@@ -1,0 +1,31 @@
+{
+  "parser": "babel-eslint",
+  "plugins": [
+    "react",
+    "react-native"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+        "jsx": true,
+        "modules": true
+    }
+  },
+  "extends" : [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "airbnb-base"
+  ],
+  "rules" : {
+    "arrow-body-style": "warn",
+    "class-methods-use-this": "off",
+    "no-console": "off",
+    "max-len": ["error", {"code": 160}],
+    "no-tabs": "error",
+    "indent": ["error", 4],
+    "no-use-before-define": ["error", {"functions": false, "variables": false}],
+    "no-unused-vars": ["error", {"args": "none"}]
+  },
+  "globals": {
+    "fetch": false
+  }
+}
