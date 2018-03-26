@@ -8,13 +8,7 @@ registerScreens();
 registerScreenVisibilityListener();
 
 // Wallet
-EthWallet.init().then(() => {
-    const addresses = EthWallet.getPublicAddresses();
-    console.log(`addresses: ${addresses}`);
-    EthWallet.getEthBalance(addresses[0]).then((ethBalance) => {
-        console.log(`ethBalance: ${ethBalance}`);
-    });
-});
+EthWallet.init();
 
 // Firebase Cloud Messaging
 FCM.getFCMToken().then((fcmToken) => {
