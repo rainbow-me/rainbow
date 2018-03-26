@@ -1,10 +1,12 @@
 import { Navigation, ScreenVisibilityListener } from 'react-native-navigation';
 
 import POCScreen from './POCScreen';
+import QRScannerScreen from './QRScannerScreen';
 
 // register all screens of the app (including internal ones)
 export function registerScreens() {
     Navigation.registerComponent('BalanceWallet.POCScreen', () => POCScreen);
+    Navigation.registerComponent('BalanceWallet.QRScannerScreen', () => QRScannerScreen);
 }
 
 export function registerScreenVisibilityListener() {

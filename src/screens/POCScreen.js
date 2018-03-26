@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Platform, StyleSheet, View, Text } from 'react-native';
-import FCM from 'react-native-fcm';
 import * as EthWallet from '../model/ethWallet';
 // import PropTypes from 'prop-types';
 
@@ -28,10 +27,6 @@ class POCScreen extends Component {
         console.log(`addresses: ${addresses}`);
         const ethBalance = await EthWallet.getEthBalance(addresses[0]);
         console.log(`ethBalance: ${ethBalance}`);
-
-        // Firebase Cloud Messaging
-        const fcmToken = await FCM.getFCMToken();
-        console.log(`FCM Token: ${fcmToken}`);
     };
 
     render() {

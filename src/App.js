@@ -1,15 +1,31 @@
+import FCM from 'react-native-fcm';
 import { Navigation } from 'react-native-navigation';
 import { registerScreens, registerScreenVisibilityListener } from './screens';
+import * as EthWallet from './model/ethWallet';
 
 // screen related book keeping
 registerScreens();
 registerScreenVisibilityListener();
 
+// Wallet
+EthWallet.init().then(() => {
+    const addresses = EthWallet.getPublicAddresses();
+    console.log(`addresses: ${addresses}`);
+    EthWallet.getEthBalance(addresses[0]).then((ethBalance) => {
+        console.log(`ethBalance: ${ethBalance}`);
+    });
+});
+
+// Firebase Cloud Messaging
+FCM.getFCMToken().then((fcmToken) => {
+    console.log(`FCM Token: ${fcmToken}`);
+});
+
 Navigation.startTabBasedApp({
     tabs: [
         {
             label: 'POC', // tab label as appears under the icon in iOS (optional)
-            screen: 'BalanceWallet.POCScreen', // unique ID registered with Navigation.registerScreen
+            screen: 'BalanceWallet.QRScannerScreen', // unique ID registered with Navigation.registerScreen
             // icon: require('../img/one.png'), // local image asset for the tab icon unselected state (optional on iOS)
             // selectedIcon: require('../img/one_selected.png'), // local image asset for the tab icon selected state (optional, iOS only. On Android, Use `tabBarSelectedButtonColor` instead)
             // iconInsets: { // add this to change icon position (optional, iOS only).
@@ -18,7 +34,7 @@ Navigation.startTabBasedApp({
             //   bottom: -6, // optional, default is 0.
             //   right: 0 // optional, default is 0.
             // },
-            title: 'Proof of Concept', // title of the screen as appears in the nav bar (optional)
+            title: 'QR Code Scanner', // title of the screen as appears in the nav bar (optional)
             // titleImage: require('../img/titleImage.png'), // iOS only. navigation bar title image instead of the title text of the pushed screen (optional)
             // navigatorStyle: {}, // override the navigator style for the tab screen, see "Styling the navigator" below (optional),
             // navigatorButtons: {} // override the nav buttons for the tab screen, see "Adding buttons to the navigator" below (optional)
