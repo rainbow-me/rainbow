@@ -1,0 +1,1 @@
+#import <FirebaseCore/FIRConfiguration.h>

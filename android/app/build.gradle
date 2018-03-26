@@ -137,6 +137,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-fcm')
     compile project(':react-native-randombytes')
     compile project(':react-native-keychain')
     compile fileTree(dir: "libs", include: ["*.jar"])
