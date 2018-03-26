@@ -19,12 +19,13 @@
     "arrow-body-style": "warn",
     "class-methods-use-this": "off",
     "no-console": "off",
-    # "max-len": ["error", {"code": 160, "comments": 500}],
-    "max-len": ["off"],
+    "max-len": ["error", {"code": 160, "comments": 500}],
+    #"max-len": ["off", {"code": 160, "comments": 500}],
     "no-tabs": "error",
     "indent": ["error", 4],
     "no-use-before-define": ["error", {"functions": false, "variables": false}],
-    "no-unused-vars": ["error", {"args": "none"}]
+    "no-unused-vars": ["error", {"args": "none"}],
+    "no-plusplus": ["off"]
   },
   "globals": {
     "fetch": false
