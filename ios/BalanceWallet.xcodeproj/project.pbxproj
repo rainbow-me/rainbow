@@ -49,7 +49,6 @@
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		A4B69522341D47A2A567235B /* libRNCamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ECA4556961174464B4EEA890 /* libRNCamera.a */; };
-		AAD5A56897EE4200833CA977 /* libRNRandomBytes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C9FC848ADC464143A969D4F1 /* libRNRandomBytes.a */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
 		B2EB646C5E2740AB8442A85B /* libRNFIRMessaging.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9168A5D32A7A4066B14312DE /* libRNFIRMessaging.a */; };
 /* End PBXBuildFile section */
@@ -457,7 +456,6 @@
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
 				5347DDBC2068967E00CB07E0 /* FirebaseMessaging.framework in Frameworks */,
 				185E23EEFABD42E485B30702 /* libRNKeychain.a in Frameworks */,
-				AAD5A56897EE4200833CA977 /* libRNRandomBytes.a in Frameworks */,
 				B2EB646C5E2740AB8442A85B /* libRNFIRMessaging.a in Frameworks */,
 				5347DDC12068967E00CB07E0 /* FirebaseInstanceID.framework in Frameworks */,
 				5347DDBA2068967E00CB07E0 /* FirebaseCore.framework in Frameworks */,
@@ -1486,13 +1484,11 @@
 				DEVELOPMENT_TEAM = Q4G66XSS36;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/BalanceWallet/Frameworks",
 					"$(PROJECT_DIR)/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-navigation/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-keychain/RNKeychainManager",
-					"$(SRCROOT)/../node_modules/react-native-randombytes",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 				);
@@ -1523,13 +1519,11 @@
 				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/BalanceWallet/Frameworks",
 					"$(PROJECT_DIR)/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../node_modules/react-native-navigation/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-keychain/RNKeychainManager",
-					"$(SRCROOT)/../node_modules/react-native-randombytes",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 				);

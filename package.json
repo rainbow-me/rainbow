@@ -9,6 +9,7 @@
         "lint": "eslint ./src/ --ext .js"
     },
     "dependencies": {
+        "axios": "^0.18.0",
         "ethers": "^3.0.7",
         "prop-types": "^15.6.1",
         "react": "^16.3.0-alpha.1",

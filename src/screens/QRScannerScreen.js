@@ -1,32 +1,46 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, Alert } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
+import FCM from 'react-native-fcm';
+import * as EthWallet from '../model/ethWallet';
+import * as api from '../model/api';
 
 class QRScannerScreen extends Component {
-    onSuccess = (e) => {
-        Alert.alert(
-            'QR Code Contents',
-            e.data,
-            [
-                {
-                    text: 'OK',
-                    onPress: () => {
-                        console.dir(this);
-                        this.qrCodeScanner.reactivate();
-                        console.log('OK Pressed');
-                    },
-                },
-            ],
-            { cancelable: false },
-        );
+    onSuccess = async (e) => {
+        console.log(`e.data: ${e.data}`);
+        const data = JSON.parse(e.data);
+        if (data.domain && data.token) {
+            const fcmToken = await FCM.getFCMToken();
+            const address = await EthWallet.loadAddress();
+            const responseJson = await api.updateConnectionDetails(data.domain, data.token, fcmToken, [address]);
+            console.log(`responseJson: ${responseJson}`);
+        }
+
+        setTimeout(() => {
+            this.qrCodeScanner.reactivate();
+        }, 1000);
+
+        // Alert.alert(
+        //     'QR Code Contents',
+        //     e.data,
+        //     [
+        //         {
+        //             text: 'OK',
+        //             onPress: () => {
+        //                 console.dir(this);
+        //                 this.qrCodeScanner.reactivate();
+        //                 console.log('OK Pressed');
+        //             },
+        //         },
+        //     ],
+        //     { cancelable: false },
+        // );
     };
 
     render() {
         return (
             <View style={styles.container}>
-                <Text style={styles.centerText}>
-                    Go to <Text style={styles.textBold}>wikipedia.org/wiki/QR_code</Text> on your computer and scan the QR code.
-                </Text>
+                <Text style={styles.centerText}>Scan the Balance Manager QR code to log in</Text>
                 <QRCodeScanner
                     ref={(c) => {
                         this.qrCodeScanner = c;
