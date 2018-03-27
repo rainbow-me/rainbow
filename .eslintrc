@@ -25,7 +25,8 @@
     "indent": ["error", 4],
     "no-use-before-define": ["error", {"functions": false, "variables": false}],
     "no-unused-vars": ["error", {"args": "none"}],
-    "no-plusplus": ["off"]
+    "no-plusplus": ["off"],
+    "no-underscore-dangle": ["off"]
   },
   "globals": {
     "fetch": false

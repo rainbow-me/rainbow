@@ -1,5 +1,5 @@
 import FCM, { FCMEvent, NotificationType, RemoteNotificationResult, WillPresentNotificationResult } from 'react-native-fcm';
-import { Platform } from 'react-native';
+import { Platform, AsyncStorage, AppState } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import { registerScreens, registerScreenVisibilityListener } from './screens';
 import * as EthWallet from './model/ethWallet';
@@ -15,37 +15,70 @@ EthWallet.init();
 FCM.getFCMToken().then((fcmToken) => {
     console.log(`FCM Token: ${fcmToken}`);
 });
-FCM.on(FCMEvent.Notification, (notif) => {
-    console.log('Notification', notif);
 
-    if (Platform.OS === 'ios') {
-        // optional
-        // iOS requires developers to call completionHandler to end notification process. If you do not call it your background remote notifications could be throttled, to read more about it see the above documentation link.
-        // This library handles it for you automatically with default behavior (for remote notification, finish with NoData; for WillPresent, finish depend on "show_in_foreground"). However if you want to return different result, follow the following code to override
-        // notif._notificationType is available for iOS platfrom
-        switch (notif._notificationType) {
-        case NotificationType.Remote:
-            notif.finish(RemoteNotificationResult.NewData); // other types available: RemoteNotificationResult.NewData, RemoteNotificationResult.ResultFailed
-            break;
-        case NotificationType.NotificationResponse:
-            notif.finish();
-            break;
-        case NotificationType.WillPresent:
-            notif.finish(WillPresentNotificationResult.All); // other types available: WillPresentNotificationResult.None
-            // this type of notificaiton will be called only when you are in foreground.
-            // if it is a remote notification, don't do any app logic here. Another notification callback will be triggered with type NotificationType.Remote
-            break;
-        default:
-            break;
+// App is killed
+function registerKilledListener() {
+    // these callback will be triggered even when app is killed
+    FCM.on(FCMEvent.Notification, (notif) => {
+        console.log(`registerKilledListener notif: ${notif}`);
+        AsyncStorage.setItem('lastNotification', JSON.stringify(notif));
+        if (notif.opened_from_tray) {
+            setTimeout(() => {
+                if (notif._actionIdentifier === 'reply') {
+                    if (AppState.currentState !== 'background') {
+                        console.log(`User replied ${JSON.stringify(notif._userText)}`);
+                    } else {
+                        AsyncStorage.setItem('lastMessage', JSON.stringify(notif._userText));
+                    }
+                }
+                if (notif._actionIdentifier === 'view') {
+                    console.log('User clicked View in App');
+                }
+                if (notif._actionIdentifier === 'dismiss') {
+                    console.log('User clicked Dismiss');
+                }
+            }, 1000);
         }
-    }
-});
+    });
+}
+
+// App in foreground or background
+function registerAppListener() {
+    FCM.on(FCMEvent.Notification, (notif) => {
+        console.log(`registerAppListener notif: ${notif}`);
+
+        if (Platform.OS === 'ios') {
+            // optional
+            // iOS requires developers to call completionHandler to end notification process. If you do not call it your background remote notifications could be throttled, to read more about it see the above documentation link.
+            // This library handles it for you automatically with default behavior (for remote notification, finish with NoData; for WillPresent, finish depend on "show_in_foreground"). However if you want to return different result, follow the following code to override
+            // notif._notificationType is available for iOS platfrom
+            switch (notif._notificationType) {
+            case NotificationType.Remote:
+                notif.finish(RemoteNotificationResult.NewData); // other types available: RemoteNotificationResult.NewData, RemoteNotificationResult.ResultFailed
+                break;
+            case NotificationType.NotificationResponse:
+                notif.finish();
+                break;
+            case NotificationType.WillPresent:
+                notif.finish(WillPresentNotificationResult.All); // other types available: WillPresentNotificationResult.None
+                // this type of notificaiton will be called only when you are in foreground.
+                // if it is a remote notification, don't do any app logic here. Another notification callback will be triggered with type NotificationType.Remote
+                break;
+            default:
+                break;
+            }
+        }
+    });
+}
+
+registerAppListener();
+registerKilledListener();
 
 Navigation.startTabBasedApp({
     tabs: [
         {
             label: 'POC', // tab label as appears under the icon in iOS (optional)
-            screen: 'BalanceWallet.QRScannerScreen', // unique ID registered with Navigation.registerScreen
+            screen: 'BalanceWallet.TransactionScreen', // QRScannerScreen', // unique ID registered with Navigation.registerScreen
             // icon: require('../img/one.png'), // local image asset for the tab icon unselected state (optional on iOS)
             // selectedIcon: require('../img/one_selected.png'), // local image asset for the tab icon selected state (optional, iOS only. On Android, Use `tabBarSelectedButtonColor` instead)
             // iconInsets: { // add this to change icon position (optional, iOS only).
