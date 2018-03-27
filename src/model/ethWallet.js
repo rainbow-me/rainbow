@@ -40,6 +40,23 @@ export async function loadWallet() {
     return null;
 }
 
+export async function createTransaction(to, data, value, gasLimit, gasPrice, nonce = null) {
+    return {
+        to,
+        data,
+        value: ethers.utils.parseEther(value),
+        gasLimit,
+        gasPrice,
+        nonce,
+    };
+}
+
+export async function sendTransaction(transaction) {
+    const wallet = await loadWallet();
+    const transactionHash = await wallet.sendTransaction(transaction);
+    return transactionHash;
+}
+
 export async function saveSeedPhrase(seedPhrase) {
     await Keychain.saveString(seedPhraseKey, seedPhrase);
 }

@@ -1,40 +1,45 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, View, Text, Button } from 'react-native';
+import { StyleSheet, View, Text, Button } from 'react-native';
+import PropTypes from 'prop-types';
 import * as EthWallet from '../model/ethWallet';
-// import PropTypes from 'prop-types';
 
 class TransactionScreen extends Component {
-    // componentDidMount = async () => {
-    //     // // Try to load an existing wallet
-    //     // let wallet = await Wallet.loadWallet();
-    //     //
-    //     // if (!wallet) {
-    //     //     // Create a new wallet
-    //     //     wallet = await Wallet.createWallet();
-    //     // }
-    //     //
-    //     // console.log(`wallet address: ${wallet.address}`);
-    //     // console.log(`wallet private key: ${wallet.privateKey}`);
-    //     // console.log(`wallet provider: ${wallet.provider}`);
-    //     // console.log(`wallet seed phrase: ${Wallet.loadSeedPhrase()}`);
-    //     await EthWallet.init();
-    //     const addresses = EthWallet.getPublicAddresses();
-    //     console.log(`addresses: ${addresses}`);
-    //     const ethBalance = await EthWallet.getEthBalance(addresses[0]);
-    //     console.log(`ethBalance: ${ethBalance}`);
-    // };
+    constructor(props) {
+        super(props);
+        this.state = { confirmed: false, transactionText: JSON.stringify(props.transaction) };
+    }
 
-    confirmTransaction = () => {};
+    confirmTransaction = async (transaction) => {
+        const transactionHash = await EthWallet.sendTransaction(transaction);
+        this.setState(previousState => ({ confirmed: true, transactionText: `Transaction sent!\n${transactionHash}` }));
+    };
 
     render() {
         return (
             <View style={styles.container}>
-                <Text style={styles.title}>Confirm transaction from Balance Manager</Text>
-                <Button onPress={this.confirmTransaction} title="Press to confirm" color="#841584" accessibilityLabel="Press to confirm" />
+                <Text style={styles.transaction}>{JSON.stringify(this.state.transactionText)}</Text>
+                {!this.state.confirmed && (
+                    <View>
+                        <Text style={styles.title}>Confirm transaction from Balance Manager</Text>
+                        <Button
+                            onPress={() => {
+                                this.confirmTransaction(this.props.transaction);
+                            }}
+                            title="Press to confirm"
+                            color="#841584"
+                            accessibilityLabel="Press to confirm"
+                        />
+                    </View>
+                )}
             </View>
         );
     }
 }
+
+TransactionScreen.propTypes = {
+    navigation: PropTypes.any,
+    transaction: PropTypes.any,
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -48,7 +53,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         margin: 10,
     },
-    instructions: {
+    transaction: {
         textAlign: 'center',
         color: '#333333',
         marginBottom: 5,
