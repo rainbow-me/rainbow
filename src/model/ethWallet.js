@@ -25,6 +25,7 @@ export async function createWallet(seedPhrase = generateSeedPhrase()) {
     saveAddress(wallet.address);
 
     console.log(`Wallet: Generated wallet with public address: ${wallet.address}`);
+
     return wallet;
 }
 

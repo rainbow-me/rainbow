@@ -22,15 +22,28 @@ export async function postRequest(url, bodyJson) {
 }
 
 // TODO: Check that addresses is an array of strings
-export async function updateConnectionDetails(bridgeDomain, sessionToken, fcmToken, addresses) {
+// TODO: encryptedPayload should include a publicKey field with this device's RSA pubkey
+// TODO: encrypt entire encryptedPayload string with Dapp's pubkey
+export async function updateDeviceDetails(bridgeDomain, sessionToken, fcmToken, addresses) {
     const bodyJson = JSON.stringify({
-        token: sessionToken,
+        sessionToken,
+        fcmToken,
         encryptedPayload: JSON.stringify({
-            fcmToken,
             addresses,
         }),
     });
 
-    const responseJson = await postRequest(`${bridgeDomain}/updateConnectionDetails`, bodyJson);
+    const responseJson = await postRequest(`${bridgeDomain}/update-device-details`, bodyJson);
     console.log(`updateConnectionDetails response ${JSON.stringify(responseJson)}`);
+    return responseJson.deviceUuid;
 }
+
+// TODO: First parse the push notification to get this info, and call this API to get the actual transaction data
+// The data returned is the encryptedPayload for the transaction, which I decrypt using my privkey from the server
+// that payload contains all info needed to construct a transaction
+// export async function getTransactionDetails(deviceUuid, transactionUuid) {}
+
+// TODO: After attempting to send the transaction to the blockchain, call this API to report the success
+// and if successful the transaction hash. Format is {deviceUuid, transactionUuid, encryptedPayload: {success: boolean, transactionHash: string}}
+// Encrypted payload should be stringified and encrypted using the Dapp's pubkey
+// export asunc function updateTransactionStatus(deviceUuid, transactionUuid, transactionHash, success) {}

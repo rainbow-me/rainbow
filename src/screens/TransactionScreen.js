@@ -3,6 +3,8 @@ import { StyleSheet, View, Text, Button } from 'react-native';
 import PropTypes from 'prop-types';
 import * as EthWallet from '../model/ethWallet';
 
+// TODO: Show full transaction info
+// TODO: Skin using new designs
 class TransactionScreen extends Component {
     constructor(props) {
         super(props);

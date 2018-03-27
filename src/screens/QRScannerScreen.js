@@ -1,19 +1,60 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, Alert } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import FCM from 'react-native-fcm';
+import FCM, { FCMEvent, NotificationType, RemoteNotificationResult, WillPresentNotificationResult } from 'react-native-fcm';
+import PropTypes from 'prop-types';
 import * as EthWallet from '../model/ethWallet';
 import * as api from '../model/api';
 
 class QRScannerScreen extends Component {
+    constructor(props) {
+        super(props);
+        this.registerAppListener();
+    }
+
+    registerAppListener = () => {
+        FCM.on(FCMEvent.Notification, (notif) => {
+            // TODO: Parse deviceUuid, transactionUuid, and eventually vendor name etc, then look up the
+            //       publick key from the keychain based on the deviceUuid to make further API calls
+            console.log(`registerAppListener notif: ${notif}`);
+
+            if (Platform.OS === 'ios') {
+                // optional
+                // iOS requires developers to call completionHandler to end notification process. If you do not call it your background remote notifications could be throttled, to read more about it see the above documentation link.
+                // This library handles it for you automatically with default behavior (for remote notification, finish with NoData; for WillPresent, finish depend on "show_in_foreground"). However if you want to return different result, follow the following code to override
+                // notif._notificationType is available for iOS platfrom
+                switch (notif._notificationType) {
+                case NotificationType.Remote:
+                    notif.finish(RemoteNotificationResult.NewData); // other types available: RemoteNotificationResult.NewData, RemoteNotificationResult.ResultFailed
+                    break;
+                case NotificationType.NotificationResponse:
+                    notif.finish();
+                    break;
+                case NotificationType.WillPresent:
+                    notif.finish(WillPresentNotificationResult.All); // other types available: WillPresentNotificationResult.None
+                    // this type of notificaiton will be called only when you are in foreground.
+                    // if it is a remote notification, don't do any app logic here. Another notification callback will be triggered with type NotificationType.Remote
+                    break;
+                default:
+                    break;
+                }
+            }
+
+            // Show the TransactionScreen
+        });
+    };
+
     onSuccess = async (e) => {
         console.log(`e.data: ${e.data}`);
         const data = JSON.parse(e.data);
-        if (data.domain && data.token) {
+        // TODO: Expect a publickKey field with RSA pubkey for the Dapp and pass to updateDeviceDetails
+        // TODO: Save publicKey and domain keyed on deviceUuid in the keychain
+        //       to be able to retreive transaction info from bridge after receiving push notification
+        if (data.domain && data.sessionToken) {
             const fcmToken = await FCM.getFCMToken();
             const address = await EthWallet.loadAddress();
-            const responseJson = await api.updateConnectionDetails(data.domain, data.token, fcmToken, [address]);
-            console.log(`responseJson: ${responseJson}`);
+            const deviceUuid = await api.updateDeviceDetails(data.domain, data.sessionToken, fcmToken, [address]);
+            console.log(`deviceUuid: ${deviceUuid}`);
         }
 
         setTimeout(() => {
@@ -54,6 +95,10 @@ class QRScannerScreen extends Component {
         );
     }
 }
+
+QRScannerScreen.propTypes = {
+    navigation: PropTypes.any,
+};
 
 const styles = StyleSheet.create({
     container: {

@@ -42,43 +42,43 @@ function registerKilledListener() {
     });
 }
 
-// App in foreground or background
-function registerAppListener() {
-    FCM.on(FCMEvent.Notification, (notif) => {
-        console.log(`registerAppListener notif: ${notif}`);
-
-        if (Platform.OS === 'ios') {
-            // optional
-            // iOS requires developers to call completionHandler to end notification process. If you do not call it your background remote notifications could be throttled, to read more about it see the above documentation link.
-            // This library handles it for you automatically with default behavior (for remote notification, finish with NoData; for WillPresent, finish depend on "show_in_foreground"). However if you want to return different result, follow the following code to override
-            // notif._notificationType is available for iOS platfrom
-            switch (notif._notificationType) {
-            case NotificationType.Remote:
-                notif.finish(RemoteNotificationResult.NewData); // other types available: RemoteNotificationResult.NewData, RemoteNotificationResult.ResultFailed
-                break;
-            case NotificationType.NotificationResponse:
-                notif.finish();
-                break;
-            case NotificationType.WillPresent:
-                notif.finish(WillPresentNotificationResult.All); // other types available: WillPresentNotificationResult.None
-                // this type of notificaiton will be called only when you are in foreground.
-                // if it is a remote notification, don't do any app logic here. Another notification callback will be triggered with type NotificationType.Remote
-                break;
-            default:
-                break;
-            }
-        }
-    });
-}
-
-registerAppListener();
+// // App in foreground or background
+// function registerAppListener() {
+//     FCM.on(FCMEvent.Notification, (notif) => {
+//         console.log(`registerAppListener notif: ${notif}`);
+//
+//         if (Platform.OS === 'ios') {
+//             // optional
+//             // iOS requires developers to call completionHandler to end notification process. If you do not call it your background remote notifications could be throttled, to read more about it see the above documentation link.
+//             // This library handles it for you automatically with default behavior (for remote notification, finish with NoData; for WillPresent, finish depend on "show_in_foreground"). However if you want to return different result, follow the following code to override
+//             // notif._notificationType is available for iOS platfrom
+//             switch (notif._notificationType) {
+//             case NotificationType.Remote:
+//                 notif.finish(RemoteNotificationResult.NewData); // other types available: RemoteNotificationResult.NewData, RemoteNotificationResult.ResultFailed
+//                 break;
+//             case NotificationType.NotificationResponse:
+//                 notif.finish();
+//                 break;
+//             case NotificationType.WillPresent:
+//                 notif.finish(WillPresentNotificationResult.All); // other types available: WillPresentNotificationResult.None
+//                 // this type of notificaiton will be called only when you are in foreground.
+//                 // if it is a remote notification, don't do any app logic here. Another notification callback will be triggered with type NotificationType.Remote
+//                 break;
+//             default:
+//                 break;
+//             }
+//         }
+//     });
+// }
+//
+// registerAppListener();
 registerKilledListener();
 
 Navigation.startTabBasedApp({
     tabs: [
         {
             label: 'POC', // tab label as appears under the icon in iOS (optional)
-            screen: 'BalanceWallet.TransactionScreen', // QRScannerScreen', // unique ID registered with Navigation.registerScreen
+            screen: 'BalanceWallet.QRScannerScreen', // unique ID registered with Navigation.registerScreen
             // icon: require('../img/one.png'), // local image asset for the tab icon unselected state (optional on iOS)
             // selectedIcon: require('../img/one_selected.png'), // local image asset for the tab icon selected state (optional, iOS only. On Android, Use `tabBarSelectedButtonColor` instead)
             // iconInsets: { // add this to change icon position (optional, iOS only).
