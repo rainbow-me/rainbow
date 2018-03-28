@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import FCM, { FCMEvent, NotificationType, RemoteNotificationResult, WillPresentNotificationResult } from 'react-native-fcm';
+import { Navigation } from 'react-native-navigation';
 import PropTypes from 'prop-types';
 import * as ethWallet from '../model/ethWallet';
 import * as api from '../model/api';
@@ -12,6 +13,17 @@ class QRScannerScreen extends Component {
         super(props);
         this.registerAppListener();
     }
+
+    componentDidMount = async () => {
+        Navigation.showModal({
+            screen: 'BalanceWallet.TransactionScreen', // unique ID registered with Navigation.registerScreen
+            // title: 'Modal', // title of the screen as appears in the nav bar (optional)
+            passProps: {}, // simple serializable object that will pass as props to the modal (optional)
+            navigatorStyle: { navBarHidden: true }, // override the navigator style for the screen, see "Styling the navigator" below (optional)
+            navigatorButtons: {}, // override the nav buttons for the screen, see "Adding buttons to the navigator" below (optional)
+            animationType: 'slide-up', // 'none' / 'slide-up' , appear animation for the modal (optional, default 'slide-up')
+        });
+    };
 
     registerAppListener = () => {
         FCM.on(FCMEvent.Notification, (notif) => {

@@ -77,9 +77,9 @@ registerKilledListener();
 Navigation.startTabBasedApp({
     tabs: [
         {
-            label: 'POC', // tab label as appears under the icon in iOS (optional)
-            screen: 'BalanceWallet.QRScannerScreen', // unique ID registered with Navigation.registerScreen
-            // icon: require('../img/one.png'), // local image asset for the tab icon unselected state (optional on iOS)
+            label: 'Wallet', // tab label as appears under the icon in iOS (optional)
+            screen: 'BalanceWallet.WalletScreen', // unique ID registered with Navigation.registerScreen
+            icon: require('../img/wallet-icon.png'), // local image asset for the tab icon unselected state (optional on iOS)
             // selectedIcon: require('../img/one_selected.png'), // local image asset for the tab icon selected state (optional, iOS only. On Android, Use `tabBarSelectedButtonColor` instead)
             // iconInsets: { // add this to change icon position (optional, iOS only).
             //   top: 6, // optional, default is 0.
@@ -87,7 +87,39 @@ Navigation.startTabBasedApp({
             //   bottom: -6, // optional, default is 0.
             //   right: 0 // optional, default is 0.
             // },
-            title: 'QR Code Scanner', // title of the screen as appears in the nav bar (optional)
+            title: 'Wallet', // title of the screen as appears in the nav bar (optional)
+            // titleImage: require('../img/titleImage.png'), // iOS only. navigation bar title image instead of the title text of the pushed screen (optional)
+            // navigatorStyle: {}, // override the navigator style for the tab screen, see "Styling the navigator" below (optional),
+            // navigatorButtons: {} // override the nav buttons for the tab screen, see "Adding buttons to the navigator" below (optional)
+        },
+        {
+            label: 'Scan', // tab label as appears under the icon in iOS (optional)
+            screen: 'BalanceWallet.QRScannerScreen', // unique ID registered with Navigation.registerScreen
+            icon: require('../img/scan-icon.png'), // local image asset for the tab icon unselected state (optional on iOS)
+            // selectedIcon: require('../img/one_selected.png'), // local image asset for the tab icon selected state (optional, iOS only. On Android, Use `tabBarSelectedButtonColor` instead)
+            // iconInsets: { // add this to change icon position (optional, iOS only).
+            //   top: 6, // optional, default is 0.
+            //   left: 0, // optional, default is 0.
+            //   bottom: -6, // optional, default is 0.
+            //   right: 0 // optional, default is 0.
+            // },
+            title: 'Wallet Conneeeeeeect', // title of the screen as appears in the nav bar (optional)
+            // titleImage: require('../img/titleImage.png'), // iOS only. navigation bar title image instead of the title text of the pushed screen (optional)
+            // navigatorStyle: {}, // override the navigator style for the tab screen, see "Styling the navigator" below (optional),
+            // navigatorButtons: {} // override the nav buttons for the tab screen, see "Adding buttons to the navigator" below (optional)
+        },
+        {
+            label: 'Settings', // tab label as appears under the icon in iOS (optional)
+            screen: 'BalanceWallet.SettingsScreen', // unique ID registered with Navigation.registerScreen
+            icon: require('../img/settings-icon.png'), // local image asset for the tab icon unselected state (optional on iOS)
+            // selectedIcon: require('../img/one_selected.png'), // local image asset for the tab icon selected state (optional, iOS only. On Android, Use `tabBarSelectedButtonColor` instead)
+            // iconInsets: { // add this to change icon position (optional, iOS only).
+            //   top: 6, // optional, default is 0.
+            //   left: 0, // optional, default is 0.
+            //   bottom: -6, // optional, default is 0.
+            //   right: 0 // optional, default is 0.
+            // },
+            title: 'Settings', // title of the screen as appears in the nav bar (optional)
             // titleImage: require('../img/titleImage.png'), // iOS only. navigation bar title image instead of the title text of the pushed screen (optional)
             // navigatorStyle: {}, // override the navigator style for the tab screen, see "Styling the navigator" below (optional),
             // navigatorButtons: {} // override the nav buttons for the tab screen, see "Adding buttons to the navigator" below (optional)
@@ -95,9 +127,9 @@ Navigation.startTabBasedApp({
     ],
     tabsStyle: {
         // optional, add this if you want to style the tab bar beyond the defaults
-        tabBarButtonColor: '#ffff00', // optional, change the color of the tab icons and text (also unselected). On Android, add this to appStyle
-        tabBarSelectedButtonColor: '#ff9900', // optional, change the color of the selected tab icon and text (only selected). On Android, add this to appStyle
-        tabBarBackgroundColor: '#551A8B', // optional, change the background color of the tab bar
+        tabBarButtonColor: '#abb1b8', // optional, change the color of the tab icons and text (also unselected). On Android, add this to appStyle
+        tabBarSelectedButtonColor: '#0b0b0c', // optional, change the color of the selected tab icon and text (only selected). On Android, add this to appStyle
+        tabBarBackgroundColor: '#f7f8fc', // optional, change the background color of the tab bar
         initialTabIndex: 1, // optional, the default selected bottom tab. Default: 0. On Android, add this to appStyle
     },
     appStyle: {
