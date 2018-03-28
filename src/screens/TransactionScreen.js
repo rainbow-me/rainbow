@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text } from 'react-native';
 import PropTypes from 'prop-types';
-import Styled from 'styled-components';
+import styled from 'styled-components';
+import Button from '../components/Button';
 import * as ethWallet from '../model/ethWallet';
 
 // TODO: Show full transaction info
@@ -25,15 +26,29 @@ class TransactionScreen extends Component {
                     <StyledBottomContainer>
                         <StyledTransactionDetailContainer>
                             <StyledTransactionDetailTitle>FROM</StyledTransactionDetailTitle>
-                            <StyledTransactionDetailText>My Wallet • 0xa4…d7A1</StyledTransactionDetailText>
+                            <StyledTransactionDetailText>
+                                {this.props.fromName} • {this.props.fromAddress}
+                            </StyledTransactionDetailText>
                             <StyledTransactionDetailSeparator />
                         </StyledTransactionDetailContainer>
                         <StyledTransactionDetailContainer>
                             <StyledTransactionDetailTitle>TO</StyledTransactionDetailTitle>
-                            <StyledTransactionDetailText>CryptoKitties • 0xb3…x2N9</StyledTransactionDetailText>
-                            <StyledVerifiedBadge>Verified</StyledVerifiedBadge>
+                            <StyledTransactionDetailText>
+                                {this.props.toName} • {this.props.toAddress}
+                            </StyledTransactionDetailText>
+                            {this.props.isVerified && <StyledVerifiedBadge>Verified</StyledVerifiedBadge>}
                             <StyledTransactionDetailSeparator />
                         </StyledTransactionDetailContainer>
+                        <StyledTransactionDetailContainer>
+                            <StyledCurrencyNameText>{this.props.currencyName}</StyledCurrencyNameText>
+                            <StyledAmountText>{this.props.amount}</StyledAmountText>
+                            <StyledConvertedAmountText>{this.props.convertedAmount}</StyledConvertedAmountText>
+                        </StyledTransactionDetailContainer>
+                        <StyledConfirmButtonContainer>
+                            <Button outline onPress={() => console.log('pressed')}>
+                                Confirm with FaceID
+                            </Button>
+                        </StyledConfirmButtonContainer>
                     </StyledBottomContainer>
                 )}
             </StyledContainer>
@@ -46,14 +61,25 @@ TransactionScreen.propTypes = {
     transaction: PropTypes.any,
 };
 
-const StyledContainer = Styled.View`
+TransactionScreen.defaultProps = {
+    fromName: 'My Wallet',
+    fromAddress: '0xa4…d7A1',
+    toName: 'CryptoKitties',
+    toAddress: '0xb3…x2N9',
+    isVerified: true,
+    currencyName: '0x',
+    amount: '17.92853 ZRX',
+    convertedAmount: '$10.76',
+};
+
+const StyledContainer = styled.View`
     flex: 1;
     justify-content: center;
     align-items: center;
-    background-color: #2a265a;
+    background-color: rgb(42, 38, 90);
 `;
 
-const StyledBottomContainer = Styled.View`
+const StyledBottomContainer = styled.View`
     position: absolute;
     bottom: 0;
     align-self: flex-end;
@@ -61,16 +87,16 @@ const StyledBottomContainer = Styled.View`
     height: 367px;
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
-    background-color: #ffffff;
+    background-color: rgb(255, 255, 255);
 `;
 
-const StyledTransactionDetailContainer = Styled.View`
+const StyledTransactionDetailContainer = styled.View`
     position: relative;
     width: 100%;
     height: 77px;
 `;
 
-const StyledTransactionDetailTitle = Styled.Text`
+const StyledTransactionDetailTitle = styled.Text`
     position: absolute;
     top: 19px;
     left: 18px;
@@ -79,31 +105,29 @@ const StyledTransactionDetailTitle = Styled.Text`
     font-size: 12px;
     font-weight: bold;
     letter-spacing: 0.5px;
-    color: #6c6c6e;
+    color: rgba(45, 45, 49, 0.7);
 `;
 
-const StyledTransactionDetailText = Styled.Text`
+const StyledTransactionDetailText = styled.Text`
     position: absolute;
     left: 18px;
     top: 38px;
     width: 176px;
     height: 19px;
     font-size: 16px;
-    font-weight: normal;
-    text-align: left;
-    color: #8a8e97;
+    color: rgba(60, 66, 82, 0.6);
 `;
 
-const StyledTransactionDetailSeparator = Styled.View`
+const StyledTransactionDetailSeparator = styled.View`
     position: absolute;
     left: 18px;
     bottom: 0;
     width: 100%;
     height: 2px;
-    background: #f9f9f9;
+    background-color: rgba(230, 230, 230, 0.22);
 `;
 
-const StyledVerifiedBadge = Styled.Text`
+const StyledVerifiedBadge = styled.Text`
     position: absolute;
     top: 27px;
     right: 18px;
@@ -111,10 +135,55 @@ const StyledVerifiedBadge = Styled.Text`
     font-size: 12px;
     font-weight: 700;
     text-align: center;
-    color: #ffffff;
+    color: rgb(255, 255, 255);
     border-radius: 6px;
-    background-color: #247fff;
+    background-color: rgb(36, 127, 255);
     overflow: hidden;
 `;
+
+const StyledCurrencyNameText = styled.Text`
+    position: absolute;
+    left: 19px;
+    top: 27px;
+    width: 50%;
+    height: 19px;
+    font-size: 16px;
+    font-weight: 600;
+    color: rgb(45, 45, 49);
+`;
+
+const StyledAmountText = styled.Text`
+    position: absolute;
+    left: 19px;
+    top: 53px;
+    width: 50%;
+    height: 16px;
+    font-size: 14px;
+    color: rgba(60, 66, 82, 0.6);
+`;
+
+const StyledConvertedAmountText = styled.Text`
+    position: absolute;
+    top: 28px;
+    right: 20px;
+    width: 50%;
+    height: 36px;
+    font-size: 30px;
+    text-align: right;
+    color: rgb(12, 12, 13);
+`;
+
+const StyledConfirmButtonContainer = styled.View`
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+`;
+
+// const StyledConfirmButton = styled.Button`
+//     width: 347px;
+//     height: 59px;
+//     border-radius: 14px;
+//     background-color: rgb(0, 179, 113);
+// `;
 
 export default TransactionScreen;
