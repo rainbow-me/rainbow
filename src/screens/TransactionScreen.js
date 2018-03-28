@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, Button } from 'react-native';
 import PropTypes from 'prop-types';
-import * as EthWallet from '../model/ethWallet';
+import * as ethWallet from '../model/ethWallet';
 
 // TODO: Show full transaction info
 // TODO: Skin using new designs
@@ -12,7 +12,7 @@ class TransactionScreen extends Component {
     }
 
     confirmTransaction = async (transaction) => {
-        const transactionHash = await EthWallet.sendTransaction(transaction);
+        const transactionHash = await ethWallet.sendTransaction(transaction);
         this.setState(previousState => ({ confirmed: true, transactionText: `Transaction sent!\n${transactionHash}` }));
     };
 

@@ -1,17 +1,18 @@
 import { RSA } from 'react-native-rsa-native';
-import * as Keychain from './keychain';
+import * as keychain from './keychain';
 
 /*
  * Public
  */
 
-export async function createConnection(deviceUuid, serverPublicKey) {
+export async function createConnection(bridgeDomain, serverPublicKey, deviceUuid) {
     const keys = await RSA.generate();
     const connection = {
-        deviceUuid,
+        bridgeDomain,
         serverPublicKey,
         appPublicKey: keys.public,
         appPrivateKey: keys.private,
+        deviceUuid,
     };
     return connection;
 }
@@ -57,14 +58,14 @@ export async function decryptPayload(connection, encryptedPayload) {
 const connectionsKey = 'connectionsKey';
 
 async function loadConnections() {
-    const connections = await Keychain.loadObject(connectionsKey);
+    const connections = await keychain.loadObject(connectionsKey);
     return connections || {};
 }
 
 async function saveConnections(connections) {
-    await Keychain.saveObject(connectionsKey, connections);
+    await keychain.saveObject(connectionsKey, connections);
 }
 
 async function removeConnections() {
-    await Keychain.removeObject(connectionsKey);
+    await keychain.removeObject(connectionsKey);
 }

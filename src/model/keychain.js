@@ -1,6 +1,6 @@
 import { setInternetCredentials, getInternetCredentials, resetInternetCredentials } from 'react-native-keychain';
 
-// NOTE: implement access control
+// NOTE: implement access control for iOS keychain
 export async function saveString(key, value, accessControl) {
     try {
         await setInternetCredentials(key, key, value);

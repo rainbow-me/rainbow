@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Platform, StyleSheet, View, Text } from 'react-native';
-import * as EthWallet from '../model/ethWallet';
+import * as ethWallet from '../model/ethWallet';
 // import PropTypes from 'prop-types';
 
 const instructions = Platform.select({
@@ -22,10 +22,10 @@ class POCScreen extends Component {
         // console.log(`wallet private key: ${wallet.privateKey}`);
         // console.log(`wallet provider: ${wallet.provider}`);
         // console.log(`wallet seed phrase: ${Wallet.loadSeedPhrase()}`);
-        await EthWallet.init();
-        const addresses = EthWallet.getPublicAddresses();
+        await ethWallet.init();
+        const addresses = ethWallet.getPublicAddresses();
         console.log(`addresses: ${addresses}`);
-        const ethBalance = await EthWallet.getEthBalance(addresses[0]);
+        const ethBalance = await ethWallet.getEthBalance(addresses[0]);
         console.log(`ethBalance: ${ethBalance}`);
     };
 

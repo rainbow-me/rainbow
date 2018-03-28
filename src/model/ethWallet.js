@@ -1,5 +1,5 @@
 import ethers from 'ethers';
-import * as Keychain from './keychain';
+import * as keychain from './keychain';
 
 const seedPhraseKey = 'seedPhrase';
 const privateKeyKey = 'privateKey';
@@ -59,28 +59,28 @@ export async function sendTransaction(transaction) {
 }
 
 export async function saveSeedPhrase(seedPhrase) {
-    await Keychain.saveString(seedPhraseKey, seedPhrase);
+    await keychain.saveString(seedPhraseKey, seedPhrase);
 }
 
 export async function loadSeedPhrase() {
-    const seedPhrase = await Keychain.loadString(seedPhraseKey);
+    const seedPhrase = await keychain.loadString(seedPhraseKey);
     return seedPhrase;
 }
 
 export async function savePrivateKey(privateKey) {
-    await Keychain.saveString(privateKeyKey, privateKey);
+    await keychain.saveString(privateKeyKey, privateKey);
 }
 
 export async function loadPrivateKey() {
-    const privateKey = await Keychain.loadString(privateKeyKey);
+    const privateKey = await keychain.loadString(privateKeyKey);
     return privateKey;
 }
 
 export async function saveAddress(address) {
-    await Keychain.saveString(addressKey, address);
+    await keychain.saveString(addressKey, address);
 }
 
 export async function loadAddress() {
-    const privateKey = await Keychain.loadString(addressKey);
+    const privateKey = await keychain.loadString(addressKey);
     return privateKey;
 }

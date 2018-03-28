@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Alert } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import FCM, { FCMEvent, NotificationType, RemoteNotificationResult, WillPresentNotificationResult } from 'react-native-fcm';
 import PropTypes from 'prop-types';
-import * as EthWallet from '../model/ethWallet';
+import * as ethWallet from '../model/ethWallet';
 import * as api from '../model/api';
+import * as connections from '../model/connections';
 
 class QRScannerScreen extends Component {
     constructor(props) {
@@ -47,35 +48,26 @@ class QRScannerScreen extends Component {
     onSuccess = async (e) => {
         console.log(`e.data: ${e.data}`);
         const data = JSON.parse(e.data);
-        // TODO: Expect a publickKey field with RSA pubkey for the Dapp and pass to updateDeviceDetails
-        // TODO: Save publicKey and domain keyed on deviceUuid in the keychain
-        //       to be able to retreive transaction info from bridge after receiving push notification
-        if (data.domain && data.sessionToken) {
+        if (data.domain && data.sessionToken && data.publickKey) {
+            // Create a connection object
+            const connection = connections.createConnection(data.domain, data.publicKey);
+
+            // Get the other parameters
             const fcmToken = await FCM.getFCMToken();
-            const address = await EthWallet.loadAddress();
-            const deviceUuid = await api.updateDeviceDetails(data.domain, data.sessionToken, fcmToken, [address]);
+            const address = await ethWallet.loadAddress();
+
+            // Call the API to register this device and get the deviceUuid
+            const deviceUuid = await api.updateDeviceDetails(connection, data.sessionToken, fcmToken, [address]);
             console.log(`deviceUuid: ${deviceUuid}`);
+
+            // Persist the connection object
+            connection.deviceUuid = deviceUuid;
+            connections.saveConnection(connection);
         }
 
         setTimeout(() => {
             this.qrCodeScanner.reactivate();
         }, 1000);
-
-        // Alert.alert(
-        //     'QR Code Contents',
-        //     e.data,
-        //     [
-        //         {
-        //             text: 'OK',
-        //             onPress: () => {
-        //                 console.dir(this);
-        //                 this.qrCodeScanner.reactivate();
-        //                 console.log('OK Pressed');
-        //             },
-        //         },
-        //     ],
-        //     { cancelable: false },
-        // );
     };
 
     render() {
