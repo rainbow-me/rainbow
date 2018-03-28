@@ -4693,6 +4693,10 @@ react-native-qrcode-scanner@^0.0.30:
   dependencies:
     prop-types "^15.5.10"
 
+react-native-rsa-native@^1.0.17:
+  version "1.0.17"
+  resolved "https://registry.yarnpkg.com/react-native-rsa-native/-/react-native-rsa-native-1.0.17.tgz#a3291dbb51625f7be4ef2fba102cf1220ed73909"
+
 react-native@0.54.2:
   version "0.54.2"
   resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.54.2.tgz#73786e7bf3f80b0b060ca0bfe5b192f9c2f253da"

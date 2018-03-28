@@ -137,6 +137,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-rsa-native')
     compile project(':react-native-camera')
     compile project(':react-native-fcm')
     compile project(':react-native-randombytes')

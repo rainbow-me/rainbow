@@ -11,7 +11,6 @@ export async function postRequest(url, bodyJson) {
     }
 }
 
-// TODO: Check that addresses is an array of strings
 // TODO: encryptedPayload should include a publicKey field with this device's RSA pubkey
 // TODO: encrypt entire encryptedPayload string with Dapp's pubkey
 export async function updateDeviceDetails(bridgeDomain, sessionToken, fcmToken, addresses) {

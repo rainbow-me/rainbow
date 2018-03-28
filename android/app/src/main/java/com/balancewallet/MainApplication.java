@@ -3,6 +3,7 @@ package com.balancewallet;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.RNRSA.RNRSAPackage;
 import org.reactnative.camera.RNCameraPackage;
 import com.evollu.react.fcm.FIRMessagingPackage;
 import com.bitgo.randombytes.RandomBytesPackage;
@@ -27,6 +28,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNRSAPackage(),
             new RNCameraPackage(),
             new FIRMessagingPackage(),
             new RandomBytesPackage(),

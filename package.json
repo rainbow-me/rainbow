@@ -19,6 +19,7 @@
         "react-native-keychain": "^3.0.0-rc.3",
         "react-native-navigation": "^1.1.412",
         "react-native-qrcode-scanner": "^0.0.30",
+        "react-native-rsa-native": "^1.0.17",
         "react-redux": "^5.0.7",
         "redux": "^3.7.2",
         "styled-components": "^3.2.3"
