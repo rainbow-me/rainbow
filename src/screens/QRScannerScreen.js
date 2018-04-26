@@ -5,8 +5,8 @@ import FCM, { FCMEvent, NotificationType, RemoteNotificationResult, WillPresentN
 import { Navigation } from 'react-native-navigation';
 import PropTypes from 'prop-types';
 import * as ethWallet from '../model/ethWallet';
-import * as api from '../model/api';
 import * as connections from '../model/connections';
+import { WalletConnector } from 'walletconnect';
 
 class QRScannerScreen extends Component {
     constructor(props) {
@@ -14,6 +14,7 @@ class QRScannerScreen extends Component {
         this.registerAppListener();
     }
 
+    /*
     componentDidMount = async () => {
         Navigation.showModal({
             screen: 'BalanceWallet.TransactionScreen', // unique ID registered with Navigation.registerScreen
@@ -24,6 +25,7 @@ class QRScannerScreen extends Component {
             animationType: 'slide-up', // 'none' / 'slide-up' , appear animation for the modal (optional, default 'slide-up')
         });
     };
+    */
 
     registerAppListener = () => {
         FCM.on(FCMEvent.Notification, (notif) => {
@@ -60,21 +62,17 @@ class QRScannerScreen extends Component {
     onSuccess = async (e) => {
         console.log(`e.data: ${e.data}`);
         const data = JSON.parse(e.data);
-        if (data.domain && data.sessionToken && data.publickKey) {
+        if (data.domain && data.sessionId && data.sharedKey && data.dappName) {
             // Create a connection object
-            const connection = connections.createConnection(data.domain, data.publicKey);
+            const walletConnector = new WalletConnector(data.domain, { sessionId: data.sessionId, sharedKey: data.sharedKey, dappName: data.dappName });
 
             // Get the other parameters
             const fcmToken = await FCM.getFCMToken();
             const address = await ethWallet.loadAddress();
+            const walletWebhook = 'https://walletconnect.balance.io/webhook/push-notify';
 
-            // Call the API to register this device and get the deviceUuid
-            const deviceUuid = await api.updateDeviceDetails(connection, data.sessionToken, fcmToken, [address]);
-            console.log(`deviceUuid: ${deviceUuid}`);
-
-            // Persist the connection object
-            connection.deviceUuid = deviceUuid;
-            connections.saveConnection(connection);
+            // Call the API to register this device
+            await walletConnector.sendSessionStatus({ fcmToken, walletWebhook, data: { address } });
         }
 
         setTimeout(() => {
