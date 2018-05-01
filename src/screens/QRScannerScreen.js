@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import * as ethWallet from '../model/ethWallet';
 import * as connections from '../model/connections';
 import { WalletConnector } from 'walletconnect';
+import Frisbee from 'frisbee'
 
 class QRScannerScreen extends Component {
     constructor(props) {
@@ -64,7 +65,7 @@ class QRScannerScreen extends Component {
         const data = JSON.parse(e.data);
         if (data.domain && data.sessionId && data.sharedKey && data.dappName) {
             // Create a connection object
-            const walletConnector = new WalletConnector(data.domain, { sessionId: data.sessionId, sharedKey: data.sharedKey, dappName: data.dappName });
+            const walletConnector = new WalletConnector("https://walletconnect.balance.io", { sessionId: data.sessionId, sharedKey: data.sharedKey, dappName: data.dappName });
 
             // Get the other parameters
             const fcmToken = await FCM.getFCMToken();
@@ -72,7 +73,33 @@ class QRScannerScreen extends Component {
             const walletWebhook = 'https://walletconnect.balance.io/webhook/push-notify';
 
             // Call the API to register this device
-            await walletConnector.sendSessionStatus({ fcmToken, walletWebhook, data: { address } });
+            const encryptedData = await walletConnector.encrypt({address: address});
+            console.log(`encrypted data: ${encryptedData}`);
+          /*
+            const frisbeeInstance = new Frisbee({
+              baseURI: walletConnector.bridgeURL,
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+            const helloRes = await frisbeeInstance.get('/hello');
+            console.log(`printing hello status ${helloRes.status}`);
+            const res = await frisbeeInstance.put(`/session/${data.sessionId}`, {
+              body: {
+                fcmToken,
+                walletWebhook,
+                data: encryptedData
+              }
+            });
+            console.log("awaiting result");
+            console.log(`status is: ${res.status}`);
+           */ 
+            await walletConnector.sendSessionStatus({
+              fcmToken: fcmToken,
+              walletWebhook: walletWebhook,
+              data: { address: address }
+            });
+            console.log("sent session status");
         }
 
         setTimeout(() => {
