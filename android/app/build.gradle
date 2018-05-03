@@ -141,7 +141,6 @@ dependencies {
     compile project(':react-native-tcp')
     compile project(':react-native-os')
     compile project(':react-native-navigation')
-    compile project(':react-native-rsa-native')
     compile project(':react-native-camera')
     compile project(':react-native-fcm')
     compile project(':react-native-randombytes')

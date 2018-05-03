@@ -7,7 +7,6 @@ import com.tradle.react.UdpSocketsModule;
 import com.peel.react.TcpSocketsModule;
 import com.peel.react.rnos.RNOSModule;
 import com.reactnativenavigation.NavigationReactPackage;
-import com.RNRSA.RNRSAPackage;
 import org.reactnative.camera.RNCameraPackage;
 import com.evollu.react.fcm.FIRMessagingPackage;
 import com.bitgo.randombytes.RandomBytesPackage;
@@ -36,7 +35,6 @@ public class MainApplication extends Application implements ReactApplication {
             new TcpSocketsModule(),
             new RNOSModule(),
             new NavigationReactPackage(),
-            new RNRSAPackage(),
             new RNCameraPackage(),
             new FIRMessagingPackage(),
             new RandomBytesPackage(),
