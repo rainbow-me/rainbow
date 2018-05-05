@@ -42,37 +42,53 @@ function registerKilledListener() {
     });
 }
 
-// // App in foreground or background
-// function registerAppListener() {
-//     FCM.on(FCMEvent.Notification, (notif) => {
-//         console.log(`registerAppListener notif: ${notif}`);
-//
-//         if (Platform.OS === 'ios') {
-//             // optional
-//             // iOS requires developers to call completionHandler to end notification process. If you do not call it your background remote notifications could be throttled, to read more about it see the above documentation link.
-//             // This library handles it for you automatically with default behavior (for remote notification, finish with NoData; for WillPresent, finish depend on "show_in_foreground"). However if you want to return different result, follow the following code to override
-//             // notif._notificationType is available for iOS platfrom
-//             switch (notif._notificationType) {
-//             case NotificationType.Remote:
-//                 notif.finish(RemoteNotificationResult.NewData); // other types available: RemoteNotificationResult.NewData, RemoteNotificationResult.ResultFailed
-//                 break;
-//             case NotificationType.NotificationResponse:
-//                 notif.finish();
-//                 break;
-//             case NotificationType.WillPresent:
-//                 notif.finish(WillPresentNotificationResult.All); // other types available: WillPresentNotificationResult.None
-//                 // this type of notificaiton will be called only when you are in foreground.
-//                 // if it is a remote notification, don't do any app logic here. Another notification callback will be triggered with type NotificationType.Remote
-//                 break;
-//             default:
-//                 break;
-//             }
-//         }
-//     });
-// }
-//
-// registerAppListener();
+// App in foreground or background
+function registerAppListener() {
+    FCM.on(FCMEvent.Notification, (notif) => {
+        console.log(`registerAppListener notif: ${notif}`);
+
+        if (Platform.OS === 'ios') {
+            // optional
+            // iOS requires developers to call completionHandler to end notification process. If you do not call it your background remote notifications could be throttled, to read more about it see the above documentation link.
+            // This library handles it for you automatically with default behavior (for remote notification, finish with NoData; for WillPresent, finish depend on "show_in_foreground"). However if you want to return different result, follow the following code to override
+            switch (notif._notificationType) {
+            case NotificationType.Remote:
+                console.log('remote notification type received');
+                notif.finish(RemoteNotificationResult.NewData); // other types available: RemoteNotificationResult.NewData, RemoteNotificationResult.ResultFailed
+                break;
+            case NotificationType.NotificationResponse:
+                const sessionId = notif.sessionId;
+                const transactionId = notif.transactionId;
+                console.log('notification response type received', sessionId);
+                console.log('transaction id', transactionId);
+                notif.finish();
+                break;
+            case NotificationType.WillPresent:
+                console.log('notification will present type received');
+                notif.finish(WillPresentNotificationResult.All); // other types available: WillPresentNotificationResult.None
+                // this type of notificaiton will be called only when you are in foreground.
+                // if it is a remote notification, don't do any app logic here. Another notification callback will be triggered with type NotificationType.Remote
+                break;
+            default:
+                break;
+            }
+        }
+    });
+}
+
+registerAppListener();
 registerKilledListener();
+
+function showApproveTransactions(sessionId, transactionId) {
+  Navigation.showModal({
+      screen: 'BalanceWallet.TransactionScreen', // unique ID registered with Navigation.registerScreen
+      // title: 'Modal', // title of the screen as appears in the nav bar (optional)
+      passProps: {sessionId, transactionId}, // simple serializable object that will pass as props to the modal (optional)
+      navigatorStyle: { navBarHidden: true }, // override the navigator style for the screen, see "Styling the navigator" below (optional)
+      navigatorButtons: {}, // override the nav buttons for the screen, see "Adding buttons to the navigator" below (optional)
+      animationType: 'slide-up', // 'none' / 'slide-up' , appear animation for the modal (optional, default 'slide-up')
+  });
+}
 
 Navigation.startTabBasedApp({
     tabs: [

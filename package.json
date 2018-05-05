@@ -20,7 +20,6 @@
     "domain-browser": "^1.2.0",
     "ethers": "^3.0.7",
     "events": "^1.1.1",
-    "frisbee": "^1.6.4",
     "https-browserify": "0.0.1",
     "path-browserify": "0.0.0",
     "process": "^0.11.10",
@@ -51,7 +50,7 @@
     "url": "^0.10.3",
     "util": "^0.10.3",
     "vm-browserify": "0.0.4",
-    "walletconnect": "^0.0.1-beta.10"
+    "walletconnect": "^0.0.1-beta.12"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.2",

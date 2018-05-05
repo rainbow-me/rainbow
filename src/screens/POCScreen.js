@@ -10,18 +10,6 @@ const instructions = Platform.select({
 
 class POCScreen extends Component {
     componentDidMount = async () => {
-        // // Try to load an existing wallet
-        // let wallet = await Wallet.loadWallet();
-        //
-        // if (!wallet) {
-        //     // Create a new wallet
-        //     wallet = await Wallet.createWallet();
-        // }
-        //
-        // console.log(`wallet address: ${wallet.address}`);
-        // console.log(`wallet private key: ${wallet.privateKey}`);
-        // console.log(`wallet provider: ${wallet.provider}`);
-        // console.log(`wallet seed phrase: ${Wallet.loadSeedPhrase()}`);
         await ethWallet.init();
         const addresses = ethWallet.getPublicAddresses();
         console.log(`addresses: ${addresses}`);
