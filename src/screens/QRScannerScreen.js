@@ -16,8 +16,9 @@ class QRScannerScreen extends Component {
     onSuccess = async (e) => {
         const data = JSON.parse(e.data);
         if (data.domain && data.sessionId && data.sharedKey && data.dappName) {
+            // TODO: retry or notify on failure
             await walletConnectInit(data.domain, data.sessionId, data.sharedKey, data.dappName);
-            await walletConnectSendSession();
+            const success = await walletConnectSendSession();
         }
 
         setTimeout(() => {

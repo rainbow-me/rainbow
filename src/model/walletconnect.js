@@ -17,10 +17,26 @@ export const walletConnectInit = async (bridgeDomain, sessionId, sharedKey, dapp
 
 export const walletConnectSendSession = async () => {
   const address = await ethWallet.loadAddress();
-  const encryptedData = await walletConnector.encrypt({address: address});
-  await walletConnectInstance.walletConnector.sendSessionStatus({
-    fcmToken: walletConnectInstance.fcmToken,
-    walletWebhook: walletConnectInstance.walletWebhook,
-    data: { address: address }
-  });
+  try {
+    const success = await walletConnectInstance.walletConnector.sendSessionStatus({
+      fcmToken: walletConnectInstance.fcmToken,
+      walletWebhook: walletConnectInstance.walletWebhook,
+      data: { address }
+    });
+  } catch(err) {
+    console.log('send session status error', err);
+  }
+}
+
+export const walletConnectGetTransaction = async (transactionId) => {
+  const transactionData = await walletConnectInstance.walletConnector.getTransactionRequest(transactionId);
+  return transactionData;
+}
+
+export const walletConnectSendTransactionHash = async (transactionId, success, txHash) => {
+  try {
+    const result = await walletConnectInstance.walletConnector.sendTransactionStatus(transactionId, { success, txHash });
+  } catch(err) {
+    console.log('sending txn status error', err);
+  }
 }

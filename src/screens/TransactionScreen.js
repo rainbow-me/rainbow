@@ -4,49 +4,64 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Button from '../components/Button';
 import * as ethWallet from '../model/ethWallet';
+import { Navigation } from 'react-native-navigation';
+import { getTransactionToApprove } from '../model/transactions';
+import { walletConnectSendTransactionHash } from '../model/walletconnect';
 
-// TODO: Show full transaction info
-// TODO: Skin using new designs
 class TransactionScreen extends Component {
     constructor(props) {
         super(props);
-        this.state = { confirmed: false, transactionText: JSON.stringify(props.transaction) };
+        this.state = { confirmed: false, transaction: null };
     }
 
-    confirmTransaction = async (transaction) => {
-        // const transactionHash = await ethWallet.sendTransaction(transaction);
-        // this.setState(previousState => ({ confirmed: true, transactionText: `Transaction sent!\n${transactionHash}` }));
-        this.setState(previousState => ({ confirmed: true, transactionText: 'Transaction sent!' }));
+    componentDidMount() {
+      this.showNewTransaction();
+    }
+
+    showNewTransaction = () => {
+        const transaction = getTransactionToApprove();
+        this.setState( { transaction } );
+    }
+
+    confirmTransaction = async () => {
+        const transaction = this.state.transaction;
+        const transactionReceipt = await ethWallet.sendTransaction(transaction.transactionData);
+        if (transactionReceipt && transactionReceipt.hash) {
+          await walletConnectSendTransactionHash(transaction.transactionId, true, transactionReceipt.hash);
+          this.setState(previousState => ({ confirmed: true, transaction: null }));
+        } else {
+          await walletConnectSendTransactionHash(false, null);
+          this.setState(previousState => ({ confirmed: false }));
+        }
     };
 
     render() {
         return (
             <StyledContainer>
-                {!this.state.confirmed && (
+                {!this.state.confirmed && this.state.transaction && (
                     <StyledBottomContainer>
                         <StyledTransactionDetailContainer>
                             <StyledTransactionDetailTitle>FROM</StyledTransactionDetailTitle>
                             <StyledTransactionDetailText>
-                                {this.props.fromName} • {this.props.fromAddress}
+                                {this.state.transaction.transactionData.from}
                             </StyledTransactionDetailText>
                             <StyledTransactionDetailSeparator />
                         </StyledTransactionDetailContainer>
                         <StyledTransactionDetailContainer>
                             <StyledTransactionDetailTitle>TO</StyledTransactionDetailTitle>
                             <StyledTransactionDetailText>
-                                {this.props.toName} • {this.props.toAddress}
+                                {this.state.transaction.transactionData.to}
                             </StyledTransactionDetailText>
-                            {this.props.isVerified && <StyledVerifiedBadge>Verified</StyledVerifiedBadge>}
                             <StyledTransactionDetailSeparator />
                         </StyledTransactionDetailContainer>
                         <StyledTransactionDetailContainer>
                             <StyledCurrencyNameText>{this.props.currencyName}</StyledCurrencyNameText>
-                            <StyledAmountText>{this.props.amount}</StyledAmountText>
-                            <StyledConvertedAmountText>{this.props.convertedAmount}</StyledConvertedAmountText>
+                            <StyledAmountText>{this.state.transaction.transactionData.value}</StyledAmountText>
+                            //<StyledConvertedAmountText>{this.props.convertedAmount}</StyledConvertedAmountText>
                         </StyledTransactionDetailContainer>
                         <StyledConfirmButtonContainer>
-                            <Button outline onPress={() => console.log('pressed')}>
-                                Confirm with FaceID
+                            <Button outline onPress={() => this.confirmTransaction()}>
+                                Confirm with TouchID
                             </Button>
                         </StyledConfirmButtonContainer>
                     </StyledBottomContainer>
@@ -62,14 +77,10 @@ TransactionScreen.propTypes = {
 };
 
 TransactionScreen.defaultProps = {
-    fromName: 'My Wallet',
-    fromAddress: '0xa4…d7A1',
-    toName: 'CryptoKitties',
-    toAddress: '0xb3…x2N9',
-    isVerified: true,
-    currencyName: '0x',
-    amount: '17.92853 ZRX',
-    convertedAmount: '$10.76',
+    fromAddress: 'fake address',
+    toAddress: 'fake address',
+    currencyName: 'AVO',
+    convertedAmount: 'TBD',
 };
 
 const StyledContainer = styled.View`
