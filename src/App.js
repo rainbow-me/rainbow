@@ -85,21 +85,21 @@ Navigation.startTabBasedApp({
         {
             label: 'Wallet',
             screen: 'BalanceWallet.WalletScreen',
-            // icon: walletIcon,
+            icon: require('../img/wallet-icon.png'), // eslint-disable-line
 
             title: 'Wallet',
         },
         {
             label: 'Scan',
             screen: 'BalanceWallet.QRScannerScreen',
-            // icon: scanIcon,
+            icon: require('../img/scan-icon.png'), // eslint-disable-line
 
             title: 'Wallet Connect',
         },
         {
             label: 'Settings',
             screen: 'BalanceWallet.SettingsScreen',
-            // icon: settingsIcon,
+            icon: require('../img/settings-icon.png'), // eslint-disable-line
 
             title: 'Settings',
         },
