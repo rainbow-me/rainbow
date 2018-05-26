@@ -48,7 +48,7 @@
     "rn-nodeify": "^10.0.0",
     "stream-browserify": "^1.0.0",
     "string_decoder": "^0.10.31",
-    "styled-components": "^3.2.3",
+    "styled-components": "^3.3.0",
     "timers-browserify": "^1.4.2",
     "tty-browserify": "0.0.0",
     "url": "^0.10.3",

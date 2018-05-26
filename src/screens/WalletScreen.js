@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
 import * as ethWallet from '../model/ethWallet';
 import { apiGetAccountBalances } from '../helpers/api';
+import Container from '../components/Container';
+import Card from '../components/Card';
+import Section from '../components/Section';
+import Text from '../components/Text';
+import Label from '../components/Label';
 
 class WalletScreen extends Component {
   state = {
@@ -35,35 +39,28 @@ class WalletScreen extends Component {
     const ethereum = this.state.wallet ? this.state.wallet.balances.filter(asset => asset.contract.symbol === 'ETH')[0] : { balance: '0' };
     const ethBalance = `${Number(Number(ethereum.balance) / 1e18).toFixed(8)} ETH`;
     return !this.state.loading ? (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>{address}</Text>
-        <Text style={styles.instructions}>{ethBalance}</Text>
-      </View>
+      <Container>
+        <Card>
+          <Section>
+            <Label>{'Address'}</Label>
+            <Text>{address}</Text>
+          </Section>
+          <Section>
+            <Label>{'Ethereum'}</Label>
+            <Text>{ethBalance}</Text>
+          </Section>
+        </Card>
+      </Container>
     ) : (
-      <View style={styles.container}>
-        <Text style={styles.instructions}>{'Loading ...'}</Text>
-      </View>
+      <Container>
+        <Card>
+          <Section>
+            <Label>Loading...</Label>
+          </Section>
+        </Card>
+      </Container>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
 
 export default WalletScreen;
