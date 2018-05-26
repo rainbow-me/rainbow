@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import QRCodeScanner from 'react-native-qrcode-scanner';
 import PropTypes from 'prop-types';
+import { StyleSheet, View, Text } from 'react-native';
+import { Navigation } from 'react-native-navigation';
+import QRCodeScanner from 'react-native-qrcode-scanner';
+import Button from '../components/Button';
 import { walletConnectInit, walletConnectSendSession } from '../model/walletconnect';
 
 class QRScannerScreen extends Component {
@@ -18,6 +20,15 @@ class QRScannerScreen extends Component {
     }, 1000);
   };
 
+  onShowDemoTransaction = () => {
+    Navigation.showModal({
+      screen: 'BalanceWallet.DemoTransactionScreen',
+      navigatorStyle: { navBarHidden: true },
+      navigatorButtons: {},
+      animationType: 'slide-up',
+    });
+  };
+
   render() {
     return (
       <View style={styles.container}>
@@ -31,6 +42,7 @@ class QRScannerScreen extends Component {
           style={styles.scanner}
           onRead={this.onSuccess}
         />
+        <Button onPress={this.onShowDemoTransaction}>{'Show Demo Transaction'}</Button>
       </View>
     );
   }

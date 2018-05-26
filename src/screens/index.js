@@ -4,6 +4,7 @@ import POCScreen from './POCScreen';
 import QRScannerScreen from './QRScannerScreen';
 import SettingsScreen from './SettingsScreen';
 import TransactionScreen from './TransactionScreen';
+import DemoTransactionScreen from './DemoTransactionScreen';
 import WalletScreen from './WalletScreen';
 
 // register all screens of the app (including internal ones)
@@ -12,6 +13,7 @@ export function registerScreens() {
   Navigation.registerComponent('BalanceWallet.QRScannerScreen', () => QRScannerScreen);
   Navigation.registerComponent('BalanceWallet.SettingsScreen', () => SettingsScreen);
   Navigation.registerComponent('BalanceWallet.TransactionScreen', () => TransactionScreen);
+  Navigation.registerComponent('BalanceWallet.DemoTransactionScreen', () => DemoTransactionScreen);
   Navigation.registerComponent('BalanceWallet.WalletScreen', () => WalletScreen);
 }
 
