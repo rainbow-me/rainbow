@@ -5,6 +5,7 @@ import Card from '../components/Card';
 import Section from '../components/Section';
 import Label from '../components/Label';
 import Text from '../components/Text';
+import { capitalize } from '../helpers/utilities';
 
 class SettingsScreen extends Component {
   render() {
@@ -14,7 +15,7 @@ class SettingsScreen extends Component {
           <Card key={section}>
             {Object.keys(personalData[section]).map(label => (
               <Section key={label}>
-                <Label>{label}</Label>
+                <Label>{capitalize(label)}</Label>
                 <Text>{personalData[section][label]}</Text>
               </Section>
             ))}

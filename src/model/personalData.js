@@ -1,13 +1,13 @@
 export default {
   personalDetails: {
-    Name: 'John Doe',
-    Email: 'johndoe@gmail.com',
+    name: 'John Doe',
+    email: 'johndoe@gmail.com',
   },
   shippingAddress: {
-    Street: '452 Holly Lane',
-    City: 'Hopewell',
-    State: 'VA',
-    ZipCode: '23860',
-    Country: 'United States',
+    street: '452 Holly Lane',
+    city: 'Hopewell',
+    state: 'VA',
+    zipCode: '23860',
+    country: 'United States',
   },
 };
