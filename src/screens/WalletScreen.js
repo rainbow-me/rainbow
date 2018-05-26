@@ -24,7 +24,18 @@ class WalletScreen extends Component {
       console.log('wallet', wallet);
       if (wallet) {
         const { data } = await apiGetAccountBalances(wallet.address, 'mainnet');
-        wallet.balances = data;
+        const assets = data.map(asset => {
+          const exponent = 10 ** Number(asset.contract.decimals);
+          const balance = Number(asset.balance) / exponent;
+          return {
+            address: asset.contract.address,
+            name: asset.contract.name,
+            symbol: asset.contract.symbol,
+            decimals: asset.contract.decimals,
+            balance,
+          };
+        });
+        wallet.assets = assets;
         console.log('wallet', wallet);
         return wallet;
       }
@@ -36,8 +47,6 @@ class WalletScreen extends Component {
   };
   render() {
     const address = this.state.wallet ? this.state.wallet.address : '';
-    const ethereum = this.state.wallet ? this.state.wallet.balances.filter(asset => asset.contract.symbol === 'ETH')[0] : { balance: '0' };
-    const ethBalance = `${Number(Number(ethereum.balance) / 1e18).toFixed(8)} ETH`;
     return !this.state.loading ? (
       <Container>
         <Card>
@@ -45,10 +54,13 @@ class WalletScreen extends Component {
             <Label>{'Address'}</Label>
             <Text>{address}</Text>
           </Section>
-          <Section>
-            <Label>{'Ethereum'}</Label>
-            <Text>{ethBalance}</Text>
-          </Section>
+          {this.state.wallet &&
+            this.state.wallet.assets.map(asset => (
+              <Section key={asset.symbol}>
+                <Label>{asset.name}</Label>
+                <Text>{`${Number(asset.balance).toFixed(8)} ${asset.symbol}`}</Text>
+              </Section>
+            ))}
         </Card>
       </Container>
     ) : (
