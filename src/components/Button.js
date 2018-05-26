@@ -3,9 +3,8 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 const colors = {
-  accent: '#911',
-  highlight: '#D22',
-  contrast: '#FFF',
+  accent: 'rgb(18, 184, 120)',
+  contrast: 'rgb(255, 255, 255)',
 };
 
 const Label = styled.Text`
@@ -21,10 +20,11 @@ const ButtonContainer = styled.TouchableHighlight`
   margin-top: 5px;
   border-color: ${colors.accent};
   border-width: 2px;
+  border-radius: 10px;
 `;
 
 const Button = props => (
-  <ButtonContainer underlayColor={colors.highlight} onPress={props.onPress} outline={props.outline}>
+  <ButtonContainer onPress={props.onPress} outline={props.outline}>
     <Label outline={props.outline}>{props.children}</Label>
   </ButtonContainer>
 );
