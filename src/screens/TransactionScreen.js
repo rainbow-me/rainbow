@@ -18,6 +18,7 @@ class TransactionScreen extends Component {
 
   showNewTransaction = () => {
     const transaction = getTransactionToApprove();
+    console.log('transaction', transaction);
     this.setState({ transaction });
   };
 
