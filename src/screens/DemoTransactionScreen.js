@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Navigation } from 'react-native-navigation';
 import styled from 'styled-components';
 import Button from '../components/Button';
 
@@ -109,7 +110,20 @@ const SConfirmButtonContainer = styled.View`
   align-items: center;
 `;
 
+const SCloseModal = styled.Text`
+  color: #5376ff;
+  font-size: 17px;
+  position: absolute;
+  top: 15px;
+  right: 17px;
+`;
+
 class TransactionScreen extends Component {
+  onClose() {
+    Navigation.dismissModal({
+      animationType: 'slide-down',
+    });
+  }
   render() {
     return (
       <SContainer>
@@ -123,6 +137,7 @@ class TransactionScreen extends Component {
           <STransactionDetailContainer>
             <STransactionDetailTitle>FROM</STransactionDetailTitle>
             <STransactionDetailText>{'0x9b7b2B4f7a391b6F14A81221AE0920A9735B67Fb'}</STransactionDetailText>
+            <SCloseModal onPress={this.onClose}>Cancel</SCloseModal>
             <STransactionDetailSeparator />
           </STransactionDetailContainer>
           <STransactionDetailContainer>

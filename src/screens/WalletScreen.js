@@ -39,7 +39,7 @@ class WalletScreen extends Component {
         console.log('wallet', wallet);
         return wallet;
       }
-      throw new Error('Missing wallet!');
+      return null;
     } catch (error) {
       console.error(error);
       return error;
