@@ -27,7 +27,8 @@
     "no-unused-vars": ["error", {"args": "none"}],
     "no-plusplus": ["off"],
     "no-underscore-dangle": ["off"],
-    "arrow-parens": ["off"]
+    "arrow-parens": ["off"],
+    "no-param-reassign": ["off"]
   },
   "globals": {
     "fetch": false

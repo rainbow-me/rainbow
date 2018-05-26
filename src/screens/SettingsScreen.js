@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { Platform, StyleSheet, View, Text } from 'react-native';
-// import * as ethWallet from '../model/ethWallet';
-// import PropTypes from 'prop-types';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\nCmd+D or shake for dev menu',
