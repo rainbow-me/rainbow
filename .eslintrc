@@ -26,7 +26,8 @@
     "no-use-before-define": ["error", {"functions": false, "variables": false}],
     "no-unused-vars": ["error", {"args": "none"}],
     "no-plusplus": ["off"],
-    "no-underscore-dangle": ["off"]
+    "no-underscore-dangle": ["off"],
+    "arrow-parens": ["off"]
   },
   "globals": {
     "fetch": false

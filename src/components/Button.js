@@ -1,6 +1,6 @@
 import React from 'react';
-import { Text, TouchableHighlight } from 'react-native';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 
 const colors = {
     accent: '#911',
@@ -28,5 +28,15 @@ const Button = props => (
         <Label outline={props.outline}>{props.children}</Label>
     </ButtonContainer>
 );
+
+Button.propTypes = {
+    children: PropTypes.node.isRequired,
+    onPress: PropTypes.func.isRequired,
+    outline: PropTypes.bool,
+};
+
+Button.defaultProps = {
+    outline: false,
+};
 
 export default Button;

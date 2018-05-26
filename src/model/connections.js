@@ -9,7 +9,7 @@ export async function createConnection(bridgeDomain, sessionId, sessionKey, iv) 
         bridgeDomain,
         sessionId,
         sessionKey,
-        iv
+        iv,
     };
     return connection;
 }
@@ -34,8 +34,6 @@ export async function removeConnection(sessionId) {
 export async function removeAllConnections() {
     await removeConnections();
 }
-
-
 
 /*
  * Private

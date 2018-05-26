@@ -1,24 +1,16 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import FCM, { FCMEvent, NotificationType, RemoteNotificationResult, WillPresentNotificationResult } from 'react-native-fcm';
-import { Navigation } from 'react-native-navigation';
 import PropTypes from 'prop-types';
-import * as ethWallet from '../model/ethWallet';
-import * as connections from '../model/connections';
 import { walletConnectInit, walletConnectSendSession } from '../model/walletconnect';
 
 class QRScannerScreen extends Component {
-    constructor(props) {
-        super(props);
-    }
-
-    onSuccess = async (e) => {
+    onSuccess = async e => {
         const data = JSON.parse(e.data);
         if (data.domain && data.sessionId && data.sharedKey && data.dappName) {
             // TODO: retry or notify on failure
             await walletConnectInit(data.domain, data.sessionId, data.sharedKey, data.dappName);
-            const success = await walletConnectSendSession();
+            await walletConnectSendSession();
         }
 
         setTimeout(() => {
@@ -31,7 +23,7 @@ class QRScannerScreen extends Component {
             <View style={styles.container}>
                 <Text style={styles.centerText}>Scan the Balance Manager QR code to log in</Text>
                 <QRCodeScanner
-                    ref={(c) => {
+                    ref={c => {
                         this.qrCodeScanner = c;
                     }}
                     topViewStyle={styles.scannerTop}

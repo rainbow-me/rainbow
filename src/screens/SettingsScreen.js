@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Platform, StyleSheet, View, Text } from 'react-native';
-import * as ethWallet from '../model/ethWallet';
+// import * as ethWallet from '../model/ethWallet';
 // import PropTypes from 'prop-types';
 
 const instructions = Platform.select({

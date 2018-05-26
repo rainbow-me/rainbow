@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Button from '../components/Button';
 import * as ethWallet from '../model/ethWallet';
-import { Navigation } from 'react-native-navigation';
 import { getTransactionToApprove } from '../model/transactions';
 import { walletConnectSendTransactionHash } from '../model/walletconnect';
 
@@ -15,53 +13,50 @@ class TransactionScreen extends Component {
     }
 
     componentDidMount() {
-      this.showNewTransaction();
+        this.showNewTransaction();
     }
 
     showNewTransaction = () => {
         const transaction = getTransactionToApprove();
-        this.setState( { transaction } );
-    }
+        this.setState({ transaction });
+    };
 
     confirmTransaction = async () => {
-        const transaction = this.state.transaction;
+        const { transaction } = this.state;
         const transactionReceipt = await ethWallet.sendTransaction(transaction.transactionData);
         if (transactionReceipt && transactionReceipt.hash) {
-          await walletConnectSendTransactionHash(transaction.transactionId, true, transactionReceipt.hash);
-          this.setState(previousState => ({ confirmed: true, transaction: null }));
+            await walletConnectSendTransactionHash(transaction.transactionId, true, transactionReceipt.hash);
+            this.setState(previousState => ({ confirmed: true, transaction: null }));
         } else {
-          await walletConnectSendTransactionHash(false, null);
-          this.setState(previousState => ({ confirmed: false }));
+            await walletConnectSendTransactionHash(false, null);
+            this.setState(previousState => ({ confirmed: false }));
         }
     };
 
     render() {
         return (
             <StyledContainer>
-                {!this.state.confirmed && this.state.transaction && (
+                {!this.state.confirmed &&
+                    this.state.transaction && (
                     <StyledBottomContainer>
                         <StyledTransactionDetailContainer>
                             <StyledTransactionDetailTitle>FROM</StyledTransactionDetailTitle>
-                            <StyledTransactionDetailText>
-                                {this.state.transaction.transactionData.from}
-                            </StyledTransactionDetailText>
+                            <StyledTransactionDetailText>{this.state.transaction.transactionData.from}</StyledTransactionDetailText>
                             <StyledTransactionDetailSeparator />
                         </StyledTransactionDetailContainer>
                         <StyledTransactionDetailContainer>
                             <StyledTransactionDetailTitle>TO</StyledTransactionDetailTitle>
-                            <StyledTransactionDetailText>
-                                {this.state.transaction.transactionData.to}
-                            </StyledTransactionDetailText>
+                            <StyledTransactionDetailText>{this.state.transaction.transactionData.to}</StyledTransactionDetailText>
                             <StyledTransactionDetailSeparator />
                         </StyledTransactionDetailContainer>
                         <StyledTransactionDetailContainer>
                             <StyledCurrencyNameText>{this.props.currencyName}</StyledCurrencyNameText>
                             <StyledAmountText>{this.state.transaction.transactionData.value}</StyledAmountText>
-                            //<StyledConvertedAmountText>{this.props.convertedAmount}</StyledConvertedAmountText>
+                            {/* <StyledConvertedAmountText>{this.props.convertedAmount}</StyledConvertedAmountText> */}
                         </StyledTransactionDetailContainer>
                         <StyledConfirmButtonContainer>
                             <Button outline onPress={() => this.confirmTransaction()}>
-                                Confirm with TouchID
+                                    Confirm with TouchID
                             </Button>
                         </StyledConfirmButtonContainer>
                     </StyledBottomContainer>
@@ -74,6 +69,8 @@ class TransactionScreen extends Component {
 TransactionScreen.propTypes = {
     navigation: PropTypes.any,
     transaction: PropTypes.any,
+    convertedAmount: PropTypes.string,
+    currencyName: PropTypes.string,
 };
 
 TransactionScreen.defaultProps = {
@@ -138,19 +135,19 @@ const StyledTransactionDetailSeparator = styled.View`
     background-color: rgba(230, 230, 230, 0.22);
 `;
 
-const StyledVerifiedBadge = styled.Text`
-    position: absolute;
-    top: 27px;
-    right: 18px;
-    padding: 3px 5px 3px 5px;
-    font-size: 12px;
-    font-weight: 700;
-    text-align: center;
-    color: rgb(255, 255, 255);
-    border-radius: 6px;
-    background-color: rgb(36, 127, 255);
-    overflow: hidden;
-`;
+// const StyledVerifiedBadge = styled.Text`
+//     position: absolute;
+//     top: 27px;
+//     right: 18px;
+//     padding: 3px 5px 3px 5px;
+//     font-size: 12px;
+//     font-weight: 700;
+//     text-align: center;
+//     color: rgb(255, 255, 255);
+//     border-radius: 6px;
+//     background-color: rgb(36, 127, 255);
+//     overflow: hidden;
+// `;
 
 const StyledCurrencyNameText = styled.Text`
     position: absolute;
@@ -173,16 +170,16 @@ const StyledAmountText = styled.Text`
     color: rgba(60, 66, 82, 0.6);
 `;
 
-const StyledConvertedAmountText = styled.Text`
-    position: absolute;
-    top: 28px;
-    right: 20px;
-    width: 50%;
-    height: 36px;
-    font-size: 30px;
-    text-align: right;
-    color: rgb(12, 12, 13);
-`;
+// const StyledConvertedAmountText = styled.Text`
+//     position: absolute;
+//     top: 28px;
+//     right: 20px;
+//     width: 50%;
+//     height: 36px;
+//     font-size: 30px;
+//     text-align: right;
+//     color: rgb(12, 12, 13);
+// `;
 
 const StyledConfirmButtonContainer = styled.View`
     flex: 1;
