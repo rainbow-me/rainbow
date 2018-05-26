@@ -4,9 +4,6 @@ import { Navigation } from 'react-native-navigation';
 import { registerScreens, registerScreenVisibilityListener } from './screens';
 import * as EthWallet from './model/ethWallet';
 import { addNewTransaction } from './model/transactions';
-// import walletIcon from '../img/wallet-icon.png';
-// import scanIcon from '../img/scan-icon.png';
-// import settingsIcon from '../img/settings-icon.png';
 
 registerScreens();
 registerScreenVisibilityListener();
@@ -85,21 +82,21 @@ Navigation.startTabBasedApp({
         {
             label: 'Wallet',
             screen: 'BalanceWallet.WalletScreen',
-            icon: require('../img/wallet-icon.png'), // eslint-disable-line
+            icon: require('./assets/wallet-icon.png'), // eslint-disable-line
 
             title: 'Wallet',
         },
         {
             label: 'Scan',
             screen: 'BalanceWallet.QRScannerScreen',
-            icon: require('../img/scan-icon.png'), // eslint-disable-line
+            icon: require('./assets/scan-icon.png'), // eslint-disable-line
 
             title: 'Wallet Connect',
         },
         {
             label: 'Settings',
             screen: 'BalanceWallet.SettingsScreen',
-            icon: require('../img/settings-icon.png'), // eslint-disable-line
+            icon: require('./assets/settings-icon.png'), // eslint-disable-line
 
             title: 'Settings',
         },
