@@ -3,7 +3,10 @@ package com.balancewallet;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
-import com.RNRSA.RNRSAPackage;
+import com.tradle.react.UdpSocketsModule;
+import com.peel.react.TcpSocketsModule;
+import com.peel.react.rnos.RNOSModule;
+import com.reactnativenavigation.NavigationReactPackage;
 import org.reactnative.camera.RNCameraPackage;
 import com.evollu.react.fcm.FIRMessagingPackage;
 import com.bitgo.randombytes.RandomBytesPackage;
@@ -28,7 +31,10 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new RNRSAPackage(),
+            new UdpSocketsModule(),
+            new TcpSocketsModule(),
+            new RNOSModule(),
+            new NavigationReactPackage(),
             new RNCameraPackage(),
             new FIRMessagingPackage(),
             new RandomBytesPackage(),
