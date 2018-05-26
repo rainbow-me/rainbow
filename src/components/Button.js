@@ -8,19 +8,22 @@ const colors = {
 };
 
 const Label = styled.Text`
-  color: ${props => (!props.outline ? colors.contrast : colors.accent)};
-  font-weight: 700;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
   align-self: center;
-  padding: 10px;
+  padding: 0 0 10px 0;
 `;
 
 const ButtonContainer = styled.TouchableHighlight`
-  background-color: ${props => (props.outline ? colors.contrast : colors.accent)};
-  width: 80%;
-  margin-top: 5px;
-  border-color: ${colors.accent};
-  border-width: 2px;
-  border-radius: 10px;
+  position: absolute;
+  bottom: 48px;
+  background-color: #00B371;
+  width: 347px;
+  height: 59px;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 `;
 
 const Button = props => (

@@ -40,9 +40,9 @@ const SBottomContainer = styled.View`
   bottom: 0;
   align-self: flex-end;
   width: 100%;
-  height: 367px;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
+  height: 480px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
   background-color: rgb(255, 255, 255);
 `;
 
@@ -76,11 +76,11 @@ const STransactionDetailText = styled.Text`
 
 const STransactionDetailSeparator = styled.View`
   position: absolute;
-  left: 18px;
+  left: 14px;
   bottom: 0;
   width: 100%;
-  height: 2px;
-  background-color: rgba(230, 230, 230, 0.22);
+  height: 1px;
+  background-color: rgba(230, 230, 230, 0.3);
 `;
 
 const SCurrencyNameText = styled.Text`
@@ -110,12 +110,27 @@ const SConfirmButtonContainer = styled.View`
   align-items: center;
 `;
 
+const SConfirmMenu = styled.Image`
+  position: absolute;
+  top: 16px;
+  left: 0;
+  width: 375px;
+  height: 326px;
+  align-self: stretch;
+`;
+
 const SCloseModal = styled.Text`
   color: #5376ff;
   font-size: 17px;
   position: absolute;
   top: 15px;
-  right: 17px;
+  right: 16px;
+`;
+
+const SFaceID = styled.Image`
+  transform: translateX(-78px) translateY(11px);
+  width: 32px;
+  height: 32px;
 `;
 
 class TransactionScreen extends Component {
@@ -131,26 +146,15 @@ class TransactionScreen extends Component {
           {/* eslint-disable-next-line */}
           <SVendorLogo source={require('../assets/ethereum.png')} />
           <SVendorName>{'Ethereum Store'}</SVendorName>
-          <SRequestPayment>{'Request for Payment'}</SRequestPayment>
+          <SRequestPayment>{'Request for payment'}</SRequestPayment>
         </STopContainer>
         <SBottomContainer>
+        <SConfirmMenu source={require('../assets/confirm-menu.png')} />
           <STransactionDetailContainer>
-            <STransactionDetailTitle>FROM</STransactionDetailTitle>
-            <STransactionDetailText>{'0x9b7b2B4f7a391b6F14A81221AE0920A9735B67Fb'}</STransactionDetailText>
             <SCloseModal onPress={this.onClose}>Cancel</SCloseModal>
-            <STransactionDetailSeparator />
-          </STransactionDetailContainer>
-          <STransactionDetailContainer>
-            <STransactionDetailTitle>TO</STransactionDetailTitle>
-            <STransactionDetailText>{'0x9b7b2B4f7a391b6F14A81221AE0920A9735B67Fb'}</STransactionDetailText>
-            <STransactionDetailSeparator />
-          </STransactionDetailContainer>
-          <STransactionDetailContainer>
-            <SCurrencyNameText>{'ETH'}</SCurrencyNameText>
-            <SAmountText>{'0.1000'}</SAmountText>
           </STransactionDetailContainer>
           <SConfirmButtonContainer>
-            <Button onPress={() => this.confirmTransaction()}>Confirm with TouchID</Button>
+            <Button onPress={() => this.confirmTransaction()}><SFaceID source={require('../assets/faceid.png')} />Pay with FaceID</Button>
           </SConfirmButtonContainer>
         </SBottomContainer>
       </SContainer>
