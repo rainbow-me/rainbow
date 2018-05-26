@@ -1,42 +1,78 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, View, Text } from 'react-native';
 import * as ethWallet from '../model/ethWallet';
-// import PropTypes from 'prop-types';
-
-const instructions = Platform.select({
-    ios: 'Press Cmd+R to reload,\nCmd+D or shake for dev menu',
-    android: 'Double tap R on your keyboard to reload,\nShake or press menu button for dev menu',
-});
+import { apiGetAccountBalances } from '../helpers/api';
+import Container from '../components/Container';
+import Card from '../components/Card';
+import Section from '../components/Section';
+import Text from '../components/Text';
+import Label from '../components/Label';
 
 class WalletScreen extends Component {
-    render() {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.welcome}>Welcome to React Native!</Text>
-                <Text style={styles.instructions}>To get started, edit App.js</Text>
-                <Text style={styles.instructions}>{instructions}</Text>
-            </View>
-        );
+  state = {
+    loading: false,
+    wallet: null,
+  };
+  componentDidMount() {
+    this.setState({ loading: true });
+    this.loadWallet()
+      .then(wallet => this.setState({ loading: false, wallet }))
+      .catch(error => this.setState({ loading: false, wallet: null }));
+  }
+  loadWallet = async () => {
+    try {
+      const wallet = await ethWallet.loadWallet();
+      console.log('wallet', wallet);
+      if (wallet) {
+        const { data } = await apiGetAccountBalances(wallet.address, 'mainnet');
+        const assets = data.map(asset => {
+          const exponent = 10 ** Number(asset.contract.decimals);
+          const balance = Number(asset.balance) / exponent;
+          return {
+            address: asset.contract.address,
+            name: asset.contract.name,
+            symbol: asset.contract.symbol,
+            decimals: asset.contract.decimals,
+            balance,
+          };
+        });
+        wallet.assets = assets;
+        console.log('wallet', wallet);
+        return wallet;
+      }
+      return null;
+    } catch (error) {
+      console.error(error);
+      return error;
     }
+  };
+  render() {
+    const address = this.state.wallet ? this.state.wallet.address : '';
+    return !this.state.loading ? (
+      <Container>
+        <Card>
+          <Section>
+            <Label>{'Address'}</Label>
+            <Text>{address}</Text>
+          </Section>
+          {this.state.wallet &&
+            this.state.wallet.assets.map(asset => (
+              <Section key={asset.symbol}>
+                <Label>{asset.name}</Label>
+                <Text>{`${Number(asset.balance).toFixed(8)} ${asset.symbol}`}</Text>
+              </Section>
+            ))}
+        </Card>
+      </Container>
+    ) : (
+      <Container>
+        <Card>
+          <Section>
+            <Label>Loading...</Label>
+          </Section>
+        </Card>
+      </Container>
+    );
+  }
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF',
-    },
-    welcome: {
-        fontSize: 20,
-        textAlign: 'center',
-        margin: 10,
-    },
-    instructions: {
-        textAlign: 'center',
-        color: '#333333',
-        marginBottom: 5,
-    },
-});
 
 export default WalletScreen;
