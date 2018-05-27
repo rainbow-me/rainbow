@@ -1,13 +1,13 @@
 export default {
   personalDetails: {
-    name: 'John Doe',
-    email: 'johndoe@gmail.com',
+    name: 'Christian Baroni',
+    email: 'christian@balance.io',
   },
   shippingAddress: {
-    street: '452 Holly Lane',
-    city: 'Hopewell',
-    state: 'VA',
-    zipCode: '23860',
+    street: '167 N 9th St',
+    city: 'Brooklyn',
+    state: 'NY',
+    zipCode: '11211',
     country: 'United States',
   },
 };
