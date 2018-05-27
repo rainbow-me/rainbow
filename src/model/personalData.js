@@ -1,7 +1,7 @@
 export default {
   personalDetails: {
     name: 'Christian Baroni',
-    email: 'christian@balance.io',
+    email: 'c@baroni.co',
     phone: '268-508-9243',
   },
   shippingAddress: {
