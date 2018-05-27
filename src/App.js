@@ -91,7 +91,7 @@ Navigation.startTabBasedApp({
       screen: 'BalanceWallet.QRScannerScreen',
       icon: require('./assets/scan-icon.png'), // eslint-disable-line
 
-      title: 'Wallet Connect',
+      title: 'WalletConnect',
     },
     {
       label: 'Settings',

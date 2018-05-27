@@ -137,6 +137,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-touch-id')
     compile project(':react-native-udp')
     compile project(':react-native-tcp')
     compile project(':react-native-os')

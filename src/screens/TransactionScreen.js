@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import TouchID from 'react-native-touch-id';
 import styled from 'styled-components';
-import { StatusBar } from 'react-native';
+import { StatusBar, AlertIOS } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import Button from '../components/Button';
 import * as ethWallet from '../model/ethWallet';
@@ -105,18 +106,25 @@ class TransactionScreen extends Component {
     this.setState({ transaction });
   };
 
-  confirmTransaction = async () => {
-    const { transaction } = this.state;
-    const transactionReceipt = await ethWallet.sendTransaction(transaction.transactionData);
-    if (transactionReceipt && transactionReceipt.hash) {
-      await walletConnectSendTransactionHash(transaction.transactionId, true, transactionReceipt.hash);
-      this.onClose();
-      this.setState(() => ({ confirmed: true, transaction: null }));
-    } else {
-      await walletConnectSendTransactionHash(false, null);
-      this.setState(() => ({ confirmed: false }));
-    }
-  };
+  confirmTransaction = () =>
+    TouchID.authenticate('Confirm transaction')
+      .then(async success => {
+        console.log('success', success);
+        const { transaction } = this.state;
+        const transactionReceipt = await ethWallet.sendTransaction(transaction.transactionData);
+        if (transactionReceipt && transactionReceipt.hash) {
+          await walletConnectSendTransactionHash(transaction.transactionId, true, transactionReceipt.hash);
+          this.onClose();
+          this.setState(() => ({ confirmed: true, transaction: null }));
+        } else {
+          await walletConnectSendTransactionHash(false, null);
+          this.setState(() => ({ confirmed: false }));
+        }
+      })
+      .catch(error => {
+        console.log('error', error);
+        AlertIOS.alert('Authentication Failed');
+      });
 
   onClose() {
     StatusBar.setBarStyle('dark-content', true);

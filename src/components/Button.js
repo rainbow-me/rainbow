@@ -22,7 +22,7 @@ const ButtonContainer = styled.TouchableHighlight`
 `;
 
 const Button = props => (
-  <ButtonContainer onPress={props.onPress} outline={props.outline}>
+  <ButtonContainer underlayColor={'#00A367'} onPress={props.onPress} outline={props.outline}>
     <Label outline={props.outline}>{props.children}</Label>
   </ButtonContainer>
 );

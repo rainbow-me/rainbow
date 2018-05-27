@@ -20,7 +20,7 @@ class QRScannerScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.centerText}>Scan the Balance Manager QR code to log in</Text>
+        <Text style={styles.centerText}>Scan a WalletConnect QR code</Text>
         <QRCodeScanner
           ref={c => {
             this.qrCodeScanner = c;
