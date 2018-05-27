@@ -2,15 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { StyleSheet, View, Text } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-// import { Navigation } from 'react-native-navigation';
-// import Button from '../components/Button';
 import { walletConnectInit, walletConnectSendSession } from '../model/walletconnect';
 
 class QRScannerScreen extends Component {
   onSuccess = async e => {
     const data = JSON.parse(e.data);
     if (data.domain && data.sessionId && data.sharedKey && data.dappName) {
-      // TODO: retry or notify on failure
       await walletConnectInit(data.domain, data.sessionId, data.sharedKey, data.dappName);
       await walletConnectSendSession();
     }
@@ -19,15 +16,6 @@ class QRScannerScreen extends Component {
       this.qrCodeScanner.reactivate();
     }, 1000);
   };
-
-  // onShowDemoTransaction = () => {
-  //   Navigation.showModal({
-  //     screen: 'BalanceWallet.DemoTransactionScreen',
-  //     navigatorStyle: { navBarHidden: true },
-  //     navigatorButtons: {},
-  //     animationType: 'slide-up',
-  //   });
-  // };
 
   render() {
     return (
@@ -42,7 +30,6 @@ class QRScannerScreen extends Component {
           style={styles.scanner}
           onRead={this.onSuccess}
         />
-        {/* <Button onPress={this.onShowDemoTransaction}>{'Show Demo Transaction'}</Button> */}
       </View>
     );
   }
