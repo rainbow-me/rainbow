@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { StatusBar } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import Button from '../components/Button';
 import * as ethWallet from '../model/ethWallet';
@@ -98,12 +99,13 @@ const SCloseModal = styled.Text`
 `;
 
 class TransactionScreen extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { confirmed: false, transaction: null };
-  }
+  state = {
+    confirmed: false,
+    transaction: null,
+  };
 
   componentDidMount() {
+    StatusBar.setBarStyle('light-content', true);
     this.showNewTransaction();
   }
 
@@ -126,6 +128,7 @@ class TransactionScreen extends Component {
   };
 
   onClose() {
+    StatusBar.setBarStyle('dark-content', true);
     Navigation.dismissModal({
       animationType: 'slide-down',
     });
