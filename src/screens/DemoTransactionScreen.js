@@ -10,7 +10,7 @@ const SContainer = styled.View`
 `;
 
 const STopContainer = styled.View`
-  padding-top: 120px;
+  padding-top: 128px;
   justify-content: center;
   align-items: center;
 `;
@@ -25,14 +25,16 @@ const SVendorLogo = styled.Image`
 const SVendorName = styled.Text`
   margin-top: 16px;
   font-size: 19px;
+  font-weight: bold;
   margin-bottom: 4px;
   color: rgb(255, 255, 255);
+  letter-spacing: 0.2px;
 `;
 
 const SRequestPayment = styled.Text`
   color: rgb(255, 255, 255);
   font-size: 17px;
-  opacity: 0.6;
+  opacity: 0.78;
 `;
 
 const SBottomContainer = styled.View`
@@ -112,10 +114,10 @@ const SConfirmButtonContainer = styled.View`
 
 const SConfirmMenu = styled.Image`
   position: absolute;
-  top: 16px;
+  top: 0;
   left: 0;
   width: 375px;
-  height: 326px;
+  height: 480px;
   align-self: stretch;
 `;
 
@@ -128,9 +130,10 @@ const SCloseModal = styled.Text`
 `;
 
 const SFaceID = styled.Image`
-  transform: translateX(-78px) translateY(11px);
+  position: absolute;
   width: 32px;
   height: 32px;
+  transform: translateX(-91px) translateY(-6px);
 `;
 
 class TransactionScreen extends Component {
