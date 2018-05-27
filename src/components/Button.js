@@ -13,7 +13,8 @@ const Label = styled.Text`
   font-weight: 600;
   letter-spacing: 0.4px;
   align-self: center;
-  padding: 0 0 10px 0;
+  text-align: center;
+  padding: 16px 0 0 0;
 `;
 
 const ButtonContainer = styled.TouchableHighlight`
@@ -23,7 +24,6 @@ const ButtonContainer = styled.TouchableHighlight`
   width: 347px;
   height: 59px;
   border-radius: 14px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 `;
 
 const Button = props => (
