@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Navigation } from 'react-native-navigation';
 import styled from 'styled-components';
 import Button from '../components/Button';
+import { StatusBar } from 'react-native';
 
 const SContainer = styled.View`
   flex: 1;
@@ -138,11 +139,13 @@ const SFaceID = styled.Image`
 
 class TransactionScreen extends Component {
   onClose() {
+    StatusBar.setBarStyle('dark-content', true);
     Navigation.dismissModal({
       animationType: 'slide-down',
     });
   }
   render() {
+    StatusBar.setBarStyle('light-content', true);
     return (
       <SContainer>
         <STopContainer>
