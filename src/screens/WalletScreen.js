@@ -53,9 +53,9 @@ class WalletScreen extends Component {
       <Container>
         <Card>
           <Section>
-            <Label>{'Address'}</Label>
+            <Label>{'Wallet Address'}</Label>
             <Text>{address}</Text>
-            <Button onPress={Clipboard.setString(address)} title="Copy" />
+            <Button onPress={Clipboard.setString(address)} title="Copy" color="#666666" accessibilityLabel="Copy the address of your wallet to the clipboard" />
           </Section>
           {this.state.wallet &&
             this.state.wallet.assets.map(asset => (
