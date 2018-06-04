@@ -40,6 +40,7 @@
     "react-native-permissions": "^1.1.1",
     "react-native-qrcode-scanner": "^0.0.30",
     "react-native-randombytes": "^3.1.0",
+    "react-native-splash-screen": "3.0.6",
     "react-native-tcp": "^3.3.0",
     "react-native-touch-id": "^4.0.1",
     "react-native-udp": "^2.3.1",

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Button, Clipboard } from 'react-native';
 import * as ethWallet from '../model/ethWallet';
 import { apiGetAccountBalances } from '../helpers/api';
 import Container from '../components/Container';
@@ -45,6 +46,7 @@ class WalletScreen extends Component {
       return error;
     }
   };
+
   render() {
     const address = this.state.wallet ? this.state.wallet.address : '';
     return !this.state.loading ? (
@@ -53,6 +55,7 @@ class WalletScreen extends Component {
           <Section>
             <Label>{'Address'}</Label>
             <Text>{address}</Text>
+            <Button onPress={Clipboard.setString(address)} title="Copy" />
           </Section>
           {this.state.wallet &&
             this.state.wallet.assets.map(asset => (
