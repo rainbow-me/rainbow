@@ -5,9 +5,9 @@ import styled from 'styled-components';
 const StyledCard = styled.View`
   width: 100%;
   background-color: white;
-  margin: 14px;
-  padding: 10px;
-  border-radius: 8px;
+  margin: 0px;
+  padding: 15px;
+  border-radius: 0px;
   shadow-color: #000;
   shadow-offset: 0 2px;
   shadow-opacity: 0.1;
