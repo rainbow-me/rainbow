@@ -13,6 +13,7 @@
 #import <React/RCTRootView.h>
 #import "RCCManager.h"
 #import "RNFIRMessaging.h"
+#import "SplashScreen.h"
 
 @interface AppDelegate() <FIRMessagingDelegate, UNUserNotificationCenterDelegate>
 @end
@@ -42,6 +43,7 @@
   self.window.backgroundColor = [UIColor whiteColor];
   [[RCCManager sharedInstance] initBridgeWithBundleURL:jsCodeLocation launchOptions:launchOptions];
   
+//  [SplashScreen show];
   return YES;
 }
 
