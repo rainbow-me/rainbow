@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Button, Clipboard } from 'react-native';
-import * as ethWallet from '../model/ethWallet';
-import { apiGetAccountBalances } from '../helpers/api';
-import Container from '../components/Container';
+import { Button, Clipboard, Image } from 'react-native';
 import Card from '../components/Card';
+import Container from '../components/Container';
+import Label from '../components/Label';
 import Section from '../components/Section';
 import Text from '../components/Text';
-import Label from '../components/Label';
+import { apiGetAccountBalances } from '../helpers/api';
+import * as ethWallet from '../model/ethWallet';
 
 class WalletScreen extends Component {
   state = {
@@ -57,14 +57,23 @@ class WalletScreen extends Component {
             <Text>{address}</Text>
             <Button onPress={Clipboard.setString(address)} title="Copy" color="#666666" accessibilityLabel="Copy the address of your wallet to the clipboard" />
           </Section>
-          {this.state.wallet &&
-            this.state.wallet.assets.map(asset => (
-              <Section key={asset.symbol}>
-                <Label>{asset.name}</Label>
-                <Text>{`${Number(asset.balance).toFixed(8)} ${asset.symbol}`}</Text>
-              </Section>
-            ))}
         </Card>
+        {this.state.wallet &&
+          this.state.wallet.assets.map(asset => (
+            <Section key={asset.symbol}>
+              <Image
+                style={{
+                  width: 25,
+                  height: 25,
+                  borderRadius: 12.5,
+                  backgroundColor: '#000',
+                }}
+                source={require('../assets/ethereum.png')}
+              />
+              <Label>{asset.name}</Label>
+              <Text>{`${Number(asset.balance).toFixed(8)} ${asset.symbol}`}</Text>
+            </Section>
+          ))}
       </Container>
     ) : (
       <Container>
