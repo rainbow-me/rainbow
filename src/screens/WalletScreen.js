@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { Button, Clipboard } from 'react-native';
 import Card from '../components/Card';
 import CoinRow from '../components/CoinRow';
 import Container from '../components/Container';
 import Label from '../components/Label';
 import Section from '../components/Section';
-import Text from '../components/Text';
+import WalletMenu from '../components/WalletMenu';
 import { apiGetAccountBalances } from '../helpers/api';
 import * as ethWallet from '../model/ethWallet';
 
@@ -52,13 +51,7 @@ class WalletScreen extends Component {
     const address = this.state.wallet ? this.state.wallet.address : '';
     return !this.state.loading ? (
       <Container>
-        <Card>
-          <Section>
-            <Label>{'Wallet Address'}</Label>
-            <Text>{address}</Text>
-            <Button onPress={Clipboard.setString(address)} title="Copy" color="#666666" accessibilityLabel="Copy the address of your wallet to the clipboard" />
-          </Section>
-        </Card>
+        <WalletMenu walletAddress={address} />
         {this.state.wallet &&
           this.state.wallet.assets.map(asset => (
             <CoinRow
