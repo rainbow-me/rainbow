@@ -1,13 +1,6 @@
 export default {
   personalDetails: {
-    name: 'John Doe',
-    email: 'johndoe@gmail.com',
-  },
-  shippingAddress: {
-    street: '452 Holly Lane',
-    city: 'Hopewell',
-    state: 'VA',
-    zipCode: '23860',
-    country: 'United States',
+    Wallet: 'Christian Baroni',
+    Phrase: 'the cat sat under the frog and the frog sat under the cat',
   },
 };

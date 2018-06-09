@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import * as ethWallet from '../model/ethWallet';
-import { apiGetAccountBalances } from '../helpers/api';
-import Container from '../components/Container';
 import Card from '../components/Card';
-import Section from '../components/Section';
-import Text from '../components/Text';
+import CoinRow from '../components/CoinRow';
+import Container from '../components/Container';
 import Label from '../components/Label';
+import Section from '../components/Section';
+import WalletMenu from '../components/WalletMenu';
+import { apiGetAccountBalances } from '../helpers/api';
+import * as ethWallet from '../model/ethWallet';
 
 class WalletScreen extends Component {
   state = {
@@ -45,23 +46,22 @@ class WalletScreen extends Component {
       return error;
     }
   };
+
   render() {
     const address = this.state.wallet ? this.state.wallet.address : '';
     return !this.state.loading ? (
       <Container>
-        <Card>
-          <Section>
-            <Label>{'Address'}</Label>
-            <Text>{address}</Text>
-          </Section>
-          {this.state.wallet &&
-            this.state.wallet.assets.map(asset => (
-              <Section key={asset.symbol}>
-                <Label>{asset.name}</Label>
-                <Text>{`${Number(asset.balance).toFixed(8)} ${asset.symbol}`}</Text>
-              </Section>
-            ))}
-        </Card>
+        <WalletMenu walletAddress={address} />
+        {this.state.wallet &&
+          this.state.wallet.assets.map(asset => (
+            <CoinRow
+              key={asset.symbol}
+              imgPath={require('../assets/eth-icon.png')}
+              coinSymbol={asset.symbol}
+              coinName={asset.name}
+              coinBalance={asset.balance}
+            />
+          ))}
       </Container>
     ) : (
       <Container>

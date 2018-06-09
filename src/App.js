@@ -4,6 +4,7 @@ import { Navigation } from 'react-native-navigation';
 import { registerScreens, registerScreenVisibilityListener } from './screens';
 import * as EthWallet from './model/ethWallet';
 import { addNewTransaction } from './model/transactions';
+import SplashScreen from 'react-native-splash-screen';
 
 registerScreens();
 registerScreenVisibilityListener();
@@ -13,6 +14,12 @@ EthWallet.init();
 FCM.getFCMToken().then(fcmToken => {
   console.log(`FCM Token: ${fcmToken}`);
 });
+
+// export default class App extends Component {
+//   componentDidMount() {
+//     SplashScreen.hide();
+//   }
+// }
 
 function registerKilledListener() {
   FCM.on(FCMEvent.Notification, notif => {
@@ -91,7 +98,7 @@ Navigation.startTabBasedApp({
       screen: 'BalanceWallet.QRScannerScreen',
       icon: require('./assets/scan-icon.png'), // eslint-disable-line
 
-      title: 'Wallet Connect',
+      title: 'WalletConnect',
     },
     {
       label: 'Settings',
@@ -105,7 +112,7 @@ Navigation.startTabBasedApp({
     tabBarButtonColor: '#abb1b8',
     tabBarSelectedButtonColor: '#0b0b0c',
     tabBarBackgroundColor: '#f7f8fc',
-    initialTabIndex: 1,
+    initialTabIndex: 0,
   },
   appStyle: {
     orientation: 'portrait',

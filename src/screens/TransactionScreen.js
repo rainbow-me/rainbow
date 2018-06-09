@@ -1,92 +1,77 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import TouchID from 'react-native-touch-id';
 import styled from 'styled-components';
+import { StatusBar, AlertIOS } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import Button from '../components/Button';
 import * as ethWallet from '../model/ethWallet';
 import { getTransactionToApprove } from '../model/transactions';
 import { walletConnectSendTransactionHash } from '../model/walletconnect';
 
-const StyledContainer = styled.View`
+const SContainer = styled.View`
   flex: 1;
-  justify-content: center;
-  align-items: center;
-  background-color: rgb(42, 38, 90);
+  background-color: rgb(0, 0, 0);
 `;
 
-const StyledBottomContainer = styled.View`
+const STopContainer = styled.View`
+  padding-top: 128px;
+  justify-content: center;
+  align-items: center;
+`;
+
+const SVendorLogo = styled.Image`
+  width: 25px;
+  height: 40px;
+  margin: 0 auto;
+  align-self: stretch;
+`;
+
+const SVendorName = styled.Text`
+  margin-top: 16px;
+  font-size: 19px;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: rgb(255, 255, 255);
+  letter-spacing: 0.2px;
+`;
+
+const SRequestPayment = styled.Text`
+  color: rgb(255, 255, 255);
+  font-size: 17px;
+  opacity: 0.78;
+`;
+
+const SBottomContainer = styled.View`
   position: absolute;
   bottom: 0;
   align-self: flex-end;
   width: 100%;
-  height: 367px;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
+  height: 480px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
   background-color: rgb(255, 255, 255);
 `;
 
-const StyledTransactionDetailContainer = styled.View`
+const STransactionDetailContainer = styled.View`
   position: relative;
   width: 100%;
   height: 77px;
 `;
 
-const StyledTransactionDetailTitle = styled.Text`
-  position: absolute;
-  top: 19px;
-  left: 18px;
-  width: 38px;
-  height: 14px;
-  font-size: 12px;
-  font-weight: bold;
-  letter-spacing: 0.5px;
-  color: rgba(45, 45, 49, 0.7);
-`;
-
-const StyledTransactionDetailText = styled.Text`
-  position: absolute;
-  left: 18px;
-  top: 38px;
-  width: 176px;
-  height: 19px;
-  font-size: 16px;
-  color: rgba(60, 66, 82, 0.6);
-`;
-
-const StyledTransactionDetailSeparator = styled.View`
-  position: absolute;
-  left: 18px;
-  bottom: 0;
-  width: 100%;
-  height: 2px;
-  background-color: rgba(230, 230, 230, 0.22);
-`;
-
-const StyledCurrencyNameText = styled.Text`
-  position: absolute;
-  left: 19px;
-  top: 27px;
-  width: 50%;
-  height: 19px;
-  font-size: 16px;
-  font-weight: 600;
-  color: rgb(45, 45, 49);
-`;
-
-const StyledAmountText = styled.Text`
-  position: absolute;
-  left: 19px;
-  top: 53px;
-  width: 50%;
-  height: 16px;
-  font-size: 14px;
-  color: rgba(60, 66, 82, 0.6);
-`;
-
-const StyledConfirmButtonContainer = styled.View`
+const SConfirmButtonContainer = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
+`;
+
+const SConfirmMenu = styled.Image`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 375px;
+  height: 480px;
+  align-self: stretch;
 `;
 
 const SCloseModal = styled.Text`
@@ -94,16 +79,24 @@ const SCloseModal = styled.Text`
   font-size: 17px;
   position: absolute;
   top: 15px;
-  right: 17px;
+  right: 16px;
+`;
+
+const SFaceID = styled.Image`
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  transform: translateX(-91px) translateY(-6px);
 `;
 
 class TransactionScreen extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { confirmed: false, transaction: null };
-  }
+  state = {
+    confirmed: false,
+    transaction: null,
+  };
 
   componentDidMount() {
+    StatusBar.setBarStyle('light-content', true);
     this.showNewTransaction();
   }
 
@@ -113,19 +106,28 @@ class TransactionScreen extends Component {
     this.setState({ transaction });
   };
 
-  confirmTransaction = async () => {
-    const { transaction } = this.state;
-    const transactionReceipt = await ethWallet.sendTransaction(transaction.transactionData);
-    if (transactionReceipt && transactionReceipt.hash) {
-      await walletConnectSendTransactionHash(transaction.transactionId, true, transactionReceipt.hash);
-      this.setState(previousState => ({ confirmed: true, transaction: null }));
-    } else {
-      await walletConnectSendTransactionHash(false, null);
-      this.setState(previousState => ({ confirmed: false }));
-    }
-  };
+  confirmTransaction = () =>
+    TouchID.authenticate('Confirm transaction')
+      .then(async success => {
+        console.log('success', success);
+        const { transaction } = this.state;
+        const transactionReceipt = await ethWallet.sendTransaction(transaction.transactionData);
+        if (transactionReceipt && transactionReceipt.hash) {
+          await walletConnectSendTransactionHash(transaction.transactionId, true, transactionReceipt.hash);
+          this.onClose();
+          this.setState(() => ({ confirmed: true, transaction: null }));
+        } else {
+          await walletConnectSendTransactionHash(false, null);
+          this.setState(() => ({ confirmed: false }));
+        }
+      })
+      .catch(error => {
+        console.log('error', error);
+        AlertIOS.alert('Authentication Failed');
+      });
 
   onClose() {
+    StatusBar.setBarStyle('dark-content', true);
     Navigation.dismissModal({
       animationType: 'slide-down',
     });
@@ -133,34 +135,27 @@ class TransactionScreen extends Component {
 
   render() {
     return (
-      <StyledContainer>
-        {!this.state.confirmed &&
-          this.state.transaction && (
-          <StyledBottomContainer>
-            <StyledTransactionDetailContainer>
-              <StyledTransactionDetailTitle>FROM</StyledTransactionDetailTitle>
-              <StyledTransactionDetailText>{this.state.transaction.transactionData.from}</StyledTransactionDetailText>
-              <SCloseModal onPress={this.onClose}>Cancel</SCloseModal>
-              <StyledTransactionDetailSeparator />
-            </StyledTransactionDetailContainer>
-            <StyledTransactionDetailContainer>
-              <StyledTransactionDetailTitle>TO</StyledTransactionDetailTitle>
-              <StyledTransactionDetailText>{this.state.transaction.transactionData.to}</StyledTransactionDetailText>
-              <StyledTransactionDetailSeparator />
-            </StyledTransactionDetailContainer>
-            <StyledTransactionDetailContainer>
-              <StyledCurrencyNameText>{this.props.currencyName}</StyledCurrencyNameText>
-              <StyledAmountText>{this.state.transaction.transactionData.value}</StyledAmountText>
-              {/* <StyledConvertedAmountText>{this.props.convertedAmount}</StyledConvertedAmountText> */}
-            </StyledTransactionDetailContainer>
-            <StyledConfirmButtonContainer>
-              <Button outline onPress={() => this.confirmTransaction()}>
-                  Confirm with TouchID
-              </Button>
-            </StyledConfirmButtonContainer>
-          </StyledBottomContainer>
-        )}
-      </StyledContainer>
+      <SContainer>
+        <STopContainer>
+          {/* eslint-disable-next-line */}
+          <SVendorLogo source={require('../assets/ethereum.png')} />
+          <SVendorName>{'Ethereum Store'}</SVendorName>
+          <SRequestPayment>{'Request for payment'}</SRequestPayment>
+        </STopContainer>
+        <SBottomContainer>
+          {/* eslint-disable-next-line */}
+          <SConfirmMenu source={require('../assets/confirm-menu.png')} />
+          <STransactionDetailContainer>
+            <SCloseModal onPress={this.onClose}>Cancel</SCloseModal>
+          </STransactionDetailContainer>
+          <SConfirmButtonContainer>
+            <Button onPress={() => this.confirmTransaction()}>
+              {/* eslint-disable-next-line */}
+              <SFaceID source={require('../assets/faceid.png')} />Pay with FaceID
+            </Button>
+          </SConfirmButtonContainer>
+        </SBottomContainer>
+      </SContainer>
     );
   }
 }
