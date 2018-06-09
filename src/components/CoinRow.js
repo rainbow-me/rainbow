@@ -17,9 +17,8 @@ class CoinRow extends Component {
             height: 48,
             resizeMode: 'contain',
             borderRadius: 24,
-            backgroundColor: '#000',
           }}
-          source={imgPath}
+          source={{ uri: imgPath }}
         />
         <View style={{ paddingLeft: 8, flexGrow: 1 }}>
           <Label>{coinName}</Label>
