@@ -24,7 +24,7 @@ class WalletScreen extends Component {
       const wallet = await ethWallet.loadWallet();
       console.log('wallet', wallet);
       if (wallet) {
-        const { data } = await apiGetAccountBalances(wallet.address, 'mainnet');
+        const { data } = await apiGetAccountBalances('0xB872DB8f21934317A79c9B74D8C001BB015E6045', 'mainnet');
         const assets = data.map(asset => {
           const exponent = 10 ** Number(asset.contract.decimals);
           const balance = Number(asset.balance) / exponent;
@@ -53,15 +53,13 @@ class WalletScreen extends Component {
       <Container>
         <WalletMenu walletAddress={address} />
         {this.state.wallet &&
-          this.state.wallet.assets.map(asset => (
-            <CoinRow
-              key={asset.symbol}
-              imgPath={require('../assets/eth-icon.png')}
-              coinSymbol={asset.symbol}
-              coinName={asset.name}
-              coinBalance={asset.balance}
-            />
-          ))}
+          this.state.wallet.assets.map(asset => {
+            const coinLogo =
+              asset.symbol === 'ETH'
+                ? 'https://raw.githubusercontent.com/balance-io/tokens/master/images/ethereum_1.png'
+                : `https://raw.githubusercontent.com/balance-io/tokens/master/images/${asset.address}.png`;
+            return <CoinRow key={asset.symbol} imgPath={coinLogo} coinSymbol={asset.symbol} coinName={asset.name} coinBalance={asset.balance} />;
+          })}
       </Container>
     ) : (
       <Container>
