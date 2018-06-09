@@ -4,10 +4,10 @@ import styled from 'styled-components';
 
 const StyledContainer = styled.View`
   flex: 1;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
   background-color: #eeeeee;
-  padding: 20px;
+  padding: 00px;
 `;
 
 const Container = ({ children, ...props }) => <StyledContainer {...props}>{children}</StyledContainer>;

@@ -8,7 +8,6 @@ class QRScannerScreen extends Component {
   onSuccess = async e => {
     const data = JSON.parse(e.data);
     if (data.domain && data.sessionId && data.sharedKey && data.dappName) {
-      // TODO: retry or notify on failure
       await walletConnectInit(data.domain, data.sessionId, data.sharedKey, data.dappName);
       await walletConnectSendSession();
     }
@@ -21,7 +20,7 @@ class QRScannerScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.centerText}>Scan the Balance Manager QR code to log in</Text>
+        <Text style={styles.centerText}>Scan a WalletConnect QR code</Text>
         <QRCodeScanner
           ref={c => {
             this.qrCodeScanner = c;
