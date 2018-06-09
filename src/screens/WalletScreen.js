@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Button, Clipboard, Image } from 'react-native';
+import { Button, Clipboard } from 'react-native';
 import Card from '../components/Card';
+import CoinRow from '../components/CoinRow';
 import Container from '../components/Container';
 import Label from '../components/Label';
 import Section from '../components/Section';
@@ -60,19 +61,13 @@ class WalletScreen extends Component {
         </Card>
         {this.state.wallet &&
           this.state.wallet.assets.map(asset => (
-            <Section key={asset.symbol}>
-              <Image
-                style={{
-                  width: 25,
-                  height: 25,
-                  borderRadius: 12.5,
-                  backgroundColor: '#000',
-                }}
-                source={require('../assets/ethereum.png')}
-              />
-              <Label>{asset.name}</Label>
-              <Text>{`${Number(asset.balance).toFixed(8)} ${asset.symbol}`}</Text>
-            </Section>
+            <CoinRow
+              key={asset.symbol}
+              imgPath={require('../assets/eth-icon.png')}
+              coinSymbol={asset.symbol}
+              coinName={asset.name}
+              coinBalance={asset.balance}
+            />
           ))}
       </Container>
     ) : (
