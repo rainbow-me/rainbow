@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { ScrollView } from 'react-native';
 import Card from '../components/Card';
 import CoinRow from '../components/CoinRow';
 import Container from '../components/Container';
@@ -52,14 +53,16 @@ class WalletScreen extends Component {
     return !this.state.loading ? (
       <Container>
         <WalletMenu walletAddress={address} />
-        {this.state.wallet &&
-          this.state.wallet.assets.map(asset => {
-            const coinLogo =
-              asset.symbol === 'ETH'
-                ? 'https://raw.githubusercontent.com/balance-io/tokens/master/images/ethereum_1.png'
-                : `https://raw.githubusercontent.com/balance-io/tokens/master/images/${asset.address}.png`;
-            return <CoinRow key={asset.symbol} imgPath={coinLogo} coinSymbol={asset.symbol} coinName={asset.name} coinBalance={asset.balance} />;
-          })}
+        <ScrollView directionalLockEnabled>
+          {this.state.wallet &&
+            this.state.wallet.assets.map(asset => {
+              const coinLogo =
+                asset.symbol === 'ETH'
+                  ? 'https://raw.githubusercontent.com/balance-io/tokens/master/images/ethereum_1.png'
+                  : `https://raw.githubusercontent.com/balance-io/tokens/master/images/${asset.address}.png`;
+              return <CoinRow key={asset.symbol} imgPath={coinLogo} coinSymbol={asset.symbol} coinName={asset.name} coinBalance={asset.balance} />;
+            })}
+        </ScrollView>
       </Container>
     ) : (
       <Container>
