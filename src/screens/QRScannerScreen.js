@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, View, Text } from 'react-native';
+import React, { Component } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { walletConnectInit, walletConnectSendSession } from '../model/walletconnect';
 
@@ -16,11 +16,14 @@ class QRScannerScreen extends Component {
       this.qrCodeScanner.reactivate();
     }, 1000);
   };
+  static navigatorStyle = {
+    navBarHidden: true,
+    statusBarTextColorScheme: 'light',
+  };
 
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.centerText}>Scan a WalletConnect QR code</Text>
         <QRCodeScanner
           ref={c => {
             this.qrCodeScanner = c;
@@ -30,6 +33,7 @@ class QRScannerScreen extends Component {
           style={styles.scanner}
           onRead={this.onSuccess}
         />
+        <Text style={styles.centerText}>Scan a QR code to connect to a web dapp</Text>
       </View>
     );
   }
@@ -53,7 +57,7 @@ const styles = StyleSheet.create({
     height: 100,
     fontSize: 18,
     paddingTop: 32,
-    color: '#777',
+    color: 'rgba(0,0,0,0.54)',
   },
 
   scannerTop: {
@@ -62,6 +66,7 @@ const styles = StyleSheet.create({
   },
   scanner: {
     flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.05)',
   },
   scannerBottom: {
     flex: 0,
