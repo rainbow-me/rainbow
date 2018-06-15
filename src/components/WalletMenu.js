@@ -11,7 +11,7 @@ class WalletMenu extends Component {
   render() {
     const { walletAddress } = this.props;
     return (
-      <Card>
+      <Card style={{ paddingTop: 50 }}>
         <Section style={{ flexDirection: 'row' }}>
           <View style={{ flexGrow: 1 }}>
             <View style={{ flexDirection: 'row' }}>

@@ -48,6 +48,10 @@ class WalletScreen extends Component {
     }
   };
 
+  static navigatorStyle = {
+    navBarHidden: true,
+  };
+
   render() {
     const address = this.state.wallet ? this.state.wallet.address : '';
     return !this.state.loading ? (
