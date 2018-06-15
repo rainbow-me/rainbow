@@ -10,7 +10,14 @@ class CoinRow extends Component {
       imgPath, coinSymbol, coinName, coinBalance,
     } = this.props;
     return (
-      <Section style={{ flexDirection: 'row', padding: 8 }}>
+      <Section
+        style={{
+          flexDirection: 'row',
+          padding: 8,
+          alignItems: 'stretch',
+          width: '100%',
+        }}
+      >
         <Image
           style={{
             width: 48,
@@ -21,7 +28,7 @@ class CoinRow extends Component {
           source={{ uri: imgPath }}
         />
         <View style={{ paddingLeft: 8, flexGrow: 1 }}>
-          <Label>{coinName}</Label>
+          <Label style={{ width: '100%' }}>{coinName}</Label>
           <Text>{`${Number(coinBalance).toFixed(8)} ${coinSymbol}`}</Text>
         </View>
         <View style={{ paddingRight: 8, alignItems: 'flex-end' }}>

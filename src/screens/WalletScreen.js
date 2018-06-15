@@ -25,7 +25,7 @@ class WalletScreen extends Component {
       const wallet = await ethWallet.loadWallet();
       console.log('wallet', wallet);
       if (wallet) {
-        const { data } = await apiGetAccountBalances('0xB872DB8f21934317A79c9B74D8C001BB015E6045', 'mainnet');
+        const { data } = await apiGetAccountBalances(wallet.address, 'mainnet');
         const assets = data.map(asset => {
           const exponent = 10 ** Number(asset.contract.decimals);
           const balance = Number(asset.balance) / exponent;
@@ -53,7 +53,7 @@ class WalletScreen extends Component {
     return !this.state.loading ? (
       <Container>
         <WalletMenu walletAddress={address} />
-        <ScrollView directionalLockEnabled>
+        <ScrollView style={{ width: '100%' }} directionalLockEnabled>
           {this.state.wallet &&
             this.state.wallet.assets.map(asset => {
               const coinLogo =
