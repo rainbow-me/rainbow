@@ -1,10 +1,9 @@
+import { AppState, AsyncStorage, Platform } from 'react-native';
 import FCM, { FCMEvent, NotificationType, RemoteNotificationResult, WillPresentNotificationResult } from 'react-native-fcm';
-import { Platform, AsyncStorage, AppState } from 'react-native';
 import { Navigation } from 'react-native-navigation';
-import { registerScreens, registerScreenVisibilityListener } from './screens';
 import * as EthWallet from './model/ethWallet';
 import { addNewTransaction } from './model/transactions';
-import SplashScreen from 'react-native-splash-screen';
+import { registerScreens, registerScreenVisibilityListener } from './screens';
 
 registerScreens();
 registerScreenVisibilityListener();
@@ -111,7 +110,7 @@ Navigation.startTabBasedApp({
   tabsStyle: {
     tabBarButtonColor: '#abb1b8',
     tabBarSelectedButtonColor: '#0b0b0c',
-    tabBarBackgroundColor: '#f7f8fc',
+    tabBarBackgroundColor: '#fff',
     initialTabIndex: 0,
   },
   appStyle: {
