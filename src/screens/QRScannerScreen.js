@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
+import Card from '../components/Card';
 import { walletConnectInit, walletConnectSendSession } from '../model/walletconnect';
 
 class QRScannerScreen extends Component {
@@ -33,7 +34,43 @@ class QRScannerScreen extends Component {
           style={styles.scanner}
           onRead={this.onSuccess}
         />
-        <Text style={styles.centerText}>Scan a QR code to connect to a web dapp</Text>
+        <Card style={{ flex: 1 }}>
+          <Image
+            style={{
+              width: 74,
+              height: 46,
+              resizeMode: 'contain',
+              alignSelf: 'center',
+            }}
+            source={require('../assets/walletconnect-logo-blue.png')}
+          />
+          <Text style={[styles.centerText, styles.title]}>WalletConnect</Text>
+          <Text style={styles.centerText}>Scan a QR code to connect to a web dapp</Text>
+          <ScrollView horizontal>
+            <View
+              style={{
+                borderColor: '#E8E6E6',
+                borderStyle: 'solid',
+                borderWidth: 0.5,
+                padding: 8,
+                backgroundColor: '#FCFCFC',
+                borderRadius: 8,
+              }}
+            >
+              <Text style={styles.dappName}>CryptoKitties.co</Text>
+              <Image
+                style={{
+                  width: 68,
+                  height: 84,
+                  resizeMode: 'contain',
+                  alignSelf: 'center',
+                }}
+                source={require('../assets/landing-kitty03.png')}
+              />
+              <Text style={styles.dappName}>Tokenized cat trading</Text>
+            </View>
+          </ScrollView>
+        </Card>
       </View>
     );
   }
@@ -54,10 +91,19 @@ const styles = StyleSheet.create({
   centerText: {
     flexWrap: 'wrap',
     textAlign: 'center',
-    height: 100,
-    fontSize: 18,
+    fontSize: 16,
     paddingTop: 32,
     color: 'rgba(0,0,0,0.54)',
+  },
+  title: {
+    color: '#3B99FC',
+    fontSize: 18,
+    paddingTop: 16,
+  },
+  dappName: {
+    fontSize: 12,
+    color: '#3B99FC',
+    paddingTop: 0,
   },
 
   scannerTop: {
