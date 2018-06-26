@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import { ScrollView } from 'react-native';
 import Card from '../components/Card';
-import CoinRow from '../components/CoinRow';
+import CoinRow from '../components/coin-row/CoinRow';
 import Container from '../components/Container';
 import Label from '../components/Label';
 import Section from '../components/Section';
 import WalletMenu from '../components/WalletMenu';
 import { apiGetAccountBalances } from '../helpers/api';
 import * as ethWallet from '../model/ethWallet';
+
+const TokenImageUrl = 'https://raw.githubusercontent.com/balance-io/tokens/master/images/';
 
 class WalletScreen extends Component {
   state = {
@@ -59,13 +61,15 @@ class WalletScreen extends Component {
         <WalletMenu walletAddress={address} />
         <ScrollView style={{ width: '100%' }} directionalLockEnabled>
           {this.state.wallet &&
-            this.state.wallet.assets.map(asset => {
-              const coinLogo =
-                asset.symbol === 'ETH'
-                  ? 'https://raw.githubusercontent.com/balance-io/tokens/master/images/ethereum_1.png'
-                  : `https://raw.githubusercontent.com/balance-io/tokens/master/images/${asset.address}.png`;
-              return <CoinRow key={asset.symbol} imgPath={coinLogo} coinSymbol={asset.symbol} coinName={asset.name} coinBalance={asset.balance} />;
-            })}
+            this.state.wallet.assets.map(asset => (
+              <CoinRow
+                balance={asset.balance}
+                imgPath={`${TokenImageUrl}${(asset.symbol === 'ETH') ? 'ethereum_1' : asset.address}.png`}
+                key={asset.symbol}
+                name={asset.name}
+                symbol={asset.symbol}
+              />
+            ))}
         </ScrollView>
       </Container>
     ) : (
