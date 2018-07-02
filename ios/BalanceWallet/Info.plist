@@ -52,7 +52,7 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<true />
+	<true/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Graphik-Black.otf</string>
@@ -104,17 +104,11 @@
 		<string>SF-Pro-Text-Semibold.otf</string>
 		<string>SF-Pro-Text-SemiboldItalic.otf</string>
 		<string>SFMono-Bold.otf</string>
-		<string>SFMono-BoldItalic.otf</string>
 		<string>SFMono-Heavy.otf</string>
-		<string>SFMono-HeavyItalic.otf</string>
 		<string>SFMono-Light.otf</string>
-		<string>SFMono-LightItalic.otf</string>
 		<string>SFMono-Medium.otf</string>
-		<string>SFMono-MediumItalic.otf</string>
 		<string>SFMono-Regular.otf</string>
-		<string>SFMono-RegularItalic.otf</string>
 		<string>SFMono-Semibold.otf</string>
-		<string>SFMono-SemiboldItalic.otf</string>
 	</array>
 </dict>
 </plist>
