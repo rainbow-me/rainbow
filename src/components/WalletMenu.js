@@ -6,6 +6,8 @@ import Section from '../components/Section';
 import Text from '../components/Text';
 import { ellipseAddress } from '../helpers/utilities';
 
+import Tabs from './tabs/Tabs';
+
 class WalletMenu extends Component {
   onPress = () => null;
   render() {
@@ -26,7 +28,6 @@ class WalletMenu extends Component {
               />
               <Label style={{ color: 'rgba(0,0,0,.54)', fontWeight: '300', marginBottom: 0 }}>{'Main Network'}</Label>
             </View>
-
             <Text style={{ color: 'rgba(0,0,0,.87)', fontWeight: '300', fontSize: 22 }}>{ellipseAddress(walletAddress, 20)}</Text>
           </View>
           <View style={{ flexDirection: 'row' }}>
@@ -38,24 +39,11 @@ class WalletMenu extends Component {
             </TouchableOpacity>
           </View>
         </Section>
-        <Section style={{ flexDirection: 'row' }}>
-          <TouchableOpacity
-            style={{
-              backgroundColor: '#000',
-              borderRadius: 12,
-              alignItems: 'center',
-
-              padding: 7,
-            }}
-            onPress={this.onPress}
-            accessibilityLabel="Balance"
-          >
-            <Text style={{ color: '#fff', fontSize: 18 }}> Balances </Text>
-          </TouchableOpacity>
-
-          <Button onPress={this.onPress} title="Transactions" color="rgba(0,0,0,.54)" accessibilityLabel="Transactions" />
-          <Button onPress={this.onPress} title="Interactions" color="rgba(0,0,0,.54)" accessibilityLabel="Interactions" />
-        </Section>
+        <Tabs
+          items={this.props.tabItems}
+          onChange={this.props.onTabChange}
+          selectedTab={this.props.selectedTab}
+        />
       </Card>
     );
   }

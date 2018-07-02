@@ -2,14 +2,20 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
 import styled from 'styled-components/native';
-import { calcDirectionToDegrees, colors } from '../../styles';
-import { directionPropType } from '../../utils';
+import { calcDirectionToDegrees, colors } from '../../../styles';
+import { directionPropType } from '../../../utils';
 
 const SvgContainer = styled(Svg)`
   transform: rotate(${calcDirectionToDegrees}deg);
 `;
 
-const ArrowIcon = ({ color, direction, height, width, ...props }) => (
+const ArrowIcon = ({
+  color,
+  direction,
+  height,
+  width,
+  ...props
+}) => (
   <SvgContainer
     direction={direction}
     height={height}

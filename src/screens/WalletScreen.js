@@ -1,87 +1,66 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { ScrollView } from 'react-native';
-import Card from '../components/Card';
-import CoinRow from '../components/coin-row/CoinRow';
-import Container from '../components/Container';
-import Label from '../components/Label';
-import Section from '../components/Section';
+import { FlatList, SectionList, ScrollView } from 'react-native';
 import WalletMenu from '../components/WalletMenu';
-import { apiGetAccountBalances } from '../helpers/api';
-import * as ethWallet from '../model/ethWallet';
 
-const TokenImageUrl = 'https://raw.githubusercontent.com/balance-io/tokens/master/images/';
+import styled from 'styled-components/primitives';
+import Row from '../components/layout/Row';
+import BalanceCoinRow from '../components/asset-list/BalanceCoinRow';
+import TransactionCoinRow from '../components/asset-list/TransactionCoinRow';
+import AssetListHeader from '../components/asset-list/AssetListHeader';
+import AssetListItem from '../components/asset-list/AssetListItem';
+
+import Avatar from '../components/Avatar';
+
+const TabItems = ['Balances', 'Transactions', 'Interactions'];
+
+const Header = styled(Row)`
+  height: 98;
+  padding-left: 20;
+  padding-bottom: 20;
+`;
+
+const Container = styled(ScrollView)`
+
+`;
+
+const Separator = styled.View`
+  height: 27;
+`;
 
 class WalletScreen extends Component {
-  state = {
-    loading: false,
-    wallet: null,
-  };
-  componentDidMount() {
-    this.setState({ loading: true });
-    this.loadWallet()
-      .then(wallet => this.setState({ loading: false, wallet }))
-      .catch(error => this.setState({ loading: false, wallet: null }));
+  static propTypes = {
+    loading: PropTypes.bool,
+    wallet: PropTypes.object,
   }
-  loadWallet = async () => {
-    try {
-      const wallet = await ethWallet.loadWallet();
-      console.log('wallet', wallet);
-      if (wallet) {
-        const { data } = await apiGetAccountBalances(wallet.address, 'mainnet');
-        const assets = data.map(asset => {
-          const exponent = 10 ** Number(asset.contract.decimals);
-          const balance = Number(asset.balance) / exponent;
-          return {
-            address: asset.contract.address,
-            name: asset.contract.name,
-            symbol: asset.contract.symbol,
-            decimals: asset.contract.decimals,
-            balance,
-          };
-        });
-        wallet.assets = assets;
-        console.log('wallet', wallet);
-        return wallet;
-      }
-      return null;
-    } catch (error) {
-      console.error(error);
-      return error;
-    }
-  };
 
   static navigatorStyle = {
     navBarHidden: true,
-  };
+  }
 
   render() {
-    const address = this.state.wallet ? this.state.wallet.address : '';
-    return !this.state.loading ? (
+    const { loading, wallet } = this.props;
+    const { assets = [] } = wallet;
+
+    console.log('loading wallet', loading);
+
+    return (
       <Container>
-        <WalletMenu walletAddress={address} />
-        <ScrollView style={{ width: '100%' }} directionalLockEnabled>
-          {this.state.wallet &&
-            this.state.wallet.assets.map(asset => (
-              <CoinRow
-                balance={asset.balance}
-                imgPath={`${TokenImageUrl}${(asset.symbol === 'ETH') ? 'ethereum_1' : asset.address}.png`}
-                key={asset.symbol}
-                name={asset.name}
-                symbol={asset.symbol}
-              />
-            ))}
-        </ScrollView>
-      </Container>
-    ) : (
-      <Container>
-        <Card>
-          <Section>
-            <Label>Loading...</Label>
-          </Section>
-        </Card>
+        <Header align="end">
+          <Avatar />
+        </Header>
+        <SectionList
+          keyExtractor={(item, index) => item + index}
+          renderItem={AssetListItem}
+          renderSectionHeader={AssetListHeader}
+          renderSectionFooter={() => <Separator />}
+          sections={[
+            { title: 'Balance', data: assets, renderItem: BalanceCoinRow },
+            { title: 'Collectables', data: ['item3', 'item4'] },
+          ]}
+        />
       </Container>
     );
   }
 }
-
 export default WalletScreen;

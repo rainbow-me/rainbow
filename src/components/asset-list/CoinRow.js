@@ -11,13 +11,6 @@ import CoinIcon from '../CoinIcon';
 import CoinName from './CoinName';
 import { colors, fonts } from '../../styles';
 
-const BalanceText = styled.Text`
-  font-family: ${fonts.family.SFMono};
-  font-size: 15px;
-  color: ${colors.blueGreyDark};
-  font-weight: ${fonts.weight.normal};
-`;
-
 const Container = styled(Row)`
   padding: 15px 18px 15px 20px;
 `;
@@ -34,31 +27,46 @@ const ContentRow = styled(props => <Row {...props} align="center" justify="space
 `;
 
 const CoinRow = ({
+  address,
   balance,
-  imgPath,
+  bottomRowRender,
   name,
   symbol,
+  topRowRender,
 }) => (
   <Container align="center">
-    <CoinIcon source={imgPath} />
+    <CoinIcon
+      address={address}
+      symbol={symbol}
+    />
     <Content>
       <ContentRow>
-        <CoinName>{name}</CoinName>
-        <BalanceText>{'$50.00'}</BalanceText>
+        {topRowRender({
+          address,
+          balance,
+          name,
+          symbol,
+        })}
       </ContentRow>
       <ContentRow>
-        <Text>{`${Number(balance).toFixed(8)} ${symbol}`}</Text>
-        <Text>{'1.58%'}</Text>
+        {bottomRowRender({
+          address,
+          balance,
+          name,
+          symbol,
+        })}
       </ContentRow>
     </Content>
   </Container>
 );
 
 CoinRow.propTypes = {
-  balance: PropTypes.string,
-  imgPath: PropTypes.string,
+  address: PropTypes.string,
+  balance: PropTypes.number,
+  bottomRowRender: PropTypes.func,
   name: PropTypes.string,
   symbol: PropTypes.string,
+  topRowRender: PropTypes.func,
 };
 
 export default CoinRow;

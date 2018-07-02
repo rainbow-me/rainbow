@@ -1,3 +1,4 @@
+import { upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/native';
@@ -34,12 +35,18 @@ const TransactionStatusBadge = ({ status }) => (
       direction={(status === TransactionTypes.sent) ? 'up' : 'down'}
       name={(status === TransactionTypes.pending) ? 'spinner' : 'arrow'}
     />
-    <TransactionLabel color={TransactionColors[status]}>{status}</TransactionLabel>
+    <TransactionLabel color={TransactionColors[status]}>
+      {upperFirst(status)}
+    </TransactionLabel>
   </Row>
 );
 
 TransactionStatusBadge.propTypes = {
   status: PropTypes.oneOf(Object.values(TransactionTypes)),
+};
+
+TransactionStatusBadge.defaultProps = {
+  status: TransactionTypes.pending,
 };
 
 export default TransactionStatusBadge;
