@@ -4,5 +4,5 @@ export default PropTypes.oneOf([
   'down',
   'left',
   'right',
-  'up'
+  'up',
 ]);
