@@ -10,6 +10,7 @@
     "postinstall": "rn-nodeify --install --hack"
   },
   "dependencies": {
+    "@hocs/omit-props": "^0.4.0",
     "@tradle/react-native-http": "^2.0.0",
     "assert": "^1.4.1",
     "axios": "^0.18.0",
@@ -47,6 +48,7 @@
     "react-native-tcp": "^3.3.0",
     "react-native-touch-id": "^4.0.1",
     "react-native-udp": "^2.3.1",
+    "react-primitives": "^0.6.0",
     "react-redux": "^5.0.7",
     "readable-stream": "^1.0.33",
     "recompose": "^0.27.1",
@@ -54,7 +56,7 @@
     "rn-nodeify": "^10.0.0",
     "stream-browserify": "^1.0.0",
     "string_decoder": "^0.10.31",
-    "styled-components": "^3.3.0",
+    "styled-components": "^3.3.3",
     "timers-browserify": "^1.4.2",
     "tty-browserify": "0.0.0",
     "url": "^0.10.3",

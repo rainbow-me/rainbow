@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { FlatList, SectionList, ScrollView } from 'react-native';
-import WalletMenu from '../components/WalletMenu';
 
 import styled from 'styled-components/primitives';
 import Row from '../components/layout/Row';

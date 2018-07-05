@@ -1,7 +1,7 @@
 import { upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components/native';
+import styled from 'styled-components/primitives';
 import { colors, fonts } from '../../styles';
 import Row from '../layout/Row';
 import Icon from '../icons/Icon';
