@@ -1,29 +1,19 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Image, Text, View } from 'react-native';
-import styled from 'styled-components/native';
-import Row from '../layout/Row';
+import React from 'react';
+import styled from 'styled-components/primitives';
 import Column from '../layout/Column';
-import Label from '../Label';
-import Section from '../Section';
-// import Text from '../Text';
+import Row from '../layout/Row';
+import { padding } from '../../styles';
 import CoinIcon from '../CoinIcon';
-import CoinName from './CoinName';
-import { colors, fonts } from '../../styles';
 
 const Container = styled(Row)`
-  padding: 15px 18px 15px 20px;
+  ${padding(12, 18, 12, 20)}
 `;
 
 const Content = styled(Column)`
   flex: 1;
+  height: 40;
   margin-left: 12px;
-`;
-
-const ContentRow = styled(props => <Row {...props} align="center" justify="space-between" />)`
-  &:first-of-type {
-    margin-bottom: 6px;
-  }
 `;
 
 const CoinRow = ({
@@ -35,27 +25,24 @@ const CoinRow = ({
   topRowRender,
 }) => (
   <Container align="center">
-    <CoinIcon
-      address={address}
-      symbol={symbol}
-    />
-    <Content>
-      <ContentRow>
+    <CoinIcon asset={address || symbol} />
+    <Content justify="space-between">
+      <Row align="center" justify="space-between">
         {topRowRender({
           address,
           balance,
           name,
           symbol,
         })}
-      </ContentRow>
-      <ContentRow>
+      </Row>
+      <Row align="center" justify="space-between">
         {bottomRowRender({
           address,
           balance,
           name,
           symbol,
         })}
-      </ContentRow>
+      </Row>
     </Content>
   </Container>
 );

@@ -1,20 +1,11 @@
-import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
-import { Text } from 'react-native';
-import styled from 'styled-components/native';
-import Row from '../layout/Row';
-import Column from '../layout/Column';
-// import Label from '../Label';
-// import Section from '../Section';
-// import Text from '../Text';
-// import CoinIcon from '../CoinIcon';
+import { Monospace } from '../text';
+import BalanceText from './BalanceText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { colors, fonts } from '../../styles';
-import BalanceText from './BalanceText';
 import TransactionStatusBadge from './TransactionStatusBadge';
 
-const TransactionCoinRow = (props) => (
+const TransactionCoinRow = props => (
   <CoinRow
     {...props}
     bottomRowRender={({ balance, name = 'Ethereum' }) => (
@@ -26,18 +17,10 @@ const TransactionCoinRow = (props) => (
     topRowRender={({ balance = '123123', symbol = 'ETH' }) => (
       <Fragment>
         <TransactionStatusBadge />
-        <Text>{`${Number(balance).toFixed(8)} ${symbol}`}</Text>
+        <Monospace>{`${Number(balance).toFixed(8)} ${symbol}`}</Monospace>
       </Fragment>
     )}
   />
 );
-
-TransactionCoinRow.propTypes = {
-  // address: PropTypes.string,
-  // balance: PropTypes.string,
-  // imgPath: PropTypes.string,
-  // name: PropTypes.string,
-  // symbol: PropTypes.string,
-};
 
 export default TransactionCoinRow;

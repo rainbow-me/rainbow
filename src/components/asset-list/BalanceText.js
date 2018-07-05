@@ -1,11 +1,10 @@
-import styled from 'styled-components/native';
+import styled from 'styled-components/primitives';
 import { colors, fonts } from '../../styles';
+import { Monospace } from '../text';
 
-const BalanceText = styled.Text`
-  font-family: ${fonts.family.SFMono};
-  font-size: 15px;
+const BalanceText = styled(Monospace)`
   color: ${colors.blueGreyDark};
-  font-weight: ${fonts.weight.normal};
+  font-size: ${fonts.size.lmedium};
 `;
 
 export default BalanceText;
