@@ -56,7 +56,7 @@ class WalletScreen extends Component {
     const address = this.state.wallet ? this.state.wallet.address : '';
     return !this.state.loading ? (
       <Container>
-        <WalletMenu walletAddress={address} />
+        <WalletMenu walletAddress={address} navigator={this.props.navigator} />
         <ScrollView style={{ width: '100%' }} directionalLockEnabled>
           {this.state.wallet &&
             this.state.wallet.assets.map(asset => {

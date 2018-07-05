@@ -8,6 +8,16 @@ import { ellipseAddress } from '../helpers/utilities';
 
 class WalletMenu extends Component {
   onPress = () => null;
+
+  openSend = () =>
+    this.props.navigator.showModal({
+      screen: 'BalanceWallet.SendScreen', // unique ID registered with Navigation.registerScreen
+      title: 'Send', // navigation bar title of the pushed screen (optional)
+      passProps: {}, // we will probably pass wallet info here
+      navigatorStyle: {}, // override the navigator style for the screen, see "Styling the navigator" below (optional)
+      animationType: 'slide-up',
+    });
+
   render() {
     const { walletAddress } = this.props;
     return (
@@ -33,7 +43,7 @@ class WalletMenu extends Component {
             <TouchableOpacity onPress={this.onPress} accessibilityLabel="Transaction">
               <Image style={{ width: 60, height: 60 }} source={require('../assets/transaction-button.png')} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={this.onPress} accessibilityLabel="Send">
+            <TouchableOpacity onPress={this.openSend} accessibilityLabel="Send">
               <Image style={{ width: 60, height: 60 }} source={require('../assets/send-button.png')} />
             </TouchableOpacity>
           </View>
