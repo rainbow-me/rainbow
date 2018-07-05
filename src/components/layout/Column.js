@@ -1,8 +1,7 @@
-import React from 'react';
+import { compose, setDisplayName, withProps } from 'recompose';
 import Flex from './Flex';
 
-const Column = props => <Flex {...props} direction="column" />;
-
-Column.displayName = 'Column';
-
-export default Column;
+export default compose(
+  setDisplayName('Column'),
+  withProps({ direction: 'column' }),
+)(Flex);

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
-import styled from 'styled-components/native';
+import styled from 'styled-components/primitives';
 import { calcDirectionToDegrees, colors } from '../../../styles';
 import { directionPropType } from '../../../utils';
 
@@ -19,7 +19,6 @@ const ArrowIcon = ({
   <SvgContainer
     direction={direction}
     height={height}
-    viewBox="0 0 10 7"
     width={width}
   >
     <Path

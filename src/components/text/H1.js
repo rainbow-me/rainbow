@@ -1,4 +1,4 @@
-import styled from 'styled-components/native';
+import styled from 'styled-components/primitives';
 import { colors, fonts } from '../../styles';
 
 const H1 = styled.Text`
