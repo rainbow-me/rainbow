@@ -5,13 +5,10 @@ import { FlatList, SectionList, ScrollView } from 'react-native';
 import styled from 'styled-components/primitives';
 import Row from '../components/layout/Row';
 import BalanceCoinRow from '../components/asset-list/BalanceCoinRow';
-import TransactionCoinRow from '../components/asset-list/TransactionCoinRow';
 import AssetListHeader from '../components/asset-list/AssetListHeader';
 import AssetListItem from '../components/asset-list/AssetListItem';
 
 import Avatar from '../components/Avatar';
-
-const TabItems = ['Balances', 'Transactions', 'Interactions'];
 
 const Header = styled(Row)`
   height: 98;
