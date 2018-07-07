@@ -25,10 +25,17 @@ class SendScreen extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.card}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingRight: 16,
+            }}
+          >
             <Button onPress={this.closeModal} title="Cancel" color="#5983FF" accessibilityLabel="Cancel" style={{ fontSize: 18 }} />
             <Text style={{ fontSize: 18, fontWeight: '600' }}>{'Send'}</Text>
-            <Image style={{ width: 60, height: 60 }} source={require('../assets/send-button.png')} />
+            <Image style={{ width: 20, height: 20, marginLeft: 34 }} source={require('../assets/scan-icon-alt.png')} />
           </View>
           <Section
             style={{
@@ -73,7 +80,6 @@ class SendScreen extends Component {
               style={{ height: 40, flexGrow: 1, marginLeft: 8 }}
               onChangeText={text => this.setState({ text })}
               value={this.state.text}
-              clearTextOnFocus={true}
               placeholder="Address, Name, Phone"
             />
             <TouchableOpacity onPress={this.pasteContent} style={{ backgroundColor: '#A9ADB9', borderRadius: 14, padding: 6 }}>
@@ -103,7 +109,7 @@ class SendScreen extends Component {
               />
               <View style={{ paddingLeft: 8, flexGrow: 1 }}>
                 <Label style={{ width: '100%' }}>{item.name}</Label>
-                <Text>{item.text}</Text>
+                <Text style={{ color: 'rgba(0,0,0,0.54)' }}>{item.text}</Text>
               </View>
             </Section>
           )}
@@ -134,14 +140,17 @@ const styles = StyleSheet.create({
   },
 });
 
+// Test data for contacts
+// Real data will probably come from phone contacts
+// Maybe use this: https://github.com/rt2zz/react-native-contacts
 const sections = [
   {
     title: '',
     data: [
       {
-        name: 'Ethereum',
+        name: 'Richard Burton',
         image: 'https://raw.githubusercontent.com/balance-io/tokens/master/images/ethereum_1.png',
-        text: 'sometext',
+        text: '@ricburton',
       },
       {
         name: 'Ethereum',
