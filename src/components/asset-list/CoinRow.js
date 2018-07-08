@@ -25,7 +25,7 @@ const CoinRow = ({
   topRowRender,
 }) => (
   <Container align="center">
-    <CoinIcon asset={address || symbol} />
+    <CoinIcon symbol={symbol} />
     <Content justify="space-between">
       <Row align="center" justify="space-between">
         {topRowRender({

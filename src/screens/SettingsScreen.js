@@ -1,29 +1,37 @@
-import { upperFirst } from 'lodash';
-import React, { Component } from 'react';
-import personalData from '../model/personalData';
+import PropTypes from 'prop-types';
+import React from 'react';
+import styled from 'styled-components/primitives';
 import Container from '../components/Container';
-import Card from '../components/Card';
-import Section from '../components/Section';
-import Label from '../components/Label';
-import Text from '../components/Text';
+import { Column } from '../components/layout';
+import { Monospace } from '../components/text';
+import { colors, fonts, padding } from '../styles';
 
-class SettingsScreen extends Component {
-  render() {
-    return (
-      <Container>
-        {Object.keys(personalData).map(section => (
-          <Card key={section}>
-            {Object.keys(personalData[section]).map(label => (
-              <Section key={label}>
-                <Label>{upperFirst(label)}</Label>
-                <Text>{personalData[section][label]}</Text>
-              </Section>
-            ))}
-          </Card>
-        ))}
-      </Container>
-    );
-  }
-}
+const SettingsItem = styled(Column)`
+  ${padding(20)}
+`;
+
+const Label = styled.Text`
+  color: #25292E;
+  font-size: ${fonts.size.large};
+  font-weight: ${fonts.weight.semibold};
+`;
+
+const WalletAddressText = styled(Monospace)`
+  margin-top: 10;
+  color: ${colors.blueGreyDark};
+`;
+
+const SettingsScreen = ({ address }) => (
+  <Container>
+    <SettingsItem>
+      <Label>Wallet address</Label>
+      <WalletAddressText selectable>{address}</WalletAddressText>
+    </SettingsItem>
+  </Container>
+);
+
+SettingsScreen.propTypes = {
+  address: PropTypes.string,
+};
 
 export default SettingsScreen;
