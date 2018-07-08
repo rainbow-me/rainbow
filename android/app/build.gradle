@@ -137,7 +137,6 @@ android {
 }
 
 dependencies {
-    compile project(':rn-fetch-blob')
     compile project(':react-native-svg')
     compile project(':react-native-splash-screen')
     compile project(':react-native-touch-id')
