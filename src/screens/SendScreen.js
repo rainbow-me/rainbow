@@ -62,9 +62,15 @@ class SendScreen extends Component {
               <Label style={{ width: '100%' }}>{'Ethereum'}</Label>
               <Text>{'$5,678'}</Text>
             </View>
-            <View style={{ paddingRight: 8, alignItems: 'flex-end' }}>
-              <Text>{'>'}</Text>
-            </View>
+            <Image
+              style={{
+                width: 5,
+                height: 12,
+                marginRight: 8,
+                alignSelf: 'center',
+              }}
+              source={require('../assets/dropdown-arrow.png')}
+            />
           </Section>
           <View
             style={{
