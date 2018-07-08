@@ -6,6 +6,7 @@ import Row from '../components/layout/Row';
 import AssetListHeader from '../components/asset-list/AssetListHeader';
 import AssetListItem from '../components/asset-list/AssetListItem';
 import BalanceCoinRow from '../components/asset-list/BalanceCoinRow';
+import UniqueTokenGridList from '../components/asset-list/UniqueTokenGridList';
 import Avatar from '../components/Avatar';
 
 const Header = styled(Row)`
@@ -30,7 +31,7 @@ const WalletScreen = ({ wallet: { assets = [] } }) => (
       renderSectionFooter={() => <Separator />}
       sections={[
         { title: 'Balances', totalValue: '456.60', data: assets, renderItem: BalanceCoinRow },
-        { title: 'Collectables', totalValue: '26.32', data: ['item3', 'item4'] },
+        { title: 'Collectibles', totalValue: '26.32', data: [['fake nft #1', 'fake nft #2', 'fake nft #3']], renderItem: UniqueTokenGridList },
       ]}
     />
   </ScrollView>

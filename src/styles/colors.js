@@ -43,6 +43,7 @@ const vendor = {
 };
 
 export default {
+  alpha: (color, alpha) => `rgba(${chroma(color).rgb()}, ${alpha})`,
   ...base,
   ...transparent,
   ...vendor,
