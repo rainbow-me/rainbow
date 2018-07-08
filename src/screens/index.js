@@ -2,7 +2,7 @@ import { Navigation, ScreenVisibilityListener } from 'react-native-navigation';
 
 import POCScreen from './POCScreen';
 import QRScannerScreen from './QRScannerScreen';
-import SettingsScreen from './SettingsScreen';
+import SettingsScreenWithData from './SettingsScreenWithData';
 import TransactionScreen from './TransactionScreen';
 import WalletScreenWithData from './WalletScreenWithData';
 
@@ -10,7 +10,7 @@ import WalletScreenWithData from './WalletScreenWithData';
 export function registerScreens() {
   Navigation.registerComponent('BalanceWallet.POCScreen', () => POCScreen);
   Navigation.registerComponent('BalanceWallet.QRScannerScreen', () => QRScannerScreen);
-  Navigation.registerComponent('BalanceWallet.SettingsScreen', () => SettingsScreen);
+  Navigation.registerComponent('BalanceWallet.SettingsScreen', () => SettingsScreenWithData);
   Navigation.registerComponent('BalanceWallet.TransactionScreen', () => TransactionScreen);
   Navigation.registerComponent('BalanceWallet.WalletScreen', () => WalletScreenWithData);
 }

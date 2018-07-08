@@ -8,8 +8,9 @@ font.family = {
 };
 
 font.size = {
-  tiny: '10px',
-  small: '12px',
+  micro: '9px',
+  tiny: '11px',
+  small: '13px',
   smedium: '14px',
   medium: '15px',
   lmedium: '16px',

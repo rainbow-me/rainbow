@@ -1,56 +1,38 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { mapProps } from 'recompose';
-import styled from 'styled-components/primitives';
-import { borders, colors, position } from '../styles';
-import { Centered } from './layout';
+import { css } from 'styled-components/primitives';
+import DefaultCoinIcon, { FallbackIcon as DefaultFallbackIcon } from 'react-coin-icon';
+import { fonts } from '../styles';
 
-const TokenImageUrl = 'https://raw.githubusercontent.com/balance-io/tokens/master/images';
-
-const Container = styled(Centered)`
-  ${({ size }) => position.size(size)}
-  background-color: ${colors.white};
-  border-radius: ${({ size }) => (size / 2)};
-  overflow: hidden;
+const fallbackTextStyles = css`
+  font-family: ${fonts.family.SFMono};
+  margin-bottom: 1;
 `;
 
-const ImageFallback = styled.Image`
-  resize-mode: contain;
-`;
+const FallbackIcon = ({ symbol }) => (
+  <DefaultFallbackIcon
+    symbol={symbol}
+    textStyles={fallbackTextStyles}
+  />
+);
 
-const ImageFallbackContainer = styled(Centered)`
-  ${position.size('100%')}
-  border-color: ${borders.color};
-  border-radius: ${({ size }) => (size / 2)};
-  border-width: 2;
-`;
+FallbackIcon.propTypes = DefaultFallbackIcon.propTypes;
 
-const CoinIcon = ({ asset, size }) => {
-  const imageFallback = (
-    <ImageFallbackContainer size={size}>
-      <ImageFallback
-        source={{ uri: `${TokenImageUrl}/${asset}.png` }}
-        style={position.sizeAsObject(size * 0.666)}
-      />
-    </ImageFallbackContainer>
-  );
-
-  return (
-    <Container size={size}>
-      {imageFallback}
-    </Container>
-  );
-};
+const CoinIcon = ({ size, symbol }) => (
+  <DefaultCoinIcon
+    fallbackRenderer={FallbackIcon}
+    size={size}
+    symbol={symbol}
+  />
+);
 
 CoinIcon.propTypes = {
-  asset: PropTypes.string,
-  size: PropTypes.number.isRequired,
+  symbol: PropTypes.string,
+  size: PropTypes.number,
 };
 
 CoinIcon.defaultProps = {
-  size: 48,
+  size: 40,
 };
 
-export default mapProps(({ asset }) => ({
-  asset: '0xe41d2489571d322189246dafa5ebde1f4699f498', // (asset === 'ETH') ? 'ethereum_1' : asset,
-}))(CoinIcon);
+export default CoinIcon;

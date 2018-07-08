@@ -7,8 +7,6 @@ const Container = styled.Text`
 `;
 
 const AssetListItem = ({ item, index, section }) => {
-  console.log('item', item);
-
   return (
     <Container>{item}</Container>
   );

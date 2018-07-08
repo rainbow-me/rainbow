@@ -1,13 +1,11 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { FlatList, SectionList, ScrollView } from 'react-native';
-
+import React from 'react';
+import { SectionList, ScrollView } from 'react-native';
 import styled from 'styled-components/primitives';
 import Row from '../components/layout/Row';
-import BalanceCoinRow from '../components/asset-list/BalanceCoinRow';
 import AssetListHeader from '../components/asset-list/AssetListHeader';
 import AssetListItem from '../components/asset-list/AssetListItem';
-
+import BalanceCoinRow from '../components/asset-list/BalanceCoinRow';
 import Avatar from '../components/Avatar';
 
 const Header = styled(Row)`
@@ -16,47 +14,31 @@ const Header = styled(Row)`
   padding-bottom: 20;
 `;
 
-const Container = styled(ScrollView)`
-
-`;
-
 const Separator = styled.View`
   height: 27;
 `;
 
-class WalletScreen extends Component {
-  static propTypes = {
-    loading: PropTypes.bool,
-    wallet: PropTypes.object,
-  }
+const WalletScreen = ({ wallet: { assets = [] } }) => (
+  <ScrollView>
+    <Header align="end">
+      <Avatar />
+    </Header>
+    <SectionList
+      keyExtractor={(item, index) => item + index}
+      renderItem={AssetListItem}
+      renderSectionHeader={props => <AssetListHeader {...props} />}
+      renderSectionFooter={() => <Separator />}
+      sections={[
+        { title: 'Balances', totalValue: '456.60', data: assets, renderItem: BalanceCoinRow },
+        { title: 'Collectables', totalValue: '26.32', data: ['item3', 'item4'] },
+      ]}
+    />
+  </ScrollView>
+);
 
-  static navigatorStyle = {
-    navBarHidden: true,
-  }
+WalletScreen.propTypes = {
+  loading: PropTypes.bool,
+  wallet: PropTypes.object,
+};
 
-  render() {
-    const { loading, wallet } = this.props;
-    const { assets = [] } = wallet;
-
-    console.log('loading wallet', loading);
-
-    return (
-      <Container>
-        <Header align="end">
-          <Avatar />
-        </Header>
-        <SectionList
-          keyExtractor={(item, index) => item + index}
-          renderItem={AssetListItem}
-          renderSectionHeader={AssetListHeader}
-          renderSectionFooter={() => <Separator />}
-          sections={[
-            { title: 'Balance', data: assets, renderItem: BalanceCoinRow },
-            { title: 'Collectables', data: ['item3', 'item4'] },
-          ]}
-        />
-      </Container>
-    );
-  }
-}
 export default WalletScreen;
