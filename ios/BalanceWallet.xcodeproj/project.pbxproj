@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00932FBBF3DC42F49E58F439 /* SF-Pro-Text-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 71542F40BF6344038C07EECD /* SF-Pro-Text-Semibold.otf */; };
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
@@ -100,6 +99,7 @@
 		DC003933759A4BF080456378 /* SFMono-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4CF73EDD0A7F43ABADF87813 /* SFMono-Semibold.otf */; };
 		DC91DD38F5134EA9A45BC274 /* Graphik-Super.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3B181234B0F54F639E1ADE92 /* Graphik-Super.otf */; };
 		E17EC5EE52FA491AB68B1373 /* Graphik-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 72974CB1F2964E708294C273 /* Graphik-RegularItalic.otf */; };
+		E1CB7C0183024F1993389670 /* libRNSuperEllipseMask.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3844D22E720C43B183B360A9 /* libRNSuperEllipseMask.a */; };
 		F01247787D8F45159B67C192 /* Graphik-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2C96418821D34F79B0E2F0E0 /* Graphik-Black.otf */; };
 /* End PBXBuildFile section */
 
@@ -166,6 +166,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = 83CBBA2E1A601D0E00E9B192;
 			remoteInfo = React;
+		};
+		240F4F1420F3E34A00F0472A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E196C2F0A3914695BBBA99B1 /* RNSuperEllipseMask.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNSuperEllipseMask;
 		};
 		24A314B420D87AFD0041BBB6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -511,6 +518,7 @@
 		2FFA3B610E344B98AA9AE209 /* libRNOS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNOS.a; sourceTree = "<group>"; };
 		3184F7FC11754861B821DAD8 /* libReactNativePermissions.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libReactNativePermissions.a; sourceTree = "<group>"; };
 		35A9AC06638D4F9195435FEE /* SF-Pro-Display-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Bold.otf"; path = "../src/assets/fonts/SF-Pro-Display-Bold.otf"; sourceTree = "<group>"; };
+		3844D22E720C43B183B360A9 /* libRNSuperEllipseMask.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSuperEllipseMask.a; sourceTree = "<group>"; };
 		3ACFE26C98B246CEBFA50A85 /* SF-Pro-Display-ThinItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-ThinItalic.otf"; path = "../src/assets/fonts/SF-Pro-Display-ThinItalic.otf"; sourceTree = "<group>"; };
 		3B181234B0F54F639E1ADE92 /* Graphik-Super.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Super.otf"; path = "../src/assets/fonts/Graphik-Super.otf"; sourceTree = "<group>"; };
 		40963901E8BF41AAB0EF1495 /* SF-Pro-Display-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Black.otf"; path = "../src/assets/fonts/SF-Pro-Display-Black.otf"; sourceTree = "<group>"; };
@@ -584,6 +592,7 @@
 		D397123F031B4DB890317C4B /* SFMono-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Regular.otf"; path = "../src/assets/fonts/SFMono-Regular.otf"; sourceTree = "<group>"; };
 		D810F21A9174463085847852 /* Graphik-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Regular.otf"; path = "../src/assets/fonts/Graphik-Regular.otf"; sourceTree = "<group>"; };
 		D85564395B6A4CD4A1144168 /* SF-Pro-Text-Heavy.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-Heavy.otf"; path = "../src/assets/fonts/SF-Pro-Text-Heavy.otf"; sourceTree = "<group>"; };
+		E196C2F0A3914695BBBA99B1 /* RNSuperEllipseMask.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSuperEllipseMask.xcodeproj; path = "../node_modules/react-native-super-ellipse-mask/ios/RNSuperEllipseMask.xcodeproj"; sourceTree = "<group>"; };
 		E633C3E25B00453CB74647C7 /* SF-Pro-Display-HeavyItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-HeavyItalic.otf"; path = "../src/assets/fonts/SF-Pro-Display-HeavyItalic.otf"; sourceTree = "<group>"; };
 		E8746E90D5AD44D784CF079A /* SF-Pro-Text-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-BoldItalic.otf"; path = "../src/assets/fonts/SF-Pro-Text-BoldItalic.otf"; sourceTree = "<group>"; };
 		EC8312FDD1F741A48DC3FC15 /* SF-Pro-Display-Heavy.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Heavy.otf"; path = "../src/assets/fonts/SF-Pro-Display-Heavy.otf"; sourceTree = "<group>"; };
@@ -641,6 +650,7 @@
 				C67770342A1D4769877948CB /* libTouchID.a in Frameworks */,
 				675345C954374B1499E16736 /* libSplashScreen.a in Frameworks */,
 				5ED7858448524F29871FAA3A /* libRNSVG.a in Frameworks */,
+				E1CB7C0183024F1993389670 /* libRNSuperEllipseMask.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -760,6 +770,14 @@
 				538D53612066FC6C000BD833 /* libdouble-conversion.a */,
 				538D53632066FC6C000BD833 /* libprivatedata.a */,
 				538D53652066FC6C000BD833 /* libprivatedata-tvOS.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		240F4F1120F3E34A00F0472A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				240F4F1520F3E34A00F0472A /* libRNSuperEllipseMask.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -932,6 +950,7 @@
 				CC2461214C3643F6AC47CD95 /* libTouchID.a */,
 				7D9133CF77F040998840ED57 /* libSplashScreen.a */,
 				B881D6B44E9E4C67909E84A8 /* libRNSVG.a */,
+				3844D22E720C43B183B360A9 /* libRNSuperEllipseMask.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -1006,6 +1025,7 @@
 				1328E4D67A964F8794B8E5CC /* TouchID.xcodeproj */,
 				4D32B2BF425042DC9F2A2B51 /* SplashScreen.xcodeproj */,
 				68147C3D76EE4C3D823038B6 /* RNSVG.xcodeproj */,
+				E196C2F0A3914695BBBA99B1 /* RNSuperEllipseMask.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1215,6 +1235,10 @@
 					ProjectRef = 6462C7421B654AF7B5923A2F /* RNRandomBytes.xcodeproj */;
 				},
 				{
+					ProductGroup = 240F4F1120F3E34A00F0472A /* Products */;
+					ProjectRef = E196C2F0A3914695BBBA99B1 /* RNSuperEllipseMask.xcodeproj */;
+				},
+				{
 					ProductGroup = 24A314B020D87AFD0041BBB6 /* Products */;
 					ProjectRef = 68147C3D76EE4C3D823038B6 /* RNSVG.xcodeproj */;
 				},
@@ -1298,6 +1322,13 @@
 			fileType = archive.ar;
 			path = libReact.a;
 			remoteRef = 146834031AC3E56700842450 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		240F4F1520F3E34A00F0472A /* libRNSuperEllipseMask.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNSuperEllipseMask.a;
+			remoteRef = 240F4F1420F3E34A00F0472A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		24A314B520D87AFD0041BBB6 /* libRNSVG.a */ = {
@@ -1765,11 +1796,15 @@
 					"$(SRCROOT)/../node_modules/react-native-touch-id",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-super-ellipse-mask/ios",
 				);
 				INFOPLIST_FILE = BalanceWalletTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -1799,11 +1834,15 @@
 					"$(SRCROOT)/../node_modules/react-native-touch-id",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-super-ellipse-mask/ios",
 				);
 				INFOPLIST_FILE = BalanceWalletTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -1841,6 +1880,7 @@
 					"$(SRCROOT)/../node_modules/react-native-touch-id",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-super-ellipse-mask/ios",
 				);
 				INFOPLIST_FILE = BalanceWallet/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1885,6 +1925,7 @@
 					"$(SRCROOT)/../node_modules/react-native-touch-id",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-super-ellipse-mask/ios",
 				);
 				INFOPLIST_FILE = BalanceWallet/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
