@@ -14,7 +14,7 @@ const Shadow = styled(Centered)`
   ${({ size }) => position.size(size)}
   border-radius: ${({ size }) => (size / 2)};
   box-shadow: 0px 4px 6px ${colors.alpha(colors.purple, 0.04)};
-  box-shadow: 0px 1px 3px ${colors.alpha(colors.purple, 0.04)};
+  box-shadow: 0px 1px 3px ${colors.alpha(colors.purple, 0.08)};
 `;
 
 const CoinIcon = ({ size, symbol }) => (

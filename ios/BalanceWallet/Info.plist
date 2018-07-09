@@ -34,7 +34,7 @@
 	<key>NSFaceIDUsageDescription</key>
 	<string>Balance Wallet</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Graphik-Black.otf</string>
