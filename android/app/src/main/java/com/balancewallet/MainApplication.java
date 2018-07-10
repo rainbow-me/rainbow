@@ -3,6 +3,9 @@ package com.balancewallet;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.surajit.rnrg.RNRadialGradientPackage;
+import com.BV.LinearGradient.LinearGradientPackage;
+import com.horcrux.svg.SvgPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.rnfingerprint.FingerprintAuthPackage;
 import com.tradle.react.UdpSocketsModule;
@@ -33,6 +36,9 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNRadialGradientPackage(),
+            new LinearGradientPackage(),
+            new SvgPackage(),
             new SplashScreenReactPackage(),
             new FingerprintAuthPackage(),
             new UdpSocketsModule(),
