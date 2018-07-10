@@ -34,7 +34,64 @@
 	<key>NSFaceIDUsageDescription</key>
 	<string>Balance Wallet</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Graphik-Black.otf</string>
+		<string>Graphik-BlackItalic.otf</string>
+		<string>Graphik-Bold.otf</string>
+		<string>Graphik-BoldItalic.otf</string>
+		<string>Graphik-Extralight.otf</string>
+		<string>Graphik-ExtralightItalic.otf</string>
+		<string>Graphik-Light.otf</string>
+		<string>Graphik-LightItalic.otf</string>
+		<string>Graphik-Medium.otf</string>
+		<string>Graphik-MediumItalic.otf</string>
+		<string>Graphik-Regular.otf</string>
+		<string>Graphik-RegularItalic.otf</string>
+		<string>Graphik-Semibold.otf</string>
+		<string>Graphik-SemiboldItalic.otf</string>
+		<string>Graphik-Super.otf</string>
+		<string>Graphik-SuperItalic.otf</string>
+		<string>Graphik-Thin.otf</string>
+		<string>Graphik-ThinItalic.otf</string>
+		<string>SF-Pro-Display-Black.otf</string>
+		<string>SF-Pro-Display-BlackItalic.otf</string>
+		<string>SF-Pro-Display-Bold.otf</string>
+		<string>SF-Pro-Display-BoldItalic.otf</string>
+		<string>SF-Pro-Display-Heavy.otf</string>
+		<string>SF-Pro-Display-HeavyItalic.otf</string>
+		<string>SF-Pro-Display-Light.otf</string>
+		<string>SF-Pro-Display-LightItalic.otf</string>
+		<string>SF-Pro-Display-Medium.otf</string>
+		<string>SF-Pro-Display-MediumItalic.otf</string>
+		<string>SF-Pro-Display-Regular.otf</string>
+		<string>SF-Pro-Display-RegularItalic.otf</string>
+		<string>SF-Pro-Display-Semibold.otf</string>
+		<string>SF-Pro-Display-SemiboldItalic.otf</string>
+		<string>SF-Pro-Display-Thin.otf</string>
+		<string>SF-Pro-Display-ThinItalic.otf</string>
+		<string>SF-Pro-Display-Ultralight.otf</string>
+		<string>SF-Pro-Display-UltralightItalic.otf</string>
+		<string>SF-Pro-Text-Bold.otf</string>
+		<string>SF-Pro-Text-BoldItalic.otf</string>
+		<string>SF-Pro-Text-Heavy.otf</string>
+		<string>SF-Pro-Text-HeavyItalic.otf</string>
+		<string>SF-Pro-Text-Light.otf</string>
+		<string>SF-Pro-Text-LightItalic.otf</string>
+		<string>SF-Pro-Text-Medium.otf</string>
+		<string>SF-Pro-Text-MediumItalic.otf</string>
+		<string>SF-Pro-Text-Regular.otf</string>
+		<string>SF-Pro-Text-RegularItalic.otf</string>
+		<string>SF-Pro-Text-Semibold.otf</string>
+		<string>SF-Pro-Text-SemiboldItalic.otf</string>
+		<string>SFMono-Bold.otf</string>
+		<string>SFMono-Heavy.otf</string>
+		<string>SFMono-Light.otf</string>
+		<string>SFMono-Medium.otf</string>
+		<string>SFMono-Regular.otf</string>
+		<string>SFMono-Semibold.otf</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
@@ -52,6 +109,6 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<true />
+	<true/>
 </dict>
 </plist>
