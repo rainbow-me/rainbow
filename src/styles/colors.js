@@ -5,13 +5,13 @@ const base = {
   blue: '#657fe6', // '101, 127, 230'
   blueActive: '#5a71cc', // '90, 113, 204'
   blueGreyDark: '#3c4252', // '60, 66, 82'
-  blueGreyMedium: '#7b7f8a', // '123, 127, 138'
   blueGreyLight: '#666A73', // '102, 106, 115'
+  blueGreyMedium: '#7b7f8a', // '123, 127, 138'
   blueHover: '#6c87f5', // '108, 135, 245'
   bodyBackground: '#2c2f38', // '44, 47, 56'
   brightGreen: '#12b878', // '18, 184, 120'
   brightGreenHover: '#15c17f', // '21, 193, 127'
-  dark: '#0c0c0d', // '12, 12, 13'
+  dark: '#25292E', // '37, 41, 46'
   darkGrey: '#71778a', // '113, 119, 138'
   darkText: '#2b2d33', // '43, 45, 51'
   fadedBlue: '#6781e6', // '103, 129, 230'
@@ -27,6 +27,7 @@ const base = {
   purple: '#32325d', // '50, 50, 93'
   red: '#d64b47', // '214, 75, 71'
   rowDivider: '#f8f8f8', // '248, 248, 248'
+  transparent: 'transparent',
   white: '#ffffff', // '255, 255, 255'
 };
 

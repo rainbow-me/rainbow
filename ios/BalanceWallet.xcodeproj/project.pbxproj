@@ -33,6 +33,7 @@
 		22EFEDF0A171401B969489EA /* Graphik-ExtralightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B08CD125C3934D689EE3ED9F /* Graphik-ExtralightItalic.otf */; };
 		23D12D1DE57A48FDB0A0EB7F /* SFMono-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1C23D9528D91452CB51BB2DC /* SFMono-Heavy.otf */; };
 		27CC1F72003A449DABD4A07F /* Graphik-ThinItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6BB3C4885345454CAFF7386D /* Graphik-ThinItalic.otf */; };
+		2EF474635F084624BC534614 /* libSRSRadialGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F8B7BCD6969459B9BCF79F1 /* libSRSRadialGradient.a */; };
 		30295EDAFC6649B382C12B47 /* libTcpSockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90F2877E44E54E589AD5E726 /* libTcpSockets.a */; };
 		316DECAF01EA48E5B59F319A /* SF-Pro-Display-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = EE7C697FCA884E838D648420 /* SF-Pro-Display-Thin.otf */; };
 		3B031AD726CA4DFE8BFDD175 /* SF-Pro-Display-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 40963901E8BF41AAB0EF1495 /* SF-Pro-Display-Black.otf */; };
@@ -57,6 +58,7 @@
 		5A012F7DB8CA486BAEF3ACEE /* SF-Pro-Display-Ultralight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6E90D11E94384F88B3CCF8A5 /* SF-Pro-Display-Ultralight.otf */; };
 		5B4C8D8CC95141199E330AE8 /* SF-Pro-Text-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = FB0A589CD6544DF091E290E1 /* SF-Pro-Text-Bold.otf */; };
 		5D446368C4DC4F7F82690027 /* SF-Pro-Display-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 35A9AC06638D4F9195435FEE /* SF-Pro-Display-Bold.otf */; };
+		5D8AC19FA7FA4D3EBA368F6C /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B95C162CD7734A4890913C71 /* libBVLinearGradient.a */; };
 		5DF47839D1DC4A4C99BA25AB /* SF-Pro-Display-SemiboldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B62537C3C11B4D39ABA23326 /* SF-Pro-Display-SemiboldItalic.otf */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		5ED7858448524F29871FAA3A /* libRNSVG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B881D6B44E9E4C67909E84A8 /* libRNSVG.a */; };
@@ -66,6 +68,7 @@
 		6A1421A80CB840418AD4F054 /* SF-Pro-Display-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 473AF82DC5574C8FB7E994E4 /* SF-Pro-Display-RegularItalic.otf */; };
 		7546CA4EBE0749BFA539F18F /* SF-Pro-Display-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = C4FC92A82BFE49B5B13878E7 /* SF-Pro-Display-Light.otf */; };
 		7AAB007C19CF43AEB3636322 /* libRNOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FFA3B610E344B98AA9AE209 /* libRNOS.a */; };
+		818DDA895909449E88D7236F /* libToolTipMenu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 26ADF24CCCE14BCF96E3036B /* libToolTipMenu.a */; };
 		81F683508CA54274AEBB4E6F /* SF-Pro-Text-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = E8746E90D5AD44D784CF079A /* SF-Pro-Text-BoldItalic.otf */; };
 		82E526ACEB284D2CA93D078F /* SF-Pro-Display-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B31638FC549141C59A78240B /* SF-Pro-Display-Semibold.otf */; };
 		82E904EE2F584DCCA1FA7D2D /* Graphik-LightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = A6F81036CB7246009F8A828B /* Graphik-LightItalic.otf */; };
@@ -91,6 +94,7 @@
 		C5CAF0821E244CB9B942FBFA /* Graphik-SemiboldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9FE9843096904A1FBD265327 /* Graphik-SemiboldItalic.otf */; };
 		C67770342A1D4769877948CB /* libTouchID.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CC2461214C3643F6AC47CD95 /* libTouchID.a */; };
 		CA6E724B3AEE4AB0B6A73335 /* SF-Pro-Display-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = C25B32B51F3E4E2884798100 /* SF-Pro-Display-Regular.otf */; };
+		CB5580E67F9D43899B09A7BF /* ToolTipMenuTests.xctest in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F8345FBE3E94FF688A3C317 /* ToolTipMenuTests.xctest */; };
 		CDE36CBB77EB4CDDA2243A54 /* SF-Pro-Display-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6571001890284D4C98767215 /* SF-Pro-Display-Medium.otf */; };
 		D1BF4172612249759FB5DF97 /* SF-Pro-Text-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = C038BDF56A4A4AD68AF3D3BF /* SF-Pro-Text-Medium.otf */; };
 		D1FF41BA03E947FFBAA83CB6 /* SF-Pro-Text-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 61BD408340724C52A2527E7B /* SF-Pro-Text-RegularItalic.otf */; };
@@ -173,6 +177,41 @@
 			proxyType = 2;
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RNSuperEllipseMask;
+		};
+		240F4FCC20F3F59B00F0472A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B52D52EB3C4A4012A27545B9 /* BVLinearGradient.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = BVLinearGradient;
+		};
+		240F4FCE20F3F59B00F0472A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B52D52EB3C4A4012A27545B9 /* BVLinearGradient.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 64AA15081EF7F30100718508;
+			remoteInfo = "BVLinearGradient-tvOS";
+		};
+		240F502420F515FF00F0472A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 354A8F63DD414278B605A8A2 /* SRSRadialGradient.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = SRSRadialGradient;
+		};
+		240F510420F55C7300F0472A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B0FA7ED798E74E4181BC1A24 /* ToolTipMenu.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4681C0211B05271A004D67D4;
+			remoteInfo = ToolTipMenu;
+		};
+		240F510620F55C7300F0472A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B0FA7ED798E74E4181BC1A24 /* ToolTipMenu.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4681C02C1B05271A004D67D4;
+			remoteInfo = ToolTipMenuTests;
 		};
 		24A314B420D87AFD0041BBB6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -513,10 +552,14 @@
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		1C23D9528D91452CB51BB2DC /* SFMono-Heavy.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Heavy.otf"; path = "../src/assets/fonts/SFMono-Heavy.otf"; sourceTree = "<group>"; };
 		24055E8ADB77418F972E63D2 /* Graphik-MediumItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-MediumItalic.otf"; path = "../src/assets/fonts/Graphik-MediumItalic.otf"; sourceTree = "<group>"; };
+		26ADF24CCCE14BCF96E3036B /* libToolTipMenu.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libToolTipMenu.a; sourceTree = "<group>"; };
 		2C96418821D34F79B0E2F0E0 /* Graphik-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Black.otf"; path = "../src/assets/fonts/Graphik-Black.otf"; sourceTree = "<group>"; };
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F8345FBE3E94FF688A3C317 /* ToolTipMenuTests.xctest */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ToolTipMenuTests.xctest; sourceTree = "<group>"; };
+		2F8B7BCD6969459B9BCF79F1 /* libSRSRadialGradient.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libSRSRadialGradient.a; sourceTree = "<group>"; };
 		2FFA3B610E344B98AA9AE209 /* libRNOS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNOS.a; sourceTree = "<group>"; };
 		3184F7FC11754861B821DAD8 /* libReactNativePermissions.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libReactNativePermissions.a; sourceTree = "<group>"; };
+		354A8F63DD414278B605A8A2 /* SRSRadialGradient.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = SRSRadialGradient.xcodeproj; path = "../node_modules/react-native-radial-gradient/ios/SRSRadialGradient.xcodeproj"; sourceTree = "<group>"; };
 		35A9AC06638D4F9195435FEE /* SF-Pro-Display-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Bold.otf"; path = "../src/assets/fonts/SF-Pro-Display-Bold.otf"; sourceTree = "<group>"; };
 		3844D22E720C43B183B360A9 /* libRNSuperEllipseMask.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSuperEllipseMask.a; sourceTree = "<group>"; };
 		3ACFE26C98B246CEBFA50A85 /* SF-Pro-Display-ThinItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-ThinItalic.otf"; path = "../src/assets/fonts/SF-Pro-Display-ThinItalic.otf"; sourceTree = "<group>"; };
@@ -576,11 +619,14 @@
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
 		AF8BF8CFB6EE4713BA73B936 /* Graphik-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-BoldItalic.otf"; path = "../src/assets/fonts/Graphik-BoldItalic.otf"; sourceTree = "<group>"; };
 		B08CD125C3934D689EE3ED9F /* Graphik-ExtralightItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-ExtralightItalic.otf"; path = "../src/assets/fonts/Graphik-ExtralightItalic.otf"; sourceTree = "<group>"; };
+		B0FA7ED798E74E4181BC1A24 /* ToolTipMenu.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = ToolTipMenu.xcodeproj; path = "../node_modules/react-native-tooltip/ToolTipMenu.xcodeproj"; sourceTree = "<group>"; };
 		B2CBE0B1E3A542D185ADB893 /* RNOS.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNOS.xcodeproj; path = "../node_modules/react-native-os/ios/RNOS.xcodeproj"; sourceTree = "<group>"; };
 		B31638FC549141C59A78240B /* SF-Pro-Display-Semibold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Semibold.otf"; path = "../src/assets/fonts/SF-Pro-Display-Semibold.otf"; sourceTree = "<group>"; };
 		B4F297E2CB3548A3B3AD33BE /* UdpSockets.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = UdpSockets.xcodeproj; path = "../node_modules/react-native-udp/ios/UdpSockets.xcodeproj"; sourceTree = "<group>"; };
+		B52D52EB3C4A4012A27545B9 /* BVLinearGradient.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = BVLinearGradient.xcodeproj; path = "../node_modules/react-native-linear-gradient/BVLinearGradient.xcodeproj"; sourceTree = "<group>"; };
 		B62537C3C11B4D39ABA23326 /* SF-Pro-Display-SemiboldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-SemiboldItalic.otf"; path = "../src/assets/fonts/SF-Pro-Display-SemiboldItalic.otf"; sourceTree = "<group>"; };
 		B881D6B44E9E4C67909E84A8 /* libRNSVG.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSVG.a; sourceTree = "<group>"; };
+		B95C162CD7734A4890913C71 /* libBVLinearGradient.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libBVLinearGradient.a; sourceTree = "<group>"; };
 		C038BDF56A4A4AD68AF3D3BF /* SF-Pro-Text-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-Medium.otf"; path = "../src/assets/fonts/SF-Pro-Text-Medium.otf"; sourceTree = "<group>"; };
 		C25B32B51F3E4E2884798100 /* SF-Pro-Display-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Regular.otf"; path = "../src/assets/fonts/SF-Pro-Display-Regular.otf"; sourceTree = "<group>"; };
 		C4DB3F82C3AC4E21BA4DED6F /* SFMono-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Bold.otf"; path = "../src/assets/fonts/SFMono-Bold.otf"; sourceTree = "<group>"; };
@@ -651,6 +697,10 @@
 				675345C954374B1499E16736 /* libSplashScreen.a in Frameworks */,
 				5ED7858448524F29871FAA3A /* libRNSVG.a in Frameworks */,
 				E1CB7C0183024F1993389670 /* libRNSuperEllipseMask.a in Frameworks */,
+				5D8AC19FA7FA4D3EBA368F6C /* libBVLinearGradient.a in Frameworks */,
+				2EF474635F084624BC534614 /* libSRSRadialGradient.a in Frameworks */,
+				818DDA895909449E88D7236F /* libToolTipMenu.a in Frameworks */,
+				CB5580E67F9D43899B09A7BF /* ToolTipMenuTests.xctest in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -778,6 +828,32 @@
 			isa = PBXGroup;
 			children = (
 				240F4F1520F3E34A00F0472A /* libRNSuperEllipseMask.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		240F4FC820F3F59B00F0472A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				240F4FCD20F3F59B00F0472A /* libBVLinearGradient.a */,
+				240F4FCF20F3F59B00F0472A /* libBVLinearGradient.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		240F502120F515FF00F0472A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				240F502520F515FF00F0472A /* libSRSRadialGradient.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		240F510020F55C7300F0472A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				240F510520F55C7300F0472A /* libToolTipMenu.a */,
+				240F510720F55C7300F0472A /* ToolTipMenuTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -951,6 +1027,10 @@
 				7D9133CF77F040998840ED57 /* libSplashScreen.a */,
 				B881D6B44E9E4C67909E84A8 /* libRNSVG.a */,
 				3844D22E720C43B183B360A9 /* libRNSuperEllipseMask.a */,
+				B95C162CD7734A4890913C71 /* libBVLinearGradient.a */,
+				2F8B7BCD6969459B9BCF79F1 /* libSRSRadialGradient.a */,
+				26ADF24CCCE14BCF96E3036B /* libToolTipMenu.a */,
+				2F8345FBE3E94FF688A3C317 /* ToolTipMenuTests.xctest */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -1026,6 +1106,9 @@
 				4D32B2BF425042DC9F2A2B51 /* SplashScreen.xcodeproj */,
 				68147C3D76EE4C3D823038B6 /* RNSVG.xcodeproj */,
 				E196C2F0A3914695BBBA99B1 /* RNSuperEllipseMask.xcodeproj */,
+				B52D52EB3C4A4012A27545B9 /* BVLinearGradient.xcodeproj */,
+				354A8F63DD414278B605A8A2 /* SRSRadialGradient.xcodeproj */,
+				B0FA7ED798E74E4181BC1A24 /* ToolTipMenu.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1159,6 +1242,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = 240F4FC820F3F59B00F0472A /* Products */;
+					ProjectRef = B52D52EB3C4A4012A27545B9 /* BVLinearGradient.xcodeproj */;
+				},
+				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
 					ProjectRef = 00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */;
 				},
@@ -1247,8 +1334,16 @@
 					ProjectRef = 4D32B2BF425042DC9F2A2B51 /* SplashScreen.xcodeproj */;
 				},
 				{
+					ProductGroup = 240F502120F515FF00F0472A /* Products */;
+					ProjectRef = 354A8F63DD414278B605A8A2 /* SRSRadialGradient.xcodeproj */;
+				},
+				{
 					ProductGroup = 3CAAB8942093B23100C098DB /* Products */;
 					ProjectRef = 84B80B46F5EE42CF8C3999DC /* TcpSockets.xcodeproj */;
+				},
+				{
+					ProductGroup = 240F510020F55C7300F0472A /* Products */;
+					ProjectRef = B0FA7ED798E74E4181BC1A24 /* ToolTipMenu.xcodeproj */;
 				},
 				{
 					ProductGroup = 425AEEB020BAEBEC00A28785 /* Products */;
@@ -1329,6 +1424,41 @@
 			fileType = archive.ar;
 			path = libRNSuperEllipseMask.a;
 			remoteRef = 240F4F1420F3E34A00F0472A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		240F4FCD20F3F59B00F0472A /* libBVLinearGradient.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libBVLinearGradient.a;
+			remoteRef = 240F4FCC20F3F59B00F0472A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		240F4FCF20F3F59B00F0472A /* libBVLinearGradient.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libBVLinearGradient.a;
+			remoteRef = 240F4FCE20F3F59B00F0472A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		240F502520F515FF00F0472A /* libSRSRadialGradient.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libSRSRadialGradient.a;
+			remoteRef = 240F502420F515FF00F0472A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		240F510520F55C7300F0472A /* libToolTipMenu.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libToolTipMenu.a;
+			remoteRef = 240F510420F55C7300F0472A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		240F510720F55C7300F0472A /* ToolTipMenuTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ToolTipMenuTests.xctest;
+			remoteRef = 240F510620F55C7300F0472A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		24A314B520D87AFD0041BBB6 /* libRNSVG.a */ = {
@@ -1797,12 +1927,19 @@
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-super-ellipse-mask/ios",
+					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
+					"$(SRCROOT)/../node_modules/react-native-radial-gradient/ios",
+					"$(SRCROOT)/../node_modules/react-native-tooltip/ToolTipMenu",
 				);
 				INFOPLIST_FILE = BalanceWalletTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
@@ -1835,12 +1972,19 @@
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-super-ellipse-mask/ios",
+					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
+					"$(SRCROOT)/../node_modules/react-native-radial-gradient/ios",
+					"$(SRCROOT)/../node_modules/react-native-tooltip/ToolTipMenu",
 				);
 				INFOPLIST_FILE = BalanceWalletTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
@@ -1881,6 +2025,9 @@
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-super-ellipse-mask/ios",
+					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
+					"$(SRCROOT)/../node_modules/react-native-radial-gradient/ios",
+					"$(SRCROOT)/../node_modules/react-native-tooltip/ToolTipMenu",
 				);
 				INFOPLIST_FILE = BalanceWallet/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1926,6 +2073,9 @@
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-super-ellipse-mask/ios",
+					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
+					"$(SRCROOT)/../node_modules/react-native-radial-gradient/ios",
+					"$(SRCROOT)/../node_modules/react-native-tooltip/ToolTipMenu",
 				);
 				INFOPLIST_FILE = BalanceWallet/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
