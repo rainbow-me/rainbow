@@ -1,10 +1,10 @@
 import { Navigation, ScreenVisibilityListener } from 'react-native-navigation';
 
-import POCScreen from './POCScreen';
-import QRScannerScreen from './QRScannerScreen';
-import SettingsScreenWithData from './SettingsScreenWithData';
-import TransactionScreen from './TransactionScreen';
-import WalletScreenWithData from './WalletScreenWithData';
+import POCScreen from './screens/POCScreen';
+import QRScannerScreen from './screens/QRScannerScreen';
+import SettingsScreenWithData from './settings/SettingsScreenWithData';
+import TransactionScreen from './screens/TransactionScreen';
+import WalletScreenWithData from './wallet/WalletScreenWithData';
 
 // register all screens of the app (including internal ones)
 export function registerScreens() {
@@ -25,4 +25,9 @@ export function registerScreenVisibilityListener() {
     willDisappear: ({ screen }) => console.log(`Screen will disappear ${screen}`),
     didDisappear: ({ screen }) => console.log(`Screen disappeared ${screen}`),
   }).register();
+}
+
+export default function initializeScreens() {
+  registerScreens();
+  registerScreenVisibilityListener();
 }

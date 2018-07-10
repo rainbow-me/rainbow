@@ -6,6 +6,7 @@ import ArrowIcon from './svg/ArrowIcon';
 import AvatarIcon from './svg/AvatarIcon';
 import SpinnerIcon from './svg/SpinnerIcon';
 import ThreeDotsIcon from './svg/ThreeDotsIcon';
+import WalletConnectIcon from './svg/WalletConnectIcon';
 
 const Icon = ({ name, ...props }) =>
   createElement((Icon.IconTypes[name] || Flex), props);
@@ -19,6 +20,7 @@ Icon.IconTypes = {
   avatar: AvatarIcon,
   spinner: SpinnerIcon,
   threeDots: ThreeDotsIcon,
+  walletConnect: WalletConnectIcon,
 };
 
 export default Icon;
