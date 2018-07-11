@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled, { css } from 'styled-components/primitives';
 import DefaultCoinIcon, { FallbackIcon as DefaultFallbackIcon } from 'react-coin-icon';
-import { colors, fonts, position } from '../styles';
+import { colors, fonts, position, shadow } from '../styles';
 import { Centered } from './layout';
 
 const fallbackTextStyles = css`
@@ -12,10 +12,10 @@ const fallbackTextStyles = css`
 
 const Shadow = styled(Centered)`
   ${({ size }) => position.size(size)}
+  ${shadow.build(0, 4, 6, colors.alpha(colors.purple, 0.04))}}
+  ${shadow.build(0, 1, 3, colors.alpha(colors.purple, 0.08))}}
   background-color: ${colors.alpha(colors.purple, 0.04)};
   border-radius: ${({ size }) => (size / 2)};
-  box-shadow: 0px 4px 6px ${colors.alpha(colors.purple, 0.04)};
-  box-shadow: 0px 1px 3px ${colors.alpha(colors.purple, 0.08)};
 `;
 
 const CoinIcon = ({ size, symbol }) => (
