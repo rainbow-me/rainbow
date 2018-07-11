@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/primitives';
 
 const StyledLabel = styled.Text`
   font-weight: 600;
