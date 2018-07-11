@@ -41,14 +41,3 @@ export const ellipseAddress = (text = '') => {
   const result = `${firstFour}...${lastFour}`;
   return result;
 };
-
-/**
- * @desc capitalize string
- * @param  {String} [string]
- * @return {String}
- */
-export const capitalize = string =>
-  string
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');

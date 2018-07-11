@@ -3,10 +3,9 @@ import FCM, { FCMEvent, NotificationType, RemoteNotificationResult, WillPresentN
 import { Navigation } from 'react-native-navigation';
 import * as EthWallet from './model/ethWallet';
 import { addNewTransaction } from './model/transactions';
-import { registerScreens, registerScreenVisibilityListener } from './screens';
+import initializeScreens from './register-screens';
 
-registerScreens();
-registerScreenVisibilityListener();
+initializeScreens();
 
 EthWallet.init();
 
