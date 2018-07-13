@@ -1,17 +1,17 @@
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import styled from 'styled-components/primitives';
-import { colors, position } from '../../styles';
+import { colors, position, shadow } from '../../styles';
 import { ButtonPressAnimation } from '../buttons';
 import { Centered } from '../layout';
 
 const Container = styled(Centered)`
   ${({ size }) => position.size(size)}
+  ${shadow.build(0, 1, 18, colors.alpha(colors.purple, 0.12))}
+  ${shadow.build(0, 3, 5, colors.alpha(colors.purple, 0.2))}
+  ${shadow.build(0, 6, 10, colors.alpha(colors.purple, 0.14))}
   background-color: ${colors.blue};
   border-radius: 24;
-  box-shadow: 0px 1px 18px ${colors.alpha(colors.purple, 0.12)};
-  box-shadow: 0px 3px 5px ${colors.alpha(colors.purple, 0.2)};
-  box-shadow: 0px 6px 10px ${colors.alpha(colors.purple, 0.14)};
   overflow: hidden;
 `;
 

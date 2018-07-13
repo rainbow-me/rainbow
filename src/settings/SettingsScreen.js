@@ -5,7 +5,7 @@ import { compose, withHandlers } from 'recompose';
 import styled from 'styled-components/primitives';
 import { Centered, Column } from '../components/layout';
 import { Monospace } from '../components/text';
-import { colors, fonts, padding, position } from '../styles';
+import { colors, fonts, padding, position, shadow } from '../styles';
 
 import ToolTip from 'react-native-tooltip';
 
@@ -21,17 +21,16 @@ const WalletAddressTextContainer = styled(Centered).attrs({ direction: 'column' 
 
 const QRCodePadding = 25;
 const QRCodeImageSize = 150;
-const shadowColor = colors.alpha(colors.black, 0.04);
 
 const QRCodeContainer = styled(Centered)`
   ${padding(QRCodePadding)}
   ${position.size(QRCodeImageSize + (QRCodePadding * 2))}
+  ${shadow.build(0, 3, 5)}
+  ${shadow.build(0, 6, 10)}
   background-color: ${colors.white};
-  border-color: ${shadowColor};
+  border-color: ${shadow.color};
   border-radius: 24;
   border-width: 1;
-  box-shadow: 0 3px 5px ${shadowColor};
-  box-shadow: 0 6px 10px ${shadowColor};
 `;
 
 const SettingsScreen = ({ address, onCopyAddress }) => (
