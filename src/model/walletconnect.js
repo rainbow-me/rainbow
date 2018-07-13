@@ -1,43 +1,33 @@
-import FCM from 'react-native-fcm';
 import { WalletConnector } from 'walletconnect';
-import * as wallet from '../reducers/wallet';
 import personalData from './personalData';
+import { commonStorage } from 'balance-common';
 
-export const walletConnectInstance = {
-  walletWebhook: 'https://walletconnect.balance.io/webhook/push-notify',
-  fcmToken: null,
-  walletConnector: null,
-};
+const WALLET_WEBHOOK = 'https://walletconnect.balance.io/webhook/push-notify';
 
 export const walletConnectInit = async (bridgeDomain, sessionId, sharedKey, dappName) => {
-  const fcmToken = await FCM.getFCMToken();
+  const { accountAddress } = getState().account;
+  const fcmTokenLocal = commonStorage.getLocal('fcmToken');
+  const fcmToken = fcmTokenLocal ? fcmTokenLocal.data : null;
   const walletConnector = new WalletConnector(bridgeDomain, { sessionId, sharedKey, dappName });
-  walletConnectInstance.walletConnector = walletConnector;
-  walletConnectInstance.fcmToken = fcmToken;
-};
-
-export const walletConnectSendSession = async () => {
-  const address = await wallet.loadAddress();
+  commonStorage.saveWalletConnectAccount(walletConnector);
   try {
-    await walletConnectInstance.walletConnector.sendSessionStatus({
-      fcmToken: walletConnectInstance.fcmToken,
-      walletWebhook: walletConnectInstance.walletWebhook,
-      data: { address, personalData },
-    });
-  } catch (err) {
-    console.log('send session status error', err);
+    await walletConnector.sendSessionStatus({ fcmToken, WALLET_WEBHOOK, data: { address, personalData } });
+  } catch (error) {
+    //TODO error handling
   }
-};
-
-export const walletConnectGetTransaction = async transactionId => {
-  const transactionData = await walletConnectInstance.walletConnector.getTransactionRequest(transactionId);
-  return transactionData;
-};
+}
 
 export const walletConnectSendTransactionHash = async (transactionId, success, txHash) => {
+  const walletConnector = commonStorage.getWalletConnectAccount();
   try {
-    await walletConnectInstance.walletConnector.sendTransactionStatus(transactionId, { success, txHash });
-  } catch (err) {
-    console.log('sending txn status error', err);
+    await walletConnector.sendTransactionStatus(transactionId, { success, txHash });
+  } catch (error) {
+    //TODO error handling
   }
+};
+
+export const walletConnectGetTransaction = async (transactionId) => {
+  const walletConnector = commonStorage.getWalletConnectAccount();
+  const transaction = await walletConnector.getTransactionRequest(transactionId);
+  return transaction;
 };

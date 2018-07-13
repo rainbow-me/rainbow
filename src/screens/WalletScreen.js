@@ -8,7 +8,6 @@ import AssetListItem from '../components/asset-list/AssetListItem';
 import BalanceCoinRow from '../components/asset-list/BalanceCoinRow';
 import UniqueTokenGridList from '../components/asset-list/UniqueTokenGridList';
 import Avatar from '../components/Avatar';
-import { walletInit } from '../reducers/wallet';
 import { connect } from 'react-redux';
 
 const Header = styled(Row)`
@@ -26,15 +25,11 @@ class WalletScreen extends Component {
     accountInfo: PropTypes.object.isRequired,
     fetching: PropTypes.bool.isRequired,
     uniqueTokens: PropTypes.array.isRequired,
-    fetchingUniqueTokens: PropTypes.bool.isRequired
+    fetchingUniqueTokens: PropTypes.bool.isRequired,
   }
 
   static navigatorStyle = {
     navBarHidden: true,
-  }
-
-  componentDidMount = () => {
-    this.props.walletInit();
   }
 
   render() {
@@ -69,7 +64,5 @@ const reduxProps = ( { account } ) => ({
 
 export default connect(
   reduxProps,
-  {
-    walletInit,
-  }
+  null
 )(WalletScreen);

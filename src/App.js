@@ -2,16 +2,17 @@ import { Component } from 'react';
 import { AppState, AsyncStorage, Platform } from 'react-native';
 import FCM, { FCMEvent, NotificationType, RemoteNotificationResult, WillPresentNotificationResult } from 'react-native-fcm';
 import { Navigation } from 'react-native-navigation';
-import { addNewTransaction } from './model/transactions';
 import { registerScreens, registerScreenVisibilityListener } from './screens';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
-import { Provider } from 'react-redux';
-import { account } from 'balance-common';
+import { connect, Provider } from 'react-redux';
+import { account, commonStorage, accountUpdateAccountAddress } from 'balance-common';
 import thunk from 'redux-thunk';
-import wallet from './reducers/wallet';
+import transactionsToApprove, { addTransactionToApprove } from './reducers/transactionsToApprove';
+import { walletConnectGetTransaction } from './model/walletconnect';
+import { walletInit } from './model/wallet';
 
 const store = createStore(
-  combineReducers({ wallet, account }),
+  combineReducers({ account, transactionsToApprove }),
   applyMiddleware(thunk)
 );
 
@@ -42,7 +43,7 @@ function registerKilledListener() {
   });
 }
 
-function registerAppListener() {
+function registerAppListener(notificationHandler) {
   FCM.on(FCMEvent.Notification, notif => {
     console.log(`registerAppListener notif: ${notif}`);
     const { sessionId, transactionId } = notif;
@@ -53,7 +54,7 @@ function registerAppListener() {
         notif.finish(RemoteNotificationResult.NewData);
         break;
       case NotificationType.NotificationResponse:
-        showApproveTransactions(sessionId, transactionId);
+        notificationHandler(transactionId);
         notif.finish();
         break;
       case NotificationType.WillPresent:
@@ -67,27 +68,46 @@ function registerAppListener() {
   });
 }
 
-function showApproveTransactions(sessionId, transactionId) {
-  addNewTransaction(sessionId, transactionId).then(() => {
-    Navigation.showModal({
-      screen: 'BalanceWallet.TransactionScreen',
-      navigatorStyle: { navBarHidden: true },
-      navigatorButtons: {},
-      animationType: 'slide-up',
-    });
-  });
-}
-
-registerAppListener();
 registerKilledListener();
 
-export default class App extends Component {
+class App extends Component {
   constructor(props) {
     super(props);
+    this.startApp();
+  }
+
+  componentDidMount() {
+    registerAppListener(this.onPushNotification);
+
     FCM.getFCMToken().then(fcmToken => {
+      commonStorage.saveLocal(key='fcmToken', { data: fcmToken });
       console.log(`FCM Token: ${fcmToken}`);
     });
-    this.startApp();
+
+    walletInit()
+    .then(wallet => {
+      this.props.accountUpdateAccountAddress(wallet.address, 'BALANCEWALLET');
+    })
+    .catch(error => {
+      // TODO error handling 
+    });
+    console.log('wallet init');
+  }
+
+  onPushNotification(transactionId) {
+    console.log('on push notification...');
+    walletConnectGetTransaction(transactionId).then(transaction => {
+      this.props.addTransactionToApprove(transaction);
+      Navigation.showModal({
+        screen: 'BalanceWallet.TransactionConfirmationScreen',
+        navigatorStyle: { navBarHidden: true },
+        navigatorButtons: {},
+        animationType: 'slide-up',
+      });
+    })
+    .catch(error => {
+      // TODO error handling
+    });
   }
 
   startApp() {
@@ -134,3 +154,15 @@ export default class App extends Component {
     });
   }
 }
+
+const reduxProps = ({ account }) => ({
+  fetching: account.fetching,
+});
+
+export default connect(
+  reduxProps,
+  {
+    addTransactionToApprove,
+    accountUpdateAccountAddress,
+  }
+)(App);
