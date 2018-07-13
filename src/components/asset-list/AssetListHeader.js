@@ -52,7 +52,7 @@ export default class AssetListHeader extends Component {
             </ContextMenuButton>
           </Row>
           <TotalValue size="large" weight="semibold">
-            {`$${totalValue}`}
+            {`${totalValue}`}
           </TotalValue>
         </Header>
         <BorderLine />

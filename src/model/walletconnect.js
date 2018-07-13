@@ -1,6 +1,6 @@
 import FCM from 'react-native-fcm';
 import { WalletConnector } from 'walletconnect';
-import * as ethWallet from './ethWallet';
+import * as wallet from '../reducers/wallet';
 import personalData from './personalData';
 
 export const walletConnectInstance = {
@@ -17,7 +17,7 @@ export const walletConnectInit = async (bridgeDomain, sessionId, sharedKey, dapp
 };
 
 export const walletConnectSendSession = async () => {
-  const address = await ethWallet.loadAddress();
+  const address = await wallet.loadAddress();
   try {
     await walletConnectInstance.walletConnector.sendSessionStatus({
       fcmToken: walletConnectInstance.fcmToken,

@@ -1,3 +1,15 @@
+import Storage from 'react-native-storage';
+import { AsyncStorage } from 'react-native';
+
+const storage = new Storage({
+    size: 1000,
+    storageBackend: AsyncStorage,
+    defaultExpires: null,
+    enableCache: true,
+});
+
+global.storage = storage;
+
 if (typeof __dirname === 'undefined') global.__dirname = '/';
 if (typeof __filename === 'undefined') global.__filename = '';
 if (typeof process === 'undefined') {
