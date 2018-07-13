@@ -4,14 +4,15 @@ import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import Card from '../components/Card';
 import DappCard from '../components/DappCard';
-import { walletConnectInit, walletConnectSendSession } from '../model/walletconnect';
+import { walletConnectInit } from '../model/walletconnect';
+import { connect } from 'react-redux';
 
-class QRScannerScreen extends Component {
+export default class QRScannerScreen extends Component {
+
   onSuccess = async e => {
     const data = JSON.parse(e.data);
     if (data.domain && data.sessionId && data.sharedKey && data.dappName) {
       await walletConnectInit(data.domain, data.sessionId, data.sharedKey, data.dappName);
-      await walletConnectSendSession();
     }
 
     setTimeout(() => {
@@ -48,9 +49,6 @@ class QRScannerScreen extends Component {
   }
 }
 
-QRScannerScreen.propTypes = {
-  navigation: PropTypes.any,
-};
 
 const styles = StyleSheet.create({
   container: {
@@ -121,4 +119,3 @@ const dappInfo = [
   },
 ];
 
-export default QRScannerScreen;

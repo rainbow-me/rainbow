@@ -5,9 +5,10 @@ import styled from 'styled-components';
 import { StatusBar, AlertIOS } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 import Button from '../components/Button';
-import * as wallet from '../reducers/wallet';
-import { getTransactionToApprove } from '../model/transactions';
-import { walletConnectSendTransactionHash } from '../model/walletconnect';
+import { sendTransaction } from '../model/wallet';
+import { walletConnectSendTransactionHash }  from '../model/walletconnect';
+import { updateTransactionsToApprove } from '../reducers/transactionsToApprove';
+import { connect } from 'react-redux';
 
 const SContainer = styled.View`
   flex: 1;
@@ -89,7 +90,14 @@ const SFaceID = styled.Image`
   transform: translateX(-91px) translateY(-6px);
 `;
 
-class TransactionScreen extends Component {
+class TransactionConfirmationScreen extends Component {
+  static propTypes = {
+    navigation: PropTypes.any,
+    transaction: PropTypes.any,
+    convertedAmount: PropTypes.string,
+    currencyName: PropTypes.string,
+  };
+
   state = {
     confirmed: false,
     transaction: null,
@@ -101,8 +109,9 @@ class TransactionScreen extends Component {
   }
 
   showNewTransaction = () => {
-    const transaction = getTransactionToApprove();
-    console.log('transaction', transaction);
+    const transaction = this.props.transactionsToApprove[0] || null;
+    const remainingTransactions = this.props.transactionsToApprove.slice(1,);
+    this.props.updateTransactionsToApprove(remainingTransactions); 
     this.setState({ transaction });
   };
 
@@ -111,14 +120,25 @@ class TransactionScreen extends Component {
       .then(async success => {
         console.log('success', success);
         const { transaction } = this.state;
-        const transactionReceipt = await wallet.sendTransaction(transaction.transactionData);
+        const transactionReceipt = await sendTransaction(transaction.transactionData);
         if (transactionReceipt && transactionReceipt.hash) {
-          await walletConnectSendTransactionHash(transaction.transactionId, true, transactionReceipt.hash);
-          this.onClose();
-          this.setState(() => ({ confirmed: true, transaction: null }));
+          walletConnectSendTransactionHash(transaction.transactionId, true, transactionReceipt.hash)
+          .then(() => {
+            this.onClose();
+            this.setState(() => ({ confirmed: true, transaction: null }));
+          })
+          .catch(error => {
+            this.onClose();
+            this.setState(() => ({ confirmed: false, transaction: null }));
+          });
         } else {
-          await walletConnectSendTransactionHash(false, null);
-          this.setState(() => ({ confirmed: false }));
+          walletConnectSendTransactionHash(false, null)
+          .then(() => {
+            this.setState(() => ({ confirmed: false }));
+          })
+          .catch(error => {
+            this.setState(() => ({ confirmed: false }));
+          });
         }
       })
       .catch(error => {
@@ -160,18 +180,20 @@ class TransactionScreen extends Component {
   }
 }
 
-TransactionScreen.propTypes = {
-  navigation: PropTypes.any,
-  transaction: PropTypes.any,
-  convertedAmount: PropTypes.string,
-  currencyName: PropTypes.string,
-};
-
-TransactionScreen.defaultProps = {
-  fromAddress: 'fake address',
-  toAddress: 'fake address',
-  currencyName: 'AVO',
+TransactionConfirmationScreen.defaultProps = {
+  fromAddress: '',
+  toAddress: '',
+  currencyName: '',
   convertedAmount: 'TBD',
 };
 
-export default TransactionScreen;
+const reduxProps = ({ transactionsToApprove }) => ({
+  transactionsToApprove: transactionsToApprove.transactionsToApprove,
+});
+
+export default connect(
+  reduxProps,
+  {
+    updateTransactionsToApprove,
+  }
+)(TransactionConfirmationScreen);
