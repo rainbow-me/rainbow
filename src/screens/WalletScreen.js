@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Component } from 'react';
 import { SectionList, ScrollView } from 'react-native';
 import styled from 'styled-components/primitives';
 import Row from '../components/layout/Row';
@@ -8,6 +8,8 @@ import AssetListItem from '../components/asset-list/AssetListItem';
 import BalanceCoinRow from '../components/asset-list/BalanceCoinRow';
 import UniqueTokenGridList from '../components/asset-list/UniqueTokenGridList';
 import Avatar from '../components/Avatar';
+import { walletInit } from '../reducers/wallet';
+import { connect } from 'react-redux';
 
 const Header = styled(Row)`
   height: 98;
@@ -19,27 +21,55 @@ const Separator = styled.View`
   height: 27;
 `;
 
-const WalletScreen = ({ wallet: { assets = [] } }) => (
-  <ScrollView>
-    <Header align="end">
-      <Avatar />
-    </Header>
-    <SectionList
-      keyExtractor={(item, index) => item + index}
-      renderItem={AssetListItem}
-      renderSectionHeader={props => <AssetListHeader {...props} />}
-      renderSectionFooter={() => <Separator />}
-      sections={[
-        { title: 'Balances', totalValue: '456.60', data: assets, renderItem: BalanceCoinRow },
-        { title: 'Collectibles', totalValue: '26.32', data: [['fake nft #1', 'fake nft #2', 'fake nft #3']], renderItem: UniqueTokenGridList },
-      ]}
-    />
-  </ScrollView>
-);
+class WalletScreen extends Component {
+  static propTypes = {
+    accountInfo: PropTypes.object.isRequired,
+    fetching: PropTypes.bool.isRequired,
+    uniqueTokens: PropTypes.array.isRequired,
+    fetchingUniqueTokens: PropTypes.bool.isRequired
+  }
 
-WalletScreen.propTypes = {
-  loading: PropTypes.bool,
-  wallet: PropTypes.object,
-};
+  static navigatorStyle = {
+    navBarHidden: true,
+  }
 
-export default WalletScreen;
+  componentDidMount = () => {
+    this.props.walletInit();
+  }
+
+  render() {
+    const { accountInfo, uniqueTokens } = this.props;
+
+    return (
+      <ScrollView>
+      <Header align="end">
+        <Avatar />
+      </Header>
+      <SectionList
+        keyExtractor={(item, index) => item + index}
+        renderItem={AssetListItem}
+        renderSectionHeader={props => <AssetListHeader {...props} />}
+        renderSectionFooter={() => <Separator />}
+        sections={[
+          { title: 'Balances', totalValue: accountInfo.total.display || '---', data: accountInfo.assets, renderItem: BalanceCoinRow },
+          { title: 'Collectibles', totalValue: '', data: [uniqueTokens], renderItem: UniqueTokenGridList },
+        ]}
+      />
+    </ScrollView>
+    );
+  }
+}
+
+const reduxProps = ( { account } ) => ({
+  accountInfo: account.accountInfo,
+  fetching: account.fetching,
+  uniqueTokens: account.uniqueTokens,
+  fetchingUniqueTokens: account.fetchingUniqueTokens,
+});
+
+export default connect(
+  reduxProps,
+  {
+    walletInit,
+  }
+)(WalletScreen);

@@ -1,24 +1,22 @@
+import { Component } from 'react';
 import { AppState, AsyncStorage, Platform } from 'react-native';
 import FCM, { FCMEvent, NotificationType, RemoteNotificationResult, WillPresentNotificationResult } from 'react-native-fcm';
 import { Navigation } from 'react-native-navigation';
-import * as EthWallet from './model/ethWallet';
 import { addNewTransaction } from './model/transactions';
 import { registerScreens, registerScreenVisibilityListener } from './screens';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { Provider } from 'react-redux';
+import { account } from 'balance-common';
+import thunk from 'redux-thunk';
+import wallet from './reducers/wallet';
 
-registerScreens();
+const store = createStore(
+  combineReducers({ wallet, account }),
+  applyMiddleware(thunk)
+);
+
+registerScreens(store, Provider);
 registerScreenVisibilityListener();
-
-EthWallet.init();
-
-FCM.getFCMToken().then(fcmToken => {
-  console.log(`FCM Token: ${fcmToken}`);
-});
-
-// export default class App extends Component {
-//   componentDidMount() {
-//     SplashScreen.hide();
-//   }
-// }
 
 function registerKilledListener() {
   FCM.on(FCMEvent.Notification, notif => {
@@ -69,9 +67,6 @@ function registerAppListener() {
   });
 }
 
-registerAppListener();
-registerKilledListener();
-
 function showApproveTransactions(sessionId, transactionId) {
   addNewTransaction(sessionId, transactionId).then(() => {
     Navigation.showModal({
@@ -83,44 +78,59 @@ function showApproveTransactions(sessionId, transactionId) {
   });
 }
 
-Navigation.startTabBasedApp({
-  tabs: [
-    {
-      label: 'Wallet',
-      screen: 'BalanceWallet.WalletScreen',
-      icon: require('./assets/wallet-icon.png'), // eslint-disable-line
+registerAppListener();
+registerKilledListener();
 
-      title: 'Wallet',
-    },
-    {
-      label: 'Scan',
-      screen: 'BalanceWallet.QRScannerScreen',
-      icon: require('./assets/scan-icon.png'), // eslint-disable-line
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    FCM.getFCMToken().then(fcmToken => {
+      console.log(`FCM Token: ${fcmToken}`);
+    });
+    this.startApp();
+  }
 
-      title: 'WalletConnect',
-    },
-    {
-      label: 'Settings',
-      screen: 'BalanceWallet.SettingsScreen',
-      icon: require('./assets/settings-icon.png'), // eslint-disable-line
+  startApp() {
+    Navigation.startTabBasedApp({
+      tabs: [
+        {
+          label: 'Wallet',
+          screen: 'BalanceWallet.WalletScreen',
+          icon: require('./assets/wallet-icon.png'), // eslint-disable-line
 
-      title: 'Settings',
-    },
-  ],
-  tabsStyle: {
-    tabBarButtonColor: '#abb1b8',
-    tabBarSelectedButtonColor: '#0b0b0c',
-    tabBarBackgroundColor: '#fff',
-    initialTabIndex: 0,
-  },
-  appStyle: {
-    orientation: 'portrait',
-    bottomTabBadgeTextColor: 'red',
-    bottomTabBadgeBackgroundColor: 'green',
+          title: 'Wallet',
+        },
+        {
+          label: 'Scan',
+          screen: 'BalanceWallet.QRScannerScreen',
+          icon: require('./assets/scan-icon.png'), // eslint-disable-line
 
-    hideBackButtonTitle: false,
-  },
+          title: 'WalletConnect',
+        },
+        {
+          label: 'Settings',
+          screen: 'BalanceWallet.SettingsScreen',
+          icon: require('./assets/settings-icon.png'), // eslint-disable-line
 
-  passProps: {},
-  animationType: 'slide-down',
-});
+          title: 'Settings',
+        },
+      ],
+      tabsStyle: {
+        tabBarButtonColor: '#abb1b8',
+        tabBarSelectedButtonColor: '#0b0b0c',
+        tabBarBackgroundColor: '#fff',
+        initialTabIndex: 0,
+      },
+      appStyle: {
+        orientation: 'portrait',
+        bottomTabBadgeTextColor: 'red',
+        bottomTabBadgeBackgroundColor: 'green',
+
+        hideBackButtonTitle: false,
+      },
+
+      passProps: {},
+      animationType: 'slide-down',
+    });
+  }
+}

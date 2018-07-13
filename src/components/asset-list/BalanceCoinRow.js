@@ -16,20 +16,20 @@ const BalanceCoinRow = ({ item, ...props }) => (
   <CoinRow
     {...item}
     {...props}
-    bottomRowRender={({ balance, symbol }) => (
+    bottomRowRender={({ balance, symbol, native }) => (
       <Fragment>
         <BottomRowText>
-          {`${Number(balance).toFixed(8)} ${symbol}`}
+          {`${balance.display}`}
         </BottomRowText>
         <BottomRowText>
-          {'- 1.58 %'}
+          {`${native && native.change ? native.change.display : '---'}`}
         </BottomRowText>
       </Fragment>
     )}
-    topRowRender={({ balance, name }) => (
+    topRowRender={({ balance, name, native }) => (
       <Fragment>
         <CoinName>{name}</CoinName>
-        <BalanceText>{'$50.00'}</BalanceText>
+        <BalanceText>{`${ native && native.balance ? native.balance.display : '---'}`}</BalanceText>
       </Fragment>
     )}
   />
