@@ -52,7 +52,7 @@ class WalletScreen extends Component {
         renderSectionFooter={() => <Separator />}
         sections={[
           { title: 'Balances', totalValue: accountInfo.total.display || '---', data: accountInfo.assets, renderItem: BalanceCoinRow },
-          { title: 'Collectibles', totalValue: '', data: [uniqueTokens], renderItem: UniqueTokenGridList },
+          /*{ title: 'Collectibles', totalValue: '', data: [uniqueTokens], renderItem: UniqueTokenGridList },*/
         ]}
       />
     </ScrollView>
