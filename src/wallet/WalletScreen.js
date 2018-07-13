@@ -28,7 +28,7 @@ const keyExtractor = (item, index) => {
 };
 
 const WalletScreen = ({ accountInfo, ...props }) => {
-  const sections = [{
+  const sections = {
     balances: {
       title: 'Balances',
       totalValue: accountInfo.total.display || '---',
@@ -41,7 +41,7 @@ const WalletScreen = ({ accountInfo, ...props }) => {
       data: [uniqueTokens],
       renderItem: UniqueTokenGridList,
     },*/
-  }];
+  };
 
   return (
     <FabWrapper fabs={[<WalletConnectFab key="walletConnectFab" />]}>

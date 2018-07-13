@@ -4,7 +4,7 @@ import { FluidNavigator } from 'react-navigation-fluid-transitions';
 import IntroScreen from '../onboarding/IntroScreen';
 import LoadingScreen from '../onboarding/LoadingScreen';
 import SettingsScreenWithData from '../settings/SettingsScreenWithData';
-import WalletScreenWithData from '../wallet/WalletScreenWithData';
+import WalletScreen from '../wallet/WalletScreen';
 import QRScannerScreen from './QRScannerScreen';
 
 // const handleDismissKeyboard = () => Keyboard.dismiss();
@@ -23,7 +23,7 @@ const AppStack = FluidNavigator({
   },
   WalletScreen: {
     navigationOptions: { gesturesEnabled: true },
-    screen: WalletScreenWithData,
+    screen: WalletScreen,
   },
 }, {
   initialRouteName: 'WalletScreen',

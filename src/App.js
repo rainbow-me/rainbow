@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import { AppRegistry, AppState, AsyncStorage, Platform } from 'react-native';
 import FCM, { FCMEvent, NotificationType, RemoteNotificationResult, WillPresentNotificationResult } from 'react-native-fcm';
 import { connect, Provider } from 'react-redux';
+import { compose, withProps } from 'recompose';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import { walletConnectGetTransaction } from './model/walletconnect';
@@ -115,12 +116,15 @@ class App extends Component {
   )
 }
 
-const AppWithRedux = connect(
-  null,
-  {
-    addTransactionToApprove,
-    accountUpdateAccountAddress,
-  },
+const AppWithRedux = compose(
+  withProps({ store }),
+  connect(
+    null,
+    {
+      addTransactionToApprove,
+      accountUpdateAccountAddress,
+    },
+  ),
 )(App);
 
 AppRegistry.registerComponent('BalanceWallet', () => AppWithRedux);
