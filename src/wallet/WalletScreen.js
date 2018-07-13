@@ -19,12 +19,14 @@ const WalletScreen = ({ wallet: { assets = [] } }) => {
   const sections = {
     balances: {
       data: assets,
+      key: 'balances',
       renderItem: BalanceCoinRow,
       title: 'Balances',
       totalValue: '456.60',
     },
     collectibles: {
       data: [['fake nft #1', 'fake nft #2', 'fake nft #3']],
+      key: 'collectibles',
       renderItem: UniqueTokenGridList,
       title: 'Collectibles',
       totalValue: '26.32',
@@ -36,7 +38,21 @@ const WalletScreen = ({ wallet: { assets = [] } }) => {
       <ScrollView>
         <WalletHeader />
         <SectionList
-          keyExtractor={(item, index) => item + index}
+          keyExtractor={(item, index) => {
+            let key = null;
+
+            if (Array.isArray(item)) {
+              key = item[0];
+            } else if (typeof item === 'object') {
+              key = item.symbol;
+            }
+
+            const realkey = key + index;
+
+            console.log('🔑🔑🔑', realkey);
+
+            return realkey;
+          }}
           renderItem={AssetListItem}
           renderSectionHeader={props => <AssetListHeader {...props} />}
           renderSectionFooter={() => <Separator />}

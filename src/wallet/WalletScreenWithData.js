@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Navigation } from 'react-native-navigation';
 import { apiGetAccountBalances, apiGetTransactionData } from '../helpers/api';
 import * as ethWallet from '../model/ethWallet';
 import WalletScreen from './WalletScreen';
@@ -9,8 +10,20 @@ export default class WalletScreenWithData extends Component {
     wallet: {},
   }
 
-  static navigatorStyle = {
-    navBarHidden: true,
+  constructor(props) {
+    super(props);
+
+    Navigation.events().bindComponent(this);
+  }
+
+  static get options() {
+    return {
+      topBar: {
+        animate: false,
+        drawBehind: true,
+        visible: false,
+      },
+    };
   }
 
   componentDidMount= () =>

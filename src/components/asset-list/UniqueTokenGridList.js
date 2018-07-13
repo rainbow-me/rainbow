@@ -9,31 +9,26 @@ const GridList = styled(FlatList)`
   ${padding(0, 20)}
 `;
 
-const UniqueTokenGridList = ({ item, index, ...rest }) => {
-  console.log('GRID LIST rest', rest);
-
-  return (
-    <GridList
-      data={item}
-      key={index}
-      numColumns={2}
-      renderItem={({ index, ...itemProps }) => (
-        console.log('ITEM PROPS ITEM PROPS', itemProps),
-        <UniqueTokenCard
-          {...itemProps}
-          key={index}
-          style={{
-            marginTop: 15,
-            marginRight: (index % 2 === 0) ? 15 : 0,
-          }}
-        />
-      )}
-    />
-  );
-};
+const UniqueTokenGridList = ({ item, ...rest }) => (
+  <GridList
+    data={item}
+    keyExtractor={(listItem, index) => (listItem + index)}
+    numColumns={2}
+    renderItem={({ index, ...itemProps }) => (
+      <UniqueTokenCard
+        {...itemProps}
+        style={{
+          marginTop: 15,
+          marginRight: (index % 2 === 0) ? 15 : 0,
+        }}
+      />
+    )}
+  />
+);
 
 UniqueTokenGridList.propTypes = {
   item: PropTypes.array,
+  index: PropTypes.number,
 };
 
 export default UniqueTokenGridList;
