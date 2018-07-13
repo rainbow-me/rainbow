@@ -6,3 +6,4 @@ export { default as fonts } from './fonts';
 export { default as margin } from './margin';
 export { default as padding } from './padding';
 export { default as position } from './position';
+export { default as shadow } from './shadow';

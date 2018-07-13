@@ -4,7 +4,7 @@ import TouchID from 'react-native-touch-id';
 import styled from 'styled-components';
 import { StatusBar, AlertIOS } from 'react-native';
 import { Navigation } from 'react-native-navigation';
-import Button from '../components/Button';
+import { Button } from '../components/buttons';
 import { sendTransaction } from '../model/wallet';
 import { walletConnectSendTransactionHash }  from '../model/walletconnect';
 import { updateTransactionsToApprove } from '../reducers/transactionsToApprove';
@@ -111,7 +111,7 @@ class TransactionConfirmationScreen extends Component {
   showNewTransaction = () => {
     const transaction = this.props.transactionsToApprove[0] || null;
     const remainingTransactions = this.props.transactionsToApprove.slice(1,);
-    this.props.updateTransactionsToApprove(remainingTransactions); 
+    this.props.updateTransactionsToApprove(remainingTransactions);
     this.setState({ transaction });
   };
 
