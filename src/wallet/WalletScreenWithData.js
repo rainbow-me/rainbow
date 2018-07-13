@@ -9,10 +9,6 @@ export default class WalletScreenWithData extends Component {
     wallet: {},
   }
 
-  static navigatorStyle = {
-    navBarHidden: true,
-  }
-
   componentDidMount= () =>
     this.loadWallet()
       .then(wallet => this.setState({ loading: false, wallet }))
@@ -52,5 +48,10 @@ export default class WalletScreenWithData extends Component {
     }
   }
 
-  render = () => <WalletScreen {...this.state} />
+  render = () => (
+    <WalletScreen
+      {...this.props}
+      {...this.state}
+    />
+  )
 }

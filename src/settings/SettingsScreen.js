@@ -1,63 +1,90 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import QRCode from 'react-native-qrcode-svg';
-import { compose, withHandlers } from 'recompose';
+import React from 'react';
+import { Dimensions } from 'react-native';
 import styled from 'styled-components/primitives';
+import { Button } from '../components/buttons';
 import { Centered, Column } from '../components/layout';
 import { Monospace } from '../components/text';
-import { colors, fonts, padding, position, shadow } from '../styles';
+import CopyTooltip from '../components/CopyTooltip';
+import QRCodeDisplay from '../components/QRCodeDisplay';
+import { colors, fonts, padding } from '../styles';
 
-import ToolTip from 'react-native-tooltip';
-
-const Container = styled(Centered).attrs({ direction: 'column' })`
-  ${padding(0, 31)}
+const Container = styled(Column).attrs({ align: 'center', justify: 'start' })`
+  ${padding(28, 31)}
+  background-color: ${colors.white};
   height: 100%;
 `;
 
+const SettingsText = styled(Monospace).attrs({ size: 'h5', weight: 'medium' })`
+  line-height: 28;
+`;
+
+const Footer = styled(SettingsText).attrs({ color: 'grey' })`
+  bottom: 55;
+  position: absolute;
+`;
+
+const SeedPhraseSection = styled(Centered).attrs({ direction: 'column' })`
+  margin-top: ${fonts.size.h5};
+`;
+
+const SeedPhraseText = styled(SettingsText)`
+  margin-top: 50;
+  max-width: 288;
+  text-align: center;
+`;
+
 const WalletAddressTextContainer = styled(Centered).attrs({ direction: 'column' })`
+  margin-bottom: 52;
   margin-top: 22;
   width: 100%;
 `;
 
-const QRCodePadding = 25;
-const QRCodeImageSize = 150;
+const buildAddressAbbreviation = (address) => {
+  const isSmallPhone = (Dimensions.get('window') < 375);
+  const numChars = isSmallPhone ? 8 : 10;
 
-const QRCodeContainer = styled(Centered)`
-  ${padding(QRCodePadding)}
-  ${position.size(QRCodeImageSize + (QRCodePadding * 2))}
-  ${shadow.build(0, 3, 5)}
-  ${shadow.build(0, 6, 10)}
-  background-color: ${colors.white};
-  border-color: ${shadow.color};
-  border-radius: 24;
-  border-width: 1;
-`;
+  const sections = [
+    address.substring(0, numChars),
+    address.substring(address.length - numChars),
+  ];
 
-const SettingsScreen = ({ address, onCopyAddress }) => (
+  return sections.join('...');
+};
+
+const SettingsScreen = ({
+  address,
+  onSendFeedback,
+  onToggleShowSeedPhrase,
+  showSeedPhrase,
+}) => (
   <Container>
-    <QRCodeContainer>
-      {address && <QRCode size={QRCodeImageSize} value={address} />}
-    </QRCodeContainer>
+    <QRCodeDisplay value={address} />
     <WalletAddressTextContainer>
-      <ToolTip
-        actions={[{ onPress: onCopyAddress, text: 'Copy' }]}
-        underlayColor={colors.transparent}
-      >
-        <Monospace size="big" weight="semibold">{address}</Monospace>
-      </ToolTip>
+      <CopyTooltip textToCopy={address}>
+        <Monospace size="big" weight="semibold">
+          {buildAddressAbbreviation(address)}
+        </Monospace>
+      </CopyTooltip>
     </WalletAddressTextContainer>
+    <Button onPress={onSendFeedback}>Send Feedback</Button>
+    <SeedPhraseSection>
+      <Button onPress={onToggleShowSeedPhrase}>Show Seed Phrase</Button>
+      {showSeedPhrase && (
+        <SeedPhraseText>
+          REPLACE WITH SEED PHRASE witch collapse practice feed shame open despair creek road again ice least
+        </SeedPhraseText>
+      )}
+    </SeedPhraseSection>
+    <Footer>Balance v0.01</Footer>
   </Container>
 );
 
 SettingsScreen.propTypes = {
   address: PropTypes.string,
-  onCopyAddress: PropTypes.func,
+  onSendFeedback: PropTypes.func,
+  onToggleShowSeedPhrase: PropTypes.func,
+  showSeedPhrase: PropTypes.bool,
 };
 
-export default compose(
-  withHandlers({
-    onCopyAddress: () => () => {
-
-    },
-  }),
-)(SettingsScreen);
+export default SettingsScreen;

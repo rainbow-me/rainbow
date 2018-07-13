@@ -22,8 +22,19 @@ const InnerBorder = styled.View`
   border-width: 0.5;
 `;
 
-const FloatingActionButton = ({ children, size, ...props }) => (
-  <ButtonPressAnimation>
+const FloatingActionButton = ({
+  children,
+  onPress,
+  onPressIn,
+  onPressOut,
+  size,
+  ...props
+}) => (
+  <ButtonPressAnimation
+    onPress={onPress}
+    onPressIn={onPressIn}
+    onPressOut={onPressOut}
+  >
     <Container {...props} size={size}>
       <Fragment>
         {(typeof children === 'function')
@@ -38,6 +49,9 @@ const FloatingActionButton = ({ children, size, ...props }) => (
 
 FloatingActionButton.propTypes = {
   children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
+  onPress: PropTypes.func,
+  onPressIn: PropTypes.func,
+  onPressOut: PropTypes.func,
   size: PropTypes.number,
 };
 
