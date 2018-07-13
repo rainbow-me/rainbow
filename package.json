@@ -34,27 +34,34 @@
     "querystring-es3": "^0.2.1",
     "react": "^16.3.2",
     "react-coin-icon": "^0.1.1",
-    "react-native": "^0.55.4",
+    "react-native": "^0.56.0",
     "react-native-actionsheet": "^2.4.2",
     "react-native-camera": "^1.0.3",
     "react-native-crypto": "^2.1.2",
-    "react-native-fcm": "^14.1.3",
+    "react-native-fcm": "^16.0.0",
+    "react-native-iphone-x-helper": "^1.0.3",
     "react-native-keychain": "^3.0.0-rc.3",
     "react-native-level-fs": "^3.0.1",
-    "react-native-navigation": "^1.1.412",
+    "react-native-linear-gradient": "^2.4.0",
+    "react-native-mail": "^3.0.6",
     "react-native-os": "^1.2.1",
     "react-native-permissions": "^1.1.1",
     "react-native-qrcode-scanner": "^0.0.30",
+    "react-native-qrcode-svg": "^5.1.0",
+    "react-native-radial-gradient": "^1.0.4",
     "react-native-randombytes": "^3.1.0",
     "react-native-splash-screen": "3.0.6",
     "react-native-storage": "^0.2.2",
-    "react-native-super-ellipse-mask": "^1.0.7",
     "react-native-svg": "^6.4.1",
     "react-native-tcp": "^3.3.0",
+    "react-native-tooltip": "^5.2.0",
     "react-native-touch-id": "^4.0.1",
     "react-native-udp": "^2.3.1",
+    "react-navigation": "^2.6.2",
+    "react-navigation-fluid-transitions": "^0.2.2",
     "react-primitives": "^0.6.0",
     "react-redux": "^5.0.7",
+    "react-spring": "^5.4.0",
     "readable-stream": "^1.0.33",
     "recompose": "^0.27.1",
     "redux": "^3.7.2",
@@ -71,9 +78,10 @@
     "walletconnect": "^0.0.1-beta.12"
   },
   "devDependencies": {
+    "@babel/core": "7.0.0-beta.47",
     "babel-eslint": "^8.2.2",
     "babel-jest": "^22.4.3",
-    "babel-preset-react-native": "^4.0.0",
+    "babel-preset-react-native": "5.0.2",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.9.0",
@@ -102,14 +110,14 @@
     "domain": "domain-browser",
     "http": "@tradle/react-native-http",
     "https": "https-browserify",
-    "os": "react-native-os",
     "path": "path-browserify",
     "querystring": "querystring-es3",
     "fs": "react-native-level-fs",
     "dgram": "react-native-udp",
     "timers": "timers-browserify",
     "tty": "tty-browserify",
-    "tls": false
+    "tls": false,
+    "os": "react-native-os"
   },
   "browser": {
     "crypto": "react-native-crypto",
@@ -128,14 +136,14 @@
     "domain": "domain-browser",
     "http": "@tradle/react-native-http",
     "https": "https-browserify",
-    "os": "react-native-os",
     "path": "path-browserify",
     "querystring": "querystring-es3",
     "fs": "react-native-level-fs",
     "dgram": "react-native-udp",
     "timers": "timers-browserify",
     "tty": "tty-browserify",
-    "tls": false
+    "tls": false,
+    "os": "react-native-os"
   },
   "rnpm": {
     "assets": [
@@ -143,4 +151,3 @@
     ]
   }
 }
-
