@@ -18,7 +18,10 @@ const QRCodeContainer = styled(Centered)`
 
 const QRCodeDisplay = ({ size, value }) => (
   <QRCodeContainer gutter={size / 6} size={size}>
-    {value && <QRCode size={size} value={value} />}
+    {value
+      ? <QRCode size={size} value={value} />
+      : null
+    }
   </QRCodeContainer>
 );
 

@@ -1,11 +1,8 @@
-import { AppState, AsyncStorage, Platform } from 'react-native';
+import { AppRegistry, AppState, AsyncStorage, Platform } from 'react-native';
 import FCM, { FCMEvent, NotificationType, RemoteNotificationResult, WillPresentNotificationResult } from 'react-native-fcm';
-import { Navigation } from 'react-native-navigation';
 import * as EthWallet from './model/ethWallet';
 import { addNewTransaction } from './model/transactions';
-import initializeScreens from './register-screens';
-
-initializeScreens();
+import Routes from './screens/Routes';
 
 EthWallet.init();
 
@@ -82,105 +79,4 @@ function showApproveTransactions(sessionId, transactionId) {
   });
 }
 
-Navigation.events().registerAppLaunchedListener(() => {
-  Navigation.setRoot({
-    root: {
-      stack: {
-        id: 'IntroScreen',
-        children: [{
-          component: {
-            name: 'BalanceWallet.IntroScreen',
-          },
-        }],
-      },
-    },
-  });
-});
-
-  // Navigation.setRoot({
-  //   root: {
-  //     bottomTabs: {
-  //       children: [{
-  //         stack: {
-  //           children: [{
-  //             component: {
-  //               name: '',
-  //               passProps: {
-  //                 text: 'This is tab 1',
-  //               },
-  //             },
-  //           }],
-  //           options: {
-  //             bottomTab: {
-  //               title: 'Intro Screen',
-  //               icon: require('./assets/wallet-icon.png'), // eslint-disable-line
-  //               testID: 'FIRST_TAB_BAR_BUTTON',
-  //             },
-  //           },
-  //         },
-  //       },
-  //       {
-  //         component: {
-  //           name: 'BalanceWallet.WalletScreen',
-  //           passProps: {
-  //             text: 'This is tab 2',
-  //           },
-  //           options: {
-  //             bottomTab: {
-  //               title: 'Tab 2',
-  //               icon: require('./assets/wallet-icon.png'), // eslint-disable-line
-  //               testID: 'SECOND_TAB_BAR_BUTTON',
-  //             },
-  //           },
-  //         },
-  //       }],
-  //     },
-  //   },
-  // });
-// Navigation.startTabBasedApp({
-//   tabs: [
-//     {
-//       label: 'Intro',
-//       screen: '',
-
-//       title: 'Intro',
-//     },
-//     {
-//       label: 'Wallet',
-//       screen: 'BalanceWallet.WalletScreen',
-//       icon: require('./assets/wallet-icon.png'), // eslint-disable-line
-
-//       title: 'Wallet',
-//     },
-//     {
-//       label: 'Scan',
-//       screen: 'BalanceWallet.QRScannerScreen',
-//       icon: require('./assets/scan-icon.png'), // eslint-disable-line
-
-//       title: 'WalletConnect',
-//     },
-//     {
-//       label: 'Settings',
-//       screen: 'BalanceWallet.SettingsScreen',
-//       icon: require('./assets/settings-icon.png'), // eslint-disable-line
-
-//       title: 'Settings',
-//     },
-//   ],
-//   tabsStyle: {
-//     tabBarButtonColor: '#abb1b8',
-//     tabBarSelectedButtonColor: '#0b0b0c',
-//     tabBarBackgroundColor: '#fff',
-//     initialTabIndex: 0,
-//   },
-//   appStyle: {
-//     orientation: 'portrait',
-//     bottomTabBadgeTextColor: 'red',
-//     bottomTabBadgeBackgroundColor: 'green',
-
-//     hideBackButtonTitle: false,
-//   },
-
-//   passProps: {},
-//   animationType: 'slide-down',
-// });
+AppRegistry.registerComponent('BalanceWallet', () => Routes);
