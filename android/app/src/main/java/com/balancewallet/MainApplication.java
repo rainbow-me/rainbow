@@ -3,19 +3,19 @@ package com.balancewallet;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
-import com.surajit.rnrg.RNRadialGradientPackage;
-import com.BV.LinearGradient.LinearGradientPackage;
+import com.tradle.react.UdpSocketsModule;
+import com.rnfingerprint.FingerprintAuthPackage;
+import com.peel.react.TcpSocketsModule;
 import com.horcrux.svg.SvgPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
-import com.rnfingerprint.FingerprintAuthPackage;
-import com.tradle.react.UdpSocketsModule;
-import com.peel.react.TcpSocketsModule;
-import com.peel.react.rnos.RNOSModule;
-import com.reactnativenavigation.NavigationReactPackage;
-import org.reactnative.camera.RNCameraPackage;
-import com.evollu.react.fcm.FIRMessagingPackage;
 import com.bitgo.randombytes.RandomBytesPackage;
+import com.surajit.rnrg.RNRadialGradientPackage;
+import com.peel.react.rnos.RNOSModule;
+import com.chirag.RNMail.RNMail;
+import com.BV.LinearGradient.LinearGradientPackage;
 import com.oblador.keychain.KeychainPackage;
+import com.evollu.react.fcm.FIRMessagingPackage;
+import org.reactnative.camera.RNCameraPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -36,19 +36,19 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new RNRadialGradientPackage(),
-            new LinearGradientPackage(),
+            new UdpSocketsModule(),
+            new FingerprintAuthPackage(),
+            new TcpSocketsModule(),
             new SvgPackage(),
             new SplashScreenReactPackage(),
-            new FingerprintAuthPackage(),
-            new UdpSocketsModule(),
-            new TcpSocketsModule(),
-            new RNOSModule(),
-            new NavigationReactPackage(),
-            new RNCameraPackage(),
-            new FIRMessagingPackage(),
             new RandomBytesPackage(),
-            new KeychainPackage()
+            new RNRadialGradientPackage(),
+            new RNOSModule(),
+            new RNMail(),
+            new LinearGradientPackage(),
+            new KeychainPackage(),
+            new FIRMessagingPackage(),
+            new RNCameraPackage()
       );
     }
 

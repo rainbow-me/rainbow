@@ -4,7 +4,7 @@ import TouchID from 'react-native-touch-id';
 import styled from 'styled-components';
 import { StatusBar, AlertIOS } from 'react-native';
 import { Navigation } from 'react-native-navigation';
-import Button from '../components/Button';
+import { Button } from '../components/buttons';
 import * as ethWallet from '../model/ethWallet';
 import { getTransactionToApprove } from '../model/transactions';
 import { walletConnectSendTransactionHash } from '../model/walletconnect';

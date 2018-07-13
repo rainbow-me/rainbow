@@ -1,11 +1,8 @@
-import { AppState, AsyncStorage, Platform } from 'react-native';
+import { AppRegistry, AppState, AsyncStorage, Platform } from 'react-native';
 import FCM, { FCMEvent, NotificationType, RemoteNotificationResult, WillPresentNotificationResult } from 'react-native-fcm';
-import { Navigation } from 'react-native-navigation';
 import * as EthWallet from './model/ethWallet';
 import { addNewTransaction } from './model/transactions';
-import initializeScreens from './register-screens';
-
-initializeScreens();
+import Routes from './screens/Routes';
 
 EthWallet.init();
 
@@ -73,53 +70,13 @@ registerKilledListener();
 
 function showApproveTransactions(sessionId, transactionId) {
   addNewTransaction(sessionId, transactionId).then(() => {
-    Navigation.showModal({
-      screen: 'BalanceWallet.TransactionScreen',
-      navigatorStyle: { navBarHidden: true },
-      navigatorButtons: {},
-      animationType: 'slide-up',
-    });
+    // Navigation.showModal({
+    //   screen: 'BalanceWallet.TransactionScreen',
+    //   navigatorStyle: { navBarHidden: true },
+    //   navigatorButtons: {},
+    //   animationType: 'slide-up',
+    // });
   });
 }
 
-Navigation.startTabBasedApp({
-  tabs: [
-    {
-      label: 'Wallet',
-      screen: 'BalanceWallet.WalletScreen',
-      icon: require('./assets/wallet-icon.png'), // eslint-disable-line
-
-      title: 'Wallet',
-    },
-    {
-      label: 'Scan',
-      screen: 'BalanceWallet.QRScannerScreen',
-      icon: require('./assets/scan-icon.png'), // eslint-disable-line
-
-      title: 'WalletConnect',
-    },
-    {
-      label: 'Settings',
-      screen: 'BalanceWallet.SettingsScreen',
-      icon: require('./assets/settings-icon.png'), // eslint-disable-line
-
-      title: 'Settings',
-    },
-  ],
-  tabsStyle: {
-    tabBarButtonColor: '#abb1b8',
-    tabBarSelectedButtonColor: '#0b0b0c',
-    tabBarBackgroundColor: '#fff',
-    initialTabIndex: 0,
-  },
-  appStyle: {
-    orientation: 'portrait',
-    bottomTabBadgeTextColor: 'red',
-    bottomTabBadgeBackgroundColor: 'green',
-
-    hideBackButtonTitle: false,
-  },
-
-  passProps: {},
-  animationType: 'slide-down',
-});
+AppRegistry.registerComponent('BalanceWallet', () => Routes);

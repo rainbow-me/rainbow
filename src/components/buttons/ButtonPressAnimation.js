@@ -23,10 +23,12 @@ const buildAnimatedTransform = ({ scale, translateY }) => ({
 const ButtonPressAnimation = ({
   children,
   isPressed,
+  onPress,
   onPressIn,
   onPressOut,
 }) => (
   <TouchableWithoutFeedback
+    onPress={onPress}
     onPressIn={onPressIn}
     onPressOut={onPressOut}
   >
@@ -50,6 +52,7 @@ const ButtonPressAnimation = ({
 ButtonPressAnimation.propTypes = {
   children: PropTypes.node,
   isPressed: PropTypes.bool,
+  onPress: PropTypes.func,
   onPressIn: PropTypes.func,
   onPressOut: PropTypes.func,
 };
@@ -57,8 +60,18 @@ ButtonPressAnimation.propTypes = {
 export default compose(
   withState('isPressed', 'toggleIsPressed', false),
   withHandlers({
-    onPressIn: ({ toggleIsPressed }) => () => toggleIsPressed(true),
-    onPressOut: ({ toggleIsPressed }) => () => toggleIsPressed(false),
+    onPressIn: ({ onPressIn, toggleIsPressed }) => (event) => {
+      toggleIsPressed(true);
+      if (onPressIn) {
+        onPressIn(event);
+      }
+    },
+    onPressOut: ({ onPressOut, toggleIsPressed }) => (event) => {
+      toggleIsPressed(false);
+      if (onPressOut) {
+        onPressOut(event);
+      }
+    },
   }),
   omitProps('toggleIsPressed'),
 )(ButtonPressAnimation);
