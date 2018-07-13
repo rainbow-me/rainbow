@@ -3,7 +3,6 @@ package com.balancewallet;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
-import com.peel.react.rnos.RNOSModule;
 import com.tradle.react.UdpSocketsModule;
 import com.rnfingerprint.FingerprintAuthPackage;
 import com.peel.react.TcpSocketsModule;
@@ -11,6 +10,7 @@ import com.horcrux.svg.SvgPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.bitgo.randombytes.RandomBytesPackage;
 import com.surajit.rnrg.RNRadialGradientPackage;
+import com.peel.react.rnos.RNOSModule;
 import com.chirag.RNMail.RNMail;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.oblador.keychain.KeychainPackage;
@@ -36,7 +36,6 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new RNOSModule(),
             new UdpSocketsModule(),
             new FingerprintAuthPackage(),
             new TcpSocketsModule(),
@@ -44,6 +43,7 @@ public class MainApplication extends Application implements ReactApplication {
             new SplashScreenReactPackage(),
             new RandomBytesPackage(),
             new RNRadialGradientPackage(),
+            new RNOSModule(),
             new RNMail(),
             new LinearGradientPackage(),
             new KeychainPackage(),

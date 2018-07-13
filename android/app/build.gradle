@@ -137,7 +137,6 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-os')
     compile project(':react-native-udp')
     compile project(':react-native-touch-id')
     compile project(':react-native-tcp')
@@ -145,6 +144,7 @@ dependencies {
     compile project(':react-native-splash-screen')
     compile project(':react-native-randombytes')
     compile project(':react-native-radial-gradient')
+    compile project(':react-native-os')
     compile project(':react-native-mail')
     compile project(':react-native-linear-gradient')
     compile project(':react-native-keychain')
