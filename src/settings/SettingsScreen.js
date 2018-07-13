@@ -7,10 +7,11 @@ import { Centered, Column } from '../components/layout';
 import { Monospace } from '../components/text';
 import CopyTooltip from '../components/CopyTooltip';
 import QRCodeDisplay from '../components/QRCodeDisplay';
-import { fonts, padding } from '../styles';
+import { colors, fonts, padding } from '../styles';
 
 const Container = styled(Column).attrs({ align: 'center', justify: 'start' })`
   ${padding(28, 31)}
+  background-color: ${colors.white};
   height: 100%;
 `;
 

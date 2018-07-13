@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Alert } from 'react-native';
+import { AsyncStorage } from 'react-native';
 import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../components/buttons';
 import Icon from '../components/icons/Icon';
@@ -76,28 +76,13 @@ const WarningIcon = styled(Icon).attrs({
 
 export default class IntroScreen extends Component {
   static propTypes = {
-    address: PropTypes.string,
-    onSendFeedback: PropTypes.func,
-    onToggleShowSeedPhrase: PropTypes.func,
-    showSeedPhrase: PropTypes.bool,
+    navigation: PropTypes.object,
   }
 
-  static get options() {
-    return {
-      topBar: {
-        animate: false,
-        drawBehind: true,
-        visible: false,
-      },
-    };
+  handleCreateWallet = async () => {
+    await AsyncStorage.setItem('isUserInitialized', 'true');
+    this.props.navigation.navigate('WalletScreen');
   }
-
-  handleCreateWallet = () =>
-    Alert.alert(
-      'TODO: HOOK THIS UP TO ROUTER',
-      'this currently does nothing',
-      [{ text: 'OK MIKE I WILL DO THAT' }],
-    )
 
   render = () => (
     <Container>

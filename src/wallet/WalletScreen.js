@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { ScrollView, SectionList } from 'react-native';
@@ -9,13 +10,23 @@ import {
   UniqueTokenGridList,
 } from '../components/asset-list';
 import { FabWrapper, WalletConnectFab } from '../components/fab';
+import { colors } from '../styles';
 import WalletHeader from './WalletHeader';
+
+const Container = styled(ScrollView)`
+  background-color: ${colors.white}
+`;
 
 const Separator = styled.View`
   height: 27;
 `;
 
-const WalletScreen = ({ wallet: { assets = [] } }) => {
+const keyExtractor = (item, index) => {
+  const key = Array.isArray(item) ? item[0] : get(item, 'symbol');
+  return key + index;
+};
+
+const WalletScreen = ({ wallet: { assets = [] }, ...props }) => {
   const sections = {
     balances: {
       data: assets,
@@ -35,30 +46,16 @@ const WalletScreen = ({ wallet: { assets = [] } }) => {
 
   return (
     <FabWrapper fabs={[<WalletConnectFab key="walletConnectFab" />]}>
-      <ScrollView>
-        <WalletHeader />
+      <Container>
+        <WalletHeader {...props} />
         <SectionList
-          keyExtractor={(item, index) => {
-            let key = null;
-
-            if (Array.isArray(item)) {
-              key = item[0];
-            } else if (typeof item === 'object') {
-              key = item.symbol;
-            }
-
-            const realkey = key + index;
-
-            console.log('🔑🔑🔑', realkey);
-
-            return realkey;
-          }}
+          keyExtractor={keyExtractor}
           renderItem={AssetListItem}
-          renderSectionHeader={props => <AssetListHeader {...props} />}
           renderSectionFooter={() => <Separator />}
+          renderSectionHeader={headerProps => <AssetListHeader {...headerProps} />}
           sections={[sections.balances, sections.collectibles]}
         />
-      </ScrollView>
+      </Container>
     </FabWrapper>
   );
 };
