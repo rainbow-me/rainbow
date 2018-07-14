@@ -13,9 +13,17 @@ const BorderLine = styled.View`
   background-color: ${colors.lightGrey};
   border-bottom-left-radius: 2;
   border-top-left-radius: 2;
-  height: 2;
-  left: 20;
+  bottom: 0;
+  left: 19;
+  position: absolute;
   right: 0;
+  top: 0;
+`;
+
+const BorderLineContainer = styled(Row)`
+  background-color: ${colors.white};
+  height: 2;
+  width: 100%;
 `;
 
 const ContextMenuButton = styled(Centered)`
@@ -26,8 +34,9 @@ const ContextMenuButton = styled(Centered)`
 const Header = styled(Row)`
   background-color: ${colors.white};
   height: 35;
-  padding-left: 20;
-  padding-right: 20;
+  padding-left: 19;
+  padding-right: 19;
+  width: 100%;
 `;
 
 const TotalValue = styled(Monospace)`
@@ -63,7 +72,9 @@ export default class AssetListHeader extends Component {
             {`${totalValue}`}
           </TotalValue>
         </Header>
-        <BorderLine />
+        <BorderLineContainer>
+          <BorderLine />
+        </BorderLineContainer>
         <ActionSheet
           cancelButtonIndex={3}
           onPress={(index) => { console.log('ON PRESS', index) }}

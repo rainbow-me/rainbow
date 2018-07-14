@@ -22,14 +22,19 @@ const BalanceCoinRow = ({ item, ...props }) => (
           {`${balance.display}`}
         </BottomRowText>
         <BottomRowText>
-          {`${native && native.change ? native.change.display : '---'}`}
+          {`${(native && native.change)
+            ? native.change.display.split('%').join(' %')
+            : '-'
+          }`}
         </BottomRowText>
       </Fragment>
     )}
     topRowRender={({ balance, name, native }) => (
       <Fragment>
         <CoinName>{name}</CoinName>
-        <BalanceText>{`${ native && native.balance ? native.balance.display : '---'}`}</BalanceText>
+        <BalanceText>
+          {`${(native && native.balance) ? native.balance.display : '--'}`}
+        </BalanceText>
       </Fragment>
     )}
   />
