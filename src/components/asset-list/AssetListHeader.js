@@ -5,7 +5,8 @@ import ActionSheet from 'react-native-actionsheet';
 import styled from 'styled-components/primitives';
 import { colors, padding } from '../../styles';
 import Icon from '../icons/Icon';
-import { Row } from '../layout';
+import { ButtonPressAnimation } from '../buttons';
+import { Centered, Row } from '../layout';
 import { H1, Monospace } from '../text';
 
 const BorderLine = styled.View`
@@ -17,11 +18,13 @@ const BorderLine = styled.View`
   right: 0;
 `;
 
-const ContextMenuButton = styled(TouchableOpacity)`
-  ${padding(8, 10)}
+const ContextMenuButton = styled(Centered)`
+  ${padding(0, 10)}
+  height: 100%;
 `;
 
 const Header = styled(Row)`
+  background-color: ${colors.white};
   height: 35;
   padding-left: 20;
   padding-right: 20;
@@ -47,9 +50,14 @@ export default class AssetListHeader extends Component {
         <Header align="center" justify="space-between">
           <Row align="center">
             <H1>{title}</H1>
-            <ContextMenuButton onPress={this.showActionSheet}>
-              <Icon name="threeDots" />
-            </ContextMenuButton>
+            <ButtonPressAnimation
+              activeOpacity={0.2}
+              onPress={this.showActionSheet}
+            >
+              <ContextMenuButton>
+                <Icon name="threeDots" />
+              </ContextMenuButton>
+            </ButtonPressAnimation>
           </Row>
           <TotalValue size="large" weight="semibold">
             {`${totalValue}`}
