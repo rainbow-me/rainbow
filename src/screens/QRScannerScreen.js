@@ -4,8 +4,11 @@ import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import Card from '../components/Card';
 import DappCard from '../components/DappCard';
+import { Page } from '../components/layout';
 import { walletConnectInit } from '../model/walletconnect';
 import { connect } from 'react-redux';
+import { Transition } from 'react-navigation-fluid-transitions';
+import { colors } from '../styles';
 
 class QRScannerScreen extends Component {
   static propTypes = {
@@ -23,6 +26,7 @@ class QRScannerScreen extends Component {
       this.qrCodeScanner.reactivate();
     }, 1000);
   };
+
   static navigatorStyle = {
     navBarHidden: true,
     statusBarTextColorScheme: 'light',
@@ -30,28 +34,34 @@ class QRScannerScreen extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <QRCodeScanner
-          ref={c => {
-            this.qrCodeScanner = c;
-          }}
-          topViewStyle={styles.scannerTop}
-          bottomViewStyle={styles.scannerBottom}
-          style={styles.scanner}
-          onRead={this.onSuccess}
-        />
-        <Card style={{ flex: 1 }}>
-          <Image style={styles.connectLogo} source={require('../assets/walletconnect-logo-blue.png')} />
-          <Text style={[styles.centerText, styles.title]}>WalletConnect</Text>
-          <Text style={[styles.centerText, styles.textDefault]}>Scan a QR code to connect to a web dapp</Text>
-          <ScrollView horizontal contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}>
-            {dappInfo.map(dapp => <DappCard key={dapp.name} dappName={dapp.name} dappImage={dapp.image} dappText={dapp.text} />)}
-          </ScrollView>
-        </Card>
-      </View>
+      <Transition appear='horizontal' disappear='horizontal'>
+        <Page color={colors.black}>
+          <QRCodeScanner
+            ref={c => {
+              this.qrCodeScanner = c;
+            }}
+            topViewStyle={styles.scannerTop}
+            bottomViewStyle={styles.scannerBottom}
+            style={styles.scanner}
+            onRead={this.onSuccess}
+          />
+        </Page>
+      </Transition>
     );
   }
 }
+
+        // <View style={styles.container}>
+        // </View>
+
+          // <Card style={{ flex: 1 }}>
+          //   <Image style={styles.connectLogo} source={require('../assets/walletconnect-logo-blue.png')} />
+          //   <Text style={[styles.centerText, styles.title]}>WalletConnect</Text>
+          //   <Text style={[styles.centerText, styles.textDefault]}>Scan a QR code to connect to a web dapp</Text>
+          //   <ScrollView horizontal contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}>
+          //     {dappInfo.map(dapp => <DappCard key={dapp.name} dappName={dapp.name} dappImage={dapp.image} dappText={dapp.text} />)}
+          //   </ScrollView>
+          // </Card>
 
 
 const styles = StyleSheet.create({
@@ -82,16 +92,16 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   scannerTop: {
-    flex: 0,
+    // flex: 0,
     height: 0,
   },
   scanner: {
-    flex: 1,
+    // flex: 1,
     backgroundColor: 'rgba(0,0,0,0.05)',
   },
   scannerBottom: {
-    flex: 0,
-    height: 0,
+    // flex: 0,
+    // height: 0,
   },
 
   textBold: {

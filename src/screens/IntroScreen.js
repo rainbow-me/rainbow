@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AsyncStorage } from 'react-native';
+import { isIphoneX } from 'react-native-iphone-x-helper';
 import styled from 'styled-components/primitives';
+import AppVersionStamp from '../components/AppVersionStamp';
 import { ButtonPressAnimation } from '../components/buttons';
 import Icon from '../components/icons/Icon';
 import { Column, Row } from '../components/layout';
@@ -46,18 +48,6 @@ const CreateWalletButtonText = styled(Monospace).attrs({
   line-height: 20;
 `;
 
-const Footer = styled(Monospace).attrs({
-  size: 'h5',
-  weight: 'medium',
-})`
-  bottom: 55;
-  color: #2A2B30;
-  left: 0;
-  position: absolute;
-  right: 0;
-  text-align: center;
-`;
-
 const InstructionsText = styled(Monospace).attrs({
   color: 'white',
   size: 'lmedium',
@@ -65,6 +55,13 @@ const InstructionsText = styled(Monospace).attrs({
   color: ${colors.alpha(colors.white, 0.46)};
   line-height: 25;
   width: 315;
+`;
+
+const IntroAppVersion = styled(AppVersionStamp)`
+  bottom: ${isIphoneX ? 34 : 0};
+  left: 0;
+  position: absolute;
+  right: 0;
 `;
 
 const WarningIcon = styled(Icon).attrs({
@@ -111,7 +108,7 @@ export default class IntroScreen extends Component {
           </ButtonPressAnimation>
         </Row>
       </Content>
-      <Footer>Balance v0.01</Footer>
+      <IntroAppVersion color="#2A2B30" />
     </Container>
   )
 }
