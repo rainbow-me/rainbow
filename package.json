@@ -67,6 +67,7 @@
     "redux": "^3.7.2",
     "redux-thunk": "^2.3.0",
     "rn-nodeify": "^10.0.0",
+    "rn-walletconnect-wallet": "^0.0.1-beta.13",
     "stream-browserify": "^1.0.0",
     "string_decoder": "^0.10.31",
     "styled-components": "^3.3.3",
@@ -74,8 +75,7 @@
     "tty-browserify": "0.0.0",
     "url": "^0.10.3",
     "util": "^0.10.3",
-    "vm-browserify": "0.0.4",
-    "walletconnect": "^0.0.1-beta.12"
+    "vm-browserify": "0.0.4"
   },
   "devDependencies": {
     "@babel/core": "7.0.0-beta.47",

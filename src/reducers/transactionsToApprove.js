@@ -6,7 +6,7 @@ export const updateTransactionsToApprove = (transactions) => (dispatch, getState
 };
 
 export const addTransactionToApprove = (transaction) => (dispatch, getState) => {
-  const { transactionsToApprove } = getState().walletconnect;
+  const { transactionsToApprove } = getState().transactionsToApprove;
   const updatedTransactions = transactionsToApprove.concat(transaction);
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
 };

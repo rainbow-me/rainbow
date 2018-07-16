@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import TouchID from 'react-native-touch-id';
 import styled from 'styled-components';
 import { StatusBar, AlertIOS } from 'react-native';
-import { Navigation } from 'react-native-navigation';
 import { Button } from '../components/buttons';
 import { sendTransaction } from '../model/wallet';
 import { walletConnectSendTransactionHash }  from '../model/walletconnect';
@@ -148,9 +147,6 @@ class TransactionConfirmationScreen extends Component {
 
   onClose() {
     StatusBar.setBarStyle('dark-content', true);
-    Navigation.dismissModal({
-      animationType: 'slide-down',
-    });
   }
 
   render() {

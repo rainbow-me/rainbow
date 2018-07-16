@@ -14,7 +14,7 @@ export const walletInit = async (seedPhrase = generateSeedPhrase()) => {
   try {
     wallet = await loadWallet();
     if (!wallet) {
-      wallet = createWallet();
+      wallet = await createWallet();
     }
     return wallet;
   } catch(error) {
@@ -51,6 +51,11 @@ export const sendTransaction = async (transaction) => {
   return transactionHash;
 };
 
+export const loadSeedPhrase = async () => {
+  const seedPhrase = await keychain.loadString(seedPhraseKey);
+  return seedPhrase;
+};
+
 const createWallet = async (seedPhrase = generateSeedPhrase()) => {
   const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
   wallet.provider = ethers.providers.getDefaultProvider();
@@ -65,11 +70,6 @@ const createWallet = async (seedPhrase = generateSeedPhrase()) => {
 
 const saveSeedPhrase = async (seedPhrase) => {
   await keychain.saveString(seedPhraseKey, seedPhrase);
-};
-
-const loadSeedPhrase = async () => {
-  const seedPhrase = await keychain.loadString(seedPhraseKey);
-  return seedPhrase;
 };
 
 const savePrivateKey = async (privateKey) => {

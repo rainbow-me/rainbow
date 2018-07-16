@@ -7,12 +7,16 @@ import DappCard from '../components/DappCard';
 import { walletConnectInit } from '../model/walletconnect';
 import { connect } from 'react-redux';
 
-export default class QRScannerScreen extends Component {
+class QRScannerScreen extends Component {
+  static propTypes = {
+    accountAddress: PropTypes.string
+  }
 
   onSuccess = async e => {
     const data = JSON.parse(e.data);
+    // TODO: show a success modal and then send user to Balances
     if (data.domain && data.sessionId && data.sharedKey && data.dappName) {
-      await walletConnectInit(data.domain, data.sessionId, data.sharedKey, data.dappName);
+      await walletConnectInit(this.props.accountAddress, data.domain, data.sessionId, data.sharedKey, data.dappName);
     }
 
     setTimeout(() => {
@@ -119,3 +123,8 @@ const dappInfo = [
   },
 ];
 
+const reduxProps = ({ account }) => ({
+  accountAddress: account.accountAddress,
+});
+
+export default connect(reduxProps, null)(QRScannerScreen);

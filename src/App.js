@@ -17,30 +17,6 @@ const store = createStore(
   applyMiddleware(thunk),
 );
 
-function registerKilledListener() {
-  FCM.on(FCMEvent.Notification, notif => {
-    console.log(`registerKilledListener notif: ${notif}`);
-    AsyncStorage.setItem('lastNotification', JSON.stringify(notif));
-    if (notif.opened_from_tray) {
-      setTimeout(() => {
-        if (notif._actionIdentifier === 'reply') {
-          if (AppState.currentState !== 'background') {
-            console.log(`User replied ${JSON.stringify(notif._userText)}`);
-          } else {
-            AsyncStorage.setItem('lastMessage', JSON.stringify(notif._userText));
-          }
-        }
-        if (notif._actionIdentifier === 'view') {
-          console.log('User clicked View in App');
-        }
-        if (notif._actionIdentifier === 'dismiss') {
-          console.log('User clicked Dismiss');
-        }
-      }, 1000);
-    }
-  });
-}
-
 function registerAppListener(notificationHandler) {
   FCM.on(FCMEvent.Notification, notif => {
     console.log(`registerAppListener notif: ${notif}`);
@@ -66,6 +42,31 @@ function registerAppListener(notificationHandler) {
   });
 }
 
+function registerKilledListener() {
+  FCM.on(FCMEvent.Notification, notif => {
+    console.log(`registerKilledListener notif: ${notif}`);
+    AsyncStorage.setItem('lastNotification', JSON.stringify(notif));
+    if (notif.opened_from_tray) {
+      setTimeout(() => {
+        if (notif._actionIdentifier === 'reply') {
+          if (AppState.currentState !== 'background') {
+            console.log(`User replied ${JSON.stringify(notif._userText)}`);
+          } else {
+            AsyncStorage.setItem('lastMessage', JSON.stringify(notif._userText));
+          }
+        }
+        if (notif._actionIdentifier === 'view') {
+          console.log('User clicked View in App');
+        }
+        if (notif._actionIdentifier === 'dismiss') {
+          console.log('User clicked Dismiss');
+        }
+      }, 1000);
+    }
+  });
+}
+
+
 registerKilledListener();
 
 class App extends Component {
@@ -76,7 +77,6 @@ class App extends Component {
 
   componentDidMount() {
     registerAppListener(this.onPushNotification);
-
     FCM.getFCMToken().then(fcmToken => {
       commonStorage.saveLocal('fcmToken', { data: fcmToken });
       console.log(`FCM Token: ${fcmToken}`);
@@ -84,6 +84,7 @@ class App extends Component {
 
     walletInit()
       .then(wallet => {
+        console.log('wallet address', wallet.address);
         this.props.accountUpdateAccountAddress(wallet.address, 'BALANCEWALLET');
       })
       .catch(error => {
@@ -91,25 +92,16 @@ class App extends Component {
       });
     console.log('wallet init');
   }
+ 
 
-  onPushNotification(transactionId) {
-    console.log('on push notification...');
-    walletConnectGetTransaction(transactionId)
-      .then(transaction => {
-        this.props.addTransactionToApprove(transaction);
-        // Navigation.showModal({
-        //   screen: 'BalanceWallet.TransactionConfirmationScreen',
-        //   navigatorStyle: { navBarHidden: true },
-        //   navigatorButtons: {},
-        //   animationType: 'slide-up',
-        // });
-      })
-      .catch(error => {
-        // TODO error handling
-      });
-  }
+  onPushNotification = async (transactionId) => {
+    const transaction = await walletConnectGetTransaction(transactionId);
+    this.props.addTransactionToApprove(transaction);
+    //this.routesRef.props.navigation.navigate('ConfirmTransaction');
+  };
 
   render = () => (
+    console.log('routes ref', this.routesRef),
     <Provider store={store}>
       <Routes />
     </Provider>
