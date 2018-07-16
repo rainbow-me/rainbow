@@ -1,7 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AsyncStorage } from 'react-native';
+import { isIphoneX } from 'react-native-iphone-x-helper';
+import { Transition } from 'react-navigation-fluid-transitions';
 import styled from 'styled-components/primitives';
+import AppVersionStamp from '../components/AppVersionStamp';
 import { ButtonPressAnimation } from '../components/buttons';
 import Icon from '../components/icons/Icon';
 import { Column, Row } from '../components/layout';
@@ -46,18 +49,6 @@ const CreateWalletButtonText = styled(Monospace).attrs({
   line-height: 20;
 `;
 
-const Footer = styled(Monospace).attrs({
-  size: 'h5',
-  weight: 'medium',
-})`
-  bottom: 55;
-  color: #2A2B30;
-  left: 0;
-  position: absolute;
-  right: 0;
-  text-align: center;
-`;
-
 const InstructionsText = styled(Monospace).attrs({
   color: 'white',
   size: 'lmedium',
@@ -65,6 +56,13 @@ const InstructionsText = styled(Monospace).attrs({
   color: ${colors.alpha(colors.white, 0.46)};
   line-height: 25;
   width: 315;
+`;
+
+const IntroAppVersion = styled(AppVersionStamp)`
+  bottom: ${isIphoneX ? 34 : 0};
+  left: 0;
+  position: absolute;
+  right: 0;
 `;
 
 const WarningIcon = styled(Icon).attrs({
@@ -85,33 +83,35 @@ export default class IntroScreen extends Component {
   }
 
   render = () => (
-    <Container>
-      <Content>
-        <Monospace
-          color="white"
-          size="big"
-          weight="semibold"
-        >
-          Welcome to Balance
-        </Monospace>
-        <AlphaWarning>
-          <WarningIcon />
-          <AlphaWarningText>This is alpha software.</AlphaWarningText>
-        </AlphaWarning>
-        <InstructionsText>
-          Please do not store more in your wallet than you are willing to lose.
-        </InstructionsText>
-        <Row>
-          <ButtonPressAnimation onPress={this.handleCreateWallet}>
-            <CreateWalletButton>
-              <CreateWalletButtonText>
-                Create a Wallet
-              </CreateWalletButtonText>
-            </CreateWalletButton>
-          </ButtonPressAnimation>
-        </Row>
-      </Content>
-      <Footer>Balance v0.01</Footer>
-    </Container>
+    <Transition appear='bottom' disappear='flip'>
+      <Container>
+        <Content>
+          <Monospace
+            color="white"
+            size="big"
+            weight="semibold"
+          >
+            Welcome to Balance
+          </Monospace>
+          <AlphaWarning>
+            <WarningIcon />
+            <AlphaWarningText>This is alpha software.</AlphaWarningText>
+          </AlphaWarning>
+          <InstructionsText>
+            Please do not store more in your wallet than you are willing to lose.
+          </InstructionsText>
+          <Row>
+            <ButtonPressAnimation onPress={this.handleCreateWallet}>
+              <CreateWalletButton>
+                <CreateWalletButtonText>
+                  Create a Wallet
+                </CreateWalletButtonText>
+              </CreateWalletButton>
+            </ButtonPressAnimation>
+          </Row>
+        </Content>
+        <IntroAppVersion color="#2A2B30" />
+      </Container>
+    </Transition>
   )
 }

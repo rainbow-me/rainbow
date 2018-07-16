@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AppRegistry, AppState, AsyncStorage, Platform } from 'react-native';
 import FCM, { FCMEvent, NotificationType, RemoteNotificationResult, WillPresentNotificationResult } from 'react-native-fcm';
+import { createStackNavigator } from 'react-navigation';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompose';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
@@ -92,22 +93,21 @@ class App extends Component {
       });
     console.log('wallet init');
   }
- 
 
   onPushNotification = async (transactionId) => {
     const transaction = await walletConnectGetTransaction(transactionId);
     this.props.addTransactionToApprove(transaction);
-    //this.routesRef.props.navigation.navigate('ConfirmTransaction');
-  };
+    // this.props.navigation.navigate('ConfirmTransaction');
+  }
 
   render = () => (
-    console.log('routes ref', this.routesRef),
     <Provider store={store}>
       <Routes />
     </Provider>
   )
 }
 
+const AppWithRouter = createStackNavigator({ App: { screen: App } }, { headerMode: 'none' });
 const AppWithRedux = compose(
   withProps({ store }),
   connect(
@@ -117,6 +117,6 @@ const AppWithRedux = compose(
       accountUpdateAccountAddress,
     },
   ),
-)(App);
+)(AppWithRouter);
 
 AppRegistry.registerComponent('BalanceWallet', () => AppWithRedux);
