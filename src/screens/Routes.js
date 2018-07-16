@@ -6,6 +6,7 @@ import LoadingScreen from '../onboarding/LoadingScreen';
 import SettingsScreenWithData from '../settings/SettingsScreenWithData';
 import WalletScreen from '../wallet/WalletScreen';
 import QRScannerScreen from './QRScannerScreen';
+import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
 // const handleDismissKeyboard = () => Keyboard.dismiss();
 
@@ -37,11 +38,19 @@ const IntroStack = createStackNavigator({
   headerMode: 'none',
 });
 
+const ConfirmTransactionStack = createStackNavigator({
+  TransactionConfirmationScreen,
+}, {
+  mode: 'modal',
+  headerMode: 'none',
+});
+
 export default createSwitchNavigator(
   {
     Loading: LoadingScreen,
     App: AppStack,
     Intro: IntroStack,
+    ConfirmTransaction: ConfirmTransactionStack,
   },
   {
     initialRouteName: 'Loading',
