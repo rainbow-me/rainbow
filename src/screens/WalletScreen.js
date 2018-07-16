@@ -1,8 +1,9 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { ScrollView, SectionList } from 'react-native';
+import { SectionList } from 'react-native';
 import { connect } from 'react-redux';
+import { compose, withHandlers } from 'recompose';
 import styled from 'styled-components/primitives';
 import {
   AssetListHeader,
@@ -10,12 +11,15 @@ import {
   BalanceCoinRow,
   // UniqueTokenGridList,
 } from '../components/asset-list';
+import Avatar from '../components/Avatar';
+import { ButtonPressAnimation } from '../components/buttons';
 import { FabWrapper, WalletConnectFab } from '../components/fab';
-import { colors } from '../styles';
-import WalletHeader from './WalletHeader';
+import { Header, Page } from '../components/layout';
+import { position } from '../styles';
+import { Transition } from 'react-navigation-fluid-transitions';
 
-const Container = styled(ScrollView)`
-  background-color: ${colors.white}
+const List = styled(SectionList)`
+  ${position.size('100%')}
 `;
 
 const Separator = styled.View`
@@ -27,7 +31,7 @@ const keyExtractor = (item, index) => {
   return key + index;
 };
 
-const WalletScreen = ({ accountInfo, ...props }) => {
+const WalletScreen = ({ accountInfo, onPressProfile }) => {
   const sections = {
     balances: {
       title: 'Balances',
@@ -40,22 +44,26 @@ const WalletScreen = ({ accountInfo, ...props }) => {
       totalValue: '',
       data: [uniqueTokens],
       renderItem: UniqueTokenGridList,
-    },*/
+    }, */
   };
 
   return (
-    <FabWrapper fabs={[<WalletConnectFab key="walletConnectFab" />]}>
-      <Container>
-        <WalletHeader {...props} />
-        <SectionList
+    <Page>
+      <FabWrapper fabs={[<WalletConnectFab key="walletConnectFab" />]}>
+        <Header>
+          <ButtonPressAnimation onPress={onPressProfile}>
+            <Avatar />
+          </ButtonPressAnimation>
+        </Header>
+        <List
           keyExtractor={keyExtractor}
           renderItem={AssetListItem}
           renderSectionFooter={() => <Separator />}
           renderSectionHeader={headerProps => <AssetListHeader {...headerProps} />}
           sections={[sections.balances]}
         />
-      </Container>
-    </FabWrapper>
+      </FabWrapper>
+    </Page>
   );
 };
 
@@ -63,6 +71,7 @@ WalletScreen.propTypes = {
   accountInfo: PropTypes.object.isRequired,
   fetching: PropTypes.bool.isRequired,
   fetchingUniqueTokens: PropTypes.bool.isRequired,
+  onPressProfile: PropTypes.func.isRequired,
   uniqueTokens: PropTypes.array.isRequired,
 };
 
@@ -73,4 +82,9 @@ const reduxProps = ({ account }) => ({
   uniqueTokens: account.uniqueTokens,
 });
 
-export default connect(reduxProps, null)(WalletScreen);
+export default compose(
+  connect(reduxProps, null),
+  withHandlers({
+    onPressProfile: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
+  }),
+)(WalletScreen);

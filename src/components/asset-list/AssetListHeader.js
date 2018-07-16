@@ -5,26 +5,38 @@ import ActionSheet from 'react-native-actionsheet';
 import styled from 'styled-components/primitives';
 import { colors, padding } from '../../styles';
 import Icon from '../icons/Icon';
-import { Row } from '../layout';
+import { ButtonPressAnimation } from '../buttons';
+import { Centered, Row } from '../layout';
 import { H1, Monospace } from '../text';
 
 const BorderLine = styled.View`
   background-color: ${colors.lightGrey};
   border-bottom-left-radius: 2;
   border-top-left-radius: 2;
-  height: 2;
-  left: 20;
+  bottom: 0;
+  left: 19;
+  position: absolute;
   right: 0;
+  top: 0;
 `;
 
-const ContextMenuButton = styled(TouchableOpacity)`
-  ${padding(8, 10)}
+const BorderLineContainer = styled(Row)`
+  background-color: ${colors.white};
+  height: 2;
+  width: 100%;
+`;
+
+const ContextMenuButton = styled(Centered)`
+  ${padding(0, 10)}
+  height: 100%;
 `;
 
 const Header = styled(Row)`
+  background-color: ${colors.white};
   height: 35;
-  padding-left: 20;
-  padding-right: 20;
+  padding-left: 19;
+  padding-right: 19;
+  width: 100%;
 `;
 
 const TotalValue = styled(Monospace)`
@@ -47,15 +59,22 @@ export default class AssetListHeader extends Component {
         <Header align="center" justify="space-between">
           <Row align="center">
             <H1>{title}</H1>
-            <ContextMenuButton onPress={this.showActionSheet}>
-              <Icon name="threeDots" />
-            </ContextMenuButton>
+            <ButtonPressAnimation
+              activeOpacity={0.2}
+              onPress={this.showActionSheet}
+            >
+              <ContextMenuButton>
+                <Icon name="threeDots" />
+              </ContextMenuButton>
+            </ButtonPressAnimation>
           </Row>
           <TotalValue size="large" weight="semibold">
             {`${totalValue}`}
           </TotalValue>
         </Header>
-        <BorderLine />
+        <BorderLineContainer>
+          <BorderLine />
+        </BorderLineContainer>
         <ActionSheet
           cancelButtonIndex={3}
           onPress={(index) => { console.log('ON PRESS', index) }}
