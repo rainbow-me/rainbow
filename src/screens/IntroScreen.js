@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AsyncStorage } from 'react-native';
 import { isIphoneX } from 'react-native-iphone-x-helper';
+import { Transition } from 'react-navigation-fluid-transitions';
 import styled from 'styled-components/primitives';
 import AppVersionStamp from '../components/AppVersionStamp';
 import { ButtonPressAnimation } from '../components/buttons';
@@ -82,33 +83,35 @@ export default class IntroScreen extends Component {
   }
 
   render = () => (
-    <Container>
-      <Content>
-        <Monospace
-          color="white"
-          size="big"
-          weight="semibold"
-        >
-          Welcome to Balance
-        </Monospace>
-        <AlphaWarning>
-          <WarningIcon />
-          <AlphaWarningText>This is alpha software.</AlphaWarningText>
-        </AlphaWarning>
-        <InstructionsText>
-          Please do not store more in your wallet than you are willing to lose.
-        </InstructionsText>
-        <Row>
-          <ButtonPressAnimation onPress={this.handleCreateWallet}>
-            <CreateWalletButton>
-              <CreateWalletButtonText>
-                Create a Wallet
-              </CreateWalletButtonText>
-            </CreateWalletButton>
-          </ButtonPressAnimation>
-        </Row>
-      </Content>
-      <IntroAppVersion color="#2A2B30" />
-    </Container>
+    <Transition appear='bottom' disappear='flip'>
+      <Container>
+        <Content>
+          <Monospace
+            color="white"
+            size="big"
+            weight="semibold"
+          >
+            Welcome to Balance
+          </Monospace>
+          <AlphaWarning>
+            <WarningIcon />
+            <AlphaWarningText>This is alpha software.</AlphaWarningText>
+          </AlphaWarning>
+          <InstructionsText>
+            Please do not store more in your wallet than you are willing to lose.
+          </InstructionsText>
+          <Row>
+            <ButtonPressAnimation onPress={this.handleCreateWallet}>
+              <CreateWalletButton>
+                <CreateWalletButtonText>
+                  Create a Wallet
+                </CreateWalletButtonText>
+              </CreateWalletButton>
+            </ButtonPressAnimation>
+          </Row>
+        </Content>
+        <IntroAppVersion color="#2A2B30" />
+      </Container>
+    </Transition>
   )
 }

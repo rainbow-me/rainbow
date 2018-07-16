@@ -16,6 +16,7 @@ import { ButtonPressAnimation } from '../components/buttons';
 import { FabWrapper, WalletConnectFab } from '../components/fab';
 import { Header, Page } from '../components/layout';
 import { position } from '../styles';
+import { Transition } from 'react-navigation-fluid-transitions';
 
 const List = styled(SectionList)`
   ${position.size('100%')}
