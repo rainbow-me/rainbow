@@ -9,7 +9,7 @@ import {
   AssetListHeader,
   AssetListItem,
   BalanceCoinRow,
-  // UniqueTokenGridList,
+  UniqueTokenGridList,
 } from '../components/asset-list';
 import Avatar from '../components/Avatar';
 import { ButtonPressAnimation } from '../components/buttons';
@@ -31,7 +31,7 @@ const keyExtractor = (item, index) => {
   return key + index;
 };
 
-const WalletScreen = ({ accountInfo, onPressProfile }) => {
+const WalletScreen = ({ accountInfo, onPressProfile, uniqueTokens }) => {
   const orderedAssets = accountInfo.assets.sort((a,b) => {
     const amountA = a.native && a.native.balance && a.native.balance.amount ? a.native.balance.amount : "0";
     const amountB = b.native && b.native.balance && b.native.balance.amount ? b.native.balance.amount : "0";
@@ -44,12 +44,12 @@ const WalletScreen = ({ accountInfo, onPressProfile }) => {
       data: orderedAssets,
       renderItem: BalanceCoinRow,
     },
-    /* collectibles: {
+    collectibles: {
       title: 'Collectibles',
       totalValue: '',
       data: [uniqueTokens],
       renderItem: UniqueTokenGridList,
-    }, */
+    },
   };
 
   return (
