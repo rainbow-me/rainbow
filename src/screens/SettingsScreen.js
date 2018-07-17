@@ -54,6 +54,7 @@ const buildAddressAbbreviation = (address) => {
 
 const SettingsScreen = ({
   address,
+  seedPhrase,
   onPressBackButton,
   onSendFeedback,
   onToggleShowSeedPhrase,
@@ -88,7 +89,7 @@ const SettingsScreen = ({
     <SeedPhraseSection>
       {showSeedPhrase && (
         <SeedPhraseText>
-          witch collapse practice feed shame open despair creek road again ice least
+          {seedPhrase}
         </SeedPhraseText>
       )}
     </SeedPhraseSection>
@@ -97,6 +98,7 @@ const SettingsScreen = ({
 );
 
 SettingsScreen.propTypes = {
+  seedPhrase: PropTypes.string,
   address: PropTypes.string,
   onPressBackButton: PropTypes.func,
   onSendFeedback: PropTypes.func,
