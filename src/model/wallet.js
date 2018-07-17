@@ -1,6 +1,5 @@
 import ethers from 'ethers';
-import * as keychain from './keychain';
-
+import * as keychain from '../model/keychain';
 const seedPhraseKey = 'seedPhrase';
 const privateKeyKey = 'privateKey';
 const addressKey = 'addressKey';
@@ -9,27 +8,20 @@ export function generateSeedPhrase() {
   return ethers.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
 }
 
-export async function init(seedPhrase = generateSeedPhrase()) {
-  let wallet = await loadWallet();
-  if (!wallet) {
-    wallet = await createWallet();
+export const walletInit = async (seedPhrase = generateSeedPhrase()) => {
+  let wallet = null;
+  try {
+    wallet = await loadWallet();
+    if (!wallet) {
+      wallet = await createWallet();
+    }
+    return wallet;
+  } catch(error) {
+    return wallet;
   }
-}
+};
 
-export async function createWallet(seedPhrase = generateSeedPhrase()) {
-  const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
-  wallet.provider = ethers.providers.getDefaultProvider();
-
-  saveSeedPhrase(seedPhrase);
-  savePrivateKey(wallet.privateKey);
-  saveAddress(wallet.address);
-
-  console.log(`Wallet: Generated wallet with public address: ${wallet.address}`);
-
-  return wallet;
-}
-
-export async function loadWallet() {
+export const loadWallet = async () => {
   const privateKey = await loadPrivateKey();
   if (privateKey) {
     const wallet = new ethers.Wallet(privateKey);
@@ -39,9 +31,9 @@ export async function loadWallet() {
   }
   console.log("Wallet: failed to load existing wallet because the private key doesn't exist");
   return null;
-}
+};
 
-export async function createTransaction(to, data, value, gasLimit, gasPrice, nonce = null) {
+export const createTransaction = async (to, data, value, gasLimit, gasPrice, nonce = null) => {
   return {
     to,
     data,
@@ -50,37 +42,50 @@ export async function createTransaction(to, data, value, gasLimit, gasPrice, non
     gasPrice,
     nonce,
   };
-}
+};
 
-export async function sendTransaction(transaction) {
+export const sendTransaction = async (transaction) => {
   const wallet = await loadWallet();
   const transactionHash = await wallet.sendTransaction(transaction);
   return transactionHash;
-}
+};
 
-export async function saveSeedPhrase(seedPhrase) {
-  await keychain.saveString(seedPhraseKey, seedPhrase);
-}
-
-export async function loadSeedPhrase() {
+export const loadSeedPhrase = async () => {
   const seedPhrase = await keychain.loadString(seedPhraseKey);
   return seedPhrase;
-}
+};
 
-export async function savePrivateKey(privateKey) {
+const createWallet = async (seedPhrase = generateSeedPhrase()) => {
+  const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
+  wallet.provider = ethers.providers.getDefaultProvider();
+  saveSeedPhrase(seedPhrase);
+  savePrivateKey(wallet.privateKey);
+  saveAddress(wallet.address);
+
+  console.log(`Wallet: Generated wallet with public address: ${wallet.address}`);
+
+  return wallet;
+};
+
+const saveSeedPhrase = async (seedPhrase) => {
+  await keychain.saveString(seedPhraseKey, seedPhrase);
+};
+
+const savePrivateKey = async (privateKey) => {
   await keychain.saveString(privateKeyKey, privateKey);
-}
+};
 
-export async function loadPrivateKey() {
+const loadPrivateKey = async () => {
   const privateKey = await keychain.loadString(privateKeyKey);
   return privateKey;
-}
+};
 
-export async function saveAddress(address) {
+const saveAddress = async (address) => {
   await keychain.saveString(addressKey, address);
-}
+};
 
-export async function loadAddress() {
+const loadAddress = async () => {
   const privateKey = await keychain.loadString(addressKey);
   return privateKey;
-}
+};
+

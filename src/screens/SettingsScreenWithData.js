@@ -1,9 +1,10 @@
 import { debounce } from 'lodash';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Alert, Clipboard } from 'react-native';
 import Mailer from 'react-native-mail';
 import { Transition } from 'react-navigation-fluid-transitions';
-import * as ethWallet from '../model/ethWallet';
+import { loadWallet } from '../model/wallet';
 import SettingsScreen from './SettingsScreen';
 
 const FeedbackEmailAddress = 'contact+alphafeedback@balance.io';
@@ -19,14 +20,20 @@ const handleSendFeedbackError = debounce(() =>
   ), 250);
 
 export default class SettingsScreenWithData extends Component {
+  static propTypes = {
+    navigation: PropTypes.object,
+  }
+
   state = {
     address: '',
     showSeedPhrase: false,
   }
 
   componentDidMount= () =>
-    this.loadWallet()
+    loadWallet()
       .then(({ address }) => this.setState({ address }))
+
+  handlePressBackButton = () => this.props.navigation.goBack()
 
   handleSendFeedback = () =>
     Mailer.mail({
@@ -37,12 +44,11 @@ export default class SettingsScreenWithData extends Component {
   handleToggleShowSeedPhrase = () =>
     this.setState(prevState => ({ showSeedPhrase: !prevState.showSeedPhrase }))
 
-  loadWallet = async () => ethWallet.loadWallet()
-
   render = () => (
     <Transition appear='left' disappear='left'>
       <SettingsScreen
         {...this.state}
+        onPressBackButton={this.handlePressBackButton}
         onSendFeedback={this.handleSendFeedback}
         onToggleShowSeedPhrase={this.handleToggleShowSeedPhrase}
       />

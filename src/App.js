@@ -1,20 +1,47 @@
+import { account, commonStorage, accountUpdateAccountAddress } from 'balance-common';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { AppRegistry, AppState, AsyncStorage, Platform } from 'react-native';
 import FCM, { FCMEvent, NotificationType, RemoteNotificationResult, WillPresentNotificationResult } from 'react-native-fcm';
-import * as EthWallet from './model/ethWallet';
-import { addNewTransaction } from './model/transactions';
+import { NavigationActions } from 'react-navigation';
+import { connect, Provider } from 'react-redux';
+import { compose, withProps } from 'recompose';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
+import thunk from 'redux-thunk';
+import { walletConnectGetTransaction } from './model/walletconnect';
+import { walletInit } from './model/wallet';
+import transactionsToApprove, { addTransactionToApprove } from './reducers/transactionsToApprove';
 import Routes from './screens/Routes';
 
-EthWallet.init();
+const store = createStore(
+  combineReducers({ account, transactionsToApprove }),
+  applyMiddleware(thunk),
+);
 
-FCM.getFCMToken().then(fcmToken => {
-  console.log(`FCM Token: ${fcmToken}`);
-});
+function registerAppListener(notificationHandler) {
+  FCM.on(FCMEvent.Notification, notif => {
+    console.log(`registerAppListener notif: ${notif}`);
+    const { transactionId } = notif;
 
-// export default class App extends Component {
-//   componentDidMount() {
-//     SplashScreen.hide();
-//   }
-// }
+    if (Platform.OS === 'ios') {
+      switch (notif._notificationType) {
+      case NotificationType.Remote:
+        notif.finish(RemoteNotificationResult.NewData);
+        break;
+      case NotificationType.NotificationResponse:
+        notificationHandler(transactionId);
+        notif.finish();
+        break;
+      case NotificationType.WillPresent:
+        notif.finish(WillPresentNotificationResult.All);
+
+        break;
+      default:
+        break;
+      }
+    }
+  });
+}
 
 function registerKilledListener() {
   FCM.on(FCMEvent.Notification, notif => {
@@ -40,43 +67,70 @@ function registerKilledListener() {
   });
 }
 
-function registerAppListener() {
-  FCM.on(FCMEvent.Notification, notif => {
-    console.log(`registerAppListener notif: ${notif}`);
-    const { sessionId, transactionId } = notif;
 
-    if (Platform.OS === 'ios') {
-      switch (notif._notificationType) {
-      case NotificationType.Remote:
-        notif.finish(RemoteNotificationResult.NewData);
-        break;
-      case NotificationType.NotificationResponse:
-        showApproveTransactions(sessionId, transactionId);
-        notif.finish();
-        break;
-      case NotificationType.WillPresent:
-        notif.finish(WillPresentNotificationResult.All);
-
-        break;
-      default:
-        break;
-      }
-    }
-  });
-}
-
-registerAppListener();
 registerKilledListener();
 
-function showApproveTransactions(sessionId, transactionId) {
-  addNewTransaction(sessionId, transactionId).then(() => {
-    // Navigation.showModal({
-    //   screen: 'BalanceWallet.TransactionScreen',
-    //   navigatorStyle: { navBarHidden: true },
-    //   navigatorButtons: {},
-    //   animationType: 'slide-up',
-    // });
-  });
+class App extends Component {
+  static propTypes = {
+    accountUpdateAccountAddress: PropTypes.func,
+    addTransactionToApprove: PropTypes.func,
+  }
+
+  navigatorRef = null
+
+  componentDidMount() {
+    registerAppListener(this.onPushNotification);
+    FCM.getFCMToken().then(fcmToken => {
+      commonStorage.saveLocal('fcmToken', { data: fcmToken });
+      console.log(`FCM Token: ${fcmToken}`);
+    });
+
+    walletInit()
+      .then(wallet => {
+        console.log('wallet address', wallet.address);
+        this.props.accountUpdateAccountAddress(wallet.address, 'BALANCEWALLET');
+      })
+      .catch(error => {
+        // TODO error handling
+      });
+    console.log('wallet init');
+  }
+
+  handleNavigatorRef = (navigatorRef) => { this.navigatorRef = navigatorRef; }
+
+  handleOpenConfirmTransactionModal = () => {
+    if (!this.navigatorRef) return;
+
+    const action = NavigationActions.navigate({
+      routeName: 'ConfirmTransaction',
+      params: {},
+    });
+
+    this.navigatorRef.dispatch(action);
+  }
+
+  onPushNotification = async (transactionId) => {
+    const transactionPayload = await walletConnectGetTransaction(transactionId);
+    this.props.addTransactionToApprove(transactionId, transactionPayload);
+    this.handleOpenConfirmTransactionModal();
+  }
+
+  render = () => (
+    <Provider store={store}>
+      <Routes ref={this.handleNavigatorRef} />
+    </Provider>
+  )
 }
 
-AppRegistry.registerComponent('BalanceWallet', () => Routes);
+const AppWithRedux = compose(
+  withProps({ store }),
+  connect(
+    null,
+    {
+      addTransactionToApprove,
+      accountUpdateAccountAddress,
+    },
+  ),
+)(App);
+
+AppRegistry.registerComponent('BalanceWallet', () => AppWithRedux);

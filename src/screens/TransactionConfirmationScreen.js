@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import TouchID from 'react-native-touch-id';
 import styled from 'styled-components';
 import { StatusBar, AlertIOS } from 'react-native';
-import { Navigation } from 'react-native-navigation';
 import { Button } from '../components/buttons';
-import * as ethWallet from '../model/ethWallet';
-import { getTransactionToApprove } from '../model/transactions';
-import { walletConnectSendTransactionHash } from '../model/walletconnect';
+import { sendTransaction } from '../model/wallet';
+import { walletConnectSendTransactionHash }  from '../model/walletconnect';
+import { getTransactionToApprove } from '../reducers/transactionsToApprove';
+import { connect } from 'react-redux';
 
 const SContainer = styled.View`
   flex: 1;
@@ -89,10 +89,13 @@ const SFaceID = styled.Image`
   transform: translateX(-91px) translateY(-6px);
 `;
 
-class TransactionScreen extends Component {
+class TransactionConfirmationScreen extends Component {
+  static propTypes = {
+    navigation: PropTypes.any,
+  };
+
   state = {
-    confirmed: false,
-    transaction: null,
+    transactionDetails: null,
   };
 
   componentDidMount() {
@@ -101,24 +104,34 @@ class TransactionScreen extends Component {
   }
 
   showNewTransaction = () => {
-    const transaction = getTransactionToApprove();
-    console.log('transaction', transaction);
-    this.setState({ transaction });
+    const transactionDetails = this.props.getTransactionToApprove();
+    // includes transactionId and payload
+    // TODO parse out the txn details and set state
+    this.setState(() => ({ transactionDetails }));
   };
 
   confirmTransaction = () =>
     TouchID.authenticate('Confirm transaction')
       .then(async success => {
-        console.log('success', success);
-        const { transaction } = this.state;
-        const transactionReceipt = await ethWallet.sendTransaction(transaction.transactionData);
+        const { transactionDetails } = this.state;
+        // TODO try catch
+        const transactionReceipt = await sendTransaction(transactionDetails.transactionPayload);
         if (transactionReceipt && transactionReceipt.hash) {
-          await walletConnectSendTransactionHash(transaction.transactionId, true, transactionReceipt.hash);
-          this.onClose();
-          this.setState(() => ({ confirmed: true, transaction: null }));
+          try {
+            await walletConnectSendTransactionHash(transactionDetails.transactionId, true, transactionReceipt.hash);
+            // TODO: update that this transaction has been confirmed and reset txn details
+            this.onClose();
+            this.setState(() => ({ transactionDetails: null }));
+          } catch(error) {
+            // TODO error handling when txn hash failed to send; store somewhere?
+            console.log('error sending txn hash', error);
+            this.onClose();
+            this.setState(() => ({ transaction: null }));
+          }
         } else {
+          // TODO try catch
           await walletConnectSendTransactionHash(false, null);
-          this.setState(() => ({ confirmed: false }));
+          this.setState(() => ({ transactionDetails: null }));
         }
       })
       .catch(error => {
@@ -128,9 +141,6 @@ class TransactionScreen extends Component {
 
   onClose() {
     StatusBar.setBarStyle('dark-content', true);
-    Navigation.dismissModal({
-      animationType: 'slide-down',
-    });
   }
 
   render() {
@@ -139,12 +149,11 @@ class TransactionScreen extends Component {
         <STopContainer>
           {/* eslint-disable-next-line */}
           <SVendorLogo source={require('../assets/ethereum.png')} />
-          <SVendorName>{'Ethereum Store'}</SVendorName>
-          <SRequestPayment>{'Request for payment'}</SRequestPayment>
+          <SVendorName>{'Balance Manager'}</SVendorName>
+          <SRequestPayment>{'Confirm Transaction'}</SRequestPayment>
         </STopContainer>
         <SBottomContainer>
           {/* eslint-disable-next-line */}
-          <SConfirmMenu source={require('../assets/confirm-menu.png')} />
           <STransactionDetailContainer>
             <SCloseModal onPress={this.onClose}>Cancel</SCloseModal>
           </STransactionDetailContainer>
@@ -160,18 +169,13 @@ class TransactionScreen extends Component {
   }
 }
 
-TransactionScreen.propTypes = {
-  navigation: PropTypes.any,
-  transaction: PropTypes.any,
-  convertedAmount: PropTypes.string,
-  currencyName: PropTypes.string,
-};
+const reduxProps = ({ transactionsToApprove }) => ({
+  transactionsToApprove: transactionsToApprove.transactionsToApprove,
+});
 
-TransactionScreen.defaultProps = {
-  fromAddress: 'fake address',
-  toAddress: 'fake address',
-  currencyName: 'AVO',
-  convertedAmount: 'TBD',
-};
-
-export default TransactionScreen;
+export default connect(
+  reduxProps,
+  {
+    getTransactionToApprove,
+  }
+)(TransactionConfirmationScreen);

@@ -1,7 +1,7 @@
 import omitProps from '@hocs/omit-props';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { TouchableWithoutFeedback } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { View } from 'react-primitives';
 import { animated, interpolate, Spring } from 'react-spring/dist/native';
 import { compose, withHandlers, withState } from 'recompose';
@@ -21,40 +21,44 @@ const buildAnimatedTransform = ({ scale, translateY }) => ({
 });
 
 const ButtonPressAnimation = ({
+  activeOpacity,
   children,
   isPressed,
   onPress,
   onPressIn,
   onPressOut,
 }) => (
-  <TouchableWithoutFeedback
+  <TouchableOpacity
+    activeOpacity={activeOpacity}
     onPress={onPress}
     onPressIn={onPressIn}
     onPressOut={onPressOut}
   >
-    {/* TouchableWithoutFeedback requires its children to be wrapped in a <View /> */}
-    <View>
-      <Spring
-        from={PressAnimationState.from}
-        native
-        to={isPressed ? PressAnimationState.to : PressAnimationState.from}
-      >
-        {springValues => (
-          <AnimatedView style={buildAnimatedTransform(springValues)}>
-            {children}
-          </AnimatedView>
-        )}
-      </Spring>
-    </View>
-  </TouchableWithoutFeedback>
+    <Spring
+      from={PressAnimationState.from}
+      native
+      to={isPressed ? PressAnimationState.to : PressAnimationState.from}
+    >
+      {springValues => (
+        <AnimatedView style={buildAnimatedTransform(springValues)}>
+          {children}
+        </AnimatedView>
+      )}
+    </Spring>
+  </TouchableOpacity>
 );
 
 ButtonPressAnimation.propTypes = {
+  activeOpacity: PropTypes.number,
   children: PropTypes.node,
   isPressed: PropTypes.bool,
   onPress: PropTypes.func,
   onPressIn: PropTypes.func,
   onPressOut: PropTypes.func,
+};
+
+ButtonPressAnimation.defaultProps = {
+  activeOpacity: 1,
 };
 
 export default compose(
