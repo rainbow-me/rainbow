@@ -65,7 +65,7 @@ const WalletScreen = ({ accountInfo, onPressProfile, uniqueTokens }) => {
           renderItem={AssetListItem}
           renderSectionFooter={() => <Separator />}
           renderSectionHeader={headerProps => <AssetListHeader {...headerProps} />}
-          sections={[sections.balances]}
+          sections={[sections.balances, sections.collectibles]}
         />
       </FabWrapper>
     </Page>
