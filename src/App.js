@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AppRegistry, AppState, AsyncStorage, Platform } from 'react-native';
 import FCM, { FCMEvent, NotificationType, RemoteNotificationResult, WillPresentNotificationResult } from 'react-native-fcm';
-import { createStackNavigator } from 'react-navigation';
+import { NavigationActions } from 'react-navigation';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompose';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
@@ -76,6 +76,8 @@ class App extends Component {
     addTransactionToApprove: PropTypes.func,
   }
 
+  navigatorRef = null
+
   componentDidMount() {
     registerAppListener(this.onPushNotification);
     FCM.getFCMToken().then(fcmToken => {
@@ -94,15 +96,28 @@ class App extends Component {
     console.log('wallet init');
   }
 
+  handleNavigatorRef = (navigatorRef) => { this.navigatorRef = navigatorRef; }
+
+  handleOpenConfirmTransactionModal = () => {
+    if (!this.navigatorRef) return;
+
+    const action = NavigationActions.navigate({
+      routeName: 'ConfirmTransaction',
+      params: {},
+    });
+
+    this.navigatorRef.dispatch(action);
+  }
+
   onPushNotification = async (transactionId) => {
     const transaction = await walletConnectGetTransaction(transactionId);
     this.props.addTransactionToApprove(transaction);
-    // this.props.navigation.navigate('ConfirmTransaction');
+    this.handleOpenConfirmTransactionModal();
   }
 
   render = () => (
     <Provider store={store}>
-      <Routes />
+      <Routes ref={this.handleNavigatorRef} />
     </Provider>
   )
 }
@@ -118,7 +133,4 @@ const AppWithRedux = compose(
   ),
 )(App);
 
-
-const AppWithRouter = createStackNavigator({ App: { screen: AppWithRedux } }, { headerMode: 'none' });
-
-AppRegistry.registerComponent('BalanceWallet', () => AppWithRouter);
+AppRegistry.registerComponent('BalanceWallet', () => AppWithRedux);

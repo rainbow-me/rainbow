@@ -30,24 +30,20 @@ const IntroStack = createStackNavigator({
   IntroScreen,
 }, {
   headerMode: 'none',
-});
-
-const ConfirmTransactionStack = createStackNavigator({
-  TransactionConfirmationScreen,
-}, {
-  mode: 'modal',
-  headerMode: 'none',
+  mode: 'card', // Horizontal gestures
 });
 
 export default createSwitchNavigator(
   {
-    Loading: LoadingScreen,
     App: AppStack,
+    ConfirmTransaction: TransactionConfirmationScreen,
     Intro: IntroStack,
-    ConfirmTransaction: ConfirmTransactionStack,
+    Loading: LoadingScreen,
   },
   {
+    headerMode: 'none',
     initialRouteName: 'Loading',
+    mode: 'modal',
   },
 );
 
