@@ -19,7 +19,7 @@ const Text = styled(Monospace)`
 
 const UniqueTokenCard = ({ item, ...props }) => (
   <Container {...props}>
-    <Text>{item}</Text>
+    <Text>{item.name}</Text>
   </Container>
 );
 
