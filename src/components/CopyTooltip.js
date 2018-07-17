@@ -1,28 +1,38 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Component } from 'react';
 import { Clipboard } from 'react-native';
 import ToolTip from 'react-native-tooltip';
-import { withHandlers } from 'recompose';
+import { withNavigation } from 'react-navigation';
 import { colors } from '../styles';
 
-const CopyTooltip = ({ onCopy, underlayColor, ...props }) => (
-  <ToolTip
-    {...props}
-    actions={[{ onPress: onCopy, text: 'Copy' }]}
-    underlayColor={colors.transparent}
-  />
-);
+class CopyTooltip extends Component {
+  static propTypes = {
+    navigation: PropTypes.object,
+    textToCopy: PropTypes.string,
+  }
 
-CopyTooltip.propTypes = {
-  onCopy: PropTypes.func,
-  textToCopy: PropTypes.string,
-  underlayColor: PropTypes.string,
-};
+  tooltip = null
 
-CopyTooltip.defaultProps = {
-  underlayColor: colors.transparent,
-};
+  componentDidUpdate = () => {
+    if (this.props.navigation.state.isTransitioning) {
+      this.handleHideTooltip();
+    }
+  }
 
-export default withHandlers({
-  onCopy: ({ textToCopy }) => () => Clipboard.setString(textToCopy),
-})(CopyTooltip);
+  componentWillUnmount = () => this.handleHideTooltip()
+
+  handleCopy = () => Clipboard.setString(this.props.textToCopy)
+  handleRef = (ref) => { this.tooltip = ref; }
+  handleHideTooltip = () => this.tooltip.hideMenu()
+
+  render = () => (
+    <ToolTip
+      {...this.props}
+      actions={[{ onPress: this.handleCopy, text: 'Copy' }]}
+      ref={this.handleRef}
+      underlayColor={colors.transparent}
+    />
+  )
+}
+
+export default withNavigation(CopyTooltip);

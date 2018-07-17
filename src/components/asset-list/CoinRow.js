@@ -7,7 +7,7 @@ import { padding } from '../../styles';
 import CoinIcon from '../CoinIcon';
 
 const Container = styled(Row)`
-  ${padding(12, 18, 12, 20)}
+  ${padding(12, 19, 12, 15)}
 `;
 
 const Content = styled(Column)`
@@ -20,6 +20,7 @@ const CoinRow = ({
   address,
   balance,
   bottomRowRender,
+  native,
   name,
   symbol,
   topRowRender,
@@ -31,6 +32,7 @@ const CoinRow = ({
         {topRowRender({
           address,
           balance,
+          native,
           name,
           symbol,
         })}
@@ -39,6 +41,7 @@ const CoinRow = ({
         {bottomRowRender({
           address,
           balance,
+          native,
           name,
           symbol,
         })}
@@ -49,7 +52,8 @@ const CoinRow = ({
 
 CoinRow.propTypes = {
   address: PropTypes.string,
-  balance: PropTypes.number,
+  balance: PropTypes.object,
+  native: PropTypes.object,
   bottomRowRender: PropTypes.func,
   name: PropTypes.string,
   symbol: PropTypes.string,

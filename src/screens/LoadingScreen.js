@@ -7,6 +7,8 @@ import { Centered } from '../components/layout';
 import { Monospace } from '../components/text';
 import { colors, padding } from '../styles';
 
+import { Transition } from 'react-navigation-fluid-transitions';
+
 const Container = styled(Centered)`
   ${padding(0, 30)}
   background-color: ${colors.white};
@@ -44,10 +46,11 @@ export default class LoadingScreen extends Component {
 
     // This will switch to the App screen or Auth screen and this loading
     // screen will be unmounted and thrown away.
-    this.props.navigation.navigate(isUserInitialized ? 'App' : 'Intro');
+    this.props.navigation.navigate('Intro'); //isUserInitialized ? 'App' : 'Intro'
   }
 
   render = () => (
+    <Transition appear='bottom' disappear='bottom'>
     <Container>
       <Content>
         <Icon
@@ -57,5 +60,6 @@ export default class LoadingScreen extends Component {
       </Content>
       <Footer>Balance v0.01</Footer>
     </Container>
+    </Transition>
   )
 }

@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { cloneElement } from 'react';
-import { isIphoneX } from 'react-native-iphone-x-helper';
 import styled from 'styled-components/primitives';
 import { position } from '../../styles';
 import { Row } from '../layout';
@@ -10,7 +9,7 @@ const Container = styled.View`
 `;
 
 const Wrapper = styled(Row)`
-  bottom: ${(isIphoneX ? 42 : 0) + 12};
+  bottom: 21;
   position: absolute;
   right: 12;
 `;
