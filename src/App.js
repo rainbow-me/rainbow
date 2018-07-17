@@ -107,7 +107,6 @@ class App extends Component {
   )
 }
 
-const AppWithRouter = createStackNavigator({ App: { screen: App } }, { headerMode: 'none' });
 const AppWithRedux = compose(
   withProps({ store }),
   connect(
@@ -117,6 +116,9 @@ const AppWithRedux = compose(
       accountUpdateAccountAddress,
     },
   ),
-)(AppWithRouter);
+)(App);
 
-AppRegistry.registerComponent('BalanceWallet', () => AppWithRedux);
+
+const AppWithRouter = createStackNavigator({ App: { screen: AppWithRedux } }, { headerMode: 'none' });
+
+AppRegistry.registerComponent('BalanceWallet', () => AppWithRouter);
