@@ -32,11 +32,16 @@ const keyExtractor = (item, index) => {
 };
 
 const WalletScreen = ({ accountInfo, onPressProfile }) => {
+  const orderedAssets = accountInfo.assets.sort((a,b) => {
+    const amountA = a.native && a.native.balance && a.native.balance.amount ? a.native.balance.amount : "0";
+    const amountB = b.native && b.native.balance && b.native.balance.amount ? b.native.balance.amount : "0";
+    return parseFloat(amountB) - parseFloat(amountA);
+  });
   const sections = {
     balances: {
       title: 'Balances',
       totalValue: accountInfo.total.display || '---',
-      data: accountInfo.assets,
+      data: orderedAssets,
       renderItem: BalanceCoinRow,
     },
     /* collectibles: {
