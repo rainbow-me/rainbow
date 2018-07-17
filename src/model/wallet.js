@@ -8,12 +8,12 @@ export function generateSeedPhrase() {
   return ethers.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
 }
 
-export const walletInit = async (seedPhrase = generateSeedPhrase()) => {
+export const walletInit = async (seedPhrase = null) => {
   let wallet = null;
   try {
     wallet = await loadWallet();
     if (!wallet) {
-      wallet = await createWallet();
+      wallet = await createWallet(seedPhrase);
     }
     return wallet;
   } catch(error) {
@@ -55,8 +55,8 @@ export const loadSeedPhrase = async () => {
   return seedPhrase;
 };
 
-const createWallet = async (seedPhrase = generateSeedPhrase()) => {
-  const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
+const createWallet = async (seedPhrase) => {
+  const wallet = ethers.Wallet.fromMnemonic(seedPhrase || generateSeedPhrase());
   wallet.provider = ethers.providers.getDefaultProvider();
   saveSeedPhrase(seedPhrase);
   savePrivateKey(wallet.privateKey);
