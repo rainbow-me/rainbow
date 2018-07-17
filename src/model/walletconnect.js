@@ -1,5 +1,4 @@
 import RNWalletConnect from 'rn-walletconnect-wallet';
-import personalData from './personalData';
 import { commonStorage } from 'balance-common';
 
 const WALLET_WEBHOOK = 'https://walletconnect.balance.io/webhook/push-notify';

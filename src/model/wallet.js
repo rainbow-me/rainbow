@@ -1,6 +1,5 @@
 import ethers from 'ethers';
 import * as keychain from '../model/keychain';
-import { accountUpdateAccountAddress } from 'balance-common';
 const seedPhraseKey = 'seedPhrase';
 const privateKeyKey = 'privateKey';
 const addressKey = 'addressKey';

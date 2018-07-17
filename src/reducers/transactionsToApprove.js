@@ -1,12 +1,17 @@
 // -- Constants --------------------------------------- //
 const WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE = 'wallet/WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE';
 
-export const updateTransactionsToApprove = (transactions) => (dispatch, getState) => {
-  dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: transactions });
+export const getTransactionToApprove = () => (dispatch, getState) => {
+  const { transactionsToApprove } = getState().transactionsToApprove;
+  const transaction = transactionsToApprove[0] || null;
+  const remainingTransactions = transactionsToApprove.slice(1,);
+  dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: remainingTransactions });
+  return transaction;
 };
 
-export const addTransactionToApprove = (transaction) => (dispatch, getState) => {
+export const addTransactionToApprove = (transactionId, transactionPayload) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
+  const transaction = { transactionId, transactionPayload };
   const updatedTransactions = transactionsToApprove.concat(transaction);
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
 };

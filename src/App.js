@@ -110,8 +110,8 @@ class App extends Component {
   }
 
   onPushNotification = async (transactionId) => {
-    const transaction = await walletConnectGetTransaction(transactionId);
-    this.props.addTransactionToApprove(transaction);
+    const transactionPayload = await walletConnectGetTransaction(transactionId);
+    this.props.addTransactionToApprove(transactionId, transactionPayload);
     this.handleOpenConfirmTransactionModal();
   }
 
