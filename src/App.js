@@ -94,7 +94,6 @@ class App extends Component {
       .catch(error => {
         // TODO error handling
       });
-    console.log('wallet init');
   }
 
   handleNavigatorRef = (navigatorRef) => { this.navigatorRef = navigatorRef; }
