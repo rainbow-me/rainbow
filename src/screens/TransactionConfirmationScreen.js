@@ -8,7 +8,6 @@ import { sendTransaction } from '../model/wallet';
 import { walletConnectSendTransactionHash }  from '../model/walletconnect';
 import { getTransactionToApprove } from '../reducers/transactionsToApprove';
 import { connect } from 'react-redux';
-import { getTransactionDisplayDetails } from '../helpers/utilities';
 
 const SContainer = styled.View`
   flex: 1;
@@ -101,9 +100,8 @@ class TransactionConfirmationScreen extends Component {
 
   componentDidMount() {
     StatusBar.setBarStyle('light-content', true);
-    const { transactionId, transactionPayload } = this.props.getTransactionToApprove();
-    const transactionDisplayDetails = getTransactionDisplayDetails(transactionPayload);
-    this.setState(() => ({ transactionDetails: { transactionId, transactionPayload, transactionDisplayDetails} }));
+    const transactionDetails = this.props.getTransactionToApprove();
+    this.setState(() => ({ transactionDetails }));
   }
 
   confirmTransaction = () =>
