@@ -2,12 +2,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import TouchID from 'react-native-touch-id';
 import styled from 'styled-components';
-import { StatusBar, AlertIOS } from 'react-native';
+import { StatusBar, AlertIOS, Text } from 'react-native';
 import { Button } from '../components/buttons';
 import { sendTransaction } from '../model/wallet';
 import { walletConnectSendTransactionHash }  from '../model/walletconnect';
 import { getTransactionToApprove } from '../reducers/transactionsToApprove';
 import { connect } from 'react-redux';
+import { getTransactionDisplayDetails } from '../helpers/utilities';
 
 const SContainer = styled.View`
   flex: 1;
@@ -100,15 +101,10 @@ class TransactionConfirmationScreen extends Component {
 
   componentDidMount() {
     StatusBar.setBarStyle('light-content', true);
-    this.showNewTransaction();
+    const { transactionId, transactionPayload } = this.props.getTransactionToApprove();
+    const transactionDisplayDetails = getTransactionDisplayDetails(transactionPayload);
+    this.setState(() => ({ transactionDetails: { transactionId, transactionPayload, transactionDisplayDetails} }));
   }
-
-  showNewTransaction = () => {
-    const transactionDetails = this.props.getTransactionToApprove();
-    // includes transactionId and payload
-    // TODO parse out the txn details and set state
-    this.setState(() => ({ transactionDetails }));
-  };
 
   confirmTransaction = () =>
     TouchID.authenticate('Confirm transaction')
@@ -144,6 +140,7 @@ class TransactionConfirmationScreen extends Component {
   }
 
   render() {
+    const { transactionDetails } = this.state;
     return (
       <SContainer>
         <STopContainer>
@@ -156,6 +153,10 @@ class TransactionConfirmationScreen extends Component {
           {/* eslint-disable-next-line */}
           <STransactionDetailContainer>
             <SCloseModal onPress={this.onClose}>Cancel</SCloseModal>
+            <Text>{`From: ${transactionDetails ? transactionDetails.transactionDisplayDetails.from : '---'}`}</Text>
+            <Text>{`To: ${transactionDetails ? transactionDetails.transactionDisplayDetails.to : '---'}`}</Text>
+            <Text>{`Symbol: ${transactionDetails ? transactionDetails.transactionDisplayDetails.symbol : '---'}`}</Text>
+            <Text>{`Value: ${transactionDetails ? transactionDetails.transactionDisplayDetails.value : '---'}`}</Text>
           </STransactionDetailContainer>
           <SConfirmButtonContainer>
             <Button onPress={() => this.confirmTransaction()}>
