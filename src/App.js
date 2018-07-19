@@ -20,7 +20,7 @@ const store = createStore(
 
 function registerAppListener(notificationHandler) {
   FCM.on(FCMEvent.Notification, notif => {
-    console.log(`registerAppListener notif: ${notif}`);
+    console.log('registerAppListener notif', notif);
     const { transactionId } = notif;
 
     if (Platform.OS === 'ios') {
@@ -80,6 +80,7 @@ class App extends Component {
 
   componentDidMount() {
     registerAppListener(this.onPushNotification);
+    // TODO: save and get FCM token from AsyncStorage
     FCM.getFCMToken().then(fcmToken => {
       commonStorage.saveLocal('fcmToken', { data: fcmToken });
       console.log(`FCM Token: ${fcmToken}`);
