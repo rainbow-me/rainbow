@@ -10,6 +10,7 @@ font.family = {
 font.size = {
   micro: '9px',
   tiny: '11px',
+  smaller: '12px',
   small: '13px',
   smedium: '14px',
   medium: '15px',
@@ -17,7 +18,7 @@ font.size = {
   large: '18px',
   big: '22px',
   h1: '42px',
-  h2: '32px',
+  h2: '30px',
   h3: '24px',
   h4: '20px',
   h5: '17px',

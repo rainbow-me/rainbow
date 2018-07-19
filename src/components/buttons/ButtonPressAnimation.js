@@ -23,6 +23,7 @@ const buildAnimatedTransform = ({ scale, translateY }) => ({
 const ButtonPressAnimation = ({
   activeOpacity,
   children,
+  disabled,
   isPressed,
   onPress,
   onPressIn,
@@ -30,6 +31,7 @@ const ButtonPressAnimation = ({
 }) => (
   <TouchableOpacity
     activeOpacity={activeOpacity}
+    disabled={disabled}
     onPress={onPress}
     onPressIn={onPressIn}
     onPressOut={onPressOut}
@@ -51,6 +53,7 @@ const ButtonPressAnimation = ({
 ButtonPressAnimation.propTypes = {
   activeOpacity: PropTypes.number,
   children: PropTypes.node,
+  disabled: PropTypes.bool,
   isPressed: PropTypes.bool,
   onPress: PropTypes.func,
   onPressIn: PropTypes.func,
