@@ -1,29 +1,56 @@
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
+import React from 'react';
+import { SectionList } from 'react-native';
+import { compose, withProps } from 'recompose';
 import styled from 'styled-components/primitives';
-import Column from '../layout/Column';
+import { position } from '../../styles';
+import AssetListHeader from './AssetListHeader';
+import AssetListItem from './AssetListItem';
+import AssetListSkeleton from './AssetListSkeleton';
 
-const Cointainer = styled(Column)`
-  width: 100%;
+const List = styled(SectionList)`
+  ${position.size('100%')}
 `;
 
-const Content = styled.View`
-  background-color: #f7f7f7;
+const Separator = styled.View`
+  height: 27;
 `;
 
-const AssetList = ({ assets, label }) => (
-  <Cointainer>
-    <Content>
-      <Fragment>
-        {assets}
-      </Fragment>
-    </Content>
-  </Cointainer>
+const keyExtractor = (item, index) => {
+  const key = Array.isArray(item) ? item[0] : get(item, 'symbol');
+  return key + index;
+};
+
+const AssetList = ({ isEmpty, sections }) => (
+  isEmpty ? (
+    <AssetListSkeleton />
+  ) : (
+    <List
+      keyExtractor={keyExtractor}
+      renderItem={AssetListItem}
+      renderSectionFooter={() => <Separator />}
+      renderSectionHeader={headerProps => <AssetListHeader {...headerProps} />}
+      sections={sections}
+    />
+  )
 );
 
 AssetList.propTypes = {
-  assets: PropTypes.arrayOf(PropTypes.node),
-  label: PropTypes.string,
+  isEmpty: PropTypes.bool,
+  sections: PropTypes.arrayOf(PropTypes.object),
 };
 
-export default AssetList;
+AssetList.defaultProps = {
+  // isEmpty: true,
+};
+
+export default compose(
+  withProps(({ sections }) => {
+    // sections.map(section => {
+
+    // })
+    console.log('sections', sections);
+    // return { isEmpty:
+  }),
+)(AssetList);
