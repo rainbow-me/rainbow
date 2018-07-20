@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { StatusBar, AlertIOS } from 'react-native';
@@ -55,24 +56,22 @@ class TransactionConfirmationScreenWithData extends Component {
   handleCancelTransaction = () => {
     console.log('onCancelTransaction', this.props);
     StatusBar.setBarStyle('dark-content', true);
-    // this.props.navigation.goBack();
+    this.props.navigation.goBack();
   }
 
   showNewTransaction = () => {
     const transactionDetails = this.props.getTransactionToApprove();
-    // includes transactionId and payload
-    // TODO parse out the txn details and set state
     this.setState({ transactionDetails });
   }
 
   render = () => (
     <TransactionConfirmationScreen
       asset={{
-        address: '0x1074bA07DD1DCFae8bFa9ab259F58A15faD5383a',
-        amount: 17.92584,
-        name: '0x',
-        nativeAmount: '$123.45',
-        symbol: 'zrx',
+        address: `${get(this.state.transactionDetails, 'transactionDisplayDetails.to', '---')}`,
+        amount: `${get(this.state.transactionDetails, 'transactionDisplayDetails.value', '---')}`,
+        name: `${get(this.state.transactionDetails, 'transactionDisplayDetails.name', '---')}`,
+        nativeAmount: '',
+        symbol: `${get(this.state.transactionDetails, 'transactionDisplayDetails.symbol', '---')}`,
       }}
       onCancelTransaction={this.handleCancelTransaction}
       onConfirmTransaction={this.handleConfirmTransaction}

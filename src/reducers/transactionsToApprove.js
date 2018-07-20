@@ -7,7 +7,7 @@ const WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE = 'wallet/WALLETCONNECT_UPDAT
 const getAssetDetails = (contractAddress, assets) => {
   for (var item of assets)  {
     if (item.address === contractAddress) {
-      return { symbol: item.symbol, decimals: item.decimals }
+      return { symbol: item.symbol, decimals: item.decimals, name: item.name }
     }
   }
   return null;
@@ -20,11 +20,12 @@ const getTransactionDisplayDetails = (transaction, assets) => {
       from: transaction.from,
       to: transaction.to,
       symbol: 'ETH',
+      name: 'Ethereum',
       value: bignumber.fromWei(bignumber.convertHexToString(transaction.value)),
     }
   } else if (transaction.data.startsWith(tokenTransferHash)) {
     const contractAddress = transaction.to;
-    const { symbol, decimals } = getAssetDetails(contractAddress, assets);
+    const { symbol, decimals, name } = getAssetDetails(contractAddress, assets);
     const dataPayload = transaction.data.replace(tokenTransferHash, '');
     const toAddress = '0x' + dataPayload.slice(0, 64).replace(/^0+/, '');
     const amount = '0x' + dataPayload.slice(64,128).replace(/^0+/, '');
@@ -33,6 +34,7 @@ const getTransactionDisplayDetails = (transaction, assets) => {
       from: transaction.from,
       to: toAddress,
       symbol: symbol,
+      name: name,
       value: transferValue,
     }
   } else {
