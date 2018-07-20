@@ -4,7 +4,7 @@ import IntroScreen from './IntroScreen';
 import LoadingScreen from './LoadingScreen';
 import QRScannerScreen from './QRScannerScreen';
 import SettingsScreenWithData from './SettingsScreenWithData';
-import TransactionConfirmationScreen from './TransactionConfirmationScreen';
+import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
 
 const AppStack = FluidNavigator({
@@ -36,7 +36,7 @@ const IntroStack = createStackNavigator({
 export default createSwitchNavigator(
   {
     App: AppStack,
-    ConfirmTransaction: TransactionConfirmationScreen,
+    ConfirmTransaction: TransactionConfirmationScreenWithData,
     Intro: IntroStack,
     Loading: LoadingScreen,
   },

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Svg, { Circle, G } from 'react-native-svg';
+import Svg, { Circle, G } from 'svgs';
 import { colors } from '../../../styles';
 
 const ThreeDotsIcon = ({ color, ...props }) => (

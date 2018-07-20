@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Dimensions } from 'react-native';
 import styled from 'styled-components/primitives';
 import AppVersionStamp from '../components/AppVersionStamp';
 import { Button, ButtonPressAnimation } from '../components/buttons';
 import Icon from '../components/icons/Icon';
 import { Centered, Column, Header, Page } from '../components/layout';
-import { Monospace } from '../components/text';
+import { Monospace, TruncatedAddress } from '../components/text';
 import CopyTooltip from '../components/CopyTooltip';
 import QRCodeDisplay from '../components/QRCodeDisplay';
 import { colors, fonts, padding } from '../styles';
@@ -40,18 +39,6 @@ const WalletAddressTextContainer = styled(Centered).attrs({ direction: 'column' 
   width: 100%;
 `;
 
-const buildAddressAbbreviation = (address) => {
-  const isSmallPhone = (Dimensions.get('window').width < 375);
-  const numChars = isSmallPhone ? 8 : 10;
-
-  const sections = [
-    address.substring(0, numChars),
-    address.substring(address.length - numChars),
-  ];
-
-  return sections.join('...');
-};
-
 const SettingsScreen = ({
   address,
   seedPhrase,
@@ -76,9 +63,11 @@ const SettingsScreen = ({
       <QRCodeDisplay value={address} />
       <WalletAddressTextContainer>
         <CopyTooltip textToCopy={address}>
-          <Monospace size="big" weight="semibold">
-            {buildAddressAbbreviation(address)}
-          </Monospace>
+          <TruncatedAddress
+            address={address}
+            size="big"
+            weight="semibold"
+          />
         </CopyTooltip>
       </WalletAddressTextContainer>
       <Button onPress={onSendFeedback}>Send Feedback</Button>

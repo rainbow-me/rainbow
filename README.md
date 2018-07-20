@@ -15,8 +15,10 @@ If you are new to React Native, this is a helpful introduction: https://facebook
 
 2. Run `npm install` to get all of the packages required.
 
-3. Run `npm run ios` to build the project for XCode.
+3. Run `./node_modules/.bin/rn-nodeify --install "crypto" --hack`
 
-4. Open `balance-wallet/ios/BalanceWallet.xcodeproj`.
+4. Run `npm run ios` to build the project for XCode.
 
-5. Run the project by clicking the play button.
+5. Open `balance-wallet/ios/BalanceWallet.xcodeproj`.
+
+6. Run the project by clicking the play button.
