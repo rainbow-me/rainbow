@@ -4,7 +4,7 @@ import { withNavigation } from 'react-navigation';
 import RadialGradient from 'react-native-radial-gradient';
 import { compose, withHandlers } from 'recompose';
 import styled from 'styled-components/primitives';
-import { position } from '../../styles';
+import { colors, position } from '../../styles';
 import Icon from '../icons/Icon';
 import FloatingActionButton from './FloatingActionButton';
 
@@ -16,15 +16,17 @@ const WalletConnectIcon = styled(Icon)`
   margin-bottom: 2;
 `;
 
-const WalletConnectFab = ({ onPress, ...props }) => (
-  <FloatingActionButton {...props} onPress={onPress}>
+const WalletConnectFab = ({ disabled, onPress, ...props }) => (
+  <FloatingActionButton {...props} disabled={disabled} onPress={onPress}>
     {({ size }) => (
       <Fragment>
-        <GradientBackground
-          center={[0, (size / 2)]}
-          colors={['#5D9DF6', '#006FFF']}
-          radius={size}
-        />
+        {!disabled && (
+          <GradientBackground
+            center={[0, (size / 2)]}
+            colors={[colors.primaryBlue, '#006FFF']}
+            radius={size}
+          />
+        )}
         <WalletConnectIcon name="walletConnect" />
       </Fragment>
     )}
@@ -32,6 +34,7 @@ const WalletConnectFab = ({ onPress, ...props }) => (
 );
 
 WalletConnectFab.propTypes = {
+  disabled: PropTypes.bool,
   onPress: PropTypes.func,
 };
 
