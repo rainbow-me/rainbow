@@ -7,21 +7,21 @@
 	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
 	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>CLIENT_ID</key>
-	<string>291547253303-vfgiggk0rm226260s3vvq50nfi499bdd.apps.googleusercontent.com</string>
+	<string>944919125796-bitokvoqd0c40qincv60h85guak41rjn.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.291547253303-vfgiggk0rm226260s3vvq50nfi499bdd</string>
+	<string>com.googleusercontent.apps.944919125796-bitokvoqd0c40qincv60h85guak41rjn</string>
 	<key>API_KEY</key>
-	<string>AIzaSyA26AJGVCyHp8B8i0_WEYqvwt4N-95kDjk</string>
+	<string>AIzaSyBp_tWYHKxXwcBSc1mp7pPIR_fufVHZBzg</string>
 	<key>GCM_SENDER_ID</key>
-	<string>291547253303</string>
+	<string>944919125796</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>software.balanced.fcmtest</string>
+	<string>io.balance.balancewallet</string>
 	<key>PROJECT_ID</key>
-	<string>balance-bridge</string>
+	<string>balance-424a3</string>
 	<key>STORAGE_BUCKET</key>
-	<string>balance-bridge.appspot.com</string>
+	<string>balance-424a3.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<true></true>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -33,8 +33,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:291547253303:ios:0762f108a2c3ea17</string>
+	<string>1:944919125796:ios:58255248a8c10bbf</string>
 	<key>DATABASE_URL</key>
-	<string>https://balance-bridge.firebaseio.com</string>
+	<string>https://balance-424a3.firebaseio.com</string>
 </dict>
 </plist>
