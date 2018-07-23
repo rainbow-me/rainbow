@@ -1,46 +1,21 @@
 import PropTypes from 'prop-types';
-import React, { cloneElement, createElement } from 'react';
-import { View } from 'react-native';
-import { compose, nest, toClass, renderComponent, withProps } from 'recompose';
-// import { View } from 'react-primitives';
+import React, { Component, createElement } from 'react';
+import { nest } from 'recompact';
 import styled from 'styled-components/primitives';
-import { Row } from './layout';
-import { borders, colors, shadow } from '../styles';
 
-const Container = styled(Row)`
-  background-color: ${colors.white};
-  flex-shrink: 0;
-  height: 2;
-  width: 100%;
-`;
-
-
-const ShadowItem = styled.View`
+const Shadow = styled.View`
   background-color: ${({ shadowColor }) => shadowColor};
   border-radius: ${({ borderRadius }) => borderRadius};
-  box-shadow: ${({ boxShadow, ...rest }) => {
-    console.log('boxShadow', boxShadow);
-    console.log('REST', rest);
-
-    return boxShadow;
-  }};
+  box-shadow: ${({ boxShadow }) => boxShadow};
   height: ${({ height }) => height};
   width: ${({ width }) => width};
 `;
 
-const Shadow = ({
-  boxShadow,
-  ...props
-}) => {
+const ShadowItem = ({ boxShadow, ...props }) => {
   const shadowParts = boxShadow.split(' ');
   const shadowColor = shadowParts.slice(3).join('');
-
-  console.log('SHADOW COLOR', boxShadow);
-
-  console.log('boxShadow', boxShadow);
-
   return (
-    <ShadowItem
+    <Shadow
       {...props}
       boxShadow={boxShadow}
       shadowColor={shadowColor}
@@ -48,34 +23,47 @@ const Shadow = ({
   );
 };
 
-Shadow.propTypes = {
+ShadowItem.propTypes = {
   borderRadius: PropTypes.number,
   boxShadow: PropTypes.string,
   height: PropTypes.number,
   width: PropTypes.number,
 };
 
-const enhance = compose(
-  withProps(({ shadows, ...props }) => ({
-    stack: shadows.map((boxShadow, index) => () => (
-      <Shadow
+export default class ShadowStack extends Component {
+  static propTypes = {
+    shadows: PropTypes.arrayOf(PropTypes.string),
+  }
+
+  constructor(props) {
+    super(props);
+    this.buildNestedStack();
+  }
+
+  componentDidUpdate = prevProps => {
+    if (this.props.shadows !== prevProps.shadows) {
+      this.buildNestedStack();
+    }
+  }
+
+  nestedStack = null
+
+  buildNestedStack = () => {
+    this.nestedStack = nest(...this.buildShadows());
+  }
+
+  buildShadows = () => {
+    const { shadows, ...props } = this.props;
+    return shadows.map((boxShadow, index) => nestedProps => (
+      <ShadowItem
         {...props}
+        {...nestedProps}
         boxShadow={boxShadow}
         index={index}
         key={boxShadow}
       />
-    )),
-  })),
-  withProps(({ stack }) => ({ stack: nest(...stack) })),
-);
+    ));
+  }
 
-// children, /
-
-const ShadowStack = enhance(({ children, stack, ...props }) => {
-  return createElement(stack, {
-    ...props,
-    children,
-  });
-});
-
-export default ShadowStack;
+  render = () => createElement(this.nestedStack, this.props)
+}
