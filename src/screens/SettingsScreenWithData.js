@@ -9,15 +9,16 @@ import SettingsScreen from './SettingsScreen';
 
 const FeedbackEmailAddress = 'contact+alphafeedback@balance.io';
 
-const handleSendFeedbackError = debounce(() =>
-  Alert.alert(
+const handleSendFeedbackError = debounce(error => (
+  error ? Alert.alert(
     'Error launching email client',
     'Would you like to manually copy our feedback email address to your clipboard?',
     [
       { text: 'Copy email address', onPress: () => Clipboard.setString(FeedbackEmailAddress) },
       { text: 'No thanks', style: 'cancel' },
     ],
-  ), 250);
+  ) : null
+), 250);
 
 export default class SettingsScreenWithData extends Component {
   static propTypes = {
