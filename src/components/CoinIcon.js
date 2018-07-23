@@ -3,19 +3,12 @@ import React from 'react';
 import styled, { css } from 'styled-components/primitives';
 import DefaultCoinIcon, { FallbackIcon as DefaultFallbackIcon } from 'react-coin-icon';
 import { colors, fonts, position, shadow } from '../styles';
-import { Centered } from './layout';
 import ShadowStack from './ShadowStack';
 
 const fallbackTextStyles = css`
   font-family: ${fonts.family.SFMono};
   margin-bottom: 1;
 `;
-
-// const Shadow = styled(Centered)`
-//   ${({ size }) => position.size(size)}
-//   background-color: ${colors.alpha(colors.purple, 0.04)};
-//   border-radius: ${({ size }) => (size / 2)};
-// `;
 
 const CoinIcon = ({ size, symbol }) => (
   <ShadowStack
@@ -30,12 +23,12 @@ const CoinIcon = ({ size, symbol }) => (
       fallbackRenderer={() => (
         <DefaultFallbackIcon
           {...position.sizeAsObject(size)}
-          symbol={'dai'}
+          symbol={symbol}
           textStyles={fallbackTextStyles}
         />
       )}
       size={size}
-      symbol={'dai'}
+      symbol={symbol}
     />
   </ShadowStack>
 );
