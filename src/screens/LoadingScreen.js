@@ -1,13 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AsyncStorage } from 'react-native';
+import { Transition } from 'react-navigation-fluid-transitions';
 import styled from 'styled-components/primitives';
 import Icon from '../components/icons/Icon';
 import { Centered } from '../components/layout';
 import { Monospace } from '../components/text';
 import { colors, padding } from '../styles';
-
-import { Transition } from 'react-navigation-fluid-transitions';
 
 const Container = styled(Centered)`
   ${padding(0, 30)}
@@ -46,20 +45,20 @@ export default class LoadingScreen extends Component {
 
     // This will switch to the App screen or Auth screen and this loading
     // screen will be unmounted and thrown away.
-    this.props.navigation.navigate('Intro'); //isUserInitialized ? 'App' : 'Intro'
+    this.props.navigation.navigate(isUserInitialized ? 'App' : 'Intro');
   }
 
   render = () => (
     <Transition appear='bottom' disappear='bottom'>
-    <Container>
-      <Content>
-        <Icon
-          color={colors.lightGrey}
-          name="balanceLogo"
-        />
-      </Content>
-      <Footer>Balance v0.01</Footer>
-    </Container>
+      <Container>
+        <Content>
+          <Icon
+            color={colors.lightGrey}
+            name="balanceLogo"
+          />
+        </Content>
+        <Footer>Balance v0.01</Footer>
+      </Container>
     </Transition>
   )
 }
