@@ -1,88 +1,50 @@
 import PropTypes from 'prop-types';
-import React, { Component, Fragment } from 'react';
-import { TouchableOpacity } from 'react-native';
-import ActionSheet from 'react-native-actionsheet';
+import React, { Fragment } from 'react';
 import styled from 'styled-components/primitives';
 import { colors, padding } from '../../styles';
-import Icon from '../icons/Icon';
-import { ButtonPressAnimation } from '../buttons';
-import { Centered, Row } from '../layout';
+import { Row } from '../layout';
 import { H1, Monospace } from '../text';
+import ContextMenu from '../ContextMenu';
+import Divider from '../Divider';
 
-const BorderLine = styled.View`
-  background-color: ${colors.lightGrey};
-  border-bottom-left-radius: 2;
-  border-top-left-radius: 2;
-  bottom: 0;
-  left: 19;
-  position: absolute;
-  right: 0;
-  top: 0;
-`;
-
-const BorderLineContainer = styled(Row)`
-  background-color: ${colors.white};
-  height: 2;
-  width: 100%;
-`;
-
-const ContextMenuButton = styled(Centered)`
-  ${padding(0, 10)}
-  height: 100%;
-`;
-
-const Header = styled(Row)`
+const Header = styled(Row).attrs({ align: 'center', justify: 'space-between' })`
+  ${padding(0, 19)}
   background-color: ${colors.white};
   height: 35;
-  padding-left: 19;
-  padding-right: 19;
   width: 100%;
 `;
 
-const TotalValue = styled(Monospace)`
-  color: ${colors.blueGreyDark};
-`;
+const AssetListHeader = ({ section: { showContextMenu, title, totalValue } }) => (
+  <Fragment>
+    <Header>
+      <Row align="center">
+        <H1>{title}</H1>
+        {showContextMenu && (
+          <ContextMenu
+            cancelButtonIndex={1}
+            onPress={(index) => console.log('ON PRESS', index)}
+            options={['Hide zero value assets', 'Cancel']}
+          />
+        )}
+      </Row>
+      <Monospace
+        color={colors.blueGreyDark}
+        size="large"
+        weight="semibold"
+      >
+        {`${totalValue}`}
+      </Monospace>
+    </Header>
+    <Divider />
+  </Fragment>
+);
 
-export default class AssetListHeader extends Component {
-  static propTypes = {
-    section: PropTypes.object,
-  }
+AssetListHeader.propTypes = {
+  section: PropTypes.shape({
+    showContextMenu: PropTypes.bool,
+    title: PropTypes.string,
+    totalValue: PropTypes.string,
+  }),
+};
 
-  handleActionSheetRef = (ref) => { this.ActionSheet = ref; }
-  showActionSheet = () => this.ActionSheet.show()
-
-  render = () => {
-    const { section: { title, totalValue } } = this.props;
-
-    return (
-      <Fragment>
-        <Header align="center" justify="space-between">
-          <Row align="center">
-            <H1>{title}</H1>
-            <ButtonPressAnimation
-              activeOpacity={0.2}
-              onPress={this.showActionSheet}
-            >
-              <ContextMenuButton>
-                <Icon name="threeDots" />
-              </ContextMenuButton>
-            </ButtonPressAnimation>
-          </Row>
-          <TotalValue size="large" weight="semibold">
-            {`${totalValue}`}
-          </TotalValue>
-        </Header>
-        <BorderLineContainer>
-          <BorderLine />
-        </BorderLineContainer>
-        <ActionSheet
-          cancelButtonIndex={3}
-          onPress={(index) => { console.log('ON PRESS', index) }}
-          options={['Diversity', 'Name', 'Recently Added', 'Cancel']}
-          ref={this.handleActionSheetRef}
-          title={`Sort ${title.toLowerCase()} by:`}
-        />
-      </Fragment>
-    );
-  }
-}
+export default AssetListHeader;

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Svg, { Path } from 'react-native-svg';
+import Svg, { Path } from 'svgs';
 
 const AvatarIcon = ({ size }) => (
   <Svg height={size} width={size}>
