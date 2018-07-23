@@ -1,9 +1,8 @@
-import omitProps from '@hocs/omit-props';
 import { times } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withNavigation } from 'react-navigation';
-import { compose, withHandlers } from 'recompose';
+import { compose, omitProps, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, margin, position } from '../../styles';
 import { Button } from '../buttons';
@@ -30,7 +29,12 @@ const AssetListSkeleton = ({ onPressAddFunds, skeletonCount }) => (
   <Container>
     <AssetListHeader section={{ title: 'Balances', totalValue: '$0.00' }} />
     <Column>
-      {times(skeletonCount, index => <SkeletonElement index={index} />)}
+      {times(skeletonCount, index => (
+        <SkeletonElement
+          index={index}
+          key={`${SkeletonElement}${index}`}
+        />
+      ))}
       <ButtonContainer>
         <Button
           bgColor={colors.primaryBlue}

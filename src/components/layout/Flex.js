@@ -1,7 +1,7 @@
 import omitProps from '@hocs/omit-props';
 import PropTypes from 'prop-types';
 import { Animated } from 'react-native';
-import { componentFromProp } from 'recompose';
+import { componentFromProp } from 'recompact';
 import styled from 'styled-components/primitives';
 
 export const getFlexStyleKeysFromShorthand = style => (
@@ -11,8 +11,9 @@ export const getFlexStyleKeysFromShorthand = style => (
 );
 
 const FlexPropBlacklist = ['align', 'direction', 'justify', 'wrap'];
+const FlexElement = omitProps(...FlexPropBlacklist)(componentFromProp('component'));
 
-const Flex = styled(omitProps(...FlexPropBlacklist)(componentFromProp('component')))`
+const Flex = styled(FlexElement)`
   align-items: ${({ align }) => getFlexStyleKeysFromShorthand(align)};
   flex-direction: ${({ direction }) => direction};
   flex-wrap: ${({ wrap }) => (wrap ? 'wrap' : 'nowrap')};

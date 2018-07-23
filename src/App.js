@@ -5,7 +5,7 @@ import { AppRegistry, AppState, AsyncStorage, Platform } from 'react-native';
 import FCM, { FCMEvent, NotificationType, RemoteNotificationResult, WillPresentNotificationResult } from 'react-native-fcm';
 import { NavigationActions } from 'react-navigation';
 import { connect, Provider } from 'react-redux';
-import { compose, withProps } from 'recompose';
+import { compose, withProps } from 'recompact';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import { walletConnectGetTransaction } from './model/walletconnect';
