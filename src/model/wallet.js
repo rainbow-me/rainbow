@@ -12,7 +12,7 @@ export function generateSeedPhrase() {
 export const walletInit = async (seedPhrase = null) => {
   let walletAddress = null;
   try {
-    //walletAddress = await loadAddress();
+    walletAddress = await loadAddress();
     if (!walletAddress) {
       walletAddress = await createWallet(seedPhrase);
     }
