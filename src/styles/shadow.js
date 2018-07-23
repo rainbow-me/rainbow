@@ -9,12 +9,10 @@ const shadow = {};
 
 shadow.color = colors.alpha(colors.black, 0.04);
 
-shadow.build = (x, y, radius, color = shadow.color) => css`
-  box-shadow:
-    ${addUnitToNumberValues(x)}
-    ${addUnitToNumberValues(y)}
-    ${addUnitToNumberValues(radius)}
-    ${color};
+shadow.build = (...options) => css`
+  box-shadow: ${shadow.buildString(...options)};
 `;
+
+shadow.buildString = (x, y, radius, color = shadow.color) => (`${addUnitToNumberValues(x)} ${addUnitToNumberValues(y)} ${addUnitToNumberValues(radius)} ${color}`);
 
 export default shadow;
