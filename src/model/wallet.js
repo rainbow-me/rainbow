@@ -56,7 +56,8 @@ export const loadSeedPhrase = async () => {
 };
 
 const createWallet = async (seedPhrase) => {
-  const wallet = ethers.Wallet.fromMnemonic(seedPhrase || generateSeedPhrase());
+  const walletSeedPhrase = seedPhrase || generateSeedPhrase();
+  const wallet = ethers.Wallet.fromMnemonic(walletSeedPhrase);
   wallet.provider = ethers.providers.getDefaultProvider();
   saveSeedPhrase(seedPhrase);
   savePrivateKey(wallet.privateKey);
