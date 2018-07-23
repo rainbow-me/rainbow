@@ -1,7 +1,7 @@
 import omitProps from '@hocs/omit-props';
 import PropTypes from 'prop-types';
 import React from 'react';
-import SvgElement, { Path } from 'react-native-svg';
+import SvgElement, { Path } from 'svgs';
 import styled from 'styled-components/primitives';
 import { calcDirectionToDegrees, colors } from '../../../styles';
 import { directionPropType } from '../../../utils';
