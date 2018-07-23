@@ -1,10 +1,9 @@
-import omitProps from '@hocs/omit-props';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { View } from 'react-primitives';
 import { animated, interpolate, Spring } from 'react-spring/dist/native';
-import { compose, withHandlers, withState } from 'recompose';
+import { compose, omitProps, withHandlers, withState } from 'recompact';
 
 const AnimatedView = animated(View);
 

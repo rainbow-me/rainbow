@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { cloneElement } from 'react';
 import styled from 'styled-components/primitives';
 import { position } from '../../styles';
+import { withSafeAreaViewInsetValues } from '../../hoc';
 import { Row } from '../layout';
 
 const Container = styled.View`
@@ -9,16 +10,19 @@ const Container = styled.View`
 `;
 
 const Wrapper = styled(Row)`
-  bottom: 21;
+  bottom: ${({ bottomInset }) => (bottomInset + 21)};
   position: absolute;
   right: 12;
 `;
 
-const FabWrapper = ({ children, fabs }) => (
+const FabWrapper = ({ children, items, safeAreaInset }) => (
   <Container>
     {children}
-    <Wrapper direction="row-reverse">
-      {fabs.map((fab, index) => (
+    <Wrapper
+      bottomInset={safeAreaInset.bottom}
+      direction="row-reverse"
+    >
+      {items.map((fab, index) => (
         cloneElement(fab, {
           key: index,
           style: {
@@ -32,7 +36,8 @@ const FabWrapper = ({ children, fabs }) => (
 
 FabWrapper.propTypes = {
   children: PropTypes.node,
-  fabs: PropTypes.arrayOf(PropTypes.node).isRequired,
+  items: PropTypes.arrayOf(PropTypes.node).isRequired,
+  safeAreaInset: PropTypes.shape({ bottom: PropTypes.number }),
 };
 
-export default FabWrapper;
+export default withSafeAreaViewInsetValues(FabWrapper);

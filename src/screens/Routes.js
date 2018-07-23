@@ -8,6 +8,13 @@ import TransactionConfirmationScreenWithData from './TransactionConfirmationScre
 import WalletScreen from './WalletScreen';
 
 const AppStack = FluidNavigator({
+  ConfirmTransaction: {
+    screen: TransactionConfirmationScreenWithData,
+    mode: 'modal',
+    navigationOptions: {
+      gesturesEnabled: false,
+    },
+  },
   QRScannerScreen: {
     screen: QRScannerScreen,
   },
@@ -36,7 +43,6 @@ const IntroStack = createStackNavigator({
 export default createSwitchNavigator(
   {
     App: AppStack,
-    ConfirmTransaction: TransactionConfirmationScreenWithData,
     Intro: IntroStack,
     Loading: LoadingScreen,
   },

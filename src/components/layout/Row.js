@@ -1,4 +1,4 @@
-import { compose, setDisplayName, withProps } from 'recompose';
+import { compose, setDisplayName, withProps } from 'recompact';
 import Flex from './Flex';
 
 export default compose(

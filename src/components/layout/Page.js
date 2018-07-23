@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { SafeAreaView } from 'react-navigation';
 import { View } from 'react-primitives';
-import { componentFromProp } from 'recompose';
+import { componentFromProp } from 'recompact';
 import styled from 'styled-components/primitives';
+import { withSafeAreaViewInsetValues } from '../../hoc';
 import { colors, position } from '../../styles';
 
 const Container = styled(componentFromProp('component'))`
@@ -11,12 +11,13 @@ const Container = styled(componentFromProp('component'))`
   background-color: ${({ color }) => color};
 `;
 
-const SafeArea = styled(SafeAreaView)`
+const SafeArea = styled.View`
+  padding-top: ${({ topInset }) => topInset};
   background-color: ${({ color }) => color};
 `;
 
-const Page = props => (
-  <SafeArea {...props}>
+const Page = ({ safeAreaInset, ...props }) => (
+  <SafeArea {...props} topInset={safeAreaInset.top}>
     <Container {...props} />
   </SafeArea>
 );
@@ -24,6 +25,7 @@ const Page = props => (
 Page.propTypes = {
   color: PropTypes.string,
   component: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
+  safeAreaInset: PropTypes.shape({ top: PropTypes.number }),
 };
 
 Page.defaultProps = {
@@ -31,4 +33,4 @@ Page.defaultProps = {
   component: View,
 };
 
-export default Page;
+export default withSafeAreaViewInsetValues(Page);

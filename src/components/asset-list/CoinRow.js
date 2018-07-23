@@ -20,8 +20,8 @@ const CoinRow = ({
   address,
   balance,
   bottomRowRender,
-  native,
   name,
+  native,
   symbol,
   topRowRender,
 }) => (

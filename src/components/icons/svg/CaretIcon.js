@@ -1,6 +1,6 @@
-import omitProps from '@hocs/omit-props';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { omitProps } from 'recompact';
 import SvgElement, { Path } from 'svgs';
 import styled from 'styled-components/primitives';
 import { calcDirectionToDegrees, colors } from '../../../styles';
