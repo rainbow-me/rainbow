@@ -47,7 +47,7 @@ export default class SettingsScreenWithData extends Component {
   handleToggleShowSeedPhrase = () => {
     if (!this.state.showSeedPhrase) {
       loadSeedPhrase().then(seedPhrase => {
-        this.setState({showSeedPhrase: true, seedPhrase });
+        this.setState({ showSeedPhrase: true, seedPhrase });
       });
     } else {
       this.setState({ showSeedPhrase: false, seedPhrase: '' });

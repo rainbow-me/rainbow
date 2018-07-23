@@ -2,9 +2,10 @@ import PropTypes from 'prop-types';
 import React, { Component, createElement } from 'react';
 import { nest } from 'recompact';
 import styled from 'styled-components/primitives';
+import { colors } from '../styles';
 
 const Shadow = styled.View`
-  background-color: ${({ shadowColor }) => shadowColor};
+  background-color: ${({ shadowColor }) => (shadowColor || colors.white)};
   border-radius: ${({ borderRadius }) => borderRadius};
   box-shadow: ${({ boxShadow }) => boxShadow};
   height: ${({ height }) => height};
