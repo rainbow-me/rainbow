@@ -6040,8 +6040,8 @@ react-redux@^5.0.7:
     prop-types "^15.6.0"
 
 react-spring@^5.4.0:
-  version "5.4.3"
-  resolved "https://registry.yarnpkg.com/react-spring/-/react-spring-5.4.3.tgz#446102bfd9ccc17390554ae69a7d28159b9d0bc0"
+  version "5.4.4"
+  resolved "https://registry.yarnpkg.com/react-spring/-/react-spring-5.4.4.tgz#d4f7c9626c9fb83b7e85769538cd80bcc7ba6f61"
   dependencies:
     "@babel/runtime" "7.0.0-beta.51"
 
