@@ -39,11 +39,12 @@ const Button = ({
   children,
   onPress,
   size,
+  style,
   textProps,
   ...props
 }) => (
   <ButtonPressAnimation onPress={onPress}>
-    <Container {...props} size={size}>
+    <Container {...props} size={size} style={style}>
       <Text
         color="white"
         size={ButtonSizeTypes[size].fontSize}
@@ -61,6 +62,7 @@ Button.propTypes = {
   children: PropTypes.node.isRequired,
   onPress: PropTypes.func.isRequired,
   size: PropTypes.oneOf(Object.keys(ButtonSizeTypes)),
+  style: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   textProps: PropTypes.object,
   type: PropTypes.oneOf(Object.keys(ButtonShapeTypes)),
 };
