@@ -1,8 +1,8 @@
 import ethers from 'ethers';
 import * as keychain from '../model/keychain';
-const seedPhraseKey = 'seedPhrase';
-const privateKeyKey = 'privateKey';
-const addressKey = 'addressKey';
+const seedPhraseKey = 'balanceWalletSeedPhrase';
+const privateKeyKey = 'balanceWalletPrivateKey';
+const addressKey = 'balanceWalletAddressKey';
 
 export function generateSeedPhrase() {
   return ethers.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
@@ -59,7 +59,7 @@ const createWallet = async (seedPhrase) => {
   const walletSeedPhrase = seedPhrase || generateSeedPhrase();
   const wallet = ethers.Wallet.fromMnemonic(walletSeedPhrase);
   wallet.provider = ethers.providers.getDefaultProvider();
-  saveSeedPhrase(seedPhrase);
+  saveSeedPhrase(walletSeedPhrase);
   savePrivateKey(wallet.privateKey);
   saveAddress(wallet.address);
 
