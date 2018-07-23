@@ -2,7 +2,7 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { SectionList } from 'react-native';
-import { compose, withProps } from 'recompose';
+import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { position } from '../../styles';
 import AssetListHeader from './AssetListHeader';

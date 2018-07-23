@@ -2,7 +2,7 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { compose, withHandlers, withState } from 'recompose';
+import { compose, withHandlers, withState } from 'recompact';
 import { AssetList, BalanceCoinRow, UniqueTokenGridList } from '../components/asset-list';
 import Avatar from '../components/Avatar';
 import { ButtonPressAnimation } from '../components/buttons';
