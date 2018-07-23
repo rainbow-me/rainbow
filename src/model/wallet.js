@@ -1,8 +1,8 @@
 import ethers from 'ethers';
 import * as keychain from '../model/keychain';
-const seedPhraseKey = 'seedPhrase';
-const privateKeyKey = 'privateKey';
-const addressKey = 'addressKey';
+const seedPhraseKey = 'balanceWalletSeedPhrase';
+const privateKeyKey = 'balanceWalletPrivateKey';
+const addressKey = 'balanceWalletAddressKey';
 import { ACCESS_CONTROL, ACCESSIBLE } from 'react-native-keychain';
 
 export function generateSeedPhrase() {
@@ -22,9 +22,8 @@ export const walletInit = async (seedPhrase = null) => {
   }
 };
 
-export const loadWallet = async () => {
-  console.log('load wallet');
-  const privateKey = await loadPrivateKey();
+export const loadWallet = async (authenticationPrompt) => {
+  const privateKey = await loadPrivateKey(authenticationPrompt);
   if (privateKey) {
     const wallet = new ethers.Wallet(privateKey);
     wallet.provider = ethers.providers.getDefaultProvider();
@@ -46,32 +45,28 @@ export const createTransaction = async (to, data, value, gasLimit, gasPrice, non
   };
 };
 
-export const sendTransaction = async (transaction) => {
-  console.log('send txn');
-  const wallet = await loadWallet();
+export const sendTransaction = async (transaction, authenticationPrompt = 'Please authenticate') => {
+  const wallet = await loadWallet(authenticationPrompt);
   const transactionHash = await wallet.sendTransaction(transaction);
   return transactionHash;
 };
 
 export const loadSeedPhrase = async () => {
-  console.log('load seed phrase');
   const authenticationPrompt = 'Please authenticate to view seed phrase';
   const seedPhrase = await keychain.loadString(seedPhraseKey, { authenticationPrompt });
   return seedPhrase;
 };
 
 export const loadAddress = async () => {
-  console.log('load address');
   const privateKey = await keychain.loadString(addressKey);
   return privateKey;
 };
 
 const createWallet = async (seedPhrase) => {
-  console.log('create wallet');
-  seedPhrase = seedPhrase || generateSeedPhrase(); 
-  const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
+  const walletSeedPhrase = seedPhrase || generateSeedPhrase();
+  const wallet = ethers.Wallet.fromMnemonic(walletSeedPhrase);
   wallet.provider = ethers.providers.getDefaultProvider();
-  saveSeedPhrase(seedPhrase);
+  saveSeedPhrase(walletSeedPhrase);
   savePrivateKey(wallet.privateKey);
   saveAddress(wallet.address);
 
@@ -81,24 +76,20 @@ const createWallet = async (seedPhrase) => {
 };
 
 const saveSeedPhrase = async (seedPhrase) => {
-  console.log('save seed phrase');
   const accessControlOptions = { accessControl: ACCESS_CONTROL.USER_PRESENCE, accessible: ACCESSIBLE.WHEN_UNLOCKED };
   await keychain.saveString(seedPhraseKey, seedPhrase, accessControlOptions);
 };
 
 const savePrivateKey = async (privateKey) => {
-  console.log('save private key');
-  // TODO add accessControlOptions
-  await keychain.saveString(privateKeyKey, privateKey);
+  const accessControlOptions = { accessControl: ACCESS_CONTROL.USER_PRESENCE, accessible: ACCESSIBLE.WHEN_UNLOCKED };
+  await keychain.saveString(privateKeyKey, privateKey, accessControlOptions);
 };
 
-const loadPrivateKey = async () => {
-  console.log('load private key');
-  const privateKey = await keychain.loadString(privateKeyKey);
+const loadPrivateKey = async (authenticationPrompt) => {
+  const privateKey = await keychain.loadString(privateKeyKey, { authenticationPrompt });
   return privateKey;
 };
 
 const saveAddress = async (address) => {
-  console.log('save address');
   await keychain.saveString(addressKey, address);
 };
