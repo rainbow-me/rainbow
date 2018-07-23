@@ -5,9 +5,14 @@ import { SectionList } from 'react-native';
 import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { position } from '../../styles';
+import { FabWrapper, WalletConnectFab } from '../fab';
 import AssetListHeader from './AssetListHeader';
 import AssetListItem from './AssetListItem';
 import AssetListSkeleton from './AssetListSkeleton';
+
+const Container = styled.View`
+  flex: 1;
+`;
 
 const List = styled(SectionList)`
   ${position.size('100%')}
@@ -23,17 +28,21 @@ const keyExtractor = (item, index) => {
 };
 
 const AssetList = ({ isEmpty, sections }) => (
-  isEmpty ? (
-    <AssetListSkeleton />
-  ) : (
-    <List
-      keyExtractor={keyExtractor}
-      renderItem={AssetListItem}
-      renderSectionFooter={() => <Separator />}
-      renderSectionHeader={headerProps => <AssetListHeader {...headerProps} />}
-      sections={sections}
-    />
-  )
+  <Container>
+    <FabWrapper items={[<WalletConnectFab disabled={isEmpty} key="walletConnectFab" />]}>
+      {isEmpty ? (
+        <AssetListSkeleton />
+      ) : (
+        <List
+          keyExtractor={keyExtractor}
+          renderItem={AssetListItem}
+          renderSectionFooter={() => <Separator />}
+          renderSectionHeader={headerProps => <AssetListHeader {...headerProps} />}
+          sections={sections}
+        />
+      )}
+    </FabWrapper>
+  </Container>
 );
 
 AssetList.propTypes = {
@@ -41,16 +50,13 @@ AssetList.propTypes = {
   sections: PropTypes.arrayOf(PropTypes.object),
 };
 
-AssetList.defaultProps = {
-  // isEmpty: true,
-};
+export default withProps(({ sections }) => {
+  let isEmpty = true;
 
-export default compose(
-  withProps(({ sections }) => {
-    // sections.map(section => {
+  for (let i = 0; i < sections.length; i += 1) {
+    if (!isEmpty) break;
+    isEmpty = !sections[i].totalItems;
+  }
 
-    // })
-    // console.log('sections', sections);
-    // return { isEmpty:
-  }),
-)(AssetList);
+  return { isEmpty };
+})(AssetList);
