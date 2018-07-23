@@ -47,7 +47,12 @@ const SettingsScreen = ({
   onToggleShowSeedPhrase,
   showSeedPhrase,
 }) => (
-  <Page component={Column} align="stretch" justify="center">
+  <Page
+    align="stretch"
+    component={Column}
+    justify="center"
+    showBottomInset
+  >
     <Header align="end" justify="end">
       <ButtonPressAnimation onPress={onPressBackButton}>
         <BackButton>
