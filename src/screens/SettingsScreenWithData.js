@@ -45,18 +45,14 @@ export default class SettingsScreenWithData extends Component {
     }, handleSendFeedbackError)
 
   handleToggleShowSeedPhrase = () => {
-    this.setState(prevState => ({
-      if (!prevState.showSeedPhrase) {
-        console.log('loading seed phrase', prevState.showSeedPhrase);
-        loadSeedPhrase().then(seedPhrase => {
-          console.log('seed phrase loaded', seedPhrase);
-          return { showSeedPhrase: !prevState.showSeedPhrase, seedPhrase };
-        });
-      } else {
-        return { showSeedPhrase: !prevState.showSeedPhrase, seedPhrase: '' };
-      }
-    }));
-  }
+    if (!this.state.showSeedPhrase) {
+      loadSeedPhrase().then(seedPhrase => {
+        this.setState({showSeedPhrase: true, seedPhrase });
+      });
+    } else {
+      this.setState({ showSeedPhrase: false, seedPhrase: '' });
+    }
+  };
 
   render = () => (
     <Transition appear='left' disappear='left'>
