@@ -32,7 +32,7 @@ class TransactionConfirmationScreenWithData extends Component {
           await walletConnectSendTransactionHash(transactionDetails.transactionId, true, transactionReceipt.hash);
           // TODO: update that this transaction has been confirmed and reset txn details
           this.handleCancelTransaction();
-        } catch(error) {
+        } catch (error) {
           // TODO error handling when txn hash failed to send; store somewhere?
           console.log('error sending txn hash', error);
           this.handleCancelTransaction();
@@ -60,19 +60,23 @@ class TransactionConfirmationScreenWithData extends Component {
     this.setState({ transactionDetails });
   }
 
-  render = () => (
-    <TransactionConfirmationScreen
-      asset={{
-        address: `${get(this.state.transactionDetails, 'transactionDisplayDetails.to', '')}`,
-        amount: `${get(this.state.transactionDetails, 'transactionDisplayDetails.value', '')}`,
-        name: `${get(this.state.transactionDetails, 'transactionDisplayDetails.name', '')}`,
-        nativeAmount: '',
-        symbol: `${get(this.state.transactionDetails, 'transactionDisplayDetails.symbol', '')}`,
-      }}
-      onCancelTransaction={this.handleCancelTransaction}
-      onConfirmTransaction={this.handleConfirmTransaction}
-    />
-  )
+  render = () => {
+    const { transactionDetails } = this.state;
+
+    return (
+      <TransactionConfirmationScreen
+        asset={{
+          address: get(transactionDetails, 'transactionDisplayDetails.to'),
+          amount: `${get(transactionDetails, 'transactionDisplayDetails.value', '0.00')}`,
+          name: `${get(transactionDetails, 'transactionDisplayDetails.name', 'Error displaying name')}`,
+          nativeAmount: '',
+          symbol: `${get(transactionDetails, 'transactionDisplayDetails.symbol', 'N/A')}`,
+        }}
+        onCancelTransaction={this.handleCancelTransaction}
+        onConfirmTransaction={this.handleConfirmTransaction}
+      />
+    );
+  }
 }
 
 export default connect(
