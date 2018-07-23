@@ -21,7 +21,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>3</string>
+	<string>4</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
@@ -37,17 +37,17 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Balance Wallet</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Balance Wallet</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Balance Wallet</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Used to scan QR codes</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Used to sign transactions</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Balance Wallet</string>
-	<key>NSCalendarsUsageDescription</key>
-	<string>Balance Wallet</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Balance Wallet</string>
-	<key>NSAppleMusicUsageDescription</key>
 	<string>Balance Wallet</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Balance Wallet</string>

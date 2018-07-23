@@ -17,7 +17,10 @@ const buildAddressAbbreviation = (address, truncationLength) => {
 
 const TruncatedAddress = ({ address, truncationLength, ...props }) => (
   <Monospace {...props}>
-    {buildAddressAbbreviation(address, truncationLength)}
+    {address
+      ? buildAddressAbbreviation(address, truncationLength)
+      : 'Error displaying address'
+    }
   </Monospace>
 );
 

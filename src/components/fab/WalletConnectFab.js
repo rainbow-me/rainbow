@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import { withNavigation } from 'react-navigation';
 import RadialGradient from 'react-native-radial-gradient';
-import { compose, withHandlers } from 'recompose';
+import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
 import Icon from '../icons/Icon';
