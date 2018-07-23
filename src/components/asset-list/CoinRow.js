@@ -20,12 +20,11 @@ const CoinRow = ({
   address,
   balance,
   bottomRowRender,
-  native,
   name,
+  native,
   symbol,
   topRowRender,
 }) => (
-  console.log('<CoinIcon symbol={symbol} />', <CoinIcon symbol={symbol} />),
   <Container align="center">
     <CoinIcon symbol={symbol} />
     <Content justify="space-between">

@@ -6,7 +6,6 @@ import { compose, withHandlers, withState } from 'recompact';
 import { AssetList, BalanceCoinRow, UniqueTokenGridList } from '../components/asset-list';
 import Avatar from '../components/Avatar';
 import { ButtonPressAnimation } from '../components/buttons';
-import { FabWrapper, WalletConnectFab } from '../components/fab';
 import { Header, Page } from '../components/layout';
 
 const sortAssetsByNativeAmount = assets =>
@@ -28,29 +27,29 @@ const WalletScreen = ({
       renderItem: BalanceCoinRow,
       showContextMenu: true,
       title: 'Balances',
+      totalItems: sortAssetsByNativeAmount(accountInfo.assets).length,
       totalValue: accountInfo.total.display || '---',
     },
     collectibles: {
       data: [uniqueTokens],
       renderItem: UniqueTokenGridList,
       title: 'Collectibles',
+      totalItems: uniqueTokens.length,
       totalValue: '',
     },
   };
 
   return (
     <Page>
-      <FabWrapper fabs={[<WalletConnectFab key="walletConnectFab" />]}>
-        <Header>
-          <ButtonPressAnimation onPress={onPressProfile}>
-            <Avatar />
-          </ButtonPressAnimation>
-        </Header>
-        <AssetList
-          sections={[sections.balances, sections.collectibles]}
-          showShitcoins={showShitcoins}
-        />
-      </FabWrapper>
+      <Header>
+        <ButtonPressAnimation onPress={onPressProfile}>
+          <Avatar />
+        </ButtonPressAnimation>
+      </Header>
+      <AssetList
+        sections={[sections.balances, sections.collectibles]}
+        showShitcoins={showShitcoins}
+      />
     </Page>
   );
 };
