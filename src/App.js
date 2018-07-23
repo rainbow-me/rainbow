@@ -26,17 +26,22 @@ function registerAppListener(notificationHandler) {
     if (Platform.OS === 'ios') {
       switch (notif._notificationType) {
       case NotificationType.Remote:
+        console.log('remote notification');
+        notificationHandler(transactionId);
         notif.finish(RemoteNotificationResult.NewData);
         break;
       case NotificationType.NotificationResponse:
+        console.log('notification response');
         notificationHandler(transactionId);
         notif.finish();
         break;
       case NotificationType.WillPresent:
-        notif.finish(WillPresentNotificationResult.All);
-
+        console.log('will present');
+        notificationHandler(transactionId);
+        notif.finish(WillPresentNotificationResult.None);
         break;
       default:
+        console.log('fcm default');
         break;
       }
     }
