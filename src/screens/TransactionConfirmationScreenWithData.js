@@ -2,7 +2,6 @@ import { get } from 'lodash';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { StatusBar, AlertIOS } from 'react-native';
-import TouchID from 'react-native-touch-id';
 import { connect } from 'react-redux';
 import { sendTransaction } from '../model/wallet';
 import { walletConnectSendTransactionHash } from '../model/walletconnect';
