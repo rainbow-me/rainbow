@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { Alert, Clipboard } from 'react-native';
 import Mailer from 'react-native-mail';
 import { Transition } from 'react-navigation-fluid-transitions';
-import { loadWallet, loadSeedPhrase } from '../model/wallet';
+import { loadAddress, loadSeedPhrase } from '../model/wallet';
 import SettingsScreen from './SettingsScreen';
 
 const FeedbackEmailAddress = 'contact+alphafeedback@balance.io';
@@ -31,10 +31,8 @@ export default class SettingsScreenWithData extends Component {
   }
 
   componentDidMount = () => {
-    loadWallet().then(({ address }) => {
-      loadSeedPhrase().then(seedPhrase => {
-        this.setState({ address, seedPhrase });
-      });
+    loadAddress().then(address => {
+      this.setState({ address });
     });
   };
 
@@ -46,8 +44,15 @@ export default class SettingsScreenWithData extends Component {
       subject: '📱 Balance Wallet Alpha Feedback',
     }, handleSendFeedbackError)
 
-  handleToggleShowSeedPhrase = () =>
-    this.setState(prevState => ({ showSeedPhrase: !prevState.showSeedPhrase }))
+  handleToggleShowSeedPhrase = () => {
+    if (!this.state.showSeedPhrase) {
+      loadSeedPhrase().then(seedPhrase => {
+        this.setState({showSeedPhrase: true, seedPhrase });
+      });
+    } else {
+      this.setState({ showSeedPhrase: false, seedPhrase: '' });
+    }
+  };
 
   render = () => (
     <Transition appear='left' disappear='left'>
