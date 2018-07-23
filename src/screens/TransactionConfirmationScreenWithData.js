@@ -51,7 +51,6 @@ class TransactionConfirmationScreenWithData extends Component {
   handleCancelTransaction = () => {
     console.log('onCancelTransaction', this.props);
     StatusBar.setBarStyle('dark-content', true);
-    this.setState(() => ({ transactionDetails: null }));
     this.props.navigation.goBack();
   }
 
