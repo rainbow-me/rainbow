@@ -17,11 +17,13 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>1.0.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -38,9 +40,19 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Used to scan QR codes</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>Balance Wallet</string>
+	<string>Used to sign transactions</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
+	<string>Balance Wallet</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Balance Wallet</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Balance Wallet</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Balance Wallet</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Balance Wallet</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Balance Wallet</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Graphik-Black.otf</string>
