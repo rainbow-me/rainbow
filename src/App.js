@@ -87,9 +87,9 @@ class App extends Component {
     });
 
     walletInit()
-      .then(wallet => {
-        console.log('wallet address', wallet.address);
-        this.props.accountUpdateAccountAddress(wallet.address, 'BALANCEWALLET');
+      .then(walletAddress => {
+        console.log('wallet address is', walletAddress);
+        this.props.accountUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
       })
       .catch(error => {
         // TODO error handling
