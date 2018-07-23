@@ -50,7 +50,7 @@ export default compose(
     // sections.map(section => {
 
     // })
-    console.log('sections', sections);
+    // console.log('sections', sections);
     // return { isEmpty:
   }),
 )(AssetList);

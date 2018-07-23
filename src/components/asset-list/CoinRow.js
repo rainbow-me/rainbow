@@ -25,6 +25,7 @@ const CoinRow = ({
   symbol,
   topRowRender,
 }) => (
+  console.log('<CoinIcon symbol={symbol} />', <CoinIcon symbol={symbol} />),
   <Container align="center">
     <CoinIcon symbol={symbol} />
     <Content justify="space-between">

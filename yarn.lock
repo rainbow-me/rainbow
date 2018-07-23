@@ -1672,9 +1672,9 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-balance-common@^0.1.0:
+"balance-common@git+https://github.com/balance-io/balance-common.git":
   version "0.1.0"
-  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.1.0.tgz#efe83266ec0a5da431cf5430911bd037d15a5c49"
+  resolved "git+https://github.com/balance-io/balance-common.git#99003c1184adec5682f4415919973c1031d80b5f"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -5162,8 +5162,8 @@ number-is-nan@^1.0.0:
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
 
 nwsapi@^2.0.0:
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/nwsapi/-/nwsapi-2.0.7.tgz#6fc54c254621f10cac5225b76e81c74120139b78"
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/nwsapi/-/nwsapi-2.0.6.tgz#5fb7f5b828b97fe1de47eb2a6f8703036b6cb71a"
 
 oauth-sign@~0.8.2:
   version "0.8.2"
@@ -5724,7 +5724,7 @@ react-clone-referenced-element@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/react-clone-referenced-element/-/react-clone-referenced-element-1.0.1.tgz#2bba8c69404c5e4a944398600bcc4c941f860682"
 
-react-coin-icon@^0.1.1:
+react-coin-icon@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.2.tgz#ef87fc6238593e62e0ac36420cad222f1ab068f5"
   dependencies:
@@ -6083,8 +6083,8 @@ react-redux@^5.0.7:
     prop-types "^15.6.0"
 
 react-spring@^5.4.0:
-  version "5.4.2"
-  resolved "https://registry.yarnpkg.com/react-spring/-/react-spring-5.4.2.tgz#7cdedf96a1f267131b89a3f9a0001e992c0c299c"
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/react-spring/-/react-spring-5.4.1.tgz#56df5196ea6e0e52bc996d873ea4aaaedc705a79"
   dependencies:
     "@babel/runtime" "7.0.0-beta.51"
     opencollective "^1.0.3"
