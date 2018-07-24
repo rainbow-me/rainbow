@@ -5830,9 +5830,9 @@ react-native-safe-area-view@react-community/react-native-safe-area-view#27/head:
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
-react-native-splash-screen@3.0.6:
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.0.6.tgz#c0bbf2c8ae40a313c4c7044f55e569414ff68332"
+react-native-splash-screen@crazycodeboy/react-native-splash-screen#266/head:
+  version "3.1.0"
+  resolved "https://codeload.github.com/crazycodeboy/react-native-splash-screen/tar.gz/7ca5314217d743f6689e1bb873b719208837c218"
 
 react-native-storage@^0.2.2:
   version "0.2.2"

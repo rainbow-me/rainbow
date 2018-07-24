@@ -17,7 +17,7 @@ export const walletInit = async (seedPhrase = null) => {
       walletAddress = await createWallet(seedPhrase);
     }
     return walletAddress;
-  } catch(error) {
+  } catch (error) {
     return walletAddress;
   }
 };
