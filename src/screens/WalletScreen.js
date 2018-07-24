@@ -10,24 +10,42 @@ import { Header, Page } from '../components/layout';
 
 const filterEmptyAssetSections = sections => sections.filter(({ totalItems }) => totalItems);
 
-const sortAssetsByNativeAmount = assets =>
-  assets.sort((a, b) => {
+const sortAssetsByNativeAmount = (assets, showShitcoins) => {
+  const assetsWithMarketValue = assets.filter(asset => asset.native !== null);
+  const sortedAssetsWithMarketValue = assetsWithMarketValue.sort((a, b) => {
     const amountA = get(a, 'native.balance.amount', 0);
     const amountB = get(b, 'native.balance.amount', 0);
     return parseFloat(amountB) - parseFloat(amountA);
   });
 
+  if (showShitcoins) {
+    const assetsWithNoMarketValue = assets.filter(asset => asset.native === null);
+    const sortedAssetsWithNoMarketValue = assetsWithNoMarketValue.sort((a, b) => {
+      return (a.name < b.name) ? -1 : 1; 
+    });
+    return sortedAssetsWithMarketValue.concat(sortedAssetsWithNoMarketValue);
+  } else {
+    return sortedAssetsWithMarketValue;
+  }
+};
+
 const WalletScreen = ({
   accountInfo,
   onPressProfile,
+  onToggleShowShitcoins,
   showShitcoins,
   uniqueTokens,
 }) => {
+  const contextMenuOptions = {
+    cancelButtonIndex: 1,
+    onPress: (index) => { if (index === 0) onToggleShowShitcoins(); },
+    options: [`${showShitcoins ? 'Hide' : 'Show'} tokens with no price data`, 'Cancel'],
+  };
   const sections = {
     balances: {
-      data: sortAssetsByNativeAmount(accountInfo.assets),
+      contextMenuOptions,
+      data: sortAssetsByNativeAmount(accountInfo.assets, showShitcoins),
       renderItem: BalanceCoinRow,
-      showContextMenu: true,
       title: 'Balances',
       totalItems: sortAssetsByNativeAmount(accountInfo.assets).length,
       totalValue: accountInfo.total.display || '---',
@@ -73,11 +91,10 @@ const reduxProps = ({ account }) => ({
 });
 
 export default compose(
-  withState('showShitcoins', 'toggleShowShitcoins', false),
+  withState('showShitcoins', 'toggleShowShitcoins', true),
   connect(reduxProps, null),
   withHandlers({
     onPressProfile: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
-    onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) =>
-      toggleShowShitcoins(!showShitcoins),
+    onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => () => toggleShowShitcoins(!showShitcoins),
   }),
 )(WalletScreen);

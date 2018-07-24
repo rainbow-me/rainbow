@@ -16,7 +16,7 @@ const Header = styled(Row).attrs({ align: 'center', justify: 'space-between' })`
 
 const AssetListHeader = ({
   section: {
-    showContextMenu,
+    contextMenuOptions,
     title,
     totalValue,
   },
@@ -25,13 +25,7 @@ const AssetListHeader = ({
     <Header>
       <Row align="center">
         <H1>{title}</H1>
-        {showContextMenu && (
-          <ContextMenu
-            cancelButtonIndex={1}
-            onPress={(index) => console.log('ON PRESS', index)}
-            options={['Hide zero value assets', 'Cancel']}
-          />
-        )}
+        {contextMenuOptions && (<ContextMenu {...contextMenuOptions} />)}
       </Row>
       <Monospace
         color={colors.blueGreyDark}
@@ -47,7 +41,7 @@ const AssetListHeader = ({
 
 AssetListHeader.propTypes = {
   section: PropTypes.shape({
-    showContextMenu: PropTypes.bool,
+    contextMenuOptions: PropTypes.object,
     title: PropTypes.string,
     totalValue: PropTypes.string,
   }),
