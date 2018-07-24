@@ -25,11 +25,7 @@ const AssetListHeader = ({
     <Header>
       <Row align="center">
         <H1>{title}</H1>
-        {contextMenuOptions && (
-          <ContextMenu
-            {...contextMenuOptions}
-          />
-        )}
+        {contextMenuOptions && (<ContextMenu {...contextMenuOptions} />)}
       </Row>
       <Monospace
         color={colors.blueGreyDark}
