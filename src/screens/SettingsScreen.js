@@ -82,9 +82,11 @@ const SettingsScreen = ({
     </Content>
     <SeedPhraseSection>
       {showSeedPhrase && (
-        <SeedPhraseText>
-          {seedPhrase}
-        </SeedPhraseText>
+        <CopyTooltip textToCopy={seedPhrase}>
+          <SeedPhraseText>
+            {seedPhrase}
+          </SeedPhraseText>
+        </CopyTooltip>
       )}
     </SeedPhraseSection>
     <AppVersionStamp />
