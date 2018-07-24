@@ -1660,9 +1660,9 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-balance-common@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.1.0.tgz#efe83266ec0a5da431cf5430911bd037d15a5c49"
+balance-common@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.1.1.tgz#2b1dbaf10a6ce292a564be0c625280b6775b9a0b"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -5989,8 +5989,8 @@ react-navigation-tabs@0.5.1:
     react-native-tab-view "^1.0.0"
 
 react-navigation@^2.6.2:
-  version "2.9.0"
-  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-2.9.0.tgz#714d14c085fa566088166c85f187bc5f5943812d"
+  version "2.9.1"
+  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-2.9.1.tgz#122bc0a3f320b0c80ae2e68f0f21bb633c41fc24"
   dependencies:
     clamp "^1.0.1"
     create-react-context "^0.2.1"

@@ -17,10 +17,15 @@ export const walletConnectInit = async (accountAddress, bridgeUrl, sessionId, sh
 }
 
 export const walletConnectGetTransaction = async (transactionId) => {
-  const { bridgeUrl, sessionId, sharedKey, dappName } = await commonStorage.getWalletConnectAccount();
-  const walletConnector = new RNWalletConnect({ bridgeUrl, dappName, sessionId, sharedKey});
-  const transaction = await walletConnector.getTransactionRequest(transactionId);
-  return transaction;
+  try {
+    const { bridgeUrl, sessionId, sharedKey, dappName } = await commonStorage.getWalletConnectAccount();
+    const walletConnector = new RNWalletConnect({ bridgeUrl, dappName, sessionId, sharedKey});
+    return await walletConnector.getTransactionRequest(transactionId);
+  } catch(error) {
+    console.log('Error getting transaction from Wallet Connect', error);
+    // TODO: show error
+    return null;
+  }
 };
 
 export const walletConnectSendTransactionHash = async (transactionId, success, txHash) => {
