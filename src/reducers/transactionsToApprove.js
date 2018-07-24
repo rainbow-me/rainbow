@@ -13,15 +13,32 @@ const getAssetDetails = (contractAddress, assets) => {
   return null;
 };
 
-const getTransactionDisplayDetails = (transaction, assets) => {
+export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => {
+  let _nativeAmount = '';
+  if (prices[nativeCurrency][symbol]) {
+    const nativeAmount = bignumber.convertAssetAmountToNativeValue(
+      assetAmount,
+      { symbol },
+      prices,
+    );
+    _nativeAmount = bignumber.formatInputDecimals(nativeAmount, assetAmount);
+  }
+  const displayAmount = bignumber.convertAssetAmountToDisplaySpecific(_nativeAmount, prices, nativeCurrency);
+  return displayAmount;
+};
+
+const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrency) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
   if (transaction.data == '0x') {
+    const value = bignumber.fromWei(bignumber.convertHexToString(transaction.value));
+    const nativeAmount = getNativeAmount(prices, nativeCurrency, value, 'ETH');
     return {
       from: transaction.from,
-      to: transaction.to,
-      symbol: 'ETH',
       name: 'Ethereum',
-      value: bignumber.fromWei(bignumber.convertHexToString(transaction.value)),
+      nativeAmount,
+      symbol: 'ETH',
+      to: transaction.to,
+      value,
     }
   } else if (transaction.data.startsWith(tokenTransferHash)) {
     const contractAddress = transaction.to;
@@ -29,13 +46,15 @@ const getTransactionDisplayDetails = (transaction, assets) => {
     const dataPayload = transaction.data.replace(tokenTransferHash, '');
     const toAddress = '0x' + dataPayload.slice(0, 64).replace(/^0+/, '');
     const amount = '0x' + dataPayload.slice(64,128).replace(/^0+/, '');
-    const transferValue = bignumber.fromWei(bignumber.convertHexToString(amount), decimals);
+    const value = bignumber.fromWei(bignumber.convertHexToString(amount), decimals);
+    const nativeAmount = getNativeAmount(prices, nativeCurrency, value, symbol);
     return {
       from: transaction.from,
-      to: toAddress,
-      symbol: symbol,
       name: name,
-      value: transferValue,
+      nativeAmount,
+      symbol: symbol,
+      to: toAddress,
+      value,
     }
   } else {
     console.log('This type of transaction is currently not supported.');
@@ -45,8 +64,8 @@ const getTransactionDisplayDetails = (transaction, assets) => {
 
 export const addTransactionToApprove = (transactionId, transactionPayload) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
-  const { accountInfo } = getState().account;
-  const transactionDisplayDetails = getTransactionDisplayDetails(transactionPayload, accountInfo.assets);
+  const { accountInfo, prices, nativeCurrency } = getState().account;
+  const transactionDisplayDetails = getTransactionDisplayDetails(transactionPayload, accountInfo.assets, prices, nativeCurrency);
   const transaction = { transactionId, transactionPayload, transactionDisplayDetails };
   const updatedTransactions = transactionsToApprove.concat(transaction);
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });

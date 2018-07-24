@@ -68,7 +68,7 @@ class TransactionConfirmationScreenWithData extends Component {
           address: get(transactionDetails, 'transactionDisplayDetails.to'),
           amount: `${get(transactionDetails, 'transactionDisplayDetails.value', '0.00')}`,
           name: `${get(transactionDetails, 'transactionDisplayDetails.name', 'Error displaying name')}`,
-          nativeAmount: '',
+          nativeAmount: get(transactionDetails, 'transactionDisplayDetails.nativeAmount'),
           symbol: `${get(transactionDetails, 'transactionDisplayDetails.symbol', 'N/A')}`,
         }}
         onCancelTransaction={this.handleCancelTransaction}
