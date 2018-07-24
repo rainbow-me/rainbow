@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { AsyncStorage } from 'react-native';
-import SplashScreen from 'react-native-splash-screen';
+import { connect } from 'react-redux';
 import styled from 'styled-components/primitives';
 import Icon from '../components/icons/Icon';
 import { Centered, Column } from '../components/layout';
 import { Monospace } from '../components/text';
+import { loadAddress } from '../model/wallet';
 import { colors, padding, position } from '../styles';
 
 const Container = styled(Centered)`
@@ -22,7 +22,7 @@ const Text = styled(Monospace).attrs({ color: 'grey' })`
   margin-bottom: 10;
 `;
 
-export default class LoadingScreen extends Component {
+class LoadingScreen extends Component {
   static propTypes = {
     navigation: PropTypes.object,
   }
@@ -49,15 +49,11 @@ export default class LoadingScreen extends Component {
     }
   }
 
-  handleLoading = async () => {
-    const isUserInitialized = await AsyncStorage.getItem('isUserInitialized');
-
-    // If this is a brand new instance of the Balance Wallet app show the 'IntroScreen',
-    // otherwise display the main 'App' route. Afterwards this view will be
-    // unmounted and thrown away.
-    this.props.navigation.navigate(isUserInitialized ? 'App' : 'Intro');
-    SplashScreen.hide();
-  }
+  // If this is a brand new instance of the Balance Wallet app show the 'IntroScreen',
+  // otherwise display the main 'App' route. Afterwards this view will be
+  // unmounted and thrown away.
+  handleLoading = () =>
+    loadAddress().then(address => this.props.navigation.navigate(address ? 'App' : 'Intro'))
 
   render = () => (
     <Container>
@@ -74,3 +70,6 @@ export default class LoadingScreen extends Component {
     </Container>
   )
 }
+
+const reduxProps = ({ account: { accountAddress } }) => ({ accountAddress });
+export default connect(reduxProps, null)(LoadingScreen);
