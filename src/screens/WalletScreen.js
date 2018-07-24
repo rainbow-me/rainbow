@@ -8,12 +8,24 @@ import Avatar from '../components/Avatar';
 import { ButtonPressAnimation } from '../components/buttons';
 import { Header, Page } from '../components/layout';
 
-const sortAssetsByNativeAmount = assets =>
-  assets.sort((a, b) => {
+const sortAssetsByNativeAmount = (assets, showShitcoins) => {
+  const assetsWithMarketValue = assets.filter(asset => asset.native !== null);
+  const sortedAssetsWithMarketValue = assetsWithMarketValue.sort((a, b) => {
     const amountA = get(a, 'native.balance.amount', 0);
     const amountB = get(b, 'native.balance.amount', 0);
     return parseFloat(amountB) - parseFloat(amountA);
   });
+
+  if (showShitcoins) {
+    const assetsWithNoMarketValue = assets.filter(asset => asset.native === null);
+    const sortedAssetsWithNoMarketValue = assetsWithNoMarketValue.sort((a, b) => {
+      return (a.name < b.name) ? -1 : 1; 
+    });
+    return sortedAssetsWithMarketValue.concat(sortedAssetsWithNoMarketValue);
+  } else {
+    return sortedAssetsWithMarketValue;
+  }
+};
 
 const WalletScreen = ({
   accountInfo,
@@ -21,11 +33,14 @@ const WalletScreen = ({
   showShitcoins,
   uniqueTokens,
 }) => {
+  const onPress = (index) => { if (index == 0) { this.showShitcoins = false; } };
+  const contextMenuOptions = { cancelButtonIndex: 1, onPress: onPress, options: ['Hide zero value assets', 'Cancel'] };
+
   const sections = {
     balances: {
       data: sortAssetsByNativeAmount(accountInfo.assets),
       renderItem: BalanceCoinRow,
-      showContextMenu: true,
+      contextMenuOptions,
       title: 'Balances',
       totalItems: sortAssetsByNativeAmount(accountInfo.assets).length,
       totalValue: accountInfo.total.display || '---',
@@ -71,7 +86,7 @@ const reduxProps = ({ account }) => ({
 });
 
 export default compose(
-  withState('showShitcoins', 'toggleShowShitcoins', false),
+  withState('showShitcoins', 'toggleShowShitcoins', true),
   connect(reduxProps, null),
   withHandlers({
     onPressProfile: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
