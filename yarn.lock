@@ -5675,9 +5675,9 @@ react-clone-referenced-element@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/react-clone-referenced-element/-/react-clone-referenced-element-1.0.1.tgz#2bba8c69404c5e4a944398600bcc4c941f860682"
 
-react-coin-icon@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.2.tgz#ef87fc6238593e62e0ac36420cad222f1ab068f5"
+react-coin-icon@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.5.tgz#d2e3658d7eeb74837016088c7572234468d68631"
   dependencies:
     "@svgr/cli" "^2.0.0"
     styled-components "^3.3.3"
@@ -5830,9 +5830,9 @@ react-native-safe-area-view@react-community/react-native-safe-area-view#27/head:
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
-react-native-splash-screen@3.0.6:
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.0.6.tgz#c0bbf2c8ae40a313c4c7044f55e569414ff68332"
+react-native-splash-screen@crazycodeboy/react-native-splash-screen#266/head:
+  version "3.1.0"
+  resolved "https://codeload.github.com/crazycodeboy/react-native-splash-screen/tar.gz/7ca5314217d743f6689e1bb873b719208837c218"
 
 react-native-storage@^0.2.2:
   version "0.2.2"

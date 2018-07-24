@@ -8,6 +8,8 @@ import Avatar from '../components/Avatar';
 import { ButtonPressAnimation } from '../components/buttons';
 import { Header, Page } from '../components/layout';
 
+const filterEmptyAssetSections = sections => sections.filter(({ totalItems }) => totalItems);
+
 const sortAssetsByNativeAmount = (assets, showShitcoins) => {
   const assetsWithMarketValue = assets.filter(asset => asset.native !== null);
   const sortedAssetsWithMarketValue = assetsWithMarketValue.sort((a, b) => {
@@ -62,7 +64,7 @@ const WalletScreen = ({
         </ButtonPressAnimation>
       </Header>
       <AssetList
-        sections={[sections.balances, sections.collectibles]}
+        sections={filterEmptyAssetSections([sections.balances, sections.collectibles])}
         showShitcoins={showShitcoins}
       />
     </Page>

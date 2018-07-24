@@ -7,8 +7,13 @@ import { colors } from '../styles';
 
 class CopyTooltip extends Component {
   static propTypes = {
+    activeOpacity: PropTypes.number,
     navigation: PropTypes.object,
     textToCopy: PropTypes.string,
+  }
+
+  static defaultProps = {
+    activeOpacity: 0.666,
   }
 
   tooltip = null
@@ -22,13 +27,16 @@ class CopyTooltip extends Component {
   componentWillUnmount = () => this.handleHideTooltip()
 
   handleCopy = () => Clipboard.setString(this.props.textToCopy)
-  handleRef = (ref) => { this.tooltip = ref; }
   handleHideTooltip = () => this.tooltip.hideMenu()
+  handlePressIn = () => this.tooltip.showMenu()
+  handleRef = (ref) => { this.tooltip = ref; }
 
   render = () => (
     <ToolTip
       {...this.props}
       actions={[{ onPress: this.handleCopy, text: 'Copy' }]}
+      activeOpacity={this.props.activeOpacity}
+      onPressIn={this.handlePressIn}
       ref={this.handleRef}
       underlayColor={colors.transparent}
     />

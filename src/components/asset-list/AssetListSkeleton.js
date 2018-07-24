@@ -32,7 +32,7 @@ const AssetListSkeleton = ({ onPressAddFunds, skeletonCount }) => (
       {times(skeletonCount, index => (
         <SkeletonElement
           index={index}
-          key={`${SkeletonElement}${index}`}
+          key={`SkeletonElement${index}`}
         />
       ))}
       <ButtonContainer>
