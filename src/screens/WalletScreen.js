@@ -34,13 +34,21 @@ const WalletScreen = ({
   onPressProfile,
   showShitcoins,
   uniqueTokens,
+  onToggleShowShitcoins,
 }) => {
-  const onPress = (index) => { if (index == 0) { this.showShitcoins = false; } };
-  const contextMenuOptions = { cancelButtonIndex: 1, onPress: onPress, options: ['Hide zero value assets', 'Cancel'] };
-
+  const onPress = (index) => {
+    if (index === 0) {
+      onToggleShowShitcoins();
+    }
+  };
+  const contextMenuOptions = {
+    cancelButtonIndex: 1,
+    onPress: onPress,
+    options: [`${showShitcoins ? 'Hide' : 'Show'} zero value assets`, 'Cancel'],
+  };
   const sections = {
     balances: {
-      data: sortAssetsByNativeAmount(accountInfo.assets),
+      data: sortAssetsByNativeAmount(accountInfo.assets, showShitcoins),
       renderItem: BalanceCoinRow,
       contextMenuOptions,
       title: 'Balances',
@@ -92,7 +100,6 @@ export default compose(
   connect(reduxProps, null),
   withHandlers({
     onPressProfile: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
-    onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) =>
-      toggleShowShitcoins(!showShitcoins),
+    onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => () => toggleShowShitcoins(!showShitcoins),
   }),
 )(WalletScreen);
