@@ -7,6 +7,7 @@ import { AssetList, BalanceCoinRow, UniqueTokenGridList } from '../components/as
 import Avatar from '../components/Avatar';
 import { ButtonPressAnimation } from '../components/buttons';
 import { Header, Page } from '../components/layout';
+import { withHideSplashScreenOnMount } from '../hoc';
 
 const filterEmptyAssetSections = sections => sections.filter(({ totalItems }) => totalItems);
 
@@ -21,12 +22,12 @@ const sortAssetsByNativeAmount = (assets, showShitcoins) => {
   if (showShitcoins) {
     const assetsWithNoMarketValue = assets.filter(asset => asset.native === null);
     const sortedAssetsWithNoMarketValue = assetsWithNoMarketValue.sort((a, b) => {
-      return (a.name < b.name) ? -1 : 1; 
+      return (a.name < b.name) ? -1 : 1;
     });
     return sortedAssetsWithMarketValue.concat(sortedAssetsWithNoMarketValue);
-  } else {
-    return sortedAssetsWithMarketValue;
   }
+
+  return sortedAssetsWithMarketValue;
 };
 
 const WalletScreen = ({
@@ -36,14 +37,13 @@ const WalletScreen = ({
   showShitcoins,
   uniqueTokens,
 }) => {
-  const contextMenuOptions = {
-    cancelButtonIndex: 1,
-    onPress: (index) => { if (index === 0) onToggleShowShitcoins(); },
-    options: [`${showShitcoins ? 'Hide' : 'Show'} tokens with no price data`, 'Cancel'],
-  };
   const sections = {
     balances: {
-      contextMenuOptions,
+      contextMenuOptions: {
+        cancelButtonIndex: 1,
+        onPress: (index) => { if (index === 0) onToggleShowShitcoins(); },
+        options: [`${showShitcoins ? 'Hide' : 'Show'} assets with no price data`, 'Cancel'],
+      },
       data: sortAssetsByNativeAmount(accountInfo.assets, showShitcoins),
       renderItem: BalanceCoinRow,
       title: 'Balances',
@@ -79,6 +79,7 @@ WalletScreen.propTypes = {
   fetching: PropTypes.bool.isRequired,
   fetchingUniqueTokens: PropTypes.bool.isRequired,
   onPressProfile: PropTypes.func.isRequired,
+  onToggleShowShitcoins: PropTypes.func,
   showShitcoins: PropTypes.bool,
   uniqueTokens: PropTypes.array.isRequired,
 };
@@ -91,6 +92,7 @@ const reduxProps = ({ account }) => ({
 });
 
 export default compose(
+  withHideSplashScreenOnMount,
   withState('showShitcoins', 'toggleShowShitcoins', true),
   connect(reduxProps, null),
   withHandlers({
