@@ -1,34 +1,32 @@
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
-import styled, { css } from 'styled-components/primitives';
+import styled from 'styled-components/primitives';
 import { colors, position, shadow } from '../../styles';
 import { ButtonPressAnimation } from '../buttons';
 import { Centered } from '../layout';
+import { ShadowStack } from '../shadow-stack';
 
-const containerStyles = css`
-  ${({ size }) => position.size(size)}
-  border-radius: 24;
-`;
+const FloatingActionButtonBorderRadius = 24;
 
 const Container = styled(Centered)`
-  ${containerStyles}
+  ${position.cover}
   background-color: ${({ disabled }) => (disabled ? '#F6F7F9' : colors.blue)};
+  border-radius: ${FloatingActionButtonBorderRadius};
   overflow: hidden;
 `;
 
 const InnerBorder = styled.View`
   ${position.cover}
   border-color: ${colors.alpha(colors.black, 0.06)};
-  border-radius: 24;
+  border-radius: ${FloatingActionButtonBorderRadius};
   border-width: 0.5;
 `;
 
-const Shadow = styled.View`
-  ${containerStyles}
-  ${({ disabled }) => (disabled ? null : shadow.build(0, 1, 18, colors.alpha(colors.purple, 0.12)))}
-  ${({ disabled }) => (disabled ? null : shadow.build(0, 3, 5, colors.alpha(colors.purple, 0.2)))}
-  ${({ disabled }) => (disabled ? null : shadow.build(0, 6, 10, colors.alpha(colors.purple, 0.14)))}
-`;
+const buildFabShadow = disabled => (disabled ? [] : [
+  shadow.buildString(0, 1, 18, colors.alpha(colors.purple, 0.12)),
+  shadow.buildString(0, 3, 5, colors.alpha(colors.purple, 0.2)),
+  shadow.buildString(0, 6, 10, colors.alpha(colors.purple, 0.14)),
+]);
 
 const FloatingActionButton = ({
   children,
@@ -45,8 +43,12 @@ const FloatingActionButton = ({
     onPressIn={onPressIn}
     onPressOut={onPressOut}
   >
-    <Shadow size={size} disabled={disabled}>
-      <Container {...props} disabled={disabled} size={size}>
+    <ShadowStack
+      {...position.sizeAsObject(size)}
+      borderRadius={24}
+      shadows={buildFabShadow(disabled)}
+    >
+      <Container {...props} disabled={disabled}>
         <Fragment>
           {(typeof children === 'function')
             ? children({ size })
@@ -55,7 +57,7 @@ const FloatingActionButton = ({
           {!disabled && <InnerBorder />}
         </Fragment>
       </Container>
-    </Shadow>
+    </ShadowStack>
   </ButtonPressAnimation>
 );
 
@@ -68,8 +70,10 @@ FloatingActionButton.propTypes = {
   size: PropTypes.number,
 };
 
+FloatingActionButton.size = 54;
+
 FloatingActionButton.defaultProps = {
-  size: 54,
+  size: FloatingActionButton.size,
 };
 
 export default FloatingActionButton;

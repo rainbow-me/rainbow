@@ -11,7 +11,7 @@
 #import <React/RCTRootView.h>
 #import "Firebase.h"
 #import "RNFIRMessaging.h"
-#import "SplashScreen.h"
+#import "RNSplashScreen.h"
 
 @interface AppDelegate() <FIRMessagingDelegate, UNUserNotificationCenterDelegate>
 @end
@@ -51,6 +51,10 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+
+  // react-native-splash-screen
+  //
+  [RNSplashScreen show];
   return YES;
 }
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
