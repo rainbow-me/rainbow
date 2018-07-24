@@ -12,12 +12,22 @@ const Container = styled(componentFromProp('component'))`
 `;
 
 const SafeArea = styled.View`
-  padding-top: ${({ topInset }) => topInset};
   background-color: ${({ color }) => color};
+  padding-bottom: ${({ bottomInset }) => bottomInset};
+  padding-top: ${({ topInset }) => topInset};
 `;
 
-const Page = ({ safeAreaInset, ...props }) => (
-  <SafeArea {...props} topInset={safeAreaInset.top}>
+const Page = ({
+  safeAreaInset,
+  showBottomInset,
+  showTopInset,
+  ...props
+}) => (
+  <SafeArea
+    {...props}
+    bottomInset={showBottomInset ? safeAreaInset.bottom : 0}
+    topInset={showTopInset ? safeAreaInset.top : 0}
+  >
     <Container {...props} />
   </SafeArea>
 );
@@ -26,11 +36,14 @@ Page.propTypes = {
   color: PropTypes.string,
   component: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
   safeAreaInset: PropTypes.shape({ top: PropTypes.number }),
+  showBottomInset: PropTypes.bool,
+  showTopInset: PropTypes.bool,
 };
 
 Page.defaultProps = {
   color: colors.white,
   component: View,
+  showTopInset: true,
 };
 
 export default withSafeAreaViewInsetValues(Page);

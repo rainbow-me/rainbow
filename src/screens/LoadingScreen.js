@@ -1,33 +1,25 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AsyncStorage } from 'react-native';
-import { Transition } from 'react-navigation-fluid-transitions';
+import SplashScreen from 'react-native-splash-screen';
 import styled from 'styled-components/primitives';
 import Icon from '../components/icons/Icon';
-import { Centered } from '../components/layout';
+import { Centered, Column } from '../components/layout';
 import { Monospace } from '../components/text';
-import { colors, padding } from '../styles';
+import { colors, padding, position } from '../styles';
 
 const Container = styled(Centered)`
-  ${padding(0, 30)}
-  background-color: ${colors.white};
-  height: 100%;
+  ${position.cover}
+  ${padding(40)}
 `;
 
-const Content = styled(Centered)`
-  margin-bottom: 10;
-`;
-
-const Footer = styled(Monospace).attrs({
-  size: 'h5',
-  weight: 'medium',
-})`
-  bottom: 55;
-  color: #2A2B30;
-  left: 0;
-  position: absolute;
-  right: 0;
+const ErrorText = styled(Monospace).attrs({ color: 'red' })`
+  margin-top: 10;
   text-align: center;
+`;
+
+const Text = styled(Monospace).attrs({ color: 'grey' })`
+  margin-bottom: 10;
 `;
 
 export default class LoadingScreen extends Component {
@@ -38,27 +30,47 @@ export default class LoadingScreen extends Component {
   constructor(props) {
     super(props);
     this.handleLoading();
+    this.state = { isError: false };
+  }
+
+  errorTimeoutHandle = null
+
+  componentDidMount = () => {
+    this.errorTimeoutHandle = setTimeout(() => {
+      this.setState({ isError: true });
+      this.timerHandle = 0;
+    }, 5000);
+  }
+
+  componentWillUnmount = () => {
+    if (this.errorTimeoutHandle) {
+      clearTimeout(this.errorTimeoutHandle);
+      this.errorTimeoutHandle = 0;
+    }
   }
 
   handleLoading = async () => {
     const isUserInitialized = await AsyncStorage.getItem('isUserInitialized');
 
-    // This will switch to the App screen or Auth screen and this loading
-    // screen will be unmounted and thrown away.
+    // If this is a brand new instance of the Balance Wallet app show the 'IntroScreen',
+    // otherwise display the main 'App' route. Afterwards this view will be
+    // unmounted and thrown away.
     this.props.navigation.navigate(isUserInitialized ? 'App' : 'Intro');
+    SplashScreen.hide();
   }
 
   render = () => (
-    <Transition appear='bottom' disappear='bottom'>
-      <Container>
-        <Content>
-          <Icon
-            color={colors.lightGrey}
-            name="balanceLogo"
-          />
-        </Content>
-        <Footer>Balance v0.01</Footer>
-      </Container>
-    </Transition>
+    <Container>
+      {this.state.isError ? (
+        <Column align="center" justify="center">
+          <Icon color={colors.red} name="warning" />
+          <ErrorText>
+            there has been an error loading the wallet. please kill the app and retry
+          </ErrorText>
+        </Column>
+      ) : (
+        <Text>loading...</Text>
+      )}
+    </Container>
   )
 }
