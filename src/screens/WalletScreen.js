@@ -39,7 +39,7 @@ const WalletScreen = ({
   const contextMenuOptions = {
     cancelButtonIndex: 1,
     onPress: (index) => { if (index === 0) onToggleShowShitcoins(); },
-    options: [`${showShitcoins ? 'Hide' : 'Show'} zero value assets`, 'Cancel'],
+    options: [`${showShitcoins ? 'Hide' : 'Show'} tokens with no price data`, 'Cancel'],
   };
   const sections = {
     balances: {
