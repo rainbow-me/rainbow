@@ -32,25 +32,20 @@ const sortAssetsByNativeAmount = (assets, showShitcoins) => {
 const WalletScreen = ({
   accountInfo,
   onPressProfile,
+  onToggleShowShitcoins,
   showShitcoins,
   uniqueTokens,
-  onToggleShowShitcoins,
 }) => {
-  const onPress = (index) => {
-    if (index === 0) {
-      onToggleShowShitcoins();
-    }
-  };
   const contextMenuOptions = {
     cancelButtonIndex: 1,
-    onPress: onPress,
+    onPress: (index) => { if (index === 0) onToggleShowShitcoins(); },
     options: [`${showShitcoins ? 'Hide' : 'Show'} zero value assets`, 'Cancel'],
   };
   const sections = {
     balances: {
+      contextMenuOptions,
       data: sortAssetsByNativeAmount(accountInfo.assets, showShitcoins),
       renderItem: BalanceCoinRow,
-      contextMenuOptions,
       title: 'Balances',
       totalItems: sortAssetsByNativeAmount(accountInfo.assets).length,
       totalValue: accountInfo.total.display || '---',
