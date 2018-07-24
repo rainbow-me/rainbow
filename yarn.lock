@@ -5675,9 +5675,9 @@ react-clone-referenced-element@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/react-clone-referenced-element/-/react-clone-referenced-element-1.0.1.tgz#2bba8c69404c5e4a944398600bcc4c941f860682"
 
-react-coin-icon@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.2.tgz#ef87fc6238593e62e0ac36420cad222f1ab068f5"
+react-coin-icon@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.5.tgz#d2e3658d7eeb74837016088c7572234468d68631"
   dependencies:
     "@svgr/cli" "^2.0.0"
     styled-components "^3.3.3"
