@@ -14,7 +14,13 @@ const Header = styled(Row).attrs({ align: 'center', justify: 'space-between' })`
   width: 100%;
 `;
 
-const AssetListHeader = ({ section: { showContextMenu, title, totalValue } }) => (
+const AssetListHeader = ({
+  section: {
+    showContextMenu,
+    title,
+    totalValue,
+  },
+}) => (
   <Fragment>
     <Header>
       <Row align="center">
