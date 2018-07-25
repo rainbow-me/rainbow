@@ -159,7 +159,7 @@ const TransactionConfirmationScreen = ({
 TransactionConfirmationScreen.propTypes = {
   asset: PropTypes.shape({
     address: PropTypes.string,
-    amount: PropTypes.number,
+    amount: PropTypes.string,
     name: PropTypes.string,
     nativeAmount: PropTypes.string,
     symbol: PropTypes.string,

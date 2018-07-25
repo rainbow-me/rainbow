@@ -32,7 +32,7 @@ const UniqueTokenCard = ({ item, ...props }) => (
 );
 
 UniqueTokenCard.propTypes = {
-  item: PropTypes.string,
+  item: PropTypes.object,
 };
 
 export default UniqueTokenCard;
