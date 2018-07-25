@@ -41,8 +41,9 @@ const WalletScreen = ({
     balances: {
       contextMenuOptions: {
         cancelButtonIndex: 1,
+        destructiveButtonIndex: showShitcoins ? 0 : 99, // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
         onPress: (index) => { if (index === 0) onToggleShowShitcoins(); },
-        options: [`${showShitcoins ? 'Hide' : 'Show'} assets with no price data`, 'Cancel'],
+        options: [`${showShitcoins ? 'Hide' : 'Show'} assets w/ no price data`, 'Cancel'],
       },
       data: sortAssetsByNativeAmount(accountInfo.assets, showShitcoins),
       renderItem: BalanceCoinRow,
