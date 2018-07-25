@@ -31,6 +31,7 @@ const base = {
   purple: '#32325d', // '50, 50, 93'
   red: '#d64b47', // '214, 75, 71'
   rowDivider: '#f8f8f8', // '248, 248, 248'
+  seaGreen: '#3aa686', // '58, 166, 134'
   skeleton: '#f7f7f8', // '247, 247, 248'
   teal: '#84f8da', // '132, 248, 218'
   transparent: 'transparent',
@@ -57,6 +58,8 @@ const colors = {
 };
 
 const getColorForString = (colorString = '') => {
+  if (!colorString) return null;
+
   const isHex = colorString.charAt(0) === '#';
   const isRGB = colorString.toLowerCase().substring(0, 2) === 'rgb';
   return (isHex || isRGB) ? colorString : colors[colorString];

@@ -1,10 +1,8 @@
-import styled from 'styled-components/primitives';
-import { colors, fonts } from '../../styles';
+import { withProps } from 'recompact';
 import { Monospace } from '../text';
 
-const BalanceText = styled(Monospace)`
-  color: ${colors.blueGreyDark};
-  font-size: ${fonts.size.lmedium};
-`;
-
-export default BalanceText;
+export default withProps((props) => ({
+  color: 'blueGreyDark',
+  size: 'lmedium',
+  ...props,
+}))(Monospace);
