@@ -43,7 +43,6 @@ Page.propTypes = {
 Page.defaultProps = {
   color: colors.white,
   component: View,
-  showTopInset: true,
 };
 
 export default withSafeAreaViewInsetValues(Page);
