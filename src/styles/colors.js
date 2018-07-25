@@ -1,4 +1,5 @@
 import chroma from 'chroma-js';
+import PropTypes from 'prop-types';
 
 const base = {
   black: '#000000', // '0, 0, 0'
@@ -48,9 +49,24 @@ const vendor = {
   walletconnect: '#4099ff', // '64, 153, 255'
 };
 
-export default {
+const colors = {
   alpha: (color, alpha) => `rgba(${chroma(color).rgb()}, ${alpha})`,
   ...base,
   ...transparent,
   ...vendor,
+};
+
+const getColorForString = (colorString = '') => {
+  const isHex = colorString.charAt(0) === '#';
+  const isRGB = colorString.toLowerCase().substring(0, 2) === 'rgb';
+  return (isHex || isRGB) ? colorString : colors[colorString];
+};
+
+export default {
+  ...colors,
+  get: getColorForString,
+  propType: PropTypes.oneOf([
+    ...Object.keys(colors),
+    ...Object.values(colors),
+  ]),
 };
