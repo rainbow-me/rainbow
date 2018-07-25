@@ -2,32 +2,22 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Dimensions, StyleSheet } from 'react-native';
 import ReactNativeQRCodeScanner from 'react-native-qrcode-scanner';
-import { compose, withHandlers, withState } from 'recompact';
 import styled from 'styled-components/primitives';
-import { colors, padding, position } from '../../styles';
-import { Centered, Column, Row } from '../layout';
-import { ErrorText, Monospace } from '../text';
+import CrosshairAsset from '../../assets/qrcode-scanner-crosshair.png';
+import { colors, position } from '../../styles';
+import { Centered } from '../layout';
+import { ErrorText } from '../text';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
 
-const coverStyle = {
-  bottom: 0,
-  left: 0,
-  position: 'absolute',
-  right: 0,
-  top: 0,
-};
-
 const styles = StyleSheet.create({
-  cameraContainer: {
-    ...coverStyle,
-    backgroundColor: colors.blue,
-    height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width,
-  },
-  containerStyle: coverStyle,
-  zeroContainer: {
+  disableSection: {
     flex: 0,
     height: 0,
+  },
+  fullscreen: {
+    ...position.coverAsObject,
+    height: Dimensions.get('window').height,
+    width: Dimensions.get('window').width,
   },
 });
 
@@ -36,12 +26,19 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   background-color: ${colors.black};
 `;
 
+const Crosshair = styled.Image`
+  ${position.size(Dimensions.get('window').width * (293 / 375))}
+  margin-bottom: 1;
+  resize-mode: contain;
+`;
+
+const CrosshairContainer = styled(Centered)`
+  ${position.cover}
+`;
+
 export default class QRCodeScanner extends Component {
   static propTypes = {
-    accountAddress: PropTypes.string,
-    navigation: PropTypes.object,
     onCameraReady: PropTypes.func,
-    onMountError: PropTypes.func,
     onSuccess: PropTypes.func,
     scannerRef: PropTypes.func,
   }
@@ -55,9 +52,10 @@ export default class QRCodeScanner extends Component {
 
   componentDidMount = () => {
     this.initializionTimeout = setTimeout(() => {
-      this.handleInitialization();
-      this.handleError('initializing');
       this.initializionTimeout = 0;
+      if (this.state.isInitializing) {
+        this.handleError('initializing');
+      }
     }, 5000);
   }
 
@@ -70,49 +68,48 @@ export default class QRCodeScanner extends Component {
 
   handleCameraReady = () => {
     console.log('✅📷 CAMERA READY');
-    this.handleInitialization();
+    this.handleDidInitialize();
     if (this.props.onCameraReady) this.props.onCameraReady();
   }
 
+  handleDidInitialize = () => this.setState({ isInitializing: false })
   handleError = error => this.setState({ error })
-  handleInitialization = () => this.setState({ isInitializing: false })
 
   handleMountError = () => {
     console.log('📷🚨 CAMERA MOUNT ERROR');
-    this.handleInitialization();
+    this.handleDidInitialize();
     this.handleError('mounting');
   }
 
   render = () => {
     const { onSuccess, scannerRef } = this.props;
-    const { error, isInitializing } = this.state;
+    const { error } = this.state;
 
     return (
       <Container>
         <ReactNativeQRCodeScanner
-          bottomViewStyle={styles.zeroContainer}
+          bottomViewStyle={styles.disableSection}
           cameraProps={{
             onCameraReady: this.handleCameraReady,
             onMountError: this.handleMountError,
           }}
-          cameraStyle={styles.cameraContainer}
-          containerStyle={styles.containerStyle}
+          cameraStyle={styles.fullscreen}
+          containerStyle={styles.fullscreen}
           notAuthorizedView={<QRCodeScannerNeedsAuthorization />}
           onRead={onSuccess}
           pendingAuthorizationView={<QRCodeScannerNeedsAuthorization />}
           ref={scannerRef}
-          topViewStyle={styles.zeroContainer}
+          topViewStyle={styles.disableSection}
         />
-        {error && (
+        {error ? (
           <ErrorText
             color={colors.red}
             error={`Error ${error} camera`}
           />
-        )}
-        {isInitializing && (
-          <Monospace color="white">
-            initializing...
-          </Monospace>
+        ) : (
+          <CrosshairContainer>
+            <Crosshair source={CrosshairAsset} />
+          </CrosshairContainer>
         )}
       </Container>
     );

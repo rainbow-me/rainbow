@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { isIphoneX } from 'react-native-iphone-x-helper';
+import BalanceManagerLogo from '../assets/balance-manager-logo.png';
 import { Button, BlockButton } from '../components/buttons';
 import CoinIcon from '../components/CoinIcon';
 import { Centered, Column, Row } from '../components/layout';
 import { Monospace, Smallcaps, Text, TruncatedAddress } from '../components/text';
 import Divider from '../components/Divider';
-
 import { borders, colors, padding, position } from '../styles';
 
 const AssetName = styled(Text).attrs({
@@ -114,8 +114,7 @@ const TransactionConfirmationScreen = ({
   <Container>
     <Masthead>
       <VenderLogoContainer>
-        {/* eslint-disable-next-line */}
-        <VendorLogo source={require('../assets/balance-manager-logo.png')} />
+        <VendorLogo source={BalanceManagerLogo} />
       </VenderLogoContainer>
       <VendorName>Balance Manager</VendorName>
       <TransactionMessage>Transaction Request</TransactionMessage>

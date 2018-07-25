@@ -6,10 +6,11 @@ import styled from 'styled-components/primitives';
 import { Button } from '../buttons';
 import { Column } from '../layout';
 import { ErrorText, Monospace } from '../text';
-import { colors, padding } from '../../styles';
+import { colors, padding, position } from '../../styles';
 
 const Container = styled(Column)`
   ${padding(30, 50, 60, 30)}
+  ${position.cover}
 `;
 
 const SettingsButton = styled(Button)`
@@ -23,8 +24,11 @@ const Text = styled(Monospace).attrs({ color: 'mediumGrey' })`
 `;
 
 const QRCodeScannerNeedsAuthorization = ({ onPressSettings }) => (
-  <Container>
-    <ErrorText color={colors.white} error="Camera not authorized" />
+  <Container align="start" justify="center">
+    <ErrorText
+      color={colors.white}
+      error="Camera not authorized"
+    />
     <Text>
       In order to use WalletConnect, you must first give Balance Wallet
       permission to access your phone's camera.
