@@ -137,6 +137,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-haptic-feedback')
     compile project(':react-native-udp')
     compile project(':react-native-touch-id')
     compile project(':react-native-tcp')
