@@ -5714,9 +5714,9 @@ react-native-actionsheet@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/react-native-actionsheet/-/react-native-actionsheet-2.4.2.tgz#6a00dd51a75ef2c8974312130e405af73191500f"
 
-"react-native-camera@git+https://git@github.com/react-native-community/react-native-camera":
-  version "1.1.5"
-  resolved "git+https://git@github.com/react-native-community/react-native-camera#860662e0b0e5668503fd6119867abf62b789f677"
+react-native-camera@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.1.4.tgz#5a01be906507cc2f232405f903c52c9d99988dba"
   dependencies:
     lodash "^4.17.4"
     prop-types "^15.5.10"

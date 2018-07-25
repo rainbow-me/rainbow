@@ -38,7 +38,7 @@
     "react-coin-icon": "^0.1.5",
     "react-native": "^0.56.0",
     "react-native-actionsheet": "^2.4.2",
-    "react-native-camera": "git+https://git@github.com/react-native-community/react-native-camera",
+    "react-native-camera": "^1.1.4",
     "react-native-crypto": "^2.1.2",
     "react-native-fcm": "^16.0.0",
     "react-native-iphone-x-helper": "^1.0.3",

@@ -1,24 +1,12 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Dimensions, StyleSheet } from 'react-native';
-import { compose, withHandlers, withState } from 'recompact';
+import React from 'react';
+import { withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-import { Button } from '../components/buttons';
-import Icon from '../components/icons/Icon';
 import { Header, HeaderButton } from '../components/header';
-import { Centered, Column, Row } from '../components/layout';
+import Icon from '../components/icons/Icon';
+import { Centered } from '../components/layout';
 import { QRCodeScanner } from '../components/qrcode-scanner';
-import { Monospace } from '../components/text';
-import { colors, fonts, padding, position } from '../styles';
-import { Transition } from 'react-navigation-fluid-transitions';
-
-const coverStyle = {
-  bottom: 0,
-  left: 0,
-  position: 'absolute',
-  right: 0,
-  top: 0,
-};
+import { colors, padding, position } from '../styles';
 
 const BackButton = styled.View`
   ${padding(20, 20, 4, 0)}
@@ -29,29 +17,22 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   background-color: ${colors.black};
 `;
 
-const QRScannerHeader = styled(Header)`
+const QRScannerHeader = styled(Header).attrs({
+  align: 'end',
+  justify: 'start',
+})`
   position: absolute;
   top: 0;
 `;
 
-const enhance = compose(
-  withHandlers({
-    onPressBackButton: ({ navigation, ...props }) => () => {
-      console.log('☝️☝️☝️☝️☝️☝️☝️☝️☝️☝️PROPS', props);
-      navigation.goBack();
-    },
-  }),
-);
-
-const QRScannerScreen = enhance(({
-  onPressBackButton,
-  onSuccess,
-  scannerRef,
-}) => (
-      <Transition appear="horizontal">
+const QRScannerScreen = ({ onPressBackButton, onSuccess, scannerRef }) => (
   <Container>
-    <QRCodeScanner onSuccess={onSuccess} scannerRef={scannerRef} />
-    <QRScannerHeader align="end" justify="start">
+    <QRCodeScanner
+      {...this.props}
+      onSuccess={onSuccess}
+      scannerRef={scannerRef}
+    />
+    <QRScannerHeader>
       <HeaderButton onPress={onPressBackButton}>
         <BackButton>
           <Icon
@@ -63,8 +44,7 @@ const QRScannerScreen = enhance(({
       </HeaderButton>
     </QRScannerHeader>
   </Container>
-      </Transition>
-));
+);
 
 QRScannerScreen.propTypes = {
   accountAddress: PropTypes.string,
@@ -77,13 +57,6 @@ QRScannerScreen.propTypes = {
   scannerRef: PropTypes.func,
 };
 
-export default QRScannerScreen;
-
-// compose(
-//   withHandlers({
-//     onPressBackButton: ({ navigation, ...props }) => () => {
-//       console.log('☝️☝️☝️☝️☝️☝️☝️☝️☝️☝️PROPS', props);
-//       navigation.goBack();
-//     },
-//   }),
-// )(QRScannerScreen);
+export default withHandlers({
+  onPressBackButton: ({ navigation }) => () => navigation.goBack(),
+})(QRScannerScreen);

@@ -21,9 +21,10 @@ const sortAssetsByNativeAmount = (assets, showShitcoins) => {
 
   if (showShitcoins) {
     const assetsWithNoMarketValue = assets.filter(asset => asset.native === null);
-    const sortedAssetsWithNoMarketValue = assetsWithNoMarketValue.sort((a, b) => {
-      return (a.name < b.name) ? -1 : 1;
-    });
+    const sortedAssetsWithNoMarketValue = assetsWithNoMarketValue.sort((a, b) => (
+      (a.name < b.name) ? -1 : 1
+    ));
+
     return sortedAssetsWithMarketValue.concat(sortedAssetsWithNoMarketValue);
   }
 
