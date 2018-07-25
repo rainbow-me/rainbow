@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -1296,7 +1295,7 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = Q4G66XSS36;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Push = {
 								enabled = 1;
@@ -2120,7 +2119,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = BalanceWallet/BalanceWallet.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = Q4G66XSS36;
@@ -2157,7 +2156,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.balance.balancewallet;
 				PRODUCT_NAME = BalanceWallet;
 				PROVISIONING_PROFILE = "587a30f1-8b82-4cb1-bc43-5214fe9e6bcc";
-				PROVISIONING_PROFILE_SPECIFIER = "match Development io.balance.balancewallet";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -2167,8 +2166,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = BalanceWallet/BalanceWallet.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Q4G66XSS36;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2204,7 +2203,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.balance.balancewallet;
 				PRODUCT_NAME = BalanceWallet;
 				PROVISIONING_PROFILE = "8895aaa6-904d-421d-a78a-0c94fa26de3f";
-				PROVISIONING_PROFILE_SPECIFIER = "match AppStore io.balance.balancewallet";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
