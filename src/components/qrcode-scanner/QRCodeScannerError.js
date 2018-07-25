@@ -1,0 +1,1 @@
+QRCodeScannerInitializing.js

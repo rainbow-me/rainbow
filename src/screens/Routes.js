@@ -2,7 +2,7 @@ import { createSwitchNavigator, createStackNavigator } from 'react-navigation';
 import { FluidNavigator } from 'react-navigation-fluid-transitions';
 import IntroScreen from './IntroScreen';
 import LoadingScreen from './LoadingScreen';
-import QRScannerScreen from './QRScannerScreen';
+import QRScannerScreenWithData from './QRScannerScreenWithData';
 import SettingsScreenWithData from './SettingsScreenWithData';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
@@ -16,7 +16,7 @@ const AppStack = FluidNavigator({
     },
   },
   QRScannerScreen: {
-    screen: QRScannerScreen,
+    screen: QRScannerScreenWithData,
   },
   SettingsScreen: {
     navigationOptions: {
