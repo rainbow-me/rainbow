@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { AsyncStorage } from 'react-native';
+import React from 'react';
 import { isIphoneX } from 'react-native-iphone-x-helper';
 import { Transition } from 'react-navigation-fluid-transitions';
+import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import AppVersionStamp from '../components/AppVersionStamp';
 import { ButtonPressAnimation } from '../components/buttons';
@@ -10,6 +10,7 @@ import Icon from '../components/icons/Icon';
 import { Column, Row } from '../components/layout';
 import { Monospace } from '../components/text';
 import { colors, fonts, padding } from '../styles';
+import { withHideSplashScreenOnMount } from '../hoc';
 
 const AlphaWarning = styled(Row).attrs({ align: 'center' })`
   margin-top: 37;
@@ -72,46 +73,43 @@ const WarningIcon = styled(Icon).attrs({
   margin-right: ${fonts.size.micro};
 `;
 
-export default class IntroScreen extends Component {
-  static propTypes = {
-    navigation: PropTypes.object,
-  }
+const IntroScreen = ({ onCreateWallet }) => (
+  <Transition appear="bottom" disappear="bottom">
+    <Container>
+      <Content>
+        <Monospace color="white" size="big" weight="semibold">
+          Welcome to Balance
+        </Monospace>
+        <AlphaWarning>
+          <WarningIcon />
+          <AlphaWarningText>This is alpha software.</AlphaWarningText>
+        </AlphaWarning>
+        <InstructionsText>
+          Please do not store more in your wallet than you are willing to lose.
+        </InstructionsText>
+        <Row>
+          <ButtonPressAnimation onPress={onCreateWallet}>
+            <CreateWalletButton>
+              <CreateWalletButtonText>
+                Create a Wallet
+              </CreateWalletButtonText>
+            </CreateWalletButton>
+          </ButtonPressAnimation>
+        </Row>
+      </Content>
+      <IntroAppVersion color="#2A2B30" />
+    </Container>
+  </Transition>
+);
 
-  handleCreateWallet = async () => {
-    await AsyncStorage.setItem('isUserInitialized', 'true');
-    this.props.navigation.navigate('WalletScreen');
-  }
+IntroScreen.propTypes = {
+  navigation: PropTypes.object,
+  onCreateWallet: PropTypes.func,
+};
 
-  render = () => (
-    <Transition appear='bottom' disappear='flip'>
-      <Container>
-        <Content>
-          <Monospace
-            color="white"
-            size="big"
-            weight="semibold"
-          >
-            Welcome to Balance
-          </Monospace>
-          <AlphaWarning>
-            <WarningIcon />
-            <AlphaWarningText>This is alpha software.</AlphaWarningText>
-          </AlphaWarning>
-          <InstructionsText>
-            Please do not store more in your wallet than you are willing to lose.
-          </InstructionsText>
-          <Row>
-            <ButtonPressAnimation onPress={this.handleCreateWallet}>
-              <CreateWalletButton>
-                <CreateWalletButtonText>
-                  Create a Wallet
-                </CreateWalletButtonText>
-              </CreateWalletButton>
-            </ButtonPressAnimation>
-          </Row>
-        </Content>
-        <IntroAppVersion color="#2A2B30" />
-      </Container>
-    </Transition>
-  )
-}
+export default compose(
+  withHideSplashScreenOnMount,
+  withHandlers({
+    onCreateWallet: ({ navigation }) => () => navigation.navigate('WalletScreen'),
+  }),
+)(IntroScreen);
