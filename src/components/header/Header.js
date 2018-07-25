@@ -1,45 +1,42 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, hoistStatics } from 'recompact';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import { compose, hoistStatics, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { Row } from '../layout';
-import { withSafeAreaViewInsetValues } from '../../hoc';
 import { padding } from '../../styles';
 
 const HeaderHeight = 54;
+const HeaderPaddingBottom = 4;
 
 const Container = styled(Row).attrs({ align: 'end' })`
-  ${({ topInset }) => padding((topInset - 10), 9, 10)}
+  ${({ statusBarHeight }) => padding(statusBarHeight, 9, HeaderPaddingBottom)}
   flex-shrink: 0;
-  height: ${({ topInset }) => (HeaderHeight + topInset)};
+  height: ${({ statusBarHeight }) => (HeaderHeight + HeaderPaddingBottom + statusBarHeight)};
   width: 100%;
 `;
 
-const Header = ({
-  safeAreaInset,
-  showTopInset,
-  ...props
-}) => (
+const Header = ({ statusBarHeight, ...props }) => (
   <Container
     {...props}
-    topInset={showTopInset ? safeAreaInset.top : 0}
+    statusBarHeight={statusBarHeight}
   />
 );
 
 Header.propTypes = {
-  color: PropTypes.string,
-  component: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
-  safeAreaInset: PropTypes.shape({ top: PropTypes.number }),
-  showTopInset: PropTypes.bool,
+  statusBarHeight: PropTypes.number,
+  statusBarSafeMode: PropTypes.bool,
 };
 
 Header.defaultProps = {
-  showTopInset: true,
+  statusBarSafeMode: true,
 };
 
 Header.height = HeaderHeight;
 
 export default compose(
   hoistStatics,
-  withSafeAreaViewInsetValues,
+  withProps(({ statusBarSafeMode }) => ({
+    statusBarHeight: getStatusBarHeight(statusBarSafeMode),
+  })),
 )(Header);
