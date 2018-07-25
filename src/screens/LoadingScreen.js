@@ -1,28 +1,35 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { AsyncStorage } from 'react-native';
-import SplashScreen from 'react-native-splash-screen';
+import React, { Component, Fragment } from 'react';
+import { connect } from 'react-redux';
 import styled from 'styled-components/primitives';
 import Icon from '../components/icons/Icon';
-import { Centered, Column } from '../components/layout';
-import { Monospace } from '../components/text';
+import { Column } from '../components/layout';
+import { ErrorText, Monospace } from '../components/text';
+import { loadAddress } from '../model/wallet';
 import { colors, padding, position } from '../styles';
 
-const Container = styled(Centered)`
+const Container = styled(Column).attrs({ justify: 'center' })`
   ${position.cover}
-  ${padding(40)}
+  ${padding(0, 0, 60, 0)}
 `;
 
-const ErrorText = styled(Monospace).attrs({ color: 'red' })`
+const ErrorContainer = styled(Column)`
+  ${padding(0, 50, 0, 30)}
+`;
+
+const ErrorMessage = styled(Monospace).attrs({ color: 'red' })`
+  line-height: 25;
+  margin-top: 7;
+`;
+
+const LoadingColor = colors.alpha(colors.grey, 0.5);
+
+const LoadingText = styled(Monospace)`
+  line-height: 25;
   margin-top: 10;
-  text-align: center;
 `;
 
-const Text = styled(Monospace).attrs({ color: 'grey' })`
-  margin-bottom: 10;
-`;
-
-export default class LoadingScreen extends Component {
+class LoadingScreen extends Component {
   static propTypes = {
     navigation: PropTypes.object,
   }
@@ -38,7 +45,7 @@ export default class LoadingScreen extends Component {
   componentDidMount = () => {
     this.errorTimeoutHandle = setTimeout(() => {
       this.setState({ isError: true });
-      this.timerHandle = 0;
+      this.errorTimeoutHandle = 0;
     }, 5000);
   }
 
@@ -49,28 +56,31 @@ export default class LoadingScreen extends Component {
     }
   }
 
-  handleLoading = async () => {
-    const isUserInitialized = await AsyncStorage.getItem('isUserInitialized');
+  handleLoading = () => {
+    const { navigation } = this.props;
 
     // If this is a brand new instance of the Balance Wallet app show the 'IntroScreen',
     // otherwise display the main 'App' route. Afterwards this view will be
     // unmounted and thrown away.
-    this.props.navigation.navigate(isUserInitialized ? 'App' : 'Intro');
-    SplashScreen.hide();
+    loadAddress().then(address => navigation.navigate(address ? 'App' : 'Intro'));
   }
 
   render = () => (
-    <Container>
+    <Container align={this.state.isError ? 'start' : 'center'}>
       {this.state.isError ? (
-        <Column align="center" justify="center">
-          <Icon color={colors.red} name="warning" />
-          <ErrorText>
-            there has been an error loading the wallet. please kill the app and retry
-          </ErrorText>
-        </Column>
+        <ErrorContainer>
+          <ErrorText color={colors.red} error="Error" />
+          <ErrorMessage>There has been an error loading the wallet. Please kill the app and retry.</ErrorMessage>
+        </ErrorContainer>
       ) : (
-        <Text>loading...</Text>
+        <Fragment>
+          <Icon color={LoadingColor} name="balanceLogo" />
+          <LoadingText color={LoadingColor}>Loading</LoadingText>
+        </Fragment>
       )}
     </Container>
   )
 }
+
+const reduxProps = ({ account: { accountAddress } }) => ({ accountAddress });
+export default connect(reduxProps, null)(LoadingScreen);

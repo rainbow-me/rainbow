@@ -31,11 +31,7 @@ export default class SettingsScreenWithData extends Component {
     seedPhrase: '',
   }
 
-  componentDidMount = () => {
-    loadAddress().then(address => {
-      this.setState({ address });
-    });
-  };
+  componentDidMount = () => loadAddress().then(address => this.setState({ address }))
 
   handlePressBackButton = () => this.props.navigation.goBack()
 

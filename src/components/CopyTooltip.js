@@ -10,10 +10,12 @@ class CopyTooltip extends Component {
     activeOpacity: PropTypes.number,
     navigation: PropTypes.object,
     textToCopy: PropTypes.string,
+    tooltipText: PropTypes.string,
   }
 
   static defaultProps = {
     activeOpacity: 0.666,
+    tooltipText: 'Copy',
   }
 
   tooltip = null
@@ -34,7 +36,7 @@ class CopyTooltip extends Component {
   render = () => (
     <ToolTip
       {...this.props}
-      actions={[{ onPress: this.handleCopy, text: 'Copy' }]}
+      actions={[{ onPress: this.handleCopy, text: this.props.tooltipText }]}
       activeOpacity={this.props.activeOpacity}
       onPressIn={this.handlePressIn}
       ref={this.handleRef}

@@ -3,6 +3,7 @@ package com.balancewallet;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.reactlibrary.RNReactNativeHapticFeedbackPackage;
 import com.tradle.react.UdpSocketsModule;
 import com.rnfingerprint.FingerprintAuthPackage;
 import com.peel.react.TcpSocketsModule;
@@ -36,6 +37,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNReactNativeHapticFeedbackPackage(),
             new UdpSocketsModule(),
             new FingerprintAuthPackage(),
             new TcpSocketsModule(),

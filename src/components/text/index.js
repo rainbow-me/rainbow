@@ -1,3 +1,4 @@
+export { default as ErrorText } from './ErrorText';
 export { default as H1 } from './H1';
 export { default as Monospace } from './Monospace';
 export { default as Smallcaps } from './Smallcaps';

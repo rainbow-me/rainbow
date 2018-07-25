@@ -5714,7 +5714,7 @@ react-native-actionsheet@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/react-native-actionsheet/-/react-native-actionsheet-2.4.2.tgz#6a00dd51a75ef2c8974312130e405af73191500f"
 
-react-native-camera@^1.0.3:
+react-native-camera@^1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.1.4.tgz#5a01be906507cc2f232405f903c52c9d99988dba"
   dependencies:
@@ -5755,6 +5755,10 @@ react-native-fcm@^16.0.0:
   version "16.0.0"
   resolved "https://registry.yarnpkg.com/react-native-fcm/-/react-native-fcm-16.0.0.tgz#22ff9de21a2fe5cb30f8d50b1a3b4bf3bccd6434"
 
+react-native-haptic-feedback@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.2.0.tgz#6948470529d8054d189db6613987d0e677f4c383"
+
 react-native-iphone-x-helper@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.0.3.tgz#7a2f1e0574e899a0f1d426e6167fd98990083214"
@@ -5788,11 +5792,12 @@ react-native-permissions@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-1.1.1.tgz#4876004681ff8556454613d85249b01baff9b35b"
 
-react-native-qrcode-scanner@^0.0.30:
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/react-native-qrcode-scanner/-/react-native-qrcode-scanner-0.0.30.tgz#ebe260c9211599438afbd311d1fee973236dac10"
+react-native-qrcode-scanner@moaazsidat/react-native-qrcode-scanner#113/head:
+  version "1.0.1"
+  resolved "https://codeload.github.com/moaazsidat/react-native-qrcode-scanner/tar.gz/f2dbec7b4b61b707900562bdb94caa2b024fe069"
   dependencies:
     prop-types "^15.5.10"
+    react-native-permissions "^1.1.1"
 
 react-native-qrcode-svg@^5.1.0:
   version "5.1.0"
