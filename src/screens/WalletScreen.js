@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 import { compose, withHandlers, withState } from 'recompact';
 import { AssetList, BalanceCoinRow, UniqueTokenGridList } from '../components/asset-list';
 import Avatar from '../components/Avatar';
-import { ButtonPressAnimation } from '../components/buttons';
-import { Header, Page } from '../components/layout';
+import { Header, HeaderButton } from '../components/header';
+import { Page } from '../components/layout';
 import { withHideSplashScreenOnMount } from '../hoc';
 
 const filterEmptyAssetSections = sections => sections.filter(({ totalItems }) => totalItems);
@@ -62,9 +62,9 @@ const WalletScreen = ({
   return (
     <Page>
       <Header>
-        <ButtonPressAnimation onPress={onPressProfile}>
+        <HeaderButton onPress={onPressProfile}>
           <Avatar />
-        </ButtonPressAnimation>
+        </HeaderButton>
       </Header>
       <AssetList
         sections={filterEmptyAssetSections([sections.balances, sections.collectibles])}

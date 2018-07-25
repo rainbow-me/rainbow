@@ -2,9 +2,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
 import AppVersionStamp from '../components/AppVersionStamp';
-import { Button, ButtonPressAnimation } from '../components/buttons';
+import { Button } from '../components/buttons';
 import Icon from '../components/icons/Icon';
-import { Centered, Column, Header, Page } from '../components/layout';
+import { Header, HeaderButton } from '../components/header';
+import { Centered, Column, Page } from '../components/layout';
 import { Monospace, TruncatedAddress } from '../components/text';
 import CopyTooltip from '../components/CopyTooltip';
 import QRCodeDisplay from '../components/QRCodeDisplay';
@@ -54,7 +55,7 @@ const SettingsScreen = ({
     showBottomInset
   >
     <Header align="end" justify="end">
-      <ButtonPressAnimation onPress={onPressBackButton}>
+      <HeaderButton onPress={onPressBackButton}>
         <BackButton>
           <Icon
             color={colors.brightBlue}
@@ -62,7 +63,7 @@ const SettingsScreen = ({
             name="caret"
           />
         </BackButton>
-      </ButtonPressAnimation>
+      </HeaderButton>
     </Header>
     <Content>
       <QRCodeDisplay value={address} />
