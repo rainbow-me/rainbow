@@ -1,5 +1,4 @@
 import { debounce } from 'lodash';
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Alert, Clipboard } from 'react-native';
 import Mailer from 'react-native-mail';
@@ -21,19 +20,12 @@ const handleSendFeedbackError = debounce(error => (
 ), 250);
 
 export default class SettingsScreenWithData extends Component {
-  static propTypes = {
-    navigation: PropTypes.object,
-  }
-
   state = {
     address: '',
-    showSeedPhrase: false,
-    seedPhrase: '',
+    seedPhrase: null,
   }
 
   componentDidMount = () => loadAddress().then(address => this.setState({ address }))
-
-  handlePressBackButton = () => this.props.navigation.goBack()
 
   handleSendFeedback = () =>
     Mailer.mail({
@@ -42,20 +34,17 @@ export default class SettingsScreenWithData extends Component {
     }, handleSendFeedbackError)
 
   handleToggleShowSeedPhrase = () => {
-    if (!this.state.showSeedPhrase) {
-      loadSeedPhrase().then(seedPhrase => {
-        this.setState({ showSeedPhrase: true, seedPhrase });
-      });
+    if (!this.state.seedPhrase) {
+      loadSeedPhrase().then(seedPhrase => this.setState({ seedPhrase }));
     } else {
-      this.setState({ showSeedPhrase: false, seedPhrase: '' });
+      this.setState({ seedPhrase: null });
     }
-  };
+  }
 
   render = () => (
     <Transition appear='left' disappear='left'>
       <SettingsScreen
         {...this.state}
-        onPressBackButton={this.handlePressBackButton}
         onSendFeedback={this.handleSendFeedback}
         onToggleShowSeedPhrase={this.handleToggleShowSeedPhrase}
       />
