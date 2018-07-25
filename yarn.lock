@@ -1660,9 +1660,9 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-balance-common@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.1.1.tgz#2b1dbaf10a6ce292a564be0c625280b6775b9a0b"
+balance-common@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.1.2.tgz#516c2f64e9bec73144143980568e71e6d0b48c1e"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -5085,8 +5085,8 @@ npm-bundled@^1.0.1:
   resolved "https://registry.yarnpkg.com/npm-bundled/-/npm-bundled-1.0.3.tgz#7e71703d973af3370a9591bafe3a63aca0be2308"
 
 npm-packlist@^1.1.6:
-  version "1.1.10"
-  resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-1.1.10.tgz#1039db9e985727e464df066f4cf0ab6ef85c398a"
+  version "1.1.11"
+  resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-1.1.11.tgz#84e8c683cbe7867d34b1d357d893ce29e28a02de"
   dependencies:
     ignore-walk "^3.0.1"
     npm-bundled "^1.0.1"
