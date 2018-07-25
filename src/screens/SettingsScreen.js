@@ -68,7 +68,7 @@ const SettingsScreen = ({
     <Content>
       <QRCodeDisplay value={address} />
       <WalletAddressTextContainer>
-        <CopyTooltip textToCopy={address}>
+        <CopyTooltip textToCopy={address} tooltipText="Copy Address">
           <TruncatedAddress
             address={address}
             size="big"
@@ -83,7 +83,7 @@ const SettingsScreen = ({
     </Content>
     <SeedPhraseSection>
       {showSeedPhrase && (
-        <CopyTooltip textToCopy={seedPhrase}>
+        <CopyTooltip textToCopy={seedPhrase} tooltipText="Copy Seed Phrase">
           <SeedPhraseText>
             {seedPhrase}
           </SeedPhraseText>
