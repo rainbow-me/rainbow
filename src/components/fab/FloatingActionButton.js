@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import { compose, hoistStatics, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, position, shadow } from '../../styles';
 import { ButtonPressAnimation } from '../buttons';
@@ -76,4 +78,15 @@ FloatingActionButton.defaultProps = {
   size: FloatingActionButton.size,
 };
 
-export default FloatingActionButton;
+export default hoistStatics(
+  withHandlers({
+    onPressIn: ({ onPressIn }) => (event) => {
+      ReactNativeHapticFeedback.trigger('impactLight');
+      if (onPressIn) onPressIn(event);
+    },
+    onPressOut: ({ onPressOut }) => (event) => {
+      ReactNativeHapticFeedback.trigger('impactLight');
+      if (onPressOut) onPressOut(event);
+    },
+  }),
+)(FloatingActionButton);

@@ -5755,6 +5755,10 @@ react-native-fcm@^16.0.0:
   version "16.0.0"
   resolved "https://registry.yarnpkg.com/react-native-fcm/-/react-native-fcm-16.0.0.tgz#22ff9de21a2fe5cb30f8d50b1a3b4bf3bccd6434"
 
+react-native-haptic-feedback@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.2.0.tgz#6948470529d8054d189db6613987d0e677f4c383"
+
 react-native-iphone-x-helper@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.0.3.tgz#7a2f1e0574e899a0f1d426e6167fd98990083214"
