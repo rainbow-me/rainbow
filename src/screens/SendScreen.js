@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Button, Image, SectionList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Label from '../components/Label';
 import Section from '../components/Section';
 
 class SendScreen extends Component {
@@ -59,7 +58,6 @@ class SendScreen extends Component {
               source={{ uri: 'https://raw.githubusercontent.com/balance-io/tokens/master/images/ethereum_1.png' }}
             />
             <View style={{ paddingLeft: 8, flexGrow: 1 }}>
-              <Label style={{ width: '100%' }}>{'Ethereum'}</Label>
               <Text>{'$5,678'}</Text>
             </View>
             <Image
@@ -129,7 +127,7 @@ class SendScreen extends Component {
                 </View>
               )}
               <View style={{ paddingLeft: 8, flexGrow: 1 }}>
-                <Label>{item.name}</Label>
+                <Text>{item.name}</Text>
                 <Text style={{ color: 'rgba(0,0,0,0.54)' }}>{item.text}</Text>
               </View>
             </Section>
