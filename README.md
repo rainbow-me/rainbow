@@ -13,7 +13,7 @@ If you are new to React Native, this is a helpful introduction: https://facebook
 
 1. Clone the GitHub repository to your machine.
 
-2. Run `npm install` to get all of the packages required.
+2. Run `yarn` to get all of the packages required.
 
 3. Run `./node_modules/.bin/rn-nodeify --install "crypto" --hack`
 
