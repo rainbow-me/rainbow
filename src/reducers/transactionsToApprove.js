@@ -22,9 +22,11 @@ export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => 
       prices,
     );
     _nativeAmount = bignumber.formatInputDecimals(nativeAmount, assetAmount);
-  }
-  const displayAmount = bignumber.convertAssetAmountToDisplaySpecific(_nativeAmount, prices, nativeCurrency);
-  return displayAmount;
+    const displayAmount = bignumber.convertAssetAmountToDisplaySpecific(_nativeAmount, prices, nativeCurrency);
+    return displayAmount;
+  } else {
+    return _nativeAmount;
+  } 
 };
 
 const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrency) => {
