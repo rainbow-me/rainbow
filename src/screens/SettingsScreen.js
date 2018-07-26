@@ -9,6 +9,7 @@ import { Monospace, TruncatedAddress } from '../components/text';
 import CopyTooltip from '../components/CopyTooltip';
 import QRCodeDisplay from '../components/QRCodeDisplay';
 import { colors, fonts, padding } from '../styles';
+import { deviceUtils } from '../utils';
 
 const Content = styled(Column).attrs({ align: 'center', justify: 'start' })`
   ${padding(2, 31, 0)}
@@ -30,7 +31,7 @@ const SeedPhraseText = styled(Monospace).attrs({ size: 'h5', weight: 'medium' })
 `;
 
 const WalletAddressTextContainer = styled(Centered).attrs({ direction: 'column' })`
-  margin-bottom: 52;
+  margin-bottom: ${(deviceUtils.height < 700) ? 30 : 52};
   margin-top: 22;
   width: 100%;
 `;
@@ -55,7 +56,10 @@ const SettingsScreen = ({
       />
     </Header>
     <Content>
-      <QRCodeDisplay value={address} />
+      <QRCodeDisplay
+        size={(deviceUtils.width * (150 / deviceUtils.iPhoneXWidth))}
+        value={address}
+      />
       <WalletAddressTextContainer>
         <CopyTooltip textToCopy={address} tooltipText="Copy Address">
           <TruncatedAddress

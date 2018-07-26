@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { isIphoneX } from 'react-native-iphone-x-helper';
 import { Transition } from 'react-navigation-fluid-transitions';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
@@ -10,7 +9,7 @@ import Icon from '../components/icons/Icon';
 import { Column, Row } from '../components/layout';
 import { Monospace } from '../components/text';
 import { colors, fonts, padding } from '../styles';
-import { withHideSplashScreenOnMount } from '../hoc';
+import { withHideSplashScreenOnMount, withSafeAreaViewInsetValues } from '../hoc';
 
 const AlphaWarning = styled(Row).attrs({ align: 'center' })`
   margin-top: 37;
@@ -60,7 +59,7 @@ const InstructionsText = styled(Monospace).attrs({
 `;
 
 const IntroAppVersion = styled(AppVersionStamp)`
-  bottom: ${isIphoneX ? 34 : 0};
+  bottom: ${({ bottomInset }) => bottomInset};
   left: 0;
   position: absolute;
   right: 0;
@@ -73,7 +72,7 @@ const WarningIcon = styled(Icon).attrs({
   margin-right: ${fonts.size.micro};
 `;
 
-const IntroScreen = ({ onCreateWallet }) => (
+const IntroScreen = ({ onCreateWallet, safeAreaInset }) => (
   <Transition appear="bottom" disappear="bottom">
     <Container>
       <Content>
@@ -97,7 +96,10 @@ const IntroScreen = ({ onCreateWallet }) => (
           </ButtonPressAnimation>
         </Row>
       </Content>
-      <IntroAppVersion color="#2A2B30" />
+      <IntroAppVersion
+        bottomInset={safeAreaInset.bottom}
+        color="#2A2B30"
+      />
     </Container>
   </Transition>
 );
@@ -105,10 +107,12 @@ const IntroScreen = ({ onCreateWallet }) => (
 IntroScreen.propTypes = {
   navigation: PropTypes.object,
   onCreateWallet: PropTypes.func,
+  safeAreaInset: PropTypes.object,
 };
 
 export default compose(
   withHideSplashScreenOnMount,
+  withSafeAreaViewInsetValues,
   withHandlers({
     onCreateWallet: ({ navigation }) => () => navigation.navigate('WalletScreen'),
   }),
