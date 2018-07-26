@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { StatusBar } from 'react-native';
 import styled from 'styled-components/primitives';
 import { BackButton, Header } from '../components/header';
 import { Centered } from '../components/layout';
@@ -21,6 +22,7 @@ const QRScannerHeader = styled(Header).attrs({
 
 const QRScannerScreen = ({ onSuccess, scannerRef }) => (
   <Container>
+    <StatusBar barStyle="light-content" />
     <QRCodeScanner
       {...this.props}
       onSuccess={onSuccess}
