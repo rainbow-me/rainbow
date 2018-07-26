@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
+import { StatusBar } from 'react-native';
 import { connect } from 'react-redux';
 import styled from 'styled-components/primitives';
 import Icon from '../components/icons/Icon';
@@ -67,6 +68,7 @@ class LoadingScreen extends Component {
 
   render = () => (
     <Container align={this.state.isError ? 'start' : 'center'}>
+      <StatusBar hidden />
       {this.state.isError ? (
         <ErrorContainer>
           <ErrorText color={colors.red} error="Error" />

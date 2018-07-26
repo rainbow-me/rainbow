@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Dimensions, StyleSheet } from 'react-native';
+import Permissions from 'react-native-permissions';
 import ReactNativeQRCodeScanner from 'react-native-qrcode-scanner';
 import styled from 'styled-components/primitives';
 import CrosshairAsset from '../../assets/qrcode-scanner-crosshair.png';
@@ -8,6 +9,9 @@ import { colors, position } from '../../styles';
 import { Centered } from '../layout';
 import { ErrorText } from '../text';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
+
+const CAMERA_PERMISSION = 'camera';
+const PERMISSION_AUTHORIZED = 'authorized';
 
 const styles = StyleSheet.create({
   disableSection: {
@@ -45,15 +49,18 @@ export default class QRCodeScanner extends Component {
 
   state = {
     error: null,
-    isInitializing: true,
+    isAuthorized: false,
+    isInitialized: false,
   }
 
   initializionTimeout = null
 
   componentDidMount = () => {
+    this.handleIsAuthorized();
+
     this.initializionTimeout = setTimeout(() => {
       this.initializionTimeout = 0;
-      if (this.state.isInitializing) {
+      if (!this.state.isInitialized) {
         this.handleError('initializing');
       }
     }, 5000);
@@ -67,23 +74,32 @@ export default class QRCodeScanner extends Component {
   }
 
   handleCameraReady = () => {
-    console.log('✅📷 CAMERA READY');
+    console.log('📷 ✅ CAMERA READY');
     this.handleDidInitialize();
     if (this.props.onCameraReady) this.props.onCameraReady();
   }
 
-  handleDidInitialize = () => this.setState({ isInitializing: false })
+  handleDidInitialize = () => this.setState({ isInitialized: true })
+
   handleError = error => this.setState({ error })
 
+  handleIsAuthorized = () => {
+    Permissions.request(CAMERA_PERMISSION).then((response) => {
+      this.setState({ isAuthorized: response === PERMISSION_AUTHORIZED });
+    });
+  }
+
   handleMountError = () => {
-    console.log('📷🚨 CAMERA MOUNT ERROR');
-    this.handleDidInitialize();
+    console.log('📷 🚨 CAMERA MOUNT ERROR');
     this.handleError('mounting');
   }
 
   render = () => {
     const { onSuccess, scannerRef } = this.props;
-    const { error } = this.state;
+    const { error, isAuthorized, isInitialized } = this.state;
+
+    const showCrosshair = !error && isAuthorized && isInitialized;
+    const showErrorMessage = error && !isInitialized;
 
     return (
       <Container>
@@ -101,12 +117,13 @@ export default class QRCodeScanner extends Component {
           ref={scannerRef}
           topViewStyle={styles.disableSection}
         />
-        {error ? (
+        {showErrorMessage && (
           <ErrorText
             color={colors.red}
             error={`Error ${error} camera`}
           />
-        ) : (
+        )}
+        {showCrosshair && (
           <CrosshairContainer>
             <Crosshair source={CrosshairAsset} />
           </CrosshairContainer>

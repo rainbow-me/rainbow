@@ -1,6 +1,7 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { StatusBar } from 'react-native';
 import { connect } from 'react-redux';
 import { compose, withHandlers, withState } from 'recompact';
 import { AssetList, BalanceCoinRow, UniqueTokenGridList } from '../components/asset-list';
@@ -63,6 +64,7 @@ const WalletScreen = ({
 
   return (
     <Page>
+      <StatusBar barStyle="dark-content" />
       <Header>
         <HeaderButton onPress={onPressProfile}>
           <Avatar />
