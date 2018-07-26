@@ -4,6 +4,7 @@ import IntroScreen from './IntroScreen';
 import LoadingScreen from './LoadingScreen';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
 import SettingsScreenWithData from './SettingsScreenWithData';
+import SendScreen from './SendScreen';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
 
@@ -26,6 +27,9 @@ const AppStack = FluidNavigator({
   },
   WalletScreen: {
     screen: WalletScreen,
+  },
+  SendScreen: {
+    screen: SendScreen,
   },
 }, {
   initialRouteName: 'WalletScreen',
