@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { StatusBar } from 'react-native';
 import { Transition } from 'react-navigation-fluid-transitions';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
@@ -75,6 +76,7 @@ const WarningIcon = styled(Icon).attrs({
 const IntroScreen = ({ onCreateWallet, safeAreaInset }) => (
   <Transition appear="bottom" disappear="bottom">
     <Container>
+      <StatusBar barStyle="light-content" />
       <Content>
         <Monospace color="white" size="big" weight="semibold">
           Welcome to Balance

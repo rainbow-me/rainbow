@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { StatusBar } from 'react-native';
 import styled from 'styled-components/primitives';
 import AppVersionStamp from '../components/AppVersionStamp';
 import { Button } from '../components/buttons';
@@ -49,6 +50,7 @@ const SettingsScreen = ({
     justify="center"
     showBottomInset
   >
+    <StatusBar barStyle="dark-content" />
     <Header align="end" justify="end">
       <BackButton
         color={colors.brightBlue}
