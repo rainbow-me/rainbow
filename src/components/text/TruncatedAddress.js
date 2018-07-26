@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Dimensions } from 'react-native';
+import { deviceUtils } from '../../utils';
 import Monospace from './Monospace';
 
 const buildAddressAbbreviation = (address, truncationLength) => {
-  const isSmallPhone = (Dimensions.get('window').width < 375);
-  const numCharsPerSection = truncationLength || (isSmallPhone ? 8 : 10);
+  const defaultNumCharsPerSection = deviceUtils.isSmallPhone ? 8 : 10;
+  const numCharsPerSection = truncationLength || defaultNumCharsPerSection;
 
   const sections = [
     address.substring(0, numCharsPerSection),
@@ -16,7 +16,12 @@ const buildAddressAbbreviation = (address, truncationLength) => {
 };
 
 const TruncatedAddress = ({ address, truncationLength, ...props }) => (
-  <Monospace {...props}>
+  <Monospace
+    {...props}
+    adjustsFontSizeToFit={true}
+    minimumFontScale={0.5}
+    numberOfLines={1}
+  >
     {address
       ? buildAddressAbbreviation(address, truncationLength)
       : 'Error displaying address'
