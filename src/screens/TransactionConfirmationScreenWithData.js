@@ -67,7 +67,7 @@ class TransactionConfirmationScreenWithData extends Component {
         asset={{
           address: get(transactionDetails, 'transactionDisplayDetails.to'),
           amount: `${get(transactionDetails, 'transactionDisplayDetails.value', '0.00')}`,
-          name: `${get(transactionDetails, 'transactionDisplayDetails.name', 'Error displaying name')}`,
+          name: `${get(transactionDetails, 'transactionDisplayDetails.name', 'No data')}`,
           nativeAmount: get(transactionDetails, 'transactionDisplayDetails.nativeAmount'),
           symbol: `${get(transactionDetails, 'transactionDisplayDetails.symbol', 'N/A')}`,
         }}

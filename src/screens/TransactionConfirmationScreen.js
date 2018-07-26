@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { isIphoneX } from 'react-native-iphone-x-helper';
 import BalanceManagerLogo from '../assets/balance-manager-logo.png';
 import { Button, BlockButton } from '../components/buttons';
 import CoinIcon from '../components/CoinIcon';
 import { Centered, Column, Row } from '../components/layout';
 import { Monospace, Smallcaps, Text, TruncatedAddress } from '../components/text';
 import Divider from '../components/Divider';
+import { withSafeAreaViewInsetValues } from '../hoc';
 import { borders, colors, padding, position } from '../styles';
 
 const AssetName = styled(Text).attrs({
@@ -21,15 +21,15 @@ const BottomSheet = styled(Column).attrs({ justify: 'space-between' })`
   ${borders.buildRadius('top', 15)}
   background-color: ${colors.white};
   flex: 0;
-  min-height: 270;
-  padding-bottom: ${isIphoneX ? 34 : 0};
+  min-height: ${({ bottomInset }) => (bottomInset + 236)};
+  padding-bottom: ${({ bottomInset }) => bottomInset};
   width: 100%;
 `;
 
 const CancelButtonContainer = styled.View`
-  bottom: 24;
+  bottom: 22;
   position: absolute;
-  right: 21;
+  right: 19;
 `;
 
 const Container = styled(Column)`
@@ -45,7 +45,7 @@ const Masthead = styled(Centered).attrs({ direction: 'column' })`
 `;
 
 const SendButtonContainer = styled.View`
-  ${padding(7, 15, 12)}
+  ${padding(7, 15, 14)}
   flex-shrink: 0;
 `;
 
@@ -110,6 +110,7 @@ const TransactionConfirmationScreen = ({
   },
   onCancelTransaction,
   onConfirmTransaction,
+  safeAreaInset,
 }) => (
   <Container>
     <Masthead>
@@ -129,7 +130,7 @@ const TransactionConfirmationScreen = ({
         </Button>
       </CancelButtonContainer>
     </Masthead>
-    <BottomSheet>
+    <BottomSheet bottomInset={safeAreaInset.bottom}>
       <TransactionAddressRow>
         <Smallcaps>To</Smallcaps>
         <TransactionAddress address={address} truncationLength={15}/>
@@ -166,7 +167,7 @@ TransactionConfirmationScreen.propTypes = {
   }),
   onCancelTransaction: PropTypes.func,
   onConfirmTransaction: PropTypes.func,
-
+  safeAreaInset: PropTypes.object,
 };
 
-export default TransactionConfirmationScreen;
+export default withSafeAreaViewInsetValues(TransactionConfirmationScreen);

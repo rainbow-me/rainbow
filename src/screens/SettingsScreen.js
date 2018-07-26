@@ -1,19 +1,16 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { StatusBar } from 'react-native';
 import styled from 'styled-components/primitives';
 import AppVersionStamp from '../components/AppVersionStamp';
 import { Button } from '../components/buttons';
-import Icon from '../components/icons/Icon';
-import { Header, HeaderButton } from '../components/header';
+import { BackButton, Header } from '../components/header';
 import { Centered, Column, Page } from '../components/layout';
 import { Monospace, TruncatedAddress } from '../components/text';
 import CopyTooltip from '../components/CopyTooltip';
 import QRCodeDisplay from '../components/QRCodeDisplay';
 import { colors, fonts, padding } from '../styles';
-
-const BackButton = styled.View`
-  ${padding(20, 0, 4, 20)}
-`;
+import { deviceUtils } from '../utils';
 
 const Content = styled(Column).attrs({ align: 'center', justify: 'start' })`
   ${padding(2, 31, 0)}
@@ -35,18 +32,17 @@ const SeedPhraseText = styled(Monospace).attrs({ size: 'h5', weight: 'medium' })
 `;
 
 const WalletAddressTextContainer = styled(Centered).attrs({ direction: 'column' })`
-  margin-bottom: 52;
+  margin-bottom: ${(deviceUtils.height < 700) ? 30 : 52};
   margin-top: 22;
   width: 100%;
 `;
 
 const SettingsScreen = ({
   address,
-  seedPhrase,
   onPressBackButton,
   onSendFeedback,
   onToggleShowSeedPhrase,
-  showSeedPhrase,
+  seedPhrase,
 }) => (
   <Page
     align="stretch"
@@ -54,19 +50,18 @@ const SettingsScreen = ({
     justify="center"
     showBottomInset
   >
+    <StatusBar barStyle="dark-content" />
     <Header align="end" justify="end">
-      <HeaderButton onPress={onPressBackButton}>
-        <BackButton>
-          <Icon
-            color={colors.brightBlue}
-            direction="right"
-            name="caret"
-          />
-        </BackButton>
-      </HeaderButton>
+      <BackButton
+        color={colors.brightBlue}
+        direction="right"
+      />
     </Header>
     <Content>
-      <QRCodeDisplay value={address} />
+      <QRCodeDisplay
+        size={(deviceUtils.width * (150 / deviceUtils.iPhoneXWidth))}
+        value={address}
+      />
       <WalletAddressTextContainer>
         <CopyTooltip textToCopy={address} tooltipText="Copy Address">
           <TruncatedAddress
@@ -78,11 +73,11 @@ const SettingsScreen = ({
       </WalletAddressTextContainer>
       <Button onPress={onSendFeedback}>Send Feedback</Button>
       <SeedPhraseButton onPress={onToggleShowSeedPhrase}>
-        {showSeedPhrase ? 'Hide' : 'Show'} Seed Phrase
+        {seedPhrase ? 'Hide' : 'Show'} Seed Phrase
       </SeedPhraseButton>
     </Content>
     <SeedPhraseSection>
-      {showSeedPhrase && (
+      {seedPhrase && (
         <CopyTooltip textToCopy={seedPhrase} tooltipText="Copy Seed Phrase">
           <SeedPhraseText>
             {seedPhrase}
@@ -95,12 +90,11 @@ const SettingsScreen = ({
 );
 
 SettingsScreen.propTypes = {
-  seedPhrase: PropTypes.string,
   address: PropTypes.string,
   onPressBackButton: PropTypes.func,
   onSendFeedback: PropTypes.func,
   onToggleShowSeedPhrase: PropTypes.func,
-  showSeedPhrase: PropTypes.bool,
+  seedPhrase: PropTypes.string,
 };
 
 export default SettingsScreen;
