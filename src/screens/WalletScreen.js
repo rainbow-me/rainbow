@@ -13,13 +13,19 @@ import {
   groupAssetsByMarketValue,
   sortAssetsByNativeAmount,
 } from '../helpers/assets';
-import { withAccountAssets, withHideSplashScreenOnMount } from '../hoc';
+import {
+  withAccountAddress,
+  withAccountAssets,
+  withHideSplashScreenOnMount,
+} from '../hoc';
 import { position } from '../styles';
 
 const BalanceRenderItem = renderItemProps => <BalanceCoinRow {...renderItemProps} />;
 const filterEmptyAssetSections = sections => sections.filter(({ totalItems }) => totalItems);
 
 const WalletScreen = ({
+  accountAddress,
+  accountUpdateAccountAddress,
   assets,
   assetsCount,
   assetsTotalUSD,
@@ -71,6 +77,15 @@ const WalletScreen = ({
       </Header>
       <AssetList
         onPressWalletConnect={onPressWalletConnect}
+        fetchData={() => {
+          // note: every time this is called it sets a new interval. this is a memory leak.
+          accountUpdateAccountAddress(accountAddress, 'BALANCEWALLET');
+          return new Promise((resolve) => {
+            // hack: use timeout so that it looks like loading is happening
+            // accountUpdateAccountAddress does not return a promise
+            setTimeout(resolve, 2000);
+          });
+        }}
         sections={filterEmptyAssetSections([sections.balances, sections.collectibles])}
         showShitcoins={showShitcoins}
       />
@@ -79,6 +94,8 @@ const WalletScreen = ({
 };
 
 WalletScreen.propTypes = {
+  accountAddress: PropTypes.string,
+  accountUpdateAccountAddress: PropTypes.func.isRequired,
   assets: PropTypes.array,
   assetsCount: PropTypes.number,
   assetsTotalUSD: PropTypes.shape({
@@ -95,6 +112,7 @@ WalletScreen.propTypes = {
 };
 
 export default compose(
+  withAccountAddress,
   withAccountAssets,
   withHideSplashScreenOnMount,
   withState('showShitcoins', 'toggleShowShitcoins', true),

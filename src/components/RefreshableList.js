@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FlatList, RefreshControl } from 'react-native';
+import { SectionList, RefreshControl } from 'react-native';
 
 // note: copied from https://facebook.github.io/react-native/docs/refreshcontrol
 class RefreshableList extends React.PureComponent {
@@ -21,28 +21,30 @@ class RefreshableList extends React.PureComponent {
   }
 
   render() {
-    const { data, renderItem } = this.props;
     const { refreshing } = this.state;
 
     return (
-      <FlatList
-        data={data}
+      <SectionList
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={this._onRefresh}
           />
         }
-        renderItem={renderItem}
+        { ...this.props}
       />
     );
   }
 }
 
 RefreshableList.propTypes = {
-  data: PropTypes.array.isRequired,
+  contentContainerStyle: PropTypes.object.isRequired,
   fetchData: PropTypes.func.isRequired,
+  keyExtractor: PropTypes.func.isRequired,
   renderItem: PropTypes.func.isRequired,
+  renderSectionFooter: PropTypes.func.isRequired,
+  renderSectionHeader: PropTypes.func.isRequired,
+  sections: PropTypes.array.isRequired,
 };
 
 export default RefreshableList;
