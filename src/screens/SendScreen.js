@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Button, Image, SectionList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Section from '../components/Section';
 
 const SendScreen = ({ }) => (
   <View style={styles.container}>
@@ -17,40 +16,6 @@ const SendScreen = ({ }) => (
         <Text style={{ fontSize: 18, fontWeight: '600' }}>{'Send'}</Text>
         <Image style={{ width: 20, height: 20, marginLeft: 34 }} source={require('../assets/scan-icon-alt.png')} />
       </View>
-      <Section
-        style={{
-          flexDirection: 'row',
-          padding: 8,
-          alignItems: 'stretch',
-          width: '100%',
-          borderTopWidth: 1,
-          borderTopColor: 'rgba(0,0,0, 0.1)',
-          borderBottomWidth: 1,
-          borderBottomColor: 'rgba(0,0,0, 0.1)',
-        }}
-      >
-        <Image
-          style={{
-            width: 48,
-            height: 48,
-            resizeMode: 'contain',
-            borderRadius: 24,
-          }}
-          source={{ uri: 'https://raw.githubusercontent.com/balance-io/tokens/master/images/ethereum_1.png' }}
-        />
-        <View style={{ paddingLeft: 8, flexGrow: 1 }}>
-          <Text>{'$5,678'}</Text>
-        </View>
-        <Image
-          style={{
-            width: 5,
-            height: 12,
-            marginRight: 8,
-            alignSelf: 'center',
-          }}
-          source={require('../assets/dropdown-arrow.png')}
-        />
-      </Section>
       <View
         style={{
           flexDirection: 'row',
@@ -72,51 +37,6 @@ const SendScreen = ({ }) => (
         </TouchableOpacity>
       </View>
     </View>
-    <SectionList
-      renderItem={({ item, index, section }) => (
-        <Section
-          key={index}
-          style={{
-            flexDirection: 'row',
-            padding: 8,
-            alignItems: 'stretch',
-            width: '100%',
-          }}
-        >
-          {item.image ? (
-            <Image
-              style={{
-                width: 48,
-                height: 48,
-                resizeMode: 'contain',
-                borderRadius: 24,
-              }}
-              source={{ uri: item.image }}
-            />
-          ) : (
-            <View
-              style={{
-                width: 40,
-                height: 40,
-                backgroundColor: item.color,
-                borderRadius: 20,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>{item.initials}</Text>
-            </View>
-          )}
-          <View style={{ paddingLeft: 8, flexGrow: 1 }}>
-            <Text>{item.name}</Text>
-            <Text style={{ color: 'rgba(0,0,0,0.54)' }}>{item.text}</Text>
-          </View>
-        </Section>
-      )}
-      renderSectionHeader={({ section: { title } }) => <Text style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.54)', paddingLeft: 8 }}>{title}</Text>}
-      sections={sections}
-      keyExtractor={(item, index) => item + index}
-    />
   </View>
 );
 
