@@ -19,40 +19,6 @@ const SendScreen = ({ }) => (
       <View
         style={{
           flexDirection: 'row',
-          padding: 8,
-          alignItems: 'stretch',
-          width: '100%',
-          borderTopWidth: 1,
-          borderTopColor: 'rgba(0,0,0, 0.1)',
-          borderBottomWidth: 1,
-          borderBottomColor: 'rgba(0,0,0, 0.1)',
-        }}
-      >
-        <Image
-          style={{
-            width: 48,
-            height: 48,
-            resizeMode: 'contain',
-            borderRadius: 24,
-          }}
-          source={{ uri: 'https://raw.githubusercontent.com/balance-io/tokens/master/images/ethereum_1.png' }}
-        />
-        <View style={{ paddingLeft: 8, flexGrow: 1 }}>
-          <Text>{'$5,678'}</Text>
-        </View>
-        <Image
-          style={{
-            width: 5,
-            height: 12,
-            marginRight: 8,
-            alignSelf: 'center',
-          }}
-          source={require('../assets/dropdown-arrow.png')}
-        />
-      </View>
-      <View
-        style={{
-          flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
           marginLeft: 16,
@@ -71,51 +37,6 @@ const SendScreen = ({ }) => (
         </TouchableOpacity>
       </View>
     </View>
-    <SectionList
-      renderItem={({ item, index, section }) => (
-        <View
-          key={index}
-          style={{
-            flexDirection: 'row',
-            padding: 8,
-            alignItems: 'stretch',
-            width: '100%',
-          }}
-        >
-          {item.image ? (
-            <Image
-              style={{
-                width: 48,
-                height: 48,
-                resizeMode: 'contain',
-                borderRadius: 24,
-              }}
-              source={{ uri: item.image }}
-            />
-          ) : (
-            <View
-              style={{
-                width: 40,
-                height: 40,
-                backgroundColor: item.color,
-                borderRadius: 20,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>{item.initials}</Text>
-            </View>
-          )}
-          <View style={{ paddingLeft: 8, flexGrow: 1 }}>
-            <Text>{item.name}</Text>
-            <Text style={{ color: 'rgba(0,0,0,0.54)' }}>{item.text}</Text>
-          </View>
-        </View>
-      )}
-      renderSectionHeader={({ section: { title } }) => <Text style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.54)', paddingLeft: 8 }}>{title}</Text>}
-      sections={sections}
-      keyExtractor={(item, index) => item + index}
-    />
   </View>
 );
 
