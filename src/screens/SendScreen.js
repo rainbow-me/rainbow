@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Button, Image, SectionList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Section from '../components/Section';
 
 const SendScreen = ({ }) => (
   <View style={styles.container}>
@@ -17,7 +16,7 @@ const SendScreen = ({ }) => (
         <Text style={{ fontSize: 18, fontWeight: '600' }}>{'Send'}</Text>
         <Image style={{ width: 20, height: 20, marginLeft: 34 }} source={require('../assets/scan-icon-alt.png')} />
       </View>
-      <Section
+      <View
         style={{
           flexDirection: 'row',
           padding: 8,
@@ -50,7 +49,7 @@ const SendScreen = ({ }) => (
           }}
           source={require('../assets/dropdown-arrow.png')}
         />
-      </Section>
+      </View>
       <View
         style={{
           flexDirection: 'row',
@@ -74,7 +73,7 @@ const SendScreen = ({ }) => (
     </View>
     <SectionList
       renderItem={({ item, index, section }) => (
-        <Section
+        <View
           key={index}
           style={{
             flexDirection: 'row',
@@ -111,7 +110,7 @@ const SendScreen = ({ }) => (
             <Text>{item.name}</Text>
             <Text style={{ color: 'rgba(0,0,0,0.54)' }}>{item.text}</Text>
           </View>
-        </Section>
+        </View>
       )}
       renderSectionHeader={({ section: { title } }) => <Text style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.54)', paddingLeft: 8 }}>{title}</Text>}
       sections={sections}
