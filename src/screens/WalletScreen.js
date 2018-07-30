@@ -8,6 +8,7 @@ import Avatar from '../components/Avatar';
 import { Header, HeaderButton } from '../components/header';
 import { Page } from '../components/layout';
 import { withHideSplashScreenOnMount } from '../hoc';
+import { sortList } from '../utils';
 
 const filterEmptyAssetSections = sections => sections.filter(({ totalItems }) => totalItems);
 
@@ -33,6 +34,17 @@ const sortAssetsByNativeAmount = (assets, showShitcoins) => {
   return sortedAssetsWithMarketValue;
 };
 
+const buildUniqueTokenList = (uniqueTokensAssets) => {
+  console.log('uniqueTokensAssets', uniqueTokensAssets);
+  let newList = [];
+
+  for (let i = 0; i < uniqueTokensAssets.length; i += 1) {
+
+  }
+
+  return [uniqueTokensAssets];
+};
+
 const WalletScreen = ({
   accountInfo,
   onPressProfile,
@@ -56,7 +68,7 @@ const WalletScreen = ({
       totalValue: accountInfo.total.display || '',
     },
     collectibles: {
-      data: [uniqueTokens],
+      data: buildUniqueTokenList(uniqueTokens),
       renderItem: UniqueTokenGridList,
       title: 'Collectibles',
       totalItems: uniqueTokens.length,
