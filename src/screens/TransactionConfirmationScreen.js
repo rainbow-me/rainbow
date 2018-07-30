@@ -1,19 +1,57 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import styled from 'styled-components';
 import BalanceManagerLogo from '../assets/balance-manager-logo.png';
 import { Button, BlockButton } from '../components/buttons';
 import CoinIcon from '../components/CoinIcon';
+import { Nbsp } from '../components/html-entities';
 import { Centered, Column, Row } from '../components/layout';
-import { Monospace, Smallcaps, Text, TruncatedAddress } from '../components/text';
+import {
+  Monospace,
+  Smallcaps,
+  Text,
+  TruncatedAddress,
+  TruncatedText,
+} from '../components/text';
 import Divider from '../components/Divider';
 import { withSafeAreaViewInsetValues } from '../hoc';
-import { borders, colors, padding, position } from '../styles';
+import { borders, colors, fonts, padding, position } from '../styles';
 
-const AssetName = styled(Text).attrs({
+const Address = styled(TruncatedAddress).attrs({ size: 'lmedium' })`
+  color: ${colors.alpha(colors.blueGreyDark, 0.6)}
+  margin-top: 5;
+`;
+
+const AddressRow = styled(Column)`
+  ${padding(19, 19, 18)}
+  flex-shrink: 0;
+`;
+
+const Amount = styled(Monospace).attrs({ size: 'smedium' })`
+  color: ${colors.alpha(colors.blueGreyDark, 0.6)}
+  text-transform: uppercase;
+`;
+
+const AmountRow = styled(Row).attrs({
+  align: 'center',
+  justify: 'space-between',
+})`
+  ${padding(21, 19)}
+  flex: 1;
+`;
+
+const AmountRowLeft = styled(Column)`
+  flex-grow: -1;
+  flex-shrink: 1;
+  padding-right: ${fonts.size.lmedium};
+`;
+
+const AssetName = styled(TruncatedText).attrs({
+  component: Text,
   size: 'lmedium',
   weight: 'medium',
 })`
+  flex-shrink: 1;
   margin-left: 6;
 `;
 
@@ -44,40 +82,34 @@ const Masthead = styled(Centered).attrs({ direction: 'column' })`
   width: 100%;
 `;
 
+const NativeAmount = styled(Monospace).attrs({
+  size: 'h2',
+  weight: 'medium',
+})`
+  flex-grow: 0;
+  flex-shrink: 0;
+`;
+
 const SendButtonContainer = styled.View`
   ${padding(7, 15, 14)}
   flex-shrink: 0;
 `;
 
-const TransactionAddress = styled(TruncatedAddress).attrs({
-  size: 'lmedium',
-})`
-  color: ${colors.alpha(colors.blueGreyDark, 0.6)}
-  margin-top: 5;
+const TokenAmount = styled(TruncatedText).attrs({ component: Amount })`
+  flex-grow: 0;
+  flex-shrink: 1;
 `;
 
-const TransactionAddressRow = styled(Column)`
-  ${padding(19, 19, 18)}
+const TokenAmountRow = styled(Row).attrs({ align: 'center' })`
+  margin-top: 6;
+`;
+
+const TokenSymbol = styled(Amount)`
+  flex-grow: -1;
   flex-shrink: 0;
 `;
 
-const TransactionAmount = styled(Monospace).attrs({
-  size: 'smedium',
-})`
-  color: ${colors.alpha(colors.blueGreyDark, 0.6)}
-  margin-top: 6;
-  text-transform: uppercase;
-`;
-
-const TransactionAmountRow = styled(Row).attrs({
-  align: 'center',
-  justify: 'space-between',
-})`
-  ${padding(21, 19)}
-  flex: 1;
-`;
-
-const TransactionMessage = styled(Text).attrs({ size: 'h5' })`
+const TransactionType = styled(Text).attrs({ size: 'h5' })`
   color: ${colors.alpha(colors.white, 0.68)}
   margin-top: 6;
 `;
@@ -118,7 +150,7 @@ const TransactionConfirmationScreen = ({
         <VendorLogo source={BalanceManagerLogo} />
       </VenderLogoContainer>
       <VendorName>Balance Manager</VendorName>
-      <TransactionMessage>Transaction Request</TransactionMessage>
+      <TransactionType>Transaction Request</TransactionType>
       <CancelButtonContainer>
         <Button
           bgColor={colors.blueGreyMedium}
@@ -131,23 +163,24 @@ const TransactionConfirmationScreen = ({
       </CancelButtonContainer>
     </Masthead>
     <BottomSheet bottomInset={safeAreaInset.bottom}>
-      <TransactionAddressRow>
+      <AddressRow>
         <Smallcaps>To</Smallcaps>
-        <TransactionAddress address={address} truncationLength={15}/>
-      </TransactionAddressRow>
+        <Address address={address} truncationLength={15}/>
+      </AddressRow>
       <Divider />
-      <TransactionAmountRow align="center" justify="space-between">
-        <Column>
+      <AmountRow align="center" justify="space-between">
+        <AmountRowLeft>
           <Row align="center">
             <CoinIcon size={22} symbol={symbol} />
             <AssetName>{name}</AssetName>
           </Row>
-          <TransactionAmount>{amount} {symbol}</TransactionAmount>
-        </Column>
-        <Monospace size="h2" weight="medium">
-          {nativeAmount}
-        </Monospace>
-      </TransactionAmountRow>
+          <TokenAmountRow>
+            <TokenAmount>{amount}</TokenAmount>
+            <TokenSymbol><Nbsp />{symbol}</TokenSymbol>
+          </TokenAmountRow>
+        </AmountRowLeft>
+        <NativeAmount>{nativeAmount}</NativeAmount>
+      </AmountRow>
       <SendButtonContainer>
         <BlockButton onPress={onConfirmTransaction}>
           Send Transaction
