@@ -40,7 +40,7 @@
     "react-native-actionsheet": "^2.4.2",
     "react-native-camera": "^1.1.4",
     "react-native-crypto": "^2.1.2",
-    "react-native-fcm": "^16.0.0",
+    "react-native-firebase": "^4.3.8",
     "react-native-haptic-feedback": "^1.2.0",
     "react-native-iphone-x-helper": "^1.0.3",
     "react-native-keychain": "^3.0.0-rc.3",
