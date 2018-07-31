@@ -31,29 +31,38 @@ class TransactionConfirmationScreenWithData extends Component {
         try {
           await walletConnectSendTransactionHash(transactionDetails.transactionId, true, transactionReceipt.hash);
           // TODO: update that this transaction has been confirmed and reset txn details
-          this.handleCancelTransaction();
+          this.closeTransactionScreen();
         } catch (error) {
           // TODO error handling when txn hash failed to send; store somewhere?
-          console.log('error sending txn hash', error);
-          this.handleCancelTransaction();
+          this.closeTransactionScreen();
           AlertIOS.alert('Failed to send transaction status');
         }
       } else {
         try {
-          await walletConnectSendTransactionHash(false, null);
           this.handleCancelTransaction();
         } catch (error) {
+          this.closeTransactionScreen();
           AlertIOS.alert('Failed to send failed transaction status');
         }
       }
     } catch (error) {
-      console.log('confirm send txn error', error);
+      this.handleCancelTransaction();
       AlertIOS.alert('Authentication Failed');
     }
   };
 
-  handleCancelTransaction = () => {
-    console.log('onCancelTransaction', this.props);
+  handleCancelTransaction = async () => {
+    try {
+      const { transactionDetails } = this.state;
+      await walletConnectSendTransactionHash(transactionDetails.transactionId, false, null);
+      this.closeTransactionScreen();
+    } catch (error) {
+      this.closeTransactionScreen();
+      AlertIOS.alert('Failed to send cancelled transaction to WalletConnect');
+    }
+  }
+
+  closeTransactionScreen = () => {
     StatusBar.setBarStyle('dark-content', true);
     this.props.navigation.goBack();
   }
