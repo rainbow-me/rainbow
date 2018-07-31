@@ -36,11 +36,15 @@ class TransactionConfirmationScreenWithData extends Component {
           // TODO error handling when txn hash failed to send; store somewhere?
           console.log('error sending txn hash', error);
           this.handleCancelTransaction();
+          AlertIOS.alert('Failed to send transaction status');
         }
       } else {
-        // TODO try catch
-        await walletConnectSendTransactionHash(false, null);
-        this.handleCancelTransaction();
+        try {
+          await walletConnectSendTransactionHash(false, null);
+          this.handleCancelTransaction();
+        } catch (error) {
+          AlertIOS.alert('Failed to send failed transaction status');
+        }
       }
     } catch (error) {
       console.log('confirm send txn error', error);
