@@ -2,7 +2,7 @@ import { account, commonStorage, accountUpdateAccountAddress } from 'balance-com
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AppRegistry, AppState, AsyncStorage, Platform } from 'react-native';
-import FCM, { FCMEvent, NotificationType, RemoteNotificationResult, WillPresentNotificationResult } from 'react-native-fcm';
+import firebase from 'react-native-firebase';
 import { NavigationActions } from 'react-navigation';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
@@ -18,63 +18,6 @@ const store = createStore(
   applyMiddleware(thunk),
 );
 
-function registerAppListener(notificationHandler) {
-  FCM.on(FCMEvent.Notification, notif => {
-    console.log('registerAppListener notif', notif);
-    const { transactionId } = notif;
-
-    if (Platform.OS === 'ios') {
-      switch (notif._notificationType) {
-      case NotificationType.Remote:
-        console.log('remote notification');
-        notificationHandler(transactionId);
-        notif.finish(RemoteNotificationResult.NewData);
-        break;
-      case NotificationType.NotificationResponse:
-        console.log('notification response');
-        notificationHandler(transactionId);
-        notif.finish();
-        break;
-      case NotificationType.WillPresent:
-        console.log('will present');
-        notificationHandler(transactionId);
-        notif.finish(WillPresentNotificationResult.None);
-        break;
-      default:
-        console.log('fcm default');
-        break;
-      }
-    }
-  });
-}
-
-function registerKilledListener() {
-  FCM.on(FCMEvent.Notification, notif => {
-    console.log(`registerKilledListener notif: ${notif}`);
-    AsyncStorage.setItem('lastNotification', JSON.stringify(notif));
-    if (notif.opened_from_tray) {
-      setTimeout(() => {
-        if (notif._actionIdentifier === 'reply') {
-          if (AppState.currentState !== 'background') {
-            console.log(`User replied ${JSON.stringify(notif._userText)}`);
-          } else {
-            AsyncStorage.setItem('lastMessage', JSON.stringify(notif._userText));
-          }
-        }
-        if (notif._actionIdentifier === 'view') {
-          console.log('User clicked View in App');
-        }
-        if (notif._actionIdentifier === 'dismiss') {
-          console.log('User clicked Dismiss');
-        }
-      }, 1000);
-    }
-  });
-}
-
-
-registerKilledListener();
-
 class App extends Component {
   static propTypes = {
     accountUpdateAccountAddress: PropTypes.func,
@@ -84,21 +27,63 @@ class App extends Component {
   navigatorRef = null
 
   componentDidMount() {
-    registerAppListener(this.onPushNotification);
-    // TODO: save and get FCM token from AsyncStorage
-    FCM.getFCMToken().then(fcmToken => {
-      commonStorage.saveLocal('fcmToken', { data: fcmToken });
-      console.log(`FCM Token: ${fcmToken}`);
+    firebase.messaging().getToken()
+      .then(fcmToken => {
+        if (fcmToken) {
+          console.log('received fcmToken', fcmToken);
+          commonStorage.saveLocal('balanceWalletFcmToken', { data: fcmToken });
+        } else {
+          console.log('no fcm token yet');
+        }
+      });
+
+    this.onTokenRefreshListener = firebase.messaging().onTokenRefresh(fcmToken => {
+      console.log('received refreshed fcm token', fcmToken);
+      commonStorage.saveLocal('balanceWalletFcmToken', { data: fcmToken });
+    });
+    this.notificationDisplayedListener = firebase.notifications().onNotificationDisplayed(notification => {
+      console.log('on notification displayed', notification);
+      const { transactionId } = notification.data;
+      this.onPushNotification(transactionId);
+    });
+    this.notificationListener = firebase.notifications().onNotification(notification => {
+      console.log('on notification', notification);
+      const { transactionId } = notification.data;
+      this.onPushNotification(transactionId);
+
+    });
+
+    this.notificationOpenedListener = firebase.notifications().onNotificationOpened(notificationOpen => {
+      console.log('on notification opened');
+      const notification = notificationOpen.notification;
+      const { transactionId } = notification.data;
+      this.onPushNotification(transactionId);
     });
 
     walletInit()
       .then(walletAddress => {
         console.log('wallet address is', walletAddress);
         this.props.accountUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
+        firebase.notifications().getInitialNotification()
+        .then(notificationOpen => {
+          console.log('on notification initial');
+          if (notificationOpen) {
+            const notification = notificationOpen.notification;
+            const { transactionId } = notification.data;
+            this.onPushNotification(transactionId);
+          }
+        });
       })
       .catch(error => {
         // TODO error handling
       });
+  }
+
+  componentWillUnmount() {
+    this.notificationDisplayedListener();
+    this.notificationListener();
+    this.notificationOpenedListender();
+    this.onTokenRefreshListener();
   }
 
   handleNavigatorRef = (navigatorRef) => { this.navigatorRef = navigatorRef; }

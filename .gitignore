@@ -1,6 +1,8 @@
 # OSX
 #
 .DS_Store
+ios/Pods/
+ios/BalanceWallet.app.dSYM.zip
 
 # Xcode
 #

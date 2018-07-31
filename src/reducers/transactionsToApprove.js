@@ -15,7 +15,7 @@ const getAssetDetails = (contractAddress, assets) => {
 
 export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => {
   let _nativeAmount = '';
-  if (prices[nativeCurrency][symbol]) {
+  if (prices && prices[nativeCurrency] && prices[nativeCurrency][symbol]) {
     const nativeAmount = bignumber.convertAssetAmountToNativeValue(
       assetAmount,
       { symbol },

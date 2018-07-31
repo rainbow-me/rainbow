@@ -1,18 +1,19 @@
 import RNWalletConnect from 'rn-walletconnect-wallet';
 import { commonStorage } from 'balance-common';
+import { AlertIOS } from 'react-native';
 
 const PUSH_ENDPOINT = 'https://walletconnect.balance.io/webhook/push-notify';
 
 export const walletConnectInit = async (accountAddress, bridgeUrl, sessionId, sharedKey, dappName) => {
-  const fcmTokenLocal = await commonStorage.getLocal('fcmToken');
+  const fcmTokenLocal = await commonStorage.getLocal('balanceWalletFcmToken');
   const fcmToken = fcmTokenLocal ? fcmTokenLocal.data : null;
   const walletConnector = new RNWalletConnect({ bridgeUrl, sessionId, sharedKey, dappName });
+  // TODO fcmToken is null logic
   await commonStorage.saveWalletConnectAccount({ bridgeUrl, sessionId, sharedKey, dappName });
   try {
     await walletConnector.sendSessionStatus({ fcmToken, pushEndpoint: PUSH_ENDPOINT, data: [accountAddress] });
   } catch (error) {
-    console.log('error sending session status', error);
-    // TODO: show error 
+    AlertIOS.alert(`Unable to initialize with Wallet Connect`);
   }
 }
 
