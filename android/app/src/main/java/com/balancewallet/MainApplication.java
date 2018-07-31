@@ -3,6 +3,7 @@ package com.balancewallet;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import io.invertase.firebase.RNFirebasePackage;
 import com.reactlibrary.RNReactNativeHapticFeedbackPackage;
 import com.tradle.react.UdpSocketsModule;
 import com.rnfingerprint.FingerprintAuthPackage;
@@ -15,7 +16,6 @@ import com.peel.react.rnos.RNOSModule;
 import com.chirag.RNMail.RNMail;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.oblador.keychain.KeychainPackage;
-import com.evollu.react.fcm.FIRMessagingPackage;
 import org.reactnative.camera.RNCameraPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -37,6 +37,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNFirebasePackage(),
             new RNReactNativeHapticFeedbackPackage(),
             new UdpSocketsModule(),
             new FingerprintAuthPackage(),
@@ -49,7 +50,6 @@ public class MainApplication extends Application implements ReactApplication {
             new RNMail(),
             new LinearGradientPackage(),
             new KeychainPackage(),
-            new FIRMessagingPackage(),
             new RNCameraPackage()
       );
     }
