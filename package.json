@@ -39,6 +39,7 @@
     "react-native": "^0.56.0",
     "react-native-actionsheet": "^2.4.2",
     "react-native-camera": "^1.1.4",
+    "react-native-code-push": "^5.4.1",
     "react-native-crypto": "^2.1.2",
     "react-native-firebase": "^4.3.8",
     "react-native-gesture-handler": "^1.0.7",
