@@ -38,10 +38,19 @@ const AssetList = ({
   isEmpty,
   safeAreaInset,
   sections,
+  onPressWalletConnect,
   ...props
 }) => (
   <Container>
-    <FabWrapper items={[<WalletConnectFab disabled={isEmpty} key="walletConnectFab" />]}>
+    <FabWrapper
+      items={[(
+        <WalletConnectFab
+          disabled={isEmpty}
+          key="walletConnectFab"
+          onPress={onPressWalletConnect}
+        />
+      )]}
+    >
       {isEmpty ? (
         <AssetListSkeleton />
       ) : (
@@ -61,6 +70,7 @@ const AssetList = ({
 AssetList.propTypes = {
   isEmpty: PropTypes.bool,
   safeAreaInset: PropTypes.object,
+  onPressWalletConnect: PropTypes.func,
   sections: PropTypes.arrayOf(PropTypes.object),
 };
 

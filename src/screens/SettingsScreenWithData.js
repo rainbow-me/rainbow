@@ -44,6 +44,7 @@ export default class SettingsScreenWithData extends Component {
   render = () => (
     <Transition appear='left' disappear='left'>
       <SettingsScreen
+        {...this.props}
         {...this.state}
         onSendFeedback={this.handleSendFeedback}
         onToggleShowSeedPhrase={this.handleToggleShowSeedPhrase}

@@ -5855,9 +5855,9 @@ react-native-permissions@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-1.1.1.tgz#4876004681ff8556454613d85249b01baff9b35b"
 
-react-native-qrcode-scanner@moaazsidat/react-native-qrcode-scanner#113/head:
+react-native-qrcode-scanner@mikedemarais/react-native-qrcode-scanner:
   version "1.0.1"
-  resolved "https://codeload.github.com/moaazsidat/react-native-qrcode-scanner/tar.gz/f2dbec7b4b61b707900562bdb94caa2b024fe069"
+  resolved "https://codeload.github.com/mikedemarais/react-native-qrcode-scanner/tar.gz/2ca70b8c64afb87e712aba578e11409c6406069e"
   dependencies:
     prop-types "^15.5.10"
     react-native-permissions "^1.1.1"

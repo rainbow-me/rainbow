@@ -1,7 +1,6 @@
-import { get } from 'lodash';
+import { get, groupBy, isNull } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StatusBar } from 'react-native';
 import { connect } from 'react-redux';
 import { compose, withHandlers, withState } from 'recompact';
 import { AssetList, BalanceCoinRow, UniqueTokenGridList } from '../components/asset-list';
@@ -13,16 +12,18 @@ import { withHideSplashScreenOnMount } from '../hoc';
 const filterEmptyAssetSections = sections => sections.filter(({ totalItems }) => totalItems);
 
 const sortAssetsByNativeAmount = (assets, showShitcoins) => {
-  const assetsWithMarketValue = assets.filter(asset => asset.native !== null);
-  const sortedAssetsWithMarketValue = assetsWithMarketValue.sort((a, b) => {
+  const assetsByMarketValue = groupBy(assets, ({ native }) => (
+    isNull(native) ? 'noValue' : 'hasValue'
+  ));
+
+  const sortedAssetsWithMarketValue = (assetsByMarketValue.hasValue || []).sort((a, b) => {
     const amountA = get(a, 'native.balance.amount', 0);
     const amountB = get(b, 'native.balance.amount', 0);
     return parseFloat(amountB) - parseFloat(amountA);
   });
 
   if (showShitcoins) {
-    const assetsWithNoMarketValue = assets.filter(asset => asset.native === null);
-    const sortedAssetsWithNoMarketValue = assetsWithNoMarketValue.sort((a, b) => (
+    const sortedAssetsWithNoMarketValue = (assetsByMarketValue.noValue || []).sort((a, b) => (
       (a.name < b.name) ? -1 : 1
     ));
 
@@ -35,6 +36,7 @@ const sortAssetsByNativeAmount = (assets, showShitcoins) => {
 const WalletScreen = ({
   accountInfo,
   onPressProfile,
+  onPressWalletConnect,
   onToggleShowShitcoins,
   showShitcoins,
   uniqueTokens,
@@ -64,13 +66,13 @@ const WalletScreen = ({
 
   return (
     <Page>
-      <StatusBar barStyle="dark-content" />
       <Header>
         <HeaderButton onPress={onPressProfile}>
           <Avatar />
         </HeaderButton>
       </Header>
       <AssetList
+        onPressWalletConnect={onPressWalletConnect}
         sections={filterEmptyAssetSections([sections.balances, sections.collectibles])}
         showShitcoins={showShitcoins}
       />
@@ -83,6 +85,7 @@ WalletScreen.propTypes = {
   fetching: PropTypes.bool.isRequired,
   fetchingUniqueTokens: PropTypes.bool.isRequired,
   onPressProfile: PropTypes.func.isRequired,
+  onPressWalletConnect: PropTypes.func.isRequired,
   onToggleShowShitcoins: PropTypes.func,
   showShitcoins: PropTypes.bool,
   uniqueTokens: PropTypes.array.isRequired,
@@ -101,6 +104,7 @@ export default compose(
   connect(reduxProps, null),
   withHandlers({
     onPressProfile: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
+    onPressWalletConnect: ({ navigation }) => () => navigation.navigate('QRScannerScreen'),
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => () => toggleShowShitcoins(!showShitcoins),
   }),
 )(WalletScreen);
