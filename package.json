@@ -49,7 +49,7 @@
     "react-native-mail": "^3.0.6",
     "react-native-os": "^1.2.1",
     "react-native-permissions": "^1.1.1",
-    "react-native-qrcode-scanner": "moaazsidat/react-native-qrcode-scanner#113/head",
+    "react-native-qrcode-scanner": "mikedemarais/react-native-qrcode-scanner",
     "react-native-qrcode-svg": "^5.1.0",
     "react-native-radial-gradient": "^1.0.4",
     "react-native-randombytes": "^3.1.0",

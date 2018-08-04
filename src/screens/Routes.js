@@ -1,14 +1,11 @@
 import { createSwitchNavigator, createStackNavigator } from 'react-navigation';
-import { FluidNavigator } from 'react-navigation-fluid-transitions';
 import IntroScreen from './IntroScreen';
 import LoadingScreen from './LoadingScreen';
-import QRScannerScreenWithData from './QRScannerScreenWithData';
-import SettingsScreenWithData from './SettingsScreenWithData';
 import SendScreen from './SendScreen';
+import SwipeLayout from './SwipeLayout';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
-import WalletScreen from './WalletScreen';
 
-const AppStack = FluidNavigator({
+const AppStack = createStackNavigator({
   ConfirmTransaction: {
     screen: TransactionConfirmationScreenWithData,
     mode: 'modal',
@@ -16,25 +13,16 @@ const AppStack = FluidNavigator({
       gesturesEnabled: false,
     },
   },
-  QRScannerScreen: {
-    screen: QRScannerScreenWithData,
-  },
-  SettingsScreen: {
-    navigationOptions: {
-      gestureDirection: 'inverted',
-    },
-    screen: SettingsScreenWithData,
-  },
-  WalletScreen: {
-    screen: WalletScreen,
+  SwipeLayout: {
+    screen: SwipeLayout,
   },
   SendScreen: {
     screen: SendScreen,
   },
 }, {
-  initialRouteName: 'WalletScreen',
-  mode: 'card', // Horizontal gestures
-  navigationOptions: { gesturesEnabled: true },
+  headerMode: 'none',
+  initialRouteName: 'SwipeLayout',
+  mode: 'modal',
 });
 
 const IntroStack = createStackNavigator({
