@@ -5,6 +5,7 @@ import android.app.Application;
 import com.facebook.react.ReactApplication;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import io.invertase.firebase.RNFirebasePackage;
+import com.microsoft.codepush.react.CodePush;
 import com.reactlibrary.RNReactNativeHapticFeedbackPackage;
 import com.tradle.react.UdpSocketsModule;
 import com.rnfingerprint.FingerprintAuthPackage;
@@ -29,6 +30,12 @@ import java.util.List;
 public class MainApplication extends Application implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
+
+        @Override
+        protected String getJSBundleFile() {
+        return CodePush.getJSBundleFile();
+        }
+
     @Override
     public boolean getUseDeveloperSupport() {
       return BuildConfig.DEBUG;
@@ -40,6 +47,7 @@ public class MainApplication extends Application implements ReactApplication {
           new MainReactPackage(),
             new RNGestureHandlerPackage(),
             new RNFirebasePackage(),
+            new CodePush(BuildConfig.CODEPUSH_KEY, getApplicationContext(), BuildConfig.DEBUG),
             new RNReactNativeHapticFeedbackPackage(),
             new UdpSocketsModule(),
             new FingerprintAuthPackage(),
