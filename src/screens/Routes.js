@@ -2,8 +2,33 @@ import { createSwitchNavigator, createStackNavigator } from 'react-navigation';
 import IntroScreen from './IntroScreen';
 import LoadingScreen from './LoadingScreen';
 import SendScreen from './SendScreen';
-import SwipeLayout from './SwipeLayout';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
+import QRScannerScreenWithData from './QRScannerScreenWithData';
+import SettingsScreenWithData from './SettingsScreenWithData';
+import WalletScreen from './WalletScreen';
+
+import createSwipeNavigator from '../navigators/createSwipeNavigator';
+
+const SwipeStack = createSwipeNavigator({
+  SettingsScreen: {
+    name: 'SettingsScreen',
+    screen: SettingsScreenWithData,
+    statusBarColor: 'dark-content',
+  },
+  WalletScreen: {
+    name: 'WalletScreen',
+    screen: WalletScreen,
+    statusBarColor: 'dark-content',
+  },
+  QRScannerScreen: {
+    name: 'QRScannerScreen',
+    screen: QRScannerScreenWithData,
+    statusBarColor: 'light-content',
+  },
+}, {
+  headerMode: 'none',
+  initialRouteName: 'WalletScreen',
+});
 
 const AppStack = createStackNavigator({
   ConfirmTransaction: {
@@ -13,9 +38,7 @@ const AppStack = createStackNavigator({
       gesturesEnabled: false,
     },
   },
-  SwipeLayout: {
-    screen: SwipeLayout,
-  },
+  SwipeLayout: SwipeStack,
   SendScreen: {
     screen: SendScreen,
   },
