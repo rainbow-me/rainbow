@@ -2,7 +2,7 @@ import { get, isNull, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, createElement } from 'react';
 import { FlatList, StatusBar, View } from 'react-native';
-import { withHideSplashScreenOnMount } from '../hoc';
+import { withHideSplashScreen } from '../hoc';
 import { deviceUtils } from '../utils';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
 import SettingsScreenWithData from './SettingsScreenWithData';
@@ -31,6 +31,7 @@ const getSwipeItemLayout = (data, index) => ({
 class SwipeLayout extends Component {
   static propTypes = {
     initialScrollIndex: PropTypes.number,
+    onHideSplashScreen: PropTypes.func,
   }
 
   static defaultProps = {
@@ -48,7 +49,12 @@ class SwipeLayout extends Component {
   handleSwipeEnd = () => this.setState({ isSwiping: false })
 
   handleNavigateBack = () => this.scrollToIndex(this.state.prevScreenIndex)
-  handleNavigateInitial = () => this.scrollToIndex(this.props.initialScrollIndex, false)
+
+  handleNavigateInitial = () => {
+    this.scrollToIndex(this.props.initialScrollIndex, false);
+    this.props.onHideSplashScreen();
+  }
+
   handleNavigate = (navigateToScreenName) => {
     const indexForName = SwipeLayoutScreens.findIndex(({ name }) => (
       name === navigateToScreenName
@@ -153,4 +159,4 @@ class SwipeLayout extends Component {
   }
 }
 
-export default withHideSplashScreenOnMount(SwipeLayout);
+export default withHideSplashScreen(SwipeLayout);
