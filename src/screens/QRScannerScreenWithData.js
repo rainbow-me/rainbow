@@ -58,7 +58,7 @@ class QRScannerScreenWithData extends PureComponent {
       if (isScreenActive && isDisabled && !isSwiping) {
         this.qrCodeScannerRef.enable();
       } else if (!isDisabled) {
-        this.qrCodeScannerRef.disable();
+        // this.qrCodeScannerRef.disable();
       }
     }
 
