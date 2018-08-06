@@ -20,13 +20,9 @@ const List = styled(SectionList)`
   ${position.size('100%')}
 `;
 
-const buildContentContainerStyle = (safeAreaInset) => {
-  // We want to add enough spacing below the list so that when the user scrolls to the bottom,
-  // the bottom of the list content lines up with the top of the FABs (+ padding).
+const buildListBottomPadding = (safeAreaInset) => {
   const fabSizeWithPadding = FloatingActionButton.size + (FabWrapper.bottomPosition * 2);
-  return {
-    paddingBottom: (safeAreaInset.bottom + fabSizeWithPadding) - AssetListFooter.height,
-  };
+  return (safeAreaInset.bottom + fabSizeWithPadding) - AssetListFooter.height;
 };
 
 const keyExtractor = (item, index) => {
@@ -55,11 +51,19 @@ const AssetList = ({
         <AssetListSkeleton />
       ) : (
         <List
-          contentContainerStyle={buildContentContainerStyle(safeAreaInset)}
+          contentContainerStyle={{
+            // We want to add enough spacing below the list so that when the user scrolls to the bottom,
+            // the bottom of the list content lines up with the top of the FABs (+ padding).
+            paddingBottom: buildListBottomPadding(safeAreaInset),
+          }}
           keyExtractor={keyExtractor}
           renderItem={AssetListItem}
           renderSectionFooter={AssetListFooter}
           renderSectionHeader={headerProps => <AssetListHeader {...headerProps} />}
+          scrollIndicatorInsets={{
+            bottom: buildListBottomPadding(safeAreaInset) + AssetListFooter.height,
+            top: AssetListHeader.height,
+          }}
           sections={sections}
         />
       )}
