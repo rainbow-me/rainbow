@@ -38,6 +38,18 @@ const base = {
   white: '#ffffff', // '255, 255, 255'
 };
 
+const assetIcon = {
+  blue: '#7dabf0', // '125, 171, 240'
+  orange: '#f2bb3a', // '242, 187, 58'
+  purple: '#464e5e', // '70, 78, 94'
+  red: '#c95050', // '201, 80, 80',
+};
+
+assetIcon.random = () => {
+  const assetIconColors = Object.values(assetIcon);
+  return assetIconColors[Math.floor(Math.random() * assetIconColors.length)];
+};
+
 const transparent = {
   whiteTransparent: chroma(base.white).alpha(0.8), // '255, 255, 255'
   purpleTransparent: chroma(base.purple).alpha(0.7), // '50, 50, 93'
@@ -52,6 +64,7 @@ const vendor = {
 
 const colors = {
   alpha: (color, alpha) => `rgba(${chroma(color).rgb()}, ${alpha})`,
+  assetIcon,
   ...base,
   ...transparent,
   ...vendor,

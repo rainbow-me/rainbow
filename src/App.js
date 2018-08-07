@@ -77,6 +77,13 @@ class App extends Component {
       .catch(error => {
         // TODO error handling
       });
+
+    setTimeout(() => {
+      this.handleOpenConfirmTransactionModal()
+    }, 7500);
+    // setTimeout(() => {
+    //   this.handleOpenConfirmTransactionModal()
+    // }, 12500);
   }
 
   componentWillUnmount() {

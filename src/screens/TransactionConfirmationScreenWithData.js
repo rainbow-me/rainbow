@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { StatusBar, AlertIOS } from 'react-native';
+import { AlertIOS, StatusBar, Vibration } from 'react-native';
 import { connect } from 'react-redux';
 import { sendTransaction } from '../model/wallet';
 import { walletConnectSendTransactionHash } from '../model/walletconnect';
@@ -21,6 +21,7 @@ class TransactionConfirmationScreenWithData extends Component {
   componentDidMount() {
     StatusBar.setBarStyle('light-content', true);
     this.showNewTransaction();
+    Vibration.vibrate();
   }
 
   handleConfirmTransaction = async () => {
