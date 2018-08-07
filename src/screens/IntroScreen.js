@@ -22,7 +22,7 @@ const AlphaWarningText = styled(Monospace).attrs({
   size: 'lmedium',
   weight: 'medium',
 })`
-  line-height: 25;
+  line-height: ${fonts.lineHeight.loose};
 `;
 
 const Container = styled(Column).attrs({ align: 'start', justify: 'center' })`
@@ -55,7 +55,7 @@ const InstructionsText = styled(Monospace).attrs({
   size: 'lmedium',
 })`
   color: ${colors.alpha(colors.white, 0.46)};
-  line-height: 25;
+  line-height: ${fonts.lineHeight.loose};
   width: 315;
 `;
 
