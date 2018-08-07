@@ -9,7 +9,8 @@ import { deviceUtils } from '../utils';
 export default function createSwipeNavigator(screens, options) {
   const router = StackRouter(screens, options);
   const routeOrder = options.order || map(screens, ({ name }) => name);
-  const flatListScreens = map(screens, (screen) => screen);
+  const initialScreens = map(screens, () => screens[options.initialRouteName]);
+  const loadedScreens = map(screens, (screen) => screen);
 
   class NavigationView extends Component {
     static propTypes = {
@@ -17,6 +18,11 @@ export default function createSwipeNavigator(screens, options) {
       navigation: PropTypes.object,
       navigationConfig: PropTypes.object,
       screenProps: PropTypes.object,
+    };
+
+    state = {
+      currentIndex: 0,
+      flatListScreens: initialScreens,
     };
 
     /**
@@ -95,11 +101,14 @@ export default function createSwipeNavigator(screens, options) {
     /**
      * Scroll to the initial route provided in createSwipeNavigator options
      * when the view is rendered and sizing is calculated.
+     * Replace initial screens with the final screens.
      */
     onLayout = () => {
       const routeIndex = this.getRouteIndex(options.initialRouteName);
 
       this.scrollToIndex(routeIndex, false);
+
+      this.setState({ flatListScreens: loadedScreens });
     };
 
     /**
@@ -114,6 +123,26 @@ export default function createSwipeNavigator(screens, options) {
       const currentScreenName = routeOrder[currentScreenIndex] || options.initialRouteName;
 
       navigation.navigate(currentScreenName);
+    };
+
+    /**
+     * Handle updating the current index of the FlatList when
+     * the scroll point is past the halfway point to the next page.
+     * @param  {Object} options.nativeEvent   The native event with layout data.
+     */
+    onScroll = ({ nativeEvent }) => {
+      const { currentIndex } = this.state;
+
+      const currentOffsetX = get(nativeEvent, 'contentOffset.x', 0);
+      const startOffsetX = currentIndex * deviceUtils.dimensions.width;
+      const endOffsetXRight = (currentIndex + 1) * deviceUtils.dimensions.width;
+      const endOffsetXLeft = (currentIndex - 1) * deviceUtils.dimensions.width;
+
+      if (currentOffsetX - startOffsetX > (endOffsetXRight - startOffsetX) / 2) {
+        this.setState({ currentIndex: currentIndex + 1 });
+      } else if (currentOffsetX - startOffsetX < (endOffsetXLeft - startOffsetX) / 2) {
+        this.setState({ currentIndex: currentIndex - 1 });
+      }
     };
 
     /**
@@ -144,13 +173,16 @@ export default function createSwipeNavigator(screens, options) {
     };
 
     render() {
-      const currentRoute = this.getCurrentRoute();
+      const { currentIndex, flatListScreens } = this.state;
+
+      const currentScreenName = routeOrder[currentIndex] || '';
+      const currentScreen = screens[currentScreenName] || {};
 
       return (
         <View onLayout={this.onLayout}>
           <StatusBar
             animated
-            barStyle={screens[currentRoute.routeName].statusBarColor}
+            barStyle={currentScreen.statusBarColor}
             networkActivityIndicatorVisible={true}
           />
           <FlatList
@@ -159,11 +191,12 @@ export default function createSwipeNavigator(screens, options) {
             getItemLayout={this.getItemLayout}
             horizontal
             onMomentumScrollEnd={this.onMomentumScrollEnd}
+            onScroll={this.onScroll}
             pagingEnabled
             ref={(flatListRef) => { this.flatListRef = flatListRef; }}
             removeClippedSubviews
             renderItem={this.renderItem}
-            scrollEventThrottle={0}
+            scrollEventThrottle={1}
             showsHorizontalScrollIndicator={false}
           />
         </View>

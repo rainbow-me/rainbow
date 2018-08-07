@@ -44,5 +44,5 @@ QRScannerScreen.propTypes = {
 };
 
 export default withHandlers({
-  onPressBackButton: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
+  onPressBackButton: ({ navigation }) => () => navigation.goBack(),
 })(QRScannerScreen);
