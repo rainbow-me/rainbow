@@ -57,7 +57,6 @@
 		2DF0FFEE2056DD460020B375 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DAD3EA31DF850E9000B6D8A /* libReact.a */; };
 		3049BEF5B7E0435F905556DD /* Graphik-ThinItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3EA8003C5E2D46E38184714B /* Graphik-ThinItalic.otf */; };
 		3310F0AEC95F47189C2B19DD /* Graphik-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 7CEEDA7A68C24426BBAA8D77 /* Graphik-BoldItalic.otf */; };
-		33C4C716E4E340409A7CB1DF /* RNMailTests.xctest in Frameworks */ = {isa = PBXBuildFile; fileRef = 25992DBB7F97481A95784B0F /* RNMailTests.xctest */; };
 		340305B6506A4DDFB4EB98AA /* SF-Pro-Text-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = F62BBE10D6534F74B2180711 /* SF-Pro-Text-Bold.otf */; };
 		35AD5968C62046E7BC7CF346 /* Graphik-Super.otf in Resources */ = {isa = PBXBuildFile; fileRef = 7CD46377E5FC4E5EBFD57D71 /* Graphik-Super.otf */; };
 		396C4BA42EEC4D0985CEBB42 /* SF-Pro-Text-SemiboldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FA887652F27F43869229AD50 /* SF-Pro-Text-SemiboldItalic.otf */; };
@@ -93,7 +92,7 @@
 		96E52368EDC94B9B80D1F29C /* SF-Pro-Text-LightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = D1641F1A96C841C085169B2E /* SF-Pro-Text-LightItalic.otf */; };
 		978F83D3C5E4491F9D9AC2C1 /* libSplashScreen.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA95F99E656542F790F685B6 /* libSplashScreen.a */; };
 		9E8553031AD44F52A814F2AB /* SF-Pro-Display-SemiboldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 86B30DBBDA594167BFE4747E /* SF-Pro-Display-SemiboldItalic.otf */; };
-		A697A1F7C2CF434D8386454D /* ToolTipMenuTests.xctest in Frameworks */ = {isa = PBXBuildFile; fileRef = B0C692B061D7430D8194DC98 /* ToolTipMenuTests.xctest */; };
+		A399F4A539CA4B00922A41A8 /* libRNFIRMessaging.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DEADFA4826D4D0BAA950D21 /* libRNFIRMessaging.a */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
 		AE47B46652EA48AFB68E7832 /* SF-Pro-Text-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6B0A8BE2484F46980BE9AC /* SF-Pro-Text-Semibold.otf */; };
 		AFCABA638327463693E67FD4 /* SF-Pro-Text-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 715DAAA3174542BAB93807A6 /* SF-Pro-Text-RegularItalic.otf */; };
@@ -723,7 +722,8 @@
 				2340D4240F794E6DACB53521 /* libRNKeychain.a in Frameworks */,
 				45C6CAEFC1A04F3FB291BE53 /* libBVLinearGradient.a in Frameworks */,
 				94822FBFCA7246168685FA85 /* libRNMail.a in Frameworks */,
-				33C4C716E4E340409A7CB1DF /* RNMailTests.xctest in Frameworks */,
+				24979E8520F84005007EB0DA /* FirebaseNanoPB.framework in Frameworks */,
+				24979E8120F84005007EB0DA /* FirebaseCore.framework in Frameworks */,
 				4433A04AF3E942A2894B3933 /* libRNOS.a in Frameworks */,
 				24979E8620F84005007EB0DA /* FirebaseInstanceID.framework in Frameworks */,
 				4AF3A1B2CEC540D7A1AF957C /* libReactNativePermissions.a in Frameworks */,
@@ -733,7 +733,6 @@
 				91959ACCE81B4C128AAC8154 /* libRNSVG.a in Frameworks */,
 				07F258CE8EB84A8A949D4580 /* libTcpSockets.a in Frameworks */,
 				ED8A2571BF074F6DB6D09045 /* libToolTipMenu.a in Frameworks */,
-				A697A1F7C2CF434D8386454D /* ToolTipMenuTests.xctest in Frameworks */,
 				6E37C5716EC449C1B63D0E06 /* libTouchID.a in Frameworks */,
 				D77132C4B96040C39FED1AD5 /* libUdpSockets.a in Frameworks */,
 				1A048DFD2F724753902EA40B /* libRNReactNativeHapticFeedback.a in Frameworks */,
@@ -1342,7 +1341,7 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = Q4G66XSS36;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Push = {
 								enabled = 1;
@@ -2221,7 +2220,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = BalanceWallet/BalanceWallet.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = Q4G66XSS36;
@@ -2259,8 +2258,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.balance.balancewallet;
 				PRODUCT_NAME = BalanceWallet;
-				PROVISIONING_PROFILE = "587a30f1-8b82-4cb1-bc43-5214fe9e6bcc";
-				PROVISIONING_PROFILE_SPECIFIER = "match Development io.balance.balancewallet";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -2271,8 +2270,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = BalanceWallet/BalanceWallet.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Q4G66XSS36;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2309,8 +2308,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.balance.balancewallet;
 				PRODUCT_NAME = BalanceWallet;
-				PROVISIONING_PROFILE = "8895aaa6-904d-421d-a78a-0c94fa26de3f";
-				PROVISIONING_PROFILE_SPECIFIER = "match AppStore io.balance.balancewallet";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
