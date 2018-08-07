@@ -1,8 +1,8 @@
+import { get, map } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, createElement } from 'react';
 import { createNavigator, StackRouter } from 'react-navigation';
 import { FlatList, StatusBar, View } from 'react-native';
-import { get, map } from 'lodash';
 
 import { deviceUtils } from '../utils';
 
@@ -166,7 +166,15 @@ export default function createSwipeNavigator(screens, options) {
       const { navigation } = this.props;
 
       return (
-        <View key={item.name} style={deviceUtils.dimensions}>
+        <View
+          key={item.name}
+          style={{
+            ...deviceUtils.dimensions,
+            flex: 1,
+            justifyContent: 'flex-start',
+            alignItems: 'flex-start',
+          }}
+        >
           {createElement(item.screen, { navigation: { ...navigation, goBack: this.goBack, navigate: this.navigate } })}
         </View>
       );
@@ -178,8 +186,11 @@ export default function createSwipeNavigator(screens, options) {
       const currentScreenName = routeOrder[currentIndex] || '';
       const currentScreen = screens[currentScreenName] || {};
 
+            // directionalLockEnabled={true}
+            // removeClippedSubviews
+
       return (
-        <View onLayout={this.onLayout}>
+        <View onLayout={this.onLayout} style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'flex-start' }}>
           <StatusBar
             animated
             barStyle={currentScreen.statusBarColor}
@@ -194,9 +205,8 @@ export default function createSwipeNavigator(screens, options) {
             onScroll={this.onScroll}
             pagingEnabled
             ref={(flatListRef) => { this.flatListRef = flatListRef; }}
-            removeClippedSubviews
             renderItem={this.renderItem}
-            scrollEventThrottle={1}
+            scrollEventThrottle={16}
             showsHorizontalScrollIndicator={false}
           />
         </View>

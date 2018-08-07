@@ -5534,7 +5534,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@*, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2:
+prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.2.tgz#05d5ca77b4453e985d60fc7ff8c859094a497102"
   dependencies:
@@ -5654,12 +5654,12 @@ react-clone-referenced-element@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/react-clone-referenced-element/-/react-clone-referenced-element-1.0.1.tgz#2bba8c69404c5e4a944398600bcc4c941f860682"
 
-react-coin-icon@^0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.5.tgz#d2e3658d7eeb74837016088c7572234468d68631"
+react-coin-icon@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.6.tgz#38f6b0328618073bbd6020ce8c0dcdbda2aa5f9a"
   dependencies:
     "@svgr/cli" "^2.0.0"
-    styled-components "^3.3.3"
+    styled-components "3.3.3"
     svgs "github:Tvrqvoise/svgs#5137d86dfab6390df4917716a52fb5a572914358"
 
 react-css-property-operations@^15.4.1:
@@ -5818,6 +5818,10 @@ react-native-safe-area-view@react-community/react-native-safe-area-view#27/head:
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
+react-native-shimmer-placeholder@^1.0.29:
+  version "1.0.29"
+  resolved "https://registry.yarnpkg.com/react-native-shimmer-placeholder/-/react-native-shimmer-placeholder-1.0.29.tgz#738d3270eeef6360f1f66bdf8506180bbfa7fb7a"
+
 react-native-splash-screen@crazycodeboy/react-native-splash-screen#266/head:
   version "3.1.0"
   resolved "https://codeload.github.com/crazycodeboy/react-native-splash-screen/tar.gz/7ca5314217d743f6689e1bb873b719208837c218"
@@ -5964,7 +5968,7 @@ react-navigation-fluid-transitions@^0.2.2:
   dependencies:
     lodash.chunk "*"
     lodash.sortby "*"
-    prop-types "*"
+    prop-types "^15.6.0"
 
 react-navigation-tabs@0.6.0:
   version "0.6.0"
@@ -6871,7 +6875,7 @@ strip-json-comments@~2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-2.0.1.tgz#3c531942e908c2697c0ec344858c286c7ca0a60a"
 
-styled-components@^3.3.3:
+styled-components@3.3.3:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/styled-components/-/styled-components-3.3.3.tgz#09e702055ab11f7a8eab8229b1c0d0b855095686"
   dependencies:

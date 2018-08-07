@@ -1,4 +1,7 @@
 import { createSwitchNavigator, createStackNavigator } from 'react-navigation';
+
+import { FluidNavigator } from 'react-navigation-fluid-transitions';
+
 import IntroScreen from './IntroScreen';
 import LoadingScreen from './LoadingScreen';
 import SendScreen from './SendScreen';
@@ -33,18 +36,24 @@ const SwipeStack = createSwipeNavigator({
 const AppStack = createStackNavigator({
   ConfirmTransaction: {
     screen: TransactionConfirmationScreenWithData,
-    mode: 'modal',
-    navigationOptions: {
-      gesturesEnabled: false,
-    },
+    // mode: 'modal',
+    navigationOptions: { gesturesEnabled: false },
+    // navigationOptions: {
+    //   gesturesEnabled: false,
+    // },
   },
-  SwipeLayout: SwipeStack,
+  SwipeLayout: {
+    screen: SwipeStack,
+  navigationOptions: { gesturesEnabled: false },
+  },
   SendScreen: {
     screen: SendScreen,
+  navigationOptions: { gesturesEnabled: false },
   },
 }, {
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',
+  navigationOptions: { gesturesEnabled: false },
   mode: 'modal',
 });
 

@@ -3,19 +3,32 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { compose, withHandlers, withState } from 'recompact';
-import { AssetList, BalanceCoinRow, UniqueTokenGridList } from '../components/asset-list';
+import { AssetList, UniqueTokenRow } from '../components/asset-list';
+import { BalanceCoinRow } from '../components/coin-row';
 import Avatar from '../components/Avatar';
 import { Header, HeaderButton } from '../components/header';
-import { Page } from '../components/layout';
+import { FlexItem, Page } from '../components/layout';
 import { withHideSplashScreenOnMount } from '../hoc';
-import { sortList } from '../utils';
+import { position } from '../styles';
+
+const buildUniqueTokenList = (uniqueTokensAssets) => {
+  const list = [];
+
+  for (let i = 0; i < uniqueTokensAssets.length; i += 2) {
+    list.push([uniqueTokensAssets[i], uniqueTokensAssets[i + 1]]);
+  }
+
+  return list;
+};
 
 const filterEmptyAssetSections = sections => sections.filter(({ totalItems }) => totalItems);
 
+const groupAssetsByMarketValue = assets => groupBy(assets, ({ native }) => (
+  isNull(native) ? 'noValue' : 'hasValue'
+));
+
 const sortAssetsByNativeAmount = (assets, showShitcoins) => {
-  const assetsByMarketValue = groupBy(assets, ({ native }) => (
-    isNull(native) ? 'noValue' : 'hasValue'
-  ));
+  const assetsByMarketValue = groupAssetsByMarketValue(assets);
 
   const sortedAssetsWithMarketValue = (assetsByMarketValue.hasValue || []).sort((a, b) => {
     const amountA = get(a, 'native.balance.amount', 0);
@@ -34,17 +47,6 @@ const sortAssetsByNativeAmount = (assets, showShitcoins) => {
   return sortedAssetsWithMarketValue;
 };
 
-const buildUniqueTokenList = (uniqueTokensAssets) => {
-  console.log('uniqueTokensAssets', uniqueTokensAssets);
-  let newList = [];
-
-  for (let i = 0; i < uniqueTokensAssets.length; i += 1) {
-
-  }
-
-  return [uniqueTokensAssets];
-};
-
 const WalletScreen = ({
   accountInfo,
   onPressProfile,
@@ -55,29 +57,34 @@ const WalletScreen = ({
 }) => {
   const sections = {
     balances: {
-      contextMenuOptions: {
-        cancelButtonIndex: 1,
-        destructiveButtonIndex: showShitcoins ? 0 : 99, // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
-        onPress: (index) => { if (index === 0) onToggleShowShitcoins(); },
-        options: [`${showShitcoins ? 'Hide' : 'Show'} assets w/ no price data`, 'Cancel'],
-      },
       data: sortAssetsByNativeAmount(accountInfo.assets, showShitcoins),
       renderItem: BalanceCoinRow,
       title: 'Balances',
-      totalItems: (!!Number(accountInfo.total.amount)) ? accountInfo.assets.length : 0,
+      totalItems: accountInfo.total.amount ? accountInfo.assets.length : 0,
       totalValue: accountInfo.total.display || '',
     },
     collectibles: {
       data: buildUniqueTokenList(uniqueTokens),
-      renderItem: UniqueTokenGridList,
+      renderItem: UniqueTokenRow,
       title: 'Collectibles',
       totalItems: uniqueTokens.length,
       totalValue: '',
     },
   };
 
+  const assetsByMarketValue = groupAssetsByMarketValue(accountInfo.assets);
+  const totalShitcoins = get(assetsByMarketValue, 'noValue', []).length;
+  if (totalShitcoins) {
+    sections.balances.contextMenuOptions = {
+      cancelButtonIndex: 1,
+      destructiveButtonIndex: showShitcoins ? 0 : 99, // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
+      onPress: (index) => { if (index === 0) onToggleShowShitcoins(); },
+      options: [`${showShitcoins ? 'Hide' : 'Show'} assets w/ no price data`, 'Cancel'],
+    };
+  }
+
   return (
-    <Page>
+    <Page component={FlexItem} style={position.sizeAsObject('100%')}>
       <Header>
         <HeaderButton onPress={onPressProfile}>
           <Avatar />

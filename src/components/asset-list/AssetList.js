@@ -5,39 +5,36 @@ import { SectionList } from 'react-native';
 import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withSafeAreaViewInsetValues } from '../../hoc';
-import { position } from '../../styles';
+import { colors, position } from '../../styles';
 import { FabWrapper, FloatingActionButton, WalletConnectFab } from '../fab';
+import { FlexItem } from '../layout';
 import AssetListHeader from './AssetListHeader';
 import AssetListItem from './AssetListItem';
 import AssetListFooter from './AssetListFooter';
 import AssetListSkeleton from './AssetListSkeleton';
 
-const Container = styled.View`
-  flex: 1;
-`;
-
 const List = styled(SectionList)`
   ${position.size('100%')}
+  background-color: ${colors.white};
 `;
+
+const assetListKeyExtractor = (item, index) => (
+  get(item, Array.isArray(item) ? '[0].id' : 'symbol') + index
+);
 
 const buildListBottomPadding = (safeAreaInset) => {
   const fabSizeWithPadding = FloatingActionButton.size + (FabWrapper.bottomPosition * 2);
   return (safeAreaInset.bottom + fabSizeWithPadding) - AssetListFooter.height;
 };
 
-const keyExtractor = (item, index) => {
-  const key = Array.isArray(item) ? item[0] : get(item, 'symbol');
-  return key + index;
-};
-
 const AssetList = ({
   isEmpty,
+  onPressWalletConnect,
   safeAreaInset,
   sections,
-  onPressWalletConnect,
   ...props
 }) => (
-  <Container>
+  <FlexItem>
     <FabWrapper
       items={[(
         <WalletConnectFab
@@ -56,7 +53,7 @@ const AssetList = ({
             // the bottom of the list content lines up with the top of the FABs (+ padding).
             paddingBottom: buildListBottomPadding(safeAreaInset),
           }}
-          keyExtractor={keyExtractor}
+          keyExtractor={assetListKeyExtractor}
           renderItem={AssetListItem}
           renderSectionFooter={AssetListFooter}
           renderSectionHeader={headerProps => <AssetListHeader {...headerProps} />}
@@ -68,13 +65,13 @@ const AssetList = ({
         />
       )}
     </FabWrapper>
-  </Container>
+  </FlexItem>
 );
 
 AssetList.propTypes = {
   isEmpty: PropTypes.bool,
-  safeAreaInset: PropTypes.object,
   onPressWalletConnect: PropTypes.func,
+  safeAreaInset: PropTypes.object,
   sections: PropTypes.arrayOf(PropTypes.object),
 };
 
