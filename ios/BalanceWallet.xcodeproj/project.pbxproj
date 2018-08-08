@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -92,7 +91,6 @@
 		96E52368EDC94B9B80D1F29C /* SF-Pro-Text-LightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = D1641F1A96C841C085169B2E /* SF-Pro-Text-LightItalic.otf */; };
 		978F83D3C5E4491F9D9AC2C1 /* libSplashScreen.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA95F99E656542F790F685B6 /* libSplashScreen.a */; };
 		9E8553031AD44F52A814F2AB /* SF-Pro-Display-SemiboldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 86B30DBBDA594167BFE4747E /* SF-Pro-Display-SemiboldItalic.otf */; };
-		A399F4A539CA4B00922A41A8 /* libRNFIRMessaging.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DEADFA4826D4D0BAA950D21 /* libRNFIRMessaging.a */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
 		AE47B46652EA48AFB68E7832 /* SF-Pro-Text-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6B0A8BE2484F46980BE9AC /* SF-Pro-Text-Semibold.otf */; };
 		AFCABA638327463693E67FD4 /* SF-Pro-Text-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 715DAAA3174542BAB93807A6 /* SF-Pro-Text-RegularItalic.otf */; };
@@ -722,8 +720,6 @@
 				2340D4240F794E6DACB53521 /* libRNKeychain.a in Frameworks */,
 				45C6CAEFC1A04F3FB291BE53 /* libBVLinearGradient.a in Frameworks */,
 				94822FBFCA7246168685FA85 /* libRNMail.a in Frameworks */,
-				24979E8520F84005007EB0DA /* FirebaseNanoPB.framework in Frameworks */,
-				24979E8120F84005007EB0DA /* FirebaseCore.framework in Frameworks */,
 				4433A04AF3E942A2894B3933 /* libRNOS.a in Frameworks */,
 				24979E8620F84005007EB0DA /* FirebaseInstanceID.framework in Frameworks */,
 				4AF3A1B2CEC540D7A1AF957C /* libReactNativePermissions.a in Frameworks */,
