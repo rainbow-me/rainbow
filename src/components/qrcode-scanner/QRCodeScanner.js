@@ -99,7 +99,7 @@ export default class QRCodeScanner extends Component {
     const { error, isAuthorized, isInitialized } = this.state;
 
     const showCrosshair = !error && isAuthorized && isInitialized;
-    const showErrorMessage = error && !isInitialized;
+    const showErrorMessage = error && isAuthorized && !isInitialized;
 
     return (
       <Container>
