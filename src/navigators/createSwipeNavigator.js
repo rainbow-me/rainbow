@@ -166,16 +166,15 @@ export default function createSwipeNavigator(screens, options) {
       const { navigation } = this.props;
 
       return (
-        <View
-          key={item.name}
-          style={{
-            ...deviceUtils.dimensions,
-            flex: 1,
-            justifyContent: 'flex-start',
-            alignItems: 'flex-start',
-          }}
-        >
-          {createElement(item.screen, { navigation: { ...navigation, goBack: this.goBack, navigate: this.navigate } })}
+        <View key={item.name} style={deviceUtils.dimensions}>
+          {createElement(item.screen, {
+            isScreenActive: index === this.state.currentIndex,
+            navigation: {
+              ...navigation,
+              goBack: this.goBack,
+              navigate: this.navigate,
+            },
+          })}
         </View>
       );
     };
@@ -186,11 +185,8 @@ export default function createSwipeNavigator(screens, options) {
       const currentScreenName = routeOrder[currentIndex] || '';
       const currentScreen = screens[currentScreenName] || {};
 
-            // directionalLockEnabled={true}
-            // removeClippedSubviews
-
       return (
-        <View onLayout={this.onLayout} style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+        <View onLayout={this.onLayout}>
           <StatusBar
             animated
             barStyle={currentScreen.statusBarColor}
@@ -199,12 +195,14 @@ export default function createSwipeNavigator(screens, options) {
           <FlatList
             bounces={false}
             data={flatListScreens}
+            extraData={{ currentIndex }}
             getItemLayout={this.getItemLayout}
             horizontal
             onMomentumScrollEnd={this.onMomentumScrollEnd}
             onScroll={this.onScroll}
             pagingEnabled
             ref={(flatListRef) => { this.flatListRef = flatListRef; }}
+            removeClippedSubviews
             renderItem={this.renderItem}
             scrollEventThrottle={16}
             showsHorizontalScrollIndicator={false}
