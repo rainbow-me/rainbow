@@ -2,15 +2,14 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import styled from 'styled-components/primitives';
-import { colors, fonts } from '../../styles';
+import { colors } from '../../styles';
 import { Monospace } from '../text';
 import BalanceText from './BalanceText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
-const BottomRowText = styled(Monospace)`
-  color: ${colors.blueGreyLight};
-  font-size: ${fonts.size.smedium};
+const BottomRowText = styled(Monospace).attrs({ size: 'smedium' })`
+  color: ${({ color }) => (color || colors.blueGreyLight)};
 `;
 
 const formatPercentageString = percentString => (
