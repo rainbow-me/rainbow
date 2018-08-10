@@ -1,35 +1,33 @@
+import { omit } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
+import { AlertIOS } from 'react-native';
 import { connect } from 'react-redux';
 import { walletConnectInit } from '../model/walletconnect';
 import QRScannerScreen from './QRScannerScreen';
-import { AlertIOS } from 'react-native';
 
-class QRScannerScreenWithData extends PureComponent {
+class QRScannerScreenWithData extends Component {
   static propTypes = {
     accountAddress: PropTypes.string,
     isScreenActive: PropTypes.bool,
-    isSwiping: PropTypes.bool,
     navigation: PropTypes.object,
   }
 
-  scannerReactivationTimeout = null
+  shouldComponentUpdate = ({ isScreenActive, ...nextProps }) => {
+    if (this.qrCodeScannerRef) {
+      const isDisabled = this.qrCodeScannerRef.state.disablingByUser;
 
-  componentWillUnmount = () => {
-    if (this.scannerReactivationTimeout) {
-      clearTimeout(this.scannerReactivationTimeout);
-      this.scannerReactivationTimeout = 0;
+      if (isScreenActive && isDisabled) {
+        console.log('📠✅ Enabling QR Code Scanner');
+        this.qrCodeScannerRef.enable();
+      } else if (!isScreenActive && !isDisabled) {
+        console.log('📠🚫 Disabling QR Code Scanner');
+        this.qrCodeScannerRef.disable();
+      }
     }
-  }
 
-  handleScannerReactivation = () => {
-    this.scannerReactivationTimeout = setTimeout(() => {
-      console.log('resetting qr scanner');
-      this.qrCodeScannerRef.reactivate();
-    }, 1000);
+    return nextProps === omit(this.props, 'isScreenActive');
   }
-
-  handleScannerRef = (ref) => { this.qrCodeScannerRef = ref; }
 
   onSuccess = async (event) => {
     const { accountAddress, navigation } = this.props;
@@ -42,34 +40,17 @@ class QRScannerScreenWithData extends PureComponent {
       } catch (error) {
         AlertIOS.alert('Error initializing with WalletConnect', error);
         console.log('error initializing wallet connect', error);
-        this.handleScannerReactivation();
       }
-    } else {
-      this.handleScannerReactivation();
     }
   }
 
-  render = () => {
-    const { isScreenActive, isSwiping, ...props } = this.props;
-
-    if (this.qrCodeScannerRef) {
-      const isDisabled = this.qrCodeScannerRef.state.disablingByUser;
-
-      if (isScreenActive && isDisabled && !isSwiping) {
-        this.qrCodeScannerRef.enable();
-      } else if (!isDisabled) {
-        // this.qrCodeScannerRef.disable();
-      }
-    }
-
-    return (
-      <QRScannerScreen
-        {...props}
-        scannerRef={this.handleScannerRef}
-        onSuccess={this.onSuccess}
-      />
-    );
-  }
+  render = () => (
+    <QRScannerScreen
+      {...this.props}
+      scannerRef={(ref) => { this.qrCodeScannerRef = ref; }}
+      onSuccess={this.onSuccess}
+    />
+  )
 }
 
 const reduxProps = ({ account: { accountAddress } }) => ({ accountAddress });

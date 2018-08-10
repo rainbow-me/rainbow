@@ -2,7 +2,7 @@ import { get, groupBy, isNull } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { compose, withHandlers, withState } from 'recompact';
+import { compose, onlyUpdateForPropTypes, withHandlers, withState } from 'recompact';
 import { AssetList, UniqueTokenRow } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import Avatar from '../components/Avatar';
@@ -126,4 +126,5 @@ export default compose(
     onPressWalletConnect: ({ navigation }) => () => navigation.navigate('QRScannerScreen'),
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => () => toggleShowShitcoins(!showShitcoins),
   }),
+  onlyUpdateForPropTypes,
 )(WalletScreen);
