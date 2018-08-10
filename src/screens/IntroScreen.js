@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StatusBar } from 'react-native';
-import { Transition } from 'react-navigation-fluid-transitions';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import AppVersionStamp from '../components/AppVersionStamp';
@@ -74,36 +73,34 @@ const WarningIcon = styled(Icon).attrs({
 `;
 
 const IntroScreen = ({ onCreateWallet, safeAreaInset }) => (
-  <Transition appear="bottom" disappear="bottom">
-    <Container>
-      <StatusBar barStyle="light-content" />
-      <Content>
-        <Monospace color="white" size="big" weight="semibold">
-          Welcome to Balance
-        </Monospace>
-        <AlphaWarning>
-          <WarningIcon />
-          <AlphaWarningText>This is alpha software.</AlphaWarningText>
-        </AlphaWarning>
-        <InstructionsText>
-          Please do not store more in your wallet than you are willing to lose.
-        </InstructionsText>
-        <Row>
-          <ButtonPressAnimation onPress={onCreateWallet}>
-            <CreateWalletButton>
-              <CreateWalletButtonText>
-                Create a Wallet
-              </CreateWalletButtonText>
-            </CreateWalletButton>
-          </ButtonPressAnimation>
-        </Row>
-      </Content>
-      <IntroAppVersion
-        bottomInset={safeAreaInset.bottom}
-        color="#2A2B30"
-      />
-    </Container>
-  </Transition>
+  <Container>
+    <StatusBar barStyle="light-content" />
+    <Content>
+      <Monospace color="white" size="big" weight="semibold">
+        Welcome to Balance
+      </Monospace>
+      <AlphaWarning>
+        <WarningIcon />
+        <AlphaWarningText>This is alpha software.</AlphaWarningText>
+      </AlphaWarning>
+      <InstructionsText>
+        Please do not store more in your wallet than you are willing to lose.
+      </InstructionsText>
+      <Row>
+        <ButtonPressAnimation onPress={onCreateWallet}>
+          <CreateWalletButton>
+            <CreateWalletButtonText>
+              Create a Wallet
+            </CreateWalletButtonText>
+          </CreateWalletButton>
+        </ButtonPressAnimation>
+      </Row>
+    </Content>
+    <IntroAppVersion
+      bottomInset={safeAreaInset.bottom}
+      color="#2A2B30"
+    />
+  </Container>
 );
 
 IntroScreen.propTypes = {

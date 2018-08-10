@@ -1,7 +1,5 @@
 import { createSwitchNavigator, createStackNavigator } from 'react-navigation';
-
-import { FluidNavigator } from 'react-navigation-fluid-transitions';
-
+import createSwipeNavigator from '../navigators/createSwipeNavigator';
 import IntroScreen from './IntroScreen';
 import LoadingScreen from './LoadingScreen';
 import SendScreen from './SendScreen';
@@ -9,8 +7,6 @@ import TransactionConfirmationScreenWithData from './TransactionConfirmationScre
 import QRScannerScreenWithData from './QRScannerScreenWithData';
 import SettingsScreenWithData from './SettingsScreenWithData';
 import WalletScreen from './WalletScreen';
-
-import createSwipeNavigator from '../navigators/createSwipeNavigator';
 
 const SwipeStack = createSwipeNavigator({
   SettingsScreen: {
@@ -34,26 +30,12 @@ const SwipeStack = createSwipeNavigator({
 });
 
 const AppStack = createStackNavigator({
-  ConfirmTransaction: {
-    screen: TransactionConfirmationScreenWithData,
-    // mode: 'modal',
-    navigationOptions: { gesturesEnabled: false },
-    // navigationOptions: {
-    //   gesturesEnabled: false,
-    // },
-  },
-  SwipeLayout: {
-    screen: SwipeStack,
-  navigationOptions: { gesturesEnabled: false },
-  },
-  SendScreen: {
-    screen: SendScreen,
-  navigationOptions: { gesturesEnabled: false },
-  },
+  ConfirmTransaction: TransactionConfirmationScreenWithData,
+  SendScreen,
+  SwipeLayout: SwipeStack,
 }, {
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',
-  navigationOptions: { gesturesEnabled: false },
   mode: 'modal',
 });
 
