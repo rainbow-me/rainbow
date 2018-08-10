@@ -58,7 +58,7 @@ const AssetList = ({
           renderSectionFooter={AssetListFooter}
           renderSectionHeader={headerProps => <AssetListHeader {...headerProps} />}
           scrollIndicatorInsets={{
-            bottom: buildListBottomPadding(safeAreaInset) + AssetListFooter.height,
+            bottom: safeAreaInset.bottom,
             top: AssetListHeader.height,
           }}
           sections={sections}
