@@ -80,13 +80,13 @@ FloatingActionButton.defaultProps = {
 
 export default hoistStatics(
   withHandlers({
+    onPress: ({ onPress }) => (event) => {
+      ReactNativeHapticFeedback.trigger('impactLight');
+      if (onPress) onPress(event);
+    },
     onPressIn: ({ onPressIn }) => (event) => {
       ReactNativeHapticFeedback.trigger('impactLight');
       if (onPressIn) onPressIn(event);
-    },
-    onPressOut: ({ onPressOut }) => (event) => {
-      ReactNativeHapticFeedback.trigger('impactLight');
-      if (onPressOut) onPressOut(event);
     },
   }),
 )(FloatingActionButton);

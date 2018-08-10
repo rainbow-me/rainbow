@@ -41,22 +41,22 @@ class App extends Component {
       console.log('received refreshed fcm token', fcmToken);
       commonStorage.saveLocal('balanceWalletFcmToken', { data: fcmToken });
     });
+
     this.notificationDisplayedListener = firebase.notifications().onNotificationDisplayed(notification => {
       console.log('on notification displayed', notification);
       const { transactionId } = notification.data;
       this.onPushNotification(transactionId);
     });
+
     this.notificationListener = firebase.notifications().onNotification(notification => {
       console.log('on notification', notification);
       const { transactionId } = notification.data;
       this.onPushNotification(transactionId);
-
     });
 
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened(notificationOpen => {
       console.log('on notification opened');
-      const notification = notificationOpen.notification;
-      const { transactionId } = notification.data;
+      const { transactionId } = notificationOpen.notification.data;
       this.onPushNotification(transactionId);
     });
 
@@ -64,26 +64,20 @@ class App extends Component {
       .then(walletAddress => {
         console.log('wallet address is', walletAddress);
         this.props.accountUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
-        firebase.notifications().getInitialNotification()
-        .then(notificationOpen => {
-          console.log('on notification initial');
-          if (notificationOpen) {
-            const notification = notificationOpen.notification;
-            const { transactionId } = notification.data;
-            this.onPushNotification(transactionId);
-          }
-        });
+        firebase
+          .notifications()
+          .getInitialNotification()
+          .then(notificationOpen => {
+            console.log('on notification initial');
+            if (notificationOpen) {
+              const { transactionId } = notificationOpen.notification.data;
+              this.onPushNotification(transactionId);
+            }
+          });
       })
       .catch(error => {
         // TODO error handling
       });
-
-    setTimeout(() => {
-      this.handleOpenConfirmTransactionModal()
-    }, 7500);
-    // setTimeout(() => {
-    //   this.handleOpenConfirmTransactionModal()
-    // }, 12500);
   }
 
   componentWillUnmount() {
