@@ -47,7 +47,6 @@ const AmountRowLeft = styled(Column)`
 `;
 
 const AssetName = styled(TruncatedText).attrs({
-  component: Text,
   size: 'lmedium',
   weight: 'medium',
 })`
