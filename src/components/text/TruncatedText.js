@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { createElement } from 'react';
-import { Text } from 'react-native';
+import Text from './Text';
 
 const TruncatedText = ({
   component,
