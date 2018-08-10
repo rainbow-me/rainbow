@@ -72,6 +72,12 @@ ButtonPressAnimation.defaultProps = {
 export default compose(
   withState('isPressed', 'toggleIsPressed', false),
   withHandlers({
+    onPress: ({ onPress, toggleIsPressed }) => (event) => {
+      toggleIsPressed(false);
+      if (onPress) {
+        onPress(event);
+      }
+    },
     onPressIn: ({ onPressIn, toggleIsPressed }) => (event) => {
       toggleIsPressed(true);
       if (onPressIn) {
