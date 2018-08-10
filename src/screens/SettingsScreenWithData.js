@@ -1,4 +1,4 @@
-import { debounce } from 'lodash';
+import { debounce, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Alert, Clipboard } from 'react-native';
@@ -29,13 +29,18 @@ export default class SettingsScreenWithData extends Component {
     seedPhrase: null,
   }
 
-  componentDidMount = () => loadAddress().then(address => this.setState({ address }))
-  componentDidUpdate() {
-    if (this.state.seedPhrase && !this.props.isScreenActive) {
-      // Hide seedphrase is user navigates away from this screen
+  shouldComponentUpdate = ({ isScreenActive, ...nextProps }, nextState) => {
+    if (!isScreenActive && this.state.seedPhrase) {
       this.handleHideSeedPhrase();
     }
+
+    const isNewProps = nextProps !== omit(this.props, 'isScreenActive');
+    const isNewState = nextState !== this.state;
+
+    return isNewProps || isNewState;
   }
+
+  componentDidMount = () => loadAddress().then(address => this.setState({ address }))
 
   handleHideSeedPhrase = () => this.setState({ seedPhrase: null })
 
