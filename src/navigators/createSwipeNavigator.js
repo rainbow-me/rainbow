@@ -11,6 +11,10 @@ export default function createSwipeNavigator(screens, options) {
   const routeOrder = options.order || map(screens, ({ name }) => name);
   const initialScreens = map(screens, () => screens[options.initialRouteName]);
   const loadedScreens = map(screens, (screen) => screen);
+  const onSwipeStart = options.onSwipeStart || function noop() {};
+  const onSwipeEnd = options.onSwipeEnd || function noop() {};
+
+  let isSwiping = false;
 
   class NavigationView extends Component {
     static propTypes = {
@@ -23,6 +27,25 @@ export default function createSwipeNavigator(screens, options) {
     state = {
       currentIndex: 0,
       flatListScreens: initialScreens,
+    };
+
+    constructor(props) {
+      super(props);
+
+      router.getComponentForRouteName = this.getComponentForRouteName;
+    }
+
+    /**
+     * Get the component for a given route and scroll there.
+     * @param  {String} routeName   The name of the route to get the component of.
+     * @return {Object}             The component for the given route.
+     */
+    getComponentForRouteName = (routeName) => {
+      const routeIndex = this.getRouteIndex(routeName);
+
+      this.scrollToIndex(routeIndex);
+
+      return loadedScreens[routeIndex];
     };
 
     /**
@@ -123,6 +146,11 @@ export default function createSwipeNavigator(screens, options) {
       const currentScreenName = routeOrder[currentScreenIndex] || options.initialRouteName;
 
       navigation.navigate(currentScreenName);
+
+      if (isSwiping) {
+        isSwiping = false;
+        onSwipeEnd(navigation);
+      }
     };
 
     /**
@@ -133,6 +161,7 @@ export default function createSwipeNavigator(screens, options) {
     onScroll = ({ nativeEvent }) => {
       const { currentIndex } = this.state;
 
+      const layoutMeasurementWidth = get(nativeEvent, 'layoutMeasurement.width', 0);
       const currentOffsetX = get(nativeEvent, 'contentOffset.x', 0);
       const startOffsetX = currentIndex * deviceUtils.dimensions.width;
       const endOffsetXRight = (currentIndex + 1) * deviceUtils.dimensions.width;
@@ -142,6 +171,11 @@ export default function createSwipeNavigator(screens, options) {
         this.setState({ currentIndex: currentIndex + 1 });
       } else if (currentOffsetX - startOffsetX < (endOffsetXLeft - startOffsetX) / 2) {
         this.setState({ currentIndex: currentIndex - 1 });
+      }
+
+      if (!isSwiping && currentOffsetX % layoutMeasurementWidth !== 0) {
+        isSwiping = true;
+        onSwipeStart();
       }
     };
 

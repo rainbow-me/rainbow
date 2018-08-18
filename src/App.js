@@ -1,17 +1,19 @@
-import { account, commonStorage, accountUpdateAccountAddress } from 'balance-common';
+import firebase from 'react-native-firebase';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { AppRegistry, AppState, AsyncStorage, Platform } from 'react-native';
-import firebase from 'react-native-firebase';
-import { NavigationActions } from 'react-navigation';
-import { connect, Provider } from 'react-redux';
-import { compose, withProps } from 'recompact';
-import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
+import { account, commonStorage, accountUpdateAccountAddress } from 'balance-common';
+import { AppRegistry } from 'react-native';
+import { compose, withProps } from 'recompact';
+import { connect, Provider } from 'react-redux';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { NavigationActions } from 'react-navigation';
+
+import Navigation from './navigation';
+import Routes from './screens/Routes';
+import transactionsToApprove, { addTransactionToApprove } from './reducers/transactionsToApprove';
 import { walletConnectGetTransaction } from './model/walletconnect';
 import { walletInit } from './model/wallet';
-import transactionsToApprove, { addTransactionToApprove } from './reducers/transactionsToApprove';
-import Routes from './screens/Routes';
 
 const store = createStore(
   combineReducers({ account, transactionsToApprove }),
@@ -97,7 +99,7 @@ class App extends Component {
       params: {},
     });
 
-    this.navigatorRef.dispatch(action);
+    Navigation.handleAction(this.navigatorRef, action);
   }
 
   onPushNotification = async (transactionId) => {
