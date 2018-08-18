@@ -8,6 +8,8 @@ import QRScannerScreenWithData from './QRScannerScreenWithData';
 import SettingsScreenWithData from './SettingsScreenWithData';
 import WalletScreen from './WalletScreen';
 
+import Navigation from '../navigation';
+
 const SwipeStack = createSwipeNavigator({
   SettingsScreen: {
     name: 'SettingsScreen',
@@ -27,6 +29,8 @@ const SwipeStack = createSwipeNavigator({
 }, {
   headerMode: 'none',
   initialRouteName: 'WalletScreen',
+  onSwipeStart: () => Navigation.pauseNavigationActions(),
+  onSwipeEnd: (navigation) => Navigation.resumeNavigationActions(navigation),
 });
 
 const AppStack = createStackNavigator({

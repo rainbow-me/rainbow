@@ -17,10 +17,10 @@ class QRScannerScreenWithData extends Component {
     if (this.qrCodeScannerRef) {
       const isDisabled = this.qrCodeScannerRef.state.disablingByUser;
 
-      if (isScreenActive && isDisabled) {
+      if (isScreenActive && isDisabled && typeof this.qrCodeScannerRef.enable === 'function') {
         console.log('📠✅ Enabling QR Code Scanner');
         this.qrCodeScannerRef.enable();
-      } else if (!isScreenActive && !isDisabled) {
+      } else if (!isScreenActive && !isDisabled && typeof this.qrCodeScannerRef.disable === 'function') {
         console.log('📠🚫 Disabling QR Code Scanner');
         this.qrCodeScannerRef.disable();
       }
