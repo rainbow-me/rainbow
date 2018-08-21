@@ -1,11 +1,12 @@
 import { createSwitchNavigator, createStackNavigator } from 'react-navigation';
 import createSwipeNavigator from '../navigators/createSwipeNavigator';
+import ActivityScreen from './ActivityScreen';
 import IntroScreen from './IntroScreen';
 import LoadingScreen from './LoadingScreen';
-import SendScreen from './SendScreen';
-import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
+import SendScreen from './SendScreen';
 import SettingsScreenWithData from './SettingsScreenWithData';
+import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
 
 import Navigation from '../navigation';
@@ -34,6 +35,7 @@ const SwipeStack = createSwipeNavigator({
 });
 
 const AppStack = createStackNavigator({
+  ActivityScreen,
   ConfirmTransaction: TransactionConfirmationScreenWithData,
   SendScreen,
   SwipeLayout: SwipeStack,
