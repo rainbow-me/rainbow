@@ -19,7 +19,7 @@ const SpinnerIcon = ({
   width,
   ...props
 }) => (
-  <SvgContainer
+  <Svg
     height={height}
     width={width}
   >
@@ -27,7 +27,7 @@ const SpinnerIcon = ({
       d="M11.5 5.75a.75.75 0 1 1-1.5 0A4.25 4.25 0 1 0 5.75 10a.75.75 0 0 1 0 1.5 5.75 5.75 0 1 1 5.75-5.75z"
       fill={color}
     />
-  </SvgContainer>
+  </Svg>
 );
 
 SpinnerIcon.propTypes = {

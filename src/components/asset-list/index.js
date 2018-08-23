@@ -1,5 +1,4 @@
 export { default as AssetList } from './AssetList';
-export { default as AssetListFooter } from './AssetListFooter';
 export { default as AssetListHeader } from './AssetListHeader';
 export { default as AssetListItem } from './AssetListItem';
 export { default as UniqueTokenCard } from './UniqueTokenCard';
