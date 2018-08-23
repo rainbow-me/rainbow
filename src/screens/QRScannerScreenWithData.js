@@ -1,4 +1,4 @@
-import { omit } from 'lodash';
+import { isFunction, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AlertIOS } from 'react-native';
@@ -14,13 +14,13 @@ class QRScannerScreenWithData extends Component {
   }
 
   shouldComponentUpdate = ({ isScreenActive, ...nextProps }) => {
-    if (this.qrCodeScannerRef) {
+    if (this.qrCodeScannerRef && this.qrCodeScannerRef.disable) {
       const isDisabled = this.qrCodeScannerRef.state.disablingByUser;
 
-      if (isScreenActive && isDisabled && typeof this.qrCodeScannerRef.enable === 'function') {
+      if (isScreenActive && isDisabled && isFunction(this.qrCodeScannerRef.enable)) {
         console.log('📠✅ Enabling QR Code Scanner');
         this.qrCodeScannerRef.enable();
-      } else if (!isScreenActive && !isDisabled && typeof this.qrCodeScannerRef.disable === 'function') {
+      } else if (!isScreenActive && !isDisabled && isFunction(this.qrCodeScannerRef.disable)) {
         console.log('📠🚫 Disabling QR Code Scanner');
         this.qrCodeScannerRef.disable();
       }
