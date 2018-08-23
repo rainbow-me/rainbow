@@ -8,6 +8,7 @@ const base = {
   blueGreyDark: '#3c4252', // '60, 66, 82'
   blueGreyLight: '#666A73', // '102, 106, 115'
   blueGreyMedium: '#636875', // '99, 104, 117'
+  blueGreyMediumLight: '#7b7f8a', // '123, 127, 138'
   blueHover: '#6c87f5', // '108, 135, 245'
   bodyBackground: '#2c2f38', // '44, 47, 56'
   brightBlue: '#5983FF', // '89, 131, 255'
@@ -27,7 +28,8 @@ const base = {
   mediumGrey: '#a1a5b3', // '161, 165, 179'
   orange: '#f6851b', // '246, 133, 27'
   orangeLight: '#FFAF24', // '255, 175, 36'
-  primaryBlue: '#5d9df6', // '93, 157, 246',
+  primaryBlue: '#5d9df6', // '93, 157, 246'
+  primaryGreen: '#00a352', // '0, 163, 82'
   purple: '#32325d', // '50, 50, 93'
   red: '#d64b47', // '214, 75, 71'
   rowDivider: '#f8f8f8', // '248, 248, 248'

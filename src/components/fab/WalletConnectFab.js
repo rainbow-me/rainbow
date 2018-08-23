@@ -8,12 +8,12 @@ import { colors, position } from '../../styles';
 import Icon from '../icons/Icon';
 import FloatingActionButton from './FloatingActionButton';
 
-const GradientBackground = styled(RadialGradient)`
-  ${position.cover}
+const CameraIcon = styled(Icon)`
+  margin-bottom: 2;
 `;
 
-const WalletConnectIcon = styled(Icon)`
-  margin-bottom: 2;
+const GradientBackground = styled(RadialGradient)`
+  ${position.cover}
 `;
 
 const WalletConnectFab = ({ disabled, onPress, ...props }) => (
@@ -27,7 +27,10 @@ const WalletConnectFab = ({ disabled, onPress, ...props }) => (
             radius={size}
           />
         )}
-        <WalletConnectIcon name="walletConnect" />
+        <CameraIcon
+          color={colors.white}
+          name="camera"
+        />
       </Fragment>
     )}
   </FloatingActionButton>

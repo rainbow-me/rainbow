@@ -7,12 +7,11 @@ import { Row } from '../layout';
 import { padding } from '../../styles';
 
 const HeaderHeight = 54;
-const HeaderPaddingBottom = 4;
 
 const Container = styled(Row).attrs({ align: 'end' })`
-  ${({ statusBarHeight }) => padding(statusBarHeight, 9, HeaderPaddingBottom)}
+  ${({ statusBarHeight }) => padding(statusBarHeight, 9, 1)}
   flex-shrink: 0;
-  height: ${({ statusBarHeight }) => (HeaderHeight + HeaderPaddingBottom + statusBarHeight)};
+  height: ${({ statusBarHeight }) => (HeaderHeight + statusBarHeight)};
   width: 100%;
 `;
 
