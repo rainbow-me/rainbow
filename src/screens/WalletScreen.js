@@ -60,8 +60,8 @@ const WalletScreen = ({
       data: sortAssetsByNativeAmount(accountInfo.assets, showShitcoins),
       renderItem: BalanceCoinRow,
       title: 'Balances',
-      totalItems: accountInfo.total.amount ? accountInfo.assets.length : 0,
-      totalValue: accountInfo.total.display || '',
+      totalItems: get(accountInfo, 'total.amount') ? accountInfo.assets.length : 0,
+      totalValue: get(accountInfo, 'total.display', ''),
     },
     collectibles: {
       data: buildUniqueTokenList(uniqueTokens),

@@ -229,8 +229,8 @@ export default function createSwipeNavigator(screens, options) {
           <FlatList
             bounces={false}
             data={flatListScreens}
-            getItemLayout={this.getItemLayout}
             extraData={{ currentIndex }}
+            getItemLayout={this.getItemLayout}
             horizontal
             onMomentumScrollEnd={this.onMomentumScrollEnd}
             onScroll={this.onScroll}

@@ -26,7 +26,7 @@ Flex.displayName = 'Flex';
 Flex.propTypes = {
   align: PropTypes.oneOf(['baseline', 'center', 'end', 'start', 'stretch']),
   component: PropTypes.func,
-  direction: PropTypes.oneOf(['row', 'column']),
+  direction: PropTypes.oneOf(['column', 'column-reverse', 'row', 'row-reverse']),
   flex: PropTypes.number,
   justify: PropTypes.oneOf(['center', 'end', 'space-around', 'space-between', 'start']),
   wrap: PropTypes.bool,
