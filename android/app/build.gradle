@@ -137,6 +137,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-gesture-handler')
     compile project(':react-native-firebase')
     compile project(':react-native-haptic-feedback')
     compile project(':react-native-udp')
