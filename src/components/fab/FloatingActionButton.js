@@ -47,7 +47,7 @@ const FloatingActionButton = ({
   >
     <ShadowStack
       {...position.sizeAsObject(size)}
-      borderRadius={24}
+      borderRadius={FloatingActionButtonBorderRadius}
       shadows={buildFabShadow(disabled)}
     >
       <Container {...props} disabled={disabled}>

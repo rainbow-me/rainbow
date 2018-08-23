@@ -1,14 +1,28 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { BaseButton } from 'react-native-gesture-handler';
 import { View } from 'react-primitives';
-import { animated, interpolate, Spring } from 'react-spring/dist/native';
-import { compose, omitProps, withHandlers, withState } from 'recompact';
+import {
+  animated,
+  config as ReactSpringConfig,
+  interpolate,
+  Spring,
+} from 'react-spring/dist/native';
+import stylePropType from 'react-style-proptype';
+import { compose, withHandlers, withState } from 'recompact';
 import { animations } from '../../styles';
 
 const AnimatedView = animated(View);
 
-const buildAnimatedTransform = ({ scale, translateY }) => ({
+const PressRetentionOffsetValue = 15;
+const PressRetentionOffset = {
+  bottom: PressRetentionOffsetValue,
+  left: PressRetentionOffsetValue,
+  right: PressRetentionOffsetValue,
+  top: PressRetentionOffsetValue,
+};
+
+const interpolateTransform = ({ scale, translateY, ...rest }) => ({
   transform: [
     { scale: interpolate([scale], s => s) },
     { translateY: interpolate([translateY], y => y) },
@@ -21,31 +35,34 @@ const ButtonPressAnimation = ({
   children,
   config,
   disabled,
-  isPressed,
+  isActive,
+  onActiveStateChange,
   onPress,
-  onPressIn,
-  onPressOut,
+  onRest,
+  style,
 }) => (
-  <TouchableOpacity
+  <BaseButton
     activeOpacity={activeOpacity}
     disabled={disabled}
+    onActiveStateChange={onActiveStateChange}
     onPress={onPress}
-    onPressIn={onPressIn}
-    onPressOut={onPressOut}
+    pressRetentionOffset={PressRetentionOffset}
+    style={style}
   >
     <Spring
       config={config}
       from={animation.from}
+      onRest={onRest}
       native
-      to={isPressed ? animation.to : animation.from}
+      to={isActive ? animation.to : animation.from}
     >
       {springValues => (
-        <AnimatedView style={buildAnimatedTransform(springValues)}>
+        <AnimatedView style={interpolateTransform(springValues)}>
           {children}
         </AnimatedView>
       )}
     </Spring>
-  </TouchableOpacity>
+  </BaseButton>
 );
 
 ButtonPressAnimation.propTypes = {
@@ -57,39 +74,34 @@ ButtonPressAnimation.propTypes = {
   children: PropTypes.node,
   config: PropTypes.object,
   disabled: PropTypes.bool,
-  isPressed: PropTypes.bool,
+  isActive: PropTypes.bool,
+  onActiveStateChange: PropTypes.func,
   onPress: PropTypes.func,
-  onPressIn: PropTypes.func,
-  onPressOut: PropTypes.func,
+  onRest: PropTypes.func,
+  style: stylePropType,
 };
 
 ButtonPressAnimation.defaultProps = {
   activeOpacity: 1,
   animation: animations.keyframes.button,
-  // config: animations.spring.default,
+  config: ReactSpringConfig.wobbly, // animations.spring.default,
 };
 
 export default compose(
-  withState('isPressed', 'toggleIsPressed', false),
+  withState('isActive', 'setIsActive', false),
+  withState('didPress', 'setDidPress', false),
   withHandlers({
-    onPress: ({ onPress, toggleIsPressed }) => (event) => {
-      toggleIsPressed(false);
-      if (onPress) {
-        onPress(event);
-      }
+    onActiveStateChange: ({ onActiveStateChange, setIsActive }) => (isActive) => {
+      if (onActiveStateChange) onActiveStateChange(isActive);
+      setIsActive(isActive);
     },
-    onPressIn: ({ onPressIn, toggleIsPressed }) => (event) => {
-      toggleIsPressed(true);
-      if (onPressIn) {
-        onPressIn(event);
-      }
+    onPress: ({ onPress, setDidPress }) => (event) => {
+      if (onPress) onPress(event);
+      setDidPress(true);
     },
-    onPressOut: ({ onPressOut, toggleIsPressed }) => (event) => {
-      toggleIsPressed(false);
-      if (onPressOut) {
-        onPressOut(event);
-      }
+    onRest: ({ didPress, onRest, setDidPress }) => (event) => {
+      if (didPress) setDidPress(false);
+      if (onRest) onRest(event);
     },
   }),
-  omitProps('toggleIsPressed'),
 )(ButtonPressAnimation);
