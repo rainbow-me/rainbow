@@ -2,16 +2,16 @@ import React from 'react';
 import styled from 'styled-components/primitives';
 import { colors } from '../../styles';
 
-const AssetListFooterHeight = 27;
+const ListFooterHeight = 27;
 
 const Spacer = styled.View`
   background-color: ${colors.white};
-  height: ${AssetListFooterHeight};
+  height: ${ListFooterHeight};
   width: 100%;
 `;
 
-const AssetListFooter = () => <Spacer />;
+const ListFooter = () => <Spacer />;
 
-AssetListFooter.height = AssetListFooterHeight;
+ListFooter.height = ListFooterHeight;
 
-export default AssetListFooter;
+export default ListFooter;
