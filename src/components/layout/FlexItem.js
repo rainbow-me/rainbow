@@ -1,3 +1,4 @@
+import { isUndefined } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-primitives';
@@ -11,7 +12,7 @@ const FlexItem = ({
   <View
     {...props}
     style={{
-      flex: (!flex && !grow && !shrink) ? 1 : flex,
+      flex: (isUndefined(flex) && isUndefined(grow) && isUndefined(shrink)) ? 1 : flex,
       flexGrow: grow,
       flexShrink: shrink,
     }}

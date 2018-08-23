@@ -1,16 +1,12 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
-import styled from 'styled-components/primitives';
+import { shouldUpdate } from 'recompact';
 import { colors } from '../../styles';
-import { Monospace } from '../text';
 import BalanceText from './BalanceText';
+import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-
-const BottomRowText = styled(Monospace).attrs({ size: 'smedium' })`
-  color: ${({ color }) => (color || colors.blueGreyLight)};
-`;
 
 const formatPercentageString = percentString => (
   percentString
@@ -54,4 +50,11 @@ BalanceCoinRow.propTypes = {
   item: PropTypes.object,
 };
 
-export default BalanceCoinRow;
+const isNewValueForPath = (a, b, path) => (get(a, path) !== get(b, path));
+
+export default shouldUpdate((props, nextProps) => {
+  const isNewNativePrice = isNewValueForPath(props, nextProps, 'item.native.price.display');
+  const isNewTokenBalance = isNewValueForPath(props, nextProps, 'item.balance.amount');
+
+  return isNewNativePrice || isNewTokenBalance;
+})(BalanceCoinRow);
