@@ -21,8 +21,9 @@ const ActivityList = ({
 }) => (
   <SectionList
     contentContainerStyle={{ paddingBottom: 40 }}
+    extraData={{ hasPendingTransaction }}
     getItemLayout={getItemLayout}
-    initialNumToRender={50}
+    initialNumToRender={75}
     keyExtractor={({ hash }) => hash}
     removeClippedSubviews
     renderSectionHeader={({ section }) => <ActivityListHeader {...section} />}
