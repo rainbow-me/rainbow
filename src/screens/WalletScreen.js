@@ -7,7 +7,7 @@ import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
 import { AssetList, UniqueTokenRow } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import Avatar from '../components/Avatar';
-import { Header, HeaderButton } from '../components/header';
+import { ActivityHeaderButton, Header, HeaderButton } from '../components/header';
 import { FlexItem, Page } from '../components/layout';
 import { withHideSplashScreenOnMount } from '../hoc';
 import { position } from '../styles';
@@ -89,10 +89,11 @@ const WalletScreen = ({
 
   return (
     <Page component={FlexItem} style={position.sizeAsObject('100%')}>
-      <Header>
+      <Header justify="space-between">
         <HeaderButton onPress={onPressProfile}>
           <Avatar />
         </HeaderButton>
+        <ActivityHeaderButton />
       </Header>
       <AssetList
         onPressWalletConnect={onPressWalletConnect}

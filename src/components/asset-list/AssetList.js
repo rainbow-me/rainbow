@@ -1,22 +1,14 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { SectionList } from 'react-native';
 import { compose, withProps } from 'recompact';
-import styled from 'styled-components/primitives';
 import { withSafeAreaViewInsetValues } from '../../hoc';
-import { colors, position } from '../../styles';
 import { FabWrapper, FloatingActionButton, WalletConnectFab } from '../fab';
+import { ListFooter, SectionList } from '../list';
 import { FlexItem } from '../layout';
 import AssetListHeader from './AssetListHeader';
 import AssetListItem from './AssetListItem';
-import AssetListFooter from './AssetListFooter';
 import AssetListSkeleton from './AssetListSkeleton';
-
-const List = styled(SectionList)`
-  ${position.size('100%')}
-  background-color: ${colors.white};
-`;
 
 const assetListKeyExtractor = (item, index) => (
   get(item, Array.isArray(item) ? '[0].id' : 'symbol') + index
@@ -24,7 +16,7 @@ const assetListKeyExtractor = (item, index) => (
 
 const buildListBottomPadding = (safeAreaInset) => {
   const fabSizeWithPadding = FloatingActionButton.size + (FabWrapper.bottomPosition * 2);
-  return (safeAreaInset.bottom + fabSizeWithPadding) - AssetListFooter.height;
+  return (safeAreaInset.bottom + fabSizeWithPadding) - ListFooter.height;
 };
 
 const AssetList = ({
@@ -47,7 +39,7 @@ const AssetList = ({
       {isEmpty ? (
         <AssetListSkeleton />
       ) : (
-        <List
+        <SectionList
           contentContainerStyle={{
             // We want to add enough spacing below the list so that when the user scrolls to the bottom,
             // the bottom of the list content lines up with the top of the FABs (+ padding).
@@ -55,12 +47,7 @@ const AssetList = ({
           }}
           keyExtractor={assetListKeyExtractor}
           renderItem={AssetListItem}
-          renderSectionFooter={AssetListFooter}
-          renderSectionHeader={headerProps => <AssetListHeader {...headerProps} />}
-          scrollIndicatorInsets={{
-            bottom: safeAreaInset.bottom,
-            top: AssetListHeader.height,
-          }}
+          renderSectionHeader={({ section }) => <AssetListHeader {...section} />}
           sections={sections}
         />
       )}

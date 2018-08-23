@@ -1,13 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { connect } from 'react-redux';
-import { compose, onlyUpdateForPropTypes, withHandlers, withState } from 'recompact';
-import { colors, position } from '../../styles';
-import { AssetList, UniqueTokenRow } from '../asset-list';
-import { BalanceCoinRow } from '../coin-row';
-import Avatar from '../Avatar';
+import { withNavigation } from 'react-navigation';
+import { compose, withHandlers } from 'recompact';
 import Icon from '../icons/Icon';
-import { FlexItem, Page } from '../layout';
+import { colors } from '../../styles';
 import HeaderButton from './HeaderButton';
 
 const ActivityHeaderButton = ({ onPress }) => {
@@ -25,4 +21,15 @@ ActivityHeaderButton.propTypes = {
   onPress: PropTypes.func,
 };
 
-export default ActivityHeaderButton;
+export default compose(
+  withNavigation,
+  withHandlers({
+    onPress: ({ navigation, onPress }) => (event) => {
+      if (onPress) {
+        return onPress(event);
+      }
+
+      return navigation.navigate('ActivityScreen');
+    },
+  }),
+)(ActivityHeaderButton);

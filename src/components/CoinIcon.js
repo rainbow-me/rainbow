@@ -5,6 +5,8 @@ import ReactCoinIcon, { FallbackIcon } from 'react-coin-icon';
 import { colors, fonts, position, shadow } from '../styles';
 import { ShadowStack } from './shadow-stack';
 
+const CoinIconHeight = 40;
+
 const fallbackTextStyles = css`
   font-family: ${fonts.family.SFMono};
   margin-bottom: 1;
@@ -22,8 +24,8 @@ const CoinIcon = ({ size, symbol }) => (
     {...position.sizeAsObject(size)}
     borderRadius={size / 2}
     shadows={[
-      shadow.buildString(0, 4, 6, colors.alpha(colors.purple, 0.04)),
-      shadow.buildString(0, 1, 3, colors.alpha(colors.purple, 0.08)),
+      shadow.buildString(0, 4, 6, colors.alpha(colors.purple, 0.12)),
+      shadow.buildString(0, 1, 3, colors.alpha(colors.purple, 0.24)),
     ]}
   >
     <ReactCoinIcon
@@ -40,7 +42,9 @@ CoinIcon.propTypes = {
 };
 
 CoinIcon.defaultProps = {
-  size: 40,
+  size: CoinIconHeight,
 };
+
+CoinIcon.height = CoinIconHeight;
 
 export default CoinIcon;

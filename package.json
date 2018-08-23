@@ -23,6 +23,7 @@
     "color": "^3.0.0",
     "console-browserify": "^1.1.0",
     "constants-browserify": "^1.0.0",
+    "date-fns": "^1.29.0",
     "dns.js": "^1.0.1",
     "domain-browser": "^1.2.0",
     "ethers": "^3.0.7",
@@ -92,7 +93,7 @@
     "vm-browserify": "0.0.4"
   },
   "devDependencies": {
-    "@babel/core": "7.0.0-beta.47",
+    "@babel/core": "^7.0.0",
     "babel-eslint": "^8.2.2",
     "babel-jest": "^22.4.3",
     "babel-preset-react-native": "5.0.2",

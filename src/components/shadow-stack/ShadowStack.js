@@ -15,6 +15,7 @@ const ChildrenWrapper = styled.View`
 `;
 
 const ShadowStackContainer = styled.View`
+  background-color: #ffffff;
   border-radius: ${({ borderRadius }) => borderRadius};
   height: ${({ height }) => height};
   width: ${({ width }) => width};
