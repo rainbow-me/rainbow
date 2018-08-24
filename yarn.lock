@@ -1670,8 +1670,9 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-balance-common@../balance-common:
-  version "0.3.6"
+balance-common@^0.3.7:
+  version "0.3.7"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.3.7.tgz#80e246c2fe30cb364c31f255729a904ce1eec6ed"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
