@@ -9,7 +9,7 @@ export const walletConnectInit = async (accountAddress, bridgeUrl, sessionId, sh
   const fcmToken = fcmTokenLocal ? fcmTokenLocal.data : null;
   const walletConnector = new RNWalletConnect({ bridgeUrl, sessionId, sharedKey, dappName });
   // TODO fcmToken is null logic
-  await commonStorage.saveWalletConnectAccount({ bridgeUrl, sessionId, sharedKey, dappName });
+  await commonStorage.saveWalletConnectSession({ bridgeUrl, sessionId, sharedKey, dappName });
   try {
     await walletConnector.sendSessionStatus({ fcmToken, pushEndpoint: PUSH_ENDPOINT, data: [accountAddress] });
   } catch (error) {
@@ -19,9 +19,13 @@ export const walletConnectInit = async (accountAddress, bridgeUrl, sessionId, sh
 
 export const walletConnectGetTransaction = async (transactionId) => {
   try {
-    const { bridgeUrl, sessionId, sharedKey, dappName } = await commonStorage.getWalletConnectAccount();
-    const walletConnector = new RNWalletConnect({ bridgeUrl, dappName, sessionId, sharedKey});
-    return await walletConnector.getTransactionRequest(transactionId);
+    const walletConnectSession = await commonStorage.getWalletConnectSession();
+    if (walletConnectSession) {
+      const { bridgeUrl, sessionId, sharedKey, dappName } = walletConnectSession;
+      const walletConnector = new RNWalletConnect({ bridgeUrl, dappName, sessionId, sharedKey});
+      return await walletConnector.getTransactionRequest(transactionId);
+    }
+    return null;
   } catch(error) {
     console.log('Error getting transaction from Wallet Connect', error);
     // TODO: show error
@@ -30,13 +34,19 @@ export const walletConnectGetTransaction = async (transactionId) => {
 };
 
 export const walletConnectSendTransactionHash = async (transactionId, success, txHash) => {
-  const { bridgeUrl, dappName, sessionId, sharedKey }  = await commonStorage.getWalletConnectAccount();
-  const walletConnector = new RNWalletConnect({ bridgeUrl, dappName, sessionId, sharedKey});
-  try {
-    await walletConnector.sendTransactionStatus(transactionId, { success, txHash });
-  } catch (error) {
-    console.log('error sending transaction hash', error);
+  const walletConnectSession = await commonStorage.getWalletConnectSession();
+  if (walletConnectSession) {
+    const { bridgeUrl, sessionId, sharedKey, dappName } = walletConnectSession;
+    const walletConnector = new RNWalletConnect({ bridgeUrl, dappName, sessionId, sharedKey});
+    try {
+      await walletConnector.sendTransactionStatus(transactionId, { success, txHash });
+    } catch (error) {
+      console.log('error sending transaction hash', error);
+      //TODO error handling
+    }
+  } else {
     //TODO error handling
+    console.log('WalletConnect session has expired while trying to send transaction hash');
   }
 };
 
