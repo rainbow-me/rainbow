@@ -7,10 +7,12 @@ import { H1, Monospace } from '../text';
 import ContextMenu from '../ContextMenu';
 import Divider from '../Divider';
 
+const AssetListHeaderHeight = 35;
+
 const Header = styled(Row).attrs({ align: 'center', justify: 'space-between' })`
   ${padding(0, 19)}
   background-color: ${colors.white};
-  height: 35;
+  height: ${AssetListHeaderHeight};
   width: 100%;
 `;
 
@@ -27,11 +29,7 @@ const AssetListHeader = ({
         <H1>{title}</H1>
         {contextMenuOptions && (<ContextMenu {...contextMenuOptions} />)}
       </Row>
-      <Monospace
-        color={colors.blueGreyDark}
-        size="large"
-        weight="semibold"
-      >
+      <Monospace size="large" weight="semibold">
         {`${totalValue}`}
       </Monospace>
     </Header>
@@ -46,5 +44,7 @@ AssetListHeader.propTypes = {
     totalValue: PropTypes.string,
   }),
 };
+
+AssetListHeader.height = AssetListHeaderHeight;
 
 export default AssetListHeader;

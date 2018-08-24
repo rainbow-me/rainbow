@@ -31,14 +31,14 @@ PODS:
     - nanopb/encode (= 0.3.8)
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
-  - Protobuf (3.6.0)
+  - Protobuf (3.6.1)
 
 DEPENDENCIES:
   - Firebase/Core (~> 5.3.0)
   - Firebase/Messaging (~> 5.3.0)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/cocoapods/specs.git:
     - Firebase
     - FirebaseAnalytics
     - FirebaseCore
@@ -49,15 +49,15 @@ SPEC REPOS:
     - Protobuf
 
 SPEC CHECKSUMS:
-  Firebase: 76ec2a7cde90fb4037793f83aeeca48451543487
-  FirebaseAnalytics: b8bce8d5c40173328b8a4300da18c5c7e0a1908d
-  FirebaseCore: 31d258ec80ea97e1e8e40ce00a7ba7297afb45c2
-  FirebaseInstanceID: 4f7768a98c5c3c5bd9a4c9e431ea98dccc0a51f9
-  FirebaseMessaging: 94579ae655d817287f029ebfebd5b0811fbb3a51
+  Firebase: 68afeeb05461db02d7c9e3215cda28068670f4aa
+  FirebaseAnalytics: b3628aea54c50464c32c393fb2ea032566e7ecc2
+  FirebaseCore: 62f1b792a49bb9e8b4073f24606d2c93ffc352f0
+  FirebaseInstanceID: f3f0657372592ecdfdfe2cac604a5a75758376a6
+  FirebaseMessaging: 6894b8fe0a0cf26c3b13dad729f1131654ae0bdb
   GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
-  Protobuf: df76aea48ef0f5f98c7bf133279425208ec02a9b
+  Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
 
 PODFILE CHECKSUM: 8cf8c5c72a0b45742ea93200c56270adf0bc939f
 
-COCOAPODS: 1.5.0
+COCOAPODS: 1.5.3

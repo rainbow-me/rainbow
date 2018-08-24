@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Image, SectionList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-const SendScreen = ({ }) => (
+const SendScreen = ({ sections }) => (
   <View style={styles.container}>
     <View style={styles.card}>
       <View

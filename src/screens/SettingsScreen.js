@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StatusBar } from 'react-native';
+import { withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import AppVersionStamp from '../components/AppVersionStamp';
 import { Button } from '../components/buttons';
@@ -32,7 +32,7 @@ const SeedPhraseText = styled(Monospace).attrs({ size: 'h5', weight: 'medium' })
 `;
 
 const WalletAddressTextContainer = styled(Centered).attrs({ direction: 'column' })`
-  margin-bottom: ${(deviceUtils.height < 700) ? 30 : 52};
+  margin-bottom: ${(deviceUtils.dimensions.height < 700) ? 30 : 52};
   margin-top: 22;
   width: 100%;
 `;
@@ -50,16 +50,16 @@ const SettingsScreen = ({
     justify="center"
     showBottomInset
   >
-    <StatusBar barStyle="dark-content" />
     <Header align="end" justify="end">
       <BackButton
         color={colors.brightBlue}
         direction="right"
+        onPress={onPressBackButton}
       />
     </Header>
     <Content>
       <QRCodeDisplay
-        size={(deviceUtils.width * (150 / deviceUtils.iPhoneXWidth))}
+        size={(deviceUtils.dimensions.width * (150 / deviceUtils.iPhoneXWidth))}
         value={address}
       />
       <WalletAddressTextContainer>
@@ -97,4 +97,6 @@ SettingsScreen.propTypes = {
   seedPhrase: PropTypes.string,
 };
 
-export default SettingsScreen;
+export default withHandlers({
+  onPressBackButton: ({ navigation }) => () => navigation.goBack(),
+})(SettingsScreen);

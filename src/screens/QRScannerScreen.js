@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StatusBar } from 'react-native';
+import { withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { BackButton, Header } from '../components/header';
 import { Centered } from '../components/layout';
@@ -20,9 +20,8 @@ const QRScannerHeader = styled(Header).attrs({
   top: 0;
 `;
 
-const QRScannerScreen = ({ onSuccess, scannerRef }) => (
+const QRScannerScreen = ({ onPressBackButton, onSuccess, scannerRef }) => (
   <Container>
-    <StatusBar barStyle="light-content" />
     <QRCodeScanner
       {...this.props}
       onSuccess={onSuccess}
@@ -32,14 +31,18 @@ const QRScannerScreen = ({ onSuccess, scannerRef }) => (
       <BackButton
         color={colors.white}
         direction="left"
+        onPress={onPressBackButton}
       />
     </QRScannerHeader>
   </Container>
 );
 
 QRScannerScreen.propTypes = {
+  onPressBackButton: PropTypes.func,
   onSuccess: PropTypes.func,
   scannerRef: PropTypes.func,
 };
 
-export default QRScannerScreen;
+export default withHandlers({
+  onPressBackButton: ({ navigation }) => () => navigation.goBack(),
+})(QRScannerScreen);

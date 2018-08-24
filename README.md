@@ -17,8 +17,12 @@ If you are new to React Native, this is a helpful introduction: https://facebook
 
 3. Run `./node_modules/.bin/rn-nodeify --install "crypto" --hack`
 
-4. Run `npm run ios` to build the project for XCode.
+4. Install CocoaPods by running `sudo gem install cocoapods`
 
-5. Open `balance-wallet/ios/BalanceWallet.xcodeproj`.
+5. Install required Pods by running `cd ios && pod install && cd ..`
 
-6. Run the project by clicking the play button.
+6. Run `yarn ios` to build the project for XCode.
+
+7. Open `balance-wallet/ios/BalanceWallet.xcworkspace`.
+
+8. Run the project by clicking the play button.

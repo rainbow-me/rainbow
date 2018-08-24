@@ -157,7 +157,7 @@ const TransactionConfirmationScreen = ({
           size="small"
           textProps={{ color: 'black', size: 'medium' }}
         >
-          Cancel
+          Reject
         </Button>
       </CancelButtonContainer>
     </Masthead>

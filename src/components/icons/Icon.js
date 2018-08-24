@@ -7,6 +7,7 @@ import AssetListItemSkeletonIcon from './svg/AssetListItemSkeletonIcon';
 import AvatarIcon from './svg/AvatarIcon';
 import BalanceLogoIcon from './svg/BalanceLogoIcon';
 import CaretIcon from './svg/CaretIcon';
+import ClockIcon from './svg/ClockIcon';
 import SpinnerIcon from './svg/SpinnerIcon';
 import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import WalletConnectIcon from './svg/WalletConnectIcon';
@@ -25,6 +26,7 @@ Icon.IconTypes = {
   avatar: AvatarIcon,
   balanceLogo: BalanceLogoIcon,
   caret: CaretIcon,
+  clock: ClockIcon,
   spinner: SpinnerIcon,
   threeDots: ThreeDotsIcon,
   walletConnect: WalletConnectIcon,
