@@ -6,7 +6,7 @@ import styled from 'styled-components/primitives';
 import { Button } from '../buttons';
 import { Column } from '../layout';
 import { ErrorText, Monospace } from '../text';
-import { colors, padding, position } from '../../styles';
+import { colors, fonts, padding, position } from '../../styles';
 
 const Container = styled(Column)`
   ${padding(30, 50, 60, 30)}
@@ -18,7 +18,7 @@ const SettingsButton = styled(Button)`
 `;
 
 const Text = styled(Monospace).attrs({ color: 'mediumGrey' })`
-  line-height: 25;
+  line-height: ${fonts.lineHeight.loose};
   margin-bottom: 30;
   margin-top: 7;
 `;

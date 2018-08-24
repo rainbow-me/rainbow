@@ -40,10 +40,10 @@ export default compose(
   withHandlers({
     onPress: ({ navigation, onPress }) => (event) => {
       if (onPress) {
-        onPress(event);
+        return onPress(event);
       }
 
-      navigation.dispatch(NavigationActions.back());
+      return navigation.dispatch(NavigationActions.back());
     },
   }),
 )(BackButton);
