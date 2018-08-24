@@ -1,17 +1,19 @@
-import { account, commonStorage, accountUpdateAccountAddress } from 'balance-common';
+import firebase from 'react-native-firebase';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { AppRegistry, AppState, AsyncStorage, Platform } from 'react-native';
-import firebase from 'react-native-firebase';
-import { NavigationActions } from 'react-navigation';
-import { connect, Provider } from 'react-redux';
-import { compose, withProps } from 'recompact';
-import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
+import { account, commonStorage, accountUpdateAccountAddress } from 'balance-common';
+import { AppRegistry } from 'react-native';
+import { compose, withProps } from 'recompact';
+import { connect, Provider } from 'react-redux';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { NavigationActions } from 'react-navigation';
+
+import Navigation from './navigation';
+import Routes from './screens/Routes';
+import transactionsToApprove, { addTransactionToApprove } from './reducers/transactionsToApprove';
 import { walletConnectGetTransaction } from './model/walletconnect';
 import { walletInit } from './model/wallet';
-import transactionsToApprove, { addTransactionToApprove } from './reducers/transactionsToApprove';
-import Routes from './screens/Routes';
 
 const store = createStore(
   combineReducers({ account, transactionsToApprove }),
@@ -41,22 +43,22 @@ class App extends Component {
       console.log('received refreshed fcm token', fcmToken);
       commonStorage.saveLocal('balanceWalletFcmToken', { data: fcmToken });
     });
+
     this.notificationDisplayedListener = firebase.notifications().onNotificationDisplayed(notification => {
       console.log('on notification displayed', notification);
       const { transactionId } = notification.data;
       this.onPushNotification(transactionId);
     });
+
     this.notificationListener = firebase.notifications().onNotification(notification => {
       console.log('on notification', notification);
       const { transactionId } = notification.data;
       this.onPushNotification(transactionId);
-
     });
 
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened(notificationOpen => {
       console.log('on notification opened');
-      const notification = notificationOpen.notification;
-      const { transactionId } = notification.data;
+      const { transactionId } = notificationOpen.notification.data;
       this.onPushNotification(transactionId);
     });
 
@@ -64,15 +66,16 @@ class App extends Component {
       .then(walletAddress => {
         console.log('wallet address is', walletAddress);
         this.props.accountUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
-        firebase.notifications().getInitialNotification()
-        .then(notificationOpen => {
-          console.log('on notification initial');
-          if (notificationOpen) {
-            const notification = notificationOpen.notification;
-            const { transactionId } = notification.data;
-            this.onPushNotification(transactionId);
-          }
-        });
+        firebase
+          .notifications()
+          .getInitialNotification()
+          .then(notificationOpen => {
+            console.log('on notification initial');
+            if (notificationOpen) {
+              const { transactionId } = notificationOpen.notification.data;
+              this.onPushNotification(transactionId);
+            }
+          });
       })
       .catch(error => {
         // TODO error handling
@@ -96,7 +99,7 @@ class App extends Component {
       params: {},
     });
 
-    this.navigatorRef.dispatch(action);
+    Navigation.handleAction(this.navigatorRef, action);
   }
 
   onPushNotification = async (transactionId) => {

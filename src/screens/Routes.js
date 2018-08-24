@@ -1,40 +1,48 @@
 import { createSwitchNavigator, createStackNavigator } from 'react-navigation';
-import { FluidNavigator } from 'react-navigation-fluid-transitions';
+import createSwipeNavigator from '../navigators/createSwipeNavigator';
+import ActivityScreen from './ActivityScreen';
 import IntroScreen from './IntroScreen';
 import LoadingScreen from './LoadingScreen';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
-import SettingsScreenWithData from './SettingsScreenWithData';
 import SendScreen from './SendScreen';
+import SettingsScreenWithData from './SettingsScreenWithData';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
 
-const AppStack = FluidNavigator({
-  ConfirmTransaction: {
-    screen: TransactionConfirmationScreenWithData,
-    mode: 'modal',
-    navigationOptions: {
-      gesturesEnabled: false,
-    },
-  },
-  QRScannerScreen: {
-    screen: QRScannerScreenWithData,
-  },
+import Navigation from '../navigation';
+
+const SwipeStack = createSwipeNavigator({
   SettingsScreen: {
-    navigationOptions: {
-      gestureDirection: 'inverted',
-    },
+    name: 'SettingsScreen',
     screen: SettingsScreenWithData,
+    statusBarColor: 'dark-content',
   },
   WalletScreen: {
+    name: 'WalletScreen',
     screen: WalletScreen,
+    statusBarColor: 'dark-content',
   },
-  SendScreen: {
-    screen: SendScreen,
+  QRScannerScreen: {
+    name: 'QRScannerScreen',
+    screen: QRScannerScreenWithData,
+    statusBarColor: 'light-content',
   },
 }, {
+  headerMode: 'none',
   initialRouteName: 'WalletScreen',
-  mode: 'card', // Horizontal gestures
-  navigationOptions: { gesturesEnabled: true },
+  onSwipeStart: () => Navigation.pauseNavigationActions(),
+  onSwipeEnd: (navigation) => Navigation.resumeNavigationActions(navigation),
+});
+
+const AppStack = createStackNavigator({
+  ActivityScreen,
+  ConfirmTransaction: TransactionConfirmationScreenWithData,
+  SendScreen,
+  SwipeLayout: SwipeStack,
+}, {
+  headerMode: 'none',
+  initialRouteName: 'SwipeLayout',
+  mode: 'modal',
 });
 
 const IntroStack = createStackNavigator({

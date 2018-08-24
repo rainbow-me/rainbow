@@ -47,7 +47,7 @@ const FloatingActionButton = ({
   >
     <ShadowStack
       {...position.sizeAsObject(size)}
-      borderRadius={24}
+      borderRadius={FloatingActionButtonBorderRadius}
       shadows={buildFabShadow(disabled)}
     >
       <Container {...props} disabled={disabled}>
@@ -80,13 +80,13 @@ FloatingActionButton.defaultProps = {
 
 export default hoistStatics(
   withHandlers({
+    onPress: ({ onPress }) => (event) => {
+      ReactNativeHapticFeedback.trigger('impactLight');
+      if (onPress) onPress(event);
+    },
     onPressIn: ({ onPressIn }) => (event) => {
       ReactNativeHapticFeedback.trigger('impactLight');
       if (onPressIn) onPressIn(event);
-    },
-    onPressOut: ({ onPressOut }) => (event) => {
-      ReactNativeHapticFeedback.trigger('impactLight');
-      if (onPressOut) onPressOut(event);
     },
   }),
 )(FloatingActionButton);

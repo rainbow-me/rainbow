@@ -114,6 +114,8 @@ export default class QRCodeScanner extends Component {
           notAuthorizedView={<QRCodeScannerNeedsAuthorization />}
           onRead={onSuccess}
           pendingAuthorizationView={<QRCodeScannerNeedsAuthorization />}
+          reactivate={true}
+          reactivateTimeout={1000}
           ref={scannerRef}
           topViewStyle={styles.disableSection}
         />

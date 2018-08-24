@@ -7,7 +7,7 @@ import Icon from '../components/icons/Icon';
 import { Column } from '../components/layout';
 import { ErrorText, Monospace } from '../components/text';
 import { loadAddress } from '../model/wallet';
-import { colors, padding, position } from '../styles';
+import { colors, fonts, padding, position } from '../styles';
 
 const Container = styled(Column).attrs({ justify: 'center' })`
   ${position.cover}
@@ -19,14 +19,14 @@ const ErrorContainer = styled(Column)`
 `;
 
 const ErrorMessage = styled(Monospace).attrs({ color: 'red' })`
-  line-height: 25;
+  line-height: ${fonts.lineHeight.loose};
   margin-top: 7;
 `;
 
 const LoadingColor = colors.alpha(colors.grey, 0.5);
 
 const LoadingText = styled(Monospace)`
-  line-height: 25;
+  line-height: ${fonts.lineHeight.loose};
   margin-top: 10;
 `;
 

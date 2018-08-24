@@ -1,8 +1,8 @@
-import { debounce } from 'lodash';
+import { debounce, omit } from 'lodash';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Alert, Clipboard } from 'react-native';
 import Mailer from 'react-native-mail';
-import { Transition } from 'react-navigation-fluid-transitions';
 import { loadAddress, loadSeedPhrase } from '../model/wallet';
 import SettingsScreen from './SettingsScreen';
 
@@ -20,12 +20,29 @@ const handleSendFeedbackError = debounce(error => (
 ), 250);
 
 export default class SettingsScreenWithData extends Component {
+  static propTypes = {
+    isScreenActive: PropTypes.bool,
+  }
+
   state = {
     address: '',
     seedPhrase: null,
   }
 
+  shouldComponentUpdate = ({ isScreenActive, ...nextProps }, nextState) => {
+    if (!isScreenActive && this.state.seedPhrase) {
+      this.handleHideSeedPhrase();
+    }
+
+    const isNewProps = nextProps !== omit(this.props, 'isScreenActive');
+    const isNewState = nextState !== this.state;
+
+    return isNewProps || isNewState;
+  }
+
   componentDidMount = () => loadAddress().then(address => this.setState({ address }))
+
+  handleHideSeedPhrase = () => this.setState({ seedPhrase: null })
 
   handleSendFeedback = () =>
     Mailer.mail({
@@ -37,17 +54,16 @@ export default class SettingsScreenWithData extends Component {
     if (!this.state.seedPhrase) {
       loadSeedPhrase().then(seedPhrase => this.setState({ seedPhrase }));
     } else {
-      this.setState({ seedPhrase: null });
+      this.handleHideSeedPhrase();
     }
   }
 
   render = () => (
-    <Transition appear='left' disappear='left'>
-      <SettingsScreen
-        {...this.state}
-        onSendFeedback={this.handleSendFeedback}
-        onToggleShowSeedPhrase={this.handleToggleShowSeedPhrase}
-      />
-    </Transition>
+    <SettingsScreen
+      {...this.props}
+      {...this.state}
+      onSendFeedback={this.handleSendFeedback}
+      onToggleShowSeedPhrase={this.handleToggleShowSeedPhrase}
+    />
   )
 }
