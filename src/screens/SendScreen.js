@@ -1,68 +1,122 @@
-import React from 'react';
-import { Button, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import lang from 'i18n-js';
+import React, { Component } from 'react';
+import { Image, KeyboardAvoidingView, Text, TextInput, View } from 'react-native';
+import styled from 'styled-components/primitives';
 
-const SendScreen = ({ sections }) => (
-  <View style={styles.container}>
-    <View style={styles.card}>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          paddingRight: 16,
-        }}
-      >
-        <Button
-          onPress={this.closeModal}
-          title={lang.t('wallet.action.cancel')}
-          color="#5983FF"
-          accessibilityLabel={lang.t('wallet.action.cancel')}
-          style={{ fontSize: 18 }}
-        />
-        <Text style={{ fontSize: 18, fontWeight: '600' }}>{lang.t('wallet.action.send')}</Text>
-        <Image style={{ width: 20, height: 20, marginLeft: 34 }} source={require('../assets/scan-icon-alt.png')} />
-      </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginLeft: 16,
-          marginRight: 16,
-        }}
-      >
-        <Image style={{ width: 20, height: 20 }} source={require('../assets/person-icon.png')} />
-        <TextInput
-          style={{ height: 40, flexGrow: 1, marginLeft: 8 }}
-          onChangeText={text => this.setState({ text })}
-          value={this.state.text}
-          placeholder="Address, Name, Phone"
-        />
-        <TouchableOpacity onPress={this.pasteContent} style={{ backgroundColor: '#A9ADB9', borderRadius: 14, padding: 6 }}>
-          <Text style={{ color: '#fff', fontSize: 15, fontWeight: '600' }}>{lang.t('wallet.action.paste')}</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </View>
-);
+import { Page, Flex } from '../components/layout';
+import { Button } from '../components/buttons';
+import { colors, fonts, padding, position } from '../styles';
 
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 50,
-    backgroundColor: '#F7F8FA',
-  },
-  card: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    backgroundColor: '#fff',
-  },
-});
+const Container = styled(Page)`
+  ${position.size('100%')}
+  background-color: ${colors.white};
+  align-items: center;
+`;
 
-export default SendScreen;
+const AddressInput = styled(TextInput)`
+  flex-grow: 1;
+  font-size: ${fonts.size.h5}
+  font-family: ${fonts.family.SFMono};
+  font-weight: ${fonts.weight.semibold};
+  color: ${colors.brightRoyalBlue};
+  margin-top: 1px;
+`;
+
+const AddressInputLabel = styled(Text)`
+  color: ${colors.blueGreyDark};
+  font-size: ${fonts.size.h5}
+  font-family: ${fonts.family.SFMono};
+  font-weight: ${fonts.weight.semibold};
+  margin-right: 6px;
+  opacity: 0.6;
+`;
+
+const AddressInputContainer = styled(Flex)`
+  ${padding(45, 20)}
+  padding-bottom: 20px;
+  align-items: center;
+`;
+
+const AddressInputBottomBorder = styled(View)`
+  background-color: ${colors.blueGreyLight};
+  opacity: 0.05;
+  width: 100%;
+  height: 2px;
+`;
+
+const BackgroundImage = styled(Image)`
+  height: 88px;
+  width: 91px;
+  margin-top: 130px;
+`;
+
+const BottomButton = styled(Button)`
+  ${padding(0, 10)}
+  background-color: ${colors.brightRoyalBlue};
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  margin-left: 10px;
+`;
+
+const BottomButtonContainer = styled(Flex)`
+  ${padding(20, 20)}
+  justify-content: flex-end;
+  width: 100%;
+`;
+
+const BackgroundImageContainer = styled(Flex)`
+  flex-grow: 1;
+`;
+
+const CameraIcon = styled(Image)`
+  margin-top: -5px;
+  height: 14px;
+  width: 17px;
+`;
+
+export default class SendScreen extends Component {
+  static propTypes = {
+
+  };
+
+  static defaultProps = {
+
+  };
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      address: '',
+    };
+  }
+
+  onPressPaste = () => {
+
+  };
+
+  onPressCamera = () => {
+
+  };
+
+  render() {
+    return (
+      <KeyboardAvoidingView behavior="height">
+        <Container showTopInset>
+          <AddressInputContainer>
+            <AddressInputLabel>To:</AddressInputLabel>
+            <AddressInput placeholder="Ethereum Address: (0x...)" autoFocus />
+          </AddressInputContainer>
+          <AddressInputBottomBorder />
+          <BackgroundImageContainer>
+            <BackgroundImage source={require('../assets/send-background.png')} />
+          </BackgroundImageContainer>
+          <BottomButtonContainer>
+            <BottomButton onPress={this.onPressPaste}>Paste</BottomButton>
+            <BottomButton onPress={this.onPressCamera}><CameraIcon source={require('../assets/camera.png')} /></BottomButton>
+          </BottomButtonContainer>
+        </Container>
+      </KeyboardAvoidingView>
+    );
+  }
+}

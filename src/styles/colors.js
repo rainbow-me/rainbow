@@ -11,6 +11,7 @@ const base = {
   blueGreyMediumLight: '#7b7f8a', // '123, 127, 138'
   blueHover: '#6c87f5', // '108, 135, 245'
   bodyBackground: '#2c2f38', // '44, 47, 56'
+  brightRoyalBlue: '#0E76FD',
   brightBlue: '#5983FF', // '89, 131, 255'
   brightGreen: '#12b878', // '18, 184, 120'
   brightGreenHover: '#15c17f', // '21, 193, 127'
