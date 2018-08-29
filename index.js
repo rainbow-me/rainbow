@@ -1,3 +1,4 @@
+import './global.js';
 import './shim.js';
 
 /*eslint-disable*/
