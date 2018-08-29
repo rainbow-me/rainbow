@@ -7,6 +7,10 @@ font.family = {
   SFProText: 'SF Pro Text',
 };
 
+font.lineHeight = {
+  loose: 25,
+};
+
 font.size = {
   micro: '9px',
   tiny: '11px',

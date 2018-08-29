@@ -41,6 +41,12 @@ WalletConnectFab.propTypes = {
 export default compose(
   withNavigation,
   withHandlers({
-    onPress: ({ navigation }) => () => navigation.navigate('QRScannerScreen'),
+    onPress: ({ navigation, onPress }) => (event) => {
+      if (onPress) {
+        return onPress(event);
+      }
+
+      return navigation.navigate('QRScannerScreen');
+    },
   }),
 )(WalletConnectFab);

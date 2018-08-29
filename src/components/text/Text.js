@@ -1,3 +1,4 @@
+import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, fonts } from '../../styles';
 
@@ -8,4 +9,4 @@ const Text = styled.Text`
   font-weight: ${({ weight }) => fonts.weight[weight || 'regular']};
 `;
 
-export default Text;
+export default withProps({ allowFontScaling: false })(Text);

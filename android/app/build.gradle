@@ -137,6 +137,8 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-gesture-handler')
+    compile project(':react-native-firebase')
     compile project(':react-native-haptic-feedback')
     compile project(':react-native-udp')
     compile project(':react-native-touch-id')
@@ -149,7 +151,6 @@ dependencies {
     compile project(':react-native-mail')
     compile project(':react-native-linear-gradient')
     compile project(':react-native-keychain')
-    compile project(':react-native-fcm')
     compile project(':react-native-camera')
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"

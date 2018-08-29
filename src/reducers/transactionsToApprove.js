@@ -1,5 +1,11 @@
 import smartContractMethods from 'balance-common/src/references/smartcontract-methods.json';
-import { bignumber } from 'balance-common';
+import {
+  convertAssetAmountToDisplaySpecific,
+  convertAssetAmountToNativeValue,
+  convertHexToString,
+  formatInputDecimals,
+  fromWei
+} from 'balance-common';
 
 // -- Constants --------------------------------------- //
 const WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE = 'wallet/WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE';
@@ -15,14 +21,14 @@ const getAssetDetails = (contractAddress, assets) => {
 
 export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => {
   let _nativeAmount = '';
-  if (prices[nativeCurrency][symbol]) {
-    const nativeAmount = bignumber.convertAssetAmountToNativeValue(
+  if (prices && prices[nativeCurrency] && prices[nativeCurrency][symbol]) {
+    const nativeAmount = convertAssetAmountToNativeValue(
       assetAmount,
       { symbol },
       prices,
     );
-    _nativeAmount = bignumber.formatInputDecimals(nativeAmount, assetAmount);
-    const displayAmount = bignumber.convertAssetAmountToDisplaySpecific(_nativeAmount, prices, nativeCurrency);
+    _nativeAmount = formatInputDecimals(nativeAmount, assetAmount);
+    const displayAmount = convertAssetAmountToDisplaySpecific(_nativeAmount, prices, nativeCurrency);
     return displayAmount;
   } else {
     return _nativeAmount;
@@ -32,7 +38,7 @@ export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => 
 const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrency) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
   if (transaction.data == '0x') {
-    const value = bignumber.fromWei(bignumber.convertHexToString(transaction.value));
+    const value = fromWei(convertHexToString(transaction.value));
     const nativeAmount = getNativeAmount(prices, nativeCurrency, value, 'ETH');
     return {
       from: transaction.from,
@@ -48,7 +54,7 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
     const dataPayload = transaction.data.replace(tokenTransferHash, '');
     const toAddress = '0x' + dataPayload.slice(0, 64).replace(/^0+/, '');
     const amount = '0x' + dataPayload.slice(64,128).replace(/^0+/, '');
-    const value = bignumber.fromWei(bignumber.convertHexToString(amount), decimals);
+    const value = fromWei(convertHexToString(amount), decimals);
     const nativeAmount = getNativeAmount(prices, nativeCurrency, value, symbol);
     return {
       from: transaction.from,

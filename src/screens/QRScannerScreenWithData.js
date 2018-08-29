@@ -1,5 +1,7 @@
+import { isFunction, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { AlertIOS } from 'react-native';
 import { connect } from 'react-redux';
 import { walletConnectInit } from '../model/walletconnect';
 import QRScannerScreen from './QRScannerScreen';
@@ -7,10 +9,25 @@ import QRScannerScreen from './QRScannerScreen';
 class QRScannerScreenWithData extends Component {
   static propTypes = {
     accountAddress: PropTypes.string,
+    isScreenActive: PropTypes.bool,
     navigation: PropTypes.object,
   }
 
-  handleScannerRef = (ref) => { this.qrCodeScanner = ref; }
+  shouldComponentUpdate = ({ isScreenActive, ...nextProps }) => {
+    if (this.qrCodeScannerRef && this.qrCodeScannerRef.disable) {
+      const isDisabled = this.qrCodeScannerRef.state.disablingByUser;
+
+      if (isScreenActive && isDisabled && isFunction(this.qrCodeScannerRef.enable)) {
+        console.log('📠✅ Enabling QR Code Scanner');
+        this.qrCodeScannerRef.enable();
+      } else if (!isScreenActive && !isDisabled && isFunction(this.qrCodeScannerRef.disable)) {
+        console.log('📠🚫 Disabling QR Code Scanner');
+        this.qrCodeScannerRef.disable();
+      }
+    }
+
+    return nextProps === omit(this.props, 'isScreenActive');
+  }
 
   onSuccess = async (event) => {
     const { accountAddress, navigation } = this.props;
@@ -21,19 +38,16 @@ class QRScannerScreenWithData extends Component {
         await walletConnectInit(accountAddress, data.domain, data.sessionId, data.sharedKey, data.dappName);
         navigation.navigate('WalletScreen');
       } catch (error) {
-        // TODO error handling
+        AlertIOS.alert('Error initializing with WalletConnect', error);
         console.log('error initializing wallet connect', error);
-        setTimeout(() => this.qrCodeScanner.reactivate(), 1000);
       }
-    } else {
-      setTimeout(() => this.qrCodeScanner.reactivate(), 1000);
     }
   }
 
   render = () => (
     <QRScannerScreen
       {...this.props}
-      scannerRef={this.handleScannerRef}
+      scannerRef={(ref) => { this.qrCodeScannerRef = ref; }}
       onSuccess={this.onSuccess}
     />
   )
