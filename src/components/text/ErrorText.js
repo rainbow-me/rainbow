@@ -7,7 +7,7 @@ import Monospace from './Monospace';
 import { colors, fonts } from '../../styles';
 
 const Text = styled(Monospace).attrs({ size: 'lmedium', weight: 'medium' })`
-  line-height: 25;
+  line-height: ${fonts.lineHeight.loose};
   margin-left: ${fonts.size.micro};
 `;
 

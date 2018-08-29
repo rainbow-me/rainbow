@@ -1,6 +1,11 @@
-import SplashScreen from 'react-native-splash-screen';
-import { lifecycle } from 'recompact';
+import { compose, lifecycle } from 'recompact';
+import withHideSplashScreen from './withHideSplashScreen';
 
-export default Component => lifecycle({
-  componentDidMount: () => SplashScreen.hide(),
-})(Component);
+export default Component => compose(
+  withHideSplashScreen,
+  lifecycle({
+    componentDidMount() {
+      this.props.onHideSplashScreen();
+    },
+  }),
+)(Component);

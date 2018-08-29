@@ -47,7 +47,6 @@ const AmountRowLeft = styled(Column)`
 `;
 
 const AssetName = styled(TruncatedText).attrs({
-  component: Text,
   size: 'lmedium',
   weight: 'medium',
 })`
@@ -158,7 +157,7 @@ const TransactionConfirmationScreen = ({
           size="small"
           textProps={{ color: 'black', size: 'medium' }}
         >
-          Cancel
+          Reject
         </Button>
       </CancelButtonContainer>
     </Masthead>
