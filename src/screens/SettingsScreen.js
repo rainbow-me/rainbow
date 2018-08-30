@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
+
+import SendFeedback from "../components/SendFeedback";
 import AppVersionStamp from '../components/AppVersionStamp';
 import { Button } from '../components/buttons';
 import { BackButton, Header } from '../components/header';
@@ -40,7 +42,6 @@ const WalletAddressTextContainer = styled(Centered).attrs({ direction: 'column' 
 const SettingsScreen = ({
   address,
   onPressBackButton,
-  onSendFeedback,
   onToggleShowSeedPhrase,
   seedPhrase,
 }) => (
@@ -71,7 +72,7 @@ const SettingsScreen = ({
           />
         </CopyTooltip>
       </WalletAddressTextContainer>
-      <Button onPress={onSendFeedback}>Send Feedback</Button>
+      <SendFeedback />
       <SeedPhraseButton onPress={onToggleShowSeedPhrase}>
         {seedPhrase ? 'Hide' : 'Show'} Seed Phrase
       </SeedPhraseButton>
@@ -92,7 +93,6 @@ const SettingsScreen = ({
 SettingsScreen.propTypes = {
   address: PropTypes.string,
   onPressBackButton: PropTypes.func,
-  onSendFeedback: PropTypes.func,
   onToggleShowSeedPhrase: PropTypes.func,
   seedPhrase: PropTypes.string,
 };
