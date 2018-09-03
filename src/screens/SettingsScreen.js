@@ -6,6 +6,7 @@ import AppVersionStamp from '../components/AppVersionStamp';
 import { Button } from '../components/buttons';
 import { BackButton, Header } from '../components/header';
 import { Centered, Column, Page } from '../components/layout';
+import SendFeedback from "../components/SendFeedback";
 import { Monospace, TruncatedAddress } from '../components/text';
 import CopyTooltip from '../components/CopyTooltip';
 import QRCodeDisplay from '../components/QRCodeDisplay';
@@ -40,7 +41,6 @@ const WalletAddressTextContainer = styled(Centered).attrs({ direction: 'column' 
 const SettingsScreen = ({
   address,
   onPressBackButton,
-  onSendFeedback,
   onToggleShowSeedPhrase,
   seedPhrase,
 }) => (
@@ -71,7 +71,7 @@ const SettingsScreen = ({
           />
         </CopyTooltip>
       </WalletAddressTextContainer>
-      <Button onPress={onSendFeedback}>Send Feedback</Button>
+      <SendFeedback />
       <SeedPhraseButton onPress={onToggleShowSeedPhrase}>
         {seedPhrase ? 'Hide' : 'Show'} Seed Phrase
       </SeedPhraseButton>
@@ -92,7 +92,6 @@ const SettingsScreen = ({
 SettingsScreen.propTypes = {
   address: PropTypes.string,
   onPressBackButton: PropTypes.func,
-  onSendFeedback: PropTypes.func,
   onToggleShowSeedPhrase: PropTypes.func,
   seedPhrase: PropTypes.string,
 };
