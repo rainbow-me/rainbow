@@ -2,7 +2,6 @@ import { debounce } from "lodash";
 import React from "react";
 import { Alert, Clipboard } from "react-native";
 import Mailer from "react-native-mail";
-
 import { Button } from "../components/buttons";
 
 const FeedbackEmailAddress = "contact+alphafeedback@balance.io";
