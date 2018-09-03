@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Svg, { Path } from 'svgs';
+import { Path } from 'svgs';
 import { colors } from '../../../styles';
+import Svg from '../Svg';
 
 const WalletConnectIcon = ({ color, ...props }) => (
   <Svg height="19" width="31" viewBox="0 0 31 19" {...props}>
