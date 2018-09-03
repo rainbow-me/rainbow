@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-
 import AppVersionStamp from '../components/AppVersionStamp';
 import { Button } from '../components/buttons';
 import { BackButton, Header } from '../components/header';

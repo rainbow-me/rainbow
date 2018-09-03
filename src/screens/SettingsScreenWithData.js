@@ -2,7 +2,6 @@ import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Alert, Clipboard } from 'react-native';
-
 import { loadAddress, loadSeedPhrase } from '../model/wallet';
 import SettingsScreen from './SettingsScreen';
 
