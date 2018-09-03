@@ -75,10 +75,15 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
+<<<<<<< HEAD
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
   RNLanguages: e3ae05ef105937645218272429dac0c3f7633451
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
 PODFILE CHECKSUM: 3610f1285ea386f3fd9ae1b8e16c8daf3a0f16f5
+=======
+
+PODFILE CHECKSUM: 8cf8c5c72a0b45742ea93200c56270adf0bc939f
+>>>>>>> c7d1608... add ‘install-pods’ script to package.json
 
 COCOAPODS: 1.5.3
