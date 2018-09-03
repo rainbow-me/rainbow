@@ -5,8 +5,10 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
+    "install-pods": "cd ios && pod install && cd ..",
     "ios": "react-native run-ios --simulator='iPhone X'",
     "lint": "eslint ./src/ --ext .js",
+    "nodeify": "./node_modules/.bin/rn-nodeify --install \"crypto\" --hack",
     "postinstall": "rn-nodeify --install --hack"
   },
   "dependencies": {
