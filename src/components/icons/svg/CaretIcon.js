@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { omitProps } from 'recompact';
-import SvgElement, { Path } from 'svgs';
+import { Path } from 'svgs';
 import styled from 'styled-components/primitives';
 import { calcDirectionToDegrees, colors } from '../../../styles';
 import { directionPropType } from '../../../utils';
+import SvgElement from '../Svg';
 
 const Svg = styled(omitProps('direction')(SvgElement))`
   transform: rotate(${calcDirectionToDegrees}deg);
