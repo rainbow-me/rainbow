@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Svg, { Path } from 'svgs';
+import { Path } from 'svgs';
 import { colors } from '../../../styles';
+import Svg from '../Svg';
 
 const BalanceLogoIcon = ({ color, ...props }) => (
   <Svg height="46" width="43" viewBox="0 0 43 46" {...props}>
