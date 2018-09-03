@@ -3,11 +3,11 @@ import React from 'react';
 import { withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 
-import SendFeedback from "../components/SendFeedback";
 import AppVersionStamp from '../components/AppVersionStamp';
 import { Button } from '../components/buttons';
 import { BackButton, Header } from '../components/header';
 import { Centered, Column, Page } from '../components/layout';
+import SendFeedback from "../components/SendFeedback";
 import { Monospace, TruncatedAddress } from '../components/text';
 import CopyTooltip from '../components/CopyTooltip';
 import QRCodeDisplay from '../components/QRCodeDisplay';
