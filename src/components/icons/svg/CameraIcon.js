@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Svg, { Path } from 'svgs';
+import { Path } from 'svgs';
 import { colors } from '../../../styles';
+import Svg from '../Svg';
 
 const CameraIcon = ({ color, ...props }) => (
   <Svg height="21" width="26" viewBox="0 0 26 21" {...props}>
