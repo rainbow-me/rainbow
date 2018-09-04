@@ -6,6 +6,7 @@ import styled, { css } from 'styled-components/primitives';
 import { colors, padding, position, shadow } from '../../styles';
 import { Centered } from '../layout';
 import { Text } from '../text';
+import { Icon } from '../icons';
 import ButtonPressAnimation from './ButtonPressAnimation';
 
 const BlockButtonBorderRadius = 14;
@@ -17,9 +18,13 @@ const containerStyles = css`
   height: ${BlockButtonHeight};
 `;
 
-const Container = styled(Centered)`
+const Container = styled(ButtonPressAnimation)`
+  border-radius: ${BlockButtonBorderRadius};
+`;
+
+const Content = styled(Centered)`
   ${containerStyles}
-  ${padding(17, 0, 21)}
+  ${padding(15, 15)}
   overflow: hidden;
 `;
 
@@ -49,28 +54,44 @@ const Shadow = styled.View`
   ${shadow.build(0, 3, 5, colors.alpha(colors.purple, 0.2))}
 `;
 
+const LeftIcon = styled(Icon)`
+  ${position.size(BlockButtonHeight)}
+  position: absolute;
+  left: 15px;
+`;
+
+const RightIcon = styled(Icon)`
+  ${position.size(BlockButtonHeight)}
+  position: absolute;
+  right: 15px;
+`;
+
 const BlockButton = ({
   children,
   height,
   onLayout,
   width,
+  leftIconName,
+  rightIconName,
   ...props
 }) => (
-  <ButtonPressAnimation {...props}>
+  <Container {...props}>
     <Shadow>
-      <Container onLayout={onLayout}>
+      <Content onLayout={onLayout}>
         <GradientBackground
           center={[0, (height / 2)]}
           colors={[colors.primaryBlue, '#006FFF']}
           radius={width}
         />
         <InnerBorder />
+        {leftIconName ? <LeftIcon name={leftIconName} /> : null}
         <Label>
           {children}
         </Label>
-      </Container>
+        {rightIconName ? <RightIcon name={rightIconName} /> : null}
+      </Content>
     </Shadow>
-  </ButtonPressAnimation>
+  </Container>
 );
 
 BlockButton.propTypes = {

@@ -11,7 +11,6 @@ const base = {
   blueGreyMediumLight: '#7b7f8a', // '123, 127, 138'
   blueHover: '#6c87f5', // '108, 135, 245'
   bodyBackground: '#2c2f38', // '44, 47, 56'
-  brightRoyalBlue: '#0E76FD',
   brightBlue: '#5983FF', // '89, 131, 255'
   brightGreen: '#12b878', // '18, 184, 120'
   brightGreenHover: '#15c17f', // '21, 193, 127'
@@ -50,6 +49,11 @@ const assetIcon = {
   red: '#c95050', // '201, 80, 80',
 };
 
+const sendScreen = {
+  brightBlue: '#0e76fd', // '16, 118, 253'
+  lightGrey: '#fafafa', // '250, 250, 250'
+};
+
 assetIcon.random = () => {
   const assetIconColors = Object.values(assetIcon);
   return assetIconColors[Math.floor(Math.random() * assetIconColors.length)];
@@ -85,6 +89,7 @@ const colors = {
   alpha: buildRgba,
   assetIcon,
   getTextColorForBackground,
+  sendScreen,
   ...base,
   ...transparent,
   ...vendor,
