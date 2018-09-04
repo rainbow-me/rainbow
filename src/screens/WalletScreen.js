@@ -1,17 +1,14 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
-import lang from 'i18n-js';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
-import { AssetList } from '../components/asset-list';
-import { UniqueTokenRow } from '../components/unique-token';
+import { compose, onlyUpdateForPropTypes, withHandlers, withState } from 'recompact';
+import { AssetList, UniqueTokenRow } from '../components/asset-list';
 import Avatar from '../components/Avatar';
 import { BalanceCoinRow } from '../components/coin-row';
 import { ActivityHeaderButton, Header, HeaderButton } from '../components/header';
 import { FlexItem, Page } from '../components/layout';
 import {
-  areAssetsEqualToInitialAccountAssetsState,
   buildUniqueTokenList,
   groupAssetsByMarketValue,
   sortAssetsByNativeAmount,
@@ -19,25 +16,24 @@ import {
 import {
   withAccountAddress,
   withAccountAssets,
-  withHideSplashScreen,
+  withHideSplashScreenOnMount,
   withRequestsInit,
 } from '../hoc';
 import { position } from '../styles';
+import { FabWrapper, WalletConnectFab, SendFab } from '../components/fab';
 
 const BalanceRenderItem = renderItemProps => <BalanceCoinRow {...renderItemProps} />;
-const UniqueTokenRenderItem = renderItemProps => <UniqueTokenRow {...renderItemProps} />;
 const filterEmptyAssetSections = sections => sections.filter(({ totalItems }) => totalItems);
 
 const WalletScreen = ({
   assets,
   assetsCount,
   assetsTotalUSD,
-  didLoadAssetList,
   fetching,
+  onPressSend,
   onPressProfile,
   onPressWalletConnect,
   onRefreshList,
-  onSectionsLoaded,
   onToggleShowShitcoins,
   showShitcoins,
   uniqueTokens,
@@ -46,42 +42,42 @@ const WalletScreen = ({
     balances: {
       data: sortAssetsByNativeAmount(assets, showShitcoins),
       renderItem: BalanceRenderItem,
-      title: lang.t('account.tab_balances'),
+      title: 'Balances',
       totalItems: get(assetsTotalUSD, 'amount') ? assetsCount : 0,
       totalValue: get(assetsTotalUSD, 'display', ''),
     },
     collectibles: {
       data: buildUniqueTokenList(uniqueTokens),
-      renderItem: UniqueTokenRenderItem,
-      title: lang.t('account.tab_collectibles'),
+      renderItem: UniqueTokenRow,
+      title: 'Collectibles',
       totalItems: uniqueTokens.length,
       totalValue: '',
     },
   };
 
+  let isEmpty = false;
+
+  // for (let i = 0; i < sections.length; i += 1) {
+  //   if (!isEmpty) break;
+  //   isEmpty = !sections[i].totalItems;
+  // }
+
   const assetsByMarketValue = groupAssetsByMarketValue(assets);
+
   const totalShitcoins = get(assetsByMarketValue, 'noValue', []).length;
   if (totalShitcoins) {
-    // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
-    const destructiveButtonIndex = showShitcoins ? 0 : 99;
-
     sections.balances.contextMenuOptions = {
       cancelButtonIndex: 1,
-      destructiveButtonIndex,
+      destructiveButtonIndex: showShitcoins ? 0 : 99, // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
       onPress: onToggleShowShitcoins,
-      options: [
-        `${lang.t(`account.${showShitcoins ? 'hide' : 'show'}`)} ${lang.t('wallet.assets.no_price')}`,
-        lang.t('wallet.action.cancel'),
-      ],
+      options: [`${showShitcoins ? 'Hide' : 'Show'} assets with no price data`, 'Cancel'],
     };
   }
 
-  const filteredSections = filterEmptyAssetSections([sections.balances, sections.collectibles]);
-
-  let isEmpty = !filteredSections.length;
-  if (filteredSections.length === 1) {
-    isEmpty = areAssetsEqualToInitialAccountAssetsState(filteredSections[0].data[0]);
-  }
+  const fabItems = [
+    <SendFab disable={isEmpty} key="sendFab" onPress={onPressSend} />,
+    <WalletConnectFab disable={isEmpty} key="walletConnectFab" onPress={onPressWalletConnect} />,
+  ];
 
   return (
     <Page component={FlexItem} style={position.sizeAsObject('100%')}>
@@ -89,16 +85,20 @@ const WalletScreen = ({
         <HeaderButton onPress={onPressProfile}>
           <Avatar />
         </HeaderButton>
-        {(didLoadAssetList && !isEmpty) && <ActivityHeaderButton />}
+        <ActivityHeaderButton />
       </Header>
-      <AssetList
-        fetchData={onRefreshList}
-        isEmpty={isEmpty}
-        onPressWalletConnect={onPressWalletConnect}
-        onSectionsLoaded={onSectionsLoaded}
-        sections={filteredSections}
-        showShitcoins={showShitcoins}
-      />
+      <FlexItem>
+        <FabWrapper items={fabItems}>
+          <AssetList
+            fetchData={onRefreshList}
+            onPressSend={onPressSend}
+            onPressWalletConnect={onPressWalletConnect}
+            sections={filterEmptyAssetSections([sections.balances, sections.collectibles])}
+            showShitcoins={showShitcoins}
+            isEmpty={isEmpty}
+          />
+        </FabWrapper>
+      </FlexItem>
     </Page>
   );
 };
@@ -110,13 +110,12 @@ WalletScreen.propTypes = {
     amount: PropTypes.string,
     display: PropTypes.string,
   }),
-  didLoadAssetList: PropTypes.bool,
   fetching: PropTypes.bool.isRequired,
   fetchingUniqueTokens: PropTypes.bool.isRequired,
   onPressProfile: PropTypes.func.isRequired,
+  onPressSend: PropTypes.func.isRequired,
   onPressWalletConnect: PropTypes.func.isRequired,
   onRefreshList: PropTypes.func.isRequired,
-  onSectionsLoaded: PropTypes.func,
   onToggleShowShitcoins: PropTypes.func,
   showShitcoins: PropTypes.bool,
   uniqueTokens: PropTypes.array.isRequired,
@@ -125,12 +124,12 @@ WalletScreen.propTypes = {
 export default compose(
   withAccountAddress,
   withAccountAssets,
-  withHideSplashScreen,
+  withHideSplashScreenOnMount,
   withRequestsInit,
   withSafeTimeout,
-  withState('didLoadAssetList', 'toggleLoadAssetList', false),
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
+    onPressSend: ({ navigation }) => () => navigation.navigate('SendScreen'),
     onPressProfile: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
     onPressWalletConnect: ({ navigation }) => () => navigation.navigate('QRScannerScreen'),
     onRefreshList: ({
@@ -145,17 +144,11 @@ export default compose(
       // accountUpdateAccountAddress does not return a promise
       return new Promise(resolve => setSafeTimeout(resolve, 2000));
     },
-    onSectionsLoaded: ({ didLoadAssetList, onHideSplashScreen, toggleLoadAssetList }) => () => {
-      if (!didLoadAssetList) {
-        onHideSplashScreen();
-        toggleLoadAssetList(true);
-      }
-    },
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
       if (index === 0) {
         toggleShowShitcoins(!showShitcoins);
       }
     },
   }),
-  onlyUpdateForKeys(['isScreenActive', ...Object.keys(WalletScreen.propTypes)]),
+  onlyUpdateForPropTypes,
 )(WalletScreen);
