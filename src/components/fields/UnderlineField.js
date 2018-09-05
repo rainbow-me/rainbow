@@ -3,7 +3,9 @@ import React, { Component } from 'react';
 import styled from 'styled-components/primitives';
 import { Animated, TextInput, View } from 'react-native';
 
-import { colors, fonts } from '../../styles';
+import { colors, fonts, padding } from '../../styles';
+import { Button } from '../buttons';
+import { Row } from '../layout';
 
 const Container = styled(View)`
   flex-grow: 1;
@@ -15,6 +17,15 @@ const Field = styled(TextInput)`
   font-family: ${fonts.family.SFMono};
   font-size: ${fonts.size.h2};
   margin-bottom: 10px;
+`;
+
+const FieldButton = styled(Button)`
+  ${padding(0, 10)}
+  background-color: ${colors.sendScreen.brightBlue};
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  margin-top: 4px;
 `;
 
 const Underline = styled(View)`
@@ -34,24 +45,43 @@ const UnderlineAnimated = styled(Animated.View)`
 export default class UnderlineField extends Component {
   static propTypes = {
     autoFocus: PropTypes.bool,
+    buttonText: PropTypes.string,
     keyboardType: PropTypes.oneOf(['default', 'number-pad', 'decimal-pad', 'numeric', 'email-address', 'phone-pad']),
+    format: PropTypes.func,
+    maxLength: PropTypes.number,
     onBlur: PropTypes.func,
     onChange: PropTypes.func,
     onFocus: PropTypes.func,
+    onPressButton: PropTypes.func,
     placeholder: PropTypes.string,
     style: PropTypes.any,
-    value: PropTypes.string,
+    value: PropTypes.any,
   };
 
   static defaultProps = {
+    format() {},
     onBlur() {},
     onChange() {},
     onFocus() {},
+    onPressButton() {},
   };
 
-  state = {
-    underlineAnimation: new Animated.Value(0),
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      underlineAnimation: new Animated.Value(0),
+      value: props.value,
+    };
+  }
+
+  componentDidUpdate(prevProps) {
+    const { value } = this.props;
+
+    if (value !== prevProps.value) {
+      this.setState({ value });
+    }
+  }
 
   onBlur = (...props) => {
     const { onBlur } = this.props;
@@ -60,6 +90,15 @@ export default class UnderlineField extends Component {
     Animated.timing(underlineAnimation, { toValue: 0, duration: 300 }).start();
 
     onBlur(...props);
+  };
+
+  onChange = ({ nativeEvent }) => {
+    const { format, onChange } = this.props;
+    const value = format(nativeEvent.text);
+
+    this.setState({ value }, () => {
+      onChange(value);
+    });
   };
 
   onFocus = (...props) => {
@@ -74,28 +113,34 @@ export default class UnderlineField extends Component {
   render() {
     const {
       autoFocus,
+      buttonText,
       keyboardType,
-      onChange,
+      maxLength,
+      onPressButton,
       placeholder,
       style,
-      value,
     } = this.props;
 
     const {
       underlineAnimation,
+      value,
     } = this.state;
 
     return (
       <Container style={style}>
-        <Field
-          autoFocus={autoFocus}
-          keyboardType={keyboardType}
-          onBlur={this.onBlur}
-          onChange={onChange}
-          onFocus={this.onFocus}
-          placeholder={placeholder}
-          value={value}
-        />
+        <Row>
+          <Field
+            autoFocus={autoFocus}
+            keyboardType={keyboardType}
+            maxLength={maxLength}
+            onBlur={this.onBlur}
+            onChange={this.onChange}
+            onFocus={this.onFocus}
+            placeholder={placeholder}
+            value={String(value || '')}
+          />
+          {buttonText && <FieldButton onPress={onPressButton}>{buttonText}</FieldButton>}
+        </Row>
         <Underline />
         <UnderlineAnimated style={{ width: underlineAnimation.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }) }} />
       </Container>

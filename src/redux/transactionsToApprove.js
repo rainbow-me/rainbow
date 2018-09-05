@@ -47,7 +47,7 @@ export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => 
     return displayAmount;
   } else {
     return _nativeAmount;
-  } 
+  }
 };
 
 const getTransactionDisplayDetails = (transactionData, assets, prices, nativeCurrency) => {
