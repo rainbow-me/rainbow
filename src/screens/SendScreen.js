@@ -1,6 +1,7 @@
 import _ from 'underscore';
+import { get } from 'lodash';
 import React, { Component } from 'react';
-import { Clipboard, Image, KeyboardAvoidingView, Text, TextInput, View } from 'react-native';
+import { Animated, Clipboard, Image, KeyboardAvoidingView, Text, TextInput, View } from 'react-native';
 import styled from 'styled-components/primitives';
 import { compose } from 'recompact';
 import { connect } from 'react-redux';
@@ -9,12 +10,13 @@ import { isValidAddress } from 'balance-common';
 import { abbreviations } from '../utils';
 import { AssetList, UniqueTokenRow } from '../components/asset-list';
 import { Button, BlockButton } from '../components/buttons';
-import { colors, fonts, padding, shadow } from '../styles';
+import { colors, fonts, padding } from '../styles';
 import { Monospace } from '../components/text';
-import { Column, Page, Flex, FlexItem, Row } from '../components/layout';
+import { Column, Page, Flex, FlexItem, FlyInView, Row } from '../components/layout';
 import { SendCoinRow } from '../components/coin-row';
 import { UnderlineField } from '../components/fields';
 import { PillLabel } from '../components/labels';
+import { formatUSD } from '../utils/formatters';
 
 const Container = styled(Page)`
   background-color: ${colors.white};
@@ -126,7 +128,21 @@ class SendScreen extends Component {
         isValid: false,
       },
       selectedAsset: {},
+      selectedAssetAnimation: new Animated.Value(1),
+      selectedAssetPageY: 0,
+      transaction: {},
     };
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const {
+      selectedAsset,
+      selectedAssetAnimation,
+    } = this.state;
+
+    if (_.isEmpty(prevState.selectedAsset) && !_.isEmpty(selectedAsset)) {
+      Animated.timing(selectedAssetAnimation, { toValue: 0, duration: 300 }).start();
+    }
   }
 
   onChangeAddressInput = ({ nativeEvent }) => {
@@ -161,8 +177,8 @@ class SendScreen extends Component {
   };
 
   onPressAssetHandler = (selectedAsset) => {
-    return () => {
-      this.setState({ selectedAsset });
+    return ({ nativeEvent }) => {
+      this.setState({ selectedAsset, selectedAssetPageY: nativeEvent.pageY });
     };
   };
 
@@ -170,7 +186,30 @@ class SendScreen extends Component {
 
   };
 
-  renderAssets() {
+  onPressMax = () => {
+    const { transaction } = this.props;
+    const { selectedAsset } = this.state;
+
+    const balanceAmount = Number(get(selectedAsset, 'native.balance.amount'));
+    const fixedBalanceAmount = (balanceAmount / (10 ** 18)).toFixed(2);
+    const amount = String(fixedBalanceAmount);
+
+    this.setState({ transaction: { ...transaction, usd: formatUSD(amount) } });
+  };
+
+  onChangeAsset = (value) => {
+    const { transaction } = this.props;
+
+    this.setState({ transaction: { ...transaction, asset: value } });
+  };
+
+  onChangeUSD = (value) => {
+    const { transaction } = this.props;
+
+    this.setState({ transaction: { ...transaction, usd: value } });
+  };
+
+  renderAssetList() {
     const { accountInfo, uniqueTokens } = this.props;
     const { selectedAsset } = this.state;
 
@@ -192,8 +231,18 @@ class SendScreen extends Component {
     };
 
     return (
+      <FlyInView>
+        <AssetList sections={[sections.balances]} hideHeader hideFooter />
+      </FlyInView>
+    );
+  }
+
+  renderAssets() {
+    const { selectedAsset } = this.state;
+
+    return (
       <Flex>
-        {!_.isEmpty(selectedAsset) ? null : <AssetList sections={[sections.balances]} hideHeader hideFooter />}
+        {!_.isEmpty(selectedAsset) ? null : this.renderAssetList()}
         {!_.isEmpty(selectedAsset) ? this.renderTransaction() : null}
       </Flex>
     );
@@ -214,18 +263,38 @@ class SendScreen extends Component {
   }
 
   renderTransaction() {
-    const { selectedAsset } = this.state;
+    const { selectedAsset, selectedAssetAnimation, selectedAssetPageY, transaction } = this.state;
 
     return (
-      <Column style={{ width: '100%', height: '100%', flexGrow: 1 }}>
+      <Column style={{
+        width: '100%',
+        height: '100%',
+        flexGrow: 1,
+        // top: selectedAssetAnimation.interpolate({ inputRange: [0, 1], outputRange: [0, selectedAssetPageY] }),
+      }}>
         <SendCoinRow item={selectedAsset} onPress={this.onPressAssetHandler({})} />
         <TransactionContainer>
           <Row>
-            <NumberInput autoFocus placeholder="0" />
+            <NumberInput
+              autoFocus
+              format={(value) => Number(value)}
+              maxLength={8}
+              placeholder="0"
+              onChangeAsset={this.onChangeAsset}
+              value={transaction.asset}
+            />
             <NumberInputLabel>{selectedAsset.symbol}</NumberInputLabel>
           </Row>
           <Row>
-            <NumberInput placeholder="0.00" />
+            <NumberInput
+              buttonText="Max"
+              format={formatUSD}
+              maxLength={8}
+              onChange={this.onChangeUSD}
+              onPressButton={this.onPressMax}
+              placeholder="0.00"
+              value={transaction.usd}
+            />
             <NumberInputLabel>USD</NumberInputLabel>
           </Row>
           <SendButton leftIconName="face" onLongPress={this.onPressSend}>Hold To Send</SendButton>
