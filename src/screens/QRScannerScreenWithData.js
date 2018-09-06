@@ -32,11 +32,11 @@ class QRScannerScreenWithData extends Component {
 
   onSuccess = async (event) => {
     const { accountAddress, navigation } = this.props;
-    const data = JSON.parse(event.data);
+    const data = event.data;
 
-    if (data.domain && data.sessionId && data.sharedKey && data.dappName) {
+    if (data) {
       try {
-        await walletConnectInit(accountAddress, data.domain, data.sessionId, data.sharedKey, data.dappName);
+        await walletConnectInit(accountAddress, data);
         navigation.navigate('WalletScreen');
       } catch (error) {
         AlertIOS.alert(lang.t('wallet.wallet_connect.error'), error);

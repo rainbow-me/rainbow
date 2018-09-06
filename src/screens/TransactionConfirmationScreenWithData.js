@@ -6,12 +6,10 @@ import lang from 'i18n-js';
 import { connect } from 'react-redux';
 import { sendTransaction } from '../model/wallet';
 import { walletConnectSendTransactionHash } from '../model/walletconnect';
-import { getTransactionToApprove } from '../reducers/transactionsToApprove';
 import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
 class TransactionConfirmationScreenWithData extends Component {
   static propTypes = {
-    getTransactionToApprove: PropTypes.func,
     navigation: PropTypes.any,
   }
 
@@ -21,7 +19,6 @@ class TransactionConfirmationScreenWithData extends Component {
 
   componentDidMount() {
     StatusBar.setBarStyle('light-content', true);
-    this.showNewTransaction();
     Vibration.vibrate();
   }
 
@@ -31,7 +28,7 @@ class TransactionConfirmationScreenWithData extends Component {
       const transactionReceipt = await sendTransaction(transactionDetails.transactionPayload, lang.t('wallet.transaction.confirm'));
       if (transactionReceipt && transactionReceipt.hash) {
         try {
-          await walletConnectSendTransactionHash(transactionDetails.transactionId, true, transactionReceipt.hash);
+          await walletConnectSendTransactionHash(transactionDetails.sessionId, transactionDetails.transactionId, true, transactionReceipt.hash);
           // TODO: update that this transaction has been confirmed and reset txn details
           this.closeTransactionScreen();
         } catch (error) {
@@ -56,7 +53,7 @@ class TransactionConfirmationScreenWithData extends Component {
   handleCancelTransaction = async () => {
     try {
       const { transactionDetails } = this.state;
-      await walletConnectSendTransactionHash(transactionDetails.transactionId, false, null);
+      await walletConnectSendTransactionHash(transactionDetails.sessionId, transactionDetails.transactionId, false, null);
       this.closeTransactionScreen();
     } catch (error) {
       this.closeTransactionScreen();
@@ -69,11 +66,6 @@ class TransactionConfirmationScreenWithData extends Component {
     this.props.navigation.goBack();
   }
 
-  showNewTransaction = () => {
-    const transactionDetails = this.props.getTransactionToApprove();
-    this.setState({ transactionDetails });
-  }
-
   render = () => {
     const { transactionDetails } = this.state;
 
@@ -82,6 +74,7 @@ class TransactionConfirmationScreenWithData extends Component {
         asset={{
           address: get(transactionDetails, 'transactionDisplayDetails.to'),
           amount: `${get(transactionDetails, 'transactionDisplayDetails.value', '0.00')}`,
+          dappName: `${get(transactionDetails, 'dappName', '')}`,
           name: `${get(transactionDetails, 'transactionDisplayDetails.name', 'No data')}`,
           nativeAmount: get(transactionDetails, 'transactionDisplayDetails.nativeAmount'),
           symbol: `${get(transactionDetails, 'transactionDisplayDetails.symbol', 'N/A')}`,
@@ -95,5 +88,5 @@ class TransactionConfirmationScreenWithData extends Component {
 
 export default connect(
   ({ transactionsToApprove: { transactionsToApprove } }) => ({ transactionsToApprove }),
-  { getTransactionToApprove },
+  null,
 )(TransactionConfirmationScreenWithData);
