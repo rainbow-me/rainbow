@@ -6,6 +6,7 @@ import {
   formatInputDecimals,
   fromWei
 } from 'balance-common';
+import { mapValues } from 'lodash';
 
 // -- Constants --------------------------------------- //
 const WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE = 'wallet/WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE';
@@ -70,28 +71,36 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
   }
 };
 
-export const addTransactionToApprove = (transactionId, transactionPayload) => (dispatch, getState) => {
+export const addTransactionToApprove = (sessionId, transactionId, transactionPayload, dappName) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
   const { accountInfo, prices, nativeCurrency } = getState().account;
   const transactionDisplayDetails = getTransactionDisplayDetails(transactionPayload, accountInfo.assets, prices, nativeCurrency);
-  const transaction = { transactionId, transactionPayload, transactionDisplayDetails };
-  const updatedTransactions = transactionsToApprove.concat(transaction);
+  const transaction = { sessionId, transactionId, transactionPayload, transactionDisplayDetails, dappName };
+  const updatedTransactions = { ...transactionsToApprove, transactionId: transaction };
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
-};
-
-export const getTransactionToApprove = () => (dispatch, getState) => {
-  const { transactionsToApprove } = getState().transactionsToApprove;
-  const transaction = transactionsToApprove[0] || null;
-  const remainingTransactions = transactionsToApprove.slice(1,);
-  dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: remainingTransactions });
   return transaction;
 };
 
+export const addTransactionsToApprove = (transactions) => (dispatch, getState) => {
+  const { transactionsToApprove } = getState().transactionsToApprove;
+  const { accountInfo, prices, nativeCurrency } = getState().account;
+  const transactionsWithDisplayDetails = mapValues(transactions, (transactionDetails) => {
+    const transactionDisplayDetails = getTransactionDisplayDetails(transactionPayload, accountInfo.assets, prices, nativeCurrency);
+    return { ...transactionDetails, transactionDisplayDetails };
+  });
+  const updatedTransactions = { ...transactionsToApprove, ...transactionsWithDisplayDetails };
+  dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
+};
+
+export const transactionIfExists = (transactionId) => {
+  const { transactionsToApprove } = getState().transactionsToApprove;
+  return (transactionsToApprove && transactionsToApprove[transactionId]);
+};
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   fetching: false,
-  transactionsToApprove: [],
+  transactionsToApprove: {},
 };
 
 export default (state = INITIAL_STATE, action) => {
