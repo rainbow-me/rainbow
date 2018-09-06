@@ -135,6 +135,7 @@ const TransactionConfirmationScreen = ({
   asset: {
     address,
     amount,
+    dappName,
     name,
     nativeAmount,
     symbol,
@@ -148,7 +149,7 @@ const TransactionConfirmationScreen = ({
       <VenderLogoContainer>
         <VendorLogo source={BalanceManagerLogo} />
       </VenderLogoContainer>
-      <VendorName>Balance Manager</VendorName>
+      <VendorName>{dappName}</VendorName>
       <TransactionType>Transaction Request</TransactionType>
       <CancelButtonContainer>
         <Button
