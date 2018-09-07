@@ -15,6 +15,7 @@
     "@babel/highlight" "7.0.0-beta.47"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.0.0-beta.35":
 =======
 "@babel/code-frame@7.0.0-beta.51":
@@ -25,6 +26,9 @@
 
 "@babel/code-frame@^7.0.0-beta.35":
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+"@babel/code-frame@^7.0.0", "@babel/code-frame@^7.0.0-beta.35":
+>>>>>>> 697e255... update yarn.lock
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.0.0.tgz#06e2ab19bdb535385559aabb5ba59729482800f8"
   dependencies:
@@ -51,6 +55,7 @@
     source-map "^0.5.0"
 
 "@babel/core@^7.0.0":
+<<<<<<< HEAD
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.1.0.tgz#08958f1371179f62df6966d8a614003d11faeb04"
   dependencies:
@@ -60,6 +65,17 @@
     "@babel/parser" "^7.1.0"
     "@babel/template" "^7.1.0"
     "@babel/traverse" "^7.1.0"
+=======
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.0.0.tgz#0cb0c0fd2e78a0a2bec97698f549ae9ce0b99515"
+  dependencies:
+    "@babel/code-frame" "^7.0.0"
+    "@babel/generator" "^7.0.0"
+    "@babel/helpers" "^7.0.0"
+    "@babel/parser" "^7.0.0"
+    "@babel/template" "^7.0.0"
+    "@babel/traverse" "^7.0.0"
+>>>>>>> 697e255... update yarn.lock
     "@babel/types" "^7.0.0"
     convert-source-map "^1.1.0"
     debug "^3.1.0"
@@ -90,6 +106,7 @@
     trim-right "^1.0.1"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@babel/generator@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.0.0.tgz#1efd58bffa951dc846449e58ce3a1d7f02d393aa"
@@ -101,11 +118,20 @@
 "@babel/generator@7.0.0-beta.51":
   version "7.0.0-beta.51"
   resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.0.0-beta.51.tgz#6c7575ffde761d07485e04baedc0392c6d9e30f6"
+=======
+"@babel/generator@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.0.0.tgz#1efd58bffa951dc846449e58ce3a1d7f02d393aa"
+>>>>>>> 697e255... update yarn.lock
   dependencies:
-    "@babel/types" "7.0.0-beta.51"
+    "@babel/types" "^7.0.0"
     jsesc "^2.5.1"
+<<<<<<< HEAD
     lodash "^4.17.5"
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+    lodash "^4.17.10"
+>>>>>>> 697e255... update yarn.lock
     source-map "^0.5.0"
     trim-right "^1.0.1"
 
@@ -169,6 +195,7 @@
     "@babel/types" "7.0.0-beta.47"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@babel/helper-function-name@^7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@babel/helper-function-name/-/helper-function-name-7.1.0.tgz#a0ceb01685f73355d4360c1247f582bfafc8ff53"
@@ -185,6 +212,15 @@
     "@babel/template" "7.0.0-beta.51"
     "@babel/types" "7.0.0-beta.51"
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+"@babel/helper-function-name@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@babel/helper-function-name/-/helper-function-name-7.0.0.tgz#a68cc8d04420ccc663dd258f9cc41b8261efa2d4"
+  dependencies:
+    "@babel/helper-get-function-arity" "^7.0.0"
+    "@babel/template" "^7.0.0"
+    "@babel/types" "^7.0.0"
+>>>>>>> 697e255... update yarn.lock
 
 "@babel/helper-get-function-arity@7.0.0-beta.44":
   version "7.0.0-beta.44"
@@ -199,6 +235,7 @@
     "@babel/types" "7.0.0-beta.47"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@babel/helper-get-function-arity@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@babel/helper-get-function-arity/-/helper-get-function-arity-7.0.0.tgz#83572d4320e2a4657263734113c42868b64e49c3"
@@ -211,6 +248,13 @@
   dependencies:
     "@babel/types" "7.0.0-beta.51"
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+"@babel/helper-get-function-arity@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@babel/helper-get-function-arity/-/helper-get-function-arity-7.0.0.tgz#83572d4320e2a4657263734113c42868b64e49c3"
+  dependencies:
+    "@babel/types" "^7.0.0"
+>>>>>>> 697e255... update yarn.lock
 
 "@babel/helper-hoist-variables@7.0.0-beta.47":
   version "7.0.0-beta.47"
@@ -298,6 +342,7 @@
     "@babel/types" "7.0.0-beta.47"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@babel/helper-split-export-declaration@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@babel/helper-split-export-declaration/-/helper-split-export-declaration-7.0.0.tgz#3aae285c0311c2ab095d997b8c9a94cad547d813"
@@ -310,6 +355,13 @@
   dependencies:
     "@babel/types" "7.0.0-beta.51"
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+"@babel/helper-split-export-declaration@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@babel/helper-split-export-declaration/-/helper-split-export-declaration-7.0.0.tgz#3aae285c0311c2ab095d997b8c9a94cad547d813"
+  dependencies:
+    "@babel/types" "^7.0.0"
+>>>>>>> 697e255... update yarn.lock
 
 "@babel/helper-wrap-function@7.0.0-beta.47":
   version "7.0.0-beta.47"
@@ -328,12 +380,21 @@
     "@babel/traverse" "7.0.0-beta.47"
     "@babel/types" "7.0.0-beta.47"
 
+<<<<<<< HEAD
 "@babel/helpers@^7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@babel/helpers/-/helpers-7.1.0.tgz#429bf0f0020be56a4242883432084e3d70a8a141"
   dependencies:
     "@babel/template" "^7.1.0"
     "@babel/traverse" "^7.1.0"
+=======
+"@babel/helpers@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@babel/helpers/-/helpers-7.0.0.tgz#7213388341eeb07417f44710fd7e1d00acfa6ac0"
+  dependencies:
+    "@babel/template" "^7.0.0"
+    "@babel/traverse" "^7.0.0"
+>>>>>>> 697e255... update yarn.lock
     "@babel/types" "^7.0.0"
 
 "@babel/highlight@7.0.0-beta.44":
@@ -353,6 +414,7 @@
     js-tokens "^3.0.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 "@babel/highlight@7.0.0-beta.51":
   version "7.0.0-beta.51"
@@ -363,6 +425,8 @@
     js-tokens "^3.0.0"
 
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+>>>>>>> 697e255... update yarn.lock
 "@babel/highlight@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@babel/highlight/-/highlight-7.0.0.tgz#f710c38c8d458e6dd9a201afb637fcb781ce99e4"
@@ -372,6 +436,7 @@
     js-tokens "^4.0.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@babel/parser@^7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.1.0.tgz#a7cd42cb3c12aec52e24375189a47b39759b783e"
@@ -380,6 +445,11 @@
   version "7.0.0-beta.51"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.0.0-beta.51.tgz#27cec2df409df60af58270ed8f6aa55409ea86f6"
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+"@babel/parser@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.0.0.tgz#697655183394facffb063437ddf52c0277698775"
+>>>>>>> 697e255... update yarn.lock
 
 "@babel/plugin-external-helpers@7.0.0-beta.47":
   version "7.0.0-beta.47"
@@ -651,6 +721,7 @@
     lodash "^4.17.5"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@babel/template@^7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.1.0.tgz#58cc9572e1bfe24fe1537fdf99d839d53e517e22"
@@ -668,6 +739,15 @@
     "@babel/types" "7.0.0-beta.51"
     lodash "^4.17.5"
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+"@babel/template@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.0.0.tgz#c2bc9870405959c89a9c814376a2ecb247838c80"
+  dependencies:
+    "@babel/code-frame" "^7.0.0"
+    "@babel/parser" "^7.0.0"
+    "@babel/types" "^7.0.0"
+>>>>>>> 697e255... update yarn.lock
 
 "@babel/traverse@7.0.0-beta.44":
   version "7.0.0-beta.44"
@@ -700,6 +780,7 @@
     lodash "^4.17.5"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@babel/traverse@^7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.1.0.tgz#503ec6669387efd182c3888c4eec07bcc45d91b2"
@@ -729,6 +810,21 @@
     invariant "^2.2.0"
     lodash "^4.17.5"
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+"@babel/traverse@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.0.0.tgz#b1fe9b6567fdf3ab542cfad6f3b31f854d799a61"
+  dependencies:
+    "@babel/code-frame" "^7.0.0"
+    "@babel/generator" "^7.0.0"
+    "@babel/helper-function-name" "^7.0.0"
+    "@babel/helper-split-export-declaration" "^7.0.0"
+    "@babel/parser" "^7.0.0"
+    "@babel/types" "^7.0.0"
+    debug "^3.1.0"
+    globals "^11.1.0"
+    lodash "^4.17.10"
+>>>>>>> 697e255... update yarn.lock
 
 "@babel/types@7.0.0-beta.44":
   version "7.0.0-beta.44"
@@ -747,6 +843,7 @@
     to-fast-properties "^2.0.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@babel/types@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.0.0.tgz#6e191793d3c854d19c6749989e3bc55f0e962118"
@@ -761,6 +858,14 @@
     esutils "^2.0.2"
     lodash "^4.17.5"
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+"@babel/types@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.0.0.tgz#6e191793d3c854d19c6749989e3bc55f0e962118"
+  dependencies:
+    esutils "^2.0.2"
+    lodash "^4.17.10"
+>>>>>>> 697e255... update yarn.lock
     to-fast-properties "^2.0.0"
 
 "@hocs/omit-props@^0.4.0":
@@ -777,15 +882,26 @@
     react-display-name "^0.2.4"
 
 "@svgr/cli@^2.0.0":
+<<<<<<< HEAD
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/@svgr/cli/-/cli-2.4.1.tgz#2017b9b76b55dec31a02bc15395689789abf2504"
+=======
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@svgr/cli/-/cli-2.3.0.tgz#a4d0120f26291278fad8baa79ae2a81061d9da5b"
+>>>>>>> 697e255... update yarn.lock
   dependencies:
     "@svgr/core" "^2.4.1"
     camelcase "^5.0.0"
     chalk "^2.4.1"
+<<<<<<< HEAD
     commander "^2.18.0"
     dashify "^1.0.0"
     glob "^7.1.3"
+=======
+    commander "^2.17.1"
+    glob "^7.1.3"
+    lodash "^4.17.10"
+>>>>>>> 697e255... update yarn.lock
     output-file-sync "^2.0.1"
     recursive-readdir "^2.2.2"
 
@@ -809,8 +925,13 @@
     inherits "~2.0.1"
 
 "@types/node@^10.3.2":
+<<<<<<< HEAD
   version "10.10.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.10.1.tgz#d5c96ca246a418404914d180b7fdd625ad18eca6"
+=======
+  version "10.9.4"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.9.4.tgz#0f4cb2dc7c1de6096055357f70179043c33e9897"
+>>>>>>> 697e255... update yarn.lock
 
 "@yarnpkg/lockfile@^1.0.0":
   version "1.0.2"
@@ -898,6 +1019,7 @@ ajv@^5.2.3, ajv@^5.3.0:
     json-schema-traverse "^0.3.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 align-text@^0.1.1, align-text@^0.1.3:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/align-text/-/align-text-0.1.4.tgz#0cd90a561093f35d0a99256c22b7069433fad117"
@@ -910,6 +1032,8 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
 =======
+=======
+>>>>>>> 697e255... update yarn.lock
 ajv@^6.5.1:
   version "6.5.3"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.5.3.tgz#71a569d189ecf4f4f321224fecb166f071dd90f9"
@@ -918,7 +1042,10 @@ ajv@^6.5.1:
     fast-json-stable-stringify "^2.0.0"
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
+<<<<<<< HEAD
 >>>>>>> 010e43d... update yarn.lock
+=======
+>>>>>>> 697e255... update yarn.lock
 
 animated@^0.2.2:
   version "0.2.2"
@@ -2256,6 +2383,7 @@ caniuse-lite@^1.0.30000844:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.0.30000886"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000886.tgz#2127186c4f57da10d3ba26fc3e87dce4a5ddd3ae"
 =======
@@ -2270,6 +2398,10 @@ caniuse-lite@^1.0.30000844:
   version "1.0.30000880"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000880.tgz#b7b6ceaf739e17d0dda0d89426cba4be16d07bb0"
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+  version "1.0.30000885"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000885.tgz#e889e9f8e7e50e769f2a49634c932b8aee622984"
+>>>>>>> 697e255... update yarn.lock
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -2458,6 +2590,7 @@ combined-stream@1.0.6:
   dependencies:
     delayed-stream "~1.0.0"
 
+<<<<<<< HEAD
 combined-stream@~1.0.6:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/combined-stream/-/combined-stream-1.0.7.tgz#2d1d24317afb8abe95d6d2c0b07b57813539d828"
@@ -2465,6 +2598,9 @@ combined-stream@~1.0.6:
     delayed-stream "~1.0.0"
 
 commander@^2.18.0, commander@^2.8.1, commander@^2.9.0:
+=======
+commander@^2.17.1, commander@^2.8.1, commander@^2.9.0:
+>>>>>>> 697e255... update yarn.lock
   version "2.18.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.18.0.tgz#2bf063ddee7c7891176981a2cc798e5754bc6970"
 
@@ -2487,6 +2623,7 @@ commondir@^1.0.1:
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 compare-versions@^3.1.0:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/compare-versions/-/compare-versions-3.3.1.tgz#1ede3172b713c15f7c7beb98cb74d2d82576dad3"
@@ -2497,6 +2634,8 @@ component-emitter@^1.2.0, component-emitter@^1.2.1:
 component-emitter@^1.2.1:
 >>>>>>> 010e43d... update yarn.lock
 =======
+=======
+>>>>>>> 697e255... update yarn.lock
 component-emitter@^1.2.1:
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
   version "1.2.1"
@@ -2654,6 +2793,7 @@ create-react-class@^15.6.2, create-react-class@^15.6.3:
     object-assign "^4.1.1"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 create-react-context@0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/create-react-context/-/create-react-context-0.2.2.tgz#9836542f9aaa22868cd7d4a6f82667df38019dca"
@@ -2662,6 +2802,11 @@ create-react-context@^0.2.1:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/create-react-context/-/create-react-context-0.2.3.tgz#9ec140a6914a22ef04b8b09b7771de89567cb6f3"
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+create-react-context@0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/create-react-context/-/create-react-context-0.2.2.tgz#9836542f9aaa22868cd7d4a6f82667df38019dca"
+>>>>>>> 697e255... update yarn.lock
   dependencies:
     fbjs "^0.8.0"
     gud "^1.0.0"
@@ -2821,12 +2966,15 @@ debug@^3.1.0:
   dependencies:
     ms "2.0.0"
 
+<<<<<<< HEAD
 debug@^3.1.0:
   version "3.2.5"
   resolved "https://registry.yarnpkg.com/debug/-/debug-3.2.5.tgz#c2418fbfd7a29f4d4f70ff4cea604d4b64c46407"
   dependencies:
     ms "^2.1.1"
 
+=======
+>>>>>>> 697e255... update yarn.lock
 decamelize@^1.1.1:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
@@ -3088,6 +3236,7 @@ ee-first@1.1.1:
 electron-to-chromium@^1.3.47:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.3.63"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.63.tgz#6485f5f4f3375358aa8fa23c2029ada208483b8d"
 =======
@@ -3098,6 +3247,10 @@ electron-to-chromium@^1.3.47:
   version "1.3.70"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.70.tgz#ded377256d92d81b4257d36c65aa890274afcfd2"
 >>>>>>> 5f9e5f9... temp changes for wc commonstorage changes
+=======
+  version "1.3.63"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.63.tgz#6485f5f4f3375358aa8fa23c2029ada208483b8d"
+>>>>>>> 697e255... update yarn.lock
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -3394,10 +3547,13 @@ eth-lib@0.2.7:
     elliptic "^6.4.0"
     xhr-request-promise "^0.1.2"
 
+<<<<<<< HEAD
 eth-parse-uri@^0.6.4:
   version "0.6.7"
   resolved "https://registry.yarnpkg.com/eth-parse-uri/-/eth-parse-uri-0.6.7.tgz#3deb4becdb4dc5a634c4da4f979676d76cb24b76"
 
+=======
+>>>>>>> 697e255... update yarn.lock
 ethers@4.0.0-beta.1:
   version "4.0.0-beta.1"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.0-beta.1.tgz#0648268b83e0e91a961b1af971c662cdf8cbab6d"
@@ -3991,6 +4147,7 @@ glob-parent@^2.0.0:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 glob@^5.0.15:
   version "5.0.15"
   resolved "https://registry.yarnpkg.com/glob/-/glob-5.0.15.tgz#1bc936b9e02f4a603fcc222ecf7633d30b8b93b1"
@@ -4008,6 +4165,9 @@ glob@^7.0.3, glob@^7.0.5, glob@^7.1.1, glob@^7.1.2, glob@^7.1.3:
 =======
 glob@^7.0.3, glob@^7.0.5, glob@^7.1.1, glob@^7.1.2:
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+glob@^7.0.3, glob@^7.0.5, glob@^7.1.1, glob@^7.1.2, glob@^7.1.3:
+>>>>>>> 697e255... update yarn.lock
   version "7.1.3"
   resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.3.tgz#3960832d3f1574108342dafd3a67b332c0969df1"
   dependencies:
@@ -4117,6 +4277,7 @@ h2x-types@^1.1.0:
   resolved "https://registry.yarnpkg.com/h2x-types/-/h2x-types-1.1.0.tgz#ec0d5e3674e2207269f32976ac9c82aaff4818e6"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 handlebars@^4.0.3:
   version "4.0.12"
   resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.0.12.tgz#2c15c8a96d46da5e266700518ba8cb8d919d5bc5"
@@ -4125,6 +4286,11 @@ handlebars@^4.0.11:
   version "4.0.11"
   resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.0.11.tgz#630a35dfe0294bc281edae6ffc5d329fc7982dcc"
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+handlebars@^4.0.3:
+  version "4.0.12"
+  resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.0.12.tgz#2c15c8a96d46da5e266700518ba8cb8d919d5bc5"
+>>>>>>> 697e255... update yarn.lock
   dependencies:
     async "^2.5.0"
     optimist "^0.6.1"
@@ -4307,8 +4473,13 @@ i18n-js@^3.0.11:
   resolved "https://registry.yarnpkg.com/i18n-js/-/i18n-js-3.0.11.tgz#f9e96bdb641c5b9d6be12759d7c422089987ef02"
 
 i18next@^11.3.2:
+<<<<<<< HEAD
   version "11.9.0"
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-11.9.0.tgz#c30c0a5e0a857124923a8dd1ce8f1df603e30c70"
+=======
+  version "11.7.0"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-11.7.0.tgz#caf2f3d512ca5b2f556f065f698f33d44ca311d7"
+>>>>>>> 697e255... update yarn.lock
 
 iconv-lite@0.4.19:
   version "0.4.19"
@@ -4340,7 +4511,10 @@ idna-uts46-hx@^2.3.1:
   dependencies:
     punycode "2.1.0"
 
+<<<<<<< HEAD
 >>>>>>> 010e43d... update yarn.lock
+=======
+>>>>>>> 697e255... update yarn.lock
 ieee754@^1.1.4:
   version "1.1.12"
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.12.tgz#50bf24e5b9c8bb98af4964c941cdb0918da7b60b"
@@ -4685,6 +4859,10 @@ is-typedarray@^1.0.0, is-typedarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/is-typedarray/-/is-typedarray-1.0.0.tgz#e479c80858df0c1b11ddda6940f96011fcda4a9a"
 
+is-utf8@^0.2.0:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/is-utf8/-/is-utf8-0.2.1.tgz#4b0da1442104d1b336340e80797e865cf39f7d72"
+
 is-windows@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/is-windows/-/is-windows-1.0.2.tgz#d1850eb9791ecd18e6182ce12a30f396634bb19d"
@@ -4732,6 +4910,7 @@ isstream@~0.1.2:
 
 istanbul-api@^1.1.14:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.3.7"
   resolved "https://registry.yarnpkg.com/istanbul-api/-/istanbul-api-1.3.7.tgz#a86c770d2b03e11e3f778cd7aedd82d2722092aa"
 =======
@@ -4742,12 +4921,20 @@ istanbul-api@^1.1.14:
     async "^2.1.4"
     fileset "^2.0.2"
 <<<<<<< HEAD
+=======
+  version "1.3.7"
+  resolved "https://registry.yarnpkg.com/istanbul-api/-/istanbul-api-1.3.7.tgz#a86c770d2b03e11e3f778cd7aedd82d2722092aa"
+  dependencies:
+    async "^2.1.4"
+    fileset "^2.0.2"
+>>>>>>> 697e255... update yarn.lock
     istanbul-lib-coverage "^1.2.1"
     istanbul-lib-hook "^1.2.2"
     istanbul-lib-instrument "^1.10.2"
     istanbul-lib-report "^1.1.5"
     istanbul-lib-source-maps "^1.2.6"
     istanbul-reports "^1.5.1"
+<<<<<<< HEAD
 =======
     istanbul-lib-coverage "^1.2.0"
     istanbul-lib-hook "^1.2.0"
@@ -4756,10 +4943,13 @@ istanbul-api@^1.1.14:
     istanbul-lib-source-maps "^1.2.5"
     istanbul-reports "^1.4.1"
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+>>>>>>> 697e255... update yarn.lock
     js-yaml "^3.7.0"
     mkdirp "^0.5.1"
     once "^1.4.0"
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 istanbul-lib-coverage@^1.1.1, istanbul-lib-coverage@^1.2.1:
 =======
@@ -4773,6 +4963,9 @@ istanbul-lib-coverage@^2.0.1:
 
 istanbul-lib-hook@^1.2.0:
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+istanbul-lib-coverage@^1.1.1, istanbul-lib-coverage@^1.2.1:
+>>>>>>> 697e255... update yarn.lock
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/istanbul-lib-coverage/-/istanbul-lib-coverage-1.2.1.tgz#ccf7edcd0a0bb9b8f729feeb0930470f9af664f0"
 
@@ -4795,6 +4988,7 @@ istanbul-lib-instrument@^1.10.1, istanbul-lib-instrument@^1.10.2, istanbul-lib-i
     semver "^5.3.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 istanbul-lib-report@^1.1.5:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/istanbul-lib-report/-/istanbul-lib-report-1.1.5.tgz#f2a657fc6282f96170aaf281eb30a458f7f4170c"
@@ -4815,12 +5009,18 @@ istanbul-lib-report@^1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/istanbul-lib-report/-/istanbul-lib-report-1.1.4.tgz#e886cdf505c4ebbd8e099e4396a90d0a28e2acb5"
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+istanbul-lib-report@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/istanbul-lib-report/-/istanbul-lib-report-1.1.5.tgz#f2a657fc6282f96170aaf281eb30a458f7f4170c"
+>>>>>>> 697e255... update yarn.lock
   dependencies:
     istanbul-lib-coverage "^1.2.1"
     mkdirp "^0.5.1"
     path-parse "^1.0.5"
     supports-color "^3.1.2"
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 istanbul-lib-source-maps@^1.2.1, istanbul-lib-source-maps@^1.2.6:
   version "1.2.6"
@@ -4836,10 +5036,19 @@ istanbul-lib-source-maps@^1.2.1, istanbul-lib-source-maps@^1.2.5:
     debug "^3.1.0"
     istanbul-lib-coverage "^1.2.0"
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+istanbul-lib-source-maps@^1.2.1, istanbul-lib-source-maps@^1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/istanbul-lib-source-maps/-/istanbul-lib-source-maps-1.2.6.tgz#37b9ff661580f8fca11232752ee42e08c6675d8f"
+  dependencies:
+    debug "^3.1.0"
+    istanbul-lib-coverage "^1.2.1"
+>>>>>>> 697e255... update yarn.lock
     mkdirp "^0.5.1"
     rimraf "^2.6.1"
     source-map "^0.5.3"
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 istanbul-reports@^1.5.1:
   version "1.5.1"
@@ -4849,8 +5058,13 @@ istanbul-reports@^1.4.1:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/istanbul-reports/-/istanbul-reports-1.5.0.tgz#c6c2867fa65f59eb7dcedb7f845dfc76aaee70f9"
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+istanbul-reports@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/istanbul-reports/-/istanbul-reports-1.5.1.tgz#97e4dbf3b515e8c484caea15d6524eebd3ff4e1a"
+>>>>>>> 697e255... update yarn.lock
   dependencies:
-    handlebars "^4.0.11"
+    handlebars "^4.0.3"
 
 isurl@^1.0.0-alpha5:
   version "1.0.0"
@@ -5394,6 +5608,7 @@ klaw@^1.0.0:
   optionalDependencies:
     graceful-fs "^4.1.9"
 
+<<<<<<< HEAD
 lazy-cache@^0.2.3:
   version "0.2.7"
   resolved "https://registry.yarnpkg.com/lazy-cache/-/lazy-cache-0.2.7.tgz#7feddf2dcb6edb77d11ef1d117ab5ffdf0ab1b65"
@@ -5402,6 +5617,8 @@ lazy-cache@^1.0.3:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/lazy-cache/-/lazy-cache-1.0.4.tgz#a1d78fc3a50474cb80845d3b3b6e1da49a446e8e"
 
+=======
+>>>>>>> 697e255... update yarn.lock
 lcid@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/lcid/-/lcid-1.0.0.tgz#308accafa0bc483a3867b4b6f2b9506251d1b835"
@@ -5489,6 +5706,7 @@ levn@^0.3.0, levn@~0.3.0:
     type-check "~0.3.2"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 load-json-file@^1.0.0:
   version "1.1.0"
   resolved "http://registry.npmjs.org/load-json-file/-/load-json-file-1.1.0.tgz#956905708d58b4bab4c2261b04f59f31c99374c0"
@@ -5504,19 +5722,25 @@ load-json-file@^1.0.0:
 load-json-file@^2.0.0:
   version "2.0.0"
   resolved "http://registry.npmjs.org/load-json-file/-/load-json-file-2.0.0.tgz#7947e42149af80d696cbf797bcaabcfe1fe29ca8"
+=======
+load-json-file@^1.0.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/load-json-file/-/load-json-file-1.1.0.tgz#956905708d58b4bab4c2261b04f59f31c99374c0"
+>>>>>>> 697e255... update yarn.lock
   dependencies:
     graceful-fs "^4.1.2"
     parse-json "^2.2.0"
     pify "^2.0.0"
-    strip-bom "^3.0.0"
+    pinkie-promise "^2.0.0"
+    strip-bom "^2.0.0"
 
-load-json-file@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/load-json-file/-/load-json-file-4.0.0.tgz#2f5f45ab91e33216234fd53adab668eb4ec0993b"
+load-json-file@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/load-json-file/-/load-json-file-2.0.0.tgz#7947e42149af80d696cbf797bcaabcfe1fe29ca8"
   dependencies:
     graceful-fs "^4.1.2"
-    parse-json "^4.0.0"
-    pify "^3.0.0"
+    parse-json "^2.2.0"
+    pify "^2.0.0"
     strip-bom "^3.0.0"
 
 locate-path@^2.0.0:
@@ -5555,8 +5779,13 @@ lodash.throttle@^4.1.1:
   resolved "https://registry.yarnpkg.com/lodash.throttle/-/lodash.throttle-4.1.1.tgz#c23e91b710242ac70c37f1e1cda9274cc39bf2f4"
 
 lodash@^4.13.1, lodash@^4.16.6, lodash@^4.17.10, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.6.1:
+<<<<<<< HEAD
   version "4.17.11"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
+=======
+  version "4.17.10"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
+>>>>>>> 697e255... update yarn.lock
 
 loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.3.1:
   version "1.4.0"
@@ -6180,7 +6409,11 @@ number-to-bn@1.7.0:
     bn.js "4.11.6"
     strip-hex-prefix "1.0.0"
 
+<<<<<<< HEAD
 nwsapi@^2.0.7, nwsapi@^2.0.8:
+=======
+nwsapi@^2.0.7:
+>>>>>>> 697e255... update yarn.lock
   version "2.0.9"
   resolved "https://registry.yarnpkg.com/nwsapi/-/nwsapi-2.0.9.tgz#77ac0cdfdcad52b6a1151a84e73254edc33ed016"
 
@@ -6491,17 +6724,19 @@ path-to-regexp@^1.7.0:
   dependencies:
     isarray "0.0.1"
 
+path-type@^1.0.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/path-type/-/path-type-1.1.0.tgz#59c44f7ee491da704da415da5a4070ba4f8fe441"
+  dependencies:
+    graceful-fs "^4.1.2"
+    pify "^2.0.0"
+    pinkie-promise "^2.0.0"
+
 path-type@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/path-type/-/path-type-2.0.0.tgz#f012ccb8415b7096fc2daa1054c3d72389594c73"
   dependencies:
     pify "^2.0.0"
-
-path-type@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/path-type/-/path-type-3.0.0.tgz#cef31dc8e0a1a3bb0d105c0cd97cf3bf47f4e36f"
-  dependencies:
-    pify "^3.0.0"
 
 pbkdf2@3.0.8:
   version "3.0.8"
@@ -6828,15 +7063,24 @@ rc@^1.2.7:
     strip-json-comments "~2.0.1"
 
 react-art@^16.4.0:
+<<<<<<< HEAD
   version "16.5.2"
   resolved "https://registry.yarnpkg.com/react-art/-/react-art-16.5.2.tgz#dabfc9a5ef565ecb4f817bb0e872f9a5cd7f89cb"
+=======
+  version "16.5.0"
+  resolved "https://registry.yarnpkg.com/react-art/-/react-art-16.5.0.tgz#0e03a8e5dccbd3fe8b31330db0aabdd08bf81218"
+>>>>>>> 697e255... update yarn.lock
   dependencies:
     art "^0.10.1"
     create-react-class "^15.6.2"
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.2"
+<<<<<<< HEAD
     schedule "^0.5.0"
+=======
+    schedule "^0.3.0"
+>>>>>>> 697e255... update yarn.lock
 
 react-clone-referenced-element@^1.0.1:
   version "1.1.0"
@@ -6865,9 +7109,15 @@ react-display-name@^0.2.4:
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/react-display-name/-/react-display-name-0.2.4.tgz#e2a670b81d79a2204335510c01246f4c92ff12cf"
 
+<<<<<<< HEAD
 react-is@^16.3.1, react-is@^16.3.2, react-is@^16.5.2:
   version "16.5.2"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.5.2.tgz#e2a7b7c3f5d48062eb769fcb123505eb928722e3"
+=======
+react-is@^16.3.1, react-is@^16.3.2, react-is@^16.5.0:
+  version "16.5.0"
+  resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.5.0.tgz#2ec7c192709698591efe13722fab3ef56144ba55"
+>>>>>>> 697e255... update yarn.lock
 
 react-lifecycles-compat@^3, react-lifecycles-compat@^3.0.2, react-lifecycles-compat@^3.0.4:
   version "3.0.4"
@@ -6942,7 +7192,10 @@ react-native-iphone-x-helper@ptelad/react-native-iphone-x-helper#7/head:
 react-native-iphone-x-helper@^1.0.3:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.1.0.tgz#3a881720900bd8d1c67de2c465ea9aa9296180a7"
+<<<<<<< HEAD
 >>>>>>> 010e43d... update yarn.lock
+=======
+>>>>>>> 697e255... update yarn.lock
 
 react-native-keychain@^3.0.0:
   version "3.0.0"
@@ -7000,6 +7253,7 @@ react-native-randombytes@^3.1.0:
     buffer "^4.9.1"
     sjcl "^1.0.3"
 
+<<<<<<< HEAD
 react-native-safe-area-view@0.11.0:
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.11.0.tgz#4f3dda43c2bace37965e7c6aef5fc83d4f19d174"
@@ -7009,6 +7263,11 @@ react-native-safe-area-view@0.11.0:
 react-native-safe-area-view@mikedemarais/react-native-safe-area-view:
   version "0.10.0"
   resolved "https://codeload.github.com/mikedemarais/react-native-safe-area-view/tar.gz/b67379092dd176887569465a7e41362a83698a3e"
+=======
+react-native-safe-area-view@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.9.0.tgz#10ece2ecac70e7005a5b0b3f06c8833060e6d21f"
+>>>>>>> 697e255... update yarn.lock
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
@@ -7172,22 +7431,33 @@ react-navigation-drawer@0.5.0:
 
 react-navigation-fluid-transitions@^0.2.2:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "0.2.6"
   resolved "https://registry.yarnpkg.com/react-navigation-fluid-transitions/-/react-navigation-fluid-transitions-0.2.6.tgz#5c8f281304bcfe44e5e9bd5d7c965c3bda0c689e"
 =======
   version "0.2.5"
   resolved "https://registry.yarnpkg.com/react-navigation-fluid-transitions/-/react-navigation-fluid-transitions-0.2.5.tgz#f2d3e68b5d6996c4e7972e735a2166527e917a65"
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/react-navigation-fluid-transitions/-/react-navigation-fluid-transitions-0.2.6.tgz#5c8f281304bcfe44e5e9bd5d7c965c3bda0c689e"
+>>>>>>> 697e255... update yarn.lock
   dependencies:
     lodash.chunk "*"
     lodash.sortby "*"
     prop-types "*"
 
+<<<<<<< HEAD
 react-navigation-stack@0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-0.5.1.tgz#acc3c84c7b5209c7d89380d7f4576f17624f683c"
   dependencies:
     react-native-screens "^1.0.0-alpha.10"
+=======
+react-navigation-stack@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-0.3.0.tgz#cdd056771e5fd12114811824653b1ec7e9ae5de1"
+>>>>>>> 697e255... update yarn.lock
 
 react-navigation-tabs@0.7.0:
   version "0.7.0"
@@ -7199,8 +7469,13 @@ react-navigation-tabs@0.7.0:
     react-native-tab-view "^1.0.0"
 
 react-navigation@^2.11.2:
+<<<<<<< HEAD
   version "2.15.0"
   resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-2.15.0.tgz#1fafda16050892c71037a4e4bc4f79ca4c33fbec"
+=======
+  version "2.13.0"
+  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-2.13.0.tgz#7102ff7cbc492c8daf2ad90fc80463c3469f8b78"
+>>>>>>> 697e255... update yarn.lock
   dependencies:
     clamp "^1.0.1"
     create-react-context "0.2.2"
@@ -7211,7 +7486,11 @@ react-navigation@^2.11.2:
     react-native-safe-area-view "0.11.0"
     react-navigation-deprecated-tab-navigator "1.3.0"
     react-navigation-drawer "0.5.0"
+<<<<<<< HEAD
     react-navigation-stack "0.5.1"
+=======
+    react-navigation-stack "0.3.0"
+>>>>>>> 697e255... update yarn.lock
     react-navigation-tabs "0.7.0"
 
 react-primitives@^0.6.0:
@@ -7252,6 +7531,7 @@ react-redux@^5.0.7:
 react-spring@^5.4.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "5.6.15"
   resolved "https://registry.yarnpkg.com/react-spring/-/react-spring-5.6.15.tgz#ee8bae27765675c1de0c56b0fc2625759e432004"
 =======
@@ -7262,6 +7542,10 @@ react-spring@^5.4.0:
   version "5.6.10"
   resolved "https://registry.yarnpkg.com/react-spring/-/react-spring-5.6.10.tgz#646e428e77d687ea190984c8726a73fe54bfbc00"
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+  version "5.6.15"
+  resolved "https://registry.yarnpkg.com/react-spring/-/react-spring-5.6.15.tgz#ee8bae27765675c1de0c56b0fc2625759e432004"
+>>>>>>> 697e255... update yarn.lock
   dependencies:
     "@babel/runtime" "^7.0.0"
 
@@ -7272,6 +7556,7 @@ react-style-proptype@^3.2.1:
     prop-types "^15.5.4"
 
 react-test-renderer@^16.2.0:
+<<<<<<< HEAD
   version "16.5.2"
   resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-16.5.2.tgz#92e9d2c6f763b9821b2e0b22f994ee675068b5ae"
   dependencies:
@@ -7279,6 +7564,15 @@ react-test-renderer@^16.2.0:
     prop-types "^15.6.2"
     react-is "^16.5.2"
     schedule "^0.5.0"
+=======
+  version "16.5.0"
+  resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-16.5.0.tgz#1aeca0edc4f27f63265dcaed80ba82e11e762f56"
+  dependencies:
+    object-assign "^4.1.1"
+    prop-types "^15.6.2"
+    react-is "^16.5.0"
+    schedule "^0.3.0"
+>>>>>>> 697e255... update yarn.lock
 
 react-timer-mixin@^0.13.2, react-timer-mixin@^0.13.3:
   version "0.13.4"
@@ -7292,13 +7586,29 @@ react-transform-hmr@^1.0.4:
     react-proxy "^1.1.7"
 
 react@^16.2.0, react@^16.3.2:
+<<<<<<< HEAD
   version "16.5.2"
   resolved "https://registry.yarnpkg.com/react/-/react-16.5.2.tgz#19f6b444ed139baa45609eee6dc3d318b3895d42"
+=======
+  version "16.5.0"
+  resolved "https://registry.yarnpkg.com/react/-/react-16.5.0.tgz#f2c1e754bf9751a549d9c6d9aca41905beb56575"
+>>>>>>> 697e255... update yarn.lock
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.2"
+<<<<<<< HEAD
     schedule "^0.5.0"
+=======
+    schedule "^0.3.0"
+
+read-pkg-up@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/read-pkg-up/-/read-pkg-up-1.0.1.tgz#9d63c13276c065918d57f002a57f40a1b643fb02"
+  dependencies:
+    find-up "^1.0.0"
+    read-pkg "^1.0.0"
+>>>>>>> 697e255... update yarn.lock
 
 read-pkg-up@^2.0.0:
   version "2.0.0"
@@ -7307,12 +7617,13 @@ read-pkg-up@^2.0.0:
     find-up "^2.0.0"
     read-pkg "^2.0.0"
 
-read-pkg-up@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/read-pkg-up/-/read-pkg-up-3.0.0.tgz#3ed496685dba0f8fe118d0691dc51f4a1ff96f07"
+read-pkg@^1.0.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/read-pkg/-/read-pkg-1.1.0.tgz#f5ffaa5ecd29cb31c0474bca7d756b6bb29e3f28"
   dependencies:
-    find-up "^2.0.0"
-    read-pkg "^3.0.0"
+    load-json-file "^1.0.0"
+    normalize-package-data "^2.3.2"
+    path-type "^1.0.0"
 
 read-pkg@^2.0.0:
   version "2.0.0"
@@ -7322,6 +7633,7 @@ read-pkg@^2.0.0:
     normalize-package-data "^2.3.2"
     path-type "^2.0.0"
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -7343,6 +7655,8 @@ read-pkg@^3.0.0:
 readable-stream@^1.0.26-4, readable-stream@^1.0.27-1, readable-stream@^1.0.33:
 >>>>>>> c7d1608... add ‘install-pods’ script to package.json
 =======
+=======
+>>>>>>> 697e255... update yarn.lock
 readable-stream@^1.0.26-4, readable-stream@^1.0.27-1, readable-stream@^1.0.33:
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
   version "1.1.14"
@@ -7765,9 +8079,15 @@ sax@~1.1.1:
   version "1.1.6"
   resolved "http://registry.npmjs.org/sax/-/sax-1.1.6.tgz#5d616be8a5e607d54e114afae55b7eaf2fcc3240"
 
+<<<<<<< HEAD
 schedule@^0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/schedule/-/schedule-0.5.0.tgz#c128fffa0b402488b08b55ae74bb9df55cc29cc8"
+=======
+schedule@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/schedule/-/schedule-0.3.0.tgz#1be2ab2fc2e768536269ce7326efb478d6c045e8"
+>>>>>>> 697e255... update yarn.lock
   dependencies:
     object-assign "^4.1.1"
 
@@ -7800,7 +8120,7 @@ seek-bzip@^1.0.5:
   dependencies:
     commander "~2.8.1"
 
-"semver@2 || 3 || 4 || 5", semver@5.x, semver@^5.0.1, semver@^5.0.3, semver@^5.1.0, semver@^5.3.0, semver@^5.4.1, semver@^5.5.0:
+"semver@2 || 3 || 4 || 5", semver@5.x, semver@^5.0.1, semver@^5.0.3, semver@^5.1.0, semver@^5.3.0, semver@^5.4.1:
   version "5.5.1"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.5.1.tgz#7dfdd8814bdb7cabc7be0fb1d734cfb66c940477"
 
@@ -8199,6 +8519,12 @@ strip-bom@3.0.0, strip-bom@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/strip-bom/-/strip-bom-3.0.0.tgz#2334c18e9c759f7bdd56fdef7e9ae3d588e68ed3"
 
+strip-bom@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/strip-bom/-/strip-bom-2.0.0.tgz#6219a85616520491f35788bdbf1447a99c7e6b0e"
+  dependencies:
+    is-utf8 "^0.2.0"
+
 strip-dirs@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/strip-dirs/-/strip-dirs-2.1.0.tgz#4987736264fc344cf20f6c34aca9d13d1d4ed6c5"
@@ -8375,6 +8701,7 @@ temp@0.8.3:
 
 test-exclude@^4.2.1:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/test-exclude/-/test-exclude-4.2.3.tgz#a9a5e64474e4398339245a0a769ad7c2f4a97c20"
   dependencies:
@@ -8390,6 +8717,15 @@ test-exclude@^4.2.1:
     minimatch "^3.0.4"
     read-pkg-up "^3.0.0"
 >>>>>>> 52152c6... add ‘install-pods’ script to package.json
+=======
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/test-exclude/-/test-exclude-4.2.3.tgz#a9a5e64474e4398339245a0a769ad7c2f4a97c20"
+  dependencies:
+    arrify "^1.0.1"
+    micromatch "^2.3.11"
+    object-assign "^4.1.0"
+    read-pkg-up "^1.0.1"
+>>>>>>> 697e255... update yarn.lock
     require-main-filename "^1.0.1"
 
 text-table@~0.2.0:
