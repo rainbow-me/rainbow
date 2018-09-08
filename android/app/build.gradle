@@ -77,6 +77,7 @@ project.ext.react = [
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
+apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -116,9 +117,23 @@ android {
         }
     }
     buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+            // Note: CodePush updates should not be tested in Debug mode as they are overriden by the RN packager. However, because CodePush checks for updates in all modes, we must supply a key.
+            buildConfigField "String", "CODEPUSH_KEY", ""
+        }
+
+        releaseStaging {
+            applicationIdSuffix ".staging"
+            minifyEnabled enableProguardInReleaseBuilds
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            buildConfigField "String", "CODEPUSH_KEY", "<STAGING_DEPLOYMENT_KEY>"
+        }
+
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            buildConfigField "String", "CODEPUSH_KEY", "<PRODUCTION_DEPLOYMENT_KEY>"
         }
     }
     // applicationVariants are e.g. debug, release
@@ -139,6 +154,7 @@ android {
 dependencies {
     compile project(':react-native-gesture-handler')
     compile project(':react-native-firebase')
+    compile project(':react-native-code-push')
     compile project(':react-native-haptic-feedback')
     compile project(':react-native-udp')
     compile project(':react-native-touch-id')
