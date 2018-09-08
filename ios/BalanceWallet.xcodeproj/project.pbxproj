@@ -110,9 +110,9 @@
 		E98BBF45029948B38545996F /* Graphik-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E6F010E529544E518E1792C7 /* Graphik-Bold.otf */; };
 		ECF14FECD39C459D86EDCB82 /* libCodePush.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E39434CDDE4C54848FBFD5 /* libCodePush.a */; };
 		ED8A2571BF074F6DB6D09045 /* libToolTipMenu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A014AE1645874354A732EB35 /* libToolTipMenu.a */; };
+		F35098D973414A09939FB3F8 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D1A86E696CA24D4F9D3F7F0F /* libz.tbd */; };
 		F4E8A17A670147F4A5EC177E /* libRNGestureHandler.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A7E5E09E14B4EA4B52CC6EE /* libRNGestureHandler.a */; };
 		F62BAAAB845E4657B61A8F84 /* libRNFirebase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C349494D40704C079F21BD3B /* libRNFirebase.a */; };
-		F35098D973414A09939FB3F8 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D1A86E696CA24D4F9D3F7F0F /* libz.tbd */; };
 		F9EB9219ED9A4C72826A5908 /* Graphik-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = A6EEFE6EA9354456B0DB4520 /* Graphik-Regular.otf */; };
 		F9EF1D44351840B8A380BD3E /* SF-Pro-Display-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = BA31E8CEDBCC417CA50BC57B /* SF-Pro-Display-Bold.otf */; };
 		FBDF4EF177284CF4826D7BF9 /* SF-Pro-Display-HeavyItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = D7BFD847B72D414D9BE734A0 /* SF-Pro-Display-HeavyItalic.otf */; };
@@ -342,6 +342,7 @@
 			proxyType = 2;
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RNGestureHandler;
+		};
 		2C867629211152560067D47A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4A9E14039D3A4590A2F32D92 /* CodePush.xcodeproj */;
@@ -646,6 +647,7 @@
 		45B0EAA273D24F15B885A97D /* libRNMail.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNMail.a; sourceTree = "<group>"; };
 		46EFC4C16BAF4873BE45393E /* UdpSockets.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = UdpSockets.xcodeproj; path = "../node_modules/react-native-udp/ios/UdpSockets.xcodeproj"; sourceTree = "<group>"; };
 		4A9E14039D3A4590A2F32D92 /* CodePush.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = CodePush.xcodeproj; path = "../node_modules/react-native-code-push/ios/CodePush.xcodeproj"; sourceTree = "<group>"; };
+		4BC4C815AED5E011A9F31474 /* Pods-BalanceWallet.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BalanceWallet.staging.xcconfig"; path = "Pods/Target Support Files/Pods-BalanceWallet/Pods-BalanceWallet.staging.xcconfig"; sourceTree = "<group>"; };
 		50B1B80F51614673AFD8A804 /* RNKeychain.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNKeychain.xcodeproj; path = "../node_modules/react-native-keychain/RNKeychain.xcodeproj"; sourceTree = "<group>"; };
 		51A0A7CFC45344D49BFF6CB9 /* libReactNativePermissions.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libReactNativePermissions.a; sourceTree = "<group>"; };
 		51E41940863B4B88BDEF48D7 /* Graphik-SuperItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-SuperItalic.otf"; path = "../src/assets/fonts/Graphik-SuperItalic.otf"; sourceTree = "<group>"; };
@@ -1082,6 +1084,10 @@
 			isa = PBXGroup;
 			children = (
 				24D171E2212F57110090F180 /* libRNGestureHandler.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		2C867625211152550067D47A /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1120,6 +1126,7 @@
 			children = (
 				FC66276043513D02FCEDDA58 /* Pods-BalanceWallet.debug.xcconfig */,
 				432859DCCD05A1435434FB50 /* Pods-BalanceWallet.release.xcconfig */,
+				4BC4C815AED5E011A9F31474 /* Pods-BalanceWallet.staging.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -1770,6 +1777,8 @@
 			fileType = archive.ar;
 			path = libRNGestureHandler.a;
 			remoteRef = 24D171E1212F57110090F180 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		2C86762A211152560067D47A /* libCodePush.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -2302,7 +2311,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = Q4G66XSS36;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
@@ -2350,11 +2359,12 @@
 			baseConfigurationReference = 432859DCCD05A1435434FB50 /* Pods-BalanceWallet.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODEPUSH_KEY = "rRRp2wVm2zME6qpn0ncR7CAV5QCD343992b2-2d60-469e-9628-dfd37746ec1a";
 				CODE_SIGN_ENTITLEMENTS = BalanceWallet/BalanceWallet.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = Q4G66XSS36;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
@@ -2436,11 +2446,13 @@
 		};
 		2C6A799821127ED9003AFB37 /* Staging */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4BC4C815AED5E011A9F31474 /* Pods-BalanceWallet.staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODEPUSH_KEY = "kVkoMqwPWFwoeBl7Uubt8X8NZlpL343992b2-2d60-469e-9628-dfd37746ec1a";
 				CODE_SIGN_ENTITLEMENTS = BalanceWallet/BalanceWallet.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (

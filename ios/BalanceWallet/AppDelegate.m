@@ -32,7 +32,7 @@
   
    
   // React Native
-  //
+  // comment out the "#ifdef DEBUG" if you want to test out CodePush locally
   NSURL *jsCodeLocation;
   #ifdef DEBUG
     //  jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.bundle?platform=ios&dev=true"];
