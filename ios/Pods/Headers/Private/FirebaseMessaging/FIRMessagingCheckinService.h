@@ -1,1 +1,0 @@
-../../../FirebaseMessaging/Firebase/Messaging/FIRMessagingCheckinService.h
