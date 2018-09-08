@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { css } from 'styled-components/primitives';
 import ReactCoinIcon, { FallbackIcon } from 'react-coin-icon';
+import { hoistStatics, onlyUpdateForKeys } from 'recompact';
 import { colors, fonts, position, shadow } from '../styles';
 import { ShadowStack } from './shadow-stack';
 
@@ -47,4 +48,4 @@ CoinIcon.defaultProps = {
 
 CoinIcon.height = CoinIconHeight;
 
-export default CoinIcon;
+export default hoistStatics(onlyUpdateForKeys(['symbol']))(CoinIcon);

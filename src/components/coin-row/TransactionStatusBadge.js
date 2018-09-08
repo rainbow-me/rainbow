@@ -1,6 +1,7 @@
 import { get, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
 import { TransactionStatusTypes } from '../../helpers/transactions';
 import { colors, position } from '../../styles';
@@ -62,4 +63,4 @@ TransactionStatusBadge.defaultProps = {
   status: TransactionStatusTypes.error,
 };
 
-export default TransactionStatusBadge;
+export default onlyUpdateForKeys(['status'])(TransactionStatusBadge);
