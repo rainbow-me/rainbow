@@ -28,7 +28,7 @@ const ActivityScreen = ({
 }) => (
   <Container>
     <Header align="end">
-      <HeaderButton onPress={onPressBack}>
+      <HeaderButton align="end" onPress={onPressBack}>
         <CloseButtonIcon
           color={colors.brightBlue}
           name="close"
