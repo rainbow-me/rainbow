@@ -48,4 +48,4 @@ CoinIcon.defaultProps = {
 
 CoinIcon.height = CoinIconHeight;
 
-export default CoinIcon;
+export default hoistStatics(onlyUpdateForKeys(['symbol']))(CoinIcon);
