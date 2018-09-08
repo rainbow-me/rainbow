@@ -35,7 +35,12 @@ const SwipeStack = createSwipeNavigator({
 });
 
 const AppStack = createStackNavigator({
-  ActivityScreen,
+  ActivityScreen: {
+    navigationOptions: {
+      gesturesEnabled: false,
+    },
+    screen: ActivityScreen,
+  },
   ConfirmTransaction: TransactionConfirmationScreenWithData,
   SendScreen,
   SwipeLayout: SwipeStack,
