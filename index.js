@@ -1,8 +1,9 @@
-import lang, { getLanguages } from 'react-native-i18n';
-import { resources } from 'balance-common';
-
 import './global';
 import './shim';
+
+/* eslint-disable import/first */
+import lang, { getLanguages } from 'react-native-i18n';
+import { resources } from 'balance-common';
 
 // eslint-disable-next-line
 import App from './src/App';
