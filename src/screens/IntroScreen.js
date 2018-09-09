@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StatusBar } from 'react-native';
+import lang from 'react-native-i18n';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import AppVersionStamp from '../components/AppVersionStamp';
@@ -77,20 +78,20 @@ const IntroScreen = ({ onCreateWallet, safeAreaInset }) => (
     <StatusBar barStyle="light-content" />
     <Content>
       <Monospace color="white" size="big" weight="semibold">
-        Welcome to Balance
+        {lang.t('wallet.intro.welcome')}
       </Monospace>
       <AlphaWarning>
         <WarningIcon />
-        <AlphaWarningText>This is alpha software.</AlphaWarningText>
+        <AlphaWarningText>{lang.t('wallet.intro.warning')}</AlphaWarningText>
       </AlphaWarning>
       <InstructionsText>
-        Please do not store more in your wallet than you are willing to lose.
+        {lang.t('wallet.intro.instructions')}
       </InstructionsText>
       <Row>
         <ButtonPressAnimation onPress={onCreateWallet}>
           <CreateWalletButton>
             <CreateWalletButtonText>
-              Create a Wallet
+              {lang.t('wallet.intro.create_wallet')}
             </CreateWalletButtonText>
           </CreateWalletButton>
         </ButtonPressAnimation>
