@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Svg, { Circle, G, Rect } from 'svgs';
+import { Circle, G, Rect } from 'svgs';
 import { colors } from '../../../styles';
+import Svg from '../Svg';
 
 const AssetListItemSkeletonIcon = ({ color, ...props }) => (
   <Svg height="40" width="341" viewBox="0 0 341 40" {...props}>
@@ -24,5 +25,3 @@ AssetListItemSkeletonIcon.defaultProps = {
 };
 
 export default AssetListItemSkeletonIcon;
-
-  // <path fill="#FFF" d="M-15-149h375v812H-15z"/>

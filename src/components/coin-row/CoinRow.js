@@ -1,63 +1,50 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
 import Column from '../layout/Column';
 import Row from '../layout/Row';
-import { padding } from '../../styles';
+import { colors, padding } from '../../styles';
 import CoinIcon from '../CoinIcon';
 
+const CoinRowPaddingVertical = 12;
+
 const Container = styled(Row)`
-  ${padding(12, 19, 12, 15)}
+  ${padding(CoinRowPaddingVertical, 19, CoinRowPaddingVertical, 15)}
+  background-color: ${colors.white};
 `;
 
 const Content = styled(Column)`
   flex: 1;
-  height: 40;
-  margin-left: 12px;
+  height: ${CoinIcon.height};
+  margin-left: ${CoinRowPaddingVertical};
 `;
 
-const CoinRow = ({
-  address,
-  balance,
+const CoinRow = pure(({
   bottomRowRender,
-  name,
-  native,
   symbol,
   topRowRender,
+  ...props
 }) => (
   <Container align="center">
     <CoinIcon symbol={symbol} />
     <Content justify="space-between">
       <Row align="center" justify="space-between">
-        {topRowRender({
-          address,
-          balance,
-          native,
-          name,
-          symbol,
-        })}
+        {topRowRender({ symbol, ...props })}
       </Row>
       <Row align="center" justify="space-between">
-        {bottomRowRender({
-          address,
-          balance,
-          native,
-          name,
-          symbol,
-        })}
+        {bottomRowRender({ symbol, ...props })}
       </Row>
     </Content>
   </Container>
-);
+));
 
 CoinRow.propTypes = {
-  address: PropTypes.string,
-  balance: PropTypes.object,
-  native: PropTypes.object,
   bottomRowRender: PropTypes.func,
-  name: PropTypes.string,
   symbol: PropTypes.string,
   topRowRender: PropTypes.func,
 };
+
+CoinRow.height = CoinIcon.height + (CoinRowPaddingVertical * 2);
 
 export default CoinRow;

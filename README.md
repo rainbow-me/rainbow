@@ -15,11 +15,11 @@ If you are new to React Native, this is a helpful introduction: https://facebook
 
 2. Run `yarn` to get all of the packages required.
 
-3. Run `./node_modules/.bin/rn-nodeify --install "crypto" --hack`
+3. Run `yarn nodeify`.
 
-4. Install CocoaPods by running `sudo gem install cocoapods`
+4. Install CocoaPods by running `sudo gem install cocoapods`.
 
-5. Install required Pods by running `cd ios && pod install && cd ..`
+5. Install required Pods by running `yard install-pods`.
 
 6. Run `yarn ios` to build the project for XCode.
 
