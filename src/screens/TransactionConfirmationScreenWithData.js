@@ -27,7 +27,8 @@ class TransactionConfirmationScreenWithData extends Component {
       const transactionReceipt = await sendTransaction(transactionDetails.transactionPayload, 'Confirm transaction' );
       if (transactionReceipt && transactionReceipt.hash) {
         try {
-          await walletConnectSendTransactionHash(transactionDetails.sessionId, transactionDetails.transactionId, true, transactionReceipt.hash);
+          //TODO: get walletConnector from reducer using transactionDetails.sessionId
+          await walletConnectSendTransactionHash(walletConnector, transactionDetails.transactionId, true, transactionReceipt.hash);
           // TODO: update that this transaction has been confirmed and reset txn details
           this.closeTransactionScreen();
         } catch (error) {
@@ -52,7 +53,8 @@ class TransactionConfirmationScreenWithData extends Component {
   handleCancelTransaction = async () => {
     try {
       const { transactionDetails } = this.state;
-      await walletConnectSendTransactionHash(transactionDetails.sessionId, transactionDetails.transactionId, false, null);
+      // TODO: get walletConnector from reducer with transactionDetails.sessionId
+      await walletConnectSendTransactionHash(walletConnector, transactionDetails.transactionId, false, null);
       this.closeTransactionScreen();
     } catch (error) {
       this.closeTransactionScreen();

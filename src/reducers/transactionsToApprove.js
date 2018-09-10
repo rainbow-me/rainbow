@@ -36,7 +36,8 @@ export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => 
   } 
 };
 
-const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrency) => {
+const getTransactionDisplayDetails = (transactionData, assets, prices, nativeCurrency) => {
+  const { transaction, timestamp: timestampInSeconds } = transactionData;
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
   if (transaction.data == '0x') {
     const value = fromWei(convertHexToString(transaction.value));
@@ -46,6 +47,7 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
       name: 'Ethereum',
       nativeAmount,
       symbol: 'ETH',
+      timestampInSeconds,
       to: transaction.to,
       value,
     }
@@ -61,7 +63,8 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
       from: transaction.from,
       name: name,
       nativeAmount,
-      symbol: symbol,
+      symbol,
+      timestampInSeconds,
       to: toAddress,
       value,
     }
