@@ -36,7 +36,8 @@ class QRScannerScreenWithData extends Component {
 
     if (data) {
       try {
-        await walletConnectInit(accountAddress, data);
+        const walletConnector = await walletConnectInit(accountAddress, data);
+        // TODO: reducer to add walletConnector to state
         navigation.navigate('WalletScreen');
       } catch (error) {
         AlertIOS.alert(lang.t('wallet.wallet_connect.error'), error);
