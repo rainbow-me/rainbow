@@ -2,6 +2,7 @@ import { isFunction, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AlertIOS } from 'react-native';
+import lang from 'react-native-i18n';
 import { connect } from 'react-redux';
 import { walletConnectInit } from '../model/walletconnect';
 import QRScannerScreen from './QRScannerScreen';
@@ -38,7 +39,7 @@ class QRScannerScreenWithData extends Component {
         await walletConnectInit(accountAddress, data.domain, data.sessionId, data.sharedKey, data.dappName);
         navigation.navigate('WalletScreen');
       } catch (error) {
-        AlertIOS.alert('Error initializing with WalletConnect', error);
+        AlertIOS.alert(lang.t('wallet.qr.scanner_screen.error'), error);
         console.log('error initializing wallet connect', error);
       }
     }
