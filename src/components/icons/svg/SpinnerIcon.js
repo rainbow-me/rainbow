@@ -1,45 +1,32 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Svg, { Path } from 'svgs';
-import styled from 'styled-components/primitives';
-import { animations, colors } from '../../../styles';
+import { Path } from 'svgs';
+import { colors } from '../../../styles';
+import { SpinAnimation } from '../../animations';
+import Svg from '../Svg';
 
-const AnimatedContainer = styled(Svg)`
-
-`;
-
-// ${animations.build({
-//     name: animations.spin,
-//     iterationCount: 'infinite',
-//   })}
-
-const SpinnerIcon = ({
-  color,
-  height,
-  width,
-  ...props
-}) => (
-  <SvgContainer
-    height={height}
-    width={width}
-  >
-    <Path
-      d="M11.5 5.75a.75.75 0 1 1-1.5 0A4.25 4.25 0 1 0 5.75 10a.75.75 0 0 1 0 1.5 5.75 5.75 0 1 1 5.75-5.75z"
-      fill={color}
-    />
-  </SvgContainer>
+const SpinnerIcon = ({ color, size, ...props }) => (
+  <SpinAnimation>
+    <Svg
+      height={size}
+      width={size}
+    >
+      <Path
+        d="M11.5 5.75a.75.75 0 1 1-1.5 0A4.25 4.25 0 1 0 5.75 10a.75.75 0 0 1 0 1.5 5.75 5.75 0 1 1 5.75-5.75z"
+        fill={color}
+      />
+    </Svg>
+  </SpinAnimation>
 );
 
 SpinnerIcon.propTypes = {
   color: PropTypes.string,
-  height: PropTypes.number,
-  width: PropTypes.number,
+  size: PropTypes.number,
 };
 
 SpinnerIcon.defaultProps = {
   color: colors.blue,
-  height: 12,
-  width: 12,
+  size: 12,
 };
 
 export default SpinnerIcon;

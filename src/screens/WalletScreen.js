@@ -6,7 +6,7 @@ import { compose, onlyUpdateForPropTypes, withHandlers, withState } from 'recomp
 import { AssetList, UniqueTokenRow } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import Avatar from '../components/Avatar';
-import { Header, HeaderButton } from '../components/header';
+import { ActivityHeaderButton, Header, HeaderButton } from '../components/header';
 import { FlexItem, Page } from '../components/layout';
 import { withHideSplashScreenOnMount } from '../hoc';
 import { position } from '../styles';
@@ -58,7 +58,8 @@ const WalletScreen = ({
   const sections = {
     balances: {
       data: sortAssetsByNativeAmount(accountInfo.assets, showShitcoins),
-      renderItem: BalanceCoinRow,
+      // eslint-disable-next-line react/display-name
+      renderItem: renderItemProps => <BalanceCoinRow {...renderItemProps} />,
       title: 'Balances',
       totalItems: get(accountInfo, 'total.amount') ? accountInfo.assets.length : 0,
       totalValue: get(accountInfo, 'total.display', ''),
@@ -85,10 +86,11 @@ const WalletScreen = ({
 
   return (
     <Page component={FlexItem} style={position.sizeAsObject('100%')}>
-      <Header>
+      <Header justify="space-between">
         <HeaderButton onPress={onPressProfile}>
           <Avatar />
         </HeaderButton>
+        <ActivityHeaderButton />
       </Header>
       <AssetList
         onPressWalletConnect={onPressWalletConnect}

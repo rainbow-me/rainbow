@@ -1,28 +1,63 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StatusBar } from 'react-native';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-import AppVersionStamp from '../components/AppVersionStamp';
-import { ButtonPressAnimation } from '../components/buttons';
+import { ActivityList } from '../components/activity-list';
+import { Header, HeaderButton } from '../components/header';
 import Icon from '../components/icons/Icon';
-import { Column, Row } from '../components/layout';
-import { Monospace } from '../components/text';
-import { withHideSplashScreenOnMount, withSafeAreaViewInsetValues } from '../hoc';
-import { colors, fonts, padding } from '../styles';
+import { Column } from '../components/layout';
+import { withAccountAddress, withAccountTransactions } from '../hoc';
+import { colors, position } from '../styles';
 
-const ActivityScreen = (props) => {
+const CloseButtonIcon = styled(Icon)`
+  ${position.maxSize(19)}
+`;
 
+const Container = styled(Column)`
+  ${position.size('100%')}
+  background-color: ${colors.white};
+  flex: 1;
+`;
 
-  return (
-    <Container>
-
-    </Container>
-  );
-}
+const ActivityScreen = ({
+  accountAddress,
+  fetchingTransactions,
+  hasPendingTransaction,
+  onPressBack,
+  transactions,
+}) => (
+  <Container>
+    <Header align="end">
+      <HeaderButton align="end" onPress={onPressBack}>
+        <CloseButtonIcon
+          color={colors.brightBlue}
+          name="close"
+        />
+      </HeaderButton>
+    </Header>
+    {(accountAddress && !fetchingTransactions) && (
+      <ActivityList
+        accountAddress={accountAddress}
+        fetchingTransactions={fetchingTransactions}
+        hasPendingTransaction={hasPendingTransaction}
+        transactions={transactions}
+      />
+    )}
+  </Container>
+);
 
 ActivityScreen.propTypes = {
-  //
+  accountAddress: PropTypes.string,
+  fetchingTransactions: PropTypes.bool,
+  hasPendingTransaction: PropTypes.bool,
+  onPressBack: PropTypes.func,
+  transactions: PropTypes.array,
 };
 
-export default ActivityScreen;
+export default compose(
+  withAccountAddress,
+  withAccountTransactions,
+  withHandlers({
+    onPressBack: ({ navigation }) => () => navigation.goBack(),
+  }),
+)(ActivityScreen);

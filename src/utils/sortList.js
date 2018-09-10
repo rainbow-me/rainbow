@@ -1,7 +1,9 @@
-const sortList = (array = [], sortByKey) =>
+import { get } from 'lodash';
+
+export default (array = [], sortByKey) =>
   array.slice(0).sort((a, b) => {
-    const itemA = sortByKey ? a[sortByKey] : a;
-    const itemB = sortByKey ? b[sortByKey] : b;
+    const itemA = sortByKey ? get(a, sortByKey) : a;
+    const itemB = sortByKey ? get(b, sortByKey) : b;
 
     if (typeof itemA === 'string' && typeof itemB === 'string') {
       if (itemA.toLowerCase() < itemB.toLowerCase()) return -1;
@@ -12,5 +14,3 @@ const sortList = (array = [], sortByKey) =>
     if (itemA > itemB) return 1;
     return 0;
   });
-
-export default sortList;
