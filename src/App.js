@@ -113,7 +113,8 @@ class App extends Component {
   }
 
   fetchAllTransactionsFromWalletConnectSessions = async () => {
-    const allTransactions = await walletConnectGetAllTransactions();
+    // TODO: get all transactions from reducer state; may not be possible to get all valid walletConnectors right away unless I have a function in between
+    const allTransactions = await walletConnectGetAllTransactions(this.props.allValidWalletConnectors);
     const transaction = this.props.addTransactionsToApprove(allTransactions);
   }
 
@@ -122,7 +123,8 @@ class App extends Component {
     if (existingTransaction) {
       this.handleOpenConfirmTransactionModal(existingTransaction);
     } else {
-      const transactionDetails = await walletConnectGetTransaction(transactionId, sessionId);
+      // TODO: get session for sessionId from reducer
+      const transactionDetails = await walletConnectGetTransaction(transactionId, session);
       if (transactionDetails) {
         const { transactionPayload, dappName } = transactionDetails;
         const transaction = this.props.addTransactionToApprove(sessionId, transactionId, transactionPayload, dappName);
