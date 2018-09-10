@@ -4,11 +4,14 @@ import PropTypes from 'prop-types';
 import { AlertIOS, StatusBar, Vibration } from 'react-native';
 import { connect } from 'react-redux';
 import { sendTransaction } from '../model/wallet';
+import { accountUpdateHasPendingTransaction, accountUpdateTransactions } from 'balance-common';
 import { walletConnectSendTransactionHash } from '../model/walletconnect';
 import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
 class TransactionConfirmationScreenWithData extends Component {
   static propTypes = {
+    accountUpdateHasPendingTransaction: PropTypes.func,
+    accountUpdateTransactions: PropTypes.func,
     navigation: PropTypes.any,
   }
 
@@ -26,6 +29,18 @@ class TransactionConfirmationScreenWithData extends Component {
       const { transactionDetails } = this.state;
       const transactionReceipt = await sendTransaction(transactionDetails.transactionPayload, 'Confirm transaction' );
       if (transactionReceipt && transactionReceipt.hash) {
+        const txDetails = {
+          amount: get(transactionDetails, 'transactionDisplayDetails.value'),
+          asset: get(transactionDetails, 'transactionDisplayDetails.symbol'),
+          from: get(transactionDetails, 'transactionDisplayDetails.from'),
+          gasLimit: get(transactionDetails, 'transactionDisplayDetails.gasLimit'),
+          gasPrice: get(transactionDetails, 'transactionDisplayDetails.gasPrice'),
+          hash = transactionReceipt.hash;
+          nonce: get(transactionDetails, 'transactionDisplayDetails.nonce'),
+          to: get(transactionDetails, 'transactionDisplayDetails.to'),
+        };
+        dispatch(this.props.accountUpdateHasPendingTransaction());
+        dispatch(this.props.accountUpdateTransactions(txDetails));
         try {
           //TODO: get walletConnector from reducer using transactionDetails.sessionId
           await walletConnectSendTransactionHash(walletConnector, transactionDetails.transactionId, true, transactionReceipt.hash);
@@ -89,5 +104,5 @@ class TransactionConfirmationScreenWithData extends Component {
 
 export default connect(
   ({ transactionsToApprove: { transactionsToApprove } }) => ({ transactionsToApprove }),
-  null,
+  { accountUpdateHasPendingTransaction, accountUpdateTransactions },
 )(TransactionConfirmationScreenWithData);

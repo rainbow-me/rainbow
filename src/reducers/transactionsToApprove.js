@@ -44,8 +44,11 @@ const getTransactionDisplayDetails = (transactionData, assets, prices, nativeCur
     const nativeAmount = getNativeAmount(prices, nativeCurrency, value, 'ETH');
     return {
       from: transaction.from,
+      gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
+      gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
       name: 'Ethereum',
       nativeAmount,
+      nonce: Number(convertHexToString(transaction.nonce)),
       symbol: 'ETH',
       timestampInSeconds,
       to: transaction.to,
@@ -61,8 +64,11 @@ const getTransactionDisplayDetails = (transactionData, assets, prices, nativeCur
     const nativeAmount = getNativeAmount(prices, nativeCurrency, value, symbol);
     return {
       from: transaction.from,
+      gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
+      gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
       name: name,
       nativeAmount,
+      nonce: Number(convertHexToString(transaction.nonce)),
       symbol,
       timestampInSeconds,
       to: toAddress,
