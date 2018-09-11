@@ -1,6 +1,7 @@
 import { get, groupBy, isNull } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
+import lang from 'react-native-i18n';
 import { connect } from 'react-redux';
 import { compose, onlyUpdateForPropTypes, withHandlers, withState } from 'recompact';
 import { AssetList, UniqueTokenRow } from '../components/asset-list';
@@ -59,14 +60,14 @@ const WalletScreen = ({
     balances: {
       data: sortAssetsByNativeAmount(accountInfo.assets, showShitcoins),
       renderItem: BalanceCoinRow,
-      title: 'Balances',
+      title: lang.t('account.tab_balances'),
       totalItems: get(accountInfo, 'total.amount') ? accountInfo.assets.length : 0,
       totalValue: get(accountInfo, 'total.display', ''),
     },
     collectibles: {
       data: buildUniqueTokenList(uniqueTokens),
       renderItem: UniqueTokenRow,
-      title: 'Collectibles',
+      title: lang.t('account.tab_collectibles'),
       totalItems: uniqueTokens.length,
       totalValue: '',
     },
@@ -79,7 +80,10 @@ const WalletScreen = ({
       cancelButtonIndex: 1,
       destructiveButtonIndex: showShitcoins ? 0 : 99, // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
       onPress: (index) => { if (index === 0) onToggleShowShitcoins(); },
-      options: [`${showShitcoins ? 'Hide' : 'Show'} assets w/ no price data`, 'Cancel'],
+      options: [
+        `${showShitcoins ? lang.t('account.hide') : lang.t('account.show')} ${lang.t('wallet.assets.no_price')}`,
+        lang.t('wallet.action.cancel'),
+      ],
     };
   }
 
