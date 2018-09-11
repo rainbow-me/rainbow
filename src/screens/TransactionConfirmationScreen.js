@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import lang from 'react-native-i18n';
 import styled from 'styled-components';
 import BalanceManagerLogo from '../assets/balance-manager-logo.png';
 import { Button, BlockButton } from '../components/buttons';
@@ -149,7 +150,7 @@ const TransactionConfirmationScreen = ({
         <VendorLogo source={BalanceManagerLogo} />
       </VenderLogoContainer>
       <VendorName>Balance Manager</VendorName>
-      <TransactionType>Transaction Request</TransactionType>
+      <TransactionType>{lang.t('wallet.transaction.request')}</TransactionType>
       <CancelButtonContainer>
         <Button
           bgColor={colors.blueGreyMedium}
@@ -157,13 +158,13 @@ const TransactionConfirmationScreen = ({
           size="small"
           textProps={{ color: 'black', size: 'medium' }}
         >
-          Reject
+          {lang.t('wallet.action.reject')}
         </Button>
       </CancelButtonContainer>
     </Masthead>
     <BottomSheet bottomInset={safeAreaInset.bottom}>
       <AddressRow>
-        <Smallcaps>To</Smallcaps>
+        <Smallcaps>{lang.t('wallet.transaction.to')}</Smallcaps>
         <Address address={address} truncationLength={15}/>
       </AddressRow>
       <Divider />
@@ -182,7 +183,7 @@ const TransactionConfirmationScreen = ({
       </AmountRow>
       <SendButtonContainer>
         <BlockButton onPress={onConfirmTransaction}>
-          Send Transaction
+          {lang.t('wallet.transaction.send')}
         </BlockButton>
       </SendButtonContainer>
     </BottomSheet>
