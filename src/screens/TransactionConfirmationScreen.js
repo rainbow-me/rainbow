@@ -164,7 +164,7 @@ const TransactionConfirmationScreen = ({
     </Masthead>
     <BottomSheet bottomInset={safeAreaInset.bottom}>
       <AddressRow>
-        <Smallcaps>{lang.t('wallet.transaction.to')}</Smallcaps>
+        <Smallcaps>{lang.t('wallet.action.to')}</Smallcaps>
         <Address address={address} truncationLength={15}/>
       </AddressRow>
       <Divider />
