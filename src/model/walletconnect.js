@@ -24,24 +24,35 @@ export const walletConnectInit = async (accountAddress, uriString) => {
   }
 }
 
+export const walletConnectInitAllConnectors = async () => {
+  try {
+    const allSessions = await commonStorage.getAllValidWalletConnectSessions();
+    const allConnectors = mapValues(allSessions, (session) => {
+      const walletConnector = new RNWalletConnect(session.uriString);
+      walletConnector.expires = session.expiration;
+      return walletConnector;
+    });
+    return allConnectors;
+  } catch (error) {
+    AlertIOS.alert('Unable to retrieve all WalletConnect sessions.');
+    return {};
+  }
+}
+
 export const walletConnectDisconnect = async (walletConnector) => {
-  // TODO: removing session from commonStorage
-  // const session = await commonStorage.removeWalletConnectSession(sessionId);
   if (walletConnector) {
     try {
-      await walletConnector.disconnectSession(sessionId);
+      await commonStorage.removeWalletConnectSession(walletConnector.sessionId);
+      await walletConnector.disconnectSession(walletConnector.sessionId);
     } catch (error) {
       AlertIOS.alert('Failed to disconnect WalletConnect session');
     }
   }
 }
 
-export const walletConnectGetAllTransactions = async (allValidSessions) => {
+export const walletConnectGetAllTransactions = async (walletConnectors) => {
   try {
-    // TODO: may be all valid walletconnectos (not sessions)
-    // const allValidSessions = await commonStorage.getAllValidWalletConnectSessions();
-    const sessionToTransactions = mapValues(allValidSessions, (session) => {
-      const walletConnector = new RNWalletConnect(session.uriString);
+    const sessionToTransactions = mapValues(walletConnectors, (walletConnector) => {
       const sessionId = walletConnector.sessionId;
       const dappName = walletConnector.dappName;
       const sessionTransactions = await walletConnector.getAllTransactionRequests();
@@ -74,7 +85,6 @@ export const walletConnectGetTransaction = async (transactionId, walletConnector
 };
 
 export const walletConnectSendTransactionHash = async (walletConnector, transactionId, success, txHash) => {
-  //const session = await commonStorage.getWalletConnectSession(sessionId);
   if (walletConnector) {
     try {
       await walletConnector.sendTransactionStatus(transactionId, { success, txHash });
