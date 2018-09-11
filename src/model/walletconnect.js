@@ -1,4 +1,5 @@
 import RNWalletConnect from 'rn-walletconnect-wallet';
+import lang from 'react-native-i18n';
 import { commonStorage } from 'balance-common';
 import { AlertIOS } from 'react-native';
 
@@ -13,7 +14,7 @@ export const walletConnectInit = async (accountAddress, bridgeUrl, sessionId, sh
   try {
     await walletConnector.sendSessionStatus({ fcmToken, pushEndpoint: PUSH_ENDPOINT, data: [accountAddress] });
   } catch (error) {
-    AlertIOS.alert(`Unable to initialize with Wallet Connect`);
+    AlertIOS.alert(lang.t('wallet.wallet_connect.error'));
   }
 }
 
@@ -49,4 +50,3 @@ export const walletConnectSendTransactionHash = async (transactionId, success, t
     console.log('WalletConnect session has expired while trying to send transaction hash');
   }
 };
-
