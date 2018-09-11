@@ -39,7 +39,7 @@ class QRScannerScreenWithData extends Component {
         await walletConnectInit(accountAddress, data.domain, data.sessionId, data.sharedKey, data.dappName);
         navigation.navigate('WalletScreen');
       } catch (error) {
-        AlertIOS.alert(lang.t('wallet.qr.scanner_screen.error'), error);
+        AlertIOS.alert(lang.t('wallet.wallet_connect.error'), error);
         console.log('error initializing wallet connect', error);
       }
     }
