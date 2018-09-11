@@ -6,7 +6,7 @@ import {
   formatInputDecimals,
   fromWei
 } from 'balance-common';
-import { mapValues } from 'lodash';
+import { mapValues, omit } from 'lodash';
 
 // -- Constants --------------------------------------- //
 const WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE = 'wallet/WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE';
@@ -101,9 +101,15 @@ export const addTransactionsToApprove = (transactions) => (dispatch, getState) =
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
 };
 
-export const transactionIfExists = (transactionId) => {
+export const transactionIfExists = (transactionId) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
   return (transactionsToApprove && transactionsToApprove[transactionId]);
+};
+
+export const removeTransaction = (transactionId) => (dispatch, getState) => {
+  const { transactionsToApprove } = getState().transactionsToApprove;
+  const updatedTransactions = omit(transactionsToApprove, [transactionId]);
+  dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
 };
 
 // -- Reducer ----------------------------------------- //
