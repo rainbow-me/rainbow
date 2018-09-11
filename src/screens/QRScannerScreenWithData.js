@@ -5,11 +5,13 @@ import { AlertIOS } from 'react-native';
 import lang from 'i18n-js';
 import { connect } from 'react-redux';
 import { walletConnectInit } from '../model/walletconnect';
+import { addWalletConnector } from '../reducers/walletconnect';
 import QRScannerScreen from './QRScannerScreen';
 
 class QRScannerScreenWithData extends Component {
   static propTypes = {
     accountAddress: PropTypes.string,
+    addWalletConnector: PropTypes.func,
     isScreenActive: PropTypes.bool,
     navigation: PropTypes.object,
   }
@@ -37,7 +39,7 @@ class QRScannerScreenWithData extends Component {
     if (data) {
       try {
         const walletConnector = await walletConnectInit(accountAddress, data);
-        // TODO: reducer to add walletConnector to state
+        this.props.addWalletConnector(walletConnector);
         navigation.navigate('WalletScreen');
       } catch (error) {
         AlertIOS.alert(lang.t('wallet.wallet_connect.error'), error);
@@ -56,4 +58,4 @@ class QRScannerScreenWithData extends Component {
 }
 
 const reduxProps = ({ account: { accountAddress } }) => ({ accountAddress });
-export default connect(reduxProps, null)(QRScannerScreenWithData);
+export default connect(reduxProps, { addWalletConnector })(QRScannerScreenWithData);
