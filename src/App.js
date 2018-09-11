@@ -15,7 +15,9 @@ import transactionsToApprove, {
   addTransactionsToApprove,
   transactionIfExists
 } from './reducers/transactionsToApprove';
+import { getValidWalletConnectors } from './reducers/walletconnect';
 import {
+  walletConnectInitAllSessions,
   walletConnectGetAllTransactions,
   walletConnectGetTransaction
 } from './model/walletconnect';
@@ -32,6 +34,8 @@ class App extends Component {
     accountUpdateAccountAddress: PropTypes.func,
     addTransactionToApprove: PropTypes.func,
     addTransactionsToApprove: PropTypes.func,
+    getValidWalletConnectors: PropTypes.func,
+    setWalletConnectors: PropTypes.func,
     transactionIfExists: PropTypes.func,
   }
 
@@ -75,6 +79,13 @@ class App extends Component {
       .then(walletAddress => {
         console.log('wallet address is', walletAddress);
         this.props.accountUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
+        walletConnectInitAllSessions()
+          .then(allConnectors => {
+            this.props.setWalletConnectors(walletConnectors);
+          })
+          .catch(error => {
+            console.log('Unable to init all WalletConnect sessions');
+          });
         firebase
           .notifications()
           .getInitialNotification()
@@ -113,8 +124,8 @@ class App extends Component {
   }
 
   fetchAllTransactionsFromWalletConnectSessions = async () => {
-    // TODO: get all transactions from reducer state; may not be possible to get all valid walletConnectors right away unless I have a function in between
-    const allTransactions = await walletConnectGetAllTransactions(this.props.allValidWalletConnectors);
+    const validWalletConnectors = this.props.getValidWalletConnectors();
+    const allTransactions = await walletConnectGetAllTransactions(validWalletConnectors);
     const transaction = this.props.addTransactionsToApprove(allTransactions);
   }
 
@@ -123,8 +134,8 @@ class App extends Component {
     if (existingTransaction) {
       this.handleOpenConfirmTransactionModal(existingTransaction);
     } else {
-      // TODO: get session for sessionId from reducer
-      const transactionDetails = await walletConnectGetTransaction(transactionId, session);
+      const walletConnector = this.props.walletConnectors[sessionId];
+      const transactionDetails = await walletConnectGetTransaction(transactionId, walletConnector);
       if (transactionDetails) {
         const { transactionPayload, dappName } = transactionDetails;
         const transaction = this.props.addTransactionToApprove(sessionId, transactionId, transactionPayload, dappName);
@@ -145,11 +156,13 @@ class App extends Component {
 const AppWithRedux = compose(
   withProps({ store }),
   connect(
-    null,
+    ({ walletconnector: { walletConnectors } }) => ({ walletConnectors }),
     {
       addTransactionToApprove,
       addTransactionsToApprove,
       accountUpdateAccountAddress,
+      getValidWalletConnectors,
+      setWalletConnectors,
       transactionIfExists,
     },
   ),

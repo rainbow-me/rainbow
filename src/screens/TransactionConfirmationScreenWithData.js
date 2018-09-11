@@ -8,12 +8,14 @@ import { sendTransaction } from '../model/wallet';
 import { accountUpdateHasPendingTransaction, accountUpdateTransactions } from 'balance-common';
 import { walletConnectSendTransactionHash } from '../model/walletconnect';
 import TransactionConfirmationScreen from './TransactionConfirmationScreen';
+import { removeTransaction } from '../reducers/transactionsToApprove';
 
 class TransactionConfirmationScreenWithData extends Component {
   static propTypes = {
     accountUpdateHasPendingTransaction: PropTypes.func,
     accountUpdateTransactions: PropTypes.func,
     navigation: PropTypes.any,
+    removeTransaction: PropTypes.func,
   }
 
   state = {
@@ -40,10 +42,11 @@ class TransactionConfirmationScreenWithData extends Component {
           nonce: get(transactionDetails, 'transactionDisplayDetails.nonce'),
           to: get(transactionDetails, 'transactionDisplayDetails.to'),
         };
-        dispatch(this.props.accountUpdateHasPendingTransaction());
-        dispatch(this.props.accountUpdateTransactions(txDetails));
+        this.props.accountUpdateHasPendingTransaction();
+        this.props.accountUpdateTransactions(txDetails);
+        this.props.removeTransaction(transactionDetails.transactionId);
         try {
-          //TODO: get walletConnector from reducer using transactionDetails.sessionId
+          const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
           await walletConnectSendTransactionHash(walletConnector, transactionDetails.transactionId, true, transactionReceipt.hash);
           // TODO: update that this transaction has been confirmed and reset txn details
           this.closeTransactionScreen();
@@ -61,21 +64,28 @@ class TransactionConfirmationScreenWithData extends Component {
         }
       }
     } catch (error) {
-      this.handleCancelTransaction();
+      // TODO only send failed status after multiple tries
+      this.sendFailedTransactionStatus();
       AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
     }
   };
 
-  handleCancelTransaction = async () => {
+  sendFailedTransactionStatus = async () => {
     try {
       const { transactionDetails } = this.state;
-      // TODO: get walletConnector from reducer with transactionDetails.sessionId
+      this.props.removeTransaction(transactionDetails.transactionId);
+      const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
       await walletConnectSendTransactionHash(walletConnector, transactionDetails.transactionId, false, null);
       this.closeTransactionScreen();
     } catch (error) {
       this.closeTransactionScreen();
       AlertIOS.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
     }
+  }
+
+  handleCancelTransaction = async () => {
+    this.props.removeTransaction(transactionDetails.transactionId);
+    await sendFailedTransactionStatus();
   }
 
   closeTransactionScreen = () => {
@@ -104,6 +114,13 @@ class TransactionConfirmationScreenWithData extends Component {
 }
 
 export default connect(
-  ({ transactionsToApprove: { transactionsToApprove } }) => ({ transactionsToApprove }),
-  { accountUpdateHasPendingTransaction, accountUpdateTransactions },
+  ({
+    transactionsToApprove: { transactionsToApprove },
+    walletconnect: { walletConnectors }
+  }) => ({ transactionsToApprove, walletConnectors }),
+  {
+    accountUpdateHasPendingTransaction,
+    accountUpdateTransactions,
+    removeTransaction
+  },
 )(TransactionConfirmationScreenWithData);
