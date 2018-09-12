@@ -19,7 +19,7 @@ If you are new to React Native, this is a helpful introduction: https://facebook
 
 4. Install CocoaPods by running `sudo gem install cocoapods`.
 
-5. Install required Pods by running `yard install-pods`.
+5. Install required Pods by running `yarn install-pods`.
 
 6. Run `yarn ios` to build the project for XCode.
 
