@@ -38,7 +38,7 @@ class TransactionConfirmationScreenWithData extends Component {
           from: get(transactionDetails, 'transactionDisplayDetails.from'),
           gasLimit: get(transactionDetails, 'transactionDisplayDetails.gasLimit'),
           gasPrice: get(transactionDetails, 'transactionDisplayDetails.gasPrice'),
-          hash = transactionReceipt.hash;
+          hash: transactionReceipt.hash,
           nonce: get(transactionDetails, 'transactionDisplayDetails.nonce'),
           to: get(transactionDetails, 'transactionDisplayDetails.to'),
         };
