@@ -54,7 +54,7 @@ const groupTransactionByDate = transactions => {
     } else if (isYesterday(timestamp)) {
       return 'Yesterday';
     } else if (isThisMonth(timestamp)) {
-      return 'This month';
+      return 'This Month';
     }
 
     return format(timestamp, `MMMM${isThisYear(timestamp) ? '' : ' YYYY'}`);
