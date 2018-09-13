@@ -8,7 +8,7 @@ import { ButtonPressAnimation } from '../buttons';
 import { Centered } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 
-const FloatingActionButtonBorderRadius = 24;
+const FloatingActionButtonBorderRadius = 27;
 
 const Container = styled(Centered)`
   ${position.cover}
