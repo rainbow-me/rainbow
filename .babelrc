@@ -1,3 +1,4 @@
 {
-  "presets": ["react-native"]
+  "plugins": ["date-fns", ["lodash", { "id": ["lodash", "recompose"] }]],
+  "presets": ["module:metro-react-native-babel-preset"]
 }
