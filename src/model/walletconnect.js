@@ -52,7 +52,7 @@ export const walletConnectDisconnect = async (walletConnector) => {
 
 export const walletConnectGetAllTransactions = async (walletConnectors) => {
   try {
-    const sessionToTransactions = mapValues(walletConnectors, (walletConnector) => {
+    const sessionToTransactions = mapValues(walletConnectors, async (walletConnector) => {
       const sessionId = walletConnector.sessionId;
       const dappName = walletConnector.dappName;
       const sessionTransactions = await walletConnector.getAllTransactionRequests();
