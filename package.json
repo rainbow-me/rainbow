@@ -45,6 +45,7 @@
     "react-native": "^0.57.0",
     "react-native-actionsheet": "^2.4.2",
     "react-native-camera": "^1.1.4",
+    "react-native-circular-progress": "^1.0.1",
     "react-native-code-push": "^5.4.1",
     "react-native-crypto": "^2.1.2",
     "react-native-firebase": "^4.3.8",
