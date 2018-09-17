@@ -16,7 +16,10 @@ import transactionsToApprove, {
   addTransactionsToApprove,
   transactionIfExists
 } from './reducers/transactionsToApprove';
-import { getValidWalletConnectors } from './reducers/walletconnect';
+import walletconnect, {
+  getValidWalletConnectors,
+  setWalletConnectors
+} from './reducers/walletconnect';
 import {
   walletConnectInitAllSessions,
   walletConnectGetAllTransactions,
@@ -25,7 +28,7 @@ import {
 import { walletInit } from './model/wallet';
 
 const store = createStore(
-  combineReducers({ account, transactionsToApprove }),
+  combineReducers({ account, transactionsToApprove, walletconnect }),
   applyMiddleware(thunk),
 );
 
@@ -156,7 +159,7 @@ class App extends Component {
 const AppWithRedux = compose(
   withProps({ store }),
   connect(
-    ({ walletconnector: { walletConnectors } }) => ({ walletConnectors }),
+    ({ walletconnect: { walletConnectors } }) => ({ walletConnectors }),
     {
       addTransactionToApprove,
       addTransactionsToApprove,
