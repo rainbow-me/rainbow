@@ -232,6 +232,7 @@ export default function createSwipeNavigator(screens, options) {
             extraData={{ currentIndex }}
             getItemLayout={this.getItemLayout}
             horizontal
+            initialNumToRender={1}
             onMomentumScrollEnd={this.onMomentumScrollEnd}
             onScroll={this.onScroll}
             pagingEnabled

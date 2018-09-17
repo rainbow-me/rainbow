@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, withHandlers } from 'recompact';
+import { compose, withHandlers, onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
 import { ActivityList } from '../components/activity-list';
 import { Header, HeaderButton } from '../components/header';
@@ -25,6 +25,7 @@ const ActivityScreen = ({
   hasPendingTransaction,
   onPressBack,
   transactions,
+  transactionsCount,
 }) => (
   <Container>
     <Header align="end">
@@ -38,9 +39,9 @@ const ActivityScreen = ({
     {(accountAddress && !fetchingTransactions) && (
       <ActivityList
         accountAddress={accountAddress}
-        fetchingTransactions={fetchingTransactions}
         hasPendingTransaction={hasPendingTransaction}
         transactions={transactions}
+        transactionsCount={transactionsCount}
       />
     )}
   </Container>
@@ -52,6 +53,7 @@ ActivityScreen.propTypes = {
   hasPendingTransaction: PropTypes.bool,
   onPressBack: PropTypes.func,
   transactions: PropTypes.array,
+  transactionsCount: PropTypes.number,
 };
 
 export default compose(
@@ -60,4 +62,5 @@ export default compose(
   withHandlers({
     onPressBack: ({ navigation }) => () => navigation.goBack(),
   }),
+  onlyUpdateForKeys(['hasPendingTransaction', 'transactionsCount']),
 )(ActivityScreen);
