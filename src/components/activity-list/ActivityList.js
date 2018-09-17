@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { onlyUpdateForKeys } from 'recompact';
 import { buildTransactionsSections } from '../../helpers/transactions';
 import { CoinRow, TransactionCoinRow } from '../coin-row';
 import { SectionList } from '../list';
@@ -13,17 +14,16 @@ const getItemLayout = (data, index) => ({
 
 const ActivityList = ({
   accountAddress,
-  fetchingTransactions,
   hasPendingTransaction,
-  onPressBack,
-  safeAreaInset,
   transactions,
 }) => (
   <SectionList
     contentContainerStyle={{ paddingBottom: 40 }}
+    extraData={{ hasPendingTransaction }}
     getItemLayout={getItemLayout}
-    initialNumToRender={50}
+    initialNumToRender={30}
     keyExtractor={({ hash }) => hash}
+    maxToRenderPerBatch={40}
     removeClippedSubviews
     renderSectionHeader={({ section }) => <ActivityListHeader {...section} />}
     sections={buildTransactionsSections({
@@ -38,6 +38,7 @@ ActivityList.propTypes = {
   accountAddress: PropTypes.string,
   hasPendingTransaction: PropTypes.bool,
   transactions: PropTypes.array,
+  transactionsCount: PropTypes.number,
 };
 
-export default ActivityList;
+export default onlyUpdateForKeys(['hasPendingTransaction', 'transactionsCount'])(ActivityList);

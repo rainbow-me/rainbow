@@ -10,6 +10,7 @@ const mapStateToProps = ({
   fetchingTransactions,
   hasPendingTransaction,
   transactions,
+  transactionsCount: (transactions || []).length,
 });
 
 export default Component => connect(mapStateToProps)(Component);
