@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { StatusBar } from 'react-native';
-import { connect } from 'react-redux';
 import styled from 'styled-components/primitives';
 import Icon from '../components/icons/Icon';
 import { Column } from '../components/layout';
@@ -30,14 +29,14 @@ const LoadingText = styled(Monospace)`
   margin-top: 10;
 `;
 
-class LoadingScreen extends Component {
+export default class LoadingScreen extends Component {
   static propTypes = {
     navigation: PropTypes.object,
   }
 
   constructor(props) {
     super(props);
-    this.handleLoading();
+    loadAddress().then(this.handleNavigation);
     this.state = { isError: false };
   }
 
@@ -57,14 +56,10 @@ class LoadingScreen extends Component {
     }
   }
 
-  handleLoading = () => {
-    const { navigation } = this.props;
-
-    // If this is a brand new instance of the Balance Wallet app show the 'IntroScreen',
-    // otherwise display the main 'App' route. Afterwards this view will be
-    // unmounted and thrown away.
-    loadAddress().then(address => navigation.navigate(address ? 'App' : 'Intro'));
-  }
+  // If this is a brand new instance of the Balance Wallet app show the 'IntroScreen',
+  // otherwise display the main 'App' route. Afterwards this view will be
+  // unmounted and thrown away.
+  handleNavigation = address => this.props.navigation.navigate(address ? 'App' : 'Intro')
 
   render = () => (
     <Container align={this.state.isError ? 'start' : 'center'}>
@@ -83,6 +78,3 @@ class LoadingScreen extends Component {
     </Container>
   )
 }
-
-const reduxProps = ({ account: { accountAddress } }) => ({ accountAddress });
-export default connect(reduxProps, null)(LoadingScreen);
