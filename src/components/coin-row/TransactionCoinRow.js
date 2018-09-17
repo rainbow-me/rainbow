@@ -13,6 +13,7 @@ const TransactionCoinRow = ({ accountAddress, item, ...props }) => (
   <CoinRow
     {...item}
     {...props}
+    shouldRasterizeIOS={true}
     bottomRowRender={({ name, native, status }) => {
       const nativeDisplay = get(native, 'balance.display');
 
