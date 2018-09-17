@@ -28,6 +28,7 @@ const CoinIcon = enhance(({ size, symbol }) => (
       shadow.buildString(0, 4, 6, colors.alpha(colors.purple, 0.12)),
       shadow.buildString(0, 1, 3, colors.alpha(colors.purple, 0.24)),
     ]}
+    shouldRasterizeIOS={true}
   >
     <ReactCoinIcon
       fallbackRenderer={CoinIconFallback}
