@@ -1,4 +1,8 @@
 {
-  "plugins": ["date-fns", ["lodash", { "id": ["lodash", "recompose"] }]],
+  "plugins": [
+    "babel-plugin-styled-components",
+    "date-fns", 
+    ["lodash", { "id": ["lodash", "recompose"] }]
+  ],
   "presets": ["module:metro-react-native-babel-preset"]
 }
