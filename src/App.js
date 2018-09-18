@@ -20,7 +20,7 @@ import walletconnect, {
   setWalletConnectors
 } from './reducers/walletconnect';
 import {
-  walletConnectInitAllSessions,
+  walletConnectInitAllConnectors,
   walletConnectGetAllTransactions,
   walletConnectGetTransaction
 } from './model/walletconnect';
@@ -82,9 +82,10 @@ class App extends Component {
       .then(walletAddress => {
         console.log('wallet address is', walletAddress);
         this.props.accountUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
-        walletConnectInitAllSessions()
+        walletConnectInitAllConnectors()
           .then(allConnectors => {
             this.props.setWalletConnectors(walletConnectors);
+            fetchAllTransactionsFromWalletConnectSessions(allConnectors);
           })
           .catch(error => {
             console.log('Unable to init all WalletConnect sessions');
@@ -126,8 +127,8 @@ class App extends Component {
     Navigation.handleAction(this.navigatorRef, action);
   }
 
-  fetchAllTransactionsFromWalletConnectSessions = async () => {
-    const validWalletConnectors = this.props.getValidWalletConnectors();
+  fetchAllTransactionsFromWalletConnectSessions = async (allConnectors = null) => {
+    const validWalletConnectors = allConnectors || this.props.getValidWalletConnectors();
     const allTransactions = await walletConnectGetAllTransactions(validWalletConnectors);
     const transaction = this.props.addTransactionsToApprove(allTransactions);
   }
