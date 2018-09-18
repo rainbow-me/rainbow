@@ -2,8 +2,10 @@ import { isFunction, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AlertIOS } from 'react-native';
+import { compose } from 'recompact';
 import lang from 'i18n-js';
 import { connect } from 'react-redux';
+import { withAccountAddress } from '../hoc';
 import { walletConnectInit } from '../model/walletconnect';
 import { addWalletConnector } from '../reducers/walletconnect';
 import QRScannerScreen from './QRScannerScreen';
@@ -32,7 +34,11 @@ class QRScannerScreenWithData extends Component {
     return nextProps === omit(this.props, 'isScreenActive');
   }
 
-  onSuccess = async (event) => {
+  handlePressBackButton = () => this.props.navigation.goBack()
+
+  handleScannerRef = (ref) => { this.qrCodeScannerRef = ref; }
+
+  handleSuccess = async (event) => {
     const { accountAddress, navigation } = this.props;
     const data = event.data;
 
@@ -51,11 +57,14 @@ class QRScannerScreenWithData extends Component {
   render = () => (
     <QRScannerScreen
       {...this.props}
-      scannerRef={(ref) => { this.qrCodeScannerRef = ref; }}
-      onSuccess={this.onSuccess}
+      onPressBackButton={this.handlePressBackButton}
+      onSuccess={this.handleSuccess}
+      scannerRef={this.handleScannerRef}
     />
   )
 }
 
-const reduxProps = ({ account: { accountAddress } }) => ({ accountAddress });
-export default connect(reduxProps, { addWalletConnector })(QRScannerScreenWithData);
+export default compose(
+  withAccountAddress,
+  connect(null, { addWalletConnector }),
+)(QRScannerScreenWithData);

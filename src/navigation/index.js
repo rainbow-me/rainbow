@@ -1,3 +1,5 @@
+import { InteractionManager } from 'react-native';
+
 const queuedNavigationActions = [];
 let isPaused = false;
 
@@ -29,13 +31,15 @@ function resumeNavigationActions(navigation) {
   isPaused = false;
 
   // XXX - Need to determine if we want to navigate to next page instantly or after certain timeout.
-  setTimeout(() => {
-    while (queuedNavigationActions.length) {
-      const currentAction = queuedNavigationActions.pop();
+  if (queuedNavigationActions.length) {
+    InteractionManager.runAfterInteractions(() => {
+      while (queuedNavigationActions.length) {
+        const currentAction = queuedNavigationActions.pop();
 
-      navigation.dispatch(currentAction);
-    }
-  }, 300);
+        navigation.dispatch(currentAction);
+      }
+    });
+  }
 }
 
 export default {
