@@ -1691,9 +1691,9 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-balance-common@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.4.0.tgz#e43001878a86cf2d2fe253351c0ef9ccfd03456f"
+balance-common@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.4.1.tgz#59945306902c88d4db5506fac4b82acfdb6e0003"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -4066,6 +4066,10 @@ https-proxy-agent@^2.2.1:
 hyphenate-style-name@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/hyphenate-style-name/-/hyphenate-style-name-1.0.2.tgz#31160a36930adaf1fc04c6074f7eb41465d4ec4b"
+
+i18n-js@^3.0.11:
+  version "3.0.11"
+  resolved "https://registry.yarnpkg.com/i18n-js/-/i18n-js-3.0.11.tgz#f9e96bdb641c5b9d6be12759d7c422089987ef02"
 
 i18next@^11.3.2:
   version "11.6.0"
@@ -6649,6 +6653,10 @@ react-native-iphone-x-helper@^1.0.3:
 react-native-keychain@^3.0.0-rc.3:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-3.0.0.tgz#29da1dfa43c2581f76bf9420914fd38a1558cf18"
+
+react-native-languages@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-languages/-/react-native-languages-3.0.0.tgz#c2ffcd799e5cc4f091b8183450198d55c03a8720"
 
 react-native-level-fs@^3.0.1:
   version "3.0.1"
