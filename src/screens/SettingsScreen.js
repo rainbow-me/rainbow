@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import lang from 'i18n-js';
 import { withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import AppVersionStamp from '../components/AppVersionStamp';
 import { Button } from '../components/buttons';
 import { BackButton, Header } from '../components/header';
 import { Centered, Column, Page } from '../components/layout';
-import SendFeedback from "../components/SendFeedback";
+import SendFeedback from '../components/SendFeedback';
 import { Monospace, TruncatedAddress } from '../components/text';
 import CopyTooltip from '../components/CopyTooltip';
 import QRCodeDisplay from '../components/QRCodeDisplay';
@@ -63,7 +64,7 @@ const SettingsScreen = ({
         value={address}
       />
       <WalletAddressTextContainer>
-        <CopyTooltip textToCopy={address} tooltipText="Copy Address">
+        <CopyTooltip textToCopy={address} tooltipText={lang.t('wallet.settings.copy_address')}>
           <TruncatedAddress
             address={address}
             size="big"
@@ -73,12 +74,12 @@ const SettingsScreen = ({
       </WalletAddressTextContainer>
       <SendFeedback />
       <SeedPhraseButton onPress={onToggleShowSeedPhrase}>
-        {seedPhrase ? 'Hide' : 'Show'} Seed Phrase
+        {seedPhrase ? lang.t('wallet.settings.hide_seed_phrase') : lang.t('wallet.settings.show_seed_phrase')}
       </SeedPhraseButton>
     </Content>
     <SeedPhraseSection>
       {seedPhrase && (
-        <CopyTooltip textToCopy={seedPhrase} tooltipText="Copy Seed Phrase">
+        <CopyTooltip textToCopy={seedPhrase} tooltipText={lang.t('wallet.settings.copy_seed_phrase')}>
           <SeedPhraseText>
             {seedPhrase}
           </SeedPhraseText>

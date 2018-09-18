@@ -2,6 +2,7 @@ import { get } from 'lodash';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { AlertIOS, StatusBar, Vibration } from 'react-native';
+import lang from 'i18n-js';
 import { connect } from 'react-redux';
 import { sendTransaction } from '../model/wallet';
 import { walletConnectSendTransactionHash } from '../model/walletconnect';
@@ -27,7 +28,7 @@ class TransactionConfirmationScreenWithData extends Component {
   handleConfirmTransaction = async () => {
     try {
       const { transactionDetails } = this.state;
-      const transactionReceipt = await sendTransaction(transactionDetails.transactionPayload, 'Confirm transaction' );
+      const transactionReceipt = await sendTransaction(transactionDetails.transactionPayload, lang.t('wallet.transaction.confirm'));
       if (transactionReceipt && transactionReceipt.hash) {
         try {
           await walletConnectSendTransactionHash(transactionDetails.transactionId, true, transactionReceipt.hash);
@@ -36,19 +37,19 @@ class TransactionConfirmationScreenWithData extends Component {
         } catch (error) {
           // TODO error handling when txn hash failed to send; store somewhere?
           this.closeTransactionScreen();
-          AlertIOS.alert('Failed to send transaction status');
+          AlertIOS.alert(lang.t('wallet.transaction.alert.transaction_status'));
         }
       } else {
         try {
           this.handleCancelTransaction();
         } catch (error) {
           this.closeTransactionScreen();
-          AlertIOS.alert('Failed to send failed transaction status');
+          AlertIOS.alert(lang.t('wallet.transaction.alert.failed_transaction_status'));
         }
       }
     } catch (error) {
       this.handleCancelTransaction();
-      AlertIOS.alert('Authentication Failed');
+      AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
     }
   };
 
@@ -59,7 +60,7 @@ class TransactionConfirmationScreenWithData extends Component {
       this.closeTransactionScreen();
     } catch (error) {
       this.closeTransactionScreen();
-      AlertIOS.alert('Failed to send cancelled transaction to WalletConnect');
+      AlertIOS.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
     }
   }
 

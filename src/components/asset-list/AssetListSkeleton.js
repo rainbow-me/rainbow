@@ -1,6 +1,7 @@
 import { times } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
+import lang from 'i18n-js';
 import { withNavigation } from 'react-navigation';
 import { compose, omitProps, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
@@ -27,7 +28,7 @@ const SkeletonElement = styled(Icon).attrs({ name: 'assetListItemSkeleton' })`
 
 const AssetListSkeleton = ({ onPressAddFunds, skeletonCount }) => (
   <Container>
-    <AssetListHeader section={{ title: 'Balances', totalValue: '$0.00' }} />
+    <AssetListHeader section={{ title: lang.t('account.tab_balances'), totalValue: '$0.00' }} />
     <Column>
       {times(skeletonCount, index => (
         <SkeletonElement
