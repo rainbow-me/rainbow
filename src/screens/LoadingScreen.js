@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { StatusBar } from 'react-native';
-import lang from 'react-native-i18n';
+import lang from 'i18n-js';
 import { connect } from 'react-redux';
 import styled from 'styled-components/primitives';
 import Icon from '../components/icons/Icon';

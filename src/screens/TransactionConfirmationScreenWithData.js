@@ -2,7 +2,7 @@ import { get } from 'lodash';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { AlertIOS, StatusBar, Vibration } from 'react-native';
-import lang from 'react-native-i18n';
+import lang from 'i18n-js';
 import { connect } from 'react-redux';
 import { sendTransaction } from '../model/wallet';
 import { walletConnectSendTransactionHash } from '../model/walletconnect';

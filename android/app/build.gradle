@@ -152,7 +152,7 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-i18n')
+    compile project(':react-native-languages')
     compile project(':react-native-gesture-handler')
     compile project(':react-native-firebase')
     compile project(':react-native-code-push')

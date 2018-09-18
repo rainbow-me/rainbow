@@ -1,7 +1,7 @@
 import { times } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import lang from 'react-native-i18n';
+import lang from 'i18n-js';
 import { withNavigation } from 'react-navigation';
 import { compose, omitProps, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
