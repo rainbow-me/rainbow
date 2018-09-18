@@ -1,5 +1,6 @@
+import { withSafeTimeout } from '@hocs/safe-timers';
 import PropTypes from 'prop-types';
-import React, { Component, Fragment } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { StatusBar } from 'react-native';
 import styled from 'styled-components/primitives';
 import Icon from '../components/icons/Icon';
@@ -29,9 +30,10 @@ const LoadingText = styled(Monospace)`
   margin-top: 10;
 `;
 
-export default class LoadingScreen extends Component {
+class LoadingScreen extends PureComponent {
   static propTypes = {
     navigation: PropTypes.object,
+    setSafeTimeout: PropTypes.func,
   }
 
   constructor(props) {
@@ -40,21 +42,8 @@ export default class LoadingScreen extends Component {
     this.state = { isError: false };
   }
 
-  errorTimeoutHandle = null
-
-  componentDidMount = () => {
-    this.errorTimeoutHandle = setTimeout(() => {
-      this.setState({ isError: true });
-      this.errorTimeoutHandle = 0;
-    }, 5000);
-  }
-
-  componentWillUnmount = () => {
-    if (this.errorTimeoutHandle) {
-      clearTimeout(this.errorTimeoutHandle);
-      this.errorTimeoutHandle = 0;
-    }
-  }
+  componentDidMount = () => this.props.setSafeTimeout(this.handleError, 5000)
+  handleError = () => this.setState({ isError: true })
 
   // If this is a brand new instance of the Balance Wallet app show the 'IntroScreen',
   // otherwise display the main 'App' route. Afterwards this view will be
@@ -78,3 +67,5 @@ export default class LoadingScreen extends Component {
     </Container>
   )
 }
+
+export default withSafeTimeout(LoadingScreen);
