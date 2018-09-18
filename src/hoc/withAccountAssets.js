@@ -1,5 +1,7 @@
 import { connect } from 'react-redux';
 
+const EMPTY_ARRAY = [];
+
 const mapStateToProps = ({
   account: {
     accountInfo: {
@@ -10,10 +12,9 @@ const mapStateToProps = ({
     fetchingUniqueTokens,
     uniqueTokens,
   },
-  ...rest
 }) => ({
   assets,
-  assetsCount: (assets || []).length,
+  assetsCount: (assets || EMPTY_ARRAY).length,
   assetsTotalUSD: total,
   fetching,
   fetchingUniqueTokens,

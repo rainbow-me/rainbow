@@ -1,10 +1,11 @@
 import { get, map } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component, createElement } from 'react';
+import React, { createElement, PureComponent } from 'react';
 import { createNavigator, StackRouter } from 'react-navigation';
 import { FlatList, StatusBar, View } from 'react-native';
-
 import { deviceUtils } from '../utils';
+
+const EMPTY_ARRAY = [];
 
 export default function createSwipeNavigator(screens, options) {
   const router = StackRouter(screens, options);
@@ -16,7 +17,7 @@ export default function createSwipeNavigator(screens, options) {
 
   let isSwiping = false;
 
-  class NavigationView extends Component {
+  class NavigationView extends PureComponent {
     static propTypes = {
       descriptors: PropTypes.object,
       navigation: PropTypes.object,
@@ -78,7 +79,7 @@ export default function createSwipeNavigator(screens, options) {
      * @return {Number}             The index of the route which will be zero if the route does not exist.
      */
     getRouteIndex = (routeName) => {
-      const routeIndex = (routeOrder || []).indexOf(routeName);
+      const routeIndex = (routeOrder || EMPTY_ARRAY).indexOf(routeName);
 
       return routeIndex > -1 ? routeIndex : 0;
     };
@@ -105,6 +106,8 @@ export default function createSwipeNavigator(screens, options) {
 
       this.scrollToIndex(routeIndex, true);
     };
+
+    handleFlatListRef = (flatListRef) => { this.flatListRef = flatListRef; }
 
     /**
      * Navigate to a screen with certain params and a scroll animation.
@@ -232,11 +235,10 @@ export default function createSwipeNavigator(screens, options) {
             extraData={{ currentIndex }}
             getItemLayout={this.getItemLayout}
             horizontal
-            initialNumToRender={1}
             onMomentumScrollEnd={this.onMomentumScrollEnd}
             onScroll={this.onScroll}
             pagingEnabled
-            ref={(flatListRef) => { this.flatListRef = flatListRef; }}
+            ref={this.handleFlatListRef}
             removeClippedSubviews
             renderItem={this.renderItem}
             scrollEventThrottle={16}
