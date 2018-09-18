@@ -12,6 +12,9 @@ const getItemLayout = (data, index) => ({
   offset: CoinRow.height * index,
 });
 
+const keyExtractor = ({ hash }) => hash;
+const renderSectionHeader = ({ section }) => <ActivityListHeader {...section} />;
+
 const ActivityList = ({
   accountAddress,
   hasPendingTransaction,
@@ -22,10 +25,10 @@ const ActivityList = ({
     extraData={{ hasPendingTransaction }}
     getItemLayout={getItemLayout}
     initialNumToRender={30}
-    keyExtractor={({ hash }) => hash}
+    keyExtractor={keyExtractor}
     maxToRenderPerBatch={40}
     removeClippedSubviews
-    renderSectionHeader={({ section }) => <ActivityListHeader {...section} />}
+    renderSectionHeader={renderSectionHeader}
     sections={buildTransactionsSections({
       accountAddress,
       renderItem: TransactionCoinRow,
