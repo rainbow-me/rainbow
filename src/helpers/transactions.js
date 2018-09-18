@@ -80,9 +80,11 @@ export const buildTransactionsSections = ({ accountAddress, renderItem, transact
   const normalizedTransactions = normalizeTransactions({ accountAddress, transactions });
   const transactionsByDate = groupTransactionByDate(normalizedTransactions);
 
-  return Object.keys(transactionsByDate).map((section) => ({
+  const renderItemElement = renderItemProps => createElement(renderItem, renderItemProps);
+
+  return Object.keys(transactionsByDate).map(section => ({
     data: transactionsByDate[section],
-    renderItem: renderItemProps => createElement(renderItem, renderItemProps),
+    renderItem: renderItemElement,
     title: section,
   }));
 };
