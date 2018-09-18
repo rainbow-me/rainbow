@@ -2,7 +2,7 @@ import { isFunction, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AlertIOS } from 'react-native';
-import lang from 'react-native-i18n';
+import lang from 'i18n-js';
 import { connect } from 'react-redux';
 import { walletConnectInit } from '../model/walletconnect';
 import QRScannerScreen from './QRScannerScreen';

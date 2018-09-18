@@ -1,5 +1,5 @@
 import RNWalletConnect from 'rn-walletconnect-wallet';
-import lang from 'react-native-i18n';
+import lang from 'i18n-js';
 import { commonStorage } from 'balance-common';
 import { AlertIOS } from 'react-native';
 

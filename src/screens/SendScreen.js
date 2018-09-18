@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import lang from 'react-native-i18n';
+import lang from 'i18n-js';
 
 const SendScreen = ({ sections }) => (
   <View style={styles.container}>

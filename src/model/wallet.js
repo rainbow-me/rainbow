@@ -1,5 +1,5 @@
 import ethers from 'ethers';
-import lang from 'react-native-i18n';
+import lang from 'i18n-js';
 import * as keychain from '../model/keychain';
 const seedPhraseKey = 'balanceWalletSeedPhrase';
 const privateKeyKey = 'balanceWalletPrivateKey';
