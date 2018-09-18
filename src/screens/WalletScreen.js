@@ -1,50 +1,22 @@
-import { get, groupBy, isNull } from 'lodash';
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, onlyUpdateForPropTypes, withHandlers, withState } from 'recompact';
 import { AssetList, UniqueTokenRow } from '../components/asset-list';
-import { BalanceCoinRow } from '../components/coin-row';
 import Avatar from '../components/Avatar';
+import { BalanceCoinRow } from '../components/coin-row';
 import { ActivityHeaderButton, Header, HeaderButton } from '../components/header';
 import { FlexItem, Page } from '../components/layout';
+import {
+  buildUniqueTokenList,
+  groupAssetsByMarketValue,
+  sortAssetsByNativeAmount,
+} from '../helpers/assets';
 import { withAccountAssets, withHideSplashScreenOnMount } from '../hoc';
 import { position } from '../styles';
 
-const buildUniqueTokenList = (uniqueTokensAssets) => {
-  const list = [];
-
-  for (let i = 0; i < uniqueTokensAssets.length; i += 2) {
-    list.push([uniqueTokensAssets[i], uniqueTokensAssets[i + 1]]);
-  }
-
-  return list;
-};
-
+const BalanceRenderItem = renderItemProps => <BalanceCoinRow {...renderItemProps} />;
 const filterEmptyAssetSections = sections => sections.filter(({ totalItems }) => totalItems);
-
-const groupAssetsByMarketValue = assets => groupBy(assets, ({ native }) => (
-  isNull(native) ? 'noValue' : 'hasValue'
-));
-
-const sortAssetsByNativeAmount = (assets, showShitcoins) => {
-  const assetsByMarketValue = groupAssetsByMarketValue(assets);
-
-  const sortedAssetsWithMarketValue = (assetsByMarketValue.hasValue || []).sort((a, b) => {
-    const amountA = get(a, 'native.balance.amount', 0);
-    const amountB = get(b, 'native.balance.amount', 0);
-    return parseFloat(amountB) - parseFloat(amountA);
-  });
-
-  if (showShitcoins) {
-    const sortedAssetsWithNoMarketValue = (assetsByMarketValue.noValue || []).sort((a, b) => (
-      (a.name < b.name) ? -1 : 1
-    ));
-
-    return sortedAssetsWithMarketValue.concat(sortedAssetsWithNoMarketValue);
-  }
-
-  return sortedAssetsWithMarketValue;
-};
 
 const WalletScreen = ({
   assets,
@@ -60,8 +32,7 @@ const WalletScreen = ({
   const sections = {
     balances: {
       data: sortAssetsByNativeAmount(assets, showShitcoins),
-      // eslint-disable-next-line react/display-name
-      renderItem: renderItemProps => <BalanceCoinRow {...renderItemProps} />,
+      renderItem: BalanceRenderItem,
       title: 'Balances',
       totalItems: get(assetsTotalUSD, 'amount') ? assetsCount : 0,
       totalValue: get(assetsTotalUSD, 'display', ''),
@@ -81,7 +52,7 @@ const WalletScreen = ({
     sections.balances.contextMenuOptions = {
       cancelButtonIndex: 1,
       destructiveButtonIndex: showShitcoins ? 0 : 99, // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
-      onPress: (index) => { if (index === 0) onToggleShowShitcoins(); },
+      onPress: onToggleShowShitcoins,
       options: [`${showShitcoins ? 'Hide' : 'Show'} assets with no price data`, 'Cancel'],
     };
   }
@@ -126,7 +97,11 @@ export default compose(
   withHandlers({
     onPressProfile: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
     onPressWalletConnect: ({ navigation }) => () => navigation.navigate('QRScannerScreen'),
-    onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => () => toggleShowShitcoins(!showShitcoins),
+    onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
+      if (index === 0) {
+        toggleShowShitcoins(!showShitcoins);
+      }
+    },
   }),
   onlyUpdateForPropTypes,
 )(WalletScreen);
