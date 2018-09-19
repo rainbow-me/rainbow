@@ -1,15 +1,15 @@
+import CodePush from 'react-native-code-push';
 import firebase from 'react-native-firebase';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import thunk from 'redux-thunk';
 import { account, accountInitializeState, accountUpdateAccountAddress, commonStorage } from 'balance-common';
-import { AppRegistry } from 'react-native';
+import { AppRegistry, AppState, AsyncStorage, Platform } from 'react-native';
 import { compose, withProps } from 'recompact';
 import { connect, Provider } from 'react-redux';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { NavigationActions } from 'react-navigation';
 import { AlertIOS } from 'react-native';
-import Navigation from './navigation';
 import Routes from './screens/Routes';
 import transactionsToApprove, {
   addTransactionToApprove,
@@ -26,6 +26,7 @@ import {
   walletConnectGetTransaction
 } from './model/walletconnect';
 import { walletInit } from './model/wallet';
+import Navigation from './navigation';
 
 const store = createStore(
   combineReducers({ account, transactionsToApprove, walletconnect }),
@@ -181,4 +182,9 @@ const AppWithRedux = compose(
   ),
 )(App);
 
-AppRegistry.registerComponent('BalanceWallet', () => AppWithRedux);
+const AppWithCodePush = CodePush({
+  checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
+  installMode: CodePush.InstallMode.ON_NEXT_RESUME,
+})(AppWithRedux);
+
+AppRegistry.registerComponent('BalanceWallet', () => AppWithCodePush);

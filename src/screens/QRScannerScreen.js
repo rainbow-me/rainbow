@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withHandlers } from 'recompact';
+import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
 import { BackButton, Header } from '../components/header';
 import { Centered } from '../components/layout';
@@ -43,6 +43,4 @@ QRScannerScreen.propTypes = {
   scannerRef: PropTypes.func,
 };
 
-export default withHandlers({
-  onPressBackButton: ({ navigation }) => () => navigation.goBack(),
-})(QRScannerScreen);
+export default pure(QRScannerScreen);

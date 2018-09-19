@@ -1,5 +1,6 @@
+import { withSafeTimeout } from '@hocs/safe-timers';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Dimensions, StyleSheet } from 'react-native';
 import Permissions from 'react-native-permissions';
 import ReactNativeQRCodeScanner from 'react-native-qrcode-scanner';
@@ -40,11 +41,12 @@ const CrosshairContainer = styled(Centered)`
   ${position.cover}
 `;
 
-export default class QRCodeScanner extends Component {
+class QRCodeScanner extends PureComponent {
   static propTypes = {
     onCameraReady: PropTypes.func,
     onSuccess: PropTypes.func,
     scannerRef: PropTypes.func,
+    setSafeTimeout: PropTypes.func,
   }
 
   state = {
@@ -53,25 +55,11 @@ export default class QRCodeScanner extends Component {
     isInitialized: false,
   }
 
-  initializionTimeout = null
-
   componentDidMount = () => {
     this.handleIsAuthorized();
-
-    this.initializionTimeout = setTimeout(() => {
-      this.initializionTimeout = 0;
-      if (!this.state.isInitialized) {
-        this.handleError('initializing');
-      }
-    }, 5000);
+    this.props.setSafeTimeout(this.handleInitializationError, 5000);
   }
 
-  componentWillUnmount = () => {
-    if (this.initializionTimeout) {
-      clearTimeout(this.initializionTimeout);
-      this.initializionTimeout = 0;
-    }
-  }
 
   handleCameraReady = () => {
     console.log('📷 ✅ CAMERA READY');
@@ -87,6 +75,12 @@ export default class QRCodeScanner extends Component {
     Permissions.request(CAMERA_PERMISSION).then((response) => {
       this.setState({ isAuthorized: response === PERMISSION_AUTHORIZED });
     });
+  }
+
+  handleInitializationError = () => {
+    if (!this.state.isInitialized) {
+      this.handleError('initializing');
+    }
   }
 
   handleMountError = () => {
@@ -134,3 +128,5 @@ export default class QRCodeScanner extends Component {
     );
   }
 }
+
+export default withSafeTimeout(QRCodeScanner);

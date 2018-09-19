@@ -1,19 +1,16 @@
 import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Alert, Clipboard } from 'react-native';
-import { loadAddress, loadSeedPhrase } from '../model/wallet';
+import { withAccountAddress } from '../hoc';
+import { loadSeedPhrase } from '../model/wallet';
 import SettingsScreen from './SettingsScreen';
 
-export default class SettingsScreenWithData extends Component {
+class SettingsScreenWithData extends Component {
   static propTypes = {
     isScreenActive: PropTypes.bool,
   }
 
-  state = {
-    address: '',
-    seedPhrase: null,
-  }
+  state = { seedPhrase: null }
 
   shouldComponentUpdate = ({ isScreenActive, ...nextProps }, nextState) => {
     if (!isScreenActive && this.state.seedPhrase) {
@@ -26,9 +23,8 @@ export default class SettingsScreenWithData extends Component {
     return isNewProps || isNewState;
   }
 
-  componentDidMount = () => loadAddress().then(address => this.setState({ address }))
-
   handleHideSeedPhrase = () => this.setState({ seedPhrase: null })
+  handlePressBackButton = () => this.props.navigation.goBack()
 
   handleToggleShowSeedPhrase = () => {
     if (!this.state.seedPhrase) {
@@ -42,7 +38,10 @@ export default class SettingsScreenWithData extends Component {
     <SettingsScreen
       {...this.props}
       {...this.state}
+      onPressBackButton={this.handlePressBackButton}
       onToggleShowSeedPhrase={this.handleToggleShowSeedPhrase}
     />
   )
 }
+
+export default withAccountAddress(SettingsScreenWithData);
