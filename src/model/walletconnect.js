@@ -2,19 +2,23 @@ import RNWalletConnect from 'rn-walletconnect-wallet';
 import { commonStorage } from 'balance-common';
 import { AlertIOS } from 'react-native';
 import { assign, mapValues, values } from 'lodash';
-
 const PUSH_ENDPOINT = 'https://walletconnect.balance.io/webhook/push-notify';
 
 export const walletConnectInit = async (accountAddress, uriString) => {
   const fcmTokenLocal = await commonStorage.getLocal('balanceWalletFcmToken');
   const fcmToken = fcmTokenLocal ? fcmTokenLocal.data : null;
   const walletConnector = new RNWalletConnect(uriString);
+  const something = walletConnector._parseWalletConnectURI(uriString);
+  console.log('walletconnector', walletConnector);
   if (fcmToken) {
     try {
       await walletConnector.sendSessionStatus({ fcmToken, pushEndpoint: PUSH_ENDPOINT, data: [accountAddress] });
+      console.log('sent session status');
       await commonStorage.saveWalletConnectSession(walletConnector.sessionId, uriString, walletConnector.expires);
+      console.log('saved wc session');
       return walletConnector;
     } catch (error) {
+      console.log(error);
       AlertIOS.alert('Unable to initialize with WalletConnect');
       return null;
     }
@@ -26,15 +30,20 @@ export const walletConnectInit = async (accountAddress, uriString) => {
 
 export const walletConnectInitAllConnectors = async () => {
   try {
-    const allSessions = await commonStorage.getAllValidWalletConnectSessions();
+    console.log('walletconnect init all connectors', commonStorage);
+    const allSessions = await commonStorage.getLocal('walletconnect');
+    //const allSessions = await commonStorage.getAllValidWalletConnectSessions();
+    console.log('>>>all sessions', allSessions);
     const allConnectors = mapValues(allSessions, (session) => {
       const walletConnector = new RNWalletConnect(session.uriString);
       walletConnector.expires = session.expiration;
       return walletConnector;
     });
+    console.log('allconnectors', allConnectors);
     return allConnectors;
   } catch (error) {
     AlertIOS.alert('Unable to retrieve all WalletConnect sessions.');
+    console.log('init all connectors error');
     return {};
   }
 }
@@ -52,6 +61,7 @@ export const walletConnectDisconnect = async (walletConnector) => {
 
 export const walletConnectGetAllTransactions = async (walletConnectors) => {
   try {
+    console.log('wc get all txns');
     const sessionToTransactions = mapValues(walletConnectors, async (walletConnector) => {
       const sessionId = walletConnector.sessionId;
       const dappName = walletConnector.dappName;
@@ -61,8 +71,10 @@ export const walletConnectGetAllTransactions = async (walletConnectors) => {
       });
       return sessionTransactionMapping;
     });
+    console.log('sessionToTxns', sessionToTransactions);
     const transactionValues = values(sessionToTransactions);
     const allTransactions = assign({}, ...transactionValues);
+    return allTransactions;
   } catch(error) {
     console.log('Error getting all transactions from WalletConnect', error);
     // TODO: show error

@@ -17,8 +17,11 @@ export const addWalletConnector = (walletConnector) => (dispatch, getState) => {
 };
 
 export const getValidWalletConnectors = () => (dispatch, getState) => {
+  console.log('get valid wallet connectors');
   const { walletConnectors } = getState().walletconnect;
+  console.log('walletConnectors from state', walletConnectors);
   const validConnectors = filter(walletConnectors, (walletConnector) => { return (new Date(walletConnector.expires) > new Date()) });
+  console.log('valid connectors', validConnectors);
   dispatch({ type: WALLETCONNECT_NEW_SESSION, payload: validConnectors });
   return validConnectors;
 };
