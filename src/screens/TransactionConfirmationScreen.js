@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 import BalanceManagerLogo from '../assets/balance-manager-logo.png';
 import { Button, BlockButton } from '../components/buttons';
-import CoinIcon from '../components/CoinIcon';
+import { CoinIcon } from '../components/coin-icon';
 import { Nbsp } from '../components/html-entities';
 import { Centered, Column, Row } from '../components/layout';
 import {

@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { compose, hoistStatics, withHandlers } from 'recompact';
+import { withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, position, shadow } from '../../styles';
 import { ButtonPressAnimation } from '../buttons';
 import { Centered } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 
-const FloatingActionButtonBorderRadius = 24;
+const FloatingActionButtonBorderRadius = 27;
 
 const Container = styled(Centered)`
   ${position.cover}
@@ -30,7 +30,18 @@ const buildFabShadow = disabled => (disabled ? [] : [
   shadow.buildString(0, 6, 10, colors.alpha(colors.purple, 0.14)),
 ]);
 
-const FloatingActionButton = ({
+const enhance = withHandlers({
+  onPress: ({ onPress }) => (event) => {
+    ReactNativeHapticFeedback.trigger('impactLight');
+    if (onPress) onPress(event);
+  },
+  onPressIn: ({ onPressIn }) => (event) => {
+    ReactNativeHapticFeedback.trigger('impactLight');
+    if (onPressIn) onPressIn(event);
+  },
+});
+
+const FloatingActionButton = enhance(({
   children,
   disabled,
   onPress,
@@ -61,7 +72,7 @@ const FloatingActionButton = ({
       </Container>
     </ShadowStack>
   </ButtonPressAnimation>
-);
+));
 
 FloatingActionButton.propTypes = {
   children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
@@ -78,15 +89,4 @@ FloatingActionButton.defaultProps = {
   size: FloatingActionButton.size,
 };
 
-export default hoistStatics(
-  withHandlers({
-    onPress: ({ onPress }) => (event) => {
-      ReactNativeHapticFeedback.trigger('impactLight');
-      if (onPress) onPress(event);
-    },
-    onPressIn: ({ onPressIn }) => (event) => {
-      ReactNativeHapticFeedback.trigger('impactLight');
-      if (onPressIn) onPressIn(event);
-    },
-  }),
-)(FloatingActionButton);
+export default FloatingActionButton;

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { onlyUpdateForKeys } from 'recompact';
 import { buildTransactionsSections } from '../../helpers/transactions';
 import { CoinRow, TransactionCoinRow } from '../coin-row';
 import { SectionList } from '../list';
@@ -11,21 +12,23 @@ const getItemLayout = (data, index) => ({
   offset: CoinRow.height * index,
 });
 
+const keyExtractor = ({ hash }) => hash;
+const renderSectionHeader = ({ section }) => <ActivityListHeader {...section} />;
+
 const ActivityList = ({
   accountAddress,
-  fetchingTransactions,
   hasPendingTransaction,
-  onPressBack,
-  safeAreaInset,
   transactions,
 }) => (
   <SectionList
     contentContainerStyle={{ paddingBottom: 40 }}
+    extraData={{ hasPendingTransaction }}
     getItemLayout={getItemLayout}
-    initialNumToRender={50}
-    keyExtractor={({ hash }) => hash}
+    initialNumToRender={30}
+    keyExtractor={keyExtractor}
+    maxToRenderPerBatch={40}
     removeClippedSubviews
-    renderSectionHeader={({ section }) => <ActivityListHeader {...section} />}
+    renderSectionHeader={renderSectionHeader}
     sections={buildTransactionsSections({
       accountAddress,
       renderItem: TransactionCoinRow,
@@ -38,6 +41,7 @@ ActivityList.propTypes = {
   accountAddress: PropTypes.string,
   hasPendingTransaction: PropTypes.bool,
   transactions: PropTypes.array,
+  transactionsCount: PropTypes.number,
 };
 
-export default ActivityList;
+export default onlyUpdateForKeys(['hasPendingTransaction', 'transactionsCount'])(ActivityList);

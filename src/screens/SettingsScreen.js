@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withHandlers } from 'recompact';
+import { onlyUpdateForPropTypes } from 'recompact';
 import styled from 'styled-components/primitives';
 import AppVersionStamp from '../components/AppVersionStamp';
 import { Button } from '../components/buttons';
 import { BackButton, Header } from '../components/header';
 import { Centered, Column, Page } from '../components/layout';
-import SendFeedback from "../components/SendFeedback";
+import SendFeedback from '../components/SendFeedback';
 import { Monospace, TruncatedAddress } from '../components/text';
 import CopyTooltip from '../components/CopyTooltip';
 import QRCodeDisplay from '../components/QRCodeDisplay';
@@ -39,7 +39,7 @@ const WalletAddressTextContainer = styled(Centered).attrs({ direction: 'column' 
 `;
 
 const SettingsScreen = ({
-  address,
+  accountAddress,
   onPressBackButton,
   onToggleShowSeedPhrase,
   seedPhrase,
@@ -60,12 +60,12 @@ const SettingsScreen = ({
     <Content>
       <QRCodeDisplay
         size={(deviceUtils.dimensions.width * (150 / deviceUtils.iPhoneXWidth))}
-        value={address}
+        value={accountAddress}
       />
       <WalletAddressTextContainer>
-        <CopyTooltip textToCopy={address} tooltipText="Copy Address">
+        <CopyTooltip textToCopy={accountAddress} tooltipText="Copy Address">
           <TruncatedAddress
-            address={address}
+            address={accountAddress}
             size="big"
             weight="semibold"
           />
@@ -90,12 +90,10 @@ const SettingsScreen = ({
 );
 
 SettingsScreen.propTypes = {
-  address: PropTypes.string,
+  accountAddress: PropTypes.string,
   onPressBackButton: PropTypes.func,
   onToggleShowSeedPhrase: PropTypes.func,
   seedPhrase: PropTypes.string,
 };
 
-export default withHandlers({
-  onPressBackButton: ({ navigation }) => () => navigation.goBack(),
-})(SettingsScreen);
+export default onlyUpdateForPropTypes(SettingsScreen);
