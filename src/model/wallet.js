@@ -1,8 +1,8 @@
 import ethers from 'ethers';
 import * as keychain from '../model/keychain';
-const seedPhraseKey = 'balanceWalletSeedPhrase';
-const privateKeyKey = 'balanceWalletPrivateKey';
-const addressKey = 'balanceWalletAddressKey';
+const seedPhraseKey = 'seedPhrase';
+const privateKeyKey = 'privateKey';
+const addressKey = 'addressKey';
 import { ACCESS_CONTROL, ACCESSIBLE } from 'react-native-keychain';
 
 export function generateSeedPhrase() {

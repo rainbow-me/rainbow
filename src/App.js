@@ -2,7 +2,7 @@ import firebase from 'react-native-firebase';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import thunk from 'redux-thunk';
-import { account, commonStorage, accountUpdateAccountAddress } from 'balance-common';
+import { account, accountInitializeState, accountUpdateAccountAddress, commonStorage } from 'balance-common';
 import { AppRegistry } from 'react-native';
 import { compose, withProps } from 'recompact';
 import { connect, Provider } from 'react-redux';
@@ -35,6 +35,7 @@ const store = createStore(
 class App extends Component {
   static propTypes = {
     accountUpdateAccountAddress: PropTypes.func,
+    accountInitializeState: PropTypes.func,
     addTransactionToApprove: PropTypes.func,
     addTransactionsToApprove: PropTypes.func,
     getValidWalletConnectors: PropTypes.func,
@@ -78,14 +79,17 @@ class App extends Component {
       this.onPushNotificationOpened(transactionId, sessionId);
     });
 
+    this.props.accountInitializeState();
+
     walletInit()
       .then(walletAddress => {
         console.log('wallet address is', walletAddress);
         this.props.accountUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
         walletConnectInitAllConnectors()
           .then(allConnectors => {
-            this.props.setWalletConnectors(walletConnectors);
-            fetchAllTransactionsFromWalletConnectSessions(allConnectors);
+            console.log('got all inited connectors');
+            this.props.setWalletConnectors(allConnectors);
+            this.fetchAllTransactionsFromWalletConnectSessions(allConnectors);
           })
           .catch(error => {
             console.log('Unable to init all WalletConnect sessions');
@@ -102,7 +106,8 @@ class App extends Component {
           });
       })
       .catch(error => {
-        // TODO error handling
+        console.log('failed to init wallet');
+        AlertIOS.alert('Error: Failed to initialize wallet.');
       });
   }
 
@@ -127,10 +132,13 @@ class App extends Component {
     Navigation.handleAction(this.navigatorRef, action);
   }
 
-  fetchAllTransactionsFromWalletConnectSessions = async (allConnectors = null) => {
-    const validWalletConnectors = allConnectors || this.props.getValidWalletConnectors();
-    const allTransactions = await walletConnectGetAllTransactions(validWalletConnectors);
-    const transaction = this.props.addTransactionsToApprove(allTransactions);
+  fetchAllTransactionsFromWalletConnectSessions = async (allConnectors) => {
+    if (allConnectors) {
+      const allTransactions = await walletConnectGetAllTransactions(allConnectors);
+      if (allTransactions) {
+        this.props.addTransactionsToApprove(allTransactions);
+      }
+    } 
   }
 
   onPushNotificationOpened = async (transactionId, sessionId) => {
@@ -164,6 +172,7 @@ const AppWithRedux = compose(
     {
       addTransactionToApprove,
       addTransactionsToApprove,
+      accountInitializeState,
       accountUpdateAccountAddress,
       getValidWalletConnectors,
       setWalletConnectors,
