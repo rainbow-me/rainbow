@@ -23,6 +23,7 @@ const base = {
   grey: '#a9adb9', // '169, 173, 185'
   headerTitle: '#aaafbd', // '170, 175, 189'
   lightBlue: '#c5f2ff', // '197, 242, 255'
+  lightestGrey: '#eee9e8', // '238, 233, 232'
   lightGreen: '#54d192', // '84, 209, 146'
   lightGrey: '#f7f7f8', // '247, 247, 248'
   mediumGrey: '#a1a5b3', // '161, 165, 179'
@@ -65,9 +66,24 @@ const vendor = {
   walletconnect: '#4099ff', // '64, 153, 255'
 };
 
+const buildRgba = (color, alpha) => `rgba(${chroma(color).rgb()}, ${alpha})`;
+
+const getTextColorForBackground = (bgColor, textColors = {}) => {
+  const backgroundColor = bgColor || base.white;
+  const {
+    dark = base.black,
+    light = base.white,
+  } = textColors;
+
+  const isLightBackground = chroma(backgroundColor).luminance() > 0.5;
+  return isLightBackground ? dark : light;
+};
+
+
 const colors = {
-  alpha: (color, alpha) => `rgba(${chroma(color).rgb()}, ${alpha})`,
+  alpha: buildRgba,
   assetIcon,
+  getTextColorForBackground,
   ...base,
   ...transparent,
   ...vendor,
