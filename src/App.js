@@ -87,7 +87,7 @@ class App extends Component {
         this.props.accountUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
         walletConnectInitAllConnectors()
           .then(allConnectors => {
-            console.log('got all inited connectors');
+            console.log('got all inited connectors', allConnectors);
             this.props.setWalletConnectors(allConnectors);
             this.fetchAllTransactionsFromWalletConnectSessions(allConnectors);
           })
@@ -98,8 +98,9 @@ class App extends Component {
           .notifications()
           .getInitialNotification()
           .then(notificationOpen => {
-            console.log('on notification opened - while app closed');
+            console.log('on initial notification');
             if (notificationOpen) {
+              console.log('on initial notification opened - while app closed');
               const { transactionId, sessionId } = notificationOpen.notification.data;
               this.onPushNotificationOpened(transactionId, sessionId);
             }
