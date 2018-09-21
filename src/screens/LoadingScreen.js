@@ -1,6 +1,6 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
 import PropTypes from 'prop-types';
-import React, { Fragment, PureComponent } from 'react';
+import React, { Component, Fragment } from 'react';
 import { StatusBar } from 'react-native';
 import styled from 'styled-components/primitives';
 import Icon from '../components/icons/Icon';
@@ -30,25 +30,26 @@ const LoadingText = styled(Monospace)`
   margin-top: 10;
 `;
 
-class LoadingScreen extends PureComponent {
+class LoadingScreen extends Component {
   static propTypes = {
     navigation: PropTypes.object,
     setSafeTimeout: PropTypes.func,
   }
 
-  constructor(props) {
-    super(props);
-    loadAddress().then(this.handleNavigation);
-    this.state = { isError: false };
+  state = { isError: false }
+
+  componentDidMount = async () => {
+    // After 5 seconds, show error message if user has not been redirected
+    this.props.setSafeTimeout(this.handleError, 5000);
+    await loadAddress().then(this.handleNavigation);
   }
 
-  componentDidMount = () => this.props.setSafeTimeout(this.handleError, 5000)
   handleError = () => this.setState({ isError: true })
 
   // If this is a brand new instance of the Balance Wallet app show the 'IntroScreen',
   // otherwise display the main 'App' route. Afterwards this view will be
   // unmounted and thrown away.
-  handleNavigation = address => this.props.navigation.navigate(address ? 'App' : 'Intro')
+  handleNavigation = async address => this.props.navigation.navigate(address ? 'App' : 'Intro')
 
   render = () => (
     <Container align={this.state.isError ? 'start' : 'center'}>
