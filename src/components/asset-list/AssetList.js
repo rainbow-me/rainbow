@@ -6,7 +6,6 @@ import { withSafeAreaViewInsetValues } from '../../hoc';
 import { FabWrapper, FloatingActionButton, WalletConnectFab } from '../fab';
 import { ListFooter, SectionList } from '../list';
 import { FlexItem } from '../layout';
-import RefreshableList from '../RefreshableList';
 import AssetListHeader from './AssetListHeader';
 import AssetListItem from './AssetListItem';
 import AssetListSkeleton from './AssetListSkeleton';
@@ -41,12 +40,13 @@ const AssetList = ({
       {isEmpty ? (
         <AssetListSkeleton />
       ) : (
-        <RefreshableList
+        <SectionList
           contentContainerStyle={{
             // We want to add enough spacing below the list so that when the user scrolls to the bottom,
             // the bottom of the list content lines up with the top of the FABs (+ padding).
             paddingBottom: buildListBottomPadding(safeAreaInset),
           }}
+          enablePullToRefresh
           fetchData={fetchData}
           keyExtractor={assetListKeyExtractor}
           renderItem={AssetListItem}
