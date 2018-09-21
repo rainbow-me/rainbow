@@ -20,6 +20,7 @@ const buildListBottomPadding = (safeAreaInset) => {
 };
 
 const AssetList = ({
+  fetchData,
   isEmpty,
   onPressWalletConnect,
   safeAreaInset,
@@ -45,6 +46,8 @@ const AssetList = ({
             // the bottom of the list content lines up with the top of the FABs (+ padding).
             paddingBottom: buildListBottomPadding(safeAreaInset),
           }}
+          enablePullToRefresh
+          fetchData={fetchData}
           keyExtractor={assetListKeyExtractor}
           renderItem={AssetListItem}
           renderSectionHeader={({ section }) => <AssetListHeader {...section} />}
@@ -56,6 +59,7 @@ const AssetList = ({
 );
 
 AssetList.propTypes = {
+  fetchData: PropTypes.func.isRequired,
   isEmpty: PropTypes.bool,
   onPressWalletConnect: PropTypes.func,
   safeAreaInset: PropTypes.object,
