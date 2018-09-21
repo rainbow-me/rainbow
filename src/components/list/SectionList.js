@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { SectionList as ReactSectionList } from 'react-native';
+import { RefreshControl, SectionList as ReactSectionList } from 'react-native';
 import { View } from 'react-primitives';
+import { compose, omitProps, withHandlers, withState } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withSafeAreaViewInsetValues } from '../../hoc';
 import { colors, position } from '../../styles';
@@ -16,6 +17,9 @@ const List = styled(ReactSectionList)`
 `;
 
 const SectionList = ({
+  enablePullToRefresh,
+  isRefreshing,
+  onRefresh,
   renderItem,
   renderSectionFooter,
   safeAreaInset,
@@ -23,6 +27,14 @@ const SectionList = ({
   ...props
 }) => (
   <List
+    refreshControl={(
+      enablePullToRefresh ? (
+        <RefreshControl
+          onRefresh={onRefresh}
+          refreshing={isRefreshing}
+        />
+      ) : null
+    )}
     renderItem={renderItem}
     renderSectionFooter={renderSectionFooter}
     scrollIndicatorInsets={{
@@ -34,15 +46,32 @@ const SectionList = ({
 );
 
 SectionList.propTypes = {
+  enablePullToRefresh: PropTypes.bool,
+  fetchData: PropTypes.func,
+  isRefreshing: PropTypes.bool,
+  onRefresh: PropTypes.func,
   renderItem: PropTypes.func,
   renderSectionFooter: PropTypes.func,
   showSafeAreaInsetBottom: PropTypes.bool,
 };
 
 SectionList.defaultProps = {
+  enablePullToRefresh: false,
   renderItem: DefaultRenderItem,
   renderSectionFooter: ListFooter,
   showSafeAreaInsetBottom: true,
 };
 
-export default withSafeAreaViewInsetValues(SectionList);
+export default compose(
+  withSafeAreaViewInsetValues,
+  withState('isRefreshing', 'setIsRefreshing', false),
+  withHandlers({
+    onRefresh: ({ fetchData, isRefreshing, setIsRefreshing }) => () => {
+      if (isRefreshing) return;
+
+      setIsRefreshing(true);
+      fetchData().then(() => setIsRefreshing(false));
+    },
+  }),
+  omitProps('fetchData', 'setIsRefreshing'),
+)(SectionList);
