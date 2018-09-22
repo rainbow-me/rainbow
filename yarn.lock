@@ -2059,8 +2059,8 @@ can-promise@^0.0.1:
     window-or-global "^1.0.1"
 
 caniuse-lite@^1.0.30000844:
-  version "1.0.30000878"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000878.tgz#c644c39588dd42d3498e952234c372e5a40a4123"
+  version "1.0.30000886"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000886.tgz#2127186c4f57da10d3ba26fc3e87dce4a5ddd3ae"
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -2228,8 +2228,8 @@ color-name@1.1.1:
   resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.1.tgz#4b1415304cf50028ea81643643bd82ea05803689"
 
 color-name@^1.0.0:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.3.tgz#a7d0558bd89c42f795dd42328f740831ca53bc25"
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.4.tgz#c2a09a87acbde69543de6f63fa3995c826c536a2"
 
 color-string@^1.5.2:
   version "1.5.3"
@@ -6646,11 +6646,11 @@ react-native-haptic-feedback@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.2.0.tgz#6948470529d8054d189db6613987d0e677f4c383"
 
-react-native-iphone-x-helper@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.0.3.tgz#7a2f1e0574e899a0f1d426e6167fd98990083214"
+react-native-iphone-x-helper@ptelad/react-native-iphone-x-helper#7/head:
+  version "1.1.0"
+  resolved "https://codeload.github.com/ptelad/react-native-iphone-x-helper/tar.gz/f9011ecf8d05f8573621d2fbb2d65e1a311d35c4"
 
-react-native-keychain@^3.0.0-rc.3:
+react-native-keychain@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-3.0.0.tgz#29da1dfa43c2581f76bf9420914fd38a1558cf18"
 
@@ -6720,9 +6720,9 @@ react-native-safe-area-view@^0.9.0:
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
-react-native-safe-area-view@react-community/react-native-safe-area-view#27/head:
-  version "0.6.0"
-  resolved "https://codeload.github.com/react-community/react-native-safe-area-view/tar.gz/9ba01c5a7b7d2e6eaee9e86db66b00e39919ceed"
+react-native-safe-area-view@mikedemarais/react-native-safe-area-view:
+  version "0.10.0"
+  resolved "https://codeload.github.com/mikedemarais/react-native-safe-area-view/tar.gz/b67379092dd176887569465a7e41362a83698a3e"
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
@@ -6774,8 +6774,8 @@ react-native-tooltip@^5.2.0:
   resolved "https://registry.yarnpkg.com/react-native-tooltip/-/react-native-tooltip-5.2.0.tgz#4358ea1e9bdcb49dad28bf5881440b0182927422"
 
 react-native-touch-id@^4.0.1:
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/react-native-touch-id/-/react-native-touch-id-4.0.4.tgz#7dbc051c9966bbcd33c2cfbb8d3bad171770b6b7"
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-touch-id/-/react-native-touch-id-4.1.0.tgz#7df3b5b0ab4d72765ca3fb760cb71cdec2ee14c4"
 
 react-native-udp@^2.3.1:
   version "2.3.1"
