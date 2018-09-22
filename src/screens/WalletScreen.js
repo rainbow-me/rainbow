@@ -1,9 +1,9 @@
+import lang from 'i18n-js';
 import { get, groupBy, isNull } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import lang from 'i18n-js';
 import { connect } from 'react-redux';
-import { compose, onlyUpdateForPropTypes, withHandlers, withState } from 'recompact';
+import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
 import { AssetList, UniqueTokenRow } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import Avatar from '../components/Avatar';
@@ -130,5 +130,5 @@ export default compose(
     onPressWalletConnect: ({ navigation }) => () => navigation.navigate('QRScannerScreen'),
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => () => toggleShowShitcoins(!showShitcoins),
   }),
-  onlyUpdateForPropTypes,
+  onlyUpdateForKeys(['isScreenActive', ...Object.keys(WalletScreen.propTypes)]),
 )(WalletScreen);
