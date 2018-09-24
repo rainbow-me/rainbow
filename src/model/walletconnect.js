@@ -9,14 +9,10 @@ export const walletConnectInit = async (accountAddress, uriString) => {
   const fcmTokenLocal = await commonStorage.getLocal('balanceWalletFcmToken');
   const fcmToken = fcmTokenLocal ? fcmTokenLocal.data : null;
   const walletConnector = new RNWalletConnect(uriString);
-  const something = walletConnector._parseWalletConnectURI(uriString);
-  console.log('walletconnector', walletConnector);
   if (fcmToken) {
     try {
       await walletConnector.sendSessionStatus({ fcmToken, pushEndpoint: PUSH_ENDPOINT, data: [accountAddress] });
-      console.log('sent session status');
       await commonStorage.saveWalletConnectSession(walletConnector.sessionId, uriString, walletConnector.expires);
-      console.log('saved wc session');
       return walletConnector;
     } catch (error) {
       console.log(error);
@@ -32,19 +28,15 @@ export const walletConnectInit = async (accountAddress, uriString) => {
 export const walletConnectInitAllConnectors = async () => {
   try {
     console.log('walletconnect init all connectors', commonStorage);
-    const allSessions = await commonStorage.getLocal('walletconnect');
-    //const allSessions = await commonStorage.getAllValidWalletConnectSessions();
-    console.log('>>>all sessions', allSessions);
+    const allSessions = await commonStorage.getAllValidWalletConnectSessions();
     const allConnectors = mapValues(allSessions, (session) => {
       const walletConnector = new RNWalletConnect(session.uriString);
       walletConnector.expires = session.expiration;
       return walletConnector;
     });
-    console.log('allconnectors', allConnectors);
     return allConnectors;
   } catch (error) {
     AlertIOS.alert('Unable to retrieve all WalletConnect sessions.');
-    console.log('init all connectors error');
     return {};
   }
 }
@@ -62,18 +54,22 @@ export const walletConnectDisconnect = async (walletConnector) => {
 
 export const walletConnectGetAllTransactions = async (walletConnectors) => {
   try {
-    console.log('wc get all txns');
-    const sessionToTransactions = mapValues(walletConnectors, async (walletConnector) => {
+    const sessionToTransactions = mapValues(walletConnectors, (walletConnector) => new Promise((resolve, reject) => {
       const sessionId = walletConnector.sessionId;
       const dappName = walletConnector.dappName;
-      const sessionTransactions = await walletConnector.getAllTransactionRequests();
-      const sessionTransactionMapping = mapValues(sessionTransactions, (transactionPayload, transactionId) => {
-        return { sessionId, transactionId, transactionPayload, dappName };
-      });
-      return sessionTransactionMapping;
-    });
-    console.log('sessionToTxns', sessionToTransactions);
-    const transactionValues = values(sessionToTransactions);
+      walletConnector.getAllTransactionRequests()
+        .then(sessionTransactions => {
+          const sessionTransactionMapping = mapValues(sessionTransactions, (transactionPayloadx, transactionId) => {
+            return { sessionId, transactionId, transactionPayloadx, dappName };
+          });
+          resolve(sessionTransactionMapping);
+        })
+        .catch(error => {
+          resolve({});
+        });
+    }));
+    const sessionTransactionValues = values(sessionToTransactions);
+    const transactionValues = await Promise.all(sessionTransactionValues);
     const allTransactions = assign({}, ...transactionValues);
     return allTransactions;
   } catch(error) {
