@@ -709,8 +709,8 @@
     inherits "~2.0.1"
 
 "@types/node@^10.3.2":
-  version "10.10.3"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.10.3.tgz#09c75a4ad84d6a3d286790bdd9489a4f8ee9906c"
+  version "10.11.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.11.0.tgz#ddd0d67a3b6c3810dd1a59e36675fa82de5e19ae"
 
 "@yarnpkg/lockfile@^1.0.0":
   version "1.1.0"
@@ -4878,9 +4878,9 @@ js-tokens@^3.0.0, js-tokens@^3.0.2:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
 
-js-walletconnect-core@^0.6.26:
-  version "0.6.26"
-  resolved "https://registry.yarnpkg.com/js-walletconnect-core/-/js-walletconnect-core-0.6.26.tgz#37c9548c7a788f948c1747637f8e008f8801705a"
+js-walletconnect-core@^0.6.29:
+  version "0.6.29"
+  resolved "https://registry.yarnpkg.com/js-walletconnect-core/-/js-walletconnect-core-0.6.29.tgz#b4e5645aa0de47322bdab959b36a031ad25539fa"
   dependencies:
     eth-parse-uri "^0.6.7"
 
@@ -7272,11 +7272,11 @@ rn-nodeify@^10.0.0:
     semver "^5.0.1"
     xtend "^4.0.0"
 
-rn-walletconnect-wallet@^0.6.26:
-  version "0.6.26"
-  resolved "https://registry.yarnpkg.com/rn-walletconnect-wallet/-/rn-walletconnect-wallet-0.6.26.tgz#fe125aa2febb6915a114ef652fdb7769e7deb7fe"
+rn-walletconnect-wallet@^0.6.29:
+  version "0.6.29"
+  resolved "https://registry.yarnpkg.com/rn-walletconnect-wallet/-/rn-walletconnect-wallet-0.6.29.tgz#565755233d9d7f2768409cb1c1eaf8ac5689e245"
   dependencies:
-    js-walletconnect-core "^0.6.26"
+    js-walletconnect-core "^0.6.29"
 
 rsvp@^3.3.3:
   version "3.6.2"
