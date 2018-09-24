@@ -1044,6 +1044,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "10.10.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.10.1.tgz#d5c96ca246a418404914d180b7fdd625ad18eca6"
 =======
@@ -1058,6 +1059,10 @@
   version "10.10.3"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.10.3.tgz#09c75a4ad84d6a3d286790bdd9489a4f8ee9906c"
 >>>>>>> ff3f7d9... fixes for transaction payload from wc bridge
+=======
+  version "10.11.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.11.0.tgz#ddd0d67a3b6c3810dd1a59e36675fa82de5e19ae"
+>>>>>>> 7aff3e2... final updates for wc changes
 
 "@yarnpkg/lockfile@^1.0.0":
   version "1.1.0"
@@ -5778,6 +5783,7 @@ js-tokens@^3.0.0, js-tokens@^3.0.2:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 js-walletconnect-core@^0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/js-walletconnect-core/-/js-walletconnect-core-0.6.1.tgz#1195a386a5845cf79b6fb8e9162672e2c3e9ca9d"
@@ -5806,6 +5812,11 @@ js-walletconnect-core@^0.6.26:
   version "0.6.26"
   resolved "https://registry.yarnpkg.com/js-walletconnect-core/-/js-walletconnect-core-0.6.26.tgz#37c9548c7a788f948c1747637f8e008f8801705a"
 >>>>>>> ff3f7d9... fixes for transaction payload from wc bridge
+=======
+js-walletconnect-core@^0.6.29:
+  version "0.6.29"
+  resolved "https://registry.yarnpkg.com/js-walletconnect-core/-/js-walletconnect-core-0.6.29.tgz#b4e5645aa0de47322bdab959b36a031ad25539fa"
+>>>>>>> 7aff3e2... final updates for wc changes
   dependencies:
     eth-parse-uri "^0.6.7"
 
@@ -8819,6 +8830,7 @@ rn-nodeify@^10.0.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 rn-walletconnect-wallet@^0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/rn-walletconnect-wallet/-/rn-walletconnect-wallet-0.6.1.tgz#1b369b6a966b356d7ab18fe4cbb20968cb3bc942"
@@ -8859,6 +8871,13 @@ rn-walletconnect-wallet@^0.6.26:
   dependencies:
     js-walletconnect-core "^0.6.26"
 >>>>>>> ff3f7d9... fixes for transaction payload from wc bridge
+=======
+rn-walletconnect-wallet@^0.6.29:
+  version "0.6.29"
+  resolved "https://registry.yarnpkg.com/rn-walletconnect-wallet/-/rn-walletconnect-wallet-0.6.29.tgz#565755233d9d7f2768409cb1c1eaf8ac5689e245"
+  dependencies:
+    js-walletconnect-core "^0.6.29"
+>>>>>>> 7aff3e2... final updates for wc changes
 
 rsvp@^3.3.3:
   version "3.6.2"

@@ -71,7 +71,7 @@ class TransactionConfirmationScreenWithData extends Component {
     } catch (error) {
       // TODO only send failed status after multiple tries
       console.log('error for auth failed', error);
-      this.sendFailedTransactionStatus();
+      await this.sendFailedTransactionStatus();
       AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
     }
   };
@@ -90,8 +90,9 @@ class TransactionConfirmationScreenWithData extends Component {
   }
 
   handleCancelTransaction = async () => {
+    const { transactionDetails } = this.state;
     this.props.removeTransaction(transactionDetails.transactionId);
-    await sendFailedTransactionStatus();
+    await this.sendFailedTransactionStatus();
   }
 
   closeTransactionScreen = () => {
