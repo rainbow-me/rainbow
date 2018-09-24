@@ -1,3 +1,4 @@
+import { withSafeTimeout } from '@hocs/safe-timers';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -12,7 +13,11 @@ import {
   groupAssetsByMarketValue,
   sortAssetsByNativeAmount,
 } from '../helpers/assets';
-import { withAccountAssets, withHideSplashScreenOnMount } from '../hoc';
+import {
+  withAccountAddress,
+  withAccountAssets,
+  withHideSplashScreenOnMount,
+} from '../hoc';
 import { position } from '../styles';
 
 const BalanceRenderItem = renderItemProps => <BalanceCoinRow {...renderItemProps} />;
@@ -25,6 +30,7 @@ const WalletScreen = ({
   fetching,
   onPressProfile,
   onPressWalletConnect,
+  onRefreshList,
   onToggleShowShitcoins,
   showShitcoins,
   uniqueTokens,
@@ -66,6 +72,7 @@ const WalletScreen = ({
         <ActivityHeaderButton />
       </Header>
       <AssetList
+        fetchData={onRefreshList}
         onPressWalletConnect={onPressWalletConnect}
         sections={filterEmptyAssetSections([sections.balances, sections.collectibles])}
         showShitcoins={showShitcoins}
@@ -85,18 +92,32 @@ WalletScreen.propTypes = {
   fetchingUniqueTokens: PropTypes.bool.isRequired,
   onPressProfile: PropTypes.func.isRequired,
   onPressWalletConnect: PropTypes.func.isRequired,
+  onRefreshList: PropTypes.func.isRequired,
   onToggleShowShitcoins: PropTypes.func,
   showShitcoins: PropTypes.bool,
   uniqueTokens: PropTypes.array.isRequired,
 };
 
 export default compose(
+  withAccountAddress,
   withAccountAssets,
   withHideSplashScreenOnMount,
+  withSafeTimeout,
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
     onPressProfile: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
     onPressWalletConnect: ({ navigation }) => () => navigation.navigate('QRScannerScreen'),
+    onRefreshList: ({
+      accountAddress,
+      accountUpdateAccountAddress,
+      setSafeTimeout,
+    }) => () => {
+      accountUpdateAccountAddress(accountAddress, 'BALANCEWALLET');
+
+      // hack: use timeout so that it looks like loading is happening
+      // accountUpdateAccountAddress does not return a promise
+      return new Promise(resolve => setSafeTimeout(resolve, 2000));
+    },
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
       if (index === 0) {
         toggleShowShitcoins(!showShitcoins);

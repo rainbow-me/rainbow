@@ -1,3 +1,4 @@
+import { accountUpdateAccountAddress } from 'balance-common';
 import { connect } from 'react-redux';
 
 const EMPTY_ARRAY = [];
@@ -21,4 +22,4 @@ const mapStateToProps = ({
   uniqueTokens,
 });
 
-export default Component => connect(mapStateToProps)(Component);
+export default Component => connect(mapStateToProps, { accountUpdateAccountAddress })(Component);
