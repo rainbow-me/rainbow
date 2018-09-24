@@ -75,6 +75,7 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
 <<<<<<< HEAD
+<<<<<<< HEAD
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
 <<<<<<< HEAD
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
@@ -91,5 +92,10 @@ PODFILE CHECKSUM: 8cf8c5c72a0b45742ea93200c56270adf0bc939f
 
 PODFILE CHECKSUM: 97c78f76d7d1d1d8f88964e3d07e241a30346175
 >>>>>>> 75d5592... bugfixes and typos
+=======
+  Protobuf: 6b0fc34ab8f2b7dbad2278a48be08a669427c59f
+
+PODFILE CHECKSUM: 97c78f76d7d1d1d8f88964e3d07e241a30346175
+>>>>>>> dd085d1... still in progress: adding new function to props
 
 COCOAPODS: 1.5.3
