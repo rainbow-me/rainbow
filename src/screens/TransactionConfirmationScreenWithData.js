@@ -24,12 +24,14 @@ class TransactionConfirmationScreenWithData extends Component {
   componentDidMount() {
     StatusBar.setBarStyle('light-content', true);
     Vibration.vibrate();
+    const { transactionDetails } = this.props.navigation.state.params;
+    this.setState({ transactionDetails });
   }
 
   handleConfirmTransaction = async () => {
     try {
       const { transactionDetails } = this.state;
-      const transactionReceipt = await sendTransaction(transactionDetails.transactionPayload, 'Confirm transaction' );
+      const transactionReceipt = await sendTransaction(transactionDetails.transactionPayload.data, 'Confirm transaction' );
       if (transactionReceipt && transactionReceipt.hash) {
         const txDetails = {
           amount: get(transactionDetails, 'transactionDisplayDetails.value'),
@@ -64,6 +66,7 @@ class TransactionConfirmationScreenWithData extends Component {
       }
     } catch (error) {
       // TODO only send failed status after multiple tries
+      console.log('error for auth failed', error);
       this.sendFailedTransactionStatus();
       AlertIOS.alert('Authentication Failed');
     }
@@ -94,7 +97,6 @@ class TransactionConfirmationScreenWithData extends Component {
 
   render = () => {
     const { transactionDetails } = this.state;
-
     return (
       <TransactionConfirmationScreen
         asset={{

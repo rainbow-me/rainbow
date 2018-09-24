@@ -1,4 +1,5 @@
 import smartContractMethods from 'balance-common/src/references/smartcontract-methods.json';
+import BigNumber from 'bignumber.js';
 import {
   convertAssetAmountToDisplaySpecific,
   convertAssetAmountToNativeValue,
@@ -37,7 +38,7 @@ export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => 
 };
 
 const getTransactionDisplayDetails = (transactionData, assets, prices, nativeCurrency) => {
-  const { transaction, timestamp: timestampInSeconds } = transactionData;
+  const { data: transaction, timestamp: timestampInSeconds } = transactionData;
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
   if (transaction.data == '0x') {
     const value = fromWei(convertHexToString(transaction.value));
@@ -85,7 +86,7 @@ export const addTransactionToApprove = (sessionId, transactionId, transactionPay
   const { accountInfo, prices, nativeCurrency } = getState().account;
   const transactionDisplayDetails = getTransactionDisplayDetails(transactionPayload, accountInfo.assets, prices, nativeCurrency);
   const transaction = { sessionId, transactionId, transactionPayload, transactionDisplayDetails, dappName };
-  const updatedTransactions = { ...transactionsToApprove, transactionId: transaction };
+  const updatedTransactions = { ...transactionsToApprove, [transactionId]: transaction };
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
   return transaction;
 };
@@ -94,7 +95,7 @@ export const addTransactionsToApprove = (transactions) => (dispatch, getState) =
   const { transactionsToApprove } = getState().transactionsToApprove;
   const { accountInfo, prices, nativeCurrency } = getState().account;
   const transactionsWithDisplayDetails = mapValues(transactions, (transactionDetails) => {
-    const transactionDisplayDetails = getTransactionDisplayDetails(transactionPayload, accountInfo.assets, prices, nativeCurrency);
+    const transactionDisplayDetails = getTransactionDisplayDetails(transactionDetails, accountInfo.assets, prices, nativeCurrency);
     return { ...transactionDetails, transactionDisplayDetails };
   });
   const updatedTransactions = { ...transactionsToApprove, ...transactionsWithDisplayDetails };
