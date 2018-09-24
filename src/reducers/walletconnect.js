@@ -10,8 +10,7 @@ export const setWalletConnectors = (walletConnectors) => (dispatch, getState) =>
 export const addWalletConnector = (walletConnector) => (dispatch, getState) => {
   if (walletConnector) {
     const { walletConnectors } = getState().walletconnect;
-    const sessionId = walletConnector.sessionId;
-    const updatedWalletConnectors = { ...walletConnectors, sessionId: walletConnector };
+    const updatedWalletConnectors = { ...walletConnectors, [walletConnector.sessionId]: walletConnector };
     dispatch({ type: WALLETCONNECT_NEW_SESSION, payload: updatedWalletConnectors });
   }
 };
