@@ -7,6 +7,7 @@ import { AppRegistry } from 'react-native';
 import { compose, withProps } from 'recompact';
 import { connect, Provider } from 'react-redux';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { isEmpty } from 'lodash';
 import { NavigationActions } from 'react-navigation';
 import { AlertIOS } from 'react-native';
 import Navigation from './navigation';
@@ -87,7 +88,6 @@ class App extends Component {
         this.props.accountUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
         walletConnectInitAllConnectors()
           .then(allConnectors => {
-            console.log('got all inited connectors', allConnectors);
             this.props.setWalletConnectors(allConnectors);
             this.fetchAllTransactionsFromWalletConnectSessions(allConnectors);
           })
@@ -134,9 +134,9 @@ class App extends Component {
   }
 
   fetchAllTransactionsFromWalletConnectSessions = async (allConnectors) => {
-    if (allConnectors) {
+    if (!isEmpty(allConnectors)) {
       const allTransactions = await walletConnectGetAllTransactions(allConnectors);
-      if (allTransactions) {
+      if (!isEmpty(allTransactions)) {
         this.props.addTransactionsToApprove(allTransactions);
       }
     } 
