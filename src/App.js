@@ -8,6 +8,7 @@ import { AppRegistry, AppState, AsyncStorage, Platform } from 'react-native';
 import { compose, withProps } from 'recompact';
 import { connect, Provider } from 'react-redux';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { isEmpty } from 'lodash';
 import { NavigationActions } from 'react-navigation';
 import { AlertIOS } from 'react-native';
 import Routes from './screens/Routes';
@@ -88,7 +89,6 @@ class App extends Component {
         this.props.accountUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
         walletConnectInitAllConnectors()
           .then(allConnectors => {
-            console.log('got all inited connectors');
             this.props.setWalletConnectors(allConnectors);
             this.fetchAllTransactionsFromWalletConnectSessions(allConnectors);
           })
@@ -99,8 +99,9 @@ class App extends Component {
           .notifications()
           .getInitialNotification()
           .then(notificationOpen => {
-            console.log('on notification opened - while app closed');
+            console.log('on initial notification');
             if (notificationOpen) {
+              console.log('on initial notification opened - while app closed');
               const { transactionId, sessionId } = notificationOpen.notification.data;
               this.onPushNotificationOpened(transactionId, sessionId);
             }
@@ -134,9 +135,9 @@ class App extends Component {
   }
 
   fetchAllTransactionsFromWalletConnectSessions = async (allConnectors) => {
-    if (allConnectors) {
+    if (!isEmpty(allConnectors)) {
       const allTransactions = await walletConnectGetAllTransactions(allConnectors);
-      if (allTransactions) {
+      if (!isEmpty(allTransactions)) {
         this.props.addTransactionsToApprove(allTransactions);
       }
     } 
