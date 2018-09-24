@@ -1,10 +1,10 @@
 import { isFunction, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { compose, onlyUpdateForPropTypes } from 'recompact';
 import { AlertIOS } from 'react-native';
-import { withAccountAddress } from '../hoc';
+import { withAccountAddress, withWalletConnectors } from '../hoc';
 import { walletConnectInit } from '../model/walletconnect';
-import { addWalletConnector } from '../reducers/walletconnect';
 import QRScannerScreen from './QRScannerScreen';
 
 class QRScannerScreenWithData extends Component {
@@ -61,4 +61,8 @@ class QRScannerScreenWithData extends Component {
   )
 }
 
-export default withAccountAddress(QRScannerScreenWithData);
+export default compose(
+  withAccountAddress,
+  withWalletConnectors,
+)(QRScannerScreenWithData);
+//export default withAccountAddress(QRScannerScreenWithData);
