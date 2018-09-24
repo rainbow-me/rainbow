@@ -1,13 +1,11 @@
+import lang from 'i18n-js';
 import { isFunction, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { AlertIOS } from 'react-native';
 import { compose } from 'recompact';
-import lang from 'i18n-js';
-import { connect } from 'react-redux';
-import { withAccountAddress } from '../hoc';
+import { AlertIOS } from 'react-native';
+import { withAccountAddress, withWalletConnectors } from '../hoc';
 import { walletConnectInit } from '../model/walletconnect';
-import { addWalletConnector } from '../reducers/walletconnect';
 import QRScannerScreen from './QRScannerScreen';
 
 class QRScannerScreenWithData extends Component {
@@ -66,5 +64,5 @@ class QRScannerScreenWithData extends Component {
 
 export default compose(
   withAccountAddress,
-  connect(null, { addWalletConnector }),
+  withWalletConnectors,
 )(QRScannerScreenWithData);
