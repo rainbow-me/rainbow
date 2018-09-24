@@ -36,13 +36,13 @@ class QRScannerScreenWithData extends Component {
   handleScannerRef = (ref) => { this.qrCodeScannerRef = ref; }
 
   handleSuccess = async (event) => {
-    const { accountAddress, navigation } = this.props;
+    const { accountAddress, addWalletConnector, navigation } = this.props;
     const data = event.data;
 
     if (data) {
       try {
         const walletConnector = await walletConnectInit(accountAddress, data);
-        this.props.addWalletConnector(walletConnector);
+        addWalletConnector(walletConnector);
         navigation.navigate('WalletScreen');
       } catch (error) {
         AlertIOS.alert('Error initializing with WalletConnect', error);
