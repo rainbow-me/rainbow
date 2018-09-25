@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import CodePush from 'react-native-code-push';
 import firebase from 'react-native-firebase';
 import PropTypes from 'prop-types';
@@ -110,6 +110,12 @@ class App extends Component {
         console.log('failed to init wallet');
         AlertIOS.alert('Error: Failed to initialize wallet.');
       });
+
+      setTimeout(() => {
+        const navState = get(this.navigatorRef, 'state.nav');
+        const route = Navigation.getActiveRouteName(navState);
+        console.log('HERE YOU GO JIN!!', route);
+      }, 4000);
   }
 
   componentWillUnmount() {
