@@ -46,28 +46,15 @@ class TransactionConfirmationScreenWithData extends Component {
         this.props.accountUpdateHasPendingTransaction();
         this.props.accountUpdateTransactions(txDetails);
         this.props.removeTransaction(transactionDetails.transactionId);
-        try {
-          const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
-          await walletConnectSendTransactionHash(walletConnector, transactionDetails.transactionId, true, transactionReceipt.hash);
-          this.closeTransactionScreen();
-        } catch (error) {
-          // TODO error handling when txn hash failed to send; store somewhere?
-          this.closeTransactionScreen();
-          AlertIOS.alert('Failed to send transaction status to WalletConnect');
-        }
+        const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
+        await walletConnectSendTransactionHash(walletConnector, transactionDetails.transactionId, true, transactionReceipt.hash);
+        this.closeTransactionScreen();
       } else {
-        try {
-          this.handleCancelTransaction();
-        } catch (error) {
-          this.closeTransactionScreen();
-          AlertIOS.alert('Failed to send failed transaction status');
-        }
+        await this.handleCancelTransaction();
       }
     } catch (error) {
-      // TODO only send failed status after multiple tries
-      console.log('error for auth failed', error);
       await this.sendFailedTransactionStatus();
-      AlertIOS.alert('Authentication Failed');
+      AlertIOS.alert('Unable to send transaction.');
     }
   };
 
@@ -84,9 +71,14 @@ class TransactionConfirmationScreenWithData extends Component {
   }
 
   handleCancelTransaction = async () => {
-    const { transactionDetails } = this.state;
-    this.props.removeTransaction(transactionDetails.transactionId);
-    await this.sendFailedTransactionStatus();
+    try {
+      const { transactionDetails } = this.state;
+      this.props.removeTransaction(transactionDetails.transactionId);
+      await this.sendFailedTransactionStatus();
+    } catch (error) {
+      this.closeTransactionScreen();
+      AlertIOS.alert('Failed to send rejected transaction status');
+    }
   }
 
   closeTransactionScreen = () => {
