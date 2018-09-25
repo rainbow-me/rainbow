@@ -2150,6 +2150,7 @@ babylon@^6.18.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 balance-common@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.4.1.tgz#59945306902c88d4db5506fac4b82acfdb6e0003"
@@ -2178,6 +2179,11 @@ balance-common@^0.5.4:
   version "0.4.5"
   resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.4.5.tgz#f63685d273e881c958c051bf1fe5f9fa2fb58725"
 >>>>>>> 4e75a00... Fix for react-native bug https://github.com/facebook/react-native/issues/21150
+=======
+balance-common@^0.5.5:
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.5.5.tgz#3a124d8779c8bf2b9d3cfb629b171fea53a2212e"
+>>>>>>> 64a0d1f... fixes for pending txns
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -3064,7 +3070,7 @@ css-color-keywords@^1.0.0:
 
 css-in-js-utils@^2.0.0:
   version "2.0.1"
-  resolved "https://registry.yarnpkg.com/css-in-js-utils/-/css-in-js-utils-2.0.1.tgz#3b472b398787291b47cfe3e44fecfdd9e914ba99"
+  resolved "http://registry.npmjs.org/css-in-js-utils/-/css-in-js-utils-2.0.1.tgz#3b472b398787291b47cfe3e44fecfdd9e914ba99"
   dependencies:
     hyphenate-style-name "^1.0.2"
     isobject "^3.0.1"
@@ -7289,8 +7295,8 @@ pbkdf2@3.0.8:
     create-hmac "^1.1.2"
 
 pbkdf2@^3.0.3:
-  version "3.0.16"
-  resolved "https://registry.yarnpkg.com/pbkdf2/-/pbkdf2-3.0.16.tgz#7404208ec6b01b62d85bf83853a8064f8d9c2a5c"
+  version "3.0.17"
+  resolved "https://registry.yarnpkg.com/pbkdf2/-/pbkdf2-3.0.17.tgz#976c206530617b14ebb32114239f7b09336e93a6"
   dependencies:
     create-hash "^1.1.2"
     create-hmac "^1.1.4"
