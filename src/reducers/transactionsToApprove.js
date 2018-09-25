@@ -15,7 +15,7 @@ const WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE = 'wallet/WALLETCONNECT_UPDAT
 const getAssetDetails = (contractAddress, assets) => {
   for (var item of assets)  {
     if (item.address === contractAddress) {
-      return { symbol: item.symbol, decimals: item.decimals, name: item.name }
+      return { ...item }
     }
   }
   return null;
@@ -47,30 +47,28 @@ const getTransactionDisplayDetails = (transactionData, assets, prices, nativeCur
       from: transaction.from,
       gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
       gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
-      name: 'Ethereum',
+      asset: { address: null, decimals: 18, name: 'Ethereum', symbol: 'ETH' },
       nativeAmount,
       nonce: Number(convertHexToString(transaction.nonce)),
-      symbol: 'ETH',
       timestampInSeconds,
       to: transaction.to,
       value,
     }
   } else if (transaction.data.startsWith(tokenTransferHash)) {
     const contractAddress = transaction.to;
-    const { symbol, decimals, name } = getAssetDetails(contractAddress, assets);
+    const asset = getAssetDetails(contractAddress, assets);
     const dataPayload = transaction.data.replace(tokenTransferHash, '');
     const toAddress = '0x' + dataPayload.slice(0, 64).replace(/^0+/, '');
     const amount = '0x' + dataPayload.slice(64,128).replace(/^0+/, '');
-    const value = fromWei(convertHexToString(amount), decimals);
-    const nativeAmount = getNativeAmount(prices, nativeCurrency, value, symbol);
+    const value = fromWei(convertHexToString(amount), asset.decimals);
+    const nativeAmount = getNativeAmount(prices, nativeCurrency, value, asset.symbol);
     return {
       from: transaction.from,
       gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
       gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
-      name: name,
+      asset,
       nativeAmount,
       nonce: Number(convertHexToString(transaction.nonce)),
-      symbol,
       timestampInSeconds,
       to: toAddress,
       value,
