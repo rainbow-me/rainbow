@@ -72,8 +72,7 @@ export const walletConnectGetAllTransactions = async (walletConnectors) => {
     const allTransactions = assign({}, ...transactionValues);
     return allTransactions;
   } catch(error) {
-    console.log('Error getting all transactions from WalletConnect', error);
-    // TODO: show error
+    AlertIOS.alert('Error fetching all transactions from open WalletConnect sessions.');
     return {};
   }
 };
@@ -97,12 +96,10 @@ export const walletConnectSendTransactionHash = async (walletConnector, transact
     try {
       await walletConnector.sendTransactionStatus(transactionId, { success, txHash });
     } catch (error) {
-      console.log('error sending transaction hash', error);
-      //TODO error handling
+      AlertIOS.alert('Failed to send transaction status to WalletConnect.');
     }
   } else {
-    //TODO error handling
-    console.log('WalletConnect session has expired while trying to send transaction hash');
+    AlertIOS.alert('WalletConnect session has expired while trying to send transaction hash. Please reconnect.');
   }
 };
 
