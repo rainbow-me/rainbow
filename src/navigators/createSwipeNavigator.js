@@ -184,8 +184,6 @@ export default function createSwipeNavigator(screens, options) {
           onSwipeStart();
         }
 
-        console.log('NEW INDEX', newIndex);
-
         return { currentIndex: newIndex };
       });
     };

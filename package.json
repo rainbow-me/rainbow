@@ -67,7 +67,7 @@
     "react-native-reanimated": "^1.0.0-alpha.9",
     "react-native-safe-area-view": "mikedemarais/react-native-safe-area-view",
     "react-native-shimmer-placeholder": "^1.0.29",
-    "react-native-splash-screen": "crazycodeboy/react-native-splash-screen#266/head",
+    "react-native-splash-screen": "crazycodeboy/react-native-splash-screen#285/head",
     "react-native-storage": "^0.2.2",
     "react-native-svg": "^7.0.2",
     "react-native-tcp": "^3.3.0",

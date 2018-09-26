@@ -2414,11 +2414,21 @@ balance-common@^0.4.0:
   resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.4.7.tgz#d9c29872123e426e3e975a1e0cec22a504b6fc45"
 >>>>>>> 7fa7df1... IDK WTF
 =======
+<<<<<<< HEAD
 "balance-common@git+https://github.com/balance-io/balance-common.git#wc-storage":
   version "0.5.7"
   resolved "git+https://github.com/balance-io/balance-common.git#4fe4b0f40356051046e700923861689f8e6594b0"
 >>>>>>> 0f4eb34... upgrade react-native-reanimated package version
+<<<<<<< HEAD
 >>>>>>> 3db8745... install + link react-native-reanimated package
+=======
+=======
+balance-common@^0.4.7:
+  version "0.4.9"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.4.9.tgz#67f3cde2a9a8c7abfe0fa9245dd013cc0477861f"
+>>>>>>> 1731732... Fix walletscreen loading state
+>>>>>>> 7629f04... Fix walletscreen loading state
+>>>>>>> 4be4a73... Fix walletscreen loading state
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -2598,8 +2608,8 @@ brorand@^1.0.1:
   resolved "https://registry.yarnpkg.com/brorand/-/brorand-1.1.0.tgz#12c25efe40a45e3c323eb8675a0a0ce57b22371f"
 
 browser-process-hrtime@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/browser-process-hrtime/-/browser-process-hrtime-0.1.2.tgz#425d68a58d3447f02a04aa894187fce8af8b7b8e"
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/browser-process-hrtime/-/browser-process-hrtime-0.1.3.tgz#616f00faef1df7ec1b5bf9cfe2bdc3170f26c7b4"
 
 browser-resolve@^1.11.2:
   version "1.11.3"
@@ -2683,7 +2693,7 @@ buffer-alloc-unsafe@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/buffer-alloc-unsafe/-/buffer-alloc-unsafe-1.1.0.tgz#bd7dc26ae2972d0eda253be061dba992349c19f0"
 
-buffer-alloc@^1.1.0:
+buffer-alloc@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/buffer-alloc/-/buffer-alloc-1.2.0.tgz#890dd90d923a873e08e10e5fd51a57e5b7cce0ec"
   dependencies:
@@ -2833,11 +2843,20 @@ caniuse-lite@^1.0.30000844:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000886.tgz#2127186c4f57da10d3ba26fc3e87dce4a5ddd3ae"
 >>>>>>> 7fa7df1... IDK WTF
 =======
+<<<<<<< HEAD
   version "1.0.30000888"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000888.tgz#22edb50d91dd70612b5898e3b36f460600c6492f"
   integrity sha512-vftg+5p/lPsQGpnhSo/yBuYL36ai/cyjLvU3dOPJY1kkKrekLWIy8SLm+wzjX0hpCUdFTasC4/ZT7uqw4rKOnQ==
 >>>>>>> 0f4eb34... upgrade react-native-reanimated package version
+<<<<<<< HEAD
 >>>>>>> 3db8745... install + link react-native-reanimated package
+=======
+=======
+  version "1.0.30000887"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000887.tgz#1769458c27bbdcf61b0cb6b5072bb6cd11fd9c23"
+>>>>>>> 1731732... Fix walletscreen loading state
+>>>>>>> 7629f04... Fix walletscreen loading state
+>>>>>>> 4be4a73... Fix walletscreen loading state
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -2880,8 +2899,8 @@ chownr@^1.0.1:
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-1.1.1.tgz#54726b8b8fff4df053c42187e801fb4412df1494"
 
 chroma-js@^1.3.7:
-  version "1.3.7"
-  resolved "https://registry.yarnpkg.com/chroma-js/-/chroma-js-1.3.7.tgz#38db1b46c99b002b77aa5e6b6744589388f28425"
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/chroma-js/-/chroma-js-1.4.0.tgz#695c52e7c97617e5f687db31913503d410481ae4"
 
 ci-info@^1.5.0:
   version "1.6.0"
@@ -3324,7 +3343,7 @@ css-color-keywords@^1.0.0:
 
 css-in-js-utils@^2.0.0:
   version "2.0.1"
-  resolved "https://registry.yarnpkg.com/css-in-js-utils/-/css-in-js-utils-2.0.1.tgz#3b472b398787291b47cfe3e44fecfdd9e914ba99"
+  resolved "http://registry.npmjs.org/css-in-js-utils/-/css-in-js-utils-2.0.1.tgz#3b472b398787291b47cfe3e44fecfdd9e914ba99"
   dependencies:
     hyphenate-style-name "^1.0.2"
     isobject "^3.0.1"
@@ -7099,8 +7118,8 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
 
 needle@^2.2.1:
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/needle/-/needle-2.2.3.tgz#c1b04da378cd634d8befe2de965dc2cfb0fd65ca"
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/needle/-/needle-2.2.4.tgz#51931bff82533b1928b7d1d69e01f1b00ffd2a4e"
   dependencies:
     debug "^2.1.2"
     iconv-lite "^0.4.4"
@@ -7616,8 +7635,8 @@ pbkdf2@3.0.8:
     create-hmac "^1.1.2"
 
 pbkdf2@^3.0.3:
-  version "3.0.16"
-  resolved "https://registry.yarnpkg.com/pbkdf2/-/pbkdf2-3.0.16.tgz#7404208ec6b01b62d85bf83853a8064f8d9c2a5c"
+  version "3.0.17"
+  resolved "https://registry.yarnpkg.com/pbkdf2/-/pbkdf2-3.0.17.tgz#976c206530617b14ebb32114239f7b09336e93a6"
   dependencies:
     create-hash "^1.1.2"
     create-hmac "^1.1.4"
@@ -8292,9 +8311,9 @@ react-native-shimmer-placeholder@^1.0.29:
   version "1.0.29"
   resolved "https://registry.yarnpkg.com/react-native-shimmer-placeholder/-/react-native-shimmer-placeholder-1.0.29.tgz#738d3270eeef6360f1f66bdf8506180bbfa7fb7a"
 
-react-native-splash-screen@crazycodeboy/react-native-splash-screen#266/head:
-  version "3.1.0"
-  resolved "https://codeload.github.com/crazycodeboy/react-native-splash-screen/tar.gz/7ca5314217d743f6689e1bb873b719208837c218"
+react-native-splash-screen@crazycodeboy/react-native-splash-screen#285/head:
+  version "3.1.1"
+  resolved "https://codeload.github.com/crazycodeboy/react-native-splash-screen/tar.gz/7f8dd1d7ca2cc3e9a3e5fec938e91a769c356c3e"
 
 react-native-storage@^0.2.2:
   version "0.2.2"
@@ -10032,15 +10051,15 @@ table@4.0.2:
     string-width "^2.1.1"
 
 tar-stream@^1.5.2:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/tar-stream/-/tar-stream-1.6.1.tgz#f84ef1696269d6223ca48f6e1eeede3f7e81f395"
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/tar-stream/-/tar-stream-1.6.2.tgz#8ea55dab37972253d9a9af90fdcd559ae435c555"
   dependencies:
     bl "^1.0.0"
-    buffer-alloc "^1.1.0"
+    buffer-alloc "^1.2.0"
     end-of-stream "^1.0.0"
     fs-constants "^1.0.0"
     readable-stream "^2.3.0"
-    to-buffer "^1.1.0"
+    to-buffer "^1.1.1"
     xtend "^4.0.0"
 
 tar.gz@^1.0.5:
@@ -10174,7 +10193,7 @@ tmpl@1.0.x:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/tmpl/-/tmpl-1.0.4.tgz#23640dd7b42d00433911140820e5cf440e521dd1"
 
-to-buffer@^1.1.0:
+to-buffer@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/to-buffer/-/to-buffer-1.1.1.tgz#493bd48f62d7c43fcded313a03dcadb2e1213a80"
 
