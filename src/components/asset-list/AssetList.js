@@ -1,8 +1,9 @@
-import { get } from 'lodash';
+import { INITIAL_ACCOUNT_STATE } from 'balance-common';
+import { get, isEqual, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, withProps } from 'recompact';
-import { withSafeAreaViewInsetValues } from '../../hoc';
+import { compose, onlyUpdateForKeys, withProps, withState } from 'recompact';
+import { withHideSplashScreen, withSafeAreaViewInsetValues } from '../../hoc';
 import { FabWrapper, FloatingActionButton, WalletConnectFab } from '../fab';
 import { ListFooter, SectionList } from '../list';
 import { FlexItem } from '../layout';
@@ -19,10 +20,13 @@ const buildListBottomPadding = (safeAreaInset) => {
   return (safeAreaInset.bottom + fabSizeWithPadding) - ListFooter.height;
 };
 
+const renderSectionHeader = ({ section }) => <AssetListHeader {...section} />;
+
 const AssetList = ({
   fetchData,
   isEmpty,
   onPressWalletConnect,
+  onSectionsLoaded,
   safeAreaInset,
   sections,
   ...props
@@ -50,7 +54,7 @@ const AssetList = ({
           fetchData={fetchData}
           keyExtractor={assetListKeyExtractor}
           renderItem={AssetListItem}
-          renderSectionHeader={({ section }) => <AssetListHeader {...section} />}
+          renderSectionHeader={renderSectionHeader}
           sections={sections}
         />
       )}
@@ -62,20 +66,49 @@ AssetList.propTypes = {
   fetchData: PropTypes.func.isRequired,
   isEmpty: PropTypes.bool,
   onPressWalletConnect: PropTypes.func,
+  onSectionsLoaded: PropTypes.func,
   safeAreaInset: PropTypes.object,
   sections: PropTypes.arrayOf(PropTypes.object),
 };
 
-export default compose(
-  withSafeAreaViewInsetValues,
-  withProps(({ sections }) => {
-    let isEmpty = true;
+const InitialAccountAssetsState = get(INITIAL_ACCOUNT_STATE, 'accountInfo.assets[0]', {});
 
-    for (let i = 0; i < sections.length; i += 1) {
-      if (!isEmpty) break;
-      isEmpty = !sections[i].totalItems;
+const isInitialAccountAssetsState = (sectionData) => {
+  const currentBalance = get(sectionData, 'balance.display');
+  const initialBalance = get(InitialAccountAssetsState, 'balance.display');
+
+  if (!isEqual(currentBalance, initialBalance)) {
+    return false;
+  }
+
+  const currentState = omit(sectionData, ['balance', 'native']);
+  const initialState = omit(InitialAccountAssetsState, ['balance', 'native']);
+
+  return isEqual(currentState, initialState);
+};
+
+export default compose(
+  withState('didLoad', 'toggleDidLoad', false),
+  withHideSplashScreen,
+  withSafeAreaViewInsetValues,
+  withProps(({
+    didLoad,
+    onSectionsLoaded,
+    sections,
+    toggleDidLoad,
+  }) => {
+    let isEmpty = false;
+
+    if (!didLoad && (sections && sections.length)) {
+      onSectionsLoaded();
+      toggleDidLoad(true);
+    }
+
+    if (sections.length === 1) {
+      isEmpty = isInitialAccountAssetsState(sections[0].data[0]);
     }
 
     return { isEmpty };
   }),
+  onlyUpdateForKeys(['isEmpty', 'sections']),
 )(AssetList);

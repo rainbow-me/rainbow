@@ -1,16 +1,26 @@
+import {
+  account,
+  accountInitializeState,
+  accountUpdateAccountAddress,
+  commonStorage,
+} from 'balance-common';
 import { get, isEmpty } from 'lodash';
-import CodePush from 'react-native-code-push';
-import firebase from 'react-native-firebase';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import thunk from 'redux-thunk';
 import { AlertIOS, AppRegistry } from 'react-native';
-import { account, accountInitializeState, accountUpdateAccountAddress, commonStorage } from 'balance-common';
-import { compose, withProps } from 'recompact';
-import { connect, Provider } from 'react-redux';
-import { createStore, applyMiddleware, combineReducers } from 'redux';
+import CodePush from 'react-native-code-push';
+import firebase from 'react-native-firebase';
 import { NavigationActions } from 'react-navigation';
-import Routes from './screens/Routes';
+import { connect, Provider } from 'react-redux';
+import { compose, withProps } from 'recompact';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
+import thunk from 'redux-thunk';
+import {
+  walletConnectGetAllTransactions,
+  walletConnectGetTransaction,
+  walletConnectInitAllConnectors,
+} from './model/walletconnect';
+import { walletInit } from './model/wallet';
 import transactionsToApprove, {
   addTransactionToApprove,
   addTransactionsToApprove,
@@ -19,14 +29,9 @@ import transactionsToApprove, {
 } from './reducers/transactionsToApprove';
 import walletconnect, {
   getValidWalletConnectors,
-  setWalletConnectors
+  setWalletConnectors,
 } from './reducers/walletconnect';
-import {
-  walletConnectInitAllConnectors,
-  walletConnectGetAllTransactions,
-  walletConnectGetTransaction
-} from './model/walletconnect';
-import { walletInit } from './model/wallet';
+import Routes from './screens/Routes';
 import Navigation from './navigation';
 
 const store = createStore(
@@ -69,15 +74,15 @@ class App extends Component {
       const navState = get(this.navigatorRef, 'state.nav');
       const route = Navigation.getActiveRouteName(navState);
       const { transactionId, sessionId } = notification.data;
-      if (route == 'ConfirmTransaction') {
+      if (route === 'ConfirmTransaction') {
         this.fetchAndAddTransaction(transactionId, sessionId)
-				  .then(transaction => {
-						const localNotification = new firebase.notifications.Notification()
-							.setTitle(notification.title)
-							.setBody(notification.body)
-							.setData(notification.data);
-						firebase.notifications().displayNotification(localNotification);
-				});
+          .then(transaction => {
+            const localNotification = new firebase.notifications.Notification()
+              .setTitle(notification.title)
+              .setBody(notification.body)
+              .setData(notification.data);
+            firebase.notifications().displayNotification(localNotification);
+          });
       } else {
         this.onPushNotificationOpened(transactionId, sessionId);
       }
@@ -120,7 +125,6 @@ class App extends Component {
         console.log('failed to init wallet');
         AlertIOS.alert('Error: Failed to initialize wallet.');
       });
-
   }
 
   componentWillUnmount() {
@@ -169,13 +173,11 @@ class App extends Component {
   fetchAndAddTransaction = async (transactionId, sessionId) => {
     const walletConnector = this.props.walletConnectors[sessionId];
     const transactionDetails = await walletConnectGetTransaction(transactionId, walletConnector);
-    if (transactionDetails) {
-      const { transactionPayload, dappName } = transactionDetails;
-      const transaction = this.props.addTransactionToApprove(sessionId, transactionId, transactionPayload, dappName);
-      return transaction;
-    } else {
-      return null;
-    }
+
+    if (!transactionDetails) return null;
+
+    const { transactionPayload, dappName } = transactionDetails;
+    return this.props.addTransactionToApprove(sessionId, transactionId, transactionPayload, dappName);
   }
 
   render = () => (
