@@ -4,6 +4,18 @@ const queuedNavigationActions = [];
 let isPaused = false;
 
 /**
+ * Gets the current screen from navigation state
+ */
+function getActiveRouteName(navigationState) {
+  if (!navigationState) return null;
+
+  const route = navigationState.routes[navigationState.index];
+  // recursively dive into nested navigators
+  if (route.routes) return getActiveRouteName(route);
+  return route.routeName;
+}
+
+/**
  * Handle a navigation action or queue the action if navigation actions have been paused.
  * @param  {Object} navigation  The navigation object defined by react-navigation.
  * @param  {Object} action      The navigation action to run.
@@ -43,6 +55,7 @@ function resumeNavigationActions(navigation) {
 }
 
 export default {
+  getActiveRouteName,
   handleAction,
   pauseNavigationActions,
   resumeNavigationActions,
