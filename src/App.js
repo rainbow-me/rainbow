@@ -62,20 +62,27 @@ class App extends Component {
       commonStorage.saveLocal('balanceWalletFcmToken', { data: fcmToken });
     });
 
-    this.notificationDisplayedListener = firebase.notifications().onNotificationDisplayed(notification => {
-      console.log('on notification displayed - not sure when this is ever called', notification);
-      const { transactionId, sessionId } = notification.data;
-      this.onPushNotificationOpened(transactionId, sessionId);
-    });
-
     this.notificationListener = firebase.notifications().onNotification(notification => {
-      console.log('on notification - while app in foreground');
+      console.log('on notification received while app in foreground');
+      const navState = get(this.navigatorRef, 'state.nav');
+      const route = Navigation.getActiveRouteName(navState);
       const { transactionId, sessionId } = notification.data;
-      this.onPushNotificationOpened(transactionId, sessionId);
+      if (route == 'ConfirmTransaction') {
+        this.fetchAndAddTransaction(transactionId, sessionId)
+				  .then(transaction => {
+						const localNotification = new firebase.notifications.Notification()
+							.setTitle(notification.title)
+							.setBody(notification.body)
+							.setData(notification.data);
+						firebase.notifications().displayNotification(localNotification);
+				});
+      } else {
+        this.onPushNotificationOpened(transactionId, sessionId);
+      }
     });
 
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened(notificationOpen => {
-      console.log('on notification opened - while app in background');
+      console.log('on notification manually opened - while app in background or foreground');
       const { transactionId, sessionId } = notificationOpen.notification.data;
       this.onPushNotificationOpened(transactionId, sessionId);
     });
@@ -111,11 +118,6 @@ class App extends Component {
         AlertIOS.alert('Error: Failed to initialize wallet.');
       });
 
-      setTimeout(() => {
-        const navState = get(this.navigatorRef, 'state.nav');
-        const route = Navigation.getActiveRouteName(navState);
-        console.log('HERE YOU GO JIN!!', route);
-      }, 4000);
   }
 
   componentWillUnmount() {
@@ -128,7 +130,6 @@ class App extends Component {
   handleNavigatorRef = (navigatorRef) => { this.navigatorRef = navigatorRef; }
 
   handleOpenConfirmTransactionModal = (transactionDetails) => {
-    // TODO: return if the page selected is the TransactionConfirmationScreen:
     if (!this.navigatorRef) return;
 
     const action = NavigationActions.navigate({
@@ -153,15 +154,24 @@ class App extends Component {
     if (existingTransaction) {
       this.handleOpenConfirmTransactionModal(existingTransaction);
     } else {
-      const walletConnector = this.props.walletConnectors[sessionId];
-      const transactionDetails = await walletConnectGetTransaction(transactionId, walletConnector);
-      if (transactionDetails) {
-        const { transactionPayload, dappName } = transactionDetails;
-        const transaction = this.props.addTransactionToApprove(sessionId, transactionId, transactionPayload, dappName);
+      const transaction = await this.fetchAndAddTransaction(transactionId, sessionId);
+      if (transaction) {
         this.handleOpenConfirmTransactionModal(transaction);
       } else {
         AlertIOS.alert('The requested transaction could not be found.');
       }
+    }
+  }
+
+  fetchAndAddTransaction = async (transactionId, sessionId) => {
+    const walletConnector = this.props.walletConnectors[sessionId];
+    const transactionDetails = await walletConnectGetTransaction(transactionId, walletConnector);
+    if (transactionDetails) {
+      const { transactionPayload, dappName } = transactionDetails;
+      const transaction = this.props.addTransactionToApprove(sessionId, transactionId, transactionPayload, dappName);
+      return transaction;
+    } else {
+      return null;
     }
   }
 
