@@ -3,6 +3,7 @@ import React from 'react';
 import { compose, onlyUpdateForKeys, withProps } from 'recompact';
 import { css } from 'styled-components/primitives';
 import { colors } from '../../styles';
+import { get } from 'lodash';
 import { Button } from '../buttons';
 import { Text } from '../text';
 import CoinName from './CoinName';
@@ -45,7 +46,7 @@ const RequestCoinRow = ({
   <CoinRow
     {...item}
     {...props}
-    bottomRowRender={({ name }) => <CoinName>{name}</CoinName>}
+    bottomRowRender={({ transactionDisplayDetails }) => <CoinName>{get(transactionDisplayDetails, 'asset.name')}</CoinName>}
     coinIconRender={RequestCoinIcon}
     expirationColor={expirationColor}
     topRowRender={() => (

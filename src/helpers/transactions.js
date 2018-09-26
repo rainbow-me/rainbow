@@ -5,7 +5,11 @@ import {
   isToday,
   isYesterday,
 } from 'date-fns';
-import { get, groupBy } from 'lodash';
+import {
+  get,
+  groupBy,
+  isEmpty,
+} from 'lodash';
 import { createElement } from 'react';
 import { sortList } from '../utils';
 
@@ -41,8 +45,7 @@ export const getTransactionStatus = ({
   return undefined;
 };
 
-const groupTransactionByDate = transactions => {
-  const sortedChronologically = sortList(transactions, 'timestamp.ms', Date.now()).reverse();
+const groupTransactionByDate = transactions => { const sortedChronologically = sortList(transactions, 'timestamp.ms', Date.now()).reverse();
 
   return groupBy(sortedChronologically, ({ pending, timestamp: time }) => {
     if (pending) return 'Pending';
@@ -77,15 +80,28 @@ const normalizeTransactions = ({ accountAddress, transactions }) =>
     symbol: get(asset, 'symbol'),
   }));
 
-export const buildTransactionsSections = ({ accountAddress, renderItem, transactions }) => {
+const renderItemElement = renderItem => renderItemProps => createElement(renderItem, renderItemProps);
+
+export const buildTransactionsSections = ({ accountAddress, requests, transactions, requestRenderItem, transactionRenderItem }) => {
   const normalizedTransactions = normalizeTransactions({ accountAddress, transactions });
   const transactionsByDate = groupTransactionByDate(normalizedTransactions);
 
-  const renderItemElement = renderItemProps => createElement(renderItem, renderItemProps);
-
-  return Object.keys(transactionsByDate).map(section => ({
+  const sectionedTransactions = Object.keys(transactionsByDate).map(section => ({
     data: transactionsByDate[section],
-    renderItem: renderItemElement,
+    renderItem: renderItemElement(transactionRenderItem),
     title: section,
   }));
+  let requestsToApprove = [];
+  if (!isEmpty(requests)) {
+    requestsToApprove = [{
+      data: requests,
+      renderItem: renderItemElement(requestRenderItem),
+      title: 'Requests',
+    }];
+  }
+
+  return [
+    ...requestsToApprove,
+    ...sectionedTransactions,
+  ]
 };

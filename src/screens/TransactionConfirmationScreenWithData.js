@@ -82,15 +82,23 @@ class TransactionConfirmationScreenWithData extends Component {
 
   render = () => {
     const { transactionDetails } = this.props.navigation.state.params;
+    const { transactionDisplayDetails:
+      {
+        asset,
+        nativeAmount,
+        to,
+        value,
+      }
+    } = transactionDetails;
     return (
       <TransactionConfirmationScreen
         asset={{
-          address: get(transactionDetails, 'transactionDisplayDetails.to'),
-          amount: `${get(transactionDetails, 'transactionDisplayDetails.value', '0.00')}`,
-          dappName: `${get(transactionDetails, 'dappName', '')}`,
-          name: `${get(transactionDetails, 'transactionDisplayDetails.asset.name', 'No data')}`,
-          nativeAmount: get(transactionDetails, 'transactionDisplayDetails.nativeAmount'),
-          symbol: `${get(transactionDetails, 'transactionDisplayDetails.asset.symbol', 'N/A')}`,
+          address: to,
+          amount: value || '0.00',
+          dappName: transactionDetails.dappName || '',
+          name: asset.name || 'No data',
+          nativeAmount: nativeAmount,
+          symbol: asset.symbol || 'N/A',
         }}
         onCancelTransaction={this.handleCancelTransaction}
         onConfirmTransaction={this.handleConfirmTransaction}
@@ -99,6 +107,7 @@ class TransactionConfirmationScreenWithData extends Component {
   }
 }
 
+// TODO: clean up with HOCs
 export default connect(
   ({
     transactionsToApprove: { transactionsToApprove },
