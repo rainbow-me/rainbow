@@ -17,20 +17,14 @@ class TransactionConfirmationScreenWithData extends Component {
     removeTransaction: PropTypes.func,
   }
 
-  state = {
-    transactionDetails: null,
-  }
-
   componentDidMount() {
     StatusBar.setBarStyle('light-content', true);
     Vibration.vibrate();
-    const { transactionDetails } = this.props.navigation.state.params;
-    this.setState({ transactionDetails });
   }
 
   handleConfirmTransaction = async () => {
     try {
-      const { transactionDetails } = this.state;
+      const { transactionDetails } = this.props.navigation.state.params;
       const transactionReceipt = await sendTransaction(transactionDetails.transactionPayload.data, 'Confirm transaction' );
       if (transactionReceipt && transactionReceipt.hash) {
         const txDetails = {
@@ -60,7 +54,7 @@ class TransactionConfirmationScreenWithData extends Component {
 
   sendFailedTransactionStatus = async () => {
     try {
-      const { transactionDetails } = this.state;
+      const { transactionDetails } = this.props.navigation.state.params;
       const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
       await walletConnectSendTransactionHash(walletConnector, transactionDetails.transactionId, false, null);
       this.closeTransactionScreen();
@@ -72,7 +66,7 @@ class TransactionConfirmationScreenWithData extends Component {
 
   handleCancelTransaction = async () => {
     try {
-      const { transactionDetails } = this.state;
+      const { transactionDetails } = this.props.navigation.state.params;
       this.props.removeTransaction(transactionDetails.transactionId);
       await this.sendFailedTransactionStatus();
     } catch (error) {
@@ -87,7 +81,7 @@ class TransactionConfirmationScreenWithData extends Component {
   }
 
   render = () => {
-    const { transactionDetails } = this.state;
+    const { transactionDetails } = this.props.navigation.state.params;
     return (
       <TransactionConfirmationScreen
         asset={{
