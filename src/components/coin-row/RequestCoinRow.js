@@ -66,10 +66,8 @@ const RequestCoinRow = ({
 
 export default compose(
   withNavigation,
-  withProps(() => {
-    // XXX TODO: HOOK THIS UP
-    const createdAt = subMinutes(Date.now(), 48);
-    // XXX TODO: HOOK THIS UP
+  withProps(({ item: { transactionDisplayDetails: { timestampInMs } }}) => {
+    const createdAt = new Date(timestampInMs);
     const expiresAt = addHours(createdAt, 1);
     const percentElapsed = getPercentageOfTimeElapsed(createdAt, expiresAt);
 
