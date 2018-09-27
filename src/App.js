@@ -14,7 +14,8 @@ import Routes from './screens/Routes';
 import transactionsToApprove, {
   addTransactionToApprove,
   addTransactionsToApprove,
-  transactionIfExists
+  transactionIfExists,
+  transactionsToApproveInit,
 } from './reducers/transactionsToApprove';
 import walletconnect, {
   getValidWalletConnectors,
@@ -42,6 +43,7 @@ class App extends Component {
     getValidWalletConnectors: PropTypes.func,
     setWalletConnectors: PropTypes.func,
     transactionIfExists: PropTypes.func,
+    transactionsToApproveInit: PropTypes.func,
   }
 
   navigatorRef = null
@@ -93,6 +95,7 @@ class App extends Component {
       .then(walletAddress => {
         console.log('wallet address is', walletAddress);
         this.props.accountUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
+        this.props.transactionsToApproveInit();
         walletConnectInitAllConnectors()
           .then(allConnectors => {
             this.props.setWalletConnectors(allConnectors);
@@ -194,6 +197,7 @@ const AppWithRedux = compose(
       getValidWalletConnectors,
       setWalletConnectors,
       transactionIfExists,
+      transactionsToApproveInit,
     },
   ),
 )(App);
