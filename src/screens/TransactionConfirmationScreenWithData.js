@@ -1,13 +1,13 @@
 import { get } from 'lodash';
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { AlertIOS, StatusBar, Vibration } from 'react-native';
 import { connect } from 'react-redux';
+import { compose, withHandlers, onlyUpdateForKeys } from 'recompact';
+import PropTypes from 'prop-types';
+import { withTransactionConfirmationScreen } from '../hoc';
 import { sendTransaction } from '../model/wallet';
-import { accountUpdateHasPendingTransaction, accountUpdateTransactions } from 'balance-common';
 import { walletConnectSendTransactionHash } from '../model/walletconnect';
 import TransactionConfirmationScreen from './TransactionConfirmationScreen';
-import { removeTransaction } from '../reducers/transactionsToApprove';
 
 class TransactionConfirmationScreenWithData extends Component {
   static propTypes = {
@@ -107,15 +107,6 @@ class TransactionConfirmationScreenWithData extends Component {
   }
 }
 
-// TODO: clean up with HOCs
-export default connect(
-  ({
-    transactionsToApprove: { transactionsToApprove },
-    walletconnect: { walletConnectors }
-  }) => ({ transactionsToApprove, walletConnectors }),
-  {
-    accountUpdateHasPendingTransaction,
-    accountUpdateTransactions,
-    removeTransaction
-  },
+export default compose(
+  withTransactionConfirmationScreen,
 )(TransactionConfirmationScreenWithData);

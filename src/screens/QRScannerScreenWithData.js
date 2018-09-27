@@ -65,4 +65,3 @@ export default compose(
   withAccountAddress,
   withWalletConnectors,
 )(QRScannerScreenWithData);
-//export default withAccountAddress(QRScannerScreenWithData);
