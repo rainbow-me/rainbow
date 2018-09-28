@@ -41,6 +41,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.1.0.tgz#08958f1371179f62df6966d8a614003d11faeb04"
   dependencies:
@@ -68,15 +69,23 @@
 =======
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.1.0.tgz#08958f1371179f62df6966d8a614003d11faeb04"
+=======
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.1.1.tgz#fdd176dd00a79efab4ebd650edd6508638fdcf8b"
+>>>>>>> 93d15cf... fixes for unnecessary txn history calls
   dependencies:
     "@babel/code-frame" "^7.0.0"
-    "@babel/generator" "^7.0.0"
-    "@babel/helpers" "^7.1.0"
-    "@babel/parser" "^7.1.0"
-    "@babel/template" "^7.1.0"
+    "@babel/generator" "^7.1.1"
+    "@babel/helpers" "^7.1.1"
+    "@babel/parser" "^7.1.1"
+    "@babel/template" "^7.1.1"
     "@babel/traverse" "^7.1.0"
+<<<<<<< HEAD
 >>>>>>> 279c7cd... upgrade packages
     "@babel/types" "^7.0.0"
+=======
+    "@babel/types" "^7.1.1"
+>>>>>>> 93d15cf... fixes for unnecessary txn history calls
     convert-source-map "^1.1.0"
     debug "^3.1.0"
     json5 "^0.5.0"
@@ -95,6 +104,7 @@
     source-map "^0.5.0"
     trim-right "^1.0.1"
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 "@babel/generator@7.0.0-beta.47":
   version "7.0.0-beta.47"
@@ -126,8 +136,13 @@
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.0.0.tgz#1efd58bffa951dc846449e58ce3a1d7f02d393aa"
 >>>>>>> 697e255... update yarn.lock
+=======
+"@babel/generator@^7.0.0", "@babel/generator@^7.1.1":
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.1.1.tgz#4a5d2b7ab9b7c75a5aa56bf0750224f41e4eae41"
+>>>>>>> 93d15cf... fixes for unnecessary txn history calls
   dependencies:
-    "@babel/types" "^7.0.0"
+    "@babel/types" "^7.1.1"
     jsesc "^2.5.1"
 <<<<<<< HEAD
     lodash "^4.17.5"
@@ -390,12 +405,19 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@babel/helpers@^7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@babel/helpers/-/helpers-7.1.0.tgz#429bf0f0020be56a4242883432084e3d70a8a141"
+=======
+"@babel/helpers@^7.1.1":
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@babel/helpers/-/helpers-7.1.1.tgz#e742d49ca190ac3b5e47c030a618d4f9c51c1b8f"
+>>>>>>> 93d15cf... fixes for unnecessary txn history calls
   dependencies:
-    "@babel/template" "^7.1.0"
+    "@babel/template" "^7.1.1"
     "@babel/traverse" "^7.1.0"
+<<<<<<< HEAD
 =======
 "@babel/helpers@^7.0.0":
   version "7.0.0"
@@ -413,6 +435,9 @@
     "@babel/traverse" "^7.1.0"
 >>>>>>> 279c7cd... upgrade packages
     "@babel/types" "^7.0.0"
+=======
+    "@babel/types" "^7.1.1"
+>>>>>>> 93d15cf... fixes for unnecessary txn history calls
 
 "@babel/highlight@7.0.0-beta.44":
   version "7.0.0-beta.44"
@@ -458,6 +483,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@babel/parser@^7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.1.0.tgz#a7cd42cb3c12aec52e24375189a47b39759b783e"
@@ -476,6 +502,11 @@
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.1.0.tgz#a7cd42cb3c12aec52e24375189a47b39759b783e"
 >>>>>>> 279c7cd... upgrade packages
+=======
+"@babel/parser@^7.0.0", "@babel/parser@^7.1.0", "@babel/parser@^7.1.1":
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.1.1.tgz#c23e1f3539047b898e471ecfbe7752082384c572"
+>>>>>>> 93d15cf... fixes for unnecessary txn history calls
 
 "@babel/plugin-external-helpers@^7.0.0":
   version "7.0.0"
@@ -630,8 +661,8 @@
     "@babel/helper-plugin-utils" "^7.0.0"
 
 "@babel/plugin-transform-destructuring@^7.0.0":
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-destructuring/-/plugin-transform-destructuring-7.0.0.tgz#68e911e1935dda2f06b6ccbbf184ffb024e9d43a"
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-destructuring/-/plugin-transform-destructuring-7.1.1.tgz#7845ae1c52281f7dfa56d2276c0ad646a6cd61b4"
   dependencies:
     "@babel/helper-plugin-utils" "^7.0.0"
 
@@ -771,8 +802,8 @@
     source-map-support "^0.5.9"
 
 "@babel/runtime@^7.0.0":
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.0.0.tgz#adeb78fedfc855aa05bc041640f3f6f98e85424c"
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.1.1.tgz#1ac9e4ff923ba081f9ced34a0a28e930b29ec395"
   dependencies:
     regenerator-runtime "^0.12.0"
 
@@ -785,6 +816,7 @@
     babylon "7.0.0-beta.44"
     lodash "^4.2.0"
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 "@babel/template@7.0.0-beta.47":
@@ -831,6 +863,15 @@
     "@babel/parser" "^7.1.0"
     "@babel/types" "^7.0.0"
 >>>>>>> 697e255... update yarn.lock
+=======
+"@babel/template@^7.0.0", "@babel/template@^7.1.0", "@babel/template@^7.1.1":
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.1.1.tgz#21430719f1c6cbbbcf274623b42bbe96fda896dc"
+  dependencies:
+    "@babel/code-frame" "^7.0.0"
+    "@babel/parser" "^7.1.1"
+    "@babel/types" "^7.1.1"
+>>>>>>> 93d15cf... fixes for unnecessary txn history calls
 
 "@babel/traverse@7.0.0-beta.44":
   version "7.0.0-beta.44"
@@ -927,6 +968,7 @@
     to-fast-properties "^2.0.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@babel/types@7.0.0-beta.51":
   version "7.0.0-beta.51"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.0.0-beta.51.tgz#d802b7b543b5836c778aa691797abf00f3d97ea9"
@@ -961,6 +1003,11 @@
 >>>>>>> daccbe4... Create RequestCoinRow
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.0.0.tgz#6e191793d3c854d19c6749989e3bc55f0e962118"
+=======
+"@babel/types@^7.0.0", "@babel/types@^7.0.0-beta.49", "@babel/types@^7.1.1":
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.1.1.tgz#d4cd23395df3e2c24d398a55285a4432e8e97a46"
+>>>>>>> 93d15cf... fixes for unnecessary txn history calls
   dependencies:
     esutils "^2.0.2"
     lodash "^4.17.10"
@@ -1046,6 +1093,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "10.10.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.10.1.tgz#d5c96ca246a418404914d180b7fdd625ad18eca6"
 =======
@@ -1068,6 +1116,10 @@
   version "10.11.2"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.11.2.tgz#59508b88ce90fe2742f7b8414c6f5db3e359570d"
 >>>>>>> 2013d3d... removing expired incoming requests on view
+=======
+  version "10.11.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.11.3.tgz#c055536ac8a5e871701aa01914be5731539d01ee"
+>>>>>>> 93d15cf... fixes for unnecessary txn history calls
 
 "@yarnpkg/lockfile@^1.0.0":
   version "1.1.0"
@@ -2162,6 +2214,7 @@ babylon@^6.18.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 balance-common@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.4.1.tgz#59945306902c88d4db5506fac4b82acfdb6e0003"
@@ -2200,6 +2253,11 @@ balance-common@^0.5.6:
   version "0.5.6"
   resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.5.6.tgz#e8efb27c8e7d53189bf8f74968bdfa194a814bc8"
 >>>>>>> 2013d3d... removing expired incoming requests on view
+=======
+"balance-common@git+https://github.com/balance-io/balance-common.git#wc-storage":
+  version "0.5.6"
+  resolved "git+https://github.com/balance-io/balance-common.git#f33724733921980723084b53e0ba9661b301fb5b"
+>>>>>>> 93d15cf... fixes for unnecessary txn history calls
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
