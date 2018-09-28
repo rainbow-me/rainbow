@@ -1,7 +1,7 @@
 import { isFunction, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { compose, onlyUpdateForPropTypes } from 'recompact';
+import { compose } from 'recompact';
 import { AlertIOS } from 'react-native';
 import { withAccountAddress, withWalletConnectors } from '../hoc';
 import { walletConnectInit } from '../model/walletconnect';
