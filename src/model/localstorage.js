@@ -1,3 +1,5 @@
+import { differenceInMinutes } from 'date-fns';
+import { pickBy } from 'lodash';
 import { commonStorage } from 'balance-common';
 
 /**
@@ -7,7 +9,10 @@ import { commonStorage } from 'balance-common';
  */
 export const getAccountLocalRequests = async (accountAddress, network) => {
   const accountLocal = await commonStorage.getLocal(accountAddress.toLowerCase());
-  return accountLocal && accountLocal[network] ? accountLocal[network].requests : null;
+  const requests = accountLocal && accountLocal[network] ? accountLocal[network].requests : {};
+  const openRequests = pickBy(requests, (request) => (differenceInMinutes(Date.now(), request.transactionPayload.timestamp) < 60));
+  await updateLocalRequests(accountAddress, network, openRequests);
+  return openRequests;
 };
 
 /**
