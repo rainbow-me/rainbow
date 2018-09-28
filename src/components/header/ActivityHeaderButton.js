@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { compose, onlyUpdateForPropTypes, withHandlers } from 'recompact';
-import { withAccountTransactions } from '../../hoc';
+import { withAccountTransactions, withRequests } from '../../hoc';
 import { colors } from '../../styles';
 import { Badge } from '../badge';
 import Icon from '../icons/Icon';
@@ -14,7 +14,7 @@ const ActivityHeaderButton = ({ onPress, pendingRequestCount, transactionsCount 
     <HeaderButton onPress={onPress}>
       <Centered>
         <Icon color={colors.dark} name="clock" />
-        {pendingRequestCount && (
+        {pendingRequestCount > 0 && (
           <Badge
             delay={2500}
             value={pendingRequestCount}
@@ -34,6 +34,7 @@ ActivityHeaderButton.propTypes = {
 export default compose(
   withAccountTransactions,
   withNavigation,
+  withRequests,
   withHandlers({
     onPress: ({ navigation, onPress }) => (event) => {
       if (onPress) {

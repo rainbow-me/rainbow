@@ -17,6 +17,7 @@ import {
   withAccountAddress,
   withAccountAssets,
   withHideSplashScreenOnMount,
+  withRequestsInit,
 } from '../hoc';
 import { position } from '../styles';
 
@@ -102,6 +103,7 @@ export default compose(
   withAccountAddress,
   withAccountAssets,
   withHideSplashScreenOnMount,
+  withRequestsInit,
   withSafeTimeout,
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
@@ -111,9 +113,10 @@ export default compose(
       accountAddress,
       accountUpdateAccountAddress,
       setSafeTimeout,
+      transactionsToApproveInit,
     }) => () => {
       accountUpdateAccountAddress(accountAddress, 'BALANCEWALLET');
-
+      transactionsToApproveInit();
       // hack: use timeout so that it looks like loading is happening
       // accountUpdateAccountAddress does not return a promise
       return new Promise(resolve => setSafeTimeout(resolve, 2000));

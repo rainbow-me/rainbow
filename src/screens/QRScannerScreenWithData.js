@@ -1,14 +1,16 @@
 import { isFunction, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { compose } from 'recompact';
 import { AlertIOS } from 'react-native';
-import { withAccountAddress } from '../hoc';
+import { withAccountAddress, withWalletConnectors } from '../hoc';
 import { walletConnectInit } from '../model/walletconnect';
 import QRScannerScreen from './QRScannerScreen';
 
 class QRScannerScreenWithData extends Component {
   static propTypes = {
     accountAddress: PropTypes.string,
+    addWalletConnector: PropTypes.func,
     isScreenActive: PropTypes.bool,
     navigation: PropTypes.object,
   }
@@ -34,12 +36,13 @@ class QRScannerScreenWithData extends Component {
   handleScannerRef = (ref) => { this.qrCodeScannerRef = ref; }
 
   handleSuccess = async (event) => {
-    const { accountAddress, navigation } = this.props;
-    const data = JSON.parse(event.data);
+    const { accountAddress, addWalletConnector, navigation } = this.props;
+    const data = event.data;
 
-    if (data.domain && data.sessionId && data.sharedKey && data.dappName) {
+    if (data) {
       try {
-        await walletConnectInit(accountAddress, data.domain, data.sessionId, data.sharedKey, data.dappName);
+        const walletConnector = await walletConnectInit(accountAddress, data);
+        addWalletConnector(walletConnector);
         navigation.navigate('WalletScreen');
       } catch (error) {
         AlertIOS.alert('Error initializing with WalletConnect', error);
@@ -58,4 +61,7 @@ class QRScannerScreenWithData extends Component {
   )
 }
 
-export default withAccountAddress(QRScannerScreenWithData);
+export default compose(
+  withAccountAddress,
+  withWalletConnectors,
+)(QRScannerScreenWithData);
