@@ -141,7 +141,7 @@ export default function createSwipeNavigator(screens, options) {
      * Handle adding the next screen to the router stack when scrolling has ended.
      * @param  {Object} options.nativeEvent   The native event with layout data.
      */
-    onMomentumScrollEnd = ({ nativeEvent }) => {
+    onScrollEndDrag = ({ nativeEvent }) => {
       const { navigation } = this.props;
 
       const currentOffsetX = get(nativeEvent, 'contentOffset.x', 0);
@@ -241,7 +241,7 @@ export default function createSwipeNavigator(screens, options) {
             extraData={{ currentIndex }}
             getItemLayout={this.getItemLayout}
             horizontal
-            onMomentumScrollEnd={this.onMomentumScrollEnd}
+            onScrollEndDrag={this.onScrollEndDrag}
             onScroll={this.onScroll}
             pagingEnabled
             ref={this.handleFlatListRef}
