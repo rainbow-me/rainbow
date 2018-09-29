@@ -45,6 +45,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.1.0.tgz#08958f1371179f62df6966d8a614003d11faeb04"
   dependencies:
@@ -95,6 +96,11 @@
 >>>>>>> 5374e36... BEGIN PENDING
 >>>>>>> 940e3c7... ActivityList optimizations
 >>>>>>> 4041839... ActivityList optimizations
+=======
+  version "7.1.2"
+  resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.1.2.tgz#f8d2a9ceb6832887329a7b60f9d035791400ba4e"
+  integrity sha512-IFeSSnjXdhDaoysIlev//UzHZbdEmm7D0EIH2qtse9xK7mXEZQpYjs2P00XlP1qYsYvid79p+Zgg6tz1mp6iVw==
+>>>>>>> 2584562... switch swipe navigation binding to onScrollEndDrag
   dependencies:
     "@babel/code-frame" "^7.0.0"
     "@babel/generator" "^7.1.2"
@@ -131,6 +137,7 @@
     source-map "^0.5.0"
     trim-right "^1.0.1"
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -177,18 +184,12 @@
   resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.1.1.tgz#4a5d2b7ab9b7c75a5aa56bf0750224f41e4eae41"
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> 2584562... switch swipe navigation binding to onScrollEndDrag
 "@babel/generator@^7.0.0", "@babel/generator@^7.1.2":
   version "7.1.2"
   resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.1.2.tgz#fde75c072575ce7abbd97322e8fef5bae67e4630"
   integrity sha512-70A9HWLS/1RHk3Ck8tNHKxOoKQuSKocYgwDN85Pyl/RBduss6AKxUR7RIZ/lzduQMSYfWEM4DDBu6A+XGbkFig==
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
-"@babel/generator@^7.0.0":
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.0.0.tgz#1efd58bffa951dc846449e58ce3a1d7f02d393aa"
-  integrity sha512-/BM2vupkpbZXq22l1ALO7MqXJZH2k8bKVv8Y+pABFnzWdztDB/ZLveP5At21vLz5c2YtSE6p7j2FZEsqafMz5Q==
->>>>>>> 5374e36... BEGIN PENDING
->>>>>>> 940e3c7... ActivityList optimizations
   dependencies:
     "@babel/types" "^7.1.2"
 >>>>>>> 3db8745... install + link react-native-reanimated package
@@ -479,6 +480,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@babel/helpers@^7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@babel/helpers/-/helpers-7.1.0.tgz#429bf0f0020be56a4242883432084e3d70a8a141"
@@ -517,18 +519,12 @@
   resolved "https://registry.yarnpkg.com/@babel/helpers/-/helpers-7.1.1.tgz#e742d49ca190ac3b5e47c030a618d4f9c51c1b8f"
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> 2584562... switch swipe navigation binding to onScrollEndDrag
 "@babel/helpers@^7.1.2":
   version "7.1.2"
   resolved "https://registry.yarnpkg.com/@babel/helpers/-/helpers-7.1.2.tgz#ab752e8c35ef7d39987df4e8586c63b8846234b5"
   integrity sha512-Myc3pUE8eswD73aWcartxB16K6CGmHDv9KxOmD2CeOs/FaEAQodr3VYGmlvOmog60vNQ2w8QbatuahepZwrHiA==
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
-"@babel/helpers@^7.1.0":
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/@babel/helpers/-/helpers-7.1.0.tgz#429bf0f0020be56a4242883432084e3d70a8a141"
-  integrity sha512-V1jXUTNdTpBn37wqqN73U+eBpzlLHmxA4aDaghJBggmzly/FpIJMHXse9lgdzQQT4gs5jZ5NmYxOL8G3ROc29g==
->>>>>>> 5374e36... BEGIN PENDING
->>>>>>> 940e3c7... ActivityList optimizations
   dependencies:
     "@babel/template" "^7.1.2"
     "@babel/traverse" "^7.1.0"
@@ -583,6 +579,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@babel/parser@^7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.1.0.tgz#a7cd42cb3c12aec52e24375189a47b39759b783e"
@@ -612,10 +609,13 @@
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.1.1.tgz#c23e1f3539047b898e471ecfbe7752082384c572"
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> 2584562... switch swipe navigation binding to onScrollEndDrag
 "@babel/parser@^7.0.0", "@babel/parser@^7.1.0", "@babel/parser@^7.1.2":
   version "7.1.2"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.1.2.tgz#85c5c47af6d244fab77bce6b9bd830e38c978409"
   integrity sha512-x5HFsW+E/nQalGMw7hu+fvPqnBeBaIr0lWJ2SG0PPL2j+Pm9lYvCrsZJGIgauPIENx0v10INIyFjmSNUD/gSqQ==
+<<<<<<< HEAD
 >>>>>>> 0f4eb34... upgrade react-native-reanimated package version
 <<<<<<< HEAD
 >>>>>>> 3db8745... install + link react-native-reanimated package
@@ -628,6 +628,8 @@
 >>>>>>> 5374e36... BEGIN PENDING
 >>>>>>> 940e3c7... ActivityList optimizations
 >>>>>>> 4041839... ActivityList optimizations
+=======
+>>>>>>> 2584562... switch swipe navigation binding to onScrollEndDrag
 
 "@babel/plugin-external-helpers@^7.0.0":
   version "7.0.0"
@@ -804,21 +806,9 @@
     "@babel/helper-plugin-utils" "^7.0.0"
 
 "@babel/plugin-transform-destructuring@^7.0.0":
-<<<<<<< HEAD
-  version "7.1.1"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-destructuring/-/plugin-transform-destructuring-7.1.1.tgz#7845ae1c52281f7dfa56d2276c0ad646a6cd61b4"
-=======
-<<<<<<< HEAD
   version "7.1.2"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-destructuring/-/plugin-transform-destructuring-7.1.2.tgz#5fa77d473f5a0a3f5266ad7ce2e8c995a164d60a"
   integrity sha512-cvToXvp/OsYxtEn57XJu9BvsGSEYjAh9UeUuXpoi7x6QHB7YdWyQ4lRU/q0Fu1IJNT0o0u4FQ1DMQBzJ8/8vZg==
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-destructuring/-/plugin-transform-destructuring-7.0.0.tgz#68e911e1935dda2f06b6ccbbf184ffb024e9d43a"
-  integrity sha512-Fr2GtF8YJSXGTyFPakPFB4ODaEKGU04bPsAllAIabwoXdFrPxL0LVXQX5dQWoxOjjgozarJcC9eWGsj0fD6Zsg==
->>>>>>> 5374e36... BEGIN PENDING
->>>>>>> 940e3c7... ActivityList optimizations
   dependencies:
     "@babel/helper-plugin-utils" "^7.0.0"
 
@@ -977,21 +967,9 @@
     source-map-support "^0.5.9"
 
 "@babel/runtime@^7.0.0":
-<<<<<<< HEAD
-  version "7.1.1"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.1.1.tgz#1ac9e4ff923ba081f9ced34a0a28e930b29ec395"
-=======
-<<<<<<< HEAD
   version "7.1.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.1.2.tgz#81c89935f4647706fc54541145e6b4ecfef4b8e3"
   integrity sha512-Y3SCjmhSupzFB6wcv1KmmFucH6gDVnI30WjOcicV10ju0cZjak3Jcs67YLIXBrmZYw1xCrVeJPbycFwrqNyxpg==
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.0.0.tgz#adeb78fedfc855aa05bc041640f3f6f98e85424c"
-  integrity sha512-7hGhzlcmg01CvH1EHdSPVXYX1aJ8KCEyz6I9xYIi/asDtzBPMyMhVibhM/K6g/5qnKBwjZtp10bNZIEFTRW1MA==
->>>>>>> 5374e36... BEGIN PENDING
->>>>>>> 940e3c7... ActivityList optimizations
   dependencies:
     regenerator-runtime "^0.12.0"
 
@@ -1005,6 +983,7 @@
     babylon "7.0.0-beta.44"
     lodash "^4.2.0"
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1061,18 +1040,12 @@
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.1.1.tgz#21430719f1c6cbbbcf274623b42bbe96fda896dc"
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> 2584562... switch swipe navigation binding to onScrollEndDrag
 "@babel/template@^7.0.0", "@babel/template@^7.1.0", "@babel/template@^7.1.2":
   version "7.1.2"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.1.2.tgz#090484a574fef5a2d2d7726a674eceda5c5b5644"
   integrity sha512-SY1MmplssORfFiLDcOETrW7fCLl+PavlwMh92rrGcikQaRq4iWPVH0MpwPpY3etVMx6RnDjXtr6VZYr/IbP/Ag==
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
-"@babel/template@^7.0.0", "@babel/template@^7.1.0":
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.1.0.tgz#58cc9572e1bfe24fe1537fdf99d839d53e517e22"
-  integrity sha512-yZ948B/pJrwWGY6VxG6XRFsVTee3IQ7bihq9zFpM00Vydu6z5Xwg0C3J644kxI9WOTzd+62xcIsQ+AT1MGhqhA==
->>>>>>> 5374e36... BEGIN PENDING
->>>>>>> 940e3c7... ActivityList optimizations
   dependencies:
     "@babel/code-frame" "^7.0.0"
 <<<<<<< HEAD
@@ -1187,6 +1160,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@babel/types@7.0.0-beta.51":
   version "7.0.0-beta.51"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.0.0-beta.51.tgz#d802b7b543b5836c778aa691797abf00f3d97ea9"
@@ -1232,10 +1206,13 @@
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.1.1.tgz#d4cd23395df3e2c24d398a55285a4432e8e97a46"
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> 2584562... switch swipe navigation binding to onScrollEndDrag
 "@babel/types@^7.0.0", "@babel/types@^7.0.0-beta.49", "@babel/types@^7.1.2":
   version "7.1.2"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.1.2.tgz#183e7952cf6691628afdc2e2b90d03240bac80c0"
   integrity sha512-pb1I05sZEKiSlMUV9UReaqsCPUpgbHHHu2n1piRm7JkuBkm6QxcaIzKu6FMnMtCbih/cEYTR+RGYYC96Yk9HAg==
+<<<<<<< HEAD
 >>>>>>> 0f4eb34... upgrade react-native-reanimated package version
 <<<<<<< HEAD
 >>>>>>> 3db8745... install + link react-native-reanimated package
@@ -1248,6 +1225,8 @@
 >>>>>>> 5374e36... BEGIN PENDING
 >>>>>>> 940e3c7... ActivityList optimizations
 >>>>>>> 4041839... ActivityList optimizations
+=======
+>>>>>>> 2584562... switch swipe navigation binding to onScrollEndDrag
   dependencies:
     esutils "^2.0.2"
     lodash "^4.17.10"
@@ -1344,6 +1323,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "10.10.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.10.1.tgz#d5c96ca246a418404914d180b7fdd625ad18eca6"
 =======
@@ -1393,6 +1373,11 @@
 >>>>>>> 5374e36... BEGIN PENDING
 >>>>>>> 940e3c7... ActivityList optimizations
 >>>>>>> 4041839... ActivityList optimizations
+=======
+  version "10.11.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.11.3.tgz#c055536ac8a5e871701aa01914be5731539d01ee"
+  integrity sha512-3AvcEJAh9EMatxs+OxAlvAEs7OTy6AG94mcH1iqyVDwVVndekLxzwkWQ/Z4SDbY6GO2oyUXyWW8tQ4rENSSQVQ==
+>>>>>>> 2584562... switch swipe navigation binding to onScrollEndDrag
 
 "@yarnpkg/lockfile@^1.0.0":
   version "1.1.0"
@@ -1450,21 +1435,9 @@ acorn-jsx@^3.0.0:
     acorn "^3.0.4"
 
 acorn-walk@^6.0.1:
-<<<<<<< HEAD
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/acorn-walk/-/acorn-walk-6.1.0.tgz#c957f4a1460da46af4a0388ce28b4c99355b0cbc"
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   integrity sha512-ugTb7Lq7u4GfWSqqpwE0bGyoBZNMTok/zDBXxfEG0QM50jNlGhIWjRC1pPN7bvV1anhF+bs+/gNcRw+o55Evbg==
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
-=======
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/acorn-walk/-/acorn-walk-6.0.1.tgz#c7827bdbb8e21aa97b609adfa225400d9ae348ba"
-  integrity sha512-PqVQ8c6a3kyqdsUZlC7nljp3FFuxipBRHKu+7C1h8QygBFlzTaDX5HD383jej3Peed+1aDG8HwkfB1Z1HMNPkw==
->>>>>>> 5374e36... BEGIN PENDING
->>>>>>> 940e3c7... ActivityList optimizations
 
 acorn@^3.0.4:
   version "3.3.0"
@@ -1511,6 +1484,7 @@ acorn@^6.0.1:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-6.0.2.tgz#6a459041c320ab17592c6317abbfdf4bbaa98ca4"
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 2013d3d... removing expired incoming requests on view
 =======
 <<<<<<< HEAD
@@ -1525,6 +1499,9 @@ acorn@^6.0.1:
 >>>>>>> 5374e36... BEGIN PENDING
 >>>>>>> 940e3c7... ActivityList optimizations
 >>>>>>> 4041839... ActivityList optimizations
+=======
+  integrity sha512-GXmKIvbrN3TV7aVqAzVFaMW8F8wzVX7voEBRO3bDA64+EX37YSayggRJP5Xig6HYHBkWKpFg9W5gg6orklubhg==
+>>>>>>> 2584562... switch swipe navigation binding to onScrollEndDrag
 
 aes-js@3.0.0:
   version "3.0.0"
@@ -2162,18 +2139,9 @@ babel-plugin-lodash@^3.3.4:
     require-package-name "^2.0.1"
 
 babel-plugin-styled-components@^1.7.1:
-<<<<<<< HEAD
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/babel-plugin-styled-components/-/babel-plugin-styled-components-1.7.1.tgz#c291d2a48ec77bb0828275b87696b6594a2f80f9"
-<<<<<<< HEAD
-=======
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-styled-components/-/babel-plugin-styled-components-1.8.0.tgz#9dd054c8e86825203449a852a5746f29f2dab857"
   integrity sha512-PcrdbXFO/9Plo9JURIj8G0Dsz+Ct8r+NvjoLh6qPt8Y/3EIAj1gHGW1ocPY1IkQbXZLBEZZSRBAxJem1KFdBXg==
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
-  integrity sha512-pLRCnT8jW4D8QToGFNj8IxJCTnvcBk03qE2K0FMrTX/mMp23Hg5di6F6/lQaCLVjb8jyS39WBI29ouulrHfUCQ==
->>>>>>> 940e3c7... ActivityList optimizations
   dependencies:
     "@babel/helper-annotate-as-pure" "^7.0.0"
     lodash "^4.17.10"
@@ -2699,6 +2667,7 @@ babylon@^6.18.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 balance-common@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.4.1.tgz#59945306902c88d4db5506fac4b82acfdb6e0003"
@@ -2781,6 +2750,11 @@ balance-common@^0.4.10:
 >>>>>>> 5374e36... BEGIN PENDING
 >>>>>>> 940e3c7... ActivityList optimizations
 >>>>>>> 4041839... ActivityList optimizations
+=======
+"balance-common@git+https://github.com/balance-io/balance-common.git#wc-storage":
+  version "0.5.7"
+  resolved "git+https://github.com/balance-io/balance-common.git#4fe4b0f40356051046e700923861689f8e6594b0"
+>>>>>>> 2584562... switch swipe navigation binding to onScrollEndDrag
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -3210,6 +3184,7 @@ caniuse-lite@^1.0.30000844:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.0.30000886"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000886.tgz#2127186c4f57da10d3ba26fc3e87dce4a5ddd3ae"
 =======
@@ -3275,6 +3250,11 @@ caniuse-lite@^1.0.30000844:
 >>>>>>> 5374e36... BEGIN PENDING
 >>>>>>> 940e3c7... ActivityList optimizations
 >>>>>>> 4041839... ActivityList optimizations
+=======
+  version "1.0.30000888"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000888.tgz#22edb50d91dd70612b5898e3b36f460600c6492f"
+  integrity sha512-vftg+5p/lPsQGpnhSo/yBuYL36ai/cyjLvU3dOPJY1kkKrekLWIy8SLm+wzjX0hpCUdFTasC4/ZT7uqw4rKOnQ==
+>>>>>>> 2584562... switch swipe navigation binding to onScrollEndDrag
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -3859,21 +3839,9 @@ css-select@^2.0.0:
     nth-check "^1.0.1"
 
 css-to-react-native@^2.0.3:
-<<<<<<< HEAD
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/css-to-react-native/-/css-to-react-native-2.2.2.tgz#c077d0f7bf3e6c915a539e7325821c9dd01f9965"
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   integrity sha512-w99Fzop1FO8XKm0VpbQp3y5mnTnaS+rtCvS+ylSEOK76YXO5zoHQx/QMB1N54Cp+Ya9jB9922EHrh14ld4xmmw==
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
-=======
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/css-to-react-native/-/css-to-react-native-2.2.1.tgz#7f3f4c95de65501b8720c87bf0caf1f39073b88e"
-  integrity sha512-v++LRcf633phJiYZBDqtmGPj3+BVof0isd2jgwYLWZJ5YSuhCkrfYtDsNhM6oJthiEco0f9tDVJ1vUkDJNgGEA==
->>>>>>> 5374e36... BEGIN PENDING
->>>>>>> 940e3c7... ActivityList optimizations
   dependencies:
     css-color-keywords "^1.0.0"
     fbjs "^0.8.5"
@@ -3917,7 +3885,7 @@ cssom@0.3.x, "cssom@>= 0.3.2 < 0.4.0":
   resolved "https://registry.yarnpkg.com/cssom/-/cssom-0.3.4.tgz#8cd52e8a3acfd68d3aed38ee0a640177d2f9d797"
   integrity sha512-+7prCSORpXNeR4/fUP3rL+TzqtiFfhMvTd7uEqMdgPvLPt4+uzFUeufx5RHjGTACCargg/DiEt/moMQmvnfkog==
 
-cssstyle@^1.0.0:
+cssstyle@^1.0.0, cssstyle@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/cssstyle/-/cssstyle-1.1.1.tgz#18b038a9c44d65f7a8e428a653b9f6fe42faf5fb"
   integrity sha512-364AI1l/M5TYcFH83JnOH/pSqgaNnKmYgKrm0didZMGKWjQB60dymwWy1rKUgL3J1ffdq9xVi2yGLHdSjjSNog==
@@ -4375,6 +4343,7 @@ electron-to-chromium@^1.3.47, electron-to-chromium@^1.3.62:
 =======
 electron-to-chromium@^1.3.47:
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 9eae8f6... Make Flex component default to using View
   version "1.3.67"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.67.tgz#5e8f3ffac89b4b0402c7e1a565be06f3a109abbc"
@@ -4414,6 +4383,11 @@ electron-to-chromium@^1.3.47:
 >>>>>>> 5374e36... BEGIN PENDING
 >>>>>>> 940e3c7... ActivityList optimizations
 >>>>>>> 4041839... ActivityList optimizations
+=======
+  version "1.3.72"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.72.tgz#b69683081d5b7eee6e1ea07b2f5fa30b3c72252d"
+  integrity sha512-OFbXEC01Lq7A66e3UywkvWYNN00HO1I9MAPereGe0NIXrt2MeaovL1bbY+951HKG0euUdPBe0L7yfKxgqxBMMw==
+>>>>>>> 2584562... switch swipe navigation binding to onScrollEndDrag
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -4501,21 +4475,9 @@ es-abstract@^1.5.1, es-abstract@^1.6.1, es-abstract@^1.7.0:
     is-regex "^1.0.4"
 
 es-to-primitive@^1.1.1:
-<<<<<<< HEAD
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/es-to-primitive/-/es-to-primitive-1.2.0.tgz#edf72478033456e8dda8ef09e00ad9650707f377"
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   integrity sha512-qZryBOJjV//LaxLTV6UC//WewneB3LcXOL9NP++ozKVXsIIIpm/2c13UDiD9Jp2eThsecw9m3jPqDwTyobcdbg==
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
-=======
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/es-to-primitive/-/es-to-primitive-1.1.1.tgz#45355248a88979034b6792e19bb81f2b7975dd0d"
-  integrity sha1-RTVSSKiJeQNLZ5Lhm7gfK3l13Q0=
->>>>>>> 5374e36... BEGIN PENDING
->>>>>>> 940e3c7... ActivityList optimizations
   dependencies:
     is-callable "^1.1.4"
     is-date-object "^1.0.1"
@@ -4851,16 +4813,8 @@ eventemitter3@^3.0.0:
 
 events@^1.0.2, events@^1.1.1:
   version "1.1.1"
-<<<<<<< HEAD
-  resolved "http://registry.npmjs.org/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
-=======
   resolved "https://registry.yarnpkg.com/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
   integrity sha1-nr23Y1rQmccNzEwqH1AEKI6L2SQ=
-<<<<<<< HEAD
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
->>>>>>> 5374e36... BEGIN PENDING
->>>>>>> 940e3c7... ActivityList optimizations
 
 evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
   version "1.0.3"
@@ -5215,16 +5169,8 @@ finalhandler@1.1.0:
 
 finalhandler@1.1.1:
   version "1.1.1"
-<<<<<<< HEAD
-  resolved "http://registry.npmjs.org/finalhandler/-/finalhandler-1.1.1.tgz#eebf4ed840079c83f4249038c9d703008301b105"
-=======
   resolved "https://registry.yarnpkg.com/finalhandler/-/finalhandler-1.1.1.tgz#eebf4ed840079c83f4249038c9d703008301b105"
   integrity sha512-Y1GUDo39ez4aHAw7MysnUD5JzYX+WaIj8I57kO3aEPT1fFRL4sr7mjei97FgnwhAyyzRYmQZaTHb2+9uZ1dPtg==
-<<<<<<< HEAD
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
->>>>>>> 5374e36... BEGIN PENDING
->>>>>>> 940e3c7... ActivityList optimizations
   dependencies:
     debug "2.6.9"
     encodeurl "~1.0.2"
@@ -5975,7 +5921,7 @@ iconv-lite@0.4.23:
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
 
-iconv-lite@^0.4.17, iconv-lite@^0.4.4, iconv-lite@~0.4.13:
+iconv-lite@0.4.24, iconv-lite@^0.4.17, iconv-lite@^0.4.4, iconv-lite@~0.4.13:
   version "0.4.24"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
   integrity sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==
@@ -7121,16 +7067,16 @@ jsdom@^11.5.1:
     xml-name-validator "^3.0.0"
 
 jsdom@^12.0.0:
-  version "12.0.0"
-  resolved "https://registry.yarnpkg.com/jsdom/-/jsdom-12.0.0.tgz#043ffaac60605d87adf77a1ec3eb7686918b6b64"
-  integrity sha512-42RgZYXWwyClG0pN6Au7TExAQqRvzbtJhlcIvu58cJj4yr1bIbqZkgxHqn1btxKu80axZXPZLvldeTzg2auKow==
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/jsdom/-/jsdom-12.1.0.tgz#2c8fbd12a2c690c8a8e14cce164afa11879e57f4"
+  integrity sha512-1lrrgWhI5zN5B5p88xihrhfeAbdagMUXEN8Z+8l5f33k5IMZYDxIDJaPXKOOBF4xAt6hVyE/HrBbUYGjSrZlvg==
   dependencies:
     abab "^2.0.0"
     acorn "^5.7.1"
     acorn-globals "^4.1.0"
     array-equal "^1.0.0"
     cssom ">= 0.3.2 < 0.4.0"
-    cssstyle "^1.0.0"
+    cssstyle "^1.1.1"
     data-urls "^1.0.1"
     domexception "^1.0.1"
     escodegen "^1.11.0"
@@ -7140,7 +7086,7 @@ jsdom@^12.0.0:
     pn "^1.1.0"
     request "^2.88.0"
     request-promise-native "^1.0.5"
-    sax "^1.2.4"
+    saxes "^3.1.2"
     symbol-tree "^3.2.2"
     tough-cookie "^2.4.3"
     w3c-hr-time "^1.0.1"
@@ -7205,16 +7151,8 @@ json-stringify-safe@~5.0.1:
 
 json5@^0.5.0, json5@^0.5.1:
   version "0.5.1"
-<<<<<<< HEAD
-  resolved "http://registry.npmjs.org/json5/-/json5-0.5.1.tgz#1eade7acc012034ad84e2396767ead9fa5495821"
-=======
   resolved "https://registry.yarnpkg.com/json5/-/json5-0.5.1.tgz#1eade7acc012034ad84e2396767ead9fa5495821"
   integrity sha1-Hq3nrMASA0rYTiOWdn6tn6VJWCE=
-<<<<<<< HEAD
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
->>>>>>> 5374e36... BEGIN PENDING
->>>>>>> 940e3c7... ActivityList optimizations
 
 jsonfile@^2.1.0:
   version "2.4.0"
@@ -8207,18 +8145,9 @@ nan@2.10.0:
   integrity sha512-bAdJv7fBLhWC+/Bls0Oza+mvTaNQtP+1RyhhhvD95pgUJz6XM5IzgmxOkItJ9tkoCiplvAnXI1tNmmUD/eScyA==
 
 nan@^2.0.8, nan@^2.3.3, nan@^2.9.2:
-<<<<<<< HEAD
-  version "2.11.0"
-  resolved "https://registry.yarnpkg.com/nan/-/nan-2.11.0.tgz#574e360e4d954ab16966ec102c0c049fd961a099"
-<<<<<<< HEAD
-=======
   version "2.11.1"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.11.1.tgz#90e22bccb8ca57ea4cd37cc83d3819b52eea6766"
   integrity sha512-iji6k87OSXa0CcrLl9z+ZiYSuR2o+c0bGuNmXdrhTQTakxytAFsC56SArGYoiHlJlFoHSnvmhpceZJaXkVuOtA==
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
-  integrity sha512-F4miItu2rGnV2ySkXOQoA8FKz/SR2Q2sWP0sbTxNxz/tuokeC8WxOhPMcwi0qIyGtVn/rrSeLbvVkznqCdwYnw==
->>>>>>> 940e3c7... ActivityList optimizations
 
 nano-json-stream-parser@^0.1.2:
   version "0.1.2"
@@ -9387,14 +9316,7 @@ react-native-actionsheet@^2.4.2:
 react-native-camera@^1.2.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.3.0.tgz#b4d8bea052ab4bd43f58576dac03def7a5ea416e"
-<<<<<<< HEAD
-=======
   integrity sha512-f4Nev0dvJmWQPbXLYu4BF17agLWS6iQ+vanPlWkEaa4MAjbClD/YrQaR8w9vY+C472crSp3kRGHJXIQzSwgMpw==
-<<<<<<< HEAD
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
->>>>>>> 5374e36... BEGIN PENDING
->>>>>>> 940e3c7... ActivityList optimizations
   dependencies:
     lodash "^4.17.10"
     prop-types "^15.6.2"
@@ -9524,14 +9446,7 @@ react-native-linear-gradient@^2.4.0:
 react-native-mail@^3.0.6:
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/react-native-mail/-/react-native-mail-3.0.7.tgz#07e6aca43f6f1f85f3e58e96e7fcd16b31a927b8"
-<<<<<<< HEAD
-=======
   integrity sha512-FHe4kKJKAGuCPPWcDwaRSjdUhEE4IWIsVtTZ05dgD/MgOm00isYmM20zuJHla7oiHVQ2HmzGji76g6IuhIrCjw==
-<<<<<<< HEAD
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
->>>>>>> 5374e36... BEGIN PENDING
->>>>>>> 940e3c7... ActivityList optimizations
 
 react-native-os@^1.2.1:
   version "1.2.1"
@@ -9575,20 +9490,19 @@ react-native-randombytes@^3.1.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 react-native-reanimated@^1.0.0-alpha.8:
   version "1.0.0-alpha.8"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.0.0-alpha.8.tgz#12a11ce8a51cb1df269b22d40f0e492f2fe23443"
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> 2584562... switch swipe navigation binding to onScrollEndDrag
 react-native-reanimated@^1.0.0-alpha.9:
   version "1.0.0-alpha.9"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.0.0-alpha.9.tgz#6d3bcc60b258621f6d85e3630614d3532d49c647"
   integrity sha512-xNY3YrwwDNzRvT+6mpeDUoYY6a3pa5FQVy94yDgDxSNzM3KcxYnHNJtnEHUCWRSdHCsU90yuhcIFpMav7k6yPw==
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
-  integrity sha512-S5ZJKHt+L1rpTzLn9X8HlnEsApIShRe0RZbpkp9GiBk59m20euDeUgaOtJfUbB3gm2YY8si/DhzS0qHg+Wlyvw==
->>>>>>> 940e3c7... ActivityList optimizations
 
 >>>>>>> 3db8745... install + link react-native-reanimated package
 react-native-safe-area-view@0.11.0:
@@ -9656,30 +9570,15 @@ react-native-svg@^7.0.2:
 
 react-native-tab-view@^0.0.77:
   version "0.0.77"
-<<<<<<< HEAD
-  resolved "http://registry.npmjs.org/react-native-tab-view/-/react-native-tab-view-0.0.77.tgz#11ceb8e7c23100d07e628dc151b57797524d00d4"
-=======
   resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-0.0.77.tgz#11ceb8e7c23100d07e628dc151b57797524d00d4"
   integrity sha512-9vjD4Ly1Zlum1Y4g23ODpi/F3gYIUIsKWrsZO/Oh5cuX1eiB1DRVn11nY1z+j/hsQfhfyW6nDlmySyDvYQvYCA==
-<<<<<<< HEAD
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
->>>>>>> 5374e36... BEGIN PENDING
->>>>>>> 940e3c7... ActivityList optimizations
   dependencies:
     prop-types "^15.6.0"
 
 react-native-tab-view@^1.0.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-1.2.0.tgz#0cc26a1c8e49b6c0d58a30363dbbe43954907c31"
-<<<<<<< HEAD
-=======
   integrity sha512-lpiWi3dog86Fu/W60DU12RKrFv3XuTv0lHMC56t2jlDqxLfVzG9ufV7li6Afl2S2ZicNU1Bob8WPgxVZc8egAA==
-<<<<<<< HEAD
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
->>>>>>> 5374e36... BEGIN PENDING
->>>>>>> 940e3c7... ActivityList optimizations
   dependencies:
     prop-types "^15.6.1"
 
@@ -9849,6 +9748,7 @@ react-navigation-fluid-transitions@^0.2.2:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "0.2.6"
   resolved "https://registry.yarnpkg.com/react-navigation-fluid-transitions/-/react-navigation-fluid-transitions-0.2.6.tgz#5c8f281304bcfe44e5e9bd5d7c965c3bda0c689e"
 =======
@@ -9885,6 +9785,11 @@ react-navigation-fluid-transitions@^0.2.2:
 >>>>>>> 5374e36... BEGIN PENDING
 >>>>>>> 940e3c7... ActivityList optimizations
 >>>>>>> 4041839... ActivityList optimizations
+=======
+  version "0.2.71"
+  resolved "https://registry.yarnpkg.com/react-navigation-fluid-transitions/-/react-navigation-fluid-transitions-0.2.71.tgz#9aa289d853a36e9e85422f9378f1c1f958fc7bb2"
+  integrity sha512-DSrM3TGfMevqNHdBBbh/C11FZN7kTSFJkJ3YGd8thV38Ls1695U/3i3wako483ZV+WygBx/bSqStB0pJQax7dw==
+>>>>>>> 2584562... switch swipe navigation binding to onScrollEndDrag
   dependencies:
     lodash.chunk "*"
     lodash.sortby "*"
@@ -10842,6 +10747,7 @@ sax@~1.1.1:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 schedule@^0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/schedule/-/schedule-0.5.0.tgz#c128fffa0b402488b08b55ae74bb9df55cc29cc8"
@@ -10853,6 +10759,15 @@ schedule@^0.3.0:
 =======
 schedule@^0.4.0:
 =======
+=======
+saxes@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/saxes/-/saxes-3.1.2.tgz#f18440ea0fa6a625d3d1a7e13f4c3f10effc5f40"
+  integrity sha512-u6e6AgG8AZSrw4XriEgKoja0qoFVBR8uGn5TPu4fnRObeeMAyytaCswAMUqVmebv8jcAyoLJeOcTxhbx505Cww==
+  dependencies:
+    xmlchars "^1.1.0"
+
+>>>>>>> 2584562... switch swipe navigation binding to onScrollEndDrag
 schedule@0.4.0:
 >>>>>>> 4e75a00... Fix for react-native bug https://github.com/facebook/react-native/issues/21150
   version "0.4.0"
@@ -11243,21 +11158,9 @@ spawn-sync@^1.0.15:
     os-shim "^0.1.2"
 
 spdx-correct@^3.0.0:
-<<<<<<< HEAD
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/spdx-correct/-/spdx-correct-3.0.1.tgz#434434ff9d1726b4d9f4219d1004813d80639e30"
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   integrity sha512-hxSPZbRZvSDuOvADntOElzJpenIR7wXJkuoUcUtS0erbgt2fgeaoPIYretfKpslMhfFDY4k0MZ2F5CUzhBsSvQ==
->>>>>>> 0f4eb34... upgrade react-native-reanimated package version
-=======
-=======
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/spdx-correct/-/spdx-correct-3.0.0.tgz#05a5b4d7153a195bc92c3c425b69f3b2a9524c82"
-  integrity sha512-N19o9z5cEyc8yQQPukRCZ9EUmb4HUpnrmaL/fxS2pBo2jbfcFRVuFZ/oFC+vZz0MNNk0h80iMn5/S6qGZOL5+g==
->>>>>>> 5374e36... BEGIN PENDING
->>>>>>> 940e3c7... ActivityList optimizations
   dependencies:
     spdx-expression-parse "^3.0.0"
     spdx-license-ids "^3.0.0"
@@ -12400,11 +12303,11 @@ webidl-conversions@^4.0.2:
     yaeti "^0.0.6"
 
 whatwg-encoding@^1.0.1, whatwg-encoding@^1.0.3, whatwg-encoding@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/whatwg-encoding/-/whatwg-encoding-1.0.4.tgz#63fb016b7435b795d9025632c086a5209dbd2621"
-  integrity sha512-vM9KWN6MP2mIHZ86ytcyIv7e8Cj3KTfO2nd2c8PFDqcI4bxFmQp83ibq4wadq7rL9l9sZV6o9B0LTt8ygGAAXg==
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/whatwg-encoding/-/whatwg-encoding-1.0.5.tgz#5abacf777c32166a51d085d6b4f3e7d27113ddb0"
+  integrity sha512-b5lim54JOPN9HtzvK9HFXvBma/rnfFeqsic0hSpjtDbVxR3dJKLc+KB4V6GgiGOvl7CY/KNh8rxSo9DKQrnUEw==
   dependencies:
-    iconv-lite "0.4.23"
+    iconv-lite "0.4.24"
 
 whatwg-fetch@>=0.10.0:
   version "3.0.0"
@@ -12632,6 +12535,11 @@ xmlbuilder@^9.0.7:
   version "9.0.7"
   resolved "https://registry.yarnpkg.com/xmlbuilder/-/xmlbuilder-9.0.7.tgz#132ee63d2ec5565c557e20f4c22df9aca686b10d"
   integrity sha1-Ey7mPS7FVlxVfiD0wi35rKaGsQ0=
+
+xmlchars@^1.1.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/xmlchars/-/xmlchars-1.3.0.tgz#a3e2ed9dc13c6e57e404d2641eee62f0d1b49f92"
+  integrity sha512-ItNDLDOaIeTPL6HSYjSqZEY2nZBdmbOA/3xiGTd/y0HGILzvQ3FifNnlQGWvKaMfGZVQWHogtH6GjsNP3cg4nA==
 
 xmldoc@^0.4.0:
   version "0.4.0"
