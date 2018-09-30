@@ -14,11 +14,11 @@ import {
   addTransactionsToApprove,
   transactionIfExists,
   transactionsToApproveInit,
-} from './reducers/transactionsToApprove';
+} from './redux/transactionsToApprove';
 import {
   getValidWalletConnectors,
   setWalletConnectors,
-} from './reducers/walletconnect';
+} from './redux/nodes/walletconnect/actions';
 import {
   walletConnectInitAllConnectors,
   walletConnectGetAllTransactions,
@@ -63,15 +63,16 @@ class App extends Component {
       const navState = get(this.navigatorRef, 'state.nav');
       const route = Navigation.getActiveRouteName(navState);
       const { transactionId, sessionId } = notification.data;
-      if (route == 'ConfirmTransaction') {
+      if (route === 'ConfirmTransaction') {
         this.fetchAndAddTransaction(transactionId, sessionId)
-				  .then(transaction => {
-						const localNotification = new firebase.notifications.Notification()
-							.setTitle(notification.title)
-							.setBody(notification.body)
-							.setData(notification.data);
-						firebase.notifications().displayNotification(localNotification);
-				});
+          .then(transaction => {
+            const localNotification = new firebase.notifications.Notification()
+              .setTitle(notification.title)
+              .setBody(notification.body)
+              .setData(notification.data);
+
+            firebase.notifications().displayNotification(localNotification);
+          });
       } else {
         this.onPushNotificationOpened(transactionId, sessionId);
       }

@@ -1,11 +1,12 @@
-import { account } from 'balance-common';
+import { account, send } from 'balance-common';
 import { combineReducers } from 'redux';
 
-import transactions from './transactions/reducer';
 import transactionsToApprove from './transactionsToApprove';
+import walletconnect from './nodes/walletconnect/reducer';
 
 export default combineReducers({
   account,
-  transactions,
+  send,
   transactionsToApprove,
+  walletconnect,
 });

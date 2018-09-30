@@ -37,6 +37,7 @@ const ButtonPressAnimation = ({
   disabled,
   isActive,
   onActiveStateChange,
+  onLongPress,
   onPress,
   onRest,
   style,
@@ -45,6 +46,7 @@ const ButtonPressAnimation = ({
     activeOpacity={activeOpacity}
     disabled={disabled}
     onActiveStateChange={onActiveStateChange}
+    onLongPress={onLongPress}
     onPress={onPress}
     pressRetentionOffset={PressRetentionOffset}
     style={style}
@@ -76,6 +78,7 @@ ButtonPressAnimation.propTypes = {
   disabled: PropTypes.bool,
   isActive: PropTypes.bool,
   onActiveStateChange: PropTypes.func,
+  onLongPress: PropTypes.func,
   onPress: PropTypes.func,
   onRest: PropTypes.func,
   style: stylePropType,
@@ -94,6 +97,10 @@ export default compose(
     onActiveStateChange: ({ onActiveStateChange, setIsActive }) => (isActive) => {
       if (onActiveStateChange) onActiveStateChange(isActive);
       setIsActive(isActive);
+    },
+    onLongPress: ({ onLongPress, setDidPress }) => (event) => {
+      if (onLongPress) onLongPress(event);
+      setDidPress(true);
     },
     onPress: ({ onPress, setDidPress }) => (event) => {
       if (onPress) onPress(event);

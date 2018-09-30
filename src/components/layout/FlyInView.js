@@ -10,11 +10,6 @@ export default class FlyInView extends Component {
     style: PropTypes.object,
   };
 
-  static defaultProps = {
-    children: [],
-    style: {},
-  };
-
   state = {
     animation: new Animated.Value(0),
   };
@@ -36,7 +31,7 @@ export default class FlyInView extends Component {
     const { animation } = this.state;
 
     return (
-      <Flex style={{
+      <Flex component={Animated.View} style={{
         ...style,
         marginTop: animation.interpolate({ inputRange: [0, 1], outputRange: [40, 0] }),
         opacity: animation.interpolate({ inputRange: [0, 1], outputRange: [0, 1] }),

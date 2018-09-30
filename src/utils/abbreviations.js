@@ -12,6 +12,11 @@ export function address(currentAddress, truncationLength) {
   return sections.join('...');
 }
 
+export function isAddress(currentAddress) {
+  return (currentAddress || '').substring(0, 2) === '0x' && (currentAddress || '').indexOf('...') > -1;
+}
+
 export default {
   address,
+  isAddress,
 };

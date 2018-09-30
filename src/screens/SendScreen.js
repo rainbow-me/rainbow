@@ -1,37 +1,21 @@
 import _ from 'underscore';
-import { get } from 'lodash';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Animated, Clipboard, Image, KeyboardAvoidingView, Text, TextInput, View } from 'react-native';
 import styled from 'styled-components/primitives';
+import { Animated, Clipboard, Image, KeyboardAvoidingView, Text, View } from 'react-native';
 import { compose } from 'recompact';
 import { connect } from 'react-redux';
-import { isValidAddress } from 'balance-common';
+import { get } from 'lodash';
 
-import { abbreviations } from '../utils';
 import { AssetList, UniqueTokenRow } from '../components/asset-list';
 import { Button, BlockButton } from '../components/buttons';
-import { colors, fonts, padding } from '../styles';
+import { colors, fonts, padding, position } from '../styles';
 import { Monospace } from '../components/text';
 import { Column, Page, Flex, FlexItem, FlyInView, Row } from '../components/layout';
 import { SendCoinRow } from '../components/coin-row';
-import { UnderlineField } from '../components/fields';
+import { AddressField, UnderlineField } from '../components/fields';
 import { PillLabel } from '../components/labels';
-import { formatUSD } from '../utils/formatters';
-
-const Container = styled(Page)`
-  background-color: ${colors.white};
-  align-items: center;
-  flex-grow: 1;
-`;
-
-const AddressInput = styled(TextInput)`
-  flex-grow: 1;
-  font-size: ${fonts.size.h5}
-  font-family: ${fonts.family.SFMono};
-  font-weight: ${fonts.weight.semibold};
-  color: ${props => props.isValid ? colors.sendScreen.brightBlue : colors.blueGreyDark};
-  margin-top: 1px;
-`;
+import { formatUSD, formatUSDInput, removeLeadingZeros } from '../utils/formatters';
 
 const AddressInputLabel = styled(Text)`
   color: ${colors.blueGreyDark};
@@ -53,6 +37,10 @@ const AddressInputBottomBorder = styled(View)`
   opacity: 0.05;
   width: 100%;
   height: 2px;
+`;
+
+const AssetContainer = styled(Flex)`
+  ${position.size('100%')}
 `;
 
 const BackgroundImage = styled(Image)`
@@ -81,11 +69,11 @@ const BottomButtonContainer = styled(Flex)`
   width: 100%;
 `;
 
-// const CameraIcon = styled(Image)`
-//   margin-top: -5px;
-//   height: 14px;
-//   width: 17px;
-// `;
+const Container = styled(Page)`
+  background-color: ${colors.white};
+  align-items: center;
+  flex-grow: 1;
+`;
 
 const NumberInput = styled(UnderlineField).attrs({ keyboardType: 'number-pad' })`
   margin-bottom: 15px;
@@ -97,40 +85,44 @@ const NumberInputLabel = styled(Monospace)`
   color: ${colors.blueGreyDark};
 `;
 
-const TransactionContainer = styled(View)`
-  ${padding(20, 20)}
-  flex-grow: 1;
-  background-color: ${colors.lightGrey};
-  margin-bottom: 0;
-`;
-
 const SendButton = styled(BlockButton)`
   margin-top: 15px;
   margin-bottom: 30px;
 `;
 
+const TransactionContainer = styled(View)`
+  ${padding(20, 20)}
+  flex-grow: 1;
+  background-color: ${colors.lightGrey};
+`;
+
 class SendScreen extends Component {
   static propTypes = {
-
+    isValidAddress: PropTypes.bool,
+    selected: PropTypes.string,
+    sendMaxBalance: PropTypes.func,
+    sendUpdateAssetAmount: PropTypes.func,
+    sendUpdateNativeAmount: PropTypes.func,
+    sendUpdateRecipient: PropTypes.func,
+    sendUpdateSelected: PropTypes.func,
   };
 
   static defaultProps = {
-
+    isValidAddress: false,
+    sendMaxBalance() {},
+    sendUpdateAssetAmount() {},
+    sendUpdateNativeAmount() {},
+    sendUpdateRecipient() {},
+    sendUpdateSelected() {},
   };
 
   constructor(props) {
     super(props);
 
     this.state = {
-      address: {
-        full: '',
-        abbreviation: '',
-        isValid: false,
-      },
       selectedAsset: {},
       selectedAssetAnimation: new Animated.Value(1),
       selectedAssetPageY: 0,
-      transaction: {},
     };
   }
 
@@ -145,68 +137,49 @@ class SendScreen extends Component {
     }
   }
 
-  onChangeAddressInput = ({ nativeEvent }) => {
-    const { address } = this.state;
+  onChangeAddressInput = (value) => {
+    const { sendUpdateRecipient } = this.props;
 
-    this.setState({
-      address: {
-        full: address.isValid ? address.full.substring(0, address.full.length - 1) : nativeEvent.text,
-        abbreviation: abbreviations.address(nativeEvent.text),
-        isValid: address.isValid ? false : isValidAddress(nativeEvent.text),
-      },
-    });
+    sendUpdateRecipient(value);
   };
 
   onPressPaste = () => {
+    const { sendUpdateRecipient } = this.props;
+
     Clipboard.getString()
       .then((string) => {
-        const isValid = isValidAddress(string);
-
-        this.setState({
-          address: {
-            full: string,
-            abbreviation: isValid && abbreviations.address(string),
-            isValid,
-          },
-        });
+        sendUpdateRecipient(string);
       });
   };
 
-  onPressCamera = () => {
+  onChangeAssetAmount = (value) => {
+    const { sendUpdateAssetAmount } = this.props;
 
+    sendUpdateAssetAmount(String(value));
+  };
+
+  onChangeNativeAmount = (value) => {
+    const { sendUpdateNativeAmount } = this.props;
+
+    sendUpdateNativeAmount(String(value));
   };
 
   onPressAssetHandler = (selectedAsset) => {
-    return ({ nativeEvent }) => {
-      this.setState({ selectedAsset, selectedAssetPageY: nativeEvent.pageY });
+    const { sendUpdateSelected } = this.props;
+
+    return () => {
+      this.setState({ selectedAsset });
+
+      sendUpdateSelected(selectedAsset.symbol);
     };
   };
 
   onPressSend = () => {
+    const { onSubmit } = this.props;
 
-  };
-
-  onPressMax = () => {
-    const { transaction } = this.props;
-    const { selectedAsset } = this.state;
-
-    const balanceAmount = Number(get(selectedAsset, 'native.balance.amount'));
-    const fixedBalanceAmount = (balanceAmount / (10 ** 18)).toFixed(2);
-    const amount = String(fixedBalanceAmount);
-
-    this.setState({ transaction: { ...transaction, usd: formatUSD(amount) } });
-  };
-
-  onChangeAsset = (value) => {
-    const { transaction } = this.props;
-
-    this.setState({ transaction: { ...transaction, asset: value } });
-  };
-
-  onChangeUSD = (value) => {
-    const { transaction } = this.props;
-
-    this.setState({ transaction: { ...transaction, usd: value } });
+    this.setState({ isLoading: true }, () => {
+      onSubmit();
+    });
   };
 
   renderAssetList() {
@@ -232,19 +205,21 @@ class SendScreen extends Component {
 
     return (
       <FlyInView>
-        <AssetList sections={[sections.balances]} hideHeader hideFooter />
+        <AssetList sections={[sections.balances]} hideHeader />
       </FlyInView>
     );
   }
 
   renderAssets() {
-    const { selectedAsset } = this.state;
+    const { selected } = this.props;
+
+    console.log('selected', selected)
 
     return (
-      <Flex>
-        {!_.isEmpty(selectedAsset) ? null : this.renderAssetList()}
-        {!_.isEmpty(selectedAsset) ? this.renderTransaction() : null}
-      </Flex>
+      <AssetContainer>
+        {selected ? null : this.renderAssetList()}
+        {selected ? this.renderTransaction() : null}
+      </AssetContainer>
     );
   }
 
@@ -256,51 +231,60 @@ class SendScreen extends Component {
         </BackgroundImageContainer>
         <BottomButtonContainer>
           <BottomButton onPress={this.onPressPaste}>Paste</BottomButton>
-          {/* <BottomButton onPress={this.onPressCamera}><CameraIcon source={require('../assets/camera.png')} /></BottomButton> */}
         </BottomButtonContainer>
       </FlexItem>
     );
   }
 
   renderTransaction() {
-    const { selectedAsset, selectedAssetAnimation, selectedAssetPageY, transaction } = this.state;
+    const {
+      gasPrice,
+      assetAmount,
+      nativeAmount,
+      sendMaxBalance,
+    } = this.props;
+
+    const { selectedAsset } = this.state;
+
+    const fee = get(gasPrice, 'txFee.native.value.display', '$0.00').substring(1);
+    const time = get(gasPrice, 'estimatedTime.display', '');
+    const isZeroAssetAmount = Number(assetAmount) <= 0;
 
     return (
-      <Column style={{
-        width: '100%',
-        height: '100%',
-        flexGrow: 1,
+      <Column flex={1} style={{
         // top: selectedAssetAnimation.interpolate({ inputRange: [0, 1], outputRange: [0, selectedAssetPageY] }),
       }}>
-        <SendCoinRow item={selectedAsset} onPress={this.onPressAssetHandler({})} />
+        <SendCoinRow item={selectedAsset} onPress={this.onPressAssetHandler(selectedAsset)} />
         <TransactionContainer>
           <Row>
             <NumberInput
               autoFocus
-              format={(value) => Number(value)}
-              maxLength={8}
+              format={removeLeadingZeros}
               placeholder="0"
-              onChangeAsset={this.onChangeAsset}
-              value={transaction.asset}
+              onChange={this.onChangeAssetAmount}
+              value={assetAmount}
             />
             <NumberInputLabel>{selectedAsset.symbol}</NumberInputLabel>
           </Row>
           <Row>
             <NumberInput
               buttonText="Max"
-              format={formatUSD}
-              maxLength={8}
-              onChange={this.onChangeUSD}
-              onPressButton={this.onPressMax}
+              format={formatUSDInput}
+              onChange={this.onChangeNativeAmount}
+              onPressButton={sendMaxBalance}
               placeholder="0.00"
-              value={transaction.usd}
+              value={formatUSD(nativeAmount)}
             />
             <NumberInputLabel>USD</NumberInputLabel>
           </Row>
-          <SendButton leftIconName="face" onLongPress={this.onPressSend}>Hold To Send</SendButton>
+          <SendButton
+            disabled={isZeroAssetAmount}
+            leftIconName={isZeroAssetAmount ? null : 'face'}
+            onPress={this.onPressSend}
+          >{isZeroAssetAmount ? 'Enter An Amount' : 'Hold To Send'}</SendButton>
           <Row justify="space-between">
-            <PillLabel>Fee: $0.06</PillLabel>
-            <PillLabel icon="clock">Arrives in ~ 2 min</PillLabel>
+            <PillLabel>Fee: ${formatUSD(fee)}</PillLabel>
+            <PillLabel icon="clock">Arrives in ~ {time}</PillLabel>
           </Row>
         </TransactionContainer>
       </Column>
@@ -308,23 +292,23 @@ class SendScreen extends Component {
   }
 
   render() {
-    const { address } = this.state;
+    const { recipient, isValidAddress } = this.props;
 
     return (
-      <KeyboardAvoidingView behavior="height">
+      <KeyboardAvoidingView behavior="padding">
         <Container showTopInset>
           <AddressInputContainer>
             <AddressInputLabel>To:</AddressInputLabel>
-            <AddressInput
+            <AddressField
               autoFocus
-              isValid={address.isValid}
+              isValid={isValidAddress}
               onChange={this.onChangeAddressInput}
               placeholder="Ethereum Address: (0x...)"
-              value={address.isValid ? address.abbreviation : address.full}
+              value={recipient}
             />
           </AddressInputContainer>
           <AddressInputBottomBorder />
-          {address.isValid ? this.renderAssets() : this.renderEmptyState()}
+          {isValidAddress ? this.renderAssets() : this.renderEmptyState()}
         </Container>
       </KeyboardAvoidingView>
     );

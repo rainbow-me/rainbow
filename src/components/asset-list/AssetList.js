@@ -38,7 +38,7 @@ const AssetList = ({
     fetchData={fetchData}
     keyExtractor={assetListKeyExtractor}
     renderItem={AssetListItem}
-    renderSectionHeader={!hideHeader && (headerProps => <AssetListHeader {...headerProps} />)}
+    renderSectionHeader={!hideHeader && (({ section }) => <AssetListHeader {...section} />)}
     sections={sections}
   />
 ));
