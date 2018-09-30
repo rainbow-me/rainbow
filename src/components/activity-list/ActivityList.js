@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, mapProps, onlyUpdateForKeys } from 'recompact';
+import { onlyUpdateForKeys } from 'recompact';
 import { buildTransactionsSections } from '../../helpers/transactions';
 import { CoinRow, TransactionCoinRow, RequestCoinRow } from '../coin-row';
 import { SectionList } from '../list';
@@ -16,66 +16,37 @@ const keyExtractor = ({ hash, transactionId }) => (hash || transactionId);
 const renderSectionHeader = ({ section }) => <ActivityListHeader {...section} />;
 
 const ActivityList = ({
+  accountAddress,
   hasPendingTransaction,
-  pendingTransactionsCount,
-  sections,
+  requests,
+  transactions,
   transactionsCount,
 }) => (
   <SectionList
     contentContainerStyle={{ paddingBottom: 40 }}
-    extraData={{ hasPendingTransaction, pendingTransactionsCount }}
+    extraData={{ hasPendingTransaction }}
     getItemLayout={getItemLayout}
-    initialNumToRender={(transactionsCount < 30) ? transactionsCount : 30}
+    initialNumToRender={Math.min(transactionsCount, 30)}
     keyExtractor={keyExtractor}
     maxToRenderPerBatch={40}
+    removeClippedSubviews
     renderSectionHeader={renderSectionHeader}
-    sections={sections}
+    sections={buildTransactionsSections({
+      accountAddress,
+      requests,
+      transactions,
+      requestRenderItem: RequestCoinRow,
+      transactionRenderItem: TransactionCoinRow,
+    })}
   />
 );
 
 ActivityList.propTypes = {
+  accountAddress: PropTypes.string,
   hasPendingTransaction: PropTypes.bool,
-  pendingTransactionsCount: PropTypes.number,
-  sections: PropTypes.arrayOf(PropTypes.shape({
-    data: PropTypes.array,
-    renderItem: PropTypes.func,
-    title: PropTypes.string.isRequired,
-  })),
+  requests: PropTypes.array,
+  transactions: PropTypes.array,
   transactionsCount: PropTypes.number,
 };
 
-export default compose(
-  mapProps(({
-    accountAddress,
-    requests,
-    transactions,
-    ...props
-  }) => {
-    let pendingTransactionsCount = 0;
-
-    const sections = buildTransactionsSections({
-      accountAddress,
-      requestRenderItem: RequestCoinRow,
-      requests,
-      transactionRenderItem: TransactionCoinRow,
-      transactions,
-    });
-
-    const pendingTransactionsSection = sections[requests.length ? 1 : 0];
-    if (pendingTransactionsSection.title === 'Pending') {
-      pendingTransactionsCount = pendingTransactionsSection.data.length;
-    }
-
-    return {
-      ...props,
-      pendingTransactionsCount,
-      sections,
-    };
-  }),
-  onlyUpdateForKeys([
-    'hasPendingTransaction',
-    'pendingTransactionsCount',
-    'sections',
-    'transactionsCount',
-  ]),
-)(ActivityList);
+export default onlyUpdateForKeys(['hasPendingTransaction', 'requests', 'transactionsCount'])(ActivityList);

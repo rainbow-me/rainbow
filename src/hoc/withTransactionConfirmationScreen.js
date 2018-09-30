@@ -1,6 +1,6 @@
 import { accountUpdateHasPendingTransaction, accountUpdateTransactions } from 'balance-common';
 import { connect } from 'react-redux';
-import { removeTransaction } from '../reducers/transactionsToApprove';
+import { removeTransaction } from '../redux/transactionsToApprove';
 
 const mapStateToProps = ({ walletconnect: { walletConnectors } }) => ({
   walletConnectors,

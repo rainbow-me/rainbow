@@ -48,8 +48,8 @@ export const createTransaction = async (to, data, value, gasLimit, gasPrice, non
 
 export const sendTransaction = async (transaction, authenticationPrompt = lang.t('account.authenticate.please')) => {
   const wallet = await loadWallet(authenticationPrompt);
-  const transactionHash = await wallet.sendTransaction(transaction);
-  return transactionHash;
+  const transactionResponse = await wallet.sendTransaction(transaction);
+  return transactionResponse;
 };
 
 export const loadSeedPhrase = async () => {

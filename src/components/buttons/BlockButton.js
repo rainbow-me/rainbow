@@ -68,6 +68,7 @@ const RightIcon = styled(Icon)`
 
 const BlockButton = ({
   children,
+  disabled,
   height,
   onLayout,
   width,
@@ -80,7 +81,7 @@ const BlockButton = ({
       <Content onLayout={onLayout}>
         <GradientBackground
           center={[0, (height / 2)]}
-          colors={[colors.primaryBlue, '#006FFF']}
+          colors={[disabled ? colors.grey : colors.primaryBlue, disabled ? colors.grey : '#006FFF']}
           radius={width}
         />
         <InnerBorder />
