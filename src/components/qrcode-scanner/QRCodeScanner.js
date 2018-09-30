@@ -1,7 +1,8 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
+import { isFunction } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, InteractionManager, StyleSheet } from 'react-native';
 import Permissions from 'react-native-permissions';
 import ReactNativeQRCodeScanner from 'react-native-qrcode-scanner';
 import styled from 'styled-components/primitives';
@@ -43,6 +44,7 @@ const CrosshairContainer = styled(Centered)`
 
 class QRCodeScanner extends PureComponent {
   static propTypes = {
+    enableScanning: PropTypes.bool,
     onCameraReady: PropTypes.func,
     onSuccess: PropTypes.func,
     scannerRef: PropTypes.func,
@@ -60,6 +62,35 @@ class QRCodeScanner extends PureComponent {
     this.props.setSafeTimeout(this.handleInitializationError, 5000);
   }
 
+  componentDidUpdate = () => {
+    const { enableScanning } = this.props;
+
+    if (!this.scannerRef) return;
+
+    InteractionManager.runAfterInteractions(() => {
+      const isScannerEnabled = !this.scannerRef.state.disablingByUser;
+
+      if (enableScanning && !isScannerEnabled) {
+        this.handleEnableScanner();
+      } else if (!enableScanning && isScannerEnabled) {
+        this.handleDisableScanner();
+      }
+    });
+  }
+
+  handleDisableScanner = () => {
+    if (isFunction(this.scannerRef.disable)) {
+      console.log('📠🚫 Disabling QR Code Scanner');
+      this.scannerRef.disable();
+    }
+  }
+
+  handleEnableScanner = () => {
+    if (isFunction(this.scannerRef.enable)) {
+      console.log('📠✅ Enabling QR Code Scanner');
+      this.scannerRef.enable();
+    }
+  }
 
   handleCameraReady = () => {
     console.log('📷 ✅ CAMERA READY');
@@ -71,11 +102,9 @@ class QRCodeScanner extends PureComponent {
 
   handleError = error => this.setState({ error })
 
-  handleIsAuthorized = () => {
-    Permissions.request(CAMERA_PERMISSION).then((response) => {
-      this.setState({ isAuthorized: response === PERMISSION_AUTHORIZED });
-    });
-  }
+  handleIsAuthorized = () =>
+    Permissions.request(CAMERA_PERMISSION)
+      .then(response => this.setState({ isAuthorized: response === PERMISSION_AUTHORIZED }))
 
   handleInitializationError = () => {
     if (!this.state.isInitialized) {
@@ -83,13 +112,15 @@ class QRCodeScanner extends PureComponent {
     }
   }
 
+  handleScannerRef = (ref) => { this.scannerRef = ref; }
+
   handleMountError = () => {
     console.log('📷 🚨 CAMERA MOUNT ERROR');
     this.handleError('mounting');
   }
 
   render = () => {
-    const { onSuccess, scannerRef } = this.props;
+    const { onSuccess } = this.props;
     const { error, isAuthorized, isInitialized } = this.state;
 
     const showCrosshair = !error && isAuthorized && isInitialized;
@@ -110,7 +141,7 @@ class QRCodeScanner extends PureComponent {
           pendingAuthorizationView={<QRCodeScannerNeedsAuthorization />}
           reactivate={true}
           reactivateTimeout={1000}
-          ref={scannerRef}
+          ref={this.handleScannerRef}
           topViewStyle={styles.disableSection}
         />
         {showErrorMessage && (

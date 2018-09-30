@@ -20,12 +20,12 @@ const QRScannerHeader = styled(Header).attrs({
   top: 0;
 `;
 
-const QRScannerScreen = ({ onPressBackButton, onSuccess, scannerRef }) => (
+const QRScannerScreen = ({ isScreenActive, onPressBackButton, onSuccess }) => (
   <Container>
     <QRCodeScanner
       {...this.props}
+      enableScanning={isScreenActive}
       onSuccess={onSuccess}
-      scannerRef={scannerRef}
     />
     <QRScannerHeader>
       <BackButton
@@ -38,9 +38,9 @@ const QRScannerScreen = ({ onPressBackButton, onSuccess, scannerRef }) => (
 );
 
 QRScannerScreen.propTypes = {
+  isScreenActive: PropTypes.bool.isRequired,
   onPressBackButton: PropTypes.func,
   onSuccess: PropTypes.func,
-  scannerRef: PropTypes.func,
 };
 
 export default pure(QRScannerScreen);
