@@ -1,17 +1,21 @@
-import { get } from 'lodash';
-import CodePush from 'react-native-code-push';
-import firebase from 'react-native-firebase';
+import { account, accountInitializeState, accountUpdateAccountAddress, commonStorage } from 'balance-common';
+import { get, isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import thunk from 'redux-thunk';
-import { account, accountInitializeState, accountUpdateAccountAddress, commonStorage } from 'balance-common';
-import { AppRegistry, AppState, AsyncStorage, Platform } from 'react-native';
-import { compose, withProps } from 'recompact';
-import { connect, Provider } from 'react-redux';
-import { createStore, applyMiddleware, combineReducers } from 'redux';
-import { isEmpty } from 'lodash';
+import CodePush from 'react-native-code-push';
+import { AlertIOS, AppRegistry, AppState, AsyncStorage, Platform } from 'react-native';
+import {
+  REACT_APP_CRYPTOCOMPARE_API_KEY,
+  REACT_APP_DONATION_ADDRESS,
+  REACT_APP_OPENSEA_API_KEY,
+  REACT_APP_SHAPESHIFT_API_KEY,
+} from 'react-native-dotenv';
+import firebase from 'react-native-firebase';
 import { NavigationActions } from 'react-navigation';
-import { AlertIOS } from 'react-native';
+import { connect, Provider } from 'react-redux';
+import { compose, withProps } from 'recompact';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
+import thunk from 'redux-thunk';
 import Routes from './screens/Routes';
 import transactionsToApprove, {
   addTransactionToApprove,
@@ -50,7 +54,16 @@ class App extends Component {
 
   navigatorRef = null
 
+  setEnvironmentVariables = () => {
+    process.env['REACT_APP_CRYPTOCOMPARE_API_KEY'] = REACT_APP_CRYPTOCOMPARE_API_KEY;
+    process.env['REACT_APP_OPENSEA_API_KEY'] = REACT_APP_OPENSEA_API_KEY;
+    process.env['REACT_APP_SHAPESHIFT_API_KEY'] = REACT_APP_SHAPESHIFT_API_KEY;
+    process.env['REACT_APP_DONATION_ADDRESS'] = REACT_APP_DONATION_ADDRESS;
+  }
+
   componentDidMount() {
+    this.setEnvironmentVariables();
+
     firebase.messaging().getToken()
       .then(fcmToken => {
         if (fcmToken) {
@@ -122,7 +135,6 @@ class App extends Component {
         console.log('failed to init wallet');
         AlertIOS.alert('Error: Failed to initialize wallet.');
       });
-
   }
 
   componentWillUnmount() {
