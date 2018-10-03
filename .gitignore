@@ -1,4 +1,5 @@
 .env
+ios/GoogleService-Info.plist
 
 # OSX
 #
