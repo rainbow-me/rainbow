@@ -35,7 +35,6 @@ const UniqueTokenImage = ({
   imageUrl,
   isLoading,
   name,
-  fallbackTextColor,
   onError,
   onLoad,
   onLoadStart,
