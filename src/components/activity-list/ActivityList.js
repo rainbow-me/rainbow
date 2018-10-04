@@ -19,15 +19,15 @@ const ActivityList = ({
   hasPendingTransaction,
   pendingTransactionsCount,
   sections,
+  transactionsCount,
 }) => (
   <SectionList
     contentContainerStyle={{ paddingBottom: 40 }}
     extraData={{ hasPendingTransaction, pendingTransactionsCount }}
     getItemLayout={getItemLayout}
-    initialNumToRender={30}
+    initialNumToRender={(transactionsCount < 30) ? transactionsCount : 30}
     keyExtractor={keyExtractor}
     maxToRenderPerBatch={40}
-    removeClippedSubviews
     renderSectionHeader={renderSectionHeader}
     sections={sections}
   />
@@ -41,6 +41,7 @@ ActivityList.propTypes = {
     renderItem: PropTypes.func,
     title: PropTypes.string.isRequired,
   })),
+  transactionsCount: PropTypes.number,
 };
 
 export default compose(

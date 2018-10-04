@@ -39,15 +39,6 @@ PODS:
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
   - Protobuf (3.6.1)
-<<<<<<< HEAD
-  - React (0.56.0):
-    - React/Core (= 0.56.0)
-  - React/Core (0.56.0):
-    - yoga (= 0.56.0.React)
-  - RNLanguages (3.0.0):
-    - React
-  - yoga (0.56.0.React)
-=======
   - React (0.57.1):
     - React/Core (= 0.57.1)
   - React/Core (0.57.1):
@@ -100,20 +91,16 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
+  - RNLanguages (3.0.0):
+    - React
   - RNReanimated (1.0.0-alpha.9):
     - React
   - yoga (0.57.1.React)
->>>>>>> 3db8745... install + link react-native-reanimated package
 
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - Firebase/Core (~> 5.3.0)
   - Firebase/Messaging (~> 5.3.0)
-<<<<<<< HEAD
-  - React (from `../node_modules/react-native`)
-  - RNLanguages (from `../node_modules/react-native-languages`)
-  - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
-=======
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/GLog.podspec`)
   - React/Core (from `../node_modules/react-native`)
@@ -132,9 +119,9 @@ DEPENDENCIES:
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTVibration (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
+  - RNLanguages (from `../node_modules/react-native-languages`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga/yoga.podspec`)
->>>>>>> 3db8745... install + link react-native-reanimated package
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -149,14 +136,6 @@ SPEC REPOS:
     - Protobuf
 
 EXTERNAL SOURCES:
-<<<<<<< HEAD
-  React:
-    :path: "../node_modules/react-native"
-  RNLanguages:
-    :path: "../node_modules/react-native-languages"
-  yoga:
-    :path: "../node_modules/react-native/ReactCommon/yoga"
-=======
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   Folly:
@@ -165,11 +144,12 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/GLog.podspec"
   React:
     :path: "../node_modules/react-native"
+  RNLanguages:
+    :path: "../node_modules/react-native-languages"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga/yoga.podspec"
->>>>>>> 3db8745... install + link react-native-reanimated package
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
@@ -183,37 +163,12 @@ SPEC CHECKSUMS:
   glog: e8acf0ebbf99759d3ff18c86c292a5898282dcde
   GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
-<<<<<<< HEAD
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
   RNLanguages: e3ae05ef105937645218272429dac0c3f7633451
-  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
-
-PODFILE CHECKSUM: 3610f1285ea386f3fd9ae1b8e16c8daf3a0f16f5
-=======
-
-PODFILE CHECKSUM: 8cf8c5c72a0b45742ea93200c56270adf0bc939f
->>>>>>> c7d1608... add ‘install-pods’ script to package.json
-=======
-  Protobuf: 6b0fc34ab8f2b7dbad2278a48be08a669427c59f
-
-PODFILE CHECKSUM: 97c78f76d7d1d1d8f88964e3d07e241a30346175
->>>>>>> 75d5592... bugfixes and typos
-=======
-  Protobuf: 6b0fc34ab8f2b7dbad2278a48be08a669427c59f
-
-PODFILE CHECKSUM: 97c78f76d7d1d1d8f88964e3d07e241a30346175
->>>>>>> dd085d1... still in progress: adding new function to props
-=======
-  Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
-  React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
   RNReanimated: 45d9313b7a62318ed00d60a811937321e43e076e
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: 804d280cffe44fa90eb9b969aa309b60646b1248
->>>>>>> 3db8745... install + link react-native-reanimated package
+PODFILE CHECKSUM: c49a29a0cf11d5997d350eeca70fc3062229403a
 
 COCOAPODS: 1.5.3

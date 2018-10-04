@@ -48,14 +48,8 @@ class TransactionConfirmationScreenWithData extends Component {
         }
       }
     } catch (error) {
-<<<<<<< HEAD
-      await this.sendFailedTransactionStatus();
-      // 'Unable to send transaction.'
-      AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
-=======
       this.handleCancelTransaction();
-      AlertIOS.alert('Authentication Failed');
->>>>>>> c089cc8... transactions / confirmation stuff?
+      AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
     }
   };
 
