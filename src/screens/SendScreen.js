@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
-import { Button, Image, SectionList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { Button, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import lang from 'i18n-js';
 
 const SendScreen = ({ sections }) => (
   <View style={styles.container}>
@@ -12,8 +13,14 @@ const SendScreen = ({ sections }) => (
           paddingRight: 16,
         }}
       >
-        <Button onPress={this.closeModal} title="Cancel" color="#5983FF" accessibilityLabel="Cancel" style={{ fontSize: 18 }} />
-        <Text style={{ fontSize: 18, fontWeight: '600' }}>{'Send'}</Text>
+        <Button
+          onPress={this.closeModal}
+          title={lang.t('wallet.action.cancel')}
+          color="#5983FF"
+          accessibilityLabel={lang.t('wallet.action.cancel')}
+          style={{ fontSize: 18 }}
+        />
+        <Text style={{ fontSize: 18, fontWeight: '600' }}>{lang.t('wallet.action.send')}</Text>
         <Image style={{ width: 20, height: 20, marginLeft: 34 }} source={require('../assets/scan-icon-alt.png')} />
       </View>
       <View
@@ -33,7 +40,7 @@ const SendScreen = ({ sections }) => (
           placeholder="Address, Name, Phone"
         />
         <TouchableOpacity onPress={this.pasteContent} style={{ backgroundColor: '#A9ADB9', borderRadius: 14, padding: 6 }}>
-          <Text style={{ color: '#fff', fontSize: 15, fontWeight: '600' }}>{'Paste'}</Text>
+          <Text style={{ color: '#fff', fontSize: 15, fontWeight: '600' }}>{lang.t('wallet.action.paste')}</Text>
         </TouchableOpacity>
       </View>
     </View>

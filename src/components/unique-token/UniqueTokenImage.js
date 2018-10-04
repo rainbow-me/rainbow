@@ -1,7 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Image } from 'react-primitives';
-import { compose, withHandlers, withProps, withState } from 'recompact';
+import {
+  compose,
+  onlyUpdateForKeys,
+  withHandlers,
+  withProps,
+  withState,
+} from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, fonts, padding, position } from '../../styles';
 import { Centered } from '../layout';
@@ -25,6 +31,7 @@ const FallbackText = styled(Monospace).attrs({ size: 'smedium' })`
 
 const UniqueTokenImage = ({
   error,
+  fallbackTextColor,
   imageUrl,
   isLoading,
   name,
@@ -46,7 +53,9 @@ const UniqueTokenImage = ({
         style={position.sizeAsObject('100%')}
       />
     ) : (
-      <FallbackText color={fallbackTextColor}>{name}</FallbackText>
+      <FallbackText color={fallbackTextColor}>
+        {name}
+      </FallbackText>
     )}
     {isLoading && <Shimmer {...position.sizeAsObject(size)} />}
   </Container>
@@ -66,6 +75,7 @@ UniqueTokenImage.propTypes = {
 };
 
 const buildUniqueTokenName = ({ contractName, id, name }) => (name || `${contractName} #${id}`);
+const getFallbackTextColor = bg => colors.getTextColorForBackground(bg, FallbackTextColorVariants);
 
 export default compose(
   withState('error', 'handleErrorState', null),
@@ -79,7 +89,8 @@ export default compose(
     onLoadStart: ({ handleLoadingState }) => () => handleLoadingState(true),
   }),
   withProps(({ backgroundColor, item }) => ({
-    fallbackTextColor: colors.getTextColorForBackground(backgroundColor, FallbackTextColorVariants),
+    fallbackTextColor: getFallbackTextColor(backgroundColor),
     name: buildUniqueTokenName(item),
   })),
+  onlyUpdateForKeys(['error', 'imageUrl', 'isLoading']),
 )(UniqueTokenImage);

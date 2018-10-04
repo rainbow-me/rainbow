@@ -5,11 +5,7 @@ import {
   isToday,
   isYesterday,
 } from 'date-fns';
-import {
-  get,
-  groupBy,
-  isEmpty,
-} from 'lodash';
+import { get, groupBy, isEmpty } from 'lodash';
 import { createElement } from 'react';
 import { sortList } from '../utils';
 
@@ -81,7 +77,13 @@ const normalizeTransactions = ({ accountAddress, transactions }) =>
 
 const renderItemElement = renderItem => renderItemProps => createElement(renderItem, renderItemProps);
 
-export const buildTransactionsSections = ({ accountAddress, requests, transactions, requestRenderItem, transactionRenderItem }) => {
+export const buildTransactionsSections = ({
+  accountAddress,
+  requestRenderItem,
+  requests,
+  transactionRenderItem,
+  transactions,
+}) => {
   const normalizedTransactions = normalizeTransactions({ accountAddress, transactions });
   const transactionsByDate = groupTransactionByDate(normalizedTransactions);
 
@@ -102,5 +104,5 @@ export const buildTransactionsSections = ({ accountAddress, requests, transactio
   return [
     ...requestsToApprove,
     ...sectionedTransactions,
-  ]
+  ];
 };

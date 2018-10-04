@@ -135,13 +135,13 @@ export default function createSwipeNavigator(screens, options) {
       this.scrollToIndex(routeIndex, false);
 
       this.setState({ flatListScreens: loadedScreens });
-    };
+    }
 
     /**
      * Handle adding the next screen to the router stack when scrolling has ended.
      * @param  {Object} options.nativeEvent   The native event with layout data.
      */
-    onMomentumScrollEnd = ({ nativeEvent }) => {
+    onScrollEndDrag = ({ nativeEvent }) => {
       const { navigation } = this.props;
 
       const currentOffsetX = get(nativeEvent, 'contentOffset.x', 0);
@@ -162,24 +162,30 @@ export default function createSwipeNavigator(screens, options) {
      * @param  {Object} options.nativeEvent   The native event with layout data.
      */
     onScroll = ({ nativeEvent }) => {
-      const { currentIndex } = this.state;
-
       const layoutMeasurementWidth = get(nativeEvent, 'layoutMeasurement.width', 0);
       const currentOffsetX = get(nativeEvent, 'contentOffset.x', 0);
-      const startOffsetX = currentIndex * deviceUtils.dimensions.width;
-      const endOffsetXRight = (currentIndex + 1) * deviceUtils.dimensions.width;
-      const endOffsetXLeft = (currentIndex - 1) * deviceUtils.dimensions.width;
 
-      if (currentOffsetX - startOffsetX > (endOffsetXRight - startOffsetX) / 2) {
-        this.setState({ currentIndex: currentIndex + 1 });
-      } else if (currentOffsetX - startOffsetX < (endOffsetXLeft - startOffsetX) / 2) {
-        this.setState({ currentIndex: currentIndex - 1 });
-      }
+      this.setState(({ currentIndex }) => {
+        const startOffsetX = currentIndex * deviceUtils.dimensions.width;
+        const endOffsetXLeft = (currentIndex - 1) * deviceUtils.dimensions.width;
+        const endOffsetXRight = (currentIndex + 1) * deviceUtils.dimensions.width;
 
-      if (!isSwiping && currentOffsetX % layoutMeasurementWidth !== 0) {
-        isSwiping = true;
-        onSwipeStart();
-      }
+        const beginningOffset = currentOffsetX - startOffsetX;
+
+        let newIndex = currentIndex;
+        if (beginningOffset > (endOffsetXRight - startOffsetX) / 2) {
+          newIndex = currentIndex + 1;
+        } else if (beginningOffset < (endOffsetXLeft - startOffsetX) / 2) {
+          newIndex = currentIndex - 1;
+        }
+
+        if (!isSwiping && currentOffsetX % layoutMeasurementWidth !== 0) {
+          isSwiping = true;
+          onSwipeStart();
+        }
+
+        return { currentIndex: newIndex };
+      });
     };
 
     /**
@@ -235,7 +241,7 @@ export default function createSwipeNavigator(screens, options) {
             extraData={{ currentIndex }}
             getItemLayout={this.getItemLayout}
             horizontal
-            onMomentumScrollEnd={this.onMomentumScrollEnd}
+            onScrollEndDrag={this.onScrollEndDrag}
             onScroll={this.onScroll}
             pagingEnabled
             ref={this.handleFlatListRef}

@@ -1,4 +1,4 @@
-import { isFunction, omit } from 'lodash';
+import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { compose } from 'recompact';
@@ -15,23 +15,11 @@ class QRScannerScreenWithData extends Component {
     navigation: PropTypes.object,
   }
 
-  shouldComponentUpdate = ({ isScreenActive, ...nextProps }) => {
-    if (this.qrCodeScannerRef && this.qrCodeScannerRef.disable) {
-      const isDisabled = this.qrCodeScannerRef.state.disablingByUser;
-
-      if (isScreenActive && isDisabled && isFunction(this.qrCodeScannerRef.enable)) {
-        console.log('📠✅ Enabling QR Code Scanner');
-        this.qrCodeScannerRef.enable();
-      } else if (!isScreenActive && !isDisabled && isFunction(this.qrCodeScannerRef.disable)) {
-        console.log('📠🚫 Disabling QR Code Scanner');
-        this.qrCodeScannerRef.disable();
-      }
-    }
-
-    return nextProps === omit(this.props, 'isScreenActive');
-  }
-
   handlePressBackButton = () => this.props.navigation.goBack()
+
+  handleSuccess = async (event) => {
+    const { accountAddress, navigation } = this.props;
+    const data = JSON.parse(event.data);
 
   handleScannerRef = (ref) => { this.qrCodeScannerRef = ref; }
 
@@ -45,7 +33,7 @@ class QRScannerScreenWithData extends Component {
         addWalletConnector(walletConnector);
         navigation.navigate('WalletScreen');
       } catch (error) {
-        AlertIOS.alert('Error initializing with WalletConnect', error);
+        AlertIOS.alert(lang.t('wallet.wallet_connect.error'), error);
         console.log('error initializing wallet connect', error);
       }
     }
@@ -56,7 +44,6 @@ class QRScannerScreenWithData extends Component {
       {...this.props}
       onPressBackButton={this.handlePressBackButton}
       onSuccess={this.handleSuccess}
-      scannerRef={this.handleScannerRef}
     />
   )
 }

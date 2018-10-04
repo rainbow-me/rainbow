@@ -8,8 +8,6 @@ import { ShadowStack } from '../shadow-stack';
 
 const CoinIconSize = 40;
 
-const CoinIconHeight = 40;
-
 const fallbackTextStyles = css`
   font-family: ${fonts.family.SFMono};
   margin-bottom: 1;

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import lang from 'i18n-js';
 import { onlyUpdateForPropTypes } from 'recompact';
 import styled from 'styled-components/primitives';
 import AppVersionStamp from '../components/AppVersionStamp';
@@ -63,7 +64,7 @@ const SettingsScreen = ({
         value={accountAddress}
       />
       <WalletAddressTextContainer>
-        <CopyTooltip textToCopy={accountAddress} tooltipText="Copy Address">
+        <CopyTooltip textToCopy={accountAddress} tooltipText={lang.t('wallet.settings.copy_address')}>
           <TruncatedAddress
             address={accountAddress}
             size="big"
@@ -73,12 +74,12 @@ const SettingsScreen = ({
       </WalletAddressTextContainer>
       <SendFeedback />
       <SeedPhraseButton onPress={onToggleShowSeedPhrase}>
-        {seedPhrase ? 'Hide' : 'Show'} Seed Phrase
+        {seedPhrase ? lang.t('wallet.settings.hide_seed_phrase') : lang.t('wallet.settings.show_seed_phrase')}
       </SeedPhraseButton>
     </Content>
     <SeedPhraseSection>
       {seedPhrase && (
-        <CopyTooltip textToCopy={seedPhrase} tooltipText="Copy Seed Phrase">
+        <CopyTooltip textToCopy={seedPhrase} tooltipText={lang.t('wallet.settings.copy_seed_phrase')}>
           <SeedPhraseText>
             {seedPhrase}
           </SeedPhraseText>

@@ -2,6 +2,7 @@ import { withSafeTimeout } from '@hocs/safe-timers';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { StatusBar } from 'react-native';
+import lang from 'i18n-js';
 import styled from 'styled-components/primitives';
 import Icon from '../components/icons/Icon';
 import { Column } from '../components/layout';
@@ -57,12 +58,12 @@ class LoadingScreen extends Component {
       {this.state.isError ? (
         <ErrorContainer>
           <ErrorText color={colors.red} error="Error" />
-          <ErrorMessage>There has been an error loading the wallet. Please kill the app and retry.</ErrorMessage>
+          <ErrorMessage>{lang.t('wallet.loading.error')}</ErrorMessage>
         </ErrorContainer>
       ) : (
         <Fragment>
           <Icon color={LoadingColor} name="balanceLogo" />
-          <LoadingText color={LoadingColor}>Loading</LoadingText>
+          <LoadingText color={LoadingColor}>{lang.t('wallet.loading.message')}</LoadingText>
         </Fragment>
       )}
     </Container>
