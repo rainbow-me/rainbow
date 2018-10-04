@@ -26,8 +26,8 @@ const SkeletonElement = styled(Icon).attrs({ name: 'assetListItemSkeleton' })`
   opacity: ${({ index }) => (1 - (0.2 * index))};
 `;
 
-const AssetListSkeleton = ({ onPressAddFunds, skeletonCount }) => (
-  <Container>
+const AssetListSkeleton = ({ onPressAddFunds, skeletonCount, ...props }) => (
+  <Container {...props}>
     <AssetListHeader section={{ title: lang.t('account.tab_balances'), totalValue: '$0.00' }} />
     <Column>
       {times(skeletonCount, index => (
