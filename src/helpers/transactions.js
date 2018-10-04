@@ -41,10 +41,8 @@ export const getTransactionStatus = ({
   return undefined;
 };
 
-const groupTransactionByDate = (transactions) => {
-  const sortedChronologically = sortList(transactions, 'timestamp.ms', Date.now()).reverse();
-
-  return groupBy(sortedChronologically, ({ pending, timestamp: time }) => {
+const groupTransactionByDate = transactions => {
+  return groupBy(transactions, ({ pending, timestamp: time }) => {
     if (pending) return 'Pending';
 
     const { ms } = time;
@@ -94,7 +92,6 @@ export const buildTransactionsSections = ({
     renderItem: renderItemElement(transactionRenderItem),
     title: section,
   }));
-
   let requestsToApprove = [];
   if (!isEmpty(requests)) {
     requestsToApprove = [{

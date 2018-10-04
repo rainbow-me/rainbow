@@ -32,7 +32,7 @@ const bottomRowRender = ({ name, native, status }) => {
       <CoinName>{name}</CoinName>
       <BalanceText color={balanceTextColor}>
         {(nativeDisplay && isStatusSent) ? '- ' : ''}
-        {nativeDisplay || '$0.00'}
+        {nativeDisplay || ''}
       </BalanceText>
     </Fragment>
   );

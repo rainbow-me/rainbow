@@ -86,7 +86,7 @@
     "redux": "^3.7.2",
     "redux-thunk": "^2.3.0",
     "rn-nodeify": "^10.0.0",
-    "rn-walletconnect-wallet": "^0.0.1-beta.17",
+    "rn-walletconnect-wallet": "^0.6.29",
     "stream-browserify": "^1.0.0",
     "string_decoder": "^0.10.31",
     "styled-components": "3.3.3",
@@ -112,6 +112,7 @@
     "eslint-plugin-react-native": "^3.2.1",
     "jest": "^22.4.3",
     "metro-react-native-babel-preset": "^0.45.2",
+    "react-native-dotenv": "^0.2.0",
     "react-test-renderer": "^16.2.0",
     "schedule": "0.4.0"
   },
