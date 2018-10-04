@@ -1,4 +1,5 @@
 import ethers from 'ethers';
+import lang from 'i18n-js';
 import * as keychain from '../model/keychain';
 const seedPhraseKey = 'seedPhrase';
 const privateKeyKey = 'privateKey';
@@ -45,14 +46,14 @@ export const createTransaction = async (to, data, value, gasLimit, gasPrice, non
   };
 };
 
-export const sendTransaction = async (transaction, authenticationPrompt = 'Please authenticate') => {
+export const sendTransaction = async (transaction, authenticationPrompt = lang.t('account.authenticate.please')) => {
   const wallet = await loadWallet(authenticationPrompt);
   const transactionHash = await wallet.sendTransaction(transaction);
   return transactionHash;
 };
 
 export const loadSeedPhrase = async () => {
-  const authenticationPrompt = 'Please authenticate to view seed phrase';
+  const authenticationPrompt = lang.t('account.authenticate.please_seed_phrase');
   const seedPhrase = await keychain.loadString(seedPhraseKey, { authenticationPrompt });
   return seedPhrase;
 };

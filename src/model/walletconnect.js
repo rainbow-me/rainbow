@@ -1,4 +1,5 @@
 import RNWalletConnect from 'rn-walletconnect-wallet';
+import lang from 'i18n-js';
 import { commonStorage } from 'balance-common';
 import { AlertIOS } from 'react-native';
 import { assign, mapValues, values } from 'lodash';
@@ -102,4 +103,3 @@ export const walletConnectSendTransactionHash = async (walletConnector, transact
     AlertIOS.alert('WalletConnect session has expired while trying to send transaction hash. Please reconnect.');
   }
 };
-

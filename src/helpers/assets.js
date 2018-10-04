@@ -1,6 +1,24 @@
-import { get, groupBy, isNull } from 'lodash';
+import { INITIAL_ACCOUNT_STATE } from 'balance-common';
+import { get, groupBy, isEqual, isNull, omit } from 'lodash';
 
 const EMPTY_ARRAY = [];
+
+const InitialAccountAssetsState = get(INITIAL_ACCOUNT_STATE, 'accountInfo.assets[0]', {});
+
+export const areAssetsEqualToInitialAccountAssetsState = (sectionData) => {
+  const currentBalance = get(sectionData, 'balance.display');
+  const initialBalance = get(InitialAccountAssetsState, 'balance.display');
+
+  if (!isEqual(currentBalance, initialBalance)) {
+    return false;
+  }
+
+  const currentState = omit(sectionData, ['balance', 'native']);
+  const initialState = omit(InitialAccountAssetsState, ['balance', 'native']);
+
+  return isEqual(currentState, initialState);
+};
+
 
 export const buildUniqueTokenList = (uniqueTokensAssets) => {
   const list = [];

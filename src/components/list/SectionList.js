@@ -32,6 +32,7 @@ const SectionList = ({
         <RefreshControl
           onRefresh={onRefresh}
           refreshing={isRefreshing}
+          tintColor={colors.alpha(colors.blueGreyLight, 0.666)}
         />
       ) : null
     )}

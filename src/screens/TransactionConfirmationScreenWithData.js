@@ -1,6 +1,7 @@
 import { get } from 'lodash';
 import React, { Component } from 'react';
 import { AlertIOS, StatusBar, Vibration } from 'react-native';
+import lang from 'i18n-js';
 import { connect } from 'react-redux';
 import { compose, withHandlers, onlyUpdateForKeys } from 'recompact';
 import PropTypes from 'prop-types';
@@ -25,7 +26,9 @@ class TransactionConfirmationScreenWithData extends Component {
   handleConfirmTransaction = async () => {
     try {
       const { transactionDetails } = this.props.navigation.state.params;
-      const transactionReceipt = await sendTransaction(transactionDetails.transactionPayload.data, 'Confirm transaction' );
+      const txPayload = transactionDetails.transactionPayload.data;
+      const transactionReceipt = await sendTransaction(txPayload, lang.t('wallet.transaction.confirm'));
+
       if (transactionReceipt && transactionReceipt.hash) {
         const txDetails = {
           asset: get(transactionDetails, 'transactionDisplayDetails.asset'),
@@ -48,7 +51,7 @@ class TransactionConfirmationScreenWithData extends Component {
       }
     } catch (error) {
       await this.sendFailedTransactionStatus();
-      AlertIOS.alert('Unable to send transaction.');
+      AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
     }
   };
 
@@ -60,7 +63,18 @@ class TransactionConfirmationScreenWithData extends Component {
       this.closeTransactionScreen();
     } catch (error) {
       this.closeTransactionScreen();
-      AlertIOS.alert('Failed to send cancelled transaction to WalletConnect');
+      AlertIOS.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
+    }
+  }
+
+  handleCancelTransaction = async () => {
+    try {
+      const { transactionDetails } = this.props.navigation.state.params;
+      this.props.removeTransaction(transactionDetails.transactionId);
+      await this.sendFailedTransactionStatus();
+    } catch (error) {
+      this.closeTransactionScreen();
+      AlertIOS.alert('Failed to send rejected transaction status');
     }
   }
 
