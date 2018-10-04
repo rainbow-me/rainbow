@@ -18,12 +18,6 @@ class QRScannerScreenWithData extends Component {
   handlePressBackButton = () => this.props.navigation.goBack()
 
   handleSuccess = async (event) => {
-    const { accountAddress, navigation } = this.props;
-    const data = JSON.parse(event.data);
-
-  handleScannerRef = (ref) => { this.qrCodeScannerRef = ref; }
-
-  handleSuccess = async (event) => {
     const { accountAddress, addWalletConnector, navigation } = this.props;
     const data = event.data;
 
