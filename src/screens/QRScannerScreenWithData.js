@@ -10,6 +10,7 @@ import QRScannerScreen from './QRScannerScreen';
 class QRScannerScreenWithData extends Component {
   static propTypes = {
     accountAddress: PropTypes.string,
+    addWalletConnector: PropTypes.func,
     isScreenActive: PropTypes.bool,
     navigation: PropTypes.object,
   }
@@ -17,12 +18,13 @@ class QRScannerScreenWithData extends Component {
   handlePressBackButton = () => this.props.navigation.goBack()
 
   handleSuccess = async (event) => {
-    const { accountAddress, navigation } = this.props;
-    const data = JSON.parse(event.data);
+    const { accountAddress, addWalletConnector, navigation } = this.props;
+    const data = event.data;
 
-    if (data.domain && data.sessionId && data.sharedKey && data.dappName) {
+    if (data) {
       try {
-        await walletConnectInit(accountAddress, data.domain, data.sessionId, data.sharedKey, data.dappName);
+        const walletConnector = await walletConnectInit(accountAddress, data);
+        addWalletConnector(walletConnector);
         navigation.navigate('WalletScreen');
       } catch (error) {
         AlertIOS.alert(lang.t('wallet.wallet_connect.error'), error);

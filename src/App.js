@@ -9,6 +9,12 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AlertIOS, AppRegistry } from 'react-native';
 import CodePush from 'react-native-code-push';
+import {
+  REACT_APP_CRYPTOCOMPARE_API_KEY,
+  REACT_APP_DONATION_ADDRESS,
+  REACT_APP_OPENSEA_API_KEY,
+  REACT_APP_SHAPESHIFT_API_KEY,
+} from 'react-native-dotenv';
 import firebase from 'react-native-firebase';
 import { NavigationActions } from 'react-navigation';
 import { connect, Provider } from 'react-redux';
@@ -53,7 +59,16 @@ class App extends Component {
 
   navigatorRef = null
 
+  setEnvironmentVariables = () => {
+    process.env['REACT_APP_CRYPTOCOMPARE_API_KEY'] = REACT_APP_CRYPTOCOMPARE_API_KEY;
+    process.env['REACT_APP_OPENSEA_API_KEY'] = REACT_APP_OPENSEA_API_KEY;
+    process.env['REACT_APP_SHAPESHIFT_API_KEY'] = REACT_APP_SHAPESHIFT_API_KEY;
+    process.env['REACT_APP_DONATION_ADDRESS'] = REACT_APP_DONATION_ADDRESS;
+  }
+
   componentDidMount() {
+    this.setEnvironmentVariables();
+
     firebase.messaging().getToken()
       .then(fcmToken => {
         if (fcmToken) {
@@ -173,7 +188,6 @@ class App extends Component {
   fetchAndAddTransaction = async (transactionId, sessionId) => {
     const walletConnector = this.props.walletConnectors[sessionId];
     const transactionDetails = await walletConnectGetTransaction(transactionId, walletConnector);
-
     if (!transactionDetails) return null;
 
     const { transactionPayload, dappName } = transactionDetails;

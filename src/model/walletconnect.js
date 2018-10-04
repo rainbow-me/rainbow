@@ -8,9 +8,9 @@ const PUSH_ENDPOINT = 'https://walletconnect.balance.io/webhook/push-notify';
 export const walletConnectInit = async (accountAddress, uriString) => {
   const fcmTokenLocal = await commonStorage.getLocal('balanceWalletFcmToken');
   const fcmToken = fcmTokenLocal ? fcmTokenLocal.data : null;
-  const walletConnector = new RNWalletConnect(uriString);
   if (fcmToken) {
     try {
+      const walletConnector = new RNWalletConnect(uriString);
       await walletConnector.sendSessionStatus({ fcmToken, pushEndpoint: PUSH_ENDPOINT, data: [accountAddress] });
       await commonStorage.saveWalletConnectSession(walletConnector.sessionId, uriString, walletConnector.expires);
       return walletConnector;
