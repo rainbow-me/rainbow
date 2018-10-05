@@ -1679,9 +1679,9 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-balance-common@0.5.10:
-  version "0.5.10"
-  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.5.10.tgz#13eaa05dd53e5d1d9974b242d22db7d99af03a2f"
+balance-common@0.5.12:
+  version "0.5.12"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.5.12.tgz#383480abd207bea461410a16acfc9ef0332f56d7"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -7229,7 +7229,7 @@ regex-not@^1.0.0, regex-not@^1.0.2:
 
 regexpp@^1.0.1:
   version "1.1.0"
-  resolved "https://registry.yarnpkg.com/regexpp/-/regexpp-1.1.0.tgz#0e3516dd0b7904f413d2d4193dce4618c3a689ab"
+  resolved "http://registry.npmjs.org/regexpp/-/regexpp-1.1.0.tgz#0e3516dd0b7904f413d2d4193dce4618c3a689ab"
 
 regexpu-core@^2.0.0:
   version "2.0.0"
@@ -8885,8 +8885,8 @@ ws@^5.2.0:
     async-limiter "~1.0.0"
 
 ws@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-6.0.0.tgz#eaa494aded00ac4289d455bac8d84c7c651cef35"
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-6.1.0.tgz#119a9dbf92c54e190ec18d10e871d55c95cf9373"
   dependencies:
     async-limiter "~1.0.0"
 
