@@ -3,7 +3,7 @@ import React from 'react';
 import { Monospace } from '../text';
 import { ListHeader } from '../list';
 
-const AssetListHeader = ({ totalValue, ...props }) => (console.log(props),
+const AssetListHeader = ({ totalValue, ...props }) => (
   <ListHeader {...props}>
     {totalValue ? (
       <Monospace size="large" weight="semibold">

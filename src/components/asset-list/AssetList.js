@@ -24,6 +24,7 @@ const AssetList = ({
   safeAreaInset,
   sections,
   hideHeader,
+  onLayout,
   ...props
 }) => (isEmpty ? (
   <AssetListSkeleton />
@@ -37,6 +38,7 @@ const AssetList = ({
     enablePullToRefresh
     fetchData={fetchData}
     keyExtractor={assetListKeyExtractor}
+    onLayout={onLayout}
     renderItem={AssetListItem}
     renderSectionHeader={!hideHeader && (({ section }) => <AssetListHeader {...section} />)}
     sections={sections}
@@ -46,6 +48,7 @@ const AssetList = ({
 AssetList.propTypes = {
   fetchData: PropTypes.func.isRequired,
   isEmpty: PropTypes.bool,
+  onLayout: PropTypes.func,
   safeAreaInset: PropTypes.object,
   sections: PropTypes.arrayOf(PropTypes.object),
   hideHeader: PropTypes.bool,
