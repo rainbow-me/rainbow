@@ -120,19 +120,16 @@ class SendScreen extends Component {
     super(props);
 
     this.state = {
-      selectedAsset: {},
       selectedAssetAnimation: new Animated.Value(1),
       selectedAssetPageY: 0,
     };
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const {
-      selectedAsset,
-      selectedAssetAnimation,
-    } = this.state;
+    const { selected } = this.props;
+    const { selectedAssetAnimation } = this.state;
 
-    if (_.isEmpty(prevState.selectedAsset) && !_.isEmpty(selectedAsset)) {
+    if (_.isEmpty(prevProps.selected) && !_.isEmpty(selected)) {
       Animated.timing(selectedAssetAnimation, { toValue: 0, duration: 300 }).start();
     }
   }
@@ -164,27 +161,23 @@ class SendScreen extends Component {
     sendUpdateNativeAmount(String(value));
   };
 
-  onPressAssetHandler = (selectedAsset) => {
+  onPressAssetHandler = (symbol) => {
     const { sendUpdateSelected } = this.props;
 
     return () => {
-      this.setState({ selectedAsset });
-
-      sendUpdateSelected(selectedAsset.symbol);
+      sendUpdateSelected(symbol);
     };
   };
 
   onPressSend = () => {
-    const { onSubmit } = this.props;
+    const { onSubmit, sendUpdateSelected } = this.props;
 
-    this.setState({ isLoading: true }, () => {
-      onSubmit();
-    });
+    onSubmit();
+    sendUpdateSelected('');
   };
 
   renderAssetList() {
     const { accountInfo, uniqueTokens } = this.props;
-    const { selectedAsset } = this.state;
 
     const sections = {
       balances: {
@@ -192,8 +185,7 @@ class SendScreen extends Component {
         renderItem: (props) => (
           <SendCoinRow
             {...props}
-            isSelected={props.item.name === selectedAsset.name}
-            onPress={this.onPressAssetHandler(props.item)}
+            onPress={this.onPressAssetHandler(props.item.symbol)}
           />
         ),
       },
@@ -213,12 +205,9 @@ class SendScreen extends Component {
   renderAssets() {
     const { selected } = this.props;
 
-    console.log('selected', selected)
-
     return (
       <AssetContainer>
-        {selected ? null : this.renderAssetList()}
-        {selected ? this.renderTransaction() : null}
+        {_.isEmpty(selected) ? this.renderAssetList() : this.renderTransaction()}
       </AssetContainer>
     );
   }
@@ -242,9 +231,8 @@ class SendScreen extends Component {
       assetAmount,
       nativeAmount,
       sendMaxBalance,
+      selected,
     } = this.props;
-
-    const { selectedAsset } = this.state;
 
     const fee = get(gasPrice, 'txFee.native.value.display', '$0.00').substring(1);
     const time = get(gasPrice, 'estimatedTime.display', '');
@@ -254,7 +242,7 @@ class SendScreen extends Component {
       <Column flex={1} style={{
         // top: selectedAssetAnimation.interpolate({ inputRange: [0, 1], outputRange: [0, selectedAssetPageY] }),
       }}>
-        <SendCoinRow item={selectedAsset} onPress={this.onPressAssetHandler(selectedAsset)} />
+        <SendCoinRow item={selected} onPress={this.onPressAssetHandler('')} />
         <TransactionContainer>
           <Row>
             <NumberInput
@@ -264,7 +252,7 @@ class SendScreen extends Component {
               onChange={this.onChangeAssetAmount}
               value={assetAmount}
             />
-            <NumberInputLabel>{selectedAsset.symbol}</NumberInputLabel>
+            <NumberInputLabel>{selected.symbol}</NumberInputLabel>
           </Row>
           <Row>
             <NumberInput
