@@ -66,5 +66,5 @@ export default compose(
   withHandlers({
     onPressBack: ({ navigation }) => () => navigation.goBack(),
   }),
-  // onlyUpdateForKeys(['hasPendingTransaction', 'requests', 'transactionsCount']),
+  onlyUpdateForKeys(['hasPendingTransaction', 'requests', 'transactionsCount']),
 )(ActivityScreen);

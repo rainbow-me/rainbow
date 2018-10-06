@@ -25,7 +25,7 @@ const SectionList = ({
   safeAreaInset,
   showSafeAreaInsetBottom,
   ...props
-}) => (console.log(props),
+}) => (
   <List
     refreshControl={(
       enablePullToRefresh ? (

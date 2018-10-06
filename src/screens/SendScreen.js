@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import styled from 'styled-components/primitives';
 import { Animated, Clipboard, Image, KeyboardAvoidingView, Text, View } from 'react-native';
-import { compose } from 'recompact';
+import { compose, withHandlers } from 'recompact';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
 
@@ -98,8 +98,9 @@ const TransactionContainer = styled(View)`
 
 class SendScreen extends Component {
   static propTypes = {
+    fetchData: PropTypes.func,
     isValidAddress: PropTypes.bool,
-    selected: PropTypes.string,
+    selected: PropTypes.object,
     sendMaxBalance: PropTypes.func,
     sendUpdateAssetAmount: PropTypes.func,
     sendUpdateNativeAmount: PropTypes.func,
@@ -108,6 +109,7 @@ class SendScreen extends Component {
   };
 
   static defaultProps = {
+    fetchData() {},
     isValidAddress: false,
     sendMaxBalance() {},
     sendUpdateAssetAmount() {},
@@ -170,14 +172,16 @@ class SendScreen extends Component {
   };
 
   onPressSend = () => {
-    const { onSubmit, sendUpdateSelected } = this.props;
+    const { assetAmount, onSubmit, sendUpdateSelected } = this.props;
 
-    onSubmit();
-    sendUpdateSelected('');
+    if (Number(assetAmount) > 0) {
+      onSubmit();
+      sendUpdateSelected('');
+    }
   };
 
   renderAssetList() {
-    const { accountInfo, uniqueTokens } = this.props;
+    const { accountInfo, fetchData, uniqueTokens } = this.props;
 
     const sections = {
       balances: {
@@ -197,7 +201,11 @@ class SendScreen extends Component {
 
     return (
       <FlyInView>
-        <AssetList sections={[sections.balances]} hideHeader />
+        <AssetList
+          fetchData={fetchData}
+          hideHeader
+          sections={[sections.balances]}
+        />
       </FlyInView>
     );
   }
@@ -310,4 +318,21 @@ const reduxProps = ({ account }) => ({
   uniqueTokens: account.uniqueTokens,
 });
 
-export default compose(connect(reduxProps, null))(SendScreen);
+export default compose(
+  withHandlers({
+    fetchData: ({
+      accountAddress,
+      accountUpdateAccountAddress,
+      setSafeTimeout,
+      transactionsToApproveInit,
+    }) => () => {
+      accountUpdateAccountAddress(accountAddress, 'BALANCEWALLET');
+      transactionsToApproveInit();
+      // hack: use timeout so that it looks like loading is happening
+      // accountUpdateAccountAddress does not return a promise
+      return new Promise(resolve => setSafeTimeout(resolve, 2000));
+    },
+  }),
+  connect(reduxProps, null),
+)(SendScreen);
+

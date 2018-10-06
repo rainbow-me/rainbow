@@ -16,10 +16,10 @@ const Container = styled(Centered)`
 
 const LabelIcon = styled(Icon).attrs({
   color: props => colors.alpha(props.textColor || colors.blueGreyLight, 0.8),
+  height: 14,
+  width: 14,
 })`
   margin-right: 6px;
-  height: 14px;
-  width: 14px;
 `;
 
 const Label = styled.Text`

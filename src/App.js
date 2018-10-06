@@ -18,7 +18,7 @@ import {
 import {
   getValidWalletConnectors,
   setWalletConnectors,
-} from './redux/nodes/walletconnect/actions';
+} from './redux/walletconnect';
 import {
   walletConnectInitAllConnectors,
   walletConnectGetAllTransactions,
@@ -43,6 +43,9 @@ class App extends Component {
   navigatorRef = null
 
   componentDidMount() {
+    commonStorage.resetAccount('0x1492004547FF0eFd778CC2c14E794B26B4701105');
+    console.log('!!! reset account');
+
     firebase.messaging().getToken()
       .then(fcmToken => {
         if (fcmToken) {
@@ -164,13 +167,11 @@ class App extends Component {
   fetchAndAddTransaction = async (transactionId, sessionId) => {
     const walletConnector = this.props.walletConnectors[sessionId];
     const transactionDetails = await walletConnectGetTransaction(transactionId, walletConnector);
-    if (transactionDetails) {
-      const { transactionPayload, dappName } = transactionDetails;
-      const transaction = this.props.addTransactionToApprove(sessionId, transactionId, transactionPayload, dappName);
-      return transaction;
-    } else {
-      return null;
-    }
+    if (!transactionDetails) return null;
+
+    const { transactionPayload, dappName } = transactionDetails;
+
+    return this.props.addTransactionToApprove(sessionId, transactionId, transactionPayload, dappName);
   }
 
   render = () => (

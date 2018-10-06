@@ -32,10 +32,23 @@ PODS:
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
   - Protobuf (3.6.1)
+  - React (0.57.1):
+    - React/Core (= 0.57.1)
+  - React/Core (0.57.1):
+    - yoga (= 0.57.1.React)
+  - RNLanguages (3.0.0):
+    - React
+  - RNReanimated (1.0.0-alpha.9):
+    - React
+  - yoga (0.57.1.React)
 
 DEPENDENCIES:
   - Firebase/Core (~> 5.3.0)
   - Firebase/Messaging (~> 5.3.0)
+  - React (from `../node_modules/react-native`)
+  - RNLanguages (from `../node_modules/react-native-languages`)
+  - RNReanimated (from `../node_modules/react-native-reanimated`)
+  - yoga (from `../node_modules/react-native/ReactCommon/yoga/yoga.podspec`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -48,6 +61,16 @@ SPEC REPOS:
     - nanopb
     - Protobuf
 
+EXTERNAL SOURCES:
+  React:
+    :path: "../node_modules/react-native"
+  RNLanguages:
+    :path: "../node_modules/react-native-languages"
+  RNReanimated:
+    :path: "../node_modules/react-native-reanimated"
+  yoga:
+    :path: "../node_modules/react-native/ReactCommon/yoga/yoga.podspec"
+
 SPEC CHECKSUMS:
   Firebase: 68afeeb05461db02d7c9e3215cda28068670f4aa
   FirebaseAnalytics: b3628aea54c50464c32c393fb2ea032566e7ecc2
@@ -57,7 +80,11 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
+  React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
+  RNLanguages: e3ae05ef105937645218272429dac0c3f7633451
+  RNReanimated: 45d9313b7a62318ed00d60a811937321e43e076e
+  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: 8cf8c5c72a0b45742ea93200c56270adf0bc939f
+PODFILE CHECKSUM: 7733116ae5a1ca62941804422572870030138744
 
 COCOAPODS: 1.5.3
