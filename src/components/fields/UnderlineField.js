@@ -87,7 +87,7 @@ export default class UnderlineField extends Component {
     const { onBlur } = this.props;
     const { underlineAnimation } = this.state;
 
-    Animated.timing(underlineAnimation, { toValue: 0, duration: 300 }).start();
+    Animated.timing(underlineAnimation, { toValue: 0, duration: 150 }).start();
 
     onBlur(...props);
   };
@@ -105,7 +105,7 @@ export default class UnderlineField extends Component {
     const { onFocus } = this.props;
     const { underlineAnimation } = this.state;
 
-    Animated.timing(underlineAnimation, { toValue: 1, duration: 300 }).start();
+    Animated.timing(underlineAnimation, { toValue: 1, duration: 150 }).start();
 
     onFocus(...props);
   };

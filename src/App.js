@@ -118,7 +118,6 @@ class App extends Component {
         console.log('failed to init wallet');
         AlertIOS.alert('Error: Failed to initialize wallet.');
       });
-
   }
 
   componentWillUnmount() {
