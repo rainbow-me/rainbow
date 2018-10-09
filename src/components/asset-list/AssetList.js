@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose } from 'recompact';
+import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
 import { withSafeAreaViewInsetValues } from '../../hoc';
 import { FabWrapper, FloatingActionButton } from '../fab';
 import { ListFooter, SectionList } from '../list';
@@ -27,7 +27,7 @@ const AssetList = ({
   onLayout,
   ...props
 }) => (isEmpty ? (
-  <AssetListSkeleton />
+  <AssetListSkeleton onLayout={onLayout} />
 ) : (
   <SectionList
     contentContainerStyle={{
@@ -47,11 +47,27 @@ const AssetList = ({
 
 AssetList.propTypes = {
   fetchData: PropTypes.func.isRequired,
+  hideHeader: PropTypes.bool,
   isEmpty: PropTypes.bool,
   onLayout: PropTypes.func,
+  onSectionsLoaded: PropTypes.func,
   safeAreaInset: PropTypes.object,
   sections: PropTypes.arrayOf(PropTypes.object),
-  hideHeader: PropTypes.bool,
 };
 
-export default compose(withSafeAreaViewInsetValues)(AssetList);
+export default compose(
+  withState('didLoad', 'toggleDidLoad', false),
+  withSafeAreaViewInsetValues,
+  withHandlers({
+    onLayout: ({ didLoad, onSectionsLoaded, toggleDidLoad }) => () => {
+      if (!didLoad) {
+        if (typeof onSectionsLoaded === 'function') {
+          onSectionsLoaded();
+        }
+
+        toggleDidLoad(true);
+      }
+    },
+  }),
+  onlyUpdateForKeys(['isEmpty', 'sections']),
+)(AssetList);

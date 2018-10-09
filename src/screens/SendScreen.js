@@ -269,7 +269,7 @@ class SendScreen extends Component {
               onChange={this.onChangeNativeAmount}
               onPressButton={sendMaxBalance}
               placeholder="0.00"
-              value={formatUSD(nativeAmount)}
+              value={nativeAmount && formatUSD(nativeAmount)}
             />
             <NumberInputLabel>USD</NumberInputLabel>
           </Row>
