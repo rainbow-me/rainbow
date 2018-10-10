@@ -86,7 +86,7 @@ const WalletScreen = ({
   return (
     <Page component={FlexItem} style={position.sizeAsObject('100%')}>
       <Header justify="space-between">
-        <HeaderButton onPress={onPressProfile}>
+        <HeaderButton onPress={onPressProfile} transformOrigin="left">
           <Avatar />
         </HeaderButton>
         {(didLoadAssetList && !isEmpty) && <ActivityHeaderButton />}
