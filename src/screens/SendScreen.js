@@ -2,20 +2,30 @@ import _ from 'underscore';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import styled from 'styled-components/primitives';
-import { Animated, Clipboard, Image, KeyboardAvoidingView, Text, View } from 'react-native';
+import { Animated, Clipboard, Image, Keyboard, KeyboardAvoidingView, Text, View } from 'react-native';
 import { compose, withHandlers } from 'recompact';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
+import { withSafeTimeout } from '@hocs/safe-timers';
 
+import { showActionSheetWithOptions } from '../utils/actionsheet';
+import { AddressField, UnderlineField } from '../components/fields';
 import { AssetList, UniqueTokenRow } from '../components/asset-list';
 import { Button, BlockButton } from '../components/buttons';
-import { colors, fonts, padding, position } from '../styles';
-import { Monospace } from '../components/text';
+import { colors, fonts, padding, position, shadow } from '../styles';
 import { Column, Page, Flex, FlexItem, FlyInView, Row } from '../components/layout';
-import { SendCoinRow } from '../components/coin-row';
-import { AddressField, UnderlineField } from '../components/fields';
+import { formatUSD, formatUSDInput, removeLeadingZeros, uppercase } from '../utils/formatters';
+import { Monospace } from '../components/text';
 import { PillLabel } from '../components/labels';
-import { formatUSD, formatUSDInput, removeLeadingZeros } from '../utils/formatters';
+import { SendCoinRow } from '../components/coin-row';
+import { Icon } from '../components/icons';
+import { ShadowStack } from '../components/shadow-stack';
+import {
+  withAccountAddress,
+  withAccountAssets,
+  withRequestsInit,
+} from '../hoc';
+import { deviceUtils } from '../utils';
 
 const AddressInputLabel = styled(Text)`
   color: ${colors.blueGreyDark};
@@ -69,13 +79,21 @@ const BottomButtonContainer = styled(Flex)`
   width: 100%;
 `;
 
+const CameraIcon = styled(Image)`
+  margin-top: -5px;
+  height: 14px;
+  width: 17px;
+`;
+
 const Container = styled(Page)`
   background-color: ${colors.white};
   align-items: center;
   flex-grow: 1;
 `;
 
-const NumberInput = styled(UnderlineField).attrs({ keyboardType: 'number-pad' })`
+const NumberInput = styled(UnderlineField).attrs({
+  keyboardType: 'decimal-pad',
+})`
   margin-bottom: 15px;
   margin-right: 30px;
 `;
@@ -103,6 +121,7 @@ class SendScreen extends Component {
     selected: PropTypes.object,
     sendMaxBalance: PropTypes.func,
     sendUpdateAssetAmount: PropTypes.func,
+    sendUpdateGasPrice: PropTypes.func,
     sendUpdateNativeAmount: PropTypes.func,
     sendUpdateRecipient: PropTypes.func,
     sendUpdateSelected: PropTypes.func,
@@ -113,6 +132,7 @@ class SendScreen extends Component {
     isValidAddress: false,
     sendMaxBalance() {},
     sendUpdateAssetAmount() {},
+    sendUpdateGasPrice() {},
     sendUpdateNativeAmount() {},
     sendUpdateRecipient() {},
     sendUpdateSelected() {},
@@ -148,6 +168,8 @@ class SendScreen extends Component {
     Clipboard.getString()
       .then((string) => {
         sendUpdateRecipient(string);
+
+        Keyboard.dismiss();
       });
   };
 
@@ -172,12 +194,41 @@ class SendScreen extends Component {
   };
 
   onPressSend = () => {
-    const { assetAmount, onSubmit, sendUpdateSelected } = this.props;
+    const {
+      assetAmount,
+      onSubmit,
+      navigation,
+      sendUpdateSelected,
+    } = this.props;
 
     if (Number(assetAmount) > 0) {
       onSubmit();
-      sendUpdateSelected('');
+      sendUpdateSelected();
+      navigation.replace('ActivityScreen');
     }
+  };
+
+  onPressTransactionSpeed = () => {
+    const { gasPrices, sendUpdateGasPrice } = this.props;
+
+    const options = _.map(gasPrices, (value, key) => ({
+      value: key,
+      label: `${uppercase(key, 7)}: ${get(value, 'txFee.native.value.display')}  ~${get(value, 'estimatedTime.display')}`,
+    }));
+
+    showActionSheetWithOptions({
+      options: options.map(option => option.label),
+    }, (buttonIndex) => {
+      if (buttonIndex > -1) {
+        sendUpdateGasPrice(options[buttonIndex].value);
+      }
+    });
+  };
+
+  onPressCamera = () => {
+    const { navigation } = this.props;
+
+    navigation.navigate('QRScannerScreen');
   };
 
   renderAssetList() {
@@ -228,6 +279,7 @@ class SendScreen extends Component {
         </BackgroundImageContainer>
         <BottomButtonContainer>
           <BottomButton onPress={this.onPressPaste}>Paste</BottomButton>
+          <BottomButton onPress={this.onPressCamera}><CameraIcon source={require('../assets/camera.png')} /></BottomButton>
         </BottomButtonContainer>
       </FlexItem>
     );
@@ -250,7 +302,23 @@ class SendScreen extends Component {
       <Column flex={1} style={{
         // top: selectedAssetAnimation.interpolate({ inputRange: [0, 1], outputRange: [0, selectedAssetPageY] }),
       }}>
-        <SendCoinRow item={selected} onPress={this.onPressAssetHandler('')} />
+        <ShadowStack
+          height={64}
+          width={deviceUtils.dimensions.width}
+          borderRadius={0}
+          shadows={[
+            shadow.buildString(0, 4, 6, colors.alpha(colors.purple, 0.12)),
+            shadow.buildString(0, 6, 4, colors.alpha(colors.purple, 0.24)),
+          ]}
+          shouldRasterizeIOS={true}
+        >
+          <SendCoinRow item={selected} onPress={this.onPressAssetHandler('')}>
+            <Column>
+              <Icon name="caret" direction="up" size={5} color={colors.dark} />
+              <Icon name="caret" direction="down" size={5} color={colors.dark} />
+            </Column>
+          </SendCoinRow>
+        </ShadowStack>
         <TransactionContainer>
           <Row>
             <NumberInput
@@ -280,7 +348,7 @@ class SendScreen extends Component {
           >{isZeroAssetAmount ? 'Enter An Amount' : 'Hold To Send'}</SendButton>
           <Row justify="space-between">
             <PillLabel>Fee: ${formatUSD(fee)}</PillLabel>
-            <PillLabel icon="clock">Arrives in ~ {time}</PillLabel>
+            <PillLabel icon="clock" onPress={this.onPressTransactionSpeed}>Arrives in ~ {time}</PillLabel>
           </Row>
         </TransactionContainer>
       </Column>
@@ -319,6 +387,10 @@ const reduxProps = ({ account }) => ({
 });
 
 export default compose(
+  withAccountAddress,
+  withAccountAssets,
+  withRequestsInit,
+  withSafeTimeout,
   withHandlers({
     fetchData: ({
       accountAddress,

@@ -1675,9 +1675,9 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-balance-common@balance-io/balance-common#f4f021725a80d408078ce386e412f2c85bdacda5:
-  version "0.4.19"
-  resolved "https://codeload.github.com/balance-io/balance-common/tar.gz/f4f021725a80d408078ce386e412f2c85bdacda5"
+balance-common@balance-io/balance-common#wc-storage:
+  version "0.5.12"
+  resolved "https://codeload.github.com/balance-io/balance-common/tar.gz/d7c162e0165a8908137df21766fc6c253730b1e7"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -7951,14 +7951,7 @@ svgo@^1.0.5:
     unquote "~1.1.1"
     util.promisify "~1.0.0"
 
-svgs@^3.2.1:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/svgs/-/svgs-3.3.1.tgz#10d9495077cf89dfebea682746cceb9b17d56fd2"
-  dependencies:
-    prop-types "^15.5.10"
-    rip-out "^1.0.0"
-
-"svgs@github:Tvrqvoise/svgs#5137d86dfab6390df4917716a52fb5a572914358":
+svgs@^3.2.1, "svgs@github:Tvrqvoise/svgs#5137d86dfab6390df4917716a52fb5a572914358":
   version "3.2.1"
   resolved "https://codeload.github.com/Tvrqvoise/svgs/tar.gz/5137d86dfab6390df4917716a52fb5a572914358"
   dependencies:
