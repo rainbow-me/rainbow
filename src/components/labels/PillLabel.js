@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
+import { TouchableOpacity } from 'react-native';
 
 import { Centered } from '../layout';
 import { colors, fonts, padding, shadow } from '../../styles';
@@ -29,8 +30,8 @@ const Label = styled.Text`
   font-weight: ${fonts.weight.medium};
 `;
 
-const PillLabel = ({ children, icon }) => (
-  <Container>
+const PillLabel = ({ children, icon, onPress }) => (
+  <Container component={TouchableOpacity} onPress={onPress} activeOpacity={onPress ? 0.25 : 1}>
     {icon ? <LabelIcon name={icon} /> : null}
     <Label>{children}</Label>
   </Container>
@@ -39,6 +40,7 @@ const PillLabel = ({ children, icon }) => (
 PillLabel.propTypes = {
   children: PropTypes.any,
   icon: PropTypes.string,
+  onPress: PropTypes.func,
 };
 
 export default PillLabel;

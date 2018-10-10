@@ -9,12 +9,25 @@ export function formatUSDInput(value = '0.00') {
 }
 
 export function removeLeadingZeros(value = '') {
-  return String(Number(value));
+  if (value.length > 1 && value.substring(0, 1) === '0' && value.substring(1, 2) !== '.') {
+    return removeLeadingZeros(value.substring(1));
+  }
+
+  if (value.substring(value.length - 1, value.length) === '.' && value.indexOf('.') !== value.length - 1) {
+    return value.substring(0, value.length - 1);
+  }
+
+  return value;
+}
+
+export function uppercase(value = '') {
+  return value.substring(0, 1).toUpperCase() + value.substring(1);
 }
 
 export default {
   formatUSD,
   formatUSDInput,
   removeLeadingZeros,
+  uppercase,
 };
 

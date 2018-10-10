@@ -54,13 +54,13 @@ const Shadow = styled.View`
   ${shadow.build(0, 3, 5, colors.alpha(colors.purple, 0.2))}
 `;
 
-const LeftIcon = styled(Icon)`
+const LeftIcon = styled(Icon).attrs({ color: colors.white, size: 28 })`
   ${position.size(BlockButtonHeight)}
   position: absolute;
   left: 15px;
 `;
 
-const RightIcon = styled(Icon)`
+const RightIcon = styled(Icon).attrs({ color: colors.white, size: 28 })`
   ${position.size(BlockButtonHeight)}
   position: absolute;
   right: 15px;
