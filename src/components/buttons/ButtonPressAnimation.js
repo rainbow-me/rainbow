@@ -1,107 +1,108 @@
+import { compact } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { BaseButton } from 'react-native-gesture-handler';
-import { View } from 'react-primitives';
-import {
-  animated,
-  config as ReactSpringConfig,
-  interpolate,
-  Spring,
-} from 'react-spring/dist/native';
-import stylePropType from 'react-style-proptype';
-import { compose, withHandlers, withState } from 'recompact';
+import React, { Component } from 'react';
+import { Animated } from 'react-native';
+import { State, TapGestureHandler } from 'react-native-gesture-handler';
 import { animations } from '../../styles';
+import { directionPropType } from '../../utils';
 
-const AnimatedView = animated(View);
+const ButtonKeyframes = animations.keyframes.button;
 
-const PressRetentionOffsetValue = 15;
-const PressRetentionOffset = {
-  bottom: PressRetentionOffsetValue,
-  left: PressRetentionOffsetValue,
-  right: PressRetentionOffsetValue,
-  top: PressRetentionOffsetValue,
+const DefaultAnimatedValues = {
+  opacity: 0,
+  scale: ButtonKeyframes.from.scale,
+  transX: 0,
 };
 
-const interpolateTransform = ({ scale, translateY, ...rest }) => ({
-  transform: [
-    { scale: interpolate([scale], s => s) },
-    { translateY: interpolate([translateY], y => y) },
-  ],
-});
+export default class ButtonPressAnimation extends Component {
+  static propTypes = {
+    activeOpacity: PropTypes.number,
+    children: PropTypes.any,
+    disabled: PropTypes.bool,
+    onPress: PropTypes.func.isRequired,
+    style: PropTypes.oneOf([PropTypes.object, PropTypes.number]),
+    transformOrigin: directionPropType,
+  }
 
-const ButtonPressAnimation = ({
-  activeOpacity,
-  animation,
-  children,
-  config,
-  disabled,
-  isActive,
-  onActiveStateChange,
-  onPress,
-  onRest,
-  style,
-}) => (
-  <BaseButton
-    activeOpacity={activeOpacity}
-    disabled={disabled}
-    onActiveStateChange={onActiveStateChange}
-    onPress={onPress}
-    pressRetentionOffset={PressRetentionOffset}
-    style={style}
-  >
-    <Spring
-      config={config}
-      from={animation.from}
-      onRest={onRest}
-      native
-      to={isActive ? animation.to : animation.from}
-    >
-      {springValues => (
-        <AnimatedView style={interpolateTransform(springValues)}>
+  state = { scaleOffsetX: null }
+
+  opacity = new Animated.Value(DefaultAnimatedValues.opacity)
+  scale = new Animated.Value(DefaultAnimatedValues.scale)
+  transX = new Animated.Value(DefaultAnimatedValues.transX)
+
+  handleLayout = ({ nativeEvent: { layout } }) => {
+    if (this.props.transformOrigin) {
+      const width = Math.floor(layout.width);
+      const scaleOffsetX = (width - (width * ButtonKeyframes.to.scale)) / 2;
+      this.setState({ scaleOffsetX });
+    }
+  }
+
+  handleStateChange = ({ nativeEvent: { state } }) => {
+    const { activeOpacity, onPress, transformOrigin } = this.props;
+    const { scaleOffsetX } = this.state;
+
+    const isActive = state === State.BEGAN;
+
+    const animationsArray = [
+      // Default spring animation
+      animations.buildSpring({
+        from: ButtonKeyframes.from.scale,
+        isActive,
+        to: ButtonKeyframes.to.scale,
+        value: this.scale,
+      }),
+    ];
+
+    if (activeOpacity) {
+      // Opacity animation
+      animationsArray.push(animations.buildSpring({
+        from: DefaultAnimatedValues.opacity,
+        isActive,
+        to: activeOpacity,
+        value: this.opacity,
+      }));
+    }
+
+    if (scaleOffsetX) {
+      // Fake 'transform-origin' support by abusing translateX
+      const directionMultiple = (transformOrigin === 'left') ? -1 : 1;
+      animationsArray.push(animations.buildSpring({
+        from: DefaultAnimatedValues.transX,
+        isActive,
+        to: scaleOffsetX * (directionMultiple),
+        value: this.transX,
+      }));
+    }
+
+    // Start animations
+    Animated.parallel(animationsArray).start();
+
+    if (state === State.END) {
+      onPress();
+    }
+  }
+
+  buildAnimationStyles = () => {
+    const { activeOpacity, transformOrigin } = this.props;
+    return ({
+      ...(activeOpacity ? { opacity: this.opacity } : {}),
+      transform: compact([
+        transformOrigin ? { translateX: this.transX } : null,
+        { scale: this.scale },
+      ]),
+    });
+  }
+
+  render() {
+    const { children, disabled, style } = this.props;
+
+    return (
+      <TapGestureHandler enabled={!disabled} onHandlerStateChange={this.handleStateChange}>
+        <Animated.View onLayout={this.handleLayout} style={[style, this.buildAnimationStyles()]}>
           {children}
-        </AnimatedView>
-      )}
-    </Spring>
-  </BaseButton>
-);
-
-ButtonPressAnimation.propTypes = {
-  activeOpacity: PropTypes.number,
-  animation: PropTypes.shape({
-    from: PropTypes.object.isRequired,
-    to: PropTypes.object.isRequired,
-  }),
-  children: PropTypes.node,
-  config: PropTypes.object,
-  disabled: PropTypes.bool,
-  isActive: PropTypes.bool,
-  onActiveStateChange: PropTypes.func,
-  onPress: PropTypes.func,
-  onRest: PropTypes.func,
-  style: stylePropType,
-};
-
-ButtonPressAnimation.defaultProps = {
-  activeOpacity: 1,
-  animation: animations.keyframes.button,
-  config: ReactSpringConfig.wobbly, // animations.spring.default,
-};
-
-export default compose(
-  withState('isActive', 'setIsActive', false),
-  withState('didPress', 'setDidPress', false),
-  withHandlers({
-    onActiveStateChange: ({ onActiveStateChange, setIsActive }) => (isActive) => {
-      if (onActiveStateChange) onActiveStateChange(isActive);
-      setIsActive(isActive);
-    },
-    onPress: ({ onPress, setDidPress }) => (event) => {
-      if (onPress) onPress(event);
-      setDidPress(true);
-    },
-    onRest: ({ didPress, onRest, setDidPress }) => (event) => {
-      if (didPress) setDidPress(false);
-      if (onRest) onRest(event);
-    },
-  }),
-)(ButtonPressAnimation);
+        </Animated.View>
+      </TapGestureHandler>
+    );
+  }
+}
