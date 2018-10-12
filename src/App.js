@@ -7,7 +7,7 @@ import {
 import { get, isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { AlertIOS, AppRegistry } from 'react-native';
+import { AlertIOS, AppRegistry, AppState } from 'react-native';
 import CodePush from 'react-native-code-push';
 import firebase from 'react-native-firebase';
 import { NavigationActions } from 'react-navigation';
@@ -40,6 +40,10 @@ const store = createStore(
 );
 
 class App extends Component {
+  state = {
+    appState: AppState.currentState
+  }
+
   static propTypes = {
     accountUpdateAccountAddress: PropTypes.func,
     accountInitializeState: PropTypes.func,
@@ -54,9 +58,7 @@ class App extends Component {
   navigatorRef = null
 
   componentDidMount() {
-    commonStorage.resetAccount('0x1492004547FF0eFd778CC2c14E794B26B4701105');
-    console.log('!!! reset account');
-
+    AppState.addEventListener('change', this.handleAppStateChange);
     firebase.messaging().getToken()
       .then(fcmToken => {
         if (fcmToken) {
@@ -107,7 +109,6 @@ class App extends Component {
         walletConnectInitAllConnectors()
           .then(allConnectors => {
             this.props.setWalletConnectors(allConnectors);
-            this.fetchAllTransactionsFromWalletConnectSessions(allConnectors);
           })
           .catch(error => {
             console.log('Unable to init all WalletConnect sessions');
@@ -130,7 +131,15 @@ class App extends Component {
       });
   }
 
+  handleAppStateChange = async (nextAppState) => {
+    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+      this.fetchAllTransactionsFromWalletConnectSessions();
+    }
+    this.setState({appState: nextAppState});
+  }
+
   componentWillUnmount() {
+    AppState.removeEventListener('change', this.handleAppStateChange);
     this.notificationDisplayedListener();
     this.notificationListener();
     this.notificationOpenedListender();
@@ -150,7 +159,8 @@ class App extends Component {
     Navigation.handleAction(this.navigatorRef, action);
   }
 
-  fetchAllTransactionsFromWalletConnectSessions = async (allConnectors) => {
+  fetchAllTransactionsFromWalletConnectSessions = async () => {
+    const allConnectors = this.props.getValidWalletConnectors()
     if (!isEmpty(allConnectors)) {
       const allTransactions = await walletConnectGetAllTransactions(allConnectors);
       if (!isEmpty(allTransactions)) {
