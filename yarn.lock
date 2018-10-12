@@ -1675,9 +1675,9 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-"balance-common@git+https://github.com/balance-io/balance-common.git#wc-storage":
-  version "0.5.12"
-  resolved "git+https://github.com/balance-io/balance-common.git#56cb6ea95b7d01f3b69a12ad8a672956b4f8e74e"
+balance-common@^0.5.13:
+  version "0.5.13"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.5.13.tgz#897826f69b7f29f27abff206f78ff093cda5bea0"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -2831,8 +2831,8 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
 
 electron-to-chromium@^1.3.47:
-  version "1.3.77"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.77.tgz#9207a874a21a8fcb665bb4ff1675a11ba65517f4"
+  version "1.3.78"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.78.tgz#ecb72b5b166ba6598efb384461d63cad74678ebf"
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -2985,8 +2985,8 @@ eslint-plugin-react-native-globals@^0.1.1:
   resolved "https://registry.yarnpkg.com/eslint-plugin-react-native-globals/-/eslint-plugin-react-native-globals-0.1.2.tgz#ee1348bc2ceb912303ce6bdbd22e2f045ea86ea2"
 
 eslint-plugin-react-native@^3.2.1:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-react-native/-/eslint-plugin-react-native-3.3.0.tgz#77135f1b9d69058c5612777aac90d9cd6d35af33"
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react-native/-/eslint-plugin-react-native-3.4.0.tgz#7141045eed5c1468ebeae0ed6bc5fd7bac2418ec"
   dependencies:
     eslint-plugin-react-native-globals "^0.1.1"
 
@@ -6713,8 +6713,8 @@ react-native-safe-area-view@mikedemarais/react-native-safe-area-view:
     hoist-non-react-statics "^2.3.1"
 
 react-native-screens@^1.0.0-alpha.11:
-  version "1.0.0-alpha.14"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.14.tgz#fe3ccdcec7be8e1ada090c34a7f8951337adf653"
+  version "1.0.0-alpha.15"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.15.tgz#5b5a0041310b46f12048fda1908d52e7290ec18f"
 
 react-native-shimmer-placeholder@^1.0.29:
   version "1.0.29"
@@ -6729,8 +6729,8 @@ react-native-storage@^0.2.2:
   resolved "https://registry.yarnpkg.com/react-native-storage/-/react-native-storage-0.2.3.tgz#294f034c6ecbd9e08cfe02fa24ecb9db7a861a1b"
 
 react-native-svg@^7.0.2:
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-7.0.3.tgz#1ced56f4f6e96ad95374d66706390f51fa86bea7"
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-7.1.0.tgz#0945bb29e8de6ef49b35fb6e9b450b8d2b18627a"
   dependencies:
     color "^2.0.1"
     lodash "^4.16.6"
@@ -7755,8 +7755,8 @@ sprintf-js@~1.0.2:
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
 
 sshpk@^1.7.0:
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/sshpk/-/sshpk-1.15.0.tgz#74e084946318c487a6c7c64796f864301ce35886"
+  version "1.15.1"
+  resolved "https://registry.yarnpkg.com/sshpk/-/sshpk-1.15.1.tgz#b79a089a732e346c6e0714830f36285cd38191a2"
   dependencies:
     asn1 "~0.2.3"
     assert-plus "^1.0.0"

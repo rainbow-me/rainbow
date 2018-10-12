@@ -132,10 +132,10 @@ class App extends Component {
   }
 
   handleAppStateChange = async (nextAppState) => {
-    this.setState({appState: nextAppState});
     if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
-      await this.fetchAllTransactionsFromWalletConnectSessions();
+      this.fetchAllTransactionsFromWalletConnectSessions();
     }
+    this.setState({appState: nextAppState});
   }
 
   componentWillUnmount() {

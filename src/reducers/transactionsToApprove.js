@@ -18,11 +18,8 @@ import {
 const WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE = 'wallet/WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE';
 
 export const transactionsToApproveInit = () => (dispatch, getState) => {
-  console.log('transactions to approve init');
   const { accountAddress, network } = getState().account;
   commonStorage.getAccountLocalRequests(accountAddress, network).then((requests) => {
-    console.log('txns to approve init network', network);
-    console.log('requests from txn to approve', requests);
     const transactionsToApprove = requests || {};
     dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: transactionsToApprove });
   })
@@ -103,7 +100,6 @@ export const addTransactionToApprove = (sessionId, transactionId, transactionPay
   const transaction = { sessionId, transactionId, transactionPayload, transactionDisplayDetails, dappName };
   const updatedTransactions = { ...transactionsToApprove, [transactionId]: transaction };
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
-  console.log('updating local requests', updatedTransactions);
   commonStorage.updateLocalRequests(accountAddress, network, updatedTransactions);
   return transaction;
 };
@@ -117,7 +113,6 @@ export const addTransactionsToApprove = (transactions) => (dispatch, getState) =
   });
   const updatedTransactions = { ...transactionsToApprove, ...transactionsWithDisplayDetails };
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
-  console.log('multiple updating local requests', updatedTransactions);
   commonStorage.updateLocalRequests(accountAddress, network, updatedTransactions);
 };
 
