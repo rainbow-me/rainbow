@@ -36,9 +36,9 @@ PODS:
     - React/Core (= 0.57.1)
   - React/Core (0.57.1):
     - yoga (= 0.57.1.React)
-  - RNLanguages (3.0.0):
+  - RNLanguages (3.0.1):
     - React
-  - RNReanimated (1.0.0-alpha.9):
+  - RNReanimated (1.0.0-alpha.10):
     - React
   - yoga (0.57.1.React)
 

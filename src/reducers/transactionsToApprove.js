@@ -1,6 +1,7 @@
 import smartContractMethods from 'balance-common/src/references/smartcontract-methods.json';
 import BigNumber from 'bignumber.js';
 import {
+  commonStorage,
   convertAssetAmountToDisplaySpecific,
   convertAssetAmountToNativeValue,
   convertHexToString,
@@ -9,17 +10,19 @@ import {
 } from 'balance-common';
 import { mapValues, omit } from 'lodash';
 import {
-  getAccountLocalRequests,
+//  getAccountLocalRequests,
   removeLocalRequest,
-  updateLocalRequests
 } from '../model/localstorage';
 
 // -- Constants --------------------------------------- //
 const WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE = 'wallet/WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE';
 
 export const transactionsToApproveInit = () => (dispatch, getState) => {
+  console.log('transactions to approve init');
   const { accountAddress, network } = getState().account;
-  getAccountLocalRequests(accountAddress, network).then((requests) => {
+  commonStorage.getAccountLocalRequests(accountAddress, network).then((requests) => {
+    console.log('txns to approve init network', network);
+    console.log('requests from txn to approve', requests);
     const transactionsToApprove = requests || {};
     dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: transactionsToApprove });
   })
@@ -100,7 +103,8 @@ export const addTransactionToApprove = (sessionId, transactionId, transactionPay
   const transaction = { sessionId, transactionId, transactionPayload, transactionDisplayDetails, dappName };
   const updatedTransactions = { ...transactionsToApprove, [transactionId]: transaction };
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
-  updateLocalRequests(accountAddress, network, updatedTransactions);
+  console.log('updating local requests', updatedTransactions);
+  commonStorage.updateLocalRequests(accountAddress, network, updatedTransactions);
   return transaction;
 };
 
@@ -108,12 +112,13 @@ export const addTransactionsToApprove = (transactions) => (dispatch, getState) =
   const { transactionsToApprove } = getState().transactionsToApprove;
   const { accountInfo, accountAddress, network, prices, nativeCurrency } = getState().account;
   const transactionsWithDisplayDetails = mapValues(transactions, (transactionDetails) => {
-    const transactionDisplayDetails = getTransactionDisplayDetails(transactionDetails, accountInfo.assets, prices, nativeCurrency);
+    const transactionDisplayDetails = getTransactionDisplayDetails(transactionDetails.transactionPayload, accountInfo.assets, prices, nativeCurrency);
     return { ...transactionDetails, transactionDisplayDetails };
   });
   const updatedTransactions = { ...transactionsToApprove, ...transactionsWithDisplayDetails };
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
-  updateLocalRequests(accountAddress, network, updatedTransactions);
+  console.log('multiple updating local requests', updatedTransactions);
+  commonStorage.updateLocalRequests(accountAddress, network, updatedTransactions);
 };
 
 export const transactionIfExists = (transactionId) => (dispatch, getState) => {
