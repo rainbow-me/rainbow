@@ -8,10 +8,10 @@ import { commonStorage } from 'balance-common';
  * @return {Object}
  */
 export const getAccountLocalRequests = async (accountAddress, network) => {
-  const accountLocal = await commonStorage.getLocal(accountAddress.toLowerCase());
+  const accountLocal = await commonStorage.getAccountLocal(accountAddress);
   const requests = accountLocal && accountLocal[network] ? accountLocal[network].requests : {};
-  const openRequests = pickBy(requests, (request) => (differenceInMinutes(Date.now(), request.transactionPayload.timestamp) < 60));
-  await updateLocalRequests(accountAddress, network, openRequests);
+  const openRequests = pickBy(requests, (request) => (differenceInMinutes(Date.now(), request.transactionDisplayDetails.timestampInMs) < 60));
+  await commonStorage.updateLocalRequests(accountAddress, network, openRequests);
   return openRequests;
 };
 
