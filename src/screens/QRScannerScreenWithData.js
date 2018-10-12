@@ -1,13 +1,13 @@
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { compose } from 'recompact';
 import { AlertIOS } from 'react-native';
 import { withAccountAddress, withWalletConnectors } from '../hoc';
 import { walletConnectInit } from '../model/walletconnect';
 import QRScannerScreen from './QRScannerScreen';
 
-class QRScannerScreenWithData extends Component {
+class QRScannerScreenWithData extends PureComponent {
   static propTypes = {
     accountAddress: PropTypes.string,
     addWalletConnector: PropTypes.func,
@@ -15,7 +15,7 @@ class QRScannerScreenWithData extends Component {
     navigation: PropTypes.object,
   }
 
-  handlePressBackButton = () => this.props.navigation.goBack()
+  handlePressBackButton = () => this.props.navigation.push('WalletScreen')
 
   handleSuccess = async (event) => {
     const { accountAddress, addWalletConnector, navigation } = this.props;
