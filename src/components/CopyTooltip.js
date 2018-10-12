@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Clipboard } from 'react-native';
 import ToolTip from 'react-native-tooltip';
 import { withNavigation } from 'react-navigation';
+import { compose, onlyUpdateForKeys } from 'recompact';
 import { colors } from '../styles';
 
-class CopyTooltip extends Component {
+class CopyTooltip extends PureComponent {
   static propTypes = {
     activeOpacity: PropTypes.number,
     navigation: PropTypes.object,
@@ -45,4 +46,7 @@ class CopyTooltip extends Component {
   )
 }
 
-export default withNavigation(CopyTooltip);
+export default compose(
+  withNavigation,
+  onlyUpdateForKeys(['textToCopy', 'tooltipText']),
+)(CopyTooltip);

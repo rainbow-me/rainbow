@@ -9,8 +9,13 @@ const Container = styled(Flex)`
   ${padding(10)}
 `;
 
-const HeaderButton = ({ children, onPress, ...props }) => (
-  <ButtonPressAnimation onPress={onPress}>
+const HeaderButton = ({
+  children,
+  onPress,
+  transformOrigin,
+  ...props
+}) => (
+  <ButtonPressAnimation onPress={onPress} transformOrigin={transformOrigin}>
     <Container {...props}>
       {children}
     </Container>
@@ -18,6 +23,7 @@ const HeaderButton = ({ children, onPress, ...props }) => (
 );
 
 HeaderButton.propTypes = {
+  ...ButtonPressAnimation.propTypes,
   children: PropTypes.node,
   onPress: PropTypes.func.isRequired,
 };
