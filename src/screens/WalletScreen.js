@@ -131,7 +131,7 @@ export default compose(
   withState('didLoadAssetList', 'toggleLoadAssetList', false),
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
-    onPressProfile: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
+    onPressProfile: ({ navigation }) => () => navigation.push('SettingsScreen'),
     onPressWalletConnect: ({ navigation }) => () => navigation.navigate('QRScannerScreen'),
     onRefreshList: ({
       accountAddress,
