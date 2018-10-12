@@ -1,7 +1,6 @@
 import smartContractMethods from 'balance-common/src/references/smartcontract-methods.json';
 import BigNumber from 'bignumber.js';
 import {
-  commonStorage,
   convertAssetAmountToDisplaySpecific,
   convertAssetAmountToNativeValue,
   convertHexToString,
@@ -10,8 +9,9 @@ import {
 } from 'balance-common';
 import { mapValues, omit } from 'lodash';
 import {
-//  getAccountLocalRequests,
+  getAccountLocalRequests,
   removeLocalRequest,
+  updateLocalRequests,
 } from '../model/localstorage';
 
 // -- Constants --------------------------------------- //
@@ -19,7 +19,7 @@ const WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE = 'wallet/WALLETCONNECT_UPDAT
 
 export const transactionsToApproveInit = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().account;
-  commonStorage.getAccountLocalRequests(accountAddress, network).then((requests) => {
+  getAccountLocalRequests(accountAddress, network).then((requests) => {
     const transactionsToApprove = requests || {};
     dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: transactionsToApprove });
   })
@@ -100,7 +100,7 @@ export const addTransactionToApprove = (sessionId, transactionId, transactionPay
   const transaction = { sessionId, transactionId, transactionPayload, transactionDisplayDetails, dappName };
   const updatedTransactions = { ...transactionsToApprove, [transactionId]: transaction };
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
-  commonStorage.updateLocalRequests(accountAddress, network, updatedTransactions);
+  updateLocalRequests(accountAddress, network, updatedTransactions);
   return transaction;
 };
 
@@ -113,7 +113,7 @@ export const addTransactionsToApprove = (transactions) => (dispatch, getState) =
   });
   const updatedTransactions = { ...transactionsToApprove, ...transactionsWithDisplayDetails };
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
-  commonStorage.updateLocalRequests(accountAddress, network, updatedTransactions);
+  updateLocalRequests(accountAddress, network, updatedTransactions);
 };
 
 export const transactionIfExists = (transactionId) => (dispatch, getState) => {
