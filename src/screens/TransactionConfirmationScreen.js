@@ -4,7 +4,7 @@ import lang from 'i18n-js';
 import styled from 'styled-components';
 import BalanceManagerLogo from '../assets/balance-manager-logo.png';
 import { Button, BlockButton } from '../components/buttons';
-import CoinIcon from '../components/CoinIcon';
+import { CoinIcon } from '../components/coin-icon';
 import { Nbsp } from '../components/html-entities';
 import { Centered, Column, Row } from '../components/layout';
 import {
@@ -136,6 +136,7 @@ const TransactionConfirmationScreen = ({
   asset: {
     address,
     amount,
+    dappName,
     name,
     nativeAmount,
     symbol,
@@ -149,7 +150,7 @@ const TransactionConfirmationScreen = ({
       <VenderLogoContainer>
         <VendorLogo source={BalanceManagerLogo} />
       </VenderLogoContainer>
-      <VendorName>Balance Manager</VendorName>
+      <VendorName>{dappName}</VendorName>
       <TransactionType>{lang.t('wallet.transaction.request')}</TransactionType>
       <CancelButtonContainer>
         <Button

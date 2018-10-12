@@ -1,40 +1,41 @@
-import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Alert, Clipboard } from 'react-native';
-import { loadAddress, loadSeedPhrase } from '../model/wallet';
+import { InteractionManager } from 'react-native';
+import { withAccountAddress } from '../hoc';
+import { loadSeedPhrase } from '../model/wallet';
 import SettingsScreen from './SettingsScreen';
 
-export default class SettingsScreenWithData extends Component {
+class SettingsScreenWithData extends Component {
   static propTypes = {
     isScreenActive: PropTypes.bool,
   }
 
-  state = {
-    address: '',
-    seedPhrase: null,
-  }
+  state = { seedPhrase: null }
 
-  shouldComponentUpdate = ({ isScreenActive, ...nextProps }, nextState) => {
+  shouldComponentUpdate = ({ accountAddress, isScreenActive }, nextState) => {
     if (!isScreenActive && this.state.seedPhrase) {
-      this.handleHideSeedPhrase();
+      this.handleSeedPhraseState();
     }
 
-    const isNewProps = nextProps !== omit(this.props, 'isScreenActive');
+    const isNewAddress = this.props.accountAddress !== accountAddress;
+    const isNewScreenActive = this.props.isScreenActive !== isScreenActive;
+
+    const isNewProps = isNewAddress || isNewScreenActive;
     const isNewState = nextState !== this.state;
 
     return isNewProps || isNewState;
   }
 
-  componentDidMount = () => loadAddress().then(address => this.setState({ address }))
+  handlePressBackButton = () => this.props.navigation.navigate('WalletScreen')
 
-  handleHideSeedPhrase = () => this.setState({ seedPhrase: null })
+  handleSeedPhraseState = (seedPhrase = null) =>
+    InteractionManager.runAfterInteractions(() => this.setState({ seedPhrase }))
 
-  handleToggleShowSeedPhrase = () => {
+  toggleShowSeedPhrase = () => {
     if (!this.state.seedPhrase) {
-      loadSeedPhrase().then(seedPhrase => this.setState({ seedPhrase }));
+      loadSeedPhrase().then(this.handleSeedPhraseState);
     } else {
-      this.handleHideSeedPhrase();
+      this.handleSeedPhraseState();
     }
   }
 
@@ -42,7 +43,10 @@ export default class SettingsScreenWithData extends Component {
     <SettingsScreen
       {...this.props}
       {...this.state}
-      onToggleShowSeedPhrase={this.handleToggleShowSeedPhrase}
+      onPressBackButton={this.handlePressBackButton}
+      onToggleShowSeedPhrase={this.toggleShowSeedPhrase}
     />
   )
 }
+
+export default withAccountAddress(SettingsScreenWithData);

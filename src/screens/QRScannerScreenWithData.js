@@ -1,42 +1,30 @@
-import { isFunction, omit } from 'lodash';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { AlertIOS } from 'react-native';
 import lang from 'i18n-js';
-import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
+import { compose } from 'recompact';
+import { AlertIOS } from 'react-native';
+import { withAccountAddress, withWalletConnectors } from '../hoc';
 import { walletConnectInit } from '../model/walletconnect';
 import QRScannerScreen from './QRScannerScreen';
 
-class QRScannerScreenWithData extends Component {
+class QRScannerScreenWithData extends PureComponent {
   static propTypes = {
     accountAddress: PropTypes.string,
+    addWalletConnector: PropTypes.func,
     isScreenActive: PropTypes.bool,
     navigation: PropTypes.object,
   }
 
-  shouldComponentUpdate = ({ isScreenActive, ...nextProps }) => {
-    if (this.qrCodeScannerRef && this.qrCodeScannerRef.disable) {
-      const isDisabled = this.qrCodeScannerRef.state.disablingByUser;
+  handlePressBackButton = () => this.props.navigation.push('WalletScreen')
 
-      if (isScreenActive && isDisabled && isFunction(this.qrCodeScannerRef.enable)) {
-        console.log('📠✅ Enabling QR Code Scanner');
-        this.qrCodeScannerRef.enable();
-      } else if (!isScreenActive && !isDisabled && isFunction(this.qrCodeScannerRef.disable)) {
-        console.log('📠🚫 Disabling QR Code Scanner');
-        this.qrCodeScannerRef.disable();
-      }
-    }
+  handleSuccess = async (event) => {
+    const { accountAddress, addWalletConnector, navigation } = this.props;
+    const data = event.data;
 
-    return nextProps === omit(this.props, 'isScreenActive');
-  }
-
-  onSuccess = async (event) => {
-    const { accountAddress, navigation } = this.props;
-    const data = JSON.parse(event.data);
-
-    if (data.domain && data.sessionId && data.sharedKey && data.dappName) {
+    if (data) {
       try {
-        await walletConnectInit(accountAddress, data.domain, data.sessionId, data.sharedKey, data.dappName);
+        const walletConnector = await walletConnectInit(accountAddress, data);
+        addWalletConnector(walletConnector);
         navigation.navigate('WalletScreen');
       } catch (error) {
         AlertIOS.alert(lang.t('wallet.wallet_connect.error'), error);
@@ -48,11 +36,13 @@ class QRScannerScreenWithData extends Component {
   render = () => (
     <QRScannerScreen
       {...this.props}
-      scannerRef={(ref) => { this.qrCodeScannerRef = ref; }}
-      onSuccess={this.onSuccess}
+      onPressBackButton={this.handlePressBackButton}
+      onSuccess={this.handleSuccess}
     />
   )
 }
 
-const reduxProps = ({ account: { accountAddress } }) => ({ accountAddress });
-export default connect(reduxProps, null)(QRScannerScreenWithData);
+export default compose(
+  withAccountAddress,
+  withWalletConnectors,
+)(QRScannerScreenWithData);

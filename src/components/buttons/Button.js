@@ -1,7 +1,10 @@
+import { pick } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { colors, padding, position } from '../../styles';
+import { colors, padding } from '../../styles';
+import InnerBorder from '../InnerBorder';
+import { Centered } from '../layout';
 import { Text } from '../text';
 import ButtonPressAnimation from './ButtonPressAnimation';
 
@@ -21,30 +24,35 @@ const ButtonShapeTypes = {
   rounded: 'rounded',
 };
 
-const Container = styled.View`
+const Container = styled(Centered)`
   ${({ size }) => padding(...ButtonSizeTypes[size].padding)}
   background-color: ${({ bgColor }) => (bgColor || colors.grey)};
   border-radius: ${({ type }) => ((type === 'rounded') ? 14 : 50)};
   flex-grow: 0;
-`;
-
-const InnerBorder = styled.View`
-  ${position.cover}
-  border-color: ${colors.alpha(colors.black, 0.06)};
-  border-radius: ${({ type }) => ((type === 'rounded') ? 14 : 50)};
-  border-width: 0.5;
+  ${({ containerStyles }) => containerStyles}
 `;
 
 const Button = ({
   children,
+  containerStyles,
   onPress,
   size,
   style,
   textProps,
+  type,
   ...props
 }) => (
-  <ButtonPressAnimation onPress={onPress}>
-    <Container {...props} size={size} style={style}>
+  <ButtonPressAnimation
+    {...pick(props, Object.keys(ButtonPressAnimation.propTypes))}
+    onPress={onPress}
+  >
+    <Container
+      {...props}
+      containerStyles={containerStyles}
+      size={size}
+      style={style}
+      type={type}
+    >
       <Text
         color="white"
         size={ButtonSizeTypes[size].fontSize}
@@ -53,13 +61,14 @@ const Button = ({
       >
         {children}
       </Text>
-      <InnerBorder {...props} />
+      <InnerBorder radius={(type === 'rounded') ? 14 : 50} />
     </Container>
   </ButtonPressAnimation>
 );
 
 Button.propTypes = {
   children: PropTypes.node.isRequired,
+  containerStyles: PropTypes.string,
   onPress: PropTypes.func.isRequired,
   size: PropTypes.oneOf(Object.keys(ButtonSizeTypes)),
   style: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),

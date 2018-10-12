@@ -1,102 +1,102 @@
+import { withSafeTimeout } from '@hocs/safe-timers';
 import lang from 'i18n-js';
-import { get, groupBy, isNull } from 'lodash';
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { connect } from 'react-redux';
 import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
-import { AssetList, UniqueTokenRow } from '../components/asset-list';
-import { BalanceCoinRow } from '../components/coin-row';
+import { AssetList } from '../components/asset-list';
+import { UniqueTokenRow } from '../components/unique-token';
 import Avatar from '../components/Avatar';
-import { Header, HeaderButton } from '../components/header';
+import { BalanceCoinRow } from '../components/coin-row';
+import { ActivityHeaderButton, Header, HeaderButton } from '../components/header';
 import { FlexItem, Page } from '../components/layout';
-import { withHideSplashScreenOnMount } from '../hoc';
+import {
+  areAssetsEqualToInitialAccountAssetsState,
+  buildUniqueTokenList,
+  groupAssetsByMarketValue,
+  sortAssetsByNativeAmount,
+} from '../helpers/assets';
+import {
+  withAccountAddress,
+  withAccountAssets,
+  withHideSplashScreen,
+  withRequestsInit,
+} from '../hoc';
 import { position } from '../styles';
 
-const buildUniqueTokenList = (uniqueTokensAssets) => {
-  const list = [];
-
-  for (let i = 0; i < uniqueTokensAssets.length; i += 2) {
-    list.push([uniqueTokensAssets[i], uniqueTokensAssets[i + 1]]);
-  }
-
-  return list;
-};
-
+const BalanceRenderItem = renderItemProps => <BalanceCoinRow {...renderItemProps} />;
+const UniqueTokenRenderItem = renderItemProps => <UniqueTokenRow {...renderItemProps} />;
 const filterEmptyAssetSections = sections => sections.filter(({ totalItems }) => totalItems);
 
-const groupAssetsByMarketValue = assets => groupBy(assets, ({ native }) => (
-  isNull(native) ? 'noValue' : 'hasValue'
-));
-
-const sortAssetsByNativeAmount = (assets, showShitcoins) => {
-  const assetsByMarketValue = groupAssetsByMarketValue(assets);
-
-  const sortedAssetsWithMarketValue = (assetsByMarketValue.hasValue || []).sort((a, b) => {
-    const amountA = get(a, 'native.balance.amount', 0);
-    const amountB = get(b, 'native.balance.amount', 0);
-    return parseFloat(amountB) - parseFloat(amountA);
-  });
-
-  if (showShitcoins) {
-    const sortedAssetsWithNoMarketValue = (assetsByMarketValue.noValue || []).sort((a, b) => (
-      (a.name < b.name) ? -1 : 1
-    ));
-
-    return sortedAssetsWithMarketValue.concat(sortedAssetsWithNoMarketValue);
-  }
-
-  return sortedAssetsWithMarketValue;
-};
-
 const WalletScreen = ({
-  accountInfo,
+  assets,
+  assetsCount,
+  assetsTotalUSD,
+  didLoadAssetList,
+  fetching,
   onPressProfile,
   onPressWalletConnect,
+  onRefreshList,
+  onSectionsLoaded,
   onToggleShowShitcoins,
   showShitcoins,
   uniqueTokens,
 }) => {
   const sections = {
     balances: {
-      data: sortAssetsByNativeAmount(accountInfo.assets, showShitcoins),
-      renderItem: BalanceCoinRow,
+      data: sortAssetsByNativeAmount(assets, showShitcoins),
+      renderItem: BalanceRenderItem,
       title: lang.t('account.tab_balances'),
-      totalItems: get(accountInfo, 'total.amount') ? accountInfo.assets.length : 0,
-      totalValue: get(accountInfo, 'total.display', ''),
+      totalItems: get(assetsTotalUSD, 'amount') ? assetsCount : 0,
+      totalValue: get(assetsTotalUSD, 'display', ''),
     },
     collectibles: {
       data: buildUniqueTokenList(uniqueTokens),
-      renderItem: UniqueTokenRow,
+      renderItem: UniqueTokenRenderItem,
       title: lang.t('account.tab_collectibles'),
       totalItems: uniqueTokens.length,
       totalValue: '',
     },
   };
 
-  const assetsByMarketValue = groupAssetsByMarketValue(accountInfo.assets);
+  const assetsByMarketValue = groupAssetsByMarketValue(assets);
   const totalShitcoins = get(assetsByMarketValue, 'noValue', []).length;
   if (totalShitcoins) {
+    // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
+    const destructiveButtonIndex = showShitcoins ? 0 : 99;
+
     sections.balances.contextMenuOptions = {
       cancelButtonIndex: 1,
-      destructiveButtonIndex: showShitcoins ? 0 : 99, // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
-      onPress: (index) => { if (index === 0) onToggleShowShitcoins(); },
+      destructiveButtonIndex,
+      onPress: onToggleShowShitcoins,
       options: [
-        `${showShitcoins ? lang.t('account.hide') : lang.t('account.show')} ${lang.t('wallet.assets.no_price')}`,
+        `${lang.t(`account.${showShitcoins ? 'hide' : 'show'}`)} ${lang.t('wallet.assets.no_price')}`,
         lang.t('wallet.action.cancel'),
       ],
     };
   }
 
+  const filteredSections = filterEmptyAssetSections([sections.balances, sections.collectibles]);
+
+  let isEmpty = !filteredSections.length;
+  if (filteredSections.length === 1) {
+    isEmpty = areAssetsEqualToInitialAccountAssetsState(filteredSections[0].data[0]);
+  }
+
   return (
     <Page component={FlexItem} style={position.sizeAsObject('100%')}>
-      <Header>
-        <HeaderButton onPress={onPressProfile}>
+      <Header justify="space-between">
+        <HeaderButton onPress={onPressProfile} transformOrigin="left">
           <Avatar />
         </HeaderButton>
+        {(didLoadAssetList && !isEmpty) && <ActivityHeaderButton />}
       </Header>
       <AssetList
+        fetchData={onRefreshList}
+        isEmpty={isEmpty}
         onPressWalletConnect={onPressWalletConnect}
-        sections={filterEmptyAssetSections([sections.balances, sections.collectibles])}
+        onSectionsLoaded={onSectionsLoaded}
+        sections={filteredSections}
         showShitcoins={showShitcoins}
       />
     </Page>
@@ -104,31 +104,58 @@ const WalletScreen = ({
 };
 
 WalletScreen.propTypes = {
-  accountInfo: PropTypes.object.isRequired,
+  assets: PropTypes.array,
+  assetsCount: PropTypes.number,
+  assetsTotalUSD: PropTypes.shape({
+    amount: PropTypes.string,
+    display: PropTypes.string,
+  }),
+  didLoadAssetList: PropTypes.bool,
   fetching: PropTypes.bool.isRequired,
   fetchingUniqueTokens: PropTypes.bool.isRequired,
   onPressProfile: PropTypes.func.isRequired,
   onPressWalletConnect: PropTypes.func.isRequired,
+  onRefreshList: PropTypes.func.isRequired,
+  onSectionsLoaded: PropTypes.func,
   onToggleShowShitcoins: PropTypes.func,
   showShitcoins: PropTypes.bool,
   uniqueTokens: PropTypes.array.isRequired,
 };
 
-const reduxProps = ({ account }) => ({
-  accountInfo: account.accountInfo,
-  fetching: account.fetching,
-  fetchingUniqueTokens: account.fetchingUniqueTokens,
-  uniqueTokens: account.uniqueTokens,
-});
-
 export default compose(
-  withHideSplashScreenOnMount,
+  withAccountAddress,
+  withAccountAssets,
+  withHideSplashScreen,
+  withRequestsInit,
+  withSafeTimeout,
+  withState('didLoadAssetList', 'toggleLoadAssetList', false),
   withState('showShitcoins', 'toggleShowShitcoins', true),
-  connect(reduxProps, null),
   withHandlers({
-    onPressProfile: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
+    onPressProfile: ({ navigation }) => () => navigation.push('SettingsScreen'),
     onPressWalletConnect: ({ navigation }) => () => navigation.navigate('QRScannerScreen'),
-    onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => () => toggleShowShitcoins(!showShitcoins),
+    onRefreshList: ({
+      accountAddress,
+      accountUpdateAccountAddress,
+      setSafeTimeout,
+      transactionsToApproveInit,
+    }) => () => {
+      accountUpdateAccountAddress(accountAddress, 'BALANCEWALLET');
+      transactionsToApproveInit();
+      // hack: use timeout so that it looks like loading is happening
+      // accountUpdateAccountAddress does not return a promise
+      return new Promise(resolve => setSafeTimeout(resolve, 2000));
+    },
+    onSectionsLoaded: ({ didLoadAssetList, onHideSplashScreen, toggleLoadAssetList }) => () => {
+      if (!didLoadAssetList) {
+        onHideSplashScreen();
+        toggleLoadAssetList(true);
+      }
+    },
+    onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
+      if (index === 0) {
+        toggleShowShitcoins(!showShitcoins);
+      }
+    },
   }),
   onlyUpdateForKeys(['isScreenActive', ...Object.keys(WalletScreen.propTypes)]),
 )(WalletScreen);

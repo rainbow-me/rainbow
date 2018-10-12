@@ -1,6 +1,7 @@
 import { upperFirst } from 'lodash';
 import { css } from 'styled-components';
 import colors from './colors';
+import position from './position';
 
 const border = {};
 
@@ -12,6 +13,16 @@ border.default = css`
   border-color: ${border.color};
   border-width: ${border.width};
 `;
+
+border.buildCircle = size => css`
+  ${position.size(size)}
+  border-radius: ${size / 2};
+`;
+
+border.buildCircleAsObject = size => ({
+  ...position.sizeAsObject(size),
+  borderRadius: size / 2,
+});
 
 border.buildRadius = (direction, value = border.radius) => {
   if (direction === 'bottom' || direction === 'top') {

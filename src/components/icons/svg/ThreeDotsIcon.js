@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Svg, { Circle, G } from 'svgs';
+import { Circle, G } from 'svgs';
 import { colors } from '../../../styles';
+import Svg from '../Svg';
 
 const ThreeDotsIcon = ({ color, ...props }) => (
   <Svg height="5" width="23" viewBox="0 0 23 5" {...props}>

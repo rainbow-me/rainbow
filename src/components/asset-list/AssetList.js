@@ -1,22 +1,14 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { SectionList } from 'react-native';
-import { compose, withProps } from 'recompact';
-import styled from 'styled-components/primitives';
+import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
 import { withSafeAreaViewInsetValues } from '../../hoc';
-import { colors, position } from '../../styles';
 import { FabWrapper, FloatingActionButton, WalletConnectFab } from '../fab';
+import { ListFooter, SectionList } from '../list';
 import { FlexItem } from '../layout';
 import AssetListHeader from './AssetListHeader';
 import AssetListItem from './AssetListItem';
-import AssetListFooter from './AssetListFooter';
 import AssetListSkeleton from './AssetListSkeleton';
-
-const List = styled(SectionList)`
-  ${position.size('100%')}
-  background-color: ${colors.white};
-`;
 
 const assetListKeyExtractor = (item, index) => (
   get(item, Array.isArray(item) ? '[0].id' : 'symbol') + index
@@ -24,14 +16,19 @@ const assetListKeyExtractor = (item, index) => (
 
 const buildListBottomPadding = (safeAreaInset) => {
   const fabSizeWithPadding = FloatingActionButton.size + (FabWrapper.bottomPosition * 2);
-  return (safeAreaInset.bottom + fabSizeWithPadding) - AssetListFooter.height;
+  return (safeAreaInset.bottom + fabSizeWithPadding) - ListFooter.height;
 };
 
+const renderSectionHeader = ({ section }) => <AssetListHeader {...section} />;
+
 const AssetList = ({
+  fetchData,
   isEmpty,
   onPressWalletConnect,
+  onSectionsLoaded,
   safeAreaInset,
   sections,
+  onLayout,
   ...props
 }) => (
   <FlexItem>
@@ -45,22 +42,20 @@ const AssetList = ({
       )]}
     >
       {isEmpty ? (
-        <AssetListSkeleton />
+        <AssetListSkeleton onLayout={onLayout}/>
       ) : (
-        <List
+        <SectionList
           contentContainerStyle={{
             // We want to add enough spacing below the list so that when the user scrolls to the bottom,
             // the bottom of the list content lines up with the top of the FABs (+ padding).
             paddingBottom: buildListBottomPadding(safeAreaInset),
           }}
+          enablePullToRefresh
+          fetchData={fetchData}
           keyExtractor={assetListKeyExtractor}
+          onLayout={onLayout}
           renderItem={AssetListItem}
-          renderSectionFooter={AssetListFooter}
-          renderSectionHeader={headerProps => <AssetListHeader {...headerProps} />}
-          scrollIndicatorInsets={{
-            bottom: safeAreaInset.bottom,
-            top: AssetListHeader.height,
-          }}
+          renderSectionHeader={renderSectionHeader}
           sections={sections}
         />
       )}
@@ -69,22 +64,25 @@ const AssetList = ({
 );
 
 AssetList.propTypes = {
+  fetchData: PropTypes.func.isRequired,
   isEmpty: PropTypes.bool,
+  onLayout: PropTypes.func,
   onPressWalletConnect: PropTypes.func,
+  onSectionsLoaded: PropTypes.func,
   safeAreaInset: PropTypes.object,
   sections: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default compose(
+  withState('didLoad', 'toggleDidLoad', false),
   withSafeAreaViewInsetValues,
-  withProps(({ sections }) => {
-    let isEmpty = true;
-
-    for (let i = 0; i < sections.length; i += 1) {
-      if (!isEmpty) break;
-      isEmpty = !sections[i].totalItems;
-    }
-
-    return { isEmpty };
+  withHandlers({
+    onLayout: ({ didLoad, onSectionsLoaded, toggleDidLoad }) => () => {
+      if (!didLoad) {
+        onSectionsLoaded();
+        toggleDidLoad(true);
+      }
+    },
   }),
+  onlyUpdateForKeys(['isEmpty', 'sections']),
 )(AssetList);

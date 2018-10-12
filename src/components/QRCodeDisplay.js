@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import QRCode from 'react-native-qrcode-svg';
+import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
 import { Centered } from '../components/layout';
 import { colors, padding, position, shadow } from '../styles';
@@ -34,4 +35,4 @@ QRCodeDisplay.defaultProps = {
   size: 150,
 };
 
-export default QRCodeDisplay;
+export default pure(QRCodeDisplay);
