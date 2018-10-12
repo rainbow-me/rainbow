@@ -86,7 +86,7 @@ const WalletScreen = ({
   return (
     <Page component={FlexItem} style={position.sizeAsObject('100%')}>
       <Header justify="space-between">
-        <HeaderButton onPress={onPressProfile}>
+        <HeaderButton onPress={onPressProfile} transformOrigin="left">
           <Avatar />
         </HeaderButton>
         {(didLoadAssetList && !isEmpty) && <ActivityHeaderButton />}
@@ -131,7 +131,7 @@ export default compose(
   withState('didLoadAssetList', 'toggleLoadAssetList', false),
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
-    onPressProfile: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
+    onPressProfile: ({ navigation }) => () => navigation.push('SettingsScreen'),
     onPressWalletConnect: ({ navigation }) => () => navigation.navigate('QRScannerScreen'),
     onRefreshList: ({
       accountAddress,
