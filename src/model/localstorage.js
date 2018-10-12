@@ -7,13 +7,17 @@ import { commonStorage } from 'balance-common';
  * @param  {String}   [address]
  * @return {Object}
  */
+/**
 export const getAccountLocalRequests = async (accountAddress, network) => {
-  const accountLocal = await commonStorage.getLocal(accountAddress.toLowerCase());
+  const accountLocal = await commonStorage.getAccountLocal(accountAddress);
+  console.log('get account local', accountLocal);
   const requests = accountLocal && accountLocal[network] ? accountLocal[network].requests : {};
   const openRequests = pickBy(requests, (request) => (differenceInMinutes(Date.now(), request.transactionPayload.timestamp) < 60));
-  await updateLocalRequests(accountAddress, network, openRequests);
+  console.log('openRequests', openRequests);
+  await commonStorage.updateLocalRequests(accountAddress, network, openRequests);
   return openRequests;
 };
+ */
 
 /**
  * @desc update local incoming transaction requests
@@ -21,7 +25,9 @@ export const getAccountLocalRequests = async (accountAddress, network) => {
  * @param  {String}   [network]
  * @return {Void}
  */
+/**
 export const updateLocalRequests = async (address, network, requests) => {
+  console.log('local requests requests', requests);
   if (!address) return;
   let accountLocal = await commonStorage.getAccountLocal(address);
   if (!accountLocal) {
@@ -31,8 +37,13 @@ export const updateLocalRequests = async (address, network, requests) => {
     accountLocal[network] = {};
   }
   accountLocal[network].requests = { ...requests };
+  console.log('updating local requests', accountLocal);
   await commonStorage.saveLocal(address.toLowerCase(), accountLocal);
+  // TODO
+  const accountLocalAgain = await commonStorage.getAccountLocal(address);
+  console.log('get account local again after saving', accountLocalAgain);
 };
+*/
 
 /**
  * @desc remove transaction request
