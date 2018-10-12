@@ -27,7 +27,6 @@ export const walletConnectInit = async (accountAddress, uriString) => {
 
 export const walletConnectInitAllConnectors = async () => {
   try {
-    console.log('walletconnect init all connectors', commonStorage);
     const allSessions = await commonStorage.getAllValidWalletConnectSessions();
     const allConnectors = mapValues(allSessions, (session) => {
       const walletConnector = new RNWalletConnect(session.uriString);
