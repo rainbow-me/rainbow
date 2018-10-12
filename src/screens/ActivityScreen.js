@@ -1,28 +1,70 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StatusBar } from 'react-native';
-import { compose, withHandlers } from 'recompact';
+import { compose, withHandlers, onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
-import AppVersionStamp from '../components/AppVersionStamp';
-import { ButtonPressAnimation } from '../components/buttons';
+import { ActivityList } from '../components/activity-list';
+import { Header, HeaderButton } from '../components/header';
 import Icon from '../components/icons/Icon';
-import { Column, Row } from '../components/layout';
-import { Monospace } from '../components/text';
-import { withHideSplashScreenOnMount, withSafeAreaViewInsetValues } from '../hoc';
-import { colors, fonts, padding } from '../styles';
+import { Column } from '../components/layout';
+import { withAccountAddress, withAccountTransactions, withRequests } from '../hoc';
+import { colors, position } from '../styles';
 
-const ActivityScreen = (props) => {
+const CloseButtonIcon = styled(Icon)`
+  ${position.maxSize(19)}
+`;
 
+const Container = styled(Column)`
+  ${position.size('100%')}
+  background-color: ${colors.white};
+  flex: 1;
+`;
 
-  return (
-    <Container>
-
-    </Container>
-  );
-}
+const ActivityScreen = ({
+  accountAddress,
+  fetchingTransactions,
+  hasPendingTransaction,
+  onPressBack,
+  requests,
+  transactions,
+  transactionsCount,
+}) => (
+  <Container>
+    <Header align="end">
+      <HeaderButton align="end" onPress={onPressBack}>
+        <CloseButtonIcon
+          color={colors.brightBlue}
+          name="close"
+        />
+      </HeaderButton>
+    </Header>
+    {(accountAddress && !fetchingTransactions) && (
+      <ActivityList
+        accountAddress={accountAddress}
+        hasPendingTransaction={hasPendingTransaction}
+        requests={requests}
+        transactions={transactions}
+        transactionsCount={transactionsCount}
+      />
+    )}
+  </Container>
+);
 
 ActivityScreen.propTypes = {
-  //
+  accountAddress: PropTypes.string,
+  fetchingTransactions: PropTypes.bool,
+  hasPendingTransaction: PropTypes.bool,
+  onPressBack: PropTypes.func,
+  requests: PropTypes.array,
+  transactions: PropTypes.array,
+  transactionsCount: PropTypes.number,
 };
 
-export default ActivityScreen;
+export default compose(
+  withAccountAddress,
+  withAccountTransactions,
+  withRequests,
+  withHandlers({
+    onPressBack: ({ navigation }) => () => navigation.goBack(),
+  }),
+  onlyUpdateForKeys(['hasPendingTransaction', 'requests', 'transactionsCount']),
+)(ActivityScreen);

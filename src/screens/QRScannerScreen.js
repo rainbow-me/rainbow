@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withHandlers } from 'recompact';
+import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
 import { BackButton, Header } from '../components/header';
 import { Centered } from '../components/layout';
@@ -20,12 +20,12 @@ const QRScannerHeader = styled(Header).attrs({
   top: 0;
 `;
 
-const QRScannerScreen = ({ onPressBackButton, onSuccess, scannerRef }) => (
+const QRScannerScreen = ({ isScreenActive, onPressBackButton, onSuccess }) => (
   <Container>
     <QRCodeScanner
       {...this.props}
+      enableScanning={isScreenActive}
       onSuccess={onSuccess}
-      scannerRef={scannerRef}
     />
     <QRScannerHeader>
       <BackButton
@@ -38,11 +38,9 @@ const QRScannerScreen = ({ onPressBackButton, onSuccess, scannerRef }) => (
 );
 
 QRScannerScreen.propTypes = {
+  isScreenActive: PropTypes.bool.isRequired,
   onPressBackButton: PropTypes.func,
   onSuccess: PropTypes.func,
-  scannerRef: PropTypes.func,
 };
 
-export default withHandlers({
-  onPressBackButton: ({ navigation }) => () => navigation.goBack(),
-})(QRScannerScreen);
+export default pure(QRScannerScreen);

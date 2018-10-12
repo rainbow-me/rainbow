@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Image } from 'react-primitives';
 import styled from 'styled-components/primitives';
-import { colors, position, shadow } from '../styles';
+import { borders, colors, position, shadow } from '../styles';
 import Icon from './icons/Icon';
 import { Centered } from './layout';
 import { ShadowStack } from './shadow-stack';
@@ -15,8 +15,7 @@ const Container = styled(Centered)`
 
 const Avatar = ({ size, source }) => (
   <ShadowStack
-    {...position.sizeAsObject(size)}
-    borderRadius={size}
+    {...borders.buildCircleAsObject(size)}
     shadows={[
       shadow.buildString(0, 1.5, 2.5),
       shadow.buildString(0, 3, 5),

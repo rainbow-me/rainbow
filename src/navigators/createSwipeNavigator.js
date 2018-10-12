@@ -1,10 +1,11 @@
 import { get, map } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component, createElement } from 'react';
+import React, { createElement, PureComponent } from 'react';
 import { createNavigator, StackRouter } from 'react-navigation';
 import { FlatList, StatusBar, View } from 'react-native';
-
 import { deviceUtils } from '../utils';
+
+const EMPTY_ARRAY = [];
 
 export default function createSwipeNavigator(screens, options) {
   const router = StackRouter(screens, options);
@@ -16,7 +17,7 @@ export default function createSwipeNavigator(screens, options) {
 
   let isSwiping = false;
 
-  class NavigationView extends Component {
+  class NavigationView extends PureComponent {
     static propTypes = {
       descriptors: PropTypes.object,
       navigation: PropTypes.object,
@@ -78,7 +79,7 @@ export default function createSwipeNavigator(screens, options) {
      * @return {Number}             The index of the route which will be zero if the route does not exist.
      */
     getRouteIndex = (routeName) => {
-      const routeIndex = (routeOrder || []).indexOf(routeName);
+      const routeIndex = (routeOrder || EMPTY_ARRAY).indexOf(routeName);
 
       return routeIndex > -1 ? routeIndex : 0;
     };
@@ -106,6 +107,8 @@ export default function createSwipeNavigator(screens, options) {
       this.scrollToIndex(routeIndex, true);
     };
 
+    handleFlatListRef = (flatListRef) => { this.flatListRef = flatListRef; }
+
     /**
      * Navigate to a screen with certain params and a scroll animation.
      * @param  {String} routeName   The screen to navigate to.
@@ -132,13 +135,13 @@ export default function createSwipeNavigator(screens, options) {
       this.scrollToIndex(routeIndex, false);
 
       this.setState({ flatListScreens: loadedScreens });
-    };
+    }
 
     /**
      * Handle adding the next screen to the router stack when scrolling has ended.
      * @param  {Object} options.nativeEvent   The native event with layout data.
      */
-    onMomentumScrollEnd = ({ nativeEvent }) => {
+    onScrollEndDrag = ({ nativeEvent }) => {
       const { navigation } = this.props;
 
       const currentOffsetX = get(nativeEvent, 'contentOffset.x', 0);
@@ -159,24 +162,30 @@ export default function createSwipeNavigator(screens, options) {
      * @param  {Object} options.nativeEvent   The native event with layout data.
      */
     onScroll = ({ nativeEvent }) => {
-      const { currentIndex } = this.state;
-
       const layoutMeasurementWidth = get(nativeEvent, 'layoutMeasurement.width', 0);
       const currentOffsetX = get(nativeEvent, 'contentOffset.x', 0);
-      const startOffsetX = currentIndex * deviceUtils.dimensions.width;
-      const endOffsetXRight = (currentIndex + 1) * deviceUtils.dimensions.width;
-      const endOffsetXLeft = (currentIndex - 1) * deviceUtils.dimensions.width;
 
-      if (currentOffsetX - startOffsetX > (endOffsetXRight - startOffsetX) / 2) {
-        this.setState({ currentIndex: currentIndex + 1 });
-      } else if (currentOffsetX - startOffsetX < (endOffsetXLeft - startOffsetX) / 2) {
-        this.setState({ currentIndex: currentIndex - 1 });
-      }
+      this.setState(({ currentIndex }) => {
+        const startOffsetX = currentIndex * deviceUtils.dimensions.width;
+        const endOffsetXLeft = (currentIndex - 1) * deviceUtils.dimensions.width;
+        const endOffsetXRight = (currentIndex + 1) * deviceUtils.dimensions.width;
 
-      if (!isSwiping && currentOffsetX % layoutMeasurementWidth !== 0) {
-        isSwiping = true;
-        onSwipeStart();
-      }
+        const beginningOffset = currentOffsetX - startOffsetX;
+
+        let newIndex = currentIndex;
+        if (beginningOffset > (endOffsetXRight - startOffsetX) / 2) {
+          newIndex = currentIndex + 1;
+        } else if (beginningOffset < (endOffsetXLeft - startOffsetX) / 2) {
+          newIndex = currentIndex - 1;
+        }
+
+        if (!isSwiping && currentOffsetX % layoutMeasurementWidth !== 0) {
+          isSwiping = true;
+          onSwipeStart();
+        }
+
+        return { currentIndex: newIndex };
+      });
     };
 
     /**
@@ -232,10 +241,10 @@ export default function createSwipeNavigator(screens, options) {
             extraData={{ currentIndex }}
             getItemLayout={this.getItemLayout}
             horizontal
-            onMomentumScrollEnd={this.onMomentumScrollEnd}
+            onScrollEndDrag={this.onScrollEndDrag}
             onScroll={this.onScroll}
             pagingEnabled
-            ref={(flatListRef) => { this.flatListRef = flatListRef; }}
+            ref={this.handleFlatListRef}
             removeClippedSubviews
             renderItem={this.renderItem}
             scrollEventThrottle={16}
