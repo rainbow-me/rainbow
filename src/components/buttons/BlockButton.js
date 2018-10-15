@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import styled, { css } from 'styled-components/primitives';
+import { componentFromProp } from 'recompact';
 import { colors, padding, position, shadow } from '../../styles';
 import { Centered } from '../layout';
 import { Text } from '../text';
@@ -18,7 +19,9 @@ const containerStyles = css`
   height: ${BlockButtonHeight};
 `;
 
-const Container = styled(ButtonPressAnimation)`
+const ContainerElement = componentFromProp('component');
+
+const Container = styled(ContainerElement)`
   border-radius: ${BlockButtonBorderRadius};
 `;
 
@@ -54,13 +57,13 @@ const Shadow = styled.View`
   ${shadow.build(0, 3, 5, colors.alpha(colors.purple, 0.2))}
 `;
 
-const LeftIcon = styled(Icon).attrs({ color: colors.white, size: 28 })`
+const LeftIcon = styled(Icon).attrs({ color: colors.white, size: 32 })`
   ${position.size(BlockButtonHeight)}
   position: absolute;
   left: 15px;
 `;
 
-const RightIcon = styled(Icon).attrs({ color: colors.white, size: 28 })`
+const RightIcon = styled(Icon).attrs({ color: colors.white, size: 32 })`
   ${position.size(BlockButtonHeight)}
   position: absolute;
   right: 15px;
@@ -73,7 +76,9 @@ const BlockButton = ({
   onLayout,
   width,
   leftIconName,
+  leftIconProps,
   rightIconName,
+  rightIconProps,
   ...props
 }) => (
   <Container {...props}>
@@ -85,11 +90,11 @@ const BlockButton = ({
           radius={width}
         />
         <InnerBorder />
-        {leftIconName ? <LeftIcon name={leftIconName} /> : null}
+        {leftIconName ? <LeftIcon name={leftIconName} {...leftIconProps} /> : null}
         <Label>
           {children}
         </Label>
-        {rightIconName ? <RightIcon name={rightIconName} /> : null}
+        {rightIconName ? <RightIcon name={rightIconName} {...rightIconProps} /> : null}
       </Content>
     </Shadow>
   </Container>
@@ -97,9 +102,21 @@ const BlockButton = ({
 
 BlockButton.propTypes = {
   children: PropTypes.node,
+  disabled: PropTypes.disabled,
   height: PropTypes.number,
+  leftIconName: PropTypes.string,
+  leftIconProps: PropTypes.object,
   onLayout: PropTypes.func,
+  rightIconName: PropTypes.string,
+  rightIconProps: PropTypes.object,
   width: PropTypes.number,
+};
+
+BlockButton.defaultProps = {
+  component: ButtonPressAnimation,
+  disabled: false,
+  leftIconProps: {},
+  rightIconProps: {},
 };
 
 export default withViewLayoutProps(({ width, height }) => ({ width, height }))(BlockButton);

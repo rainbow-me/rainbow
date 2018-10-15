@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { createElement, PureComponent } from 'react';
 import { createNavigator, StackRouter } from 'react-navigation';
 import { FlatList, StatusBar, View } from 'react-native';
-import { deviceUtils } from '../utils';
+import { deviceUtils } from '../../utils';
 
 const EMPTY_ARRAY = [];
 
