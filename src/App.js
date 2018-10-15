@@ -94,7 +94,7 @@ class App extends Component {
     });
 
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened(notificationOpen => {
-      console.log('on notification manually opened - while app in background or foreground');
+      console.log('on notification manually opened');
       const { transactionId, sessionId } = notificationOpen.notification.data;
       this.onPushNotificationOpened(transactionId, sessionId);
     });
@@ -109,24 +109,22 @@ class App extends Component {
         walletConnectInitAllConnectors()
           .then(allConnectors => {
             this.props.setWalletConnectors(allConnectors);
+            firebase
+              .notifications()
+              .getInitialNotification()
+              .then(notificationOpen => {
+                if (!notificationOpen) {
+                  this.fetchAllTransactionsFromWalletConnectSessions();
+                }
+              });
           })
           .catch(error => {
             console.log('Unable to init all WalletConnect sessions');
           });
-        firebase
-          .notifications()
-          .getInitialNotification()
-          .then(notificationOpen => {
-            console.log('on initial notification');
-            if (notificationOpen) {
-              console.log('on initial notification opened - while app closed');
-              const { transactionId, sessionId } = notificationOpen.notification.data;
-              this.onPushNotificationOpened(transactionId, sessionId);
-            }
-          });
+        /*
+      */
       })
       .catch(error => {
-        console.log('failed to init wallet');
         AlertIOS.alert('Error: Failed to initialize wallet.');
       });
   }
