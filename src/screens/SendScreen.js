@@ -2,7 +2,7 @@ import _ from 'underscore';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import styled from 'styled-components/primitives';
-import { Animated, Clipboard, Image, Keyboard, KeyboardAvoidingView, Text, View } from 'react-native';
+import { Animated, Clipboard, Image, Keyboard, KeyboardAvoidingView, StatusBar, Text, View } from 'react-native';
 import { compose, withHandlers } from 'recompact';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
@@ -11,7 +11,7 @@ import { withSafeTimeout } from '@hocs/safe-timers';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
 import { AddressField, UnderlineField } from '../components/fields';
 import { AssetList, UniqueTokenRow } from '../components/asset-list';
-import { Button, BlockButton } from '../components/buttons';
+import { Button, BlockButton, LongPressButton } from '../components/buttons';
 import { colors, fonts, padding, position, shadow } from '../styles';
 import { Column, Page, Flex, FlexItem, FlyInView, Row } from '../components/layout';
 import { formatUSD, formatUSDInput, removeLeadingZeros, uppercase } from '../utils/formatters';
@@ -27,6 +27,8 @@ import {
 } from '../hoc';
 import { deviceUtils } from '../utils';
 
+console.disableYellowBox = true;
+
 const AddressInputLabel = styled(Text)`
   color: ${colors.blueGreyDark};
   font-size: ${fonts.size.h5}
@@ -37,7 +39,7 @@ const AddressInputLabel = styled(Text)`
 `;
 
 const AddressInputContainer = styled(Flex)`
-  ${padding(45, 20)}
+  ${padding(20, 20)}
   padding-bottom: 20px;
   align-items: center;
 `;
@@ -56,12 +58,12 @@ const AssetContainer = styled(Flex)`
 const BackgroundImage = styled(Image)`
   height: 88px;
   width: 91px;
-  margin-top: 130px;
 `;
 
 const BackgroundImageContainer = styled(Flex)`
   flex-grow: 1;
   justify-content: center;
+  align-items: center;
 `;
 
 const BottomButton = styled(Button)`
@@ -75,6 +77,7 @@ const BottomButton = styled(Button)`
 
 const BottomButtonContainer = styled(Flex)`
   ${padding(20, 20)}
+  padding-top: 0px;
   justify-content: flex-end;
   width: 100%;
 `;
@@ -89,13 +92,15 @@ const Container = styled(Page)`
   background-color: ${colors.white};
   align-items: center;
   flex-grow: 1;
+  padding-top: 5px;
+  padding-bottom: 25px;
 `;
 
 const NumberInput = styled(UnderlineField).attrs({
   keyboardType: 'decimal-pad',
 })`
-  margin-bottom: 15px;
-  margin-right: 30px;
+  margin-bottom: 10px;
+  margin-right: 26px;
 `;
 
 const NumberInputLabel = styled(Monospace)`
@@ -103,9 +108,8 @@ const NumberInputLabel = styled(Monospace)`
   color: ${colors.blueGreyDark};
 `;
 
-const SendButton = styled(BlockButton)`
-  margin-top: 15px;
-  margin-bottom: 30px;
+const SendButton = styled(BlockButton).attrs({ component: LongPressButton })`
+  ${padding(10, 0)}
 `;
 
 const TransactionContainer = styled(View)`
@@ -114,11 +118,19 @@ const TransactionContainer = styled(View)`
   background-color: ${colors.lightGrey};
 `;
 
+const HandleIcon = styled(Icon).attrs({
+  name: 'caret',
+  color: colors.sendScreen.grey,
+})`
+  transform: rotate(90deg) scaleX(1.75);
+`;
+
 class SendScreen extends Component {
   static propTypes = {
     fetchData: PropTypes.func,
     isValidAddress: PropTypes.bool,
     selected: PropTypes.object,
+    sendClearFields: PropTypes.func,
     sendMaxBalance: PropTypes.func,
     sendUpdateAssetAmount: PropTypes.func,
     sendUpdateGasPrice: PropTypes.func,
@@ -130,6 +142,7 @@ class SendScreen extends Component {
   static defaultProps = {
     fetchData() {},
     isValidAddress: false,
+    sendClearFields() {},
     sendMaxBalance() {},
     sendUpdateAssetAmount() {},
     sendUpdateGasPrice() {},
@@ -142,18 +155,16 @@ class SendScreen extends Component {
     super(props);
 
     this.state = {
-      selectedAssetAnimation: new Animated.Value(1),
-      selectedAssetPageY: 0,
+      sendLongPressProgress: new Animated.Value(0),
     };
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { selected } = this.props;
-    const { selectedAssetAnimation } = this.state;
+  componentDidMount() {
+    StatusBar.setBarStyle('light-content', true);
+  }
 
-    if (_.isEmpty(prevProps.selected) && !_.isEmpty(selected)) {
-      Animated.timing(selectedAssetAnimation, { toValue: 0, duration: 300 }).start();
-    }
+  componentWillUnmount() {
+    StatusBar.setBarStyle('dark-content', true);
   }
 
   onChangeAddressInput = (value) => {
@@ -194,17 +205,37 @@ class SendScreen extends Component {
   };
 
   onPressSend = () => {
+    const { sendLongPressProgress } = this.state;
+
+    Animated.timing(sendLongPressProgress, {
+      toValue: 100,
+      duration: 800,
+    }).start();
+  };
+
+  onReleaseSend = () => {
+    const { sendLongPressProgress } = this.state;
+
+    Animated.timing(sendLongPressProgress, {
+      toValue: 0,
+      duration: (sendLongPressProgress._value / 100) * 800,
+    }).start();
+  };
+
+  onLongPressSend = () => {
     const {
       assetAmount,
       onSubmit,
       navigation,
-      sendUpdateSelected,
+      sendClearFields,
     } = this.props;
 
     if (Number(assetAmount) > 0) {
-      onSubmit();
-      sendUpdateSelected();
-      navigation.replace('ActivityScreen');
+      onSubmit()
+        .then(() => {
+          sendClearFields();
+          navigation.replace('ActivityScreen');
+        });
     }
   };
 
@@ -294,14 +325,14 @@ class SendScreen extends Component {
       selected,
     } = this.props;
 
+    const { sendLongPressProgress } = this.state;
+
     const fee = get(gasPrice, 'txFee.native.value.display', '$0.00').substring(1);
     const time = get(gasPrice, 'estimatedTime.display', '');
     const isZeroAssetAmount = Number(assetAmount) <= 0;
 
     return (
-      <Column flex={1} style={{
-        // top: selectedAssetAnimation.interpolate({ inputRange: [0, 1], outputRange: [0, selectedAssetPageY] }),
-      }}>
+      <Column flex={1}>
         <ShadowStack
           height={64}
           width={deviceUtils.dimensions.width}
@@ -344,7 +375,11 @@ class SendScreen extends Component {
           <SendButton
             disabled={isZeroAssetAmount}
             leftIconName={isZeroAssetAmount ? null : 'face'}
+            rightIconName={isZeroAssetAmount ? null : 'progress'}
+            rightIconProps={{ progress: sendLongPressProgress, color: colors.alpha(colors.sendScreen.grey, 0.3), progressColor: colors.white }}
+            onLongPress={this.onLongPressSend}
             onPress={this.onPressSend}
+            onRelease={this.onReleaseSend}
           >{isZeroAssetAmount ? 'Enter An Amount' : 'Hold To Send'}</SendButton>
           <Row justify="space-between">
             <PillLabel>Fee: ${formatUSD(fee)}</PillLabel>
@@ -360,7 +395,8 @@ class SendScreen extends Component {
 
     return (
       <KeyboardAvoidingView behavior="padding">
-        <Container showTopInset>
+        <Container>
+          <HandleIcon />
           <AddressInputContainer>
             <AddressInputLabel>To:</AddressInputLabel>
             <AddressField

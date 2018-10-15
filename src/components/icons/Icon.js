@@ -12,9 +12,10 @@ import ClockIcon from './svg/ClockIcon';
 import CloseIcon from './svg/CloseIcon';
 import DotIcon from './svg/DotIcon';
 import FaceIcon from './svg/FaceIcon';
+import ProgressIcon from './svg/ProgressIcon';
+import SendIcon from './svg/SendIcon';
 import SpinnerIcon from './svg/SpinnerIcon';
 import ThreeDotsIcon from './svg/ThreeDotsIcon';
-import SendIcon from './svg/SendIcon';
 import WalletConnectIcon from './svg/WalletConnectIcon';
 import WarningIcon from './svg/WarningIcon';
 
@@ -36,6 +37,7 @@ Icon.IconTypes = {
   close: CloseIcon,
   dot: DotIcon,
   face: FaceIcon,
+  progress: ProgressIcon,
   spinner: SpinnerIcon,
   threeDots: ThreeDotsIcon,
   walletConnect: WalletConnectIcon,

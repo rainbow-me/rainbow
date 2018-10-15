@@ -1,5 +1,6 @@
 import { createSwitchNavigator, createStackNavigator } from 'react-navigation';
-import createSwipeNavigator from '../navigators/createSwipeNavigator';
+import createSwipeNavigator from '../navigation/navigators/createSwipeNavigator';
+import sheetTransition from '../navigation/transitions/sheet';
 import ActivityScreen from './ActivityScreen';
 import IntroScreen from './IntroScreen';
 import LoadingScreen from './LoadingScreen';
@@ -38,16 +39,23 @@ const AppStack = createStackNavigator({
   ActivityScreen: {
     navigationOptions: {
       gesturesEnabled: false,
+      effect: 'sheet',
     },
     screen: ActivityScreen,
   },
   ConfirmTransaction: TransactionConfirmationScreenWithData,
-  SendScreen: SendScreenWithData,
+  SendScreen: {
+    navigationOptions: {
+      effect: 'sheet',
+    },
+    screen: SendScreenWithData,
+  },
   SwipeLayout: SwipeStack,
 }, {
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',
   mode: 'modal',
+  transitionConfig: sheetTransition,
 });
 
 const IntroStack = createStackNavigator({
