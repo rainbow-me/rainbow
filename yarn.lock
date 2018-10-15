@@ -6729,8 +6729,8 @@ react-native-storage@^0.2.2:
   resolved "https://registry.yarnpkg.com/react-native-storage/-/react-native-storage-0.2.3.tgz#294f034c6ecbd9e08cfe02fa24ecb9db7a861a1b"
 
 react-native-svg@^7.0.2:
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-7.1.0.tgz#0945bb29e8de6ef49b35fb6e9b450b8d2b18627a"
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-7.1.1.tgz#6147d0bd2a42016232678dcf0376c8d4860857fa"
   dependencies:
     color "^2.0.1"
     lodash "^4.16.6"
