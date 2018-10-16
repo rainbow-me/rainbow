@@ -8,10 +8,6 @@ import { colors, position } from '../../styles';
 import Icon from '../icons/Icon';
 import FloatingActionButton from './FloatingActionButton';
 
-const CameraIcon = styled(Icon)`
-  margin-bottom: 2;
-`;
-
 const GradientBackground = styled(RadialGradient)`
   ${position.cover}
 `;
@@ -27,9 +23,10 @@ const WalletConnectFab = ({ disabled, onPress, ...props }) => (
             radius={size}
           />
         )}
-        <CameraIcon
+        <Icon
           color={colors.white}
           name="camera"
+          style={{ marginBottom: 2 }}
         />
       </Fragment>
     )}
