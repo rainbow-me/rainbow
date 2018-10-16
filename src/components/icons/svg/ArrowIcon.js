@@ -1,37 +1,26 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Path } from 'svgs';
-import styled from 'styled-components/primitives';
-import { calcDirectionToDegrees, colors } from '../../../styles';
-import { directionPropType } from '../../../utils';
+import { withRotationForDirection } from '../../../hoc';
+import { colors } from '../../../styles';
 import Svg from '../Svg';
-
-const SvgContainer = styled(Svg)`
-  transform: rotate(${calcDirectionToDegrees}deg);
-`;
 
 const ArrowIcon = ({
   color,
-  direction,
   height,
   width,
   ...props
 }) => (
-  <SvgContainer
-    direction={direction}
-    height={height}
-    width={width}
-  >
+  <Svg height={height} width={width} {...props}>
     <Path
       d="M5.614 4.186v1.92a.349.349 0 0 0 .552.278L9.554 3.56a.344.344 0 0 0 0-.562L6.166.174a.349.349 0 0 0-.552.278v1.922H1.41a.77.77 0 0 0-.77.77v.272c0 .425.345.77.77.77h4.204z"
       fill={color}
     />
-  </SvgContainer>
+  </Svg>
 );
 
 ArrowIcon.propTypes = {
   color: PropTypes.string,
-  direction: directionPropType,
   height: PropTypes.number,
   width: PropTypes.number,
 };
@@ -42,4 +31,4 @@ ArrowIcon.defaultProps = {
   width: 10,
 };
 
-export default ArrowIcon;
+export default withRotationForDirection(ArrowIcon);

@@ -3,7 +3,6 @@ import { createElement } from 'react';
 import Flex from '../layout/Flex';
 
 import ArrowIcon from './svg/ArrowIcon';
-import AssetListItemSkeletonIcon from './svg/AssetListItemSkeletonIcon';
 import AvatarIcon from './svg/AvatarIcon';
 import BalanceLogoIcon from './svg/BalanceLogoIcon';
 import CameraIcon from './svg/CameraIcon';
@@ -25,7 +24,6 @@ Icon.propTypes = {
 
 Icon.IconTypes = {
   arrow: ArrowIcon,
-  assetListItemSkeleton: AssetListItemSkeletonIcon,
   avatar: AvatarIcon,
   balanceLogo: BalanceLogoIcon,
   camera: CameraIcon,
