@@ -67,6 +67,9 @@ class App extends Component {
         } else {
           console.log('no fcm token yet');
         }
+      })
+      .catch(error => {
+        console.log('error getting fcm token');
       });
 
     this.onTokenRefreshListener = firebase.messaging().onTokenRefresh(fcmToken => {

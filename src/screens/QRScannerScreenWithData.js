@@ -1,8 +1,9 @@
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { compose } from 'recompact';
 import { AlertIOS } from 'react-native';
+import firebase from 'react-native-firebase';
+import { compose } from 'recompact';
 import { withAccountAddress, withWalletConnectors } from '../hoc';
 import { walletConnectInit } from '../model/walletconnect';
 import QRScannerScreen from './QRScannerScreen';
@@ -25,6 +26,14 @@ class QRScannerScreenWithData extends PureComponent {
       try {
         const walletConnector = await walletConnectInit(accountAddress, data);
         addWalletConnector(walletConnector);
+        const enabled = await firebase.messaging().hasPermission();
+        if (!enabled) {
+          try {
+            await firebase.messaging().requestPermission();
+          } catch (error) {
+            console.log('user has rejected notifications');
+          }
+        }
         navigation.navigate('WalletScreen');
       } catch (error) {
         AlertIOS.alert(lang.t('wallet.wallet_connect.error'), error);
