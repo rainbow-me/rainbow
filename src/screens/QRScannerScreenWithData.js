@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { AlertIOS } from 'react-native';
+import { Alert } from 'react-native';
 import firebase from 'react-native-firebase';
 import { compose } from 'recompact';
 import { withAccountAddress, withWalletConnectors } from '../hoc';
@@ -29,7 +29,15 @@ class QRScannerScreenWithData extends PureComponent {
         const enabled = await firebase.messaging().hasPermission();
         if (!enabled) {
           try {
-            await firebase.messaging().requestPermission();
+            Alert.alert(
+              lang.t('wallet.push_notifications.please_enable_title'),
+              lang.t('wallet.push_notifications.please_enable_body'),
+              [
+                {text: 'Okay', onPress: async () => await firebase.messaging().requestPermission()},
+                {text: 'Dismiss', onPress: () => console.log('Push notification dismissed'), style: 'cancel'}
+              ],
+              { cancelable: false }
+            );
           } catch (error) {
             console.log('user has rejected notifications');
           }
