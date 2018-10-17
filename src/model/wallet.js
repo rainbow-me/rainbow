@@ -71,26 +71,27 @@ export const loadAddress = async () => {
 const createWallet = async (seedPhrase) => {
   const walletSeedPhrase = seedPhrase || generateSeedPhrase();
   const wallet = ethers.Wallet.fromMnemonic(walletSeedPhrase);
-  wallet.provider = ethers.providers.getDefaultProvider();
-  const canAuthenticate = canImplyAuthentication({ authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS});
-  if (canAuthenticate) {
-    saveSeedPhrase(walletSeedPhrase);
-    savePrivateKey(wallet.privateKey);
-    saveAddress(wallet.address);
-    console.log(`Wallet: Generated wallet with public address: ${wallet.address}`);
-    return wallet.address;
-  }
-  AlertIOS.alert('Please set up a device passcode.');
-  return null;
+  saveWalletDetails(walletSeedPhrase, wallet.privateKey, wallet.address);
+  return wallet.address;
 };
 
-const saveSeedPhrase = async (seedPhrase) => {
-  const accessControlOptions = { accessControl: ACCESS_CONTROL.USER_PRESENCE, accessible: ACCESSIBLE.WHEN_UNLOCKED };
+const saveWalletDetails = async (seedPhrase, privateKey, address) => {
+  const canAuthenticate = await canImplyAuthentication({ authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS});
+  let accessControlOptions = {};
+  if (canAuthenticate) {
+    accessControlOptions = { accessControl: ACCESS_CONTROL.USER_PRESENCE, accessible: ACCESSIBLE.WHEN_UNLOCKED };
+  }
+  saveSeedPhrase(seedPhrase, accessControlOptions);
+  savePrivateKey(privateKey, accessControlOptions);
+  saveAddress(address);
+  console.log(`Wallet: Generated wallet with public address: ${address}`);
+};
+
+const saveSeedPhrase = async (seedPhrase, accessControlOptions = {}) => {
   await keychain.saveString(seedPhraseKey, seedPhrase, accessControlOptions);
 };
 
-const savePrivateKey = async (privateKey) => {
-  const accessControlOptions = { accessControl: ACCESS_CONTROL.USER_PRESENCE, accessible: ACCESSIBLE.WHEN_UNLOCKED };
+const savePrivateKey = async (privateKey, accessControlOptions = {}) => {
   await keychain.saveString(privateKeyKey, privateKey, accessControlOptions);
 };
 
