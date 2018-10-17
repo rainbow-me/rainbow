@@ -1,10 +1,16 @@
 import ethers from 'ethers';
 import lang from 'i18n-js';
+import { AlertIOS } from 'react-native';
+import {
+  ACCESS_CONTROL,
+  ACCESSIBLE,
+  AUTHENTICATION_TYPE,
+  canImplyAuthentication,
+} from 'react-native-keychain';
 import * as keychain from '../model/keychain';
 const seedPhraseKey = 'seedPhrase';
 const privateKeyKey = 'privateKey';
 const addressKey = 'addressKey';
-import { ACCESS_CONTROL, ACCESSIBLE } from 'react-native-keychain';
 
 export function generateSeedPhrase() {
   return ethers.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
@@ -12,15 +18,11 @@ export function generateSeedPhrase() {
 
 export const walletInit = async (seedPhrase = null) => {
   let walletAddress = null;
-  try {
-    walletAddress = await loadAddress();
-    if (!walletAddress) {
-      walletAddress = await createWallet(seedPhrase);
-    }
-    return walletAddress;
-  } catch (error) {
-    return walletAddress;
+  walletAddress = await loadAddress();
+  if (!walletAddress) {
+    walletAddress = await createWallet(seedPhrase);
   }
+  return walletAddress;
 };
 
 export const loadWallet = async (authenticationPrompt) => {
@@ -59,21 +61,27 @@ export const loadSeedPhrase = async () => {
 };
 
 export const loadAddress = async () => {
-  const privateKey = await keychain.loadString(addressKey);
-  return privateKey;
+  try {
+    return await keychain.loadString(addressKey);
+  } catch (error) {
+    return null;
+  }
 };
 
 const createWallet = async (seedPhrase) => {
   const walletSeedPhrase = seedPhrase || generateSeedPhrase();
   const wallet = ethers.Wallet.fromMnemonic(walletSeedPhrase);
   wallet.provider = ethers.providers.getDefaultProvider();
-  saveSeedPhrase(walletSeedPhrase);
-  savePrivateKey(wallet.privateKey);
-  saveAddress(wallet.address);
-
-  console.log(`Wallet: Generated wallet with public address: ${wallet.address}`);
-
-  return wallet.address;
+  const canAuthenticate = canImplyAuthentication({ authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS});
+  if (canAuthenticate) {
+    saveSeedPhrase(walletSeedPhrase);
+    savePrivateKey(wallet.privateKey);
+    saveAddress(wallet.address);
+    console.log(`Wallet: Generated wallet with public address: ${wallet.address}`);
+    return wallet.address;
+  }
+  AlertIOS.alert('Please set up a device passcode.');
+  return null;
 };
 
 const saveSeedPhrase = async (seedPhrase) => {

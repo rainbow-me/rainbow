@@ -106,6 +106,7 @@ class App extends Component {
 
     walletInit()
       .then(walletAddress => {
+        if (!walletAddress) { return; }
         console.log('wallet address is', walletAddress);
         this.props.accountUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
         this.props.transactionsToApproveInit();
