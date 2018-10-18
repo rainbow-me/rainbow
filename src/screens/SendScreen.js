@@ -93,7 +93,6 @@ const Container = styled(Page)`
   align-items: center;
   flex-grow: 1;
   padding-top: 5px;
-  padding-bottom: 25px;
 `;
 
 const NumberInput = styled(UnderlineField).attrs({
@@ -109,7 +108,7 @@ const NumberInputLabel = styled(Monospace)`
 `;
 
 const SendButton = styled(BlockButton).attrs({ component: LongPressButton })`
-  ${padding(10, 0)}
+  ${padding(18, 0)}
 `;
 
 const TransactionContainer = styled(View)`
@@ -247,10 +246,13 @@ class SendScreen extends Component {
       label: `${uppercase(key, 7)}: ${get(value, 'txFee.native.value.display')}  ~${get(value, 'estimatedTime.display')}`,
     }));
 
+    options.unshift({ label: 'Cancel' });
+
     showActionSheetWithOptions({
       options: options.map(option => option.label),
+      cancelButtonIndex: 0,
     }, (buttonIndex) => {
-      if (buttonIndex > -1) {
+      if (buttonIndex > 0) {
         sendUpdateGasPrice(options[buttonIndex].value);
       }
     });
@@ -351,27 +353,29 @@ class SendScreen extends Component {
           </SendCoinRow>
         </ShadowStack>
         <TransactionContainer>
-          <Row>
-            <NumberInput
-              autoFocus
-              format={removeLeadingZeros}
-              placeholder="0"
-              onChange={this.onChangeAssetAmount}
-              value={assetAmount}
-            />
-            <NumberInputLabel>{selected.symbol}</NumberInputLabel>
-          </Row>
-          <Row>
-            <NumberInput
-              buttonText="Max"
-              format={formatUSDInput}
-              onChange={this.onChangeNativeAmount}
-              onPressButton={sendMaxBalance}
-              placeholder="0.00"
-              value={nativeAmount && formatUSD(nativeAmount)}
-            />
-            <NumberInputLabel>USD</NumberInputLabel>
-          </Row>
+          <Column>
+            <Row>
+              <NumberInput
+                autoFocus
+                format={removeLeadingZeros}
+                placeholder="0"
+                onChange={this.onChangeAssetAmount}
+                value={assetAmount}
+              />
+              <NumberInputLabel>{selected.symbol}</NumberInputLabel>
+            </Row>
+            <Row>
+              <NumberInput
+                buttonText="Max"
+                format={formatUSDInput}
+                onChange={this.onChangeNativeAmount}
+                onPressButton={sendMaxBalance}
+                placeholder="0.00"
+                value={nativeAmount && formatUSD(nativeAmount)}
+              />
+              <NumberInputLabel>USD</NumberInputLabel>
+            </Row>
+          </Column>
           <SendButton
             disabled={isZeroAssetAmount}
             leftIconName={isZeroAssetAmount ? null : 'face'}
@@ -395,7 +399,7 @@ class SendScreen extends Component {
 
     return (
       <KeyboardAvoidingView behavior="padding">
-        <Container>
+        <Container showBottomInset>
           <HandleIcon />
           <AddressInputContainer>
             <AddressInputLabel>To:</AddressInputLabel>

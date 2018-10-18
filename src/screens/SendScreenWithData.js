@@ -2,4 +2,7 @@ import { withSendComponentWithData } from 'balance-common';
 import SendScreen from './SendScreen';
 import { sendTransaction } from '../model/wallet';
 
-export default withSendComponentWithData(SendScreen, { sendTransactionCallback: sendTransaction });
+export default withSendComponentWithData(SendScreen, {
+  gasFormat: 'short',
+  sendTransactionCallback: sendTransaction,
+});
