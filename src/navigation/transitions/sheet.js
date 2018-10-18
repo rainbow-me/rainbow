@@ -7,7 +7,7 @@ export default function sheet(transitionProps, prevTransitionProps) {
   return {
     transitionSpec: {
       timing: Animated.spring,
-      tension: 60,
+      tension: 62,
       friction: 10,
       useNativeDriver: true,
     },
