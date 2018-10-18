@@ -1684,9 +1684,9 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-balance-common@^0.5.15-push:
-  version "0.5.15-push"
-  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.5.15-push.tgz#c3cea5edd2e0456b9f7ba0d9a8f4830c93a5c93a"
+balance-common@^0.5.17:
+  version "0.5.17"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.5.17.tgz#ad1df68e94e1e281518bb0c98d9ac2d0cac14c04"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -2039,8 +2039,8 @@ can-promise@^0.0.1:
     window-or-global "^1.0.1"
 
 caniuse-lite@^1.0.30000844:
-  version "1.0.30000892"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000892.tgz#344d2b51ee3ff5977537da4aa449c90eec40b759"
+  version "1.0.30000893"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000893.tgz#284b20932bd41b93e21626975f2050cb01561986"
 
 capture-exit@^1.2.0:
   version "1.2.0"
