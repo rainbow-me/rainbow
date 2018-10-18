@@ -6,9 +6,9 @@ import { deviceUtils, safeAreaInsetValues } from '../../utils';
 export default function sheet(transitionProps, prevTransitionProps) {
   return {
     transitionSpec: {
-      duration: 650,
-      easing: Easing.out(Easing.poly(4)),
-      timing: Animated.timing,
+      timing: Animated.spring,
+      tension: 64,
+      friction: 10,
       useNativeDriver: true,
     },
     screenInterpolator: (sceneProps = {}) => {
@@ -28,6 +28,7 @@ export default function sheet(transitionProps, prevTransitionProps) {
       const scaleEnd = 1 - ((safeAreaInsetValues.top + distanceFromTop) / deviceUtils.dimensions.height);
       const heightEnd = safeAreaInsetValues.top + distanceFromTop;
       const borderRadiusEnd = 12;
+      const borderRadiusScaledEnd = 12 / (1 - ((safeAreaInsetValues.top + distanceFromTop) / deviceUtils.dimensions.height));
       const opacityEnd = 0.5;
 
 
@@ -49,7 +50,7 @@ export default function sheet(transitionProps, prevTransitionProps) {
 
         const borderRadius = position.interpolate({
           inputRange: [prevIndex, nextIndex],
-          outputRange: [0, borderRadiusEnd],
+          outputRange: [isIphoneX() ? 38.5 : 0, borderRadiusScaledEnd],
         });
 
         return {
