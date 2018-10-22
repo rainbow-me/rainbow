@@ -40,8 +40,9 @@ const AddressInputLabel = styled(Text)`
 
 const AddressInputContainer = styled(Flex)`
   ${padding(20, 20)}
-  padding-bottom: 20px;
   align-items: center;
+  width: 100%;
+  overflow: hidden;
 `;
 
 const AddressInputBottomBorder = styled(View)`
@@ -66,7 +67,9 @@ const BackgroundImageContainer = styled(Flex)`
   align-items: center;
 `;
 
-const BottomButton = styled(Button)`
+const BottomButton = styled(Button).attrs({
+  type: 'pill',
+})`
   ${padding(0, 10)}
   background-color: ${colors.sendScreen.brightBlue};
   align-items: center;
@@ -82,17 +85,20 @@ const BottomButtonContainer = styled(Flex)`
   width: 100%;
 `;
 
-const CameraIcon = styled(Image)`
+const CameraIcon = styled(Icon).attrs({
+  name: 'camera',
+  color: colors.white,
+  width: 17,
+  height: 14,
+})`
   margin-top: -5px;
-  height: 14px;
-  width: 17px;
 `;
 
 const Container = styled(Page)`
+  ${padding(5, 0, 10)}
   background-color: ${colors.white};
   align-items: center;
   flex-grow: 1;
-  padding-top: 5px;
 `;
 
 const NumberInput = styled(UnderlineField).attrs({
@@ -261,7 +267,7 @@ class SendScreen extends Component {
   onPressCamera = () => {
     const { navigation } = this.props;
 
-    navigation.navigate('QRScannerScreen');
+    navigation.navigate('SendQRScannerScreen', { onSuccess: this.onChangeAddressInput });
   };
 
   renderAssetList() {
@@ -312,7 +318,7 @@ class SendScreen extends Component {
         </BackgroundImageContainer>
         <BottomButtonContainer>
           <BottomButton onPress={this.onPressPaste}>Paste</BottomButton>
-          <BottomButton onPress={this.onPressCamera}><CameraIcon source={require('../assets/camera.png')} /></BottomButton>
+          <BottomButton onPress={this.onPressCamera}><CameraIcon /></BottomButton>
         </BottomButtonContainer>
       </FlexItem>
     );
@@ -357,9 +363,11 @@ class SendScreen extends Component {
             <Row>
               <NumberInput
                 autoFocus
+                buttonText="Max"
                 format={removeLeadingZeros}
-                placeholder="0"
                 onChange={this.onChangeAssetAmount}
+                onPressButton={sendMaxBalance}
+                placeholder="0"
                 value={assetAmount}
               />
               <NumberInputLabel>{selected.symbol}</NumberInputLabel>
@@ -387,7 +395,11 @@ class SendScreen extends Component {
           >{isZeroAssetAmount ? 'Enter An Amount' : 'Hold To Send'}</SendButton>
           <Row justify="space-between">
             <PillLabel>Fee: ${formatUSD(fee)}</PillLabel>
-            <PillLabel icon="clock" onPress={this.onPressTransactionSpeed}>Arrives in ~ {time}</PillLabel>
+            <PillLabel
+              color={colors.blueGreyDark}
+              icon="clock"
+              onPress={this.onPressTransactionSpeed}
+            >Arrives in ~ {time}</PillLabel>
           </Row>
         </TransactionContainer>
       </Column>

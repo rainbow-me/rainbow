@@ -5,6 +5,7 @@ import ActivityScreen from './ActivityScreen';
 import IntroScreen from './IntroScreen';
 import LoadingScreen from './LoadingScreen';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
+import SendQRScannerScreenWithData from './SendQRScannerScreenWithData';
 import SendScreenWithData from './SendScreenWithData';
 import SettingsScreenWithData from './SettingsScreenWithData';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
@@ -50,6 +51,7 @@ const AppStack = createStackNavigator({
     },
     screen: SendScreenWithData,
   },
+  SendQRScannerScreen: SendQRScannerScreenWithData,
   SwipeLayout: SwipeStack,
 }, {
   headerMode: 'none',

@@ -81,7 +81,7 @@ const BlockButton = ({
   rightIconProps,
   ...props
 }) => (
-  <Container {...props}>
+  <Container {...props} disabled={disabled}>
     <Shadow>
       <Content onLayout={onLayout}>
         <GradientBackground
