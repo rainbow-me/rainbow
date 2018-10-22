@@ -19,7 +19,9 @@ const Field = styled(TextInput)`
   margin-bottom: 10px;
 `;
 
-const FieldButton = styled(Button)`
+const FieldButton = styled(Button).attrs({
+  type: 'pill',
+})`
   ${padding(0, 10)}
   background-color: ${colors.sendScreen.brightBlue};
   align-items: center;
@@ -59,6 +61,7 @@ export default class UnderlineField extends Component {
   };
 
   static defaultProps = {
+    autoFocus: false,
     format() {},
     onBlur() {},
     onChange() {},
@@ -70,6 +73,7 @@ export default class UnderlineField extends Component {
     super(props);
 
     this.state = {
+      isFocused: props.autoFocus,
       underlineAnimation: new Animated.Value(0),
       value: props.value,
     };
@@ -89,6 +93,8 @@ export default class UnderlineField extends Component {
 
     Animated.timing(underlineAnimation, { toValue: 0, duration: 150 }).start();
 
+    this.setState({ isFocused: false });
+
     onBlur(...props);
   };
 
@@ -107,6 +113,8 @@ export default class UnderlineField extends Component {
 
     Animated.timing(underlineAnimation, { toValue: 1, duration: 150 }).start();
 
+    this.setState({ isFocused: true });
+
     onFocus(...props);
   };
 
@@ -122,6 +130,7 @@ export default class UnderlineField extends Component {
     } = this.props;
 
     const {
+      isFocused,
       underlineAnimation,
       value,
     } = this.state;
@@ -139,7 +148,7 @@ export default class UnderlineField extends Component {
             placeholder={placeholder}
             value={String(value || '')}
           />
-          {buttonText && <FieldButton onPress={onPressButton}>{buttonText}</FieldButton>}
+          {buttonText && isFocused && <FieldButton onPress={onPressButton}>{buttonText}</FieldButton>}
         </Row>
         <Underline />
         <UnderlineAnimated style={{ width: underlineAnimation.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }) }} />

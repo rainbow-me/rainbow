@@ -20,10 +20,15 @@ const QRScannerHeader = styled(Header).attrs({
   top: 0;
 `;
 
-const QRScannerScreen = ({ isScreenActive, onPressBackButton, onSuccess }) => (
+const QRScannerScreen = ({
+  isScreenActive,
+  onPressBackButton,
+  onSuccess,
+  ...props
+}) => (
   <Container>
     <QRCodeScanner
-      {...this.props}
+      {...props}
       enableScanning={isScreenActive}
       onSuccess={onSuccess}
     />

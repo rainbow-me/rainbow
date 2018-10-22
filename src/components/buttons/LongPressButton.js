@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { InteractionManager } from 'react-native';
 import Animated, { Easing } from 'react-native-reanimated';
 import { LongPressGestureHandler, State, TapGestureHandler } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -36,18 +37,44 @@ export default class LongPressButton extends Component {
   onTapHandlerStateChange = ({ nativeEvent }) => {
     const { disabled, onPress, onRelease } = this.props;
 
-    timing(this.scale, {
-      toValue: (!disabled && nativeEvent.state === State.BEGAN) ? 0.875 : 1,
-      duration: 150,
-      easing: Easing.inOut(Easing.ease),
-    }).start();
+    console.log(nativeEvent.state)
 
-    console.log('here', nativeEvent)
+    if (nativeEvent.state === State.BEGAN) {
+      if (disabled) {
+        ReactNativeHapticFeedback.trigger('impactLight');
 
-    if (!disabled && nativeEvent.state === State.BEGAN) {
-      onPress();
+        timing(this.scale, {
+          toValue: 0.975,
+          duration: 100,
+          easing: Easing.inOut(Easing.ease),
+        }).start(() => {
+          ReactNativeHapticFeedback.trigger('impactLight');
+
+          timing(this.scale, {
+            toValue: 1,
+            duration: 100,
+            easing: Easing.inOut(Easing.ease),
+          }).start();
+        });
+      } else {
+        timing(this.scale, {
+          toValue: 0.875,
+          duration: 150,
+          easing: Easing.inOut(Easing.ease),
+        }).start();
+
+        onPress();
+      }
     } else if (!disabled && nativeEvent.state === State.END) {
-      onRelease();
+      timing(this.scale, {
+        toValue: 1,
+        duration: 150,
+        easing: Easing.inOut(Easing.ease),
+      }).start();
+
+      InteractionManager.runAfterInteractions(() => {
+        onRelease();
+      });
     }
   };
 

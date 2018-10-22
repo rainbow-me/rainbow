@@ -1,18 +1,45 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import styled from 'styled-components/primitives';
-import { Animated, TextInput } from 'react-native';
+import { Animated, Text, TextInput, View } from 'react-native';
 
 import { abbreviations } from '../../utils';
 import { colors, fonts } from '../../styles';
+import { Row } from '../layout';
 
-const Container = styled(TextInput)`
+const Container = styled(View)`
+  position: relative;
+  flex-grow: 1;
+`;
+
+const Input = styled(TextInput)`
   flex-grow: 1;
   font-size: ${fonts.size.h5}
   font-family: ${fonts.family.SFMono};
   font-weight: ${fonts.weight.semibold};
   color: ${props => (props.isValid ? colors.sendScreen.brightBlue : colors.blueGreyDark)};
   margin-top: 1px;
+`;
+
+const Placeholder = styled(Row)`
+  position: absolute;
+  top: 0;
+`;
+
+const SFMono = styled(Text)`
+  color: ${colors.blueGreyDark};
+  font-family: ${fonts.family.SFMono};
+  font-size: ${fonts.size.h5};
+  font-weight: ${fonts.weight.semibold};
+  opacity: 0.6;
+`;
+
+const SFProText = styled(Text)`
+  color: ${colors.blueGreyDark};
+  font-family: ${fonts.family.SFProText};
+  font-size: ${fonts.size.h5};
+  font-weight: ${fonts.weight.semibold};
+  opacity: 0.6;
 `;
 
 export default class UnderlineField extends Component {
@@ -69,19 +96,33 @@ export default class UnderlineField extends Component {
     });
   };
 
+  renderPlaceholder() {
+    return (
+      <Placeholder>
+        <SFMono>Ethereum Address (</SFMono>
+        <SFProText>0x...</SFProText>
+        <SFMono>)</SFMono>
+      </Placeholder>
+    );
+  }
+
   render() {
     const { autoFocus, isValid, style } = this.props;
     const { value } = this.state;
 
     return (
-      <Container
-        autoFocus={autoFocus}
-        isValid={isValid}
-        onChange={this.onChange}
-        placeholder="Ethereum Address: (0x...)"
-        value={isValid ? abbreviations.address(value) : value}
-        style={style}
-      />
+      <Container>
+        <Input
+          autoCorrect={false}
+          autoFocus={autoFocus}
+          isValid={isValid}
+          keyboardType="name-phone-pad"
+          onChange={this.onChange}
+          value={isValid ? abbreviations.address(value) : value}
+          style={style}
+        />
+        {!value ? this.renderPlaceholder() : null}
+      </Container>
     );
   }
 }

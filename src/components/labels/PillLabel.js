@@ -16,7 +16,7 @@ const Container = styled(Centered)`
 `;
 
 const LabelIcon = styled(Icon).attrs({
-  color: props => colors.alpha(props.textColor || colors.blueGreyLight, 0.8),
+  color: props => colors.alpha(props.color || colors.blueGreyLight, 0.8),
   height: 14,
   width: 14,
 })`
@@ -24,21 +24,27 @@ const LabelIcon = styled(Icon).attrs({
 `;
 
 const Label = styled.Text`
-  color: ${props => colors.alpha(props.textColor || colors.blueGreyLight, 0.8)};
+  color: ${props => colors.alpha(props.color || colors.blueGreyLight, 0.8)};
   font-family: ${fonts.family.SFProText};
   font-size: ${fonts.size.medium};
   font-weight: ${fonts.weight.medium};
 `;
 
-const PillLabel = ({ children, icon, onPress }) => (
+const PillLabel = ({
+  children,
+  color,
+  icon,
+  onPress,
+}) => (
   <Container component={TouchableOpacity} onPress={onPress} activeOpacity={onPress ? 0.25 : 1}>
-    {icon ? <LabelIcon name={icon} /> : null}
-    <Label>{children}</Label>
+    {icon ? <LabelIcon color={color} name={icon} /> : null}
+    <Label color={color}>{children}</Label>
   </Container>
 );
 
 PillLabel.propTypes = {
   children: PropTypes.any,
+  color: PropTypes.string,
   icon: PropTypes.string,
   onPress: PropTypes.func,
 };
