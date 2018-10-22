@@ -1,3 +1,4 @@
+import { pick } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
@@ -41,7 +42,10 @@ const Button = ({
   type,
   ...props
 }) => (
-  <ButtonPressAnimation onPress={onPress}>
+  <ButtonPressAnimation
+    {...pick(props, Object.keys(ButtonPressAnimation.propTypes))}
+    onPress={onPress}
+  >
     <Container
       {...props}
       containerStyles={containerStyles}

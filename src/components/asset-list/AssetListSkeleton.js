@@ -1,15 +1,15 @@
+import lang from 'i18n-js';
 import { times } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import lang from 'i18n-js';
 import { withNavigation } from 'react-navigation';
 import { compose, omitProps, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-import { colors, margin, position } from '../../styles';
+import { colors, position } from '../../styles';
 import { Button } from '../buttons';
-import Icon from '../icons/Icon';
 import { Centered, Column } from '../layout';
 import AssetListHeader from './AssetListHeader';
+import AssetListItemSkeleton from './AssetListItemSkeleton';
 
 const ButtonContainer = styled(Centered)`
   bottom: 28;
@@ -21,17 +21,17 @@ const Container = styled(Column)`
   ${position.size('100%')}
 `;
 
-const SkeletonElement = styled(Icon).attrs({ name: 'assetListItemSkeleton' })`
-  ${({ index }) => margin((index === 0 ? 15 : 12.5), 19, 12.5, 15)}
-  opacity: ${({ index }) => (1 - (0.2 * index))};
-`;
-
 const AssetListSkeleton = ({ onPressAddFunds, skeletonCount, ...props }) => (
   <Container {...props}>
-    <AssetListHeader section={{ title: lang.t('account.tab_balances'), totalValue: '$0.00' }} />
+    <AssetListHeader
+      section={{
+        title: lang.t('account.tab_balances'),
+        totalValue: '$0.00',
+      }}
+    />
     <Column>
       {times(skeletonCount, index => (
-        <SkeletonElement
+        <AssetListItemSkeleton
           index={index}
           key={`SkeletonElement${index}`}
         />
@@ -59,8 +59,6 @@ AssetListSkeleton.defaultProps = {
 
 export default compose(
   withNavigation,
-  withHandlers({
-    onPressAddFunds: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
-  }),
+  withHandlers({ onPressAddFunds: ({ navigation }) => () => navigation.push('SettingsScreen') }),
   omitProps('navigation'),
 )(AssetListSkeleton);

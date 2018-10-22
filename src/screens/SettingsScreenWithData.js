@@ -1,6 +1,6 @@
-import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { InteractionManager } from 'react-native';
 import { withAccountAddress } from '../hoc';
 import { loadSeedPhrase } from '../model/wallet';
 import SettingsScreen from './SettingsScreen';
@@ -12,25 +12,30 @@ class SettingsScreenWithData extends Component {
 
   state = { seedPhrase: null }
 
-  shouldComponentUpdate = ({ isScreenActive, ...nextProps }, nextState) => {
+  shouldComponentUpdate = ({ accountAddress, isScreenActive }, nextState) => {
     if (!isScreenActive && this.state.seedPhrase) {
-      this.handleHideSeedPhrase();
+      this.handleSeedPhraseState();
     }
 
-    const isNewProps = nextProps !== omit(this.props, 'isScreenActive');
+    const isNewAddress = this.props.accountAddress !== accountAddress;
+    const isNewScreenActive = this.props.isScreenActive !== isScreenActive;
+
+    const isNewProps = isNewAddress || isNewScreenActive;
     const isNewState = nextState !== this.state;
 
     return isNewProps || isNewState;
   }
 
-  handleHideSeedPhrase = () => this.setState({ seedPhrase: null })
-  handlePressBackButton = () => this.props.navigation.goBack()
+  handlePressBackButton = () => this.props.navigation.navigate('WalletScreen')
 
-  handleToggleShowSeedPhrase = () => {
+  handleSeedPhraseState = (seedPhrase = null) =>
+    InteractionManager.runAfterInteractions(() => this.setState({ seedPhrase }))
+
+  toggleShowSeedPhrase = () => {
     if (!this.state.seedPhrase) {
-      loadSeedPhrase().then(seedPhrase => this.setState({ seedPhrase }));
+      loadSeedPhrase().then(this.handleSeedPhraseState);
     } else {
-      this.handleHideSeedPhrase();
+      this.handleSeedPhraseState();
     }
   }
 
@@ -39,7 +44,7 @@ class SettingsScreenWithData extends Component {
       {...this.props}
       {...this.state}
       onPressBackButton={this.handlePressBackButton}
-      onToggleShowSeedPhrase={this.handleToggleShowSeedPhrase}
+      onToggleShowSeedPhrase={this.toggleShowSeedPhrase}
     />
   )
 }

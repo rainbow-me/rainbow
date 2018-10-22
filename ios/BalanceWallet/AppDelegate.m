@@ -26,8 +26,6 @@
   //
   [FIRApp configure];
   [RNFirebaseNotifications configure];
-  [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
-  [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionBadge | UNAuthorizationOptionSound) completionHandler:^(BOOL granted, NSError * _Nullable error) {}];
   [application registerForRemoteNotifications];
   
    

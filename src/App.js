@@ -4,7 +4,7 @@ import firebase from 'react-native-firebase';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { accountInitializeState, accountUpdateAccountAddress, commonStorage } from 'balance-common';
-import { AppRegistry, AlertIOS } from 'react-native';
+import { AppRegistry, AlertIOS, AppState } from 'react-native';
 import { compose, withProps } from 'recompact';
 import { connect, Provider } from 'react-redux';
 import { NavigationActions } from 'react-navigation';
@@ -29,6 +29,10 @@ import { walletInit } from './model/wallet';
 import Navigation from './navigation';
 
 class App extends Component {
+  state = {
+    appState: AppState.currentState
+  }
+
   static propTypes = {
     accountUpdateAccountAddress: PropTypes.func,
     accountInitializeState: PropTypes.func,
@@ -43,9 +47,7 @@ class App extends Component {
   navigatorRef = null
 
   componentDidMount() {
-    commonStorage.resetAccount('0x1492004547FF0eFd778CC2c14E794B26B4701105');
-    console.log('!!! reset account');
-
+    AppState.addEventListener('change', this.handleAppStateChange);
     firebase.messaging().getToken()
       .then(fcmToken => {
         if (fcmToken) {
@@ -54,6 +56,9 @@ class App extends Component {
         } else {
           console.log('no fcm token yet');
         }
+      })
+      .catch(error => {
+        console.log('error getting fcm token');
       });
 
     this.onTokenRefreshListener = firebase.messaging().onTokenRefresh(fcmToken => {
@@ -82,7 +87,7 @@ class App extends Component {
     });
 
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened(notificationOpen => {
-      console.log('on notification manually opened - while app in background or foreground');
+      console.log('on notification manually opened');
       const { transactionId, sessionId } = notificationOpen.notification.data;
       this.onPushNotificationOpened(transactionId, sessionId);
     });
@@ -91,36 +96,42 @@ class App extends Component {
 
     walletInit()
       .then(walletAddress => {
+        if (!walletAddress) { return; }
         console.log('wallet address is', walletAddress);
         this.props.accountUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
         this.props.transactionsToApproveInit();
         walletConnectInitAllConnectors()
           .then(allConnectors => {
             this.props.setWalletConnectors(allConnectors);
-            this.fetchAllTransactionsFromWalletConnectSessions(allConnectors);
+            firebase
+              .notifications()
+              .getInitialNotification()
+              .then(notificationOpen => {
+                if (!notificationOpen) {
+                  this.fetchAllTransactionsFromWalletConnectSessions();
+                }
+              });
           })
           .catch(error => {
             console.log('Unable to init all WalletConnect sessions');
           });
-        firebase
-          .notifications()
-          .getInitialNotification()
-          .then(notificationOpen => {
-            console.log('on initial notification');
-            if (notificationOpen) {
-              console.log('on initial notification opened - while app closed');
-              const { transactionId, sessionId } = notificationOpen.notification.data;
-              this.onPushNotificationOpened(transactionId, sessionId);
-            }
-          });
+        /*
+      */
       })
       .catch(error => {
-        console.log('failed to init wallet');
         AlertIOS.alert('Error: Failed to initialize wallet.');
       });
   }
 
+  handleAppStateChange = async (nextAppState) => {
+    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+      this.fetchAllTransactionsFromWalletConnectSessions();
+    }
+    this.setState({appState: nextAppState});
+  }
+
   componentWillUnmount() {
+    AppState.removeEventListener('change', this.handleAppStateChange);
     this.notificationDisplayedListener();
     this.notificationListener();
     this.notificationOpenedListender();
@@ -140,7 +151,8 @@ class App extends Component {
     Navigation.handleAction(this.navigatorRef, action);
   }
 
-  fetchAllTransactionsFromWalletConnectSessions = async (allConnectors) => {
+  fetchAllTransactionsFromWalletConnectSessions = async () => {
+    const allConnectors = this.props.getValidWalletConnectors()
     if (!isEmpty(allConnectors)) {
       const allTransactions = await walletConnectGetAllTransactions(allConnectors);
       if (!isEmpty(allTransactions)) {
