@@ -11,7 +11,7 @@ import { mapValues, omit } from 'lodash';
 import {
   getAccountLocalRequests,
   removeLocalRequest,
-  updateLocalRequests
+  updateLocalRequests,
 } from '../model/localstorage';
 
 // -- Constants --------------------------------------- //
@@ -108,7 +108,7 @@ export const addTransactionsToApprove = (transactions) => (dispatch, getState) =
   const { transactionsToApprove } = getState().transactionsToApprove;
   const { accountInfo, accountAddress, network, prices, nativeCurrency } = getState().account;
   const transactionsWithDisplayDetails = mapValues(transactions, (transactionDetails) => {
-    const transactionDisplayDetails = getTransactionDisplayDetails(transactionDetails, accountInfo.assets, prices, nativeCurrency);
+    const transactionDisplayDetails = getTransactionDisplayDetails(transactionDetails.transactionPayload, accountInfo.assets, prices, nativeCurrency);
     return { ...transactionDetails, transactionDisplayDetails };
   });
   const updatedTransactions = { ...transactionsToApprove, ...transactionsWithDisplayDetails };

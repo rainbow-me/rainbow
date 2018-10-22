@@ -1,4 +1,4 @@
-import { filter } from 'lodash';
+import { pickBy } from 'lodash';
 
 // -- Constants --------------------------------------- //
 const WALLETCONNECT_NEW_SESSION = 'walletconnect/WALLETCONNECT_NEW_SESSION';
@@ -16,11 +16,8 @@ export const addWalletConnector = (walletConnector) => (dispatch, getState) => {
 };
 
 export const getValidWalletConnectors = () => (dispatch, getState) => {
-  console.log('get valid wallet connectors');
   const { walletConnectors } = getState().walletconnect;
-  console.log('walletConnectors from state', walletConnectors);
-  const validConnectors = filter(walletConnectors, (walletConnector) => { return (new Date(walletConnector.expires) > new Date()) });
-  console.log('valid connectors', validConnectors);
+  const validConnectors = pickBy(walletConnectors, (walletConnector) => { return (new Date(walletConnector.expires) > new Date()) });
   dispatch({ type: WALLETCONNECT_NEW_SESSION, payload: validConnectors });
   return validConnectors;
 };

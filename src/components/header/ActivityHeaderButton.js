@@ -10,7 +10,7 @@ import { Centered } from '../layout';
 import HeaderButton from './HeaderButton';
 
 const ActivityHeaderButton = ({ onPress, pendingRequestCount }) => (
-  <HeaderButton onPress={onPress}>
+  <HeaderButton onPress={onPress} transformOrigin="right">
     <Centered>
       <Icon color={colors.dark} name="clock" />
       {pendingRequestCount > 0 && (

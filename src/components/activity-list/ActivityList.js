@@ -61,9 +61,10 @@ export default compose(
       transactions,
     });
 
-    const pendingTransactionsSection = sections[requests.length ? 1 : 0];
-    if (pendingTransactionsSection && pendingTransactionsSection.title === 'Pending') {
-      pendingTransactionsCount = pendingTransactionsSection.data.length;
+    const pendingTxSection = sections[requests.length ? 1 : 0];
+
+    if (pendingTxSection && pendingTxSection.title === 'Pending') {
+      pendingTransactionsCount = pendingTxSection.data.length;
     }
 
     return {
