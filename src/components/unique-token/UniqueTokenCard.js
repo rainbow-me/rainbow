@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, position, shadow } from '../../styles';
 import { Centered } from '../layout';
@@ -63,4 +64,4 @@ UniqueTokenCard.propTypes = {
   size: PropTypes.number,
 };
 
-export default UniqueTokenCard;
+export default pure(UniqueTokenCard);
