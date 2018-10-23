@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { RefreshControl, SectionList as ReactSectionList } from 'react-native';
 import { View } from 'react-primitives';
-import { compose, omitProps, withHandlers, withState } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withSafeAreaViewInsetValues } from '../../hoc';
 import { colors, position } from '../../styles';
@@ -16,65 +15,82 @@ const List = styled(ReactSectionList)`
   background-color: ${colors.white};
 `;
 
-const SectionList = ({
-  enablePullToRefresh,
-  hideHeader,
-  isRefreshing,
-  onRefresh,
-  renderItem,
-  renderSectionFooter,
-  safeAreaInset,
-  showSafeAreaInsetBottom,
-  ...props
-}) => (
-  <List
-    refreshControl={(
-      enablePullToRefresh ? (
-        <RefreshControl
-          onRefresh={onRefresh}
-          refreshing={isRefreshing}
-          tintColor={colors.alpha(colors.blueGreyLight, 0.666)}
-        />
-      ) : null
-    )}
-    renderItem={renderItem}
-    renderSectionFooter={renderSectionFooter}
-    scrollIndicatorInsets={{
-      bottom: showSafeAreaInsetBottom ? safeAreaInset.bottom : 0,
-      top: hideHeader ? 0 : ListHeader.height,
-    }}
-    {...props}
-  />
-);
+class SectionList extends PureComponent {
+  static propTypes = {
+    enablePullToRefresh: PropTypes.bool,
+    fetchData: PropTypes.func,
+    hideHeader: PropTypes.bool,
+    isRefreshing: PropTypes.bool,
+    onRefresh: PropTypes.func,
+    renderItem: PropTypes.func,
+    renderSectionFooter: PropTypes.func,
+    showSafeAreaInsetBottom: PropTypes.bool,
+  }
 
-SectionList.propTypes = {
-  enablePullToRefresh: PropTypes.bool,
-  fetchData: PropTypes.func,
-  hideHeader: PropTypes.bool,
-  isRefreshing: PropTypes.bool,
-  onRefresh: PropTypes.func,
-  renderItem: PropTypes.func,
-  renderSectionFooter: PropTypes.func,
-  showSafeAreaInsetBottom: PropTypes.bool,
-};
+  static defaultProps = {
+    enablePullToRefresh: false,
+    renderItem: DefaultRenderItem,
+    renderSectionFooter: ListFooter,
+    showSafeAreaInsetBottom: true,
+  }
 
-SectionList.defaultProps = {
-  enablePullToRefresh: false,
-  renderItem: DefaultRenderItem,
-  renderSectionFooter: ListFooter,
-  showSafeAreaInsetBottom: true,
-};
+  state = { isRefreshing: false }
 
-export default compose(
-  withSafeAreaViewInsetValues,
-  withState('isRefreshing', 'setIsRefreshing', false),
-  withHandlers({
-    onRefresh: ({ fetchData, isRefreshing, setIsRefreshing }) => () => {
-      if (isRefreshing) return;
+  listRef = null
 
-      setIsRefreshing(true);
-      fetchData().then(() => setIsRefreshing(false));
-    },
-  }),
-  omitProps('fetchData', 'setIsRefreshing'),
-)(SectionList);
+  handleListRef = (ref) => { this.listRef = ref; }
+
+  handleRefresh = () => {
+    if (this.state.isRefreshing) return;
+
+    this.setState({ isRefreshing: true });
+    this.props.fetchData()
+      .then(() => {
+        this.setState({ isRefreshing: false });
+        return this.listRef.root.scrollToLocation({
+          itemIndex: 0,
+          sectionIndex: 0,
+          viewOffset: ListHeader.height,
+        });
+      });
+  }
+
+  renderRefreshControl = () => {
+    if (!this.props.enablePullToRefresh) return null;
+
+    return (
+      <RefreshControl
+        onRefresh={this.handleRefresh}
+        refreshing={this.state.isRefreshing}
+        tintColor={colors.alpha(colors.blueGreyLight, 0.666)}
+      />
+    );
+  }
+
+  render = () => {
+    const {
+      hideHeader,
+      renderItem,
+      renderSectionFooter,
+      safeAreaInset,
+      showSafeAreaInsetBottom,
+      ...props
+    } = this.props;
+
+    return (
+      <List
+        refreshControl={this.renderRefreshControl()}
+        renderItem={renderItem}
+        ref={this.handleListRef}
+        renderSectionFooter={renderSectionFooter}
+        scrollIndicatorInsets={{
+          bottom: showSafeAreaInsetBottom ? safeAreaInset.bottom : 0,
+          top: hideHeader ? 0 : ListHeader.height,
+        }}
+        {...props}
+      />
+    );
+  }
+}
+
+export default withSafeAreaViewInsetValues(SectionList);
