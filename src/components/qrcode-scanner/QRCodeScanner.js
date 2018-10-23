@@ -68,7 +68,7 @@ class QRCodeScanner extends PureComponent {
     if (!this.scannerRef) return;
 
     InteractionManager.runAfterInteractions(() => {
-      const isScannerEnabled = !this.scannerRef.state.disablingByUser;
+      const isScannerEnabled = this.scannerRef && !this.scannerRef.state.disablingByUser;
 
       if (enableScanning && !isScannerEnabled) {
         this.handleEnableScanner();
@@ -79,14 +79,14 @@ class QRCodeScanner extends PureComponent {
   }
 
   handleDisableScanner = () => {
-    if (isFunction(this.scannerRef.disable)) {
+    if (this.scannerRef && isFunction(this.scannerRef.disable)) {
       console.log('📠🚫 Disabling QR Code Scanner');
       this.scannerRef.disable();
     }
   }
 
   handleEnableScanner = () => {
-    if (isFunction(this.scannerRef.enable)) {
+    if (this.scannerRef && isFunction(this.scannerRef.enable)) {
       console.log('📠✅ Enabling QR Code Scanner');
       this.scannerRef.enable();
     }

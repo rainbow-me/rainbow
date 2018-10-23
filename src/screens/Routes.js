@@ -10,6 +10,7 @@ import SendScreenWithData from './SendScreenWithData';
 import SettingsScreenWithData from './SettingsScreenWithData';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
+import { deviceUtils } from '../utils';
 
 import Navigation from '../navigation';
 
@@ -39,8 +40,10 @@ const SwipeStack = createSwipeNavigator({
 const AppStack = createStackNavigator({
   ActivityScreen: {
     navigationOptions: {
-      gesturesEnabled: false,
       effect: 'sheet',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height / 2,
+      },
     },
     screen: ActivityScreen,
   },
@@ -48,6 +51,9 @@ const AppStack = createStackNavigator({
   SendScreen: {
     navigationOptions: {
       effect: 'sheet',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height / 2,
+      },
     },
     screen: SendScreenWithData,
   },

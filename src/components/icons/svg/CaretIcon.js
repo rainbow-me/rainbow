@@ -5,7 +5,12 @@ import { withRotationForDirection } from '../../../hoc';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
-const CaretIcon = ({ color, size, ...props }) => (
+const CaretIcon = ({
+  color,
+  direction,
+  size,
+  ...props
+}) => (
   <Svg
     {...props}
     height={size ? size * 1.9 : '19'}
