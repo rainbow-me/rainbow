@@ -1,7 +1,8 @@
-import { addHours, differenceInMinutes, subMinutes } from 'date-fns';
+import { addHours, differenceInMinutes } from 'date-fns';
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, onlyUpdateForKeys, withProps } from 'recompact';
+import { compose, onlyUpdateForKeys, withHandlers, withProps } from 'recompact';
 import { withNavigation } from 'react-navigation';
 import { css } from 'styled-components/primitives';
 import { colors } from '../../styles';
@@ -26,26 +27,11 @@ const buttonContainerStyles = css`
   padding-right: 12;
 `;
 
-const RequestCoinRowButton = ({ navigation, transactionDetails }) => (
-  <Button
-    bgColor={colors.primaryBlue}
-    containerStyles={buttonContainerStyles}
-    onPress={() => navigation.navigate({
-      routeName: 'ConfirmTransaction',
-      params: { transactionDetails }
-    })}
-    size="small"
-    textProps={{ size: 'smedium' }}
-  >
-    Open
-  </Button>
-);
-
 const RequestCoinRow = ({
   expirationColor,
   expiresAt,
   item,
-  navigation,
+  onPressOpen,
   ...props
 }) => (
   <CoinRow
@@ -60,13 +46,28 @@ const RequestCoinRow = ({
       </Text>
     )}
   >
-    <RequestCoinRowButton navigation={navigation} transactionDetails={item}/>
+    <Button
+      bgColor={colors.primaryBlue}
+      containerStyles={buttonContainerStyles}
+      onPress={onPressOpen}
+      size="small"
+      textProps={{ size: 'smedium' }}
+    >
+      Open
+    </Button>
   </CoinRow>
 );
 
+RequestCoinRow.propTypes = {
+  expirationColor: PropTypes.string,
+  expiresAt: PropTypes.number,
+  item: PropTypes.object,
+  onPressOpen: PropTypes.func,
+};
+
 export default compose(
   withNavigation,
-  withProps(({ item: { transactionDisplayDetails: { timestampInMs } }}) => {
+  withProps(({ item: { transactionDisplayDetails: { timestampInMs } } }) => {
     const createdAt = new Date(timestampInMs);
     const expiresAt = addHours(createdAt, 1);
     const percentElapsed = getPercentageOfTimeElapsed(createdAt, expiresAt);
@@ -77,6 +78,13 @@ export default compose(
       expiresAt,
       percentElapsed,
     };
+  }),
+  withHandlers({
+    onPressOpen: ({ item, navigation }) => () =>
+      navigation.navigate({
+        params: { transactionDetails: item },
+        routeName: 'ConfirmTransaction',
+      }),
   }),
   onlyUpdateForKeys(['expirationColor', 'percentElapsed']),
 )(RequestCoinRow);
