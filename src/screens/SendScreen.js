@@ -7,6 +7,7 @@ import { compose, withHandlers } from 'recompact';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
 import { withSafeTimeout } from '@hocs/safe-timers';
+import { isIphoneX } from 'react-native-iphone-x-helper';
 
 import { showActionSheetWithOptions } from '../utils/actionsheet';
 import { AddressField, UnderlineField } from '../components/fields';
@@ -32,7 +33,7 @@ console.disableYellowBox = true;
 const AddressInputLabel = styled(Text)`
   color: ${colors.blueGreyDark};
   font-size: ${fonts.size.h5}
-  font-family: ${fonts.family.SFMono};
+  font-family: ${fonts.family.SFProText};
   font-weight: ${fonts.weight.semibold};
   margin-right: 6px;
   opacity: 0.6;
@@ -95,7 +96,7 @@ const CameraIcon = styled(Icon).attrs({
 `;
 
 const Container = styled(Page)`
-  ${padding(5, 0, 10)}
+  ${padding(0, 0, 10)}
   background-color: ${colors.white};
   align-items: center;
   flex-grow: 1;
@@ -124,10 +125,10 @@ const TransactionContainer = styled(View)`
 `;
 
 const HandleIcon = styled(Icon).attrs({
-  name: 'caret',
+  name: 'handle',
   color: colors.sendScreen.grey,
 })`
-  transform: rotate(90deg) scaleX(1.75);
+  margin-top: 16px;
 `;
 
 class SendScreen extends Component {
@@ -169,8 +170,25 @@ class SendScreen extends Component {
   }
 
   componentWillUnmount() {
+    const { sendClearFields } = this.props;
+
     StatusBar.setBarStyle('dark-content', true);
+
+    sendClearFields();
   }
+
+  getTransactionSpeedOptions = () => {
+    const { gasPrices } = this.props;
+
+    const options = _.map(gasPrices, (value, key) => ({
+      value: key,
+      label: `${uppercase(key, 7)}: ${get(value, 'txFee.native.value.display')}  ~${get(value, 'estimatedTime.display')}`,
+    }));
+
+    options.unshift({ label: 'Cancel' });
+
+    return options;
+  };
 
   onChangeAddressInput = (value) => {
     const { sendUpdateRecipient } = this.props;
@@ -228,31 +246,36 @@ class SendScreen extends Component {
   };
 
   onLongPressSend = () => {
-    const {
-      assetAmount,
-      onSubmit,
-      navigation,
-      sendClearFields,
-    } = this.props;
+    const { sendUpdateGasPrice } = this.props;
+    const { sendLongPressProgress } = this.state;
 
-    if (Number(assetAmount) > 0) {
-      onSubmit()
-        .then(() => {
-          sendClearFields();
-          navigation.replace('ActivityScreen');
-        });
+    Animated.timing(sendLongPressProgress, {
+      toValue: 0,
+      duration: (sendLongPressProgress._value / 100) * 800,
+    }).start();
+
+    if (isIphoneX()) {
+      this.sendTransaction();
+    } else {
+      const options = this.getTransactionSpeedOptions();
+
+      showActionSheetWithOptions({
+        options: options.map(option => option.label),
+        cancelButtonIndex: 0,
+      }, (buttonIndex) => {
+        if (buttonIndex > 0) {
+          sendUpdateGasPrice(options[buttonIndex].value);
+
+          this.sendTransaction();
+        }
+      });
     }
   };
 
   onPressTransactionSpeed = () => {
-    const { gasPrices, sendUpdateGasPrice } = this.props;
+    const { sendUpdateGasPrice } = this.props;
 
-    const options = _.map(gasPrices, (value, key) => ({
-      value: key,
-      label: `${uppercase(key, 7)}: ${get(value, 'txFee.native.value.display')}  ~${get(value, 'estimatedTime.display')}`,
-    }));
-
-    options.unshift({ label: 'Cancel' });
+    const options = this.getTransactionSpeedOptions();
 
     showActionSheetWithOptions({
       options: options.map(option => option.label),
@@ -268,6 +291,23 @@ class SendScreen extends Component {
     const { navigation } = this.props;
 
     navigation.navigate('SendQRScannerScreen', { onSuccess: this.onChangeAddressInput });
+  };
+
+  sendTransaction = () => {
+    const {
+      assetAmount,
+      navigation,
+      onSubmit,
+      sendClearFields,
+    } = this.props;
+
+    if (Number(assetAmount) > 0) {
+      onSubmit()
+        .then(() => {
+          sendClearFields();
+          navigation.replace('ActivityScreen');
+        });
+    }
   };
 
   renderAssetList() {
@@ -324,32 +364,49 @@ class SendScreen extends Component {
     );
   }
 
+  renderTransactionSpeed() {
+    const { gasPrice } = this.props;
+
+    const fee = get(gasPrice, 'txFee.native.value.display', '$0.00').substring(1);
+    const time = get(gasPrice, 'estimatedTime.display', '');
+
+    return (
+      <Row justify="space-between">
+        <PillLabel>Fee: ${formatUSD(fee)}</PillLabel>
+        <PillLabel
+          color={colors.blueGreyDark}
+          icon="clock"
+          onPress={this.onPressTransactionSpeed}
+        >
+          Arrives in ~ {time}
+        </PillLabel>
+      </Row>
+    );
+  }
+
   renderTransaction() {
     const {
-      gasPrice,
       assetAmount,
       nativeAmount,
-      sendMaxBalance,
       selected,
+      sendMaxBalance,
     } = this.props;
 
     const { sendLongPressProgress } = this.state;
 
-    const fee = get(gasPrice, 'txFee.native.value.display', '$0.00').substring(1);
-    const time = get(gasPrice, 'estimatedTime.display', '');
     const isZeroAssetAmount = Number(assetAmount) <= 0;
 
     return (
       <Column flex={1}>
         <ShadowStack
-          height={64}
-          width={deviceUtils.dimensions.width}
           borderRadius={0}
+          height={64}
           shadows={[
             shadow.buildString(0, 4, 6, colors.alpha(colors.purple, 0.12)),
             shadow.buildString(0, 6, 4, colors.alpha(colors.purple, 0.24)),
           ]}
           shouldRasterizeIOS={true}
+          width={deviceUtils.dimensions.width}
         >
           <SendCoinRow item={selected} onPress={this.onPressAssetHandler('')}>
             <Column>
@@ -392,15 +449,10 @@ class SendScreen extends Component {
             onLongPress={this.onLongPressSend}
             onPress={this.onPressSend}
             onRelease={this.onReleaseSend}
-          >{isZeroAssetAmount ? 'Enter An Amount' : 'Hold To Send'}</SendButton>
-          <Row justify="space-between">
-            <PillLabel>Fee: ${formatUSD(fee)}</PillLabel>
-            <PillLabel
-              color={colors.blueGreyDark}
-              icon="clock"
-              onPress={this.onPressTransactionSpeed}
-            >Arrives in ~ {time}</PillLabel>
-          </Row>
+          >
+            {isZeroAssetAmount ? 'Enter An Amount' : 'Hold To Send'}
+          </SendButton>
+          {isIphoneX() ? this.renderTransactionSpeed() : null}
         </TransactionContainer>
       </Column>
     );

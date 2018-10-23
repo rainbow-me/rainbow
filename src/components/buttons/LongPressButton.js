@@ -37,22 +37,18 @@ export default class LongPressButton extends Component {
   onTapHandlerStateChange = ({ nativeEvent }) => {
     const { disabled, onPress, onRelease } = this.props;
 
-    console.log(nativeEvent.state)
-
     if (nativeEvent.state === State.BEGAN) {
       if (disabled) {
-        ReactNativeHapticFeedback.trigger('impactLight');
+        ReactNativeHapticFeedback.trigger('notificationWarning');
 
         timing(this.scale, {
           toValue: 0.975,
-          duration: 100,
+          duration: 150,
           easing: Easing.inOut(Easing.ease),
         }).start(() => {
-          ReactNativeHapticFeedback.trigger('impactLight');
-
           timing(this.scale, {
             toValue: 1,
-            duration: 100,
+            duration: 150,
             easing: Easing.inOut(Easing.ease),
           }).start();
         });
@@ -84,7 +80,15 @@ export default class LongPressButton extends Component {
     if (!disabled && nativeEvent.state === State.ACTIVE) {
       ReactNativeHapticFeedback.trigger('impactHeavy');
 
-      onLongPress();
+      timing(this.scale, {
+        toValue: 1,
+        duration: 150,
+        easing: Easing.inOut(Easing.ease),
+      }).start(() => {
+        InteractionManager.runAfterInteractions(() => {
+          onLongPress();
+        });
+      });
     }
   };
 

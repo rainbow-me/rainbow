@@ -11,6 +11,7 @@ import ClockIcon from './svg/ClockIcon';
 import CloseIcon from './svg/CloseIcon';
 import DotIcon from './svg/DotIcon';
 import FaceIcon from './svg/FaceIcon';
+import HandleIcon from './svg/HandleIcon';
 import ProgressIcon from './svg/ProgressIcon';
 import SendIcon from './svg/SendIcon';
 import SpinnerIcon from './svg/SpinnerIcon';
@@ -35,6 +36,7 @@ Icon.IconTypes = {
   close: CloseIcon,
   dot: DotIcon,
   face: FaceIcon,
+  handle: HandleIcon,
   progress: ProgressIcon,
   spinner: SpinnerIcon,
   threeDots: ThreeDotsIcon,
