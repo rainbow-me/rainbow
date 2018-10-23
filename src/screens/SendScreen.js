@@ -450,7 +450,7 @@ class SendScreen extends Component {
             onPress={this.onPressSend}
             onRelease={this.onReleaseSend}
           >
-            {isZeroAssetAmount ? 'Enter An Amount' : 'Hold To Send'}
+            {isZeroAssetAmount ? 'Enter an Amount' : 'Hold to Send'}
           </SendButton>
           {isIphoneX() ? this.renderTransactionSpeed() : null}
         </TransactionContainer>
@@ -511,4 +511,3 @@ export default compose(
   }),
   connect(reduxProps, null),
 )(SendScreen);
-
