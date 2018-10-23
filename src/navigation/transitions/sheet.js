@@ -7,8 +7,8 @@ export default function sheet(transitionProps, prevTransitionProps) {
   return {
     transitionSpec: {
       timing: Animated.spring,
-      tension: 62,
-      friction: 10,
+      tension: 58,
+      friction: 9.8,
       useNativeDriver: true,
     },
     screenInterpolator: (sceneProps = {}) => {
