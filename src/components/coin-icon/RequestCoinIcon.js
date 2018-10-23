@@ -13,7 +13,7 @@ const RequestCoinIcon = ({ expirationColor, percentElapsed, size }) => (
     tintColor={expirationColor}
     width={2}
   >
-    {() => <RequestVendorLogoIcon size={size / 2} />}
+    {() => <RequestVendorLogoIcon />}
   </CircularProgress>
 );
 
