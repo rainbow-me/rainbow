@@ -50,8 +50,7 @@ export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => 
   } 
 };
 
-const getTransactionDisplayDetails = (transactionData, assets, prices, nativeCurrency) => {
-  const { data: transaction } = transactionData;
+const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrency) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
   const timestampInMs = Date.now();
   if (transaction.data == '0x') {
@@ -93,11 +92,11 @@ const getTransactionDisplayDetails = (transactionData, assets, prices, nativeCur
   }
 };
 
-export const addTransactionToApprove = (sessionId, transactionId, transactionPayload, dappName) => (dispatch, getState) => {
+export const addTransactionToApprove = (sessionId, transactionId, callData, dappName) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
   const { accountInfo, accountAddress, network, prices, nativeCurrency } = getState().account;
-  const transactionDisplayDetails = getTransactionDisplayDetails(transactionPayload, accountInfo.assets, prices, nativeCurrency);
-  const transaction = { sessionId, transactionId, transactionPayload, transactionDisplayDetails, dappName };
+  const transactionDisplayDetails = getTransactionDisplayDetails(callData, accountInfo.assets, prices, nativeCurrency);
+  const transaction = { sessionId, transactionId, callData, transactionDisplayDetails, dappName };
   const updatedTransactions = { ...transactionsToApprove, [transactionId]: transaction };
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
   updateLocalRequests(accountAddress, network, updatedTransactions);
@@ -108,7 +107,7 @@ export const addTransactionsToApprove = (transactions) => (dispatch, getState) =
   const { transactionsToApprove } = getState().transactionsToApprove;
   const { accountInfo, accountAddress, network, prices, nativeCurrency } = getState().account;
   const transactionsWithDisplayDetails = mapValues(transactions, (transactionDetails) => {
-    const transactionDisplayDetails = getTransactionDisplayDetails(transactionDetails.transactionPayload, accountInfo.assets, prices, nativeCurrency);
+    const transactionDisplayDetails = getTransactionDisplayDetails(transactionDetails.callData, accountInfo.assets, prices, nativeCurrency);
     return { ...transactionDetails, transactionDisplayDetails };
   });
   const updatedTransactions = { ...transactionsToApprove, ...transactionsWithDisplayDetails };

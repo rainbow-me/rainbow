@@ -25,8 +25,8 @@ export const getTransactionStatus = ({
   pending,
   to,
 }) => {
-  const isFromAccount = from === accountAddress;
-  const isToAccount = to === accountAddress;
+  const isFromAccount = from.toLowerCase() === accountAddress.toLowerCase();
+  const isToAccount = to.toLowerCase() === accountAddress.toLowerCase();
 
   if (pending && isFromAccount) return TransactionStatusTypes.sending;
   if (pending && isToAccount) return TransactionStatusTypes.receiving;

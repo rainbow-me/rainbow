@@ -81,9 +81,9 @@ class App extends Component {
       console.log('on notification received while app in foreground');
       const navState = get(this.navigatorRef, 'state.nav');
       const route = Navigation.getActiveRouteName(navState);
-      const { transactionId, sessionId } = notification.data;
+      const { callId, sessionId } = notification.data;
       if (route === 'ConfirmTransaction') {
-        this.fetchAndAddTransaction(transactionId, sessionId)
+        this.fetchAndAddTransaction(callId, sessionId)
           .then(transaction => {
             const localNotification = new firebase.notifications.Notification()
               .setTitle(notification.title)
@@ -92,14 +92,14 @@ class App extends Component {
             firebase.notifications().displayNotification(localNotification);
           });
       } else {
-        this.onPushNotificationOpened(transactionId, sessionId);
+        this.onPushNotificationOpened(callId, sessionId);
       }
     });
 
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened(notificationOpen => {
       console.log('on notification manually opened');
-      const { transactionId, sessionId } = notificationOpen.notification.data;
-      this.onPushNotificationOpened(transactionId, sessionId);
+      const { callId, sessionId } = notificationOpen.notification.data;
+      this.onPushNotificationOpened(callId, sessionId);
     });
 
     this.props.accountInitializeState();
@@ -171,12 +171,12 @@ class App extends Component {
     }
   }
 
-  onPushNotificationOpened = async (transactionId, sessionId) => {
-    const existingTransaction = this.props.transactionIfExists(transactionId);
+  onPushNotificationOpened = async (callId, sessionId) => {
+    const existingTransaction = this.props.transactionIfExists(callId);
     if (existingTransaction) {
       this.handleOpenConfirmTransactionModal(existingTransaction);
     } else {
-      const transaction = await this.fetchAndAddTransaction(transactionId, sessionId);
+      const transaction = await this.fetchAndAddTransaction(callId, sessionId);
       if (transaction) {
         this.handleOpenConfirmTransactionModal(transaction);
       } else {
@@ -185,13 +185,13 @@ class App extends Component {
     }
   }
 
-  fetchAndAddTransaction = async (transactionId, sessionId) => {
+  fetchAndAddTransaction = async (callId, sessionId) => {
     const walletConnector = this.props.walletConnectors[sessionId];
-    const transactionDetails = await walletConnectGetTransaction(transactionId, walletConnector);
+    const transactionDetails = await walletConnectGetTransaction(callId, walletConnector);
     if (!transactionDetails) return null;
 
-    const { transactionPayload, dappName } = transactionDetails;
-    return this.props.addTransactionToApprove(sessionId, transactionId, transactionPayload, dappName);
+    const { callData, dappName } = transactionDetails;
+    return this.props.addTransactionToApprove(sessionId, callId, callData, dappName);
   }
 
   render = () => (

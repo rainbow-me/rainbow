@@ -26,7 +26,7 @@ class TransactionConfirmationScreenWithData extends Component {
   handleConfirmTransaction = async () => {
     try {
       const { transactionDetails } = this.props.navigation.state.params;
-      const txPayload = transactionDetails.transactionPayload.data;
+      const txPayload = transactionDetails.callData;
       const transactionReceipt = await sendTransaction(txPayload, lang.t('wallet.transaction.confirm'));
 
       if (transactionReceipt && transactionReceipt.hash) {
