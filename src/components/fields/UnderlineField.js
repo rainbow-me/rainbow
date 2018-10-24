@@ -35,6 +35,7 @@ const Underline = styled(View)`
   height: 2px;
   background-color: ${colors.blueGreyDark};
   opacity: 0.2;
+  border-radius: 1px;
 `;
 
 const UnderlineAnimated = styled(Animated.View)`
@@ -42,6 +43,7 @@ const UnderlineAnimated = styled(Animated.View)`
   height: 2px;
   background-color: ${colors.sendScreen.brightBlue};
   margin-top: -2px;
+  border-radius: 1px;
 `;
 
 export default class UnderlineField extends Component {
