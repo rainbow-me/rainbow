@@ -3,7 +3,6 @@ import lang from 'i18n-js';
 import { commonStorage } from 'balance-common';
 import { AlertIOS } from 'react-native';
 import { assign, get, mapValues, values } from 'lodash';
-//const PUSH_ENDPOINT = 'https://walletconnect.balance.io/webhook/push-notify';
 const PUSH_ENDPOINT = 'https://us-central1-balance-424a3.cloudfunctions.net/push';
 
 export const walletConnectInit = async (accountAddress, uriString) => {
