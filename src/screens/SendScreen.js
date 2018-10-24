@@ -2,6 +2,7 @@ import _ from 'underscore';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import styled from 'styled-components/primitives';
+import TouchID from 'react-native-touch-id';
 import { Animated, Clipboard, Image, Keyboard, KeyboardAvoidingView, StatusBar, Text, View } from 'react-native';
 import { compose, withHandlers } from 'recompact';
 import { connect } from 'react-redux';
@@ -53,10 +54,6 @@ const AddressInputBottomBorder = styled(View)`
   height: 2px;
 `;
 
-const AssetContainer = styled(Flex)`
-  ${position.size('100%')}
-`;
-
 const BackgroundImage = styled(Image)`
   height: 88px;
   width: 91px;
@@ -96,7 +93,7 @@ const CameraIcon = styled(Icon).attrs({
 `;
 
 const Container = styled(Page)`
-  ${padding(0, 0, 10)}
+  padding-bottom: ${isIphoneX() ? '30px' : '15px'};
   background-color: ${colors.white};
   align-items: center;
   flex-grow: 1;
@@ -120,7 +117,8 @@ const SendButton = styled(BlockButton).attrs({ component: LongPressButton })`
 
 const TransactionContainer = styled(View)`
   ${padding(20, 20)}
-  flex-grow: 1;
+  padding-bottom: 50px;
+  flex-grow: 2;
   background-color: ${colors.lightGrey};
 `;
 
@@ -134,6 +132,8 @@ const HandleIcon = styled(Icon).attrs({
 class SendScreen extends Component {
   static propTypes = {
     fetchData: PropTypes.func,
+    isSufficientBalance: PropTypes.bool,
+    isSufficientGas: PropTypes.bool,
     isValidAddress: PropTypes.bool,
     selected: PropTypes.object,
     sendClearFields: PropTypes.func,
@@ -147,6 +147,8 @@ class SendScreen extends Component {
 
   static defaultProps = {
     fetchData() {},
+    isSufficientBalance: false,
+    isSufficientGas: false,
     isValidAddress: false,
     sendClearFields() {},
     sendMaxBalance() {},
@@ -161,12 +163,21 @@ class SendScreen extends Component {
     super(props);
 
     this.state = {
+      biometryType: null,
       sendLongPressProgress: new Animated.Value(0),
     };
   }
 
   componentDidMount() {
     StatusBar.setBarStyle('light-content', true);
+
+    TouchID.isSupported()
+      .then(biometryType => {
+        this.setState({ biometryType });
+      })
+      .catch(() => {
+        this.setState({ biometryType: 'FaceID' });
+      });
   }
 
   componentWillUnmount() {
@@ -340,16 +351,6 @@ class SendScreen extends Component {
     );
   }
 
-  renderAssets() {
-    const { selected } = this.props;
-
-    return (
-      <AssetContainer>
-        {_.isEmpty(selected) ? this.renderAssetList() : this.renderTransaction()}
-      </AssetContainer>
-    );
-  }
-
   renderEmptyState() {
     return (
       <FlexItem>
@@ -361,6 +362,47 @@ class SendScreen extends Component {
           <BottomButton onPress={this.onPressCamera}><CameraIcon /></BottomButton>
         </BottomButtonContainer>
       </FlexItem>
+    );
+  }
+
+  renderSendButton() {
+    const { assetAmount, isSufficientBalance, isSufficientGas } = this.props;
+    const { biometryType, sendLongPressProgress } = this.state;
+
+    const isZeroAssetAmount = Number(assetAmount) <= 0;
+    const leftIconName = biometryType === 'FaceID' ? 'faceid' : 'touchid';
+
+    let disabled = true;
+    let label = 'Enter an Amount';
+
+    // if (!isZeroAssetAmount && !isSufficientGas) {
+    //   disabled = true;
+    //   label = 'Insufficient Gas';
+    // } else if (!isZeroAssetAmount && !isSufficientBalance) {
+    //   disabled = true;
+    //   label = 'Insufficient Funds';
+    // } else if (!isZeroAssetAmount) {
+    //   disabled = false;
+    //   label = 'Hold to Send';
+    // }
+    //
+    if (!isZeroAssetAmount) {
+      disabled = false;
+      label = 'Hold to Send';
+    }
+
+    return (
+      <SendButton
+        disabled={disabled}
+        leftIconName={disabled ? null : leftIconName}
+        rightIconName={disabled ? null : 'progress'}
+        rightIconProps={{ progress: sendLongPressProgress, color: colors.alpha(colors.sendScreen.grey, 0.3), progressColor: colors.white }}
+        onLongPress={this.onLongPressSend}
+        onPress={this.onPressSend}
+        onRelease={this.onReleaseSend}
+      >
+        {label}
+      </SendButton>
     );
   }
 
@@ -391,10 +433,6 @@ class SendScreen extends Component {
       selected,
       sendMaxBalance,
     } = this.props;
-
-    const { sendLongPressProgress } = this.state;
-
-    const isZeroAssetAmount = Number(assetAmount) <= 0;
 
     return (
       <Column flex={1}>
@@ -441,17 +479,7 @@ class SendScreen extends Component {
               <NumberInputLabel>USD</NumberInputLabel>
             </Row>
           </Column>
-          <SendButton
-            disabled={isZeroAssetAmount}
-            leftIconName={isZeroAssetAmount ? null : 'face'}
-            rightIconName={isZeroAssetAmount ? null : 'progress'}
-            rightIconProps={{ progress: sendLongPressProgress, color: colors.alpha(colors.sendScreen.grey, 0.3), progressColor: colors.white }}
-            onLongPress={this.onLongPressSend}
-            onPress={this.onPressSend}
-            onRelease={this.onReleaseSend}
-          >
-            {isZeroAssetAmount ? 'Enter an Amount' : 'Hold to Send'}
-          </SendButton>
+          {this.renderSendButton()}
           {isIphoneX() ? this.renderTransactionSpeed() : null}
         </TransactionContainer>
       </Column>
@@ -459,11 +487,11 @@ class SendScreen extends Component {
   }
 
   render() {
-    const { recipient, isValidAddress } = this.props;
+    const { isValidAddress, recipient, selected } = this.props;
 
     return (
       <KeyboardAvoidingView behavior="padding">
-        <Container showBottomInset>
+        <Container>
           <HandleIcon />
           <AddressInputContainer>
             <AddressInputLabel>To:</AddressInputLabel>
@@ -476,7 +504,9 @@ class SendScreen extends Component {
             />
           </AddressInputContainer>
           <AddressInputBottomBorder />
-          {isValidAddress ? this.renderAssets() : this.renderEmptyState()}
+          {!isValidAddress ? this.renderEmptyState() : null}
+          {isValidAddress && _.isEmpty(selected) ? this.renderAssetList() : null}
+          {isValidAddress && !_.isEmpty(selected) ? this.renderTransaction() : null}
         </Container>
       </KeyboardAvoidingView>
     );

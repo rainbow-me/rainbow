@@ -17,6 +17,10 @@ export function removeLeadingZeros(value = '') {
     return value.substring(0, value.length - 1);
   }
 
+  if (value.substring(0, 1) === '.') {
+    return `0${value}`;
+  }
+
   return value;
 }
 

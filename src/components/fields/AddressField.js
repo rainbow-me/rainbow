@@ -19,11 +19,13 @@ const Input = styled(TextInput)`
   font-weight: ${fonts.weight.semibold};
   color: ${props => (props.isValid ? colors.sendScreen.brightBlue : colors.blueGreyDark)};
   margin-top: 1px;
+  z-index: 1;
 `;
 
 const Placeholder = styled(Row)`
   position: absolute;
   top: 0;
+  z-index: 0;
 `;
 
 const SFMono = styled(Text)`
