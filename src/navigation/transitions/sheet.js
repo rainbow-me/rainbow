@@ -4,9 +4,14 @@ import { isIphoneX } from 'react-native-iphone-x-helper';
 import { deviceUtils, safeAreaInsetValues } from '../../utils';
 
 export default function sheet(transitionProps, prevTransitionProps) {
+  const nextEffect = get(transitionProps, 'scene.descriptor.options.effect');
+  const prevEffect = get(prevTransitionProps, 'scene.descriptor.options.effect');
+  const nextIndex = get(transitionProps, 'index');
+  const prevIndex = get(prevTransitionProps, 'index', nextIndex - 1);
+
   return {
     transitionSpec: {
-      timing: Animated.spring,
+      timing: nextEffect === 'sheet' && nextIndex > prevIndex ? Animated.spring : Animated.timing,
       tension: 58,
       friction: 9.8,
       useNativeDriver: true,
@@ -17,11 +22,6 @@ export default function sheet(transitionProps, prevTransitionProps) {
         position,
         scene,
       } = sceneProps;
-
-      const nextEffect = get(transitionProps, 'scene.descriptor.options.effect');
-      const prevEffect = get(prevTransitionProps, 'scene.descriptor.options.effect');
-      const nextIndex = get(transitionProps, 'index');
-      const prevIndex = get(prevTransitionProps, 'index', nextIndex - 1);
 
       const distanceFromTop = isIphoneX() ? 14 : 6;
       const scaleEnd = 1 - ((safeAreaInsetValues.top + distanceFromTop) / deviceUtils.dimensions.height);
@@ -150,6 +150,50 @@ export default function sheet(transitionProps, prevTransitionProps) {
             translateY: heightEnd,
           }],
           zIndex: 2,
+        };
+      }
+
+      if (nextEffect === 'sheet' && prevIndex > nextIndex && scene.index === nextIndex - 1) {
+        const width = layout.initWidth;
+        const translateX = position.interpolate({
+          inputRange: [nextIndex - 1, nextIndex],
+          outputRange: [width, 0],
+        });
+
+        return {
+          overflow: 'hidden',
+          opacity: opacityEnd,
+          borderTopLeftRadius: borderRadiusEnd,
+          borderTopRightRadius: borderRadiusEnd,
+          transform: [{
+            translateX,
+          }, {
+            translateY: distanceFromTop
+          }, {
+            scale: scaleEnd,
+          }],
+        };
+      }
+
+      if (prevEffect === 'sheet' && prevIndex < nextIndex && scene.index === prevIndex - 1) {
+        const width = layout.initWidth;
+        const translateX = position.interpolate({
+          inputRange: [prevIndex - 1, prevIndex],
+          outputRange: [width, 0],
+        });
+
+        return {
+          overflow: 'hidden',
+          opacity: opacityEnd,
+          borderTopLeftRadius: borderRadiusEnd,
+          borderTopRightRadius: borderRadiusEnd,
+          transform: [{
+            translateX,
+          }, {
+            translateY: distanceFromTop
+          }, {
+            scale: scaleEnd,
+          }],
         };
       }
 
