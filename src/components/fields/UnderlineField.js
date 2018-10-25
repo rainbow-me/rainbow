@@ -17,6 +17,8 @@ const Field = styled(TextInput)`
   font-family: ${fonts.family.SFMono};
   font-size: ${fonts.size.h2};
   margin-bottom: 10px;
+  padding-right: 10px;
+  max-width: ${({ buttonOffset }) => (250 - buttonOffset)}px
 `;
 
 const FieldButton = styled(Button).attrs({
@@ -148,7 +150,8 @@ export default class UnderlineField extends Component {
             onChange={this.onChange}
             onFocus={this.onFocus}
             placeholder={placeholder}
-            value={String(value || '')}
+            value={format(String(value || ''))}
+            buttonOffset={buttonText && isFocused ? 40 : 0}
           />
           {buttonText && isFocused && <FieldButton onPress={onPressButton}>{buttonText}</FieldButton>}
         </Row>
