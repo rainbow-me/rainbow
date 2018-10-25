@@ -71,6 +71,14 @@ export default class UnderlineField extends Component {
     };
   }
 
+  componentDidMount() {
+    const { autoFocus } = this.props;
+
+    if (autoFocus && this.input && typeof this.input.focus === 'function') {
+      this.input.focus();
+    }
+  }
+
   componentDidUpdate(prevProps) {
     const { value } = this.props;
 
@@ -116,12 +124,12 @@ export default class UnderlineField extends Component {
       <Container>
         <Input
           autoCorrect={false}
-          autoFocus={autoFocus}
           isValid={isValid}
           keyboardType="name-phone-pad"
           onChange={this.onChange}
           value={isValid ? abbreviations.address(value) : value}
           style={style}
+          innerRef={input => { this.input = input; }}
         />
         {!value ? this.renderPlaceholder() : null}
       </Container>

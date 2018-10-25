@@ -31,6 +31,10 @@ import { deviceUtils } from '../utils';
 
 console.disableYellowBox = true;
 
+const AddressInput = styled(AddressField)`
+  padding-right: 20px;
+`;
+
 const AddressInputLabel = styled(Text)`
   color: ${colors.blueGreyDark};
   font-size: ${fonts.size.h5}
@@ -213,8 +217,6 @@ class SendScreen extends Component {
     Clipboard.getString()
       .then((string) => {
         sendUpdateRecipient(string);
-
-        Keyboard.dismiss();
       });
   };
 
@@ -455,7 +457,7 @@ class SendScreen extends Component {
         </ShadowStack>
         <TransactionContainer>
           <Column>
-            <Row>
+            <Row justify="space-between">
               <NumberInput
                 autoFocus
                 buttonText="Max"
@@ -467,14 +469,14 @@ class SendScreen extends Component {
               />
               <NumberInputLabel>{selected.symbol}</NumberInputLabel>
             </Row>
-            <Row>
+            <Row justify="space-between">
               <NumberInput
                 buttonText="Max"
                 format={formatUSDInput}
                 onChange={this.onChangeNativeAmount}
                 onPressButton={sendMaxBalance}
                 placeholder="0.00"
-                value={nativeAmount && formatUSD(nativeAmount)}
+                value={nativeAmount}
               />
               <NumberInputLabel>USD</NumberInputLabel>
             </Row>
@@ -495,7 +497,7 @@ class SendScreen extends Component {
           <HandleIcon />
           <AddressInputContainer>
             <AddressInputLabel>To:</AddressInputLabel>
-            <AddressField
+            <AddressInput
               autoFocus
               isValid={isValidAddress}
               onChange={this.onChangeAddressInput}
