@@ -49,6 +49,12 @@ const assetIcon = {
   red: '#c95050', // '201, 80, 80',
 };
 
+const sendScreen = {
+  brightBlue: '#0e76fd', // '16, 118, 253'
+  lightGrey: '#fafafa', // '250, 250, 250'
+  grey: '#d8d8d8', // '216, 216, 216'
+};
+
 assetIcon.random = () => {
   const assetIconColors = Object.values(assetIcon);
   return assetIconColors[Math.floor(Math.random() * assetIconColors.length)];
@@ -84,6 +90,7 @@ const colors = {
   alpha: buildRgba,
   assetIcon,
   getTextColorForBackground,
+  sendScreen,
   ...base,
   ...transparent,
   ...vendor,

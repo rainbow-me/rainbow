@@ -1,13 +1,16 @@
 import { createSwitchNavigator, createStackNavigator } from 'react-navigation';
-import createSwipeNavigator from '../navigators/createSwipeNavigator';
+import createSwipeNavigator from '../navigation/navigators/createSwipeNavigator';
+import sheetTransition from '../navigation/transitions/sheet';
 import ActivityScreen from './ActivityScreen';
 import IntroScreen from './IntroScreen';
 import LoadingScreen from './LoadingScreen';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
-import SendScreen from './SendScreen';
+import SendQRScannerScreenWithData from './SendQRScannerScreenWithData';
+import SendScreenWithData from './SendScreenWithData';
 import SettingsScreenWithData from './SettingsScreenWithData';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
+import { deviceUtils } from '../utils';
 
 import Navigation from '../navigation';
 
@@ -37,17 +40,30 @@ const SwipeStack = createSwipeNavigator({
 const AppStack = createStackNavigator({
   ActivityScreen: {
     navigationOptions: {
-      gesturesEnabled: false,
+      effect: 'sheet',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height / 2,
+      },
     },
     screen: ActivityScreen,
   },
   ConfirmTransaction: TransactionConfirmationScreenWithData,
-  SendScreen,
+  SendScreen: {
+    navigationOptions: {
+      effect: 'sheet',
+      gestureResponseDistance: {
+        vertical: 150,
+      },
+    },
+    screen: SendScreenWithData,
+  },
+  SendQRScannerScreen: SendQRScannerScreenWithData,
   SwipeLayout: SwipeStack,
 }, {
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',
   mode: 'modal',
+  transitionConfig: sheetTransition,
 });
 
 const IntroStack = createStackNavigator({

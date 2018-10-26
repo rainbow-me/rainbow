@@ -1,4 +1,4 @@
-import { addWalletConnector } from '../reducers/walletconnect';
 import { connect } from 'react-redux';
+import { addWalletConnector } from '../redux/walletconnect';
 
 export default Component => connect(null, { addWalletConnector })(Component);

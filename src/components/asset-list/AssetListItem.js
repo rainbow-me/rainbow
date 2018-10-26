@@ -6,11 +6,7 @@ const Container = styled.Text`
 
 `;
 
-const AssetListItem = ({ item, index, section }) => {
-  return (
-    <Container>{item}</Container>
-  );
-};
+const AssetListItem = ({ item }) => ((typeof item === 'string') ? (<Container>{item}</Container>) : null);
 
 AssetListItem.propTypes = {
   item: PropTypes.object,
