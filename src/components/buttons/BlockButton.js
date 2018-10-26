@@ -3,9 +3,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import styled, { css } from 'styled-components/primitives';
+import { componentFromProp } from 'recompact';
 import { colors, padding, position, shadow } from '../../styles';
 import { Centered } from '../layout';
 import { Text } from '../text';
+import { Icon } from '../icons';
 import ButtonPressAnimation from './ButtonPressAnimation';
 
 const BlockButtonBorderRadius = 14;
@@ -17,9 +19,15 @@ const containerStyles = css`
   height: ${BlockButtonHeight};
 `;
 
-const Container = styled(Centered)`
+const ContainerElement = componentFromProp('component');
+
+const Container = styled(ContainerElement)`
+  border-radius: ${BlockButtonBorderRadius};
+`;
+
+const Content = styled(Centered)`
   ${containerStyles}
-  ${padding(17, 0, 21)}
+  ${padding(15, 15)}
   overflow: hidden;
 `;
 
@@ -49,35 +57,66 @@ const Shadow = styled.View`
   ${shadow.build(0, 3, 5, colors.alpha(colors.purple, 0.2))}
 `;
 
+const LeftIcon = styled(Icon).attrs({ color: colors.white, size: 32 })`
+  ${position.size(BlockButtonHeight)}
+  position: absolute;
+  left: 15px;
+`;
+
+const RightIcon = styled(Icon).attrs({ color: colors.white, size: 32 })`
+  ${position.size(BlockButtonHeight)}
+  position: absolute;
+  right: 15px;
+`;
+
 const BlockButton = ({
   children,
+  disabled,
   height,
   onLayout,
   width,
+  leftIconName,
+  leftIconProps,
+  rightIconName,
+  rightIconProps,
   ...props
 }) => (
-  <ButtonPressAnimation {...props}>
+  <Container {...props} disabled={disabled}>
     <Shadow>
-      <Container onLayout={onLayout}>
+      <Content onLayout={onLayout}>
         <GradientBackground
           center={[0, (height / 2)]}
-          colors={[colors.primaryBlue, '#006FFF']}
+          colors={[disabled ? colors.grey : colors.primaryBlue, disabled ? colors.grey : '#006FFF']}
           radius={width}
         />
         <InnerBorder />
+        {leftIconName ? <LeftIcon name={leftIconName} {...leftIconProps} /> : null}
         <Label>
           {children}
         </Label>
-      </Container>
+        {rightIconName ? <RightIcon name={rightIconName} {...rightIconProps} /> : null}
+      </Content>
     </Shadow>
-  </ButtonPressAnimation>
+  </Container>
 );
 
 BlockButton.propTypes = {
   children: PropTypes.node,
+  disabled: PropTypes.disabled,
   height: PropTypes.number,
+  leftIconName: PropTypes.string,
+  leftIconProps: PropTypes.object,
   onLayout: PropTypes.func,
+  rightIconName: PropTypes.string,
+  rightIconProps: PropTypes.object,
   width: PropTypes.number,
+};
+
+BlockButton.defaultProps = {
+  component: ButtonPressAnimation,
+  disabled: false,
+  leftIconProps: {},
+  rightIconProps: {},
 };
 
 export default withViewLayoutProps(({ width, height }) => ({ width, height }))(BlockButton);

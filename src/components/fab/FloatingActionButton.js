@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-import { colors, position, shadow } from '../../styles';
 import { ButtonPressAnimation } from '../buttons';
 import { Centered } from '../layout';
+import { colors, position, shadow } from '../../styles';
 import { ShadowStack } from '../shadow-stack';
+import { withHandlers } from 'recompact';
 
 const FloatingActionButtonBorderRadius = 27;
 
@@ -48,6 +48,7 @@ const FloatingActionButton = enhance(({
   onPressIn,
   onPressOut,
   size,
+  style,
   ...props
 }) => (
   <ButtonPressAnimation
@@ -55,6 +56,7 @@ const FloatingActionButton = enhance(({
     onPress={onPress}
     onPressIn={onPressIn}
     onPressOut={onPressOut}
+    style={style}
   >
     <ShadowStack
       {...position.sizeAsObject(size)}

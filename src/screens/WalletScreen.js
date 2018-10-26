@@ -23,6 +23,7 @@ import {
   withRequestsInit,
 } from '../hoc';
 import { position } from '../styles';
+import { FabWrapper, WalletConnectFab, SendFab } from '../components/fab';
 
 const BalanceRenderItem = renderItemProps => <BalanceCoinRow {...renderItemProps} />;
 const UniqueTokenRenderItem = renderItemProps => <UniqueTokenRow {...renderItemProps} />;
@@ -34,6 +35,7 @@ const WalletScreen = ({
   assetsTotalUSD,
   didLoadAssetList,
   fetching,
+  onPressSend,
   onPressProfile,
   onPressWalletConnect,
   onRefreshList,
@@ -60,6 +62,7 @@ const WalletScreen = ({
   };
 
   const assetsByMarketValue = groupAssetsByMarketValue(assets);
+
   const totalShitcoins = get(assetsByMarketValue, 'noValue', []).length;
   if (totalShitcoins) {
     // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
@@ -79,9 +82,15 @@ const WalletScreen = ({
   const filteredSections = filterEmptyAssetSections([sections.balances, sections.collectibles]);
 
   let isEmpty = !filteredSections.length;
+
   if (filteredSections.length === 1) {
     isEmpty = areAssetsEqualToInitialAccountAssetsState(filteredSections[0].data[0]);
   }
+
+  const fabItems = [
+    <SendFab disable={isEmpty} key="sendFab" onPress={onPressSend} />,
+    <WalletConnectFab disable={isEmpty} key="walletConnectFab" onPress={onPressWalletConnect} />,
+  ];
 
   return (
     <Page component={FlexItem} style={position.sizeAsObject('100%')}>
@@ -91,14 +100,19 @@ const WalletScreen = ({
         </HeaderButton>
         {(didLoadAssetList && !isEmpty) && <ActivityHeaderButton />}
       </Header>
-      <AssetList
-        fetchData={onRefreshList}
-        isEmpty={isEmpty}
-        onPressWalletConnect={onPressWalletConnect}
-        onSectionsLoaded={onSectionsLoaded}
-        sections={filteredSections}
-        showShitcoins={showShitcoins}
-      />
+      <FlexItem>
+        <FabWrapper items={fabItems}>
+          <AssetList
+            fetchData={onRefreshList}
+            isEmpty={isEmpty}
+            onPressSend={onPressSend}
+            onPressWalletConnect={onPressWalletConnect}
+            onSectionsLoaded={onSectionsLoaded}
+            sections={filteredSections}
+            showShitcoins={showShitcoins}
+          />
+        </FabWrapper>
+      </FlexItem>
     </Page>
   );
 };
@@ -114,6 +128,7 @@ WalletScreen.propTypes = {
   fetching: PropTypes.bool.isRequired,
   fetchingUniqueTokens: PropTypes.bool.isRequired,
   onPressProfile: PropTypes.func.isRequired,
+  onPressSend: PropTypes.func.isRequired,
   onPressWalletConnect: PropTypes.func.isRequired,
   onRefreshList: PropTypes.func.isRequired,
   onSectionsLoaded: PropTypes.func,
@@ -131,7 +146,8 @@ export default compose(
   withState('didLoadAssetList', 'toggleLoadAssetList', false),
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
-    onPressProfile: ({ navigation }) => () => navigation.push('SettingsScreen'),
+    onPressSend: ({ navigation }) => () => navigation.navigate('SendScreen'),
+    onPressProfile: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
     onPressWalletConnect: ({ navigation }) => () => navigation.navigate('QRScannerScreen'),
     onRefreshList: ({
       accountAddress,
