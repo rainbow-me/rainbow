@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import styled from 'styled-components/primitives';
 import TouchID from 'react-native-touch-id';
-import { Animated, Clipboard, Image, Keyboard, KeyboardAvoidingView, StatusBar, Text, View } from 'react-native';
+import { Animated, Clipboard, Image, Keyboard, KeyboardAvoidingView, StatusBar, Text, View, InteractionManager } from 'react-native';
 import { compose, withHandlers } from 'recompact';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
@@ -14,8 +14,8 @@ import { showActionSheetWithOptions } from '../utils/actionsheet';
 import { AddressField, UnderlineField } from '../components/fields';
 import { AssetList, UniqueTokenRow } from '../components/asset-list';
 import { Button, BlockButton, LongPressButton } from '../components/buttons';
-import { colors, fonts, padding, position, shadow } from '../styles';
-import { Column, Page, Flex, FlexItem, FlyInView, Row } from '../components/layout';
+import { colors, fonts, padding, shadow } from '../styles';
+import { Column, Flex, FlyInView, Row } from '../components/layout';
 import { formatUSD, formatUSDInput, removeLeadingZeros, uppercase } from '../utils/formatters';
 import { Monospace } from '../components/text';
 import { PillLabel } from '../components/labels';
@@ -28,8 +28,6 @@ import {
   withRequestsInit,
 } from '../hoc';
 import { deviceUtils } from '../utils';
-
-console.disableYellowBox = true;
 
 const AddressInput = styled(AddressField)`
   padding-right: 20px;
@@ -63,7 +61,7 @@ const BackgroundImage = styled(Image)`
   width: 91px;
 `;
 
-const BackgroundImageContainer = styled(Flex)`
+const BackgroundImageContainer = styled(Row)`
   flex-grow: 1;
   justify-content: center;
   align-items: center;
@@ -96,11 +94,24 @@ const CameraIcon = styled(Icon).attrs({
   margin-top: -5px;
 `;
 
-const Container = styled(Page)`
-  padding-bottom: ${isIphoneX() ? '30px' : '15px'};
+const Container = styled(Column)`
   background-color: ${colors.white};
   align-items: center;
-  flex-grow: 1;
+  height: 100%;
+`;
+
+const EmptyStateContainer = styled(Column)`
+  background-color: ${colors.white};
+  padding-bottom: ${isIphoneX() ? '50px' : '15px'};
+  justify-content: space-between;
+  flex: 1;
+`;
+
+const HandleIcon = styled(Icon).attrs({
+  name: 'handle',
+  color: colors.sendScreen.grey,
+})`
+  margin-top: 16px;
 `;
 
 const NumberInput = styled(UnderlineField).attrs({
@@ -124,13 +135,6 @@ const TransactionContainer = styled(View)`
   padding-bottom: 50px;
   flex-grow: 2;
   background-color: ${colors.lightGrey};
-`;
-
-const HandleIcon = styled(Icon).attrs({
-  name: 'handle',
-  color: colors.sendScreen.grey,
-})`
-  margin-top: 16px;
 `;
 
 class SendScreen extends Component {
@@ -172,7 +176,14 @@ class SendScreen extends Component {
     };
   }
 
-  componentDidMount() {
+  componentDidMount(prevProps) {
+    const { navigation, sendUpdateRecipient } = this.props;
+    const address = get(navigation, 'state.params.address');
+
+    if (address) {
+      sendUpdateRecipient(address);
+    }
+
     StatusBar.setBarStyle('light-content', true);
 
     TouchID.isSupported()
@@ -182,6 +193,14 @@ class SendScreen extends Component {
       .catch(() => {
         this.setState({ biometryType: 'FaceID' });
       });
+  }
+
+  componentDidUpdate(prevProps) {
+    const { isValidAddress } = this.props;
+
+    if (prevProps.isValidAddress !== isValidAddress) {
+      Keyboard.dismiss();
+    }
   }
 
   componentWillUnmount() {
@@ -300,10 +319,20 @@ class SendScreen extends Component {
     });
   };
 
+  onBackQRScanner = () => {
+    InteractionManager.runAfterInteractions(() => {
+      this.addressInput.focus();
+    });
+  };
+
   onPressCamera = () => {
     const { navigation } = this.props;
 
-    navigation.navigate('SendQRScannerScreen', { onSuccess: this.onChangeAddressInput });
+    Keyboard.dismiss();
+
+    InteractionManager.runAfterInteractions(() => {
+      navigation.navigate('SendQRScannerScreen', { onSuccess: this.onChangeAddressInput, onBack: this.onBackQRScanner });
+    });
   };
 
   sendTransaction = () => {
@@ -343,7 +372,7 @@ class SendScreen extends Component {
     };
 
     return (
-      <FlyInView>
+      <FlyInView style={{ flex: 1 }}>
         <AssetList
           fetchData={fetchData}
           hideHeader
@@ -355,7 +384,7 @@ class SendScreen extends Component {
 
   renderEmptyState() {
     return (
-      <FlexItem>
+      <EmptyStateContainer>
         <BackgroundImageContainer>
           <BackgroundImage source={require('../assets/send-background.png')} />
         </BackgroundImageContainer>
@@ -363,7 +392,7 @@ class SendScreen extends Component {
           <BottomButton onPress={this.onPressPaste}>Paste</BottomButton>
           <BottomButton onPress={this.onPressCamera}><CameraIcon /></BottomButton>
         </BottomButtonContainer>
-      </FlexItem>
+      </EmptyStateContainer>
     );
   }
 
@@ -377,18 +406,13 @@ class SendScreen extends Component {
     let disabled = true;
     let label = 'Enter an Amount';
 
-    // if (!isZeroAssetAmount && !isSufficientGas) {
-    //   disabled = true;
-    //   label = 'Insufficient Gas';
-    // } else if (!isZeroAssetAmount && !isSufficientBalance) {
-    //   disabled = true;
-    //   label = 'Insufficient Funds';
-    // } else if (!isZeroAssetAmount) {
-    //   disabled = false;
-    //   label = 'Hold to Send';
-    // }
-    //
-    if (!isZeroAssetAmount) {
+    if (!isZeroAssetAmount && !isSufficientGas) {
+      disabled = true;
+      label = 'Insufficient Gas';
+    } else if (!isZeroAssetAmount && !isSufficientBalance) {
+      disabled = true;
+      label = 'Insufficient Funds';
+    } else if (!isZeroAssetAmount) {
       disabled = false;
       label = 'Hold to Send';
     }
@@ -503,6 +527,7 @@ class SendScreen extends Component {
               onChange={this.onChangeAddressInput}
               placeholder="Ethereum Address: (0x...)"
               value={recipient}
+              inputRef={(addressInput) => { this.addressInput = addressInput; }}
             />
           </AddressInputContainer>
           <AddressInputBottomBorder />

@@ -52,7 +52,7 @@ const AppStack = createStackNavigator({
     navigationOptions: {
       effect: 'sheet',
       gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height / 2,
+        vertical: 150,
       },
     },
     screen: SendScreenWithData,

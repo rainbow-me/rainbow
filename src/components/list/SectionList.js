@@ -18,6 +18,7 @@ const List = styled(ReactSectionList)`
 
 const SectionList = ({
   enablePullToRefresh,
+  hideHeader,
   isRefreshing,
   onRefresh,
   renderItem,
@@ -40,7 +41,7 @@ const SectionList = ({
     renderSectionFooter={renderSectionFooter}
     scrollIndicatorInsets={{
       bottom: showSafeAreaInsetBottom ? safeAreaInset.bottom : 0,
-      top: ListHeader.height,
+      top: hideHeader ? 0 : ListHeader.height,
     }}
     {...props}
   />
@@ -49,6 +50,7 @@ const SectionList = ({
 SectionList.propTypes = {
   enablePullToRefresh: PropTypes.bool,
   fetchData: PropTypes.func,
+  hideHeader: PropTypes.bool,
   isRefreshing: PropTypes.bool,
   onRefresh: PropTypes.func,
   renderItem: PropTypes.func,

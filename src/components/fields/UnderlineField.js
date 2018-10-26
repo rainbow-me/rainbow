@@ -6,6 +6,7 @@ import { Animated, TextInput, View } from 'react-native';
 import { colors, fonts, padding } from '../../styles';
 import { Button } from '../buttons';
 import { Row } from '../layout';
+import { deviceUtils } from '../../utils';
 
 const Container = styled(View)`
   flex-grow: 1;
@@ -18,7 +19,7 @@ const Field = styled(TextInput)`
   font-size: ${fonts.size.h2};
   margin-bottom: 10px;
   padding-right: 10px;
-  max-width: ${({ buttonOffset }) => (250 - buttonOffset)}px
+  max-width: ${({ buttonOffset }) => (deviceUtils.dimensions.width - 130 - buttonOffset)}px
 `;
 
 const FieldButton = styled(Button).attrs({
@@ -126,6 +127,7 @@ export default class UnderlineField extends Component {
     const {
       autoFocus,
       buttonText,
+      format,
       keyboardType,
       maxLength,
       onPressButton,

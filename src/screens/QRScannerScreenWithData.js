@@ -4,6 +4,7 @@ import React, { PureComponent } from 'react';
 import { Alert } from 'react-native';
 import firebase from 'react-native-firebase';
 import { compose } from 'recompact';
+import { isValidAddress } from 'balance-common';
 import { withAccountAddress, withWalletConnectors } from '../hoc';
 import { walletConnectInit } from '../model/walletconnect';
 import QRScannerScreen from './QRScannerScreen';
@@ -20,32 +21,37 @@ class QRScannerScreenWithData extends PureComponent {
 
   handleSuccess = async (event) => {
     const { accountAddress, addWalletConnector, navigation } = this.props;
-    const data = event.data;
 
-    if (data) {
-      try {
-        const walletConnector = await walletConnectInit(accountAddress, data);
-        addWalletConnector(walletConnector);
-        const enabled = await firebase.messaging().hasPermission();
-        if (!enabled) {
-          try {
-            Alert.alert(
-              lang.t('wallet.push_notifications.please_enable_title'),
-              lang.t('wallet.push_notifications.please_enable_body'),
-              [
-                {text: 'Okay', onPress: async () => await firebase.messaging().requestPermission()},
-                {text: 'Dismiss', onPress: () => console.log('Push notification dismissed'), style: 'cancel'}
-              ],
-              { cancelable: false }
-            );
-          } catch (error) {
-            console.log('user has rejected notifications');
+    if (event.data) {
+      const parts = event.data.split(':');
+
+      if (isValidAddress(parts[1])) {
+        navigation.navigate('SendScreen', { address: parts[1] });
+      } else {
+        try {
+          const walletConnector = await walletConnectInit(accountAddress, event.data);
+          addWalletConnector(walletConnector);
+          const enabled = await firebase.messaging().hasPermission();
+          if (!enabled) {
+            try {
+              Alert.alert(
+                lang.t('wallet.push_notifications.please_enable_title'),
+                lang.t('wallet.push_notifications.please_enable_body'),
+                [
+                  { text: 'Okay', onPress: async () => await firebase.messaging().requestPermission() },
+                  { text: 'Dismiss', onPress: () => console.log('Push notification dismissed'), style: 'cancel' },
+                ],
+                { cancelable: false },
+              );
+            } catch (error) {
+              console.log('user has rejected notifications');
+            }
           }
+          navigation.navigate('WalletScreen');
+        } catch (error) {
+          AlertIOS.alert(lang.t('wallet.wallet_connect.error'), error);
+          console.log('error initializing wallet connect', error);
         }
-        navigation.navigate('WalletScreen');
-      } catch (error) {
-        AlertIOS.alert(lang.t('wallet.wallet_connect.error'), error);
-        console.log('error initializing wallet connect', error);
       }
     }
   }

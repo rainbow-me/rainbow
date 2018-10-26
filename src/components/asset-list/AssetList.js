@@ -42,6 +42,7 @@ const AssetList = ({
     renderItem={AssetListItem}
     renderSectionHeader={!hideHeader && (({ section }) => <AssetListHeader {...section} />)}
     sections={sections}
+    hideHeader={hideHeader}
   />
 ));
 
