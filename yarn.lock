@@ -1924,6 +1924,7 @@ babylon@^6.18.0:
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
   integrity sha512-q/UEjfGJ2Cm3oKV71DJz9d25TPnq5rhBVL2Q4fA5wcC3jcrdn7+SssEybFIxwAvvP+YCsCYNKughoF33GxgycQ==
 
+<<<<<<< HEAD
 "balance-common@git+https://github.com/balance-io/balance-common.git#gas-format-option":
   version "0.5.18-wc7updates"
 <<<<<<< HEAD
@@ -1932,6 +1933,11 @@ babylon@^6.18.0:
   resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.5.18-wc7updates.tgz#8b9268b5fe85f870bd4d35efe6fc750025f2ba70"
   integrity sha512-nlTp6z/U66xOxc9IQhWRpTbya8kcvjet5DaNjGx5dsPzpmhgkP4xxMkEomKk0CobQiXCiFeizea/mmR5gxQRWA==
 >>>>>>> 66959f0... upgrade important RN packages
+=======
+"balance-common@git+https://github.com/balance-io/balance-common.git#wc-storage":
+  version "0.5.18-wc7updates"
+  resolved "git+https://github.com/balance-io/balance-common.git#44d46fe983c618b2743f1f2a7bd3d8f246085835"
+>>>>>>> 4e17d3e... upgrade balance-common
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -2340,6 +2346,7 @@ can-promise@^0.0.1:
 
 caniuse-lite@^1.0.30000844:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.0.30000899"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000899.tgz#6febdbbc388a7982f620ee0e3d09aab0c061389e"
 =======
@@ -2347,6 +2354,11 @@ caniuse-lite@^1.0.30000844:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000898.tgz#651306e690ca83caca5814da5afa3eb4de0f86c2"
   integrity sha512-ytlTZqO4hYe4rNAJhMynUAIUI33jsP2Bb1two/9OVC39wZjPZ8exIO0eCLw5mqAtegOGiGF0kkTWTn3B02L+mw==
 >>>>>>> 66959f0... upgrade important RN packages
+=======
+  version "1.0.30000899"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000899.tgz#6febdbbc388a7982f620ee0e3d09aab0c061389e"
+  integrity sha512-enC3zKfUCJxxwvUIsBkbHd54CtJw1KtIWvrK0JZxWD/fEN2knHaai45lndJ4xXAkyRAPyk60J3yagkKDWhfeMA==
+>>>>>>> 4e17d3e... upgrade balance-common
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -3297,6 +3309,7 @@ ee-first@1.1.1:
 
 electron-to-chromium@^1.3.47:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.3.82"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.82.tgz#7d13ae4437d2a783de3f4efba96b186c540b67b1"
 =======
@@ -3304,6 +3317,11 @@ electron-to-chromium@^1.3.47:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.81.tgz#32af69206ef78973b6a6771b0c8450c2ce253913"
   integrity sha512-+rym2xtzwPWmoi8AYRrCdW65QOT0vfUHjZb5mjgh0VLyj31pGM3CpP3znKhQNBzQaWujR/KEl/mfC2lnKYgADA==
 >>>>>>> 66959f0... upgrade important RN packages
+=======
+  version "1.3.82"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.82.tgz#7d13ae4437d2a783de3f4efba96b186c540b67b1"
+  integrity sha512-NI4nB2IWGcU4JVT1AE8kBb/dFor4zjLHMLsOROPahppeHrR0FG5uslxMmkp/thO1MvPjM2xhlKoY29/I60s0ew==
+>>>>>>> 4e17d3e... upgrade balance-common
 
 elliptic@6.3.3, elliptic@^6.0.0:
   version "6.3.3"
@@ -4706,6 +4724,7 @@ i18n-js@^3.0.11:
 
 i18next@^11.3.2:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "11.10.2"
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-11.10.2.tgz#e5f10346f6320ecf15595419926c25255381a56c"
 =======
@@ -4713,6 +4732,11 @@ i18next@^11.3.2:
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-11.10.1.tgz#260d1114e94c0eedc330e5bd5624c77387376f19"
   integrity sha512-cXSA0vc+jmpcQ4EKP+SFQ5WSKwTnEr3j5+SU5E5rpefhvfxSQ5Av5wCWqL7I5b8HJSWEiV9JtzYAMuVvxx7e1A==
 >>>>>>> 66959f0... upgrade important RN packages
+=======
+  version "11.10.2"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-11.10.2.tgz#e5f10346f6320ecf15595419926c25255381a56c"
+  integrity sha512-1rowdX8PqrvsdFhYb3v0A/LlIHLQL1HTa4ia29IzhvNAg2fesNV7R1jXibWLmLQdz3FfTB8RuqSqDEjIawXruA==
+>>>>>>> 4e17d3e... upgrade balance-common
 
 iconv-lite@0.4.23:
   version "0.4.23"
@@ -7701,10 +7725,16 @@ react-native-camera@^1.2.0:
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.3.1.tgz#d7c1a207bfc33b11c130762d6b494b4169562463"
 =======
 react-native-camera@^1.3.0:
+<<<<<<< HEAD
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.3.0.tgz#b4d8bea052ab4bd43f58576dac03def7a5ea416e"
   integrity sha512-f4Nev0dvJmWQPbXLYu4BF17agLWS6iQ+vanPlWkEaa4MAjbClD/YrQaR8w9vY+C472crSp3kRGHJXIQzSwgMpw==
 >>>>>>> 66959f0... upgrade important RN packages
+=======
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.3.1.tgz#d7c1a207bfc33b11c130762d6b494b4169562463"
+  integrity sha512-IFhU+7ax60eXnqqoTI0r6l/2AoZcYduBJ3tLKdDPue/1w6Fnfx5f2BEIU3hTNzjGX3v29vz+xZNKo0pwcrJmOA==
+>>>>>>> 4e17d3e... upgrade balance-common
   dependencies:
     lodash "^4.17.10"
     prop-types "^15.6.2"
@@ -7782,6 +7812,7 @@ react-native-gesture-handler@^1.0.7:
 
 react-native-haptic-feedback@^1.2.0:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.4.0.tgz#3af9fd8fa1a0ce4e8a3558f06405bc8bdc5b0264"
 =======
@@ -7789,6 +7820,11 @@ react-native-haptic-feedback@^1.2.0:
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.3.0.tgz#c3ceb8c0125752fe474676e2d703f1e4c8312a8f"
   integrity sha512-WkPoEr5E3lhuf28BxiKmGpQhBafZmR3cCDfiBGkeIPPi6CrlT5DKSZL8DaOcwwPkpu3wFexjucm3MR/O8OtS4Q==
 >>>>>>> 66959f0... upgrade important RN packages
+=======
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.4.0.tgz#3af9fd8fa1a0ce4e8a3558f06405bc8bdc5b0264"
+  integrity sha512-ey49cVvJuLlZsjv24/4Vi0cFYgCDLUSpvIGtrdizAVInKJpvibVqtZhx5kRUtjn7KBu/w6vLgM8lvf8CWdb6eg==
+>>>>>>> 4e17d3e... upgrade balance-common
 
 react-native-iphone-x-helper@ptelad/react-native-iphone-x-helper#7/head:
   version "1.1.0"
@@ -8119,6 +8155,7 @@ react-proxy@^1.1.7:
 
 react-redux@^5.0.7:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-5.1.0.tgz#948b1e2686473d1999092bcfb32d0dc43d33f667"
 =======
@@ -8126,6 +8163,11 @@ react-redux@^5.0.7:
   resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-5.0.7.tgz#0dc1076d9afb4670f993ffaef44b8f8c1155a4c8"
   integrity sha512-5VI8EV5hdgNgyjfmWzBbdrqUkrVRKlyTKk1sGH3jzM2M2Mhj/seQgPXaz6gVAj2lz/nz688AdTqMO18Lr24Zhg==
 >>>>>>> 66959f0... upgrade important RN packages
+=======
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-5.1.0.tgz#948b1e2686473d1999092bcfb32d0dc43d33f667"
+  integrity sha512-CRMpEx8+ccpoVxQrQDkG1obExNYpj6dZ1Ni7lUNFB9wcxOhy02tIqpFo4IUXc0kYvCGMu6ABj9A4imEX2VGZJQ==
+>>>>>>> 4e17d3e... upgrade balance-common
   dependencies:
     "@babel/runtime" "^7.1.2"
     hoist-non-react-statics "^3.0.0"
@@ -9688,6 +9730,7 @@ typedarray@^0.0.6:
 
 ua-parser-js@^0.7.18:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "0.7.19"
   resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.19.tgz#94151be4c0a7fb1d001af7022fdaca4642659e4b"
 
@@ -9698,6 +9741,11 @@ uglify-es@^3.1.9:
   version "0.7.18"
   resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.18.tgz#a7bfd92f56edfb117083b69e31d2aa8882d4b1ed"
   integrity sha512-LtzwHlVHwFGTptfNSgezHp7WUlwiqb0gA9AALRbKaERfxwJoiX0A73QbTToxteIAuIaFshhgIZfqK8s7clqgnA==
+=======
+  version "0.7.19"
+  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.19.tgz#94151be4c0a7fb1d001af7022fdaca4642659e4b"
+  integrity sha512-T3PVJ6uz8i0HzPxOF9SWzWAlfN/DavlpQqepn22xgve/5QecC+XMCAtmUNnY7C9StehaV6exjUCI801lOI7QlQ==
+>>>>>>> 4e17d3e... upgrade balance-common
 
 uglify-es@^3.1.9:
   version "3.3.9"
