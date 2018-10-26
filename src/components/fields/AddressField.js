@@ -47,6 +47,7 @@ const SFProText = styled(Text)`
 export default class UnderlineField extends Component {
   static propTypes = {
     autoFocus: PropTypes.bool,
+    inputRef: PropTypes.func,
     isValid: PropTypes.bool,
     onBlur: PropTypes.func,
     onChange: PropTypes.func,
@@ -69,14 +70,6 @@ export default class UnderlineField extends Component {
       underlineAnimation: new Animated.Value(0),
       value: props.value,
     };
-  }
-
-  componentDidMount() {
-    const { autoFocus } = this.props;
-
-    if (autoFocus && this.input && typeof this.input.focus === 'function') {
-      this.input.focus();
-    }
   }
 
   componentDidUpdate(prevProps) {
@@ -117,19 +110,28 @@ export default class UnderlineField extends Component {
   }
 
   render() {
-    const { autoFocus, isValid, style } = this.props;
-    const { value } = this.state;
+    const {
+      autoFocus,
+      inputRef,
+      isValid,
+      style,
+    } = this.props;
+
+    const {
+      value,
+    } = this.state;
 
     return (
       <Container>
         <Input
+          autoFocus={autoFocus}
           autoCorrect={false}
           isValid={isValid}
           keyboardType="name-phone-pad"
           onChange={this.onChange}
           value={isValid ? abbreviations.address(value) : value}
           style={style}
-          innerRef={input => { this.input = input; }}
+          innerRef={inputRef}
         />
         {!value ? this.renderPlaceholder() : null}
       </Container>

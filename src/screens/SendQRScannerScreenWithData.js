@@ -15,8 +15,11 @@ export default class SendQRScannerScreenWithData extends Component {
 
   handlePressBackButton = () => {
     const { navigation } = this.props;
+    const onBack = get(navigation, 'state.params.onBack', () => {});
+
 
     navigation.goBack();
+    onBack();
   }
 
   handleSuccess = async (event) => {

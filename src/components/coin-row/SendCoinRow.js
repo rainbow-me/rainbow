@@ -17,7 +17,7 @@ const SendCoinRow = ({ item, ...props }) => (
     {...props}
     bottomRowRender={({ balance, native }) => (
       <Fragment>
-        <BottomRowText>{get(balance, 'display')} ≈ {get(native, 'balance.display')}</BottomRowText>
+        <BottomRowText>{get(balance, 'display')} ≈ {get(native, 'balance.display') || '$0.00'}</BottomRowText>
       </Fragment>
     )}
     topRowRender={({ name }) => (
