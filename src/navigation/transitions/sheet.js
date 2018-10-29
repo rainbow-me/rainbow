@@ -3,6 +3,8 @@ import { get } from 'lodash';
 import { isIphoneX } from 'react-native-iphone-x-helper';
 import { deviceUtils, safeAreaInsetValues } from '../../utils';
 
+export const transitionName = 'sheet';
+
 export default function sheet(transitionProps, prevTransitionProps) {
   const nextEffect = get(transitionProps, 'scene.descriptor.options.effect');
   const prevEffect = get(prevTransitionProps, 'scene.descriptor.options.effect');
@@ -11,7 +13,7 @@ export default function sheet(transitionProps, prevTransitionProps) {
 
   return {
     transitionSpec: {
-      timing: nextEffect === 'sheet' && nextIndex > prevIndex ? Animated.spring : Animated.timing,
+      timing: nextEffect === transitionName && nextIndex > prevIndex ? Animated.spring : Animated.timing,
       tension: 58,
       friction: 9.8,
       useNativeDriver: true,
@@ -30,7 +32,7 @@ export default function sheet(transitionProps, prevTransitionProps) {
       const borderRadiusScaledEnd = 12 / (1 - ((safeAreaInsetValues.top + distanceFromTop) / deviceUtils.dimensions.height));
       const opacityEnd = 0.5;
 
-      if (nextEffect === 'sheet' && scene.index === prevIndex && nextIndex > prevIndex) {
+      if (nextEffect === transitionName && scene.index === prevIndex && nextIndex > prevIndex) {
         const translateY = position.interpolate({
           inputRange: [prevIndex, nextIndex],
           outputRange: [0, distanceFromTop],
@@ -65,7 +67,7 @@ export default function sheet(transitionProps, prevTransitionProps) {
         };
       }
 
-      if (nextEffect === 'sheet' && scene.index === nextIndex && nextIndex > prevIndex) {
+      if (nextEffect === transitionName && scene.index === nextIndex && nextIndex > prevIndex) {
         const height = layout.initHeight;
         const translateY = position.interpolate({
           inputRange: [prevIndex, nextIndex],
@@ -84,7 +86,7 @@ export default function sheet(transitionProps, prevTransitionProps) {
         };
       }
 
-      if (prevEffect === 'sheet' && scene.index === nextIndex && nextIndex < prevIndex) {
+      if (prevEffect === transitionName && scene.index === nextIndex && nextIndex < prevIndex) {
         const opacity = position.interpolate({
           inputRange: [nextIndex, prevIndex],
           outputRange: [1, opacityEnd],
@@ -112,7 +114,7 @@ export default function sheet(transitionProps, prevTransitionProps) {
         };
       }
 
-      if (prevEffect === 'sheet' && scene.index === prevIndex && nextIndex < prevIndex) {
+      if (prevEffect === transitionName && scene.index === prevIndex && nextIndex < prevIndex) {
         const height = layout.initHeight;
         const translateY = position.interpolate({
           inputRange: [nextIndex, prevIndex],
@@ -131,7 +133,7 @@ export default function sheet(transitionProps, prevTransitionProps) {
         };
       }
 
-      if ((prevEffect === 'sheet' && scene.index === prevIndex) || (nextEffect === 'sheet' && scene.index === nextIndex)) {
+      if ((prevEffect === transitionName && scene.index === prevIndex) || (nextEffect === transitionName && scene.index === nextIndex)) {
         const height = layout.initHeight;
         const width = layout.initWidth;
         const translateX = position.interpolate({
@@ -153,7 +155,7 @@ export default function sheet(transitionProps, prevTransitionProps) {
         };
       }
 
-      if (nextEffect === 'sheet' && prevIndex > nextIndex && scene.index === nextIndex - 1) {
+      if (nextEffect === transitionName && prevIndex > nextIndex && scene.index === nextIndex - 1) {
         const width = layout.initWidth;
         const translateX = position.interpolate({
           inputRange: [nextIndex - 1, nextIndex],
@@ -168,14 +170,14 @@ export default function sheet(transitionProps, prevTransitionProps) {
           transform: [{
             translateX,
           }, {
-            translateY: distanceFromTop
+            translateY: distanceFromTop,
           }, {
             scale: scaleEnd,
           }],
         };
       }
 
-      if (prevEffect === 'sheet' && prevIndex < nextIndex && scene.index === prevIndex - 1) {
+      if (prevEffect === transitionName && prevIndex < nextIndex && scene.index === prevIndex - 1) {
         const width = layout.initWidth;
         const translateX = position.interpolate({
           inputRange: [prevIndex - 1, prevIndex],
@@ -190,7 +192,7 @@ export default function sheet(transitionProps, prevTransitionProps) {
           transform: [{
             translateX,
           }, {
-            translateY: distanceFromTop
+            translateY: distanceFromTop,
           }, {
             scale: scaleEnd,
           }],
