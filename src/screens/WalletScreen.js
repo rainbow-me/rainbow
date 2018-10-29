@@ -3,6 +3,7 @@ import lang from 'i18n-js';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { StatusBar } from 'react-native';
 import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
 import { AssetList } from '../components/asset-list';
 import { UniqueTokenRow } from '../components/unique-token';
@@ -25,8 +26,6 @@ import {
 import { position } from '../styles';
 import { FabWrapper, WalletConnectFab, SendFab } from '../components/fab';
 
-const BalanceRenderItem = renderItemProps => <BalanceCoinRow {...renderItemProps} />;
-const UniqueTokenRenderItem = renderItemProps => <UniqueTokenRow {...renderItemProps} />;
 const filterEmptyAssetSections = sections => sections.filter(({ totalItems }) => totalItems);
 
 const WalletScreen = ({
@@ -35,6 +34,7 @@ const WalletScreen = ({
   assetsTotalUSD,
   didLoadAssetList,
   fetching,
+  navigation,
   onPressSend,
   onPressProfile,
   onPressWalletConnect,
@@ -47,14 +47,24 @@ const WalletScreen = ({
   const sections = {
     balances: {
       data: sortAssetsByNativeAmount(assets, showShitcoins),
-      renderItem: BalanceRenderItem,
+      renderItem: (renderItemProps) => (
+        <BalanceCoinRow
+          {...renderItemProps}
+          onPress={(symbol) => navigation.navigate('ExpandedAssetScreen', { type: 'token', name: symbol })}
+        />
+      ),
       title: lang.t('account.tab_balances'),
       totalItems: get(assetsTotalUSD, 'amount') ? assetsCount : 0,
       totalValue: get(assetsTotalUSD, 'display', ''),
     },
     collectibles: {
       data: buildUniqueTokenList(uniqueTokens),
-      renderItem: UniqueTokenRenderItem,
+      renderItem: (renderItemProps) => (
+        <UniqueTokenRow
+          {...renderItemProps}
+          onPress={(name) => navigation.navigate('ExpandedAssetScreen', { type: 'unique_token', name })}
+        />
+      ),
       title: lang.t('account.tab_collectibles'),
       totalItems: uniqueTokens.length,
       totalValue: '',
@@ -94,6 +104,7 @@ const WalletScreen = ({
 
   return (
     <Page component={FlexItem} style={position.sizeAsObject('100%')}>
+      <StatusBar barStyle="dark-content" />
       <Header justify="space-between">
         <HeaderButton onPress={onPressProfile} transformOrigin="left">
           <Avatar />
@@ -127,6 +138,7 @@ WalletScreen.propTypes = {
   didLoadAssetList: PropTypes.bool,
   fetching: PropTypes.bool.isRequired,
   fetchingUniqueTokens: PropTypes.bool.isRequired,
+  navigation: PropTypes.object,
   onPressProfile: PropTypes.func.isRequired,
   onPressSend: PropTypes.func.isRequired,
   onPressWalletConnect: PropTypes.func.isRequired,

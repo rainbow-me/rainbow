@@ -6541,6 +6541,12 @@ react-native-actionsheet@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/react-native-actionsheet/-/react-native-actionsheet-2.4.2.tgz#6a00dd51a75ef2c8974312130e405af73191500f"
 
+react-native-blur@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/react-native-blur/-/react-native-blur-3.2.2.tgz#5bfb50638d148982c9560436554ed01d77d6d07d"
+  dependencies:
+    prop-types "^15.5.10"
+
 react-native-camera@^1.2.0:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.3.1.tgz#d7c1a207bfc33b11c130762d6b494b4169562463"

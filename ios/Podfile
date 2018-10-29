@@ -8,4 +8,6 @@ target 'BalanceWallet' do
   pod 'yoga', path: "#{rn_path}/ReactCommon/yoga/yoga.podspec"
   pod 'RNLanguages', :path => '../node_modules/react-native-languages'
   pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
+  pod 'react-native-blur', :path => '../node_modules/react-native-blur'
+
 end

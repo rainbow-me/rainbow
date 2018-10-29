@@ -2,10 +2,11 @@ import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
+import { View } from 'react-native';
+import { ButtonPressAnimation } from '../buttons';
 import { colors, padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
-import { TouchableOpacity } from 'react-native';
 
 const CoinRowPaddingVertical = 12;
 
@@ -36,10 +37,9 @@ const CoinRow = pure(({
   ...props
 }) => (
   <Container
-    component={TouchableOpacity}
+    component={onPress ? ButtonPressAnimation : View}
     align="center"
-    onPress={onPress}
-    activeOpacity={onPress ? 0.2 : 1}
+    onPress={() => onPress && onPress(symbol)}
     style={containerStyles}
   >
     {createElement(coinIconRender, { symbol, ...props })}

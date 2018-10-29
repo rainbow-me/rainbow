@@ -34,6 +34,8 @@ PODS:
   - Protobuf (3.6.1)
   - React (0.57.1):
     - React/Core (= 0.57.1)
+  - react-native-blur (0.8.0):
+    - React
   - React/Core (0.57.1):
     - yoga (= 0.57.1.React)
   - RNLanguages (3.0.1):
@@ -46,6 +48,7 @@ DEPENDENCIES:
   - Firebase/Core (~> 5.3.0)
   - Firebase/Messaging (~> 5.3.0)
   - React (from `../node_modules/react-native`)
+  - react-native-blur (from `../node_modules/react-native-blur`)
   - RNLanguages (from `../node_modules/react-native-languages`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga/yoga.podspec`)
@@ -64,6 +67,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   React:
     :path: "../node_modules/react-native"
+  react-native-blur:
+    :path: "../node_modules/react-native-blur"
   RNLanguages:
     :path: "../node_modules/react-native-languages"
   RNReanimated:
@@ -81,10 +86,11 @@ SPEC CHECKSUMS:
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
+  react-native-blur: c35c1f6c2c76db7108bde7ed343bd2b01d64e0c0
   RNLanguages: e3ae05ef105937645218272429dac0c3f7633451
   RNReanimated: 45d9313b7a62318ed00d60a811937321e43e076e
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: 7733116ae5a1ca62941804422572870030138744
+PODFILE CHECKSUM: 820862140c8167647e9ffb0a52c9f62b4a7ba216
 
 COCOAPODS: 1.5.3
