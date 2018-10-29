@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
+import { View } from 'react-native';
+import { ButtonPressAnimation } from '../buttons';
 import { colors, position, shadow } from '../../styles';
 import { Centered } from '../layout';
 import { ShadowStack } from '../shadow-stack';
@@ -29,6 +31,7 @@ const UniqueTokenCard = ({
     ...item
   },
   size,
+  onPress,
   ...props
 }) => {
   const backgroundColor = background || colors.lightestGrey;
@@ -43,7 +46,11 @@ const UniqueTokenCard = ({
         shadow.buildString(0, 6, 10, 'rgba(0,0,0,0.1)'),
       ]}
     >
-      <Container backgroundColor={backgroundColor}>
+      <Container
+        backgroundColor={backgroundColor}
+        component={onPress ? ButtonPressAnimation : View}
+        onPress={() => onPress && onPress(item.name)}
+      >
         <UniqueTokenImage
           backgroundColor={backgroundColor}
           imageUrl={imagePreviewUrl}
@@ -61,6 +68,7 @@ UniqueTokenCard.propTypes = {
     background: PropTypes.string,
     imagePreviewUrl: PropTypes.string,
   }),
+  onPress: PropTypes.func,
   size: PropTypes.number,
 };
 
