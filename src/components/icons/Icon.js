@@ -9,11 +9,13 @@ import CameraIcon from './svg/CameraIcon';
 import CaretIcon from './svg/CaretIcon';
 import ClockIcon from './svg/ClockIcon';
 import CloseIcon from './svg/CloseIcon';
+import CompassIcon from './svg/CompassIcon';
 import DotIcon from './svg/DotIcon';
 import FaceIdIcon from './svg/FaceIdIcon';
 import HandleIcon from './svg/HandleIcon';
 import ProgressIcon from './svg/ProgressIcon';
 import SendIcon from './svg/SendIcon';
+import ShareIcon from './svg/ShareIcon';
 import SpinnerIcon from './svg/SpinnerIcon';
 import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import TouchIdIcon from './svg/TouchIdIcon';
@@ -35,6 +37,7 @@ Icon.IconTypes = {
   caret: CaretIcon,
   clock: ClockIcon,
   close: CloseIcon,
+  compass: CompassIcon,
   dot: DotIcon,
   faceid: FaceIdIcon,
   handle: HandleIcon,
@@ -44,6 +47,7 @@ Icon.IconTypes = {
   touchid: TouchIdIcon,
   walletConnect: WalletConnectIcon,
   send: SendIcon,
+  share: ShareIcon,
   warning: WarningIcon,
 };
 

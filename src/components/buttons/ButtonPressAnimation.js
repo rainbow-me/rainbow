@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Animated } from 'react-native';
 import { State, TapGestureHandler } from 'react-native-gesture-handler';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { animations } from '../../styles';
 import { directionPropType } from '../../utils';
 
@@ -77,6 +78,10 @@ export default class ButtonPressAnimation extends Component {
 
     // Start animations
     Animated.parallel(animationsArray).start();
+
+    if (state === State.BEGAN) {
+      ReactNativeHapticFeedback.trigger('impactLight');
+    }
 
     if (state === State.END) {
       onPress();
