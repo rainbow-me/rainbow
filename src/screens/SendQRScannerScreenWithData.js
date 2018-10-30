@@ -1,7 +1,7 @@
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AlertIOS } from 'react-native';
-import { get } from 'lodash';
 import QRScannerScreen from './QRScannerScreen';
 
 export default class SendQRScannerScreenWithData extends Component {
@@ -17,19 +17,18 @@ export default class SendQRScannerScreenWithData extends Component {
     const { navigation } = this.props;
     const onBack = get(navigation, 'state.params.onBack', () => {});
 
-
     navigation.goBack();
     onBack();
   }
 
-  handleSuccess = async (event) => {
+  handleSuccess = async ({ data }) => {
     const { navigation } = this.props;
     const onSuccess = get(navigation, 'state.params.onSuccess', () => {});
 
     this.setState({ enableScanning: false });
 
-    if (event.data) {
-      const parts = event.data.split(':');
+    if (data) {
+      const parts = data.split(':');
 
       if (parts[0] === 'ethereum') {
         onSuccess(parts[1]);
@@ -44,16 +43,13 @@ export default class SendQRScannerScreenWithData extends Component {
     }
   }
 
-  render() {
-    const { enableScanning } = this.state;
-
-    return (
-      <QRScannerScreen
-        {...this.props}
-        isScreenActive={enableScanning}
-        onPressBackButton={this.handlePressBackButton}
-        onSuccess={this.handleSuccess}
-      />
-    );
-  }
+  render = () => (
+    <QRScannerScreen
+      {...this.props}
+      isScreenActive={this.state.enableScanning}
+      onPressBackButton={this.handlePressBackButton}
+      onSuccess={this.handleSuccess}
+      showWalletConnectSheet={false}
+    />
+  )
 }
