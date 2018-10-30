@@ -2,29 +2,12 @@ import { isValidAddress } from 'balance-common';
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { Alert, AlertIOS } from 'react-native';
 import firebase from 'react-native-firebase';
 import { compose } from 'recompact';
 import { withAccountAddress, withAddWalletConnector } from '../hoc';
+import { Alert } from '../components/alerts';
 import { walletConnectInit } from '../model/walletconnect';
 import QRScannerScreen from './QRScannerScreen';
-
-const requestNotificationPermissionAlert = () =>
-  Alert.alert(
-    lang.t('wallet.push_notifications.please_enable_title'),
-    lang.t('wallet.push_notifications.please_enable_body'),
-    [
-      {
-        onPress: async () => firebase.messaging().requestPermission(),
-        text: 'Okay',
-      }, {
-        onPress: () => console.log('Push notification dismissed'),
-        style: 'cancel',
-        text: 'Dismiss',
-      },
-    ],
-    { cancelable: false },
-  );
 
 class QRScannerScreenWithData extends PureComponent {
   static propTypes = {
@@ -52,7 +35,18 @@ class QRScannerScreenWithData extends PureComponent {
 
       if (!arePushNotificationsAuthorized) {
         try {
-          requestNotificationPermissionAlert();
+          Alert({
+            buttons: [{
+              onPress: async () => firebase.messaging().requestPermission(),
+              text: 'Okay',
+            }, {
+              onPress: () => console.log('Push notification dismissed'),
+              style: 'cancel',
+              text: 'Dismiss',
+            }],
+            message: lang.t('wallet.push_notifications.please_enable_body'),
+            title: lang.t('wallet.push_notifications.please_enable_title'),
+          });
         } catch (error) {
           console.log('user has rejected notifications');
         }
@@ -61,7 +55,10 @@ class QRScannerScreenWithData extends PureComponent {
       return addWalletConnector(walletConnector);
     } catch (error) {
       console.log('error initializing wallet connect', error);
-      return AlertIOS.alert(lang.t('wallet.wallet_connect.error'), error);
+      return Alert({
+        message: error,
+        title: lang.t('wallet.wallet_connect.error'),
+      });
     }
   }
 
