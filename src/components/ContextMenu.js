@@ -17,8 +17,10 @@ export default class ContextMenu extends Component {
     title: PropTypes.string,
   }
 
-  handleActionSheetRef = (ref) => { this.ActionSheet = ref; }
-  showActionSheet = () => this.ActionSheet.show()
+  actionSheetRef = null
+
+  handleActionSheetRef = (ref) => { this.actionSheetRef = ref; }
+  showActionSheet = () => this.actionSheetRef.show()
 
   render = () => (
     <Fragment>
