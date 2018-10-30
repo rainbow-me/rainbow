@@ -203,7 +203,7 @@ class ExpandedAssetScreen extends Component {
                 size="bmedium"
                 weight="semibold"
               >
-                Send To...
+                Send to...
               </Text>
               <ActionIcon name="send" />
             </AssetActionRow>
