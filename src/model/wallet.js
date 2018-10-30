@@ -1,6 +1,5 @@
 import ethers from 'ethers';
 import lang from 'i18n-js';
-import { AlertIOS } from 'react-native';
 import {
   ACCESS_CONTROL,
   ACCESSIBLE,

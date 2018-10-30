@@ -1,11 +1,11 @@
+import { isValidAddress } from 'balance-common';
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { Alert } from 'react-native';
 import firebase from 'react-native-firebase';
 import { compose } from 'recompact';
-import { isValidAddress } from 'balance-common';
-import { withAccountAddress, withWalletConnectors } from '../hoc';
+import { withAccountAddress, withAddWalletConnector } from '../hoc';
+import { Alert } from '../components/alerts';
 import { walletConnectInit } from '../model/walletconnect';
 import QRScannerScreen from './QRScannerScreen';
 
@@ -13,46 +13,52 @@ class QRScannerScreenWithData extends PureComponent {
   static propTypes = {
     accountAddress: PropTypes.string,
     addWalletConnector: PropTypes.func,
-    isScreenActive: PropTypes.bool,
     navigation: PropTypes.object,
   }
 
   handlePressBackButton = () => this.props.navigation.push('WalletScreen')
 
-  handleSuccess = async (event) => {
+  handleScanSuccess = async ({ data }) => {
     const { accountAddress, addWalletConnector, navigation } = this.props;
 
-    if (event.data) {
-      const parts = event.data.split(':');
+    if (!data) return null;
 
-      if (isValidAddress(parts[1])) {
-        navigation.navigate('SendScreen', { address: parts[1] });
-      } else {
+    const parts = data.split(':');
+
+    if (isValidAddress(parts[1])) {
+      return navigation.navigate('SendScreen', { address: parts[1] });
+    }
+
+    try {
+      const walletConnector = await walletConnectInit(accountAddress, data);
+      const arePushNotificationsAuthorized = await firebase.messaging().hasPermission();
+
+      if (!arePushNotificationsAuthorized) {
         try {
-          const walletConnector = await walletConnectInit(accountAddress, event.data);
-          addWalletConnector(walletConnector);
-          const enabled = await firebase.messaging().hasPermission();
-          if (!enabled) {
-            try {
-              Alert.alert(
-                lang.t('wallet.push_notifications.please_enable_title'),
-                lang.t('wallet.push_notifications.please_enable_body'),
-                [
-                  { text: 'Okay', onPress: async () => await firebase.messaging().requestPermission() },
-                  { text: 'Dismiss', onPress: () => console.log('Push notification dismissed'), style: 'cancel' },
-                ],
-                { cancelable: false },
-              );
-            } catch (error) {
-              console.log('user has rejected notifications');
-            }
-          }
-          navigation.navigate('WalletScreen');
+          Alert({
+            buttons: [{
+              onPress: async () => firebase.messaging().requestPermission(),
+              text: 'Okay',
+            }, {
+              onPress: () => console.log('Push notification dismissed'),
+              style: 'cancel',
+              text: 'Dismiss',
+            }],
+            message: lang.t('wallet.push_notifications.please_enable_body'),
+            title: lang.t('wallet.push_notifications.please_enable_title'),
+          });
         } catch (error) {
-          AlertIOS.alert(lang.t('wallet.wallet_connect.error'), error);
-          console.log('error initializing wallet connect', error);
+          console.log('user has rejected notifications');
         }
       }
+
+      return addWalletConnector(walletConnector);
+    } catch (error) {
+      console.log('error initializing wallet connect', error);
+      return Alert({
+        message: error,
+        title: lang.t('wallet.wallet_connect.error'),
+      });
     }
   }
 
@@ -60,12 +66,12 @@ class QRScannerScreenWithData extends PureComponent {
     <QRScannerScreen
       {...this.props}
       onPressBackButton={this.handlePressBackButton}
-      onSuccess={this.handleSuccess}
+      onScanSuccess={this.handleScanSuccess}
     />
   )
 }
 
 export default compose(
   withAccountAddress,
-  withWalletConnectors,
+  withAddWalletConnector,
 )(QRScannerScreenWithData);
