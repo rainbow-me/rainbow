@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { AlertIOS } from 'react-native';
+import { Alert } from '../components/alerts';
 import QRScannerScreen from './QRScannerScreen';
 
 export default class SendQRScannerScreenWithData extends Component {
@@ -34,14 +34,18 @@ export default class SendQRScannerScreenWithData extends Component {
         onSuccess(parts[1]);
         navigation.goBack();
 
-        this.setState({ enableScanning: true });
+        this.handleEnableScanning();
       } else {
-        AlertIOS.alert('Invalid Address', 'Sorry, this QR code doesn\'t contain an Ethereum address.', () => {
-          this.setState({ enableScanning: true });
+        Alert({
+          callback: this.handleEnableScanning,
+          message: 'Sorry, this QR code doesn\'t contain an Ethereum address.',
+          title: 'Invalid Address',
         });
       }
     }
   }
+
+  handleEnableScanning = () => this.setState({ enableScanning: true })
 
   render = () => (
     <QRScannerScreen
