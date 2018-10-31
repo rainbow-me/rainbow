@@ -5,7 +5,7 @@ import { deviceUtils, safeAreaInsetValues } from '../../utils';
 
 export const transitionName = 'sheet';
 
-export default function sheet(transitionProps, prevTransitionProps) {
+export default function sheet(navigation, transitionProps, prevTransitionProps) {
   const nextEffect = get(transitionProps, 'scene.descriptor.options.effect');
   const prevEffect = get(prevTransitionProps, 'scene.descriptor.options.effect');
   const nextIndex = get(transitionProps, 'index');
@@ -24,6 +24,8 @@ export default function sheet(transitionProps, prevTransitionProps) {
         position,
         scene,
       } = sceneProps;
+
+      navigation.setTransitionPosition(position);
 
       const distanceFromTop = isIphoneX() ? 14 : 6;
       const scaleEnd = 1 - ((safeAreaInsetValues.top + distanceFromTop) / deviceUtils.dimensions.height);
