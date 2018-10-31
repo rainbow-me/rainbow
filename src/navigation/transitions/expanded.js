@@ -1,9 +1,10 @@
 import { Animated } from 'react-native';
 import { get } from 'lodash';
+import { deviceUtils } from '../../utils';
 
 export const transitionName = 'expanded';
 
-export default function expanded(transitionProps, prevTransitionProps) {
+export default function expanded(navigation, transitionProps, prevTransitionProps) {
   const nextEffect = get(transitionProps, 'scene.descriptor.options.effect');
   const prevEffect = get(prevTransitionProps, 'scene.descriptor.options.effect');
   const nextIndex = get(transitionProps, 'index');
@@ -12,7 +13,7 @@ export default function expanded(transitionProps, prevTransitionProps) {
   return {
     transitionSpec: {
       timing: nextEffect === transitionName && nextIndex > prevIndex ? Animated.spring : Animated.timing,
-      tension: 58,
+      tension: 100,
       friction: 9.8,
       useNativeDriver: true,
     },
@@ -23,7 +24,10 @@ export default function expanded(transitionProps, prevTransitionProps) {
         scene,
       } = sceneProps;
 
-      const opacityEnd = 0.25;
+      navigation.setTransitionPosition(position);
+
+      const opacityEnd = 0.75;
+      const translateYStart = deviceUtils.dimensions.height;
 
       if (nextEffect === transitionName && scene.index === prevIndex && nextIndex > prevIndex) {
         const opacity = position.interpolate({
@@ -33,20 +37,18 @@ export default function expanded(transitionProps, prevTransitionProps) {
 
         return {
           opacity,
-          overflow: 'hidden',
         };
       }
 
       if (nextEffect === transitionName && scene.index === nextIndex && nextIndex > prevIndex) {
-        const scale = position.interpolate({
+        const translateY = position.interpolate({
           inputRange: [prevIndex, nextIndex],
-          outputRange: [0, 1],
+          outputRange: [translateYStart, 0],
         });
 
         return {
-          overflow: 'hidden',
           transform: [{
-            scale,
+            translateY,
           }],
         };
       }
@@ -59,20 +61,18 @@ export default function expanded(transitionProps, prevTransitionProps) {
 
         return {
           opacity,
-          overflow: 'hidden',
         };
       }
 
       if (prevEffect === transitionName && scene.index === prevIndex && nextIndex < prevIndex) {
-        const scale = position.interpolate({
+        const translateY = position.interpolate({
           inputRange: [nextIndex, prevIndex],
-          outputRange: [0, 1],
+          outputRange: [translateYStart, 0],
         });
 
         return {
-          overflow: 'hidden',
           transform: [{
-            scale,
+            translateY,
           }],
         };
       }
