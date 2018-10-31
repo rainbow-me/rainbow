@@ -1686,7 +1686,11 @@ babylon@^6.18.0:
 
 "balance-common@git+https://github.com/balance-io/balance-common.git#gas-format-option":
   version "0.5.18-wc7updates"
+<<<<<<< HEAD
   resolved "git+https://github.com/balance-io/balance-common.git#e4d47d703886560a03e8f2b064d53c2b7dacb0c9"
+=======
+  resolved "git+https://github.com/balance-io/balance-common.git#4f55701764f8919138910dd8775fbfd79f42a338"
+>>>>>>> 266c99d... fixes for txn hash retrieved after send txn
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -2039,8 +2043,13 @@ can-promise@^0.0.1:
     window-or-global "^1.0.1"
 
 caniuse-lite@^1.0.30000844:
+<<<<<<< HEAD
   version "1.0.30000902"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000902.tgz#74eaf6ed7f1d31e5148725081c9df60051c5e2b3"
+=======
+  version "1.0.30000903"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000903.tgz#86d46227759279b3db345ddbe778335dbba9e858"
+>>>>>>> 266c99d... fixes for txn hash retrieved after send txn
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -2879,8 +2888,8 @@ entities@~1.1.1:
   resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.2.tgz#bdfa735299664dfafd34529ed4f8522a275fea56"
 
 envinfo@^5.7.0:
-  version "5.10.0"
-  resolved "https://registry.yarnpkg.com/envinfo/-/envinfo-5.10.0.tgz#503a9774ae15b93ea68bdfae2ccd6306624ea6df"
+  version "5.11.0"
+  resolved "https://registry.yarnpkg.com/envinfo/-/envinfo-5.11.0.tgz#0eb97683e4225c93ce029e4be3c90acd0c4b09d4"
 
 errno@^0.1.1, errno@~0.1.1:
   version "0.1.7"
@@ -6715,7 +6724,11 @@ react-native-level-fs@^3.0.1:
     level-filesystem "^1.0.1"
     levelup "^0.18.2"
 
+<<<<<<< HEAD
 react-native-linear-gradient@^2.4.2:
+=======
+react-native-linear-gradient@^2.4.0:
+>>>>>>> 266c99d... fixes for txn hash retrieved after send txn
   version "2.4.3"
   resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.4.3.tgz#a7f5fe685b1a2ac788cca37828c5c9ca91357a16"
 
@@ -6941,7 +6954,11 @@ react-navigation-tabs@0.8.4:
     react-lifecycles-compat "^3.0.4"
     react-native-tab-view "^1.0.0"
 
+<<<<<<< HEAD
 react-navigation@^2.18.0:
+=======
+react-navigation@^2.17.0:
+>>>>>>> 266c99d... fixes for txn hash retrieved after send txn
   version "2.18.2"
   resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-2.18.2.tgz#ba278ded41f736d029c7cae5d54ab1427dc6ed34"
   dependencies:
@@ -7402,7 +7419,11 @@ rn-nodeify@^10.0.0:
     semver "^5.0.1"
     xtend "^4.0.0"
 
+<<<<<<< HEAD
 rn-walletconnect-wallet@^0.7.24:
+=======
+rn-walletconnect-wallet@^0.7.23:
+>>>>>>> 266c99d... fixes for txn hash retrieved after send txn
   version "0.7.26"
   resolved "https://registry.yarnpkg.com/rn-walletconnect-wallet/-/rn-walletconnect-wallet-0.7.26.tgz#9d39d18f74abd9fe2b4bfd343a6d90a338b43a96"
   dependencies:
@@ -7803,8 +7824,8 @@ spdx-expression-parse@^3.0.0:
     spdx-license-ids "^3.0.0"
 
 spdx-license-ids@^3.0.0:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/spdx-license-ids/-/spdx-license-ids-3.0.1.tgz#e2a303236cac54b04031fa7a5a79c7e701df852f"
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/spdx-license-ids/-/spdx-license-ids-3.0.2.tgz#a59efc09784c2a5bada13cfeaf5c75dd214044d2"
 
 split-string@^3.0.1, split-string@^3.0.2:
   version "3.1.0"
