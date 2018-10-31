@@ -196,15 +196,8 @@ class SendScreen extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { navigation, isValidAddress, sendUpdateSelected } = this.props;
-
-    if (prevProps.isValidAddress !== isValidAddress) {
-      const asset = get(navigation, 'state.params.asset');
-
-      if (asset) {
-        sendUpdateSelected(asset);
-      }
-
+    const { isValidAddress } = this.props;
+    if (isValidAddress && (prevProps.isValidAddress !== isValidAddress)) {
       Keyboard.dismiss();
     }
   }
