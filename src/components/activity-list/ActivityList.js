@@ -12,7 +12,7 @@ const getItemLayout = (data, index) => ({
   offset: CoinRow.height * index,
 });
 
-const keyExtractor = ({ hash, transactionId }) => (hash || transactionId);
+const keyExtractor = ({ hash, callId }) => (hash || callId);
 const renderSectionHeader = ({ section }) => <ActivityListHeader {...section} />;
 
 const ActivityList = ({
