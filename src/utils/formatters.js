@@ -8,7 +8,7 @@ export function formatUSDInput(value = '') {
   const decimals = parts[1] || '';
 
   if (decimals.length > 2) {
-    return formattedValue.substring(0, formattedValue.length - 1);
+    return `${parts[0]}.${decimals.substring(0, 2)}`;
   }
 
   return formattedValue;
