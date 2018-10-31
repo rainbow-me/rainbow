@@ -2,7 +2,7 @@ import { get, each } from 'lodash';
 import expandedTransition from './expanded';
 import sheetTransition from './sheet';
 
-export function buildTransitions(transitions) {
+export function buildTransitions(navigation, transitions) {
   return (transitionProps, prevTransitionProps) => {
     const nextEffect = get(transitionProps, 'scene.descriptor.options.effect');
     const prevEffect = get(prevTransitionProps, 'scene.descriptor.options.effect');
@@ -16,7 +16,7 @@ export function buildTransitions(transitions) {
     });
 
     if (typeof currentTransition === 'function') {
-      return currentTransition(transitionProps, prevTransitionProps);
+      return currentTransition(navigation, transitionProps, prevTransitionProps);
     }
 
     return {};

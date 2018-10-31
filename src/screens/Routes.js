@@ -73,7 +73,7 @@ const AppStack = createStackNavigator({
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',
   mode: 'modal',
-  transitionConfig: buildTransitions({ expanded, sheet }),
+  transitionConfig: buildTransitions(Navigation, { expanded, sheet }),
   cardStyle: {
     backgroundColor: 'transparent',
   },

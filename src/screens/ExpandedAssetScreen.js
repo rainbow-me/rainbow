@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 import styled from 'styled-components/primitives';
 import { compose, withProps } from 'recompact';
 import { filter, get } from 'lodash';
-import { InteractionManager, Linking, Share, StatusBar, TouchableOpacity } from 'react-native';
+import { Animated, InteractionManager, Linking, Share, StatusBar, TouchableOpacity } from 'react-native';
+import { BlurView } from 'react-native-blur';
 
 import { colors, padding, position } from '../styles';
 import { ButtonPressAnimation } from '../components/buttons';
@@ -13,6 +14,15 @@ import { Icon } from '../components/icons';
 import { UniqueTokenImage } from '../components/unique-token';
 import { withAccountAssets } from '../hoc';
 import { deviceUtils } from '../utils';
+import Navigation from '../navigation';
+
+const overlayStyles = {
+  position: 'absolute',
+  top: -50,
+  left: -50,
+  right: -50,
+  bottom: -50,
+};
 
 const ActionIcon = styled(Icon).attrs({
   color: colors.sendScreen.brightBlue,
@@ -61,7 +71,7 @@ const Container = styled(Column).attrs({
   align: 'center',
   justify: 'center',
 })`
-  ${padding(0, 30)}
+  ${padding(0, 15)}
   background-color: transparent;
   height: 100%;
 `;
@@ -136,11 +146,18 @@ class ExpandedAssetScreen extends Component {
       type,
     } = this.props;
 
-    console.log(selectedAsset)
+    const transitionPosition = Navigation.getTransitionPosition();
+    const blurOpacity = transitionPosition.interpolate({
+      inputRange: [0, 0.9, 1],
+      outputRange: [0, 0.01, 1],
+    });
 
     return (
       <Container>
         <StatusBar barStyle="light-content" />
+        <Animated.View style={{ ...overlayStyles, opacity: blurOpacity }}>
+          <BlurView style={overlayStyles} blurAmount={5} blurType="dark" />
+        </Animated.View>
         <BackgroundButton onPress={() => navigation.goBack()} />
         {type === 'unique_token' ? (
           <FloatingContainer
