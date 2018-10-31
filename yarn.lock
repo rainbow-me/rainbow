@@ -1684,13 +1684,17 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-"balance-common@git+https://github.com/balance-io/balance-common.git#gas-format-option":
+"balance-common@git+https://github.com/balance-io/balance-common.git#wc-storage":
   version "0.5.18-wc7updates"
+<<<<<<< HEAD
 <<<<<<< HEAD
   resolved "git+https://github.com/balance-io/balance-common.git#e4d47d703886560a03e8f2b064d53c2b7dacb0c9"
 =======
   resolved "git+https://github.com/balance-io/balance-common.git#4f55701764f8919138910dd8775fbfd79f42a338"
 >>>>>>> 266c99d... fixes for txn hash retrieved after send txn
+=======
+  resolved "git+https://github.com/balance-io/balance-common.git#57efe04b8fbd128bb8807662601790446edabd52"
+>>>>>>> e1952c4... fixes for updating valid address logic
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
