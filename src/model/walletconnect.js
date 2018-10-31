@@ -1,5 +1,5 @@
 import { commonStorage } from 'balance-common';
-import { get, mapValues, values } from 'lodash';
+import { assign, get, mapValues, values } from 'lodash';
 import { AlertIOS } from 'react-native';
 import RNWalletConnect from 'rn-walletconnect-wallet';
 
@@ -71,7 +71,7 @@ const getTransactionForSession = (walletConnector) => new Promise((resolve, reje
         callData: get(transactionPayload, 'data.params[0]', null),
         dappName,
         sessionId,
-        transactionId: callId,
+        callId,
       }))))
     .catch(error => resolve({}));
 });
@@ -80,7 +80,7 @@ export const walletConnectGetAllTransactions = async (walletConnectors) => {
   try {
     const sessionToTransactions = mapValues(walletConnectors, getTransactionForSession);
     const transactionValues = await Promise.all(values(sessionToTransactions));
-    return { ...transactionValues };
+    return assign({}, ...transactionValues);
   } catch (error) {
     AlertIOS.alert('Error fetching all transactions from open WalletConnect sessions.');
     return {};
