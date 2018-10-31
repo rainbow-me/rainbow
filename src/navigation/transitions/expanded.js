@@ -13,8 +13,8 @@ export default function expanded(navigation, transitionProps, prevTransitionProp
   return {
     transitionSpec: {
       timing: nextEffect === transitionName && nextIndex > prevIndex ? Animated.spring : Animated.timing,
-      tension: 100,
-      friction: 9.8,
+      tension: 120,
+      friction: 12,
       useNativeDriver: true,
     },
     screenInterpolator: (sceneProps = {}) => {
