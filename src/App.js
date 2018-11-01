@@ -8,7 +8,7 @@ import { AppRegistry, AlertIOS, AppState } from 'react-native';
 import { compose, withProps } from 'recompact';
 import { connect, Provider } from 'react-redux';
 import { NavigationActions } from 'react-navigation';
-import Routes from './screens/Routes';
+import { withWalletConnectConnections } from './hoc';
 import {
   addTransactionToApprove,
   addTransactionsToApprove,
@@ -16,33 +16,29 @@ import {
   transactionsToApproveInit,
 } from './redux/transactionsToApprove';
 import {
-  getValidWalletConnectors,
-  setWalletConnectors,
-} from './redux/walletconnect';
-import {
   walletConnectInitAllConnectors,
   walletConnectGetAllTransactions,
   walletConnectGetTransaction,
 } from './model/walletconnect';
 import store from './redux/store';
 import { walletInit } from './model/wallet';
+import Routes from './screens/Routes';
 import Navigation from './navigation';
 
 class App extends Component {
-  state = {
-    appState: AppState.currentState
-  }
-
   static propTypes = {
-    accountUpdateAccountAddress: PropTypes.func,
     accountInitializeState: PropTypes.func,
-    addTransactionToApprove: PropTypes.func,
+    accountUpdateAccountAddress: PropTypes.func,
     addTransactionsToApprove: PropTypes.func,
+    addTransactionToApprove: PropTypes.func,
     getValidWalletConnectors: PropTypes.func,
     setWalletConnectors: PropTypes.func,
     transactionIfExists: PropTypes.func,
     transactionsToApproveInit: PropTypes.func,
+    walletConnectors: PropTypes.arrayOf(PropTypes.object),
   }
+
+  state = { appState: AppState.currentState }
 
   navigatorRef = null
 
@@ -127,7 +123,7 @@ class App extends Component {
     if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
       this.fetchAllTransactionsFromWalletConnectSessions();
     }
-    this.setState({appState: nextAppState});
+    this.setState({ appState: nextAppState });
   }
 
   componentWillUnmount() {
@@ -152,7 +148,7 @@ class App extends Component {
   }
 
   fetchAllTransactionsFromWalletConnectSessions = async () => {
-    const allConnectors = this.props.getValidWalletConnectors()
+    const allConnectors = this.props.getValidWalletConnectors();
     if (!isEmpty(allConnectors)) {
       const allTransactions = await walletConnectGetAllTransactions(allConnectors);
       if (!isEmpty(allTransactions)) {
@@ -176,7 +172,7 @@ class App extends Component {
   }
 
   fetchAndAddTransaction = async (callId, sessionId) => {
-    const walletConnector = this.props.walletConnectors[sessionId];
+    const walletConnector = this.props.walletConnectors.find(({ _sessionId }) => (_sessionId === sessionId));
     const transactionDetails = await walletConnectGetTransaction(callId, walletConnector);
     if (!transactionDetails) return null;
 
@@ -193,15 +189,14 @@ class App extends Component {
 
 const AppWithRedux = compose(
   withProps({ store }),
+  withWalletConnectConnections,
   connect(
-    ({ walletconnect: { walletConnectors } }) => ({ walletConnectors }),
+    null,
     {
       addTransactionToApprove,
       addTransactionsToApprove,
       accountInitializeState,
       accountUpdateAccountAddress,
-      getValidWalletConnectors,
-      setWalletConnectors,
       transactionIfExists,
       transactionsToApproveInit,
     },

@@ -5,6 +5,7 @@ import React, { PureComponent } from 'react';
 import { Dimensions, InteractionManager, StyleSheet } from 'react-native';
 import Permissions from 'react-native-permissions';
 import ReactNativeQRCodeScanner from 'react-native-qrcode-scanner';
+import stylePropType from 'react-style-proptype';
 import styled from 'styled-components/primitives';
 import CrosshairAsset from '../../assets/qrcode-scanner-crosshair.png';
 import { colors, position } from '../../styles';
@@ -38,12 +39,13 @@ const Crosshair = styled.Image`
   resize-mode: contain;
 `;
 
-const CrosshairContainer = styled(Centered)`
+const ContentContainer = styled(Centered)`
   ${position.cover}
 `;
 
 class QRCodeScanner extends PureComponent {
   static propTypes = {
+    contentStyles: stylePropType,
     enableScanning: PropTypes.bool,
     onCameraReady: PropTypes.func,
     onSuccess: PropTypes.func,
@@ -120,7 +122,7 @@ class QRCodeScanner extends PureComponent {
   }
 
   render = () => {
-    const { onSuccess } = this.props;
+    const { contentStyles, onSuccess } = this.props;
     const { error, isAuthorized, isInitialized } = this.state;
 
     const showCrosshair = !error && isAuthorized && isInitialized;
@@ -144,17 +146,15 @@ class QRCodeScanner extends PureComponent {
           ref={this.handleScannerRef}
           topViewStyle={styles.disableSection}
         />
-        {showErrorMessage && (
-          <ErrorText
-            color={colors.red}
-            error={`Error ${error} camera`}
-          />
-        )}
-        {showCrosshair && (
-          <CrosshairContainer>
-            <Crosshair source={CrosshairAsset} />
-          </CrosshairContainer>
-        )}
+        <ContentContainer style={contentStyles}>
+          {showErrorMessage && (
+            <ErrorText
+              color={colors.red}
+              error={`Error ${error} camera`}
+            />
+          )}
+          {showCrosshair && <Crosshair source={CrosshairAsset} />}
+        </ContentContainer>
       </Container>
     );
   }
