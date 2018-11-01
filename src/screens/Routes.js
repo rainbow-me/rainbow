@@ -12,6 +12,8 @@ import SettingsScreenWithData from './SettingsScreenWithData';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
 import { deviceUtils } from '../utils';
+import store from '../redux/store';
+import { updateTransitionProps } from '../redux/navigation';
 
 import Navigation from '../navigation';
 
@@ -76,6 +78,12 @@ const AppStack = createStackNavigator({
   transitionConfig: buildTransitions(Navigation, { expanded, sheet }),
   cardStyle: {
     backgroundColor: 'transparent',
+  },
+  onTransitionStart() {
+    store.dispatch(updateTransitionProps({ isTransitioning: true }));
+  },
+  onTransitionEnd() {
+    store.dispatch(updateTransitionProps({ isTransitioning: false }));
   },
 });
 

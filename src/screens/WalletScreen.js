@@ -1,16 +1,17 @@
-import { withSafeTimeout } from '@hocs/safe-timers';
 import lang from 'i18n-js';
-import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StatusBar } from 'react-native';
+import { Animated, StatusBar } from 'react-native';
+import { BlurView } from 'react-native-blur';
 import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
-import { AssetList } from '../components/asset-list';
-import { UniqueTokenRow } from '../components/unique-token';
+import { get } from 'lodash';
+import { withSafeTimeout } from '@hocs/safe-timers';
 import Avatar from '../components/Avatar';
-import { BalanceCoinRow } from '../components/coin-row';
 import { ActivityHeaderButton, Header, HeaderButton } from '../components/header';
+import { AssetList } from '../components/asset-list';
+import { BalanceCoinRow } from '../components/coin-row';
 import { FlexItem, Page } from '../components/layout';
+import { UniqueTokenRow } from '../components/unique-token';
 import {
   areAssetsEqualToInitialAccountAssetsState,
   buildUniqueTokenList,
@@ -22,9 +23,19 @@ import {
   withAccountAssets,
   withHideSplashScreen,
   withRequestsInit,
+  withTransitionProps,
 } from '../hoc';
 import { position } from '../styles';
 import { FabWrapper, WalletConnectFab, SendFab } from '../components/fab';
+
+const overlayStyles = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  zIndex: 1,
+};
 
 const filterEmptyAssetSections = sections => sections.filter(({ totalItems }) => totalItems);
 
@@ -42,6 +53,7 @@ const WalletScreen = ({
   onSectionsLoaded,
   onToggleShowShitcoins,
   showShitcoins,
+  transitionProps,
   uniqueTokens,
 }) => {
   const sections = {
@@ -102,9 +114,16 @@ const WalletScreen = ({
     <WalletConnectFab disable={isEmpty} key="walletConnectFab" onPress={onPressWalletConnect} />,
   ];
 
+  const showBlur = transitionProps.effect === 'expanded' && (transitionProps.isTransitioning || transitionProps.position._value > 0);
+
   return (
     <Page component={FlexItem} style={position.sizeAsObject('100%')}>
       <StatusBar barStyle="dark-content" />
+      {showBlur ? (
+        <Animated.View style={{ ...overlayStyles, opacity: transitionProps.position }}>
+          <BlurView style={overlayStyles} blurAmount={5} blurType="dark" />
+        </Animated.View>
+      ) : null}
       <Header justify="space-between">
         <HeaderButton onPress={onPressProfile} transformOrigin="left">
           <Avatar />
@@ -146,6 +165,7 @@ WalletScreen.propTypes = {
   onSectionsLoaded: PropTypes.func,
   onToggleShowShitcoins: PropTypes.func,
   showShitcoins: PropTypes.bool,
+  transitionProps: PropTypes.object,
   uniqueTokens: PropTypes.array.isRequired,
 };
 
@@ -155,6 +175,7 @@ export default compose(
   withHideSplashScreen,
   withRequestsInit,
   withSafeTimeout,
+  withTransitionProps,
   withState('didLoadAssetList', 'toggleLoadAssetList', false),
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({

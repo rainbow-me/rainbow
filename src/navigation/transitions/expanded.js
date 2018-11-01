@@ -1,6 +1,8 @@
 import { Animated } from 'react-native';
 import { get } from 'lodash';
 import { deviceUtils } from '../../utils';
+import store from '../../redux/store';
+import { updateTransitionProps } from '../../redux/navigation';
 
 export const transitionName = 'expanded';
 
@@ -24,7 +26,12 @@ export default function expanded(navigation, transitionProps, prevTransitionProp
         scene,
       } = sceneProps;
 
-      navigation.setTransitionPosition(position);
+      store.dispatch(updateTransitionProps({
+        nextIndex,
+        prevIndex,
+        position,
+        effect: transitionName,
+      }));
 
       const opacityEnd = 0.75;
       const translateYStart = deviceUtils.dimensions.height;

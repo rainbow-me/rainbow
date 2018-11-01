@@ -27,7 +27,7 @@ import {
   withAccountAssets,
   withRequestsInit,
 } from '../hoc';
-import { deviceUtils } from '../utils';
+import { deviceUtils, sortList } from '../utils';
 
 const AddressInput = styled(AddressField)`
   padding-right: 20px;
@@ -356,7 +356,7 @@ class SendScreen extends Component {
 
     const sections = {
       balances: {
-        data: accountInfo.assets,
+        data: sortList(accountInfo.assets, 'native.balance.amount', 'desc'),
         renderItem: (props) => (
           <SendCoinRow
             {...props}
