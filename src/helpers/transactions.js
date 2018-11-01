@@ -7,7 +7,6 @@ import {
 } from 'date-fns';
 import { get, groupBy, isEmpty } from 'lodash';
 import { createElement } from 'react';
-import { sortList } from '../utils';
 
 export const TransactionStatusTypes = {
   failed: 'failed',
@@ -41,8 +40,8 @@ export const getTransactionStatus = ({
   return undefined;
 };
 
-const groupTransactionByDate = transactions => {
-  return groupBy(transactions, ({ pending, timestamp: time }) => {
+const groupTransactionByDate = (transactions) =>
+  groupBy(transactions, ({ pending, timestamp: time }) => {
     if (pending) return 'Pending';
 
     const { ms } = time;
@@ -58,7 +57,6 @@ const groupTransactionByDate = transactions => {
 
     return format(timestamp, `MMMM${isThisYear(timestamp) ? '' : ' YYYY'}`);
   });
-};
 
 const normalizeTransactions = ({ accountAddress, transactions }) =>
   transactions.map(({

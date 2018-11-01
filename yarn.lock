@@ -2834,8 +2834,8 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
 
 electron-to-chromium@^1.3.47:
-  version "1.3.82"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.82.tgz#7d13ae4437d2a783de3f4efba96b186c540b67b1"
+  version "1.3.83"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.83.tgz#74584eb0972bb6777811c5d68d988c722f5e6666"
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -2879,8 +2879,8 @@ entities@~1.1.1:
   resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.2.tgz#bdfa735299664dfafd34529ed4f8522a275fea56"
 
 envinfo@^5.7.0:
-  version "5.11.0"
-  resolved "https://registry.yarnpkg.com/envinfo/-/envinfo-5.11.0.tgz#0eb97683e4225c93ce029e4be3c90acd0c4b09d4"
+  version "5.11.1"
+  resolved "https://registry.yarnpkg.com/envinfo/-/envinfo-5.11.1.tgz#a1c2cb55196931b2ac6d4110fa7f0003697ad9df"
 
 errno@^0.1.1, errno@~0.1.1:
   version "0.1.7"
@@ -4042,8 +4042,8 @@ hyphenate-style-name@^1.0.2:
   resolved "https://registry.yarnpkg.com/hyphenate-style-name/-/hyphenate-style-name-1.0.2.tgz#31160a36930adaf1fc04c6074f7eb41465d4ec4b"
 
 i18n-js@^3.0.11:
-  version "3.0.11"
-  resolved "https://registry.yarnpkg.com/i18n-js/-/i18n-js-3.0.11.tgz#f9e96bdb641c5b9d6be12759d7c422089987ef02"
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/i18n-js/-/i18n-js-3.1.0.tgz#4ec474b2b7ba8175284a0003804c7bf713991919"
 
 i18next@^11.3.2:
   version "11.10.2"
@@ -6618,7 +6618,7 @@ react-native-blur@^3.2.2:
   dependencies:
     prop-types "^15.5.10"
 
-react-native-camera@^1.2.0:
+react-native-camera@^1.3.0:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.3.1.tgz#d7c1a207bfc33b11c130762d6b494b4169562463"
   dependencies:
@@ -6711,7 +6711,7 @@ react-native-level-fs@^3.0.1:
     level-filesystem "^1.0.1"
     levelup "^0.18.2"
 
-react-native-linear-gradient@^2.4.0:
+react-native-linear-gradient@^2.4.2:
   version "2.4.3"
   resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.4.3.tgz#a7f5fe685b1a2ac788cca37828c5c9ca91357a16"
 
@@ -6916,7 +6916,7 @@ react-navigation-drawer@0.5.0:
   dependencies:
     react-native-drawer-layout-polyfill "^1.3.2"
 
-react-navigation-fluid-transitions@^0.2.2:
+react-navigation-fluid-transitions@^0.2.72:
   version "0.2.72"
   resolved "https://registry.yarnpkg.com/react-navigation-fluid-transitions/-/react-navigation-fluid-transitions-0.2.72.tgz#79ffd14df0fb9dae298ad196df3d3b212df0cb53"
   dependencies:
@@ -6937,7 +6937,7 @@ react-navigation-tabs@0.8.4:
     react-lifecycles-compat "^3.0.4"
     react-native-tab-view "^1.0.0"
 
-react-navigation@^2.17.0:
+react-navigation@^2.18.0:
   version "2.18.2"
   resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-2.18.2.tgz#ba278ded41f736d029c7cae5d54ab1427dc6ed34"
   dependencies:
@@ -7398,7 +7398,7 @@ rn-nodeify@^10.0.0:
     semver "^5.0.1"
     xtend "^4.0.0"
 
-rn-walletconnect-wallet@^0.7.23:
+rn-walletconnect-wallet@^0.7.24:
   version "0.7.26"
   resolved "https://registry.yarnpkg.com/rn-walletconnect-wallet/-/rn-walletconnect-wallet-0.7.26.tgz#9d39d18f74abd9fe2b4bfd343a6d90a338b43a96"
   dependencies:
@@ -8427,7 +8427,7 @@ use@^3.1.0:
 
 utf8@2.1.1:
   version "2.1.1"
-  resolved "https://registry.yarnpkg.com/utf8/-/utf8-2.1.1.tgz#2e01db02f7d8d0944f77104f1609eb0c304cf768"
+  resolved "http://registry.npmjs.org/utf8/-/utf8-2.1.1.tgz#2e01db02f7d8d0944f77104f1609eb0c304cf768"
 
 util-deprecate@~1.0.1:
   version "1.0.2"
@@ -8442,7 +8442,7 @@ util.promisify@^1.0.0, util.promisify@~1.0.0:
 
 util@0.10.3:
   version "0.10.3"
-  resolved "https://registry.yarnpkg.com/util/-/util-0.10.3.tgz#7afb1afe50805246489e3db7fe0ed379336ac0f9"
+  resolved "http://registry.npmjs.org/util/-/util-0.10.3.tgz#7afb1afe50805246489e3db7fe0ed379336ac0f9"
   dependencies:
     inherits "2.0.1"
 

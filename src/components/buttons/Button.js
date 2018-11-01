@@ -29,6 +29,7 @@ const Container = styled(Centered)`
   background-color: ${({ bgColor }) => (bgColor || colors.grey)};
   border-radius: ${({ type }) => ((type === 'rounded') ? 14 : 50)};
   flex-grow: 0;
+  position: relative;
   ${({ containerStyles }) => containerStyles}
 `;
 

@@ -1,15 +1,19 @@
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { pure } from 'recompact';
+import { compose, pure, withHandlers, withState } from 'recompact';
 import styled from 'styled-components/primitives';
 import { BackButton, Header } from '../components/header';
 import { Centered } from '../components/layout';
 import { QRCodeScanner } from '../components/qrcode-scanner';
+import { WalletConnectList } from '../components/walletconnect-list';
+import { withWalletConnectConnections, withSafeAreaViewInsetValues } from '../hoc';
 import { colors, position } from '../styles';
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   ${position.size('100%')}
   background-color: ${colors.black};
+  overflow: hidden;
 `;
 
 const QRScannerHeader = styled(Header).attrs({
@@ -23,29 +27,58 @@ const QRScannerHeader = styled(Header).attrs({
 const QRScannerScreen = ({
   isScreenActive,
   onPressBackButton,
-  onSuccess,
-  ...props
-}) => (
-  <Container>
-    <QRCodeScanner
-      {...props}
-      enableScanning={isScreenActive}
-      onSuccess={onSuccess}
-    />
-    <QRScannerHeader>
-      <BackButton
-        color={colors.white}
-        direction="left"
-        onPress={onPressBackButton}
+  onScanSuccess,
+  onSheetLayout,
+  sheetHeight,
+  showWalletConnectSheet,
+  walletConnectorsCount,
+}) => {
+  const showSheet = showWalletConnectSheet && !!walletConnectorsCount;
+
+  return (
+    <Container>
+      <QRCodeScanner
+        {...this.props}
+        contentStyles={{
+          bottom: showSheet ? sheetHeight : 0,
+          top: showSheet ? Header.height : 0,
+        }}
+        enableScanning={isScreenActive}
+        onSuccess={onScanSuccess}
       />
-    </QRScannerHeader>
-  </Container>
-);
+      <QRScannerHeader>
+        <BackButton
+          color={colors.white}
+          direction="left"
+          onPress={onPressBackButton}
+        />
+      </QRScannerHeader>
+      {showSheet && (<WalletConnectList onLayout={onSheetLayout}/>)}
+    </Container>
+  );
+};
 
 QRScannerScreen.propTypes = {
   isScreenActive: PropTypes.bool.isRequired,
   onPressBackButton: PropTypes.func,
-  onSuccess: PropTypes.func,
+  onScanSuccess: PropTypes.func,
+  onSheetLayout: PropTypes.func,
+  sheetHeight: PropTypes.number,
+  showWalletConnectSheet: PropTypes.bool,
+  walletConnectorsCount: PropTypes.number,
 };
 
-export default pure(QRScannerScreen);
+QRScannerScreen.defaultProps = {
+  showWalletConnectSheet: true,
+};
+
+export default compose(
+  pure,
+  withState('sheetHeight', 'setSheetHeight', null),
+  withSafeAreaViewInsetValues,
+  withWalletConnectConnections,
+  withHandlers({
+    onSheetLayout: ({ setSheetHeight }) => ({ nativeEvent }) =>
+      setSheetHeight(get(nativeEvent, 'layout.height')),
+  }),
+)(QRScannerScreen);

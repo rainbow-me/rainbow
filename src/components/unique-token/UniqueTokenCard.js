@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
 import { View } from 'react-native';
 import { ButtonPressAnimation } from '../buttons';
@@ -71,4 +72,4 @@ UniqueTokenCard.propTypes = {
   size: PropTypes.number,
 };
 
-export default UniqueTokenCard;
+export default pure(UniqueTokenCard);
