@@ -91,18 +91,6 @@ SPEC CHECKSUMS:
   RNReanimated: 45d9313b7a62318ed00d60a811937321e43e076e
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-PODFILE CHECKSUM: 6d56e7c3d62f1b0973fa1115d56e4da6cee057c7
-=======
 PODFILE CHECKSUM: 820862140c8167647e9ffb0a52c9f62b4a7ba216
->>>>>>> 7b842ed... Implement expanded state for displaying assets and unique tokens
-=======
-PODFILE CHECKSUM: f930433c96348baac9030c753d3ef7f35c4b7880
->>>>>>> 266c99d... fixes for txn hash retrieved after send txn
-=======
-PODFILE CHECKSUM: 820862140c8167647e9ffb0a52c9f62b4a7ba216
->>>>>>> 9be970e... Fix blur on expanded animation/add sorting to send
 
 COCOAPODS: 1.5.3
