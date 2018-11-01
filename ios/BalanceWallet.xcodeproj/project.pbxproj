@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -440,6 +441,13 @@
 			remoteGlobalIDString = 9936F32F1F5F2E5B0010BF04;
 			remoteInfo = "privatedata-tvOS";
 		};
+		3C39C26F218BBE66004C763F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3C39C266218BBE66004C763F /* FastImage.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A287971D1DE0C0A60081BDFA;
+			remoteInfo = FastImage;
+		};
 		3C63E308210FD58100CD471C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3759782F486D4A9C80CC99F5 /* RNFirebase.xcodeproj */;
@@ -646,6 +654,7 @@
 		3A545B8C781B47AC8A7CD956 /* RNSVG.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSVG.xcodeproj; path = "../node_modules/react-native-svg/ios/RNSVG.xcodeproj"; sourceTree = "<group>"; };
 		3A7E5E09E14B4EA4B52CC6EE /* libRNGestureHandler.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNGestureHandler.a; sourceTree = "<group>"; };
 		3C379D5D20FD1F92009AF81F /* BalanceWallet.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = BalanceWallet.entitlements; path = BalanceWallet/BalanceWallet.entitlements; sourceTree = "<group>"; };
+		3C39C266218BBE66004C763F /* FastImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FastImage.xcodeproj; path = "../node_modules/react-native-fast-image/ios/FastImage.xcodeproj"; sourceTree = "<group>"; };
 		3CE850D5210FEA8F00672599 /* libGoogleToolboxForMac.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libGoogleToolboxForMac.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3CE850D7210FEACE00672599 /* libnanopb.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libnanopb.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3EA8003C5E2D46E38184714B /* Graphik-ThinItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-ThinItalic.otf"; path = "../src/assets/fonts/Graphik-ThinItalic.otf"; sourceTree = "<group>"; };
@@ -1138,6 +1147,14 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		3C39C267218BBE66004C763F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3C39C270218BBE66004C763F /* libFastImage.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		3C63E305210FD58100CD471C /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1167,6 +1184,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				3C39C266218BBE66004C763F /* FastImage.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
@@ -1440,6 +1458,10 @@
 				{
 					ProductGroup = 2C867625211152550067D47A /* Products */;
 					ProjectRef = 4A9E14039D3A4590A2F32D92 /* CodePush.xcodeproj */;
+				},
+				{
+					ProductGroup = 3C39C267218BBE66004C763F /* Products */;
+					ProjectRef = 3C39C266218BBE66004C763F /* FastImage.xcodeproj */;
 				},
 				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
@@ -1875,6 +1897,13 @@
 			fileType = archive.ar;
 			path = "libprivatedata-tvOS.a";
 			remoteRef = 2DF0FFEC2056DD460020B375 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		3C39C270218BBE66004C763F /* libFastImage.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libFastImage.a;
+			remoteRef = 3C39C26F218BBE66004C763F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		3C63E309210FD58100CD471C /* libRNFirebase.a */ = {

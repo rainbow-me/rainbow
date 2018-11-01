@@ -152,6 +152,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-fast-image')
     compile project(':react-native-blur')
     compile project(':react-native-languages')
     compile project(':react-native-reanimated')
