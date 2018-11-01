@@ -5,20 +5,19 @@ import { compose, withProps } from 'recompact';
 import { filter, get } from 'lodash';
 import { InteractionManager, Linking, Share, StatusBar, TouchableOpacity } from 'react-native';
 
-import { colors, padding, position } from '../styles';
 import { ButtonPressAnimation } from '../components/buttons';
-import { Column, Row } from '../components/layout';
-import { Text } from '../components/text';
 import { Icon } from '../components/icons';
+import { Centered, Column, Row } from '../components/layout';
+import { Text } from '../components/text';
 import { UniqueTokenImage } from '../components/unique-token';
 import { withAccountAssets } from '../hoc';
+import { colors, padding, position } from '../styles';
 import { deviceUtils } from '../utils';
 
 const ActionIcon = styled(Icon).attrs({
   color: colors.sendScreen.brightBlue,
 })`
-  height: 21px;
-  width: 21px;
+  ${position.size(21)};
 `;
 
 const AssetTitleRow = styled(Row).attrs({
@@ -48,8 +47,8 @@ const AssetActionRow = styled(ButtonPressAnimation)`
 const Border = styled(Row)`
   background-color: ${colors.blueGreyLight};
   height: 2px;
-  width: 100%;
   opacity: 0.03;
+  width: 100%;
 `;
 
 const BackgroundButton = styled(TouchableOpacity)`
@@ -57,10 +56,7 @@ const BackgroundButton = styled(TouchableOpacity)`
   z-index: 0;
 `;
 
-const Container = styled(Column).attrs({
-  align: 'center',
-  justify: 'center',
-})`
+const Container = styled(Centered).attrs({ direction: 'column' })`
   ${padding(0, 15)}
   background-color: transparent;
   height: 100%;
@@ -69,11 +65,11 @@ const Container = styled(Column).attrs({
 const FloatingContainer = styled(Column)`
   ${padding(20, 0)}
   background-color: ${({ color }) => color || colors.white};
-  width: 100%;
   border-radius: 12px;
   height: ${({ size }) => (size ? `${size - 60}px` : 'auto')};
   margin-bottom: ${({ marginBottom }) => (marginBottom ? `${marginBottom}px` : '0px')};
   padding-bottom: 0px;
+  width: 100%;
   z-index: 1;
 `;
 
@@ -239,8 +235,7 @@ class ExpandedAssetScreen extends Component {
 export default compose(
   withAccountAssets,
   withProps(({ assets, navigation, uniqueTokens }) => {
-    const type = get(navigation, 'state.params.type');
-    const name = get(navigation, 'state.params.name');
+    const { name, type } = navigation.state.params;
 
     let selectedAsset = {};
 
@@ -250,12 +245,14 @@ export default compose(
       [selectedAsset] = filter(uniqueTokens, (asset) => asset.name === name);
     }
 
-    const subtitle = type === 'token' ? get(selectedAsset, 'balance.display') : `${selectedAsset.contractName} #${selectedAsset.id}`;
+    const subtitle = type === 'token'
+      ? get(selectedAsset, 'balance.display')
+      : `${selectedAsset.contractName} #${selectedAsset.id}`;
 
     return {
-      type,
       selectedAsset,
       subtitle,
+      type,
     };
   }),
 )(ExpandedAssetScreen);

@@ -1,8 +1,8 @@
-import { Animated } from 'react-native';
 import { get } from 'lodash';
-import { deviceUtils } from '../../utils';
-import store from '../../redux/store';
+import { Animated } from 'react-native';
 import { updateTransitionProps } from '../../redux/navigation';
+import store from '../../redux/store';
+import { deviceUtils } from '../../utils';
 
 export const transitionName = 'expanded';
 
