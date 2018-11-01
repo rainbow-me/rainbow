@@ -2,6 +2,8 @@ import { Animated } from 'react-native';
 import { get } from 'lodash';
 import { isIphoneX } from 'react-native-iphone-x-helper';
 import { deviceUtils, safeAreaInsetValues } from '../../utils';
+import store from '../../redux/store';
+import { updateTransitionProps } from '../../redux/navigation';
 
 export const transitionName = 'sheet';
 
@@ -25,7 +27,12 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
         scene,
       } = sceneProps;
 
-      navigation.setTransitionPosition(position);
+      store.dispatch(updateTransitionProps({
+        nextIndex,
+        prevIndex,
+        position,
+        effect: transitionName,
+      }));
 
       const distanceFromTop = isIphoneX() ? 14 : 6;
       const scaleEnd = 1 - ((safeAreaInsetValues.top + distanceFromTop) / deviceUtils.dimensions.height);
