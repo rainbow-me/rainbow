@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Image } from 'react-primitives';
+import FastImage from 'react-native-fast-image';
 import {
   compose,
   onlyUpdateForKeys,
@@ -43,7 +43,7 @@ const UniqueTokenImage = ({
 }) => (
   <Container>
     {(imageUrl && !error) ? (
-      <Image
+      <FastImage
         onError={onError}
         onLoad={onLoad}
         onLoadStart={onLoadStart}
