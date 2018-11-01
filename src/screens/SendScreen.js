@@ -9,7 +9,9 @@ import { connect } from 'react-redux';
 import { get } from 'lodash';
 import { withSafeTimeout } from '@hocs/safe-timers';
 import { isIphoneX } from 'react-native-iphone-x-helper';
-
+import {
+  sortAssetsByNativeAmount,
+} from '../helpers/assets';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
 import { AddressField, UnderlineField } from '../components/fields';
 import { AssetList, UniqueTokenRow } from '../components/asset-list';
@@ -353,10 +355,9 @@ class SendScreen extends Component {
 
   renderAssetList() {
     const { accountInfo, fetchData, uniqueTokens } = this.props;
-
     const sections = {
       balances: {
-        data: sortList(accountInfo.assets, 'native.balance.amount', 'desc'),
+        data: sortAssetsByNativeAmount(accountInfo.assets, true),
         renderItem: (props) => (
           <SendCoinRow
             {...props}
