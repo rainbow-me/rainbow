@@ -2,7 +2,6 @@ import { Animated, InteractionManager } from 'react-native';
 
 const queuedNavigationActions = [];
 let isPaused = false;
-let transitionPosition = new Animated.Value(0);
 
 /**
  * Gets the current screen from navigation state
@@ -55,18 +54,9 @@ function resumeNavigationActions(navigation) {
   }
 }
 
-function getTransitionPosition() {
-  return transitionPosition;
-}
-
-function setTransitionPosition(position) {
-  transitionPosition = position;
-}
 export default {
   getActiveRouteName,
-  getTransitionPosition,
   handleAction,
   pauseNavigationActions,
   resumeNavigationActions,
-  setTransitionPosition
 };
