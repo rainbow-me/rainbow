@@ -17,16 +17,12 @@ const Container = styled(Row)`
   width: 100%;
 `;
 
-const renderItems = (uniqueToken, itemIndex) => (
-  <UniqueTokenCard
-    item={uniqueToken}
-    key={uniqueToken.id}
-    size={CardSize}
-    style={{ marginLeft: (itemIndex >= 1) ? CardMargin : 0 }}
-  />
-);
-
-const UniqueTokenRow = ({ isFirstRow, isLastRow, items }) => (
+const UniqueTokenRow = ({
+  isFirstRow,
+  isLastRow,
+  items,
+  onPress,
+}) => (
   <Container
     align="center"
     justify="start"
@@ -35,7 +31,15 @@ const UniqueTokenRow = ({ isFirstRow, isLastRow, items }) => (
       marginTop: isFirstRow ? CardMargin : 0,
     }}
   >
-    {items.map(renderItems)}
+    {items.map((uniqueToken, itemIndex) => (
+      <UniqueTokenCard
+        item={uniqueToken}
+        key={uniqueToken.id}
+        size={CardSize}
+        style={{ marginLeft: (itemIndex >= 1) ? CardMargin : 0 }}
+        onPress={onPress}
+      />
+    ))}
   </Container>
 );
 
@@ -43,6 +47,7 @@ UniqueTokenRow.propTypes = {
   isFirstRow: PropTypes.bool,
   isLastRow: PropTypes.bool,
   items: PropTypes.array,
+  onPress: PropTypes.func,
 };
 
 export default compose(

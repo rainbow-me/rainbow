@@ -166,7 +166,7 @@ class App extends Component {
       if (transaction) {
         this.handleOpenConfirmTransactionModal(transaction);
       } else {
-        AlertIOS.alert('The requested transaction could not be found.');
+        AlertIOS.alert('This request has expired.');
       }
     }
   }

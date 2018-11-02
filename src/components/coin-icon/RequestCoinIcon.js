@@ -3,7 +3,7 @@ import React from 'react';
 import { CircularProgress } from 'react-native-circular-progress';
 import RequestVendorLogoIcon from './RequestVendorLogoIcon';
 
-const RequestCoinIcon = ({ expirationColor, percentElapsed, size }) => (
+const RequestCoinIcon = ({ dappName, expirationColor, percentElapsed, size }) => (
   <CircularProgress
     fill={percentElapsed}
     lineCap="round"
@@ -13,7 +13,7 @@ const RequestCoinIcon = ({ expirationColor, percentElapsed, size }) => (
     tintColor={expirationColor}
     width={2}
   >
-    {() => <RequestVendorLogoIcon />}
+    {() => <RequestVendorLogoIcon dappName={dappName} />}
   </CircularProgress>
 );
 

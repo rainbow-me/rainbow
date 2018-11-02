@@ -1,7 +1,8 @@
 import { createSwitchNavigator, createStackNavigator } from 'react-navigation';
 import createSwipeNavigator from '../navigation/navigators/createSwipeNavigator';
-import sheetTransition from '../navigation/transitions/sheet';
+import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import ActivityScreen from './ActivityScreen';
+import ExpandedAssetScreen from './ExpandedAssetScreen';
 import IntroScreen from './IntroScreen';
 import LoadingScreen from './LoadingScreen';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
@@ -11,6 +12,8 @@ import SettingsScreenWithData from './SettingsScreenWithData';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
 import { deviceUtils } from '../utils';
+import store from '../redux/store';
+import { updateTransitionProps } from '../redux/navigation';
 
 import Navigation from '../navigation';
 
@@ -48,6 +51,15 @@ const AppStack = createStackNavigator({
     screen: ActivityScreen,
   },
   ConfirmTransaction: TransactionConfirmationScreenWithData,
+  ExpandedAssetScreen: {
+    navigationOptions: {
+      effect: 'expanded',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height,
+      },
+    },
+    screen: ExpandedAssetScreen,
+  },
   SendScreen: {
     navigationOptions: {
       effect: 'sheet',
@@ -63,7 +75,16 @@ const AppStack = createStackNavigator({
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',
   mode: 'modal',
-  transitionConfig: sheetTransition,
+  transitionConfig: buildTransitions(Navigation, { expanded, sheet }),
+  cardStyle: {
+    backgroundColor: 'transparent',
+  },
+  onTransitionStart() {
+    store.dispatch(updateTransitionProps({ isTransitioning: true }));
+  },
+  onTransitionEnd() {
+    store.dispatch(updateTransitionProps({ isTransitioning: false }));
+  },
 });
 
 const IntroStack = createStackNavigator({

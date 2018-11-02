@@ -9,7 +9,9 @@ import { connect } from 'react-redux';
 import { get } from 'lodash';
 import { withSafeTimeout } from '@hocs/safe-timers';
 import { isIphoneX } from 'react-native-iphone-x-helper';
-
+import {
+  sortAssetsByNativeAmount,
+} from '../helpers/assets';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
 import { AddressField, UnderlineField } from '../components/fields';
 import { AssetList, UniqueTokenRow } from '../components/asset-list';
@@ -27,7 +29,7 @@ import {
   withAccountAssets,
   withRequestsInit,
 } from '../hoc';
-import { deviceUtils } from '../utils';
+import { deviceUtils, sortList } from '../utils';
 
 const AddressInput = styled(AddressField)`
   padding-right: 20px;
@@ -197,8 +199,7 @@ class SendScreen extends Component {
 
   componentDidUpdate(prevProps) {
     const { isValidAddress } = this.props;
-
-    if (prevProps.isValidAddress !== isValidAddress) {
+    if (isValidAddress && (prevProps.isValidAddress !== isValidAddress)) {
       Keyboard.dismiss();
     }
   }
@@ -354,10 +355,9 @@ class SendScreen extends Component {
 
   renderAssetList() {
     const { accountInfo, fetchData, uniqueTokens } = this.props;
-
     const sections = {
       balances: {
-        data: accountInfo.assets,
+        data: sortAssetsByNativeAmount(accountInfo.assets, true),
         renderItem: (props) => (
           <SendCoinRow
             {...props}

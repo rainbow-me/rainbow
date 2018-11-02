@@ -1,15 +1,17 @@
-import { withSafeTimeout } from '@hocs/safe-timers';
 import lang from 'i18n-js';
-import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Animated, StatusBar } from 'react-native';
+import { BlurView } from 'react-native-blur';
 import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
-import { AssetList } from '../components/asset-list';
-import { UniqueTokenRow } from '../components/unique-token';
+import { get } from 'lodash';
+import { withSafeTimeout } from '@hocs/safe-timers';
 import Avatar from '../components/Avatar';
-import { BalanceCoinRow } from '../components/coin-row';
 import { ActivityHeaderButton, Header, HeaderButton } from '../components/header';
+import { AssetList } from '../components/asset-list';
+import { BalanceCoinRow } from '../components/coin-row';
 import { FlexItem, Page } from '../components/layout';
+import { UniqueTokenRow } from '../components/unique-token';
 import {
   areAssetsEqualToInitialAccountAssetsState,
   buildUniqueTokenList,
@@ -21,12 +23,20 @@ import {
   withAccountAssets,
   withHideSplashScreen,
   withRequestsInit,
+  withTransitionProps,
 } from '../hoc';
 import { position } from '../styles';
 import { FabWrapper, WalletConnectFab, SendFab } from '../components/fab';
 
-const BalanceRenderItem = renderItemProps => <BalanceCoinRow {...renderItemProps} />;
-const UniqueTokenRenderItem = renderItemProps => <UniqueTokenRow {...renderItemProps} />;
+const overlayStyles = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  zIndex: 1,
+};
+
 const filterEmptyAssetSections = sections => sections.filter(({ totalItems }) => totalItems);
 
 const WalletScreen = ({
@@ -35,6 +45,7 @@ const WalletScreen = ({
   assetsTotalUSD,
   didLoadAssetList,
   fetching,
+  navigation,
   onPressSend,
   onPressProfile,
   onPressWalletConnect,
@@ -42,19 +53,30 @@ const WalletScreen = ({
   onSectionsLoaded,
   onToggleShowShitcoins,
   showShitcoins,
+  transitionProps,
   uniqueTokens,
 }) => {
   const sections = {
     balances: {
       data: sortAssetsByNativeAmount(assets, showShitcoins),
-      renderItem: BalanceRenderItem,
+      renderItem: (renderItemProps) => (
+        <BalanceCoinRow
+          {...renderItemProps}
+          onPress={(symbol) => navigation.navigate('ExpandedAssetScreen', { type: 'token', name: symbol })}
+        />
+      ),
       title: lang.t('account.tab_balances'),
       totalItems: get(assetsTotalUSD, 'amount') ? assetsCount : 0,
       totalValue: get(assetsTotalUSD, 'display', ''),
     },
     collectibles: {
       data: buildUniqueTokenList(uniqueTokens),
-      renderItem: UniqueTokenRenderItem,
+      renderItem: (renderItemProps) => (
+        <UniqueTokenRow
+          {...renderItemProps}
+          onPress={(name) => navigation.navigate('ExpandedAssetScreen', { type: 'unique_token', name })}
+        />
+      ),
       title: lang.t('account.tab_collectibles'),
       totalItems: uniqueTokens.length,
       totalValue: '',
@@ -92,8 +114,16 @@ const WalletScreen = ({
     <WalletConnectFab disable={isEmpty} key="walletConnectFab" onPress={onPressWalletConnect} />,
   ];
 
+  const showBlur = transitionProps.effect === 'expanded' && (transitionProps.isTransitioning || transitionProps.position._value > 0);
+
   return (
     <Page component={FlexItem} style={position.sizeAsObject('100%')}>
+      <StatusBar barStyle="dark-content" />
+      {showBlur ? (
+        <Animated.View style={{ ...overlayStyles, opacity: transitionProps.position }}>
+          <BlurView style={overlayStyles} blurAmount={5} blurType="dark" />
+        </Animated.View>
+      ) : null}
       <Header justify="space-between">
         <HeaderButton onPress={onPressProfile} transformOrigin="left">
           <Avatar />
@@ -127,6 +157,7 @@ WalletScreen.propTypes = {
   didLoadAssetList: PropTypes.bool,
   fetching: PropTypes.bool.isRequired,
   fetchingUniqueTokens: PropTypes.bool.isRequired,
+  navigation: PropTypes.object,
   onPressProfile: PropTypes.func.isRequired,
   onPressSend: PropTypes.func.isRequired,
   onPressWalletConnect: PropTypes.func.isRequired,
@@ -134,6 +165,7 @@ WalletScreen.propTypes = {
   onSectionsLoaded: PropTypes.func,
   onToggleShowShitcoins: PropTypes.func,
   showShitcoins: PropTypes.bool,
+  transitionProps: PropTypes.object,
   uniqueTokens: PropTypes.array.isRequired,
 };
 
@@ -143,6 +175,7 @@ export default compose(
   withHideSplashScreen,
   withRequestsInit,
   withSafeTimeout,
+  withTransitionProps,
   withState('didLoadAssetList', 'toggleLoadAssetList', false),
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({

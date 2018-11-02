@@ -37,7 +37,7 @@ const RequestCoinRow = ({
   <CoinRow
     {...item}
     {...props}
-    bottomRowRender={({ transactionDisplayDetails }) => <CoinName>{get(transactionDisplayDetails, 'asset.name')}</CoinName>}
+    bottomRowRender={({ dappName, transactionDisplayDetails }) => <CoinName>{dappName}</CoinName>}
     coinIconRender={RequestCoinIcon}
     expirationColor={expirationColor}
     topRowRender={() => (

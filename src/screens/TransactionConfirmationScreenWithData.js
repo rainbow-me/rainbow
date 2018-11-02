@@ -1,10 +1,8 @@
+import lang from 'i18n-js';
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AlertIOS, StatusBar, Vibration } from 'react-native';
-import lang from 'i18n-js';
-import { connect } from 'react-redux';
-import { compose, withHandlers, onlyUpdateForKeys } from 'recompact';
-import PropTypes from 'prop-types';
 import { withTransactionConfirmationScreen } from '../hoc';
 import { sendTransaction } from '../model/wallet';
 import { walletConnectSendTransactionHash } from '../model/walletconnect';
@@ -16,6 +14,7 @@ class TransactionConfirmationScreenWithData extends Component {
     accountUpdateTransactions: PropTypes.func,
     navigation: PropTypes.any,
     removeTransaction: PropTypes.func,
+    walletConnectors: PropTypes.object,
   }
 
   componentDidMount() {
@@ -27,15 +26,15 @@ class TransactionConfirmationScreenWithData extends Component {
     try {
       const { transactionDetails } = this.props.navigation.state.params;
       const txPayload = transactionDetails.callData;
-      const transactionReceipt = await sendTransaction(txPayload, lang.t('wallet.transaction.confirm'));
+      const transactionHash = await sendTransaction(txPayload, lang.t('wallet.transaction.confirm'));
 
-      if (transactionReceipt && transactionReceipt.hash) {
+      if (transactionHash) {
         const txDetails = {
           asset: get(transactionDetails, 'transactionDisplayDetails.asset'),
           from: get(transactionDetails, 'transactionDisplayDetails.from'),
           gasLimit: get(transactionDetails, 'transactionDisplayDetails.gasLimit'),
           gasPrice: get(transactionDetails, 'transactionDisplayDetails.gasPrice'),
-          hash: transactionReceipt.hash,
+          hash: transactionHash,
           nonce: get(transactionDetails, 'transactionDisplayDetails.nonce'),
           to: get(transactionDetails, 'transactionDisplayDetails.to'),
           value: get(transactionDetails, 'transactionDisplayDetails.value'),
@@ -44,7 +43,7 @@ class TransactionConfirmationScreenWithData extends Component {
         this.props.accountUpdateTransactions(txDetails);
         this.props.removeTransaction(transactionDetails.callId);
         const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
-        await walletConnectSendTransactionHash(walletConnector, transactionDetails.callId, true, transactionReceipt.hash);
+        await walletConnectSendTransactionHash(walletConnector, transactionDetails.callId, true, transactionHash);
         this.closeTransactionScreen();
       } else {
         await this.handleCancelTransaction();
@@ -84,23 +83,26 @@ class TransactionConfirmationScreenWithData extends Component {
   }
 
   render = () => {
-    const { transactionDetails } = this.props.navigation.state.params;
-    const { transactionDisplayDetails:
-      {
-        asset,
-        nativeAmount,
-        to,
-        value,
-      }
-    } = transactionDetails;
+    const {
+      transactionDetails: {
+        dappName,
+        transactionDisplayDetails: {
+          asset,
+          nativeAmount,
+          to,
+          value,
+        },
+      },
+    } = this.props.navigation.state.params;
+
     return (
       <TransactionConfirmationScreen
         asset={{
           address: to,
           amount: value || '0.00',
-          dappName: transactionDetails.dappName || '',
+          dappName: dappName || '',
           name: asset.name || 'No data',
-          nativeAmount: nativeAmount,
+          nativeAmount,
           symbol: asset.symbol || 'N/A',
         }}
         onCancelTransaction={this.handleCancelTransaction}
@@ -110,6 +112,4 @@ class TransactionConfirmationScreenWithData extends Component {
   }
 }
 
-export default compose(
-  withTransactionConfirmationScreen,
-)(TransactionConfirmationScreenWithData);
+export default withTransactionConfirmationScreen(TransactionConfirmationScreenWithData);
