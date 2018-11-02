@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Animated, StatusBar } from 'react-native';
+import { Animated } from 'react-native';
 import { BlurView } from 'react-native-blur';
 import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
 import { get } from 'lodash';
@@ -118,7 +118,6 @@ const WalletScreen = ({
 
   return (
     <Page component={FlexItem} style={position.sizeAsObject('100%')}>
-      <StatusBar barStyle="dark-content" />
       {showBlur ? (
         <Animated.View style={{ ...overlayStyles, opacity: transitionProps.position }}>
           <BlurView style={overlayStyles} blurAmount={5} blurType="dark" />
