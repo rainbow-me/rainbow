@@ -73,7 +73,7 @@ const SettingsScreen = ({
         </CopyTooltip>
       </WalletAddressTextContainer>
       <SendFeedback />
-      <SeedPhraseButton onPress={onToggleShowSeedPhrase}>
+      <SeedPhraseButton enableHapticFeedback={false} onPress={onToggleShowSeedPhrase}>
         {seedPhrase ? lang.t('wallet.settings.hide_seed_phrase') : lang.t('wallet.settings.show_seed_phrase')}
       </SeedPhraseButton>
     </Content>

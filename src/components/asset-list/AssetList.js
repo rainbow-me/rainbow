@@ -1,10 +1,10 @@
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
 import { withSafeAreaViewInsetValues } from '../../hoc';
 import { FabWrapper, FloatingActionButton } from '../fab';
 import { ListFooter, SectionList } from '../list';
-import { get } from 'lodash';
 import AssetListHeader from './AssetListHeader';
 import AssetListItem from './AssetListItem';
 import AssetListSkeleton from './AssetListSkeleton';

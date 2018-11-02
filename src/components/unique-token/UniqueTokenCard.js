@@ -1,10 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { pure } from 'recompact';
+import { compose, pure, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-import { View } from 'react-native';
-import { ButtonPressAnimation } from '../buttons';
 import { colors, position, shadow } from '../../styles';
+import { ButtonPressAnimation } from '../buttons';
 import { Centered } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import UniqueTokenImage from './UniqueTokenImage';
@@ -30,36 +29,34 @@ const UniqueTokenCard = ({
     imagePreviewUrl,
     ...item
   },
-  size,
   onPress,
+  size,
   ...props
 }) => {
   const backgroundColor = background || colors.lightestGrey;
 
   return (
-    <ShadowStack
-      {...props}
-      {...position.sizeAsObject(size)}
-      borderRadius={UniqueTokenCardBorderRadius}
-      shadows={[
-        shadow.buildString(0, 3, 5, 'rgba(0,0,0,0.1)'),
-        shadow.buildString(0, 6, 10, 'rgba(0,0,0,0.1)'),
-      ]}
-    >
-      <Container
-        backgroundColor={backgroundColor}
-        component={onPress ? ButtonPressAnimation : View}
-        onPress={() => onPress && onPress(item.name)}
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+      <ShadowStack
+        {...props}
+        {...position.sizeAsObject(size)}
+        borderRadius={UniqueTokenCardBorderRadius}
+        shadows={[
+          shadow.buildString(0, 3, 5, 'rgba(0,0,0,0.1)'),
+          shadow.buildString(0, 6, 10, 'rgba(0,0,0,0.1)'),
+        ]}
       >
-        <UniqueTokenImage
-          backgroundColor={backgroundColor}
-          imageUrl={imagePreviewUrl}
-          item={item}
-          size={size}
-        />
-        <InnerBorder />
-      </Container>
-    </ShadowStack>
+        <Container backgroundColor={backgroundColor}>
+          <UniqueTokenImage
+            backgroundColor={backgroundColor}
+            imageUrl={imagePreviewUrl}
+            item={item}
+            size={size}
+          />
+          <InnerBorder />
+        </Container>
+      </ShadowStack>
+    </ButtonPressAnimation>
   );
 };
 
@@ -72,4 +69,13 @@ UniqueTokenCard.propTypes = {
   size: PropTypes.number,
 };
 
-export default pure(UniqueTokenCard);
+export default compose(
+  pure,
+  withHandlers({
+    onPress: ({ item: { name }, onPress }) => () => {
+      if (onPress) {
+        onPress(name);
+      }
+    },
+  }),
+)(UniqueTokenCard);

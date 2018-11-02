@@ -20,9 +20,16 @@ export default class ButtonPressAnimation extends Component {
     activeOpacity: PropTypes.number,
     children: PropTypes.any,
     disabled: PropTypes.bool,
+    enableHapticFeedback: PropTypes.bool,
     onPress: PropTypes.func.isRequired,
-    style: PropTypes.oneOf([PropTypes.object, PropTypes.number]),
+    scaleTo: PropTypes.number,
+    style: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
     transformOrigin: directionPropType,
+  }
+
+  static defaultProps = {
+    enableHapticFeedback: true,
+    scaleTo: ButtonKeyframes.to.scale,
   }
 
   state = { scaleOffsetX: null }
@@ -32,15 +39,23 @@ export default class ButtonPressAnimation extends Component {
   transX = new Animated.Value(DefaultAnimatedValues.transX)
 
   handleLayout = ({ nativeEvent: { layout } }) => {
-    if (this.props.transformOrigin) {
+    const { scaleTo, transformOrigin } = this.props;
+
+    if (transformOrigin) {
       const width = Math.floor(layout.width);
-      const scaleOffsetX = (width - (width * ButtonKeyframes.to.scale)) / 2;
+      const scaleOffsetX = (width - (width * scaleTo)) / 2;
       this.setState({ scaleOffsetX });
     }
   }
 
   handleStateChange = ({ nativeEvent: { state } }) => {
-    const { activeOpacity, onPress, transformOrigin } = this.props;
+    const {
+      activeOpacity,
+      enableHapticFeedback,
+      onPress,
+      scaleTo,
+      transformOrigin,
+    } = this.props;
     const { scaleOffsetX } = this.state;
 
     const isActive = state === State.BEGAN;
@@ -50,7 +65,7 @@ export default class ButtonPressAnimation extends Component {
       animations.buildSpring({
         from: ButtonKeyframes.from.scale,
         isActive,
-        to: ButtonKeyframes.to.scale,
+        to: scaleTo,
         value: this.scale,
       }),
     ];
@@ -79,7 +94,7 @@ export default class ButtonPressAnimation extends Component {
     // Start animations
     Animated.parallel(animationsArray).start();
 
-    if (state === State.BEGAN) {
+    if (enableHapticFeedback && state === State.ACTIVE) {
       ReactNativeHapticFeedback.trigger('impactLight');
     }
 
