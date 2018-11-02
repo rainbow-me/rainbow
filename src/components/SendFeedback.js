@@ -35,7 +35,7 @@ const handleSendFeedback = () =>
   );
 
 const SendFeedback = () => (
-  <Button onPress={handleSendFeedback}>
+  <Button enableHapticFeedback={false} onPress={handleSendFeedback}>
     {lang.t('wallet.feedback.send')}
   </Button>
 );

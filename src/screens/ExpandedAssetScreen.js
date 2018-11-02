@@ -1,11 +1,16 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import styled from 'styled-components/primitives';
-import { compose, withProps } from 'recompact';
 import { filter, get } from 'lodash';
-import { InteractionManager, Linking, Share, StatusBar, TouchableOpacity } from 'react-native';
+import PropTypes from 'prop-types';
+import React, { Component, Fragment } from 'react';
+import { compose, withProps } from 'recompact';
+import {
+  InteractionManager,
+  Linking,
+  Share,
+  StatusBar,
+  TouchableOpacity,
+} from 'react-native';
+import styled from 'styled-components/primitives';
 
-import { ButtonPressAnimation } from '../components/buttons';
 import { Icon } from '../components/icons';
 import { Centered, Column, Row } from '../components/layout';
 import { Text } from '../components/text';
@@ -37,10 +42,10 @@ const AssetSubtitleRow = styled(Row).attrs({
   opacity: 0.6;
 `;
 
-const AssetActionRow = styled(ButtonPressAnimation)`
+const AssetActionRow = styled(TouchableOpacity).attrs({ activeOpacity: 0.5 })`
   ${padding(20, 20)}
-  flex-direction: row;
   align-items: center;
+  flex-direction: row;
   justify-content: space-between;
 `;
 
@@ -138,7 +143,7 @@ class ExpandedAssetScreen extends Component {
         <BackgroundButton onPress={() => navigation.goBack()} />
         {type === 'unique_token' ? (
           <FloatingContainer
-            color={selectedAsset.background}
+            color={selectedAsset.background || colors.lightestGrey}
             marginBottom={20}
             size={deviceUtils.dimensions.width}
           >
@@ -189,6 +194,22 @@ class ExpandedAssetScreen extends Component {
             ) : null}
           </AssetSubtitleRow>
           <Border />
+          {type === 'unique_token' && (
+            <Fragment>
+              <AssetActionRow onPress={this.onPressView}>
+                <Text
+                  color={colors.sendScreen.brightBlue}
+                  family="SFProText"
+                  size="bmedium"
+                  weight="semibold"
+                >
+                  View on OpenSea
+                </Text>
+                <ActionIcon name="compass" />
+              </AssetActionRow>
+              <Border />
+            </Fragment>
+          )}
           {type === 'token' ? (
             <AssetActionRow onPress={this.onPressSend}>
               <Text
@@ -214,18 +235,6 @@ class ExpandedAssetScreen extends Component {
               <ActionIcon name="share" />
             </AssetActionRow>
           )}
-          <Border />
-          <AssetActionRow onPress={this.onPressView}>
-            <Text
-              color={colors.sendScreen.brightBlue}
-              family="SFProText"
-              size="bmedium"
-              weight="semibold"
-            >
-              View on {type === 'token' ? 'CoinMarketCap' : 'OpenSea'}
-            </Text>
-            <ActionIcon name="compass" />
-          </AssetActionRow>
         </FloatingContainer>
       </Container>
     );

@@ -2,8 +2,6 @@ import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
-import { View } from 'react-native';
-import { ButtonPressAnimation } from '../buttons';
 import { colors, padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
@@ -36,12 +34,7 @@ const CoinRow = pure(({
   topRowRender,
   ...props
 }) => (
-  <Container
-    component={onPress ? ButtonPressAnimation : View}
-    align="center"
-    onPress={() => onPress && onPress(symbol)}
-    style={containerStyles}
-  >
+  <Container align="center" style={containerStyles}>
     {createElement(coinIconRender, { symbol, ...props })}
     <Content justify="space-between" styles={contentStyles}>
       <Row align="center" justify="space-between">
