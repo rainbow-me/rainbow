@@ -4,11 +4,13 @@ import React, { Component, Fragment } from 'react';
 import { StatusBar } from 'react-native';
 import lang from 'i18n-js';
 import styled from 'styled-components/primitives';
+import { compose } from 'recompact';
 import Icon from '../components/icons/Icon';
 import { Column } from '../components/layout';
 import { ErrorText, Monospace } from '../components/text';
 import { loadAddress } from '../model/wallet';
 import { colors, fonts, padding, position } from '../styles';
+import { withHideSplashScreenOnMount } from '../hoc';
 
 const Container = styled(Column).attrs({ justify: 'center' })`
   ${position.cover}
@@ -70,4 +72,7 @@ class LoadingScreen extends Component {
   )
 }
 
-export default withSafeTimeout(LoadingScreen);
+export default compose(
+  withHideSplashScreenOnMount,
+  withSafeTimeout,
+)(LoadingScreen);

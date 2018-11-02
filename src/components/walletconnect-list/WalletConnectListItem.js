@@ -32,7 +32,7 @@ const ExpiresText = styled(Text).attrs({ size: 'medium' })`
 const WalletConnectListItem = ({
   dappName,
   expires,
-  onDisconnect,
+  onPress,
 }) => (
   <Container>
     <RequestVendorLogoIcon
@@ -49,7 +49,7 @@ const WalletConnectListItem = ({
     </Content>
     <DisconnectButton
       bgColor={colors.primaryBlue}
-      onPress={onDisconnect}
+      onPress={onPress}
       textProps={{ size: 'smedium' }}
     >
       Connected
@@ -60,7 +60,7 @@ const WalletConnectListItem = ({
 WalletConnectListItem.propTypes = {
   dappName: PropTypes.string.isRequired,
   expires: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-  onDisconnect: PropTypes.func.isRequired,
+  onPress: PropTypes.func.isRequired,
 };
 
 WalletConnectListItem.height = VendorLogoIconSize + (ContainerPadding * 2);
@@ -68,6 +68,6 @@ WalletConnectListItem.height = VendorLogoIconSize + (ContainerPadding * 2);
 export default hoistStatics(compose(
   onlyUpdateForKeys(['expires']),
   withHandlers({
-    onDisconnect: ({ _sessionId, onDisconnect }) => () => onDisconnect(_sessionId),
+    onPress: ({ onPress, _sessionId }) => () => onPress(_sessionId),
   }),
 ))(WalletConnectListItem);

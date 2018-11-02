@@ -9,6 +9,7 @@ import { walletConnectDisconnect } from '../../model/walletconnect';
 import { borders, colors, shadow } from '../../styles';
 import { Column } from '../layout';
 import WalletConnectListItem from './WalletConnectListItem';
+import { showActionSheetWithOptions } from '../../utils/actionsheet';
 
 const SheetBorderRadius = 17;
 
@@ -26,7 +27,7 @@ const Sheet = styled(Column)`
 `;
 
 const WalletConnectList = ({
-  onDisconnectWalletConnectSession,
+  onHandleDisconnectAlert,
   onLayout,
   safeAreaInset,
   walletConnectors,
@@ -40,7 +41,7 @@ const WalletConnectList = ({
         <WalletConnectListItem
           {...item}
           key={get(item, '_sessionId', index)}
-          onDisconnect={onDisconnectWalletConnectSession}
+          onPress={onHandleDisconnectAlert}
         />
       )}
       scrollIndicatorInsets={{
@@ -61,11 +62,22 @@ export default compose(
   withSafeAreaViewInsetValues,
   withWalletConnectConnections,
   withHandlers({
-    onDisconnectWalletConnectSession: ({ getValidWalletConnectors, removeWalletConnector }) => (sessionId) => {
-      const walletConnectors = getValidWalletConnectors();
-      return walletConnectDisconnect(walletConnectors[sessionId])
-        .then(() => removeWalletConnector(sessionId));
-    },
+    onHandleDisconnectAlert: ({ getValidWalletConnectors, removeWalletConnector }) => (sessionId) => {
+      showActionSheetWithOptions({
+        cancelButtonIndex: 1,
+        destructiveButtonIndex: 0,
+        options: ['Disconnect', 'Cancel'],
+        title: 'Would you like to disconnect your session?',
+      }, (buttonIndex) => {
+        if (buttonIndex === 0) {
+          console.log('disconnecting!!', sessionId);
+          const walletConnectors = getValidWalletConnectors();
+          return walletConnectDisconnect(
+            walletConnectors[sessionId]
+          ).then(() => removeWalletConnector(sessionId));
+        }
+      });
+    }
   }),
   onlyUpdateForPropTypes,
 )(WalletConnectList);

@@ -5,7 +5,6 @@ import styled from 'styled-components/primitives';
 import { colors, padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
-import { TouchableOpacity } from 'react-native';
 
 const CoinRowPaddingVertical = 12;
 
@@ -35,13 +34,7 @@ const CoinRow = pure(({
   topRowRender,
   ...props
 }) => (
-  <Container
-    component={TouchableOpacity}
-    align="center"
-    onPress={onPress}
-    activeOpacity={onPress ? 0.2 : 1}
-    style={containerStyles}
-  >
+  <Container align="center" style={containerStyles}>
     {createElement(coinIconRender, { symbol, ...props })}
     <Content justify="space-between" styles={contentStyles}>
       <Row align="center" justify="space-between">
