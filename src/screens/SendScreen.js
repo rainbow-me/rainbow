@@ -201,6 +201,7 @@ class SendScreen extends Component {
     const {
       isValidAddress,
       navigation,
+      selected,
       sendUpdateSelected
     } = this.props;
     if (isValidAddress && !prevProps.isValidAddress) {
@@ -209,6 +210,19 @@ class SendScreen extends Component {
       if (asset) {
         sendUpdateSelected(asset);
       }
+    }
+
+    if (prevProps.isValidAddress !== isValidAddress ||
+        prevProps.selected !== selected) {
+      let verticalGestureResponseDistance = 0;
+
+      if (isValidAddress) {
+        verticalGestureResponseDistance = _.isEmpty(selected) ? 150 : deviceUtils.dimensions.height;
+      } else {
+        verticalGestureResponseDistance = deviceUtils.dimensions.height;
+      }
+
+      navigation.setParams({ verticalGestureResponseDistance });
     }
   }
 
