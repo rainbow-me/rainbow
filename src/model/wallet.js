@@ -7,9 +7,9 @@ import {
   canImplyAuthentication,
 } from 'react-native-keychain';
 import * as keychain from '../model/keychain';
-const seedPhraseKey = 'seedPhrase';
-const privateKeyKey = 'privateKey';
-const addressKey = 'addressKey';
+const seedPhraseKey = 'balanceWalletSeedPhrase';
+const privateKeyKey = 'balanceWalletPrivateKey';
+const addressKey = 'balanceWalletAddressKey';
 
 export function generateSeedPhrase() {
   return ethers.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
