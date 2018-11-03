@@ -3,33 +3,27 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import styled from 'styled-components/primitives';
 import TouchID from 'react-native-touch-id';
-import { Animated, Clipboard, Image, Keyboard, KeyboardAvoidingView, StatusBar, Text, View, InteractionManager } from 'react-native';
+import { Animated, Clipboard, Image, Keyboard, KeyboardAvoidingView, Text, View, InteractionManager } from 'react-native';
 import { compose, withHandlers } from 'recompact';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
 import { withSafeTimeout } from '@hocs/safe-timers';
 import { isIphoneX } from 'react-native-iphone-x-helper';
-import {
-  sortAssetsByNativeAmount,
-} from '../helpers/assets';
-import { showActionSheetWithOptions } from '../utils/actionsheet';
 import { AddressField, UnderlineField } from '../components/fields';
 import { AssetList, UniqueTokenRow } from '../components/asset-list';
 import { Button, BlockButton, LongPressButton } from '../components/buttons';
 import { colors, fonts, padding, shadow } from '../styles';
 import { Column, Flex, FlyInView, Row } from '../components/layout';
+import { deviceUtils } from '../utils';
 import { formatUSD, formatUSDInput, removeLeadingZeros, uppercase } from '../utils/formatters';
+import { Icon } from '../components/icons';
 import { Monospace } from '../components/text';
 import { PillLabel } from '../components/labels';
 import { SendCoinRow } from '../components/coin-row';
-import { Icon } from '../components/icons';
 import { ShadowStack } from '../components/shadow-stack';
-import {
-  withAccountAddress,
-  withAccountAssets,
-  withRequestsInit,
-} from '../hoc';
-import { deviceUtils, sortList } from '../utils';
+import { showActionSheetWithOptions } from '../utils/actionsheet';
+import { sortAssetsByNativeAmount } from '../helpers/assets';
+import { withAccountAddress, withAccountAssets, withRequestsInit } from '../hoc';
 
 const AddressInput = styled(AddressField)`
   padding-right: 20px;
@@ -104,7 +98,7 @@ const Container = styled(Column)`
 
 const EmptyStateContainer = styled(Column)`
   background-color: ${colors.white};
-  padding-bottom: ${isIphoneX() ? '50px' : '15px'};
+  padding-bottom: ${isIphoneX() ? '50px' : '20px'};
   justify-content: space-between;
   flex: 1;
 `;
@@ -178,15 +172,13 @@ class SendScreen extends Component {
     };
   }
 
-  componentDidMount(prevProps) {
+  componentDidMount() {
     const { navigation, sendUpdateRecipient } = this.props;
     const address = get(navigation, 'state.params.address');
 
     if (address) {
       sendUpdateRecipient(address);
     }
-
-    StatusBar.setBarStyle('light-content', true);
 
     TouchID.isSupported()
       .then(biometryType => {
@@ -202,14 +194,17 @@ class SendScreen extends Component {
       isValidAddress,
       navigation,
       selected,
-      sendUpdateSelected
+      sendUpdateSelected,
     } = this.props;
+
+    const asset = get(navigation, 'state.params.asset');
+
     if (isValidAddress && !prevProps.isValidAddress) {
-      Keyboard.dismiss();
-      const asset = get(navigation, 'state.params.asset');
       if (asset) {
         sendUpdateSelected(asset);
       }
+
+      Keyboard.dismiss();
     }
 
     if (prevProps.isValidAddress !== isValidAddress ||
@@ -228,8 +223,6 @@ class SendScreen extends Component {
 
   componentWillUnmount() {
     const { sendClearFields } = this.props;
-
-    StatusBar.setBarStyle('dark-content', true);
 
     sendClearFields();
   }

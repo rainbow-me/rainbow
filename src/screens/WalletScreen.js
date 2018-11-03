@@ -115,11 +115,15 @@ const WalletScreen = ({
   ];
 
   const showBlur = transitionProps.effect === 'expanded' && (transitionProps.isTransitioning || transitionProps.position._value > 0);
+  const blurOpacity = transitionProps.position.interpolate({
+    inputRange: [0, 0.01, 1],
+    outputRange: [0, 1, 1],
+  });
 
   return (
     <Page component={FlexItem} style={position.sizeAsObject('100%')}>
       {showBlur ? (
-        <Animated.View style={{ ...overlayStyles, opacity: transitionProps.position }}>
+        <Animated.View style={{ ...overlayStyles, opacity: blurOpacity }}>
           <BlurView style={overlayStyles} blurAmount={5} blurType="dark" />
         </Animated.View>
       ) : null}
