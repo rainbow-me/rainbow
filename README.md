@@ -13,16 +13,18 @@ If you are new to React Native, this is a helpful introduction: https://facebook
 
 1. Clone the GitHub repository to your machine.
 
-2. Run `yarn` to get all of the packages required.
+2. Run `nvm use` to use set version of node for this project
 
-3. Run `yarn nodeify`.
+3. Run `yarn` to get all of the packages required.
 
-4. Install CocoaPods by running `sudo gem install cocoapods`.
+4. Run `yarn nodeify`.
 
-5. Install required Pods by running `yarn install-pods`.
+5. Install CocoaPods by running `sudo gem install cocoapods`.
 
-6. Run `yarn ios` to build the project for XCode.
+6. Install required Pods by running `yarn install-pods`.
 
-7. Open `balance-wallet/ios/BalanceWallet.xcworkspace`.
+7. Run `yarn ios` to build the project for XCode.
 
-8. Run the project by clicking the play button.
+8. Open `balance-wallet/ios/BalanceWallet.xcworkspace`.
+
+9. Run the project by clicking the play button.

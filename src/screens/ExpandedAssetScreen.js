@@ -99,7 +99,7 @@ class ExpandedAssetScreen extends Component {
     navigation.goBack();
 
     InteractionManager.runAfterInteractions(() => {
-      navigation.navigate('SendScreen', { asset: selectedAsset });
+      navigation.navigate('SendScreen', { asset: selectedAsset.symbol });
     });
   };
 
