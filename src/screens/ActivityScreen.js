@@ -29,7 +29,7 @@ const ActivityScreen = ({
   transactionsCount,
 }) => (
   <Container>
-    <Header align="end">
+    <Header excludeStatusBarHeight={true} align="end">
       <HeaderButton align="end" onPress={onPressBack}>
         <CloseButtonIcon
           color={colors.brightBlue}
