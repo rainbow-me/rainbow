@@ -24,9 +24,13 @@ class QRScannerScreenWithData extends PureComponent {
     if (!data) return null;
 
     const parts = data.split(':');
+    const address =
+      (parts[0] === 'ethereum' && isValidAddress(parts[1])) ?
+        parts[1] : isValidAddress(parts[0]) ?
+          parts[0] : null;
 
-    if (isValidAddress(parts[1])) {
-      return navigation.navigate('SendScreen', { address: parts[1] });
+    if (address) {
+      return navigation.navigate('SendScreen', { address });
     }
 
     try {
