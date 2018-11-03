@@ -7,7 +7,7 @@ const keyframes = {
   },
   button: {
     from: { scale: 1 },
-    to: { scale: 0.80 },
+    to: { scale: 0.86 },
   },
 };
 
@@ -18,7 +18,7 @@ const spring = {
   },
   default: {
     friction: 44,
-    tension: 1000,
+    tension: 600,
   },
 };
 
