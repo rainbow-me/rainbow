@@ -1,3 +1,4 @@
+import { isValidAddress } from 'balance-common';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -27,21 +28,23 @@ export default class SendQRScannerScreenWithData extends Component {
 
     this.setState({ enableScanning: false });
 
-    if (data) {
-      const parts = data.split(':');
+    if (!data) return null;
+    const parts = data.split(':');
+    const address =
+      (parts[0] === 'ethereum' && isValidAddress(parts[1])) ?
+        parts[1] : isValidAddress(parts[0]) ?
+          parts[0] : null;
+    if (address) {
+      onSuccess(address);
+      navigation.goBack();
 
-      if (parts[0] === 'ethereum') {
-        onSuccess(parts[1]);
-        navigation.goBack();
-
-        this.handleEnableScanning();
-      } else {
-        Alert({
-          callback: this.handleEnableScanning,
-          message: 'Sorry, this QR code doesn\'t contain an Ethereum address.',
-          title: 'Invalid Address',
-        });
-      }
+      this.handleEnableScanning();
+    } else {
+      Alert({
+        callback: this.handleEnableScanning,
+        message: 'Sorry, this QR code doesn\'t contain an Ethereum address.',
+        title: 'Invalid Address',
+      });
     }
   }
 
@@ -52,7 +55,7 @@ export default class SendQRScannerScreenWithData extends Component {
       {...this.props}
       isScreenActive={this.state.enableScanning}
       onPressBackButton={this.handlePressBackButton}
-      onSuccess={this.handleSuccess}
+      onScanSuccess={this.handleSuccess}
       showWalletConnectSheet={false}
     />
   )
