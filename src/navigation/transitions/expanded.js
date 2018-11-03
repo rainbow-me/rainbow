@@ -2,7 +2,7 @@ import { get } from 'lodash';
 import { Animated } from 'react-native';
 import { updateTransitionProps } from '../../redux/navigation';
 import store from '../../redux/store';
-import { deviceUtils } from '../../utils';
+import { deviceUtils, statusBar } from '../../utils';
 
 export const transitionName = 'expanded';
 
@@ -11,6 +11,14 @@ export default function expanded(navigation, transitionProps, prevTransitionProp
   const prevEffect = get(prevTransitionProps, 'scene.descriptor.options.effect');
   const nextIndex = get(transitionProps, 'index');
   const prevIndex = get(prevTransitionProps, 'index', nextIndex - 1);
+
+  if (nextEffect === transitionName) {
+    statusBar.setBarStyle('light-content', true);
+  }
+
+  if (prevEffect === transitionName) {
+    statusBar.setBarStyle('dark-content', true);
+  }
 
   return {
     transitionSpec: {

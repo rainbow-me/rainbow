@@ -1,8 +1,8 @@
 import { Animated } from 'react-native';
 import { get } from 'lodash';
-import { isIphoneX } from 'react-native-iphone-x-helper';
-import { deviceUtils, safeAreaInsetValues } from '../../utils';
+import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
 import store from '../../redux/store';
+import { deviceUtils, statusBar } from '../../utils';
 import { updateTransitionProps } from '../../redux/navigation';
 
 export const transitionName = 'sheet';
@@ -12,6 +12,14 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
   const prevEffect = get(prevTransitionProps, 'scene.descriptor.options.effect');
   const nextIndex = get(transitionProps, 'index');
   const prevIndex = get(prevTransitionProps, 'index', nextIndex - 1);
+
+  if (nextEffect === transitionName) {
+    statusBar.setBarStyle('light-content', true);
+  }
+
+  if (prevEffect === transitionName) {
+    statusBar.setBarStyle('dark-content', true);
+  }
 
   return {
     transitionSpec: {
@@ -34,11 +42,13 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
         effect: transitionName,
       }));
 
-      const distanceFromTop = isIphoneX() ? 14 : 6;
-      const scaleEnd = 1 - ((safeAreaInsetValues.top + distanceFromTop) / deviceUtils.dimensions.height);
-      const heightEnd = safeAreaInsetValues.top + distanceFromTop;
+
+      const statusBarHeight = getStatusBarHeight(true);
+      const distanceFromTop = 14;
+      const scaleEnd = 1 - ((statusBarHeight + (isIphoneX() ? distanceFromTop : 0)) / deviceUtils.dimensions.height);
+      const heightEnd = statusBarHeight + distanceFromTop;
       const borderRadiusEnd = 12;
-      const borderRadiusScaledEnd = 12 / (1 - ((safeAreaInsetValues.top + distanceFromTop) / deviceUtils.dimensions.height));
+      const borderRadiusScaledEnd = borderRadiusEnd / scaleEnd;
       const opacityEnd = 0.5;
 
       if (nextEffect === transitionName && scene.index === prevIndex && nextIndex > prevIndex) {

@@ -13,7 +13,7 @@ import styled from 'styled-components/primitives';
 
 import { Icon } from '../components/icons';
 import { Centered, Column, Row } from '../components/layout';
-import { Text } from '../components/text';
+import { Text, TruncatedText } from '../components/text';
 import { UniqueTokenImage } from '../components/unique-token';
 import { withAccountAssets } from '../hoc';
 import { colors, padding, position } from '../styles';
@@ -76,6 +76,15 @@ const FloatingContainer = styled(Column)`
   padding-bottom: 0px;
   width: 100%;
   z-index: 1;
+`;
+
+const Name = styled(Text).attrs({
+  color: colors.blueGreyDark,
+  family: 'SFProText',
+  size: 'larger',
+  weight: 'semibold',
+})`
+  max-width: 60%;
 `;
 
 class ExpandedAssetScreen extends Component {
@@ -156,14 +165,9 @@ class ExpandedAssetScreen extends Component {
         ) : null}
         <FloatingContainer color={colors.white}>
           <AssetTitleRow>
-            <Text
-              color={colors.blueGreyDark}
-              family="SFProText"
-              size="larger"
-              weight="semibold"
-            >
+            <TruncatedText component={Name}>
               {get(selectedAsset, 'name')}
-            </Text>
+            </TruncatedText>
             <Text
               color={colors.blueGreyDark}
               family="SFProText"
