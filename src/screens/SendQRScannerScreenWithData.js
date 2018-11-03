@@ -2,8 +2,9 @@ import { isValidAddress } from 'balance-common';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Alert } from '../components/alerts';
 import QRScannerScreen from './QRScannerScreen';
+import { Alert } from '../components/alerts';
+import { statusBar } from '../utils';
 
 export default class SendQRScannerScreenWithData extends Component {
   static propTypes = {
@@ -12,6 +13,10 @@ export default class SendQRScannerScreenWithData extends Component {
 
   state = {
     enableScanning: true,
+  }
+
+  componentDidMount() {
+    statusBar.setBarStyle('light-content', true);
   }
 
   handlePressBackButton = () => {
