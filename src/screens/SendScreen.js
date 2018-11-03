@@ -198,9 +198,22 @@ class SendScreen extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { isValidAddress } = this.props;
-    if (isValidAddress && (prevProps.isValidAddress !== isValidAddress)) {
+    const { isValidAddress, navigation, selected } = this.props;
+
+    if (isValidAddress && prevProps.isValidAddress !== isValidAddress) {
       Keyboard.dismiss();
+    }
+
+    if (prevProps.isValidAddress !== isValidAddress || prevProps.selected !== selected) {
+      let verticalGestureResponseDistance = 0;
+
+      if (isValidAddress) {
+        verticalGestureResponseDistance = _.isEmpty(selected) ? 150 : deviceUtils.dimensions.height;
+      } else {
+        verticalGestureResponseDistance = deviceUtils.dimensions.height;
+      }
+
+      navigation.setParams({ verticalGestureResponseDistance });
     }
   }
 

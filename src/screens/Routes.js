@@ -58,15 +58,7 @@ const AppStack = createStackNavigator({
     },
     screen: ExpandedAssetScreen,
   },
-  SendScreen: {
-    navigationOptions: {
-      effect: 'sheet',
-      gestureResponseDistance: {
-        vertical: 150,
-      },
-    },
-    screen: SendScreenWithData,
-  },
+  SendScreen: SendScreenWithData,
   SendQRScannerScreen: SendQRScannerScreenWithData,
   SwipeLayout: SwipeStack,
 }, {
