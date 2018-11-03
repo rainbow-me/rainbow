@@ -44,9 +44,7 @@ const AppStack = createStackNavigator({
   ActivityScreen: {
     navigationOptions: {
       effect: 'sheet',
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height / 2,
-      },
+      gesturesEnabled: false // @NOTE: disabled the gesture for ActivityScreen due to conflict with the Notification Center gesture
     },
     screen: ActivityScreen,
   },
