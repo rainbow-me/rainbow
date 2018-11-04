@@ -37,15 +37,16 @@ const QRScannerScreen = ({
 
   return (
     <Container>
-      <QRCodeScanner
-        {...this.props}
-        contentStyles={{
-          bottom: showSheet ? sheetHeight : 0,
-          top: showSheet ? Header.height : 0,
-        }}
-        enableScanning={isScreenActive}
-        onSuccess={onScanSuccess}
-      />
+      {isScreenActive && (
+        <QRCodeScanner
+          {...this.props}
+          contentStyles={{
+            bottom: showSheet ? sheetHeight : 0,
+            top: showSheet ? Header.height : 0,
+          }}
+          onSuccess={onScanSuccess}
+        />
+      )}
       <QRScannerHeader>
         <BackButton
           color={colors.white}
