@@ -2222,12 +2222,8 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputFileListPaths = (
-			);
 			inputPaths = (
 				"$(SRCROOT)/BalanceWallet/Info.plist",
-			);
-			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
