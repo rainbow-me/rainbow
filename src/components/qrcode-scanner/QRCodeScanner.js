@@ -55,7 +55,7 @@ class QRCodeScanner extends PureComponent {
 
   state = {
     error: null,
-    isAuthorized: false,
+    isAuthorized: true,
     isInitialized: false,
   }
 
@@ -125,8 +125,8 @@ class QRCodeScanner extends PureComponent {
     const { contentStyles, onSuccess } = this.props;
     const { error, isAuthorized, isInitialized } = this.state;
 
-    const showCrosshair = !error && isAuthorized && isInitialized;
     const showErrorMessage = error && isAuthorized && !isInitialized;
+    const showCrosshair = !error && isAuthorized && !showErrorMessage;
 
     return (
       <Container>
