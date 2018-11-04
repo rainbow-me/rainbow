@@ -29,7 +29,7 @@ export const walletConnectInit = async (accountAddress, uriString) => {
       return null;
     }
   } else {
-    AlertIOS.alert('Unable to find wallet FCM token.');
+    AlertIOS.alert('Unable to initialize WalletConnect: missing push notification token. Please try again.');
     return null;
   }
 };
