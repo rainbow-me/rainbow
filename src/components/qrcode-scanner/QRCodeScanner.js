@@ -145,6 +145,7 @@ class QRCodeScanner extends PureComponent {
           reactivateTimeout={1000}
           ref={this.handleScannerRef}
           topViewStyle={styles.disableSection}
+          vibrate={false}
         />
         {isAuthorized && (
           <ContentContainer style={contentStyles}>

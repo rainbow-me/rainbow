@@ -2,9 +2,10 @@ import { isValidAddress } from 'balance-common';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import QRScannerScreen from './QRScannerScreen';
+import { Vibration } from 'react-native';
 import { Alert } from '../components/alerts';
 import { statusBar } from '../utils';
+import QRScannerScreen from './QRScannerScreen';
 
 export default class SendQRScannerScreenWithData extends Component {
   static propTypes = {
@@ -39,7 +40,9 @@ export default class SendQRScannerScreenWithData extends Component {
       (parts[0] === 'ethereum' && isValidAddress(parts[1])) ?
         parts[1] : isValidAddress(parts[0]) ?
           parts[0] : null;
+
     if (address) {
+      Vibration.vibrate();
       onSuccess(address);
       navigation.goBack();
 
@@ -58,6 +61,7 @@ export default class SendQRScannerScreenWithData extends Component {
   render = () => (
     <QRScannerScreen
       {...this.props}
+      enableScanning={this.state.enableScanning}
       isScreenActive={this.state.enableScanning}
       onPressBackButton={this.handlePressBackButton}
       onScanSuccess={this.handleSuccess}
