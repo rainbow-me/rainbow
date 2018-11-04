@@ -146,15 +146,17 @@ class QRCodeScanner extends PureComponent {
           ref={this.handleScannerRef}
           topViewStyle={styles.disableSection}
         />
-        <ContentContainer style={contentStyles}>
-          {showErrorMessage && (
-            <ErrorText
-              color={colors.red}
-              error={`Error ${error} camera`}
-            />
-          )}
-          {showCrosshair && <Crosshair source={CrosshairAsset} />}
-        </ContentContainer>
+        {isAuthorized && (
+          <ContentContainer style={contentStyles}>
+            {showErrorMessage && (
+              <ErrorText
+                color={colors.red}
+                error={`Error ${error} camera`}
+              />
+            )}
+            {showCrosshair && <Crosshair source={CrosshairAsset} />}
+          </ContentContainer>
+        )}
       </Container>
     );
   }

@@ -30,7 +30,7 @@ class QRCodeScannerNeedsAuthorization extends PureComponent {
 
   state = { isVisible: false }
 
-  componentDidMount = () => this.props.setSafeTimeout(this.enableVisibility, 1000)
+  componentDidMount = () => this.props.setSafeTimeout(this.enableVisibility, 500)
 
   enableVisibility = () => this.setState({ isVisible: true })
 
