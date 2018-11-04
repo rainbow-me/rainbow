@@ -13,4 +13,6 @@ target 'BalanceWallet' do
   pod 'react-native-blur', :path => '../node_modules/react-native-blur'
 
   pod 'react-native-fast-image', :path => '../node_modules/react-native-fast-image'
+  pod 'Fabric', '~> 1.7.11'
+  pod 'Crashlytics', '~> 3.10.7'
 end
