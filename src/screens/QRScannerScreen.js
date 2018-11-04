@@ -25,6 +25,7 @@ const QRScannerHeader = styled(Header).attrs({
 `;
 
 const QRScannerScreen = ({
+  enableScanning,
   isScreenActive,
   onPressBackButton,
   onScanSuccess,
@@ -44,6 +45,7 @@ const QRScannerScreen = ({
             bottom: showSheet ? sheetHeight : 0,
             top: showSheet ? Header.height : 0,
           }}
+          enableScanning={enableScanning}
           onSuccess={onScanSuccess}
         />
       )}
@@ -60,6 +62,7 @@ const QRScannerScreen = ({
 };
 
 QRScannerScreen.propTypes = {
+  enableScanning: PropTypes.bool,
   isScreenActive: PropTypes.bool.isRequired,
   onPressBackButton: PropTypes.func,
   onScanSuccess: PropTypes.func,
@@ -74,7 +77,6 @@ QRScannerScreen.defaultProps = {
 };
 
 export default compose(
-  pure,
   withState('sheetHeight', 'setSheetHeight', null),
   withSafeAreaViewInsetValues,
   withWalletConnectConnections,
