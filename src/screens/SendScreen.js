@@ -1,29 +1,35 @@
-import _ from 'underscore';
+import { withSafeTimeout } from '@hocs/safe-timers';
+import { get, isEmpty, map } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import styled from 'styled-components/primitives';
-import TouchID from 'react-native-touch-id';
-import { Animated, Clipboard, Image, Keyboard, KeyboardAvoidingView, Text, View, InteractionManager } from 'react-native';
-import { compose, withHandlers } from 'recompact';
-import { connect } from 'react-redux';
-import { get } from 'lodash';
-import { withSafeTimeout } from '@hocs/safe-timers';
+import {
+  Animated,
+  Clipboard,
+  Image,
+  InteractionManager,
+  Keyboard,
+  KeyboardAvoidingView,
+  Text,
+  View,
+} from 'react-native';
 import { isIphoneX } from 'react-native-iphone-x-helper';
-import { AddressField, UnderlineField } from '../components/fields';
+import TouchID from 'react-native-touch-id';
+import { compose, withHandlers } from 'recompact';
+import styled from 'styled-components/primitives';
 import { AssetList, UniqueTokenRow } from '../components/asset-list';
 import { Button, BlockButton, LongPressButton } from '../components/buttons';
-import { colors, fonts, padding, shadow } from '../styles';
-import { Column, Flex, FlyInView, Row } from '../components/layout';
-import { deviceUtils } from '../utils';
-import { formatUSD, formatUSDInput, removeLeadingZeros, uppercase } from '../utils/formatters';
-import { Icon } from '../components/icons';
-import { Monospace } from '../components/text';
-import { PillLabel } from '../components/labels';
 import { SendCoinRow } from '../components/coin-row';
+import { AddressField, UnderlineField } from '../components/fields';
+import { Icon } from '../components/icons';
+import { PillLabel } from '../components/labels';
+import { Column, Flex, FlyInView, Row } from '../components/layout';
 import { ShadowStack } from '../components/shadow-stack';
-import { showActionSheetWithOptions } from '../utils/actionsheet';
-import { sortAssetsByNativeAmount } from '../helpers/assets';
+import { Monospace } from '../components/text';
 import { withAccountAddress, withAccountAssets, withRequestsInit } from '../hoc';
+import { colors, fonts, padding, shadow } from '../styles';
+import { deviceUtils } from '../utils';
+import { showActionSheetWithOptions } from '../utils/actionsheet';
+import { formatUSD, formatUSDInput, removeLeadingZeros, uppercase } from '../utils/formatters';
 
 const AddressInput = styled(AddressField)`
   padding-right: 20px;
@@ -213,7 +219,7 @@ class SendScreen extends Component {
       let verticalGestureResponseDistance = 0;
 
       if (isValidAddress) {
-        verticalGestureResponseDistance = _.isEmpty(selected) ? 150 : deviceUtils.dimensions.height;
+        verticalGestureResponseDistance = isEmpty(selected) ? 150 : deviceUtils.dimensions.height;
       } else {
         verticalGestureResponseDistance = deviceUtils.dimensions.height;
       }
@@ -231,7 +237,7 @@ class SendScreen extends Component {
   getTransactionSpeedOptions = () => {
     const { gasPrices } = this.props;
 
-    const options = _.map(gasPrices, (value, key) => ({
+    const options = map(gasPrices, (value, key) => ({
       value: key,
       label: `${uppercase(key, 7)}: ${get(value, 'txFee.native.value.display')}  ~${get(value, 'estimatedTime.display')}`,
     }));
@@ -553,8 +559,8 @@ class SendScreen extends Component {
           </AddressInputContainer>
           <AddressInputBottomBorder />
           {!isValidAddress ? this.renderEmptyState() : null}
-          {isValidAddress && _.isEmpty(selected) ? this.renderAssetList() : null}
-          {isValidAddress && !_.isEmpty(selected) ? this.renderTransaction() : null}
+          {isValidAddress && isEmpty(selected) ? this.renderAssetList() : null}
+          {isValidAddress && !isEmpty(selected) ? this.renderTransaction() : null}
         </Container>
       </KeyboardAvoidingView>
     );
