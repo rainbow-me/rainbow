@@ -30,6 +30,10 @@ export const buildUniqueTokenList = (uniqueTokensAssets) => {
   return list;
 };
 
+export const buildUniqueTokenName = ({ contractName, id, name }) => (
+  name || `${contractName} #${id}`
+);
+
 export const groupAssetsByMarketValue = assets => groupBy(assets, ({ native }) => (
   isNull(native) ? 'noValue' : 'hasValue'
 ));
