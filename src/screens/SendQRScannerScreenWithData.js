@@ -1,10 +1,9 @@
-import { isValidAddress } from 'balance-common';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Vibration } from 'react-native';
 import { Alert } from '../components/alerts';
-import { statusBar } from '../utils';
+import { getEthereumAddressFromQRCodeData, statusBar } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
 
 export default class SendQRScannerScreenWithData extends Component {
@@ -19,6 +18,8 @@ export default class SendQRScannerScreenWithData extends Component {
   componentDidMount() {
     statusBar.setBarStyle('light-content', true);
   }
+
+  handleEnableScanning = () => this.setState({ enableScanning: true })
 
   handlePressBackButton = () => {
     const { navigation } = this.props;
@@ -35,28 +36,22 @@ export default class SendQRScannerScreenWithData extends Component {
     this.setState({ enableScanning: false });
 
     if (!data) return null;
-    const parts = data.split(':');
-    const address =
-      (parts[0] === 'ethereum' && isValidAddress(parts[1])) ?
-        parts[1] : isValidAddress(parts[0]) ?
-          parts[0] : null;
+    const address = getEthereumAddressFromQRCodeData(data);
 
     if (address) {
       Vibration.vibrate();
       onSuccess(address);
       navigation.goBack();
 
-      this.handleEnableScanning();
-    } else {
-      Alert({
-        callback: this.handleEnableScanning,
-        message: 'Sorry, this QR code doesn\'t contain an Ethereum address.',
-        title: 'Invalid Address',
-      });
+      return this.handleEnableScanning();
     }
-  }
 
-  handleEnableScanning = () => this.setState({ enableScanning: true })
+    return Alert({
+      callback: this.handleEnableScanning,
+      message: 'Sorry, this QR code doesn\'t contain an Ethereum address.',
+      title: 'Invalid Address',
+    });
+  }
 
   render = () => (
     <QRScannerScreen
