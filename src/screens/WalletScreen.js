@@ -1,23 +1,20 @@
-import lang from 'i18n-js';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { Animated } from 'react-native';
-import { BlurView } from 'react-native-blur';
-import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
-import { get } from 'lodash';
 import { withSafeTimeout } from '@hocs/safe-timers';
-import Avatar from '../components/Avatar';
-import { ActivityHeaderButton, Header, HeaderButton } from '../components/header';
-import { AssetList } from '../components/asset-list';
-import { BalanceCoinRow } from '../components/coin-row';
-import { FlexItem, Page } from '../components/layout';
-import { UniqueTokenRow } from '../components/unique-token';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import {
-  areAssetsEqualToInitialAccountAssetsState,
-  buildUniqueTokenList,
-  groupAssetsByMarketValue,
-  sortAssetsByNativeAmount,
-} from '../helpers/assets';
+  compose,
+  onlyUpdateForKeys,
+  withHandlers,
+  withProps,
+  withState,
+} from 'recompact';
+import styled from 'styled-components/primitives';
+import BlurOverlay from '../components/BlurOverlay';
+import { AssetList } from '../components/asset-list';
+import { FabWrapper } from '../components/fab';
+import { ActivityHeaderButton, Header, ProfileHeaderButton } from '../components/header';
+import { Page } from '../components/layout';
+import buildWalletSections from '../helpers/buildWalletSections';
 import {
   withAccountAddress,
   withAccountAssets,
@@ -26,151 +23,70 @@ import {
   withTransitionProps,
 } from '../hoc';
 import { position } from '../styles';
-import { FabWrapper, WalletConnectFab, SendFab } from '../components/fab';
 
-const overlayStyles = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  zIndex: 1,
-};
+const WalletPage = styled(Page)`
+  ${position.size('100%')};
+  flex: 1;
+`;
 
-const filterEmptyAssetSections = sections => sections.filter(({ totalItems }) => totalItems);
-
-const WalletScreen = ({
-  assets,
-  assetsCount,
-  assetsTotalUSD,
-  didLoadAssetList,
-  fetching,
-  navigation,
-  onPressSend,
-  onPressProfile,
-  onPressWalletConnect,
-  onRefreshList,
-  onSectionsLoaded,
-  onToggleShowShitcoins,
-  showShitcoins,
-  transitionProps,
-  uniqueTokens,
-}) => {
-  const sections = {
-    balances: {
-      data: sortAssetsByNativeAmount(assets, showShitcoins),
-      renderItem: (renderItemProps) => (
-        <BalanceCoinRow
-          {...renderItemProps}
-          onPress={(symbol) => navigation.navigate('ExpandedAssetScreen', { type: 'token', name: symbol })}
-        />
-      ),
-      title: lang.t('account.tab_balances'),
-      totalItems: get(assetsTotalUSD, 'amount') ? assetsCount : 0,
-      totalValue: get(assetsTotalUSD, 'display', ''),
-    },
-    collectibles: {
-      data: buildUniqueTokenList(uniqueTokens),
-      renderItem: (renderItemProps) => (
-        <UniqueTokenRow
-          {...renderItemProps}
-          onPress={(name) => navigation.navigate('ExpandedAssetScreen', { type: 'unique_token', name })}
-        />
-      ),
-      title: lang.t('account.tab_collectibles'),
-      totalItems: uniqueTokens.length,
-      totalValue: '',
-    },
-  };
-
-  const assetsByMarketValue = groupAssetsByMarketValue(assets);
-
-  const totalShitcoins = get(assetsByMarketValue, 'noValue', []).length;
-  if (totalShitcoins) {
-    // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
-    const destructiveButtonIndex = showShitcoins ? 0 : 99;
-
-    sections.balances.contextMenuOptions = {
-      cancelButtonIndex: 1,
-      destructiveButtonIndex,
-      onPress: onToggleShowShitcoins,
-      options: [
-        `${lang.t(`account.${showShitcoins ? 'hide' : 'show'}`)} ${lang.t('wallet.assets.no_price')}`,
-        lang.t('wallet.action.cancel'),
-      ],
-    };
+class WalletScreen extends Component {
+  static propTypes = {
+    isEmpty: PropTypes.bool.isRequired,
+    isLoading: PropTypes.bool.isRequired,
+    onHideSplashScreen: PropTypes.func,
+    onRefreshList: PropTypes.func.isRequired,
+    sections: PropTypes.array,
+    transitionProps: PropTypes.object,
   }
 
-  const filteredSections = filterEmptyAssetSections([sections.balances, sections.collectibles]);
+  componentDidUpdate = (prevProps) => {
+    const { isLoading, onHideSplashScreen } = this.props;
 
-  let isEmpty = !filteredSections.length;
-
-  if (filteredSections.length === 1) {
-    isEmpty = areAssetsEqualToInitialAccountAssetsState(filteredSections[0].data[0]);
+    if (!isLoading && prevProps.isLoading) {
+      onHideSplashScreen();
+    }
   }
 
-  const fabItems = [
-    <SendFab disable={isEmpty} key="sendFab" onPress={onPressSend} />,
-    <WalletConnectFab disable={isEmpty} key="walletConnectFab" onPress={onPressWalletConnect} />,
-  ];
+  render = () => {
+    const {
+      isEmpty,
+      isLoading,
+      onRefreshList,
+      sections,
+      transitionProps,
+    } = this.props;
 
-  const showBlur = transitionProps.effect === 'expanded' && (transitionProps.isTransitioning || transitionProps.position._value > 0);
-  const blurOpacity = transitionProps.position.interpolate({
-    inputRange: [0, 0.01, 1],
-    outputRange: [0, 1, 1],
-  });
+    const {
+      effect,
+      isTransitioning,
+      position: transPosition,
+    } = transitionProps;
 
-  return (
-    <Page component={FlexItem} style={position.sizeAsObject('100%')}>
-      {showBlur ? (
-        <Animated.View style={{ ...overlayStyles, opacity: blurOpacity }}>
-          <BlurView style={overlayStyles} blurAmount={5} blurType="dark" />
-        </Animated.View>
-      ) : null}
-      <Header justify="space-between">
-        <HeaderButton onPress={onPressProfile} transformOrigin="left">
-          <Avatar />
-        </HeaderButton>
-        {(didLoadAssetList && !isEmpty) && <ActivityHeaderButton />}
-      </Header>
-      <FlexItem>
-        <FabWrapper items={fabItems}>
+    const showBlur = effect === 'expanded' && (isTransitioning || transPosition._value > 0);
+    const blurOpacity = transPosition.interpolate({
+      inputRange: [0, 0.01, 1],
+      outputRange: [0, 1, 1],
+    });
+
+    return (
+      <WalletPage>
+        {showBlur && <BlurOverlay opacity={blurOpacity} />}
+        <Header justify="space-between">
+          <ProfileHeaderButton />
+          {(!isEmpty && !isLoading) && <ActivityHeaderButton />}
+        </Header>
+        <FabWrapper disable={isEmpty || isLoading}>
           <AssetList
             fetchData={onRefreshList}
-            isEmpty={isEmpty}
-            onPressSend={onPressSend}
-            onPressWalletConnect={onPressWalletConnect}
-            onSectionsLoaded={onSectionsLoaded}
-            sections={filteredSections}
-            showShitcoins={showShitcoins}
+            isEmpty={isEmpty && !isLoading}
+            isLoading={isLoading}
+            sections={sections}
           />
         </FabWrapper>
-      </FlexItem>
-    </Page>
-  );
-};
-
-WalletScreen.propTypes = {
-  assets: PropTypes.array,
-  assetsCount: PropTypes.number,
-  assetsTotalUSD: PropTypes.shape({
-    amount: PropTypes.string,
-    display: PropTypes.string,
-  }),
-  didLoadAssetList: PropTypes.bool,
-  fetching: PropTypes.bool.isRequired,
-  fetchingUniqueTokens: PropTypes.bool.isRequired,
-  navigation: PropTypes.object,
-  onPressProfile: PropTypes.func.isRequired,
-  onPressSend: PropTypes.func.isRequired,
-  onPressWalletConnect: PropTypes.func.isRequired,
-  onRefreshList: PropTypes.func.isRequired,
-  onSectionsLoaded: PropTypes.func,
-  onToggleShowShitcoins: PropTypes.func,
-  showShitcoins: PropTypes.bool,
-  transitionProps: PropTypes.object,
-  uniqueTokens: PropTypes.array.isRequired,
-};
+      </WalletPage>
+    );
+  }
+}
 
 export default compose(
   withAccountAddress,
@@ -179,12 +95,8 @@ export default compose(
   withRequestsInit,
   withSafeTimeout,
   withTransitionProps,
-  withState('didLoadAssetList', 'toggleLoadAssetList', false),
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
-    onPressSend: ({ navigation }) => () => navigation.navigate('SendScreen'),
-    onPressProfile: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
-    onPressWalletConnect: ({ navigation }) => () => navigation.navigate('QRScannerScreen'),
     onRefreshList: ({
       accountAddress,
       accountUpdateAccountAddress,
@@ -197,17 +109,12 @@ export default compose(
       // accountUpdateAccountAddress does not return a promise
       return new Promise(resolve => setSafeTimeout(resolve, 2000));
     },
-    onSectionsLoaded: ({ didLoadAssetList, onHideSplashScreen, toggleLoadAssetList }) => () => {
-      if (!didLoadAssetList) {
-        onHideSplashScreen();
-        toggleLoadAssetList(true);
-      }
-    },
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
       if (index === 0) {
         toggleShowShitcoins(!showShitcoins);
       }
     },
   }),
+  withProps(buildWalletSections),
   onlyUpdateForKeys(['isScreenActive', ...Object.keys(WalletScreen.propTypes)]),
 )(WalletScreen);

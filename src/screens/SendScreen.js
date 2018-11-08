@@ -135,6 +135,7 @@ const TransactionContainer = styled(View)`
 
 class SendScreen extends Component {
   static propTypes = {
+    allAssets: PropTypes.array,
     fetchData: PropTypes.func,
     isSufficientBalance: PropTypes.bool,
     isSufficientGas: PropTypes.bool,
@@ -369,14 +370,15 @@ class SendScreen extends Component {
   };
 
   renderAssetList() {
-    const { accountInfo, fetchData, uniqueTokens } = this.props;
+    const { allAssets, fetchData, uniqueTokens } = this.props;
+
     const sections = {
       balances: {
-        data: sortAssetsByNativeAmount(accountInfo.assets, true),
-        renderItem: (props) => (
+        data: allAssets,
+        renderItem: (itemProps) => (
           <SendCoinRow
-            {...props}
-            onPress={this.onPressAssetHandler(props.item.symbol)}
+            {...itemProps}
+            onPress={this.onPressAssetHandler(itemProps.item.symbol)}
           />
         ),
       },
@@ -555,13 +557,6 @@ class SendScreen extends Component {
   }
 }
 
-const reduxProps = ({ account }) => ({
-  accountInfo: account.accountInfo,
-  fetching: account.fetching,
-  fetchingUniqueTokens: account.fetchingUniqueTokens,
-  uniqueTokens: account.uniqueTokens,
-});
-
 export default compose(
   withAccountAddress,
   withAccountAssets,
@@ -581,5 +576,4 @@ export default compose(
       return new Promise(resolve => setSafeTimeout(resolve, 2000));
     },
   }),
-  connect(reduxProps, null),
 )(SendScreen);

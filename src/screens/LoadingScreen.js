@@ -8,9 +8,9 @@ import { compose } from 'recompact';
 import Icon from '../components/icons/Icon';
 import { Column } from '../components/layout';
 import { ErrorText, Monospace } from '../components/text';
+import { withAccountAddress, withHideSplashScreenOnMount } from '../hoc';
 import { loadAddress } from '../model/wallet';
 import { colors, fonts, padding, position } from '../styles';
-import { withHideSplashScreenOnMount } from '../hoc';
 
 const Container = styled(Column).attrs({ justify: 'center' })`
   ${position.cover}
@@ -73,6 +73,7 @@ class LoadingScreen extends Component {
 }
 
 export default compose(
+  withAccountAddress,
   withHideSplashScreenOnMount,
   withSafeTimeout,
 )(LoadingScreen);

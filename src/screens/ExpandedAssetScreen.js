@@ -92,17 +92,10 @@ const Name = styled(TruncatedText).attrs({
 
 class ExpandedAssetScreen extends Component {
   static propTypes = {
-    assets: PropTypes.array,
     navigation: PropTypes.object,
     selectedAsset: PropTypes.object,
     subtitle: PropTypes.string,
     type: PropTypes.string,
-    uniqueTokens: PropTypes.array,
-  };
-
-  static defaultProps = {
-    assets: [],
-    uniqueTokens: [],
   };
 
   onPressSend = () => {
@@ -254,13 +247,13 @@ class ExpandedAssetScreen extends Component {
 
 export default compose(
   withAccountAssets,
-  withProps(({ assets, navigation, uniqueTokens }) => {
+  withProps(({ allAssets, navigation, uniqueTokens }) => {
     const { name, type } = navigation.state.params;
 
     let selectedAsset = {};
 
     if (type === 'token') {
-      [selectedAsset] = filter(assets, (asset) => asset.symbol === name);
+      [selectedAsset] = filter(allAssets, (asset) => asset.symbol === name);
     } else if (type === 'unique_token') {
       [selectedAsset] = filter(uniqueTokens, (asset) => asset.name === name);
     }
