@@ -1,10 +1,10 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
+import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { StatusBar } from 'react-native';
-import lang from 'i18n-js';
-import styled from 'styled-components/primitives';
 import { compose } from 'recompact';
+import styled from 'styled-components/primitives';
 import Icon from '../components/icons/Icon';
 import { Column } from '../components/layout';
 import { ErrorText, Monospace } from '../components/text';
@@ -13,8 +13,8 @@ import { loadAddress } from '../model/wallet';
 import { colors, fonts, padding, position } from '../styles';
 
 const Container = styled(Column).attrs({ justify: 'center' })`
-  ${position.cover}
   ${padding(0, 0, 60, 0)}
+  ${position.cover}
 `;
 
 const ErrorContainer = styled(Column)`
