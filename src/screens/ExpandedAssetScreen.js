@@ -168,14 +168,16 @@ class ExpandedAssetScreen extends Component {
                 : get(selectedAsset, 'name')
               }
             </Name>
-            <Text
-              color={colors.blueGreyDark}
-              family="SFProText"
-              size="larger"
-              weight="semibold"
-            >
-              {get(selectedAsset, 'native.price.display')}
-            </Text>
+            {type === 'token' ? (
+              <Text
+                color={colors.blueGreyDark}
+                family="SFProText"
+                size="larger"
+                weight="semibold"
+              >
+                {get(selectedAsset, 'native.price.display', '$0.00')}
+              </Text>
+            ) : null}
           </AssetTitleRow>
           <AssetSubtitleRow>
             <Text
