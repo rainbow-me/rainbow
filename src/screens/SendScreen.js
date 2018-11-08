@@ -438,11 +438,15 @@ class SendScreen extends Component {
       <SendButton
         disabled={disabled}
         leftIconName={disabled ? null : leftIconName}
-        rightIconName={disabled ? null : 'progress'}
-        rightIconProps={{ progress: sendLongPressProgress, color: colors.alpha(colors.sendScreen.grey, 0.3), progressColor: colors.white }}
         onLongPress={this.onLongPressSend}
         onPress={this.onPressSend}
         onRelease={this.onReleaseSend}
+        rightIconName={disabled ? null : 'progress'}
+        rightIconProps={{
+          color: colors.alpha(colors.sendScreen.grey, 0.3),
+          progress: sendLongPressProgress,
+          progressColor: colors.white,
+        }}
       >
         {label}
       </SendButton>

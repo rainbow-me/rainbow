@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, pure, withHandlers, withState } from 'recompact';
+import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
 import styled from 'styled-components/primitives';
 import { BackButton, Header } from '../components/header';
 import { Centered } from '../components/layout';
@@ -84,4 +84,10 @@ export default compose(
     onSheetLayout: ({ setSheetHeight }) => ({ nativeEvent }) =>
       setSheetHeight(get(nativeEvent, 'layout.height')),
   }),
+  onlyUpdateForKeys([
+    'enableScanning',
+    'isScreenActive',
+    'sheetHeight',
+    'walletConnectorsCount',
+  ]),
 )(QRScannerScreen);
