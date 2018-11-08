@@ -9,6 +9,7 @@ import {
   withState,
 } from 'recompact';
 import styled from 'styled-components/primitives';
+import { buildUniqueTokenName } from '../../helpers/assets';
 import { colors, fonts, padding, position } from '../../styles';
 import { Centered } from '../layout';
 import { Monospace } from '../text';
@@ -70,10 +71,9 @@ UniqueTokenImage.propTypes = {
   onError: PropTypes.func,
   onLoad: PropTypes.func,
   onLoadStart: PropTypes.func,
-  size: PropTypes.number,
+  size: PropTypes.number.isRequired,
 };
 
-const buildUniqueTokenName = ({ contractName, id, name }) => (name || `${contractName} #${id}`);
 const getFallbackTextColor = bg => colors.getTextColorForBackground(bg, FallbackTextColorVariants);
 
 export default compose(
