@@ -31,6 +31,29 @@ class QRScannerScreenWithData extends PureComponent {
 
   handleReenableScanning = () => this.setState({ enableScanning: true })
 
+  checkPushNotificationPermissions = async () => {
+    const arePushNotificationsAuthorized = await firebase
+      .messaging()
+      .hasPermission();
+
+    if (!arePushNotificationsAuthorized) {
+      // TODO: try catch around Alert?
+      Alert({
+        buttons: [{
+          onPress: async () => firebase
+                               .messaging()
+                               .requestPermission(),
+          text: 'Okay',
+        }, {
+          style: 'cancel',
+          text: 'Dismiss',
+        }],
+        message: lang.t('wallet.push_notifications.please_enable_body'),
+        title: lang.t('wallet.push_notifications.please_enable_title'),
+      });
+    }
+  }
+
   handleScanSuccess = async ({ data }) => {
     const {
       accountAddress,
@@ -40,48 +63,27 @@ class QRScannerScreenWithData extends PureComponent {
     } = this.props;
 
     if (!data) return null;
-
     this.setState({ enableScanning: false });
     setSafeTimeout(this.handleReenableScanning, 1000);
+    Vibration.vibrate();
 
     const address = getEthereumAddressFromQRCodeData(data);
 
     if (address) {
-      Vibration.vibrate();
       return navigation.navigate('SendScreen', { address });
     }
 
-    try {
-      const walletConnector = await walletConnectInit(accountAddress, data);
-      const arePushNotificationsAuthorized = await firebase.messaging().hasPermission();
-
-      Vibration.vibrate();
-
-      if (!arePushNotificationsAuthorized) {
-        try {
-          Alert({
-            buttons: [{
-              onPress: async () => firebase.messaging().requestPermission(),
-              text: 'Okay',
-            }, {
-              onPress: () => console.log('Push notification dismissed'),
-              style: 'cancel',
-              text: 'Dismiss',
-            }],
-            message: lang.t('wallet.push_notifications.please_enable_body'),
-            title: lang.t('wallet.push_notifications.please_enable_title'),
-          });
-        } catch (error) {
-          console.log('user has rejected notifications');
-        }
-      }
-
+    if (data.startsWith('wc')) {
+      const walletConnector = await walletConnectInit(
+        accountAddress,
+        data
+      );
+      await this.checkPushNotificationPermissions();
       return addWalletConnector(walletConnector);
-    } catch (error) {
-      console.log('error initializing wallet connect', error);
+    } else {
       return Alert({
-        message: error,
-        title: lang.t('wallet.wallet_connect.error'),
+        message: lang.t('wallet.unrecognized_qrcode'),
+        title: lang.t('wallet.unrecognized_qrcode_title'),
       });
     }
   }
