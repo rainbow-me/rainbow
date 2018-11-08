@@ -1,15 +1,13 @@
 import PropTypes from 'prop-types';
-import React, { cloneElement } from 'react';
+import React, { createElement } from 'react';
+import { hoistStatics } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withSafeAreaViewInsetValues } from '../../hoc';
-import { position } from '../../styles';
-import { Row } from '../layout';
+import { FlexItem, Row } from '../layout';
+import SendFab from './SendFab';
+import WalletConnectFab from './WalletConnectFab';
 
 const FabWrapperBottomPosition = 21;
-
-const Container = styled.View`
-  ${position.cover}
-`;
 
 const Wrapper = styled(Row)`
   bottom: ${({ bottomInset }) => (bottomInset + FabWrapperBottomPosition)};
@@ -17,12 +15,18 @@ const Wrapper = styled(Row)`
   right: 12;
 `;
 
-const FabWrapper = withSafeAreaViewInsetValues(({ children, items, safeAreaInset }) => (
-  <Container>
+const FabWrapper = ({
+  children,
+  disabled,
+  fabs,
+  safeAreaInset,
+}) => (
+  <FlexItem>
     {children}
     <Wrapper bottomInset={safeAreaInset.bottom} direction="row-reverse">
-      {items.map((fab, index) => (
-        cloneElement(fab, {
+      {fabs.map((fab, index) => (
+        createElement(fab, {
+          disabled,
           key: index,
           style: {
             marginLeft: (index > 0) ? 12 : 0,
@@ -30,15 +34,20 @@ const FabWrapper = withSafeAreaViewInsetValues(({ children, items, safeAreaInset
         })
       ))}
     </Wrapper>
-  </Container>
-));
+  </FlexItem>
+);
 
 FabWrapper.propTypes = {
   children: PropTypes.node,
-  items: PropTypes.arrayOf(PropTypes.node).isRequired,
+  disabled: PropTypes.bool,
+  fabs: PropTypes.arrayOf(PropTypes.func).isRequired,
   safeAreaInset: PropTypes.shape({ bottom: PropTypes.number }),
+};
+
+FabWrapper.defaultProps = {
+  fabs: [SendFab, WalletConnectFab],
 };
 
 FabWrapper.bottomPosition = FabWrapperBottomPosition;
 
-export default FabWrapper;
+export default hoistStatics(withSafeAreaViewInsetValues)(FabWrapper);
