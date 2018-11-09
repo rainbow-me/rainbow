@@ -77,7 +77,7 @@ class QRScannerScreenWithData extends PureComponent {
       return navigation.navigate('SendScreen', { address });
     }
 
-    if (data.startsWith('wc')) {
+    if (data.startsWith('ethereum:wc')) {
       const walletConnector = await walletConnectInit(
         accountAddress,
         data
