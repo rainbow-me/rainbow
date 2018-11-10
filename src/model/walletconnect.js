@@ -1,4 +1,5 @@
 import { commonStorage } from 'balance-common';
+import lang from 'i18n-js';
 import { assign, get, mapValues, values } from 'lodash';
 import { AlertIOS } from 'react-native';
 import RNWalletConnect from 'rn-walletconnect-wallet';
@@ -6,10 +7,13 @@ import RNWalletConnect from 'rn-walletconnect-wallet';
 const PUSH_ENDPOINT = 'https://us-central1-balance-424a3.cloudfunctions.net/push';
 
 export const walletConnectInit = async (accountAddress, uriString) => {
-  const fcmTokenLocal = await commonStorage.getLocal('balanceWalletFcmToken');
-  const fcmToken = get(fcmTokenLocal, 'data', null);
+  try {
+    const fcmTokenLocal = await commonStorage.getLocal('balanceWalletFcmToken');
+    const fcmToken = get(fcmTokenLocal, 'data', null);
+    if (!fcmToken) {
+      throw new Error('Push notification token unavailable.');
+    }
 
-  if (fcmToken) {
     try {
       const walletConnector = new RNWalletConnect({
         push: {
@@ -20,16 +24,15 @@ export const walletConnectInit = async (accountAddress, uriString) => {
         uri: uriString,
       });
       await walletConnector.approveSession({ accounts: [accountAddress] });
-      console.log('walletConnector.expires', new Date(walletConnector.expires));
       await commonStorage.saveWalletConnectSession(walletConnector.sessionId, uriString, walletConnector.expires);
       return walletConnector;
     } catch (error) {
       console.log(error);
-      AlertIOS.alert('Unable to initialize with WalletConnect');
+      AlertIOS.alert(lang.t('wallet.wallet_connect.error'));
       return null;
     }
-  } else {
-    AlertIOS.alert('Unable to initialize WalletConnect: missing push notification token. Please try again.');
+  } catch (error) {
+    AlertIOS.alert(lang.t('wallet.wallet_connect.missing_fcm'));
     return null;
   }
 };
