@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withNavigation } from 'react-navigation';
 import { compose, onlyUpdateForPropTypes, withHandlers } from 'recompact';
 import Avatar from '../Avatar';
 import HeaderButton from './HeaderButton';
@@ -16,7 +15,8 @@ ProfileHeaderButton.propTypes = {
 };
 
 export default compose(
-  withNavigation,
-  withHandlers({ onPress: ({ navigation }) => () => navigation.navigate('SettingsScreen') }),
+  withHandlers({
+    onPress: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
+  }),
   onlyUpdateForPropTypes,
 )(ProfileHeaderButton);
