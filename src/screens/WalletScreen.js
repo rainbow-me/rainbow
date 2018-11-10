@@ -33,6 +33,7 @@ class WalletScreen extends Component {
   static propTypes = {
     isEmpty: PropTypes.bool.isRequired,
     isLoading: PropTypes.bool.isRequired,
+    navigation: PropTypes.object,
     onHideSplashScreen: PropTypes.func,
     onRefreshList: PropTypes.func.isRequired,
     sections: PropTypes.array,
@@ -51,6 +52,7 @@ class WalletScreen extends Component {
     const {
       isEmpty,
       isLoading,
+      navigation,
       onRefreshList,
       sections,
       transitionProps,
@@ -72,8 +74,10 @@ class WalletScreen extends Component {
       <WalletPage>
         {showBlur && <BlurOverlay opacity={blurOpacity} />}
         <Header justify="space-between">
-          <ProfileHeaderButton />
-          {(!isEmpty && !isLoading) && <ActivityHeaderButton />}
+          <ProfileHeaderButton navigation={navigation} />
+          {(!isEmpty && !isLoading) && (
+            <ActivityHeaderButton navigation={navigation}/>
+          )}
         </Header>
         <FabWrapper disable={isEmpty || isLoading}>
           <AssetList

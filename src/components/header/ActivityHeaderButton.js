@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withNavigation } from 'react-navigation';
 import { compose, onlyUpdateForPropTypes, withHandlers } from 'recompact';
 import { withRequests } from '../../hoc';
 import { colors } from '../../styles';
@@ -29,16 +28,9 @@ ActivityHeaderButton.propTypes = {
 };
 
 export default compose(
-  withNavigation,
   withRequests,
   withHandlers({
-    onPress: ({ navigation, onPress }) => (event) => {
-      if (onPress) {
-        return onPress(event);
-      }
-
-      return navigation.navigate('ActivityScreen');
-    },
+    onPress: ({ navigation }) => () => navigation.navigate('ActivityScreen'),
   }),
   onlyUpdateForPropTypes,
 )(ActivityHeaderButton);
