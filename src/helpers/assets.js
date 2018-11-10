@@ -1,5 +1,6 @@
 import { INITIAL_ACCOUNT_STATE } from 'balance-common';
-import { get, groupBy, isEqual, isNull, omit } from 'lodash';
+import { get, groupBy, isEqual, isNull, omit, toNumber } from 'lodash';
+import { sortList } from '../utils';
 
 const EMPTY_ARRAY = [];
 
@@ -19,7 +20,6 @@ export const areAssetsEqualToInitialAccountAssetsState = (sectionData) => {
   return isEqual(currentState, initialState);
 };
 
-
 export const buildUniqueTokenList = (uniqueTokensAssets) => {
   const list = [];
 
@@ -30,26 +30,30 @@ export const buildUniqueTokenList = (uniqueTokensAssets) => {
   return list;
 };
 
+export const buildUniqueTokenName = ({ contractName, id, name }) => (
+  name || `${contractName} #${id}`
+);
+
 export const groupAssetsByMarketValue = assets => groupBy(assets, ({ native }) => (
   isNull(native) ? 'noValue' : 'hasValue'
 ));
 
-export const sortAssetsByNativeAmount = (assets, showShitcoins) => {
-  const assetsByMarketValue = groupAssetsByMarketValue(assets);
+export const sortAssetsByNativeAmount = (assets) => {
+  const {
+    hasValue = EMPTY_ARRAY,
+    noValue = EMPTY_ARRAY,
+  } = groupAssetsByMarketValue(assets);
 
-  const sortedAssetsWithMarketValue = (assetsByMarketValue.hasValue || EMPTY_ARRAY).sort((a, b) => {
-    const amountA = get(a, 'native.balance.amount', 0);
-    const amountB = get(b, 'native.balance.amount', 0);
-    return parseFloat(amountB) - parseFloat(amountA);
-  });
+  const sortedAssets = sortList(hasValue, 'native.balance.amount', 'desc', 0, toNumber);
+  const sortedShitcoins = sortList(noValue, 'name', 'asc');
+  const allAssets = sortedAssets.concat(sortedShitcoins);
 
-  if (showShitcoins) {
-    const sortedAssetsWithNoMarketValue = (assetsByMarketValue.noValue || EMPTY_ARRAY).sort((a, b) => (
-      (a.name < b.name) ? -1 : 1
-    ));
-
-    return sortedAssetsWithMarketValue.concat(sortedAssetsWithNoMarketValue);
-  }
-
-  return sortedAssetsWithMarketValue;
+  return {
+    allAssets,
+    allAssetsCount: allAssets.length,
+    assets: sortedAssets,
+    assetsCount: sortedAssets.length,
+    shitcoins: sortedShitcoins,
+    shitcoinsCount: sortedShitcoins.length,
+  };
 };

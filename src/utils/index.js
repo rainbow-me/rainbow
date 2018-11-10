@@ -1,4 +1,5 @@
 export { default as abbreviations } from './abbreviations';
+export { getEthereumAddressFromQRCodeData } from './address';
 export { default as deviceUtils } from './deviceUtils';
 export { default as directionPropType } from './directionPropType';
 export { default as reduceStylesArrayToObject } from './reduceStylesArrayToObject';

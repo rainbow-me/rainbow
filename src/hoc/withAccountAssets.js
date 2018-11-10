@@ -1,7 +1,7 @@
 import { accountUpdateAccountAddress } from 'balance-common';
 import { connect } from 'react-redux';
-
-const EMPTY_ARRAY = [];
+import { compose, withProps } from 'recompact';
+import { sortAssetsByNativeAmount } from '../helpers/assets';
 
 const mapStateToProps = ({
   account: {
@@ -15,11 +15,15 @@ const mapStateToProps = ({
   },
 }) => ({
   assets,
-  assetsCount: (assets || EMPTY_ARRAY).length,
   assetsTotalUSD: total,
   fetching,
   fetchingUniqueTokens,
   uniqueTokens,
 });
 
-export default Component => connect(mapStateToProps, { accountUpdateAccountAddress })(Component);
+const sortAssets = ({ assets }) => sortAssetsByNativeAmount(assets);
+
+export default Component => compose(
+  connect(mapStateToProps, { accountUpdateAccountAddress }),
+  withProps(sortAssets),
+)(Component);
