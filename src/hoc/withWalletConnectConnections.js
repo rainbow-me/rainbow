@@ -9,21 +9,18 @@ import { sortList } from '../utils';
 
 const mapStateToProps = ({ walletconnect: { walletConnectors } }) => ({ walletConnectors });
 
-const sortWalletConnectors = ({ walletConnectors }) => {
-  if (!walletConnectors) return null;
-
-  const sortedWalletConnectors = sortList(Object.values(walletConnectors), 'expires');
-  return {
-    walletConnectors: sortedWalletConnectors,
-    walletConnectorsCount: sortedWalletConnectors.length,
-  };
-};
-
 export default Component => compose(
   connect(mapStateToProps, {
     getValidWalletConnectors,
     removeWalletConnector,
     setWalletConnectors,
   }),
-  withProps(sortWalletConnectors),
+  withProps(({ walletConnectors }) => {
+    const sortedWalletConnectors = sortList(Object.values(walletConnectors), 'expires');
+
+    return {
+      walletConnectors: sortedWalletConnectors,
+      walletConnectorsCount: sortedWalletConnectors.length,
+    };
+  }),
 )(Component);
