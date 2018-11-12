@@ -1,16 +1,14 @@
 import React from 'react';
+import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
 import { Row } from './layout';
-import { borders, colors } from '../styles';
+import { borders, colors, position } from '../styles';
 
 const BorderLine = styled.View`
-  ${borders.buildRadius('left', 2)}
+  ${borders.buildRadius('left', 2)};
+  ${position.cover};
   background-color: ${colors.lightGrey};
-  bottom: 0;
   left: 19;
-  position: absolute;
-  right: 0;
-  top: 0;
 `;
 
 const Container = styled(Row)`
@@ -20,10 +18,10 @@ const Container = styled(Row)`
   width: 100%;
 `;
 
-const Divider = props => (
-  <Container {...props}>
+const Divider = () => (
+  <Container>
     <BorderLine />
   </Container>
 );
 
-export default Divider;
+export default pure(Divider);

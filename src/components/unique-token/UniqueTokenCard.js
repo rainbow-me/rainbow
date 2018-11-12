@@ -26,7 +26,7 @@ const InnerBorder = styled.View`
 const UniqueTokenCard = ({
   item: {
     background,
-    imagePreviewUrl,
+    image_preview_url,
     ...item
   },
   onPress,
@@ -49,7 +49,7 @@ const UniqueTokenCard = ({
         <Container backgroundColor={backgroundColor}>
           <UniqueTokenImage
             backgroundColor={backgroundColor}
-            imageUrl={imagePreviewUrl}
+            imageUrl={image_preview_url}
             item={item}
             size={size}
           />
@@ -63,7 +63,7 @@ const UniqueTokenCard = ({
 UniqueTokenCard.propTypes = {
   item: PropTypes.shape({
     background: PropTypes.string,
-    imagePreviewUrl: PropTypes.string,
+    image_preview_url: PropTypes.string,
   }),
   onPress: PropTypes.func,
   size: PropTypes.number,

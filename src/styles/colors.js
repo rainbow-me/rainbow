@@ -7,6 +7,7 @@ const base = {
   blueActive: '#5a71cc', // '90, 113, 204'
   blueGreyDark: '#3c4252', // '60, 66, 82'
   blueGreyLight: '#666A73', // '102, 106, 115'
+  blueGreyLighter: '#888D96', // '136, 141, 150'
   blueGreyMedium: '#636875', // '99, 104, 117'
   blueGreyMediumLight: '#7b7f8a', // '123, 127, 138'
   blueHover: '#6c87f5', // '108, 135, 245'
@@ -74,22 +75,22 @@ const vendor = {
 
 const buildRgba = (color, alpha) => `rgba(${chroma(color).rgb()}, ${alpha})`;
 
-const getTextColorForBackground = (bgColor, textColors = {}) => {
-  const backgroundColor = bgColor || base.white;
+const isColorLight = targetColor => (chroma(targetColor || base.white).luminance() > 0.5);
+
+const getTextColorForBackground = (targetColor, textColors = {}) => {
   const {
     dark = base.black,
     light = base.white,
   } = textColors;
 
-  const isLightBackground = chroma(backgroundColor).luminance() > 0.5;
-  return isLightBackground ? dark : light;
+  return isColorLight(targetColor) ? dark : light;
 };
-
 
 const colors = {
   alpha: buildRgba,
   assetIcon,
   getTextColorForBackground,
+  isColorLight,
   sendScreen,
   ...base,
   ...transparent,
