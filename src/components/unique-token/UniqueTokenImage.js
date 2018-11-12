@@ -10,10 +10,11 @@ import {
 } from 'recompact';
 import styled from 'styled-components/primitives';
 import { buildUniqueTokenName } from '../../helpers/assets';
-import { colors, fonts, padding, position } from '../../styles';
+import { colors, fonts, position } from '../../styles';
 import { Centered } from '../layout';
 import { Monospace } from '../text';
 import Shimmer from '../Shimmer';
+import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
 
 const FallbackTextColorVariants = {
   dark: colors.blueGreyLight,
@@ -21,8 +22,7 @@ const FallbackTextColorVariants = {
 };
 
 const Container = styled(Centered)`
-  ${padding(19, 10)}
-  ${position.cover}
+  ${position.cover};
 `;
 
 const FallbackText = styled(Monospace).attrs({ size: 'smedium' })`
@@ -39,16 +39,17 @@ const UniqueTokenImage = ({
   onError,
   onLoad,
   onLoadStart,
+  resizeMode,
   size,
-  ...props
 }) => (
   <Container>
     {(imageUrl && !error) ? (
-      <FastImage
+      <ImageWithCachedDimensions
         onError={onError}
         onLoad={onLoad}
+        id={imageUrl}
         onLoadStart={onLoadStart}
-        resizeMode="contain"
+        resizeMode={FastImage.resizeMode[resizeMode]}
         source={{ uri: imageUrl }}
         style={position.sizeAsObject('100%')}
       />
@@ -71,7 +72,12 @@ UniqueTokenImage.propTypes = {
   onError: PropTypes.func,
   onLoad: PropTypes.func,
   onLoadStart: PropTypes.func,
+  resizeMode: PropTypes.oneOf(Object.values(FastImage.resizeMode)),
   size: PropTypes.number.isRequired,
+};
+
+UniqueTokenImage.defaultProps = {
+  resizeMode: 'cover',
 };
 
 const getFallbackTextColor = bg => colors.getTextColorForBackground(bg, FallbackTextColorVariants);
