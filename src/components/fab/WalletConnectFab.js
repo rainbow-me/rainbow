@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import { withNavigation } from 'react-navigation';
 import RadialGradient from 'react-native-radial-gradient';
-import { compose, withHandlers } from 'recompact';
+import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
 import Icon from '../icons/Icon';
@@ -40,13 +40,6 @@ WalletConnectFab.propTypes = {
 
 export default compose(
   withNavigation,
-  withHandlers({
-    onPress: ({ navigation, onPress }) => (event) => {
-      if (onPress) {
-        return onPress(event);
-      }
-
-      return navigation.navigate('QRScannerScreen');
-    },
-  }),
+  withHandlers({ onPress: ({ navigation }) => () => navigation.navigate('QRScannerScreen') }),
+  onlyUpdateForKeys(['disabled']),
 )(WalletConnectFab);
