@@ -48,9 +48,19 @@ export const createTransaction = async (to, data, value, gasLimit, gasPrice, non
 };
 
 export const sendTransaction = async (transaction, authenticationPrompt = lang.t('account.authenticate.please')) => {
-  const wallet = await loadWallet(authenticationPrompt);
-  const result = await wallet.sendTransaction(transaction);
-  return result.hash;
+  try {
+    const wallet = await loadWallet(authenticationPrompt);
+    try {
+      const result = await wallet.sendTransaction(transaction);
+      return result.hash;
+    } catch(error) {
+    AlertIOS.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      return null;
+    }
+  } catch(error) {
+    AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
+    return null;
+  }
 };
 
 export const loadSeedPhrase = async () => {
