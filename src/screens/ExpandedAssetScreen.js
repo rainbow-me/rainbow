@@ -1,7 +1,6 @@
 import { filter, get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
-import { compose, withProps } from 'recompact';
 import {
   InteractionManager,
   Linking,
@@ -9,12 +8,13 @@ import {
   StatusBar,
   TouchableOpacity,
 } from 'react-native';
+import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
-
 import { Icon } from '../components/icons';
 import { Centered, Column, Row } from '../components/layout';
 import { Text, TruncatedText } from '../components/text';
 import { UniqueTokenImage } from '../components/unique-token';
+import { buildUniqueTokenName } from '../helpers/assets';
 import { withAccountAssets } from '../hoc';
 import { colors, padding, position } from '../styles';
 import { deviceUtils } from '../utils';
@@ -67,39 +67,35 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   height: 100%;
 `;
 
+const FloatingContainerPaddingX = 20;
+
 const FloatingContainer = styled(Column)`
-  ${padding(20, 0)}
+  ${padding(FloatingContainerPaddingX, 0)}
   background-color: ${({ color }) => color || colors.white};
   border-radius: 12px;
-  height: ${({ size }) => (size ? `${size - 60}px` : 'auto')};
+  height: ${({ size }) => size || 'auto'};
   margin-bottom: ${({ marginBottom }) => (marginBottom ? `${marginBottom}px` : '0px')};
   padding-bottom: 0px;
   width: 100%;
   z-index: 1;
 `;
 
-const Name = styled(Text).attrs({
+const Name = styled(TruncatedText).attrs({
   color: colors.blueGreyDark,
   family: 'SFProText',
   size: 'larger',
   weight: 'semibold',
 })`
-  max-width: 60%;
+  flex: 1;
+  padding-right: ${FloatingContainerPaddingX * 1.25};
 `;
 
 class ExpandedAssetScreen extends Component {
   static propTypes = {
-    assets: PropTypes.array,
     navigation: PropTypes.object,
     selectedAsset: PropTypes.object,
     subtitle: PropTypes.string,
     type: PropTypes.string,
-    uniqueTokens: PropTypes.array,
-  };
-
-  static defaultProps = {
-    assets: [],
-    uniqueTokens: [],
   };
 
   onPressSend = () => {
@@ -154,28 +150,34 @@ class ExpandedAssetScreen extends Component {
           <FloatingContainer
             color={selectedAsset.background || colors.lightestGrey}
             marginBottom={20}
-            size={deviceUtils.dimensions.width}
+            size={deviceUtils.dimensions.width - 60}
           >
             <UniqueTokenImage
               backgroundColor={selectedAsset.background}
               imageUrl={selectedAsset.imagePreviewUrl}
               item={selectedAsset}
+              size={deviceUtils.dimensions.width - 60}
             />
           </FloatingContainer>
         ) : null}
         <FloatingContainer color={colors.white}>
           <AssetTitleRow>
-            <TruncatedText component={Name}>
-              {get(selectedAsset, 'name')}
-            </TruncatedText>
-            <Text
-              color={colors.blueGreyDark}
-              family="SFProText"
-              size="larger"
-              weight="semibold"
-            >
-              {get(selectedAsset, 'native.price.display')}
-            </Text>
+            <Name>
+              {(type === 'unique_token')
+                ? buildUniqueTokenName(selectedAsset)
+                : get(selectedAsset, 'name')
+              }
+            </Name>
+            {type === 'token' ? (
+              <Text
+                color={colors.blueGreyDark}
+                family="SFProText"
+                size="larger"
+                weight="semibold"
+              >
+                {get(selectedAsset, 'native.price.display', '$0.00')}
+              </Text>
+            ) : null}
           </AssetTitleRow>
           <AssetSubtitleRow>
             <Text
@@ -247,20 +249,27 @@ class ExpandedAssetScreen extends Component {
 
 export default compose(
   withAccountAssets,
-  withProps(({ assets, navigation, uniqueTokens }) => {
+  withProps(({ allAssets, navigation, uniqueTokens }) => {
     const { name, type } = navigation.state.params;
 
     let selectedAsset = {};
 
     if (type === 'token') {
-      [selectedAsset] = filter(assets, (asset) => asset.symbol === name);
+      [selectedAsset] = filter(allAssets, (asset) => asset.symbol === name);
     } else if (type === 'unique_token') {
       [selectedAsset] = filter(uniqueTokens, (asset) => asset.name === name);
     }
 
-    const subtitle = type === 'token'
-      ? get(selectedAsset, 'balance.display')
-      : `${selectedAsset.contractName} #${selectedAsset.id}`;
+    let subtitle = '';
+
+    if (type === 'token') {
+      subtitle = get(selectedAsset, 'balance.display');
+    } else if (type === 'unique_token') {
+      const hasName = get(selectedAsset, 'name');
+      subtitle = hasName
+        ? `${selectedAsset.contractName} #${selectedAsset.id}`
+        : selectedAsset.contractName;
+    }
 
     return {
       selectedAsset,

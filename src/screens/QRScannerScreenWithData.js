@@ -1,14 +1,14 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
-import { isValidAddress } from 'balance-common';
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Vibration } from 'react-native';
 import firebase from 'react-native-firebase';
 import { compose } from 'recompact';
-import { withAccountAddress, withAddWalletConnector } from '../hoc';
 import { Alert } from '../components/alerts';
 import { walletConnectInit } from '../model/walletconnect';
+import { withAccountAddress, withAddWalletConnector } from '../hoc';
+import { getEthereumAddressFromQRCodeData } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
 
 class QRScannerScreenWithData extends PureComponent {
@@ -67,11 +67,7 @@ class QRScannerScreenWithData extends PureComponent {
     setSafeTimeout(this.handleReenableScanning, 1000);
     Vibration.vibrate();
 
-    const parts = data.split(':');
-    const address =
-      (parts[0] === 'ethereum' && isValidAddress(parts[1])) ?
-        parts[1] : isValidAddress(parts[0]) ?
-          parts[0] : null;
+    const address = getEthereumAddressFromQRCodeData(data);
 
     if (address) {
       return navigation.navigate('SendScreen', { address });

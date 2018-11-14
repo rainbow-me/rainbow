@@ -10,7 +10,7 @@ import { directionPropType } from '../../utils';
 const ButtonKeyframes = animations.keyframes.button;
 
 const DefaultAnimatedValues = {
-  opacity: 0,
+  opacity: 1,
   scale: ButtonKeyframes.from.scale,
   transX: 0,
 };
