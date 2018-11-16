@@ -1,5 +1,6 @@
 import ethers from 'ethers';
 import lang from 'i18n-js';
+import { AlertIOS } from 'react-native';
 import {
   ACCESS_CONTROL,
   ACCESSIBLE,
@@ -54,7 +55,8 @@ export const sendTransaction = async (transaction, authenticationPrompt = lang.t
       const result = await wallet.sendTransaction(transaction);
       return result.hash;
     } catch(error) {
-    AlertIOS.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      console.log('sendTxn error', error);
+      AlertIOS.alert(lang.t('wallet.transaction.alert.failed_transaction'));
       return null;
     }
   } catch(error) {
