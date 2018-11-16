@@ -1,3 +1,4 @@
+import { getTransactionCount, web3Instance } from 'balance-common';
 import lang from 'i18n-js';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
@@ -14,6 +15,8 @@ class TransactionConfirmationScreenWithData extends Component {
     accountUpdateTransactions: PropTypes.func,
     navigation: PropTypes.any,
     removeTransaction: PropTypes.func,
+    transactionCountNonce: PropTypes.number,
+    updateTransactionCountNonce: PropTypes.func,
     walletConnectors: PropTypes.object,
   }
 
@@ -23,34 +26,34 @@ class TransactionConfirmationScreenWithData extends Component {
   }
 
   handleConfirmTransaction = async () => {
-    try {
-      const { transactionDetails } = this.props.navigation.state.params;
-      const txPayload = transactionDetails.callData;
-      const transactionHash = await sendTransaction(txPayload, lang.t('wallet.transaction.confirm'));
+    const { transactionDetails } = this.props.navigation.state.params;
+    const txPayload = transactionDetails.callData;
+    const web3TxnCount = await getTransactionCount(txPayload.from);
+    const maxTxnCount = Math.max(this.props.transactionCountNonce, web3TxnCount);
+    const nonce = web3Instance.utils.toHex(maxTxnCount);
+    const txPayloadLatestNonce = { ...txPayload, nonce };
+    const transactionHash = await sendTransaction(txPayloadLatestNonce, lang.t('wallet.transaction.confirm'));
 
-      if (transactionHash) {
-        const txDetails = {
-          asset: get(transactionDetails, 'transactionDisplayDetails.asset'),
-          from: get(transactionDetails, 'transactionDisplayDetails.from'),
-          gasLimit: get(transactionDetails, 'transactionDisplayDetails.gasLimit'),
-          gasPrice: get(transactionDetails, 'transactionDisplayDetails.gasPrice'),
-          hash: transactionHash,
-          nonce: get(transactionDetails, 'transactionDisplayDetails.nonce'),
-          to: get(transactionDetails, 'transactionDisplayDetails.to'),
-          value: get(transactionDetails, 'transactionDisplayDetails.value'),
-        };
-        this.props.accountUpdateHasPendingTransaction();
-        this.props.accountUpdateTransactions(txDetails);
-        this.props.removeTransaction(transactionDetails.callId);
-        const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
-        await walletConnectSendTransactionHash(walletConnector, transactionDetails.callId, true, transactionHash);
-        this.closeTransactionScreen();
-      } else {
-        await this.handleCancelTransaction();
-      }
-    } catch (error) {
-      await this.sendFailedTransactionStatus();
-      AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
+    if (transactionHash) {
+      this.props.updateTransactionCountNonce(maxTxnCount + 1);
+      const txDetails = {
+        asset: get(transactionDetails, 'transactionDisplayDetails.asset'),
+        from: get(transactionDetails, 'transactionDisplayDetails.from'),
+        gasLimit: get(transactionDetails, 'transactionDisplayDetails.gasLimit'),
+        gasPrice: get(transactionDetails, 'transactionDisplayDetails.gasPrice'),
+        hash: transactionHash,
+        nonce: get(transactionDetails, 'transactionDisplayDetails.nonce'),
+        to: get(transactionDetails, 'transactionDisplayDetails.to'),
+        value: get(transactionDetails, 'transactionDisplayDetails.value'),
+      };
+      this.props.accountUpdateHasPendingTransaction();
+      this.props.accountUpdateTransactions(txDetails);
+      this.props.removeTransaction(transactionDetails.callId);
+      const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
+      await walletConnectSendTransactionHash(walletConnector, transactionDetails.callId, true, transactionHash);
+      this.closeTransactionScreen();
+    } else {
+      await this.handleCancelTransaction();
     }
   };
 
