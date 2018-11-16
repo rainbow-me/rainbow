@@ -1687,9 +1687,9 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-balance-common@^0.5.22:
-  version "0.5.22"
-  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.5.22.tgz#6b19531edfc72ed520d0e6ff7855d2a33bf0fc9e"
+balance-common@^0.5.24:
+  version "0.5.24"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.5.24.tgz#174382ad3775b8c2f3d8ea7e3d312c4475622384"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -6724,8 +6724,8 @@ react-native-level-fs@^3.0.1:
     levelup "^0.18.2"
 
 react-native-linear-gradient@^2.4.2:
-  version "2.4.3"
-  resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.4.3.tgz#a7f5fe685b1a2ac788cca37828c5c9ca91357a16"
+  version "2.4.4"
+  resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.4.4.tgz#64944a39290eefbede18dfd7e9551f1ef61e3de7"
 
 react-native-mail@^3.0.6:
   version "3.0.7"
@@ -6811,8 +6811,8 @@ react-native-tab-view@^0.0.77:
     prop-types "^15.6.0"
 
 react-native-tab-view@^1.0.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-1.3.0.tgz#822fcf14e9a1d08d3548338c217c716a31637e1c"
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-1.3.1.tgz#f9932d6bd5ba7dad75ef9335a68f13d85ba5bd56"
   dependencies:
     prop-types "^15.6.1"
 
@@ -9064,7 +9064,7 @@ yauzl@^2.4.2:
     fd-slicer "~1.1.0"
 
 yazl@^2.4.1:
-  version "2.4.3"
-  resolved "https://registry.yarnpkg.com/yazl/-/yazl-2.4.3.tgz#ec26e5cc87d5601b9df8432dbdd3cd2e5173a071"
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/yazl/-/yazl-2.5.0.tgz#1ab8de8cd3c3c252986c7fa2f6562784d7288e49"
   dependencies:
     buffer-crc32 "~0.2.3"
