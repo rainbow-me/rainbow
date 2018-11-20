@@ -44,15 +44,7 @@ class SectionList extends PureComponent {
     if (this.state.isRefreshing) return;
 
     this.setState({ isRefreshing: true });
-    this.props.fetchData()
-      .then(() => {
-        this.setState({ isRefreshing: false });
-        return this.listRef.root.scrollToLocation({
-          itemIndex: 0,
-          sectionIndex: 0,
-          viewOffset: ListHeader.height,
-        });
-      });
+    this.props.fetchData().then(() => this.setState({ isRefreshing: false }));
   }
 
   renderRefreshControl = () => {
