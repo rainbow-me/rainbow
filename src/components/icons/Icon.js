@@ -25,10 +25,6 @@ import WarningIcon from './svg/WarningIcon';
 const Icon = ({ name, ...props }) =>
   createElement((Icon.IconTypes[name] || Flex), props);
 
-Icon.propTypes = {
-  name: PropTypes.string,
-};
-
 Icon.IconTypes = {
   arrow: ArrowIcon,
   avatar: AvatarIcon,
@@ -49,6 +45,10 @@ Icon.IconTypes = {
   send: SendIcon,
   share: ShareIcon,
   warning: WarningIcon,
+};
+
+Icon.propTypes = {
+  name: PropTypes.oneOf(Object.keys(Icon.IconTypes)),
 };
 
 export default Icon;
