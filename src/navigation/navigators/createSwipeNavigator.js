@@ -245,7 +245,6 @@ export default function createSwipeNavigator(screens, options) {
           <StatusBar
             animated
             barStyle={currentScreen.statusBarColor}
-            networkActivityIndicatorVisible={true}
           />
           <FlatList
             bounces={false}
