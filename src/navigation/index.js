@@ -1,5 +1,20 @@
+import { Animated, InteractionManager } from 'react-native';
+
 const queuedNavigationActions = [];
 let isPaused = false;
+let transitionPosition = new Animated.Value(0);
+
+/**
+ * Gets the current screen from navigation state
+ */
+function getActiveRouteName(navigationState) {
+  if (!navigationState) return null;
+
+  const route = navigationState.routes[navigationState.index];
+  // recursively dive into nested navigators
+  if (route.routes) return getActiveRouteName(route);
+  return route.routeName;
+}
 
 /**
  * Handle a navigation action or queue the action if navigation actions have been paused.
@@ -29,17 +44,29 @@ function resumeNavigationActions(navigation) {
   isPaused = false;
 
   // XXX - Need to determine if we want to navigate to next page instantly or after certain timeout.
-  setTimeout(() => {
-    while (queuedNavigationActions.length) {
-      const currentAction = queuedNavigationActions.pop();
+  if (queuedNavigationActions.length) {
+    InteractionManager.runAfterInteractions(() => {
+      while (queuedNavigationActions.length) {
+        const currentAction = queuedNavigationActions.pop();
 
-      navigation.dispatch(currentAction);
-    }
-  }, 300);
+        navigation.dispatch(currentAction);
+      }
+    });
+  }
 }
 
+function getTransitionPosition() {
+  return transitionPosition;
+}
+
+function setTransitionPosition(position) {
+  transitionPosition = position;
+}
 export default {
+  getActiveRouteName,
+  getTransitionPosition,
   handleAction,
   pauseNavigationActions,
   resumeNavigationActions,
+  setTransitionPosition
 };

@@ -13,16 +13,43 @@ If you are new to React Native, this is a helpful introduction: https://facebook
 
 1. Clone the GitHub repository to your machine.
 
-2. Run `yarn` to get all of the packages required.
+2. Run `nvm use` to use set version of node for this project
 
-3. Run `./node_modules/.bin/rn-nodeify --install "crypto" --hack`
+3. Run `yarn` to get all of the packages required.
 
-4. Install CocoaPods by running `sudo gem install cocoapods`
+4. Run `yarn nodeify`.
 
-5. Install required Pods by running `cd ios && pod install && cd ..`
+5. Install CocoaPods by running `sudo gem install cocoapods`.
 
-6. Run `yarn ios` to build the project for XCode.
+6. Install required Pods by running `yarn install-pods`.
 
-7. Open `balance-wallet/ios/BalanceWallet.xcworkspace`.
+7. Run `yarn ios` to build the project for XCode.
 
-8. Run the project by clicking the play button.
+8. Open `balance-wallet/ios/BalanceWallet.xcworkspace`.
+
+9. Run the project by clicking the play button.
+
+## CodePush
+
+In order to use code push you must be logged into the correct Microsoft App Center account.
+
+### Prerequisites
+```
+npm install -g code-push
+code-push login
+```
+
+At this point you will be required to log into the account tied to the code push public keys in Info.plist
+
+### Deployment
+```
+code-push release-react BalanceWallet-iOS ios -d <DEPLOYMENT>
+```
+
+The deployment can either be `Staging` or `Production` depending on the mode of the application you wish to update was built in through XCode.
+
+### Local Builds
+
+In order to build the application in "release" mode but not use the code push distribution you must build the application using the scheme `LocalRelease`.
+
+Building the application with the `Staging` scheme or `Release` scheme will result in your bundle being replaced by the live code push deployment on resume of the application.

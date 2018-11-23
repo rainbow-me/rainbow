@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withHandlers } from 'recompact';
+import lang from 'i18n-js';
+import { onlyUpdateForPropTypes } from 'recompact';
 import styled from 'styled-components/primitives';
 import AppVersionStamp from '../components/AppVersionStamp';
 import { Button } from '../components/buttons';
 import { BackButton, Header } from '../components/header';
 import { Centered, Column, Page } from '../components/layout';
+import SendFeedback from '../components/SendFeedback';
 import { Monospace, TruncatedAddress } from '../components/text';
 import CopyTooltip from '../components/CopyTooltip';
 import QRCodeDisplay from '../components/QRCodeDisplay';
@@ -38,9 +40,8 @@ const WalletAddressTextContainer = styled(Centered).attrs({ direction: 'column' 
 `;
 
 const SettingsScreen = ({
-  address,
+  accountAddress,
   onPressBackButton,
-  onSendFeedback,
   onToggleShowSeedPhrase,
   seedPhrase,
 }) => (
@@ -60,25 +61,25 @@ const SettingsScreen = ({
     <Content>
       <QRCodeDisplay
         size={(deviceUtils.dimensions.width * (150 / deviceUtils.iPhoneXWidth))}
-        value={address}
+        value={accountAddress}
       />
       <WalletAddressTextContainer>
-        <CopyTooltip textToCopy={address} tooltipText="Copy Address">
+        <CopyTooltip textToCopy={accountAddress} tooltipText={lang.t('wallet.settings.copy_address')}>
           <TruncatedAddress
-            address={address}
+            address={accountAddress}
             size="big"
             weight="semibold"
           />
         </CopyTooltip>
       </WalletAddressTextContainer>
-      <Button onPress={onSendFeedback}>Send Feedback</Button>
-      <SeedPhraseButton onPress={onToggleShowSeedPhrase}>
-        {seedPhrase ? 'Hide' : 'Show'} Seed Phrase
+      <SendFeedback />
+      <SeedPhraseButton enableHapticFeedback={false} scaleTo={0.92} onPress={onToggleShowSeedPhrase}>
+        {seedPhrase ? lang.t('wallet.settings.hide_seed_phrase') : lang.t('wallet.settings.show_seed_phrase')}
       </SeedPhraseButton>
     </Content>
     <SeedPhraseSection>
       {seedPhrase && (
-        <CopyTooltip textToCopy={seedPhrase} tooltipText="Copy Seed Phrase">
+        <CopyTooltip textToCopy={seedPhrase} tooltipText={lang.t('wallet.settings.copy_seed_phrase')}>
           <SeedPhraseText>
             {seedPhrase}
           </SeedPhraseText>
@@ -90,13 +91,10 @@ const SettingsScreen = ({
 );
 
 SettingsScreen.propTypes = {
-  address: PropTypes.string,
+  accountAddress: PropTypes.string,
   onPressBackButton: PropTypes.func,
-  onSendFeedback: PropTypes.func,
   onToggleShowSeedPhrase: PropTypes.func,
   seedPhrase: PropTypes.string,
 };
 
-export default withHandlers({
-  onPressBackButton: ({ navigation }) => () => navigation.goBack(),
-})(SettingsScreen);
+export default onlyUpdateForPropTypes(SettingsScreen);

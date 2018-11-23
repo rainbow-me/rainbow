@@ -1,9 +1,16 @@
 import ethers from 'ethers';
+import lang from 'i18n-js';
+import { AlertIOS } from 'react-native';
+import {
+  ACCESS_CONTROL,
+  ACCESSIBLE,
+  AUTHENTICATION_TYPE,
+  canImplyAuthentication,
+} from 'react-native-keychain';
 import * as keychain from '../model/keychain';
 const seedPhraseKey = 'balanceWalletSeedPhrase';
 const privateKeyKey = 'balanceWalletPrivateKey';
 const addressKey = 'balanceWalletAddressKey';
-import { ACCESS_CONTROL, ACCESSIBLE } from 'react-native-keychain';
 
 export function generateSeedPhrase() {
   return ethers.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
@@ -11,15 +18,11 @@ export function generateSeedPhrase() {
 
 export const walletInit = async (seedPhrase = null) => {
   let walletAddress = null;
-  try {
-    walletAddress = await loadAddress();
-    if (!walletAddress) {
-      walletAddress = await createWallet(seedPhrase);
-    }
-    return walletAddress;
-  } catch (error) {
-    return walletAddress;
+  walletAddress = await loadAddress();
+  if (!walletAddress) {
+    walletAddress = await createWallet(seedPhrase);
   }
+  return walletAddress;
 };
 
 export const loadWallet = async (authenticationPrompt) => {
@@ -45,43 +48,61 @@ export const createTransaction = async (to, data, value, gasLimit, gasPrice, non
   };
 };
 
-export const sendTransaction = async (transaction, authenticationPrompt = 'Please authenticate') => {
-  const wallet = await loadWallet(authenticationPrompt);
-  const transactionHash = await wallet.sendTransaction(transaction);
-  return transactionHash;
+export const sendTransaction = async (transaction, authenticationPrompt = lang.t('account.authenticate.please')) => {
+  try {
+    const wallet = await loadWallet(authenticationPrompt);
+    try {
+      const result = await wallet.sendTransaction(transaction);
+      return result.hash;
+    } catch(error) {
+      console.log('sendTxn error', error);
+      AlertIOS.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      return null;
+    }
+  } catch(error) {
+    AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
+    return null;
+  }
 };
 
 export const loadSeedPhrase = async () => {
-  const authenticationPrompt = 'Please authenticate to view seed phrase';
+  const authenticationPrompt = lang.t('account.authenticate.please_seed_phrase');
   const seedPhrase = await keychain.loadString(seedPhraseKey, { authenticationPrompt });
   return seedPhrase;
 };
 
 export const loadAddress = async () => {
-  const privateKey = await keychain.loadString(addressKey);
-  return privateKey;
+  try {
+    return await keychain.loadString(addressKey);
+  } catch (error) {
+    return null;
+  }
 };
 
 const createWallet = async (seedPhrase) => {
   const walletSeedPhrase = seedPhrase || generateSeedPhrase();
   const wallet = ethers.Wallet.fromMnemonic(walletSeedPhrase);
-  wallet.provider = ethers.providers.getDefaultProvider();
-  saveSeedPhrase(walletSeedPhrase);
-  savePrivateKey(wallet.privateKey);
-  saveAddress(wallet.address);
-
-  console.log(`Wallet: Generated wallet with public address: ${wallet.address}`);
-
+  saveWalletDetails(walletSeedPhrase, wallet.privateKey, wallet.address);
   return wallet.address;
 };
 
-const saveSeedPhrase = async (seedPhrase) => {
-  const accessControlOptions = { accessControl: ACCESS_CONTROL.USER_PRESENCE, accessible: ACCESSIBLE.WHEN_UNLOCKED };
+const saveWalletDetails = async (seedPhrase, privateKey, address) => {
+  const canAuthenticate = await canImplyAuthentication({ authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS});
+  let accessControlOptions = {};
+  if (canAuthenticate) {
+    accessControlOptions = { accessControl: ACCESS_CONTROL.USER_PRESENCE, accessible: ACCESSIBLE.WHEN_UNLOCKED };
+  }
+  saveSeedPhrase(seedPhrase, accessControlOptions);
+  savePrivateKey(privateKey, accessControlOptions);
+  saveAddress(address);
+  console.log(`Wallet: Generated wallet with public address: ${address}`);
+};
+
+const saveSeedPhrase = async (seedPhrase, accessControlOptions = {}) => {
   await keychain.saveString(seedPhraseKey, seedPhrase, accessControlOptions);
 };
 
-const savePrivateKey = async (privateKey) => {
-  const accessControlOptions = { accessControl: ACCESS_CONTROL.USER_PRESENCE, accessible: ACCESSIBLE.WHEN_UNLOCKED };
+const savePrivateKey = async (privateKey, accessControlOptions = {}) => {
   await keychain.saveString(privateKeyKey, privateKey, accessControlOptions);
 };
 

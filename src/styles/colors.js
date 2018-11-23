@@ -7,7 +7,9 @@ const base = {
   blueActive: '#5a71cc', // '90, 113, 204'
   blueGreyDark: '#3c4252', // '60, 66, 82'
   blueGreyLight: '#666A73', // '102, 106, 115'
+  blueGreyLighter: '#888D96', // '136, 141, 150'
   blueGreyMedium: '#636875', // '99, 104, 117'
+  blueGreyMediumLight: '#7b7f8a', // '123, 127, 138'
   blueHover: '#6c87f5', // '108, 135, 245'
   bodyBackground: '#2c2f38', // '44, 47, 56'
   brightBlue: '#5983FF', // '89, 131, 255'
@@ -22,12 +24,15 @@ const base = {
   grey: '#a9adb9', // '169, 173, 185'
   headerTitle: '#aaafbd', // '170, 175, 189'
   lightBlue: '#c5f2ff', // '197, 242, 255'
+  lightestGrey: '#eee9e8', // '238, 233, 232'
   lightGreen: '#54d192', // '84, 209, 146'
   lightGrey: '#f7f7f8', // '247, 247, 248'
   mediumGrey: '#a1a5b3', // '161, 165, 179'
   orange: '#f6851b', // '246, 133, 27'
   orangeLight: '#FFAF24', // '255, 175, 36'
-  primaryBlue: '#5d9df6', // '93, 157, 246',
+  orangeMedium: '#FCA247', // '252, 162, 71'
+  primaryBlue: '#5d9df6', // '93, 157, 246'
+  primaryGreen: '#00a352', // '0, 163, 82'
   purple: '#32325d', // '50, 50, 93'
   red: '#d64b47', // '214, 75, 71'
   rowDivider: '#f8f8f8', // '248, 248, 248'
@@ -43,6 +48,12 @@ const assetIcon = {
   orange: '#f2bb3a', // '242, 187, 58'
   purple: '#464e5e', // '70, 78, 94'
   red: '#c95050', // '201, 80, 80',
+};
+
+const sendScreen = {
+  brightBlue: '#0e76fd', // '16, 118, 253'
+  lightGrey: '#fafafa', // '250, 250, 250'
+  grey: '#d8d8d8', // '216, 216, 216'
 };
 
 assetIcon.random = () => {
@@ -62,9 +73,25 @@ const vendor = {
   walletconnect: '#4099ff', // '64, 153, 255'
 };
 
+const buildRgba = (color, alpha) => `rgba(${chroma(color).rgb()}, ${alpha})`;
+
+const isColorLight = targetColor => (chroma(targetColor || base.white).luminance() > 0.5);
+
+const getTextColorForBackground = (targetColor, textColors = {}) => {
+  const {
+    dark = base.black,
+    light = base.white,
+  } = textColors;
+
+  return isColorLight(targetColor) ? dark : light;
+};
+
 const colors = {
-  alpha: (color, alpha) => `rgba(${chroma(color).rgb()}, ${alpha})`,
+  alpha: buildRgba,
   assetIcon,
+  getTextColorForBackground,
+  isColorLight,
+  sendScreen,
   ...base,
   ...transparent,
   ...vendor,

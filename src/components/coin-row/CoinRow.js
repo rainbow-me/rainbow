@@ -1,63 +1,71 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { createElement } from 'react';
+import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
-import Column from '../layout/Column';
-import Row from '../layout/Row';
-import { padding } from '../../styles';
-import CoinIcon from '../CoinIcon';
+import { colors, padding } from '../../styles';
+import { CoinIcon } from '../coin-icon';
+import { Column, Row } from '../layout';
+
+const CoinRowPaddingVertical = 12;
 
 const Container = styled(Row)`
-  ${padding(12, 19, 12, 15)}
+  ${padding(CoinRowPaddingVertical, 19, CoinRowPaddingVertical, 15)}
+  background-color: ${colors.white};
+  width: 100%;
+  ${({ containerStyles }) => containerStyles}
 `;
 
 const Content = styled(Column)`
+  background-color: ${colors.white};
   flex: 1;
-  height: 40;
-  margin-left: 12px;
+  height: ${CoinIcon.size};
+  margin-left: ${CoinRowPaddingVertical};
+  ${({ contentStyles }) => contentStyles}
 `;
 
-const CoinRow = ({
-  address,
-  balance,
+const CoinRow = pure(({
   bottomRowRender,
-  name,
-  native,
+  children,
+  coinIconRender,
+  containerStyles,
+  contentStyles,
+  onPress,
   symbol,
   topRowRender,
+  ...props
 }) => (
-  <Container align="center">
-    <CoinIcon symbol={symbol} />
-    <Content justify="space-between">
+  <Container align="center" style={containerStyles}>
+    {createElement(coinIconRender, { symbol, ...props })}
+    <Content justify="space-between" styles={contentStyles}>
       <Row align="center" justify="space-between">
-        {topRowRender({
-          address,
-          balance,
-          native,
-          name,
-          symbol,
-        })}
+        {topRowRender({ symbol, ...props })}
       </Row>
       <Row align="center" justify="space-between">
-        {bottomRowRender({
-          address,
-          balance,
-          native,
-          name,
-          symbol,
-        })}
+        {bottomRowRender({ symbol, ...props })}
       </Row>
     </Content>
+    {(typeof children === 'function')
+      ? children({ symbol, ...props })
+      : children
+    }
   </Container>
-);
+));
 
 CoinRow.propTypes = {
-  address: PropTypes.string,
-  balance: PropTypes.object,
-  native: PropTypes.object,
   bottomRowRender: PropTypes.func,
-  name: PropTypes.string,
+  coinIconRender: PropTypes.func,
+  children: PropTypes.node,
+  containerStyles: PropTypes.string,
+  contentStyles: PropTypes.string,
+  onPress: PropTypes.func,
   symbol: PropTypes.string,
   topRowRender: PropTypes.func,
 };
+
+CoinRow.defaultProps = {
+  coinIconRender: CoinIcon,
+};
+
+CoinRow.height = CoinIcon.size + (CoinRowPaddingVertical * 2);
 
 export default CoinRow;

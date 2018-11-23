@@ -2,17 +2,7 @@ import PropTypes from 'prop-types';
 import { createElement } from 'react';
 import Text from './Text';
 
-const TruncatedText = ({
-  component,
-  ellipsizeMode,
-  numberOfLines,
-  ...props
-}) =>
-  createElement(component, {
-    ellipsizeMode,
-    numberOfLines,
-    ...props,
-  });
+const TruncatedText = ({ component, ...props }) => createElement(component, props);
 
 TruncatedText.propTypes = {
   component: PropTypes.func,

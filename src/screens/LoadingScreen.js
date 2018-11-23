@@ -1,17 +1,20 @@
+import { withSafeTimeout } from '@hocs/safe-timers';
+import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { StatusBar } from 'react-native';
-import { connect } from 'react-redux';
+import { compose } from 'recompact';
 import styled from 'styled-components/primitives';
 import Icon from '../components/icons/Icon';
 import { Column } from '../components/layout';
 import { ErrorText, Monospace } from '../components/text';
+import { withAccountAddress, withHideSplashScreenOnMount } from '../hoc';
 import { loadAddress } from '../model/wallet';
 import { colors, fonts, padding, position } from '../styles';
 
 const Container = styled(Column).attrs({ justify: 'center' })`
-  ${position.cover}
   ${padding(0, 0, 60, 0)}
+  ${position.cover}
 `;
 
 const ErrorContainer = styled(Column)`
@@ -33,38 +36,23 @@ const LoadingText = styled(Monospace)`
 class LoadingScreen extends Component {
   static propTypes = {
     navigation: PropTypes.object,
+    setSafeTimeout: PropTypes.func,
   }
 
-  constructor(props) {
-    super(props);
-    this.handleLoading();
-    this.state = { isError: false };
+  state = { isError: false }
+
+  componentDidMount = async () => {
+    // After 5 seconds, show error message if user has not been redirected
+    this.props.setSafeTimeout(this.handleError, 5000);
+    await loadAddress().then(this.handleNavigation);
   }
 
-  errorTimeoutHandle = null
+  handleError = () => this.setState({ isError: true })
 
-  componentDidMount = () => {
-    this.errorTimeoutHandle = setTimeout(() => {
-      this.setState({ isError: true });
-      this.errorTimeoutHandle = 0;
-    }, 5000);
-  }
-
-  componentWillUnmount = () => {
-    if (this.errorTimeoutHandle) {
-      clearTimeout(this.errorTimeoutHandle);
-      this.errorTimeoutHandle = 0;
-    }
-  }
-
-  handleLoading = () => {
-    const { navigation } = this.props;
-
-    // If this is a brand new instance of the Balance Wallet app show the 'IntroScreen',
-    // otherwise display the main 'App' route. Afterwards this view will be
-    // unmounted and thrown away.
-    loadAddress().then(address => navigation.navigate(address ? 'App' : 'Intro'));
-  }
+  // If this is a brand new instance of the Balance Wallet app show the 'IntroScreen',
+  // otherwise display the main 'App' route. Afterwards this view will be
+  // unmounted and thrown away.
+  handleNavigation = async address => this.props.navigation.navigate(address ? 'App' : 'Intro')
 
   render = () => (
     <Container align={this.state.isError ? 'start' : 'center'}>
@@ -72,17 +60,20 @@ class LoadingScreen extends Component {
       {this.state.isError ? (
         <ErrorContainer>
           <ErrorText color={colors.red} error="Error" />
-          <ErrorMessage>There has been an error loading the wallet. Please kill the app and retry.</ErrorMessage>
+          <ErrorMessage>{lang.t('wallet.loading.error')}</ErrorMessage>
         </ErrorContainer>
       ) : (
         <Fragment>
           <Icon color={LoadingColor} name="balanceLogo" />
-          <LoadingText color={LoadingColor}>Loading</LoadingText>
+          <LoadingText color={LoadingColor}>{lang.t('wallet.loading.message')}</LoadingText>
         </Fragment>
       )}
     </Container>
   )
 }
 
-const reduxProps = ({ account: { accountAddress } }) => ({ accountAddress });
-export default connect(reduxProps, null)(LoadingScreen);
+export default compose(
+  withAccountAddress,
+  withHideSplashScreenOnMount,
+  withSafeTimeout,
+)(LoadingScreen);
