@@ -1,42 +1,23 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import { compose, hoistStatics, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
-import { Row } from '../layout';
 import { padding } from '../../styles';
+import { Row } from '../layout';
 
+const StatusBarHeight = getStatusBarHeight(true);
 const HeaderHeight = 54;
-const HeaderPaddingBottom = 4;
+const HeaderHeightWithStatusBar = HeaderHeight + StatusBarHeight;
 
 const Container = styled(Row).attrs({ align: 'end' })`
-  ${({ statusBarHeight }) => padding(statusBarHeight, 9, HeaderPaddingBottom)}
+  ${padding(StatusBarHeight, 9, 1)}
   flex-shrink: 0;
-  height: ${({ statusBarHeight }) => (HeaderHeight + HeaderPaddingBottom + statusBarHeight)};
+  height: ${({ excludeStatusBarHeight }) =>
+    excludeStatusBarHeight === true ? HeaderHeight : HeaderHeightWithStatusBar};
   width: 100%;
 `;
 
-const Header = ({ statusBarHeight, ...props }) => (
-  <Container
-    {...props}
-    statusBarHeight={statusBarHeight}
-  />
-);
-
-Header.propTypes = {
-  statusBarHeight: PropTypes.number,
-  statusBarSafeMode: PropTypes.bool,
-};
-
-Header.defaultProps = {
-  statusBarSafeMode: true,
-};
+const Header = props => <Container {...props} />;
 
 Header.height = HeaderHeight;
 
-export default compose(
-  hoistStatics,
-  withProps(({ statusBarSafeMode }) => ({
-    statusBarHeight: getStatusBarHeight(statusBarSafeMode),
-  })),
-)(Header);
+export default Header;

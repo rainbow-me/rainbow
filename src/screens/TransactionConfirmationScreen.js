@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import lang from 'i18n-js';
 import styled from 'styled-components';
 import BalanceManagerLogo from '../assets/balance-manager-logo.png';
 import { Button, BlockButton } from '../components/buttons';
-import CoinIcon from '../components/CoinIcon';
+import { CoinIcon } from '../components/coin-icon';
 import { Nbsp } from '../components/html-entities';
 import { Centered, Column, Row } from '../components/layout';
 import {
@@ -135,6 +136,7 @@ const TransactionConfirmationScreen = ({
   asset: {
     address,
     amount,
+    dappName,
     name,
     nativeAmount,
     symbol,
@@ -148,8 +150,8 @@ const TransactionConfirmationScreen = ({
       <VenderLogoContainer>
         <VendorLogo source={BalanceManagerLogo} />
       </VenderLogoContainer>
-      <VendorName>Balance Manager</VendorName>
-      <TransactionType>Transaction Request</TransactionType>
+      <VendorName>{dappName}</VendorName>
+      <TransactionType>{lang.t('wallet.transaction.request')}</TransactionType>
       <CancelButtonContainer>
         <Button
           bgColor={colors.blueGreyMedium}
@@ -157,13 +159,13 @@ const TransactionConfirmationScreen = ({
           size="small"
           textProps={{ color: 'black', size: 'medium' }}
         >
-          Reject
+          {lang.t('wallet.action.reject')}
         </Button>
       </CancelButtonContainer>
     </Masthead>
     <BottomSheet bottomInset={safeAreaInset.bottom}>
       <AddressRow>
-        <Smallcaps>To</Smallcaps>
+        <Smallcaps>{lang.t('wallet.action.to')}</Smallcaps>
         <Address address={address} truncationLength={15}/>
       </AddressRow>
       <Divider />
@@ -182,7 +184,7 @@ const TransactionConfirmationScreen = ({
       </AmountRow>
       <SendButtonContainer>
         <BlockButton onPress={onConfirmTransaction}>
-          Send Transaction
+          {lang.t('wallet.transaction.send')}
         </BlockButton>
       </SendButtonContainer>
     </BottomSheet>

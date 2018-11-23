@@ -10,9 +10,11 @@ const ShimmerElement = styled(ShimmerPlaceHolder)`
 `;
 
 const generateColorShimmerTheme = (color, opacity) => ([
+  colors.alpha(color, opacity * 0.166),
   colors.alpha(color, opacity * 0.333),
   colors.alpha(color, opacity),
   colors.alpha(color, opacity * 0.333),
+  colors.alpha(color, opacity * 0.166),
 ]);
 
 const Shimmer = ({
@@ -51,7 +53,7 @@ Shimmer.defaultProps = {
   backgroundColorBehindBorder: colors.transparent,
   color: colors.white,
   duration: 1000,
-  opacity: 0.2,
+  opacity: 0.1,
 };
 
 export default Shimmer;

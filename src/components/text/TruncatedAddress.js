@@ -1,19 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { deviceUtils } from '../../utils';
+
 import Monospace from './Monospace';
-
-const buildAddressAbbreviation = (address, truncationLength) => {
-  const defaultNumCharsPerSection = deviceUtils.isSmallPhone ? 8 : 10;
-  const numCharsPerSection = truncationLength || defaultNumCharsPerSection;
-
-  const sections = [
-    address.substring(0, numCharsPerSection),
-    address.substring(address.length - numCharsPerSection),
-  ];
-
-  return sections.join('...');
-};
+import { abbreviations } from '../../utils';
 
 const TruncatedAddress = ({ address, truncationLength, ...props }) => (
   <Monospace
@@ -23,7 +12,7 @@ const TruncatedAddress = ({ address, truncationLength, ...props }) => (
     numberOfLines={1}
   >
     {address
-      ? buildAddressAbbreviation(address, truncationLength)
+      ? abbreviations.address(address, truncationLength)
       : 'Error displaying address'
     }
   </Monospace>

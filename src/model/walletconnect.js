@@ -1,52 +1,123 @@
-import RNWalletConnect from 'rn-walletconnect-wallet';
 import { commonStorage } from 'balance-common';
+import lang from 'i18n-js';
+import { assign, get, mapValues, values } from 'lodash';
 import { AlertIOS } from 'react-native';
+import RNWalletConnect from 'rn-walletconnect-wallet';
 
-const PUSH_ENDPOINT = 'https://walletconnect.balance.io/webhook/push-notify';
+const PUSH_ENDPOINT = 'https://us-central1-balance-424a3.cloudfunctions.net/push';
 
-export const walletConnectInit = async (accountAddress, bridgeUrl, sessionId, sharedKey, dappName) => {
-  const fcmTokenLocal = await commonStorage.getLocal('balanceWalletFcmToken');
-  const fcmToken = fcmTokenLocal ? fcmTokenLocal.data : null;
-  const walletConnector = new RNWalletConnect({ bridgeUrl, sessionId, sharedKey, dappName });
-  // TODO fcmToken is null logic
-  await commonStorage.saveWalletConnectSession({ bridgeUrl, sessionId, sharedKey, dappName });
+export const walletConnectInit = async (accountAddress, uriString) => {
   try {
-    await walletConnector.sendSessionStatus({ fcmToken, pushEndpoint: PUSH_ENDPOINT, data: [accountAddress] });
-  } catch (error) {
-    AlertIOS.alert(`Unable to initialize with Wallet Connect`);
-  }
-}
-
-export const walletConnectGetTransaction = async (transactionId) => {
-  try {
-    const walletConnectSession = await commonStorage.getWalletConnectSession();
-    if (walletConnectSession) {
-      const { bridgeUrl, sessionId, sharedKey, dappName } = walletConnectSession;
-      const walletConnector = new RNWalletConnect({ bridgeUrl, dappName, sessionId, sharedKey});
-      return await walletConnector.getTransactionRequest(transactionId);
+    const fcmTokenLocal = await commonStorage.getLocal('balanceWalletFcmToken');
+    const fcmToken = get(fcmTokenLocal, 'data', null);
+    if (!fcmToken) {
+      throw new Error('Push notification token unavailable.');
     }
-    return null;
-  } catch(error) {
-    console.log('Error getting transaction from Wallet Connect', error);
-    // TODO: show error
+
+    try {
+      const walletConnector = new RNWalletConnect({
+        push: {
+          token: fcmToken,
+          type: 'fcm',
+          webhook: PUSH_ENDPOINT,
+        },
+        uri: uriString,
+      });
+      await walletConnector.approveSession({ accounts: [accountAddress] });
+      await commonStorage.saveWalletConnectSession(walletConnector.sessionId, uriString, walletConnector.expires);
+      return walletConnector;
+    } catch (error) {
+      console.log(error);
+      AlertIOS.alert(lang.t('wallet.wallet_connect.error'));
+      return null;
+    }
+  } catch (error) {
+    AlertIOS.alert(lang.t('wallet.wallet_connect.missing_fcm'));
     return null;
   }
 };
 
-export const walletConnectSendTransactionHash = async (transactionId, success, txHash) => {
-  const walletConnectSession = await commonStorage.getWalletConnectSession();
-  if (walletConnectSession) {
-    const { bridgeUrl, sessionId, sharedKey, dappName } = walletConnectSession;
-    const walletConnector = new RNWalletConnect({ bridgeUrl, dappName, sessionId, sharedKey});
+export const walletConnectInitAllConnectors = async () => {
+  try {
+    const allSessions = await commonStorage.getAllValidWalletConnectSessions();
+    const allConnectors = mapValues(allSessions, (session) => {
+      const walletConnector = new RNWalletConnect({
+        push: null,
+        uri: session.uriString,
+      });
+      walletConnector.expires = session.expiration;
+      return walletConnector;
+    });
+    return allConnectors;
+  } catch (error) {
+    AlertIOS.alert('Unable to retrieve all WalletConnect sessions.');
+    return {};
+  }
+};
+
+export const walletConnectDisconnect = async (walletConnector) => {
+  if (walletConnector) {
     try {
-      await walletConnector.sendTransactionStatus(transactionId, { success, txHash });
+      await commonStorage.removeWalletConnectSession(walletConnector._sessionId);
+      await walletConnector.killSession();
     } catch (error) {
-      console.log('error sending transaction hash', error);
-      //TODO error handling
+      AlertIOS.alert('Failed to disconnect WalletConnect session');
+    }
+  }
+};
+
+const getTransactionForSession = (walletConnector) => new Promise((resolve, reject) => {
+  const { dappName, sessionId } = walletConnector;
+  walletConnector.getAllCallRequests()
+    .then((allCalls) =>
+      resolve(mapValues(allCalls, (transactionPayload, callId) => ({
+        callData: get(transactionPayload, 'data.params[0]', null),
+        dappName,
+        sessionId,
+        callId,
+      }))))
+    .catch(error => resolve({}));
+});
+
+export const walletConnectGetAllTransactions = async (walletConnectors) => {
+  try {
+    const sessionToTransactions = mapValues(walletConnectors, getTransactionForSession);
+    const transactionValues = await Promise.all(values(sessionToTransactions));
+    return assign({}, ...transactionValues);
+  } catch (error) {
+    AlertIOS.alert('Error fetching all transactions from open WalletConnect sessions.');
+    return {};
+  }
+};
+
+export const walletConnectGetTransaction = async (callId, walletConnector) => {
+  try {
+    if (walletConnector) {
+      const { dappName } = walletConnector;
+      const callData = await walletConnector.getCallRequest(callId);
+      return {
+        callData: get(callData, 'data.params[0]', null),
+        dappName,
+      };
+    }
+    return null;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const walletConnectSendTransactionHash = async (walletConnector, callId, success, txHash) => {
+  if (walletConnector) {
+    try {
+      if (success) {
+        await walletConnector.approveCallRequest(callId, { result: txHash });
+      } else {
+        await walletConnector.rejectCallRequest(callId);
+      }
+    } catch (error) {
+      AlertIOS.alert('Failed to send transaction status to WalletConnect.');
     }
   } else {
-    //TODO error handling
-    console.log('WalletConnect session has expired while trying to send transaction hash');
+    AlertIOS.alert('WalletConnect session has expired while trying to send transaction hash. Please reconnect.');
   }
 };
-

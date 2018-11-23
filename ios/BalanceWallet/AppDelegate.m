@@ -6,6 +6,7 @@
  */
 
 #import "AppDelegate.h"
+#import <CodePush/CodePush.h>
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
@@ -25,19 +26,16 @@
   //
   [FIRApp configure];
   [RNFirebaseNotifications configure];
-  [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
-  [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionBadge | UNAuthorizationOptionSound) completionHandler:^(BOOL granted, NSError * _Nullable error) {}];
   [application registerForRemoteNotifications];
   
    
   // React Native
-  //
+  // comment out the "#ifdef DEBUG" if you want to test out CodePush locally
   NSURL *jsCodeLocation;
-  #ifdef DEBUG
-    //  jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.bundle?platform=ios&dev=true"];
+  #if defined(DEBUG) || defined(LOCAL_RELEASE)
     jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
   #else
-    jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+    jsCodeLocation = [CodePush bundleURL];
   #endif
 
 

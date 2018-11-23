@@ -1,65 +1,82 @@
+import { getTransactionCount, web3Instance } from 'balance-common';
+import lang from 'i18n-js';
 import { get } from 'lodash';
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { AlertIOS, StatusBar, Vibration } from 'react-native';
-import { connect } from 'react-redux';
+import { withTransactionConfirmationScreen } from '../hoc';
 import { sendTransaction } from '../model/wallet';
 import { walletConnectSendTransactionHash } from '../model/walletconnect';
-import { getTransactionToApprove } from '../reducers/transactionsToApprove';
 import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
 class TransactionConfirmationScreenWithData extends Component {
   static propTypes = {
-    getTransactionToApprove: PropTypes.func,
+    accountUpdateHasPendingTransaction: PropTypes.func,
+    accountUpdateTransactions: PropTypes.func,
     navigation: PropTypes.any,
-  }
-
-  state = {
-    transactionDetails: null,
+    removeTransaction: PropTypes.func,
+    transactionCountNonce: PropTypes.number,
+    updateTransactionCountNonce: PropTypes.func,
+    walletConnectors: PropTypes.object,
   }
 
   componentDidMount() {
     StatusBar.setBarStyle('light-content', true);
-    this.showNewTransaction();
     Vibration.vibrate();
   }
 
   handleConfirmTransaction = async () => {
-    try {
-      const { transactionDetails } = this.state;
-      const transactionReceipt = await sendTransaction(transactionDetails.transactionPayload, 'Confirm transaction' );
-      if (transactionReceipt && transactionReceipt.hash) {
-        try {
-          await walletConnectSendTransactionHash(transactionDetails.transactionId, true, transactionReceipt.hash);
-          // TODO: update that this transaction has been confirmed and reset txn details
-          this.closeTransactionScreen();
-        } catch (error) {
-          // TODO error handling when txn hash failed to send; store somewhere?
-          this.closeTransactionScreen();
-          AlertIOS.alert('Failed to send transaction status');
-        }
-      } else {
-        try {
-          this.handleCancelTransaction();
-        } catch (error) {
-          this.closeTransactionScreen();
-          AlertIOS.alert('Failed to send failed transaction status');
-        }
-      }
-    } catch (error) {
-      this.handleCancelTransaction();
-      AlertIOS.alert('Authentication Failed');
+    const { transactionDetails } = this.props.navigation.state.params;
+    const txPayload = transactionDetails.callData;
+    const web3TxnCount = await getTransactionCount(txPayload.from);
+    const maxTxnCount = Math.max(this.props.transactionCountNonce, web3TxnCount);
+    const nonce = web3Instance.utils.toHex(maxTxnCount);
+    const txPayloadLatestNonce = { ...txPayload, nonce };
+    const transactionHash = await sendTransaction(txPayloadLatestNonce, lang.t('wallet.transaction.confirm'));
+
+    if (transactionHash) {
+      this.props.updateTransactionCountNonce(maxTxnCount + 1);
+      const txDetails = {
+        asset: get(transactionDetails, 'transactionDisplayDetails.asset'),
+        from: get(transactionDetails, 'transactionDisplayDetails.from'),
+        gasLimit: get(transactionDetails, 'transactionDisplayDetails.gasLimit'),
+        gasPrice: get(transactionDetails, 'transactionDisplayDetails.gasPrice'),
+        hash: transactionHash,
+        nonce: get(transactionDetails, 'transactionDisplayDetails.nonce'),
+        to: get(transactionDetails, 'transactionDisplayDetails.to'),
+        value: get(transactionDetails, 'transactionDisplayDetails.value'),
+      };
+      this.props.accountUpdateHasPendingTransaction();
+      this.props.accountUpdateTransactions(txDetails);
+      this.props.removeTransaction(transactionDetails.callId);
+      const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
+      await walletConnectSendTransactionHash(walletConnector, transactionDetails.callId, true, transactionHash);
+      this.closeTransactionScreen();
+    } else {
+      await this.handleCancelTransaction();
     }
   };
 
-  handleCancelTransaction = async () => {
+  sendFailedTransactionStatus = async () => {
     try {
-      const { transactionDetails } = this.state;
-      await walletConnectSendTransactionHash(transactionDetails.transactionId, false, null);
       this.closeTransactionScreen();
+      const { transactionDetails } = this.props.navigation.state.params;
+      const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
+      await walletConnectSendTransactionHash(walletConnector, transactionDetails.callId, false, null);
     } catch (error) {
       this.closeTransactionScreen();
-      AlertIOS.alert('Failed to send cancelled transaction to WalletConnect');
+      AlertIOS.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
+    }
+  }
+
+  handleCancelTransaction = async () => {
+    try {
+      await this.sendFailedTransactionStatus();
+      const { transactionDetails } = this.props.navigation.state.params;
+      this.props.removeTransaction(transactionDetails.callId);
+    } catch (error) {
+      this.closeTransactionScreen();
+      AlertIOS.alert('Failed to send rejected transaction status');
     }
   }
 
@@ -68,22 +85,28 @@ class TransactionConfirmationScreenWithData extends Component {
     this.props.navigation.goBack();
   }
 
-  showNewTransaction = () => {
-    const transactionDetails = this.props.getTransactionToApprove();
-    this.setState({ transactionDetails });
-  }
-
   render = () => {
-    const { transactionDetails } = this.state;
+    const {
+      transactionDetails: {
+        dappName,
+        transactionDisplayDetails: {
+          asset,
+          nativeAmount,
+          to,
+          value,
+        },
+      },
+    } = this.props.navigation.state.params;
 
     return (
       <TransactionConfirmationScreen
         asset={{
-          address: get(transactionDetails, 'transactionDisplayDetails.to'),
-          amount: `${get(transactionDetails, 'transactionDisplayDetails.value', '0.00')}`,
-          name: `${get(transactionDetails, 'transactionDisplayDetails.name', 'No data')}`,
-          nativeAmount: get(transactionDetails, 'transactionDisplayDetails.nativeAmount'),
-          symbol: `${get(transactionDetails, 'transactionDisplayDetails.symbol', 'N/A')}`,
+          address: to,
+          amount: value || '0.00',
+          dappName: dappName || '',
+          name: asset.name || 'No data',
+          nativeAmount,
+          symbol: asset.symbol || 'N/A',
         }}
         onCancelTransaction={this.handleCancelTransaction}
         onConfirmTransaction={this.handleConfirmTransaction}
@@ -92,7 +115,4 @@ class TransactionConfirmationScreenWithData extends Component {
   }
 }
 
-export default connect(
-  ({ transactionsToApprove: { transactionsToApprove } }) => ({ transactionsToApprove }),
-  { getTransactionToApprove },
-)(TransactionConfirmationScreenWithData);
+export default withTransactionConfirmationScreen(TransactionConfirmationScreenWithData);

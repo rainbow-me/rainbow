@@ -1,130 +1,124 @@
-import { get, groupBy, isNull } from 'lodash';
+import { withSafeTimeout } from '@hocs/safe-timers';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { connect } from 'react-redux';
-import { compose, onlyUpdateForPropTypes, withHandlers, withState } from 'recompact';
-import { AssetList, UniqueTokenRow } from '../components/asset-list';
-import { BalanceCoinRow } from '../components/coin-row';
-import Avatar from '../components/Avatar';
-import { Header, HeaderButton } from '../components/header';
-import { FlexItem, Page } from '../components/layout';
-import { withHideSplashScreenOnMount } from '../hoc';
+import React, { Component } from 'react';
+import {
+  compose,
+  onlyUpdateForKeys,
+  withHandlers,
+  withProps,
+  withState,
+} from 'recompact';
+import styled from 'styled-components/primitives';
+import BlurOverlay from '../components/BlurOverlay';
+import { AssetList } from '../components/asset-list';
+import { FabWrapper } from '../components/fab';
+import { ActivityHeaderButton, Header, ProfileHeaderButton } from '../components/header';
+import { Page } from '../components/layout';
+import buildWalletSections from '../helpers/buildWalletSections';
+import {
+  withAccountAddress,
+  withAccountAssets,
+  withHideSplashScreen,
+  withRequestsInit,
+  withTransitionProps,
+} from '../hoc';
 import { position } from '../styles';
 
-const buildUniqueTokenList = (uniqueTokensAssets) => {
-  const list = [];
+const WalletPage = styled(Page)`
+  ${position.size('100%')};
+  flex: 1;
+`;
 
-  for (let i = 0; i < uniqueTokensAssets.length; i += 2) {
-    list.push([uniqueTokensAssets[i], uniqueTokensAssets[i + 1]]);
+class WalletScreen extends Component {
+  static propTypes = {
+    isEmpty: PropTypes.bool.isRequired,
+    isLoading: PropTypes.bool.isRequired,
+    navigation: PropTypes.object,
+    onHideSplashScreen: PropTypes.func,
+    onRefreshList: PropTypes.func.isRequired,
+    sections: PropTypes.array,
+    transitionProps: PropTypes.object,
   }
 
-  return list;
-};
+  componentDidUpdate = (prevProps) => {
+    const { isLoading, onHideSplashScreen } = this.props;
 
-const filterEmptyAssetSections = sections => sections.filter(({ totalItems }) => totalItems);
-
-const groupAssetsByMarketValue = assets => groupBy(assets, ({ native }) => (
-  isNull(native) ? 'noValue' : 'hasValue'
-));
-
-const sortAssetsByNativeAmount = (assets, showShitcoins) => {
-  const assetsByMarketValue = groupAssetsByMarketValue(assets);
-
-  const sortedAssetsWithMarketValue = (assetsByMarketValue.hasValue || []).sort((a, b) => {
-    const amountA = get(a, 'native.balance.amount', 0);
-    const amountB = get(b, 'native.balance.amount', 0);
-    return parseFloat(amountB) - parseFloat(amountA);
-  });
-
-  if (showShitcoins) {
-    const sortedAssetsWithNoMarketValue = (assetsByMarketValue.noValue || []).sort((a, b) => (
-      (a.name < b.name) ? -1 : 1
-    ));
-
-    return sortedAssetsWithMarketValue.concat(sortedAssetsWithNoMarketValue);
+    if (!isLoading && prevProps.isLoading) {
+      onHideSplashScreen();
+    }
   }
 
-  return sortedAssetsWithMarketValue;
-};
+  render = () => {
+    const {
+      isEmpty,
+      isLoading,
+      navigation,
+      onRefreshList,
+      sections,
+      transitionProps,
+    } = this.props;
 
-const WalletScreen = ({
-  accountInfo,
-  onPressProfile,
-  onPressWalletConnect,
-  onToggleShowShitcoins,
-  showShitcoins,
-  uniqueTokens,
-}) => {
-  const sections = {
-    balances: {
-      data: sortAssetsByNativeAmount(accountInfo.assets, showShitcoins),
-      renderItem: BalanceCoinRow,
-      title: 'Balances',
-      totalItems: get(accountInfo, 'total.amount') ? accountInfo.assets.length : 0,
-      totalValue: get(accountInfo, 'total.display', ''),
-    },
-    collectibles: {
-      data: buildUniqueTokenList(uniqueTokens),
-      renderItem: UniqueTokenRow,
-      title: 'Collectibles',
-      totalItems: uniqueTokens.length,
-      totalValue: '',
-    },
-  };
+    const {
+      effect,
+      isTransitioning,
+      position: transPosition,
+    } = transitionProps;
 
-  const assetsByMarketValue = groupAssetsByMarketValue(accountInfo.assets);
-  const totalShitcoins = get(assetsByMarketValue, 'noValue', []).length;
-  if (totalShitcoins) {
-    sections.balances.contextMenuOptions = {
-      cancelButtonIndex: 1,
-      destructiveButtonIndex: showShitcoins ? 0 : 99, // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
-      onPress: (index) => { if (index === 0) onToggleShowShitcoins(); },
-      options: [`${showShitcoins ? 'Hide' : 'Show'} assets w/ no price data`, 'Cancel'],
-    };
+    const showBlur = effect === 'expanded' && (isTransitioning || transPosition._value > 0);
+    const blurOpacity = transPosition.interpolate({
+      inputRange: [0, 0.01, 1],
+      outputRange: [0, 1, 1],
+    });
+
+    return (
+      <WalletPage>
+        {showBlur && <BlurOverlay opacity={blurOpacity} />}
+        <Header justify="space-between">
+          <ProfileHeaderButton navigation={navigation} />
+          {(!isEmpty && !isLoading) && (
+            <ActivityHeaderButton navigation={navigation}/>
+          )}
+        </Header>
+        <FabWrapper disable={isEmpty || isLoading}>
+          <AssetList
+            fetchData={onRefreshList}
+            isEmpty={isEmpty && !isLoading}
+            isLoading={isLoading}
+            sections={sections}
+          />
+        </FabWrapper>
+      </WalletPage>
+    );
   }
-
-  return (
-    <Page component={FlexItem} style={position.sizeAsObject('100%')}>
-      <Header>
-        <HeaderButton onPress={onPressProfile}>
-          <Avatar />
-        </HeaderButton>
-      </Header>
-      <AssetList
-        onPressWalletConnect={onPressWalletConnect}
-        sections={filterEmptyAssetSections([sections.balances, sections.collectibles])}
-        showShitcoins={showShitcoins}
-      />
-    </Page>
-  );
-};
-
-WalletScreen.propTypes = {
-  accountInfo: PropTypes.object.isRequired,
-  fetching: PropTypes.bool.isRequired,
-  fetchingUniqueTokens: PropTypes.bool.isRequired,
-  onPressProfile: PropTypes.func.isRequired,
-  onPressWalletConnect: PropTypes.func.isRequired,
-  onToggleShowShitcoins: PropTypes.func,
-  showShitcoins: PropTypes.bool,
-  uniqueTokens: PropTypes.array.isRequired,
-};
-
-const reduxProps = ({ account }) => ({
-  accountInfo: account.accountInfo,
-  fetching: account.fetching,
-  fetchingUniqueTokens: account.fetchingUniqueTokens,
-  uniqueTokens: account.uniqueTokens,
-});
+}
 
 export default compose(
-  withHideSplashScreenOnMount,
+  withAccountAddress,
+  withAccountAssets,
+  withHideSplashScreen,
+  withRequestsInit,
+  withSafeTimeout,
+  withTransitionProps,
   withState('showShitcoins', 'toggleShowShitcoins', true),
-  connect(reduxProps, null),
   withHandlers({
-    onPressProfile: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
-    onPressWalletConnect: ({ navigation }) => () => navigation.navigate('QRScannerScreen'),
-    onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => () => toggleShowShitcoins(!showShitcoins),
+    onRefreshList: ({
+      accountAddress,
+      accountUpdateAccountAddress,
+      setSafeTimeout,
+      transactionsToApproveInit,
+    }) => () => {
+      accountUpdateAccountAddress(accountAddress, 'BALANCEWALLET');
+      transactionsToApproveInit();
+      // hack: use timeout so that it looks like loading is happening
+      // accountUpdateAccountAddress does not return a promise
+      return new Promise(resolve => setSafeTimeout(resolve, 2000));
+    },
+    onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
+      if (index === 0) {
+        toggleShowShitcoins(!showShitcoins);
+      }
+    },
   }),
-  onlyUpdateForPropTypes,
+  withProps(buildWalletSections),
+  onlyUpdateForKeys(['isScreenActive', ...Object.keys(WalletScreen.propTypes)]),
 )(WalletScreen);

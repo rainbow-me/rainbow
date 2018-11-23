@@ -1,14 +1,16 @@
+import lang from 'i18n-js';
 import { times } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { ActivityIndicator } from 'react-native';
 import { withNavigation } from 'react-navigation';
-import { compose, omitProps, withHandlers } from 'recompact';
+import { compose, omitProps, pure, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-import { colors, margin, position } from '../../styles';
+import { colors, position } from '../../styles';
 import { Button } from '../buttons';
-import Icon from '../icons/Icon';
 import { Centered, Column } from '../layout';
 import AssetListHeader from './AssetListHeader';
+import AssetListItemSkeleton from './AssetListItemSkeleton';
 
 const ButtonContainer = styled(Centered)`
   bottom: 28;
@@ -20,46 +22,56 @@ const Container = styled(Column)`
   ${position.size('100%')}
 `;
 
-const SkeletonElement = styled(Icon).attrs({ name: 'assetListItemSkeleton' })`
-  ${({ index }) => margin((index === 0 ? 15 : 12.5), 19, 12.5, 15)}
-  opacity: ${({ index }) => (1 - (0.2 * index))};
-`;
+const renderSkeletons = times(5, index => (
+  <AssetListItemSkeleton
+    index={index}
+    key={`SkeletonElement${index}`}
+  />
+));
 
-const AssetListSkeleton = ({ onPressAddFunds, skeletonCount }) => (
-  <Container>
-    <AssetListHeader section={{ title: 'Balances', totalValue: '$0.00' }} />
+const AssetListSkeleton = ({
+  isLoading,
+  onPressAddFunds,
+  skeletonCount,
+  ...props
+}) => (
+  <Container {...props}>
+    <AssetListHeader
+      section={{
+        title: lang.t('account.tab_balances'),
+        totalValue: '$0.00',
+      }}
+    />
     <Column>
-      {times(skeletonCount, index => (
-        <SkeletonElement
-          index={index}
-          key={`SkeletonElement${index}`}
+      {renderSkeletons}
+      {isLoading ? (
+        <ActivityIndicator
+          animating={true}
+          color={colors.alpha(colors.blueGreyLight, 0.666)}
+          size="large"
         />
-      ))}
-      <ButtonContainer>
-        <Button
-          bgColor={colors.primaryBlue}
-          onPress={onPressAddFunds}
-        >
-          Add Funds
-        </Button>
-      </ButtonContainer>
+      ) : (
+        <ButtonContainer>
+          <Button
+            bgColor={colors.primaryBlue}
+            onPress={onPressAddFunds}
+          >
+            Add Funds
+          </Button>
+        </ButtonContainer>
+      )}
     </Column>
   </Container>
 );
 
 AssetListSkeleton.propTypes = {
+  isLoading: PropTypes.bool,
   onPressAddFunds: PropTypes.func,
-  skeletonCount: PropTypes.number,
-};
-
-AssetListSkeleton.defaultProps = {
-  skeletonCount: 5,
 };
 
 export default compose(
+  pure,
   withNavigation,
-  withHandlers({
-    onPressAddFunds: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
-  }),
+  withHandlers({ onPressAddFunds: ({ navigation }) => () => navigation.push('SettingsScreen') }),
   omitProps('navigation'),
 )(AssetListSkeleton);
