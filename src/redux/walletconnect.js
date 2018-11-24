@@ -1,17 +1,13 @@
 import { isFuture } from 'date-fns';
-import { get, isEmpty, omitBy, pickBy } from 'lodash';
+import { omitBy, pickBy } from 'lodash';
 
 // -- Constants --------------------------------------- //
 const WALLETCONNECT_NEW_SESSION = 'walletconnect/WALLETCONNECT_NEW_SESSION';
 
 export const addWalletConnector = (walletConnector) => (dispatch, getState) => {
   if (walletConnector) {
-    const newDappName = get(walletConnector, 'dappName', null);
     const { walletConnectors } = getState().walletconnect;
-    const dedupedConnectors = !isEmpty(newDappName) ?
-      pickBy(walletConnectors, (connector) => { return newDappName !== connector.dappName }) :
-      walletConnectors;
-    const updatedWalletConnectors = { ...dedupedConnectors, [walletConnector.sessionId]: walletConnector };
+    const updatedWalletConnectors = { ...walletConnectors, [walletConnector.sessionId]: walletConnector };
     dispatch({ payload: updatedWalletConnectors, type: WALLETCONNECT_NEW_SESSION });
   }
 };
