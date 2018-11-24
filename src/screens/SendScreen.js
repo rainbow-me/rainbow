@@ -13,6 +13,7 @@ import {
   View,
 } from 'react-native';
 import { isIphoneX } from 'react-native-iphone-x-helper';
+import Piwik from 'react-native-matomo';
 import TouchID from 'react-native-touch-id';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
@@ -359,6 +360,8 @@ class SendScreen extends Component {
   };
 
   sendTransaction = () => {
+    // TODO: add a name, value?
+    Piwik.trackEvent('Send', 'confirm');
     const {
       assetAmount,
       navigation,
