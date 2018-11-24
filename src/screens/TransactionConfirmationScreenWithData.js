@@ -21,6 +21,12 @@ class TransactionConfirmationScreenWithData extends Component {
     walletConnectors: PropTypes.object,
   }
 
+  componentDidUpdate = (prevProps) => {
+    if (this.props.isScreenActive && !prevProps.isScreenActive) {
+      Piwik.trackScreen('TxnConfirmScreen', 'TxnConfirmScreen');
+    }
+  }
+
   componentDidMount() {
     StatusBar.setBarStyle('light-content', true);
     Vibration.vibrate();

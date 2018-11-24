@@ -123,7 +123,6 @@ class App extends Component {
 
   handleAppStateChange = async (nextAppState) => {
     if (this.state.appState.match(/inactive|unknown|background/) && nextAppState === 'active') {
-      Piwik.trackEvent('screen', 'view', 'app');
       this.fetchAllTransactionsFromWalletConnectSessions();
     }
     this.setState({ appState: nextAppState });

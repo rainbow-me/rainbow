@@ -25,6 +25,7 @@ class QRScannerScreenWithData extends PureComponent {
   componentDidUpdate = (prevProps) => {
     if (this.props.isScreenActive && !prevProps.isScreenActive) {
       this.setState({ enableScanning: true });
+      Piwik.trackScreen('QRScannerScreen', 'QRScannerScreen');
     }
   }
 
