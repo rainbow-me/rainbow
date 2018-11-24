@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -62,6 +63,8 @@
 		3C363E14D5DE4A028E43EA38 /* SF-Pro-Display-UltralightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = DCA738BE00E04734AEDA2F07 /* SF-Pro-Display-UltralightItalic.otf */; };
 		3C398DDB3F4F4F7E9B3F8C86 /* libRNRandomBytes-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E0889DFA1224AA48F1A5301 /* libRNRandomBytes-tvOS.a */; };
 		3C41C1415A994234A0FF2589 /* SF-Pro-Text-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 233322FCDC624F6FA60C4B52 /* SF-Pro-Text-Heavy.otf */; };
+		3CE916E621A8BF0200BF6B5E /* libBNFPiwik.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CE916A421A8BED500BF6B5E /* libBNFPiwik.a */; };
+		3CE916EA21A8BFAC00BF6B5E /* piwiktracker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 3CE916E721A8BFAC00BF6B5E /* piwiktracker.xcdatamodeld */; };
 		4013198EBD3D4D6F8052D25E /* SF-Pro-Display-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9DF45B9EB38D4E8FA18A04C6 /* SF-Pro-Display-Light.otf */; };
 		41804DE52CE94296995264E0 /* SF-Pro-Text-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 35A24AFF4AB449C287EE66A8 /* SF-Pro-Text-Medium.otf */; };
 		424410A1E84845328C5A0CAB /* Graphik-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 182DC054E3584C83822F2A82 /* Graphik-RegularItalic.otf */; };
@@ -469,6 +472,13 @@
 			remoteGlobalIDString = 47413E2820DBB5D000CCDA85;
 			remoteInfo = "SRSRadialGradien-tvOS";
 		};
+		3CE916A321A8BED500BF6B5E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3CE9169F21A8BED500BF6B5E /* BNFPiwik.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = BNFPiwik;
+		};
 		3DAD3E831DF850E9000B6D8A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00C302BB1ABCB91800DB3ED1 /* RCTImage.xcodeproj */;
@@ -664,6 +674,9 @@
 		3C39C266218BBE66004C763F /* FastImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FastImage.xcodeproj; path = "../node_modules/react-native-fast-image/ios/FastImage.xcodeproj"; sourceTree = "<group>"; };
 		3CE850D5210FEA8F00672599 /* libGoogleToolboxForMac.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libGoogleToolboxForMac.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3CE850D7210FEACE00672599 /* libnanopb.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libnanopb.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		3CE9169F21A8BED500BF6B5E /* BNFPiwik.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BNFPiwik.xcodeproj; path = "../node_modules/react-native-matomo/ios/BNFPiwik.xcodeproj"; sourceTree = "<group>"; };
+		3CE916E821A8BFAC00BF6B5E /* piwiktracker.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = piwiktracker.xcdatamodel; sourceTree = "<group>"; };
+		3CE916E921A8BFAC00BF6B5E /* piwiktracker v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "piwiktracker v2.xcdatamodel"; sourceTree = "<group>"; };
 		3EA8003C5E2D46E38184714B /* Graphik-ThinItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-ThinItalic.otf"; path = "../src/assets/fonts/Graphik-ThinItalic.otf"; sourceTree = "<group>"; };
 		3F61BCAE46144D64ABDD2408 /* libPasscodeAuth.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libPasscodeAuth.a; sourceTree = "<group>"; };
 		40B0A80541C544ED93E6039D /* PasscodeAuth.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = PasscodeAuth.xcodeproj; path = "../node_modules/@ledgerhq/react-native-passcode-auth/PasscodeAuth.xcodeproj"; sourceTree = "<group>"; };
@@ -759,6 +772,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3CE916E621A8BF0200BF6B5E /* libBNFPiwik.a in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
@@ -907,6 +921,7 @@
 		13B07FAE1A68108700A75B9A /* BalanceWallet */ = {
 			isa = PBXGroup;
 			children = (
+				3CE916E721A8BFAC00BF6B5E /* piwiktracker.xcdatamodeld */,
 				3C379D5D20FD1F92009AF81F /* BalanceWallet.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -1184,6 +1199,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		3CE916A021A8BED500BF6B5E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3CE916A421A8BED500BF6B5E /* libBNFPiwik.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		5E91572E1DD0AC6500FF2AA8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1205,6 +1228,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				3CE9169F21A8BED500BF6B5E /* BNFPiwik.xcodeproj */,
 				3C39C266218BBE66004C763F /* FastImage.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
@@ -1474,6 +1498,10 @@
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
+				{
+					ProductGroup = 3CE916A021A8BED500BF6B5E /* Products */;
+					ProjectRef = 3CE9169F21A8BED500BF6B5E /* BNFPiwik.xcodeproj */;
+				},
 				{
 					ProductGroup = 24979D4220F83E3E007EB0DA /* Products */;
 					ProjectRef = 8AC83A50CE8F4EE782376063 /* BVLinearGradient.xcodeproj */;
@@ -1954,6 +1982,13 @@
 			remoteRef = 3CD4E8CC216989E8000FA5BD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		3CE916A421A8BED500BF6B5E /* libBNFPiwik.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libBNFPiwik.a;
+			remoteRef = 3CE916A321A8BED500BF6B5E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		3DAD3E841DF850E9000B6D8A /* libRCTImage-tvOS.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -2247,6 +2282,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3CE916EA21A8BFAC00BF6B5E /* piwiktracker.xcdatamodeld in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
@@ -3361,6 +3397,21 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		3CE916E721A8BFAC00BF6B5E /* piwiktracker.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				3CE916E821A8BFAC00BF6B5E /* piwiktracker.xcdatamodel */,
+				3CE916E921A8BFAC00BF6B5E /* piwiktracker v2.xcdatamodel */,
+			);
+			currentVersion = 3CE916E921A8BFAC00BF6B5E /* piwiktracker v2.xcdatamodel */;
+			name = piwiktracker.xcdatamodeld;
+			path = "../node_modules/react-native-matomo/ios/PiwikTracker/piwiktracker.xcdatamodeld";
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }
