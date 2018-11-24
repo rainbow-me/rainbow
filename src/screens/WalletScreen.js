@@ -1,6 +1,7 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import Piwik from 'react-native-matomo';
 import {
   compose,
   onlyUpdateForKeys,
@@ -42,10 +43,14 @@ class WalletScreen extends Component {
 
   componentDidUpdate = (prevProps) => {
     const { isLoading, onHideSplashScreen } = this.props;
-
     if (!isLoading && prevProps.isLoading) {
       onHideSplashScreen();
     }
+
+    if (this.props.isScreenActive && !prevProps.isScreenActive) {
+      Piwik.trackScreen('WalletScreen', 'WalletScreen');
+    }
+
   }
 
   render = () => {
