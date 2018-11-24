@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Vibration } from 'react-native';
 import firebase from 'react-native-firebase';
+import Piwik from 'react-native-matomo';
 import { compose } from 'recompact';
 import { Alert } from '../components/alerts';
 import { walletConnectInit } from '../model/walletconnect';
@@ -70,10 +71,12 @@ class QRScannerScreenWithData extends PureComponent {
     const address = getEthereumAddressFromQRCodeData(data);
 
     if (address) {
+      Piwik.trackEvent('QRScanner', 'address');
       return navigation.navigate('SendScreen', { address });
     }
 
     if (data.startsWith('ethereum:wc')) {
+      Piwik.trackEvent('QRScanner', 'walletconnect');
       const walletConnector = await walletConnectInit(
         accountAddress,
         data
@@ -81,6 +84,7 @@ class QRScannerScreenWithData extends PureComponent {
       await this.checkPushNotificationPermissions();
       return addWalletConnector(walletConnector);
     } else {
+      Piwik.trackEvent('QRScanner', 'unknown');
       return Alert({
         message: lang.t('wallet.unrecognized_qrcode'),
         title: lang.t('wallet.unrecognized_qrcode_title'),

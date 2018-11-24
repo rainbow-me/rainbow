@@ -2,6 +2,7 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { InteractionManager } from 'react-native';
+import Piwik from 'react-native-matomo';
 import { compose, withHandlers, withProps } from 'recompact';
 import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
@@ -46,6 +47,7 @@ export default compose(
       navigation.goBack();
 
       InteractionManager.runAfterInteractions(() => {
+        Piwik.trackEvent('Navigation', 'send-expanded');
         navigation.navigate('SendScreen', { asset: symbol });
       });
     },
