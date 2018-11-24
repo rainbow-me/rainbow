@@ -20,6 +20,7 @@
     "assert": "^1.4.1",
     "axios": "^0.18.0",
     "balance-common": "0.5.28",
+    "react-native-matomo": "git+https://github.com/BonifyByForteil/react-native-matomo.git",
     "browserify-zlib": "^0.1.4",
     "buffer": "^4.9.1",
     "chroma-js": "^1.3.7",

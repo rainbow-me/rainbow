@@ -8,6 +8,7 @@ import { AppRegistry, AlertIOS, AppState } from 'react-native';
 import { compose, withProps } from 'recompact';
 import { connect, Provider } from 'react-redux';
 import { NavigationActions } from 'react-navigation';
+import Piwik from 'react-native-matomo';
 import { withWalletConnectConnections } from './hoc';
 import {
   addTransactionToApprove,
@@ -43,6 +44,7 @@ class App extends Component {
   navigatorRef = null
 
   componentDidMount() {
+    Piwik.initTracker('https://matomo.balance.io/piwik.php', 2);
     AppState.addEventListener('change', this.handleAppStateChange);
     firebase.messaging().getToken()
       .then(fcmToken => {
@@ -120,7 +122,8 @@ class App extends Component {
   }
 
   handleAppStateChange = async (nextAppState) => {
-    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+    if (this.state.appState.match(/inactive|unknown|background/) && nextAppState === 'active') {
+      Piwik.trackEvent('screen', 'view', 'app');
       this.fetchAllTransactionsFromWalletConnectSessions();
     }
     this.setState({ appState: nextAppState });
