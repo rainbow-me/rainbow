@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import { withNavigation } from 'react-navigation';
+import Piwik from 'react-native-matomo';
 import RadialGradient from 'react-native-radial-gradient';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
@@ -40,6 +41,9 @@ SendFab.propTypes = {
 
 export default compose(
   withNavigation,
-  withHandlers({ onPress: ({ navigation }) => () => navigation.navigate('SendScreen') }),
+  withHandlers({ onPress: ({ navigation }) => () => {
+    Piwik.trackEvent('Navigation', 'send-fab');
+    navigation.navigate('SendScreen');
+  }}),
   onlyUpdateForKeys(['disabled']),
 )(SendFab);

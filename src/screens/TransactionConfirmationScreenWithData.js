@@ -4,6 +4,7 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AlertIOS, StatusBar, Vibration } from 'react-native';
+import Piwik from 'react-native-matomo';
 import { withTransactionConfirmationScreen } from '../hoc';
 import { sendTransaction } from '../model/wallet';
 import { walletConnectSendTransactionHash } from '../model/walletconnect';
@@ -26,6 +27,8 @@ class TransactionConfirmationScreenWithData extends Component {
   }
 
   handleConfirmTransaction = async () => {
+    // TODO: add a name, value?
+    Piwik.trackEvent('Send', 'confirm-wc');
     const { transactionDetails } = this.props.navigation.state.params;
     const txPayload = transactionDetails.callData;
     const web3TxnCount = await getTransactionCount(txPayload.from);
