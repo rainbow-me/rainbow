@@ -122,7 +122,7 @@ class App extends Component {
   }
 
   handleAppStateChange = async (nextAppState) => {
-    if (this.state.appState.match(/inactive|unknown|background/) && nextAppState === 'active') {
+    if (this.state.appState.match(/unknown|background/) && nextAppState === 'active') {
       Piwik.trackEvent('screen', 'view', 'app');
       this.fetchAllTransactionsFromWalletConnectSessions();
     }
@@ -156,6 +156,7 @@ class App extends Component {
       const allTransactions = await walletConnectGetAllTransactions(allConnectors);
       if (!isEmpty(allTransactions)) {
         this.props.addTransactionsToApprove(allTransactions);
+        await firebase.notifications().removeAllDeliveredNotifications();
       }
     }
   }
