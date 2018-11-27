@@ -975,8 +975,8 @@ assign-symbols@^1.0.0:
   resolved "https://registry.yarnpkg.com/assign-symbols/-/assign-symbols-1.0.0.tgz#59667f41fadd4f20ccbc2bb96b8d4f7f78ec0367"
 
 ast-types@0.x.x:
-  version "0.11.6"
-  resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.11.6.tgz#4e2266c2658829aef3b40cc33ad599c4e9eb89ef"
+  version "0.11.7"
+  resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.11.7.tgz#f318bf44e339db6a320be0009ded64ec1471f46c"
 
 astral-regex@^1.0.0:
   version "1.0.0"
@@ -1233,10 +1233,11 @@ babel-plugin-lodash@^3.3.4:
     require-package-name "^2.0.1"
 
 babel-plugin-styled-components@^1.8.0:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-styled-components/-/babel-plugin-styled-components-1.8.0.tgz#9dd054c8e86825203449a852a5746f29f2dab857"
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/babel-plugin-styled-components/-/babel-plugin-styled-components-1.9.1.tgz#53dde7a9cdff22a16db197129b1e68160c926e8b"
   dependencies:
     "@babel/helper-annotate-as-pure" "^7.0.0"
+    babel-plugin-syntax-jsx "^6.18.0"
     lodash "^4.17.10"
 
 babel-plugin-syntax-async-functions@^6.8.0:
@@ -1255,7 +1256,7 @@ babel-plugin-syntax-flow@^6.18.0, babel-plugin-syntax-flow@^6.8.0:
   version "6.18.0"
   resolved "http://registry.npmjs.org/babel-plugin-syntax-flow/-/babel-plugin-syntax-flow-6.18.0.tgz#4c3ab20a2af26aa20cd25995c398c4eb70310c8d"
 
-babel-plugin-syntax-jsx@^6.3.13, babel-plugin-syntax-jsx@^6.8.0:
+babel-plugin-syntax-jsx@^6.18.0, babel-plugin-syntax-jsx@^6.3.13, babel-plugin-syntax-jsx@^6.8.0:
   version "6.18.0"
   resolved "http://registry.npmjs.org/babel-plugin-syntax-jsx/-/babel-plugin-syntax-jsx-6.18.0.tgz#0af32a9a6e13ca7a3fd5069e62d7b0f58d0d8946"
 
@@ -1687,9 +1688,9 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-balance-common@0.5.28:
-  version "0.5.28"
-  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.5.28.tgz#44761a0f2c5b3bad0d5f29502bb7d18f7f3348fb"
+balance-common@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.0.tgz#1201a3856c4b461e0e4aa38524ee9d3ec29409ab"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -2054,8 +2055,8 @@ can-promise@0.0.1:
     window-or-global "^1.0.1"
 
 caniuse-lite@^1.0.30000844:
-  version "1.0.30000910"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000910.tgz#755d5181d4b006e5a2b59b1ffa05d0a0470039f5"
+  version "1.0.30000912"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000912.tgz#08e650d4090a9c0ab06bfd2b46b7d3ad6dcaea28"
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -2098,8 +2099,8 @@ chownr@^1.1.1:
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-1.1.1.tgz#54726b8b8fff4df053c42187e801fb4412df1494"
 
 chroma-js@^1.3.7:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/chroma-js/-/chroma-js-1.4.0.tgz#695c52e7c97617e5f687db31913503d410481ae4"
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/chroma-js/-/chroma-js-1.4.1.tgz#eb2d9c4d1ff24616be84b35119f4d26f8205f134"
 
 ci-info@^1.5.0:
   version "1.6.0"
@@ -2844,8 +2845,8 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
 
 electron-to-chromium@^1.3.47:
-  version "1.3.84"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.84.tgz#2e55df59e818f150a9f61b53471ebf4f0feecc65"
+  version "1.3.85"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.85.tgz#5c46f790aa96445cabc57eb9d17346b1e46476fe"
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -3232,7 +3233,7 @@ expand-brackets@^2.1.4:
 
 expand-range@^1.8.1:
   version "1.8.2"
-  resolved "https://registry.yarnpkg.com/expand-range/-/expand-range-1.8.2.tgz#a299effd335fe2721ebae8e257ec79644fc85337"
+  resolved "http://registry.npmjs.org/expand-range/-/expand-range-1.8.2.tgz#a299effd335fe2721ebae8e257ec79644fc85337"
   dependencies:
     fill-range "^2.1.0"
 
@@ -3975,8 +3976,8 @@ hoist-non-react-statics@^2.2.0, hoist-non-react-statics@^2.3.1, hoist-non-react-
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.5.5.tgz#c5903cf409c0dfd908f388e619d86b9c1174cb47"
 
 hoist-non-react-statics@^3.0.1, hoist-non-react-statics@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-3.1.0.tgz#42414ccdfff019cd2168168be998c7b3bd5245c0"
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-3.2.0.tgz#d21b9fc72b50fdc38c5d88f6e2c52f2c2dbe5ee2"
   dependencies:
     react-is "^16.3.2"
 
@@ -4851,9 +4852,9 @@ js-tokens@^3.0.0, js-tokens@^3.0.2:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
 
-js-walletconnect-core@^0.7.26:
-  version "0.7.26"
-  resolved "https://registry.yarnpkg.com/js-walletconnect-core/-/js-walletconnect-core-0.7.26.tgz#2e875fe6c17d9958bbd891a807d448cebd7f5bc8"
+js-walletconnect-core@^0.7.27:
+  version "0.7.27"
+  resolved "https://registry.yarnpkg.com/js-walletconnect-core/-/js-walletconnect-core-0.7.27.tgz#e185ae277713fec69a612f43080096ba8ef59e07"
   dependencies:
     eth-parse-uri "^0.6.9"
 
@@ -6459,7 +6460,7 @@ pseudomap@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/pseudomap/-/pseudomap-1.0.2.tgz#f052a28da70e618917ef0a8ac34c1ae5a68286b3"
 
-psl@^1.1.24:
+psl@^1.1.24, psl@^1.1.28:
   version "1.1.29"
   resolved "https://registry.yarnpkg.com/psl/-/psl-1.1.29.tgz#60f580d360170bb722a797cc704411e6da850c67"
 
@@ -6482,7 +6483,7 @@ punycode@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
 
-punycode@^2.1.0:
+punycode@^2.1.0, punycode@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
 
@@ -6500,9 +6501,13 @@ qrcode@^1.2.0:
     pngjs "^3.3.0"
     yargs "^8.0.2"
 
-qs@6.5.2, qs@^6.5.1, qs@~6.5.2:
+qs@6.5.2, qs@~6.5.2:
   version "6.5.2"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
+
+qs@^6.5.1:
+  version "6.6.0"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.6.0.tgz#a99c0f69a8d26bf7ef012f871cdabb0aee4424c2"
 
 query-string@^5.0.1:
   version "5.1.1"
@@ -6612,7 +6617,7 @@ react-display-name@^0.2.4:
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/react-display-name/-/react-display-name-0.2.4.tgz#e2a670b81d79a2204335510c01246f4c92ff12cf"
 
-react-is@^16.3.1, react-is@^16.3.2, react-is@^16.6.0, react-is@^16.6.3:
+react-is@^16.3.1, react-is@^16.3.2, react-is@^16.5.2, react-is@^16.6.0, react-is@^16.6.3:
   version "16.6.3"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.6.3.tgz#d2d7462fcfcbe6ec0da56ad69047e47e56e7eac0"
 
@@ -6697,8 +6702,8 @@ react-native-firebase@^4.3.8:
     prop-types "^15.6.1"
 
 react-native-gesture-handler@^1.0.7:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.0.9.tgz#ddec4d19d51cb6fb54df6eca792ebd76aaef083f"
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.0.10.tgz#160e55e4886471931b7f7d52e22d94007540ab83"
   dependencies:
     hoist-non-react-statics "^2.3.1"
     invariant "^2.2.2"
@@ -6728,8 +6733,8 @@ react-native-level-fs@^3.0.1:
     levelup "^0.18.2"
 
 react-native-linear-gradient@^2.4.2:
-  version "2.4.4"
-  resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.4.4.tgz#64944a39290eefbede18dfd7e9551f1ef61e3de7"
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.5.2.tgz#e00312997661ef99d76d5fb902fef3d04bc6b5d5"
 
 react-native-mail@^3.0.6:
   version "3.0.7"
@@ -6959,14 +6964,15 @@ react-navigation-tabs@0.8.4:
     react-native-tab-view "^1.0.0"
 
 react-navigation@^2.18.0:
-  version "2.18.2"
-  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-2.18.2.tgz#ba278ded41f736d029c7cae5d54ab1427dc6ed34"
+  version "2.18.3"
+  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-2.18.3.tgz#de9a24dc37dfc33f3e4779a9f13f45ea97dfe19e"
   dependencies:
     clamp "^1.0.1"
     create-react-context "0.2.2"
     hoist-non-react-statics "^2.2.0"
     path-to-regexp "^1.7.0"
     query-string "^6.1.0"
+    react-is "^16.5.2"
     react-lifecycles-compat "^3"
     react-native-safe-area-view "0.11.0"
     react-native-screens "^1.0.0-alpha.11"
@@ -7252,7 +7258,7 @@ regjsgen@^0.4.0:
 
 regjsparser@^0.1.4:
   version "0.1.5"
-  resolved "https://registry.yarnpkg.com/regjsparser/-/regjsparser-0.1.5.tgz#7ee8f84dc6fa792d3fd0ae228d24bd949ead205c"
+  resolved "http://registry.npmjs.org/regjsparser/-/regjsparser-0.1.5.tgz#7ee8f84dc6fa792d3fd0ae228d24bd949ead205c"
   dependencies:
     jsesc "~0.5.0"
 
@@ -7420,10 +7426,10 @@ rn-nodeify@^10.0.0:
     xtend "^4.0.0"
 
 rn-walletconnect-wallet@^0.7.24:
-  version "0.7.26"
-  resolved "https://registry.yarnpkg.com/rn-walletconnect-wallet/-/rn-walletconnect-wallet-0.7.26.tgz#9d39d18f74abd9fe2b4bfd343a6d90a338b43a96"
+  version "0.7.27"
+  resolved "https://registry.yarnpkg.com/rn-walletconnect-wallet/-/rn-walletconnect-wallet-0.7.27.tgz#ac812f4e2c2cb429a10a3130d3eb0898210478fa"
   dependencies:
-    js-walletconnect-core "^0.7.26"
+    js-walletconnect-core "^0.7.27"
 
 rsvp@^3.3.3:
   version "3.6.2"
@@ -7933,11 +7939,11 @@ string-width@^1.0.1:
 
 string_decoder@^0.10.31, string_decoder@~0.10.x:
   version "0.10.31"
-  resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-0.10.31.tgz#62e203bc41766c6c28c9fc84301dab1c5310fa94"
+  resolved "http://registry.npmjs.org/string_decoder/-/string_decoder-0.10.31.tgz#62e203bc41766c6c28c9fc84301dab1c5310fa94"
 
 string_decoder@~1.1.1:
   version "1.1.1"
-  resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-1.1.1.tgz#9cf1611ba62685d7030ae9e4ba34149c3af03fc8"
+  resolved "http://registry.npmjs.org/string_decoder/-/string_decoder-1.1.1.tgz#9cf1611ba62685d7030ae9e4ba34149c3af03fc8"
   dependencies:
     safe-buffer "~5.1.0"
 
@@ -8275,7 +8281,14 @@ to-regex@^3.0.1, to-regex@^3.0.2:
     regex-not "^1.0.2"
     safe-regex "^1.1.0"
 
-tough-cookie@>=2.3.3, tough-cookie@^2.3.4, tough-cookie@^2.4.3, tough-cookie@~2.4.3:
+tough-cookie@>=2.3.3, tough-cookie@^2.3.4, tough-cookie@^2.4.3:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/tough-cookie/-/tough-cookie-2.5.0.tgz#cd9fb2a0aa1d5a12b473bd9fb96fa3dcff65ade2"
+  dependencies:
+    psl "^1.1.28"
+    punycode "^2.1.1"
+
+tough-cookie@~2.4.3:
   version "2.4.3"
   resolved "https://registry.yarnpkg.com/tough-cookie/-/tough-cookie-2.4.3.tgz#53f36da3f47783b0925afa06ff9f3b165280f781"
   dependencies:
