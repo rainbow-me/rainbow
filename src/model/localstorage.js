@@ -3,6 +3,24 @@ import { pickBy } from 'lodash';
 import { commonStorage } from 'balance-common';
 
 /**
+ * @desc get last tracking date
+ * @return {Date|Object}
+ */
+export const getLastTrackingDate = async () => {
+  const lastTrackingDate = await commonStorage.getLocal('lastTrackingDate');
+  return lastTrackingDate ? new Date(lastTrackingDate) : null;
+};
+
+/**
+ * @desc update last tracking date
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Void}
+ */
+export const updateLastTrackingDate = async () => {
+  await commonStorage.saveLocal('lastTrackingDate', Date.now());
+};
+/**
  * @desc get account local requests
  * @param  {String}   [address]
  * @return {Object}

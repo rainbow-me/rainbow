@@ -1688,9 +1688,9 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-balance-common@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.0.tgz#1201a3856c4b461e0e4aa38524ee9d3ec29409ab"
+balance-common@0.6.0-trackingobject:
+  version "0.6.0-trackingobject"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.0-trackingobject.tgz#a3796a6ff1e006291317368d3df7cb75026c1615"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"

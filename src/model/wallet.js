@@ -49,12 +49,12 @@ export const createTransaction = async (to, data, value, gasLimit, gasPrice, non
   };
 };
 
-export const sendTransaction = async ({ trackingName, trackingAmount, transaction }) => {
+export const sendTransaction = async ({ tracking, transaction }) => {
   try {
     const wallet = await loadWallet();
     try {
       const result = await wallet.sendTransaction(transaction);
-      Piwik.trackEvent('Send', 'confirm', trackingName, trackingAmount);
+      Piwik.trackEvent('Send', tracking.action, tracking.name, tracking.amount);
       return result.hash;
     } catch(error) {
       console.log('sendTxn error', error);
