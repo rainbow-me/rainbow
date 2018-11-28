@@ -33,15 +33,23 @@ class TransactionConfirmationScreenWithData extends Component {
   }
 
   handleConfirmTransaction = async () => {
-    // TODO: add a name, value?
-    Piwik.trackEvent('Send', 'confirm-wc');
     const { transactionDetails } = this.props.navigation.state.params;
     const txPayload = transactionDetails.callData;
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(this.props.transactionCountNonce, web3TxnCount);
     const nonce = web3Instance.utils.toHex(maxTxnCount);
     const txPayloadLatestNonce = { ...txPayload, nonce };
-    const transactionHash = await sendTransaction(txPayloadLatestNonce, lang.t('wallet.transaction.confirm'));
+    const symbol = get(transactionDisplayDetails, 'asset.symbol', 'unknown');
+    const address = get(transactionDisplayDetails, 'asset.address', '');
+    const trackingName = `${symbol}:${address}`;
+    const transactionHash = await sendTransaction({
+      tracking: {
+        action: 'send-wc',
+        amount: get(transactionDisplayDetails, 'nativeAmount'),
+        name: trackingName,
+      },
+      transaction: txPayloadLatestNonce
+    });
 
     if (transactionHash) {
       this.props.updateTransactionCountNonce(maxTxnCount + 1);
@@ -100,7 +108,7 @@ class TransactionConfirmationScreenWithData extends Component {
         dappName,
         transactionDisplayDetails: {
           asset,
-          nativeAmount,
+          nativeAmountDisplay,
           to,
           value,
         },
@@ -114,7 +122,7 @@ class TransactionConfirmationScreenWithData extends Component {
           amount: value || '0.00',
           dappName: dappName || '',
           name: asset.name || 'No data',
-          nativeAmount,
+          nativeAmountDisplay,
           symbol: asset.symbol || 'N/A',
         }}
         onCancelTransaction={this.handleCancelTransaction}

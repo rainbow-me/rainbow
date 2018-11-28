@@ -1,3 +1,5 @@
+import { get } from 'lodash';
+import { isSameDay } from 'date-fns';
 import { withSafeTimeout } from '@hocs/safe-timers';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -21,6 +23,7 @@ import {
   withAccountAssets,
   withHideSplashScreen,
   withRequestsInit,
+  withTrackingDate,
   withTransitionProps,
 } from '../hoc';
 import { position } from '../styles';
@@ -41,14 +44,28 @@ class WalletScreen extends Component {
     transitionProps: PropTypes.object,
   }
 
+  componentDidMount = () => {
+    this.props.trackingDateInit();
+  }
+
   componentDidUpdate = (prevProps) => {
-    const { isLoading, onHideSplashScreen } = this.props;
+    const {
+      assetsTotalUSD,
+      isLoading,
+      onHideSplashScreen,
+      trackingDate
+    } = this.props;
     if (!isLoading && prevProps.isLoading) {
       onHideSplashScreen();
     }
 
     if (this.props.isScreenActive && !prevProps.isScreenActive) {
       Piwik.trackScreen('WalletScreen', 'WalletScreen');
+      const totalTrackingAmount = get(assetsTotalUSD, 'totalTrackingAmount', null);
+      if (totalTrackingAmount && (!this.props.trackingDate || !isSameDay(this.props.trackingDate, Date.now()))) {
+        Piwik.trackEvent('Balance', 'Total', 'TotalUSDBalance', totalTrackingAmount);
+        this.props.updateTrackingDate();
+      }
     }
 
   }
@@ -103,6 +120,7 @@ export default compose(
   withHideSplashScreen,
   withRequestsInit,
   withSafeTimeout,
+  withTrackingDate,
   withTransitionProps,
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
