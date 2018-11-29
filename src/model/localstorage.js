@@ -8,7 +8,7 @@ import { commonStorage } from 'balance-common';
  */
 export const getLastTrackingDate = async () => {
   const lastTrackingDate = await commonStorage.getLocal('lastTrackingDate');
-  return lastTrackingDate ? new Date(lastTrackingDate) : null;
+  return lastTrackingDate && lastTrackingDate.data ? new Date(lastTrackingDate.data) : null;
 };
 
 /**
@@ -18,7 +18,7 @@ export const getLastTrackingDate = async () => {
  * @return {Void}
  */
 export const updateLastTrackingDate = async () => {
-  await commonStorage.saveLocal('lastTrackingDate', Date.now());
+  await commonStorage.saveLocal('lastTrackingDate', { data: new Date().toString() });
 };
 /**
  * @desc get account local requests
