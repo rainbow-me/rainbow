@@ -42,7 +42,7 @@ SendFab.propTypes = {
 export default compose(
   withNavigation,
   withHandlers({ onPress: ({ navigation }) => () => {
-    Piwik.trackEvent('Navigation', 'send-fab');
+    Piwik.trackEvent('Navigation', 'send-fab', 'SendFabNav');
     navigation.navigate('SendScreen');
   }}),
   onlyUpdateForKeys(['disabled']),
