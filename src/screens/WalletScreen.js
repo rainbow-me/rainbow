@@ -50,10 +50,12 @@ class WalletScreen extends Component {
 
   componentDidUpdate = (prevProps) => {
     const {
+      allAssetsCount,
       assetsTotalUSD,
       isLoading,
       onHideSplashScreen,
-      trackingDate
+      trackingDate,
+      uniqueTokens,
     } = this.props;
     if (!isLoading && prevProps.isLoading) {
       onHideSplashScreen();
@@ -63,6 +65,8 @@ class WalletScreen extends Component {
       Piwik.trackScreen('WalletScreen', 'WalletScreen');
       const totalTrackingAmount = get(assetsTotalUSD, 'totalTrackingAmount', null);
       if (totalTrackingAmount && (!this.props.trackingDate || !isSameDay(this.props.trackingDate, Date.now()))) {
+        Piwik.trackEvent('Balance', 'AssetsCount', 'TotalAssetsCount', allAssetsCount);
+        Piwik.trackEvent('Balance', 'NFTCount', 'TotalNFTCount', uniqueTokens.length);
         Piwik.trackEvent('Balance', 'Total', 'TotalUSDBalance', totalTrackingAmount);
         this.props.updateTrackingDate();
       }
