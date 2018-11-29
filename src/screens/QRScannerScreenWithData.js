@@ -72,12 +72,12 @@ class QRScannerScreenWithData extends PureComponent {
     const address = getEthereumAddressFromQRCodeData(data);
 
     if (address) {
-      Piwik.trackEvent('QRScanner', 'address');
+      Piwik.trackEvent('QRScanner', 'address', 'QRScannedAddress);
       return navigation.navigate('SendScreen', { address });
     }
 
     if (data.startsWith('ethereum:wc')) {
-      Piwik.trackEvent('QRScanner', 'walletconnect');
+      Piwik.trackEvent('QRScanner', 'walletconnect', 'QRScannedWC');
       const walletConnector = await walletConnectInit(
         accountAddress,
         data
@@ -85,7 +85,7 @@ class QRScannerScreenWithData extends PureComponent {
       await this.checkPushNotificationPermissions();
       return addWalletConnector(walletConnector);
     } else {
-      Piwik.trackEvent('QRScanner', 'unknown');
+      Piwik.trackEvent('QRScanner', 'unknown', 'QRScannedUnknown');
       return Alert({
         message: lang.t('wallet.unrecognized_qrcode'),
         title: lang.t('wallet.unrecognized_qrcode_title'),
