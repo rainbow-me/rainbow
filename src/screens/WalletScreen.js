@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, join, map } from 'lodash';
 import { isSameDay } from 'date-fns';
 import { withSafeTimeout } from '@hocs/safe-timers';
 import PropTypes from 'prop-types';
@@ -51,6 +51,7 @@ class WalletScreen extends Component {
   componentDidUpdate = (prevProps) => {
     const {
       allAssetsCount,
+      assets,
       assetsTotalUSD,
       isLoading,
       onHideSplashScreen,
@@ -64,8 +65,10 @@ class WalletScreen extends Component {
     if (this.props.isScreenActive && !prevProps.isScreenActive) {
       Piwik.trackScreen('WalletScreen', 'WalletScreen');
       const totalTrackingAmount = get(assetsTotalUSD, 'totalTrackingAmount', null);
+      const assetSymbols = join(map(assets, (asset) => asset.symbol));
       if (totalTrackingAmount && (!this.props.trackingDate || !isSameDay(this.props.trackingDate, Date.now()))) {
         Piwik.trackEvent('Balance', 'AssetsCount', 'TotalAssetsCount', allAssetsCount);
+        Piwik.trackEvent('Balance', 'AssetSymbols', 'AssetSymbols', assetSymbols);
         Piwik.trackEvent('Balance', 'NFTCount', 'TotalNFTCount', uniqueTokens.length);
         Piwik.trackEvent('Balance', 'Total', 'TotalUSDBalance', totalTrackingAmount);
         this.props.updateTrackingDate();
