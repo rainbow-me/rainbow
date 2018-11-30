@@ -16,7 +16,7 @@ import styled from 'styled-components/primitives';
 import BlurOverlay from '../components/BlurOverlay';
 import { AssetList } from '../components/asset-list';
 import { FabWrapper } from '../components/fab';
-import { ActivityHeaderButton, Header, ProfileHeaderButton } from '../components/header';
+import { CameraHeaderButton, Header, ProfileHeaderButton } from '../components/header';
 import { Page } from '../components/layout';
 import buildWalletSections from '../helpers/buildWalletSections';
 import {
@@ -108,9 +108,7 @@ class WalletScreen extends Component {
         {showBlur && <BlurOverlay opacity={blurOpacity} />}
         <Header justify="space-between">
           <ProfileHeaderButton navigation={navigation} />
-          {(!isEmpty && !isLoading) && (
-            <ActivityHeaderButton navigation={navigation}/>
-          )}
+          <CameraHeaderButton navigation={navigation} />
         </Header>
         <FabWrapper disable={isEmpty || isLoading}>
           <AssetList

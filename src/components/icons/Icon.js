@@ -2,16 +2,22 @@ import PropTypes from 'prop-types';
 import { createElement } from 'react';
 import Flex from '../layout/Flex';
 
+import ArrowCircledIcon from './svg/ArrowCircledIcon';
 import ArrowIcon from './svg/ArrowIcon';
 import AvatarIcon from './svg/AvatarIcon';
 import BalanceLogoIcon from './svg/BalanceLogoIcon';
 import CameraIcon from './svg/CameraIcon';
 import CaretIcon from './svg/CaretIcon';
+import CaretThinIcon from './svg/CaretThinIcon';
+import CheckmarkCircledIcon from './svg/CheckmarkCircledIcon';
+import CheckmarkIcon from './svg/CheckmarkIcon';
 import ClockIcon from './svg/ClockIcon';
 import CloseIcon from './svg/CloseIcon';
 import CompassIcon from './svg/CompassIcon';
+import CopyIcon from './svg/CopyIcon';
 import DotIcon from './svg/DotIcon';
 import FaceIdIcon from './svg/FaceIdIcon';
+import GearIcon from './svg/GearIcon';
 import HandleIcon from './svg/HandleIcon';
 import OfflineIcon from './svg/OfflineIcon';
 import ProgressIcon from './svg/ProgressIcon';
@@ -24,28 +30,34 @@ import WalletConnectIcon from './svg/WalletConnectIcon';
 import WarningIcon from './svg/WarningIcon';
 
 const Icon = ({ name, ...props }) =>
-  createElement((Icon.IconTypes[name] || Flex), props);
+  createElement(Icon.IconTypes[name] || Flex, props);
 
 Icon.IconTypes = {
   arrow: ArrowIcon,
+  arrowCircled: ArrowCircledIcon,
   avatar: AvatarIcon,
   balanceLogo: BalanceLogoIcon,
   camera: CameraIcon,
   caret: CaretIcon,
+  caretThin: CaretThinIcon,
+  checkmark: CheckmarkIcon,
+  checkmarkCircled: CheckmarkCircledIcon,
   clock: ClockIcon,
   close: CloseIcon,
   compass: CompassIcon,
+  copy: CopyIcon,
   dot: DotIcon,
   faceid: FaceIdIcon,
+  gear: GearIcon,
   handle: HandleIcon,
   offline: OfflineIcon,
   progress: ProgressIcon,
+  send: SendIcon,
+  share: ShareIcon,
   spinner: SpinnerIcon,
   threeDots: ThreeDotsIcon,
   touchid: TouchIdIcon,
   walletConnect: WalletConnectIcon,
-  send: SendIcon,
-  share: ShareIcon,
   warning: WarningIcon,
 };
 

@@ -17,11 +17,13 @@ const renderSectionHeader = ({ section }) => <ActivityListHeader {...section} />
 
 const ActivityList = ({
   hasPendingTransaction,
+  header,
   pendingTransactionsCount,
   sections,
   transactionsCount,
 }) => (
   <SectionList
+    ListHeaderComponent={header}
     contentContainerStyle={{ paddingBottom: 40 }}
     extraData={{ hasPendingTransaction, pendingTransactionsCount }}
     getItemLayout={getItemLayout}
@@ -36,6 +38,7 @@ const ActivityList = ({
 ActivityList.propTypes = {
   hasPendingTransaction: PropTypes.bool,
   pendingTransactionsCount: PropTypes.number,
+  header: PropTypes.node,
   sections: PropTypes.arrayOf(PropTypes.shape({
     data: PropTypes.array,
     renderItem: PropTypes.func,

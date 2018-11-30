@@ -8,7 +8,7 @@ import LoadingScreen from './LoadingScreen';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
 import SendQRScannerScreenWithData from './SendQRScannerScreenWithData';
 import SendScreenWithData from './SendScreenWithData';
-import SettingsScreenWithData from './SettingsScreenWithData';
+import ProfileScreenWithData from './ProfileScreenWithData';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
 import { deviceUtils } from '../utils';
@@ -18,9 +18,9 @@ import { updateTransitionProps } from '../redux/navigation';
 import Navigation from '../navigation';
 
 const SwipeStack = createSwipeNavigator({
-  SettingsScreen: {
-    name: 'SettingsScreen',
-    screen: SettingsScreenWithData,
+  ProfileScreen: {
+    name: 'ProfileScreen',
+    screen: ProfileScreenWithData,
     statusBarColor: 'dark-content',
   },
   WalletScreen: {
