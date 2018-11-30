@@ -12,7 +12,11 @@ function getActiveRouteName(navigationState) {
 
   const route = navigationState.routes[navigationState.index];
   // recursively dive into nested navigators
-  if (route.routes) return getActiveRouteName(route);
+  if (route.routes) {
+    console.log('route', route);
+    console.log('route.routes', route.routes);
+    return getActiveRouteName(route);
+  }
   return route.routeName;
 }
 

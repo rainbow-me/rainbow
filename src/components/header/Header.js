@@ -11,8 +11,11 @@ const HeaderHeightWithStatusBar = HeaderHeight + StatusBarHeight;
 const Container = styled(Row).attrs({ align: 'end' })`
   ${padding(StatusBarHeight, 9, 1)}
   flex-shrink: 0;
-  height: ${({ excludeStatusBarHeight }) =>
-    excludeStatusBarHeight === true ? HeaderHeight : HeaderHeightWithStatusBar};
+  height: ${({ excludeStatusBarHeight }) => (
+    (excludeStatusBarHeight === true)
+      ? HeaderHeight
+      : HeaderHeightWithStatusBar
+  )};
   width: 100%;
 `;
 

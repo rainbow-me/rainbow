@@ -2,11 +2,12 @@ import chroma from 'chroma-js';
 import PropTypes from 'prop-types';
 
 const base = {
+  appleBlue: '#0E76FD', // 14, 118, 253
   black: '#000000', // '0, 0, 0'
   blue: '#657fe6', // '101, 127, 230'
   blueActive: '#5a71cc', // '90, 113, 204'
   blueGreyDark: '#3c4252', // '60, 66, 82'
-  blueGreyLight: '#666A73', // '102, 106, 115'
+  blueGreyLight: '#666A73', // '102, 106, 115' // TODO XXX SHOULD THIS BE: '#A1A5AC'?
   blueGreyLighter: '#888D96', // '136, 141, 150'
   blueGreyMedium: '#636875', // '99, 104, 117'
   blueGreyMediumLight: '#7b7f8a', // '123, 127, 138'
@@ -30,6 +31,7 @@ const base = {
   mediumGrey: '#a1a5b3', // '161, 165, 179'
   orange: '#f6851b', // '246, 133, 27'
   orangeLight: '#FFAF24', // '255, 175, 36'
+  paleBlue: '#5D9DF6',
   orangeMedium: '#FCA247', // '252, 162, 71'
   primaryBlue: '#5d9df6', // '93, 157, 246'
   primaryGreen: '#00a352', // '0, 163, 82'
