@@ -72,7 +72,7 @@ class QRScannerScreenWithData extends PureComponent {
     const address = getEthereumAddressFromQRCodeData(data);
 
     if (address) {
-      Piwik.trackEvent('QRScanner', 'address', 'QRScannedAddress);
+      Piwik.trackEvent('QRScanner', 'address', 'QRScannedAddress');
       return navigation.navigate('SendScreen', { address });
     }
 
