@@ -18,8 +18,8 @@ import {
 } from './redux/transactionsToApprove';
 import {
   walletConnectInitAllConnectors,
-  walletConnectGetAllTransactions,
-  walletConnectGetTransaction,
+  walletConnectGetAllRequests,
+  walletConnectGetRequest,
 } from './model/walletconnect';
 import store from './redux/store';
 import { walletInit } from './model/wallet';
@@ -70,7 +70,7 @@ class App extends Component {
       const route = Navigation.getActiveRouteName(navState);
       const { callId, sessionId } = notification.data;
       if (route === 'ConfirmTransaction') {
-        this.fetchAndAddTransaction(callId, sessionId)
+        this.fetchAndAddWalletConnectRequest(callId, sessionId)
           .then(transaction => {
             const localNotification = new firebase.notifications.Notification()
               .setTitle(notification.title)
@@ -106,7 +106,7 @@ class App extends Component {
               .getInitialNotification()
               .then(notificationOpen => {
                 if (!notificationOpen) {
-                  this.fetchAllTransactionsFromWalletConnectSessions();
+                  this.fetchAllRequestsFromWalletConnectSessions();
                 }
               });
           })
@@ -124,7 +124,7 @@ class App extends Component {
   handleAppStateChange = async (nextAppState) => {
     if (this.state.appState.match(/unknown|background/) && nextAppState === 'active') {
       Piwik.trackEvent('screen', 'view', 'app');
-      this.fetchAllTransactionsFromWalletConnectSessions();
+      this.fetchAllRequestsFromWalletConnectSessions();
     }
     this.setState({ appState: nextAppState });
   }
@@ -141,21 +141,28 @@ class App extends Component {
 
   handleOpenConfirmTransactionModal = (transactionDetails) => {
     if (!this.navigatorRef) return;
-
-    const action = NavigationActions.navigate({
-      routeName: 'ConfirmTransaction',
-      params: { transactionDetails },
-    });
-
+    const requestType = get(transactionDetails, 'transactionDisplayDetails.type');
+    let action = null;
+    if (requestType === 'message') {
+      action = NavigationActions.navigate({
+        routeName: 'SignMessage',
+        params: { transactionDetails },
+      });
+    } else {
+      action = NavigationActions.navigate({
+        routeName: 'ConfirmTransaction',
+        params: { transactionDetails },
+      });
+    }
     Navigation.handleAction(this.navigatorRef, action);
   }
 
-  fetchAllTransactionsFromWalletConnectSessions = async () => {
+  fetchAllRequestsFromWalletConnectSessions = async () => {
     const allConnectors = this.props.getValidWalletConnectors();
     if (!isEmpty(allConnectors)) {
-      const allTransactions = await walletConnectGetAllTransactions(allConnectors);
-      if (!isEmpty(allTransactions)) {
-        this.props.addTransactionsToApprove(allTransactions);
+      const allRequests = await walletConnectGetAllRequests(allConnectors);
+      if (!isEmpty(allRequests)) {
+        this.props.addTransactionsToApprove(allRequests);
         await firebase.notifications().removeAllDeliveredNotifications();
       }
     }
@@ -166,7 +173,7 @@ class App extends Component {
     if (existingTransaction) {
       this.handleOpenConfirmTransactionModal(existingTransaction);
     } else {
-      const transaction = await this.fetchAndAddTransaction(callId, sessionId);
+      const transaction = await this.fetchAndAddWalletConnectRequest(callId, sessionId);
       if (transaction) {
         this.handleOpenConfirmTransactionModal(transaction);
       } else {
@@ -175,12 +182,12 @@ class App extends Component {
     }
   }
 
-  fetchAndAddTransaction = async (callId, sessionId) => {
+  fetchAndAddWalletConnectRequest = async (callId, sessionId) => {
     const walletConnector = this.props.walletConnectors.find(({ _sessionId }) => (_sessionId === sessionId));
-    const transactionDetails = await walletConnectGetTransaction(callId, walletConnector);
-    if (!transactionDetails) return null;
+    const callData = await walletConnectGetRequest(callId, walletConnector);
+    if (!callData) return null;
 
-    const { callData, dappName } = transactionDetails;
+    const { dappName } = walletConnector;
     return this.props.addTransactionToApprove(sessionId, callId, callData, dappName);
   }
 

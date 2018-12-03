@@ -65,6 +65,22 @@ export const sendTransaction = async (transaction, authenticationPrompt = lang.t
   }
 };
 
+export const signMessage = async (message, authenticationPrompt = lang.t('account.authenticate.please')) => {
+  try {
+    const wallet = await loadWallet(authenticationPrompt);
+    try {
+      return await wallet.signMessage(message);
+    } catch(error) {
+      console.log('signMessage error', error);
+      AlertIOS.alert(lang.t('wallet.message_signing.failed_signing'));
+      return null;
+    }
+  } catch(error) {
+    AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
+    return null;
+  }
+};
+
 export const loadSeedPhrase = async () => {
   const authenticationPrompt = lang.t('account.authenticate.please_seed_phrase');
   const seedPhrase = await keychain.loadString(seedPhraseKey, { authenticationPrompt });

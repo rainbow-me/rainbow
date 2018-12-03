@@ -7,7 +7,7 @@ import { AlertIOS, StatusBar, Vibration } from 'react-native';
 import Piwik from 'react-native-matomo';
 import { withTransactionConfirmationScreen } from '../hoc';
 import { sendTransaction } from '../model/wallet';
-import { walletConnectSendTransactionHash } from '../model/walletconnect';
+import { walletConnectSendStatus } from '../model/walletconnect';
 import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
 class TransactionConfirmationScreenWithData extends Component {
@@ -30,7 +30,7 @@ class TransactionConfirmationScreenWithData extends Component {
     // TODO: add a name, value?
     Piwik.trackEvent('Send', 'confirm-wc');
     const { transactionDetails } = this.props.navigation.state.params;
-    const txPayload = transactionDetails.callData;
+    const txPayload = get(transactionDetails, 'callData.params[0]');
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(this.props.transactionCountNonce, web3TxnCount);
     const nonce = web3Instance.utils.toHex(maxTxnCount);
@@ -53,7 +53,7 @@ class TransactionConfirmationScreenWithData extends Component {
       this.props.accountUpdateTransactions(txDetails);
       this.props.removeTransaction(transactionDetails.callId);
       const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
-      await walletConnectSendTransactionHash(walletConnector, transactionDetails.callId, true, transactionHash);
+      await walletConnectSendStatus(walletConnector, transactionDetails.callId, transactionHash);
       this.closeTransactionScreen();
     } else {
       await this.handleCancelTransaction();
@@ -65,7 +65,7 @@ class TransactionConfirmationScreenWithData extends Component {
       this.closeTransactionScreen();
       const { transactionDetails } = this.props.navigation.state.params;
       const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
-      await walletConnectSendTransactionHash(walletConnector, transactionDetails.callId, false, null);
+      await walletConnectSendStatus(walletConnector, transactionDetails.callId, null);
     } catch (error) {
       this.closeTransactionScreen();
       AlertIOS.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
