@@ -66,12 +66,12 @@ export const walletConnectDisconnect = async (walletConnector) => {
   }
 };
 
-const getTransactionForSession = (walletConnector) => new Promise((resolve, reject) => {
+const getRequestsForSession = (walletConnector) => new Promise((resolve, reject) => {
   const { dappName, sessionId } = walletConnector;
   walletConnector.getAllCallRequests()
     .then((allCalls) =>
-      resolve(mapValues(allCalls, (transactionPayload, callId) => ({
-        callData: get(transactionPayload, 'data.params[0]', null),
+      resolve(mapValues(allCalls, (requestPayload, callId) => ({
+        callData: get(requestPayload, 'data'),
         dappName,
         sessionId,
         callId,
@@ -79,26 +79,22 @@ const getTransactionForSession = (walletConnector) => new Promise((resolve, reje
     .catch(error => resolve({}));
 });
 
-export const walletConnectGetAllTransactions = async (walletConnectors) => {
+export const walletConnectGetAllRequests = async (walletConnectors) => {
   try {
-    const sessionToTransactions = mapValues(walletConnectors, getTransactionForSession);
-    const transactionValues = await Promise.all(values(sessionToTransactions));
-    return assign({}, ...transactionValues);
+    const sessionToRequests = mapValues(walletConnectors, getRequestsForSession);
+    const requestValues = await Promise.all(values(sessionToRequests));
+    return assign({}, ...requestValues);
   } catch (error) {
-    AlertIOS.alert('Error fetching all transactions from open WalletConnect sessions.');
+    AlertIOS.alert('Error fetching all requests from open WalletConnect sessions.');
     return {};
   }
 };
 
-export const walletConnectGetTransaction = async (callId, walletConnector) => {
+export const walletConnectGetRequest = async (callId, walletConnector) => {
   try {
     if (walletConnector) {
-      const { dappName } = walletConnector;
       const callData = await walletConnector.getCallRequest(callId);
-      return {
-        callData: get(callData, 'data.params[0]', null),
-        dappName,
-      };
+      return get(callData, 'data');
     }
     return null;
   } catch (error) {
@@ -106,18 +102,18 @@ export const walletConnectGetTransaction = async (callId, walletConnector) => {
   }
 };
 
-export const walletConnectSendTransactionHash = async (walletConnector, callId, success, txHash) => {
+export const walletConnectSendStatus = async (walletConnector, callId, result) => {
   if (walletConnector) {
     try {
-      if (success) {
-        await walletConnector.approveCallRequest(callId, { result: txHash });
+      if (result) {
+        await walletConnector.approveCallRequest(callId, { result });
       } else {
         await walletConnector.rejectCallRequest(callId);
       }
     } catch (error) {
-      AlertIOS.alert('Failed to send transaction status to WalletConnect.');
+      AlertIOS.alert('Failed to send request status to WalletConnect.');
     }
   } else {
-    AlertIOS.alert('WalletConnect session has expired while trying to send transaction hash. Please reconnect.');
+    AlertIOS.alert('WalletConnect session has expired while trying to send request status. Please reconnect.');
   }
 };

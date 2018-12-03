@@ -7,7 +7,7 @@ import {
   formatInputDecimals,
   fromWei,
 } from 'balance-common';
-import { mapValues, omit } from 'lodash';
+import { get, mapValues, omit } from 'lodash';
 import {
   getAccountLocalRequests,
   removeLocalRequest,
@@ -49,6 +49,26 @@ export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => 
   return _nativeAmount;
 };
 
+const getRequestDisplayDetails = (callData, assets, prices, nativeCurrency) => {
+  if (callData.method === 'eth_sendTransaction') {
+    const transaction = get(callData, 'params[0]', null);
+    return getTransactionDisplayDetails(transaction, assets, prices, nativeCurrency);
+  } else if (callData.method === 'eth_sign') {
+    const message = get(callData, 'params[1]');
+    return getMessageDisplayDetails(message);
+  }
+  return null;
+};
+
+const getMessageDisplayDetails = (message) => {
+  const timestampInMs = Date.now();
+  return {
+    type: 'message',
+    message,
+    timestampInMs,
+  };
+};
+
 const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrency) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
   const timestampInMs = Date.now();
@@ -69,6 +89,7 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
       nonce: Number(convertHexToString(transaction.nonce)),
       timestampInMs,
       to: transaction.to,
+      type: 'transaction',
       value,
     };
   } else if (transaction.data.startsWith(tokenTransferHash)) {
@@ -88,6 +109,7 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
       nonce: Number(convertHexToString(transaction.nonce)),
       timestampInMs,
       to: toAddress,
+      type: 'transaction',
       value,
     };
   }
@@ -99,7 +121,7 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
 export const addTransactionToApprove = (sessionId, callId, callData, dappName) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
   const { accountInfo, accountAddress, network, prices, nativeCurrency } = getState().account;
-  const transactionDisplayDetails = getTransactionDisplayDetails(callData, accountInfo.assets, prices, nativeCurrency);
+  const transactionDisplayDetails = getRequestDisplayDetails(callData, accountInfo.assets, prices, nativeCurrency);
   const transaction = { sessionId, callId, callData, transactionDisplayDetails, dappName };
   const updatedTransactions = { ...transactionsToApprove, [callId]: transaction };
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
@@ -111,7 +133,7 @@ export const addTransactionsToApprove = (transactions) => (dispatch, getState) =
   const { transactionsToApprove } = getState().transactionsToApprove;
   const { accountInfo, accountAddress, network, prices, nativeCurrency } = getState().account;
   const transactionsWithDisplayDetails = mapValues(transactions, (transactionDetails) => {
-    const transactionDisplayDetails = getTransactionDisplayDetails(transactionDetails.callData, accountInfo.assets, prices, nativeCurrency);
+    const transactionDisplayDetails = getRequestDisplayDetails(transactionDetails.callData, accountInfo.assets, prices, nativeCurrency);
     return { ...transactionDetails, transactionDisplayDetails };
   });
   const updatedTransactions = { ...transactionsToApprove, ...transactionsWithDisplayDetails };
