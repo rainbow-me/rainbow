@@ -80,20 +80,11 @@ export default compose(
     };
   }),
   withHandlers({
-    onPressOpen: ({ item, navigation }) => () => {
-      const methodType = get(item, 'transactionDisplayDetails.type');
-      if (methodType === 'transaction') {
-        navigation.navigate({
-          params: { transactionDetails: item },
-          routeName: 'ConfirmTransaction',
-        })
-      } else {
-        navigation.navigate({
-          params: { transactionDetails: item },
-          routeName: 'SignMessage',
-        })
-      }
-    },
+    onPressOpen: ({ item, navigation }) => () =>
+      navigation.navigate({
+        params: { transactionDetails: item },
+        routeName: 'ConfirmRequest',
+      }),
   }),
   onlyUpdateForKeys(['expirationColor', 'percentElapsed']),
 )(RequestCoinRow);

@@ -69,7 +69,7 @@ class App extends Component {
       const navState = get(this.navigatorRef, 'state.nav');
       const route = Navigation.getActiveRouteName(navState);
       const { callId, sessionId } = notification.data;
-      if (route === 'ConfirmTransaction') {
+      if (route === 'ConfirmRequest') {
         this.fetchAndAddWalletConnectRequest(callId, sessionId)
           .then(transaction => {
             const localNotification = new firebase.notifications.Notification()
@@ -141,19 +141,10 @@ class App extends Component {
 
   handleOpenConfirmTransactionModal = (transactionDetails) => {
     if (!this.navigatorRef) return;
-    const requestType = get(transactionDetails, 'transactionDisplayDetails.type');
-    let action = null;
-    if (requestType === 'message') {
-      action = NavigationActions.navigate({
-        routeName: 'SignMessage',
-        params: { transactionDetails },
-      });
-    } else {
-      action = NavigationActions.navigate({
-        routeName: 'ConfirmTransaction',
-        params: { transactionDetails },
-      });
-    }
+    const action = NavigationActions.navigate({
+      routeName: 'ConfirmRequest',
+      params: { transactionDetails },
+    });
     Navigation.handleAction(this.navigatorRef, action);
   }
 

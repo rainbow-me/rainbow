@@ -63,9 +63,9 @@ const getRequestDisplayDetails = (callData, assets, prices, nativeCurrency) => {
 const getMessageDisplayDetails = (message) => {
   const timestampInMs = Date.now();
   return {
-    type: 'message',
-    message,
+    payload: message,
     timestampInMs,
+    type: 'message',
   };
 };
 
@@ -76,21 +76,23 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
     const value = fromWei(convertHexToString(transaction.value));
     const nativeAmount = getNativeAmount(prices, nativeCurrency, value, 'ETH');
     return {
-      asset: {
-        address: null,
-        decimals: 18,
-        name: 'Ethereum',
-        symbol: 'ETH',
+      payload: {
+        asset: {
+          address: null,
+          decimals: 18,
+          name: 'Ethereum',
+          symbol: 'ETH',
+        },
+        from: transaction.from,
+        gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
+        gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
+        nativeAmount,
+        nonce: Number(convertHexToString(transaction.nonce)),
+        to: transaction.to,
+        value,
       },
-      from: transaction.from,
-      gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
-      gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
-      nativeAmount,
-      nonce: Number(convertHexToString(transaction.nonce)),
       timestampInMs,
-      to: transaction.to,
       type: 'transaction',
-      value,
     };
   } else if (transaction.data.startsWith(tokenTransferHash)) {
     const contractAddress = transaction.to;
@@ -101,16 +103,18 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
     const value = fromWei(convertHexToString(amount), asset.decimals);
     const nativeAmount = getNativeAmount(prices, nativeCurrency, value, asset.symbol);
     return {
-      asset,
-      from: transaction.from,
-      gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
-      gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
-      nativeAmount,
-      nonce: Number(convertHexToString(transaction.nonce)),
+      payload: {
+        asset,
+        from: transaction.from,
+        gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
+        gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
+        nativeAmount,
+        nonce: Number(convertHexToString(transaction.nonce)),
+        to: toAddress,
+        value,
+      },
       timestampInMs,
-      to: toAddress,
       type: 'transaction',
-      value,
     };
   }
 
