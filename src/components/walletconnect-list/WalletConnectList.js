@@ -1,11 +1,11 @@
-import { get } from 'lodash';
+import { get, pickBy, values } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FlatList } from 'react-native';
 import { compose, onlyUpdateForPropTypes, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withWalletConnectConnections, withSafeAreaViewInsetValues } from '../../hoc';
-import { walletConnectDisconnect } from '../../model/walletconnect';
+import { walletConnectDisconnectAll } from '../../model/walletconnect';
 import { borders, colors, shadow } from '../../styles';
 import { Column } from '../layout';
 import WalletConnectListItem from './WalletConnectListItem';
@@ -40,7 +40,7 @@ const WalletConnectList = ({
       renderItem={({ index, item }) => (
         <WalletConnectListItem
           {...item}
-          key={get(item, '_sessionId', index)}
+          key={get(item, 'dappName', index)}
           onPress={onHandleDisconnectAlert}
         />
       )}
@@ -62,19 +62,20 @@ export default compose(
   withSafeAreaViewInsetValues,
   withWalletConnectConnections,
   withHandlers({
-    onHandleDisconnectAlert: ({ getValidWalletConnectors, removeWalletConnector }) => (sessionId) => {
+    onHandleDisconnectAlert: ({ getValidWalletConnectors, removeWalletConnectorByDapp }) => (dappName) => {
       showActionSheetWithOptions({
         cancelButtonIndex: 1,
         destructiveButtonIndex: 0,
         options: ['Disconnect', 'Cancel'],
-        title: 'Would you like to disconnect your session?',
+        title: `Would you like to disconnect from ${dappName}?`,
       }, (buttonIndex) => {
         if (buttonIndex === 0) {
-          console.log('disconnecting!!', sessionId);
-          const walletConnectors = getValidWalletConnectors();
-          return walletConnectDisconnect(
-            walletConnectors[sessionId]
-          ).then(() => removeWalletConnector(sessionId));
+          const validSessions = getValidWalletConnectors();
+          const dappSessions = values(pickBy(validSessions, (session) => session.dappName === dappName));
+          walletConnectDisconnectAll(dappSessions)
+          .then(() => {
+            removeWalletConnectorByDapp(dappName);
+          });
         }
       });
     }
