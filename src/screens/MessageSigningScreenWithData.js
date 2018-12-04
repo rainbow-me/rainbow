@@ -12,7 +12,6 @@ import MessageSigningScreen from './MessageSigningScreen';
 
 class MessageSigningScreenWithData extends Component {
   static propTypes = {
-    accountUpdateTransactions: PropTypes.func,
     navigation: PropTypes.any,
     removeTransaction: PropTypes.func,
     walletConnectors: PropTypes.object,
@@ -32,7 +31,6 @@ class MessageSigningScreenWithData extends Component {
 
     if (flatFormatSignature) {
       const txDetails = { message };
-      //this.props.accountUpdateTransactions(txDetails); // TODO: how to display transactions for signed message
       this.props.removeTransaction(transactionDetails.callId);
       const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
       await walletConnectSendStatus(walletConnector, transactionDetails.callId, flatFormatSignature);
