@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import { AlertIOS, StatusBar, Vibration } from 'react-native';
 import Piwik from 'react-native-matomo';
 import { withTransactionConfirmationScreen } from '../hoc';
-import { sendTransaction } from '../model/wallet';
+import { signMessage, sendTransaction } from '../model/wallet';
 import { walletConnectSendStatus } from '../model/walletconnect';
 import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
@@ -40,34 +40,50 @@ class TransactionConfirmationScreenWithData extends Component {
     if (transactionHash) {
       this.props.updateTransactionCountNonce(maxTxnCount + 1);
       const txDetails = {
-        asset: get(transactionDetails, 'transactionDisplayDetails.asset'),
-        from: get(transactionDetails, 'transactionDisplayDetails.from'),
-        gasLimit: get(transactionDetails, 'transactionDisplayDetails.gasLimit'),
-        gasPrice: get(transactionDetails, 'transactionDisplayDetails.gasPrice'),
+        asset: get(transactionDetails, 'transactionDisplayDetails.payload.asset'),
+        from: get(transactionDetails, 'transactionDisplayDetails.payload.from'),
+        gasLimit: get(transactionDetails, 'transactionDisplayDetails.payload.gasLimit'),
+        gasPrice: get(transactionDetails, 'transactionDisplayDetails.payload.gasPrice'),
         hash: transactionHash,
-        nonce: get(transactionDetails, 'transactionDisplayDetails.nonce'),
-        to: get(transactionDetails, 'transactionDisplayDetails.to'),
-        value: get(transactionDetails, 'transactionDisplayDetails.value'),
+        nonce: get(transactionDetails, 'transactionDisplayDetails.payload.nonce'),
+        to: get(transactionDetails, 'transactionDisplayDetails.payload.to'),
+        value: get(transactionDetails, 'transactionDisplayDetails.payload.value'),
       };
       this.props.accountUpdateHasPendingTransaction();
       this.props.accountUpdateTransactions(txDetails);
       this.props.removeTransaction(transactionDetails.callId);
       const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
       await walletConnectSendStatus(walletConnector, transactionDetails.callId, transactionHash);
-      this.closeTransactionScreen();
+      this.closeScreen();
     } else {
       await this.handleCancelTransaction();
     }
   };
 
+  handleSignMessage = async () => {
+    const { transactionDetails } = this.props.navigation.state.params;
+    const message = get(transactionDetails, 'transactionDisplayDetails.payload');
+    const flatFormatSignature = await signMessage(message);
+
+    if (flatFormatSignature) {
+      const txDetails = { message };
+      this.props.removeTransaction(transactionDetails.callId);
+      const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
+      await walletConnectSendStatus(walletConnector, transactionDetails.callId, flatFormatSignature);
+      this.closeScreen();
+    } else {
+      await this.handleCancelSignMessage();
+    }
+  };
+
   sendFailedTransactionStatus = async () => {
     try {
-      this.closeTransactionScreen();
+      this.closeScreen();
       const { transactionDetails } = this.props.navigation.state.params;
       const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
       await walletConnectSendStatus(walletConnector, transactionDetails.callId, null);
     } catch (error) {
-      this.closeTransactionScreen();
+      this.closeScreen();
       AlertIOS.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
     }
   }
@@ -78,12 +94,12 @@ class TransactionConfirmationScreenWithData extends Component {
       const { transactionDetails } = this.props.navigation.state.params;
       this.props.removeTransaction(transactionDetails.callId);
     } catch (error) {
-      this.closeTransactionScreen();
+      this.closeScreen();
       AlertIOS.alert('Failed to send rejected transaction status');
     }
   }
 
-  closeTransactionScreen = () => {
+  closeScreen = () => {
     StatusBar.setBarStyle('dark-content', true);
     this.props.navigation.goBack();
   }
@@ -93,26 +109,20 @@ class TransactionConfirmationScreenWithData extends Component {
       transactionDetails: {
         dappName,
         transactionDisplayDetails: {
-          asset,
-          nativeAmount,
-          to,
-          value,
-        },
-      },
+          type,
+          payload,
+        }
+      }
     } = this.props.navigation.state.params;
 
     return (
       <TransactionConfirmationScreen
-        asset={{
-          address: to,
-          amount: value || '0.00',
-          dappName: dappName || '',
-          name: asset.name || 'No data',
-          nativeAmount,
-          symbol: asset.symbol || 'N/A',
-        }}
+        dappName={dappName || ''}
+        request={payload}
+        requestType={type}
         onCancelTransaction={this.handleCancelTransaction}
         onConfirmTransaction={this.handleConfirmTransaction}
+        onSignMessage={this.handleSignMessage}
       />
     );
   }

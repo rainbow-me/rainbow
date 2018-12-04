@@ -10,7 +10,6 @@ import SendQRScannerScreenWithData from './SendQRScannerScreenWithData';
 import SendScreenWithData from './SendScreenWithData';
 import SettingsScreenWithData from './SettingsScreenWithData';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
-import MessageSigningScreenWithData from './MessageSigningScreenWithData';
 import WalletScreen from './WalletScreen';
 import { deviceUtils } from '../utils';
 import store from '../redux/store';
@@ -49,8 +48,7 @@ const AppStack = createStackNavigator({
     },
     screen: ActivityScreen,
   },
-  ConfirmTransaction: TransactionConfirmationScreenWithData,
-  SignMessage: MessageSigningScreenWithData,
+  ConfirmRequest: TransactionConfirmationScreenWithData,
   ExpandedAssetScreen: {
     navigationOptions: {
       effect: 'expanded',
