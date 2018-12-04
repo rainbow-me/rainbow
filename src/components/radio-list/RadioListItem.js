@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { compose, setPropTypes, withHandlers } from 'recompact';
 import styled from 'styled-components';
 import { colors, position } from '../../styles';
 import Icon from '../icons/Icon';
 import { Centered } from '../layout';
-import { TouchableRow } from '../touchable-row';
+import { ListItem } from '../list';
 
 const CheckmarkSize = 20;
 const Checkmark = styled(Icon).attrs({
@@ -19,17 +20,22 @@ const CheckmarkContainer = styled(Centered)`
   flex-shrink: 0;
 `;
 
-const RadioListItem = ({ selected, ...props }) => (
-  <TouchableRow {...props}>
+const RadioListItem = ({ onPress, selected, ...props }) => (
+  <ListItem onPress={onPress} {...props}>
     <CheckmarkContainer>
       {selected && <Checkmark />}
     </CheckmarkContainer>
-  </TouchableRow>
+  </ListItem>
 );
 
-RadioListItem.propTypes = {
-  ...TouchableRow.propTypes,
-  selected: PropTypes.bool,
-};
-
-export default RadioListItem;
+export default compose(
+  setPropTypes({
+    ...ListItem.propTypes,
+    onPress: PropTypes.func.isRequired,
+    selected: PropTypes.bool,
+    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+  }),
+  withHandlers({
+    onPress: ({ onPress, value }) => () => onPress(value),
+  }),
+)(RadioListItem);

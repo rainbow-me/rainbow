@@ -5,6 +5,7 @@ import ActivityScreen from './ActivityScreen';
 import ExpandedAssetScreen from './ExpandedAssetScreen';
 import IntroScreen from './IntroScreen';
 import LoadingScreen from './LoadingScreen';
+import NewSettingsScreen from './NewSettingsScreen';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
 import SendQRScannerScreenWithData from './SendQRScannerScreenWithData';
 import SendScreenWithData from './SendScreenWithData';
@@ -16,6 +17,9 @@ import store from '../redux/store';
 import { updateTransitionProps } from '../redux/navigation';
 
 import Navigation from '../navigation';
+
+const onSwipeEndSwipeStack = navigation => Navigation.resumeNavigationActions(navigation);
+const onSwipeStartSwipeStack = () => Navigation.pauseNavigationActions();
 
 const SwipeStack = createSwipeNavigator({
   ProfileScreen: {
@@ -36,8 +40,8 @@ const SwipeStack = createSwipeNavigator({
 }, {
   headerMode: 'none',
   initialRouteName: 'WalletScreen',
-  onSwipeStart: () => Navigation.pauseNavigationActions(),
-  onSwipeEnd: (navigation) => Navigation.resumeNavigationActions(navigation),
+  onSwipeEnd: onSwipeEndSwipeStack,
+  onSwipeStart: onSwipeStartSwipeStack,
 });
 
 const AppStack = createStackNavigator({
@@ -61,6 +65,13 @@ const AppStack = createStackNavigator({
   SendScreen: SendScreenWithData,
   SendQRScannerScreen: SendQRScannerScreenWithData,
   SwipeLayout: SwipeStack,
+  SettingsModal: {
+    navigationOptions: {
+      effect: 'expanded',
+      gesturesEnabled: false,
+    },
+    screen: NewSettingsScreen,
+  },
 }, {
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',

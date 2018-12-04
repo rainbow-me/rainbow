@@ -2,19 +2,19 @@ import { PropTypes } from 'prop-types';
 import React from 'react';
 import Divider from '../Divider';
 
-const TouchableRowDivider = ({ inset }) => (
+const ListItemDivider = ({ inset }) => (
   <Divider
     insetLeft={inset}
     insetRight={inset}
   />
 );
 
-TouchableRowDivider.propTypes = {
+ListItemDivider.propTypes = {
   inset: PropTypes.number,
 };
 
-TouchableRowDivider.defaultProps = {
+ListItemDivider.defaultProps = {
   inset: 16,
 };
 
-export default TouchableRowDivider;
+export default ListItemDivider;

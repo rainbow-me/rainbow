@@ -1,47 +1,50 @@
 import { resources, supportedLanguages } from 'balance-common';
-import { get, pickBy } from 'lodash';
+import { get, keys, pickBy } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React from 'react';
+import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { withAccountSettings } from '../../hoc';
-import { OptionList, OptionListItem } from '../option-list';
+import { RadioList, RadioListItem } from '../radio-list';
 
 // Only show languages that have 'wallet' translations available.
-const hasWalletTranslation = language => get(language, 'translation.wallet');
-const filteredSupportedLanguages = pickBy(resources, hasWalletTranslation);
-const languageItems = Object.keys(filteredSupportedLanguages).map(code => ({
+const hasWalletTranslations = language => get(language, 'translation.wallet');
+const languagesWithWalletTranslations = keys(pickBy(resources, hasWalletTranslations));
+
+const languageListItems = languagesWithWalletTranslations.map(code => ({
   code,
+  key: code,
   language: supportedLanguages[code],
+  value: code,
 }));
 
-class LanguageSection extends PureComponent {
-  static propTypes = {
-    accountChangeLanguage: PropTypes.func.isRequired,
-    language: PropTypes.string,
-  }
+const renderLanguageListItem = ({ code, language, ...item }) => (
+  <RadioListItem
+    {...item}
+    label={language}
+    value={code}
+  />
+);
 
-  state = { selected: this.props.language }
+const LanguageSection = ({ language, onSelectLanguage }) => (
+  <RadioList
+    extraData={language}
+    items={languageListItems}
+    onChange={onSelectLanguage}
+    renderItem={renderLanguageListItem}
+    value={language}
+  />
+);
 
-  onSelectLanguage = (language) => () => {
-    this.setState({ selected: language });
-    this.props.accountChangeLanguage(language);
-  }
+LanguageSection.propTypes = {
+  language: PropTypes.string,
+  onSelectLanguage: PropTypes.func.isRequired,
+};
 
-  renderListItem = ({ item: { code, language } }) => (
-    <OptionListItem
-      key={code}
-      label={language}
-      onPress={this.onSelectLanguage(code)}
-      selected={this.state.selected === code}
-    />
-  )
-
-  render = () => (
-    <OptionList
-      extraData={this.state}
-      items={languageItems}
-      renderItem={this.renderListItem}
-    />
-  )
-}
-
-export default withAccountSettings(LanguageSection);
+export default compose(
+  withAccountSettings,
+  withHandlers({
+    onSelectLanguage: ({ accountChangeLanguage }) => (language) =>
+      accountChangeLanguage(language),
+  }),
+  onlyUpdateForKeys(['language']),
+)(LanguageSection);
