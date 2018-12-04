@@ -1,84 +1,59 @@
 import React from 'react';
-import { Linking, TouchableOpacity, Image } from 'react-native';
+import { Linking, ScrollView, TouchableOpacity } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import { withNavigation } from 'react-navigation';
+import { compose, withHandlers } from 'recompact';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-import { Column, Row } from '../layout';
-import { Text } from '../text';
+import { Centered, Column, FlexItem, Row } from '../layout';
+import { Emoji, Text } from '../text';
 import Icon from '../icons/Icon';
 import { LANGUAGES } from '../../utils/constants';
-import { colors, padding } from '../../styles';
+import { colors, fonts, margin, padding, position } from '../../styles';
 
 import BackupIcon from '../../assets/backup-icon.png';
 import CurrencyIcon from '../../assets/currency-icon.png';
 import LanguageIcon from '../../assets/language-icon.png';
 import SecurityIcon from '../../assets/security-icon.png';
 
+import { ListFooter, ListItem, ListItemDivider, SectionList } from '../list';
+
 // ======================================================================
 // Styles
 // ======================================================================
 
-const SettingGroup = styled(Column)`
-  margin-bottom: 26;
-`;
-
-const SettingRow = styled(Row).attrs({
-  align: 'center',
-  justify: 'start',
-})`
-  align-self: stretch;
-  ${padding(14, 0)};
-`;
-
-// NOTE:
-// I was having issues getting :last-child to properly
-// remove borders, so I'm using `props.border` as a workaround.
-// @hoodsy
-const SettingButton = styled(TouchableOpacity)`
-  border-bottom-width: ${({ border }) => (border ? 1 : 0)};
-  border-bottom-color: ${colors.lightGrey};
-`;
-
-const PrimarySettingRow = styled(SettingRow)`
-  ${padding(10, 0)};
-`;
-
-const SettingRowIcon = styled(Image)`
-  width: 44;
-  height: 44;
+// Beware: magic numbers lol
+const SettingIcon = styled(FastImage)`
+  ${position.size(44)};
   margin-left: -6;
-  margin-right: 3;
-  margin-bottom: -9;
+  margin-right: -6;
+  margin-top: 6.5;
 `;
 
-const SettingRowLabel = styled(Text).attrs({
-  size: 'h5',
-})``;
+const ArrowGroup = ({ children }) => (
+  <Row align="center" justify="end" style={{ opacity: 0.6 }}>
+    <Text color="blueGreyDark" size="bmedium" style={{ marginRight: 6 }}>
+      {children}
+    </Text>
+    <Icon
+      color={colors.blueGreyDark}
+      name="caretThin"
+      style={{ width: 11 }}
+    />
+  </Row>
+);
 
-const SettingArrowGroup = styled(Row).attrs({
-  align: 'center',
-  justify: 'center',
-})`
-  margin-left: auto;
-  opacity: 0.6;
-`;
+ArrowGroup.propTypes = {
+  children: PropTypes.node,
+};
 
-const SettingRowValue = styled(Text).attrs({
-  size: 'h5',
-  color: colors.blueGreyDark,
-})`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  margin-right: 6;
-`;
 
-const SettingRowArrow = styled(Icon).attrs({
-  name: 'caretThin',
-  color: colors.blueGreyDark,
-})``;
+  // display: flex;
+  // flex-direction: row;
+  // justify-content: center;
+  // align-items: center;
+
 
 const BackupRowIcon = styled(Icon).attrs({
   name: 'checkmarkCircled',
@@ -87,123 +62,107 @@ const BackupRowIcon = styled(Icon).attrs({
   margin-bottom: -5;
 `;
 
-const SettingRowEmoji = styled(Text).attrs({
-  size: 'h5',
-})`
-  margin-right: 8;
-`;
+const URLs = {
+  ABOUT: 'https://balance.io/about',
+  FEEDBACK: 'support@balance.io',
+  LEGAL: 'https://github.com/balance-io/balance-wallet/blob/master/LICENSE',
+};
 
 // ======================================================================
 // Component
 // ======================================================================
 
-class SettingsSection extends React.Component {
-  webviews = {
-    ABOUT: 'https://balance.io/about',
-    FEEDBACK: 'support@balance.io',
-    LEGAL: 'https://github.com/balance-io/balance-wallet/blob/master/LICENSE',
-  };
-
-  openWebView = uri => () => {
-    Linking.openURL(uri);
-    // this.props.navigation.navigate("WebView", { uri });
-  };
-
-  render() {
-    const {
-      language,
-      nativeCurrency,
-      onPressBackup,
-      onPressLanguage,
-      onPressCurrency,
-      onPressSecurity,
-    } = this.props;
-    return (
-      <Column>
-        <SettingGroup>
-          <SettingButton border onPress={onPressBackup}>
-            <PrimarySettingRow>
-              <SettingRowIcon source={BackupIcon} />
-              <SettingRowLabel>Backup</SettingRowLabel>
-              <SettingArrowGroup>
-                <SettingRowValue>
-                  <BackupRowIcon />
-                </SettingRowValue>
-                <SettingRowArrow />
-              </SettingArrowGroup>
-            </PrimarySettingRow>
-          </SettingButton>
-
-          <SettingButton border onPress={onPressCurrency}>
-            <PrimarySettingRow>
-              <SettingRowIcon source={CurrencyIcon} />
-              <SettingRowLabel>Currency</SettingRowLabel>
-              <SettingArrowGroup>
-                <SettingRowValue>{nativeCurrency || ''}</SettingRowValue>
-                <SettingRowArrow />
-              </SettingArrowGroup>
-            </PrimarySettingRow>
-          </SettingButton>
-
-          <SettingButton onPress={onPressLanguage}>
-            <PrimarySettingRow>
-              <SettingRowIcon source={LanguageIcon} />
-              <SettingRowLabel>Language</SettingRowLabel>
-              <SettingArrowGroup>
-                <SettingRowValue>{LANGUAGES[language] || ''}</SettingRowValue>
-                <SettingRowArrow />
-              </SettingArrowGroup>
-            </PrimarySettingRow>
-          </SettingButton>
-
-          {/*
-            <SettingButton onPress={onPressSecurity}>
-            <PrimarySettingRow>
-              <SettingRowIcon source={SecurityIcon} />
-              <SettingRowLabel>Security</SettingRowLabel>
-              <SettingArrowGroup>
-                <SettingRowArrow />
-              </SettingArrowGroup>
-            </PrimarySettingRow>
-          </SettingButton>
-        */}
-        </SettingGroup>
-
-        <SettingGroup>
-          <SettingButton onPress={this.openWebView(this.webviews.ABOUT)} border>
-            <SettingRow>
-              <SettingRowEmoji>⚖</SettingRowEmoji>
-              <SettingRowLabel>About Balance</SettingRowLabel>
-            </SettingRow>
-          </SettingButton>
-          <SettingButton
-            onPress={this.openWebView(this.webviews.FEEDBACK)}
-            border
-          >
-            <SettingRow>
-              <SettingRowEmoji>❤️</SettingRowEmoji>
-              <SettingRowLabel>Leave Feedback️</SettingRowLabel>
-            </SettingRow>
-          </SettingButton>
-          <SettingButton onPress={this.openWebView(this.webviews.LEGAL)}>
-            <SettingRow>
-              <SettingRowEmoji>📃</SettingRowEmoji>
-              <SettingRowLabel>Legal</SettingRowLabel>
-            </SettingRow>
-          </SettingButton>
-        </SettingGroup>
-      </Column>
-    );
-  }
-}
+const SettingsSection = ({
+  language,
+  nativeCurrency,
+  onPressBackup,
+  onPressCurrency,
+  onPressLanguage,
+  onPressSecurity,
+  openWebView,
+  ...props,
+}) => (
+  <ScrollView style={position.coverAsObject}>
+    <Column style={{ marginTop: 8 }}>
+      <ListItem
+        icon={<SettingIcon source={BackupIcon} />}
+        onPress={onPressBackup}
+        label="Backup"
+      >
+        <ArrowGroup>
+          <BackupRowIcon />
+        </ArrowGroup>
+      </ListItem>
+      <ListItemDivider />
+      <ListItem
+        icon={<SettingIcon source={CurrencyIcon} />}
+        onPress={onPressCurrency}
+        label="Currency"
+      >
+        <ArrowGroup>
+          {nativeCurrency || ''}
+        </ArrowGroup>
+      </ListItem>
+      <ListItemDivider />
+      <ListItem
+        icon={<SettingIcon source={LanguageIcon} />}
+        onPress={onPressLanguage}
+        label="Language"
+      >
+        <ArrowGroup>
+          {LANGUAGES[language] || ''}
+        </ArrowGroup>
+      </ListItem>
+    {/*
+        <ListItemDivider />
+        <ListItem
+          icon={<SettingIcon source={SecurityIcon} />}
+          onPress={onPressSecurity}
+          label="Security"
+        >
+          <ArrowGroup />
+        </ListItem>
+    */}
+    </Column>
+    <ListFooter />
+    <Column>
+      <ListItem
+        icon={<Emoji name="scales" />}
+        label="About Balance"
+        onPress={openWebView}
+        value={URLs.ABOUT}
+      />
+      <ListItemDivider />
+      <ListItem
+        icon={<Emoji name="heart" />}
+        label="Leave Feedback️"
+        onPress={openWebView}
+        value={URLs.FEEDBACK}
+      />
+      <ListItemDivider />
+      <ListItem
+        icon={<Emoji name="page_with_curl" />}
+        label="Legal"
+        onPress={openWebView}
+        value={URLs.LEGAL}
+      />
+    </Column>
+  </ScrollView>
+);
 
 SettingsSection.propTypes = {
-  nativeCurrency: PropTypes.string.isRequired,
   language: PropTypes.string.isRequired,
+  nativeCurrency: PropTypes.string.isRequired,
   navigation: PropTypes.object.isRequired,
   onPressBackup: PropTypes.func.isRequired,
   onPressCurrency: PropTypes.func.isRequired,
   onPressLanguage: PropTypes.func.isRequired,
+  openWebView: PropTypes.func,
 };
 
-export default withNavigation(SettingsSection);
+export default compose(
+  // withNavigation,
+  withHandlers({
+    openWebView: () => (uri) => Linking.openURL(uri),
+  }),
+)(SettingsSection);

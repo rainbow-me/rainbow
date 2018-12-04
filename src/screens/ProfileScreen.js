@@ -17,6 +17,7 @@ import { colors, fonts, padding, position } from '../styles';
 import { deviceUtils } from '../utils';
 import { SettingsMenu } from '../components/settings-menu';
 import { ActivityList } from '../components/activity-list';
+import BlurOverlay from '../components/BlurOverlay';
 
 const ProfileScreen = ({
   accountAddress,
@@ -27,6 +28,7 @@ const ProfileScreen = ({
   transactions,
   transactionsCount,
   requests,
+  transitionProps,
   overlayOpacity,
   settingsVisible,
   hasPendingTransaction,
@@ -35,8 +37,26 @@ const ProfileScreen = ({
   // allow navigation to any Settings section via navigation.params
   const settingsSection = navigation.getParam('settingsSection', 'Settings');
 
+    const {
+      effect,
+      isTransitioning,
+      position: transPosition,
+    } = transitionProps;
+
+    const showBlur = effect === 'expanded' && (isTransitioning || transPosition._value > 0);
+    const blurOpacity = transPosition.interpolate({
+      inputRange: [0, 0.01, 1],
+      outputRange: [0, 1, 1],
+    });
+
   return (
     <Page component={FlexItem} style={position.sizeAsObject('100%')}>
+      {showBlur && (
+        <BlurOverlay
+          blurType="light"
+          opacity={blurOpacity}
+        />
+      )}
       <Header justify="space-between">
         <HeaderButton onPress={onShowSettingsOverlay}>
           <Icon name="gear" />
@@ -46,22 +66,13 @@ const ProfileScreen = ({
           onPress={onPressBackButton}
         />
       </Header>
-
       <ActivityList
-        header={<ProfileMasthead accountAddress={accountAddress} />}
         accountAddress={accountAddress}
         hasPendingTransaction={hasPendingTransaction}
+        header={<ProfileMasthead accountAddress={accountAddress} />}
         requests={requests}
         transactions={transactions}
         transactionsCount={transactionsCount}
-      />
-
-      <SettingsMenu
-        overlayOpacity={overlayOpacity}
-        modalYPosition={modalYPosition}
-        section={settingsSection}
-        visible={settingsVisible}
-        onPressClose={onHideSettingsOverlay}
       />
     </Page>
   );
@@ -79,3 +90,13 @@ ProfileScreen.propTypes = {
 };
 
 export default ProfileScreen;
+
+
+
+      // <SettingsMenu
+      //   overlayOpacity={overlayOpacity}
+      //   modalYPosition={modalYPosition}
+      //   section={settingsSection}
+      //   visible={settingsVisible}
+      //   onPressClose={onHideSettingsOverlay}
+      // />

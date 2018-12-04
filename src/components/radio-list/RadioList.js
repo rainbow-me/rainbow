@@ -1,46 +1,41 @@
-// import { PropTypes } from 'prop-types';
-// import React from 'react';
-// import { FlatList } from 'react-native';
-// import Divider from '../Divider';
-// // import { Column } from '../layout';
-// import OptionListItem from './OptionListItem';
-// import { TouchableRowList } from '../touchable-row';
+import { PropTypes } from 'prop-types';
+import React, { createElement, PureComponent } from 'react';
+import { List } from '../list';
+import RadioListItem from './RadioListItem';
 
-// const getItemLayout = (data, index) => ({
-//   index,
-//   length: OptionListItem.height,
-//   offset: OptionListItem.height * index,
-// });
+export default class RadioList extends PureComponent {
+  static propTypes = {
+    items: PropTypes.arrayOf(PropTypes.shape({
+      value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+    })),
+    onChange: PropTypes.func,
+    renderItem: PropTypes.func,
+  }
 
+  static defaultProps = {
+    renderItem: RadioListItem,
+  }
 
-// const OptionList = ({ items, renderItem, ...props }) => (
-//   console.log('options list itesm', items),
-//   console.log('options list renderitem', renderItem),
-//   <TouchableRowList
-//     keyExtractor={keyExtractor}
-//     removeClippedSubviews
-//     renderItem={renderItem}
-//     scrollEventThrottle={16}
-//     {...props}
-//   />
-// );
+  state = { selected: this.props.value }
 
-// OptionList.propTypes = {
-//   items: PropTypes.arrayOf(PropTypes.object),
-//   renderItem: PropTypes.func,
-// };
+  handleChange = selected =>
+    this.setState({ selected }, () => {
+      if (this.props.onChange) {
+        this.props.onChange(selected);
+      }
+    })
 
-// OptionList.defaultProps = {
-//   renderItem: OptionListItem,
-// };
+  renderItem = ({ item }) =>
+    createElement(this.props.renderItem, {
+      ...item,
+      onPress: this.handleChange,
+      selected: item.value === this.state.selected,
+    })
 
-// export default OptionList;
-
-// // compose(
-// //   withHandlers({
-
-// //   }),
-// //   withProps({
-
-// //   }),
-// // )();
+  render = () => (
+    <List
+      {...this.props}
+      renderItem={this.renderItem}
+    />
+  )
+}

@@ -1,17 +1,17 @@
 import { PropTypes } from 'prop-types';
 import React from 'react';
 import { FlatList } from 'react-native';
-import TouchableRow from './TouchableRow';
-import TouchableRowDivider from './TouchableRowDivider';
+import ListItem from './ListItem';
+import ListItemDivider from './ListItemDivider';
 
-const getItemLayout = (data, index) => ({
+const getListItemLayout = (data, index) => ({
   index,
-  length: TouchableRow.height,
-  offset: TouchableRow.height * index,
+  length: ListItem.height,
+  offset: ListItem.height * index,
 });
 
-    // keyExtractor={keyExtractor}
-const TouchableRowList = ({
+const List = ({
+  getItemLayout,
   items,
   renderItem,
   ...props
@@ -19,7 +19,7 @@ const TouchableRowList = ({
   <FlatList
     data={items}
     getItemLayout={getItemLayout}
-    ItemSeparatorComponent={TouchableRowDivider}
+    ItemSeparatorComponent={ListItemDivider}
     removeClippedSubviews
     renderItem={renderItem}
     scrollEventThrottle={16}
@@ -27,12 +27,16 @@ const TouchableRowList = ({
   />
 );
 
-TouchableRowList.propTypes = {
+List.propTypes = {
+  getItemLayout: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({
     key: PropTypes.string.isRequired,
   })).isRequired,
-  keyExtractor: PropTypes.func.isRequired,
   renderItem: PropTypes.func.isRequired,
 };
 
-export default TouchableRowList;
+List.defaultProps = {
+  getItemLayout: getListItemLayout,
+};
+
+export default List;

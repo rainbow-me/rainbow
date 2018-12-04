@@ -1,24 +1,27 @@
-import { supportedNativeCurrencies } from 'balance-common';
+import { supportedNativeCurrencies as currencies } from 'balance-common';
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
-import Emoji from 'react-native-emoji';
+import React from 'react';
+import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
+import styled from 'styled-components/primitives';
 import { withAccountSettings } from '../../hoc';
+import { fonts } from '../../styles';
 import { CoinIcon } from '../coin-icon';
-import { OptionList, OptionListItem } from '../option-list';
+import { RadioList, RadioListItem } from '../radio-list';
+import { Emoji } from '../text';
 
-const FlagEmoji = props => (
-  <Emoji
-    {...props}
-    style={{ fontSize: 20, lineHeight: 0 }}
-  />
-);
+const currencyListItems = Object.values(currencies).map(({ currency, ...item }) => ({
+  ...item,
+  currency,
+  key: currency,
+  value: currency,
+}));
 
 const renderCurrencyIcon = (currency) => {
   if (!currency) return null;
 
-  if (currency === 'EUR') return <FlagEmoji name="flag-eu" />;
-  if (currency === 'GBP') return <FlagEmoji name="gb" />;
-  if (currency === 'USD') return <FlagEmoji name="us" />;
+  if (currency === 'EUR') return <Emoji name="flag-eu" />;
+  if (currency === 'GBP') return <Emoji name="gb" />;
+  if (currency === 'USD') return <Emoji name="us" />;
 
   return (
     <CoinIcon
@@ -29,47 +32,36 @@ const renderCurrencyIcon = (currency) => {
   );
 };
 
-const CurrencyItems = Object.values(supportedNativeCurrencies).map((currency) => {
-  console.log('map currency', currency);
+const renderCurrencyListItem = ({ currency, label, ...item }) => (
+  <RadioListItem
+    {...item}
+    icon={renderCurrencyIcon(currency)}
+    label={`${label} (${currency})`}
+    value={currency}
+  />
+);
 
-  return currency;
-});
+const CurrencySection = ({ nativeCurrency, onSelectCurrency }) => (
+  <RadioList
+    extraData={nativeCurrency}
+    items={currencyListItems}
+    onChange={onSelectCurrency}
+    renderItem={renderCurrencyListItem}
+    value={nativeCurrency}
+  />
+);
 
-class CurrencySection extends PureComponent {
-  static propTypes = {
-    accountChangeNativeCurrency: PropTypes.func.isRequired,
-    nativeCurrency: PropTypes.oneOf(Object.keys(supportedNativeCurrencies)),
-  }
+CurrencySection.propTypes = {
+  nativeCurrency: PropTypes.oneOf(Object.keys(currencies)),
+  onSelectCurrency: PropTypes.func.isRequired,
+};
 
-  state = { selected: this.props.nativeCurrency }
+export default compose(
+  withAccountSettings,
+  withHandlers({
+    onSelectCurrency: ({ accountChangeNativeCurrency }) => (currency) =>
+      accountChangeNativeCurrency(currency),
+  }),
+  onlyUpdateForKeys(['nativeCurrency']),
+)(CurrencySection);
 
-  onSelectCurrency = (selectedCurrency) => () => {
-    this.props.accountChangeNativeCurrency(selectedCurrency);
-    this.setState({ selected: selectedCurrency });
-  }
-
-  renderListItem = ({ item: { currency, label } }) => (
-    <OptionListItem
-      icon={renderCurrencyIcon(currency)}
-      key={currency}
-      label={`${label} (${currency})`}
-      onPress={this.onSelectCurrency(currency)}
-      selected={this.state.selected === currency}
-    />
-  )
-
-  render = () => {
-    const items = CurrencyItems;
-    console.log('🤑️🤑️🤑️curreny list items', items);
-
-    return (
-      <OptionList
-        extraData={this.state}
-        items={items}
-        renderItem={this.renderListItem}
-      />
-    )
-  }
-}
-
-export default withAccountSettings(CurrencySection);
