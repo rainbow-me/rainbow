@@ -19,7 +19,7 @@
     "@tradle/react-native-http": "^2.0.0",
     "assert": "^1.4.1",
     "axios": "^0.18.0",
-    "balance-common": "git+https://github.com/balance-io/balance-common.git#wc-dapp",
+    "balance-common": "^0.6.3",
     "react-native-matomo": "git+https://github.com/BonifyByForteil/react-native-matomo.git",
     "browserify-zlib": "^0.1.4",
     "buffer": "^4.9.1",

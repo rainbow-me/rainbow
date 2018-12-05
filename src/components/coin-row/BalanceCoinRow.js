@@ -66,7 +66,7 @@ export default compose(
   withHandlers({
     onPress: ({ item: { symbol }, onPress }) => () => {
       if (onPress) {
-        Piwik.trackEvent('BalanceCoinRow', 'view-expanded');
+        Piwik.trackEvent('BalanceCoinRow', 'view-expanded', 'OpenBalanceCoinRow');
         onPress(symbol);
       }
     },
