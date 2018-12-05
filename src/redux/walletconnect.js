@@ -19,14 +19,12 @@ export const getValidWalletConnectors = () => (dispatch, getState) => {
   return validConnectors;
 };
 
-export const removeWalletConnector = (sessionId) => (dispatch, getState) => {
-  if (sessionId) {
-    const { walletConnectors } = getState().walletconnect;
-    dispatch({
-      payload: omitBy(walletConnectors, ({ _sessionId }) => (_sessionId === sessionId)),
-      type: WALLETCONNECT_NEW_SESSION,
-    });
-  }
+export const removeWalletConnectorByDapp = (dappName) => (dispatch, getState) => {
+  const { walletConnectors } = getState().walletconnect;
+  dispatch({
+    payload: omitBy(walletConnectors, ({ dappName: _dappName }) => (_dappName === dappName)),
+    type: WALLETCONNECT_NEW_SESSION,
+  });
 };
 
 export const setWalletConnectors = (walletConnectors) => (dispatch) =>
