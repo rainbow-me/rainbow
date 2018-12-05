@@ -1,6 +1,9 @@
+import { get, join, map } from 'lodash';
+import { isSameDay } from 'date-fns';
 import { withSafeTimeout } from '@hocs/safe-timers';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import Piwik from 'react-native-matomo';
 import {
   compose,
   onlyUpdateForKeys,
@@ -20,6 +23,7 @@ import {
   withAccountAssets,
   withHideSplashScreen,
   withRequestsInit,
+  withTrackingDate,
   withTransitionProps,
 } from '../hoc';
 import { position } from '../styles';
@@ -40,12 +44,37 @@ class WalletScreen extends Component {
     transitionProps: PropTypes.object,
   }
 
-  componentDidUpdate = (prevProps) => {
-    const { isLoading, onHideSplashScreen } = this.props;
+  componentDidMount = () => {
+    this.props.trackingDateInit();
+  }
 
+  componentDidUpdate = (prevProps) => {
+    const {
+      allAssetsCount,
+      assets,
+      assetsTotalUSD,
+      isLoading,
+      onHideSplashScreen,
+      trackingDate,
+      uniqueTokens,
+    } = this.props;
     if (!isLoading && prevProps.isLoading) {
       onHideSplashScreen();
     }
+
+    if (this.props.isScreenActive && !prevProps.isScreenActive) {
+      Piwik.trackScreen('WalletScreen', 'WalletScreen');
+      const totalTrackingAmount = get(assetsTotalUSD, 'totalTrackingAmount', null);
+      const assetSymbols = join(map(assets, (asset) => asset.symbol));
+      if (totalTrackingAmount && (!this.props.trackingDate || !isSameDay(this.props.trackingDate, Date.now()))) {
+        Piwik.trackEvent('Balance', 'AssetsCount', 'TotalAssetsCount', allAssetsCount);
+        Piwik.trackEvent('Balance', 'AssetSymbols', 'AssetSymbols', assetSymbols);
+        Piwik.trackEvent('Balance', 'NFTCount', 'TotalNFTCount', uniqueTokens.length);
+        Piwik.trackEvent('Balance', 'Total', 'TotalUSDBalance', totalTrackingAmount);
+        this.props.updateTrackingDate();
+      }
+    }
+
   }
 
   render = () => {
@@ -98,6 +127,7 @@ export default compose(
   withHideSplashScreen,
   withRequestsInit,
   withSafeTimeout,
+  withTrackingDate,
   withTransitionProps,
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({

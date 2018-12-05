@@ -75,7 +75,7 @@ export default compose(
   withHandlers({
     onPress: ({ item: { name }, onPress }) => () => {
       if (onPress) {
-        Piwik.trackEvent('UniqueTokens', 'view');
+        Piwik.trackEvent('UniqueTokens', 'open', 'OpenUniqueToken');
         onPress(name);
       }
     },

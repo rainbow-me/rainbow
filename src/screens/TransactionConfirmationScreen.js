@@ -138,7 +138,7 @@ const TransactionConfirmationScreen = ({
     amount,
     dappName,
     name,
-    nativeAmount,
+    nativeAmountDisplay,
     symbol,
   },
   onCancelTransaction,
@@ -180,7 +180,7 @@ const TransactionConfirmationScreen = ({
             <TokenSymbol><Nbsp />{symbol}</TokenSymbol>
           </TokenAmountRow>
         </AmountRowLeft>
-        <NativeAmount>{nativeAmount}</NativeAmount>
+        <NativeAmount>{nativeAmountDisplay}</NativeAmount>
       </AmountRow>
       <SendButtonContainer>
         <BlockButton onPress={onConfirmTransaction}>
@@ -196,7 +196,7 @@ TransactionConfirmationScreen.propTypes = {
     address: PropTypes.string,
     amount: PropTypes.string,
     name: PropTypes.string,
-    nativeAmount: PropTypes.string,
+    nativeAmountDisplay: PropTypes.string,
     symbol: PropTypes.string,
   }),
   onCancelTransaction: PropTypes.func,
