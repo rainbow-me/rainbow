@@ -3,6 +3,24 @@ import { pickBy } from 'lodash';
 import { commonStorage } from 'balance-common';
 
 /**
+ * @desc get show shitcoins setting
+ * @return {True|False}
+ */
+export const getShowShitcoinsSetting = async () => {
+  const showShitcoins = await commonStorage.getLocal('showShitcoins');
+  return showShitcoins ? showShitcoins.data : null;
+};
+
+/**
+ * @desc update show shitcoins setting
+ * @param  {Boolean}   [updatedSetting]
+ * @return {Void}
+ */
+export const updateShowShitcoinsSetting = async (updatedSetting) => {
+  await commonStorage.saveLocal('showShitcoins', { data: updatedSetting });
+};
+
+/**
  * @desc get last tracking date
  * @return {Date|Object}
  */
