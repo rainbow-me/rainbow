@@ -3,6 +3,7 @@ import { isSameDay } from 'date-fns';
 import { withSafeTimeout } from '@hocs/safe-timers';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../model/localstorage';
 import Piwik from 'react-native-matomo';
 import {
   compose,
@@ -44,8 +45,12 @@ class WalletScreen extends Component {
     transitionProps: PropTypes.object,
   }
 
-  componentDidMount = () => {
+  componentDidMount = async () => {
     this.props.trackingDateInit();
+    const showShitcoins = await getShowShitcoinsSetting();
+    if (showShitcoins !== null) {
+      this.props.toggleShowShitcoins(showShitcoins);
+    }
   }
 
   componentDidUpdate = (prevProps) => {
@@ -74,7 +79,6 @@ class WalletScreen extends Component {
         this.props.updateTrackingDate();
       }
     }
-
   }
 
   render = () => {
@@ -145,7 +149,9 @@ export default compose(
     },
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
       if (index === 0) {
-        toggleShowShitcoins(!showShitcoins);
+        const updatedShowShitcoinsSetting = !showShitcoins;
+        toggleShowShitcoins(updatedShowShitcoinsSetting);
+        updateShowShitcoinsSetting(updatedShowShitcoinsSetting);
       }
     },
   }),
