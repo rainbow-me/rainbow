@@ -50,13 +50,24 @@ export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => 
 };
 
 const getRequestDisplayDetails = (callData, assets, prices, nativeCurrency) => {
+  /*
+   * eth_accounts
+   * eth_signTransaction
+   * eth_sendRawTransaction
+   * eth_signTypedData
+   */
   if (callData.method === 'eth_sendTransaction') {
     const transaction = get(callData, 'params[0]', null);
     return getTransactionDisplayDetails(transaction, assets, prices, nativeCurrency);
-  } else if (callData.method === 'eth_sign') {
+  } else if (callData.method === 'eth_sign' || callData.method === 'personal_sign') {
     const message = get(callData, 'params[1]');
     return getMessageDisplayDetails(message);
+  } else if (callData.method === 'eth_signTypedData' ||
+             callData.method === 'eth_signTypedData_v3') {
+    console.log('callData signed typed data', callData);
+    return null;
   }
+  //callData.method === 'eth_signTypedData_v1' ||
   return null;
 };
 
