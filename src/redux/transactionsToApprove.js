@@ -55,12 +55,6 @@ export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => 
 };
 
 const getRequestDisplayDetails = (callData, assets, prices, nativeCurrency) => {
-  /*
-   * eth_accounts
-   * eth_signTransaction
-   * eth_sendRawTransaction
-   * eth_signTypedData
-   */
   if (callData.method === 'eth_sendTransaction') {
     const transaction = get(callData, 'params[0]', null);
     return getTransactionDisplayDetails(transaction, assets, prices, nativeCurrency);
@@ -69,10 +63,8 @@ const getRequestDisplayDetails = (callData, assets, prices, nativeCurrency) => {
     return getMessageDisplayDetails(message);
   } else if (callData.method === 'eth_signTypedData' ||
              callData.method === 'eth_signTypedData_v3') {
-    console.log('callData signed typed data', callData);
     return null;
   }
-  //callData.method === 'eth_signTypedData_v1' ||
   return null;
 };
 
@@ -136,7 +128,6 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
     };
   }
 
-  console.log('This type of transaction is currently not supported.');
   return null;
 };
 
