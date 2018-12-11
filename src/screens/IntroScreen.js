@@ -110,7 +110,7 @@ const ImportButton = styled(TouchableOpacity)`
 const ImportIcon = styled(Icon).attrs({
   name: 'arrowCircled',
   color: colors.white,
-  direction: 'right',
+  direction: 'row',
   style: { paddingRight: '5' },
 })``;
 
