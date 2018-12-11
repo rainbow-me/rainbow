@@ -1,38 +1,47 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StatusBar } from 'react-native';
+import {
+  Clipboard,
+  KeyboardAvoidingView,
+  Linking,
+  TextInput,
+  TouchableOpacity
+} from 'react-native';
 import lang from 'i18n-js';
-import { compose, withHandlers } from 'recompact';
-import styled from 'styled-components/primitives';
-import AppVersionStamp from '../components/AppVersionStamp';
-import { ButtonPressAnimation } from '../components/buttons';
+import { withNavigation } from 'react-navigation';
+import { compose } from 'recompact';
+import styled from 'styled-components';
 import Icon from '../components/icons/Icon';
-import { Column, Row } from '../components/layout';
-import { Monospace } from '../components/text';
+import { Column } from '../components/layout';
+import { Text } from '../components/text';
 import { colors, fonts, padding } from '../styles';
-import { withHideSplashScreenOnMount, withSafeAreaViewInsetValues } from '../hoc';
 
-const AlphaWarning = styled(Row).attrs({ align: 'center' })`
-  margin-top: 37;
-  margin-bottom: 7;
+const Container = styled(Column).attrs({ align: 'center' })`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  ${padding(16)};
+  padding-top: 0;
+  background: ${colors.white};
+  border-top-left-radius: 12;
+  border-top-right-radius: 12;
 `;
 
-const AlphaWarningText = styled(Monospace).attrs({
-  color: 'orangeLight',
-  size: 'lmedium',
-  weight: 'medium',
+const HandleIcon = styled(Icon).attrs({
+  name: 'handle',
+  color: '#C4C6CB',
 })`
-  line-height: ${fonts.lineHeight.loose};
+  margin-top: 16px;
+  margin-bottom: 2;
 `;
 
-const Container = styled(Column).attrs({ align: 'start', justify: 'center' })`
-  ${padding(0, 30)}
-  background-color: ${colors.black};
-  height: 100%;
-`;
-
-const Content = styled(Column)`
-  margin-bottom: 10;
+const Body = styled(Column).attrs({
+  align: 'center',
+})`
+  margin-right: 50;
+  margin-left: 50;
+  margin-top: auto;
+  margin-bottom: auto;
 `;
 
 const CreateWalletButton = styled.View`
@@ -42,78 +51,169 @@ const CreateWalletButton = styled.View`
   margin-top: 47;
 `;
 
-const CreateWalletButtonText = styled(Monospace).attrs({
-  color: 'black',
-  size: 'h5',
-  weight: 'semibold',
+const Input = styled(TextInput).attrs({
+  placeholderTextColor: '#C4C6CB',
+  multiline: true,
 })`
-  line-height: 20;
+  font-family: ${fonts.family['SFProText']};
+  font-weight: ${fonts.weight.semibold};
+  font-size: ${fonts.size.large};
+  margin-bottom: 20;
+  text-align: center;
+  line-height: 25;
 `;
 
-const InstructionsText = styled(Monospace).attrs({
-  color: 'white',
-  size: 'lmedium',
+const HelpText = styled(Text).attrs({
+  size: 'medium',
+  weight: 'medium',
+  color: '#636875',
 })`
-  color: ${colors.alpha(colors.white, 0.46)};
-  line-height: ${fonts.lineHeight.loose};
-  width: 315;
+  text-align: center;
 `;
 
-const IntroAppVersion = styled(AppVersionStamp)`
-  bottom: ${({ bottomInset }) => bottomInset};
-  left: 0;
-  position: absolute;
-  right: 0;
-`;
-
-const WarningIcon = styled(Icon).attrs({
-  color: colors.orangeLight,
-  name: 'warning',
+const Footer = styled(KeyboardAvoidingView).attrs({
+  behavior: 'padding',
+  keyboardVerticalOffset: 80,
 })`
-  margin-right: ${fonts.size.micro};
+  display: flex;
+  align-self: stretch;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
 `;
 
-const IntroScreen = ({ onCreateWallet, safeAreaInset }) => (
-  <Container>
-    <StatusBar barStyle="light-content" />
-    <Content>
-      <Monospace color="white" size="big" weight="semibold">
-        {lang.t('wallet.intro.welcome')}
-      </Monospace>
-      <AlphaWarning>
-        <WarningIcon />
-        <AlphaWarningText>{lang.t('wallet.intro.warning')}</AlphaWarningText>
-      </AlphaWarning>
-      <InstructionsText>
-        {lang.t('wallet.intro.instructions')}
-      </InstructionsText>
-      <Row>
-        <ButtonPressAnimation onPress={onCreateWallet}>
-          <CreateWalletButton>
-            <CreateWalletButtonText>
-              {lang.t('wallet.intro.create_wallet')}
-            </CreateWalletButtonText>
-          </CreateWalletButton>
-        </ButtonPressAnimation>
-      </Row>
-    </Content>
-    <IntroAppVersion
-      bottomInset={safeAreaInset.bottom}
-      color="#2A2B30"
-    />
-  </Container>
-);
+const HelpButton = styled(TouchableOpacity)`
+  padding-left: 8;
+  padding-right: 8;
+  padding-top: 6;
+  padding-bottom: 6;
+  border: 1px solid #f6f7f7;
+  border-radius: 15px;
+`;
 
-IntroScreen.propTypes = {
-  navigation: PropTypes.object,
-  onCreateWallet: PropTypes.func,
-  safeAreaInset: PropTypes.object,
-};
+const ImportButton = styled(TouchableOpacity)`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: 8;
+  padding-right: 8;
+  padding-top: 6;
+  padding-bottom: 6;
+  background: ${props => (props.disabled ? '#D2D3D7' : colors.appleBlue)};
+  border-radius: 15px;
+  shadow-color: ${colors.dark};
+  shadow-offset: 0px 6px;
+  shadow-opacity: 0.14;
+  shadow-radius: 10;
+`;
 
-export default compose(
-  withHideSplashScreenOnMount,
-  withSafeAreaViewInsetValues,
-  withHandlers({
-    onCreateWallet: ({ navigation }) => () => navigation.navigate('WalletScreen'),
-  }),
-)(IntroScreen);
+const ImportIcon = styled(Icon).attrs({
+  name: 'arrowCircled',
+  color: colors.white,
+  direction: 'right',
+  style: { paddingRight: '5' },
+})``;
+
+const ImportText = styled(Text).attrs({
+  size: 'medium',
+  weight: 'bold',
+})`
+  color: ${colors.white};
+  padding-left: ${({ padding }) => (padding ? 5 : 0)};
+`;
+
+class IntroScreen extends React.Component {
+  static propTypes = {
+    screenProps: PropTypes.objectOf({
+      handleWalletConfig: PropTypes.func,
+    }),
+    navigation: PropTypes.object,
+  };
+
+  state = {
+    seedPhrase: '',
+  };
+
+  isSeedPhraseValid = () => {
+    const phraseCount = this.state.seedPhrase
+      .split(' ')
+      .filter(word => word !== '').length;
+    return phraseCount >= 12 && phraseCount <= 24;
+  };
+
+  onImportSeedPhrase = () => {
+    this.props.screenProps
+      .handleWalletConfig(this.state.seedPhrase)
+      .then(address => {
+        if (address) {
+          this.props.navigation.navigate('WalletScreen');
+        }
+      })
+      .catch(error => {
+        console.log('INTRO ERROR', error);
+      });
+  };
+
+  onChangeSeedPhrase = seedPhrase => {
+    this.setState({ seedPhrase });
+  };
+
+  onPasteSeedPhrase = () => {
+    Clipboard.getString()
+      .then(this.onChangeSeedPhrase)
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  onPressHelp = () => {
+    Linking.openURL('https://support.balance.io');
+  };
+
+  renderImportButton = () => {
+    if (this.state.seedPhrase !== '') {
+      return (
+        <ImportButton
+          disabled={!this.isSeedPhraseValid()}
+          onPress={this.onImportSeedPhrase}
+        >
+          <ImportIcon />
+          <ImportText padding>Import</ImportText>
+        </ImportButton>
+      );
+    } else {
+      return (
+        <ImportButton onPress={this.onPasteSeedPhrase}>
+          <ImportText>Paste</ImportText>
+        </ImportButton>
+      );
+    }
+  };
+
+  render() {
+    return (
+      <Container>
+        <HandleIcon />
+        <Text size="large" weight="bold">
+          Import
+        </Text>
+         <Body>
+          <Input
+            autoFocus
+            value={this.state.seedPhrase}
+            placeholder={'Type your seed phrase'}
+            onChangeText={this.onChangeSeedPhrase}
+          />
+        </Body>
+         <Footer>
+          <HelpButton onPress={this.onPressHelp}>
+            <HelpText>Help</HelpText>
+          </HelpButton>
+          {this.renderImportButton()}
+        </Footer>
+      </Container>
+    );
+  }
+}
+
+export default compose(withNavigation)(IntroScreen);
