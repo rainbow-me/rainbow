@@ -4,11 +4,13 @@ import firebase from 'react-native-firebase';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { accountInitializeState, accountUpdateAccountAddress, commonStorage } from 'balance-common';
-import { AppRegistry, AlertIOS, AppState } from 'react-native';
+import { AppRegistry, AlertIOS, AppState, View } from 'react-native';
 import { compose, withProps } from 'recompact';
 import { connect, Provider } from 'react-redux';
 import { NavigationActions } from 'react-navigation';
 import Piwik from 'react-native-matomo';
+import styled from 'styled-components';
+import OfflineBadge from './components/OfflineBadge';
 import { withWalletConnectConnections } from './hoc';
 import {
   addTransactionToApprove,
@@ -25,6 +27,10 @@ import store from './redux/store';
 import { walletInit } from './model/wallet';
 import Routes from './screens/Routes';
 import Navigation from './navigation';
+
+const Container = styled(View)`
+  flex: 1;
+`;
 
 class App extends Component {
   static propTypes = {
@@ -183,7 +189,10 @@ class App extends Component {
 
   render = () => (
     <Provider store={store}>
-      <Routes ref={this.handleNavigatorRef} />
+      <Container>
+        <OfflineBadge />
+        <Routes ref={this.handleNavigatorRef} />
+      </Container>
     </Provider>
   )
 }
