@@ -97,35 +97,35 @@ class App extends Component {
     });
 
     this.props.accountInitializeState();
-
-    walletInit()
-      .then(walletAddress => {
-        if (!walletAddress) { return; }
-        console.log('wallet address is', walletAddress);
-        this.props.accountUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
-        this.props.transactionsToApproveInit();
-        walletConnectInitAllConnectors()
-          .then(allConnectors => {
-            this.props.setWalletConnectors(allConnectors);
-            firebase
-              .notifications()
-              .getInitialNotification()
-              .then(notificationOpen => {
-                if (!notificationOpen) {
-                  this.fetchAllRequestsFromWalletConnectSessions();
-                }
-              });
-          })
-          .catch(error => {
-            console.log('Unable to init all WalletConnect sessions');
-          });
-        /*
-      */
-      })
-      .catch(error => {
-        AlertIOS.alert('Error: Failed to initialize wallet.');
-      });
+    this.handleWalletConfig();
   }
+
+  handleWalletConfig = async seedPhrase => {
+    try {
+      const walletAddress = await walletInit(seedPhrase);
+      console.log('wallet address is', walletAddress);
+      this.props.accountUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
+      this.props.transactionsToApproveInit();
+      try {
+				const allConnectors = await walletConnectInitAllConnectors();
+				if (allConnectors) {
+					this.props.setWalletConnectors(allConnectors);
+				}
+			} catch (error) {
+				console.log('Unable to init all WalletConnect sessions');
+			}
+      const notificationOpen = await firebase
+        .notifications()
+        .getInitialNotification();
+      if (!notificationOpen) {
+				this.fetchAllRequestsFromWalletConnectSessions();
+      }
+      return walletAddress;
+    } catch (error) {
+			AlertIOS.alert('Error: Failed to initialize wallet.');
+      console.log('WALLET ERROR', error);
+    }
+  };
 
   handleAppStateChange = async (nextAppState) => {
     if (this.state.appState.match(/unknown|background/) && nextAppState === 'active') {
@@ -191,7 +191,10 @@ class App extends Component {
     <Provider store={store}>
       <Container>
         <OfflineBadge />
-        <Routes ref={this.handleNavigatorRef} />
+        <Routes
+          ref={this.handleNavigatorRef}
+          screenProps={{ handleWalletConfig: this.handleWalletConfig }}
+        />
       </Container>
     </Provider>
   )
