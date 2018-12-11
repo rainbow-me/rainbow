@@ -39,6 +39,7 @@ const SwipeStack = createSwipeNavigator({
   },
 }, {
   headerMode: 'none',
+  mode: 'modal',
   initialRouteName: 'WalletScreen',
   onSwipeEnd: onSwipeEndSwipeStack,
   onSwipeStart: onSwipeStartSwipeStack,

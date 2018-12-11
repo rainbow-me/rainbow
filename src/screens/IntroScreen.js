@@ -52,11 +52,8 @@ const CreateWalletButton = styled.View`
 `;
 
 const Input = styled(TextInput).attrs({
-  autoCapitalize: false,
-  autoCorrect: false,
-  multiline: true,
   placeholderTextColor: '#C4C6CB',
-  spellCheck: true,
+  multiline: true,
 })`
   font-family: ${fonts.family['SFProText']};
   font-weight: ${fonts.weight.semibold};
@@ -152,6 +149,9 @@ class IntroScreen extends React.Component {
           this.props.navigation.navigate('WalletScreen');
         }
       })
+      .catch(error => {
+        console.log('INTRO ERROR', error);
+      });
   };
 
   onChangeSeedPhrase = seedPhrase => {
@@ -197,7 +197,7 @@ class IntroScreen extends React.Component {
         <Text size="large" weight="bold">
           Import
         </Text>
-        <Body>
+         <Body>
           <Input
             autoFocus
             value={this.state.seedPhrase}
@@ -205,7 +205,7 @@ class IntroScreen extends React.Component {
             onChangeText={this.onChangeSeedPhrase}
           />
         </Body>
-        <Footer>
+         <Footer>
           <HelpButton onPress={this.onPressHelp}>
             <HelpText>Help</HelpText>
           </HelpButton>

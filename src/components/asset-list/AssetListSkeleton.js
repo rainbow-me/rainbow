@@ -15,16 +15,6 @@ import { Centered, Column } from '../layout';
 import AssetListHeader from './AssetListHeader';
 import AssetListItemSkeleton from './AssetListItemSkeleton';
 
-const Container = styled(Column)`
-  ${position.size('100%')}
-`;
-
-const SkeletonContainer = styled(Column)`
-  position: absolute;
-  top: 0;
-  z-index: -1;
-`;
-
 const SkeletonElement = styled(Icon).attrs({ name: 'assetListItemSkeleton' })`
   ${({ index }) => margin(index === 0 ? 15 : 12.5, 19, 12.5, 15)}
   opacity: ${({ index }) => 1 - 0.2 * index};
@@ -35,11 +25,13 @@ const AssetListBody = styled(Centered)`
 `;
 
 const ButtonContainer = styled(Centered)`
-  flex-direction: column;
-  width: 225;
-  margin-left: auto;
-  margin-right: auto;
-  padding-bottom: 42.5;
+  bottom: 28;
+  position: absolute;
+  width: 100%;
+`;
+
+const Container = styled(Column)`
+  ${position.size('100%')}
 `;
 
 const renderSkeletons = times(5, index => (
@@ -70,17 +62,15 @@ const AssetListSkeleton = ({
   onPressImportWallet,
   ...props
 }) => (
-  <Container>
+  <Container {...props}>
     <AssetListHeader
       section={{
         title: lang.t('account.tab_balances'),
         totalValue: '$0.00',
       }}
     />
-    <AssetListBody>
-      <SkeletonContainer>
-        {renderSkeletons}
-      </SkeletonContainer>
+    <Column>
+      {renderSkeletons}
       {isLoading ? (
         <ActivityIndicator
           animating={true}
@@ -101,7 +91,7 @@ const AssetListSkeleton = ({
           </ImportText>
         </ButtonContainer>
       )}
-    </AssetListBody>
+    </Column>
   </Container>
 );
 
