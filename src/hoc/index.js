@@ -5,6 +5,7 @@ export { default as withAddWalletConnector } from './withAddWalletConnector';
 export { default as withHideSplashScreen } from './withHideSplashScreen';
 export { default as withHideSplashScreenOnMount } from './withHideSplashScreenOnMount';
 export { default as withImageDimensionsCache } from './withImageDimensionsCache';
+export { default as withMessageSigningScreen } from './withMessageSigningScreen';
 export { default as withRequests } from './withRequests';
 export { default as withRequestsInit } from './withRequestsInit';
 export { default as withRotationForDirection } from './withRotationForDirection';

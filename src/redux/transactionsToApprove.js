@@ -7,7 +7,7 @@ import {
   formatInputDecimals,
   fromWei,
 } from 'balance-common';
-import { mapValues, omit } from 'lodash';
+import { get, mapValues, omit } from 'lodash';
 import {
   getAccountLocalRequests,
   removeLocalRequest,
@@ -54,6 +54,29 @@ export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => 
   return { nativeAmount, nativeAmountDisplay };
 };
 
+const getRequestDisplayDetails = (callData, assets, prices, nativeCurrency) => {
+  if (callData.method === 'eth_sendTransaction') {
+    const transaction = get(callData, 'params[0]', null);
+    return getTransactionDisplayDetails(transaction, assets, prices, nativeCurrency);
+  } else if (callData.method === 'eth_sign' || callData.method === 'personal_sign') {
+    const message = get(callData, 'params[1]');
+    return getMessageDisplayDetails(message);
+  } else if (callData.method === 'eth_signTypedData' ||
+             callData.method === 'eth_signTypedData_v3') {
+    return null;
+  }
+  return null;
+};
+
+const getMessageDisplayDetails = (message) => {
+  const timestampInMs = Date.now();
+  return {
+    payload: message,
+    timestampInMs,
+    type: 'message',
+  };
+};
+
 const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrency) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
   const timestampInMs = Date.now();
@@ -61,21 +84,24 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
     const value = fromWei(convertHexToString(transaction.value));
     const { nativeAmount, nativeAmountDisplay } = getNativeAmount(prices, nativeCurrency, value, 'ETH');
     return {
-      asset: {
-        address: null,
-        decimals: 18,
-        name: 'Ethereum',
-        symbol: 'ETH',
+      payload: {
+        asset: {
+          address: null,
+          decimals: 18,
+          name: 'Ethereum',
+          symbol: 'ETH',
+        },
+        from: transaction.from,
+        gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
+        gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
+        nativeAmount,
+        nativeAmountDisplay,
+        nonce: Number(convertHexToString(transaction.nonce)),
+        to: transaction.to,
+        value,
       },
-      from: transaction.from,
-      gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
-      gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
-      nativeAmount,
-      nativeAmountDisplay,
-      nonce: Number(convertHexToString(transaction.nonce)),
       timestampInMs,
-      to: transaction.to,
-      value,
+      type: 'transaction',
     };
   } else if (transaction.data.startsWith(tokenTransferHash)) {
     const contractAddress = transaction.to;
@@ -86,27 +112,29 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
     const value = fromWei(convertHexToString(amount), asset.decimals);
     const { nativeAmount, nativeAmountDisplay } = getNativeAmount(prices, nativeCurrency, value, asset.symbol);
     return {
-      asset,
-      from: transaction.from,
-      gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
-      gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
-      nativeAmount,
-      nativeAmountDisplay,
-      nonce: Number(convertHexToString(transaction.nonce)),
+      payload: {
+        asset,
+        from: transaction.from,
+        gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
+        gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
+        nativeAmount,
+        nativeAmountDisplay,
+        nonce: Number(convertHexToString(transaction.nonce)),
+        to: toAddress,
+        value,
+      },
       timestampInMs,
-      to: toAddress,
-      value,
+      type: 'transaction',
     };
   }
 
-  console.log('This type of transaction is currently not supported.');
   return null;
 };
 
 export const addTransactionToApprove = (sessionId, callId, callData, dappName) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
   const { accountInfo, accountAddress, network, prices, nativeCurrency } = getState().account;
-  const transactionDisplayDetails = getTransactionDisplayDetails(callData, accountInfo.assets, prices, nativeCurrency);
+  const transactionDisplayDetails = getRequestDisplayDetails(callData, accountInfo.assets, prices, nativeCurrency);
   const transaction = { sessionId, callId, callData, transactionDisplayDetails, dappName };
   const updatedTransactions = { ...transactionsToApprove, [callId]: transaction };
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
@@ -118,7 +146,7 @@ export const addTransactionsToApprove = (transactions) => (dispatch, getState) =
   const { transactionsToApprove } = getState().transactionsToApprove;
   const { accountInfo, accountAddress, network, prices, nativeCurrency } = getState().account;
   const transactionsWithDisplayDetails = mapValues(transactions, (transactionDetails) => {
-    const transactionDisplayDetails = getTransactionDisplayDetails(transactionDetails.callData, accountInfo.assets, prices, nativeCurrency);
+    const transactionDisplayDetails = getRequestDisplayDetails(transactionDetails.callData, accountInfo.assets, prices, nativeCurrency);
     return { ...transactionDetails, transactionDisplayDetails };
   });
   const updatedTransactions = { ...transactionsToApprove, ...transactionsWithDisplayDetails };
