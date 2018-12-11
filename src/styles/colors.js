@@ -2,11 +2,12 @@ import chroma from 'chroma-js';
 import PropTypes from 'prop-types';
 
 const base = {
+  appleBlue: '#0E76FD', // 14, 118, 253
   black: '#000000', // '0, 0, 0'
   blue: '#657fe6', // '101, 127, 230'
   blueActive: '#5a71cc', // '90, 113, 204'
   blueGreyDark: '#3c4252', // '60, 66, 82'
-  blueGreyLight: '#666A73', // '102, 106, 115'
+  blueGreyLight: '#A1A5AC', // '102, 106, 115'
   blueGreyLighter: '#888D96', // '136, 141, 150'
   blueGreyMedium: '#636875', // '99, 104, 117'
   blueGreyMediumLight: '#7b7f8a', // '123, 127, 138'
