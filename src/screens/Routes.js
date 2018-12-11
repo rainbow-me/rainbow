@@ -36,6 +36,7 @@ const SwipeStack = createSwipeNavigator({
 }, {
   headerMode: 'none',
   initialRouteName: 'WalletScreen',
+  mode: 'modal',
   onSwipeStart: () => Navigation.pauseNavigationActions(),
   onSwipeEnd: (navigation) => Navigation.resumeNavigationActions(navigation),
 });
@@ -49,6 +50,15 @@ const AppStack = createStackNavigator({
     screen: ActivityScreen,
   },
   ConfirmRequest: TransactionConfirmationScreenWithData,
+  IntroScreen: {
+    screen: IntroScreen,
+    navigationOptions: {
+      effect: 'sheet',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height / 2,
+      },
+    },
+  },
   ExpandedAssetScreen: {
     navigationOptions: {
       effect: 'expanded',
@@ -77,17 +87,9 @@ const AppStack = createStackNavigator({
   },
 });
 
-const IntroStack = createStackNavigator({
-  IntroScreen,
-}, {
-  headerMode: 'none',
-  mode: 'card', // Horizontal gestures
-});
-
 export default createSwitchNavigator(
   {
     App: AppStack,
-    Intro: IntroStack,
     Loading: LoadingScreen,
   },
   {
