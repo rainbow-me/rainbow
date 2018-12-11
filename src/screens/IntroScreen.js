@@ -149,9 +149,6 @@ class IntroScreen extends React.Component {
           this.props.navigation.navigate('WalletScreen');
         }
       })
-      .catch(error => {
-        console.log('INTRO ERROR', error);
-      });
   };
 
   onChangeSeedPhrase = seedPhrase => {
