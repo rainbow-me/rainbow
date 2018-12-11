@@ -131,9 +131,8 @@ class App extends Component {
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
-    this.notificationDisplayedListener();
     this.notificationListener();
-    this.notificationOpenedListender();
+    this.notificationOpenedListener();
     this.onTokenRefreshListener();
   }
 

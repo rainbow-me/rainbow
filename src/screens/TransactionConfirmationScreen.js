@@ -87,7 +87,7 @@ const TransactionConfirmationScreen = ({
         address: get(request, 'to'),
         amount: get(request, 'value', '0.00'),
         name: get(request, 'asset.name', 'No data'),
-        nativeAmount: get(request, 'nativeAmount'),
+        nativeAmountDisplay: get(request, 'nativeAmountDisplay'),
         symbol: get(request, 'asset.symbol', 'N/A'),
       }}
       onConfirmTransaction={onConfirmTransaction}

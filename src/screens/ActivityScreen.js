@@ -1,12 +1,18 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, withHandlers, onlyUpdateForKeys } from 'recompact';
+import { setDisplayName } from 'recompose';
 import styled from 'styled-components/primitives';
 import { ActivityList } from '../components/activity-list';
 import { Header, HeaderButton } from '../components/header';
 import Icon from '../components/icons/Icon';
 import { Column } from '../components/layout';
-import { withAccountAddress, withAccountTransactions, withRequests } from '../hoc';
+import {
+  withAccountAddress,
+  withAccountTransactions,
+  withRequests,
+  withTrackingScreen,
+} from '../hoc';
 import { colors, position } from '../styles';
 
 const CloseButtonIcon = styled(Icon)`
@@ -60,6 +66,7 @@ ActivityScreen.propTypes = {
 };
 
 export default compose(
+  setDisplayName('ActivityScreen'),
   withAccountAddress,
   withAccountTransactions,
   withRequests,
@@ -67,4 +74,5 @@ export default compose(
     onPressBack: ({ navigation }) => () => navigation.goBack(),
   }),
   onlyUpdateForKeys(['hasPendingTransaction', 'requests', 'transactionsCount']),
+  withTrackingScreen,
 )(ActivityScreen);
