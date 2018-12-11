@@ -36,7 +36,7 @@ class App extends Component {
     setWalletConnectors: PropTypes.func,
     transactionIfExists: PropTypes.func,
     transactionsToApproveInit: PropTypes.func,
-    walletConnectors: PropTypes.arrayOf(PropTypes.object),
+    sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
   }
 
   state = { appState: AppState.currentState }
@@ -173,7 +173,7 @@ class App extends Component {
   }
 
   fetchAndAddWalletConnectRequest = async (callId, sessionId) => {
-    const walletConnector = this.props.walletConnectors.find(({ _sessionId }) => (_sessionId === sessionId));
+    const walletConnector = this.props.sortedWalletConnectors.find(({ _sessionId }) => (_sessionId === sessionId));
     const callData = await walletConnectGetRequest(callId, walletConnector);
     if (!callData) return null;
 

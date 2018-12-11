@@ -27,7 +27,8 @@ export default Component => compose(
       };
     });
     return {
-      walletConnectors: values(dappWalletConnector),
+      sortedWalletConnectors,
+      walletConnectorsByDappName: values(dappWalletConnector),
       walletConnectorsCount: sortedWalletConnectors.length,
     };
   }),

@@ -39,13 +39,13 @@ class TransactionConfirmationScreenWithData extends Component {
     const maxTxnCount = Math.max(this.props.transactionCountNonce, web3TxnCount);
     const nonce = web3Instance.utils.toHex(maxTxnCount);
     const txPayloadLatestNonce = { ...txPayload, nonce };
-    const symbol = get(transactionDisplayDetails, 'asset.symbol', 'unknown');
-    const address = get(transactionDisplayDetails, 'asset.address', '');
+    const symbol = get(transactionDetails, 'transactionDisplayDetails.payload.asset.symbol', 'unknown');
+    const address = get(transactionDetails, 'transactionDisplayDetails.payload.asset.address', '');
     const trackingName = `${symbol}:${address}`;
     const transactionHash = await sendTransaction({
       tracking: {
         action: 'send-wc',
-        amount: get(transactionDisplayDetails, 'nativeAmount'),
+        amount: get(transactionDetails, 'transactionDisplayDetails.payload.nativeAmount'),
         name: trackingName,
       },
       transaction: txPayloadLatestNonce

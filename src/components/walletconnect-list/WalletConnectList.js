@@ -30,12 +30,12 @@ const WalletConnectList = ({
   onHandleDisconnectAlert,
   onLayout,
   safeAreaInset,
-  walletConnectors,
+  walletConnectorsByDappName,
 }) => (
   <Sheet bottomInset={safeAreaInset.bottom} onLayout={onLayout}>
     <FlatList
       contentContainerStyle={{ paddingBottom: safeAreaInset.bottom }}
-      data={walletConnectors}
+      data={walletConnectorsByDappName}
       removeClippedSubviews
       renderItem={({ index, item }) => (
         <WalletConnectListItem
@@ -55,7 +55,7 @@ const WalletConnectList = ({
 WalletConnectList.propTypes = {
   onLayout: PropTypes.func,
   safeAreaInset: PropTypes.object,
-  walletConnectors: PropTypes.arrayOf(PropTypes.object),
+  walletConnectorsByDappName: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default compose(
