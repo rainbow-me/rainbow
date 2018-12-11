@@ -21,21 +21,35 @@ class TransactionConfirmationScreenWithData extends Component {
     walletConnectors: PropTypes.object,
   }
 
+  componentDidUpdate = (prevProps) => {
+    if (this.props.isScreenActive && !prevProps.isScreenActive) {
+      Piwik.trackScreen('TxnConfirmScreen', 'TxnConfirmScreen');
+    }
+  }
+
   componentDidMount() {
     StatusBar.setBarStyle('light-content', true);
     Vibration.vibrate();
   }
 
   handleConfirmTransaction = async () => {
-    // TODO: add a name, value?
-    Piwik.trackEvent('Send', 'confirm-wc');
     const { transactionDetails } = this.props.navigation.state.params;
     const txPayload = get(transactionDetails, 'callData.params[0]');
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(this.props.transactionCountNonce, web3TxnCount);
     const nonce = web3Instance.utils.toHex(maxTxnCount);
     const txPayloadLatestNonce = { ...txPayload, nonce };
-    const transactionHash = await sendTransaction(txPayloadLatestNonce, lang.t('wallet.transaction.confirm'));
+    const symbol = get(transactionDisplayDetails, 'asset.symbol', 'unknown');
+    const address = get(transactionDisplayDetails, 'asset.address', '');
+    const trackingName = `${symbol}:${address}`;
+    const transactionHash = await sendTransaction({
+      tracking: {
+        action: 'send-wc',
+        amount: get(transactionDisplayDetails, 'nativeAmount'),
+        name: trackingName,
+      },
+      transaction: txPayloadLatestNonce
+    });
 
     if (transactionHash) {
       this.props.updateTransactionCountNonce(maxTxnCount + 1);

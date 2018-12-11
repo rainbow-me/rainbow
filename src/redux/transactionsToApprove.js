@@ -35,18 +35,23 @@ const getAssetDetails = (contractAddress, assets) => {
 };
 
 export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => {
-  let _nativeAmount = '';
+  let nativeAmount = '';
+  let nativeAmountDisplay = '';
   if (prices && prices[nativeCurrency] && prices[nativeCurrency][symbol]) {
-    const nativeAmount = convertAssetAmountToNativeValue(
+    nativeAmount = convertAssetAmountToNativeValue(
       assetAmount,
       { symbol },
       prices,
     );
-    _nativeAmount = formatInputDecimals(nativeAmount, assetAmount);
-    return convertAssetAmountToDisplaySpecific(_nativeAmount, prices, nativeCurrency);
+    const _nativeAmount = formatInputDecimals(nativeAmount, assetAmount);
+    nativeAmountDisplay = convertAssetAmountToDisplaySpecific(_nativeAmount, prices, nativeCurrency);
+    return {
+      nativeAmount,
+      nativeAmountDisplay,
+    };
   }
 
-  return _nativeAmount;
+  return { nativeAmount, nativeAmountDisplay };
 };
 
 const getRequestDisplayDetails = (callData, assets, prices, nativeCurrency) => {
@@ -85,7 +90,7 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
   const timestampInMs = Date.now();
   if (transaction.data === '0x') {
     const value = fromWei(convertHexToString(transaction.value));
-    const nativeAmount = getNativeAmount(prices, nativeCurrency, value, 'ETH');
+    const { nativeAmount, nativeAmountDisplay } = getNativeAmount(prices, nativeCurrency, value, 'ETH');
     return {
       payload: {
         asset: {
@@ -98,6 +103,7 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
         gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
         gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
         nativeAmount,
+        nativeAmountDisplay,
         nonce: Number(convertHexToString(transaction.nonce)),
         to: transaction.to,
         value,
@@ -112,7 +118,7 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
     const toAddress = `0x${dataPayload.slice(0, 64).replace(/^0+/, '')}`;
     const amount = `0x${dataPayload.slice(64, 128).replace(/^0+/, '')}`;
     const value = fromWei(convertHexToString(amount), asset.decimals);
-    const nativeAmount = getNativeAmount(prices, nativeCurrency, value, asset.symbol);
+    const { nativeAmount, nativeAmountDisplay } = getNativeAmount(prices, nativeCurrency, value, asset.symbol);
     return {
       payload: {
         asset,
@@ -120,6 +126,7 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
         gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
         gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
         nativeAmount,
+        nativeAmountDisplay,
         nonce: Number(convertHexToString(transaction.nonce)),
         to: toAddress,
         value,

@@ -1,6 +1,6 @@
 import { commonStorage } from 'balance-common';
 import lang from 'i18n-js';
-import { assign, get, mapValues, values } from 'lodash';
+import { assign, forEach, get, mapValues, values } from 'lodash';
 import { AlertIOS } from 'react-native';
 import RNWalletConnect from 'rn-walletconnect-wallet';
 
@@ -55,14 +55,13 @@ export const walletConnectInitAllConnectors = async () => {
   }
 };
 
-export const walletConnectDisconnect = async (walletConnector) => {
-  if (walletConnector) {
-    try {
-      await commonStorage.removeWalletConnectSession(walletConnector._sessionId);
-      await walletConnector.killSession();
-    } catch (error) {
-      AlertIOS.alert('Failed to disconnect WalletConnect session');
-    }
+export const walletConnectDisconnectAll = async (walletConnectors) => {
+  try {
+    const sessionIds = values(mapValues(walletConnectors, (walletConnector) => walletConnector.sessionId));
+    await commonStorage.removeWalletConnectSessions(sessionIds);
+    forEach(walletConnectors, (walletConnector) => walletConnector.killSession());
+  } catch (error) {
+    AlertIOS.alert('Failed to disconnect all WalletConnect sessions');
   }
 };
 

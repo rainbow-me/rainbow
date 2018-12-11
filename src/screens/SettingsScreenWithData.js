@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { InteractionManager } from 'react-native';
+import Piwik from 'react-native-matomo';
 import { withAccountAddress } from '../hoc';
 import { loadSeedPhrase } from '../model/wallet';
 import SettingsScreen from './SettingsScreen';
@@ -11,6 +12,12 @@ class SettingsScreenWithData extends Component {
   }
 
   state = { seedPhrase: null }
+
+  componentDidUpdate = (prevProps) => {
+    if (this.props.isScreenActive && !prevProps.isScreenActive) {
+      Piwik.trackScreen('SettingsScreen', 'SettingsScreen');
+    }
+  }
 
   shouldComponentUpdate = ({ accountAddress, isScreenActive }, nextState) => {
     if (!isScreenActive && this.state.seedPhrase) {
