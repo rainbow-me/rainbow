@@ -197,7 +197,7 @@ class IntroScreen extends React.Component {
         <Text size="large" weight="bold">
           Import
         </Text>
-         <Body>
+        <Body>
           <Input
             autoFocus
             value={this.state.seedPhrase}
@@ -205,7 +205,7 @@ class IntroScreen extends React.Component {
             onChangeText={this.onChangeSeedPhrase}
           />
         </Body>
-         <Footer>
+        <Footer>
           <HelpButton onPress={this.onPressHelp}>
             <HelpText>Help</HelpText>
           </HelpButton>

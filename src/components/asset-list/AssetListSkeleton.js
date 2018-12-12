@@ -77,7 +77,10 @@ const AssetListSkeleton = ({
         totalValue: '$0.00',
       }}
     />
-    <Column>
+    <AssetListBody>
+      <SkeletonContainer>
+        {renderSkeletons}
+      </SkeletonContainer>
       {isLoading ? (
         <ActivityIndicator
           animating={true}
@@ -98,10 +101,7 @@ const AssetListSkeleton = ({
           </ImportText>
         </ButtonContainer>
       )}
-      <SkeletonContainer>
-        {renderSkeletons}
-      </SkeletonContainer>
-    </Column>
+    </AssetListBody>
   </Container>
 );
 

@@ -30,7 +30,11 @@ const Container = styled(Centered)`
   border-radius: ${({ type }) => ((type === 'rounded') ? 14 : 50)};
   flex-grow: 0;
   position: relative;
-  ${({ containerStyles }) => containerStyles}
+  ${({ containerStyles }) => containerStyles};
+  shadow-color: ${colors.blueGreyLight};
+  shadow-offset: 0px 4px;
+  shadow-opacity: 0.2;
+  shadow-radius: 6;
 `;
 
 const Button = ({
