@@ -29,7 +29,10 @@ class TransactionConfirmationScreenWithData extends Component {
 
   componentDidMount() {
     StatusBar.setBarStyle('light-content', true);
-    Vibration.vibrate();
+    const { autoOpened } = this.props.navigation.state.params;
+    if (autoOpened) {
+      Vibration.vibrate();
+    }
   }
 
   handleConfirmTransaction = async () => {
