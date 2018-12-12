@@ -37,7 +37,7 @@ const RequestCoinRow = ({
   <CoinRow
     {...item}
     {...props}
-    bottomRowRender={({ dappName, transactionDisplayDetails }) => <CoinName>{dappName}</CoinName>}
+    bottomRowRender={({ dappName }) => <CoinName>{dappName}</CoinName>}
     coinIconRender={RequestCoinIcon}
     expirationColor={expirationColor}
     topRowRender={() => (
@@ -83,7 +83,7 @@ export default compose(
     onPressOpen: ({ item, navigation }) => () =>
       navigation.navigate({
         params: { transactionDetails: item },
-        routeName: 'ConfirmTransaction',
+        routeName: 'ConfirmRequest',
       }),
   }),
   onlyUpdateForKeys(['expirationColor', 'percentElapsed']),

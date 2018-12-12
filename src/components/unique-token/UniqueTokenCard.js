@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import Piwik from 'react-native-matomo';
 import { compose, pure, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, position, shadow } from '../../styles';
@@ -74,6 +75,7 @@ export default compose(
   withHandlers({
     onPress: ({ item: { name }, onPress }) => () => {
       if (onPress) {
+        Piwik.trackEvent('UniqueTokens', 'open', 'OpenUniqueToken');
         onPress(name);
       }
     },

@@ -67,5 +67,5 @@ WalletConnectListItem.height = VendorLogoIconSize + (ContainerPadding * 2);
 
 export default hoistStatics(compose(
   onlyUpdateForKeys(['expires']),
-  withHandlers({ onPress: ({ onPress, _sessionId }) => () => onPress(_sessionId) }),
+  withHandlers({ onPress: ({ onPress, dappName }) => () => onPress(dappName) }),
 ))(WalletConnectListItem);

@@ -3,6 +3,42 @@ import { pickBy } from 'lodash';
 import { commonStorage } from 'balance-common';
 
 /**
+ * @desc get show shitcoins setting
+ * @return {True|False}
+ */
+export const getShowShitcoinsSetting = async () => {
+  const showShitcoins = await commonStorage.getLocal('showShitcoins');
+  return showShitcoins ? showShitcoins.data : null;
+};
+
+/**
+ * @desc update show shitcoins setting
+ * @param  {Boolean}   [updatedSetting]
+ * @return {Void}
+ */
+export const updateShowShitcoinsSetting = async (updatedSetting) => {
+  await commonStorage.saveLocal('showShitcoins', { data: updatedSetting });
+};
+
+/**
+ * @desc get last tracking date
+ * @return {Date|Object}
+ */
+export const getLastTrackingDate = async () => {
+  const lastTrackingDate = await commonStorage.getLocal('lastTrackingDate');
+  return lastTrackingDate && lastTrackingDate.data ? new Date(lastTrackingDate.data) : null;
+};
+
+/**
+ * @desc update last tracking date
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Void}
+ */
+export const updateLastTrackingDate = async () => {
+  await commonStorage.saveLocal('lastTrackingDate', { data: new Date().toString() });
+};
+/**
  * @desc get account local requests
  * @param  {String}   [address]
  * @return {Object}
