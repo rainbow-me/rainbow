@@ -86,14 +86,14 @@ class App extends Component {
             firebase.notifications().displayNotification(localNotification);
           });
       } else {
-        this.onPushNotificationOpened(callId, sessionId);
+        this.onPushNotificationOpened(callId, sessionId, true);
       }
     });
 
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened(notificationOpen => {
       console.log('on notification manually opened');
       const { callId, sessionId } = notificationOpen.notification.data;
-      this.onPushNotificationOpened(callId, sessionId);
+      this.onPushNotificationOpened(callId, sessionId, false);
     });
 
     this.props.accountInitializeState();
@@ -144,11 +144,11 @@ class App extends Component {
 
   handleNavigatorRef = (navigatorRef) => { this.navigatorRef = navigatorRef; }
 
-  handleOpenConfirmTransactionModal = (transactionDetails) => {
+  handleOpenConfirmTransactionModal = (transactionDetails, autoOpened) => {
     if (!this.navigatorRef) return;
     const action = NavigationActions.navigate({
       routeName: 'ConfirmRequest',
-      params: { transactionDetails },
+      params: { transactionDetails, autoOpened },
     });
     Navigation.handleAction(this.navigatorRef, action);
   }
@@ -164,14 +164,14 @@ class App extends Component {
     }
   }
 
-  onPushNotificationOpened = async (callId, sessionId) => {
+  onPushNotificationOpened = async (callId, sessionId, autoOpened) => {
     const existingTransaction = this.props.transactionIfExists(callId);
     if (existingTransaction) {
-      this.handleOpenConfirmTransactionModal(existingTransaction);
+      this.handleOpenConfirmTransactionModal(existingTransaction, autoOpened);
     } else {
       const transaction = await this.fetchAndAddWalletConnectRequest(callId, sessionId);
       if (transaction) {
-        this.handleOpenConfirmTransactionModal(transaction);
+        this.handleOpenConfirmTransactionModal(transaction, autoOpened);
       } else {
         AlertIOS.alert('This request has expired.');
       }
