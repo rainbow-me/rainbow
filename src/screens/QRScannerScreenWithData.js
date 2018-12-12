@@ -29,7 +29,7 @@ class QRScannerScreenWithData extends PureComponent {
     }
   }
 
-  handlePressBackButton = () => this.props.navigation.push('WalletScreen')
+  handlePressBackButton = () => this.props.navigation.navigate('WalletScreen')
 
   handleReenableScanning = () => this.setState({ enableScanning: true })
 
@@ -66,29 +66,29 @@ class QRScannerScreenWithData extends PureComponent {
 
     if (!data) return null;
     this.setState({ enableScanning: false });
-    setSafeTimeout(this.handleReenableScanning, 1000);
     Vibration.vibrate();
 
     const address = getEthereumAddressFromQRCodeData(data);
-
     if (address) {
       Piwik.trackEvent('QRScanner', 'address', 'QRScannedAddress');
-      return navigation.navigate('SendScreen', { address });
-    }
-
-    if (data.startsWith('ethereum:wc')) {
+      navigation.navigate('WalletScreen');
+      navigation.navigate('SendScreen', { address });
+      setSafeTimeout(this.handleReenableScanning, 1000);
+    } else if (data.startsWith('ethereum:wc')) {
       Piwik.trackEvent('QRScanner', 'walletconnect', 'QRScannedWC');
       const walletConnector = await walletConnectInit(
         accountAddress,
         data
       );
       await this.checkPushNotificationPermissions();
-      return addWalletConnector(walletConnector);
+      addWalletConnector(walletConnector);
+      setSafeTimeout(this.handleReenableScanning, 1000);
     } else {
       Piwik.trackEvent('QRScanner', 'unknown', 'QRScannedUnknown');
-      return Alert({
+      Alert({
         message: lang.t('wallet.unrecognized_qrcode'),
         title: lang.t('wallet.unrecognized_qrcode_title'),
+        callback: this.handleReenableScanning,
       });
     }
   }
