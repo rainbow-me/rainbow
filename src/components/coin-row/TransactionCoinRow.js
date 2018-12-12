@@ -1,7 +1,9 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
-import { compose, mapProps, onlyUpdateForKeys } from 'recompact';
+import { compose, mapProps, onlyUpdateForKeys, withHandlers } from 'recompact';
+import { Linking } from 'react-native';
+import { ButtonPressAnimation } from '../buttons';
 import { TransactionStatusTypes } from '../../helpers/transactions';
 import { colors } from '../../styles';
 import BalanceText from './BalanceText';
@@ -9,11 +11,13 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
+import { showActionSheetWithOptions } from '../../utils/actionsheet';
 
 const rowRenderPropTypes = {
   balance: PropTypes.object,
   name: PropTypes.string,
   native: PropTypes.object,
+  onPressTransaction: PropTypes.func,
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
 };
 
@@ -49,14 +53,16 @@ const topRowRender = ({ balance, status }) => (
 
 topRowRender.propTypes = rowRenderPropTypes;
 
-const TransactionCoinRow = ({ item, ...props }) => (
-  <CoinRow
-    {...item}
-    {...props}
-    shouldRasterizeIOS={true}
-    bottomRowRender={bottomRowRender}
-    topRowRender={topRowRender}
-  />
+const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
+  <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>
+    <CoinRow
+      {...item}
+      {...props}
+      shouldRasterizeIOS={true}
+      bottomRowRender={bottomRowRender}
+      topRowRender={topRowRender}
+    />
+  </ButtonPressAnimation>
 );
 
 export default compose(
@@ -66,5 +72,20 @@ export default compose(
     pending,
     ...props,
   })),
+  withHandlers({
+    onPressTransaction: ({ hash }) => () => {
+      if (hash) {
+        showActionSheetWithOptions({
+          cancelButtonIndex: 1,
+          options: ['View on Etherscan', 'Cancel'],
+        }, (buttonIndex) => {
+          if (buttonIndex === 0) {
+            const etherscanUrl = `https://etherscan.io/tx/${hash}`;
+            Linking.openURL(etherscanUrl);
+          }
+        });
+      }
+    },
+  }),
   onlyUpdateForKeys(['hash', 'pending']),
 )(TransactionCoinRow);
