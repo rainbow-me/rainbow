@@ -54,6 +54,9 @@ const CreateWalletButton = styled.View`
 const Input = styled(TextInput).attrs({
   placeholderTextColor: '#C4C6CB',
   multiline: true,
+  autoCorrect: false,
+  spellCheck: true,
+  autoCapitalize: false,
 })`
   font-family: ${fonts.family['SFProText']};
   font-weight: ${fonts.weight.semibold};
