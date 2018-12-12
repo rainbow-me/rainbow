@@ -52,11 +52,11 @@ const CreateWalletButton = styled.View`
 `;
 
 const Input = styled(TextInput).attrs({
-  placeholderTextColor: '#C4C6CB',
-  multiline: true,
-  autoCorrect: false,
-  spellCheck: true,
   autoCapitalize: false,
+  autoCorrect: false,
+  multiline: true,
+  placeholderTextColor: '#C4C6CB',
+  spellCheck: true,
 })`
   font-family: ${fonts.family['SFProText']};
   font-weight: ${fonts.weight.semibold};
@@ -113,7 +113,7 @@ const ImportButton = styled(TouchableOpacity)`
 const ImportIcon = styled(Icon).attrs({
   name: 'arrowCircled',
   color: colors.white,
-  direction: 'row',
+  direction: 'right',
   style: { paddingRight: '5' },
 })``;
 
