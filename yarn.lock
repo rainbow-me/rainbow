@@ -4104,8 +4104,8 @@ image-size@^0.6.0:
   resolved "https://registry.yarnpkg.com/image-size/-/image-size-0.6.3.tgz#e7e5c65bb534bd7cdcedd6cb5166272a85f75fb2"
 
 immer@^1.7.4:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/immer/-/immer-1.8.0.tgz#afa8393996a1f3f5255019e7d10c29d42dd95225"
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/immer/-/immer-1.8.2.tgz#111e9c9e6832c833868f3f6481758a421f63f403"
 
 import-fresh@^2.0.0:
   version "2.0.0"
@@ -5356,9 +5356,9 @@ metro-babel7-plugin-react-transform@0.45.6:
   dependencies:
     "@babel/helper-module-imports" "^7.0.0"
 
-metro-babel7-plugin-react-transform@0.48.3:
-  version "0.48.3"
-  resolved "https://registry.yarnpkg.com/metro-babel7-plugin-react-transform/-/metro-babel7-plugin-react-transform-0.48.3.tgz#c3e43c99173c143537fb234b44cdd6e6b511d511"
+metro-babel7-plugin-react-transform@0.48.5:
+  version "0.48.5"
+  resolved "https://registry.yarnpkg.com/metro-babel7-plugin-react-transform/-/metro-babel7-plugin-react-transform-0.48.5.tgz#312eb0adf3764357c79b79acc6eb92646051b349"
   dependencies:
     "@babel/helper-module-imports" "^7.0.0"
 
@@ -5439,8 +5439,8 @@ metro-react-native-babel-preset@0.45.6:
     react-transform-hmr "^1.0.4"
 
 metro-react-native-babel-preset@^0.48.1:
-  version "0.48.3"
-  resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.48.3.tgz#839dbd0d9e4012f550861d2295b998144a61bcc8"
+  version "0.48.5"
+  resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.48.5.tgz#cafa1c3ea326a447a89031928b0932f38a65815c"
   dependencies:
     "@babel/plugin-proposal-class-properties" "^7.0.0"
     "@babel/plugin-proposal-export-default-from" "^7.0.0"
@@ -5475,7 +5475,7 @@ metro-react-native-babel-preset@^0.48.1:
     "@babel/plugin-transform-typescript" "^7.0.0"
     "@babel/plugin-transform-unicode-regex" "^7.0.0"
     "@babel/template" "^7.0.0"
-    metro-babel7-plugin-react-transform "0.48.3"
+    metro-babel7-plugin-react-transform "0.48.5"
     react-transform-hmr "^1.0.4"
 
 metro-resolver@0.45.6:
@@ -6486,8 +6486,8 @@ pseudomap@^1.0.2:
   resolved "https://registry.yarnpkg.com/pseudomap/-/pseudomap-1.0.2.tgz#f052a28da70e618917ef0a8ac34c1ae5a68286b3"
 
 psl@^1.1.24, psl@^1.1.28:
-  version "1.1.29"
-  resolved "https://registry.yarnpkg.com/psl/-/psl-1.1.29.tgz#60f580d360170bb722a797cc704411e6da850c67"
+  version "1.1.31"
+  resolved "https://registry.yarnpkg.com/psl/-/psl-1.1.31.tgz#e9aa86d0101b5b105cbe93ac6b784cd547276184"
 
 public-encrypt@^4.0.0:
   version "4.0.3"
@@ -6661,8 +6661,8 @@ react-native-blur@^3.2.2:
     prop-types "^15.5.10"
 
 react-native-camera@^1.3.0:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.5.1.tgz#c241cc0456e5dd31f1d05812bf3d0e86fb6931a3"
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.6.0.tgz#0b3777e119d07800ee626f802f44daae4c711258"
   dependencies:
     lodash "^4.17.10"
     prop-types "^15.6.2"
