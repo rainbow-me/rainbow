@@ -72,6 +72,6 @@ AssetListSkeleton.propTypes = {
 export default compose(
   pure,
   withNavigation,
-  withHandlers({ onPressAddFunds: ({ navigation }) => () => navigation.push('SettingsScreen') }),
+  withHandlers({ onPressAddFunds: ({ navigation }) => () => navigation.navigate('SettingsScreen') }),
   omitProps('navigation'),
 )(AssetListSkeleton);
