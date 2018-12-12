@@ -48,7 +48,7 @@ const AppStack = createStackNavigator({
     },
     screen: ActivityScreen,
   },
-  ConfirmTransaction: TransactionConfirmationScreenWithData,
+  ConfirmRequest: TransactionConfirmationScreenWithData,
   ExpandedAssetScreen: {
     navigationOptions: {
       effect: 'expanded',

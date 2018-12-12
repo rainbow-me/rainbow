@@ -36,6 +36,14 @@ class SectionList extends PureComponent {
 
   state = { isRefreshing: false }
 
+  componentDidMount = () => {
+    this.isCancelled = false;
+  };
+
+  componentWillUnmount = () => {
+    this.isCancelled = true;
+  };
+
   listRef = null
 
   handleListRef = (ref) => { this.listRef = ref; }
@@ -44,7 +52,9 @@ class SectionList extends PureComponent {
     if (this.state.isRefreshing) return;
 
     this.setState({ isRefreshing: true });
-    this.props.fetchData().then(() => this.setState({ isRefreshing: false }));
+    this.props.fetchData().then(() => {
+      !this.isCancelled && this.setState({ isRefreshing: false })
+    });
   }
 
   renderRefreshControl = () => {

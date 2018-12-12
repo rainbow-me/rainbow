@@ -13,6 +13,7 @@ import CompassIcon from './svg/CompassIcon';
 import DotIcon from './svg/DotIcon';
 import FaceIdIcon from './svg/FaceIdIcon';
 import HandleIcon from './svg/HandleIcon';
+import OfflineIcon from './svg/OfflineIcon';
 import ProgressIcon from './svg/ProgressIcon';
 import SendIcon from './svg/SendIcon';
 import ShareIcon from './svg/ShareIcon';
@@ -37,6 +38,7 @@ Icon.IconTypes = {
   dot: DotIcon,
   faceid: FaceIdIcon,
   handle: HandleIcon,
+  offline: OfflineIcon,
   progress: ProgressIcon,
   spinner: SpinnerIcon,
   threeDots: ThreeDotsIcon,

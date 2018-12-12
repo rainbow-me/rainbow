@@ -7,6 +7,7 @@ import {
   AUTHENTICATION_TYPE,
   canImplyAuthentication,
 } from 'react-native-keychain';
+import Piwik from 'react-native-matomo';
 import * as keychain from '../model/keychain';
 const seedPhraseKey = 'balanceWalletSeedPhrase';
 const privateKeyKey = 'balanceWalletPrivateKey';
@@ -25,8 +26,8 @@ export const walletInit = async (seedPhrase = null) => {
   return walletAddress;
 };
 
-export const loadWallet = async (authenticationPrompt) => {
-  const privateKey = await loadPrivateKey(authenticationPrompt);
+export const loadWallet = async () => {
+  const privateKey = await loadPrivateKey();
   if (privateKey) {
     const wallet = new ethers.Wallet(privateKey);
     wallet.provider = ethers.providers.getDefaultProvider();
@@ -48,11 +49,12 @@ export const createTransaction = async (to, data, value, gasLimit, gasPrice, non
   };
 };
 
-export const sendTransaction = async (transaction, authenticationPrompt = lang.t('account.authenticate.please')) => {
+export const sendTransaction = async ({ tracking, transaction }) => {
   try {
-    const wallet = await loadWallet(authenticationPrompt);
+    const wallet = await loadWallet();
     try {
       const result = await wallet.sendTransaction(transaction);
+      Piwik.trackEvent('Send', tracking.action, tracking.name, tracking.amount);
       return result.hash;
     } catch(error) {
       console.log('sendTxn error', error);
@@ -65,8 +67,23 @@ export const sendTransaction = async (transaction, authenticationPrompt = lang.t
   }
 };
 
-export const loadSeedPhrase = async () => {
-  const authenticationPrompt = lang.t('account.authenticate.please_seed_phrase');
+export const signMessage = async (message, authenticationPrompt = lang.t('account.authenticate.please')) => {
+  try {
+    const wallet = await loadWallet(authenticationPrompt);
+    try {
+      return await wallet.signMessage(message);
+    } catch(error) {
+      console.log('signMessage error', error);
+      AlertIOS.alert(lang.t('wallet.message_signing.failed_signing'));
+      return null;
+    }
+  } catch(error) {
+    AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
+    return null;
+  }
+};
+
+export const loadSeedPhrase = async (authenticationPrompt = lang.t('account.authenticate.please_seed_phrase')) => {
   const seedPhrase = await keychain.loadString(seedPhraseKey, { authenticationPrompt });
   return seedPhrase;
 };
@@ -106,7 +123,7 @@ const savePrivateKey = async (privateKey, accessControlOptions = {}) => {
   await keychain.saveString(privateKeyKey, privateKey, accessControlOptions);
 };
 
-const loadPrivateKey = async (authenticationPrompt) => {
+const loadPrivateKey = async (authenticationPrompt = lang.t('account.authenticate.please')) => {
   const privateKey = await keychain.loadString(privateKeyKey, { authenticationPrompt });
   return privateKey;
 };
