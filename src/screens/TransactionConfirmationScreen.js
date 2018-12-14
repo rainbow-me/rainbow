@@ -90,8 +90,8 @@ class TransactionConfirmationScreen extends Component {
     const { sendLongPressProgress } = this.state;
 
     Animated.timing(sendLongPressProgress, {
-      toValue: 50,
-      duration: 400,
+      toValue: 100,
+      duration: 800,
     }).start();
   };
 
