@@ -35,6 +35,13 @@ class TransactionConfirmationScreenWithData extends Component {
     }
   }
 
+  handleConfirm = async (requestType) => {
+    if (requestType === 'message') {
+      return this.handleSignMessage();
+    }
+    return this.handleConfirmTransaction();
+  };
+
   handleConfirmTransaction = async () => {
     const { transactionDetails } = this.props.navigation.state.params;
     const txPayload = get(transactionDetails, 'callData.params[0]');
@@ -138,8 +145,7 @@ class TransactionConfirmationScreenWithData extends Component {
         request={payload}
         requestType={type}
         onCancelTransaction={this.handleCancelTransaction}
-        onConfirmTransaction={this.handleConfirmTransaction}
-        onSignMessage={this.handleSignMessage}
+        onConfirm={this.handleConfirm}
       />
     );
   }
