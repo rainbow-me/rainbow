@@ -7,7 +7,7 @@ import { accountInitializeState, accountUpdateAccountAddress, commonStorage } fr
 import { AppRegistry, AlertIOS, AppState, View } from 'react-native';
 import { compose, withProps } from 'recompact';
 import { connect, Provider } from 'react-redux';
-import { NavigationActions } from 'react-navigation';
+import { StackActions } from 'react-navigation';
 import Piwik from 'react-native-matomo';
 import styled from 'styled-components';
 import OfflineBadge from './components/OfflineBadge';
@@ -146,7 +146,7 @@ class App extends Component {
 
   handleOpenConfirmTransactionModal = (transactionDetails, autoOpened) => {
     if (!this.navigatorRef) return;
-    const action = NavigationActions.navigate({
+    const action = StackActions.push({
       routeName: 'ConfirmRequest',
       params: { transactionDetails, autoOpened },
     });
