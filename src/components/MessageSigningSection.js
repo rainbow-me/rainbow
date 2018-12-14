@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { ScrollView } from 'react-native';
 import lang from 'i18n-js';
 import styled from 'styled-components';
 import { Column } from '../components/layout';
@@ -42,7 +43,9 @@ const MessageSigningSection = ({
   <BottomSheet bottomInset={safeAreaInset.bottom}>
     <MessageRow>
       <Smallcaps>{lang.t('wallet.message_signing.message')}</Smallcaps>
-      <Message>{message}</Message>
+      <ScrollView>
+        <Message>{message}</Message>
+      </ScrollView>
     </MessageRow>
     <SendButtonContainer>
       {sendButton}
