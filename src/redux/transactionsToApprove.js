@@ -63,9 +63,20 @@ const getRequestDisplayDetails = (callData, assets, prices, nativeCurrency) => {
     return getMessageDisplayDetails(message);
   } else if (callData.method === 'eth_signTypedData' ||
              callData.method === 'eth_signTypedData_v3') {
-    return null;
+    const request = get(callData, 'params[1]', null);
+    const jsonRequest = JSON.stringify(request.message);
+    return getTypedDataDisplayDetails(jsonRequest);
   }
   return null;
+};
+
+const getTypedDataDisplayDetails = (request) => {
+  const timestampInMs = Date.now();
+  return {
+    payload: request,
+    timestampInMs,
+    type: 'message',
+  };
 };
 
 const getMessageDisplayDetails = (message) => {
