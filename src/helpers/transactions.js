@@ -69,7 +69,7 @@ const normalizeTransactions = ({ accountAddress, transactions }) =>
     ...tx,
     balance: value,
     name: get(asset, 'name'),
-    hash: hash.replace(/-.*/g, ''),
+    originalHash: hash.replace(/-.*/g, ''),
     native: { balance: get(native, 'USD.value') },
     status: getTransactionStatus({ accountAddress, ...tx }),
     symbol: get(asset, 'symbol'),

@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import lang from 'i18n-js';
 import styled from 'styled-components';
-import { BlockButton } from '../components/buttons';
 import { Column } from '../components/layout';
 import {
   Smallcaps,
@@ -37,8 +36,8 @@ const SendButtonContainer = styled.View`
 
 const MessageSigningSection = ({
   message,
-  onSignMessage,
   safeAreaInset,
+  sendButton,
 }) => (
   <BottomSheet bottomInset={safeAreaInset.bottom}>
     <MessageRow>
@@ -46,17 +45,15 @@ const MessageSigningSection = ({
       <Message>{message}</Message>
     </MessageRow>
     <SendButtonContainer>
-      <BlockButton onPress={onSignMessage}>
-        {lang.t('wallet.message_signing.sign')}
-      </BlockButton>
+      {sendButton}
     </SendButtonContainer>
   </BottomSheet>
 );
 
 MessageSigningSection.propTypes = {
   message: PropTypes.string,
-  onSignMessage: PropTypes.func,
   safeAreaInset: PropTypes.object,
+  sendButton: PropTypes.object,
 };
 
 export default withSafeAreaViewInsetValues(MessageSigningSection);
