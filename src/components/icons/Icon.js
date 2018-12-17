@@ -19,6 +19,7 @@ import DotIcon from './svg/DotIcon';
 import FaceIdIcon from './svg/FaceIdIcon';
 import GearIcon from './svg/GearIcon';
 import HandleIcon from './svg/HandleIcon';
+import InboxIcon from './svg/InboxIcon';
 import OfflineIcon from './svg/OfflineIcon';
 import ProgressIcon from './svg/ProgressIcon';
 import SendIcon from './svg/SendIcon';
@@ -50,6 +51,7 @@ Icon.IconTypes = {
   faceid: FaceIdIcon,
   gear: GearIcon,
   handle: HandleIcon,
+  inbox: InboxIcon,
   offline: OfflineIcon,
   progress: ProgressIcon,
   send: SendIcon,
