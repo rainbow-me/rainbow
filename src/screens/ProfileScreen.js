@@ -1,102 +1,70 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import lang from 'i18n-js';
-import { onlyUpdateForPropTypes } from 'recompact';
-import styled from 'styled-components/primitives';
-import AppVersionStamp from '../components/AppVersionStamp';
-import { Button } from '../components/buttons';
 import { BackButton, Header, HeaderButton } from '../components/header';
-import { Centered, Column, FlexItem, Page } from '../components/layout';
-import SendFeedback from '../components/SendFeedback';
-import { Monospace, TruncatedAddress } from '../components/text';
+import { FlexItem, Page } from '../components/layout';
 import Icon from '../components/icons/Icon';
-import CopyTooltip from '../components/CopyTooltip';
-import ProfileMasthead from '../components/ProfileMasthead';
-import QRCodeDisplay from '../components/QRCodeDisplay';
-import { colors, fonts, padding, position } from '../styles';
-import { deviceUtils } from '../utils';
-import { SettingsMenu } from '../components/settings-menu';
+import { ProfileMasthead } from '../components/profile';
+import { position } from '../styles';
 import { ActivityList } from '../components/activity-list';
 import BlurOverlay from '../components/BlurOverlay';
 
 const ProfileScreen = ({
   accountAddress,
-  onHideSettingsOverlay,
-  modalYPosition,
+  blurOpacity,
+  hasPendingTransaction,
   navigation,
   onPressBackButton,
+  onPressSettings,
+  requests,
+  showBlur,
   transactions,
   transactionsCount,
-  requests,
   transitionProps,
-  overlayOpacity,
-  settingsVisible,
-  hasPendingTransaction,
-  onShowSettingsOverlay,
-}) => {
-  // allow navigation to any Settings section via navigation.params
-  const settingsSection = navigation.getParam('settingsSection', 'Settings');
-
-    const {
-      effect,
-      isTransitioning,
-      position: transPosition,
-    } = transitionProps;
-
-    const showBlur = effect === 'expanded' && (isTransitioning || transPosition._value > 0);
-    const blurOpacity = transPosition.interpolate({
-      inputRange: [0, 0.01, 1],
-      outputRange: [0, 1, 1],
-    });
-
-  return (
-    <Page component={FlexItem} style={position.sizeAsObject('100%')}>
-      {showBlur && (
-        <BlurOverlay
-          blurType="light"
-          opacity={blurOpacity}
+}) => (
+  <Page component={FlexItem} style={position.sizeAsObject('100%')}>
+    {showBlur && (
+      <BlurOverlay
+        blurType="light"
+        opacity={blurOpacity}
+      />
+    )}
+    <Header justify="space-between">
+      <HeaderButton onPress={onPressSettings}>
+        <Icon name="gear" />
+      </HeaderButton>
+      <BackButton
+        direction="right"
+        onPress={onPressBackButton}
+      />
+    </Header>
+    <ActivityList
+      accountAddress={accountAddress}
+      hasPendingTransaction={hasPendingTransaction}
+      header={(
+        <ProfileMasthead
+          accountAddress={accountAddress}
+          navigation={navigation}
         />
       )}
-      <Header justify="space-between">
-        <HeaderButton onPress={onShowSettingsOverlay}>
-          <Icon name="gear" />
-        </HeaderButton>
-        <BackButton
-          direction="right"
-          onPress={onPressBackButton}
-        />
-      </Header>
-      <ActivityList
-        accountAddress={accountAddress}
-        hasPendingTransaction={hasPendingTransaction}
-        header={<ProfileMasthead accountAddress={accountAddress} />}
-        requests={requests}
-        transactions={transactions}
-        transactionsCount={transactionsCount}
-      />
-    </Page>
-  );
-};
+      requests={requests}
+      transactions={transactions}
+      transactionsCount={transactionsCount}
+    />
+  </Page>
+);
 
 ProfileScreen.propTypes = {
   accountAddress: PropTypes.string,
-  modalYPosition: PropTypes.number,
+  blurOpacity: PropTypes.object,
+  hasPendingTransaction: PropTypes.bool,
   navigation: PropTypes.object,
-  onHideSettingsOverlay: PropTypes.func,
   onPressBackButton: PropTypes.func,
-  onShowSettingsOverlay: PropTypes.func,
-  overlayOpacity: PropTypes.number,
-  settingsVisible: PropTypes.bool,
+  onPressSettings: PropTypes.func,
+  requests: PropTypes.array,
+  showBlur: PropTypes.bool,
+  transactions: PropTypes.array,
+  transactionsCount: PropTypes.number,
+  transitionProps: PropTypes.object,
 };
 
 export default ProfileScreen;
-
-
-
-      // <SettingsMenu
-      //   overlayOpacity={overlayOpacity}
-      //   modalYPosition={modalYPosition}
-      //   section={settingsSection}
-      //   visible={settingsVisible}
-      //   onPressClose={onHideSettingsOverlay}
-      // />

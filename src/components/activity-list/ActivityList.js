@@ -23,15 +23,16 @@ const ActivityList = ({
   transactionsCount,
 }) => (
   <SectionList
-    ListHeaderComponent={header}
     contentContainerStyle={{ paddingBottom: 40 }}
     extraData={{ hasPendingTransaction, pendingTransactionsCount }}
     getItemLayout={getItemLayout}
-    initialNumToRender={(transactionsCount < 30) ? transactionsCount : 30}
+    initialNumToRender={12}
     keyExtractor={keyExtractor}
-    maxToRenderPerBatch={40}
+    ListHeaderComponent={header}
+    removeClippedSubviews={true}
     renderSectionHeader={renderSectionHeader}
     sections={sections}
+    windowSize={15.75}
   />
 );
 
