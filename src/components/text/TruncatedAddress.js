@@ -1,10 +1,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import Monospace from './Monospace';
 import { abbreviations } from '../../utils';
+import Monospace from './Monospace';
 
-const TruncatedAddress = ({ address, truncationLength, ...props }) => (
+const TruncatedAddress = ({
+  address,
+  firstSectionLength,
+  truncationLength,
+  ...props
+}) => (
   <Monospace
     {...props}
     adjustsFontSizeToFit={true}
@@ -12,7 +16,7 @@ const TruncatedAddress = ({ address, truncationLength, ...props }) => (
     numberOfLines={1}
   >
     {address
-      ? abbreviations.address(address, truncationLength)
+      ? abbreviations.address(address, truncationLength, firstSectionLength)
       : 'Error displaying address'
     }
   </Monospace>
@@ -20,6 +24,7 @@ const TruncatedAddress = ({ address, truncationLength, ...props }) => (
 
 TruncatedAddress.propTypes = {
   address: PropTypes.string,
+  firstSectionLength: PropTypes.number,
   truncationLength: PropTypes.number,
 };
 

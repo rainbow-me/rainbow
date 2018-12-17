@@ -1,3 +1,4 @@
+export { default as Br } from './Br';
 export { default as Emoji } from './Emoji';
 export { default as ErrorText } from './ErrorText';
 export { default as H1 } from './H1';
