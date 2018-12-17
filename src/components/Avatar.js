@@ -40,7 +40,7 @@ Avatar.propTypes = {
 };
 
 Avatar.defaultProps = {
-  size: 30,
+  size: 32,
 };
 
 export default Avatar;
