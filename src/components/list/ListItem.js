@@ -1,7 +1,7 @@
 import { isString } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { BorderlessButton } from 'react-native-gesture-handler';
 import {
   compose,
   onlyUpdateForPropTypes,
@@ -48,7 +48,7 @@ const ListItem = ({
 }) => (
   <Container
     activeOpacity={activeOpacity}
-    component={TouchableOpacity}
+    component={BorderlessButton}
     onPress={onPress}
     {...props}
   >
