@@ -1,9 +1,9 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { BorderlessButton } from 'react-native-gesture-handler';
 import styled from 'styled-components/primitives';
 import { position } from '../styles';
 
-const Container = styled(TouchableOpacity)`
+const Container = styled(BorderlessButton)`
   ${position.cover}
   z-index: 0;
 `;

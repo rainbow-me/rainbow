@@ -1,14 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
-import { compose, setPropTypes, withProps, withHandlers } from 'recompact';
+import { BorderlessButton } from 'react-native-gesture-handler';
 import styled from 'styled-components';
-import { colors, padding, position } from '../../styles';
-import Icon from '../icons/Icon';
-import { Centered, FlexItem, Row } from '../layout';
-import { Text as UnstyledText, TruncatedText } from '../text';
+import { colors } from '../../styles';
+import { Icon } from '../icons';
+import { Row } from '../layout';
+import { Text as UnstyledText } from '../text';
 
-  // flex: 1,
 const Container = styled(Row).attrs({ align: 'center' })`
   bottom: 0;
   flex: 1;
@@ -28,32 +26,34 @@ const Text = styled(UnstyledText).attrs({
   margin-left: ${({ showBackArrow }) => (showBackArrow ? 4 : 0)};
 `;
 
-const ModalHeaderButton = ({ children, side, showBackArrow, ...props }) => {
-
-  return (
-    <Container
-      component={TouchableOpacity}
-      justify={(side === 'left') ? 'start' : 'end'}
-      side={side}
-      {...props}
-    >
-      {showBackArrow && (
-        <Icon
-          color={colors.appleBlue}
-          direction="left"
-          height={16}
-          name="caret"
-        />
-      )}
-      <Text showBackArrow={showBackArrow}>
-        {children}
-      </Text>
-    </Container>
-  );
-};
+const ModalHeaderButton = ({
+  label,
+  showBackArrow,
+  side,
+  ...props
+}) => (
+  <Container
+    component={BorderlessButton}
+    justify={(side === 'left') ? 'start' : 'end'}
+    side={side}
+    {...props}
+  >
+    {showBackArrow && (
+      <Icon
+        color={colors.appleBlue}
+        direction="left"
+        height={16}
+        name="caret"
+      />
+    )}
+    <Text showBackArrow={showBackArrow}>
+      {label}
+    </Text>
+  </Container>
+);
 
 ModalHeaderButton.propTypes = {
-  children: PropTypes.string,
+  label: PropTypes.string,
   showBackArrow: PropTypes.bool,
 };
 
