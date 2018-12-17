@@ -1,30 +1,27 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import TouchID from 'react-native-touch-id';
-import PasscodeAuth from 'react-native-passcode-auth';
+import { compose, withHandlers, withProps, withState } from 'recompose';
 
-import { Monospace } from '../text';
+import { loadSeedPhrase as loadSeedPhraseFromKeychain } from '../../model/wallet';
+import { colors, margin, position } from '../../styles';
+import { Br, Monospace, Text } from '../text';
 import { Centered } from '../layout';
 import { Button } from '../buttons';
-import { loadSeedPhrase } from '../../model/wallet';
 
-// ======================================================================
-// Styles
-// ======================================================================
-
-const Content = styled(Centered).attrs({
+const Container = styled(Centered).attrs({
   align: 'stretch',
 })`
   flex: 1;
-  flex-direction: column;
 `;
 
 const PhraseButton = styled(Button)`
-  margin-top: auto;
-  margin-bottom: auto;
-  margin-left: auto;
-  margin-right: auto;
+  ${margin('auto')}
+`;
+
+const Content = styled(Centered)`
+  ${margin(6, 0)};
+  text-align: center;
 `;
 
 const SeedPhrase = styled(Monospace).attrs({
@@ -39,64 +36,47 @@ const SeedPhrase = styled(Monospace).attrs({
   padding-right: 25;
 `;
 
-// ======================================================================
-// Component
-// ======================================================================
+const BackupSection = ({ hideSeedPhrase, seedPhrase, showSeedPhrase }) => (
+  <Centered direction="column" flex={1}>
+    <Text size="large" weight="semibold">Your Seed Phrase</Text>
+    <Content>
+      <Text color="blueGreyLighter" style={{ lineHeight: 21 }}>
+        If you lose access to your device, the only way to restore your
+        funds is with your 12-word seed phrase.
+        <Br />
+        <Br />
+        Please store it in a safe place.
+      </Text>
+    </Content>
+    {!seedPhrase && (
+      <PhraseButton onPress={showSeedPhrase}>
+        Show Seed Phrase
+      </PhraseButton>
+    )}
+    {seedPhrase && (
+      <Fragment>
+        <PhraseButton onPress={hideSeedPhrase}>
+          Hide Seed Phrase
+        </PhraseButton>
+        <SeedPhrase>{seedPhrase}</SeedPhrase>
+      </Fragment>
+    )}
+  </Centered>
+);
 
-class BackupSection extends React.Component {
-  state = {
-    seedPhrase: null,
-  };
+BackupSection.propTypes = {
+  hideSeedPhrase: PropTypes.func.isRequired,
+  seedPhrase: PropTypes.string,
+  showSeedPhrase: PropTypes.func.isRequired,
+};
 
-  showSeedPhrase = () => {
-    TouchID.isSupported()
-      .then(biometryType => {
-        if (biometryType === 'FaceID' || biometryType === 'TouchID') {
-          TouchID.authenticate('View seed phrase')
-            .then(this.loadSeedPhrase)
-            .catch(this.catchAuthError);
-        }
-      })
-      .catch(error => {
-        PasscodeAuth.authenticate('View seed phrase')
-          .then(this.loadSeedPhrase)
-          .catch(this.catchAuthError);
-      });
-  };
-
-  hideSeedPhrase = () => {
-    this.setState({ seedPhrase: null });
-  };
-
-  loadSeedPhrase = success => {
-    loadSeedPhrase().then(seedPhrase => this.setState({ seedPhrase }));
-  };
-
-  catchAuthError = error => {
-    this.hideSeedPhrase();
-  };
-
-  render() {
-    return (
-      <Content>
-        {!this.state.seedPhrase && (
-          <PhraseButton onPress={this.showSeedPhrase}>
-            Show Seed Phrase
-          </PhraseButton>
-        )}
-        {this.state.seedPhrase && (
-          <React.Fragment>
-            <PhraseButton onPress={this.hideSeedPhrase}>
-              Hide Seed Phrase
-            </PhraseButton>
-            <SeedPhrase>{this.state.seedPhrase}</SeedPhrase>
-          </React.Fragment>
-        )}
-      </Content>
-    );
-  }
-}
-
-BackupSection.propTypes = {};
-
-export default BackupSection;
+export default compose(
+  withState('seedPhrase', 'setSeedPhrase', null),
+  withHandlers({ hideSeedPhrase: ({ setSeedPhrase }) => () => setSeedPhrase(null) }),
+  withHandlers({
+    showSeedPhrase: ({ hideSeedPhrase, setSeedPhrase }) => () =>
+      loadSeedPhraseFromKeychain()
+        .then(setSeedPhrase)
+        .catch(hideSeedPhrase),
+  }),
+)(BackupSection);

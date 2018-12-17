@@ -5,11 +5,12 @@ import ActivityScreen from './ActivityScreen';
 import ExpandedAssetScreen from './ExpandedAssetScreen';
 import IntroScreen from './IntroScreen';
 import LoadingScreen from './LoadingScreen';
-import NewSettingsScreen from './NewSettingsScreen';
+import ProfileScreenWithData from './ProfileScreenWithData';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
+import ReceiveModal from './ReceiveModal';
 import SendQRScannerScreenWithData from './SendQRScannerScreenWithData';
 import SendScreenWithData from './SendScreenWithData';
-import ProfileScreenWithData from './ProfileScreenWithData';
+import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
 import { deviceUtils } from '../utils';
@@ -62,6 +63,15 @@ const AppStack = createStackNavigator({
     },
     screen: ExpandedAssetScreen,
   },
+  ReceiveModal: {
+    navigationOptions: {
+      effect: 'expanded',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height,
+      },
+    },
+    screen: ReceiveModal,
+  },
   SendScreen: SendScreenWithData,
   SendQRScannerScreen: SendQRScannerScreenWithData,
   SwipeLayout: SwipeStack,
@@ -70,7 +80,7 @@ const AppStack = createStackNavigator({
       effect: 'expanded',
       gesturesEnabled: false,
     },
-    screen: NewSettingsScreen,
+    screen: SettingsModal,
   },
 }, {
   headerMode: 'none',
