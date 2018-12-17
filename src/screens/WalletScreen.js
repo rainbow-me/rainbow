@@ -1,9 +1,8 @@
-import { get, join, map } from 'lodash';
-import { isSameDay } from 'date-fns';
 import { withSafeTimeout } from '@hocs/safe-timers';
+import { isSameDay } from 'date-fns';
+import { get, join, map } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../model/localstorage';
 import Piwik from 'react-native-matomo';
 import {
   compose,
@@ -19,13 +18,14 @@ import { FabWrapper } from '../components/fab';
 import { CameraHeaderButton, Header, ProfileHeaderButton } from '../components/header';
 import { Page } from '../components/layout';
 import buildWalletSections from '../helpers/buildWalletSections';
+import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../model/localstorage';
 import {
   withAccountAddress,
   withAccountAssets,
+  withBlurTransitionProps,
   withHideSplashScreen,
   withRequestsInit,
   withTrackingDate,
-  withTransitionProps,
 } from '../hoc';
 import { position } from '../styles';
 
@@ -36,12 +36,14 @@ const WalletPage = styled(Page)`
 
 class WalletScreen extends Component {
   static propTypes = {
+    blurOpacity: PropTypes.object,
     isEmpty: PropTypes.bool.isRequired,
     isLoading: PropTypes.bool.isRequired,
     navigation: PropTypes.object,
     onHideSplashScreen: PropTypes.func,
     onRefreshList: PropTypes.func.isRequired,
     sections: PropTypes.array,
+    showBlur: PropTypes.bool,
     transitionProps: PropTypes.object,
   }
 
@@ -83,25 +85,14 @@ class WalletScreen extends Component {
 
   render = () => {
     const {
+      blurOpacity,
       isEmpty,
       isLoading,
       navigation,
       onRefreshList,
       sections,
-      transitionProps,
+      showBlur,
     } = this.props;
-
-    const {
-      effect,
-      isTransitioning,
-      position: transPosition,
-    } = transitionProps;
-
-    const showBlur = effect === 'expanded' && (isTransitioning || transPosition._value > 0);
-    const blurOpacity = transPosition.interpolate({
-      inputRange: [0, 0.01, 1],
-      outputRange: [0, 1, 1],
-    });
 
     return (
       <WalletPage>
@@ -130,7 +121,7 @@ export default compose(
   withRequestsInit,
   withSafeTimeout,
   withTrackingDate,
-  withTransitionProps,
+  withBlurTransitionProps,
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
     onRefreshList: ({
