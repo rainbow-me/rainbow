@@ -37,7 +37,7 @@ const base = {
   primaryGreen: '#00a352', // '0, 163, 82'
   purple: '#32325d', // '50, 50, 93'
   red: '#d64b47', // '214, 75, 71'
-  rowDivider: '#f8f8f8', // '248, 248, 248'
+  rowDivider: '#f9f9fa', // '249, 249, 250'
   seaGreen: '#3aa686', // '58, 166, 134'
   skeleton: '#f7f7f8', // '247, 247, 248'
   teal: '#84f8da', // '132, 248, 218'
