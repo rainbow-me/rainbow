@@ -53,7 +53,7 @@ const assetIcon = {
 };
 
 const sendScreen = {
-  brightBlue: '#0e76fd', // '16, 118, 253'
+  brightBlue: base.appleBlue,  // 14, 118, 253
   lightGrey: '#fafafa', // '250, 250, 250'
   grey: '#d8d8d8', // '216, 216, 216'
 };
