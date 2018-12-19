@@ -1,4 +1,5 @@
-import { supportedNativeCurrencies as currencies } from 'balance-common';
+import { supportedNativeCurrencies } from 'balance-common';
+import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
@@ -7,6 +8,8 @@ import { CoinIcon } from '../coin-icon';
 import { RadioList, RadioListItem } from '../radio-list';
 import { Emoji } from '../text';
 
+// Disable BTC native currency support until BTC wallet support exists
+const currencies = omit(supportedNativeCurrencies || {}, 'BTC');
 const currencyListItems = Object.values(currencies).map(({ currency, ...item }) => ({
   ...item,
   currency,
@@ -50,7 +53,7 @@ const CurrencySection = ({ nativeCurrency, onSelectCurrency }) => (
 );
 
 CurrencySection.propTypes = {
-  nativeCurrency: PropTypes.oneOf(Object.keys(currencies)),
+  nativeCurrency: PropTypes.oneOf(Object.keys(supportedNativeCurrencies)),
   onSelectCurrency: PropTypes.func.isRequired,
 };
 
