@@ -66,22 +66,22 @@ const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
 );
 
 export default compose(
-  mapProps(({ item: { hash, originalHash, pending, ...item }, ...props }) => ({
-    originalHash,
+  mapProps(({ item: { hash, pending, ...item }, ...props }) => ({
+    hash,
     item,
     pending,
     ...props,
   })),
   withHandlers({
-    onPressTransaction: ({ originalHash }) => () => {
-      if (originalHash) {
+    onPressTransaction: ({ hash }) => () => {
+      if (hash) {
         showActionSheetWithOptions({
           cancelButtonIndex: 1,
           options: ['View on Etherscan', 'Cancel'],
         }, (buttonIndex) => {
           if (buttonIndex === 0) {
-            const etherscanUrl = `https://etherscan.io/tx/${originalHash}`;
-            Linking.openURL(etherscanUrl);
+            const normalizedHash = hash.replace(/-.*/g, '');
+            Linking.openURL(`https://etherscan.io/tx/${normalizedHash}`);
           }
         });
       }

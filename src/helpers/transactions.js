@@ -61,7 +61,6 @@ const groupTransactionByDate = (transactions) =>
 const normalizeTransactions = ({ accountAddress, transactions }) =>
   transactions.map(({
     asset,
-    hash,
     native,
     value,
     ...tx
@@ -69,7 +68,6 @@ const normalizeTransactions = ({ accountAddress, transactions }) =>
     ...tx,
     balance: value,
     name: get(asset, 'name'),
-    originalHash: hash.replace(/-.*/g, ''),
     native: { balance: get(native, 'USD.value') },
     status: getTransactionStatus({ accountAddress, ...tx }),
     symbol: get(asset, 'symbol'),
