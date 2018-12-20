@@ -12,6 +12,7 @@ const ProfileScreen = ({
   accountAddress,
   blurOpacity,
   hasPendingTransaction,
+  nativeCurrency,
   navigation,
   onPressBackButton,
   onPressSettings,
@@ -46,6 +47,7 @@ const ProfileScreen = ({
           navigation={navigation}
         />
       )}
+      nativeCurrency={nativeCurrency}
       requests={requests}
       transactions={transactions}
       transactionsCount={transactionsCount}
@@ -57,6 +59,7 @@ ProfileScreen.propTypes = {
   accountAddress: PropTypes.string,
   blurOpacity: PropTypes.object,
   hasPendingTransaction: PropTypes.bool,
+  nativeCurrency: PropTypes.string,
   navigation: PropTypes.object,
   onPressBackButton: PropTypes.func,
   onPressSettings: PropTypes.func,
