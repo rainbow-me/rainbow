@@ -87,7 +87,7 @@ const SettingsSection = ({
         </ArrowGroup>
       </ListItem>
       <ListItemDivider />
-      <ListItem
+      {/*<ListItem
         icon={<SettingIcon source={LanguageIcon} />}
         onPress={onPressLanguage}
         label="Language"
@@ -95,7 +95,7 @@ const SettingsSection = ({
         <ArrowGroup>
           {supportedLanguages[language] || ''}
         </ArrowGroup>
-      </ListItem>
+      </ListItem>*/}
       {/*
         <ListItemDivider />
         <ListItem
