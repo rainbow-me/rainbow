@@ -52,6 +52,7 @@ ActivityList.propTypes = {
 export default compose(
   mapProps(({
     accountAddress,
+    nativeCurrency,
     requests,
     transactions,
     ...props
@@ -60,6 +61,7 @@ export default compose(
 
     const sections = buildTransactionsSections({
       accountAddress,
+      nativeCurrency,
       requestRenderItem: RequestCoinRow,
       requests,
       transactionRenderItem: TransactionCoinRow,
@@ -80,6 +82,7 @@ export default compose(
   }),
   onlyUpdateForKeys([
     'hasPendingTransaction',
+    'nativeCurrency',
     'pendingTransactionsCount',
     'sections',
     'transactionsCount',
