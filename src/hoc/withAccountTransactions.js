@@ -7,11 +7,13 @@ const mapStateToProps = ({
   account: {
     fetchingTransactions,
     hasPendingTransaction,
+    nativeCurrency,
     transactions,
   },
 }) => ({
   fetchingTransactions,
   hasPendingTransaction,
+  nativeCurrency,
   transactions,
 });
 

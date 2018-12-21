@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import Piwik from 'react-native-matomo';
 import {
   compose,
-  onlyUpdateForKeys,
+  shouldUpdate,
   withHandlers,
   withProps,
   withState,
@@ -145,5 +145,13 @@ export default compose(
     },
   }),
   withProps(buildWalletSections),
-  onlyUpdateForKeys(['isScreenActive', ...Object.keys(WalletScreen.propTypes)]),
+  shouldUpdate((props, { isScreenActive, ...nextProps }) => {
+    if (!isScreenActive) return false;
+
+    const finishedPopulating = props.isEmpty && !nextProps.isEmpty;
+    const finishedLoading = props.isLoading && !nextProps.isLoading;
+    const newSections = props.sections !== nextProps.sections;
+
+    return finishedPopulating || finishedLoading || newSections;
+  }),
 )(WalletScreen);
