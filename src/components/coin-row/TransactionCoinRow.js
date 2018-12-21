@@ -29,14 +29,13 @@ const bottomRowRender = ({ name, native, status }) => {
 
   let balanceTextColor = colors.blueGreyLight;
   if (isStatusReceived) balanceTextColor = colors.primaryGreen;
-  if (!nativeDisplay) balanceTextColor = null;
 
   return (
     <Fragment>
       <CoinName>{name}</CoinName>
       <BalanceText color={balanceTextColor}>
         {(nativeDisplay && isStatusSent) ? '- ' : ''}
-        {nativeDisplay || ''}
+        {nativeDisplay || `${native.symbol}0.00`}
       </BalanceText>
     </Fragment>
   );
