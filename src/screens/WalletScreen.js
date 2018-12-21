@@ -152,8 +152,6 @@ export default compose(
     const finishedLoading = props.isLoading && !nextProps.isLoading;
     const newSections = props.sections !== nextProps.sections;
 
-    const updated = finishedPopulating || finishedLoading || newSections;
-    console.log('UPDATE WALLET');
-    return updated;
+    return finishedPopulating || finishedLoading || newSections;
   }),
 )(WalletScreen);
