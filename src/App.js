@@ -46,7 +46,7 @@ class App extends Component {
 
   navigatorRef = null
 
-  componentDidMount() {
+  async componentDidMount() {
     Piwik.initTracker('https://matomo.balance.io/piwik.php', 2);
     AppState.addEventListener('change', this.handleAppStateChange);
     firebase.messaging().getToken()
@@ -93,7 +93,7 @@ class App extends Component {
       this.onPushNotificationOpened(callId, sessionId, false);
     });
 
-    this.props.accountInitializeState();
+    await this.props.accountInitializeState();
 
     walletInit()
       .then(walletAddress => {
