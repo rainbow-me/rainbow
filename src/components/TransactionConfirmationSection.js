@@ -3,7 +3,6 @@ import React from 'react';
 import lang from 'i18n-js';
 import styled from 'styled-components';
 import BalanceManagerLogo from '../assets/balance-manager-logo.png';
-import { BlockButton } from '../components/buttons';
 import { CoinIcon } from '../components/coin-icon';
 import { Nbsp } from '../components/html-entities';
 import { Column, Row } from '../components/layout';
@@ -36,7 +35,7 @@ const AmountRow = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
 })`
-  ${padding(21, 19)}
+  ${padding(19, 19)}
   flex: 1;
 `;
 
@@ -72,7 +71,7 @@ const NativeAmount = styled(Monospace).attrs({
 `;
 
 const SendButtonContainer = styled.View`
-  ${padding(7, 15, 14)}
+  ${padding(2, 15, 14)}
   flex-shrink: 0;
 `;
 
@@ -99,8 +98,8 @@ const TransactionConfirmationSection = ({
     nativeAmountDisplay,
     symbol,
   },
-  onConfirmTransaction,
   safeAreaInset,
+  sendButton,
 }) => (
   <BottomSheet bottomInset={safeAreaInset.bottom}>
     <AddressRow>
@@ -122,9 +121,7 @@ const TransactionConfirmationSection = ({
       <NativeAmount>{nativeAmountDisplay}</NativeAmount>
     </AmountRow>
     <SendButtonContainer>
-      <BlockButton onPress={onConfirmTransaction}>
-        {lang.t('wallet.transaction.send')}
-      </BlockButton>
+      {sendButton}
     </SendButtonContainer>
   </BottomSheet>
 );
@@ -137,8 +134,8 @@ TransactionConfirmationSection.propTypes = {
     nativeAmountDisplay: PropTypes.string,
     symbol: PropTypes.string,
   }),
-  onConfirmTransaction: PropTypes.func,
   safeAreaInset: PropTypes.object,
+  sendButton: PropTypes.object,
 };
 
 export default withSafeAreaViewInsetValues(TransactionConfirmationSection);
