@@ -66,9 +66,10 @@ const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
 );
 
 export default compose(
-  mapProps(({ item: { hash, pending, ...item }, ...props }) => ({
+  mapProps(({ item: { hash, native, pending, ...item }, ...props }) => ({
     hash,
     item,
+    native,
     pending,
     ...props,
   })),
@@ -87,5 +88,5 @@ export default compose(
       }
     },
   }),
-  onlyUpdateForKeys(['hash', 'pending']),
+  onlyUpdateForKeys(['hash', 'native', 'pending']),
 )(TransactionCoinRow);

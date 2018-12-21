@@ -16,6 +16,7 @@ export default compose(
     onPressBackButton: ({ navigation }) => () => navigation.navigate('WalletScreen'),
     onPressSettings: ({ navigation }) => () => navigation.navigate('SettingsModal'),
   }),
+  /*
   shouldUpdate((props, { isScreenActive, ...nextProps }) => {
     if (!isScreenActive) return false;
 
@@ -26,4 +27,5 @@ export default compose(
     console.log('UPDATE PROFILE', update);
     return update;
   }),
+  */
 )(ProfileScreen);
