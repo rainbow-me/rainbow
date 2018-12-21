@@ -1,71 +1,92 @@
-import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
+import FastImage from 'react-native-fast-image';
+import { compose, withHandlers, withState } from 'recompact';
 import styled from 'styled-components';
-import { compose, withHandlers, withProps, withState } from 'recompose';
-
+import SeedPhraseImageSource from '../../assets/seed-phrase-icon.png';
 import { loadSeedPhrase as loadSeedPhraseFromKeychain } from '../../model/wallet';
-import { colors, margin, position } from '../../styles';
-import { Br, Monospace, Text } from '../text';
-import { Centered } from '../layout';
+import { colors, padding, position, shadow } from '../../styles';
 import { Button } from '../buttons';
+import { Centered, Column } from '../layout';
+import { Br, Monospace, Text } from '../text';
+import CopyTooltip from '../CopyTooltip';
 
-const Container = styled(Centered).attrs({
-  align: 'stretch',
-})`
-  flex: 1;
-`;
-
-const PhraseButton = styled(Button)`
-  ${margin('auto')}
+const Container = styled(Column)`
+  ${padding(80, 40, 0)};
 `;
 
 const Content = styled(Centered)`
-  ${margin(6, 0)};
-  text-align: center;
+  margin-bottom: 34;
+  margin-top: 6;
+  max-width: 265;
+  padding-top: ${({ seedPhrase }) => (seedPhrase ? 34 : 0)}
 `;
 
-const SeedPhrase = styled(Monospace).attrs({
-  size: 'h5',
-  weight: 'medium',
-})`
-  line-height: 28;
-  max-width: 288;
-  text-align: center;
-  margin-top: 25;
-  padding-left: 25;
-  padding-right: 25;
+const ToggleSeedPhraseButton = styled(Button)`
+  ${shadow.build(0, 6, 10, colors.alpha(colors.purple, 0.14))}
+  background-color: ${colors.appleBlue};
+  width: 235;
 `;
 
-const BackupSection = ({ hideSeedPhrase, seedPhrase, showSeedPhrase }) => (
-  <Centered direction="column" flex={1}>
-    <Text size="large" weight="semibold">Your Seed Phrase</Text>
-    <Content>
-      <Text color="blueGreyLighter" style={{ lineHeight: 21 }}>
-        If you lose access to your device, the only way to restore your
-        funds is with your 12-word seed phrase.
-        <Br />
-        <Br />
-        Please store it in a safe place.
-      </Text>
+const BackupSection = ({
+  hideSeedPhrase,
+  navigation,
+  seedPhrase,
+  showSeedPhrase,
+}) => (
+  <Container align="center" flex={1}>
+    <FastImage
+      source={SeedPhraseImageSource}
+      style={position.sizeAsObject(70)}
+    />
+    <Text
+      lineHeight="loose"
+      size="large"
+      weight="semibold"
+    >
+      Your Seed Phrase
+    </Text>
+    <Content flex={0} seedPhrase={seedPhrase}>
+      {seedPhrase
+        ? (
+          <CopyTooltip
+            navigation={navigation}
+            textToCopy={seedPhrase}
+            tooltipText="Copy Seed Phrase"
+          >
+            <Monospace
+              align="center"
+              lineHeight="loosest"
+              size="h5"
+              weight="medium"
+            >
+              {seedPhrase}
+            </Monospace>
+          </CopyTooltip>
+        ) : (
+          <Text
+            align="center"
+            color="blueGreyLighter"
+            lineHeight="loose"
+          >
+            If you lose access to your device, the only way to restore your
+            funds is with your 12-word seed phrase.
+            <Br />
+            <Br />
+            Please store it in a safe place.
+          </Text>
+        )
+      }
     </Content>
-    {!seedPhrase && (
-      <PhraseButton onPress={showSeedPhrase}>
-        Show Seed Phrase
-      </PhraseButton>
-    )}
-    {seedPhrase && (
-      <Fragment>
-        <PhraseButton onPress={hideSeedPhrase}>
-          Hide Seed Phrase
-        </PhraseButton>
-        <SeedPhrase>{seedPhrase}</SeedPhrase>
-      </Fragment>
-    )}
-  </Centered>
+    <ToggleSeedPhraseButton onPress={showSeedPhrase}>
+      {seedPhrase ? 'Hide' : 'Show'} Seed Phrase
+    </ToggleSeedPhraseButton>
+  </Container>
 );
 
 BackupSection.propTypes = {
   hideSeedPhrase: PropTypes.func.isRequired,
+  navigation: PropTypes.object,
   seedPhrase: PropTypes.string,
   showSeedPhrase: PropTypes.func.isRequired,
 };
