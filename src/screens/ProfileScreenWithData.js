@@ -23,9 +23,7 @@ export default compose(
     const finishedLoading = props.fetchingTransactions && !nextProps.fetchingTransactions;
     const newTxCount = props.transactionsCount !== nextProps.transactionsCount;
     const newNativeCurrency = props.nativeCurrency !== nextProps.nativeCurrency;
-    const update = finishedLoading || newTxCount || newNativeCurrency;
-    console.log('UPDATE PROFILE', update);
-    return update;
+    return finishedLoading || newTxCount || newNativeCurrency;
   }),
   */
 )(ProfileScreen);
