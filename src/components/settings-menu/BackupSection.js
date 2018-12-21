@@ -16,13 +16,12 @@ const Container = styled(Centered).attrs({
 `;
 
 const PhraseButton = styled(Button)`
-  ${margin(28, 0, 0, 0)}
-  background-color: ${colors.sendScreen.brightBlue};
+  ${margin('auto')}
 `;
 
 const Content = styled(Centered)`
-  ${margin(6, 40)};
-  align-items: center;
+  ${margin(6, 0)};
+  text-align: center;
 `;
 
 const SeedPhrase = styled(Monospace).attrs({
@@ -41,7 +40,7 @@ const BackupSection = ({ hideSeedPhrase, seedPhrase, showSeedPhrase }) => (
   <Centered direction="column" flex={1}>
     <Text size="large" weight="semibold">Your Seed Phrase</Text>
     <Content>
-      <Text color="blueGreyLighter" style={{ lineHeight: 21, textAlign: 'center' }}>
+      <Text color="blueGreyLighter" style={{ lineHeight: 21 }}>
         If you lose access to your device, the only way to restore your
         funds is with your 12-word seed phrase.
         <Br />
