@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, mapProps, onlyUpdateForKeys } from 'recompact';
 import { buildTransactionsSections } from '../../helpers/transactions';
+import { withAccountSettings } from '../../hoc';
 import { CoinRow, TransactionCoinRow, RequestCoinRow } from '../coin-row';
 import { SectionList } from '../list';
 import ActivityListHeader from './ActivityListHeader';
@@ -13,19 +14,23 @@ const getItemLayout = (data, index) => ({
 });
 
 const keyExtractor = ({ hash, timestamp: { ms } }) => (hash || ms);
-
 const renderSectionHeader = ({ section }) => <ActivityListHeader {...section} />;
 
 const ActivityList = ({
   hasPendingTransaction,
   header,
+  nativeCurrency,
   pendingTransactionsCount,
   sections,
   transactionsCount,
 }) => (
   <SectionList
     contentContainerStyle={{ paddingBottom: 40 }}
-    extraData={{ hasPendingTransaction, pendingTransactionsCount }}
+    extraData={{
+      hasPendingTransaction,
+      nativeCurrency,
+      pendingTransactionsCount,
+    }}
     getItemLayout={getItemLayout}
     initialNumToRender={12}
     keyExtractor={keyExtractor}
@@ -39,8 +44,9 @@ const ActivityList = ({
 
 ActivityList.propTypes = {
   hasPendingTransaction: PropTypes.bool,
-  pendingTransactionsCount: PropTypes.number,
   header: PropTypes.node,
+  nativeCurrency: PropTypes.string.isRequired,
+  pendingTransactionsCount: PropTypes.number,
   sections: PropTypes.arrayOf(PropTypes.shape({
     data: PropTypes.array,
     renderItem: PropTypes.func,
@@ -50,6 +56,7 @@ ActivityList.propTypes = {
 };
 
 export default compose(
+  withAccountSettings,
   mapProps(({
     accountAddress,
     nativeCurrency,
