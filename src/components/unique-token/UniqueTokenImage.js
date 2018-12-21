@@ -26,7 +26,7 @@ const Container = styled(Centered)`
 `;
 
 const FallbackText = styled(Monospace).attrs({ size: 'smedium' })`
-  line-height: ${fonts.lineHeight.loose};
+  line-height: ${fonts.lineHeight.looser};
   text-align: center;
 `;
 
