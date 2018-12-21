@@ -29,8 +29,18 @@ class TransactionConfirmationScreenWithData extends Component {
 
   componentDidMount() {
     StatusBar.setBarStyle('light-content', true);
-    Vibration.vibrate();
+    const { autoOpened } = this.props.navigation.state.params;
+    if (autoOpened) {
+      Vibration.vibrate();
+    }
   }
+
+  handleConfirm = async (requestType) => {
+    if (requestType === 'message') {
+      return this.handleSignMessage();
+    }
+    return this.handleConfirmTransaction();
+  };
 
   handleConfirmTransaction = async () => {
     const { transactionDetails } = this.props.navigation.state.params;
@@ -135,8 +145,7 @@ class TransactionConfirmationScreenWithData extends Component {
         request={payload}
         requestType={type}
         onCancelTransaction={this.handleCancelTransaction}
-        onConfirmTransaction={this.handleConfirmTransaction}
-        onSignMessage={this.handleSignMessage}
+        onConfirm={this.handleConfirm}
       />
     );
   }

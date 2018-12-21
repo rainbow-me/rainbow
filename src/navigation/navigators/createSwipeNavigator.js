@@ -161,11 +161,6 @@ export default function createSwipeNavigator(screens, options) {
       const currentScreenName = routeOrder[currentScreenIndex] || options.initialRouteName;
 
       navigation.navigate(currentScreenName);
-
-      if (isSwiping) {
-        isSwiping = false;
-        onSwipeEnd(navigation);
-      }
     };
 
     /**
@@ -198,6 +193,15 @@ export default function createSwipeNavigator(screens, options) {
 
         return { currentIndex: newIndex };
       });
+    };
+
+    onMomentumScrollEnd = () => {
+      const { navigation } = this.props;
+
+      if (isSwiping) {
+        isSwiping = false;
+        onSwipeEnd(navigation);
+      }
     };
 
     /**
@@ -253,6 +257,7 @@ export default function createSwipeNavigator(screens, options) {
             getItemLayout={this.getItemLayout}
             horizontal
             onScrollEndDrag={this.onScrollEndDrag}
+            onMomentumScrollEnd={this.onMomentumScrollEnd}
             onScroll={this.onScroll}
             pagingEnabled
             ref={this.handleFlatListRef}
