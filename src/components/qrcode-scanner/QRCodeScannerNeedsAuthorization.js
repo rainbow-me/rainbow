@@ -18,7 +18,7 @@ const SettingsButton = styled(Button)`
 `;
 
 const Text = styled(Monospace).attrs({ color: 'mediumGrey' })`
-  line-height: ${fonts.lineHeight.loose};
+  line-height: ${fonts.lineHeight.looser};
   margin-bottom: 30;
   margin-top: 7;
 `;
