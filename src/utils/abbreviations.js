@@ -1,15 +1,14 @@
 import deviceUtils from './deviceUtils';
 
-export function address(currentAddress, truncationLength) {
-  const defaultNumCharsPerSection = deviceUtils.isSmallPhone ? 8 : 10;
+const defaultNumCharsPerSection = deviceUtils.isSmallPhone ? 8 : 10;
+
+export function address(currentAddress, truncationLength, firstSectionLength) {
   const numCharsPerSection = truncationLength || defaultNumCharsPerSection;
 
-  const sections = [
-    currentAddress.substring(0, numCharsPerSection),
+  return [
+    currentAddress.substring(0, firstSectionLength || numCharsPerSection),
     currentAddress.substring(currentAddress.length - numCharsPerSection),
-  ];
-
-  return sections.join('...');
+  ].join('...');
 }
 
 export function isAddress(currentAddress) {
@@ -18,5 +17,6 @@ export function isAddress(currentAddress) {
 
 export default {
   address,
+  defaultNumCharsPerSection,
   isAddress,
 };

@@ -1,20 +1,10 @@
-import PropTypes from 'prop-types';
-import React, { Children, cloneElement } from 'react';
-import { Column } from '../layout';
+import { compose, setDisplayName, withProps } from 'recompact';
+import { ColumnWithMargins } from '../layout';
 
-const FloatingPanels = ({ children }) => (
-  <Column style={{ width: '100%' }}>
-    {Children.map(children, (child, index) =>
-      cloneElement(child, {
-        style: {
-          marginBottom: (index < children.length - 1) ? 20 : 0,
-        },
-      }))}
-  </Column>
-);
-
-FloatingPanels.propTypes = {
-  children: PropTypes.node,
-};
-
-export default FloatingPanels;
+export default compose(
+  setDisplayName('FloatingPanels'),
+  withProps({
+    margin: 20,
+    style: { width: '100%' },
+  }),
+)(ColumnWithMargins);

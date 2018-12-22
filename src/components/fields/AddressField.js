@@ -124,14 +124,14 @@ export default class UnderlineField extends Component {
     return (
       <Container>
         <Input
-          autoFocus={autoFocus}
           autoCorrect={false}
+          autoFocus={autoFocus}
           isValid={isValid}
           keyboardType="name-phone-pad"
           onChange={this.onChange}
-          value={isValid ? abbreviations.address(value) : value}
+          ref={inputRef}
           style={style}
-          innerRef={inputRef}
+          value={isValid ? abbreviations.address(value) : value}
         />
         {!value ? this.renderPlaceholder() : null}
       </Container>

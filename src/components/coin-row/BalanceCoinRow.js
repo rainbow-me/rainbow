@@ -1,8 +1,10 @@
+import { supportedNativeCurrencies } from 'balance-common';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import Piwik from 'react-native-matomo';
 import { compose, shouldUpdate, withHandlers } from 'recompact';
+import { withAccountSettings } from '../../hoc';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../buttons';
 import BalanceText from './BalanceText';
@@ -16,7 +18,12 @@ const formatPercentageString = percentString => (
     : '-'
 );
 
-const BalanceCoinRow = ({ item, onPress, ...props }) => (
+const BalanceCoinRow = ({
+  item,
+  nativeCurrency,
+  onPress,
+  ...props,
+}) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
     <CoinRow
       {...item}
@@ -37,11 +44,13 @@ const BalanceCoinRow = ({ item, onPress, ...props }) => (
       }}
       topRowRender={({ name, native }) => {
         const nativeDisplay = get(native, 'balance.display');
+        const currencySymbol = supportedNativeCurrencies[nativeCurrency].symbol;
+
         return (
           <Fragment>
             <CoinName>{name}</CoinName>
             <BalanceText color={nativeDisplay ? null : colors.blueGreyLight}>
-              {nativeDisplay || '$0.00'}
+              {nativeDisplay || `${currencySymbol}0.00`}
             </BalanceText>
           </Fragment>
         );
@@ -52,16 +61,19 @@ const BalanceCoinRow = ({ item, onPress, ...props }) => (
 
 BalanceCoinRow.propTypes = {
   item: PropTypes.object,
+  nativeCurrency: PropTypes.string.isRequired,
 };
 
 const isNewValueForPath = (a, b, path) => (get(a, path) !== get(b, path));
 
 export default compose(
+  withAccountSettings,
   shouldUpdate((props, nextProps) => {
+    const isNewNativeCurrency = isNewValueForPath(props, nextProps, 'nativeCurrency');
     const isNewNativePrice = isNewValueForPath(props, nextProps, 'item.native.price.display');
     const isNewTokenBalance = isNewValueForPath(props, nextProps, 'item.balance.amount');
 
-    return isNewNativePrice || isNewTokenBalance;
+    return isNewNativeCurrency || isNewNativePrice || isNewTokenBalance;
   }),
   withHandlers({
     onPress: ({ item: { symbol }, onPress }) => () => {
