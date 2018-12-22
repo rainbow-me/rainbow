@@ -1,13 +1,12 @@
-import { get, join, map } from 'lodash';
-import { isSameDay } from 'date-fns';
 import { withSafeTimeout } from '@hocs/safe-timers';
+import { isSameDay } from 'date-fns';
+import { get, join, map } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../model/localstorage';
 import Piwik from 'react-native-matomo';
 import {
   compose,
-  onlyUpdateForKeys,
+  shouldUpdate,
   withHandlers,
   withProps,
   withState,
@@ -16,16 +15,17 @@ import styled from 'styled-components/primitives';
 import BlurOverlay from '../components/BlurOverlay';
 import { AssetList } from '../components/asset-list';
 import { FabWrapper } from '../components/fab';
-import { ActivityHeaderButton, Header, ProfileHeaderButton } from '../components/header';
+import { CameraHeaderButton, Header, ProfileHeaderButton } from '../components/header';
 import { Page } from '../components/layout';
 import buildWalletSections from '../helpers/buildWalletSections';
+import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../model/localstorage';
 import {
   withAccountAddress,
   withAccountAssets,
+  withBlurTransitionProps,
   withHideSplashScreen,
   withRequestsInit,
   withTrackingDate,
-  withTransitionProps,
 } from '../hoc';
 import { position } from '../styles';
 
@@ -36,12 +36,14 @@ const WalletPage = styled(Page)`
 
 class WalletScreen extends Component {
   static propTypes = {
+    blurOpacity: PropTypes.object,
     isEmpty: PropTypes.bool.isRequired,
     isLoading: PropTypes.bool.isRequired,
     navigation: PropTypes.object,
     onHideSplashScreen: PropTypes.func,
     onRefreshList: PropTypes.func.isRequired,
     sections: PropTypes.array,
+    showBlur: PropTypes.bool,
     transitionProps: PropTypes.object,
   }
 
@@ -83,34 +85,21 @@ class WalletScreen extends Component {
 
   render = () => {
     const {
+      blurOpacity,
       isEmpty,
       isLoading,
       navigation,
       onRefreshList,
       sections,
-      transitionProps,
+      showBlur,
     } = this.props;
-
-    const {
-      effect,
-      isTransitioning,
-      position: transPosition,
-    } = transitionProps;
-
-    const showBlur = effect === 'expanded' && (isTransitioning || transPosition._value > 0);
-    const blurOpacity = transPosition.interpolate({
-      inputRange: [0, 0.01, 1],
-      outputRange: [0, 1, 1],
-    });
 
     return (
       <WalletPage>
         {showBlur && <BlurOverlay opacity={blurOpacity} />}
         <Header justify="space-between">
           <ProfileHeaderButton navigation={navigation} />
-          {(!isEmpty && !isLoading) && (
-            <ActivityHeaderButton navigation={navigation}/>
-          )}
+          <CameraHeaderButton navigation={navigation} />
         </Header>
         <FabWrapper disable={isEmpty || isLoading}>
           <AssetList
@@ -132,7 +121,7 @@ export default compose(
   withRequestsInit,
   withSafeTimeout,
   withTrackingDate,
-  withTransitionProps,
+  withBlurTransitionProps,
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
     onRefreshList: ({
@@ -156,5 +145,13 @@ export default compose(
     },
   }),
   withProps(buildWalletSections),
-  onlyUpdateForKeys(['isScreenActive', ...Object.keys(WalletScreen.propTypes)]),
+  shouldUpdate((props, { isScreenActive, ...nextProps }) => {
+    if (!isScreenActive) return false;
+
+    const finishedPopulating = props.isEmpty && !nextProps.isEmpty;
+    const finishedLoading = props.isLoading && !nextProps.isLoading;
+    const newSections = props.sections !== nextProps.sections;
+
+    return finishedPopulating || finishedLoading || newSections;
+  }),
 )(WalletScreen);

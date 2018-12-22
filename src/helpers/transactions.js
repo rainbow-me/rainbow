@@ -1,3 +1,4 @@
+import { supportedNativeCurrencies } from 'balance-common';
 import {
   format,
   isThisMonth,
@@ -58,7 +59,7 @@ const groupTransactionByDate = (transactions) =>
     return format(timestamp, `MMMM${isThisYear(timestamp) ? '' : ' YYYY'}`);
   });
 
-const normalizeTransactions = ({ accountAddress, transactions }) =>
+const normalizeTransactions = ({ accountAddress, nativeCurrency, transactions }) =>
   transactions.map(({
     asset,
     native,
@@ -68,7 +69,10 @@ const normalizeTransactions = ({ accountAddress, transactions }) =>
     ...tx,
     balance: value,
     name: get(asset, 'name'),
-    native: { balance: get(native, 'USD.value') },
+    native: {
+      ...supportedNativeCurrencies[nativeCurrency],
+      balance: get(native, `${nativeCurrency}.value`),
+    },
     status: getTransactionStatus({ accountAddress, ...tx }),
     symbol: get(asset, 'symbol'),
   }));
@@ -77,12 +81,18 @@ const renderItemElement = renderItem => renderItemProps => createElement(renderI
 
 export const buildTransactionsSections = ({
   accountAddress,
+  nativeCurrency,
   requestRenderItem,
   requests,
   transactionRenderItem,
   transactions,
 }) => {
-  const normalizedTransactions = normalizeTransactions({ accountAddress, transactions });
+  const normalizedTransactions = normalizeTransactions({
+    accountAddress,
+    nativeCurrency,
+    transactions,
+  });
+
   const transactionsByDate = groupTransactionByDate(normalizedTransactions);
 
   const sectionedTransactions = Object.keys(transactionsByDate).map(section => ({

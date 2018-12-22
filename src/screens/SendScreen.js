@@ -286,8 +286,8 @@ class SendScreen extends Component {
     const { sendLongPressProgress } = this.state;
 
     Animated.timing(sendLongPressProgress, {
-      toValue: 100,
-      duration: 800,
+      toValue: 50,
+      duration: 400,
     }).start();
   };
 

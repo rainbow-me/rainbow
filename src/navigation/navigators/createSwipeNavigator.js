@@ -28,6 +28,7 @@ export default function createSwipeNavigator(screens, options) {
     state = {
       currentIndex: 0,
       flatListScreens: initialScreens,
+      scrollEnabled: true,
     };
 
     constructor(props) {
@@ -161,11 +162,6 @@ export default function createSwipeNavigator(screens, options) {
       const currentScreenName = routeOrder[currentScreenIndex] || options.initialRouteName;
 
       navigation.navigate(currentScreenName);
-
-      if (isSwiping) {
-        isSwiping = false;
-        onSwipeEnd(navigation);
-      }
     };
 
     /**
@@ -200,6 +196,15 @@ export default function createSwipeNavigator(screens, options) {
       });
     };
 
+    onMomentumScrollEnd = () => {
+      const { navigation } = this.props;
+
+      if (isSwiping) {
+        isSwiping = false;
+        onSwipeEnd(navigation);
+      }
+    };
+
     /**
      * Scroll to a given index in the flat list.
      * @param  {Number}  index      The index in the flat list to scroll to.
@@ -209,6 +214,10 @@ export default function createSwipeNavigator(screens, options) {
       if (this.flatListRef && typeof this.flatListRef.scrollToIndex === 'function') {
         this.flatListRef.scrollToIndex({ animated, index, viewOffset: 0 });
       }
+    };
+
+    toggleSwiping = scrollEnabled => {
+      this.setState({ scrollEnabled });
     };
 
     /**
@@ -229,13 +238,14 @@ export default function createSwipeNavigator(screens, options) {
               goBack: this.goBack,
               navigate: this.navigate,
             },
+            toggleSwiping: this.toggleSwiping,
           })}
         </View>
       );
     };
 
     render() {
-      const { currentIndex, flatListScreens } = this.state;
+      const { currentIndex, flatListScreens, scrollEnabled } = this.state;
 
       const currentScreenName = routeOrder[currentIndex] || '';
       const currentScreen = screens[currentScreenName] || {};
@@ -253,11 +263,13 @@ export default function createSwipeNavigator(screens, options) {
             getItemLayout={this.getItemLayout}
             horizontal
             onScrollEndDrag={this.onScrollEndDrag}
+            onMomentumScrollEnd={this.onMomentumScrollEnd}
             onScroll={this.onScroll}
             pagingEnabled
             ref={this.handleFlatListRef}
             removeClippedSubviews
             renderItem={this.renderItem}
+            scrollEnabled={scrollEnabled}
             scrollEventThrottle={16}
             showsHorizontalScrollIndicator={false}
           />

@@ -1,15 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { ScrollView } from 'react-native';
 import lang from 'i18n-js';
 import styled from 'styled-components';
-import { BlockButton } from '../components/buttons';
-import { Column } from '../components/layout';
-import {
-  Smallcaps,
-  Text,
-} from '../components/text';
 import { withSafeAreaViewInsetValues } from '../hoc';
-import { borders, colors, fonts, padding, position } from '../styles';
+import { borders, colors, padding } from '../styles';
+import { Column } from './layout';
+import { Smallcaps, Text } from './text';
 
 const Message = styled(Text).attrs({ size: 'lmedium' })`
   color: ${colors.alpha(colors.blueGreyDark, 0.6)}
@@ -37,26 +34,26 @@ const SendButtonContainer = styled.View`
 
 const MessageSigningSection = ({
   message,
-  onSignMessage,
   safeAreaInset,
+  sendButton,
 }) => (
   <BottomSheet bottomInset={safeAreaInset.bottom}>
     <MessageRow>
       <Smallcaps>{lang.t('wallet.message_signing.message')}</Smallcaps>
-      <Message>{message}</Message>
+      <ScrollView>
+        <Message>{message}</Message>
+      </ScrollView>
     </MessageRow>
     <SendButtonContainer>
-      <BlockButton onPress={onSignMessage}>
-        {lang.t('wallet.message_signing.sign')}
-      </BlockButton>
+      {sendButton}
     </SendButtonContainer>
   </BottomSheet>
 );
 
 MessageSigningSection.propTypes = {
   message: PropTypes.string,
-  onSignMessage: PropTypes.func,
   safeAreaInset: PropTypes.object,
+  sendButton: PropTypes.object,
 };
 
 export default withSafeAreaViewInsetValues(MessageSigningSection);
