@@ -1,19 +1,15 @@
 import { filter } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StatusBar, TouchableOpacity } from 'react-native';
+import { StatusBar } from 'react-native';
 import { compose, defaultProps, withHandlers, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { TokenExpandedState, UniqueTokenExpandedState } from '../components/expanded-state';
 import { Centered } from '../components/layout';
+import TouchableBackdrop from '../components/TouchableBackdrop';
 import { withAccountAssets } from '../hoc';
-import { padding, position } from '../styles';
+import { padding } from '../styles';
 import { deviceUtils } from '../utils';
-
-const BackgroundButton = styled(TouchableOpacity)`
-  ${position.cover}
-  z-index: 0;
-`;
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   ${({ containerPadding }) => padding(containerPadding)};
@@ -36,7 +32,7 @@ const ExpandedAssetScreen = ({
   return (
     <Container containerPadding={containerPadding}>
       <StatusBar barStyle="light-content" />
-      <BackgroundButton onPress={onPressBackground} />
+      <TouchableBackdrop onPress={onPressBackground} />
       {type === 'token'
         ? <TokenExpandedState {...expandedStateProps} />
         : <UniqueTokenExpandedState {...expandedStateProps} />

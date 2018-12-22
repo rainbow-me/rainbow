@@ -94,7 +94,6 @@
 		CB988C526B0C48FC9750A038 /* SF-Pro-Display-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 84DB92DCDF5D4374B26FFCC6 /* SF-Pro-Display-BoldItalic.otf */; };
 		D77132C4B96040C39FED1AD5 /* libUdpSockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AC94663BD4242A29273D66F /* libUdpSockets.a */; };
 		DBBDEB86E54044EE8712C882 /* Graphik-BlackItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = CEC826911B5641B8AF788BB3 /* Graphik-BlackItalic.otf */; };
-		E3F4A3DF32F64D4582D0DB23 /* libPasscodeAuth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F61BCAE46144D64ABDD2408 /* libPasscodeAuth.a */; };
 		E98BBF45029948B38545996F /* Graphik-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E6F010E529544E518E1792C7 /* Graphik-Bold.otf */; };
 		ECF14FECD39C459D86EDCB82 /* libCodePush.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E39434CDDE4C54848FBFD5 /* libCodePush.a */; };
 		ED8A2571BF074F6DB6D09045 /* libToolTipMenu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A014AE1645874354A732EB35 /* libToolTipMenu.a */; };
@@ -176,13 +175,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RNReactNativeHapticFeedback;
-		};
-		245C7315218BD9D100909B99 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 40B0A80541C544ED93E6039D /* PasscodeAuth.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 134814201AA4EA6300B7C361;
-			remoteInfo = PasscodeAuth;
 		};
 		24979D5C20F83E3E007EB0DA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -654,8 +646,6 @@
 		3CE916E821A8BFAC00BF6B5E /* piwiktracker.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = piwiktracker.xcdatamodel; sourceTree = "<group>"; };
 		3CE916E921A8BFAC00BF6B5E /* piwiktracker v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "piwiktracker v2.xcdatamodel"; sourceTree = "<group>"; };
 		3EA8003C5E2D46E38184714B /* Graphik-ThinItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-ThinItalic.otf"; path = "../src/assets/fonts/Graphik-ThinItalic.otf"; sourceTree = "<group>"; };
-		3F61BCAE46144D64ABDD2408 /* libPasscodeAuth.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libPasscodeAuth.a; sourceTree = "<group>"; };
-		40B0A80541C544ED93E6039D /* PasscodeAuth.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = PasscodeAuth.xcodeproj; path = "../node_modules/@ledgerhq/react-native-passcode-auth/PasscodeAuth.xcodeproj"; sourceTree = "<group>"; };
 		432859DCCD05A1435434FB50 /* Pods-BalanceWallet.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BalanceWallet.release.xcconfig"; path = "Pods/Target Support Files/Pods-BalanceWallet/Pods-BalanceWallet.release.xcconfig"; sourceTree = "<group>"; };
 		45B0EAA273D24F15B885A97D /* libRNMail.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNMail.a; sourceTree = "<group>"; };
 		46EFC4C16BAF4873BE45393E /* UdpSockets.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = UdpSockets.xcodeproj; path = "../node_modules/react-native-udp/ios/UdpSockets.xcodeproj"; sourceTree = "<group>"; };
@@ -783,7 +773,6 @@
 				F4E8A17A670147F4A5EC177E /* libRNGestureHandler.a in Frameworks */,
 				ECF14FECD39C459D86EDCB82 /* libCodePush.a in Frameworks */,
 				F35098D973414A09939FB3F8 /* libz.tbd in Frameworks */,
-				E3F4A3DF32F64D4582D0DB23 /* libPasscodeAuth.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -916,14 +905,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		245C7312218BD9D100909B99 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				245C7316218BD9D100909B99 /* libPasscodeAuth.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		24979D1220F83E3D007EB0DA /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
@@ -950,7 +931,6 @@
 				C349494D40704C079F21BD3B /* libRNFirebase.a */,
 				3A7E5E09E14B4EA4B52CC6EE /* libRNGestureHandler.a */,
 				22E39434CDDE4C54848FBFD5 /* libCodePush.a */,
-				3F61BCAE46144D64ABDD2408 /* libPasscodeAuth.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -1212,7 +1192,6 @@
 				3759782F486D4A9C80CC99F5 /* RNFirebase.xcodeproj */,
 				171CDF49E32841EDA7D557DB /* RNGestureHandler.xcodeproj */,
 				4A9E14039D3A4590A2F32D92 /* CodePush.xcodeproj */,
-				40B0A80541C544ED93E6039D /* PasscodeAuth.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1417,10 +1396,6 @@
 					ProjectRef = 3C39C266218BBE66004C763F /* FastImage.xcodeproj */;
 				},
 				{
-					ProductGroup = 245C7312218BD9D100909B99 /* Products */;
-					ProjectRef = 40B0A80541C544ED93E6039D /* PasscodeAuth.xcodeproj */;
-				},
-				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
 					ProjectRef = 00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */;
 				},
@@ -1607,13 +1582,6 @@
 			fileType = archive.ar;
 			path = libRNReactNativeHapticFeedback.a;
 			remoteRef = 244C64092108794F007A5856 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		245C7316218BD9D100909B99 /* libPasscodeAuth.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libPasscodeAuth.a;
-			remoteRef = 245C7315218BD9D100909B99 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		24979D5D20F83E3E007EB0DA /* libBVLinearGradient.a */ = {
@@ -2220,9 +2188,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -2267,9 +2232,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
@@ -2511,8 +2473,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -2649,9 +2609,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (

@@ -4,12 +4,12 @@ import firebase from 'react-native-firebase';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { accountInitializeState, accountUpdateAccountAddress, commonStorage } from 'balance-common';
-import { AppRegistry, AlertIOS, AppState, View } from 'react-native';
+import { AppRegistry, AlertIOS, AppState } from 'react-native';
 import { compose, withProps } from 'recompact';
 import { connect, Provider } from 'react-redux';
 import { StackActions } from 'react-navigation';
 import Piwik from 'react-native-matomo';
-import styled from 'styled-components';
+import { FlexItem } from './components/layout';
 import OfflineBadge from './components/OfflineBadge';
 import { withWalletConnectConnections } from './hoc';
 import {
@@ -28,9 +28,6 @@ import { walletInit } from './model/wallet';
 import Routes from './screens/Routes';
 import Navigation from './navigation';
 
-const Container = styled(View)`
-  flex: 1;
-`;
 
 class App extends Component {
   static propTypes = {
@@ -49,7 +46,7 @@ class App extends Component {
 
   navigatorRef = null
 
-  componentDidMount() {
+  async componentDidMount() {
     Piwik.initTracker('https://matomo.balance.io/piwik.php', 2);
     AppState.addEventListener('change', this.handleAppStateChange);
     firebase.messaging().getToken()
@@ -96,7 +93,7 @@ class App extends Component {
       this.onPushNotificationOpened(callId, sessionId, false);
     });
 
-    this.props.accountInitializeState();
+    await this.props.accountInitializeState();
 
     walletInit()
       .then(walletAddress => {
@@ -189,10 +186,10 @@ class App extends Component {
 
   render = () => (
     <Provider store={store}>
-      <Container>
+      <FlexItem>
         <OfflineBadge />
         <Routes ref={this.handleNavigatorRef} />
-      </Container>
+      </FlexItem>
     </Provider>
   )
 }

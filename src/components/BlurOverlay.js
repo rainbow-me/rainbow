@@ -11,11 +11,11 @@ const styles = StyleSheet.create({
   },
 });
 
-const BlurOverlay = ({ blurAmount, opacity }) => (
+const BlurOverlay = ({ blurAmount, blurType, opacity }) => (
   <Animated.View style={[styles.overlay, { opacity }]}>
     <BlurView
       blurAmount={blurAmount}
-      blurType="dark"
+      blurType={blurType}
       style={styles.overlay}
     />
   </Animated.View>
@@ -23,11 +23,13 @@ const BlurOverlay = ({ blurAmount, opacity }) => (
 
 BlurOverlay.propTypes = {
   blurAmount: PropTypes.number,
+  blurType: PropTypes.oneOf(['dark', 'light']),
   opacity: PropTypes.object,
 };
 
 BlurOverlay.defaultProps = {
   blurAmount: 5,
+  blurType: 'dark',
 };
 
 export default BlurOverlay;

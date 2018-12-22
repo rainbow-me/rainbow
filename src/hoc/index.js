@@ -1,7 +1,9 @@
 export { default as withAccountAddress } from './withAccountAddress';
 export { default as withAccountAssets } from './withAccountAssets';
+export { default as withAccountSettings } from './withAccountSettings';
 export { default as withAccountTransactions } from './withAccountTransactions';
 export { default as withAddWalletConnector } from './withAddWalletConnector';
+export { default as withBlurTransitionProps } from './withBlurTransitionProps';
 export { default as withHideSplashScreen } from './withHideSplashScreen';
 export { default as withHideSplashScreenOnMount } from './withHideSplashScreenOnMount';
 export { default as withImageDimensionsCache } from './withImageDimensionsCache';

@@ -26,7 +26,7 @@ const ButtonShapeTypes = {
 
 const Container = styled(Centered)`
   ${({ size }) => padding(...ButtonSizeTypes[size].padding)}
-  background-color: ${({ bgColor }) => (bgColor || colors.grey)};
+  background-color: ${({ bgColor }) => bgColor};
   border-radius: ${({ type }) => ((type === 'rounded') ? 14 : 50)};
   flex-grow: 0;
   position: relative;
@@ -68,6 +68,7 @@ const Button = ({
 );
 
 Button.propTypes = {
+  bgColor: PropTypes.string,
   children: PropTypes.node.isRequired,
   containerStyles: PropTypes.string,
   onPress: PropTypes.func.isRequired,
@@ -78,6 +79,7 @@ Button.propTypes = {
 };
 
 Button.defaultProps = {
+  bgColor: colors.grey,
   size: 'default',
   type: ButtonShapeTypes.pill,
 };

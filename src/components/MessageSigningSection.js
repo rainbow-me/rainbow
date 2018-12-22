@@ -3,13 +3,10 @@ import React from 'react';
 import { ScrollView } from 'react-native';
 import lang from 'i18n-js';
 import styled from 'styled-components';
-import { Column } from '../components/layout';
-import {
-  Smallcaps,
-  Text,
-} from '../components/text';
 import { withSafeAreaViewInsetValues } from '../hoc';
-import { borders, colors, fonts, padding, position } from '../styles';
+import { borders, colors, padding } from '../styles';
+import { Column } from './layout';
+import { Smallcaps, Text } from './text';
 
 const Message = styled(Text).attrs({ size: 'lmedium' })`
   color: ${colors.alpha(colors.blueGreyDark, 0.6)}
