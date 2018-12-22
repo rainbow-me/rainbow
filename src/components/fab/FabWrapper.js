@@ -45,7 +45,7 @@ FabWrapper.propTypes = {
 };
 
 FabWrapper.defaultProps = {
-  fabs: [SendFab, WalletConnectFab],
+  fabs: [SendFab],
 };
 
 FabWrapper.bottomPosition = FabWrapperBottomPosition;

@@ -8,7 +8,9 @@ font.family = {
 };
 
 font.lineHeight = {
-  loose: 25,
+  loose: 21,
+  looser: 25,
+  loosest: 28,
 };
 
 font.size = {
