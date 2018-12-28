@@ -6,6 +6,7 @@ A mobile wallet for dapps &amp; tokens. Currently focused on iOS.
 
 * A computer running macOS.
 * Install the latest version of XCode: https://developer.apple.com/xcode/
+* Clone and install Balance Common, our shared library: https://github.com/balance-io/balance-common
 
 ## How to run the project
 
