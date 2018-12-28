@@ -1712,7 +1712,7 @@ babylon@^6.18.0:
 
 "balance-common@git+https://github.com/balance-io/balance-common.git#updateFormatNativeDisplay":
   version "0.6.8"
-  resolved "git+https://github.com/balance-io/balance-common.git#f6a88e7fa2f509ac6f29c30370fd2fc77ea30546"
+  resolved "git+https://github.com/balance-io/balance-common.git#5ea8cccdfb5d62bf08ab07e432c58347122de937"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
