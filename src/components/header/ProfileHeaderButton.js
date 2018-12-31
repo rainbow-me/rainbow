@@ -16,7 +16,7 @@ ProfileHeaderButton.propTypes = {
 
 export default compose(
   withHandlers({
-    onPress: ({ navigation }) => () => navigation.navigate('SettingsScreen'),
+    onPress: ({ navigation }) => () => navigation.navigate('ProfileScreen'),
   }),
   onlyUpdateForPropTypes,
 )(ProfileHeaderButton);

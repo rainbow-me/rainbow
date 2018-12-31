@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { createElement, Fragment } from 'react';
 import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, padding } from '../../styles';
@@ -23,24 +23,33 @@ const Header = styled(Row).attrs({
 const ListHeader = pure(({
   children,
   contextMenuOptions,
+  showDivider,
   title,
+  titleRenderer,
 }) => (
-  <React.Fragment>
+  <Fragment>
     <Header>
       <Row align="center">
-        <H1>{title}</H1>
+        {createElement(titleRenderer, { children: title })}
         {contextMenuOptions && (<ContextMenu {...contextMenuOptions} />)}
       </Row>
       {children}
     </Header>
-    <Divider />
-  </React.Fragment>
+    {showDivider && <Divider />}
+  </Fragment>
 ));
 
 ListHeader.propTypes = {
   children: PropTypes.node,
   contextMenuOptions: PropTypes.object,
+  showDivider: PropTypes.bool,
   title: PropTypes.string,
+  titleRenderer: PropTypes.func,
+};
+
+ListHeader.defaultProps = {
+  showDivider: true,
+  titleRenderer: H1,
 };
 
 ListHeader.height = ListHeaderHeight;

@@ -38,11 +38,11 @@ class SectionList extends PureComponent {
 
   componentDidMount = () => {
     this.isCancelled = false;
-  };
+  }
 
   componentWillUnmount = () => {
     this.isCancelled = true;
-  };
+  }
 
   listRef = null
 
@@ -53,7 +53,9 @@ class SectionList extends PureComponent {
 
     this.setState({ isRefreshing: true });
     this.props.fetchData().then(() => {
-      !this.isCancelled && this.setState({ isRefreshing: false })
+      if (!this.isCancelled) {
+        this.setState({ isRefreshing: false });
+      }
     });
   }
 

@@ -31,12 +31,13 @@ const base = {
   mediumGrey: '#a1a5b3', // '161, 165, 179'
   orange: '#f6851b', // '246, 133, 27'
   orangeLight: '#FFAF24', // '255, 175, 36'
+  paleBlue: '#5D9DF6',
   orangeMedium: '#FCA247', // '252, 162, 71'
   primaryBlue: '#5d9df6', // '93, 157, 246'
   primaryGreen: '#00a352', // '0, 163, 82'
   purple: '#32325d', // '50, 50, 93'
   red: '#d64b47', // '214, 75, 71'
-  rowDivider: '#f8f8f8', // '248, 248, 248'
+  rowDivider: '#f9f9fa', // '249, 249, 250'
   seaGreen: '#3aa686', // '58, 166, 134'
   skeleton: '#f7f7f8', // '247, 247, 248'
   teal: '#84f8da', // '132, 248, 218'
@@ -52,7 +53,7 @@ const assetIcon = {
 };
 
 const sendScreen = {
-  brightBlue: '#0e76fd', // '16, 118, 253'
+  brightBlue: base.appleBlue,  // 14, 118, 253
   lightGrey: '#fafafa', // '250, 250, 250'
   grey: '#d8d8d8', // '216, 216, 216'
 };
