@@ -1710,9 +1710,9 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-"balance-common@git+https://github.com/balance-io/balance-common.git#updateFormatNativeDisplay":
-  version "0.6.8"
-  resolved "git+https://github.com/balance-io/balance-common.git#a89e3e488e82b5f715ecdc46e0961a4d02eae7fe"
+balance-common@^0.6.9:
+  version "0.6.9"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.9.tgz#7c02efbb6b2d9b9c3eeb982223c591deea996884"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
