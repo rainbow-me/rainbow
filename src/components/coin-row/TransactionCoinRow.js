@@ -29,14 +29,13 @@ const bottomRowRender = ({ name, native, status }) => {
 
   let balanceTextColor = colors.blueGreyLight;
   if (isStatusReceived) balanceTextColor = colors.primaryGreen;
-  if (!nativeDisplay) balanceTextColor = null;
 
   return (
     <Fragment>
       <CoinName>{name}</CoinName>
       <BalanceText color={balanceTextColor}>
         {(nativeDisplay && isStatusSent) ? '- ' : ''}
-        {nativeDisplay || ''}
+        {nativeDisplay || `${native.symbol}0.00`}
       </BalanceText>
     </Fragment>
   );
@@ -66,26 +65,27 @@ const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
 );
 
 export default compose(
-  mapProps(({ item: { hash, originalHash, pending, ...item }, ...props }) => ({
-    originalHash,
+  mapProps(({ item: { hash, native, pending, ...item }, ...props }) => ({
+    hash,
     item,
+    native,
     pending,
     ...props,
   })),
   withHandlers({
-    onPressTransaction: ({ originalHash }) => () => {
-      if (originalHash) {
+    onPressTransaction: ({ hash }) => () => {
+      if (hash) {
         showActionSheetWithOptions({
           cancelButtonIndex: 1,
           options: ['View on Etherscan', 'Cancel'],
         }, (buttonIndex) => {
           if (buttonIndex === 0) {
-            const etherscanUrl = `https://etherscan.io/tx/${originalHash}`;
-            Linking.openURL(etherscanUrl);
+            const normalizedHash = hash.replace(/-.*/g, '');
+            Linking.openURL(`https://etherscan.io/tx/${normalizedHash}`);
           }
         });
       }
     },
   }),
-  onlyUpdateForKeys(['hash', 'pending']),
+  onlyUpdateForKeys(['hash', 'native', 'pending']),
 )(TransactionCoinRow);

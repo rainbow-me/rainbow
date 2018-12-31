@@ -22,14 +22,14 @@ const ErrorContainer = styled(Column)`
 `;
 
 const ErrorMessage = styled(Monospace).attrs({ color: 'red' })`
-  line-height: ${fonts.lineHeight.loose};
+  line-height: ${fonts.lineHeight.looser};
   margin-top: 7;
 `;
 
 const LoadingColor = colors.alpha(colors.grey, 0.5);
 
 const LoadingText = styled(Monospace)`
-  line-height: ${fonts.lineHeight.loose};
+  line-height: ${fonts.lineHeight.looser};
   margin-top: 10;
 `;
 

@@ -1,14 +1,15 @@
 import { createSwitchNavigator, createStackNavigator } from 'react-navigation';
 import createSwipeNavigator from '../navigation/navigators/createSwipeNavigator';
 import { buildTransitions, expanded, sheet } from '../navigation/transitions';
-import ActivityScreen from './ActivityScreen';
 import ExpandedAssetScreen from './ExpandedAssetScreen';
 import IntroScreen from './IntroScreen';
 import LoadingScreen from './LoadingScreen';
+import ProfileScreenWithData from './ProfileScreenWithData';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
+import ReceiveModal from './ReceiveModal';
 import SendQRScannerScreenWithData from './SendQRScannerScreenWithData';
 import SendScreenWithData from './SendScreenWithData';
-import SettingsScreenWithData from './SettingsScreenWithData';
+import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
 import { deviceUtils } from '../utils';
@@ -17,10 +18,13 @@ import { updateTransitionProps } from '../redux/navigation';
 
 import Navigation from '../navigation';
 
+const onSwipeEndSwipeStack = navigation => Navigation.resumeNavigationActions(navigation);
+const onSwipeStartSwipeStack = () => Navigation.pauseNavigationActions();
+
 const SwipeStack = createSwipeNavigator({
-  SettingsScreen: {
-    name: 'SettingsScreen',
-    screen: SettingsScreenWithData,
+  ProfileScreen: {
+    name: 'ProfileScreen',
+    screen: ProfileScreenWithData,
     statusBarColor: 'dark-content',
   },
   WalletScreen: {
@@ -36,19 +40,11 @@ const SwipeStack = createSwipeNavigator({
 }, {
   headerMode: 'none',
   initialRouteName: 'WalletScreen',
-  mode: 'modal',
-  onSwipeStart: () => Navigation.pauseNavigationActions(),
-  onSwipeEnd: (navigation) => Navigation.resumeNavigationActions(navigation),
+  onSwipeEnd: onSwipeEndSwipeStack,
+  onSwipeStart: onSwipeStartSwipeStack,
 });
 
 const AppStack = createStackNavigator({
-  ActivityScreen: {
-    navigationOptions: {
-      effect: 'sheet',
-      gesturesEnabled: false, // @NOTE: disabled the gesture for ActivityScreen due to conflict with the Notification Center gesture
-    },
-    screen: ActivityScreen,
-  },
   ConfirmRequest: TransactionConfirmationScreenWithData,
   IntroScreen: {
     screen: IntroScreen,
@@ -68,9 +64,25 @@ const AppStack = createStackNavigator({
     },
     screen: ExpandedAssetScreen,
   },
+  ReceiveModal: {
+    navigationOptions: {
+      effect: 'expanded',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height,
+      },
+    },
+    screen: ReceiveModal,
+  },
   SendScreen: SendScreenWithData,
   SendQRScannerScreen: SendQRScannerScreenWithData,
   SwipeLayout: SwipeStack,
+  SettingsModal: {
+    navigationOptions: {
+      effect: 'expanded',
+      gesturesEnabled: false,
+    },
+    screen: SettingsModal,
+  },
 }, {
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',

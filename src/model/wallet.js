@@ -61,34 +61,34 @@ export const sendTransaction = async ({ tracking, transaction }) => {
       const result = await wallet.sendTransaction(transaction);
       Piwik.trackEvent('Send', tracking.action, tracking.name, tracking.amount);
       return result.hash;
-    } catch(error) {
+    } catch (error) {
       console.log('sendTxn error', error);
       AlertIOS.alert(lang.t('wallet.transaction.alert.failed_transaction'));
       return null;
     }
-  } catch(error) {
+  } catch (error) {
     AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
     return null;
   }
 };
 
-export const signMessage = async (message, authenticationPrompt = lang.t('account.authenticate.please')) => {
+export const signMessage = async (message, authenticationPrompt = lang.t('wallet.authenticate.please')) => {
   try {
     const wallet = await loadWallet(authenticationPrompt);
     try {
       return await wallet.signMessage(message);
-    } catch(error) {
+    } catch (error) {
       console.log('signMessage error', error);
       AlertIOS.alert(lang.t('wallet.message_signing.failed_signing'));
       return null;
     }
-  } catch(error) {
+  } catch (error) {
     AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
     return null;
   }
 };
 
-export const loadSeedPhrase = async (authenticationPrompt = lang.t('account.authenticate.please_seed_phrase')) => {
+export const loadSeedPhrase = async (authenticationPrompt = lang.t('wallet.authenticate.please_seed_phrase')) => {
   const seedPhrase = await keychain.loadString(seedPhraseKey, { authenticationPrompt });
   return seedPhrase;
 };
@@ -128,7 +128,7 @@ const savePrivateKey = async (privateKey, accessControlOptions = {}) => {
   await keychain.saveString(privateKeyKey, privateKey, accessControlOptions);
 };
 
-const loadPrivateKey = async (authenticationPrompt = lang.t('account.authenticate.please')) => {
+const loadPrivateKey = async (authenticationPrompt = lang.t('wallet.authenticate.please')) => {
   const privateKey = await keychain.loadString(privateKeyKey, { authenticationPrompt });
   return privateKey;
 };

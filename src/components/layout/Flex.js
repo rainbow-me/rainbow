@@ -17,6 +17,7 @@ const FlexPropBlacklist = ['align', 'direction', 'flex', 'justify', 'wrap'];
 const FlexElement = omitProps(...FlexPropBlacklist)(componentFromProp('component'));
 
 const Flex = styled(FlexElement)`
+  ${({ self }) => (self ? `align-self: ${getFlexStyleKeysFromShorthand(self)};` : null)}
   ${({ flex }) => (flex ? `flex: ${flex};` : null)}
   align-items: ${({ align }) => getFlexStyleKeysFromShorthand(align)};
   flex-direction: ${({ direction }) => direction};
@@ -32,6 +33,7 @@ Flex.propTypes = {
   direction: PropTypes.oneOf(['column', 'column-reverse', 'row', 'row-reverse']),
   flex: PropTypes.number,
   justify: PropTypes.oneOf(['center', 'end', 'space-around', 'space-between', 'start']),
+  self: PropTypes.oneOf(['center', 'end', 'start', 'stretch']),
   wrap: PropTypes.bool,
 };
 

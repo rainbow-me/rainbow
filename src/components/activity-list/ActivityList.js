@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, mapProps, onlyUpdateForKeys } from 'recompact';
 import { buildTransactionsSections } from '../../helpers/transactions';
+import { withAccountSettings } from '../../hoc';
 import { CoinRow, TransactionCoinRow, RequestCoinRow } from '../coin-row';
 import { SectionList } from '../list';
 import ActivityListHeader from './ActivityListHeader';
@@ -12,29 +13,39 @@ const getItemLayout = (data, index) => ({
   offset: CoinRow.height * index,
 });
 
-const keyExtractor = ({ hash, callId }) => (hash || callId);
+const keyExtractor = ({ hash, timestamp, transactionDisplayDetails }) => (hash || (timestamp ? timestamp.ms : transactionDisplayDetails.timestampInMs));
 const renderSectionHeader = ({ section }) => <ActivityListHeader {...section} />;
 
 const ActivityList = ({
   hasPendingTransaction,
+  header,
+  nativeCurrency,
   pendingTransactionsCount,
   sections,
   transactionsCount,
 }) => (
   <SectionList
     contentContainerStyle={{ paddingBottom: 40 }}
-    extraData={{ hasPendingTransaction, pendingTransactionsCount }}
+    extraData={{
+      hasPendingTransaction,
+      nativeCurrency,
+      pendingTransactionsCount,
+    }}
     getItemLayout={getItemLayout}
-    initialNumToRender={(transactionsCount < 30) ? transactionsCount : 30}
+    initialNumToRender={12}
     keyExtractor={keyExtractor}
-    maxToRenderPerBatch={40}
+    ListHeaderComponent={header}
+    removeClippedSubviews={true}
     renderSectionHeader={renderSectionHeader}
     sections={sections}
+    windowSize={15.75}
   />
 );
 
 ActivityList.propTypes = {
   hasPendingTransaction: PropTypes.bool,
+  header: PropTypes.node,
+  nativeCurrency: PropTypes.string.isRequired,
   pendingTransactionsCount: PropTypes.number,
   sections: PropTypes.arrayOf(PropTypes.shape({
     data: PropTypes.array,
@@ -45,8 +56,10 @@ ActivityList.propTypes = {
 };
 
 export default compose(
+  withAccountSettings,
   mapProps(({
     accountAddress,
+    nativeCurrency,
     requests,
     transactions,
     ...props
@@ -55,6 +68,7 @@ export default compose(
 
     const sections = buildTransactionsSections({
       accountAddress,
+      nativeCurrency,
       requestRenderItem: RequestCoinRow,
       requests,
       transactionRenderItem: TransactionCoinRow,
@@ -75,6 +89,7 @@ export default compose(
   }),
   onlyUpdateForKeys([
     'hasPendingTransaction',
+    'nativeCurrency',
     'pendingTransactionsCount',
     'sections',
     'transactionsCount',
