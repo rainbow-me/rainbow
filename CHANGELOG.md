@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [0.3.0-2](https://github.com/balance-io/balance-wallet/releases/tag/v0.3.0-2)
+### Changed
+* Fix for toggle seed phrase button
+* Fix for send native currency formatting
+
 ## [0.3.0-1](https://github.com/balance-io/balance-wallet/releases/tag/v0.3.0-1)
 ### Added
 * Native currency selection in Settings
