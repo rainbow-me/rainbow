@@ -44,7 +44,7 @@ export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => 
       prices,
     );
     const _nativeAmount = formatInputDecimals(nativeAmount, assetAmount);
-    nativeAmountDisplay = convertAssetAmountToDisplaySpecific(_nativeAmount, prices, nativeCurrency);
+    nativeAmountDisplay = convertAssetAmountToDisplaySpecific(_nativeAmount, nativeCurrency);
     return {
       nativeAmount,
       nativeAmountDisplay,
