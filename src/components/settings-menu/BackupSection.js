@@ -32,7 +32,7 @@ const BackupSection = ({
   hideSeedPhrase,
   navigation,
   seedPhrase,
-  showSeedPhrase,
+  toggleSeedPhrase,
 }) => (
   <Container align="center" flex={1}>
     <FastImage
@@ -78,7 +78,7 @@ const BackupSection = ({
         )
       }
     </Content>
-    <ToggleSeedPhraseButton onPress={showSeedPhrase}>
+    <ToggleSeedPhraseButton onPress={toggleSeedPhrase}>
       {seedPhrase ? 'Hide' : 'Show'} Seed Phrase
     </ToggleSeedPhraseButton>
   </Container>
@@ -88,16 +88,21 @@ BackupSection.propTypes = {
   hideSeedPhrase: PropTypes.func.isRequired,
   navigation: PropTypes.object,
   seedPhrase: PropTypes.string,
-  showSeedPhrase: PropTypes.func.isRequired,
+  toggleSeedPhrase: PropTypes.func.isRequired,
 };
 
 export default compose(
   withState('seedPhrase', 'setSeedPhrase', null),
   withHandlers({ hideSeedPhrase: ({ setSeedPhrase }) => () => setSeedPhrase(null) }),
   withHandlers({
-    showSeedPhrase: ({ hideSeedPhrase, setSeedPhrase }) => () =>
-      loadSeedPhraseFromKeychain()
-        .then(setSeedPhrase)
-        .catch(hideSeedPhrase),
+    toggleSeedPhrase: ({ seedPhrase, hideSeedPhrase, setSeedPhrase }) => () => {
+      if (!seedPhrase) {
+        loadSeedPhraseFromKeychain()
+          .then(setSeedPhrase)
+          .catch(hideSeedPhrase)
+      } else {
+        hideSeedPhrase()
+      }
+    },
   }),
 )(BackupSection);
