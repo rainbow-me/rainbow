@@ -40,7 +40,7 @@ PODS:
     - React/Core (= 0.57.1)
   - react-native-blur (0.8.0):
     - React
-  - react-native-fast-image (5.1.1):
+  - react-native-fast-image (5.1.2):
     - FLAnimatedImage
     - React
     - SDWebImage/Core

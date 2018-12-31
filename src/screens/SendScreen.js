@@ -1,3 +1,4 @@
+import { convertAssetAmountToDisplay } from 'balance-common';
 import { withSafeTimeout } from '@hocs/safe-timers';
 import { get, isEmpty, map } from 'lodash';
 import PropTypes from 'prop-types';
@@ -25,11 +26,16 @@ import { PillLabel } from '../components/labels';
 import { Column, Flex, FlyInView, Row } from '../components/layout';
 import { ShadowStack } from '../components/shadow-stack';
 import { Monospace } from '../components/text';
-import { withAccountAddress, withAccountAssets, withRequestsInit } from '../hoc';
+import {
+  withAccountAddress,
+  withAccountAssets,
+  withAccountSettings,
+  withRequestsInit
+} from '../hoc';
 import { colors, fonts, padding, shadow } from '../styles';
 import { deviceUtils } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
-import { formatUSD, formatUSDInput, removeLeadingZeros, uppercase } from '../utils/formatters';
+import { removeLeadingZeros, uppercase } from '../utils/formatters';
 
 const AddressInput = styled(AddressField)`
   padding-right: 20px;
@@ -274,6 +280,11 @@ class SendScreen extends Component {
     sendUpdateNativeAmount(String(value));
   };
 
+  onFormatNativeAmount = (value) => {
+    const { nativeCurrency } = this.props;
+    return convertAssetAmountToDisplay(value, nativeCurrency, 18);
+  };
+
   onPressAssetHandler = (symbol) => {
     const { sendUpdateSelected } = this.props;
 
@@ -370,7 +381,7 @@ class SendScreen extends Component {
       onSubmit()
         .then(() => {
           sendClearFields();
-          navigation.replace('ActivityScreen');
+          navigation.navigate('ProfileScreen');
         });
     }
   };
@@ -462,12 +473,12 @@ class SendScreen extends Component {
   renderTransactionSpeed() {
     const { gasPrice } = this.props;
 
-    const fee = get(gasPrice, 'txFee.native.value.display', '$0.00').substring(1);
+    const fee = get(gasPrice, 'txFee.native.value.display', '$0.00');
     const time = get(gasPrice, 'estimatedTime.display', '');
 
     return (
       <Row justify="space-between">
-        <PillLabel>Fee: ${formatUSD(fee)}</PillLabel>
+        <PillLabel>Fee: {fee}</PillLabel>
         <PillLabel
           color={colors.blueGreyDark}
           icon="clock"
@@ -483,6 +494,7 @@ class SendScreen extends Component {
     const {
       assetAmount,
       nativeAmount,
+      nativeCurrency,
       selected,
       sendMaxBalance,
     } = this.props;
@@ -523,13 +535,13 @@ class SendScreen extends Component {
             <Row justify="space-between">
               <NumberInput
                 buttonText="Max"
-                format={formatUSDInput}
+                format={this.onFormatNativeAmount}
                 onChange={this.onChangeNativeAmount}
                 onPressButton={sendMaxBalance}
                 placeholder="0.00"
                 value={nativeAmount}
               />
-              <NumberInputLabel>USD</NumberInputLabel>
+              <NumberInputLabel>{nativeCurrency}</NumberInputLabel>
             </Row>
           </Column>
           {this.renderSendButton()}
@@ -570,6 +582,7 @@ class SendScreen extends Component {
 export default compose(
   withAccountAddress,
   withAccountAssets,
+  withAccountSettings,
   withRequestsInit,
   withSafeTimeout,
   withHandlers({
