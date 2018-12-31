@@ -4,7 +4,6 @@ import Flex from '../layout/Flex';
 
 import ArrowCircledIcon from './svg/ArrowCircledIcon';
 import ArrowIcon from './svg/ArrowIcon';
-import ArrowCircledIcon from './svg/ArrowCircledIcon';
 import AssetListItemSkeletonIcon from './svg/AssetListItemSkeletonIcon';
 import AvatarIcon from './svg/AvatarIcon';
 import BalanceLogoIcon from './svg/BalanceLogoIcon';
