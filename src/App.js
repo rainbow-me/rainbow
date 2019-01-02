@@ -47,6 +47,8 @@ class App extends Component {
   navigatorRef = null
 
   async componentDidMount() {
+    this.props.accountInitializeState();
+    await this.handleWalletConfig();
     Piwik.initTracker('https://matomo.balance.io/piwik.php', 2);
     AppState.addEventListener('change', this.handleAppStateChange);
     firebase.messaging().getToken()
@@ -93,8 +95,15 @@ class App extends Component {
       this.onPushNotificationOpened(callId, sessionId, false);
     });
 
-    this.props.accountInitializeState();
-    this.handleWalletConfig();
+    const notificationOpen = await firebase
+      .notifications()
+      .getInitialNotification();
+    if (notificationOpen) {
+      const { callId, sessionId } = notificationOpen.notification.data;
+      this.onPushNotificationOpened(callId, sessionId, false);
+    } else {
+			this.fetchAllRequestsFromWalletConnectSessions();
+    }
   }
 
   handleWalletConfig = async seedPhrase => {
@@ -111,12 +120,6 @@ class App extends Component {
 			} catch (error) {
 				console.log('Unable to init all WalletConnect sessions');
 			}
-      const notificationOpen = await firebase
-        .notifications()
-        .getInitialNotification();
-      if (!notificationOpen) {
-				this.fetchAllRequestsFromWalletConnectSessions();
-      }
       return walletAddress;
     } catch (error) {
 			AlertIOS.alert('Error: Failed to initialize wallet.');
