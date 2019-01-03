@@ -73,6 +73,9 @@ export default class ButtonPressAnimation extends Component {
     if (activeOpacity) {
       // Opacity animation
       animationsArray.push(animations.buildSpring({
+        config: {
+          isInteraction: false,
+        },
         from: DefaultAnimatedValues.opacity,
         isActive,
         to: activeOpacity,
@@ -84,6 +87,9 @@ export default class ButtonPressAnimation extends Component {
       // Fake 'transform-origin' support by abusing translateX
       const directionMultiple = (transformOrigin === 'left') ? -1 : 1;
       animationsArray.push(animations.buildSpring({
+        config: {
+          isInteraction: false,
+        },
         from: DefaultAnimatedValues.transX,
         isActive,
         to: scaleOffsetX * (directionMultiple),

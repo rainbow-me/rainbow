@@ -9,6 +9,7 @@ import AnimatedPagerItem from './AnimatedPagerItem';
 const buildPagerAnimation = toValue => ({
   duration: 300,
   easing: Easing.bezier(0.4, 0, 0.2, 1),
+  isInteraction: false,
   toValue,
   useNativeDriver: true,
 });
