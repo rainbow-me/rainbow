@@ -6,6 +6,7 @@ import Piwik from 'react-native-matomo';
 import { compose, shouldUpdate, withHandlers } from 'recompact';
 import { withAccountSettings } from '../../hoc';
 import { colors } from '../../styles';
+import { isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../buttons';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
@@ -64,14 +65,12 @@ BalanceCoinRow.propTypes = {
   nativeCurrency: PropTypes.string.isRequired,
 };
 
-const isNewValueForPath = (a, b, path) => (get(a, path) !== get(b, path));
-
 export default compose(
   withAccountSettings,
-  shouldUpdate((props, nextProps) => {
-    const isNewNativeCurrency = isNewValueForPath(props, nextProps, 'nativeCurrency');
-    const isNewNativePrice = isNewValueForPath(props, nextProps, 'item.native.price.display');
-    const isNewTokenBalance = isNewValueForPath(props, nextProps, 'item.balance.amount');
+  shouldUpdate((...props) => {
+    const isNewNativeCurrency = isNewValueForPath(...props, 'nativeCurrency');
+    const isNewNativePrice = isNewValueForPath(...props, 'item.native.price.display');
+    const isNewTokenBalance = isNewValueForPath(...props, 'item.balance.amount');
 
     return isNewNativeCurrency || isNewNativePrice || isNewTokenBalance;
   }),
