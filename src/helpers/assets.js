@@ -14,7 +14,7 @@ const EMPTY_ARRAY = [];
 
 const InitialAccountAssetsState = get(INITIAL_ASSETS_STATE, 'assets[0]', {});
 
-export const areAssetsEqualToInitialAccountAssetsState = (sectionData) => {
+export const isDefaultAssetsInitialState = (sectionData) => {
   const currentBalance = get(sectionData, 'balance.display');
   const initialBalance = get(InitialAccountAssetsState, 'balance.display');
 

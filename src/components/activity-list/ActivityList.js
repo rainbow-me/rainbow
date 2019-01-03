@@ -14,6 +14,9 @@ const getItemLayout = (data, index) => ({
 });
 
 const keyExtractor = ({ hash, timestamp, transactionDisplayDetails }) => (hash || (timestamp ? timestamp.ms : transactionDisplayDetails.timestampInMs));
+// const keyExtractor = ({ hash, timestamp: { ms } }) => (hash || ms);
+
+// eslint-disable-next-line react/prop-types
 const renderSectionHeader = ({ section }) => <ActivityListHeader {...section} />;
 
 const ActivityList = ({
@@ -25,7 +28,7 @@ const ActivityList = ({
   transactionsCount,
 }) => (
   <SectionList
-    contentContainerStyle={{ paddingBottom: 40 }}
+    contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 40 }}
     extraData={{
       hasPendingTransaction,
       nativeCurrency,
@@ -85,6 +88,7 @@ export default compose(
 
     return {
       ...props,
+      nativeCurrency,
       pendingTransactionsCount,
       sections,
     };

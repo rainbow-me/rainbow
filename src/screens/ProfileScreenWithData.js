@@ -1,10 +1,12 @@
-import { compose, shouldUpdate, withHandlers } from 'recompact';
+import { compose, shouldUpdate, withHandlers, withProps } from 'recompact';
 import { setDisplayName } from 'recompose';
 import {
   withAccountAddress,
   withAccountTransactions,
   withBlurTransitionProps,
+  withIsWalletEmpty,
   withRequests,
+  withAccountSettings,
   withTrackingScreen,
 } from '../hoc';
 import ProfileScreen from './ProfileScreen';
@@ -12,14 +14,21 @@ import ProfileScreen from './ProfileScreen';
 export default compose(
   setDisplayName('ProfileScreen'),
   withAccountAddress,
+  withAccountSettings,
   withAccountTransactions,
   withBlurTransitionProps,
+  withIsWalletEmpty,
   withRequests,
   withHandlers({
     onPressBackButton: ({ navigation }) => () => navigation.navigate('WalletScreen'),
     onPressSettings: ({ navigation }) => () => navigation.navigate('SettingsModal'),
   }),
   withTrackingScreen,
+  withProps(({ isWalletEmpty, transactionsCount }) => ({
+    isEmpty: isWalletEmpty && !transactionsCount,
+  })),
+)(ProfileScreen);
+
   /*
   shouldUpdate((props, { isScreenActive, ...nextProps }) => {
     if (!isScreenActive) return false;
@@ -30,4 +39,3 @@ export default compose(
     return finishedLoading || newTxCount || newNativeCurrency;
   }),
   */
-)(ProfileScreen);

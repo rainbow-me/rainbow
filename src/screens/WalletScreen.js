@@ -2,47 +2,55 @@ import { isSameDay } from 'date-fns';
 import { get, join, map } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import isEqual from 'react-fast-compare';
 import Piwik from 'react-native-matomo';
 import {
   compose,
+  pickProps,
   shouldUpdate,
   withHandlers,
   withProps,
   withState,
 } from 'recompact';
-import styled from 'styled-components/primitives';
-import BlurOverlay from '../components/BlurOverlay';
 import { AssetList } from '../components/asset-list';
+import BlurOverlay from '../components/BlurOverlay';
 import { FabWrapper } from '../components/fab';
 import { CameraHeaderButton, Header, ProfileHeaderButton } from '../components/header';
 import { Page } from '../components/layout';
 import buildWalletSections from '../helpers/buildWalletSections';
 import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../model/localstorage';
 import {
-  withAccountAddress,
   withAccountAssets,
   withAccountRefresh,
-  withFetchingPrices,
   withBlurTransitionProps,
+  withFetchingPrices,
+  withHideSplashScreen,
+  withIsWalletEmpty,
   withTrackingDate,
 } from '../hoc';
 import { position } from '../styles';
-
-const WalletPage = styled(Page)`
-  ${position.size('100%')};
-  flex: 1;
-`;
+import { isNewValueForPath } from '../utils';
 
 class WalletScreen extends Component {
   static propTypes = {
+    allAssetsCount: PropTypes.number,
+    assets: PropTypes.array,
+    assetsTotal: PropTypes.object,
     blurOpacity: PropTypes.object,
     isEmpty: PropTypes.bool.isRequired,
-    fetchingAssets: PropTypes.bool.isRequired,
+    isLoading: PropTypes.bool.isRequired,
+    isScreenActive: PropTypes.bool,
     navigation: PropTypes.object,
+    onHideSplashScreen: PropTypes.func,
     onRefreshList: PropTypes.func.isRequired,
     sections: PropTypes.array,
     showBlur: PropTypes.bool,
+    toggleShowShitcoins: PropTypes.func,
+    trackingDate: PropTypes.object,
+    trackingDateInit: PropTypes.func,
     transitionProps: PropTypes.object,
+    uniqueTokens: PropTypes.array,
+    updateTrackingDate: PropTypes.func,
   }
 
   componentDidMount = async () => {
@@ -58,20 +66,29 @@ class WalletScreen extends Component {
       allAssetsCount,
       assets,
       assetsTotal,
-      fetchingAssets,
+      isLoading,
+      isScreenActive,
+      onHideSplashScreen,
       trackingDate,
       uniqueTokens,
+      updateTrackingDate,
     } = this.props;
-    if (this.props.isScreenActive && !prevProps.isScreenActive) {
+
+    if (!isLoading && prevProps.isLoading) {
+      onHideSplashScreen();
+    }
+
+    if (isScreenActive && !prevProps.isScreenActive) {
       Piwik.trackScreen('WalletScreen', 'WalletScreen');
       const totalTrackingAmount = get(assetsTotal, 'totalTrackingAmount', null);
       const assetSymbols = join(map(assets, (asset) => asset.symbol));
-      if (totalTrackingAmount && (!this.props.trackingDate || !isSameDay(this.props.trackingDate, Date.now()))) {
+      if (totalTrackingAmount && (!trackingDate || !isSameDay(trackingDate, Date.now()))) {
         Piwik.trackEvent('Balance', 'AssetsCount', 'TotalAssetsCount', allAssetsCount);
         Piwik.trackEvent('Balance', 'AssetSymbols', 'AssetSymbols', assetSymbols);
         Piwik.trackEvent('Balance', 'NFTCount', 'TotalNFTCount', uniqueTokens.length);
         Piwik.trackEvent('Balance', 'Total', 'TotalUSDBalance', totalTrackingAmount);
-        this.props.updateTrackingDate();
+
+        updateTrackingDate();
       }
     }
   }
@@ -80,7 +97,7 @@ class WalletScreen extends Component {
     const {
       blurOpacity,
       isEmpty,
-      fetchingAssets,
+      isLoading,
       navigation,
       onRefreshList,
       sections,
@@ -88,21 +105,21 @@ class WalletScreen extends Component {
     } = this.props;
 
     return (
-      <WalletPage>
+      <Page style={{ flex: 1, ...position.sizeAsObject('100%') }}>
         {showBlur && <BlurOverlay opacity={blurOpacity} />}
         <Header justify="space-between">
           <ProfileHeaderButton navigation={navigation} />
           <CameraHeaderButton navigation={navigation} />
         </Header>
-        <FabWrapper disable={isEmpty || fetchingAssets}>
+        <FabWrapper disabled={isEmpty || isLoading}>
           <AssetList
             fetchData={onRefreshList}
-            isEmpty={isEmpty}
-            isLoading={fetchingAssets}
+            isEmpty={isEmpty && !isLoading}
+            isLoading={isLoading}
             sections={sections}
           />
         </FabWrapper>
-      </WalletPage>
+      </Page>
     );
   }
 }
@@ -112,7 +129,9 @@ export default compose(
   withAccountRefresh,
   withFetchingPrices,
   withTrackingDate,
+  withHideSplashScreen,
   withBlurTransitionProps,
+  withIsWalletEmpty,
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
     onRefreshList: ({ refreshAccount }) => async () => {
@@ -127,14 +146,21 @@ export default compose(
     },
   }),
   withProps(buildWalletSections),
+  pickProps(Object.keys(WalletScreen.propTypes)),
   shouldUpdate((props, { isScreenActive, ...nextProps }) => {
     if (!isScreenActive) return false;
 
     const finishedFetchingPrices = props.fetchingPrices && !nextProps.fetchingPrices;
+    const finishedLoading = props.isLoading && !nextProps.isLoading;
     const finishedPopulating = props.isEmpty && !nextProps.isEmpty;
-    const finishedLoading = props.fetchingAssets && !nextProps.fetchingAssets;
-    const newSections = props.sections !== nextProps.sections;
 
-    return finishedPopulating || finishedLoading || finishedFetchingPrices || newSections;
+    const newBalance = isNewValueForPath(props, nextProps, 'sections[0].totalValue');
+    const newCollectibles = isNewValueForPath(props, nextProps, 'sections[1].totalItems');
+
+    const willUpdate = finishedFetchingPrices || finishedLoading || finishedPopulating || newBalance || newCollectibles;
+
+    console.log('willUpdate', willUpdate);
+
+    return willUpdate;
   }),
 )(WalletScreen);
