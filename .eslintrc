@@ -2,7 +2,8 @@
   "parser": "babel-eslint",
   "plugins": [
     "react",
-    "react-native"
+    "react-native",
+    "react-native-animation-linter"
   ],
   "parserOptions": {
     "ecmaFeatures": {
@@ -28,9 +29,15 @@
     "no-plusplus": ["off"],
     "no-underscore-dangle": ["off"],
     "arrow-parens": ["off"],
-    "no-param-reassign": ["off"]
+    "no-param-reassign": ["off"],
+    "react-native-animation-linter/must-tear-down-animations": 2,
   },
   "globals": {
     "fetch": false
+  },
+  "settings": {
+    "react": {
+      "version": "16.5.0"
+    }
   }
 }
