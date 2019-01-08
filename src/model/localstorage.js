@@ -62,7 +62,7 @@ export const getLocalRequests = async (accountAddress, network) => {
  * @param  {String}   [network]
  * @return {Void}
  */
-export const saveLocalRequests = async (address, network, requests) => {
+export const saveLocalRequests = async (accountAddress, network, requests) => {
   await commonStorage.saveLocal(
     getRequestsKey(accountAddress, network),
     { data: requests }
