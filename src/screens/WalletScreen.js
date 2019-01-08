@@ -23,6 +23,7 @@ import {
   withAccountAddress,
   withAccountAssets,
   withAccountRefresh,
+  withFetchingPrices,
   withBlurTransitionProps,
   withHideSplashScreen,
   withTrackingDate,
@@ -117,6 +118,7 @@ class WalletScreen extends Component {
 export default compose(
   withAccountAssets,
   withAccountRefresh,
+  withFetchingPrices,
   withHideSplashScreen,
   withSafeTimeout,
   withTrackingDate,
@@ -142,12 +144,12 @@ export default compose(
   withProps(buildWalletSections),
   shouldUpdate((props, { isScreenActive, ...nextProps }) => {
     if (!isScreenActive) return false;
-    // TODO: prices, or get prices to be triggered by redux
 
+    const finishedFetchingPrices = props.fetchingPrices && !nextProps.fetchingPrices;
     const finishedPopulating = props.isEmpty && !nextProps.isEmpty;
     const finishedLoading = props.fetchingAssets && !nextProps.fetchingAssets;
     const newSections = props.sections !== nextProps.sections;
 
-    return finishedPopulating || finishedLoading || newSections;
+    return finishedPopulating || finishedLoading || finishedFetchingPrices || newSections;
   }),
 )(WalletScreen);
