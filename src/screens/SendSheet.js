@@ -143,7 +143,7 @@ const TransactionContainer = styled(View)`
   background-color: ${colors.lightGrey};
 `;
 
-class SendScreen extends Component {
+class SendSheet extends Component {
   static propTypes = {
     allAssets: PropTypes.array,
     fetchData: PropTypes.func,
@@ -586,4 +586,4 @@ export default compose(
       await refreshAccount();
     },
   }),
-)(SendScreen);
+)(SendSheet);
