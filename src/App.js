@@ -52,6 +52,8 @@ class App extends Component {
   navigatorRef = null
 
   async componentDidMount() {
+    this.props.settingsInitializeState();
+    await this.handleWalletConfig();
     Piwik.initTracker('https://matomo.balance.io/piwik.php', 2);
     AppState.addEventListener('change', this.handleAppStateChange);
     firebase.messaging().getToken()
@@ -98,38 +100,38 @@ class App extends Component {
       this.onPushNotificationOpened(callId, sessionId, false);
     });
 
-    this.props.settingsInitializeState();
-
-    walletInit()
-      .then(walletAddress => {
-        if (!walletAddress) { return; }
-        console.log('wallet address is', walletAddress);
-        this.props.settingsUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
-        this.props.refreshAccount();
-        this.props.transactionsToApproveInit();
-        walletConnectInitAllConnectors()
-          .then(allConnectors => {
-            this.props.setWalletConnectors(allConnectors);
-            firebase
-              .notifications()
-              .getInitialNotification()
-              .then(notificationOpen => {
-                if (!notificationOpen) {
-                  this.fetchAllRequestsFromWalletConnectSessions();
-                }
-              });
-          })
-          .catch(error => {
-            console.log('Unable to init all WalletConnect sessions');
-          });
-        /*
-      */
-      })
-      .catch(error => {
-        console.log('error', error);
-        AlertIOS.alert('Error: Failed to initialize wallet.');
-      });
+    const notificationOpen = await firebase
+      .notifications()
+      .getInitialNotification();
+    if (notificationOpen) {
+      const { callId, sessionId } = notificationOpen.notification.data;
+      this.onPushNotificationOpened(callId, sessionId, false);
+    } else {
+			this.fetchAllRequestsFromWalletConnectSessions();
+    }
   }
+
+  handleWalletConfig = async seedPhrase => {
+    try {
+      const walletAddress = await walletInit(seedPhrase);
+      console.log('wallet address is', walletAddress);
+      this.props.settingsUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
+      this.props.refreshAccount();
+      this.props.transactionsToApproveInit();
+      try {
+				const allConnectors = await walletConnectInitAllConnectors();
+				if (allConnectors) {
+					this.props.setWalletConnectors(allConnectors);
+				}
+			} catch (error) {
+				console.log('Unable to init all WalletConnect sessions');
+			}
+      return walletAddress;
+    } catch (error) {
+			AlertIOS.alert('Error: Failed to initialize wallet.');
+      console.log('WALLET ERROR', error);
+    }
+  };
 
   handleAppStateChange = async (nextAppState) => {
     if (this.state.appState.match(/unknown|background/) && nextAppState === 'active') {
@@ -195,7 +197,10 @@ class App extends Component {
     <Provider store={store}>
       <FlexItem>
         <OfflineBadge />
-        <Routes ref={this.handleNavigatorRef} />
+        <Routes
+          ref={this.handleNavigatorRef}
+          screenProps={{ handleWalletConfig: this.handleWalletConfig }}
+        />
       </FlexItem>
     </Provider>
   )

@@ -7,7 +7,7 @@ const base = {
   blue: '#657fe6', // '101, 127, 230'
   blueActive: '#5a71cc', // '90, 113, 204'
   blueGreyDark: '#3c4252', // '60, 66, 82'
-  blueGreyLight: '#666A73', // '102, 106, 115' // TODO XXX SHOULD THIS BE: '#A1A5AC'?
+  blueGreyLight: '#A1A5AC', // '102, 106, 115'
   blueGreyLighter: '#888D96', // '136, 141, 150'
   blueGreyMedium: '#636875', // '99, 104, 117'
   blueGreyMediumLight: '#7b7f8a', // '123, 127, 138'
