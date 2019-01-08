@@ -38,7 +38,7 @@ class WalletScreen extends Component {
   static propTypes = {
     blurOpacity: PropTypes.object,
     isEmpty: PropTypes.bool.isRequired,
-    isLoading: PropTypes.bool.isRequired,
+    fetchingAssets: PropTypes.bool.isRequired,
     navigation: PropTypes.object,
     onHideSplashScreen: PropTypes.func,
     onRefreshList: PropTypes.func.isRequired,
@@ -60,12 +60,12 @@ class WalletScreen extends Component {
       allAssetsCount,
       assets,
       assetsTotal,
-      isLoading,
+      fetchingAssets,
       onHideSplashScreen,
       trackingDate,
       uniqueTokens,
     } = this.props;
-    if (!isLoading && prevProps.isLoading) {
+    if (!fetchingAssets && prevProps.fetchingAssets) {
       onHideSplashScreen();
     }
 
@@ -87,7 +87,7 @@ class WalletScreen extends Component {
     const {
       blurOpacity,
       isEmpty,
-      isLoading,
+      fetchingAssets,
       navigation,
       onRefreshList,
       sections,
@@ -101,11 +101,11 @@ class WalletScreen extends Component {
           <ProfileHeaderButton navigation={navigation} />
           <CameraHeaderButton navigation={navigation} />
         </Header>
-        <FabWrapper disable={isEmpty || isLoading}>
+        <FabWrapper disable={isEmpty || fetchingAssets}>
           <AssetList
             fetchData={onRefreshList}
-            isEmpty={isEmpty && !isLoading}
-            isLoading={isLoading}
+            isEmpty={isEmpty && !fetchingAssets}
+            isLoading={fetchingAssets}
             sections={sections}
           />
         </FabWrapper>
@@ -142,9 +142,10 @@ export default compose(
   withProps(buildWalletSections),
   shouldUpdate((props, { isScreenActive, ...nextProps }) => {
     if (!isScreenActive) return false;
+    // TODO: prices, or get prices to be triggered by redux
 
     const finishedPopulating = props.isEmpty && !nextProps.isEmpty;
-    const finishedLoading = props.isLoading && !nextProps.isLoading;
+    const finishedLoading = props.fetchingAssets && !nextProps.fetchingAssets;
     const newSections = props.sections !== nextProps.sections;
 
     return finishedPopulating || finishedLoading || newSections;
