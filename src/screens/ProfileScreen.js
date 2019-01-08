@@ -52,7 +52,7 @@ const ProfileScreen = ({
       )}
       nativeCurrency={nativeCurrency}
       requests={requests}
-      transactions={[]}
+      transactions={transactions}
       transactionsCount={transactionsCount}
     />
     {isEmpty && <AddFundsInterstitial />}

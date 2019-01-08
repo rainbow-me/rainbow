@@ -1,14 +1,13 @@
-import { createSwitchNavigator, createStackNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation';
 import createSwipeNavigator from '../navigation/navigators/createSwipeNavigator';
 import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import ExpandedAssetScreen from './ExpandedAssetScreen';
-import IntroScreen from './IntroScreen';
-import LoadingScreen from './LoadingScreen';
+import ImportSeedPhraseSheet from './ImportSeedPhraseSheet';
 import ProfileScreenWithData from './ProfileScreenWithData';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
 import ReceiveModal from './ReceiveModal';
 import SendQRScannerScreenWithData from './SendQRScannerScreenWithData';
-import SendScreenWithData from './SendScreenWithData';
+import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
@@ -45,10 +44,10 @@ const SwipeStack = createSwipeNavigator({
   onSwipeStart: onSwipeStartSwipeStack,
 });
 
-const AppStack = createStackNavigator({
+export default createStackNavigator({
   ConfirmRequest: TransactionConfirmationScreenWithData,
-  IntroScreen: {
-    screen: IntroScreen,
+  ImportSeedPhraseSheet: {
+    screen: ImportSeedPhraseSheet,
     navigationOptions: {
       effect: 'sheet',
       gestureResponseDistance: {
@@ -74,7 +73,7 @@ const AppStack = createStackNavigator({
     },
     screen: ReceiveModal,
   },
-  SendScreen: SendScreenWithData,
+  SendSheet: SendSheetWithData,
   SendQRScannerScreen: SendQRScannerScreenWithData,
   SwipeLayout: SwipeStack,
   SettingsModal: {
@@ -99,16 +98,3 @@ const AppStack = createStackNavigator({
     store.dispatch(updateTransitionProps({ isTransitioning: false }));
   },
 });
-
-export default createSwitchNavigator(
-  {
-    App: AppStack,
-    Loading: LoadingScreen,
-  },
-  {
-    headerMode: 'none',
-    initialRouteName: 'Loading',
-    mode: 'modal',
-  },
-);
-

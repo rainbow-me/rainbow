@@ -155,11 +155,12 @@ export default compose(
     const finishedPopulating = props.isEmpty && !nextProps.isEmpty;
 
     const newBalance = isNewValueForPath(props, nextProps, 'sections[0].totalValue');
+    const newBlur = isNewValueForPath(props, nextProps, 'showBlur');
     const newCollectibles = isNewValueForPath(props, nextProps, 'sections[1].totalItems');
 
-    const willUpdate = finishedFetchingPrices || finishedLoading || finishedPopulating || newBalance || newCollectibles;
+    const willUpdate = finishedFetchingPrices || finishedLoading || finishedPopulating || newBalance || newCollectibles || newBlur;
 
-    console.log('willUpdate', willUpdate);
+    // console.log('willUpdate', willUpdate);
 
     return willUpdate;
   }),

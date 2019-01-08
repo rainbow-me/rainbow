@@ -100,8 +100,9 @@ const enhance = compose(
     traits: sortList(traits, 'trait_type', 'asc'),
   })),
   withHandlers({
-    onListLayout: ({ dimensions, setWillListOverflow }) => ({ nativeEvent: { layout } }) =>
-      setWillListOverflow(layout.height > dimensions.height),
+    onListLayout: ({ dimensions, setWillListOverflow }) => ({ nativeEvent: { layout } }) => {
+      setWillListOverflow(layout.height > dimensions.height);
+    },
     onScroll: () => event => {
       event.stopPropagation();
     },
