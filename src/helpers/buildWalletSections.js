@@ -5,10 +5,7 @@ import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniqueTokenRow } from '../components/unique-token';
-import {
-  areAssetsEqualToInitialAccountAssetsState,
-  buildUniqueTokenList,
-} from '../helpers/assets';
+import { buildUniqueTokenList } from '../helpers/assets';
 
 const enhanceRenderItem = compose(
   withNavigation,
@@ -71,14 +68,8 @@ export default ({
 
   const filteredSections = Object.values(sections).filter(({ totalItems }) => totalItems);
 
-  let isEmpty = !filteredSections.length;
-  if (filteredSections.length === 1) {
-    isEmpty = areAssetsEqualToInitialAccountAssetsState(filteredSections[0].data[0]);
-  }
-
   return {
-    isEmpty,
-    isLoading: !filteredSections.length,
+    isEmpty: !filteredSections.length,
     sections: filteredSections,
   };
 };

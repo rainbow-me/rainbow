@@ -7,7 +7,7 @@ import {
   INITIAL_ASSETS_STATE,
   multiply,
 } from 'balance-common';
-import { get, groupBy, isEmpty, isEqual, isNull, omit, toNumber } from 'lodash';
+import { get, groupBy, isEmpty, isEqual, isNil, omit, toNumber } from 'lodash';
 import { sortList } from '../utils';
 
 const EMPTY_ARRAY = [];
@@ -43,7 +43,7 @@ export const buildUniqueTokenName = ({ asset_contract, id, name }) => (
 );
 
 export const groupAssetsByMarketValue = assets => groupBy(assets, ({ native }) => (
-  isNull(native) ? 'noValue' : 'hasValue'
+  isNil(native) ? 'noValue' : 'hasValue'
 ));
 
 export const sortAssetsByNativeAmount = (originalAssets, prices, nativeCurrency) => {
