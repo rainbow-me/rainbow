@@ -1710,9 +1710,9 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-balance-common@^0.6.9:
+"balance-common@git+https://github.com/balance-io/balance-common.git#redux":
   version "0.6.9"
-  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.9.tgz#7c02efbb6b2d9b9c3eeb982223c591deea996884"
+  resolved "git+https://github.com/balance-io/balance-common.git#f13266b79300ea216b6153ecd94954cfe94f6779"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -6674,8 +6674,8 @@ react-native-blur@^3.2.2:
     prop-types "^15.5.10"
 
 react-native-camera@^1.4.3:
-  version "1.6.4"
-  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.6.4.tgz#a7d0f3da8ff07be36c07e14dcae57d822a09013e"
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.8.0.tgz#e4749b112b99ce04c60f581d24624cd413d2d14a"
   dependencies:
     prop-types "^15.6.2"
 
@@ -7519,8 +7519,8 @@ sax@~1.1.1:
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.1.6.tgz#5d616be8a5e607d54e114afae55b7eaf2fcc3240"
 
 saxes@^3.1.4:
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/saxes/-/saxes-3.1.4.tgz#4ad5c53eb085ac0570ea1071a07aaf22ad29cebd"
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/saxes/-/saxes-3.1.5.tgz#ecbba12c7ca99f87f70dbd14a6c57b2b5de8b298"
   dependencies:
     xmlchars "^1.3.1"
 

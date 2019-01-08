@@ -1,5 +1,13 @@
-import { INITIAL_ASSETS_STATE } from 'balance-common';
-import { get, groupBy, isEqual, isNull, omit, toNumber } from 'lodash';
+import {
+  add,
+  convertAmountFromBigNumber,
+  convertAmountToBigNumber,
+  convertAmountToDisplay,
+  convertAmountToUnformattedDisplay,
+  INITIAL_ASSETS_STATE,
+  multiply,
+} from 'balance-common';
+import { get, groupBy, isEmpty, isEqual, isNull, omit, toNumber } from 'lodash';
 import { sortList } from '../utils';
 
 const EMPTY_ARRAY = [];
@@ -70,7 +78,7 @@ const parseNativePrices = (
   let newAccount = null;
   const newAssets = assets.map(asset => {
     if (
-      !nativePrices ||
+      isEmpty(nativePrices) ||
       (nativePrices && !nativePrices[nativeCurrency][asset.symbol])
     )
       return asset;
@@ -95,6 +103,8 @@ const parseNativePrices = (
     const balanceDisplay = convertAmountToDisplay(
       balanceAmount,
       nativePrices,
+      null,
+      nativeCurrency,
     );
     const assetPrice = nativePrices[nativeCurrency][asset.symbol].price;
     return {
@@ -122,7 +132,7 @@ const parseNativePrices = (
         add(total, asset.native ? asset.trackingAmount : 0),
       0,
     );
-  const totalDisplay = convertAmountToDisplay(totalAmount, nativePrices);
+  const totalDisplay = convertAmountToDisplay(totalAmount, nativePrices, null, nativeCurrency);
   const totalTrackingAmount = convertAmountToUnformattedDisplay(totalUSDAmount, 'USD');
   const total = { amount: totalAmount, display: totalDisplay, totalTrackingAmount };
   newAccount = {
