@@ -2010,10 +2010,13 @@ babylon@^6.18.0:
   integrity sha512-q/UEjfGJ2Cm3oKV71DJz9d25TPnq5rhBVL2Q4fA5wcC3jcrdn7+SssEybFIxwAvvP+YCsCYNKughoF33GxgycQ==
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 balance-common@^0.6.11:
   version "0.6.11"
   resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.11.tgz#016c1d08289380e57aca04b43c5fc338b7d9998c"
 =======
+=======
+>>>>>>> 1280af4... Rename “IntroScreen” into “ImportSeedPhraseSheet”
 <<<<<<< HEAD
 "balance-common@git+https://github.com/balance-io/balance-common.git#redux":
   version "0.6.9"
@@ -2022,7 +2025,16 @@ balance-common@^0.6.11:
 balance-common@../balance-common:
   version "0.6.9"
 >>>>>>> 1631581... make babel strip console’s from production build
+<<<<<<< HEAD
 >>>>>>> 9b78282... make babel strip console’s from production build
+=======
+=======
+balance-common@^0.6.10:
+  version "0.6.10"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.10.tgz#60679581e1d89ebedf603a8828f2fa9bd23aa788"
+  integrity sha512-RhvkuQICsvNBL/o6XKLwV5d5Lz0IxSzk1TTOnzAV1hispzOkbrYvCqGhyEPuCeaUw4kUdLfogLUJqEMvCL7N2g==
+>>>>>>> 2bad6b7... squash importseedphrase
+>>>>>>> 1280af4... Rename “IntroScreen” into “ImportSeedPhraseSheet”
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -2424,13 +2436,6 @@ caller-callsite@^2.0.0:
   dependencies:
     callsites "^2.0.0"
 
-caller-path@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/caller-path/-/caller-path-0.1.0.tgz#94085ef63581ecd3daa92444a8fe94e82577751f"
-  integrity sha1-lAhe9jWB7NPaqSREqP6U6CV3dR8=
-  dependencies:
-    callsites "^0.2.0"
-
 caller-path@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/caller-path/-/caller-path-2.0.0.tgz#468f83044e369ab2010fac5f06ceee15bb2cb1f4"
@@ -2438,6 +2443,7 @@ caller-path@^2.0.0:
   dependencies:
     caller-callsite "^2.0.0"
 
+<<<<<<< HEAD
 callsites@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/callsites/-/callsites-0.2.0.tgz#afab96262910a7f33c19a5775825c69f34e350ca"
@@ -2446,6 +2452,8 @@ callsites@^0.2.0:
   integrity sha1-r6uWJikQp/M8GaV3WCXGnzTjUMo=
 >>>>>>> 1631581... make babel strip console’s from production build
 
+=======
+>>>>>>> 2bad6b7... squash importseedphrase
 callsites@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/callsites/-/callsites-2.0.0.tgz#06eb84f00eea413da86affefacbffb36093b3c50"
@@ -2453,6 +2461,11 @@ callsites@^2.0.0:
 =======
   integrity sha1-BuuE8A7qQT2oav/vrL/7Ngk7PFA=
 >>>>>>> 1631581... make babel strip console’s from production build
+
+callsites@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/callsites/-/callsites-3.0.0.tgz#fb7eb569b72ad7a45812f93fd9430a3e410b3dd3"
+  integrity sha512-tWnkwu9YEq2uzlBDI4RcLn8jrFvF9AOi8PxDNU3hZZjJcjkcRAq3vCI+vZcg1SuxISDYe86k9VZFwAxDiJGoAw==
 
 camelcase@^4.1.0:
   version "4.1.0"
@@ -2473,6 +2486,7 @@ can-promise@0.0.1:
 
 caniuse-lite@^1.0.30000844:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.0.30000927"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000927.tgz#114a9de4ff1e01f5790fe578ecd93421c7524665"
 =======
@@ -2480,6 +2494,11 @@ caniuse-lite@^1.0.30000844:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000926.tgz#4361a99d818ca6e521dbe89a732de62a194a789c"
   integrity sha512-diMkEvxfFw09SkbErCLmw/1Fx1ZZe9xfWm4aeA2PUffB48x1tfZeMsK5j4BW7zN7Y4PdqmPVVdG2eYjE5IRTag==
 >>>>>>> 1631581... make babel strip console’s from production build
+=======
+  version "1.0.30000927"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000927.tgz#114a9de4ff1e01f5790fe578ecd93421c7524665"
+  integrity sha512-ogq4NbUWf1uG/j66k0AmiO3GjqJAlQyF8n4w8a954cbCyFKmYGvRtgz6qkq2fWuduTXHibX7GyYL5Pg58Aks2g==
+>>>>>>> 2bad6b7... squash importseedphrase
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -2509,6 +2528,7 @@ chalk@1.1.3, chalk@^1.0.0, chalk@^1.1.1, chalk@^1.1.3:
 
 chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0, chalk@^2.4.1:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
 =======
@@ -2516,6 +2536,11 @@ chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0, chalk@^2.4.1:
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.1.tgz#18c49ab16a037b6eb0152cc83e3471338215b66e"
   integrity sha512-ObN6h1v2fTJSmUXoS3nMQ92LbDK9be4TV+6G+omQlGJFdcUX5heKi1LZ1YnRMIgwTLEj3E24bT6tYni50rlCfQ==
 >>>>>>> 1631581... make babel strip console’s from production build
+=======
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
+  integrity sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==
+>>>>>>> 2bad6b7... squash importseedphrase
   dependencies:
     ansi-styles "^3.2.1"
     escape-string-regexp "^1.0.5"
@@ -3457,6 +3482,7 @@ ee-first@1.1.1:
 
 electron-to-chromium@^1.3.47:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.3.100"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.100.tgz#899fb088def210aee6b838a47655bbb299190e13"
 =======
@@ -3464,6 +3490,11 @@ electron-to-chromium@^1.3.47:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.96.tgz#25770ec99b8b07706dedf3a5f43fa50cb54c4f9a"
   integrity sha512-ZUXBUyGLeoJxp4Nt6G/GjBRLnyz8IKQGexZ2ndWaoegThgMGFO1tdDYID5gBV32/1S83osjJHyfzvanE/8HY4Q==
 >>>>>>> 1631581... make babel strip console’s from production build
+=======
+  version "1.3.100"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.100.tgz#899fb088def210aee6b838a47655bbb299190e13"
+  integrity sha512-cEUzis2g/RatrVf8x26L8lK5VEls1AGnLHk6msluBUg/NTB4wcXzExTsGscFq+Vs4WBBU2zbLLySvD4C0C3hwg==
+>>>>>>> 2bad6b7... squash importseedphrase
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -3663,17 +3694,23 @@ eslint-plugin-react@^7.7.0:
   resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.12.3.tgz#b9ca4cd7cd3f5d927db418a1950366a12d4568fd"
 =======
 eslint-plugin-react-native@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-react-native/-/eslint-plugin-react-native-3.5.0.tgz#78a5d6aadb11f85d1b114488d1fddfa2bf4fc1fb"
-  integrity sha512-L0qwiBQbG3MVMQk4XVCyyX+9nqJjr9YUmqpJ98Gb+uAmD+xlxT33rDL9ZBQgzMzBxDcUW6WiPcll8j9uXpyLyQ==
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react-native/-/eslint-plugin-react-native-3.6.0.tgz#7cad3b7c6159df6d26fe3252c6c5417a17f27b4b"
+  integrity sha512-BEQcHZ06hZSBYWFVuNEq0xuui5VEsWpHDsZGBtfadHfCRqRMUrkYPgdDb3bpc60qShHE83kqIv59uKdinEg91Q==
   dependencies:
     eslint-plugin-react-native-globals "^0.1.1"
 
 eslint-plugin-react@^7.12.1:
+<<<<<<< HEAD
   version "7.12.2"
   resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.12.2.tgz#95a4d8117011787824625ea57be9e38401d33548"
   integrity sha512-6F8uOJXOsWWWD3Mg8cvz4onsqEYp2LFZCFlgjaTAzbPLwqdwRCeK78unbuEaMXYPxq8paXCzTpoaDCwXBvC/gg==
 >>>>>>> 1631581... make babel strip console’s from production build
+=======
+  version "7.12.3"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.12.3.tgz#b9ca4cd7cd3f5d927db418a1950366a12d4568fd"
+  integrity sha512-WTIA3cS8OzkPeCi4KWuPmjR33lgG9r9Y/7RmnLTRw08MZKgAfnK/n3BO4X0S67MPkVLazdfCNT/XWqcDu4BLTA==
+>>>>>>> 2bad6b7... squash importseedphrase
   dependencies:
     array-includes "^3.0.3"
     doctrine "^2.1.0"
@@ -3720,10 +3757,16 @@ eslint@^4.19.1:
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-4.19.1.tgz#32d1d653e1d90408854bfb296f076ec7e186a300"
 =======
 eslint@^5.11.1:
+<<<<<<< HEAD
   version "5.11.1"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-5.11.1.tgz#8deda83db9f354bf9d3f53f9677af7e0e13eadda"
   integrity sha512-gOKhM8JwlFOc2acbOrkYR05NW8M6DCMSvfcJiBB5NDxRE1gv8kbvxKaC9u69e6ZGEMWXcswA/7eKR229cEIpvg==
 >>>>>>> 1631581... make babel strip console’s from production build
+=======
+  version "5.12.0"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-5.12.0.tgz#fab3b908f60c52671fb14e996a450b96c743c859"
+  integrity sha512-LntwyPxtOHrsJdcSwyQKVtHofPHdv+4+mFwEe91r2V13vqpM8yLr7b1sW+Oo/yheOPkWYsYlYJCkzlFAt8KV7g==
+>>>>>>> 2bad6b7... squash importseedphrase
   dependencies:
     "@babel/code-frame" "^7.0.0"
     ajv "^6.5.3"
@@ -3742,6 +3785,7 @@ eslint@^5.11.1:
     glob "^7.1.2"
     globals "^11.7.0"
     ignore "^4.0.6"
+    import-fresh "^3.0.0"
     imurmurhash "^0.1.4"
     inquirer "^6.1.0"
     js-yaml "^3.12.0"
@@ -3756,7 +3800,6 @@ eslint@^5.11.1:
     pluralize "^7.0.0"
     progress "^2.0.0"
     regexpp "^2.0.1"
-    require-uncached "^1.0.3"
     semver "^5.5.1"
     strip-ansi "^4.0.0"
     strip-json-comments "^2.0.1"
@@ -4998,6 +5041,7 @@ image-size@^0.6.0:
 
 immer@^1.7.4:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/immer/-/immer-1.10.0.tgz#bad67605ba9c810275d91e1c2a47d4582e98286d"
 =======
@@ -5005,6 +5049,11 @@ immer@^1.7.4:
   resolved "https://registry.yarnpkg.com/immer/-/immer-1.9.3.tgz#e88f8cbea730d2cde0f5e7e763000a8608bccdae"
   integrity sha512-bUyz3fOHGn82V7h4oVgJGmFglZt53JWwSyVNAT4sO0d7IovHLwLuHbh14uYKY0tewFoDcEdiQW7HuL0NsRVziw==
 >>>>>>> 1631581... make babel strip console’s from production build
+=======
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/immer/-/immer-1.10.0.tgz#bad67605ba9c810275d91e1c2a47d4582e98286d"
+  integrity sha512-O3sR1/opvCDGLEVcvrGTMtLac8GJ5IwZC4puPrLuRj3l7ICKvkmA0vGuU9OW8mV9WIBRnaxp5GJh9IEAaNOoYg==
+>>>>>>> 2bad6b7... squash importseedphrase
 
 import-fresh@^2.0.0:
   version "2.0.0"
@@ -5013,6 +5062,14 @@ import-fresh@^2.0.0:
   dependencies:
     caller-path "^2.0.0"
     resolve-from "^3.0.0"
+
+import-fresh@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/import-fresh/-/import-fresh-3.0.0.tgz#a3d897f420cab0e671236897f75bc14b4885c390"
+  integrity sha512-pOnA9tfM3Uwics+SaBLCNyZZZbK+4PTu0OPZtLlMIrv17EdBoC15S9Kn8ckJ9TZTyKb3ywNE5y1yeDxxGA7nTQ==
+  dependencies:
+    parent-module "^1.0.0"
+    resolve-from "^4.0.0"
 
 import-local@^1.0.0:
   version "1.0.0"
@@ -5164,6 +5221,10 @@ ip-regex@^1.0.3:
 ip-regex@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/ip-regex/-/ip-regex-3.0.0.tgz#0a934694b4066558c46294244a23cc33116bf732"
+<<<<<<< HEAD
+=======
+  integrity sha512-T8wDtjy+Qf2TAPDQmBp0eGKJ8GavlWlUnamr3wRn6vvdZlKVuJXXMlSncYFRYgVHOM3If5NR1H4+OvVQU9Idvg==
+>>>>>>> 2bad6b7... squash importseedphrase
 
 ip@^1.1.4, ip@^1.1.5:
   version "1.1.5"
@@ -5983,10 +6044,16 @@ js-yaml@^3.12.0, js-yaml@^3.7.0, js-yaml@^3.9.0, js-yaml@^3.9.1:
   resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.12.1.tgz#295c8632a18a23e054cf5c9d3cecafe678167600"
 =======
 js-yaml@^3.12.0, js-yaml@^3.7.0, js-yaml@^3.9.0:
+<<<<<<< HEAD
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.12.0.tgz#eaed656ec8344f10f527c6bfa1b6e2244de167d1"
   integrity sha512-PIt2cnwmPfL4hKNwqeiuz4bKfnzHTBv6HyVgjahA6mPLwPDzjDWrplJBMjHUFxku/N3FlmrbyPclad+I+4mJ3A==
 >>>>>>> 1631581... make babel strip console’s from production build
+=======
+  version "3.12.1"
+  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.12.1.tgz#295c8632a18a23e054cf5c9d3cecafe678167600"
+  integrity sha512-um46hB9wNOKlwkHgiuyEVAybXBjwFUV0Z/RaHJblRd9DXltue9FTYvzCr9ErQrK9Adz5MU4gHWVaNUfdmrC8qA==
+>>>>>>> 2bad6b7... squash importseedphrase
   dependencies:
     argparse "^1.0.7"
     esprima "^4.0.0"
@@ -7201,6 +7268,7 @@ npm-bundled@^1.0.1:
 
 npm-packlist@^1.1.6:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-1.2.0.tgz#55a60e793e272f00862c7089274439a4cc31fc7f"
 =======
@@ -7208,6 +7276,11 @@ npm-packlist@^1.1.6:
   resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-1.1.12.tgz#22bde2ebc12e72ca482abd67afc51eb49377243a"
   integrity sha512-WJKFOVMeAlsU/pjXuqVdzU0WfgtIBCupkEVwn+1Y0ERAbUfWw8R4GjgVbaKnUjRoD2FoQbHOCbOyT5Mbs9Lw4g==
 >>>>>>> 1631581... make babel strip console’s from production build
+=======
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-1.2.0.tgz#55a60e793e272f00862c7089274439a4cc31fc7f"
+  integrity sha512-7Mni4Z8Xkx0/oegoqlcao/JpPCPEMtUvsmB0q7mgvlMinykJLSRTYuFqoQLYgGY8biuxIeiHO+QNJKbCfljewQ==
+>>>>>>> 2bad6b7... squash importseedphrase
   dependencies:
     ignore-walk "^3.0.1"
     npm-bundled "^1.0.1"
@@ -7603,6 +7676,13 @@ pako@~0.2.0:
 =======
   integrity sha1-8/dSL073gjSNqBYbrZ7P1Rv4OnU=
 >>>>>>> 1631581... make babel strip console’s from production build
+
+parent-module@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/parent-module/-/parent-module-1.0.0.tgz#df250bdc5391f4a085fb589dad761f5ad6b865b5"
+  integrity sha512-8Mf5juOMmiE4FcmzYc4IaiS9L3+9paz2KOiXzkRviCP6aDmN49Hz6EMWz0lGNp9pX80GvvAuLADtyGfW/Em3TA==
+  dependencies:
+    callsites "^3.0.0"
 
 parse-asn1@^5.0.0:
   version "5.1.1"
@@ -8218,6 +8298,7 @@ react-native-blur@^3.2.2:
 
 react-native-camera@^1.4.3:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.8.0.tgz#e4749b112b99ce04c60f581d24624cd413d2d14a"
 =======
@@ -8225,6 +8306,11 @@ react-native-camera@^1.4.3:
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.6.4.tgz#a7d0f3da8ff07be36c07e14dcae57d822a09013e"
   integrity sha512-aS77+UVOKwxE+gTfpkPwIVoyFPD7uFuLV6qzV2M9kwK/KklR7wjd594xvatX40GHfLRFRpuUn5HiJU5WnOovbQ==
 >>>>>>> 1631581... make babel strip console’s from production build
+=======
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.8.0.tgz#e4749b112b99ce04c60f581d24624cd413d2d14a"
+  integrity sha512-fJPSbCZ4ZWI+1kQ2Y41ed0fr3Bnw+qo6eb8uv3HcTkGzBJ1OCzLIcAhpXLhizyiyY9nwSuMy9asQKS3Tun8eXA==
+>>>>>>> 2bad6b7... squash importseedphrase
   dependencies:
     prop-types "^15.6.2"
 
@@ -8395,6 +8481,7 @@ react-native-randombytes@^3.1.0:
 
 react-native-reanimated@^1.0.0-alpha.9:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.0.0-alpha.11"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.0.0-alpha.11.tgz#b78c839bae878d149561b56a3c750414957ea86d"
 =======
@@ -8402,6 +8489,11 @@ react-native-reanimated@^1.0.0-alpha.9:
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.0.0-alpha.10.tgz#e9e6fb35a2cf52fdc912b9fbc76f34f80698e530"
   integrity sha512-dbZG/Lh5Q+6zRvS7+gIkZKmXTG7XVqHbpMROL1LApBBMQwuLq/uLtKk/nBSn1+mNmazPrPMTehI7TG3AEkctww==
 >>>>>>> 1631581... make babel strip console’s from production build
+=======
+  version "1.0.0-alpha.11"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.0.0-alpha.11.tgz#b78c839bae878d149561b56a3c750414957ea86d"
+  integrity sha512-lDakjY8CXmZiSN71hyc276b3d7M9mKV9ZyYw4W/rTnnJbgBFaqdIxSHq4S4LxSbVqpAoQMfUJqPTE0BKbAz7Aw==
+>>>>>>> 2bad6b7... squash importseedphrase
 
 react-native-safe-area-view@0.11.0:
   version "0.11.0"
@@ -8418,6 +8510,7 @@ react-native-safe-area-view@mikedemarais/react-native-safe-area-view:
 
 react-native-screens@^1.0.0-alpha.11:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.0.0-alpha.21"
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.21.tgz#ba8d401e82fa3d0f30e7922dbb6446a8c000d7ef"
 =======
@@ -8425,6 +8518,11 @@ react-native-screens@^1.0.0-alpha.11:
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.19.tgz#ecf3c9023e169b7013266d40b9c5599f37667f6d"
   integrity sha512-+a7GdwzLWYWYVUJMg+XuyBoRFGD8GdGyBfebuTNBY+xwUZpTXCaK/GlLGL6EE3h0iBHZu83do7zViEailWRNyA==
 >>>>>>> 1631581... make babel strip console’s from production build
+=======
+  version "1.0.0-alpha.21"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.21.tgz#ba8d401e82fa3d0f30e7922dbb6446a8c000d7ef"
+  integrity sha512-Jm0hfUyEw0v4Rn2rmpG2ab+H2J+36a/505gufMeZQUcx8EajysiuyzNcHQ9B9NhUEUajk/ostF73X4pHuMLItw==
+>>>>>>> 2bad6b7... squash importseedphrase
 
 react-native-shimmer-placeholder@^1.0.29:
   version "1.0.30"
@@ -9042,6 +9140,7 @@ require-package-name@^2.0.1:
   resolved "https://registry.yarnpkg.com/require-package-name/-/require-package-name-2.0.1.tgz#c11e97276b65b8e2923f75dabf5fb2ef0c3841b9"
   integrity sha1-wR6XJ2tluOKSP3Xav1+y7ww4Qbk=
 
+<<<<<<< HEAD
 require-uncached@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/require-uncached/-/require-uncached-1.0.3.tgz#4e0d56d6c9662fd31e43011c4b95aa49955421d3"
@@ -9053,6 +9152,8 @@ require-uncached@^1.0.3:
     caller-path "^0.1.0"
     resolve-from "^1.0.0"
 
+=======
+>>>>>>> 2bad6b7... squash importseedphrase
 resolve-cwd@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/resolve-cwd/-/resolve-cwd-2.0.0.tgz#00a9f7387556e27038eae232caa372a6a59b665a"
@@ -9060,15 +9161,15 @@ resolve-cwd@^2.0.0:
   dependencies:
     resolve-from "^3.0.0"
 
-resolve-from@^1.0.0:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/resolve-from/-/resolve-from-1.0.1.tgz#26cbfe935d1aeeeabb29bc3fe5aeb01e93d44226"
-  integrity sha1-Jsv+k10a7uq7Kbw/5a6wHpPUQiY=
-
 resolve-from@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/resolve-from/-/resolve-from-3.0.0.tgz#b22c7af7d9d6881bc8b6e653335eebcb0a188748"
   integrity sha1-six699nWiBvItuZTM17rywoYh0g=
+
+resolve-from@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/resolve-from/-/resolve-from-4.0.0.tgz#4abcd852ad32dd7baabfe9b40e00a36db5f392e6"
+  integrity sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==
 
 resolve-url@^0.2.1:
   version "0.2.1"
@@ -9250,10 +9351,16 @@ saxes@^3.1.4:
   integrity sha1-XWFr6KXmB9VOEUr65Vt+ry/MMkA=
 
 saxes@^3.1.4:
+<<<<<<< HEAD
   version "3.1.4"
   resolved "https://registry.yarnpkg.com/saxes/-/saxes-3.1.4.tgz#4ad5c53eb085ac0570ea1071a07aaf22ad29cebd"
   integrity sha512-GVZmLJnkS4Vl8Pe9o4nc5ALZ615VOVxCmea8Cs0l+8GZw3RQ5XGOSUomIUfuZuk4Todo44v4y+HY1EATkDDiZg==
 >>>>>>> 1631581... make babel strip console’s from production build
+=======
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/saxes/-/saxes-3.1.5.tgz#ecbba12c7ca99f87f70dbd14a6c57b2b5de8b298"
+  integrity sha512-2mgiX2VOarcQv8G40WdJ5QJniYdsPr0yGedkd98PqApodsS9DG29qyHl/X65OILm7Bapd1/zUUvTHVZwNLhXvQ==
+>>>>>>> 2bad6b7... squash importseedphrase
   dependencies:
     xmlchars "^1.3.1"
 
@@ -10243,6 +10350,10 @@ to-regex@^3.0.1, to-regex@^3.0.2:
 tough-cookie@>=2.3.3:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/tough-cookie/-/tough-cookie-3.0.0.tgz#d2bceddebde633153ff20a52fa844a0dc71dacef"
+<<<<<<< HEAD
+=======
+  integrity sha512-LHMvg+RBP/mAVNqVbOX8t+iJ+tqhBA/t49DuI7+IDAWHrASnesqSu1vWbKB7UrE2yk+HMFUBMadRGMkB4VCfog==
+>>>>>>> 2bad6b7... squash importseedphrase
   dependencies:
     ip-regex "^3.0.0"
     psl "^1.1.28"

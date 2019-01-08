@@ -32,7 +32,7 @@ const Container = styled(Centered)`
 
 const Paragraph = styled(Text).attrs({
   align: 'center',
-  color: '#C4C6CB',
+  color: colors.placeholder,
   lineHeight: 'loose',
   size: 'smedium',
 })`
@@ -84,6 +84,6 @@ export default compose(
   withNavigation,
   withHandlers({
     onPressAddFunds: ({ navigation }) => () => navigation.navigate('ReceiveModal'),
-    onPressImportWallet: ({ navigation }) => () => navigation.navigate('IntroScreen'),
+    onPressImportWallet: ({ navigation }) => () => navigation.navigate('ImportSeedPhraseSheet'),
   }),
 )(AddFundsInterstitial);

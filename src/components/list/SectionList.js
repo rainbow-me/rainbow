@@ -24,6 +24,7 @@ class SectionList extends PureComponent {
     onRefresh: PropTypes.func,
     renderItem: PropTypes.func,
     renderSectionFooter: PropTypes.func,
+    safeAreaInset: PropTypes.object,
     showSafeAreaInsetBottom: PropTypes.bool,
   }
 

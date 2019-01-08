@@ -54,6 +54,9 @@ class LoadingScreen extends Component {
 
   handleError = () => this.setState({ isError: true })
 
+  // If this is a brand new instance of the Balance Wallet app show the 'ImportSeedPhraseSheet',
+  // otherwise display the main 'App' route. Afterwards this view will be
+  // unmounted and thrown away.
   handleNavigation = async () => this.props.navigation.navigate('App')
 
   render = () => (
