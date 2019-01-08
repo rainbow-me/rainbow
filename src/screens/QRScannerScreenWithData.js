@@ -72,7 +72,7 @@ class QRScannerScreenWithData extends PureComponent {
     if (address) {
       Piwik.trackEvent('QRScanner', 'address', 'QRScannedAddress');
       navigation.navigate('WalletScreen');
-      navigation.navigate('SendScreen', { address });
+      navigation.navigate('SendSheet', { address });
       setSafeTimeout(this.handleReenableScanning, 1000);
     } else if (data.startsWith('ethereum:wc')) {
       Piwik.trackEvent('QRScanner', 'walletconnect', 'QRScannedWC');
