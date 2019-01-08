@@ -60,8 +60,8 @@ CurrencySection.propTypes = {
 export default compose(
   withAccountSettings,
   withHandlers({
-    onSelectCurrency: ({ accountChangeNativeCurrency }) => (currency) =>
-      accountChangeNativeCurrency(currency),
+    onSelectCurrency: ({ settingsChangeNativeCurrency }) => (currency) =>
+      settingsChangeNativeCurrency(currency),
   }),
   onlyUpdateForKeys(['nativeCurrency']),
 )(CurrencySection);

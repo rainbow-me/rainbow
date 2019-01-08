@@ -22,9 +22,9 @@ import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../model/lo
 import {
   withAccountAddress,
   withAccountAssets,
+  withAccountRefresh,
   withBlurTransitionProps,
   withHideSplashScreen,
-  withRequestsInit,
   withTrackingDate,
 } from '../hoc';
 import { position } from '../styles';
@@ -59,7 +59,7 @@ class WalletScreen extends Component {
     const {
       allAssetsCount,
       assets,
-      assetsTotalUSD,
+      assetsTotal,
       isLoading,
       onHideSplashScreen,
       trackingDate,
@@ -71,7 +71,7 @@ class WalletScreen extends Component {
 
     if (this.props.isScreenActive && !prevProps.isScreenActive) {
       Piwik.trackScreen('WalletScreen', 'WalletScreen');
-      const totalTrackingAmount = get(assetsTotalUSD, 'totalTrackingAmount', null);
+      const totalTrackingAmount = get(assetsTotal, 'totalTrackingAmount', null);
       const assetSymbols = join(map(assets, (asset) => asset.symbol));
       if (totalTrackingAmount && (!this.props.trackingDate || !isSameDay(this.props.trackingDate, Date.now()))) {
         Piwik.trackEvent('Balance', 'AssetsCount', 'TotalAssetsCount', allAssetsCount);
@@ -115,25 +115,20 @@ class WalletScreen extends Component {
 }
 
 export default compose(
-  withAccountAddress,
   withAccountAssets,
+  withAccountRefresh,
   withHideSplashScreen,
-  withRequestsInit,
   withSafeTimeout,
   withTrackingDate,
   withBlurTransitionProps,
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
     onRefreshList: ({
-      accountAddress,
-      accountUpdateAccountAddress,
       setSafeTimeout,
-      transactionsToApproveInit,
+      refreshAccount,
     }) => () => {
-      accountUpdateAccountAddress(accountAddress, 'BALANCEWALLET');
-      transactionsToApproveInit();
+      refreshAccount();
       // hack: use timeout so that it looks like loading is happening
-      // accountUpdateAccountAddress does not return a promise
       return new Promise(resolve => setSafeTimeout(resolve, 2000));
     },
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {

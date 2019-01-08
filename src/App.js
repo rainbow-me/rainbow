@@ -3,7 +3,11 @@ import CodePush from 'react-native-code-push';
 import firebase from 'react-native-firebase';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { accountInitializeState, accountUpdateAccountAddress, commonStorage } from 'balance-common';
+import {
+  settingsInitializeState,
+  settingsUpdateAccountAddress,
+  commonStorage,
+} from 'balance-common';
 import { AppRegistry, AlertIOS, AppState } from 'react-native';
 import { compose, withProps } from 'recompact';
 import { connect, Provider } from 'react-redux';
@@ -11,7 +15,7 @@ import { StackActions } from 'react-navigation';
 import Piwik from 'react-native-matomo';
 import { FlexItem } from './components/layout';
 import OfflineBadge from './components/OfflineBadge';
-import { withWalletConnectConnections } from './hoc';
+import { withAccountRefresh, withWalletConnectConnections } from './hoc';
 import {
   addTransactionToApprove,
   addTransactionsToApprove,
@@ -31,11 +35,12 @@ import Navigation from './navigation';
 
 class App extends Component {
   static propTypes = {
-    accountInitializeState: PropTypes.func,
-    accountUpdateAccountAddress: PropTypes.func,
+    settingsInitializeState: PropTypes.func,
+    settingsUpdateAccountAddress: PropTypes.func,
     addTransactionsToApprove: PropTypes.func,
     addTransactionToApprove: PropTypes.func,
     getValidWalletConnectors: PropTypes.func,
+    refreshAccount: PropTypes.func,
     setWalletConnectors: PropTypes.func,
     transactionIfExists: PropTypes.func,
     transactionsToApproveInit: PropTypes.func,
@@ -47,6 +52,7 @@ class App extends Component {
   navigatorRef = null
 
   async componentDidMount() {
+    console.log('HIIIIIIIIIIIII'); // TODO
     Piwik.initTracker('https://matomo.balance.io/piwik.php', 2);
     AppState.addEventListener('change', this.handleAppStateChange);
     firebase.messaging().getToken()
@@ -93,13 +99,14 @@ class App extends Component {
       this.onPushNotificationOpened(callId, sessionId, false);
     });
 
-    await this.props.accountInitializeState();
+    await this.props.settingsInitializeState();
 
     walletInit()
       .then(walletAddress => {
         if (!walletAddress) { return; }
         console.log('wallet address is', walletAddress);
-        this.props.accountUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
+        this.props.settingsUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
+        this.props.refreshAccount();
         this.props.transactionsToApproveInit();
         walletConnectInitAllConnectors()
           .then(allConnectors => {
@@ -120,6 +127,7 @@ class App extends Component {
       */
       })
       .catch(error => {
+        console.log('error', error);
         AlertIOS.alert('Error: Failed to initialize wallet.');
       });
   }
@@ -196,14 +204,15 @@ class App extends Component {
 
 const AppWithRedux = compose(
   withProps({ store }),
+  withAccountRefresh,
   withWalletConnectConnections,
   connect(
     null,
     {
       addTransactionToApprove,
       addTransactionsToApprove,
-      accountInitializeState,
-      accountUpdateAccountAddress,
+      settingsInitializeState,
+      settingsUpdateAccountAddress,
       transactionIfExists,
       transactionsToApproveInit,
     },

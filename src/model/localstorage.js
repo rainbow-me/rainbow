@@ -38,59 +38,48 @@ export const getLastTrackingDate = async () => {
 export const updateLastTrackingDate = async () => {
   await commonStorage.saveLocal('lastTrackingDate', { data: new Date().toString() });
 };
+
+const getRequestsKey = (accountAddress, network) => {
+  return `requests-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+};
+
 /**
  * @desc get account local requests
  * @param  {String}   [address]
  * @return {Object}
  */
-export const getAccountLocalRequests = async (accountAddress, network) => {
-  const accountLocal = await commonStorage.getAccountLocal(accountAddress);
-  const requests = accountLocal && accountLocal[network] ? accountLocal[network].requests : {};
+export const getLocalRequests = async (accountAddress, network) => {
+  const requestsData = await commonStorage.getLocal(getRequestsKey(accountAddress, network));
+  const requests = requestsData ? requestsData.data : {};
   const openRequests = pickBy(requests, (request) => (differenceInMinutes(Date.now(), request.transactionDisplayDetails.timestampInMs) < 60));
-  await updateLocalRequests(accountAddress, network, openRequests);
+  await saveLocalRequests(accountAddress, network, openRequests);
   return openRequests;
 };
 
 /**
- * @desc update local incoming transaction requests
+ * @desc save local incoming requests
  * @param  {String}   [address]
  * @param  {String}   [network]
  * @return {Void}
  */
-export const updateLocalRequests = async (address, network, requests) => {
-  if (!address) return;
-  let accountLocal = await commonStorage.getAccountLocal(address);
-  if (!accountLocal) {
-    accountLocal = {};
-  }
-  if (!accountLocal[network]) {
-    accountLocal[network] = {};
-  }
-  accountLocal[network].requests = { ...requests };
-  await commonStorage.saveLocal(address.toLowerCase(), accountLocal);
+export const saveLocalRequests = async (address, network, requests) => {
+  await commonStorage.saveLocal(
+    getRequestsKey(accountAddress, network),
+    { data: requests }
+  );
 };
 
 /**
- * @desc remove transaction request
+ * @desc remove request
  * @param  {String}   [address]
  * @param  {String}   [network]
  * @param  {String}   [callId]
  * @return {Void}
  */
 export const removeLocalRequest = async (address, network, callId) => {
-  if (!address) return;
-  let accountLocal = await commonStorage.getAccountLocal(address);
-  if (!accountLocal) {
-    accountLocal = {};
-  }
-  if (!accountLocal[network]) {
-    accountLocal[network] = {};
-  }
-  if (!accountLocal[network].requests) {
-    accountLocal[network].requests = {};
-  }
-  let updatedRequests = accountLocal[network].requests;
+  const requests = getLocalRequests(address, network);
+  let updatedRequests = { ...requests };
   delete updatedRequests[callId];
-  accountLocal[network].requests = { ...updatedRequests };
+  saveLocalRequests(address, network, updatedRequests);
   await commonStorage.saveLocal(address.toLowerCase(), accountLocal);
 };
