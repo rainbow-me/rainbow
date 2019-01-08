@@ -27,10 +27,9 @@ import { Column, Flex, FlyInView, Row } from '../components/layout';
 import { ShadowStack } from '../components/shadow-stack';
 import { Monospace } from '../components/text';
 import {
-  withAccountAddress,
   withAccountAssets,
+  withAccountRefresh,
   withAccountSettings,
-  withRequestsInit
 } from '../hoc';
 import { colors, fonts, padding, shadow } from '../styles';
 import { deviceUtils } from '../utils';
@@ -580,22 +579,17 @@ class SendScreen extends Component {
 }
 
 export default compose(
-  withAccountAddress,
   withAccountAssets,
   withAccountSettings,
-  withRequestsInit,
+  withAccountRefresh,
   withSafeTimeout,
   withHandlers({
     fetchData: ({
-      accountAddress,
-      accountUpdateAccountAddress,
       setSafeTimeout,
-      transactionsToApproveInit,
+      refreshAccount,
     }) => () => {
-      accountUpdateAccountAddress(accountAddress, 'BALANCEWALLET');
-      transactionsToApproveInit();
+      refreshAccount();
       // hack: use timeout so that it looks like loading is happening
-      // accountUpdateAccountAddress does not return a promise
       return new Promise(resolve => setSafeTimeout(resolve, 2000));
     },
   }),

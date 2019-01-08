@@ -64,6 +64,7 @@ export default compose(
     navigation,
     uniqueTokens,
   }) => {
+    // TODO: allAssets test
     const { name, type } = navigation.state.params;
 
     let selectedAsset = {};

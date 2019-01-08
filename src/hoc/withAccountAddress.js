@@ -1,9 +1,10 @@
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompose';
+import { settingsUpdateAccountAddress } from 'balance-common';
 
-const mapStateToProps = ({ account: { accountAddress } }) => ({ accountAddress });
+const mapStateToProps = ({ settings: { accountAddress } }) => ({ accountAddress });
 
 export default Component => compose(
-  connect(mapStateToProps),
+  connect(mapStateToProps, { settingsUpdateAccountAddress }),
   withProps(({ accountAddress }) => ({ accountAddress: accountAddress.toLowerCase() })),
 )(Component);

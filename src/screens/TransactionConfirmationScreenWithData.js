@@ -12,8 +12,7 @@ import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
 class TransactionConfirmationScreenWithData extends Component {
   static propTypes = {
-    accountUpdateHasPendingTransaction: PropTypes.func,
-    accountUpdateTransactions: PropTypes.func,
+    transactionsAddNewTransaction: PropTypes.func,
     navigation: PropTypes.any,
     removeTransaction: PropTypes.func,
     transactionCountNonce: PropTypes.number,
@@ -73,8 +72,7 @@ class TransactionConfirmationScreenWithData extends Component {
         to: get(transactionDetails, 'transactionDisplayDetails.payload.to'),
         value: get(transactionDetails, 'transactionDisplayDetails.payload.value'),
       };
-      this.props.accountUpdateHasPendingTransaction();
-      this.props.accountUpdateTransactions(txDetails);
+      this.props.transactionsAddNewTransaction(txDetails);
       this.props.removeTransaction(transactionDetails.callId);
       const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
       await walletConnectSendStatus(walletConnector, transactionDetails.callId, transactionHash);
