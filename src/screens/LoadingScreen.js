@@ -52,7 +52,7 @@ class LoadingScreen extends Component {
   // If this is a brand new instance of the Balance Wallet app show the 'IntroScreen',
   // otherwise display the main 'App' route. Afterwards this view will be
   // unmounted and thrown away.
-  handleNavigation = async address => this.props.navigation.navigate(address ? 'App' : 'Intro')
+  handleNavigation = async address => this.props.navigation.navigate('App')
 
   render = () => (
     <Container align={this.state.isError ? 'start' : 'center'}>

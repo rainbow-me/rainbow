@@ -4,6 +4,7 @@ import Flex from '../layout/Flex';
 
 import ArrowCircledIcon from './svg/ArrowCircledIcon';
 import ArrowIcon from './svg/ArrowIcon';
+import AssetListItemSkeletonIcon from './svg/AssetListItemSkeletonIcon';
 import AvatarIcon from './svg/AvatarIcon';
 import BalanceLogoIcon from './svg/BalanceLogoIcon';
 import CameraIcon from './svg/CameraIcon';
@@ -36,6 +37,7 @@ const Icon = ({ name, ...props }) =>
 Icon.IconTypes = {
   arrow: ArrowIcon,
   arrowCircled: ArrowCircledIcon,
+  assetListItemSkeleton: AssetListItemSkeletonIcon,
   avatar: AvatarIcon,
   balanceLogo: BalanceLogoIcon,
   camera: CameraIcon,
