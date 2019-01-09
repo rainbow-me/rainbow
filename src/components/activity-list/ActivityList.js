@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, mapProps, onlyUpdateForKeys } from 'recompact';
 import { buildTransactionsSections } from '../../helpers/transactions';
-import { withAccountSettings } from '../../hoc';
+import { withAccountAddress, withAccountSettings, withAccountTransactions } from '../../hoc';
 import { CoinRow, TransactionCoinRow, RequestCoinRow } from '../coin-row';
 import { SectionList } from '../list';
 import ActivityListHeader from './ActivityListHeader';
@@ -56,7 +56,9 @@ ActivityList.propTypes = {
 };
 
 export default compose(
+  withAccountAddress,
   withAccountSettings,
+  withAccountTransactions,
   mapProps(({
     accountAddress,
     nativeCurrency,

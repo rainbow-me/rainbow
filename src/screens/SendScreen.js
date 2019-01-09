@@ -1,5 +1,4 @@
 import { convertAssetAmountToDisplay } from 'balance-common';
-import { withSafeTimeout } from '@hocs/safe-timers';
 import { get, isEmpty, map } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -27,10 +26,9 @@ import { Column, Flex, FlyInView, Row } from '../components/layout';
 import { ShadowStack } from '../components/shadow-stack';
 import { Monospace } from '../components/text';
 import {
-  withAccountAddress,
   withAccountAssets,
+  withAccountRefresh,
   withAccountSettings,
-  withRequestsInit
 } from '../hoc';
 import { colors, fonts, padding, shadow } from '../styles';
 import { deviceUtils } from '../utils';
@@ -580,23 +578,12 @@ class SendScreen extends Component {
 }
 
 export default compose(
-  withAccountAddress,
   withAccountAssets,
   withAccountSettings,
-  withRequestsInit,
-  withSafeTimeout,
+  withAccountRefresh,
   withHandlers({
-    fetchData: ({
-      accountAddress,
-      accountUpdateAccountAddress,
-      setSafeTimeout,
-      transactionsToApproveInit,
-    }) => () => {
-      accountUpdateAccountAddress(accountAddress, 'BALANCEWALLET');
-      transactionsToApproveInit();
-      // hack: use timeout so that it looks like loading is happening
-      // accountUpdateAccountAddress does not return a promise
-      return new Promise(resolve => setSafeTimeout(resolve, 2000));
+    fetchData: ({ refreshAccount }) => async () => {
+      await refreshAccount();
     },
   }),
 )(SendScreen);

@@ -1,10 +1,10 @@
 import lang from 'i18n-js';
-import { accountChangeLanguage, accountChangeNativeCurrency } from 'balance-common';
+import { settingsChangeLanguage, settingsChangeNativeCurrency } from 'balance-common';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 
 const mapStateToProps = ({
-  account: {
+  settings: {
     language,
     nativeCurrency,
   },
@@ -15,8 +15,8 @@ const mapStateToProps = ({
 
 export default Component => compose(
   connect(mapStateToProps, {
-    accountChangeLanguage,
-    accountChangeNativeCurrency,
+    settingsChangeLanguage,
+    settingsChangeNativeCurrency,
   }),
   withProps(({ language }) => {
     if (language !== lang.locale) {

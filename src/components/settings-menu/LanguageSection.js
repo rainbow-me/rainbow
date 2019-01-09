@@ -43,8 +43,8 @@ LanguageSection.propTypes = {
 export default compose(
   withAccountSettings,
   withHandlers({
-    onSelectLanguage: ({ accountChangeLanguage }) => (language) =>
-      accountChangeLanguage(language),
+    onSelectLanguage: ({ settingsChangeLanguage }) => (language) =>
+      settingsChangeLanguage(language),
   }),
   onlyUpdateForKeys(['language']),
 )(LanguageSection);
