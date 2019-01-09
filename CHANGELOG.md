@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 ### Added
 
 ### Changed
+* Splash screen to be removed after successfully loaded wallet data
+* Support for separate reducer changes for settings, assets, transactions, prices
+* Support for promisified account refresh
 
 ### Removed
 
