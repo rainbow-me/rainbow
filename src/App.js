@@ -116,7 +116,7 @@ class App extends Component {
       const walletAddress = await walletInit(seedPhrase);
       console.log('wallet address is', walletAddress);
       this.props.settingsUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
-      this.props.refreshAccount();
+      await this.props.refreshAccount();
       this.props.transactionsToApproveInit();
       try {
 				const allConnectors = await walletConnectInitAllConnectors();
