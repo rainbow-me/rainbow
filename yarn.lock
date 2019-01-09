@@ -1710,9 +1710,9 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-"balance-common@git+https://github.com/balance-io/balance-common.git#redux":
+"balance-common@git+https://github.com/balance-io/balance-common.git#reduxpromise":
   version "0.6.9"
-  resolved "git+https://github.com/balance-io/balance-common.git#83ac2983fc0e09e9d8542132b11f69d8ed5cf905"
+  resolved "git+https://github.com/balance-io/balance-common.git#ae1797cf7c153d26bbcee222c06ad5554d4c067e"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -3803,8 +3803,8 @@ global@^4.3.0, global@^4.3.2, global@~4.3.0:
     process "~0.5.1"
 
 globals@^11.0.1, globals@^11.1.0:
-  version "11.9.0"
-  resolved "https://registry.yarnpkg.com/globals/-/globals-11.9.0.tgz#bde236808e987f290768a93d065060d78e6ab249"
+  version "11.10.0"
+  resolved "https://registry.yarnpkg.com/globals/-/globals-11.10.0.tgz#1e09776dffda5e01816b3bb4077c8b59c24eaa50"
 
 globals@^9.18.0:
   version "9.18.0"
