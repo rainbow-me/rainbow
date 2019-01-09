@@ -52,8 +52,6 @@ class App extends Component {
   navigatorRef = null
 
   async componentDidMount() {
-    this.props.settingsInitializeState();
-    await this.handleWalletConfig();
     Piwik.initTracker('https://matomo.balance.io/piwik.php', 2);
     AppState.addEventListener('change', this.handleAppStateChange);
     firebase.messaging().getToken()
@@ -115,6 +113,7 @@ class App extends Component {
     try {
       const walletAddress = await walletInit(seedPhrase);
       console.log('wallet address is', walletAddress);
+      this.props.settingsInitializeState();
       this.props.settingsUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
       await this.props.refreshAccount();
       this.props.transactionsToApproveInit();

@@ -7,7 +7,6 @@ export { default as withAddWalletConnector } from './withAddWalletConnector';
 export { default as withBlurTransitionProps } from './withBlurTransitionProps';
 export { default as withFetchingPrices } from './withFetchingPrices';
 export { default as withHideSplashScreen } from './withHideSplashScreen';
-export { default as withHideSplashScreenOnMount } from './withHideSplashScreenOnMount';
 export { default as withImageDimensionsCache } from './withImageDimensionsCache';
 export { default as withMessageSigningScreen } from './withMessageSigningScreen';
 export { default as withRequests } from './withRequests';

@@ -24,7 +24,6 @@ import {
   withAccountRefresh,
   withFetchingPrices,
   withBlurTransitionProps,
-  withHideSplashScreen,
   withTrackingDate,
 } from '../hoc';
 import { position } from '../styles';
@@ -40,7 +39,6 @@ class WalletScreen extends Component {
     isEmpty: PropTypes.bool.isRequired,
     fetchingAssets: PropTypes.bool.isRequired,
     navigation: PropTypes.object,
-    onHideSplashScreen: PropTypes.func,
     onRefreshList: PropTypes.func.isRequired,
     sections: PropTypes.array,
     showBlur: PropTypes.bool,
@@ -61,14 +59,9 @@ class WalletScreen extends Component {
       assets,
       assetsTotal,
       fetchingAssets,
-      onHideSplashScreen,
       trackingDate,
       uniqueTokens,
     } = this.props;
-    if (!fetchingAssets && prevProps.fetchingAssets) {
-      onHideSplashScreen();
-    }
-
     if (this.props.isScreenActive && !prevProps.isScreenActive) {
       Piwik.trackScreen('WalletScreen', 'WalletScreen');
       const totalTrackingAmount = get(assetsTotal, 'totalTrackingAmount', null);
@@ -104,7 +97,7 @@ class WalletScreen extends Component {
         <FabWrapper disable={isEmpty || fetchingAssets}>
           <AssetList
             fetchData={onRefreshList}
-            isEmpty={isEmpty && !fetchingAssets}
+            isEmpty={isEmpty}
             isLoading={fetchingAssets}
             sections={sections}
           />
@@ -118,7 +111,6 @@ export default compose(
   withAccountAssets,
   withAccountRefresh,
   withFetchingPrices,
-  withHideSplashScreen,
   withTrackingDate,
   withBlurTransitionProps,
   withState('showShitcoins', 'toggleShowShitcoins', true),
