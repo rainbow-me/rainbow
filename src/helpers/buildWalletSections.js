@@ -39,7 +39,7 @@ export default ({
       data: showShitcoins ? allAssets : assets,
       renderItem: balancesRenderItem,
       title: lang.t('account.tab_balances'),
-      totalItems: get(assetsTotal, 'amount') ? allAssetsCount : 0,
+      totalItems: allAssetsCount,
       totalValue: get(assetsTotal, 'display', ''),
     },
     collectibles: {
@@ -69,7 +69,7 @@ export default ({
   const filteredSections = Object.values(sections).filter(({ totalItems }) => totalItems);
 
   return {
-    isEmpty: !filteredSections.length,
+    isEmpty: !(allAssetsCount || uniqueTokens.length),
     sections: filteredSections,
   };
 };
