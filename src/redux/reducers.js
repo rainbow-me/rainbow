@@ -1,4 +1,10 @@
-import { assets, prices, send, settings, transactions } from 'balance-common';
+import {
+  assets,
+  prices,
+  send,
+  settings,
+  transactions,
+} from 'balance-common';
 import { combineReducers } from 'redux';
 
 import imageDimensionsCache from './imageDimensionsCache';

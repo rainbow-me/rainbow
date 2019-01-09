@@ -2,11 +2,9 @@ import { isSameDay } from 'date-fns';
 import { get, join, map } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import isEqual from 'react-fast-compare';
 import Piwik from 'react-native-matomo';
 import {
   compose,
-  pickProps,
   shouldUpdate,
   withHandlers,
   withProps,
@@ -47,14 +45,16 @@ class WalletScreen extends Component {
     showBlur: PropTypes.bool,
     toggleShowShitcoins: PropTypes.func,
     trackingDate: PropTypes.object,
-    trackingDateInit: PropTypes.func,
     transitionProps: PropTypes.object,
     uniqueTokens: PropTypes.array,
     updateTrackingDate: PropTypes.func,
   }
 
   componentDidMount = async () => {
-    this.props.trackingDateInit();
+    // Initialize wallet
+    const { handleWalletConfig } = this.props.navigation.getScreenProps();
+    await handleWalletConfig();
+
     const showShitcoins = await getShowShitcoinsSetting();
     if (showShitcoins !== null) {
       this.props.toggleShowShitcoins(showShitcoins);
@@ -81,7 +81,7 @@ class WalletScreen extends Component {
     if (isScreenActive && !prevProps.isScreenActive) {
       Piwik.trackScreen('WalletScreen', 'WalletScreen');
       const totalTrackingAmount = get(assetsTotal, 'totalTrackingAmount', null);
-      const assetSymbols = join(map(assets, (asset) => asset.symbol));
+      const assetSymbols = join(map(assets || {}, (asset) => asset.symbol));
       if (totalTrackingAmount && (!trackingDate || !isSameDay(trackingDate, Date.now()))) {
         Piwik.trackEvent('Balance', 'AssetsCount', 'TotalAssetsCount', allAssetsCount);
         Piwik.trackEvent('Balance', 'AssetSymbols', 'AssetSymbols', assetSymbols);
@@ -134,9 +134,7 @@ export default compose(
   withIsWalletEmpty,
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
-    onRefreshList: ({ refreshAccount }) => async () => {
-      await refreshAccount();
-    },
+    onRefreshList: ({ refreshAccount }) => () => refreshAccount(),
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
       if (index === 0) {
         const updatedShowShitcoinsSetting = !showShitcoins;
@@ -146,7 +144,6 @@ export default compose(
     },
   }),
   withProps(buildWalletSections),
-  pickProps(Object.keys(WalletScreen.propTypes)),
   shouldUpdate((props, { isScreenActive, ...nextProps }) => {
     if (!isScreenActive) return false;
 
@@ -158,10 +155,13 @@ export default compose(
     const newBlur = isNewValueForPath(props, nextProps, 'showBlur');
     const newCollectibles = isNewValueForPath(props, nextProps, 'sections[1].totalItems');
 
-    const willUpdate = finishedFetchingPrices || finishedLoading || finishedPopulating || newBalance || newCollectibles || newBlur;
-
-    // console.log('willUpdate', willUpdate);
-
-    return willUpdate;
+    return (
+      finishedFetchingPrices
+      || finishedLoading
+      || finishedPopulating
+      || newBalance
+      || newBlur
+      || newCollectibles
+    );
   }),
 )(WalletScreen);

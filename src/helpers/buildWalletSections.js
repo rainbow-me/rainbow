@@ -5,16 +5,17 @@ import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniqueTokenRow } from '../components/unique-token';
-import { buildUniqueTokenList, isDefaultAssetsInitialState } from '../helpers/assets';
+import { buildUniqueTokenList } from './assets';
 
 const enhanceRenderItem = compose(
   withNavigation,
   withHandlers({
-    onPress: ({ assetType, navigation }) => (name) =>
+    onPress: ({ assetType, navigation }) => (name) => {
       navigation.navigate('ExpandedAssetScreen', {
         name,
         type: assetType,
-      }),
+      });
+    },
   }),
 );
 
@@ -24,8 +25,7 @@ const UniqueTokenItem = enhanceRenderItem(UniqueTokenRow);
 const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
 const collectiblesRenderItem = item => <UniqueTokenItem {...item} assetType="unique_token" />;
 
-const filterWalletSections = sections =>
-  Object.values(sections).filter(({ totalItems }) => totalItems);
+const filterWalletSections = sections => Object.values(sections).filter(({ totalItems }) => totalItems);
 
 export default ({
   allAssets,
@@ -73,18 +73,10 @@ export default ({
   }
 
   const filteredSections = filterWalletSections(sections);
-  let isEmpty = !filteredSections.length;
-
-  if (filteredSections.length === 1) {
-    const section = get(filteredSections, '[0].data[0]');
-    isEmpty = isDefaultAssetsInitialState(section);
-  }
+  const isEmpty = !filteredSections.length;
 
   // Save wallet empty status to state
   setIsWalletEmpty(isEmpty);
-
-
-    // isEmpty: !(allAssetsCount || uniqueTokens.length),
 
   return {
     isEmpty,

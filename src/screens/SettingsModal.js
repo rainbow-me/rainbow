@@ -36,6 +36,7 @@ const SettingsModal = ({
   navigation,
   onCloseModal,
   onPressBack,
+  onPressImportSeedPhrase,
   onPressSection,
 }) => {
   const { component, title } = currentSettingsPage;
@@ -57,6 +58,7 @@ const SettingsModal = ({
           <SettingsSection
             onPressBackup={onPressSection(SettingsPages.backup)}
             onPressCurrency={onPressSection(SettingsPages.currency)}
+            onPressImportSeedPhrase={onPressImportSeedPhrase}
             onPressLanguage={onPressSection(SettingsPages.language)}
           />
           {component && createElement(component, { navigation })}
@@ -71,6 +73,7 @@ SettingsModal.propTypes = {
   navigation: PropTypes.object,
   onCloseModal: PropTypes.func,
   onPressBack: PropTypes.func,
+  onPressImportSeedPhrase: PropTypes.func,
   onPressSection: PropTypes.func,
 };
 
@@ -81,6 +84,10 @@ export default compose(
   withHandlers({
     onCloseModal: ({ navigation }) => () => navigation.goBack(),
     onPressBack: ({ navigation }) => () => navigation.setParams({ section: SettingsPages.default }),
+    onPressImportSeedPhrase: ({ navigation }) => () => {
+      navigation.goBack(); // XXX TODO is this right?
+      navigation.navigate('ImportSeedPhraseSheet');
+    },
     onPressSection: ({ navigation }) => (section) => () => navigation.setParams({ section }),
   }),
   onlyUpdateForKeys(['currentSettingsPage']),

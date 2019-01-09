@@ -7,7 +7,15 @@ import {
   INITIAL_ASSETS_STATE,
   multiply,
 } from 'balance-common';
-import { get, groupBy, isEmpty, isEqual, isNil, omit, toNumber } from 'lodash';
+import {
+  get,
+  groupBy,
+  isEmpty,
+  isEqual,
+  isNil,
+  omit,
+  toNumber,
+} from 'lodash';
 import { sortList } from '../utils';
 
 const EMPTY_ARRAY = [];
@@ -47,7 +55,6 @@ export const groupAssetsByMarketValue = assets => groupBy(assets, ({ native }) =
 ));
 
 export const sortAssetsByNativeAmount = (originalAssets, prices, nativeCurrency) => {
-  console.log('SORT ASSETS BY NATIVE AMOUNT');
   const { assets, total } = parseNativePrices(originalAssets, nativeCurrency, prices);
   const {
     hasValue = EMPTY_ARRAY,
@@ -80,8 +87,9 @@ const parseNativePrices = (
     if (
       isEmpty(nativePrices) ||
       (nativePrices && !nativePrices[nativeCurrency][asset.symbol])
-    )
+    ) {
       return asset;
+    }
 
     const balanceAmountUnit = convertAmountFromBigNumber(
       asset.balance.amount,
