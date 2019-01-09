@@ -8,8 +8,7 @@ import styled from 'styled-components/primitives';
 import Icon from '../components/icons/Icon';
 import { Column } from '../components/layout';
 import { ErrorText, Monospace } from '../components/text';
-import { withHideSplashScreenOnMount } from '../hoc';
-import { loadAddress } from '../model/wallet';
+import { withHideSplashScreen } from '../hoc';
 import { colors, fonts, padding, position } from '../styles';
 
 const Container = styled(Column).attrs({ justify: 'center' })`
@@ -35,6 +34,10 @@ const LoadingText = styled(Monospace)`
 
 class LoadingScreen extends Component {
   static propTypes = {
+    screenProps: PropTypes.objectOf({
+      handleWalletConfig: PropTypes.func,
+    }),
+    onHideSplashScreen: PropTypes.func,
     navigation: PropTypes.object,
     setSafeTimeout: PropTypes.func,
   }
@@ -42,17 +45,16 @@ class LoadingScreen extends Component {
   state = { isError: false }
 
   componentDidMount = async () => {
-    // After 5 seconds, show error message if user has not been redirected
-    this.props.setSafeTimeout(this.handleError, 5000);
-    await loadAddress().then(this.handleNavigation);
+    // After 10 seconds, show error message if user has not been redirected
+    this.props.setSafeTimeout(this.handleError, 10000);
+    await this.props.screenProps.handleWalletConfig();
+    await this.handleNavigation();
+    this.props.onHideSplashScreen();
   }
 
   handleError = () => this.setState({ isError: true })
 
-  // If this is a brand new instance of the Balance Wallet app show the 'IntroScreen',
-  // otherwise display the main 'App' route. Afterwards this view will be
-  // unmounted and thrown away.
-  handleNavigation = async address => this.props.navigation.navigate('App')
+  handleNavigation = async () => this.props.navigation.navigate('App')
 
   render = () => (
     <Container align={this.state.isError ? 'start' : 'center'}>
@@ -73,6 +75,6 @@ class LoadingScreen extends Component {
 }
 
 export default compose(
-  withHideSplashScreenOnMount,
+  withHideSplashScreen,
   withSafeTimeout,
 )(LoadingScreen);
