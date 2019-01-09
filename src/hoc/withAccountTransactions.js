@@ -4,16 +4,14 @@ import { compose, withProps } from 'recompact';
 const EMPTY_ARRAY = [];
 
 const mapStateToProps = ({
-  account: {
+  transactions: {
     fetchingTransactions,
     hasPendingTransaction,
-    nativeCurrency,
     transactions,
   },
 }) => ({
   fetchingTransactions,
   hasPendingTransaction,
-  nativeCurrency,
   transactions,
 });
 

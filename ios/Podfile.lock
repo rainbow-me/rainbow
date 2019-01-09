@@ -52,9 +52,9 @@ PODS:
     - React/RCTNetwork
   - React/RCTNetwork (0.57.1):
     - React/Core
-  - RNLanguages (3.0.1):
+  - RNLanguages (3.0.2):
     - React
-  - RNReanimated (1.0.0-alpha.10):
+  - RNReanimated (1.0.0-alpha.11):
     - React
   - SDWebImage/Core (4.4.3)
   - SDWebImage/GIF (4.4.3):

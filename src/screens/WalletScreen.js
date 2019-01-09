@@ -1,4 +1,3 @@
-import { withSafeTimeout } from '@hocs/safe-timers';
 import { isSameDay } from 'date-fns';
 import { get, join, map } from 'lodash';
 import PropTypes from 'prop-types';
@@ -22,9 +21,9 @@ import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../model/lo
 import {
   withAccountAddress,
   withAccountAssets,
+  withAccountRefresh,
+  withFetchingPrices,
   withBlurTransitionProps,
-  withHideSplashScreen,
-  withRequestsInit,
   withTrackingDate,
 } from '../hoc';
 import { position } from '../styles';
@@ -38,9 +37,8 @@ class WalletScreen extends Component {
   static propTypes = {
     blurOpacity: PropTypes.object,
     isEmpty: PropTypes.bool.isRequired,
-    isLoading: PropTypes.bool.isRequired,
+    fetchingAssets: PropTypes.bool.isRequired,
     navigation: PropTypes.object,
-    onHideSplashScreen: PropTypes.func,
     onRefreshList: PropTypes.func.isRequired,
     sections: PropTypes.array,
     showBlur: PropTypes.bool,
@@ -59,19 +57,14 @@ class WalletScreen extends Component {
     const {
       allAssetsCount,
       assets,
-      assetsTotalUSD,
-      isLoading,
-      onHideSplashScreen,
+      assetsTotal,
+      fetchingAssets,
       trackingDate,
       uniqueTokens,
     } = this.props;
-    if (!isLoading && prevProps.isLoading) {
-      onHideSplashScreen();
-    }
-
     if (this.props.isScreenActive && !prevProps.isScreenActive) {
       Piwik.trackScreen('WalletScreen', 'WalletScreen');
-      const totalTrackingAmount = get(assetsTotalUSD, 'totalTrackingAmount', null);
+      const totalTrackingAmount = get(assetsTotal, 'totalTrackingAmount', null);
       const assetSymbols = join(map(assets, (asset) => asset.symbol));
       if (totalTrackingAmount && (!this.props.trackingDate || !isSameDay(this.props.trackingDate, Date.now()))) {
         Piwik.trackEvent('Balance', 'AssetsCount', 'TotalAssetsCount', allAssetsCount);
@@ -87,7 +80,7 @@ class WalletScreen extends Component {
     const {
       blurOpacity,
       isEmpty,
-      isLoading,
+      fetchingAssets,
       navigation,
       onRefreshList,
       sections,
@@ -101,11 +94,11 @@ class WalletScreen extends Component {
           <ProfileHeaderButton navigation={navigation} />
           <CameraHeaderButton navigation={navigation} />
         </Header>
-        <FabWrapper disable={isEmpty || isLoading}>
+        <FabWrapper disable={isEmpty || fetchingAssets}>
           <AssetList
             fetchData={onRefreshList}
-            isEmpty={isEmpty && !isLoading}
-            isLoading={isLoading}
+            isEmpty={isEmpty}
+            isLoading={fetchingAssets}
             sections={sections}
           />
         </FabWrapper>
@@ -115,26 +108,15 @@ class WalletScreen extends Component {
 }
 
 export default compose(
-  withAccountAddress,
   withAccountAssets,
-  withHideSplashScreen,
-  withRequestsInit,
-  withSafeTimeout,
+  withAccountRefresh,
+  withFetchingPrices,
   withTrackingDate,
   withBlurTransitionProps,
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
-    onRefreshList: ({
-      accountAddress,
-      accountUpdateAccountAddress,
-      setSafeTimeout,
-      transactionsToApproveInit,
-    }) => () => {
-      accountUpdateAccountAddress(accountAddress, 'BALANCEWALLET');
-      transactionsToApproveInit();
-      // hack: use timeout so that it looks like loading is happening
-      // accountUpdateAccountAddress does not return a promise
-      return new Promise(resolve => setSafeTimeout(resolve, 2000));
+    onRefreshList: ({ refreshAccount }) => async () => {
+      await refreshAccount();
     },
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
       if (index === 0) {
@@ -148,10 +130,11 @@ export default compose(
   shouldUpdate((props, { isScreenActive, ...nextProps }) => {
     if (!isScreenActive) return false;
 
+    const finishedFetchingPrices = props.fetchingPrices && !nextProps.fetchingPrices;
     const finishedPopulating = props.isEmpty && !nextProps.isEmpty;
-    const finishedLoading = props.isLoading && !nextProps.isLoading;
+    const finishedLoading = props.fetchingAssets && !nextProps.fetchingAssets;
     const newSections = props.sections !== nextProps.sections;
 
-    return finishedPopulating || finishedLoading || newSections;
+    return finishedPopulating || finishedLoading || finishedFetchingPrices || newSections;
   }),
 )(WalletScreen);

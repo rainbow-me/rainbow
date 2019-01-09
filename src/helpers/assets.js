@@ -1,10 +1,18 @@
-import { INITIAL_ACCOUNT_STATE } from 'balance-common';
-import { get, groupBy, isEqual, isNull, omit, toNumber } from 'lodash';
+import {
+  add,
+  convertAmountFromBigNumber,
+  convertAmountToBigNumber,
+  convertAmountToDisplay,
+  convertAmountToUnformattedDisplay,
+  INITIAL_ASSETS_STATE,
+  multiply,
+} from 'balance-common';
+import { get, groupBy, isEmpty, isEqual, isNil, omit, toNumber } from 'lodash';
 import { sortList } from '../utils';
 
 const EMPTY_ARRAY = [];
 
-const InitialAccountAssetsState = get(INITIAL_ACCOUNT_STATE, 'accountInfo.assets[0]', {});
+const InitialAccountAssetsState = get(INITIAL_ASSETS_STATE, 'assets[0]', {});
 
 export const areAssetsEqualToInitialAccountAssetsState = (sectionData) => {
   const currentBalance = get(sectionData, 'balance.display');
@@ -35,10 +43,12 @@ export const buildUniqueTokenName = ({ asset_contract, id, name }) => (
 );
 
 export const groupAssetsByMarketValue = assets => groupBy(assets, ({ native }) => (
-  isNull(native) ? 'noValue' : 'hasValue'
+  isNil(native) ? 'noValue' : 'hasValue'
 ));
 
-export const sortAssetsByNativeAmount = (assets) => {
+export const sortAssetsByNativeAmount = (originalAssets, prices, nativeCurrency) => {
+  console.log('SORT ASSETS BY NATIVE AMOUNT');
+  const { assets, total } = parseNativePrices(originalAssets, nativeCurrency, prices);
   const {
     hasValue = EMPTY_ARRAY,
     noValue = EMPTY_ARRAY,
@@ -53,7 +63,81 @@ export const sortAssetsByNativeAmount = (assets) => {
     allAssetsCount: allAssets.length,
     assets: sortedAssets,
     assetsCount: sortedAssets.length,
+    assetsTotal: total,
     shitcoins: sortedShitcoins,
     shitcoinsCount: sortedShitcoins.length,
   };
+};
+
+const parseNativePrices = (
+  assets = null,
+  nativeCurrency,
+  nativePrices = null,
+) => {
+  let totalAmount = 0;
+  let newAccount = null;
+  const newAssets = assets.map(asset => {
+    if (
+      isEmpty(nativePrices) ||
+      (nativePrices && !nativePrices[nativeCurrency][asset.symbol])
+    )
+      return asset;
+
+    const balanceAmountUnit = convertAmountFromBigNumber(
+      asset.balance.amount,
+      asset.decimals,
+    );
+    const balancePriceUnit = convertAmountFromBigNumber(
+      nativePrices[nativeCurrency][asset.symbol].price.amount,
+    );
+    const balanceRaw = multiply(balanceAmountUnit, balancePriceUnit);
+    const balanceAmount = convertAmountToBigNumber(balanceRaw);
+    let trackingAmount = balanceAmount;
+    if (nativeCurrency !== 'USD') {
+      const trackingPriceUnit = convertAmountFromBigNumber(
+        nativePrices['USD'][asset.symbol].price.amount,
+      );
+      const trackingRaw = multiply(balanceAmountUnit, trackingPriceUnit);
+      trackingAmount = convertAmountToBigNumber(trackingRaw);
+    }
+    const balanceDisplay = convertAmountToDisplay(
+      balanceAmount,
+      nativePrices,
+      null,
+      nativeCurrency,
+    );
+    const assetPrice = nativePrices[nativeCurrency][asset.symbol].price;
+    return {
+      ...asset,
+      trackingAmount,
+      native: {
+        selected: nativePrices.selected,
+        balance: { amount: balanceAmount, display: balanceDisplay },
+        price: assetPrice,
+        change:
+          asset.symbol === nativeCurrency
+            ? { amount: '0', display: '———' }
+            : nativePrices[nativeCurrency][asset.symbol].change,
+      },
+    };
+  });
+  totalAmount = newAssets.reduce(
+    (total, asset) =>
+      add(total, asset.native ? asset.native.balance.amount : 0),
+    0,
+  );
+  const totalUSDAmount = (nativeCurrency === 'USD') ? totalAmount :
+    newAssets.reduce(
+      (total, asset) =>
+        add(total, asset.native ? asset.trackingAmount : 0),
+      0,
+    );
+  const totalDisplay = convertAmountToDisplay(totalAmount, nativePrices, null, nativeCurrency);
+  const totalTrackingAmount = convertAmountToUnformattedDisplay(totalUSDAmount, 'USD');
+  const total = { amount: totalAmount, display: totalDisplay, totalTrackingAmount };
+  newAccount = {
+    assets: newAssets,
+    total: total,
+  };
+  return newAccount;
 };

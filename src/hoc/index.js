@@ -1,11 +1,12 @@
 export { default as withAccountAddress } from './withAccountAddress';
 export { default as withAccountAssets } from './withAccountAssets';
+export { default as withAccountRefresh } from './withAccountRefresh';
 export { default as withAccountSettings } from './withAccountSettings';
 export { default as withAccountTransactions } from './withAccountTransactions';
 export { default as withAddWalletConnector } from './withAddWalletConnector';
 export { default as withBlurTransitionProps } from './withBlurTransitionProps';
+export { default as withFetchingPrices } from './withFetchingPrices';
 export { default as withHideSplashScreen } from './withHideSplashScreen';
-export { default as withHideSplashScreenOnMount } from './withHideSplashScreenOnMount';
 export { default as withImageDimensionsCache } from './withImageDimensionsCache';
 export { default as withMessageSigningScreen } from './withMessageSigningScreen';
 export { default as withRequests } from './withRequests';

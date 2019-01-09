@@ -9,17 +9,17 @@ import {
 } from 'balance-common';
 import { get, mapValues, omit } from 'lodash';
 import {
-  getAccountLocalRequests,
+  getLocalRequests,
   removeLocalRequest,
-  updateLocalRequests,
+  saveLocalRequests,
 } from '../model/localstorage';
 
 // -- Constants --------------------------------------- //
 const WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE = 'wallet/WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE';
 
 export const transactionsToApproveInit = () => (dispatch, getState) => {
-  const { accountAddress, network } = getState().account;
-  getAccountLocalRequests(accountAddress, network).then((requests) => {
+  const { accountAddress, network } = getState().settings;
+  getLocalRequests(accountAddress, network).then((requests) => {
     const transactionsToApprove = requests || {};
     dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: transactionsToApprove });
   })
@@ -42,6 +42,7 @@ export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => 
       assetAmount,
       { symbol },
       prices,
+      nativeCurrency,
     );
     const _nativeAmount = formatInputDecimals(nativeAmount, assetAmount);
     nativeAmountDisplay = convertAssetAmountToDisplaySpecific(_nativeAmount, nativeCurrency);
@@ -144,25 +145,29 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
 
 export const addTransactionToApprove = (sessionId, callId, callData, dappName) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
-  const { accountInfo, accountAddress, network, prices, nativeCurrency } = getState().account;
-  const transactionDisplayDetails = getRequestDisplayDetails(callData, accountInfo.assets, prices, nativeCurrency);
+  const { accountAddress, network, nativeCurrency } = getState().settings;
+  const { prices } = getState().prices;
+  const { assets } = getState().assets;
+  const transactionDisplayDetails = getRequestDisplayDetails(callData, assets, prices, nativeCurrency);
   const transaction = { sessionId, callId, callData, transactionDisplayDetails, dappName };
   const updatedTransactions = { ...transactionsToApprove, [callId]: transaction };
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
-  updateLocalRequests(accountAddress, network, updatedTransactions);
+  saveLocalRequests(accountAddress, network, updatedTransactions);
   return transaction;
 };
 
 export const addTransactionsToApprove = (transactions) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
-  const { accountInfo, accountAddress, network, prices, nativeCurrency } = getState().account;
+  const { accountAddress, network, nativeCurrency } = getState().settings;
+  const { prices } = getState().prices;
+  const { assets } = getState().assets;
   const transactionsWithDisplayDetails = mapValues(transactions, (transactionDetails) => {
-    const transactionDisplayDetails = getRequestDisplayDetails(transactionDetails.callData, accountInfo.assets, prices, nativeCurrency);
+    const transactionDisplayDetails = getRequestDisplayDetails(transactionDetails.callData, assets, prices, nativeCurrency);
     return { ...transactionDetails, transactionDisplayDetails };
   });
   const updatedTransactions = { ...transactionsToApprove, ...transactionsWithDisplayDetails };
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
-  updateLocalRequests(accountAddress, network, updatedTransactions);
+  saveLocalRequests(accountAddress, network, updatedTransactions);
 };
 
 export const transactionIfExists = (callId) => (dispatch, getState) => {
@@ -171,7 +176,7 @@ export const transactionIfExists = (callId) => (dispatch, getState) => {
 };
 
 export const removeTransaction = (callId) => (dispatch, getState) => {
-  const { accountAddress, network } = getState().account;
+  const { accountAddress, network } = getState().settings;
   const { transactionsToApprove } = getState().transactionsToApprove;
   const updatedTransactions = omit(transactionsToApprove, [callId]);
   removeLocalRequest(accountAddress, network, callId);

@@ -1,4 +1,4 @@
-import { account, send } from 'balance-common';
+import { assets, prices, send, settings, transactions } from 'balance-common';
 import { combineReducers } from 'redux';
 
 import imageDimensionsCache from './imageDimensionsCache';
@@ -9,12 +9,15 @@ import transactionsToApprove from './transactionsToApprove';
 import walletconnect from './walletconnect';
 
 export default combineReducers({
-  account,
+  assets,
   imageDimensionsCache,
   navigation,
   nonce,
+  prices,
   send,
+  settings,
   tracking,
+  transactions,
   transactionsToApprove,
   walletconnect,
 });

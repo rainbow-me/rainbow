@@ -1,29 +1,32 @@
-import { accountUpdateAccountAddress } from 'balance-common';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { sortAssetsByNativeAmount } from '../helpers/assets';
 
 const mapStateToProps = ({
-  account: {
-    accountInfo: {
-      assets,
-      total,
-    },
-    fetching,
+  assets: {
+    assets,
+    fetchingAssets,
     fetchingUniqueTokens,
     uniqueTokens,
   },
+  prices: {
+    prices
+  },
+  settings: {
+    nativeCurrency
+  },
 }) => ({
   assets,
-  assetsTotalUSD: total,
-  fetching,
+  nativeCurrency,
+  prices,
+  fetchingAssets,
   fetchingUniqueTokens,
   uniqueTokens,
 });
 
-const sortAssets = ({ assets }) => sortAssetsByNativeAmount(assets);
+const sortAssets = ({ assets, nativeCurrency, prices }) => sortAssetsByNativeAmount(assets, prices, nativeCurrency);
 
 export default Component => compose(
-  connect(mapStateToProps, { accountUpdateAccountAddress }),
+  connect(mapStateToProps),
   withProps(sortAssets),
 )(Component);
