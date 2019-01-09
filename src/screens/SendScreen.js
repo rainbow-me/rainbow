@@ -1,5 +1,4 @@
 import { convertAssetAmountToDisplay } from 'balance-common';
-import { withSafeTimeout } from '@hocs/safe-timers';
 import { get, isEmpty, map } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -582,15 +581,9 @@ export default compose(
   withAccountAssets,
   withAccountSettings,
   withAccountRefresh,
-  withSafeTimeout,
   withHandlers({
-    fetchData: ({
-      setSafeTimeout,
-      refreshAccount,
-    }) => () => {
-      refreshAccount();
-      // hack: use timeout so that it looks like loading is happening
-      return new Promise(resolve => setSafeTimeout(resolve, 2000));
+    fetchData: ({ refreshAccount }) => async () => {
+      await refreshAccount();
     },
   }),
 )(SendScreen);

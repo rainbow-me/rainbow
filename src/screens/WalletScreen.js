@@ -1,4 +1,3 @@
-import { withSafeTimeout } from '@hocs/safe-timers';
 import { isSameDay } from 'date-fns';
 import { get, join, map } from 'lodash';
 import PropTypes from 'prop-types';
@@ -120,18 +119,12 @@ export default compose(
   withAccountRefresh,
   withFetchingPrices,
   withHideSplashScreen,
-  withSafeTimeout,
   withTrackingDate,
   withBlurTransitionProps,
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
-    onRefreshList: ({
-      setSafeTimeout,
-      refreshAccount,
-    }) => () => {
-      refreshAccount();
-      // hack: use timeout so that it looks like loading is happening
-      return new Promise(resolve => setSafeTimeout(resolve, 2000));
+    onRefreshList: ({ refreshAccount }) => async () => {
+      await refreshAccount();
     },
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
       if (index === 0) {
