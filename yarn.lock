@@ -811,10 +811,7 @@ absolute-path@^0.0.0:
 abstract-leveldown@~0.12.1:
   version "0.12.4"
   resolved "https://registry.yarnpkg.com/abstract-leveldown/-/abstract-leveldown-0.12.4.tgz#29e18e632e60e4e221d5810247852a63d7b2e410"
-<<<<<<< HEAD
-=======
   integrity sha1-KeGOYy5g5OIh1YECR4UqY9ey5BA=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     xtend "~3.0.0"
 
@@ -834,47 +831,25 @@ acorn-globals@^4.1.0, acorn-globals@^4.3.0:
     acorn "^6.0.1"
     acorn-walk "^6.0.1"
 
-<<<<<<< HEAD
-acorn-jsx@^3.0.0:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-3.0.1.tgz#afdf9488fb1ecefc8348f6fb22f464e32a58b36b"
-  dependencies:
-    acorn "^3.0.4"
-=======
 acorn-jsx@^5.0.0:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.0.1.tgz#32a064fd925429216a09b141102bfdd185fae40e"
   integrity sha512-HJ7CfNHrfJLlNTzIEUTj43LNWGkqpRLxm3YjAlcD0ACydk9XynzYsCBHxut+iqt+1aBXkx9UP/w/ZqMr13XIzg==
->>>>>>> 1631581... make babel strip console’s from production build
 
 acorn-walk@^6.0.1:
   version "6.1.1"
   resolved "https://registry.yarnpkg.com/acorn-walk/-/acorn-walk-6.1.1.tgz#d363b66f5fac5f018ff9c3a1e7b6f8e310cc3913"
   integrity sha512-OtUw6JUTgxA2QoqqmrmQ7F2NYqiBPi/L2jqHyFtllhOUvXYQXf0Z1CYUinIfyT4bTCGmrA7gX9FvHA81uzCoVw==
 
-<<<<<<< HEAD
-acorn@^3.0.4:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/acorn/-/acorn-3.3.0.tgz#45e37fb39e8da3f25baee3ff5369e2bb5f22017a"
-
-acorn@^5.5.0, acorn@^5.5.3:
-=======
 acorn@^5.5.3:
->>>>>>> 1631581... make babel strip console’s from production build
   version "5.7.3"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.7.3.tgz#67aa231bf8812974b85235a96771eb6bd07ea279"
   integrity sha512-T/zvzYRfbVojPWahDsE5evJdHb3oJoQfFbsrKM7w5Zcs++Tr257tia3BmMP8XYVjp1S9RZXQMh7gao96BlqZOw==
 
-<<<<<<< HEAD
-acorn@^6.0.1, acorn@^6.0.4:
-  version "6.0.5"
-  resolved "https://registry.yarnpkg.com/acorn/-/acorn-6.0.5.tgz#81730c0815f3f3b34d8efa95cb7430965f4d887a"
-=======
 acorn@^6.0.1, acorn@^6.0.2, acorn@^6.0.4:
   version "6.0.5"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-6.0.5.tgz#81730c0815f3f3b34d8efa95cb7430965f4d887a"
   integrity sha512-i33Zgp3XWtmZBMNvCr4azvOFeWVw1Rk6p3hfi3LUDvIFraOMywb1kAtrbi+med14m4Xfpqm3zRZMT+c0FNE7kg==
->>>>>>> 1631581... make babel strip console’s from production build
 
 aes-js@3.0.0:
   version "3.0.0"
@@ -909,10 +884,7 @@ animated@^0.2.2:
 ansi-colors@^1.0.1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-1.1.0.tgz#6374b4dd5d4718ff3ce27a671a3b1cad077132a9"
-<<<<<<< HEAD
-=======
   integrity sha512-SFKX67auSNoVR38N3L+nvsPjOE0bybKTYbkf5tRvushrAPQ9V75huw0ZxBkKVeRU9kqH3d6HA4xTckbwZ4ixmA==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     ansi-wrap "^0.1.0"
 
@@ -926,18 +898,12 @@ ansi-cyan@^0.1.1:
 ansi-escapes@^1.1.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-1.4.0.tgz#d3a8a83b319aa67793662b13e761c7911422306e"
-<<<<<<< HEAD
-=======
   integrity sha1-06ioOzGapneTZisT52HHkRQiMG4=
->>>>>>> 1631581... make babel strip console’s from production build
 
 ansi-escapes@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-3.1.0.tgz#f73207bb81207d75fd6c83f125af26eea378ca30"
-<<<<<<< HEAD
-=======
   integrity sha512-UgAb8H9D41AQnu/PbWlCofQVcnV4Gs2bBJi9eZPxfU/hgglFh3SMDMENRIqdr7H6XFnXdoknctFByVsCOotTVw==
->>>>>>> 1631581... make babel strip console’s from production build
 
 ansi-gray@^0.1.1:
   version "0.1.1"
@@ -1068,10 +1034,7 @@ arr-union@^3.1.0:
 array-equal@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/array-equal/-/array-equal-1.0.0.tgz#8c2a5ef2472fd9ea742b04c77a75093ba2757c93"
-<<<<<<< HEAD
-=======
   integrity sha1-jCpe8kcv2ep0KwTHenUJO6J1fJM=
->>>>>>> 1631581... make babel strip console’s from production build
 
 array-filter@~0.0.0:
   version "0.0.1"
@@ -1081,10 +1044,7 @@ array-filter@~0.0.0:
 array-flatten@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/array-flatten/-/array-flatten-1.1.1.tgz#9a5f699051b1e7073328f2a008968b64ea2955d2"
-<<<<<<< HEAD
-=======
   integrity sha1-ml9pkFGx5wczKPKgCJaLZOopVdI=
->>>>>>> 1631581... make babel strip console’s from production build
 
 array-includes@^3.0.3:
   version "3.0.3"
@@ -1212,10 +1172,7 @@ aws4@^1.8.0:
 axios@^0.18.0:
   version "0.18.0"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.18.0.tgz#32d53e4851efdc0a11993b6cd000789d70c05102"
-<<<<<<< HEAD
-=======
   integrity sha1-MtU+SFHv3AoRmTts0AB4nXDAUQI=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     follow-redirects "^1.3.0"
     is-buffer "^1.1.5"
@@ -1439,10 +1396,7 @@ babel-plugin-date-fns@^0.2.1:
 babel-plugin-istanbul@^4.1.5:
   version "4.1.6"
   resolved "https://registry.yarnpkg.com/babel-plugin-istanbul/-/babel-plugin-istanbul-4.1.6.tgz#36c59b2192efce81c5b378321b74175add1c9a45"
-<<<<<<< HEAD
-=======
   integrity sha512-PWP9FQ1AhZhS01T/4qLSKoHGY/xvkZdVBGlKM/HuxxS3+sC66HhTNR7+MpbO/so/cz/wY94MeSWJuP1hXIPfwQ==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     babel-plugin-syntax-object-rest-spread "^6.13.0"
     find-up "^2.1.0"
@@ -1478,50 +1432,32 @@ babel-plugin-lodash@^3.3.4:
 babel-plugin-syntax-async-functions@^6.8.0:
   version "6.13.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-syntax-async-functions/-/babel-plugin-syntax-async-functions-6.13.0.tgz#cad9cad1191b5ad634bf30ae0872391e0647be95"
-<<<<<<< HEAD
-=======
   integrity sha1-ytnK0RkbWtY0vzCuCHI5HgZHvpU=
->>>>>>> 1631581... make babel strip console’s from production build
 
 babel-plugin-syntax-class-properties@^6.8.0:
   version "6.13.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-syntax-class-properties/-/babel-plugin-syntax-class-properties-6.13.0.tgz#d7eb23b79a317f8543962c505b827c7d6cac27de"
-<<<<<<< HEAD
-=======
   integrity sha1-1+sjt5oxf4VDlixQW4J8fWysJ94=
->>>>>>> 1631581... make babel strip console’s from production build
 
 babel-plugin-syntax-exponentiation-operator@^6.8.0:
   version "6.13.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-syntax-exponentiation-operator/-/babel-plugin-syntax-exponentiation-operator-6.13.0.tgz#9ee7e8337290da95288201a6a57f4170317830de"
-<<<<<<< HEAD
-=======
   integrity sha1-nufoM3KQ2pUoggGmpX9BcDF4MN4=
->>>>>>> 1631581... make babel strip console’s from production build
 
 babel-plugin-syntax-flow@^6.18.0, babel-plugin-syntax-flow@^6.8.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-syntax-flow/-/babel-plugin-syntax-flow-6.18.0.tgz#4c3ab20a2af26aa20cd25995c398c4eb70310c8d"
-<<<<<<< HEAD
-=======
   integrity sha1-TDqyCiryaqIM0lmVw5jE63AxDI0=
->>>>>>> 1631581... make babel strip console’s from production build
 
 babel-plugin-syntax-jsx@^6.18.0, babel-plugin-syntax-jsx@^6.3.13, babel-plugin-syntax-jsx@^6.8.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-syntax-jsx/-/babel-plugin-syntax-jsx-6.18.0.tgz#0af32a9a6e13ca7a3fd5069e62d7b0f58d0d8946"
-<<<<<<< HEAD
-=======
   integrity sha1-CvMqmm4Tyno/1QaeYtew9Y0NiUY=
->>>>>>> 1631581... make babel strip console’s from production build
 
 babel-plugin-syntax-object-rest-spread@^6.13.0, babel-plugin-syntax-object-rest-spread@^6.8.0:
   version "6.13.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-syntax-object-rest-spread/-/babel-plugin-syntax-object-rest-spread-6.13.0.tgz#fd6536f2bce13836ffa3a5458c4903a597bb3bf5"
-<<<<<<< HEAD
-=======
   integrity sha1-/WU28rzhODb/o6VFjEkDpZe7O/U=
->>>>>>> 1631581... make babel strip console’s from production build
 
 babel-plugin-syntax-trailing-function-commas@^6.22.0, babel-plugin-syntax-trailing-function-commas@^6.8.0:
   version "6.22.0"
@@ -1999,42 +1935,17 @@ babel-types@^6.18.0, babel-types@^6.19.0, babel-types@^6.24.1, babel-types@^6.26
 babylon@7.0.0-beta.44:
   version "7.0.0-beta.44"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-7.0.0-beta.44.tgz#89159e15e6e30c5096e22d738d8c0af8a0e8ca1d"
-<<<<<<< HEAD
-=======
   integrity sha512-5Hlm13BJVAioCHpImtFqNOF2H3ieTOHd0fmFGMxOJ9jgeFqeAwsv3u5P5cR7CSeFrkgHsT19DgFJkHV0/Mcd8g==
->>>>>>> 1631581... make babel strip console’s from production build
 
 babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
   integrity sha512-q/UEjfGJ2Cm3oKV71DJz9d25TPnq5rhBVL2Q4fA5wcC3jcrdn7+SssEybFIxwAvvP+YCsCYNKughoF33GxgycQ==
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-balance-common@^0.6.11:
-  version "0.6.11"
-  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.11.tgz#016c1d08289380e57aca04b43c5fc338b7d9998c"
-=======
-=======
->>>>>>> 1280af4... Rename “IntroScreen” into “ImportSeedPhraseSheet”
-<<<<<<< HEAD
-"balance-common@git+https://github.com/balance-io/balance-common.git#redux":
-  version "0.6.9"
-  resolved "git+https://github.com/balance-io/balance-common.git#83ac2983fc0e09e9d8542132b11f69d8ed5cf905"
-=======
-balance-common@../balance-common:
-  version "0.6.9"
->>>>>>> 1631581... make babel strip console’s from production build
-<<<<<<< HEAD
->>>>>>> 9b78282... make babel strip console’s from production build
-=======
-=======
-balance-common@^0.6.10:
-  version "0.6.10"
-  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.10.tgz#60679581e1d89ebedf603a8828f2fa9bd23aa788"
-  integrity sha512-RhvkuQICsvNBL/o6XKLwV5d5Lz0IxSzk1TTOnzAV1hispzOkbrYvCqGhyEPuCeaUw4kUdLfogLUJqEMvCL7N2g==
->>>>>>> 2bad6b7... squash importseedphrase
->>>>>>> 1280af4... Rename “IntroScreen” into “ImportSeedPhraseSheet”
+balance-common@^0.6.12:
+  version "0.6.12"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.12.tgz#eb32485e675562e1073df0e5abf750d5d7fc4a09"
+  integrity sha512-GdmulMTWWRKsr5CqDJcQXD0l8icPdlmMtbLDTTXEIZqNIzPhFQXdVmgH01zetNJfLo4OMy7Gy5xHAbDsHjFnvw==
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -2108,10 +2019,7 @@ bignumber.js@^7.0.1:
 bl@^1.0.0:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/bl/-/bl-1.2.2.tgz#a160911717103c07410cef63ef51b397c025af9c"
-<<<<<<< HEAD
-=======
   integrity sha512-e8tQYnZodmebYDWGH7KMRvtzKXaJHx3BbilrgZCfvyLUYdKpK1t5PSPmpkny/SgiTSCnjfLW7v5rlONXVFkQEA==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     readable-stream "^2.3.5"
     safe-buffer "^5.1.1"
@@ -2119,10 +2027,7 @@ bl@^1.0.0:
 bl@~0.8.1:
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/bl/-/bl-0.8.2.tgz#c9b6bca08d1bc2ea00fc8afb4f1a5fd1e1c66e4e"
-<<<<<<< HEAD
-=======
   integrity sha1-yba8oI0bwuoA/Ir7Txpf0eHGbk4=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     readable-stream "~1.0.26"
 
@@ -2136,10 +2041,7 @@ block-stream@*:
 bluebird@^2.9.34:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-2.11.0.tgz#534b9033c022c9579c56ba3b3e5a5caafbb650e1"
-<<<<<<< HEAD
-=======
   integrity sha1-U0uQM8AiyVecVro7Plpcqvu2UOE=
->>>>>>> 1631581... make babel strip console’s from production build
 
 bluebird@^3.5.0:
   version "3.5.3"
@@ -2249,10 +2151,7 @@ browser-resolve@^1.11.2:
 browserify-aes@^1.0.0, browserify-aes@^1.0.4:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/browserify-aes/-/browserify-aes-1.2.0.tgz#326734642f403dabc3003209853bb70ad428ef48"
-<<<<<<< HEAD
-=======
   integrity sha512-+7CHXqGuspUn/Sl5aO7Ea0xWGAtETPXNSAjHo48JfLdPWcMng33Xe4znFvQweqc/uzk5zSOI3H52CYnjCfb5hA==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     buffer-xor "^1.0.3"
     cipher-base "^1.0.0"
@@ -2283,10 +2182,7 @@ browserify-des@^1.0.0:
 browserify-rsa@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/browserify-rsa/-/browserify-rsa-4.0.1.tgz#21e0abfaf6f2029cf2fafb133567a701d4135524"
-<<<<<<< HEAD
-=======
   integrity sha1-IeCr+vbyApzy+vsTNWenAdQTVSQ=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     bn.js "^4.1.0"
     randombytes "^2.0.1"
@@ -2375,10 +2271,7 @@ buffer-xor@^1.0.3:
 buffer@^3.0.1:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/buffer/-/buffer-3.6.0.tgz#a72c936f77b96bf52f5f7e7b467180628551defb"
-<<<<<<< HEAD
-=======
   integrity sha1-pyyTb3e5a/UvX357RnGAYoVR3vs=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     base64-js "0.0.8"
     ieee754 "^1.1.4"
@@ -2387,10 +2280,7 @@ buffer@^3.0.1:
 buffer@^4.9.1:
   version "4.9.1"
   resolved "https://registry.yarnpkg.com/buffer/-/buffer-4.9.1.tgz#6d1bb601b07a4efced97094132093027c95bc298"
-<<<<<<< HEAD
-=======
   integrity sha1-bRu2AbB6TvztlwlBMgkwJ8lbwpg=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     base64-js "^1.0.2"
     ieee754 "^1.1.4"
@@ -2443,24 +2333,10 @@ caller-path@^2.0.0:
   dependencies:
     caller-callsite "^2.0.0"
 
-<<<<<<< HEAD
-callsites@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/callsites/-/callsites-0.2.0.tgz#afab96262910a7f33c19a5775825c69f34e350ca"
-<<<<<<< HEAD
-=======
-  integrity sha1-r6uWJikQp/M8GaV3WCXGnzTjUMo=
->>>>>>> 1631581... make babel strip console’s from production build
-
-=======
->>>>>>> 2bad6b7... squash importseedphrase
 callsites@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/callsites/-/callsites-2.0.0.tgz#06eb84f00eea413da86affefacbffb36093b3c50"
-<<<<<<< HEAD
-=======
   integrity sha1-BuuE8A7qQT2oav/vrL/7Ngk7PFA=
->>>>>>> 1631581... make babel strip console’s from production build
 
 callsites@^3.0.0:
   version "3.0.0"
@@ -2485,20 +2361,9 @@ can-promise@0.0.1:
     window-or-global "^1.0.1"
 
 caniuse-lite@^1.0.30000844:
-<<<<<<< HEAD
-<<<<<<< HEAD
-  version "1.0.30000927"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000927.tgz#114a9de4ff1e01f5790fe578ecd93421c7524665"
-=======
-  version "1.0.30000926"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000926.tgz#4361a99d818ca6e521dbe89a732de62a194a789c"
-  integrity sha512-diMkEvxfFw09SkbErCLmw/1Fx1ZZe9xfWm4aeA2PUffB48x1tfZeMsK5j4BW7zN7Y4PdqmPVVdG2eYjE5IRTag==
->>>>>>> 1631581... make babel strip console’s from production build
-=======
-  version "1.0.30000927"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000927.tgz#114a9de4ff1e01f5790fe578ecd93421c7524665"
-  integrity sha512-ogq4NbUWf1uG/j66k0AmiO3GjqJAlQyF8n4w8a954cbCyFKmYGvRtgz6qkq2fWuduTXHibX7GyYL5Pg58Aks2g==
->>>>>>> 2bad6b7... squash importseedphrase
+  version "1.0.30000928"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000928.tgz#805e828dc72b06498e3683a32e61c7507fd67b88"
+  integrity sha512-aSpMWRXL6ZXNnzm8hgE4QDLibG5pVJ2Ujzsuj3icazlIkxXkPXtL+BWnMx6FBkWmkZgBHGUxPZQvrbRw2ZTxhg==
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -2515,10 +2380,7 @@ caseless@~0.12.0:
 chalk@1.1.3, chalk@^1.0.0, chalk@^1.1.1, chalk@^1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-1.1.3.tgz#a8115c55e4a702fe4d150abd3872822a7e09fc98"
-<<<<<<< HEAD
-=======
   integrity sha1-qBFcVeSnAv5NFQq9OHKCKn4J/Jg=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     ansi-styles "^2.2.1"
     escape-string-regexp "^1.0.2"
@@ -2527,20 +2389,9 @@ chalk@1.1.3, chalk@^1.0.0, chalk@^1.1.1, chalk@^1.1.3:
     supports-color "^2.0.0"
 
 chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0, chalk@^2.4.1:
-<<<<<<< HEAD
-<<<<<<< HEAD
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
-=======
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.1.tgz#18c49ab16a037b6eb0152cc83e3471338215b66e"
-  integrity sha512-ObN6h1v2fTJSmUXoS3nMQ92LbDK9be4TV+6G+omQlGJFdcUX5heKi1LZ1YnRMIgwTLEj3E24bT6tYni50rlCfQ==
->>>>>>> 1631581... make babel strip console’s from production build
-=======
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
   integrity sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==
->>>>>>> 2bad6b7... squash importseedphrase
   dependencies:
     ansi-styles "^3.2.1"
     escape-string-regexp "^1.0.5"
@@ -2644,10 +2495,7 @@ cliui@^4.0.0:
 clone-deep@^0.2.4:
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/clone-deep/-/clone-deep-0.2.4.tgz#4e73dd09e9fb971cc38670c5dced9c1896481cc6"
-<<<<<<< HEAD
-=======
   integrity sha1-TnPdCen7lxzDhnDF3O2cGJZIHMY=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     for-own "^0.1.3"
     is-plain-object "^2.0.1"
@@ -2748,10 +2596,7 @@ color@^3.0.0:
 colors@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.1.2.tgz#168a4701756b6a7f51a12ce0c97bfa28c084ed63"
-<<<<<<< HEAD
-=======
   integrity sha1-FopHAXVran9RoSzgyXv6KMCE7WM=
->>>>>>> 1631581... make babel strip console’s from production build
 
 combined-stream@^1.0.6, combined-stream@~1.0.6:
   version "1.0.7"
@@ -2778,10 +2623,7 @@ commander@~2.17.1:
 commander@~2.8.1:
   version "2.8.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.8.1.tgz#06be367febfda0c330aa1e2a072d3dc9762425d4"
-<<<<<<< HEAD
-=======
   integrity sha1-Br42f+v9oMMwqh4qBy09yXYkJdQ=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     graceful-readlink ">= 1.0.0"
 
@@ -2823,10 +2665,7 @@ concat-map@0.0.1:
 concat-stream@^1.4.4, concat-stream@^1.4.7, concat-stream@^1.6.0:
   version "1.6.2"
   resolved "https://registry.yarnpkg.com/concat-stream/-/concat-stream-1.6.2.tgz#904bdf194cd3122fc675c77fc4ac3d4ff0fd1a34"
-<<<<<<< HEAD
-=======
   integrity sha512-27HBghJxjiZtIk3Ycvn/4kbJk/1uZuJFfuPEns6LaEvpvG1f0hTea8lilrouyo9mVc2GWdcEZ8OLoGmSADlrCw==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     buffer-from "^1.0.0"
     inherits "^2.0.3"
@@ -2868,10 +2707,7 @@ contains-path@^0.1.0:
 content-disposition@0.5.2:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/content-disposition/-/content-disposition-0.5.2.tgz#0cf68bb9ddf5f2be7961c3a85178cb85dba78cb4"
-<<<<<<< HEAD
-=======
   integrity sha1-DPaLud318r55YcOoUXjLhdunjLQ=
->>>>>>> 1631581... make babel strip console’s from production build
 
 content-type@~1.0.4:
   version "1.0.4"
@@ -2908,15 +2744,12 @@ copy-descriptor@^0.1.0:
 core-js@^1.0.0:
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-1.2.7.tgz#652294c14651db28fa93bd2d5ff2983a4f08c636"
-<<<<<<< HEAD
-=======
   integrity sha1-ZSKUwUZR2yj6k70tX/KYOk8IxjY=
->>>>>>> 1631581... make babel strip console’s from production build
 
 core-js@^2.2.2, core-js@^2.4.0, core-js@^2.4.1, core-js@^2.5.0, core-js@^2.5.7:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.1.tgz#87416ae817de957a3f249b3b5ca475d4aaed6042"
-  integrity sha512-L72mmmEayPJBejKIWe2pYtGis5r0tQ5NaJekdhyXgeMQTpJoBsH0NL4ElY2LfSoV15xeQWKQ+XTTOZdyero5Xg==
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.2.tgz#267988d7268323b349e20b4588211655f0e83944"
+  integrity sha512-NdBPF/RVwPW6jr0NCILuyN9RiqLo2b1mddWHkUL+VnvcB7dzlnBJ1bXYntjpTGOgkZiiLWj2JxmOr7eGE3qK6g==
 
 core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"
@@ -2952,10 +2785,7 @@ create-ecdh@^4.0.0:
 create-hash@^1.1.0, create-hash@^1.1.2:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/create-hash/-/create-hash-1.2.0.tgz#889078af11a63756bcfb59bd221996be3a9ef196"
-<<<<<<< HEAD
-=======
   integrity sha512-z00bCGNHDG8mHAkP7CtT1qVu+bFQUPjYq/4Iv3C3kWjTFV10zIjfSoeqXo9Asws8gwSHDGj/hl2u4OGIjapeCg==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     cipher-base "^1.0.1"
     inherits "^2.0.1"
@@ -2966,10 +2796,7 @@ create-hash@^1.1.0, create-hash@^1.1.2:
 create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/create-hmac/-/create-hmac-1.1.7.tgz#69170c78b3ab957147b2b8b04572e47ead2243ff"
-<<<<<<< HEAD
-=======
   integrity sha512-MJG9liiZ+ogc4TzUwuvbER1JRdgvUFSB5+VR/g5h82fGaIRWMWddtKBHi7/sVhfjQZ6SehlyhvQYrcYkaUIpLg==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     cipher-base "^1.0.3"
     create-hash "^1.1.0"
@@ -3040,10 +2867,7 @@ css-color-keywords@^1.0.0:
 css-in-js-utils@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/css-in-js-utils/-/css-in-js-utils-2.0.1.tgz#3b472b398787291b47cfe3e44fecfdd9e914ba99"
-<<<<<<< HEAD
-=======
   integrity sha512-PJF0SpJT+WdbVVt0AOYp9C8GnuruRlL/UFW7932nLWmFLQTaWEzTBQEx7/hn4BuV+WON75iAViSUJLiU3PKbpA==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     hyphenate-style-name "^1.0.2"
     isobject "^3.0.1"
@@ -3276,10 +3100,7 @@ default-require-extensions@^1.0.0:
 deferred-leveldown@~0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/deferred-leveldown/-/deferred-leveldown-0.2.0.tgz#2cef1f111e1c57870d8bbb8af2650e587cd2f5b4"
-<<<<<<< HEAD
-=======
   integrity sha1-LO8fER4cV4cNi7uK8mUOWHzS9bQ=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     abstract-leveldown "~0.12.1"
 
@@ -3379,10 +3200,7 @@ diff@^3.2.0:
 diffie-hellman@^5.0.0:
   version "5.0.3"
   resolved "https://registry.yarnpkg.com/diffie-hellman/-/diffie-hellman-5.0.3.tgz#40e8ee98f55a2149607146921c63e1ae5f3d2875"
-<<<<<<< HEAD
-=======
   integrity sha512-kqag/Nl+f3GwyK25fhUMYj81BUOrZ9IuJsjIcDE5icNM9FJHAVm3VcUDxdLPoQtTuUylWm6ZIknYJwwaPxsUzg==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     bn.js "^4.1.0"
     miller-rabin "^4.0.0"
@@ -3401,10 +3219,7 @@ dns.js@^1.0.1:
 doctrine@1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/doctrine/-/doctrine-1.5.0.tgz#379dce730f6166f76cefa4e6707a159b02c5a6fa"
-<<<<<<< HEAD
-=======
   integrity sha1-N53Ocw9hZvds76TmcHoVmwLFpvo=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     esutils "^2.0.2"
     isarray "^1.0.0"
@@ -3442,10 +3257,7 @@ domelementtype@1:
 domelementtype@~1.1.1:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/domelementtype/-/domelementtype-1.1.3.tgz#bd28773e2642881aec51544924299c5cd822185b"
-<<<<<<< HEAD
-=======
   integrity sha1-vSh3PiZCiBrsUVRJJCmcXNgiGFs=
->>>>>>> 1631581... make babel strip console’s from production build
 
 domexception@^1.0.1:
   version "1.0.1"
@@ -3481,20 +3293,9 @@ ee-first@1.1.1:
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
 electron-to-chromium@^1.3.47:
-<<<<<<< HEAD
-<<<<<<< HEAD
-  version "1.3.100"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.100.tgz#899fb088def210aee6b838a47655bbb299190e13"
-=======
-  version "1.3.96"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.96.tgz#25770ec99b8b07706dedf3a5f43fa50cb54c4f9a"
-  integrity sha512-ZUXBUyGLeoJxp4Nt6G/GjBRLnyz8IKQGexZ2ndWaoegThgMGFO1tdDYID5gBV32/1S83osjJHyfzvanE/8HY4Q==
->>>>>>> 1631581... make babel strip console’s from production build
-=======
   version "1.3.100"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.100.tgz#899fb088def210aee6b838a47655bbb299190e13"
   integrity sha512-cEUzis2g/RatrVf8x26L8lK5VEls1AGnLHk6msluBUg/NTB4wcXzExTsGscFq+Vs4WBBU2zbLLySvD4C0C3hwg==
->>>>>>> 2bad6b7... squash importseedphrase
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -3573,10 +3374,7 @@ errorhandler@^1.5.0:
 es-abstract@^1.11.0, es-abstract@^1.12.0, es-abstract@^1.5.1, es-abstract@^1.7.0:
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/es-abstract/-/es-abstract-1.13.0.tgz#ac86145fdd5099d8dd49558ccba2eaf9b88e24e9"
-<<<<<<< HEAD
-=======
   integrity sha512-vDZfg/ykNxQVwup/8E1BZhVzFfBxs9NqMzGcvIJrqg5k2/5Za2bWo40dK2J1pgLngZ7c+Shh8lwYtLGyrwPutg==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     es-to-primitive "^1.2.0"
     function-bind "^1.1.1"
@@ -3602,10 +3400,7 @@ es6-promise@^4.0.3:
 es6-promisify@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/es6-promisify/-/es6-promisify-5.0.0.tgz#5109d62f3e56ea967c4b63505aef08291c8a5203"
-<<<<<<< HEAD
-=======
   integrity sha1-UQnWLz5W6pZ8S2NQWu8IKRyKUgM=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     es6-promise "^4.0.3"
 
@@ -3682,17 +3477,6 @@ eslint-plugin-react-native-globals@^0.1.1:
   resolved "https://registry.yarnpkg.com/eslint-plugin-react-native-globals/-/eslint-plugin-react-native-globals-0.1.2.tgz#ee1348bc2ceb912303ce6bdbd22e2f045ea86ea2"
   integrity sha512-9aEPf1JEpiTjcFAmmyw8eiIXmcNZOqaZyHO77wgm0/dWfT/oxC1SrIq8ET38pMxHYrcB6Uew+TzUVsBeczF88g==
 
-<<<<<<< HEAD
-eslint-plugin-react-native@^3.2.1:
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-react-native/-/eslint-plugin-react-native-3.6.0.tgz#7cad3b7c6159df6d26fe3252c6c5417a17f27b4b"
-  dependencies:
-    eslint-plugin-react-native-globals "^0.1.1"
-
-eslint-plugin-react@^7.7.0:
-  version "7.12.3"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.12.3.tgz#b9ca4cd7cd3f5d927db418a1950366a12d4568fd"
-=======
 eslint-plugin-react-native@^3.5.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-react-native/-/eslint-plugin-react-native-3.6.0.tgz#7cad3b7c6159df6d26fe3252c6c5417a17f27b4b"
@@ -3701,16 +3485,9 @@ eslint-plugin-react-native@^3.5.0:
     eslint-plugin-react-native-globals "^0.1.1"
 
 eslint-plugin-react@^7.12.1:
-<<<<<<< HEAD
-  version "7.12.2"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.12.2.tgz#95a4d8117011787824625ea57be9e38401d33548"
-  integrity sha512-6F8uOJXOsWWWD3Mg8cvz4onsqEYp2LFZCFlgjaTAzbPLwqdwRCeK78unbuEaMXYPxq8paXCzTpoaDCwXBvC/gg==
->>>>>>> 1631581... make babel strip console’s from production build
-=======
   version "7.12.3"
   resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.12.3.tgz#b9ca4cd7cd3f5d927db418a1950366a12d4568fd"
   integrity sha512-WTIA3cS8OzkPeCi4KWuPmjR33lgG9r9Y/7RmnLTRw08MZKgAfnK/n3BO4X0S67MPkVLazdfCNT/XWqcDu4BLTA==
->>>>>>> 2bad6b7... squash importseedphrase
   dependencies:
     array-includes "^3.0.3"
     doctrine "^2.1.0"
@@ -3751,22 +3528,10 @@ eslint-visitor-keys@^1.0.0:
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#3f3180fb2e291017716acb4c9d6d5b5c34a6a81d"
   integrity sha512-qzm/XxIbxm/FHyH341ZrbnMUpe+5Bocte9xkmFMzPMjRaZMcXww+MpBptFvtU+79L362nqiLhekCxCxDPaUMBQ==
 
-<<<<<<< HEAD
-eslint@^4.19.1:
-  version "4.19.1"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-4.19.1.tgz#32d1d653e1d90408854bfb296f076ec7e186a300"
-=======
 eslint@^5.11.1:
-<<<<<<< HEAD
-  version "5.11.1"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-5.11.1.tgz#8deda83db9f354bf9d3f53f9677af7e0e13eadda"
-  integrity sha512-gOKhM8JwlFOc2acbOrkYR05NW8M6DCMSvfcJiBB5NDxRE1gv8kbvxKaC9u69e6ZGEMWXcswA/7eKR229cEIpvg==
->>>>>>> 1631581... make babel strip console’s from production build
-=======
   version "5.12.0"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-5.12.0.tgz#fab3b908f60c52671fb14e996a450b96c743c859"
   integrity sha512-LntwyPxtOHrsJdcSwyQKVtHofPHdv+4+mFwEe91r2V13vqpM8yLr7b1sW+Oo/yheOPkWYsYlYJCkzlFAt8KV7g==
->>>>>>> 2bad6b7... squash importseedphrase
   dependencies:
     "@babel/code-frame" "^7.0.0"
     ajv "^6.5.3"
@@ -3806,16 +3571,10 @@ eslint@^5.11.1:
     table "^5.0.2"
     text-table "^0.2.0"
 
-<<<<<<< HEAD
-espree@^3.5.4:
-  version "3.5.4"
-  resolved "https://registry.yarnpkg.com/espree/-/espree-3.5.4.tgz#b0f447187c8a8bed944b815a660bddf5deb5d1a7"
-=======
 espree@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/espree/-/espree-5.0.0.tgz#fc7f984b62b36a0f543b13fb9cd7b9f4a7f5b65c"
   integrity sha512-1MpUfwsdS9MMoN7ZXqAr9e9UKdVHDcvrJpyx7mm1WuQlx/ygErEQBzgi5Nh5qBHIoYweprhtMkTCb9GhcAIcsA==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     acorn "^6.0.2"
     acorn-jsx "^5.0.0"
@@ -3914,10 +3673,7 @@ ethjs-unit@0.1.6:
 event-target-shim@^1.0.5:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/event-target-shim/-/event-target-shim-1.1.1.tgz#a86e5ee6bdaa16054475da797ccddf0c55698491"
-<<<<<<< HEAD
-=======
   integrity sha1-qG5e5r2qFgVEddp5fM3fDFVphJE=
->>>>>>> 1631581... make babel strip console’s from production build
 
 eventemitter3@1.1.1:
   version "1.1.1"
@@ -3932,10 +3688,7 @@ eventemitter3@^3.0.0:
 events@^1.0.2, events@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
-<<<<<<< HEAD
-=======
   integrity sha1-nr23Y1rQmccNzEwqH1AEKI6L2SQ=
->>>>>>> 1631581... make babel strip console’s from production build
 
 evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
   version "1.0.3"
@@ -3998,20 +3751,14 @@ expand-brackets@^2.1.4:
 expand-range@^1.8.1:
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/expand-range/-/expand-range-1.8.2.tgz#a299effd335fe2721ebae8e257ec79644fc85337"
-<<<<<<< HEAD
-=======
   integrity sha1-opnv/TNf4nIeuujiV+x5ZE/IUzc=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     fill-range "^2.1.0"
 
 expect@^22.4.0:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/expect/-/expect-22.4.3.tgz#d5a29d0a0e1fb2153557caef2674d4547e914674"
-<<<<<<< HEAD
-=======
   integrity sha512-XcNXEPehqn8b/jm8FYotdX0YrXn36qp4HWlrVT4ktwQas1l1LPxiVWncYnnL2eyMtKAmVIaG0XAp0QlrqJaxaA==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     ansi-styles "^3.2.0"
     jest-diff "^22.4.3"
@@ -4086,10 +3833,7 @@ extend@3, extend@^3.0.0, extend@~3.0.2:
 external-editor@^1.0.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/external-editor/-/external-editor-1.1.1.tgz#12d7b0db850f7ff7e7081baf4005700060c4600b"
-<<<<<<< HEAD
-=======
   integrity sha1-Etew24UPf/fnCBuvQAVwAGDEYAs=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     extend "^3.0.0"
     spawn-sync "^1.0.15"
@@ -4098,10 +3842,7 @@ external-editor@^1.0.1:
 external-editor@^2.0.1, external-editor@^2.0.4:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/external-editor/-/external-editor-2.2.0.tgz#045511cfd8d133f3846673d1047c154e214ad3d5"
-<<<<<<< HEAD
-=======
   integrity sha512-bSn6gvGxKt+b7+6TKEv1ZycHleA7aHhRHyAqJyp5pbUFuYYNIzpZnQDk7AsYckyWdEnTeAnay0aCy2aV6iTk9A==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     chardet "^0.4.0"
     iconv-lite "^0.4.17"
@@ -4157,13 +3898,6 @@ fancy-log@^1.3.2:
     parse-node-version "^1.0.0"
     time-stamp "^1.0.0"
 
-<<<<<<< HEAD
-fast-deep-equal@^1.0.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-1.1.0.tgz#c053477817c86b51daa853c81e059b733d023614"
-
-=======
->>>>>>> 1631581... make babel strip console’s from production build
 fast-deep-equal@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-2.0.1.tgz#7b05218ddf9667bf7f370bf7fdb2cb15fdd0aa49"
@@ -4248,10 +3982,7 @@ file-entry-cache@^2.0.0:
 file-type@^3.8.0:
   version "3.9.0"
   resolved "https://registry.yarnpkg.com/file-type/-/file-type-3.9.0.tgz#257a078384d1db8087bc449d107d52a52672b9e9"
-<<<<<<< HEAD
-=======
   integrity sha1-JXoHg4TR24CHvESdEH1SpSZyuek=
->>>>>>> 1631581... make babel strip console’s from production build
 
 file-type@^5.2.0:
   version "5.2.0"
@@ -4318,10 +4049,7 @@ finalhandler@1.1.0:
 finalhandler@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/finalhandler/-/finalhandler-1.1.1.tgz#eebf4ed840079c83f4249038c9d703008301b105"
-<<<<<<< HEAD
-=======
   integrity sha512-Y1GUDo39ez4aHAw7MysnUD5JzYX+WaIj8I57kO3aEPT1fFRL4sr7mjei97FgnwhAyyzRYmQZaTHb2+9uZ1dPtg==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     debug "2.6.9"
     encodeurl "~1.0.2"
@@ -4378,10 +4106,7 @@ flexibility@^2.0.1:
 follow-redirects@^1.3.0:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.6.1.tgz#514973c44b5757368bad8bddfe52f81f015c94cb"
-<<<<<<< HEAD
-=======
   integrity sha512-t2JCjbzxQpWvbhts3l6SH1DKzSrx8a+SsaVf4h6bG4kOXUuPYS/kg2Lr4gQSb7eemaHqJkOThF1BGyjlUkO1GQ==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     debug "=3.1.0"
 
@@ -4458,10 +4183,7 @@ fs-constants@^1.0.0:
 fs-extra@^0.22.1:
   version "0.22.1"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-0.22.1.tgz#5fd6f8049dc976ca19eb2355d658173cabcce056"
-<<<<<<< HEAD
-=======
   integrity sha1-X9b4BJ3JdsoZ6yNV1lgXPKvM4FY=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     graceful-fs "^4.1.2"
     jsonfile "^2.1.0"
@@ -4470,10 +4192,7 @@ fs-extra@^0.22.1:
 fs-extra@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-1.0.0.tgz#cd3ce5f7e7cb6145883fcae3191e9877f8587950"
-<<<<<<< HEAD
-=======
   integrity sha1-zTzl9+fLYUWIP8rjGR6Yd/hYeVA=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     graceful-fs "^4.1.2"
     jsonfile "^2.1.0"
@@ -4585,10 +4304,7 @@ get-caller-file@^1.0.1:
 get-stream@^2.2.0:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/get-stream/-/get-stream-2.3.1.tgz#5f38f93f346009666ee0150a054167f91bdd95de"
-<<<<<<< HEAD
-=======
   integrity sha1-Xzj5PzRgCWZu4BUKBUFn+Rvdld4=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     object-assign "^4.0.1"
     pinkie-promise "^2.0.0"
@@ -4596,10 +4312,7 @@ get-stream@^2.2.0:
 get-stream@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/get-stream/-/get-stream-3.0.0.tgz#8e943d1358dc37555054ecbe2edb05aa174ede14"
-<<<<<<< HEAD
-=======
   integrity sha1-jpQ9E1jcN1VQVOy+LtsFqhdO3hQ=
->>>>>>> 1631581... make babel strip console’s from production build
 
 get-uri@^2.0.0:
   version "2.0.2"
@@ -4671,16 +4384,10 @@ global@^4.3.0, global@^4.3.2, global@~4.3.0:
     min-document "^2.19.0"
     process "~0.5.1"
 
-<<<<<<< HEAD
-globals@^11.0.1, globals@^11.1.0:
+globals@^11.1.0, globals@^11.7.0:
   version "11.10.0"
   resolved "https://registry.yarnpkg.com/globals/-/globals-11.10.0.tgz#1e09776dffda5e01816b3bb4077c8b59c24eaa50"
-=======
-globals@^11.1.0, globals@^11.7.0:
-  version "11.9.0"
-  resolved "https://registry.yarnpkg.com/globals/-/globals-11.9.0.tgz#bde236808e987f290768a93d065060d78e6ab249"
-  integrity sha512-5cJVtyXWH8PiJPVLZzzoIizXx944O4OmRro5MWKx5fT4MgcN7OfaMutPeaTdJCCURwbWdhhcCWcKIffPnmTzBg==
->>>>>>> 9b78282... make babel strip console’s from production build
+  integrity sha512-0GZF1RiPKU97IHUO5TORo9w1PwrH/NBPl+fS7oMLdaTRiYmYbwK4NWoZWrAdd0/abG9R2BU+OiwyQpTpE6pdfQ==
 
 globals@^9.18.0:
   version "9.18.0"
@@ -4936,10 +4643,7 @@ html-encoding-sniffer@^1.0.2:
 http-errors@1.6.3, http-errors@~1.6.2, http-errors@~1.6.3:
   version "1.6.3"
   resolved "https://registry.yarnpkg.com/http-errors/-/http-errors-1.6.3.tgz#8b55680bb4be283a0b5bf4ea2e38580be1d9320d"
-<<<<<<< HEAD
-=======
   integrity sha1-i1VoC7S+KDoLW/TqLjhYC+HZMg0=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     depd "~1.1.2"
     inherits "2.0.3"
@@ -5040,20 +4744,9 @@ image-size@^0.6.0:
   integrity sha512-47xSUiQioGaB96nqtp5/q55m0aBQSQdyIloMOc/x+QVTDZLNmXE892IIDrJ0hM1A5vcNUDD5tDffkSP5lCaIIA==
 
 immer@^1.7.4:
-<<<<<<< HEAD
-<<<<<<< HEAD
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/immer/-/immer-1.10.0.tgz#bad67605ba9c810275d91e1c2a47d4582e98286d"
-=======
-  version "1.9.3"
-  resolved "https://registry.yarnpkg.com/immer/-/immer-1.9.3.tgz#e88f8cbea730d2cde0f5e7e763000a8608bccdae"
-  integrity sha512-bUyz3fOHGn82V7h4oVgJGmFglZt53JWwSyVNAT4sO0d7IovHLwLuHbh14uYKY0tewFoDcEdiQW7HuL0NsRVziw==
->>>>>>> 1631581... make babel strip console’s from production build
-=======
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/immer/-/immer-1.10.0.tgz#bad67605ba9c810275d91e1c2a47d4582e98286d"
   integrity sha512-O3sR1/opvCDGLEVcvrGTMtLac8GJ5IwZC4puPrLuRj3l7ICKvkmA0vGuU9OW8mV9WIBRnaxp5GJh9IEAaNOoYg==
->>>>>>> 2bad6b7... squash importseedphrase
 
 import-fresh@^2.0.0:
   version "2.0.0"
@@ -5123,10 +4816,7 @@ inline-style-prefixer@^4.0.2:
 inquirer@1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-1.1.2.tgz#ac3ba5f06b8e7291abd9f22912c03f09cfe2dd1f"
-<<<<<<< HEAD
-=======
   integrity sha1-rDul8GuOcpGr2fIpEsA/Cc/i3R8=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     ansi-escapes "^1.1.0"
     chalk "^1.0.0"
@@ -5221,10 +4911,7 @@ ip-regex@^1.0.3:
 ip-regex@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/ip-regex/-/ip-regex-3.0.0.tgz#0a934694b4066558c46294244a23cc33116bf732"
-<<<<<<< HEAD
-=======
   integrity sha512-T8wDtjy+Qf2TAPDQmBp0eGKJ8GavlWlUnamr3wRn6vvdZlKVuJXXMlSncYFRYgVHOM3If5NR1H4+OvVQU9Idvg==
->>>>>>> 2bad6b7... squash importseedphrase
 
 ip@^1.1.4, ip@^1.1.5:
   version "1.1.5"
@@ -5239,10 +4926,7 @@ ipaddr.js@1.8.0:
 is-accessor-descriptor@^0.1.6:
   version "0.1.6"
   resolved "https://registry.yarnpkg.com/is-accessor-descriptor/-/is-accessor-descriptor-0.1.6.tgz#a9e12cb3ae8d876727eeef3843f8a0897b5c98d6"
-<<<<<<< HEAD
-=======
   integrity sha1-qeEss66Nh2cn7u84Q/igiXtcmNY=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     kind-of "^3.0.2"
 
@@ -5271,10 +4955,7 @@ is-buffer@^1.0.2, is-buffer@^1.1.5:
 is-builtin-module@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/is-builtin-module/-/is-builtin-module-1.0.0.tgz#540572d34f7ac3119f8f76c30cbc1b1e037affbe"
-<<<<<<< HEAD
-=======
   integrity sha1-VAVy0096wxGfj3bDDLwbHgN6/74=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     builtin-modules "^1.0.0"
 
@@ -5293,10 +4974,7 @@ is-ci@^1.0.10:
 is-data-descriptor@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/is-data-descriptor/-/is-data-descriptor-0.1.4.tgz#0b5ee648388e2c860282e793f1856fec3f301b56"
-<<<<<<< HEAD
-=======
   integrity sha1-C17mSDiOLIYCgueT8YVv7D8wG1Y=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     kind-of "^3.0.2"
 
@@ -5391,10 +5069,7 @@ is-function@^1.0.1:
 is-generator-fn@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/is-generator-fn/-/is-generator-fn-1.0.0.tgz#969d49e1bb3329f6bb7f09089be26578b2ddd46a"
-<<<<<<< HEAD
-=======
   integrity sha1-lp1J4bszKfa7fwkIm+JleLLd1Go=
->>>>>>> 1631581... make babel strip console’s from production build
 
 is-glob@^2.0.0, is-glob@^2.0.1:
   version "2.0.1"
@@ -5511,10 +5186,7 @@ is-windows@^1.0.2:
 is@~0.2.6:
   version "0.2.7"
   resolved "https://registry.yarnpkg.com/is/-/is-0.2.7.tgz#3b34a2c48f359972f35042849193ae7264b63562"
-<<<<<<< HEAD
-=======
   integrity sha1-OzSixI81mXLzUEKEkZOucmS2NWI=
->>>>>>> 1631581... make babel strip console’s from production build
 
 isarray@0.0.1:
   version "0.0.1"
@@ -5642,10 +5314,7 @@ isurl@^1.0.0-alpha5:
 jest-changed-files@^22.2.0:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/jest-changed-files/-/jest-changed-files-22.4.3.tgz#8882181e022c38bd46a2e4d18d44d19d90a90fb2"
-<<<<<<< HEAD
-=======
   integrity sha512-83Dh0w1aSkUNFhy5d2dvqWxi/y6weDwVVLU6vmK0cV9VpRxPzhTeGimbsbRDSnEoszhF937M4sDLLeS7Cu/Tmw==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     throat "^4.0.0"
 
@@ -5709,10 +5378,7 @@ jest-config@^22.4.4:
 jest-diff@^22.4.0, jest-diff@^22.4.3:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/jest-diff/-/jest-diff-22.4.3.tgz#e18cc3feff0aeef159d02310f2686d4065378030"
-<<<<<<< HEAD
-=======
   integrity sha512-/QqGvCDP5oZOF6PebDuLwrB2BMD8ffJv6TAGAdEVuDx1+uEgrHpSFrfrOiMRx2eJ1hgNjlQrOQEHetVwij90KA==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     chalk "^2.0.1"
     diff "^3.2.0"
@@ -5729,20 +5395,14 @@ jest-docblock@23.2.0, jest-docblock@^23.2.0:
 jest-docblock@^22.4.0, jest-docblock@^22.4.3:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/jest-docblock/-/jest-docblock-22.4.3.tgz#50886f132b42b280c903c592373bb6e93bb68b19"
-<<<<<<< HEAD
-=======
   integrity sha512-uPKBEAw7YrEMcXueMKZXn/rbMxBiSv48fSqy3uEnmgOlQhSX+lthBqHb1fKWNVmFqAp9E/RsSdBfiV31LbzaOg==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     detect-newline "^2.1.0"
 
 jest-environment-jsdom@^22.4.1:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/jest-environment-jsdom/-/jest-environment-jsdom-22.4.3.tgz#d67daa4155e33516aecdd35afd82d4abf0fa8a1e"
-<<<<<<< HEAD
-=======
   integrity sha512-FviwfR+VyT3Datf13+ULjIMO5CSeajlayhhYQwpzgunswoaLIPutdbrnfUHEMyJCwvqQFaVtTmn9+Y8WCt6n1w==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     jest-mock "^22.4.3"
     jest-util "^22.4.3"
@@ -5751,10 +5411,7 @@ jest-environment-jsdom@^22.4.1:
 jest-environment-node@^22.4.1:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/jest-environment-node/-/jest-environment-node-22.4.3.tgz#54c4eaa374c83dd52a9da8759be14ebe1d0b9129"
-<<<<<<< HEAD
-=======
   integrity sha512-reZl8XF6t/lMEuPWwo9OLfttyC26A5AMgDyEQ6DBgZuyfyeNUzYT8BFo6uxCCP/Av/b7eb9fTi3sIHFPBzmlRA==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     jest-mock "^22.4.3"
     jest-util "^22.4.3"
@@ -5762,10 +5419,7 @@ jest-environment-node@^22.4.1:
 jest-get-type@^22.1.0, jest-get-type@^22.4.3:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/jest-get-type/-/jest-get-type-22.4.3.tgz#e3a8504d8479342dd4420236b322869f18900ce4"
-<<<<<<< HEAD
-=======
   integrity sha512-/jsz0Y+V29w1chdXVygEKSz2nBoHoYqNShPe+QgxSNjAuP1i8+k4LbQNrfoliKej0P45sivkSCh7yiD6ubHS3w==
->>>>>>> 1631581... make babel strip console’s from production build
 
 jest-haste-map@23.5.0:
   version "23.5.0"
@@ -5784,10 +5438,7 @@ jest-haste-map@23.5.0:
 jest-haste-map@^22.4.2:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/jest-haste-map/-/jest-haste-map-22.4.3.tgz#25842fa2ba350200767ac27f658d58b9d5c2e20b"
-<<<<<<< HEAD
-=======
   integrity sha512-4Q9fjzuPVwnaqGKDpIsCSoTSnG3cteyk2oNVjBX12HHOaF1oxql+uUiqZb5Ndu7g/vTZfdNwwy4WwYogLh29DQ==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     fb-watchman "^2.0.0"
     graceful-fs "^4.1.11"
@@ -5817,20 +5468,14 @@ jest-jasmine2@^22.4.4:
 jest-leak-detector@^22.4.0:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/jest-leak-detector/-/jest-leak-detector-22.4.3.tgz#2b7b263103afae8c52b6b91241a2de40117e5b35"
-<<<<<<< HEAD
-=======
   integrity sha512-NZpR/Ls7+ndO57LuXROdgCGz2RmUdC541tTImL9bdUtU3WadgFGm0yV+Ok4Fuia/1rLAn5KaJ+i76L6e3zGJYQ==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     pretty-format "^22.4.3"
 
 jest-matcher-utils@^22.4.0, jest-matcher-utils@^22.4.3:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/jest-matcher-utils/-/jest-matcher-utils-22.4.3.tgz#4632fe428ebc73ebc194d3c7b65d37b161f710ff"
-<<<<<<< HEAD
-=======
   integrity sha512-lsEHVaTnKzdAPR5t4B6OcxXo9Vy4K+kRRbG5gtddY8lBEC+Mlpvm1CJcsMESRjzUhzkz568exMV1hTB76nAKbA==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     chalk "^2.0.1"
     jest-get-type "^22.4.3"
@@ -5839,10 +5484,7 @@ jest-matcher-utils@^22.4.0, jest-matcher-utils@^22.4.3:
 jest-message-util@^22.4.0, jest-message-util@^22.4.3:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/jest-message-util/-/jest-message-util-22.4.3.tgz#cf3d38aafe4befddbfc455e57d65d5239e399eb7"
-<<<<<<< HEAD
-=======
   integrity sha512-iAMeKxhB3Se5xkSjU0NndLLCHtP4n+GtCqV0bISKA5dmOXQfEbdEmYiu2qpnWBDCQdEafNDDU6Q+l6oBMd/+BA==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     "@babel/code-frame" "^7.0.0-beta.35"
     chalk "^2.0.1"
@@ -5853,36 +5495,24 @@ jest-message-util@^22.4.0, jest-message-util@^22.4.3:
 jest-mock@^22.4.3:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/jest-mock/-/jest-mock-22.4.3.tgz#f63ba2f07a1511772cdc7979733397df770aabc7"
-<<<<<<< HEAD
-=======
   integrity sha512-+4R6mH5M1G4NK16CKg9N1DtCaFmuxhcIqF4lQK/Q1CIotqMs/XBemfpDPeVZBFow6iyUNu6EBT9ugdNOTT5o5Q==
->>>>>>> 1631581... make babel strip console’s from production build
 
 jest-regex-util@^22.1.0, jest-regex-util@^22.4.3:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/jest-regex-util/-/jest-regex-util-22.4.3.tgz#a826eb191cdf22502198c5401a1fc04de9cef5af"
-<<<<<<< HEAD
-=======
   integrity sha512-LFg1gWr3QinIjb8j833bq7jtQopiwdAs67OGfkPrvy7uNUbVMfTXXcOKXJaeY5GgjobELkKvKENqq1xrUectWg==
->>>>>>> 1631581... make babel strip console’s from production build
 
 jest-resolve-dependencies@^22.1.0:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/jest-resolve-dependencies/-/jest-resolve-dependencies-22.4.3.tgz#e2256a5a846732dc3969cb72f3c9ad7725a8195e"
-<<<<<<< HEAD
-=======
   integrity sha512-06czCMVToSN8F2U4EvgSB1Bv/56gc7MpCftZ9z9fBgUQM7dzHGCMBsyfVA6dZTx8v0FDcnALf7hupeQxaBCvpA==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     jest-regex-util "^22.4.3"
 
 jest-resolve@^22.4.2:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/jest-resolve/-/jest-resolve-22.4.3.tgz#0ce9d438c8438229aa9b916968ec6b05c1abb4ea"
-<<<<<<< HEAD
-=======
   integrity sha512-u3BkD/MQBmwrOJDzDIaxpyqTxYH+XqAXzVJP51gt29H8jpj3QgKof5GGO2uPGKGeA1yTMlpbMs1gIQ6U4vcRhw==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     browser-resolve "^1.11.2"
     chalk "^2.0.1"
@@ -5938,18 +5568,12 @@ jest-serializer@23.0.1, jest-serializer@^23.0.1:
 jest-serializer@^22.4.3:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/jest-serializer/-/jest-serializer-22.4.3.tgz#a679b81a7f111e4766235f4f0c46d230ee0f7436"
-<<<<<<< HEAD
-=======
   integrity sha512-uPaUAppx4VUfJ0QDerpNdF43F68eqKWCzzhUlKNDsUPhjOon7ZehR4C809GCqh765FoMRtTVUVnGvIoskkYHiw==
->>>>>>> 1631581... make babel strip console’s from production build
 
 jest-snapshot@^22.4.0:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/jest-snapshot/-/jest-snapshot-22.4.3.tgz#b5c9b42846ffb9faccb76b841315ba67887362d2"
-<<<<<<< HEAD
-=======
   integrity sha512-JXA0gVs5YL0HtLDCGa9YxcmmV2LZbwJ+0MfyXBBc5qpgkEYITQFJP7XNhcHFbUvRiniRpRbGVfJrOoYhhGE0RQ==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     chalk "^2.0.1"
     jest-diff "^22.4.3"
@@ -5961,10 +5585,7 @@ jest-snapshot@^22.4.0:
 jest-util@^22.4.1, jest-util@^22.4.3:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/jest-util/-/jest-util-22.4.3.tgz#c70fec8eec487c37b10b0809dc064a7ecf6aafac"
-<<<<<<< HEAD
-=======
   integrity sha512-rfDfG8wyC5pDPNdcnAlZgwKnzHvZDu8Td2NJI/jAGKEGxJPYiE4F0ss/gSAkG4778Y23Hvbz+0GMrDJTeo7RjQ==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     callsites "^2.0.0"
     chalk "^2.0.1"
@@ -5995,10 +5616,7 @@ jest-worker@23.2.0, jest-worker@^23.2.0:
 jest-worker@^22.2.2, jest-worker@^22.4.3:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/jest-worker/-/jest-worker-22.4.3.tgz#5c421417cba1c0abf64bf56bd5fb7968d79dd40b"
-<<<<<<< HEAD
-=======
   integrity sha512-B1ucW4fI8qVAuZmicFxI1R3kr2fNeYJyvIQ1rKcuLYnenFV5K5aMbxFj6J0i00Ju83S8jP2d7Dz14+AvbIHRYQ==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     merge-stream "^1.0.1"
 
@@ -6038,22 +5656,10 @@ js-walletconnect-core@^0.7.28:
     eth-parse-uri "^0.6.9"
     idempotent-babel-polyfill "^7.0.0"
 
-<<<<<<< HEAD
-js-yaml@^3.12.0, js-yaml@^3.7.0, js-yaml@^3.9.0, js-yaml@^3.9.1:
-  version "3.12.1"
-  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.12.1.tgz#295c8632a18a23e054cf5c9d3cecafe678167600"
-=======
 js-yaml@^3.12.0, js-yaml@^3.7.0, js-yaml@^3.9.0:
-<<<<<<< HEAD
-  version "3.12.0"
-  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.12.0.tgz#eaed656ec8344f10f527c6bfa1b6e2244de167d1"
-  integrity sha512-PIt2cnwmPfL4hKNwqeiuz4bKfnzHTBv6HyVgjahA6mPLwPDzjDWrplJBMjHUFxku/N3FlmrbyPclad+I+4mJ3A==
->>>>>>> 1631581... make babel strip console’s from production build
-=======
   version "3.12.1"
   resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.12.1.tgz#295c8632a18a23e054cf5c9d3cecafe678167600"
   integrity sha512-um46hB9wNOKlwkHgiuyEVAybXBjwFUV0Z/RaHJblRd9DXltue9FTYvzCr9ErQrK9Adz5MU4gHWVaNUfdmrC8qA==
->>>>>>> 2bad6b7... squash importseedphrase
   dependencies:
     argparse "^1.0.7"
     esprima "^4.0.0"
@@ -6130,10 +5736,7 @@ jsdom@^11.5.1:
 jsesc@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-1.3.0.tgz#46c3fec8c1892b12b0833db9bc7622176dbab34b"
-<<<<<<< HEAD
-=======
   integrity sha1-RsP+yMGJKxKwgz25vHYiF226s0s=
->>>>>>> 1631581... make babel strip console’s from production build
 
 jsesc@^2.5.1:
   version "2.5.2"
@@ -6143,10 +5746,7 @@ jsesc@^2.5.1:
 jsesc@~0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-0.5.0.tgz#e7dee66e35d6fc16f710fe91d5cf69f70f08911d"
-<<<<<<< HEAD
-=======
   integrity sha1-597mbjXW/Bb3EP6R1c9p9w8IkR0=
->>>>>>> 1631581... make babel strip console’s from production build
 
 json-parse-better-errors@^1.0.1:
   version "1.0.2"
@@ -6183,10 +5783,7 @@ json-stringify-safe@~5.0.1:
 json5@^0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/json5/-/json5-0.5.1.tgz#1eade7acc012034ad84e2396767ead9fa5495821"
-<<<<<<< HEAD
-=======
   integrity sha1-Hq3nrMASA0rYTiOWdn6tn6VJWCE=
->>>>>>> 1631581... make babel strip console’s from production build
 
 json5@^2.1.0:
   version "2.1.0"
@@ -6198,10 +5795,7 @@ json5@^2.1.0:
 jsonfile@^2.1.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/jsonfile/-/jsonfile-2.4.0.tgz#3736a2b428b87bbda0cc83b53fa3d633a35c2ae8"
-<<<<<<< HEAD
-=======
   integrity sha1-NzaitCi4e72gzIO1P6PWM6NcKug=
->>>>>>> 1631581... make babel strip console’s from production build
   optionalDependencies:
     graceful-fs "^4.1.6"
 
@@ -6250,18 +5844,12 @@ keccakjs@^0.2.1:
 kind-of@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-1.1.0.tgz#140a3d2d41a36d2efcfa9377b62c24f8495a5c44"
-<<<<<<< HEAD
-=======
   integrity sha1-FAo9LUGjbS78+pN3tiwk+ElaXEQ=
->>>>>>> 1631581... make babel strip console’s from production build
 
 kind-of@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-2.0.1.tgz#018ec7a4ce7e3a86cb9141be519d24c8faa981b5"
-<<<<<<< HEAD
-=======
   integrity sha1-AY7HpM5+OobLkUG+UZ0kyPqpgbU=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     is-buffer "^1.0.2"
 
@@ -6345,48 +5933,33 @@ level-filesystem@^1.0.1:
 level-fix-range@2.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/level-fix-range/-/level-fix-range-2.0.0.tgz#c417d62159442151a19d9a2367868f1724c2d548"
-<<<<<<< HEAD
-=======
   integrity sha1-xBfWIVlEIVGhnZojZ4aPFyTC1Ug=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     clone "~0.1.9"
 
 level-fix-range@~1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/level-fix-range/-/level-fix-range-1.0.2.tgz#bf15b915ae36d8470c821e883ddf79cd16420828"
-<<<<<<< HEAD
-=======
   integrity sha1-vxW5Fa422EcMgh6IPd95zRZCCCg=
->>>>>>> 1631581... make babel strip console’s from production build
 
 "level-hooks@>=4.4.0 <5":
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/level-hooks/-/level-hooks-4.5.0.tgz#1b9ae61922930f3305d1a61fc4d83c8102c0dd93"
-<<<<<<< HEAD
-=======
   integrity sha1-G5rmGSKTDzMF0aYfxNg8gQLA3ZM=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     string-range "~1.2"
 
 level-peek@1.0.6, level-peek@^1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/level-peek/-/level-peek-1.0.6.tgz#bec51c72a82ee464d336434c7c876c3fcbcce77f"
-<<<<<<< HEAD
-=======
   integrity sha1-vsUccqgu5GTTNkNMfIdsP8vM538=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     level-fix-range "~1.0.2"
 
 level-sublevel@^5.2.0:
   version "5.2.3"
   resolved "https://registry.yarnpkg.com/level-sublevel/-/level-sublevel-5.2.3.tgz#744c12c72d2e72be78dde3b9b5cd84d62191413a"
-<<<<<<< HEAD
-=======
   integrity sha1-dEwSxy0ucr543eO5tc2E1iGRQTo=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     level-fix-range "2.0"
     level-hooks ">=4.4.0 <5"
@@ -6396,10 +5969,7 @@ level-sublevel@^5.2.0:
 levelup@^0.18.2:
   version "0.18.6"
   resolved "https://registry.yarnpkg.com/levelup/-/levelup-0.18.6.tgz#e6a01cb089616c8ecc0291c2a9bd3f0c44e3e5eb"
-<<<<<<< HEAD
-=======
   integrity sha1-5qAcsIlhbI7MApHCqb0/DETj5es=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     bl "~0.8.1"
     deferred-leveldown "~0.2.0"
@@ -6425,10 +5995,7 @@ levn@^0.3.0, levn@~0.3.0:
 load-json-file@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/load-json-file/-/load-json-file-1.1.0.tgz#956905708d58b4bab4c2261b04f59f31c99374c0"
-<<<<<<< HEAD
-=======
   integrity sha1-lWkFcI1YtLq0wiYbBPWfMcmTdMA=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     graceful-fs "^4.1.2"
     parse-json "^2.2.0"
@@ -6439,10 +6006,7 @@ load-json-file@^1.0.0:
 load-json-file@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/load-json-file/-/load-json-file-2.0.0.tgz#7947e42149af80d696cbf797bcaabcfe1fe29ca8"
-<<<<<<< HEAD
-=======
   integrity sha1-eUfkIUmvgNaWy/eXvKq8/h/inKg=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     graceful-fs "^4.1.2"
     parse-json "^2.2.0"
@@ -6580,10 +6144,7 @@ mdn-data@~1.1.0:
 media-typer@0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
-<<<<<<< HEAD
-=======
   integrity sha1-hxDXrwqmJvj/+hzgAWhUUmMlV0g=
->>>>>>> 1631581... make babel strip console’s from production build
 
 mem@^1.1.0:
   version "1.1.0"
@@ -6906,18 +6467,12 @@ miller-rabin@^4.0.0:
 mime-db@~1.23.0:
   version "1.23.0"
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.23.0.tgz#a31b4070adaea27d732ea333740a64d0ec9a6659"
-<<<<<<< HEAD
-=======
   integrity sha1-oxtAcK2uon1zLqMzdApk0OyaZlk=
->>>>>>> 1631581... make babel strip console’s from production build
 
 mime-types@2.1.11:
   version "2.1.11"
   resolved "https://registry.yarnpkg.com/mime-types/-/mime-types-2.1.11.tgz#c259c471bda808a85d6cd193b430a5fae4473b3c"
-<<<<<<< HEAD
-=======
   integrity sha1-wlnEcb2oCKhdbNGTtDCl+uRHOzw=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     mime-db "~1.23.0"
 
@@ -6975,26 +6530,17 @@ minimalistic-crypto-utils@^1.0.0, minimalistic-crypto-utils@^1.0.1:
 minimist@0.0.8:
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.0.8.tgz#857fcabfc3397d2625b8228262e86aa7a011b05d"
-<<<<<<< HEAD
-=======
   integrity sha1-hX/Kv8M5fSYluCKCYuhqp6ARsF0=
->>>>>>> 1631581... make babel strip console’s from production build
 
 minimist@1.2.0, minimist@^1.1.1, minimist@^1.1.2, minimist@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
-<<<<<<< HEAD
-=======
   integrity sha1-o1AIsg9BOD7sH7kU9M1d95omQoQ=
->>>>>>> 1631581... make babel strip console’s from production build
 
 minimist@~0.0.1:
   version "0.0.10"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.0.10.tgz#de3f98543dbf96082be48ad1a0c7cda836301dcf"
-<<<<<<< HEAD
-=======
   integrity sha1-3j+YVD2/lggr5IrRoMfNqDYwHc8=
->>>>>>> 1631581... make babel strip console’s from production build
 
 minipass@^2.2.1, minipass@^2.3.4:
   version "2.3.5"
@@ -7037,10 +6583,7 @@ mkdirp-promise@^5.0.1:
 mkdirp@*, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.5.1.tgz#30057438eac6cf7f8c4767f38648d6697d75c903"
-<<<<<<< HEAD
-=======
   integrity sha1-MAV0OOrGz3+MR2fzhkjWaX11yQM=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     minimist "0.0.8"
 
@@ -7078,18 +6621,12 @@ ms@^2.1.1:
 mute-stream@0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.6.tgz#48962b19e169fd1dfc240b3f1e7317627bbc47db"
-<<<<<<< HEAD
-=======
   integrity sha1-SJYrGeFp/R38JAs/HnMXYnu8R9s=
->>>>>>> 1631581... make babel strip console’s from production build
 
 mute-stream@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
-<<<<<<< HEAD
-=======
   integrity sha1-MHXOk7whuPq0PhvE2n6BFe0ee6s=
->>>>>>> 1631581... make babel strip console’s from production build
 
 mz@^2.6.0:
   version "2.7.0"
@@ -7103,10 +6640,7 @@ mz@^2.6.0:
 nan@2.10.0:
   version "2.10.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
-<<<<<<< HEAD
-=======
   integrity sha512-bAdJv7fBLhWC+/Bls0Oza+mvTaNQtP+1RyhhhvD95pgUJz6XM5IzgmxOkItJ9tkoCiplvAnXI1tNmmUD/eScyA==
->>>>>>> 1631581... make babel strip console’s from production build
 
 nan@^2.0.8, nan@^2.3.3, nan@^2.9.2:
   version "2.12.1"
@@ -7174,10 +6708,7 @@ node-emoji@1.8.1:
 node-fetch@1.6.3:
   version "1.6.3"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-1.6.3.tgz#dc234edd6489982d58e8f0db4f695029abcd8c04"
-<<<<<<< HEAD
-=======
   integrity sha1-3CNO3WSJmC1Y6PDbT2lQKavNjAQ=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     encoding "^0.1.11"
     is-stream "^1.0.1"
@@ -7267,20 +6798,9 @@ npm-bundled@^1.0.1:
   integrity sha512-m/e6jgWu8/v5niCUKQi9qQl8QdeEduFA96xHDDzFGqly0OOjI7c+60KM/2sppfnUU9JJagf+zs+yGhqSOFj71g==
 
 npm-packlist@^1.1.6:
-<<<<<<< HEAD
-<<<<<<< HEAD
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-1.2.0.tgz#55a60e793e272f00862c7089274439a4cc31fc7f"
-=======
-  version "1.1.12"
-  resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-1.1.12.tgz#22bde2ebc12e72ca482abd67afc51eb49377243a"
-  integrity sha512-WJKFOVMeAlsU/pjXuqVdzU0WfgtIBCupkEVwn+1Y0ERAbUfWw8R4GjgVbaKnUjRoD2FoQbHOCbOyT5Mbs9Lw4g==
->>>>>>> 1631581... make babel strip console’s from production build
-=======
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-1.2.0.tgz#55a60e793e272f00862c7089274439a4cc31fc7f"
   integrity sha512-7Mni4Z8Xkx0/oegoqlcao/JpPCPEMtUvsmB0q7mgvlMinykJLSRTYuFqoQLYgGY8biuxIeiHO+QNJKbCfljewQ==
->>>>>>> 2bad6b7... squash importseedphrase
   dependencies:
     ignore-walk "^3.0.1"
     npm-bundled "^1.0.1"
@@ -7295,10 +6815,7 @@ npm-run-path@^2.0.0:
 npmlog@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/npmlog/-/npmlog-2.0.4.tgz#98b52530f2514ca90d09ec5b22c8846722375692"
-<<<<<<< HEAD
-=======
   integrity sha1-mLUlMPJRTKkNCexbIsiEZyI3VpI=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     ansi "~0.3.1"
     are-we-there-yet "~1.1.2"
@@ -7447,10 +6964,7 @@ object.pick@^1.1.1, object.pick@^1.3.0:
 object.values@^1.0.4:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/object.values/-/object.values-1.1.0.tgz#bf6810ef5da3e5325790eaaa2be213ea84624da9"
-<<<<<<< HEAD
-=======
   integrity sha512-8mf0nKLAoFX6VlNVdhGj31SVYpaNFtUnuoOXWyFEstsWRgU837AK+JYM0iAxwkSzGRbwn8cbFmgbyxj1j4VbXg==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     define-properties "^1.1.3"
     es-abstract "^1.12.0"
@@ -7491,10 +7005,7 @@ once@^1.3.0, once@^1.3.1, once@^1.4.0:
 onetime@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/onetime/-/onetime-1.1.0.tgz#a1f7838f8314c516f05ecefcbc4ccfe04b4ed789"
-<<<<<<< HEAD
-=======
   integrity sha1-ofeDj4MUxRbwXs78vEzP4EtO14k=
->>>>>>> 1631581... make babel strip console’s from production build
 
 onetime@^2.0.0:
   version "2.0.1"
@@ -7518,10 +7029,7 @@ opencollective@^1.0.3:
 opn@4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/opn/-/opn-4.0.2.tgz#7abc22e644dff63b0a96d5ab7f2790c0f01abc95"
-<<<<<<< HEAD
-=======
   integrity sha1-erwi5kTf9jsKltWrfyeQwPAavJU=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     object-assign "^4.0.1"
     pinkie-promise "^2.0.0"
@@ -7529,10 +7037,7 @@ opn@4.0.2:
 opn@^3.0.2:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/opn/-/opn-3.0.3.tgz#b6d99e7399f78d65c3baaffef1fb288e9b85243a"
-<<<<<<< HEAD
-=======
   integrity sha1-ttmec5n3jWXDuq/+8fsojpuFJDo=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     object-assign "^4.0.1"
 
@@ -7564,10 +7069,7 @@ options@>=0.0.5:
 os-homedir@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/os-homedir/-/os-homedir-1.0.2.tgz#ffbc4988336e0e833de0c168c7ef152121aa7fb3"
-<<<<<<< HEAD
-=======
   integrity sha1-/7xJiDNuDoM94MFox+8VISGqf7M=
->>>>>>> 1631581... make babel strip console’s from production build
 
 os-locale@^2.0.0:
   version "2.1.0"
@@ -7586,10 +7088,7 @@ os-shim@^0.1.2:
 os-tmpdir@^1.0.0, os-tmpdir@^1.0.1, os-tmpdir@~1.0.1, os-tmpdir@~1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/os-tmpdir/-/os-tmpdir-1.0.2.tgz#bbe67406c79aa85c5cfec766fe5734555dfa1274"
-<<<<<<< HEAD
-=======
   integrity sha1-u+Z0BseaqFxc/sdm/lc0VV36EnQ=
->>>>>>> 1631581... make babel strip console’s from production build
 
 osenv@^0.1.4:
   version "0.1.5"
@@ -7672,10 +7171,7 @@ pac-resolver@^3.0.0:
 pako@~0.2.0:
   version "0.2.9"
   resolved "https://registry.yarnpkg.com/pako/-/pako-0.2.9.tgz#f3f7522f4ef782348da8161bad9ecfd51bf83a75"
-<<<<<<< HEAD
-=======
   integrity sha1-8/dSL073gjSNqBYbrZ7P1Rv4OnU=
->>>>>>> 1631581... make babel strip console’s from production build
 
 parent-module@^1.0.0:
   version "1.0.0"
@@ -7687,10 +7183,7 @@ parent-module@^1.0.0:
 parse-asn1@^5.0.0:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/parse-asn1/-/parse-asn1-5.1.1.tgz#f6bf293818332bd0dab54efb16087724745e6ca8"
-<<<<<<< HEAD
-=======
   integrity sha512-KPx7flKXg775zZpnp9SxJlz00gTd4BmJ2yJufSc44gMCRrRQ7NSzAcSJQfifuOLgW6bEi+ftrALtsgALeB2Adw==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     asn1.js "^4.0.0"
     browserify-aes "^1.0.0"
@@ -7759,10 +7252,7 @@ pascalcase@^0.1.1:
 path-browserify@0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/path-browserify/-/path-browserify-0.0.0.tgz#a0b870729aae214005b7d5032ec2cbbb0fb4451a"
-<<<<<<< HEAD
-=======
   integrity sha1-oLhwcpquIUAFt9UDLsLLuw+0RRo=
->>>>>>> 1631581... make babel strip console’s from production build
 
 path-exists@^2.0.0:
   version "2.1.0"
@@ -7779,10 +7269,7 @@ path-exists@^3.0.0:
 path-is-absolute@^1.0.0, path-is-absolute@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/path-is-absolute/-/path-is-absolute-1.0.1.tgz#174b9268735534ffbc7ace6bf53a5a9e1b5c5f5f"
-<<<<<<< HEAD
-=======
   integrity sha1-F0uSaHNVNP+8es5r9TpanhtcX18=
->>>>>>> 1631581... make babel strip console’s from production build
 
 path-is-inside@^1.0.2:
   version "1.0.2"
@@ -7830,10 +7317,7 @@ path-type@^2.0.0:
 pbkdf2@3.0.8:
   version "3.0.8"
   resolved "https://registry.yarnpkg.com/pbkdf2/-/pbkdf2-3.0.8.tgz#2f8abf16ebecc82277945d748aba1d78761f61e2"
-<<<<<<< HEAD
-=======
   integrity sha1-L4q/FuvsyCJ3lF10irodeHYfYeI=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     create-hmac "^1.1.2"
 
@@ -7851,10 +7335,7 @@ pbkdf2@^3.0.3:
 pegjs@^0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/pegjs/-/pegjs-0.10.0.tgz#cf8bafae6eddff4b5a7efb185269eaaf4610ddbd"
-<<<<<<< HEAD
-=======
   integrity sha1-z4uvrm7d/0tafvsYUmnqr0YQ3b0=
->>>>>>> 1631581... make babel strip console’s from production build
 
 pend@~1.2.0:
   version "1.2.0"
@@ -7869,10 +7350,7 @@ performance-now@^2.1.0:
 pify@^2.0.0, pify@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/pify/-/pify-2.3.0.tgz#ed141a6ac043a849ea588498e7dca8b15330e90c"
-<<<<<<< HEAD
-=======
   integrity sha1-7RQaasBDqEnqWISY59yosVMw6Qw=
->>>>>>> 1631581... make babel strip console’s from production build
 
 pify@^3.0.0:
   version "3.0.0"
@@ -7994,10 +7472,7 @@ prettier@^1.14.2:
 pretty-format@^22.4.0, pretty-format@^22.4.3:
   version "22.4.3"
   resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-22.4.3.tgz#f873d780839a9c02e9664c8a082e9ee79eaac16f"
-<<<<<<< HEAD
-=======
   integrity sha512-S4oT9/sT6MN7/3COoOy+ZJeA92VmOnveLHgrwBE3Z1W5N9S2A1QGNYiE1z75DAENbJrXXUb+OWXhpJcg05QKQQ==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     ansi-regex "^3.0.0"
     ansi-styles "^3.2.0"
@@ -8005,10 +7480,7 @@ pretty-format@^22.4.0, pretty-format@^22.4.3:
 pretty-format@^4.2.1:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-4.3.1.tgz#530be5c42b3c05b36414a7a2a4337aa80acd0e8d"
-<<<<<<< HEAD
-=======
   integrity sha1-UwvlxCs8BbNkFKeipDN6qArNDo0=
->>>>>>> 1631581... make babel strip console’s from production build
 
 private@^0.1.6, private@^0.1.8:
   version "0.1.8"
@@ -8061,10 +7533,7 @@ proxy-addr@~2.0.4:
 proxy-agent@2:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/proxy-agent/-/proxy-agent-2.3.1.tgz#3d49d863d46cf5f37ca8394848346ea02373eac6"
-<<<<<<< HEAD
-=======
   integrity sha512-CNKuhC1jVtm8KJYFTS2ZRO71VCBx3QSA92So/e6NrY6GoJonkx3Irnk4047EsCcswczwqAekRj3s8qLRGahSKg==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     agent-base "^4.2.0"
     debug "^3.1.0"
@@ -8156,10 +7625,7 @@ qs@^6.5.1:
 query-string@^5.0.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/query-string/-/query-string-5.1.1.tgz#a78c012b71c17e05f2e3fa2319dd330682efb3cb"
-<<<<<<< HEAD
-=======
   integrity sha512-gjWOsm2SoGlgLEdAGt7a6slVOk9mGiXmPFMqrEhLQ68rhQuBnpfs3+EmlvqKyxnCo9/PPlF+9MtY02S1aFg+Jw==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     decode-uri-component "^0.2.0"
     object-assign "^4.1.0"
@@ -8297,20 +7763,9 @@ react-native-blur@^3.2.2:
     prop-types "^15.5.10"
 
 react-native-camera@^1.4.3:
-<<<<<<< HEAD
-<<<<<<< HEAD
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.8.0.tgz#e4749b112b99ce04c60f581d24624cd413d2d14a"
-=======
-  version "1.6.4"
-  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.6.4.tgz#a7d0f3da8ff07be36c07e14dcae57d822a09013e"
-  integrity sha512-aS77+UVOKwxE+gTfpkPwIVoyFPD7uFuLV6qzV2M9kwK/KklR7wjd594xvatX40GHfLRFRpuUn5HiJU5WnOovbQ==
->>>>>>> 1631581... make babel strip console’s from production build
-=======
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.8.0.tgz#e4749b112b99ce04c60f581d24624cd413d2d14a"
   integrity sha512-fJPSbCZ4ZWI+1kQ2Y41ed0fr3Bnw+qo6eb8uv3HcTkGzBJ1OCzLIcAhpXLhizyiyY9nwSuMy9asQKS3Tun8eXA==
->>>>>>> 2bad6b7... squash importseedphrase
   dependencies:
     prop-types "^15.6.2"
 
@@ -8415,10 +7870,7 @@ react-native-keychain@^3.0.0:
 react-native-languages@^3.0.0:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/react-native-languages/-/react-native-languages-3.0.2.tgz#c2c4c5050974fe4b50f7372051ca1f9824c1c778"
-<<<<<<< HEAD
-=======
   integrity sha512-LGsTfixFM6hXDhcFJI6mrtrNBsGPSvXT9RtZQ0tlqmGFKmMyZW6eQgJ7kLw8lISD2FIGl4jJwY06EAJpbMsNxg==
->>>>>>> 1631581... make babel strip console’s from production build
 
 react-native-level-fs@^3.0.1:
   version "3.0.1"
@@ -8480,20 +7932,9 @@ react-native-randombytes@^3.1.0:
     sjcl "^1.0.3"
 
 react-native-reanimated@^1.0.0-alpha.9:
-<<<<<<< HEAD
-<<<<<<< HEAD
-  version "1.0.0-alpha.11"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.0.0-alpha.11.tgz#b78c839bae878d149561b56a3c750414957ea86d"
-=======
-  version "1.0.0-alpha.10"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.0.0-alpha.10.tgz#e9e6fb35a2cf52fdc912b9fbc76f34f80698e530"
-  integrity sha512-dbZG/Lh5Q+6zRvS7+gIkZKmXTG7XVqHbpMROL1LApBBMQwuLq/uLtKk/nBSn1+mNmazPrPMTehI7TG3AEkctww==
->>>>>>> 1631581... make babel strip console’s from production build
-=======
   version "1.0.0-alpha.11"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.0.0-alpha.11.tgz#b78c839bae878d149561b56a3c750414957ea86d"
   integrity sha512-lDakjY8CXmZiSN71hyc276b3d7M9mKV9ZyYw4W/rTnnJbgBFaqdIxSHq4S4LxSbVqpAoQMfUJqPTE0BKbAz7Aw==
->>>>>>> 2bad6b7... squash importseedphrase
 
 react-native-safe-area-view@0.11.0:
   version "0.11.0"
@@ -8509,20 +7950,9 @@ react-native-safe-area-view@mikedemarais/react-native-safe-area-view:
     hoist-non-react-statics "^2.3.1"
 
 react-native-screens@^1.0.0-alpha.11:
-<<<<<<< HEAD
-<<<<<<< HEAD
-  version "1.0.0-alpha.21"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.21.tgz#ba8d401e82fa3d0f30e7922dbb6446a8c000d7ef"
-=======
-  version "1.0.0-alpha.19"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.19.tgz#ecf3c9023e169b7013266d40b9c5599f37667f6d"
-  integrity sha512-+a7GdwzLWYWYVUJMg+XuyBoRFGD8GdGyBfebuTNBY+xwUZpTXCaK/GlLGL6EE3h0iBHZu83do7zViEailWRNyA==
->>>>>>> 1631581... make babel strip console’s from production build
-=======
   version "1.0.0-alpha.21"
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.21.tgz#ba8d401e82fa3d0f30e7922dbb6446a8c000d7ef"
   integrity sha512-Jm0hfUyEw0v4Rn2rmpG2ab+H2J+36a/505gufMeZQUcx8EajysiuyzNcHQ9B9NhUEUajk/ostF73X4pHuMLItw==
->>>>>>> 2bad6b7... squash importseedphrase
 
 react-native-shimmer-placeholder@^1.0.29:
   version "1.0.30"
@@ -8550,10 +7980,7 @@ react-native-svg@^8.0.8:
 react-native-tab-view@^0.0.77:
   version "0.0.77"
   resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-0.0.77.tgz#11ceb8e7c23100d07e628dc151b57797524d00d4"
-<<<<<<< HEAD
-=======
   integrity sha512-9vjD4Ly1Zlum1Y4g23ODpi/F3gYIUIsKWrsZO/Oh5cuX1eiB1DRVn11nY1z+j/hsQfhfyW6nDlmySyDvYQvYCA==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     prop-types "^15.6.0"
 
@@ -8833,10 +8260,7 @@ read-pkg@^2.0.0:
 readable-stream@1.1.x, readable-stream@^1.0.26-4, readable-stream@^1.0.27-1, readable-stream@^1.0.33:
   version "1.1.14"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-1.1.14.tgz#7cf4c54ef648e3813084c636dd2079e166c081d9"
-<<<<<<< HEAD
-=======
   integrity sha1-fPTFTvZI44EwhMY23SB54WbAgdk=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     core-util-is "~1.0.0"
     inherits "~2.0.1"
@@ -8846,10 +8270,7 @@ readable-stream@1.1.x, readable-stream@^1.0.26-4, readable-stream@^1.0.27-1, rea
 readable-stream@2, readable-stream@^2.0.1, readable-stream@^2.0.6, readable-stream@^2.2.2, readable-stream@^2.3.0, readable-stream@^2.3.5, readable-stream@~2.3.6:
   version "2.3.6"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.3.6.tgz#b11c27d88b8ff1fbe070643cf94b0c79ae1b0aaf"
-<<<<<<< HEAD
-=======
   integrity sha512-tQtKA9WIAhBF3+VLAseyMqZeBjW0AHJoxOtYqSUZNJxauErmLbVm2FW1y+J/YA9dUrAC39ITejlZWhVIwawkKw==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     core-util-is "~1.0.0"
     inherits "~2.0.3"
@@ -8862,10 +8283,7 @@ readable-stream@2, readable-stream@^2.0.1, readable-stream@^2.0.6, readable-stre
 readable-stream@~1.0.26, readable-stream@~1.0.26-4:
   version "1.0.34"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-1.0.34.tgz#125820e34bc842d2f2aaafafe4c2916ee32c157c"
-<<<<<<< HEAD
-=======
   integrity sha1-Elgg40vIQtLyqq+v5MKRbuMsFXw=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     core-util-is "~1.0.0"
     inherits "~2.0.1"
@@ -8996,24 +8414,15 @@ regex-not@^1.0.0, regex-not@^1.0.2:
     extend-shallow "^3.0.2"
     safe-regex "^1.1.0"
 
-<<<<<<< HEAD
-regexpp@^1.0.1:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/regexpp/-/regexpp-1.1.0.tgz#0e3516dd0b7904f413d2d4193dce4618c3a689ab"
-=======
 regexpp@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/regexpp/-/regexpp-2.0.1.tgz#8d19d31cf632482b589049f8281f93dbcba4d07f"
   integrity sha512-lv0M6+TkDVniA3aD1Eg0DVpfU/booSu7Eev3TDO/mZKHBfVjgCGTV4t4buppESEYDtkArYFOxTJWv6S5C+iaNw==
->>>>>>> 1631581... make babel strip console’s from production build
 
 regexpu-core@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/regexpu-core/-/regexpu-core-2.0.0.tgz#49d038837b8dcf8bfa5b9a42139938e6ea2ae240"
-<<<<<<< HEAD
-=======
   integrity sha1-SdA4g3uNz4v6W5pCE5k45uoq4kA=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     regenerate "^1.2.1"
     regjsgen "^0.2.0"
@@ -9034,10 +8443,7 @@ regexpu-core@^4.1.3:
 regjsgen@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/regjsgen/-/regjsgen-0.2.0.tgz#6c016adeac554f75823fe37ac05b92d5a4edb1f7"
-<<<<<<< HEAD
-=======
   integrity sha1-bAFq3qxVT3WCP+N6wFuS1aTtsfc=
->>>>>>> 1631581... make babel strip console’s from production build
 
 regjsgen@^0.5.0:
   version "0.5.0"
@@ -9047,10 +8453,7 @@ regjsgen@^0.5.0:
 regjsparser@^0.1.4:
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/regjsparser/-/regjsparser-0.1.5.tgz#7ee8f84dc6fa792d3fd0ae228d24bd949ead205c"
-<<<<<<< HEAD
-=======
   integrity sha1-fuj4Tcb6eS0/0K4ijSS9lJ6tIFw=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     jsesc "~0.5.0"
 
@@ -9140,20 +8543,6 @@ require-package-name@^2.0.1:
   resolved "https://registry.yarnpkg.com/require-package-name/-/require-package-name-2.0.1.tgz#c11e97276b65b8e2923f75dabf5fb2ef0c3841b9"
   integrity sha1-wR6XJ2tluOKSP3Xav1+y7ww4Qbk=
 
-<<<<<<< HEAD
-require-uncached@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/require-uncached/-/require-uncached-1.0.3.tgz#4e0d56d6c9662fd31e43011c4b95aa49955421d3"
-<<<<<<< HEAD
-=======
-  integrity sha1-Tg1W1slmL9MeQwEcS5WqSZVUIdM=
->>>>>>> 1631581... make babel strip console’s from production build
-  dependencies:
-    caller-path "^0.1.0"
-    resolve-from "^1.0.0"
-
-=======
->>>>>>> 2bad6b7... squash importseedphrase
 resolve-cwd@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/resolve-cwd/-/resolve-cwd-2.0.0.tgz#00a9f7387556e27038eae232caa372a6a59b665a"
@@ -9207,20 +8596,14 @@ ret@~0.1.10:
 rimraf@2, rimraf@^2.2.8, rimraf@^2.5.4, rimraf@^2.6.1, rimraf@~2.6.2:
   version "2.6.3"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.6.3.tgz#b2d104fe0d8fb27cf9e0a1cda8262dd3833c6cab"
-<<<<<<< HEAD
-=======
   integrity sha512-mwqeW5XsA2qAejG46gYdENaxXjx9onRNCfn7L0duuP4hCuTIi/QO7PDK07KJfp1d+izWPrzEJDcSqBa0OZQriA==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     glob "^7.1.3"
 
 rimraf@~2.2.6:
   version "2.2.8"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.2.8.tgz#e439be2aaee327321952730f99a8929e4fc50582"
-<<<<<<< HEAD
-=======
   integrity sha1-5Dm+Kq7jJzIZUnMPmaiSnk/FBYI=
->>>>>>> 1631581... make babel strip console’s from production build
 
 rip-out@^1.0.0:
   version "1.0.0"
@@ -9306,10 +8689,7 @@ safe-buffer@5.1.2, safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.1, s
 safe-regex@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/safe-regex/-/safe-regex-1.1.0.tgz#40a3669f3b077d1e943d44629e157dd48023bf2e"
-<<<<<<< HEAD
-=======
   integrity sha1-QKNmnzsHfR6UPURinhV91IAjvy4=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     ret "~0.1.10"
 
@@ -9342,25 +8722,12 @@ sax@^1.2.4, sax@~1.2.4:
 sax@~1.1.1:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.1.6.tgz#5d616be8a5e607d54e114afae55b7eaf2fcc3240"
-<<<<<<< HEAD
-
-saxes@^3.1.4:
-  version "3.1.5"
-  resolved "https://registry.yarnpkg.com/saxes/-/saxes-3.1.5.tgz#ecbba12c7ca99f87f70dbd14a6c57b2b5de8b298"
-=======
   integrity sha1-XWFr6KXmB9VOEUr65Vt+ry/MMkA=
 
 saxes@^3.1.4:
-<<<<<<< HEAD
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/saxes/-/saxes-3.1.4.tgz#4ad5c53eb085ac0570ea1071a07aaf22ad29cebd"
-  integrity sha512-GVZmLJnkS4Vl8Pe9o4nc5ALZ615VOVxCmea8Cs0l+8GZw3RQ5XGOSUomIUfuZuk4Todo44v4y+HY1EATkDDiZg==
->>>>>>> 1631581... make babel strip console’s from production build
-=======
   version "3.1.5"
   resolved "https://registry.yarnpkg.com/saxes/-/saxes-3.1.5.tgz#ecbba12c7ca99f87f70dbd14a6c57b2b5de8b298"
   integrity sha512-2mgiX2VOarcQv8G40WdJ5QJniYdsPr0yGedkd98PqApodsS9DG29qyHl/X65OILm7Bapd1/zUUvTHVZwNLhXvQ==
->>>>>>> 2bad6b7... squash importseedphrase
   dependencies:
     xmlchars "^1.3.1"
 
@@ -9382,18 +8749,12 @@ scheduler@^0.12.0:
 scrypt-js@2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/scrypt-js/-/scrypt-js-2.0.3.tgz#bb0040be03043da9a012a2cea9fc9f852cfc87d4"
-<<<<<<< HEAD
-=======
   integrity sha1-uwBAvgMEPamgEqLOqfyfhSz8h9Q=
->>>>>>> 1631581... make babel strip console’s from production build
 
 scrypt.js@0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/scrypt.js/-/scrypt.js-0.2.0.tgz#af8d1465b71e9990110bedfc593b9479e03a8ada"
-<<<<<<< HEAD
-=======
   integrity sha1-r40UZbcemZARC+38WTuUeeA6ito=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     scrypt "^6.0.2"
     scryptsy "^1.2.1"
@@ -9427,10 +8788,7 @@ seek-bzip@^1.0.5:
 semver@~2.3.1:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/semver/-/semver-2.3.2.tgz#b9848f25d6cf36333073ec9ef8856d42f1233e52"
-<<<<<<< HEAD
-=======
   integrity sha1-uYSPJdbPNjMwc+ye+IVtQvEjPlI=
->>>>>>> 1631581... make babel strip console’s from production build
 
 send@0.16.2:
   version "0.16.2"
@@ -9454,10 +8812,7 @@ send@0.16.2:
 serialize-error@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/serialize-error/-/serialize-error-2.1.0.tgz#50b679d5635cdf84667bdc8e59af4e5b81d5f60a"
-<<<<<<< HEAD
-=======
   integrity sha1-ULZ51WNc34Rme9yOWa9OW4HV9go=
->>>>>>> 1631581... make babel strip console’s from production build
 
 serve-static@1.13.2, serve-static@^1.13.1:
   version "1.13.2"
@@ -9523,10 +8878,7 @@ setprototypeof@1.1.0:
 sha.js@^2.4.0, sha.js@^2.4.8:
   version "2.4.11"
   resolved "https://registry.yarnpkg.com/sha.js/-/sha.js-2.4.11.tgz#37a5cf0b81ecbc6943de109ba2960d1b26584ae7"
-<<<<<<< HEAD
-=======
   integrity sha512-QMEp5B7cftE7APOjk5Y6xgrbWu+WkLVQwk8JNjZ8nKRciZaByEW6MubieAiToS7+dwvrjGhH8jRXz3MVd0AYqQ==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
@@ -9597,10 +8949,7 @@ simple-get@^2.7.0:
 simple-plist@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/simple-plist/-/simple-plist-0.2.1.tgz#71766db352326928cf3a807242ba762322636723"
-<<<<<<< HEAD
-=======
   integrity sha1-cXZts1IyaSjPOoByQrp2IyJjZyM=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     bplist-creator "0.0.7"
     bplist-parser "0.1.1"
@@ -9773,10 +9122,7 @@ split-string@^3.0.1, split-string@^3.0.2:
 sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
-<<<<<<< HEAD
-=======
   integrity sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=
->>>>>>> 1631581... make babel strip console’s from production build
 
 sshpk@^1.7.0:
   version "1.16.0"
@@ -9839,10 +9185,7 @@ stealthy-require@^1.1.0:
 stream-browserify@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/stream-browserify/-/stream-browserify-1.0.0.tgz#bf9b4abfb42b274d751479e44e0ff2656b6f1193"
-<<<<<<< HEAD
-=======
   integrity sha1-v5tKv7QrJ011FHnkTg/yZWtvEZM=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     inherits "~2.0.1"
     readable-stream "^1.0.27-1"
@@ -9878,18 +9221,12 @@ string-length@^2.0.0:
 string-range@~1.2, string-range@~1.2.1:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/string-range/-/string-range-1.2.2.tgz#a893ed347e72299bc83befbbf2a692a8d239d5dd"
-<<<<<<< HEAD
-=======
   integrity sha1-qJPtNH5yKZvIO++78qaSqNI51d0=
->>>>>>> 1631581... make babel strip console’s from production build
 
 string-width@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-1.0.2.tgz#118bdf5b8cdc51a2a7e70d211e07e2b0b9b107d3"
-<<<<<<< HEAD
-=======
   integrity sha1-EYvfW4zcUaKn5w0hHgfisLmxB9M=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     code-point-at "^1.0.0"
     is-fullwidth-code-point "^1.0.0"
@@ -9906,28 +9243,19 @@ string-width@^1.0.1:
 string_decoder@^0.10.31, string_decoder@~0.10.x:
   version "0.10.31"
   resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-0.10.31.tgz#62e203bc41766c6c28c9fc84301dab1c5310fa94"
-<<<<<<< HEAD
-=======
   integrity sha1-YuIDvEF2bGwoyfyEMB2rHFMQ+pQ=
->>>>>>> 1631581... make babel strip console’s from production build
 
 string_decoder@~1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-1.1.1.tgz#9cf1611ba62685d7030ae9e4ba34149c3af03fc8"
-<<<<<<< HEAD
-=======
   integrity sha512-n/ShnvDi6FHbbVfviro+WojiFzv+s8MPMHBczVePfUpDJLwoLT0ht1l4YwBCbi8pJAveEEdnkHyPyTP/mzRfwg==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     safe-buffer "~5.1.0"
 
 strip-ansi@^3.0.0, strip-ansi@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-3.0.1.tgz#6a385fb8853d952d5ff05d0e8aaf94278dc63dcf"
-<<<<<<< HEAD
-=======
   integrity sha1-ajhfuIU9lS1f8F0Oiq+UJ43GPc8=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     ansi-regex "^2.0.0"
 
@@ -9967,10 +9295,7 @@ strip-dirs@^2.0.0:
 strip-eof@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/strip-eof/-/strip-eof-1.0.0.tgz#bb43ff5598a6eb05d89b59fcd129c983313606bf"
-<<<<<<< HEAD
-=======
   integrity sha1-u0P/VZim6wXYm1n80SnJgzE2Br8=
->>>>>>> 1631581... make babel strip console’s from production build
 
 strip-hex-prefix@1.0.0:
   version "1.0.0"
@@ -10029,10 +9354,7 @@ stylis@^3.5.0:
 superagent-proxy@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/superagent-proxy/-/superagent-proxy-1.0.3.tgz#acfa776672f11c24a90ad575e855def8be44f741"
-<<<<<<< HEAD
-=======
   integrity sha512-79Ujg1lRL2ICfuHUdX+H2MjIw73kB7bXsIkxLwHURz3j0XUmEEEoJ+u/wq+mKwna21Uejsm2cGR3OESA00TIjA==
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     debug "^3.1.0"
     proxy-agent "2"
@@ -10056,10 +9378,7 @@ superagent@^3.8.0:
 supports-color@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-2.0.0.tgz#535d045ce6b6363fa40117084629995e9df324c7"
-<<<<<<< HEAD
-=======
   integrity sha1-U10EXOa2Nj+kARcIRimZXp3zJMc=
->>>>>>> 1631581... make babel strip console’s from production build
 
 supports-color@^3.1.2, supports-color@^3.2.3:
   version "3.2.3"
@@ -10179,10 +9498,7 @@ tar.gz@^1.0.5:
 tar@^2.1.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/tar/-/tar-2.2.1.tgz#8e4d2a256c0e2185c6b18ad694aec968b83cb1d1"
-<<<<<<< HEAD
-=======
   integrity sha1-jk0qJWwOIYXGsYrWlK7JaLg8sdE=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     block-stream "*"
     fstream "^1.0.2"
@@ -10204,10 +9520,7 @@ tar@^4:
 temp@0.8.3:
   version "0.8.3"
   resolved "https://registry.yarnpkg.com/temp/-/temp-0.8.3.tgz#e0c6bc4d26b903124410e4fed81103014dfc1f59"
-<<<<<<< HEAD
-=======
   integrity sha1-4Ma8TSa5AxJEEOT+2BEDAU38H1k=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     os-tmpdir "^1.0.0"
     rimraf "~2.2.6"
@@ -10258,10 +9571,7 @@ through2@^2.0.0:
 through@^2.3.6:
   version "2.3.8"
   resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
-<<<<<<< HEAD
-=======
   integrity sha1-DdTJ/6q8NXlgsbckEV1+Doai4fU=
->>>>>>> 1631581... make babel strip console’s from production build
 
 thunkify@^2.1.2:
   version "2.1.2"
@@ -10281,10 +9591,7 @@ timed-out@^4.0.0, timed-out@^4.0.1:
 timers-browserify@^1.4.2:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/timers-browserify/-/timers-browserify-1.4.2.tgz#c9c58b575be8407375cb5e2462dacee74359f41d"
-<<<<<<< HEAD
-=======
   integrity sha1-ycWLV1voQHN1y14kYtrO50NZ9B0=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     process "~0.11.0"
 
@@ -10350,10 +9657,7 @@ to-regex@^3.0.1, to-regex@^3.0.2:
 tough-cookie@>=2.3.3:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/tough-cookie/-/tough-cookie-3.0.0.tgz#d2bceddebde633153ff20a52fa844a0dc71dacef"
-<<<<<<< HEAD
-=======
   integrity sha512-LHMvg+RBP/mAVNqVbOX8t+iJ+tqhBA/t49DuI7+IDAWHrASnesqSu1vWbKB7UrE2yk+HMFUBMadRGMkB4VCfog==
->>>>>>> 2bad6b7... squash importseedphrase
   dependencies:
     ip-regex "^3.0.0"
     psl "^1.1.28"
@@ -10400,10 +9704,7 @@ tslib@^1.9.0:
 tty-browserify@0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/tty-browserify/-/tty-browserify-0.0.0.tgz#a157ba402da24e9bf957f9aa69d524eed42901a6"
-<<<<<<< HEAD
-=======
   integrity sha1-oVe6QC2iTpv5V/mqadUk7tQpAaY=
->>>>>>> 1631581... make babel strip console’s from production build
 
 tunnel-agent@^0.6.0:
   version "0.6.0"
@@ -10486,10 +9787,7 @@ unbzip2-stream@^1.0.9:
 underscore@1.8.3:
   version "1.8.3"
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.8.3.tgz#4f3fb53b106e6097fcf9cb4109f2a5e9bdfa5022"
-<<<<<<< HEAD
-=======
   integrity sha1-Tz+1OxBuYJf8+ctBCfKl6b36UCI=
->>>>>>> 1631581... make babel strip console’s from production build
 
 underscore@^1.9.1:
   version "1.9.1"
@@ -10592,10 +9890,7 @@ use@^3.1.0:
 utf8@2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/utf8/-/utf8-2.1.1.tgz#2e01db02f7d8d0944f77104f1609eb0c304cf768"
-<<<<<<< HEAD
-=======
   integrity sha1-LgHbAvfY0JRPdxBPFgnrDDBM92g=
->>>>>>> 1631581... make babel strip console’s from production build
 
 util-deprecate@~1.0.1:
   version "1.0.2"
@@ -10613,10 +9908,7 @@ util.promisify@^1.0.0, util.promisify@~1.0.0:
 util@0.10.3:
   version "0.10.3"
   resolved "https://registry.yarnpkg.com/util/-/util-0.10.3.tgz#7afb1afe50805246489e3db7fe0ed379336ac0f9"
-<<<<<<< HEAD
-=======
   integrity sha1-evsa/lCAUkZInj23/g7TeTNqwPk=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     inherits "2.0.1"
 
@@ -10635,18 +9927,12 @@ utils-merge@1.0.1:
 uuid@2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-2.0.1.tgz#c2a30dedb3e535d72ccf82e343941a50ba8533ac"
-<<<<<<< HEAD
-=======
   integrity sha1-wqMN7bPlNdcsz4LjQ5QaULqFM6w=
->>>>>>> 1631581... make babel strip console’s from production build
 
 uuid@3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.0.1.tgz#6544bba2dfda8c1cf17e629a3a305e2bb1fee6c1"
-<<<<<<< HEAD
-=======
   integrity sha1-ZUS7ot/ajBzxfmKaOjBeK7H+5sE=
->>>>>>> 1631581... make babel strip console’s from production build
 
 uuid@^3.3.2:
   version "3.3.2"
@@ -10678,10 +9964,7 @@ verror@1.10.0:
 vm-browserify@0.0.4:
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-0.0.4.tgz#5d7ea45bbef9e4a6ff65f95438e0a87c357d5a73"
-<<<<<<< HEAD
-=======
   integrity sha1-XX6kW7755Kb/ZflUOOCofDV9WnM=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     indexof "0.0.1"
 
@@ -10726,10 +10009,7 @@ watch@~0.18.0:
 web3-bzz@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-bzz/-/web3-bzz-1.0.0-beta.34.tgz#068d37777ab65e5c60f8ec8b9a50cfe45277929c"
-<<<<<<< HEAD
-=======
   integrity sha1-Bo03d3q2Xlxg+OyLmlDP5FJ3kpw=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     got "7.1.0"
     swarm-js "0.1.37"
@@ -10738,10 +10018,7 @@ web3-bzz@1.0.0-beta.34:
 web3-core-helpers@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-core-helpers/-/web3-core-helpers-1.0.0-beta.34.tgz#b168da00d3e19e156bc15ae203203dd4dfee2d03"
-<<<<<<< HEAD
-=======
   integrity sha1-sWjaANPhnhVrwVriAyA91N/uLQM=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     underscore "1.8.3"
     web3-eth-iban "1.0.0-beta.34"
@@ -10750,10 +10027,7 @@ web3-core-helpers@1.0.0-beta.34:
 web3-core-method@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-core-method/-/web3-core-method-1.0.0-beta.34.tgz#ec163c8a2c490fa02a7ec15559fa7307fc7cc6dd"
-<<<<<<< HEAD
-=======
   integrity sha1-7BY8iixJD6AqfsFVWfpzB/x8xt0=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     underscore "1.8.3"
     web3-core-helpers "1.0.0-beta.34"
@@ -10764,10 +10038,7 @@ web3-core-method@1.0.0-beta.34:
 web3-core-promievent@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-core-promievent/-/web3-core-promievent-1.0.0-beta.34.tgz#a4f4fa6784bb293e82c60960ae5b56a94cd03edc"
-<<<<<<< HEAD
-=======
   integrity sha1-pPT6Z4S7KT6CxglgrltWqUzQPtw=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     any-promise "1.3.0"
     eventemitter3 "1.1.1"
@@ -10775,10 +10046,7 @@ web3-core-promievent@1.0.0-beta.34:
 web3-core-requestmanager@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-core-requestmanager/-/web3-core-requestmanager-1.0.0-beta.34.tgz#01f8f6cf2ae6b6f0b70c38bae1ef741b5bab215c"
-<<<<<<< HEAD
-=======
   integrity sha1-Afj2zyrmtvC3DDi64e90G1urIVw=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     underscore "1.8.3"
     web3-core-helpers "1.0.0-beta.34"
@@ -10789,10 +10057,7 @@ web3-core-requestmanager@1.0.0-beta.34:
 web3-core-subscriptions@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-core-subscriptions/-/web3-core-subscriptions-1.0.0-beta.34.tgz#9fed144033f221c3cf21060302ffdaf5ef2de2de"
-<<<<<<< HEAD
-=======
   integrity sha1-n+0UQDPyIcPPIQYDAv/a9e8t4t4=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     eventemitter3 "1.1.1"
     underscore "1.8.3"
@@ -10801,10 +10066,7 @@ web3-core-subscriptions@1.0.0-beta.34:
 web3-core@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-core/-/web3-core-1.0.0-beta.34.tgz#121be8555e9fb00d2c5d05ddd3381d0c9e46987e"
-<<<<<<< HEAD
-=======
   integrity sha1-EhvoVV6fsA0sXQXd0zgdDJ5GmH4=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     web3-core-helpers "1.0.0-beta.34"
     web3-core-method "1.0.0-beta.34"
@@ -10814,10 +10076,7 @@ web3-core@1.0.0-beta.34:
 web3-eth-abi@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-eth-abi/-/web3-eth-abi-1.0.0-beta.34.tgz#034533e3aa2f7e59ff31793eaea685c0ed5af67a"
-<<<<<<< HEAD
-=======
   integrity sha1-A0Uz46ovfln/MXk+rqaFwO1a9no=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     bn.js "4.11.6"
     underscore "1.8.3"
@@ -10827,10 +10086,7 @@ web3-eth-abi@1.0.0-beta.34:
 web3-eth-accounts@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-eth-accounts/-/web3-eth-accounts-1.0.0-beta.34.tgz#e09142eeecc797ac3459b75e9b23946d3695f333"
-<<<<<<< HEAD
-=======
   integrity sha1-4JFC7uzHl6w0WbdemyOUbTaV8zM=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     any-promise "1.3.0"
     crypto-browserify "3.12.0"
@@ -10846,10 +10102,7 @@ web3-eth-accounts@1.0.0-beta.34:
 web3-eth-contract@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-eth-contract/-/web3-eth-contract-1.0.0-beta.34.tgz#9dbb38fae7643a808427a20180470ec7415c91e6"
-<<<<<<< HEAD
-=======
   integrity sha1-nbs4+udkOoCEJ6IBgEcOx0FckeY=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     underscore "1.8.3"
     web3-core "1.0.0-beta.34"
@@ -10863,10 +10116,7 @@ web3-eth-contract@1.0.0-beta.34:
 web3-eth-iban@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-eth-iban/-/web3-eth-iban-1.0.0-beta.34.tgz#9af458605867ccf74ea979aaf326b38ba6a5ba0c"
-<<<<<<< HEAD
-=======
   integrity sha1-mvRYYFhnzPdOqXmq8yazi6alugw=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     bn.js "4.11.6"
     web3-utils "1.0.0-beta.34"
@@ -10874,10 +10124,7 @@ web3-eth-iban@1.0.0-beta.34:
 web3-eth-personal@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-eth-personal/-/web3-eth-personal-1.0.0-beta.34.tgz#9afba167342ebde5420bcd5895c3f6c34388f205"
-<<<<<<< HEAD
-=======
   integrity sha1-mvuhZzQuveVCC81YlcP2w0OI8gU=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     web3-core "1.0.0-beta.34"
     web3-core-helpers "1.0.0-beta.34"
@@ -10888,10 +10135,7 @@ web3-eth-personal@1.0.0-beta.34:
 web3-eth@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-eth/-/web3-eth-1.0.0-beta.34.tgz#74086000850c6fe6f535ef49837d6d4bb6113268"
-<<<<<<< HEAD
-=======
   integrity sha1-dAhgAIUMb+b1Ne9Jg31tS7YRMmg=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     underscore "1.8.3"
     web3-core "1.0.0-beta.34"
@@ -10909,10 +10153,7 @@ web3-eth@1.0.0-beta.34:
 web3-net@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-net/-/web3-net-1.0.0-beta.34.tgz#427cea2f431881449c8e38d523290f173f9ff63d"
-<<<<<<< HEAD
-=======
   integrity sha1-QnzqL0MYgUScjjjVIykPFz+f9j0=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     web3-core "1.0.0-beta.34"
     web3-core-method "1.0.0-beta.34"
@@ -10921,10 +10162,7 @@ web3-net@1.0.0-beta.34:
 web3-providers-http@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-providers-http/-/web3-providers-http-1.0.0-beta.34.tgz#e561b52bbb43766282007d40285bfe3550c27e7a"
-<<<<<<< HEAD
-=======
   integrity sha1-5WG1K7tDdmKCAH1AKFv+NVDCfno=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     web3-core-helpers "1.0.0-beta.34"
     xhr2 "0.1.4"
@@ -10932,10 +10170,7 @@ web3-providers-http@1.0.0-beta.34:
 web3-providers-ipc@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-providers-ipc/-/web3-providers-ipc-1.0.0-beta.34.tgz#a1b77f1a306d73649a9c039052e40cb71328d00a"
-<<<<<<< HEAD
-=======
   integrity sha1-obd/GjBtc2SanAOQUuQMtxMo0Ao=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     oboe "2.1.3"
     underscore "1.8.3"
@@ -10944,10 +10179,7 @@ web3-providers-ipc@1.0.0-beta.34:
 web3-providers-ws@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-providers-ws/-/web3-providers-ws-1.0.0-beta.34.tgz#7de70f1b83f2de36476772156becfef6e3516eb3"
-<<<<<<< HEAD
-=======
   integrity sha1-fecPG4Py3jZHZ3IVa+z+9uNRbrM=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     underscore "1.8.3"
     web3-core-helpers "1.0.0-beta.34"
@@ -10956,10 +10188,7 @@ web3-providers-ws@1.0.0-beta.34:
 web3-shh@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-shh/-/web3-shh-1.0.0-beta.34.tgz#975061d71eaec42ccee576f7bd8f70f03844afe0"
-<<<<<<< HEAD
-=======
   integrity sha1-l1Bh1x6uxCzO5Xb3vY9w8DhEr+A=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     web3-core "1.0.0-beta.34"
     web3-core-method "1.0.0-beta.34"
@@ -10969,10 +10198,7 @@ web3-shh@1.0.0-beta.34:
 web3-utils@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.0.0-beta.34.tgz#9411fc39aaef39ca4e06169f762297d9ff020970"
-<<<<<<< HEAD
-=======
   integrity sha1-lBH8OarvOcpOBhafdiKX2f8CCXA=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     bn.js "4.11.6"
     eth-lib "0.1.27"
@@ -10985,10 +10211,7 @@ web3-utils@1.0.0-beta.34:
 web3@1.0.0-beta.34:
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/web3/-/web3-1.0.0-beta.34.tgz#347e561b784098cb5563315f490479a1d91f2ab1"
-<<<<<<< HEAD
-=======
   integrity sha1-NH5WG3hAmMtVYzFfSQR5odkfKrE=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     web3-bzz "1.0.0-beta.34"
     web3-core "1.0.0-beta.34"
@@ -11084,10 +10307,7 @@ wordwrap@~0.0.2:
 wrap-ansi@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-2.1.0.tgz#d8fc3d284dd05794fe84973caecdd1cf824fdd85"
-<<<<<<< HEAD
-=======
   integrity sha1-2Pw9KE3QV5T+hJc8rs3Rz4JP3YU=
->>>>>>> 1631581... make babel strip console’s from production build
   dependencies:
     string-width "^1.0.1"
     strip-ansi "^3.0.1"
@@ -11214,18 +10434,12 @@ xml-name-validator@^3.0.0:
 xmlbuilder@8.2.2:
   version "8.2.2"
   resolved "https://registry.yarnpkg.com/xmlbuilder/-/xmlbuilder-8.2.2.tgz#69248673410b4ba42e1a6136551d2922335aa773"
-<<<<<<< HEAD
-=======
   integrity sha1-aSSGc0ELS6QuGmE2VR0pIjNap3M=
->>>>>>> 1631581... make babel strip console’s from production build
 
 xmlbuilder@^9.0.7:
   version "9.0.7"
   resolved "https://registry.yarnpkg.com/xmlbuilder/-/xmlbuilder-9.0.7.tgz#132ee63d2ec5565c557e20f4c22df9aca686b10d"
-<<<<<<< HEAD
-=======
   integrity sha1-Ey7mPS7FVlxVfiD0wi35rKaGsQ0=
->>>>>>> 1631581... make babel strip console’s from production build
 
 xmlchars@^1.3.1:
   version "1.3.1"
