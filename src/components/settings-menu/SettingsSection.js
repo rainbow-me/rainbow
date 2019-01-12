@@ -112,7 +112,7 @@ const SettingsSection = ({
     <Column>
       <ListItem
         icon={<Emoji name="seedling" />}
-        label="Import seed phrase"
+        label="Import Seed Phrase"
         onPress={onPressImportSeedPhrase}
       />
       <ListItemDivider />
