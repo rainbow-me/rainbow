@@ -1,17 +1,24 @@
 import { isValidSeedPhrase as validateSeedPhrase } from 'balance-common';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Clipboard, KeyboardAvoidingView, Linking } from 'react-native';
+import {
+  Clipboard,
+  InteractionManager,
+  KeyboardAvoidingView,
+  Linking,
+} from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { withNavigation } from 'react-navigation';
 import {
   compose,
+  lifecycle,
   onlyUpdateForKeys,
   withHandlers,
   withProps,
   withState,
 } from 'recompact';
 import styled from 'styled-components';
+import { Alert } from '../components/alerts';
 import { Icon } from '../components/icons';
 import { MultiLineInput } from '../components/inputs';
 import { Centered, Column, Row } from '../components/layout';
@@ -74,6 +81,7 @@ const SeedPhraseInput = styled(MultiLineInput)`
 `;
 
 const ImportSeedPhraseSheet = ({
+  isClipboardContentsValidSeedPhrase,
   isSeedPhraseValid,
   onImportSeedPhrase,
   onInputChange,
@@ -92,6 +100,7 @@ const ImportSeedPhraseSheet = ({
         autoFocus
         onChange={onInputChange}
         placeholder={'Type your seed phrase'}
+        returnKeyType="done"
         size="large"
         value={seedPhrase}
         weight="semibold"
@@ -108,7 +117,7 @@ const ImportSeedPhraseSheet = ({
         </Text>
       </HelpButton>
       <ImportButton
-        disabled={!!seedPhrase && !isSeedPhraseValid}
+        disabled={seedPhrase ? !isSeedPhraseValid : !isClipboardContentsValidSeedPhrase}
         onPress={seedPhrase ? onImportSeedPhrase : onPasteSeedPhrase}
       >
         {!!seedPhrase && (
@@ -132,36 +141,70 @@ const ImportSeedPhraseSheet = ({
 );
 
 ImportSeedPhraseSheet.propTypes = {
+  isClipboardContentsValidSeedPhrase: PropTypes.bool,
   isSeedPhraseValid: PropTypes.bool,
   navigation: PropTypes.object,
   onImportSeedPhrase: PropTypes.func,
   onInputChange: PropTypes.func,
   onPasteSeedPhrase: PropTypes.func,
   onPressHelp: PropTypes.func,
-  screenProps: PropTypes.objectOf({ handleWalletConfig: PropTypes.func }),
+  screenProps: PropTypes.shape({ handleWalletConfig: PropTypes.func }),
   seedPhrase: PropTypes.string,
   setSeedPhrase: PropTypes.func,
 };
 
+const ConfirmImportSeedPhraseAlert = (onSuccess) => Alert({
+  buttons: [{
+    onPress: onSuccess,
+    text: 'Import',
+  }, {
+    text: 'Cancel',
+    style: 'cancel',
+  }],
+  // eslint-disable-next-line
+  message: 'Importing this seed phrase will overwrite your existing wallet. Before continuing, please make sure you’ve transferred its contents or backed up its seed phrase.',
+  title: 'Are you sure you want to import?',
+});
+
 export default compose(
   withNavigation,
+  withState('clipboardContents', 'setClipboardContents', ''),
   withState('seedPhrase', 'setSeedPhrase', ''),
+  lifecycle({
+    componentDidMount() {
+      InteractionManager.runAfterInteractions(async () => {
+        const { setClipboardContents } = this.props;
+        await Clipboard.getString().then(setClipboardContents);
+      });
+    },
+  }),
   withHandlers({
-    onImportSeedPhrase: ({ navigation, seedPhrase, screenProps }) => () => screenProps
-      .handleWalletConfig(seedPhrase)
-      .then(address => {
-        if (address) {
-          navigation.navigate('WalletScreen');
-        }
-      }),
+    onImportSeedPhrase: ({ navigation, screenProps, seedPhrase }) => () => (
+      ConfirmImportSeedPhraseAlert(() => (
+        screenProps
+          .handleWalletConfig(seedPhrase)
+          .then((address, test) => {
+            console.log('ON IMPORT SEED THEN', address, test);
+
+            if (address) {
+              navigation.navigate('WalletScreen');
+            }
+          })))),
     onInputChange: ({ setSeedPhrase }) => ({ nativeEvent }) => setSeedPhrase(nativeEvent.text),
-    onPasteSeedPhrase: ({ setSeedPhrase }) => () => Clipboard.getString()
-      .then(setSeedPhrase)
-      .catch(error => console.log(error)),
+    onPasteSeedPhrase: ({ setSeedPhrase }) => () => {
+      Clipboard.getString()
+        .then(setSeedPhrase)
+        .catch(error => console.log(error));
+    },
     onPressHelp: () => () => Linking.openURL('https://support.balance.io'),
   }),
-  withProps(({ seedPhrase }) => ({
+  withProps(({ clipboardContents, seedPhrase }) => ({
+    isClipboardContentsValidSeedPhrase: validateSeedPhrase(clipboardContents),
     isSeedPhraseValid: validateSeedPhrase(seedPhrase),
   })),
-  onlyUpdateForKeys(['seedPhrase']),
+  onlyUpdateForKeys([
+    'isClipboardContentsValidSeedPhrase',
+    'isSeedPhraseValid',
+    'seedPhrase',
+  ]),
 )(ImportSeedPhraseSheet);

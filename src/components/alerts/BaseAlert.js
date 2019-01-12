@@ -22,4 +22,3 @@ BaseAlert.propTypes = {
 };
 
 export default BaseAlert;
-

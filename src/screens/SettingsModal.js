@@ -1,7 +1,13 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import { compose, onlyUpdateForKeys, withHandlers, withProps } from 'recompact';
+import { InteractionManager } from 'react-native';
+import {
+  compose,
+  onlyUpdateForKeys,
+  withHandlers,
+  withProps,
+} from 'recompact';
 import { Column } from '../components/layout';
 import { Modal, ModalHeader } from '../components/modal';
 import { AnimatedPager } from '../components/pager';
@@ -84,9 +90,11 @@ export default compose(
   withHandlers({
     onCloseModal: ({ navigation }) => () => navigation.goBack(),
     onPressBack: ({ navigation }) => () => navigation.setParams({ section: SettingsPages.default }),
-    onPressImportSeedPhrase: ({ navigation }) => () => {
-      navigation.goBack(); // XXX TODO is this right?
-      navigation.navigate('ImportSeedPhraseSheet');
+    onPressImportSeedPhrase: ({ navigation, setSafeTimeout }) => () => {
+      navigation.goBack();
+      InteractionManager.runAfterInteractions(() => {
+        navigation.navigate('ImportSeedPhraseSheet');
+      });
     },
     onPressSection: ({ navigation }) => (section) => () => navigation.setParams({ section }),
   }),
