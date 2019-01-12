@@ -233,9 +233,8 @@ class SendSheet extends Component {
   }
 
   componentWillUnmount() {
-    const { sendClearFields } = this.props;
-
-    sendClearFields();
+    this.props.sendClearFields();
+    this.state.sendLongPressProgress.stopAnimation();
   }
 
   getTransactionSpeedOptions = () => {

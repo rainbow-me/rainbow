@@ -80,6 +80,10 @@ export default class UnderlineField extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this.state.underlineAnimation.stopAnimation();
+  }
+
   onChange = ({ nativeEvent }) => {
     const { isValid, onChange } = this.props;
     const { value } = this.state;

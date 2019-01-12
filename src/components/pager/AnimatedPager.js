@@ -36,6 +36,11 @@ export default class AnimatedPager extends Component {
 
   componentDidUpdate = () => this.onAnimatePages(this.props.isOpen)
 
+  componentWillUnmount() {
+    this.translateValues.page1.stopAnimation();
+    this.translateValues.page2.stopAnimation();
+  }
+
   onAnimatePages = (isOpen) => {
     const { width } = this.props;
     const { page1, page2 } = this.translateValues;

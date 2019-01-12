@@ -35,8 +35,16 @@ export default class ButtonPressAnimation extends Component {
   state = { scaleOffsetX: null }
 
   opacity = new Animated.Value(DefaultAnimatedValues.opacity)
+
   scale = new Animated.Value(DefaultAnimatedValues.scale)
+
   transX = new Animated.Value(DefaultAnimatedValues.transX)
+
+  componentWillUnmount = () => {
+    this.opacity.stopAnimation();
+    this.scale.stopAnimation();
+    this.transX.stopAnimation();
+  }
 
   handleLayout = ({ nativeEvent: { layout } }) => {
     const { scaleTo, transformOrigin } = this.props;
