@@ -14,7 +14,7 @@ export default class SpinAnimation extends PureComponent {
 
   animatedValue = new Animated.Value(0)
 
-  componentDidMount = () =>
+  componentDidMount = () => (
     Animated.loop(
       Animated.timing(this.animatedValue, {
         duration: this.props.duration,
@@ -24,12 +24,16 @@ export default class SpinAnimation extends PureComponent {
         useNativeDriver: true,
       }),
     ).start()
+  )
 
-  interpolatedAnimation = () =>
+  componentWillUnmount = () => this.animatedValue.stopAnimation()
+
+  interpolatedAnimation = () => (
     this.animatedValue.interpolate({
       inputRange: [0, 1],
       outputRange: ['0deg', '360deg'],
     })
+  )
 
   render = () => (
     <Animated.View style={{ transform: [{ rotate: this.interpolatedAnimation() }] }}>
