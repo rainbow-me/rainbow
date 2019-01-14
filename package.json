@@ -18,7 +18,7 @@
     "@tradle/react-native-http": "^2.0.0",
     "assert": "^1.4.1",
     "axios": "^0.18.0",
-    "balance-common": "^0.6.11",
+    "balance-common": "git+https://github.com/balance-io/balance-common.git#testing",
     "browserify-zlib": "^0.1.4",
     "buffer": "^4.9.1",
     "chroma-js": "^1.3.7",

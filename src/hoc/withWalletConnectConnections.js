@@ -1,3 +1,4 @@
+import { sortList } from 'balance-common';
 import { head, groupBy, mapValues, values } from 'lodash';
 import { compose, withProps } from 'recompact';
 import { connect } from 'react-redux';
@@ -6,7 +7,6 @@ import {
   removeWalletConnectorByDapp,
   setWalletConnectors,
 } from '../redux/walletconnect';
-import { sortList } from '../utils';
 
 const mapStateToProps = ({ walletconnect: { walletConnectors } }) => ({ walletConnectors });
 

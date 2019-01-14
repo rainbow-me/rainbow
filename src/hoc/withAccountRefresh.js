@@ -5,9 +5,9 @@ import { compose, withHandlers } from 'recompact';
 export default Component => compose(
   connect(null, { assetsRefreshState, transactionsRefreshState }),
   withHandlers({
-    refreshAccount: ({ assetsRefreshState, transactionsRefreshState }) => async () => {
-      transactionsRefreshState();
-      await assetsRefreshState();
+    refreshAccount: (ownProps) => async () => {
+      ownProps.transactionsRefreshState();
+      await ownProps.assetsRefreshState();
     },
   }),
 )(Component);
