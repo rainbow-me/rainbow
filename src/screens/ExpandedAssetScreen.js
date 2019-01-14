@@ -1,5 +1,6 @@
 import { filter } from 'lodash';
 import PropTypes from 'prop-types';
+import { withAccountAssets } from 'balance-common';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { compose, defaultProps, withHandlers, withProps } from 'recompact';
@@ -7,7 +8,6 @@ import styled from 'styled-components/primitives';
 import { TokenExpandedState, UniqueTokenExpandedState } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import TouchableBackdrop from '../components/TouchableBackdrop';
-import { withAccountAssets } from '../hoc';
 import { padding } from '../styles';
 import { deviceUtils } from '../utils';
 

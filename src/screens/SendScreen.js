@@ -1,4 +1,4 @@
-import { convertAssetAmountToDisplay } from 'balance-common';
+import { convertAssetAmountToDisplay, withAccountAssets } from 'balance-common';
 import { get, isEmpty, map } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -26,7 +26,6 @@ import { Column, Flex, FlyInView, Row } from '../components/layout';
 import { ShadowStack } from '../components/shadow-stack';
 import { Monospace } from '../components/text';
 import {
-  withAccountAssets,
   withAccountRefresh,
   withAccountSettings,
 } from '../hoc';
