@@ -2,13 +2,13 @@ import {
   add,
   convertAmountFromBigNumber,
   convertAmountToBigNumber,
-  convertAmountToDisplay,
   convertAmountToUnformattedDisplay,
   INITIAL_ASSETS_STATE,
   multiply,
+  simpleConvertAmountToDisplay,
 } from 'balance-common';
 import { get, groupBy, isEmpty, isEqual, isNil, omit, toNumber } from 'lodash';
-import { sortList } from '../utils';
+import { sortList } from 'balance-common';
 
 const EMPTY_ARRAY = [];
 
@@ -100,10 +100,8 @@ const parseNativePrices = (
       const trackingRaw = multiply(balanceAmountUnit, trackingPriceUnit);
       trackingAmount = convertAmountToBigNumber(trackingRaw);
     }
-    const balanceDisplay = convertAmountToDisplay(
+    const balanceDisplay = simpleConvertAmountToDisplay(
       balanceAmount,
-      nativePrices,
-      null,
       nativeCurrency,
     );
     const assetPrice = nativePrices[nativeCurrency][asset.symbol].price;
@@ -132,7 +130,7 @@ const parseNativePrices = (
         add(total, asset.native ? asset.trackingAmount : 0),
       0,
     );
-  const totalDisplay = convertAmountToDisplay(totalAmount, nativePrices, null, nativeCurrency);
+  const totalDisplay = simpleConvertAmountToDisplay(totalAmount, nativeCurrency);
   const totalTrackingAmount = convertAmountToUnformattedDisplay(totalUSDAmount, 'USD');
   const total = { amount: totalAmount, display: totalDisplay, totalTrackingAmount };
   newAccount = {
