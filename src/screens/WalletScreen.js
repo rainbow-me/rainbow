@@ -1,3 +1,4 @@
+import { withAccountAssets } from 'balance-common';
 import { isSameDay } from 'date-fns';
 import { get, join, map } from 'lodash';
 import PropTypes from 'prop-types';
@@ -20,7 +21,6 @@ import buildWalletSections from '../helpers/buildWalletSections';
 import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../model/localstorage';
 import {
   withAccountAddress,
-  withAccountAssets,
   withAccountRefresh,
   withFetchingPrices,
   withBlurTransitionProps,
