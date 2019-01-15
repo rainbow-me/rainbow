@@ -19,7 +19,6 @@ import { Page } from '../components/layout';
 import buildWalletSections from '../helpers/buildWalletSections';
 import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../model/localstorage';
 import {
-  withAccountAssets,
   withAccountRefresh,
   withBlurTransitionProps,
   withFetchingPrices,
