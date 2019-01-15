@@ -17,6 +17,7 @@ import {
   withProps,
   withState,
 } from 'recompact';
+import { withAccountReset } from '../hoc';
 import styled from 'styled-components';
 import { Alert } from '../components/alerts';
 import { Icon } from '../components/icons';
@@ -167,6 +168,7 @@ const ConfirmImportSeedPhraseAlert = (onSuccess) => Alert({
 });
 
 export default compose(
+  withAccountReset,
   withNavigation,
   withState('clipboardContents', 'setClipboardContents', ''),
   withState('seedPhrase', 'setSeedPhrase', ''),
@@ -179,8 +181,9 @@ export default compose(
     },
   }),
   withHandlers({
-    onImportSeedPhrase: ({ navigation, screenProps, seedPhrase }) => () => (
-      ConfirmImportSeedPhraseAlert(() => (
+    onImportSeedPhrase: ({ accountClearState, navigation, screenProps, seedPhrase }) => () => (
+      ConfirmImportSeedPhraseAlert(() => {
+        accountClearState();
         screenProps
           .handleWalletConfig(seedPhrase)
           .then((address, test) => {
@@ -189,7 +192,8 @@ export default compose(
             if (address) {
               navigation.navigate('WalletScreen');
             }
-          })))),
+          })
+      })),
     onInputChange: ({ setSeedPhrase }) => ({ nativeEvent }) => setSeedPhrase(nativeEvent.text),
     onPasteSeedPhrase: ({ setSeedPhrase }) => () => {
       Clipboard.getString()
