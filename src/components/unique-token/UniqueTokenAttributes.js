@@ -1,3 +1,4 @@
+import { sortList } from 'balance-common';
 import PropTypes from 'prop-types';
 import styled from 'styled-components/primitives';
 import React from 'react';
@@ -11,7 +12,7 @@ import {
   withState,
 } from 'recompact';
 import { colors, margin } from '../../styles';
-import { dimensionsPropType, sortList } from '../../utils';
+import { dimensionsPropType } from '../../utils';
 import { Centered, FlexItem } from '../layout';
 import { PagerControls } from '../pager';
 import Tag from '../Tag';
