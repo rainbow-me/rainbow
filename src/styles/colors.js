@@ -31,8 +31,9 @@ const base = {
   mediumGrey: '#a1a5b3', // '161, 165, 179'
   orange: '#f6851b', // '246, 133, 27'
   orangeLight: '#FFAF24', // '255, 175, 36'
-  paleBlue: '#5D9DF6',
   orangeMedium: '#FCA247', // '252, 162, 71'
+  paleBlue: '#5D9DF6',
+  placeholder: '#C4C6CB', // 196, 198, 203
   primaryBlue: '#5d9df6', // '93, 157, 246'
   primaryGreen: '#00a352', // '0, 163, 82'
   purple: '#32325d', // '50, 50, 93'
@@ -53,7 +54,7 @@ const assetIcon = {
 };
 
 const sendScreen = {
-  brightBlue: base.appleBlue,  // 14, 118, 253
+  brightBlue: base.appleBlue, // 14, 118, 253
   lightGrey: '#fafafa', // '250, 250, 250'
   grey: '#d8d8d8', // '216, 216, 216'
 };

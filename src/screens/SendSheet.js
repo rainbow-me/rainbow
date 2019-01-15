@@ -143,7 +143,7 @@ const TransactionContainer = styled(View)`
   background-color: ${colors.lightGrey};
 `;
 
-class SendScreen extends Component {
+class SendSheet extends Component {
   static propTypes = {
     allAssets: PropTypes.array,
     fetchData: PropTypes.func,
@@ -233,9 +233,8 @@ class SendScreen extends Component {
   }
 
   componentWillUnmount() {
-    const { sendClearFields } = this.props;
-
-    sendClearFields();
+    this.props.sendClearFields();
+    this.state.sendLongPressProgress.stopAnimation();
   }
 
   getTransactionSpeedOptions = () => {
@@ -586,4 +585,4 @@ export default compose(
       await refreshAccount();
     },
   }),
-)(SendScreen);
+)(SendSheet);

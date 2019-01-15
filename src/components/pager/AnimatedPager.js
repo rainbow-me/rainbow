@@ -9,6 +9,7 @@ import AnimatedPagerItem from './AnimatedPagerItem';
 const buildPagerAnimation = toValue => ({
   duration: 300,
   easing: Easing.bezier(0.4, 0, 0.2, 1),
+  isInteraction: false,
   toValue,
   useNativeDriver: true,
 });
@@ -34,6 +35,11 @@ export default class AnimatedPager extends Component {
   }
 
   componentDidUpdate = () => this.onAnimatePages(this.props.isOpen)
+
+  componentWillUnmount() {
+    this.translateValues.page1.stopAnimation();
+    this.translateValues.page2.stopAnimation();
+  }
 
   onAnimatePages = (isOpen) => {
     const { width } = this.props;

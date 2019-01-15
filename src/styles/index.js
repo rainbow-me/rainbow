@@ -1,5 +1,6 @@
 export { default as animations } from './animations';
 export { default as borders } from './borders';
+export { default as buildTextStyles } from './buildTextStyles';
 export { default as calcDirectionToDegrees } from './calcDirectionToDegrees';
 export { default as colors } from './colors';
 export { default as fonts } from './fonts';

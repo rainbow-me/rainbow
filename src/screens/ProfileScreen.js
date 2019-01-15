@@ -1,17 +1,19 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { ActivityList } from '../components/activity-list';
+import AddFundsInterstitial from '../components/AddFundsInterstitial';
+import BlurOverlay from '../components/BlurOverlay';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { FlexItem, Page } from '../components/layout';
-import Icon from '../components/icons/Icon';
+import { Icon } from '../components/icons';
 import { ProfileMasthead } from '../components/profile';
 import { position } from '../styles';
-import { ActivityList } from '../components/activity-list';
-import BlurOverlay from '../components/BlurOverlay';
 
 const ProfileScreen = ({
   accountAddress,
   blurOpacity,
   hasPendingTransaction,
+  isEmpty,
   nativeCurrency,
   navigation,
   onPressBackButton,
@@ -45,6 +47,7 @@ const ProfileScreen = ({
         <ProfileMasthead
           accountAddress={accountAddress}
           navigation={navigation}
+          showBottomDivider={!isEmpty}
         />
       )}
       nativeCurrency={nativeCurrency}
@@ -52,6 +55,7 @@ const ProfileScreen = ({
       transactions={transactions}
       transactionsCount={transactionsCount}
     />
+    {isEmpty && <AddFundsInterstitial />}
   </Page>
 );
 
@@ -59,6 +63,7 @@ ProfileScreen.propTypes = {
   accountAddress: PropTypes.string,
   blurOpacity: PropTypes.object,
   hasPendingTransaction: PropTypes.bool,
+  isEmpty: PropTypes.bool,
   nativeCurrency: PropTypes.string,
   navigation: PropTypes.object,
   onPressBackButton: PropTypes.func,

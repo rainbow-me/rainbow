@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { pure } from 'recompact';
 import styled, { css } from 'styled-components/primitives';
 import { Row } from './layout';
 import { borders, colors, position } from '../styles';
+
+const DefaultDividerSize = 2;
 
 const horizontalBorderLineStyles = ({ insetLeft, insetRight }) => css`
   ${insetLeft ? borders.buildRadius('left', 2) : null};
@@ -34,12 +35,17 @@ const BorderLine = styled.View`
 const Container = styled(Row)`
   background-color: ${colors.white};
   flex-shrink: 0;
-  height: ${({ horizontal }) => (horizontal ? '2' : '100%')};
-  width: ${({ horizontal }) => (horizontal ? '100%' : '2')};
+  height: ${({ horizontal, size }) => (horizontal ? size : '100%')};
+  width: ${({ horizontal, size }) => (horizontal ? '100%' : size)};
 `;
 
-const Divider = ({ color, horizontal, ...props }) => (
-  <Container {...props} horizontal={horizontal}>
+const Divider = ({
+  color,
+  horizontal,
+  size,
+  ...props
+}) => (
+  <Container {...props} horizontal={horizontal} size={size}>
     <BorderLine
       {...props}
       color={color}
@@ -55,6 +61,7 @@ Divider.propTypes = {
   insetLeft: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
   insetRight: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
   insetTop: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
+  size: PropTypes.number,
 };
 
 Divider.defaultProps = {
@@ -62,6 +69,9 @@ Divider.defaultProps = {
   horizontal: true,
   insetLeft: 19,
   insetRight: false,
+  size: DefaultDividerSize,
 };
 
-export default pure(Divider);
+Divider.size = DefaultDividerSize;
+
+export default Divider;

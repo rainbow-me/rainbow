@@ -48,7 +48,7 @@ export default compose(
 
       InteractionManager.runAfterInteractions(() => {
         Piwik.trackEvent('Navigation', 'send-expanded', 'SendTokenExpandedNav');
-        navigation.navigate('SendScreen', { asset: symbol });
+        navigation.navigate('SendSheet', { asset: symbol });
       });
     },
   }),

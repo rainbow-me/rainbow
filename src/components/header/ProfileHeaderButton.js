@@ -7,7 +7,7 @@ import { Badge } from '../badge';
 import { withRequests } from '../../hoc';
 import { Centered } from '../layout';
 
-const ProfileHeaderButton = ({ onPress, pendingRequestCount }) => console.log('pending', pendingRequestCount) || (
+const ProfileHeaderButton = ({ onPress, pendingRequestCount }) => (
   <HeaderButton onPress={onPress} transformOrigin="left">
     <Centered>
       <Avatar />

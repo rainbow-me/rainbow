@@ -7,7 +7,7 @@
     "test": "jest",
     "install-pods": "cd ios && pod install && cd ..",
     "ios": "react-native run-ios --simulator='iPhone X'",
-    "lint": "eslint ./src/ --ext .js",
+    "lint": "eslint './**/*.js'",
     "nodeify": "./node_modules/.bin/rn-nodeify --install \"crypto\" --hack",
     "postinstall": "rn-nodeify --install --hack"
   },
@@ -18,7 +18,7 @@
     "@tradle/react-native-http": "^2.0.0",
     "assert": "^1.4.1",
     "axios": "^0.18.0",
-    "balance-common": "^0.6.12-convertdisplay",
+    "balance-common": "0.6.13-resetlogic",
     "browserify-zlib": "^0.1.4",
     "buffer": "^4.9.1",
     "chroma-js": "^1.3.7",
@@ -44,6 +44,7 @@
     "querystring-es3": "^0.2.1",
     "react": "^16.5.0",
     "react-coin-icon": "^0.1.6",
+    "react-fast-compare": "^2.0.4",
     "react-native": "0.57.1",
     "react-native-actionsheet": "^2.4.2",
     "react-native-blur": "^3.2.2",
@@ -103,7 +104,7 @@
     "vm-browserify": "0.0.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.1.2",
+    "@babel/core": "^7.2.2",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^8.2.2",
     "babel-jest": "^22.4.3",
@@ -111,17 +112,20 @@
     "babel-plugin-lodash": "^3.3.4",
     "babel-plugin-styled-components": "^1.9.2",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.21",
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.9.0",
-    "eslint-plugin-react": "^7.7.0",
-    "eslint-plugin-react-native": "^3.2.1",
+    "babel-plugin-transform-remove-console": "^6.9.4",
+    "eslint": "^5.11.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-react": "^7.12.1",
+    "eslint-plugin-react-native": "^3.5.0",
+    "eslint-plugin-react-native-animation-linter": "^0.1.2",
     "jest": "^22.4.3",
     "metro-react-native-babel-preset": "^0.50.0",
     "react-test-renderer": "^16.2.0",
     "schedule": "0.4.0"
   },
   "resolutions": {
+    "**/eslint-plugin-import": "2.14.0",
     "**/resolve": "1.8.1"
   },
   "jest": {

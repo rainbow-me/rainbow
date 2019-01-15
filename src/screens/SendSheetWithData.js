@@ -1,13 +1,13 @@
 import { withSendComponentWithData } from 'balance-common';
-import SendScreen from './SendScreen';
+import SendSheet from './SendSheet';
 import { sendTransaction } from '../model/wallet';
 
-const SendScreenWithData = withSendComponentWithData(SendScreen, {
+const SendSheetWithData = withSendComponentWithData(SendSheet, {
   gasFormat: 'short',
   sendTransactionCallback: sendTransaction,
 });
 
-SendScreenWithData.navigationOptions = ({ navigation }) => {
+SendSheetWithData.navigationOptions = ({ navigation }) => {
   const { params } = navigation.state;
 
   return {
@@ -18,4 +18,4 @@ SendScreenWithData.navigationOptions = ({ navigation }) => {
   };
 };
 
-export default SendScreenWithData;
+export default SendSheetWithData;
