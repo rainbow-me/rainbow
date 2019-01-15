@@ -16,6 +16,7 @@ class QRScannerScreenWithData extends PureComponent {
   static propTypes = {
     accountAddress: PropTypes.string,
     addWalletConnector: PropTypes.func,
+    isScreenActive: PropTypes.bool,
     navigation: PropTypes.object,
     setSafeTimeout: PropTypes.func,
   }
@@ -42,9 +43,7 @@ class QRScannerScreenWithData extends PureComponent {
       // TODO: try catch around Alert?
       Alert({
         buttons: [{
-          onPress: async () => firebase
-                               .messaging()
-                               .requestPermission(),
+          onPress: async () => firebase.messaging().requestPermission(),
           text: 'Okay',
         }, {
           style: 'cancel',
@@ -69,28 +68,28 @@ class QRScannerScreenWithData extends PureComponent {
     Vibration.vibrate();
 
     const address = getEthereumAddressFromQRCodeData(data);
+
     if (address) {
       Piwik.trackEvent('QRScanner', 'address', 'QRScannedAddress');
       navigation.navigate('WalletScreen');
-      navigation.navigate('SendScreen', { address });
-      setSafeTimeout(this.handleReenableScanning, 1000);
-    } else if (data.startsWith('ethereum:wc')) {
+      navigation.navigate('SendSheet', { address });
+      return setSafeTimeout(this.handleReenableScanning, 1000);
+    }
+
+    if (data.startsWith('ethereum:wc')) {
       Piwik.trackEvent('QRScanner', 'walletconnect', 'QRScannedWC');
-      const walletConnector = await walletConnectInit(
-        accountAddress,
-        data
-      );
+      const walletConnector = await walletConnectInit(accountAddress, data);
       await this.checkPushNotificationPermissions();
       addWalletConnector(walletConnector);
-      setSafeTimeout(this.handleReenableScanning, 1000);
-    } else {
-      Piwik.trackEvent('QRScanner', 'unknown', 'QRScannedUnknown');
-      Alert({
-        message: lang.t('wallet.unrecognized_qrcode'),
-        title: lang.t('wallet.unrecognized_qrcode_title'),
-        callback: this.handleReenableScanning,
-      });
+      return setSafeTimeout(this.handleReenableScanning, 1000);
     }
+
+    Piwik.trackEvent('QRScanner', 'unknown', 'QRScannedUnknown');
+    return Alert({
+      message: lang.t('wallet.unrecognized_qrcode'),
+      title: lang.t('wallet.unrecognized_qrcode_title'),
+      callback: this.handleReenableScanning,
+    });
   }
 
   render = () => (

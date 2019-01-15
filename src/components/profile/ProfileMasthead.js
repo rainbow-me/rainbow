@@ -29,6 +29,7 @@ const ProfileMasthead = ({
   accountAddress,
   onPressCopy,
   onPressReceive,
+  showBottomDivider,
 }) => (
   <Column
     align="center"
@@ -52,7 +53,7 @@ const ProfileMasthead = ({
         text="Receive"
       />
     </RowWithMargins>
-    <Divider style={{ position: 'absolute', bottom: 0 }} />
+    {showBottomDivider && <Divider style={{ position: 'absolute', bottom: 0 }} />}
   </Column>
 );
 
@@ -60,6 +61,11 @@ ProfileMasthead.propTypes = {
   accountAddress: PropTypes.string,
   onPressCopy: PropTypes.func,
   onPressReceive: PropTypes.func,
+  showBottomDivider: PropTypes.bool,
+};
+
+ProfileMasthead.defaultProps = {
+  showBottomDivider: true,
 };
 
 export default compose(
@@ -68,5 +74,5 @@ export default compose(
     onPressCopy: ({ accountAddress }) => () => Clipboard.setString(accountAddress),
     onPressReceive: ({ navigation }) => () => navigation.navigate('ReceiveModal'),
   }),
-  onlyUpdateForKeys(['accountAddress']),
+  onlyUpdateForKeys(['accountAddress', 'showBottomDivider']),
 )(ProfileMasthead);

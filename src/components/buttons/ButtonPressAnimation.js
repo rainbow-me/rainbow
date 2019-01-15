@@ -35,8 +35,16 @@ export default class ButtonPressAnimation extends Component {
   state = { scaleOffsetX: null }
 
   opacity = new Animated.Value(DefaultAnimatedValues.opacity)
+
   scale = new Animated.Value(DefaultAnimatedValues.scale)
+
   transX = new Animated.Value(DefaultAnimatedValues.transX)
+
+  componentWillUnmount = () => {
+    this.opacity.stopAnimation();
+    this.scale.stopAnimation();
+    this.transX.stopAnimation();
+  }
 
   handleLayout = ({ nativeEvent: { layout } }) => {
     const { scaleTo, transformOrigin } = this.props;
@@ -73,6 +81,9 @@ export default class ButtonPressAnimation extends Component {
     if (activeOpacity) {
       // Opacity animation
       animationsArray.push(animations.buildSpring({
+        config: {
+          isInteraction: false,
+        },
         from: DefaultAnimatedValues.opacity,
         isActive,
         to: activeOpacity,
@@ -84,6 +95,9 @@ export default class ButtonPressAnimation extends Component {
       // Fake 'transform-origin' support by abusing translateX
       const directionMultiple = (transformOrigin === 'left') ? -1 : 1;
       animationsArray.push(animations.buildSpring({
+        config: {
+          isInteraction: false,
+        },
         from: DefaultAnimatedValues.transX,
         isActive,
         to: scaleOffsetX * (directionMultiple),
