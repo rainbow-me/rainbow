@@ -6,8 +6,8 @@ export default Component => compose(
   connect(null, { assetsRefreshState, transactionsRefreshState }),
   withHandlers({
     refreshAccount: (ownProps) => async () => {
-      ownProps.assetsRefreshState();
-      await ownProps.transactionsRefreshState();
+      ownProps.transactionsRefreshState();
+      await ownProps.assetsRefreshState();
     },
   }),
 )(Component);

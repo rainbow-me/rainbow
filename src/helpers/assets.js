@@ -2,10 +2,10 @@ import {
   add,
   convertAmountFromBigNumber,
   convertAmountToBigNumber,
-  convertAmountToDisplay,
   convertAmountToUnformattedDisplay,
-  INITIAL_ASSETS_STATE,
   multiply,
+  sortList,
+  simpleConvertAmountToDisplay,
 } from 'balance-common';
 import {
   get,
@@ -16,25 +16,8 @@ import {
   omit,
   toNumber,
 } from 'lodash';
-import { sortList } from '../utils';
 
 const EMPTY_ARRAY = [];
-
-const InitialAccountAssetsState = get(INITIAL_ASSETS_STATE, 'assets[0]', {});
-
-export const isDefaultAssetsInitialState = (sectionData) => {
-  const currentBalance = get(sectionData, 'balance.display');
-  const initialBalance = get(InitialAccountAssetsState, 'balance.display');
-
-  if (!isEqual(currentBalance, initialBalance)) {
-    return false;
-  }
-
-  const currentState = omit(sectionData, ['balance', 'native']);
-  const initialState = omit(InitialAccountAssetsState, ['balance', 'native']);
-
-  return isEqual(currentState, initialState);
-};
 
 export const buildUniqueTokenList = (uniqueTokensAssets) => {
   const list = [];
@@ -108,10 +91,8 @@ const parseNativePrices = (
       const trackingRaw = multiply(balanceAmountUnit, trackingPriceUnit);
       trackingAmount = convertAmountToBigNumber(trackingRaw);
     }
-    const balanceDisplay = convertAmountToDisplay(
+    const balanceDisplay = simpleConvertAmountToDisplay(
       balanceAmount,
-      nativePrices,
-      null,
       nativeCurrency,
     );
     const assetPrice = nativePrices[nativeCurrency][asset.symbol].price;
@@ -140,7 +121,7 @@ const parseNativePrices = (
         add(total, asset.native ? asset.trackingAmount : 0),
       0,
     );
-  const totalDisplay = convertAmountToDisplay(totalAmount, nativePrices, null, nativeCurrency);
+  const totalDisplay = simpleConvertAmountToDisplay(totalAmount, nativeCurrency);
   const totalTrackingAmount = convertAmountToUnformattedDisplay(totalUSDAmount, 'USD');
   const total = { amount: totalAmount, display: totalDisplay, totalTrackingAmount };
   newAccount = {
