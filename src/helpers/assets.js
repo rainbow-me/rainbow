@@ -3,30 +3,21 @@ import {
   convertAmountFromBigNumber,
   convertAmountToBigNumber,
   convertAmountToUnformattedDisplay,
-  INITIAL_ASSETS_STATE,
   multiply,
+  sortList,
   simpleConvertAmountToDisplay,
 } from 'balance-common';
-import { get, groupBy, isEmpty, isEqual, isNil, omit, toNumber } from 'lodash';
-import { sortList } from 'balance-common';
+import {
+  get,
+  groupBy,
+  isEmpty,
+  isEqual,
+  isNil,
+  omit,
+  toNumber,
+} from 'lodash';
 
 const EMPTY_ARRAY = [];
-
-const InitialAccountAssetsState = get(INITIAL_ASSETS_STATE, 'assets[0]', {});
-
-export const areAssetsEqualToInitialAccountAssetsState = (sectionData) => {
-  const currentBalance = get(sectionData, 'balance.display');
-  const initialBalance = get(InitialAccountAssetsState, 'balance.display');
-
-  if (!isEqual(currentBalance, initialBalance)) {
-    return false;
-  }
-
-  const currentState = omit(sectionData, ['balance', 'native']);
-  const initialState = omit(InitialAccountAssetsState, ['balance', 'native']);
-
-  return isEqual(currentState, initialState);
-};
 
 export const buildUniqueTokenList = (uniqueTokensAssets) => {
   const list = [];
@@ -47,7 +38,6 @@ export const groupAssetsByMarketValue = assets => groupBy(assets, ({ native }) =
 ));
 
 export const sortAssetsByNativeAmount = (originalAssets, prices, nativeCurrency) => {
-  console.log('SORT ASSETS BY NATIVE AMOUNT');
   const { assets, total } = parseNativePrices(originalAssets, nativeCurrency, prices);
   const {
     hasValue = EMPTY_ARRAY,
@@ -80,8 +70,9 @@ const parseNativePrices = (
     if (
       isEmpty(nativePrices) ||
       (nativePrices && !nativePrices[nativeCurrency][asset.symbol])
-    )
+    ) {
       return asset;
+    }
 
     const balanceAmountUnit = convertAmountFromBigNumber(
       asset.balance.amount,

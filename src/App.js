@@ -3,11 +3,7 @@ import CodePush from 'react-native-code-push';
 import firebase from 'react-native-firebase';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import {
-  settingsInitializeState,
-  settingsUpdateAccountAddress,
-  commonStorage,
-} from 'balance-common';
+import { commonStorage, settingsInitializeState, settingsUpdateAccountAddress } from 'balance-common';
 import { AppRegistry, AlertIOS, AppState } from 'react-native';
 import { compose, withProps } from 'recompact';
 import { connect, Provider } from 'react-redux';
@@ -15,7 +11,11 @@ import { StackActions } from 'react-navigation';
 import Piwik from 'react-native-matomo';
 import { FlexItem } from './components/layout';
 import OfflineBadge from './components/OfflineBadge';
-import { withAccountRefresh, withWalletConnectConnections } from './hoc';
+import {
+  withAccountRefresh,
+  withTrackingDate,
+  withWalletConnectConnections,
+} from './hoc';
 import {
   addTransactionToApprove,
   addTransactionsToApprove,
@@ -32,19 +32,24 @@ import { walletInit } from './model/wallet';
 import Routes from './screens/Routes';
 import Navigation from './navigation';
 
+if (process.env.NODE_ENV === 'development') {
+  console.log('process', process);
+  console.disableYellowBox = true;
+}
 
 class App extends Component {
   static propTypes = {
-    settingsInitializeState: PropTypes.func,
-    settingsUpdateAccountAddress: PropTypes.func,
     addTransactionsToApprove: PropTypes.func,
     addTransactionToApprove: PropTypes.func,
     getValidWalletConnectors: PropTypes.func,
     refreshAccount: PropTypes.func,
+    settingsInitializeState: PropTypes.func,
+    settingsUpdateAccountAddress: PropTypes.func,
     setWalletConnectors: PropTypes.func,
+    sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
+    trackingDateInit: PropTypes.func,
     transactionIfExists: PropTypes.func,
     transactionsToApproveInit: PropTypes.func,
-    sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
   }
 
   state = { appState: AppState.currentState }
@@ -97,20 +102,11 @@ class App extends Component {
       const { callId, sessionId } = notificationOpen.notification.data;
       this.onPushNotificationOpened(callId, sessionId, false);
     });
-
-    const notificationOpen = await firebase
-      .notifications()
-      .getInitialNotification();
-    if (notificationOpen) {
-      const { callId, sessionId } = notificationOpen.notification.data;
-      this.onPushNotificationOpened(callId, sessionId, false);
-    } else {
-			this.fetchAllRequestsFromWalletConnectSessions();
-    }
   }
 
-  handleWalletConfig = async seedPhrase => {
+  handleWalletConfig = async (seedPhrase) => {
     try {
+      this.props.trackingDateInit();
       const walletAddress = await walletInit(seedPhrase);
       console.log('wallet address is', walletAddress);
       this.props.settingsInitializeState();
@@ -118,17 +114,21 @@ class App extends Component {
       await this.props.refreshAccount();
       this.props.transactionsToApproveInit();
       try {
-				const allConnectors = await walletConnectInitAllConnectors();
-				if (allConnectors) {
-					this.props.setWalletConnectors(allConnectors);
-				}
-			} catch (error) {
-				console.log('Unable to init all WalletConnect sessions');
-			}
+        const allConnectors = await walletConnectInitAllConnectors();
+        if (allConnectors) {
+          this.props.setWalletConnectors(allConnectors);
+        }
+      } catch (error) {
+        console.log('Unable to init all WalletConnect sessions');
+      }
+      const notificationOpen = await firebase.notifications().getInitialNotification();
+      if (!notificationOpen) {
+        this.fetchAllRequestsFromWalletConnectSessions();
+      }
       return walletAddress;
     } catch (error) {
-			AlertIOS.alert('Error: Failed to initialize wallet.');
       console.log('WALLET ERROR', error);
+      return AlertIOS.alert('Error: Failed to initialize wallet.');
     }
   };
 
@@ -208,12 +208,13 @@ class App extends Component {
 const AppWithRedux = compose(
   withProps({ store }),
   withAccountRefresh,
+  withTrackingDate,
   withWalletConnectConnections,
   connect(
     null,
     {
-      addTransactionToApprove,
       addTransactionsToApprove,
+      addTransactionToApprove,
       settingsInitializeState,
       settingsUpdateAccountAddress,
       transactionIfExists,
