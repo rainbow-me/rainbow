@@ -4,7 +4,7 @@ import Piwik from 'react-native-matomo';
 import { compose, pure, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, position, shadow } from '../../styles';
-import { ButtonPressAnimation } from '../buttons';
+import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import UniqueTokenImage from './UniqueTokenImage';

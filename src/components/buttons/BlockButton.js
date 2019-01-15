@@ -5,10 +5,10 @@ import RadialGradient from 'react-native-radial-gradient';
 import styled, { css } from 'styled-components/primitives';
 import { componentFromProp } from 'recompact';
 import { colors, padding, position, shadow } from '../../styles';
+import ButtonPressAnimation from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { Icon } from '../icons';
-import ButtonPressAnimation from './ButtonPressAnimation';
 
 const BlockButtonBorderRadius = 14;
 const BlockButtonHeight = 59;
