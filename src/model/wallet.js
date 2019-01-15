@@ -9,6 +9,7 @@ import {
 } from 'react-native-keychain';
 import Piwik from 'react-native-matomo';
 import * as keychain from '../model/keychain';
+
 const seedPhraseKey = 'balanceWalletSeedPhrase';
 const privateKeyKey = 'balanceWalletPrivateKey';
 const addressKey = 'balanceWalletAddressKey';
@@ -43,16 +44,14 @@ export const loadWallet = async () => {
   return null;
 };
 
-export const createTransaction = async (to, data, value, gasLimit, gasPrice, nonce = null) => {
-  return {
-    to,
-    data,
-    value: ethers.utils.parseEther(value),
-    gasLimit,
-    gasPrice,
-    nonce,
-  };
-};
+export const createTransaction = async (to, data, value, gasLimit, gasPrice, nonce = null) => ({
+  data,
+  gasLimit,
+  gasPrice,
+  nonce,
+  to,
+  value: ethers.utils.parseEther(value),
+});
 
 export const sendTransaction = async ({ tracking, transaction }) => {
   try {

@@ -67,14 +67,10 @@ class TransactionConfirmationScreen extends Component {
     onConfirm: PropTypes.func,
   };
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      biometryType: null,
-      sendLongPressProgress: new Animated.Value(0),
-    };
-  };
+  state = {
+    biometryType: null,
+    sendLongPressProgress: new Animated.Value(0),
+  }
 
   componentDidMount() {
     TouchID.isSupported()
@@ -84,6 +80,10 @@ class TransactionConfirmationScreen extends Component {
       .catch(() => {
         this.setState({ biometryType: 'FaceID' });
       });
+  }
+
+  componentWillUnmount() {
+    this.state.sendLongPressProgress.stopAnimation();
   }
 
   onPressSend = () => {
