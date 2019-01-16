@@ -40,6 +40,7 @@ export default ({
   showShitcoins,
   uniqueTokens,
 }) => {
+  console.log('build wallet sections');
   const sections = {
     balances: {
       data: showShitcoins ? allAssets : assets,
@@ -80,7 +81,7 @@ export default ({
 
   return {
     isEmpty,
-    isLoading: isEmpty || fetchingAssets || fetchingUniqueTokens,
+    isLoading: fetchingAssets || fetchingUniqueTokens,
     sections: filteredSections,
   };
 };

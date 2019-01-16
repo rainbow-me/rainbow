@@ -30,7 +30,7 @@ const AssetList = ({
   sections,
   ...props
 }) => (
-  (isEmpty || isLoading) ? (
+  (isLoading || isEmpty) ? (
     <AssetListSkeleton isLoading={isLoading} />
   ) : (
     <SectionList
@@ -61,5 +61,5 @@ AssetList.propTypes = {
 
 export default compose(
   withSafeAreaViewInsetValues,
-  onlyUpdateForKeys(['isLoading', 'sections']),
+  onlyUpdateForKeys(['isEmpty', 'isLoading', 'sections']),
 )(AssetList);

@@ -54,6 +54,7 @@ class WalletScreen extends Component {
     // Initialize wallet
     const { handleWalletConfig } = this.props.navigation.getScreenProps();
     await handleWalletConfig();
+    this.props.onHideSplashScreen();
 
     const showShitcoins = await getShowShitcoinsSetting();
     if (showShitcoins !== null) {
@@ -66,17 +67,12 @@ class WalletScreen extends Component {
       allAssetsCount,
       assets,
       assetsTotal,
-      isLoading,
       isScreenActive,
       onHideSplashScreen,
       trackingDate,
       uniqueTokens,
       updateTrackingDate,
     } = this.props;
-
-    if (!isLoading && prevProps.isLoading) {
-      onHideSplashScreen();
-    }
 
     if (isScreenActive && !prevProps.isScreenActive) {
       Piwik.trackScreen('WalletScreen', 'WalletScreen');
@@ -103,7 +99,6 @@ class WalletScreen extends Component {
       sections,
       showBlur,
     } = this.props;
-
     return (
       <Page style={{ flex: 1, ...position.sizeAsObject('100%') }}>
         {showBlur && <BlurOverlay opacity={blurOpacity} />}
@@ -114,7 +109,7 @@ class WalletScreen extends Component {
         <FabWrapper disabled={isEmpty || isLoading}>
           <AssetList
             fetchData={onRefreshList}
-            isEmpty={isEmpty && !isLoading}
+            isEmpty={isEmpty}
             isLoading={isLoading}
             sections={sections}
           />
