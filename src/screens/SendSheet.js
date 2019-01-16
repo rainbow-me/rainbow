@@ -488,12 +488,14 @@ class SendSheet extends Component {
 
   renderTransaction() {
     const {
+      allAssets,
       assetAmount,
       nativeAmount,
       nativeCurrency,
       selected,
       sendMaxBalance,
     } = this.props;
+    const selectedAsset = allAssets.find(asset => asset.symbol === selected.symbol);
 
     return (
       <Column flex={1}>
@@ -507,7 +509,7 @@ class SendSheet extends Component {
           shouldRasterizeIOS={true}
           width={deviceUtils.dimensions.width}
         >
-          <SendCoinRow item={selected} onPress={this.onPressAssetHandler('')}>
+          <SendCoinRow item={selectedAsset} onPress={this.onPressAssetHandler('')}>
             <Column>
               <Icon name="caret" direction="up" size={5} color={colors.dark} />
               <Icon name="caret" direction="down" size={5} color={colors.dark} />
