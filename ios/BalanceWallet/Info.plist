@@ -39,6 +39,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Balance Wallet</string>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Balance Wallet</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
