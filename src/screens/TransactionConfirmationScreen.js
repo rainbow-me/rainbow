@@ -11,7 +11,11 @@ import { Centered, Column } from '../components/layout';
 import TransactionConfirmationSection from '../components/TransactionConfirmationSection';
 import MessageSigningSection from '../components/MessageSigningSection';
 import { Text } from '../components/text';
-import { borders, colors, fonts, padding, position } from '../styles';
+import {
+  colors,
+  padding,
+  position,
+} from '../styles';
 
 const SendButton = styled(BlockButton).attrs({ component: LongPressButton })`
   ${padding(0, 0)}
@@ -171,19 +175,19 @@ class TransactionConfirmationScreen extends Component {
           message={request}
           sendButton={this.renderSendButton()}
         />) :
-        (<TransactionConfirmationSection
-          asset={{
-            address: get(request, 'to'),
-            amount: get(request, 'value', '0.00'),
-            name: get(request, 'asset.name', 'No data'),
-            nativeAmountDisplay: get(request, 'nativeAmountDisplay'),
-            symbol: get(request, 'asset.symbol', 'N/A'),
-          }}
-          sendButton={this.renderSendButton()}
-        />)}
+          (<TransactionConfirmationSection
+            asset={{
+              address: get(request, 'to'),
+              amount: get(request, 'value', '0.00'),
+              name: get(request, 'asset.name', 'No data'),
+              nativeAmountDisplay: get(request, 'nativeAmountDisplay'),
+              symbol: get(request, 'asset.symbol', 'N/A'),
+            }}
+            sendButton={this.renderSendButton()}
+          />)}
       </Container>
-    )
+    );
   }
-};
+}
 
 export default TransactionConfirmationScreen;

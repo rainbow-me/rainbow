@@ -39,9 +39,7 @@ export const updateLastTrackingDate = async () => {
   await commonStorage.saveLocal('lastTrackingDate', { data: new Date().toString() });
 };
 
-const getRequestsKey = (accountAddress, network) => {
-  return `requests-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
-};
+const getRequestsKey = (accountAddress, network) => `requests-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 
 /**
  * @desc get account local requests
@@ -65,7 +63,7 @@ export const getLocalRequests = async (accountAddress, network) => {
 export const saveLocalRequests = async (accountAddress, network, requests) => {
   await commonStorage.saveLocal(
     getRequestsKey(accountAddress, network),
-    { data: requests }
+    { data: requests },
   );
 };
 
@@ -78,8 +76,7 @@ export const saveLocalRequests = async (accountAddress, network, requests) => {
  */
 export const removeLocalRequest = async (address, network, callId) => {
   const requests = getLocalRequests(address, network);
-  let updatedRequests = { ...requests };
+  const updatedRequests = { ...requests };
   delete updatedRequests[callId];
   saveLocalRequests(address, network, updatedRequests);
-  await commonStorage.saveLocal(address.toLowerCase(), accountLocal);
 };

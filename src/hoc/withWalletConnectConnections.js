@@ -1,5 +1,10 @@
 import { sortList } from 'balance-common';
-import { head, groupBy, mapValues, values } from 'lodash';
+import {
+  head,
+  groupBy,
+  mapValues,
+  values,
+} from 'lodash';
 import { compose, withProps } from 'recompact';
 import { connect } from 'react-redux';
 import {
@@ -23,7 +28,7 @@ export default Component => compose(
       const firstElement = head(connectors);
       return {
         dappName: firstElement.dappName,
-        expires: firstElement.expires
+        expires: firstElement.expires,
       };
     });
     return {

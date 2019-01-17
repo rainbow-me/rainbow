@@ -17,8 +17,8 @@ import {
   withProps,
   withState,
 } from 'recompact';
-import { withAccountReset } from '../hoc';
 import styled from 'styled-components';
+import { withAccountReset } from '../hoc';
 import { Alert } from '../components/alerts';
 import { Icon } from '../components/icons';
 import { MultiLineInput } from '../components/inputs';
@@ -192,7 +192,7 @@ export default compose(
             if (address) {
               navigation.navigate('WalletScreen');
             }
-          })
+          });
       })),
     onInputChange: ({ setSeedPhrase }) => ({ nativeEvent }) => setSeedPhrase(nativeEvent.text),
     onPasteSeedPhrase: ({ setSeedPhrase }) => () => {

@@ -1,7 +1,12 @@
 import { upperCase, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, hoistStatics, onlyUpdateForPropTypes, withProps } from 'recompact';
+import {
+  compose,
+  hoistStatics,
+  onlyUpdateForPropTypes,
+  withProps,
+} from 'recompact';
 import styled from 'styled-components/primitives';
 import { Centered, Column } from './layout';
 import { Text as TextElement } from './text';

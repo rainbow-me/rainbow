@@ -3,7 +3,12 @@ import PropTypes from 'prop-types';
 import { withAccountAssets } from 'balance-common';
 import React from 'react';
 import { StatusBar } from 'react-native';
-import { compose, defaultProps, withHandlers, withProps } from 'recompact';
+import {
+  compose,
+  defaultProps,
+  withHandlers,
+  withProps,
+} from 'recompact';
 import styled from 'styled-components/primitives';
 import { TokenExpandedState, UniqueTokenExpandedState } from '../components/expanded-state';
 import { Centered } from '../components/layout';
@@ -84,4 +89,3 @@ export default compose(
     onPressBackground: ({ navigation }) => () => navigation.goBack(),
   }),
 )(ExpandedAssetScreen);
-
