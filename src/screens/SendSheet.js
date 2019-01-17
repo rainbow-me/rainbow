@@ -16,20 +16,31 @@ import { isIphoneX } from 'react-native-iphone-x-helper';
 import TouchID from 'react-native-touch-id';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-import { AssetList, UniqueTokenRow } from '../components/asset-list';
+import { AssetList } from '../components/asset-list';
+import { UniqueTokenRow } from '../components/unique-token';
 import { Button, BlockButton, LongPressButton } from '../components/buttons';
 import { SendCoinRow } from '../components/coin-row';
 import { AddressField, UnderlineField } from '../components/fields';
 import { Icon } from '../components/icons';
 import { PillLabel } from '../components/labels';
-import { Column, Flex, FlyInView, Row } from '../components/layout';
+import {
+  Column,
+  Flex,
+  FlyInView,
+  Row,
+} from '../components/layout';
 import { ShadowStack } from '../components/shadow-stack';
 import { Monospace } from '../components/text';
 import {
   withAccountRefresh,
   withAccountSettings,
 } from '../hoc';
-import { colors, fonts, padding, shadow } from '../styles';
+import {
+  colors,
+  fonts,
+  padding,
+  shadow,
+} from '../styles';
 import { deviceUtils } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
 import { removeLeadingZeros, uppercase } from '../utils/formatters';
@@ -217,8 +228,8 @@ class SendSheet extends Component {
       Keyboard.dismiss();
     }
 
-    if (prevProps.isValidAddress !== isValidAddress ||
-        prevProps.selected !== selected) {
+    if (prevProps.isValidAddress !== isValidAddress
+        || prevProps.selected !== selected) {
       let verticalGestureResponseDistance = 0;
 
       if (isValidAddress) {

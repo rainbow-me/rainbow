@@ -1,4 +1,9 @@
-import { compose, shouldUpdate, withHandlers, withProps } from 'recompact';
+import {
+  compose,
+  shouldUpdate,
+  withHandlers,
+  withProps
+} from 'recompact';
 import { setDisplayName } from 'recompose';
 import {
   withAccountAddress,
@@ -29,13 +34,13 @@ export default compose(
   })),
 )(ProfileScreen);
 
-  /*
-  shouldUpdate((props, { isScreenActive, ...nextProps }) => {
-    if (!isScreenActive) return false;
+/*
+shouldUpdate((props, { isScreenActive, ...nextProps }) => {
+  if (!isScreenActive) return false;
 
-    const finishedLoading = props.fetchingTransactions && !nextProps.fetchingTransactions;
-    const newTxCount = props.transactionsCount !== nextProps.transactionsCount;
-    const newNativeCurrency = props.nativeCurrency !== nextProps.nativeCurrency;
-    return finishedLoading || newTxCount || newNativeCurrency;
-  }),
-  */
+  const finishedLoading = props.fetchingTransactions && !nextProps.fetchingTransactions;
+  const newTxCount = props.transactionsCount !== nextProps.transactionsCount;
+  const newNativeCurrency = props.nativeCurrency !== nextProps.nativeCurrency;
+  return finishedLoading || newTxCount || newNativeCurrency;
+}),
+*/

@@ -68,7 +68,6 @@ class WalletScreen extends Component {
       assets,
       assetsTotal,
       isScreenActive,
-      onHideSplashScreen,
       trackingDate,
       uniqueTokens,
       updateTrackingDate,

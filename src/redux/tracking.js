@@ -22,9 +22,9 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case TRACKING_UPDATE_DATE:
-      return { ...state, trackingDate: action.payload };
-    default:
-      return state;
+  case TRACKING_UPDATE_DATE:
+    return { ...state, trackingDate: action.payload };
+  default:
+    return state;
   }
 };

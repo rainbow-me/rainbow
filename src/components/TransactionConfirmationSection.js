@@ -2,19 +2,23 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import lang from 'i18n-js';
 import styled from 'styled-components';
-import BalanceManagerLogo from '../assets/balance-manager-logo.png';
-import { CoinIcon } from '../components/coin-icon';
-import { Nbsp } from '../components/html-entities';
-import { Column, Row } from '../components/layout';
+import { CoinIcon } from './coin-icon';
+import { Nbsp } from './html-entities';
+import { Column, Row } from './layout';
 import {
   Monospace,
   Smallcaps,
   TruncatedAddress,
   TruncatedText,
-} from '../components/text';
-import Divider from '../components/Divider';
+} from './text';
+import Divider from './Divider';
 import { withSafeAreaViewInsetValues } from '../hoc';
-import { borders, colors, fonts, padding, position } from '../styles';
+import {
+  borders,
+  colors,
+  fonts,
+  padding,
+} from '../styles';
 
 const Address = styled(TruncatedAddress).attrs({ size: 'lmedium' })`
   color: ${colors.alpha(colors.blueGreyDark, 0.6)}

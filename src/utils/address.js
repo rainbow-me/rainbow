@@ -12,7 +12,8 @@ export const getEthereumAddressFromQRCodeData = (data) => {
 
   if (parts[0] === 'ethereum' && isValidAddress(parts[1])) {
     return parts[1];
-  } else if (isValidAddress(parts[0])) {
+  }
+  if (isValidAddress(parts[0])) {
     return parts[0];
   }
 

@@ -8,7 +8,7 @@ import {
   canImplyAuthentication,
 } from 'react-native-keychain';
 import Piwik from 'react-native-matomo';
-import * as keychain from '../model/keychain';
+import * as keychain from './keychain';
 
 const seedPhraseKey = 'balanceWalletSeedPhrase';
 const privateKeyKey = 'balanceWalletPrivateKey';
@@ -108,7 +108,7 @@ const createWallet = async (seedPhrase) => {
 };
 
 const saveWalletDetails = async (seedPhrase, privateKey, address) => {
-  const canAuthenticate = await canImplyAuthentication({ authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS});
+  const canAuthenticate = await canImplyAuthentication({ authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS });
   let accessControlOptions = {};
   if (canAuthenticate) {
     accessControlOptions = { accessControl: ACCESS_CONTROL.USER_PRESENCE, accessible: ACCESSIBLE.WHEN_UNLOCKED };
