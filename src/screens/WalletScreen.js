@@ -1,8 +1,8 @@
-import { withSafeTimeout } from '@hocs/safe-timers';
+import { withAccountAssets } from 'balance-common';
 import { isSameDay } from 'date-fns';
 import { get, join, map } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import Piwik from 'react-native-matomo';
 import {
   compose,
@@ -11,44 +11,52 @@ import {
   withProps,
   withState,
 } from 'recompact';
-import styled from 'styled-components/primitives';
-import BlurOverlay from '../components/BlurOverlay';
 import { AssetList } from '../components/asset-list';
+import BlurOverlay from '../components/BlurOverlay';
 import { FabWrapper } from '../components/fab';
 import { CameraHeaderButton, Header, ProfileHeaderButton } from '../components/header';
 import { Page } from '../components/layout';
-import buildWalletSections from '../helpers/buildWalletSections';
+import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../model/localstorage';
 import {
-  withAccountAddress,
-  withAccountAssets,
+  withAccountRefresh,
+  withAccountSettings,
   withBlurTransitionProps,
+  withFetchingPrices,
   withHideSplashScreen,
-  withRequestsInit,
+  withIsWalletEmpty,
   withTrackingDate,
 } from '../hoc';
 import { position } from '../styles';
+import { isNewValueForPath } from '../utils';
 
-const WalletPage = styled(Page)`
-  ${position.size('100%')};
-  flex: 1;
-`;
-
-class WalletScreen extends Component {
+class WalletScreen extends PureComponent {
   static propTypes = {
+    allAssetsCount: PropTypes.number,
+    assets: PropTypes.array,
+    assetsTotal: PropTypes.object,
     blurOpacity: PropTypes.object,
     isEmpty: PropTypes.bool.isRequired,
     isLoading: PropTypes.bool.isRequired,
+    isScreenActive: PropTypes.bool,
     navigation: PropTypes.object,
     onHideSplashScreen: PropTypes.func,
     onRefreshList: PropTypes.func.isRequired,
     sections: PropTypes.array,
     showBlur: PropTypes.bool,
+    toggleShowShitcoins: PropTypes.func,
+    trackingDate: PropTypes.object,
     transitionProps: PropTypes.object,
+    uniqueTokens: PropTypes.array,
+    updateTrackingDate: PropTypes.func,
   }
 
   componentDidMount = async () => {
-    this.props.trackingDateInit();
+    // Initialize wallet
+    const { handleWalletConfig } = this.props.navigation.getScreenProps();
+    await handleWalletConfig();
+    this.props.onHideSplashScreen();
+
     const showShitcoins = await getShowShitcoinsSetting();
     if (showShitcoins !== null) {
       this.props.toggleShowShitcoins(showShitcoins);
@@ -59,26 +67,24 @@ class WalletScreen extends Component {
     const {
       allAssetsCount,
       assets,
-      assetsTotalUSD,
-      isLoading,
-      onHideSplashScreen,
+      assetsTotal,
+      isScreenActive,
       trackingDate,
       uniqueTokens,
+      updateTrackingDate,
     } = this.props;
-    if (!isLoading && prevProps.isLoading) {
-      onHideSplashScreen();
-    }
 
-    if (this.props.isScreenActive && !prevProps.isScreenActive) {
+    if (isScreenActive && !prevProps.isScreenActive) {
       Piwik.trackScreen('WalletScreen', 'WalletScreen');
-      const totalTrackingAmount = get(assetsTotalUSD, 'totalTrackingAmount', null);
-      const assetSymbols = join(map(assets, (asset) => asset.symbol));
-      if (totalTrackingAmount && (!this.props.trackingDate || !isSameDay(this.props.trackingDate, Date.now()))) {
+      const totalTrackingAmount = get(assetsTotal, 'totalTrackingAmount', null);
+      const assetSymbols = join(map(assets || {}, (asset) => asset.symbol));
+      if (totalTrackingAmount && (!trackingDate || !isSameDay(trackingDate, Date.now()))) {
         Piwik.trackEvent('Balance', 'AssetsCount', 'TotalAssetsCount', allAssetsCount);
         Piwik.trackEvent('Balance', 'AssetSymbols', 'AssetSymbols', assetSymbols);
         Piwik.trackEvent('Balance', 'NFTCount', 'TotalNFTCount', uniqueTokens.length);
         Piwik.trackEvent('Balance', 'Total', 'TotalUSDBalance', totalTrackingAmount);
-        this.props.updateTrackingDate();
+
+        updateTrackingDate();
       }
     }
   }
@@ -93,49 +99,38 @@ class WalletScreen extends Component {
       sections,
       showBlur,
     } = this.props;
-
     return (
-      <WalletPage>
+      <Page style={{ flex: 1, ...position.sizeAsObject('100%') }}>
         {showBlur && <BlurOverlay opacity={blurOpacity} />}
         <Header justify="space-between">
           <ProfileHeaderButton navigation={navigation} />
           <CameraHeaderButton navigation={navigation} />
         </Header>
-        <FabWrapper disable={isEmpty || isLoading}>
+        <FabWrapper disabled={isEmpty || isLoading}>
           <AssetList
             fetchData={onRefreshList}
-            isEmpty={isEmpty && !isLoading}
+            isEmpty={isEmpty}
             isLoading={isLoading}
             sections={sections}
           />
         </FabWrapper>
-      </WalletPage>
+      </Page>
     );
   }
 }
 
 export default compose(
-  withAccountAddress,
   withAccountAssets,
-  withHideSplashScreen,
-  withRequestsInit,
-  withSafeTimeout,
+  withAccountRefresh,
+  withAccountSettings,
+  withFetchingPrices,
   withTrackingDate,
+  withHideSplashScreen,
   withBlurTransitionProps,
+  withIsWalletEmpty,
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
-    onRefreshList: ({
-      accountAddress,
-      accountUpdateAccountAddress,
-      setSafeTimeout,
-      transactionsToApproveInit,
-    }) => () => {
-      accountUpdateAccountAddress(accountAddress, 'BALANCEWALLET');
-      transactionsToApproveInit();
-      // hack: use timeout so that it looks like loading is happening
-      // accountUpdateAccountAddress does not return a promise
-      return new Promise(resolve => setSafeTimeout(resolve, 2000));
-    },
+    onRefreshList: ({ refreshAccount }) => () => refreshAccount(),
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
       if (index === 0) {
         const updatedShowShitcoinsSetting = !showShitcoins;
@@ -144,14 +139,5 @@ export default compose(
       }
     },
   }),
-  withProps(buildWalletSections),
-  shouldUpdate((props, { isScreenActive, ...nextProps }) => {
-    if (!isScreenActive) return false;
-
-    const finishedPopulating = props.isEmpty && !nextProps.isEmpty;
-    const finishedLoading = props.isLoading && !nextProps.isLoading;
-    const newSections = props.sections !== nextProps.sections;
-
-    return finishedPopulating || finishedLoading || newSections;
-  }),
+  withProps(buildWalletSectionsSelector),
 )(WalletScreen);

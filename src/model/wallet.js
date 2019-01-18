@@ -8,7 +8,8 @@ import {
   canImplyAuthentication,
 } from 'react-native-keychain';
 import Piwik from 'react-native-matomo';
-import * as keychain from '../model/keychain';
+import * as keychain from './keychain';
+
 const seedPhraseKey = 'balanceWalletSeedPhrase';
 const privateKeyKey = 'balanceWalletPrivateKey';
 const addressKey = 'balanceWalletAddressKey';
@@ -19,9 +20,14 @@ export function generateSeedPhrase() {
 
 export const walletInit = async (seedPhrase = null) => {
   let walletAddress = null;
-  walletAddress = await loadAddress();
-  if (!walletAddress) {
+  if (seedPhrase) {
     walletAddress = await createWallet(seedPhrase);
+  }
+  if (!walletAddress) {
+    walletAddress = await loadAddress();
+  }
+  if (!walletAddress) {
+    walletAddress = await createWallet();
   }
   return walletAddress;
 };
@@ -38,16 +44,14 @@ export const loadWallet = async () => {
   return null;
 };
 
-export const createTransaction = async (to, data, value, gasLimit, gasPrice, nonce = null) => {
-  return {
-    to,
-    data,
-    value: ethers.utils.parseEther(value),
-    gasLimit,
-    gasPrice,
-    nonce,
-  };
-};
+export const createTransaction = async (to, data, value, gasLimit, gasPrice, nonce = null) => ({
+  data,
+  gasLimit,
+  gasPrice,
+  nonce,
+  to,
+  value: ethers.utils.parseEther(value),
+});
 
 export const sendTransaction = async ({ tracking, transaction }) => {
   try {
@@ -104,7 +108,7 @@ const createWallet = async (seedPhrase) => {
 };
 
 const saveWalletDetails = async (seedPhrase, privateKey, address) => {
-  const canAuthenticate = await canImplyAuthentication({ authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS});
+  const canAuthenticate = await canImplyAuthentication({ authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS });
   let accessControlOptions = {};
   if (canAuthenticate) {
     accessControlOptions = { accessControl: ACCESS_CONTROL.USER_PRESENCE, accessible: ACCESSIBLE.WHEN_UNLOCKED };

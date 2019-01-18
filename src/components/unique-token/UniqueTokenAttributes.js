@@ -1,3 +1,4 @@
+import { sortList } from 'balance-common';
 import PropTypes from 'prop-types';
 import styled from 'styled-components/primitives';
 import React from 'react';
@@ -10,8 +11,8 @@ import {
   withProps,
   withState,
 } from 'recompact';
-import { colors, margin } from '../../styles';
-import { dimensionsPropType, sortList } from '../../utils';
+import { colors, margin, padding } from '../../styles';
+import { dimensionsPropType } from '../../utils';
 import { Centered, FlexItem } from '../layout';
 import { PagerControls } from '../pager';
 import Tag from '../Tag';
@@ -24,6 +25,7 @@ const AttributeItemTag = styled(Tag)`
 `;
 
 const Wrapper = styled(Centered).attrs({ wrap: true })`
+  ${padding(0, AttributesPadding * 1.125)}
   flex-grow: 1;
 `;
 
@@ -86,7 +88,10 @@ UniqueTokenAttributes.propTypes = {
   dimensions: dimensionsPropType,
   onListLayout: PropTypes.func,
   onScroll: PropTypes.func,
-  traits: PropTypes.object,
+  traits: PropTypes.arrayOf(PropTypes.shape({
+    trait_type: PropTypes.string.isRequired,
+    value: PropTypes.node.isRequired,
+  })),
   willListOverflow: PropTypes.bool,
 };
 
@@ -100,11 +105,10 @@ const enhance = compose(
     traits: sortList(traits, 'trait_type', 'asc'),
   })),
   withHandlers({
-    onListLayout: ({ dimensions, setWillListOverflow }) => ({ nativeEvent: { layout } }) =>
-      setWillListOverflow(layout.height > dimensions.height),
-    onScroll: () => event => {
-      event.stopPropagation();
+    onListLayout: ({ dimensions, setWillListOverflow }) => ({ nativeEvent: { layout } }) => {
+      setWillListOverflow(layout.height > dimensions.height);
     },
+    onScroll: () => event => event.stopPropagation(),
   }),
 );
 

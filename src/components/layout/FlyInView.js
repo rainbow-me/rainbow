@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Animated } from 'react-native';
-
 import Flex from './Flex';
 
 export default class FlyInView extends Component {
@@ -24,6 +23,7 @@ export default class FlyInView extends Component {
     const { animation } = this.state;
 
     Animated.timing(animation, { toValue: 0, duration: 300 }).start();
+    animation.stopAnimation();
   }
 
   render() {

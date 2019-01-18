@@ -1,0 +1,115 @@
+import { isValidSeedPhrase as validateSeedPhrase } from 'balance-common';
+import { get } from 'lodash';
+import { Clipboard, InteractionManager, Linking } from 'react-native';
+import { withNavigation } from 'react-navigation';
+import {
+  compose,
+  lifecycle,
+  onlyUpdateForKeys,
+  withHandlers,
+  withProps,
+  withState,
+} from 'recompact';
+import { Alert } from '../components/alerts';
+import { withAccountReset } from '../hoc';
+import { deviceUtils } from '../utils';
+import ImportSeedPhraseSheet from './ImportSeedPhraseSheet';
+
+const ConfirmImportAlert = onSuccess => (
+  Alert({
+    buttons: [{
+      onPress: onSuccess,
+      text: 'Import',
+    }, {
+      text: 'Cancel',
+      style: 'cancel',
+    }],
+    // eslint-disable-next-line
+    message: 'Importing this seed phrase will overwrite your existing wallet. Before continuing, please make sure you’ve transferred its contents or backed up its seed phrase.',
+    title: 'Are you sure you want to import?',
+  })
+);
+
+const ImportSeedPhraseSheetWithData = compose(
+  withAccountReset,
+  withNavigation,
+  withState('clipboardContents', 'setClipboardContents', ''),
+  withState('isImporting', 'setIsImporting', false),
+  withState('seedPhrase', 'setSeedPhrase', ''),
+  lifecycle({
+    componentDidMount() {
+      InteractionManager.runAfterInteractions(async () => {
+        const { setClipboardContents } = this.props;
+        await Clipboard.getString().then(setClipboardContents);
+      });
+    },
+    componentDidUpdate(prevProps) {
+      const { isImporting, navigation } = this.props;
+
+      if (isImporting !== prevProps.isImporting) {
+        navigation.setParams({ gesturesEnabled: !isImporting });
+      }
+    },
+  }),
+  withHandlers({
+    importSeedPhrase: ({
+      accountClearState,
+      navigation,
+      screenProps,
+      seedPhrase,
+      setIsImporting,
+    }) => () => {
+      setIsImporting(true);
+      accountClearState();
+
+      return screenProps
+        .handleWalletConfig(seedPhrase.trim())
+        .then((address) => {
+          if (address) {
+            navigation.navigate('WalletScreen');
+          }
+        })
+        .catch((error) => {
+          setIsImporting(false);
+          console.error('error importing seed phrase: ', error);
+        });
+    },
+  }),
+  withHandlers({
+    onImportSeedPhrase: ({ importSeedPhrase }) => () => ConfirmImportAlert(importSeedPhrase),
+    onInputChange: ({ setSeedPhrase }) => ({ nativeEvent }) => setSeedPhrase(nativeEvent.text),
+    onPasteSeedPhrase: ({ setSeedPhrase }) => () => {
+      Clipboard.getString()
+        .then(setSeedPhrase)
+        .catch(error => console.log(error));
+    },
+    onPressHelp: () => () => Linking.openURL('https://support.balance.io'),
+  }),
+  withHandlers({
+    onPressEnterKey: ({ onImportSeedPhrase, seedPhrase }) => ({ nativeEvent: { key } }) => {
+      if (seedPhrase) {
+        onImportSeedPhrase();
+      }
+    },
+  }),
+  withProps(({ clipboardContents, seedPhrase }) => ({
+    isClipboardContentsValidSeedPhrase: validateSeedPhrase(clipboardContents),
+    isSeedPhraseValid: validateSeedPhrase(seedPhrase),
+  })),
+  onlyUpdateForKeys([
+    'isClipboardContentsValidSeedPhrase',
+    'isImporting',
+    'isSeedPhraseValid',
+    'seedPhrase',
+  ]),
+)(ImportSeedPhraseSheet);
+
+ImportSeedPhraseSheetWithData.navigationOptions = ({ navigation }) => ({
+  effect: 'sheet',
+  gesturesEnabled: get(navigation, 'state.params.gesturesEnabled', true),
+  gestureResponseDistance: {
+    vertical: deviceUtils.dimensions.height / 2,
+  },
+});
+
+export default ImportSeedPhraseSheetWithData;

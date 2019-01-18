@@ -1,27 +1,25 @@
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
+import { createSelector } from 'reselect';
 
-const EMPTY_ARRAY = [];
+const transactionsSelector = state => state.transactions;
 
 const mapStateToProps = ({
-  account: {
-    fetchingTransactions,
+  transactions: {
     hasPendingTransaction,
-    nativeCurrency,
     transactions,
   },
 }) => ({
-  fetchingTransactions,
   hasPendingTransaction,
-  nativeCurrency,
   transactions,
 });
 
-const getTransactionsCount = ({ transactions }) => ({
-  transactionsCount: (transactions || EMPTY_ARRAY).length,
-});
+const transactionsCountSelector = createSelector(
+  [ transactionsSelector ],
+  (transactions) => ({ transactionsCount: transactions.length }),
+);
 
 export default Component => compose(
   connect(mapStateToProps),
-  withProps(getTransactionsCount),
+  withProps(transactionsCountSelector),
 )(Component);

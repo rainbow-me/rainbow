@@ -37,9 +37,9 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case WALLETCONNECT_NEW_SESSION:
-      return { ...state, walletConnectors: action.payload };
-    default:
-      return state;
+  case WALLETCONNECT_NEW_SESSION:
+    return { ...state, walletConnectors: action.payload };
+  default:
+    return state;
   }
 };

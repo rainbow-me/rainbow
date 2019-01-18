@@ -1,4 +1,4 @@
-import { get, map } from 'lodash';
+import { get, isFunction, map } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { createElement, PureComponent } from 'react';
 import { createNavigator, StackRouter } from 'react-navigation';
@@ -79,9 +79,7 @@ export default function createSwipeNavigator(screens, options) {
      * @param  {String} routeName   The name of the route to get the index of.
      * @return {Number}             The index of the route which will be zero if the route does not exist.
      */
-    getRouteIndex = (routeName) => {
-      return (routeOrder || EMPTY_ARRAY).indexOf(routeName);
-    };
+    getRouteIndex = (routeName) => (routeOrder || EMPTY_ARRAY).indexOf(routeName);
 
     /**
      * Get item data based on screen dimensions.
@@ -211,8 +209,12 @@ export default function createSwipeNavigator(screens, options) {
      * @param  {Boolean} animated   Whether or not to animate to the index.
      */
     scrollToIndex = (index, animated) => {
-      if (this.flatListRef && typeof this.flatListRef.scrollToIndex === 'function') {
-        this.flatListRef.scrollToIndex({ animated, index, viewOffset: 0 });
+      if (this.flatListRef && isFunction(this.flatListRef.scrollToIndex)) {
+        this.flatListRef.scrollToIndex({
+          animated,
+          index,
+          viewOffset: 0,
+        });
       }
     };
 
@@ -259,12 +261,14 @@ export default function createSwipeNavigator(screens, options) {
           <FlatList
             bounces={false}
             data={flatListScreens}
+            decelerationRate="fast"
             extraData={{ currentIndex }}
             getItemLayout={this.getItemLayout}
             horizontal
-            onScrollEndDrag={this.onScrollEndDrag}
+            maxToRenderPerBatch={3}
             onMomentumScrollEnd={this.onMomentumScrollEnd}
             onScroll={this.onScroll}
+            onScrollEndDrag={this.onScrollEndDrag}
             pagingEnabled
             ref={this.handleFlatListRef}
             removeClippedSubviews
@@ -272,6 +276,7 @@ export default function createSwipeNavigator(screens, options) {
             scrollEnabled={scrollEnabled}
             scrollEventThrottle={16}
             showsHorizontalScrollIndicator={false}
+            windowSize={7}
           />
         </View>
       );

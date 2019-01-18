@@ -1,6 +1,6 @@
 import { compact } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Animated } from 'react-native';
 import { State, TapGestureHandler } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -15,7 +15,7 @@ const DefaultAnimatedValues = {
   transX: 0,
 };
 
-export default class ButtonPressAnimation extends Component {
+export default class ButtonPressAnimation extends PureComponent {
   static propTypes = {
     activeOpacity: PropTypes.number,
     children: PropTypes.any,
@@ -35,8 +35,16 @@ export default class ButtonPressAnimation extends Component {
   state = { scaleOffsetX: null }
 
   opacity = new Animated.Value(DefaultAnimatedValues.opacity)
+
   scale = new Animated.Value(DefaultAnimatedValues.scale)
+
   transX = new Animated.Value(DefaultAnimatedValues.transX)
+
+  componentWillUnmount = () => {
+    this.opacity.stopAnimation();
+    this.scale.stopAnimation();
+    this.transX.stopAnimation();
+  }
 
   handleLayout = ({ nativeEvent: { layout } }) => {
     const { scaleTo, transformOrigin } = this.props;
@@ -73,6 +81,9 @@ export default class ButtonPressAnimation extends Component {
     if (activeOpacity) {
       // Opacity animation
       animationsArray.push(animations.buildSpring({
+        config: {
+          isInteraction: false,
+        },
         from: DefaultAnimatedValues.opacity,
         isActive,
         to: activeOpacity,
@@ -84,6 +95,9 @@ export default class ButtonPressAnimation extends Component {
       // Fake 'transform-origin' support by abusing translateX
       const directionMultiple = (transformOrigin === 'left') ? -1 : 1;
       animationsArray.push(animations.buildSpring({
+        config: {
+          isInteraction: false,
+        },
         from: DefaultAnimatedValues.transX,
         isActive,
         to: scaleOffsetX * (directionMultiple),

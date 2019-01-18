@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [0.3.0-4](https://github.com/balance-io/balance-wallet/releases/tag/v0.3.0-4)
+
+### Added
+* Import seed phrase
+
+### Changed
+* Performance improvements
+* Splash screen to be removed after successfully loaded wallet data
+* Support for separate reducer changes for settings, assets, transactions, prices
+* Support for promisified account refresh
+
 ## [0.3.0-3](https://github.com/balance-io/balance-wallet/releases/tag/v0.3.0-3)
 ### Changed
 * Fix for toggle seed phrase button

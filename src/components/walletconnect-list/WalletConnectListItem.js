@@ -1,7 +1,12 @@
 import { distanceInWordsStrict } from 'date-fns';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, hoistStatics, onlyUpdateForKeys, withHandlers } from 'recompact';
+import {
+  compose,
+  hoistStatics,
+  onlyUpdateForKeys,
+  withHandlers,
+} from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, padding } from '../../styles';
 import { Button } from '../buttons';

@@ -5,9 +5,18 @@ import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import Divider from '../components/Divider';
 import { Column } from '../components/layout';
-import { Modal, ModalFooterButton, ModalFooterButtonsRow, ModalHeader } from '../components/modal';
+import {
+  Modal,
+  ModalFooterButton,
+  ModalFooterButtonsRow,
+  ModalHeader,
+} from '../components/modal';
 import QRCodeDisplay from '../components/QRCodeDisplay';
-import { Br, Monospace, Text } from '../components/text';
+import {
+  Br,
+  Monospace,
+  Text,
+} from '../components/text';
 import { withAccountAddress } from '../hoc';
 import { colors, padding } from '../styles';
 

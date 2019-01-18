@@ -1,13 +1,18 @@
 import { filter } from 'lodash';
 import PropTypes from 'prop-types';
+import { withAccountAssets } from 'balance-common';
 import React from 'react';
 import { StatusBar } from 'react-native';
-import { compose, defaultProps, withHandlers, withProps } from 'recompact';
+import {
+  compose,
+  defaultProps,
+  withHandlers,
+  withProps,
+} from 'recompact';
 import styled from 'styled-components/primitives';
 import { TokenExpandedState, UniqueTokenExpandedState } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import TouchableBackdrop from '../components/TouchableBackdrop';
-import { withAccountAssets } from '../hoc';
 import { padding } from '../styles';
 import { deviceUtils } from '../utils';
 
@@ -55,33 +60,32 @@ const ExpandedAssetScreenDefaultProps = {
 
 ExpandedAssetScreen.defaultProps = ExpandedAssetScreenDefaultProps;
 
+const buildExpandedAsset = ({
+  allAssets,
+  containerPadding,
+  navigation,
+  uniqueTokens,
+}) => {
+  const { name, type } = navigation.state.params;
+
+  let selectedAsset = {};
+
+  if (type === 'token') {
+    [selectedAsset] = filter(allAssets, (asset) => asset.symbol === name);
+  } else if (type === 'unique_token') {
+    [selectedAsset] = filter(uniqueTokens, (asset) => asset.name === name);
+  }
+
+  return {
+    asset: selectedAsset,
+    panelWidth: deviceUtils.dimensions.width - (containerPadding * 2),
+    type,
+  };
+}
+
 export default compose(
   defaultProps(ExpandedAssetScreenDefaultProps),
   withAccountAssets,
-  withProps(({
-    allAssets,
-    containerPadding,
-    navigation,
-    uniqueTokens,
-  }) => {
-    const { name, type } = navigation.state.params;
-
-    let selectedAsset = {};
-
-    if (type === 'token') {
-      [selectedAsset] = filter(allAssets, (asset) => asset.symbol === name);
-    } else if (type === 'unique_token') {
-      [selectedAsset] = filter(uniqueTokens, (asset) => asset.name === name);
-    }
-
-    return {
-      asset: selectedAsset,
-      panelWidth: deviceUtils.dimensions.width - (containerPadding * 2),
-      type,
-    };
-  }),
-  withHandlers({
-    onPressBackground: ({ navigation }) => () => navigation.goBack(),
-  }),
+  withProps(buildExpandedAsset),
+  withHandlers({ onPressBackground: ({ navigation }) => () => navigation.goBack() }),
 )(ExpandedAssetScreen);
-

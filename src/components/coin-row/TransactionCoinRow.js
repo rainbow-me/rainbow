@@ -1,20 +1,26 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
-import { compose, mapProps, onlyUpdateForKeys, withHandlers } from 'recompact';
+import {
+  compose,
+  mapProps,
+  onlyUpdateForKeys,
+  withHandlers,
+} from 'recompact';
 import { Linking } from 'react-native';
-import { ButtonPressAnimation } from '../buttons';
-import { TransactionStatusTypes } from '../../helpers/transactions';
+import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { colors } from '../../styles';
+import { showActionSheetWithOptions } from '../../utils/actionsheet';
+import { ButtonPressAnimation } from '../animations';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
-import { showActionSheetWithOptions } from '../../utils/actionsheet';
 
 const rowRenderPropTypes = {
   balance: PropTypes.object,
+  item: PropTypes.object,
   name: PropTypes.string,
   native: PropTypes.object,
   onPressTransaction: PropTypes.func,
@@ -64,8 +70,18 @@ const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
   </ButtonPressAnimation>
 );
 
+TransactionCoinRow.propTypes = rowRenderPropTypes;
+
 export default compose(
-  mapProps(({ item: { hash, native, pending, ...item }, ...props }) => ({
+  mapProps(({
+    item: {
+      hash,
+      native,
+      pending,
+      ...item
+    },
+    ...props
+  }) => ({
     hash,
     item,
     native,

@@ -43,7 +43,7 @@ export default compose(
   withNavigation,
   withHandlers({ onPress: ({ navigation }) => () => {
     Piwik.trackEvent('Navigation', 'send-fab', 'SendFabNav');
-    navigation.navigate('SendScreen');
+    navigation.navigate('SendSheet');
   }}),
   onlyUpdateForKeys(['disabled']),
 )(SendFab);

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import Divider from '../Divider';
 import { Monospace } from '../text';
 import { ListHeader } from '../list';
 
@@ -17,6 +18,6 @@ AssetListHeader.propTypes = {
   totalValue: PropTypes.string,
 };
 
-AssetListHeader.height = ListHeader.height;
+AssetListHeader.height = ListHeader.height + Divider.size;
 
 export default AssetListHeader;

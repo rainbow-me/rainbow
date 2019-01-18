@@ -12,11 +12,11 @@ import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
 class TransactionConfirmationScreenWithData extends Component {
   static propTypes = {
-    accountUpdateHasPendingTransaction: PropTypes.func,
-    accountUpdateTransactions: PropTypes.func,
+    isScreenActive: PropTypes.bool.isRequired,
     navigation: PropTypes.any,
     removeTransaction: PropTypes.func,
     transactionCountNonce: PropTypes.number,
+    transactionsAddNewTransaction: PropTypes.func,
     updateTransactionCountNonce: PropTypes.func,
     walletConnectors: PropTypes.object,
   }
@@ -58,7 +58,7 @@ class TransactionConfirmationScreenWithData extends Component {
         amount: get(transactionDetails, 'transactionDisplayDetails.payload.nativeAmount'),
         name: trackingName,
       },
-      transaction: txPayloadLatestNonce
+      transaction: txPayloadLatestNonce,
     });
 
     if (transactionHash) {
@@ -73,8 +73,7 @@ class TransactionConfirmationScreenWithData extends Component {
         to: get(transactionDetails, 'transactionDisplayDetails.payload.to'),
         value: get(transactionDetails, 'transactionDisplayDetails.payload.value'),
       };
-      this.props.accountUpdateHasPendingTransaction();
-      this.props.accountUpdateTransactions(txDetails);
+      this.props.transactionsAddNewTransaction(txDetails);
       this.props.removeTransaction(transactionDetails.callId);
       const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
       await walletConnectSendStatus(walletConnector, transactionDetails.callId, transactionHash);
@@ -90,7 +89,6 @@ class TransactionConfirmationScreenWithData extends Component {
     const flatFormatSignature = await signMessage(message);
 
     if (flatFormatSignature) {
-      const txDetails = { message };
       this.props.removeTransaction(transactionDetails.callId);
       const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
       await walletConnectSendStatus(walletConnector, transactionDetails.callId, flatFormatSignature);
@@ -135,8 +133,8 @@ class TransactionConfirmationScreenWithData extends Component {
         transactionDisplayDetails: {
           type,
           payload,
-        }
-      }
+        },
+      },
     } = this.props.navigation.state.params;
 
     return (
