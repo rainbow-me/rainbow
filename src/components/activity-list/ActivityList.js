@@ -1,11 +1,20 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, mapProps, onlyUpdateForKeys } from 'recompact';
-import { buildTransactionsSections } from '../../helpers/transactions';
-import { withAccountAddress, withAccountSettings, withAccountTransactions } from '../../hoc';
-import { CoinRow, TransactionCoinRow, RequestCoinRow } from '../coin-row';
-import { SectionList } from '../list';
+import {
+  compose,
+  mapProps,
+  onlyUpdateForKeys,
+  withProps,
+} from 'recompact';
 import ActivityListHeader from './ActivityListHeader';
+import { CoinRow } from '../coin-row';
+import { SectionList } from '../list';
+import { buildTransactionsSectionsSelector } from '../../helpers/transactions';
+import {
+  withAccountAddress,
+  withAccountSettings,
+  withAccountTransactions,
+} from '../../hoc';
 
 const getItemLayout = (data, index) => ({
   index,
@@ -62,23 +71,14 @@ export default compose(
   withAccountAddress,
   withAccountSettings,
   withAccountTransactions,
+  withProps(buildTransactionsSectionsSelector),
   mapProps(({
-    accountAddress,
     nativeCurrency,
     requests,
-    transactions,
+    sections,
     ...props
   }) => {
     let pendingTransactionsCount = 0;
-
-    const sections = buildTransactionsSections({
-      accountAddress,
-      nativeCurrency,
-      requestRenderItem: RequestCoinRow,
-      requests,
-      transactionRenderItem: TransactionCoinRow,
-      transactions,
-    });
 
     const pendingTxSection = sections[requests.length ? 1 : 0];
 
