@@ -2,7 +2,7 @@ import { createStackNavigator } from 'react-navigation';
 import createSwipeNavigator from '../navigation/navigators/createSwipeNavigator';
 import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import ExpandedAssetScreen from './ExpandedAssetScreen';
-import ImportSeedPhraseSheet from './ImportSeedPhraseSheet';
+import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from './ProfileScreenWithData';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
 import ReceiveModal from './ReceiveModal';
@@ -46,15 +46,7 @@ const SwipeStack = createSwipeNavigator({
 
 export default createStackNavigator({
   ConfirmRequest: TransactionConfirmationScreenWithData,
-  ImportSeedPhraseSheet: {
-    screen: ImportSeedPhraseSheet,
-    navigationOptions: {
-      effect: 'sheet',
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height / 2,
-      },
-    },
-  },
+  ImportSeedPhraseSheet: ImportSeedPhraseSheetWithData,
   ExpandedAssetScreen: {
     navigationOptions: {
       effect: 'expanded',
