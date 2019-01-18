@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
-import { TransactionStatusTypes } from '../../helpers/transactions';
+import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { colors, position } from '../../styles';
 import { Row } from '../layout';
 import Icon from '../icons/Icon';
