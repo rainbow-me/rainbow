@@ -60,32 +60,32 @@ const ExpandedAssetScreenDefaultProps = {
 
 ExpandedAssetScreen.defaultProps = ExpandedAssetScreenDefaultProps;
 
+const buildExpandedAsset = ({
+  allAssets,
+  containerPadding,
+  navigation,
+  uniqueTokens,
+}) => {
+  const { name, type } = navigation.state.params;
+
+  let selectedAsset = {};
+
+  if (type === 'token') {
+    [selectedAsset] = filter(allAssets, (asset) => asset.symbol === name);
+  } else if (type === 'unique_token') {
+    [selectedAsset] = filter(uniqueTokens, (asset) => asset.name === name);
+  }
+
+  return {
+    asset: selectedAsset,
+    panelWidth: deviceUtils.dimensions.width - (containerPadding * 2),
+    type,
+  };
+}
+
 export default compose(
   defaultProps(ExpandedAssetScreenDefaultProps),
   withAccountAssets,
-  withProps(({
-    allAssets,
-    containerPadding,
-    navigation,
-    uniqueTokens,
-  }) => {
-    const { name, type } = navigation.state.params;
-
-    let selectedAsset = {};
-
-    if (type === 'token') {
-      [selectedAsset] = filter(allAssets, (asset) => asset.symbol === name);
-    } else if (type === 'unique_token') {
-      [selectedAsset] = filter(uniqueTokens, (asset) => asset.name === name);
-    }
-
-    return {
-      asset: selectedAsset,
-      panelWidth: deviceUtils.dimensions.width - (containerPadding * 2),
-      type,
-    };
-  }),
-  withHandlers({
-    onPressBackground: ({ navigation }) => () => navigation.goBack(),
-  }),
+  withProps(buildExpandedAsset),
+  withHandlers({ onPressBackground: ({ navigation }) => () => navigation.goBack() }),
 )(ExpandedAssetScreen);
