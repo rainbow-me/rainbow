@@ -19,7 +19,7 @@ import { Emoji, Text } from '../text';
 
 const SettingsExternalURLs = {
   about: 'https://balance.io/about',
-  feedback: 'support@balance.io',
+  feedback: 'https://support@balance.io',
   legal: 'https://github.com/balance-io/balance-wallet/blob/master/LICENSE',
 };
 

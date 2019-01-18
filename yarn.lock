@@ -2081,10 +2081,9 @@ bail@^1.0.0:
   resolved "https://registry.yarnpkg.com/bail/-/bail-1.0.3.tgz#63cfb9ddbac829b02a3128cd53224be78e6c21a3"
   integrity sha512-1X8CnjFVQ+a+KW36uBNMTU5s8+v5FzeqrP7hTG5aTb4aPreSbZJlhwPon9VKMuEVgV++JM+SQrALY3kr7eswdg==
 
-balance-common@^0.6.14:
+balance-common@^0.6.15:
   version "0.6.15"
   resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.15.tgz#dea19ee1df28e3ed636aba5ce885c1ef13486788"
-  integrity sha512-NFlKnlmWx+rvgjy4g7iPV7c08ucEyIiN0cg1kCr8BWURZOxcOW0LV0QlmUaE9PI95sklsm94QwYfJ8oTh2Zvjw==
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
