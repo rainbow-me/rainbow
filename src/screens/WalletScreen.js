@@ -2,7 +2,7 @@ import { withAccountAssets } from 'balance-common';
 import { isSameDay } from 'date-fns';
 import { get, join, map } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import Piwik from 'react-native-matomo';
 import {
   compose,
@@ -20,6 +20,7 @@ import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../model/localstorage';
 import {
   withAccountRefresh,
+  withAccountSettings,
   withBlurTransitionProps,
   withFetchingPrices,
   withHideSplashScreen,
@@ -29,7 +30,7 @@ import {
 import { position } from '../styles';
 import { isNewValueForPath } from '../utils';
 
-class WalletScreen extends Component {
+class WalletScreen extends PureComponent {
   static propTypes = {
     allAssetsCount: PropTypes.number,
     assets: PropTypes.array,
@@ -121,6 +122,7 @@ class WalletScreen extends Component {
 export default compose(
   withAccountAssets,
   withAccountRefresh,
+  withAccountSettings,
   withFetchingPrices,
   withTrackingDate,
   withHideSplashScreen,
@@ -138,26 +140,4 @@ export default compose(
     },
   }),
   withProps(buildWalletSectionsSelector),
-  shouldUpdate((props, { isScreenActive, ...nextProps }) => {
-    if (!isScreenActive) return false;
-
-    const changedShowShitcoins = props.showShitcoins !== nextProps.showShitcoins;
-    const finishedFetchingPrices = props.fetchingPrices && !nextProps.fetchingPrices;
-    const finishedLoading = props.isLoading && !nextProps.isLoading;
-    const finishedPopulating = props.isEmpty && !nextProps.isEmpty;
-
-    const newBalance = isNewValueForPath(props, nextProps, 'sections[0].totalValue');
-    const newBlur = isNewValueForPath(props, nextProps, 'showBlur');
-    const newCollectibles = isNewValueForPath(props, nextProps, 'sections[1].totalItems');
-
-    return (
-      finishedFetchingPrices
-      || finishedLoading
-      || finishedPopulating
-      || newBalance
-      || newBlur
-      || newCollectibles
-      || changedShowShitcoins
-    );
-  }),
 )(WalletScreen);
