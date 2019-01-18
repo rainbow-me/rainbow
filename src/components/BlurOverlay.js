@@ -23,7 +23,7 @@ const BlurOverlay = ({ blurAmount, blurType, opacity }) => (
 
 BlurOverlay.propTypes = {
   blurAmount: PropTypes.number,
-  blurType: PropTypes.oneOf(['dark', 'light']),
+  blurType: PropTypes.oneOf(['dark', 'light', 'xlight']),
   opacity: PropTypes.object,
 };
 

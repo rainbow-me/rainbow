@@ -57,6 +57,7 @@
     "react-native-firebase": "^4.3.8",
     "react-native-gesture-handler": "^1.0.7",
     "react-native-haptic-feedback": "^1.2.0",
+    "react-native-indicators": "^0.13.0",
     "react-native-iphone-x-helper": "^1.2.0",
     "react-native-keychain": "^3.0.0",
     "react-native-languages": "^3.0.0",
