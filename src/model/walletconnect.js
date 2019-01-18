@@ -1,6 +1,12 @@
 import { commonStorage } from 'balance-common';
 import lang from 'i18n-js';
-import { assign, forEach, get, mapValues, values } from 'lodash';
+import {
+  assign,
+  forEach,
+  get,
+  mapValues,
+  values,
+} from 'lodash';
 import { AlertIOS } from 'react-native';
 import RNWalletConnect from 'rn-walletconnect-wallet';
 

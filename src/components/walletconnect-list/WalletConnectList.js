@@ -53,6 +53,7 @@ const WalletConnectList = ({
 );
 
 WalletConnectList.propTypes = {
+  onHandleDisconnectAlert: PropTypes.func,
   onLayout: PropTypes.func,
   safeAreaInset: PropTypes.object,
   walletConnectorsByDappName: PropTypes.arrayOf(PropTypes.object),
@@ -73,12 +74,12 @@ export default compose(
           const validSessions = getValidWalletConnectors();
           const dappSessions = values(pickBy(validSessions, (session) => session.dappName === dappName));
           walletConnectDisconnectAll(dappSessions)
-          .then(() => {
-            removeWalletConnectorByDapp(dappName);
-          });
+            .then(() => {
+              removeWalletConnectorByDapp(dappName);
+            });
         }
       });
-    }
+    },
   }),
   onlyUpdateForPropTypes,
 )(WalletConnectList);

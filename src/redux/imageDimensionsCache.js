@@ -17,9 +17,9 @@ const INITIAL_STATE = {};
 export default (state = INITIAL_STATE, action) =>
   produce(state, draft => {
     switch (action.type) {
-      case MERGE:
-        draft[action.id] = action.dimensions;
-      case PRUNE:
-        omit(draft, action.idsToPrune);
+    case MERGE:
+      draft[action.id] = action.dimensions;
+    case PRUNE:
+      omit(draft, action.idsToPrune);
     }
   });

@@ -15,9 +15,9 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case NONCE_UPDATE_TRANSACTION_COUNT_NONCE:
-      return { ...state, transactionCountNonce: action.payload };
-    default:
-      return state;
+  case NONCE_UPDATE_TRANSACTION_COUNT_NONCE:
+    return { ...state, transactionCountNonce: action.payload };
+  default:
+    return state;
   }
 };

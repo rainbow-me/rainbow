@@ -22,13 +22,13 @@ export const transactionsToApproveInit = () => (dispatch, getState) => {
   getLocalRequests(accountAddress, network).then((requests) => {
     const transactionsToApprove = requests || {};
     dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: transactionsToApprove });
-  })
+  });
 };
 
 const getAssetDetails = (contractAddress, assets) => {
-  for (var item of assets)  {
+  for (var item of assets) {
     if (item.address === contractAddress) {
-      return { ...item }
+      return { ...item };
     }
   }
   return null;
@@ -59,10 +59,12 @@ const getRequestDisplayDetails = (callData, assets, prices, nativeCurrency) => {
   if (callData.method === 'eth_sendTransaction') {
     const transaction = get(callData, 'params[0]', null);
     return getTransactionDisplayDetails(transaction, assets, prices, nativeCurrency);
-  } else if (callData.method === 'eth_sign' || callData.method === 'personal_sign') {
+  }
+  if (callData.method === 'eth_sign' || callData.method === 'personal_sign') {
     const message = get(callData, 'params[1]');
     return getMessageDisplayDetails(message);
-  } else if (callData.method === 'eth_signTypedData' ||
+  }
+  if (callData.method === 'eth_signTypedData' ||
              callData.method === 'eth_signTypedData_v3') {
     const request = get(callData, 'params[1]', null);
     const jsonRequest = JSON.stringify(request.message);
@@ -115,7 +117,8 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
       timestampInMs,
       type: 'transaction',
     };
-  } else if (transaction.data.startsWith(tokenTransferHash)) {
+  }
+  if (transaction.data.startsWith(tokenTransferHash)) {
     const contractAddress = transaction.to;
     const asset = getAssetDetails(contractAddress, assets);
     const dataPayload = transaction.data.replace(tokenTransferHash, '');
@@ -149,7 +152,13 @@ export const addTransactionToApprove = (sessionId, callId, callData, dappName) =
   const { prices } = getState().prices;
   const { assets } = getState().assets;
   const transactionDisplayDetails = getRequestDisplayDetails(callData, assets, prices, nativeCurrency);
-  const transaction = { sessionId, callId, callData, transactionDisplayDetails, dappName };
+  const transaction = {
+    sessionId,
+    callId,
+    callData,
+    transactionDisplayDetails,
+    dappName,
+  };
   const updatedTransactions = { ...transactionsToApprove, [callId]: transaction };
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
   saveLocalRequests(accountAddress, network, updatedTransactions);
@@ -191,12 +200,12 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE:
-      return {
-        ...state,
-        transactionsToApprove: action.payload,
-      };
-    default:
-      return state;
+  case WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE:
+    return {
+      ...state,
+      transactionsToApprove: action.payload,
+    };
+  default:
+    return state;
   }
 };

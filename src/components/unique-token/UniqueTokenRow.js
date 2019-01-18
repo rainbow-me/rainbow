@@ -1,7 +1,12 @@
 import { compact } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, mapProps, onlyUpdateForKeys, withProps } from 'recompact';
+import {
+  compose,
+  mapProps,
+  onlyUpdateForKeys,
+  withProps,
+} from 'recompact';
 import styled from 'styled-components/primitives';
 import { padding } from '../../styles';
 import { deviceUtils } from '../../utils';
