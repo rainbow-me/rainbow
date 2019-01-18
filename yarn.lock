@@ -2081,10 +2081,10 @@ bail@^1.0.0:
   resolved "https://registry.yarnpkg.com/bail/-/bail-1.0.3.tgz#63cfb9ddbac829b02a3128cd53224be78e6c21a3"
   integrity sha512-1X8CnjFVQ+a+KW36uBNMTU5s8+v5FzeqrP7hTG5aTb4aPreSbZJlhwPon9VKMuEVgV++JM+SQrALY3kr7eswdg==
 
-balance-common@0.6.13:
-  version "0.6.13"
-  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.13.tgz#caf224c45c5e67dc21fbc57363c1022a5be49bb5"
-  integrity sha512-Zqb6+B7fMy1oY9mcc5KXRkcRvm76UAWmpWW11eiSw7MKLzuIMUh0qCTErxYsGZ+8a9Fmhx+/mCR9Gy8tX+vThQ==
+balance-common@^0.6.14:
+  version "0.6.15"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.15.tgz#dea19ee1df28e3ed636aba5ce885c1ef13486788"
+  integrity sha512-NFlKnlmWx+rvgjy4g7iPV7c08ucEyIiN0cg1kCr8BWURZOxcOW0LV0QlmUaE9PI95sklsm94QwYfJ8oTh2Zvjw==
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -3788,9 +3788,9 @@ eslint-visitor-keys@^1.0.0:
   integrity sha512-qzm/XxIbxm/FHyH341ZrbnMUpe+5Bocte9xkmFMzPMjRaZMcXww+MpBptFvtU+79L362nqiLhekCxCxDPaUMBQ==
 
 eslint@^5.11.1:
-  version "5.12.0"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-5.12.0.tgz#fab3b908f60c52671fb14e996a450b96c743c859"
-  integrity sha512-LntwyPxtOHrsJdcSwyQKVtHofPHdv+4+mFwEe91r2V13vqpM8yLr7b1sW+Oo/yheOPkWYsYlYJCkzlFAt8KV7g==
+  version "5.12.1"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-5.12.1.tgz#5ca9931fb9029d04e7be92b03ce3b58edfac7e3b"
+  integrity sha512-54NV+JkTpTu0d8+UYSA8mMKAG4XAsaOrozA9rCW7tgneg1mevcL7wIotPC+fZ0SkWwdhNqoXoxnQCTBp7UvTsg==
   dependencies:
     "@babel/code-frame" "^7.0.0"
     ajv "^6.5.3"
