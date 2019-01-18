@@ -1703,9 +1703,9 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-"balance-common@git+https://github.com/balance-io/balance-common.git#ratelimit":
-  version "0.6.13"
-  resolved "git+https://github.com/balance-io/balance-common.git#98e6d50eac2996aa5d334de98c00d863a76efc7c"
+balance-common@^0.6.14:
+  version "0.6.14"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.14.tgz#7b20b4ea2190c552ffc31baec0072c07ff778810"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
