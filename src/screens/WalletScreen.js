@@ -141,6 +141,7 @@ export default compose(
   shouldUpdate((props, { isScreenActive, ...nextProps }) => {
     if (!isScreenActive) return false;
 
+    const changedShowShitcoins = props.showShitcoins !== nextProps.showShitcoins;
     const finishedFetchingPrices = props.fetchingPrices && !nextProps.fetchingPrices;
     const finishedLoading = props.isLoading && !nextProps.isLoading;
     const finishedPopulating = props.isEmpty && !nextProps.isEmpty;
@@ -156,6 +157,7 @@ export default compose(
       || newBalance
       || newBlur
       || newCollectibles
+      || changedShowShitcoins
     );
   }),
 )(WalletScreen);
