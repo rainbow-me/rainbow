@@ -99,7 +99,7 @@ const buildWalletSections = (
   };
 };
 
-export const buildWalletSectionsSelector = createSelector(
+export default createSelector(
   [
     allAssetsSelector,
     allAssetsCountSelector,
@@ -113,5 +113,5 @@ export const buildWalletSectionsSelector = createSelector(
     showShitcoinsSelector,
     uniqueTokensSelector,
   ],
-  buildWalletSections
+  buildWalletSections,
 );
