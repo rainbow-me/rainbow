@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Animated, InteractionManager } from 'react-native';
-
+import { Animated } from 'react-native';
 import Flex from './Flex';
 
 export default class FlyInView extends Component {
