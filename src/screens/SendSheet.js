@@ -1,5 +1,4 @@
-import { convertAssetAmountToDisplay } from 'balance-common';
-import { withSafeTimeout } from '@hocs/safe-timers';
+import { convertAssetAmountToDisplay, withAccountAssets } from 'balance-common';
 import { get, isEmpty, map } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -17,22 +16,31 @@ import { isIphoneX } from 'react-native-iphone-x-helper';
 import TouchID from 'react-native-touch-id';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-import { AssetList, UniqueTokenRow } from '../components/asset-list';
+import { AssetList } from '../components/asset-list';
+import { UniqueTokenRow } from '../components/unique-token';
 import { Button, BlockButton, LongPressButton } from '../components/buttons';
 import { SendCoinRow } from '../components/coin-row';
 import { AddressField, UnderlineField } from '../components/fields';
 import { Icon } from '../components/icons';
 import { PillLabel } from '../components/labels';
-import { Column, Flex, FlyInView, Row } from '../components/layout';
+import {
+  Column,
+  Flex,
+  FlyInView,
+  Row,
+} from '../components/layout';
 import { ShadowStack } from '../components/shadow-stack';
 import { Monospace } from '../components/text';
 import {
-  withAccountAddress,
-  withAccountAssets,
+  withAccountRefresh,
   withAccountSettings,
-  withRequestsInit
 } from '../hoc';
-import { colors, fonts, padding, shadow } from '../styles';
+import {
+  colors,
+  fonts,
+  padding,
+  shadow,
+} from '../styles';
 import { deviceUtils } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
 import { removeLeadingZeros, uppercase } from '../utils/formatters';
@@ -145,7 +153,7 @@ const TransactionContainer = styled(View)`
   background-color: ${colors.lightGrey};
 `;
 
-class SendScreen extends Component {
+class SendSheet extends Component {
   static propTypes = {
     allAssets: PropTypes.array,
     fetchData: PropTypes.func,
@@ -220,8 +228,8 @@ class SendScreen extends Component {
       Keyboard.dismiss();
     }
 
-    if (prevProps.isValidAddress !== isValidAddress ||
-        prevProps.selected !== selected) {
+    if (prevProps.isValidAddress !== isValidAddress
+        || prevProps.selected !== selected) {
       let verticalGestureResponseDistance = 0;
 
       if (isValidAddress) {
@@ -235,9 +243,8 @@ class SendScreen extends Component {
   }
 
   componentWillUnmount() {
-    const { sendClearFields } = this.props;
-
-    sendClearFields();
+    this.props.sendClearFields();
+    this.state.sendLongPressProgress.stopAnimation();
   }
 
   getTransactionSpeedOptions = () => {
@@ -492,12 +499,14 @@ class SendScreen extends Component {
 
   renderTransaction() {
     const {
+      allAssets,
       assetAmount,
       nativeAmount,
       nativeCurrency,
       selected,
       sendMaxBalance,
     } = this.props;
+    const selectedAsset = allAssets.find(asset => asset.symbol === selected.symbol);
 
     return (
       <Column flex={1}>
@@ -511,7 +520,7 @@ class SendScreen extends Component {
           shouldRasterizeIOS={true}
           width={deviceUtils.dimensions.width}
         >
-          <SendCoinRow item={selected} onPress={this.onPressAssetHandler('')}>
+          <SendCoinRow item={selectedAsset} onPress={this.onPressAssetHandler('')}>
             <Column>
               <Icon name="caret" direction="up" size={5} color={colors.dark} />
               <Icon name="caret" direction="down" size={5} color={colors.dark} />
@@ -580,23 +589,12 @@ class SendScreen extends Component {
 }
 
 export default compose(
-  withAccountAddress,
   withAccountAssets,
   withAccountSettings,
-  withRequestsInit,
-  withSafeTimeout,
+  withAccountRefresh,
   withHandlers({
-    fetchData: ({
-      accountAddress,
-      accountUpdateAccountAddress,
-      setSafeTimeout,
-      transactionsToApproveInit,
-    }) => () => {
-      accountUpdateAccountAddress(accountAddress, 'BALANCEWALLET');
-      transactionsToApproveInit();
-      // hack: use timeout so that it looks like loading is happening
-      // accountUpdateAccountAddress does not return a promise
-      return new Promise(resolve => setSafeTimeout(resolve, 2000));
+    fetchData: ({ refreshAccount }) => async () => {
+      await refreshAccount();
     },
   }),
-)(SendScreen);
+)(SendSheet);

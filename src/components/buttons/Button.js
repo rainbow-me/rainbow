@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { colors, padding } from '../../styles';
+import { ButtonPressAnimation } from '../animations';
 import InnerBorder from '../InnerBorder';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import ButtonPressAnimation from './ButtonPressAnimation';
 
 const ButtonSizeTypes = {
   small: {
@@ -30,7 +30,11 @@ const Container = styled(Centered)`
   border-radius: ${({ type }) => ((type === 'rounded') ? 14 : 50)};
   flex-grow: 0;
   position: relative;
-  ${({ containerStyles }) => containerStyles}
+  ${({ containerStyles }) => containerStyles};
+  shadow-color: ${colors.blueGreyLight};
+  shadow-offset: 0px 4px;
+  shadow-opacity: 0.2;
+  shadow-radius: 6;
 `;
 
 const Button = ({

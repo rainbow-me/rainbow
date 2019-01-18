@@ -25,11 +25,11 @@ PODS:
     - GoogleToolboxForMac/Logger (~> 2.1)
     - Protobuf (~> 3.1)
   - FLAnimatedImage (1.0.12)
-  - GoogleToolboxForMac/Defines (2.2.0)
-  - GoogleToolboxForMac/Logger (2.2.0):
-    - GoogleToolboxForMac/Defines (= 2.2.0)
-  - "GoogleToolboxForMac/NSData+zlib (2.2.0)":
-    - GoogleToolboxForMac/Defines (= 2.2.0)
+  - GoogleToolboxForMac/Defines (2.1.4)
+  - GoogleToolboxForMac/Logger (2.1.4):
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+  - "GoogleToolboxForMac/NSData+zlib (2.1.4)":
+    - GoogleToolboxForMac/Defines (= 2.1.4)
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
     - nanopb/encode (= 0.3.901)
@@ -52,12 +52,12 @@ PODS:
     - React/RCTNetwork
   - React/RCTNetwork (0.57.1):
     - React/Core
-  - RNLanguages (3.0.1):
+  - RNLanguages (3.0.2):
     - React
-  - RNReanimated (1.0.0-alpha.10):
+  - RNReanimated (1.0.0-alpha.11):
     - React
-  - SDWebImage/Core (4.4.3)
-  - SDWebImage/GIF (4.4.3):
+  - SDWebImage/Core (4.4.2)
+  - SDWebImage/GIF (4.4.2):
     - FLAnimatedImage (~> 1.0)
     - SDWebImage/Core
   - yoga (0.57.1.React)
@@ -112,7 +112,7 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: 4f7768a98c5c3c5bd9a4c9e431ea98dccc0a51f9
   FirebaseMessaging: 94579ae655d817287f029ebfebd5b0811fbb3a51
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
-  GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
+  GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 6b0fc34ab8f2b7dbad2278a48be08a669427c59f
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
@@ -120,7 +120,7 @@ SPEC CHECKSUMS:
   react-native-fast-image: cba3d9bf9c2cf8ddb643d887a686c53a5dd90a2c
   RNLanguages: e3ae05ef105937645218272429dac0c3f7633451
   RNReanimated: 45d9313b7a62318ed00d60a811937321e43e076e
-  SDWebImage: c5594f1a19c48d526d321e548902b56b479cd508
+  SDWebImage: 4170dae6332a915d44c918675d51dc1c4c06b45f
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
 PODFILE CHECKSUM: 49f66978b10019df5c3f0971f9cb6e6bc610c256

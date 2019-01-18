@@ -19,7 +19,7 @@ import { Emoji, Text } from '../text';
 
 const SettingsExternalURLs = {
   about: 'https://balance.io/about',
-  feedback: 'support@balance.io',
+  feedback: 'https://support@balance.io',
   legal: 'https://github.com/balance-io/balance-wallet/blob/master/LICENSE',
 };
 
@@ -60,6 +60,7 @@ const SettingsSection = ({
   nativeCurrency,
   onPressBackup,
   onPressCurrency,
+  onPressImportSeedPhrase,
   onPressLanguage,
   // onPressSecurity,
   openWebView,
@@ -110,6 +111,12 @@ const SettingsSection = ({
     <ListFooter />
     <Column>
       <ListItem
+        icon={<Emoji name="seedling" />}
+        label="Import Seed Phrase"
+        onPress={onPressImportSeedPhrase}
+      />
+      <ListItemDivider />
+      <ListItem
         icon={<Emoji name="scales" />}
         label="About Balance"
         onPress={openWebView}
@@ -138,6 +145,7 @@ SettingsSection.propTypes = {
   nativeCurrency: PropTypes.string.isRequired,
   onPressBackup: PropTypes.func.isRequired,
   onPressCurrency: PropTypes.func.isRequired,
+  onPressImportSeedPhrase: PropTypes.func.isRequired,
   onPressLanguage: PropTypes.func.isRequired,
   // onPressSecurity: PropTypes.func.isRequired,
   openWebView: PropTypes.func,

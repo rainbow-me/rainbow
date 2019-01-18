@@ -64,11 +64,12 @@ function getTransitionPosition() {
 function setTransitionPosition(position) {
   transitionPosition = position;
 }
+
 export default {
   getActiveRouteName,
   getTransitionPosition,
   handleAction,
   pauseNavigationActions,
   resumeNavigationActions,
-  setTransitionPosition
+  setTransitionPosition,
 };

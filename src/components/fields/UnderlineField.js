@@ -92,6 +92,10 @@ export default class UnderlineField extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this.state.underlineAnimation.stopAnimation();
+  }
+
   onBlur = (...props) => {
     const { onBlur } = this.props;
     const { underlineAnimation } = this.state;

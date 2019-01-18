@@ -1,9 +1,18 @@
+import { settingsUpdateAccountAddress } from 'balance-common';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompose';
+import { createSelector } from 'reselect';
 
-const mapStateToProps = ({ account: { accountAddress } }) => ({ accountAddress });
+const mapStateToProps = ({ settings: { accountAddress } }) => ({ accountAddress });
+
+const accountAddressSelector = state => state.accountAddress;
+
+const lowerAccountAddressSelector = createSelector(
+  [ accountAddressSelector ],
+  (accountAddress) => ({ accountAddress: accountAddress.toLowerCase() }),
+);
 
 export default Component => compose(
-  connect(mapStateToProps),
-  withProps(({ accountAddress }) => ({ accountAddress: accountAddress.toLowerCase() })),
+  connect(mapStateToProps, { settingsUpdateAccountAddress }),
+  withProps(lowerAccountAddressSelector),
 )(Component);

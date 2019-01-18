@@ -6,17 +6,20 @@ import {
   isToday,
   isYesterday,
 } from 'date-fns';
-import { get, groupBy, isEmpty } from 'lodash';
+import {
+  get,
+  groupBy,
+  isEmpty,
+} from 'lodash';
 import { createElement } from 'react';
+import { createSelector } from 'reselect';
+import { RequestCoinRow, TransactionCoinRow } from '../components/coin-row';
+import TransactionStatusTypes from './transactionStatusTypes';
 
-export const TransactionStatusTypes = {
-  failed: 'failed',
-  received: 'received',
-  receiving: 'receiving',
-  self: 'self',
-  sending: 'sending',
-  sent: 'sent',
-};
+const accountAddressSelector = state => state.accountAddress;
+const nativeCurrencySelector = state => state.nativeCurrency;
+const requestsSelector = state => state.requests;
+const transactionsSelector = state => state.transactions;
 
 export const getTransactionStatus = ({
   accountAddress,
@@ -41,23 +44,18 @@ export const getTransactionStatus = ({
   return undefined;
 };
 
-const groupTransactionByDate = (transactions) =>
-  groupBy(transactions, ({ pending, timestamp: time }) => {
-    if (pending) return 'Pending';
+const groupTransactionByDate = ({ pending, timestamp: time }) => {
+  if (pending) return 'Pending';
 
-    const { ms } = time;
-    const timestamp = new Date(parseInt(ms, 10));
+  const { ms } = time;
+  const timestamp = new Date(parseInt(ms, 10));
 
-    if (isToday(timestamp)) {
-      return 'Today';
-    } else if (isYesterday(timestamp)) {
-      return 'Yesterday';
-    } else if (isThisMonth(timestamp)) {
-      return 'This Month';
-    }
+  if (isToday(timestamp)) return 'Today';
+  if (isYesterday(timestamp)) return 'Yesterday';
+  if (isThisMonth(timestamp)) return 'This Month';
 
-    return format(timestamp, `MMMM${isThisYear(timestamp) ? '' : ' YYYY'}`);
-  });
+  return format(timestamp, `MMMM${isThisYear(timestamp) ? '' : ' YYYY'}`);
+};
 
 const normalizeTransactions = ({ accountAddress, nativeCurrency, transactions }) =>
   transactions.map(({
@@ -79,38 +77,54 @@ const normalizeTransactions = ({ accountAddress, nativeCurrency, transactions })
 
 const renderItemElement = renderItem => renderItemProps => createElement(renderItem, renderItemProps);
 
-export const buildTransactionsSections = ({
+const buildTransactionsSections = (
   accountAddress,
   nativeCurrency,
-  requestRenderItem,
   requests,
-  transactionRenderItem,
   transactions,
-}) => {
-  const normalizedTransactions = normalizeTransactions({
-    accountAddress,
-    nativeCurrency,
-    transactions,
-  });
+) => {
+  let sectionedTransactions = [];
 
-  const transactionsByDate = groupTransactionByDate(normalizedTransactions);
+  if (!isEmpty(transactions)) {
+    const normalizedTransactions = normalizeTransactions({
+      accountAddress,
+      nativeCurrency,
+      transactions,
+    });
 
-  const sectionedTransactions = Object.keys(transactionsByDate).map(section => ({
-    data: transactionsByDate[section],
-    renderItem: renderItemElement(transactionRenderItem),
-    title: section,
-  }));
+    const transactionsByDate = groupBy(normalizedTransactions, groupTransactionByDate);
+
+    sectionedTransactions = Object.keys(transactionsByDate).map(section => ({
+      data: transactionsByDate[section],
+      renderItem: renderItemElement(TransactionCoinRow),
+      title: section,
+    }));
+  }
+
+
   let requestsToApprove = [];
   if (!isEmpty(requests)) {
     requestsToApprove = [{
       data: requests,
-      renderItem: renderItemElement(requestRenderItem),
+      renderItem: renderItemElement(RequestCoinRow),
       title: 'Requests',
     }];
   }
 
-  return [
-    ...requestsToApprove,
-    ...sectionedTransactions,
-  ];
+  return {
+    sections: [
+      ...requestsToApprove,
+      ...sectionedTransactions,
+    ],
+  };
 };
+
+export const buildTransactionsSectionsSelector = createSelector(
+  [
+    accountAddressSelector,
+    nativeCurrencySelector,
+    requestsSelector,
+    transactionsSelector,
+  ],
+  buildTransactionsSections,
+);

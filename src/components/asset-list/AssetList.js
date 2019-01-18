@@ -18,7 +18,8 @@ const buildListBottomPadding = (safeAreaInset) => {
   return (safeAreaInset.bottom + fabSizeWithPadding) - ListFooter.height;
 };
 
-const renderAssetListHeader = ({ section }) => <AssetListHeader {...section} />;
+// eslint-disable-next-line react/prop-types
+const AssetListHeaderRenderer = ({ section }) => <AssetListHeader {...section} />;
 
 const AssetList = ({
   fetchData,
@@ -29,7 +30,7 @@ const AssetList = ({
   sections,
   ...props
 }) => (
-  (isEmpty || isLoading) ? (
+  (isLoading || isEmpty) ? (
     <AssetListSkeleton isLoading={isLoading} />
   ) : (
     <SectionList
@@ -43,7 +44,7 @@ const AssetList = ({
       hideHeader={hideHeader}
       keyExtractor={assetListKeyExtractor}
       renderItem={AssetListItem}
-      renderSectionHeader={hideHeader ? null : renderAssetListHeader}
+      renderSectionHeader={hideHeader ? null : AssetListHeaderRenderer}
       sections={sections}
     />
   )

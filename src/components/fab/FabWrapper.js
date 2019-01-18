@@ -5,7 +5,6 @@ import styled from 'styled-components/primitives';
 import { withSafeAreaViewInsetValues } from '../../hoc';
 import { FlexItem, Row } from '../layout';
 import SendFab from './SendFab';
-import WalletConnectFab from './WalletConnectFab';
 
 const FabWrapperBottomPosition = 21;
 
@@ -15,6 +14,14 @@ const Wrapper = styled(Row)`
   right: 12;
 `;
 
+const renderFab = (fab, index) =>
+  createElement(fab, {
+    key: index,
+    style: {
+      marginLeft: (index > 0) ? 12 : 0,
+    },
+  });
+
 const FabWrapper = ({
   children,
   disabled,
@@ -23,17 +30,14 @@ const FabWrapper = ({
 }) => (
   <FlexItem>
     {children}
-    <Wrapper bottomInset={safeAreaInset.bottom} direction="row-reverse">
-      {fabs.map((fab, index) => (
-        createElement(fab, {
-          disabled,
-          key: index,
-          style: {
-            marginLeft: (index > 0) ? 12 : 0,
-          },
-        })
-      ))}
-    </Wrapper>
+    {!disabled && (
+      <Wrapper
+        bottomInset={safeAreaInset.bottom}
+        direction="row-reverse"
+      >
+        {fabs.map(renderFab)}
+      </Wrapper>
+    )}
   </FlexItem>
 );
 
