@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import styled from 'styled-components/primitives';
 import { colors } from '../../styles';
-import { ButtonPressAnimation } from '../buttons';
+import { ButtonPressAnimation } from '../animations';
 import { Monospace } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';

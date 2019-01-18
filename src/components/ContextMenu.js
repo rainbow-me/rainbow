@@ -3,8 +3,8 @@ import React, { Component, Fragment } from 'react';
 import ActionSheet from 'react-native-actionsheet';
 import styled from 'styled-components/primitives';
 import { padding } from '../styles';
-import { ButtonPressAnimation } from './buttons';
-import Icon from './icons/Icon';
+import { ButtonPressAnimation } from './animations';
+import { Icon } from './icons';
 import { Centered } from './layout';
 
 const ContextMenuButton = styled(Centered)`
@@ -20,6 +20,7 @@ export default class ContextMenu extends Component {
   actionSheetRef = null
 
   handleActionSheetRef = (ref) => { this.actionSheetRef = ref; }
+
   showActionSheet = () => this.actionSheetRef.show()
 
   render = () => (
