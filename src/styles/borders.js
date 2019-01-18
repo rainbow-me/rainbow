@@ -30,7 +30,8 @@ border.buildRadius = (direction, value = border.radius) => {
       border-${upperFirst(direction)}-left-radius: ${value};
       border-${upperFirst(direction)}-right-radius: ${value};
     `;
-  } else if (direction === 'left' || direction === 'right') {
+  }
+  if (direction === 'left' || direction === 'right') {
     return css`
       border-bottom-${upperFirst(direction)}-radius: ${value};
       border-top-${upperFirst(direction)}-radius: ${value};

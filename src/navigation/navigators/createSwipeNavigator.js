@@ -79,9 +79,7 @@ export default function createSwipeNavigator(screens, options) {
      * @param  {String} routeName   The name of the route to get the index of.
      * @return {Number}             The index of the route which will be zero if the route does not exist.
      */
-    getRouteIndex = (routeName) => {
-      return (routeOrder || EMPTY_ARRAY).indexOf(routeName);
-    };
+    getRouteIndex = (routeName) => (routeOrder || EMPTY_ARRAY).indexOf(routeName);
 
     /**
      * Get item data based on screen dimensions.
