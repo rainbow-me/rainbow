@@ -38,7 +38,6 @@ export default compose(
 shouldUpdate((props, { isScreenActive, ...nextProps }) => {
   if (!isScreenActive) return false;
 
-  const finishedLoading = props.fetchingTransactions && !nextProps.fetchingTransactions;
   const newTxCount = props.transactionsCount !== nextProps.transactionsCount;
   const newNativeCurrency = props.nativeCurrency !== nextProps.nativeCurrency;
   return finishedLoading || newTxCount || newNativeCurrency;
