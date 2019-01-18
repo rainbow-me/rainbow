@@ -1,6 +1,6 @@
 import { compact } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Animated } from 'react-native';
 import { State, TapGestureHandler } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -15,7 +15,7 @@ const DefaultAnimatedValues = {
   transX: 0,
 };
 
-export default class ButtonPressAnimation extends Component {
+export default class ButtonPressAnimation extends PureComponent {
   static propTypes = {
     activeOpacity: PropTypes.number,
     children: PropTypes.any,

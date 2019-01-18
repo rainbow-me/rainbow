@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import { withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-import { ButtonPressAnimation } from '../buttons';
+import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { colors, position, shadow } from '../../styles';
 import { ShadowStack } from '../shadow-stack';
-import { withHandlers } from 'recompact';
 
 const FloatingActionButtonBorderRadius = 27;
 

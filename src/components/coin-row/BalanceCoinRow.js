@@ -7,7 +7,7 @@ import { compose, shouldUpdate, withHandlers } from 'recompact';
 import { withAccountSettings } from '../../hoc';
 import { colors } from '../../styles';
 import { isNewValueForPath } from '../../utils';
-import { ButtonPressAnimation } from '../buttons';
+import { ButtonPressAnimation } from '../animations';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
@@ -18,44 +18,58 @@ const formatPercentageString = percentString => (
     ? percentString.split('-').join('- ').split('%').join(' %')
     : '-'
 );
+const BottomRow = ({ balance, native }) => {
+  const percentChange = get(native, 'change.display');
+  const percentageChangeDisplay = formatPercentageString(percentChange);
+  const isPositive = (percentChange && (percentageChangeDisplay.charAt(0) !== '-'));
+
+  return (
+    <Fragment>
+      <BottomRowText>{balance.display}</BottomRowText>
+      <BottomRowText color={isPositive ? colors.seaGreen : null}>
+        {percentageChangeDisplay}
+      </BottomRowText>
+    </Fragment>
+  );
+};
+
+BottomRow.propTypes = {
+  balance: PropTypes.shape({ display: PropTypes.string }),
+  native: PropTypes.object,
+};
+
+const TopRow = ({ name, native, nativeCurrency }) => {
+  const nativeDisplay = get(native, 'balance.display');
+  const currencySymbol = supportedNativeCurrencies[nativeCurrency].symbol;
+
+  return (
+    <Fragment>
+      <CoinName>{name}</CoinName>
+      <BalanceText color={nativeDisplay ? null : colors.blueGreyLight}>
+        {nativeDisplay || `${currencySymbol}0.00`}
+      </BalanceText>
+    </Fragment>
+  );
+};
+
+TopRow.propTypes = {
+  name: PropTypes.string,
+  native: PropTypes.object,
+  nativeCurrency: PropTypes.string,
+};
 
 const BalanceCoinRow = ({
   item,
   nativeCurrency,
   onPress,
-  ...props,
+  ...props
 }) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
     <CoinRow
       {...item}
       {...props}
-      bottomRowRender={({ balance, symbol, native }) => {
-        const percentChange = get(native, 'change.display');
-        const percentageChangeDisplay = formatPercentageString(percentChange);
-        const isPositive = (percentChange && (percentageChangeDisplay.charAt(0) !== '-'));
-
-        return (
-          <Fragment>
-            <BottomRowText>{balance.display}</BottomRowText>
-            <BottomRowText color={isPositive ? colors.seaGreen : null}>
-              {percentageChangeDisplay}
-            </BottomRowText>
-          </Fragment>
-        );
-      }}
-      topRowRender={({ name, native }) => {
-        const nativeDisplay = get(native, 'balance.display');
-        const currencySymbol = supportedNativeCurrencies[nativeCurrency].symbol;
-
-        return (
-          <Fragment>
-            <CoinName>{name}</CoinName>
-            <BalanceText color={nativeDisplay ? null : colors.blueGreyLight}>
-              {nativeDisplay || `${currencySymbol}0.00`}
-            </BalanceText>
-          </Fragment>
-        );
-      }}
+      bottomRowRender={BottomRow}
+      topRowRender={TopRow}
     />
   </ButtonPressAnimation>
 );
@@ -63,6 +77,7 @@ const BalanceCoinRow = ({
 BalanceCoinRow.propTypes = {
   item: PropTypes.object,
   nativeCurrency: PropTypes.string.isRequired,
+  onPress: PropTypes.func,
 };
 
 export default compose(
