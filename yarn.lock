@@ -6342,8 +6342,8 @@ parent-module@^1.0.0:
     callsites "^3.0.0"
 
 parse-asn1@^5.0.0:
-  version "5.1.2"
-  resolved "https://registry.yarnpkg.com/parse-asn1/-/parse-asn1-5.1.2.tgz#13efbaaac8da669a9751a6b50a7cfccfdef756ae"
+  version "5.1.3"
+  resolved "https://registry.yarnpkg.com/parse-asn1/-/parse-asn1-5.1.3.tgz#1600c6cc0727365d68b97f3aa78939e735a75204"
   dependencies:
     asn1.js "^4.0.0"
     browserify-aes "^1.0.0"
@@ -6922,6 +6922,12 @@ react-native-gesture-handler@^1.0.7:
 react-native-haptic-feedback@^1.2.0:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.4.2.tgz#e15ed66f2ffe9ec886b4098b792591136efd5ee2"
+
+react-native-indicators@^0.13.0:
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/react-native-indicators/-/react-native-indicators-0.13.0.tgz#001824bba194b1ca6e654d903beaf0168d4e6ac8"
+  dependencies:
+    prop-types "^15.5.10"
 
 react-native-iphone-x-helper@^1.2.0:
   version "1.2.0"
