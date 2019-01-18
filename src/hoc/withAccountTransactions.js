@@ -5,12 +5,10 @@ const EMPTY_ARRAY = [];
 
 const mapStateToProps = ({
   transactions: {
-    fetchingTransactions,
     hasPendingTransaction,
     transactions,
   },
 }) => ({
-  fetchingTransactions,
   hasPendingTransaction,
   transactions,
 });
