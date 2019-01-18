@@ -83,7 +83,6 @@ const buildTransactionsSections = (
   requests,
   transactions,
 ) => {
-  console.log('Build transactions sections');
   let sectionedTransactions = [];
 
   if (!isEmpty(transactions)) {
