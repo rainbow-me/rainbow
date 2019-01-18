@@ -16,7 +16,7 @@ import BlurOverlay from '../components/BlurOverlay';
 import { FabWrapper } from '../components/fab';
 import { CameraHeaderButton, Header, ProfileHeaderButton } from '../components/header';
 import { Page } from '../components/layout';
-import { buildWalletSectionsSelector } from '../helpers/buildWalletSections';
+import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../model/localstorage';
 import {
   withAccountRefresh,
@@ -68,7 +68,6 @@ class WalletScreen extends Component {
       assets,
       assetsTotal,
       isScreenActive,
-      onHideSplashScreen,
       trackingDate,
       uniqueTokens,
       updateTrackingDate,
