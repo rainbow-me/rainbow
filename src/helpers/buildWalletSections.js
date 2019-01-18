@@ -3,9 +3,22 @@ import { get } from 'lodash';
 import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
+import { createSelector } from 'reselect';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniqueTokenRow } from '../components/unique-token';
 import { buildUniqueTokenList } from './assets';
+
+const allAssetsSelector = state => state.allAssets;
+const allAssetsCountSelector = state => state.allAssetsCount;
+const assetsSelector = state => state.assets;
+const assetsTotalSelector = state => state.assetsTotal;
+const fetchingAssetsSelector = state => state.fetchingAssets;
+const fetchingUniqueTokensSelector = state => state.fetchingUniqueTokens;
+const onToggleShowShitcoinsSelector = state => state.onToggleShowShitcoins;
+const setIsWalletEmptySelector = state => state.setIsWalletEmpty;
+const shitcoinsCountSelector = state => state.shitcoinsCount;
+const showShitcoinsSelector = state => state.showShitcoins;
+const uniqueTokensSelector = state => state.uniqueTokens;
 
 const enhanceRenderItem = compose(
   withNavigation,
@@ -27,7 +40,7 @@ const collectiblesRenderItem = item => <UniqueTokenItem {...item} assetType="uni
 
 const filterWalletSections = sections => Object.values(sections).filter(({ totalItems }) => totalItems);
 
-export default ({
+const buildWalletSections = (
   allAssets,
   allAssetsCount,
   assets,
@@ -39,7 +52,7 @@ export default ({
   shitcoinsCount,
   showShitcoins,
   uniqueTokens,
-}) => {
+) => {
   console.log('build wallet sections');
   const sections = {
     balances: {
@@ -85,3 +98,20 @@ export default ({
     sections: filteredSections,
   };
 };
+
+export const buildWalletSectionsSelector = createSelector(
+  [
+    allAssetsSelector,
+    allAssetsCountSelector,
+    assetsSelector,
+    assetsTotalSelector,
+    fetchingAssetsSelector,
+    fetchingUniqueTokensSelector,
+    onToggleShowShitcoinsSelector,
+    setIsWalletEmptySelector,
+    shitcoinsCountSelector,
+    showShitcoinsSelector,
+    uniqueTokensSelector,
+  ],
+  buildWalletSections
+);
