@@ -1,14 +1,23 @@
+import {
+  accountLoadState,
+  commonStorage,
+  settingsInitializeState,
+  settingsUpdateAccountAddress,
+} from 'balance-common';
 import { get, isEmpty } from 'lodash';
-import CodePush from 'react-native-code-push';
-import firebase from 'react-native-firebase';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { commonStorage, settingsInitializeState, settingsUpdateAccountAddress } from 'balance-common';
-import { AppRegistry, AlertIOS, AppState } from 'react-native';
-import { compose, withProps } from 'recompact';
-import { connect, Provider } from 'react-redux';
-import { StackActions } from 'react-navigation';
 import Piwik from 'react-native-matomo';
+import {
+  AppRegistry,
+  AlertIOS,
+  AppState
+} from 'react-native';
+import { StackActions } from 'react-navigation';
+import CodePush from 'react-native-code-push';
+import firebase from 'react-native-firebase';
+import { connect, Provider } from 'react-redux';
+import { compose, withProps } from 'recompact';
 import { FlexItem } from './components/layout';
 import OfflineBadge from './components/OfflineBadge';
 import {
@@ -39,6 +48,7 @@ if (process.env.NODE_ENV === 'development') {
 
 class App extends Component {
   static propTypes = {
+    accountLoadState: PropTypes.func,
     addTransactionsToApprove: PropTypes.func,
     addTransactionToApprove: PropTypes.func,
     getValidWalletConnectors: PropTypes.func,
@@ -62,10 +72,7 @@ class App extends Component {
     firebase.messaging().getToken()
       .then(fcmToken => {
         if (fcmToken) {
-          console.log('received fcmToken', fcmToken);
           commonStorage.saveLocal('balanceWalletFcmToken', { data: fcmToken });
-        } else {
-          console.log('no fcm token yet');
         }
       })
       .catch(error => {
@@ -73,12 +80,10 @@ class App extends Component {
       });
 
     this.onTokenRefreshListener = firebase.messaging().onTokenRefresh(fcmToken => {
-      console.log('received refreshed fcm token', fcmToken);
       commonStorage.saveLocal('balanceWalletFcmToken', { data: fcmToken });
     });
 
     this.notificationListener = firebase.notifications().onNotification(notification => {
-      console.log('on notification received while app in foreground');
       const navState = get(this.navigatorRef, 'state.nav');
       const route = Navigation.getActiveRouteName(navState);
       const { callId, sessionId } = notification.data;
@@ -98,7 +103,6 @@ class App extends Component {
     });
 
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened(notificationOpen => {
-      console.log('on notification manually opened');
       const { callId, sessionId } = notificationOpen.notification.data;
       this.onPushNotificationOpened(callId, sessionId, false);
     });
@@ -108,9 +112,9 @@ class App extends Component {
     try {
       this.props.trackingDateInit();
       const walletAddress = await walletInit(seedPhrase);
-      console.log('wallet address is', walletAddress);
       this.props.settingsInitializeState();
       this.props.settingsUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
+      this.props.accountLoadState();
       await this.props.refreshAccount();
       this.props.transactionsToApproveInit();
       try {
@@ -127,7 +131,6 @@ class App extends Component {
       }
       return walletAddress;
     } catch (error) {
-      console.log('WALLET ERROR', error);
       return AlertIOS.alert('Error: Failed to initialize wallet.');
     }
   };
@@ -213,6 +216,7 @@ const AppWithRedux = compose(
   connect(
     null,
     {
+      accountLoadState,
       addTransactionsToApprove,
       addTransactionToApprove,
       settingsInitializeState,
