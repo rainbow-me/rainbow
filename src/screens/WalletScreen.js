@@ -130,7 +130,7 @@ export default compose(
   withIsWalletEmpty,
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
-    onRefreshList: ({ refreshAccount }) => () => refreshAccount(),
+    onRefreshList: ({ refreshAccount }) => async () => await refreshAccount(),
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
       if (index === 0) {
         const updatedShowShitcoinsSetting = !showShitcoins;
