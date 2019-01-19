@@ -1817,9 +1817,9 @@ bail@^1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/bail/-/bail-1.0.3.tgz#63cfb9ddbac829b02a3128cd53224be78e6c21a3"
 
-balance-common@^0.6.15:
-  version "0.6.15"
-  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.15.tgz#dea19ee1df28e3ed636aba5ce885c1ef13486788"
+balance-common@^0.6.16:
+  version "0.6.16"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.16.tgz#19d460147d8692f50889e5c904399334b3adbcde"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"

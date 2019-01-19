@@ -133,6 +133,7 @@ class QRCodeScanner extends PureComponent {
         <ReactNativeQRCodeScanner
           bottomViewStyle={styles.disableSection}
           cameraProps={{
+            captureAudio: false,
             onCameraReady: this.handleCameraReady,
             onMountError: this.handleMountError,
           }}
