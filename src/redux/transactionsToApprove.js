@@ -140,6 +140,22 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
       type: 'transaction',
     };
   }
+  if (transaction.data) {
+    console.log('unknown transaction', transaction);
+    return {
+      payload: {
+        from: transaction.from,
+        gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
+        gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
+        nonce: Number(convertHexToString(transaction.nonce)),
+        to: transaction.to,
+        value: transaction.value,
+        data: transaction.data,
+      },
+      timestampInMs,
+      type: 'interaction',
+    };
+  }
 
   return null;
 };
