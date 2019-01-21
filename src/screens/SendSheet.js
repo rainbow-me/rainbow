@@ -1,4 +1,4 @@
-import { convertAssetAmountToDisplay, withAccountAssets } from 'balance-common';
+import { withAccountAssets } from 'balance-common';
 import { get, isEmpty, map } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -260,6 +260,20 @@ class SendSheet extends Component {
     return options;
   };
 
+  formatNativeInput = (value = '') => {
+    const { nativeCurrency } = this.props;
+    const nativeCurrencyDecimals = (nativeCurrency !== 'ETH') ? 2 : 18;
+    const formattedValue = removeLeadingZeros(value);
+    const parts = formattedValue.split('.');
+    const decimals = parts[1] || '';
+
+    if (decimals.length > nativeCurrencyDecimals) {
+      return `${parts[0]}.${decimals.substring(0, nativeCurrencyDecimals)}`;
+    }
+
+    return formattedValue;
+  };
+
   onChangeAddressInput = (value) => {
     const { sendUpdateRecipient } = this.props;
 
@@ -285,11 +299,6 @@ class SendSheet extends Component {
     const { sendUpdateNativeAmount } = this.props;
 
     sendUpdateNativeAmount(String(value));
-  };
-
-  onFormatNativeAmount = (value) => {
-    const { nativeCurrency } = this.props;
-    return convertAssetAmountToDisplay(value, nativeCurrency, 18);
   };
 
   onPressAssetHandler = (symbol) => {
@@ -544,7 +553,7 @@ class SendSheet extends Component {
             <Row justify="space-between">
               <NumberInput
                 buttonText="Max"
-                format={this.onFormatNativeAmount}
+                format={this.formatNativeInput}
                 onChange={this.onChangeNativeAmount}
                 onPressButton={sendMaxBalance}
                 placeholder="0.00"
