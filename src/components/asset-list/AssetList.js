@@ -30,7 +30,7 @@ const AssetList = ({
   sections,
   ...props
 }) => (
-  (isLoading || isEmpty) ? (
+  ((isLoading && isEmpty) || isEmpty) ? (
     <AssetListSkeleton isLoading={isLoading} />
   ) : (
     <SectionList

@@ -21,7 +21,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>4</string>
+	<string>10</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -50,6 +50,8 @@
 	<key>NSFaceIDUsageDescription</key>
 	<string>Used to sign transactions</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Balance Wallet</string>
+	<key>NSMicrophoneUsageDescription</key>
 	<string>Balance Wallet</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Balance Wallet</string>
