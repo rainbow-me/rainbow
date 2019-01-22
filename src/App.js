@@ -8,11 +8,7 @@ import { get, isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Piwik from 'react-native-matomo';
-import {
-  AppRegistry,
-  AlertIOS,
-  AppState
-} from 'react-native';
+import { AlertIOS, AppRegistry, AppState } from 'react-native';
 import { StackActions } from 'react-navigation';
 import CodePush from 'react-native-code-push';
 import firebase from 'react-native-firebase';
