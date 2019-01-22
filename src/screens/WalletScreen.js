@@ -106,7 +106,7 @@ class WalletScreen extends PureComponent {
           <ProfileHeaderButton navigation={navigation} />
           <CameraHeaderButton navigation={navigation} />
         </Header>
-        <FabWrapper disabled={isEmpty || isLoading}>
+        <FabWrapper disabled={isEmpty}>
           <AssetList
             fetchData={onRefreshList}
             isEmpty={isEmpty}
