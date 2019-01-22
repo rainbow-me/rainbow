@@ -1,41 +1,45 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { BorderlessButton } from 'react-native-gesture-handler';
-import { onlyUpdateForPropTypes } from 'recompact';
-import { colors } from '../../styles';
+import { pure } from 'recompact';
+import { colors, padding } from '../../styles';
+import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text } from '../text';
 
 const ProfileAction = ({
   icon,
-  maxHeight,
+  iconSize,
+  onPress,
   text,
   ...props
 }) => (
-  <Row align="center" component={BorderlessButton} {...props}>
-    <Icon
-      color={colors.appleBlue}
-      name={icon}
-      style={{
-        marginRight: 6,
-        maxHeight,
-      }}
-    />
-    <Text color="appleBlue" weight="semibold">
-      {text}
-    </Text>
-  </Row>
+  <ButtonPressAnimation onPress={onPress} {...props}>
+    <Row align="center" css={padding(8, 9)}>
+      <Icon
+        color={colors.appleBlue}
+        name={icon}
+        style={{
+          marginRight: 6,
+          maxHeight: iconSize,
+        }}
+      />
+      <Text color="appleBlue" weight="semibold">
+        {text}
+      </Text>
+    </Row>
+  </ButtonPressAnimation>
 );
 
 ProfileAction.propTypes = {
   icon: Icon.propTypes.name,
-  maxHeight: PropTypes.number,
+  iconSize: PropTypes.number,
+  onPress: PropTypes.func,
   text: PropTypes.string,
 };
 
 ProfileAction.defaultProps = {
-  maxHeight: 16,
+  iconSize: 16,
 };
 
-export default onlyUpdateForPropTypes(ProfileAction);
+export default pure(ProfileAction);

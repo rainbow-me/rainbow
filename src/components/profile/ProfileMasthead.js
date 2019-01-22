@@ -2,26 +2,32 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Clipboard } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { compose, onlyUpdateForKeys, setStatic, withHandlers } from 'recompact';
+import {
+  compose,
+  onlyUpdateForKeys,
+  pure,
+  setStatic,
+  withHandlers,
+} from 'recompact';
 import styled from 'styled-components';
 import AvatarImageSource from '../../assets/avatar.png';
 import { borders, margin } from '../../styles';
 import { abbreviations } from '../../utils';
+import Divider from '../Divider';
 import { Column, RowWithMargins } from '../layout';
 import { TruncatedAddress } from '../text';
-import Divider from '../Divider';
 import ProfileAction from './ProfileAction';
 
 const ProfileMastheadHeight = 184;
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
+  align: 'center',
   firstSectionLength: abbreviations.defaultNumCharsPerSection,
   size: 'big',
   truncationLength: 4,
   weight: 'bold',
 })`
-  ${margin(1, 0, 11)}
-  text-align: center;
+  ${margin(1, 0, 3)};
   width: 100%;
 `;
 
@@ -41,7 +47,7 @@ const ProfileMasthead = ({
       style={borders.buildCircleAsObject(85)}
     />
     <AddressAbbreviation address={accountAddress} />
-    <RowWithMargins align="center">
+    <RowWithMargins align="center" margin={1}>
       <ProfileAction
         icon="copy"
         onPress={onPressCopy}
@@ -75,4 +81,5 @@ export default compose(
     onPressReceive: ({ navigation }) => () => navigation.navigate('ReceiveModal'),
   }),
   onlyUpdateForKeys(['accountAddress', 'showBottomDivider']),
+  pure,
 )(ProfileMasthead);
