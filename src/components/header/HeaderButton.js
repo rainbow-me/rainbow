@@ -7,7 +7,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Flex } from '../layout';
 
 const Container = styled(Flex)`
-  ${padding(10)}
+  ${padding(10)};
 `;
 
 const HeaderButton = ({

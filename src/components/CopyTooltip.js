@@ -30,8 +30,11 @@ class CopyTooltip extends PureComponent {
   componentWillUnmount = () => this.handleHideTooltip()
 
   handleCopy = () => Clipboard.setString(this.props.textToCopy)
+
   handleHideTooltip = () => this.tooltip.hideMenu()
+
   handlePressIn = () => this.tooltip.showMenu()
+
   handleRef = (ref) => { this.tooltip = ref; }
 
   render = () => (

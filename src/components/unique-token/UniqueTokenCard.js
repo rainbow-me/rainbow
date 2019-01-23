@@ -73,10 +73,10 @@ UniqueTokenCard.propTypes = {
 export default compose(
   pure,
   withHandlers({
-    onPress: ({ item: { name }, onPress }) => () => {
+    onPress: ({ item, onPress }) => () => {
       if (onPress) {
         Piwik.trackEvent('UniqueTokens', 'open', 'OpenUniqueToken');
-        onPress(name);
+        onPress(item);
       }
     },
   }),
