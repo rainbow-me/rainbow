@@ -23,9 +23,9 @@ const uniqueTokensSelector = state => state.uniqueTokens;
 const enhanceRenderItem = compose(
   withNavigation,
   withHandlers({
-    onPress: ({ assetType, navigation }) => (name) => {
+    onPress: ({ assetType, navigation }) => (item) => {
       navigation.navigate('ExpandedAssetScreen', {
-        name,
+        asset: item,
         type: assetType,
       });
     },

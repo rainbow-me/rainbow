@@ -90,10 +90,10 @@ export default compose(
     return isNewNativeCurrency || isNewNativePrice || isNewTokenBalance;
   }),
   withHandlers({
-    onPress: ({ item: { symbol }, onPress }) => () => {
+    onPress: ({ item, onPress }) => () => {
       if (onPress) {
         Piwik.trackEvent('BalanceCoinRow', 'view-expanded', 'OpenBalanceCoinRow');
-        onPress(symbol);
+        onPress(item);
       }
     },
   }),
