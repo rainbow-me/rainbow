@@ -16,10 +16,10 @@ const withRequests = (requests) => {
     pendingRequestCount: sortedRequests.length,
     requests: sortedRequests,
   };
-}
+};
 
 const withRequestsSelector = createSelector(
-  [ requestsSelector ],
+  [requestsSelector],
   withRequests,
 );
 

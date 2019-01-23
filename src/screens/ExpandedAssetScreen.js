@@ -1,5 +1,4 @@
 import { withAccountAssets } from 'balance-common';
-import { filter } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StatusBar } from 'react-native';

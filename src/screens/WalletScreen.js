@@ -47,7 +47,6 @@ class WalletScreen extends PureComponent {
     showBlur: PropTypes.bool,
     toggleShowShitcoins: PropTypes.func,
     trackingDate: PropTypes.object,
-    transitionProps: PropTypes.object,
     uniqueTokens: PropTypes.array,
     updateTrackingDate: PropTypes.func,
   }
