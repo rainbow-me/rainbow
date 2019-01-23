@@ -13,6 +13,7 @@ import styled from 'styled-components';
 import AvatarImageSource from '../../assets/avatar.png';
 import { borders, margin } from '../../styles';
 import { abbreviations } from '../../utils';
+import CopyTooltip from '../CopyTooltip';
 import Divider from '../Divider';
 import { Column, RowWithMargins } from '../layout';
 import { TruncatedAddress } from '../text';
@@ -46,7 +47,9 @@ const ProfileMasthead = ({
       source={AvatarImageSource}
       style={borders.buildCircleAsObject(85)}
     />
-    <AddressAbbreviation address={accountAddress} />
+    <CopyTooltip textToCopy={accountAddress} tooltipText="Copy Address">
+      <AddressAbbreviation address={accountAddress} />
+    </CopyTooltip>
     <RowWithMargins align="center" margin={1}>
       <ProfileAction
         icon="copy"
