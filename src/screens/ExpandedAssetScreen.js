@@ -9,6 +9,7 @@ import {
   withHandlers,
   withProps,
 } from 'recompact';
+import { createSelector } from 'reselect';
 import styled from 'styled-components/primitives';
 import { TokenExpandedState, UniqueTokenExpandedState } from '../components/expanded-state';
 import { Centered } from '../components/layout';
@@ -60,32 +61,33 @@ const ExpandedAssetScreenDefaultProps = {
 
 ExpandedAssetScreen.defaultProps = ExpandedAssetScreenDefaultProps;
 
-const buildExpandedAsset = ({
-  allAssets,
+const containerPaddingSelector = state => state.containerPadding;
+const navigationSelector = state => state.navigation;
+
+const withExpandedAssets = (
   containerPadding,
   navigation,
-  uniqueTokens,
-}) => {
-  const { name, type } = navigation.state.params;
-
-  let selectedAsset = {};
-
-  if (type === 'token') {
-    [selectedAsset] = filter(allAssets, (asset) => asset.symbol === name);
-  } else if (type === 'unique_token') {
-    [selectedAsset] = filter(uniqueTokens, (asset) => asset.name === name);
-  }
-
+) => {
+  const { asset, type } = navigation.state.params;
   return {
-    asset: selectedAsset,
+    asset,
     panelWidth: deviceUtils.dimensions.width - (containerPadding * 2),
     type,
   };
 }
 
+const buildExpandedAssetsSelector = createSelector(
+  [
+    containerPaddingSelector,
+    navigationSelector,
+  ],
+  withExpandedAssets,
+);
+
+
 export default compose(
   defaultProps(ExpandedAssetScreenDefaultProps),
   withAccountAssets,
-  withProps(buildExpandedAsset),
+  withProps(buildExpandedAssetsSelector),
   withHandlers({ onPressBackground: ({ navigation }) => () => navigation.goBack() }),
 )(ExpandedAssetScreen);
