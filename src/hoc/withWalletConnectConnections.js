@@ -1,7 +1,7 @@
 import { sortList } from 'balance-common';
 import {
-  head,
   groupBy,
+  head,
   mapValues,
   values,
 } from 'lodash';
@@ -33,10 +33,10 @@ const sortWalletConnectors = (walletConnectors) => {
     walletConnectorsByDappName: values(dappWalletConnector),
     walletConnectorsCount: sortedWalletConnectors.length,
   };
-}
+};
 
 const walletConnectSelector = createSelector(
-  [ walletConnectorsSelector ],
+  [walletConnectorsSelector],
   sortWalletConnectors,
 );
 
