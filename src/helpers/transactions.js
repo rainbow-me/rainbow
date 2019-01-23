@@ -83,10 +83,9 @@ const buildTransactionsSections = (
   requests,
   transactions,
 ) => {
-  console.log('Build transactions sections');
   let sectionedTransactions = [];
 
-  if (transactions) {
+  if (!isEmpty(transactions)) {
     const normalizedTransactions = normalizeTransactions({
       accountAddress,
       nativeCurrency,

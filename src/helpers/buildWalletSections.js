@@ -54,7 +54,6 @@ const buildWalletSections = (
   showShitcoins,
   uniqueTokens,
 ) => {
-  console.log('build wallet sections');
   const sections = {
     balances: {
       data: showShitcoins ? allAssets : assets,

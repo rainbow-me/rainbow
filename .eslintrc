@@ -18,6 +18,7 @@
   ],
   "rules" : {
     "arrow-body-style": "warn",
+    "camelcase": ["error", {ignoreDestructuring: true}],
     "class-methods-use-this": "off",
     "no-console": "off",
     "max-len": ["error", {"code": 160, "comments": 500}],

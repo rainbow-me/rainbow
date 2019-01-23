@@ -8,18 +8,19 @@ import {
   withHandlers,
 } from 'recompact';
 import { Linking } from 'react-native';
-import { ButtonPressAnimation } from '../buttons';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import { colors } from '../../styles';
+import { showActionSheetWithOptions } from '../../utils/actionsheet';
+import { ButtonPressAnimation } from '../animations';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { colors } from '../../styles';
 import TransactionStatusBadge from './TransactionStatusBadge';
-import { showActionSheetWithOptions } from '../../utils/actionsheet';
 
 const rowRenderPropTypes = {
   balance: PropTypes.object,
+  item: PropTypes.object,
   name: PropTypes.string,
   native: PropTypes.object,
   onPressTransaction: PropTypes.func,
@@ -68,6 +69,8 @@ const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
     />
   </ButtonPressAnimation>
 );
+
+TransactionCoinRow.propTypes = rowRenderPropTypes;
 
 export default compose(
   mapProps(({
