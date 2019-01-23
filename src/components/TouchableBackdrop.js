@@ -2,10 +2,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import styled from 'styled-components/primitives';
-import { position } from '../styles';
+import { colors, position } from '../styles';
 
 const Container = styled(BorderlessButton)`
   ${position.cover};
+  background-color: ${colors.transparent};
   z-index: ${({ zIndex }) => (zIndex)};
 `;
 

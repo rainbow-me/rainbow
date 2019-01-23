@@ -2,6 +2,7 @@ import { get } from 'lodash';
 import { Animated } from 'react-native';
 import { updateTransitionProps } from '../../redux/navigation';
 import store from '../../redux/store';
+import { colors } from '../../styles';
 import { deviceUtils, statusBar } from '../../utils';
 
 export const transitionName = 'expanded';
@@ -21,6 +22,9 @@ export default function expanded(navigation, transitionProps, prevTransitionProp
   }
 
   return {
+    containerStyles: {
+      backgroundColor: colors.black,
+    },
     transitionSpec: {
       timing: nextEffect === transitionName && nextIndex > prevIndex ? Animated.spring : Animated.timing,
       tension: 120,
