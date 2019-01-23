@@ -23,9 +23,9 @@ const uniqueTokensSelector = state => state.uniqueTokens;
 const enhanceRenderItem = compose(
   withNavigation,
   withHandlers({
-    onPress: ({ asset, assetType, navigation }) => (name) => {
+    onPress: ({ assetType, navigation }) => (item) => {
       navigation.navigate('ExpandedAssetScreen', {
-        asset,
+        asset: item,
         name,
         type: assetType,
       });
@@ -36,8 +36,8 @@ const enhanceRenderItem = compose(
 const TokenItem = enhanceRenderItem(BalanceCoinRow);
 const UniqueTokenItem = enhanceRenderItem(UniqueTokenRow);
 
-const balancesRenderItem = item => <TokenItem {...item} asset={item.item} assetType="token" />;
-const collectiblesRenderItem = item => <UniqueTokenItem {...item} asset={item.item} assetType="unique_token" />;
+const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
+const collectiblesRenderItem = item => <UniqueTokenItem {...item} assetType="unique_token" />;
 
 const filterWalletSections = sections => Object.values(sections).filter(({ totalItems }) => totalItems);
 

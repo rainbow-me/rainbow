@@ -68,7 +68,7 @@ const withExpandedAssets = (
   containerPadding,
   navigation,
 ) => {
-  const { asset, name, type } = navigation.state.params;
+  const { asset, type } = navigation.state.params;
   return {
     asset,
     panelWidth: deviceUtils.dimensions.width - (containerPadding * 2),
