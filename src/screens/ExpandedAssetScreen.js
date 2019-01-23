@@ -76,7 +76,7 @@ const withExpandedAssets = (
   };
 }
 
-const withExpandedAssetsSelector = createSelector(
+const buildExpandedAssetsSelector = createSelector(
   [
     containerPaddingSelector,
     navigationSelector,
@@ -84,11 +84,10 @@ const withExpandedAssetsSelector = createSelector(
   withExpandedAssets,
 );
 
+
 export default compose(
   defaultProps(ExpandedAssetScreenDefaultProps),
   withAccountAssets,
-  withProps(withExpandedAssetsSelector),
-  withHandlers({
-    onPressBackground: ({ navigation }) => () => navigation.goBack(),
-  }),
+  withProps(buildExpandedAssetsSelector),
+  withHandlers({ onPressBackground: ({ navigation }) => () => navigation.goBack() }),
 )(ExpandedAssetScreen);

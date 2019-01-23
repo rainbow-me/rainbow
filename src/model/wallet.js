@@ -37,10 +37,8 @@ export const loadWallet = async () => {
   if (privateKey) {
     const wallet = new ethers.Wallet(privateKey);
     wallet.provider = ethers.providers.getDefaultProvider();
-    console.log(`Wallet: successfully loaded existing wallet with public address: ${wallet.address}`);
     return wallet;
   }
-  console.log("Wallet: failed to load existing wallet because the private key doesn't exist");
   return null;
 };
 
@@ -56,12 +54,14 @@ export const createTransaction = async (to, data, value, gasLimit, gasPrice, non
 export const sendTransaction = async ({ tracking, transaction }) => {
   try {
     const wallet = await loadWallet();
+    if (!wallet) {
+      return null;
+    }
     try {
       const result = await wallet.sendTransaction(transaction);
       Piwik.trackEvent('Send', tracking.action, tracking.name, tracking.amount);
       return result.hash;
     } catch (error) {
-      console.log('sendTxn error', error);
       AlertIOS.alert(lang.t('wallet.transaction.alert.failed_transaction'));
       return null;
     }
@@ -77,7 +77,6 @@ export const signMessage = async (message, authenticationPrompt = lang.t('wallet
     try {
       return await wallet.signMessage(message);
     } catch (error) {
-      console.log('signMessage error', error);
       AlertIOS.alert(lang.t('wallet.message_signing.failed_signing'));
       return null;
     }
@@ -116,7 +115,6 @@ const saveWalletDetails = async (seedPhrase, privateKey, address) => {
   saveSeedPhrase(seedPhrase, accessControlOptions);
   savePrivateKey(privateKey, accessControlOptions);
   saveAddress(address);
-  console.log(`Wallet: Generated wallet with public address: ${address}`);
 };
 
 const saveSeedPhrase = async (seedPhrase, accessControlOptions = {}) => {
@@ -128,8 +126,12 @@ const savePrivateKey = async (privateKey, accessControlOptions = {}) => {
 };
 
 const loadPrivateKey = async (authenticationPrompt = lang.t('wallet.authenticate.please')) => {
-  const privateKey = await keychain.loadString(privateKeyKey, { authenticationPrompt });
-  return privateKey;
+  try {
+    const privateKey = await keychain.loadString(privateKeyKey, { authenticationPrompt });
+    return privateKey;
+  } catch (error) {
+    return null;
+  }
 };
 
 const saveAddress = async (address) => {

@@ -64,9 +64,7 @@ const ImportSeedPhraseSheetWithData = compose(
 
       return screenProps
         .handleWalletConfig(seedPhrase.trim())
-        .then((address, test) => {
-          console.log('ON IMPORT SEED THEN', address, test);
-
+        .then((address) => {
           if (address) {
             navigation.navigate('WalletScreen');
           }
