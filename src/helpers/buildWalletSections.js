@@ -26,7 +26,6 @@ const enhanceRenderItem = compose(
     onPress: ({ assetType, navigation }) => (item) => {
       navigation.navigate('ExpandedAssetScreen', {
         asset: item,
-        name,
         type: assetType,
       });
     },
