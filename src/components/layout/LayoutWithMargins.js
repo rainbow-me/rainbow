@@ -10,13 +10,13 @@ const LayoutWithMargins = ({
   ...props
 }) => (
   <Flex {...props}>
-    {Children.map(children, (child, index) =>
+    {Children.map(children, (child, index) => (
       cloneElement(child, {
         style: {
           ...get(child, 'props.style', {}),
           [marginKey]: (index < children.length - 1) ? margin : 0,
         },
-      }))}
+      })))}
   </Flex>
 );
 
