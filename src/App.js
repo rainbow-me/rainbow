@@ -124,7 +124,8 @@ class App extends Component {
       }
       return walletAddress;
     } catch (error) {
-      return AlertIOS.alert('Error: Failed to initialize wallet.');
+      AlertIOS.alert('Error: Failed to initialize wallet.');
+      return null;
     }
   };
 

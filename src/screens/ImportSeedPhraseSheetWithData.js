@@ -11,7 +11,7 @@ import {
   withState,
 } from 'recompact';
 import { Alert } from '../components/alerts';
-import { withAccountReset } from '../hoc';
+import { withAccountRefresh, withAccountReset } from '../hoc';
 import { deviceUtils } from '../utils';
 import ImportSeedPhraseSheet from './ImportSeedPhraseSheet';
 
@@ -32,6 +32,7 @@ const ConfirmImportAlert = onSuccess => (
 
 const ImportSeedPhraseSheetWithData = compose(
   withAccountReset,
+  withAccountRefresh,
   withNavigation,
   withState('clipboardContents', 'setClipboardContents', ''),
   withState('isImporting', 'setIsImporting', false),
@@ -55,6 +56,7 @@ const ImportSeedPhraseSheetWithData = compose(
     importSeedPhrase: ({
       accountClearState,
       navigation,
+      refreshAccount,
       screenProps,
       seedPhrase,
       setIsImporting,
@@ -66,7 +68,13 @@ const ImportSeedPhraseSheetWithData = compose(
         .handleWalletConfig(seedPhrase.trim())
         .then((address) => {
           if (address) {
-            navigation.navigate('WalletScreen');
+            refreshAccount()
+              .then(() => {
+              setIsImporting(false);
+              navigation.navigate('WalletScreen');
+            });
+          } else {
+            setIsImporting(false);
           }
         })
         .catch((error) => {
@@ -83,7 +91,7 @@ const ImportSeedPhraseSheetWithData = compose(
         .then(setSeedPhrase)
         .catch(error => console.log(error));
     },
-    onPressHelp: () => () => Linking.openURL('https://support.balance.io'),
+    onPressHelp: () => () => Linking.openURL('http://support.balance.io'),
   }),
   withHandlers({
     onPressEnterKey: ({ onImportSeedPhrase, seedPhrase }) => ({ nativeEvent: { key } }) => {
