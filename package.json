@@ -82,7 +82,7 @@
     "react-native-tooltip": "^5.2.0",
     "react-native-touch-id": "^4.1.0",
     "react-native-udp": "^2.3.1",
-    "react-navigation": "^2.18.0",
+    "react-navigation": "^3.0.9",
     "react-navigation-fluid-transitions": "^0.2.72",
     "react-primitives": "^0.7.0",
     "react-redux": "^5.0.7",

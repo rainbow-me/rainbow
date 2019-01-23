@@ -1,4 +1,4 @@
-import { createStackNavigator } from 'react-navigation';
+import { createAppContainer, createStackNavigator } from 'react-navigation';
 import createSwipeNavigator from '../navigation/navigators/createSwipeNavigator';
 import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import ExpandedAssetScreen from './ExpandedAssetScreen';
@@ -44,7 +44,7 @@ const SwipeStack = createSwipeNavigator({
   onSwipeStart: onSwipeStartSwipeStack,
 });
 
-export default createStackNavigator({
+const MainNavigator = createStackNavigator({
   ConfirmRequest: TransactionConfirmationScreenWithData,
   ImportSeedPhraseSheet: ImportSeedPhraseSheetWithData,
   ExpandedAssetScreen: {
@@ -90,3 +90,5 @@ export default createStackNavigator({
     store.dispatch(updateTransitionProps({ isTransitioning: false }));
   },
 });
+
+export default createAppContainer(MainNavigator);
