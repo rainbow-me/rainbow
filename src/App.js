@@ -17,7 +17,6 @@ import { compose, withProps } from 'recompact';
 import { FlexItem } from './components/layout';
 import OfflineBadge from './components/OfflineBadge';
 import {
-  withAccountRefresh,
   withTrackingDate,
   withWalletConnectConnections,
 } from './hoc';
@@ -48,7 +47,6 @@ class App extends Component {
     addTransactionsToApprove: PropTypes.func,
     addTransactionToApprove: PropTypes.func,
     getValidWalletConnectors: PropTypes.func,
-    refreshAccount: PropTypes.func,
     settingsInitializeState: PropTypes.func,
     settingsUpdateAccountAddress: PropTypes.func,
     setWalletConnectors: PropTypes.func,
@@ -111,7 +109,6 @@ class App extends Component {
       this.props.settingsInitializeState();
       this.props.settingsUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
       this.props.accountLoadState();
-      await this.props.refreshAccount();
       this.props.transactionsToApproveInit();
       try {
         const allConnectors = await walletConnectInitAllConnectors();
@@ -206,7 +203,6 @@ class App extends Component {
 
 const AppWithRedux = compose(
   withProps({ store }),
-  withAccountRefresh,
   withTrackingDate,
   withWalletConnectConnections,
   connect(

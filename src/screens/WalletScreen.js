@@ -42,6 +42,7 @@ class WalletScreen extends PureComponent {
     navigation: PropTypes.object,
     onHideSplashScreen: PropTypes.func,
     onRefreshList: PropTypes.func.isRequired,
+    refreshAccount: PropTypes.func,
     sections: PropTypes.array,
     showBlur: PropTypes.bool,
     toggleShowShitcoins: PropTypes.func,
@@ -55,12 +56,13 @@ class WalletScreen extends PureComponent {
     // Initialize wallet
     const { handleWalletConfig } = this.props.navigation.getScreenProps();
     await handleWalletConfig();
-    this.props.onHideSplashScreen();
 
     const showShitcoins = await getShowShitcoinsSetting();
     if (showShitcoins !== null) {
       this.props.toggleShowShitcoins(showShitcoins);
     }
+    this.props.onHideSplashScreen();
+    await this.props.refreshAccount();
   }
 
   componentDidUpdate = (prevProps) => {
