@@ -1,11 +1,12 @@
+import { withAccountAssets } from 'balance-common';
 import { filter } from 'lodash';
 import PropTypes from 'prop-types';
-import { withAccountAssets } from 'balance-common';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import {
   compose,
   defaultProps,
+  pure,
   withHandlers,
   withProps,
 } from 'recompact';
@@ -74,7 +75,7 @@ const withExpandedAssets = (
     panelWidth: deviceUtils.dimensions.width - (containerPadding * 2),
     type,
   };
-}
+};
 
 const buildExpandedAssetsSelector = createSelector(
   [
@@ -90,4 +91,5 @@ export default compose(
   withAccountAssets,
   withProps(buildExpandedAssetsSelector),
   withHandlers({ onPressBackground: ({ navigation }) => () => navigation.goBack() }),
+  pure,
 )(ExpandedAssetScreen);

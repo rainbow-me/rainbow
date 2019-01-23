@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 
-const mapStateToProps = ({ navigation: { transitionProps } }) => ({
-  transitionProps,
-});
+const mapStateToProps = ({ navigation: { transitionProps } }) => ({ transitionProps });
 
-export default Component => connect(mapStateToProps)(Component);
+const withTransitionProps = Component => connect(mapStateToProps)(Component);
+
+export default withTransitionProps;
