@@ -32,7 +32,7 @@
     "arrow-parens": ["off"],
     "no-param-reassign": ["off"],
     "react-native-animation-linter/must-tear-down-animations": 2,
-    "sort-keys": ["error", "asc", {"caseSensitive": true, "natural": false}]
+    "sort-keys": ["error", "asc", {"caseSensitive": false, "natural": false}]
   },
   "globals": {
     "fetch": false

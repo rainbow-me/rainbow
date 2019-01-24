@@ -12,6 +12,7 @@ import { AlertIOS, AppRegistry, AppState } from 'react-native';
 import { StackActions } from 'react-navigation';
 import CodePush from 'react-native-code-push';
 import firebase from 'react-native-firebase';
+import { useScreens } from 'react-native-screens';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { FlexItem } from './components/layout';
@@ -40,6 +41,8 @@ if (process.env.NODE_ENV === 'development') {
   console.log('process', process);
   console.disableYellowBox = true;
 }
+
+useScreens();
 
 class App extends Component {
   static propTypes = {

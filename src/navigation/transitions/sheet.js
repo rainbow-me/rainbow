@@ -23,14 +23,9 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
   }
 
   return {
-    containerStyles: {
+    containerStyle: {
       backgroundColor: colors.black,
-    },
-    transitionSpec: {
-      timing: nextEffect === transitionName && nextIndex > prevIndex ? Animated.spring : Animated.timing,
-      tension: 58,
-      friction: 9.8,
-      useNativeDriver: true,
+      opacity: 1,
     },
     screenInterpolator: (sceneProps = {}) => {
       const {
@@ -40,12 +35,11 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
       } = sceneProps;
 
       store.dispatch(updateTransitionProps({
-        nextIndex,
-        prevIndex,
-        position,
         effect: transitionName,
+        nextIndex,
+        position,
+        prevIndex,
       }));
-
 
       const statusBarHeight = getStatusBarHeight(true);
       const distanceFromTop = 14;
@@ -77,10 +71,10 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
         });
 
         return {
-          opacity,
-          overflow: 'hidden',
           borderTopLeftRadius: borderRadius,
           borderTopRightRadius: borderRadius,
+          opacity,
+          overflow: 'hidden',
           transform: [{
             translateY,
           }, {
@@ -98,10 +92,10 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
         });
 
         return {
-          overflow: 'hidden',
           borderTopLeftRadius: borderRadiusEnd,
           borderTopRightRadius: borderRadiusEnd,
           height: height - heightEnd,
+          overflow: 'hidden',
           transform: [{
             translateY,
           }],
@@ -126,10 +120,10 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
         });
 
         return {
-          opacity,
-          overflow: 'hidden',
           borderTopLeftRadius: borderRadius,
           borderTopRightRadius: borderRadius,
+          opacity,
+          overflow: 'hidden',
           transform: [{
             scale,
           }],
@@ -145,10 +139,10 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
         });
 
         return {
-          overflow: 'hidden',
           borderTopLeftRadius: borderRadiusEnd,
           borderTopRightRadius: borderRadiusEnd,
           height: height - heightEnd,
+          overflow: 'hidden',
           transform: [{
             translateY,
           }],
@@ -165,10 +159,10 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
         });
 
         return {
-          overflow: 'hidden',
           borderTopLeftRadius: borderRadiusEnd,
           borderTopRightRadius: borderRadiusEnd,
           height: height - heightEnd,
+          overflow: 'hidden',
           transform: [{
             translateX,
           }, {
@@ -186,10 +180,10 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
         });
 
         return {
-          overflow: 'hidden',
-          opacity: opacityEnd,
           borderTopLeftRadius: borderRadiusEnd,
           borderTopRightRadius: borderRadiusEnd,
+          opacity: opacityEnd,
+          overflow: 'hidden',
           transform: [{
             translateX,
           }, {
@@ -208,10 +202,10 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
         });
 
         return {
-          overflow: 'hidden',
-          opacity: opacityEnd,
           borderTopLeftRadius: borderRadiusEnd,
           borderTopRightRadius: borderRadiusEnd,
+          opacity: opacityEnd,
+          overflow: 'hidden',
           transform: [{
             translateX,
           }, {
@@ -234,6 +228,12 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
           translateX,
         }],
       };
+    },
+    transitionSpec: {
+      friction: 9.8,
+      tension: 58,
+      timing: ((nextEffect === transitionName) && (nextIndex > prevIndex)) ? Animated.spring : Animated.timing,
+      useNativeDriver: true,
     },
   };
 }
