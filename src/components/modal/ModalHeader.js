@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
-import { colors, position } from '../../styles';
+import { borders, colors, position } from '../../styles';
 import { Centered, Row } from '../layout';
 import { TruncatedText } from '../text';
 import ModalHeaderButton from './ModalHeaderButton';
@@ -13,6 +13,7 @@ const Container = styled(Row).attrs({
   flex: 0,
   justify: 'space-between',
 })`
+  ${borders.buildRadius('top', 12)};
   background-color: ${colors.white};
   flex-shrink: 0;
   height: ${ModalHeaderHeight};

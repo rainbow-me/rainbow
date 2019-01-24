@@ -6,7 +6,6 @@ import React, { PureComponent } from 'react';
 import Piwik from 'react-native-matomo';
 import {
   compose,
-  shouldUpdate,
   withHandlers,
   withProps,
   withState,
@@ -27,8 +26,7 @@ import {
   withIsWalletEmpty,
   withTrackingDate,
 } from '../hoc';
-import { position } from '../styles';
-import { isNewValueForPath } from '../utils';
+import { colors, position } from '../styles';
 
 class WalletScreen extends PureComponent {
   static propTypes = {
@@ -52,16 +50,24 @@ class WalletScreen extends PureComponent {
   }
 
   componentDidMount = async () => {
+    const {
+      navigation,
+      onHideSplashScreen,
+      refreshAccount,
+      toggleShowShitcoins,
+    } = this.props;
+
     // Initialize wallet
-    const { handleWalletConfig } = this.props.navigation.getScreenProps();
+    const { handleWalletConfig } = navigation.getScreenProps();
     await handleWalletConfig();
 
     const showShitcoins = await getShowShitcoinsSetting();
     if (showShitcoins !== null) {
-      this.props.toggleShowShitcoins(showShitcoins);
+      toggleShowShitcoins(showShitcoins);
     }
-    this.props.onHideSplashScreen();
-    await this.props.refreshAccount();
+
+    onHideSplashScreen();
+    await refreshAccount();
   }
 
   componentDidUpdate = (prevProps) => {
@@ -102,7 +108,13 @@ class WalletScreen extends PureComponent {
     } = this.props;
     return (
       <Page style={{ flex: 1, ...position.sizeAsObject('100%') }}>
-        {showBlur && <BlurOverlay opacity={blurOpacity} />}
+        {showBlur && (
+          <BlurOverlay
+            backgroundColor={colors.alpha(colors.blueGreyDarker, 0.8)}
+            blurAmount={2.5}
+            opacity={blurOpacity}
+          />
+        )}
         <Header justify="space-between">
           <ProfileHeaderButton navigation={navigation} />
           <CameraHeaderButton navigation={navigation} />
