@@ -10,9 +10,6 @@
 #     https://docs.fastlane.tools/plugins/available-plugins
 #
 
-# Uncomment the line if you want fastlane to automatically update itself
-# update_fastlane
-
 default_platform(:ios)
 
 platform :ios do
@@ -24,5 +21,30 @@ platform :ios do
     )
     gym(scheme: "BalanceWallet")
     pilot
+  end
+
+  desc "Submit a new Internal build to Apple TestFlight"
+  lane :internal do
+    update_info_plist(
+      plist_path: "BalanceWallet/Info.plist",
+      display_name: "Balance Internal"
+    )
+    update_app_identifier(
+      app_identifier: "io.balance.balancewallet.internal",
+      xcodeproj: "BalanceWallet.xcodeproj",
+      plist_path: "BalanceWallet/Info.plist",
+    )
+    match(
+      type: "adhoc",
+      app_identifier: "io.balance.balancewallet.internal",
+      git_url: "git@github.com:balance-io/balance-code-signing.git"
+    )
+    gym(
+      scheme: "BalanceWallet",
+      export_method: "ad-hoc"
+    )
+    pilot(
+      app_identifier: "io.balance.balancewallet.internal"
+    )
   end
 end
