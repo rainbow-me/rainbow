@@ -21,6 +21,11 @@ or alternatively using `brew cask install fastlane`
 fastlane ios beta
 ```
 Submit a new Beta build to Apple TestFlight
+### ios internal
+```
+fastlane ios internal
+```
+Submit a new Internal build to Apple TestFlight
 
 ----
 
