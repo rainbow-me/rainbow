@@ -27,7 +27,7 @@ platform :ios do
   lane :internal do
     update_info_plist(
       plist_path: "BalanceWallet/Info.plist",
-      display_name: "Balance Internal"
+      display_name: "Internal"
     )
     update_app_identifier(
       app_identifier: "io.balance.balancewallet.internal",
@@ -35,13 +35,13 @@ platform :ios do
       plist_path: "BalanceWallet/Info.plist",
     )
     match(
-      type: "adhoc",
+      type: "appstore",
       app_identifier: "io.balance.balancewallet.internal",
       git_url: "git@github.com:balance-io/balance-code-signing.git"
     )
     gym(
       scheme: "BalanceWallet",
-      export_method: "ad-hoc"
+      export_method: "app-store"
     )
     pilot(
       app_identifier: "io.balance.balancewallet.internal"
