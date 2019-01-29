@@ -93,7 +93,6 @@ const buildWalletSections = (
 
   return {
     isEmpty,
-    isLoading: fetchingAssets || fetchingUniqueTokens,
     sections: filteredSections,
   };
 };

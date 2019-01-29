@@ -25,13 +25,12 @@ const AssetList = ({
   fetchData,
   hideHeader,
   isEmpty,
-  isLoading,
   safeAreaInset,
   sections,
   ...props
 }) => (
-  ((isLoading && isEmpty) || isEmpty) ? (
-    <AssetListSkeleton isLoading={isLoading} />
+  (isEmpty) ? (
+    <AssetListSkeleton />
   ) : (
     <SectionList
       contentContainerStyle={{
@@ -54,12 +53,11 @@ AssetList.propTypes = {
   fetchData: PropTypes.func.isRequired,
   hideHeader: PropTypes.bool,
   isEmpty: PropTypes.bool,
-  isLoading: PropTypes.bool,
   safeAreaInset: PropTypes.object,
   sections: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default compose(
   withSafeAreaViewInsetValues,
-  onlyUpdateForKeys(['isEmpty', 'isLoading', 'sections']),
+  onlyUpdateForKeys(['isEmpty', 'sections']),
 )(AssetList);
