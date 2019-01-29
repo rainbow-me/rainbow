@@ -86,9 +86,9 @@ class QRScannerScreenWithData extends PureComponent {
 
     Piwik.trackEvent('QRScanner', 'unknown', 'QRScannedUnknown');
     return Alert({
+      callback: this.handleReenableScanning,
       message: lang.t('wallet.unrecognized_qrcode'),
       title: lang.t('wallet.unrecognized_qrcode_title'),
-      callback: this.handleReenableScanning,
     });
   }
 

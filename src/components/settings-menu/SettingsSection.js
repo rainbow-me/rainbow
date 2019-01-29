@@ -4,7 +4,7 @@ import React from 'react';
 import { Linking, ScrollView } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
-import styled from 'styled-components';
+import styled from 'styled-components/primitives';
 import BackupIcon from '../../assets/backup-icon.png';
 import CurrencyIcon from '../../assets/currency-icon.png';
 import LanguageIcon from '../../assets/language-icon.png';

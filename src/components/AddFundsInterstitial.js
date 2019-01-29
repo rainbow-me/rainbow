@@ -3,7 +3,7 @@ import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { compose, pure, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-import { colors } from '../styles';
+import { colors, margin} from '../styles';
 import { Button } from './buttons';
 import Divider from './Divider';
 import { Centered } from './layout';
@@ -19,14 +19,13 @@ const ButtonContainer = styled(Centered).attrs({ direction: 'column' })`
 `;
 
 const DividerContainer = styled(Centered)`
-  margin-bottom: ${InterstitialMargin};
-  margin-top: ${InterstitialMargin};
+  ${margin(InterstitialMargin, 0)}
   width: 93;
 `;
 
 const Container = styled(Centered)`
-  position: absolute;
   left: 50%;
+  position: absolute;
   top: 50%;
 `;
 
