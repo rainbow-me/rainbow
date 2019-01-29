@@ -718,8 +718,8 @@
     inherits "~2.0.1"
 
 "@types/node@*":
-  version "10.12.18"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.18.tgz#1d3ca764718915584fcd9f6344621b7672665c67"
+  version "10.12.19"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.19.tgz#ca1018c26be01f07e66ac7fefbeb6407e4490c61"
 
 "@types/node@^8.0.7":
   version "8.10.39"
@@ -1811,6 +1811,7 @@ bail@^1.0.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 balance-common@^0.6.23:
   version "0.6.23"
   resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.23.tgz#24a4ef40a3657d2019afee54098dce32f239947d"
@@ -1834,6 +1835,11 @@ balance-common@^0.6.24:
   version "0.6.24"
   resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.24.tgz#69aaa162fe17ccb046100686a96feca59c739eb7"
 >>>>>>> c82ba7f... bumping up version
+=======
+balance-common@^0.6.26:
+  version "0.6.26"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.26.tgz#d51d3eade47530b7e245e4970b7e590941d460fc"
+>>>>>>> 353a876... fixes for loading after import
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -3252,8 +3258,8 @@ eslint-plugin-import@2.14.0:
     resolve "^1.6.0"
 
 eslint-plugin-import@^2.14.0:
-  version "2.15.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-import/-/eslint-plugin-import-2.15.0.tgz#d8f3c28b8988ccde5df964706faa7c1e52f0602a"
+  version "2.16.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-import/-/eslint-plugin-import-2.16.0.tgz#97ac3e75d0791c4fac0e15ef388510217be7f66f"
   dependencies:
     contains-path "^0.1.0"
     debug "^2.6.9"
