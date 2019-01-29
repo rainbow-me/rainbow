@@ -1,6 +1,6 @@
 {
   "name": "BalanceWallet",
-  "version": "0.3.0-20",
+  "version": "0.3.0-21",
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
