@@ -15,12 +15,27 @@ default_platform(:ios)
 platform :ios do
   desc "Submit a new Beta build to Apple TestFlight"
   lane :beta do
+    update_info_plist(
+      plist_path: "BalanceWallet/Info.plist",
+      display_name: "Balance"
+    )
+    update_app_identifier(
+      app_identifier: "io.balance.balancewallet",
+      xcodeproj: "BalanceWallet.xcodeproj",
+      plist_path: "BalanceWallet/Info.plist",
+    )
     match(
       type: "appstore",
+      app_identifier: "io.balance.balancewallet",
       git_url: "git@github.com:balance-io/balance-code-signing.git"
     )
-    gym(scheme: "BalanceWallet")
-    pilot
+    gym(
+      scheme: "BalanceWallet",
+      export_method: "app-store"
+    )
+    pilot(
+      app_identifier: "io.balance.balancewallet"
+    )
   end
 
   desc "Submit a new Internal build to Apple TestFlight"
