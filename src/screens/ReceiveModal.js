@@ -61,7 +61,7 @@ const ReceiveScreen = ({
       onPressClose={onCloseModal}
       title="Receive"
     />
-    <Divider insetLeft={16} insetRight={16} />
+    <Divider inset={[0, 16]} />
     <Content>
       <DescriptionText>
         Send Ether, ERC-20 tokens, or<Br />

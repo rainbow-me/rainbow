@@ -1,3 +1,9 @@
+import {
+  constant,
+  isNil,
+  isNumber,
+  times,
+} from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled, { css } from 'styled-components/primitives';
@@ -6,27 +12,41 @@ import { borders, colors, position } from '../styles';
 
 const DefaultDividerSize = 2;
 
-const horizontalBorderLineStyles = ({ insetLeft, insetRight }) => css`
-  ${insetLeft ? borders.buildRadius('left', 2) : null};
-  ${insetRight ? borders.buildRadius('right', 2) : null};
-  left: ${insetLeft || 0};
-  right: ${insetRight || 0};
+const buildInsetFromProps = (inset) => {
+  if (!inset) return times(4, constant(0));
+  if (isNumber(inset)) return times(4, inset);
+
+  const rightInset = !isNil(inset[1]) ? inset[1] : inset[0];
+
+  return [
+    inset[0],
+    rightInset,
+    inset[2] || inset[0],
+    !isNil(inset[3]) ? inset[3] : rightInset,
+  ];
+};
+
+const horizontalBorderLineStyles = (inset) => css`
+  ${inset[3] ? borders.buildRadius('left', 2) : null}
+  ${inset[1] ? borders.buildRadius('right', 2) : null}
+  left: ${inset[3]};
+  right: ${inset[1]};
 `;
 
-const verticalBorderLineStyles = ({ insetBottom, insetTop }) => css`
-  ${insetBottom ? borders.buildRadius('bottom', 2) : null};
-  ${insetTop ? borders.buildRadius('top', 2) : null};
-  bottom: ${insetBottom || 0};
-  top: ${insetTop || 0};
+const verticalBorderLineStyles = (inset) => css`
+  ${inset[2] ? borders.buildRadius('bottom', 2) : null}
+  ${inset[0] ? borders.buildRadius('top', 2) : null}
+  bottom: ${inset[2]};
+  top: ${inset[0]};
 `;
 
 const BorderLine = styled.View`
   ${position.cover};
-  ${({ horizontal, ...props }) => (
+  ${({ horizontal, inset }) => (
     horizontal
-      ? horizontalBorderLineStyles(props)
-      : verticalBorderLineStyles(props)
-  )}
+      ? horizontalBorderLineStyles(inset)
+      : verticalBorderLineStyles(inset)
+  )};
   background-color: ${({ color }) => color};
   bottom: 0;
   top: 0;
@@ -42,6 +62,7 @@ const Container = styled(Row)`
 const Divider = ({
   color,
   horizontal,
+  inset,
   size,
   ...props
 }) => (
@@ -50,6 +71,7 @@ const Divider = ({
       {...props}
       color={color}
       horizontal={horizontal}
+      inset={buildInsetFromProps(inset)}
     />
   </Container>
 );
@@ -57,18 +79,14 @@ const Divider = ({
 Divider.propTypes = {
   color: PropTypes.string,
   horizontal: PropTypes.bool,
-  insetBottom: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
-  insetLeft: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
-  insetRight: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
-  insetTop: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
+  inset: PropTypes.arrayOf(PropTypes.number),
   size: PropTypes.number,
 };
 
 Divider.defaultProps = {
   color: colors.lightGrey,
   horizontal: true,
-  insetLeft: 19,
-  insetRight: false,
+  inset: [0, 0, 0, 19],
   size: DefaultDividerSize,
 };
 

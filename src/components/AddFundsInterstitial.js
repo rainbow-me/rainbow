@@ -56,7 +56,7 @@ const AddFundsInterstitial = ({
         Add Funds
       </Button>
       <DividerContainer>
-        <Divider insetLeft={false} />
+        <Divider inset={false} />
       </DividerContainer>
       <Button bgColor="#5D9DF6" onPress={onPressImportWallet}>
         Import Wallet
