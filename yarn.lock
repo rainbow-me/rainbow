@@ -1812,6 +1812,7 @@ bail@^1.0.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 balance-common@^0.6.23:
   version "0.6.23"
   resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.23.tgz#24a4ef40a3657d2019afee54098dce32f239947d"
@@ -1840,6 +1841,11 @@ balance-common@^0.6.26:
   version "0.6.26"
   resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.26.tgz#d51d3eade47530b7e245e4970b7e590941d460fc"
 >>>>>>> 353a876... fixes for loading after import
+=======
+balance-common@^0.6.27:
+  version "0.6.27"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.27.tgz#b5dbd13552590d40a129aec89c3310425767ed1f"
+>>>>>>> 4d254e6... update to common version for token transfer having value set
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
