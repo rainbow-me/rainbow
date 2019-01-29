@@ -81,6 +81,9 @@ const buildRgba = (color, alpha) => `rgba(${chroma(color).rgb()}, ${alpha})`;
 
 const isColorLight = targetColor => (chroma(targetColor || base.white).luminance() > 0.5);
 
+const isHex = (color = '') => ((color.length >= 3) && (color.charAt(0) === '#'));
+const isRGB = (color = '') => (color.toLowerCase().substring(0, 3) === 'rgb');
+
 const getTextColorForBackground = (targetColor, textColors = {}) => {
   const {
     dark = base.black,
@@ -104,9 +107,8 @@ const colors = {
 const getColorForString = (colorString = '') => {
   if (!colorString) return null;
 
-  const isHex = colorString.charAt(0) === '#';
-  const isRGB = colorString.toLowerCase().substring(0, 2) === 'rgb';
-  return (isHex || isRGB) ? colorString : colors[colorString];
+  const isValidColorString = isHex(colorString) || isRGB(colorString);
+  return isValidColorString ? colorString : colors[colorString];
 };
 
 export default {
