@@ -35,7 +35,6 @@ class WalletScreen extends PureComponent {
     assetsTotal: PropTypes.object,
     blurOpacity: PropTypes.object,
     isEmpty: PropTypes.bool.isRequired,
-    isLoading: PropTypes.bool.isRequired,
     isScreenActive: PropTypes.bool,
     navigation: PropTypes.object,
     onHideSplashScreen: PropTypes.func,
@@ -100,7 +99,6 @@ class WalletScreen extends PureComponent {
     const {
       blurOpacity,
       isEmpty,
-      isLoading,
       navigation,
       onRefreshList,
       sections,
@@ -123,7 +121,6 @@ class WalletScreen extends PureComponent {
           <AssetList
             fetchData={onRefreshList}
             isEmpty={isEmpty}
-            isLoading={isLoading}
             sections={sections}
           />
         </FabWrapper>
