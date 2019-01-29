@@ -14,6 +14,6 @@ const Container = styled(Monospace).attrs({
   text-align: center;
 `;
 
-const AppVersionStamp = props => <Container {...props}>Balance v0.3.0 (18)</Container>;
+const AppVersionStamp = props => <Container {...props}>Balance v0.3.0 (19)</Container>;
 
 export default AppVersionStamp;
