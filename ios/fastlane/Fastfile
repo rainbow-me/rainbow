@@ -13,6 +13,13 @@
 default_platform(:ios)
 
 platform :ios do
+  desc "Refresh dSYMs"
+  lane :refresh_dsyms do
+    download_dsyms
+    upload_symbols_to_crashlytics
+    clean_build_artifacts
+  end
+
   desc "Submit a new Beta build to Apple TestFlight"
   lane :beta do
     update_info_plist(
@@ -31,11 +38,15 @@ platform :ios do
     )
     gym(
       scheme: "BalanceWallet",
-      export_method: "app-store"
+      export_method: "app-store",
+      include_symbols: true,
     )
     pilot(
       app_identifier: "io.balance.balancewallet"
     )
+    download_dsyms
+    upload_symbols_to_crashlytics
+    clean_build_artifacts
   end
 
   desc "Submit a new Internal build to Apple TestFlight"
@@ -56,10 +67,14 @@ platform :ios do
     )
     gym(
       scheme: "BalanceWallet",
-      export_method: "app-store"
+      export_method: "app-store",
+      include_symbols: true,
     )
     pilot(
       app_identifier: "io.balance.balancewallet.internal"
     )
+    download_dsyms
+    upload_symbols_to_crashlytics
+    clean_build_artifacts
   end
 end
