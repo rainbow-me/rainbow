@@ -8,8 +8,8 @@ export default Component => compose(
   withHandlers({
     refreshAccount: (ownProps) => async () => {
       try {
-        ownProps.transactionsRefreshState();
         await ownProps.assetsRefreshState();
+        ownProps.transactionsRefreshState();
       } catch (error) {
         // TODO more granular error messaging depending on offline status
       }
