@@ -3,6 +3,7 @@
   "version": "0.3.0-18",
   "private": true,
   "scripts": {
+    "clean:cache": "rm -rf $TMPDIR/react-* && watchman watch-del-all && npm cache clean --force && npm cache verify",
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
     "install-pods": "cd ios && pod install && cd ..",
