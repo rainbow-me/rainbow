@@ -17,6 +17,7 @@
     "@hocs/safe-timers": "^0.4.0",
     "@hocs/with-view-layout-props": "^0.2.0",
     "@tradle/react-native-http": "^2.0.0",
+    "@walletconnect/react-native": "^1.0.0-beta.3",
     "assert": "^1.4.1",
     "axios": "^0.18.0",
     "balance-common": "^0.6.23",
