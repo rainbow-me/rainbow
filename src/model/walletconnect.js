@@ -1,36 +1,57 @@
 import { commonStorage } from 'balance-common';
 import lang from 'i18n-js';
 import {
-  assign,
-  forEach,
-  get,
-  mapValues,
-  values,
+  assign, forEach, get, mapValues, values,
 } from 'lodash';
 import { AlertIOS } from 'react-native';
-import RNWalletConnect from 'rn-walletconnect-wallet';
+import RNWalletConnect from '@walletconnect/react-native';
+import { DEVICE_LANGUAGE } from '../helpers/constants';
 
-const PUSH_ENDPOINT = 'https://us-central1-balance-424a3.cloudfunctions.net/push';
+const getFCMToken = async () => {
+  const fcmTokenLocal = await commonStorage.getLocal('balanceWalletFcmToken');
+  const fcmToken = get(fcmTokenLocal, 'data', null);
+  if (!fcmToken) {
+    throw new Error('Push notification token unavailable.');
+  }
+  return fcmToken;
+};
+
+const getNativeOptions = async () => {
+  const language = DEVICE_LANGUAGE.replace(/[-_](\w?)+/gi, '').toLowerCase();
+  const token = await getFCMToken();
+
+  const nativeOptions = {
+    clientMeta: {
+      description: 'Store and secure all your ERC-20 tokens in one place',
+      url: 'https://balance.io',
+      icons: ['https://avatars0.githubusercontent.com/u/19879255?s=200&v=4'],
+      name: 'Balance Wallet',
+      ssl: true,
+    },
+    push: {
+      url: 'https://us-central1-balance-424a3.cloudfunctions.net',
+      type: 'fcm',
+      token,
+      peerMeta: true,
+      language,
+    },
+  };
+
+  return nativeOptions;
+};
 
 export const walletConnectInit = async (accountAddress, uriString) => {
   try {
-    const fcmTokenLocal = await commonStorage.getLocal('balanceWalletFcmToken');
-    const fcmToken = get(fcmTokenLocal, 'data', null);
-    if (!fcmToken) {
-      throw new Error('Push notification token unavailable.');
-    }
-
+    const nativeOptions = await getNativeOptions();
     try {
-      const walletConnector = new RNWalletConnect({
-        push: {
-          token: fcmToken,
-          type: 'fcm',
-          webhook: PUSH_ENDPOINT,
+      const walletConnector = new RNWalletConnect(
+        {
+          uri: uriString,
         },
-        uri: uriString,
-      });
-      await walletConnector.approveSession({ accounts: [accountAddress] });
-      await commonStorage.saveWalletConnectSession(walletConnector.sessionId, uriString, walletConnector.expires);
+        nativeOptions,
+      );
+      await walletConnector.approveSession({ chainId: 1, accounts: [accountAddress] });
+      await commonStorage.saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
       return walletConnector;
     } catch (error) {
       console.log(error);
@@ -46,12 +67,16 @@ export const walletConnectInit = async (accountAddress, uriString) => {
 export const walletConnectInitAllConnectors = async () => {
   try {
     const allSessions = await commonStorage.getAllValidWalletConnectSessions();
-    const allConnectors = mapValues(allSessions, (session) => {
-      const walletConnector = new RNWalletConnect({
-        push: null,
-        uri: session.uriString,
-      });
-      walletConnector.expires = session.expiration;
+
+    const nativeOptions = getNativeOptions();
+
+    const allConnectors = mapValues(allSessions, session => {
+      const walletConnector = new RNWalletConnect(
+        {
+          session,
+        },
+        nativeOptions,
+      );
       return walletConnector;
     });
     return allConnectors;
@@ -61,30 +86,32 @@ export const walletConnectInitAllConnectors = async () => {
   }
 };
 
-export const walletConnectDisconnectAll = async (walletConnectors) => {
+export const walletConnectDisconnectAll = async walletConnectors => {
   try {
-    const sessionIds = values(mapValues(walletConnectors, (walletConnector) => walletConnector.sessionId));
-    await commonStorage.removeWalletConnectSessions(sessionIds);
-    forEach(walletConnectors, (walletConnector) => walletConnector.killSession());
+    const peerIds = values(mapValues(walletConnectors, walletConnector => walletConnector.peerId));
+    await commonStorage.removeWalletConnectSessions(peerIds);
+    forEach(walletConnectors, walletConnector => walletConnector.killSession());
   } catch (error) {
     AlertIOS.alert('Failed to disconnect all WalletConnect sessions');
   }
 };
 
-const getRequestsForSession = (walletConnector) => new Promise((resolve, reject) => {
-  const { dappName, sessionId } = walletConnector;
-  walletConnector.getAllCallRequests()
-    .then((allCalls) =>
-      resolve(mapValues(allCalls, (requestPayload, callId) => ({
+const getRequestsForSession = walletConnector => new Promise((resolve, reject) => {
+  const { peerMeta, peerId } = walletConnector;
+  walletConnector
+    .getAllCallRequests()
+    .then(allCalls => resolve(
+      mapValues(allCalls, (requestPayload, callId) => ({
         callData: get(requestPayload, 'data'),
-        dappName,
-        sessionId,
+        peerMeta,
+        peerId,
         callId,
-      }))))
+      })),
+    ))
     .catch(error => resolve({}));
 });
 
-export const walletConnectGetAllRequests = async (walletConnectors) => {
+export const walletConnectGetAllRequests = async walletConnectors => {
   try {
     const sessionToRequests = mapValues(walletConnectors, getRequestsForSession);
     const requestValues = await Promise.all(values(sessionToRequests));

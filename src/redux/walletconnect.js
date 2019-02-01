@@ -4,10 +4,10 @@ import { omitBy, pickBy } from 'lodash';
 // -- Constants --------------------------------------- //
 const WALLETCONNECT_NEW_SESSION = 'walletconnect/WALLETCONNECT_NEW_SESSION';
 
-export const addWalletConnector = (walletConnector) => (dispatch, getState) => {
+export const addWalletConnector = walletConnector => (dispatch, getState) => {
   if (walletConnector) {
     const { walletConnectors } = getState().walletconnect;
-    const updatedWalletConnectors = { ...walletConnectors, [walletConnector.sessionId]: walletConnector };
+    const updatedWalletConnectors = { ...walletConnectors, [walletConnector.peerId]: walletConnector };
     dispatch({ payload: updatedWalletConnectors, type: WALLETCONNECT_NEW_SESSION });
   }
 };
@@ -19,16 +19,18 @@ export const getValidWalletConnectors = () => (dispatch, getState) => {
   return validConnectors;
 };
 
-export const removeWalletConnectorByDapp = (dappName) => (dispatch, getState) => {
+export const removeWalletConnectorByDapp = dappName => (dispatch, getState) => {
   const { walletConnectors } = getState().walletconnect;
   dispatch({
-    payload: omitBy(walletConnectors, ({ dappName: _dappName }) => (_dappName === dappName)),
+    payload: omitBy(walletConnectors, ({ dappName: _dappName }) => _dappName === dappName),
     type: WALLETCONNECT_NEW_SESSION,
   });
 };
 
-export const setWalletConnectors = (walletConnectors) => (dispatch) =>
-  dispatch({ payload: walletConnectors, type: WALLETCONNECT_NEW_SESSION });
+export const setWalletConnectors = walletConnectors => dispatch => dispatch({
+  payload: walletConnectors,
+  type: WALLETCONNECT_NEW_SESSION,
+});
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
