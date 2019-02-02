@@ -1,16 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
+import { colors, position } from '../../styles';
 
 const Container = styled.View`
-  background-color: ${({ shadowColor }) => (shadowColor || '#ffffff')};
+  ${position.cover};
+  background-color: ${({ shadowColor }) => (shadowColor || colors.white)};
   border-radius: ${({ borderRadius }) => borderRadius};
-  bottom: 0;
   box-shadow: ${({ shadow }) => shadow};
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
 `;
 
 const getColorFromShadowString = (shadow = '') => shadow.split(' ').slice(3).join('');
