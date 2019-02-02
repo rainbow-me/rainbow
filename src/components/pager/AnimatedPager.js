@@ -16,6 +16,7 @@ const buildPagerAnimation = toValue => ({
 
 const Container = styled.View`
   ${position.cover};
+  overflow: hidden;
 `;
 
 export default class AnimatedPager extends Component {

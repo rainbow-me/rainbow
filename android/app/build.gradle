@@ -153,6 +153,7 @@ android {
 
 dependencies {
     compile project(':react-native-screens')
+    compile project(':react-native-version-number')
     compile project(':react-native-matomo')
     compile project(':react-native-fast-image')
     compile project(':react-native-blur')

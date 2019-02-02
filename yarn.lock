@@ -1010,6 +1010,7 @@ ansi-escapes@^3.0.0, ansi-escapes@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-3.2.0.tgz#8780b98ff9dbf5638152d1f1fe5c1d7b4442976b"
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> be44d6f... version update for common fix for not showing add funds on empty wallet
 =======
 <<<<<<< HEAD
@@ -1020,6 +1021,9 @@ ansi-escapes@^3.0.0, ansi-escapes@^3.2.0:
 =======
   integrity sha512-cBhpre4ma+U0T1oM5fXg7Dy1Jw7zzwv7lt/GoCpr+hDQJoYnKVPLL4dCvSEFMmQurOQvSrwT7SL/DAlhBI97RQ==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+  integrity sha512-cBhpre4ma+U0T1oM5fXg7Dy1Jw7zzwv7lt/GoCpr+hDQJoYnKVPLL4dCvSEFMmQurOQvSrwT7SL/DAlhBI97RQ==
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
 
 ansi-gray@^0.1.1:
   version "0.1.1"
@@ -1297,6 +1301,7 @@ autoprefixer@^9.0.0:
 <<<<<<< HEAD
   version "9.4.7"
   resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-9.4.7.tgz#f997994f9a810eae47b38fa6d8a119772051c4ff"
+<<<<<<< HEAD
 =======
   version "9.4.6"
   resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-9.4.6.tgz#0ace275e33b37de16b09a5547dbfe73a98c1d446"
@@ -1317,6 +1322,9 @@ autoprefixer@^9.0.0:
 =======
   integrity sha512-qS5wW6aXHkm53Y4z73tFGsUhmZu4aMPV9iHXYlF0c/wxjknXNHuj/1cIQb+6YH692DbJGGWcckAXX+VxKvahMA==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+  integrity sha512-qS5wW6aXHkm53Y4z73tFGsUhmZu4aMPV9iHXYlF0c/wxjknXNHuj/1cIQb+6YH692DbJGGWcckAXX+VxKvahMA==
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
   dependencies:
     browserslist "^4.4.1"
     caniuse-lite "^1.0.30000932"
@@ -1910,6 +1918,14 @@ babel-plugin-transform-react-jsx@^6.24.1, babel-plugin-transform-react-jsx@^6.8.
     babel-plugin-syntax-jsx "^6.8.0"
     babel-runtime "^6.22.0"
 
+<<<<<<< HEAD
+=======
+babel-plugin-transform-react-remove-prop-types@^0.4.21:
+  version "0.4.24"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-react-remove-prop-types/-/babel-plugin-transform-react-remove-prop-types-0.4.24.tgz#f2edaf9b4c6a5fbe5c1d678bfb531078c1555f3a"
+  integrity sha512-eqj0hVcJUR57/Ug2zE1Yswsw4LhuqqHhD+8v120T1cl3kjg76QwtyBrdIk4WVwK+lAhBJVYCd/v+4nc4y+8JsA==
+
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
 babel-plugin-transform-regenerator@^6.22.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-regenerator/-/babel-plugin-transform-regenerator-6.26.0.tgz#e0703696fbde27f0a3efcacf8b4dca2f7b3a8f2f"
@@ -2117,6 +2133,7 @@ bail@^1.0.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 balance-common@^0.6.23:
   version "0.6.23"
   resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.23.tgz#24a4ef40a3657d2019afee54098dce32f239947d"
@@ -2163,15 +2180,20 @@ balance-common@^0.6.28:
 =======
 =======
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
 balance-common@^0.6.28:
   version "0.6.28"
   resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.28.tgz#41ad6f097ca8160ecc35fb84e1c379a59de9c9d7"
   integrity sha512-ltVA6tHVkTYOcHrFnOpPTZLXBIT/NUBag0u6sFsSFIJg94qNBfpoYFqkihBRVCA6/fWBwkQ8ncauUcIE5Md82A==
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 2550295... Enable Redux DevTools integration
 >>>>>>> 472ccdc... Enable Redux DevTools integration
 =======
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -2633,6 +2655,7 @@ caniuse-lite@^1.0.30000844, caniuse-lite@^1.0.30000929, caniuse-lite@^1.0.300009
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000933.tgz#5871ff54b3177675ae1c2a275b2aae7abf2b9222"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> a85a0a5... updates for common fixes for errored txns
 =======
 <<<<<<< HEAD
@@ -2643,6 +2666,9 @@ caniuse-lite@^1.0.30000844, caniuse-lite@^1.0.30000929, caniuse-lite@^1.0.300009
 =======
   integrity sha512-d3QXv7eFTU40DSedSP81dV/ajcGSKpT+GW+uhtWmLvQm9bPk0KK++7i1e2NSW/CXGZhWFt2mFbFtCJ5I5bMuVA==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+  integrity sha512-d3QXv7eFTU40DSedSP81dV/ajcGSKpT+GW+uhtWmLvQm9bPk0KK++7i1e2NSW/CXGZhWFt2mFbFtCJ5I5bMuVA==
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -3656,6 +3682,7 @@ electron-to-chromium@^1.3.103, electron-to-chromium@^1.3.47:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.3.108"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.108.tgz#2e79a6fcaa4b3e7c75abf871505bda8e268c910e"
 =======
@@ -3685,6 +3712,11 @@ electron-to-chromium@^1.3.103, electron-to-chromium@^1.3.47:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.111.tgz#9bde11c953425c1756f85c66e61de2b74ced75d0"
   integrity sha512-I2QjmmxWULp89fEHlFwRpKXSw4Y/Igo3u41py4MkzJTrgDOf/S4oq/IMuTUHze/5TTPpwem74oQiPMEgFtuDRA==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+  version "1.3.111"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.111.tgz#9bde11c953425c1756f85c66e61de2b74ced75d0"
+  integrity sha512-I2QjmmxWULp89fEHlFwRpKXSw4Y/Igo3u41py4MkzJTrgDOf/S4oq/IMuTUHze/5TTPpwem74oQiPMEgFtuDRA==
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -5149,6 +5181,7 @@ hoist-non-react-statics@^3.0.1, hoist-non-react-statics@^3.1.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   integrity sha512-0XsbTXxgiaCDYDIWFcwkmerZPSwywfUqYmwT4jzewKTQSWoE6FCMoUVOeBJWK3E/CrWbxRG3m5GzY4lnIwGRBA==
 >>>>>>> 4c70eef... Fix all issues related to react-navigation v3 upgrade. everything works
@@ -5157,6 +5190,9 @@ hoist-non-react-statics@^3.0.1, hoist-non-react-statics@^3.1.0:
 =======
   integrity sha512-0XsbTXxgiaCDYDIWFcwkmerZPSwywfUqYmwT4jzewKTQSWoE6FCMoUVOeBJWK3E/CrWbxRG3m5GzY4lnIwGRBA==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+  integrity sha512-0XsbTXxgiaCDYDIWFcwkmerZPSwywfUqYmwT4jzewKTQSWoE6FCMoUVOeBJWK3E/CrWbxRG3m5GzY4lnIwGRBA==
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
   dependencies:
     react-is "^16.7.0"
 
@@ -5262,6 +5298,7 @@ hyphenate-style-name@^1.0.2:
 =======
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/hyphenate-style-name/-/hyphenate-style-name-1.0.3.tgz#097bb7fa0b8f1a9cf0bd5c734cf95899981a9b48"
+<<<<<<< HEAD
 >>>>>>> be44d6f... version update for common fix for not showing add funds on empty wallet
 =======
 <<<<<<< HEAD
@@ -5272,6 +5309,9 @@ hyphenate-style-name@^1.0.2:
 =======
   integrity sha512-EcuixamT82oplpoJ2XU4pDtKGWQ7b00CD9f1ug9IaQ3p1bkHMiKCZ9ut9QDI6qsa6cpUuB+A/I+zLtdNK4n2DQ==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+  integrity sha512-EcuixamT82oplpoJ2XU4pDtKGWQ7b00CD9f1ug9IaQ3p1bkHMiKCZ9ut9QDI6qsa6cpUuB+A/I+zLtdNK4n2DQ==
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
 
 i18n-js@^3.0.11:
   version "3.2.1"
@@ -5326,6 +5366,7 @@ ignore@^5.0.4:
 <<<<<<< HEAD
   version "5.0.5"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.0.5.tgz#c663c548d6ce186fb33616a8ccb5d46e56bdbbf9"
+<<<<<<< HEAD
 =======
   version "5.0.4"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.0.4.tgz#33168af4a21e99b00c5d41cbadb6a6cb49903a45"
@@ -5346,6 +5387,9 @@ ignore@^5.0.4:
 =======
   integrity sha512-kOC8IUb8HSDMVcYrDVezCxpJkzSQWTAzf3olpKM6o9rM5zpojx23O0Fl8Wr4+qJ6ZbPEHqf1fdwev/DS7v7pmA==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+  integrity sha512-kOC8IUb8HSDMVcYrDVezCxpJkzSQWTAzf3olpKM6o9rM5zpojx23O0Fl8Wr4+qJ6ZbPEHqf1fdwev/DS7v7pmA==
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
 
 image-size@^0.6.0:
   version "0.6.3"
@@ -5373,12 +5417,15 @@ immer@^1.7.4:
   version "1.12.1"
   resolved "https://registry.yarnpkg.com/immer/-/immer-1.12.1.tgz#40c6e5b292c00560836c2993bda3a24379d466f5"
   integrity sha512-3fmKM6ovaqDt0CdC9daXpNi5x/YCYS3i4cwLdTVkhJdk5jrDXoPs7lCm3IqM3yhfSnz4tjjxbRG2CziQ7m8ztg==
+<<<<<<< HEAD
 >>>>>>> 4c70eef... Fix all issues related to react-navigation v3 upgrade. everything works
 =======
 >>>>>>> be44d6f... version update for common fix for not showing add funds on empty wallet
 =======
   integrity sha512-3fmKM6ovaqDt0CdC9daXpNi5x/YCYS3i4cwLdTVkhJdk5jrDXoPs7lCm3IqM3yhfSnz4tjjxbRG2CziQ7m8ztg==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
 
 import-fresh@^2.0.0:
   version "2.0.0"
@@ -6404,6 +6451,7 @@ jsdom@>=11.0.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   integrity sha512-cG1NtMWO9hWpqRNRR3dSvEQa8bFI6iLlqU2x4kwX51FQjp0qus8T9aBaAO6iGp3DeBrhdwuKxckknohkmfvsFw==
 >>>>>>> 4c70eef... Fix all issues related to react-navigation v3 upgrade. everything works
@@ -6412,6 +6460,9 @@ jsdom@>=11.0.0:
 =======
   integrity sha512-cG1NtMWO9hWpqRNRR3dSvEQa8bFI6iLlqU2x4kwX51FQjp0qus8T9aBaAO6iGp3DeBrhdwuKxckknohkmfvsFw==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+  integrity sha512-cG1NtMWO9hWpqRNRR3dSvEQa8bFI6iLlqU2x4kwX51FQjp0qus8T9aBaAO6iGp3DeBrhdwuKxckknohkmfvsFw==
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
   dependencies:
     abab "^2.0.0"
     acorn "^6.0.4"
@@ -7652,6 +7703,7 @@ node-releases@^1.1.3:
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.6.tgz#47d160033e24a64e79487a62de63cf691052ec54"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 2a61835... error txn fixes from common
 =======
 <<<<<<< HEAD
@@ -7662,6 +7714,9 @@ node-releases@^1.1.3:
 =======
   integrity sha512-lODUVHEIZutZx+TDdOk47qLik8FJMXzJ+WnyUGci1MTvTOyzZrz5eVPIIpc5Hb3NfHZGeGHeuwrRYVI1PEITWg==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+  integrity sha512-lODUVHEIZutZx+TDdOk47qLik8FJMXzJ+WnyUGci1MTvTOyzZrz5eVPIIpc5Hb3NfHZGeGHeuwrRYVI1PEITWg==
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
   dependencies:
     semver "^5.3.0"
 
@@ -8433,6 +8488,7 @@ postcss-less@^3.1.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   integrity sha512-66ZBVo1JGkQ7r13M97xcHcyarWpgg21RaqIZWZXHE3XOtb5+ywK1uZWeY1DYkYRkIX/l8Hvxnx9iSKB68nFr+w==
 >>>>>>> 4c70eef... Fix all issues related to react-navigation v3 upgrade. everything works
@@ -8441,6 +8497,9 @@ postcss-less@^3.1.0:
 =======
   integrity sha512-66ZBVo1JGkQ7r13M97xcHcyarWpgg21RaqIZWZXHE3XOtb5+ywK1uZWeY1DYkYRkIX/l8Hvxnx9iSKB68nFr+w==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+  integrity sha512-66ZBVo1JGkQ7r13M97xcHcyarWpgg21RaqIZWZXHE3XOtb5+ywK1uZWeY1DYkYRkIX/l8Hvxnx9iSKB68nFr+w==
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
   dependencies:
     postcss "^7.0.14"
 
@@ -8873,6 +8932,7 @@ react-native-camera@^1.4.3:
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.10.0.tgz#cd477cf37ccc023c5e7ec013d0661d1a39ac6aca"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> a85a0a5... updates for common fixes for errored txns
 =======
 <<<<<<< HEAD
@@ -8883,6 +8943,9 @@ react-native-camera@^1.4.3:
 =======
   integrity sha512-8j5PvEKlniVwr5mZ+HQjLY8GKZuZoPTeXbwGxFwKdQczXV+x40VoIZJx14eXc+ge9HVFmlgVazmK4vSf+OTkIw==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+  integrity sha512-8j5PvEKlniVwr5mZ+HQjLY8GKZuZoPTeXbwGxFwKdQczXV+x40VoIZJx14eXc+ge9HVFmlgVazmK4vSf+OTkIw==
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
   dependencies:
     prop-types "^15.6.2"
 
@@ -8967,6 +9030,7 @@ react-native-gesture-handler@^1.0.7:
   version "1.0.15"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.0.15.tgz#7e0d0a457820a3c9325a3d492daaed14400508a6"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 react-native-gesture-handler@^1.0.0, react-native-gesture-handler@^1.0.7:
@@ -8994,6 +9058,9 @@ react-native-gesture-handler@^1.0.7, react-native-gesture-handler@~1.0.14:
 =======
   integrity sha512-BePn+YOKcspHb1xPkUdJs+H6jiaECrT2c98txADBYWHwuUeundE+uUJG0r3FQLFvM2MoGeiJeD96sePzk+WSvQ==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+  integrity sha512-BePn+YOKcspHb1xPkUdJs+H6jiaECrT2c98txADBYWHwuUeundE+uUJG0r3FQLFvM2MoGeiJeD96sePzk+WSvQ==
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
   dependencies:
     hoist-non-react-statics "^2.3.1"
     invariant "^2.2.2"
@@ -9092,11 +9159,14 @@ react-native-reanimated@^1.0.0-alpha.9:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 react-native-safe-area-view@^0.11.0:
 =======
 <<<<<<< HEAD
 =======
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
 react-native-safe-area-view@0.11.0:
 >>>>>>> 472ccdc... Enable Redux DevTools integration
   version "0.11.0"
@@ -9162,6 +9232,7 @@ react-native-tab-view@^1.0.0:
   resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-1.3.2.tgz#c4e43a538dcacce151938745cea09176beeccbc3"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> a85a0a5... updates for common fixes for errored txns
 =======
 =======
@@ -9174,6 +9245,9 @@ react-native-tab-view@^1.0.0, react-native-tab-view@^1.2.0:
 =======
   integrity sha512-2U+HxDQdjzExoC6gZ+wUhC8v8JjntppsFVU4v4pRvC/1dkN7DJv1k8UEy9+p7ucEaNrcAzu/j5N09Jf4qG36vw==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+  integrity sha512-2U+HxDQdjzExoC6gZ+wUhC8v8JjntppsFVU4v4pRvC/1dkN7DJv1k8UEy9+p7ucEaNrcAzu/j5N09Jf4qG36vw==
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
   dependencies:
     prop-types "^15.6.1"
 
@@ -9209,6 +9283,11 @@ react-native-udp@^2.3.1:
     inherits "^2.0.1"
     ip-regex "^1.0.3"
     util "^0.10.3"
+
+react-native-version-number@^0.3.5:
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/react-native-version-number/-/react-native-version-number-0.3.5.tgz#90f1b49bcb5e72f801bdc22ed6bad6c7cbbc2222"
+  integrity sha512-iANHQrYyDSe5Yts2qVjAjFXpK5EHkJGSFAqnVa3Bu/UKBRUjhnMqvskc3EH+IIvvJH9N2Qpidm1KCq42BWa6jQ==
 
 react-native@0.57.1:
   version "0.57.1"
@@ -9287,10 +9366,14 @@ react-navigation-drawer@0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/react-navigation-drawer/-/react-navigation-drawer-0.5.0.tgz#d91b6a6ec65c34ba78c00f814b1e6508922cc9ec"
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 472ccdc... Enable Redux DevTools integration
 =======
   integrity sha512-F1y593uC6pqBMGH+Omz75oNODEbxB/s0EGO8QtYwu1NmOOEUuuLA+c14zm+pgMsI4HlDabiHxPkWqsgGz25xVQ==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+  integrity sha512-F1y593uC6pqBMGH+Omz75oNODEbxB/s0EGO8QtYwu1NmOOEUuuLA+c14zm+pgMsI4HlDabiHxPkWqsgGz25xVQ==
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
   dependencies:
     react-native-tab-view "^1.2.0"
 
@@ -9322,7 +9405,10 @@ react-navigation-tabs@0.8.4:
   version "0.8.4"
   resolved "https://registry.yarnpkg.com/react-navigation-tabs/-/react-navigation-tabs-0.8.4.tgz#aa767f28b899f13c99f2b034b4a665f8cf0a5737"
   integrity sha512-CbS3xIVJVtpu+AYslv0PMLmjddJFVtU3XAhSJ9XnMrKLUJNmnQdW/L0w/Gp5qcBEF9h6bgsY3CoTtp7I6bqyOQ==
+<<<<<<< HEAD
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
   dependencies:
     hoist-non-react-statics "^2.5.0"
     prop-types "^15.6.1"
@@ -10333,6 +10419,7 @@ slice-ansi@2.0.0:
 slice-ansi@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/slice-ansi/-/slice-ansi-2.1.0.tgz#cacd7693461a637a5788d92a7dd4fba068e81636"
+<<<<<<< HEAD
 >>>>>>> be44d6f... version update for common fix for not showing add funds on empty wallet
 =======
 <<<<<<< HEAD
@@ -10343,6 +10430,9 @@ slice-ansi@^2.0.0:
 =======
   integrity sha512-Qu+VC3EwYLldKa1fCxuuvULvSJOKEgk9pi8dZeCVK7TqBfUNTH4sFkk4joj8afVSfAYgJoSOetjx9QWOJ5mYoQ==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+  integrity sha512-Qu+VC3EwYLldKa1fCxuuvULvSJOKEgk9pi8dZeCVK7TqBfUNTH4sFkk4joj8afVSfAYgJoSOetjx9QWOJ5mYoQ==
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
   dependencies:
     ansi-styles "^3.2.0"
     astral-regex "^1.0.0"
@@ -10502,6 +10592,7 @@ sshpk@^1.7.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   integrity sha512-HXXqVUq7+pcKeLqqZj6mHFUMvXtOJt1uoUx09pFW6011inTMxqI8BA8PM95myrIyyKwdnzjdFjLiE6KBPVtJIg==
 >>>>>>> 4c70eef... Fix all issues related to react-navigation v3 upgrade. everything works
@@ -10510,6 +10601,9 @@ sshpk@^1.7.0:
 =======
   integrity sha512-HXXqVUq7+pcKeLqqZj6mHFUMvXtOJt1uoUx09pFW6011inTMxqI8BA8PM95myrIyyKwdnzjdFjLiE6KBPVtJIg==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+  integrity sha512-HXXqVUq7+pcKeLqqZj6mHFUMvXtOJt1uoUx09pFW6011inTMxqI8BA8PM95myrIyyKwdnzjdFjLiE6KBPVtJIg==
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
   dependencies:
     asn1 "~0.2.3"
     assert-plus "^1.0.0"
@@ -10971,6 +11065,7 @@ table@^5.0.0, table@^5.0.2:
   resolved "https://registry.yarnpkg.com/table/-/table-5.2.2.tgz#61d474c9e4d8f4f7062c98c7504acb3c08aa738f"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> be44d6f... version update for common fix for not showing add funds on empty wallet
 =======
 <<<<<<< HEAD
@@ -10981,6 +11076,9 @@ table@^5.0.0, table@^5.0.2:
 =======
   integrity sha512-f8mJmuu9beQEDkKHLzOv4VxVYlU68NpdzjbGPl69i4Hx0sTopJuNxuzJd17iV2h24dAfa93u794OnDA5jqXvfQ==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+  integrity sha512-f8mJmuu9beQEDkKHLzOv4VxVYlU68NpdzjbGPl69i4Hx0sTopJuNxuzJd17iV2h24dAfa93u794OnDA5jqXvfQ==
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
   dependencies:
     ajv "^6.6.1"
     lodash "^4.17.11"
@@ -11997,6 +12095,7 @@ ws@^6.1.2:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   integrity sha512-tbSxiT+qJI223AP4iLfQbkbxkwdFcneYinM2+x46Gx2wgvbaOMO36czfdfVUBRTHvzAMRhDd98sA5d/BuWbQdg==
 >>>>>>> 4c70eef... Fix all issues related to react-navigation v3 upgrade. everything works
@@ -12005,6 +12104,9 @@ ws@^6.1.2:
 =======
   integrity sha512-tbSxiT+qJI223AP4iLfQbkbxkwdFcneYinM2+x46Gx2wgvbaOMO36czfdfVUBRTHvzAMRhDd98sA5d/BuWbQdg==
 >>>>>>> 9ec6174... fix yarn/podfile after rebase
+=======
+  integrity sha512-tbSxiT+qJI223AP4iLfQbkbxkwdFcneYinM2+x46Gx2wgvbaOMO36czfdfVUBRTHvzAMRhDd98sA5d/BuWbQdg==
+>>>>>>> e4427c7... Add AppVersionStamp to Settings modal
   dependencies:
     async-limiter "~1.0.0"
 
