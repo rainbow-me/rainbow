@@ -25,14 +25,6 @@ const TitleContainer = styled(Centered)`
   zIndex: 0;
 `;
 
-const TitleText = styled(TruncatedText).attrs({
-  size: 'large',
-  weight: 'bold',
-})`
-  height: 21;
-  letter-spacing: -0.2px;
-`;
-
 const ModalHeader = ({
   onPressBack,
   onPressClose,
@@ -50,7 +42,14 @@ const ModalHeader = ({
       />
     )}
     <TitleContainer>
-      <TitleText>{title}</TitleText>
+      <TruncatedText
+        height={21}
+        letterSpacing="tight"
+        size="large"
+        weight="bold"
+      >
+        {title}
+      </TruncatedText>
     </TitleContainer>
     <ModalHeaderButton
       label="Done"

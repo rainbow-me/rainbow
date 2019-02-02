@@ -7,6 +7,12 @@ font.family = {
   SFProText: 'SF Pro Text',
 };
 
+font.letterSpacing = {
+  /* eslint-disable sort-keys */
+  tight: -0.2,
+  loose: 0.46,
+};
+
 font.lineHeight = {
   /* eslint-disable sort-keys */
   none: 0,

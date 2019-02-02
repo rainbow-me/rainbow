@@ -54,14 +54,6 @@ const VenderLogoContainer = styled(Centered)`
   margin-bottom: 24;
 `;
 
-const VendorName = styled(Text).attrs({
-  size: 'h4',
-  weight: 'semibold',
-})`
-  color: ${colors.white};
-  letter-spacing: -0.2px;
-`;
-
 class TransactionConfirmationScreen extends Component {
   static propTypes = {
     dappName: PropTypes.string,
@@ -158,7 +150,14 @@ class TransactionConfirmationScreen extends Component {
           <VenderLogoContainer>
             <VendorLogo source={BalanceManagerLogo} />
           </VenderLogoContainer>
-          <VendorName>{dappName}</VendorName>
+          <Text
+            color="white"
+            letterSpacing="loose"
+            size="h4"
+            weight="semibold"
+          >
+            {dappName}
+          </Text>
           <TransactionType>{lang.t('wallet.transaction.request')}</TransactionType>
           <CancelButtonContainer>
             <Button
