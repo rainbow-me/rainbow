@@ -57,7 +57,7 @@ const groupTransactionByDate = ({ pending, timestamp: time }) => {
   return format(timestamp, `MMMM${isThisYear(timestamp) ? '' : ' YYYY'}`);
 };
 
-const normalizeTransactions = ({ accountAddress, nativeCurrency, transactions }) =>
+const normalizeTransactions = ({ accountAddress, nativeCurrency, transactions }) => (
   transactions.map(({
     asset,
     native,
@@ -73,7 +73,8 @@ const normalizeTransactions = ({ accountAddress, nativeCurrency, transactions })
     },
     status: getTransactionStatus({ accountAddress, ...tx }),
     symbol: get(asset, 'symbol'),
-  }));
+  }))
+);
 
 const renderItemElement = renderItem => renderItemProps => createElement(renderItem, renderItemProps);
 
