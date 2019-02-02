@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.facebook.react.ReactApplication;
 import com.swmansion.rnscreens.RNScreensPackage;
+import com.apsl.versionnumber.RNVersionNumberPackage;
 import de.bonify.reactnativepiwik.PiwikPackage;
 import com.dylanvann.fastimage.FastImageViewPackage;
 import com.cmcewen.blurview.BlurViewPackage;
@@ -52,6 +53,7 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
             new RNScreensPackage(),
+            new RNVersionNumberPackage(),
             new PiwikPackage(),
             new FastImageViewPackage(),
             new BlurViewPackage(),

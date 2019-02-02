@@ -83,6 +83,7 @@
     "react-native-tooltip": "^5.2.0",
     "react-native-touch-id": "^4.1.0",
     "react-native-udp": "^2.3.1",
+    "react-native-version-number": "^0.3.5",
     "react-navigation": "^3.0.9",
     "react-navigation-fluid-transitions": "^0.2.72",
     "react-primitives": "^0.7.0",
