@@ -31,8 +31,7 @@ import TouchIdIcon from './svg/TouchIdIcon';
 import WalletConnectIcon from './svg/WalletConnectIcon';
 import WarningIcon from './svg/WarningIcon';
 
-const Icon = ({ name, ...props }) =>
-  createElement(Icon.IconTypes[name] || Flex, props);
+const Icon = ({ name, ...props }) => createElement(Icon.IconTypes[name] || Flex, props);
 
 Icon.IconTypes = {
   arrow: ArrowIcon,

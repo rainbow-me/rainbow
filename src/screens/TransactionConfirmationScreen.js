@@ -57,10 +57,10 @@ const VenderLogoContainer = styled(Centered)`
 class TransactionConfirmationScreen extends Component {
   static propTypes = {
     dappName: PropTypes.string,
-    request: PropTypes.object,
-    requestType: PropTypes.string,
     onCancelTransaction: PropTypes.func,
     onConfirm: PropTypes.func,
+    request: PropTypes.object,
+    requestType: PropTypes.string,
   };
 
   state = {
@@ -86,8 +86,8 @@ class TransactionConfirmationScreen extends Component {
     const { sendLongPressProgress } = this.state;
 
     Animated.timing(sendLongPressProgress, {
-      toValue: 100,
       duration: 800,
+      toValue: 100,
     }).start();
   };
 
@@ -95,8 +95,8 @@ class TransactionConfirmationScreen extends Component {
     const { sendLongPressProgress } = this.state;
 
     Animated.timing(sendLongPressProgress, {
-      toValue: 0,
       duration: (sendLongPressProgress._value / 100) * 800,
+      toValue: 0,
     }).start();
   };
 
@@ -105,8 +105,8 @@ class TransactionConfirmationScreen extends Component {
     const { sendLongPressProgress } = this.state;
 
     Animated.timing(sendLongPressProgress, {
-      toValue: 0,
       duration: (sendLongPressProgress._value / 100) * 800,
+      toValue: 0,
     }).start();
 
     await onConfirm(requestType);
@@ -170,20 +170,25 @@ class TransactionConfirmationScreen extends Component {
             </Button>
           </CancelButtonContainer>
         </Masthead>
-        {requestType === 'message' ? (<MessageSigningSection
-          message={request}
-          sendButton={this.renderSendButton()}
-        />) :
-          (<TransactionConfirmationSection
-            asset={{
-              address: get(request, 'to'),
-              amount: get(request, 'value', '0.00'),
-              name: get(request, 'asset.name', 'No data'),
-              nativeAmountDisplay: get(request, 'nativeAmountDisplay'),
-              symbol: get(request, 'asset.symbol', 'N/A'),
-            }}
-            sendButton={this.renderSendButton()}
-          />)}
+        {(requestType === 'message')
+          ? (
+            <MessageSigningSection
+              message={request}
+              sendButton={this.renderSendButton()}
+            />
+          ) : (
+            <TransactionConfirmationSection
+              asset={{
+                address: get(request, 'to'),
+                amount: get(request, 'value', '0.00'),
+                name: get(request, 'asset.name', 'No data'),
+                nativeAmountDisplay: get(request, 'nativeAmountDisplay'),
+                symbol: get(request, 'asset.symbol', 'N/A'),
+              }}
+              sendButton={this.renderSendButton()}
+            />
+          )
+        }
       </Container>
     );
   }
