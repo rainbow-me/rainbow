@@ -3,6 +3,7 @@ export { default as withAccountRefresh } from './withAccountRefresh';
 export { default as withAccountReset } from './withAccountReset';
 export { default as withAccountSettings } from './withAccountSettings';
 export { default as withAccountTransactions } from './withAccountTransactions';
+export { default as withActionSheetManager } from './withActionSheetManager';
 export { default as withAddWalletConnector } from './withAddWalletConnector';
 export { default as withBlurTransitionProps } from './withBlurTransitionProps';
 export { default as withFetchingPrices } from './withFetchingPrices';

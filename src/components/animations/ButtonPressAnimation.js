@@ -71,6 +71,9 @@ export default class ButtonPressAnimation extends PureComponent {
     const animationsArray = [
       // Default spring animation
       animations.buildSpring({
+        config: {
+          isInteraction: false,
+        },
         from: ButtonKeyframes.from.scale,
         isActive,
         to: scaleTo,
