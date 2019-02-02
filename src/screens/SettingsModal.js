@@ -49,7 +49,7 @@ const SettingsModal = ({
   const isDefaultPage = title === SettingsPages.default.title;
 
   return (
-    <Modal onCloseModal={onCloseModal}>
+    <Modal minHeight={580} onCloseModal={onCloseModal}>
       <Column flex={1}>
         <ModalHeader
           onPressBack={onPressBack}
