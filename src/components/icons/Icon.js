@@ -16,6 +16,7 @@ import ClockIcon from './svg/ClockIcon';
 import CloseIcon from './svg/CloseIcon';
 import CompassIcon from './svg/CompassIcon';
 import CopyIcon from './svg/CopyIcon';
+import CrosshairIcon from './svg/CrosshairIcon';
 import DotIcon from './svg/DotIcon';
 import FaceIdIcon from './svg/FaceIdIcon';
 import GearIcon from './svg/GearIcon';
@@ -48,6 +49,7 @@ Icon.IconTypes = {
   close: CloseIcon,
   compass: CompassIcon,
   copy: CopyIcon,
+  crosshair: CrosshairIcon,
   dot: DotIcon,
   faceid: FaceIdIcon,
   gear: GearIcon,
