@@ -5,6 +5,7 @@ A mobile wallet for dapps &amp; tokens. Currently focused on iOS.
 ## Requirements
 
 * A computer running macOS.
+* NVM installed: https://github.com/creationix/nvm
 * Install the latest version of XCode: https://developer.apple.com/xcode/
 * Clone and install Balance Common, our shared library: https://github.com/balance-io/balance-common
 
