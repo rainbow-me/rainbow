@@ -58,14 +58,8 @@ PODS:
     - React
   - RNReanimated (1.0.0-alpha.11):
     - React
-<<<<<<< HEAD
-<<<<<<< HEAD
   - RNScreens (1.0.0-alpha.22):
     - React
-=======
->>>>>>> 9ec6174... fix yarn/podfile after rebase
-=======
->>>>>>> e4427c7... Add AppVersionStamp to Settings modal
   - SDWebImage/Core (4.4.2)
   - SDWebImage/GIF (4.4.2):
     - FLAnimatedImage (~> 1.0)
@@ -137,21 +131,10 @@ SPEC CHECKSUMS:
   react-native-version-number: 36c0d8eb57a275a6239a860f8dbab3d18299b0e0
   RNLanguages: e3ae05ef105937645218272429dac0c3f7633451
   RNReanimated: 45d9313b7a62318ed00d60a811937321e43e076e
-<<<<<<< HEAD
-<<<<<<< HEAD
   RNScreens: 354046589421edc3d83d5c6212475bf1fb9a731d
-  SDWebImage: 4170dae6332a915d44c918675d51dc1c4c06b45f
-=======
-  SDWebImage: 624d6e296c69b244bcede364c72ae0430ac14681
->>>>>>> 9ec6174... fix yarn/podfile after rebase
-  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
-
-PODFILE CHECKSUM: 3155e5956b15d1c511c3db1999e98a626b54b5fa
-=======
   SDWebImage: 624d6e296c69b244bcede364c72ae0430ac14681
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: bdd08f10dac71e0d945c6dfa3446fbca63f2fcee
->>>>>>> e4427c7... Add AppVersionStamp to Settings modal
+PODFILE CHECKSUM: b82ff0cc0a9e5be26f7421953c078bf323e6e85d
 
 COCOAPODS: 1.5.3
