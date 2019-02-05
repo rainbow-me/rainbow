@@ -56,7 +56,7 @@ PODS:
     - React/Core
   - RNLanguages (3.0.2):
     - React
-  - RNReanimated (1.0.0-alpha.11):
+  - RNReanimated (1.0.0-alpha.12):
     - React
   - RNScreens (1.0.0-alpha.22):
     - React
