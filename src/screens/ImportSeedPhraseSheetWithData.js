@@ -92,7 +92,7 @@ const ImportSeedPhraseSheetWithData = compose(
       }
 
       if (!prevProps.isImporting && isImporting) {
-        importSeedPhrase();
+        InteractionManager.runAfterInteractions(importSeedPhrase);
       }
     },
   }),
