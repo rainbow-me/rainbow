@@ -152,8 +152,8 @@ class App extends Component {
   handleOpenConfirmTransactionModal = (transactionDetails, autoOpened) => {
     if (!this.navigatorRef) return;
     const action = StackActions.push({
-      routeName: 'ConfirmRequest',
       params: { transactionDetails, autoOpened },
+      routeName: 'ConfirmRequest',
     });
     Navigation.handleAction(this.navigatorRef, action);
   }
