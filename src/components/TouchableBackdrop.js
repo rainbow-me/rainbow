@@ -1,16 +1,18 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import styled from 'styled-components/primitives';
 import { colors, position } from '../styles';
 
-const Container = styled(BorderlessButton)`
-  ${position.cover};
-  background-color: ${colors.transparent};
-  z-index: ${({ zIndex }) => (zIndex)};
-`;
-
-const TouchableBackdrop = props => <Container {...props} />;
+const TouchableBackdrop = props => (
+  <BorderlessButton
+    css={`
+      ${position.cover};
+      background-color: ${colors.transparent};
+      z-index: ${({ zIndex }) => (zIndex)};
+    `}
+    {...props}
+  />
+);
 
 TouchableBackdrop.propTypes = {
   zIndex: PropTypes.number,

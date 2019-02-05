@@ -29,7 +29,6 @@ const ProfileScreen = ({
       <FadeInAnimation duration={200} style={{ ...position.coverAsObject, zIndex: 1 }}>
         <BlurOverlay
           backgroundColor={colors.alpha(colors.blueGreyDarker, 0.4)}
-          blurAmount={2.5}
           blurType="light"
           opacity={blurOpacity}
         />

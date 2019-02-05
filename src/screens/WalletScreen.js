@@ -26,7 +26,7 @@ import {
   withIsWalletEmpty,
   withTrackingDate,
 } from '../hoc';
-import { colors, position } from '../styles';
+import { position } from '../styles';
 
 class WalletScreen extends PureComponent {
   static propTypes = {
@@ -108,15 +108,10 @@ class WalletScreen extends PureComponent {
       sections,
       showBlur,
     } = this.props;
+
     return (
       <Page style={{ flex: 1, ...position.sizeAsObject('100%') }}>
-        {showBlur && (
-          <BlurOverlay
-            backgroundColor={colors.alpha(colors.blueGreyDarker, 0.8)}
-            blurAmount={2.5}
-            opacity={blurOpacity}
-          />
-        )}
+        {showBlur && <BlurOverlay opacity={blurOpacity} />}
         <Header justify="space-between">
           <ProfileHeaderButton navigation={navigation} />
           <CameraHeaderButton navigation={navigation} />
