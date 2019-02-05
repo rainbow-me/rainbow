@@ -22,10 +22,10 @@ const withLanguage = (language) => {
   }
 
   return { language };
-}
+};
 
 const withLanguageSelector = createSelector(
-  [ languageSelector ],
+  [languageSelector],
   withLanguage,
 );
 

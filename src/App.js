@@ -12,6 +12,7 @@ import { AlertIOS, AppRegistry, AppState } from 'react-native';
 import { StackActions } from 'react-navigation';
 import CodePush from 'react-native-code-push';
 import firebase from 'react-native-firebase';
+import { useScreens } from 'react-native-screens';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { FlexItem } from './components/layout';
@@ -40,6 +41,8 @@ if (process.env.NODE_ENV === 'development') {
   console.log('process', process);
   console.disableYellowBox = true;
 }
+
+useScreens();
 
 class App extends Component {
   static propTypes = {
@@ -70,7 +73,7 @@ class App extends Component {
         }
       })
       .catch(error => {
-        console.log('error getting fcm token');
+        console.log('error getting fcm token', error);
       });
 
     this.onTokenRefreshListener = firebase.messaging().onTokenRefresh(fcmToken => {
@@ -149,20 +152,24 @@ class App extends Component {
   handleOpenConfirmTransactionModal = (transactionDetails, autoOpened) => {
     if (!this.navigatorRef) return;
     const action = StackActions.push({
-      routeName: 'ConfirmRequest',
       params: { transactionDetails, autoOpened },
+      routeName: 'ConfirmRequest',
     });
     Navigation.handleAction(this.navigatorRef, action);
   }
 
   fetchAllRequestsFromWalletConnectSessions = async () => {
-    const allConnectors = this.props.getValidWalletConnectors();
-    if (!isEmpty(allConnectors)) {
-      const allRequests = await walletConnectGetAllRequests(allConnectors);
-      if (!isEmpty(allRequests)) {
-        this.props.addTransactionsToApprove(allRequests);
-        await firebase.notifications().removeAllDeliveredNotifications();
+    try {
+      const allConnectors = this.props.getValidWalletConnectors();
+      if (!isEmpty(allConnectors)) {
+        const allRequests = await walletConnectGetAllRequests(allConnectors);
+        if (!isEmpty(allRequests)) {
+          this.props.addTransactionsToApprove(allRequests);
+          await firebase.notifications().removeAllDeliveredNotifications();
+        }
       }
+    } catch (error) {
+      console.log('error fetching all requests from wallet connect', error);
     }
   }
 
@@ -181,12 +188,17 @@ class App extends Component {
   }
 
   fetchAndAddWalletConnectRequest = async (callId, sessionId) => {
-    const walletConnector = this.props.sortedWalletConnectors.find(({ _sessionId }) => (_sessionId === sessionId));
-    const callData = await walletConnectGetRequest(callId, walletConnector);
-    if (!callData) return null;
+    try {
+      const walletConnector = this.props.sortedWalletConnectors.find(({ _sessionId }) => (_sessionId === sessionId));
+      const callData = await walletConnectGetRequest(callId, walletConnector);
+      if (!callData) return null;
 
-    const { dappName } = walletConnector;
-    return this.props.addTransactionToApprove(sessionId, callId, callData, dappName);
+      const { dappName } = walletConnector;
+      return this.props.addTransactionToApprove(sessionId, callId, callData, dappName);
+    } catch (error) {
+      console.log('error fetching wallet connect request');
+      return null;
+    }
   }
 
   render = () => (

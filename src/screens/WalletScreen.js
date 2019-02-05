@@ -6,7 +6,6 @@ import React, { PureComponent } from 'react';
 import Piwik from 'react-native-matomo';
 import {
   compose,
-  shouldUpdate,
   withHandlers,
   withProps,
   withState,
@@ -28,7 +27,6 @@ import {
   withTrackingDate,
 } from '../hoc';
 import { position } from '../styles';
-import { isNewValueForPath } from '../utils';
 
 class WalletScreen extends PureComponent {
   static propTypes = {
@@ -37,7 +35,6 @@ class WalletScreen extends PureComponent {
     assetsTotal: PropTypes.object,
     blurOpacity: PropTypes.object,
     isEmpty: PropTypes.bool.isRequired,
-    isLoading: PropTypes.bool.isRequired,
     isScreenActive: PropTypes.bool,
     navigation: PropTypes.object,
     onHideSplashScreen: PropTypes.func,
@@ -47,22 +44,33 @@ class WalletScreen extends PureComponent {
     showBlur: PropTypes.bool,
     toggleShowShitcoins: PropTypes.func,
     trackingDate: PropTypes.object,
-    transitionProps: PropTypes.object,
     uniqueTokens: PropTypes.array,
     updateTrackingDate: PropTypes.func,
   }
 
   componentDidMount = async () => {
+    const {
+      navigation,
+      onHideSplashScreen,
+      refreshAccount,
+      toggleShowShitcoins,
+    } = this.props;
+
     // Initialize wallet
-    const { handleWalletConfig } = this.props.navigation.getScreenProps();
+    const { handleWalletConfig } = navigation.getScreenProps();
     await handleWalletConfig();
 
-    const showShitcoins = await getShowShitcoinsSetting();
-    if (showShitcoins !== null) {
-      this.props.toggleShowShitcoins(showShitcoins);
+    try {
+      const showShitcoins = await getShowShitcoinsSetting();
+      if (showShitcoins !== null) {
+        toggleShowShitcoins(showShitcoins);
+      }
+    } catch (error) {
+      // TODO
     }
-    this.props.onHideSplashScreen();
-    await this.props.refreshAccount();
+
+    onHideSplashScreen();
+    await refreshAccount();
   }
 
   componentDidUpdate = (prevProps) => {
@@ -95,12 +103,12 @@ class WalletScreen extends PureComponent {
     const {
       blurOpacity,
       isEmpty,
-      isLoading,
       navigation,
       onRefreshList,
       sections,
       showBlur,
     } = this.props;
+
     return (
       <Page style={{ flex: 1, ...position.sizeAsObject('100%') }}>
         {showBlur && <BlurOverlay opacity={blurOpacity} />}
@@ -112,7 +120,6 @@ class WalletScreen extends PureComponent {
           <AssetList
             fetchData={onRefreshList}
             isEmpty={isEmpty}
-            isLoading={isLoading}
             sections={sections}
           />
         </FabWrapper>

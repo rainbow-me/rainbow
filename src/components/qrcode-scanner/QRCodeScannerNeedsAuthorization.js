@@ -2,26 +2,15 @@ import { withSafeTimeout } from '@hocs/safe-timers';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Linking } from 'react-native';
-import styled from 'styled-components/primitives';
-import { colors, fonts, padding, position } from '../../styles';
+import {
+  colors,
+  margin,
+  padding,
+  position,
+} from '../../styles';
 import { Button } from '../buttons';
 import { Column } from '../layout';
 import { ErrorText, Monospace } from '../text';
-
-const Container = styled(Column)`
-  ${padding(30, 50, 60, 30)}
-  ${position.cover}
-`;
-
-const SettingsButton = styled(Button)`
-  align-self: flex-start;
-`;
-
-const Text = styled(Monospace).attrs({ color: 'mediumGrey' })`
-  line-height: ${fonts.lineHeight.looser};
-  margin-bottom: 30;
-  margin-top: 7;
-`;
 
 class QRCodeScannerNeedsAuthorization extends PureComponent {
   static propTypes = {
@@ -34,24 +23,37 @@ class QRCodeScannerNeedsAuthorization extends PureComponent {
 
   enableVisibility = () => this.setState({ isVisible: true })
 
-  onPressSettings = () =>
-    Linking.canOpenURL('app-settings:').then(() => Linking.openURL('app-settings:'))
+  onPressSettings = () => (
+    Linking.canOpenURL('app-settings:')
+      .then(() => Linking.openURL('app-settings:'))
+  )
 
   render = () => (
     this.state.isVisible ? (
-      <Container align="start" justify="center">
+      <Column
+        align="start"
+        css={`
+          ${padding(30, 50, 60, 30)};
+          ${position.cover};
+        `}
+        justify="center"
+      >
         <ErrorText
           color={colors.white}
           error="Camera not authorized"
         />
-        <Text>
+        <Monospace
+          color="mediumGrey"
+          css={margin(7, 0, 30)}
+          lineHeight="looser"
+        >
           In order to use WalletConnect, you must first give Balance Wallet
           permission to access your phone's camera.
-        </Text>
-        <SettingsButton onPress={this.onPressSettings}>
+        </Monospace>
+        <Button self="start" onPress={this.onPressSettings}>
           Open settings
-        </SettingsButton>
-      </Container>
+        </Button>
+      </Column>
     ) : null
   )
 }

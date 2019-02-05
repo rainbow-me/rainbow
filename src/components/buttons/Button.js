@@ -9,13 +9,13 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 
 const ButtonSizeTypes = {
-  small: {
-    fontSize: 'medium',
-    padding: [5.5, 10, 6.5],
-  },
   default: {
     fontSize: 'h5',
     padding: [12, 16, 15],
+  },
+  small: {
+    fontSize: 'medium',
+    padding: [5.5, 10, 6.5],
   },
 };
 
@@ -30,11 +30,11 @@ const Container = styled(Centered)`
   border-radius: ${({ type }) => ((type === 'rounded') ? 14 : 50)};
   flex-grow: 0;
   position: relative;
-  ${({ containerStyles }) => containerStyles};
   shadow-color: ${colors.blueGreyLight};
   shadow-offset: 0px 4px;
   shadow-opacity: 0.2;
   shadow-radius: 6;
+  ${({ containerStyles }) => containerStyles};
 `;
 
 const Button = ({

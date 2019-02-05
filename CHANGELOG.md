@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [0.3.0-22](https://github.com/balance-io/balance-wallet/releases/tag/v0.3.0-22)
+### Added
+* WalletConnect explainer
+* Support for multiple builds
+
+### Changed
+* Fixes for navigation bugs
+* Fix for delayed Importing notification after importing seed phrase
+* Fix for showing seed phrase UI on older iPhones
+* Update QR code scanner design
+
 ## [0.3.0-4](https://github.com/balance-io/balance-wallet/releases/tag/v0.3.0-4)
 
 ### Added

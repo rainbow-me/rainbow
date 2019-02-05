@@ -77,7 +77,7 @@ const buildWalletSections = (
     sections.balances.contextMenuOptions = {
       cancelButtonIndex: 1,
       destructiveButtonIndex,
-      onPress: onToggleShowShitcoins,
+      onPressActionSheet: onToggleShowShitcoins,
       options: [
         `${lang.t(`account.${showShitcoins ? 'hide' : 'show'}`)} ${lang.t('wallet.assets.no_price')}`,
         lang.t('wallet.action.cancel'),
@@ -93,7 +93,6 @@ const buildWalletSections = (
 
   return {
     isEmpty,
-    isLoading: fetchingAssets || fetchingUniqueTokens,
     sections: filteredSections,
   };
 };

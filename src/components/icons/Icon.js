@@ -16,6 +16,7 @@ import ClockIcon from './svg/ClockIcon';
 import CloseIcon from './svg/CloseIcon';
 import CompassIcon from './svg/CompassIcon';
 import CopyIcon from './svg/CopyIcon';
+import CrosshairIcon from './svg/CrosshairIcon';
 import DotIcon from './svg/DotIcon';
 import FaceIdIcon from './svg/FaceIdIcon';
 import GearIcon from './svg/GearIcon';
@@ -31,8 +32,7 @@ import TouchIdIcon from './svg/TouchIdIcon';
 import WalletConnectIcon from './svg/WalletConnectIcon';
 import WarningIcon from './svg/WarningIcon';
 
-const Icon = ({ name, ...props }) =>
-  createElement(Icon.IconTypes[name] || Flex, props);
+const Icon = ({ name, ...props }) => createElement(Icon.IconTypes[name] || Flex, props);
 
 Icon.IconTypes = {
   arrow: ArrowIcon,
@@ -49,6 +49,7 @@ Icon.IconTypes = {
   close: CloseIcon,
   compass: CompassIcon,
   copy: CopyIcon,
+  crosshair: CrosshairIcon,
   dot: DotIcon,
   faceid: FaceIdIcon,
   gear: GearIcon,

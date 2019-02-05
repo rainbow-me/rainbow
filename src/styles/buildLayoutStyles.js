@@ -7,7 +7,7 @@ export default (values, type) => {
   const defaultHorizontal = !isNil(values[1]) ? values[1] : values[0];
 
   return css`
-    ${type}-bottom: ${values[2] || values[0]};
+    ${type}-bottom: ${!isNil(values[2]) ? values[2] : values[0]};
     ${type}-left: ${!isNil(values[3]) ? values[3] : defaultHorizontal};
     ${type}-right: ${defaultHorizontal};
     ${type}-top: ${values[0]};
