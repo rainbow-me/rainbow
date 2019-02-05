@@ -37,21 +37,6 @@ const ImportSeedPhraseSheetWithData = compose(
   withState('clipboardContents', 'setClipboardContents', ''),
   withState('isImporting', 'setIsImporting', false),
   withState('seedPhrase', 'setSeedPhrase', ''),
-  lifecycle({
-    componentDidMount() {
-      InteractionManager.runAfterInteractions(async () => {
-        const { setClipboardContents } = this.props;
-        await Clipboard.getString().then(setClipboardContents);
-      });
-    },
-    componentDidUpdate(prevProps) {
-      const { isImporting, navigation } = this.props;
-
-      if (isImporting !== prevProps.isImporting) {
-        navigation.setParams({ gesturesEnabled: !isImporting });
-      }
-    },
-  }),
   withHandlers({
     importSeedPhrase: ({
       accountClearState,
@@ -61,7 +46,6 @@ const ImportSeedPhraseSheetWithData = compose(
       seedPhrase,
       setIsImporting,
     }) => () => {
-      setIsImporting(true);
       accountClearState();
 
       return screenProps
@@ -70,9 +54,9 @@ const ImportSeedPhraseSheetWithData = compose(
           if (address) {
             refreshAccount()
               .then(() => {
-              setIsImporting(false);
-              navigation.navigate('WalletScreen');
-            });
+                setIsImporting(false);
+                navigation.navigate('WalletScreen');
+              });
           } else {
             setIsImporting(false);
           }
@@ -84,7 +68,7 @@ const ImportSeedPhraseSheetWithData = compose(
     },
   }),
   withHandlers({
-    onImportSeedPhrase: ({ importSeedPhrase }) => () => ConfirmImportAlert(importSeedPhrase),
+    onImportSeedPhrase: ({ setIsImporting }) => () => ConfirmImportAlert(() => setIsImporting(true)),
     onInputChange: ({ setSeedPhrase }) => ({ nativeEvent }) => setSeedPhrase(nativeEvent.text),
     onPasteSeedPhrase: ({ setSeedPhrase }) => () => {
       Clipboard.getString()
@@ -92,6 +76,25 @@ const ImportSeedPhraseSheetWithData = compose(
         .catch(error => console.log(error));
     },
     onPressHelp: () => () => Linking.openURL('http://support.balance.io'),
+  }),
+  lifecycle({
+    componentDidMount() {
+      InteractionManager.runAfterInteractions(async () => {
+        const { setClipboardContents } = this.props;
+        await Clipboard.getString().then(setClipboardContents);
+      });
+    },
+    componentDidUpdate(prevProps) {
+      const { isImporting, navigation, importSeedPhrase } = this.props;
+
+      if (isImporting !== prevProps.isImporting) {
+        navigation.setParams({ gesturesEnabled: !isImporting });
+      }
+
+      if (!prevProps.isImporting && isImporting) {
+        importSeedPhrase();
+      }
+    },
   }),
   withHandlers({
     onPressEnterKey: ({ onImportSeedPhrase, seedPhrase }) => ({ nativeEvent: { key } }) => {
