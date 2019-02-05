@@ -32,7 +32,9 @@ const LoadingOverlay = ({ title }) => (
     disabled={true}
     zIndex={999}
   >
-    <FadeInAnimation>
+    <FadeInAnimation
+      isInteraction
+    >
       <Overlay
         blurAmount={20}
         blurType="light"
