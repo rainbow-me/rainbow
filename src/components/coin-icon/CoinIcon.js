@@ -3,7 +3,12 @@ import React from 'react';
 import { css } from 'styled-components/primitives';
 import ReactCoinIcon, { FallbackIcon } from 'react-coin-icon';
 import { hoistStatics, onlyUpdateForKeys } from 'recompact';
-import { borders, colors, fonts, shadow } from '../../styles';
+import {
+  borders,
+  colors,
+  fonts,
+  shadow,
+} from '../../styles';
 import { ShadowStack } from '../shadow-stack';
 
 const CoinIconSize = 40;

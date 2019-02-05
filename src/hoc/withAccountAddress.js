@@ -8,7 +8,7 @@ const mapStateToProps = ({ settings: { accountAddress } }) => ({ accountAddress 
 const accountAddressSelector = state => state.accountAddress;
 
 const lowerAccountAddressSelector = createSelector(
-  [ accountAddressSelector ],
+  [accountAddressSelector],
   (accountAddress) => ({ accountAddress: accountAddress.toLowerCase() }),
 );
 

@@ -4,31 +4,29 @@ import React from 'react';
 import { Linking, ScrollView } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
-import styled from 'styled-components';
+import styled from 'styled-components/primitives';
 import BackupIcon from '../../assets/backup-icon.png';
 import CurrencyIcon from '../../assets/currency-icon.png';
 import LanguageIcon from '../../assets/language-icon.png';
 // import SecurityIcon from '../../assets/security-icon.png';
 import { withAccountSettings } from '../../hoc';
-import { colors, position } from '../../styles';
-
-import Icon from '../icons/Icon';
-import { Column, Row } from '../layout';
-import { ListFooter, ListItem, ListItemDivider } from '../list';
-import { Emoji, Text } from '../text';
+import { position } from '../../styles';
+import AppVersionStamp from '../AppVersionStamp';
+import { Icon } from '../icons';
+import { Column } from '../layout';
+import {
+  ListFooter,
+  ListItem,
+  ListItemArrowGroup,
+  ListItemDivider,
+} from '../list';
+import { Emoji } from '../text';
 
 const SettingsExternalURLs = {
   about: 'https://balance.io/about',
   feedback: 'http://support.balance.io',
   legal: 'https://github.com/balance-io/balance-wallet/blob/master/LICENSE',
 };
-
-const BackupRowIcon = styled(Icon).attrs({
-  color: colors.blueGreyDark,
-  name: 'checkmarkCircled',
-})`
-  margin-bottom: -5;
-`;
 
 // ⚠️ Beware: magic numbers lol
 const SettingIcon = styled(FastImage)`
@@ -37,23 +35,6 @@ const SettingIcon = styled(FastImage)`
   margin-right: -6;
   margin-top: 6.5;
 `;
-
-const ArrowGroup = ({ children }) => (
-  <Row align="center" justify="end" style={{ opacity: 0.6 }}>
-    <Text color="blueGreyDark" size="bmedium" style={{ marginRight: 6 }}>
-      {children}
-    </Text>
-    <Icon
-      color={colors.blueGreyDark}
-      name="caretThin"
-      style={{ width: 11 }}
-    />
-  </Row>
-);
-
-ArrowGroup.propTypes = {
-  children: PropTypes.node,
-};
 
 const SettingsSection = ({
   language,
@@ -66,16 +47,23 @@ const SettingsSection = ({
   openWebView,
   ...props
 }) => (
-  <ScrollView style={position.coverAsObject}>
+  <ScrollView
+    contentContainerStyle={position.sizeAsObject('100%')}
+    style={position.coverAsObject}
+  >
     <Column style={{ marginTop: 8 }}>
       <ListItem
         icon={<SettingIcon source={BackupIcon} />}
         onPress={onPressBackup}
         label="Backup"
       >
-        <ArrowGroup>
-          <BackupRowIcon />
-        </ArrowGroup>
+        <ListItemArrowGroup>
+          <Icon
+            color="blueGreyDark"
+            name="checkmarkCircled"
+            style={{ marginBottom: -5 }}
+          />
+        </ListItemArrowGroup>
       </ListItem>
       <ListItemDivider />
       <ListItem
@@ -83,9 +71,9 @@ const SettingsSection = ({
         onPress={onPressCurrency}
         label="Currency"
       >
-        <ArrowGroup>
+        <ListItemArrowGroup>
           {nativeCurrency || ''}
-        </ArrowGroup>
+        </ListItemArrowGroup>
       </ListItem>
       <ListItemDivider />
       <ListItem
@@ -93,9 +81,9 @@ const SettingsSection = ({
         onPress={onPressLanguage}
         label="Language"
       >
-        <ArrowGroup>
+        <ListItemArrowGroup>
           {supportedLanguages[language] || ''}
-        </ArrowGroup>
+        </ListItemArrowGroup>
       </ListItem>
       {/*
         <ListItemDivider />
@@ -104,7 +92,7 @@ const SettingsSection = ({
           onPress={onPressSecurity}
           label="Security"
         >
-          <ArrowGroup />
+          <ListItemArrowGroup />
         </ListItem>
       */}
     </Column>
@@ -136,6 +124,14 @@ const SettingsSection = ({
         onPress={openWebView}
         value={SettingsExternalURLs.legal}
       />
+    </Column>
+    <Column
+      align="center"
+      flex={1}
+      justify="end"
+      style={{ paddingBottom: 24 }}
+    >
+      <AppVersionStamp />
     </Column>
   </ScrollView>
 );

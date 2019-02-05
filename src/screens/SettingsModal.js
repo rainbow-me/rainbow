@@ -20,20 +20,20 @@ import {
 
 const SettingsPages = {
   backup: {
-    title: 'Backup',
     component: BackupSection,
+    title: 'Backup',
   },
   currency: {
-    title: 'Currency',
     component: CurrencySection,
+    title: 'Currency',
   },
   default: {
-    title: 'Settings',
     component: null,
+    title: 'Settings',
   },
   language: {
-    title: 'Language',
     component: LanguageSection,
+    title: 'Language',
   },
 };
 
@@ -49,7 +49,7 @@ const SettingsModal = ({
   const isDefaultPage = title === SettingsPages.default.title;
 
   return (
-    <Modal onCloseModal={onCloseModal}>
+    <Modal minHeight={580} onCloseModal={onCloseModal}>
       <Column flex={1}>
         <ModalHeader
           onPressBack={onPressBack}

@@ -1,9 +1,10 @@
-import { Animated } from 'react-native';
 import { get } from 'lodash';
+import { Animated } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
-import store from '../../redux/store';
-import { deviceUtils, statusBar } from '../../utils';
 import { updateTransitionProps } from '../../redux/navigation';
+import store from '../../redux/store';
+import { colors } from '../../styles';
+import { deviceUtils, statusBar } from '../../utils';
 
 export const transitionName = 'sheet';
 
@@ -22,11 +23,9 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
   }
 
   return {
-    transitionSpec: {
-      timing: nextEffect === transitionName && nextIndex > prevIndex ? Animated.spring : Animated.timing,
-      tension: 58,
-      friction: 9.8,
-      useNativeDriver: true,
+    containerStyle: {
+      backgroundColor: colors.black,
+      opacity: 1,
     },
     screenInterpolator: (sceneProps = {}) => {
       const {
@@ -36,12 +35,11 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
       } = sceneProps;
 
       store.dispatch(updateTransitionProps({
-        nextIndex,
-        prevIndex,
-        position,
         effect: transitionName,
+        nextIndex,
+        position,
+        prevIndex,
       }));
-
 
       const statusBarHeight = getStatusBarHeight(true);
       const distanceFromTop = 14;
@@ -73,10 +71,10 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
         });
 
         return {
-          opacity,
-          overflow: 'hidden',
           borderTopLeftRadius: borderRadius,
           borderTopRightRadius: borderRadius,
+          opacity,
+          overflow: 'hidden',
           transform: [{
             translateY,
           }, {
@@ -94,10 +92,10 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
         });
 
         return {
-          overflow: 'hidden',
           borderTopLeftRadius: borderRadiusEnd,
           borderTopRightRadius: borderRadiusEnd,
           height: height - heightEnd,
+          overflow: 'hidden',
           transform: [{
             translateY,
           }],
@@ -122,10 +120,10 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
         });
 
         return {
-          opacity,
-          overflow: 'hidden',
           borderTopLeftRadius: borderRadius,
           borderTopRightRadius: borderRadius,
+          opacity,
+          overflow: 'hidden',
           transform: [{
             scale,
           }],
@@ -141,10 +139,10 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
         });
 
         return {
-          overflow: 'hidden',
           borderTopLeftRadius: borderRadiusEnd,
           borderTopRightRadius: borderRadiusEnd,
           height: height - heightEnd,
+          overflow: 'hidden',
           transform: [{
             translateY,
           }],
@@ -161,10 +159,10 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
         });
 
         return {
-          overflow: 'hidden',
           borderTopLeftRadius: borderRadiusEnd,
           borderTopRightRadius: borderRadiusEnd,
           height: height - heightEnd,
+          overflow: 'hidden',
           transform: [{
             translateX,
           }, {
@@ -182,10 +180,10 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
         });
 
         return {
-          overflow: 'hidden',
-          opacity: opacityEnd,
           borderTopLeftRadius: borderRadiusEnd,
           borderTopRightRadius: borderRadiusEnd,
+          opacity: opacityEnd,
+          overflow: 'hidden',
           transform: [{
             translateX,
           }, {
@@ -204,10 +202,10 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
         });
 
         return {
-          overflow: 'hidden',
-          opacity: opacityEnd,
           borderTopLeftRadius: borderRadiusEnd,
           borderTopRightRadius: borderRadiusEnd,
+          opacity: opacityEnd,
+          overflow: 'hidden',
           transform: [{
             translateX,
           }, {
@@ -230,6 +228,12 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
           translateX,
         }],
       };
+    },
+    transitionSpec: {
+      friction: 9.8,
+      tension: 58,
+      timing: ((nextEffect === transitionName) && (nextIndex > prevIndex)) ? Animated.spring : Animated.timing,
+      useNativeDriver: true,
     },
   };
 }

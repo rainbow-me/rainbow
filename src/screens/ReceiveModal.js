@@ -61,7 +61,7 @@ const ReceiveScreen = ({
       onPressClose={onCloseModal}
       title="Receive"
     />
-    <Divider insetLeft={16} insetRight={16} />
+    <Divider inset={[0, 16]} />
     <Content>
       <DescriptionText>
         Send Ether, ERC-20 tokens, or<Br />
@@ -108,11 +108,12 @@ export default compose(
   withHandlers({
     onCloseModal: ({ navigation }) => () => navigation.goBack(),
     onPressCopyAddress: ({ accountAddress }) => () => Clipboard.setString(accountAddress),
-    onPressShareAddress: ({ accountAddress }) => () =>
+    onPressShareAddress: ({ accountAddress }) => () => (
       Share.share({
         message: accountAddress,
         title: 'My account address:',
-      }),
+      })
+    ),
   }),
   onlyUpdateForKeys(['accountAddress']),
 )(ReceiveScreen);

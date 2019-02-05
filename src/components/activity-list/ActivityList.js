@@ -37,6 +37,7 @@ const ActivityList = ({
   transactionsCount,
 }) => (
   <SectionList
+    alwaysBounceVertical={false}
     contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 40 }}
     extraData={{
       hasPendingTransaction,
