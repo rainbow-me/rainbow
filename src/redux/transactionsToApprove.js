@@ -55,18 +55,18 @@ export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => 
   return { nativeAmount, nativeAmountDisplay };
 };
 
-const getRequestDisplayDetails = (callData, assets, prices, nativeCurrency) => {
-  if (callData.method === 'eth_sendTransaction') {
-    const transaction = get(callData, 'params[0]', null);
+const getRequestDisplayDetails = (payload, assets, prices, nativeCurrency) => {
+  if (payload.method === 'eth_sendTransaction') {
+    const transaction = get(payload, 'params[0]', null);
     return getTransactionDisplayDetails(transaction, assets, prices, nativeCurrency);
   }
-  if (callData.method === 'eth_sign' || callData.method === 'personal_sign') {
-    const message = get(callData, 'params[1]');
+  if (payload.method === 'eth_sign' || payload.method === 'personal_sign') {
+    const message = get(payload, 'params[1]');
     return getMessageDisplayDetails(message);
   }
-  if (callData.method === 'eth_signTypedData' ||
-    callData.method === 'eth_signTypedData_v3') {
-    const request = get(callData, 'params[1]', null);
+  if (payload.method === 'eth_signTypedData' ||
+    payload.method === 'eth_signTypedData_v3') {
+    const request = get(payload, 'params[1]', null);
     const jsonRequest = JSON.stringify(request.message);
     return getTypedDataDisplayDetails(jsonRequest);
   }
@@ -146,16 +146,16 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
   return null;
 };
 
-export const addTransactionToApprove = (sessionId, callId, callData, dappName) => (dispatch, getState) => {
+export const addTransactionToApprove = (peerId, callId, payload, dappName) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
   const { accountAddress, network, nativeCurrency } = getState().settings;
   const { prices } = getState().prices;
   const { assets } = getState().assets;
-  const transactionDisplayDetails = getRequestDisplayDetails(callData, assets, prices, nativeCurrency);
+  const transactionDisplayDetails = getRequestDisplayDetails(payload, assets, prices, nativeCurrency);
   const transaction = {
-    sessionId,
+    peerId,
     callId,
-    callData,
+    payload,
     transactionDisplayDetails,
     dappName,
   };

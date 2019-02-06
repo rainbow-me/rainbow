@@ -56,26 +56,11 @@ export const registerTokenRefreshListener = () => firebase.messaging().onTokenRe
 });
 
 export const registerNotificationListener = () => firebase.notifications().onNotification(notification => {
-  const navState = get(this.navigatorRef, 'state.nav');
-  const route = Navigation.getActiveRouteName(navState);
-  const { callId, sessionId } = notification.data;
-  if (route === 'ConfirmRequest') {
-    this.fetchAndAddWalletConnectRequest(callId, sessionId).then(transaction => {
-      const localNotification = new firebase.notifications.Notification()
-        .setTitle(notification.title)
-        .setBody(notification.body)
-        .setData(notification.data);
-
-      firebase.notifications().displayNotification(localNotification);
-    });
-  } else {
-    this.onPushNotificationOpened(callId, sessionId, true);
-  }
+  console.log('onNotification');
 });
 
 export const registerNotificationOpenedListener = () => firebase.notifications().onNotificationOpened(notificationOpen => {
-  const { callId, sessionId } = notificationOpen.notification.data;
-  this.onPushNotificationOpened(callId, sessionId, false);
+  console.log('onNotificationOpened');
 });
 
 export const getInitialNotification = () => firebase.notifications().getInitialNotification();
