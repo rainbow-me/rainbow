@@ -1,32 +1,24 @@
 import smartContractMethods from 'balance-common/src/references/smartcontract-methods.json';
 import BigNumber from 'bignumber.js';
 import {
-  convertAssetAmountToDisplaySpecific,
-  convertAssetAmountToNativeValue,
-  convertHexToString,
-  formatInputDecimals,
-  fromWei,
+  convertAssetAmountToDisplaySpecific, convertAssetAmountToNativeValue, convertHexToString, formatInputDecimals, fromWei,
 } from 'balance-common';
 import { get, mapValues, omit } from 'lodash';
-import {
-  getLocalRequests,
-  removeLocalRequest,
-  saveLocalRequests,
-} from '../model/localstorage';
+import { getLocalRequests, removeLocalRequest, saveLocalRequests } from '../model/localstorage';
 
 // -- Constants --------------------------------------- //
 const WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE = 'wallet/WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE';
 
 export const transactionsToApproveInit = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  getLocalRequests(accountAddress, network).then((requests) => {
+  getLocalRequests(accountAddress, network).then(requests => {
     const transactionsToApprove = requests || {};
     dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: transactionsToApprove });
   });
 };
 
 const getAssetDetails = (contractAddress, assets) => {
-  for (var item of assets) {
+  for (const item of assets) {
     if (item.address === contractAddress) {
       return { ...item };
     }
@@ -38,12 +30,7 @@ export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => 
   let nativeAmount = '';
   let nativeAmountDisplay = '';
   if (prices && prices[nativeCurrency] && prices[nativeCurrency][symbol]) {
-    nativeAmount = convertAssetAmountToNativeValue(
-      assetAmount,
-      { symbol },
-      prices,
-      nativeCurrency,
-    );
+    nativeAmount = convertAssetAmountToNativeValue(assetAmount, { symbol }, prices, nativeCurrency);
     const _nativeAmount = formatInputDecimals(nativeAmount, assetAmount);
     nativeAmountDisplay = convertAssetAmountToDisplaySpecific(_nativeAmount, nativeCurrency);
     return {
@@ -64,8 +51,7 @@ const getRequestDisplayDetails = (callData, assets, prices, nativeCurrency) => {
     const message = get(callData, 'params[1]');
     return getMessageDisplayDetails(message);
   }
-  if (callData.method === 'eth_signTypedData' ||
-             callData.method === 'eth_signTypedData_v3') {
+  if (callData.method === 'eth_signTypedData' || callData.method === 'eth_signTypedData_v3') {
     const request = get(callData, 'params[1]', null);
     const jsonRequest = JSON.stringify(request.message);
     return getTypedDataDisplayDetails(jsonRequest);
@@ -73,7 +59,7 @@ const getRequestDisplayDetails = (callData, assets, prices, nativeCurrency) => {
   return null;
 };
 
-const getTypedDataDisplayDetails = (request) => {
+const getTypedDataDisplayDetails = request => {
   const timestampInMs = Date.now();
   return {
     payload: request,
@@ -82,7 +68,7 @@ const getTypedDataDisplayDetails = (request) => {
   };
 };
 
-const getMessageDisplayDetails = (message) => {
+const getMessageDisplayDetails = message => {
   const timestampInMs = Date.now();
   return {
     payload: message,
@@ -165,12 +151,12 @@ export const addTransactionToApprove = (sessionId, callId, callData, dappName) =
   return transaction;
 };
 
-export const addTransactionsToApprove = (transactions) => (dispatch, getState) => {
+export const addTransactionsToApprove = transactions => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
   const { accountAddress, network, nativeCurrency } = getState().settings;
   const { prices } = getState().prices;
   const { assets } = getState().assets;
-  const transactionsWithDisplayDetails = mapValues(transactions, (transactionDetails) => {
+  const transactionsWithDisplayDetails = mapValues(transactions, transactionDetails => {
     const transactionDisplayDetails = getRequestDisplayDetails(transactionDetails.callData, assets, prices, nativeCurrency);
     return { ...transactionDetails, transactionDisplayDetails };
   });
@@ -179,12 +165,12 @@ export const addTransactionsToApprove = (transactions) => (dispatch, getState) =
   saveLocalRequests(accountAddress, network, updatedTransactions);
 };
 
-export const transactionIfExists = (callId) => (dispatch, getState) => {
+export const transactionIfExists = callId => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
-  return (transactionsToApprove && transactionsToApprove[callId]);
+  return transactionsToApprove && transactionsToApprove[callId];
 };
 
-export const removeTransaction = (callId) => (dispatch, getState) => {
+export const removeTransaction = callId => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { transactionsToApprove } = getState().transactionsToApprove;
   const updatedTransactions = omit(transactionsToApprove, [callId]);
