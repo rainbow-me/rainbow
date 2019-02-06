@@ -63,7 +63,7 @@ class App extends Component {
 
   state = { appState: AppState.currentState }
 
-  navigatorRef = null;
+  navigatorRef = null
 
   async componentDidMount() {
     Piwik.initTracker('https://matomo.balance.io/piwik.php', 2);
@@ -114,9 +114,7 @@ class App extends Component {
     this.onTokenRefreshListener();
   }
 
-  handleNavigatorRef = (navigatorRef) => {
-    this.navigatorRef = navigatorRef;
-  }
+  handleNavigatorRef = (navigatorRef) => { this.navigatorRef = navigatorRef; }
 
   handleOpenConfirmTransactionModal = (transactionDetails, autoOpened) => {
     if (!this.navigatorRef) return;
