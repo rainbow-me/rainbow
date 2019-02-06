@@ -51,7 +51,7 @@ const ActivityList = ({
     removeClippedSubviews={true}
     renderSectionHeader={renderSectionHeader}
     sections={sections}
-    windowSize={15.75}
+    windowSize={50}
   />
 );
 
