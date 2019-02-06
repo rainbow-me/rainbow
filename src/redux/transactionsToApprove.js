@@ -146,7 +146,7 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
   return null;
 };
 
-export const addTransactionToApprove = (peerId, callId, payload, dappName) => (dispatch, getState) => {
+export const addTransactionToApprove = (peerId, requestId, payload, dappName) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
   const { accountAddress, network, nativeCurrency } = getState().settings;
   const { prices } = getState().prices;
@@ -154,27 +154,27 @@ export const addTransactionToApprove = (peerId, callId, payload, dappName) => (d
   const transactionDisplayDetails = getRequestDisplayDetails(payload, assets, prices, nativeCurrency);
   const transaction = {
     peerId,
-    callId,
+    requestId,
     payload,
     transactionDisplayDetails,
     dappName,
   };
-  const updatedTransactions = { ...transactionsToApprove, [callId]: transaction };
+  const updatedTransactions = { ...transactionsToApprove, [requestId]: transaction };
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
   saveLocalRequests(accountAddress, network, updatedTransactions);
   return transaction;
 };
 
-export const transactionIfExists = (callId) => (dispatch, getState) => {
+export const transactionIfExists = (requestId) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
-  return transactionsToApprove && transactionsToApprove[callId];
+  return transactionsToApprove && transactionsToApprove[requestId];
 };
 
-export const removeTransaction = (callId) => (dispatch, getState) => {
+export const removeTransaction = (requestId) => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { transactionsToApprove } = getState().transactionsToApprove;
-  const updatedTransactions = omit(transactionsToApprove, [callId]);
-  removeLocalRequest(accountAddress, network, callId);
+  const updatedTransactions = omit(transactionsToApprove, [requestId]);
+  removeLocalRequest(accountAddress, network, requestId);
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
 };
 

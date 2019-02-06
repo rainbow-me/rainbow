@@ -73,8 +73,8 @@ class TransactionConfirmationScreenWithData extends Component {
         value: get(transactionDetails, 'transactionDisplayDetails.payload.value'),
       };
       this.props.transactionsAddNewTransaction(txDetails);
-      this.props.removeTransaction(transactionDetails.callId);
-      await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.callId, transactionHash);
+      this.props.removeTransaction(transactionDetails.requestId);
+      await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, transactionHash);
       this.closeScreen();
     } else {
       await this.handleCancelTransaction();
@@ -87,8 +87,8 @@ class TransactionConfirmationScreenWithData extends Component {
     const flatFormatSignature = await signMessage(message);
 
     if (flatFormatSignature) {
-      this.props.removeTransaction(transactionDetails.callId);
-      await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.callId, flatFormatSignature);
+      this.props.removeTransaction(transactionDetails.requestId);
+      await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, flatFormatSignature);
       this.closeScreen();
     } else {
       await this.handleCancelSignMessage();
@@ -99,7 +99,7 @@ class TransactionConfirmationScreenWithData extends Component {
     try {
       this.closeScreen();
       const { transactionDetails } = this.props.navigation.state.params;
-      await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.callId, null);
+      await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, null);
     } catch (error) {
       this.closeScreen();
       AlertIOS.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
@@ -110,7 +110,7 @@ class TransactionConfirmationScreenWithData extends Component {
     try {
       await this.sendFailedTransactionStatus();
       const { transactionDetails } = this.props.navigation.state.params;
-      this.props.removeTransaction(transactionDetails.callId);
+      this.props.removeTransaction(transactionDetails.requestId);
     } catch (error) {
       this.closeScreen();
       AlertIOS.alert('Failed to send rejected transaction status');
