@@ -1,5 +1,8 @@
 import {
-  assign, get, mapValues, values,
+  assign,
+  get,
+  mapValues,
+  values,
 } from 'lodash';
 import { AlertIOS } from 'react-native';
 
