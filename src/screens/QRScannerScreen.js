@@ -2,12 +2,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
+import { BubbleSheet } from '../components/bubble-sheet';
 import { BackButton, Header } from '../components/header';
 import { Centered } from '../components/layout';
 import { QRCodeScanner } from '../components/qrcode-scanner';
 import { WalletConnectExplainer, WalletConnectList } from '../components/walletconnect-list';
 import { colors, position } from '../styles';
-import { BubbleSheet } from '../components/bubble-sheet';
+import { safeAreaInsetValues } from '../utils';
 
 const Container = styled(Centered)`
   ${position.size('100%')};
@@ -21,13 +22,13 @@ const QRScannerScreenHeader = styled(Header).attrs({ align: 'end', justify: 'sta
 `;
 
 const WalletConnectBubbleSheet = styled(BubbleSheet)`
-  bottom: 21;
+  bottom: ${safeAreaInsetValues.bottom ? 21 : 0};
   overflow: hidden;
 `;
 
-// 😇️ use these for testing if u want LOL
-//
-// const fakeDapps = times(3, (i) => ({
+// // 😇️ use these for testing if u want LOL
+// import { times } from 'lodash';
+// const fakeDapps = times(5, (i) => ({
 //   dappName: `Balance Manager${i}`,
 //   expires: 1548966057000 * (i + 1),
 // }));
