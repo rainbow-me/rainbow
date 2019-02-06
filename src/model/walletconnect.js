@@ -6,6 +6,7 @@ import {
 import { AlertIOS } from 'react-native';
 import RNWalletConnect from '@walletconnect/react-native';
 import { DEVICE_LANGUAGE } from '../helpers/constants';
+import { getChainId } from './wallet';
 
 const getFCMToken = async () => {
   const fcmTokenLocal = await commonStorage.getLocal('balanceWalletFcmToken');
@@ -50,7 +51,9 @@ export const walletConnectInit = async (accountAddress, uriString) => {
         },
         nativeOptions,
       );
-      await walletConnector.approveSession({ chainId: 1, accounts: [accountAddress] });
+      const chainId = await getChainId();
+      const accounts = [accountAddress];
+      await walletConnector.approveSession({ chainId, accounts });
       await commonStorage.saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
       return walletConnector;
     } catch (error) {
