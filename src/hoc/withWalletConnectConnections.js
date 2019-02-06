@@ -10,8 +10,8 @@ import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';
 import {
   getValidWalletConnectors,
-  removeWalletConnectorByDapp,
-  setWalletConnectors,
+  walletConnectInitAllConnectors,
+  walletConnectDisconnectAllByDappName,
 } from '../redux/walletconnect';
 
 const mapStateToProps = ({ walletconnect: { walletConnectors } }) => ({ walletConnectors });
@@ -38,13 +38,13 @@ const sortWalletConnectors = (walletConnectors) => {
 const walletConnectSelector = createSelector(
   [ walletConnectorsSelector ],
   sortWalletConnectors,
-);
+)
 
 export default Component => compose(
   connect(mapStateToProps, {
     getValidWalletConnectors,
-    removeWalletConnectorByDapp,
-    setWalletConnectors,
+    walletConnectInitAllConnectors,
+    walletConnectDisconnectAllByDappName,
   }),
   withProps(walletConnectSelector),
 )(Component);
