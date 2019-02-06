@@ -5,12 +5,13 @@ import {
 import { commonStorage } from 'balance-common';
 import { AlertIOS } from 'react-native';
 import lang from 'i18n-js';
-import RNWalletConnect from '@walletconnect/react-native';
+import WalletConnect from '@walletconnect/react-native';
 import { DEVICE_LANGUAGE } from '../helpers/constants';
 import { getChainId } from '../model/wallet';
 import { getFCMToken, checkPushNotificationPermissions } from '../model/firebase';
 
 // -- Constants --------------------------------------- //
+
 const WALLETCONNECT_NEW_SESSION = 'walletconnect/WALLETCONNECT_NEW_SESSION';
 
 // -- Actions ---------------------------------------- //
@@ -44,7 +45,7 @@ export const walletConnectInitNewSession = (accountAddress, uriString) => async 
   try {
     const nativeOptions = await getNativeOptions();
     try {
-      const walletConnector = new RNWalletConnect(
+      const walletConnector = new WalletConnect(
         {
           uri: uriString,
         },
@@ -76,7 +77,7 @@ export const walletConnectInitAllConnectors = () => async dispatch => {
     const nativeOptions = getNativeOptions();
 
     allConnectors = mapValues(allSessions, session => {
-      const walletConnector = new RNWalletConnect(
+      const walletConnector = new WalletConnect(
         {
           session,
         },
@@ -103,6 +104,22 @@ export const walletConnectDisconnectAllByDappName = dappName => async dispatch =
     dispatch(removeWalletConnectorByDapp(dappName));
   } catch (error) {
     AlertIOS.alert('Failed to disconnect all WalletConnect sessions');
+  }
+};
+
+export const walletConnectSendStatus = async (walletConnector, callId, result) => {
+  if (walletConnector) {
+    try {
+      if (result) {
+        await walletConnector.approveCallRequest(callId, { result });
+      } else {
+        await walletConnector.rejectCallRequest(callId);
+      }
+    } catch (error) {
+      AlertIOS.alert('Failed to send request status to WalletConnect.');
+    }
+  } else {
+    AlertIOS.alert('WalletConnect session has expired while trying to send request status. Please reconnect.');
   }
 };
 
@@ -141,9 +158,9 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-  case WALLETCONNECT_NEW_SESSION:
-    return { ...state, walletConnectors: action.payload };
-  default:
-    return state;
+    case WALLETCONNECT_NEW_SESSION:
+      return { ...state, walletConnectors: action.payload };
+    default:
+      return state;
   }
 };

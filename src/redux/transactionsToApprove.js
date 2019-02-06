@@ -165,20 +165,6 @@ export const addTransactionToApprove = (sessionId, callId, callData, dappName) =
   return transaction;
 };
 
-export const addTransactionsToApprove = (transactions) => (dispatch, getState) => {
-  const { transactionsToApprove } = getState().transactionsToApprove;
-  const { accountAddress, network, nativeCurrency } = getState().settings;
-  const { prices } = getState().prices;
-  const { assets } = getState().assets;
-  const transactionsWithDisplayDetails = mapValues(transactions, (transactionDetails) => {
-    const transactionDisplayDetails = getRequestDisplayDetails(transactionDetails.callData, assets, prices, nativeCurrency);
-    return { ...transactionDetails, transactionDisplayDetails };
-  });
-  const updatedTransactions = { ...transactionsToApprove, ...transactionsWithDisplayDetails };
-  dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
-  saveLocalRequests(accountAddress, network, updatedTransactions);
-};
-
 export const transactionIfExists = (callId) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
   return transactionsToApprove && transactionsToApprove[callId];

@@ -3,7 +3,6 @@ import {
   settingsInitializeState,
   settingsUpdateAccountAddress,
 } from 'balance-common';
-import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Piwik from 'react-native-matomo';
@@ -20,14 +19,9 @@ import {
 } from './hoc';
 import {
   addTransactionToApprove,
-  addTransactionsToApprove,
   transactionIfExists,
   transactionsToApproveInit,
 } from './redux/transactionsToApprove';
-import {
-  walletConnectGetAllRequests,
-  walletConnectGetRequest,
-} from './model/walletconnect';
 import store from './redux/store';
 import { walletInit } from './model/wallet';
 import {
@@ -35,7 +29,6 @@ import {
   registerTokenRefreshListener,
   registerNotificationListener,
   registerNotificationOpenedListener,
-  removeAllDeliveredNotifications,
   getInitialNotification,
 } from './model/firebase';
 import Routes from './screens/Routes';
@@ -49,7 +42,6 @@ if (process.env.NODE_ENV === 'development') {
 class App extends Component {
   static propTypes = {
     accountLoadState: PropTypes.func,
-    addTransactionsToApprove: PropTypes.func,
     addTransactionToApprove: PropTypes.func,
     getValidWalletConnectors: PropTypes.func,
     settingsInitializeState: PropTypes.func,
@@ -90,7 +82,7 @@ class App extends Component {
       this.props.walletConnectInitAllConnectors();
       const notificationOpen = await getInitialNotification();
       if (!notificationOpen) {
-        this.fetchAllRequestsFromWalletConnectSessions();
+        // deleted fetchAllRequestsFromWalletConnectSessions()
       }
       return walletAddress;
     } catch (error) {
@@ -102,7 +94,7 @@ class App extends Component {
   handleAppStateChange = async (nextAppState) => {
     if (this.state.appState.match(/unknown|background/) && nextAppState === 'active') {
       Piwik.trackEvent('screen', 'view', 'app');
-      this.fetchAllRequestsFromWalletConnectSessions();
+      // deleted fetchAllRequestsFromWalletConnectSessions()
     }
     this.setState({ appState: nextAppState });
   }
@@ -125,39 +117,29 @@ class App extends Component {
     Navigation.handleAction(this.navigatorRef, action);
   }
 
-  fetchAllRequestsFromWalletConnectSessions = async () => {
-    const allConnectors = this.props.getValidWalletConnectors();
-    if (!isEmpty(allConnectors)) {
-      const allRequests = await walletConnectGetAllRequests(allConnectors);
-      if (!isEmpty(allRequests)) {
-        this.props.addTransactionsToApprove(allRequests);
-        await removeAllDeliveredNotifications();
-      }
-    }
-  }
 
   onPushNotificationOpened = async (callId, sessionId, autoOpened) => {
     const existingTransaction = this.props.transactionIfExists(callId);
     if (existingTransaction) {
       this.handleOpenConfirmTransactionModal(existingTransaction, autoOpened);
     } else {
-      const transaction = await this.fetchAndAddWalletConnectRequest(callId, sessionId);
-      if (transaction) {
-        this.handleOpenConfirmTransactionModal(transaction, autoOpened);
-      } else {
-        AlertIOS.alert('This request has expired.');
-      }
+      // const transaction = await this.fetchAndAddWalletConnectRequest(callId, sessionId);
+      // if (transaction) {
+      //   this.handleOpenConfirmTransactionModal(transaction, autoOpened);
+      // } else {
+      //   AlertIOS.alert('This request has expired.');
+      // }
     }
   }
 
-  fetchAndAddWalletConnectRequest = async (callId, sessionId) => {
-    const walletConnector = this.props.sortedWalletConnectors.find(({ _sessionId }) => _sessionId === sessionId);
-    const callData = await walletConnectGetRequest(callId, walletConnector);
-    if (!callData) return null;
+  // fetchAndAddWalletConnectRequest = async (callId, sessionId) => {
+  //   const walletConnector = this.props.sortedWalletConnectors.find(({ _sessionId }) => _sessionId === sessionId);
+  //   const callData = await walletConnectGetRequest(callId, walletConnector);
+  //   if (!callData) return null;
 
-    const { dappName } = walletConnector;
-    return this.props.addTransactionToApprove(sessionId, callId, callData, dappName);
-  }
+  //   const { dappName } = walletConnector;
+  //   return this.props.addTransactionToApprove(sessionId, callId, callData, dappName);
+  // }
 
   render = () => (
     <Provider store={store}>
@@ -180,7 +162,6 @@ const AppWithRedux = compose(
     null,
     {
       accountLoadState,
-      addTransactionsToApprove,
       addTransactionToApprove,
       settingsInitializeState,
       settingsUpdateAccountAddress,
