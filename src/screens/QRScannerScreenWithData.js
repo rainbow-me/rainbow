@@ -21,20 +21,23 @@ class QRScannerScreenWithData extends PureComponent {
 
   state = { enableScanning: true };
 
-  componentDidUpdate = prevProps => {
+  componentDidUpdate = (prevProps) => {
     if (this.props.isScreenActive && !prevProps.isScreenActive) {
       this.setState({ enableScanning: true });
       Piwik.trackScreen('QRScannerScreen', 'QRScannerScreen');
     }
-  };
+  }
 
-  handlePressBackButton = () => this.props.navigation.navigate('WalletScreen');
+  handlePressBackButton = () => this.props.navigation.navigate('WalletScreen')
 
-  handleReenableScanning = () => this.setState({ enableScanning: true });
+  handleReenableScanning = () => this.setState({ enableScanning: true })
 
   handleScanSuccess = async ({ data }) => {
     const {
-      accountAddress, walletConnectInitNewSession, navigation, setSafeTimeout,
+      accountAddress,
+      walletConnectInitNewSession,
+      navigation,
+      setSafeTimeout,
     } = this.props;
 
     if (!data) return null;
@@ -62,7 +65,7 @@ class QRScannerScreenWithData extends PureComponent {
       title: lang.t('wallet.unrecognized_qrcode_title'),
       callback: this.handleReenableScanning,
     });
-  };
+  }
 
   render = () => (
     <QRScannerScreen
@@ -71,7 +74,7 @@ class QRScannerScreenWithData extends PureComponent {
       onPressBackButton={this.handlePressBackButton}
       onScanSuccess={this.handleScanSuccess}
     />
-  );
+  )
 }
 
 export default compose(

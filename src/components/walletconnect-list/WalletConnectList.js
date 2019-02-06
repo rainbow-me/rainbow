@@ -18,7 +18,7 @@ const Sheet = styled(Column)`
   background-color: ${colors.white};
   bottom: 0;
   left: 0;
-  max-height: ${({ bottomInset }) => bottomInset + WalletConnectListItem.height * 3};
+  max-height: ${({ bottomInset }) => bottomInset + (WalletConnectListItem.height * 3)};
   min-height: ${({ bottomInset }) => bottomInset + WalletConnectListItem.height};
   position: absolute;
   right: 0;
@@ -26,14 +26,23 @@ const Sheet = styled(Column)`
 `;
 
 const WalletConnectList = ({
-  onHandleDisconnectAlert, onLayout, safeAreaInset, walletConnectorsByDappName,
+  onHandleDisconnectAlert,
+  onLayout,
+  safeAreaInset,
+  walletConnectorsByDappName,
 }) => (
   <Sheet bottomInset={safeAreaInset.bottom} onLayout={onLayout}>
     <FlatList
       contentContainerStyle={{ paddingBottom: safeAreaInset.bottom }}
       data={walletConnectorsByDappName}
       removeClippedSubviews
-      renderItem={({ index, item }) => <WalletConnectListItem {...item} key={get(item, 'dappName', index)} onPress={onHandleDisconnectAlert} />}
+      renderItem={({ index, item }) => (
+        <WalletConnectListItem
+          {...item}
+          key={get(item, 'dappName', index)}
+          onPress={onHandleDisconnectAlert}
+        />
+      )}
       scrollIndicatorInsets={{
         bottom: safeAreaInset.bottom,
         top: SheetBorderRadius,
@@ -53,19 +62,17 @@ export default compose(
   withSafeAreaViewInsetValues,
   withWalletConnectConnections,
   withHandlers({
-    onHandleDisconnectAlert: ({ walletConnectDisconnectAllByDappName }) => dappName => {
-      showActionSheetWithOptions(
-        {
-          cancelButtonIndex: 1,
-          destructiveButtonIndex: 0,
-          options: ['Disconnect', 'Cancel'],
-          title: `Would you like to disconnect from ${dappName}?`,
-        },
-        buttonIndex => {
-          if (buttonIndex === 0) {
-            walletConnectDisconnectAllByDappName(dappName);
-          }
-        },
+    onHandleDisconnectAlert: ({ walletConnectDisconnectAllByDappName }) => (dappName) => {
+      showActionSheetWithOptions({
+        cancelButtonIndex: 1,
+        destructiveButtonIndex: 0,
+        options: ['Disconnect', 'Cancel'],
+        title: `Would you like to disconnect from ${dappName}?`,
+      }, (buttonIndex) => {
+        if (buttonIndex === 0) {
+          walletConnectDisconnectAllByDappName(dappName);
+        }
+      },
       );
     },
   }),

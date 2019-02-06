@@ -1,4 +1,8 @@
-import { accountLoadState, settingsInitializeState, settingsUpdateAccountAddress } from 'balance-common';
+import {
+  accountLoadState,
+  settingsInitializeState,
+  settingsUpdateAccountAddress,
+} from 'balance-common';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -10,11 +14,20 @@ import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { FlexItem } from './components/layout';
 import OfflineBadge from './components/OfflineBadge';
-import { withTrackingDate, withWalletConnectConnections } from './hoc';
 import {
-  addTransactionToApprove, addTransactionsToApprove, transactionIfExists, transactionsToApproveInit,
+  withTrackingDate,
+  withWalletConnectConnections,
+} from './hoc';
+import {
+  addTransactionToApprove,
+  addTransactionsToApprove,
+  transactionIfExists,
+  transactionsToApproveInit,
 } from './redux/transactionsToApprove';
-import { walletConnectGetAllRequests, walletConnectGetRequest } from './model/walletconnect';
+import {
+  walletConnectGetAllRequests,
+  walletConnectGetRequest,
+} from './model/walletconnect';
 import store from './redux/store';
 import { walletInit } from './model/wallet';
 import {
@@ -46,9 +59,9 @@ class App extends Component {
     trackingDateInit: PropTypes.func,
     transactionIfExists: PropTypes.func,
     transactionsToApproveInit: PropTypes.func,
-  };
+  }
 
-  state = { appState: AppState.currentState };
+  state = { appState: AppState.currentState }
 
   navigatorRef = null;
 
@@ -66,7 +79,7 @@ class App extends Component {
     this.notificationOpenedListener = registerNotificationOpenedListener();
   }
 
-  handleWalletConfig = async seedPhrase => {
+  handleWalletConfig = async (seedPhrase) => {
     try {
       this.props.trackingDateInit();
       const walletAddress = await walletInit(seedPhrase);
@@ -84,15 +97,15 @@ class App extends Component {
       AlertIOS.alert('Error: Failed to initialize wallet.');
       return null;
     }
-  };
+  }
 
-  handleAppStateChange = async nextAppState => {
+  handleAppStateChange = async (nextAppState) => {
     if (this.state.appState.match(/unknown|background/) && nextAppState === 'active') {
       Piwik.trackEvent('screen', 'view', 'app');
       this.fetchAllRequestsFromWalletConnectSessions();
     }
     this.setState({ appState: nextAppState });
-  };
+  }
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
@@ -101,9 +114,9 @@ class App extends Component {
     this.onTokenRefreshListener();
   }
 
-  handleNavigatorRef = navigatorRef => {
+  handleNavigatorRef = (navigatorRef) => {
     this.navigatorRef = navigatorRef;
-  };
+  }
 
   handleOpenConfirmTransactionModal = (transactionDetails, autoOpened) => {
     if (!this.navigatorRef) return;
@@ -112,7 +125,7 @@ class App extends Component {
       params: { transactionDetails, autoOpened },
     });
     Navigation.handleAction(this.navigatorRef, action);
-  };
+  }
 
   fetchAllRequestsFromWalletConnectSessions = async () => {
     const allConnectors = this.props.getValidWalletConnectors();
@@ -123,7 +136,7 @@ class App extends Component {
         await removeAllDeliveredNotifications();
       }
     }
-  };
+  }
 
   onPushNotificationOpened = async (callId, sessionId, autoOpened) => {
     const existingTransaction = this.props.transactionIfExists(callId);
@@ -137,7 +150,7 @@ class App extends Component {
         AlertIOS.alert('This request has expired.');
       }
     }
-  };
+  }
 
   fetchAndAddWalletConnectRequest = async (callId, sessionId) => {
     const walletConnector = this.props.sortedWalletConnectors.find(({ _sessionId }) => _sessionId === sessionId);
@@ -146,16 +159,19 @@ class App extends Component {
 
     const { dappName } = walletConnector;
     return this.props.addTransactionToApprove(sessionId, callId, callData, dappName);
-  };
+  }
 
   render = () => (
     <Provider store={store}>
       <FlexItem>
         <OfflineBadge />
-        <Routes ref={this.handleNavigatorRef} screenProps={{ handleWalletConfig: this.handleWalletConfig }} />
+        <Routes
+          ref={this.handleNavigatorRef}
+          screenProps={{ handleWalletConfig: this.handleWalletConfig }}
+        />
       </FlexItem>
     </Provider>
-  );
+  )
 }
 
 const AppWithRedux = compose(
