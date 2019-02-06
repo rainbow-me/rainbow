@@ -4,10 +4,10 @@ import * as keychain from './keychain';
  * Public
  */
 
-export async function createConnection(bridgeDomain, sessionId, sessionKey, iv) {
+export async function createConnection(bridgeDomain, peerId, sessionKey, iv) {
   const connection = {
     bridgeDomain,
-    sessionId,
+    peerId,
     sessionKey,
     iv,
   };
@@ -16,18 +16,18 @@ export async function createConnection(bridgeDomain, sessionId, sessionKey, iv) 
 
 export async function saveConnection(connection) {
   const connections = await loadConnections();
-  connections[connection.sessionId] = connection;
+  connections[connection.peerId] = connection;
   await saveConnections(connections);
 }
 
-export async function loadConnection(sessionId) {
+export async function loadConnection(peerId) {
   const connections = await loadConnections();
-  return connections[sessionId];
+  return connections[peerId];
 }
 
-export async function removeConnection(sessionId) {
+export async function removeConnection(peerId) {
   const connections = await loadConnections();
-  delete connections[sessionId];
+  delete connections[peerId];
   await saveConnections(connections);
 }
 

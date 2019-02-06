@@ -117,30 +117,6 @@ class App extends Component {
     Navigation.handleAction(this.navigatorRef, action);
   }
 
-
-  onPushNotificationOpened = async (callId, sessionId, autoOpened) => {
-    const existingTransaction = this.props.transactionIfExists(callId);
-    if (existingTransaction) {
-      this.handleOpenConfirmTransactionModal(existingTransaction, autoOpened);
-    } else {
-      // const transaction = await this.fetchAndAddWalletConnectRequest(callId, sessionId);
-      // if (transaction) {
-      //   this.handleOpenConfirmTransactionModal(transaction, autoOpened);
-      // } else {
-      //   AlertIOS.alert('This request has expired.');
-      // }
-    }
-  }
-
-  // fetchAndAddWalletConnectRequest = async (callId, sessionId) => {
-  //   const walletConnector = this.props.sortedWalletConnectors.find(({ _sessionId }) => _sessionId === sessionId);
-  //   const callData = await walletConnectGetRequest(callId, walletConnector);
-  //   if (!callData) return null;
-
-  //   const { dappName } = walletConnector;
-  //   return this.props.addTransactionToApprove(sessionId, callId, callData, dappName);
-  // }
-
   render = () => (
     <Provider store={store}>
       <FlexItem>

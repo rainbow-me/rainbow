@@ -43,7 +43,7 @@ class TransactionConfirmationScreenWithData extends Component {
 
   handleConfirmTransaction = async () => {
     const { transactionDetails } = this.props.navigation.state.params;
-    const txPayload = get(transactionDetails, 'callData.params[0]');
+    const txPayload = get(transactionDetails, 'payload.params[0]');
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(this.props.transactionCountNonce, web3TxnCount);
     const nonce = web3Instance.utils.toHex(maxTxnCount);
@@ -74,7 +74,7 @@ class TransactionConfirmationScreenWithData extends Component {
       };
       this.props.transactionsAddNewTransaction(txDetails);
       this.props.removeTransaction(transactionDetails.callId);
-      await this.props.walletConnectSendStatus(transactionDetails.sessionId, transactionDetails.callId, transactionHash);
+      await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.callId, transactionHash);
       this.closeScreen();
     } else {
       await this.handleCancelTransaction();
@@ -88,7 +88,7 @@ class TransactionConfirmationScreenWithData extends Component {
 
     if (flatFormatSignature) {
       this.props.removeTransaction(transactionDetails.callId);
-      await this.props.walletConnectSendStatus(transactionDetails.sessionId, transactionDetails.callId, flatFormatSignature);
+      await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.callId, flatFormatSignature);
       this.closeScreen();
     } else {
       await this.handleCancelSignMessage();
@@ -99,7 +99,7 @@ class TransactionConfirmationScreenWithData extends Component {
     try {
       this.closeScreen();
       const { transactionDetails } = this.props.navigation.state.params;
-      await this.props.walletConnectSendStatus(transactionDetails.sessionId, transactionDetails.callId, null);
+      await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.callId, null);
     } catch (error) {
       this.closeScreen();
       AlertIOS.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));

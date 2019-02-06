@@ -107,8 +107,8 @@ export const walletConnectDisconnectAllByDappName = dappName => async dispatch =
   }
 };
 
-export const walletConnectSendStatus = (sessionId, callId, result) => async (dispatch, getState) => {
-  const walletConnector = getState().walletconnect.walletConnectors[sessionId];
+export const walletConnectSendStatus = (peerId, callId, result) => async (dispatch, getState) => {
+  const walletConnector = getState().walletconnect.walletConnectors[peerId];
   if (walletConnector) {
     try {
       if (result) {
