@@ -41,9 +41,22 @@ import {
   padding,
   shadow,
 } from '../styles';
-import { deviceUtils } from '../utils';
+import { deviceUtils, directionPropType } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
 import { removeLeadingZeros, uppercase } from '../utils/formatters';
+
+const DoubleArrowIconItem = ({ direction }) => (
+  <Icon
+    color={colors.dark}
+    direction={direction}
+    name="caret"
+    size={5}
+  />
+);
+
+DoubleArrowIconItem.propTypes = {
+  direction: directionPropType,
+};
 
 const AddressInput = styled(AddressField)`
   padding-right: 20px;
@@ -135,11 +148,6 @@ const NumberInput = styled(UnderlineField).attrs({
 })`
   margin-bottom: 10px;
   margin-right: 26px;
-`;
-
-const NumberInputLabel = styled(Monospace)`
-  fontSize: ${fonts.size.h2};
-  color: ${colors.blueGreyDark};
 `;
 
 const SendButton = styled(BlockButton).attrs({ component: LongPressButton })`
@@ -487,9 +495,9 @@ class SendSheet extends Component {
   }
 
   renderTransactionSpeed() {
-    const { gasPrice } = this.props;
+    const { gasPrice, nativeCurrencySymbol } = this.props;
 
-    const fee = get(gasPrice, 'txFee.native.value.display', '$0.00');
+    const fee = get(gasPrice, 'txFee.native.value.display', `${nativeCurrencySymbol}0.00`);
     const time = get(gasPrice, 'estimatedTime.display', '');
 
     return (
@@ -517,6 +525,11 @@ class SendSheet extends Component {
     } = this.props;
     const selectedAsset = allAssets.find(asset => asset.symbol === selected.symbol);
 
+    const symbolMaxLength = 6;
+    const selectedAssetSymbol = (selected.symbol.length > symbolMaxLength)
+      ? selected.symbol.substring(0, symbolMaxLength)
+      : selected.symbol;
+
     return (
       <Column flex={1}>
         <ShadowStack
@@ -529,10 +542,14 @@ class SendSheet extends Component {
           shouldRasterizeIOS={true}
           width={deviceUtils.dimensions.width}
         >
-          <SendCoinRow item={selectedAsset} onPress={this.onPressAssetHandler('')}>
+          <SendCoinRow
+            item={selectedAsset}
+            onPress={this.onPressAssetHandler('')}
+            paddingRight={24}
+          >
             <Column>
-              <Icon name="caret" direction="up" size={5} color={colors.dark} />
-              <Icon name="caret" direction="down" size={5} color={colors.dark} />
+              <DoubleArrowIconItem direction="up" />
+              <DoubleArrowIconItem direction="down" />
             </Column>
           </SendCoinRow>
         </ShadowStack>
@@ -548,7 +565,9 @@ class SendSheet extends Component {
                 placeholder="0"
                 value={assetAmount}
               />
-              <NumberInputLabel>{selected.symbol}</NumberInputLabel>
+              <Monospace color="blueGreyDark" size="h2">
+                {selectedAssetSymbol}
+              </Monospace>
             </Row>
             <Row justify="space-between">
               <NumberInput
@@ -559,7 +578,9 @@ class SendSheet extends Component {
                 placeholder="0.00"
                 value={nativeAmount}
               />
-              <NumberInputLabel>{nativeCurrency}</NumberInputLabel>
+              <Monospace color="blueGreyDark" size="h2">
+                {nativeCurrency}
+              </Monospace>
             </Row>
           </Column>
           {this.renderSendButton()}
