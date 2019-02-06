@@ -7,7 +7,6 @@ import { AlertIOS, StatusBar, Vibration } from 'react-native';
 import Piwik from 'react-native-matomo';
 import { withTransactionConfirmationScreen } from '../hoc';
 import { signMessage, sendTransaction } from '../model/wallet';
-import { walletConnectSendStatus } from '../model/walletconnect';
 import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
 class TransactionConfirmationScreenWithData extends Component {
@@ -18,7 +17,7 @@ class TransactionConfirmationScreenWithData extends Component {
     transactionCountNonce: PropTypes.number,
     transactionsAddNewTransaction: PropTypes.func,
     updateTransactionCountNonce: PropTypes.func,
-    walletConnectors: PropTypes.object,
+    walletConnectSendStatus: PropTypes.func,
   }
 
   componentDidUpdate = (prevProps) => {
@@ -75,8 +74,7 @@ class TransactionConfirmationScreenWithData extends Component {
       };
       this.props.transactionsAddNewTransaction(txDetails);
       this.props.removeTransaction(transactionDetails.callId);
-      const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
-      await walletConnectSendStatus(walletConnector, transactionDetails.callId, transactionHash);
+      await this.props.walletConnectSendStatus(transactionDetails.sessionId, transactionDetails.callId, transactionHash);
       this.closeScreen();
     } else {
       await this.handleCancelTransaction();
@@ -90,8 +88,7 @@ class TransactionConfirmationScreenWithData extends Component {
 
     if (flatFormatSignature) {
       this.props.removeTransaction(transactionDetails.callId);
-      const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
-      await walletConnectSendStatus(walletConnector, transactionDetails.callId, flatFormatSignature);
+      await this.props.walletConnectSendStatus(transactionDetails.sessionId, transactionDetails.callId, flatFormatSignature);
       this.closeScreen();
     } else {
       await this.handleCancelSignMessage();
@@ -102,8 +99,7 @@ class TransactionConfirmationScreenWithData extends Component {
     try {
       this.closeScreen();
       const { transactionDetails } = this.props.navigation.state.params;
-      const walletConnector = this.props.walletConnectors[transactionDetails.sessionId];
-      await walletConnectSendStatus(walletConnector, transactionDetails.callId, null);
+      await this.props.walletConnectSendStatus(transactionDetails.sessionId, transactionDetails.callId, null);
     } catch (error) {
       this.closeScreen();
       AlertIOS.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
