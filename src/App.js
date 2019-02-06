@@ -15,7 +15,6 @@ import {
   addTransactionToApprove, addTransactionsToApprove, transactionIfExists, transactionsToApproveInit,
 } from './redux/transactionsToApprove';
 import { walletConnectGetAllRequests, walletConnectGetRequest } from './model/walletconnect';
-import { walletConnectInitAllConnectors } from './redux/walletconnect';
 import store from './redux/store';
 import { walletInit } from './model/wallet';
 import {
@@ -42,7 +41,7 @@ class App extends Component {
     getValidWalletConnectors: PropTypes.func,
     settingsInitializeState: PropTypes.func,
     settingsUpdateAccountAddress: PropTypes.func,
-    setWalletConnectors: PropTypes.func,
+    walletConnectInitAllConnectors: PropTypes.func,
     sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
     trackingDateInit: PropTypes.func,
     transactionIfExists: PropTypes.func,
@@ -75,14 +74,7 @@ class App extends Component {
       this.props.settingsUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
       this.props.accountLoadState();
       this.props.transactionsToApproveInit();
-      try {
-        const allConnectors = await walletConnectInitAllConnectors();
-        if (allConnectors) {
-          this.props.setWalletConnectors(allConnectors);
-        }
-      } catch (error) {
-        console.log('Unable to init all WalletConnect sessions');
-      }
+      this.props.walletConnectInitAllConnectors();
       const notificationOpen = await getInitialNotification();
       if (!notificationOpen) {
         this.fetchAllRequestsFromWalletConnectSessions();

@@ -13,7 +13,7 @@ import { getFCMToken, checkPushNotificationPermissions } from '../model/firebase
 // -- Constants --------------------------------------- //
 const WALLETCONNECT_NEW_SESSION = 'walletconnect/WALLETCONNECT_NEW_SESSION';
 
-// -- Helpers ---------------------------------------- //
+// -- Actions ---------------------------------------- //
 
 const getNativeOptions = async () => {
   const language = DEVICE_LANGUAGE.replace(/[-_](\w?)+/gi, '').toLowerCase();
@@ -38,8 +38,6 @@ const getNativeOptions = async () => {
 
   return nativeOptions;
 };
-
-// -- Actions ---------------------------------------- //
 
 export const walletConnectInitNewSession = (accountAddress, uriString) => async dispatch => {
   let result = null;
@@ -70,13 +68,14 @@ export const walletConnectInitNewSession = (accountAddress, uriString) => async 
   }
 };
 
-export const walletConnectInitAllConnectors = async () => {
+export const walletConnectInitAllConnectors = () => async dispatch => {
+  let allConnectors = {};
   try {
     const allSessions = await commonStorage.getAllValidWalletConnectSessions();
 
     const nativeOptions = getNativeOptions();
 
-    const allConnectors = mapValues(allSessions, session => {
+    allConnectors = mapValues(allSessions, session => {
       const walletConnector = new RNWalletConnect(
         {
           session,
@@ -85,18 +84,23 @@ export const walletConnectInitAllConnectors = async () => {
       );
       return walletConnector;
     });
-    return allConnectors;
   } catch (error) {
     AlertIOS.alert('Unable to retrieve all WalletConnect sessions.');
-    return {};
+    allConnectors = {};
+  }
+  if (allConnectors) {
+    dispatch(setWalletConnectors(allConnectors));
   }
 };
 
-export const walletConnectDisconnectAllByDappName = async walletConnectors => {
+export const walletConnectDisconnectAllByDappName = dappName => async dispatch => {
+  const validSessions = dispatch(getValidWalletConnectors());
+  const walletConnectors = values(pickBy(validSessions, session => session.dappName === dappName));
   try {
     const peerIds = values(mapValues(walletConnectors, walletConnector => walletConnector.peerId));
     await commonStorage.removeWalletConnectSessions(peerIds);
     forEach(walletConnectors, walletConnector => walletConnector.killSession());
+    dispatch(removeWalletConnectorByDapp(dappName));
   } catch (error) {
     AlertIOS.alert('Failed to disconnect all WalletConnect sessions');
   }

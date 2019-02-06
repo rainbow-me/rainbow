@@ -3,24 +3,25 @@ import {
 } from 'lodash';
 import { AlertIOS } from 'react-native';
 
-const getRequestsForSession = walletConnector => new Promise((resolve, reject) => {
-  const { peerMeta, peerId } = walletConnector;
-  walletConnector
-    .getAllCallRequests()
-    .then(allCalls => resolve(
-      mapValues(allCalls, (requestPayload, callId) => ({
-        callData: get(requestPayload, 'data'),
-        peerMeta,
-        peerId,
-        callId,
-      })),
-    ))
-    .catch(error => resolve({}));
-});
-
 export const walletConnectGetAllRequests = async walletConnectors => {
   try {
-    const sessionToRequests = mapValues(walletConnectors, getRequestsForSession);
+    const sessionToRequests = mapValues(
+      walletConnectors,
+      walletConnector => new Promise((resolve, reject) => {
+        const { peerMeta, peerId } = walletConnector;
+        walletConnector
+          .getAllCallRequests()
+          .then(allCalls => resolve(
+            mapValues(allCalls, (requestPayload, callId) => ({
+              callData: get(requestPayload, 'data'),
+              peerMeta,
+              peerId,
+              callId,
+            })),
+          ))
+          .catch(error => resolve({}));
+      }),
+    );
     const requestValues = await Promise.all(values(sessionToRequests));
     return assign({}, ...requestValues);
   } catch (error) {
