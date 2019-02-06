@@ -2,7 +2,10 @@ import ethers from 'ethers';
 import lang from 'i18n-js';
 import { AlertIOS } from 'react-native';
 import {
-  ACCESS_CONTROL, ACCESSIBLE, AUTHENTICATION_TYPE, canImplyAuthentication,
+  ACCESS_CONTROL,
+  ACCESSIBLE,
+  AUTHENTICATION_TYPE,
+  canImplyAuthentication,
 } from 'react-native-keychain';
 import Piwik from 'react-native-matomo';
 import * as keychain from './keychain';
@@ -102,7 +105,7 @@ export const loadAddress = async () => {
   }
 };
 
-const createWallet = async seedPhrase => {
+const createWallet = async (seedPhrase) => {
   const walletSeedPhrase = seedPhrase || generateSeedPhrase();
   const wallet = ethers.Wallet.fromMnemonic(walletSeedPhrase);
   saveWalletDetails(walletSeedPhrase, wallet.privateKey, wallet.address);
@@ -137,6 +140,6 @@ const loadPrivateKey = async (authenticationPrompt = lang.t('wallet.authenticate
   }
 };
 
-const saveAddress = async address => {
+const saveAddress = async (address) => {
   await keychain.saveString(addressKey, address);
 };
