@@ -78,6 +78,4 @@ export const registerNotificationOpenedListener = () => firebase.notifications()
   this.onPushNotificationOpened(callId, sessionId, false);
 });
 
-export const removeAllDeliveredNotifications = () => firebase.notifications().removeAllDeliveredNotifications();
-
 export const getInitialNotification = () => firebase.notifications().getInitialNotification();
