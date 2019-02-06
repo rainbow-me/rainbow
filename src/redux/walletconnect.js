@@ -107,14 +107,14 @@ export const walletConnectDisconnectAllByDappName = dappName => async dispatch =
   }
 };
 
-export const walletConnectSendStatus = (peerId, callId, result) => async (dispatch, getState) => {
+export const walletConnectSendStatus = (peerId, requestId, result) => async (dispatch, getState) => {
   const walletConnector = getState().walletconnect.walletConnectors[peerId];
   if (walletConnector) {
     try {
       if (result) {
-        await walletConnector.approveCallRequest(callId, { result });
+        await walletConnector.approveCallRequest(requestId, { result });
       } else {
-        await walletConnector.rejectCallRequest(callId);
+        await walletConnector.rejectCallRequest(requestId);
       }
     } catch (error) {
       AlertIOS.alert('Failed to send request status to WalletConnect.');
