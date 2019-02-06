@@ -71,7 +71,7 @@ export default class ButtonPressAnimation extends PureComponent {
     const isActive = state === State.BEGAN;
 
     if (buttonExcludingMutex !== this) {
-      if (buttonExcludingMutex === null) {
+      if (buttonExcludingMutex === null && isActive) {
         buttonExcludingMutex = this;
       } else {
         return;
