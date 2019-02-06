@@ -1,11 +1,10 @@
-import { get, pickBy, values } from 'lodash';
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FlatList } from 'react-native';
 import { compose, onlyUpdateForPropTypes, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withWalletConnectConnections, withSafeAreaViewInsetValues } from '../../hoc';
-import { walletConnectDisconnectAll } from '../../model/walletconnect';
 import { borders, colors, shadow } from '../../styles';
 import { Column } from '../layout';
 import WalletConnectListItem from './WalletConnectListItem';
@@ -63,7 +62,7 @@ export default compose(
   withSafeAreaViewInsetValues,
   withWalletConnectConnections,
   withHandlers({
-    onHandleDisconnectAlert: ({ getValidWalletConnectors, removeWalletConnectorByDapp }) => (dappName) => {
+    onHandleDisconnectAlert: ({ walletConnectDisconnectAllByDappName }) => (dappName) => {
       showActionSheetWithOptions({
         cancelButtonIndex: 1,
         destructiveButtonIndex: 0,
@@ -71,14 +70,10 @@ export default compose(
         title: `Would you like to disconnect from ${dappName}?`,
       }, (buttonIndex) => {
         if (buttonIndex === 0) {
-          const validSessions = getValidWalletConnectors();
-          const dappSessions = values(pickBy(validSessions, (session) => session.dappName === dappName));
-          walletConnectDisconnectAll(dappSessions)
-            .then(() => {
-              removeWalletConnectorByDapp(dappName);
-            });
+          walletConnectDisconnectAllByDappName(dappName);
         }
-      });
+      },
+      );
     },
   }),
   onlyUpdateForPropTypes,

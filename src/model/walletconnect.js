@@ -1,126 +1,30 @@
-import { commonStorage } from 'balance-common';
-import lang from 'i18n-js';
 import {
   assign,
-  forEach,
   get,
   mapValues,
   values,
 } from 'lodash';
 import { AlertIOS } from 'react-native';
-import RNWalletConnect from '@walletconnect/react-native';
-import { DEVICE_LANGUAGE } from '../helpers/constants';
-import { getChainId } from './wallet';
-
-const getFCMToken = async () => {
-  const fcmTokenLocal = await commonStorage.getLocal('balanceWalletFcmToken');
-  const fcmToken = get(fcmTokenLocal, 'data', null);
-  if (!fcmToken) {
-    throw new Error('Push notification token unavailable.');
-  }
-  return fcmToken;
-};
-
-const getNativeOptions = async () => {
-  const language = DEVICE_LANGUAGE.replace(/[-_](\w?)+/gi, '').toLowerCase();
-  const token = await getFCMToken();
-
-  const nativeOptions = {
-    clientMeta: {
-      description: 'Store and secure all your ERC-20 tokens in one place',
-      url: 'https://balance.io',
-      icons: ['https://avatars0.githubusercontent.com/u/19879255?s=200&v=4'],
-      name: 'Balance Wallet',
-      ssl: true,
-    },
-    push: {
-      url: 'https://us-central1-balance-424a3.cloudfunctions.net',
-      type: 'fcm',
-      token,
-      peerMeta: true,
-      language,
-    },
-  };
-
-  return nativeOptions;
-};
-
-export const walletConnectInit = async (accountAddress, uriString) => {
-  try {
-    const nativeOptions = await getNativeOptions();
-    try {
-      const walletConnector = new RNWalletConnect(
-        {
-          uri: uriString,
-        },
-        nativeOptions,
-      );
-      const chainId = await getChainId();
-      const accounts = [accountAddress];
-      await walletConnector.approveSession({ chainId, accounts });
-      await commonStorage.saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
-      return walletConnector;
-    } catch (error) {
-      console.log(error);
-      AlertIOS.alert(lang.t('wallet.wallet_connect.error'));
-      return null;
-    }
-  } catch (error) {
-    AlertIOS.alert(lang.t('wallet.wallet_connect.missing_fcm'));
-    return null;
-  }
-};
-
-export const walletConnectInitAllConnectors = async () => {
-  try {
-    const allSessions = await commonStorage.getAllValidWalletConnectSessions();
-
-    const nativeOptions = getNativeOptions();
-
-    const allConnectors = mapValues(allSessions, session => {
-      const walletConnector = new RNWalletConnect(
-        {
-          session,
-        },
-        nativeOptions,
-      );
-      return walletConnector;
-    });
-    return allConnectors;
-  } catch (error) {
-    AlertIOS.alert('Unable to retrieve all WalletConnect sessions.');
-    return {};
-  }
-};
-
-export const walletConnectDisconnectAll = async walletConnectors => {
-  try {
-    const peerIds = values(mapValues(walletConnectors, walletConnector => walletConnector.peerId));
-    await commonStorage.removeWalletConnectSessions(peerIds);
-    forEach(walletConnectors, walletConnector => walletConnector.killSession());
-  } catch (error) {
-    AlertIOS.alert('Failed to disconnect all WalletConnect sessions');
-  }
-};
-
-const getRequestsForSession = walletConnector => new Promise((resolve, reject) => {
-  const { peerMeta, peerId } = walletConnector;
-  walletConnector
-    .getAllCallRequests()
-    .then(allCalls => resolve(
-      mapValues(allCalls, (requestPayload, callId) => ({
-        callData: get(requestPayload, 'data'),
-        peerMeta,
-        peerId,
-        callId,
-      })),
-    ))
-    .catch(error => resolve({}));
-});
 
 export const walletConnectGetAllRequests = async walletConnectors => {
   try {
-    const sessionToRequests = mapValues(walletConnectors, getRequestsForSession);
+    const sessionToRequests = mapValues(
+      walletConnectors,
+      walletConnector => new Promise((resolve, reject) => {
+        const { peerMeta, peerId } = walletConnector;
+        walletConnector
+          .getAllCallRequests()
+          .then(allCalls => resolve(
+            mapValues(allCalls, (requestPayload, callId) => ({
+              callData: get(requestPayload, 'data'),
+              peerMeta,
+              peerId,
+              callId,
+            })),
+          ))
+          .catch(error => resolve({}));
+      }),
+    );
     const requestValues = await Promise.all(values(sessionToRequests));
     return assign({}, ...requestValues);
   } catch (error) {
