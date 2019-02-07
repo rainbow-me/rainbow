@@ -76,7 +76,7 @@ const getRequestDisplayDetails = (payload, assets, prices, nativeCurrency) => {
 const getTypedDataDisplayDetails = (request) => {
   const timestampInMs = Date.now();
   return {
-    callData: request,
+    payload: request,
     timestampInMs,
     type: 'message',
   };
@@ -85,7 +85,7 @@ const getTypedDataDisplayDetails = (request) => {
 const getMessageDisplayDetails = (message) => {
   const timestampInMs = Date.now();
   return {
-    callData: message,
+    payload: message,
     timestampInMs,
     type: 'message',
   };
@@ -98,7 +98,7 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
     const value = fromWei(convertHexToString(transaction.value));
     const { nativeAmount, nativeAmountDisplay } = getNativeAmount(prices, nativeCurrency, value, 'ETH');
     return {
-      callData: {
+      payload: {
         asset: {
           address: null,
           decimals: 18,
@@ -127,7 +127,7 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
     const value = fromWei(convertHexToString(amount), asset.decimals);
     const { nativeAmount, nativeAmountDisplay } = getNativeAmount(prices, nativeCurrency, value, asset.symbol);
     return {
-      callData: {
+      payload: {
         asset,
         from: transaction.from,
         gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
