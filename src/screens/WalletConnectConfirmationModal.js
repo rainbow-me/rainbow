@@ -64,7 +64,7 @@ export default compose(
   withWalletConnectConfirmationModal,
   withHandlers({
     onCloseModal: ({ navigation }) => () => navigation.goBack(),
-    onApprove: ({ peerId, walletConnectApproveSession }) => () => walletConnectApproveSession(peerId),
-    onReject: ({ peerId, walletConnectRejectSession }) => () => walletConnectRejectSession(peerId),
+    onApprove: ({ handshakeTopic, walletConnectApproveSession }) => () => walletConnectApproveSession(handshakeTopic),
+    onReject: ({ handshakeTopic, walletConnectRejectSession }) => () => walletConnectRejectSession(handshakeTopic),
   }),
 )(WalletConnectConfirmationModal);

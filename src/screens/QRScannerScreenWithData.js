@@ -6,14 +6,14 @@ import { Vibration } from 'react-native';
 import Piwik from 'react-native-matomo';
 import { compose } from 'recompact';
 import { Alert } from '../components/alerts';
-import { withInitNewWalletConnector } from '../hoc';
+import { withWalletConnectOnSessionRequest } from '../hoc';
 import { getEthereumAddressFromQRCodeData } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
 
 class QRScannerScreenWithData extends PureComponent {
   static propTypes = {
     accountAddress: PropTypes.string,
-    walletConnectInitNewSession: PropTypes.func,
+    walletConnectOnSessionRequest: PropTypes.func,
     isScreenActive: PropTypes.bool,
     navigation: PropTypes.object,
     setSafeTimeout: PropTypes.func,
@@ -34,12 +34,15 @@ class QRScannerScreenWithData extends PureComponent {
 
   handleScanSuccess = async ({ data }) => {
     const {
-      walletConnectInitNewSession,
+      walletConnectOnSessionRequest,
       navigation,
       setSafeTimeout,
     } = this.props;
 
     if (!data) return null;
+
+    console.log('QRCode scanned data', data);
+
     this.setState({ enableScanning: false });
     Vibration.vibrate();
 
@@ -54,7 +57,7 @@ class QRScannerScreenWithData extends PureComponent {
 
     if (data.startsWith('wc:')) {
       Piwik.trackEvent('QRScanner', 'walletconnect', 'QRScannedWC');
-      await walletConnectInitNewSession(data);
+      await walletConnectOnSessionRequest(data);
       return setSafeTimeout(this.handleReenableScanning, 1000);
     }
 
@@ -77,6 +80,6 @@ class QRScannerScreenWithData extends PureComponent {
 }
 
 export default compose(
-  withInitNewWalletConnector,
+  withWalletConnectOnSessionRequest,
   withSafeTimeout,
 )(QRScannerScreenWithData);
