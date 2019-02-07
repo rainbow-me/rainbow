@@ -147,11 +147,10 @@ export const addWalletConnector = walletConnector => (dispatch, getState) => {
       const transactionDetails = dispatch(addTransactionToApprove(peerId, requestId, payload, dappName));
 
       if (transactionDetails) {
-        const action = {
+        Navigation.handleAction({
           routeName: 'ConfirmRequest',
           params: { transactionDetails, autoOpened },
-        };
-        Navigation.handleAction(action);
+        });
       } else {
         AlertIOS.alert('This request has expired.');
       }

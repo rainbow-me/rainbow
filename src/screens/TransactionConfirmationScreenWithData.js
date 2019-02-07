@@ -48,13 +48,13 @@ class TransactionConfirmationScreenWithData extends Component {
     const maxTxnCount = Math.max(this.props.transactionCountNonce, web3TxnCount);
     const nonce = web3Instance.utils.toHex(maxTxnCount);
     const txPayloadLatestNonce = { ...txPayload, nonce };
-    const symbol = get(transactionDetails, 'transactionDisplayDetails.payload.asset.symbol', 'unknown');
-    const address = get(transactionDetails, 'transactionDisplayDetails.payload.asset.address', '');
+    const symbol = get(transactionDetails, 'transactionDisplayDetails.callData.asset.symbol', 'unknown');
+    const address = get(transactionDetails, 'transactionDisplayDetails.callData.asset.address', '');
     const trackingName = `${symbol}:${address}`;
     const transactionHash = await sendTransaction({
       tracking: {
         action: 'send-wc',
-        amount: get(transactionDetails, 'transactionDisplayDetails.payload.nativeAmount'),
+        amount: get(transactionDetails, 'transactionDisplayDetails.callData.nativeAmount'),
         name: trackingName,
       },
       transaction: txPayloadLatestNonce,
@@ -63,14 +63,14 @@ class TransactionConfirmationScreenWithData extends Component {
     if (transactionHash) {
       this.props.updateTransactionCountNonce(maxTxnCount + 1);
       const txDetails = {
-        asset: get(transactionDetails, 'transactionDisplayDetails.payload.asset'),
-        from: get(transactionDetails, 'transactionDisplayDetails.payload.from'),
-        gasLimit: get(transactionDetails, 'transactionDisplayDetails.payload.gasLimit'),
-        gasPrice: get(transactionDetails, 'transactionDisplayDetails.payload.gasPrice'),
+        asset: get(transactionDetails, 'transactionDisplayDetails.callData.asset'),
+        from: get(transactionDetails, 'transactionDisplayDetails.callData.from'),
+        gasLimit: get(transactionDetails, 'transactionDisplayDetails.callData.gasLimit'),
+        gasPrice: get(transactionDetails, 'transactionDisplayDetails.callData.gasPrice'),
         hash: transactionHash,
-        nonce: get(transactionDetails, 'transactionDisplayDetails.payload.nonce'),
-        to: get(transactionDetails, 'transactionDisplayDetails.payload.to'),
-        value: get(transactionDetails, 'transactionDisplayDetails.payload.value'),
+        nonce: get(transactionDetails, 'transactionDisplayDetails.callData.nonce'),
+        to: get(transactionDetails, 'transactionDisplayDetails.callData.to'),
+        value: get(transactionDetails, 'transactionDisplayDetails.callData.value'),
       };
       this.props.transactionsAddNewTransaction(txDetails);
       this.props.removeTransaction(transactionDetails.requestId);
@@ -83,7 +83,7 @@ class TransactionConfirmationScreenWithData extends Component {
 
   handleSignMessage = async () => {
     const { transactionDetails } = this.props.navigation.state.params;
-    const message = get(transactionDetails, 'transactionDisplayDetails.payload');
+    const message = get(transactionDetails, 'transactionDisplayDetails.callData');
     const flatFormatSignature = await signMessage(message);
 
     if (flatFormatSignature) {
@@ -128,7 +128,7 @@ class TransactionConfirmationScreenWithData extends Component {
         dappName,
         transactionDisplayDetails: {
           type,
-          payload,
+          callData,
         },
       },
     } = this.props.navigation.state.params;
@@ -136,7 +136,7 @@ class TransactionConfirmationScreenWithData extends Component {
     return (
       <TransactionConfirmationScreen
         dappName={dappName || ''}
-        request={payload}
+        request={callData}
         requestType={type}
         onCancelTransaction={this.handleCancelTransaction}
         onConfirm={this.handleConfirm}
