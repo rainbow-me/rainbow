@@ -3,7 +3,6 @@ export { default as withAccountRefresh } from './withAccountRefresh';
 export { default as withAccountReset } from './withAccountReset';
 export { default as withAccountSettings } from './withAccountSettings';
 export { default as withAccountTransactions } from './withAccountTransactions';
-export { default as withInitNewWalletConnector } from './withInitNewWalletConnector';
 export { default as withBlurTransitionProps } from './withBlurTransitionProps';
 export { default as withFetchingPrices } from './withFetchingPrices';
 export { default as withHideSplashScreen } from './withHideSplashScreen';
@@ -20,3 +19,4 @@ export { default as withTransactionConfirmationScreen } from './withTransactionC
 export { default as withTransitionProps } from './withTransitionProps';
 export { default as withWalletConnectConfirmationModal } from './withWalletConnectConfirmationModal';
 export { default as withWalletConnectConnections } from './withWalletConnectConnections';
+export { default as withWalletConnectOnSessionRequest } from './withWalletConnectOnSessionRequest';

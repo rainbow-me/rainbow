@@ -1,10 +1,8 @@
-import { distanceInWordsStrict } from 'date-fns';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {
   compose,
   hoistStatics,
-  onlyUpdateForKeys,
   withHandlers,
 } from 'recompact';
 import styled from 'styled-components/primitives';
@@ -36,7 +34,7 @@ const ExpiresText = styled(Text).attrs({ size: 'medium' })`
 
 const WalletConnectListItem = ({
   dappName,
-  expires,
+  url,
   onPress,
 }) => (
   <Container>
@@ -49,7 +47,7 @@ const WalletConnectListItem = ({
         {dappName}
       </TruncatedText>
       <ExpiresText>
-        Expires in {distanceInWordsStrict(Date.now(), expires)}
+        {url}
       </ExpiresText>
     </Content>
     <DisconnectButton
@@ -64,13 +62,12 @@ const WalletConnectListItem = ({
 
 WalletConnectListItem.propTypes = {
   dappName: PropTypes.string.isRequired,
-  expires: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+  url: PropTypes.string.isRequired,
   onPress: PropTypes.func.isRequired,
 };
 
 WalletConnectListItem.height = VendorLogoIconSize + (ContainerPadding * 2);
 
 export default hoistStatics(compose(
-  onlyUpdateForKeys(['expires']),
   withHandlers({ onPress: ({ onPress, dappName }) => () => onPress(dappName) }),
 ))(WalletConnectListItem);

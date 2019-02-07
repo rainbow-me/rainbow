@@ -28,7 +28,6 @@ import {
   withTrackingDate,
 } from '../hoc';
 import { position } from '../styles';
-import { isNewValueForPath } from '../utils';
 
 class WalletScreen extends PureComponent {
   static propTypes = {
