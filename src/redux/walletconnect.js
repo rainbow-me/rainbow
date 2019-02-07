@@ -42,7 +42,6 @@ const getNativeOptions = async () => {
 };
 
 export const walletConnectInitNewSession = (uriString) => async (dispatch, getState) => {
-  const { accountAddress, chainId } = getState().settings;
   let walletConnector = null;
   try {
     const nativeOptions = await getNativeOptions();
@@ -53,7 +52,7 @@ export const walletConnectInitNewSession = (uriString) => async (dispatch, getSt
         },
         nativeOptions,
       );
-      await walletConnector.approveSession({ chainId, accounts: [accountAddress] });
+
       await commonStorage.saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
     } catch (error) {
       console.log(error);
@@ -69,7 +68,17 @@ export const walletConnectInitNewSession = (uriString) => async (dispatch, getSt
         throw error;
       }
 
-      // Display Session Request Modal
+      const { peerId, peerMeta } = payload.params[0]
+
+      if (peerMeta.url === 'https://manager.balance.io') {
+        const { accountAddress, chainId } = getState().settings;
+        walletConnector.approveSession({ chainId, accounts: [accountAddress] });
+      } else {
+        Navigation.handleAction({
+          routeName: 'WalletConnectConfimationModal',
+          params: { peerId, peerMeta },
+        });
+      }
     });
 
     walletConnector.on('call_request', (error, payload) => {
@@ -100,7 +109,7 @@ export const walletConnectInitNewSession = (uriString) => async (dispatch, getSt
       }
 
       // disconnect walletConnector
-      dispatch(walletConnectDisconnectAllByDappName(walletConnector.peerMeta.name))
+      dispatch(walletConnectDisconnectAllByDappName(walletConnector.peerMeta.name));
     });
 
     const { walletConnectors } = getState().walletconnect;
@@ -134,8 +143,24 @@ export const walletConnectInitAllConnectors = () => async dispatch => {
       payload: walletConnectors,
       type: WALLETCONNECT_NEW_SESSION,
     });
-
   }
+};
+
+export const walletConnectApproveSession = (peerId) => (dispatch, getState) => {
+  const { accountAddress, chainId } = getState().settings;
+  const { walletConnectors } = getState().walletConnect;
+
+  const walletConnector = walletConnectors.filter(wc => wc.peerId === peerId)[0];
+
+  walletConnector.approveSession({ chainId, accounts: [accountAddress] });
+};
+
+export const walletConnectRejectSession = (peerId) => (dispatch, getState) => {
+  const { walletConnectors } = getState().walletConnect;
+
+  const walletConnector = walletConnectors.filter(wc => wc.peerId === peerId)[0];
+
+  walletConnector.rejectSession();
 };
 
 export const walletConnectDisconnectAllByDappName = dappName => async dispatch => {
