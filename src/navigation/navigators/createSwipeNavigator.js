@@ -137,14 +137,11 @@ export default function createSwipeNavigator(screens, options) {
     /**
      * Scroll to the initial route provided in createSwipeNavigator options
      * when the view is rendered and sizing is calculated.
-     * Replace initial screens with the final screens.
      */
     onLayout = () => {
       const routeIndex = this.getRouteIndex(options.initialRouteName);
 
       this.scrollToIndex(routeIndex, false);
-
-      this.setState({ flatListScreens: loadedScreens });
     }
 
     /**
