@@ -7,7 +7,12 @@ import {
   formatInputDecimals,
   fromWei,
 } from 'balance-common';
-import { get, mapValues, omit } from 'lodash';
+import {
+  find,
+  get,
+  mapValues,
+  omit,
+} from 'lodash';
 import {
   getLocalRequests,
   removeLocalRequest,
@@ -21,18 +26,11 @@ export const transactionsToApproveInit = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   getLocalRequests(accountAddress, network).then((requests) => {
     const transactionsToApprove = requests || {};
-    dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: transactionsToApprove });
+    dispatch({ payload: transactionsToApprove, type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE });
   });
 };
 
-const getAssetDetails = (contractAddress, assets) => {
-  for (var item of assets) {
-    if (item.address === contractAddress) {
-      return { ...item };
-    }
-  }
-  return null;
-};
+const getAssetDetails = (contractAddress, assets) => find(assets, (item) => item.address === contractAddress);
 
 export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => {
   let nativeAmount = '';
@@ -64,8 +62,8 @@ const getRequestDisplayDetails = (callData, assets, prices, nativeCurrency) => {
     const message = get(callData, 'params[1]');
     return getMessageDisplayDetails(message);
   }
-  if (callData.method === 'eth_signTypedData' ||
-             callData.method === 'eth_signTypedData_v3') {
+  if (callData.method === 'eth_signTypedData'
+      || callData.method === 'eth_signTypedData_v3') {
     const request = get(callData, 'params[1]', null);
     const jsonRequest = JSON.stringify(request.message);
     return getTypedDataDisplayDetails(jsonRequest);
@@ -153,14 +151,14 @@ export const addTransactionToApprove = (sessionId, callId, callData, dappName) =
   const { assets } = getState().assets;
   const transactionDisplayDetails = getRequestDisplayDetails(callData, assets, prices, nativeCurrency);
   const transaction = {
-    sessionId,
-    callId,
     callData,
-    transactionDisplayDetails,
+    callId,
     dappName,
+    sessionId,
+    transactionDisplayDetails,
   };
   const updatedTransactions = { ...transactionsToApprove, [callId]: transaction };
-  dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
+  dispatch({ payload: updatedTransactions, type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE });
   saveLocalRequests(accountAddress, network, updatedTransactions);
   return transaction;
 };
@@ -175,7 +173,7 @@ export const addTransactionsToApprove = (transactions) => (dispatch, getState) =
     return { ...transactionDetails, transactionDisplayDetails };
   });
   const updatedTransactions = { ...transactionsToApprove, ...transactionsWithDisplayDetails };
-  dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
+  dispatch({ payload: updatedTransactions, type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE });
   saveLocalRequests(accountAddress, network, updatedTransactions);
 };
 
@@ -189,7 +187,7 @@ export const removeTransaction = (callId) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
   const updatedTransactions = omit(transactionsToApprove, [callId]);
   removeLocalRequest(accountAddress, network, callId);
-  dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
+  dispatch({ payload: updatedTransactions, type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE });
 };
 
 // -- Reducer ----------------------------------------- //
