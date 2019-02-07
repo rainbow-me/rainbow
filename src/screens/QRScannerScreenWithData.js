@@ -34,7 +34,6 @@ class QRScannerScreenWithData extends PureComponent {
 
   handleScanSuccess = async ({ data }) => {
     const {
-      accountAddress,
       walletConnectInitNewSession,
       navigation,
       setSafeTimeout,
@@ -53,9 +52,9 @@ class QRScannerScreenWithData extends PureComponent {
       return setSafeTimeout(this.handleReenableScanning, 1000);
     }
 
-    if (data.startsWith('ethereum:wc')) {
+    if (data.startsWith('wc:')) {
       Piwik.trackEvent('QRScanner', 'walletconnect', 'QRScannedWC');
-      await walletConnectInitNewSession(accountAddress, data);
+      await walletConnectInitNewSession(data);
       return setSafeTimeout(this.handleReenableScanning, 1000);
     }
 
@@ -78,7 +77,6 @@ class QRScannerScreenWithData extends PureComponent {
 }
 
 export default compose(
-  withAccountAddress,
   withInitNewWalletConnector,
   withSafeTimeout,
 )(QRScannerScreenWithData);
