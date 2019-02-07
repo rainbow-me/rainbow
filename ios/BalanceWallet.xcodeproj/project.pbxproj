@@ -2291,7 +2291,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.balance.balancewallet;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.balance.balancewallet-pedrouid";
 				PRODUCT_NAME = BalanceWallet;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2344,7 +2344,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.balance.balancewallet;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.balance.balancewallet-pedrouid";
 				PRODUCT_NAME = BalanceWallet;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2432,7 +2432,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.balance.balancewallet;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.balance.balancewallet-pedrouid";
 				PRODUCT_NAME = BalanceWallet;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2566,7 +2566,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.balance.balancewallet;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.balance.balancewallet-pedrouid";
 				PRODUCT_NAME = BalanceWallet;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
