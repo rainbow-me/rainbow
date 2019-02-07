@@ -8,6 +8,7 @@ import {
   pure,
   withHandlers,
   withProps,
+  shouldUpdate,
 } from 'recompact';
 import { createSelector } from 'reselect';
 import styled from 'styled-components/primitives';
@@ -91,4 +92,5 @@ export default compose(
   withProps(buildExpandedAssetsSelector),
   withHandlers({ onPressBackground: ({ navigation }) => () => navigation.goBack() }),
   pure,
+  shouldUpdate(() => false),
 )(ExpandedAssetScreen);
