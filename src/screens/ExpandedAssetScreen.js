@@ -5,7 +5,6 @@ import { StatusBar } from 'react-native';
 import {
   compose,
   defaultProps,
-  pure,
   withHandlers,
   withProps,
   shouldUpdate,
@@ -91,6 +90,5 @@ export default compose(
   withAccountAssets,
   withProps(buildExpandedAssetsSelector),
   withHandlers({ onPressBackground: ({ navigation }) => () => navigation.goBack() }),
-  pure,
   shouldUpdate(() => false),
 )(ExpandedAssetScreen);
