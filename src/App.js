@@ -52,6 +52,7 @@ class App extends Component {
     addTransactionsToApprove: PropTypes.func,
     addTransactionToApprove: PropTypes.func,
     getValidWalletConnectors: PropTypes.func,
+    onHideSplashScreen: PropTypes.func,
     refreshAccount: PropTypes.func,
     settingsInitializeState: PropTypes.func,
     settingsUpdateAccountAddress: PropTypes.func,
@@ -158,7 +159,7 @@ class App extends Component {
   handleOpenConfirmTransactionModal = (transactionDetails, autoOpened) => {
     if (!this.navigatorRef) return;
     const action = StackActions.push({
-      params: { transactionDetails, autoOpened },
+      params: { autoOpened, transactionDetails },
       routeName: 'ConfirmRequest',
     });
     Navigation.handleAction(this.navigatorRef, action);
