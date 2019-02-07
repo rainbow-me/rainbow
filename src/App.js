@@ -28,7 +28,6 @@ import {
   registerTokenRefreshListener,
   registerNotificationListener,
   registerNotificationOpenedListener,
-  getInitialNotification,
 } from './model/firebase';
 import Routes from './screens/Routes';
 import Navigation from './navigation';
@@ -79,10 +78,6 @@ class App extends Component {
       this.props.accountLoadState();
       this.props.transactionsToApproveInit();
       this.props.walletConnectInitAllConnectors();
-      const notificationOpen = await getInitialNotification();
-      if (!notificationOpen) {
-        // deleted fetchAllRequestsFromWalletConnectSessions()
-      }
       return walletAddress;
     } catch (error) {
       AlertIOS.alert('Error: Failed to initialize wallet.');
@@ -93,7 +88,6 @@ class App extends Component {
   handleAppStateChange = async (nextAppState) => {
     if (this.state.appState.match(/unknown|background/) && nextAppState === 'active') {
       Piwik.trackEvent('screen', 'view', 'app');
-      // deleted fetchAllRequestsFromWalletConnectSessions()
     }
     this.setState({ appState: nextAppState });
   }
