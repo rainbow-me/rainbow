@@ -43,11 +43,11 @@ const getNativeOptions = async () => {
 
 export const walletConnectInitNewSession = (uriString) => async (dispatch, getState) => {
   const { accountAddress, chainId } = getState().settings;
-  let result = null;
+  let walletConnector = null;
   try {
     const nativeOptions = await getNativeOptions();
     try {
-      const walletConnector = new WalletConnect(
+      walletConnector = new WalletConnect(
         {
           uri: uriString,
         },
@@ -55,7 +55,6 @@ export const walletConnectInitNewSession = (uriString) => async (dispatch, getSt
       );
       await walletConnector.approveSession({ chainId, accounts: [accountAddress] });
       await commonStorage.saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
-      result = walletConnector;
     } catch (error) {
       console.log(error);
       AlertIOS.alert(lang.t('wallet.wallet_connect.error'));
@@ -63,69 +62,8 @@ export const walletConnectInitNewSession = (uriString) => async (dispatch, getSt
   } catch (error) {
     AlertIOS.alert(lang.t('wallet.wallet_connect.missing_fcm'));
   }
-  if (result) {
+  if (walletConnector) {
     await checkPushNotificationPermissions();
-    dispatch(addWalletConnector(result));
-  }
-};
-
-export const walletConnectInitAllConnectors = () => async dispatch => {
-  let allConnectors = {};
-  try {
-    const allSessions = await commonStorage.getAllValidWalletConnectSessions();
-
-    const nativeOptions = getNativeOptions();
-
-    allConnectors = mapValues(allSessions, session => {
-      const walletConnector = new WalletConnect(
-        {
-          session,
-        },
-        nativeOptions,
-      );
-      return walletConnector;
-    });
-  } catch (error) {
-    AlertIOS.alert('Unable to retrieve all WalletConnect sessions.');
-    allConnectors = {};
-  }
-  if (allConnectors) {
-    dispatch(setWalletConnectors(allConnectors));
-  }
-};
-
-export const walletConnectDisconnectAllByDappName = dappName => async dispatch => {
-  const validSessions = dispatch(getValidWalletConnectors());
-  const walletConnectors = values(pickBy(validSessions, session => session.dappName === dappName));
-  try {
-    const peerIds = values(mapValues(walletConnectors, walletConnector => walletConnector.peerId));
-    await commonStorage.removeWalletConnectSessions(peerIds);
-    forEach(walletConnectors, walletConnector => walletConnector.killSession());
-    dispatch(removeWalletConnectorByDapp(dappName));
-  } catch (error) {
-    AlertIOS.alert('Failed to disconnect all WalletConnect sessions');
-  }
-};
-
-export const walletConnectSendStatus = (peerId, requestId, result) => async (dispatch, getState) => {
-  const walletConnector = getState().walletconnect.walletConnectors[peerId];
-  if (walletConnector) {
-    try {
-      if (result) {
-        await walletConnector.approveCallRequest(requestId, { result });
-      } else {
-        await walletConnector.rejectCallRequest(requestId);
-      }
-    } catch (error) {
-      AlertIOS.alert('Failed to send request status to WalletConnect.');
-    }
-  } else {
-    AlertIOS.alert('WalletConnect session has expired while trying to send request status. Please reconnect.');
-  }
-};
-
-export const addWalletConnector = walletConnector => (dispatch, getState) => {
-  if (walletConnector) {
     walletConnector.on('wc_sessionRequest', (error, payload) => {
       if (error) {
         throw error;
@@ -171,6 +109,66 @@ export const addWalletConnector = walletConnector => (dispatch, getState) => {
   }
 };
 
+export const walletConnectInitAllConnectors = () => async dispatch => {
+  let walletConnectors = {};
+  try {
+    const allSessions = await commonStorage.getAllValidWalletConnectSessions();
+
+    const nativeOptions = getNativeOptions();
+
+    walletConnectors = mapValues(allSessions, session => {
+      const walletConnector = new WalletConnect(
+        {
+          session,
+        },
+        nativeOptions,
+      );
+      return walletConnector;
+    });
+  } catch (error) {
+    AlertIOS.alert('Unable to retrieve all WalletConnect sessions.');
+    walletConnectors = {};
+  }
+  if (walletConnectors) {
+    dispatch({
+      payload: walletConnectors,
+      type: WALLETCONNECT_NEW_SESSION,
+    });
+
+  }
+};
+
+export const walletConnectDisconnectAllByDappName = dappName => async dispatch => {
+  const validSessions = dispatch(getValidWalletConnectors());
+  const walletConnectors = values(pickBy(validSessions, session => session.dappName === dappName));
+  try {
+    const peerIds = values(mapValues(walletConnectors, walletConnector => walletConnector.peerId));
+    await commonStorage.removeWalletConnectSessions(peerIds);
+    forEach(walletConnectors, walletConnector => walletConnector.killSession());
+    dispatch(removeWalletConnectorByDapp(dappName));
+  } catch (error) {
+    AlertIOS.alert('Failed to disconnect all WalletConnect sessions');
+  }
+};
+
+export const walletConnectSendStatus = (peerId, requestId, result) => async (dispatch, getState) => {
+  const walletConnector = getState().walletconnect.walletConnectors[peerId];
+  if (walletConnector) {
+    try {
+      if (result) {
+        await walletConnector.approveCallRequest(requestId, { result });
+      } else {
+        await walletConnector.rejectCallRequest(requestId);
+      }
+    } catch (error) {
+      AlertIOS.alert('Failed to send request status to WalletConnect.');
+    }
+  } else {
+    AlertIOS.alert('WalletConnect session has expired while trying to send request status. Please reconnect.');
+  }
+};
+
+
 export const getValidWalletConnectors = () => (dispatch, getState) => {
   const { walletConnectors } = getState().walletconnect;
   const validConnectors = pickBy(walletConnectors, ({ expires }) => isFuture(expires));
@@ -185,11 +183,6 @@ export const removeWalletConnectorByDapp = dappName => (dispatch, getState) => {
     type: WALLETCONNECT_NEW_SESSION,
   });
 };
-
-export const setWalletConnectors = walletConnectors => dispatch => dispatch({
-  payload: walletConnectors,
-  type: WALLETCONNECT_NEW_SESSION,
-});
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {

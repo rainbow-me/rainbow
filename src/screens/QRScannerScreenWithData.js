@@ -6,7 +6,7 @@ import { Vibration } from 'react-native';
 import Piwik from 'react-native-matomo';
 import { compose } from 'recompact';
 import { Alert } from '../components/alerts';
-import { withAccountAddress, withInitNewWalletConnector } from '../hoc';
+import { withInitNewWalletConnector } from '../hoc';
 import { getEthereumAddressFromQRCodeData } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
 
