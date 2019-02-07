@@ -3,7 +3,6 @@ import lang from 'i18n-js';
 import { get } from 'lodash';
 import { commonStorage } from 'balance-common';
 import { Alert } from '../components/alerts';
-import Navigation from '../navigation';
 
 export const getFCMToken = async () => {
   const fcmTokenLocal = await commonStorage.getLocal('balanceWalletFcmToken');

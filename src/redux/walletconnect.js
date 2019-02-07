@@ -8,6 +8,8 @@ import lang from 'i18n-js';
 import WalletConnect from '@walletconnect/react-native';
 import { DEVICE_LANGUAGE } from '../helpers/constants';
 import { getFCMToken, checkPushNotificationPermissions } from '../model/firebase';
+import { addTransactionToApprove } from './transactionsToApprove';
+import Navigation from '../navigation';
 
 // -- Constants --------------------------------------- //
 
@@ -124,6 +126,46 @@ export const walletConnectSendStatus = (peerId, requestId, result) => async (dis
 
 export const addWalletConnector = walletConnector => (dispatch, getState) => {
   if (walletConnector) {
+    walletConnector.on('wc_sessionRequest', (error, payload) => {
+      if (error) {
+        throw error;
+      }
+
+      // Display Session Request Modal
+    });
+
+    walletConnector.on('call_request', (error, payload) => {
+      if (error) {
+        throw error;
+      }
+
+      const { peerId } = walletConnector;
+      const requestId = payload.id;
+      const dappName = walletConnector.peerMeta.name;
+      const autoOpened = true;
+
+      const transactionDetails = dispatch(addTransactionToApprove(peerId, requestId, payload, dappName));
+
+      if (transactionDetails) {
+        const action = {
+          routeName: 'ConfirmRequest',
+          params: { transactionDetails, autoOpened },
+        };
+        Navigation.handleAction(action);
+      } else {
+        AlertIOS.alert('This request has expired.');
+      }
+    });
+
+    walletConnector.on('disconnect', (error, payload) => {
+      if (error) {
+        throw error;
+      }
+
+      // disconnect walletConnector
+      dispatch(walletConnectDisconnectAllByDappName(walletConnector.peerMeta.name))
+    });
+
     const { walletConnectors } = getState().walletconnect;
     const updatedWalletConnectors = { ...walletConnectors, [walletConnector.peerId]: walletConnector };
     dispatch({ payload: updatedWalletConnectors, type: WALLETCONNECT_NEW_SESSION });

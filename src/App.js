@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Piwik from 'react-native-matomo';
 import { AlertIOS, AppRegistry, AppState } from 'react-native';
-import { StackActions } from 'react-navigation';
 import CodePush from 'react-native-code-push';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
@@ -106,16 +105,7 @@ class App extends Component {
     this.onTokenRefreshListener();
   }
 
-  handleNavigatorRef = (navigatorRef) => { this.navigatorRef = navigatorRef; }
-
-  handleOpenConfirmTransactionModal = (transactionDetails, autoOpened) => {
-    if (!this.navigatorRef) return;
-    const action = StackActions.push({
-      routeName: 'ConfirmRequest',
-      params: { transactionDetails, autoOpened },
-    });
-    Navigation.handleAction(this.navigatorRef, action);
-  }
+  handleNavigatorRef = (navigatorRef) => Navigation.setTopLevelNavigator(navigatorRef)
 
   render = () => (
     <Provider store={store}>
