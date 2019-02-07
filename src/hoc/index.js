@@ -18,4 +18,5 @@ export { default as withTrackingDate } from './withTrackingDate';
 export { default as withTrackingScreen } from './withTrackingScreen';
 export { default as withTransactionConfirmationScreen } from './withTransactionConfirmationScreen';
 export { default as withTransitionProps } from './withTransitionProps';
+export { default as withWalletConnectConfirmationModal } from './withWalletConnectConfirmationModal';
 export { default as withWalletConnectConnections } from './withWalletConnectConnections';

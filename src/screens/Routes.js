@@ -6,6 +6,7 @@ import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from './ProfileScreenWithData';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
 import ReceiveModal from './ReceiveModal';
+import WalletConnectConfirmationModal from './WalletConnectConfirmationModal';
 import SendQRScannerScreenWithData from './SendQRScannerScreenWithData';
 import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
@@ -64,6 +65,15 @@ export default createStackNavigator({
       },
     },
     screen: ReceiveModal,
+  },
+  WalletConnectConfirmationModal: {
+    navigationOptions: {
+      effect: 'expanded',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height,
+      },
+    },
+    screen: WalletConnectConfirmationModal,
   },
   SendSheet: SendSheetWithData,
   SendQRScannerScreen: SendQRScannerScreenWithData,
