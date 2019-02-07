@@ -18,6 +18,8 @@ import { compose, withProps } from 'recompact';
 import { FlexItem } from './components/layout';
 import OfflineBadge from './components/OfflineBadge';
 import {
+  withAccountRefresh,
+  withHideSplashScreen,
   withTrackingDate,
   withWalletConnectConnections,
 } from './hoc';
@@ -50,6 +52,8 @@ class App extends Component {
     addTransactionsToApprove: PropTypes.func,
     addTransactionToApprove: PropTypes.func,
     getValidWalletConnectors: PropTypes.func,
+    onHideSplashScreen: PropTypes.func,
+    refreshAccount: PropTypes.func,
     settingsInitializeState: PropTypes.func,
     settingsUpdateAccountAddress: PropTypes.func,
     setWalletConnectors: PropTypes.func,
@@ -64,6 +68,9 @@ class App extends Component {
   navigatorRef = null
 
   async componentDidMount() {
+    await this.handleWalletConfig();
+    this.props.onHideSplashScreen();
+    await this.props.refreshAccount();
     Piwik.initTracker('https://matomo.balance.io/piwik.php', 2);
     AppState.addEventListener('change', this.handleAppStateChange);
     firebase.messaging().getToken()
@@ -152,7 +159,7 @@ class App extends Component {
   handleOpenConfirmTransactionModal = (transactionDetails, autoOpened) => {
     if (!this.navigatorRef) return;
     const action = StackActions.push({
-      params: { transactionDetails, autoOpened },
+      params: { autoOpened, transactionDetails },
       routeName: 'ConfirmRequest',
     });
     Navigation.handleAction(this.navigatorRef, action);
@@ -216,6 +223,8 @@ class App extends Component {
 
 const AppWithRedux = compose(
   withProps({ store }),
+  withAccountRefresh,
+  withHideSplashScreen,
   withTrackingDate,
   withWalletConnectConnections,
   connect(
