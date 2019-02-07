@@ -6,12 +6,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
-
 ### Added
 
 ### Changed
 
 ### Removed
+
+## [0.3.0-23](https://github.com/balance-io/balance-wallet/releases/tag/v0.3.0-23)
+### Changed
+* Fix for app crashing on fresh install for iPhone 6/7
+* Fix for issue with multiple touch points causing weird behavior in expanded state
+* Fix for blank transactions history while fetching transactions
+* Fix for lengthy asset names on Send and Activity
 
 ## [0.3.0-22](https://github.com/balance-io/balance-wallet/releases/tag/v0.3.0-22)
 ### Added
