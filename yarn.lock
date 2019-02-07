@@ -1788,9 +1788,9 @@ bail@^1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/bail/-/bail-1.0.3.tgz#63cfb9ddbac829b02a3128cd53224be78e6c21a3"
 
-balance-common@^0.6.23:
-  version "0.6.23"
-  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.23.tgz#24a4ef40a3657d2019afee54098dce32f239947d"
+balance-common@balance-io/balance-common#pedrouid-walletconnect:
+  version "0.6.29"
+  resolved "https://codeload.github.com/balance-io/balance-common/tar.gz/78f6f772e5d263dd11bbd55cc4c816e46b0f11ad"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
