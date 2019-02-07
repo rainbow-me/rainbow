@@ -9,7 +9,7 @@ import { Column } from './layout';
 import { Smallcaps, Text } from './text';
 
 const Message = styled(Text).attrs({ size: 'lmedium' })`
-  color: ${colors.alpha(colors.blueGreyDark, 0.6)}
+  color: ${colors.alpha(colors.blueGreyDark, 0.6)};
   margin-top: 5;
 `;
 
