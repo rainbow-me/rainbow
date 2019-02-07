@@ -10,7 +10,6 @@ const EMPTY_ARRAY = [];
 export default function createSwipeNavigator(screens, options) {
   const router = StackRouter(screens, options);
   const routeOrder = options.order || map(screens, ({ name }) => name);
-  const initialScreens = map(screens, () => screens[options.initialRouteName]);
   const loadedScreens = map(screens, (screen) => screen);
   const onSwipeStart = options.onSwipeStart || function noop() {};
   const onSwipeEnd = options.onSwipeEnd || function noop() {};
@@ -27,7 +26,7 @@ export default function createSwipeNavigator(screens, options) {
 
     state = {
       currentIndex: 0,
-      flatListScreens: initialScreens,
+      flatListScreens: loadedScreens,
       scrollEnabled: true,
     };
 
