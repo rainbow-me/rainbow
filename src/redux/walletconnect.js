@@ -7,7 +7,6 @@ import { AlertIOS } from 'react-native';
 import lang from 'i18n-js';
 import WalletConnect from '@walletconnect/react-native';
 import { DEVICE_LANGUAGE } from '../helpers/constants';
-import { getChainId } from '../model/wallet';
 import { getFCMToken, checkPushNotificationPermissions } from '../model/firebase';
 
 // -- Constants --------------------------------------- //
@@ -40,7 +39,8 @@ const getNativeOptions = async () => {
   return nativeOptions;
 };
 
-export const walletConnectInitNewSession = (accountAddress, uriString) => async dispatch => {
+export const walletConnectInitNewSession = (uriString) => async (dispatch, getState) => {
+  const { accountAddress, chainId } = getState().settings;
   let result = null;
   try {
     const nativeOptions = await getNativeOptions();
@@ -51,9 +51,7 @@ export const walletConnectInitNewSession = (accountAddress, uriString) => async 
         },
         nativeOptions,
       );
-      const chainId = await getChainId();
-      const accounts = [accountAddress];
-      await walletConnector.approveSession({ chainId, accounts });
+      await walletConnector.approveSession({ chainId, accounts: [accountAddress] });
       await commonStorage.saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
       result = walletConnector;
     } catch (error) {
