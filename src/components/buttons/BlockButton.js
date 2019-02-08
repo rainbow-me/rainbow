@@ -11,6 +11,7 @@ import {
   shadow,
 } from '../../styles';
 import ButtonPressAnimation from '../animations';
+import InnerBorder from '../InnerBorder';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { Icon } from '../icons';
@@ -34,25 +35,6 @@ const Content = styled(Centered)`
   ${containerStyles}
   ${padding(15, 15)}
   overflow: hidden;
-`;
-
-const GradientBackground = styled(RadialGradient)`
-  ${position.cover}
-`;
-
-const InnerBorder = styled.View`
-  ${position.cover}
-  border-color: ${colors.alpha(colors.black, 0.06)}
-  border-radius: ${BlockButtonBorderRadius};
-  border-width: 0.5;
-`;
-
-const Label = styled(Text).attrs({
-  color: 'white',
-  size: 'large',
-  weight: 'medium',
-})`
-  margin-bottom: 2;
 `;
 
 const Shadow = styled.View`
@@ -89,16 +71,22 @@ const BlockButton = ({
   <Container {...props} disabled={disabled}>
     <Shadow>
       <Content onLayout={onLayout}>
-        <GradientBackground
+        <RadialGradient
           center={[0, (height / 2)]}
           colors={[disabled ? colors.grey : colors.primaryBlue, disabled ? colors.grey : '#006FFF']}
+          css={position.cover}
           radius={width}
         />
-        <InnerBorder />
+        <InnerBorder radius={BlockButtonBorderRadius} />
         {leftIconName ? <LeftIcon name={leftIconName} {...leftIconProps} /> : null}
-        <Label>
+        <Text
+          color="white"
+          size="large"
+          style={{ marginBottom: 2 }}
+          weight="medium"
+        >
           {children}
-        </Label>
+        </Text>
         {rightIconName ? <RightIcon name={rightIconName} {...rightIconProps} /> : null}
       </Content>
     </Shadow>

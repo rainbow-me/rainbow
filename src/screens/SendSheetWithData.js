@@ -19,3 +19,16 @@ SendSheetWithData.navigationOptions = ({ navigation }) => {
 };
 
 export default SendSheetWithData;
+
+
+// const SendSheetWithData = compose(
+//   withState('isAuthorizing')
+// )(withSendComponentWithData(SendSheet, {
+//   gasFormat: 'short',
+//   sendTransactionCallback: async (test) => {
+//     const tx = await sendTransaction(test);
+//     console.log('sendTransactionCallback', tx);
+
+//     return tx;
+//   },
+// }));

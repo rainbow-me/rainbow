@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { withAccountAssets } from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
 import {
-  Animated,
   Clipboard,
   Image,
   InteractionManager,
@@ -13,12 +12,10 @@ import {
   View,
 } from 'react-native';
 import { isIphoneX } from 'react-native-iphone-x-helper';
-import TouchID from 'react-native-touch-id';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { AssetList } from '../components/asset-list';
-import { UniqueTokenRow } from '../components/unique-token';
-import { Button, BlockButton, LongPressButton } from '../components/buttons';
+import { Button, HoldToAuthorizeButton } from '../components/buttons';
 import { SendCoinRow } from '../components/coin-row';
 import { AddressField, UnderlineField } from '../components/fields';
 import { Icon } from '../components/icons';
@@ -31,16 +28,12 @@ import {
 } from '../components/layout';
 import { ShadowStack } from '../components/shadow-stack';
 import { Monospace } from '../components/text';
+import { UniqueTokenRow } from '../components/unique-token';
 import {
   withAccountRefresh,
   withAccountSettings,
 } from '../hoc';
-import {
-  colors,
-  fonts,
-  padding,
-  shadow,
-} from '../styles';
+import { colors, fonts, padding } from '../styles';
 import { deviceUtils, directionPropType } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
 import { removeLeadingZeros, uppercase } from '../utils/formatters';
@@ -150,10 +143,6 @@ const NumberInput = styled(UnderlineField).attrs({
   margin-right: 26px;
 `;
 
-const SendButton = styled(BlockButton).attrs({ component: LongPressButton })`
-  ${padding(18, 0)}
-`;
-
 const TransactionContainer = styled(View)`
   ${padding(20, 20)}
   padding-bottom: 50px;
@@ -192,13 +181,8 @@ class SendSheet extends Component {
     sendUpdateSelected() {},
   };
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      biometryType: null,
-      sendLongPressProgress: new Animated.Value(0),
-    };
+  state = {
+    isAuthorizing: false,
   }
 
   componentDidMount() {
@@ -208,14 +192,6 @@ class SendSheet extends Component {
     if (address) {
       sendUpdateRecipient(address);
     }
-
-    TouchID.isSupported()
-      .then(biometryType => {
-        this.setState({ biometryType });
-      })
-      .catch(() => {
-        this.setState({ biometryType: 'FaceID' });
-      });
   }
 
   componentDidUpdate(prevProps) {
@@ -252,7 +228,6 @@ class SendSheet extends Component {
 
   componentWillUnmount() {
     this.props.sendClearFields();
-    this.state.sendLongPressProgress.stopAnimation();
   }
 
   getTransactionSpeedOptions = () => {
@@ -317,35 +292,15 @@ class SendSheet extends Component {
     };
   };
 
-  onPressSend = () => {
-    const { sendLongPressProgress } = this.state;
-
-    Animated.timing(sendLongPressProgress, {
-      duration: 800,
-      toValue: 100,
-    }).start();
-  };
-
-  onReleaseSend = () => {
-    const { sendLongPressProgress } = this.state;
-
-    Animated.timing(sendLongPressProgress, {
-      duration: (sendLongPressProgress._value / 100) * 800,
-      toValue: 0,
-    }).start();
-  };
-
   onLongPressSend = () => {
     const { sendUpdateGasPrice } = this.props;
-    const { sendLongPressProgress } = this.state;
 
-    Animated.timing(sendLongPressProgress, {
-      duration: (sendLongPressProgress._value / 100) * 800,
-      toValue: 0,
-    }).start();
+    this.setState({ isAuthorizing: true });
+
+    console.log('onpresslongsend Props', this.props);
 
     if (isIphoneX()) {
-      this.sendTransaction();
+      this.sendTransaction(this.handleAuthorizationComplete);
     } else {
       const options = this.getTransactionSpeedOptions();
 
@@ -356,11 +311,16 @@ class SendSheet extends Component {
         if (buttonIndex > 0) {
           sendUpdateGasPrice(options[buttonIndex].value);
 
-          this.sendTransaction();
+          this.sendTransaction(this.handleAuthorizationComplete);
         }
       });
     }
   };
+
+  handleAuthorizationComplete = (helloLOl) => {
+    console.log('callbackhelloLOl', helloLOl);
+    this.setState({ isAuthorizing: false });
+  }
 
   onPressTransactionSpeed = () => {
     const { sendUpdateGasPrice } = this.props;
@@ -396,7 +356,7 @@ class SendSheet extends Component {
     });
   };
 
-  sendTransaction = () => {
+  sendTransaction = (callback) => {
     const {
       assetAmount,
       navigation,
@@ -404,13 +364,16 @@ class SendSheet extends Component {
       sendClearFields,
     } = this.props;
 
-    if (Number(assetAmount) > 0) {
-      onSubmit()
-        .then(() => {
-          sendClearFields();
-          navigation.navigate('ProfileScreen');
-        });
-    }
+    if (Number(assetAmount) <= 0) return false;
+
+    console.log('sendTransaction callback', callback);
+
+    return onSubmit().then(() => {
+      console.log('supposedly hit the callback');
+      callback();
+      sendClearFields();
+      navigation.navigate('ProfileScreen');
+    });
   };
 
   renderAssetList() {
@@ -459,10 +422,8 @@ class SendSheet extends Component {
 
   renderSendButton() {
     const { assetAmount, isSufficientBalance, isSufficientGas } = this.props;
-    const { biometryType, sendLongPressProgress } = this.state;
 
     const isZeroAssetAmount = Number(assetAmount) <= 0;
-    const leftIconName = biometryType === 'FaceID' ? 'faceid' : 'touchid';
 
     let disabled = true;
     let label = 'Enter an Amount';
@@ -479,21 +440,13 @@ class SendSheet extends Component {
     }
 
     return (
-      <SendButton
+      <HoldToAuthorizeButton
         disabled={disabled}
-        leftIconName={disabled ? null : leftIconName}
         onLongPress={this.onLongPressSend}
-        onPress={this.onPressSend}
-        onRelease={this.onReleaseSend}
-        rightIconName={disabled ? null : 'progress'}
-        rightIconProps={{
-          color: colors.alpha(colors.sendScreen.grey, 0.3),
-          progress: sendLongPressProgress,
-          progressColor: colors.white,
-        }}
+        isAuthorizing={this.state.isAuthorizing}
       >
         {label}
-      </SendButton>
+      </HoldToAuthorizeButton>
     );
   }
 

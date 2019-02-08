@@ -9,6 +9,7 @@ import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from './ProfileScreenWithData';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
 import ReceiveModal from './ReceiveModal';
+import ExamplePage from './ExamplePage';
 import SendQRScannerScreenWithData from './SendQRScannerScreenWithData';
 import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
@@ -62,6 +63,7 @@ const MainNavigator = createStackNavigator({
   },
   SendQRScannerScreen: SendQRScannerScreenWithData,
   SendSheet: SendSheetWithData,
+  ExamplePage: ExamplePage,
   SettingsModal: {
     navigationOptions: {
       effect: 'expanded',
@@ -72,7 +74,7 @@ const MainNavigator = createStackNavigator({
   SwipeLayout: SwipeStack,
 }, {
   headerMode: 'none',
-  initialRouteName: 'SwipeLayout',
+  initialRouteName: 'ExamplePage',
   mode: 'modal',
   onTransitionEnd,
   onTransitionStart,
