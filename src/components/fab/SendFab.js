@@ -1,36 +1,30 @@
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
+import React from 'react';
 import { withNavigation } from 'react-navigation';
 import Piwik from 'react-native-matomo';
-import RadialGradient from 'react-native-radial-gradient';
-import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
-import styled from 'styled-components/primitives';
-import { colors, position } from '../../styles';
+import {
+  compose,
+  onlyUpdateForKeys,
+  pure,
+  withHandlers,
+} from 'recompact';
 import Icon from '../icons/Icon';
 import FloatingActionButton from './FloatingActionButton';
 
-const GradientBackground = styled(RadialGradient)`
-  ${position.cover}
-`;
-
-const SendIcon = styled(Icon)`
-  margin-bottom: 2px;
-`;
-
 const SendFab = ({ disabled, onPress, ...props }) => (
-  <FloatingActionButton {...props} disabled={disabled} onPress={onPress}>
-    {({ size }) => (
-      <Fragment>
-        {!disabled && (
-          <GradientBackground
-            center={[0, (size / 2)]}
-            colors={[colors.primaryBlue, '#006FFF']}
-            radius={size}
-          />
-        )}
-        <SendIcon name="send" />
-      </Fragment>
-    )}
+  <FloatingActionButton
+    {...props}
+    disabled={disabled}
+    onPress={onPress}
+  >
+    <Icon
+      name="send"
+      style={{
+        height: 21,
+        marginBottom: 2,
+        width: 22,
+      }}
+    />
   </FloatingActionButton>
 );
 
@@ -40,6 +34,7 @@ SendFab.propTypes = {
 };
 
 export default compose(
+  pure,
   withNavigation,
   withHandlers({
     onPress: ({ navigation }) => () => {

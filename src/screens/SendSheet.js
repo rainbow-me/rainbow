@@ -539,8 +539,8 @@ class SendSheet extends Component {
           borderRadius={0}
           height={64}
           shadows={[
-            shadow.buildString(0, 4, 6, colors.alpha(colors.purple, 0.12)),
-            shadow.buildString(0, 6, 4, colors.alpha(colors.purple, 0.24)),
+            [0, 4, 6, colors.purple, 0.12],
+            [0, 6, 4, colors.purple, 0.24],
           ]}
           shouldRasterizeIOS={true}
           width={deviceUtils.dimensions.width}

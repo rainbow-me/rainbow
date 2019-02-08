@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Linking, Share } from 'react-native';
-import { compose, withHandlers, withProps } from 'recompact';
+import { compose, onlyUpdateForPropTypes, withHandlers, withProps } from 'recompact';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { withImageDimensionsCache } from '../../hoc';
 import { colors } from '../../styles';
@@ -36,6 +36,7 @@ const UniqueTokenExpandedState = ({
     component: (
       <UniqueTokenImage
         backgroundColor={asset.background}
+        borderRadius={FloatingPanel.borderRadius}
         imageUrl={asset.image_preview_url}
         item={asset}
         resizeMode="cover"
@@ -54,10 +55,7 @@ const UniqueTokenExpandedState = ({
 
   return (
     <FloatingPanels>
-      <FloatingPanel
-        color={panelColor}
-        size={panelHeight}
-      >
+      <FloatingPanel color={panelColor} height={panelHeight} width={panelWidth}>
         {/*
             TODO XXX: THIS FLOATING PANEL SHOULD HAVE HORIZONTAL PADDING
             IF THE IMAGE IS A PERFECT SQUARE
@@ -129,4 +127,5 @@ export default compose(
       Linking.openURL(permalink);
     },
   }),
+  onlyUpdateForPropTypes,
 )(UniqueTokenExpandedState);
