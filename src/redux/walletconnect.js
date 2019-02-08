@@ -73,6 +73,8 @@ export const walletConnectOnSessionRequest = (uriString) => async (dispatch) => 
   if (walletConnector) {
     await checkPushNotificationPermissions();
 
+    dispatch(setPendingRequest(walletConnector));
+
     walletConnector.on('wc_sessionRequest', (error, payload) => {
       if (error) {
         throw error;
@@ -81,18 +83,18 @@ export const walletConnectOnSessionRequest = (uriString) => async (dispatch) => 
       const { peerId, peerMeta } = payload.params[0];
       console.log('on("wc_sessionRequest")', peerMeta);
 
-      if (whitelist.includes(peerMeta.url)) {
-        dispatch(walletConnectApproveSession(walletConnector.handshakeTopic));
-      } else {
-        console.log('open WalletConnectConfimationModal');
-        Navigation.handleAction({
-          routeName: 'WalletConnectConfimationModal',
-          params: { handshakeTopic: walletConnector.handshakeTopic, peerId, peerMeta },
-        });
-      }
+      // TODO: Delete next line and fix open WalletConnectConfimationModal
+      dispatch(walletConnectApproveSession(walletConnector.handshakeTopic));
+      // if (whitelist.includes(peerMeta.url)) {
+      //   dispatch(walletConnectApproveSession(walletConnector.handshakeTopic));
+      // } else {
+      //   console.log('open WalletConnectConfimationModal');
+      //   Navigation.handleAction({
+      //     routeName: 'WalletConnectConfimationModal',
+      //     params: { handshakeTopic: walletConnector.handshakeTopic, peerId, peerMeta },
+      //   });
+      // }
     });
-
-    dispatch(setPendingRequest(walletConnector));
   }
 };
 
@@ -126,6 +128,7 @@ export const walletConnectInitAllConnectors = () => async dispatch => {
 
 export const setPendingRequest = (walletConnector) => (dispatch, getState) => {
   const { pendingRequests } = getState().walletconnect;
+  console.log('setPendingRequest handshakeTopic', walletConnector.handshakeTopic);
   const updatedPendingRequests = {
     ...pendingRequests,
     [walletConnector.handshakeTopic]: walletConnector,
@@ -134,7 +137,8 @@ export const setPendingRequest = (walletConnector) => (dispatch, getState) => {
 };
 
 export const getPendingRequest = (handshakeTopic) => (dispatch, getState) => {
-  const { pendingRequests } = getState().walletConnect;
+  const { pendingRequests } = getState().walletconnect;
+  console.log('setPendingRequest handshakeTopic', handshakeTopic);
   const pendingRequest = pendingRequests[handshakeTopic];
   return pendingRequest;
 };
@@ -142,6 +146,7 @@ export const getPendingRequest = (handshakeTopic) => (dispatch, getState) => {
 export const removePendingRequest = (handshakeTopic) => (dispatch, getState) => {
   const { pendingRequests } = getState().walletconnect;
   const updatedPendingRequests = pendingRequests;
+  console.log('removePendingRequest handshakeTopic', handshakeTopic);
   if (updatedPendingRequests[handshakeTopic]) {
     delete updatedPendingRequests[handshakeTopic];
   }
@@ -150,6 +155,8 @@ export const removePendingRequest = (handshakeTopic) => (dispatch, getState) => 
 
 export const setWalletConnector = (walletConnector) => (dispatch, getState) => {
   const { walletConnectors } = getState().walletconnect;
+  console.log('setWalletConnector handshakeTopic', walletConnector.handshakeTopic);
+  console.log('setWalletConnector peerId', walletConnector.peerId);
   const updatedWalletConnectors = {
     ...walletConnectors,
     [walletConnector.peerId]: walletConnector,
@@ -158,13 +165,28 @@ export const setWalletConnector = (walletConnector) => (dispatch, getState) => {
 };
 
 export const getWalletConnector = (peerId) => (dispatch, getState) => {
-  const { walletConnectors } = getState().walletConnect;
+  const { walletConnectors } = getState().walletconnect;
+  console.log('setWalletConnector peerId', peerId);
   const walletConnector = walletConnectors[peerId];
   return walletConnector;
 };
 
+export const removeWalletConnector = (peerId) => (dispatch, getState) => {
+  const { walletConnectors } = getState().walletconnect;
+  const updatedWalletConnectors = walletConnectors;
+  console.log('removeWalletConnector peerId', peerId);
+  if (updatedWalletConnectors[peerId]) {
+    delete updatedWalletConnectors[peerId];
+  }
+  dispatch({ type: WALLETCONNECT_REMOVE_SESSION, payload: updatedWalletConnectors });
+};
+
 export const walletConnectApproveSession = (handshakeTopic) => (dispatch, getState) => {
-  const { accountAddress, chainId } = getState().settings;
+  // TODO: Replace fixed chainId with getState().settings value
+  const chainId = 1;
+  const { accountAddress } = getState().settings;
+  // const { accountAddress, chainId } = getState().settings;
+
   const walletConnector = dispatch(getPendingRequest(handshakeTopic));
 
   walletConnector.approveSession({ chainId, accounts: [accountAddress] });
@@ -213,7 +235,7 @@ export const walletConnectRejectSession = (handshakeTopic) => (dispatch, getStat
 };
 
 export const walletConnectDisconnectAllByDappName = dappName => async (dispatch, getState) => {
-  const { walletConnectors } = getState().walletConnect;
+  const { walletConnectors } = getState().walletconnect;
   const matchingWalletConnectors = values(pickBy(walletConnectors, session => session.peerMeta.name === dappName));
   try {
     const peerIds = values(mapValues(matchingWalletConnectors, walletConnector => walletConnector.peerId));
@@ -221,7 +243,7 @@ export const walletConnectDisconnectAllByDappName = dappName => async (dispatch,
     forEach(walletConnectors, walletConnector => walletConnector.killSession());
     dispatch({
       payload: omitBy(walletConnectors, (wc) => wc.peerMeta.name === dappName),
-      type: WALLETCONNECT_ADD_SESSION,
+      type: WALLETCONNECT_REMOVE_SESSION,
     });
   } catch (error) {
     AlertIOS.alert('Failed to disconnect all WalletConnect sessions');
