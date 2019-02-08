@@ -1,40 +1,33 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, onlyUpdateForPropTypes, withHandlers } from 'recompact';
-import styled from 'styled-components/primitives';
-import {
-  borders,
-  colors,
-  position,
-  shadow,
-} from '../../styles';
+import { borders, colors, position } from '../../styles';
 import Icon from '../icons/Icon';
 import { Centered } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import HeaderButton from './HeaderButton';
 
-const Container = styled(Centered)`
-  ${borders.buildCircle(34)}
-  ${position.cover}
-  background-color: ${colors.paleBlue};
-`;
-
 const CameraHeaderButton = ({ onPress }) => (
-  <HeaderButton onPress={onPress} transformOrigin="right">
+  <HeaderButton
+    onPress={onPress}
+    shouldRasterizeIOS
+    transformOrigin="right"
+  >
     <ShadowStack
       {...borders.buildCircleAsObject(34)}
+      backgroundColor={colors.paleBlue}
       shadows={[
-        shadow.buildString(0, 1.5, 2.5),
-        shadow.buildString(0, 3, 5),
+        [0, 3, 5, colors.dark, 0.2],
+        [0, 6, 10, colors.dark, 0.14],
       ]}
     >
-      <Container>
+      <Centered css={position.cover}>
         <Icon
           color={colors.white}
           name="camera"
           style={{ marginBottom: 2, maxWidth: 19 }}
         />
-      </Container>
+      </Centered>
     </ShadowStack>
   </HeaderButton>
 );

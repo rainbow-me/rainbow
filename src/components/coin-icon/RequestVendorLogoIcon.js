@@ -46,8 +46,8 @@ const RequestVendorLogoIcon = ({
     {...position.sizeAsObject(size)}
     borderRadius={borderRadius}
     shadows={[
-      shadow.buildString(0, 4, 6, colors.alpha(colors.purple, 0.12)),
-      shadow.buildString(0, 1, 3, colors.alpha(colors.purple, 0.24)),
+      [0, 4, 6, colors.purple, 0.12],
+      [0, 1, 3, colors.purple, 0.24],
     ]}
   >
     <VendorLogoContainer borderRadius={borderRadius} size={size}>

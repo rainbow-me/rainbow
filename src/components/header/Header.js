@@ -17,6 +17,7 @@ const Container = styled(Row).attrs({ align: 'end' })`
       : HeaderHeightWithStatusBar
   )};
   width: 100%;
+  z-index: 1;
 `;
 
 const Header = props => <Container {...props} />;

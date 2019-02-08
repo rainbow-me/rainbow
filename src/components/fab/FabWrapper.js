@@ -1,42 +1,27 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import { hoistStatics } from 'recompact';
-import styled from 'styled-components/primitives';
-import { withSafeAreaViewInsetValues } from '../../hoc';
-import { FlexItem, Row } from '../layout';
+import { safeAreaInsetValues } from '../../utils';
+import { FlexItem, RowWithMargins } from '../layout';
 import SendFab from './SendFab';
 
 const FabWrapperBottomPosition = 21;
 
-const Wrapper = styled(Row)`
-  bottom: ${({ bottomInset }) => (bottomInset + FabWrapperBottomPosition)};
-  position: absolute;
-  right: 12;
-`;
-
-const renderFab = (fab, index) =>
-  createElement(fab, {
-    key: index,
-    style: {
-      marginLeft: (index > 0) ? 12 : 0,
-    },
-  });
-
-const FabWrapper = ({
-  children,
-  disabled,
-  fabs,
-  safeAreaInset,
-}) => (
+const FabWrapper = ({ children, disabled, fabs }) => (
   <FlexItem>
     {children}
     {!disabled && (
-      <Wrapper
-        bottomInset={safeAreaInset.bottom}
+      <RowWithMargins
+        css={`
+          bottom: ${safeAreaInsetValues.bottom + FabWrapperBottomPosition};
+          position: absolute;
+          right: 12;
+        `}
         direction="row-reverse"
+        margin={12}
+        marginKey="left"
       >
-        {fabs.map(renderFab)}
-      </Wrapper>
+        {fabs.map(fab => createElement(fab))}
+      </RowWithMargins>
     )}
   </FlexItem>
 );
@@ -45,7 +30,6 @@ FabWrapper.propTypes = {
   children: PropTypes.node,
   disabled: PropTypes.bool,
   fabs: PropTypes.arrayOf(PropTypes.func).isRequired,
-  safeAreaInset: PropTypes.shape({ bottom: PropTypes.number }),
 };
 
 FabWrapper.defaultProps = {
@@ -54,4 +38,4 @@ FabWrapper.defaultProps = {
 
 FabWrapper.bottomPosition = FabWrapperBottomPosition;
 
-export default hoistStatics(withSafeAreaViewInsetValues)(FabWrapper);
+export default FabWrapper;
