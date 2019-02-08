@@ -7,12 +7,12 @@ const mapStateToProps = ({
   walletconnect: { walletConnectors },
   nonce: { transactionCountNonce },
 }) => ({
-  walletConnectors,
   transactionCountNonce,
+  walletConnectors,
 });
 
 export default Component => connect(mapStateToProps, {
-  transactionsAddNewTransaction,
   removeTransaction,
+  transactionsAddNewTransaction,
   updateTransactionCountNonce,
 })(Component);

@@ -115,10 +115,10 @@ const BottomButtonContainer = styled(Flex)`
 `;
 
 const CameraIcon = styled(Icon).attrs({
-  name: 'camera',
   color: colors.white,
-  width: 17,
   height: 14,
+  name: 'camera',
+  width: 17,
 })`
   margin-top: -5px;
 `;
@@ -137,8 +137,8 @@ const EmptyStateContainer = styled(Column)`
 `;
 
 const HandleIcon = styled(Icon).attrs({
-  name: 'handle',
   color: colors.sendScreen.grey,
+  name: 'handle',
 })`
   margin-top: 16px;
 `;
@@ -259,8 +259,8 @@ class SendSheet extends Component {
     const { gasPrices } = this.props;
 
     const options = map(gasPrices, (value, key) => ({
-      value: key,
       label: `${uppercase(key, 7)}: ${get(value, 'txFee.native.value.display')}  ~${get(value, 'estimatedTime.display')}`,
+      value: key,
     }));
 
     options.unshift({ label: 'Cancel' });
@@ -321,8 +321,8 @@ class SendSheet extends Component {
     const { sendLongPressProgress } = this.state;
 
     Animated.timing(sendLongPressProgress, {
-      toValue: 100,
       duration: 800,
+      toValue: 100,
     }).start();
   };
 
@@ -330,8 +330,8 @@ class SendSheet extends Component {
     const { sendLongPressProgress } = this.state;
 
     Animated.timing(sendLongPressProgress, {
-      toValue: 0,
       duration: (sendLongPressProgress._value / 100) * 800,
+      toValue: 0,
     }).start();
   };
 
@@ -340,8 +340,8 @@ class SendSheet extends Component {
     const { sendLongPressProgress } = this.state;
 
     Animated.timing(sendLongPressProgress, {
-      toValue: 0,
       duration: (sendLongPressProgress._value / 100) * 800,
+      toValue: 0,
     }).start();
 
     if (isIphoneX()) {
@@ -350,8 +350,8 @@ class SendSheet extends Component {
       const options = this.getTransactionSpeedOptions();
 
       showActionSheetWithOptions({
-        options: options.map(option => option.label),
         cancelButtonIndex: 0,
+        options: options.map(option => option.label),
       }, (buttonIndex) => {
         if (buttonIndex > 0) {
           sendUpdateGasPrice(options[buttonIndex].value);
@@ -368,8 +368,8 @@ class SendSheet extends Component {
     const options = this.getTransactionSpeedOptions();
 
     showActionSheetWithOptions({
-      options: options.map(option => option.label),
       cancelButtonIndex: 0,
+      options: options.map(option => option.label),
     }, (buttonIndex) => {
       if (buttonIndex > 0) {
         sendUpdateGasPrice(options[buttonIndex].value);
@@ -389,7 +389,10 @@ class SendSheet extends Component {
     Keyboard.dismiss();
 
     InteractionManager.runAfterInteractions(() => {
-      navigation.navigate('SendQRScannerScreen', { onSuccess: this.onChangeAddressInput, onBack: this.onBackQRScanner });
+      navigation.navigate('SendQRScannerScreen', {
+        onBack: this.onBackQRScanner,
+        onSuccess: this.onChangeAddressInput,
+      });
     });
   };
 

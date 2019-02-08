@@ -5,11 +5,15 @@ import { omit } from 'lodash';
 const MERGE = 'imageDimensionsCache/MERGE';
 const PRUNE = 'imageDimensionsCache/PRUNE';
 
-export const pruneImageDimensionsCache = (idsToPrune) => (dispatch) =>
-  dispatch({ idsToPrune, type: PRUNE });
+export const pruneImageDimensionsCache = (idsToPrune) => (dispatch) => dispatch({
+  idsToPrune,
+  type: PRUNE
+});
 
-export const updateImageDimensionsCache = payload => dispatch =>
-  dispatch({ ...payload, type: MERGE });
+export const updateImageDimensionsCache = payload => dispatch => dispatch({
+  ...payload,
+  type: MERGE
+});
 
 // // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {};

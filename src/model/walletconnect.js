@@ -77,9 +77,9 @@ const getRequestsForSession = (walletConnector) => new Promise((resolve, reject)
     .then((allCalls) =>
       resolve(mapValues(allCalls, (requestPayload, callId) => ({
         callData: get(requestPayload, 'data'),
+        callId,
         dappName,
         sessionId,
-        callId,
       }))))
     .catch(error => resolve({}));
 });
