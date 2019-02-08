@@ -1,19 +1,20 @@
 import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
+import stylePropType from 'react-style-proptype';
 import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
 import ShadowItem from './ShadowItem';
 
 const ChildrenWrapper = styled.View`
   ${position.cover};
-  background-color: ${colors.white};
+  background-color: ${({ backgroundColor }) => backgroundColor || colors.transparent};
   border-radius: ${({ borderRadius }) => borderRadius};
   overflow: hidden;
 `;
 
 const ShadowStackContainer = styled.View`
-  background-color: ${colors.white};
+  background-color: ${({ backgroundColor }) => backgroundColor || colors.transparent};
   border-radius: ${({ borderRadius }) => borderRadius};
   height: ${({ height }) => height};
   width: ${({ width }) => width};
@@ -22,11 +23,12 @@ const ShadowStackContainer = styled.View`
 
 export default class ShadowStack extends PureComponent {
   static propTypes = {
-    borderRadius: PropTypes.number,
+    borderRadius: PropTypes.number.isRequired,
     children: PropTypes.node,
-    height: PropTypes.number,
-    shadows: PropTypes.arrayOf(PropTypes.string),
-    width: PropTypes.number,
+    height: PropTypes.number.isRequired,
+    shadows: PropTypes.arrayOf(PropTypes.array).isRequired,
+    style: stylePropType,
+    width: PropTypes.number.isRequired,
   }
 
   static defaultProps = {
@@ -35,18 +37,23 @@ export default class ShadowStack extends PureComponent {
 
   renderItem = (shadow, index) => (
     <ShadowItem
-      {...omit(this.props, ['children', 'shadows'])}
-      key={shadow}
+      {...omit(this.props, ['children', 'shadows', 'style'])}
+      key={`${shadow.join('-')}${index}`}
       shadow={shadow}
-      style={{ zIndex: index + 2 }}
+      zIndex={index + 2}
     />
   )
 
   render = () => {
-    const { children, shadows, ...props } = this.props;
+    const {
+      children,
+      shadows,
+      style,
+      ...props
+    } = this.props;
 
     return (
-      <ShadowStackContainer {...props}>
+      <ShadowStackContainer {...props} style={style}>
         {shadows.map(this.renderItem)}
         <ChildrenWrapper {...props} style={{ zIndex: shadows.length + 2 }}>
           {children}

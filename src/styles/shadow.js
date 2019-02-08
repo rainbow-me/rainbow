@@ -1,5 +1,4 @@
 import { isNumber } from 'lodash';
-import { css } from 'styled-components';
 import colors from './colors';
 
 const addUnitToNumberValues = value => (
@@ -8,14 +7,14 @@ const addUnitToNumberValues = value => (
 
 const shadow = {};
 
-shadow.color = colors.alpha(colors.black, 0.04);
+shadow.color = colors.black;
+shadow.opacity = 0.4;
 
-shadow.build = (...options) => css`
-  box-shadow: ${shadow.buildString(...options)};
+shadow.build = (x, y, radius, color = shadow.color, opacity = shadow.opacity) => `
+  shadow-color: ${color};
+  shadow-offset: ${addUnitToNumberValues(x)} ${addUnitToNumberValues(y)};
+  shadow-opacity: ${opacity};
+  shadow-radius: ${addUnitToNumberValues(radius)};
 `;
-
-shadow.buildString = (x, y, radius, color = shadow.color) => (
-  `${addUnitToNumberValues(x)} ${addUnitToNumberValues(y)} ${addUnitToNumberValues(radius)} ${color}`
-);
 
 export default shadow;

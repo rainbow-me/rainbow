@@ -3,6 +3,7 @@ package com.balancewallet;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import com.swmansion.rnscreens.RNScreensPackage;
 import com.apsl.versionnumber.RNVersionNumberPackage;
 import de.bonify.reactnativepiwik.PiwikPackage;
@@ -52,6 +53,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNDeviceInfo(),
             new RNScreensPackage(),
             new RNVersionNumberPackage(),
             new PiwikPackage(),

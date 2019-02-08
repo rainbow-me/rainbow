@@ -21,11 +21,6 @@ const QRScannerScreenHeader = styled(Header).attrs({ align: 'end', justify: 'sta
   top: 0;
 `;
 
-const WalletConnectBubbleSheet = styled(BubbleSheet)`
-  bottom: ${safeAreaInsetValues.bottom ? 21 : 0};
-  overflow: hidden;
-`;
-
 // // 😇️ use these for testing if u want LOL
 // import { times } from 'lodash';
 // const fakeDapps = times(5, (i) => ({
@@ -65,12 +60,15 @@ const QRScannerScreen = ({
         onPress={onPressBackButton}
       />
     </QRScannerScreenHeader>
-    <WalletConnectBubbleSheet onLayout={onSheetLayout}>
+    <BubbleSheet
+      bottom={safeAreaInsetValues.bottom ? 21 : 0}
+      onLayout={onSheetLayout}
+    >
       {walletConnectorsCount
         ? <WalletConnectList items={walletConnectorsByDappName} />
         : <WalletConnectExplainer />
       }
-    </WalletConnectBubbleSheet>
+    </BubbleSheet>
   </Container>
 );
 

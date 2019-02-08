@@ -4,7 +4,7 @@ import { Path } from 'svgs';
 import Svg from '../Svg';
 
 const AvatarIcon = ({ size }) => (
-  <Svg height={size} width={size}>
+  <Svg height={size} width={size} viewBox="0 0 30 30">
     <Path
       d="M4.733 25.936A14.958 14.958 0 0 1 0 15C0 6.716 6.716 0 15 0c8.284 0 15 6.716 15 15a14.959 14.959 0 0 1-4.79 10.99c-1.936-1.83-5.781-3.077-10.21-3.077-4.429 0-8.274 1.246-10.21 3.076l-.057-.053z"
       fill="#888D96"

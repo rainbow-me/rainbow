@@ -4,7 +4,7 @@ import Divider from '../../Divider';
 import FloatingPanel from '../FloatingPanel';
 
 const AssetPanel = ({ children, ...props }) => (
-  <FloatingPanel {...props}>
+  <FloatingPanel {...props} hideShadow>
     {Children.map(children, (child, index) => (
       <Fragment>
         {child}
