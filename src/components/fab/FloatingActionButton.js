@@ -1,45 +1,44 @@
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { withHandlers } from 'recompact';
+import { compose, pure, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
+import InnerBorder from '../InnerBorder';
 import { Centered } from '../layout';
-import { colors, position, shadow } from '../../styles';
+import { colors, position } from '../../styles';
 import { ShadowStack } from '../shadow-stack';
 
 const FloatingActionButtonBorderRadius = 27;
 
 const Container = styled(Centered)`
   ${position.cover}
-  background-color: ${({ disabled }) => (disabled ? '#F6F7F9' : colors.blue)};
-  border-radius: ${FloatingActionButtonBorderRadius};
-  overflow: hidden;
+  background-color: ${({ disabled }) => (disabled ? '#F6F7F9' : colors.paleBlue)};
 `;
 
-const InnerBorder = styled.View`
-  ${position.cover}
-  border-color: ${colors.alpha(colors.black, 0.06)};
-  border-radius: ${FloatingActionButtonBorderRadius};
-  border-width: 0.5;
-`;
+const buildFabShadow = disabled => (
+  disabled
+    ? []
+    : [
+      [0, 3, 5, colors.dark, 0.2],
+      [0, 6, 10, colors.dark, 0.14],
+      [0, 1, 18, colors.dark, 0.12],
+    ]
+);
 
-const buildFabShadow = disabled => (disabled ? [] : [
-  shadow.buildString(0, 1, 18, colors.alpha(colors.purple, 0.12)),
-  shadow.buildString(0, 3, 5, colors.alpha(colors.purple, 0.2)),
-  shadow.buildString(0, 6, 10, colors.alpha(colors.purple, 0.14)),
-]);
-
-const enhance = withHandlers({
-  onPress: ({ onPress }) => (event) => {
-    ReactNativeHapticFeedback.trigger('impactLight');
-    if (onPress) onPress(event);
-  },
-  onPressIn: ({ onPressIn }) => (event) => {
-    ReactNativeHapticFeedback.trigger('impactLight');
-    if (onPressIn) onPressIn(event);
-  },
-});
+const enhance = compose(
+  pure,
+  withHandlers({
+    onPress: ({ onPress }) => (event) => {
+      ReactNativeHapticFeedback.trigger('impactLight');
+      if (onPress) onPress(event);
+    },
+    onPressIn: ({ onPressIn }) => (event) => {
+      ReactNativeHapticFeedback.trigger('impactLight');
+      if (onPressIn) onPressIn(event);
+    },
+  }),
+);
 
 const FloatingActionButton = enhance(({
   children,
@@ -60,6 +59,7 @@ const FloatingActionButton = enhance(({
   >
     <ShadowStack
       {...position.sizeAsObject(size)}
+      backgroundColor={disabled ? '#F6F7F9' : colors.paleBlue}
       borderRadius={FloatingActionButtonBorderRadius}
       shadows={buildFabShadow(disabled)}
     >
@@ -69,7 +69,12 @@ const FloatingActionButton = enhance(({
             ? children({ size })
             : children
           }
-          {!disabled && <InnerBorder />}
+          {!disabled && (
+            <InnerBorder
+              opacity={0.06}
+              radius={FloatingActionButtonBorderRadius}
+            />
+          )}
         </Fragment>
       </Container>
     </ShadowStack>
@@ -85,7 +90,7 @@ FloatingActionButton.propTypes = {
   size: PropTypes.number,
 };
 
-FloatingActionButton.size = 54;
+FloatingActionButton.size = 56;
 
 FloatingActionButton.defaultProps = {
   size: FloatingActionButton.size,

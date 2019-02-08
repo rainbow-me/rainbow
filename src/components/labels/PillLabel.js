@@ -14,7 +14,7 @@ import { Icon } from '../icons';
 
 const Container = styled(Centered)`
   ${padding(0, 12)}
-  ${shadow.build(0, 0, 0, colors.alpha(colors.dark, 0.1))}
+  ${shadow.build(0, 0, 0, colors.dark, 0.1)}
   background-color: ${props => props.backgroundColor || colors.white}
   border-radius: 15px;
   height: 30px;

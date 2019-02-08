@@ -54,6 +54,8 @@ PODS:
     - React/RCTNetwork
   - React/RCTNetwork (0.57.1):
     - React/Core
+  - RNDeviceInfo (0.21.5):
+    - React
   - RNLanguages (3.0.2):
     - React
   - RNReanimated (1.0.0-alpha.12):
@@ -75,6 +77,7 @@ DEPENDENCIES:
   - react-native-fast-image (from `../node_modules/react-native-fast-image`)
   - react-native-version-number (from `../node_modules/react-native-version-number`)
   - React/RCTImage (from `../node_modules/react-native`)
+  - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNLanguages (from `../node_modules/react-native-languages`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -104,6 +107,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-fast-image"
   react-native-version-number:
     :path: "../node_modules/react-native-version-number"
+  RNDeviceInfo:
+    :path: "../node_modules/react-native-device-info"
   RNLanguages:
     :path: "../node_modules/react-native-languages"
   RNReanimated:
@@ -116,25 +121,26 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Crashlytics: 55e24fc23989680285a21cb1146578d9d18e432c
   Fabric: 25d0963b691fc97be566392243ff0ecef5a68338
-  Firebase: 76ec2a7cde90fb4037793f83aeeca48451543487
-  FirebaseAnalytics: b8bce8d5c40173328b8a4300da18c5c7e0a1908d
-  FirebaseCore: 31d258ec80ea97e1e8e40ce00a7ba7297afb45c2
-  FirebaseInstanceID: 4f7768a98c5c3c5bd9a4c9e431ea98dccc0a51f9
-  FirebaseMessaging: 94579ae655d817287f029ebfebd5b0811fbb3a51
+  Firebase: 68afeeb05461db02d7c9e3215cda28068670f4aa
+  FirebaseAnalytics: b3628aea54c50464c32c393fb2ea032566e7ecc2
+  FirebaseCore: 62f1b792a49bb9e8b4073f24606d2c93ffc352f0
+  FirebaseInstanceID: f3f0657372592ecdfdfe2cac604a5a75758376a6
+  FirebaseMessaging: 6894b8fe0a0cf26c3b13dad729f1131654ae0bdb
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
   GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
-  Protobuf: 6b0fc34ab8f2b7dbad2278a48be08a669427c59f
+  Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
   react-native-blur: c35c1f6c2c76db7108bde7ed343bd2b01d64e0c0
   react-native-fast-image: cba3d9bf9c2cf8ddb643d887a686c53a5dd90a2c
   react-native-version-number: 36c0d8eb57a275a6239a860f8dbab3d18299b0e0
+  RNDeviceInfo: 568c5641057313b4912d08a7742ff0b2f753ed5c
   RNLanguages: e3ae05ef105937645218272429dac0c3f7633451
   RNReanimated: 45d9313b7a62318ed00d60a811937321e43e076e
   RNScreens: 354046589421edc3d83d5c6212475bf1fb9a731d
-  SDWebImage: 4170dae6332a915d44c918675d51dc1c4c06b45f
+  SDWebImage: 624d6e296c69b244bcede364c72ae0430ac14681
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: b82ff0cc0a9e5be26f7421953c078bf323e6e85d
+PODFILE CHECKSUM: 0b876ddc904bb401eb7df12eea5f563d95631161
 
 COCOAPODS: 1.5.3
