@@ -1,6 +1,5 @@
-import { createAppContainer, createStackNavigator } from 'react-navigation';
+import { createAppContainer, createStackNavigator, createMaterialTopTabNavigator } from 'react-navigation';
 import Navigation from '../navigation';
-import createSwipeNavigator from '../navigation/navigators/createSwipeNavigator';
 import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
@@ -16,35 +15,28 @@ import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
 
-const onSwipeEndSwipeStack = navigation => Navigation.resumeNavigationActions(navigation);
-const onSwipeStartSwipeStack = () => Navigation.pauseNavigationActions();
-
 const onTransitionEnd = () => store.dispatch(updateTransitionProps({ isTransitioning: false }));
 const onTransitionStart = () => store.dispatch(updateTransitionProps({ isTransitioning: true }));
 
-const SwipeStack = createSwipeNavigator({
+const SwipeStack = createMaterialTopTabNavigator({
   ProfileScreen: {
     name: 'ProfileScreen',
     screen: ProfileScreenWithData,
-    statusBarColor: 'dark-content',
   },
   WalletScreen: {
     name: 'WalletScreen',
     screen: WalletScreen,
-    statusBarColor: 'dark-content',
   },
   // eslint-disable-next-line sort-keys
   QRScannerScreen: {
     name: 'QRScannerScreen',
     screen: QRScannerScreenWithData,
-    statusBarColor: 'light-content',
   },
 }, {
   headerMode: 'none',
   initialRouteName: 'WalletScreen',
   mode: 'modal',
-  onSwipeEnd: onSwipeEndSwipeStack,
-  onSwipeStart: onSwipeStartSwipeStack,
+  tabBarComponent: null,
 });
 
 const MainNavigator = createStackNavigator({
