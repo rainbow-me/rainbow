@@ -6,6 +6,8 @@ A mobile wallet for dapps &amp; tokens. Currently focused on iOS.
 
 * A computer running macOS.
 * NVM installed: https://github.com/creationix/nvm
+* Install CocoaPods by running `sudo gem install cocoapods`
+* Install Watchman `brew install watchman`
 * Install the latest version of XCode: https://developer.apple.com/xcode/
 * Clone and install Balance Common, our shared library: https://github.com/balance-io/balance-common
 
@@ -21,15 +23,13 @@ If you are new to React Native, this is a helpful introduction: https://facebook
 
 4. Run `yarn nodeify`.
 
-5. Install CocoaPods by running `sudo gem install cocoapods`.
+5. Install required Pods by running `yarn install-pods`.
 
-6. Install required Pods by running `yarn install-pods`.
+6. Run `yarn ios` to build the project for XCode.
 
-7. Run `yarn ios` to build the project for XCode.
+7. Open `balance-wallet/ios/BalanceWallet.xcworkspace`.
 
-8. Open `balance-wallet/ios/BalanceWallet.xcworkspace`.
-
-9. Run the project by clicking the play button.
+8. Run the project by clicking the play button.
 
 ## CodePush
 
