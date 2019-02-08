@@ -4,6 +4,7 @@ import { get, join, map } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import Piwik from 'react-native-matomo';
+import { withNavigationFocus } from 'react-navigation';
 import {
   compose,
   withHandlers,
@@ -35,7 +36,7 @@ class WalletScreen extends PureComponent {
     assetsTotal: PropTypes.object,
     blurOpacity: PropTypes.object,
     isEmpty: PropTypes.bool.isRequired,
-    isScreenActive: PropTypes.bool,
+    isFocused: PropTypes.bool,
     navigation: PropTypes.object,
     onRefreshList: PropTypes.func.isRequired,
     refreshAccount: PropTypes.func,
@@ -65,13 +66,13 @@ class WalletScreen extends PureComponent {
       allAssetsCount,
       assets,
       assetsTotal,
-      isScreenActive,
+      isFocused,
       trackingDate,
       uniqueTokens,
       updateTrackingDate,
     } = this.props;
 
-    if (isScreenActive && !prevProps.isScreenActive) {
+    if (isFocused && !prevProps.isFocused) {
       Piwik.trackScreen('WalletScreen', 'WalletScreen');
       const totalTrackingAmount = get(assetsTotal, 'totalTrackingAmount', null);
       const assetSymbols = join(map(assets || {}, (asset) => asset.symbol));
@@ -120,6 +121,7 @@ export default compose(
   withAccountRefresh,
   withAccountSettings,
   withFetchingPrices,
+  withNavigationFocus,
   withTrackingDate,
   withBlurTransitionProps,
   withIsWalletEmpty,
