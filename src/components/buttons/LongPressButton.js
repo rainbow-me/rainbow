@@ -42,9 +42,9 @@ export default class LongPressButton extends Component {
         ReactNativeHapticFeedback.trigger('notificationWarning');
 
         timing(this.scale, {
-          toValue: 0.975,
           duration: 150,
           easing: Easing.inOut(Easing.ease),
+          toValue: 0.975,
         }).start(() => {
           timing(this.scale, {
             toValue: 1,
@@ -63,9 +63,9 @@ export default class LongPressButton extends Component {
       }
     } else if (!disabled && nativeEvent.state === State.END) {
       timing(this.scale, {
-        toValue: 1,
         duration: 150,
         easing: Easing.inOut(Easing.ease),
+        toValue: 1,
       }).start();
 
       InteractionManager.runAfterInteractions(() => {
