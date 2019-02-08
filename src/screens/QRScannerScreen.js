@@ -36,7 +36,7 @@ const WalletConnectBubbleSheet = styled(BubbleSheet)`
 const QRScannerScreen = ({
   enableScanning,
   isCameraAuthorized,
-  isScreenActive,
+  isFocused,
   onPressBackButton,
   onScanSuccess,
   onSheetLayout,
@@ -52,7 +52,7 @@ const QRScannerScreen = ({
         bottom: sheetHeight,
         top: Header.height,
       }}
-      enableCamera={isScreenActive}
+      enableCamera={isFocused}
       enableScanning={enableScanning}
       isCameraAuthorized={isCameraAuthorized}
       onSuccess={onScanSuccess}
@@ -77,7 +77,7 @@ const QRScannerScreen = ({
 QRScannerScreen.propTypes = {
   enableScanning: PropTypes.bool,
   isCameraAuthorized: PropTypes.bool,
-  isScreenActive: PropTypes.bool.isRequired,
+  isFocused: PropTypes.bool.isRequired,
   onPressBackButton: PropTypes.func,
   onScanSuccess: PropTypes.func,
   onSheetLayout: PropTypes.func,
@@ -95,7 +95,7 @@ QRScannerScreen.defaultProps = {
 export default onlyUpdateForKeys([
   'enableScanning',
   'isCameraAuthorized',
-  'isScreenActive',
+  'isFocused',
   'sheetHeight',
   'walletConnectorsCount',
 ])(QRScannerScreen);
