@@ -16,13 +16,13 @@ export default class FlyInView extends Component {
   componentDidMount() {
     const { animation } = this.state;
 
-    Animated.timing(animation, { toValue: 1, duration: 300 }).start();
+    Animated.timing(animation, { duration: 300, toValue: 1 }).start();
   }
 
   componentWillUnmount() {
     const { animation } = this.state;
 
-    Animated.timing(animation, { toValue: 0, duration: 300 }).start();
+    Animated.timing(animation, { duration: 300, toValue: 0 }).start();
     animation.stopAnimation();
   }
 

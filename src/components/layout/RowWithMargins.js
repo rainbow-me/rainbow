@@ -1,4 +1,9 @@
-import { compose, defaultProps, setDisplayName, withProps } from 'recompact';
+import {
+  compose,
+  defaultProps,
+  setDisplayName,
+  withProps,
+} from 'recompact';
 import LayoutWithMargins from './LayoutWithMargins';
 
 export default compose(

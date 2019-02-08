@@ -2,7 +2,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, onlyUpdateForPropTypes, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-import { borders, colors, position, shadow } from '../../styles';
+import {
+  borders,
+  colors,
+  position,
+  shadow,
+} from '../../styles';
 import Icon from '../icons/Icon';
 import { Centered } from '../layout';
 import { ShadowStack } from '../shadow-stack';
