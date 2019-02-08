@@ -1,7 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import styled from 'styled-components/primitives';
-import { Animated, Text, TextInput, View } from 'react-native';
+import {
+  Animated,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
 import { abbreviations } from '../../utils';
 import { colors, fonts } from '../../styles';

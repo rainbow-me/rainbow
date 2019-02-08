@@ -21,8 +21,8 @@ const ConfirmImportAlert = onSuccess => (
       onPress: onSuccess,
       text: 'Import',
     }, {
-      text: 'Cancel',
       style: 'cancel',
+      text: 'Cancel',
     }],
     // eslint-disable-next-line
     message: 'Importing this seed phrase will overwrite your existing wallet. Before continuing, please make sure you’ve transferred its contents or backed up its seed phrase.',
@@ -117,10 +117,10 @@ const ImportSeedPhraseSheetWithData = compose(
 
 ImportSeedPhraseSheetWithData.navigationOptions = ({ navigation }) => ({
   effect: 'sheet',
-  gesturesEnabled: get(navigation, 'state.params.gesturesEnabled', true),
   gestureResponseDistance: {
     vertical: deviceUtils.dimensions.height / 2,
   },
+  gesturesEnabled: get(navigation, 'state.params.gesturesEnabled', true),
 });
 
 export default ImportSeedPhraseSheetWithData;
