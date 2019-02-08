@@ -1,21 +1,20 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import Animated, { Easing } from 'react-native-reanimated';
 import { InteractionManager } from 'react-native';
+import Animated, { Easing } from 'react-native-reanimated';
 
 const {
-  set,
+  block,
+  call,
+  Clock,
+  clockRunning,
   cond,
+  set,
   startClock,
   stopClock,
-  clockRunning,
-  block,
   timing,
-  call,
   Value,
-  Clock,
 } = Animated;
-
 
 export default class FadeInAnimation extends PureComponent {
   static propTypes = {
@@ -38,7 +37,11 @@ export default class FadeInAnimation extends PureComponent {
 
   runTiming = () => {
     const {
-      to, easing, from, duration, isInteraction,
+      duration,
+      easing,
+      from,
+      isInteraction,
+      to,
     } = this.props;
 
     const handle = isInteraction && InteractionManager.createInteractionHandle();
