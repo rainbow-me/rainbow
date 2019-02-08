@@ -27,6 +27,7 @@ import {
   withTrackingDate,
 } from '../hoc';
 import { position } from '../styles';
+import withStatusBarStyle from '../hoc/withStatusBarStyle';
 
 class WalletScreen extends PureComponent {
   static propTypes = {
@@ -137,6 +138,7 @@ export default compose(
   withHideSplashScreen,
   withBlurTransitionProps,
   withIsWalletEmpty,
+  withStatusBarStyle('dark-content'),
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
     onRefreshList: ({ refreshAccount }) => async () => await refreshAccount(),

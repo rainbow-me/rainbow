@@ -36,7 +36,6 @@ import store from './redux/store';
 import { walletInit } from './model/wallet';
 import Routes from './screens/Routes';
 import Navigation from './navigation';
-import { statusBar } from './utils';
 
 if (process.env.NODE_ENV === 'development') {
   console.log('process', process);
@@ -202,29 +201,11 @@ class App extends Component {
     }
   }
 
-  handleStatusBarStylingOnSwiping = (prevState, currentState) => {
-    const currentScreen = Navigation.getActiveRouteName(currentState);
-    const prevScreen = Navigation.getActiveRouteName(prevState);
-
-    if (prevScreen !== currentScreen) {
-      switch (currentScreen) {
-      case 'QRScannerScreen':
-        statusBar.setBarStyle('light-content', true);
-        break;
-      case 'WalletScreen':
-        statusBar.setBarStyle('dark-content', true);
-        break;
-      default:
-      }
-    }
-  }
-
   render = () => (
     <Provider store={store}>
       <FlexItem>
         <OfflineBadge />
         <Routes
-          onNavigationStateChange={this.handleStatusBarStylingOnSwiping}
           ref={this.handleNavigatorRef}
           screenProps={{ handleWalletConfig: this.handleWalletConfig }}
         />
