@@ -19,7 +19,6 @@ import { getEthereumAddressFromQRCodeData } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
 import withStatusBarStyle from '../hoc/withStatusBarStyle';
 
-
 class QRScannerScreenWithData extends Component {
   static propTypes = {
     accountAddress: PropTypes.string,
