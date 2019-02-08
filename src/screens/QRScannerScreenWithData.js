@@ -7,6 +7,7 @@ import { Vibration } from 'react-native';
 import firebase from 'react-native-firebase';
 import Piwik from 'react-native-matomo';
 import Permissions from 'react-native-permissions';
+import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
 import { Alert } from '../components/alerts';
 import {
@@ -23,7 +24,7 @@ class QRScannerScreenWithData extends Component {
   static propTypes = {
     accountAddress: PropTypes.string,
     addWalletConnector: PropTypes.func,
-    isScreenActive: PropTypes.bool,
+    isFocused: PropTypes.bool,
     navigation: PropTypes.object,
     setSafeTimeout: PropTypes.func,
   }
@@ -35,7 +36,7 @@ class QRScannerScreenWithData extends Component {
   }
 
   componentDidUpdate = (prevProps, prevState) => {
-    if (this.props.isScreenActive && !prevProps.isScreenActive) {
+    if (this.props.isFocused && !prevProps.isFocused) {
       Permissions.request('camera').then(permission => {
         const isCameraAuthorized = permission === 'authorized';
 
@@ -119,7 +120,7 @@ class QRScannerScreenWithData extends Component {
     <QRScannerScreen
       {...this.props}
       {...this.state}
-      enableScanning={this.state.enableScanning && this.props.isScreenActive}
+      enableScanning={this.state.enableScanning && this.props.isFocused}
       onPressBackButton={this.handlePressBackButton}
       onScanSuccess={this.handleScanSuccess}
       onSheetLayout={this.handleSheetLayout}
@@ -128,6 +129,7 @@ class QRScannerScreenWithData extends Component {
 }
 
 export default compose(
+  withNavigationFocus,
   withAccountAddress,
   withAddWalletConnector,
   withSafeTimeout,
