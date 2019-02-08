@@ -1,7 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Linking, Share } from 'react-native';
-import { compose, onlyUpdateForPropTypes, withHandlers, withProps } from 'recompact';
+import {
+  compose,
+  onlyUpdateForPropTypes,
+  withHandlers,
+  withProps,
+} from 'recompact';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { withImageDimensionsCache } from '../../hoc';
 import { colors } from '../../styles';

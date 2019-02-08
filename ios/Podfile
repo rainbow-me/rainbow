@@ -18,4 +18,6 @@ target 'BalanceWallet' do
   pod 'RNScreens', :path => '../node_modules/react-native-screens'
   pod 'react-native-version-number', :path => '../node_modules/react-native-version-number'
 
+  pod 'RNDeviceInfo', :path => '../node_modules/react-native-device-info'
+
 end
