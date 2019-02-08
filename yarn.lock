@@ -814,17 +814,14 @@
     inherits "~2.0.1"
 
 "@types/node@*":
-  version "10.12.23"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.23.tgz#308a3acdc5d1c842aeadc50b867d99c46cfae868"
-<<<<<<< HEAD
-=======
-  integrity sha512-EKhb5NveQ3NlW5EV7B0VRtDKwUfVey8LuJRl9pp5iW0se87/ZqLjG0PMf2MCzPXAJYWZN5Ltg7pHIAf9/Dm1tQ==
->>>>>>> 97af2aa... Fix implementation of ShadowStack component
+  version "10.12.24"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.24.tgz#b13564af612a22a20b5d95ca40f1bffb3af315cf"
+  integrity sha512-GWWbvt+z9G5otRBW8rssOFgRY87J9N/qbhqfjMZ+gUuL6zoL+Hm6gP/8qQBG4jjimqdaNLCehcVapZ/Fs2WjCQ==
 
 "@types/node@^8.0.7":
-  version "8.10.39"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.39.tgz#e7e87ad00364dd7bc485c940926345b8ec1a26ca"
-  integrity sha512-rE7fktr02J8ybFf6eysife+WF+L4sAHWzw09DgdCebEu+qDwMvv4zl6Bc+825ttGZP73kCKxa3dhJOoGJ8+5mA==
+  version "8.10.40"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.40.tgz#4314888d5cd537945d73e9ce165c04cc550144a4"
+  integrity sha512-RRSjdwz63kS4u7edIwJUn8NqKLLQ6LyqF/X4+4jp38MBT3Vwetewi2N4dgJEshLbDwNgOJXNYoOwzVZUSSLhkQ==
 
 "@types/q@^1.5.1":
   version "1.5.1"
@@ -919,10 +916,7 @@ acorn@^5.5.3:
 acorn@^6.0.1, acorn@^6.0.2, acorn@^6.0.4:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-6.1.0.tgz#b0a3be31752c97a0f7013c5f4903b71a05db6818"
-<<<<<<< HEAD
-=======
   integrity sha512-MW/FjM+IvU9CgBzjO3UIPCE2pyEwUsoFl+VGdczOPEdxfGFjuKny/gN54mOuX7Qxmb9Rg9MCn2oKiSUeW+pjrw==
->>>>>>> 97af2aa... Fix implementation of ShadowStack component
 
 aes-js@3.0.0:
   version "3.0.0"
@@ -2044,19 +2038,14 @@ bail@^1.0.0:
   resolved "https://registry.yarnpkg.com/bail/-/bail-1.0.3.tgz#63cfb9ddbac829b02a3128cd53224be78e6c21a3"
   integrity sha512-1X8CnjFVQ+a+KW36uBNMTU5s8+v5FzeqrP7hTG5aTb4aPreSbZJlhwPon9VKMuEVgV++JM+SQrALY3kr7eswdg==
 
-"balance-common@git+https://github.com/balance-io/balance-common.git#emptyeth":
+balance-common@^0.6.29:
   version "0.6.29"
-<<<<<<< HEAD
-  resolved "git+https://github.com/balance-io/balance-common.git#0e73b6d97210ad7f7bfa9e4448878a14016e28f7"
-=======
   resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.29.tgz#969f82eda63ee0bc1d818bc2f24303bb9e0f6960"
   integrity sha512-L5r2XSo/d7KFamB8FW1yH3TJhXTB7bNrBxL+5tsqapk2SVkQU5MjNYRg0WtCRazopgVpIfC7E9gc34RXcQ055A==
->>>>>>> 97af2aa... Fix implementation of ShadowStack component
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
     date-fns "^1.29.0"
-    eslint "^5.13.0"
     i18next "^11.3.2"
     jsonp "^0.2.1"
     lodash "^4.17.10"
@@ -2128,6 +2117,7 @@ bignumber.js@^7.0.1:
 bignumber.js@^8.0.2:
   version "8.0.2"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-8.0.2.tgz#d8c4e1874359573b1ef03011a2d861214aeef137"
+  integrity sha512-EiuvFrnbv0jFixEQ9f58jo7X0qI2lNGIr/MxntmVzQc5JUweDSh8y8hbTCAomFtqwUPIOWcLXP0VEOSZTG7FFw==
 
 bl@^1.0.0:
   version "1.2.2"
@@ -2388,10 +2378,7 @@ buffer-to-arraybuffer@^0.0.5:
 buffer-xor@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/buffer-xor/-/buffer-xor-1.0.3.tgz#26e61ed1422fb70dd42e6e36729ed51d855fe8d9"
-<<<<<<< HEAD
-=======
   integrity sha1-JuYe0UIvtw3ULm42cp7VHYVf6Nk=
->>>>>>> 97af2aa... Fix implementation of ShadowStack component
 
 buffer@^4.9.1:
   version "4.9.1"
@@ -2482,10 +2469,6 @@ camelize@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/camelize/-/camelize-1.0.0.tgz#164a5483e630fa4321e5af07020e531831b2609b"
   integrity sha1-FkpUg+Yw+kMh5a8HAg5TGDGyYJs=
-
-camelize@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/camelize/-/camelize-1.0.0.tgz#164a5483e630fa4321e5af07020e531831b2609b"
 
 can-promise@0.0.1:
   version "0.0.1"
@@ -2916,10 +2899,7 @@ core-js@^1.0.0:
 core-js@^2.2.2, core-js@^2.4.0, core-js@^2.4.1, core-js@^2.5.0, core-js@^2.5.7:
   version "2.6.4"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.4.tgz#b8897c062c4d769dd30a0ac5c73976c47f92ea0d"
-<<<<<<< HEAD
-=======
   integrity sha512-05qQ5hXShcqGkPZpXEFLIpxayZscVD2kuMBZewxiIPPEagukO4mqgPA9CWhUvFBJfy3ODdK2p9xyHh7FTU9/7A==
->>>>>>> 97af2aa... Fix implementation of ShadowStack component
 
 core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"
@@ -3060,10 +3040,7 @@ css-select@^2.0.0:
 css-to-react-native@^2.0.3, css-to-react-native@^2.2.2:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/css-to-react-native/-/css-to-react-native-2.3.0.tgz#bf80d24ec4a08e430306ef429c0586e6ed5485f7"
-<<<<<<< HEAD
-=======
   integrity sha512-IhR7bNIrCFwbJbKZOAjNDZdwpsbjTN6f1agXeELHDqg1wHPA8c2QLruttKOW7hgMGetkfraRJCIEMrptifBfVw==
->>>>>>> 97af2aa... Fix implementation of ShadowStack component
   dependencies:
     camelize "^1.0.0"
     css-color-keywords "^1.0.0"
@@ -3760,7 +3737,7 @@ eslint-visitor-keys@^1.0.0:
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#3f3180fb2e291017716acb4c9d6d5b5c34a6a81d"
   integrity sha512-qzm/XxIbxm/FHyH341ZrbnMUpe+5Bocte9xkmFMzPMjRaZMcXww+MpBptFvtU+79L362nqiLhekCxCxDPaUMBQ==
 
-eslint@^5.11.1, eslint@^5.13.0:
+eslint@^5.11.1:
   version "5.13.0"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-5.13.0.tgz#ce71cc529c450eed9504530939aa97527861ede9"
   integrity sha512-nqD5WQMisciZC5EHZowejLKQjWGuFS5c70fxqSKlnDME+oz9zmE8KTlX+lHSg+/5wsC/kf9Q9eMkC8qS3oM2fg==
@@ -4837,10 +4814,7 @@ h2x-types@^1.1.0:
 handlebars@^4.0.3:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.1.0.tgz#0d6a6f34ff1f63cecec8423aa4169827bf787c3a"
-<<<<<<< HEAD
-=======
   integrity sha512-l2jRuU1NAWK6AW5qqcTATWQJvNPEwkM7NEKSiv/gqOsoSQbVoWyqVEY5GS+XPQ88zLNmqASRpzfdm8d79hJS+w==
->>>>>>> 97af2aa... Fix implementation of ShadowStack component
   dependencies:
     async "^2.5.0"
     optimist "^0.6.1"
@@ -8602,6 +8576,11 @@ react-native-crypto@^2.1.2:
     pbkdf2 "3.0.8"
     public-encrypt "^4.0.0"
 
+react-native-device-info@^0.26.2:
+  version "0.26.2"
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-0.26.2.tgz#c9e350e11f0c2f9a65f3e4fec8ddcab6881b7deb"
+  integrity sha512-Hbzc3sZxfJX0Do1yLF8Dt+tuz6+IZ61iTNGqF2LPpRhCDiJI5asrEtXF7g6bRS1H5lA2/eJDYCI/c35w63JpKA==
+
 react-native-emoji@^1.3.1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/react-native-emoji/-/react-native-emoji-1.3.1.tgz#1beaafaf4e2ce81d613990989ab1c7fae55ec063"
@@ -10786,10 +10765,7 @@ ultron@~1.1.0:
 unbzip2-stream@^1.0.9:
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/unbzip2-stream/-/unbzip2-stream-1.3.3.tgz#d156d205e670d8d8c393e1c02ebd506422873f6a"
-<<<<<<< HEAD
-=======
   integrity sha512-fUlAF7U9Ah1Q6EieQ4x4zLNejrRvDWUYmxXUpN3uziFYCHapjWFaCAnreY9bGgxzaMCFAPPpYNng57CypwJVhg==
->>>>>>> 97af2aa... Fix implementation of ShadowStack component
   dependencies:
     buffer "^5.2.1"
     through "^2.3.8"
