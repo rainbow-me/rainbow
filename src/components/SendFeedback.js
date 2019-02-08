@@ -13,8 +13,8 @@ const FeedbackErrorAlert = () => Alert({
     onPress: () => Clipboard.setString(FeedbackEmailAddress),
     text: lang.t('wallet.feedback.copy_email_address'),
   }, {
-    text: lang.t('wallet.feedback.cancel'),
     style: 'cancel',
+    text: lang.t('wallet.feedback.cancel'),
   }],
   message: lang.t('wallet.feedback.choice'),
   title: lang.t('wallet.feedback.error'),

@@ -53,8 +53,8 @@ export default class UnderlineField extends Component {
   static propTypes = {
     autoFocus: PropTypes.bool,
     buttonText: PropTypes.string,
-    keyboardType: PropTypes.oneOf(['default', 'number-pad', 'decimal-pad', 'numeric', 'email-address', 'phone-pad']),
     format: PropTypes.func,
+    keyboardType: PropTypes.oneOf(['default', 'number-pad', 'decimal-pad', 'numeric', 'email-address', 'phone-pad']),
     maxLength: PropTypes.number,
     onBlur: PropTypes.func,
     onChange: PropTypes.func,
@@ -100,7 +100,7 @@ export default class UnderlineField extends Component {
     const { onBlur } = this.props;
     const { underlineAnimation } = this.state;
 
-    Animated.timing(underlineAnimation, { toValue: 0, duration: 150 }).start();
+    Animated.timing(underlineAnimation, { duration: 150, toValue: 0 }).start();
 
     this.setState({ isFocused: false });
 
@@ -120,7 +120,7 @@ export default class UnderlineField extends Component {
     const { onFocus } = this.props;
     const { underlineAnimation } = this.state;
 
-    Animated.timing(underlineAnimation, { toValue: 1, duration: 150 }).start();
+    Animated.timing(underlineAnimation, { duration: 150, toValue: 1 }).start();
 
     this.setState({ isFocused: true });
 

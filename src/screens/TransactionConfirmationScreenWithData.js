@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AlertIOS, StatusBar, Vibration } from 'react-native';
 import Piwik from 'react-native-matomo';
+import { withNavigationFocus } from 'react-navigation';
+import { compose } from 'recompact';
 import { withTransactionConfirmationScreen } from '../hoc';
 import { signMessage, sendTransaction } from '../model/wallet';
 import { walletConnectSendStatus } from '../model/walletconnect';
@@ -12,7 +14,7 @@ import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
 class TransactionConfirmationScreenWithData extends Component {
   static propTypes = {
-    isScreenActive: PropTypes.bool.isRequired,
+    isFocused: PropTypes.bool.isRequired,
     navigation: PropTypes.any,
     removeTransaction: PropTypes.func,
     transactionCountNonce: PropTypes.number,
@@ -22,7 +24,7 @@ class TransactionConfirmationScreenWithData extends Component {
   }
 
   componentDidUpdate = (prevProps) => {
-    if (this.props.isScreenActive && !prevProps.isScreenActive) {
+    if (this.props.isFocused && !prevProps.isFocused) {
       Piwik.trackScreen('TxnConfirmScreen', 'TxnConfirmScreen');
     }
   }
@@ -149,4 +151,7 @@ class TransactionConfirmationScreenWithData extends Component {
   }
 }
 
-export default withTransactionConfirmationScreen(TransactionConfirmationScreenWithData);
+export default compose(
+  withNavigationFocus,
+  withTransactionConfirmationScreen,
+)(TransactionConfirmationScreenWithData);

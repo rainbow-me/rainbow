@@ -7,14 +7,23 @@ font.family = {
   SFProText: 'SF Pro Text',
 };
 
+font.letterSpacing = {
+  /* eslint-disable sort-keys */
+  tight: -0.2,
+  loose: 0.46,
+};
+
 font.lineHeight = {
+  /* eslint-disable sort-keys */
+  none: 0,
+  normal: 20,
   loose: 21,
   looser: 25,
   loosest: 28,
-  none: 0,
 };
 
 font.size = {
+  /* eslint-disable sort-keys */
   micro: '9px',
   tiny: '11px',
   smaller: '12px',
@@ -37,6 +46,7 @@ font.size = {
 
 // react-native requires font weights to be defined as strings
 font.weight = {
+  /* eslint-disable sort-keys */
   thin: '100',
   ultraLight: '200',
   light: '300',

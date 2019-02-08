@@ -20,6 +20,7 @@ export function generateSeedPhrase() {
 
 export const walletInit = async (seedPhrase = null) => {
   let walletAddress = null;
+  let isWalletBrandNew = false;
   if (seedPhrase) {
     walletAddress = await createWallet(seedPhrase);
   }
@@ -28,8 +29,9 @@ export const walletInit = async (seedPhrase = null) => {
   }
   if (!walletAddress) {
     walletAddress = await createWallet();
+    isWalletBrandNew = true;
   }
-  return walletAddress;
+  return { isWalletBrandNew, walletAddress } ;
 };
 
 export const loadWallet = async () => {
@@ -54,6 +56,9 @@ export const createTransaction = async (to, data, value, gasLimit, gasPrice, non
 export const sendTransaction = async ({ tracking, transaction }) => {
   try {
     const wallet = await loadWallet();
+    if (!wallet) {
+      return null;
+    }
     try {
       const result = await wallet.sendTransaction(transaction);
       Piwik.trackEvent('Send', tracking.action, tracking.name, tracking.amount);
@@ -123,8 +128,12 @@ const savePrivateKey = async (privateKey, accessControlOptions = {}) => {
 };
 
 const loadPrivateKey = async (authenticationPrompt = lang.t('wallet.authenticate.please')) => {
-  const privateKey = await keychain.loadString(privateKeyKey, { authenticationPrompt });
-  return privateKey;
+  try {
+    const privateKey = await keychain.loadString(privateKeyKey, { authenticationPrompt });
+    return privateKey;
+  } catch (error) {
+    return null;
+  }
 };
 
 const saveAddress = async (address) => {

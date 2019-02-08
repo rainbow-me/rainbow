@@ -15,6 +15,8 @@ const DefaultAnimatedValues = {
   transX: 0,
 };
 
+let buttonExcludingMutex = null;
+
 export default class ButtonPressAnimation extends PureComponent {
   static propTypes = {
     activeOpacity: PropTypes.number,
@@ -68,9 +70,23 @@ export default class ButtonPressAnimation extends PureComponent {
 
     const isActive = state === State.BEGAN;
 
+    if (buttonExcludingMutex !== this) {
+      if (buttonExcludingMutex === null && isActive) {
+        buttonExcludingMutex = this;
+      } else {
+        return;
+      }
+    }
+    if (state === State.END || state === State.FAILED || state === State.CANCELLED) {
+      buttonExcludingMutex = null;
+    }
+
     const animationsArray = [
       // Default spring animation
       animations.buildSpring({
+        config: {
+          isInteraction: false,
+        },
         from: ButtonKeyframes.from.scale,
         isActive,
         to: scaleTo,

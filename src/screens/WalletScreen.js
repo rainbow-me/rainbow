@@ -4,9 +4,9 @@ import { get, join, map } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import Piwik from 'react-native-matomo';
+import { withNavigationFocus } from 'react-navigation';
 import {
   compose,
-  shouldUpdate,
   withHandlers,
   withProps,
   withState,
@@ -23,12 +23,11 @@ import {
   withAccountSettings,
   withBlurTransitionProps,
   withFetchingPrices,
-  withHideSplashScreen,
   withIsWalletEmpty,
   withTrackingDate,
 } from '../hoc';
 import { position } from '../styles';
-import { isNewValueForPath } from '../utils';
+import withStatusBarStyle from '../hoc/withStatusBarStyle';
 
 class WalletScreen extends PureComponent {
   static propTypes = {
@@ -37,29 +36,28 @@ class WalletScreen extends PureComponent {
     assetsTotal: PropTypes.object,
     blurOpacity: PropTypes.object,
     isEmpty: PropTypes.bool.isRequired,
-    isLoading: PropTypes.bool.isRequired,
-    isScreenActive: PropTypes.bool,
+    isFocused: PropTypes.bool,
     navigation: PropTypes.object,
-    onHideSplashScreen: PropTypes.func,
     onRefreshList: PropTypes.func.isRequired,
+    refreshAccount: PropTypes.func,
     sections: PropTypes.array,
     showBlur: PropTypes.bool,
     toggleShowShitcoins: PropTypes.func,
     trackingDate: PropTypes.object,
-    transitionProps: PropTypes.object,
     uniqueTokens: PropTypes.array,
     updateTrackingDate: PropTypes.func,
   }
 
   componentDidMount = async () => {
-    // Initialize wallet
-    const { handleWalletConfig } = this.props.navigation.getScreenProps();
-    await handleWalletConfig();
-    this.props.onHideSplashScreen();
+    const { toggleShowShitcoins } = this.props;
 
-    const showShitcoins = await getShowShitcoinsSetting();
-    if (showShitcoins !== null) {
-      this.props.toggleShowShitcoins(showShitcoins);
+    try {
+      const showShitcoins = await getShowShitcoinsSetting();
+      if (showShitcoins !== null) {
+        toggleShowShitcoins(showShitcoins);
+      }
+    } catch (error) {
+      // TODO
     }
   }
 
@@ -68,13 +66,13 @@ class WalletScreen extends PureComponent {
       allAssetsCount,
       assets,
       assetsTotal,
-      isScreenActive,
+      isFocused,
       trackingDate,
       uniqueTokens,
       updateTrackingDate,
     } = this.props;
 
-    if (isScreenActive && !prevProps.isScreenActive) {
+    if (isFocused && !prevProps.isFocused) {
       Piwik.trackScreen('WalletScreen', 'WalletScreen');
       const totalTrackingAmount = get(assetsTotal, 'totalTrackingAmount', null);
       const assetSymbols = join(map(assets || {}, (asset) => asset.symbol));
@@ -93,12 +91,12 @@ class WalletScreen extends PureComponent {
     const {
       blurOpacity,
       isEmpty,
-      isLoading,
       navigation,
       onRefreshList,
       sections,
       showBlur,
     } = this.props;
+
     return (
       <Page style={{ flex: 1, ...position.sizeAsObject('100%') }}>
         {showBlur && <BlurOverlay opacity={blurOpacity} />}
@@ -106,11 +104,10 @@ class WalletScreen extends PureComponent {
           <ProfileHeaderButton navigation={navigation} />
           <CameraHeaderButton navigation={navigation} />
         </Header>
-        <FabWrapper disabled={isEmpty || isLoading}>
+        <FabWrapper disabled={isEmpty}>
           <AssetList
             fetchData={onRefreshList}
             isEmpty={isEmpty}
-            isLoading={isLoading}
             sections={sections}
           />
         </FabWrapper>
@@ -124,13 +121,14 @@ export default compose(
   withAccountRefresh,
   withAccountSettings,
   withFetchingPrices,
+  withNavigationFocus,
   withTrackingDate,
-  withHideSplashScreen,
   withBlurTransitionProps,
   withIsWalletEmpty,
+  withStatusBarStyle('dark-content'),
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
-    onRefreshList: ({ refreshAccount }) => async () => await refreshAccount(),
+    onRefreshList: ({ refreshAccount }) => async () => refreshAccount(),
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
       if (index === 0) {
         const updatedShowShitcoinsSetting = !showShitcoins;

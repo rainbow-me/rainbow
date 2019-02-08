@@ -4,7 +4,12 @@ import styled from 'styled-components/primitives';
 import { TouchableOpacity } from 'react-native';
 
 import { Centered } from '../layout';
-import { colors, fonts, padding, shadow } from '../../styles';
+import {
+  colors,
+  fonts,
+  padding,
+  shadow,
+} from '../../styles';
 import { Icon } from '../icons';
 
 const Container = styled(Centered)`

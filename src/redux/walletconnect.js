@@ -27,8 +27,9 @@ export const removeWalletConnectorByDapp = (dappName) => (dispatch, getState) =>
   });
 };
 
-export const setWalletConnectors = (walletConnectors) => (dispatch) =>
-  dispatch({ payload: walletConnectors, type: WALLETCONNECT_NEW_SESSION });
+export const setWalletConnectors = (walletConnectors) => (dispatch) => dispatch({
+  payload: walletConnectors, type: WALLETCONNECT_NEW_SESSION,
+});
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {

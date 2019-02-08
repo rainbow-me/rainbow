@@ -1,6 +1,9 @@
-import { createStackNavigator } from 'react-navigation';
-import createSwipeNavigator from '../navigation/navigators/createSwipeNavigator';
+import { createAppContainer, createStackNavigator, createMaterialTopTabNavigator } from 'react-navigation';
+import Navigation from '../navigation';
 import { buildTransitions, expanded, sheet } from '../navigation/transitions';
+import { updateTransitionProps } from '../redux/navigation';
+import store from '../redux/store';
+import { deviceUtils } from '../utils';
 import ExpandedAssetScreen from './ExpandedAssetScreen';
 import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from './ProfileScreenWithData';
@@ -11,42 +14,33 @@ import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
-import { deviceUtils } from '../utils';
-import store from '../redux/store';
-import { updateTransitionProps } from '../redux/navigation';
 
-import Navigation from '../navigation';
+const onTransitionEnd = () => store.dispatch(updateTransitionProps({ isTransitioning: false }));
+const onTransitionStart = () => store.dispatch(updateTransitionProps({ isTransitioning: true }));
 
-const onSwipeEndSwipeStack = navigation => Navigation.resumeNavigationActions(navigation);
-const onSwipeStartSwipeStack = () => Navigation.pauseNavigationActions();
-
-const SwipeStack = createSwipeNavigator({
+const SwipeStack = createMaterialTopTabNavigator({
   ProfileScreen: {
     name: 'ProfileScreen',
     screen: ProfileScreenWithData,
-    statusBarColor: 'dark-content',
   },
   WalletScreen: {
     name: 'WalletScreen',
     screen: WalletScreen,
-    statusBarColor: 'dark-content',
   },
+  // eslint-disable-next-line sort-keys
   QRScannerScreen: {
     name: 'QRScannerScreen',
     screen: QRScannerScreenWithData,
-    statusBarColor: 'light-content',
   },
 }, {
   headerMode: 'none',
-  mode: 'modal',
   initialRouteName: 'WalletScreen',
-  onSwipeEnd: onSwipeEndSwipeStack,
-  onSwipeStart: onSwipeStartSwipeStack,
+  mode: 'modal',
+  tabBarComponent: null,
 });
 
-export default createStackNavigator({
+const MainNavigator = createStackNavigator({
   ConfirmRequest: TransactionConfirmationScreenWithData,
-  ImportSeedPhraseSheet: ImportSeedPhraseSheetWithData,
   ExpandedAssetScreen: {
     navigationOptions: {
       effect: 'expanded',
@@ -56,6 +50,7 @@ export default createStackNavigator({
     },
     screen: ExpandedAssetScreen,
   },
+  ImportSeedPhraseSheet: ImportSeedPhraseSheetWithData,
   ReceiveModal: {
     navigationOptions: {
       effect: 'expanded',
@@ -65,9 +60,8 @@ export default createStackNavigator({
     },
     screen: ReceiveModal,
   },
-  SendSheet: SendSheetWithData,
   SendQRScannerScreen: SendQRScannerScreenWithData,
-  SwipeLayout: SwipeStack,
+  SendSheet: SendSheetWithData,
   SettingsModal: {
     navigationOptions: {
       effect: 'expanded',
@@ -75,18 +69,15 @@ export default createStackNavigator({
     },
     screen: SettingsModal,
   },
+  SwipeLayout: SwipeStack,
 }, {
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',
   mode: 'modal',
+  onTransitionEnd,
+  onTransitionStart,
   transitionConfig: buildTransitions(Navigation, { expanded, sheet }),
-  cardStyle: {
-    backgroundColor: 'transparent',
-  },
-  onTransitionStart() {
-    store.dispatch(updateTransitionProps({ isTransitioning: true }));
-  },
-  onTransitionEnd() {
-    store.dispatch(updateTransitionProps({ isTransitioning: false }));
-  },
+  transparentCard: true,
 });
+
+export default createAppContainer(MainNavigator);

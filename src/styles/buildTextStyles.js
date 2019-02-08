@@ -8,6 +8,11 @@ export default css`
       ? `text-align: ${align};`
       : ''
   )}
+  ${({ letterSpacing }) => (
+    letterSpacing
+      ? `letter-spacing: ${fonts.letterSpacing[letterSpacing]};`
+      : ''
+  )}
   ${({ lineHeight }) => (
     lineHeight
       ? `line-height: ${fonts.lineHeight[lineHeight]};`

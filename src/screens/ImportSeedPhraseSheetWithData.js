@@ -11,7 +11,7 @@ import {
   withState,
 } from 'recompact';
 import { Alert } from '../components/alerts';
-import { withAccountReset } from '../hoc';
+import { withAccountRefresh, withAccountReset } from '../hoc';
 import { deviceUtils } from '../utils';
 import ImportSeedPhraseSheet from './ImportSeedPhraseSheet';
 
@@ -21,8 +21,8 @@ const ConfirmImportAlert = onSuccess => (
       onPress: onSuccess,
       text: 'Import',
     }, {
-      text: 'Cancel',
       style: 'cancel',
+      text: 'Cancel',
     }],
     // eslint-disable-next-line
     message: 'Importing this seed phrase will overwrite your existing wallet. Before continuing, please make sure you’ve transferred its contents or backed up its seed phrase.',
@@ -32,41 +32,33 @@ const ConfirmImportAlert = onSuccess => (
 
 const ImportSeedPhraseSheetWithData = compose(
   withAccountReset,
+  withAccountRefresh,
   withNavigation,
   withState('clipboardContents', 'setClipboardContents', ''),
   withState('isImporting', 'setIsImporting', false),
   withState('seedPhrase', 'setSeedPhrase', ''),
-  lifecycle({
-    componentDidMount() {
-      InteractionManager.runAfterInteractions(async () => {
-        const { setClipboardContents } = this.props;
-        await Clipboard.getString().then(setClipboardContents);
-      });
-    },
-    componentDidUpdate(prevProps) {
-      const { isImporting, navigation } = this.props;
-
-      if (isImporting !== prevProps.isImporting) {
-        navigation.setParams({ gesturesEnabled: !isImporting });
-      }
-    },
-  }),
   withHandlers({
     importSeedPhrase: ({
       accountClearState,
       navigation,
+      refreshAccount,
       screenProps,
       seedPhrase,
       setIsImporting,
     }) => () => {
-      setIsImporting(true);
       accountClearState();
 
       return screenProps
         .handleWalletConfig(seedPhrase.trim())
         .then((address) => {
           if (address) {
-            navigation.navigate('WalletScreen');
+            refreshAccount()
+              .then(() => {
+                setIsImporting(false);
+                navigation.navigate('WalletScreen');
+              });
+          } else {
+            setIsImporting(false);
           }
         })
         .catch((error) => {
@@ -76,14 +68,33 @@ const ImportSeedPhraseSheetWithData = compose(
     },
   }),
   withHandlers({
-    onImportSeedPhrase: ({ importSeedPhrase }) => () => ConfirmImportAlert(importSeedPhrase),
+    onImportSeedPhrase: ({ setIsImporting }) => () => ConfirmImportAlert(() => setIsImporting(true)),
     onInputChange: ({ setSeedPhrase }) => ({ nativeEvent }) => setSeedPhrase(nativeEvent.text),
     onPasteSeedPhrase: ({ setSeedPhrase }) => () => {
       Clipboard.getString()
         .then(setSeedPhrase)
         .catch(error => console.log(error));
     },
-    onPressHelp: () => () => Linking.openURL('https://support.balance.io'),
+    onPressHelp: () => () => Linking.openURL('http://support.balance.io'),
+  }),
+  lifecycle({
+    componentDidMount() {
+      InteractionManager.runAfterInteractions(async () => {
+        const { setClipboardContents } = this.props;
+        await Clipboard.getString().then(setClipboardContents);
+      });
+    },
+    componentDidUpdate(prevProps) {
+      const { isImporting, navigation, importSeedPhrase } = this.props;
+
+      if (isImporting !== prevProps.isImporting) {
+        navigation.setParams({ gesturesEnabled: !isImporting });
+      }
+
+      if (!prevProps.isImporting && isImporting) {
+        InteractionManager.runAfterInteractions(importSeedPhrase);
+      }
+    },
   }),
   withHandlers({
     onPressEnterKey: ({ onImportSeedPhrase, seedPhrase }) => ({ nativeEvent: { key } }) => {
@@ -106,10 +117,10 @@ const ImportSeedPhraseSheetWithData = compose(
 
 ImportSeedPhraseSheetWithData.navigationOptions = ({ navigation }) => ({
   effect: 'sheet',
-  gesturesEnabled: get(navigation, 'state.params.gesturesEnabled', true),
   gestureResponseDistance: {
     vertical: deviceUtils.dimensions.height / 2,
   },
+  gesturesEnabled: get(navigation, 'state.params.gesturesEnabled', true),
 });
 
 export default ImportSeedPhraseSheetWithData;

@@ -40,8 +40,8 @@ class ProgressIcon extends Component {
 
   static defaultProps = {
     color: colors.white,
-    progressColor: colors.black,
     progress: 0,
+    progressColor: colors.black,
   };
 
   render() {

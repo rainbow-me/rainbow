@@ -1,3 +1,4 @@
+import { upperFirst } from 'lodash';
 import { StyleSheet } from 'react-native';
 import { css } from 'styled-components';
 
@@ -32,17 +33,22 @@ position.cover = css`
 
 position.coverAsObject = StyleSheet.absoluteFillObject;
 
+const buildSizeKey = (prefix, key) => (prefix ? upperFirst(key) : key);
+
 position.size = (size, prefix = '') => css`
-  ${prefix}${prefix ? 'H' : 'h'}eight: ${size};
-  ${prefix}${prefix ? 'W' : 'w'}idth:  ${size};
+  ${prefix}${buildSizeKey(prefix, 'height')}: ${size};
+  ${prefix}${buildSizeKey(prefix, 'width')}: ${size};
 `;
 
-position.sizeAsObject = size => ({
-  height: size,
-  width: size,
+position.sizeAsObject = (size, prefix = '') => ({
+  [`${prefix}${buildSizeKey(prefix, 'height')}`]: size,
+  [`${prefix}${buildSizeKey(prefix, 'width')}`]: size,
 });
 
 position.maxSize = size => position.size(size, 'max');
 position.minSize = size => position.size(size, 'min');
+
+position.maxSizeAsObject = size => position.sizeAsObject(size, 'max');
+position.minSizeAsObject = size => position.sizeAsObject(size, 'min');
 
 export default position;

@@ -41,9 +41,11 @@ SendFab.propTypes = {
 
 export default compose(
   withNavigation,
-  withHandlers({ onPress: ({ navigation }) => () => {
-    Piwik.trackEvent('Navigation', 'send-fab', 'SendFabNav');
-    navigation.navigate('SendSheet');
-  }}),
+  withHandlers({
+    onPress: ({ navigation }) => () => {
+      Piwik.trackEvent('Navigation', 'send-fab', 'SendFabNav');
+      navigation.navigate('SendSheet');
+    },
+  }),
   onlyUpdateForKeys(['disabled']),
 )(SendFab);
