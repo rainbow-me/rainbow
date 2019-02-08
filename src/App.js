@@ -115,9 +115,9 @@ class App extends Component {
   handleWalletConfig = async (seedPhrase) => {
     try {
       this.props.trackingDateInit();
-      const { brandNew, walletAddress } = await walletInit(seedPhrase);
+      const { isWalletBrandNew, walletAddress } = await walletInit(seedPhrase);
       this.props.settingsUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
-      if (brandNew) {
+      if (isWalletBrandNew) {
         return walletAddress;
       }
       this.props.settingsInitializeState();
