@@ -1,8 +1,7 @@
 import {
   compose,
-  shouldUpdate,
   withHandlers,
-  withProps
+  withProps,
 } from 'recompact';
 import { setDisplayName } from 'recompose';
 import {
@@ -33,13 +32,3 @@ export default compose(
     isEmpty: isWalletEmpty && !transactionsCount,
   })),
 )(ProfileScreen);
-
-/*
-shouldUpdate((props, { isScreenActive, ...nextProps }) => {
-  if (!isScreenActive) return false;
-
-  const newTxCount = props.transactionsCount !== nextProps.transactionsCount;
-  const newNativeCurrency = props.nativeCurrency !== nextProps.nativeCurrency;
-  return finishedLoading || newTxCount || newNativeCurrency;
-}),
-*/

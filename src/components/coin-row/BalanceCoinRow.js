@@ -1,4 +1,3 @@
-import { supportedNativeCurrencies } from 'balance-common';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
@@ -8,6 +7,7 @@ import { withAccountSettings } from '../../hoc';
 import { colors } from '../../styles';
 import { isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
+import { FlexItem, Row } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
@@ -38,29 +38,31 @@ BottomRow.propTypes = {
   native: PropTypes.object,
 };
 
-const TopRow = ({ name, native, nativeCurrency }) => {
+const TopRow = ({ name, native, nativeCurrencySymbol }) => {
   const nativeDisplay = get(native, 'balance.display');
-  const currencySymbol = supportedNativeCurrencies[nativeCurrency].symbol;
 
   return (
-    <Fragment>
-      <CoinName>{name}</CoinName>
-      <BalanceText color={nativeDisplay ? null : colors.blueGreyLight}>
-        {nativeDisplay || `${currencySymbol}0.00`}
-      </BalanceText>
-    </Fragment>
+    <Row align="center" justify="space-between">
+      <FlexItem flex={1}>
+        <CoinName>{name}</CoinName>
+      </FlexItem>
+      <FlexItem flex={0}>
+        <BalanceText color={nativeDisplay ? null : colors.blueGreyLight}>
+          {nativeDisplay || `${nativeCurrencySymbol}0.00`}
+        </BalanceText>
+      </FlexItem>
+    </Row>
   );
 };
 
 TopRow.propTypes = {
   name: PropTypes.string,
   native: PropTypes.object,
-  nativeCurrency: PropTypes.string,
+  nativeCurrencySymbol: PropTypes.string,
 };
 
 const BalanceCoinRow = ({
   item,
-  nativeCurrency,
   onPress,
   ...props
 }) => (

@@ -22,7 +22,6 @@ import {
   withAccountSettings,
   withBlurTransitionProps,
   withFetchingPrices,
-  withHideSplashScreen,
   withIsWalletEmpty,
   withTrackingDate,
 } from '../hoc';
@@ -38,7 +37,6 @@ class WalletScreen extends PureComponent {
     isEmpty: PropTypes.bool.isRequired,
     isScreenActive: PropTypes.bool,
     navigation: PropTypes.object,
-    onHideSplashScreen: PropTypes.func,
     onRefreshList: PropTypes.func.isRequired,
     refreshAccount: PropTypes.func,
     sections: PropTypes.array,
@@ -50,16 +48,7 @@ class WalletScreen extends PureComponent {
   }
 
   componentDidMount = async () => {
-    const {
-      navigation,
-      onHideSplashScreen,
-      refreshAccount,
-      toggleShowShitcoins,
-    } = this.props;
-
-    // Initialize wallet
-    const { handleWalletConfig } = navigation.getScreenProps();
-    await handleWalletConfig();
+    const { toggleShowShitcoins } = this.props;
 
     try {
       const showShitcoins = await getShowShitcoinsSetting();
@@ -69,9 +58,6 @@ class WalletScreen extends PureComponent {
     } catch (error) {
       // TODO
     }
-
-    onHideSplashScreen();
-    await refreshAccount();
   }
 
   componentDidUpdate = (prevProps) => {
@@ -135,13 +121,12 @@ export default compose(
   withAccountSettings,
   withFetchingPrices,
   withTrackingDate,
-  withHideSplashScreen,
   withBlurTransitionProps,
   withIsWalletEmpty,
   withStatusBarStyle('dark-content'),
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
-    onRefreshList: ({ refreshAccount }) => async () => await refreshAccount(),
+    onRefreshList: ({ refreshAccount }) => async () => refreshAccount(),
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
       if (index === 0) {
         const updatedShowShitcoinsSetting = !showShitcoins;
