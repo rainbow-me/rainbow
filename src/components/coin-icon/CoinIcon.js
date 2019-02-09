@@ -3,12 +3,7 @@ import React from 'react';
 import { css } from 'styled-components/primitives';
 import ReactCoinIcon, { FallbackIcon } from 'react-coin-icon';
 import { hoistStatics, onlyUpdateForKeys } from 'recompact';
-import {
-  borders,
-  colors,
-  fonts,
-  shadow,
-} from '../../styles';
+import { borders, colors, fonts } from '../../styles';
 import { ShadowStack } from '../shadow-stack';
 
 const CoinIconSize = 40;
@@ -31,6 +26,7 @@ const CoinIcon = ({ showShadow, size, symbol }) => {
       fallbackRenderer={CoinIconFallback}
       size={size}
       symbol={symbol}
+      shouldRasterizeIOS
     />
   );
 
@@ -38,10 +34,10 @@ const CoinIcon = ({ showShadow, size, symbol }) => {
     <ShadowStack
       {...borders.buildCircleAsObject(size)}
       shadows={[
-        shadow.buildString(0, 4, 6, colors.alpha(colors.purple, 0.12)),
-        shadow.buildString(0, 1, 3, colors.alpha(colors.purple, 0.24)),
+        [0, 4, 6, colors.dark, 0.04],
+        [0, 1, 3, colors.dark, 0.08],
       ]}
-      shouldRasterizeIOS={true}
+      shouldRasterizeIOS
     >
       {coinIcon}
     </ShadowStack>

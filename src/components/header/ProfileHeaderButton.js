@@ -6,16 +6,20 @@ import {
   pure,
   withHandlers,
 } from 'recompact';
+import { withRequests } from '../../hoc';
 import Avatar from '../Avatar';
 import HeaderButton from './HeaderButton';
 import { Badge } from '../badge';
-import { withRequests } from '../../hoc';
 import { Centered } from '../layout';
 
 const ProfileHeaderButton = ({ onPress, pendingRequestCount, ...props }) => (
-  <HeaderButton onPress={onPress} transformOrigin="left">
+  <HeaderButton
+    onPress={onPress}
+    shouldRasterizeIOS
+    transformOrigin="left"
+  >
     <Centered>
-      <Avatar />
+      <Avatar size={32} />
       {pendingRequestCount > 0 && (
         <Badge
           delay={2500}

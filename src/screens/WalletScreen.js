@@ -99,7 +99,6 @@ class WalletScreen extends PureComponent {
 
     return (
       <Page style={{ flex: 1, ...position.sizeAsObject('100%') }}>
-        {showBlur && <BlurOverlay opacity={blurOpacity} />}
         <Header justify="space-between">
           <ProfileHeaderButton navigation={navigation} />
           <CameraHeaderButton navigation={navigation} />
@@ -111,6 +110,7 @@ class WalletScreen extends PureComponent {
             sections={sections}
           />
         </FabWrapper>
+        {showBlur && <BlurOverlay opacity={blurOpacity} />}
       </Page>
     );
   }
