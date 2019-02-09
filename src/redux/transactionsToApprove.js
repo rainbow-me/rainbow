@@ -141,7 +141,7 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
     };
   }
   if (transaction.data) {
-    console.log('unknown transaction', transaction);
+    const value = fromWei(convertHexToString(transaction.value));
     return {
       payload: {
         from: transaction.from,
@@ -149,11 +149,11 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
         gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
         nonce: Number(convertHexToString(transaction.nonce)),
         to: transaction.to,
-        value: transaction.value,
+        value,
         data: transaction.data,
       },
       timestampInMs,
-      type: 'interaction',
+      type: 'default',
     };
   }
 
