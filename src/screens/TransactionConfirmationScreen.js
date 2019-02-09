@@ -9,6 +9,7 @@ import BalanceManagerLogo from '../assets/balance-manager-logo.png';
 import { Button, HoldToAuthorizeButton } from '../components/buttons';
 import { Centered, Column } from '../components/layout';
 import TransactionConfirmationSection from '../components/TransactionConfirmationSection';
+import DefaultTransactionConfirmationSection from '../components/DefaultTransactionConfirmationSection';
 import MessageSigningSection from '../components/MessageSigningSection';
 import { Text } from '../components/text';
 import { colors, position } from '../styles';
@@ -153,7 +154,7 @@ class TransactionConfirmationScreen extends Component {
               message={request}
               sendButton={this.renderSendButton()}
             />
-          ) : (
+          ) : (requestType === 'transaction') ? (
             <TransactionConfirmationSection
               asset={{
                 address: get(request, 'to'),
@@ -161,6 +162,15 @@ class TransactionConfirmationScreen extends Component {
                 name: get(request, 'asset.name', 'No data'),
                 nativeAmountDisplay: get(request, 'nativeAmountDisplay'),
                 symbol: get(request, 'asset.symbol', 'N/A'),
+              }}
+              sendButton={this.renderSendButton()}
+            />
+          ) : (
+            <DefaultTransactionConfirmationSection
+              asset={{
+                address: get(request, 'to'),
+                value: get(request, 'value', '0'),
+                data: get(request, 'data', ''),
               }}
               sendButton={this.renderSendButton()}
             />
