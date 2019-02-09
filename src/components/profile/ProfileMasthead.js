@@ -9,7 +9,7 @@ import {
   setStatic,
   withHandlers,
 } from 'recompact';
-import styled from 'styled-components';
+import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
 import { borders, margin } from '../../styles';
 import { abbreviations } from '../../utils';

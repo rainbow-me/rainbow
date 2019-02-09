@@ -4,16 +4,15 @@ import FastImage from 'react-native-fast-image';
 import {
   compose,
   onlyUpdateForKeys,
+  pure,
   withHandlers,
   withProps,
   withState,
 } from 'recompact';
-import styled from 'styled-components/primitives';
 import { buildUniqueTokenName } from '../../helpers/assets';
-import { colors, fonts, position } from '../../styles';
+import { colors, position } from '../../styles';
 import { Centered } from '../layout';
 import { Monospace } from '../text';
-import Shimmer from '../Shimmer';
 import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
 
 const FallbackTextColorVariants = {
@@ -21,81 +20,67 @@ const FallbackTextColorVariants = {
   light: colors.white,
 };
 
-const Container = styled(Centered)`
-  ${position.cover};
-`;
-
-const FallbackText = styled(Monospace).attrs({ size: 'smedium' })`
-  line-height: ${fonts.lineHeight.looser};
-  text-align: center;
-`;
-
 const UniqueTokenImage = ({
+  backgroundColor,
+  borderRadius,
   error,
   fallbackTextColor,
   imageUrl,
-  isLoading,
   name,
   onError,
-  onLoad,
-  onLoadStart,
   resizeMode,
   size,
 }) => (
-  <Container>
+  <Centered shouldRasterizeIOS style={{ ...position.coverAsObject, backgroundColor }}>
     {(imageUrl && !error) ? (
       <ImageWithCachedDimensions
-        onError={onError}
-        onLoad={onLoad}
         id={imageUrl}
-        onLoadStart={onLoadStart}
+        onError={onError}
         resizeMode={FastImage.resizeMode[resizeMode]}
         source={{ uri: imageUrl }}
-        style={position.sizeAsObject('100%')}
+        style={position.coverAsObject}
       />
     ) : (
-      <FallbackText color={fallbackTextColor}>
+      <Monospace
+        align="center"
+        color={fallbackTextColor}
+        lineHeight="looser"
+        size="smedium"
+      >
         {name}
-      </FallbackText>
+      </Monospace>
     )}
-    {isLoading && <Shimmer {...position.sizeAsObject(size)} />}
-  </Container>
+  </Centered>
 );
 
 UniqueTokenImage.propTypes = {
   backgroundColor: PropTypes.string,
+  borderRadius: PropTypes.number,
   error: PropTypes.object,
   fallbackTextColor: PropTypes.string,
   imageUrl: PropTypes.string,
-  isLoading: PropTypes.bool,
   name: PropTypes.string.isRequired,
   onError: PropTypes.func,
-  onLoad: PropTypes.func,
-  onLoadStart: PropTypes.func,
   resizeMode: PropTypes.oneOf(Object.values(FastImage.resizeMode)),
   size: PropTypes.number.isRequired,
 };
 
 UniqueTokenImage.defaultProps = {
+  borderRadius: 0,
   resizeMode: 'cover',
 };
 
 const getFallbackTextColor = bg => colors.getTextColorForBackground(bg, FallbackTextColorVariants);
 
 export default compose(
+  pure,
   withState('error', 'handleErrorState', null),
-  withState('isLoading', 'handleLoadingState', false),
   withHandlers({
-    onError: ({ handleErrorState, handleLoadingState }) => (error) => {
-      handleErrorState(error);
-      handleLoadingState(false);
-    },
-    onLoad: ({ handleLoadingState }) => () => handleLoadingState(false),
-    onLoadStart: ({ handleLoadingState }) => () => handleLoadingState(true),
+    onError: ({ handleErrorState }) => (error) => handleErrorState(error),
   }),
   withProps(({ backgroundColor, item }) => ({
     fallbackTextColor: getFallbackTextColor(backgroundColor),
     name: buildUniqueTokenName(item),
   })),
-  onlyUpdateForKeys(['error', 'imageUrl', 'isLoading']),
+  onlyUpdateForKeys(['error', 'imageUrl']),
 )(UniqueTokenImage);

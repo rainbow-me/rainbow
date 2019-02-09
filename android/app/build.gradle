@@ -152,6 +152,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-device-info')
     compile project(':react-native-screens')
     compile project(':react-native-version-number')
     compile project(':react-native-matomo')
