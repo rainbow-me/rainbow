@@ -105,7 +105,7 @@ class QRScannerScreenWithData extends Component {
       const walletConnector = await walletConnectInit(accountAddress, data);
       await this.checkPushNotificationPermissions();
       addWalletConnector(walletConnector);
-      return setSafeTimeout(this.handleReenableScanning, 1000);
+      return setSafeTimeout(this.handleReenableScanning, 2000);
     }
 
     Piwik.trackEvent('QRScanner', 'unknown', 'QRScannedUnknown');
