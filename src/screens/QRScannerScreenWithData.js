@@ -31,6 +31,7 @@ class QRScannerScreenWithData extends Component {
 
   state = {
     enableScanning: true,
+    requestingNotificationPermissionAlert: false,
     isCameraAuthorized: true,
     sheetHeight: 240,
   }
@@ -58,24 +59,40 @@ class QRScannerScreenWithData extends Component {
 
   handleReenableScanning = () => this.setState({ enableScanning: true })
 
+  handleReenableScanningWithPushPermissions = () => this.setState({
+    enableScanning: true,
+    requestingNotificationPermissionAlert: false,
+  });
+
   checkPushNotificationPermissions = async () => {
     const arePushNotificationsAuthorized = await firebase
       .messaging()
       .hasPermission();
 
     if (!arePushNotificationsAuthorized) {
-      // TODO: try catch around Alert?
+      this.setState({ requestingNotificationPermissionAlert: true });
       Alert({
         buttons: [{
-          onPress: async () => firebase.messaging().requestPermission(),
+          onPress: async () => {
+            try {
+              await firebase.messaging().requestPermission();
+              this.handleReenableScanningWithPushPermissions();
+            } catch (error) {
+              this.handleReenableScanningWithPushPermissions();
+            }
+          },
           text: 'Okay',
         }, {
+          onPress: () => this.handleReenableScanningWithPushPermissions(),
           style: 'cancel',
           text: 'Dismiss',
         }],
         message: lang.t('wallet.push_notifications.please_enable_body'),
         title: lang.t('wallet.push_notifications.please_enable_title'),
       });
+      return false;
+    } else {
+      return true;
     }
   }
 
@@ -103,9 +120,13 @@ class QRScannerScreenWithData extends Component {
     if (data.startsWith('ethereum:wc')) {
       Piwik.trackEvent('QRScanner', 'walletconnect', 'QRScannedWC');
       const walletConnector = await walletConnectInit(accountAddress, data);
-      await this.checkPushNotificationPermissions();
       addWalletConnector(walletConnector);
-      return setSafeTimeout(this.handleReenableScanning, 2000);
+      const hasPushPermissions = await this.checkPushNotificationPermissions();
+      if (hasPushPermissions) {
+        return setSafeTimeout(this.handleReenableScanning, 2000);
+      } else {
+        return;
+      }
     }
 
     Piwik.trackEvent('QRScanner', 'unknown', 'QRScannedUnknown');
@@ -120,7 +141,11 @@ class QRScannerScreenWithData extends Component {
     <QRScannerScreen
       {...this.props}
       {...this.state}
-      enableScanning={this.state.enableScanning && this.props.isFocused}
+      enableScanning={
+        this.state.enableScanning
+        && this.props.isFocused
+        && !this.state.requestingNotificationPermissionAlert
+      }
       onPressBackButton={this.handlePressBackButton}
       onScanSuccess={this.handleScanSuccess}
       onSheetLayout={this.handleSheetLayout}
