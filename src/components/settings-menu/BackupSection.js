@@ -28,7 +28,7 @@ const Content = styled(Centered)`
 `;
 
 const ToggleSeedPhraseButton = styled(Button)`
-  ${shadow.build(0, 6, 10, colors.alpha(colors.purple, 0.14))}
+  ${shadow.build(0, 6, 10, colors.purple, 0.14)}
   background-color: ${colors.appleBlue};
   width: 235;
 `;
