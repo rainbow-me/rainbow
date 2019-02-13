@@ -15,9 +15,9 @@ import { createElement } from 'react';
 import { createSelector } from 'reselect';
 import TransactionStatusTypes from './transactionStatusTypes';
 
-const accountAddressSelector = state => '0x1492004547ff0efd778cc2c14e794b26b4701105';
-const nativeCurrencySelector = state => 'USD';
-const requestsSelector = state => [];
+const accountAddressSelector = state => state.accountAddress;
+const nativeCurrencySelector = state => state.nativeCurrency;
+const requestsSelector = state => state.requests;
 const transactionsSelector = state => state.transactions;
 
 export const getTransactionStatus = ({
@@ -83,7 +83,6 @@ const buildTransactionsSections = (
   requests,
   transactions,
 ) => {
-  console.log('transactions');
   let sectionedTransactions = [];
 
   if (!isEmpty(transactions)) {
