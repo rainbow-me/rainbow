@@ -78,6 +78,10 @@ const normalizeTransactions = ({ accountAddress, nativeCurrency, transactions })
 
 const renderItemElement = renderItem => renderItemProps => createElement(renderItem, renderItemProps);
 
+function puff(section, prefix) {
+  return section.map(s => ({ ...s, hash: prefix + s.hash}))
+}
+
 const buildTransactionsSections = (
   accountAddress,
   nativeCurrency,
@@ -87,6 +91,7 @@ const buildTransactionsSections = (
   let sectionedTransactions = [];
 
   if (!isEmpty(transactions)) {
+    console.log(transactions)
     const normalizedTransactions = normalizeTransactions({
       accountAddress,
       nativeCurrency,
@@ -96,7 +101,7 @@ const buildTransactionsSections = (
     const transactionsByDate = groupBy(normalizedTransactions, groupTransactionByDate);
 
     sectionedTransactions = Object.keys(transactionsByDate).map(section => ({
-      data: transactionsByDate[section],
+      data: [...transactionsByDate[section], ...puff(transactionsByDate[section], "X"), ...puff(transactionsByDate[section], "M"), ...puff(transactionsByDate[section], "I"), ...puff(transactionsByDate[section], "C")],
       renderItem: renderItemElement(TransactionCoinRow),
       title: section,
     }));
