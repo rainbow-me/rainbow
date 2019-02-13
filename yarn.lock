@@ -2016,10 +2016,14 @@ bail@^1.0.0:
   resolved "https://registry.yarnpkg.com/bail/-/bail-1.0.3.tgz#63cfb9ddbac829b02a3128cd53224be78e6c21a3"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 "balance-common@git+https://github.com/balance-io/balance-common.git#defaulttxn":
+=======
+"balance-common@git+https://github.com/balance-io/balance-common.git#better-txn-handling":
+>>>>>>> 9596f56... fixes
   version "0.6.31"
-  resolved "git+https://github.com/balance-io/balance-common.git#64668350fd21535e3218d6090b38f47b2b484881"
+  resolved "git+https://github.com/balance-io/balance-common.git#728d1f99d452cc0bf98a6d29e301746ca37aa938"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
