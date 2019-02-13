@@ -2015,6 +2015,28 @@ bail@^1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/bail/-/bail-1.0.3.tgz#63cfb9ddbac829b02a3128cd53224be78e6c21a3"
 
+<<<<<<< HEAD
+=======
+"balance-common@git+https://github.com/balance-io/balance-common.git#defaulttxn":
+  version "0.6.31"
+  resolved "git+https://github.com/balance-io/balance-common.git#64668350fd21535e3218d6090b38f47b2b484881"
+  dependencies:
+    axios "^0.18.0"
+    bignumber.js "^7.0.1"
+    date-fns "^1.29.0"
+    eslint "^5.13.0"
+    i18next "^11.3.2"
+    jsonp "^0.2.1"
+    lodash "^4.17.10"
+    react "^16.2.0"
+    react-redux "^5.0.7"
+    recompact "^3.4.0"
+    redux "^4.0.0"
+    reselect "^4.0.0"
+    underscore "^1.9.1"
+    web3 "1.0.0-beta.34"
+
+>>>>>>> 979d181... logging
 balanced-match@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
@@ -7353,6 +7375,13 @@ react-native-mail@^3.0.6:
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/react-native-mail/-/react-native-mail-3.0.7.tgz#07e6aca43f6f1f85f3e58e96e7fcd16b31a927b8"
 
+<<<<<<< HEAD
+=======
+"react-native-matomo@git+https://github.com/BonifyByForteil/react-native-matomo.git#32907c88a586f8dcc69a69a0303561753064cb50":
+  version "0.0.8"
+  resolved "git+https://github.com/BonifyByForteil/react-native-matomo.git#32907c88a586f8dcc69a69a0303561753064cb50"
+
+>>>>>>> 979d181... logging
 react-native-os@^1.2.1:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/react-native-os/-/react-native-os-1.2.2.tgz#402cee00ac00a0588200a66b90e1d2b5a593fec0"
