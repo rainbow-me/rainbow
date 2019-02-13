@@ -9,6 +9,7 @@ import { FlexItem, Page } from '../components/layout';
 import { Icon } from '../components/icons';
 import { ProfileMasthead } from '../components/profile';
 import { colors, position } from '../styles';
+import { View } from 'react-native';
 
 const ProfileScreen = ({
   accountAddress,
@@ -43,22 +44,26 @@ const ProfileScreen = ({
         onPress={onPressBackButton}
       />
     </Header>
-    <ActivityList
-      accountAddress={accountAddress}
-      hasPendingTransaction={hasPendingTransaction}
-      header={(
-        <ProfileMasthead
-          accountAddress={accountAddress}
-          navigation={navigation}
-          showBottomDivider={!isEmpty}
-        />
-      )}
-      nativeCurrency={nativeCurrency}
-      requests={requests}
-      transactions={transactions}
-      transactionsCount={transactionsCount}
-    />
-    {isEmpty && <AddFundsInterstitial />}
+    <View
+      style={{ flex: 1, overflow: 'hidden' }}
+    >
+      <ActivityList
+        accountAddress={accountAddress}
+        hasPendingTransaction={hasPendingTransaction}
+        header={(
+          <ProfileMasthead
+            accountAddress={accountAddress}
+            navigation={navigation}
+            showBottomDivider={!isEmpty}
+          />
+        )}
+        nativeCurrency={nativeCurrency}
+        requests={requests}
+        transactions={transactions}
+        transactionsCount={transactionsCount}
+      />
+      {isEmpty && <AddFundsInterstitial />}
+    </View>
   </Page>
 );
 

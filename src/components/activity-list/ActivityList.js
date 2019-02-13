@@ -8,7 +8,7 @@ import {
 } from 'recompact';
 import ActivityListHeader from './ActivityListHeader';
 import { CoinRow } from '../coin-row';
-import { SectionList } from '../list';
+import { RecyclerSectionList } from '../list';
 import { buildTransactionsSectionsSelector } from '../../helpers/transactions';
 import {
   withAccountAddress,
@@ -26,7 +26,6 @@ const keyExtractor = ({ hash, timestamp, transactionDisplayDetails }) => (hash |
 // const keyExtractor = ({ hash, timestamp: { ms } }) => (hash || ms);
 
 // eslint-disable-next-line react/prop-types
-const renderSectionHeader = ({ section }) => <ActivityListHeader {...section} />;
 
 const ActivityList = ({
   hasPendingTransaction,
@@ -36,22 +35,9 @@ const ActivityList = ({
   sections,
   transactionsCount,
 }) => (
-  <SectionList
-    alwaysBounceVertical={false}
-    contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 40 }}
-    extraData={{
-      hasPendingTransaction,
-      nativeCurrency,
-      pendingTransactionsCount,
-    }}
-    getItemLayout={getItemLayout}
-    initialNumToRender={12}
-    keyExtractor={keyExtractor}
-    ListHeaderComponent={header}
-    removeClippedSubviews={true}
-    renderSectionHeader={renderSectionHeader}
+  <RecyclerSectionList
     sections={sections}
-    windowSize={50}
+    ListHeaderComponent={header}
   />
 );
 
@@ -79,6 +65,7 @@ export default compose(
     sections,
     ...props
   }) => {
+    console.log(sections)
     let pendingTransactionsCount = 0;
 
     const pendingTxSection = sections[requests.length ? 1 : 0];
