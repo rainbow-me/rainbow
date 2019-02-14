@@ -6,8 +6,6 @@ import {
   onlyUpdateForKeys,
   withProps,
 } from 'recompact';
-import ActivityListHeader from './ActivityListHeader';
-import { CoinRow } from '../coin-row';
 import { RecyclerSectionList } from '../list';
 import { buildTransactionsSectionsSelector } from '../../helpers/transactions';
 import {
@@ -16,28 +14,16 @@ import {
   withAccountTransactions,
 } from '../../hoc';
 
-const getItemLayout = (data, index) => ({
-  index,
-  length: CoinRow.height,
-  offset: CoinRow.height * index,
-});
-
-const keyExtractor = ({ hash, timestamp, transactionDisplayDetails }) => (hash || (timestamp ? timestamp.ms : transactionDisplayDetails.timestampInMs));
-// const keyExtractor = ({ hash, timestamp: { ms } }) => (hash || ms);
-
-// eslint-disable-next-line react/prop-types
-
 const ActivityList = ({
   hasPendingTransaction,
   header,
   nativeCurrency,
   pendingTransactionsCount,
   sections,
-  transactionsCount,
 }) => (
   <RecyclerSectionList
     sections={sections}
-    ListHeaderComponent={header}
+    header={header}
   />
 );
 
@@ -86,6 +72,5 @@ export default compose(
     'nativeCurrency',
     'pendingTransactionsCount',
     'sections',
-    'transactionsCount',
   ]),
 )(ActivityList);
