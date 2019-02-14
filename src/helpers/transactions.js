@@ -22,12 +22,12 @@ const requestsSelector = state => state.requests;
 const transactionsSelector = state => state.transactions;
 
 export const getTransactionStatus = ({
-  accountAddress,
-  error,
-  from,
-  pending,
-  to,
-}) => {
+                                       accountAddress,
+                                       error,
+                                       from,
+                                       pending,
+                                       to,
+                                     }) => {
   const isFromAccount = from.toLowerCase() === accountAddress.toLowerCase();
   const isToAccount = to.toLowerCase() === accountAddress.toLowerCase();
 
@@ -59,11 +59,11 @@ const groupTransactionByDate = ({ pending, timestamp: time }) => {
 
 const normalizeTransactions = ({ accountAddress, nativeCurrency, transactions }) => (
   transactions.map(({
-    asset,
-    native,
-    value,
-    ...tx
-  }) => ({
+                      asset,
+                      native,
+                      value,
+                      ...tx
+                    }) => ({
     ...tx,
     balance: value,
     name: get(asset, 'name'),
@@ -78,10 +78,6 @@ const normalizeTransactions = ({ accountAddress, nativeCurrency, transactions })
 
 const renderItemElement = renderItem => renderItemProps => createElement(renderItem, renderItemProps);
 
-function puff(section, prefix) {
-  return section.map(s => ({ ...s, hash: prefix + s.hash}))
-}
-
 const buildTransactionsSections = (
   accountAddress,
   nativeCurrency,
@@ -91,7 +87,6 @@ const buildTransactionsSections = (
   let sectionedTransactions = [];
 
   if (!isEmpty(transactions)) {
-    console.log(transactions)
     const normalizedTransactions = normalizeTransactions({
       accountAddress,
       nativeCurrency,
@@ -101,7 +96,7 @@ const buildTransactionsSections = (
     const transactionsByDate = groupBy(normalizedTransactions, groupTransactionByDate);
 
     sectionedTransactions = Object.keys(transactionsByDate).map(section => ({
-      data: [...transactionsByDate[section], ...puff(transactionsByDate[section], "X"), ...puff(transactionsByDate[section], "M"), ...puff(transactionsByDate[section], "I"), ...puff(transactionsByDate[section], "C")],
+      data: transactionsByDate[section],
       renderItem: renderItemElement(TransactionCoinRow),
       title: section,
     }));

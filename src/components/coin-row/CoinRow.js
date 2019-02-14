@@ -68,6 +68,7 @@ CoinRow.defaultProps = {
 
 export default compose(
   pure,
+  shouldUpdate(() => false),
   setStatic({ height: CoinIcon.size + (CoinRowPaddingVertical * 2) }),
   withAccountSettings,
 )(CoinRow);

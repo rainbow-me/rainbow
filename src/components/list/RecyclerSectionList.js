@@ -2,17 +2,15 @@
  Use this component inside your React Native Application.
  A scrollable list with different item type
  */
-import React, { Component } from 'react';
-import { View, Text, Dimensions } from 'react-native';
+import React from 'react';
+import { Dimensions } from 'react-native';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
+import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
+import PropTypes from 'prop-types';
 import TransactionCoinRow from '../coin-row/TransactionCoinRow';
-import ActivityList from '../activity-list/ActivityList';
 import ActivityListHeader from '../activity-list/ActivityListHeader';
 import ListFooter from './ListFooter';
-import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-
-import { colors } from '../../styles';
 
 const ViewTypes = {
   COMPONENT_HEADER: 0,
@@ -27,13 +25,21 @@ const Wrapper = styled.View`
   width: 100%;
 `;
 
-
 export default class RecycleTestComponent extends React.Component {
+  static propTypes = {
+    header: PropTypes.node,
+    sections: PropTypes.arrayOf(PropTypes.shape({
+      data: PropTypes.array,
+      renderItem: PropTypes.func,
+      title: PropTypes.string.isRequired,
+    })),
+  };
+
   constructor(args) {
     super(args);
     const { width } = Dimensions.get('window');
     this.state = {
-      dataProvider: new DataProvider((r1, r2) => r1 !== r2),
+      dataProvider: new DataProvider((r1, r2) => r1.hash !== r2.hash),
       headersIndices: [],
     };
 
@@ -62,7 +68,7 @@ export default class RecycleTestComponent extends React.Component {
         } else if (type === ViewTypes.HEADER) {
           dim.height = 35;
         } else {
-          dim.height = 150; //TODO
+          dim.height = 184;
         }
       },
     );
@@ -71,16 +77,16 @@ export default class RecycleTestComponent extends React.Component {
   static getDerivedStateFromProps(props, state) {
     const headersIndices = []; // header
     const items = props.sections.reduce((prev, curr) => {
-      console.log("XXXXX", prev.length)
       headersIndices.push(prev.length);
       return prev
         .concat([{
+          hash: curr.title,
           title: curr.title,
         }])
         .concat(curr.data)
-        .concat([{}]); // footer
-    }, [{ t: 1 }]); //header
-    headersIndices.pop(); // remove last footer
+        .concat([{ hash: `${curr.title}_end` }]); // footer
+    }, [{ hash: '_header' }]); // header
+    items.pop(); // remove last footer
     return {
       dataProvider: state.dataProvider.cloneWithRows(items),
       headersIndices,
@@ -89,9 +95,7 @@ export default class RecycleTestComponent extends React.Component {
 
   rowRenderer = (type, data) => {
     if (type === ViewTypes.COMPONENT_HEADER) {
-      const { ListHeaderComponent } = this.props;
-      console.log(ListHeaderComponent)
-      return ListHeaderComponent;
+      return this.props.header;
     }
     if (type === ViewTypes.HEADER) {
       return (
@@ -120,6 +124,7 @@ export default class RecycleTestComponent extends React.Component {
             layoutProvider={this.layoutProvider}
             dataProvider={this.state.dataProvider}
             rowRenderer={this.rowRenderer}
+            renderAheadOffset={1000}
           />
         </StickyContainer>
       </Wrapper>
