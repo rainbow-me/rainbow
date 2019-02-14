@@ -60,6 +60,7 @@ export default class RecycleTestComponent extends React.Component {
         return ViewTypes.ROW;
       },
       (type, dim) => {
+        // This values has been hardcoded for omitting imports' cycle
         dim.width = width;
         if (type === ViewTypes.ROW) {
           dim.height = 64;
