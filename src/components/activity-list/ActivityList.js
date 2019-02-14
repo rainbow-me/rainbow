@@ -6,7 +6,7 @@ import {
   onlyUpdateForKeys,
   withProps,
 } from 'recompact';
-import List from './RecyclerSectionList';
+import List from './RecyclerActivityList';
 import { buildTransactionsSectionsSelector } from '../../helpers/transactions';
 import {
   withAccountAddress,
