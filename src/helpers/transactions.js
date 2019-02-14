@@ -22,12 +22,12 @@ const requestsSelector = state => state.requests;
 const transactionsSelector = state => state.transactions;
 
 export const getTransactionStatus = ({
-                                       accountAddress,
-                                       error,
-                                       from,
-                                       pending,
-                                       to,
-                                     }) => {
+  accountAddress,
+  error,
+  from,
+  pending,
+  to,
+}) => {
   const isFromAccount = from.toLowerCase() === accountAddress.toLowerCase();
   const isToAccount = to.toLowerCase() === accountAddress.toLowerCase();
 
@@ -59,11 +59,11 @@ const groupTransactionByDate = ({ pending, timestamp: time }) => {
 
 const normalizeTransactions = ({ accountAddress, nativeCurrency, transactions }) => (
   transactions.map(({
-                      asset,
-                      native,
-                      value,
-                      ...tx
-                    }) => ({
+    asset,
+    native,
+    value,
+    ...tx
+  }) => ({
     ...tx,
     balance: value,
     name: get(asset, 'name'),
