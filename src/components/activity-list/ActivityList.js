@@ -6,7 +6,7 @@ import {
   onlyUpdateForKeys,
   withProps,
 } from 'recompact';
-import { RecyclerSectionList } from '../list';
+import List from './RecyclerSectionList';
 import { buildTransactionsSectionsSelector } from '../../helpers/transactions';
 import {
   withAccountAddress,
@@ -21,7 +21,7 @@ const ActivityList = ({
   pendingTransactionsCount,
   sections,
 }) => (
-  <RecyclerSectionList
+  <List
     sections={sections}
     header={header}
   />
@@ -51,7 +51,6 @@ export default compose(
     sections,
     ...props
   }) => {
-    console.log(sections)
     let pendingTransactionsCount = 0;
 
     const pendingTxSection = sections[requests.length ? 1 : 0];
