@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import { compose, pure, setStatic } from 'recompact';
+import {
+  compose, pure, setStatic, shouldUpdate,
+} from 'recompact';
 import styled from 'styled-components/primitives';
 import { withAccountSettings } from '../../hoc';
 import { colors, padding } from '../../styles';
