@@ -1,7 +1,3 @@
-/** *
- Use this component inside your React Native Application.
- A scrollable list with different item type
- */
 import React from 'react';
 import { Dimensions } from 'react-native';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
@@ -9,8 +5,8 @@ import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContai
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
 import PropTypes from 'prop-types';
 import TransactionCoinRow from '../coin-row/TransactionCoinRow';
-import ActivityListHeader from '../activity-list/ActivityListHeader';
-import ListFooter from './ListFooter';
+import ActivityListHeader from './ActivityListHeader';
+import ListFooter from '../list/ListFooter';
 
 const ViewTypes = {
   COMPONENT_HEADER: 0,
@@ -25,7 +21,7 @@ const Wrapper = styled.View`
   width: 100%;
 `;
 
-export default class RecycleTestComponent extends React.Component {
+export default class RecyclerActivityList extends React.Component {
   static propTypes = {
     header: PropTypes.node,
     sections: PropTypes.arrayOf(PropTypes.shape({
