@@ -12,6 +12,7 @@ import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { colors } from '../../styles';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { ButtonPressAnimation } from '../animations';
+import { FlexItem, Row } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
@@ -27,7 +28,7 @@ const rowRenderPropTypes = {
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
 };
 
-const bottomRowRender = ({ name, native, status }) => {
+const BottomRow = ({ name, native, status }) => {
   const nativeDisplay = get(native, 'balance.display');
 
   const isStatusSent = status === TransactionStatusTypes.sent;
@@ -37,35 +38,39 @@ const bottomRowRender = ({ name, native, status }) => {
   if (isStatusReceived) balanceTextColor = colors.primaryGreen;
 
   return (
-    <Fragment>
-      <CoinName>{name}</CoinName>
-      <BalanceText color={balanceTextColor}>
-        {(nativeDisplay && isStatusSent) ? '- ' : ''}
-        {nativeDisplay || `${native.symbol}0.00`}
-      </BalanceText>
-    </Fragment>
+    <Row align="center" justify="space-between">
+      <FlexItem flex={1}>
+        <CoinName>{name}</CoinName>
+      </FlexItem>
+      <FlexItem flex={0}>
+        <BalanceText color={balanceTextColor}>
+          {(nativeDisplay && isStatusSent) ? '- ' : ''}
+          {nativeDisplay || `${native.symbol}0.00`}
+        </BalanceText>
+      </FlexItem>
+    </Row>
   );
 };
 
-bottomRowRender.propTypes = rowRenderPropTypes;
+BottomRow.propTypes = rowRenderPropTypes;
 
-const topRowRender = ({ balance, status }) => (
+const TopRow = ({ balance, status }) => (
   <Fragment>
     <TransactionStatusBadge status={status} />
     <BottomRowText>{get(balance, 'display')}</BottomRowText>
   </Fragment>
 );
 
-topRowRender.propTypes = rowRenderPropTypes;
+TopRow.propTypes = rowRenderPropTypes;
 
 const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
   <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>
     <CoinRow
       {...item}
       {...props}
+      bottomRowRender={BottomRow}
       shouldRasterizeIOS={true}
-      bottomRowRender={bottomRowRender}
-      topRowRender={topRowRender}
+      topRowRender={TopRow}
     />
   </ButtonPressAnimation>
 );

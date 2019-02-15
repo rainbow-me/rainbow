@@ -1,10 +1,8 @@
 import lang from 'i18n-js';
 import { times } from 'lodash';
-import PropTypes from 'prop-types';
 import React from 'react';
-import { ActivityIndicator } from 'react-native';
 import { pure } from 'recompact';
-import { colors, position } from '../../styles';
+import { position } from '../../styles';
 import AddFundsInterstitial from '../AddFundsInterstitial';
 import { FabWrapper } from '../fab';
 import { Centered, Column } from '../layout';

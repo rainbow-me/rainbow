@@ -7,6 +7,7 @@ import { Vibration } from 'react-native';
 import firebase from 'react-native-firebase';
 import Piwik from 'react-native-matomo';
 import Permissions from 'react-native-permissions';
+import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
 import { Alert } from '../components/alerts';
 import {
@@ -17,24 +18,26 @@ import {
 import { walletConnectInit } from '../model/walletconnect';
 import { getEthereumAddressFromQRCodeData } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
+import withStatusBarStyle from '../hoc/withStatusBarStyle';
 
 class QRScannerScreenWithData extends Component {
   static propTypes = {
     accountAddress: PropTypes.string,
     addWalletConnector: PropTypes.func,
-    isScreenActive: PropTypes.bool,
+    isFocused: PropTypes.bool,
     navigation: PropTypes.object,
     setSafeTimeout: PropTypes.func,
   }
 
   state = {
     enableScanning: true,
+    requestingNotificationPermissionAlert: false,
     isCameraAuthorized: true,
     sheetHeight: 240,
   }
 
   componentDidUpdate = (prevProps, prevState) => {
-    if (this.props.isScreenActive && !prevProps.isScreenActive) {
+    if (this.props.isFocused && !prevProps.isFocused) {
       Permissions.request('camera').then(permission => {
         const isCameraAuthorized = permission === 'authorized';
 
@@ -56,24 +59,40 @@ class QRScannerScreenWithData extends Component {
 
   handleReenableScanning = () => this.setState({ enableScanning: true })
 
+  handleReenableScanningWithPushPermissions = () => this.setState({
+    enableScanning: true,
+    requestingNotificationPermissionAlert: false,
+  });
+
   checkPushNotificationPermissions = async () => {
     const arePushNotificationsAuthorized = await firebase
       .messaging()
       .hasPermission();
 
     if (!arePushNotificationsAuthorized) {
-      // TODO: try catch around Alert?
+      this.setState({ requestingNotificationPermissionAlert: true });
       Alert({
         buttons: [{
-          onPress: async () => firebase.messaging().requestPermission(),
+          onPress: async () => {
+            try {
+              await firebase.messaging().requestPermission();
+              this.handleReenableScanningWithPushPermissions();
+            } catch (error) {
+              this.handleReenableScanningWithPushPermissions();
+            }
+          },
           text: 'Okay',
         }, {
+          onPress: () => this.handleReenableScanningWithPushPermissions(),
           style: 'cancel',
           text: 'Dismiss',
         }],
         message: lang.t('wallet.push_notifications.please_enable_body'),
         title: lang.t('wallet.push_notifications.please_enable_title'),
       });
+      return false;
+    } else {
+      return true;
     }
   }
 
@@ -101,9 +120,13 @@ class QRScannerScreenWithData extends Component {
     if (data.startsWith('ethereum:wc')) {
       Piwik.trackEvent('QRScanner', 'walletconnect', 'QRScannedWC');
       const walletConnector = await walletConnectInit(accountAddress, data);
-      await this.checkPushNotificationPermissions();
       addWalletConnector(walletConnector);
-      return setSafeTimeout(this.handleReenableScanning, 1000);
+      const hasPushPermissions = await this.checkPushNotificationPermissions();
+      if (hasPushPermissions) {
+        return setSafeTimeout(this.handleReenableScanning, 2000);
+      } else {
+        return;
+      }
     }
 
     Piwik.trackEvent('QRScanner', 'unknown', 'QRScannedUnknown');
@@ -118,7 +141,11 @@ class QRScannerScreenWithData extends Component {
     <QRScannerScreen
       {...this.props}
       {...this.state}
-      enableScanning={this.state.enableScanning && this.props.isScreenActive}
+      enableScanning={
+        this.state.enableScanning
+        && this.props.isFocused
+        && !this.state.requestingNotificationPermissionAlert
+      }
       onPressBackButton={this.handlePressBackButton}
       onScanSuccess={this.handleScanSuccess}
       onSheetLayout={this.handleSheetLayout}
@@ -127,8 +154,10 @@ class QRScannerScreenWithData extends Component {
 }
 
 export default compose(
+  withNavigationFocus,
   withAccountAddress,
   withAddWalletConnector,
   withSafeTimeout,
   withWalletConnectConnections,
+  withStatusBarStyle('light-content'),
 )(QRScannerScreenWithData);

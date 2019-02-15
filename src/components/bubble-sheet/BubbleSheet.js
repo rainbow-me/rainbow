@@ -7,7 +7,7 @@ const BubbleSheetBorderRadius = 30;
 const BubbleSheet = (props) => (
   <Column
     css={`
-      ${shadow.build(0, 10, 50, colors.alpha(colors.black, 0.6))}
+      ${shadow.build(0, 10, 50, colors.black, 0.6)}
       background-color: ${colors.white};
       border-radius: ${BubbleSheetBorderRadius};
       flex-grow: 0;

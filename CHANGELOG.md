@@ -6,12 +6,29 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
-
 ### Added
 
 ### Changed
 
 ### Removed
+
+## [0.3.0-25](https://github.com/balance-io/balance-wallet/releases/tag/v0.3.0-25)
+### Added
+* WBTC pricing to rely on BTC price feed
+* Proper implementation of box shadows
+
+### Changed
+* Improved Activity List interactions
+* Fix for wrap-around behavior on Activity List
+* Better handling for non-token-transfer and non-ETH smart contract interactions
+* Fix for multiple push notifications permissions requests on initial WalletConnect connection
+
+## [0.3.0-23](https://github.com/balance-io/balance-wallet/releases/tag/v0.3.0-23)
+### Changed
+* Fix for app crashing on fresh install for iPhone 6/7
+* Fix for issue with multiple touch points causing weird behavior in expanded state
+* Fix for blank transactions history while fetching transactions
+* Fix for lengthy asset names on Send and Activity
 
 ## [0.3.0-22](https://github.com/balance-io/balance-wallet/releases/tag/v0.3.0-22)
 ### Added

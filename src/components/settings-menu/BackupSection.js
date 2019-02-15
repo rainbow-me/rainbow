@@ -5,7 +5,12 @@ import { compose, withHandlers, withState } from 'recompact';
 import styled from 'styled-components';
 import SeedPhraseImageSource from '../../assets/seed-phrase-icon.png';
 import { loadSeedPhrase as loadSeedPhraseFromKeychain } from '../../model/wallet';
-import { colors, padding, position, shadow } from '../../styles';
+import {
+  colors,
+  padding,
+  position,
+  shadow,
+} from '../../styles';
 import { Button } from '../buttons';
 import { Centered, Column } from '../layout';
 import { Br, Monospace, Text } from '../text';
@@ -23,7 +28,7 @@ const Content = styled(Centered)`
 `;
 
 const ToggleSeedPhraseButton = styled(Button)`
-  ${shadow.build(0, 6, 10, colors.alpha(colors.purple, 0.14))}
+  ${shadow.build(0, 6, 10, colors.purple, 0.14)}
   background-color: ${colors.appleBlue};
   width: 235;
 `;
@@ -99,9 +104,9 @@ export default compose(
       if (!seedPhrase) {
         loadSeedPhraseFromKeychain()
           .then(setSeedPhrase)
-          .catch(hideSeedPhrase)
+          .catch(hideSeedPhrase);
       } else {
-        hideSeedPhrase()
+        hideSeedPhrase();
       }
     },
   }),

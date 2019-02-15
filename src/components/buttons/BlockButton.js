@@ -4,7 +4,12 @@ import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import styled, { css } from 'styled-components/primitives';
 import { componentFromProp } from 'recompact';
-import { colors, padding, position, shadow } from '../../styles';
+import {
+  colors,
+  padding,
+  position,
+  shadow,
+} from '../../styles';
 import ButtonPressAnimation from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
@@ -52,9 +57,9 @@ const Label = styled(Text).attrs({
 
 const Shadow = styled.View`
   ${containerStyles}
-  ${shadow.build(0, 6, 10, colors.alpha(colors.purple, 0.14))}
-  ${shadow.build(0, 1, 18, colors.alpha(colors.purple, 0.12))}
-  ${shadow.build(0, 3, 5, colors.alpha(colors.purple, 0.2))}
+  ${shadow.build(0, 6, 10, colors.purple, 0.14)}
+  ${shadow.build(0, 1, 18, colors.purple, 0.12)}
+  ${shadow.build(0, 3, 5, colors.purple, 0.2)}
 `;
 
 const LeftIcon = styled(Icon).attrs({ color: colors.white, size: 32 })`

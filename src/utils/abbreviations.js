@@ -1,6 +1,6 @@
 import deviceUtils from './deviceUtils';
 
-const defaultNumCharsPerSection = deviceUtils.isSmallPhone ? 8 : 10;
+const defaultNumCharsPerSection = deviceUtils.isNarrowPhone ? 8 : 10;
 
 export function address(currentAddress, truncationLength, firstSectionLength) {
   const numCharsPerSection = truncationLength || defaultNumCharsPerSection;

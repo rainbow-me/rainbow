@@ -63,7 +63,7 @@ export const getLocalRequests = async (accountAddress, network) => {
 export const saveLocalRequests = async (accountAddress, network, requests) => {
   await commonStorage.saveLocal(
     getRequestsKey(accountAddress, network),
-    { data: requests }
+    { data: requests },
   );
 };
 
