@@ -57,7 +57,7 @@ export default class SendQRScannerScreenWithData extends Component {
     <QRScannerScreen
       {...this.props}
       enableScanning={this.state.enableScanning}
-      isScreenActive={this.state.enableScanning}
+      isFocused={this.state.enableScanning}
       onPressBackButton={this.handlePressBackButton}
       onScanSuccess={this.handleSuccess}
       showWalletConnectSheet={false}

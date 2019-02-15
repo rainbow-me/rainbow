@@ -41,9 +41,22 @@ import {
   padding,
   shadow,
 } from '../styles';
-import { deviceUtils } from '../utils';
+import { deviceUtils, directionPropType } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
 import { removeLeadingZeros, uppercase } from '../utils/formatters';
+
+const DoubleArrowIconItem = ({ direction }) => (
+  <Icon
+    color={colors.dark}
+    direction={direction}
+    name="caret"
+    size={5}
+  />
+);
+
+DoubleArrowIconItem.propTypes = {
+  direction: directionPropType,
+};
 
 const AddressInput = styled(AddressField)`
   padding-right: 20px;
@@ -102,10 +115,10 @@ const BottomButtonContainer = styled(Flex)`
 `;
 
 const CameraIcon = styled(Icon).attrs({
-  name: 'camera',
   color: colors.white,
-  width: 17,
   height: 14,
+  name: 'camera',
+  width: 17,
 })`
   margin-top: -5px;
 `;
@@ -124,8 +137,8 @@ const EmptyStateContainer = styled(Column)`
 `;
 
 const HandleIcon = styled(Icon).attrs({
-  name: 'handle',
   color: colors.sendScreen.grey,
+  name: 'handle',
 })`
   margin-top: 16px;
 `;
@@ -135,11 +148,6 @@ const NumberInput = styled(UnderlineField).attrs({
 })`
   margin-bottom: 10px;
   margin-right: 26px;
-`;
-
-const NumberInputLabel = styled(Monospace)`
-  fontSize: ${fonts.size.h2};
-  color: ${colors.blueGreyDark};
 `;
 
 const SendButton = styled(BlockButton).attrs({ component: LongPressButton })`
@@ -251,8 +259,8 @@ class SendSheet extends Component {
     const { gasPrices } = this.props;
 
     const options = map(gasPrices, (value, key) => ({
-      value: key,
       label: `${uppercase(key, 7)}: ${get(value, 'txFee.native.value.display')}  ~${get(value, 'estimatedTime.display')}`,
+      value: key,
     }));
 
     options.unshift({ label: 'Cancel' });
@@ -313,8 +321,8 @@ class SendSheet extends Component {
     const { sendLongPressProgress } = this.state;
 
     Animated.timing(sendLongPressProgress, {
-      toValue: 100,
       duration: 800,
+      toValue: 100,
     }).start();
   };
 
@@ -322,8 +330,8 @@ class SendSheet extends Component {
     const { sendLongPressProgress } = this.state;
 
     Animated.timing(sendLongPressProgress, {
-      toValue: 0,
       duration: (sendLongPressProgress._value / 100) * 800,
+      toValue: 0,
     }).start();
   };
 
@@ -332,8 +340,8 @@ class SendSheet extends Component {
     const { sendLongPressProgress } = this.state;
 
     Animated.timing(sendLongPressProgress, {
-      toValue: 0,
       duration: (sendLongPressProgress._value / 100) * 800,
+      toValue: 0,
     }).start();
 
     if (isIphoneX()) {
@@ -342,8 +350,8 @@ class SendSheet extends Component {
       const options = this.getTransactionSpeedOptions();
 
       showActionSheetWithOptions({
-        options: options.map(option => option.label),
         cancelButtonIndex: 0,
+        options: options.map(option => option.label),
       }, (buttonIndex) => {
         if (buttonIndex > 0) {
           sendUpdateGasPrice(options[buttonIndex].value);
@@ -360,8 +368,8 @@ class SendSheet extends Component {
     const options = this.getTransactionSpeedOptions();
 
     showActionSheetWithOptions({
-      options: options.map(option => option.label),
       cancelButtonIndex: 0,
+      options: options.map(option => option.label),
     }, (buttonIndex) => {
       if (buttonIndex > 0) {
         sendUpdateGasPrice(options[buttonIndex].value);
@@ -381,7 +389,10 @@ class SendSheet extends Component {
     Keyboard.dismiss();
 
     InteractionManager.runAfterInteractions(() => {
-      navigation.navigate('SendQRScannerScreen', { onSuccess: this.onChangeAddressInput, onBack: this.onBackQRScanner });
+      navigation.navigate('SendQRScannerScreen', {
+        onBack: this.onBackQRScanner,
+        onSuccess: this.onChangeAddressInput,
+      });
     });
   };
 
@@ -487,9 +498,9 @@ class SendSheet extends Component {
   }
 
   renderTransactionSpeed() {
-    const { gasPrice } = this.props;
+    const { gasPrice, nativeCurrencySymbol } = this.props;
 
-    const fee = get(gasPrice, 'txFee.native.value.display', '$0.00');
+    const fee = get(gasPrice, 'txFee.native.value.display', `${nativeCurrencySymbol}0.00`);
     const time = get(gasPrice, 'estimatedTime.display', '');
 
     return (
@@ -517,22 +528,31 @@ class SendSheet extends Component {
     } = this.props;
     const selectedAsset = allAssets.find(asset => asset.symbol === selected.symbol);
 
+    const symbolMaxLength = 6;
+    const selectedAssetSymbol = (selected.symbol.length > symbolMaxLength)
+      ? selected.symbol.substring(0, symbolMaxLength)
+      : selected.symbol;
+
     return (
       <Column flex={1}>
         <ShadowStack
           borderRadius={0}
           height={64}
           shadows={[
-            shadow.buildString(0, 4, 6, colors.alpha(colors.purple, 0.12)),
-            shadow.buildString(0, 6, 4, colors.alpha(colors.purple, 0.24)),
+            [0, 4, 6, colors.purple, 0.12],
+            [0, 6, 4, colors.purple, 0.24],
           ]}
           shouldRasterizeIOS={true}
           width={deviceUtils.dimensions.width}
         >
-          <SendCoinRow item={selectedAsset} onPress={this.onPressAssetHandler('')}>
+          <SendCoinRow
+            item={selectedAsset}
+            onPress={this.onPressAssetHandler('')}
+            paddingRight={24}
+          >
             <Column>
-              <Icon name="caret" direction="up" size={5} color={colors.dark} />
-              <Icon name="caret" direction="down" size={5} color={colors.dark} />
+              <DoubleArrowIconItem direction="up" />
+              <DoubleArrowIconItem direction="down" />
             </Column>
           </SendCoinRow>
         </ShadowStack>
@@ -548,7 +568,9 @@ class SendSheet extends Component {
                 placeholder="0"
                 value={assetAmount}
               />
-              <NumberInputLabel>{selected.symbol}</NumberInputLabel>
+              <Monospace color="blueGreyDark" size="h2">
+                {selectedAssetSymbol}
+              </Monospace>
             </Row>
             <Row justify="space-between">
               <NumberInput
@@ -559,7 +581,9 @@ class SendSheet extends Component {
                 placeholder="0.00"
                 value={nativeAmount}
               />
-              <NumberInputLabel>{nativeCurrency}</NumberInputLabel>
+              <Monospace color="blueGreyDark" size="h2">
+                {nativeCurrency}
+              </Monospace>
             </Row>
           </Column>
           {this.renderSendButton()}

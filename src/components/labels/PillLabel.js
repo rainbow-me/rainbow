@@ -4,12 +4,17 @@ import styled from 'styled-components/primitives';
 import { TouchableOpacity } from 'react-native';
 
 import { Centered } from '../layout';
-import { colors, fonts, padding, shadow } from '../../styles';
+import {
+  colors,
+  fonts,
+  padding,
+  shadow,
+} from '../../styles';
 import { Icon } from '../icons';
 
 const Container = styled(Centered)`
   ${padding(0, 12)}
-  ${shadow.build(0, 0, 0, colors.alpha(colors.dark, 0.1))}
+  ${shadow.build(0, 0, 0, colors.dark, 0.1)}
   background-color: ${props => props.backgroundColor || colors.white}
   border-radius: 15px;
   height: 30px;

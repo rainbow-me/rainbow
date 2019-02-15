@@ -3,8 +3,9 @@ import React from 'react';
 import Piwik from 'react-native-matomo';
 import { compose, pure, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-import { colors, position, shadow } from '../../styles';
+import { colors, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
+import InnerBorder from '../InnerBorder';
 import { Centered } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import UniqueTokenImage from './UniqueTokenImage';
@@ -12,16 +13,9 @@ import UniqueTokenImage from './UniqueTokenImage';
 const UniqueTokenCardBorderRadius = 16;
 
 const Container = styled(Centered)`
-  ${position.cover}
+  ${position.cover};
   background-color: ${({ backgroundColor }) => backgroundColor};
   border-radius: ${UniqueTokenCardBorderRadius};
-`;
-
-const InnerBorder = styled.View`
-  ${position.cover}
-  border-color: ${shadow.color}
-  border-radius: ${UniqueTokenCardBorderRadius};
-  border-width: 0.68;
 `;
 
 const UniqueTokenCard = ({
@@ -41,20 +35,24 @@ const UniqueTokenCard = ({
       <ShadowStack
         {...props}
         {...position.sizeAsObject(size)}
+        backgroundColor={backgroundColor}
         borderRadius={UniqueTokenCardBorderRadius}
         shadows={[
-          shadow.buildString(0, 3, 5, 'rgba(0,0,0,0.1)'),
-          shadow.buildString(0, 6, 10, 'rgba(0,0,0,0.1)'),
+          [0, 3, 5, colors.black, 0.04],
+          [0, 6, 10, colors.black, 0.04],
         ]}
       >
-        <Container backgroundColor={backgroundColor}>
+        <Container backgroundColor={backgroundColor} shouldRasterizeIOS>
           <UniqueTokenImage
             backgroundColor={backgroundColor}
-            imageUrl={image_preview_url}
+            imageUrl={image_preview_url} // eslint-disable-line camelcase
             item={item}
             size={size}
           />
-          <InnerBorder />
+          <InnerBorder
+            opacity={0.04}
+            radius={UniqueTokenCardBorderRadius}
+          />
         </Container>
       </ShadowStack>
     </ButtonPressAnimation>
@@ -64,6 +62,7 @@ const UniqueTokenCard = ({
 UniqueTokenCard.propTypes = {
   item: PropTypes.shape({
     background: PropTypes.string,
+    // eslint-disable-next-line camelcase
     image_preview_url: PropTypes.string,
   }),
   onPress: PropTypes.func,

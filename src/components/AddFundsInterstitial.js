@@ -3,7 +3,7 @@ import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { compose, pure, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-import { colors, margin} from '../styles';
+import { colors, margin } from '../styles';
 import { Button } from './buttons';
 import Divider from './Divider';
 import { Centered } from './layout';

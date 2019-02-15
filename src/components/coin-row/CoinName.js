@@ -1,7 +1,22 @@
-import { withProps } from 'recompact';
-import { Text } from '../text';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { TruncatedText } from '../text';
 
-export default withProps({
-  color: 'blueGreyDark',
-  size: 'lmedium',
-})(Text);
+const CoinName = ({ paddingRight, ...props }) => (
+  <TruncatedText
+    color="blueGreyDark"
+    size="lmedium"
+    style={{ paddingRight }}
+    {...props}
+  />
+);
+
+CoinName.propTypes = {
+  paddingRight: PropTypes.number,
+};
+
+CoinName.defaultProps = {
+  paddingRight: 19,
+};
+
+export default CoinName;
