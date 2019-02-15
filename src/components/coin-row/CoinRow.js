@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import {
-  compose, pure, setStatic, shouldUpdate,
+  compose,
+  pure,
+  setStatic,
 } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withAccountSettings } from '../../hoc';
@@ -70,7 +72,6 @@ CoinRow.defaultProps = {
 
 export default compose(
   pure,
-  shouldUpdate(() => false),
   setStatic({ height: CoinIcon.size + (CoinRowPaddingVertical * 2) }),
   withAccountSettings,
 )(CoinRow);
