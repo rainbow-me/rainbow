@@ -2017,6 +2017,7 @@ bail@^1.0.0:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 "balance-common@git+https://github.com/balance-io/balance-common.git#defaulttxn":
 =======
@@ -2024,6 +2025,11 @@ bail@^1.0.0:
 >>>>>>> 9596f56... fixes
   version "0.6.31"
   resolved "git+https://github.com/balance-io/balance-common.git#728d1f99d452cc0bf98a6d29e301746ca37aa938"
+=======
+"balance-common@git+https://github.com/balance-io/balance-common.git#pending":
+  version "0.6.32"
+  resolved "git+https://github.com/balance-io/balance-common.git#7819faf60eff9251d5bd3cd0b657698aa8d35f87"
+>>>>>>> 5f9a240... dev balance-common
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -7796,9 +7802,18 @@ recursive-readdir@^2.2.2:
   dependencies:
     minimatch "3.0.4"
 
+<<<<<<< HEAD
 recyclerlistview@^2.0.0-beta.4:
+=======
+recyclerlistview@^2.0.0-beta.3:
+<<<<<<< HEAD
+>>>>>>> 0ad6ce6... dev balance-common
   version "2.0.0-beta.4"
   resolved "https://registry.yarnpkg.com/recyclerlistview/-/recyclerlistview-2.0.0-beta.4.tgz#c3c96f3e55650b1c96543fe71009009ea5ce9d63"
+=======
+  version "2.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/recyclerlistview/-/recyclerlistview-2.0.0-beta.3.tgz#9352fcb7596105ddcd071583742649ed7e90f438"
+>>>>>>> 5f9a240... dev balance-common
   dependencies:
     lodash.debounce "4.0.8"
     prop-types "15.5.8"
