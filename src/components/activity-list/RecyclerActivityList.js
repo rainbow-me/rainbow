@@ -1,10 +1,11 @@
+import { get } from 'lodash';
 import React from 'react';
 import { Dimensions } from 'react-native';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
 import PropTypes from 'prop-types';
-import TransactionCoinRow from '../coin-row/TransactionCoinRow';
+import { RequestCoinRow, TransactionCoinRow } from '../coin-row';
 import ActivityListHeader from './ActivityListHeader';
 import ListFooter from '../list/ListFooter';
 
@@ -26,7 +27,6 @@ export default class RecyclerActivityList extends React.Component {
     header: PropTypes.node,
     sections: PropTypes.arrayOf(PropTypes.shape({
       data: PropTypes.array,
-      renderItem: PropTypes.func,
       title: PropTypes.string.isRequired,
     })),
   };
@@ -35,7 +35,11 @@ export default class RecyclerActivityList extends React.Component {
     super(args);
     const { width } = Dimensions.get('window');
     this.state = {
-      dataProvider: new DataProvider((r1, r2) => r1.hash !== r2.hash),
+      dataProvider: new DataProvider((r1, r2) => {
+        const r1Key = r1.hash ? r1.hash : get(r1, 'transactionDisplayDetails.timestampInMs', '');
+        const r2Key = r2.hash ? r2.hash : get(r2, 'transactionDisplayDetails.timestampInMs', '');
+        return r1Key !== r2Key;
+      }),
       headersIndices: [],
     };
 
@@ -102,6 +106,13 @@ export default class RecyclerActivityList extends React.Component {
     if (type === ViewTypes.FOOTER) {
       return (
         <ListFooter/>
+      );
+    }
+    if (!data.hash) {
+      return (
+        <RequestCoinRow
+          item={data}
+        />
       );
     }
     return (
