@@ -72,16 +72,16 @@ export default class RecyclerActivityList extends React.Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    const headersIndices = []; // header
-    const items = props.sections.reduce((prev, curr) => {
-      headersIndices.push(prev.length);
-      return prev
+    const headersIndices = [];
+    const items = props.sections.reduce((ctx, section) => {
+      headersIndices.push(ctx.length);
+      return ctx
         .concat([{
-          hash: curr.title,
-          title: curr.title,
+          hash: section.title,
+          title: section.title,
         }])
-        .concat(curr.data)
-        .concat([{ hash: `${curr.title}_end` }]); // footer
+        .concat(section.data)
+        .concat([{ hash: `${section.title}_end` }]); // footer
     }, [{ hash: '_header' }]); // header
     items.pop(); // remove last footer
     return {
