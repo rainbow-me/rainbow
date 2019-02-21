@@ -1782,9 +1782,9 @@ bail@^1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/bail/-/bail-1.0.3.tgz#63cfb9ddbac829b02a3128cd53224be78e6c21a3"
 
-"balance-common@git+https://github.com/balance-io/balance-common.git#pending":
-  version "0.6.32"
-  resolved "git+https://github.com/balance-io/balance-common.git#7819faf60eff9251d5bd3cd0b657698aa8d35f87"
+"balance-common@git+https://github.com/balance-io/balance-common.git#develop":
+  version "0.6.33"
+  resolved "git+https://github.com/balance-io/balance-common.git#96ec38b42107aa15935f632818c1095df34823df"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
