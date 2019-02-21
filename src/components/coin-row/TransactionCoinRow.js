@@ -57,7 +57,7 @@ BottomRow.propTypes = rowRenderPropTypes;
 const TopRow = ({ balance, status }) => (
   <Fragment>
     <TransactionStatusBadge status={status} />
-    <BottomRowText>{get(balance, 'display')}</BottomRowText>
+    <BottomRowText>{get(balance, 'display', '')}</BottomRowText>
   </Fragment>
 );
 
