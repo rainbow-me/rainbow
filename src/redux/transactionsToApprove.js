@@ -53,10 +53,10 @@ export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => 
   return { nativeAmount, nativeAmountDisplay };
 };
 
-const getRequestDisplayDetails = (callData, assets, prices, nativeCurrency) => {
+const getRequestDisplayDetails = (callData, assets, prices, nativeCurrency, dappName) => {
   if (callData.method === 'eth_sendTransaction') {
     const transaction = get(callData, 'params[0]', null);
-    return getTransactionDisplayDetails(transaction, assets, prices, nativeCurrency);
+    return getTransactionDisplayDetails(transaction, assets, prices, nativeCurrency, dappName);
   }
   if (callData.method === 'eth_sign' || callData.method === 'personal_sign') {
     const message = get(callData, 'params[1]');
@@ -89,7 +89,7 @@ const getMessageDisplayDetails = (message) => {
   };
 };
 
-const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrency) => {
+const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrency, dappName) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
   const timestampInMs = Date.now();
   if (transaction.data === '0x') {
@@ -144,12 +144,15 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
     const value = fromWei(convertHexToString(transaction.value));
     return {
       payload: {
+        asset: {
+          name: dappName,
+          symbol: dappName,
+        },
         from: transaction.from,
         gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
         gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
         nonce: Number(convertHexToString(transaction.nonce)),
         to: transaction.to,
-        value,
         data: transaction.data,
       },
       timestampInMs,
@@ -165,7 +168,7 @@ export const addTransactionToApprove = (sessionId, callId, callData, dappName) =
   const { accountAddress, network, nativeCurrency } = getState().settings;
   const { prices } = getState().prices;
   const { assets } = getState().assets;
-  const transactionDisplayDetails = getRequestDisplayDetails(callData, assets, prices, nativeCurrency);
+  const transactionDisplayDetails = getRequestDisplayDetails(callData, assets, prices, nativeCurrency, dappName);
   const transaction = {
     callData,
     callId,
@@ -185,7 +188,7 @@ export const addTransactionsToApprove = (transactions) => (dispatch, getState) =
   const { prices } = getState().prices;
   const { assets } = getState().assets;
   const transactionsWithDisplayDetails = mapValues(transactions, (transactionDetails) => {
-    const transactionDisplayDetails = getRequestDisplayDetails(transactionDetails.callData, assets, prices, nativeCurrency);
+    const transactionDisplayDetails = getRequestDisplayDetails(transactionDetails.callData, assets, prices, nativeCurrency, transactionDetails.dappName);
     return { ...transactionDetails, transactionDisplayDetails };
   });
   const updatedTransactions = { ...transactionsToApprove, ...transactionsWithDisplayDetails };

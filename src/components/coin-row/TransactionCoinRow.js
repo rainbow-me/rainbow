@@ -45,7 +45,7 @@ const BottomRow = ({ name, native, status }) => {
       <FlexItem flex={0}>
         <BalanceText color={balanceTextColor}>
           {(nativeDisplay && isStatusSent) ? '- ' : ''}
-          {nativeDisplay || `${native.symbol}0.00`}
+          {nativeDisplay || ''}
         </BalanceText>
       </FlexItem>
     </Row>
