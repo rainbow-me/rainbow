@@ -2034,8 +2034,12 @@ bail@^1.0.0:
 =======
 "balance-common@git+https://github.com/balance-io/balance-common.git#develop":
   version "0.6.33"
+<<<<<<< HEAD
   resolved "git+https://github.com/balance-io/balance-common.git#96ec38b42107aa15935f632818c1095df34823df"
 >>>>>>> 58a6780... cleanup for txn coin row
+=======
+  resolved "git+https://github.com/balance-io/balance-common.git#d103474c09772ab00660b7e8dcaf0f0e4ee45e80"
+>>>>>>> c11603c... pending txn for non token transfers to not display prices
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
