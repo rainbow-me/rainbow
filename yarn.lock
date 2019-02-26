@@ -2019,6 +2019,7 @@ bail@^1.0.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 "balance-common@git+https://github.com/balance-io/balance-common.git#defaulttxn":
 =======
@@ -2040,6 +2041,11 @@ bail@^1.0.0:
 =======
   resolved "git+https://github.com/balance-io/balance-common.git#d103474c09772ab00660b7e8dcaf0f0e4ee45e80"
 >>>>>>> c11603c... pending txn for non token transfers to not display prices
+=======
+balance-common@^0.6.34:
+  version "0.6.34"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.34.tgz#a73fe5aed771445c43dddcc6bac2d41f88587359"
+>>>>>>> a1c1ab2... updating common version
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
