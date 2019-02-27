@@ -2020,6 +2020,7 @@ bail@^1.0.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 "balance-common@git+https://github.com/balance-io/balance-common.git#defaulttxn":
 =======
@@ -2046,6 +2047,11 @@ balance-common@^0.6.34:
   version "0.6.34"
   resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.34.tgz#a73fe5aed771445c43dddcc6bac2d41f88587359"
 >>>>>>> a1c1ab2... updating common version
+=======
+balance-common@^0.6.35:
+  version "0.6.35"
+  resolved "https://registry.yarnpkg.com/balance-common/-/balance-common-0.6.35.tgz#1c019044fa829296f9663e1f001c495bf1f1eccb"
+>>>>>>> 201e687... new type of coin row for default contract interaction
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"

@@ -36,6 +36,7 @@ PODS:
     - GoogleUtilities/Reachability (~> 5.2)
     - Protobuf (~> 3.1)
   - FLAnimatedImage (1.0.12)
+<<<<<<< HEAD
   - Folly (2018.10.22.00):
     - boost-for-react-native
     - DoubleConversion
@@ -89,6 +90,13 @@ PODS:
   - libwebp/utils (1.0.2):
     - libwebp/core
   - libwebp/webp (1.0.2)
+=======
+  - GoogleToolboxForMac/Defines (2.2.0)
+  - GoogleToolboxForMac/Logger (2.2.0):
+    - GoogleToolboxForMac/Defines (= 2.2.0)
+  - "GoogleToolboxForMac/NSData+zlib (2.2.0)":
+    - GoogleToolboxForMac/Defines (= 2.2.0)
+>>>>>>> 201e687... new type of coin row for default contract interaction
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
     - nanopb/encode (= 0.3.901)
@@ -170,8 +178,13 @@ PODS:
     - React
   - RNScreens (1.0.0-alpha.22):
     - React
+<<<<<<< HEAD
   - SDWebImage/Core (4.4.6)
   - SDWebImage/GIF (4.4.6):
+=======
+  - SDWebImage/Core (4.4.3)
+  - SDWebImage/GIF (4.4.3):
+>>>>>>> 201e687... new type of coin row for default contract interaction
     - FLAnimatedImage (~> 1.0)
     - SDWebImage/Core
   - SDWebImage/WebP (4.4.6):
@@ -266,11 +279,15 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: e2fa4cb35ef5558c200f7f0ad8a53e212215f93e
   FirebaseMessaging: b412996f6a09337d232bb3a6676ce4d1f353d024
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
+<<<<<<< HEAD
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
   GoogleAppMeasurement: 98b71f5e04142793729a5ef23e5b96651ff4b70f
   GoogleUtilities: 273e67030e0de313e7304f6dcfa96fc5214f6c23
   libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
+=======
+  GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
+>>>>>>> 201e687... new type of coin row for default contract interaction
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
   React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
@@ -284,6 +301,17 @@ SPEC CHECKSUMS:
   RNLanguages: e3ae05ef105937645218272429dac0c3f7633451
   RNReanimated: 45d9313b7a62318ed00d60a811937321e43e076e
   RNScreens: 354046589421edc3d83d5c6212475bf1fb9a731d
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+  SDWebImage: 4170dae6332a915d44c918675d51dc1c4c06b45f
+=======
+  SDWebImage: c5594f1a19c48d526d321e548902b56b479cd508
+>>>>>>> 201e687... new type of coin row for default contract interaction
+  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
+=======
+>>>>>>> 67ab940... new type of coin row for default contract interaction
   SDWebImage: 3f3f0c02f09798048c47a5ed0a13f17b063572d8
   yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 

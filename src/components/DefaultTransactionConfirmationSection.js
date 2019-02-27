@@ -7,7 +7,12 @@ import Divider from './Divider';
 import { withSafeAreaViewInsetValues } from '../hoc';
 import { borders, colors, padding } from '../styles';
 import { Column } from './layout';
-import { Smallcaps, Text, TruncatedAddress } from './text';
+import {
+  Monospace,
+  Smallcaps,
+  Text,
+  TruncatedAddress,
+} from './text';
 
 const Message = styled(Text).attrs({ size: 'lmedium' })`
   color: ${colors.alpha(colors.blueGreyDark, 0.6)}
@@ -17,6 +22,11 @@ const Message = styled(Text).attrs({ size: 'lmedium' })`
 const AddressRow = styled(Column)`
   ${padding(19, 19, 18)}
   flex-shrink: 0;
+`;
+
+const Amount = styled(Monospace).attrs({ size: 'smedium' })`
+  color: ${colors.alpha(colors.blueGreyDark, 0.6)}
+  text-transform: uppercase;
 `;
 
 const Address = styled(TruncatedAddress).attrs({ size: 'lmedium' })`
@@ -33,7 +43,7 @@ const BottomSheet = styled(Column).attrs({ justify: 'space-between' })`
   ${borders.buildRadius('top', 15)}
   background-color: ${colors.white};
   flex: 0;
-  min-height: ${({ bottomInset }) => (bottomInset + 270)};
+  min-height: ${({ bottomInset }) => (bottomInset + 360)};
   padding-bottom: ${({ bottomInset }) => bottomInset};
   width: 100%;
 `;
@@ -58,7 +68,13 @@ const DefaultTransactionConfirmationSection = ({
       <Address address={address} truncationLength={15}/>
     </AddressRow>
     <Divider />
+    <AddressRow>
+      <Smallcaps>{lang.t('wallet.action.value')}</Smallcaps>
+      <Amount>{value}</Amount>
+    </AddressRow>
+    <Divider />
     <MessageRow>
+      <Smallcaps>{lang.t('wallet.action.input')}</Smallcaps>
       <ScrollView>
         <Message>{data}</Message>
       </ScrollView>
