@@ -5,7 +5,11 @@ import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
 import PropTypes from 'prop-types';
-import { RequestCoinRow, TransactionCoinRow } from '../coin-row';
+import {
+  ContractInteractionCoinRow,
+  RequestCoinRow,
+  TransactionCoinRow,
+} from '../coin-row';
 import ActivityListHeader from './ActivityListHeader';
 import ListFooter from '../list/ListFooter';
 
@@ -111,6 +115,13 @@ export default class RecyclerActivityList extends React.Component {
     if (!data.hash) {
       return (
         <RequestCoinRow
+          item={data}
+        />
+      );
+    }
+    if (!data.symbol && data.dappName) {
+      return (
+        <ContractInteractionCoinRow
           item={data}
         />
       );

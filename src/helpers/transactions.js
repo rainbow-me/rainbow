@@ -65,13 +65,13 @@ const normalizeTransactions = ({ accountAddress, nativeCurrency, transactions })
   }) => ({
     ...tx,
     balance: value,
-    name: get(asset, 'name'),
+    name: get(asset, 'name', ''),
     native: {
       ...supportedNativeCurrencies[nativeCurrency],
       balance: get(native, `${nativeCurrency}.value`),
     },
     status: getTransactionStatus({ accountAddress, ...tx }),
-    symbol: get(asset, 'symbol'),
+    symbol: get(asset, 'symbol', ''),
   }))
 );
 
