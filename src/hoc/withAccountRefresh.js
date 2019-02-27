@@ -1,14 +1,20 @@
 import { assetsRefreshState, transactionsRefreshState } from '@rainbow-me/rainbow-common';
 import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
+import { setAssetsFetched, setTransactionFetched } from '../redux/initialFetch';
 
 export default Component => compose(
-  connect(null, { assetsRefreshState, transactionsRefreshState }),
+  connect(null, {
+    assetsRefreshState, setAssetsFetched, setTransactionFetched, transactionsRefreshState,
+  }),
   withHandlers({
     refreshAccount: (ownProps) => async () => {
       try {
+        console.log(ownProps);
         await ownProps.assetsRefreshState();
+        ownProps.setAssetsFetched();
         await ownProps.transactionsRefreshState();
+        ownProps.setTransactionFetched();
       } catch (error) {
         // TODO more granular error messaging depending on offline status
       }
