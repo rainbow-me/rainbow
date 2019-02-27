@@ -4,7 +4,12 @@ import React from 'react';
 import { onlyUpdateForPropTypes } from 'recompact';
 import styled from 'styled-components/primitives';
 import BalanceManagerLogo from '../../assets/balance-manager-avatar.png';
-import { borders, colors, position, shadow } from '../../styles';
+import {
+  borders,
+  colors,
+  position,
+  shadow,
+} from '../../styles';
 import { Centered } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import { Text } from '../text';
@@ -38,7 +43,7 @@ const RequestVendorLogoIcon = ({ dappName, imageUrl, size }) => (
       {(dappName === 'Balance Manager') ? (
         <VendorLogoImage
           size={size}
-          source={imageUrl}
+          source={{ uri: imageUrl }}
         />
       ) : (
         <Text

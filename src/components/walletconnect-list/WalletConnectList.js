@@ -38,7 +38,9 @@ const WalletConnectList = ({
       removeClippedSubviews
       renderItem={({ index, item }) => (
         <WalletConnectListItem
-          {...item}
+          dappUrl={item.dappUrl}
+          dappName={item.dappName}
+          dappIcon={item.dappIcon}
           key={get(item, 'dappName', index)}
           onPress={onHandleDisconnectAlert}
         />
@@ -72,8 +74,7 @@ export default compose(
         if (buttonIndex === 0) {
           walletConnectDisconnectAllByDappName(dappName);
         }
-      },
-      );
+      });
     },
   }),
   onlyUpdateForPropTypes,
