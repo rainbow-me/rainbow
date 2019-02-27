@@ -26,6 +26,7 @@ import {
   FlyInView,
   Row,
 } from '../components/layout';
+import { SendEmptyState } from '../components/send';
 import { ShadowStack } from '../components/shadow-stack';
 import { Monospace } from '../components/text';
 import { UniqueTokenRow } from '../components/unique-token';
@@ -78,55 +79,10 @@ const AddressInputBottomBorder = styled(View)`
   height: 2px;
 `;
 
-const BackgroundImage = styled(Image)`
-  height: 88px;
-  width: 91px;
-`;
-
-const BackgroundImageContainer = styled(Row)`
-  flex-grow: 1;
-  justify-content: center;
-  align-items: center;
-`;
-
-const BottomButton = styled(Button).attrs({
-  type: 'pill',
-})`
-  ${padding(0, 10)}
-  background-color: ${colors.sendScreen.brightBlue};
-  align-items: center;
-  justify-content: center;
-  height: 30px;
-  margin-left: 10px;
-`;
-
-const BottomButtonContainer = styled(Flex)`
-  ${padding(20, 20)}
-  padding-top: 0px;
-  justify-content: flex-end;
-  width: 100%;
-`;
-
-const CameraIcon = styled(Icon).attrs({
-  color: colors.white,
-  height: 14,
-  name: 'camera',
-  width: 17,
-})`
-  margin-top: -5px;
-`;
-
 const Container = styled(Column)`
   background-color: ${colors.white};
   align-items: center;
   height: 100%;
-`;
-
-const EmptyStateContainer = styled(Column)`
-  background-color: ${colors.white};
-  padding-bottom: ${isIphoneX() ? '50px' : '20px'};
-  justify-content: space-between;
-  flex: 1;
 `;
 
 const HandleIcon = styled(Icon).attrs({
@@ -343,19 +299,6 @@ class SendSheet extends Component {
     });
   };
 
-  onPressCamera = () => {
-    const { navigation } = this.props;
-
-    Keyboard.dismiss();
-
-    InteractionManager.runAfterInteractions(() => {
-      navigation.navigate('SendQRScannerScreen', {
-        onBack: this.onBackQRScanner,
-        onSuccess: this.onChangeAddressInput,
-      });
-    });
-  };
-
   sendTransaction = (callback) => {
     const {
       assetAmount,
@@ -403,20 +346,6 @@ class SendSheet extends Component {
           sections={[sections.balances]}
         />
       </FlyInView>
-    );
-  }
-
-  renderEmptyState() {
-    return (
-      <EmptyStateContainer>
-        <BackgroundImageContainer>
-          <BackgroundImage source={require('../assets/send-background.png')} />
-        </BackgroundImageContainer>
-        <BottomButtonContainer>
-          <BottomButton onPress={this.onPressPaste}>Paste</BottomButton>
-          <BottomButton onPress={this.onPressCamera}><CameraIcon /></BottomButton>
-        </BottomButtonContainer>
-      </EmptyStateContainer>
     );
   }
 
@@ -547,7 +476,12 @@ class SendSheet extends Component {
   }
 
   render() {
-    const { isValidAddress, recipient, selected } = this.props;
+    const {
+      isValidAddress,
+      recipient,
+      selected,
+      sendUpdateRecipient,
+    } = this.props;
 
     return (
       <KeyboardAvoidingView behavior="padding">
@@ -565,7 +499,7 @@ class SendSheet extends Component {
             />
           </AddressInputContainer>
           <AddressInputBottomBorder />
-          {!isValidAddress ? this.renderEmptyState() : null}
+          {!isValidAddress && <SendEmptyState onPressPaste={sendUpdateRecipient} />}
           {isValidAddress && isEmpty(selected) ? this.renderAssetList() : null}
           {isValidAddress && !isEmpty(selected) ? this.renderTransaction() : null}
         </Container>

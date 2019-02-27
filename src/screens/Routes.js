@@ -74,7 +74,7 @@ const MainNavigator = createStackNavigator({
   SwipeLayout: SwipeStack,
 }, {
   headerMode: 'none',
-  initialRouteName: 'ExamplePage',
+  initialRouteName: 'SwipeLayout',
   mode: 'modal',
   onTransitionEnd,
   onTransitionStart,
