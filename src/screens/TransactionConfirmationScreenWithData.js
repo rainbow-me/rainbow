@@ -58,8 +58,10 @@ class TransactionConfirmationScreenWithData extends Component {
 
     if (transactionHash) {
       this.props.updateTransactionCountNonce(maxTxnCount + 1);
+      // TODO add request type
       const txDetails = {
         asset: get(transactionDetails, 'transactionDisplayDetails.payload.asset'),
+        dappName: get(transactionDetails, 'dappName'),
         from: get(transactionDetails, 'transactionDisplayDetails.payload.from'),
         gasLimit: get(transactionDetails, 'transactionDisplayDetails.payload.gasLimit'),
         gasPrice: get(transactionDetails, 'transactionDisplayDetails.payload.gasPrice'),
