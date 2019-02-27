@@ -22,9 +22,9 @@ const WALLETCONNECT_INIT_SESSIONS = 'walletconnect/WALLETCONNECT_INIT_SESSIONS';
 
 // -- Actions ---------------------------------------- //
 
-const whitelist = [
-  'https://manager.balance.io',
-];
+// const whitelist = [
+//   'https://manager.balance.io',
+// ];
 
 const getNativeOptions = async () => {
   const language = DEVICE_LANGUAGE.replace(/[-_](\w?)+/gi, '').toLowerCase();
@@ -75,16 +75,26 @@ export const walletConnectOnSessionRequest = (uriString) => async (dispatch) => 
 
     dispatch(setPendingRequest(walletConnector));
 
-    walletConnector.on('wc_sessionRequest', (error, payload) => {
+    walletConnector.on('session_request', (error, payload) => {
       if (error) {
         throw error;
       }
 
-      const { peerId, peerMeta } = payload.params[0];
-      console.log('on("wc_sessionRequest")', peerMeta);
+      const { peerMeta } = payload.params[0];
+      console.log('on("session_request")', peerMeta);
 
       // TODO: Delete next line and fix open WalletConnectConfimationModal
       dispatch(walletConnectApproveSession(walletConnector.handshakeTopic));
+
+
+      // TODO: Testing WalletConnectConfimationModal without whitelist
+      // console.log('open WalletConnectConfimationModal');
+      // Navigation.handleAction({
+      //   routeName: 'WalletConnectConfimationModal',
+      //   params: { handshakeTopic: walletConnector.handshakeTopic, peerId, peerMeta },
+      // });
+
+      // TODO: Testing WalletConnectConfimationModal with whitelist
       // if (whitelist.includes(peerMeta.url)) {
       //   dispatch(walletConnectApproveSession(walletConnector.handshakeTopic));
       // } else {
@@ -275,17 +285,17 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case WALLETCONNECT_ADD_REQUEST:
-      return { ...state, pendingRequests: action.payload };
-    case WALLETCONNECT_REMOVE_REQUEST:
-      return { ...state, pendingRequests: action.payload };
-    case WALLETCONNECT_ADD_SESSION:
-      return { ...state, walletConnectors: action.payload };
-    case WALLETCONNECT_REMOVE_SESSION:
-      return { ...state, walletConnectors: action.payload };
-    case WALLETCONNECT_INIT_SESSIONS:
-      return { ...state, walletConnectors: action.payload };
-    default:
-      return state;
+  case WALLETCONNECT_ADD_REQUEST:
+    return { ...state, pendingRequests: action.payload };
+  case WALLETCONNECT_REMOVE_REQUEST:
+    return { ...state, pendingRequests: action.payload };
+  case WALLETCONNECT_ADD_SESSION:
+    return { ...state, walletConnectors: action.payload };
+  case WALLETCONNECT_REMOVE_SESSION:
+    return { ...state, walletConnectors: action.payload };
+  case WALLETCONNECT_INIT_SESSIONS:
+    return { ...state, walletConnectors: action.payload };
+  default:
+    return state;
   }
 };

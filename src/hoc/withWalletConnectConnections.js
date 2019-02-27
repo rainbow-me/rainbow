@@ -25,7 +25,8 @@ const sortWalletConnectors = (walletConnectors) => {
     const firstElement = head(connectors);
     return {
       dappName: firstElement.peerMeta.name,
-      url: firstElement.peerMeta.url,
+      dappIcon: firstElement.peerMeta.icons[0],
+      dappUrl: firstElement.peerMeta.url,
     };
   });
   return {
@@ -33,12 +34,12 @@ const sortWalletConnectors = (walletConnectors) => {
     walletConnectorsByDappName: values(dappWalletConnector),
     walletConnectorsCount: sortedWalletConnectors.length,
   };
-}
+};
 
 const walletConnectSelector = createSelector(
   [walletConnectorsSelector],
   sortWalletConnectors,
-)
+);
 
 export default Component => compose(
   connect(mapStateToProps, {

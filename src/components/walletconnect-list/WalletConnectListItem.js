@@ -34,12 +34,14 @@ const ExpiresText = styled(Text).attrs({ size: 'medium' })`
 
 const WalletConnectListItem = ({
   dappName,
-  url,
+  dappIcon,
+  dappUrl,
   onPress,
 }) => (
   <Container>
     <RequestVendorLogoIcon
       dappName={dappName}
+      imageUrl={dappIcon}
       size={VendorLogoIconSize}
     />
     <Content flex={1}>
@@ -47,7 +49,7 @@ const WalletConnectListItem = ({
         {dappName}
       </TruncatedText>
       <ExpiresText>
-        {url}
+        {dappUrl}
       </ExpiresText>
     </Content>
     <DisconnectButton
@@ -62,7 +64,8 @@ const WalletConnectListItem = ({
 
 WalletConnectListItem.propTypes = {
   dappName: PropTypes.string.isRequired,
-  url: PropTypes.string.isRequired,
+  dappIcon: PropTypes.string.isRequired,
+  dappUrl: PropTypes.string.isRequired,
   onPress: PropTypes.func.isRequired,
 };
 
