@@ -3,7 +3,6 @@ import React, { createElement } from 'react';
 import {
   compose,
   pure,
-  setStatic,
 } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withAccountSettings } from '../../hoc';
@@ -12,6 +11,7 @@ import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
 
 const CoinRowPaddingVertical = 12;
+export const CoinRowHeight = CoinIcon.size + (CoinRowPaddingVertical * 2);
 
 const Container = styled(Row)`
   ${padding(CoinRowPaddingVertical, 19, CoinRowPaddingVertical, 15)}
@@ -72,6 +72,5 @@ CoinRow.defaultProps = {
 
 export default compose(
   pure,
-  setStatic({ height: CoinIcon.size + (CoinRowPaddingVertical * 2) }),
   withAccountSettings,
 )(CoinRow);
