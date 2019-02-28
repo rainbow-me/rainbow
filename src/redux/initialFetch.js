@@ -2,8 +2,8 @@
 const SET_ASSETS_FETCHED = 'initialFetch/SET_ASSETS_FETCH';
 const SET_TRANSACTIONS_FETCHED = 'initialFetch/SET_TRANSACTIONS_FETCHED';
 const NOTHING_FETCHED = 0;
-export const FETCHED_ASSETS = 1;
-const FETCHED_TRANSACTIONS = 2;
+const FETCHED_ASSETS = 1;
+export const FETCHED_TRANSACTIONS = 2;
 
 export const setTransactionFetched = () => (dispatch, getState) => {
   if (getState().initialFetch.fetchingState === FETCHED_ASSETS) {

@@ -13,7 +13,7 @@ import { LoadingOverlay } from '../components/modal';
 
 const ProfileScreen = ({
   accountAddress,
-  areTransactionsFetching,
+  areTransactionsFetched,
   blurOpacity,
   hasPendingTransaction,
   isEmpty,
@@ -25,50 +25,54 @@ const ProfileScreen = ({
   showBlur,
   transactions,
   transactionsCount,
-}) => (
-  <Page component={FlexItem} style={position.sizeAsObject('100%')}>
-    <Header justify="space-between">
-      <HeaderButton onPress={onPressSettings}>
-        <Icon name="gear" testID="Gear icon"/>
-      </HeaderButton>
-      <BackButton
-        testID="goToBalancesFromProfile"
-        direction="right"
-        onPress={onPressBackButton}
-      />
-    </Header>
-    {areTransactionsFetching && <LoadingOverlay title="Importing..." />}
-    <ActivityList
-      accountAddress={accountAddress}
-      hasPendingTransaction={hasPendingTransaction}
-      header={(
-        <ProfileMasthead
-          accountAddress={accountAddress}
-          navigation={navigation}
-          showBottomDivider={!isEmpty}
-        />
+}) => {
+  // spinner should be displayed if transactions has not been fetched,
+  // AddFundsInterstitial is not displayed (`!isEmpty`) and there's no transaction to be displayed
+  const shouldDisplaySpinner = !areTransactionsFetched && !isEmpty && transactions.length === 0;
+  return (
+    <Page component={FlexItem} style={position.sizeAsObject('100%')}>
+      {showBlur && (
+        <FadeInAnimation duration={200} style={{ ...position.coverAsObject, zIndex: 1 }}>
+          <BlurOverlay
+            backgroundColor={colors.alpha(colors.blueGreyDarker, 0.4)}
+            blurType="light"
+            opacity={blurOpacity}
+          />
+        </FadeInAnimation>
       )}
-      nativeCurrency={nativeCurrency}
-      requests={requests}
-      transactions={transactions}
-      transactionsCount={transactionsCount}
-    />
-    {isEmpty && <AddFundsInterstitial />}
-    {showBlur && (
-      <FadeInAnimation duration={200} style={{ ...position.coverAsObject, zIndex: 1 }}>
-        <BlurOverlay
-          backgroundColor={colors.alpha(colors.blueGreyDarker, 0.4)}
-          blurType="light"
-          opacity={blurOpacity}
+      <Header justify="space-between">
+        <HeaderButton onPress={onPressSettings}>
+          <Icon name="gear" />
+        </HeaderButton>
+        <BackButton
+          direction="right"
+          onPress={onPressBackButton}
         />
-      </FadeInAnimation>
-    )}
-  </Page>
-);
+      </Header>
+      {shouldDisplaySpinner && <LoadingOverlay title="Importing..." />}
+      <ActivityList
+        accountAddress={accountAddress}
+        hasPendingTransaction={hasPendingTransaction}
+        header={(
+          <ProfileMasthead
+            accountAddress={accountAddress}
+            navigation={navigation}
+            showBottomDivider={!isEmpty}
+          />
+        )}
+        nativeCurrency={nativeCurrency}
+        requests={requests}
+        transactions={areTransactionsFetched}
+        transactionsCount={transactionsCount}
+      />
+      {isEmpty && <AddFundsInterstitial />}
+    </Page>
+  );
+};
 
 ProfileScreen.propTypes = {
   accountAddress: PropTypes.string,
-  areTransactionsFetching: PropTypes.bool,
+  areTransactionsFetched: PropTypes.bool,
   blurOpacity: PropTypes.object,
   hasPendingTransaction: PropTypes.bool,
   isEmpty: PropTypes.bool,
