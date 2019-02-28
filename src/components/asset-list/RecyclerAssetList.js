@@ -125,11 +125,11 @@ export default class RecyclerAssetList extends React.Component {
 
   componentDidMount = () => {
     this.isCancelled = false;
-  }
+  };
 
   componentWillUnmount = () => {
     this.isCancelled = true;
-  }
+  };
 
   handleRefresh = () => {
     if (this.state.isRefreshing) return;
@@ -139,7 +139,7 @@ export default class RecyclerAssetList extends React.Component {
         this.setState({ isRefreshing: false });
       }
     });
-  }
+  };
 
   renderRefreshControl = () => {
     return (
@@ -149,7 +149,7 @@ export default class RecyclerAssetList extends React.Component {
         tintColor={colors.alpha(colors.blueGreyLight, 0.666)}
       />
     );
-  }
+  };
 
   rowRenderer = (type, data) => {
     if (type === ViewTypes.COIN_ROW) {
