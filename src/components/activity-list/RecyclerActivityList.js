@@ -122,7 +122,7 @@ export default class RecyclerActivityList extends React.Component {
         item={data}
       />
     );
-  }
+  };
 
   render() {
     return (
