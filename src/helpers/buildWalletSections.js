@@ -1,11 +1,6 @@
 import lang from 'i18n-js';
 import { get } from 'lodash';
-import React from 'react';
-import { withNavigation } from 'react-navigation';
-import { compose, withHandlers } from 'recompact';
 import { createSelector } from 'reselect';
-import { BalanceCoinRow } from '../components/coin-row';
-import { UniqueTokenRow } from '../components/unique-token';
 import { buildUniqueTokenList } from './assets';
 
 const allAssetsSelector = state => state.allAssets;
