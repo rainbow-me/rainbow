@@ -6,14 +6,14 @@ import {
 import { setDisplayName } from 'recompose';
 import {
   withAccountAddress,
+  withAccountSettings,
   withAccountTransactions,
+  withAreTransactionsFetched,
   withBlurTransitionProps,
   withIsWalletEmpty,
   withRequests,
-  withAccountSettings,
 } from '../hoc';
 import ProfileScreen from './ProfileScreen';
-import witAreTransactionsFetched from '../hoc/withAreTransactionsFetched';
 
 export default compose(
   setDisplayName('ProfileScreen'),
@@ -22,13 +22,14 @@ export default compose(
   withAccountTransactions,
   withBlurTransitionProps,
   withIsWalletEmpty,
-  witAreTransactionsFetched,
+  withAreTransactionsFetched,
   withRequests,
   withHandlers({
     onPressBackButton: ({ navigation }) => () => navigation.navigate('WalletScreen'),
     onPressSettings: ({ navigation }) => () => navigation.navigate('SettingsModal'),
   }),
-  withProps(({ isWalletEmpty, transactionsCount }) => ({
+  withProps(({ areTransactionsFetched, isWalletEmpty, transactionsCount }) => ({
     isEmpty: isWalletEmpty && !transactionsCount,
+    showSpinner: !areTransactionsFetched && !isWalletEmpty,
   })),
 )(ProfileScreen);
