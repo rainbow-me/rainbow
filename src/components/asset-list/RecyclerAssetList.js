@@ -56,6 +56,7 @@ export default class RecyclerAssetList extends React.Component {
     paddingBottom: PropTypes.number.isRequired,
     sections: PropTypes.arrayOf(PropTypes.shape({
       data: PropTypes.array,
+      title: PropTypes.string,
     })),
   };
 
@@ -76,16 +77,25 @@ export default class RecyclerAssetList extends React.Component {
         if (this.state.headersIndices.includes(index)) {
           return ViewTypes.HEADER;
         }
-        if (index < this.state.headersIndices[1]) {
-          return ViewTypes.COIN_ROW;
+
+        // This logic appears to be quite complex since there might be some race conditions
+        // regarding order of received sections while importing from seeds
+        const areBalancesLoaded = this.props.sections[0] && this.props.sections[0].title === 'Balances';
+        const areCollectiblesLoaded = this.props.sections.length === 2
+          || (this.props.sections[0] && this.props.sections[0].title === 'Collectibles');
+        if (areCollectiblesLoaded) {
+          const idx = areBalancesLoaded ? 1 : 0;
+          if (index === this.state.headersIndices[idx] + 1) {
+            return ViewTypes.UNIQUE_TOKEN_ROW_FIRST;
+          }
+          if (index === this.state.length - 1) {
+            return ViewTypes.UNIQUE_TOKEN_ROW_LAST;
+          }
+          if (index > this.state.headersIndices[idx]) {
+            return ViewTypes.UNIQUE_TOKEN_ROW;
+          }
         }
-        if (index === this.state.headersIndices[1] + 1) {
-          return ViewTypes.UNIQUE_TOKEN_ROW_FIRST;
-        }
-        if (index === this.state.length - 1) {
-          return ViewTypes.UNIQUE_TOKEN_ROW_LAST;
-        }
-        return ViewTypes.UNIQUE_TOKEN_ROW;
+        return ViewTypes.COIN_ROW;
       },
       (type, dim) => {
         dim.width = width;
@@ -153,7 +163,7 @@ export default class RecyclerAssetList extends React.Component {
 
   rowRenderer = (type, data) => {
     if (type === ViewTypes.COIN_ROW) {
-      return balancesRenderItem(data);
+      return balancesRenderItem({ item: data });
     }
     if (type === ViewTypes.HEADER) {
       return <AssetListHeaderRenderer {...data} />;
