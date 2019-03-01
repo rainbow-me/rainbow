@@ -10,7 +10,6 @@ export default Component => compose(
   withHandlers({
     refreshAccount: (ownProps) => async () => {
       try {
-        console.log(ownProps);
         await ownProps.assetsRefreshState();
         ownProps.setAssetsFetched();
         await ownProps.transactionsRefreshState();
