@@ -153,15 +153,13 @@ export default class RecyclerAssetList extends React.Component {
     });
   };
 
-  renderRefreshControl = () => {
-    return (
-      <RefreshControl
-        onRefresh={this.handleRefresh}
-        refreshing={this.state.isRefreshing}
-        tintColor={colors.alpha(colors.blueGreyLight, 0.666)}
-      />
-    );
-  };
+  renderRefreshControl = () => (
+    <RefreshControl
+      onRefresh={this.handleRefresh}
+      refreshing={this.state.isRefreshing}
+      tintColor={colors.alpha(colors.blueGreyLight, 0.666)}
+    />
+  );
 
   rowRenderer = (type, data) => {
     if (type === ViewTypes.COIN_ROW) {
