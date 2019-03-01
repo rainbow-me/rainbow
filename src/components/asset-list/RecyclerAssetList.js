@@ -102,6 +102,8 @@ export default class RecyclerAssetList extends React.Component {
         if (type === ViewTypes.UNIQUE_TOKEN_ROW) {
           dim.height = UniqueTokenRowHeight(false, false);
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_LAST) {
+          // We want to add enough spacing below the list so that when the user scrolls to the bottom,
+          // the bottom of the list content lines up with the top of the FABs (+ padding).
           dim.height = UniqueTokenRowHeight(false, true) + props.paddingBottom;
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST) {
           dim.height = UniqueTokenRowHeight(true, false);
