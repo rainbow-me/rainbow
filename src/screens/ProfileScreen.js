@@ -23,52 +23,48 @@ const ProfileScreen = ({
   onPressSettings,
   requests,
   showBlur,
+  showSpinner,
   transactions,
   transactionsCount,
-}) => {
-  // spinner should be displayed if transactions has not been fetched,
-  // AddFundsInterstitial is not displayed (`!isEmpty`) and there's no transaction to be displayed
-  const shouldDisplaySpinner = !areTransactionsFetched && !isEmpty && transactions.length === 0;
-  return (
-    <Page component={FlexItem} style={position.sizeAsObject('100%')}>
-      {showBlur && (
-        <FadeInAnimation duration={200} style={{ ...position.coverAsObject, zIndex: 1 }}>
-          <BlurOverlay
-            backgroundColor={colors.alpha(colors.blueGreyDarker, 0.4)}
-            blurType="light"
-            opacity={blurOpacity}
-          />
-        </FadeInAnimation>
-      )}
-      <Header justify="space-between">
-        <HeaderButton onPress={onPressSettings}>
-          <Icon name="gear" />
-        </HeaderButton>
-        <BackButton
-          direction="right"
-          onPress={onPressBackButton}
+}) => (
+  <Page component={FlexItem} style={position.sizeAsObject('100%')}>
+    {showBlur && (
+      <FadeInAnimation duration={200} style={{ ...position.coverAsObject, zIndex: 1 }}>
+        <BlurOverlay
+          backgroundColor={colors.alpha(colors.blueGreyDarker, 0.4)}
+          blurType="light"
+          opacity={blurOpacity}
         />
-      </Header>
-      {shouldDisplaySpinner && <LoadingOverlay title="Importing..." />}
-      <ActivityList
-        accountAddress={accountAddress}
-        hasPendingTransaction={hasPendingTransaction}
-        header={(
-          <ProfileMasthead
-            accountAddress={accountAddress}
-            navigation={navigation}
-            showBottomDivider={!isEmpty}
-          />
-        )}
-        nativeCurrency={nativeCurrency}
-        requests={requests}
-        transactions={areTransactionsFetched}
-        transactionsCount={transactionsCount}
+      </FadeInAnimation>
+    )}
+    <Header justify="space-between">
+      <HeaderButton onPress={onPressSettings}>
+        <Icon name="gear" />
+      </HeaderButton>
+      <BackButton
+        direction="right"
+        onPress={onPressBackButton}
       />
-      {isEmpty && <AddFundsInterstitial />}
-    </Page>
-  );
-};
+    </Header>
+    {showSpinner && <LoadingOverlay title="Importing..." />}
+    <ActivityList
+      accountAddress={accountAddress}
+      hasPendingTransaction={hasPendingTransaction}
+      header={(
+        <ProfileMasthead
+          accountAddress={accountAddress}
+          navigation={navigation}
+          showBottomDivider={!isEmpty}
+        />
+      )}
+      nativeCurrency={nativeCurrency}
+      requests={requests}
+      transactions={areTransactionsFetched}
+      transactionsCount={transactionsCount}
+    />
+    {isEmpty && <AddFundsInterstitial />}
+  </Page>
+);
 
 ProfileScreen.propTypes = {
   accountAddress: PropTypes.string,
@@ -82,6 +78,7 @@ ProfileScreen.propTypes = {
   onPressSettings: PropTypes.func,
   requests: PropTypes.array,
   showBlur: PropTypes.bool,
+  showSpinner: PropTypes.bool,
   transactions: PropTypes.array,
   transactionsCount: PropTypes.number,
 };
