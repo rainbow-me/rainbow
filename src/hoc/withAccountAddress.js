@@ -1,4 +1,4 @@
-import { settingsUpdateAccountAddress } from 'balance-common';
+import { settingsUpdateAccountAddress } from '@rainbow-me/rainbow-common';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompose';
 import { createSelector } from 'reselect';

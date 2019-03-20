@@ -1,4 +1,4 @@
-import { accountClearState } from 'balance-common';
+import { accountClearState } from '@rainbow-me/rainbow-common';
 import { connect } from 'react-redux';
 import { compose } from 'recompact';
 

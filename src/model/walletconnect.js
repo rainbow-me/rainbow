@@ -1,4 +1,3 @@
-import { commonStorage } from 'balance-common';
 import lang from 'i18n-js';
 import {
   assign,
@@ -7,6 +6,7 @@ import {
   mapValues,
   values,
 } from 'lodash';
+import { commonStorage } from '@rainbow-me/rainbow-common';
 import { AlertIOS } from 'react-native';
 import RNWalletConnect from 'rn-walletconnect-wallet';
 

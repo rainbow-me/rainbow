@@ -1,5 +1,5 @@
-import { supportedLanguages } from 'balance-common';
 import PropTypes from 'prop-types';
+import { supportedLanguages } from '@rainbow-me/rainbow-common';
 import React from 'react';
 import { Linking, ScrollView } from 'react-native';
 import FastImage from 'react-native-fast-image';
