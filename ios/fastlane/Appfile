@@ -1,5 +1,5 @@
-app_identifier("io.balance.balancewallet") # The bundle identifier of your app
-apple_id("admin@balancemy.money") # Your Apple email address
+app_identifier("io.rainbow") # The bundle identifier of your app
+apple_id("admin@rainbow.me") # Your Apple email address
 
 itc_team_id("118397822") # App Store Connect Team ID
 team_id("Q4G66XSS36") # Developer Portal Team ID
