@@ -1,6 +1,6 @@
-import { resources, supportedLanguages } from 'balance-common';
 import { get, keys, pickBy } from 'lodash';
 import PropTypes from 'prop-types';
+import { resources, supportedLanguages } from '@rainbow-me/rainbow-common';
 import React from 'react';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { withAccountSettings } from '../../hoc';
