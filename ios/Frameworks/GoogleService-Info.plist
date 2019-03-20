@@ -17,11 +17,11 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>io.balance.balancewallet</string>
+	<string>me.rainbow</string>
 	<key>PROJECT_ID</key>
-	<string>balance-424a3</string>
+	<string>rainbow-me</string>
 	<key>STORAGE_BUCKET</key>
-	<string>balance-424a3.appspot.com</string>
+	<string>rainbow-me.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<true></true>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -35,6 +35,6 @@
 	<key>GOOGLE_APP_ID</key>
 	<string>1:944919125796:ios:58255248a8c10bbf</string>
 	<key>DATABASE_URL</key>
-	<string>https://balance-424a3.firebaseio.com</string>
+	<string>https://rainbow-me.firebaseio.com</string>
 </dict>
 </plist>
