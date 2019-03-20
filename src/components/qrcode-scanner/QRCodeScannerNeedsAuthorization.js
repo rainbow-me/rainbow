@@ -47,7 +47,7 @@ class QRCodeScannerNeedsAuthorization extends PureComponent {
           css={margin(7, 0, 30)}
           lineHeight="looser"
         >
-          In order to use WalletConnect, you must first give Balance Wallet
+          In order to use WalletConnect, you must first give Rainbow
           permission to access your phone's camera.
         </Monospace>
         <Button self="start" onPress={this.onPressSettings}>
