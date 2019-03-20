@@ -23,9 +23,9 @@ import {
 import { Emoji } from '../text';
 
 const SettingsExternalURLs = {
-  about: 'https://balance.io/about',
-  feedback: 'http://support.balance.io',
-  legal: 'https://github.com/balance-io/balance-wallet/blob/master/LICENSE',
+  about: 'https://rainbow.me/about',
+  feedback: 'http://support.rainbow.me',
+  legal: 'https://github.com/rainbow-me/rainbow/blob/master/LICENSE',
 };
 
 // ⚠️ Beware: magic numbers lol
@@ -105,8 +105,8 @@ const SettingsSection = ({
       />
       <ListItemDivider />
       <ListItem
-        icon={<Emoji name="scales" />}
-        label="About Balance"
+        icon={<Emoji name="rainbow" />}
+        label="About Rainbow"
         onPress={openWebView}
         value={SettingsExternalURLs.about}
       />

@@ -10,9 +10,9 @@ import {
 import Piwik from 'react-native-matomo';
 import * as keychain from './keychain';
 
-const seedPhraseKey = 'balanceWalletSeedPhrase';
-const privateKeyKey = 'balanceWalletPrivateKey';
-const addressKey = 'balanceWalletAddressKey';
+const seedPhraseKey = 'rainbowSeedPhrase';
+const privateKeyKey = 'rainbowPrivateKey';
+const addressKey = 'rainbowAddressKey';
 
 export function generateSeedPhrase() {
   return ethers.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
