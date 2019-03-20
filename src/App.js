@@ -76,7 +76,7 @@ class App extends Component {
     firebase.messaging().getToken()
       .then(fcmToken => {
         if (fcmToken) {
-          commonStorage.saveLocal('balanceWalletFcmToken', { data: fcmToken });
+          commonStorage.saveLocal('rainbowFcmToken', { data: fcmToken });
         }
       })
       .catch(error => {
@@ -84,7 +84,7 @@ class App extends Component {
       });
 
     this.onTokenRefreshListener = firebase.messaging().onTokenRefresh(fcmToken => {
-      commonStorage.saveLocal('balanceWalletFcmToken', { data: fcmToken });
+      commonStorage.saveLocal('rainbowFcmToken', { data: fcmToken });
     });
 
     this.notificationListener = firebase.notifications().onNotification(notification => {
@@ -249,4 +249,4 @@ const AppWithCodePush = CodePush({
   installMode: CodePush.InstallMode.ON_NEXT_RESUME,
 })(AppWithRedux);
 
-AppRegistry.registerComponent('BalanceWallet', () => AppWithCodePush);
+AppRegistry.registerComponent('Rainbow', () => AppWithCodePush);
