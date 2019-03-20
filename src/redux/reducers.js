@@ -4,7 +4,7 @@ import {
   send,
   settings,
   transactions,
-} from 'balance-common';
+} from '@rainbow-me/rainbow-common';
 import { combineReducers } from 'redux';
 
 import actionSheetManager from './actionSheetManager';

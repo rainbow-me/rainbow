@@ -1,4 +1,4 @@
-import { assetsRefreshState, transactionsRefreshState } from 'balance-common';
+import { assetsRefreshState, transactionsRefreshState } from '@rainbow-me/rainbow-common';
 import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
 

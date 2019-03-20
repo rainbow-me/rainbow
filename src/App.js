@@ -1,11 +1,11 @@
+import { get, isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
 import {
   accountLoadState,
   commonStorage,
   settingsInitializeState,
   settingsUpdateAccountAddress,
-} from 'balance-common';
-import { get, isEmpty } from 'lodash';
-import PropTypes from 'prop-types';
+} from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
 import Piwik from 'react-native-matomo';
 import { AlertIOS, AppRegistry, AppState } from 'react-native';
