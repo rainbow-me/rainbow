@@ -1,6 +1,6 @@
 # Rainbow Wallet
 
-A mobile wallet for dapps &amp; tokens. Currently focused on iOS.
+A mobile wallet for open finance and the decentralized web.
 
 ## Requirements
 
