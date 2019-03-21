@@ -27,13 +27,13 @@ platform :ios do
       display_name: "Rainbow"
     )
     update_app_identifier(
-      app_identifier: "io.rainbow",
+      app_identifier: "me.rainbow",
       xcodeproj: "Rainbow.xcodeproj",
       plist_path: "Rainbow/Info.plist",
     )
     match(
       type: "appstore",
-      app_identifier: "io.rainbow",
+      app_identifier: "me.rainbow",
       git_url: "git@github.com:rainbow-me/rainbow-code-signing.git"
     )
     gym(
@@ -42,7 +42,7 @@ platform :ios do
       include_symbols: true,
     )
     pilot(
-      app_identifier: "io.rainbow"
+      app_identifier: "me.rainbow"
     )
     download_dsyms
     upload_symbols_to_crashlytics
@@ -56,13 +56,13 @@ platform :ios do
       display_name: "Internal"
     )
     update_app_identifier(
-      app_identifier: "io.rainbow.internal",
+      app_identifier: "me.rainbow.internal",
       xcodeproj: "Rainbow.xcodeproj",
       plist_path: "Rainbow/Info.plist",
     )
     match(
       type: "appstore",
-      app_identifier: "io.rainbow.internal",
+      app_identifier: "me.rainbow.internal",
       git_url: "git@github.com:rainbow-me/rainbow-code-signing.git"
     )
     gym(
@@ -71,7 +71,7 @@ platform :ios do
       include_symbols: true,
     )
     pilot(
-      app_identifier: "io.rainbow.internal"
+      app_identifier: "me.rainbow.internal"
     )
     download_dsyms
     upload_symbols_to_crashlytics
