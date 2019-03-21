@@ -23,8 +23,8 @@ import {
 import { Emoji } from '../text';
 
 const SettingsExternalURLs = {
-  about: 'https://rainbow.me/about',
-  feedback: 'http://support.rainbow.me',
+  about: 'http://rainbow.me',
+  feedback: 'http://rainbow.me',
   legal: 'https://github.com/rainbow-me/rainbow/blob/master/LICENSE',
 };
 
