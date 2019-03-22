@@ -87,9 +87,7 @@ export default class RecyclerActivityList extends React.Component {
         .concat(section.data)
         .concat([{ hash: `${section.title}_end` }]); // footer
     }, [{ hash: '_header' }]); // header
-    if (items.length > 1) {
-      items.pop(); // remove last footer
-    }
+    items.pop(); // remove last footer
     return {
       dataProvider: state.dataProvider.cloneWithRows(items),
       headersIndices,
