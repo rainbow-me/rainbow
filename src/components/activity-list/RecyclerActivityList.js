@@ -36,6 +36,14 @@ export default class RecyclerActivityList extends React.Component {
     const { width } = Dimensions.get('window');
     this.state = {
       dataProvider: new DataProvider((r1, r2) => {
+        if (r1.hash === '_header' && r1.header.props.accountAddress !== r2.header.props.accountAddress) {
+          return true;
+        }
+
+        if (r1.native && r1.native.symbol !== r2.native.symbol) {
+          return true;
+        }
+
         const r1Key = r1.hash ? r1.hash : get(r1, 'transactionDisplayDetails.timestampInMs', '');
         const r2Key = r2.hash ? r2.hash : get(r2, 'transactionDisplayDetails.timestampInMs', '');
         return r1Key !== r2Key;
@@ -86,7 +94,7 @@ export default class RecyclerActivityList extends React.Component {
         }])
         .concat(section.data)
         .concat([{ hash: `${section.title}_end` }]); // footer
-    }, [{ hash: '_header' }]); // header
+    }, [{ hash: '_header', header: props.header }]); // header
     if (items.length > 1) {
       items.pop(); // remove last footer
     }
@@ -98,7 +106,7 @@ export default class RecyclerActivityList extends React.Component {
 
   rowRenderer = (type, data) => {
     if (type === ViewTypes.COMPONENT_HEADER) {
-      return this.props.header;
+      return data.header;
     }
     if (type === ViewTypes.HEADER) {
       return (
