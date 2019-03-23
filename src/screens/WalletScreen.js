@@ -1,7 +1,7 @@
-import { withAccountAssets } from 'balance-common';
 import { isSameDay } from 'date-fns';
 import { get, join, map } from 'lodash';
 import PropTypes from 'prop-types';
+import { withAccountAssets } from '@rainbow-me/rainbow-common';
 import React, { PureComponent } from 'react';
 import Piwik from 'react-native-matomo';
 import { withNavigationFocus } from 'react-navigation';

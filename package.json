@@ -1,5 +1,5 @@
 {
-  "name": "BalanceWallet",
+  "name": "Rainbow",
   "version": "0.3.0-25",
   "private": true,
   "scripts": {
@@ -18,7 +18,7 @@
     "@tradle/react-native-http": "^2.0.0",
     "assert": "^1.4.1",
     "axios": "^0.18.0",
-    "balance-common": "^0.6.33",
+    "@rainbow-me/rainbow-common": "^0.6.36",
     "bignumber.js": "^8.0.2",
     "browserify-zlib": "^0.1.4",
     "buffer": "^4.9.1",
