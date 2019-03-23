@@ -46,7 +46,7 @@ const ProfileScreen = ({
         onPress={onPressBackButton}
       />
     </Header>
-    {showSpinner && <LoadingOverlay title="Importing..." />}
+    {showSpinner && <LoadingOverlay />}
     <ActivityList
       accountAddress={accountAddress}
       hasPendingTransaction={hasPendingTransaction}
