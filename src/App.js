@@ -116,7 +116,7 @@ class App extends Component {
     try {
       this.props.trackingDateInit();
       const { isWalletBrandNew, walletAddress } = await walletInit(seedPhrase);
-      this.props.settingsUpdateAccountAddress(walletAddress, 'BALANCEWALLET');
+      this.props.settingsUpdateAccountAddress(walletAddress, 'RAINBOWWALLET');
       if (isWalletBrandNew) {
         return walletAddress;
       }

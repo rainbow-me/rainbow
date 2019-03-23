@@ -75,7 +75,7 @@ const ImportSeedPhraseSheetWithData = compose(
         .then(setSeedPhrase)
         .catch(error => console.log(error));
     },
-    onPressHelp: () => () => Linking.openURL('http://support.rainbow.me'),
+    onPressHelp: () => () => Linking.openURL('http://rainbow.me'),
   }),
   lifecycle({
     componentDidMount() {
