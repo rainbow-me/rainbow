@@ -1,6 +1,6 @@
-import { withAccountAssets } from 'balance-common';
 import { get, isEmpty, map } from 'lodash';
 import PropTypes from 'prop-types';
+import { withAccountAssets } from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
 import {
   Animated,

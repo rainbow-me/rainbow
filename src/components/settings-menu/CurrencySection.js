@@ -1,6 +1,6 @@
-import { supportedNativeCurrencies } from 'balance-common';
 import { omit } from 'lodash';
 import PropTypes from 'prop-types';
+import { supportedNativeCurrencies } from '@rainbow-me/rainbow-common';
 import React from 'react';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { withAccountSettings } from '../../hoc';

@@ -1,6 +1,6 @@
 import { differenceInMinutes } from 'date-fns';
 import { pickBy } from 'lodash';
-import { commonStorage } from 'balance-common';
+import { commonStorage } from '@rainbow-me/rainbow-common';
 
 /**
  * @desc get show shitcoins setting

@@ -1,4 +1,3 @@
-import { commonStorage } from 'balance-common';
 import lang from 'i18n-js';
 import {
   assign,
@@ -7,14 +6,15 @@ import {
   mapValues,
   values,
 } from 'lodash';
+import { commonStorage } from '@rainbow-me/rainbow-common';
 import { AlertIOS } from 'react-native';
 import RNWalletConnect from 'rn-walletconnect-wallet';
 
-const PUSH_ENDPOINT = 'https://us-central1-balance-424a3.cloudfunctions.net/push';
+const PUSH_ENDPOINT = 'https://us-central1-rainbow-me.cloudfunctions.net/push';
 
 export const walletConnectInit = async (accountAddress, uriString) => {
   try {
-    const fcmTokenLocal = await commonStorage.getLocal('balanceWalletFcmToken');
+    const fcmTokenLocal = await commonStorage.getLocal('rainbowFcmToken');
     const fcmToken = get(fcmTokenLocal, 'data', null);
     if (!fcmToken) {
       throw new Error('Push notification token unavailable.');

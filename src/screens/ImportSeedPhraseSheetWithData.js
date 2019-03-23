@@ -1,5 +1,5 @@
-import { isValidSeedPhrase as validateSeedPhrase } from 'balance-common';
 import { get } from 'lodash';
+import { isValidSeedPhrase as validateSeedPhrase } from '@rainbow-me/rainbow-common';
 import { Clipboard, InteractionManager, Linking } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import {
@@ -75,7 +75,7 @@ const ImportSeedPhraseSheetWithData = compose(
         .then(setSeedPhrase)
         .catch(error => console.log(error));
     },
-    onPressHelp: () => () => Linking.openURL('http://support.balance.io'),
+    onPressHelp: () => () => Linking.openURL('http://rainbow.me'),
   }),
   lifecycle({
     componentDidMount() {

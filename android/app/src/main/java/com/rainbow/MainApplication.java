@@ -1,4 +1,4 @@
-package com.balancewallet;
+package me.rainbow;
 
 import android.app.Application;
 
