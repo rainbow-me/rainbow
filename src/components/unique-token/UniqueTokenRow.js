@@ -1,3 +1,4 @@
+import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {
@@ -27,7 +28,7 @@ const UniqueTokenRow = ({
   isLastRow,
   items,
   onPress,
-}) => console.log(items) ||(
+}) => (
   <Container
     align="center"
     justify="start"
@@ -36,7 +37,7 @@ const UniqueTokenRow = ({
       marginTop: isFirstRow ? CardMargin : 0,
     }}
   >
-    {items.map((uniqueToken, itemIndex) => (
+    {items.filter(e => !isNil(e)).map((uniqueToken, itemIndex) => (
       <UniqueTokenCard
         item={uniqueToken}
         key={uniqueToken.id}
