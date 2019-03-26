@@ -27,7 +27,7 @@ const UniqueTokenRow = ({
   isLastRow,
   items,
   onPress,
-}) => console.log(items) ||(
+}) => (
   <Container
     align="center"
     justify="start"
