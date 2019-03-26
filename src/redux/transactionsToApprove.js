@@ -1,18 +1,18 @@
-import smartContractMethods from 'balance-common/src/references/smartcontract-methods.json';
 import BigNumber from 'bignumber.js';
-import {
-  convertAssetAmountToDisplaySpecific,
-  convertAssetAmountToNativeValue,
-  convertHexToString,
-  formatInputDecimals,
-  fromWei,
-} from 'balance-common';
 import {
   find,
   get,
   mapValues,
   omit,
 } from 'lodash';
+import {
+  convertAssetAmountToDisplaySpecific,
+  convertAssetAmountToNativeValue,
+  convertHexToString,
+  formatInputDecimals,
+  fromWei,
+} from '@rainbow-me/rainbow-common';
+import smartContractMethods from '@rainbow-me/rainbow-common/src/references/smartcontract-methods.json';
 import {
   getLocalRequests,
   removeLocalRequest,

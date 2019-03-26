@@ -6,7 +6,7 @@ import Mailer from 'react-native-mail';
 import { Alert } from './alerts';
 import { Button } from './buttons';
 
-const FeedbackEmailAddress = 'contact+alphafeedback@balance.io';
+const FeedbackEmailAddress = 'support@rainbow.me';
 
 const FeedbackErrorAlert = () => Alert({
   buttons: [{

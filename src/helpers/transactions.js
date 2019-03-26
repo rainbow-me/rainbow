@@ -1,4 +1,3 @@
-import { supportedNativeCurrencies } from 'balance-common';
 import {
   format,
   isThisMonth,
@@ -11,6 +10,7 @@ import {
   groupBy,
   isEmpty,
 } from 'lodash';
+import { supportedNativeCurrencies } from '@rainbow-me/rainbow-common';
 import { createElement } from 'react';
 import { createSelector } from 'reselect';
 import TransactionStatusTypes from './transactionStatusTypes';

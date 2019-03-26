@@ -1,7 +1,7 @@
-import { getTransactionCount, web3Instance } from 'balance-common';
 import lang from 'i18n-js';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
+import { getTransactionCount, web3Instance } from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
 import { AlertIOS, StatusBar, Vibration } from 'react-native';
 import Piwik from 'react-native-matomo';
