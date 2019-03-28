@@ -17,14 +17,12 @@ const Container = styled(Row)`
   ${padding(CoinRowPaddingVertical, 19, CoinRowPaddingVertical, 15)}
   background-color: ${colors.white};
   width: 100%;
-  ${({ containerStyles }) => containerStyles}
 `;
 
 const Content = styled(Column)`
   background-color: ${colors.white};
   height: ${CoinIcon.size};
   margin-left: ${CoinRowPaddingVertical};
-  ${({ contentStyles }) => contentStyles}
 `;
 
 const CoinRow = ({
@@ -38,9 +36,9 @@ const CoinRow = ({
   topRowRender,
   ...props
 }) => (
-  <Container align="center" style={containerStyles}>
+  <Container align="center" css={containerStyles}>
     {createElement(coinIconRender, { symbol, ...props })}
-    <Content flex={1} justify="space-between" styles={contentStyles}>
+    <Content flex={1} justify="space-between" css={contentStyles}>
       <Row align="center" justify="space-between">
         {topRowRender({ symbol, ...props })}
       </Row>
