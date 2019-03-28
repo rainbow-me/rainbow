@@ -138,7 +138,7 @@ class TransactionConfirmationScreen extends Component {
           <TransactionType>{lang.t('wallet.transaction.request')}</TransactionType>
           <CancelButtonContainer>
             <Button
-              bgColor={colors.blueGreyMedium}
+              backgroundColor={colors.blueGreyMedium}
               onPress={onCancelTransaction}
               size="small"
               textProps={{ color: 'black', size: 'medium' }}

@@ -5,6 +5,7 @@ export { default as withAccountSettings } from './withAccountSettings';
 export { default as withAccountTransactions } from './withAccountTransactions';
 export { default as withActionSheetManager } from './withActionSheetManager';
 export { default as withAddWalletConnector } from './withAddWalletConnector';
+export { default as withAppState } from './withAppState';
 export { default as withBlurTransitionProps } from './withBlurTransitionProps';
 export { default as withFetchingPrices } from './withFetchingPrices';
 export { default as withHideSplashScreen } from './withHideSplashScreen';

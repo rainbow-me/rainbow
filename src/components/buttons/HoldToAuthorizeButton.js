@@ -154,9 +154,9 @@ export default class HoldToAuthorizeButton extends PureComponent {
   }
 
   componentWillUnmount() {
-    this.animation.stopAnimation();
-    this.progress.stopAnimation();
-    this.scale.stopAnimation();
+    // this.animation.stopAnimation();
+    // this.progress.stopAnimation();
+    // this.scale.stopAnimation();
   }
 
   onTapChange = ({ nativeEvent }) => {
