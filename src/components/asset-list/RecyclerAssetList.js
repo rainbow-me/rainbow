@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import React from 'react';
 import { Dimensions, RefreshControl } from 'react-native';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
@@ -65,9 +65,14 @@ export default class RecyclerAssetList extends React.Component {
     const { width } = Dimensions.get('window');
     this.state = {
       dataProvider: new DataProvider((r1, r2) => {
+        if (get(r1, 'section.totalValue') && r1.section.totalValue !== r2.section.totalValue) {
+          return true;
+        }
+        const r1Value = get(r1, Array.isArray(r1) ? '' : 'native.balance.display');
+        const r2Value = get(r2, Array.isArray(r2) ? '' : 'native.balance.display');
         const r1Key = get(r1, Array.isArray(r1) ? '[0].id' : 'symbol');
         const r2Key = get(r2, Array.isArray(r2) ? '[0].id' : 'symbol');
-        return r1Key !== r2Key;
+        return r1Key !== r2Key || r1Value !== r2Value;
       }),
       headersIndices: [],
     };
@@ -80,9 +85,9 @@ export default class RecyclerAssetList extends React.Component {
 
         // This logic appears to be quite complex since there might be some race conditions
         // regarding order of received sections while importing from seeds
-        const areBalancesLoaded = this.props.sections[0] && this.props.sections[0].title === 'Balances';
+        const areBalancesLoaded = this.props.sections[0] && !isEmpty(this.props.sections[0].title);
         const areCollectiblesLoaded = this.props.sections.length === 2
-          || (this.props.sections[0] && this.props.sections[0].title === 'Collectibles');
+          || (this.props.sections[0] && !isEmpty(this.props.sections[0].title));
         if (areCollectiblesLoaded) {
           const idx = areBalancesLoaded ? 1 : 0;
           if (index === this.state.headersIndices[idx] + 1) {
