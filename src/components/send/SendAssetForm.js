@@ -2,15 +2,15 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
+import { withAccountSettings } from '../../hoc';
+import transitions from '../../navigation/transitions';
+import { colors, padding, position } from '../../styles';
+import { deviceUtils } from '../../utils';
+import { removeLeadingZeros } from '../../utils/formatters';
 import { SendCoinRow } from '../coin-row';
 import { DoubleArrowSelectionIcon } from '../icons';
 import { Column, ColumnWithMargins } from '../layout';
 import { ShadowStack } from '../shadow-stack';
-import { withAccountSettings } from '../../hoc';
-import { colors, padding, position } from '../../styles';
-import { deviceUtils } from '../../utils';
-import { removeLeadingZeros } from '../../utils/formatters';
-
 import SendAssetFormField from './SendAssetFormField';
 
 const Container = styled(Column)`
@@ -24,7 +24,7 @@ const TransactionContainer = styled(Column).attrs({
   align: 'end',
   justify: 'space-between',
 })`
-  ${padding(22, 15, SendCoinRow.selectedHeight - 2)}
+  ${padding(22, 15, 19 + transitions.sheetVerticalOffset)}
   background-color: ${colors.lightGrey};
   flex: 1;
   width: 100%;

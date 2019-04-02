@@ -5,7 +5,7 @@ import Animated, { Easing } from 'react-native-reanimated';
 const buildAnimation = (value, toValue) => (
   Animated.timing(value, {
     duration: 150,
-    easing: Easing.inOut(Easing.ease),
+    easing: Easing.elastic(0.666),
     isInteraction: false,
     toValue,
     useNativeDriver: true,
@@ -36,7 +36,7 @@ export default class FlyInAnimation extends PureComponent {
       style={{
         ...this.props.style,
         opacity: this.buildInterpolation([0, 1]),
-        transform: [{ translateY: this.buildInterpolation([40, 0]) }],
+        transform: [{ translateY: this.buildInterpolation([20, 0]) }],
       }}
     >
       {this.props.children}
