@@ -43,7 +43,7 @@ const SendTransactionSpeed = ({ gasPrice, nativeCurrencySymbol, onPressTransacti
           }}
         />
         <Text color={colors.white} weight="medium">
-          Arrives in ~ {time}
+          Arrives in ~ {time.slice(0, -1)}
         </Text>
       </Button>
     </Row>

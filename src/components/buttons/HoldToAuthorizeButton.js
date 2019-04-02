@@ -1,22 +1,23 @@
 import PropTypes from 'prop-types';
-import RadialGradient from 'react-native-radial-gradient';
-import styled from 'styled-components/primitives';
 import React, { PureComponent } from 'react';
-import { withProps } from 'recompact';
-import { InteractionManager } from 'react-native';
-import Animated, { Easing } from 'react-native-reanimated';
-import { LongPressGestureHandler, State, TapGestureHandler } from 'react-native-gesture-handler';
+import {
+  LongPressGestureHandler,
+  State,
+  TapGestureHandler,
+} from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import RadialGradient from 'react-native-radial-gradient';
+import Animated, { Easing } from 'react-native-reanimated';
+import { withProps } from 'recompact';
+import styled from 'styled-components/primitives';
+import { colors, padding, position } from '../../styles';
+import { deviceUtils } from '../../utils';
 import { ScaleInAnimation } from '../animations';
 import { BiometryIcon, Icon } from '../icons';
 import InnerBorder from '../InnerBorder';
 import { Centered } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import { Text } from '../text';
-import { colors, padding, position } from '../../styles';
-import {
-  deviceUtils,
-} from '../../utils';
 
 const {
   cond,
@@ -42,6 +43,8 @@ const ButtonShadows = {
     [0, 3, 9, colors.dark, 0.08],
   ],
 };
+
+const progressDurationMs = 500; // @christian approves
 
 const Content = styled(Centered)`
   ${padding(15)}
@@ -75,8 +78,6 @@ const GradientColors = {
     to: colors.grey,
   },
 };
-
-const progressDurationMs = 500; // @christian approves
 
 const buildAnimation = (value, options) => {
   const {
@@ -126,8 +127,7 @@ export default class HoldToAuthorizeButton extends PureComponent {
     children: PropTypes.any,
     disabled: PropTypes.bool,
     isAuthorizing: PropTypes.bool,
-    onLongPress: PropTypes.func,
-    setSafeTimeout: PropTypes.func,
+    onLongPress: PropTypes.func.isRequired,
     style: PropTypes.object,
   }
 
@@ -151,12 +151,6 @@ export default class HoldToAuthorizeButton extends PureComponent {
     if (this.state.isAuthorizing && !this.props.isAuthorizing) {
       this.setState({ isAuthorizing: false });
     }
-  }
-
-  componentWillUnmount() {
-    // this.animation.stopAnimation();
-    // this.progress.stopAnimation();
-    // this.scale.stopAnimation();
   }
 
   onTapChange = ({ nativeEvent }) => {
@@ -196,24 +190,12 @@ export default class HoldToAuthorizeButton extends PureComponent {
       buildAnimation(this.scale, {
         isInteraction: true,
         toValue: 1,
-      }).start(() => {
-        this.setState({ isAuthorizing: true });
-        // // InteractionManager.runAfterInteractions(() => {
-          // buildAnimation(this.animation, {
-          //   duration: calculateReverseDuration(this.animation),
-          //   isInteraction: true,
-          //   toValue: 0,
-          // }).start();
-        // });
-      });
+      }).start(() => this.setState({ isAuthorizing: true }));
 
-      return onLongPress(this.handleLongPressCallback);
+      if (onLongPress) {
+        onLongPress();
+      }
     }
-  }
-
-  handleLongPressCallback = (result) => {
-    console.log('RESULTresult', result);
-    return this.setState({ isAuthorizing: false });
   }
 
   render() {
@@ -225,11 +207,6 @@ export default class HoldToAuthorizeButton extends PureComponent {
     } = this.props;
 
     const theme = disabled ? 'disabled' : 'default';
-
-    // const isBegan = this.tapHandlerState === State.BEGAN;
-    // const isActive = this.tapHandlerState === State.ACTIVE;
-
-    // const LOLITSHOULDWORK = (this.tapHandlerState === State.BEGAN) || (this.tapHandlerState === State.ACTIVE);
 
     return (
       <TapGestureHandler onHandlerStateChange={this.onTapChange}>

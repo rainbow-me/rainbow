@@ -1,17 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { isIphoneX } from 'react-native-iphone-x-helper';
 import { PasteAddressButton } from '../buttons';
 import { Icon } from '../icons';
 import { Centered, Column, Row } from '../layout';
 import { withNeverRerender } from '../../hoc';
+import transitionConfig from '../../navigation/transitions';
 import { colors, padding } from '../../styles';
 
 const SendEmptyState = ({ onPressPaste }) => (
   <Column
     css={`
       background-color: ${colors.white};
-      padding-bottom: ${isIphoneX() ? 50 : 20};
+      padding-bottom: ${transitionConfig.sheetVerticalOffset + 19};
     `}
     flex={1}
     justify="space-between"
@@ -23,7 +23,7 @@ const SendEmptyState = ({ onPressPaste }) => (
         style={{ height: 88, width: 91 }}
       />
     </Centered>
-    <Row css={padding(0, 15, 20)} justify="end" width="100%">
+    <Row css={padding(0, 15)} justify="end" width="100%">
       <PasteAddressButton onPress={onPressPaste}/>
     </Row>
   </Column>
