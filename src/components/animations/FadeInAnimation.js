@@ -22,7 +22,7 @@ export default class FadeInAnimation extends PureComponent {
     duration: PropTypes.number,
     easing: PropTypes.func,
     from: PropTypes.number,
-    isInteraction: PropTypes.boolean,
+    isInteraction: PropTypes.bool,
     style: PropTypes.object,
     to: PropTypes.number,
   }
