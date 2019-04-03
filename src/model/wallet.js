@@ -52,7 +52,7 @@ export const createTransaction = async (to, data, value, gasLimit, gasPrice, non
   value: ethers.utils.parseEther(value),
 });
 
-export const sendTransaction = async ({ tracking, transaction }) => {
+export const sendTransaction = async ({ transaction }) => {
   try {
     const wallet = await loadWallet();
     if (!wallet) {

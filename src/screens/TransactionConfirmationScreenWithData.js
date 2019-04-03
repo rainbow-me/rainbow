@@ -51,13 +51,7 @@ class TransactionConfirmationScreenWithData extends Component {
     const txPayloadLatestNonce = { ...txPayload, nonce };
     const symbol = get(transactionDetails, 'transactionDisplayDetails.payload.asset.symbol', 'unknown');
     const address = get(transactionDetails, 'transactionDisplayDetails.payload.asset.address', '');
-    const trackingName = `${symbol}:${address}`;
     const transactionHash = await sendTransaction({
-      tracking: {
-        action: 'send-wc',
-        amount: get(transactionDetails, 'transactionDisplayDetails.payload.nativeAmount'),
-        name: trackingName,
-      },
       transaction: txPayloadLatestNonce,
     });
 
