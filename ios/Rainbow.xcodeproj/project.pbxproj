@@ -2321,7 +2321,7 @@
 			baseConfigurationReference = D7C7933F711993F41BC21042 /* Pods-Rainbow.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODEPUSH_KEY = "rRRp2wVm2zME6qpn0ncR7CAV5QCD343992b2-2d60-469e-9628-dfd37746ec1a";
+				CODEPUSH_KEY = "CHq9hB40PBZqHTxL-f-Wd_rK4anl1e7a8912-936f-4ce7-8505-32a075039f51";
 				CODE_SIGN_ENTITLEMENTS = Rainbow/Rainbow.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
@@ -2412,7 +2412,7 @@
 			baseConfigurationReference = 32F7E1A0C89B971B01CB684B /* Pods-Rainbow.staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODEPUSH_KEY = "kVkoMqwPWFwoeBl7Uubt8X8NZlpL343992b2-2d60-469e-9628-dfd37746ec1a";
+				CODEPUSH_KEY = "Xf8eimmB0-W22TRNCwL9tZNO9xev1e7a8912-936f-4ce7-8505-32a075039f51";
 				CODE_SIGN_ENTITLEMENTS = Rainbow/Rainbow.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
@@ -2548,7 +2548,7 @@
 			baseConfigurationReference = 44EE3B0DD0E9AE29B2B74EE9 /* Pods-Rainbow.localrelease.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODEPUSH_KEY = "rRRp2wVm2zME6qpn0ncR7CAV5QCD343992b2-2d60-469e-9628-dfd37746ec1a";
+				CODEPUSH_KEY = "";
 				CODE_SIGN_ENTITLEMENTS = Rainbow/Rainbow.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
