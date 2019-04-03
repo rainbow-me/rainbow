@@ -7,7 +7,6 @@ import {
   settingsUpdateAccountAddress,
 } from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
-import Piwik from 'react-native-matomo';
 import { AlertIOS, AppRegistry, AppState } from 'react-native';
 import { StackActions } from 'react-navigation';
 import CodePush from 'react-native-code-push';
@@ -20,7 +19,6 @@ import OfflineBadge from './components/OfflineBadge';
 import {
   withAccountRefresh,
   withHideSplashScreen,
-  withTrackingDate,
   withWalletConnectConnections,
 } from './hoc';
 import {
@@ -58,7 +56,6 @@ class App extends Component {
     settingsUpdateAccountAddress: PropTypes.func,
     setWalletConnectors: PropTypes.func,
     sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
-    trackingDateInit: PropTypes.func,
     transactionIfExists: PropTypes.func,
     transactionsToApproveInit: PropTypes.func,
   }
@@ -71,7 +68,6 @@ class App extends Component {
     await this.handleWalletConfig();
     this.props.onHideSplashScreen();
     await this.props.refreshAccount();
-    Piwik.initTracker('https://matomo.balance.io/piwik.php', 2);
     AppState.addEventListener('change', this.handleAppStateChange);
     firebase.messaging().getToken()
       .then(fcmToken => {
@@ -114,7 +110,6 @@ class App extends Component {
 
   handleWalletConfig = async (seedPhrase) => {
     try {
-      this.props.trackingDateInit();
       const { isWalletBrandNew, walletAddress } = await walletInit(seedPhrase);
       this.props.settingsUpdateAccountAddress(walletAddress, 'RAINBOWWALLET');
       if (isWalletBrandNew) {
@@ -144,7 +139,6 @@ class App extends Component {
 
   handleAppStateChange = async (nextAppState) => {
     if (this.state.appState.match(/unknown|background/) && nextAppState === 'active') {
-      Piwik.trackEvent('screen', 'view', 'app');
       this.fetchAllRequestsFromWalletConnectSessions();
     }
     this.setState({ appState: nextAppState });
@@ -228,7 +222,6 @@ const AppWithRedux = compose(
   withProps({ store }),
   withAccountRefresh,
   withHideSplashScreen,
-  withTrackingDate,
   withWalletConnectConnections,
   connect(
     null,

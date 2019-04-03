@@ -2,7 +2,6 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { InteractionManager } from 'react-native';
-import Piwik from 'react-native-matomo';
 import {
   compose,
   onlyUpdateForKeys,
@@ -57,7 +56,6 @@ export default compose(
       navigation.goBack();
 
       InteractionManager.runAfterInteractions(() => {
-        Piwik.trackEvent('Navigation', 'send-expanded', 'SendTokenExpandedNav');
         navigation.navigate('SendSheet', { asset: symbol });
       });
     },
