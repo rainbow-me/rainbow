@@ -3,7 +3,6 @@ import { get, join, map } from 'lodash';
 import PropTypes from 'prop-types';
 import { withAccountAssets } from '@rainbow-me/rainbow-common';
 import React, { PureComponent } from 'react';
-import Piwik from 'react-native-matomo';
 import { withNavigationFocus } from 'react-navigation';
 import {
   compose,
@@ -24,7 +23,6 @@ import {
   withBlurTransitionProps,
   withFetchingPrices,
   withIsWalletEmpty,
-  withTrackingDate,
 } from '../hoc';
 import { position } from '../styles';
 import withStatusBarStyle from '../hoc/withStatusBarStyle';
@@ -43,9 +41,7 @@ class WalletScreen extends PureComponent {
     sections: PropTypes.array,
     showBlur: PropTypes.bool,
     toggleShowShitcoins: PropTypes.func,
-    trackingDate: PropTypes.object,
     uniqueTokens: PropTypes.array,
-    updateTrackingDate: PropTypes.func,
   }
 
   componentDidMount = async () => {
@@ -58,32 +54,6 @@ class WalletScreen extends PureComponent {
       }
     } catch (error) {
       // TODO
-    }
-  }
-
-  componentDidUpdate = (prevProps) => {
-    const {
-      allAssetsCount,
-      assets,
-      assetsTotal,
-      isFocused,
-      trackingDate,
-      uniqueTokens,
-      updateTrackingDate,
-    } = this.props;
-
-    if (isFocused && !prevProps.isFocused) {
-      Piwik.trackScreen('WalletScreen', 'WalletScreen');
-      const totalTrackingAmount = get(assetsTotal, 'totalTrackingAmount', null);
-      const assetSymbols = join(map(assets || {}, (asset) => asset.symbol));
-      if (totalTrackingAmount && (!trackingDate || !isSameDay(trackingDate, Date.now()))) {
-        Piwik.trackEvent('Balance', 'AssetsCount', 'TotalAssetsCount', allAssetsCount);
-        Piwik.trackEvent('Balance', 'AssetSymbols', 'AssetSymbols', assetSymbols);
-        Piwik.trackEvent('Balance', 'NFTCount', 'TotalNFTCount', uniqueTokens.length);
-        Piwik.trackEvent('Balance', 'Total', 'TotalUSDBalance', totalTrackingAmount);
-
-        updateTrackingDate();
-      }
     }
   }
 
@@ -122,7 +92,6 @@ export default compose(
   withAccountSettings,
   withFetchingPrices,
   withNavigationFocus,
-  withTrackingDate,
   withBlurTransitionProps,
   withIsWalletEmpty,
   withStatusBarStyle('dark-content'),

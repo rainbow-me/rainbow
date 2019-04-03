@@ -7512,10 +7512,6 @@ react-native-mail@^3.0.6:
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/react-native-mail/-/react-native-mail-3.0.7.tgz#07e6aca43f6f1f85f3e58e96e7fcd16b31a927b8"
 
-"react-native-matomo@git+https://github.com/BonifyByForteil/react-native-matomo.git":
-  version "0.0.8"
-  resolved "git+https://github.com/BonifyByForteil/react-native-matomo.git#32907c88a586f8dcc69a69a0303561753064cb50"
-
 react-native-os@^1.2.1:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/react-native-os/-/react-native-os-1.2.2.tgz#402cee00ac00a0588200a66b90e1d2b5a593fec0"
