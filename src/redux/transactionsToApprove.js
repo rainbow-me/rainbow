@@ -141,7 +141,7 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
     };
   }
   if (transaction.data) {
-    const value = fromWei(convertHexToString(transaction.value));
+    const value = transaction.value ? fromWei(convertHexToString(transaction.value)) : 0;
     return {
       payload: {
         data: transaction.data,
