@@ -1,3 +1,4 @@
+import { withAccountAssets } from '@rainbow-me/rainbow-common';
 import {
   get,
   isEmpty,
@@ -6,7 +7,6 @@ import {
   map,
 } from 'lodash';
 import PropTypes from 'prop-types';
-import { withAccountAssets } from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
 import { isIphoneX } from 'react-native-iphone-x-helper';
