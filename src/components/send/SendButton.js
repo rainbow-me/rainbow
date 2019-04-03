@@ -40,7 +40,7 @@ const SendButton = ({
 };
 
 SendButton.propTypes = {
-  assetAmount: PropTypes.number,
+  assetAmount: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   isAuthorizing: PropTypes.bool,
   isSufficientBalance: PropTypes.bool,
   isSufficientGas: PropTypes.bool,

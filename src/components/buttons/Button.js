@@ -109,7 +109,7 @@ Button.propTypes = {
   children: PropTypes.node.isRequired,
   containerStyles: PropTypes.string,
   disabled: PropTypes.bool,
-  onPress: PropTypes.func.isRequired,
+  onPress: PropTypes.func,
   showShadow: PropTypes.bool,
   size: PropTypes.oneOf(Object.keys(ButtonSizeTypes)),
   style: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),

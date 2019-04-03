@@ -111,7 +111,7 @@ SendAssetForm.propTypes = {
   onChangeAssetAmount: PropTypes.func,
   onChangeNativeAmount: PropTypes.func,
   onResetAssetSelection: PropTypes.func,
-  selected: PropTypes.bool,
+  selected: PropTypes.object,
   sendMaxBalance: PropTypes.func,
   txSpeedRenderer: PropTypes.node,
 };
