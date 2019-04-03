@@ -59,3 +59,6 @@ buck-out/
 
 # Bundle artifact
 *.jsbundle
+
+# Development Templates
+src/screens/ExamplePage.js

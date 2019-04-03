@@ -9,8 +9,7 @@ import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from './ProfileScreenWithData';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
 import ReceiveModal from './ReceiveModal';
-import ExamplePage from './ExamplePage';
-import SendQRScannerScreenWithData from './SendQRScannerScreenWithData';
+// import ExamplePage from './ExamplePage';
 import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
@@ -42,6 +41,7 @@ const SwipeStack = createMaterialTopTabNavigator({
 
 const MainNavigator = createStackNavigator({
   ConfirmRequest: TransactionConfirmationScreenWithData,
+  // ExamplePage: ExamplePage,
   ExpandedAssetScreen: {
     navigationOptions: {
       effect: 'expanded',
@@ -61,9 +61,7 @@ const MainNavigator = createStackNavigator({
     },
     screen: ReceiveModal,
   },
-  SendQRScannerScreen: SendQRScannerScreenWithData,
   SendSheet: SendSheetWithData,
-  ExamplePage: ExamplePage,
   SettingsModal: {
     navigationOptions: {
       effect: 'expanded',
