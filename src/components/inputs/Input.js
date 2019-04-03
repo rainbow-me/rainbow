@@ -33,6 +33,7 @@ Input.propTypes = {
     'decimal-pad',
     'default',
     'email-address',
+    'name-phone-pad',
     'number-pad',
     'numeric',
     'phone-pad',

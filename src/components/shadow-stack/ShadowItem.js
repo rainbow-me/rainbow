@@ -19,8 +19,8 @@ const ShadowItem = ({ backgroundColor, shadow, ...props }) => (
 ShadowItem.propTypes = {
   backgroundColor: PropTypes.string,
   height: PropTypes.number,
-  shadow: PropTypes.string,
-  width: PropTypes.number,
+  shadow: PropTypes.array,
+  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 export default pure(ShadowItem);

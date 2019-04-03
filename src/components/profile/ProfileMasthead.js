@@ -79,7 +79,7 @@ const ProfileMasthead = ({
 
 ProfileMasthead.propTypes = {
   accountAddress: PropTypes.string,
-  emojiCount: PropTypes.string,
+  emojiCount: PropTypes.number,
   onPressCopy: PropTypes.func,
   onPressReceive: PropTypes.func,
   showBottomDivider: PropTypes.bool,

@@ -50,7 +50,7 @@ class SendSheet extends Component {
     allAssets: PropTypes.array,
     assetAmount: PropTypes.string,
     fetchData: PropTypes.func,
-    gasPrice: PropTypes.string,
+    gasPrice: PropTypes.object,
     gasPrices: PropTypes.object,
     isSufficientBalance: PropTypes.bool,
     isSufficientGas: PropTypes.bool,

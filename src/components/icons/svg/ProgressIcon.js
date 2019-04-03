@@ -92,7 +92,7 @@ const ProgressIcon = ({
 
 ProgressIcon.propTypes = {
   color: PropTypes.string,
-  progress: PropTypes.number,
+  progress: PropTypes.object,
   progressColor: PropTypes.string,
   size: PropTypes.number,
   strokeWidth: PropTypes.number,

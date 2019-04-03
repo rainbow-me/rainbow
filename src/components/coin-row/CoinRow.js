@@ -57,7 +57,7 @@ CoinRow.propTypes = {
   bottomRowRender: PropTypes.func,
   children: PropTypes.node,
   coinIconRender: PropTypes.func,
-  containerStyles: PropTypes.string,
+  containerStyles: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
   contentStyles: PropTypes.string,
   onPress: PropTypes.func,
   symbol: PropTypes.string,
