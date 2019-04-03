@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { get } from 'lodash';
+import { get, isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import { getTransactionCount, web3Instance } from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
@@ -45,10 +45,19 @@ class TransactionConfirmationScreenWithData extends Component {
   handleConfirmTransaction = async () => {
     const { transactionDetails } = this.props.navigation.state.params;
     const txPayload = get(transactionDetails, 'callData.params[0]');
+    let gasLimit = txPayload.gasLimit;
+    if (isNil(gasLimit)) {
+      try {
+        rawGasLimit = await web3Instance.eth.estimateGas(txPayload);
+        gasLimit = web3Instance.utils.toHex(rawGasLimit);
+      } catch (error) {
+        console.log('error estimating gas', error);
+      }
+    }
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(this.props.transactionCountNonce, web3TxnCount);
     const nonce = web3Instance.utils.toHex(maxTxnCount);
-    const txPayloadLatestNonce = { ...txPayload, nonce };
+    const txPayloadLatestNonce = { ...txPayload, gasLimit, nonce };
     const symbol = get(transactionDetails, 'transactionDisplayDetails.payload.asset.symbol', 'unknown');
     const address = get(transactionDetails, 'transactionDisplayDetails.payload.asset.address', '');
     const transactionHash = await sendTransaction({
