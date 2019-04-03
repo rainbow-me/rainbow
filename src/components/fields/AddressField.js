@@ -1,4 +1,4 @@
-import { isValidAddress } from 'balance-common';
+import { isValidAddress } from '@rainbow-me/rainbow-common';
 import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
