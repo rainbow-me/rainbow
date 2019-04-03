@@ -24,11 +24,7 @@ class PasteAddressButton extends PureComponent {
     }
   }
 
-  getClipboardContents = () => {
-    InteractionManager.runAfterInteractions(async () => {
-      Clipboard.getString().then(this.setClipboardContents);
-    });
-  }
+  getClipboardContents = async () => Clipboard.getString().then(this.setClipboardContents)
 
   handlePress = () => {
     if (this.state.clipboardContents) {
@@ -37,9 +33,11 @@ class PasteAddressButton extends PureComponent {
   }
 
   setClipboardContents = (clipboardContents) => {
-    if (isValidAddress(clipboardContents)) {
-      this.setState({ clipboardContents });
-    }
+    InteractionManager.runAfterInteractions(() => {
+      if (isValidAddress(clipboardContents)) {
+        this.setState({ clipboardContents });
+      }
+    });
   }
 
   render() {
