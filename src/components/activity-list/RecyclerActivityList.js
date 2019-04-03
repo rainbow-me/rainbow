@@ -36,17 +36,20 @@ export default class RecyclerActivityList extends React.Component {
     const { width } = Dimensions.get('window');
     this.state = {
       dataProvider: new DataProvider((r1, r2) => {
-        if (r1.hash === '_header' && r1.header.props.accountAddress !== r2.header.props.accountAddress) {
-          return true;
+        if (r1.hash === '_header') {
+          const r1Address = get(r1, 'header.props.accountAddress', '');
+          const r2Address = get(r2, 'header.props.accountAddress', '');
+          if (r1Address !== r2Address) {
+            return true;
+          }
         }
 
-        if (r1.native && r1.native.symbol !== r2.native.symbol) {
-          return true;
-        }
+        const r1Symbol = get(r1, 'native.symbol', '');
+        const r2Symbol = get(r2, 'native.symbol', '');
 
         const r1Key = r1.hash ? r1.hash : get(r1, 'transactionDisplayDetails.timestampInMs', '');
         const r2Key = r2.hash ? r2.hash : get(r2, 'transactionDisplayDetails.timestampInMs', '');
-        return r1Key !== r2Key;
+				return (r1Key !== r2Key) || (r1Symbol !== r2Symbol);
       }),
       headersIndices: [],
     };
