@@ -12,6 +12,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [0.4.0-1](https://github.com/rainbow-me/rainbow/releases/tag/v0.4.0-1)
+### Added
+* 🌈
+* 👍 feedback when a user copies address
+
+### Changed
+* Performance improvements to Activity List
+* Improvements for send feedback
+* Fixes for iPhone 6 users stuck in a loop with gas sheet when trying to send
+
+### Removed
+* Matomo
+
 ## [0.3.0-25](https://github.com/rainbow-me/rainbow/releases/tag/v0.3.0-25)
 ### Added
 * WBTC pricing to rely on BTC price feed
