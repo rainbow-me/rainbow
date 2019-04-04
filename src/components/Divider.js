@@ -79,7 +79,7 @@ const Divider = ({
 Divider.propTypes = {
   color: PropTypes.string,
   horizontal: PropTypes.bool,
-  inset: PropTypes.arrayOf(PropTypes.number),
+  inset: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.number), PropTypes.bool]),
   size: PropTypes.number,
 };
 

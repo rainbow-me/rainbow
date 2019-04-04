@@ -1,49 +1,25 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Animated } from 'react-native';
+import React from 'react';
 import { Path } from 'svgs';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
-class HandleIcon extends Component {
-  static propTypes = {
-    color: PropTypes.string,
-    progress: PropTypes.number,
-  };
+const HandleIcon = ({ color, ...props }) => (
+  <Svg height="11" width="37" viewBox="0 0 37 11" {...props}>
+    <Path
+      d="M2.164 5.356A2.5 2.5 0 1 1 3.836.644l14.162 5.025a1.5 1.5 0 0 0 1.004 0L33.164.644a2.5 2.5 0 0 1 1.672 4.712l-14.162 5.025a6.5 6.5 0 0 1-4.348 0L2.164 5.356z"
+      fill={color}
+      fillRule="nonzero"
+    />
+  </Svg>
+);
 
-  static defaultProps = {
-    color: colors.white,
-    progress: 6.5,
-  };
+HandleIcon.propTypes = {
+  color: PropTypes.string,
+};
 
-  render() {
-    const { color, progress } = this.props;
+HandleIcon.defaultProps = {
+  color: colors.black,
+};
 
-    return (
-      <Svg
-        {...this.props}
-        height="17"
-        width="42"
-        viewBox="0 0 40 14"
-      >
-        <Path
-          d={`M19,3 L32.5,${progress}`}
-          stroke={color}
-          strokeWidth="5"
-          strokeLinecap="round"
-          fill="transparent"
-          transform="translate(24.500000, 3.500000) scale(-1, 1) translate(-24.500000, -3.500000)"
-        />
-        <Path
-          d={`M3,3 L16.5,${progress}`}
-          stroke={color}
-          strokeWidth="5"
-          strokeLinecap="round"
-          fill="transparent"
-        />
-      </Svg>
-    );
-  }
-}
-
-export default Animated.createAnimatedComponent(HandleIcon);
+export default HandleIcon;

@@ -1,6 +1,6 @@
 import { get, each } from 'lodash';
 import expandedTransition from './expanded';
-import sheetTransition from './sheet';
+import sheetTransition, { sheetVerticalOffset } from './sheet';
 
 export function buildTransitions(navigation, transitions) {
   return (transitionProps, prevTransitionProps) => {
@@ -30,4 +30,5 @@ export default {
   buildTransitions,
   expanded,
   sheet,
+  sheetVerticalOffset,
 };
