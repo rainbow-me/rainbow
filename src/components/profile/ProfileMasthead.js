@@ -4,7 +4,8 @@ import { Clipboard } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
   compose,
-  onlyUpdateForKeys,
+  onlyUpdateForPropTypes,
+  withState,
   pure,
   setStatic,
   withHandlers,
@@ -16,6 +17,7 @@ import { abbreviations } from '../../utils';
 import CopyTooltip from '../CopyTooltip';
 import Divider from '../Divider';
 import { Column, RowWithMargins } from '../layout';
+import { FloatingEmojis } from '../floating-emojis';
 import { TruncatedAddress } from '../text';
 import ProfileAction from './ProfileAction';
 
@@ -34,6 +36,7 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
 
 const ProfileMasthead = ({
   accountAddress,
+  emojiCount,
   onPressCopy,
   onPressReceive,
   showBottomDivider,
@@ -51,23 +54,32 @@ const ProfileMasthead = ({
       <AddressAbbreviation address={accountAddress} />
     </CopyTooltip>
     <RowWithMargins align="center" margin={1}>
-      <ProfileAction
-        icon="copy"
-        onPress={onPressCopy}
-        text="Copy"
-      />
+      <Column>
+        <ProfileAction
+          icon="copy"
+          onPress={onPressCopy}
+          text="Copy"
+        />
+        <FloatingEmojis
+          count={emojiCount}
+          distance={130}
+          emoji="+1"
+          size="h2"
+        />
+      </Column>
       <ProfileAction
         icon="inbox"
         onPress={onPressReceive}
         text="Receive"
       />
     </RowWithMargins>
-    {showBottomDivider && <Divider style={{ position: 'absolute', bottom: 0 }} />}
+    {showBottomDivider && <Divider style={{ bottom: 0, position: 'absolute' }} />}
   </Column>
 );
 
 ProfileMasthead.propTypes = {
   accountAddress: PropTypes.string,
+  emojiCount: PropTypes.number,
   onPressCopy: PropTypes.func,
   onPressReceive: PropTypes.func,
   showBottomDivider: PropTypes.bool,
@@ -79,10 +91,14 @@ ProfileMasthead.defaultProps = {
 
 export default compose(
   setStatic({ height: ProfileMastheadHeight }),
+  withState('emojiCount', 'setEmojiCount', 0),
   withHandlers({
-    onPressCopy: ({ accountAddress }) => () => Clipboard.setString(accountAddress),
+    onPressCopy: ({ accountAddress, emojiCount, setEmojiCount }) => () => {
+      setEmojiCount(emojiCount + 1);
+      Clipboard.setString(accountAddress);
+    },
     onPressReceive: ({ navigation }) => () => navigation.navigate('ReceiveModal'),
   }),
-  onlyUpdateForKeys(['accountAddress', 'showBottomDivider']),
   pure,
+  onlyUpdateForPropTypes,
 )(ProfileMasthead);
