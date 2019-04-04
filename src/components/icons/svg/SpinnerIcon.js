@@ -7,10 +7,7 @@ import Svg from '../Svg';
 
 const SpinnerIcon = ({ color, size, ...props }) => (
   <SpinAnimation>
-    <Svg
-      height={size}
-      width={size}
-    >
+    <Svg height={size} width={size}>
       <Path
         d="M11.5 5.75a.75.75 0 1 1-1.5 0A4.25 4.25 0 1 0 5.75 10a.75.75 0 0 1 0 1.5 5.75 5.75 0 1 1 5.75-5.75z"
         fill={color}

@@ -1,10 +1,10 @@
-import { sortList } from 'balance-common';
 import {
   groupBy,
   head,
   mapValues,
   values,
 } from 'lodash';
+import { sortList } from '@rainbow-me/rainbow-common';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';

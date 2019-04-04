@@ -11,7 +11,6 @@ import {
   withIsWalletEmpty,
   withRequests,
   withAccountSettings,
-  withTrackingScreen,
 } from '../hoc';
 import ProfileScreen from './ProfileScreen';
 
@@ -27,7 +26,6 @@ export default compose(
     onPressBackButton: ({ navigation }) => () => navigation.navigate('WalletScreen'),
     onPressSettings: ({ navigation }) => () => navigation.navigate('SettingsModal'),
   }),
-  withTrackingScreen,
   withProps(({ isWalletEmpty, transactionsCount }) => ({
     isEmpty: isWalletEmpty && !transactionsCount,
   })),

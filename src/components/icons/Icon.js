@@ -6,7 +6,7 @@ import ArrowCircledIcon from './svg/ArrowCircledIcon';
 import ArrowIcon from './svg/ArrowIcon';
 import AssetListItemSkeletonIcon from './svg/AssetListItemSkeletonIcon';
 import AvatarIcon from './svg/AvatarIcon';
-import BalanceLogoIcon from './svg/BalanceLogoIcon';
+import RainbowLogoIcon from './svg/BalanceLogoIcon';
 import CameraIcon from './svg/CameraIcon';
 import CaretIcon from './svg/CaretIcon';
 import CaretThinIcon from './svg/CaretThinIcon';
@@ -39,7 +39,7 @@ Icon.IconTypes = {
   arrowCircled: ArrowCircledIcon,
   assetListItemSkeleton: AssetListItemSkeletonIcon,
   avatar: AvatarIcon,
-  balanceLogo: BalanceLogoIcon,
+  rainbowLogo: RainbowLogoIcon,
   camera: CameraIcon,
   caret: CaretIcon,
   caretThin: CaretThinIcon,

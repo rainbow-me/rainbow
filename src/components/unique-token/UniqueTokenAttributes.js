@@ -1,6 +1,6 @@
-import { sortList } from 'balance-common';
 import PropTypes from 'prop-types';
 import styled from 'styled-components/primitives';
+import { sortList } from '@rainbow-me/rainbow-common';
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import {

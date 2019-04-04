@@ -23,26 +23,26 @@ platform :ios do
   desc "Submit a new Beta build to Apple TestFlight"
   lane :beta do
     update_info_plist(
-      plist_path: "BalanceWallet/Info.plist",
-      display_name: "Balance"
+      plist_path: "Rainbow/Info.plist",
+      display_name: "Rainbow"
     )
     update_app_identifier(
-      app_identifier: "io.balance.balancewallet",
-      xcodeproj: "BalanceWallet.xcodeproj",
-      plist_path: "BalanceWallet/Info.plist",
+      app_identifier: "me.rainbow",
+      xcodeproj: "Rainbow.xcodeproj",
+      plist_path: "Rainbow/Info.plist",
     )
     match(
       type: "appstore",
-      app_identifier: "io.balance.balancewallet",
-      git_url: "git@github.com:balance-io/balance-code-signing.git"
+      app_identifier: "me.rainbow",
+      git_url: "git@github.com:rainbow-me/rainbow-code-signing.git"
     )
     gym(
-      scheme: "BalanceWallet",
+      scheme: "Rainbow",
       export_method: "app-store",
       include_symbols: true,
     )
     pilot(
-      app_identifier: "io.balance.balancewallet"
+      app_identifier: "me.rainbow"
     )
     download_dsyms
     upload_symbols_to_crashlytics
@@ -52,26 +52,26 @@ platform :ios do
   desc "Submit a new Internal build to Apple TestFlight"
   lane :internal do
     update_info_plist(
-      plist_path: "BalanceWallet/Info.plist",
+      plist_path: "Rainbow/Info.plist",
       display_name: "Internal"
     )
     update_app_identifier(
-      app_identifier: "io.balance.balancewallet.internal",
-      xcodeproj: "BalanceWallet.xcodeproj",
-      plist_path: "BalanceWallet/Info.plist",
+      app_identifier: "me.rainbow.internal",
+      xcodeproj: "Rainbow.xcodeproj",
+      plist_path: "Rainbow/Info.plist",
     )
     match(
       type: "appstore",
-      app_identifier: "io.balance.balancewallet.internal",
-      git_url: "git@github.com:balance-io/balance-code-signing.git"
+      app_identifier: "me.rainbow.internal",
+      git_url: "git@github.com:rainbow-me/rainbow-code-signing.git"
     )
     gym(
-      scheme: "BalanceWallet",
+      scheme: "Rainbow",
       export_method: "app-store",
       include_symbols: true,
     )
     pilot(
-      app_identifier: "io.balance.balancewallet.internal"
+      app_identifier: "me.rainbow.internal"
     )
     download_dsyms
     upload_symbols_to_crashlytics

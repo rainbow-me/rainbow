@@ -52,13 +52,13 @@ const AddFundsInterstitial = ({
 }) => (
   <Container style={buildInterstitialTransform(offsetY)}>
     <ButtonContainer>
-      <Button bgColor={colors.appleBlue} onPress={onPressAddFunds}>
+      <Button backgroundColor={colors.appleBlue} onPress={onPressAddFunds}>
         Add Funds
       </Button>
       <DividerContainer>
         <Divider inset={false} />
       </DividerContainer>
-      <Button bgColor="#5D9DF6" onPress={onPressImportWallet}>
+      <Button backgroundColor="#5D9DF6" onPress={onPressImportWallet}>
         Import Wallet
       </Button>
       <Paragraph>
