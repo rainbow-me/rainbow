@@ -67,18 +67,26 @@ const DefaultTransactionConfirmationSection = ({
       <Smallcaps>{lang.t('wallet.action.to')}</Smallcaps>
       <Address address={address} truncationLength={15}/>
     </AddressRow>
-    <Divider />
-    <AddressRow>
-      <Smallcaps>{lang.t('wallet.action.value')}</Smallcaps>
-      <Amount>{value}</Amount>
-    </AddressRow>
-    <Divider />
-    <MessageRow>
-      <Smallcaps>{lang.t('wallet.action.input')}</Smallcaps>
-      <ScrollView>
-        <Message>{data}</Message>
-      </ScrollView>
-    </MessageRow>
+    {!!(value) &&
+      <Column>
+        <Divider />
+        <AddressRow>
+          <Smallcaps>{lang.t('wallet.action.value')}</Smallcaps>
+          <Amount>{value}</Amount>
+        </AddressRow>
+      </Column>
+    }
+    {!!(data) &&
+      <Column>
+        <Divider />
+        <MessageRow>
+          <Smallcaps>{lang.t('wallet.action.input')}</Smallcaps>
+          <ScrollView>
+            <Message>{data}</Message>
+          </ScrollView>
+        </MessageRow>
+      </Column>
+    }
     <SendButtonContainer>
       {sendButton}
     </SendButtonContainer>
