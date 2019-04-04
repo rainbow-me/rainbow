@@ -7,7 +7,6 @@ import {
   AUTHENTICATION_TYPE,
   canImplyAuthentication,
 } from 'react-native-keychain';
-import Piwik from 'react-native-matomo';
 import * as keychain from './keychain';
 
 const seedPhraseKey = 'rainbowSeedPhrase';
@@ -53,7 +52,7 @@ export const createTransaction = async (to, data, value, gasLimit, gasPrice, non
   value: ethers.utils.parseEther(value),
 });
 
-export const sendTransaction = async ({ tracking, transaction }) => {
+export const sendTransaction = async ({ transaction }) => {
   try {
     const wallet = await loadWallet();
     if (!wallet) {
@@ -61,7 +60,6 @@ export const sendTransaction = async ({ tracking, transaction }) => {
     }
     try {
       const result = await wallet.sendTransaction(transaction);
-      Piwik.trackEvent('Send', tracking.action, tracking.name, tracking.amount);
       return result.hash;
     } catch (error) {
       AlertIOS.alert(lang.t('wallet.transaction.alert.failed_transaction'));
