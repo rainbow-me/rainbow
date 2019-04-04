@@ -1,88 +1,61 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import styled from 'styled-components/primitives';
-import { Animated, TextInput, View } from 'react-native';
-
-import { colors, fonts, padding } from '../../styles';
+import { View } from 'react-native';
+import Animated, { Easing } from 'react-native-reanimated';
+import { colors, position } from '../../styles';
 import { Button } from '../buttons';
-import { Row } from '../layout';
-import { deviceUtils } from '../../utils';
-
-const Container = styled(View)`
-  flex-grow: 1;
-`;
-
-const Field = styled(TextInput)`
-  color: ${colors.blueGreyDark};
-  flex-grow: 1;
-  font-family: ${fonts.family.SFMono};
-  font-size: ${fonts.size.h2};
-  margin-bottom: 10px;
-  padding-right: 10px;
-  max-width: ${({ buttonOffset }) => (deviceUtils.dimensions.width - 130 - buttonOffset)}px
-`;
-
-const FieldButton = styled(Button).attrs({
-  type: 'pill',
-})`
-  ${padding(0, 10)}
-  background-color: ${colors.sendScreen.brightBlue};
-  align-items: center;
-  justify-content: center;
-  height: 30px;
-  margin-top: 4px;
-`;
+import { Input } from '../inputs';
+import { Column, FlexItem, Row } from '../layout';
 
 const Underline = styled(View)`
-  width: 100%;
-  height: 2px;
+  ${position.cover};
   background-color: ${colors.blueGreyDark};
   opacity: 0.2;
-  border-radius: 1px;
 `;
 
 const UnderlineAnimated = styled(Animated.View)`
-  width: 0%;
-  height: 2px;
+  ${position.cover};
   background-color: ${colors.sendScreen.brightBlue};
-  margin-top: -2px;
-  border-radius: 1px;
+  left: -100%;
 `;
 
-export default class UnderlineField extends Component {
+const UnderlineContainer = styled(Row)`
+  border-radius: 1px;
+  height: 2px;
+  overflow: hidden;
+  width: 100%;
+`;
+
+export default class UnderlineField extends PureComponent {
   static propTypes = {
     autoFocus: PropTypes.bool,
     buttonText: PropTypes.string,
     format: PropTypes.func,
-    keyboardType: PropTypes.oneOf(['default', 'number-pad', 'decimal-pad', 'numeric', 'email-address', 'phone-pad']),
+    keyboardType: Input.propTypes.keyboardType,
     maxLength: PropTypes.number,
     onBlur: PropTypes.func,
     onChange: PropTypes.func,
     onFocus: PropTypes.func,
     onPressButton: PropTypes.func,
     placeholder: PropTypes.string,
-    style: PropTypes.any,
     value: PropTypes.any,
-  };
+  }
 
   static defaultProps = {
     autoFocus: false,
-    format() {},
-    onBlur() {},
-    onChange() {},
-    onFocus() {},
-    onPressButton() {},
-  };
+  }
 
   constructor(props) {
     super(props);
 
     this.state = {
       isFocused: props.autoFocus,
-      underlineAnimation: new Animated.Value(0),
       value: props.value,
     };
   }
+
+  animation = new Animated.Value(0)
 
   componentDidUpdate(prevProps) {
     const { value } = this.props;
@@ -92,78 +65,100 @@ export default class UnderlineField extends Component {
     }
   }
 
-  componentWillUnmount() {
-    this.state.underlineAnimation.stopAnimation();
-  }
+  format = (string) => (
+    this.props.format
+      ? this.props.format(string)
+      : string
+  )
 
   onBlur = (...props) => {
-    const { onBlur } = this.props;
-    const { underlineAnimation } = this.state;
-
-    Animated.timing(underlineAnimation, { duration: 150, toValue: 0 }).start();
+    Animated.timing(this.animation, {
+      duration: 1,
+      easing: Easing.linear,
+      toValue: 0,
+    }).start();
 
     this.setState({ isFocused: false });
 
-    onBlur(...props);
-  };
+    if (this.props.onBlur) this.props.onBlur(...props);
+  }
 
-  onChange = ({ nativeEvent }) => {
-    const { format, onChange } = this.props;
-    const value = format(nativeEvent.text);
+  onChange = (event) => {
+    const { nativeEvent } = event;
 
-    this.setState({ value }, () => {
-      onChange(value);
-    });
-  };
+    const value = this.format(nativeEvent.text);
+
+    if (value !== this.props.value) {
+      this.setState({ value });
+
+      if (this.props.onChange) this.props.onChange(String(value));
+    }
+  }
 
   onFocus = (...props) => {
-    const { onFocus } = this.props;
-    const { underlineAnimation } = this.state;
-
-    Animated.timing(underlineAnimation, { duration: 150, toValue: 1 }).start();
+    Animated.timing(this.animation, {
+      duration: 150,
+      easing: Easing.ease,
+      toValue: 1,
+    }).start();
 
     this.setState({ isFocused: true });
 
-    onFocus(...props);
-  };
+    if (this.props.onFocus) this.props.onFocus(...props);
+  }
 
   render() {
     const {
       autoFocus,
       buttonText,
-      format,
       keyboardType,
       maxLength,
       onPressButton,
       placeholder,
-      style,
+      ...props
     } = this.props;
 
-    const {
-      isFocused,
-      underlineAnimation,
-      value,
-    } = this.state;
+    const showFieldButton = buttonText && this.state.isFocused;
 
     return (
-      <Container style={style}>
-        <Row>
-          <Field
-            autoFocus={autoFocus}
-            keyboardType={keyboardType}
-            maxLength={maxLength}
-            onBlur={this.onBlur}
-            onChange={this.onChange}
-            onFocus={this.onFocus}
-            placeholder={placeholder}
-            value={format(String(value || ''))}
-            buttonOffset={buttonText && isFocused ? 40 : 0}
-          />
-          {buttonText && isFocused && <FieldButton onPress={onPressButton}>{buttonText}</FieldButton>}
+      <Column flex={1} {...props}>
+        <Row
+          align="center"
+          justify="space-between"
+          style={{ marginBottom: 10 }}
+        >
+          <FlexItem style={{ paddingRight: 10 }}>
+            <Input
+              autoFocus={autoFocus}
+              color={colors.blueGreyDark}
+              family="SFMono"
+              keyboardType={keyboardType}
+              maxLength={maxLength}
+              onBlur={this.onBlur}
+              onChange={this.onChange}
+              onFocus={this.onFocus}
+              placeholder={placeholder}
+              size="h2"
+              value={this.format(String(this.props.value || ''))}
+            />
+          </FlexItem>
+          {showFieldButton && (
+            <Button
+              backgroundColor={colors.sendScreen.brightBlue}
+              flex={0}
+              onPress={onPressButton}
+              size="small"
+              type="pill"
+            >
+              {buttonText}
+            </Button>
+          )}
         </Row>
-        <Underline />
-        <UnderlineAnimated style={{ width: underlineAnimation.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }) }} />
-      </Container>
+        <UnderlineContainer>
+          <Underline />
+          <UnderlineAnimated style={{ transform: [{ scaleX: this.animation }] }} />
+        </UnderlineContainer>
+      </Column>
     );
   }
 }

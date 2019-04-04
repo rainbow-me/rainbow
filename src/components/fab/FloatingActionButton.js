@@ -6,10 +6,8 @@ import styled from 'styled-components/primitives';
 import { ButtonPressAnimation } from '../animations';
 import InnerBorder from '../InnerBorder';
 import { Centered } from '../layout';
-import { colors, position } from '../../styles';
+import { borders, colors, position } from '../../styles';
 import { ShadowStack } from '../shadow-stack';
-
-const FloatingActionButtonBorderRadius = 27;
 
 const Container = styled(Centered)`
   ${position.cover}
@@ -58,9 +56,8 @@ const FloatingActionButton = enhance(({
     style={style}
   >
     <ShadowStack
-      {...position.sizeAsObject(size)}
+      {...borders.buildCircleAsObject(size)}
       backgroundColor={disabled ? '#F6F7F9' : colors.paleBlue}
-      borderRadius={FloatingActionButtonBorderRadius}
       shadows={buildFabShadow(disabled)}
     >
       <Container {...props} disabled={disabled}>
@@ -72,7 +69,7 @@ const FloatingActionButton = enhance(({
           {!disabled && (
             <InnerBorder
               opacity={0.06}
-              radius={FloatingActionButtonBorderRadius}
+              radius={size / 2}
             />
           )}
         </Fragment>

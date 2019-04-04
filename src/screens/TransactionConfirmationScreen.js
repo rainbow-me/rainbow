@@ -6,20 +6,12 @@ import { Animated } from 'react-native';
 import TouchID from 'react-native-touch-id';
 import styled from 'styled-components';
 import BalanceManagerLogo from '../assets/balance-manager-logo.png';
-import { BlockButton, Button, LongPressButton } from '../components/buttons';
+import { Button, HoldToAuthorizeButton } from '../components/buttons';
 import { Centered, Column } from '../components/layout';
 import TransactionConfirmationSection from '../components/TransactionConfirmationSection';
 import MessageSigningSection from '../components/MessageSigningSection';
 import { Text } from '../components/text';
-import {
-  colors,
-  padding,
-  position,
-} from '../styles';
-
-const SendButton = styled(BlockButton).attrs({ component: LongPressButton })`
-  ${padding(0, 0)}
-`;
+import { colors, position } from '../styles';
 
 const CancelButtonContainer = styled.View`
   bottom: 22;
@@ -112,29 +104,14 @@ class TransactionConfirmationScreen extends Component {
     await onConfirm(requestType);
   };
 
-  renderSendButton() {
-    const { requestType } = this.props;
-    const { biometryType, sendLongPressProgress } = this.state;
-    const leftIconName = biometryType === 'FaceID' ? 'faceid' : 'touchid';
-    const label = (requestType === 'message') ? 'Hold to Sign' : 'Hold to Send';
-    return (
-      <SendButton
-        disabled={false}
-        leftIconName={leftIconName}
-        onLongPress={this.onLongPressSend}
-        onPress={this.onPressSend}
-        onRelease={this.onReleaseSend}
-        rightIconName={'progress'}
-        rightIconProps={{
-          color: colors.alpha(colors.sendScreen.grey, 0.3),
-          progress: sendLongPressProgress,
-          progressColor: colors.white,
-        }}
-      >
-        {label}
-      </SendButton>
-    );
-  }
+  renderSendButton = () => (
+    <HoldToAuthorizeButton
+      isAuthorizing={this.state.isAuthorizing}
+      onLongPress={this.onLongPressSend}
+    >
+      {`Hold to ${(this.props.requestType === 'message') ? 'Sign' : 'Send'}`}
+    </HoldToAuthorizeButton>
+  )
 
   render = () => {
     const {
@@ -161,7 +138,7 @@ class TransactionConfirmationScreen extends Component {
           <TransactionType>{lang.t('wallet.transaction.request')}</TransactionType>
           <CancelButtonContainer>
             <Button
-              bgColor={colors.blueGreyMedium}
+              backgroundColor={colors.blueGreyMedium}
               onPress={onCancelTransaction}
               size="small"
               textProps={{ color: 'black', size: 'medium' }}

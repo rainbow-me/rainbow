@@ -1,9 +1,9 @@
+import lang from 'i18n-js';
 import {
   settingsChangeLanguage,
   settingsChangeNativeCurrency,
   supportedNativeCurrencies,
-} from 'balance-common';
-import lang from 'i18n-js';
+} from '@rainbow-me/rainbow-common';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';

@@ -6,6 +6,10 @@ import store from '../../redux/store';
 import { colors } from '../../styles';
 import { deviceUtils, statusBar } from '../../utils';
 
+const distanceFromTop = 14;
+const statusBarHeight = getStatusBarHeight(true);
+
+export const sheetVerticalOffset = distanceFromTop + statusBarHeight;
 export const transitionName = 'sheet';
 
 export default function sheet(navigation, transitionProps, prevTransitionProps) {
@@ -41,8 +45,6 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
         prevIndex,
       }));
 
-      const statusBarHeight = getStatusBarHeight(true);
-      const distanceFromTop = 14;
       const scaleEnd = 1 - ((statusBarHeight + (isIphoneX() ? distanceFromTop : 0)) / deviceUtils.dimensions.height);
       const heightEnd = statusBarHeight + distanceFromTop;
       const borderRadiusEnd = 12;

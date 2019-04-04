@@ -1,13 +1,13 @@
 import { get } from 'lodash';
-import React from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { Dimensions } from 'react-native';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import PropTypes from 'prop-types';
 import { RequestCoinRow, TransactionCoinRow } from '../coin-row';
-import ActivityListHeader from './ActivityListHeader';
 import ListFooter from '../list/ListFooter';
+import ActivityListHeader from './ActivityListHeader';
 
 const ViewTypes = {
   COMPONENT_HEADER: 0,
@@ -22,7 +22,7 @@ const Wrapper = styled.View`
   width: 100%;
 `;
 
-export default class RecyclerActivityList extends React.Component {
+export default class RecyclerActivityList extends Component {
   static propTypes = {
     header: PropTypes.node,
     sections: PropTypes.arrayOf(PropTypes.shape({
@@ -36,9 +36,20 @@ export default class RecyclerActivityList extends React.Component {
     const { width } = Dimensions.get('window');
     this.state = {
       dataProvider: new DataProvider((r1, r2) => {
+        if (r1.hash === '_header') {
+          const r1Address = get(r1, 'header.props.accountAddress', '');
+          const r2Address = get(r2, 'header.props.accountAddress', '');
+          if (r1Address !== r2Address) {
+            return true;
+          }
+        }
+        
+        const r1Symbol = get(r1, 'native.symbol', '');
+        const r2Symbol = get(r2, 'native.symbol', '');
+
         const r1Key = r1.hash ? r1.hash : get(r1, 'transactionDisplayDetails.timestampInMs', '');
         const r2Key = r2.hash ? r2.hash : get(r2, 'transactionDisplayDetails.timestampInMs', '');
-        return r1Key !== r2Key;
+				return (r1Key !== r2Key) || (r1Symbol !== r2Symbol);
       }),
       headersIndices: [],
     };
@@ -86,8 +97,10 @@ export default class RecyclerActivityList extends React.Component {
         }])
         .concat(section.data)
         .concat([{ hash: `${section.title}_end` }]); // footer
-    }, [{ hash: '_header' }]); // header
-    items.pop(); // remove last footer
+    }, [{ hash: '_header', header: props.header }]); // header
+    if (items.length > 1) {
+      items.pop(); // remove last footer
+    }
     return {
       dataProvider: state.dataProvider.cloneWithRows(items),
       headersIndices,
@@ -96,43 +109,29 @@ export default class RecyclerActivityList extends React.Component {
 
   rowRenderer = (type, data) => {
     if (type === ViewTypes.COMPONENT_HEADER) {
-      return this.props.header;
+      return data.header;
     }
     if (type === ViewTypes.HEADER) {
-      return (
-        <ActivityListHeader {...data}/>
-      );
+      return <ActivityListHeader {...data}/>;
     }
     if (type === ViewTypes.FOOTER) {
-      return (
-        <ListFooter/>
-      );
+      return <ListFooter/>;
     }
     if (!data.hash) {
-      return (
-        <RequestCoinRow
-          item={data}
-        />
-      );
+      return <RequestCoinRow item={data} />;
     }
-    return (
-      <TransactionCoinRow
-        item={data}
-      />
-    );
+    return <TransactionCoinRow item={data} />;
   }
 
   render() {
     return (
       <Wrapper>
-        <StickyContainer
-          stickyHeaderIndices={this.state.headersIndices}
-        >
+        <StickyContainer stickyHeaderIndices={this.state.headersIndices}>
           <RecyclerListView
-            layoutProvider={this.layoutProvider}
             dataProvider={this.state.dataProvider}
-            rowRenderer={this.rowRenderer}
+            layoutProvider={this.layoutProvider}
             renderAheadOffset={1000}
+            rowRenderer={this.rowRenderer}
           />
         </StickyContainer>
       </Wrapper>
