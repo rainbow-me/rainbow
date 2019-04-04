@@ -23,7 +23,7 @@ export default class ButtonPressAnimation extends PureComponent {
     children: PropTypes.any,
     disabled: PropTypes.bool,
     enableHapticFeedback: PropTypes.bool,
-    onPress: PropTypes.func.isRequired,
+    onPress: PropTypes.func,
     scaleTo: PropTypes.number,
     style: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
     transformOrigin: directionPropType,
@@ -128,7 +128,7 @@ export default class ButtonPressAnimation extends PureComponent {
       ReactNativeHapticFeedback.trigger('impactLight');
     }
 
-    if (state === State.END) {
+    if (state === State.END && onPress) {
       onPress();
     }
   }
