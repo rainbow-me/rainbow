@@ -853,9 +853,16 @@
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
 
+<<<<<<< HEAD
 "@rainbow-me/rainbow-common@^0.6.43":
   version "0.6.43"
   resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.6.43.tgz#b589963c0717210f622c5fd92a588ac887a17ec9"
+=======
+"@rainbow-me/rainbow-common@^0.6.37":
+  version "0.6.38"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.6.38.tgz#ebbb00bd240a818765de6383d3031f519b06b968"
+  integrity sha512-TwWu+iR0fRdKxOo1HvP7VS4EjPrGoi/UQUBqlbIKWu8lQh5G5cVKZ4j/ZJgAb2SCbUpFUNBWf8Um9lZ9JKIMAw==
+>>>>>>> 6f1052e... not sure if any of this shit is worth keeping
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -8591,9 +8598,16 @@ react-native-blur@^3.2.2:
   dependencies:
     prop-types "^15.5.10"
 
+<<<<<<< HEAD
 react-native-camera@^1.10.2:
   version "1.13.1"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.13.1.tgz#19277ccae0a49dbf1b96049da5b95c847ea7aff2"
+=======
+react-native-camera@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-2.2.1.tgz#01331f011048545980463b48c83cf63e0eec0ee0"
+  integrity sha512-N4uwZIXirj2Lk5nQlSz/gXiGKxnouLdpSxYM3jqMUmegwPWIaxvjTqggXjEC2V2Go+8/1Z5ytMCLyoO969inHw==
+>>>>>>> 6f1052e... not sure if any of this shit is worth keeping
   dependencies:
     prop-types "^15.6.2"
 
@@ -10309,8 +10323,14 @@ svg-tags@^1.0.0:
   resolved "https://registry.yarnpkg.com/svg-tags/-/svg-tags-1.0.0.tgz#58f71cee3bd519b59d4b2a843b6c7de64ac04764"
 
 svgo@^1.0.5:
+<<<<<<< HEAD
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/svgo/-/svgo-1.2.0.tgz#305a8fc0f4f9710828c65039bb93d5793225ffc3"
+=======
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/svgo/-/svgo-1.2.1.tgz#3fedde75a4016193e1c2608b5fdef6f3e4a9fd99"
+  integrity sha512-Y1+LyT4/y1ms4/0yxPMSlvx6dIbgklE9w8CIOnfeoFGB74MEkq8inSfEr6NhocTaFbyYp0a1dvNgRKGRmEBlzA==
+>>>>>>> 6f1052e... not sure if any of this shit is worth keeping
   dependencies:
     chalk "^2.4.1"
     coa "^2.0.2"
@@ -10319,7 +10339,7 @@ svgo@^1.0.5:
     css-tree "1.0.0-alpha.28"
     css-url-regex "^1.1.0"
     csso "^3.5.1"
-    js-yaml "^3.12.0"
+    js-yaml "^3.13.0"
     mkdirp "~0.5.1"
     object.values "^1.1.0"
     sax "~1.2.4"
