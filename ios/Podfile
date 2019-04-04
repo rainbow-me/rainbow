@@ -3,18 +3,28 @@ platform :ios, '9.0'
 target 'Rainbow' do
   rn_path = '../node_modules/react-native'
 
-  pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
-  pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
-  pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
+  pod 'React', :path => "#{rn_path}", :subspecs => [
+    'Core',
+    'CxxBridge', # Include this for RN >= 0.47
+    'DevSupport', # Include this to enable In-App Devmenu if RN >= 0.43
+    'RCTText',
+    'RCTNetwork',
+    'RCTWebSocket', # needed for debugging
+    'RCTImage',
+    'RCTWebSocket', # Needed for debugging
+    'RCTAnimation', # Needed for FlatList and animations running on native UI thread
+    # Add any other subspecs you want to use in your project
+  ]
+
+  pod 'yoga', path: "#{rn_path}/ReactCommon/yoga"
+
+  pod 'DoubleConversion', :podspec => "#{rn_path}/third-party-podspecs/DoubleConversion.podspec"
+  pod 'Folly', :podspec => "#{rn_path}/third-party-podspecs/Folly.podspec"
+  pod 'glog', :podspec => "#{rn_path}/third-party-podspecs/glog.podspec"
 
   pod 'Firebase/Core', '~> 5.15.0'
   pod 'Firebase/Messaging', '~> 5.15.0'
 
-  pod 'React', :path => '../node_modules/react-native', :subspecs => [
-    'RCTImage'
-  ]
-  
-  pod 'yoga', path: "#{rn_path}/ReactCommon/yoga/yoga.podspec"
   pod 'RNLanguages', :path => '../node_modules/react-native-languages'
   pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
   pod 'react-native-blur', :path => '../node_modules/react-native-blur'
@@ -27,4 +37,15 @@ target 'Rainbow' do
 
   pod 'RNDeviceInfo', :path => '../node_modules/react-native-device-info'
 
+  pod 'react-native-camera', :path => '../node_modules/react-native-camera'
+
+end
+
+# workaround for bug https://github.com/facebook/react-native/issues/24192#issuecomment-479497777
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    if target.name == "React"
+      target.remove_from_project
+    end
+  end
 end
