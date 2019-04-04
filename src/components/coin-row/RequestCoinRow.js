@@ -55,7 +55,7 @@ const RequestCoinRow = ({
       topRowRender={topRowRender}
     >
       <Button
-        bgColor={colors.primaryBlue}
+        backgroundColor={colors.primaryBlue}
         containerStyles={`
           border-radius: 18;
           height: 36;

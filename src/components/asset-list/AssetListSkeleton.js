@@ -20,14 +20,12 @@ const renderSkeleton = index => (
 
 const AssetListSkeleton = () => (
   <Column style={position.sizeAsObject('100%')}>
-    <AssetListHeader title={lang.t('account.tab_balances_empty_state')} />
+    <AssetListHeader title={lang.t('account.tab_balances')} />
     <Centered flex={1}>
       <Column style={position.coverAsObject}>
         {times(5, renderSkeleton)}
       </Column>
-      {(
-        <AddFundsInterstitial offsetY={-InterstitialOffset} />
-      )}
+      <AddFundsInterstitial offsetY={InterstitialOffset * -1} />
     </Centered>
   </Column>
 );

@@ -7,7 +7,6 @@ import {
   onlyUpdateForKeys,
   withProps,
 } from 'recompact';
-import styled from 'styled-components/primitives';
 import { padding } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { Row } from '../layout';
@@ -17,24 +16,20 @@ const CardMargin = 15;
 const RowPadding = 19;
 const CardSize = (deviceUtils.dimensions.width - (RowPadding * 2) - CardMargin) / 2;
 
-const Container = styled(Row)`
-  ${padding(0, RowPadding)}
-  width: 100%;
-`;
-
 const UniqueTokenRow = ({
   isFirstRow,
   isLastRow,
   items,
   onPress,
 }) => (
-  <Container
+  <Row
     align="center"
-    justify="start"
-    style={{
-      marginBottom: CardMargin * (isLastRow ? 1.25 : 1),
-      marginTop: isFirstRow ? CardMargin : 0,
-    }}
+    css={`
+      ${padding(0, RowPadding)};
+      margin-bottom: ${CardMargin * (isLastRow ? 1.25 : 1)};
+      margin-top: ${isFirstRow ? CardMargin : 0};
+      width: 100%;
+    `}
   >
     {items.map((uniqueToken, itemIndex) => (
       <UniqueTokenCard
@@ -45,7 +40,7 @@ const UniqueTokenRow = ({
         onPress={onPress}
       />
     ))}
-  </Container>
+  </Row>
 );
 
 UniqueTokenRow.propTypes = {
