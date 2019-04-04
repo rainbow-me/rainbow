@@ -169,8 +169,8 @@ class TransactionConfirmationScreen extends Component {
             <DefaultTransactionConfirmationSection
               asset={{
                 address: get(request, 'to'),
-                value: get(request, 'value', '0'),
-                data: get(request, 'data', ''),
+                value: get(request, 'value'),
+                data: get(request, 'data'),
               }}
               sendButton={this.renderSendButton()}
             />
