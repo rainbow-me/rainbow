@@ -117,6 +117,9 @@ export default class RecyclerActivityList extends Component {
     if (type === ViewTypes.FOOTER) {
       return <ListFooter/>;
     }
+    if (!data) {
+      return null;
+    }
     if (!data.hash) {
       return <RequestCoinRow item={data} />;
     }
