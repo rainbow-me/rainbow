@@ -1355,6 +1355,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -2039,8 +2040,8 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/zsh;
-			shellScript = "export NODE_BINARY='/Users/mikedemarais/.nvm/versions/node/v11.1.0/bin/node --expose-gc --max_old_space_size=4096'\nexport FORCE_BUNDLING=true\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
+			shellPath = /bin/sh;
+			shellScript = "export NODE_ARGS=\"--expose-gc --max-old-space-size=4096\"\nexport NODE_BINARY=node\nexport FORCE_BUNDLING=true\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 		1DFACE34723C6B8DBBD5F804 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;

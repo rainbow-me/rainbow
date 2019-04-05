@@ -859,10 +859,16 @@
   resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.6.43.tgz#b589963c0717210f622c5fd92a588ac887a17ec9"
 =======
 "@rainbow-me/rainbow-common@^0.6.37":
+<<<<<<< HEAD
   version "0.6.38"
   resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.6.38.tgz#ebbb00bd240a818765de6383d3031f519b06b968"
   integrity sha512-TwWu+iR0fRdKxOo1HvP7VS4EjPrGoi/UQUBqlbIKWu8lQh5G5cVKZ4j/ZJgAb2SCbUpFUNBWf8Um9lZ9JKIMAw==
 >>>>>>> 6f1052e... not sure if any of this shit is worth keeping
+=======
+  version "0.6.39"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.6.39.tgz#d92e29c00d265668a84af6193d671b18f63b27c5"
+  integrity sha512-12UYw51w5CER8bVJwLXMeh8wUM12hUiLp3MlJfO8ajFXA9BTsHQKoB1KjayEjvFfr13B7vrJUfz3k3h+Ftt5vg==
+>>>>>>> 4313ca5... its working!
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -878,6 +884,11 @@
     reselect "^4.0.0"
     underscore "^1.9.1"
     web3 "1.0.0-beta.34"
+
+"@react-native-community/async-storage@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@react-native-community/async-storage/-/async-storage-1.2.2.tgz#1f9851a6dd2b0af08ed3ab69b7f7353c4e85ea1d"
+  integrity sha512-sjL32DFXSD26RKVZfdBgRBKQCfqO9Vh8yBukjW0ajnMsCmqRxpe0tic6D+g+EW+MI8sohtr/02bhHfVClG8Eqw==
 
 "@react-native-community/cli@^1.2.1":
   version "1.6.0"
@@ -933,6 +944,11 @@
     eslint-plugin-react-hooks "^1.5.1"
     eslint-plugin-react-native "3.6.0"
     prettier "1.16.4"
+
+"@react-native-community/netinfo@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-2.0.0.tgz#b98171aeaa4326bc9d9834399a3f6cecf8fd4781"
+  integrity sha512-/wjahsPhkWmkxEzXmz93gGDXyR/9B4tJqo2eV5ENxwimUk/qIP5XrHzqWtyqxkwIr7dnYGIlZyWkvuzUslgYYw==
 
 "@react-navigation/core@~3.2.1":
   version "3.2.1"
@@ -8617,7 +8633,7 @@ react-native-circular-progress@^1.0.1:
   dependencies:
     prop-types "^15.6.2"
 
-react-native-code-push@^5.4.1:
+react-native-code-push@^5.6.0:
   version "5.6.0"
   resolved "https://registry.yarnpkg.com/react-native-code-push/-/react-native-code-push-5.6.0.tgz#e905d32d188c5f7bcff446d813271d03a69543fd"
   dependencies:
@@ -8785,9 +8801,10 @@ react-native-shimmer-placeholder@^1.0.29:
   version "1.0.30"
   resolved "https://registry.yarnpkg.com/react-native-shimmer-placeholder/-/react-native-shimmer-placeholder-1.0.30.tgz#2c2c331f820c22f8c01dfe3c169bebcbb6591d46"
 
-react-native-splash-screen@crazycodeboy/react-native-splash-screen#285/head:
-  version "3.1.1"
-  resolved "https://codeload.github.com/crazycodeboy/react-native-splash-screen/tar.gz/7f8dd1d7ca2cc3e9a3e5fec938e91a769c356c3e"
+react-native-splash-screen@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.2.0.tgz#d47ec8557b1ba988ee3ea98d01463081b60fff45"
+  integrity sha512-Ls9qiNZzW/OLFoI25wfjjAcrf2DZ975hn2vr6U9gyuxi2nooVbzQeFoQS5vQcbCt9QX5NY8ASEEAtlLdIa6KVg==
 
 react-native-storage@^0.2.2:
   version "0.2.4"

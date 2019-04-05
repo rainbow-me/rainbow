@@ -2,7 +2,7 @@ PODS:
   - boost-for-react-native (1.63.0)
   - Crashlytics (3.10.9):
     - Fabric (~> 1.7.13)
-  - DoubleConversion (1.1.6)
+  - DoubleConversion (1.1.5)
   - Fabric (1.7.13)
   - Firebase/Core (5.15.0):
     - Firebase/CoreOnly
@@ -40,7 +40,7 @@ PODS:
     - boost-for-react-native
     - DoubleConversion
     - glog
-  - glog (0.3.5)
+  - glog (0.3.4)
   - GoogleAppMeasurement (5.4.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
     - GoogleUtilities/MethodSwizzler (~> 5.2)
@@ -97,6 +97,8 @@ PODS:
   - Protobuf (3.7.0)
   - React (0.59.3):
     - React/Core (= 0.59.3)
+  - react-native-async-storage (1.2.2):
+    - React
   - react-native-blur (0.8.0):
     - React
   - react-native-camera (2.2.1):
@@ -113,6 +115,8 @@ PODS:
     - SDWebImage/Core
     - SDWebImage/GIF
     - SDWebImage/WebP
+  - react-native-netinfo (2.0.0):
+    - React
   - react-native-version-number (0.3.5):
     - React
   - React/Core (0.59.3):
@@ -177,15 +181,15 @@ PODS:
 
 DEPENDENCIES:
   - Crashlytics (~> 3.10.7)
-  - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - Fabric (~> 1.7.11)
   - Firebase/Core (~> 5.15.0)
   - Firebase/Messaging (~> 5.15.0)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
-  - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - "react-native-async-storage (from `../node_modules/@react-native-community/async-storage`)"
   - react-native-blur (from `../node_modules/react-native-blur`)
   - react-native-camera (from `../node_modules/react-native-camera`)
   - react-native-fast-image (from `../node_modules/react-native-fast-image`)
+  - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-version-number (from `../node_modules/react-native-version-number`)
   - React/Core (from `../node_modules/react-native`)
   - React/CxxBridge (from `../node_modules/react-native`)
@@ -205,6 +209,7 @@ SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - boost-for-react-native
     - Crashlytics
+    - DoubleConversion
     - Fabric
     - Firebase
     - FirebaseAnalytics
@@ -213,6 +218,7 @@ SPEC REPOS:
     - FirebaseInstanceID
     - FirebaseMessaging
     - FLAnimatedImage
+    - glog
     - GoogleAppMeasurement
     - GoogleUtilities
     - libwebp
@@ -221,20 +227,20 @@ SPEC REPOS:
     - SDWebImage
 
 EXTERNAL SOURCES:
-  DoubleConversion:
-    :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/Folly.podspec"
-  glog:
-    :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   React:
     :path: "../node_modules/react-native"
+  react-native-async-storage:
+    :path: "../node_modules/@react-native-community/async-storage"
   react-native-blur:
     :path: "../node_modules/react-native-blur"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
   react-native-fast-image:
     :path: "../node_modules/react-native-fast-image"
+  react-native-netinfo:
+    :path: "../node_modules/@react-native-community/netinfo"
   react-native-version-number:
     :path: "../node_modules/react-native-version-number"
   RNDeviceInfo:
@@ -251,7 +257,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Crashlytics: 55e24fc23989680285a21cb1146578d9d18e432c
-  DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
+  DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
   Fabric: 25d0963b691fc97be566392243ff0ecef5a68338
 <<<<<<< HEAD
   Firebase: 76ec2a7cde90fb4037793f83aeeca48451543487
@@ -269,7 +275,7 @@ SPEC CHECKSUMS:
 >>>>>>> d98d583... First step upgrade
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
-  glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
+  glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
   GoogleAppMeasurement: 98b71f5e04142793729a5ef23e5b96651ff4b70f
   GoogleUtilities: 6481e6318c5fcabaaa8513ef8120f329055d7c10
   libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
@@ -298,9 +304,11 @@ SPEC CHECKSUMS:
 >>>>>>> d98d583... First step upgrade
 =======
   React: b52fdb80565505b7e4592b313a38868f5df51641
+  react-native-async-storage: eccd2790b0c17d50e81fb8be5f6b20bef3dc0f7e
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: b5a1fe5f8a71cb1e2f624e1b78a612d32d8a25af
   react-native-fast-image: 21d2d84a46b12cacbe7958ab6414fe828c094f82
+  react-native-netinfo: d6ff19d6b0fff3c617d01949f87e9976e7ecc9a9
   react-native-version-number: 75301519bb72064ad209a498ed08b128cbcf10e7
   RNDeviceInfo: e7c5fcde13d40e161d8a27f6c5dc69c638936002
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
@@ -310,6 +318,6 @@ SPEC CHECKSUMS:
   yoga: 1a492113f66a35e9e583bb0434f4b8cc668dd839
 >>>>>>> 6f1052e... not sure if any of this shit is worth keeping
 
-PODFILE CHECKSUM: 1335480e6e5682c172acb0d4f1f7eef3acef072c
+PODFILE CHECKSUM: cec8edecb9b3fc7f2ce9bfe04d071624da5890fb
 
 COCOAPODS: 1.6.1

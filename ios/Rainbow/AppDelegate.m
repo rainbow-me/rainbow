@@ -16,21 +16,16 @@
 #import "RNFirebaseNotifications.h"
 #import "RNSplashScreen.h"
 
-@interface AppDelegate() <FIRMessagingDelegate, UNUserNotificationCenterDelegate>
-@end
-
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  // Push Notifications
-  //
+  // Firebase - Push Notifications
   [FIRApp configure];
   [RNFirebaseNotifications configure];
   [application registerForRemoteNotifications];
    
-  // React Native
-  // comment out the "#ifdef DEBUG" if you want to test out CodePush locally
+  // React Native - Defaults
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                    moduleName:@"Rainbow"
@@ -45,19 +40,18 @@
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
 
-  // react-native-splash-screen
-  //
+  // Splashscreen - react-native-splash-screen
   [RNSplashScreen show];
   return YES;
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
-#if DEBUG || LOCAL_RELEASE
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
-#else
-  return [CodePush bundleURL];
-#endif
+  #if DEBUG
+    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+  #else
+    return [CodePush bundleURL];
+  #endif
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
