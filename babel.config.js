@@ -6,7 +6,7 @@ module.exports = {
     production: {
       plugins: [['transform-remove-console', { exclude: ['error'] }]],
     },
-  }
+  },
   plugins: [
     'babel-plugin-styled-components',
     'date-fns',

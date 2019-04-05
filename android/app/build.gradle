@@ -153,6 +153,8 @@ android {
 }
 
 dependencies {
+    implementation project(':@react-native-community_netinfo')
+    implementation project(':@react-native-community_async-storage')
     implementation project(':react-native-camera')
     compile project(':react-native-device-info')
     compile project(':react-native-screens')

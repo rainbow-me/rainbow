@@ -17,27 +17,25 @@ target 'Rainbow' do
   ]
 
   pod 'yoga', path: "#{rn_path}/ReactCommon/yoga"
-
-  pod 'DoubleConversion', :podspec => "#{rn_path}/third-party-podspecs/DoubleConversion.podspec"
   pod 'Folly', :podspec => "#{rn_path}/third-party-podspecs/Folly.podspec"
-  pod 'glog', :podspec => "#{rn_path}/third-party-podspecs/glog.podspec"
 
+  pod 'Crashlytics', '~> 3.10.7'
+  pod 'Fabric', '~> 1.7.11'
   pod 'Firebase/Core', '~> 5.15.0'
   pod 'Firebase/Messaging', '~> 5.15.0'
 
+  pod 'RNDeviceInfo', :path => '../node_modules/react-native-device-info'
   pod 'RNLanguages', :path => '../node_modules/react-native-languages'
   pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
-  pod 'react-native-blur', :path => '../node_modules/react-native-blur'
-
-  pod 'react-native-fast-image', :path => '../node_modules/react-native-fast-image'
-  pod 'Fabric', '~> 1.7.11'
-  pod 'Crashlytics', '~> 3.10.7'
   pod 'RNScreens', :path => '../node_modules/react-native-screens'
-  pod 'react-native-version-number', :path => '../node_modules/react-native-version-number'
 
-  pod 'RNDeviceInfo', :path => '../node_modules/react-native-device-info'
-
+  pod 'react-native-blur', :path => '../node_modules/react-native-blur'
   pod 'react-native-camera', :path => '../node_modules/react-native-camera'
+  pod 'react-native-fast-image', :path => '../node_modules/react-native-fast-image'
+  pod 'react-native-version-number', :path => '../node_modules/react-native-version-number'
+  pod 'react-native-async-storage', :path => '../node_modules/@react-native-community/async-storage'
+
+  pod 'react-native-netinfo', :path => '../node_modules/@react-native-community/netinfo'
 
 end
 
