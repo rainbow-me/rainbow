@@ -129,6 +129,9 @@ class App extends Component {
       const notificationOpen = await firebase.notifications().getInitialNotification();
       if (!notificationOpen) {
         this.fetchAllRequestsFromWalletConnectSessions();
+      } else {
+        const { callId, sessionId } = notificationOpen.notification.data;
+        this.onPushNotificationOpened(callId, sessionId, false);
       }
       return walletAddress;
     } catch (error) {
