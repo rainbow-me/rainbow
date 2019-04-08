@@ -17,11 +17,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.0.1</string>
+	<string>0.4.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>2</string>
+	<string>1</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -45,12 +45,12 @@
 	<string>Rainbow</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Rainbow</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Rainbow</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Used to scan QR codes</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Used to sign transactions</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Rainbow</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Rainbow</string>
 	<key>NSMicrophoneUsageDescription</key>
