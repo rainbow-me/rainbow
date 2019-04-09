@@ -127,9 +127,11 @@ class App extends Component {
         console.log('Unable to init all WalletConnect sessions');
       }
       const notificationOpen = await firebase.notifications().getInitialNotification();
-      if (!notificationOpen) {
-        this.fetchAllRequestsFromWalletConnectSessions();
+      if (notificationOpen) {
+        const { callId, sessionId } = notificationOpen.notification.data;
+        this.onPushNotificationOpened(callId, sessionId, false);
       }
+      this.fetchAllRequestsFromWalletConnectSessions();
       return walletAddress;
     } catch (error) {
       AlertIOS.alert('Error: Failed to initialize wallet.');
@@ -186,7 +188,12 @@ class App extends Component {
       if (transaction) {
         this.handleOpenConfirmTransactionModal(transaction, autoOpened);
       } else {
-        AlertIOS.alert('This request has expired.');
+        const fetchedTransaction = this.props.transactionIfExists(callId);
+        if (fetchedTransaction) {
+          this.handleOpenConfirmTransactionModal(fetchedTransaction, autoOpened);
+        } else {
+          AlertIOS.alert('This request has expired.');
+        }
       }
     }
   }
