@@ -49,6 +49,8 @@
 	<string>Used to scan QR codes</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Used to sign transactions</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Rainbow</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Rainbow</string>
 	<key>NSMicrophoneUsageDescription</key>
