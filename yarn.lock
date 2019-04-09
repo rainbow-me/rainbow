@@ -665,9 +665,9 @@
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
 
-"@rainbow-me/rainbow-common@^0.6.42":
-  version "0.6.42"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.6.42.tgz#da46321faf60017fd730d349877ae4453f8f75e3"
+"@rainbow-me/rainbow-common@^0.6.43":
+  version "0.6.43"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.6.43.tgz#b589963c0717210f622c5fd92a588ac887a17ec9"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
