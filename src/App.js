@@ -7,7 +7,7 @@ import {
   settingsUpdateAccountAddress,
 } from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
-import { AlertIOS, AppRegistry, AppState } from 'react-native';
+import { Alert, AppRegistry, AppState } from 'react-native';
 import { StackActions } from 'react-navigation';
 import CodePush from 'react-native-code-push';
 import firebase from 'react-native-firebase';
@@ -134,7 +134,7 @@ class App extends Component {
       this.fetchAllRequestsFromWalletConnectSessions();
       return walletAddress;
     } catch (error) {
-      AlertIOS.alert('Error: Failed to initialize wallet.');
+      Alert.alert('Error: Failed to initialize wallet.');
       return null;
     }
   };
@@ -192,7 +192,7 @@ class App extends Component {
         if (fetchedTransaction) {
           this.handleOpenConfirmTransactionModal(fetchedTransaction, autoOpened);
         } else {
-          AlertIOS.alert('This request has expired.');
+          Alert.alert('This request has expired.');
         }
       }
     }
