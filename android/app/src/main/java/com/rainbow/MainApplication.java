@@ -3,6 +3,9 @@ package me.rainbow;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.reactnativecommunity.netinfo.NetInfoPackage;
+import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
+import org.reactnative.camera.RNCameraPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import com.swmansion.rnscreens.RNScreensPackage;
 import com.apsl.versionnumber.RNVersionNumberPackage;
@@ -26,7 +29,6 @@ import com.peel.react.rnos.RNOSModule;
 import com.chirag.RNMail.RNMail;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.oblador.keychain.KeychainPackage;
-import org.reactnative.camera.RNCameraPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -53,6 +55,9 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new NetInfoPackage(),
+            new AsyncStoragePackage(),
+            new RNCameraPackage(),
             new RNDeviceInfo(),
             new RNScreensPackage(),
             new RNVersionNumberPackage(),
@@ -75,8 +80,7 @@ public class MainApplication extends Application implements ReactApplication {
             new RNOSModule(),
             new RNMail(),
             new LinearGradientPackage(),
-            new KeychainPackage(),
-            new RNCameraPackage()
+            new KeychainPackage()
       );
     }
 

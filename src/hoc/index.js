@@ -12,6 +12,7 @@ export { default as withHideSplashScreen } from './withHideSplashScreen';
 export { default as withImageDimensionsCache } from './withImageDimensionsCache';
 export { default as withIsWalletEmpty } from './withIsWalletEmpty';
 export { default as withMessageSigningScreen } from './withMessageSigningScreen';
+export { default as withNetInfo } from './withNetInfo';
 export { default as withNeverRerender } from './withNeverRerender';
 export { default as withRequests } from './withRequests';
 export { default as withRequestsInit } from './withRequestsInit';

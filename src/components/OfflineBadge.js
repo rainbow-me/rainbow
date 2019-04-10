@@ -1,12 +1,28 @@
+import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { Animated, NetInfo } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { compose, onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components';
-import { Icon } from './icons';
-import { Centered } from './layout';
-import { Text } from './text';
+import { withNetInfo } from '../hoc';
 import { colors, padding } from '../styles';
+import { Icon } from './icons';
+import { RowWithMargins } from './layout';
+import { Text } from './text';
 
-const Badge = styled(Centered)`
+const {
+  interpolate,
+  spring,
+  Value,
+  View,
+} = Animated;
+
+const Badge = styled(RowWithMargins).attrs({
+  align: 'center',
+  component: View,
+  justify: 'center',
+  margin: 5,
+  self: 'center',
+})`
   ${padding(10)};
   background: ${colors.dark};
   border-radius: 50;
@@ -19,90 +35,61 @@ const Badge = styled(Centered)`
   z-index: 100;
 `;
 
-const BadgeIcon = styled(Icon).attrs({
-  color: colors.white,
-})`
-  margin-bottom: -3px;
-`;
-
-const BadgeLabel = styled(Text).attrs({
-  size: 'smedium',
-  weight: 'semibold',
-  color: colors.white,
-})`
-  margin-left: 5px;
-`;
+const DefaultAnimationValue = 60;
 
 class OfflineBadge extends PureComponent {
-  state = {
-    badgeOpacity: new Animated.Value(0),
-    badgeYPosition: new Animated.Value(100),
+  static propTypes = {
+    isConnected: PropTypes.bool,
+  }
+
+  static defaultProps = {
     isConnected: true,
-  };
-
-  componentDidMount() {
-    NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
   }
 
-  componentWillUnmount() {
-    this.state.badgeOpacity.stopAnimation();
-    this.state.badgeYPosition.stopAnimation();
-    NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
+  animation = new Value(DefaultAnimationValue)
+
+  componentDidMount = () => this.runAnimation()
+
+  componentDidUpdate = () => this.runAnimation()
+
+  buildAnimation = toValue => {
+    spring(this.animation, {
+      damping: 14,
+      mass: 1,
+      overshootClamping: false,
+      restDisplacementThreshold: 0.001,
+      restSpeedThreshold: 0.001,
+      stiffness: 121.6,
+      toValue,
+    }).start();
   }
 
-  handleConnectivityChange = (isConnected) => {
-    if (isConnected) this.animateBadgeOut();
-    else this.animateBadgeIn();
-    this.setState({ isConnected });
-  };
-
-  animateBadgeIn = () => {
-    Animated.parallel([
-      Animated.spring(this.state.badgeYPosition, {
-        friction: 11,
-        tension: 90,
-        toValue: 0,
-        useNativeDriver: true,
-      }).start(),
-      Animated.spring(this.state.badgeOpacity, {
-        friction: 11,
-        tension: 90,
-        toValue: 1,
-        useNativeDriver: true,
-      }).start(),
-    ]);
-  };
-
-  animateBadgeOut = () => {
-    Animated.parallel([
-      Animated.spring(this.state.badgeYPosition, {
-        friction: 11,
-        tension: 90,
-        toValue: 100,
-        useNativeDriver: true,
-      }).start(),
-      Animated.spring(this.state.badgeOpacity, {
-        friction: 11,
-        tension: 90,
-        toValue: 0,
-        useNativeDriver: true,
-      }).start(),
-    ]);
-  };
+  runAnimation = () => this.buildAnimation(this.props.isConnected ? DefaultAnimationValue : 0)
 
   render = () => (
     <Badge
-      component={Animated.View}
-      self="center"
+      shouldRasterizeIOS
       style={{
-        opacity: this.state.badgeOpacity,
-        transform: [{ translateY: this.state.badgeYPosition }],
+        opacity: interpolate(this.animation, {
+          inputRange: [0, DefaultAnimationValue],
+          outputRange: [1, 0],
+        }),
+        transform: [{ translateY: this.animation }],
       }}
     >
-      <BadgeIcon name="offline" />
-      <BadgeLabel>Offline</BadgeLabel>
+      <Icon
+        color={colors.white}
+        name="offline"
+        style={{ marginBottom: -3 }}
+      />
+      <Text color={colors.white} size="smedium" weight="semibold">
+        Offline
+      </Text>
     </Badge>
   )
 }
 
-export default OfflineBadge;
+export default compose(
+  withNetInfo,
+  onlyUpdateForKeys(['isConnected']),
+)(OfflineBadge);

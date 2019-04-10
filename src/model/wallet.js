@@ -1,6 +1,6 @@
 import ethers from 'ethers';
 import lang from 'i18n-js';
-import { AlertIOS } from 'react-native';
+import { Alert } from 'react-native';
 import {
   ACCESS_CONTROL,
   ACCESSIBLE,
@@ -62,11 +62,11 @@ export const sendTransaction = async ({ transaction }) => {
       const result = await wallet.sendTransaction(transaction);
       return result.hash;
     } catch (error) {
-      AlertIOS.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
       return null;
     }
   } catch (error) {
-    AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
+    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
     return null;
   }
 };
@@ -77,11 +77,11 @@ export const signMessage = async (message, authenticationPrompt = lang.t('wallet
     try {
       return await wallet.signMessage(message);
     } catch (error) {
-      AlertIOS.alert(lang.t('wallet.message_signing.failed_signing'));
+      Alert.alert(lang.t('wallet.message_signing.failed_signing'));
       return null;
     }
   } catch (error) {
-    AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
+    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
     return null;
   }
 };
