@@ -16,10 +16,34 @@
   dependencies:
     "@babel/highlight" "^7.0.0"
 
+<<<<<<< HEAD
 "@babel/core@>=7.2.2", "@babel/core@^7.0.0", "@babel/core@^7.1.0", "@babel/core@^7.4.3", "@babel/core@^7.4.4", "@babel/core@^7.4.5":
+=======
+<<<<<<< HEAD
+"@babel/core@>=7.1.0", "@babel/core@^7.0.0", "@babel/core@^7.1.0", "@babel/core@^7.4.4":
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
   version "7.4.5"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.4.5.tgz#081f97e8ffca65a9b4b0fdc7e274e703f000c06a"
+<<<<<<< HEAD
   integrity sha512-OvjIh6aqXtlsA8ujtGKfC7LYWksYSX8yQcM8Ay3LuvVeQ63lcOKgoZWVqcpFwkd29aYU9rVx7jxhfhiEDV9MZA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-OvjIh6aqXtlsA8ujtGKfC7LYWksYSX8yQcM8Ay3LuvVeQ63lcOKgoZWVqcpFwkd29aYU9rVx7jxhfhiEDV9MZA==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-OvjIh6aqXtlsA8ujtGKfC7LYWksYSX8yQcM8Ay3LuvVeQ63lcOKgoZWVqcpFwkd29aYU9rVx7jxhfhiEDV9MZA==
+=======
+"@babel/core@>=7.1.0", "@babel/core@^7.0.0", "@babel/core@^7.1.0", "@babel/core@^7.4.3":
+  version "7.4.3"
+  resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.4.3.tgz#198d6d3af4567be3989550d97e068de94503074f"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@babel/code-frame" "^7.0.0"
     "@babel/generator" "^7.4.4"
@@ -860,10 +884,30 @@
     chalk "^2.0.1"
     slash "^2.0.0"
 
+<<<<<<< HEAD
 "@jest/core@^24.8.0":
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/@jest/core/-/core-24.8.0.tgz#fbbdcd42a41d0d39cddbc9f520c8bab0c33eed5b"
+<<<<<<< HEAD
   integrity sha512-R9rhAJwCBQzaRnrRgAdVfnglUuATXdwTRsYqs6NMdVcAl5euG8LtWDe+fVkN27YfKVBW61IojVsXKaOmSnqd/A==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-R9rhAJwCBQzaRnrRgAdVfnglUuATXdwTRsYqs6NMdVcAl5euG8LtWDe+fVkN27YfKVBW61IojVsXKaOmSnqd/A==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-R9rhAJwCBQzaRnrRgAdVfnglUuATXdwTRsYqs6NMdVcAl5euG8LtWDe+fVkN27YfKVBW61IojVsXKaOmSnqd/A==
+=======
+"@jest/core@^24.7.1":
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/@jest/core/-/core-24.7.1.tgz#6707f50db238d0c5988860680e2e414df0032024"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@jest/console" "^24.7.1"
     "@jest/reporters" "^24.8.0"
@@ -893,6 +937,7 @@
     rimraf "^2.5.4"
     strip-ansi "^5.0.0"
 
+<<<<<<< HEAD
 "@jest/environment@^24.8.0":
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/@jest/environment/-/environment-24.8.0.tgz#0342261383c776bdd652168f68065ef144af0eac"
@@ -921,6 +966,33 @@
     "@jest/test-result" "^24.8.0"
     "@jest/transform" "^24.8.0"
     "@jest/types" "^24.8.0"
+=======
+"@jest/environment@^24.7.1":
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/@jest/environment/-/environment-24.7.1.tgz#9b9196bc737561f67ac07817d4c5ece772e33135"
+  dependencies:
+    "@jest/fake-timers" "^24.7.1"
+    "@jest/transform" "^24.7.1"
+    "@jest/types" "^24.7.0"
+    jest-mock "^24.7.0"
+
+"@jest/fake-timers@^24.7.1":
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/@jest/fake-timers/-/fake-timers-24.7.1.tgz#56e5d09bdec09ee81050eaff2794b26c71d19db2"
+  dependencies:
+    "@jest/types" "^24.7.0"
+    jest-message-util "^24.7.1"
+    jest-mock "^24.7.0"
+
+"@jest/reporters@^24.7.1":
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/@jest/reporters/-/reporters-24.7.1.tgz#38ac0b096cd691bbbe3051ddc25988d42e37773a"
+  dependencies:
+    "@jest/environment" "^24.7.1"
+    "@jest/test-result" "^24.7.1"
+    "@jest/transform" "^24.7.1"
+    "@jest/types" "^24.7.0"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
     chalk "^2.0.1"
     exit "^0.1.2"
     glob "^7.1.2"
@@ -948,29 +1020,89 @@
     graceful-fs "^4.1.15"
     source-map "^0.6.0"
 
+<<<<<<< HEAD
 "@jest/test-result@^24.8.0":
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/@jest/test-result/-/test-result-24.8.0.tgz#7675d0aaf9d2484caa65e048d9b467d160f8e9d3"
+<<<<<<< HEAD
   integrity sha512-+YdLlxwizlfqkFDh7Mc7ONPQAhA4YylU1s529vVM1rsf67vGZH/2GGm5uO8QzPeVyaVMobCQ7FTxl38QrKRlng==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-+YdLlxwizlfqkFDh7Mc7ONPQAhA4YylU1s529vVM1rsf67vGZH/2GGm5uO8QzPeVyaVMobCQ7FTxl38QrKRlng==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-+YdLlxwizlfqkFDh7Mc7ONPQAhA4YylU1s529vVM1rsf67vGZH/2GGm5uO8QzPeVyaVMobCQ7FTxl38QrKRlng==
+=======
+"@jest/test-result@^24.7.1":
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/@jest/test-result/-/test-result-24.7.1.tgz#19eacdb29a114300aed24db651e5d975f08b6bbe"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@jest/console" "^24.7.1"
     "@jest/types" "^24.8.0"
     "@types/istanbul-lib-coverage" "^2.0.0"
 
+<<<<<<< HEAD
 "@jest/test-sequencer@^24.8.0":
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/@jest/test-sequencer/-/test-sequencer-24.8.0.tgz#2f993bcf6ef5eb4e65e8233a95a3320248cf994b"
+<<<<<<< HEAD
   integrity sha512-OzL/2yHyPdCHXEzhoBuq37CE99nkme15eHkAzXRVqthreWZamEMA0WoetwstsQBCXABhczpK03JNbc4L01vvLg==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-OzL/2yHyPdCHXEzhoBuq37CE99nkme15eHkAzXRVqthreWZamEMA0WoetwstsQBCXABhczpK03JNbc4L01vvLg==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-OzL/2yHyPdCHXEzhoBuq37CE99nkme15eHkAzXRVqthreWZamEMA0WoetwstsQBCXABhczpK03JNbc4L01vvLg==
+=======
+"@jest/test-sequencer@^24.7.1":
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/@jest/test-sequencer/-/test-sequencer-24.7.1.tgz#9c18e428e1ad945fa74f6233a9d35745ca0e63e0"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@jest/test-result" "^24.8.0"
     jest-haste-map "^24.8.0"
     jest-runner "^24.8.0"
     jest-runtime "^24.8.0"
 
+<<<<<<< HEAD
 "@jest/transform@^24.8.0":
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/@jest/transform/-/transform-24.8.0.tgz#628fb99dce4f9d254c6fd9341e3eea262e06fef5"
+<<<<<<< HEAD
   integrity sha512-xBMfFUP7TortCs0O+Xtez2W7Zu1PLH9bvJgtraN1CDST6LBM/eTOZ9SfwS/lvV8yOfcDpFmwf9bq5cYbXvqsvA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-xBMfFUP7TortCs0O+Xtez2W7Zu1PLH9bvJgtraN1CDST6LBM/eTOZ9SfwS/lvV8yOfcDpFmwf9bq5cYbXvqsvA==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-xBMfFUP7TortCs0O+Xtez2W7Zu1PLH9bvJgtraN1CDST6LBM/eTOZ9SfwS/lvV8yOfcDpFmwf9bq5cYbXvqsvA==
+=======
+"@jest/transform@^24.7.1":
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/@jest/transform/-/transform-24.7.1.tgz#872318f125bcfab2de11f53b465ab1aa780789c2"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@babel/core" "^7.1.0"
     "@jest/types" "^24.8.0"
@@ -988,10 +1120,30 @@
     source-map "^0.6.1"
     write-file-atomic "2.4.1"
 
+<<<<<<< HEAD
 "@jest/types@^24.8.0":
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/@jest/types/-/types-24.8.0.tgz#f31e25948c58f0abd8c845ae26fcea1491dea7ad"
+<<<<<<< HEAD
   integrity sha512-g17UxVr2YfBtaMUxn9u/4+siG1ptg9IGYAYwvpwn61nBg779RXnjE/m7CxYcIzEt0AbHZZAHSEZNhkE2WxURVg==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-g17UxVr2YfBtaMUxn9u/4+siG1ptg9IGYAYwvpwn61nBg779RXnjE/m7CxYcIzEt0AbHZZAHSEZNhkE2WxURVg==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-g17UxVr2YfBtaMUxn9u/4+siG1ptg9IGYAYwvpwn61nBg779RXnjE/m7CxYcIzEt0AbHZZAHSEZNhkE2WxURVg==
+=======
+"@jest/types@^24.7.0":
+  version "24.7.0"
+  resolved "https://registry.yarnpkg.com/@jest/types/-/types-24.7.0.tgz#c4ec8d1828cdf23234d9b4ee31f5482a3f04f48b"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@types/istanbul-lib-coverage" "^2.0.0"
     "@types/istanbul-reports" "^1.1.1"
@@ -1009,6 +1161,59 @@
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+"@rainbow-me/rainbow-common@^0.8.10":
+  version "0.8.10"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.8.10.tgz#dd9625c2324e9a8138e58b05af06d29d737e92a1"
+  integrity sha512-Ii42aauQp4OIa0upDFTygJgXiQMKhqguZYXLSr1mTnJv7Xf0U+/Syx5rJb8vDf9SZDoRX936UeEPemR0/fFpKw==
+=======
+<<<<<<< HEAD
+"@rainbow-me/rainbow-common@^0.8.6":
+<<<<<<< HEAD
+  version "0.8.7"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.8.7.tgz#2e32c2ef5172b18be8c9937a7561eaf57cad36f8"
+  integrity sha512-2BWOOBttqkAT2+F5g9aVCGCmlm71inSkkY1Jw1T49WPhZj9M7jkWsVNumfTOK2Gy+unnRp1hwFihF37dD8DtdQ==
+=======
+  version "0.8.6"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.8.6.tgz#fcb50a76b4fb92e7d939104d12ce2f306836a4e2"
+=======
+<<<<<<< HEAD
+"@rainbow-me/rainbow-common@^0.8.3":
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.8.3.tgz#15d65fa5460631c6adf0e31d00afcbf4d195e6ef"
+<<<<<<< HEAD
+=======
+  integrity sha512-z0wpg5gBovvrJnxwbH/9kZpha/u54ol/96Nxp8k7iXWF29WPDJaaWEZIYY+EeyXnRCFyLF8KpIzh6gsXUWMTNg==
+=======
+"@rainbow-me/rainbow-common@git+https://github.com/rainbow-me/rainbow-common.git#uniswap":
+  version "0.6.43"
+  resolved "git+https://github.com/rainbow-me/rainbow-common.git#2ecc15b0a71ad8670a6feb34d00c2bbe327bdb05"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+  dependencies:
+    axios "^0.18.0"
+    bignumber.js "^7.0.1"
+    date-fns "^1.29.0"
+    eslint "^5.13.0"
+    ethers "^4.0.27"
+    i18next "^11.3.2"
+    immer "^3.1.2"
+    jsonp "^0.2.1"
+    lodash "^4.17.10"
+    react "^16.2.0"
+    react-redux "^5.0.7"
+    recompact "^3.4.0"
+    redux "^4.0.0"
+    reselect "^4.0.0"
+    underscore "^1.9.1"
+
+<<<<<<< HEAD
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 "@react-native-community/async-storage@1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/async-storage/-/async-storage-1.4.0.tgz#11864c8ff61b7f8c7062cb8f5c3a721f6a648ede"
@@ -1092,9 +1297,37 @@
     ws "^1.1.0"
 
 "@react-native-community/cli@^1.2.1":
+<<<<<<< HEAD
   version "1.9.10"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-1.9.10.tgz#6494e604fae3fd5993571a31bd16f0af751d56b4"
+<<<<<<< HEAD
   integrity sha512-mYFsSljhia/xNozRRDXC5HyGRBWaDh3OickT28i6NrJSZLjp0kAH6g4c0OWk67EslgXcMi/qYpucA8W54ldu1w==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-mYFsSljhia/xNozRRDXC5HyGRBWaDh3OickT28i6NrJSZLjp0kAH6g4c0OWk67EslgXcMi/qYpucA8W54ldu1w==
+=======
+=======
+  version "1.9.7"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-1.9.7.tgz#1d0aad150a83f8ee06410c216b1b37e8861aa59f"
+<<<<<<< HEAD
+=======
+  integrity sha512-3Fw0TxB8fOVKD51kK9NN/SIonkvl8iCuUGb01RuzsrnMS76Wiu5JY3H7NhhPdvxFrrqa3vgBqJWRowAxbGJqJg==
+=======
+"@react-native-community/async-storage@^1.2.2":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/async-storage/-/async-storage-1.3.0.tgz#8254db63d6e2c51574008cce1535447055387b6a"
+
+"@react-native-community/cli@^1.2.1":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-1.7.0.tgz#e773b76d993b02e9faaabecaf8fb8b65a94fe519"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     chalk "^1.1.1"
     commander "^2.19.0"
@@ -1147,6 +1380,7 @@
     prettier "1.16.4"
 
 "@react-native-community/netinfo@^2.0.0":
+<<<<<<< HEAD
   version "2.0.10"
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-2.0.10.tgz#d28a446352e75754b78509557988359133cdbcca"
   integrity sha512-NrIzyLe0eSbhgMnHl2QdSEhaA7yXh6p9jzMomfUa//hoTXE+xbObGDdiWWSQm2bnXnZJg8XCU3AB9qzvqcuLnA==
@@ -1154,7 +1388,29 @@
 "@react-navigation/core@~3.4.1":
   version "3.4.2"
   resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-3.4.2.tgz#bec563e94fde40fbab3730cdc97f22afbb2a1498"
+<<<<<<< HEAD
   integrity sha512-7G+iDzLSTeOUU4vVZeRZKJ+Bd7ds7ZxYNqZcB8i0KlBeQEQfR74Ounfu/p0KIEq2RiNnaE3QT7WVP3C87sebzw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-7G+iDzLSTeOUU4vVZeRZKJ+Bd7ds7ZxYNqZcB8i0KlBeQEQfR74Ounfu/p0KIEq2RiNnaE3QT7WVP3C87sebzw==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-7G+iDzLSTeOUU4vVZeRZKJ+Bd7ds7ZxYNqZcB8i0KlBeQEQfR74Ounfu/p0KIEq2RiNnaE3QT7WVP3C87sebzw==
+=======
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-2.0.0.tgz#b98171aeaa4326bc9d9834399a3f6cecf8fd4781"
+
+"@react-navigation/core@~3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-3.3.0.tgz#a8fa76e1c2a0da588da3d94ec9ea0956b7df753e"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     hoist-non-react-statics "^3.3.0"
     path-to-regexp "^1.7.0"
@@ -1313,9 +1569,28 @@
     inherits "~2.0.1"
 
 "@types/babel__core@^7.1.0":
+<<<<<<< HEAD
   version "7.1.2"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.2.tgz#608c74f55928033fce18b99b213c16be4b3d114f"
+<<<<<<< HEAD
   integrity sha512-cfCCrFmiGY/yq0NuKNxIQvZFy9kY/1immpSpTngOnyIbD4+eJOG5mxphhHDv3CHL9GltO4GcKr54kGBg3RNdbg==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-cfCCrFmiGY/yq0NuKNxIQvZFy9kY/1immpSpTngOnyIbD4+eJOG5mxphhHDv3CHL9GltO4GcKr54kGBg3RNdbg==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-cfCCrFmiGY/yq0NuKNxIQvZFy9kY/1immpSpTngOnyIbD4+eJOG5mxphhHDv3CHL9GltO4GcKr54kGBg3RNdbg==
+=======
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.1.tgz#ce9a9e5d92b7031421e1d0d74ae59f572ba48be6"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@babel/parser" "^7.1.0"
     "@babel/types" "^7.0.0"
@@ -1359,6 +1634,7 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
+<<<<<<< HEAD
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.1.tgz#42995b446db9a48a11a07ec083499a860e9138ff"
@@ -1378,6 +1654,11 @@
   dependencies:
     "@types/istanbul-lib-coverage" "*"
     "@types/istanbul-lib-report" "*"
+=======
+"@types/istanbul-lib-coverage@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.0.tgz#1eb8c033e98cf4e1a4cedcaf8bcafe8cb7591e85"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
 
 "@types/minimatch@*":
   version "3.0.3"
@@ -1385,6 +1666,7 @@
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
 
 "@types/node@*":
+<<<<<<< HEAD
   version "12.0.10"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.0.10.tgz#51babf9c7deadd5343620055fc8aff7995c8b031"
   integrity sha512-LcsGbPomWsad6wmMNv7nBLw7YYYyfdYcz6xryKYQhx89c3XXan+8Q6AJ43G5XDIaklaVkK3mE4fCb0SBvMiPSQ==
@@ -1393,6 +1675,39 @@
   version "10.14.10"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.10.tgz#e491484c6060af8d461e12ec81c0da8a3282b8de"
   integrity sha512-V8wj+w2YMNvGuhgl/MA5fmTxgjmVHVoasfIaxMMZJV6Y8Kk+Ydpi1z2whoShDCJ2BuNVoqH/h1hrygnBxkrw/Q==
+=======
+<<<<<<< HEAD
+  version "12.0.8"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.0.8.tgz#551466be11b2adc3f3d47156758f610bd9f6b1d8"
+
+"@types/node@^10.3.2":
+  version "10.14.9"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.9.tgz#2e8d678039d27943ce53a1913386133227fd9066"
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-NelG/dSahlXYtSoVPErrp06tYFrvzj8XLWmKA+X8x0W//4MqbUyZu++giUG/v0bjAT6/Qxa8IjodrfdACyb0Fg==
+=======
+=======
+<<<<<<< HEAD
+  version "12.0.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.0.3.tgz#5d8d24e0033fc6393efadc85cb59c1f638095c9a"
+
+"@types/node@^10.3.2":
+  version "10.14.7"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.7.tgz#1854f0a9aa8d2cd6818d607b3d091346c6730362"
+<<<<<<< HEAD
+=======
+  integrity sha512-on4MmIDgHXiuJDELPk1NFaKVUxxCFr37tm8E9yN6rAiF5Pzp/9bBfBHkoexqRiY+hk/Z04EJU9kKEb59YqJ82A==
+=======
+  version "11.13.4"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-11.13.4.tgz#f83ec3c3e05b174b7241fadeb6688267fe5b22ca"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 "@types/node@^8.0.7":
   version "8.10.49"
@@ -1434,7 +1749,22 @@
 "@types/yargs@^12.0.2", "@types/yargs@^12.0.9":
   version "12.0.12"
   resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-12.0.12.tgz#45dd1d0638e8c8f153e87d296907659296873916"
+<<<<<<< HEAD
   integrity sha512-SOhuU4wNBxhhTHxYaiG5NY4HBhDIDnJF60GU+2LqHAdKKer86//e4yg69aENCtQ04n0ovz+tq2YPME5t5yp4pw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-SOhuU4wNBxhhTHxYaiG5NY4HBhDIDnJF60GU+2LqHAdKKer86//e4yg69aENCtQ04n0ovz+tq2YPME5t5yp4pw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-SOhuU4wNBxhhTHxYaiG5NY4HBhDIDnJF60GU+2LqHAdKKer86//e4yg69aENCtQ04n0ovz+tq2YPME5t5yp4pw==
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 "@walletconnect/core@^1.0.0-beta.25":
   version "1.0.0-beta.25"
@@ -1468,6 +1798,8 @@
     "@ethersproject/strings" "^5.0.0-beta.125"
     "@walletconnect/types" "^1.0.0-beta.25"
     bignumber.js "^8.1.1"
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
 
 "@yarnpkg/lockfile@^1.0.0":
   version "1.1.0"
@@ -1676,6 +2008,15 @@ anymatch@^2.0.0:
     micromatch "^3.1.4"
     normalize-path "^2.1.1"
 
+<<<<<<< HEAD
+=======
+append-transform@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/append-transform/-/append-transform-1.0.0.tgz#046a52ae582a228bd72f58acfbe2967c678759ab"
+  dependencies:
+    default-require-extensions "^2.0.0"
+
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
 aproba@^1.0.3:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/aproba/-/aproba-1.2.0.tgz#6802e6264efd18c790a1b0d517f0f2627bf2c94a"
@@ -1894,9 +2235,31 @@ atob@^2.1.1:
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
 autoprefixer@^9.0.0:
+<<<<<<< HEAD
   version "9.6.0"
   resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-9.6.0.tgz#0111c6bde2ad20c6f17995a33fad7cf6854b4c87"
+<<<<<<< HEAD
   integrity sha512-kuip9YilBqhirhHEGHaBTZKXL//xxGnzvsD0FtBQa6z+A69qZD6s/BAX9VzDF1i9VKDquTJDQaPLSEhOnL6FvQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-kuip9YilBqhirhHEGHaBTZKXL//xxGnzvsD0FtBQa6z+A69qZD6s/BAX9VzDF1i9VKDquTJDQaPLSEhOnL6FvQ==
+=======
+=======
+  version "9.5.1"
+  resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-9.5.1.tgz#243b1267b67e7e947f28919d786b50d3bb0fb357"
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-KJSzkStUl3wP0D5sdMlP82Q52JLy5+atf2MHAre48+ckWkXgixmfHyWmA77wFDy6jTHU6mIgXv6hAQ2mf1PjJQ==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     browserslist "^4.6.1"
     caniuse-lite "^1.0.30000971"
@@ -1932,7 +2295,24 @@ babel-core@7.0.0-bridge.0:
 babel-eslint@10.0.1:
   version "10.0.1"
   resolved "https://registry.yarnpkg.com/babel-eslint/-/babel-eslint-10.0.1.tgz#919681dc099614cd7d31d45c8908695092a1faed"
+<<<<<<< HEAD
   integrity sha512-z7OT1iNV+TjOwHNLLyJk+HN+YVWX+CLE6fPD2SymJZOZQBs+QIexFjhm4keGTm8MW9xr4EC9Q0PbaLB24V5GoQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-z7OT1iNV+TjOwHNLLyJk+HN+YVWX+CLE6fPD2SymJZOZQBs+QIexFjhm4keGTm8MW9xr4EC9Q0PbaLB24V5GoQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-z7OT1iNV+TjOwHNLLyJk+HN+YVWX+CLE6fPD2SymJZOZQBs+QIexFjhm4keGTm8MW9xr4EC9Q0PbaLB24V5GoQ==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@babel/code-frame" "^7.0.0"
     "@babel/parser" "^7.0.0"
@@ -1953,10 +2333,135 @@ babel-eslint@^8.2.2:
     eslint-scope "3.7.1"
     eslint-visitor-keys "^1.0.0"
 
+<<<<<<< HEAD
+=======
+babel-helper-builder-binary-assignment-operator-visitor@^6.24.1:
+  version "6.24.1"
+  resolved "https://registry.yarnpkg.com/babel-helper-builder-binary-assignment-operator-visitor/-/babel-helper-builder-binary-assignment-operator-visitor-6.24.1.tgz#cce4517ada356f4220bcae8a02c2b346f9a56664"
+  dependencies:
+    babel-helper-explode-assignable-expression "^6.24.1"
+    babel-runtime "^6.22.0"
+    babel-types "^6.24.1"
+
+babel-helper-builder-react-jsx@^6.24.1:
+  version "6.26.0"
+  resolved "https://registry.yarnpkg.com/babel-helper-builder-react-jsx/-/babel-helper-builder-react-jsx-6.26.0.tgz#39ff8313b75c8b65dceff1f31d383e0ff2a408a0"
+  dependencies:
+    babel-runtime "^6.26.0"
+    babel-types "^6.26.0"
+    esutils "^2.0.2"
+
+babel-helper-call-delegate@^6.24.1:
+  version "6.24.1"
+  resolved "https://registry.yarnpkg.com/babel-helper-call-delegate/-/babel-helper-call-delegate-6.24.1.tgz#ece6aacddc76e41c3461f88bfc575bd0daa2df8d"
+  dependencies:
+    babel-helper-hoist-variables "^6.24.1"
+    babel-runtime "^6.22.0"
+    babel-traverse "^6.24.1"
+    babel-types "^6.24.1"
+
+babel-helper-define-map@^6.24.1:
+  version "6.26.0"
+  resolved "https://registry.yarnpkg.com/babel-helper-define-map/-/babel-helper-define-map-6.26.0.tgz#a5f56dab41a25f97ecb498c7ebaca9819f95be5f"
+  dependencies:
+    babel-helper-function-name "^6.24.1"
+    babel-runtime "^6.26.0"
+    babel-types "^6.26.0"
+    lodash "^4.17.4"
+
+babel-helper-explode-assignable-expression@^6.24.1:
+  version "6.24.1"
+  resolved "https://registry.yarnpkg.com/babel-helper-explode-assignable-expression/-/babel-helper-explode-assignable-expression-6.24.1.tgz#f25b82cf7dc10433c55f70592d5746400ac22caa"
+  dependencies:
+    babel-runtime "^6.22.0"
+    babel-traverse "^6.24.1"
+    babel-types "^6.24.1"
+
+babel-helper-function-name@^6.24.1:
+  version "6.24.1"
+  resolved "https://registry.yarnpkg.com/babel-helper-function-name/-/babel-helper-function-name-6.24.1.tgz#d3475b8c03ed98242a25b48351ab18399d3580a9"
+  dependencies:
+    babel-helper-get-function-arity "^6.24.1"
+    babel-runtime "^6.22.0"
+    babel-template "^6.24.1"
+    babel-traverse "^6.24.1"
+    babel-types "^6.24.1"
+
+babel-helper-get-function-arity@^6.24.1:
+  version "6.24.1"
+  resolved "https://registry.yarnpkg.com/babel-helper-get-function-arity/-/babel-helper-get-function-arity-6.24.1.tgz#8f7782aa93407c41d3aa50908f89b031b1b6853d"
+  dependencies:
+    babel-runtime "^6.22.0"
+    babel-types "^6.24.1"
+
+babel-helper-hoist-variables@^6.24.1:
+  version "6.24.1"
+  resolved "https://registry.yarnpkg.com/babel-helper-hoist-variables/-/babel-helper-hoist-variables-6.24.1.tgz#1ecb27689c9d25513eadbc9914a73f5408be7a76"
+  dependencies:
+    babel-runtime "^6.22.0"
+    babel-types "^6.24.1"
+
+babel-helper-optimise-call-expression@^6.24.1:
+  version "6.24.1"
+  resolved "https://registry.yarnpkg.com/babel-helper-optimise-call-expression/-/babel-helper-optimise-call-expression-6.24.1.tgz#f7a13427ba9f73f8f4fa993c54a97882d1244257"
+  dependencies:
+    babel-runtime "^6.22.0"
+    babel-types "^6.24.1"
+
+babel-helper-regex@^6.24.1:
+  version "6.26.0"
+  resolved "https://registry.yarnpkg.com/babel-helper-regex/-/babel-helper-regex-6.26.0.tgz#325c59f902f82f24b74faceed0363954f6495e72"
+  dependencies:
+    babel-runtime "^6.26.0"
+    babel-types "^6.26.0"
+    lodash "^4.17.4"
+
+babel-helper-remap-async-to-generator@^6.24.1:
+  version "6.24.1"
+  resolved "https://registry.yarnpkg.com/babel-helper-remap-async-to-generator/-/babel-helper-remap-async-to-generator-6.24.1.tgz#5ec581827ad723fecdd381f1c928390676e4551b"
+  dependencies:
+    babel-helper-function-name "^6.24.1"
+    babel-runtime "^6.22.0"
+    babel-template "^6.24.1"
+    babel-traverse "^6.24.1"
+    babel-types "^6.24.1"
+
+babel-helper-replace-supers@^6.24.1:
+  version "6.24.1"
+  resolved "https://registry.yarnpkg.com/babel-helper-replace-supers/-/babel-helper-replace-supers-6.24.1.tgz#bf6dbfe43938d17369a213ca8a8bf74b6a90ab1a"
+  dependencies:
+    babel-helper-optimise-call-expression "^6.24.1"
+    babel-messages "^6.23.0"
+    babel-runtime "^6.22.0"
+    babel-template "^6.24.1"
+    babel-traverse "^6.24.1"
+    babel-types "^6.24.1"
+
+<<<<<<< HEAD
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
 babel-jest@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/babel-jest/-/babel-jest-24.8.0.tgz#5c15ff2b28e20b0f45df43fe6b7f2aae93dba589"
+<<<<<<< HEAD
   integrity sha512-+5/kaZt4I9efoXzPlZASyK/lN9qdRKmmUav9smVc0ruPQD7IsfucQ87gpOE8mn2jbDuS6M/YOW6n3v9ZoIfgnw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-+5/kaZt4I9efoXzPlZASyK/lN9qdRKmmUav9smVc0ruPQD7IsfucQ87gpOE8mn2jbDuS6M/YOW6n3v9ZoIfgnw==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-+5/kaZt4I9efoXzPlZASyK/lN9qdRKmmUav9smVc0ruPQD7IsfucQ87gpOE8mn2jbDuS6M/YOW6n3v9ZoIfgnw==
+=======
+babel-jest@^24.7.1:
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/babel-jest/-/babel-jest-24.7.1.tgz#73902c9ff15a7dfbdc9994b0b17fcefd96042178"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@jest/transform" "^24.8.0"
     "@jest/types" "^24.8.0"
@@ -1981,6 +2486,7 @@ babel-plugin-dotenv@0.1.1:
     dotenv "^2.0.0"
 
 babel-plugin-istanbul@^5.1.0:
+<<<<<<< HEAD
   version "5.1.4"
   resolved "https://registry.yarnpkg.com/babel-plugin-istanbul/-/babel-plugin-istanbul-5.1.4.tgz#841d16b9a58eeb407a0ddce622ba02fe87a752ba"
   integrity sha512-dySz4VJMH+dpndj0wjJ8JPs/7i1TdSPb1nRrn56/92pKOF9VKC1FMFJmMXjzlGGusnCAqujP6PBCiKq0sVA+YQ==
@@ -1988,6 +2494,14 @@ babel-plugin-istanbul@^5.1.0:
     find-up "^3.0.0"
     istanbul-lib-instrument "^3.3.0"
     test-exclude "^5.2.3"
+=======
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/babel-plugin-istanbul/-/babel-plugin-istanbul-5.1.1.tgz#7981590f1956d75d67630ba46f0c22493588c893"
+  dependencies:
+    find-up "^3.0.0"
+    istanbul-lib-instrument "^3.0.0"
+    test-exclude "^5.0.0"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
 
 babel-plugin-jest-hoist@^24.6.0:
   version "24.6.0"
@@ -2032,6 +2546,17 @@ babel-plugin-transform-remove-console@^6.9.4:
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-remove-console/-/babel-plugin-transform-remove-console-6.9.4.tgz#b980360c067384e24b357a588d807d3c83527780"
   integrity sha1-uYA2DAZzhOJLNXpYjYB9PINSd4A=
 
+<<<<<<< HEAD
+=======
+babel-plugin-transform-strict-mode@^6.24.1:
+  version "6.24.1"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-strict-mode/-/babel-plugin-transform-strict-mode-6.24.1.tgz#d5faf7aa578a65bbe591cf5edae04a0c67020758"
+  dependencies:
+    babel-runtime "^6.22.0"
+    babel-types "^6.24.1"
+
+<<<<<<< HEAD
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
 babel-polyfill@6.23.0:
   version "6.23.0"
   resolved "https://registry.yarnpkg.com/babel-polyfill/-/babel-polyfill-6.23.0.tgz#8364ca62df8eafb830499f699177466c3b03499d"
@@ -2041,10 +2566,70 @@ babel-polyfill@6.23.0:
     core-js "^2.4.0"
     regenerator-runtime "^0.10.0"
 
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+babel-preset-env@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/babel-preset-env/-/babel-preset-env-1.7.0.tgz#dea79fa4ebeb883cd35dab07e260c1c9c04df77a"
+  dependencies:
+    babel-plugin-check-es2015-constants "^6.22.0"
+    babel-plugin-syntax-trailing-function-commas "^6.22.0"
+    babel-plugin-transform-async-to-generator "^6.22.0"
+    babel-plugin-transform-es2015-arrow-functions "^6.22.0"
+    babel-plugin-transform-es2015-block-scoped-functions "^6.22.0"
+    babel-plugin-transform-es2015-block-scoping "^6.23.0"
+    babel-plugin-transform-es2015-classes "^6.23.0"
+    babel-plugin-transform-es2015-computed-properties "^6.22.0"
+    babel-plugin-transform-es2015-destructuring "^6.23.0"
+    babel-plugin-transform-es2015-duplicate-keys "^6.22.0"
+    babel-plugin-transform-es2015-for-of "^6.23.0"
+    babel-plugin-transform-es2015-function-name "^6.22.0"
+    babel-plugin-transform-es2015-literals "^6.22.0"
+    babel-plugin-transform-es2015-modules-amd "^6.22.0"
+    babel-plugin-transform-es2015-modules-commonjs "^6.23.0"
+    babel-plugin-transform-es2015-modules-systemjs "^6.23.0"
+    babel-plugin-transform-es2015-modules-umd "^6.23.0"
+    babel-plugin-transform-es2015-object-super "^6.22.0"
+    babel-plugin-transform-es2015-parameters "^6.23.0"
+    babel-plugin-transform-es2015-shorthand-properties "^6.22.0"
+    babel-plugin-transform-es2015-spread "^6.22.0"
+    babel-plugin-transform-es2015-sticky-regex "^6.22.0"
+    babel-plugin-transform-es2015-template-literals "^6.22.0"
+    babel-plugin-transform-es2015-typeof-symbol "^6.23.0"
+    babel-plugin-transform-es2015-unicode-regex "^6.22.0"
+    babel-plugin-transform-exponentiation-operator "^6.22.0"
+    babel-plugin-transform-regenerator "^6.22.0"
+    browserslist "^3.2.6"
+    invariant "^2.2.2"
+    semver "^5.3.0"
+
+<<<<<<< HEAD
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
 babel-preset-fbjs@^3.0.1, babel-preset-fbjs@^3.1.2, babel-preset-fbjs@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/babel-preset-fbjs/-/babel-preset-fbjs-3.2.0.tgz#c0e6347d3e0379ed84b3c2434d3467567aa05297"
+<<<<<<< HEAD
   integrity sha512-5Jo+JeWiVz2wHUUyAlvb/sSYnXNig9r+HqGAOSfh5Fzxp7SnAaR/tEGRJ1ZX7C77kfk82658w6R5Z+uPATTD9g==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-5Jo+JeWiVz2wHUUyAlvb/sSYnXNig9r+HqGAOSfh5Fzxp7SnAaR/tEGRJ1ZX7C77kfk82658w6R5Z+uPATTD9g==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-5Jo+JeWiVz2wHUUyAlvb/sSYnXNig9r+HqGAOSfh5Fzxp7SnAaR/tEGRJ1ZX7C77kfk82658w6R5Z+uPATTD9g==
+=======
+babel-preset-fbjs@^3.0.1, babel-preset-fbjs@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/babel-preset-fbjs/-/babel-preset-fbjs-3.2.0.tgz#c0e6347d3e0379ed84b3c2434d3467567aa05297"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@babel/plugin-proposal-class-properties" "^7.0.0"
     "@babel/plugin-proposal-object-rest-spread" "^7.0.0"
@@ -2077,7 +2662,24 @@ babel-preset-fbjs@^3.0.1, babel-preset-fbjs@^3.1.2, babel-preset-fbjs@^3.2.0:
 babel-preset-jest@^24.6.0:
   version "24.6.0"
   resolved "https://registry.yarnpkg.com/babel-preset-jest/-/babel-preset-jest-24.6.0.tgz#66f06136eefce87797539c0d63f1769cc3915984"
+<<<<<<< HEAD
   integrity sha512-pdZqLEdmy1ZK5kyRUfvBb2IfTPb2BUvIJczlPspS8fWmBQslNNDBqVfh7BW5leOVJMDZKzjD8XEyABTk6gQ5yw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-pdZqLEdmy1ZK5kyRUfvBb2IfTPb2BUvIJczlPspS8fWmBQslNNDBqVfh7BW5leOVJMDZKzjD8XEyABTk6gQ5yw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-pdZqLEdmy1ZK5kyRUfvBb2IfTPb2BUvIJczlPspS8fWmBQslNNDBqVfh7BW5leOVJMDZKzjD8XEyABTk6gQ5yw==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@babel/plugin-syntax-object-rest-spread" "^7.0.0"
     babel-plugin-jest-hoist "^24.6.0"
@@ -2181,6 +2783,7 @@ bl@~0.8.1:
   dependencies:
     readable-stream "~1.0.26"
 
+<<<<<<< HEAD
 blob@0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/blob/-/blob-0.0.5.tgz#d680eeef25f8cd91ad533f5b01eed48e64caf683"
@@ -2190,6 +2793,42 @@ bluebird@3.5.x:
   version "3.5.5"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.5.tgz#a8d0afd73251effbbd5fe384a77d73003c17a71f"
   integrity sha512-5am6HnnfN+urzt4yfg7IgTbotDjIT/u8AJpEt0sIU9FtXfVeezXAPKswrG+xKUCOYAINpSdgZVDU6QFh+cuH3w==
+=======
+<<<<<<< HEAD
+bluebird@3.5.x:
+  version "3.5.5"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.5.tgz#a8d0afd73251effbbd5fe384a77d73003c17a71f"
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-5am6HnnfN+urzt4yfg7IgTbotDjIT/u8AJpEt0sIU9FtXfVeezXAPKswrG+xKUCOYAINpSdgZVDU6QFh+cuH3w==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-5am6HnnfN+urzt4yfg7IgTbotDjIT/u8AJpEt0sIU9FtXfVeezXAPKswrG+xKUCOYAINpSdgZVDU6QFh+cuH3w==
+=======
+block-stream@*:
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/block-stream/-/block-stream-0.0.9.tgz#13ebfe778a03205cfe03751481ebb4b3300c126a"
+  dependencies:
+    inherits "~2.0.0"
+
+bluebird@^2.9.34:
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-2.11.0.tgz#534b9033c022c9579c56ba3b3e5a5caafbb650e1"
+
+bluebird@^3.5.0:
+  version "3.5.4"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.4.tgz#d6cc661595de30d5b3af5fcedd3c0b3ef6ec5714"
+
+bn.js@4.11.6:
+  version "4.11.6"
+  resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.6.tgz#53344adb14617a13f6e8dd2ce28905d1c0ba3215"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.4.0:
   version "4.11.8"
@@ -2334,9 +2973,31 @@ browserslist@^4.6.1:
   resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.6.3.tgz#0530cbc6ab0c1f3fc8c819c72377ba55cf647f05"
   integrity sha512-CNBqTCq22RKM8wKJNowcqihHJ4SkI8CGeK7KOR9tPboXUuS5Zk5lQgzzTbs4oxD8x+6HUshZUa2OyNI9lR93bQ==
   dependencies:
+<<<<<<< HEAD
     caniuse-lite "^1.0.30000975"
     electron-to-chromium "^1.3.164"
     node-releases "^1.1.23"
+=======
+    caniuse-lite "^1.0.30000844"
+    electron-to-chromium "^1.3.47"
+
+browserslist@^4.5.4:
+<<<<<<< HEAD
+  version "4.6.1"
+  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.6.1.tgz#ee5059b1aec18cbec9d055d6cb5e24ae50343a9b"
+<<<<<<< HEAD
+=======
+  integrity sha512-1MC18ooMPRG2UuVFJTHFIAkk6mpByJfxCrnUyvSlu/hyQSFHMrlhM02SzNuCV+quTP4CKmqtOMAIjrifrpBJXQ==
+=======
+  version "4.5.4"
+  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.5.4.tgz#166c4ecef3b51737a42436ea8002aeea466ea2c7"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+  dependencies:
+    caniuse-lite "^1.0.30000971"
+    electron-to-chromium "^1.3.137"
+    node-releases "^1.1.21"
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
 
 bser@^2.0.0:
   version "2.1.0"
@@ -2452,7 +3113,24 @@ callsites@^2.0.0:
 callsites@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/callsites/-/callsites-3.1.0.tgz#b3630abd8943432f54b3f0519238e33cd7df2f73"
+<<<<<<< HEAD
   integrity sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 camelcase-keys@^4.0.0:
   version "4.2.0"
@@ -2471,7 +3149,24 @@ camelcase@^4.1.0:
 camelcase@^5.0.0, camelcase@^5.3.1:
   version "5.3.1"
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-5.3.1.tgz#e3c9b31569e106811df242f715725a1f4c494320"
+<<<<<<< HEAD
   integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 camelize@^1.0.0:
   version "1.0.0"
@@ -2485,10 +3180,45 @@ can-promise@0.0.1:
   dependencies:
     window-or-global "^1.0.1"
 
+<<<<<<< HEAD
 caniuse-lite@^1.0.30000971, caniuse-lite@^1.0.30000975:
+<<<<<<< HEAD
   version "1.0.30000976"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000976.tgz#d30fe12662cb2a21e130d307db9907513ca830a2"
   integrity sha512-tleNB1IwPRqZiod6nUNum63xQCMN96BUO2JTeiwuRM7p9d616EHsMBjBWJMudX39qCaPuWY8KEWzMZq7A9XQMQ==
+=======
+  version "1.0.30000975"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000975.tgz#d4e7131391dddcf2838999d3ce75065f65f1cdfc"
+<<<<<<< HEAD
+=======
+  integrity sha512-ZsXA9YWQX6ATu5MNg+Vx/cMQ+hM6vBBSqDeJs8ruk9z0ky4yIHML15MoxcFt088ST2uyjgqyUGRJButkptWf0w==
+=======
+<<<<<<< HEAD
+caniuse-lite@^1.0.30000971:
+  version "1.0.30000974"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000974.tgz#b7afe14ee004e97ce6dc73e3f878290a12928ad8"
+
+caniuse-lite@^1.0.30000975:
+  version "1.0.30000975"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000975.tgz#d4e7131391dddcf2838999d3ce75065f65f1cdfc"
+=======
+<<<<<<< HEAD
+caniuse-lite@^1.0.30000844, caniuse-lite@^1.0.30000957, caniuse-lite@^1.0.30000971:
+  version "1.0.30000971"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000971.tgz#d1000e4546486a6977756547352bc96a4cfd2b13"
+<<<<<<< HEAD
+=======
+  integrity sha512-TQFYFhRS0O5rdsmSbF1Wn+16latXYsQJat66f7S7lizXW1PVpWJeZw9wqqVLIjuxDRz7s7xRUj13QCfd8hKn6g==
+=======
+caniuse-lite@^1.0.30000844, caniuse-lite@^1.0.30000955, caniuse-lite@^1.0.30000957:
+  version "1.0.30000957"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000957.tgz#fb1026bf184d7d62c685205358c3b24b9e29f7b3"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -2591,7 +3321,24 @@ chroma-js@^1.3.7:
 ci-info@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-2.0.0.tgz#67a9e964be31a51e15e5010d58e6f12834002f46"
+<<<<<<< HEAD
   integrity sha512-5tK7EtrZ0N+OLFMthtqOj4fI2Jeb88C4CAZPu25LDVUgXJ0A3Js4PMGqrn0JU1W0Mh1/Z8wZzYPxqUrXeBboCQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-5tK7EtrZ0N+OLFMthtqOj4fI2Jeb88C4CAZPu25LDVUgXJ0A3Js4PMGqrn0JU1W0Mh1/Z8wZzYPxqUrXeBboCQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-5tK7EtrZ0N+OLFMthtqOj4fI2Jeb88C4CAZPu25LDVUgXJ0A3Js4PMGqrn0JU1W0Mh1/Z8wZzYPxqUrXeBboCQ==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
   version "1.0.4"
@@ -2790,12 +3537,20 @@ combined-stream@^1.0.6, combined-stream@~1.0.6:
   dependencies:
     delayed-stream "~1.0.0"
 
+<<<<<<< HEAD
 comma-separated-tokens@^1.0.0:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/comma-separated-tokens/-/comma-separated-tokens-1.0.7.tgz#419cd7fb3258b1ed838dc0953167a25e152f5b59"
   integrity sha512-Jrx3xsP4pPv4AwJUDWY9wOXGtwPXARej6Xd99h4TUGotmf8APuquKMpK+dnD3UgyxK7OEWaisjZz+3b5jtL6xQ==
 
 commander@^2.19.0, commander@^2.20.0, commander@^2.9.0, commander@~2.20.0:
+=======
+<<<<<<< HEAD
+commander@^2.18.0, commander@^2.19.0, commander@^2.9.0, commander@~2.20.0:
+=======
+commander@^2.18.0, commander@^2.19.0, commander@^2.8.1, commander@^2.9.0, commander@~2.20.0:
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
   version "2.20.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
   integrity sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==
@@ -2803,11 +3558,35 @@ commander@^2.19.0, commander@^2.20.0, commander@^2.9.0, commander@~2.20.0:
 commander@~2.13.0:
   version "2.13.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.13.0.tgz#6964bca67685df7c1f1430c584f07d7597885b9c"
+<<<<<<< HEAD
   integrity sha512-MVuS359B+YzaWqjCL/c+22gfryv+mCBPHAv3zyVI2GN8EY6IRP8VwtasXn8jyyhvvq84R4ImN1OKRtcbIasjYA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-MVuS359B+YzaWqjCL/c+22gfryv+mCBPHAv3zyVI2GN8EY6IRP8VwtasXn8jyyhvvq84R4ImN1OKRtcbIasjYA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-MVuS359B+YzaWqjCL/c+22gfryv+mCBPHAv3zyVI2GN8EY6IRP8VwtasXn8jyyhvvq84R4ImN1OKRtcbIasjYA==
+=======
+
+commander@~2.8.1:
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.8.1.tgz#06be367febfda0c330aa1e2a072d3dc9762425d4"
+  dependencies:
+    graceful-readlink ">= 1.0.0"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 commondir@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
+<<<<<<< HEAD
   integrity sha1-3dgA2gxmEnOTzKWVDqloo6rxJTs=
 
 component-bind@1.0.0:
@@ -2819,6 +3598,26 @@ component-emitter@1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/component-emitter/-/component-emitter-1.2.1.tgz#137918d6d78283f7df7a6b7c5a63e140e69425e6"
   integrity sha1-E3kY1teCg/ffemt8WmPhQOaUJeY=
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha1-3dgA2gxmEnOTzKWVDqloo6rxJTs=
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha1-3dgA2gxmEnOTzKWVDqloo6rxJTs=
+=======
+
+compare-versions@^3.2.1:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/compare-versions/-/compare-versions-3.4.0.tgz#e0747df5c9cb7f054d6d3dc3e1dbc444f9e92b26"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 component-emitter@^1.2.0, component-emitter@^1.2.1:
   version "1.3.0"
@@ -2925,9 +3724,33 @@ core-js@^2.2.2, core-js@^2.4.0, core-js@^2.4.1:
   integrity sha512-HOpZf6eXmnl7la+cUdMnLvUxKNqLUzJvgIziQ0DiF3JwSImNphIqdGqzj6hIKyX04MmV0poclQ7+wjWvxQyR2A==
 
 core-js@^3.0.0:
+<<<<<<< HEAD
   version "3.1.4"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.1.4.tgz#3a2837fc48e582e1ae25907afcd6cf03b0cc7a07"
+<<<<<<< HEAD
   integrity sha512-YNZN8lt82XIMLnLirj9MhKDFZHalwzzrL9YLt6eb0T5D0EDl4IQ90IGkua8mHbnxNrkj1d8hbdizMc0Qmg1WnQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-YNZN8lt82XIMLnLirj9MhKDFZHalwzzrL9YLt6eb0T5D0EDl4IQ90IGkua8mHbnxNrkj1d8hbdizMc0Qmg1WnQ==
+=======
+=======
+<<<<<<< HEAD
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.1.3.tgz#95700bca5f248f5f78c0ec63e784eca663ec4138"
+<<<<<<< HEAD
+=======
+  integrity sha512-PWZ+ZfuaKf178BIAg+CRsljwjIMRV8MY00CbZczkR6Zk5LfkSkjGoaab3+bqRQWVITNZxQB7TFYz+CFcyuamvA==
+=======
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.0.1.tgz#1343182634298f7f38622f95e73f54e48ddf4738"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"
@@ -3113,7 +3936,24 @@ dashify@^2.0.0:
 data-uri-to-buffer@2:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/data-uri-to-buffer/-/data-uri-to-buffer-2.0.1.tgz#ca8f56fe38b1fd329473e9d1b4a9afcd8ce1c045"
+<<<<<<< HEAD
   integrity sha512-OkVVLrerfAKZlW2ZZ3Ve2y65jgiWqBKsTfUIAFbn8nVbPcCZg6l6gikKlEYv0kXcmzqGm6mFq/Jf2vriuEkv8A==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-OkVVLrerfAKZlW2ZZ3Ve2y65jgiWqBKsTfUIAFbn8nVbPcCZg6l6gikKlEYv0kXcmzqGm6mFq/Jf2vriuEkv8A==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-OkVVLrerfAKZlW2ZZ3Ve2y65jgiWqBKsTfUIAFbn8nVbPcCZg6l6gikKlEYv0kXcmzqGm6mFq/Jf2vriuEkv8A==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@types/node" "^8.0.7"
 
@@ -3197,6 +4037,7 @@ deep-is@~0.1.3:
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.3.tgz#b369d6fb5dbc13eecf524f91b070feedc357cf34"
   integrity sha1-s2nW+128E+7PUk+RsHD+7cNXzzQ=
 
+<<<<<<< HEAD
 deepmerge@^3.2.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-3.3.0.tgz#d3c47fd6f3a93d517b14426b0628a17b0125f5f7"
@@ -3204,7 +4045,26 @@ deepmerge@^3.2.0:
 defaults@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/defaults/-/defaults-1.0.3.tgz#c656051e9817d9ff08ed881477f3fe4019f3ef7d"
+<<<<<<< HEAD
   integrity sha1-xlYFHpgX2f8I7YgUd/P+QBnz730=
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha1-xlYFHpgX2f8I7YgUd/P+QBnz730=
+=======
+<<<<<<< HEAD
+=======
+  integrity sha1-xlYFHpgX2f8I7YgUd/P+QBnz730=
+=======
+default-require-extensions@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/default-require-extensions/-/default-require-extensions-2.0.0.tgz#f5f8fbb18a7d6d50b21f641f649ebb522cfe24f7"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     clone "^1.0.2"
 
@@ -3325,12 +4185,43 @@ detox@^12.8.0:
 diff-sequences@^24.3.0:
   version "24.3.0"
   resolved "https://registry.yarnpkg.com/diff-sequences/-/diff-sequences-24.3.0.tgz#0f20e8a1df1abddaf4d9c226680952e64118b975"
+<<<<<<< HEAD
   integrity sha512-xLqpez+Zj9GKSnPWS0WZw1igGocZ+uua8+y+5dDNTT934N3QuY1sp2LkHzwiaYQGz60hMq0pjAshdeXm5VUOEw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-xLqpez+Zj9GKSnPWS0WZw1igGocZ+uua8+y+5dDNTT934N3QuY1sp2LkHzwiaYQGz60hMq0pjAshdeXm5VUOEw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-xLqpez+Zj9GKSnPWS0WZw1igGocZ+uua8+y+5dDNTT934N3QuY1sp2LkHzwiaYQGz60hMq0pjAshdeXm5VUOEw==
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 diff@3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.5.0.tgz#800c0dd1e0a8bfbc95835c202ad220fe317e5a12"
+<<<<<<< HEAD
   integrity sha512-A46qtFgd+g7pDZinpnwiRJtxbC1hpgf0uzP3iG89scHk0AUC7A1TGxf5OiiOUv/JMZR8GOt8hL900hV0bOy5xA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-A46qtFgd+g7pDZinpnwiRJtxbC1hpgf0uzP3iG89scHk0AUC7A1TGxf5OiiOUv/JMZR8GOt8hL900hV0bOy5xA==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-A46qtFgd+g7pDZinpnwiRJtxbC1hpgf0uzP3iG89scHk0AUC7A1TGxf5OiiOUv/JMZR8GOt8hL900hV0bOy5xA==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 diffie-hellman@^5.0.0:
   version "5.0.3"
@@ -3457,10 +4348,40 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
+<<<<<<< HEAD
 electron-to-chromium@^1.3.164:
+<<<<<<< HEAD
   version "1.3.170"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.170.tgz#2dc858f8a9bb51bbfe3a429312c11f565b456e61"
   integrity sha512-vDEhHcwMogbM+WXDTh6ZktwQOqLcK7MJdCOM99UZXRI1ct3Y9OeYYJTrIHnswzv+IYwoXNj0Furh+K6UotcHVg==
+=======
+<<<<<<< HEAD
+  version "1.3.166"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.166.tgz#99d267514f4b92339788172400bc527545deb75b"
+<<<<<<< HEAD
+=======
+  integrity sha512-7XwtJz81H/PBnkmQ/07oVPOGTkBZs6ibZN8OqXNUrxjRPzR0Xj+MFcMmRZEXGilEg1Pm+97V8BZVI63qnBX1hQ==
+=======
+  version "1.3.164"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.164.tgz#8680b875577882c1572c42218d53fa9ba5f71d5d"
+=======
+<<<<<<< HEAD
+electron-to-chromium@^1.3.137, electron-to-chromium@^1.3.47:
+  version "1.3.137"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.137.tgz#ba7c88024984c038a5c5c434529aabcea7b42944"
+<<<<<<< HEAD
+=======
+  integrity sha512-kGi32g42a8vS/WnYE7ELJyejRT7hbr3UeOOu0WeuYuQ29gCpg9Lrf6RdcTQVXSt/v0bjCfnlb/EWOOsiKpTmkw==
+=======
+electron-to-chromium@^1.3.122, electron-to-chromium@^1.3.47:
+  version "1.3.124"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.124.tgz#861fc0148748a11b3e5ccebdf8b795ff513fa11f"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -4024,10 +4945,30 @@ expand-range@^1.8.1:
   dependencies:
     fill-range "^2.1.0"
 
+<<<<<<< HEAD
 expect@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/expect/-/expect-24.8.0.tgz#471f8ec256b7b6129ca2524b2a62f030df38718d"
+<<<<<<< HEAD
   integrity sha512-/zYvP8iMDrzaaxHVa724eJBCKqSHmO0FA7EDkBiRHxg6OipmMn1fN+C8T9L9K8yr7UONkOifu6+LLH+z76CnaA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-/zYvP8iMDrzaaxHVa724eJBCKqSHmO0FA7EDkBiRHxg6OipmMn1fN+C8T9L9K8yr7UONkOifu6+LLH+z76CnaA==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-/zYvP8iMDrzaaxHVa724eJBCKqSHmO0FA7EDkBiRHxg6OipmMn1fN+C8T9L9K8yr7UONkOifu6+LLH+z76CnaA==
+=======
+expect@^24.7.1:
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/expect/-/expect-24.7.1.tgz#d91defbab4e627470a152feaf35b3c31aa1c7c14"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@jest/types" "^24.8.0"
     ansi-styles "^3.2.0"
@@ -4178,7 +5119,24 @@ fbjs-css-vars@^1.0.0:
 fbjs-scripts@^1.0.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/fbjs-scripts/-/fbjs-scripts-1.2.0.tgz#069a0c0634242d10031c6460ef1fccefcdae8b27"
+<<<<<<< HEAD
   integrity sha512-5krZ8T0Bf8uky0abPoCLrfa7Orxd8UH4Qq8hRUF2RZYNMu+FmEOrBc7Ib3YVONmxTXTlLAvyrrdrVmksDb2OqQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-5krZ8T0Bf8uky0abPoCLrfa7Orxd8UH4Qq8hRUF2RZYNMu+FmEOrBc7Ib3YVONmxTXTlLAvyrrdrVmksDb2OqQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-5krZ8T0Bf8uky0abPoCLrfa7Orxd8UH4Qq8hRUF2RZYNMu+FmEOrBc7Ib3YVONmxTXTlLAvyrrdrVmksDb2OqQ==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@babel/core" "^7.0.0"
     ansi-colors "^1.0.1"
@@ -4300,6 +5258,7 @@ find-cache-dir@^2.0.0:
     make-dir "^2.0.0"
     pkg-dir "^3.0.0"
 
+<<<<<<< HEAD
 find-up@3.0.0, find-up@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/find-up/-/find-up-3.0.0.tgz#49169f1d7993430646da61ecc5ae355c21c97b73"
@@ -4307,6 +5266,8 @@ find-up@3.0.0, find-up@^3.0.0:
   dependencies:
     locate-path "^3.0.0"
 
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
 find-up@^2.0.0, find-up@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/find-up/-/find-up-2.1.0.tgz#45d1b7e506c717ddd482775a2b77920a3c0c57a7"
@@ -5044,7 +6005,24 @@ import-lazy@^3.1.0:
 import-local@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/import-local/-/import-local-2.0.0.tgz#55070be38a5993cf18ef6db7e961f5bee5c5a09d"
+<<<<<<< HEAD
   integrity sha512-b6s04m3O+s3CGSbqDIyP4R6aAwAeYlVq9+WUWep6iHa8ETRf9yei1U48C5MmfJmV9AiLYYBKPMq/W+/WRpQmCQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-b6s04m3O+s3CGSbqDIyP4R6aAwAeYlVq9+WUWep6iHa8ETRf9yei1U48C5MmfJmV9AiLYYBKPMq/W+/WRpQmCQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-b6s04m3O+s3CGSbqDIyP4R6aAwAeYlVq9+WUWep6iHa8ETRf9yei1U48C5MmfJmV9AiLYYBKPMq/W+/WRpQmCQ==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     pkg-dir "^3.0.0"
     resolve-cwd "^2.0.0"
@@ -5117,6 +6095,7 @@ inquirer@1.1.2:
     strip-ansi "^3.0.0"
     through "^2.3.6"
 
+<<<<<<< HEAD
 inquirer@3.0.6:
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-3.0.6.tgz#e04aaa9d05b7a3cb9b0f407d04375f0447190347"
@@ -5136,6 +6115,8 @@ inquirer@3.0.6:
     strip-ansi "^3.0.0"
     through "^2.3.6"
 
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
 inquirer@^3.0.6:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-3.3.0.tgz#9dd2f2ad765dcab1ff0443b491442a20ba227dc9"
@@ -5261,7 +6242,24 @@ is-callable@^1.1.4:
 is-ci@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/is-ci/-/is-ci-2.0.0.tgz#6bc6334181810e04b5c22b3d589fdca55026404c"
+<<<<<<< HEAD
   integrity sha512-YfJT7rkpQB0updsdHLGWrvhBJfcfzNNawYDNIyQXJz0IViGf75O8EBPKSdvw2rF+LGCsX4FZ8tcr3b19LcZq4w==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-YfJT7rkpQB0updsdHLGWrvhBJfcfzNNawYDNIyQXJz0IViGf75O8EBPKSdvw2rF+LGCsX4FZ8tcr3b19LcZq4w==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-YfJT7rkpQB0updsdHLGWrvhBJfcfzNNawYDNIyQXJz0IViGf75O8EBPKSdvw2rF+LGCsX4FZ8tcr3b19LcZq4w==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     ci-info "^2.0.0"
 
@@ -5358,10 +6356,34 @@ is-fullwidth-code-point@^2.0.0:
   resolved "https://registry.yarnpkg.com/is-fullwidth-code-point/-/is-fullwidth-code-point-2.0.0.tgz#a3b30a5c4f199183167aaab93beefae3ddfb654f"
   integrity sha1-o7MKXE8ZkYMWeqq5O+764937ZU8=
 
+<<<<<<< HEAD
 is-generator-fn@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/is-generator-fn/-/is-generator-fn-2.1.0.tgz#7d140adc389aaf3011a8f2a2a4cfa6faadffb118"
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
   integrity sha512-cTIB4yPYL/Grw0EaSzASzg6bBy9gqCofvWN8okThAYIxKJZC+udlRAmGbM0XLeniEJSs8uEgHPGuHSe1XsOLSQ==
+=======
+is-function@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/is-function/-/is-function-1.0.1.tgz#12cfb98b65b57dd3d193a3121f5f6e2f437602b5"
+
+is-generator-fn@^2.0.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/is-generator-fn/-/is-generator-fn-2.1.0.tgz#7d140adc389aaf3011a8f2a2a4cfa6faadffb118"
+<<<<<<< HEAD
+  integrity sha512-cTIB4yPYL/Grw0EaSzASzg6bBy9gqCofvWN8okThAYIxKJZC+udlRAmGbM0XLeniEJSs8uEgHPGuHSe1XsOLSQ==
+=======
+<<<<<<< HEAD
+  integrity sha512-cTIB4yPYL/Grw0EaSzASzg6bBy9gqCofvWN8okThAYIxKJZC+udlRAmGbM0XLeniEJSs8uEgHPGuHSe1XsOLSQ==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 is-glob@^2.0.0, is-glob@^2.0.1:
   version "2.0.1"
@@ -5566,6 +6588,7 @@ isstream@~0.1.2:
   resolved "https://registry.yarnpkg.com/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
   integrity sha1-R+Y/evVa+m+S4VAOaQ64uFKcCZo=
 
+<<<<<<< HEAD
 istanbul-lib-coverage@^2.0.2, istanbul-lib-coverage@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.5.tgz#675f0ab69503fad4b1d849f736baaca803344f49"
@@ -5574,7 +6597,54 @@ istanbul-lib-coverage@^2.0.2, istanbul-lib-coverage@^2.0.5:
 istanbul-lib-instrument@^3.0.1, istanbul-lib-instrument@^3.3.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/istanbul-lib-instrument/-/istanbul-lib-instrument-3.3.0.tgz#a5f63d91f0bbc0c3e479ef4c5de027335ec6d630"
+<<<<<<< HEAD
   integrity sha512-5nnIN4vo5xQZHdXno/YDXJ0G+I3dAm4XgzfSVTPLQpj/zAV2dV6Juy0yaf10/zrJOJeHoN3fraFe+XRq2bFVZA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-5nnIN4vo5xQZHdXno/YDXJ0G+I3dAm4XgzfSVTPLQpj/zAV2dV6Juy0yaf10/zrJOJeHoN3fraFe+XRq2bFVZA==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-5nnIN4vo5xQZHdXno/YDXJ0G+I3dAm4XgzfSVTPLQpj/zAV2dV6Juy0yaf10/zrJOJeHoN3fraFe+XRq2bFVZA==
+=======
+istanbul-api@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/istanbul-api/-/istanbul-api-2.1.1.tgz#194b773f6d9cbc99a9258446848b0f988951c4d0"
+  dependencies:
+    async "^2.6.1"
+    compare-versions "^3.2.1"
+    fileset "^2.0.3"
+    istanbul-lib-coverage "^2.0.3"
+    istanbul-lib-hook "^2.0.3"
+    istanbul-lib-instrument "^3.1.0"
+    istanbul-lib-report "^2.0.4"
+    istanbul-lib-source-maps "^3.0.2"
+    istanbul-reports "^2.1.1"
+    js-yaml "^3.12.0"
+    make-dir "^1.3.0"
+    minimatch "^3.0.4"
+    once "^1.4.0"
+
+istanbul-lib-coverage@^2.0.2, istanbul-lib-coverage@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.3.tgz#0b891e5ad42312c2b9488554f603795f9a2211ba"
+
+istanbul-lib-hook@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/istanbul-lib-hook/-/istanbul-lib-hook-2.0.3.tgz#e0e581e461c611be5d0e5ef31c5f0109759916fb"
+  dependencies:
+    append-transform "^1.0.0"
+
+istanbul-lib-instrument@^3.0.0, istanbul-lib-instrument@^3.0.1, istanbul-lib-instrument@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/istanbul-lib-instrument/-/istanbul-lib-instrument-3.1.0.tgz#a2b5484a7d445f1f311e93190813fa56dfb62971"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@babel/generator" "^7.4.0"
     "@babel/parser" "^7.4.3"
@@ -5585,18 +6655,57 @@ istanbul-lib-instrument@^3.0.1, istanbul-lib-instrument@^3.3.0:
     semver "^6.0.0"
 
 istanbul-lib-report@^2.0.4:
+<<<<<<< HEAD
   version "2.0.8"
   resolved "https://registry.yarnpkg.com/istanbul-lib-report/-/istanbul-lib-report-2.0.8.tgz#5a8113cd746d43c4889eba36ab10e7d50c9b4f33"
+<<<<<<< HEAD
   integrity sha512-fHBeG573EIihhAblwgxrSenp0Dby6tJMFR/HvlerBsrCTD5bkUuoNtn3gVh29ZCS824cGGBPn7Sg7cNk+2xUsQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-fHBeG573EIihhAblwgxrSenp0Dby6tJMFR/HvlerBsrCTD5bkUuoNtn3gVh29ZCS824cGGBPn7Sg7cNk+2xUsQ==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-fHBeG573EIihhAblwgxrSenp0Dby6tJMFR/HvlerBsrCTD5bkUuoNtn3gVh29ZCS824cGGBPn7Sg7cNk+2xUsQ==
+=======
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/istanbul-lib-report/-/istanbul-lib-report-2.0.4.tgz#bfd324ee0c04f59119cb4f07dab157d09f24d7e4"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     istanbul-lib-coverage "^2.0.5"
     make-dir "^2.1.0"
     supports-color "^6.1.0"
 
+<<<<<<< HEAD
 istanbul-lib-source-maps@^3.0.1:
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/istanbul-lib-source-maps/-/istanbul-lib-source-maps-3.0.6.tgz#284997c48211752ec486253da97e3879defba8c8"
+<<<<<<< HEAD
   integrity sha512-R47KzMtDJH6X4/YW9XTx+jrLnZnscW4VpNN+1PViSYTejLVPWv7oov+Duf8YQSPyVRUvueQqz1TcsC6mooZTXw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-R47KzMtDJH6X4/YW9XTx+jrLnZnscW4VpNN+1PViSYTejLVPWv7oov+Duf8YQSPyVRUvueQqz1TcsC6mooZTXw==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-R47KzMtDJH6X4/YW9XTx+jrLnZnscW4VpNN+1PViSYTejLVPWv7oov+Duf8YQSPyVRUvueQqz1TcsC6mooZTXw==
+=======
+istanbul-lib-source-maps@^3.0.1, istanbul-lib-source-maps@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/istanbul-lib-source-maps/-/istanbul-lib-source-maps-3.0.2.tgz#f1e817229a9146e8424a28e5d69ba220fda34156"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     debug "^4.1.1"
     istanbul-lib-coverage "^2.0.5"
@@ -5605,12 +6714,32 @@ istanbul-lib-source-maps@^3.0.1:
     source-map "^0.6.1"
 
 istanbul-reports@^2.1.1:
+<<<<<<< HEAD
   version "2.2.6"
   resolved "https://registry.yarnpkg.com/istanbul-reports/-/istanbul-reports-2.2.6.tgz#7b4f2660d82b29303a8fe6091f8ca4bf058da1af"
+<<<<<<< HEAD
   integrity sha512-SKi4rnMyLBKe0Jy2uUdx28h8oG7ph2PPuQPvIAh31d+Ci+lSiEu4C+h3oBPuJ9+mPKhOyW0M8gY4U5NM1WLeXA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-SKi4rnMyLBKe0Jy2uUdx28h8oG7ph2PPuQPvIAh31d+Ci+lSiEu4C+h3oBPuJ9+mPKhOyW0M8gY4U5NM1WLeXA==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-SKi4rnMyLBKe0Jy2uUdx28h8oG7ph2PPuQPvIAh31d+Ci+lSiEu4C+h3oBPuJ9+mPKhOyW0M8gY4U5NM1WLeXA==
+=======
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/istanbul-reports/-/istanbul-reports-2.1.1.tgz#72ef16b4ecb9a4a7bd0e2001e00f95d1eec8afa9"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     handlebars "^4.1.2"
 
+<<<<<<< HEAD
 jest-changed-files@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-changed-files/-/jest-changed-files-24.8.0.tgz#7e7eb21cf687587a85e50f3d249d1327e15b157b"
@@ -5623,7 +6752,41 @@ jest-changed-files@^24.8.0:
 jest-cli@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-cli/-/jest-cli-24.8.0.tgz#b075ac914492ed114fa338ade7362a301693e989"
+<<<<<<< HEAD
   integrity sha512-+p6J00jSMPQ116ZLlHJJvdf8wbjNbZdeSX9ptfHX06/MSNaXmKihQzx5vQcw0q2G6JsdVkUIdWbOWtSnaYs3yA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-+p6J00jSMPQ116ZLlHJJvdf8wbjNbZdeSX9ptfHX06/MSNaXmKihQzx5vQcw0q2G6JsdVkUIdWbOWtSnaYs3yA==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-+p6J00jSMPQ116ZLlHJJvdf8wbjNbZdeSX9ptfHX06/MSNaXmKihQzx5vQcw0q2G6JsdVkUIdWbOWtSnaYs3yA==
+=======
+isurl@^1.0.0-alpha5:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/isurl/-/isurl-1.0.0.tgz#b27f4f49f3cdaa3ea44a0a5b7f3462e6edc39d67"
+  dependencies:
+    has-to-string-tag-x "^1.2.0"
+    is-object "^1.0.1"
+
+jest-changed-files@^24.7.0:
+  version "24.7.0"
+  resolved "https://registry.yarnpkg.com/jest-changed-files/-/jest-changed-files-24.7.0.tgz#39d723a11b16ed7b373ac83adc76a69464b0c4fa"
+  dependencies:
+    "@jest/types" "^24.7.0"
+    execa "^1.0.0"
+    throat "^4.0.0"
+
+jest-cli@^24.7.1:
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/jest-cli/-/jest-cli-24.7.1.tgz#6093a539073b6f4953145abeeb9709cd621044f1"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@jest/core" "^24.8.0"
     "@jest/test-result" "^24.8.0"
@@ -5639,10 +6802,30 @@ jest-cli@^24.8.0:
     realpath-native "^1.1.0"
     yargs "^12.0.2"
 
+<<<<<<< HEAD
 jest-config@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-config/-/jest-config-24.8.0.tgz#77db3d265a6f726294687cbbccc36f8a76ee0f4f"
+<<<<<<< HEAD
   integrity sha512-Czl3Nn2uEzVGsOeaewGWoDPD8GStxCpAe0zOYs2x2l0fZAgPbCr3uwUkgNKV3LwE13VXythM946cd5rdGkkBZw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-Czl3Nn2uEzVGsOeaewGWoDPD8GStxCpAe0zOYs2x2l0fZAgPbCr3uwUkgNKV3LwE13VXythM946cd5rdGkkBZw==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-Czl3Nn2uEzVGsOeaewGWoDPD8GStxCpAe0zOYs2x2l0fZAgPbCr3uwUkgNKV3LwE13VXythM946cd5rdGkkBZw==
+=======
+jest-config@^24.7.1:
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/jest-config/-/jest-config-24.7.1.tgz#6c1dd4db82a89710a3cf66bdba97827c9a1cf052"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@babel/core" "^7.1.0"
     "@jest/test-sequencer" "^24.8.0"
@@ -5662,10 +6845,30 @@ jest-config@^24.8.0:
     pretty-format "^24.8.0"
     realpath-native "^1.1.0"
 
+<<<<<<< HEAD
 jest-diff@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-diff/-/jest-diff-24.8.0.tgz#146435e7d1e3ffdf293d53ff97e193f1d1546172"
+<<<<<<< HEAD
   integrity sha512-wxetCEl49zUpJ/bvUmIFjd/o52J+yWcoc5ZyPq4/W1LUKGEhRYDIbP1KcF6t+PvqNrGAFk4/JhtxDq/Nnzs66g==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-wxetCEl49zUpJ/bvUmIFjd/o52J+yWcoc5ZyPq4/W1LUKGEhRYDIbP1KcF6t+PvqNrGAFk4/JhtxDq/Nnzs66g==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-wxetCEl49zUpJ/bvUmIFjd/o52J+yWcoc5ZyPq4/W1LUKGEhRYDIbP1KcF6t+PvqNrGAFk4/JhtxDq/Nnzs66g==
+=======
+jest-diff@^24.7.0:
+  version "24.7.0"
+  resolved "https://registry.yarnpkg.com/jest-diff/-/jest-diff-24.7.0.tgz#5d862899be46249754806f66e5729c07fcb3580f"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     chalk "^2.0.1"
     diff-sequences "^24.3.0"
@@ -5684,13 +6887,34 @@ jest-docblock@^24.3.0:
   dependencies:
     detect-newline "^2.1.0"
 
+<<<<<<< HEAD
 jest-each@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-each/-/jest-each-24.8.0.tgz#a05fd2bf94ddc0b1da66c6d13ec2457f35e52775"
+<<<<<<< HEAD
   integrity sha512-NrwK9gaL5+XgrgoCsd9svsoWdVkK4gnvyhcpzd6m487tXHqIdYeykgq3MKI1u4I+5Zf0tofr70at9dWJDeb+BA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-NrwK9gaL5+XgrgoCsd9svsoWdVkK4gnvyhcpzd6m487tXHqIdYeykgq3MKI1u4I+5Zf0tofr70at9dWJDeb+BA==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-NrwK9gaL5+XgrgoCsd9svsoWdVkK4gnvyhcpzd6m487tXHqIdYeykgq3MKI1u4I+5Zf0tofr70at9dWJDeb+BA==
+=======
+jest-each@^24.7.1:
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/jest-each/-/jest-each-24.7.1.tgz#fcc7dda4147c28430ad9fb6dc7211cd17ab54e74"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@jest/types" "^24.8.0"
     chalk "^2.0.1"
+<<<<<<< HEAD
     jest-get-type "^24.8.0"
     jest-util "^24.8.0"
     pretty-format "^24.8.0"
@@ -5736,11 +6960,58 @@ jest-haste-map@24.0.0:
     jest-worker "^24.0.0"
     micromatch "^3.1.10"
     sane "^3.0.0"
+=======
+    jest-get-type "^24.3.0"
+    jest-util "^24.7.1"
+    pretty-format "^24.7.0"
+
+jest-environment-jsdom@^24.7.1:
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/jest-environment-jsdom/-/jest-environment-jsdom-24.7.1.tgz#a40e004b4458ebeb8a98082df135fd501b9fbbd6"
+  dependencies:
+    "@jest/environment" "^24.7.1"
+    "@jest/fake-timers" "^24.7.1"
+    "@jest/types" "^24.7.0"
+    jest-mock "^24.7.0"
+    jest-util "^24.7.1"
+    jsdom "^11.5.1"
+
+jest-environment-node@^24.7.1:
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/jest-environment-node/-/jest-environment-node-24.7.1.tgz#fa2c047a31522a48038d26ee4f7c8fd9c1ecfe12"
+  dependencies:
+    "@jest/environment" "^24.7.1"
+    "@jest/fake-timers" "^24.7.1"
+    "@jest/types" "^24.7.0"
+    jest-mock "^24.7.0"
+    jest-util "^24.7.1"
+
+jest-get-type@^24.3.0:
+  version "24.3.0"
+  resolved "https://registry.yarnpkg.com/jest-get-type/-/jest-get-type-24.3.0.tgz#582cfd1a4f91b5cdad1d43d2932f816d543c65da"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
 
 jest-haste-map@24.0.0-alpha.6:
   version "24.0.0-alpha.6"
   resolved "https://registry.yarnpkg.com/jest-haste-map/-/jest-haste-map-24.0.0-alpha.6.tgz#fb2c785080f391b923db51846b86840d0d773076"
+<<<<<<< HEAD
   integrity sha512-+NO2HMbjvrG8BC39ieLukdpFrcPhhjCJGhpbHodHNZygH1Tt06WrlNYGpZtWKx/zpf533tCtMQXO/q59JenjNw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-+NO2HMbjvrG8BC39ieLukdpFrcPhhjCJGhpbHodHNZygH1Tt06WrlNYGpZtWKx/zpf533tCtMQXO/q59JenjNw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-+NO2HMbjvrG8BC39ieLukdpFrcPhhjCJGhpbHodHNZygH1Tt06WrlNYGpZtWKx/zpf533tCtMQXO/q59JenjNw==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     fb-watchman "^2.0.0"
     graceful-fs "^4.1.11"
@@ -5750,10 +7021,35 @@ jest-haste-map@24.0.0-alpha.6:
     micromatch "^2.3.11"
     sane "^3.0.0"
 
+<<<<<<< HEAD
 jest-haste-map@^24.8.0:
+<<<<<<< HEAD
   version "24.8.1"
   resolved "https://registry.yarnpkg.com/jest-haste-map/-/jest-haste-map-24.8.1.tgz#f39cc1d2b1d907e014165b4bd5a957afcb992982"
+<<<<<<< HEAD
   integrity sha512-SwaxMGVdAZk3ernAx2Uv2sorA7jm3Kx+lR0grp6rMmnY06Kn/urtKx1LPN2mGTea4fCT38impYT28FfcLUhX0g==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-SwaxMGVdAZk3ernAx2Uv2sorA7jm3Kx+lR0grp6rMmnY06Kn/urtKx1LPN2mGTea4fCT38impYT28FfcLUhX0g==
+=======
+=======
+  version "24.8.0"
+  resolved "https://registry.yarnpkg.com/jest-haste-map/-/jest-haste-map-24.8.0.tgz#51794182d877b3ddfd6e6d23920e3fe72f305800"
+<<<<<<< HEAD
+=======
+  integrity sha512-ZBPRGHdPt1rHajWelXdqygIDpJx8u3xOoLyUBWRW28r3tagrgoepPrzAozW7kW9HrQfhvmiv1tncsxqHJO1onQ==
+=======
+jest-haste-map@^24.7.1:
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/jest-haste-map/-/jest-haste-map-24.7.1.tgz#772e215cd84080d4bbcb759cfb668ad649a21471"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@jest/types" "^24.8.0"
     anymatch "^2.0.0"
@@ -5769,10 +7065,30 @@ jest-haste-map@^24.8.0:
   optionalDependencies:
     fsevents "^1.2.7"
 
+<<<<<<< HEAD
 jest-jasmine2@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-jasmine2/-/jest-jasmine2-24.8.0.tgz#a9c7e14c83dd77d8b15e820549ce8987cc8cd898"
+<<<<<<< HEAD
   integrity sha512-cEky88npEE5LKd5jPpTdDCLvKkdyklnaRycBXL6GNmpxe41F0WN44+i7lpQKa/hcbXaQ+rc9RMaM4dsebrYong==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-cEky88npEE5LKd5jPpTdDCLvKkdyklnaRycBXL6GNmpxe41F0WN44+i7lpQKa/hcbXaQ+rc9RMaM4dsebrYong==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-cEky88npEE5LKd5jPpTdDCLvKkdyklnaRycBXL6GNmpxe41F0WN44+i7lpQKa/hcbXaQ+rc9RMaM4dsebrYong==
+=======
+jest-jasmine2@^24.7.1:
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/jest-jasmine2/-/jest-jasmine2-24.7.1.tgz#01398686dabe46553716303993f3be62e5d9d818"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@babel/traverse" "^7.1.0"
     "@jest/environment" "^24.8.0"
@@ -5780,7 +7096,11 @@ jest-jasmine2@^24.8.0:
     "@jest/types" "^24.8.0"
     chalk "^2.0.1"
     co "^4.6.0"
+<<<<<<< HEAD
     expect "^24.8.0"
+=======
+    expect "^24.7.1"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
     is-generator-fn "^2.0.0"
     jest-each "^24.8.0"
     jest-matcher-utils "^24.8.0"
@@ -5791,13 +7111,34 @@ jest-jasmine2@^24.8.0:
     pretty-format "^24.8.0"
     throat "^4.0.0"
 
+<<<<<<< HEAD
 jest-leak-detector@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-leak-detector/-/jest-leak-detector-24.8.0.tgz#c0086384e1f650c2d8348095df769f29b48e6980"
+<<<<<<< HEAD
   integrity sha512-cG0yRSK8A831LN8lIHxI3AblB40uhv0z+SsQdW3GoMMVcK+sJwrIIyax5tu3eHHNJ8Fu6IMDpnLda2jhn2pD/g==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-cG0yRSK8A831LN8lIHxI3AblB40uhv0z+SsQdW3GoMMVcK+sJwrIIyax5tu3eHHNJ8Fu6IMDpnLda2jhn2pD/g==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-cG0yRSK8A831LN8lIHxI3AblB40uhv0z+SsQdW3GoMMVcK+sJwrIIyax5tu3eHHNJ8Fu6IMDpnLda2jhn2pD/g==
+=======
+jest-leak-detector@^24.7.0:
+  version "24.7.0"
+  resolved "https://registry.yarnpkg.com/jest-leak-detector/-/jest-leak-detector-24.7.0.tgz#323ff93ed69be12e898f5b040952f08a94288ff9"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     pretty-format "^24.8.0"
 
+<<<<<<< HEAD
 jest-matcher-utils@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-matcher-utils/-/jest-matcher-utils-24.8.0.tgz#2bce42204c9af12bde46f83dc839efe8be832495"
@@ -5811,7 +7152,35 @@ jest-matcher-utils@^24.8.0:
 jest-message-util@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-message-util/-/jest-message-util-24.8.0.tgz#0d6891e72a4beacc0292b638685df42e28d6218b"
+<<<<<<< HEAD
   integrity sha512-p2k71rf/b6ns8btdB0uVdljWo9h0ovpnEe05ZKWceQGfXYr4KkzgKo3PBi8wdnd9OtNh46VpNIJynUn/3MKm1g==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-p2k71rf/b6ns8btdB0uVdljWo9h0ovpnEe05ZKWceQGfXYr4KkzgKo3PBi8wdnd9OtNh46VpNIJynUn/3MKm1g==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-p2k71rf/b6ns8btdB0uVdljWo9h0ovpnEe05ZKWceQGfXYr4KkzgKo3PBi8wdnd9OtNh46VpNIJynUn/3MKm1g==
+=======
+jest-matcher-utils@^24.7.0:
+  version "24.7.0"
+  resolved "https://registry.yarnpkg.com/jest-matcher-utils/-/jest-matcher-utils-24.7.0.tgz#bbee1ff37bc8b2e4afcaabc91617c1526af4bcd4"
+  dependencies:
+    chalk "^2.0.1"
+    jest-diff "^24.7.0"
+    jest-get-type "^24.3.0"
+    pretty-format "^24.7.0"
+
+jest-message-util@^24.7.1:
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/jest-message-util/-/jest-message-util-24.7.1.tgz#f1dc3a6c195647096a99d0f1dadbc447ae547018"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@babel/code-frame" "^7.0.0"
     "@jest/test-result" "^24.8.0"
@@ -5822,12 +7191,20 @@ jest-message-util@^24.8.0:
     slash "^2.0.0"
     stack-utils "^1.0.1"
 
+<<<<<<< HEAD
 jest-mock@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-mock/-/jest-mock-24.8.0.tgz#2f9d14d37699e863f1febf4e4d5a33b7fdbbde56"
   integrity sha512-6kWugwjGjJw+ZkK4mDa0Df3sDlUTsV47MSrT0nGQ0RBWJbpODDQ8MHDVtGtUYBne3IwZUhtB7elxHspU79WH3A==
   dependencies:
     "@jest/types" "^24.8.0"
+=======
+jest-mock@^24.7.0:
+  version "24.7.0"
+  resolved "https://registry.yarnpkg.com/jest-mock/-/jest-mock-24.7.0.tgz#e49ce7262c12d7f5897b0d8af77f6db8e538023b"
+  dependencies:
+    "@jest/types" "^24.7.0"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
 
 jest-pnp-resolver@^1.2.1:
   version "1.2.1"
@@ -5839,19 +7216,59 @@ jest-regex-util@^24.3.0:
   resolved "https://registry.yarnpkg.com/jest-regex-util/-/jest-regex-util-24.3.0.tgz#d5a65f60be1ae3e310d5214a0307581995227b36"
   integrity sha512-tXQR1NEOyGlfylyEjg1ImtScwMq8Oh3iJbGTjN7p0J23EuVX1MA8rwU69K4sLbCmwzgCUbVkm0FkSF9TdzOhtg==
 
+<<<<<<< HEAD
 jest-resolve-dependencies@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-resolve-dependencies/-/jest-resolve-dependencies-24.8.0.tgz#19eec3241f2045d3f990dba331d0d7526acff8e0"
+<<<<<<< HEAD
   integrity sha512-hyK1qfIf/krV+fSNyhyJeq3elVMhK9Eijlwy+j5jqmZ9QsxwKBiP6qukQxaHtK8k6zql/KYWwCTQ+fDGTIJauw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-hyK1qfIf/krV+fSNyhyJeq3elVMhK9Eijlwy+j5jqmZ9QsxwKBiP6qukQxaHtK8k6zql/KYWwCTQ+fDGTIJauw==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-hyK1qfIf/krV+fSNyhyJeq3elVMhK9Eijlwy+j5jqmZ9QsxwKBiP6qukQxaHtK8k6zql/KYWwCTQ+fDGTIJauw==
+=======
+jest-resolve-dependencies@^24.7.1:
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/jest-resolve-dependencies/-/jest-resolve-dependencies-24.7.1.tgz#cf93bbef26999488a96a2b2012f9fe7375aa378f"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@jest/types" "^24.8.0"
     jest-regex-util "^24.3.0"
     jest-snapshot "^24.8.0"
 
+<<<<<<< HEAD
 jest-resolve@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-resolve/-/jest-resolve-24.8.0.tgz#84b8e5408c1f6a11539793e2b5feb1b6e722439f"
+<<<<<<< HEAD
   integrity sha512-+hjSzi1PoRvnuOICoYd5V/KpIQmkAsfjFO71458hQ2Whi/yf1GDeBOFj8Gxw4LrApHsVJvn5fmjcPdmoUHaVKw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-+hjSzi1PoRvnuOICoYd5V/KpIQmkAsfjFO71458hQ2Whi/yf1GDeBOFj8Gxw4LrApHsVJvn5fmjcPdmoUHaVKw==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-+hjSzi1PoRvnuOICoYd5V/KpIQmkAsfjFO71458hQ2Whi/yf1GDeBOFj8Gxw4LrApHsVJvn5fmjcPdmoUHaVKw==
+=======
+jest-resolve@^24.7.1:
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/jest-resolve/-/jest-resolve-24.7.1.tgz#e4150198299298380a75a9fd55043fa3b9b17fde"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@jest/types" "^24.8.0"
     browser-resolve "^1.11.3"
@@ -5859,10 +7276,30 @@ jest-resolve@^24.8.0:
     jest-pnp-resolver "^1.2.1"
     realpath-native "^1.1.0"
 
+<<<<<<< HEAD
 jest-runner@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-runner/-/jest-runner-24.8.0.tgz#4f9ae07b767db27b740d7deffad0cf67ccb4c5bb"
+<<<<<<< HEAD
   integrity sha512-utFqC5BaA3JmznbissSs95X1ZF+d+4WuOWwpM9+Ak356YtMhHE/GXUondZdcyAAOTBEsRGAgH/0TwLzfI9h7ow==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-utFqC5BaA3JmznbissSs95X1ZF+d+4WuOWwpM9+Ak356YtMhHE/GXUondZdcyAAOTBEsRGAgH/0TwLzfI9h7ow==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-utFqC5BaA3JmznbissSs95X1ZF+d+4WuOWwpM9+Ak356YtMhHE/GXUondZdcyAAOTBEsRGAgH/0TwLzfI9h7ow==
+=======
+jest-runner@^24.7.1:
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/jest-runner/-/jest-runner-24.7.1.tgz#41c8a02a06aa23ea82d8bffd69d7fa98d32f85bf"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@jest/console" "^24.7.1"
     "@jest/environment" "^24.8.0"
@@ -5884,10 +7321,30 @@ jest-runner@^24.8.0:
     source-map-support "^0.5.6"
     throat "^4.0.0"
 
+<<<<<<< HEAD
 jest-runtime@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-runtime/-/jest-runtime-24.8.0.tgz#05f94d5b05c21f6dc54e427cd2e4980923350620"
+<<<<<<< HEAD
   integrity sha512-Mq0aIXhvO/3bX44ccT+czU1/57IgOMyy80oM0XR/nyD5zgBcesF84BPabZi39pJVA6UXw+fY2Q1N+4BiVUBWOA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-Mq0aIXhvO/3bX44ccT+czU1/57IgOMyy80oM0XR/nyD5zgBcesF84BPabZi39pJVA6UXw+fY2Q1N+4BiVUBWOA==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-Mq0aIXhvO/3bX44ccT+czU1/57IgOMyy80oM0XR/nyD5zgBcesF84BPabZi39pJVA6UXw+fY2Q1N+4BiVUBWOA==
+=======
+jest-runtime@^24.7.1:
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/jest-runtime/-/jest-runtime-24.7.1.tgz#2ffd70b22dd03a5988c0ab9465c85cdf5d25c597"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@jest/console" "^24.7.1"
     "@jest/environment" "^24.8.0"
@@ -5928,10 +7385,30 @@ jest-serializer@^24.0.0, jest-serializer@^24.0.0-alpha.6, jest-serializer@^24.4.
   resolved "https://registry.yarnpkg.com/jest-serializer/-/jest-serializer-24.4.0.tgz#f70c5918c8ea9235ccb1276d232e459080588db3"
   integrity sha512-k//0DtglVstc1fv+GY/VHDIjrtNjdYvYjMlbLUed4kxrE92sIUewOi5Hj3vrpB8CXfkJntRPDRjCrCvUhBdL8Q==
 
+<<<<<<< HEAD
 jest-snapshot@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-snapshot/-/jest-snapshot-24.8.0.tgz#3bec6a59da2ff7bc7d097a853fb67f9d415cb7c6"
+<<<<<<< HEAD
   integrity sha512-5ehtWoc8oU9/cAPe6fez6QofVJLBKyqkY2+TlKTOf0VllBB/mqUNdARdcjlZrs9F1Cv+/HKoCS/BknT0+tmfPg==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-5ehtWoc8oU9/cAPe6fez6QofVJLBKyqkY2+TlKTOf0VllBB/mqUNdARdcjlZrs9F1Cv+/HKoCS/BknT0+tmfPg==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-5ehtWoc8oU9/cAPe6fez6QofVJLBKyqkY2+TlKTOf0VllBB/mqUNdARdcjlZrs9F1Cv+/HKoCS/BknT0+tmfPg==
+=======
+jest-snapshot@^24.7.1:
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/jest-snapshot/-/jest-snapshot-24.7.1.tgz#bd5a35f74aedff070975e9e9c90024f082099568"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@babel/types" "^7.0.0"
     "@jest/types" "^24.8.0"
@@ -5946,10 +7423,30 @@ jest-snapshot@^24.8.0:
     pretty-format "^24.8.0"
     semver "^5.5.0"
 
+<<<<<<< HEAD
 jest-util@^24.0.0, jest-util@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-util/-/jest-util-24.8.0.tgz#41f0e945da11df44cc76d64ffb915d0716f46cd1"
+<<<<<<< HEAD
   integrity sha512-DYZeE+XyAnbNt0BG1OQqKy/4GVLPtzwGx5tsnDrFcax36rVE3lTA5fbvgmbVPUZf9w77AJ8otqR4VBbfFJkUZA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-DYZeE+XyAnbNt0BG1OQqKy/4GVLPtzwGx5tsnDrFcax36rVE3lTA5fbvgmbVPUZf9w77AJ8otqR4VBbfFJkUZA==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-DYZeE+XyAnbNt0BG1OQqKy/4GVLPtzwGx5tsnDrFcax36rVE3lTA5fbvgmbVPUZf9w77AJ8otqR4VBbfFJkUZA==
+=======
+jest-util@^24.7.1:
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/jest-util/-/jest-util-24.7.1.tgz#b4043df57b32a23be27c75a2763d8faf242038ff"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@jest/console" "^24.7.1"
     "@jest/fake-timers" "^24.8.0"
@@ -5964,22 +7461,50 @@ jest-util@^24.0.0, jest-util@^24.8.0:
     slash "^2.0.0"
     source-map "^0.6.0"
 
+<<<<<<< HEAD
 jest-validate@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-validate/-/jest-validate-24.8.0.tgz#624c41533e6dfe356ffadc6e2423a35c2d3b4849"
   integrity sha512-+/N7VOEMW1Vzsrk3UWBDYTExTPwf68tavEPKDnJzrC6UlHtUDU/fuEdXqFoHzv9XnQ+zW6X3qMZhJ3YexfeLDA==
   dependencies:
     "@jest/types" "^24.8.0"
+=======
+jest-validate@^24.7.0:
+  version "24.7.0"
+  resolved "https://registry.yarnpkg.com/jest-validate/-/jest-validate-24.7.0.tgz#70007076f338528ee1b1c8a8258b1b0bb982508d"
+  dependencies:
+    "@jest/types" "^24.7.0"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
     camelcase "^5.0.0"
     chalk "^2.0.1"
     jest-get-type "^24.8.0"
     leven "^2.1.0"
     pretty-format "^24.8.0"
 
+<<<<<<< HEAD
 jest-watcher@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-watcher/-/jest-watcher-24.8.0.tgz#58d49915ceddd2de85e238f6213cef1c93715de4"
+<<<<<<< HEAD
   integrity sha512-SBjwHt5NedQoVu54M5GEx7cl7IGEFFznvd/HNT8ier7cCAx/Qgu9ZMlaTQkvK22G1YOpcWBLQPFSImmxdn3DAw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-SBjwHt5NedQoVu54M5GEx7cl7IGEFFznvd/HNT8ier7cCAx/Qgu9ZMlaTQkvK22G1YOpcWBLQPFSImmxdn3DAw==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-SBjwHt5NedQoVu54M5GEx7cl7IGEFFznvd/HNT8ier7cCAx/Qgu9ZMlaTQkvK22G1YOpcWBLQPFSImmxdn3DAw==
+=======
+jest-watcher@^24.7.1:
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/jest-watcher/-/jest-watcher-24.7.1.tgz#e161363d7f3f4e1ef3d389b7b3a0aad247b673f5"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@jest/test-result" "^24.8.0"
     "@jest/types" "^24.8.0"
@@ -5989,6 +7514,7 @@ jest-watcher@^24.8.0:
     jest-util "^24.8.0"
     string-length "^2.0.0"
 
+<<<<<<< HEAD
 jest-worker@24.0.0:
   version "24.0.0"
   resolved "https://registry.yarnpkg.com/jest-worker/-/jest-worker-24.0.0.tgz#3d3483b077bf04f412f47654a27bba7e947f8b6d"
@@ -5997,6 +7523,8 @@ jest-worker@24.0.0:
     merge-stream "^1.0.1"
     supports-color "^6.1.0"
 
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
 jest-worker@24.0.0-alpha.6:
   version "24.0.0-alpha.6"
   resolved "https://registry.yarnpkg.com/jest-worker/-/jest-worker-24.0.0-alpha.6.tgz#463681b92c117c57107135c14b9b9d6cd51d80ce"
@@ -6007,15 +7535,52 @@ jest-worker@24.0.0-alpha.6:
 jest-worker@^24.0.0, jest-worker@^24.0.0-alpha.6, jest-worker@^24.6.0:
   version "24.6.0"
   resolved "https://registry.yarnpkg.com/jest-worker/-/jest-worker-24.6.0.tgz#7f81ceae34b7cde0c9827a6980c35b7cdc0161b3"
+<<<<<<< HEAD
   integrity sha512-jDwgW5W9qGNvpI1tNnvajh0a5IE/PuGLFmHk6aR/BZFz8tSgGw17GsDPXAJ6p91IvYDjOw8GpFbvvZGAK+DPQQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-jDwgW5W9qGNvpI1tNnvajh0a5IE/PuGLFmHk6aR/BZFz8tSgGw17GsDPXAJ6p91IvYDjOw8GpFbvvZGAK+DPQQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-jDwgW5W9qGNvpI1tNnvajh0a5IE/PuGLFmHk6aR/BZFz8tSgGw17GsDPXAJ6p91IvYDjOw8GpFbvvZGAK+DPQQ==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     merge-stream "^1.0.1"
     supports-color "^6.1.0"
 
+<<<<<<< HEAD
 jest@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest/-/jest-24.8.0.tgz#d5dff1984d0d1002196e9b7f12f75af1b2809081"
+<<<<<<< HEAD
   integrity sha512-o0HM90RKFRNWmAWvlyV8i5jGZ97pFwkeVoGvPW1EtLTgJc2+jcuqcbbqcSZLE/3f2S5pt0y2ZBETuhpWNl1Reg==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-o0HM90RKFRNWmAWvlyV8i5jGZ97pFwkeVoGvPW1EtLTgJc2+jcuqcbbqcSZLE/3f2S5pt0y2ZBETuhpWNl1Reg==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-o0HM90RKFRNWmAWvlyV8i5jGZ97pFwkeVoGvPW1EtLTgJc2+jcuqcbbqcSZLE/3f2S5pt0y2ZBETuhpWNl1Reg==
+=======
+jest@^24.5.0:
+  version "24.7.1"
+  resolved "https://registry.yarnpkg.com/jest/-/jest-24.7.1.tgz#0d94331cf510c75893ee32f87d7321d5bf8f2501"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     import-local "^2.0.0"
     jest-cli "^24.8.0"
@@ -6044,10 +7609,37 @@ js-tokens@^3.0.0:
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
 
+<<<<<<< HEAD
 js-yaml@3.13.1, js-yaml@^3.13.0, js-yaml@^3.13.1:
   version "3.13.1"
   resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.13.1.tgz#aff151b30bfdfa8e49e05da22e7415e9dfa37847"
+<<<<<<< HEAD
   integrity sha512-YfbcO7jXDdyj0DGxYVSlSeQNHbD7XPWvrVWeVUujrQEoZzWJIRrCPoyk6kL6IAjAG2IolMK4T0hNUe0HOUs5Jw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-YfbcO7jXDdyj0DGxYVSlSeQNHbD7XPWvrVWeVUujrQEoZzWJIRrCPoyk6kL6IAjAG2IolMK4T0hNUe0HOUs5Jw==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-YfbcO7jXDdyj0DGxYVSlSeQNHbD7XPWvrVWeVUujrQEoZzWJIRrCPoyk6kL6IAjAG2IolMK4T0hNUe0HOUs5Jw==
+=======
+js-walletconnect-core@^0.7.28:
+  version "0.7.28"
+  resolved "https://registry.yarnpkg.com/js-walletconnect-core/-/js-walletconnect-core-0.7.28.tgz#8f1a58cbbc2a51d4326e8ffa3f9cf92f69974933"
+  dependencies:
+    eth-parse-uri "^0.6.9"
+    idempotent-babel-polyfill "^7.0.0"
+
+js-yaml@^3.12.0, js-yaml@^3.13.0:
+  version "3.13.1"
+  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.13.1.tgz#aff151b30bfdfa8e49e05da22e7415e9dfa37847"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     argparse "^1.0.7"
     esprima "^4.0.0"
@@ -6225,7 +7817,24 @@ klaw@^1.0.0:
 kleur@^3.0.2:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
+<<<<<<< HEAD
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 known-css-properties@^0.11.0:
   version "0.11.0"
@@ -6638,7 +8247,24 @@ methods@^1.1.1:
 metro-babel-register@0.51.0:
   version "0.51.0"
   resolved "https://registry.yarnpkg.com/metro-babel-register/-/metro-babel-register-0.51.0.tgz#d86d3f2d90b45c7a3c6ae67a53bd1e50bad7a24d"
+<<<<<<< HEAD
   integrity sha512-rhdvHFOZ7/ub019A3+aYs8YeLydb02/FAMsKr2Nz2Jlf6VUxWrMnrcT0NYX16F9TGdi2ulRlJ9dwvUmdhkk+Bw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-rhdvHFOZ7/ub019A3+aYs8YeLydb02/FAMsKr2Nz2Jlf6VUxWrMnrcT0NYX16F9TGdi2ulRlJ9dwvUmdhkk+Bw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-rhdvHFOZ7/ub019A3+aYs8YeLydb02/FAMsKr2Nz2Jlf6VUxWrMnrcT0NYX16F9TGdi2ulRlJ9dwvUmdhkk+Bw==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@babel/core" "^7.0.0"
     "@babel/plugin-proposal-class-properties" "^7.0.0"
@@ -6653,6 +8279,7 @@ metro-babel-register@0.51.0:
     core-js "^2.2.2"
     escape-string-regexp "^1.0.5"
 
+<<<<<<< HEAD
 metro-babel-register@0.53.1:
   version "0.53.1"
   resolved "https://registry.yarnpkg.com/metro-babel-register/-/metro-babel-register-0.53.1.tgz#41c73313ff882d28d8f7df072d2c7a6b7b314ac8"
@@ -6671,6 +8298,8 @@ metro-babel-register@0.53.1:
     core-js "^2.2.2"
     escape-string-regexp "^1.0.5"
 
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
 metro-babel-transformer@0.51.0:
   version "0.51.0"
   resolved "https://registry.yarnpkg.com/metro-babel-transformer/-/metro-babel-transformer-0.51.0.tgz#9ee5199163ac46b2057527b3f8cbd8b089ffc03e"
@@ -6723,13 +8352,31 @@ metro-babel7-plugin-react-transform@0.54.1:
 metro-cache@0.51.1:
   version "0.51.1"
   resolved "https://registry.yarnpkg.com/metro-cache/-/metro-cache-0.51.1.tgz#d0b296eab8e009214413bba87e4eac3d9b44cd04"
+<<<<<<< HEAD
   integrity sha512-0m1+aicsw77LVAehNuTxDpE1c/7Xv/ajRD+UL/lFCWUxnrjSbxVtIKr8l5DxEY11082c1axVRuaV9e436W+eXg==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-0m1+aicsw77LVAehNuTxDpE1c/7Xv/ajRD+UL/lFCWUxnrjSbxVtIKr8l5DxEY11082c1axVRuaV9e436W+eXg==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-0m1+aicsw77LVAehNuTxDpE1c/7Xv/ajRD+UL/lFCWUxnrjSbxVtIKr8l5DxEY11082c1axVRuaV9e436W+eXg==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     jest-serializer "24.0.0-alpha.6"
     metro-core "0.51.1"
     mkdirp "^0.5.1"
     rimraf "^2.5.4"
 
+<<<<<<< HEAD
 metro-cache@0.53.1:
   version "0.53.1"
   resolved "https://registry.yarnpkg.com/metro-cache/-/metro-cache-0.53.1.tgz#38d73c441771bdd2437a55d50943e346e1897108"
@@ -6743,7 +8390,26 @@ metro-cache@0.53.1:
 metro-config@0.51.1, metro-config@^0.51.0:
   version "0.51.1"
   resolved "https://registry.yarnpkg.com/metro-config/-/metro-config-0.51.1.tgz#8f1a241ce2c0b521cd492c39bc5c6c69e3397b82"
+<<<<<<< HEAD
   integrity sha512-WCNd0tTI9gb/ubgTqK1+ljZL4b3hsXVinsOAtep4nHiVb6DSDdbO2yXDD2rpYx3NE6hDRMFS9HHg6G0139pAqQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-WCNd0tTI9gb/ubgTqK1+ljZL4b3hsXVinsOAtep4nHiVb6DSDdbO2yXDD2rpYx3NE6hDRMFS9HHg6G0139pAqQ==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-WCNd0tTI9gb/ubgTqK1+ljZL4b3hsXVinsOAtep4nHiVb6DSDdbO2yXDD2rpYx3NE6hDRMFS9HHg6G0139pAqQ==
+=======
+metro-config@0.51.1, metro-config@^0.51.0:
+  version "0.51.1"
+  resolved "https://registry.yarnpkg.com/metro-config/-/metro-config-0.51.1.tgz#8f1a241ce2c0b521cd492c39bc5c6c69e3397b82"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     cosmiconfig "^5.0.5"
     metro "0.51.1"
@@ -6751,6 +8417,7 @@ metro-config@0.51.1, metro-config@^0.51.0:
     metro-core "0.51.1"
     pretty-format "24.0.0-alpha.6"
 
+<<<<<<< HEAD
 metro-config@0.53.1, metro-config@^0.53.1:
   version "0.53.1"
   resolved "https://registry.yarnpkg.com/metro-config/-/metro-config-0.53.1.tgz#a522beec446187b010c0e68273015818d1c6dfb9"
@@ -6765,13 +8432,33 @@ metro-config@0.53.1, metro-config@^0.53.1:
 metro-core@0.51.1, metro-core@^0.51.0:
   version "0.51.1"
   resolved "https://registry.yarnpkg.com/metro-core/-/metro-core-0.51.1.tgz#e7227fb1dd1bb3f953272fad9876e6201140b038"
+<<<<<<< HEAD
   integrity sha512-sG1yACjdFqmIzZN50HqLTKUMp1oy0AehHhmIuYeIllo1DjX6Y2o3UAT3rGP8U+SAqJGXf/OWzl6VNyRPGDENfA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-sG1yACjdFqmIzZN50HqLTKUMp1oy0AehHhmIuYeIllo1DjX6Y2o3UAT3rGP8U+SAqJGXf/OWzl6VNyRPGDENfA==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-sG1yACjdFqmIzZN50HqLTKUMp1oy0AehHhmIuYeIllo1DjX6Y2o3UAT3rGP8U+SAqJGXf/OWzl6VNyRPGDENfA==
+=======
+metro-core@0.51.1, metro-core@^0.51.0:
+  version "0.51.1"
+  resolved "https://registry.yarnpkg.com/metro-core/-/metro-core-0.51.1.tgz#e7227fb1dd1bb3f953272fad9876e6201140b038"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     jest-haste-map "24.0.0-alpha.6"
     lodash.throttle "^4.1.1"
     metro-resolver "0.51.1"
     wordwrap "^1.0.0"
 
+<<<<<<< HEAD
 metro-core@0.53.1, metro-core@^0.53.1:
   version "0.53.1"
   resolved "https://registry.yarnpkg.com/metro-core/-/metro-core-0.53.1.tgz#350211c6327ccf307270199bb1c04012ec2d7d96"
@@ -6793,6 +8480,8 @@ metro-inspector-proxy@0.53.1:
     ws "^1.1.5"
     yargs "^9.0.0"
 
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
 metro-memory-fs@^0.51.0:
   version "0.51.1"
   resolved "https://registry.yarnpkg.com/metro-memory-fs/-/metro-memory-fs-0.51.1.tgz#624291f5956b0fd11532d80b1b85d550926f96c9"
@@ -6856,7 +8545,24 @@ metro-react-native-babel-preset@0.51.0:
 metro-react-native-babel-preset@0.51.1:
   version "0.51.1"
   resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.51.1.tgz#44aeeedfea37f7c2ab8f6f273fa71b90fe65f089"
+<<<<<<< HEAD
   integrity sha512-e9tsYDFhU70gar0jQWcZXRPJVCv4k7tEs6Pm74wXO2OO/T1MEumbvniDIGwGG8bG8RUnYdHhjcaiub2Vc5BRWw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-e9tsYDFhU70gar0jQWcZXRPJVCv4k7tEs6Pm74wXO2OO/T1MEumbvniDIGwGG8bG8RUnYdHhjcaiub2Vc5BRWw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-e9tsYDFhU70gar0jQWcZXRPJVCv4k7tEs6Pm74wXO2OO/T1MEumbvniDIGwGG8bG8RUnYdHhjcaiub2Vc5BRWw==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@babel/plugin-proposal-class-properties" "^7.0.0"
     "@babel/plugin-proposal-export-default-from" "^7.0.0"
@@ -6894,10 +8600,30 @@ metro-react-native-babel-preset@0.51.1:
     metro-babel7-plugin-react-transform "0.51.1"
     react-transform-hmr "^1.0.4"
 
+<<<<<<< HEAD
 metro-react-native-babel-preset@0.53.1:
   version "0.53.1"
   resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.53.1.tgz#6cd9e41a1b9a6e210e71ef2adf114219b4eaf2ec"
+<<<<<<< HEAD
   integrity sha512-Uf8EGL8kIPhDkoSdAAysNPxPQclUS2R1QC4cwnc8bkk2f6yqGn+1CorfiY9AaqlLEth5mKQqdtRYFDTFfB9QyA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-Uf8EGL8kIPhDkoSdAAysNPxPQclUS2R1QC4cwnc8bkk2f6yqGn+1CorfiY9AaqlLEth5mKQqdtRYFDTFfB9QyA==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-Uf8EGL8kIPhDkoSdAAysNPxPQclUS2R1QC4cwnc8bkk2f6yqGn+1CorfiY9AaqlLEth5mKQqdtRYFDTFfB9QyA==
+=======
+metro-react-native-babel-preset@^0.53.1:
+  version "0.53.1"
+  resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.53.1.tgz#6cd9e41a1b9a6e210e71ef2adf114219b4eaf2ec"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@babel/plugin-proposal-class-properties" "^7.0.0"
     "@babel/plugin-proposal-export-default-from" "^7.0.0"
@@ -6936,6 +8662,7 @@ metro-react-native-babel-preset@0.53.1:
     metro-babel7-plugin-react-transform "0.53.1"
     react-transform-hmr "^1.0.4"
 
+<<<<<<< HEAD
 metro-react-native-babel-preset@^0.54.1:
   version "0.54.1"
   resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.54.1.tgz#b8f03865c381841d7f8912e7ba46804ea3a928b8"
@@ -6978,6 +8705,8 @@ metro-react-native-babel-preset@^0.54.1:
     metro-babel7-plugin-react-transform "0.54.1"
     react-transform-hmr "^1.0.4"
 
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
 metro-react-native-babel-transformer@0.51.0:
   version "0.51.0"
   resolved "https://registry.yarnpkg.com/metro-react-native-babel-transformer/-/metro-react-native-babel-transformer-0.51.0.tgz#57a695e97a19d95de63c9633f9d0dc024ee8e99a"
@@ -7039,7 +8768,24 @@ metro-source-map@0.53.1:
 metro@0.51.1, metro@^0.51.0:
   version "0.51.1"
   resolved "https://registry.yarnpkg.com/metro/-/metro-0.51.1.tgz#b0aad4731593b9f244261bad1abb2a006d1c8969"
+<<<<<<< HEAD
   integrity sha512-nM0dqn8LQlMjhChl2fzTUq2EWiUebZM7nkesD9vQe47W10bj/tbRLPiIIAxht6SRDbPd/hRA+t39PxLhPSKEKg==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-nM0dqn8LQlMjhChl2fzTUq2EWiUebZM7nkesD9vQe47W10bj/tbRLPiIIAxht6SRDbPd/hRA+t39PxLhPSKEKg==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-nM0dqn8LQlMjhChl2fzTUq2EWiUebZM7nkesD9vQe47W10bj/tbRLPiIIAxht6SRDbPd/hRA+t39PxLhPSKEKg==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@babel/core" "^7.0.0"
     "@babel/generator" "^7.0.0"
@@ -7198,15 +8944,39 @@ miller-rabin@^4.0.0:
     bn.js "^4.0.0"
     brorand "^1.0.1"
 
+<<<<<<< HEAD
 mime-db@1.40.0, "mime-db@>= 1.40.0 < 2":
   version "1.40.0"
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.40.0.tgz#a65057e998db090f732a68f6c276d387d4126c32"
+<<<<<<< HEAD
   integrity sha512-jYdeOMPy9vnxEqFRRo6ZvTZ8d9oPb+k18PKoYNYUe2stVEBPPwsln/qWzdbmaIvnhZ9v2P+CuecK+fpUfsV2mA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-jYdeOMPy9vnxEqFRRo6ZvTZ8d9oPb+k18PKoYNYUe2stVEBPPwsln/qWzdbmaIvnhZ9v2P+CuecK+fpUfsV2mA==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-jYdeOMPy9vnxEqFRRo6ZvTZ8d9oPb+k18PKoYNYUe2stVEBPPwsln/qWzdbmaIvnhZ9v2P+CuecK+fpUfsV2mA==
+=======
+"mime-db@>= 1.38.0 < 2":
+  version "1.39.0"
+  resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.39.0.tgz#f95a20275742f7d2ad0429acfe40f4233543780e"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 mime-db@~1.23.0:
   version "1.23.0"
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.23.0.tgz#a31b4070adaea27d732ea333740a64d0ec9a6659"
   integrity sha1-oxtAcK2uon1zLqMzdApk0OyaZlk=
+
+mime-db@~1.38.0:
+  version "1.38.0"
+  resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.38.0.tgz#1a2aab16da9eb167b49c6e4df2d9c68d63d8e2ad"
 
 mime-types@2.1.11:
   version "2.1.11"
@@ -7449,11 +9219,18 @@ ncp@~2.0.0:
   integrity sha1-GVoh1sRuNh0vsSgbo4uR6d9727M=
 
 needle@^2.2.1:
+<<<<<<< HEAD
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/needle/-/needle-2.4.0.tgz#6833e74975c444642590e15a750288c5f939b57c"
   integrity sha512-4Hnwzr3mi5L97hMYeNl8wRW/Onhy4nUKR/lVemJ8gJedxxUyBLm9kkrDColJvoSfwi0jCNhD+xCdOtiGDQiRZg==
   dependencies:
     debug "^3.2.6"
+=======
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/needle/-/needle-2.3.0.tgz#ce3fea21197267bacb310705a7bbe24f2a3a3492"
+  dependencies:
+    debug "^4.1.0"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
     iconv-lite "^0.4.4"
     sax "^1.2.4"
 
@@ -7484,6 +9261,7 @@ node-emoji@1.10.0:
   dependencies:
     lodash.toarray "^4.4.0"
 
+<<<<<<< HEAD
 node-environment-flags@1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/node-environment-flags/-/node-environment-flags-1.0.5.tgz#fa930275f5bf5dae188d6192b24b4c8bbac3d76a"
@@ -7500,6 +9278,8 @@ node-fetch@1.6.3:
     encoding "^0.1.11"
     is-stream "^1.0.1"
 
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
 node-fetch@^1.0.1:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-1.7.3.tgz#980f6f72d85211a5347c6b2bc18c5b84c3eb47ef"
@@ -7550,10 +9330,36 @@ node-pre-gyp@^0.12.0:
     semver "^5.3.0"
     tar "^4"
 
+<<<<<<< HEAD
 node-releases@^1.1.23:
   version "1.1.23"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.23.tgz#de7409f72de044a2fa59c097f436ba89c39997f0"
+<<<<<<< HEAD
   integrity sha512-uq1iL79YjfYC0WXoHbC/z28q/9pOl8kSHaXdWmAAc8No+bDwqkZbzIJz55g/MUsPgSGm9LZ7QSUbzTcH5tz47w==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-uq1iL79YjfYC0WXoHbC/z28q/9pOl8kSHaXdWmAAc8No+bDwqkZbzIJz55g/MUsPgSGm9LZ7QSUbzTcH5tz47w==
+=======
+=======
+<<<<<<< HEAD
+node-releases@^1.1.21:
+  version "1.1.21"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.21.tgz#46c86f9adaceae4d63c75d3c2f2e6eee618e55f3"
+<<<<<<< HEAD
+=======
+  integrity sha512-TwnURTCjc8a+ElJUjmDqU6+12jhli1Q61xOQmdZ7ECZVBZuQpN/1UnembiIHDM1wCcfLvh5wrWXUF5H6ufX64Q==
+=======
+node-releases@^1.1.13:
+  version "1.1.14"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.14.tgz#f1f41c83cac82caebd6739e6313d56b3b09c9189"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     semver "^5.3.0"
 
@@ -7695,7 +9501,24 @@ object-copy@^0.1.0:
 object-keys@^1.0.11, object-keys@^1.0.12:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/object-keys/-/object-keys-1.1.1.tgz#1c47f272df277f3b1daf061677d9c82e2322c60e"
+<<<<<<< HEAD
   integrity sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 object-keys@~0.2.0:
   version "0.2.0"
@@ -7819,6 +9642,7 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
+<<<<<<< HEAD
 opencollective-postinstall@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/opencollective-postinstall/-/opencollective-postinstall-2.0.2.tgz#5657f1bede69b6e33a45939b061eb53d3c6c3a89"
@@ -7843,6 +9667,11 @@ opn@4.0.2:
   dependencies:
     object-assign "^4.0.1"
     pinkie-promise "^2.0.0"
+=======
+opencollective-postinstall@^2.0.0:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/opencollective-postinstall/-/opencollective-postinstall-2.0.2.tgz#5657f1bede69b6e33a45939b061eb53d3c6c3a89"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
 
 opn@^3.0.2:
   version "3.0.3"
@@ -7958,7 +9787,24 @@ p-finally@^1.0.0:
 p-is-promise@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/p-is-promise/-/p-is-promise-2.1.0.tgz#918cebaea248a62cf7ffab8e3bca8c5f882fc42e"
+<<<<<<< HEAD
   integrity sha512-Y3W0wlRPK8ZMRbNq97l4M5otioeA5lm1z7bkNkxCka8HSPjR0xRWmpCmc9utiaLP9Jb1eD8BgeIxTW4AIF45Pg==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-Y3W0wlRPK8ZMRbNq97l4M5otioeA5lm1z7bkNkxCka8HSPjR0xRWmpCmc9utiaLP9Jb1eD8BgeIxTW4AIF45Pg==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-Y3W0wlRPK8ZMRbNq97l4M5otioeA5lm1z7bkNkxCka8HSPjR0xRWmpCmc9utiaLP9Jb1eD8BgeIxTW4AIF45Pg==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 p-limit@^1.1.0:
   version "1.3.0"
@@ -8403,11 +10249,14 @@ postcss@^7.0.0, postcss@^7.0.1, postcss@^7.0.13, postcss@^7.0.14, postcss@^7.0.1
     source-map "^0.6.1"
     supports-color "^6.1.0"
 
+<<<<<<< HEAD
 postinstall-build@^5.0.1:
   version "5.0.3"
   resolved "https://registry.yarnpkg.com/postinstall-build/-/postinstall-build-5.0.3.tgz#238692f712a481d8f5bc8960e94786036241efc7"
   integrity sha512-vPvPe8TKgp4FLgY3+DfxCE5PIfoXBK2lyLfNCxsRbDsV6vS4oU5RG/IWxrblMn6heagbnMED3MemUQllQ2bQUg==
 
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
 prelude-ls@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
@@ -8431,17 +10280,42 @@ prettier@^1.16.4:
 pretty-format@24.0.0-alpha.6:
   version "24.0.0-alpha.6"
   resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-24.0.0-alpha.6.tgz#25ad2fa46b342d6278bf241c5d2114d4376fbac1"
+<<<<<<< HEAD
   integrity sha512-zG2m6YJeuzwBFqb5EIdmwYVf30sap+iMRuYNPytOccEXZMAJbPIFGKVJ/U0WjQegmnQbRo9CI7j6j3HtDaifiA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-zG2m6YJeuzwBFqb5EIdmwYVf30sap+iMRuYNPytOccEXZMAJbPIFGKVJ/U0WjQegmnQbRo9CI7j6j3HtDaifiA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-zG2m6YJeuzwBFqb5EIdmwYVf30sap+iMRuYNPytOccEXZMAJbPIFGKVJ/U0WjQegmnQbRo9CI7j6j3HtDaifiA==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     ansi-regex "^4.0.0"
     ansi-styles "^3.2.0"
 
+<<<<<<< HEAD
 pretty-format@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-24.8.0.tgz#8dae7044f58db7cb8be245383b565a963e3c27f2"
   integrity sha512-P952T7dkrDEplsR+TuY7q3VXDae5Sr7zmQb12JU/NDQa/3CH7/QW0yvqLcGN6jL+zQFKaoJcPc+yJxMTGmosqw==
   dependencies:
     "@jest/types" "^24.8.0"
+=======
+pretty-format@^24.7.0:
+  version "24.7.0"
+  resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-24.7.0.tgz#d23106bc2edcd776079c2daa5da02bcb12ed0c10"
+  dependencies:
+    "@jest/types" "^24.7.0"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
     ansi-regex "^4.0.0"
     ansi-styles "^3.2.0"
     react-is "^16.8.4"
@@ -8479,9 +10353,28 @@ promise@^7.1.1:
     asap "~2.0.3"
 
 prompts@^2.0.1:
+<<<<<<< HEAD
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/prompts/-/prompts-2.1.0.tgz#bf90bc71f6065d255ea2bdc0fe6520485c1b45db"
+<<<<<<< HEAD
   integrity sha512-+x5TozgqYdOwWsQFZizE/Tra3fKvAoy037kOyU6cgz84n8f6zxngLOV4O32kTwt9FcLCxAqw0P/c8rOr9y+Gfg==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-+x5TozgqYdOwWsQFZizE/Tra3fKvAoy037kOyU6cgz84n8f6zxngLOV4O32kTwt9FcLCxAqw0P/c8rOr9y+Gfg==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-+x5TozgqYdOwWsQFZizE/Tra3fKvAoy037kOyU6cgz84n8f6zxngLOV4O32kTwt9FcLCxAqw0P/c8rOr9y+Gfg==
+=======
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/prompts/-/prompts-2.0.4.tgz#179f9d4db3128b9933aa35f93a800d8fce76a682"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     kleur "^3.0.2"
     sisteransi "^1.0.0"
@@ -8704,7 +10597,24 @@ react-deep-force-update@^1.0.0:
 react-devtools-core@^3.6.0:
   version "3.6.1"
   resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-3.6.1.tgz#51af81ceada65209bbccb8b547a01187cd1cbf04"
+<<<<<<< HEAD
   integrity sha512-I/LSX+tpeTrGKaF1wXSfJ/kP+6iaP2JfshEjW8LtQBdz6c6HhzOJtjZXhqOUrAdysuey8M1/JgPY1flSVVt8Ig==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-I/LSX+tpeTrGKaF1wXSfJ/kP+6iaP2JfshEjW8LtQBdz6c6HhzOJtjZXhqOUrAdysuey8M1/JgPY1flSVVt8Ig==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-I/LSX+tpeTrGKaF1wXSfJ/kP+6iaP2JfshEjW8LtQBdz6c6HhzOJtjZXhqOUrAdysuey8M1/JgPY1flSVVt8Ig==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     shell-quote "^1.6.1"
     ws "^3.3.1"
@@ -8734,10 +10644,43 @@ react-native-actionsheet@^2.4.2:
   resolved "https://registry.yarnpkg.com/react-native-actionsheet/-/react-native-actionsheet-2.4.2.tgz#6a00dd51a75ef2c8974312130e405af73191500f"
   integrity sha512-DBoWIvVwuWXuptF4t46pBqkFxaUxS+rsIdHiA05t0n4BdTIDV2R4s9bLEUVOGzb94D7VxIamsXZPA/3mmw+SXg==
 
+<<<<<<< HEAD
 react-native-camera@^2.9.0:
+<<<<<<< HEAD
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-2.11.0.tgz#480de13f0ac192e950c406d8ca0157cf4bb5f41a"
+<<<<<<< HEAD
   integrity sha512-ay8te4nvL5mGzRjb2QMTOyJX+JfaIW/9oFjFVIkXOB9DzFipfeVTPMdwNx9GMpdmQ0muSXkuF16pa7K/1QLHlQ==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-ay8te4nvL5mGzRjb2QMTOyJX+JfaIW/9oFjFVIkXOB9DzFipfeVTPMdwNx9GMpdmQ0muSXkuF16pa7K/1QLHlQ==
+=======
+<<<<<<< HEAD
+  version "2.10.2"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-2.10.2.tgz#2aafc6171b0586c32f76232903836135bb7a2655"
+=======
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-2.9.0.tgz#5ef94a535dbbfd215d672deef8d0c45bf06b1f3a"
+<<<<<<< HEAD
+=======
+  integrity sha512-S1vtsmCx2upnLK/4xYALHKB1itbujHemAIhQ+R0qxxEjb/8TYP7AJUjlxmBJ57tjYR3IaNCAeiashCCnEvGe5Q==
+=======
+react-native-blur@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/react-native-blur/-/react-native-blur-3.2.2.tgz#5bfb50638d148982c9560436554ed01d77d6d07d"
+  dependencies:
+    prop-types "^15.5.10"
+
+react-native-camera@^2.2.1:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-2.2.2.tgz#2636e3ec681aef5a786ae7856820ee64e59fa060"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     prop-types "^15.6.2"
 
@@ -8786,6 +10729,7 @@ react-native-device-info@^1.6.2:
   resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-1.8.0.tgz#98a7e3adb4e3d377eeba9c751bda03b2d7f9da35"
   integrity sha512-pGSMzU/ywpJT97bIrC94p0JgNn6VZT4Rrfo9F47PfAfIfQJvsqSef3ulimr6FeUkK1nEfp0oRByV35OaOt+uZA==
 
+<<<<<<< HEAD
 react-native-dotenv@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/react-native-dotenv/-/react-native-dotenv-0.2.0.tgz#311551cb6a35a3dcfede648bded55c0e3ece579d"
@@ -8793,10 +10737,41 @@ react-native-dotenv@^0.2.0:
   dependencies:
     babel-plugin-dotenv "0.1.1"
 
+<<<<<<< HEAD
 react-native-emoji@1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/react-native-emoji/-/react-native-emoji-1.5.0.tgz#d5d4e421d20e39d48465d7fb525926d99eb3c7fc"
+<<<<<<< HEAD
   integrity sha512-Lg42ICDunUXim/sY7Xhdhxn6lpQbJVmzI1bw91LwMIB+O5IHo2nYjzkxbE6wz0grzgLMx2QmpIfu+cNIqbtlHg==
+=======
+=======
+react-native-emoji@^1.7.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/react-native-emoji/-/react-native-emoji-1.8.0.tgz#9fe5d97dbb84b102c9b1a68eb3f8e1bf4c1f6173"
+<<<<<<< HEAD
+  integrity sha512-VunKOtYes6eymyWwE7QS3mhmNXksTt2AN92PcGRtmDKLDPjuKrwd5tcJckFUekAK3H+6AMpwYy30CsiCJrDdFQ==
+=======
+=======
+<<<<<<< HEAD
+react-native-emoji@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/react-native-emoji/-/react-native-emoji-1.7.0.tgz#7c4ff9a5cc1b726a06fe32d19912938c3c3b97a4"
+=======
+<<<<<<< HEAD
+react-native-emoji@^1.6.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/react-native-emoji/-/react-native-emoji-1.7.0.tgz#7c4ff9a5cc1b726a06fe32d19912938c3c3b97a4"
+  integrity sha512-oAaDvL/a34smz36yMzSUr03N1VoaR+zZmieM3P4UJmUj4M8jMiSyDi09cJ/0Ktd10IuGMzoe9hG6pKsICwC4Bw==
+=======
+react-native-emoji@^1.3.1:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/react-native-emoji/-/react-native-emoji-1.6.0.tgz#edbee35a51a1506182876adf62fd71ce18913d39"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     node-emoji "1.10.0"
 
@@ -8805,10 +10780,30 @@ react-native-fast-image@^6.0.0:
   resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-6.0.3.tgz#e644076c5e21dd8695db07905779352b2b9c1cb8"
   integrity sha512-49OdbWV0XD2mb5VTdLRJCQ9qpMgGdliRwHSue/aJxgLLLmDK6dmFIJ/LvEn0F9e5Je16K++5lS6yJAACvvxAfw==
 
+<<<<<<< HEAD
 react-native-firebase@^4.3.8:
   version "4.3.8"
   resolved "https://registry.yarnpkg.com/react-native-firebase/-/react-native-firebase-4.3.8.tgz#a425b260aca0b97cde023dd2556fc18d16a3b7b3"
+<<<<<<< HEAD
   integrity sha512-lQuRrcnRd6Y3Drk8X66GYodfqPhWqy82+3S0rjOCoB3LhapnYXpi6QCqKJwkdBsy49zTyVsuH9cmMgQyejYW+w==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-lQuRrcnRd6Y3Drk8X66GYodfqPhWqy82+3S0rjOCoB3LhapnYXpi6QCqKJwkdBsy49zTyVsuH9cmMgQyejYW+w==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-lQuRrcnRd6Y3Drk8X66GYodfqPhWqy82+3S0rjOCoB3LhapnYXpi6QCqKJwkdBsy49zTyVsuH9cmMgQyejYW+w==
+=======
+react-native-firebase@^5.2.3:
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/react-native-firebase/-/react-native-firebase-5.3.1.tgz#cfd295f562249f6fcf5e3fb2c62894575ece2c7f"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     opencollective "^1.0.3"
     postinstall-build "^5.0.1"
@@ -8823,10 +10818,30 @@ react-native-gesture-handler@^1.2.1:
     invariant "^2.2.2"
     prop-types "^15.5.10"
 
+<<<<<<< HEAD
 react-native-haptic-feedback@^1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.8.0.tgz#f20b499041f871f35b409831db90b14a0b4ab257"
+<<<<<<< HEAD
   integrity sha512-ZLA2Os4U17EeDmefOk2zXZQE2nu/obmpyxEbtV92utKOQ2AbR62bfvS2IeUm8rlCE5Ktmk0Xn9H5i7hlkoZWLQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-ZLA2Os4U17EeDmefOk2zXZQE2nu/obmpyxEbtV92utKOQ2AbR62bfvS2IeUm8rlCE5Ktmk0Xn9H5i7hlkoZWLQ==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-ZLA2Os4U17EeDmefOk2zXZQE2nu/obmpyxEbtV92utKOQ2AbR62bfvS2IeUm8rlCE5Ktmk0Xn9H5i7hlkoZWLQ==
+=======
+react-native-haptic-feedback@^1.5.0:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.7.1.tgz#29000ef867fdd80a5eb20293d6274cd10f1cf577"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 react-native-indicators@^0.13.0:
   version "0.13.0"
@@ -8910,10 +10925,33 @@ react-native-randombytes@^3.5.2:
     buffer "^4.9.1"
     sjcl "^1.0.3"
 
+<<<<<<< HEAD
 react-native-reanimated@1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.1.0.tgz#ba6864055ec3a206cdd5209a293fe653ce276206"
+<<<<<<< HEAD
   integrity sha512-UGDVNfvuIkMqYUx6aytSzihuzv6sWubn0MQi8dRcw7BjgezhjJnVnJ/NSOcpL3cO+Ld7lFcRX6GKcskwkHdPkw==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-UGDVNfvuIkMqYUx6aytSzihuzv6sWubn0MQi8dRcw7BjgezhjJnVnJ/NSOcpL3cO+Ld7lFcRX6GKcskwkHdPkw==
+=======
+<<<<<<< HEAD
+react-native-reanimated@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.0.1.tgz#5ecb6a2f6dad0351077ac9b771ca943b7ad6feda"
+<<<<<<< HEAD
+=======
+  integrity sha512-RENoo6/sJc3FApP7vJ1Js7WyDuTVh97bbr5aMjJyw3kqpR2/JDHyL/dQFfOvSSAc+VjitpR9/CfPPad7tLRiIA==
+=======
+react-native-reanimated@^1.0.0-alpha.12:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.0.0.tgz#d4e356e852ec55611de565d8791542eeb25a45ae"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 react-native-safe-area-view@^0.14.1:
   version "0.14.5"
@@ -8934,9 +10972,28 @@ react-native-safe-area-view@mikedemarais/react-native-safe-area-view:
   integrity sha512-kSyAt0AeVU6N7ZonfV6dP6iZF8B7Bce+tk3eujXhzBGsLg0VSLnU7uE9VqJF0xdQrHR91ZjGgVMieo/8df9KTA==
 
 react-native-shimmer-placeholder@^1.0.29:
+<<<<<<< HEAD
   version "1.0.35"
   resolved "https://registry.yarnpkg.com/react-native-shimmer-placeholder/-/react-native-shimmer-placeholder-1.0.35.tgz#e75612297155a337690a42faf606fdcc4660bd39"
+<<<<<<< HEAD
   integrity sha512-qJS+eHjOuXZAxn4tFQFnRGHq6fzJOcNHrCKhbfx2+5v/Oa/W5G9Ww9DSPLiaAqzpRl74lcVZSufKTAxiVSB4qQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-qJS+eHjOuXZAxn4tFQFnRGHq6fzJOcNHrCKhbfx2+5v/Oa/W5G9Ww9DSPLiaAqzpRl74lcVZSufKTAxiVSB4qQ==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-qJS+eHjOuXZAxn4tFQFnRGHq6fzJOcNHrCKhbfx2+5v/Oa/W5G9Ww9DSPLiaAqzpRl74lcVZSufKTAxiVSB4qQ==
+=======
+  version "1.0.32"
+  resolved "https://registry.yarnpkg.com/react-native-shimmer-placeholder/-/react-native-shimmer-placeholder-1.0.32.tgz#cd82f82342587607503ace2fea78b56b0061af18"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 react-native-splash-screen@^3.2.0:
   version "3.2.0"
@@ -8956,10 +11013,30 @@ react-native-svg@^9.4.0:
   resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.5.1.tgz#eb21fa7eb5d71649620541e6549c6ed425d80240"
   integrity sha512-cRGfomzG/5LEwuJ6ct3m5yccckeI9aj8BNYwDPVxOeJ84LuJuvk5OqcjlYNeEzOWmWiH+QrFXfpLH1ag04bUeQ==
 
+<<<<<<< HEAD
 react-native-tab-view@^1.2.0, react-native-tab-view@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-1.4.1.tgz#f113cd87485808f0c991abec937f70fa380478b9"
+<<<<<<< HEAD
   integrity sha512-Bke8KkDcDhvB/z0AS7MnQKMD2p6Kwfc1rSKlMOvg9CC5CnClQ2QEnhPSbwegKDYhUkBI92iH/BYy7hNSm5kbUQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-Bke8KkDcDhvB/z0AS7MnQKMD2p6Kwfc1rSKlMOvg9CC5CnClQ2QEnhPSbwegKDYhUkBI92iH/BYy7hNSm5kbUQ==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-Bke8KkDcDhvB/z0AS7MnQKMD2p6Kwfc1rSKlMOvg9CC5CnClQ2QEnhPSbwegKDYhUkBI92iH/BYy7hNSm5kbUQ==
+=======
+react-native-tab-view@^1.2.0, react-native-tab-view@^1.3.4:
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-1.3.4.tgz#63fc3eb09652651d0ea0e016cff0f3a5e535f4de"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     prop-types "^15.6.1"
 
@@ -8997,6 +11074,7 @@ react-native-udp@^2.6.0:
     util "^0.10.3"
 
 react-native-version-number@^0.3.5:
+<<<<<<< HEAD
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/react-native-version-number/-/react-native-version-number-0.3.6.tgz#dd8b1435fc217df0a166d7e4a61fdc993f3e7437"
   integrity sha512-TdyXiK90NiwmSbmAUlUBOV6WI1QGoqtvZZzI5zQY4fKl67B3ZrZn/h+Wy/OYIKKFMfePSiyfeIs8LtHGOZ/NgA==
@@ -9004,7 +11082,29 @@ react-native-version-number@^0.3.5:
 react-native@0.59.8:
   version "0.59.8"
   resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.59.8.tgz#ade4141c777c60f5ec4889d9811d0f80a9d56547"
+<<<<<<< HEAD
   integrity sha512-x1T+/pEXrjgdH9uDzd5doJy5aFlBqW04j7ljDKIGALchhnvdFbtXXrUZ/1PfWHMrIdZxtaDt4tkSttp662GSQA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-x1T+/pEXrjgdH9uDzd5doJy5aFlBqW04j7ljDKIGALchhnvdFbtXXrUZ/1PfWHMrIdZxtaDt4tkSttp662GSQA==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-x1T+/pEXrjgdH9uDzd5doJy5aFlBqW04j7ljDKIGALchhnvdFbtXXrUZ/1PfWHMrIdZxtaDt4tkSttp662GSQA==
+=======
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/react-native-version-number/-/react-native-version-number-0.3.5.tgz#90f1b49bcb5e72f801bdc22ed6bad6c7cbbc2222"
+
+react-native@0.59.3:
+  version "0.59.3"
+  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.59.3.tgz#b984bbe457f63d5515046d32ea5721fd22843548"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     "@babel/runtime" "^7.0.0"
     "@react-native-community/cli" "^1.2.1"
@@ -9057,10 +11157,30 @@ react-native@0.59.8:
     xmldoc "^0.4.0"
     yargs "^9.0.0"
 
+<<<<<<< HEAD
 react-navigation-drawer@~1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-navigation-drawer/-/react-navigation-drawer-1.2.1.tgz#7bd5efeee7d2f611d3ebb0933e0c8e8eb7cafe52"
+<<<<<<< HEAD
   integrity sha512-T2kaBjY2c4/3I6noWFnaf/c18ntNH5DsST38i+pdc2NPxn5Yi5lkK+ZZTeKuHSFD4a7G0jWY9OGf1iRkHWLMAQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-T2kaBjY2c4/3I6noWFnaf/c18ntNH5DsST38i+pdc2NPxn5Yi5lkK+ZZTeKuHSFD4a7G0jWY9OGf1iRkHWLMAQ==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-T2kaBjY2c4/3I6noWFnaf/c18ntNH5DsST38i+pdc2NPxn5Yi5lkK+ZZTeKuHSFD4a7G0jWY9OGf1iRkHWLMAQ==
+=======
+react-navigation-drawer@1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/react-navigation-drawer/-/react-navigation-drawer-1.2.1.tgz#7bd5efeee7d2f611d3ebb0933e0c8e8eb7cafe52"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     react-native-tab-view "^1.2.0"
 
@@ -9069,14 +11189,35 @@ react-navigation-stack@~1.4.0:
   resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-1.4.0.tgz#69cdb029ea4ee5877d7e933b3117dc90bc841eb2"
   integrity sha512-zEe9wCA0Ot8agarYb//0nSWYW1GM+1R0tY/nydUV0EizeJ27At0EklYVWvYEuYU6C48va6cu8OPL7QD/CcJACw==
 
+<<<<<<< HEAD
 react-navigation-tabs@~1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/react-navigation-tabs/-/react-navigation-tabs-1.1.4.tgz#00a312250df3c519c60b7815a523ace5ee11163a"
+<<<<<<< HEAD
   integrity sha512-py2hLCRxPwXOzmY1W9XcY1rWXxdK6RGW/aXh56G9gIf8cpHNDhy/bJV4e46/JrVcse3ybFaN0liT09/DM/NdwQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-py2hLCRxPwXOzmY1W9XcY1rWXxdK6RGW/aXh56G9gIf8cpHNDhy/bJV4e46/JrVcse3ybFaN0liT09/DM/NdwQ==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-py2hLCRxPwXOzmY1W9XcY1rWXxdK6RGW/aXh56G9gIf8cpHNDhy/bJV4e46/JrVcse3ybFaN0liT09/DM/NdwQ==
+=======
+react-navigation-tabs@1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/react-navigation-tabs/-/react-navigation-tabs-1.1.2.tgz#10b7501522d99960340a0d23a471d571b70aeb82"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     hoist-non-react-statics "^2.5.0"
     prop-types "^15.6.1"
     react-lifecycles-compat "^3.0.4"
+<<<<<<< HEAD
     react-native-tab-view "^1.4.1"
 
 react-navigation@^3.11.0:
@@ -9093,7 +11234,38 @@ react-navigation@^3.11.0:
 react-primitives@^0.8.0:
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/react-primitives/-/react-primitives-0.8.0.tgz#1cba0b1bd1463df158c963cabd5130b017e35e45"
+<<<<<<< HEAD
   integrity sha512-LyzURw3K2dSlpWBhW1IpoRVzZtlpKyUAEhd+dmAD5hIRFkaJ+v3dM7+5AuFqg76B4ASxFxb/Wq9FFJ/UqMSUPA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-LyzURw3K2dSlpWBhW1IpoRVzZtlpKyUAEhd+dmAD5hIRFkaJ+v3dM7+5AuFqg76B4ASxFxb/Wq9FFJ/UqMSUPA==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-LyzURw3K2dSlpWBhW1IpoRVzZtlpKyUAEhd+dmAD5hIRFkaJ+v3dM7+5AuFqg76B4ASxFxb/Wq9FFJ/UqMSUPA==
+=======
+    react-native-tab-view "^1.3.4"
+
+react-navigation@^3.2.1:
+  version "3.7.1"
+  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-3.7.1.tgz#36bb1333c929a4cfc75d19f2e5179a08cd9e19f4"
+  dependencies:
+    "@react-navigation/core" "~3.3.0"
+    "@react-navigation/native" "~3.3.0"
+    react-navigation-drawer "1.2.1"
+    react-navigation-stack "1.2.0"
+    react-navigation-tabs "1.1.2"
+
+react-primitives@^0.7.0:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/react-primitives/-/react-primitives-0.7.1.tgz#09a0ae0c0ebc16aa07a0a89c187428fd8573ebd4"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     animated "^0.2.2"
     create-react-class "^15.6.3"
@@ -9138,7 +11310,24 @@ react-style-proptype@^3.2.2:
 react-test-renderer@16.8.3:
   version "16.8.3"
   resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-16.8.3.tgz#230006af264cc46aeef94392e04747c21839e05e"
+<<<<<<< HEAD
   integrity sha512-rjJGYebduKNZH0k1bUivVrRLX04JfIQ0FKJLPK10TAb06XWhfi4gTobooF9K/DEFNW98iGac3OSxkfIJUN9Mdg==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-rjJGYebduKNZH0k1bUivVrRLX04JfIQ0FKJLPK10TAb06XWhfi4gTobooF9K/DEFNW98iGac3OSxkfIJUN9Mdg==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-rjJGYebduKNZH0k1bUivVrRLX04JfIQ0FKJLPK10TAb06XWhfi4gTobooF9K/DEFNW98iGac3OSxkfIJUN9Mdg==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
@@ -9187,7 +11376,24 @@ read-pkg-up@^3.0.0:
 read-pkg-up@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/read-pkg-up/-/read-pkg-up-4.0.0.tgz#1b221c6088ba7799601c808f91161c66e58f8978"
+<<<<<<< HEAD
   integrity sha512-6etQSH7nJGsK0RbG/2TeDzZFa8shjQ1um+SwQQ5cwKy0dhSXdOncEhb1CPpvQG4h7FyOV6EB6YlV0yJvZQNAkA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-6etQSH7nJGsK0RbG/2TeDzZFa8shjQ1um+SwQQ5cwKy0dhSXdOncEhb1CPpvQG4h7FyOV6EB6YlV0yJvZQNAkA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-6etQSH7nJGsK0RbG/2TeDzZFa8shjQ1um+SwQQ5cwKy0dhSXdOncEhb1CPpvQG4h7FyOV6EB6YlV0yJvZQNAkA==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     find-up "^3.0.0"
     read-pkg "^3.0.0"
@@ -9342,11 +11548,14 @@ regenerate@^1.4.0:
   resolved "https://registry.yarnpkg.com/regenerate/-/regenerate-1.4.0.tgz#4a856ec4b56e4077c557589cae85e7a4c8869a11"
   integrity sha512-1G6jJVDWrt0rK99kBjvEtziZNCICAuvIPkSiUFIQxVP06RCVpq3dmDo2oi6ABpYaDYaTRr67BEhL8r1wgEZZKg==
 
+<<<<<<< HEAD
 regenerator-runtime@^0.10.0:
   version "0.10.5"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.10.5.tgz#336c3efc1220adcedda2c9fab67b5a7955a33658"
   integrity sha1-M2w+/BIgrc7dosn6tntaeVWjNlg=
 
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
 regenerator-runtime@^0.11.0:
   version "0.11.1"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
@@ -9734,7 +11943,24 @@ safe-regex@^1.1.0:
 sane@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/sane/-/sane-3.1.0.tgz#995193b7dc1445ef1fe41ddfca2faf9f111854c6"
+<<<<<<< HEAD
   integrity sha512-G5GClRRxT1cELXfdAq7UKtUsv8q/ZC5k8lQGmjEm4HcAl3HzBy68iglyNCmw4+0tiXPCBZntslHlRhbnsSws+Q==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-G5GClRRxT1cELXfdAq7UKtUsv8q/ZC5k8lQGmjEm4HcAl3HzBy68iglyNCmw4+0tiXPCBZntslHlRhbnsSws+Q==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-G5GClRRxT1cELXfdAq7UKtUsv8q/ZC5k8lQGmjEm4HcAl3HzBy68iglyNCmw4+0tiXPCBZntslHlRhbnsSws+Q==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     anymatch "^2.0.0"
     capture-exit "^1.2.0"
@@ -10099,7 +12325,24 @@ source-map-resolve@^0.5.0:
 source-map-support@^0.5.6, source-map-support@^0.5.9:
   version "0.5.12"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.12.tgz#b4f3b10d51857a5af0138d3ce8003b201613d599"
+<<<<<<< HEAD
   integrity sha512-4h2Pbvyy15EE02G+JOZpUCmqWJuqrs+sEkzewTm++BPi7Hvn/HwcqLAcNxYAyI0x13CpPPn+kMjl+hplXMHITQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-4h2Pbvyy15EE02G+JOZpUCmqWJuqrs+sEkzewTm++BPi7Hvn/HwcqLAcNxYAyI0x13CpPPn+kMjl+hplXMHITQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-4h2Pbvyy15EE02G+JOZpUCmqWJuqrs+sEkzewTm++BPi7Hvn/HwcqLAcNxYAyI0x13CpPPn+kMjl+hplXMHITQ==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     buffer-from "^1.0.0"
     source-map "^0.6.0"
@@ -10156,7 +12399,24 @@ spdx-expression-parse@^3.0.0:
 spdx-license-ids@^3.0.0:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/spdx-license-ids/-/spdx-license-ids-3.0.4.tgz#75ecd1a88de8c184ef015eafb51b5b48bfd11bb1"
+<<<<<<< HEAD
   integrity sha512-7j8LYJLeY/Yb6ACbQ7F76qy5jHkp0U6jgBfJsk97bwWlVUnUWsAgpyaCvo17h0/RQGnQ036tVDomiwoI4pDkQA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-7j8LYJLeY/Yb6ACbQ7F76qy5jHkp0U6jgBfJsk97bwWlVUnUWsAgpyaCvo17h0/RQGnQ036tVDomiwoI4pDkQA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-7j8LYJLeY/Yb6ACbQ7F76qy5jHkp0U6jgBfJsk97bwWlVUnUWsAgpyaCvo17h0/RQGnQ036tVDomiwoI4pDkQA==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 specificity@^0.4.1:
   version "0.4.1"
@@ -10206,9 +12466,28 @@ stack-utils@^1.0.1:
   integrity sha512-MTX+MeG5U994cazkjd/9KNAapsHnibjMLnfXodlkXw76JEea0UiNzrqidzo1emMwk7w5Qhc9jd4Bn9TBb1MFwA==
 
 stacktrace-parser@^0.1.3:
+<<<<<<< HEAD
   version "0.1.6"
   resolved "https://registry.yarnpkg.com/stacktrace-parser/-/stacktrace-parser-0.1.6.tgz#c17d466d15ba51bee2f753d064f17327a886ff37"
+<<<<<<< HEAD
   integrity sha512-wXhu0Z8YgCGigUtHQq+J7pjXCppk3Um5DwH4qskOKHMlJmKwuuUSm+wDAgU7t4sbVjvuDTNGwOfFKgjMEqSflA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-wXhu0Z8YgCGigUtHQq+J7pjXCppk3Um5DwH4qskOKHMlJmKwuuUSm+wDAgU7t4sbVjvuDTNGwOfFKgjMEqSflA==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-wXhu0Z8YgCGigUtHQq+J7pjXCppk3Um5DwH4qskOKHMlJmKwuuUSm+wDAgU7t4sbVjvuDTNGwOfFKgjMEqSflA==
+=======
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/stacktrace-parser/-/stacktrace-parser-0.1.5.tgz#b6784545b9bf70b4f1325671d024c71269c4bc2a"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     type-fest "^0.3.0"
 
@@ -10345,7 +12624,30 @@ strip-ansi@^5.0.0, strip-ansi@^5.1.0, strip-ansi@^5.2.0:
 strip-bom@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/strip-bom/-/strip-bom-3.0.0.tgz#2334c18e9c759f7bdd56fdef7e9ae3d588e68ed3"
+<<<<<<< HEAD
   integrity sha1-IzTBjpx1n3vdVv3vfprj1YjmjtM=
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha1-IzTBjpx1n3vdVv3vfprj1YjmjtM=
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha1-IzTBjpx1n3vdVv3vfprj1YjmjtM=
+=======
+
+strip-dirs@^2.0.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/strip-dirs/-/strip-dirs-2.1.0.tgz#4987736264fc344cf20f6c34aca9d13d1d4ed6c5"
+  dependencies:
+    is-natural-number "^4.0.1"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 strip-eof@^1.0.0:
   version "1.0.0"
@@ -10527,10 +12829,33 @@ svg-tags@^1.0.0:
   resolved "https://registry.yarnpkg.com/svg-tags/-/svg-tags-1.0.0.tgz#58f71cee3bd519b59d4b2a843b6c7de64ac04764"
   integrity sha1-WPcc7jvVGbWdSyqEO2x95krAR2Q=
 
+<<<<<<< HEAD
 svgo@^1.2.1:
+=======
+svgo@^1.0.5:
+<<<<<<< HEAD
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/svgo/-/svgo-1.2.2.tgz#0253d34eccf2aed4ad4f283e11ee75198f9d7316"
+<<<<<<< HEAD
   integrity sha512-rAfulcwp2D9jjdGu+0CuqlrAUin6bBWrpoqXWwKDZZZJfXcUXQSxLJOFJCQCSA0x0pP2U0TxSlJu2ROq5Bq6qA==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-rAfulcwp2D9jjdGu+0CuqlrAUin6bBWrpoqXWwKDZZZJfXcUXQSxLJOFJCQCSA0x0pP2U0TxSlJu2ROq5Bq6qA==
+=======
+<<<<<<< HEAD
+=======
+  integrity sha512-rAfulcwp2D9jjdGu+0CuqlrAUin6bBWrpoqXWwKDZZZJfXcUXQSxLJOFJCQCSA0x0pP2U0TxSlJu2ROq5Bq6qA==
+=======
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/svgo/-/svgo-1.2.1.tgz#3fedde75a4016193e1c2608b5fdef6f3e4a9fd99"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     chalk "^2.4.1"
     coa "^2.0.2"
@@ -10618,10 +12943,30 @@ temp@0.8.3:
     os-tmpdir "^1.0.0"
     rimraf "~2.2.6"
 
+<<<<<<< HEAD
 tempfile@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/tempfile/-/tempfile-2.0.0.tgz#6b0446856a9b1114d1856ffcbe509cccb0977265"
+<<<<<<< HEAD
   integrity sha1-awRGhWqbERTRhW/8vlCczLCXcmU=
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha1-awRGhWqbERTRhW/8vlCczLCXcmU=
+=======
+<<<<<<< HEAD
+=======
+  integrity sha1-awRGhWqbERTRhW/8vlCczLCXcmU=
+=======
+test-exclude@^5.0.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/test-exclude/-/test-exclude-5.1.0.tgz#6ba6b25179d2d38724824661323b73e03c0c1de1"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     temp-dir "^1.0.0"
     uuid "^3.0.1"
@@ -10839,7 +13184,37 @@ type-check@~0.3.2:
 type-fest@^0.3.0:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.3.1.tgz#63d00d204e059474fe5e1b7c011112bbd1dc29e1"
+<<<<<<< HEAD
   integrity sha512-cUGJnCdr4STbePCgqNFbpVNCepa+kAVohJs1sLhxzdH+gnEoOd8VhbYa7pD3zZYGiURWM2xzEII3fQcRizDkYQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-cUGJnCdr4STbePCgqNFbpVNCepa+kAVohJs1sLhxzdH+gnEoOd8VhbYa7pD3zZYGiURWM2xzEII3fQcRizDkYQ==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-cUGJnCdr4STbePCgqNFbpVNCepa+kAVohJs1sLhxzdH+gnEoOd8VhbYa7pD3zZYGiURWM2xzEII3fQcRizDkYQ==
+=======
+
+type-is@~1.6.16:
+  version "1.6.16"
+  resolved "https://registry.yarnpkg.com/type-is/-/type-is-1.6.16.tgz#f89ce341541c672b25ee7ae3c73dee3b2be50194"
+  dependencies:
+    media-typer "0.3.0"
+    mime-types "~2.1.18"
+
+typedarray-to-buffer@^3.1.2:
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/typedarray-to-buffer/-/typedarray-to-buffer-3.1.5.tgz#a97ee7a9ff42691b9f783ff1bc5112fe3fca9080"
+  dependencies:
+    is-typedarray "^1.0.0"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
 
 typedarray@^0.0.6:
   version "0.0.6"
@@ -10860,9 +13235,33 @@ uglify-es@^3.1.9:
     source-map "~0.6.1"
 
 uglify-js@^3.1.4:
+<<<<<<< HEAD
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.6.0.tgz#704681345c53a8b2079fb6cec294b05ead242ff5"
+<<<<<<< HEAD
   integrity sha512-W+jrUHJr3DXKhrsS7NUVxn3zqMOFn0hL/Ei6v0anCIMoKC93TjcflTagwIHLW7SfMFfiQuktQyFVCFHGUE0+yg==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-W+jrUHJr3DXKhrsS7NUVxn3zqMOFn0hL/Ei6v0anCIMoKC93TjcflTagwIHLW7SfMFfiQuktQyFVCFHGUE0+yg==
+=======
+=======
+<<<<<<< HEAD
+  version "3.5.15"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.5.15.tgz#fe2b5378fd0b09e116864041437bff889105ce24"
+<<<<<<< HEAD
+=======
+  integrity sha512-fe7aYFotptIddkwcm6YuA0HmknBZ52ZzOsUxZEdhhkSsz7RfjHDX2QDxwKTiv4JQ5t5NhfmpgAK+J7LiDhKSqg==
+=======
+  version "3.5.4"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.5.4.tgz#4a64d57f590e20a898ba057f838dcdfb67a939b9"
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> d2dd43b1... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     commander "~2.20.0"
     source-map "~0.6.1"
@@ -11362,7 +13761,24 @@ xcode@1.0.0:
 xcode@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/xcode/-/xcode-2.0.0.tgz#134f1f94c26fbfe8a9aaa9724bfb2772419da1a2"
+<<<<<<< HEAD
   integrity sha512-5xF6RCjAdDEiEsbbZaS/gBRt3jZ/177otZcpoLCjGN/u1LrfgH7/Sgeeavpr/jELpyDqN2im3AKosl2G2W8hfw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-5xF6RCjAdDEiEsbbZaS/gBRt3jZ/177otZcpoLCjGN/u1LrfgH7/Sgeeavpr/jELpyDqN2im3AKosl2G2W8hfw==
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+  integrity sha512-5xF6RCjAdDEiEsbbZaS/gBRt3jZ/177otZcpoLCjGN/u1LrfgH7/Sgeeavpr/jELpyDqN2im3AKosl2G2W8hfw==
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
+>>>>>>> da8b16e... hoc for uniwap liquidity
+>>>>>>> befaf398... hoc for uniwap liquidity
+>>>>>>> b0893a0f... hoc for uniwap liquidity
+>>>>>>> f67a8ed7... hoc for uniwap liquidity
   dependencies:
     simple-plist "^1.0.0"
     uuid "^3.3.2"
@@ -11495,6 +13911,7 @@ yargs-parser@^7.0.0:
   dependencies:
     camelcase "^4.1.0"
 
+<<<<<<< HEAD
 yargs-unparser@1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/yargs-unparser/-/yargs-unparser-1.5.0.tgz#f2bb2a7e83cbc87bb95c8e572828a06c9add6e0d"
@@ -11521,6 +13938,8 @@ yargs@13.2.2:
     y18n "^4.0.0"
     yargs-parser "^13.0.0"
 
+=======
+>>>>>>> 1d9d6bc... hoc for uniwap liquidity
 yargs@^12.0.2, yargs@^12.0.5:
   version "12.0.5"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-12.0.5.tgz#05f5997b609647b64f66b81e3b4b10a368e7ad13"
