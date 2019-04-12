@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 ### Added
+* Autorefresh for unique tokens
 
 ### Changed
 * Fix for app crashing when low ETH after having a previous wallet with enough ETH
