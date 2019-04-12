@@ -32,7 +32,6 @@ const uniswapSelector = state => state.uniswap;
 const pricesSelector = state => state.prices;
 const nativeCurrencySelector = state => state.nativeCurrency;
 
-// TODO if symbol does not exist, try to fetch from assets
 export const transformPool = (liquidityPool, balancePriceUnit, nativeCurrency) => {
   if (isEmpty(liquidityPool)) {
     return null;
