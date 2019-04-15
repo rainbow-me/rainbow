@@ -1,5 +1,6 @@
 import ethers from 'ethers';
 import lang from 'i18n-js';
+import { web3Provider } from '@rainbow-me/rainbow-common';
 import { Alert } from 'react-native';
 import {
   ACCESS_CONTROL,
@@ -36,7 +37,7 @@ export const walletInit = async (seedPhrase = null) => {
 export const loadWallet = async () => {
   const privateKey = await loadPrivateKey();
   if (privateKey) {
-    const wallet = new ethers.Wallet(privateKey);
+    const wallet = new ethers.Wallet(privateKey, web3Provider);
     wallet.provider = ethers.providers.getDefaultProvider();
     return wallet;
   }
