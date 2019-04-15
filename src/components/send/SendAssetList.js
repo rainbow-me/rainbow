@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FlyInAnimation } from '../animations';
-import { AssetList } from '../asset-list';
+import AssetList from '../asset-list/RecyclerAssetList';
 import { SendCoinRow } from '../coin-row';
 import { UniqueTokenRow } from '../unique-token';
 

@@ -53,7 +53,7 @@ export default class RecyclerAssetList extends React.Component {
   static propTypes = {
     fetchData: PropTypes.func,
     hideHeader: PropTypes.bool,
-    paddingBottom: PropTypes.number.isRequired,
+    paddingBottom: PropTypes.number,
     sections: PropTypes.arrayOf(PropTypes.shape({
       data: PropTypes.array,
       title: PropTypes.string,
@@ -109,13 +109,13 @@ export default class RecyclerAssetList extends React.Component {
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_LAST) {
           // We want to add enough spacing below the list so that when the user scrolls to the bottom,
           // the bottom of the list content lines up with the top of the FABs (+ padding).
-          dim.height = UniqueTokenRowHeight(false, true) + props.paddingBottom;
+          dim.height = UniqueTokenRowHeight(false, true) + props.paddingBottom || 0;
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST) {
           dim.height = UniqueTokenRowHeight(true, false);
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRowHeight;
         } else {
-          dim.height = AssetListHeader.height;
+          dim.height = this.props.hideHeader ? 0 : AssetListHeader.height;
         }
       },
     );
@@ -171,6 +171,9 @@ export default class RecyclerAssetList extends React.Component {
       return balancesRenderItem({ item: data });
     }
     if (type === ViewTypes.HEADER) {
+      if (this.props.hideHeader) {
+        return null;
+      }
       return <AssetListHeaderRenderer {...data} />;
     }
 
