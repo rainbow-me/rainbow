@@ -1,14 +1,10 @@
-import { get, isEmpty } from 'lodash';
+import { get } from 'lodash';
 import React from 'react';
 import { Dimensions, RefreshControl } from 'react-native';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
 import PropTypes from 'prop-types';
-import { compose, withHandlers } from 'recompact';
-import { withNavigation } from 'react-navigation';
-import { BalanceCoinRow } from '../coin-row/index';
-import { UniqueTokenRow } from '../unique-token';
 import { UniqueTokenRowHeight } from '../unique-token/UniqueTokenRow';
 import { CoinRowHeight } from '../coin-row/CoinRow';
 import AssetListHeader from './AssetListHeader';
