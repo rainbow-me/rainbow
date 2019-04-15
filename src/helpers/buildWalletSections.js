@@ -1,6 +1,11 @@
 import lang from 'i18n-js';
 import { get } from 'lodash';
+import React from 'react';
+import { withNavigation } from 'react-navigation';
+import { compose, withHandlers } from 'recompact';
 import { createSelector } from 'reselect';
+import { BalanceCoinRow } from '../components/coin-row';
+import { UniqueTokenRow } from '../components/unique-token';
 import { buildUniqueTokenList } from './assets';
 
 const allAssetsSelector = state => state.allAssets;
@@ -16,7 +21,23 @@ const setIsWalletEmptySelector = state => state.setIsWalletEmpty;
 const shitcoinsCountSelector = state => state.shitcoinsCount;
 const showShitcoinsSelector = state => state.showShitcoins;
 const uniqueTokensSelector = state => state.uniqueTokens;
+const enhanceRenderItem = compose(
+  withNavigation,
+  withHandlers({
+    onPress: ({ assetType, navigation }) => (item) => {
+      navigation.navigate('ExpandedAssetScreen', {
+        asset: item,
+        type: assetType,
+      });
+    },
+  }),
+);
 
+const TokenItem = enhanceRenderItem(BalanceCoinRow);
+const UniqueTokenItem = enhanceRenderItem(UniqueTokenRow);
+
+const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
+const collectiblesRenderItem = item => <UniqueTokenItem {...item} assetType="unique_token" />;
 const filterWalletSections = sections => Object.values(sections).filter(({ totalItems }) => totalItems);
 
 const buildWalletSections = (
@@ -36,13 +57,17 @@ const buildWalletSections = (
 ) => {
   const sections = {
     balances: {
+      balances: true,
       data: showShitcoins ? allAssets : assets,
+      renderItem: balancesRenderItem,
       title: lang.t('account.tab_balances'),
       totalItems: allAssetsCount,
       totalValue: get(assetsTotal, 'display', ''),
     },
     collectibles: {
+      collectibles: true,
       data: buildUniqueTokenList(uniqueTokens),
+      renderItem: collectiblesRenderItem,
       title: lang.t('account.tab_collectibles'),
       totalItems: uniqueTokens.length,
       totalValue: '',
