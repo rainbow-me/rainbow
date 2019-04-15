@@ -3,7 +3,6 @@ import React from 'react';
 import { FlyInAnimation } from '../animations';
 import AssetList from '../asset-list/RecyclerAssetList';
 import { SendCoinRow } from '../coin-row';
-import { UniqueTokenRow } from '../unique-token';
 
 const BalancesRenderItem = ({
   index,
@@ -27,26 +26,29 @@ const SendAssetList = ({
   allAssets,
   fetchData,
   onSelectAsset,
-  uniqueTokens,
+  //uniquetokens: uniqueTokens,
 }) => {
-  const sections = {
-    balances: {
+  const sections = [
+    {
+      balances: true,
       data: allAssets,
       onSelectAsset,
       renderItem: BalancesRenderItem,
     },
-    collectibles: {
-      data: uniqueTokens,
-      renderItem: UniqueTokenRow,
-    },
-  };
+    // {
+    //   collectibles: true,
+    //   data: buildUniqueTokenList(uniqueTokens),
+    //   renderItem: BalancesRenderItem,
+    //   title: lang.t('account.tab_collectibles'),
+    // },
+  ];
 
   return (
     <FlyInAnimation style={{ flex: 1, width: '100%' }}>
       <AssetList
         fetchData={fetchData}
         hideHeader
-        sections={[sections.balances]}
+        sections={sections}
       />
     </FlyInAnimation>
   );
@@ -56,7 +58,7 @@ SendAssetList.propTypes = {
   allAssets: PropTypes.array,
   fetchData: PropTypes.func,
   onSelectAsset: PropTypes.func,
-  uniqueTokens: PropTypes.array,
+  uniquetokens: PropTypes.array,
 };
 
 export default SendAssetList;

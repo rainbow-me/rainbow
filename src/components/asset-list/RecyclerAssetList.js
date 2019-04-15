@@ -27,24 +27,6 @@ const Wrapper = styled.View`
   overflow: hidden;
 `;
 
-const enhanceRenderItem = compose(
-  withNavigation,
-  withHandlers({
-    onPress: ({ assetType, navigation }) => (item) => {
-      navigation.navigate('ExpandedAssetScreen', {
-        asset: item,
-        type: assetType,
-      });
-    },
-  }),
-);
-
-const TokenItem = enhanceRenderItem(BalanceCoinRow);
-const UniqueTokenItem = enhanceRenderItem(UniqueTokenRow);
-
-const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
-const collectiblesRenderItem = item => <UniqueTokenItem {...item} assetType="unique_token" />;
-
 // eslint-disable-next-line react/prop-types
 const AssetListHeaderRenderer = ({ section }) => <AssetListHeader {...section} />;
 
@@ -65,13 +47,13 @@ export default class RecyclerAssetList extends React.Component {
     const { width } = Dimensions.get('window');
     this.state = {
       dataProvider: new DataProvider((r1, r2) => {
-        if (get(r1, 'section.totalValue') && r1.section.totalValue !== r2.section.totalValue) {
+        if (get(r1, 'section.isHeader') && r1.section.symbol !== r2.section.symbol) {
           return true;
         }
-        const r1Value = get(r1, Array.isArray(r1) ? '' : 'native.balance.display');
-        const r2Value = get(r2, Array.isArray(r2) ? '' : 'native.balance.display');
-        const r1Key = get(r1, Array.isArray(r1) ? '[0].id' : 'symbol');
-        const r2Key = get(r2, Array.isArray(r2) ? '[0].id' : 'symbol');
+        const r1Value = get(r1, r1.tokens ? '' : 'native.balance.display');
+        const r2Value = get(r2, r2.tokens ? '' : 'native.balance.display');
+        const r1Key = get(r1, r1.tokens ? 'tokens.[0].id' : 'symbol');
+        const r2Key = get(r2, r2.tokens ? 'tokens.[0].id' : 'symbol');
         return r1Key !== r2Key || r1Value !== r2Value;
       }),
       headersIndices: [],
@@ -85,9 +67,9 @@ export default class RecyclerAssetList extends React.Component {
 
         // This logic appears to be quite complex since there might be some race conditions
         // regarding order of received sections while importing from seeds
-        const areBalancesLoaded = this.props.sections[0] && !isEmpty(this.props.sections[0].title);
+        const areBalancesLoaded = this.props.sections[0] && get(this.props.sections[0], 'balances');
         const areCollectiblesLoaded = this.props.sections.length === 2
-          || (this.props.sections[0] && !isEmpty(this.props.sections[0].title));
+          || (this.props.sections[0] && get(this.props.sections[0], 'collectibles'));
         if (areCollectiblesLoaded) {
           const idx = areBalancesLoaded ? 1 : 0;
           if (index === this.state.headersIndices[idx] + 1) {
@@ -127,10 +109,11 @@ export default class RecyclerAssetList extends React.Component {
       headersIndices.push(ctx.length);
       return ctx
         .concat([{
+          isHeader: true,
           section,
           symbol: section.title,
         }])
-        .concat(section.data);
+        .concat(section.data.map(s => ({ ...s, section })));
     }, []);
     return {
       dataProvider: state.dataProvider.cloneWithRows(items),
@@ -168,7 +151,8 @@ export default class RecyclerAssetList extends React.Component {
 
   rowRenderer = (type, data) => {
     if (type === ViewTypes.COIN_ROW) {
-      return balancesRenderItem({ item: data });
+      const { section } = data;
+      return data.section.renderItem({ item: data, section });
     }
     if (type === ViewTypes.HEADER) {
       if (this.props.hideHeader) {
@@ -177,10 +161,10 @@ export default class RecyclerAssetList extends React.Component {
       return <AssetListHeaderRenderer {...data} />;
     }
 
-    return collectiblesRenderItem({
+    return data.section.renderItem({
       isFirstRow: type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST,
       isLastRow: type === ViewTypes.UNIQUE_TOKEN_ROW_LAST,
-      items: data,
+      items: data.tokens,
     });
   };
 
