@@ -1,11 +1,19 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { colors } from '../../styles';
+import { css } from 'styled-components/primitives';
+import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Monospace } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+
+const selectedHeight = 78;
+
+const selectedStyles = css`
+  ${padding(17, 14, 19, 13)};
+  height: ${selectedHeight};
+`;
 
 const BottomRow = ({ balance, native, nativeCurrencySymbol }) => {
   const fiatValue = get(native, 'balance.display') || `${nativeCurrencySymbol}0.00`;
@@ -26,23 +34,30 @@ BottomRow.propTypes = {
   nativeCurrencySymbol: PropTypes.string,
 };
 
-const TopRow = ({ name, paddingRight }) => (
-  <CoinName paddingRight={paddingRight || 0}>
+const TopRow = ({ name, selected }) => (
+  <CoinName weight={selected ? 'semibold' : 'regular'}>
     {name}
   </CoinName>
 );
 
 TopRow.propTypes = {
   name: PropTypes.string,
-  paddingRight: PropTypes.number,
+  selected: PropTypes.bool,
 };
 
-const SendCoinRow = ({ item, onPress, ...props }) => (
+const SendCoinRow = ({
+  item,
+  onPress,
+  selected,
+  ...props
+}) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
     <CoinRow
       {...item}
       {...props}
       bottomRowRender={BottomRow}
+      containerStyles={selected ? selectedStyles : null}
+      selected={selected}
       topRowRender={TopRow}
     />
   </ButtonPressAnimation>
@@ -51,6 +66,9 @@ const SendCoinRow = ({ item, onPress, ...props }) => (
 SendCoinRow.propTypes = {
   item: PropTypes.object,
   onPress: PropTypes.func,
+  selected: PropTypes.bool,
 };
+
+SendCoinRow.selectedHeight = selectedHeight;
 
 export default SendCoinRow;

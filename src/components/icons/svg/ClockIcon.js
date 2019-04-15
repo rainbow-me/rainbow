@@ -5,7 +5,7 @@ import { colors } from '../../../styles';
 import Svg from '../Svg';
 
 const ClockIcon = ({ color, ...props }) => (
-  <Svg height="30" width="30" viewBox="0 0 30 30" {...props}>
+  <Svg viewBox="0 0 30 30" {...props}>
     <G fill="none" fillRule="nonzero">
       <Circle
         cx="15"

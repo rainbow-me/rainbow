@@ -28,7 +28,7 @@ export default class ShadowStack extends PureComponent {
     height: PropTypes.number.isRequired,
     shadows: PropTypes.arrayOf(PropTypes.array).isRequired,
     style: stylePropType,
-    width: PropTypes.number.isRequired,
+    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   }
 
   static defaultProps = {

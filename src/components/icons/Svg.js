@@ -1,13 +1,23 @@
-import { compose, mapProps, omitProps } from 'recompact';
-import Svg from 'svgs';
+import Animated from 'react-native-reanimated';
+import {
+  compose,
+  mapProps,
+  omitProps,
+  toClass,
+} from 'recompact';
+import SvgPrimitive from 'svgs';
 import { reduceStylesArrayToObject } from '../../utils';
 
 const BlacklistedSVGProps = ['direction'];
 
-export default compose(
+const Svg = compose(
   omitProps(...BlacklistedSVGProps),
   mapProps(({ style, ...props }) => ({
     ...props,
     style: reduceStylesArrayToObject(style),
   })),
-)(Svg);
+)(SvgPrimitive);
+
+export const AnimatedSvg = Animated.createAnimatedComponent(toClass(Svg));
+
+export default Svg;

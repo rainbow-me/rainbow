@@ -1,13 +1,12 @@
 import ethers from 'ethers';
 import lang from 'i18n-js';
-import { AlertIOS } from 'react-native';
+import { Alert } from 'react-native';
 import {
   ACCESS_CONTROL,
   ACCESSIBLE,
   AUTHENTICATION_TYPE,
   canImplyAuthentication,
 } from 'react-native-keychain';
-import Piwik from 'react-native-matomo';
 import * as keychain from './keychain';
 
 const seedPhraseKey = 'rainbowSeedPhrase';
@@ -53,7 +52,7 @@ export const createTransaction = async (to, data, value, gasLimit, gasPrice, non
   value: ethers.utils.parseEther(value),
 });
 
-export const sendTransaction = async ({ tracking, transaction }) => {
+export const sendTransaction = async ({ transaction }) => {
   try {
     const wallet = await loadWallet();
     if (!wallet) {
@@ -61,14 +60,13 @@ export const sendTransaction = async ({ tracking, transaction }) => {
     }
     try {
       const result = await wallet.sendTransaction(transaction);
-      Piwik.trackEvent('Send', tracking.action, tracking.name, tracking.amount);
       return result.hash;
     } catch (error) {
-      AlertIOS.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
       return null;
     }
   } catch (error) {
-    AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
+    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
     return null;
   }
 };
@@ -79,11 +77,11 @@ export const signMessage = async (message, authenticationPrompt = lang.t('wallet
     try {
       return await wallet.signMessage(message);
     } catch (error) {
-      AlertIOS.alert(lang.t('wallet.message_signing.failed_signing'));
+      Alert.alert(lang.t('wallet.message_signing.failed_signing'));
       return null;
     }
   } catch (error) {
-    AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
+    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
     return null;
   }
 };

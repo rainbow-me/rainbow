@@ -6,13 +6,13 @@ import {
   onlyUpdateForKeys,
   withProps,
 } from 'recompact';
-import List from './RecyclerActivityList';
 import { buildTransactionsSectionsSelector } from '../../helpers/transactions';
 import {
   withAccountAddress,
   withAccountSettings,
   withAccountTransactions,
 } from '../../hoc';
+import RecyclerActivityList from './RecyclerActivityList';
 
 const ActivityList = ({
   hasPendingTransaction,
@@ -21,7 +21,7 @@ const ActivityList = ({
   pendingTransactionsCount,
   sections,
 }) => (
-  <List
+  <RecyclerActivityList
     sections={sections}
     header={header}
   />
