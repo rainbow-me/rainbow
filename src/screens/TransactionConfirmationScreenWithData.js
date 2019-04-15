@@ -3,8 +3,7 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import { getTransactionCount, web3Instance } from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
-import { AlertIOS, StatusBar, Vibration } from 'react-native';
-import Piwik from 'react-native-matomo';
+import { Alert, StatusBar, Vibration } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
 import { withTransactionConfirmationScreen } from '../hoc';
@@ -25,7 +24,6 @@ class TransactionConfirmationScreenWithData extends Component {
 
   componentDidUpdate = (prevProps) => {
     if (this.props.isFocused && !prevProps.isFocused) {
-      Piwik.trackScreen('TxnConfirmScreen', 'TxnConfirmScreen');
     }
   }
 
@@ -53,13 +51,7 @@ class TransactionConfirmationScreenWithData extends Component {
     const txPayloadLatestNonce = { ...txPayload, nonce };
     const symbol = get(transactionDetails, 'transactionDisplayDetails.payload.asset.symbol', 'unknown');
     const address = get(transactionDetails, 'transactionDisplayDetails.payload.asset.address', '');
-    const trackingName = `${symbol}:${address}`;
     const transactionHash = await sendTransaction({
-      tracking: {
-        action: 'send-wc',
-        amount: get(transactionDetails, 'transactionDisplayDetails.payload.nativeAmount'),
-        name: trackingName,
-      },
       transaction: txPayloadLatestNonce,
     });
 
@@ -108,7 +100,7 @@ class TransactionConfirmationScreenWithData extends Component {
       await walletConnectSendStatus(walletConnector, transactionDetails.callId, null);
     } catch (error) {
       this.closeScreen();
-      AlertIOS.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
+      Alert.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
     }
   }
 
@@ -119,7 +111,7 @@ class TransactionConfirmationScreenWithData extends Component {
       this.props.removeTransaction(transactionDetails.callId);
     } catch (error) {
       this.closeScreen();
-      AlertIOS.alert('Failed to send rejected transaction status');
+      Alert.alert('Failed to send rejected transaction status');
     }
   }
 

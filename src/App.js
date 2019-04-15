@@ -7,8 +7,7 @@ import {
   settingsUpdateAccountAddress,
 } from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
-import Piwik from 'react-native-matomo';
-import { AlertIOS, AppRegistry, AppState } from 'react-native';
+import { Alert, AppRegistry, AppState } from 'react-native';
 import { StackActions } from 'react-navigation';
 import CodePush from 'react-native-code-push';
 import firebase from 'react-native-firebase';
@@ -20,7 +19,6 @@ import OfflineBadge from './components/OfflineBadge';
 import {
   withAccountRefresh,
   withHideSplashScreen,
-  withTrackingDate,
   withWalletConnectConnections,
 } from './hoc';
 import {
@@ -58,7 +56,6 @@ class App extends Component {
     settingsUpdateAccountAddress: PropTypes.func,
     setWalletConnectors: PropTypes.func,
     sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
-    trackingDateInit: PropTypes.func,
     transactionIfExists: PropTypes.func,
     transactionsToApproveInit: PropTypes.func,
   }
@@ -71,7 +68,6 @@ class App extends Component {
     await this.handleWalletConfig();
     this.props.onHideSplashScreen();
     await this.props.refreshAccount();
-    Piwik.initTracker('https://matomo.balance.io/piwik.php', 2);
     AppState.addEventListener('change', this.handleAppStateChange);
     firebase.messaging().getToken()
       .then(fcmToken => {
@@ -114,7 +110,6 @@ class App extends Component {
 
   handleWalletConfig = async (seedPhrase) => {
     try {
-      this.props.trackingDateInit();
       const { isWalletBrandNew, walletAddress } = await walletInit(seedPhrase);
       this.props.settingsUpdateAccountAddress(walletAddress, 'RAINBOWWALLET');
       if (isWalletBrandNew) {
@@ -132,19 +127,20 @@ class App extends Component {
         console.log('Unable to init all WalletConnect sessions');
       }
       const notificationOpen = await firebase.notifications().getInitialNotification();
-      if (!notificationOpen) {
-        this.fetchAllRequestsFromWalletConnectSessions();
+      if (notificationOpen) {
+        const { callId, sessionId } = notificationOpen.notification.data;
+        this.onPushNotificationOpened(callId, sessionId, false);
       }
+      this.fetchAllRequestsFromWalletConnectSessions();
       return walletAddress;
     } catch (error) {
-      AlertIOS.alert('Error: Failed to initialize wallet.');
+      Alert.alert('Error: Failed to initialize wallet.');
       return null;
     }
   };
 
   handleAppStateChange = async (nextAppState) => {
     if (this.state.appState.match(/unknown|background/) && nextAppState === 'active') {
-      Piwik.trackEvent('screen', 'view', 'app');
       this.fetchAllRequestsFromWalletConnectSessions();
     }
     this.setState({ appState: nextAppState });
@@ -192,7 +188,12 @@ class App extends Component {
       if (transaction) {
         this.handleOpenConfirmTransactionModal(transaction, autoOpened);
       } else {
-        AlertIOS.alert('This request has expired.');
+        const fetchedTransaction = this.props.transactionIfExists(callId);
+        if (fetchedTransaction) {
+          this.handleOpenConfirmTransactionModal(fetchedTransaction, autoOpened);
+        } else {
+          Alert.alert('This request has expired.');
+        }
       }
     }
   }
@@ -228,7 +229,6 @@ const AppWithRedux = compose(
   withProps({ store }),
   withAccountRefresh,
   withHideSplashScreen,
-  withTrackingDate,
   withWalletConnectConnections,
   connect(
     null,

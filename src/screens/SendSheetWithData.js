@@ -1,21 +1,17 @@
 import { withSendComponentWithData } from '@rainbow-me/rainbow-common';
-import SendSheet from './SendSheet';
 import { sendTransaction } from '../model/wallet';
+import SendSheet from './SendSheet';
 
 const SendSheetWithData = withSendComponentWithData(SendSheet, {
   gasFormat: 'short',
   sendTransactionCallback: sendTransaction,
 });
 
-SendSheetWithData.navigationOptions = ({ navigation }) => {
-  const { params } = navigation.state;
-
-  return {
-    effect: 'sheet',
-    gestureResponseDistance: {
-      vertical: params && params.verticalGestureResponseDistance,
-    },
-  };
-};
+SendSheetWithData.navigationOptions = ({ navigation: { state: { params } } }) => ({
+  effect: 'sheet',
+  gestureResponseDistance: {
+    vertical: params && params.verticalGestureResponseDistance,
+  },
+});
 
 export default SendSheetWithData;

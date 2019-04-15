@@ -1,7 +1,6 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
-import Piwik from 'react-native-matomo';
 import { compose, shouldUpdate, withHandlers } from 'recompact';
 import { withAccountSettings } from '../../hoc';
 import { colors } from '../../styles';
@@ -94,7 +93,6 @@ export default compose(
   withHandlers({
     onPress: ({ item, onPress }) => () => {
       if (onPress) {
-        Piwik.trackEvent('BalanceCoinRow', 'view-expanded', 'OpenBalanceCoinRow');
         onPress(item);
       }
     },

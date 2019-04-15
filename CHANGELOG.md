@@ -7,10 +7,29 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 ### Added
+* Autorefresh for unique tokens
 
 ### Changed
+* Fix for app crashing when low ETH after having a previous wallet with enough ETH
+* Fix for push notification not showing up when app completely closed
+* Updated paging logic for transaction history
+* Remove dropped/replaced transactions from pending state
+* Fix crash that occurs when touching blank activity list below profile masthead while transactions still loading
 
 ### Removed
+
+## [0.4.0-1](https://github.com/rainbow-me/rainbow/releases/tag/v0.4.0-1)
+### Added
+* 🌈
+* 👍 feedback when a user copies address
+
+### Changed
+* Performance improvements to Activity List
+* Improvements for send feedback
+* Fixes for iPhone 6 users stuck in a loop with gas sheet when trying to send
+
+### Removed
+* Matomo
 
 ## [0.3.0-25](https://github.com/rainbow-me/rainbow/releases/tag/v0.3.0-25)
 ### Added

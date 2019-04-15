@@ -7,7 +7,7 @@ import {
   values,
 } from 'lodash';
 import { commonStorage } from '@rainbow-me/rainbow-common';
-import { AlertIOS } from 'react-native';
+import { Alert } from 'react-native';
 import RNWalletConnect from 'rn-walletconnect-wallet';
 
 const PUSH_ENDPOINT = 'https://us-central1-rainbow-me.cloudfunctions.net/push';
@@ -34,11 +34,11 @@ export const walletConnectInit = async (accountAddress, uriString) => {
       return walletConnector;
     } catch (error) {
       console.log(error);
-      AlertIOS.alert(lang.t('wallet.wallet_connect.error'));
+      Alert.alert(lang.t('wallet.wallet_connect.error'));
       return null;
     }
   } catch (error) {
-    AlertIOS.alert(lang.t('wallet.wallet_connect.missing_fcm'));
+    Alert.alert(lang.t('wallet.wallet_connect.missing_fcm'));
     return null;
   }
 };
@@ -56,7 +56,7 @@ export const walletConnectInitAllConnectors = async () => {
     });
     return allConnectors;
   } catch (error) {
-    AlertIOS.alert('Unable to retrieve all WalletConnect sessions.');
+    Alert.alert('Unable to retrieve all WalletConnect sessions.');
     return {};
   }
 };
@@ -67,7 +67,7 @@ export const walletConnectDisconnectAll = async (walletConnectors) => {
     await commonStorage.removeWalletConnectSessions(sessionIds);
     forEach(walletConnectors, (walletConnector) => walletConnector.killSession());
   } catch (error) {
-    AlertIOS.alert('Failed to disconnect all WalletConnect sessions');
+    Alert.alert('Failed to disconnect all WalletConnect sessions');
   }
 };
 
@@ -90,7 +90,7 @@ export const walletConnectGetAllRequests = async (walletConnectors) => {
     const requestValues = await Promise.all(values(sessionToRequests));
     return assign({}, ...requestValues);
   } catch (error) {
-    AlertIOS.alert('Error fetching all requests from open WalletConnect sessions.');
+    Alert.alert('Error fetching all requests from open WalletConnect sessions.');
     return {};
   }
 };
@@ -116,9 +116,9 @@ export const walletConnectSendStatus = async (walletConnector, callId, result) =
         await walletConnector.rejectCallRequest(callId);
       }
     } catch (error) {
-      AlertIOS.alert('Failed to send request status to WalletConnect.');
+      Alert.alert('Failed to send request status to WalletConnect.');
     }
   } else {
-    AlertIOS.alert('WalletConnect session has expired while trying to send request status. Please reconnect.');
+    Alert.alert('WalletConnect session has expired while trying to send request status. Please reconnect.');
   }
 };
