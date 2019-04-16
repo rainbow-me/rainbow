@@ -1,6 +1,6 @@
+import { BlurView } from '@react-native-community/blur';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { BlurView } from 'react-native-blur';
 import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, padding } from '../../styles';

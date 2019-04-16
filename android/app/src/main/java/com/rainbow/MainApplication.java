@@ -3,6 +3,9 @@ package me.rainbow;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import io.invertase.firebase.RNFirebasePackage;
+import react-native-tcp.TcpSocketsModule;
+import com.cmcewen.blurview.BlurViewPackage;
 import com.reactnativecommunity.netinfo.NetInfoPackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import org.reactnative.camera.RNCameraPackage;
@@ -15,7 +18,6 @@ import com.cmcewen.blurview.BlurViewPackage;
 import com.reactcommunity.rnlanguages.RNLanguagesPackage;
 import com.swmansion.reanimated.ReanimatedPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
-import io.invertase.firebase.RNFirebasePackage;
 import com.microsoft.codepush.react.CodePush;
 import com.reactlibrary.RNReactNativeHapticFeedbackPackage;
 import com.tradle.react.UdpSocketsModule;
@@ -55,6 +57,9 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNFirebasePackage(),
+            new TcpSocketsModule(),
+            new BlurViewPackage(),
             new NetInfoPackage(),
             new AsyncStoragePackage(),
             new RNCameraPackage(),
@@ -67,7 +72,6 @@ public class MainApplication extends Application implements ReactApplication {
             new RNLanguagesPackage(),
             new ReanimatedPackage(),
             new RNGestureHandlerPackage(),
-            new RNFirebasePackage(),
             new CodePush(BuildConfig.CODEPUSH_KEY, getApplicationContext(), BuildConfig.DEBUG),
             new RNReactNativeHapticFeedbackPackage(),
             new UdpSocketsModule(),
