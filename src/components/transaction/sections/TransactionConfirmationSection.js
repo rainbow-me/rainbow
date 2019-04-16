@@ -6,7 +6,7 @@ import { withProps } from 'recompact';
 import { colors, fonts, padding } from '../../../styles';
 import { CoinIcon } from '../../coin-icon';
 import { Nbsp } from '../../html-entities';
-import { ColumnWithMargins, Row } from '../../layout';
+import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import { Monospace, TruncatedAddress, TruncatedText } from '../../text';
 import TransactionRow from '../TransactionRow';
 import TransactionSheet from '../TransactionSheet';
@@ -22,21 +22,7 @@ const AmountRow = styled(Row).attrs({
   justify: 'space-between',
 })`
   ${padding(19)};
-  flex: 1;
-`;
-
-const AmountRowLeft = styled(ColumnWithMargins).attrs({ margin: 6 })`
-  flex-grow: -1;
-  flex-shrink: 1;
-  padding-right: ${fonts.size.lmedium};
-`;
-
-const AssetName = styled(TruncatedText).attrs({
-  size: 'lmedium',
-  weight: 'medium',
-})`
-  flex-shrink: 1;
-  margin-left: 6;
+  flex-shrink: 0;
 `;
 
 const NativeAmount = styled(Monospace).attrs({
@@ -61,7 +47,6 @@ const TransactionConfirmationSection = ({
   asset: {
     address,
     amount,
-    dappName,
     name,
     nativeAmountDisplay,
     symbol,
@@ -77,17 +62,19 @@ const TransactionConfirmationSection = ({
         truncationLength={15}
       />
     </TransactionRow>
-    <AmountRow align="center" justify="space-between">
-      <AmountRowLeft>
-        <Row align="center">
+    <AmountRow>
+      <ColumnWithMargins css={`padding-right: ${fonts.size.lmedium}`} margin={6}>
+        <RowWithMargins align="center" margin={6}>
           <CoinIcon size={22} symbol={symbol} />
-          <AssetName>{name}</AssetName>
-        </Row>
+          <TruncatedText size="lmedium" weight="medium">
+            {name}
+          </TruncatedText>
+        </RowWithMargins>
         <Row align="center">
           <TokenAmount>{amount}</TokenAmount>
           <TokenSymbol><Nbsp />{symbol}</TokenSymbol>
         </Row>
-      </AmountRowLeft>
+      </ColumnWithMargins>
       <NativeAmount>{nativeAmountDisplay}</NativeAmount>
     </AmountRow>
   </TransactionSheet>
