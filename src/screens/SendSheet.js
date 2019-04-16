@@ -198,7 +198,6 @@ class SendSheet extends Component {
       uniqueTokens,
       ...props
     } = this.props;
-
     const showEmptyState = !isValidAddress;
     const showAssetList = isValidAddress && isEmpty(selected);
     const showAssetForm = isValidAddress && !isEmpty(selected);
