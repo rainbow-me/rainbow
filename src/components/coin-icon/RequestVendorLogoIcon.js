@@ -20,12 +20,12 @@ const DappNameInitials = withProps({
 
 const VendorLogoContainer = styled(Centered)`
   ${({ size }) => position.size(size)}
-  background-color: ${colors.dark};
+  background-color: ${({ backgroundColor }) => backgroundColor || colors.dark};
   border-radius: ${({ borderRadius }) => borderRadius};
   overflow: hidden;
 `;
 
-const VendorLogo = styled.Image`
+export const VendorLogo = styled.Image`
   ${({ size }) => position.size(size)}
   resize-mode: contain;
 `;
@@ -38,6 +38,7 @@ const buildInitialsForDappName = (dappName) => (
 
 const RequestVendorLogoIcon = ({
   borderRadius,
+  customBackgroundColor,
   dappName,
   imageUrl,
   size,
@@ -52,7 +53,7 @@ const RequestVendorLogoIcon = ({
   >
     <VendorLogoContainer borderRadius={borderRadius} size={size}>
       {(dappName === 'Balance Manager')
-        ? <VendorLogo size={size} source={imageUrl} />
+        ? <VendorLogo size={size} backgroundColor={customBackgroundColor} source={imageUrl} />
         : (
           <DappNameInitials style={{ marginBottom: 2 }}>
             {buildInitialsForDappName(dappName)}
@@ -64,6 +65,7 @@ const RequestVendorLogoIcon = ({
 
 RequestVendorLogoIcon.propTypes = {
   borderRadius: PropTypes.number,
+  customBackgroundColor: PropTypes.string,
   dappName: PropTypes.string.isRequired,
   imageUrl: PropTypes.string,
   size: PropTypes.number.isRequired,

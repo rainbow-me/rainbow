@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import lang from 'i18n-js';
 import { FlyInAnimation } from '../animations';
 import AssetList from '../asset-list/RecyclerAssetList';
 import { SendCoinRow } from '../coin-row';
+import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
 
 const BalancesRenderItem = ({
   index,
@@ -16,6 +18,8 @@ const BalancesRenderItem = ({
   />
 );
 
+const collectiblesRenderItem = CollectiblesSendRow
+
 BalancesRenderItem.propTypes = {
   index: PropTypes.number,
   item: PropTypes.shape({ symbol: PropTypes.string }),
@@ -26,7 +30,7 @@ const SendAssetList = ({
   allAssets,
   fetchData,
   onSelectAsset,
-  //uniquetokens: uniqueTokens,
+  uniquetokens: uniqueTokens,
 }) => {
   const sections = [
     {
@@ -35,12 +39,13 @@ const SendAssetList = ({
       onSelectAsset,
       renderItem: BalancesRenderItem,
     },
-    // {
-    //   collectibles: true,
-    //   data: buildUniqueTokenList(uniqueTokens),
-    //   renderItem: BalancesRenderItem,
-    //   title: lang.t('account.tab_collectibles'),
-    // },
+    {
+      collectibles: true,
+      data: uniqueTokens,
+      renderItem: collectiblesRenderItem,
+      title: lang.t('account.tab_collectibles'),
+      type: 'small',
+    },
   ];
 
   return (

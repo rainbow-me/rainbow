@@ -18,9 +18,9 @@ export const UniqueTokenRowHeight = (isFirstRow, isLastRow) => CardSize
   + (isFirstRow ? CardMargin : 0);
 
 const UniqueTokenRow = ({
+  data,
   isFirstRow,
   isLastRow,
-  items,
   onPress,
 }) => (
   <Row
@@ -32,7 +32,7 @@ const UniqueTokenRow = ({
       width: 100%;
     `}
   >
-    {items.filter(e => !isNil(e)).map((uniqueToken, itemIndex) => (
+    {data.filter(e => !isNil(e)).map((uniqueToken, itemIndex) => (
       <UniqueTokenCard
         item={uniqueToken}
         key={uniqueToken.id}
@@ -45,9 +45,9 @@ const UniqueTokenRow = ({
 );
 
 UniqueTokenRow.propTypes = {
+  data: PropTypes.array,
   isFirstRow: PropTypes.bool,
   isLastRow: PropTypes.bool,
-  items: PropTypes.array,
   onPress: PropTypes.func,
 };
 
