@@ -5,7 +5,6 @@ import { padding } from '../../styles';
 import { ColumnWithMargins } from '../layout';
 import { Smallcaps } from '../text';
 
-//, 19, 18
 const Container = styled(ColumnWithMargins).attrs({ margin: 5 })`
   ${padding(19)};
   flex-shrink: 0;
