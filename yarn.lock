@@ -839,7 +839,7 @@
 
 "@rainbow-me/rainbow-common@git+https://github.com/rainbow-me/rainbow-common.git#ens-support":
   version "0.6.44"
-  resolved "git+https://github.com/rainbow-me/rainbow-common.git#32034af367c34a079ed95b45667f8612dbfffe23"
+  resolved "git+https://github.com/rainbow-me/rainbow-common.git#ca1336fe84a4927f65e2c8a144977667c6c7c030"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -3383,21 +3383,6 @@ etag@~1.8.1:
 eth-parse-uri@^0.6.9:
   version "0.6.9"
   resolved "https://registry.yarnpkg.com/eth-parse-uri/-/eth-parse-uri-0.6.9.tgz#2f481b95d062fb8ad5d92cccf10e63e5c4162344"
-
-ethers@^3.0.7:
-  version "3.0.29"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-3.0.29.tgz#ce8139955b4ed44456eb6764b089bb117c86775d"
-  dependencies:
-    aes-js "3.0.0"
-    bn.js "^4.4.0"
-    elliptic "6.3.3"
-    hash.js "^1.0.0"
-    inherits "2.0.1"
-    js-sha3 "0.5.7"
-    scrypt-js "2.0.3"
-    setimmediate "1.0.4"
-    uuid "2.0.1"
-    xmlhttprequest "1.8.0"
 
 ethers@^4.0.27:
   version "4.0.27"
@@ -8202,10 +8187,6 @@ scheduler@^0.13.3, scheduler@^0.13.6:
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
-
-scrypt-js@2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/scrypt-js/-/scrypt-js-2.0.3.tgz#bb0040be03043da9a012a2cea9fc9f852cfc87d4"
 
 scrypt-js@2.0.4:
   version "2.0.4"
