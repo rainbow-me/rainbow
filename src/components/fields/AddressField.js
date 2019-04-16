@@ -1,5 +1,5 @@
 import { isValidAddress } from '@rainbow-me/rainbow-common';
-import { omit } from 'lodash';
+import { omit, startsWith } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import styled from 'styled-components/primitives';
@@ -48,11 +48,11 @@ export default class AddressField extends PureComponent {
 
   onChange = ({ nativeEvent }) => this.props.onChange(nativeEvent.text)
 
-  onChangeText = (inputValue) => {
-    const isValid = isValidAddress(inputValue);
+  onChangeText = async (inputValue) => {
+    const isValid = await isValidAddress(inputValue);
     this.setState({
       isValid,
-      value: isValid ? abbreviations.address(inputValue) : inputValue,
+      value: isValid && startsWith(inputValue, '0x') ? abbreviations.address(inputValue) : inputValue,
     });
   }
 
