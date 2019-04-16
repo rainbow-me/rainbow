@@ -23,11 +23,6 @@ class TransactionConfirmationScreenWithData extends Component {
     walletConnectors: PropTypes.object,
   }
 
-  componentDidUpdate = (prevProps) => {
-    if (this.props.isFocused && !prevProps.isFocused) {
-    }
-  }
-
   componentDidMount() {
     StatusBar.setBarStyle('light-content', true);
     const { autoOpened } = this.props.navigation.state.params;
