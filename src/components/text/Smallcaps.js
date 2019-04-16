@@ -1,10 +1,10 @@
 import { withProps } from 'recompact';
 import Text from './Text';
 
-export default withProps({
+export default withProps(({ style }) => ({
   color: 'blueGreyMedium',
   letterSpacing: 'loose',
   size: 'smaller',
-  textTransform: 'uppercase',
+  style: [{ textTransform: 'uppercase' }, style],
   weight: 'semibold',
-})(Text);
+}))(Text);

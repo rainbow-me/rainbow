@@ -8,9 +8,11 @@ import styled from 'styled-components';
 import BalanceManagerLogo from '../assets/balance-manager-logo.png';
 import { Button, HoldToAuthorizeButton } from '../components/buttons';
 import { Centered, Column } from '../components/layout';
-import TransactionConfirmationSection from '../components/TransactionConfirmationSection';
-import DefaultTransactionConfirmationSection from '../components/DefaultTransactionConfirmationSection';
-import MessageSigningSection from '../components/MessageSigningSection';
+import {
+  DefaultTransactionConfirmationSection,
+  MessageSigningSection,
+  TransactionConfirmationSection,
+} from '../components/transaction';
 import { Text } from '../components/text';
 import { colors, position } from '../styles';
 
@@ -54,7 +56,7 @@ class TransactionConfirmationScreen extends Component {
     onConfirm: PropTypes.func,
     request: PropTypes.object,
     requestType: PropTypes.string,
-  };
+  }
 
   state = {
     biometryType: null,
@@ -82,7 +84,7 @@ class TransactionConfirmationScreen extends Component {
       duration: 800,
       toValue: 100,
     }).start();
-  };
+  }
 
   onReleaseSend = () => {
     const { sendLongPressProgress } = this.state;
@@ -91,7 +93,7 @@ class TransactionConfirmationScreen extends Component {
       duration: (sendLongPressProgress._value / 100) * 800,
       toValue: 0,
     }).start();
-  };
+  }
 
   onLongPressSend = async () => {
     const { onConfirm, requestType } = this.props;
@@ -103,7 +105,7 @@ class TransactionConfirmationScreen extends Component {
     }).start();
 
     await onConfirm(requestType);
-  };
+  }
 
   renderSendButton = () => (
     <HoldToAuthorizeButton
