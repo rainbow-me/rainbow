@@ -71,6 +71,7 @@ const buildWalletSections = (
       title: lang.t('account.tab_collectibles'),
       totalItems: uniqueTokens.length,
       totalValue: '',
+      type: 'big',
     },
   };
 

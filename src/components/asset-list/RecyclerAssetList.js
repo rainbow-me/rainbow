@@ -9,6 +9,7 @@ import { UniqueTokenRowHeight } from '../unique-token/UniqueTokenRow';
 import { CoinRowHeight } from '../coin-row/CoinRow';
 import AssetListHeader from './AssetListHeader';
 import { colors } from '../../styles';
+import { DividerHeight } from '../coin-row/CollectiblesSendRow';
 
 const ViewTypes = {
   COIN_ROW: 0,
@@ -82,12 +83,27 @@ export default class RecyclerAssetList extends React.Component {
       },
       (type, dim) => {
         dim.width = width;
+        if (
+          this.state.areSmallCollectibles
+          && (
+            type === ViewTypes.UNIQUE_TOKEN_ROW_LAST
+            || type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST
+            || type === ViewTypes.UNIQUE_TOKEN_ROW
+          )
+        ) {
+          dim.height = CoinRowHeight;
+          if (type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST) {
+            dim.height += DividerHeight;
+          }
+          return;
+        }
+
         if (type === ViewTypes.UNIQUE_TOKEN_ROW) {
           dim.height = UniqueTokenRowHeight(false, false);
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_LAST) {
           // We want to add enough spacing below the list so that when the user scrolls to the bottom,
           // the bottom of the list content lines up with the top of the FABs (+ padding).
-          dim.height = UniqueTokenRowHeight(false, true) + props.paddingBottom || 0;
+          dim.height = (UniqueTokenRowHeight(false, true)) + props.paddingBottom || 0;
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST) {
           dim.height = UniqueTokenRowHeight(true, false);
         } else if (type === ViewTypes.COIN_ROW) {
@@ -111,7 +127,9 @@ export default class RecyclerAssetList extends React.Component {
         }])
         .concat(section.data.map(s => ({ ...s, section })));
     }, []);
+    const areSmallCollectibles = (c => c && c.type === 'small')(props.sections.find(e => e.collectibles))
     return {
+      areSmallCollectibles,
       dataProvider: state.dataProvider.cloneWithRows(items),
       headersIndices,
       isRefreshing: false,
@@ -158,9 +176,9 @@ export default class RecyclerAssetList extends React.Component {
     }
 
     return data.section.renderItem({
+      data: data.tokens ? data.tokens : data,
       isFirstRow: type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST,
       isLastRow: type === ViewTypes.UNIQUE_TOKEN_ROW_LAST,
-      items: data.tokens,
     });
   };
 
