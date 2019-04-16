@@ -2,6 +2,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
+import { withProps } from 'recompact';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Monospace } from '../text';
@@ -12,13 +13,13 @@ import Divider from '../Divider';
 
 const selectedHeight = 78;
 
-const BottomRow = ({ id }) => {
+const BottomRow = ({ subtitle }) => {
   return (
     <Monospace
       color={colors.alpha(colors.blueGreyDark, 0.6)}
       size="smedium"
     >
-      CryptoKitties #{id}
+      {subtitle}
     </Monospace>
   );
 };
@@ -86,4 +87,8 @@ CollectiblesSendRow.selectedHeight = selectedHeight;
 
 export const DividerHeight = 20;
 
-export default CollectiblesSendRow;
+export default withProps(({ data: asset }) => ({
+  subtitle: asset.name
+    ? `${asset.asset_contract.name} #${asset.id}`
+    : asset.asset_contract.name,
+}))(CollectiblesSendRow);
