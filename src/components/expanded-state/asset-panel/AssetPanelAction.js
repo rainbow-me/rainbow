@@ -18,10 +18,16 @@ const Container = styled(Row).attrs({
   width: 100%;
 `;
 
-const IconContainer = styled(Centered)`
+const AssetPanelIcon = styled(Icon)`
+  ${position.maxSize('100%')};
+  ${position.minSize(21)};
+`;
+
+const AssetPanelIconContainer = styled(Centered)`
   flex-grow: 0;
   flex-shrink: 0;
   height: 100%;
+  padding-bottom: 3;
   width: 24;
 `;
 
@@ -37,17 +43,17 @@ const AssetPanelAction = ({
     onPress={onPress}
   >
     <FlexItem>
-      <TruncatedText color={color} size="bmedium" weight="semibold">
+      <TruncatedText
+        color={color}
+        size="bmedium"
+        weight="semibold"
+      >
         {label}
       </TruncatedText>
     </FlexItem>
-    <IconContainer>
-      <Icon
-        color={color}
-        name={icon}
-        style={position.maxSizeAsObject('100%')}
-      />
-    </IconContainer>
+    <AssetPanelIconContainer>
+      <AssetPanelIcon color={color} name={icon} />
+    </AssetPanelIconContainer>
   </Container>
 );
 
