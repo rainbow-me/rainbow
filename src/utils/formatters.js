@@ -1,3 +1,13 @@
+import { isString } from 'lodash';
+
+const firstCharacterOfString = n => n.charAt(0);
+
+export const initials = (string) => (
+  (!string || !isString(string))
+    ? '?'
+    : string.split(' ').map(firstCharacterOfString).join('')
+);
+
 export function removeLeadingZeros(value = '') {
   if (value.length > 1 && value.substring(0, 1) === '0' && value.substring(1, 2) !== '.') {
     return removeLeadingZeros(value.substring(1));
@@ -14,11 +24,7 @@ export function removeLeadingZeros(value = '') {
   return value;
 }
 
-export function uppercase(value = '') {
-  return value.substring(0, 1).toUpperCase() + value.substring(1);
-}
-
 export default {
+  initials,
   removeLeadingZeros,
-  uppercase,
 };
