@@ -41,7 +41,7 @@ export default class AddressField extends PureComponent {
     if (this.props.value && !this.state.value) {
       this.setState({
         isValid: true,
-        value: abbreviations.address(this.props.value),
+        value: startsWith(this.props.value, '0x') ? abbreviations.address(this.props.value) : this.props.value,
       });
     }
   }
@@ -68,7 +68,7 @@ export default class AddressField extends PureComponent {
           autoCorrect={false}
           autoFocus={autoFocus}
           color={isValid ? colors.appleBlue : colors.blueGreyDark}
-          keyboardType="name-phone-pad"
+          keyboardType="default"
           maxLength={42}
           onChange={this.onChange}
           onChangeText={this.onChangeText}
