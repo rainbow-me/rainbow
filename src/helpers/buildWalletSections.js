@@ -14,12 +14,13 @@ const assetsSelector = state => state.assets;
 const assetsTotalSelector = state => state.assetsTotal;
 const fetchingAssetsSelector = state => state.fetchingAssets;
 const fetchingUniqueTokensSelector = state => state.fetchingUniqueTokens;
+const languageSelector = state => state.language;
+const nativeCurrencySelector = state => state.nativeCurrency;
 const onToggleShowShitcoinsSelector = state => state.onToggleShowShitcoins;
 const setIsWalletEmptySelector = state => state.setIsWalletEmpty;
 const shitcoinsCountSelector = state => state.shitcoinsCount;
 const showShitcoinsSelector = state => state.showShitcoins;
 const uniqueTokensSelector = state => state.uniqueTokens;
-
 const enhanceRenderItem = compose(
   withNavigation,
   withHandlers({
@@ -37,7 +38,6 @@ const UniqueTokenItem = enhanceRenderItem(UniqueTokenRow);
 
 const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
 const collectiblesRenderItem = item => <UniqueTokenItem {...item} assetType="unique_token" />;
-
 const filterWalletSections = sections => Object.values(sections).filter(({ totalItems }) => totalItems);
 
 const buildWalletSections = (
@@ -47,6 +47,8 @@ const buildWalletSections = (
   assetsTotal,
   fetchingAssets,
   fetchingUniqueTokens,
+  language,
+  nativeCurrency,
   onToggleShowShitcoins,
   setIsWalletEmpty,
   shitcoinsCount,
@@ -55,6 +57,7 @@ const buildWalletSections = (
 ) => {
   const sections = {
     balances: {
+      balances: true,
       data: showShitcoins ? allAssets : assets,
       renderItem: balancesRenderItem,
       title: lang.t('account.tab_balances'),
@@ -62,11 +65,13 @@ const buildWalletSections = (
       totalValue: get(assetsTotal, 'display', ''),
     },
     collectibles: {
+      collectibles: true,
       data: buildUniqueTokenList(uniqueTokens),
       renderItem: collectiblesRenderItem,
       title: lang.t('account.tab_collectibles'),
       totalItems: uniqueTokens.length,
       totalValue: '',
+      type: 'big',
     },
   };
 
@@ -105,6 +110,8 @@ export default createSelector(
     assetsTotalSelector,
     fetchingAssetsSelector,
     fetchingUniqueTokensSelector,
+    languageSelector,
+    nativeCurrencySelector,
     onToggleShowShitcoinsSelector,
     setIsWalletEmptySelector,
     shitcoinsCountSelector,
