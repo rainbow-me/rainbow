@@ -33,8 +33,8 @@ class PasteAddressButton extends PureComponent {
   }
 
   setClipboardContents = (clipboardContents) => {
-    InteractionManager.runAfterInteractions(() => {
-      if (isValidAddress(clipboardContents)) {
+    InteractionManager.runAfterInteractions(async () => {
+      if (await isValidAddress(clipboardContents)) {
         this.setState({ clipboardContents });
       }
     });
