@@ -106,7 +106,7 @@ class QRScannerScreenWithData extends Component {
     this.setState({ enableScanning: false });
     Vibration.vibrate();
 
-    const address = getEthereumAddressFromQRCodeData(data);
+    const address = await getEthereumAddressFromQRCodeData(data);
 
     if (address) {
       navigation.navigate('WalletScreen');
