@@ -839,7 +839,7 @@
 
 "@rainbow-me/rainbow-common@git+https://github.com/rainbow-me/rainbow-common.git#ens-support":
   version "0.6.44"
-  resolved "git+https://github.com/rainbow-me/rainbow-common.git#ca1336fe84a4927f65e2c8a144977667c6c7c030"
+  resolved "git+https://github.com/rainbow-me/rainbow-common.git#1f26549b36078d08e0de75692962db918b4e06e3"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
