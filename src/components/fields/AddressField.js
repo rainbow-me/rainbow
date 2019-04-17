@@ -1,4 +1,4 @@
-import { isValidAddress } from '@rainbow-me/rainbow-common';
+import { isHexString, isValidAddress } from '@rainbow-me/rainbow-common';
 import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
@@ -41,18 +41,18 @@ export default class AddressField extends PureComponent {
     if (this.props.value && !this.state.value) {
       this.setState({
         isValid: true,
-        value: abbreviations.address(this.props.value),
+        value: isHexString(this.props.value) ? abbreviations.address(this.props.value) : this.props.value,
       });
     }
   }
 
   onChange = ({ nativeEvent }) => this.props.onChange(nativeEvent.text)
 
-  onChangeText = (inputValue) => {
-    const isValid = isValidAddress(inputValue);
+  onChangeText = async (inputValue) => {
+    const isValid = await isValidAddress(inputValue);
     this.setState({
       isValid,
-      value: isValid ? abbreviations.address(inputValue) : inputValue,
+      value: isValid && isHexString(inputValue) ? abbreviations.address(inputValue) : inputValue,
     });
   }
 
@@ -68,7 +68,7 @@ export default class AddressField extends PureComponent {
           autoCorrect={false}
           autoFocus={autoFocus}
           color={isValid ? colors.appleBlue : colors.blueGreyDark}
-          keyboardType="name-phone-pad"
+          keyboardType="default"
           maxLength={42}
           onChange={this.onChange}
           onChangeText={this.onChangeText}
