@@ -1,7 +1,8 @@
+import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import { getTransactionCount, web3Instance } from '@rainbow-me/rainbow-common';
+import { getTransactionCount } from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
 import { Alert, StatusBar, Vibration } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
@@ -47,7 +48,7 @@ class TransactionConfirmationScreenWithData extends Component {
     const txPayload = get(transactionDetails, 'callData.params[0]');
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(this.props.transactionCountNonce, web3TxnCount);
-    const nonce = web3Instance.utils.toHex(maxTxnCount);
+    const nonce = ethers.utils.hexlify(maxTxnCount);
     const txPayloadLatestNonce = { ...txPayload, nonce };
     const symbol = get(transactionDetails, 'transactionDisplayDetails.payload.asset.symbol', 'unknown');
     const address = get(transactionDetails, 'transactionDisplayDetails.payload.asset.address', '');

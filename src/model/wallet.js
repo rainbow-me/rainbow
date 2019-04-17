@@ -1,5 +1,6 @@
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 import lang from 'i18n-js';
+import { web3Provider } from '@rainbow-me/rainbow-common';
 import { Alert } from 'react-native';
 import {
   ACCESS_CONTROL,
@@ -36,9 +37,7 @@ export const walletInit = async (seedPhrase = null) => {
 export const loadWallet = async () => {
   const privateKey = await loadPrivateKey();
   if (privateKey) {
-    const wallet = new ethers.Wallet(privateKey);
-    wallet.provider = ethers.providers.getDefaultProvider();
-    return wallet;
+    return new ethers.Wallet(privateKey, web3Provider);
   }
   return null;
 };
@@ -55,9 +54,7 @@ export const createTransaction = async (to, data, value, gasLimit, gasPrice, non
 export const sendTransaction = async ({ transaction }) => {
   try {
     const wallet = await loadWallet();
-    if (!wallet) {
-      return null;
-    }
+    if (!wallet) return null;
     try {
       const result = await wallet.sendTransaction(transaction);
       return result.hash;
