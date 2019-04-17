@@ -41,10 +41,9 @@ TopRow.propTypes = {
 
 const EnhancedVendorLogo = (props) => (
   <RequestVendorLogoIcon
+    backgroundColor={props.background}
     dappName='Balance Manager'
     imageUrl={{ uri: props.image_preview_url }}
-    customBackgroundColor={props.background}
-
     {...props}/>
 )
 
