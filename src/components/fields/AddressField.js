@@ -1,5 +1,5 @@
-import { isValidAddress } from '@rainbow-me/rainbow-common';
-import { omit, startsWith } from 'lodash';
+import { isHexString, isValidAddress } from '@rainbow-me/rainbow-common';
+import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import styled from 'styled-components/primitives';
@@ -41,7 +41,7 @@ export default class AddressField extends PureComponent {
     if (this.props.value && !this.state.value) {
       this.setState({
         isValid: true,
-        value: startsWith(this.props.value, '0x') ? abbreviations.address(this.props.value) : this.props.value,
+        value: isHexString(this.props.value) ? abbreviations.address(this.props.value) : this.props.value,
       });
     }
   }
@@ -52,7 +52,7 @@ export default class AddressField extends PureComponent {
     const isValid = await isValidAddress(inputValue);
     this.setState({
       isValid,
-      value: isValid && startsWith(inputValue, '0x') ? abbreviations.address(inputValue) : inputValue,
+      value: isValid && isHexString(inputValue) ? abbreviations.address(inputValue) : inputValue,
     });
   }
 
