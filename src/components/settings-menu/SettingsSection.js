@@ -8,6 +8,7 @@ import styled from 'styled-components/primitives';
 import BackupIcon from '../../assets/backup-icon.png';
 import CurrencyIcon from '../../assets/currency-icon.png';
 import LanguageIcon from '../../assets/language-icon.png';
+import NetworkIcon from '../../assets/network-icon.png';
 // import SecurityIcon from '../../assets/security-icon.png';
 import { withAccountSettings, withSendFeedback } from '../../hoc';
 import { position } from '../../styles';
@@ -39,10 +40,12 @@ const SettingIcon = styled(FastImage)`
 const SettingsSection = ({
   language,
   nativeCurrency,
+  network,
   onPressBackup,
   onPressCurrency,
   onPressImportSeedPhrase,
   onPressLanguage,
+  onPressNetwork,
   onSendFeedback,
   // onPressSecurity,
   openWebView,
@@ -64,6 +67,16 @@ const SettingsSection = ({
             name="checkmarkCircled"
             style={{ marginBottom: -5 }}
           />
+        </ListItemArrowGroup>
+      </ListItem>
+      <ListItemDivider />
+      <ListItem
+        icon={<SettingIcon source={NetworkIcon} />}
+        onPress={onPressNetwork}
+        label="Network"
+      >
+        <ListItemArrowGroup>
+          {network || ''}
         </ListItemArrowGroup>
       </ListItem>
       <ListItemDivider />
@@ -139,13 +152,20 @@ const SettingsSection = ({
 SettingsSection.propTypes = {
   language: PropTypes.string.isRequired,
   nativeCurrency: PropTypes.string.isRequired,
+  network: PropTypes.string.isRequired,
   onPressBackup: PropTypes.func.isRequired,
   onPressCurrency: PropTypes.func.isRequired,
   onPressImportSeedPhrase: PropTypes.func.isRequired,
   onPressLanguage: PropTypes.func.isRequired,
+  onPressNetwork: PropTypes.func,
   onSendFeedback: PropTypes.func.isRequired,
   // onPressSecurity: PropTypes.func.isRequired,
   openWebView: PropTypes.func,
+};
+
+SettingsSection.defaultProps = {
+  // XXX TODO: Delete this default once testnet support exists
+  network: 'Mainnet',
 };
 
 export default compose(
