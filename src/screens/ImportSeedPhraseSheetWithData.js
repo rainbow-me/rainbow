@@ -69,7 +69,11 @@ const ImportSeedPhraseSheetWithData = compose(
   }),
   withHandlers({
     onImportSeedPhrase: ({ setIsImporting }) => () => ConfirmImportAlert(() => setIsImporting(true)),
-    onInputChange: ({ setSeedPhrase }) => ({ nativeEvent }) => setSeedPhrase(nativeEvent.text),
+    onInputChange: ({ isImporting, setSeedPhrase }) => ({ nativeEvent }) => {
+      if (!isImporting) {
+        setSeedPhrase(nativeEvent.text);
+      }
+    },
     onPasteSeedPhrase: ({ setSeedPhrase }) => () => {
       Clipboard.getString()
         .then(setSeedPhrase)

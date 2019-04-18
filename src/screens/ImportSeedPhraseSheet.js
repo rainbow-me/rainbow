@@ -57,15 +57,6 @@ const ImportButton = styled(Row).attrs({
   shadow-radius: 10;
 `;
 
-const InputContainer = styled(Centered)`
-  ${padding(0, 50)}
-  flex: 1;
-`;
-
-const SeedPhraseInput = styled(MultiLineInput)`
-  width: 100%;
-`;
-
 const ImportSeedPhraseSheet = ({
   isClipboardContentsValidSeedPhrase,
   isImporting,
@@ -80,20 +71,22 @@ const ImportSeedPhraseSheet = ({
   <Container>
     <HandleIcon />
     <Text size="large" weight="bold">Import</Text>
-    <InputContainer>
-      <SeedPhraseInput
+    <Centered css={padding(0, 50)} flex={1}>
+      <MultiLineInput
         align="center"
         autoFocus
+        editable={!isImporting}
         enablesReturnKeyAutomatically={true}
         onChange={onInputChange}
         onSubmitEditing={onPressEnterKey}
         placeholder="Type your seed phrase"
         returnKeyType="done"
         size="large"
+        style={{ width: '100%' }}
         value={seedPhrase}
         weight="semibold"
       />
-    </InputContainer>
+    </Centered>
     <Footer>
       <HelpButton onPress={onPressHelp}>
         <Text
