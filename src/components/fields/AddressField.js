@@ -68,7 +68,7 @@ export default class AddressField extends PureComponent {
           autoCorrect={false}
           autoFocus={autoFocus}
           color={isValid ? colors.appleBlue : colors.blueGreyDark}
-          keyboardType="default"
+          keyboardType="web-search"
           maxLength={42}
           onChange={this.onChange}
           onChangeText={this.onChangeText}
