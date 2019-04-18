@@ -18,6 +18,11 @@ export default css`
       ? `line-height: ${fonts.lineHeight[lineHeight]};`
       : ''
   )}
+  ${({ uppercase }) => (
+    uppercase
+      ? 'text-transform: uppercase;'
+      : ''
+  )}
   color: ${({ color }) => (colors.get(color) || colors.dark)}
   font-family: ${({ family }) => fonts.family[family || 'SFProText']};
   font-size: ${({ size }) => fonts.size[size || 'medium']};

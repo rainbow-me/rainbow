@@ -153,6 +153,9 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-firebase')
+    implementation project(':@staltz_react-native-tcp')
+    implementation project(':@react-native-community_blur')
     implementation project(':@react-native-community_netinfo')
     implementation project(':@react-native-community_async-storage')
     implementation project(':react-native-camera')
@@ -165,7 +168,6 @@ dependencies {
     compile project(':react-native-languages')
     compile project(':react-native-reanimated')
     compile project(':react-native-gesture-handler')
-    compile project(':react-native-firebase')
     compile project(':react-native-code-push')
     compile project(':react-native-haptic-feedback')
     compile project(':react-native-udp')

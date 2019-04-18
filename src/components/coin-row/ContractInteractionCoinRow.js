@@ -1,87 +1,59 @@
-import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
+import React from 'react';
 import {
   compose,
   mapProps,
   onlyUpdateForKeys,
   withHandlers,
+  withProps,
 } from 'recompact';
 import { Linking } from 'react-native';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import { colors } from '../../styles';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { ButtonPressAnimation } from '../animations';
-import { FlexItem, Row } from '../layout';
-import BalanceText from './BalanceText';
-import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
+import { RequestVendorLogoIcon } from '../coin-icon';
 
 const rowRenderPropTypes = {
-  balance: PropTypes.object,
+  dappName: PropTypes.string,
   item: PropTypes.object,
-  name: PropTypes.string,
-  native: PropTypes.object,
   onPressTransaction: PropTypes.func,
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
 };
 
-const BottomRow = ({ name, native, status }) => {
-  const nativeDisplay = get(native, 'balance.display');
-
-  const isStatusSent = status === TransactionStatusTypes.sent;
-  const isStatusReceived = status === TransactionStatusTypes.received;
-
-  let balanceTextColor = colors.blueGreyLight;
-  if (isStatusReceived) balanceTextColor = colors.primaryGreen;
-
-  return (
-    <Row align="center" justify="space-between">
-      <FlexItem flex={1}>
-        <CoinName>{name}</CoinName>
-      </FlexItem>
-      <FlexItem flex={0}>
-        <BalanceText color={balanceTextColor}>
-          {(nativeDisplay && isStatusSent) ? '- ' : ''}
-          {nativeDisplay || ''}
-        </BalanceText>
-      </FlexItem>
-    </Row>
-  );
-};
+const BottomRow = ({ dappName }) => <CoinName>{dappName}</CoinName>;
 
 BottomRow.propTypes = rowRenderPropTypes;
 
-const TopRow = ({ balance, status }) => (
-  <Fragment>
-    <TransactionStatusBadge status={status} />
-    <BottomRowText>{get(balance, 'display', '')}</BottomRowText>
-  </Fragment>
-);
+const TopRow = ({ status }) => <TransactionStatusBadge status={status} />;
 
 TopRow.propTypes = rowRenderPropTypes;
 
-const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
+const ContractInteractionVenderLogoIcon = withProps({
+  borderRadius: RequestVendorLogoIcon.size,
+})(RequestVendorLogoIcon);
+
+const ContractInteractionCoinRow = ({ item, onPressTransaction, ...props }) => (
   <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>
     <CoinRow
       {...item}
       {...props}
       bottomRowRender={BottomRow}
+      coinIconRender={ContractInteractionVenderLogoIcon}
       shouldRasterizeIOS={true}
       topRowRender={TopRow}
     />
   </ButtonPressAnimation>
 );
 
-TransactionCoinRow.propTypes = rowRenderPropTypes;
+ContractInteractionCoinRow.propTypes = rowRenderPropTypes;
 
 export default compose(
   mapProps(({
     item: {
       hash,
-      native,
       pending,
       ...item
     },
@@ -89,7 +61,6 @@ export default compose(
   }) => ({
     hash,
     item,
-    native,
     pending,
     ...props,
   })),
@@ -108,5 +79,5 @@ export default compose(
       }
     },
   }),
-  onlyUpdateForKeys(['hash', 'native', 'pending']),
-)(TransactionCoinRow);
+  onlyUpdateForKeys(['hash', 'pending']),
+)(ContractInteractionCoinRow);
