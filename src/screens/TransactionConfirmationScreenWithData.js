@@ -1,8 +1,8 @@
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
-import { get } from 'lodash';
+import { get, isNil } from 'lodash';
 import PropTypes from 'prop-types';
-import { getTransactionCount } from '@rainbow-me/rainbow-common';
+import { estimateGas, getTransactionCount, toHex } from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
 import { Alert, StatusBar, Vibration } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
@@ -23,11 +23,6 @@ class TransactionConfirmationScreenWithData extends Component {
     walletConnectors: PropTypes.object,
   }
 
-  componentDidUpdate = (prevProps) => {
-    if (this.props.isFocused && !prevProps.isFocused) {
-    }
-  }
-
   componentDidMount() {
     StatusBar.setBarStyle('light-content', true);
     const { autoOpened } = this.props.navigation.state.params;
@@ -46,6 +41,15 @@ class TransactionConfirmationScreenWithData extends Component {
   handleConfirmTransaction = async () => {
     const { transactionDetails } = this.props.navigation.state.params;
     const txPayload = get(transactionDetails, 'callData.params[0]');
+    let gasLimit = txPayload.gasLimit;
+    if (isNil(gasLimit)) {
+      try {
+        rawGasLimit = await estimateGas(txPayload);
+        gasLimit = toHex(rawGasLimit);
+      } catch (error) {
+        console.log('error estimating gas', error);
+      }
+    }
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(this.props.transactionCountNonce, web3TxnCount);
     const nonce = ethers.utils.hexlify(maxTxnCount);
@@ -58,8 +62,10 @@ class TransactionConfirmationScreenWithData extends Component {
 
     if (transactionHash) {
       this.props.updateTransactionCountNonce(maxTxnCount + 1);
+      // TODO add request type
       const txDetails = {
         asset: get(transactionDetails, 'transactionDisplayDetails.payload.asset'),
+        dappName: get(transactionDetails, 'dappName'),
         from: get(transactionDetails, 'transactionDisplayDetails.payload.from'),
         gasLimit: get(transactionDetails, 'transactionDisplayDetails.payload.gasLimit'),
         gasPrice: get(transactionDetails, 'transactionDisplayDetails.payload.gasPrice'),

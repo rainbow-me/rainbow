@@ -10,6 +10,7 @@ export default class RadioList extends PureComponent {
     })),
     onChange: PropTypes.func,
     renderItem: PropTypes.func,
+    value: PropTypes.string,
   }
 
   static defaultProps = {
@@ -18,19 +19,21 @@ export default class RadioList extends PureComponent {
 
   state = { selected: this.props.value }
 
-  handleChange = selected =>
+  handleChange = (selected) => {
     this.setState({ selected }, () => {
       if (this.props.onChange) {
         this.props.onChange(selected);
       }
-    })
+    });
+  }
 
-  renderItem = ({ item }) =>
+  renderItem = ({ item }) => (
     createElement(this.props.renderItem, {
       ...item,
       onPress: this.handleChange,
       selected: item.value === this.state.selected,
     })
+  )
 
   render = () => (
     <List

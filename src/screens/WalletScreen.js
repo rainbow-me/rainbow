@@ -1,9 +1,8 @@
-import { isSameDay } from 'date-fns';
-import { get, join, map } from 'lodash';
+import { withSafeTimeout } from '@hocs/safe-timers';
 import PropTypes from 'prop-types';
 import { withAccountAssets } from '@rainbow-me/rainbow-common';
 import React, { PureComponent } from 'react';
-import { withNavigationFocus } from 'react-navigation';
+import { withNavigation, withNavigationFocus } from 'react-navigation';
 import {
   compose,
   withHandlers,
@@ -45,12 +44,10 @@ class WalletScreen extends PureComponent {
   }
 
   componentDidMount = async () => {
-    const { toggleShowShitcoins } = this.props;
-
     try {
       const showShitcoins = await getShowShitcoinsSetting();
       if (showShitcoins !== null) {
-        toggleShowShitcoins(showShitcoins);
+        this.props.toggleShowShitcoins(showShitcoins);
       }
     } catch (error) {
       // TODO
@@ -91,6 +88,8 @@ export default compose(
   withAccountRefresh,
   withAccountSettings,
   withFetchingPrices,
+  withSafeTimeout,
+  withNavigation,
   withNavigationFocus,
   withBlurTransitionProps,
   withIsWalletEmpty,
