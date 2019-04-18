@@ -2,12 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/jin/rainbow/rainbow-wallet/ios/Rainbow.xcodeproj">
+      location = "group:Rainbow.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Rainbow.xcodeproj">
    </FileRef>
 </Workspace>
