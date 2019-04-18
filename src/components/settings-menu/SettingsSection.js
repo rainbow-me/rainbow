@@ -9,7 +9,7 @@ import BackupIcon from '../../assets/backup-icon.png';
 import CurrencyIcon from '../../assets/currency-icon.png';
 import LanguageIcon from '../../assets/language-icon.png';
 // import SecurityIcon from '../../assets/security-icon.png';
-import { withAccountSettings } from '../../hoc';
+import { withAccountSettings, withSendFeedback } from '../../hoc';
 import { position } from '../../styles';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
@@ -43,6 +43,7 @@ const SettingsSection = ({
   onPressCurrency,
   onPressImportSeedPhrase,
   onPressLanguage,
+  onSendFeedback,
   // onPressSecurity,
   openWebView,
   ...props
@@ -114,8 +115,7 @@ const SettingsSection = ({
       <ListItem
         icon={<Emoji name="heart" />}
         label="Leave Feedback️"
-        onPress={openWebView}
-        value={SettingsExternalURLs.feedback}
+        onPress={onSendFeedback}
       />
       <ListItemDivider />
       <ListItem
@@ -143,12 +143,14 @@ SettingsSection.propTypes = {
   onPressCurrency: PropTypes.func.isRequired,
   onPressImportSeedPhrase: PropTypes.func.isRequired,
   onPressLanguage: PropTypes.func.isRequired,
+  onSendFeedback: PropTypes.func.isRequired,
   // onPressSecurity: PropTypes.func.isRequired,
   openWebView: PropTypes.func,
 };
 
 export default compose(
   withAccountSettings,
+  withSendFeedback,
   withHandlers({ openWebView: () => uri => Linking.openURL(uri) }),
   onlyUpdateForKeys(['language', 'nativeCurrency']),
 )(SettingsSection);
