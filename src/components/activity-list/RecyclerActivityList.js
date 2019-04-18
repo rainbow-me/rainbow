@@ -56,7 +56,7 @@ export default class RecyclerActivityList extends Component {
         const r1Key = r1.hash ? r1.hash : get(r1, 'transactionDisplayDetails.timestampInMs', '');
         const r2Key = r2.hash ? r2.hash : get(r2, 'transactionDisplayDetails.timestampInMs', '');
 
-				return (r1Key !== r2Key)
+        return (r1Key !== r2Key)
           || (r1Symbol !== r2Symbol)
           || (r1Pending !== r2Pending);
       }),
@@ -89,7 +89,7 @@ export default class RecyclerActivityList extends Component {
         } else if (type === ViewTypes.HEADER) {
           dim.height = 35;
         } else {
-          dim.height = 184;
+          dim.height = 216;
         }
       },
     );
