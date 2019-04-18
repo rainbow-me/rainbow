@@ -17,6 +17,7 @@ const languageListItems = languagesWithWalletTranslations.map(code => ({
   value: code,
 }));
 
+// eslint-disable-next-line react/prop-types
 const renderLanguageListItem = ({ code, language, ...item }) => (
   <RadioListItem
     {...item}
@@ -43,8 +44,9 @@ LanguageSection.propTypes = {
 export default compose(
   withAccountSettings,
   withHandlers({
-    onSelectLanguage: ({ settingsChangeLanguage }) => (language) =>
-      settingsChangeLanguage(language),
+    onSelectLanguage: ({ settingsChangeLanguage }) => (language) => (
+      settingsChangeLanguage(language)
+    ),
   }),
   onlyUpdateForKeys(['language']),
 )(LanguageSection);
