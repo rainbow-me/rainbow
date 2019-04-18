@@ -1,10 +1,10 @@
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { ScrollView } from 'react-native-gesture-handler';
 import { compose, mapProps, pure } from 'recompose';
 import { colors } from '../../../styles';
 import { Monospace, TruncatedAddress } from '../../text';
+import TransactionMessage from '../TransactionMessage';
 import TransactionSheet from '../TransactionSheet';
 import TransactionRow from '../TransactionRow';
 
@@ -36,11 +36,7 @@ const DefaultTransactionConfirmationSection = ({
     )}
     {!!(data) && (
       <TransactionRow title={lang.t('wallet.action.input')}>
-        <ScrollView style={{ maxHeight: 100 }}>
-          <Monospace color={colors.blueGreyDarkTransparent} size="lmedium">
-            {data}
-          </Monospace>
-        </ScrollView>
+        <TransactionMessage message={data} />
       </TransactionRow>
     )}
   </TransactionSheet>
