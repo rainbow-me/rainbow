@@ -5,7 +5,11 @@ import { Dimensions } from 'react-native';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import { RequestCoinRow, TransactionCoinRow } from '../coin-row';
+import {
+  ContractInteractionCoinRow,
+  RequestCoinRow,
+  TransactionCoinRow,
+} from '../coin-row';
 import ListFooter from '../list/ListFooter';
 import ActivityListHeader from './ActivityListHeader';
 
@@ -122,12 +126,9 @@ export default class RecyclerActivityList extends Component {
     if (type === ViewTypes.FOOTER) {
       return <ListFooter/>;
     }
-    if (!data) {
-      return null;
-    }
-    if (!data.hash) {
-      return <RequestCoinRow item={data} />;
-    }
+    if (!data) return null;
+    if (!data.hash) return <RequestCoinRow item={data} />;
+    if (!data.symbol && data.dappName) return <ContractInteractionCoinRow item={data} />;
     return <TransactionCoinRow item={data} />;
   }
 

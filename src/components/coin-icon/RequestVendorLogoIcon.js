@@ -1,79 +1,56 @@
-import { isString } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withProps } from 'recompact';
-import styled from 'styled-components/primitives';
-import BalanceManagerLogo from '../../assets/balance-manager-avatar.png';
-import { colors, position, shadow } from '../../styles';
+import { colors, position } from '../../styles';
+import { initials } from '../../utils';
 import { Centered } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import { Text } from '../text';
 import CoinIcon from './CoinIcon';
 
 const RequestVendorLogoIconBorderRadius = 16.25;
-
-const DappNameInitials = withProps({
-  color: 'white',
-  size: 'large',
-  weight: 'medium',
-})(Text);
-
-const VendorLogoContainer = styled(Centered)`
-  ${({ size }) => position.size(size)}
-  background-color: ${({ backgroundColor }) => backgroundColor || colors.dark};
-  border-radius: ${({ borderRadius }) => borderRadius};
-  overflow: hidden;
-`;
-
-export const VendorLogo = styled.Image`
-  ${({ size }) => position.size(size)}
-  resize-mode: contain;
-`;
-
-const buildInitialsForDappName = (dappName) => (
-  (!dappName || !isString(dappName))
-    ? '?'
-    : dappName.split(' ').map(n => n.charAt(0)).join('')
-);
+const RequestVendorLogoIconShadows = [
+  [0, 8, 11, colors.dark, 0.04],
+  [0, 2, 6, colors.dark, 0.08],
+];
 
 const RequestVendorLogoIcon = ({
+  backgroundColor,
   borderRadius,
-  customBackgroundColor,
   dappName,
-  imageUrl,
   size,
+  ...props
 }) => (
   <ShadowStack
+    {...props}
     {...position.sizeAsObject(size)}
+    backgroundColor={backgroundColor}
     borderRadius={borderRadius}
-    shadows={[
-      [0, 4, 6, colors.purple, 0.12],
-      [0, 1, 3, colors.purple, 0.24],
-    ]}
+    shadows={RequestVendorLogoIconShadows}
+    shouldRasterizeIOS
   >
-    <VendorLogoContainer borderRadius={borderRadius} size={size}>
-      {(dappName === 'Balance Manager')
-        ? <VendorLogo size={size} backgroundColor={customBackgroundColor} source={imageUrl} />
-        : (
-          <DappNameInitials style={{ marginBottom: 2 }}>
-            {buildInitialsForDappName(dappName)}
-          </DappNameInitials>
-        )}
-    </VendorLogoContainer>
+    <Centered style={{ ...position.sizeAsObject(size), backgroundColor }}>
+      <Text
+        color="white"
+        size="large"
+        style={{ marginBottom: 2 }}
+        weight="medium"
+      >
+        {initials(dappName)}
+      </Text>
+    </Centered>
   </ShadowStack>
 );
 
 RequestVendorLogoIcon.propTypes = {
+  backgroundColor: PropTypes.string,
   borderRadius: PropTypes.number,
-  customBackgroundColor: PropTypes.string,
   dappName: PropTypes.string.isRequired,
-  imageUrl: PropTypes.string,
   size: PropTypes.number.isRequired,
 };
 
 RequestVendorLogoIcon.defaultProps = {
+  backgroundColor: colors.dark,
   borderRadius: RequestVendorLogoIconBorderRadius,
-  imageUrl: BalanceManagerLogo,
   size: CoinIcon.size,
 };
 
