@@ -10,7 +10,7 @@ import CurrencyIcon from '../../assets/currency-icon.png';
 import LanguageIcon from '../../assets/language-icon.png';
 import NetworkIcon from '../../assets/network-icon.png';
 // import SecurityIcon from '../../assets/security-icon.png';
-import { withAccountSettings } from '../../hoc';
+import { withAccountSettings, withSendFeedback } from '../../hoc';
 import { position } from '../../styles';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
@@ -128,8 +128,7 @@ const SettingsSection = ({
       <ListItem
         icon={<Emoji name="heart" />}
         label="Leave Feedback️"
-        onPress={openWebView}
-        value={SettingsExternalURLs.feedback}
+        onPress={onSendFeedback}
       />
       <ListItemDivider />
       <ListItem
@@ -159,6 +158,7 @@ SettingsSection.propTypes = {
   onPressImportSeedPhrase: PropTypes.func.isRequired,
   onPressLanguage: PropTypes.func.isRequired,
   onPressNetwork: PropTypes.func,
+  onSendFeedback: PropTypes.func.isRequired,
   // onPressSecurity: PropTypes.func.isRequired,
   openWebView: PropTypes.func,
 };
@@ -170,6 +170,7 @@ SettingsSection.defaultProps = {
 
 export default compose(
   withAccountSettings,
+  withSendFeedback,
   withHandlers({ openWebView: () => uri => Linking.openURL(uri) }),
   onlyUpdateForKeys(['language', 'nativeCurrency']),
 )(SettingsSection);

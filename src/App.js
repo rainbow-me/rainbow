@@ -38,7 +38,6 @@ import Routes from './screens/Routes';
 import Navigation from './navigation';
 
 if (process.env.NODE_ENV === 'development') {
-  console.log('process', process);
   console.disableYellowBox = true;
 }
 

@@ -20,18 +20,15 @@ const CoinIconFallback = fallbackProps => (
   />
 );
 
-const CoinIcon = ({ showShadow, size, symbol }) => {
-  const coinIcon = (
-    <ReactCoinIcon
-      fallbackRenderer={CoinIconFallback}
-      size={size}
-      symbol={symbol}
-      shouldRasterizeIOS
-    />
-  );
-
-  return showShadow ? (
+const CoinIcon = ({
+  showShadow,
+  size,
+  symbol,
+  ...props
+}) => (
+  showShadow ? (
     <ShadowStack
+      {...props}
       {...borders.buildCircleAsObject(size)}
       shadows={[
         [0, 4, 6, colors.dark, 0.04],
@@ -39,10 +36,23 @@ const CoinIcon = ({ showShadow, size, symbol }) => {
       ]}
       shouldRasterizeIOS
     >
-      {coinIcon}
+      <ReactCoinIcon
+        fallbackRenderer={CoinIconFallback}
+        size={size}
+        symbol={symbol}
+        shouldRasterizeIOS
+      />
     </ShadowStack>
-  ) : coinIcon;
-};
+  ) : (
+    <ReactCoinIcon
+      {...props}
+      fallbackRenderer={CoinIconFallback}
+      size={size}
+      symbol={symbol}
+      shouldRasterizeIOS
+    />
+  )
+);
 
 CoinIcon.propTypes = {
   showShadow: PropTypes.bool,
