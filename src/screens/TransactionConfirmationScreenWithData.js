@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get, isNil } from 'lodash';
 import PropTypes from 'prop-types';
-import { getTransactionCount } from '@rainbow-me/rainbow-common';
+import { estimateGas, getTransactionCount, toHex } from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
 import { Alert, StatusBar, Vibration } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
@@ -44,8 +44,8 @@ class TransactionConfirmationScreenWithData extends Component {
     let gasLimit = txPayload.gasLimit;
     if (isNil(gasLimit)) {
       try {
-        rawGasLimit = await web3Instance.eth.estimateGas(txPayload);
-        gasLimit = web3Instance.utils.toHex(rawGasLimit);
+        rawGasLimit = await estimateGas(txPayload);
+        gasLimit = toHex(rawGasLimit);
       } catch (error) {
         console.log('error estimating gas', error);
       }
