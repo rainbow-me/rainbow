@@ -5,10 +5,9 @@ import FastImage from 'react-native-fast-image';
 import {
   compose,
   onlyUpdateForPropTypes,
-  withState,
   pure,
-  setStatic,
   withHandlers,
+  withState,
 } from 'recompact';
 import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
@@ -16,12 +15,10 @@ import { borders, margin } from '../../styles';
 import { abbreviations } from '../../utils';
 import CopyTooltip from '../CopyTooltip';
 import Divider from '../Divider';
-import { Column, RowWithMargins } from '../layout';
+import { Centered, Column, RowWithMargins } from '../layout';
 import { FloatingEmojis } from '../floating-emojis';
 import { TruncatedAddress } from '../text';
 import ProfileAction from './ProfileAction';
-
-const ProfileMastheadHeight = 184;
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
@@ -34,6 +31,12 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
   width: 100%;
 `;
 
+const Container = styled(Centered).attrs({ direction: 'column ' })`
+  margin-bottom: 24;
+  padding-bottom: 32;
+  padding-top: 3;
+`;
+
 const ProfileMasthead = ({
   accountAddress,
   emojiCount,
@@ -41,14 +44,13 @@ const ProfileMasthead = ({
   onPressReceive,
   showBottomDivider,
 }) => (
-  <Column
-    align="center"
-    justify="start"
-    style={{ height: ProfileMastheadHeight }}
-  >
+  <Container>
     <FastImage
       source={AvatarImageSource}
-      style={borders.buildCircleAsObject(85)}
+      style={{
+        ...borders.buildCircleAsObject(85),
+        marginBottom: 3,
+      }}
     />
     <CopyTooltip textToCopy={accountAddress} tooltipText="Copy Address">
       <AddressAbbreviation address={accountAddress} />
@@ -74,7 +76,7 @@ const ProfileMasthead = ({
       />
     </RowWithMargins>
     {showBottomDivider && <Divider style={{ bottom: 0, position: 'absolute' }} />}
-  </Column>
+  </Container>
 );
 
 ProfileMasthead.propTypes = {
@@ -90,7 +92,6 @@ ProfileMasthead.defaultProps = {
 };
 
 export default compose(
-  setStatic({ height: ProfileMastheadHeight }),
   withState('emojiCount', 'setEmojiCount', 0),
   withHandlers({
     onPressCopy: ({ accountAddress, emojiCount, setEmojiCount }) => () => {
