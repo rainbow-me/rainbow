@@ -37,6 +37,8 @@ const SwipeStack = createMaterialTopTabNavigator({
   headerMode: 'none',
   initialRouteName: 'WalletScreen',
   mode: 'modal',
+  swipeDistanceThreshold: 30,
+  swipeVelocityThreshold: 10,
   tabBarComponent: () => null,
 });
 
