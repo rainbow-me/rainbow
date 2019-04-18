@@ -1,59 +1,47 @@
-import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
+import React from 'react';
 import {
   compose,
   mapProps,
   onlyUpdateForKeys,
   withHandlers,
+  withProps,
 } from 'recompact';
 import { Linking } from 'react-native';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import { colors } from '../../styles';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { ButtonPressAnimation } from '../animations';
-import { FlexItem, Row } from '../layout';
-import BalanceText from './BalanceText';
-import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 import { RequestVendorLogoIcon } from '../coin-icon';
 
 const rowRenderPropTypes = {
-  item: PropTypes.object,
   dappName: PropTypes.string,
+  item: PropTypes.object,
   onPressTransaction: PropTypes.func,
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
 };
 
-const BottomRow = ({ dappName }) => {
-  return (
-    <Row align="center" justify="space-between">
-      <FlexItem flex={1}>
-        <CoinName>{dappName}</CoinName>
-      </FlexItem>
-    </Row>
-  );
-};
+const BottomRow = ({ dappName }) => <CoinName>{dappName}</CoinName>;
 
 BottomRow.propTypes = rowRenderPropTypes;
 
-const TopRow = ({ status }) => (
-  <Fragment>
-    <TransactionStatusBadge status={status} />
-  </Fragment>
-);
+const TopRow = ({ status }) => <TransactionStatusBadge status={status} />;
 
 TopRow.propTypes = rowRenderPropTypes;
+
+const ContractInteractionVenderLogoIcon = withProps({
+  borderRadius: RequestVendorLogoIcon.size,
+})(RequestVendorLogoIcon);
 
 const ContractInteractionCoinRow = ({ item, onPressTransaction, ...props }) => (
   <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>
     <CoinRow
       {...item}
       {...props}
-      coinIconRender={RequestVendorLogoIcon}
       bottomRowRender={BottomRow}
+      coinIconRender={ContractInteractionVenderLogoIcon}
       shouldRasterizeIOS={true}
       topRowRender={TopRow}
     />
