@@ -40,6 +40,7 @@ const SwipeStack = createMaterialTopTabNavigator({
   headerMode: 'none',
   initialRouteName: 'WalletScreen',
   mode: 'modal',
+  tabBarComponent: null,
 });
 
 const MainNavigator = createStackNavigator({
