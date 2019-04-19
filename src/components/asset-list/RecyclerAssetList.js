@@ -44,7 +44,10 @@ export default class RecyclerAssetList extends React.Component {
     const { width } = Dimensions.get('window');
     this.state = {
       dataProvider: new DataProvider((r1, r2) => {
-        if (get(r1, 'section.isHeader') && r1.section.symbol !== r2.section.symbol) {
+        if (get(r1, 'isHeader') && get(r1, 'symbol') !== get(r2, 'symbol')) {
+          return true;
+        }
+        if (get(r1, 'isHeader') && get(r1, 'section.totalValue') !== get(r2, 'section.totalValue')) {
           return true;
         }
         const r1Value = get(r1, r1.tokens ? '' : 'native.balance.display');
