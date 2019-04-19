@@ -44,7 +44,6 @@ export default class RecyclerAssetList extends React.Component {
     const { width } = Dimensions.get('window');
     this.state = {
       dataProvider: new DataProvider((r1, r2) => {
-        console.log('r1', r1);
         if (get(r1, 'isHeader') && get(r1, 'symbol') !== get(r2, 'symbol')) {
           return true;
         }
