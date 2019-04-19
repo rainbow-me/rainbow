@@ -44,6 +44,7 @@ export default class RecyclerAssetList extends React.Component {
     const { width } = Dimensions.get('window');
     this.state = {
       dataProvider: new DataProvider((r1, r2) => {
+        console.log('r1', r1);
         if (get(r1, 'isHeader') && get(r1, 'symbol') !== get(r2, 'symbol')) {
           return true;
         }
@@ -52,9 +53,17 @@ export default class RecyclerAssetList extends React.Component {
         }
         const r1Value = get(r1, r1.tokens ? '' : 'native.balance.display');
         const r2Value = get(r2, r2.tokens ? '' : 'native.balance.display');
-        const r1Key = get(r1, r1.tokens ? 'tokens.[0].id' : 'symbol');
-        const r2Key = get(r2, r2.tokens ? 'tokens.[0].id' : 'symbol');
-        return r1Key !== r2Key || r1Value !== r2Value;
+        const r1Symbol = get(r1, 'symbol');
+        const r2Symbol = get(r2, 'symbol');
+
+        const r1TokenName0 = get(r1, 'tokens.[0].name');
+        const r2TokenName0 = get(r2, 'tokens.[0].name');
+        const r1TokenName1 = get(r1, 'tokens.[1].name');
+        const r2TokenName1 = get(r2, 'tokens.[1].name');
+        return r1Symbol !== r2Symbol
+          || r1Value !== r2Value
+          || r1TokenName0 !== r2TokenName0
+          || r1TokenName1 !== r2TokenName1;
       }),
       headersIndices: [],
     };
