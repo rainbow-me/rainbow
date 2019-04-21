@@ -1,49 +1,60 @@
 platform :ios, '9.0'
 
+# Prevent Cocoapods from collecting stats, which adds time to each pod installation
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
 target 'Rainbow' do
   rn_path = '../node_modules/react-native'
 
+  # Crashlytics
+  pod 'Fabric', '~> 1.7.11'
+  pod 'Crashlytics', '~> 3.10.7'
+
+  # Firebase
+  pod 'Firebase/Core', '~> 5.3.0'
+  pod 'Firebase/Messaging', '~> 5.3.0'
+
+  # Core React
   pod 'React', :path => "#{rn_path}", :subspecs => [
     'Core',
     'CxxBridge', # Include this for RN >= 0.47
+    'cxxreact',
     'DevSupport', # Include this to enable In-App Devmenu if RN >= 0.43
-    'RCTText',
-    'RCTNetwork',
-    'RCTWebSocket', # needed for debugging
-    'RCTImage',
-    'RCTWebSocket', # Needed for debugging
+    'fishhook',
+    'jsi',
+    'jsiexecutor',
+    'jsinspector',
+    'RCTActionSheet',
     'RCTAnimation', # Needed for FlatList and animations running on native UI thread
-    # Add any other subspecs you want to use in your project
+    'RCTBlob',
+    'RCTImage',
+    'RCTLinkingIOS',
+    'RCTNetwork',
+    'RCTPushNotification',
+    'RCTSettings',
+    'RCTText',
+    'RCTVibration',
+    'RCTWebSocket', # needed for debugging
   ]
 
+  # React Third Party - required
   pod 'yoga', path: "#{rn_path}/ReactCommon/yoga"
   pod 'Folly', :podspec => "#{rn_path}/third-party-podspecs/Folly.podspec"
+  pod 'DoubleConversion', :podspec => "#{rn_path}/third-party-podspecs/DoubleConversion.podspec"
+  pod 'glog', :podspec => "#{rn_path}/third-party-podspecs/glog.podspec"
 
-  pod 'Crashlytics', '~> 3.10.7'
-  pod 'Fabric', '~> 1.7.11'
-  pod 'Firebase/Core', '~> 5.15.0'
-  pod 'Firebase/Messaging', '~> 5.15.0'
+  # React-Native-Community packages
+  pod 'react-native-blur', :path => '../node_modules/@react-native-community/blur'
+  pod 'react-native-netinfo', :path => '../node_modules/@react-native-community/netinfo'
+  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 
+  # Third Party packages
+  pod 'react-native-camera', :path => '../node_modules/react-native-camera'
+  pod 'react-native-fast-image', :path => '../node_modules/react-native-fast-image'
+  pod 'react-native-version-number', :path => '../node_modules/react-native-version-number'
+  
   pod 'RNDeviceInfo', :path => '../node_modules/react-native-device-info'
   pod 'RNLanguages', :path => '../node_modules/react-native-languages'
   pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
   pod 'RNScreens', :path => '../node_modules/react-native-screens'
-
-  pod 'react-native-blur', :path => '../node_modules/react-native-blur'
-  pod 'react-native-camera', :path => '../node_modules/react-native-camera'
-  pod 'react-native-fast-image', :path => '../node_modules/react-native-fast-image'
-  pod 'react-native-version-number', :path => '../node_modules/react-native-version-number'
-  pod 'react-native-async-storage', :path => '../node_modules/@react-native-community/async-storage'
-
-  pod 'react-native-netinfo', :path => '../node_modules/@react-native-community/netinfo'
-
-end
-
-# workaround for bug https://github.com/facebook/react-native/issues/24192#issuecomment-479497777
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    if target.name == "React"
-      target.remove_from_project
-    end
-  end
 end

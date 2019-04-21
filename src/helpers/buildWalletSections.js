@@ -38,7 +38,7 @@ const UniqueTokenItem = enhanceRenderItem(UniqueTokenRow);
 
 const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
 const collectiblesRenderItem = item => <UniqueTokenItem {...item} assetType="unique_token" />;
-const filterWalletSections = sections => Object.values(sections).filter(({ totalItems }) => totalItems);
+const filterWalletSections = sections => sections.filter(({ header: { totalItems }}) => totalItems);
 
 const buildWalletSections = (
   allAssets,
@@ -55,31 +55,35 @@ const buildWalletSections = (
   showShitcoins,
   uniqueTokens,
 ) => {
-  const sections = {
-    balances: {
+  const sections = [
+    {
       balances: true,
       data: showShitcoins ? allAssets : assets,
+      header: {
+        title: lang.t('account.tab_balances'),
+        totalItems: allAssetsCount,
+        totalValue: get(assetsTotal, 'display', ''),
+      },
       renderItem: balancesRenderItem,
-      title: lang.t('account.tab_balances'),
-      totalItems: allAssetsCount,
-      totalValue: get(assetsTotal, 'display', ''),
     },
-    collectibles: {
+    {
       collectibles: true,
       data: buildUniqueTokenList(uniqueTokens),
+      header: {
+        title: lang.t('account.tab_collectibles'),
+        totalItems: uniqueTokens.length,
+        totalValue: '',
+      },
       renderItem: collectiblesRenderItem,
-      title: lang.t('account.tab_collectibles'),
-      totalItems: uniqueTokens.length,
-      totalValue: '',
       type: 'big',
     },
-  };
+  ];
 
   if (shitcoinsCount) {
     // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
     const destructiveButtonIndex = showShitcoins ? 0 : 99;
 
-    sections.balances.contextMenuOptions = {
+    sections[0].header.contextMenuOptions = {
       cancelButtonIndex: 1,
       destructiveButtonIndex,
       onPressActionSheet: onToggleShowShitcoins,

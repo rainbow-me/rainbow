@@ -1,11 +1,20 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { pure } from 'recompact';
+import styled from 'styled-components/primitives';
 import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
-import { Row } from '../layout';
+import { RowWithMargins } from '../layout';
 import { Text } from '../text';
+
+const Container = styled(RowWithMargins).attrs({
+  align: 'center',
+  margin: 6,
+})`
+  ${padding(8, 9)};
+  background-color: ${colors.white};
+`;
 
 const ProfileAction = ({
   icon,
@@ -15,25 +24,20 @@ const ProfileAction = ({
   ...props
 }) => (
   <ButtonPressAnimation onPress={onPress} {...props}>
-    <Row
-      align="center"
-      css={`
-        ${padding(8, 9)};
-        background-color: ${colors.white};
-      `}
-    >
+    <Container>
       <Icon
         color={colors.appleBlue}
         name={icon}
-        style={{
-          marginRight: 6,
-          maxHeight: iconSize,
-        }}
+        style={{ maxHeight: iconSize }}
       />
-      <Text color="appleBlue" weight="semibold">
+      <Text
+        color="appleBlue"
+        size="lmedium"
+        weight="semibold"
+      >
         {text}
       </Text>
-    </Row>
+    </Container>
   </ButtonPressAnimation>
 );
 

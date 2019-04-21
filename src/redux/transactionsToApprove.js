@@ -140,6 +140,22 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
       type: 'transaction',
     };
   }
+  if (transaction.data) {
+    const value = transaction.value ? fromWei(convertHexToString(transaction.value)) : 0;
+    return {
+      payload: {
+        data: transaction.data,
+        from: transaction.from,
+        gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
+        gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
+        nonce: Number(convertHexToString(transaction.nonce)),
+        to: transaction.to,
+        value,
+      },
+      timestampInMs,
+      type: 'default',
+    };
+  }
 
   return null;
 };
