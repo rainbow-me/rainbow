@@ -6,17 +6,18 @@ import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContai
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
 import PropTypes from 'prop-types';
 import { UniqueTokenRowHeight } from '../unique-token/UniqueTokenRow';
-import { CoinRowHeight } from '../coin-row/CoinRow';
+import { CoinRowBuffer, CoinRowHeight } from '../coin-row/CoinRow';
 import AssetListHeader from './AssetListHeader';
 import { colors } from '../../styles';
 import { DividerHeight } from '../coin-row/CollectiblesSendRow';
 
-const ViewTypes = {
-  COIN_ROW: 0,
-  HEADER: 1,
-  UNIQUE_TOKEN_ROW: 2,
-  UNIQUE_TOKEN_ROW_FIRST: 3,
-  UNIQUE_TOKEN_ROW_LAST: 4,
+export const ViewTypes = {
+  HEADER: 0,
+  COIN_ROW: 1,
+  COIN_ROW_LAST: 2,
+  UNIQUE_TOKEN_ROW: 3,
+  UNIQUE_TOKEN_ROW_FIRST: 4,
+  UNIQUE_TOKEN_ROW_LAST: 5,
 };
 
 const Wrapper = styled.View`
@@ -25,7 +26,7 @@ const Wrapper = styled.View`
 `;
 
 // eslint-disable-next-line react/prop-types
-const AssetListHeaderRenderer = ({ section }) => <AssetListHeader {...section} />;
+const AssetListHeaderRenderer = (data) => <AssetListHeader {...data} />;
 
 
 export default class RecyclerAssetList extends React.Component {
@@ -34,8 +35,17 @@ export default class RecyclerAssetList extends React.Component {
     hideHeader: PropTypes.bool,
     paddingBottom: PropTypes.number,
     sections: PropTypes.arrayOf(PropTypes.shape({
-      data: PropTypes.array,
-      title: PropTypes.string,
+      balances: PropTypes.bool,
+      collectibles: PropTypes.bool,
+      data: PropTypes.array.isRequired,
+      header: PropTypes.shape({
+        title: PropTypes.string,
+        totalItems: PropTypes.number,
+        totalValue: PropTypes.string,
+      }),
+      perData: PropTypes.object,
+      renderItem: PropTypes.func.isRequired,
+      type: PropTypes.string,
     })),
   };
 
@@ -44,14 +54,24 @@ export default class RecyclerAssetList extends React.Component {
     const { width } = Dimensions.get('window');
     this.state = {
       dataProvider: new DataProvider((r1, r2) => {
-        if (get(r1, 'section.isHeader') && r1.section.symbol !== r2.section.symbol) {
-          return true;
+        if (get(r1, 'isHeader')) {
+          if ((get(r1, 'title') !== get(r2, 'title'))
+              || (get(r1, 'totalValue') !== get(r2, 'totalValue'))) {
+            return true;
+          }
         }
-        const r1Value = get(r1, r1.tokens ? '' : 'native.balance.display');
-        const r2Value = get(r2, r2.tokens ? '' : 'native.balance.display');
-        const r1Key = get(r1, r1.tokens ? 'tokens.[0].id' : 'symbol');
-        const r2Key = get(r2, r2.tokens ? 'tokens.[0].id' : 'symbol');
-        return r1Key !== r2Key || r1Value !== r2Value;
+        const r1Value = get(r1, get(r1, 'item.tokens') ? '' : 'item.native.balance.display');
+        const r2Value = get(r2, get(r2, 'item.tokens') ? '' : 'item.native.balance.display');
+        const r1TokenNameFirst = get(r1, 'item.tokens.[0].id');
+        const r2TokenNameFirst = get(r2, 'item.tokens.[0].id');
+        const r1TokenNameSecond = get(r1, 'item.tokens.[1].id');
+        const r2TokenNameSecond = get(r2, 'item.tokens.[1].id');
+        const r1Symbol = get(r1, 'item.symbol');
+        const r2Symbol = get(r2, 'item.symbol');
+        return r1Symbol !== r2Symbol
+          || r1Value !== r2Value
+          || r1TokenNameFirst !== r2TokenNameFirst
+          || r1TokenNameSecond !== r2TokenNameSecond;
       }),
       headersIndices: [],
     };
@@ -61,12 +81,16 @@ export default class RecyclerAssetList extends React.Component {
         if (this.state.headersIndices.includes(index)) {
           return ViewTypes.HEADER;
         }
-
         // This logic appears to be quite complex since there might be some race conditions
         // regarding order of received sections while importing from seeds
-        const areBalancesLoaded = this.props.sections[0] && get(this.props.sections[0], 'balances');
+        const areBalancesLoaded = get(this.props, 'sections[0].balances');
         const areCollectiblesLoaded = this.props.sections.length === 2
-          || (this.props.sections[0] && get(this.props.sections[0], 'collectibles'));
+          || get(this.props, 'sections[0].collectibles');
+        if (areBalancesLoaded && areCollectiblesLoaded) {
+          if (index === this.state.headersIndices[1] - 1) {
+            return ViewTypes.COIN_ROW_LAST;
+          }
+        }
         if (areCollectiblesLoaded) {
           const idx = areBalancesLoaded ? 1 : 0;
           if (index === this.state.headersIndices[idx] + 1) {
@@ -83,13 +107,12 @@ export default class RecyclerAssetList extends React.Component {
       },
       (type, dim) => {
         dim.width = width;
-        if (
-          this.state.areSmallCollectibles
-          && (
-            type === ViewTypes.UNIQUE_TOKEN_ROW_LAST
-            || type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST
-            || type === ViewTypes.UNIQUE_TOKEN_ROW
-          )
+        if (this.state.areSmallCollectibles
+            && (
+              type === ViewTypes.UNIQUE_TOKEN_ROW_LAST
+              || type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST
+              || type === ViewTypes.UNIQUE_TOKEN_ROW
+            )
         ) {
           dim.height = CoinRowHeight;
           if (type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST) {
@@ -106,6 +129,8 @@ export default class RecyclerAssetList extends React.Component {
           dim.height = (UniqueTokenRowHeight(false, true)) + props.paddingBottom || 0;
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST) {
           dim.height = UniqueTokenRowHeight(true, false);
+        } else if (type === ViewTypes.COIN_ROW_LAST) {
+          dim.height = CoinRowHeight + CoinRowBuffer;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRowHeight;
         } else {
@@ -122,12 +147,11 @@ export default class RecyclerAssetList extends React.Component {
       return ctx
         .concat([{
           isHeader: true,
-          section,
-          symbol: section.title,
+          ...section.header,
         }])
-        .concat(section.data.map(s => ({ ...s, section })));
+        .concat(section.data.map(item => ({ item: { ...item, ...section.perData }, renderItem: section.renderItem })));
     }, []);
-    const areSmallCollectibles = (c => c && c.type === 'small')(props.sections.find(e => e.collectibles))
+    const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(props.sections.find(e => e.collectibles))
     return {
       areSmallCollectibles,
       dataProvider: state.dataProvider.cloneWithRows(items),
@@ -164,9 +188,10 @@ export default class RecyclerAssetList extends React.Component {
   );
 
   rowRenderer = (type, data) => {
-    if (type === ViewTypes.COIN_ROW) {
-      const { section } = data;
-      return data.section.renderItem({ item: data, section });
+    if (type === ViewTypes.COIN_ROW
+        || type === ViewTypes.COIN_ROW_LAST) {
+      const { item, renderItem } = data;
+      return renderItem({ item });
     }
     if (type === ViewTypes.HEADER) {
       if (this.props.hideHeader) {
@@ -175,8 +200,9 @@ export default class RecyclerAssetList extends React.Component {
       return <AssetListHeaderRenderer {...data} />;
     }
 
-    return data.section.renderItem({
-      data: data.tokens ? data.tokens : data,
+    const { item, renderItem } = data;
+    return renderItem({
+      data: item.tokens ? item.tokens : item,
       isFirstRow: type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST,
       isLastRow: type === ViewTypes.UNIQUE_TOKEN_ROW_LAST,
     });

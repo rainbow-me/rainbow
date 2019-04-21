@@ -65,11 +65,6 @@ assetIcon.random = () => {
   return assetIconColors[Math.floor(Math.random() * assetIconColors.length)];
 };
 
-const transparent = {
-  purpleTransparent: chroma(base.purple).alpha(0.7), // '50, 50, 93'
-  whiteTransparent: chroma(base.white).alpha(0.8), // '255, 255, 255'
-};
-
 const vendor = {
   etherscan: '#025c90', // '2, 92, 144'
   ethplorer: '#506685', // '80, 102, 133'
@@ -91,6 +86,12 @@ const getTextColorForBackground = (targetColor, textColors = {}) => {
   } = textColors;
 
   return isColorLight(targetColor) ? dark : light;
+};
+
+const transparent = {
+  blueGreyDarkTransparent: buildRgba(base.blueGreyDark, 0.6),
+  purpleTransparent: buildRgba(base.purple, 0.7), // '50, 50, 93'
+  whiteTransparent: buildRgba(base.white, 0.8), // '255, 255, 255'
 };
 
 const colors = {

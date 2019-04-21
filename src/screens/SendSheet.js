@@ -5,6 +5,7 @@ import {
   isFunction,
   isString,
   map,
+  upperFirst,
 } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -25,7 +26,6 @@ import { withAccountRefresh, withAccountSettings } from '../hoc';
 import { colors } from '../styles';
 import { deviceUtils } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
-import { uppercase } from '../utils/formatters';
 
 const Container = styled(Column)`
   background-color: ${colors.white};
@@ -39,7 +39,7 @@ const formatGasSpeedItems = (gasPrices) => ([
     const time = get(value, 'estimatedTime.display');
 
     return {
-      label: `${uppercase(key, 7)}: ${cost}  ~${time.slice(0, -1)}`,
+      label: `${upperFirst(key)}: ${cost}  ~${time.slice(0, -1)}`,
       value: key,
     };
   }),

@@ -1,5 +1,8 @@
-import { createAppContainer, createStackNavigator } from 'react-navigation';
-import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
+import {
+  createAppContainer,
+  createMaterialTopTabNavigator,
+  createStackNavigator,
+} from 'react-navigation';
 import Navigation from '../navigation';
 import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import { updateTransitionProps } from '../redux/navigation';
@@ -37,7 +40,7 @@ const SwipeStack = createMaterialTopTabNavigator({
   headerMode: 'none',
   initialRouteName: 'WalletScreen',
   mode: 'modal',
-  tabBarComponent: () => null,
+  tabBarComponent: null,
 });
 
 const MainNavigator = createStackNavigator({
