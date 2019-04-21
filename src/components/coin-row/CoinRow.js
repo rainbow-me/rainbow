@@ -11,6 +11,7 @@ import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
 
 const CoinRowPaddingVertical = 12;
+export const CoinRowBuffer = 42;
 export const CoinRowHeight = CoinIcon.size + (CoinRowPaddingVertical * 2);
 
 const Container = styled(Row)`
