@@ -62,9 +62,16 @@ export default class RecyclerAssetList extends React.Component {
         }
         const r1Value = get(r1, get(r1, 'item.tokens') ? '' : 'item.native.balance.display');
         const r2Value = get(r2, get(r2, 'item.tokens') ? '' : 'item.native.balance.display');
-        const r1Key = get(r1, get(r1, 'item.tokens') ? 'item.tokens.[0].id' : 'item.symbol');
-        const r2Key = get(r2, get(r2, 'item.tokens') ? 'item.tokens.[0].id' : 'item.symbol');
-        return r1Key !== r2Key || r1Value !== r2Value;
+        const r1TokenNameFirst = get(r1, 'item.tokens.[0].id');
+        const r2TokenNameFirst = get(r2, 'item.tokens.[0].id');
+        const r1TokenNameSecond = get(r1, 'item.tokens.[1].id');
+        const r2TokenNameSecond = get(r2, 'item.tokens.[1].id');
+        const r1Symbol = get(r1, 'item.symbol');
+        const r2Symbol = get(r2, 'item.symbol');
+        return r1Symbol !== r2Symbol
+          || r1Value !== r2Value
+          || r1TokenNameFirst !== r2TokenNameFirst
+          || r1TokenNameSecond !== r2TokenNameSecond;
       }),
       headersIndices: [],
     };
