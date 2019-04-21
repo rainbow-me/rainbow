@@ -101,6 +101,7 @@ class SendSheet extends Component {
 
     if (isValidAddress && !prevProps.isValidAddress) {
       if (asset) {
+        // TODO
         sendUpdateSelected(asset);
       }
 
