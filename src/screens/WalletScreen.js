@@ -161,6 +161,7 @@ export default compose(
   withIsWalletEthZero,
   withStatusBarStyle('dark-content'),
   withState('showShitcoins', 'toggleShowShitcoins', true),
+  withState('refreshed', 'toggleRefresh', false),
   withHandlers({
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
       if (index === 0) {
