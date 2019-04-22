@@ -27,7 +27,6 @@ const Wrapper = styled.View`
 // eslint-disable-next-line react/prop-types
 const AssetListHeaderRenderer = ({ section }) => <AssetListHeader {...section} />;
 
-
 export default class RecyclerAssetList extends React.Component {
   static propTypes = {
     fetchData: PropTypes.func,
@@ -143,7 +142,6 @@ export default class RecyclerAssetList extends React.Component {
       areSmallCollectibles,
       dataProvider: state.dataProvider.cloneWithRows(items),
       headersIndices,
-      isRefreshing: false,
       length: items.length,
     };
   }
