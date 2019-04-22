@@ -51,21 +51,9 @@ const EnhancedVendorLogo = (props) => (
 const CollectiblesSendRow = ({
   data,
   onPress,
-  isFirstRow,
   ...props
 }) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
-    {isFirstRow && (
-      <View
-        style={{ height: DividerHeight }}
-      >
-        <Divider
-          color={colors.alpha(colors.blueGreyLight, 0.05)}
-          inset={false}
-          flex={0}
-        />
-      </View>
-    )}
     <CoinRow
       {...props}
       {...data}

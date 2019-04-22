@@ -200,9 +200,14 @@ export default class RecyclerAssetList extends React.Component {
       return <AssetListHeaderRenderer {...data} />;
     }
 
+    if (this.state.areSmallCollectibles) {
+      const { item, renderItem } = data;
+      return renderItem({ item });
+    }
+
     const { item, renderItem } = data;
     return renderItem({
-      data: item.tokens ? item.tokens : item,
+      data: item.tokens,
       isFirstRow: type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST,
       isLastRow: type === ViewTypes.UNIQUE_TOKEN_ROW_LAST,
     });
