@@ -8,8 +8,7 @@ import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
 
 const BalancesRenderItem = ({
   index,
-  item: { symbol, ...item },
-  section: { onSelectAsset },
+  item: { onSelectAsset, symbol, ...item },
 }) => (
   <SendCoinRow
     {...item}
@@ -22,8 +21,10 @@ const collectiblesRenderItem = CollectiblesSendRow
 
 BalancesRenderItem.propTypes = {
   index: PropTypes.number,
-  item: PropTypes.shape({ symbol: PropTypes.string }),
-  section: PropTypes.shape({ onSelectAsset: PropTypes.func }),
+  item: PropTypes.shape({
+    symbol: PropTypes.string,
+    onSelectAsset: PropTypes.func
+  }),
 };
 
 const SendAssetList = ({
@@ -36,14 +37,21 @@ const SendAssetList = ({
     {
       balances: true,
       data: allAssets,
-      onSelectAsset,
+      perData: {
+        onSelectAsset,
+      },
       renderItem: BalancesRenderItem,
     },
     {
       collectibles: true,
       data: uniqueTokens,
+      header: {
+        title: lang.t('account.tab_collectibles'),
+      },
+      perData: {
+        onSelectAsset,
+      },
       renderItem: collectiblesRenderItem,
-      title: lang.t('account.tab_collectibles'),
       type: 'small',
     },
   ];
