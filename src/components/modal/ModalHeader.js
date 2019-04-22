@@ -29,6 +29,7 @@ const ModalHeader = ({
   onPressBack,
   onPressClose,
   showBackButton,
+  showDoneButton,
   title,
   ...props
 }) => (
@@ -51,11 +52,13 @@ const ModalHeader = ({
         {title}
       </TruncatedText>
     </TitleContainer>
-    <ModalHeaderButton
-      label="Done"
-      onPress={onPressClose}
-      side="right"
-    />
+    {showDoneButton && (
+      <ModalHeaderButton
+        label="Done"
+        onPress={onPressClose}
+        side="right"
+      />
+    )}
   </Container>
 );
 
@@ -63,7 +66,12 @@ ModalHeader.propTypes = {
   onPressBack: PropTypes.func,
   onPressClose: PropTypes.func,
   showBackButton: PropTypes.bool,
+  showDoneButton: PropTypes.bool,
   title: PropTypes.string,
+};
+
+ModalHeader.defaultProps = {
+  showDoneButton: true,
 };
 
 ModalHeader.height = ModalHeaderHeight;

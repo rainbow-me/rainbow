@@ -3,6 +3,7 @@ import React, { createElement } from 'react';
 import { safeAreaInsetValues } from '../../utils';
 import { FlexItem, RowWithMargins } from '../layout';
 import SendFab from './SendFab';
+import ExchangeFab from './ExchangeFab';
 
 const FabWrapperBottomPosition = 21;
 
@@ -18,7 +19,6 @@ const FabWrapper = ({ children, disabled, fabs }) => (
         `}
         direction="row-reverse"
         margin={12}
-        marginKey="left"
       >
         {fabs.map(fab => createElement(fab))}
       </RowWithMargins>
@@ -33,7 +33,7 @@ FabWrapper.propTypes = {
 };
 
 FabWrapper.defaultProps = {
-  fabs: [SendFab],
+  fabs: [ExchangeFab, SendFab],
 };
 
 FabWrapper.bottomPosition = FabWrapperBottomPosition;
