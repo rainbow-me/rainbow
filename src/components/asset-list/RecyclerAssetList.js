@@ -189,24 +189,20 @@ export default class RecyclerAssetList extends React.Component {
   );
 
   rowRenderer = (type, data) => {
-    if (type === ViewTypes.COIN_ROW
-        || type === ViewTypes.COIN_ROW_LAST) {
-      const { item, renderItem } = data;
-      return renderItem({ item });
-    }
+    const { item, renderItem } = data;
+    const { hideHeader } = this.props;
+
     if (type === ViewTypes.HEADER) {
-      if (this.props.hideHeader) {
-        return null;
-      }
-      return <AssetListHeaderRenderer {...data} />;
+      return hideHeader ? null : <AssetListHeaderRenderer {...data} />;
     }
 
-    const { item, renderItem } = data;
-    return renderItem({
-      data: item.tokens ? item.tokens : item,
-      isFirstRow: type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST,
-      isLastRow: type === ViewTypes.UNIQUE_TOKEN_ROW_LAST,
-    });
+    return (type === ViewTypes.COIN_ROW || type === ViewTypes.COIN_ROW_LAST)
+      ? renderItem({ item })
+      : renderItem({
+        data: item.tokens ? item.tokens : item,
+        isFirstRow: type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST,
+        isLastRow: type === ViewTypes.UNIQUE_TOKEN_ROW_LAST,
+      });
   };
 
   render() {
