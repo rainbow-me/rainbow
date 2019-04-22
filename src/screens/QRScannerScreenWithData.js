@@ -15,7 +15,7 @@ import {
   withWalletConnectConnections,
 } from '../hoc';
 import { walletConnectInit } from '../model/walletconnect';
-import { getEthereumAddressFromQRCodeData } from '../utils';
+import { addressUtils } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
 import withStatusBarStyle from '../hoc/withStatusBarStyle';
 
@@ -30,8 +30,8 @@ class QRScannerScreenWithData extends Component {
 
   state = {
     enableScanning: true,
-    requestingNotificationPermissionAlert: false,
     isCameraAuthorized: true,
+    requestingNotificationPermissionAlert: false,
     sheetHeight: 240,
   }
 
@@ -106,7 +106,7 @@ class QRScannerScreenWithData extends Component {
     this.setState({ enableScanning: false });
     Vibration.vibrate();
 
-    const address = await getEthereumAddressFromQRCodeData(data);
+    const address = await addressUtils.getEthereumAddressFromQRCodeData(data);
 
     if (address) {
       navigation.navigate('WalletScreen');
