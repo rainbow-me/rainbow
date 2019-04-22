@@ -1,10 +1,7 @@
 import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  compose,
-  onlyUpdateForKeys,
-} from 'recompact';
+import { onlyUpdateForPropTypes } from 'recompact';
 import { padding } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { Row } from '../layout';
@@ -13,6 +10,9 @@ import UniqueTokenCard from './UniqueTokenCard';
 const CardMargin = 15;
 const RowPadding = 19;
 const CardSize = (deviceUtils.dimensions.width - (RowPadding * 2) - CardMargin) / 2;
+
+const removeNullItems = e => !isNil(e);
+
 export const UniqueTokenRowHeight = (isFirstRow, isLastRow) => CardSize
   + CardMargin * (isLastRow ? 1.25 : 1)
   + (isFirstRow ? CardMargin : 0);
@@ -32,7 +32,7 @@ const UniqueTokenRow = ({
       width: 100%;
     `}
   >
-    {data.filter(e => !isNil(e)).map((uniqueToken, itemIndex) => (
+    {data.filter(removeNullItems).map((uniqueToken, itemIndex) => (
       <UniqueTokenCard
         item={uniqueToken}
         key={uniqueToken.id}
@@ -51,6 +51,4 @@ UniqueTokenRow.propTypes = {
   onPress: PropTypes.func,
 };
 
-export default compose(
-  onlyUpdateForKeys(['items', 'itemsCount', 'isLastRow']),
-)(UniqueTokenRow);
+export default onlyUpdateForPropTypes(UniqueTokenRow);
