@@ -1,15 +1,17 @@
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Dimensions, RefreshControl } from 'react-native';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import PropTypes from 'prop-types';
-import { UniqueTokenRowHeight } from '../unique-token/UniqueTokenRow';
-import { CoinRowBuffer, CoinRowHeight } from '../coin-row/CoinRow';
-import AssetListHeader from './AssetListHeader';
 import { colors } from '../../styles';
+import { isNewValueForPath } from '../../utils';
 import { DividerHeight } from '../coin-row/CollectiblesSendRow';
+import { CoinRowHeight } from '../coin-row/CoinRow';
+import { ListFooter } from '../list';
+import { UniqueTokenRowHeight } from '../unique-token/UniqueTokenRow';
+import AssetListHeader from './AssetListHeader';
 
 export const ViewTypes = {
   HEADER: 0,
@@ -53,24 +55,25 @@ export default class RecyclerAssetList extends React.Component {
     const { width } = Dimensions.get('window');
     this.state = {
       dataProvider: new DataProvider((r1, r2) => {
-        if (get(r1, 'isHeader')) {
-          if ((get(r1, 'title') !== get(r2, 'title'))
-              || (get(r1, 'totalValue') !== get(r2, 'totalValue'))) {
-            return true;
-          }
+        const isNewHeaderValue = isNewValueForPath(r1, r2, 'title')
+          || isNewValueForPath(r1, r2, 'totalValue');
+
+        if (get(r1, 'isHeader') && isNewHeaderValue) {
+          return true;
         }
+
+        const isNewSymbol = isNewValueForPath(r1, r2, 'item.symbol');
+
+        const isNewTokenNameFirst = isNewValueForPath(r1, r2, 'item.tokens.[0].id');
+        const isNewTokenNameSecond = isNewValueForPath(r1, r2, 'item.tokens.[1].id');
+
         const r1Value = get(r1, get(r1, 'item.tokens') ? '' : 'item.native.balance.display');
         const r2Value = get(r2, get(r2, 'item.tokens') ? '' : 'item.native.balance.display');
-        const r1TokenNameFirst = get(r1, 'item.tokens.[0].id');
-        const r2TokenNameFirst = get(r2, 'item.tokens.[0].id');
-        const r1TokenNameSecond = get(r1, 'item.tokens.[1].id');
-        const r2TokenNameSecond = get(r2, 'item.tokens.[1].id');
-        const r1Symbol = get(r1, 'item.symbol');
-        const r2Symbol = get(r2, 'item.symbol');
-        return r1Symbol !== r2Symbol
+
+        return isNewSymbol
           || r1Value !== r2Value
-          || r1TokenNameFirst !== r2TokenNameFirst
-          || r1TokenNameSecond !== r2TokenNameSecond;
+          || isNewTokenNameFirst
+          || isNewTokenNameSecond;
       }),
       headersIndices: [],
     };
@@ -129,7 +132,7 @@ export default class RecyclerAssetList extends React.Component {
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST) {
           dim.height = UniqueTokenRowHeight(true, false);
         } else if (type === ViewTypes.COIN_ROW_LAST) {
-          dim.height = CoinRowHeight + CoinRowBuffer;
+          dim.height = CoinRowHeight + ListFooter.height;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRowHeight;
         } else {
@@ -150,7 +153,7 @@ export default class RecyclerAssetList extends React.Component {
         }])
         .concat(section.data.map(item => ({ item: { ...item, ...section.perData }, renderItem: section.renderItem })));
     }, []);
-    const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(props.sections.find(e => e.collectibles))
+    const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(props.sections.find(e => e.collectibles));
     return {
       areSmallCollectibles,
       dataProvider: state.dataProvider.cloneWithRows(items),
