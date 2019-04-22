@@ -69,8 +69,8 @@ const BalanceCoinRow = ({
   onPressSend,
   openSmallBalances,
   ...props
-}) => (
-  <ButtonPressAnimation onPress={(openSmallBalances || !item.isSmall) && onPress} scaleTo={0.96}>
+}) => console.log(item, props) || (
+  <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
     <CoinRow
       onPress={onPress}
       onPressSend={onPressSend}

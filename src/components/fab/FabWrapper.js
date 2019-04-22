@@ -4,6 +4,7 @@ import { onlyUpdateForKeys } from 'recompact';
 import { safeAreaInsetValues } from '../../utils';
 import { FlexItem, RowWithMargins } from '../layout';
 import SendFab from './SendFab';
+import ExchangeFab from './ExchangeFab';
 
 const bottomPosition = 21 + safeAreaInsetValues.bottom;
 
@@ -26,7 +27,6 @@ const FabWrapper = enhance(({
         `}
         direction="row-reverse"
         margin={12}
-        marginKey="left"
       >
         {fabs.map(fab => createElement(fab, props))}
       </RowWithMargins>
@@ -43,7 +43,7 @@ FabWrapper.propTypes = {
 };
 
 FabWrapper.defaultProps = {
-  fabs: [SendFab],
+  fabs: [ExchangeFab, SendFab],
 };
 
 FabWrapper.bottomPosition = bottomPosition;

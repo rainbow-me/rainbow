@@ -28,6 +28,8 @@ import {
   onTransitionStart as onTransitionStartEffect,
 } from '../navigation/transitions/effects';
 import restoreKeyboard from './restoreKeyboard';
+import ExchangeModal from './ExchangeModal';
+import CurrencySelectModal from './CurrencySelectModal';
 
 const onTransitionEnd = () => store.dispatch(updateTransitionProps({ isTransitioning: false }));
 
@@ -63,6 +65,21 @@ const SwipeStack = createMaterialTopTabNavigator({
   swipeVelocityThreshold: 10,
   tabBarComponent: null,
 });
+
+const ExchangeModalNavigator = createMaterialTopTabNavigator({
+  MainExchangeScreen: {
+    screen: ExchangeModal,
+  },
+  // eslint-disable-next-line sort-keys
+  CurrencySelectScreen: {
+    screen: CurrencySelectModal,
+  },
+}, {
+  headerMode: 'none',
+  tabBarComponent: null,
+  mode: 'modal',
+  transparentCard: true,
+})
 
 const MainNavigator = createStackNavigator({
   ConfirmRequest: {
@@ -106,6 +123,30 @@ const MainNavigator = createStackNavigator({
       ...expandedPreset,
     },
     screen: SettingsModal,
+    transparentCard: true,
+
+  },
+  ExchangeModal2: {
+    navigationOptions: {
+      effect: 'sheet',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height,
+      },
+      mode: 'card',
+      gesturesEnabled: true,
+    },
+    mode: 'card',
+    screen: ExchangeModal,
+  },
+  ExchangeModal: {
+    navigationOptions: {
+      effect: 'expanded',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height,
+      },
+      gesturesEnabled: true,
+    },
+    screen: ExchangeModalNavigator,
   },
   SwipeLayout: {
     navigationOptions: {
