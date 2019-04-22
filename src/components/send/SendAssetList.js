@@ -6,6 +6,16 @@ import AssetList from '../asset-list/RecyclerAssetList';
 import { SendCoinRow } from '../coin-row';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
 
+const CollectiblesRenderItem = ({
+  item: { onSelectAsset, ...item },
+}) => (
+  <CollectiblesSendRow
+    data={item}
+    onPress={onSelectAsset(item)}
+  />
+);
+
+// TODO onSelectAsset should not rely on symbol
 const BalancesRenderItem = ({
   index,
   item: { onSelectAsset, symbol, ...item },
@@ -17,7 +27,11 @@ const BalancesRenderItem = ({
   />
 );
 
-const collectiblesRenderItem = CollectiblesSendRow
+CollectiblesRenderItem.propTypes = {
+  item: PropTypes.shape({
+    onSelectAsset: PropTypes.func
+  }),
+};
 
 BalancesRenderItem.propTypes = {
   index: PropTypes.number,
@@ -31,7 +45,7 @@ const SendAssetList = ({
   allAssets,
   fetchData,
   onSelectAsset,
-  uniquetokens: uniqueTokens,
+  uniqueTokens,
 }) => {
   const sections = [
     {
@@ -51,7 +65,7 @@ const SendAssetList = ({
       perData: {
         onSelectAsset,
       },
-      renderItem: collectiblesRenderItem,
+      renderItem: CollectiblesRenderItem,
       type: 'small',
     },
   ];
@@ -71,7 +85,7 @@ SendAssetList.propTypes = {
   allAssets: PropTypes.array,
   fetchData: PropTypes.func,
   onSelectAsset: PropTypes.func,
-  uniquetokens: PropTypes.array,
+  uniqueTokens: PropTypes.array,
 };
 
 export default SendAssetList;
