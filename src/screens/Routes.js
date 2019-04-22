@@ -18,6 +18,8 @@ import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
+import ExchangeModal from './ExchangeModal';
+import CurrencySelectModal from './CurrencySelectModal';
 
 const onTransitionEnd = () => store.dispatch(updateTransitionProps({ isTransitioning: false }));
 const onTransitionStart = () => store.dispatch(updateTransitionProps({ isTransitioning: true }));
@@ -42,6 +44,21 @@ const SwipeStack = createMaterialTopTabNavigator({
   mode: 'modal',
   tabBarComponent: null,
 });
+
+const ExchangeModalNavigator = createMaterialTopTabNavigator({
+  MainExchangeScreen: {
+    screen: ExchangeModal,
+  },
+  // eslint-disable-next-line sort-keys
+  CurrencySelectScreen: {
+    screen: CurrencySelectModal,
+  },
+}, {
+  headerMode: 'none',
+  tabBarComponent: null,
+  mode: 'modal',
+  transparentCard: true,
+})
 
 const MainNavigator = createStackNavigator({
   ConfirmRequest: TransactionConfirmationScreenWithData,
@@ -72,6 +89,30 @@ const MainNavigator = createStackNavigator({
       gesturesEnabled: false,
     },
     screen: SettingsModal,
+    transparentCard: true,
+
+  },
+  ExchangeModal2: {
+    navigationOptions: {
+      effect: 'sheet',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height,
+      },
+      mode: 'card',
+      gesturesEnabled: true,
+    },
+    mode: 'card',
+    screen: ExchangeModal,
+  },
+  ExchangeModal: {
+    navigationOptions: {
+      effect: 'expanded',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height,
+      },
+      gesturesEnabled: true,
+    },
+    screen: ExchangeModalNavigator,
   },
   SwipeLayout: SwipeStack,
 }, {

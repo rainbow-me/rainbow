@@ -95,6 +95,7 @@ export default compose(
   withIsWalletEmpty,
   withStatusBarStyle('dark-content'),
   withState('showShitcoins', 'toggleShowShitcoins', true),
+  withState('refreshed', 'toggleRefresh', false),
   withHandlers({
     onRefreshList: ({ refreshAccount }) => async () => refreshAccount(),
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {

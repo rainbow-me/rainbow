@@ -50,6 +50,7 @@ export default function expanded(navigation, transitionProps, prevTransitionProp
         });
 
         return {
+          backgroundColor: 'transparent',
           opacity,
         };
       }
@@ -61,6 +62,7 @@ export default function expanded(navigation, transitionProps, prevTransitionProp
         });
 
         return {
+          backgroundColor: 'transparent',
           transform: [{
             translateY,
           }],
