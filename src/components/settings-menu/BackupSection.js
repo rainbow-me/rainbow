@@ -71,7 +71,7 @@ const BackupSection = ({
         ) : (
           <Text
             align="center"
-            color="blueGreyLighter"
+            color="blueGreyLightest"
             lineHeight="loose"
           >
             If you lose access to your device, the only way to restore your

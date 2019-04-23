@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { pure } from 'recompact';
 import { TruncatedText } from '../text';
 
 const CoinName = ({ paddingRight, ...props }) => (
@@ -19,4 +20,4 @@ CoinName.defaultProps = {
   paddingRight: 19,
 };
 
-export default CoinName;
+export default pure(CoinName);

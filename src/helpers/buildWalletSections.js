@@ -38,7 +38,9 @@ const UniqueTokenItem = enhanceRenderItem(UniqueTokenRow);
 
 const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
 const collectiblesRenderItem = item => <UniqueTokenItem {...item} assetType="unique_token" />;
-const filterWalletSections = sections => sections.filter(({ header: { totalItems } }) => totalItems);
+const filterWalletSections = sections => sections.filter(({ data, header }) => (
+  data ? get(header, 'totalItems') : true
+));
 
 const buildWalletSections = (
   allAssets,

@@ -79,7 +79,7 @@ PODS:
     - React
   - react-native-camera/RN (2.6.0):
     - React
-  - react-native-fast-image (5.2.0):
+  - react-native-fast-image (5.3.0):
     - FLAnimatedImage
     - React
     - SDWebImage/Core
@@ -269,7 +269,7 @@ SPEC CHECKSUMS:
   React: 90adac468c7b72bf1fa6c64bf230650f851a8388
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: 60e1ec7b259a7779b508712f75671701f23a6b4d
-  react-native-fast-image: 21d2d84a46b12cacbe7958ab6414fe828c094f82
+  react-native-fast-image: 56efe6ea964cff19fd9bb1cc28e79b432c4b58e4
   react-native-netinfo: 1ea4efa22c02519ac8043ac3f000062a4e320795
   react-native-version-number: 75301519bb72064ad209a498ed08b128cbcf10e7
   RNCAsyncStorage: 02c55fdf22e98cdfdddca674e8ce0bb9f4e32fbf
