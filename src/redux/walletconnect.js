@@ -27,6 +27,7 @@ const WALLETCONNECT_INIT_SESSIONS = 'walletconnect/WALLETCONNECT_INIT_SESSIONS';
 // ];
 
 const getNativeOptions = async () => {
+  // TODO language format required
   const language = DEVICE_LANGUAGE.replace(/[-_](\w?)+/gi, '').toLowerCase();
   const token = await getFCMToken();
 
