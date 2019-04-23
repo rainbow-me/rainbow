@@ -20,7 +20,7 @@ const SendTransactionSpeed = ({ gasPrice, nativeCurrencySymbol, onPressTransacti
         disabled={true}
         showShadow={false}
         size="small"
-        textProps={{ color: colors.blueGreyLighter }}
+        textProps={{ color: colors.blueGreyLightest }}
         type="pill"
       >
         Fee: {fee}

@@ -1,21 +1,25 @@
-import { get } from 'lodash';
+import { get, has } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Dimensions, RefreshControl } from 'react-native';
+import { RefreshControl } from 'react-native';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
+import {
+  buildAssetHeaderUniqueIdentifier,
+  buildAssetUniqueIdentifier,
+} from '../../helpers/assets';
 import { colors } from '../../styles';
-import { isNewValueForPath } from '../../utils';
-import { DividerHeight } from '../coin-row/CollectiblesSendRow';
+import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
 import { CoinRowHeight } from '../coin-row/CoinRow';
+import { DividerHeight } from '../coin-row/CollectiblesSendRow';
 import { ListFooter } from '../list';
 import { UniqueTokenRowHeight } from '../unique-token/UniqueTokenRow';
 import AssetListHeader from './AssetListHeader';
 
 export const ViewTypes = {
   HEADER: 0,
-  COIN_ROW: 1,
+  COIN_ROW: 1, // eslint-disable-line sort-keys
   COIN_ROW_LAST: 2,
   UNIQUE_TOKEN_ROW: 3,
   UNIQUE_TOKEN_ROW_FIRST: 4,
@@ -30,11 +34,39 @@ const Wrapper = styled.View`
 // eslint-disable-next-line react/prop-types
 const AssetListHeaderRenderer = (data) => <AssetListHeader {...data} />;
 
+const hasRowChanged = (r1, r2) => {
+  if (has(r1, 'isHeader')) {
+    const isNewTitle = isNewValueForPath(r1, r2, 'title');
+    const isNewTotalItems = isNewValueForPath(r1, r2, 'totalItems');
+    const isNewTotalValue = isNewValueForPath(r1, r2, 'totalValue');
+
+    return isNewTitle || isNewTotalItems || isNewTotalValue;
+  }
+
+  const isNewAsset = isNewValueForPath(r1, r2, 'item.uniqueId');
+
+  const isNewTokenFirst = isNewValueForPath(r1, r2, 'item.tokens.[0].uniqueId');
+  const isNewTokenSecond = isNewValueForPath(r1, r2, 'item.tokens.[1].uniqueId');
+
+  const isCollectiblesRow = has(r1, 'item.tokens') && has(r2, 'item.tokens');
+  let isNewAssetBalance = false;
+
+  if (!isCollectiblesRow) {
+    isNewAssetBalance = isNewValueForPath(r1, r2, 'item.native.balance.display');
+  }
+
+  return isNewAsset
+    || isNewAssetBalance
+    || isNewTokenFirst
+    || isNewTokenSecond;
+};
+
 export default class RecyclerAssetList extends React.Component {
   static propTypes = {
     fetchData: PropTypes.func,
     hideHeader: PropTypes.bool,
     paddingBottom: PropTypes.number,
+    renderAheadOffset: PropTypes.number,
     sections: PropTypes.arrayOf(PropTypes.shape({
       balances: PropTypes.bool,
       collectibles: PropTypes.bool,
@@ -52,29 +84,9 @@ export default class RecyclerAssetList extends React.Component {
 
   constructor(props) {
     super(props);
-    const { width } = Dimensions.get('window');
+
     this.state = {
-      dataProvider: new DataProvider((r1, r2) => {
-        const isNewHeaderValue = isNewValueForPath(r1, r2, 'title')
-          || isNewValueForPath(r1, r2, 'totalValue');
-
-        if (get(r1, 'isHeader') && isNewHeaderValue) {
-          return true;
-        }
-
-        const isNewSymbol = isNewValueForPath(r1, r2, 'item.symbol');
-
-        const isNewTokenNameFirst = isNewValueForPath(r1, r2, 'item.tokens.[0].id');
-        const isNewTokenNameSecond = isNewValueForPath(r1, r2, 'item.tokens.[1].id');
-
-        const r1Value = get(r1, get(r1, 'item.tokens') ? '' : 'item.native.balance.display');
-        const r2Value = get(r2, get(r2, 'item.tokens') ? '' : 'item.native.balance.display');
-
-        return isNewSymbol
-          || r1Value !== r2Value
-          || isNewTokenNameFirst
-          || isNewTokenNameSecond;
-      }),
+      dataProvider: new DataProvider(hasRowChanged, this.getStableId),
       headersIndices: [],
     };
 
@@ -108,7 +120,7 @@ export default class RecyclerAssetList extends React.Component {
         return ViewTypes.COIN_ROW;
       },
       (type, dim) => {
-        dim.width = width;
+        dim.width = deviceUtils.dimensions.width;
         if (this.state.areSmallCollectibles
             && (
               type === ViewTypes.UNIQUE_TOKEN_ROW_LAST
@@ -119,6 +131,10 @@ export default class RecyclerAssetList extends React.Component {
           dim.height = CoinRowHeight;
           if (type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST) {
             dim.height += DividerHeight;
+          } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_LAST) {
+            // We want to add enough spacing below the list so that when the user scrolls to the bottom,
+            // the bottom of the list content lines up with the top of the FABs (+ padding).
+            dim.height += (props.paddingBottom || 0);
           }
           return;
         }
@@ -128,11 +144,11 @@ export default class RecyclerAssetList extends React.Component {
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_LAST) {
           // We want to add enough spacing below the list so that when the user scrolls to the bottom,
           // the bottom of the list content lines up with the top of the FABs (+ padding).
-          dim.height = (UniqueTokenRowHeight(false, true)) + props.paddingBottom || 0;
+          dim.height = UniqueTokenRowHeight(false, true) + (props.paddingBottom || 0);
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST) {
           dim.height = UniqueTokenRowHeight(true, false);
         } else if (type === ViewTypes.COIN_ROW_LAST) {
-          dim.height = CoinRowHeight + ListFooter.height;
+          dim.height = this.state.areSmallCollectibles ? CoinRowHeight : CoinRowHeight + ListFooter.height;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRowHeight;
         } else {
@@ -142,9 +158,10 @@ export default class RecyclerAssetList extends React.Component {
     );
   }
 
-  static getDerivedStateFromProps(props, state) {
+  static getDerivedStateFromProps({ sections }, state) {
     const headersIndices = [];
-    const items = props.sections.reduce((ctx, section) => {
+
+    const items = sections.reduce((ctx, section) => {
       headersIndices.push(ctx.length);
       return ctx
         .concat([{
@@ -153,7 +170,9 @@ export default class RecyclerAssetList extends React.Component {
         }])
         .concat(section.data.map(item => ({ item: { ...item, ...section.perData }, renderItem: section.renderItem })));
     }, []);
-    const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(props.sections.find(e => e.collectibles));
+
+    const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(sections.find(e => e.collectibles));
+
     return {
       areSmallCollectibles,
       dataProvider: state.dataProvider.cloneWithRows(items),
@@ -169,6 +188,14 @@ export default class RecyclerAssetList extends React.Component {
   componentWillUnmount = () => {
     this.isCancelled = true;
   };
+
+  getStableId = (index) => {
+    const row = get(this.state, `dataProvider._data[${index}]`);
+
+    return has(row, 'isHeader')
+      ? buildAssetHeaderUniqueIdentifier(row)
+      : buildAssetUniqueIdentifier(row.item);
+  }
 
   handleRefresh = () => {
     if (this.state.isRefreshing) return;
@@ -188,9 +215,9 @@ export default class RecyclerAssetList extends React.Component {
     />
   );
 
-  rowRenderer = (type, data) => {
+  rowRenderer = (type, data, index) => {
     const { item, renderItem } = data;
-    const { hideHeader } = this.props;
+    const { hideHeader, sections } = this.props;
 
     if (type === ViewTypes.HEADER) {
       return hideHeader ? null : <AssetListHeaderRenderer {...data} />;
@@ -202,20 +229,27 @@ export default class RecyclerAssetList extends React.Component {
         data: item.tokens ? item.tokens : item,
         isFirstRow: type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST,
         isLastRow: type === ViewTypes.UNIQUE_TOKEN_ROW_LAST,
+        shouldPrioritizeImageLoading: index < sections[0].data.length + 9,
       });
   };
 
   render() {
+    const { hideHeader, renderAheadOffset } = this.props;
+    const { dataProvider, headersIndices } = this.state;
+
     return (
       <Wrapper>
-        <StickyContainer
-          stickyHeaderIndices={this.state.headersIndices}
-        >
+        <StickyContainer stickyHeaderIndices={headersIndices}>
           <RecyclerListView
             layoutProvider={this.layoutProvider}
-            dataProvider={this.state.dataProvider}
+            dataProvider={dataProvider}
+            renderAheadOffset={renderAheadOffset}
             rowRenderer={this.rowRenderer}
-            renderAheadOffset={1000}
+            scrollIndicatorInsets={{
+              bottom: safeAreaInsetValues.bottom,
+              top: hideHeader ? 0 : AssetListHeader.height,
+            }}
+            scrollThrottle={32}
             scrollViewProps={{
               refreshControl: this.renderRefreshControl(),
             }}
