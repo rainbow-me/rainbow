@@ -80,6 +80,11 @@ const UniqueTokenExpandedState = ({
           subtitle={subtitle}
           title={title}
         />
+        {asset.isSendable && (<AssetPanelAction
+          icon="send"
+          label="Send to..."
+          onPress={onPressSend}
+        />)}
         <AssetPanelAction
           icon="compass"
           label="View on OpenSea"
@@ -90,11 +95,6 @@ const UniqueTokenExpandedState = ({
           label="Share"
           onPress={onPressShare}
         />
-        {asset.isSendable && (<AssetPanelAction
-          icon="send"
-          label="Send"
-          onPress={onPressSend}
-        />)}
       </AssetPanel>
     </FloatingPanels>
   );
