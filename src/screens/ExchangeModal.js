@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  TextInput, KeyboardAvoidingView, Keyboard,
+  TextInput, KeyboardAvoidingView, Keyboard, View,
 } from 'react-native';
 import {
   compose,
@@ -16,7 +16,7 @@ import {
 } from '../components/layout';
 import { ModalHeader } from '../components/modal';
 import withBlockedHorizontalSwipe from '../hoc/withBlockedHorizontalSwipe';
-import { colors, shadow } from '../styles';
+import { colors, padding, shadow } from '../styles';
 import { Icon } from '../components/icons';
 import FloatingPanels from '../components/expanded-state/FloatingPanels';
 import FloatingPanel from '../components/expanded-state/FloatingPanel';
@@ -37,6 +37,19 @@ const ConfirmExchngeButton = styled(Button)`
   padding-horizontal: 5;
   align-self: center
 `;
+
+
+const FeeHolder = styled(View)`
+  ${shadow.build(0, 6, 10, colors.dark, 0.14)}
+  align-self: center;
+  border-radius: 16;
+  height: 32;
+  ${padding(4, 10)}
+  margin-top: 32;
+  border-width: 1;
+  border-color: ${colors.alpha(colors.white, 0.45)};
+`;
+
 
 const TopRow = ({
   navigateToCurrencySelection, amount, changeAmount, symbol,
@@ -129,13 +142,24 @@ const SettingsModal = ({
           </FloatingPanel>
           <GestureBlocker type='bottom'/>
           {selectedTargetCurrency
-          && <ConfirmExchngeButton
-            disabled={!Number(amountToExchange)}
-            backgroundColor={Number(amountToExchange) ? colors.appleBlue : colors.blueGreyLighter}
-            onPress={onPressConfirmExchange}
-          >
-            {Number(amountToExchange) ? 'Hold to swap' : 'Enter an amount' }
-          </ConfirmExchngeButton>
+          && <React.Fragment>
+            <ConfirmExchngeButton
+              disabled={!Number(amountToExchange)}
+              backgroundColor={Number(amountToExchange) ? colors.appleBlue : colors.blueGreyLighter}
+              onPress={onPressConfirmExchange}
+            >
+              {Number(amountToExchange) ? 'Hold to swap' : 'Enter an amount' }
+            </ConfirmExchngeButton>
+            {!!Number(amountToExchange) && <FeeHolder>
+              <Text
+                color={colors.alpha(colors.white, 0.45)}
+                lineHeight="loose"
+                size="smedium"
+              >
+                👾 Fee: $0.06
+              </Text>
+            </FeeHolder>}
+          </React.Fragment>
           }
         </FloatingPanels>
       </Container>
