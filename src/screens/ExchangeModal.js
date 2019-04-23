@@ -39,29 +39,34 @@ const ConfirmExchngeButton = styled(Button)`
   align-self: center
 `;
 
-const TopRow = ({ navigateToCurrencySelection, amount, changeAmount, symbol }) => (
+const TopRow = ({
+  navigateToCurrencySelection, amount, changeAmount, symbol,
+}) => (
   <Row align="center" justify="space-between">
     <FlexItem flex={1}>
       <CoinName
-        component={TextInput}
+        component={symbol ? TextInput : Text}
         keyboardType="decimal-pad"
         value={amount}
         onChangeText={changeAmount}
-      />
+      >
+        {symbol ? null : '–'}
+      </CoinName>
     </FlexItem>
     <FlexItem flex={0}>
       <Button
         onPress={navigateToCurrencySelection}
         padding={0}
+        backgroundColor={symbol ? colors.dark : colors.appleBlue}
       >
         <Text
           color="white"
           weight="semibold"
-          style={{ fontSize: 12 }}
         >
-          {symbol}
+          {symbol || 'Choose a Coin'}
         </Text>
         <Icon
+          marginLeft={4}
           size={8}
           color="white"
           direction="right"
@@ -158,7 +163,7 @@ export default compose(
   withAccountAssets,
   withState('amountToExchange', 'setAmountToExchange', '0'),
   withState('selectedCurrency', 'setSelectedCurrency', null),
-  withState('selectedTargetCurrency', 'setSelectedTargetCurrency', 'ETH'),
+  withState('selectedTargetCurrency', 'setSelectedTargetCurrency', null),
   withProps(({
     selectedCurrency,
     allAssets: [{ symbol }],
