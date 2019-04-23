@@ -7,8 +7,7 @@ import { walletConnectSendStatus } from '../redux/walletconnect';
 const mapStateToProps = ({
   nonce: { transactionCountNonce },
 }) => ({
-  transactionCountNonce,
-  walletConnectors,
+  transactionCountNonce
 });
 
 export default Component => connect(mapStateToProps, {
