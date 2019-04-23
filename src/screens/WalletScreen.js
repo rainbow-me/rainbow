@@ -62,8 +62,10 @@ class WalletScreen extends PureComponent {
       onRefreshList,
       sections,
       showBlur,
+      ...rest
     } = this.props;
 
+    console.log(this.props)
     return (
       <Page style={{ flex: 1, ...position.sizeAsObject('100%') }}>
         <Header justify="space-between">

@@ -3,6 +3,8 @@ import {
   createMaterialTopTabNavigator,
   createStackNavigator,
 } from 'react-navigation';
+import React from 'react';
+import { get } from 'lodash';
 import Navigation from '../navigation';
 import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import { updateTransitionProps } from '../redux/navigation';
@@ -58,11 +60,32 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator({
   tabBarComponent: null,
   mode: 'modal',
   transparentCard: true,
-})
+});
+
+
+const EnhancedExchangeModalNavigator = props => <ExchangeModalNavigator {...props}/>;
+EnhancedExchangeModalNavigator.router = ExchangeModalNavigator.router;
+EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => ({
+  gesturesEnabled: !get(navigation, 'state.params.isGestureBlocked'),
+});
+
 
 const MainNavigator = createStackNavigator({
   ConfirmRequest: TransactionConfirmationScreenWithData,
   // ExamplePage: ExamplePage,
+  ExchangeModal: {
+    navigationOptions: {
+      effect: 'expanded',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height,
+      },
+    },
+    params: {
+      isGestureBlocked: false,
+      isSwipeBlocked: true,
+    },
+    screen: EnhancedExchangeModalNavigator,
+  },
   ExpandedAssetScreen: {
     navigationOptions: {
       effect: 'expanded',
@@ -91,28 +114,6 @@ const MainNavigator = createStackNavigator({
     screen: SettingsModal,
     transparentCard: true,
 
-  },
-  ExchangeModal2: {
-    navigationOptions: {
-      effect: 'sheet',
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height,
-      },
-      mode: 'card',
-      gesturesEnabled: true,
-    },
-    mode: 'card',
-    screen: ExchangeModal,
-  },
-  ExchangeModal: {
-    navigationOptions: {
-      effect: 'expanded',
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height,
-      },
-      gesturesEnabled: true,
-    },
-    screen: ExchangeModalNavigator,
   },
   SwipeLayout: SwipeStack,
 }, {

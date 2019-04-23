@@ -30,6 +30,7 @@ const AssetListHeaderRenderer = ({ section }) => <AssetListHeader {...section} /
 
 export default class RecyclerAssetList extends React.Component {
   static propTypes = {
+    externalScrollView: PropTypes.any,
     fetchData: PropTypes.func,
     hideHeader: PropTypes.bool,
     paddingBottom: PropTypes.number,
@@ -200,12 +201,13 @@ export default class RecyclerAssetList extends React.Component {
           stickyHeaderIndices={this.state.headersIndices}
         >
           <RecyclerListView
+            externalScrollView={this.props.externalScrollView}
             layoutProvider={this.layoutProvider}
             dataProvider={this.state.dataProvider}
             rowRenderer={this.rowRenderer}
             renderAheadOffset={1000}
             scrollViewProps={{
-              refreshControl: this.renderRefreshControl(),
+              refreshControl: this.props.fetchData && this.renderRefreshControl(),
             }}
           />
         </StickyContainer>
