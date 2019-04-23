@@ -2,12 +2,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { ActivityList } from '../components/activity-list';
 import AddFundsInterstitial from '../components/AddFundsInterstitial';
+import { FadeInAnimation } from '../components/animations';
 import BlurOverlay from '../components/BlurOverlay';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { FlexItem, Page } from '../components/layout';
 import { Icon } from '../components/icons';
 import { ProfileMasthead } from '../components/profile';
-import { position } from '../styles';
+import { colors, position } from '../styles';
 
 const ProfileScreen = ({
   accountAddress,
@@ -22,15 +23,8 @@ const ProfileScreen = ({
   showBlur,
   transactions,
   transactionsCount,
-  transitionProps,
 }) => (
   <Page component={FlexItem} style={position.sizeAsObject('100%')}>
-    {showBlur && (
-      <BlurOverlay
-        blurType="light"
-        opacity={blurOpacity}
-      />
-    )}
     <Header justify="space-between">
       <HeaderButton onPress={onPressSettings}>
         <Icon name="gear" />
@@ -56,6 +50,15 @@ const ProfileScreen = ({
       transactionsCount={transactionsCount}
     />
     {isEmpty && <AddFundsInterstitial />}
+    {showBlur && (
+      <FadeInAnimation duration={200} style={{ ...position.coverAsObject, zIndex: 1 }}>
+        <BlurOverlay
+          backgroundColor={colors.alpha(colors.blueGreyDarker, 0.4)}
+          blurType="light"
+          opacity={blurOpacity}
+        />
+      </FadeInAnimation>
+    )}
   </Page>
 );
 
@@ -72,7 +75,6 @@ ProfileScreen.propTypes = {
   showBlur: PropTypes.bool,
   transactions: PropTypes.array,
   transactionsCount: PropTypes.number,
-  transitionProps: PropTypes.object,
 };
 
 export default ProfileScreen;

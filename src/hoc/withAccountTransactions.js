@@ -15,7 +15,7 @@ const mapStateToProps = ({
 });
 
 const transactionsCountSelector = createSelector(
-  [ transactionsSelector ],
+  [transactionsSelector],
   (transactions) => ({ transactionsCount: transactions.length }),
 );
 

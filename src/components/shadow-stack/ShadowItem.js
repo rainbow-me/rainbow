@@ -1,33 +1,26 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components/primitives';
+import { View } from 'react-native';
+import { pure } from 'recompact';
+import { colors, position, shadow as shadowUtil } from '../../styles';
 
-const Container = styled.View`
-  background-color: ${({ shadowColor }) => (shadowColor || '#ffffff')};
-  border-radius: ${({ borderRadius }) => borderRadius};
-  bottom: 0;
-  box-shadow: ${({ shadow }) => shadow};
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-`;
-
-const getColorFromShadowString = (shadow = '') => shadow.split(' ').slice(3).join('');
-
-const ShadowItem = ({ shadow, ...props }) => (
-  <Container
+const ShadowItem = ({ backgroundColor, shadow, ...props }) => (
+  <View
     {...props}
-    shadow={shadow}
-    shadowColor={getColorFromShadowString(shadow)}
+    css={`
+      ${position.cover};
+      ${shadowUtil.build(...shadow)}
+      background-color: ${backgroundColor || colors.white};
+    `}
+    shouldRasterizeIOS
   />
 );
 
 ShadowItem.propTypes = {
-  borderRadius: PropTypes.number,
+  backgroundColor: PropTypes.string,
   height: PropTypes.number,
-  shadow: PropTypes.string,
-  width: PropTypes.number,
+  shadow: PropTypes.array,
+  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
-export default ShadowItem;
+export default pure(ShadowItem);

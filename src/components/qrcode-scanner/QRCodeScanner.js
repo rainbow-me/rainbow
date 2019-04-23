@@ -1,167 +1,89 @@
-import { withSafeTimeout } from '@hocs/safe-timers';
-import { isFunction } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { Dimensions, InteractionManager, StyleSheet } from 'react-native';
-import Permissions from 'react-native-permissions';
-import ReactNativeQRCodeScanner from 'react-native-qrcode-scanner';
+import DeviceInfo from 'react-native-device-info';
+import FastImage from 'react-native-fast-image';
 import stylePropType from 'react-style-proptype';
 import styled from 'styled-components/primitives';
-import CrosshairAsset from '../../assets/qrcode-scanner-crosshair.png';
+import SimulatorFakeCameraImageSource from '../../assets/simulator-fake-camera-image.jpg';
 import { colors, position } from '../../styles';
 import { Centered } from '../layout';
 import { ErrorText } from '../text';
-import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
-
-const CAMERA_PERMISSION = 'camera';
-const PERMISSION_AUTHORIZED = 'authorized';
-
-const styles = StyleSheet.create({
-  disableSection: {
-    flex: 0,
-    height: 0,
-  },
-  fullscreen: {
-    ...position.coverAsObject,
-    height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width,
-  },
-});
+import QRCodeScannerCamera from './QRCodeScannerCamera';
+import QRCodeScannerCrosshair from './QRCodeScannerCrosshair';
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
-  ${position.cover}
+  ${position.cover};
   background-color: ${colors.black};
 `;
 
-const Crosshair = styled.Image`
-  ${position.size(Dimensions.get('window').width * (293 / 375))}
-  margin-bottom: 1;
-  resize-mode: contain;
-`;
-
-const ContentContainer = styled(Centered)`
-  ${position.cover}
-`;
-
-class QRCodeScanner extends PureComponent {
+export default class QRCodeScanner extends PureComponent {
   static propTypes = {
     contentStyles: stylePropType,
+    enableCamera: PropTypes.bool,
     enableScanning: PropTypes.bool,
+    isCameraAuthorized: PropTypes.bool,
     onCameraReady: PropTypes.func,
     onSuccess: PropTypes.func,
-    scannerRef: PropTypes.func,
     setSafeTimeout: PropTypes.func,
+    showCrosshairText: PropTypes.bool,
   }
 
   state = {
     error: null,
-    isAuthorized: true,
     isInitialized: false,
   }
 
-  componentDidMount = () => {
-    this.handleIsAuthorized();
-    this.props.setSafeTimeout(this.handleInitializationError, 5000);
-  }
+  handleCameraReady = () => this.setState({ isInitialized: true })
 
-  componentDidUpdate = () => {
-    const { enableScanning } = this.props;
+  handleMountError = () => this.setState({ error: 'mounting' })
 
-    if (!this.scannerRef) return;
-
-    InteractionManager.runAfterInteractions(() => {
-      const isScannerEnabled = this.scannerRef && !this.scannerRef.state.disablingByUser;
-
-      if (enableScanning && !isScannerEnabled) {
-        this.handleEnableScanner();
-      } else if (!enableScanning && isScannerEnabled) {
-        this.handleDisableScanner();
-      }
-    });
-  }
-
-  handleDisableScanner = () => {
-    if (this.scannerRef && isFunction(this.scannerRef.disable)) {
-      console.log('📠🚫 Disabling QR Code Scanner');
-      this.scannerRef.disable();
+  renderCamera = () => {
+    if (DeviceInfo.isEmulator()) {
+      return (
+        <FastImage
+          source={SimulatorFakeCameraImageSource}
+          style={position.sizeAsObject('100%')}
+        />
+      );
     }
-  }
 
-  handleEnableScanner = () => {
-    if (this.scannerRef && isFunction(this.scannerRef.enable)) {
-      console.log('📠✅ Enabling QR Code Scanner');
-      this.scannerRef.enable();
-    }
-  }
-
-  handleCameraReady = () => {
-    console.log('📷 ✅ CAMERA READY');
-    this.handleDidInitialize();
-    if (this.props.onCameraReady) this.props.onCameraReady();
-  }
-
-  handleDidInitialize = () => this.setState({ isInitialized: true })
-
-  handleError = error => this.setState({ error })
-
-  handleIsAuthorized = () =>
-    Permissions.request(CAMERA_PERMISSION)
-      .then(response => this.setState({ isAuthorized: response === PERMISSION_AUTHORIZED }))
-
-  handleInitializationError = () => {
-    if (!this.state.isInitialized) {
-      this.handleError('initializing');
-    }
-  }
-
-  handleScannerRef = (ref) => { this.scannerRef = ref; }
-
-  handleMountError = () => {
-    console.log('📷 🚨 CAMERA MOUNT ERROR');
-    this.handleError('mounting');
+    return this.props.enableCamera ? (
+      <QRCodeScannerCamera
+        enableScanning={this.props.enableScanning}
+        onCameraReady={this.handleCameraReady}
+        onMountError={this.handleMountError}
+        onSuccess={this.props.onSuccess}
+      />
+    ) : null;
   }
 
   render = () => {
-    const { contentStyles, onSuccess } = this.props;
-    const { error, isAuthorized, isInitialized } = this.state;
+    const { contentStyles, isCameraAuthorized, showCrosshairText } = this.props;
+    const { error, isInitialized } = this.state;
 
-    const showErrorMessage = error && isAuthorized && !isInitialized;
-    const showCrosshair = !error && isAuthorized && !showErrorMessage;
+    const showErrorMessage = error && !isInitialized;
+    const showCrosshair = !error && !showErrorMessage;
 
     return (
       <Container>
-        <ReactNativeQRCodeScanner
-          bottomViewStyle={styles.disableSection}
-          cameraProps={{
-            captureAudio: false,
-            onCameraReady: this.handleCameraReady,
-            onMountError: this.handleMountError,
-          }}
-          cameraStyle={styles.fullscreen}
-          containerStyle={styles.fullscreen}
-          notAuthorizedView={<QRCodeScannerNeedsAuthorization />}
-          onRead={onSuccess}
-          pendingAuthorizationView={<QRCodeScannerNeedsAuthorization />}
-          reactivate={true}
-          reactivateTimeout={1000}
-          ref={this.handleScannerRef}
-          topViewStyle={styles.disableSection}
-          vibrate={false}
-        />
-        {isAuthorized && (
-          <ContentContainer style={contentStyles}>
+        {this.renderCamera()}
+        {isCameraAuthorized && (
+          <Centered style={[position.coverAsObject, contentStyles]}>
             {showErrorMessage && (
               <ErrorText
                 color={colors.red}
                 error={`Error ${error} camera`}
               />
             )}
-            {showCrosshair && <Crosshair source={CrosshairAsset} />}
-          </ContentContainer>
+            {showCrosshair && (
+              <QRCodeScannerCrosshair
+                showText={showCrosshairText || DeviceInfo.isEmulator()}
+                text={DeviceInfo.isEmulator() ? 'Simulator Mode' : undefined}
+              />
+            )}
+          </Centered>
         )}
       </Container>
     );
   }
 }
-
-export default withSafeTimeout(QRCodeScanner);

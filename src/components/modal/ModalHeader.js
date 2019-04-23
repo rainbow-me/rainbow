@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
-import { colors, position } from '../../styles';
+import { borders, colors, position } from '../../styles';
 import { Centered, Row } from '../layout';
 import { TruncatedText } from '../text';
 import ModalHeaderButton from './ModalHeaderButton';
@@ -13,6 +13,7 @@ const Container = styled(Row).attrs({
   flex: 0,
   justify: 'space-between',
 })`
+  ${borders.buildRadius('top', 12)};
   background-color: ${colors.white};
   flex-shrink: 0;
   height: ${ModalHeaderHeight};
@@ -22,14 +23,6 @@ const Container = styled(Row).attrs({
 const TitleContainer = styled(Centered)`
   ${position.cover};
   zIndex: 0;
-`;
-
-const TitleText = styled(TruncatedText).attrs({
-  size: 'large',
-  weight: 'bold',
-})`
-  height: 21;
-  letter-spacing: -0.2px;
 `;
 
 const ModalHeader = ({
@@ -49,7 +42,14 @@ const ModalHeader = ({
       />
     )}
     <TitleContainer>
-      <TitleText>{title}</TitleText>
+      <TruncatedText
+        height={21}
+        letterSpacing="tight"
+        size="large"
+        weight="bold"
+      >
+        {title}
+      </TruncatedText>
     </TitleContainer>
     <ModalHeaderButton
       label="Done"

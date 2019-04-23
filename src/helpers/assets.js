@@ -2,7 +2,7 @@ export const buildUniqueTokenList = (uniqueTokensAssets) => {
   const list = [];
 
   for (let i = 0; i < uniqueTokensAssets.length; i += 2) {
-    list.push([uniqueTokensAssets[i], uniqueTokensAssets[i + 1]]);
+    list.push({ tokens: [uniqueTokensAssets[i], uniqueTokensAssets[i + 1]] });
   }
 
   return list;

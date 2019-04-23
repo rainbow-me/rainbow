@@ -5,7 +5,7 @@ ios/GoogleService-Info.plist
 #
 .DS_Store
 ios/Pods/
-ios/BalanceWallet.app.dSYM.zip
+ios/*dSYM.zip
 
 # Xcode
 #
@@ -59,3 +59,6 @@ buck-out/
 
 # Bundle artifact
 *.jsbundle
+
+# Development Templates
+src/screens/ExamplePage.js

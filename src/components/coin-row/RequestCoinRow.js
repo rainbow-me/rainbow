@@ -1,17 +1,20 @@
 import { addHours, differenceInMinutes } from 'date-fns';
-import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, onlyUpdateForKeys, withHandlers, withProps } from 'recompact';
+import {
+  compose,
+  onlyUpdateForKeys,
+  withHandlers,
+  withProps,
+} from 'recompact';
 import { withNavigation } from 'react-navigation';
-import { css } from 'styled-components/primitives';
 import { colors } from '../../styles';
+import { ButtonPressAnimation } from '../animations';
 import { Button } from '../buttons';
+import { RequestCoinIcon } from '../coin-icon';
 import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-
-import { RequestCoinIcon } from '../coin-icon';
 
 const getPercentageOfTimeElapsed = (startDate, endDate) => {
   const originalDifference = differenceInMinutes(endDate, startDate);
@@ -20,12 +23,19 @@ const getPercentageOfTimeElapsed = (startDate, endDate) => {
   return Math.floor((currentDifference * 100) / originalDifference);
 };
 
-const buttonContainerStyles = css`
-  border-radius: 18;
-  height: 36;
-  padding-left: 12;
-  padding-right: 12;
-`;
+// eslint-disable-next-line react/prop-types
+const bottomRowRender = ({ dappName }) => <CoinName>{dappName}</CoinName>;
+
+// eslint-disable-next-line react/prop-types
+const topRowRender = ({ expirationColor, expiresAt }) => {
+  const minutes = differenceInMinutes(expiresAt, Date.now());
+
+  return (
+    <Text color={expirationColor} weight="semibold">
+      Expires in {minutes || 0}m
+    </Text>
+  );
+};
 
 const RequestCoinRow = ({
   expirationColor,
@@ -34,28 +44,32 @@ const RequestCoinRow = ({
   onPressOpen,
   ...props
 }) => (
-  <CoinRow
-    {...item}
-    {...props}
-    bottomRowRender={({ dappName }) => <CoinName>{dappName}</CoinName>}
-    coinIconRender={RequestCoinIcon}
-    expirationColor={expirationColor}
-    topRowRender={() => (
-      <Text color={expirationColor} weight="semibold">
-        Expires in {differenceInMinutes(expiresAt, Date.now())}m
-      </Text>
-    )}
-  >
-    <Button
-      bgColor={colors.primaryBlue}
-      containerStyles={buttonContainerStyles}
-      onPress={onPressOpen}
-      size="small"
-      textProps={{ size: 'smedium' }}
+  <ButtonPressAnimation onPress={onPressOpen} scaleTo={0.96}>
+    <CoinRow
+      {...item}
+      {...props}
+      bottomRowRender={bottomRowRender}
+      coinIconRender={RequestCoinIcon}
+      expirationColor={expirationColor}
+      expiresAt={expiresAt}
+      topRowRender={topRowRender}
     >
-      Open
-    </Button>
-  </CoinRow>
+      <Button
+        backgroundColor={colors.primaryBlue}
+        containerStyles={`
+          border-radius: 18;
+          height: 36;
+          padding-left: 12;
+          padding-right: 12;
+        `}
+        onPress={onPressOpen}
+        size="small"
+        textProps={{ size: 'smedium' }}
+      >
+        Open
+      </Button>
+    </CoinRow>
+  </ButtonPressAnimation>
 );
 
 RequestCoinRow.propTypes = {
@@ -80,11 +94,12 @@ export default compose(
     };
   }),
   withHandlers({
-    onPressOpen: ({ item, navigation }) => () =>
+    onPressOpen: ({ item, navigation }) => () => (
       navigation.navigate({
         params: { transactionDetails: item },
         routeName: 'ConfirmRequest',
-      }),
+      })
+    ),
   }),
   onlyUpdateForKeys(['expirationColor', 'percentElapsed']),
 )(RequestCoinRow);

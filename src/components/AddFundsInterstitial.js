@@ -3,7 +3,7 @@ import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { compose, pure, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-import { colors } from '../styles';
+import { colors, margin } from '../styles';
 import { Button } from './buttons';
 import Divider from './Divider';
 import { Centered } from './layout';
@@ -19,14 +19,13 @@ const ButtonContainer = styled(Centered).attrs({ direction: 'column' })`
 `;
 
 const DividerContainer = styled(Centered)`
-  margin-bottom: ${InterstitialMargin};
-  margin-top: ${InterstitialMargin};
+  ${margin(InterstitialMargin, 0)}
   width: 93;
 `;
 
 const Container = styled(Centered)`
-  position: absolute;
   left: 50%;
+  position: absolute;
   top: 50%;
 `;
 
@@ -53,17 +52,17 @@ const AddFundsInterstitial = ({
 }) => (
   <Container style={buildInterstitialTransform(offsetY)}>
     <ButtonContainer>
-      <Button bgColor={colors.appleBlue} onPress={onPressAddFunds}>
+      <Button backgroundColor={colors.appleBlue} onPress={onPressAddFunds}>
         Add Funds
       </Button>
       <DividerContainer>
-        <Divider insetLeft={false} />
+        <Divider inset={false} />
       </DividerContainer>
-      <Button bgColor="#5D9DF6" onPress={onPressImportWallet}>
+      <Button backgroundColor="#5D9DF6" onPress={onPressImportWallet}>
         Import Wallet
       </Button>
       <Paragraph>
-        Use your 12 or 24 word seed phrase from an existing wallet.
+        Use your 12 to 24 word seed phrase from an existing wallet.
       </Paragraph>
     </ButtonContainer>
   </Container>

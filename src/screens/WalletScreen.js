@@ -1,12 +1,10 @@
-import { withAccountAssets } from 'balance-common';
-import { isSameDay } from 'date-fns';
-import { get, join, map } from 'lodash';
+import { withSafeTimeout } from '@hocs/safe-timers';
 import PropTypes from 'prop-types';
+import { withAccountAssets } from '@rainbow-me/rainbow-common';
 import React, { PureComponent } from 'react';
-import Piwik from 'react-native-matomo';
+import { withNavigation, withNavigationFocus } from 'react-navigation';
 import {
   compose,
-  shouldUpdate,
   withHandlers,
   withProps,
   withState,
@@ -23,11 +21,10 @@ import {
   withAccountSettings,
   withBlurTransitionProps,
   withFetchingPrices,
-  withHideSplashScreen,
   withIsWalletEmpty,
-  withTrackingDate,
 } from '../hoc';
 import { position } from '../styles';
+import withStatusBarStyle from '../hoc/withStatusBarStyle';
 
 class WalletScreen extends PureComponent {
   static propTypes = {
@@ -36,57 +33,23 @@ class WalletScreen extends PureComponent {
     assetsTotal: PropTypes.object,
     blurOpacity: PropTypes.object,
     isEmpty: PropTypes.bool.isRequired,
-    isLoading: PropTypes.bool.isRequired,
-    isScreenActive: PropTypes.bool,
+    isFocused: PropTypes.bool,
     navigation: PropTypes.object,
-    onHideSplashScreen: PropTypes.func,
-    onRefreshList: PropTypes.func.isRequired,
     refreshAccount: PropTypes.func,
     sections: PropTypes.array,
     showBlur: PropTypes.bool,
     toggleShowShitcoins: PropTypes.func,
-    trackingDate: PropTypes.object,
-    transitionProps: PropTypes.object,
     uniqueTokens: PropTypes.array,
-    updateTrackingDate: PropTypes.func,
   }
 
   componentDidMount = async () => {
-    // Initialize wallet
-    const { handleWalletConfig } = this.props.navigation.getScreenProps();
-    await handleWalletConfig();
-
-    const showShitcoins = await getShowShitcoinsSetting();
-    if (showShitcoins !== null) {
-      this.props.toggleShowShitcoins(showShitcoins);
-    }
-    this.props.onHideSplashScreen();
-    await this.props.refreshAccount();
-  }
-
-  componentDidUpdate = (prevProps) => {
-    const {
-      allAssetsCount,
-      assets,
-      assetsTotal,
-      isScreenActive,
-      trackingDate,
-      uniqueTokens,
-      updateTrackingDate,
-    } = this.props;
-
-    if (isScreenActive && !prevProps.isScreenActive) {
-      Piwik.trackScreen('WalletScreen', 'WalletScreen');
-      const totalTrackingAmount = get(assetsTotal, 'totalTrackingAmount', null);
-      const assetSymbols = join(map(assets || {}, (asset) => asset.symbol));
-      if (totalTrackingAmount && (!trackingDate || !isSameDay(trackingDate, Date.now()))) {
-        Piwik.trackEvent('Balance', 'AssetsCount', 'TotalAssetsCount', allAssetsCount);
-        Piwik.trackEvent('Balance', 'AssetSymbols', 'AssetSymbols', assetSymbols);
-        Piwik.trackEvent('Balance', 'NFTCount', 'TotalNFTCount', uniqueTokens.length);
-        Piwik.trackEvent('Balance', 'Total', 'TotalUSDBalance', totalTrackingAmount);
-
-        updateTrackingDate();
+    try {
+      const showShitcoins = await getShowShitcoinsSetting();
+      if (showShitcoins !== null) {
+        this.props.toggleShowShitcoins(showShitcoins);
       }
+    } catch (error) {
+      // TODO
     }
   }
 
@@ -94,27 +57,26 @@ class WalletScreen extends PureComponent {
     const {
       blurOpacity,
       isEmpty,
-      isLoading,
       navigation,
-      onRefreshList,
+      refreshAccount,
       sections,
       showBlur,
     } = this.props;
+
     return (
       <Page style={{ flex: 1, ...position.sizeAsObject('100%') }}>
-        {showBlur && <BlurOverlay opacity={blurOpacity} />}
         <Header justify="space-between">
           <ProfileHeaderButton navigation={navigation} />
           <CameraHeaderButton navigation={navigation} />
         </Header>
         <FabWrapper disabled={isEmpty}>
           <AssetList
-            fetchData={onRefreshList}
+            fetchData={refreshAccount}
             isEmpty={isEmpty}
-            isLoading={isLoading}
             sections={sections}
           />
         </FabWrapper>
+        {showBlur && <BlurOverlay opacity={blurOpacity} />}
       </Page>
     );
   }
@@ -125,13 +87,14 @@ export default compose(
   withAccountRefresh,
   withAccountSettings,
   withFetchingPrices,
-  withTrackingDate,
-  withHideSplashScreen,
+  withSafeTimeout,
+  withNavigation,
+  withNavigationFocus,
   withBlurTransitionProps,
   withIsWalletEmpty,
+  withStatusBarStyle('dark-content'),
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
-    onRefreshList: ({ refreshAccount }) => async () => await refreshAccount(),
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
       if (index === 0) {
         const updatedShowShitcoinsSetting = !showShitcoins;

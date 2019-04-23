@@ -1,14 +1,13 @@
-import { withAccountAssets } from 'balance-common';
-import { filter } from 'lodash';
 import PropTypes from 'prop-types';
+import { withAccountAssets } from '@rainbow-me/rainbow-common';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import {
   compose,
   defaultProps,
-  pure,
   withHandlers,
   withProps,
+  shouldUpdate,
 } from 'recompact';
 import { createSelector } from 'reselect';
 import styled from 'styled-components/primitives';
@@ -91,5 +90,5 @@ export default compose(
   withAccountAssets,
   withProps(buildExpandedAssetsSelector),
   withHandlers({ onPressBackground: ({ navigation }) => () => navigation.goBack() }),
-  pure,
+  shouldUpdate(() => false),
 )(ExpandedAssetScreen);

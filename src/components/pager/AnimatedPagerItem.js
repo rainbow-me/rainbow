@@ -16,13 +16,14 @@ const AnimatedPagerItem = ({ children, translateX, ...props }) => (
     {...props}
     style={[styles.item, { transform: [{ translateX }] }]}
   >
-    <FlexItem>
+    <FlexItem style={position.sizeAsObject('100%')}>
       {children}
     </FlexItem>
   </Animated.View>
 );
 
 AnimatedPagerItem.propTypes = {
+  children: PropTypes.node,
   translateX: PropTypes.object.isRequired,
 };
 

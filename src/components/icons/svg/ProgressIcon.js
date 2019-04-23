@@ -1,82 +1,109 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
+import Animated from 'react-native-reanimated';
+import { pure } from 'recompact';
 import { G, Path } from 'svgs';
-import { Animated } from 'react-native';
-import { colors } from '../../../styles';
-import Svg from '../Svg';
+import { colors, position } from '../../../styles';
+import { Centered } from '../../layout';
+import { AnimatedSvg } from '../Svg';
 
-function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
-  const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180;
+const {
+  add,
+  concat,
+  cond,
+  cos,
+  createAnimatedComponent,
+  divide,
+  lessOrEq,
+  max,
+  min,
+  multiply,
+  sin,
+  sub,
+} = Animated;
+const AnimatedPath = createAnimatedComponent(Path);
+
+const convertProgress = progress => divide(multiply(360, min(100, max(0, progress))), 100);
+
+function polarToCartesian(center, radius, angleInDegrees) {
+  const angleInRadians = divide(multiply(sub(angleInDegrees, 90), Math.PI), 180);
 
   return {
-    x: centerX + (radius * Math.cos(angleInRadians)),
-    y: centerY + (radius * Math.sin(angleInRadians)),
+    x: concat(add(center, multiply(radius, cos(angleInRadians)))),
+    y: concat(add(center, multiply(radius, sin(angleInRadians)))),
   };
 }
 
-function circlePath(x, y, radius, startAngle, endAngle) {
-  const start = polarToCartesian(x, y, radius, endAngle * 0.9999);
-  const end = polarToCartesian(x, y, radius, startAngle);
-  const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
-  const d = [
+function circlePath(center, radius, startAngle, endAngle) {
+  const start = polarToCartesian(center, radius, multiply(endAngle, 0.9999));
+  const end = polarToCartesian(center, radius, startAngle);
+  const largeArcFlag = cond(lessOrEq(sub(endAngle, startAngle), 180), 0, 1);
+
+  const path = [
     'M', start.x, start.y,
     'A', radius, radius, 0, largeArcFlag, 0, end.x, end.y,
   ];
 
-  return d.join(' ');
+  const pathWithSpaces = path.reduce((arr, p) => [...arr, p, ' '], []);
+  return concat(...pathWithSpaces);
 }
 
-function convertProgress(progress) {
-  return (360 * Math.min(100, Math.max(0, progress || 0))) / 100;
-}
+const ProgressIcon = ({
+  color,
+  progress,
+  progressColor,
+  size,
+  strokeWidth,
+  ...props
+}) => {
+  const radius = size / 2;
+  const center = radius + 2;
+  const viewBoxSize = size + (strokeWidth * 2);
 
-class ProgressIcon extends Component {
-  static propTypes = {
-    color: PropTypes.string,
-    progress: PropTypes.number,
-    progressColor: PropTypes.string,
-    size: PropTypes.number,
-  };
-
-  static defaultProps = {
-    color: colors.white,
-    progressColor: colors.black,
-    progress: 0,
-  };
-
-  render() {
-    const {
-      color,
-      progress,
-      progressColor,
-      size,
-    } = this.props;
-
-    const centerX = (size / 2) + 2;
-    const centerY = (size / 2) + 2;
-    const radius = size / 2;
-
-    return (
-      <Svg height={size} width={size} viewBox={`0 0 ${size + 4} ${size + 4}`} {...this.props}>
-        <G originX={centerX} originY={centerY}>
-          <Path
-            d={circlePath(centerX, centerY, radius, 0, 360)}
+  return (
+    <Centered
+      {...props}
+      {...position.sizeAsObject(size)}
+    >
+      <AnimatedSvg
+        {...position.sizeAsObject(size)}
+        viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}
+      >
+        <G originX={center} originY={center}>
+          <AnimatedPath
+            d={circlePath(center, radius, 0, 360)}
+            fill="transparent"
             stroke={color}
-            strokeWidth="3px"
             strokeLinecap="round"
-            fill="transparent"
+            strokeWidth={strokeWidth}
           />
-          {progress > 0 ? <Path
-            d={circlePath(centerX, centerY, radius, 0, convertProgress(progress))}
-            stroke={progressColor}
-            strokeWidth="3px"
-            strokeLinecap="round"
+          <AnimatedPath
+            d={circlePath(center, radius, 0, convertProgress(progress))}
             fill="transparent"
-          /> : null}
+            stroke={progressColor}
+            strokeLinecap="round"
+            strokeWidth={strokeWidth}
+          />
         </G>
-      </Svg>
-    );
-  }
-}
+      </AnimatedSvg>
+    </Centered>
+  );
+};
 
-export default Animated.createAnimatedComponent(ProgressIcon);
+ProgressIcon.propTypes = {
+  color: PropTypes.string,
+  progress: PropTypes.object,
+  progressColor: PropTypes.string,
+  size: PropTypes.number,
+  strokeWidth: PropTypes.number,
+};
+
+ProgressIcon.defaultProps = {
+  color: colors.alpha(colors.sendScreen.grey, 0.3),
+  progress: 0,
+  progressColor: colors.white,
+  size: 29,
+  strokeWidth: 2,
+};
+
+export default pure(ProgressIcon);

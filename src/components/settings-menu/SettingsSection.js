@@ -1,34 +1,33 @@
-import { supportedLanguages } from 'balance-common';
 import PropTypes from 'prop-types';
+import { supportedLanguages } from '@rainbow-me/rainbow-common';
 import React from 'react';
 import { Linking, ScrollView } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
-import styled from 'styled-components';
+import styled from 'styled-components/primitives';
 import BackupIcon from '../../assets/backup-icon.png';
 import CurrencyIcon from '../../assets/currency-icon.png';
 import LanguageIcon from '../../assets/language-icon.png';
+import NetworkIcon from '../../assets/network-icon.png';
 // import SecurityIcon from '../../assets/security-icon.png';
-import { withAccountSettings } from '../../hoc';
-import { colors, position } from '../../styles';
-
-import Icon from '../icons/Icon';
-import { Column, Row } from '../layout';
-import { ListFooter, ListItem, ListItemDivider } from '../list';
-import { Emoji, Text } from '../text';
+import { withAccountSettings, withSendFeedback } from '../../hoc';
+import { position } from '../../styles';
+import AppVersionStamp from '../AppVersionStamp';
+import { Icon } from '../icons';
+import { Column } from '../layout';
+import {
+  ListFooter,
+  ListItem,
+  ListItemArrowGroup,
+  ListItemDivider,
+} from '../list';
+import { Emoji } from '../text';
 
 const SettingsExternalURLs = {
-  about: 'https://balance.io/about',
-  feedback: 'http://support.balance.io',
-  legal: 'https://github.com/balance-io/balance-wallet/blob/master/LICENSE',
+  about: 'http://rainbow.me',
+  feedback: 'http://rainbow.me',
+  legal: 'https://github.com/rainbow-me/rainbow/blob/master/LICENSE',
 };
-
-const BackupRowIcon = styled(Icon).attrs({
-  color: colors.blueGreyDark,
-  name: 'checkmarkCircled',
-})`
-  margin-bottom: -5;
-`;
 
 // ⚠️ Beware: magic numbers lol
 const SettingIcon = styled(FastImage)`
@@ -38,44 +37,47 @@ const SettingIcon = styled(FastImage)`
   margin-top: 6.5;
 `;
 
-const ArrowGroup = ({ children }) => (
-  <Row align="center" justify="end" style={{ opacity: 0.6 }}>
-    <Text color="blueGreyDark" size="bmedium" style={{ marginRight: 6 }}>
-      {children}
-    </Text>
-    <Icon
-      color={colors.blueGreyDark}
-      name="caretThin"
-      style={{ width: 11 }}
-    />
-  </Row>
-);
-
-ArrowGroup.propTypes = {
-  children: PropTypes.node,
-};
-
 const SettingsSection = ({
   language,
   nativeCurrency,
+  network,
   onPressBackup,
   onPressCurrency,
   onPressImportSeedPhrase,
   onPressLanguage,
+  onPressNetwork,
+  onSendFeedback,
   // onPressSecurity,
   openWebView,
   ...props
 }) => (
-  <ScrollView style={position.coverAsObject}>
+  <ScrollView
+    contentContainerStyle={position.sizeAsObject('100%')}
+    style={position.coverAsObject}
+  >
     <Column style={{ marginTop: 8 }}>
       <ListItem
         icon={<SettingIcon source={BackupIcon} />}
         onPress={onPressBackup}
         label="Backup"
       >
-        <ArrowGroup>
-          <BackupRowIcon />
-        </ArrowGroup>
+        <ListItemArrowGroup>
+          <Icon
+            color="blueGreyDark"
+            name="checkmarkCircled"
+            style={{ marginBottom: -5 }}
+          />
+        </ListItemArrowGroup>
+      </ListItem>
+      <ListItemDivider />
+      <ListItem
+        icon={<SettingIcon source={NetworkIcon} />}
+        onPress={onPressNetwork}
+        label="Network"
+      >
+        <ListItemArrowGroup>
+          {network || ''}
+        </ListItemArrowGroup>
       </ListItem>
       <ListItemDivider />
       <ListItem
@@ -83,9 +85,9 @@ const SettingsSection = ({
         onPress={onPressCurrency}
         label="Currency"
       >
-        <ArrowGroup>
+        <ListItemArrowGroup>
           {nativeCurrency || ''}
-        </ArrowGroup>
+        </ListItemArrowGroup>
       </ListItem>
       <ListItemDivider />
       <ListItem
@@ -93,9 +95,9 @@ const SettingsSection = ({
         onPress={onPressLanguage}
         label="Language"
       >
-        <ArrowGroup>
+        <ListItemArrowGroup>
           {supportedLanguages[language] || ''}
-        </ArrowGroup>
+        </ListItemArrowGroup>
       </ListItem>
       {/*
         <ListItemDivider />
@@ -104,7 +106,7 @@ const SettingsSection = ({
           onPress={onPressSecurity}
           label="Security"
         >
-          <ArrowGroup />
+          <ListItemArrowGroup />
         </ListItem>
       */}
     </Column>
@@ -117,8 +119,8 @@ const SettingsSection = ({
       />
       <ListItemDivider />
       <ListItem
-        icon={<Emoji name="scales" />}
-        label="About Balance"
+        icon={<Emoji name="rainbow" />}
+        label="About Rainbow"
         onPress={openWebView}
         value={SettingsExternalURLs.about}
       />
@@ -126,8 +128,7 @@ const SettingsSection = ({
       <ListItem
         icon={<Emoji name="heart" />}
         label="Leave Feedback️"
-        onPress={openWebView}
-        value={SettingsExternalURLs.feedback}
+        onPress={onSendFeedback}
       />
       <ListItemDivider />
       <ListItem
@@ -137,22 +138,39 @@ const SettingsSection = ({
         value={SettingsExternalURLs.legal}
       />
     </Column>
+    <Column
+      align="center"
+      flex={1}
+      justify="end"
+      style={{ paddingBottom: 24 }}
+    >
+      <AppVersionStamp />
+    </Column>
   </ScrollView>
 );
 
 SettingsSection.propTypes = {
   language: PropTypes.string.isRequired,
   nativeCurrency: PropTypes.string.isRequired,
+  network: PropTypes.string.isRequired,
   onPressBackup: PropTypes.func.isRequired,
   onPressCurrency: PropTypes.func.isRequired,
   onPressImportSeedPhrase: PropTypes.func.isRequired,
   onPressLanguage: PropTypes.func.isRequired,
+  onPressNetwork: PropTypes.func,
+  onSendFeedback: PropTypes.func.isRequired,
   // onPressSecurity: PropTypes.func.isRequired,
   openWebView: PropTypes.func,
 };
 
+SettingsSection.defaultProps = {
+  // XXX TODO: Delete this default once testnet support exists
+  network: 'Mainnet',
+};
+
 export default compose(
   withAccountSettings,
+  withSendFeedback,
   withHandlers({ openWebView: () => uri => Linking.openURL(uri) }),
   onlyUpdateForKeys(['language', 'nativeCurrency']),
 )(SettingsSection);

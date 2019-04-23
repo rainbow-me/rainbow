@@ -6,27 +6,13 @@ import {
   onlyUpdateForKeys,
   withProps,
 } from 'recompact';
-import ActivityListHeader from './ActivityListHeader';
-import { CoinRow } from '../coin-row';
-import { SectionList } from '../list';
 import { buildTransactionsSectionsSelector } from '../../helpers/transactions';
 import {
   withAccountAddress,
   withAccountSettings,
   withAccountTransactions,
 } from '../../hoc';
-
-const getItemLayout = (data, index) => ({
-  index,
-  length: CoinRow.height,
-  offset: CoinRow.height * index,
-});
-
-const keyExtractor = ({ hash, timestamp, transactionDisplayDetails }) => (hash || (timestamp ? timestamp.ms : transactionDisplayDetails.timestampInMs));
-// const keyExtractor = ({ hash, timestamp: { ms } }) => (hash || ms);
-
-// eslint-disable-next-line react/prop-types
-const renderSectionHeader = ({ section }) => <ActivityListHeader {...section} />;
+import RecyclerActivityList from './RecyclerActivityList';
 
 const ActivityList = ({
   hasPendingTransaction,
@@ -34,23 +20,10 @@ const ActivityList = ({
   nativeCurrency,
   pendingTransactionsCount,
   sections,
-  transactionsCount,
 }) => (
-  <SectionList
-    contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 40 }}
-    extraData={{
-      hasPendingTransaction,
-      nativeCurrency,
-      pendingTransactionsCount,
-    }}
-    getItemLayout={getItemLayout}
-    initialNumToRender={12}
-    keyExtractor={keyExtractor}
-    ListHeaderComponent={header}
-    removeClippedSubviews={true}
-    renderSectionHeader={renderSectionHeader}
+  <RecyclerActivityList
     sections={sections}
-    windowSize={15.75}
+    header={header}
   />
 );
 
@@ -98,6 +71,5 @@ export default compose(
     'nativeCurrency',
     'pendingTransactionsCount',
     'sections',
-    'transactionsCount',
   ]),
 )(ActivityList);

@@ -2,80 +2,51 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FlatList } from 'react-native';
-import { compose, onlyUpdateForPropTypes, withHandlers } from 'recompact';
-import styled from 'styled-components/primitives';
-import { withWalletConnectConnections, withSafeAreaViewInsetValues } from '../../hoc';
-import { borders, colors, shadow } from '../../styles';
-import { Column } from '../layout';
+import { safeAreaInsetValues } from '../../utils';
+import { BubbleSheet } from '../bubble-sheet';
+import { FlexItem } from '../layout';
+import { pure } from 'recompact';
 import WalletConnectListItem from './WalletConnectListItem';
-import { showActionSheetWithOptions } from '../../utils/actionsheet';
 
-const SheetBorderRadius = 17;
+const maxListItemsForDeviceSize = safeAreaInsetValues.bottom ? 4 : 3;
 
-const Sheet = styled(Column)`
-  ${borders.buildRadius('top', SheetBorderRadius)}
-  ${shadow.build(0, 10, 50, colors.alpha(colors.black, 0.6))}
-  background-color: ${colors.white};
-  bottom: 0;
-  left: 0;
-  max-height: ${({ bottomInset }) => bottomInset + (WalletConnectListItem.height * 3)};
-  min-height: ${({ bottomInset }) => bottomInset + WalletConnectListItem.height};
-  position: absolute;
-  right: 0;
-  width: 100%;
-`;
+const scrollIndicatorInset = BubbleSheet.borderRadius - 8;
+const scrollIndicatorInsets = {
+  bottom: scrollIndicatorInset,
+  top: scrollIndicatorInset,
+};
 
-const WalletConnectList = ({
-  onHandleDisconnectAlert,
-  onLayout,
-  safeAreaInset,
-  walletConnectorsByDappName,
-}) => (
-  <Sheet bottomInset={safeAreaInset.bottom} onLayout={onLayout}>
+const keyExtractor = ({ expires }) => expires;
+
+// eslint-disable-next-line react/prop-types
+const renderItem = ({ item }) => <WalletConnectListItem {...item} />;
+
+const WalletConnectList = ({ items, onLayout, ...props }) => (
+  <FlexItem
+    maxHeight={WalletConnectListItem.height * maxListItemsForDeviceSize}
+    minHeight={WalletConnectListItem.height}
+  >
     <FlatList
-      contentContainerStyle={{ paddingBottom: safeAreaInset.bottom }}
-      data={walletConnectorsByDappName}
+      {...props}
+      alwaysBounceVertical={false}
+      data={items}
+      keyExtractor={keyExtractor}
+      onLayout={onLayout}
       removeClippedSubviews
-      renderItem={({ index, item }) => (
-        <WalletConnectListItem
-          dappUrl={item.dappUrl}
-          dappName={item.dappName}
-          dappIcon={item.dappIcon}
-          key={get(item, 'dappName', index)}
-          onPress={onHandleDisconnectAlert}
-        />
-      )}
-      scrollIndicatorInsets={{
-        bottom: safeAreaInset.bottom,
-        top: SheetBorderRadius,
-      }}
+      renderItem={renderItem}
+      scrollEventThrottle={32}
+      scrollIndicatorInsets={scrollIndicatorInsets}
     />
-  </Sheet>
+  </FlexItem>
 );
 
 WalletConnectList.propTypes = {
-  onHandleDisconnectAlert: PropTypes.func,
+  items: PropTypes.arrayOf(PropTypes.shape(WalletConnectListItem.propTypes)),
   onLayout: PropTypes.func,
-  safeAreaInset: PropTypes.object,
-  walletConnectorsByDappName: PropTypes.arrayOf(PropTypes.object),
 };
 
-export default compose(
-  withSafeAreaViewInsetValues,
-  withWalletConnectConnections,
-  withHandlers({
-    onHandleDisconnectAlert: ({ walletConnectDisconnectAllByDappName }) => (dappName) => {
-      showActionSheetWithOptions({
-        cancelButtonIndex: 1,
-        destructiveButtonIndex: 0,
-        options: ['Disconnect', 'Cancel'],
-        title: `Would you like to disconnect from ${dappName}?`,
-      }, (buttonIndex) => {
-        if (buttonIndex === 0) {
-          walletConnectDisconnectAllByDappName(dappName);
-        }
-      });
-    },
-  }),
-  onlyUpdateForPropTypes,
-)(WalletConnectList);
+WalletConnectList.defaultProps = {
+  items: [],
+};
+
+export default pure(WalletConnectList);
