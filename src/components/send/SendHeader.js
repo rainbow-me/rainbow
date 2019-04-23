@@ -28,9 +28,9 @@ const SendHeader = ({ onChangeAddressInput, recipient }) => (
         To:
       </Label>
       <AddressField
+        address={recipient}
         autoFocus
         onChange={onChangeAddressInput}
-        value={recipient}
       />
     </AddressInputContainer>
     <Divider
