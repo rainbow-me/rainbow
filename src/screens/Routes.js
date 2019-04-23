@@ -76,15 +76,18 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator({
   },
 }, {
   headerMode: 'none',
-  tabBarComponent: null,
   mode: 'modal',
+  tabBarComponent: null,
   transparentCard: true,
 });
 
 
+// I need it for changing navigationOptions dynamically
+// for preventing swipe down to close on CurrencySelectScreen
 const EnhancedExchangeModalNavigator = props => <ExchangeModalNavigator {...props}/>;
 EnhancedExchangeModalNavigator.router = ExchangeModalNavigator.router;
-EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => ({
+EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => console.log(EnhancedExchangeModalNavigator.navigationOptions) || ({
+  ...navigation.state.params,
   gesturesEnabled: !get(navigation, 'state.params.isGestureBlocked'),
 });
 
@@ -106,7 +109,6 @@ const MainNavigator = createStackNavigator({
     },
     params: {
       isGestureBlocked: false,
-      isSwipeBlocked: true,
     },
     screen: EnhancedExchangeModalNavigator,
   },
