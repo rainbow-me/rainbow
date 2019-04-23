@@ -54,7 +54,7 @@ const ConfirmExchngeButton = styled(Button)`
   align-self: center
 `;
 
-const TopRow = ({ navigateToCurrencySelection, amount, changeAmount }) => console.log(amount) || (
+const TopRow = ({ navigateToCurrencySelection, amount, changeAmount, symbol }) => console.log(amount) || (
   <Row align="center" justify="space-between">
     <FlexItem flex={1}>
       <CoinName
@@ -74,7 +74,7 @@ const TopRow = ({ navigateToCurrencySelection, amount, changeAmount }) => consol
           weight="semibold"
           style={{ fontSize: 12 }}
         >
-          ETH
+          {symbol}
         </Text>
         <Icon
           size={8}
@@ -128,7 +128,7 @@ const SettingsModal = ({
                 navigateToCurrencySelection={onPressSelectCurrency}
                 bottomRowRender={() => null}
                 topRowRender={TopRow}
-                symbol='ETH'
+                symbol={selectedCurrency}
               />
               <CoinRow
                 amount={amountToExchange}
@@ -136,7 +136,7 @@ const SettingsModal = ({
                 navigateToCurrencySelection={onPressSelectTargetCurrency}
                 bottomRowRender={() => null}
                 topRowRender={TopRow}
-                symbol='ETH'
+                symbol={selectedTargetCurrency}
               />
             </Column>
           </FloatingPanel>
@@ -173,8 +173,12 @@ const withMockedPrices = withProps({
 export default compose(
   withAccountAssets,
   withState('amountToExchange', 'setAmountToExchange', '0'),
-  withState('selectedCurrency', 'setSelectedCurrency', 'ETH'),
+  withState('selectedCurrency', 'setSelectedCurrency', null),
   withState('selectedTargetCurrency', 'setSelectedTargetCurrency', 'ETH'),
+  withProps(({
+    selectedCurrency,
+    allAssets: [{ symbol }],
+  }) => ({ selectedCurrency: selectedCurrency || symbol })),
   withHandlers({
     onPressConfirmExchange:
       ({ navigation }) => () => {
