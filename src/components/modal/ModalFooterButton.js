@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import styled from 'styled-components';
+import { withNeverRerender } from '../../hoc';
 import { colors, position } from '../../styles';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
@@ -41,11 +42,10 @@ const ModalFooterButton = ({ icon, label, onPress }) => (
   </Container>
 );
 
-
 ModalFooterButton.propTypes = {
   icon: Icon.propTypes.name,
   label: PropTypes.string.isRequired,
   onPress: PropTypes.func.isRequired,
 };
 
-export default ModalFooterButton;
+export default withNeverRerender(ModalFooterButton);

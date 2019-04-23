@@ -1,5 +1,9 @@
 import lang from 'i18n-js';
-import { settingsChangeLanguage, settingsChangeNativeCurrency } from 'balance-common';
+import {
+  settingsChangeLanguage,
+  settingsChangeNativeCurrency,
+  supportedNativeCurrencies,
+} from '@rainbow-me/rainbow-common';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';
@@ -15,6 +19,7 @@ const mapStateToProps = ({
 });
 
 const languageSelector = state => state.language;
+const nativeCurrencySelector = state => state.nativeCurrency;
 
 const withLanguage = (language) => {
   if (language !== lang.locale) {
@@ -22,11 +27,20 @@ const withLanguage = (language) => {
   }
 
   return { language };
-}
+};
+
+const withNativeCurrencySymbol = nativeCurrency => ({
+  nativeCurrencySymbol: supportedNativeCurrencies[nativeCurrency].symbol,
+});
 
 const withLanguageSelector = createSelector(
-  [ languageSelector ],
+  [languageSelector],
   withLanguage,
+);
+
+const withNativeCurrencySelector = createSelector(
+  [nativeCurrencySelector],
+  withNativeCurrencySymbol,
 );
 
 export default Component => compose(
@@ -35,4 +49,5 @@ export default Component => compose(
     settingsChangeNativeCurrency,
   }),
   withProps(withLanguageSelector),
+  withProps(withNativeCurrencySelector),
 )(Component);

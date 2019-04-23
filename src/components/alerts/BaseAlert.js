@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { AlertIOS } from 'react-native';
+import { Alert } from 'react-native';
 
 const BaseAlert = ({
   buttons,
@@ -7,7 +7,7 @@ const BaseAlert = ({
   message,
   title,
   type,
-}) => AlertIOS[type](title, message, buttons || callback);
+}) => Alert[type](title, message, buttons || callback);
 
 BaseAlert.propTypes = {
   buttons: PropTypes.arrayOf(PropTypes.shape({

@@ -1,13 +1,18 @@
-import smartContractMethods from 'balance-common/src/references/smartcontract-methods.json';
 import BigNumber from 'bignumber.js';
+import {
+  find,
+  get,
+  mapValues,
+  omit,
+} from 'lodash';
 import {
   convertAssetAmountToDisplaySpecific,
   convertAssetAmountToNativeValue,
   convertHexToString,
   formatInputDecimals,
   fromWei,
-} from 'balance-common';
-import { get, mapValues, omit } from 'lodash';
+} from '@rainbow-me/rainbow-common';
+import smartContractMethods from '@rainbow-me/rainbow-common/src/references/smartcontract-methods.json';
 import {
   getLocalRequests,
   removeLocalRequest,
@@ -21,18 +26,11 @@ export const transactionsToApproveInit = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   getLocalRequests(accountAddress, network).then((requests) => {
     const transactionsToApprove = requests || {};
-    dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: transactionsToApprove });
+    dispatch({ payload: transactionsToApprove, type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE });
   });
 };
 
-const getAssetDetails = (contractAddress, assets) => {
-  for (var item of assets) {
-    if (item.address === contractAddress) {
-      return { ...item };
-    }
-  }
-  return null;
-};
+const getAssetDetails = (contractAddress, assets) => find(assets, (item) => item.address === contractAddress);
 
 export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => {
   let nativeAmount = '';
@@ -64,8 +62,8 @@ const getRequestDisplayDetails = (payload, assets, prices, nativeCurrency) => {
     const message = get(payload, 'params[1]');
     return getMessageDisplayDetails(message);
   }
-  if (payload.method === 'eth_signTypedData' ||
-    payload.method === 'eth_signTypedData_v3') {
+  if (payload.method === 'eth_signTypedData'
+    || payload.method === 'eth_signTypedData_v3') {
     const request = get(payload, 'params[1]', null);
     const jsonRequest = JSON.stringify(request.message);
     return getTypedDataDisplayDetails(jsonRequest);
@@ -142,6 +140,22 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
       type: 'transaction',
     };
   }
+  if (transaction.data) {
+    const value = transaction.value ? fromWei(convertHexToString(transaction.value)) : 0;
+    return {
+      payload: {
+        data: transaction.data,
+        from: transaction.from,
+        gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
+        gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
+        nonce: Number(convertHexToString(transaction.nonce)),
+        to: transaction.to,
+        value,
+      },
+      timestampInMs,
+      type: 'default',
+    };
+  }
 
   return null;
 };
@@ -153,11 +167,11 @@ export const addTransactionToApprove = (peerId, requestId, payload, dappName) =>
   const { assets } = getState().assets;
   const transactionDisplayDetails = getRequestDisplayDetails(payload, assets, prices, nativeCurrency);
   const transaction = {
+    dappName,
+    payload,
     peerId,
     requestId,
-    payload,
     transactionDisplayDetails,
-    dappName,
   };
   const updatedTransactions = { ...transactionsToApprove, [requestId]: transaction };
   dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });

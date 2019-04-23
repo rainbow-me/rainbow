@@ -8,9 +8,19 @@ export default css`
       ? `text-align: ${align};`
       : ''
   )}
+  ${({ letterSpacing }) => (
+    letterSpacing
+      ? `letter-spacing: ${fonts.letterSpacing[letterSpacing]};`
+      : ''
+  )}
   ${({ lineHeight }) => (
     lineHeight
       ? `line-height: ${fonts.lineHeight[lineHeight]};`
+      : ''
+  )}
+  ${({ uppercase }) => (
+    uppercase
+      ? 'text-transform: uppercase;'
       : ''
   )}
   color: ${({ color }) => (colors.get(color) || colors.dark)}

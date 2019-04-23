@@ -1,10 +1,8 @@
 import lang from 'i18n-js';
 import { times } from 'lodash';
-import PropTypes from 'prop-types';
 import React from 'react';
-import { ActivityIndicator } from 'react-native';
 import { pure } from 'recompact';
-import { colors, position } from '../../styles';
+import { position } from '../../styles';
 import AddFundsInterstitial from '../AddFundsInterstitial';
 import { FabWrapper } from '../fab';
 import { Centered, Column } from '../layout';
@@ -20,28 +18,16 @@ const renderSkeleton = index => (
   />
 );
 
-const AssetListSkeleton = ({ isLoading }) => (
+const AssetListSkeleton = () => (
   <Column style={position.sizeAsObject('100%')}>
-    <AssetListHeader title={lang.t('account.tab_balances_empty_state')} />
+    <AssetListHeader title={lang.t('account.tab_balances')} />
     <Centered flex={1}>
       <Column style={position.coverAsObject}>
         {times(5, renderSkeleton)}
       </Column>
-      {isLoading ? (
-        <ActivityIndicator
-          animating={true}
-          color={colors.alpha(colors.blueGreyLight, 0.666)}
-          size="large"
-        />
-      ) : (
-        <AddFundsInterstitial offsetY={-InterstitialOffset} />
-      )}
+      <AddFundsInterstitial offsetY={InterstitialOffset * -1} />
     </Centered>
   </Column>
 );
-
-AssetListSkeleton.propTypes = {
-  isLoading: PropTypes.bool,
-};
 
 export default pure(AssetListSkeleton);

@@ -1,18 +1,18 @@
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 import lang from 'i18n-js';
-import { AlertIOS } from 'react-native';
+import { web3Provider } from '@rainbow-me/rainbow-common';
+import { Alert } from 'react-native';
 import {
   ACCESS_CONTROL,
   ACCESSIBLE,
   AUTHENTICATION_TYPE,
   canImplyAuthentication,
 } from 'react-native-keychain';
-import Piwik from 'react-native-matomo';
 import * as keychain from './keychain';
 
-const seedPhraseKey = 'balanceWalletSeedPhrase';
-const privateKeyKey = 'balanceWalletPrivateKey';
-const addressKey = 'balanceWalletAddressKey';
+const seedPhraseKey = 'rainbowSeedPhrase';
+const privateKeyKey = 'rainbowPrivateKey';
+const addressKey = 'rainbowAddressKey';
 
 export function generateSeedPhrase() {
   return ethers.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
@@ -20,6 +20,7 @@ export function generateSeedPhrase() {
 
 export const walletInit = async (seedPhrase = null) => {
   let walletAddress = null;
+  let isWalletBrandNew = false;
   if (seedPhrase) {
     walletAddress = await createWallet(seedPhrase);
   }
@@ -28,16 +29,15 @@ export const walletInit = async (seedPhrase = null) => {
   }
   if (!walletAddress) {
     walletAddress = await createWallet();
+    isWalletBrandNew = true;
   }
-  return walletAddress;
+  return { isWalletBrandNew, walletAddress } ;
 };
 
 export const loadWallet = async () => {
   const privateKey = await loadPrivateKey();
   if (privateKey) {
-    const wallet = new ethers.Wallet(privateKey);
-    wallet.provider = ethers.providers.getDefaultProvider();
-    return wallet;
+    return new ethers.Wallet(privateKey, web3Provider);
   }
   return null;
 };
@@ -57,22 +57,19 @@ export const createTransaction = async (to, data, value, gasLimit, gasPrice, non
   value: ethers.utils.parseEther(value),
 });
 
-export const sendTransaction = async ({ tracking, transaction }) => {
+export const sendTransaction = async ({ transaction }) => {
   try {
     const wallet = await loadWallet();
-    if (!wallet) {
-      return null;
-    }
+    if (!wallet) return null;
     try {
       const result = await wallet.sendTransaction(transaction);
-      Piwik.trackEvent('Send', tracking.action, tracking.name, tracking.amount);
       return result.hash;
     } catch (error) {
-      AlertIOS.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
       return null;
     }
   } catch (error) {
-    AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
+    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
     return null;
   }
 };
@@ -83,11 +80,11 @@ export const signMessage = async (message, authenticationPrompt = lang.t('wallet
     try {
       return await wallet.signMessage(message);
     } catch (error) {
-      AlertIOS.alert(lang.t('wallet.message_signing.failed_signing'));
+      Alert.alert(lang.t('wallet.message_signing.failed_signing'));
       return null;
     }
   } catch (error) {
-    AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
+    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
     return null;
   }
 };

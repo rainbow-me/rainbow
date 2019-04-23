@@ -1,5 +1,5 @@
-import { isValidSeedPhrase as validateSeedPhrase } from 'balance-common';
 import { get } from 'lodash';
+import { isValidSeedPhrase as validateSeedPhrase } from '@rainbow-me/rainbow-common';
 import { Clipboard, InteractionManager, Linking } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import {
@@ -21,8 +21,8 @@ const ConfirmImportAlert = onSuccess => (
       onPress: onSuccess,
       text: 'Import',
     }, {
-      text: 'Cancel',
       style: 'cancel',
+      text: 'Cancel',
     }],
     // eslint-disable-next-line
     message: 'Importing this seed phrase will overwrite your existing wallet. Before continuing, please make sure you’ve transferred its contents or backed up its seed phrase.',
@@ -37,21 +37,6 @@ const ImportSeedPhraseSheetWithData = compose(
   withState('clipboardContents', 'setClipboardContents', ''),
   withState('isImporting', 'setIsImporting', false),
   withState('seedPhrase', 'setSeedPhrase', ''),
-  lifecycle({
-    componentDidMount() {
-      InteractionManager.runAfterInteractions(async () => {
-        const { setClipboardContents } = this.props;
-        await Clipboard.getString().then(setClipboardContents);
-      });
-    },
-    componentDidUpdate(prevProps) {
-      const { isImporting, navigation } = this.props;
-
-      if (isImporting !== prevProps.isImporting) {
-        navigation.setParams({ gesturesEnabled: !isImporting });
-      }
-    },
-  }),
   withHandlers({
     importSeedPhrase: ({
       accountClearState,
@@ -61,7 +46,6 @@ const ImportSeedPhraseSheetWithData = compose(
       seedPhrase,
       setIsImporting,
     }) => () => {
-      setIsImporting(true);
       accountClearState();
 
       return screenProps
@@ -70,9 +54,9 @@ const ImportSeedPhraseSheetWithData = compose(
           if (address) {
             refreshAccount()
               .then(() => {
-              setIsImporting(false);
-              navigation.navigate('WalletScreen');
-            });
+                setIsImporting(false);
+                navigation.navigate('WalletScreen');
+              });
           } else {
             setIsImporting(false);
           }
@@ -84,14 +68,37 @@ const ImportSeedPhraseSheetWithData = compose(
     },
   }),
   withHandlers({
-    onImportSeedPhrase: ({ importSeedPhrase }) => () => ConfirmImportAlert(importSeedPhrase),
-    onInputChange: ({ setSeedPhrase }) => ({ nativeEvent }) => setSeedPhrase(nativeEvent.text),
+    onImportSeedPhrase: ({ setIsImporting }) => () => ConfirmImportAlert(() => setIsImporting(true)),
+    onInputChange: ({ isImporting, setSeedPhrase }) => ({ nativeEvent }) => {
+      if (!isImporting) {
+        setSeedPhrase(nativeEvent.text);
+      }
+    },
     onPasteSeedPhrase: ({ setSeedPhrase }) => () => {
       Clipboard.getString()
         .then(setSeedPhrase)
         .catch(error => console.log(error));
     },
-    onPressHelp: () => () => Linking.openURL('http://support.balance.io'),
+    onPressHelp: () => () => Linking.openURL('http://rainbow.me'),
+  }),
+  lifecycle({
+    componentDidMount() {
+      InteractionManager.runAfterInteractions(async () => {
+        const { setClipboardContents } = this.props;
+        await Clipboard.getString().then(setClipboardContents);
+      });
+    },
+    componentDidUpdate(prevProps) {
+      const { isImporting, navigation, importSeedPhrase } = this.props;
+
+      if (isImporting !== prevProps.isImporting) {
+        navigation.setParams({ gesturesEnabled: !isImporting });
+      }
+
+      if (!prevProps.isImporting && isImporting) {
+        InteractionManager.runAfterInteractions(importSeedPhrase);
+      }
+    },
   }),
   withHandlers({
     onPressEnterKey: ({ onImportSeedPhrase, seedPhrase }) => ({ nativeEvent: { key } }) => {
@@ -114,10 +121,10 @@ const ImportSeedPhraseSheetWithData = compose(
 
 ImportSeedPhraseSheetWithData.navigationOptions = ({ navigation }) => ({
   effect: 'sheet',
-  gesturesEnabled: get(navigation, 'state.params.gesturesEnabled', true),
   gestureResponseDistance: {
     vertical: deviceUtils.dimensions.height / 2,
   },
+  gesturesEnabled: get(navigation, 'state.params.gesturesEnabled', true),
 });
 
 export default ImportSeedPhraseSheetWithData;

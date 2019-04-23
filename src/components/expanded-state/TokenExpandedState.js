@@ -2,8 +2,13 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { InteractionManager } from 'react-native';
-import Piwik from 'react-native-matomo';
-import { compose, withHandlers, withProps } from 'recompact';
+import {
+  compose,
+  onlyUpdateForKeys,
+  withHandlers,
+  withProps,
+} from 'recompact';
+import { withAccountSettings } from '../../hoc';
 import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
 
@@ -37,8 +42,12 @@ TokenExpandedState.propTypes = {
 };
 
 export default compose(
-  withProps(({ asset: { name, symbol, ...asset } }) => ({
-    price: get(asset, 'native.price.display', '$0.00'),
+  withAccountSettings,
+  withProps(({
+    asset: { name, symbol, ...asset },
+    nativeCurrencySymbol,
+  }) => ({
+    price: get(asset, 'native.price.display', `${nativeCurrencySymbol}0.00`),
     subtitle: get(asset, 'balance.display', symbol),
     title: name,
   })),
@@ -47,9 +56,9 @@ export default compose(
       navigation.goBack();
 
       InteractionManager.runAfterInteractions(() => {
-        Piwik.trackEvent('Navigation', 'send-expanded', 'SendTokenExpandedNav');
         navigation.navigate('SendSheet', { asset: symbol });
       });
     },
   }),
+  onlyUpdateForKeys(['price']),
 )(TokenExpandedState);

@@ -15,13 +15,15 @@ const DefaultAnimatedValues = {
   transX: 0,
 };
 
+let buttonExcludingMutex = null;
+
 export default class ButtonPressAnimation extends PureComponent {
   static propTypes = {
     activeOpacity: PropTypes.number,
     children: PropTypes.any,
     disabled: PropTypes.bool,
     enableHapticFeedback: PropTypes.bool,
-    onPress: PropTypes.func.isRequired,
+    onPress: PropTypes.func,
     scaleTo: PropTypes.number,
     style: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
     transformOrigin: directionPropType,
@@ -68,9 +70,23 @@ export default class ButtonPressAnimation extends PureComponent {
 
     const isActive = state === State.BEGAN;
 
+    if (buttonExcludingMutex !== this) {
+      if (buttonExcludingMutex === null && isActive) {
+        buttonExcludingMutex = this;
+      } else {
+        return;
+      }
+    }
+    if (state === State.END || state === State.FAILED || state === State.CANCELLED) {
+      buttonExcludingMutex = null;
+    }
+
     const animationsArray = [
       // Default spring animation
       animations.buildSpring({
+        config: {
+          isInteraction: false,
+        },
         from: ButtonKeyframes.from.scale,
         isActive,
         to: scaleTo,
@@ -112,7 +128,7 @@ export default class ButtonPressAnimation extends PureComponent {
       ReactNativeHapticFeedback.trigger('impactLight');
     }
 
-    if (state === State.END) {
+    if (state === State.END && onPress) {
       onPress();
     }
   }

@@ -1,29 +1,25 @@
-import { getTransactionCount, web3Instance } from 'balance-common';
+import { ethers } from 'ethers';
 import lang from 'i18n-js';
-import { get } from 'lodash';
+import { get, isNil } from 'lodash';
 import PropTypes from 'prop-types';
+import { estimateGas, getTransactionCount, toHex } from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
-import { AlertIOS, StatusBar, Vibration } from 'react-native';
-import Piwik from 'react-native-matomo';
+import { Alert, StatusBar, Vibration } from 'react-native';
+import { withNavigationFocus } from 'react-navigation';
+import { compose } from 'recompact';
 import { withTransactionConfirmationScreen } from '../hoc';
 import { signMessage, sendTransaction } from '../model/wallet';
 import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
 class TransactionConfirmationScreenWithData extends Component {
   static propTypes = {
-    isScreenActive: PropTypes.bool.isRequired,
+    isFocused: PropTypes.bool.isRequired,
     navigation: PropTypes.any,
     removeTransaction: PropTypes.func,
     transactionCountNonce: PropTypes.number,
     transactionsAddNewTransaction: PropTypes.func,
     updateTransactionCountNonce: PropTypes.func,
     walletConnectSendStatus: PropTypes.func,
-  }
-
-  componentDidUpdate = (prevProps) => {
-    if (this.props.isScreenActive && !prevProps.isScreenActive) {
-      Piwik.trackScreen('TxnConfirmScreen', 'TxnConfirmScreen');
-    }
   }
 
   componentDidMount() {
@@ -44,26 +40,31 @@ class TransactionConfirmationScreenWithData extends Component {
   handleConfirmTransaction = async () => {
     const { transactionDetails } = this.props.navigation.state.params;
     const txPayload = get(transactionDetails, 'payload.params[0]');
+    let gasLimit = txPayload.gasLimit;
+    if (isNil(gasLimit)) {
+      try {
+        rawGasLimit = await estimateGas(txPayload);
+        gasLimit = toHex(rawGasLimit);
+      } catch (error) {
+        console.log('error estimating gas', error);
+      }
+    }
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(this.props.transactionCountNonce, web3TxnCount);
-    const nonce = web3Instance.utils.toHex(maxTxnCount);
+    const nonce = ethers.utils.hexlify(maxTxnCount);
     const txPayloadLatestNonce = { ...txPayload, nonce };
     const symbol = get(transactionDetails, 'transactionDisplayDetails.payload.asset.symbol', 'unknown');
     const address = get(transactionDetails, 'transactionDisplayDetails.payload.asset.address', '');
-    const trackingName = `${symbol}:${address}`;
     const transactionHash = await sendTransaction({
-      tracking: {
-        action: 'send-wc',
-        amount: get(transactionDetails, 'transactionDisplayDetails.payload.nativeAmount'),
-        name: trackingName,
-      },
       transaction: txPayloadLatestNonce,
     });
 
     if (transactionHash) {
       this.props.updateTransactionCountNonce(maxTxnCount + 1);
+      // TODO add request type
       const txDetails = {
         asset: get(transactionDetails, 'transactionDisplayDetails.payload.asset'),
+        dappName: get(transactionDetails, 'dappName'),
         from: get(transactionDetails, 'transactionDisplayDetails.payload.from'),
         gasLimit: get(transactionDetails, 'transactionDisplayDetails.payload.gasLimit'),
         gasPrice: get(transactionDetails, 'transactionDisplayDetails.payload.gasPrice'),
@@ -102,7 +103,7 @@ class TransactionConfirmationScreenWithData extends Component {
       await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, null);
     } catch (error) {
       this.closeScreen();
-      AlertIOS.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
+      Alert.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
     }
   }
 
@@ -113,7 +114,7 @@ class TransactionConfirmationScreenWithData extends Component {
       this.props.removeTransaction(transactionDetails.requestId);
     } catch (error) {
       this.closeScreen();
-      AlertIOS.alert('Failed to send rejected transaction status');
+      Alert.alert('Failed to send rejected transaction status');
     }
   }
 
@@ -145,4 +146,7 @@ class TransactionConfirmationScreenWithData extends Component {
   }
 }
 
-export default withTransactionConfirmationScreen(TransactionConfirmationScreenWithData);
+export default compose(
+  withNavigationFocus,
+  withTransactionConfirmationScreen,
+)(TransactionConfirmationScreenWithData);

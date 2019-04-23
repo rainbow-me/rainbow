@@ -1,30 +1,26 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import EmojiRenderer from 'react-native-emoji';
-import styled from 'styled-components/primitives';
 import { fonts } from '../../styles';
 
-const StyledEmoji = styled(EmojiRenderer)`
-  font-size: ${({ size }) => size};
-  line-height: 0;
-`;
-
-const Emoji = ({ size, ...props }) => (
-  <StyledEmoji
+const Emoji = ({ lineHeight, size, ...props }) => (
+  <EmojiRenderer
     {...props}
-    size={size}
+    css={`
+      font-size: ${fonts.size[size]};
+      line-height: ${fonts.lineHeight[lineHeight]};
+    `}
   />
 );
 
 Emoji.propTypes = {
-  size: PropTypes.oneOf([
-    ...Object.keys(fonts.size),
-    ...Object.values(fonts.size),
-  ]),
+  lineHeight: PropTypes.oneOf(Object.keys(fonts.lineHeight)),
+  size: PropTypes.oneOf(Object.keys(fonts.size)),
 };
 
 Emoji.defaultProps = {
-  size: fonts.size.h4,
+  lineHeight: 'none',
+  size: 'h4',
 };
 
 export default Emoji;

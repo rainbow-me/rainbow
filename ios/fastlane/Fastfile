@@ -10,19 +10,71 @@
 #     https://docs.fastlane.tools/plugins/available-plugins
 #
 
-# Uncomment the line if you want fastlane to automatically update itself
-# update_fastlane
-
 default_platform(:ios)
 
 platform :ios do
+  desc "Refresh dSYMs"
+  lane :refresh_dsyms do
+    download_dsyms
+    upload_symbols_to_crashlytics
+    clean_build_artifacts
+  end
+
   desc "Submit a new Beta build to Apple TestFlight"
   lane :beta do
+    update_info_plist(
+      plist_path: "Rainbow/Info.plist",
+      display_name: "Rainbow"
+    )
+    update_app_identifier(
+      app_identifier: "me.rainbow",
+      xcodeproj: "Rainbow.xcodeproj",
+      plist_path: "Rainbow/Info.plist",
+    )
     match(
       type: "appstore",
-      git_url: "git@github.com:balance-io/balance-code-signing.git"
+      app_identifier: "me.rainbow",
+      git_url: "git@github.com:rainbow-me/rainbow-code-signing.git"
     )
-    gym(scheme: "BalanceWallet")
-    pilot
+    gym(
+      scheme: "Rainbow",
+      export_method: "app-store",
+      include_symbols: true,
+    )
+    pilot(
+      app_identifier: "me.rainbow"
+    )
+    download_dsyms
+    upload_symbols_to_crashlytics
+    clean_build_artifacts
+  end
+
+  desc "Submit a new Internal build to Apple TestFlight"
+  lane :internal do
+    update_info_plist(
+      plist_path: "Rainbow/Info.plist",
+      display_name: "Internal"
+    )
+    update_app_identifier(
+      app_identifier: "me.rainbow.internal",
+      xcodeproj: "Rainbow.xcodeproj",
+      plist_path: "Rainbow/Info.plist",
+    )
+    match(
+      type: "appstore",
+      app_identifier: "me.rainbow.internal",
+      git_url: "git@github.com:rainbow-me/rainbow-code-signing.git"
+    )
+    gym(
+      scheme: "Rainbow",
+      export_method: "app-store",
+      include_symbols: true,
+    )
+    pilot(
+      app_identifier: "me.rainbow.internal"
+    )
+    download_dsyms
+    upload_symbols_to_crashlytics
+    clean_build_artifacts
   end
 end

@@ -1,6 +1,6 @@
 import { differenceInMinutes } from 'date-fns';
 import { pickBy } from 'lodash';
-import { commonStorage } from 'balance-common';
+import { commonStorage } from '@rainbow-me/rainbow-common';
 
 /**
  * @desc get show shitcoins setting
@@ -18,25 +18,6 @@ export const getShowShitcoinsSetting = async () => {
  */
 export const updateShowShitcoinsSetting = async (updatedSetting) => {
   await commonStorage.saveLocal('showShitcoins', { data: updatedSetting });
-};
-
-/**
- * @desc get last tracking date
- * @return {Date|Object}
- */
-export const getLastTrackingDate = async () => {
-  const lastTrackingDate = await commonStorage.getLocal('lastTrackingDate');
-  return lastTrackingDate && lastTrackingDate.data ? new Date(lastTrackingDate.data) : null;
-};
-
-/**
- * @desc update last tracking date
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Void}
- */
-export const updateLastTrackingDate = async () => {
-  await commonStorage.saveLocal('lastTrackingDate', { data: new Date().toString() });
 };
 
 const getRequestsKey = (accountAddress, network) => `requests-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
@@ -74,9 +55,9 @@ export const saveLocalRequests = async (accountAddress, network, requests) => {
  * @param  {String}   [requestId]
  * @return {Void}
  */
-export const removeLocalRequest = async (address, network, requestId) => {
-  const requests = getLocalRequests(address, network);
+export const removeLocalRequest = async (address, network, callId) => {
+  const requests = await getLocalRequests(address, network);
   const updatedRequests = { ...requests };
-  delete updatedRequests[requestId];
-  saveLocalRequests(address, network, updatedRequests);
+  delete updatedRequests[callId];
+  await saveLocalRequests(address, network, updatedRequests);
 };

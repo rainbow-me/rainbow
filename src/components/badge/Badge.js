@@ -2,9 +2,19 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-primitives';
 import { animated, interpolate, Transition } from 'react-spring/dist/native';
-import { compose, defaultProps, onlyUpdateForKeys, withProps } from 'recompact';
+import {
+  compose,
+  defaultProps,
+  onlyUpdateForKeys,
+  withProps,
+} from 'recompact';
 import styled, { css } from 'styled-components/primitives';
-import { animations, borders, colors, padding } from '../../styles';
+import {
+  animations,
+  borders,
+  colors,
+  padding,
+} from '../../styles';
 import { Centered } from '../layout';
 import { Text } from '../text';
 

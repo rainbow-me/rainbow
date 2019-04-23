@@ -7,21 +7,21 @@
 	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
 	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>CLIENT_ID</key>
-	<string>944919125796-bitokvoqd0c40qincv60h85guak41rjn.apps.googleusercontent.com</string>
+	<string>498863290995-9p1q0khft2ducvla1hmjgc7j083s662i.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.944919125796-bitokvoqd0c40qincv60h85guak41rjn</string>
+	<string>com.googleusercontent.apps.498863290995-9p1q0khft2ducvla1hmjgc7j083s662i</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBp_tWYHKxXwcBSc1mp7pPIR_fufVHZBzg</string>
+	<string>AIzaSyCNbH_4aWuTugRUiv5bL1GkRSlf8swbQt4</string>
 	<key>GCM_SENDER_ID</key>
-	<string>944919125796</string>
+	<string>498863290995</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>io.balance.balancewallet</string>
+	<string>me.rainbow</string>
 	<key>PROJECT_ID</key>
-	<string>balance-424a3</string>
+	<string>rainbow-me</string>
 	<key>STORAGE_BUCKET</key>
-	<string>balance-424a3.appspot.com</string>
+	<string>rainbow-me.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<true></true>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -33,8 +33,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:944919125796:ios:58255248a8c10bbf</string>
+	<string>1:498863290995:ios:9549e5b497700eb0</string>
 	<key>DATABASE_URL</key>
-	<string>https://balance-424a3.firebaseio.com</string>
+	<string>https://rainbow-me.firebaseio.com</string>
 </dict>
 </plist>

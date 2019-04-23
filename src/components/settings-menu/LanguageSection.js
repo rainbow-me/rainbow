@@ -1,6 +1,6 @@
-import { resources, supportedLanguages } from 'balance-common';
 import { get, keys, pickBy } from 'lodash';
 import PropTypes from 'prop-types';
+import { resources, supportedLanguages } from '@rainbow-me/rainbow-common';
 import React from 'react';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { withAccountSettings } from '../../hoc';
@@ -17,6 +17,7 @@ const languageListItems = languagesWithWalletTranslations.map(code => ({
   value: code,
 }));
 
+// eslint-disable-next-line react/prop-types
 const renderLanguageListItem = ({ code, language, ...item }) => (
   <RadioListItem
     {...item}
@@ -43,8 +44,9 @@ LanguageSection.propTypes = {
 export default compose(
   withAccountSettings,
   withHandlers({
-    onSelectLanguage: ({ settingsChangeLanguage }) => (language) =>
-      settingsChangeLanguage(language),
+    onSelectLanguage: ({ settingsChangeLanguage }) => (language) => (
+      settingsChangeLanguage(language)
+    ),
   }),
   onlyUpdateForKeys(['language']),
 )(LanguageSection);

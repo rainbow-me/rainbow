@@ -1,7 +1,7 @@
 import {
   omitBy, pickBy, forEach, mapValues, values,
 } from 'lodash';
-import { commonStorage } from 'balance-common';
+import { commonStorage } from '@rainbow-me/rainbow-common';
 import { AlertIOS } from 'react-native';
 import lang from 'i18n-js';
 import WalletConnect from '@walletconnect/react-native';
@@ -33,13 +33,13 @@ const getNativeOptions = async () => {
   const nativeOptions = {
     clientMeta: {
       description: 'Store and secure all your ERC-20 tokens in one place',
-      url: 'https://balance.io',
+      url: 'https://rainbow.me',
       icons: ['https://avatars0.githubusercontent.com/u/19879255?s=200&v=4'],
-      name: 'Balance Wallet',
+      name: 'Rainbow',
       ssl: true,
     },
     push: {
-      url: 'https://us-central1-balance-424a3.cloudfunctions.net',
+      url: 'https://us-central1-rainbow-me.cloudfunctions.net'
       type: 'fcm',
       token,
       peerMeta: true,

@@ -1,12 +1,15 @@
-# Balance Wallet
+# Rainbow Wallet
 
-A mobile wallet for dapps &amp; tokens. Currently focused on iOS.
+A mobile wallet for open finance and the decentralized web.
 
 ## Requirements
 
 * A computer running macOS.
+* NVM installed: https://github.com/creationix/nvm
+* Install CocoaPods by running `sudo gem install cocoapods`
+* Install Watchman `brew install watchman`
 * Install the latest version of XCode: https://developer.apple.com/xcode/
-* Clone and install Balance Common, our shared library: https://github.com/balance-io/balance-common
+* Clone and install Rainbow Common, our shared library: https://github.com/rainbow-me/rainbow-common
 
 ## How to run the project
 
@@ -20,15 +23,13 @@ If you are new to React Native, this is a helpful introduction: https://facebook
 
 4. Run `yarn nodeify`.
 
-5. Install CocoaPods by running `sudo gem install cocoapods`.
+5. Install required Pods by running `yarn install-pods`.
 
-6. Install required Pods by running `yarn install-pods`.
+6. Run `yarn ios` to build the project for XCode.
 
-7. Run `yarn ios` to build the project for XCode.
+7. Open `rainbow-wallet/ios/RainbowWallet.xcworkspace`.
 
-8. Open `balance-wallet/ios/BalanceWallet.xcworkspace`.
-
-9. Run the project by clicking the play button.
+8. Run the project by clicking the play button.
 
 ## CodePush
 
@@ -44,7 +45,7 @@ At this point you will be required to log into the account tied to the code push
 
 ### Deployment
 ```
-code-push release-react BalanceWallet-iOS ios -d <DEPLOYMENT>
+code-push release-react RainbowWallet-iOS ios -d <DEPLOYMENT>
 ```
 
 The deployment can either be `Staging` or `Production` depending on the mode of the application you wish to update was built in through XCode.

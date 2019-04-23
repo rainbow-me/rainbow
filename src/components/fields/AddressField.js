@@ -1,144 +1,101 @@
+import { isHexString, isValidAddress } from '@rainbow-me/rainbow-common';
+import { omit } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import styled from 'styled-components/primitives';
-import { Animated, Text, TextInput, View } from 'react-native';
-
-import { abbreviations } from '../../utils';
-import { colors, fonts } from '../../styles';
+import { Input } from '../inputs';
 import { Row } from '../layout';
+import { Label } from '../text';
+import { colors } from '../../styles';
+import { abbreviations, addressUtils, isNewValueForPath } from '../../utils';
 
-const Container = styled(View)`
-  position: relative;
+const AddressInput = styled(Input).attrs({ family: 'SFMono' })`
   flex-grow: 1;
-`;
-
-const Input = styled(TextInput)`
-  flex-grow: 1;
-  font-size: ${fonts.size.h5}
-  font-family: ${fonts.family.SFMono};
-  font-weight: ${fonts.weight.semibold};
-  color: ${props => (props.isValid ? colors.sendScreen.brightBlue : colors.blueGreyDark)};
-  margin-top: 1px;
+  margin-top: 1;
   z-index: 1;
 `;
 
 const Placeholder = styled(Row)`
   position: absolute;
   top: 0;
-  z-index: 0;
+  z-index: 1;
 `;
 
-const SFMono = styled(Text)`
-  color: ${colors.blueGreyDark};
-  font-family: ${fonts.family.SFMono};
-  font-size: ${fonts.size.h5};
-  font-weight: ${fonts.weight.semibold};
-  opacity: 0.6;
+const PlaceholderText = styled(Label)`
+  opacity: 0.45;
 `;
 
-const SFProText = styled(Text)`
-  color: ${colors.blueGreyDark};
-  font-family: ${fonts.family.SFProText};
-  font-size: ${fonts.size.h5};
-  font-weight: ${fonts.weight.semibold};
-  opacity: 0.6;
-`;
+const formatValue = value => (
+  (isHexString(value) && (value.length === addressUtils.maxLength))
+    ? abbreviations.address(value)
+    : value
+);
 
-export default class UnderlineField extends Component {
+export default class AddressField extends PureComponent {
   static propTypes = {
+    address: PropTypes.string,
     autoFocus: PropTypes.bool,
-    inputRef: PropTypes.func,
-    isValid: PropTypes.bool,
-    onBlur: PropTypes.func,
-    onChange: PropTypes.func,
-    onFocus: PropTypes.func,
-    style: PropTypes.any,
-    value: PropTypes.any,
-  };
+    onChange: PropTypes.func.isRequired,
+  }
 
-  static defaultProps = {
+  state = {
+    address: '',
     isValid: false,
-    onBlur() {},
-    onChange() {},
-    onFocus() {},
-  };
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      underlineAnimation: new Animated.Value(0),
-      value: props.value,
-    };
   }
 
-  componentDidUpdate(prevProps) {
-    const { value } = this.props;
+  componentDidUpdate(prevProps, prevState) {
+    // Validate 'address' whenever its value changes
+    if (isNewValueForPath(this.state, prevState, 'address')) {
+      this.validateAddress(this.state.address);
+    }
 
-    if (value !== prevProps.value) {
-      this.setState({ value });
+    // Allow component state to be overwritten by parent component through the
+    // use of the 'address' prop. Assume that 'address' is valid because @rainbow-me/rainbow-common
+    // handles that for us.
+    if (this.props.address && !this.state.address) {
+      this.setState({
+        address: this.props.address,
+        isValid: true,
+      });
     }
   }
 
-  componentWillUnmount() {
-    this.state.underlineAnimation.stopAnimation();
-  }
+  onChange = ({ nativeEvent }) => this.props.onChange(nativeEvent.text)
 
-  onChange = ({ nativeEvent }) => {
-    const { isValid, onChange } = this.props;
-    const { value } = this.state;
+  onChangeText = address => this.setState({ address })
 
-    let addressValue = nativeEvent.text;
-
-    if (isValid) {
-      if (addressValue.length > abbreviations.address(value).length) {
-        addressValue = value + addressValue.substring(addressValue.length - 1);
-      } else if (addressValue.length < abbreviations.address(value).length) {
-        addressValue = value.substring(0, value.length - 1);
-      }
-    }
-
-    this.setState({ value: addressValue }, () => {
-      onChange(addressValue);
-    });
-  };
-
-  renderPlaceholder() {
-    return (
-      <Placeholder>
-        <SFProText>Ethereum Address (</SFProText>
-        <SFMono>0x</SFMono>
-        <SFProText>...)</SFProText>
-      </Placeholder>
-    );
+  validateAddress = async (inputValue) => {
+    const isValid = await isValidAddress(inputValue);
+    return this.setState({ isValid });
   }
 
   render() {
-    const {
-      autoFocus,
-      inputRef,
-      isValid,
-      style,
-    } = this.props;
-
-    const {
-      value,
-    } = this.state;
+    const { autoFocus, ...props } = this.props;
+    const { address, isValid } = this.state;
 
     return (
-      <Container>
-        <Input
+      <Row flex={1}>
+        <AddressInput
+          {...props}
+          {...omit(Label.textProps, 'opacity')}
           autoCorrect={false}
           autoFocus={autoFocus}
-          isValid={isValid}
-          keyboardType="name-phone-pad"
+          color={isValid ? colors.appleBlue : colors.blueGreyDark}
+          keyboardType="web-search"
+          maxLength={addressUtils.maxLength}
           onChange={this.onChange}
-          ref={inputRef}
-          style={style}
-          value={isValid ? abbreviations.address(value) : value}
+          onChangeText={this.onChangeText}
+          selectTextOnFocus={true}
+          value={formatValue(address)}
         />
-        {!value ? this.renderPlaceholder() : null}
-      </Container>
+        {!address && (
+          <Placeholder>
+            <PlaceholderText>Ethereum Address (</PlaceholderText>
+            <PlaceholderText family="SFMono">0x</PlaceholderText>
+            <PlaceholderText>...)</PlaceholderText>
+          </Placeholder>
+        )}
+      </Row>
     );
   }
 }

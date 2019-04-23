@@ -1,32 +1,64 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
-import styled from 'styled-components/primitives';
-import { colors } from '../../styles';
+import React from 'react';
+import { css } from 'styled-components/primitives';
+import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Monospace } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
-const BottomRowText = styled(Monospace).attrs({ size: 'smedium' })`
-  color: ${({ color }) => (color || colors.blueGreyLight)};
+const selectedHeight = 78;
+
+const selectedStyles = css`
+  ${padding(17, 14, 19, 13)};
+  height: ${selectedHeight};
 `;
 
-const SendCoinRow = ({ item, onPress, ...props }) => (
+const BottomRow = ({ balance, native, nativeCurrencySymbol }) => {
+  const fiatValue = get(native, 'balance.display') || `${nativeCurrencySymbol}0.00`;
+
+  return (
+    <Monospace
+      color={colors.alpha(colors.blueGreyDark, 0.6)}
+      size="smedium"
+    >
+      {get(balance, 'display')} ≈ {fiatValue}
+    </Monospace>
+  );
+};
+
+BottomRow.propTypes = {
+  balance: PropTypes.shape({ display: PropTypes.string }),
+  native: PropTypes.object,
+  nativeCurrencySymbol: PropTypes.string,
+};
+
+const TopRow = ({ name, selected }) => (
+  <CoinName weight={selected ? 'semibold' : 'regular'}>
+    {name}
+  </CoinName>
+);
+
+TopRow.propTypes = {
+  name: PropTypes.string,
+  selected: PropTypes.bool,
+};
+
+const SendCoinRow = ({
+  item,
+  onPress,
+  selected,
+  ...props
+}) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
     <CoinRow
       {...item}
       {...props}
-      bottomRowRender={({ balance, native }) => (
-        <Fragment>
-          <BottomRowText>{get(balance, 'display')} ≈ {get(native, 'balance.display') || '$0.00'}</BottomRowText>
-        </Fragment>
-      )}
-      topRowRender={({ name }) => (
-        <Fragment>
-          <CoinName>{name}</CoinName>
-        </Fragment>
-      )}
+      bottomRowRender={BottomRow}
+      containerStyles={selected ? selectedStyles : null}
+      selected={selected}
+      topRowRender={TopRow}
     />
   </ButtonPressAnimation>
 );
@@ -34,6 +66,9 @@ const SendCoinRow = ({ item, onPress, ...props }) => (
 SendCoinRow.propTypes = {
   item: PropTypes.object,
   onPress: PropTypes.func,
+  selected: PropTypes.bool,
 };
+
+SendCoinRow.selectedHeight = selectedHeight;
 
 export default SendCoinRow;

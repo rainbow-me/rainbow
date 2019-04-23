@@ -1,19 +1,23 @@
+import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components/primitives';
-import { Monospace } from './text';
+import VersionNumber from 'react-native-version-number';
 import { colors } from '../styles';
+import { Monospace } from './text';
 
-const Container = styled(Monospace).attrs({
-  size: 'h5',
-  weight: 'medium',
-})`
-  color: ${({ color }) => (color || colors.grey)};
-  flex-shrink: 0;
-  line-height: 28;
-  margin-bottom: 21;
-  text-align: center;
-`;
+const AppVersionStamp = ({ color, ...props }) => (
+  <Monospace
+    align="center"
+    color={color || colors.placeholder}
+    size="smedium"
+    weight="medium"
+    {...props}
+  >
+    {`${VersionNumber.appVersion} (${VersionNumber.buildVersion})`}
+  </Monospace>
+);
 
-const AppVersionStamp = props => <Container {...props}>Balance v0.3.0 (18)</Container>;
+AppVersionStamp.propTypes = {
+  color: PropTypes.string,
+};
 
 export default AppVersionStamp;

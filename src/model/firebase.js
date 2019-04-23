@@ -1,11 +1,11 @@
 import firebase from 'react-native-firebase';
 import lang from 'i18n-js';
 import { get } from 'lodash';
-import { commonStorage } from 'balance-common';
+import { commonStorage } from '@rainbow-me/rainbow-common';
 import { Alert } from '../components/alerts';
 
 export const getFCMToken = async () => {
-  const fcmTokenLocal = await commonStorage.getLocal('balanceWalletFcmToken');
+  const fcmTokenLocal = await commonStorage.getLocal('rainbowFcmToken');
   const fcmToken = get(fcmTokenLocal, 'data', null);
   if (!fcmToken) {
     throw new Error('Push notification token unavailable.');
@@ -17,7 +17,7 @@ export const saveFCMToken = async () => {
   try {
     const fcmToken = await firebase.messaging().getToken();
     if (fcmToken) {
-      commonStorage.saveLocal('balanceWalletFcmToken', { data: fcmToken });
+      commonStorage.saveLocal('rainbowFcmToken', { data: fcmToken });
     }
   } catch (error) {
     console.log('error getting fcm token');
@@ -51,15 +51,17 @@ export const checkPushNotificationPermissions = async () => {
 };
 
 export const registerTokenRefreshListener = () => firebase.messaging().onTokenRefresh(fcmToken => {
-  commonStorage.saveLocal('balanceWalletFcmToken', { data: fcmToken });
+  commonStorage.saveLocal('rainbowFcmToken', { data: fcmToken });
 });
 
 export const registerNotificationListener = () => firebase.notifications().onNotification(notification => {
   console.log('onNotification');
 });
 
+// TODO this.onPushNotificationOpened
 export const registerNotificationOpenedListener = () => firebase.notifications().onNotificationOpened(notificationOpen => {
-  console.log('onNotificationOpened');
+  const { callId, sessionId } = notificationOpen.notification.data;
+  this.onPushNotificationOpened(callId, sessionId, false);
 });
 
 export const getInitialNotification = () => firebase.notifications().getInitialNotification();
