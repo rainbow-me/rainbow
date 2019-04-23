@@ -79,7 +79,15 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator({
   tabBarComponent: null,
   mode: 'modal',
   transparentCard: true,
-})
+});
+
+
+const EnhancedExchangeModalNavigator = props => <ExchangeModalNavigator {...props}/>;
+EnhancedExchangeModalNavigator.router = ExchangeModalNavigator.router;
+EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => ({
+  gesturesEnabled: !get(navigation, 'state.params.isGestureBlocked'),
+});
+
 
 const MainNavigator = createStackNavigator({
   ConfirmRequest: {
@@ -89,6 +97,19 @@ const MainNavigator = createStackNavigator({
     screen: TransactionConfirmationScreenWithData,
   },
   ExampleScreen,
+  ExchangeModal: {
+    navigationOptions: {
+      effect: 'expanded',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height,
+      },
+    },
+    params: {
+      isGestureBlocked: false,
+      isSwipeBlocked: true,
+    },
+    screen: EnhancedExchangeModalNavigator,
+  },
   ExpandedAssetScreen: {
     navigationOptions: {
       ...expandedPreset,
