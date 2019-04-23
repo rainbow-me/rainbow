@@ -17,6 +17,7 @@ const CoinIconFallback = fallbackProps => (
   <FallbackIcon
     {...fallbackProps}
     textStyles={fallbackTextStyles}
+    symbol={fallbackProps.symbol || ''}
   />
 );
 
