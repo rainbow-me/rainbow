@@ -113,10 +113,8 @@ class WalletScreen extends Component {
       scrollViewTracker,
       sections,
       showBlur,
-      ...rest
     } = this.props;
 
-    console.log(this.props)
     return (
       <Page {...position.sizeAsObject('100%')} flex={1}>
         {/* Line below appears to be needed for having scrollViewTracker persistent while
@@ -163,7 +161,6 @@ export default compose(
   withIsWalletEthZero,
   withStatusBarStyle('dark-content'),
   withState('showShitcoins', 'toggleShowShitcoins', true),
-  withState('refreshed', 'toggleRefresh', false),
   withHandlers({
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
       if (index === 0) {

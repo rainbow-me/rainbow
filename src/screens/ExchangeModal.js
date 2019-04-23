@@ -1,42 +1,27 @@
-import { get } from 'lodash';
+import React from 'react';
 import PropTypes from 'prop-types';
-import React, { createElement } from 'react';
 import {
-  InteractionManager, View, StyleSheet, Animated, TextInput, KeyboardAvoidingView, Keyboard,
+  TextInput, KeyboardAvoidingView, Keyboard,
 } from 'react-native';
 import {
   compose,
-  onlyUpdateForKeys,
   withHandlers,
   withProps,
   withState,
 } from 'recompact';
-import { PanGestureHandler } from 'react-native-gesture-handler';
-import { NavigationEvents } from 'react-navigation';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
 import { withAccountAssets } from '@rainbow-me/rainbow-common';
 import {
   Centered, Column, FlexItem, Row,
 } from '../components/layout';
-import { Modal, ModalHeader } from '../components/modal';
-import { AnimatedPager } from '../components/pager';
-import {
-  BackupSection,
-  CurrencySection,
-  LanguageSection,
-  NetworkSection,
-  SettingsSection,
-} from '../components/settings-menu';
-import { deviceUtils, statusBar } from '../utils';
+import { ModalHeader } from '../components/modal';
 import withBlockedHorizontalSwipe from '../hoc/withBlockedHorizontalSwipe';
-import { colors, padding, shadow } from '../styles';
+import { colors, shadow } from '../styles';
 import { Icon } from '../components/icons';
 import FloatingPanels from '../components/expanded-state/FloatingPanels';
-import { AssetPanel, AssetPanelAction, AssetPanelHeader } from '../components/expanded-state/asset-panel';
 import FloatingPanel from '../components/expanded-state/FloatingPanel';
 import CoinRow from '../components/coin-row/CoinRow';
 import CoinName from '../components/coin-row/CoinName';
-import BalanceText from '../components/coin-row/BalanceText';
 import Button from '../components/buttons/Button';
 import { Text } from '../components/text';
 import GestureBlocker from '../components/GestureBlocker';
@@ -54,7 +39,7 @@ const ConfirmExchngeButton = styled(Button)`
   align-self: center
 `;
 
-const TopRow = ({ navigateToCurrencySelection, amount, changeAmount, symbol }) => console.log(amount) || (
+const TopRow = ({ navigateToCurrencySelection, amount, changeAmount, symbol }) => (
   <Row align="center" justify="space-between">
     <FlexItem flex={1}>
       <CoinName
@@ -83,16 +68,15 @@ const TopRow = ({ navigateToCurrencySelection, amount, changeAmount, symbol }) =
           name="caret"
         />
       </Button>
-      {/*     <BalanceText color={nativeDisplay ? null : colors.blueGreyLight}>
-          {nativeDisplay || `${nativeCurrencySymbol}0.00`}
-        </BalanceText> */}
     </FlexItem>
   </Row>
 );
 
 TopRow.propTypes = {
-  amountToExchange: PropTypes.number,
+  amount: PropTypes.number,
+  changeAmount: PropTypes.func,
   navigateToCurrencySelection: PropTypes.func,
+  symbol: PropTypes.func,
 };
 
 
