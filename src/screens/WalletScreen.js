@@ -113,8 +113,10 @@ class WalletScreen extends Component {
       scrollViewTracker,
       sections,
       showBlur,
+      ...rest
     } = this.props;
 
+    console.log(this.props)
     return (
       <Page {...position.sizeAsObject('100%')} flex={1}>
         {/* Line below appears to be needed for having scrollViewTracker persistent while

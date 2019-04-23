@@ -91,6 +91,7 @@ const hasRowChanged = (r1, r2) => {
 
 class RecyclerAssetList extends Component {
   static propTypes = {
+    externalScrollView: PropTypes.any,
     fetchData: PropTypes.func,
     hideHeader: PropTypes.bool,
     openFamilyTabs: PropTypes.array,
@@ -478,6 +479,7 @@ class RecyclerAssetList extends Component {
             dataProvider={dataProvider}
             extendedState={{ headersIndices }}
             itemAnimator={layoutItemAnimator}
+            externalScrollView={this.props.externalScrollView}
             layoutProvider={this.layoutProvider}
             onScroll={this.handleScroll}
             ref={this.handleListRef}
@@ -488,7 +490,7 @@ class RecyclerAssetList extends Component {
               top: hideHeader ? 0 : AssetListHeader.height,
             }}
             scrollViewProps={{
-              refreshControl: this.renderRefreshControl(),
+              refreshControl: this.props.fetchData && this.renderRefreshControl(),
             }}
             style={{
               backgroundColor: colors.white,

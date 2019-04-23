@@ -105,53 +105,52 @@ const SettingsModal = ({
   selectedTargetCurrency,
   setAmountToExchange,
   ...rest
-}) => console.log(rest) || (
-  <KeyboardAvoidingView behavior="padding">
-
-    <Container>
-      <FloatingPanels>
-        <GestureBlocker type='top'/>
-        <FloatingPanel>
-          <Column align="center">
-            <Icon
-              color={colors.sendScreen.grey}
-              name="handle"
-              style={{ height: 11, marginTop: 13 }}
-            />
-            <ModalHeader
-              showDoneButton={false}
-              title="Swap"
-            />
-            <CoinRow
-              amount={amountToExchange}
-              changeAmount={setAmountToExchange}
-              navigateToCurrencySelection={onPressSelectCurrency}
-              bottomRowRender={() => null}
-              topRowRender={TopRow}
-              symbol='ETH'
-            />
-            <CoinRow
-              amount={amountToExchange}
-              changeAmount={setAmountToExchange}
-              navigateToCurrencySelection={onPressSelectTargetCurrency}
-              bottomRowRender={() => null}
-              topRowRender={TopRow}
-              symbol='ETH'
-            />
-          </Column>
-        </FloatingPanel>
-        <GestureBlocker type='bottom'/>
-        <ConfirmExchngeButton
-          onPress={onPressConfirmExchange}
-        >
-          Hold to swap
-        </ConfirmExchngeButton>
-      </FloatingPanels>
-    </Container>
-  </KeyboardAvoidingView>
-
-
-);
+}) => {
+  return (
+    <KeyboardAvoidingView behavior="padding">
+      <Container>
+        <FloatingPanels>
+          <GestureBlocker type='top'/>
+          <FloatingPanel>
+            <Column align="center">
+              <Icon
+                color={colors.sendScreen.grey}
+                name="handle"
+                style={{ height: 11, marginTop: 13 }}
+              />
+              <ModalHeader
+                showDoneButton={false}
+                title="Swap"
+              />
+              <CoinRow
+                amount={amountToExchange}
+                changeAmount={setAmountToExchange}
+                navigateToCurrencySelection={onPressSelectCurrency}
+                bottomRowRender={() => null}
+                topRowRender={TopRow}
+                symbol='ETH'
+              />
+              <CoinRow
+                amount={amountToExchange}
+                changeAmount={setAmountToExchange}
+                navigateToCurrencySelection={onPressSelectTargetCurrency}
+                bottomRowRender={() => null}
+                topRowRender={TopRow}
+                symbol='ETH'
+              />
+            </Column>
+          </FloatingPanel>
+          <GestureBlocker type='bottom'/>
+          <ConfirmExchngeButton
+            onPress={onPressConfirmExchange}
+          >
+            Hold to swap
+          </ConfirmExchngeButton>
+        </FloatingPanels>
+      </Container>
+    </KeyboardAvoidingView>
+  );
+};
 
 
 SettingsModal.propTypes = {
@@ -177,6 +176,11 @@ export default compose(
   withState('selectedCurrency', 'setSelectedCurrency', 'ETH'),
   withState('selectedTargetCurrency', 'setSelectedTargetCurrency', 'ETH'),
   withHandlers({
+    onPressConfirmExchange:
+      ({ navigation }) => () => {
+        Keyboard.dismiss();
+        navigation.navigate('WalletScreen');
+      },
     onPressSelectCurrency: ({ navigation, setSelectedCurrency }) => () => {
       Keyboard.dismiss();
       navigation.navigate('CurrencySelectScreen', { setSelectedCurrency });
@@ -185,11 +189,6 @@ export default compose(
       ({ navigation, setSelectedTargetCurrency }) => () => {
         Keyboard.dismiss();
         navigation.navigate('CurrencySelectScreen', { setSelectedCurrency: setSelectedTargetCurrency })
-      },
-    onPressConfirmExchange:
-      ({ navigation }) => () => {
-        Keyboard.dismiss();
-        navigation.navigate('WalletScreen');
       },
   }),
   withBlockedHorizontalSwipe,
