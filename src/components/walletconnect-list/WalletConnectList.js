@@ -1,11 +1,10 @@
-import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FlatList } from 'react-native';
+import { pure } from 'recompact';
 import { safeAreaInsetValues } from '../../utils';
 import { BubbleSheet } from '../bubble-sheet';
 import { FlexItem } from '../layout';
-import { pure } from 'recompact';
 import WalletConnectListItem from './WalletConnectListItem';
 
 const maxListItemsForDeviceSize = safeAreaInsetValues.bottom ? 4 : 3;
