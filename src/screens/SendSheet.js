@@ -9,12 +9,11 @@ import {
 } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Keyboard, KeyboardAvoidingView, View, Animated } from 'react-native';
+import { Keyboard, KeyboardAvoidingView } from 'react-native';
 import { isIphoneX } from 'react-native-iphone-x-helper';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
-import { PanGestureHandler } from 'react-native-gesture-handler'
 import {
   SendAssetForm,
   SendAssetList,
