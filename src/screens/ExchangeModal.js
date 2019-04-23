@@ -33,7 +33,6 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
 
 const ConfirmExchngeButton = styled(Button)`
   ${shadow.build(0, 6, 10, colors.purple, 0.14)}
-  background-color: ${colors.appleBlue};
   width:  100%;
   padding-horizontal: 5;
   align-self: center
@@ -93,7 +92,6 @@ const SettingsModal = ({
   selectedCurrency,
   selectedTargetCurrency,
   setAmountToExchange,
-  ...rest
 }) => {
   return (
     <KeyboardAvoidingView behavior="padding">
@@ -130,11 +128,15 @@ const SettingsModal = ({
             </Column>
           </FloatingPanel>
           <GestureBlocker type='bottom'/>
-          <ConfirmExchngeButton
+          {selectedTargetCurrency
+          && <ConfirmExchngeButton
+            disabled={!Number(amountToExchange)}
+            backgroundColor={Number(amountToExchange) ? colors.appleBlue : colors.blueGreyLighter}
             onPress={onPressConfirmExchange}
           >
-            Hold to swap
+            {Number(amountToExchange) ? 'Hold to swap' : 'Enter an amount' }
           </ConfirmExchngeButton>
+          }
         </FloatingPanels>
       </Container>
     </KeyboardAvoidingView>
@@ -181,7 +183,7 @@ export default compose(
     onPressSelectTargetCurrency:
       ({ navigation, setSelectedTargetCurrency }) => () => {
         Keyboard.dismiss();
-        navigation.navigate('CurrencySelectScreen', { setSelectedCurrency: setSelectedTargetCurrency })
+        navigation.navigate('CurrencySelectScreen', { setSelectedCurrency: setSelectedTargetCurrency });
       },
   }),
   withBlockedHorizontalSwipe,
