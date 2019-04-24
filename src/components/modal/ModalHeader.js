@@ -6,7 +6,7 @@ import { Centered, Row } from '../layout';
 import { TruncatedText } from '../text';
 import ModalHeaderButton from './ModalHeaderButton';
 
-const ModalHeaderHeight = 50;
+export const ModalHeaderHeight = 50;
 
 const Container = styled(Row).attrs({
   align: 'center',
