@@ -11,7 +11,7 @@ import { ShadowStack } from '../shadow-stack';
 
 const Container = styled(Centered)`
   ${position.cover}
-  background-color: ${({ disabled }) => (disabled ? '#F6F7F9' : colors.paleBlue)};
+  background-color: ${({ disabled, color }) => (disabled ? '#F6F7F9' : color || colors.paleBlue)};
 `;
 
 const buildFabShadow = disabled => (
