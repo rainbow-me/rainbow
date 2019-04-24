@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, withHandlers } from 'recompact';
+import { compose, withHandlers, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import Divider from '../components/Divider';
 import { Column } from '../components/layout';
@@ -57,14 +57,19 @@ WalletConnectConfirmationModal.propTypes = {
   onCloseModal: PropTypes.func.isRequired,
   onApprove: PropTypes.func.isRequired,
   onReject: PropTypes.func.isRequired,
+  peerId: PropTypes.string.isRequired,
   peerMeta: PropTypes.object.isRequired,
 };
 
 export default compose(
   withWalletConnectConfirmationModal,
+  withProps(({ navigation}) => {
+    const { peerId, peerMeta } = navigation.state.params;
+    return { peerId, peerMeta };
+  }),
   withHandlers({
     onCloseModal: ({ navigation }) => () => navigation.goBack(),
-    onApprove: ({ handshakeTopic, walletConnectApproveSession }) => () => walletConnectApproveSession(handshakeTopic),
-    onReject: ({ handshakeTopic, walletConnectRejectSession }) => () => walletConnectRejectSession(handshakeTopic),
+    onApprove: ({ peerId, walletConnectApproveSession }) => () => walletConnectApproveSession(peerId),
+    onReject: ({ peerId, walletConnectRejectSession }) => () => walletConnectRejectSession(peerId),
   }),
 )(WalletConnectConfirmationModal);
