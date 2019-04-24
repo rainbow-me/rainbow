@@ -1,17 +1,42 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { compose } from 'recompact';
+import { View } from 'react-native'
 import { withAccountAssets } from '@rainbow-me/rainbow-common';
 import { NavigationEvents } from 'react-navigation';
-import { Column, FlexItem } from '../components/layout';
-import { Modal } from '../components/modal';
+import { Column, FlexItem, Row } from '../components/layout';
+import { Modal, ModalHeader } from '../components/modal';
 import AssetList from '../components/asset-list/RecyclerAssetList';
 import { SendCoinRow } from '../components/coin-row';
 import GestureBlocker from '../components/GestureBlocker';
-import { Monospace } from '../components/text';
-import { colors } from '../styles';
+import { Monospace, TruncatedText } from '../components/text';
+import { borders, colors } from '../styles';
 import StarIcon from '../components/icons/svg/StarIcon';
+import styled from 'styled-components';
+import { ModalHeaderHeight } from '../components/modal/ModalHeader';
+import { BackButton } from '../components/header';
+import Flex from '../components/layout/Flex';
 
+const HeaderContainer = styled(Row).attrs({
+  align: 'center',
+  flex: 0,
+  justify: 'center',
+})`
+  ${borders.buildRadius('top', 12)};
+  background-color: ${colors.white};
+  height: ${ModalHeaderHeight};
+  width: 100%;
+`;
+
+
+const BackButtonWrapper = styled(Flex).attrs({
+  align: 'center',
+  justify: 'center',
+})`
+  left: 0;
+  position: absolute;
+  margin-left: 15;
+`;
 
 const BottomRow = ({ balance, symbol }) => (
   <Monospace
@@ -98,6 +123,24 @@ class SelectCurrencyModal extends React.Component {
             .setParams({ isGestureBlocked: false })}
         />
         <Column flex={1}>
+          <HeaderContainer>
+            <BackButtonWrapper>
+              <BackButton
+                color={colors.black}
+                direction="left"
+                onPress={() => navigation.navigate('MainExchangeScreen')}
+                size='8'
+              />
+            </BackButtonWrapper>
+            <TruncatedText
+              height={21}
+              letterSpacing="tight"
+              size="large"
+              weight="bold"
+            >
+              Receive
+            </TruncatedText>
+          </HeaderContainer>
           <AssetList
             hideHeader
             sections={sections}
