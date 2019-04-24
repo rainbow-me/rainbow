@@ -12,6 +12,8 @@ import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import StarIcon from '../icons/svg/StarIcon';
+import { SendCoinRow } from './index';
 
 const formatPercentageString = percentString => (
   percentString
