@@ -32,6 +32,7 @@ const CoinRow = ({
   containerStyles,
   contentStyles,
   onPress,
+  starRender,
   symbol,
   topRowRender,
   ...props
@@ -50,6 +51,7 @@ const CoinRow = ({
       ? children({ symbol, ...props })
       : children
     }
+    {starRender && createElement(starRender, props)}
   </Container>
 );
 
@@ -60,6 +62,7 @@ CoinRow.propTypes = {
   containerStyles: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
   contentStyles: PropTypes.string,
   onPress: PropTypes.func,
+  starRender: PropTypes.func,
   symbol: PropTypes.string,
   topRowRender: PropTypes.func,
 };
