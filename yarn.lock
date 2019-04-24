@@ -1134,28 +1134,28 @@
   version "12.0.12"
   resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-12.0.12.tgz#45dd1d0638e8c8f153e87d296907659296873916"
 
-"@walletconnect/core@^1.0.0-beta.17":
-  version "1.0.0-beta.17"
-  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.17.tgz#78289dee5e331217f0dbf9b69319ee4b8209212f"
+"@walletconnect/core@^1.0.0-beta.18":
+  version "1.0.0-beta.18"
+  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.18.tgz#b43d5d79bb6b7beaca1bf42b0d2500f04fcd3815"
   dependencies:
     "@walletconnect/types" "^1.0.0-beta.17"
-    "@walletconnect/utils" "^1.0.0-beta.17"
+    "@walletconnect/utils" "^1.0.0-beta.18"
 
-"@walletconnect/react-native@^1.0.0-beta.17":
-  version "1.0.0-beta.17"
-  resolved "https://registry.yarnpkg.com/@walletconnect/react-native/-/react-native-1.0.0-beta.17.tgz#3f5665628c1661f6b4e76e8eb02a527480378537"
+"@walletconnect/react-native@^1.0.0-beta.18":
+  version "1.0.0-beta.18"
+  resolved "https://registry.yarnpkg.com/@walletconnect/react-native/-/react-native-1.0.0-beta.18.tgz#d168f426cdb1fcd964fcbd45bed655b8399e624e"
   dependencies:
-    "@walletconnect/core" "^1.0.0-beta.17"
+    "@walletconnect/core" "^1.0.0-beta.18"
     "@walletconnect/types" "^1.0.0-beta.17"
-    "@walletconnect/utils" "^1.0.0-beta.17"
+    "@walletconnect/utils" "^1.0.0-beta.18"
 
 "@walletconnect/types@^1.0.0-beta.17":
-  version "1.0.0-beta.17"
-  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.0.0-beta.17.tgz#0b407abec772917b4055e57830e199c8a466d772"
+  version "1.0.0-beta.18"
+  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.0.0-beta.18.tgz#c258413d41e4c557b68cef5d22ff463c3b1cd0d6"
 
-"@walletconnect/utils@^1.0.0-beta.17":
-  version "1.0.0-beta.17"
-  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-1.0.0-beta.17.tgz#d747c5db4d197320d199453131e78a7eeb598c1c"
+"@walletconnect/utils@^1.0.0-beta.18":
+  version "1.0.0-beta.18"
+  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-1.0.0-beta.18.tgz#077569c9c7e525ec8a50f4014eb662ca33694cec"
   dependencies:
     "@walletconnect/types" "^1.0.0-beta.17"
     js-sha3 "^0.8.0"
