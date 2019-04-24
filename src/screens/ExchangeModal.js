@@ -31,9 +31,10 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   height: 100%;
 `;
 
-const ConfirmExchngeButton = styled(Button)`
+const ConfirmExchangeButton = styled(Button)`
   ${shadow.build(0, 6, 10, colors.purple, 0.14)}
   width:  100%;
+  height: 64;
   padding-horizontal: 5;
   align-self: center
 `;
@@ -143,13 +144,28 @@ const SettingsModal = ({
           <GestureBlocker type='bottom'/>
           {selectedTargetCurrency
           && <React.Fragment>
-            <ConfirmExchngeButton
+            <ConfirmExchangeButton
               disabled={!Number(amountToExchange)}
               backgroundColor={Number(amountToExchange) ? colors.appleBlue : colors.blueGreyLighter}
               onPress={onPressConfirmExchange}
             >
-              {Number(amountToExchange) ? 'Hold to swap' : 'Enter an amount' }
-            </ConfirmExchngeButton>
+              {Number(amountToExchange) ? <React.Fragment>
+                <Icon
+                  height={32}
+                  width={32}
+                  style={{ position: 'absolute', left: 16 }}
+                  color="white"
+                  name='faceid'
+                />
+                <Text
+                  color="white"
+                  weight="semibold"
+                  size='h5'
+                >
+                  Hold to swap
+                </Text>
+              </React.Fragment> : 'Enter an amount' }
+            </ConfirmExchangeButton>
             {!!Number(amountToExchange) && <FeeHolder>
               <Text
                 color={colors.alpha(colors.white, 0.45)}
