@@ -36,7 +36,6 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
 const DollarRow = styled(Row)`
   ${padding(CoinRowPaddingVertical, 19, CoinRowPaddingVertical, 15)}
   background-color: ${colors.white};
-  width: 100%;
   align-content: center;
   width: 100%;
   justify-content: space-between;
@@ -62,12 +61,12 @@ const FeeHolder = styled(View)`
   border-color: ${colors.alpha(colors.white, 0.45)};
 `;
 
-const ActionContainer = styled(RowWithMargins).attrs({
-  align: 'center',
-  margin: 6,
-})`
-  background-color: ${colors.white};
+
+const ExchangeRow = styled(View)`
+  width:  100%;
+  padding-horizontal: 15;
 `;
+
 
 const MaxAction = ({ onPress }) => (
   <ButtonPressAnimation onPress={onPress}>
@@ -181,28 +180,30 @@ const SettingsModal = ({
           <GestureBlocker type='bottom'/>
           {selectedTargetCurrency
           && <React.Fragment>
-            <ConfirmExchangeButton
-              disabled={!Number(amountToExchange)}
-              backgroundColor={Number(amountToExchange) ? colors.appleBlue : colors.blueGreyLighter}
-              onPress={onPressConfirmExchange}
-            >
-              {Number(amountToExchange) ? <React.Fragment>
-                <Icon
-                  height={32}
-                  width={32}
-                  style={{ position: 'absolute', left: 16 }}
-                  color="white"
-                  name='faceid'
-                />
-                <Text
-                  color="white"
-                  weight="semibold"
-                  size='h5'
-                >
-                  Hold to swap
-                </Text>
-              </React.Fragment> : 'Enter an amount' }
-            </ConfirmExchangeButton>
+            <ExchangeRow>
+              <ConfirmExchangeButton
+                disabled={!Number(amountToExchange)}
+                backgroundColor={Number(amountToExchange) ? colors.appleBlue : colors.blueGreyLighter}
+                onPress={onPressConfirmExchange}
+              >
+                {Number(amountToExchange) ? <React.Fragment>
+                  <Icon
+                    height={32}
+                    width={32}
+                    style={{ left: 16, position: 'absolute' }}
+                    color="white"
+                    name='faceid'
+                  />
+                  <Text
+                    color="white"
+                    weight="semibold"
+                    size='h5'
+                  >
+                    Hold to swap
+                  </Text>
+                </React.Fragment> : 'Enter an amount' }
+              </ConfirmExchangeButton>
+            </ExchangeRow>
             {!!Number(amountToExchange) && <FeeHolder>
               <Text
                 color={colors.alpha(colors.white, 0.45)}
