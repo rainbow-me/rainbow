@@ -83,11 +83,13 @@
     "react-native-splash-screen": "^3.2.0",
     "react-native-storage": "^1.0.1",
     "react-native-svg": "^9.3.7",
+    "react-native-tcp": "^3.2.1",
     "react-native-tooltip": "^5.2.0",
     "react-native-touch-id": "^4.4.1",
     "react-native-udp": "^2.6.0",
     "react-native-version-number": "^0.3.5",
-    "react-navigation": "^3.8.1",
+    "react-navigation": "^3.9.0",
+    "react-navigation-tabs": "^2.1.2",
     "react-primitives": "^0.8.0",
     "react-redux": "^5.0.7",
     "react-spring": "^5.7.2",
@@ -111,8 +113,7 @@
     "tty-browserify": "0.0.0",
     "url": "^0.10.3",
     "util": "^0.10.3",
-    "vm-browserify": "0.0.4",
-    "react-native-tcp": "^3.2.1"
+    "vm-browserify": "0.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.4.0",
