@@ -27,15 +27,41 @@ const WALLETCONNECT_INIT_SESSIONS = 'walletconnect/WALLETCONNECT_INIT_SESSIONS';
 // ];
 
 const getNativeOptions = async () => {
+  // const language = DEVICE_LANGUAGE.replace(/[-_](\w?)+/gi, "").toLowerCase();
+  // const token = await getFCMToken();
+
+  const nativeOptions = {
+    clientMeta: {
+      description: "Rainbow",
+      url: "https://rainbow.me",
+      icons: ["https://walletconnect.org/walletconnect-logo.png"],
+      name: "🌈 Rainbow",
+      ssl: true
+    }
+    // push: {
+    //   url: "https://push.walletconnect.org",
+    //   type: "fcm",
+    //   token: token,
+    //   peerMeta: true,
+    //   language: language
+    // }
+  };
+
+  return nativeOptions;
+};
+
+/*
+const getNativeOptions = async () => {
+	// TODO use lang from settings
   const language = DEVICE_LANGUAGE.replace(/[-_](\w?)+/gi, '').toLowerCase();
   const token = await getFCMToken();
 
   const nativeOptions = {
     clientMeta: {
-      description: 'Store and secure all your ERC-20 tokens in one place',
+      description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
       url: 'https://rainbow.me',
       icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
-      name: 'Rainbow',
+      name: '🌈 Rainbow',
       ssl: true,
     },
     push: {
@@ -49,20 +75,75 @@ const getNativeOptions = async () => {
 
   return nativeOptions;
 };
+*/
 
-export const walletConnectOnSessionRequest = (uriString) => async (dispatch) => {
+export const walletConnectOnSessionRequest = (uri) => async (dispatch, getState) => {
+	console.log('wallet connect session request');
+  const nativeOptions = await getNativeOptions();
+
+  const walletConnector = new WalletConnect({ uri }, nativeOptions);
+
+  walletConnector.on("session_request", (error: any, payload: any) => {
+		console.log('Session request received');
+    if (error) {
+      throw error;
+    }
+    const { pendingConnectors } = getState().walletConnect;
+
+    const { peerId, peerMeta } = payload.params[0];
+
+    dispatch({
+      type: WALLETCONNECT_SESSION_REQUEST,
+      payload: [...pendingConnectors, walletConnector]
+    });
+
+    //navigate("Request", { peerId, peerMeta, payload });
+  });
+	console.log('walletConnector', walletConnector);
+};
+
+/*
+export const walletConnectOnSessionRequest = (uri) => async (dispatch) => {
   let walletConnector = null;
   try {
     const nativeOptions = await getNativeOptions();
     try {
-      console.log('walletConnectOnSessionRequest uriString', uriString);
-      walletConnector = new WalletConnect(
-        {
-          uri: uriString,
-        },
-        nativeOptions,
-      );
-      await commonStorage.saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
+      console.log('walletConnectOnSessionRequest uri', uri);
+      walletConnector = new WalletConnect({ uri }, nativeOptions);
+      // TODO subscribe here
+      walletConnector.on('session_request', (error, payload) => {
+        console.log('session request', error, payload);
+        if (error) {
+          throw error;
+        }
+
+        const { peerId, peerMeta } = payload.params[0];
+        console.log('on("session_request")', peerId, peerMeta);
+
+        // TODO: Delete next line and fix open WalletConnectConfimationModal
+        //dispatch(walletConnectApproveSession(walletConnector.handshakeTopic));
+
+
+        // TODO: Testing WalletConnectConfimationModal without whitelist
+        console.log('open WalletConnectConfirmationModal');
+        Navigation.handleAction({
+          routeName: 'WalletConnectConfirmationModal',
+          params: { handshakeTopic: walletConnector.handshakeTopic, peerId, peerMeta },
+        });
+
+        // TODO: Testing WalletConnectConfirmationModal with whitelist
+        // if (whitelist.includes(peerMeta.url)) {
+        //   dispatch(walletConnectApproveSession(walletConnector.handshakeTopic));
+        // } else {
+        //   console.log('open WalletConnectConfirmationModal');
+        //   Navigation.handleAction({
+        //     routeName: 'WalletConnectConfirmationModal',
+        //     params: { handshakeTopic: walletConnector.handshakeTopic, peerId, peerMeta },
+        //   });
+        // }
+      });
+      console.log('subscribed to session request');
+      //await commonStorage.saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
     } catch (error) {
       console.log(error);
       Alert.alert(lang.t('wallet.wallet_connect.error'));
@@ -71,9 +152,13 @@ export const walletConnectOnSessionRequest = (uriString) => async (dispatch) => 
     Alert.alert(lang.t('wallet.wallet_connect.missing_fcm'));
   }
   if (walletConnector) {
+    console.log('wallet connector', walletConnector);
+    console.log('checking permission');
     await checkPushNotificationPermissions();
+    console.log('checked permission');
     dispatch(setPendingRequest(walletConnector));
 
+    /*
     walletConnector.on('session_request', (error, payload) => {
       console.log('session request', error, payload);
       if (error) {
@@ -105,15 +190,18 @@ export const walletConnectOnSessionRequest = (uriString) => async (dispatch) => 
       //   });
       // }
     });
+    */
+  /*
   }
 };
+*/
 
 export const walletConnectInitAllConnectors = () => async dispatch => {
   let walletConnectors = {};
   try {
     const allSessions = await commonStorage.getAllValidWalletConnectSessions();
 
-    const nativeOptions = getNativeOptions();
+    const nativeOptions = await getNativeOptions();
 
     walletConnectors = mapValues(allSessions, session => {
       const walletConnector = new WalletConnect(
