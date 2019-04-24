@@ -108,7 +108,7 @@ const SettingsModal = ({
 }) => {
   return (
     <KeyboardAvoidingView behavior="padding">
-      <Container>
+      <Container paddingHorizontal={4}>
         <FloatingPanels>
           <GestureBlocker type='top'/>
           <FloatingPanel>
