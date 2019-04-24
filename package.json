@@ -15,7 +15,7 @@
     "@hocs/omit-props": "^0.4.0",
     "@hocs/safe-timers": "^0.4.0",
     "@hocs/with-view-layout-props": "^0.2.0",
-    "@rainbow-me/rainbow-common": "^0.7.5",
+    "@rainbow-me/rainbow-common": "^0.7.7",
     "@react-native-community/async-storage": "1.3.3",
     "@react-native-community/blur": "^3.3.1",
     "@react-native-community/netinfo": "^2.0.0",
