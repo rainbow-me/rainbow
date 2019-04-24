@@ -17,13 +17,16 @@ const Container = styled(ContainerElement).attrs({ align: 'end' })`
   padding-right: ${({ direction }) => ((direction === 'right') ? 0 : 20)};
 `;
 
-const BackButton = ({ color, direction, onPress }) => (
+const BackButton = ({
+  color, direction, onPress, ...props
+}) => (
   <HeaderButton onPress={onPress} transformOrigin={direction}>
     <Container direction={direction}>
       <Icon
         color={color}
         direction={direction}
         name="caret"
+        {...props}
       />
     </Container>
   </HeaderButton>
