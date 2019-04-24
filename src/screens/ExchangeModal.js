@@ -12,7 +12,7 @@ import {
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
 import { withAccountAssets } from '@rainbow-me/rainbow-common';
 import {
-  Centered, Column, FlexItem, Row,
+  Centered, Column, FlexItem, Row, RowWithMargins,
 } from '../components/layout';
 import { ModalHeader } from '../components/modal';
 import withBlockedHorizontalSwipe from '../hoc/withBlockedHorizontalSwipe';
@@ -20,15 +20,26 @@ import { colors, padding, shadow } from '../styles';
 import { Icon } from '../components/icons';
 import FloatingPanels from '../components/expanded-state/FloatingPanels';
 import FloatingPanel from '../components/expanded-state/FloatingPanel';
-import CoinRow from '../components/coin-row/CoinRow';
+import CoinRow, { CoinRowPaddingVertical } from '../components/coin-row/CoinRow';
 import CoinName from '../components/coin-row/CoinName';
 import Button from '../components/buttons/Button';
 import { Text } from '../components/text';
 import GestureBlocker from '../components/GestureBlocker';
+import BottomRowText from '../components/coin-row/BottomRowText';
+import { ButtonPressAnimation } from '../components/animations';
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   background-color: transparent;
   height: 100%;
+`;
+
+const DollarRow = styled(Row)`
+  ${padding(CoinRowPaddingVertical, 19, CoinRowPaddingVertical, 15)}
+  background-color: ${colors.white};
+  width: 100%;
+  align-content: center;
+  width: 100%;
+  justify-content: space-between;
 `;
 
 const ConfirmExchangeButton = styled(Button)`
@@ -51,6 +62,28 @@ const FeeHolder = styled(View)`
   border-color: ${colors.alpha(colors.white, 0.45)};
 `;
 
+const ActionContainer = styled(RowWithMargins).attrs({
+  align: 'center',
+  margin: 6,
+})`
+  background-color: ${colors.white};
+`;
+
+const MaxAction = ({ onPress }) => (
+  <ButtonPressAnimation onPress={onPress}>
+    <Text
+      color="appleBlue"
+      size="lmedium"
+      weight="semibold"
+    >
+      💰Max
+    </Text>
+  </ButtonPressAnimation>
+);
+
+MaxAction.propTypes = {
+  onPress: PropTypes.func,
+}
 
 const TopRow = ({
   navigateToCurrencySelection, amount, changeAmount, symbol,
@@ -131,6 +164,10 @@ const SettingsModal = ({
                 topRowRender={TopRow}
                 symbol={selectedCurrency}
               />
+              <DollarRow>
+                <BottomRowText>$0.00</BottomRowText>
+                <MaxAction/>
+              </DollarRow>
               <CoinRow
                 amount={amountToExchange}
                 changeAmount={setAmountToExchange}
