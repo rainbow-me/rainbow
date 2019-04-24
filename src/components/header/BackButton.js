@@ -26,6 +26,7 @@ const BackButton = ({
         color={color}
         direction={direction}
         name="caret"
+        {...props}
       />
     </Container>
   </HeaderButton>
