@@ -129,8 +129,8 @@ class App extends Component {
     this.onTokenRefreshListener();
   }
 
-  //handleNavigatorRef = (navigatorRef) => Navigation.setTopLevelNavigator(navigatorRef)
-  handleNavigatorRef = (navigatorRef) => { this.navigatorRef = navigatorRef; }
+  handleNavigatorRef = (navigatorRef) => Navigation.setTopLevelNavigator(navigatorRef)
+  //handleNavigatorRef = (navigatorRef) => { this.navigatorRef = navigatorRef; }
 
   handleOpenConfirmTransactionModal = (transactionDetails, autoOpened) => {
     if (!this.navigatorRef) return;

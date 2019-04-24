@@ -22,35 +22,11 @@ const WALLETCONNECT_INIT_SESSIONS = 'walletconnect/WALLETCONNECT_INIT_SESSIONS';
 
 // -- Actions ---------------------------------------- //
 
-// const whitelist = [
-//   'https://manager.balance.io',
-// ];
+// TODO store approved list
+const previouslyApprovedDapps = [
+   'https://manager.balance.io',
+];
 
-const getNativeOptions = async () => {
-  // const language = DEVICE_LANGUAGE.replace(/[-_](\w?)+/gi, "").toLowerCase();
-  // const token = await getFCMToken();
-
-  const nativeOptions = {
-    clientMeta: {
-      description: "Rainbow",
-      url: "https://rainbow.me",
-      icons: ["https://walletconnect.org/walletconnect-logo.png"],
-      name: "🌈 Rainbow",
-      ssl: true
-    }
-    // push: {
-    //   url: "https://push.walletconnect.org",
-    //   type: "fcm",
-    //   token: token,
-    //   peerMeta: true,
-    //   language: language
-    // }
-  };
-
-  return nativeOptions;
-};
-
-/*
 const getNativeOptions = async () => {
 	// TODO use lang from settings
   const language = DEVICE_LANGUAGE.replace(/[-_](\w?)+/gi, '').toLowerCase();
@@ -75,75 +51,33 @@ const getNativeOptions = async () => {
 
   return nativeOptions;
 };
-*/
 
-export const walletConnectOnSessionRequest = (uri) => async (dispatch, getState) => {
-	console.log('wallet connect session request');
-  const nativeOptions = await getNativeOptions();
-
-  const walletConnector = new WalletConnect({ uri }, nativeOptions);
-
-  walletConnector.on("session_request", (error: any, payload: any) => {
-		console.log('Session request received');
-    if (error) {
-      throw error;
-    }
-    const { pendingConnectors } = getState().walletConnect;
-
-    const { peerId, peerMeta } = payload.params[0];
-
-    dispatch({
-      type: WALLETCONNECT_SESSION_REQUEST,
-      payload: [...pendingConnectors, walletConnector]
-    });
-
-    //navigate("Request", { peerId, peerMeta, payload });
-  });
-	console.log('walletConnector', walletConnector);
-};
-
-/*
 export const walletConnectOnSessionRequest = (uri) => async (dispatch) => {
   let walletConnector = null;
   try {
     const nativeOptions = await getNativeOptions();
     try {
-      console.log('walletConnectOnSessionRequest uri', uri);
       walletConnector = new WalletConnect({ uri }, nativeOptions);
-      // TODO subscribe here
       walletConnector.on('session_request', (error, payload) => {
-        console.log('session request', error, payload);
         if (error) {
           throw error;
         }
 
         const { peerId, peerMeta } = payload.params[0];
-        console.log('on("session_request")', peerId, peerMeta);
+        console.log('on("session_request")', peerId, walletConnector);
+        dispatch(setPendingRequest(peerId, walletConnector));
+        console.log('subscribed to session request');
+        //await commonStorage.saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
 
-        // TODO: Delete next line and fix open WalletConnectConfimationModal
-        //dispatch(walletConnectApproveSession(walletConnector.handshakeTopic));
-
-
-        // TODO: Testing WalletConnectConfimationModal without whitelist
-        console.log('open WalletConnectConfirmationModal');
-        Navigation.handleAction({
-          routeName: 'WalletConnectConfirmationModal',
-          params: { handshakeTopic: walletConnector.handshakeTopic, peerId, peerMeta },
-        });
-
-        // TODO: Testing WalletConnectConfirmationModal with whitelist
-        // if (whitelist.includes(peerMeta.url)) {
-        //   dispatch(walletConnectApproveSession(walletConnector.handshakeTopic));
-        // } else {
-        //   console.log('open WalletConnectConfirmationModal');
-        //   Navigation.handleAction({
-        //     routeName: 'WalletConnectConfirmationModal',
-        //     params: { handshakeTopic: walletConnector.handshakeTopic, peerId, peerMeta },
-        //   });
-        // }
+        if (previouslyApprovedDapps.includes(peerMeta.url)) {
+          dispatch(walletConnectApproveSession(peerId));
+        } else {
+          Navigation.handleAction({
+            routeName: 'WalletConnectConfirmationModal',
+            params: { peerId, peerMeta },
+          });
+        }
       });
-      console.log('subscribed to session request');
-      //await commonStorage.saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
     } catch (error) {
       console.log(error);
       Alert.alert(lang.t('wallet.wallet_connect.error'));
@@ -152,49 +86,9 @@ export const walletConnectOnSessionRequest = (uri) => async (dispatch) => {
     Alert.alert(lang.t('wallet.wallet_connect.missing_fcm'));
   }
   if (walletConnector) {
-    console.log('wallet connector', walletConnector);
-    console.log('checking permission');
     await checkPushNotificationPermissions();
-    console.log('checked permission');
-    dispatch(setPendingRequest(walletConnector));
-
-    /*
-    walletConnector.on('session_request', (error, payload) => {
-      console.log('session request', error, payload);
-      if (error) {
-        throw error;
-      }
-
-      const { peerMeta } = payload.params[0];
-      console.log('on("session_request")', peerMeta);
-
-      // TODO: Delete next line and fix open WalletConnectConfimationModal
-      //dispatch(walletConnectApproveSession(walletConnector.handshakeTopic));
-
-
-      // TODO: Testing WalletConnectConfimationModal without whitelist
-      console.log('open WalletConnectConfirmationModal');
-      Navigation.handleAction({
-        routeName: 'WalletConnectConfirmationModal',
-        params: { handshakeTopic: walletConnector.handshakeTopic, peerId, peerMeta },
-      });
-
-      // TODO: Testing WalletConnectConfirmationModal with whitelist
-      // if (whitelist.includes(peerMeta.url)) {
-      //   dispatch(walletConnectApproveSession(walletConnector.handshakeTopic));
-      // } else {
-      //   console.log('open WalletConnectConfirmationModal');
-      //   Navigation.handleAction({
-      //     routeName: 'WalletConnectConfirmationModal',
-      //     params: { handshakeTopic: walletConnector.handshakeTopic, peerId, peerMeta },
-      //   });
-      // }
-    });
-    */
-  /*
   }
 };
-*/
 
 export const walletConnectInitAllConnectors = () => async dispatch => {
   let walletConnectors = {};
@@ -224,29 +118,28 @@ export const walletConnectInitAllConnectors = () => async dispatch => {
   }
 };
 
-export const setPendingRequest = (walletConnector) => (dispatch, getState) => {
+export const setPendingRequest = (peerId, walletConnector) => (dispatch, getState) => {
   const { pendingRequests } = getState().walletconnect;
-  console.log('setPendingRequest handshakeTopic', walletConnector.handshakeTopic);
+  console.log('setPendingRequest peerId', peerId);
   const updatedPendingRequests = {
     ...pendingRequests,
-    [walletConnector.handshakeTopic]: walletConnector,
+    [peerId]: walletConnector,
   };
   dispatch({ type: WALLETCONNECT_ADD_REQUEST, payload: updatedPendingRequests });
 };
 
-export const getPendingRequest = (handshakeTopic) => (dispatch, getState) => {
+export const getPendingRequest = (peerId) => (dispatch, getState) => {
+  console.log('getPendingRequest peerId', peerId);
   const { pendingRequests } = getState().walletconnect;
-  console.log('setPendingRequest handshakeTopic', handshakeTopic);
-  const pendingRequest = pendingRequests[handshakeTopic];
-  return pendingRequest;
+  return pendingRequests[peerId];
 };
 
-export const removePendingRequest = (handshakeTopic) => (dispatch, getState) => {
+export const removePendingRequest = (peerId) => (dispatch, getState) => {
   const { pendingRequests } = getState().walletconnect;
   const updatedPendingRequests = pendingRequests;
-  console.log('removePendingRequest handshakeTopic', handshakeTopic);
-  if (updatedPendingRequests[handshakeTopic]) {
-    delete updatedPendingRequests[handshakeTopic];
+  console.log('removePendingRequest peerId', peerId);
+  if (updatedPendingRequests[peerId]) {
+    delete updatedPendingRequests[peerId];
   }
   dispatch({ type: WALLETCONNECT_REMOVE_REQUEST, payload: updatedPendingRequests });
 };
@@ -279,15 +172,15 @@ export const removeWalletConnector = (peerId) => (dispatch, getState) => {
   dispatch({ type: WALLETCONNECT_REMOVE_SESSION, payload: updatedWalletConnectors });
 };
 
-export const walletConnectApproveSession = (handshakeTopic) => (dispatch, getState) => {
+export const walletConnectApproveSession = (peerId) => (dispatch, getState) => {
   const { accountAddress, chainId } = getState().settings;
 
   console.log('wallet connect approve session', chainId, accountAddress);
-  const walletConnector = dispatch(getPendingRequest(handshakeTopic));
+  const walletConnector = dispatch(getPendingRequest(peerId));
   console.log('wallet connect approve session wallet connector', walletConnector);
   walletConnector.approveSession({ chainId, accounts: [accountAddress] });
 
-  dispatch(removePendingRequest(handshakeTopic));
+  dispatch(removePendingRequest(peerId));
 
   walletConnector.on('call_request', (error, payload) => {
     if (error) {
@@ -322,12 +215,12 @@ export const walletConnectApproveSession = (handshakeTopic) => (dispatch, getSta
   dispatch(setWalletConnector(walletConnector));
 };
 
-export const walletConnectRejectSession = (handshakeTopic) => (dispatch, getState) => {
-  const walletConnector = dispatch(getPendingRequest(handshakeTopic));
+export const walletConnectRejectSession = (peerId) => (dispatch, getState) => {
+  const walletConnector = dispatch(getPendingRequest(peerId));
 
   walletConnector.rejectSession();
 
-  dispatch(removePendingRequest(handshakeTopic));
+  dispatch(removePendingRequest(peerId));
 };
 
 export const walletConnectDisconnectAllByDappName = dappName => async (dispatch, getState) => {
