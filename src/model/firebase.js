@@ -32,7 +32,6 @@ export const checkPushNotificationPermissions = async () => {
   const arePushNotificationsAuthorized = await hasPermission();
 
   if (!arePushNotificationsAuthorized) {
-    // TODO: try catch around Alert?
     Alert({
       buttons: [
         {

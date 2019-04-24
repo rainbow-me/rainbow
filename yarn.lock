@@ -1141,7 +1141,7 @@
     "@walletconnect/types" "^1.0.0-beta.17"
     "@walletconnect/utils" "^1.0.0-beta.17"
 
-"@walletconnect/react-native@^1.0.0-beta.3":
+"@walletconnect/react-native@^1.0.0-beta.17":
   version "1.0.0-beta.17"
   resolved "https://registry.yarnpkg.com/@walletconnect/react-native/-/react-native-1.0.0-beta.17.tgz#3f5665628c1661f6b4e76e8eb02a527480378537"
   dependencies:

@@ -2,7 +2,7 @@ import {
   omitBy, pickBy, forEach, mapValues, values,
 } from 'lodash';
 import { commonStorage } from '@rainbow-me/rainbow-common';
-import { AlertIOS } from 'react-native';
+import { Alert } from 'react-native';
 import lang from 'i18n-js';
 import WalletConnect from '@walletconnect/react-native';
 import { DEVICE_LANGUAGE } from '../helpers/constants';
@@ -27,7 +27,6 @@ const WALLETCONNECT_INIT_SESSIONS = 'walletconnect/WALLETCONNECT_INIT_SESSIONS';
 // ];
 
 const getNativeOptions = async () => {
-  // TODO language format required
   const language = DEVICE_LANGUAGE.replace(/[-_](\w?)+/gi, '').toLowerCase();
   const token = await getFCMToken();
 
@@ -35,12 +34,12 @@ const getNativeOptions = async () => {
     clientMeta: {
       description: 'Store and secure all your ERC-20 tokens in one place',
       url: 'https://rainbow.me',
-      icons: ['https://avatars0.githubusercontent.com/u/19879255?s=200&v=4'],
+      icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
       name: 'Rainbow',
       ssl: true,
     },
     push: {
-      url: 'https://us-central1-rainbow-me.cloudfunctions.net'
+      url: 'https://us-central1-rainbow-me.cloudfunctions.net',
       type: 'fcm',
       token,
       peerMeta: true,
@@ -66,17 +65,17 @@ export const walletConnectOnSessionRequest = (uriString) => async (dispatch) => 
       await commonStorage.saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
     } catch (error) {
       console.log(error);
-      AlertIOS.alert(lang.t('wallet.wallet_connect.error'));
+      Alert.alert(lang.t('wallet.wallet_connect.error'));
     }
   } catch (error) {
-    AlertIOS.alert(lang.t('wallet.wallet_connect.missing_fcm'));
+    Alert.alert(lang.t('wallet.wallet_connect.missing_fcm'));
   }
   if (walletConnector) {
     await checkPushNotificationPermissions();
-
     dispatch(setPendingRequest(walletConnector));
 
     walletConnector.on('session_request', (error, payload) => {
+      console.log('session request', error, payload);
       if (error) {
         throw error;
       }
@@ -85,23 +84,23 @@ export const walletConnectOnSessionRequest = (uriString) => async (dispatch) => 
       console.log('on("session_request")', peerMeta);
 
       // TODO: Delete next line and fix open WalletConnectConfimationModal
-      dispatch(walletConnectApproveSession(walletConnector.handshakeTopic));
+      //dispatch(walletConnectApproveSession(walletConnector.handshakeTopic));
 
 
       // TODO: Testing WalletConnectConfimationModal without whitelist
-      // console.log('open WalletConnectConfimationModal');
-      // Navigation.handleAction({
-      //   routeName: 'WalletConnectConfimationModal',
-      //   params: { handshakeTopic: walletConnector.handshakeTopic, peerId, peerMeta },
-      // });
+      console.log('open WalletConnectConfirmationModal');
+      Navigation.handleAction({
+        routeName: 'WalletConnectConfirmationModal',
+        params: { handshakeTopic: walletConnector.handshakeTopic, peerId, peerMeta },
+      });
 
-      // TODO: Testing WalletConnectConfimationModal with whitelist
+      // TODO: Testing WalletConnectConfirmationModal with whitelist
       // if (whitelist.includes(peerMeta.url)) {
       //   dispatch(walletConnectApproveSession(walletConnector.handshakeTopic));
       // } else {
-      //   console.log('open WalletConnectConfimationModal');
+      //   console.log('open WalletConnectConfirmationModal');
       //   Navigation.handleAction({
-      //     routeName: 'WalletConnectConfimationModal',
+      //     routeName: 'WalletConnectConfirmationModal',
       //     params: { handshakeTopic: walletConnector.handshakeTopic, peerId, peerMeta },
       //   });
       // }
@@ -126,7 +125,7 @@ export const walletConnectInitAllConnectors = () => async dispatch => {
       return walletConnector;
     });
   } catch (error) {
-    AlertIOS.alert('Unable to retrieve all WalletConnect sessions.');
+    Alert.alert('Unable to retrieve all WalletConnect sessions.');
     walletConnectors = {};
   }
   if (walletConnectors) {
@@ -193,13 +192,11 @@ export const removeWalletConnector = (peerId) => (dispatch, getState) => {
 };
 
 export const walletConnectApproveSession = (handshakeTopic) => (dispatch, getState) => {
-  // TODO: Replace fixed chainId with getState().settings value
-  const chainId = 1;
-  const { accountAddress } = getState().settings;
-  // const { accountAddress, chainId } = getState().settings;
+  const { accountAddress, chainId } = getState().settings;
 
+  console.log('wallet connect approve session', chainId, accountAddress);
   const walletConnector = dispatch(getPendingRequest(handshakeTopic));
-
+  console.log('wallet connect approve session wallet connector', walletConnector);
   walletConnector.approveSession({ chainId, accounts: [accountAddress] });
 
   dispatch(removePendingRequest(handshakeTopic));
@@ -222,7 +219,7 @@ export const walletConnectApproveSession = (handshakeTopic) => (dispatch, getSta
         params: { transactionDetails, autoOpened },
       });
     } else {
-      AlertIOS.alert('This request has expired.');
+      Alert.alert('This request has expired.');
     }
   });
 
@@ -257,7 +254,7 @@ export const walletConnectDisconnectAllByDappName = dappName => async (dispatch,
       type: WALLETCONNECT_REMOVE_SESSION,
     });
   } catch (error) {
-    AlertIOS.alert('Failed to disconnect all WalletConnect sessions');
+    Alert.alert('Failed to disconnect all WalletConnect sessions');
   }
 };
 
@@ -271,10 +268,10 @@ export const walletConnectSendStatus = (peerId, requestId, result) => async (dis
         await walletConnector.rejectCallRequest(requestId);
       }
     } catch (error) {
-      AlertIOS.alert('Failed to send request status to WalletConnect.');
+      Alert.alert('Failed to send request status to WalletConnect.');
     }
   } else {
-    AlertIOS.alert('WalletConnect session has expired while trying to send request status. Please reconnect.');
+    Alert.alert('WalletConnect session has expired while trying to send request status. Please reconnect.');
   }
 };
 
