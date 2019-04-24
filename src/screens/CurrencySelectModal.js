@@ -12,7 +12,7 @@ import {
 } from 'recompact';
 import { ScrollView } from 'react-native-gesture-handler';
 import lang from 'i18n-js';
-import { Column } from '../components/layout';
+import { Column, FlexItem } from '../components/layout';
 import { Modal, ModalHeader } from '../components/modal';
 import { AnimatedPager } from '../components/pager';
 import {
@@ -33,6 +33,8 @@ import store from '../redux/store';
 import { disableGestureForModal, updateTransitionProps } from '../redux/navigation';
 import { Monospace } from '../components/text';
 import { colors } from '../styles';
+import StarIcon from '../components/icons/svg/StarIcon';
+import Svg from '../components/icons/Svg';
 
 
 const BottomRow = ({ balance, symbol }) => {
@@ -53,6 +55,17 @@ BottomRow.propTypes = {
 };
 
 
+const StarRender = ({ favorite }) => (
+  <FlexItem flex={0} style={{ marginLeft: 8 }}>
+    <StarIcon
+      color={favorite ? colors.orangeLight : colors.grey}
+    />
+  </FlexItem>
+);
+
+StarRender.propTypes = {
+  favorite: PropTypes.bool,
+};
 
 const CurrencyRenderItem = ({
   index,
@@ -60,10 +73,10 @@ const CurrencyRenderItem = ({
   section: { onSelectAsset },
 }) => (
   <SendCoinRow
-    disabled
     {...item}
     onPress={onSelectAsset(symbol)}
     symbol={symbol}
+    starRender={StarRender}
     bottomRowRender={BottomRow}
   />
 );
