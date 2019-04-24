@@ -67,7 +67,7 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator({
 // for preventing swipe down to close on CurrencySelectScreen
 const EnhancedExchangeModalNavigator = props => <ExchangeModalNavigator {...props}/>;
 EnhancedExchangeModalNavigator.router = ExchangeModalNavigator.router;
-EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => console.log(EnhancedExchangeModalNavigator.navigationOptions) || ({
+EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => ({
   ...navigation.state.params,
   gesturesEnabled: !get(navigation, 'state.params.isGestureBlocked'),
 });
