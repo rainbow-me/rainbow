@@ -9,12 +9,14 @@ import {
 } from 'recompact';
 import Icon from '../icons/Icon';
 import FloatingActionButton from './FloatingActionButton';
+import { colors } from '../../styles';
 
 const ExchangeFab = ({ disabled, onPress, ...props }) => (
   <FloatingActionButton
     {...props}
     disabled={disabled}
     onPress={onPress}
+    color={colors.fadedBlue}
   >
     <Icon
       name="send"
