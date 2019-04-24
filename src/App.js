@@ -65,7 +65,6 @@ class App extends Component {
     await this.handleWalletConfig();
     this.props.onHideSplashScreen();
     await this.props.refreshAccount();
-    AppState.addEventListener('change', this.handleAppStateChange);
 
     saveFCMToken();
     this.onTokenRefreshListener = registerTokenRefreshListener();
@@ -116,7 +115,6 @@ class App extends Component {
         const { callId, sessionId } = notificationOpen.notification.data;
         this.onPushNotificationOpened(callId, sessionId, false);
       }
-      this.fetchAllRequestsFromWalletConnectSessions();
       */
       return walletAddress;
     } catch (error) {
@@ -125,15 +123,7 @@ class App extends Component {
     }
   }
 
-  handleAppStateChange = async (nextAppState) => {
-    if (this.state.appState.match(/unknown|background/) && nextAppState === 'active') {
-      //this.fetchAllRequestsFromWalletConnectSessions();
-    }
-    this.setState({ appState: nextAppState });
-  }
-
   componentWillUnmount() {
-    AppState.removeEventListener('change', this.handleAppStateChange);
     this.notificationListener();
     this.notificationOpenedListener();
     this.onTokenRefreshListener();
@@ -151,36 +141,16 @@ class App extends Component {
     Navigation.handleAction(this.navigatorRef, action);
   }
 
-  fetchAllRequestsFromWalletConnectSessions = async () => {
-    try {
-      const allConnectors = this.props.getValidWalletConnectors();
-      if (!isEmpty(allConnectors)) {
-        const allRequests = await walletConnectGetAllRequests(allConnectors);
-        if (!isEmpty(allRequests)) {
-          this.props.addTransactionsToApprove(allRequests);
-          await firebase.notifications().removeAllDeliveredNotifications();
-        }
-      }
-    } catch (error) {
-      console.log('error fetching all requests from wallet connect', error);
-    }
-  }
-
   onPushNotificationOpened = async (callId, sessionId, autoOpened) => {
-    const existingTransaction = this.props.transactionIfExists(callId);
-    if (existingTransaction) {
-      this.handleOpenConfirmTransactionModal(existingTransaction, autoOpened);
+    const transaction = await this.fetchAndAddWalletConnectRequest(callId, sessionId);
+    if (transaction) {
+      this.handleOpenConfirmTransactionModal(transaction, autoOpened);
     } else {
-      const transaction = await this.fetchAndAddWalletConnectRequest(callId, sessionId);
-      if (transaction) {
-        this.handleOpenConfirmTransactionModal(transaction, autoOpened);
+      const fetchedTransaction = this.props.transactionIfExists(callId);
+      if (fetchedTransaction) {
+        this.handleOpenConfirmTransactionModal(fetchedTransaction, autoOpened);
       } else {
-        const fetchedTransaction = this.props.transactionIfExists(callId);
-        if (fetchedTransaction) {
-          this.handleOpenConfirmTransactionModal(fetchedTransaction, autoOpened);
-        } else {
-          Alert.alert('This request has expired.');
-        }
+        Alert.alert('This request has expired.');
       }
     }
   }

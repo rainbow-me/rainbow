@@ -9,7 +9,11 @@ import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
 import { withSafeTimeout } from '@hocs/safe-timers';
 import { Alert } from '../components/alerts';
-import { withAccountAddress, withWalletConnectOnSessionRequest } from '../hoc';
+import {
+  withAccountAddress,
+  withWalletConnectConnections,
+  withWalletConnectOnSessionRequest,
+} from '../hoc';
 import { addressUtils } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
 import withStatusBarStyle from '../hoc/withStatusBarStyle';
@@ -26,7 +30,6 @@ class QRScannerScreenWithData extends Component {
   state = {
     enableScanning: true,
     isCameraAuthorized: true,
-    requestingNotificationPermissionAlert: false,
     sheetHeight: 240,
   }
 
@@ -52,43 +55,6 @@ class QRScannerScreenWithData extends Component {
 
   handleReenableScanning = () => this.setState({ enableScanning: true })
 
-  handleReenableScanningWithPushPermissions = () => this.setState({
-    enableScanning: true,
-    requestingNotificationPermissionAlert: false,
-  });
-
-  checkPushNotificationPermissions = async () => {
-    const arePushNotificationsAuthorized = await firebase
-      .messaging()
-      .hasPermission();
-
-    if (!arePushNotificationsAuthorized) {
-      this.setState({ requestingNotificationPermissionAlert: true });
-      Alert({
-        buttons: [{
-          onPress: async () => {
-            try {
-              await firebase.messaging().requestPermission();
-              this.handleReenableScanningWithPushPermissions();
-            } catch (error) {
-              this.handleReenableScanningWithPushPermissions();
-            }
-          },
-          text: 'Okay',
-        }, {
-          onPress: () => this.handleReenableScanningWithPushPermissions(),
-          style: 'cancel',
-          text: 'Dismiss',
-        }],
-        message: lang.t('wallet.push_notifications.please_enable_body'),
-        title: lang.t('wallet.push_notifications.please_enable_title'),
-      });
-      return false;
-    } else {
-      return true;
-    }
-  }
-
   handleScanSuccess = async ({ data }) => {
     const {
       walletConnectOnSessionRequest,
@@ -113,12 +79,7 @@ class QRScannerScreenWithData extends Component {
 
     if (data.startsWith('wc:')) {
       await walletConnectOnSessionRequest(data);
-      const hasPushPermissions = await this.checkPushNotificationPermissions();
-      if (hasPushPermissions) {
-        return setSafeTimeout(this.handleReenableScanning, 2000);
-      } else {
-        return;
-      }
+      return setSafeTimeout(this.handleReenableScanning, 2000);
     }
 
     return Alert({
@@ -135,7 +96,6 @@ class QRScannerScreenWithData extends Component {
       enableScanning={
         this.state.enableScanning
         && this.props.isFocused
-        && !this.state.requestingNotificationPermissionAlert
       }
       onPressBackButton={this.handlePressBackButton}
       onScanSuccess={this.handleScanSuccess}
