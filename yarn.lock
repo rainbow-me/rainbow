@@ -837,9 +837,9 @@
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
 
-"@rainbow-me/rainbow-common@^0.7.5":
-  version "0.7.5"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.7.5.tgz#f3759f19d9d12c55ec8e725dc1f5b7fcd1928e96"
+"@rainbow-me/rainbow-common@^0.7.7":
+  version "0.7.7"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.7.7.tgz#acbac1d2362af517c6b5b5dce9453f413d196ec1"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -7550,7 +7550,6 @@ react-clone-referenced-element@^1.0.1:
 react-coin-icon@^0.1.7:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.7.tgz#5b050dfea88e8d2aab7fe56e635b53ef70b50cf3"
-  integrity sha512-CWri9+WknYLKitlFS5HPX0QjSh7BTb+d8lZQN1jLM5gEBpStSEBuas4Ln8AzMmKnwgw64MAfYRP03brywTqKPw==
   dependencies:
     "@svgr/cli" "^2.0.0"
     styled-components "3.3.3"
