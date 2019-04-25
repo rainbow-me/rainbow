@@ -90,7 +90,7 @@ export default class AddressField extends PureComponent {
         />
         {!address && (
           <Placeholder>
-            <PlaceholderText>Ethereum Address (</PlaceholderText>
+            <PlaceholderText>ENS or Address (</PlaceholderText>
             <PlaceholderText family="SFMono">0x</PlaceholderText>
             <PlaceholderText>...)</PlaceholderText>
           </Placeholder>
