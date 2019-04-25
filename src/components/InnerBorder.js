@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-primitives';
-import { pure } from 'recompact';
+import { onlyUpdateForPropTypes } from 'recompact';
 import { colors, position } from '../styles';
 
 const InnerBorder = ({
@@ -38,4 +38,4 @@ InnerBorder.defaultProps = {
   width: 0.5,
 };
 
-export default pure(InnerBorder);
+export default onlyUpdateForPropTypes(InnerBorder);
