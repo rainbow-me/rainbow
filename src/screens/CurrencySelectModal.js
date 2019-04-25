@@ -16,6 +16,7 @@ import styled from 'styled-components';
 import { ModalHeaderHeight } from '../components/modal/ModalHeader';
 import { BackButton } from '../components/header';
 import Flex from '../components/layout/Flex';
+import { exchangeModalBorderRadius } from './ExchangeModal';
 
 const HeaderContainer = styled(Row).attrs({
   align: 'center',
@@ -113,7 +114,7 @@ class SelectCurrencyModal extends React.Component {
     }
 
     return (
-      <Modal overflow="hidden" containerPadding={4} minHeight={580}>
+      <Modal overflow="hidden" radius={exchangeModalBorderRadius} containerPadding={4} minHeight={580}>
         <GestureBlocker type='top'/>
         <NavigationEvents
           // dangerouslyGetParent is a bad patter in general, but in this case is exactly what we expect
