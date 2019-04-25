@@ -945,6 +945,7 @@
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@rainbow-me/rainbow-common@^0.7.7":
   version "0.7.7"
   resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.7.7.tgz#acbac1d2362af517c6b5b5dce9453f413d196ec1"
@@ -954,6 +955,12 @@
   resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.7.6.tgz#119d2ba6211f4b1e5e3edfb841343f59fe42bd25"
   integrity sha512-VeenIXhUy/+FzR1KdRlgSndDgQNmqR/N9RysGZ6PvyFU9o9vl1AsYhpigH5mnRS0uHoNVVr3opQ9yXv8AS1zGQ==
 >>>>>>> ae31fbc... not really progress
+=======
+"@rainbow-me/rainbow-common@^0.7.8":
+  version "0.7.8"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.7.8.tgz#66ecb2f56edd891d980687d6913bc19886669536"
+  integrity sha512-KzsgU4/n/TzOBD0YpxJxKhr0WIm2/ToB5tPYgHkBjUdAghfAVoLJAb+j6qiW9uqjyRavVlMhfmadqId2xOkscw==
+>>>>>>> 55b99f2... Fix all performance issues with RecyclerListView
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -982,7 +989,7 @@
   dependencies:
     prop-types "^15.5.10"
 
-"@react-native-community/cli-platform-android@^2.0.0-alpha.9":
+"@react-native-community/cli-platform-android@^2.0.0-alpha.15":
   version "2.0.0-alpha.15"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.0.0-alpha.15.tgz#5ab64c68ee828c30e866923add5e1bab81c9102a"
   integrity sha512-f5ogc1GxzkkDRw2o7PX+tnEDZ/uZYshf/5UaoH4qmaXhHdCulVSd24jTKH4HiRAXrbLf+3bm6JbwG4OLB09fzA==
@@ -993,7 +1000,7 @@
     slash "^2.0.0"
     xmldoc "^0.4.0"
 
-"@react-native-community/cli-platform-ios@^2.0.0-alpha.9":
+"@react-native-community/cli-platform-ios@^2.0.0-alpha.15":
   version "2.0.0-alpha.15"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.0.0-alpha.15.tgz#959190650a1fafeae9bbabcc422329374918b466"
   integrity sha512-gQKF9Y1dIqs2i5vveZVveUchUm0fw4bFw8XRmiy41yeb3/Qtyg8PCpnjGj+0fK7G5tW/23T6I2v4C1fRCRfnoQ==
@@ -1002,7 +1009,7 @@
     chalk "^1.1.1"
     xcode "^2.0.0"
 
-"@react-native-community/cli-tools@^2.0.0-alpha.14", "@react-native-community/cli-tools@^2.0.0-alpha.8":
+"@react-native-community/cli-tools@^2.0.0-alpha.14":
   version "2.0.0-alpha.14"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.0.0-alpha.14.tgz#c625fcc9d03d77428c242801510280ce88ef0e4b"
   integrity sha512-nU3bDcVKDuGfLCwayJXEtmFrbtuSsPAykFj1yX1kfItoIQpk7h3V66f1cOkDfaLxyUDO4fUba4oHxaQjjLGAJQ==
@@ -1011,14 +1018,14 @@
     lodash "^4.17.5"
     mime "^1.3.4"
 
-"@react-native-community/cli@2.0.0-alpha.11":
-  version "2.0.0-alpha.11"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.0.0-alpha.11.tgz#d65d577746d8656c98265c9f49ff1a0824daa99d"
-  integrity sha512-Suf2W9Kq79IiTTYr6AlGPyJRcao4H5dB2v/DvlLYkVE48gja9w2h4/taUuU54sJwy/mk5rLhfbRIi80dVZm9YQ==
+"@react-native-community/cli@2.0.0-alpha.16":
+  version "2.0.0-alpha.16"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.0.0-alpha.16.tgz#3a69e3dcbc7914025784abd0c53a86248a14aa6d"
+  integrity sha512-AeJr5wgW7zvripzU8X3CK7fMItSAoVe3nv8fvyR2fP12nVp+MfnJCt2O+utq4DhCq2drrZObTuX+WboaUAXhbw==
   dependencies:
-    "@react-native-community/cli-platform-android" "^2.0.0-alpha.9"
-    "@react-native-community/cli-platform-ios" "^2.0.0-alpha.9"
-    "@react-native-community/cli-tools" "^2.0.0-alpha.8"
+    "@react-native-community/cli-platform-android" "^2.0.0-alpha.15"
+    "@react-native-community/cli-platform-ios" "^2.0.0-alpha.15"
+    "@react-native-community/cli-tools" "^2.0.0-alpha.14"
     chalk "^1.1.1"
     commander "^2.19.0"
     compression "^1.7.1"
@@ -2751,9 +2758,9 @@ can-promise@0.0.1:
     window-or-global "^1.0.1"
 
 caniuse-lite@^1.0.30000844, caniuse-lite@^1.0.30000957, caniuse-lite@^1.0.30000960:
-  version "1.0.30000962"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000962.tgz#6c10c3ab304b89bea905e66adf98c0905088ee44"
-  integrity sha512-WXYsW38HK+6eaj5IZR16Rn91TGhU3OhbwjKZvJ4HN/XBIABLKfbij9Mnd3pM0VEwZSlltWjoWg3I8FQ0DGgNOA==
+  version "1.0.30000963"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000963.tgz#5be481d5292f22aff5ee0db4a6c049b65b5798b1"
+  integrity sha512-n4HUiullc7Lw0LyzpeLa2ffP8KxFBGdxqD/8G3bSL6oB758hZ2UE2CVK+tQN958tJIi0/tfpjAc67aAtoHgnrQ==
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -3058,11 +3065,11 @@ component-emitter@^1.2.0, component-emitter@^1.2.1:
   integrity sha512-Rd3se6QB+sO1TwqZjscQrurpEPIfO0/yYnSin6Q/rD3mOutHvUrCAhJub3r90uNb+SESBuE0QYoB90YdfatsRg==
 
 compressible@~2.0.16:
-  version "2.0.16"
-  resolved "https://registry.yarnpkg.com/compressible/-/compressible-2.0.16.tgz#a49bf9858f3821b64ce1be0296afc7380466a77f"
-  integrity sha512-JQfEOdnI7dASwCuSPWIeVYwc/zMsu/+tRhoUvEfXz2gxOA2DNjmG5vhtFdBlhWPPGo+RdT9S3tgc/uH5qgDiiA==
+  version "2.0.17"
+  resolved "https://registry.yarnpkg.com/compressible/-/compressible-2.0.17.tgz#6e8c108a16ad58384a977f3a482ca20bff2f38c1"
+  integrity sha512-BGHeLCK1GV7j1bSmQQAi26X+GgWcTjLr/0tzSvMCl3LH1w1IJ4PFSPoV5316b30cneTziC+B1a+3OjoSUcQYmw==
   dependencies:
-    mime-db ">= 1.38.0 < 2"
+    mime-db ">= 1.40.0 < 2"
 
 compression@^1.7.1:
   version "1.7.4"
@@ -3637,9 +3644,9 @@ ee-first@1.1.1:
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
 electron-to-chromium@^1.3.124, electron-to-chromium@^1.3.47:
-  version "1.3.125"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.125.tgz#dbde0e95e64ebe322db0eca764d951f885a5aff2"
-  integrity sha512-XxowpqQxJ4nDwUXHtVtmEhRqBpm2OnjBomZmZtHD0d2Eo0244+Ojezhk3sD/MBSSe2nxCdGQFRXHIsf/LUTL9A==
+  version "1.3.126"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.126.tgz#39363f76e55cf2bc06cd919cb76c808b3acaed30"
+  integrity sha512-anr0OeQkZvOGzsz1ZM7BliJjHKfEsodQWoncklQWryDCSXMdVtt/fXlQBKfXXmbMVDhpiydwL3jaonbWuk/F6g==
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -3881,10 +3888,17 @@ eslint-plugin-react-native-globals@^0.1.1:
   resolved "https://registry.yarnpkg.com/eslint-plugin-react-native-globals/-/eslint-plugin-react-native-globals-0.1.2.tgz#ee1348bc2ceb912303ce6bdbd22e2f045ea86ea2"
   integrity sha512-9aEPf1JEpiTjcFAmmyw8eiIXmcNZOqaZyHO77wgm0/dWfT/oxC1SrIq8ET38pMxHYrcB6Uew+TzUVsBeczF88g==
 
-eslint-plugin-react-native@3.6.0, eslint-plugin-react-native@^3.5.0:
+eslint-plugin-react-native@3.6.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-react-native/-/eslint-plugin-react-native-3.6.0.tgz#7cad3b7c6159df6d26fe3252c6c5417a17f27b4b"
   integrity sha512-BEQcHZ06hZSBYWFVuNEq0xuui5VEsWpHDsZGBtfadHfCRqRMUrkYPgdDb3bpc60qShHE83kqIv59uKdinEg91Q==
+  dependencies:
+    eslint-plugin-react-native-globals "^0.1.1"
+
+eslint-plugin-react-native@^3.5.0:
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react-native/-/eslint-plugin-react-native-3.7.0.tgz#7e2cc1f3cf24919c4c0ea7fac13301e7444e105f"
+  integrity sha512-krLtQmGih/uJDPxF8DBpnU8J3kRUsDm/Dey5yEhOO8LN1I3Wesbk4PGCg8Zah57azKFU+9YtGooFjJcDJWUs+g==
   dependencies:
     eslint-plugin-react-native-globals "^0.1.1"
 
@@ -7283,7 +7297,7 @@ miller-rabin@^4.0.0:
     bn.js "^4.0.0"
     brorand "^1.0.1"
 
-mime-db@1.40.0, "mime-db@>= 1.38.0 < 2":
+mime-db@1.40.0, "mime-db@>= 1.40.0 < 2":
   version "1.40.0"
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.40.0.tgz#a65057e998db090f732a68f6c276d387d4126c32"
   integrity sha512-jYdeOMPy9vnxEqFRRo6ZvTZ8d9oPb+k18PKoYNYUe2stVEBPPwsln/qWzdbmaIvnhZ9v2P+CuecK+fpUfsV2mA==
@@ -8713,7 +8727,7 @@ react-native-actionsheet@^2.4.2:
   resolved "https://registry.yarnpkg.com/react-native-actionsheet/-/react-native-actionsheet-2.4.2.tgz#6a00dd51a75ef2c8974312130e405af73191500f"
   integrity sha512-DBoWIvVwuWXuptF4t46pBqkFxaUxS+rsIdHiA05t0n4BdTIDV2R4s9bLEUVOGzb94D7VxIamsXZPA/3mmw+SXg==
 
-react-native-camera@^2.3.0:
+react-native-camera@^2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-2.6.0.tgz#bf97b0fc68aa8732d815e9bbd92e63529f51d598"
   integrity sha512-g0Hi4yhUg1yBsYbW9aLxVaX+rgl9sKrrDAGF6difiRTvwCUEqlID2DosLCQQPkLSniJHVa8gc+SwCegahU23aA==
@@ -8756,9 +8770,9 @@ react-native-crypto@^2.1.2:
     public-encrypt "^4.0.0"
 
 react-native-device-info@^1.4.3:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-1.5.0.tgz#09e17c8199ac51082d72193f17eb445e9c83e68d"
-  integrity sha512-TiZxPkiuKR1GLS9wWAqjKzk37viBLt64EGzjn0IoySosXJpa7E4XKOwAvNR9xcSZ4iSlsVMtRM2QnA8wHe5M2g==
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-1.5.1.tgz#46810a42724089c7d4a0900974a1562bce057e73"
+  integrity sha512-AePzRi/2C4LokVYfjV9SjIHv0zHgI0/rMYxVWe5KcXvuSuspUUrx4oq3+jGZMwbsJP1/aqvslMq4TEJG7F8yNA==
 
 react-native-emoji@^1.3.1:
   version "1.6.0"
@@ -9090,7 +9104,7 @@ react-spring@^5.7.2:
   dependencies:
     "@babel/runtime" "^7.0.0"
 
-react-style-proptype@^3.2.1:
+react-style-proptype@^3.2.2:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/react-style-proptype/-/react-style-proptype-3.2.2.tgz#d8e998e62ce79ec35b087252b90f19f1c33968a0"
   integrity sha512-ywYLSjNkxKHiZOqNlso9PZByNEY+FTyh3C+7uuziK0xFXu9xzdyfHwg4S9iyiRRoPCR4k2LqaBBsWVmSBwCWYQ==
@@ -10787,9 +10801,9 @@ uglify-es@^3.1.9:
     source-map "~0.6.1"
 
 uglify-js@^3.1.4:
-  version "3.5.6"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.5.6.tgz#8a5f8a06ee7415ac1fa302f4623bc7344b553da4"
-  integrity sha512-YDKRX8F0Y+Jr7LhoVk0n4G7ltR3Y7qFAj+DtVBthlOgCcIj1hyMigCfousVfn9HKmvJ+qiFlLDwaHx44/e5ZKw==
+  version "3.5.7"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.5.7.tgz#1442fda9991a01aa0eb2853876640477109113ff"
+  integrity sha512-GCgJx3BBuaf/QMvBBkhoHDh4SVsHCC3ILEzriPw4FgJJKCuxVBSYLRkDlmT3uhXyGWKs3VN5r0mCkBIZaHWu3w==
   dependencies:
     commander "~2.20.0"
     source-map "~0.6.1"

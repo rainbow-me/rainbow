@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForKeys, shouldUpdate } from 'recompact';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
+import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
 import { RecyclerAssetList } from '../asset-list';
-import { CoinRowHeight, CollectiblesSendRow, SendCoinRow } from '../coin-row';
+import { CoinRow, CollectiblesSendRow, SendCoinRow } from '../coin-row';
 import { ListFooter } from '../list';
 
 const BalancesRenderItem = ({ item: { onSelectAsset, symbol, ...item } }) => (
@@ -73,7 +74,8 @@ const SendAssetList = ({
       <RecyclerAssetList
         fetchData={fetchData}
         hideHeader
-        paddingBottom={CoinRowHeight + ListFooter.height}
+        paddingBottom={CoinRow.height + ListFooter.height}
+        renderAheadOffset={deviceUtils.dimensions.height * 1.5}
         sections={sections}
       />
     </FlyInAnimation>

@@ -17,7 +17,7 @@ import InnerBorder from '../InnerBorder';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
-export const DividerHeight = 22;
+const dividerHeight = 22;
 const selectedHeight = 78;
 
 const BottomRow = ({ subtitle }) => (
@@ -78,7 +78,23 @@ UniqueTokenCoinIcon.propTypes = {
 };
 /* eslint-enable camelcase */
 
-const CollectiblesSendRow = ({
+const buildSubtitleForUniqueToken = ({ data }) => ({
+  subtitle: data.name
+    ? `${data.asset_contract.name} #${data.id}`
+    : data.asset_contract.name,
+});
+
+const enhance = compose(
+  withProps(buildSubtitleForUniqueToken),
+  shouldUpdate((props, nextProps) => {
+    const itemIdentifier = buildAssetUniqueIdentifier(props.data);
+    const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.data);
+
+    return itemIdentifier !== nextItemIdentifier;
+  }),
+);
+
+const CollectiblesSendRow = enhance(({
   data,
   isFirstRow,
   onPress,
@@ -87,7 +103,7 @@ const CollectiblesSendRow = ({
 }) => (
   <Fragment>
     {isFirstRow && (
-      <Centered style={{ height: DividerHeight }}>
+      <Centered style={{ height: dividerHeight }}>
         <Divider color={colors.alpha(colors.blueGreyLigter, 0.05)} />
       </Centered>
     )}
@@ -102,7 +118,7 @@ const CollectiblesSendRow = ({
       />
     </ButtonPressAnimation>
   </Fragment>
-);
+));
 
 CollectiblesSendRow.propTypes = {
   data: PropTypes.object,
@@ -112,20 +128,7 @@ CollectiblesSendRow.propTypes = {
   subtitle: PropTypes.string,
 };
 
+CollectiblesSendRow.dividerHeight = dividerHeight;
 CollectiblesSendRow.selectedHeight = selectedHeight;
 
-const buildSubtitleForUniqueToken = ({ data }) => ({
-  subtitle: data.name
-    ? `${data.asset_contract.name} #${data.id}`
-    : data.asset_contract.name,
-});
-
-export default compose(
-  withProps(buildSubtitleForUniqueToken),
-  shouldUpdate((props, nextProps) => {
-    const itemIdentifier = buildAssetUniqueIdentifier(props.data);
-    const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.data);
-
-    return itemIdentifier !== nextItemIdentifier;
-  }),
-)(CollectiblesSendRow);
+export default CollectiblesSendRow;
