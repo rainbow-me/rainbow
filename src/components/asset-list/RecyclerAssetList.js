@@ -1,19 +1,29 @@
-import { get } from 'lodash';
-import React from 'react';
-import { Dimensions, RefreshControl } from 'react-native';
-import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
-import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
+import { get, has } from 'lodash';
 import PropTypes from 'prop-types';
-import { UniqueTokenRowHeight } from '../unique-token/UniqueTokenRow';
-import { CoinRowBuffer, CoinRowHeight } from '../coin-row/CoinRow';
-import AssetListHeader from './AssetListHeader';
+import React, { PureComponent } from 'react';
+import { RefreshControl } from 'react-native';
+import { pure } from 'recompact';
+import {
+  DataProvider,
+  LayoutProvider,
+  RecyclerListView,
+} from 'recyclerlistview';
+import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
+import styled from 'styled-components/primitives';
+import {
+  buildAssetHeaderUniqueIdentifier,
+  buildAssetUniqueIdentifier,
+} from '../../helpers/assets';
 import { colors } from '../../styles';
-import { DividerHeight } from '../coin-row/CollectiblesSendRow';
+import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
+import { CoinRow, CollectiblesSendRow } from '../coin-row';
+import { ListFooter } from '../list';
+import { UniqueTokenRow } from '../unique-token';
+import AssetListHeader from './AssetListHeader';
 
 export const ViewTypes = {
   HEADER: 0,
-  COIN_ROW: 1,
+  COIN_ROW: 1, // eslint-disable-line sort-keys
   COIN_ROW_LAST: 2,
   UNIQUE_TOKEN_ROW: 3,
   UNIQUE_TOKEN_ROW_FIRST: 4,
@@ -26,14 +36,42 @@ const Wrapper = styled.View`
 `;
 
 // eslint-disable-next-line react/prop-types
-const AssetListHeaderRenderer = (data) => <AssetListHeader {...data} />;
+const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
 
+const hasRowChanged = (r1, r2) => {
+  if (has(r1, 'isHeader')) {
+    const isNewShowShitcoinsValue = isNewValueForPath(r1, r2, 'showShitcoins');
+    const isNewTitle = isNewValueForPath(r1, r2, 'title');
+    const isNewTotalItems = isNewValueForPath(r1, r2, 'totalItems');
+    const isNewTotalValue = isNewValueForPath(r1, r2, 'totalValue');
 
-export default class RecyclerAssetList extends React.Component {
+    return isNewShowShitcoinsValue || isNewTitle || isNewTotalItems || isNewTotalValue;
+  }
+
+  const isNewAsset = isNewValueForPath(r1, r2, 'item.uniqueId');
+
+  const isNewTokenFirst = isNewValueForPath(r1, r2, 'item.tokens.[0].uniqueId');
+  const isNewTokenSecond = isNewValueForPath(r1, r2, 'item.tokens.[1].uniqueId');
+
+  const isCollectiblesRow = has(r1, 'item.tokens') && has(r2, 'item.tokens');
+  let isNewAssetBalance = false;
+
+  if (!isCollectiblesRow) {
+    isNewAssetBalance = isNewValueForPath(r1, r2, 'item.native.balance.display');
+  }
+
+  return isNewAsset
+    || isNewAssetBalance
+    || isNewTokenFirst
+    || isNewTokenSecond;
+};
+
+export default class RecyclerAssetList extends PureComponent {
   static propTypes = {
     fetchData: PropTypes.func,
     hideHeader: PropTypes.bool,
     paddingBottom: PropTypes.number,
+    renderAheadOffset: PropTypes.number,
     sections: PropTypes.arrayOf(PropTypes.shape({
       balances: PropTypes.bool,
       collectibles: PropTypes.bool,
@@ -49,64 +87,54 @@ export default class RecyclerAssetList extends React.Component {
     })),
   };
 
+  static defaultProps = {
+    renderAheadOffset: deviceUtils.dimensions.height,
+  };
+
   constructor(props) {
     super(props);
-    const { width } = Dimensions.get('window');
+
     this.state = {
-      dataProvider: new DataProvider((r1, r2) => {
-        if (get(r1, 'isHeader')) {
-          if ((get(r1, 'title') !== get(r2, 'title'))
-              || (get(r1, 'totalValue') !== get(r2, 'totalValue'))) {
-            return true;
-          }
-        }
-        const r1Value = get(r1, get(r1, 'item.tokens') ? '' : 'item.native.balance.display');
-        const r2Value = get(r2, get(r2, 'item.tokens') ? '' : 'item.native.balance.display');
-        const r1TokenNameFirst = get(r1, 'item.tokens.[0].id');
-        const r2TokenNameFirst = get(r2, 'item.tokens.[0].id');
-        const r1TokenNameSecond = get(r1, 'item.tokens.[1].id');
-        const r2TokenNameSecond = get(r2, 'item.tokens.[1].id');
-        const r1Symbol = get(r1, 'item.symbol');
-        const r2Symbol = get(r2, 'item.symbol');
-        return r1Symbol !== r2Symbol
-          || r1Value !== r2Value
-          || r1TokenNameFirst !== r2TokenNameFirst
-          || r1TokenNameSecond !== r2TokenNameSecond;
-      }),
+      dataProvider: new DataProvider(hasRowChanged, this.getStableId),
       headersIndices: [],
     };
 
     this.layoutProvider = new LayoutProvider(
       index => {
-        if (this.state.headersIndices.includes(index)) {
+        const { sections } = this.props;
+        const { headersIndices } = this.state;
+
+        if (headersIndices.includes(index)) {
           return ViewTypes.HEADER;
         }
+
         // This logic appears to be quite complex since there might be some race conditions
         // regarding order of received sections while importing from seeds
-        const areBalancesLoaded = get(this.props, 'sections[0].balances');
-        const areCollectiblesLoaded = this.props.sections.length === 2
-          || get(this.props, 'sections[0].collectibles');
+        const areBalancesLoaded = get(sections, '[0].balances');
+        const areCollectiblesLoaded = sections.length === 2 || get(sections, '[0].collectibles');
+
         if (areBalancesLoaded && areCollectiblesLoaded) {
-          if (index === this.state.headersIndices[1] - 1) {
+          if (index === headersIndices[1] - 1) {
             return ViewTypes.COIN_ROW_LAST;
           }
         }
+
         if (areCollectiblesLoaded) {
           const idx = areBalancesLoaded ? 1 : 0;
-          if (index === this.state.headersIndices[idx] + 1) {
+          if (index === headersIndices[idx] + 1) {
             return ViewTypes.UNIQUE_TOKEN_ROW_FIRST;
           }
           if (index === this.state.length - 1) {
             return ViewTypes.UNIQUE_TOKEN_ROW_LAST;
           }
-          if (index > this.state.headersIndices[idx]) {
+          if (index > headersIndices[idx]) {
             return ViewTypes.UNIQUE_TOKEN_ROW;
           }
         }
         return ViewTypes.COIN_ROW;
       },
       (type, dim) => {
-        dim.width = width;
+        dim.width = deviceUtils.dimensions.width;
         if (this.state.areSmallCollectibles
             && (
               type === ViewTypes.UNIQUE_TOKEN_ROW_LAST
@@ -114,25 +142,29 @@ export default class RecyclerAssetList extends React.Component {
               || type === ViewTypes.UNIQUE_TOKEN_ROW
             )
         ) {
-          dim.height = CoinRowHeight;
+          dim.height = CoinRow.height;
           if (type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST) {
-            dim.height += DividerHeight;
+            dim.height += CollectiblesSendRow.dividerHeight;
+          } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_LAST) {
+            // We want to add enough spacing below the list so that when the user scrolls to the bottom,
+            // the bottom of the list content lines up with the top of the FABs (+ padding).
+            dim.height += (props.paddingBottom || 0);
           }
           return;
         }
 
         if (type === ViewTypes.UNIQUE_TOKEN_ROW) {
-          dim.height = UniqueTokenRowHeight(false, false);
+          dim.height = UniqueTokenRow.getHeight(false, false);
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_LAST) {
           // We want to add enough spacing below the list so that when the user scrolls to the bottom,
           // the bottom of the list content lines up with the top of the FABs (+ padding).
-          dim.height = (UniqueTokenRowHeight(false, true)) + props.paddingBottom || 0;
+          dim.height = UniqueTokenRow.getHeight(false, true) + (props.paddingBottom || 0);
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST) {
-          dim.height = UniqueTokenRowHeight(true, false);
+          dim.height = UniqueTokenRow.getHeight(true, false);
         } else if (type === ViewTypes.COIN_ROW_LAST) {
-          dim.height = CoinRowHeight + CoinRowBuffer;
+          dim.height = this.state.areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height;
         } else if (type === ViewTypes.COIN_ROW) {
-          dim.height = CoinRowHeight;
+          dim.height = CoinRow.height;
         } else {
           dim.height = this.props.hideHeader ? 0 : AssetListHeader.height;
         }
@@ -140,9 +172,10 @@ export default class RecyclerAssetList extends React.Component {
     );
   }
 
-  static getDerivedStateFromProps(props, state) {
+  static getDerivedStateFromProps({ sections }, state) {
     const headersIndices = [];
-    const items = props.sections.reduce((ctx, section) => {
+
+    const items = sections.reduce((ctx, section) => {
       headersIndices.push(ctx.length);
       return ctx
         .concat([{
@@ -151,12 +184,13 @@ export default class RecyclerAssetList extends React.Component {
         }])
         .concat(section.data.map(item => ({ item: { ...item, ...section.perData }, renderItem: section.renderItem })));
     }, []);
-    const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(props.sections.find(e => e.collectibles))
+
+    const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(sections.find(e => e.collectibles));
+
     return {
       areSmallCollectibles,
       dataProvider: state.dataProvider.cloneWithRows(items),
       headersIndices,
-      isRefreshing: false,
       length: items.length,
     };
   }
@@ -167,6 +201,14 @@ export default class RecyclerAssetList extends React.Component {
 
   componentWillUnmount = () => {
     this.isCancelled = true;
+  };
+
+  getStableId = (index) => {
+    const row = get(this.state, `dataProvider._data[${index}]`);
+
+    return has(row, 'isHeader')
+      ? buildAssetHeaderUniqueIdentifier(row)
+      : buildAssetUniqueIdentifier(row.item);
   };
 
   handleRefresh = () => {
@@ -187,43 +229,41 @@ export default class RecyclerAssetList extends React.Component {
     />
   );
 
-  rowRenderer = (type, data) => {
-    if (type === ViewTypes.COIN_ROW
-        || type === ViewTypes.COIN_ROW_LAST) {
-      const { item, renderItem } = data;
-      return renderItem({ item });
-    }
-    if (type === ViewTypes.HEADER) {
-      if (this.props.hideHeader) {
-        return null;
-      }
-      return <AssetListHeaderRenderer {...data} />;
-    }
-
-    if (this.state.areSmallCollectibles) {
-      const { item, renderItem } = data;
-      return renderItem({ item });
-    }
-
+  rowRenderer = (type, data, index) => {
     const { item, renderItem } = data;
-    return renderItem({
-      data: item.tokens,
-      isFirstRow: type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST,
-      isLastRow: type === ViewTypes.UNIQUE_TOKEN_ROW_LAST,
-    });
+    const { hideHeader, sections } = this.props;
+
+    if (type === ViewTypes.HEADER) {
+      return hideHeader ? null : <AssetListHeaderRenderer {...data} />;
+    }
+
+    return (type === ViewTypes.COIN_ROW || type === ViewTypes.COIN_ROW_LAST)
+      ? renderItem({ item })
+      : renderItem({
+        item: item.tokens ? item.tokens : item,
+        isFirstRow: type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST,
+        isLastRow: type === ViewTypes.UNIQUE_TOKEN_ROW_LAST,
+        shouldPrioritizeImageLoading: index < sections[0].data.length + 9,
+        uniqueId: item.uniqueId,
+      });
   };
 
   render() {
+    const { hideHeader, renderAheadOffset } = this.props;
+    const { dataProvider, headersIndices } = this.state;
+
     return (
       <Wrapper>
-        <StickyContainer
-          stickyHeaderIndices={this.state.headersIndices}
-        >
+        <StickyContainer stickyHeaderIndices={headersIndices}>
           <RecyclerListView
             layoutProvider={this.layoutProvider}
-            dataProvider={this.state.dataProvider}
+            dataProvider={dataProvider}
+            renderAheadOffset={renderAheadOffset}
             rowRenderer={this.rowRenderer}
-            renderAheadOffset={1000}
+            scrollIndicatorInsets={{
+              bottom: safeAreaInsetValues.bottom,
+              top: hideHeader ? 0 : AssetListHeader.height,
+            }}
             scrollViewProps={{
               refreshControl: this.renderRefreshControl(),
             }}

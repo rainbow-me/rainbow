@@ -19,3 +19,10 @@ export const getEthereumAddressFromQRCodeData = async (data) => {
 
   return null;
 };
+
+export const maxLength = 42;
+
+export default {
+  getEthereumAddressFromQRCodeData,
+  maxLength,
+};

@@ -35,7 +35,6 @@ class WalletScreen extends PureComponent {
     isEmpty: PropTypes.bool.isRequired,
     isFocused: PropTypes.bool,
     navigation: PropTypes.object,
-    onRefreshList: PropTypes.func.isRequired,
     refreshAccount: PropTypes.func,
     sections: PropTypes.array,
     showBlur: PropTypes.bool,
@@ -59,7 +58,7 @@ class WalletScreen extends PureComponent {
       blurOpacity,
       isEmpty,
       navigation,
-      onRefreshList,
+      refreshAccount,
       sections,
       showBlur,
     } = this.props;
@@ -72,7 +71,7 @@ class WalletScreen extends PureComponent {
         </Header>
         <FabWrapper disabled={isEmpty}>
           <AssetList
-            fetchData={onRefreshList}
+            fetchData={refreshAccount}
             isEmpty={isEmpty}
             sections={sections}
           />
@@ -96,7 +95,6 @@ export default compose(
   withStatusBarStyle('dark-content'),
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
-    onRefreshList: ({ refreshAccount }) => async () => refreshAccount(),
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
       if (index === 0) {
         const updatedShowShitcoinsSetting = !showShitcoins;

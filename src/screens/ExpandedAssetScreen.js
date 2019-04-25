@@ -7,13 +7,13 @@ import {
   defaultProps,
   withHandlers,
   withProps,
-  shouldUpdate,
 } from 'recompact';
 import { createSelector } from 'reselect';
 import styled from 'styled-components/primitives';
 import { TokenExpandedState, UniqueTokenExpandedState } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import TouchableBackdrop from '../components/TouchableBackdrop';
+import { withNeverRerender } from '../hoc';
 import { padding } from '../styles';
 import { deviceUtils } from '../utils';
 
@@ -90,5 +90,5 @@ export default compose(
   withAccountAssets,
   withProps(buildExpandedAssetsSelector),
   withHandlers({ onPressBackground: ({ navigation }) => () => navigation.goBack() }),
-  shouldUpdate(() => false),
+  withNeverRerender,
 )(ExpandedAssetScreen);
