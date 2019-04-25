@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StatusBar, View } from 'react-native';
+import { StatusBar } from 'react-native';
 import styled from 'styled-components';
-import { colors, padding } from '../../styles';
+import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { Centered, Column } from '../layout';
 import TouchableBackdrop from '../TouchableBackdrop';
@@ -13,7 +13,7 @@ const Container = styled(Centered)`
 
 const ModalElement = styled(Column)`
   background-color: ${colors.white};
-  border-radius: 12;
+  border-radius: ${({ radius }) => radius || 12};
   flex-shrink: 0;
   height: ${({ height }) => height};
   shadow-color: ${colors.dark};

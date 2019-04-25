@@ -22,13 +22,14 @@ const FloatingPanel = ({
   height,
   hideShadow,
   style,
+  radius,
   ...props
 }) => (
   <Column
     css={`
       ${shadow.build(0, 10, 50, colors.dark, 0.4)}
       background-color: ${color};
-      border-radius: ${FloatingPanelBorderRadius};
+      border-radius: ${radius || FloatingPanelBorderRadius};
       min-height: ${height || 'auto'};
       opacity: 1;
       overflow: hidden;
@@ -45,6 +46,7 @@ FloatingPanel.propTypes = {
   color: PropTypes.string,
   height: PropTypes.number,
   hideShadow: PropTypes.bool,
+  radius: PropTypes.number,
   style: stylePropType,
   width: PropTypes.number,
 };
