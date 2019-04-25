@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
+import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
 import { withAccountSettings } from '../../hoc';
 import transitions from '../../navigation/transitions';
 import { colors, padding, position } from '../../styles';
@@ -60,34 +61,44 @@ const SendAssetForm = ({
         shouldRasterizeIOS={true}
         width={deviceUtils.dimensions.width}
       >
-        <SendCoinRow
-          item={selectedAsset}
-          onPress={onResetAssetSelection}
-          selected={true}
-        >
-          <DoubleArrowSelectionIcon />
-        </SendCoinRow>
+    {(selected.isNft) ? (
+      <CollectiblesSendRow
+        item={selected}
+        onPress={onResetAssetSelection}
+        selected={true}
+      />
+    ) : (
+      <SendCoinRow
+        item={selectedAsset}
+        onPress={onResetAssetSelection}
+        selected={true}
+      >
+        <DoubleArrowSelectionIcon />
+      </SendCoinRow>
+    )}
       </ShadowStack>
       <TransactionContainer>
-        <ColumnWithMargins flex={0} margin={18} width="100%">
-          <SendAssetFormField
-            autoFocus={true}
-            format={removeLeadingZeros}
-            label={selected.symbol}
-            onChange={onChangeAssetAmount}
-            onPressButton={sendMaxBalance}
-            placeholder="0"
-            value={assetAmount}
-          />
-          <SendAssetFormField
-            format={formatNativeInput}
-            label={nativeCurrency}
-            onChange={onChangeNativeAmount}
-            onPressButton={sendMaxBalance}
-            placeholder="0.00"
-            value={nativeAmount}
-          />
-        </ColumnWithMargins>
+          {!selected.isNft &&
+            (<ColumnWithMargins flex={0} margin={18} width="100%">
+              <SendAssetFormField
+                autoFocus={true}
+                format={removeLeadingZeros}
+                label={selected.symbol}
+                onChange={onChangeAssetAmount}
+                onPressButton={sendMaxBalance}
+                placeholder="0"
+                value={assetAmount}
+              />
+              <SendAssetFormField
+                format={formatNativeInput}
+                label={nativeCurrency}
+                onChange={onChangeNativeAmount}
+                onPressButton={sendMaxBalance}
+                placeholder="0.00"
+                value={nativeAmount}
+              />
+            </ColumnWithMargins>)
+          }
         <ColumnWithMargins
           flex={0}
           width="100%"

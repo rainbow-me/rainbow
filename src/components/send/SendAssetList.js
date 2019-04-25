@@ -9,13 +9,26 @@ import { RecyclerAssetList } from '../asset-list';
 import { CoinRow, CollectiblesSendRow, SendCoinRow } from '../coin-row';
 import { ListFooter } from '../list';
 
+const CollectiblesRenderItem = ({ item: { onSelectAsset, ...item } }) => (
+  <CollectiblesSendRow
+    item={item}
+    onPress={onSelectAsset(item)}
+  />
+);
+
 const BalancesRenderItem = ({ item: { onSelectAsset, symbol, ...item } }) => (
   <SendCoinRow
-    {...item}
+    item={item}
     onPress={onSelectAsset(symbol)}
     symbol={symbol}
   />
 );
+
+CollectiblesRenderItem.propTypes = {
+  item: PropTypes.shape({
+    onSelectAsset: PropTypes.func
+  }),
+};
 
 BalancesRenderItem.propTypes = {
   item: PropTypes.shape({
@@ -25,17 +38,17 @@ BalancesRenderItem.propTypes = {
 };
 
 const enhanceRenderItem = shouldUpdate((props, nextProps) => {
-  const { data, item } = props;
-  const { data: nextData, item: nextItem } = nextProps;
+  const { item } = props;
+  const { item: nextItem } = nextProps;
 
-  const itemIdentifier = buildAssetUniqueIdentifier(item || data);
-  const nextItemIdentifier = buildAssetUniqueIdentifier(nextItem || nextData);
+  const itemIdentifier = buildAssetUniqueIdentifier(item);
+  const nextItemIdentifier = buildAssetUniqueIdentifier(nextItem);
 
   return itemIdentifier !== nextItemIdentifier;
 });
 
 const TokenItem = React.memo(enhanceRenderItem(BalancesRenderItem));
-const UniqueTokenItem = React.memo(enhanceRenderItem(CollectiblesSendRow));
+const UniqueTokenItem = React.memo(enhanceRenderItem(CollectiblesRenderItem));
 
 const balancesRenderItem = item => <TokenItem {...item} />;
 const collectiblesRenderItem = item => <UniqueTokenItem {...item} />;
@@ -44,7 +57,7 @@ const SendAssetList = ({
   allAssets,
   fetchData,
   onSelectAsset,
-  uniquetokens: uniqueTokens,
+  uniqueTokens,
 }) => {
   const sections = [
     {
@@ -86,7 +99,7 @@ SendAssetList.propTypes = {
   allAssets: PropTypes.array,
   fetchData: PropTypes.func,
   onSelectAsset: PropTypes.func,
-  uniquetokens: PropTypes.array,
+  uniqueTokens: PropTypes.array,
 };
 
 export default onlyUpdateForKeys(['allAssets', 'uniqueTokens'])(SendAssetList);
