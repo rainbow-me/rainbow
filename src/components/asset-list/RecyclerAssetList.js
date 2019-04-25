@@ -40,11 +40,12 @@ const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
 
 const hasRowChanged = (r1, r2) => {
   if (has(r1, 'isHeader')) {
+    const isNewShowShitcoinsValue = isNewValueForPath(r1, r2, 'showShitcoins');
     const isNewTitle = isNewValueForPath(r1, r2, 'title');
     const isNewTotalItems = isNewValueForPath(r1, r2, 'totalItems');
     const isNewTotalValue = isNewValueForPath(r1, r2, 'totalValue');
 
-    return isNewTitle || isNewTotalItems || isNewTotalValue;
+    return isNewShowShitcoinsValue || isNewTitle || isNewTotalItems || isNewTotalValue;
   }
 
   const isNewAsset = isNewValueForPath(r1, r2, 'item.uniqueId');
@@ -84,11 +85,11 @@ export default class RecyclerAssetList extends PureComponent {
       renderItem: PropTypes.func.isRequired,
       type: PropTypes.string,
     })),
-  }
+  };
 
   static defaultProps = {
     renderAheadOffset: deviceUtils.dimensions.height,
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -208,7 +209,7 @@ export default class RecyclerAssetList extends PureComponent {
     return has(row, 'isHeader')
       ? buildAssetHeaderUniqueIdentifier(row)
       : buildAssetUniqueIdentifier(row.item);
-  }
+  };
 
   handleRefresh = () => {
     if (this.state.isRefreshing) return;

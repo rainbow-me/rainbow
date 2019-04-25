@@ -1,8 +1,11 @@
 import { compact, get } from 'lodash';
 
-export const buildAssetHeaderUniqueIdentifier = ({ title, totalItems, totalValue }) => (
-  `${title}_${totalItems}_${totalValue}`
-);
+export const buildAssetHeaderUniqueIdentifier = ({
+  showShitcoins,
+  title,
+  totalItems,
+  totalValue,
+}) => ([showShitcoins, title, totalItems, totalValue].join('_'));
 
 export const buildAssetUniqueIdentifier = (item) => {
   const balance = get(item, 'balance.amount', '');
