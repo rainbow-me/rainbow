@@ -20,7 +20,6 @@ const Container = styled(Row)`
 `;
 
 const Content = styled(Column)`
-  background-color: ${colors.white};
   height: ${CoinIcon.size};
   margin-left: ${CoinRowPaddingVertical};
 `;

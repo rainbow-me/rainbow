@@ -132,7 +132,7 @@ TopRow.propTypes = {
 };
 
 
-const SettingsModal = ({
+const ExchangeModal = ({
   amountToExchange,
   onPressConfirmExchange,
   onPressSelectCurrency,
@@ -170,6 +170,10 @@ const SettingsModal = ({
                 <MaxAction/>
               </DollarRow>
               <CoinRow
+                containerStyles={`
+                  background-color: ${colors.lightestGrey};
+                  height: 84;
+                `}
                 amount={amountToExchange}
                 changeAmount={setAmountToExchange}
                 navigateToCurrencySelection={onPressSelectTargetCurrency}
@@ -224,7 +228,7 @@ const SettingsModal = ({
 };
 
 
-SettingsModal.propTypes = {
+ExchangeModal.propTypes = {
   amountToExchange: PropTypes.number,
   onPressConfirmExchange: PropTypes.func,
   onPressSelectCurrency: PropTypes.func,
@@ -268,4 +272,4 @@ export default compose(
   }),
   withBlockedHorizontalSwipe,
   withMockedPrices,
-)(SettingsModal);
+)(ExchangeModal);
