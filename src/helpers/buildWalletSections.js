@@ -64,6 +64,7 @@ const buildWalletSections = (
       balances: true,
       data: showShitcoins ? allAssets : assets,
       header: {
+        showShitcoins,
         title: lang.t('account.tab_balances'),
         totalItems: allAssetsCount,
         totalValue: get(assetsTotal, 'display', ''),

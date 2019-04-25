@@ -5,10 +5,15 @@ import Divider from '../Divider';
 import { Monospace } from '../text';
 import { ListHeader } from '../list';
 
-const enhance = onlyUpdateForKeys(['title', 'totalValue']);
+const enhance = onlyUpdateForKeys(['showShitcoins', 'title', 'totalValue']);
 
-const AssetListHeader = enhance(({ title, totalValue, ...props }) => (
-  <ListHeader title={title} {...props}>
+const AssetListHeader = enhance(({
+  showShitcoins,
+  title,
+  totalValue,
+  ...props
+}) => (
+  <ListHeader showShitcoins={showShitcoins} title={title} {...props}>
     {totalValue ? (
       <Monospace size="large" weight="semibold">
         {totalValue}
@@ -18,6 +23,7 @@ const AssetListHeader = enhance(({ title, totalValue, ...props }) => (
 ));
 
 AssetListHeader.propTypes = {
+  showShitcoins: PropTypes.bool,
   title: PropTypes.string,
   totalValue: PropTypes.string,
 };
