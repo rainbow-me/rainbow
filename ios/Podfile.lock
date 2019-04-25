@@ -144,7 +144,7 @@ PODS:
     - React/RCTBlob
   - RNCAsyncStorage (1.3.3):
     - React
-  - RNDeviceInfo (1.5.0):
+  - RNDeviceInfo (1.5.1):
     - React
   - RNLanguages (3.0.2):
     - React
@@ -273,7 +273,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: 1ea4efa22c02519ac8043ac3f000062a4e320795
   react-native-version-number: 75301519bb72064ad209a498ed08b128cbcf10e7
   RNCAsyncStorage: 02c55fdf22e98cdfdddca674e8ce0bb9f4e32fbf
-  RNDeviceInfo: a716865d784cda2df3b073afd659459540c8d321
+  RNDeviceInfo: b0877c3c6b15d44c795d0854dbe7c0dd92eb62a9
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNReanimated: 9497464b378759f538c539df105cda235de496c5
   RNScreens: 720a9e6968beb73e8196239801e887d8401f86ed

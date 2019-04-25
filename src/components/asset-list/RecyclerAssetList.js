@@ -1,20 +1,24 @@
 import { get, has } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { RefreshControl } from 'react-native';
-import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
+import { pure } from 'recompact';
+import {
+  DataProvider,
+  LayoutProvider,
+  RecyclerListView,
+} from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
+import styled from 'styled-components/primitives';
 import {
   buildAssetHeaderUniqueIdentifier,
   buildAssetUniqueIdentifier,
 } from '../../helpers/assets';
 import { colors } from '../../styles';
 import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
-import { CoinRowHeight } from '../coin-row/CoinRow';
-import { DividerHeight } from '../coin-row/CollectiblesSendRow';
+import { CoinRow, CollectiblesSendRow } from '../coin-row';
 import { ListFooter } from '../list';
-import { UniqueTokenRowHeight } from '../unique-token/UniqueTokenRow';
+import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
 
 export const ViewTypes = {
@@ -32,7 +36,7 @@ const Wrapper = styled.View`
 `;
 
 // eslint-disable-next-line react/prop-types
-const AssetListHeaderRenderer = (data) => <AssetListHeader {...data} />;
+const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
 
 const hasRowChanged = (r1, r2) => {
   if (has(r1, 'isHeader')) {
@@ -61,7 +65,7 @@ const hasRowChanged = (r1, r2) => {
     || isNewTokenSecond;
 };
 
-export default class RecyclerAssetList extends React.Component {
+export default class RecyclerAssetList extends PureComponent {
   static propTypes = {
     fetchData: PropTypes.func,
     hideHeader: PropTypes.bool,
@@ -80,7 +84,11 @@ export default class RecyclerAssetList extends React.Component {
       renderItem: PropTypes.func.isRequired,
       type: PropTypes.string,
     })),
-  };
+  }
+
+  static defaultProps = {
+    renderAheadOffset: deviceUtils.dimensions.height,
+  }
 
   constructor(props) {
     super(props);
@@ -92,28 +100,33 @@ export default class RecyclerAssetList extends React.Component {
 
     this.layoutProvider = new LayoutProvider(
       index => {
-        if (this.state.headersIndices.includes(index)) {
+        const { sections } = this.props;
+        const { headersIndices } = this.state;
+
+        if (headersIndices.includes(index)) {
           return ViewTypes.HEADER;
         }
+
         // This logic appears to be quite complex since there might be some race conditions
         // regarding order of received sections while importing from seeds
-        const areBalancesLoaded = get(this.props, 'sections[0].balances');
-        const areCollectiblesLoaded = this.props.sections.length === 2
-          || get(this.props, 'sections[0].collectibles');
+        const areBalancesLoaded = get(sections, '[0].balances');
+        const areCollectiblesLoaded = sections.length === 2 || get(sections, '[0].collectibles');
+
         if (areBalancesLoaded && areCollectiblesLoaded) {
-          if (index === this.state.headersIndices[1] - 1) {
+          if (index === headersIndices[1] - 1) {
             return ViewTypes.COIN_ROW_LAST;
           }
         }
+
         if (areCollectiblesLoaded) {
           const idx = areBalancesLoaded ? 1 : 0;
-          if (index === this.state.headersIndices[idx] + 1) {
+          if (index === headersIndices[idx] + 1) {
             return ViewTypes.UNIQUE_TOKEN_ROW_FIRST;
           }
           if (index === this.state.length - 1) {
             return ViewTypes.UNIQUE_TOKEN_ROW_LAST;
           }
-          if (index > this.state.headersIndices[idx]) {
+          if (index > headersIndices[idx]) {
             return ViewTypes.UNIQUE_TOKEN_ROW;
           }
         }
@@ -128,9 +141,9 @@ export default class RecyclerAssetList extends React.Component {
               || type === ViewTypes.UNIQUE_TOKEN_ROW
             )
         ) {
-          dim.height = CoinRowHeight;
+          dim.height = CoinRow.height;
           if (type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST) {
-            dim.height += DividerHeight;
+            dim.height += CollectiblesSendRow.dividerHeight;
           } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_LAST) {
             // We want to add enough spacing below the list so that when the user scrolls to the bottom,
             // the bottom of the list content lines up with the top of the FABs (+ padding).
@@ -140,17 +153,17 @@ export default class RecyclerAssetList extends React.Component {
         }
 
         if (type === ViewTypes.UNIQUE_TOKEN_ROW) {
-          dim.height = UniqueTokenRowHeight(false, false);
+          dim.height = UniqueTokenRow.getHeight(false, false);
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_LAST) {
           // We want to add enough spacing below the list so that when the user scrolls to the bottom,
           // the bottom of the list content lines up with the top of the FABs (+ padding).
-          dim.height = UniqueTokenRowHeight(false, true) + (props.paddingBottom || 0);
+          dim.height = UniqueTokenRow.getHeight(false, true) + (props.paddingBottom || 0);
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST) {
-          dim.height = UniqueTokenRowHeight(true, false);
+          dim.height = UniqueTokenRow.getHeight(true, false);
         } else if (type === ViewTypes.COIN_ROW_LAST) {
-          dim.height = this.state.areSmallCollectibles ? CoinRowHeight : CoinRowHeight + ListFooter.height;
+          dim.height = this.state.areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height;
         } else if (type === ViewTypes.COIN_ROW) {
-          dim.height = CoinRowHeight;
+          dim.height = CoinRow.height;
         } else {
           dim.height = this.props.hideHeader ? 0 : AssetListHeader.height;
         }
@@ -230,6 +243,7 @@ export default class RecyclerAssetList extends React.Component {
         isFirstRow: type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST,
         isLastRow: type === ViewTypes.UNIQUE_TOKEN_ROW_LAST,
         shouldPrioritizeImageLoading: index < sections[0].data.length + 9,
+        uniqueId: item.uniqueId,
       });
   };
 
@@ -249,7 +263,6 @@ export default class RecyclerAssetList extends React.Component {
               bottom: safeAreaInsetValues.bottom,
               top: hideHeader ? 0 : AssetListHeader.height,
             }}
-            scrollThrottle={32}
             scrollViewProps={{
               refreshControl: this.renderRefreshControl(),
             }}

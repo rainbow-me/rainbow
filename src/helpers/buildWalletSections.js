@@ -21,6 +21,7 @@ const setIsWalletEmptySelector = state => state.setIsWalletEmpty;
 const shitcoinsCountSelector = state => state.shitcoinsCount;
 const showShitcoinsSelector = state => state.showShitcoins;
 const uniqueTokensSelector = state => state.uniqueTokens;
+
 const enhanceRenderItem = compose(
   withNavigation,
   withHandlers({
@@ -38,6 +39,7 @@ const UniqueTokenItem = enhanceRenderItem(UniqueTokenRow);
 
 const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
 const collectiblesRenderItem = item => <UniqueTokenItem {...item} assetType="unique_token" />;
+
 const filterWalletSections = sections => sections.filter(({ data, header }) => (
   data ? get(header, 'totalItems') : true
 ));

@@ -1,12 +1,16 @@
-import { get } from 'lodash';
+import { compact, get } from 'lodash';
 
 export const buildAssetHeaderUniqueIdentifier = ({ title, totalItems, totalValue }) => (
   `${title}_${totalItems}_${totalValue}`
 );
 
-export const buildAssetUniqueIdentifier = (item) => (
-  `${get(item, 'balance.amount', '')}_${get(item, 'uniqueId')}`
-);
+export const buildAssetUniqueIdentifier = (item) => {
+  const balance = get(item, 'balance.amount', '');
+  const nativePrice = get(item, 'native.price.display', '');
+  const uniqueId = get(item, 'uniqueId');
+
+  return compact([balance, nativePrice, uniqueId]).join('_');
+};
 
 export const buildUniqueTokenList = (uniqueTokens) => {
   const list = [];
