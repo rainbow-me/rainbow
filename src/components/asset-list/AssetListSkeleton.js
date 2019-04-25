@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import { times } from 'lodash';
 import React from 'react';
-import { pure } from 'recompact';
+import { withNeverRerender } from '../../hoc';
 import { position } from '../../styles';
 import AddFundsInterstitial from '../AddFundsInterstitial';
 import { FabWrapper } from '../fab';
@@ -30,4 +30,4 @@ const AssetListSkeleton = () => (
   </Column>
 );
 
-export default pure(AssetListSkeleton);
+export default withNeverRerender(AssetListSkeleton);

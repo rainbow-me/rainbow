@@ -32,7 +32,7 @@ const OuterBorder = styled(Centered)`
 `;
 
 const Text = styled(TextElement).attrs({
-  color: colors.blueGreyLighter,
+  color: colors.blueGreyLightest,
   size: 'medium',
   weight: 'medium',
 })`
@@ -41,7 +41,7 @@ const Text = styled(TextElement).attrs({
 `;
 
 const Title = styled(TextElement).attrs({
-  color: colors.blueGreyLighter,
+  color: colors.blueGreyLightest,
   size: 'tiny',
   weight: 'medium',
 })`

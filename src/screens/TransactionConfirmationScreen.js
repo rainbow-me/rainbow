@@ -150,6 +150,7 @@ class TransactionConfirmationScreen extends Component {
       <Masthead>
         <RequestVendorLogoIcon
           dappName={this.props.dappName}
+          showLargeShadow={true}
           size={60}
           style={{ marginBottom: 24 }}
         />

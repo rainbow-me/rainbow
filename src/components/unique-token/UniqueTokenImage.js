@@ -4,7 +4,6 @@ import FastImage from 'react-native-fast-image';
 import {
   compose,
   onlyUpdateForKeys,
-  pure,
   withHandlers,
   withProps,
   withState,
@@ -73,11 +72,8 @@ UniqueTokenImage.defaultProps = {
 const getFallbackTextColor = bg => colors.getTextColorForBackground(bg, FallbackTextColorVariants);
 
 export default compose(
-  pure,
   withState('error', 'handleErrorState', null),
-  withHandlers({
-    onError: ({ handleErrorState }) => (error) => handleErrorState(error),
-  }),
+  withHandlers({ onError: ({ handleErrorState }) => error => handleErrorState(error) }),
   withProps(({ backgroundColor, item }) => ({
     fallbackTextColor: getFallbackTextColor(backgroundColor),
     name: buildUniqueTokenName(item),

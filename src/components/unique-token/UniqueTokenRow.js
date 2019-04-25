@@ -1,9 +1,9 @@
 import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { onlyUpdateForPropTypes } from 'recompact';
+import { shouldUpdate } from 'recompact';
 import { padding } from '../../styles';
-import { deviceUtils } from '../../utils';
+import { deviceUtils, isNewValueForPath } from '../../utils';
 import { Row } from '../layout';
 import UniqueTokenCard from './UniqueTokenCard';
 
@@ -11,13 +11,15 @@ const CardMargin = 15;
 const RowPadding = 19;
 const CardSize = (deviceUtils.dimensions.width - (RowPadding * 2) - CardMargin) / 2;
 
-const removeNullItems = e => !isNil(e);
-
-export const UniqueTokenRowHeight = (isFirstRow, isLastRow) => CardSize
+const getHeight = (isFirstRow, isLastRow) => CardSize
   + CardMargin * (isLastRow ? 1.25 : 1)
   + (isFirstRow ? CardMargin : 0);
 
-const UniqueTokenRow = ({
+const removeNullItems = e => !isNil(e);
+
+const enhance = shouldUpdate((...props) => isNewValueForPath(...props, 'uniqueId'));
+
+const UniqueTokenRow = enhance(({
   data,
   isFirstRow,
   isLastRow,
@@ -42,7 +44,7 @@ const UniqueTokenRow = ({
       />
     ))}
   </Row>
-);
+));
 
 UniqueTokenRow.propTypes = {
   data: PropTypes.array,
@@ -51,4 +53,6 @@ UniqueTokenRow.propTypes = {
   onPress: PropTypes.func,
 };
 
-export default onlyUpdateForPropTypes(UniqueTokenRow);
+UniqueTokenRow.getHeight = getHeight;
+
+export default UniqueTokenRow;
