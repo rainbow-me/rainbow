@@ -61,6 +61,8 @@ const FeeHolder = styled(View)`
   border-color: ${colors.alpha(colors.white, 0.45)};
 `;
 
+export const exchangeModalBorderRadius = 30;
+
 
 const ExchangeRow = styled(View)`
   width:  100%;
@@ -144,7 +146,7 @@ const SettingsModal = ({
       <Container paddingHorizontal={4}>
         <FloatingPanels>
           <GestureBlocker type='top'/>
-          <FloatingPanel>
+          <FloatingPanel radius={exchangeModalBorderRadius}>
             <Column align="center">
               <Icon
                 color={colors.sendScreen.grey}
