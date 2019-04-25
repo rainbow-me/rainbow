@@ -78,24 +78,24 @@ UniqueTokenCoinIcon.propTypes = {
 };
 /* eslint-enable camelcase */
 
-const buildSubtitleForUniqueToken = ({ data }) => ({
-  subtitle: data.name
-    ? `${data.asset_contract.name} #${data.id}`
-    : data.asset_contract.name,
+const buildSubtitleForUniqueToken = ({ item }) => ({
+  subtitle: item.name
+    ? `${item.asset_contract.name} #${item.id}`
+    : item.asset_contract.name,
 });
 
 const enhance = compose(
   withProps(buildSubtitleForUniqueToken),
   shouldUpdate((props, nextProps) => {
-    const itemIdentifier = buildAssetUniqueIdentifier(props.data);
-    const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.data);
+    const itemIdentifier = buildAssetUniqueIdentifier(props.item);
+    const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.item);
 
     return itemIdentifier !== nextItemIdentifier;
   }),
 );
 
 const CollectiblesSendRow = enhance(({
-  data,
+  item,
   isFirstRow,
   onPress,
   subtitle,
@@ -110,7 +110,7 @@ const CollectiblesSendRow = enhance(({
     <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
       <CoinRow
         {...props}
-        {...data}
+        {...item}
         bottomRowRender={BottomRow}
         coinIconRender={UniqueTokenCoinIcon}
         subtitle={subtitle}
@@ -121,7 +121,7 @@ const CollectiblesSendRow = enhance(({
 ));
 
 CollectiblesSendRow.propTypes = {
-  data: PropTypes.object,
+  item: PropTypes.object,
   isFirstRow: PropTypes.bool,
   onPress: PropTypes.func,
   selected: PropTypes.bool,

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Linking, Share } from 'react-native';
+import { InteractionManager, Linking, Share } from 'react-native';
 import {
   compose,
   onlyUpdateForPropTypes,
@@ -29,6 +29,7 @@ const PagerControlsColorVariants = {
 const UniqueTokenExpandedState = ({
   asset,
   imageDimensions,
+  onPressSend,
   onPressShare,
   onPressView,
   panelColor,
@@ -79,6 +80,11 @@ const UniqueTokenExpandedState = ({
           subtitle={subtitle}
           title={title}
         />
+        {asset.isSendable && (<AssetPanelAction
+          icon="send"
+          label="Send to..."
+          onPress={onPressSend}
+        />)}
         <AssetPanelAction
           icon="compass"
           label="View on OpenSea"
@@ -97,6 +103,7 @@ const UniqueTokenExpandedState = ({
 UniqueTokenExpandedState.propTypes = {
   asset: PropTypes.object,
   imageDimensions: dimensionsPropType,
+  onPressSend: PropTypes.func,
   onPressShare: PropTypes.func,
   onPressView: PropTypes.func,
   panelColor: PropTypes.string,
@@ -122,6 +129,13 @@ export default compose(
       : ((panelWidth * imageDimensions.height) / imageDimensions.width),
   })),
   withHandlers({
+    onPressSend: ({ navigation, asset }) => () => {
+      navigation.goBack();
+
+      InteractionManager.runAfterInteractions(() => {
+        navigation.navigate('SendSheet', { asset });
+      });
+    },
     onPressShare: ({ asset: { name, permalink } }) => () => {
       Share.share({
         title: `Share ${name} Info`,

@@ -20,7 +20,7 @@ const removeNullItems = e => !isNil(e);
 const enhance = shouldUpdate((...props) => isNewValueForPath(...props, 'uniqueId'));
 
 const UniqueTokenRow = enhance(({
-  data,
+  item,
   isFirstRow,
   isLastRow,
   onPress,
@@ -34,7 +34,7 @@ const UniqueTokenRow = enhance(({
       width: 100%;
     `}
   >
-    {data.filter(removeNullItems).map((uniqueToken, itemIndex) => (
+    {item.filter(removeNullItems).map((uniqueToken, itemIndex) => (
       <UniqueTokenCard
         item={uniqueToken}
         key={uniqueToken.id}
@@ -47,7 +47,7 @@ const UniqueTokenRow = enhance(({
 ));
 
 UniqueTokenRow.propTypes = {
-  data: PropTypes.array,
+  item: PropTypes.array,
   isFirstRow: PropTypes.bool,
   isLastRow: PropTypes.bool,
   onPress: PropTypes.func,

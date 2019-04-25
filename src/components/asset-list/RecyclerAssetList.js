@@ -240,10 +240,10 @@ export default class RecyclerAssetList extends PureComponent {
     return (type === ViewTypes.COIN_ROW || type === ViewTypes.COIN_ROW_LAST)
       ? renderItem({ item })
       : renderItem({
-        data: item.tokens ? item.tokens : item,
+        item: item.tokens ? item.tokens : item,
         isFirstRow: type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST,
         isLastRow: type === ViewTypes.UNIQUE_TOKEN_ROW_LAST,
-        shouldPrioritizeImageLoading: index < sections[0].data.length + 9,
+        shouldPrioritizeImageLoading: index < sections[0].item.length + 9,
         uniqueId: item.uniqueId,
       });
   };
