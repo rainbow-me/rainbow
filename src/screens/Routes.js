@@ -41,12 +41,12 @@ const SwipeStack = createMaterialTopTabNavigator({
   initialRouteName: 'WalletScreen',
   mode: 'modal',
   springConfig: {
-    damping: 22,
-    mass: 0.6,
+    damping: 16,
+    mass: 0.3,
     overshootClamping: false,
     restDisplacementThreshold: 1,
     restSpeedThreshold: 1,
-    stiffness: 160,
+    stiffness: 140,
 
   },
   swipeDistanceThreshold: 100,
