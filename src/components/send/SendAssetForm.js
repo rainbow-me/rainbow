@@ -63,7 +63,7 @@ const SendAssetForm = ({
       >
     {(selected.isNft) ? (
       <CollectiblesSendRow
-        data={selected}
+        item={selected}
         onPress={onResetAssetSelection}
         selected={true}
       />

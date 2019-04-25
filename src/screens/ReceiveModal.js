@@ -30,7 +30,7 @@ import { colors, padding } from '../styles';
 const QRCodeSize = 180;
 
 const AddressText = styled(Monospace).attrs({
-  color: colors.blueGreyLighter,
+  color: colors.blueGreyLightest,
 })`
   font-size: 13.86;
   line-height: 19;

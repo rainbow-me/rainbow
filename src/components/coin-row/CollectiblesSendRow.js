@@ -1,81 +1,134 @@
-/* eslint-disable react/prop-types */
 import PropTypes from 'prop-types';
-import React from 'react';
-import { View } from 'react-native';
-import { withProps } from 'recompact';
+import React, { Fragment } from 'react';
+import {
+  compose,
+  onlyUpdateForKeys,
+  shouldUpdate,
+  withProps,
+} from 'recompact';
+import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
+import { RequestVendorLogoIcon } from '../coin-icon';
+import Divider from '../Divider';
+import { Centered } from '../layout';
 import { Monospace } from '../text';
+import InnerBorder from '../InnerBorder';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import RequestVendorLogoIcon from '../coin-icon/RequestVendorLogoIcon';
-import Divider from '../Divider';
 
+const dividerHeight = 22;
 const selectedHeight = 78;
 
-const BottomRow = ({ subtitle }) => {
-  return (
-    <Monospace
-      color={colors.alpha(colors.blueGreyDark, 0.6)}
-      size="smedium"
-    >
-      {subtitle}
-    </Monospace>
-  );
-};
+const BottomRow = ({ subtitle }) => (
+  <Monospace
+    color={colors.alpha(colors.blueGreyDark, 0.6)}
+    size="smedium"
+  >
+    {subtitle}
+  </Monospace>
+);
 
 BottomRow.propTypes = {
-  id: PropTypes.string,
+  subtitle: PropTypes.string,
 };
 
 const TopRow = ({ name }) => (
-  <CoinName>
+  <CoinName paddingRight={0}>
     {name}
   </CoinName>
 );
 
 TopRow.propTypes = {
   name: PropTypes.string,
-  selected: PropTypes.bool,
 };
 
-const EnhancedVendorLogo = (props) => (
-  <RequestVendorLogoIcon
-    backgroundColor={props.background}
-    dappName='Balance Manager'
-    imageUrl={{ uri: props.image_preview_url }}
-    {...props}/>
-)
+const enhanceUniqueTokenCoinIcon = onlyUpdateForKeys(['background', 'image_thumbnail_url']);
 
-
-const CollectiblesSendRow = ({
-  data,
-  onPress,
+/* eslint-disable camelcase */
+const UniqueTokenCoinIcon = enhanceUniqueTokenCoinIcon(({
+  asset_contract: { name },
+  background,
+  image_thumbnail_url,
+  shouldPrioritizeImageLoading,
   ...props
 }) => (
-  <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
-    <CoinRow
+  <Centered shouldRasterizeIOS>
+    <RequestVendorLogoIcon
+      backgroundColor={background || colors.lightestGrey}
+      borderRadius={8}
+      dappName={name}
+      imageUrl={image_thumbnail_url}
+      shouldPrioritizeImageLoading={shouldPrioritizeImageLoading}
       {...props}
-      {...data}
-      coinIconRender={EnhancedVendorLogo}
-      bottomRowRender={BottomRow}
-      topRowRender={TopRow}
     />
-  </ButtonPressAnimation>
+    <InnerBorder
+      opacity={0.04}
+      radius={8}
+      style={{ zIndex: 2 }}
+    />
+  </Centered>
+));
+
+UniqueTokenCoinIcon.propTypes = {
+  asset_contract: PropTypes.shape({ name: PropTypes.string }),
+  background: PropTypes.string,
+  image_thumbnail_url: PropTypes.string,
+  shouldPrioritizeImageLoading: PropTypes.bool,
+};
+/* eslint-enable camelcase */
+
+const buildSubtitleForUniqueToken = ({ item }) => ({
+  subtitle: item.name
+    ? `${item.asset_contract.name} #${item.id}`
+    : item.asset_contract.name,
+});
+
+const enhance = compose(
+  withProps(buildSubtitleForUniqueToken),
+  shouldUpdate((props, nextProps) => {
+    const itemIdentifier = buildAssetUniqueIdentifier(props.item);
+    const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.item);
+
+    return itemIdentifier !== nextItemIdentifier;
+  }),
 );
+
+const CollectiblesSendRow = enhance(({
+  item,
+  isFirstRow,
+  onPress,
+  subtitle,
+  ...props
+}) => (
+  <Fragment>
+    {isFirstRow && (
+      <Centered style={{ height: dividerHeight }}>
+        <Divider color={colors.alpha(colors.blueGreyLigter, 0.05)} />
+      </Centered>
+    )}
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+      <CoinRow
+        {...props}
+        {...item}
+        bottomRowRender={BottomRow}
+        coinIconRender={UniqueTokenCoinIcon}
+        subtitle={subtitle}
+        topRowRender={TopRow}
+      />
+    </ButtonPressAnimation>
+  </Fragment>
+));
 
 CollectiblesSendRow.propTypes = {
   item: PropTypes.object,
+  isFirstRow: PropTypes.bool,
   onPress: PropTypes.func,
   selected: PropTypes.bool,
+  subtitle: PropTypes.string,
 };
 
+CollectiblesSendRow.dividerHeight = dividerHeight;
 CollectiblesSendRow.selectedHeight = selectedHeight;
 
-export const DividerHeight = 20;
-
-export default withProps(({ data: asset }) => ({
-  subtitle: asset.name
-    ? `${asset.asset_contract.name} #${asset.id}`
-    : asset.asset_contract.name,
-}))(CollectiblesSendRow);
+export default CollectiblesSendRow;

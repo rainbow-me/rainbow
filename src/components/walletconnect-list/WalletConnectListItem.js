@@ -66,7 +66,7 @@ const WalletConnectListItem = enhance(({
         <TruncatedText letterSpacing="tight" size="lmedium" weight="medium">
           {dappName || 'Unknown connection'}
         </TruncatedText>
-        <Text color="blueGreyLighter" size="medium">
+        <Text color="blueGreyLightest" size="medium">
           Expires in {distanceInWordsStrict(Date.now(), expires)}
         </Text>
       </ColumnWithMargins>

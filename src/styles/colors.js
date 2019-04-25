@@ -8,8 +8,9 @@ const base = {
   blueActive: '#5a71cc', // '90, 113, 204'
   blueGreyDark: '#3C4252', // '60, 66, 82'
   blueGreyDarker: '#0F0F11', // '15, 15, 17'
-  blueGreyLight: '#A1A5AC', // '102, 106, 115'
-  blueGreyLighter: '#888D96', // '136, 141, 150'
+  blueGreyLight: '#A1A5AC',
+  blueGreyLightest: '#888D96', // '136, 141, 150'
+  blueGreyLigter: '#666A73', // '102, 106, 115'
   blueGreyMedium: '#636875', // '99, 104, 117'
   blueGreyMediumLight: '#7b7f8a', // '123, 127, 138'
   blueHover: '#6c87f5', // '108, 135, 245'
@@ -88,6 +89,11 @@ const getTextColorForBackground = (targetColor, textColors = {}) => {
   return isColorLight(targetColor) ? dark : light;
 };
 
+const getFallbackTextColor = bg => colors.getTextColorForBackground(bg, {
+  dark: colors.blueGreyLight,
+  light: colors.white,
+});
+
 const transparent = {
   blueGreyDarkTransparent: buildRgba(base.blueGreyDark, 0.6),
   purpleTransparent: buildRgba(base.purple, 0.7), // '50, 50, 93'
@@ -97,6 +103,7 @@ const transparent = {
 const colors = {
   alpha: buildRgba,
   assetIcon,
+  getFallbackTextColor,
   getTextColorForBackground,
   isColorLight,
   sendScreen,
