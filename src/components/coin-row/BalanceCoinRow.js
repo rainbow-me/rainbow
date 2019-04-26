@@ -2,6 +2,7 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import { compose, shouldUpdate, withHandlers } from 'recompact';
+import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { withAccountSettings } from '../../hoc';
 import { colors } from '../../styles';
 import { isNewValueForPath } from '../../utils';
@@ -17,6 +18,7 @@ const formatPercentageString = percentString => (
     ? percentString.split('-').join('- ').split('%').join(' %')
     : '-'
 );
+
 const BottomRow = ({ balance, native }) => {
   const percentChange = get(native, 'change.display');
   const percentageChangeDisplay = formatPercentageString(percentChange);
@@ -60,11 +62,7 @@ TopRow.propTypes = {
   nativeCurrencySymbol: PropTypes.string,
 };
 
-const BalanceCoinRow = ({
-  item,
-  onPress,
-  ...props
-}) => (
+const BalanceCoinRow = ({ item, onPress, ...props }) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
     <CoinRow
       {...item}
@@ -83,18 +81,20 @@ BalanceCoinRow.propTypes = {
 
 export default compose(
   withAccountSettings,
-  shouldUpdate((...props) => {
-    const isNewNativeCurrency = isNewValueForPath(...props, 'nativeCurrency');
-    const isNewNativePrice = isNewValueForPath(...props, 'item.native.price.display');
-    const isNewTokenBalance = isNewValueForPath(...props, 'item.balance.amount');
-
-    return isNewNativeCurrency || isNewNativePrice || isNewTokenBalance;
-  }),
   withHandlers({
     onPress: ({ item, onPress }) => () => {
       if (onPress) {
         onPress(item);
       }
     },
+  }),
+  shouldUpdate((props, nextProps) => {
+    const itemIdentifier = buildAssetUniqueIdentifier(props.item);
+    const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.item);
+
+    const isNewItem = itemIdentifier !== nextItemIdentifier;
+    const isNewNativeCurrency = isNewValueForPath(props, nextProps, 'nativeCurrency');
+
+    return isNewItem || isNewNativeCurrency;
   }),
 )(BalanceCoinRow);

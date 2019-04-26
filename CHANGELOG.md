@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 ### Added
+* Support for sending NFTs
+* Support for sending to ENS addresses
 * Autorefresh for unique tokens
 
 ### Changed

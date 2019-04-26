@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, pure, withHandlers } from 'recompact';
+import { compose, shouldUpdate, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
+import { isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import InnerBorder from '../InnerBorder';
 import { Centered } from '../layout';
@@ -69,7 +70,7 @@ UniqueTokenCard.propTypes = {
 };
 
 export default compose(
-  pure,
+  shouldUpdate((...props) => isNewValueForPath(...props, 'uniqueId')),
   withHandlers({
     onPress: ({ item, onPress }) => () => {
       if (onPress) {

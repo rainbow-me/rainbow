@@ -1,46 +1,39 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, onlyUpdateForKeys } from 'recompact';
-import { withSafeAreaViewInsetValues } from '../../hoc';
+import { onlyUpdateForKeys } from 'recompact';
+import { safeAreaInsetValues } from '../../utils';
 import { FabWrapper, FloatingActionButton } from '../fab';
 import { ListFooter } from '../list';
 import AssetListSkeleton from './AssetListSkeleton';
-import List from './RecyclerAssetList';
+import RecyclerAssetList from './RecyclerAssetList';
 
-const buildListBottomPadding = (safeAreaInset) => {
-  const fabSizeWithPadding = FloatingActionButton.size + (FabWrapper.bottomPosition * 2);
-  return (safeAreaInset.bottom + fabSizeWithPadding) - ListFooter.height;
-};
+const FabSizeWithPadding = FloatingActionButton.size + (FabWrapper.bottomPosition * 2);
+const PaddingBottom = (safeAreaInsetValues.bottom + FabSizeWithPadding) - ListFooter.height;
 
 const AssetList = ({
   fetchData,
   hideHeader,
   isEmpty,
-  safeAreaInset,
   sections,
 }) => (
-  (isEmpty) ? (
-    <AssetListSkeleton />
-  ) : (
-    <List
-      fetchData={fetchData}
-      enablePullToRefresh
-      sections={sections}
-      hideHeader={hideHeader}
-      paddingBottom={buildListBottomPadding(safeAreaInset)}
-    />
-  )
+  isEmpty
+    ? <AssetListSkeleton />
+    : (
+      <RecyclerAssetList
+        enablePullToRefresh
+        fetchData={fetchData}
+        hideHeader={hideHeader}
+        paddingBottom={PaddingBottom}
+        sections={sections}
+      />
+    )
 );
 
 AssetList.propTypes = {
   fetchData: PropTypes.func.isRequired,
   hideHeader: PropTypes.bool,
   isEmpty: PropTypes.bool,
-  safeAreaInset: PropTypes.object,
   sections: PropTypes.arrayOf(PropTypes.object),
 };
 
-export default compose(
-  withSafeAreaViewInsetValues,
-  onlyUpdateForKeys(['isEmpty', 'sections']),
-)(AssetList);
+export default onlyUpdateForKeys(['isEmpty', 'sections'])(AssetList);

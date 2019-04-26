@@ -67,7 +67,7 @@ class SendSheet extends Component {
     sendUpdateNativeAmount: PropTypes.func,
     sendUpdateRecipient: PropTypes.func,
     sendUpdateSelected: PropTypes.func,
-    uniqueTokens: PropTypes.arrayOf(PropTypes.object),
+    sendableUniqueTokens: PropTypes.arrayOf(PropTypes.object),
   }
 
   static defaultProps = {
@@ -195,7 +195,7 @@ class SendSheet extends Component {
       recipient,
       selected,
       sendUpdateRecipient,
-      uniqueTokens,
+      sendableUniqueTokens,
       ...props
     } = this.props;
     const showEmptyState = !isValidAddress;
@@ -217,7 +217,7 @@ class SendSheet extends Component {
                 allAssets={allAssets}
                 fetchData={fetchData}
                 onSelectAsset={this.onSelectAsset}
-                uniquetokens={uniqueTokens}
+                uniqueTokens={sendableUniqueTokens}
               />
             )}
             {showAssetForm && (
