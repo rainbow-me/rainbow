@@ -35,8 +35,8 @@ const SendHeader = ({ onChangeAddressInput, recipient }) => (
     </AddressInputContainer>
     <Divider
       color={colors.alpha(colors.blueGreyLight, 0.05)}
-      inset={false}
       flex={0}
+      inset={false}
     />
   </Fragment>
 );

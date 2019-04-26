@@ -830,9 +830,9 @@
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
 
-"@rainbow-me/rainbow-common@^0.7.6":
-  version "0.7.6"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.7.6.tgz#119d2ba6211f4b1e5e3edfb841343f59fe42bd25"
+"@rainbow-me/rainbow-common@^0.8.1":
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.8.1.tgz#05730d79a60bc6d5df36c2b79bf2bc3b71a68807"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -859,39 +859,39 @@
   dependencies:
     prop-types "^15.5.10"
 
-"@react-native-community/cli-platform-android@^2.0.0-alpha.9":
-  version "2.0.0-alpha.9"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.0.0-alpha.9.tgz#a97ac08c58698e11ffe1a74858e7ed06036acbab"
+"@react-native-community/cli-platform-android@^2.0.0-alpha.15":
+  version "2.0.0-alpha.15"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.0.0-alpha.15.tgz#5ab64c68ee828c30e866923add5e1bab81c9102a"
   dependencies:
-    "@react-native-community/cli-tools" "^2.0.0-alpha.8"
+    "@react-native-community/cli-tools" "^2.0.0-alpha.14"
     logkitty "^0.4.0"
     node-fetch "^2.2.0"
     slash "^2.0.0"
     xmldoc "^0.4.0"
 
-"@react-native-community/cli-platform-ios@^2.0.0-alpha.9":
-  version "2.0.0-alpha.9"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.0.0-alpha.9.tgz#ac8319b5c69aca6337e643f1d0fd8112ef95486e"
+"@react-native-community/cli-platform-ios@^2.0.0-alpha.15":
+  version "2.0.0-alpha.15"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.0.0-alpha.15.tgz#959190650a1fafeae9bbabcc422329374918b466"
   dependencies:
-    "@react-native-community/cli-tools" "^2.0.0-alpha.8"
+    "@react-native-community/cli-tools" "^2.0.0-alpha.14"
     chalk "^1.1.1"
     xcode "^2.0.0"
 
-"@react-native-community/cli-tools@^2.0.0-alpha.8":
-  version "2.0.0-alpha.14"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.0.0-alpha.14.tgz#c625fcc9d03d77428c242801510280ce88ef0e4b"
+"@react-native-community/cli-tools@^2.0.0-alpha.14":
+  version "2.0.0-alpha.17"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.0.0-alpha.17.tgz#b568efe3b88020433afe33fb1f0a63d239d81758"
   dependencies:
     chalk "^1.1.1"
     lodash "^4.17.5"
     mime "^1.3.4"
 
-"@react-native-community/cli@2.0.0-alpha.11":
-  version "2.0.0-alpha.11"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.0.0-alpha.11.tgz#d65d577746d8656c98265c9f49ff1a0824daa99d"
+"@react-native-community/cli@2.0.0-alpha.16":
+  version "2.0.0-alpha.16"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.0.0-alpha.16.tgz#3a69e3dcbc7914025784abd0c53a86248a14aa6d"
   dependencies:
-    "@react-native-community/cli-platform-android" "^2.0.0-alpha.9"
-    "@react-native-community/cli-platform-ios" "^2.0.0-alpha.9"
-    "@react-native-community/cli-tools" "^2.0.0-alpha.8"
+    "@react-native-community/cli-platform-android" "^2.0.0-alpha.15"
+    "@react-native-community/cli-platform-ios" "^2.0.0-alpha.15"
+    "@react-native-community/cli-tools" "^2.0.0-alpha.14"
     chalk "^1.1.1"
     commander "^2.19.0"
     compression "^1.7.1"
@@ -981,9 +981,9 @@
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-2.0.4.tgz#d0d7f7dc77adc9de8621351129816bc0dcacf457"
 
-"@react-navigation/core@~3.4.0":
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-3.4.0.tgz#776845f9d4f8b2b9cb99c5d2d4433ebcef290d92"
+"@react-navigation/core@~3.4.1":
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-3.4.1.tgz#8c7e0e53cfb8ccaf87afb76a2733f5e5fde20cd8"
   dependencies:
     hoist-non-react-statics "^3.3.0"
     path-to-regexp "^1.7.0"
@@ -2430,8 +2430,8 @@ can-promise@0.0.1:
     window-or-global "^1.0.1"
 
 caniuse-lite@^1.0.30000844, caniuse-lite@^1.0.30000957, caniuse-lite@^1.0.30000960:
-  version "1.0.30000962"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000962.tgz#6c10c3ab304b89bea905e66adf98c0905088ee44"
+  version "1.0.30000963"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000963.tgz#5be481d5292f22aff5ee0db4a6c049b65b5798b1"
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -2689,10 +2689,10 @@ component-emitter@^1.2.0, component-emitter@^1.2.1:
   resolved "https://registry.yarnpkg.com/component-emitter/-/component-emitter-1.3.0.tgz#16e4070fba8ae29b679f2215853ee181ab2eabc0"
 
 compressible@~2.0.16:
-  version "2.0.16"
-  resolved "https://registry.yarnpkg.com/compressible/-/compressible-2.0.16.tgz#a49bf9858f3821b64ce1be0296afc7380466a77f"
+  version "2.0.17"
+  resolved "https://registry.yarnpkg.com/compressible/-/compressible-2.0.17.tgz#6e8c108a16ad58384a977f3a482ca20bff2f38c1"
   dependencies:
-    mime-db ">= 1.38.0 < 2"
+    mime-db ">= 1.40.0 < 2"
 
 compression@^1.7.1:
   version "1.7.4"
@@ -3182,8 +3182,8 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
 
 electron-to-chromium@^1.3.124, electron-to-chromium@^1.3.47:
-  version "1.3.125"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.125.tgz#dbde0e95e64ebe322db0eca764d951f885a5aff2"
+  version "1.3.127"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.127.tgz#9b34d3d63ee0f3747967205b953b25fe7feb0e10"
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -3394,9 +3394,15 @@ eslint-plugin-react-native-globals@^0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/eslint-plugin-react-native-globals/-/eslint-plugin-react-native-globals-0.1.2.tgz#ee1348bc2ceb912303ce6bdbd22e2f045ea86ea2"
 
-eslint-plugin-react-native@3.6.0, eslint-plugin-react-native@^3.5.0:
+eslint-plugin-react-native@3.6.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-react-native/-/eslint-plugin-react-native-3.6.0.tgz#7cad3b7c6159df6d26fe3252c6c5417a17f27b4b"
+  dependencies:
+    eslint-plugin-react-native-globals "^0.1.1"
+
+eslint-plugin-react-native@^3.5.0:
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react-native/-/eslint-plugin-react-native-3.7.0.tgz#7e2cc1f3cf24919c4c0ea7fac13301e7444e105f"
   dependencies:
     eslint-plugin-react-native-globals "^0.1.1"
 
@@ -6377,7 +6383,7 @@ miller-rabin@^4.0.0:
     bn.js "^4.0.0"
     brorand "^1.0.1"
 
-mime-db@1.40.0, "mime-db@>= 1.38.0 < 2":
+mime-db@1.40.0, "mime-db@>= 1.40.0 < 2":
   version "1.40.0"
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.40.0.tgz#a65057e998db090f732a68f6c276d387d4126c32"
 
@@ -6540,8 +6546,8 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
 
 needle@^2.2.1:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/needle/-/needle-2.3.0.tgz#ce3fea21197267bacb310705a7bbe24f2a3a3492"
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/needle/-/needle-2.3.1.tgz#d272f2f4034afb9c4c9ab1379aabc17fc85c9388"
   dependencies:
     debug "^4.1.0"
     iconv-lite "^0.4.4"
@@ -6621,8 +6627,8 @@ node-pre-gyp@^0.12.0:
     tar "^4"
 
 node-releases@^1.1.14:
-  version "1.1.16"
-  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.16.tgz#efcb6615b0e8dc454bfb03bc025aad406ea6dddf"
+  version "1.1.17"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.17.tgz#71ea4631f0a97d5cd4f65f7d04ecf9072eac711a"
   dependencies:
     semver "^5.3.0"
 
@@ -7597,7 +7603,7 @@ react-native-actionsheet@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/react-native-actionsheet/-/react-native-actionsheet-2.4.2.tgz#6a00dd51a75ef2c8974312130e405af73191500f"
 
-react-native-camera@^2.3.0:
+react-native-camera@^2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-2.6.0.tgz#bf97b0fc68aa8732d815e9bbd92e63529f51d598"
   dependencies:
@@ -7636,8 +7642,8 @@ react-native-crypto@^2.1.2:
     public-encrypt "^4.0.0"
 
 react-native-device-info@^1.4.3:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-1.5.0.tgz#09e17c8199ac51082d72193f17eb445e9c83e68d"
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-1.5.1.tgz#46810a42724089c7d4a0900974a1562bce057e73"
 
 react-native-emoji@^1.3.1:
   version "1.6.0"
@@ -7645,7 +7651,7 @@ react-native-emoji@^1.3.1:
   dependencies:
     node-emoji "1.10.0"
 
-react-native-fast-image@^5.2.0:
+react-native-fast-image@^5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-5.3.0.tgz#136e045bc6e95e75b03b89a82eefecb984737fda"
 
@@ -7888,10 +7894,10 @@ react-navigation-tabs@1.1.2:
     react-native-tab-view "^1.3.4"
 
 react-navigation@^3.8.1:
-  version "3.9.0"
-  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-3.9.0.tgz#f36877226a6a5ded5c8f99d14dfaf5a073469826"
+  version "3.9.1"
+  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-3.9.1.tgz#2b2545f5c11905b534d96996c658d0691bc5f11f"
   dependencies:
-    "@react-navigation/core" "~3.4.0"
+    "@react-navigation/core" "~3.4.1"
     "@react-navigation/native" "~3.4.0"
     react-navigation-drawer "1.2.1"
     react-navigation-stack "1.3.0"
@@ -7931,7 +7937,7 @@ react-spring@^5.7.2:
   dependencies:
     "@babel/runtime" "^7.0.0"
 
-react-style-proptype@^3.2.1:
+react-style-proptype@^3.2.2:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/react-style-proptype/-/react-style-proptype-3.2.2.tgz#d8e998e62ce79ec35b087252b90f19f1c33968a0"
   dependencies:
@@ -9396,8 +9402,8 @@ uglify-es@^3.1.9:
     source-map "~0.6.1"
 
 uglify-js@^3.1.4:
-  version "3.5.6"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.5.6.tgz#8a5f8a06ee7415ac1fa302f4623bc7344b553da4"
+  version "3.5.8"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.5.8.tgz#496f62a8c23c3e6791563acbc04908edaca4025f"
   dependencies:
     commander "~2.20.0"
     source-map "~0.6.1"

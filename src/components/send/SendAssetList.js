@@ -1,37 +1,63 @@
+import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
-import lang from 'i18n-js';
+import { onlyUpdateForKeys, shouldUpdate } from 'recompact';
+import { buildAssetUniqueIdentifier } from '../../helpers/assets';
+import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
-import AssetList from '../asset-list/RecyclerAssetList';
-import { SendCoinRow } from '../coin-row';
-import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
+import { RecyclerAssetList } from '../asset-list';
+import { CoinRow, CollectiblesSendRow, SendCoinRow } from '../coin-row';
+import { ListFooter } from '../list';
 
-const BalancesRenderItem = ({
-  index,
-  item: { onSelectAsset, symbol, ...item },
-}) => (
+const CollectiblesRenderItem = ({ item: { onSelectAsset, ...item } }) => (
+  <CollectiblesSendRow
+    item={item}
+    onPress={onSelectAsset(item)}
+  />
+);
+
+const BalancesRenderItem = ({ item: { onSelectAsset, symbol, ...item } }) => (
   <SendCoinRow
-    {...item}
+    item={item}
     onPress={onSelectAsset(symbol)}
     symbol={symbol}
   />
 );
 
-const collectiblesRenderItem = CollectiblesSendRow
-
-BalancesRenderItem.propTypes = {
-  index: PropTypes.number,
+CollectiblesRenderItem.propTypes = {
   item: PropTypes.shape({
-    symbol: PropTypes.string,
     onSelectAsset: PropTypes.func
   }),
 };
+
+BalancesRenderItem.propTypes = {
+  item: PropTypes.shape({
+    onSelectAsset: PropTypes.func,
+    symbol: PropTypes.string,
+  }),
+};
+
+const enhanceRenderItem = shouldUpdate((props, nextProps) => {
+  const { item } = props;
+  const { item: nextItem } = nextProps;
+
+  const itemIdentifier = buildAssetUniqueIdentifier(item);
+  const nextItemIdentifier = buildAssetUniqueIdentifier(nextItem);
+
+  return itemIdentifier !== nextItemIdentifier;
+});
+
+const TokenItem = React.memo(enhanceRenderItem(BalancesRenderItem));
+const UniqueTokenItem = React.memo(enhanceRenderItem(CollectiblesRenderItem));
+
+const balancesRenderItem = item => <TokenItem {...item} />;
+const collectiblesRenderItem = item => <UniqueTokenItem {...item} />;
 
 const SendAssetList = ({
   allAssets,
   fetchData,
   onSelectAsset,
-  uniquetokens: uniqueTokens,
+  uniqueTokens,
 }) => {
   const sections = [
     {
@@ -40,7 +66,7 @@ const SendAssetList = ({
       perData: {
         onSelectAsset,
       },
-      renderItem: BalancesRenderItem,
+      renderItem: balancesRenderItem,
     },
     {
       collectibles: true,
@@ -58,9 +84,11 @@ const SendAssetList = ({
 
   return (
     <FlyInAnimation style={{ flex: 1, width: '100%' }}>
-      <AssetList
+      <RecyclerAssetList
         fetchData={fetchData}
         hideHeader
+        paddingBottom={CoinRow.height + ListFooter.height}
+        renderAheadOffset={deviceUtils.dimensions.height * 1.5}
         sections={sections}
       />
     </FlyInAnimation>
@@ -71,7 +99,7 @@ SendAssetList.propTypes = {
   allAssets: PropTypes.array,
   fetchData: PropTypes.func,
   onSelectAsset: PropTypes.func,
-  uniquetokens: PropTypes.array,
+  uniqueTokens: PropTypes.array,
 };
 
-export default SendAssetList;
+export default onlyUpdateForKeys(['allAssets', 'uniqueTokens'])(SendAssetList);

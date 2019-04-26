@@ -59,9 +59,6 @@ const WalletConnectListItem = enhance(({
         <TruncatedText letterSpacing="tight" size="lmedium" weight="medium">
           {dappName || 'Unknown connection'}
         </TruncatedText>
-        <Text color="blueGreyLighter" size="medium">
-          {dappUrl}
-        </Text>
       </ColumnWithMargins>
     </Row>
     <Centered>
