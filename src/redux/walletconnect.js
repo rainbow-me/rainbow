@@ -29,8 +29,8 @@ const previouslyApprovedDapps = [
 
 const getNativeOptions = async () => {
 	// TODO use lang from settings
-  const language = DEVICE_LANGUAGE.replace(/[-_](\w?)+/gi, '').toLowerCase();
-  const token = await getFCMToken();
+  //const language = DEVICE_LANGUAGE.replace(/[-_](\w?)+/gi, '').toLowerCase();
+  //const token = await getFCMToken();
 
   const nativeOptions = {
     clientMeta: {
@@ -40,6 +40,7 @@ const getNativeOptions = async () => {
       name: '🌈 Rainbow',
       ssl: true,
     },
+    /*
     push: {
       url: 'https://us-central1-rainbow-me.cloudfunctions.net',
       type: 'fcm',
@@ -47,6 +48,7 @@ const getNativeOptions = async () => {
       peerMeta: true,
       language,
     },
+    */
   };
 
   return nativeOptions;
@@ -66,7 +68,6 @@ export const walletConnectOnSessionRequest = (uri) => async (dispatch) => {
         const { peerId, peerMeta } = payload.params[0];
         console.log('on("session_request")', peerId, walletConnector);
         dispatch(setPendingRequest(peerId, walletConnector));
-        console.log('subscribed to session request');
         //await commonStorage.saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
 
         if (previouslyApprovedDapps.includes(peerMeta.url)) {
@@ -177,7 +178,6 @@ export const walletConnectApproveSession = (peerId) => (dispatch, getState) => {
 
   console.log('wallet connect approve session', chainId, accountAddress);
   const walletConnector = dispatch(getPendingRequest(peerId));
-  console.log('wallet connect approve session wallet connector', walletConnector);
   walletConnector.approveSession({ chainId, accounts: [accountAddress] });
 
   dispatch(removePendingRequest(peerId));
@@ -244,9 +244,9 @@ export const walletConnectSendStatus = (peerId, requestId, result) => async (dis
   if (walletConnector) {
     try {
       if (result) {
-        await walletConnector.approveCallRequest(requestId, { result });
+        await walletConnector.approveRequest({ id: requestId, result });
       } else {
-        await walletConnector.rejectCallRequest(requestId);
+        await walletConnector.rejectRequest({ id: requestId });
       }
     } catch (error) {
       Alert.alert('Failed to send request status to WalletConnect.');
