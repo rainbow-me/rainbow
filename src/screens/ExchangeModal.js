@@ -41,6 +41,10 @@ const DollarRow = styled(Row)`
   justify-content: space-between;
 `;
 
+const MonoTextInput = styled(TextInput)`
+  font-family: SFMono-Regular;
+`;
+
 const ConfirmExchangeButton = styled(Button)`
   ${shadow.build(0, 6, 10, colors.purple, 0.14)}
   width:  100%;
@@ -92,7 +96,9 @@ const TopRow = ({
   <Row align="center" justify="space-between">
     <FlexItem flex={1}>
       <CoinName
-        component={symbol ? TextInput : Text}
+        component={symbol ? MonoTextInput : Text}
+        keyboardAppearance="dark"
+        familyName="SFMono"
         keyboardType="decimal-pad"
         value={amount}
         onChangeText={changeAmount}
