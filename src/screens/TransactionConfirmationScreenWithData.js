@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
-import { get, isNil } from 'lodash';
+import { get, isNil, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import { estimateGas, getTransactionCount, toHex } from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
@@ -52,9 +52,10 @@ class TransactionConfirmationScreenWithData extends Component {
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(this.props.transactionCountNonce, web3TxnCount);
     const nonce = ethers.utils.hexlify(maxTxnCount);
-    const txPayloadLatestNonce = { ...txPayload, nonce };
+    let txPayloadLatestNonce = { ...txPayload, nonce };
     const symbol = get(transactionDetails, 'transactionDisplayDetails.payload.asset.symbol', 'unknown');
     const address = get(transactionDetails, 'transactionDisplayDetails.payload.asset.address', '');
+    txPayloadLatestNonce = omit(txPayloadLatestNonce, 'from');
     const transactionHash = await sendTransaction({
       transaction: txPayloadLatestNonce,
     });
