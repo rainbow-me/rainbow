@@ -18,7 +18,6 @@ const mapStateToProps = ({ walletconnect: { walletConnectors } }) => ({ walletCo
 const walletConnectorsSelector = state => state.walletConnectors;
 
 const sortWalletConnectors = (walletConnectors) => {
-  console.log('walletConnectors', walletConnectors);
   const sortedWalletConnectors = sortList(Object.values(walletConnectors), 'peerMeta.name');
   const sortedWalletConnectorsByDappName = groupBy(sortedWalletConnectors, 'peerMeta.url');
   const dappWalletConnector = mapValues(sortedWalletConnectorsByDappName, (connectors) => {
