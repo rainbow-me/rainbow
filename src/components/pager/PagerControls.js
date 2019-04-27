@@ -1,10 +1,11 @@
 import { times } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { hoistStatics, onlyUpdateForPropTypes } from 'recompact';
+import { View } from 'react-primitives';
+import { onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
-import { Centered, Column, Row } from '../layout';
-import { borders, colors, fonts, padding, position, shadow } from '../../styles';
+import { Centered } from '../layout';
+import { borders, colors, padding } from '../../styles';
 
 const PagerPadding = 9;
 
@@ -15,12 +16,9 @@ const Container = styled(Centered)`
   right: 0;
 `;
 
-const PagerItem = styled.View`
-  ${({ size }) => borders.buildCircle(size)};
-  background-color: ${({ color }) => color};
-`;
+const enhance = onlyUpdateForKeys(['selectedIndex']);
 
-const PagerControls = ({
+const PagerControls = enhance(({
   color,
   length,
   selectedIndex,
@@ -29,18 +27,18 @@ const PagerControls = ({
 }) => (
   <Container {...props}>
     {times(length, index => (
-      <PagerItem
-        color={color}
+      <View
         key={index}
-        size={size}
         style={{
+          ...borders.buildCircleAsObject(size),
+          backgroundColor: color,
           marginRight: (index < length - 1) ? PagerPadding : 0,
           opacity: (index === selectedIndex) ? 1 : 0.3,
         }}
       />
     ))}
   </Container>
-);
+));
 
 PagerControls.propTypes = {
   color: PropTypes.string,
@@ -56,4 +54,4 @@ PagerControls.defaultProps = {
 
 PagerControls.padding = PagerPadding;
 
-export default hoistStatics(onlyUpdateForPropTypes)(PagerControls);
+export default PagerControls;
