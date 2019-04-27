@@ -53,26 +53,34 @@ export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => 
   return { nativeAmount, nativeAmountDisplay };
 };
 
+const getTimestampFromPayload = payload => parseInt(payload.id.toString().slice(0, -3));
+
 const getRequestDisplayDetails = (payload, assets, prices, nativeCurrency) => {
+  const timestampInMs = getTimestampFromPayload(payload);
   if (payload.method === 'eth_sendTransaction') {
     const transaction = get(payload, 'params[0]', null);
-    return getTransactionDisplayDetails(transaction, assets, prices, nativeCurrency);
+    return getTransactionDisplayDetails(
+      transaction,
+      assets,
+      prices,
+      nativeCurrency,
+      timestampInMs,
+    );
   }
   if (payload.method === 'eth_sign' || payload.method === 'personal_sign') {
     const message = get(payload, 'params[1]');
-    return getMessageDisplayDetails(message);
+    return getMessageDisplayDetails(message, timestampInMs);
   }
   if (payload.method === 'eth_signTypedData'
     || payload.method === 'eth_signTypedData_v3') {
     const request = get(payload, 'params[1]', null);
     const jsonRequest = JSON.stringify(request.message);
-    return getTypedDataDisplayDetails(jsonRequest);
+    return getTypedDataDisplayDetails(jsonRequest, timestampInMs);
   }
   return null;
 };
 
-const getTypedDataDisplayDetails = (request) => {
-  const timestampInMs = Date.now();
+const getTypedDataDisplayDetails = (request, timestampInMs) => {
   return {
     payload: request,
     timestampInMs,
@@ -80,8 +88,7 @@ const getTypedDataDisplayDetails = (request) => {
   };
 };
 
-const getMessageDisplayDetails = (message) => {
-  const timestampInMs = Date.now();
+const getMessageDisplayDetails = (message, timestampInMs) => {
   return {
     payload: message,
     timestampInMs,
@@ -89,9 +96,8 @@ const getMessageDisplayDetails = (message) => {
   };
 };
 
-const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrency) => {
+const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrency, timestampInMs) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
-  const timestampInMs = Date.now();
   if (transaction.data === '0x') {
     const value = fromWei(convertHexToString(transaction.value));
     const { nativeAmount, nativeAmountDisplay } = getNativeAmount(prices, nativeCurrency, value, 'ETH');

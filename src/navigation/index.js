@@ -33,12 +33,9 @@ function getActiveRouteName(navigationState) {
  * @param  {Object} action      The navigation action to run.
  */
 function handleAction(action) {
-  console.log('handleAction _navigator', _navigator);
   if (!_navigator) return;
 
   action = StackActions.push(action);
-  console.log('handleAction action', action);
-  console.log('handleAction isPaused', isPaused);
   if (isPaused) {
     queuedNavigationActions.push(action);
   } else {
