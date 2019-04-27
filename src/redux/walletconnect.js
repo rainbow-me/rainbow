@@ -78,7 +78,6 @@ export const walletConnectOnSessionRequest = (uri) => async (dispatch) => {
         }
       });
     } catch (error) {
-      console.log(error);
       Alert.alert(lang.t('wallet.wallet_connect.error'));
     }
   } catch (error) {
@@ -119,7 +118,6 @@ export const walletConnectInitAllConnectors = () => async dispatch => {
 
 export const setPendingRequest = (peerId, walletConnector) => (dispatch, getState) => {
   const { pendingRequests } = getState().walletconnect;
-  console.log('setPendingRequest peerId', peerId);
   const updatedPendingRequests = {
     ...pendingRequests,
     [peerId]: walletConnector,
@@ -128,7 +126,6 @@ export const setPendingRequest = (peerId, walletConnector) => (dispatch, getStat
 };
 
 export const getPendingRequest = (peerId) => (dispatch, getState) => {
-  console.log('getPendingRequest peerId', peerId);
   const { pendingRequests } = getState().walletconnect;
   return pendingRequests[peerId];
 };
@@ -136,7 +133,6 @@ export const getPendingRequest = (peerId) => (dispatch, getState) => {
 export const removePendingRequest = (peerId) => (dispatch, getState) => {
   const { pendingRequests } = getState().walletconnect;
   const updatedPendingRequests = pendingRequests;
-  console.log('removePendingRequest peerId', peerId);
   if (updatedPendingRequests[peerId]) {
     delete updatedPendingRequests[peerId];
   }
@@ -145,8 +141,6 @@ export const removePendingRequest = (peerId) => (dispatch, getState) => {
 
 export const setWalletConnector = (walletConnector) => (dispatch, getState) => {
   const { walletConnectors } = getState().walletconnect;
-  console.log('setWalletConnector handshakeTopic', walletConnector.handshakeTopic);
-  console.log('setWalletConnector peerId', walletConnector.peerId);
   const updatedWalletConnectors = {
     ...walletConnectors,
     [walletConnector.peerId]: walletConnector,
@@ -156,7 +150,6 @@ export const setWalletConnector = (walletConnector) => (dispatch, getState) => {
 
 export const getWalletConnector = (peerId) => (dispatch, getState) => {
   const { walletConnectors } = getState().walletconnect;
-  console.log('setWalletConnector peerId', peerId);
   const walletConnector = walletConnectors[peerId];
   return walletConnector;
 };
@@ -164,7 +157,6 @@ export const getWalletConnector = (peerId) => (dispatch, getState) => {
 export const removeWalletConnector = (peerId) => (dispatch, getState) => {
   const { walletConnectors } = getState().walletconnect;
   const updatedWalletConnectors = walletConnectors;
-  console.log('removeWalletConnector peerId', peerId);
   if (updatedWalletConnectors[peerId]) {
     delete updatedWalletConnectors[peerId];
   }
@@ -244,7 +236,7 @@ export const walletConnectSendStatus = (peerId, requestId, result) => async (dis
       if (result) {
         await walletConnector.approveRequest({ id: requestId, result });
       } else {
-        await walletConnector.rejectRequest({ id: requestId });
+        await walletConnector.rejectRequest({ id: requestId, error: 'User rejected request' });
       }
     } catch (error) {
       Alert.alert('Failed to send request status to WalletConnect.');
