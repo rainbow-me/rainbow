@@ -18,13 +18,9 @@ import OfflineBadge from './components/OfflineBadge';
 import {
   withAccountRefresh,
   withHideSplashScreen,
+  withRequestsInit,
   withWalletConnectConnections,
 } from './hoc';
-import {
-  addTransactionToApprove,
-  transactionIfExists,
-  transactionsToApproveInit,
-} from './redux/transactionsToApprove';
 import store from './redux/store';
 import { walletInit } from './model/wallet';
 import {
@@ -45,7 +41,6 @@ useScreens();
 class App extends Component {
   static propTypes = {
     accountLoadState: PropTypes.func,
-    addTransactionToApprove: PropTypes.func,
     getValidWalletConnectors: PropTypes.func,
     onHideSplashScreen: PropTypes.func,
     refreshAccount: PropTypes.func,
@@ -53,7 +48,6 @@ class App extends Component {
     settingsUpdateAccountAddress: PropTypes.func,
     walletConnectInitAllConnectors: PropTypes.func,
     sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
-    transactionIfExists: PropTypes.func,
     transactionsToApproveInit: PropTypes.func,
   }
 
@@ -107,8 +101,8 @@ class App extends Component {
       }
       this.props.settingsInitializeState();
       this.props.accountLoadState();
-      this.props.transactionsToApproveInit();
       this.props.walletConnectInitAllConnectors();
+      this.props.transactionsToApproveInit();
         /*
       const notificationOpen = await firebase.notifications().getInitialNotification();
       if (notificationOpen) {
@@ -146,26 +140,12 @@ class App extends Component {
     if (transaction) {
       this.handleOpenConfirmTransactionModal(transaction, autoOpened);
     } else {
-      const fetchedTransaction = this.props.transactionIfExists(callId);
+      const fetchedTransaction = null; //this.props.transactionIfExists(callId);
       if (fetchedTransaction) {
         this.handleOpenConfirmTransactionModal(fetchedTransaction, autoOpened);
       } else {
         Alert.alert('This request has expired.');
       }
-    }
-  }
-
-  fetchAndAddWalletConnectRequest = async (callId, sessionId) => {
-    try {
-      const walletConnector = this.props.sortedWalletConnectors.find(({ _sessionId }) => (_sessionId === sessionId));
-      const callData = await walletConnectGetRequest(callId, walletConnector);
-      if (!callData) return null;
-
-      const { dappName } = walletConnector;
-      return this.props.addTransactionToApprove(sessionId, callId, callData, dappName);
-    } catch (error) {
-      console.log('error fetching wallet connect request');
-      return null;
     }
   }
 
@@ -185,17 +165,15 @@ class App extends Component {
 const AppWithRedux = compose(
   withProps({ store }),
   withAccountRefresh,
+  withRequestsInit,
   withHideSplashScreen,
   withWalletConnectConnections,
   connect(
     null,
     {
       accountLoadState,
-      addTransactionToApprove,
       settingsInitializeState,
       settingsUpdateAccountAddress,
-      transactionIfExists,
-      transactionsToApproveInit,
     },
   ),
 )(App);
