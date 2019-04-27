@@ -42,6 +42,7 @@ const TransactionType = styled(Text).attrs({ size: 'h5' })`
 class TransactionConfirmationScreen extends Component {
   static propTypes = {
     dappName: PropTypes.string,
+    imageUrl: PropTypes.string,
     onCancelTransaction: PropTypes.func,
     onConfirm: PropTypes.func,
     request: PropTypes.object,
@@ -150,6 +151,7 @@ class TransactionConfirmationScreen extends Component {
       <Masthead>
         <RequestVendorLogoIcon
           dappName={this.props.dappName}
+          imageUrl={this.props.imageUrl}
           showLargeShadow={true}
           size={60}
           style={{ marginBottom: 24 }}

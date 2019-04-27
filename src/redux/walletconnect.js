@@ -66,7 +66,6 @@ export const walletConnectOnSessionRequest = (uri) => async (dispatch) => {
         }
 
         const { peerId, peerMeta } = payload.params[0];
-        console.log('on("session_request")', peerId, walletConnector);
         dispatch(setPendingRequest(peerId, walletConnector));
 
         if (previouslyApprovedDapps.includes(peerMeta.url)) {
@@ -186,12 +185,11 @@ export const walletConnectApproveSession = (peerId) => (dispatch, getState) => {
       throw error;
     }
 
-    const { peerId } = walletConnector;
+    const { peerId, peerMeta } = walletConnector;
     const requestId = payload.id;
-    const dappName = walletConnector.peerMeta.name;
     const autoOpened = true;
 
-    const transactionDetails = dispatch(addTransactionToApprove(peerId, requestId, payload, dappName));
+    const transactionDetails = dispatch(addTransactionToApprove(peerId, requestId, payload, peerMeta));
 
     // TODO if already on route, create a new notification
     if (transactionDetails) {

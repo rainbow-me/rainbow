@@ -160,14 +160,17 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
   return null;
 };
 
-export const addTransactionToApprove = (peerId, requestId, payload, dappName) => (dispatch, getState) => {
+export const addTransactionToApprove = (peerId, requestId, payload, peerMeta) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
   const { accountAddress, network, nativeCurrency } = getState().settings;
   const { prices } = getState().prices;
   const { assets } = getState().assets;
   const transactionDisplayDetails = getRequestDisplayDetails(payload, assets, prices, nativeCurrency);
+  const dappName = peerMeta.name;
+  const imageUrl = get(peerMeta, 'icons[0]');
   const transaction = {
     dappName,
+    imageUrl,
     payload,
     peerId,
     requestId,
