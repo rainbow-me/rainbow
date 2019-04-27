@@ -128,6 +128,7 @@ class TransactionConfirmationScreenWithData extends Component {
     const {
       transactionDetails: {
         dappName,
+        imageUrl,
         transactionDisplayDetails: {
           type,
           payload,
@@ -138,6 +139,7 @@ class TransactionConfirmationScreenWithData extends Component {
     return (
       <TransactionConfirmationScreen
         dappName={dappName || ''}
+        imageUrl={imageUrl || ''}
         request={payload}
         requestType={type}
         onCancelTransaction={this.handleCancelTransaction}
