@@ -68,7 +68,6 @@ export const walletConnectOnSessionRequest = (uri) => async (dispatch) => {
         const { peerId, peerMeta } = payload.params[0];
         console.log('on("session_request")', peerId, walletConnector);
         dispatch(setPendingRequest(peerId, walletConnector));
-        //await commonStorage.saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
 
         if (previouslyApprovedDapps.includes(peerMeta.url)) {
           dispatch(walletConnectApproveSession(peerId));
@@ -176,11 +175,11 @@ export const removeWalletConnector = (peerId) => (dispatch, getState) => {
 export const walletConnectApproveSession = (peerId) => (dispatch, getState) => {
   const { accountAddress, chainId } = getState().settings;
 
-  console.log('wallet connect approve session', chainId, accountAddress);
   const walletConnector = dispatch(getPendingRequest(peerId));
   walletConnector.approveSession({ chainId, accounts: [accountAddress] });
 
   dispatch(removePendingRequest(peerId));
+  commonStorage.saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
 
   walletConnector.on('call_request', (error, payload) => {
     if (error) {
@@ -194,6 +193,7 @@ export const walletConnectApproveSession = (peerId) => (dispatch, getState) => {
 
     const transactionDetails = dispatch(addTransactionToApprove(peerId, requestId, payload, dappName));
 
+    // TODO if already on route, create a new notification
     if (transactionDetails) {
       Navigation.handleAction({
         routeName: 'ConfirmRequest',
