@@ -69,7 +69,15 @@ export default compose(
   }),
   withHandlers({
     onCloseModal: ({ navigation }) => () => navigation.goBack(),
-    onApprove: ({ peerId, walletConnectApproveSession }) => () => walletConnectApproveSession(peerId),
-    onReject: ({ peerId, walletConnectRejectSession }) => () => walletConnectRejectSession(peerId),
+  }),
+  withHandlers({
+    onApprove: ({ onCloseModal, peerId, walletConnectApproveSession }) => () => {
+      walletConnectApproveSession(peerId);
+      return onCloseModal();
+    },
+    onReject: ({ onCloseModal, peerId, walletConnectRejectSession }) => () => {
+      walletConnectRejectSession(peerId);
+      onCloseModal();
+    },
   }),
 )(WalletConnectConfirmationModal);

@@ -124,7 +124,6 @@ class App extends Component {
   }
 
   handleNavigatorRef = (navigatorRef) => Navigation.setTopLevelNavigator(navigatorRef)
-  //handleNavigatorRef = (navigatorRef) => { this.navigatorRef = navigatorRef; }
 
   handleOpenConfirmTransactionModal = (transactionDetails, autoOpened) => {
     if (!this.navigatorRef) return;

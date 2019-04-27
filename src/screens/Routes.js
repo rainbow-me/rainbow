@@ -14,7 +14,6 @@ import ProfileScreenWithData from './ProfileScreenWithData';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
 import ReceiveModal from './ReceiveModal';
 import WalletConnectConfirmationModal from './WalletConnectConfirmationModal';
-// import ExamplePage from './ExamplePage';
 import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
@@ -46,7 +45,6 @@ const SwipeStack = createMaterialTopTabNavigator({
 
 const MainNavigator = createStackNavigator({
   ConfirmRequest: TransactionConfirmationScreenWithData,
-  // ExamplePage: ExamplePage,
   ExpandedAssetScreen: {
     navigationOptions: {
       effect: 'expanded',
