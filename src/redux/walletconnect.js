@@ -88,6 +88,38 @@ export const walletConnectOnSessionRequest = (uri) => async (dispatch) => {
   }
 };
 
+const listenOnNewMessages = walletConnector => dispatch => {
+  walletConnector.on('call_request', (error, payload) => {
+    if (error) {
+      throw error;
+    }
+
+    const { peerId, peerMeta } = walletConnector;
+    const requestId = payload.id;
+    const autoOpened = true;
+
+    const transactionDetails = dispatch(addTransactionToApprove(peerId, requestId, payload, peerMeta));
+
+    if (transactionDetails) {
+      // TODO
+      Navigation.handleAction({
+        routeName: 'ConfirmRequest',
+        params: { transactionDetails, autoOpened },
+      });
+    } else {
+      Alert.alert('This request has expired.');
+    }
+  });
+  walletConnector.on('disconnect', (error, payload) => {
+    if (error) {
+      throw error;
+    }
+
+    dispatch(walletConnectDisconnectAllByDappName(walletConnector.peerMeta.name));
+  });
+  return walletConnector;
+};
+
 export const walletConnectInitAllConnectors = () => async dispatch => {
   let walletConnectors = {};
   try {
@@ -102,7 +134,7 @@ export const walletConnectInitAllConnectors = () => async dispatch => {
         },
         nativeOptions,
       );
-      return walletConnector;
+      return dispatch(listenOnNewMessages(walletConnector));
     });
   } catch (error) {
     Alert.alert('Unable to retrieve all WalletConnect sessions.');
@@ -172,37 +204,9 @@ export const walletConnectApproveSession = (peerId) => (dispatch, getState) => {
   dispatch(removePendingRequest(peerId));
   commonStorage.saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
 
-  walletConnector.on('call_request', (error, payload) => {
-    if (error) {
-      throw error;
-    }
+  const listeningWalletConnector = dispatch(listenOnNewMessages(walletConnector));
 
-    const { peerId, peerMeta } = walletConnector;
-    const requestId = payload.id;
-    const autoOpened = true;
-
-    const transactionDetails = dispatch(addTransactionToApprove(peerId, requestId, payload, peerMeta));
-
-    // TODO if already on route, create a new notification
-    if (transactionDetails) {
-      Navigation.handleAction({
-        routeName: 'ConfirmRequest',
-        params: { transactionDetails, autoOpened },
-      });
-    } else {
-      Alert.alert('This request has expired.');
-    }
-  });
-
-  walletConnector.on('disconnect', (error, payload) => {
-    if (error) {
-      throw error;
-    }
-
-    dispatch(walletConnectDisconnectAllByDappName(walletConnector.peerMeta.name));
-  });
-
-  dispatch(setWalletConnector(walletConnector));
+  dispatch(setWalletConnector(listeningWalletConnector));
 };
 
 export const walletConnectRejectSession = (peerId) => (dispatch, getState) => {
