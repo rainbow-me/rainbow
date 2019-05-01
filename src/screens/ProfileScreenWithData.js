@@ -31,6 +31,9 @@ export default compose(
     const topNav = navigation.dangerouslyGetParent()
     const { width } = deviceUtils.dimensions;
     const drawerOpenProgress = topNav.getParam('drawerOpenProgress');
+
+    // On opening drawer we firstly move BlurOverlay to screen and then set proper opacity
+    // in order not to prevent gesture recognition while if drawer closed
     const blurTranslateX = drawerOpenProgress ? drawerOpenProgress.interpolate({
       inputRange: [0, 0.1, 1],
       outputRange: [-width, 0, 0],
@@ -42,8 +45,8 @@ export default compose(
     }) : 0;
 
     return ({
-      blurTranslateX,
       blurDrawerOpacity,
+      blurTranslateX,
       isEmpty: isWalletEmpty && !transactionsCount,
     });
   }),
