@@ -20,7 +20,7 @@ const ModalElement = styled(Column)`
   shadow-color: ${colors.dark};
   shadow-offset: 0px 10px;
   shadow-opacity: 0.6;
-  shadow-radius: 50;
+  shadow-radius: ${({ shadowEnabled }) => (shadowEnabled ? 50 : 0)};
   width: 100%;
 `;
 
@@ -43,11 +43,13 @@ const Modal = ({
 Modal.propTypes = {
   height: PropTypes.number.isRequired,
   onCloseModal: PropTypes.func.isRequired,
+  shadowEnabled: PropTypes.bool,
   statusBarStyle: PropTypes.oneOf(['default', 'light-content', 'dark-content']),
 };
 
 Modal.defaultProps = {
   height: deviceUtils.dimensions.height - 230,
+  shadowEnabled: true,
   statusBarStyle: 'light-content',
 };
 

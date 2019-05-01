@@ -1,4 +1,7 @@
 import PropTypes from 'prop-types';
+import {
+  DrawerActions,
+} from 'react-navigation';
 import React from 'react';
 import { Clipboard } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -97,7 +100,7 @@ export default compose(
       setEmojiCount(emojiCount + 1);
       Clipboard.setString(accountAddress);
     },
-    onPressReceive: ({ navigation }) => () => navigation.navigate('ReceiveModal'),
+    onPressReceive: ({ navigation }) => () => navigation.dispatch(DrawerActions.openDrawer()),
   }),
   onlyUpdateForKeys(['accountAddress', 'emojiCount', 'showBottomDivider']),
 )(ProfileMasthead);

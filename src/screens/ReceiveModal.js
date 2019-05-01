@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Clipboard, Share } from 'react-native';
+import { Clipboard, Share, Animated } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {
   compose,
@@ -9,13 +9,10 @@ import {
   withState,
 } from 'recompact';
 import styled from 'styled-components/primitives';
-import Divider from '../components/Divider';
 import { Column } from '../components/layout';
 import {
-  Modal,
   ModalFooterButton,
   ModalFooterButtonsRow,
-  ModalHeader,
 } from '../components/modal';
 import QRCodeDisplay from '../components/QRCodeDisplay';
 import { FloatingEmojis } from '../components/floating-emojis';
@@ -26,6 +23,8 @@ import {
 } from '../components/text';
 import { withAccountAddress } from '../hoc';
 import { colors, padding } from '../styles';
+import FloatingPanel from '../components/expanded-state/FloatingPanel';
+import { deviceUtils } from '../utils';
 
 const QRCodeSize = 180;
 
@@ -46,7 +45,7 @@ const AddressTextContainer = styled(Column)`
 const Content = styled(Column).attrs({
   align: 'center',
   flex: 1,
-  justify: 'start',
+  justify: 'center',
 })`
   ${padding(25)}
 `;
@@ -55,30 +54,29 @@ const DescriptionText = styled(Text)`
   line-height: 21;
   margin-bottom: 22;
   text-align: center;
+  color: ${colors.white};
 `;
 
 const ReceiveScreen = ({
   accountAddress,
+  drawerOpenProgress,
   emojiCount,
   onCloseModal,
   onPressCopyAddress,
   onPressShareAddress,
 }) => (
-  <Modal height={472} onCloseModal={onCloseModal}>
-    <ModalHeader
-      onPressClose={onCloseModal}
-      title="Receive"
-    />
-    <Divider inset={[0, 16]} />
+  <Column height='100%' >
     <Content>
       <DescriptionText>
         Send Ether, ERC-20 tokens, or<Br />
         collectibles to your wallet:
       </DescriptionText>
-      <QRCodeDisplay
-        size={QRCodeSize}
-        value={accountAddress}
-      />
+      <FloatingPanel style={{ padding: 10, paddingBottom: 10, width: null }}>
+        <QRCodeDisplay
+          size={QRCodeSize}
+          value={accountAddress}
+        />
+      </FloatingPanel>
       <AddressTextContainer>
         <AddressText>
           {accountAddress.substring(0, accountAddress.length / 2)}
@@ -88,31 +86,47 @@ const ReceiveScreen = ({
         </AddressText>
       </AddressTextContainer>
     </Content>
-    <ModalFooterButtonsRow>
-      <Column flex={1}>
+    <Animated.View style={{
+      transform: [{
+        translateY: drawerOpenProgress.interpolate({
+          inputRange: [0, 0.9, 1],
+          outputRange: [100, 100, 0],
+        }),
+      }, {
+        translateX: drawerOpenProgress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [deviceUtils.dimensions.width, 0],
+        }),
+      }],
+    }}
+    >
+      <ModalFooterButtonsRow>
         <ModalFooterButton
-          icon="copy"
-          label="Copy"
-          onPress={onPressCopyAddress}
+          icon="share"
+          label="Share"
+          onPress={onPressShareAddress}
         />
-        <FloatingEmojis
-          count={emojiCount}
-          distance={130}
-          emoji="+1"
-          size="h2"
-        />
-      </Column>
-      <ModalFooterButton
-        icon="share"
-        label="Share"
-        onPress={onPressShareAddress}
-      />
-    </ModalFooterButtonsRow>
-  </Modal>
+        <Column flex={1}>
+          <ModalFooterButton
+            icon="copy"
+            label="Copy"
+            onPress={onPressCopyAddress}
+          />
+          <FloatingEmojis
+            count={emojiCount}
+            distance={130}
+            emoji="+1"
+            size="h2"
+          />
+        </Column>
+      </ModalFooterButtonsRow>
+    </Animated.View>
+  </Column>
 );
 
 ReceiveScreen.propTypes = {
   accountAddress: PropTypes.string.isRequired,
+  drawerOpenProgress: PropTypes.object.isRequired,
   emojiCount: PropTypes.number,
   navigation: PropTypes.object.isRequired,
   onCloseModal: PropTypes.func.isRequired,
