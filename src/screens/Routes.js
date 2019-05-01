@@ -28,7 +28,7 @@ const SwipeStack = createMaterialTopTabNavigator({
     name: 'ProfileScreen',
     // Kinda hacky, but ok
     screen: createDrawerNavigator({
-      Screen1: {
+      ProfileScreenWithData: {
         screen: ProfileScreenWithData,
       },
     }, {

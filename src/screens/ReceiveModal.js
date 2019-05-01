@@ -4,6 +4,7 @@ import { Clipboard, Share, Animated } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {
   compose,
+  lifecycle,
   onlyUpdateForKeys,
   withHandlers,
   withState,
@@ -152,4 +153,10 @@ export default compose(
     ),
   }),
   onlyUpdateForKeys(['accountAddress', 'emojiCount']),
+  lifecycle({
+    componentDidMount() {
+      const { drawerOpenProgress, navigation } = this.props;
+      navigation.setParams({ drawerOpenProgress });
+    },
+  }),
 )(ReceiveScreen);

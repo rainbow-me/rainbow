@@ -26,7 +26,12 @@ export default compose(
     onPressBackButton: ({ navigation }) => () => navigation.navigate('WalletScreen'),
     onPressSettings: ({ navigation }) => () => navigation.navigate('SettingsModal'),
   }),
-  withProps(({ isWalletEmpty, transactionsCount }) => ({
-    isEmpty: isWalletEmpty && !transactionsCount,
-  })),
+  withProps(({ isWalletEmpty, transactionsCount, navigation }) => {
+    const topNav = navigation.dangerouslyGetParent()
+    return ({
+      drawerOpenProgress: topNav.getParam('drawerOpenProgress'),
+      isBlurVisible: !topNav.state.isDrawerIdle || topNav.state.isDrawerOpen,
+      isEmpty: isWalletEmpty && !transactionsCount,
+    });
+  }),
 )(ProfileScreen);
