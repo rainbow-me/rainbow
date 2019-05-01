@@ -26,7 +26,7 @@ const onTransitionStart = () => store.dispatch(updateTransitionProps({ isTransit
 const SwipeStack = createMaterialTopTabNavigator({
   ProfileScreen: {
     name: 'ProfileScreen',
-    // Kinda hacky, but ok
+    // A bit hacky, but it does exactly what's expected
     screen: createDrawerNavigator({
       ProfileScreenWithData: {
         screen: ProfileScreenWithData,
