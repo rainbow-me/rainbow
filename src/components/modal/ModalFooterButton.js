@@ -33,7 +33,7 @@ const ModalFooterButton = ({ icon, label, onPress }) => (
       />
     </IconContainer>
     <Text
-      color="appleBlue"
+      color="white"
       size="large"
       weight="medium"
     >

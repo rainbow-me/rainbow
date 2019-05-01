@@ -2,6 +2,7 @@ import {
   createAppContainer,
   createMaterialTopTabNavigator,
   createStackNavigator,
+  createDrawerNavigator,
 } from 'react-navigation';
 import Navigation from '../navigation';
 import { buildTransitions, expanded, sheet } from '../navigation/transitions';
@@ -25,7 +26,17 @@ const onTransitionStart = () => store.dispatch(updateTransitionProps({ isTransit
 const SwipeStack = createMaterialTopTabNavigator({
   ProfileScreen: {
     name: 'ProfileScreen',
-    screen: ProfileScreenWithData,
+    // Kinda hacky, but ok
+    screen: createDrawerNavigator({
+      Screen1: {
+        screen: ProfileScreenWithData,
+      },
+    }, {
+      contentComponent: ReceiveModal,
+      drawerBackgroundColor: 'transparent',
+      drawerWidth: deviceUtils.dimensions.width,
+      overlayColor: 'black',
+    }),
   },
   WalletScreen: {
     name: 'WalletScreen',

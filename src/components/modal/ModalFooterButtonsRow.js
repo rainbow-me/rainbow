@@ -6,8 +6,9 @@ import { Row } from '../layout';
 import Divider from '../Divider';
 
 const Container = styled(Row)`
-  border-top-color: ${colors.rowDivider};
-  border-top-width: 2;
+  borderRadius: 30px;
+  background-color: ${colors.dark};
+  margin: 30px;
 `;
 
 const ModalFooterButtonsRow = ({ children, ...props }) => (
@@ -15,7 +16,7 @@ const ModalFooterButtonsRow = ({ children, ...props }) => (
     {Children.map(children, (child, index) => (
       <Fragment>
         {child}
-        {(index < children.length - 1) && <Divider horizontal={false} />}
+        {(index < children.length - 1) && <Divider size={0.5} color={colors.black} horizontal={false} />}
       </Fragment>
     ))}
   </Container>
