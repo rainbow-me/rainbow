@@ -5,7 +5,7 @@ import AddFundsInterstitial from '../components/AddFundsInterstitial';
 import { FadeInAnimation } from '../components/animations';
 import BlurOverlay from '../components/BlurOverlay';
 import { BackButton, Header, HeaderButton } from '../components/header';
-import { Column, FlexItem, Page } from '../components/layout';
+import { FlexItem, Page } from '../components/layout';
 import { Icon } from '../components/icons';
 import { ProfileMasthead } from '../components/profile';
 import { colors, position } from '../styles';
@@ -13,9 +13,9 @@ import { colors, position } from '../styles';
 const ProfileScreen = ({
   accountAddress,
   blurOpacity,
-  drawerOpenProgress,
+  blurTranslateX,
+  blurDrawerOpacity,
   hasPendingTransaction,
-  isBlurVisible,
   isEmpty,
   nativeCurrency,
   navigation,
@@ -52,7 +52,7 @@ const ProfileScreen = ({
       transactionsCount={transactionsCount}
     />
     {isEmpty && <AddFundsInterstitial/>}
-    {isBlurVisible && <BlurOverlay opacity={drawerOpenProgress}/>}
+    <BlurOverlay opacity={blurDrawerOpacity} translateX={blurTranslateX}/>
     {showBlur && (
       <FadeInAnimation duration={200} style={{
         ...position.coverAsObject,
@@ -70,10 +70,11 @@ const ProfileScreen = ({
 
 ProfileScreen.propTypes = {
   accountAddress: PropTypes.string,
+  blurDrawerOpacity: PropTypes.object,
   blurOpacity: PropTypes.object,
+  blurTranslateX: PropTypes.object,
   drawerOpenProgress: PropTypes.object,
   hasPendingTransaction: PropTypes.bool,
-  isBlurVisible: PropTypes.bool,
   isEmpty: PropTypes.bool,
   nativeCurrency: PropTypes.string,
   navigation: PropTypes.object,
