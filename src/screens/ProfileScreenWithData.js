@@ -28,8 +28,18 @@ export default compose(
     onPressBackButton: ({ navigation }) => () => navigation.navigate('WalletScreen'),
     onPressSettings: ({ navigation }) => () => navigation.navigate('SettingsModal'),
   }),
-  withProps(({ areTransactionsFetched, isWalletEmpty, transactionsCount }) => ({
-    isEmpty: isWalletEmpty && !transactionsCount,
-    isLoading: !areTransactionsFetched && !isWalletEmpty,
-  })),
+  withProps(({
+    areTransactionsFetched,
+    isWalletEmpty,
+    navigation,
+    transactionsCount,
+  }) => {
+    const topNav = navigation.dangerouslyGetParent();
+    return {
+      drawerOpenProgress: topNav.getParam('drawerOpenProgress'),
+      isBlurVisible: !topNav.state.isDrawerIdle || topNav.state.isDrawerOpen,
+      isEmpty: isWalletEmpty && !transactionsCount,
+      isLoading: !areTransactionsFetched && !isWalletEmpty,
+    };
+  }),
 )(ProfileScreen);
