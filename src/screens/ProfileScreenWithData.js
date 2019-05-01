@@ -13,6 +13,7 @@ import {
   withIsWalletEmpty,
   withRequests,
 } from '../hoc';
+import { deviceUtils } from '../utils';
 import ProfileScreen from './ProfileScreen';
 
 export default compose(
@@ -35,9 +36,22 @@ export default compose(
     transactionsCount,
   }) => {
     const topNav = navigation.dangerouslyGetParent();
+    const { width } = deviceUtils.dimensions;
+
+    const drawerOpenProgress = topNav.getParam('drawerOpenProgress');
+    const blurTranslateX = drawerOpenProgress ? drawerOpenProgress.interpolate({
+      inputRange: [0, 0.1, 1],
+      outputRange: [-width, 0, 0],
+    }) : -width;
+
+    const blurDrawerOpacity = drawerOpenProgress ? drawerOpenProgress.interpolate({
+      inputRange: [0, 0.1, 1],
+      outputRange: [0, 0, 1],
+    }) : 0;
+
     return {
-      drawerOpenProgress: topNav.getParam('drawerOpenProgress'),
-      isBlurVisible: !topNav.state.isDrawerIdle || topNav.state.isDrawerOpen,
+      blurDrawerOpacity,
+      blurTranslateX,
       isEmpty: isWalletEmpty && !transactionsCount,
       isLoading: !areTransactionsFetched && !isWalletEmpty,
     };
