@@ -79,7 +79,7 @@ PODS:
     - React
   - react-native-camera/RN (2.6.0):
     - React
-  - react-native-fast-image (5.2.0):
+  - react-native-fast-image (5.3.0):
     - FLAnimatedImage
     - React
     - SDWebImage/Core
@@ -144,7 +144,7 @@ PODS:
     - React/RCTBlob
   - RNCAsyncStorage (1.3.3):
     - React
-  - RNDeviceInfo (1.5.0):
+  - RNDeviceInfo (1.5.1):
     - React
   - RNLanguages (3.0.2):
     - React
@@ -254,11 +254,11 @@ SPEC CHECKSUMS:
   Crashlytics: 55e24fc23989680285a21cb1146578d9d18e432c
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   Fabric: 25d0963b691fc97be566392243ff0ecef5a68338
-  Firebase: 68afeeb05461db02d7c9e3215cda28068670f4aa
-  FirebaseAnalytics: b3628aea54c50464c32c393fb2ea032566e7ecc2
-  FirebaseCore: 62f1b792a49bb9e8b4073f24606d2c93ffc352f0
-  FirebaseInstanceID: f3f0657372592ecdfdfe2cac604a5a75758376a6
-  FirebaseMessaging: 6894b8fe0a0cf26c3b13dad729f1131654ae0bdb
+  Firebase: 76ec2a7cde90fb4037793f83aeeca48451543487
+  FirebaseAnalytics: b8bce8d5c40173328b8a4300da18c5c7e0a1908d
+  FirebaseCore: 31d258ec80ea97e1e8e40ce00a7ba7297afb45c2
+  FirebaseInstanceID: 4f7768a98c5c3c5bd9a4c9e431ea98dccc0a51f9
+  FirebaseMessaging: 94579ae655d817287f029ebfebd5b0811fbb3a51
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
@@ -266,20 +266,20 @@ SPEC CHECKSUMS:
   libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
-  React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
-  react-native-blur: c35c1f6c2c76db7108bde7ed343bd2b01d64e0c0
-  react-native-camera: 9c50d7def800895e7991ccda6203929553ceec9c
-  react-native-fast-image: 4170ad074e9de6c428fc4580ecbaacabf74901a6
-  react-native-netinfo: f4039dc64d3a55da59d6d03d4bd667d0a9f5450e
-  react-native-version-number: 36c0d8eb57a275a6239a860f8dbab3d18299b0e0
-  RNCAsyncStorage: 289488409d0c42f30e12535e3f45c5bd3cfc73d2
-  RNDeviceInfo: 08dd79c5adef48b6dc103bf3ddf208039aa78664
-  RNLanguages: e3ae05ef105937645218272429dac0c3f7633451
-  RNReanimated: 45d9313b7a62318ed00d60a811937321e43e076e
-  RNScreens: 354046589421edc3d83d5c6212475bf1fb9a731d
+  React: 90adac468c7b72bf1fa6c64bf230650f851a8388
+  react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
+  react-native-camera: 60e1ec7b259a7779b508712f75671701f23a6b4d
+  react-native-fast-image: 56efe6ea964cff19fd9bb1cc28e79b432c4b58e4
+  react-native-netinfo: 1ea4efa22c02519ac8043ac3f000062a4e320795
+  react-native-version-number: 75301519bb72064ad209a498ed08b128cbcf10e7
+  RNCAsyncStorage: 02c55fdf22e98cdfdddca674e8ce0bb9f4e32fbf
+  RNDeviceInfo: b0877c3c6b15d44c795d0854dbe7c0dd92eb62a9
+  RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
+  RNReanimated: 9497464b378759f538c539df105cda235de496c5
+  RNScreens: 720a9e6968beb73e8196239801e887d8401f86ed
   SDWebImage: 3f3f0c02f09798048c47a5ed0a13f17b063572d8
-  yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
+  yoga: 2e571f113e8cbeb0eb752aeebc86c1bfe7a8200c
 
 PODFILE CHECKSUM: 39aacc38ff279454b2722f3f03db7ef2b0d61094
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.6.1
