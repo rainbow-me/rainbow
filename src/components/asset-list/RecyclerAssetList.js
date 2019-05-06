@@ -2,6 +2,7 @@ import { get, has } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { RefreshControl } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { pure } from 'recompact';
 import {
   DataProvider,
@@ -72,6 +73,7 @@ export default class RecyclerAssetList extends PureComponent {
     hideHeader: PropTypes.bool,
     paddingBottom: PropTypes.number,
     renderAheadOffset: PropTypes.number,
+    scrollViewTracker: PropTypes.object,
     sections: PropTypes.arrayOf(PropTypes.shape({
       balances: PropTypes.bool,
       collectibles: PropTypes.bool,
@@ -264,6 +266,14 @@ export default class RecyclerAssetList extends PureComponent {
               bottom: safeAreaInsetValues.bottom,
               top: hideHeader ? 0 : AssetListHeader.height,
             }}
+            externalScrollView={props => <Animated.ScrollView
+              {...props}
+              onScroll={(event) => {
+                props.onScroll(event);
+                this.props.scrollViewTracker.setValue(event.nativeEvent.contentOffset.y);
+              }}
+            />
+            }
             scrollViewProps={{
               refreshControl: this.renderRefreshControl(),
             }}
