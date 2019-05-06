@@ -2,6 +2,7 @@ import { withSafeTimeout } from '@hocs/safe-timers';
 import PropTypes from 'prop-types';
 import { withAccountAssets } from '@rainbow-me/rainbow-common';
 import React, { PureComponent } from 'react';
+import Animated from 'react-native-reanimated';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
 import {
   compose,
@@ -36,6 +37,7 @@ class WalletScreen extends PureComponent {
     isFocused: PropTypes.bool,
     navigation: PropTypes.object,
     refreshAccount: PropTypes.func,
+    scrollViewTracker: PropTypes.object,
     sections: PropTypes.array,
     showBlur: PropTypes.bool,
     toggleShowShitcoins: PropTypes.func,
@@ -59,6 +61,7 @@ class WalletScreen extends PureComponent {
       isEmpty,
       navigation,
       refreshAccount,
+      scrollViewTracker,
       sections,
       showBlur,
     } = this.props;
@@ -69,8 +72,13 @@ class WalletScreen extends PureComponent {
           <ProfileHeaderButton navigation={navigation} />
           <CameraHeaderButton navigation={navigation} />
         </Header>
-        <FabWrapper disabled={isEmpty}>
+        <FabWrapper
+          sections={sections}
+          disabled={isEmpty}
+          scrollViewTracker={scrollViewTracker}
+        >
           <AssetList
+            scrollViewTracker={scrollViewTracker}
             fetchData={refreshAccount}
             isEmpty={isEmpty}
             sections={sections}
@@ -104,4 +112,5 @@ export default compose(
     },
   }),
   withProps(buildWalletSectionsSelector),
+  withProps({ scrollViewTracker: new Animated.Value(0) }),
 )(WalletScreen);
