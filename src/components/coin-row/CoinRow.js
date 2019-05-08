@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import { StyleSheet } from 'react-native';
-import { compose, omitProps, onlyUpdateForKeys, pure, withProps } from 'recompact';
+import {
+  compose, lifecycle, omitProps, onlyUpdateForKeys, pure, withProps,
+} from 'recompact';
 import styled from 'styled-components/primitives';
 import connect from 'react-redux/es/connect/connect';
 import { withAccountSettings } from '../../hoc';
@@ -9,7 +11,6 @@ import { colors, padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
 import Flex from '../layout/Row';
-import selectedWithFab from '../../redux/selectedWithFab';
 
 const CoinRowPaddingVertical = 12;
 
@@ -36,18 +37,25 @@ const Highlight = styled(Flex)`
 `;
 
 const mapStateToProps = ({
-                           selectedWithFab: {
-                             selectedId,
-                           },
-                         }) => ({
+  selectedWithFab: {
+    selectedId,
+  },
+}) => ({
   selectedId,
 });
 
 const enhance = compose(
   connect(mapStateToProps),
-  withProps(({ selectedId, uniqueId }) => ({ highlight: selectedId === uniqueId })),
+  withProps(({ selectedId, uniqueId }) => ({ fabDropped: selectedId === -3, highlight: selectedId === uniqueId })),
   omitProps('selectedId'),
   withAccountSettings,
+  lifecycle({
+    componentDidUpdate(prevProps) {
+      if (prevProps.highlight && !this.props.highlight && this.props.fabDropped) {
+        this.props.onPress();
+      }
+    },
+  }),
   pure,
 );
 
