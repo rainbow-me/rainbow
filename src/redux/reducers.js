@@ -14,6 +14,7 @@ import navigation from './navigation';
 import nonce from './nonce';
 import transactionsToApprove from './transactionsToApprove';
 import walletconnect from './walletconnect';
+import selectedWithFab from './selectedWithFab';
 
 export default combineReducers({
   actionSheetManager,
@@ -23,6 +24,7 @@ export default combineReducers({
   navigation,
   nonce,
   prices,
+  selectedWithFab,
   send,
   settings,
   transactions,

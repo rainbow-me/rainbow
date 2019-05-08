@@ -7,7 +7,7 @@ import SendFab from './SendFab';
 const FabWrapperBottomPosition = 21;
 
 const FabWrapper = ({
-  children, disabled, fabs, scrollViewTracker, sections,
+  children, disabled, fabs, ...rest
 }) => (
   <FlexItem>
     {children}
@@ -22,7 +22,7 @@ const FabWrapper = ({
         margin={12}
         marginKey="left"
       >
-        {fabs.map(fab => createElement(fab, { scrollViewTracker, sections }))}
+        {fabs.map(fab => createElement(fab, rest))}
       </RowWithMargins>
     )}
   </FlexItem>

@@ -2,15 +2,21 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
-import Animated, { Easing } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import {
   compose,
   onlyUpdateForKeys,
   pure,
-  withHandlers,
+  withHandlers, withProps,
 } from 'recompact';
 import Icon from '../icons/Icon';
 import FloatingActionButton from './FloatingActionButton';
+import { deviceUtils } from '../../utils';
+import { CoinRow } from '../coin-row';
+import { ListFooter } from '../list';
+import connect from 'react-redux/es/connect/connect';
+import { setIsWalletEmpty } from '../../redux/isWalletEmpty';
+import { updateSelectedID } from '../../redux/selectedWithFab';
 
 const {
   set,
@@ -18,23 +24,11 @@ const {
   eq,
   or,
   add,
-  sub,
-  pow,
-  min,
-  max,
-  debug,
-  multiply,
-  divide,
+  and,
+  greaterThan,
   lessThan,
   spring,
-  defined,
-  decay,
-  timing,
   call,
-  diff,
-  acc,
-  not,
-  abs,
   onChange,
   block,
   startClock,
@@ -82,22 +76,22 @@ function runSpring(clock, value, velocity, dest, wasRunSpring) {
 
 
 class Movable extends React.Component {
+  static propTypes = {
+    areas: PropTypes.array,
+    setHighlightedToken: PropTypes.func,
+  }
+
   static defaultProps = {
-    touchableAreas: [
-      {
-        x: 10,
-        y: 10,
-        width: 100,
-        height: 100,
-        onEnter: () => {},
-        onLeave: () => {},
-        onDrop: () => {},
-      },
-    ],
     scrollOffset: new Animated.Value(0),
   }
 
   dragX = new Animated.Value(0)
+
+  selectedIndex = new Animated.Value(0)
+
+  absoluteX = new Animated.Value(0)
+
+  absoluteY = new Animated.Value(0)
 
   dragY = new Animated.Value(0)
 
@@ -120,6 +114,8 @@ class Movable extends React.Component {
   onGestureEvent = event([
     {
       nativeEvent: {
+        absoluteX: this.absoluteX,
+        absoluteY: this.absoluteY,
         translationX: this.dragX,
         velocityX: this.dragVX,
         velocityY: this.dragVY,
@@ -137,8 +133,16 @@ class Movable extends React.Component {
     },
   ])
 
+  calculateSelectedIndex = () => this.props.areas.reduce((prev, curr, i) => cond(
+    and(
+      greaterThan(this.absoluteX, curr.left),
+      greaterThan(this.absoluteY, curr.top),
+      lessThan(this.absoluteY, curr.bottom),
+      lessThan(this.absoluteX, curr.right),
+    ), i, prev,
+  ), -1);
+
   render() {
-    console.log(this.props.sections)
     return (
       <PanGestureHandler
         onGestureEvent={this.onGestureEvent}
@@ -156,10 +160,21 @@ class Movable extends React.Component {
             ],
           }}
         >
+          {this.props.areas && this.props.areas.length !== 0
+          && <Animated.Code
+            // Provoke change on reordering
+            key={this.props.areas[0].id}
+            exec={set(this.selectedIndex, this.calculateSelectedIndex())}
+          />}
           <Animated.Code
             exec={
               block([
-                call([this.props.scrollViewTracker], console.log),
+                onChange(
+                  this.selectedIndex,
+                  call([cond(eq(this.gestureState, State.ACTIVE), this.selectedIndex, -1)], ([i]) => {
+                    this.props.updateSelectedID(i === -1 ? i : this.props.areas[i].id);
+                  }),
+                ),
                 onChange(
                   this.gestureState,
                   cond(
@@ -195,11 +210,12 @@ class Movable extends React.Component {
 }
 
 const SendFab = ({
-  disabled, onPress, scrollViewTracker, sections, ...props
+  disabled, onPress, updateSelectedID, scrollViewTracker, areas, ...props
 }) => (
   <Movable
-    sections={sections}
+    areas={areas}
     scrollViewTracker={scrollViewTracker}
+    updateSelectedID={updateSelectedID}
   >
     <FloatingActionButton
       {...props}
@@ -227,6 +243,26 @@ SendFab.propTypes = {
   sections: PropTypes.array,
 };
 
+const traverseSectionsToDimensions = ({ sections }) => {
+  if (sections && sections.length === 2) {
+    const areas = [];
+    const headerHeight = 35;
+    let height = 74 + headerHeight;
+    for (let i = 0; i < sections[0].data.length; i++) {
+      areas.push({
+        bottom: height + CoinRow.height + (sections[0].data.length - 1 === i ? ListFooter.height : 0),
+        id: sections[0].data[i].uniqueId,
+        left: 0,
+        right: deviceUtils.dimensions.width,
+        top: height,
+      });
+      height += CoinRow.height + (sections[0].data.length - 1 === i ? ListFooter.height : 0);
+    }
+    height += headerHeight;
+    return ({ areas });
+  }
+};
+
 export default compose(
   pure,
   withNavigation,
@@ -236,4 +272,6 @@ export default compose(
     },
   }),
   onlyUpdateForKeys(['disabled', 'sections']),
+  withProps(traverseSectionsToDimensions),
+  connect(null, { updateSelectedID }),
 )(SendFab);
