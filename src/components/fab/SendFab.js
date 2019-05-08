@@ -9,12 +9,12 @@ import {
   pure,
   withHandlers, withProps,
 } from 'recompact';
+import connect from 'react-redux/es/connect/connect';
 import Icon from '../icons/Icon';
 import FloatingActionButton from './FloatingActionButton';
 import { deviceUtils } from '../../utils';
 import { CoinRow } from '../coin-row';
 import { ListFooter } from '../list';
-import connect from 'react-redux/es/connect/connect';
 import { setIsWalletEmpty } from '../../redux/isWalletEmpty';
 import { updateSelectedID } from '../../redux/selectedWithFab';
 
@@ -29,6 +29,7 @@ const {
   lessThan,
   spring,
   call,
+  neq,
   onChange,
   block,
   startClock,
@@ -39,7 +40,7 @@ const {
   event,
 } = Animated;
 
-function runSpring(clock, value, velocity, dest, wasRunSpring) {
+function runSpring(clock, value, velocity, dest, wasRunSpring = false) {
   const state = {
     finished: new Value(0),
     position: new Value(0),
@@ -111,6 +112,10 @@ class Movable extends React.Component {
 
   wasRunSpring = new Animated.Value()
 
+  xClockHide = new Clock()
+
+  xClockShow = new Clock()
+
   onGestureEvent = event([
     {
       nativeEvent: {
@@ -133,16 +138,28 @@ class Movable extends React.Component {
     },
   ])
 
-  calculateSelectedIndex = () => this.props.areas.reduce((prev, curr, i) => cond(
-    and(
-      greaterThan(this.absoluteX, curr.left),
-      greaterThan(this.absoluteY, curr.top),
-      lessThan(this.absoluteY, curr.bottom),
-      lessThan(this.absoluteX, curr.right),
-    ), i, prev,
-  ), -1);
+  calculateSelectedIndex = () => cond(
+    or(
+      lessThan(this.absoluteY, 109),
+      and(
+        greaterThan(this.absoluteY, deviceUtils.dimensions.height - 90),
+        greaterThan(this.absoluteX, (deviceUtils.dimensions.width / 2) - 50),
+        lessThan(this.absoluteX, (deviceUtils.dimensions.width / 2) + 50),
+      ),
+    ),
+    -2,
+    this.props.areas.reduce((prev, curr, i) => cond(
+      and(
+        greaterThan(this.absoluteX, curr.left),
+        greaterThan(add(this.absoluteY, this.props.scrollViewTracker), curr.top),
+        lessThan(add(this.absoluteY, this.props.scrollViewTracker), curr.bottom),
+        lessThan(this.absoluteX, curr.right),
+      ), i, prev,
+    ), -1),
+  );
 
   render() {
+    const selectedIndexWithState = cond(eq(this.gestureState, State.ACTIVE), this.selectedIndex, -3);
     return (
       <PanGestureHandler
         onGestureEvent={this.onGestureEvent}
@@ -169,10 +186,27 @@ class Movable extends React.Component {
           <Animated.Code
             exec={
               block([
+       /*         onChange(
+                  this.gestureState,*/
+                cond(
+                  and(eq(this.gestureState, State.ACTIVE), neq(this.props.deleteButtonTranslate, 0)),
+                  [
+                    set(this.props.deleteButtonTranslate, runSpring(this.xClockShow, this.props.deleteButtonTranslate, 0, 0)),
+                    stopClock(this.xClockHide),
+                  ],
+                ),
+                cond(
+                  and(eq(this.gestureState, State.END), neq(this.props.deleteButtonTranslate, 100)),
+                  [
+                    set(this.props.deleteButtonTranslate, runSpring(this.xClockHide, this.props.deleteButtonTranslate, 0, 100)),
+                    stopClock(this.xClockShow),
+                  ],
+                ),
+                // ),
                 onChange(
-                  this.selectedIndex,
-                  call([cond(eq(this.gestureState, State.ACTIVE), this.selectedIndex, -1)], ([i]) => {
-                    this.props.updateSelectedID(i === -1 ? i : this.props.areas[i].id);
+                  selectedIndexWithState,
+                  call([selectedIndexWithState], ([i]) => {
+                    this.props.updateSelectedID(i < 0 ? i : this.props.areas[i].id);
                   }),
                 ),
                 onChange(
@@ -210,12 +244,13 @@ class Movable extends React.Component {
 }
 
 const SendFab = ({
-  disabled, onPress, updateSelectedID, scrollViewTracker, areas, ...props
+  disabled, onPress, deleteButtonTranslate, updateSelectedID, scrollViewTracker, areas, ...props
 }) => (
   <Movable
     areas={areas}
     scrollViewTracker={scrollViewTracker}
     updateSelectedID={updateSelectedID}
+    deleteButtonTranslate={deleteButtonTranslate}
   >
     <FloatingActionButton
       {...props}
@@ -237,6 +272,7 @@ const SendFab = ({
 
 SendFab.propTypes = {
   children: PropTypes.any,
+  deleteButtonTranslate: PropTypes.object,
   disabled: PropTypes.bool,
   onPress: PropTypes.func,
   scrollViewTracker: PropTypes.object,
@@ -261,6 +297,7 @@ const traverseSectionsToDimensions = ({ sections }) => {
     height += headerHeight;
     return ({ areas });
   }
+  return null;
 };
 
 export default compose(

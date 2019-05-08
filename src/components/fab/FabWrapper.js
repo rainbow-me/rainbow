@@ -1,8 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
+import Animated from 'react-native-reanimated';
 import { safeAreaInsetValues } from '../../utils';
 import { FlexItem, RowWithMargins } from '../layout';
 import SendFab from './SendFab';
+import Text from '../text/Text';
+import { hoistStatics, withProps } from 'recompact';
 
 const FabWrapperBottomPosition = 21;
 
@@ -11,6 +14,19 @@ const FabWrapper = ({
 }) => (
   <FlexItem>
     {children}
+    <Animated.Image
+      style={{
+        alignSelf: 'center',
+        bottom: 20,
+        height: 50,
+        position: 'absolute',
+        transform: [{
+          translateY: rest.deleteButtonTranslate,
+        }],
+        width: 50,
+      }}
+      source={require('../../assets/fab-delete.png')}
+    />
     {!disabled && (
       <RowWithMargins
         css={`
@@ -30,6 +46,7 @@ const FabWrapper = ({
 
 FabWrapper.propTypes = {
   children: PropTypes.node,
+  deleteButtonTranslate: PropTypes.object,
   disabled: PropTypes.bool,
   fabs: PropTypes.arrayOf(PropTypes.func).isRequired,
   scrollViewTracker: PropTypes.object,
@@ -42,4 +59,6 @@ FabWrapper.defaultProps = {
 
 FabWrapper.bottomPosition = FabWrapperBottomPosition;
 
-export default FabWrapper;
+export default hoistStatics(withProps({
+  deleteButtonTranslate: new Animated.Value(100),
+}))(FabWrapper);
