@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
+import { pure } from 'recompose';
 import styled from 'styled-components/primitives';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
 import transitions from '../../navigation/transitions';
@@ -91,4 +92,4 @@ SendAssetForm.propTypes = {
   txSpeedRenderer: PropTypes.node,
 };
 
-export default SendAssetForm;
+export default pure(SendAssetForm);
