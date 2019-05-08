@@ -206,7 +206,7 @@ class Movable extends React.Component {
           <Animated.Code
             exec={onChange(this.manageUpAndDownScrolling, [
               // eslint-disable-next-line no-nested-ternary
-              call([this.manageUpAndDownScrolling], ([v]) => this.props.setScrollingVelocity(v === 1 ? 2 : (v === 2 ? -2 : 0))),
+              call([this.manageUpAndDownScrolling], ([v]) => this.props.setScrollingVelocity(v === 1 ? 3 : (v === 2 ? -3 : 0))),
             ])}
           />
           <Animated.Code
@@ -227,7 +227,6 @@ class Movable extends React.Component {
                     stopClock(this.xClockShow),
                   ],
                 ),
-                // ),
                 onChange(
                   selectedIndexWithState,
                   call([selectedIndexWithState], ([i]) => {
