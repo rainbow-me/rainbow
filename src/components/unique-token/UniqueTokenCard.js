@@ -19,7 +19,13 @@ const Container = styled(Centered)`
 `;
 
 const enhance = compose(
-  shouldUpdate((...props) => isNewValueForPath(...props, 'uniqueId')),
+  shouldUpdate((props, nextProps) => {
+    const isNewHeight = isNewValueForPath(props, nextProps, 'height');
+    const isNewUniqueId = isNewValueForPath(props, nextProps, 'uniqueId');
+    const isNewWidth = isNewValueForPath(props, nextProps, 'height');
+
+    return isNewHeight || isNewUniqueId || isNewWidth;
+  }),
   withHandlers({
     onPress: ({ item, onPress }) => () => {
       if (onPress) {
