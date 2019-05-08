@@ -7,7 +7,8 @@ import {
   compose,
   onlyUpdateForKeys,
   pure,
-  withHandlers, withProps,
+  withHandlers,
+  withProps,
 } from 'recompact';
 import connect from 'react-redux/es/connect/connect';
 import Icon from '../icons/Icon';
@@ -15,8 +16,7 @@ import FloatingActionButton from './FloatingActionButton';
 import { deviceUtils } from '../../utils';
 import { CoinRow } from '../coin-row';
 import { ListFooter } from '../list';
-import { setIsWalletEmpty } from '../../redux/isWalletEmpty';
-import { updateSelectedID } from '../../redux/selectedWithFab';
+import { setScrollingVelocity, updateSelectedID } from '../../redux/selectedWithFab';
 
 const {
   set,
@@ -26,6 +26,7 @@ const {
   add,
   and,
   greaterThan,
+  not,
   lessThan,
   spring,
   call,
@@ -75,60 +76,70 @@ function runSpring(clock, value, velocity, dest, wasRunSpring = false) {
   ];
 }
 
+const extraStates = {
+  gestureInactive: -3,
+  nothing: -1,
+  overX: -2,
+};
+
 
 class Movable extends React.Component {
   static propTypes = {
     areas: PropTypes.array,
-    setHighlightedToken: PropTypes.func,
-  }
+    children: PropTypes.any,
+    deleteButtonTranslate: PropTypes.object,
+    scrollViewTracker: PropTypes.object,
+    setScrollingVelocity: PropTypes.func,
+    updateSelectedID: PropTypes.func,
+  };
 
   static defaultProps = {
     scrollOffset: new Animated.Value(0),
-  }
+  };
 
-  dragX = new Animated.Value(0)
+  dragX = new Animated.Value(0);
 
-  selectedIndex = new Animated.Value(0)
+  selectedIndex = new Animated.Value(0);
 
-  absoluteX = new Animated.Value(0)
+  absoluteX = new Animated.Value(0);
 
-  absoluteY = new Animated.Value(0)
+  absoluteY = new Animated.Value(0);
 
-  dragY = new Animated.Value(0)
+  dragY = new Animated.Value(0);
 
-  dragVX = new Animated.Value(0)
+  dragVX = new Animated.Value(0);
 
-  dragVY = new Animated.Value(0)
+  dragVY = new Animated.Value(0);
 
-  gestureState = new Animated.Value(0)
+  gestureState = new Animated.Value(0);
 
-  springOffsetX = new Animated.Value(0)
+  springOffsetX = new Animated.Value(0);
 
-  springOffsetY = new Animated.Value(0)
+  springOffsetY = new Animated.Value(0);
 
-  clockX = new Clock()
+  clockX = new Clock();
 
-  clockY = new Clock()
+  clockY = new Clock();
 
-  wasRunSpring = new Animated.Value()
+  wasRunSpring = new Animated.Value(0);
 
-  xClockHide = new Clock()
+  xClockHide = new Clock();
 
-  xClockShow = new Clock()
+  xClockShow = new Clock();
 
   onGestureEvent = event([
     {
       nativeEvent: {
         absoluteX: this.absoluteX,
         absoluteY: this.absoluteY,
+        state: this.gestureState,
         translationX: this.dragX,
+        translationY: this.dragY,
         velocityX: this.dragVX,
         velocityY: this.dragVY,
-        state: this.gestureState,
-        translationY: this.dragY,
       },
     },
-  ])
+  ]);
 
   onHandlerStateChange = event([
     {
@@ -136,18 +147,20 @@ class Movable extends React.Component {
         state: this.gestureState,
       },
     },
-  ])
+  ]);
+
+  isOverX = and(
+    greaterThan(this.absoluteY, deviceUtils.dimensions.height - 90),
+    greaterThan(this.absoluteX, (deviceUtils.dimensions.width / 2) - 50),
+    lessThan(this.absoluteX, (deviceUtils.dimensions.width / 2) + 50),
+  );
 
   calculateSelectedIndex = () => cond(
     or(
       lessThan(this.absoluteY, 109),
-      and(
-        greaterThan(this.absoluteY, deviceUtils.dimensions.height - 90),
-        greaterThan(this.absoluteX, (deviceUtils.dimensions.width / 2) - 50),
-        lessThan(this.absoluteX, (deviceUtils.dimensions.width / 2) + 50),
-      ),
+      this.isOverX,
     ),
-    -2,
+    extraStates.overX,
     this.props.areas.reduce((prev, curr, i) => cond(
       and(
         greaterThan(this.absoluteX, curr.left),
@@ -155,11 +168,17 @@ class Movable extends React.Component {
         lessThan(add(this.absoluteY, this.props.scrollViewTracker), curr.bottom),
         lessThan(this.absoluteX, curr.right),
       ), i, prev,
-    ), -1),
+    ), extraStates.nothing),
+  );
+
+  manageUpAndDownScrolling = cond(
+    and(greaterThan(this.absoluteY, deviceUtils.dimensions.height - 20), not(this.isOverX)),
+    1,
+    cond(lessThan(this.absoluteY, 120), 2, 0),
   );
 
   render() {
-    const selectedIndexWithState = cond(eq(this.gestureState, State.ACTIVE), this.selectedIndex, -3);
+    const selectedIndexWithState = cond(eq(this.gestureState, State.ACTIVE), this.selectedIndex, extraStates.gestureInactive);
     return (
       <PanGestureHandler
         onGestureEvent={this.onGestureEvent}
@@ -177,6 +196,7 @@ class Movable extends React.Component {
             ],
           }}
         >
+
           {this.props.areas && this.props.areas.length !== 0
           && <Animated.Code
             // Provoke change on reordering
@@ -184,10 +204,14 @@ class Movable extends React.Component {
             exec={set(this.selectedIndex, this.calculateSelectedIndex())}
           />}
           <Animated.Code
+            exec={onChange(this.manageUpAndDownScrolling, [
+              // eslint-disable-next-line no-nested-ternary
+              call([this.manageUpAndDownScrolling], ([v]) => this.props.setScrollingVelocity(v === 1 ? 2 : (v === 2 ? -2 : 0))),
+            ])}
+          />
+          <Animated.Code
             exec={
               block([
-       /*         onChange(
-                  this.gestureState,*/
                 cond(
                   and(eq(this.gestureState, State.ACTIVE), neq(this.props.deleteButtonTranslate, 0)),
                   [
@@ -198,6 +222,7 @@ class Movable extends React.Component {
                 cond(
                   and(eq(this.gestureState, State.END), neq(this.props.deleteButtonTranslate, 100)),
                   [
+                    call([], () => this.props.setScrollingVelocity(0)),
                     set(this.props.deleteButtonTranslate, runSpring(this.xClockHide, this.props.deleteButtonTranslate, 0, 100)),
                     stopClock(this.xClockShow),
                   ],
@@ -243,10 +268,12 @@ class Movable extends React.Component {
   }
 }
 
+const EnhancedMovable = connect(null, { setScrollingVelocity, updateSelectedID })(Movable);
+
 const SendFab = ({
-  disabled, onPress, deleteButtonTranslate, updateSelectedID, scrollViewTracker, areas, ...props
+  disabled, onPress, deleteButtonTranslate, scrollViewTracker, areas, ...props
 }) => (
-  <Movable
+  <EnhancedMovable
     areas={areas}
     scrollViewTracker={scrollViewTracker}
     updateSelectedID={updateSelectedID}
@@ -266,11 +293,12 @@ const SendFab = ({
         }}
       />
     </FloatingActionButton>
-  </Movable>
+  </EnhancedMovable>
 );
 
 
 SendFab.propTypes = {
+  areas: PropTypes.array,
   children: PropTypes.any,
   deleteButtonTranslate: PropTypes.object,
   disabled: PropTypes.bool,
@@ -294,7 +322,6 @@ const traverseSectionsToDimensions = ({ sections }) => {
       });
       height += CoinRow.height + (sections[0].data.length - 1 === i ? ListFooter.height : 0);
     }
-    height += headerHeight;
     return ({ areas });
   }
   return null;
@@ -310,5 +337,4 @@ export default compose(
   }),
   onlyUpdateForKeys(['disabled', 'sections']),
   withProps(traverseSectionsToDimensions),
-  connect(null, { updateSelectedID }),
 )(SendFab);

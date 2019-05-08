@@ -21,6 +21,7 @@ import { CoinRow, CollectiblesSendRow } from '../coin-row';
 import { ListFooter } from '../list';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
+import connect from 'react-redux/es/connect/connect';
 
 export const ViewTypes = {
   HEADER: 0,
@@ -67,12 +68,13 @@ const hasRowChanged = (r1, r2) => {
     || isNewTokenSecond;
 };
 
-export default class RecyclerAssetList extends PureComponent {
+class RecyclerAssetList extends PureComponent {
   static propTypes = {
     fetchData: PropTypes.func,
     hideHeader: PropTypes.bool,
     paddingBottom: PropTypes.number,
     renderAheadOffset: PropTypes.number,
+    scrollingVelocity: PropTypes.number,
     scrollViewTracker: PropTypes.object,
     sections: PropTypes.arrayOf(PropTypes.shape({
       balances: PropTypes.bool,
@@ -92,6 +94,10 @@ export default class RecyclerAssetList extends PureComponent {
   static defaultProps = {
     renderAheadOffset: deviceUtils.dimensions.height,
   };
+
+  rlv = React.createRef();
+
+  position = 0;
 
   constructor(props) {
     super(props);
@@ -201,8 +207,22 @@ export default class RecyclerAssetList extends PureComponent {
     this.isCancelled = false;
   };
 
+  componentDidUpdate(prev) {
+    // sorry
+    if (this.props.scrollingVelocity === 0) {
+      clearInterval(this.interval);
+    }
+    if (this.props.scrollingVelocity && this.props.scrollingVelocity !== prev.scrollingVelocity) {
+      clearInterval(this.interval)
+      this.interval = setInterval(() => {
+        this.rlv.scrollToOffset(0, this.position + this.props.scrollingVelocity);
+      }, 16);
+    }
+  }
+
   componentWillUnmount = () => {
     this.isCancelled = true;
+    clearInterval(this.interval);
   };
 
   getStableId = (index) => {
@@ -258,11 +278,15 @@ export default class RecyclerAssetList extends PureComponent {
       <Wrapper>
         <StickyContainer stickyHeaderIndices={headersIndices}>
           <RecyclerListView
+            ref={ref => { this.rlv = ref; }}
             layoutProvider={this.layoutProvider}
             dataProvider={dataProvider}
             renderAheadOffset={renderAheadOffset}
             rowRenderer={this.rowRenderer}
-            onScroll={event => this.props.scrollViewTracker.setValue(event.nativeEvent.contentOffset.y)}
+            onScroll={event => {
+              this.position = event.nativeEvent.contentOffset.y;
+              this.props.scrollViewTracker.setValue(event.nativeEvent.contentOffset.y);
+            }}
             scrollIndicatorInsets={{
               bottom: safeAreaInsetValues.bottom,
               top: hideHeader ? 0 : AssetListHeader.height,
@@ -276,3 +300,12 @@ export default class RecyclerAssetList extends PureComponent {
     );
   }
 }
+
+const mapStateToProps = ({
+                           selectedWithFab: {
+                             scrollingVelocity,
+                           },
+                         }) => ({
+  scrollingVelocity,
+});
+export default connect(mapStateToProps)(RecyclerAssetList)
