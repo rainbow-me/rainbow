@@ -63,9 +63,6 @@ class QRScannerScreenWithData extends Component {
     } = this.props;
 
     if (!data) return null;
-
-    console.log('QRCode scanned data', data);
-
     this.setState({ enableScanning: false });
     Vibration.vibrate();
 
