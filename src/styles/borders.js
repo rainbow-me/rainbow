@@ -15,7 +15,7 @@ border.default = css`
 `;
 
 border.buildCircle = size => css`
-  ${position.size(size)}
+  ${position.size(size)};
   border-radius: ${size / 2};
 `;
 
