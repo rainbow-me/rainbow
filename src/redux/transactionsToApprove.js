@@ -209,12 +209,12 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE:
-      return {
-        ...state,
-        transactionsToApprove: action.payload,
-      };
-    default:
-      return state;
+  case WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE:
+    return {
+      ...state,
+      transactionsToApprove: action.payload,
+    };
+  default:
+    return state;
   }
 };
