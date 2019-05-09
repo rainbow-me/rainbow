@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
+import { get } from 'lodash';
 import { web3Provider } from '@rainbow-me/rainbow-common';
 import { Alert } from 'react-native';
 import {
@@ -40,6 +41,11 @@ export const loadWallet = async () => {
     return new ethers.Wallet(privateKey, web3Provider);
   }
   return null;
+};
+
+export const getChainId = async () => {
+  const wallet = await loadWallet();
+  return get(wallet, 'provider.chainId');
 };
 
 export const createTransaction = async (to, data, value, gasLimit, gasPrice, nonce = null) => ({
