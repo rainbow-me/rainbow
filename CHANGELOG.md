@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 * Autorefresh for unique tokens
 
 ### Changed
+* Upgrade to WalletConnect v1
 * Fix for app crashing when low ETH after having a previous wallet with enough ETH
 * Fix for push notification not showing up when app completely closed
 * Updated paging logic for transaction history
