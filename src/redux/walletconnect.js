@@ -242,7 +242,10 @@ export const walletConnectSendStatus = (peerId, requestId, result) => async (dis
       if (result) {
         await walletConnector.approveRequest({ id: requestId, result });
       } else {
-        await walletConnector.rejectRequest({ id: requestId, error: 'User rejected request' });
+        await walletConnector.rejectRequest({
+          error: { message: 'User rejected request' },
+          id: requestId,
+        });
       }
     } catch (error) {
       Alert.alert('Failed to send request status to WalletConnect.');
