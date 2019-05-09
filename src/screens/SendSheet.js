@@ -60,6 +60,7 @@ class SendSheet extends Component {
     onSubmit: PropTypes.func,
     recipient: PropTypes.string,
     selected: PropTypes.object,
+    sendableUniqueTokens: PropTypes.arrayOf(PropTypes.object),
     sendClearFields: PropTypes.func,
     sendMaxBalance: PropTypes.func,
     sendUpdateAssetAmount: PropTypes.func,
@@ -67,7 +68,6 @@ class SendSheet extends Component {
     sendUpdateNativeAmount: PropTypes.func,
     sendUpdateRecipient: PropTypes.func,
     sendUpdateSelected: PropTypes.func,
-    sendableUniqueTokens: PropTypes.arrayOf(PropTypes.object),
   }
 
   static defaultProps = {
@@ -166,7 +166,7 @@ class SendSheet extends Component {
 
   onResetAssetSelection = () => this.props.sendUpdateSelected('')
 
-  onSelectAsset = symbol => () => this.props.sendUpdateSelected(symbol)
+  onSelectAsset = symbol => this.props.sendUpdateSelected(symbol)
 
   sendTransaction = () => {
     const {
@@ -194,8 +194,8 @@ class SendSheet extends Component {
       nativeCurrencySymbol,
       recipient,
       selected,
-      sendUpdateRecipient,
       sendableUniqueTokens,
+      sendUpdateRecipient,
       ...props
     } = this.props;
     const showEmptyState = !isValidAddress;
