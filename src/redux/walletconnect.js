@@ -68,6 +68,8 @@ export const walletConnectOnSessionRequest = (uri) => async (dispatch) => {
         const { peerId, peerMeta } = payload.params[0];
         dispatch(setPendingRequest(peerId, walletConnector));
 
+        dispatch(walletConnectApproveSession(peerId));
+        /*
         if (previouslyApprovedDapps.includes(peerMeta.url)) {
           dispatch(walletConnectApproveSession(peerId));
         } else {
@@ -76,6 +78,7 @@ export const walletConnectOnSessionRequest = (uri) => async (dispatch) => {
             params: { peerId, peerMeta },
           });
         }
+        */
       });
     } catch (error) {
       Alert.alert(lang.t('wallet.wallet_connect.error'));
