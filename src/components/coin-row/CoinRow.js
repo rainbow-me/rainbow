@@ -10,7 +10,7 @@ import { withAccountSettings } from '../../hoc';
 import { colors, padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
-import Flex from '../layout/Row';
+import Highlight from '../Highlight';
 
 const CoinRowPaddingVertical = 12;
 
@@ -23,17 +23,6 @@ const Container = styled(Row)`
 const Content = styled(Column)`
   height: ${CoinIcon.size};
   margin-left: ${CoinRowPaddingVertical};
-`;
-
-const Highlight = styled(Flex)`
- left: 0;
- top: 0;
- right: 0;
- bottom: 0;
-  position: absolute;
-  margin: 7px;
-  background-color: ${colors.lightestGrey};
-  border-radius: 10;
 `;
 
 const mapStateToProps = ({
@@ -73,7 +62,7 @@ const CoinRow = enhance(({
   ...props
 }) => (
   <Container align="center" css={containerStyles} color="red">
-    {highlight && <Highlight/>}
+    <Highlight highlight={highlight}/>
     {createElement(coinIconRender, { symbol, ...props })}
     <Content flex={1} justify="space-between" css={contentStyles}>
       <Row align="center" justify="space-between">
