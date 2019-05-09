@@ -5,7 +5,6 @@ import { commonStorage } from '@rainbow-me/rainbow-common';
 import { Alert } from 'react-native';
 import lang from 'i18n-js';
 import WalletConnect from '@walletconnect/react-native';
-import { DEVICE_LANGUAGE } from '../helpers/constants';
 import { getFCMToken, checkPushNotificationPermissions } from '../model/firebase';
 import { addTransactionToApprove } from './transactionsToApprove';
 import Navigation from '../navigation';
@@ -27,8 +26,7 @@ const previouslyApprovedDapps = [
 ];
 
 const getNativeOptions = async () => {
-	// TODO use lang from settings
-  //const language = DEVICE_LANGUAGE.replace(/[-_](\w?)+/gi, '').toLowerCase();
+  //const language = 'en'; // TODO use lang from settings
   //const token = await getFCMToken();
 
   const nativeOptions = {
