@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { cloneElement } from 'react';
 import { View } from 'react-primitives';
+import { withNeverRerender } from '../../hoc';
 import { dimensionsPropType } from '../../utils';
 
 export const pagerPagePropType = PropTypes.shape({
@@ -19,4 +20,4 @@ PagerItem.propTypes = {
   item: pagerPagePropType,
 };
 
-export default PagerItem;
+export default withNeverRerender(PagerItem);
