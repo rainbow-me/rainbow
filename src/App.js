@@ -63,9 +63,10 @@ class App extends Component {
     saveFCMToken();
     this.onTokenRefreshListener = registerTokenRefreshListener();
 
-    //this.notificationListener = registerNotificationListener();
+    /*
+    this.notificationListener = registerNotificationListener();
 
-    //this.notificationOpenedListener = registerNotificationOpenedListener();
+    this.notificationOpenedListener = registerNotificationOpenedListener();
 
     this.notificationListener = firebase.notifications().onNotification(notification => {
       const navState = get(this.navigatorRef, 'state.nav');
@@ -90,6 +91,7 @@ class App extends Component {
       const { callId, sessionId } = notificationOpen.notification.data;
       this.onPushNotificationOpened(callId, sessionId, false);
     });
+    */
   }
 
   handleWalletConfig = async (seedPhrase) => {
@@ -103,13 +105,6 @@ class App extends Component {
       this.props.accountLoadState();
       this.props.walletConnectInitAllConnectors();
       this.props.transactionsToApproveInit();
-        /*
-      const notificationOpen = await firebase.notifications().getInitialNotification();
-      if (notificationOpen) {
-        const { callId, sessionId } = notificationOpen.notification.data;
-        this.onPushNotificationOpened(callId, sessionId, false);
-      }
-      */
       return walletAddress;
     } catch (error) {
       Alert.alert('Error: Failed to initialize wallet.');
@@ -124,29 +119,6 @@ class App extends Component {
   }
 
   handleNavigatorRef = (navigatorRef) => Navigation.setTopLevelNavigator(navigatorRef)
-
-  handleOpenConfirmTransactionModal = (transactionDetails, autoOpened) => {
-    if (!this.navigatorRef) return;
-    const action = StackActions.push({
-      params: { autoOpened, transactionDetails },
-      routeName: 'ConfirmRequest',
-    });
-    Navigation.handleAction(this.navigatorRef, action);
-  }
-
-  onPushNotificationOpened = async (callId, sessionId, autoOpened) => {
-    const transaction = await this.fetchAndAddWalletConnectRequest(callId, sessionId);
-    if (transaction) {
-      this.handleOpenConfirmTransactionModal(transaction, autoOpened);
-    } else {
-      const fetchedTransaction = null; //this.props.transactionIfExists(callId);
-      if (fetchedTransaction) {
-        this.handleOpenConfirmTransactionModal(fetchedTransaction, autoOpened);
-      } else {
-        Alert.alert('This request has expired.');
-      }
-    }
-  }
 
   render = () => (
     <Provider store={store}>
