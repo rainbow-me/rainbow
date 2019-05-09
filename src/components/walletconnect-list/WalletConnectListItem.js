@@ -1,18 +1,18 @@
+import lang from 'i18n-js';
 import { pickBy, values } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import lang from 'i18n-js';
 import { compose, withHandlers } from 'recompact';
-import { withWalletConnectConnections } from '../../hoc';
-import { padding } from '../../styles';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import ContextMenu from '../ContextMenu';
+import { withWalletConnectConnections } from '../../hoc';
 import {
   Centered,
   ColumnWithMargins,
   FlexItem,
   Row,
 } from '../layout';
+import { padding } from '../../styles';
 import { Text, TruncatedText } from '../text';
 
 const ContainerPadding = 15;

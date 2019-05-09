@@ -1,7 +1,7 @@
-import firebase from 'react-native-firebase';
 import lang from 'i18n-js';
 import { get } from 'lodash';
 import { commonStorage } from '@rainbow-me/rainbow-common';
+import firebase from 'react-native-firebase';
 import { Alert } from '../components/alerts';
 
 export const getFCMToken = async () => {

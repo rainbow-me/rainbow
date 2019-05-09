@@ -8,29 +8,29 @@ import {
 import React, { Component } from 'react';
 import { Alert, AppRegistry, AppState } from 'react-native';
 import CodePush from 'react-native-code-push';
-import { StackActions } from 'react-navigation';
 import firebase from 'react-native-firebase';
 import { useScreens } from 'react-native-screens';
+import { StackActions } from 'react-navigation';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
-import { FlexItem } from './components/layout';
-import OfflineBadge from './components/OfflineBadge';
-import {
-  withAccountRefresh,
-  withHideSplashScreen,
-  withRequestsInit,
-  withWalletConnectConnections,
-} from './hoc';
-import store from './redux/store';
-import { walletInit } from './model/wallet';
 import {
   saveFCMToken,
   registerTokenRefreshListener,
   registerNotificationListener,
   registerNotificationOpenedListener,
 } from './model/firebase';
-import Routes from './screens/Routes';
+import {
+  withAccountRefresh,
+  withHideSplashScreen,
+  withRequestsInit,
+  withWalletConnectConnections,
+} from './hoc';
+import { FlexItem } from './components/layout';
 import Navigation from './navigation';
+import OfflineBadge from './components/OfflineBadge';
+import Routes from './screens/Routes';
+import store from './redux/store';
+import { walletInit } from './model/wallet';
 
 if (process.env.NODE_ENV === 'development') {
   console.disableYellowBox = true;
