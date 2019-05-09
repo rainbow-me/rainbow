@@ -10,7 +10,7 @@ const mapStateToProps = ({ transactionsToApprove: { transactionsToApprove } }) =
 const requestsSelector = state => state.requests;
 
 const withRequests = (requests) => {
-  const sortedRequests = reverse(sortBy(values(requests), 'transactionPayload.timestamp'));
+  const sortedRequests = reverse(sortBy(values(requests), 'transactionDisplayDetails.timestampInMs'));
 
   return {
     pendingRequestCount: sortedRequests.length,

@@ -4,7 +4,6 @@ export { default as withAccountReset } from './withAccountReset';
 export { default as withAccountSettings } from './withAccountSettings';
 export { default as withAccountTransactions } from './withAccountTransactions';
 export { default as withActionSheetManager } from './withActionSheetManager';
-export { default as withAddWalletConnector } from './withAddWalletConnector';
 export { default as withAppState } from './withAppState';
 export { default as withBlurTransitionProps } from './withBlurTransitionProps';
 export { default as withFetchingPrices } from './withFetchingPrices';
@@ -21,4 +20,6 @@ export { default as withSafeAreaViewInsetValues } from './withSafeAreaViewInsetV
 export { default as withSendFeedback } from './withSendFeedback';
 export { default as withTransactionConfirmationScreen } from './withTransactionConfirmationScreen';
 export { default as withTransitionProps } from './withTransitionProps';
+export { default as withWalletConnectConfirmationModal } from './withWalletConnectConfirmationModal';
 export { default as withWalletConnectConnections } from './withWalletConnectConnections';
+export { default as withWalletConnectOnSessionRequest } from './withWalletConnectOnSessionRequest';

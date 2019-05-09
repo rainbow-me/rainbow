@@ -13,7 +13,7 @@ import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from './ProfileScreenWithData';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
 import ReceiveModal from './ReceiveModal';
-// import ExamplePage from './ExamplePage';
+import WalletConnectConfirmationModal from './WalletConnectConfirmationModal';
 import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
@@ -45,7 +45,6 @@ const SwipeStack = createMaterialTopTabNavigator({
 
 const MainNavigator = createStackNavigator({
   ConfirmRequest: TransactionConfirmationScreenWithData,
-  // ExamplePage: ExamplePage,
   ExpandedAssetScreen: {
     navigationOptions: {
       effect: 'expanded',
@@ -64,6 +63,15 @@ const MainNavigator = createStackNavigator({
       },
     },
     screen: ReceiveModal,
+  },
+  WalletConnectConfirmationModal: {
+    navigationOptions: {
+      effect: 'expanded',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height,
+      },
+    },
+    screen: WalletConnectConfirmationModal,
   },
   SendSheet: SendSheetWithData,
   SettingsModal: {
