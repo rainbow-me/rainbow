@@ -26,6 +26,8 @@ const getItemLayout = (data, index) => {
 
 const keyExtractor = ({ name }, index) => (`${name}_${index}`);
 
+const renderItem = props => <PagerItem {...props} />;
+
 const Pager = ({
   controlsProps,
   currentIndex,
@@ -45,9 +47,9 @@ const Pager = ({
       onScroll={onScroll}
       onScrollEndDrag={onScrollEndDrag}
       pagingEnabled
-      renderItem={PagerItem}
+      renderItem={renderItem}
       scrollEnabled={scrollEnabled}
-      scrollEventThrottle={16}
+      scrollEventThrottle={32}
       showsHorizontalScrollIndicator={false}
     />
     {scrollEnabled && (
@@ -101,13 +103,13 @@ export default compose(
         newIndex = currentIndex - 1;
       }
 
-      return setCurrentIndex(newIndex);
+      return setCurrentIndex(newIndex < 0 ? 0 : newIndex);
     },
     onScrollEndDrag: ({ dimensions, setCurrentIndex }) => ({ nativeEvent }) => {
       const currentOffsetX = get(nativeEvent, 'contentOffset.x', 0);
       const currentScreenIndex = Math.floor(currentOffsetX / dimensions.width);
 
-      return setCurrentIndex(currentScreenIndex);
+      return setCurrentIndex(currentScreenIndex < 0 ? 0 : currentScreenIndex);
     },
   }),
   onlyUpdateForKeys(['currentIndex']),

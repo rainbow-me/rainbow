@@ -1,7 +1,12 @@
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { onlyUpdateForKeys, shouldUpdate } from 'recompact';
+import {
+  compose,
+  onlyUpdateForKeys,
+  shouldUpdate,
+  withHandlers,
+} from 'recompact';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
@@ -9,46 +14,23 @@ import { RecyclerAssetList } from '../asset-list';
 import { CoinRow, CollectiblesSendRow, SendCoinRow } from '../coin-row';
 import { ListFooter } from '../list';
 
-const CollectiblesRenderItem = ({ item: { onSelectAsset, ...item } }) => (
-  <CollectiblesSendRow
-    item={item}
-    onPress={onSelectAsset(item)}
-  />
+const enhanceRenderItem = compose(
+  withHandlers({
+    onPress: ({ item }) => () => {
+      const { isNft, onSelectAsset, symbol } = item;
+      return onSelectAsset(isNft ? item : symbol);
+    },
+  }),
+  shouldUpdate((props, nextProps) => {
+    const itemIdentifier = buildAssetUniqueIdentifier(props.item);
+    const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.item);
+
+    return itemIdentifier !== nextItemIdentifier;
+  }),
 );
 
-const BalancesRenderItem = ({ item: { onSelectAsset, symbol, ...item } }) => (
-  <SendCoinRow
-    item={item}
-    onPress={onSelectAsset(symbol)}
-    symbol={symbol}
-  />
-);
-
-CollectiblesRenderItem.propTypes = {
-  item: PropTypes.shape({
-    onSelectAsset: PropTypes.func
-  }),
-};
-
-BalancesRenderItem.propTypes = {
-  item: PropTypes.shape({
-    onSelectAsset: PropTypes.func,
-    symbol: PropTypes.string,
-  }),
-};
-
-const enhanceRenderItem = shouldUpdate((props, nextProps) => {
-  const { item } = props;
-  const { item: nextItem } = nextProps;
-
-  const itemIdentifier = buildAssetUniqueIdentifier(item);
-  const nextItemIdentifier = buildAssetUniqueIdentifier(nextItem);
-
-  return itemIdentifier !== nextItemIdentifier;
-});
-
-const TokenItem = React.memo(enhanceRenderItem(BalancesRenderItem));
-const UniqueTokenItem = React.memo(enhanceRenderItem(CollectiblesRenderItem));
+const TokenItem = React.memo(enhanceRenderItem(SendCoinRow));
+const UniqueTokenItem = React.memo(enhanceRenderItem(CollectiblesSendRow));
 
 const balancesRenderItem = item => <TokenItem {...item} />;
 const collectiblesRenderItem = item => <UniqueTokenItem {...item} />;
