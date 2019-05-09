@@ -24,7 +24,6 @@ const WALLETCONNECT_INIT_SESSIONS = 'walletconnect/WALLETCONNECT_INIT_SESSIONS';
 
 // TODO store approved list
 const previouslyApprovedDapps = [
-   'https://manager.balance.io',
 ];
 
 const getNativeOptions = async () => {
