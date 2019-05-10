@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/primitives';
+import { withNeverRerender } from '../../hoc';
 import { colors } from '../../styles';
 
 const ListFooterHeight = 27;
@@ -10,7 +11,7 @@ const Spacer = styled.View`
   width: 100%;
 `;
 
-const ListFooter = () => <Spacer />;
+const ListFooter = withNeverRerender(Spacer);
 
 ListFooter.height = ListFooterHeight;
 
