@@ -14,30 +14,20 @@ import {
 } from '../../hoc';
 import RecyclerActivityList from './RecyclerActivityList';
 
-const ActivityList = ({
-  hasPendingTransaction,
-  header,
-  nativeCurrency,
-  pendingTransactionsCount,
-  sections,
-}) => (
+const ActivityList = ({ header, sections }) => (
   <RecyclerActivityList
-    sections={sections}
     header={header}
+    sections={sections}
   />
 );
 
 ActivityList.propTypes = {
-  hasPendingTransaction: PropTypes.bool,
   header: PropTypes.node,
-  nativeCurrency: PropTypes.string.isRequired,
-  pendingTransactionsCount: PropTypes.number,
   sections: PropTypes.arrayOf(PropTypes.shape({
     data: PropTypes.array,
     renderItem: PropTypes.func,
     title: PropTypes.string.isRequired,
   })),
-  transactionsCount: PropTypes.number,
 };
 
 export default compose(
