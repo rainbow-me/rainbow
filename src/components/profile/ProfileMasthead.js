@@ -4,8 +4,7 @@ import { Clipboard } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
   compose,
-  onlyUpdateForPropTypes,
-  pure,
+  onlyUpdateForKeys,
   withHandlers,
   withState,
 } from 'recompact';
@@ -100,6 +99,5 @@ export default compose(
     },
     onPressReceive: ({ navigation }) => () => navigation.navigate('ReceiveModal'),
   }),
-  pure,
-  onlyUpdateForPropTypes,
+  onlyUpdateForKeys(['accountAddress', 'emojiCount', 'showBottomDivider']),
 )(ProfileMasthead);

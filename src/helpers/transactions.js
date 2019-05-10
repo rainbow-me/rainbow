@@ -20,6 +20,10 @@ const nativeCurrencySelector = state => state.nativeCurrency;
 const requestsSelector = state => state.requests;
 const transactionsSelector = state => state.transactions;
 
+export const buildTransactionUniqueIdentifier = ({ hash, transactionDisplayDetails }) => {
+  return hash || get(transactionDisplayDetails, 'timestampInMs');
+}
+
 export const getTransactionStatus = ({
   accountAddress,
   error,
