@@ -12,6 +12,7 @@ import { createSelector } from 'reselect';
 import {
   walletConnectDisconnectAllByDappName,
   walletConnectInitAllConnectors,
+  walletConnectUpdateTimestamp,
 } from '../redux/walletconnect';
 
 const mapStateToProps = ({ walletconnect: { walletConnectors } }) => ({ walletConnectors });
@@ -45,6 +46,7 @@ export default Component => compose(
   connect(mapStateToProps, {
     walletConnectDisconnectAllByDappName,
     walletConnectInitAllConnectors,
+    walletConnectUpdateTimestamp,
   }),
   withProps(walletConnectSelector),
 )(Component);

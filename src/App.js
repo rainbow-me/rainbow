@@ -47,7 +47,8 @@ class App extends Component {
     settingsInitializeState: PropTypes.func,
     settingsUpdateAccountAddress: PropTypes.func,
     walletConnectInitAllConnectors: PropTypes.func,
-    sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
+    walletConnectUpdateTimestamp: PropTypes.func,
+		sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
     transactionsToApproveInit: PropTypes.func,
   }
 
@@ -56,6 +57,7 @@ class App extends Component {
   navigatorRef = null
 
   async componentDidMount() {
+		AppState.addEventListener('change', this.handleAppStateChange);
     await this.handleWalletConfig();
     this.props.onHideSplashScreen();
     await this.props.refreshAccount();
@@ -112,7 +114,16 @@ class App extends Component {
     }
   }
 
+  handleAppStateChange = async (nextAppState) => {
+    if (this.state.appState.match(/unknown|background/) && nextAppState === 'active') {
+      console.log('update timestamp');
+			this.props.walletConnectUpdateTimestamp();
+    }
+    this.setState({ appState: nextAppState });
+  }
+
   componentWillUnmount() {
+		AppState.removeEventListener('change', this.handleAppStateChange);
     this.notificationListener();
     this.notificationOpenedListener();
     this.onTokenRefreshListener();
