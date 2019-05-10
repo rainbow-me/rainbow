@@ -1,5 +1,9 @@
 import {
-  omitBy, pickBy, forEach, mapValues, values,
+  forEach,
+  mapValues,
+  omitBy,
+  pickBy,
+  values,
 } from 'lodash';
 import { commonStorage } from '@rainbow-me/rainbow-common';
 import { Alert } from 'react-native';
@@ -26,8 +30,8 @@ const previouslyApprovedDapps = [
 ];
 
 const getNativeOptions = async () => {
-  //const language = 'en'; // TODO use lang from settings
-  //const token = await getFCMToken();
+  const language = 'en'; // TODO use lang from settings
+  const token = await getFCMToken();
 
   const nativeOptions = {
     clientMeta: {
@@ -37,15 +41,13 @@ const getNativeOptions = async () => {
       name: '🌈 Rainbow',
       ssl: true,
     },
-    /*
     push: {
-      url: 'https://us-central1-rainbow-me.cloudfunctions.net',
+      url: 'https://wcpush.rainbow.me',
       type: 'fcm',
       token,
       peerMeta: true,
       language,
     },
-    */
   };
 
   return nativeOptions;
@@ -101,7 +103,6 @@ const listenOnNewMessages = walletConnector => dispatch => {
     const transactionDetails = dispatch(addTransactionToApprove(peerId, requestId, payload, peerMeta));
 
     if (transactionDetails) {
-      // TODO
       Navigation.handleAction({
         routeName: 'ConfirmRequest',
         params: { transactionDetails, autoOpened },
