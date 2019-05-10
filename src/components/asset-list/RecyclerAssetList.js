@@ -258,6 +258,7 @@ export default class RecyclerAssetList extends PureComponent {
           <RecyclerListView
             layoutProvider={this.layoutProvider}
             dataProvider={dataProvider}
+            extendedState={{ headersIndices }}
             renderAheadOffset={renderAheadOffset}
             rowRenderer={this.rowRenderer}
             scrollIndicatorInsets={{
