@@ -16,7 +16,7 @@ const privateKeyKey = 'rainbowPrivateKey';
 const addressKey = 'rainbowAddressKey';
 
 export function generateSeedPhrase() {
-  return ethers.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
+  return ethers.utils.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
 }
 
 export const walletInit = async (seedPhrase = null) => {
