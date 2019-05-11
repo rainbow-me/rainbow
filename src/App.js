@@ -6,7 +6,7 @@ import {
   settingsUpdateAccountAddress,
 } from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
-import { Alert, AppRegistry, AppState } from 'react-native';
+import { Alert, AppRegistry, AppState, Linking } from 'react-native';
 import CodePush from 'react-native-code-push';
 import firebase from 'react-native-firebase';
 import { useScreens } from 'react-native-screens';
@@ -55,13 +55,44 @@ class App extends Component {
 
   navigatorRef = null
 
+  parseQueryParams = (queryString) => {
+    const result = {}
+
+    const pairs = (queryString[0] === '?'
+      ? queryString.substr(1)
+      : queryString
+    ).split('&')
+
+    for (let i = 0; i < pairs.length; i++) {
+      const keyArr = pairs[i].match(/\w+(?==)/i) || []
+      const valueArr = pairs[i].match(/=.+/i) || []
+      if (keyArr[0]) {
+        result[decodeURIComponent(keyArr[0])] = decodeURIComponent(
+          valueArr[0].substr(1)
+        )
+      }
+    }
+
+    return result;
+  }
+
+  _handleOpenLinkingURL = (event) => {
+		console.log('HI HI HI', event);
+		const uri = event.url.replace('rainbow://','')
+    const { redirectUrl } = this.parseQueryParams(uri);
+		console.log('redirect url', redirectUrl);
+    Linking.openURL(redirectUrl);
+	}
+
   async componentDidMount() {
+		Linking.addEventListener('url', this._handleOpenLinkingURL);
     await this.handleWalletConfig();
     this.props.onHideSplashScreen();
     await this.props.refreshAccount();
 
     saveFCMToken();
     this.onTokenRefreshListener = registerTokenRefreshListener();
+    this.onLinkingListener = this.registerLinkingListener(); // TODO still needed for when wallet initially opened
 
     /*
     this.notificationListener = registerNotificationListener();
@@ -117,6 +148,15 @@ class App extends Component {
     this.notificationOpenedListener();
     this.onTokenRefreshListener();
   }
+
+  registerLinkingListener = () => {
+		console.log('BYE BYE BYE');
+		Linking.getInitialURL().then((url) => {
+			if (url) {
+				console.log('Initial url is: ' + url);
+			}
+		}).catch(err => console.error('An error occurred', err));
+  };
 
   handleNavigatorRef = (navigatorRef) => Navigation.setTopLevelNavigator(navigatorRef)
 
