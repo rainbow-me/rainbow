@@ -22,3 +22,4 @@ export { default as withSendFeedback } from './withSendFeedback';
 export { default as withTransactionConfirmationScreen } from './withTransactionConfirmationScreen';
 export { default as withTransitionProps } from './withTransitionProps';
 export { default as withWalletConnectConnections } from './withWalletConnectConnections';
+export { default as withFabSendAction } from './withFabSendAction';

@@ -9,7 +9,7 @@ import UniqueTokenCard from './UniqueTokenCard';
 
 const CardMargin = 15;
 const RowPadding = 19;
-const CardSize = (deviceUtils.dimensions.width - (RowPadding * 2) - CardMargin) / 2;
+export const CardSize = (deviceUtils.dimensions.width - (RowPadding * 2) - CardMargin) / 2;
 
 const getHeight = (isFirstRow, isLastRow) => CardSize
   + CardMargin * (isLastRow ? 1.25 : 1)
