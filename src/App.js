@@ -21,7 +21,6 @@ import {
 } from './model/firebase';
 import {
   withAccountRefresh,
-  withHideSplashScreen,
   withRequestsInit,
   withWalletConnectConnections,
 } from './hoc';
@@ -42,7 +41,6 @@ class App extends Component {
   static propTypes = {
     accountLoadState: PropTypes.func,
     getValidWalletConnectors: PropTypes.func,
-    onHideSplashScreen: PropTypes.func,
     refreshAccount: PropTypes.func,
     settingsInitializeState: PropTypes.func,
     settingsUpdateAccountAddress: PropTypes.func,
@@ -57,7 +55,6 @@ class App extends Component {
 
   async componentDidMount() {
     await this.handleWalletConfig();
-    this.props.onHideSplashScreen();
     await this.props.refreshAccount();
 
     saveFCMToken();
@@ -137,7 +134,6 @@ const AppWithRedux = compose(
   withProps({ store }),
   withAccountRefresh,
   withRequestsInit,
-  withHideSplashScreen,
   withWalletConnectConnections,
   connect(
     null,

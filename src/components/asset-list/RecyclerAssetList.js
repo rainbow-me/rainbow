@@ -249,13 +249,14 @@ export default class RecyclerAssetList extends PureComponent {
   };
 
   render() {
-    const { hideHeader, renderAheadOffset } = this.props;
+    const { hideHeader, renderAheadOffset, ...props } = this.props;
     const { dataProvider, headersIndices } = this.state;
 
     return (
       <Wrapper>
         <StickyContainer stickyHeaderIndices={headersIndices}>
           <RecyclerListView
+            {...props}
             layoutProvider={this.layoutProvider}
             dataProvider={dataProvider}
             extendedState={{ headersIndices }}
