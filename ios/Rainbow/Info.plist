@@ -20,6 +20,19 @@
 	<string>0.4.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>rainbow</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>rainbow</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>15</string>
 	<key>CodePushDeploymentKey</key>
