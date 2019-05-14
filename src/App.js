@@ -70,14 +70,14 @@ class App extends Component {
 	}
 
   async componentDidMount() {
-		Linking.addEventListener('url', this._handleOpenLinkingURL);
+    Linking.addEventListener('url', this._handleOpenLinkingURL);
     await this.handleWalletConfig();
     this.props.onHideSplashScreen();
     await this.props.refreshAccount();
 
     saveFCMToken();
     this.onTokenRefreshListener = registerTokenRefreshListener();
-    this.onLinkingListener = this.registerLinkingListener(); // TODO still needed for when wallet initially opened
+    this.onLinkingListener = this.registerLinkingListener();
 
     /*
     this.notificationListener = registerNotificationListener();
@@ -136,11 +136,11 @@ class App extends Component {
   }
 
   registerLinkingListener = () => {
-		Linking.getInitialURL().then((url) => {
-			if (url) {
-				console.log('Initial url is: ' + url);
-			}
-		}).catch(err => console.error('An error occurred', err));
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        console.log('Initial url is: ' + url);
+      }
+    }).catch(err => console.error('An error occurred', err));
   };
 
   handleNavigatorRef = (navigatorRef) => Navigation.setTopLevelNavigator(navigatorRef)
