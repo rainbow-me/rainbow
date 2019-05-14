@@ -75,7 +75,7 @@ class App extends Component {
 	}
 
   async componentDidMount() {
-		AppState.addEventListener('change', this.handleAppStateChange);
+    AppState.addEventListener('change', this.handleAppStateChange);
     Linking.addEventListener('url', this.handleOpenLinkingURL);
     await this.handleWalletConfig();
     await this.props.refreshAccount();
@@ -134,7 +134,7 @@ class App extends Component {
 
   handleAppStateChange = async (nextAppState) => {
     if (nextAppState === 'active') {
-			this.props.walletConnectUpdateTimestamp();
+      this.props.walletConnectUpdateTimestamp();
     }
     if (nextAppState === 'background') {
 			this.props.walletConnectClearTimestamp();
@@ -143,7 +143,7 @@ class App extends Component {
   }
 
   componentWillUnmount() {
-		AppState.removeEventListener('change', this.handleAppStateChange);
+    AppState.removeEventListener('change', this.handleAppStateChange);
     Linking.removeEventListener('url', this.handleOpenLinkingURL);
     this.notificationListener();
     this.notificationOpenedListener();
