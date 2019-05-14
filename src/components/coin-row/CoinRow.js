@@ -22,16 +22,7 @@ const Content = styled(Column)`
   margin-left: ${CoinRowPaddingVertical};
 `;
 
-const mapStateToProps = ({
-  selectedWithFab: {
-    selectedId,
-  },
-}) => ({
-  selectedId,
-});
-
 const enhance = compose(
-  connect(mapStateToProps),
   withAccountSettings,
   withFabSendAction,
 );

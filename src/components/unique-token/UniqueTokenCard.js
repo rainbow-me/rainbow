@@ -24,7 +24,7 @@ const Container = styled(Centered)`
 `;
 
 const Shadow = styled(Highlight)`
-  background-color: ${({ highlight }) => (highlight ? '#FFFFFF55' : colors.transparent)};
+  background-color: ${({ highlight }) => (highlight ? '#FFFFFF33' : colors.transparent)};
 `;
 
 
@@ -82,14 +82,6 @@ UniqueTokenCard.propTypes = {
   size: PropTypes.number,
 };
 
-const mapStateToProps = ({
-  selectedWithFab: {
-    selectedId,
-  },
-}) => ({
-  selectedId,
-});
-
 
 export default compose(
   shouldUpdate((...props) => isNewValueForPath(...props, 'uniqueId')),
@@ -100,7 +92,6 @@ export default compose(
       }
     },
   }),
-  connect(mapStateToProps),
   withProps(({ item: { uniqueId } }) => ({ uniqueId })),
   withFabSendAction,
 )(UniqueTokenCard);

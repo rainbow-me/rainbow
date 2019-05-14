@@ -11,6 +11,7 @@ import {
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives';
+import connect from 'react-redux/es/connect/connect';
 import {
   buildAssetHeaderUniqueIdentifier,
   buildAssetUniqueIdentifier,
@@ -21,7 +22,6 @@ import { CoinRow, CollectiblesSendRow } from '../coin-row';
 import { ListFooter } from '../list';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
-import connect from 'react-redux/es/connect/connect';
 
 export const ViewTypes = {
   HEADER: 0,
@@ -213,7 +213,7 @@ class RecyclerAssetList extends PureComponent {
       clearInterval(this.interval);
     }
     if (this.props.scrollingVelocity && this.props.scrollingVelocity !== prev.scrollingVelocity) {
-      clearInterval(this.interval)
+      clearInterval(this.interval);
       this.interval = setInterval(() => {
         this.rlv.scrollToOffset(0, this.position + this.props.scrollingVelocity * 5);
       }, 30);
@@ -302,10 +302,10 @@ class RecyclerAssetList extends PureComponent {
 }
 
 const mapStateToProps = ({
-                           selectedWithFab: {
-                             scrollingVelocity,
-                           },
-                         }) => ({
+  selectedWithFab: {
+    scrollingVelocity,
+  },
+}) => ({
   scrollingVelocity,
 });
-export default connect(mapStateToProps)(RecyclerAssetList)
+export default connect(mapStateToProps)(RecyclerAssetList);

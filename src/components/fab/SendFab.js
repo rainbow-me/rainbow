@@ -5,6 +5,7 @@ import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import {
   compose,
+  omitProps,
   onlyUpdateForKeys,
   pure,
   withHandlers,
@@ -80,6 +81,7 @@ function runSpring(clock, value, velocity, dest, wasRunSpring = false) {
 const extraStates = {
   gestureInactive: -3,
   nothing: -1,
+  notSendable: -4,
   overX: -2,
 };
 
@@ -270,6 +272,20 @@ class Movable extends React.Component {
 
 const EnhancedMovable = connect(null, { setScrollingVelocity, updateSelectedID })(Movable);
 
+const mapStateToProps = ({
+  selectedWithFab: {
+    selectedId,
+  },
+}) => ({
+  selectedId,
+});
+
+const FloatingActionButtonWithDisabled = compose(
+  connect(mapStateToProps),
+  withProps(({ selectedId }) => ({ greyed: selectedId === extraStates.notSendable, size: FloatingActionButton.size })),
+  omitProps('selectedId'),
+)(FloatingActionButton);
+
 const SendFab = ({
   disabled, onPress, deleteButtonTranslate, scrollViewTracker, areas, tapRef, ...props
 }) => (
@@ -280,7 +296,7 @@ const SendFab = ({
     updateSelectedID={updateSelectedID}
     deleteButtonTranslate={deleteButtonTranslate}
   >
-    <FloatingActionButton
+    <FloatingActionButtonWithDisabled
       tapRef={tapRef}
       {...props}
       scaleTo={1.1}
@@ -295,7 +311,7 @@ const SendFab = ({
           width: 22,
         }}
       />
-    </FloatingActionButton>
+    </FloatingActionButtonWithDisabled>
   </EnhancedMovable>
 );
 
@@ -334,7 +350,7 @@ const traverseSectionsToDimensions = ({ sections }) => {
       for (let j = 0; j < tokens.length; j++) {
         areas.push({
           bottom: height + CardSize,
-          id: tokens[j].uniqueId,
+          id: tokens[j].isSendable ? tokens[j].uniqueId : extraStates.notSendable,
           left: j === 0 ? 0 : deviceUtils.dimensions.width / 2,
           right: deviceUtils.dimensions.width / (j === 0 ? 2 : 1),
           top: height,
