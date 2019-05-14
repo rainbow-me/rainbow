@@ -958,10 +958,10 @@
     reselect "^4.0.0"
     underscore "^1.9.1"
 
-"@react-native-community/async-storage@1.3.3":
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/@react-native-community/async-storage/-/async-storage-1.3.3.tgz#fbcd09c68be0f91362c1bc5696802d8e281cf67d"
-  integrity sha512-mypRivxWCO3apTDWpbvc7owcz5gZH0mI60JWPJDW/Pibr3vk9T7TQPA44b8m43qc/o5cnSEJFZk6l/1T4QEM/Q==
+"@react-native-community/async-storage@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/async-storage/-/async-storage-1.4.0.tgz#11864c8ff61b7f8c7062cb8f5c3a721f6a648ede"
+  integrity sha512-Aksg16keqrxaluFRZwmo8O8ppP9TFylyCEwBElmxeZ+a6DQAvyMn5nS3n+lgSpkYsrwU2ZGVjDluhkjtBrkEqQ==
 
 "@react-native-community/blur@^3.3.1":
   version "3.3.1"
@@ -8729,7 +8729,7 @@ react-native-actionsheet@^2.4.2:
   resolved "https://registry.yarnpkg.com/react-native-actionsheet/-/react-native-actionsheet-2.4.2.tgz#6a00dd51a75ef2c8974312130e405af73191500f"
   integrity sha512-DBoWIvVwuWXuptF4t46pBqkFxaUxS+rsIdHiA05t0n4BdTIDV2R4s9bLEUVOGzb94D7VxIamsXZPA/3mmw+SXg==
 
-react-native-camera@^2.6.0:
+react-native-camera@^2.8.0:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-2.8.0.tgz#51de78be59c05cd259074486aa702f10a98e005b"
   integrity sha512-WqmoQiwapGqQgkh8WcFw1g92xL/n74YLsQCAhGyHp9IN6bN6nCrBG66AvyrsHWxn7/VWJS6FbmXujfeQIL/e8A==
@@ -8771,12 +8771,12 @@ react-native-crypto@^2.1.2:
     pbkdf2 "3.0.8"
     public-encrypt "^4.0.0"
 
-react-native-device-info@^1.4.3:
+react-native-device-info@^1.6.2:
   version "1.6.2"
   resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-1.6.2.tgz#3c867e7be55f59636ebc91cb28e5151dfe5ed352"
   integrity sha512-Ihhqg/rTeFPkMKnyXRi1rg0TDfTaSmyNS6h1ckKORCb3w5jAtZkqmuJ5zezHFsXr0WCJz1pfmfwUZs8YAF7dcA==
 
-react-native-emoji@^1.3.1:
+react-native-emoji@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/react-native-emoji/-/react-native-emoji-1.6.0.tgz#edbee35a51a1506182876adf62fd71ce18913d39"
   integrity sha512-/A7yXFuomU9zEy5xiHMP/eJRH1wgQzySo6CGWa+Vvg2IJJ5hywg4TVYUQJRj8ITxZYhWj1GeMooKtPb03lIheg==
@@ -8806,7 +8806,7 @@ react-native-gesture-handler@^1.2.1:
     invariant "^2.2.2"
     prop-types "^15.5.10"
 
-react-native-haptic-feedback@^1.7.1:
+react-native-haptic-feedback@^1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.8.0.tgz#f20b499041f871f35b409831db90b14a0b4ab257"
   integrity sha512-ZLA2Os4U17EeDmefOk2zXZQE2nu/obmpyxEbtV92utKOQ2AbR62bfvS2IeUm8rlCE5Ktmk0Xn9H5i7hlkoZWLQ==
@@ -8823,7 +8823,7 @@ react-native-iphone-x-helper@^1.2.0:
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.2.0.tgz#9f8a376eb00bc712115abff4420318a0063fa796"
   integrity sha512-xIeTo4s77wwKgBZLVRIZC9tM9/PkXS46Ul76NXmvmixEb3ZwqGdQesR3zRiLMOoIdfOURB6N9bba9po7+x9Bag==
 
-react-native-keychain@^3.1.1:
+react-native-keychain@^3.1.3:
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-3.1.3.tgz#fce176e7b95243cecda1896a7e6bdfe0335d778a"
   integrity sha512-eWUbjYJge4icX8FhWJk/OPlyGxPnW9bZDysBX3WwOG37iurdH692HKnM2Ih+S+0te65RytImvUrcVnHVBbumYg==
@@ -8929,7 +8929,7 @@ react-native-storage@^1.0.1:
     opencollective "^1.0.3"
     opencollective-postinstall "^2.0.2"
 
-react-native-svg@^9.3.7:
+react-native-svg@^9.4.0:
   version "9.4.0"
   resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.4.0.tgz#e428e0eae55aebd2355f1ff4f22675dad4611960"
   integrity sha512-IVJlVbS2dAPerPr927fEi4uXzrPXzlra5ddgyJXZZ2IKA2ZygyYWFZDM+vsQs+Vj20CfL8nOWszQQV57vdQgFg==
