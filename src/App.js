@@ -134,7 +134,7 @@ class App extends Component {
   }
 
   componentWillUnmount() {
-    Linking.removeEventListener('url', this._handleOpenLinkingURL);
+    Linking.removeEventListener('url', this.handleOpenLinkingURL);
     this.notificationListener();
     this.notificationOpenedListener();
     this.onTokenRefreshListener();
