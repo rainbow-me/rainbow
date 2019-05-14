@@ -31,6 +31,7 @@ import Navigation from './navigation';
 import OfflineBadge from './components/OfflineBadge';
 import Routes from './screens/Routes';
 import store from './redux/store';
+import { parseQueryParams } from './utils';
 import { walletInit } from './model/wallet';
 
 if (process.env.NODE_ENV === 'development') {
@@ -57,31 +58,10 @@ class App extends Component {
 
   navigatorRef = null
 
-  parseQueryParams = (queryString) => {
-    const result = {}
-
-    const pairs = (queryString[0] === '?'
-      ? queryString.substr(1)
-      : queryString
-    ).split('&')
-
-    for (let i = 0; i < pairs.length; i++) {
-      const keyArr = pairs[i].match(/\w+(?==)/i) || []
-      const valueArr = pairs[i].match(/=.+/i) || []
-      if (keyArr[0]) {
-        result[decodeURIComponent(keyArr[0])] = decodeURIComponent(
-          valueArr[0].substr(1)
-        )
-      }
-    }
-
-    return result;
-  }
-
   _handleOpenLinkingURL = ({ url }) => {
     Linking.canOpenURL(url).then((supported) => {
       if (supported) {
-        const { uri, redirectUrl } = this.parseQueryParams(url);
+        const { uri, redirectUrl } = parseQueryParams(url);
 
         const redirect = () => Linking.openURL(redirectUrl);
         this.props.walletConnectOnSessionRequest(uri, redirect);
