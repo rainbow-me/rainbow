@@ -6,7 +6,12 @@ import {
   settingsUpdateAccountAddress,
 } from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
-import { Alert, AppRegistry, AppState } from 'react-native';
+import {
+  Alert,
+  AppRegistry,
+  AppState,
+  Linking,
+} from 'react-native';
 import CodePush from 'react-native-code-push';
 import firebase from 'react-native-firebase';
 import { useScreens } from 'react-native-screens';
@@ -23,12 +28,14 @@ import {
   withAccountRefresh,
   withRequestsInit,
   withWalletConnectConnections,
+  withWalletConnectOnSessionRequest,
 } from './hoc';
 import { FlexItem } from './components/layout';
 import Navigation from './navigation';
 import OfflineBadge from './components/OfflineBadge';
 import Routes from './screens/Routes';
 import store from './redux/store';
+import { parseQueryParams } from './utils';
 import { walletInit } from './model/wallet';
 
 if (process.env.NODE_ENV === 'development') {
@@ -44,16 +51,29 @@ class App extends Component {
     refreshAccount: PropTypes.func,
     settingsInitializeState: PropTypes.func,
     settingsUpdateAccountAddress: PropTypes.func,
-    walletConnectInitAllConnectors: PropTypes.func,
     sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
     transactionsToApproveInit: PropTypes.func,
+    walletConnectInitAllConnectors: PropTypes.func,
+    walletConnectOnSessionRequest: PropTypes.func,
   }
 
   state = { appState: AppState.currentState }
 
   navigatorRef = null
 
+  handleOpenLinkingURL = ({ url }) => {
+    Linking.canOpenURL(url).then((supported) => {
+      if (supported) {
+        const { uri, redirectUrl } = parseQueryParams(url);
+
+        const redirect = () => Linking.openURL(redirectUrl);
+        this.props.walletConnectOnSessionRequest(uri, redirect);
+      }
+    });
+	}
+
   async componentDidMount() {
+    Linking.addEventListener('url', this.handleOpenLinkingURL);
     await this.handleWalletConfig();
     await this.props.refreshAccount();
 
@@ -110,6 +130,7 @@ class App extends Component {
   }
 
   componentWillUnmount() {
+    Linking.removeEventListener('url', this.handleOpenLinkingURL);
     this.notificationListener();
     this.notificationOpenedListener();
     this.onTokenRefreshListener();
@@ -135,6 +156,7 @@ const AppWithRedux = compose(
   withAccountRefresh,
   withRequestsInit,
   withWalletConnectConnections,
+  withWalletConnectOnSessionRequest,
   connect(
     null,
     {
