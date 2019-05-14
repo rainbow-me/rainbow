@@ -8,7 +8,7 @@ import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
 import { deviceUtils } from '../utils';
-import ExpandedAssetScreen from './ExpandedAssetScreen';
+import ExpandedAssetScreenWithData from './ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from './ProfileScreenWithData';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
@@ -52,7 +52,7 @@ const MainNavigator = createStackNavigator({
         vertical: deviceUtils.dimensions.height,
       },
     },
-    screen: ExpandedAssetScreen,
+    screen: ExpandedAssetScreenWithData,
   },
   ImportSeedPhraseSheet: ImportSeedPhraseSheetWithData,
   ReceiveModal: {
