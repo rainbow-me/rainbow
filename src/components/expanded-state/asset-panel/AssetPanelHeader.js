@@ -3,11 +3,11 @@ import React from 'react';
 import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, padding } from '../../../styles';
-import { Column, Row } from '../../layout';
+import { Column, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import FloatingPanel from '../FloatingPanel';
 
-const Container = styled(Column)`
+const Container = styled(ColumnWithMargins).attrs({ margin: 4 })`
   ${padding(15, FloatingPanel.padding.x)};
   height: 75;
 `;
@@ -45,7 +45,7 @@ const AssetPanelHeader = ({
   title,
 }) => (
   <Container justify="start">
-    <HeaderRow style={{ marginBottom: 4 }}>
+    <HeaderRow>
       <Title>{title}</Title>
       {price && <Price>{price}</Price>}
     </HeaderRow>

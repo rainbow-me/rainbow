@@ -1,51 +1,36 @@
 import PropTypes from 'prop-types';
-import { withAccountAssets } from '@rainbow-me/rainbow-common';
 import React from 'react';
 import { StatusBar } from 'react-native';
-import {
-  compose,
-  defaultProps,
-  withHandlers,
-  withProps,
-} from 'recompact';
-import { createSelector } from 'reselect';
-import styled from 'styled-components/primitives';
 import { TokenExpandedState, UniqueTokenExpandedState } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import TouchableBackdrop from '../components/TouchableBackdrop';
-import { withNeverRerender } from '../hoc';
 import { padding } from '../styles';
-import { deviceUtils } from '../utils';
+import { safeAreaInsetValues } from '../utils';
 
-const Container = styled(Centered).attrs({ direction: 'column' })`
-  ${({ containerPadding }) => padding(containerPadding)};
-  background-color: transparent;
-  height: 100%;
-`;
+const {
+  bottom: safeAreaBottom,
+  top: safeAreaTop,
+} = safeAreaInsetValues;
 
 const ExpandedAssetScreen = ({
   containerPadding,
   onPressBackground,
-  panelWidth,
   type,
   ...props
-}) => {
-  const expandedStateProps = {
-    ...props,
-    panelWidth,
-  };
-
-  return (
-    <Container containerPadding={containerPadding}>
-      <StatusBar barStyle="light-content" />
-      <TouchableBackdrop onPress={onPressBackground} />
-      {type === 'token'
-        ? <TokenExpandedState {...expandedStateProps} />
-        : <UniqueTokenExpandedState {...expandedStateProps} />
-      }
-    </Container>
-  );
-};
+}) => (
+  <Centered
+    css={padding(safeAreaTop, containerPadding, safeAreaBottom || safeAreaTop)}
+    direction="column"
+    height="100%"
+  >
+    <StatusBar barStyle="light-content" />
+    <TouchableBackdrop onPress={onPressBackground} />
+    {type === 'token'
+      ? <TokenExpandedState {...props} />
+      : <UniqueTokenExpandedState {...props} />
+    }
+  </Centered>
+);
 
 ExpandedAssetScreen.propTypes = {
   asset: PropTypes.object,
@@ -55,40 +40,8 @@ ExpandedAssetScreen.propTypes = {
   type: PropTypes.oneOf(['token', 'unique_token']),
 };
 
-const ExpandedAssetScreenDefaultProps = {
+ExpandedAssetScreen.defaultProps = {
   containerPadding: 15,
 };
 
-ExpandedAssetScreen.defaultProps = ExpandedAssetScreenDefaultProps;
-
-const containerPaddingSelector = state => state.containerPadding;
-const navigationSelector = state => state.navigation;
-
-const withExpandedAssets = (
-  containerPadding,
-  navigation,
-) => {
-  const { asset, type } = navigation.state.params;
-  return {
-    asset,
-    panelWidth: deviceUtils.dimensions.width - (containerPadding * 2),
-    type,
-  };
-};
-
-const buildExpandedAssetsSelector = createSelector(
-  [
-    containerPaddingSelector,
-    navigationSelector,
-  ],
-  withExpandedAssets,
-);
-
-
-export default compose(
-  defaultProps(ExpandedAssetScreenDefaultProps),
-  withAccountAssets,
-  withProps(buildExpandedAssetsSelector),
-  withHandlers({ onPressBackground: ({ navigation }) => () => navigation.goBack() }),
-  withNeverRerender,
-)(ExpandedAssetScreen);
+export default ExpandedAssetScreen;
