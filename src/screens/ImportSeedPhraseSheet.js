@@ -9,31 +9,16 @@ import { MultiLineInput } from '../components/inputs';
 import { Centered, Column, Row } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { Text } from '../components/text';
+import transitionConfig from '../navigation/transitions';
 import { borders, colors, padding } from '../styles';
 
 const Container = styled(Column).attrs({
   align: 'center',
   flex: 1,
 })`
-  ${borders.buildRadius('top', 12)}
-  ${padding(16)};
+  ${borders.buildRadius('top', 12)};
+  ${padding(0, 16, 16)};
   background: ${colors.white};
-  padding-top: 0;
-`;
-
-const Footer = withProps({
-  align: 'start',
-  behavior: 'padding',
-  component: KeyboardAvoidingView,
-  justify: 'space-between',
-  keyboardVerticalOffset: 80,
-  self: 'stretch',
-})(Row);
-
-const HelpButton = styled(BorderlessButton)`
-  ${padding(6, 8)}
-  border: 1px solid #f6f7f7;
-  border-radius: 15px;
 `;
 
 const HandleIcon = styled(Icon).attrs({
@@ -42,6 +27,12 @@ const HandleIcon = styled(Icon).attrs({
 })`
   margin-top: 16px;
   margin-bottom: 2;
+`;
+
+const HelpButton = styled(BorderlessButton)`
+  ${padding(6, 8)}
+  border: 1px solid #f6f7f7;
+  border-radius: 15px;
 `;
 
 const ImportButton = styled(Row).attrs({
@@ -71,53 +62,58 @@ const ImportSeedPhraseSheet = ({
   <Container>
     <HandleIcon />
     <Text size="large" weight="bold">Import</Text>
-    <Centered css={padding(0, 50)} flex={1}>
-      <MultiLineInput
-        align="center"
-        autoFocus
-        editable={!isImporting}
-        enablesReturnKeyAutomatically={true}
-        onChange={onInputChange}
-        onSubmitEditing={onPressEnterKey}
-        placeholder="Type your seed phrase"
-        returnKeyType="done"
-        size="large"
-        style={{ width: '100%' }}
-        value={seedPhrase}
-        weight="semibold"
-      />
-    </Centered>
-    <Footer>
-      <HelpButton onPress={onPressHelp}>
-        <Text
+    <KeyboardAvoidingView
+      behavior="padding"
+      keyboardVerticalOffset={transitionConfig.sheetVerticalOffset + 19}
+    >
+      <Centered css={padding(0, 50)} flex={1}>
+        <MultiLineInput
           align="center"
-          color={colors.alpha(colors.blueGreyDark, 0.8)}
-          weight="medium"
+          autoFocus
+          editable={!isImporting}
+          enablesReturnKeyAutomatically={true}
+          onChange={onInputChange}
+          onSubmitEditing={onPressEnterKey}
+          placeholder="Type your seed phrase"
+          returnKeyType="done"
+          size="large"
+          style={{ width: '100%' }}
+          value={seedPhrase}
+          weight="semibold"
+        />
+      </Centered>
+      <Row align="start" justify="space-between">
+        <HelpButton onPress={onPressHelp}>
+          <Text
+            align="center"
+            color={colors.alpha(colors.blueGreyDark, 0.8)}
+            weight="medium"
+          >
+            Help
+          </Text>
+        </HelpButton>
+        <ImportButton
+          disabled={seedPhrase ? !isSeedPhraseValid : !isClipboardContentsValidSeedPhrase}
+          onPress={seedPhrase ? onImportSeedPhrase : onPasteSeedPhrase}
         >
-          Help
-        </Text>
-      </HelpButton>
-      <ImportButton
-        disabled={seedPhrase ? !isSeedPhraseValid : !isClipboardContentsValidSeedPhrase}
-        onPress={seedPhrase ? onImportSeedPhrase : onPasteSeedPhrase}
-      >
-        {!!seedPhrase && (
-          <Icon
-            color={colors.white}
-            direction="right"
-            name="arrowCircled"
-            style={{ paddingRight: 5 }}
-          />
-        )}
-        <Text
-          color="white"
-          style={{ paddingLeft: seedPhrase ? 5 : 0 }}
-          weight="bold"
-        >
-          {seedPhrase ? 'Import' : 'Paste'}
-        </Text>
-      </ImportButton>
-    </Footer>
+          {!!seedPhrase && (
+            <Icon
+              color={colors.white}
+              direction="right"
+              name="arrowCircled"
+              style={{ paddingRight: 5 }}
+            />
+          )}
+          <Text
+            color="white"
+            style={{ paddingLeft: seedPhrase ? 5 : 0 }}
+            weight="bold"
+          >
+            {seedPhrase ? 'Import' : 'Paste'}
+          </Text>
+        </ImportButton>
+      </Row>
+    </KeyboardAvoidingView>
     {isImporting && (
       <LoadingOverlay title="Importing..." />
     )}
