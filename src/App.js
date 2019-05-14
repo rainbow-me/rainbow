@@ -6,7 +6,12 @@ import {
   settingsUpdateAccountAddress,
 } from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
-import { Alert, AppRegistry, AppState, Linking } from 'react-native';
+import {
+  Alert,
+  AppRegistry,
+  AppState,
+  Linking,
+} from 'react-native';
 import CodePush from 'react-native-code-push';
 import firebase from 'react-native-firebase';
 import { useScreens } from 'react-native-screens';
@@ -58,7 +63,7 @@ class App extends Component {
 
   navigatorRef = null
 
-  _handleOpenLinkingURL = ({ url }) => {
+  handleOpenLinkingURL = ({ url }) => {
     Linking.canOpenURL(url).then((supported) => {
       if (supported) {
         const { uri, redirectUrl } = parseQueryParams(url);
@@ -70,7 +75,7 @@ class App extends Component {
 	}
 
   async componentDidMount() {
-    Linking.addEventListener('url', this._handleOpenLinkingURL);
+    Linking.addEventListener('url', handleOpenLinkingURL);
     await this.handleWalletConfig();
     this.props.onHideSplashScreen();
     await this.props.refreshAccount();
