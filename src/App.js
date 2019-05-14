@@ -75,7 +75,7 @@ class App extends Component {
 	}
 
   async componentDidMount() {
-    Linking.addEventListener('url', handleOpenLinkingURL);
+    Linking.addEventListener('url', this.handleOpenLinkingURL);
     await this.handleWalletConfig();
     this.props.onHideSplashScreen();
     await this.props.refreshAccount();
