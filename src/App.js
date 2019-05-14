@@ -137,7 +137,7 @@ class App extends Component {
       this.props.walletConnectUpdateTimestamp();
     }
     if (nextAppState === 'background') {
-			this.props.walletConnectClearTimestamp();
+      this.props.walletConnectClearTimestamp();
     }
     this.setState({ appState: nextAppState });
   }
