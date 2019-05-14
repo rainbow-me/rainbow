@@ -24,6 +24,7 @@ const WALLETCONNECT_REMOVE_SESSION = 'walletconnect/WALLETCONNECT_REMOVE_SESSION
 
 const WALLETCONNECT_INIT_SESSIONS = 'walletconnect/WALLETCONNECT_INIT_SESSIONS';
 const WALLETCONNECT_INIT_TIMESTAMP = 'walletconnect/WALLETCONNECT_INIT_TIMESTAMP';
+const WALLETCONNECT_CLEAR_TIMESTAMP = 'walletconnect/WALLETCONNECT_CLEAR_TIMESTAMP';
 
 // -- Actions ---------------------------------------- //
 
@@ -107,9 +108,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
 
     if (transactionDetails) {
       const transactionTimestamp = get(transactionDetails, 'transactionDisplayDetails.timestampInMs');
-      console.log('transaction timestamp', transactionTimestamp, new Date(transactionTimestamp));
-      console.log('app init timestamp', appInitTimestamp, new Date(appInitTimestamp));
-      if (transactionTimestamp > appInitTimestamp) {
+      if (appInitTimestamp && (transactionTimestamp > appInitTimestamp)) {
         Navigation.handleAction({
           routeName: 'ConfirmRequest',
           params: { transactionDetails, autoOpened },
@@ -129,16 +128,15 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
   return walletConnector;
 };
 
-export const walletConnectUpdateTimestamp = () => dispatch => {
-  const newDate = Date.now();
-  console.log('wallet connect init timestamp', new Date(newDate)); 
-  dispatch({
-    payload: newDate,
-    type: WALLETCONNECT_INIT_TIMESTAMP,
-  });
-};
+export const walletConnectUpdateTimestamp = () => dispatch => dispatch({
+  payload: Date.now(),
+  type: WALLETCONNECT_INIT_TIMESTAMP,
+});
+
+export const walletConnectClearTimestamp = () => dispatch => dispatch({ type: WALLETCONNECT_CLEAR_TIMESTAMP });
 
 export const walletConnectInitAllConnectors = () => async (dispatch) => {
+  dispatch(walletConnectUpdateTimestamp());
   let walletConnectors = {};
   try {
     const allSessions = await commonStorage.getAllValidWalletConnectSessions();
@@ -295,6 +293,8 @@ export default (state = INITIAL_STATE, action) => {
     return { ...state, walletConnectors: action.payload };
   case WALLETCONNECT_INIT_TIMESTAMP:
     return { ...state, appInitTimestamp: action.payload };
+  case WALLETCONNECT_CLEAR_TIMESTAMP:
+    return { ...state, appInitTimestamp: null };
   default:
     return state;
   }

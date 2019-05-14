@@ -53,6 +53,7 @@ class App extends Component {
     settingsUpdateAccountAddress: PropTypes.func,
     sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
     transactionsToApproveInit: PropTypes.func,
+    walletConnectClearTimestamp: PropTypes.func,
     walletConnectInitAllConnectors: PropTypes.func,
     walletConnectOnSessionRequest: PropTypes.func,
     walletConnectUpdateTimestamp: PropTypes.func,
@@ -132,9 +133,11 @@ class App extends Component {
   }
 
   handleAppStateChange = async (nextAppState) => {
-    if (this.state.appState.match(/unknown|background/) && nextAppState === 'active') {
-      console.log('update timestamp');
+    if (nextAppState === 'active') {
 			this.props.walletConnectUpdateTimestamp();
+    }
+    if (nextAppState === 'background') {
+			this.props.walletConnectClearTimestamp();
     }
     this.setState({ appState: nextAppState });
   }
