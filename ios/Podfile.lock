@@ -114,7 +114,7 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - RNCAsyncStorage (1.3.3):
+  - RNCAsyncStorage (1.4.0):
     - React
   - RNDeviceInfo (1.6.2):
     - React
@@ -236,7 +236,7 @@ SPEC CHECKSUMS:
   react-native-fast-image: 2fd0d5a88fd396cbb908c4307fe9f50c62be4163
   react-native-netinfo: 39c221d058dca040a69e46a083e692bbd65d5ab5
   react-native-version-number: 75301519bb72064ad209a498ed08b128cbcf10e7
-  RNCAsyncStorage: 02c55fdf22e98cdfdddca674e8ce0bb9f4e32fbf
+  RNCAsyncStorage: 0c3ef98facf3fecf455b518d6f52e10fc964c523
   RNDeviceInfo: 367e1d3b3bbebb68f2bbabb3d93e6c8b851ec87d
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNReanimated: c8dd490ca98a4edcba229bfa49f2516c95a43afb
