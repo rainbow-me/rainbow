@@ -24,6 +24,7 @@ import {
   withHideSplashScreen,
   withRequestsInit,
   withWalletConnectConnections,
+  withWalletConnectOnSessionRequest,
 } from './hoc';
 import { FlexItem } from './components/layout';
 import Navigation from './navigation';
@@ -46,9 +47,10 @@ class App extends Component {
     refreshAccount: PropTypes.func,
     settingsInitializeState: PropTypes.func,
     settingsUpdateAccountAddress: PropTypes.func,
-    walletConnectInitAllConnectors: PropTypes.func,
     sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
     transactionsToApproveInit: PropTypes.func,
+    walletConnectInitAllConnectors: PropTypes.func,
+    walletConnectOnSessionRequest: PropTypes.func,
   }
 
   state = { appState: AppState.currentState }
@@ -76,12 +78,15 @@ class App extends Component {
     return result;
   }
 
-  _handleOpenLinkingURL = (event) => {
-		console.log('HI HI HI', event);
-		const uri = event.url.replace('rainbow://','')
-    const { redirectUrl } = this.parseQueryParams(uri);
-		console.log('redirect url', redirectUrl);
-    Linking.openURL(redirectUrl);
+  _handleOpenLinkingURL = ({ url }) => {
+    Linking.canOpenURL(url).then((supported) => {
+      if (supported) {
+        const { uri, redirectUrl } = this.parseQueryParams(url);
+
+        const redirect = () => Linking.openURL(redirectUrl);
+        this.props.walletConnectOnSessionRequest(uri, redirect);
+      }
+    });
 	}
 
   async componentDidMount() {
@@ -144,13 +149,13 @@ class App extends Component {
   }
 
   componentWillUnmount() {
+    Linking.removeEventListener('url', this._handleOpenLinkingURL);
     this.notificationListener();
     this.notificationOpenedListener();
     this.onTokenRefreshListener();
   }
 
   registerLinkingListener = () => {
-		console.log('BYE BYE BYE');
 		Linking.getInitialURL().then((url) => {
 			if (url) {
 				console.log('Initial url is: ' + url);
@@ -179,6 +184,7 @@ const AppWithRedux = compose(
   withRequestsInit,
   withHideSplashScreen,
   withWalletConnectConnections,
+  withWalletConnectOnSessionRequest,
   connect(
     null,
     {

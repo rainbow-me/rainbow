@@ -73,4 +73,13 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 	sourceApplication:sourceApplication annotation:annotation];
 }
 
+// Only if your app is using [Universal Links]
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
+ restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
+{
+ return [RCTLinkingManager application:application
+                  continueUserActivity:userActivity
+										restorationHandler:restorationHandler];
+}
+
 @end
