@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 ### Added
+* Support for universal and deep linking for Safari mobile web browser
+
+### Changed
+* Fix for white screen flash on launch
+* Support for larger NFT sizes
+
+### Removed
+
+## [0.4.0-15](https://github.com/rainbow-me/rainbow/releases/tag/v0.4.0-15)
+### Added
 * Support for sending NFTs
 * Support for sending to ENS addresses
 * Autorefresh for unique tokens
