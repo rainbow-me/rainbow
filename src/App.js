@@ -82,7 +82,6 @@ class App extends Component {
 
     saveFCMToken();
     this.onTokenRefreshListener = registerTokenRefreshListener();
-    this.onLinkingListener = this.registerLinkingListener();
 
     /*
     this.notificationListener = registerNotificationListener();
@@ -139,14 +138,6 @@ class App extends Component {
     this.notificationOpenedListener();
     this.onTokenRefreshListener();
   }
-
-  registerLinkingListener = () => {
-    Linking.getInitialURL().then((url) => {
-      if (url) {
-        console.log('Initial url is: ' + url);
-      }
-    }).catch(err => console.error('An error occurred', err));
-  };
 
   handleNavigatorRef = (navigatorRef) => Navigation.setTopLevelNavigator(navigatorRef)
 
