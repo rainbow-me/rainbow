@@ -31,7 +31,7 @@ const Subtitle = withProps({
   family: 'SFMono',
   size: 'smedium',
   weight: 'regular',
-})(Text);
+})(TruncatedText);
 
 const Title = styled(TruncatedText).attrs(HeadingTextStyles)`
   flex: 1;
