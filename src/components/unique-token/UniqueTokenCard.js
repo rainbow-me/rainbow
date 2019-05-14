@@ -1,6 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, shouldUpdate, withHandlers } from 'recompact';
+import {
+  compose, shouldUpdate, withHandlers, withProps,
+} from 'recompact';
+import connect from 'react-redux/es/connect/connect';
 import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
 import { isNewValueForPath } from '../../utils';
@@ -9,6 +12,8 @@ import InnerBorder from '../InnerBorder';
 import { Centered } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import UniqueTokenImage from './UniqueTokenImage';
+import Highlight from '../Highlight';
+import { withFabSendAction } from '../../hoc';
 
 const UniqueTokenCardBorderRadius = 16;
 
@@ -18,6 +23,11 @@ const Container = styled(Centered)`
   border-radius: ${UniqueTokenCardBorderRadius};
 `;
 
+const Shadow = styled(Highlight)`
+  background-color: ${({ highlight }) => (highlight ? '#FFFFFF55' : colors.transparent)};
+`;
+
+
 const UniqueTokenCard = ({
   item: {
     background,
@@ -26,6 +36,7 @@ const UniqueTokenCard = ({
   },
   onPress,
   size,
+  highlight,
   ...props
 }) => {
   const backgroundColor = background || colors.lightestGrey;
@@ -54,12 +65,14 @@ const UniqueTokenCard = ({
             radius={UniqueTokenCardBorderRadius}
           />
         </Container>
+        <Shadow highlight={highlight}/>
       </ShadowStack>
     </ButtonPressAnimation>
   );
 };
 
 UniqueTokenCard.propTypes = {
+  highlight: PropTypes.bool,
   item: PropTypes.shape({
     background: PropTypes.string,
     // eslint-disable-next-line camelcase
@@ -68,6 +81,15 @@ UniqueTokenCard.propTypes = {
   onPress: PropTypes.func,
   size: PropTypes.number,
 };
+
+const mapStateToProps = ({
+  selectedWithFab: {
+    selectedId,
+  },
+}) => ({
+  selectedId,
+});
+
 
 export default compose(
   shouldUpdate((...props) => isNewValueForPath(...props, 'uniqueId')),
@@ -78,4 +100,7 @@ export default compose(
       }
     },
   }),
+  connect(mapStateToProps),
+  withProps(({ item: { uniqueId } }) => ({ uniqueId })),
+  withFabSendAction,
 )(UniqueTokenCard);

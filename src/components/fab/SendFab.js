@@ -17,6 +17,7 @@ import { deviceUtils } from '../../utils';
 import { CoinRow } from '../coin-row';
 import { ListFooter } from '../list';
 import { setScrollingVelocity, updateSelectedID } from '../../redux/selectedWithFab';
+import { CardSize } from '../unique-token/UniqueTokenRow';
 
 const {
   set,
@@ -90,6 +91,7 @@ class Movable extends React.Component {
     deleteButtonTranslate: PropTypes.object,
     scrollViewTracker: PropTypes.object,
     setScrollingVelocity: PropTypes.func,
+    tapRef: PropTypes.object,
     updateSelectedID: PropTypes.func,
   };
 
@@ -181,6 +183,7 @@ class Movable extends React.Component {
     const selectedIndexWithState = cond(eq(this.gestureState, State.ACTIVE), this.selectedIndex, extraStates.gestureInactive);
     return (
       <PanGestureHandler
+        simultaneousHandlers={this.props.tapRef}
         onGestureEvent={this.onGestureEvent}
         onHandlerStateChange={this.onHandlerStateChange}
       >
@@ -206,7 +209,7 @@ class Movable extends React.Component {
           <Animated.Code
             exec={onChange(this.manageUpAndDownScrolling, [
               // eslint-disable-next-line no-nested-ternary
-              call([this.manageUpAndDownScrolling], ([v]) => this.props.setScrollingVelocity(v === 1 ? 3 : (v === 2 ? -3 : 0))),
+              call([this.manageUpAndDownScrolling], ([v]) => this.props.setScrollingVelocity(v === 1 ? 1 : (v === 2 ? -1 : 0))),
             ])}
           />
           <Animated.Code
@@ -229,9 +232,7 @@ class Movable extends React.Component {
                 ),
                 onChange(
                   selectedIndexWithState,
-                  call([selectedIndexWithState], ([i]) => {
-                    this.props.updateSelectedID(i < 0 ? i : this.props.areas[i].id);
-                  }),
+                  call([selectedIndexWithState], ([i]) => this.props.updateSelectedID(i < 0 ? i : this.props.areas[i].id)),
                 ),
                 onChange(
                   this.gestureState,
@@ -270,16 +271,19 @@ class Movable extends React.Component {
 const EnhancedMovable = connect(null, { setScrollingVelocity, updateSelectedID })(Movable);
 
 const SendFab = ({
-  disabled, onPress, deleteButtonTranslate, scrollViewTracker, areas, ...props
+  disabled, onPress, deleteButtonTranslate, scrollViewTracker, areas, tapRef, ...props
 }) => (
   <EnhancedMovable
+    tapRef={tapRef}
     areas={areas}
     scrollViewTracker={scrollViewTracker}
     updateSelectedID={updateSelectedID}
     deleteButtonTranslate={deleteButtonTranslate}
   >
     <FloatingActionButton
+      tapRef={tapRef}
       {...props}
+      scaleTo={1.1}
       disabled={disabled}
       onPress={onPress}
     >
@@ -304,6 +308,7 @@ SendFab.propTypes = {
   onPress: PropTypes.func,
   scrollViewTracker: PropTypes.object,
   sections: PropTypes.array,
+  tapRef: PropTypes.object,
 };
 
 const traverseSectionsToDimensions = ({ sections }) => {
@@ -313,7 +318,7 @@ const traverseSectionsToDimensions = ({ sections }) => {
     let height = 74 + headerHeight;
     for (let i = 0; i < sections[0].data.length; i++) {
       areas.push({
-        bottom: height + CoinRow.height + (sections[0].data.length - 1 === i ? ListFooter.height : 0),
+        bottom: height + CoinRow.height,
         id: sections[0].data[i].uniqueId,
         left: 0,
         right: deviceUtils.dimensions.width,
@@ -321,6 +326,23 @@ const traverseSectionsToDimensions = ({ sections }) => {
       });
       height += CoinRow.height + (sections[0].data.length - 1 === i ? ListFooter.height : 0);
     }
+
+    height += 50;
+
+    for (let i = 0; i < sections[1].data.length; i++) {
+      const { tokens } = sections[1].data[i];
+      for (let j = 0; j < tokens.length; j++) {
+        areas.push({
+          bottom: height + CardSize,
+          id: tokens[j].uniqueId,
+          left: j === 0 ? 0 : deviceUtils.dimensions.width / 2,
+          right: deviceUtils.dimensions.width / (j === 0 ? 2 : 1),
+          top: height,
+        });
+      }
+      height += 15 + CardSize;
+    }
+
     return ({ areas });
   }
   return null;
@@ -336,4 +358,7 @@ export default compose(
   }),
   onlyUpdateForKeys(['disabled', 'sections']),
   withProps(traverseSectionsToDimensions),
+  withProps({
+    tapRef: React.createRef(),
+  }),
 )(SendFab);

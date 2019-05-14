@@ -54,6 +54,7 @@ const FloatingActionButton = enhance(({
     onPressIn={onPressIn}
     onPressOut={onPressOut}
     style={style}
+    {...props}
   >
     <ShadowStack
       {...borders.buildCircleAsObject(size)}
@@ -85,6 +86,7 @@ FloatingActionButton.propTypes = {
   onPressIn: PropTypes.func,
   onPressOut: PropTypes.func,
   size: PropTypes.number,
+  tapRef: PropTypes.object,
 };
 
 FloatingActionButton.size = 56;
