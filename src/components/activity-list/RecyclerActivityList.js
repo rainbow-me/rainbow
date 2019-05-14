@@ -1,11 +1,12 @@
-import { get } from 'lodash';
+import { has, get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Dimensions } from 'react-native';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import { isNewValueForPath, safeAreaInsetValues } from '../../utils';
+import { buildTransactionUniqueIdentifier } from '../../helpers/transactions';
+import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
 import {
   ContractInteractionCoinRow,
   RequestCoinRow,
@@ -27,7 +28,20 @@ const Wrapper = styled.View`
   width: 100%;
 `;
 
-export default class RecyclerActivityList extends Component {
+const hasRowChanged = (r1, r2) => {
+  if (r1.hash === '_header' && isNewValueForPath(r1, r2, 'header.props.accountAddress')) {
+    return true;
+  }
+
+  const r1Key = r1.hash ? r1.hash : get(r1, 'transactionDisplayDetails.timestampInMs', '');
+  const r2Key = r2.hash ? r2.hash : get(r2, 'transactionDisplayDetails.timestampInMs', '');
+
+  return (r1Key !== r2Key)
+    || isNewValueForPath(r1, r2, 'native.symbol')
+    || isNewValueForPath(r1, r2, 'pending');
+}
+
+export default class RecyclerActivityList extends PureComponent {
   static propTypes = {
     header: PropTypes.node,
     sections: PropTypes.arrayOf(PropTypes.shape({
@@ -38,20 +52,9 @@ export default class RecyclerActivityList extends Component {
 
   constructor(args) {
     super(args);
-    const { width } = Dimensions.get('window');
+
     this.state = {
-      dataProvider: new DataProvider((r1, r2) => {
-        if (r1.hash === '_header' && isNewValueForPath(r1, r2, 'header.props.accountAddress')) {
-          return true;
-        }
-
-        const r1Key = r1.hash ? r1.hash : get(r1, 'transactionDisplayDetails.timestampInMs', '');
-        const r2Key = r2.hash ? r2.hash : get(r2, 'transactionDisplayDetails.timestampInMs', '');
-
-        return (r1Key !== r2Key)
-          || isNewValueForPath(r1, r2, 'native.symbol')
-          || isNewValueForPath(r1, r2, 'pending');
-      }),
+      dataProvider: new DataProvider(hasRowChanged, this.getStableId),
       headersIndices: [],
     };
 
@@ -73,7 +76,7 @@ export default class RecyclerActivityList extends Component {
       },
       (type, dim) => {
         // This values has been hardcoded for omitting imports' cycle
-        dim.width = width;
+        dim.width = deviceUtils.dimensions.width;
         if (type === ViewTypes.ROW) {
           dim.height = 64;
         } else if (type === ViewTypes.FOOTER) {
@@ -108,15 +111,20 @@ export default class RecyclerActivityList extends Component {
     };
   }
 
+  getStableId = (index) => {
+    const row = get(this.state, `dataProvider._data[${index}]`);
+    return buildTransactionUniqueIdentifier(row);
+  };
+
   rowRenderer = (type, data) => {
     if (type === ViewTypes.COMPONENT_HEADER) {
       return data.header;
     }
     if (type === ViewTypes.HEADER) {
-      return <ActivityListHeader {...data}/>;
+      return <ActivityListHeader {...data} />;
     }
     if (type === ViewTypes.FOOTER) {
-      return <ListFooter/>;
+      return <ListFooter />;
     }
     if (!data) return null;
     if (!data.hash) return <RequestCoinRow item={data} />;
@@ -124,21 +132,19 @@ export default class RecyclerActivityList extends Component {
     return <TransactionCoinRow item={data} />;
   }
 
-  render() {
-    return (
-      <Wrapper>
-        <StickyContainer stickyHeaderIndices={this.state.headersIndices}>
-          <RecyclerListView
-            dataProvider={this.state.dataProvider}
-            layoutProvider={this.layoutProvider}
-            renderAheadOffset={1000}
-            rowRenderer={this.rowRenderer}
-            scrollIndicatorInsets={{
-              bottom: safeAreaInsetValues.bottom,
-            }}
-          />
-        </StickyContainer>
-      </Wrapper>
-    );
-  }
+  render = () => (
+    <Wrapper>
+      <StickyContainer stickyHeaderIndices={this.state.headersIndices}>
+        <RecyclerListView
+          dataProvider={this.state.dataProvider}
+          layoutProvider={this.layoutProvider}
+          renderAheadOffset={deviceUtils.dimensions.height}
+          rowRenderer={this.rowRenderer}
+          scrollIndicatorInsets={{
+            bottom: safeAreaInsetValues.bottom,
+          }}
+        />
+      </StickyContainer>
+    </Wrapper>
+  )
 }

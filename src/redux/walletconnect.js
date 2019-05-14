@@ -55,7 +55,7 @@ const getNativeOptions = async () => {
   return nativeOptions;
 };
 
-export const walletConnectOnSessionRequest = (uri) => async (dispatch) => {
+export const walletConnectOnSessionRequest = (uri, callback) => async (dispatch) => {
   let walletConnector = null;
   try {
     const nativeOptions = await getNativeOptions();
@@ -69,7 +69,7 @@ export const walletConnectOnSessionRequest = (uri) => async (dispatch) => {
         const { peerId, peerMeta } = payload.params[0];
         dispatch(setPendingRequest(peerId, walletConnector));
 
-        dispatch(walletConnectApproveSession(peerId));
+        dispatch(walletConnectApproveSession(peerId, callback));
         /*
         if (previouslyApprovedDapps.includes(peerMeta.url)) {
           dispatch(walletConnectApproveSession(peerId));
@@ -213,7 +213,7 @@ export const removeWalletConnector = (peerId) => (dispatch, getState) => {
   dispatch({ type: WALLETCONNECT_REMOVE_SESSION, payload: updatedWalletConnectors });
 };
 
-export const walletConnectApproveSession = (peerId) => (dispatch, getState) => {
+export const walletConnectApproveSession = (peerId, callback) => (dispatch, getState) => {
   const { accountAddress, chainId } = getState().settings;
 
   const walletConnector = dispatch(getPendingRequest(peerId));
@@ -225,6 +225,9 @@ export const walletConnectApproveSession = (peerId) => (dispatch, getState) => {
   const listeningWalletConnector = dispatch(listenOnNewMessages(walletConnector));
 
   dispatch(setWalletConnector(listeningWalletConnector));
+  if (callback) {
+    callback();
+  }
 };
 
 export const walletConnectRejectSession = (peerId) => (dispatch, getState) => {
