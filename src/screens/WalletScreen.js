@@ -1,6 +1,6 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
-import PropTypes from 'prop-types';
 import { withAccountAssets } from '@rainbow-me/rainbow-common';
+import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
 import {
@@ -21,6 +21,7 @@ import {
   withAccountSettings,
   withBlurTransitionProps,
   withFetchingPrices,
+  withHideSplashScreen,
   withIsWalletEmpty,
 } from '../hoc';
 import { position } from '../styles';
@@ -35,6 +36,7 @@ class WalletScreen extends PureComponent {
     isEmpty: PropTypes.bool.isRequired,
     isFocused: PropTypes.bool,
     navigation: PropTypes.object,
+    onHideSplashScreen: PropTypes.func,
     refreshAccount: PropTypes.func,
     sections: PropTypes.array,
     showBlur: PropTypes.bool,
@@ -58,6 +60,7 @@ class WalletScreen extends PureComponent {
       blurOpacity,
       isEmpty,
       navigation,
+      onHideSplashScreen,
       refreshAccount,
       sections,
       showBlur,
@@ -73,6 +76,7 @@ class WalletScreen extends PureComponent {
           <AssetList
             fetchData={refreshAccount}
             isEmpty={isEmpty}
+            onLayout={onHideSplashScreen}
             sections={sections}
           />
         </FabWrapper>
@@ -87,6 +91,7 @@ export default compose(
   withAccountRefresh,
   withAccountSettings,
   withFetchingPrices,
+  withHideSplashScreen,
   withSafeTimeout,
   withNavigation,
   withNavigationFocus,

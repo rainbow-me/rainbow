@@ -15,11 +15,13 @@ const AssetList = ({
   hideHeader,
   isEmpty,
   sections,
+  ...props
 }) => (
   isEmpty
     ? <AssetListSkeleton />
     : (
       <RecyclerAssetList
+        {...props}
         enablePullToRefresh
         fetchData={fetchData}
         hideHeader={hideHeader}
