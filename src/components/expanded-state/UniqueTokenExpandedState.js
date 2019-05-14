@@ -1,3 +1,4 @@
+import withViewLayoutProps from '@hocs/with-view-layout-props';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { InteractionManager, Linking, Share } from 'react-native';
@@ -10,7 +11,7 @@ import {
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { withImageDimensionsCache } from '../../hoc';
 import { colors } from '../../styles';
-import { dimensionsPropType } from '../../utils';
+import { deviceUtils, dimensionsPropType, safeAreaInsetValues } from '../../utils';
 import { Pager } from '../pager';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
 import {
@@ -28,7 +29,11 @@ const PagerControlsColorVariants = {
 
 const UniqueTokenExpandedState = ({
   asset,
+  containerHeight,
+  containerWidth,
   imageDimensions,
+  maxImageHeight,
+  onLayout,
   onPressSend,
   onPressShare,
   onPressView,
@@ -45,8 +50,8 @@ const UniqueTokenExpandedState = ({
         borderRadius={FloatingPanel.borderRadius}
         imageUrl={asset.image_preview_url}
         item={asset}
-        resizeMode="cover"
-        size={panelHeight}
+        resizeMode="contain"
+        size={maxImageHeight}
       />
     ),
     name: 'UniqueTokenImage',
@@ -61,21 +66,23 @@ const UniqueTokenExpandedState = ({
 
   return (
     <FloatingPanels>
-      <FloatingPanel color={panelColor} height={panelHeight} width={panelWidth}>
-        {/*
-            TODO XXX: THIS FLOATING PANEL SHOULD HAVE HORIZONTAL PADDING
-            IF THE IMAGE IS A PERFECT SQUARE
-        */}
-        <Pager
-          controlsProps={{
-            bottom: UniqueTokenAttributes.padding,
-            color: colors.getTextColorForBackground(panelColor, PagerControlsColorVariants),
-          }}
-          dimensions={{ height: panelHeight, width: panelWidth }}
-          pages={PanelPages}
-        />
-      </FloatingPanel>
-      <AssetPanel>
+      {!!maxImageHeight && (
+        <FloatingPanel color={panelColor} height={panelHeight} width={panelWidth}>
+          {/*
+              TODO XXX: THIS FLOATING PANEL SHOULD HAVE HORIZONTAL PADDING
+              IF THE IMAGE IS A PERFECT SQUARE
+          */}
+          <Pager
+            controlsProps={{
+              bottom: UniqueTokenAttributes.padding,
+              color: colors.getTextColorForBackground(panelColor, PagerControlsColorVariants),
+            }}
+            dimensions={{ height: panelHeight, width: panelWidth }}
+            pages={PanelPages}
+          />
+        </FloatingPanel>
+      )}
+      <AssetPanel onLayout={onLayout}>
         <AssetPanelHeader
           subtitle={subtitle}
           title={title}
@@ -103,6 +110,8 @@ const UniqueTokenExpandedState = ({
 UniqueTokenExpandedState.propTypes = {
   asset: PropTypes.object,
   imageDimensions: dimensionsPropType,
+  maxImageHeight: PropTypes.number,
+  onLayout: PropTypes.func.isRequired,
   onPressSend: PropTypes.func,
   onPressShare: PropTypes.func,
   onPressView: PropTypes.func,
@@ -115,6 +124,16 @@ UniqueTokenExpandedState.propTypes = {
 
 export default compose(
   withImageDimensionsCache,
+  withViewLayoutProps(({ height: siblingHeight }) => {
+    const { bottom, top } = safeAreaInsetValues;
+
+    const viewportPadding = (bottom ? (bottom + top) : (top + top));
+    const viewportHeight = deviceUtils.dimensions.height - viewportPadding;
+
+    return {
+      maxImageHeight: viewportHeight - siblingHeight - FloatingPanels.margin,
+    };
+  }),
   withProps(({ asset, imageDimensionsCache }) => ({
     imageDimensions: imageDimensionsCache[asset.image_preview_url],
     panelColor: asset.background || colors.lightestGrey,
@@ -123,11 +142,22 @@ export default compose(
       : asset.asset_contract.name,
     title: buildUniqueTokenName(asset),
   })),
-  withProps(({ imageDimensions, panelWidth }) => ({
-    panelHeight: !imageDimensions
-      ? panelWidth
-      : ((panelWidth * imageDimensions.height) / imageDimensions.width),
-  })),
+  withProps(({ asset: { background }, imageDimensions, maxImageHeight, panelWidth }) => {
+    let panelHeight = imageDimensions
+        ? ((panelWidth * imageDimensions.height) / imageDimensions.width)
+        : panelWidth;
+
+    const panelDimensions = { panelHeight };
+
+    if (panelHeight > maxImageHeight) {
+      panelDimensions.panelHeight = maxImageHeight;
+      panelDimensions.panelWidth = background
+        ? panelWidth
+        : ((maxImageHeight * imageDimensions.width) / imageDimensions.height);
+    }
+
+    return panelDimensions;
+  }),
   withHandlers({
     onPressSend: ({ navigation, asset }) => () => {
       navigation.goBack();

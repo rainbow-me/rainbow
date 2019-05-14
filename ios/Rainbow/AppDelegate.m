@@ -7,9 +7,9 @@
 
 #import "AppDelegate.h"
 #import <CodePush/CodePush.h>
-
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
+#import <React/RCTLinkingManager.h>
 #import <React/RCTRootView.h>
 #import <Firebase.h>
 #import "RNFirebaseMessaging.h"
@@ -64,6 +64,22 @@
 
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
     [[RNFirebaseMessaging instance] didRegisterUserNotificationSettings:notificationSettings];
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+	return [RCTLinkingManager application:application openURL:url
+	sourceApplication:sourceApplication annotation:annotation];
+}
+
+// Only if your app is using [Universal Links]
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
+ restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
+{
+ return [RCTLinkingManager application:application
+                  continueUserActivity:userActivity
+										restorationHandler:restorationHandler];
 }
 
 @end
