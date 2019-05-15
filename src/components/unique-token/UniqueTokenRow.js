@@ -1,9 +1,8 @@
-import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { shouldUpdate } from 'recompact';
+import { onlyUpdateForKeys } from 'recompact';
 import { padding, position } from '../../styles';
-import { deviceUtils, isNewValueForPath } from '../../utils';
+import { deviceUtils } from '../../utils';
 import { Row } from '../layout';
 import UniqueTokenCard from './UniqueTokenCard';
 
@@ -15,9 +14,7 @@ const getHeight = (isFirstRow, isLastRow) => CardSize
   + CardMargin * (isLastRow ? 1.25 : 1)
   + (isFirstRow ? CardMargin : 0);
 
-const removeNullItems = e => !isNil(e);
-
-const enhance = shouldUpdate((...props) => isNewValueForPath(...props, 'uniqueId'));
+const enhance = onlyUpdateForKeys(['isFirstRow', 'isLastRow', 'uniqueId']);
 
 const UniqueTokenRow = enhance(({
   isFirstRow,
@@ -34,13 +31,13 @@ const UniqueTokenRow = enhance(({
       width: 100%;
     `}
   >
-    {item.filter(removeNullItems).map((uniqueToken, itemIndex) => (
+    {item.map((uniqueToken, itemIndex) => (
       <UniqueTokenCard
         {...position.sizeAsObject(CardSize)}
         item={uniqueToken}
         key={uniqueToken.id}
-        style={{ marginLeft: (itemIndex >= 1) ? CardMargin : 0 }}
         onPress={onPress}
+        style={{ marginLeft: (itemIndex >= 1) ? CardMargin : 0 }}
       />
     ))}
   </Row>
