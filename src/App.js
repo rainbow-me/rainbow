@@ -72,7 +72,7 @@ class App extends Component {
         this.props.walletConnectOnSessionRequest(uri, redirect);
       }
     });
-	}
+  }
 
   async componentDidMount() {
     AppState.addEventListener('change', this.handleAppStateChange);
