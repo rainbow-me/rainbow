@@ -52,9 +52,12 @@ target 'Rainbow' do
   pod 'react-native-camera', :path => '../node_modules/react-native-camera'
   pod 'react-native-fast-image', :path => '../node_modules/react-native-fast-image'
   pod 'react-native-version-number', :path => '../node_modules/react-native-version-number'
-  
+
   pod 'RNDeviceInfo', :path => '../node_modules/react-native-device-info'
   pod 'RNLanguages', :path => '../node_modules/react-native-languages'
   pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
   pod 'RNScreens', :path => '../node_modules/react-native-screens'
+
+  pod 'FLAnimatedImage'
+  pod 'libwebp'
 end
