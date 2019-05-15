@@ -215,7 +215,7 @@ class RecyclerAssetList extends PureComponent {
     if (this.props.scrollingVelocity && this.props.scrollingVelocity !== prev.scrollingVelocity) {
       clearInterval(this.interval);
       this.interval = setInterval(() => {
-        this.rlv.scrollToOffset(0, this.position + this.props.scrollingVelocity * 5);
+        this.rlv.scrollToOffset(0, this.position + this.props.scrollingVelocity * 10);
       }, 30);
     }
   }
