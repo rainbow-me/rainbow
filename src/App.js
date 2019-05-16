@@ -73,7 +73,7 @@ class App extends Component {
         this.props.walletConnectOnSessionRequest(uri, redirect);
       }
     });
-	}
+  }
 
   onPushNotificationOpened = (topic, autoOpened = false) => {
     // TODO if on Confirm Request: redisplay local notification

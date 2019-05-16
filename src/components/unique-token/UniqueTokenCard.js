@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, shouldUpdate, withHandlers } from 'recompact';
+import stylePropType from 'react-style-proptype';
+import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
-import { isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import InnerBorder from '../InnerBorder';
 import { Centered } from '../layout';
@@ -12,20 +12,8 @@ import UniqueTokenImage from './UniqueTokenImage';
 
 const UniqueTokenCardBorderRadius = 16;
 
-const Container = styled(Centered)`
-  ${position.cover};
-  background-color: ${({ backgroundColor }) => backgroundColor};
-  border-radius: ${UniqueTokenCardBorderRadius};
-`;
-
 const enhance = compose(
-  shouldUpdate((props, nextProps) => {
-    const isNewHeight = isNewValueForPath(props, nextProps, 'height');
-    const isNewUniqueId = isNewValueForPath(props, nextProps, 'uniqueId');
-    const isNewWidth = isNewValueForPath(props, nextProps, 'height');
-
-    return isNewHeight || isNewUniqueId || isNewWidth;
-  }),
+  onlyUpdateForKeys(['height', 'style', 'uniqueId', 'width']),
   withHandlers({
     onPress: ({ item, onPress }) => () => {
       if (onPress) {
@@ -46,6 +34,7 @@ const UniqueTokenCard = enhance(({
   onPress,
   resizeMode,
   shadows,
+  style,
   width,
   ...props
 }) => {
@@ -63,9 +52,16 @@ const UniqueTokenCard = enhance(({
         borderRadius={UniqueTokenCardBorderRadius}
         height={height}
         shadows={shadows}
+        style={style}
         width={width}
       >
-        <Container backgroundColor={backgroundColor} shouldRasterizeIOS>
+        <Centered
+          style={{
+            ...position.coverAsObject,
+            backgroundColor,
+            borderRadius: UniqueTokenCardBorderRadius,
+          }}
+        >
           <UniqueTokenImage
             backgroundColor={backgroundColor}
             resizeMode={resizeMode}
@@ -76,7 +72,7 @@ const UniqueTokenCard = enhance(({
             opacity={0.04}
             radius={UniqueTokenCardBorderRadius}
           />
-        </Container>
+        </Centered>
       </ShadowStack>
     </ButtonPressAnimation>
   );
@@ -93,6 +89,7 @@ UniqueTokenCard.propTypes = {
   onPress: PropTypes.func,
   resizeMode: UniqueTokenImage.propTypes.resizeMode,
   shadows: PropTypes.array,
+  style: stylePropType,
   width: PropTypes.number,
 };
 
