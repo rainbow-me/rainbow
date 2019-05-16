@@ -1,4 +1,4 @@
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, last } from 'lodash';
 import PropTypes from 'prop-types';
 import {
   accountLoadState,
@@ -62,8 +62,6 @@ class App extends Component {
 
   state = { appState: AppState.currentState }
 
-  navigatorRef = null
-
   handleOpenLinkingURL = ({ url }) => {
     Linking.canOpenURL(url).then((supported) => {
       if (supported) {
@@ -75,8 +73,7 @@ class App extends Component {
     });
   }
 
-  onPushNotificationOpened = (topic, autoOpened = false) => {
-    // TODO if on Confirm Request: redisplay local notification
+  onPushNotificationOpened = (topic, autoOpened = false, fromLocal = false) => {
     const requests = this.props.transactionsForTopic(topic);
     if (requests && requests.length === 1) {
       const request = requests[0];
@@ -88,6 +85,13 @@ class App extends Component {
           params: { transactionDetails: request, autoOpened },
         });
       }
+    }
+    if (fromLocal) {
+      const request = last(requests);
+      return Navigation.handleAction({
+        routeName: 'ConfirmRequest',
+        params: { transactionDetails: request, autoOpened },
+      });
     }
     return Navigation.handleAction({ routeName: 'ProfileScreen' });
   };
@@ -109,29 +113,24 @@ class App extends Component {
 
     // notification while app in foreground
     this.notificationListener = firebase.notifications().onNotification(notification => {
-      const topic = get(notification, 'data.topic');
-      this.onPushNotificationOpened(topic, true);
-      /*
-      const navState = get(this.navigatorRef, 'state.nav');
-      const route = Navigation.getActiveRouteName(navState);
-      const topic = get(notification, 'data.topic');
+      const route = Navigation.getActiveRouteName();
       if (route === 'ConfirmRequest') {
         const localNotification = new firebase.notifications.Notification()
           .setTitle(notification.title)
           .setBody(notification.body)
-          .setData(notification.data);
-
+          .setData({ ...notification.data, fromLocal: true });
         firebase.notifications().displayNotification(localNotification);
       } else {
+        const topic = get(notification, 'data.topic');
         this.onPushNotificationOpened(topic, true);
       }
-      */
     });
 
     // notification opened from background
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened(notificationOpen => {
       const topic = get(notificationOpen, 'notification.data.topic');
-      this.onPushNotificationOpened(topic, false);
+      const fromLocal = get(notificationOpen, 'notification.data.fromLocal', false);
+      this.onPushNotificationOpened(topic, false, fromLocal);
     });
   }
 
