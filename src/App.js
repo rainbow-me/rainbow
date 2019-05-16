@@ -52,6 +52,7 @@ class App extends Component {
     settingsInitializeState: PropTypes.func,
     settingsUpdateAccountAddress: PropTypes.func,
     sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
+    transactionsForTopic: PropTypes.func,
     transactionsToApproveInit: PropTypes.func,
     walletConnectClearTimestamp: PropTypes.func,
     walletConnectInitAllConnectors: PropTypes.func,
@@ -74,6 +75,23 @@ class App extends Component {
     });
 	}
 
+  onPushNotificationOpened = (topic, autoOpened = false) => {
+    // TODO if on Confirm Request: redisplay local notification
+    const requests = this.props.transactionsForTopic(topic);
+    if (requests && requests.length === 1) {
+      const request = requests[0];
+      const transactionTimestamp = get(request, 'transactionDisplayDetails.timestampInMs');
+      if (!autoOpened || (this.props.appInitTimestamp
+            && (transactionTimestamp > this.props.appInitTimestamp))) {
+        return Navigation.handleAction({
+          routeName: 'ConfirmRequest',
+          params: { transactionDetails: request, autoOpened },
+        });
+      }
+    }
+    return Navigation.handleAction({ routeName: 'ProfileScreen' });
+  };
+
   async componentDidMount() {
     AppState.addEventListener('change', this.handleAppStateChange);
     Linking.addEventListener('url', this.handleOpenLinkingURL);
@@ -83,35 +101,33 @@ class App extends Component {
     saveFCMToken();
     this.onTokenRefreshListener = registerTokenRefreshListener();
 
-    /*
-    this.notificationListener = registerNotificationListener();
-
-    this.notificationOpenedListener = registerNotificationOpenedListener();
-
+    // notification while app in foreground
     this.notificationListener = firebase.notifications().onNotification(notification => {
+      const topic = get(notification, 'data.topic');
+      this.onPushNotificationOpened(topic, true);
+      /*
       const navState = get(this.navigatorRef, 'state.nav');
       const route = Navigation.getActiveRouteName(navState);
-      const { callId, sessionId } = notification.data;
+      const topic = get(notification, 'data.topic');
       if (route === 'ConfirmRequest') {
-        this.fetchAndAddWalletConnectRequest(callId, sessionId)
-          .then(transaction => {
-            const localNotification = new firebase.notifications.Notification()
-              .setTitle(notification.title)
-              .setBody(notification.body)
-              .setData(notification.data);
+        const localNotification = new firebase.notifications.Notification()
+          .setTitle(notification.title)
+          .setBody(notification.body)
+          .setData(notification.data);
 
-            firebase.notifications().displayNotification(localNotification);
-          });
+        firebase.notifications().displayNotification(localNotification);
       } else {
-        this.onPushNotificationOpened(callId, sessionId, true);
+        this.onPushNotificationOpened(topic, true);
       }
+      */
     });
 
+    // notification opened from background
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened(notificationOpen => {
-      const { callId, sessionId } = notificationOpen.notification.data;
-      this.onPushNotificationOpened(callId, sessionId, false);
+      this.props.walletConnectInitAllConnectors();
+      const topic = get(notificationOpen, 'notification.data.topic');
+      this.onPushNotificationOpened(topic, false);
     });
-    */
   }
 
   handleWalletConfig = async (seedPhrase) => {
@@ -124,6 +140,8 @@ class App extends Component {
       this.props.settingsInitializeState();
       this.props.accountLoadState();
       this.props.walletConnectInitAllConnectors();
+      const notificationOpen = await firebase.notifications().getInitialNotification();
+      console.log('initial notif', notificationOpen);
       this.props.transactionsToApproveInit();
       return walletAddress;
     } catch (error) {
@@ -172,7 +190,7 @@ const AppWithRedux = compose(
   withWalletConnectConnections,
   withWalletConnectOnSessionRequest,
   connect(
-    null,
+    ({ walletconnect: { appInitTimestamp } }) => ({ appInitTimestamp }),
     {
       accountLoadState,
       settingsInitializeState,
