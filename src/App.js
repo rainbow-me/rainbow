@@ -97,6 +97,12 @@ class App extends Component {
     Linking.addEventListener('url', this.handleOpenLinkingURL);
     await this.handleWalletConfig();
     await this.props.refreshAccount();
+    firebase.notifications().getInitialNotification().then(notificationOpen => {
+      if (notificationOpen) {
+        const topic = get(notificationOpen, 'notification.data.topic');
+        this.onPushNotificationOpened(topic, false);
+      }
+    });
 
     saveFCMToken();
     this.onTokenRefreshListener = registerTokenRefreshListener();
@@ -124,7 +130,6 @@ class App extends Component {
 
     // notification opened from background
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened(notificationOpen => {
-      this.props.walletConnectInitAllConnectors();
       const topic = get(notificationOpen, 'notification.data.topic');
       this.onPushNotificationOpened(topic, false);
     });
@@ -140,8 +145,6 @@ class App extends Component {
       this.props.settingsInitializeState();
       this.props.accountLoadState();
       this.props.walletConnectInitAllConnectors();
-      const notificationOpen = await firebase.notifications().getInitialNotification();
-      console.log('initial notif', notificationOpen);
       this.props.transactionsToApproveInit();
       return walletAddress;
     } catch (error) {
@@ -153,6 +156,7 @@ class App extends Component {
   handleAppStateChange = async (nextAppState) => {
     if (nextAppState === 'active') {
       this.props.walletConnectUpdateTimestamp();
+      await firebase.notifications().removeAllDeliveredNotifications();
     }
     if (nextAppState === 'background') {
       this.props.walletConnectClearTimestamp();
