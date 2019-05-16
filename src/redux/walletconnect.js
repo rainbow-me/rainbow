@@ -1,5 +1,6 @@
 import {
   forEach,
+  get,
   mapValues,
   omitBy,
   pickBy,
@@ -22,6 +23,8 @@ const WALLETCONNECT_ADD_SESSION = 'walletconnect/WALLETCONNECT_ADD_SESSION';
 const WALLETCONNECT_REMOVE_SESSION = 'walletconnect/WALLETCONNECT_REMOVE_SESSION';
 
 const WALLETCONNECT_INIT_SESSIONS = 'walletconnect/WALLETCONNECT_INIT_SESSIONS';
+const WALLETCONNECT_INIT_TIMESTAMP = 'walletconnect/WALLETCONNECT_INIT_TIMESTAMP';
+const WALLETCONNECT_CLEAR_TIMESTAMP = 'walletconnect/WALLETCONNECT_CLEAR_TIMESTAMP';
 
 // -- Actions ---------------------------------------- //
 
@@ -90,12 +93,13 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (dispatch)
   }
 };
 
-const listenOnNewMessages = walletConnector => dispatch => {
+const listenOnNewMessages = walletConnector => (dispatch, getState) => {
   walletConnector.on('call_request', (error, payload) => {
     if (error) {
       throw error;
     }
 
+    const { appInitTimestamp } = getState().walletconnect;
     const { peerId, peerMeta } = walletConnector;
     const requestId = payload.id;
     const autoOpened = true;
@@ -103,10 +107,13 @@ const listenOnNewMessages = walletConnector => dispatch => {
     const transactionDetails = dispatch(addTransactionToApprove(peerId, requestId, payload, peerMeta));
 
     if (transactionDetails) {
-      Navigation.handleAction({
-        routeName: 'ConfirmRequest',
-        params: { transactionDetails, autoOpened },
-      });
+      const transactionTimestamp = get(transactionDetails, 'transactionDisplayDetails.timestampInMs');
+      if (appInitTimestamp && (transactionTimestamp > appInitTimestamp)) {
+        Navigation.handleAction({
+          routeName: 'ConfirmRequest',
+          params: { transactionDetails, autoOpened },
+        });
+      }
     } else {
       Alert.alert('This request has expired.');
     }
@@ -121,7 +128,15 @@ const listenOnNewMessages = walletConnector => dispatch => {
   return walletConnector;
 };
 
-export const walletConnectInitAllConnectors = () => async dispatch => {
+export const walletConnectUpdateTimestamp = () => dispatch => dispatch({
+  payload: Date.now(),
+  type: WALLETCONNECT_INIT_TIMESTAMP,
+});
+
+export const walletConnectClearTimestamp = () => dispatch => dispatch({ type: WALLETCONNECT_CLEAR_TIMESTAMP });
+
+export const walletConnectInitAllConnectors = () => async (dispatch) => {
+  dispatch(walletConnectUpdateTimestamp());
   let walletConnectors = {};
   try {
     const allSessions = await commonStorage.getAllValidWalletConnectSessions();
@@ -261,6 +276,7 @@ export const walletConnectSendStatus = (peerId, requestId, result) => async (dis
 const INITIAL_STATE = {
   pendingRequests: {},
   walletConnectors: {},
+  appInitTimestamp: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -275,6 +291,10 @@ export default (state = INITIAL_STATE, action) => {
     return { ...state, walletConnectors: action.payload };
   case WALLETCONNECT_INIT_SESSIONS:
     return { ...state, walletConnectors: action.payload };
+  case WALLETCONNECT_INIT_TIMESTAMP:
+    return { ...state, appInitTimestamp: action.payload };
+  case WALLETCONNECT_CLEAR_TIMESTAMP:
+    return { ...state, appInitTimestamp: null };
   default:
     return state;
   }

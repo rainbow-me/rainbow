@@ -53,8 +53,10 @@ class App extends Component {
     settingsUpdateAccountAddress: PropTypes.func,
     sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
     transactionsToApproveInit: PropTypes.func,
+    walletConnectClearTimestamp: PropTypes.func,
     walletConnectInitAllConnectors: PropTypes.func,
     walletConnectOnSessionRequest: PropTypes.func,
+    walletConnectUpdateTimestamp: PropTypes.func,
   }
 
   state = { appState: AppState.currentState }
@@ -70,9 +72,10 @@ class App extends Component {
         this.props.walletConnectOnSessionRequest(uri, redirect);
       }
     });
-	}
+  }
 
   async componentDidMount() {
+    AppState.addEventListener('change', this.handleAppStateChange);
     Linking.addEventListener('url', this.handleOpenLinkingURL);
     await this.handleWalletConfig();
     await this.props.refreshAccount();
@@ -129,7 +132,18 @@ class App extends Component {
     }
   }
 
+  handleAppStateChange = async (nextAppState) => {
+    if (nextAppState === 'active') {
+      this.props.walletConnectUpdateTimestamp();
+    }
+    if (nextAppState === 'background') {
+      this.props.walletConnectClearTimestamp();
+    }
+    this.setState({ appState: nextAppState });
+  }
+
   componentWillUnmount() {
+    AppState.removeEventListener('change', this.handleAppStateChange);
     Linking.removeEventListener('url', this.handleOpenLinkingURL);
     this.notificationListener();
     this.notificationOpenedListener();
