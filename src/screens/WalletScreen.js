@@ -45,6 +45,7 @@ class WalletScreen extends PureComponent {
   }
 
   componentDidMount = async () => {
+    this.props.onHideSplashScreen()
     try {
       const showShitcoins = await getShowShitcoinsSetting();
       if (showShitcoins !== null) {
@@ -53,6 +54,7 @@ class WalletScreen extends PureComponent {
     } catch (error) {
       // TODO
     }
+    setTimeout(() => this.props.onHideSplashScreen(), 1000);
   }
 
   render = () => {
@@ -60,7 +62,6 @@ class WalletScreen extends PureComponent {
       blurOpacity,
       isEmpty,
       navigation,
-      onHideSplashScreen,
       refreshAccount,
       sections,
       showBlur,
@@ -76,7 +77,6 @@ class WalletScreen extends PureComponent {
           <AssetList
             fetchData={refreshAccount}
             isEmpty={isEmpty}
-            onLayout={onHideSplashScreen}
             sections={sections}
           />
         </FabWrapper>
