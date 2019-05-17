@@ -26,6 +26,7 @@ PODS:
     - FirebaseInstanceID (~> 3.0)
     - GoogleToolboxForMac/Logger (~> 2.1)
     - Protobuf (~> 3.1)
+  - FLAnimatedImage (1.0.12)
   - Folly (2018.10.22.00):
     - boost-for-react-native
     - DoubleConversion
@@ -36,6 +37,30 @@ PODS:
     - GoogleToolboxForMac/Defines (= 2.2.0)
   - "GoogleToolboxForMac/NSData+zlib (2.2.0)":
     - GoogleToolboxForMac/Defines (= 2.2.0)
+  - libwebp (1.0.2):
+    - libwebp/core (= 1.0.2)
+    - libwebp/dec (= 1.0.2)
+    - libwebp/demux (= 1.0.2)
+    - libwebp/dsp (= 1.0.2)
+    - libwebp/enc (= 1.0.2)
+    - libwebp/mux (= 1.0.2)
+    - libwebp/utils (= 1.0.2)
+    - libwebp/webp (= 1.0.2)
+  - libwebp/core (1.0.2):
+    - libwebp/webp
+  - libwebp/dec (1.0.2):
+    - libwebp/core
+  - libwebp/demux (1.0.2):
+    - libwebp/core
+  - libwebp/dsp (1.0.2):
+    - libwebp/core
+  - libwebp/enc (1.0.2):
+    - libwebp/core
+  - libwebp/mux (1.0.2):
+    - libwebp/core
+  - libwebp/utils (1.0.2):
+    - libwebp/core
+  - libwebp/webp (1.0.2)
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
     - nanopb/encode (= 0.3.901)
@@ -135,8 +160,10 @@ DEPENDENCIES:
   - Fabric (~> 1.7.11)
   - Firebase/Core (~> 5.3.0)
   - Firebase/Messaging (~> 5.3.0)
+  - FLAnimatedImage
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - libwebp
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-camera (from `../node_modules/react-native-camera`)
   - react-native-fast-image (from `../node_modules/react-native-fast-image`)
@@ -178,7 +205,9 @@ SPEC REPOS:
     - FirebaseCore
     - FirebaseInstanceID
     - FirebaseMessaging
+    - FLAnimatedImage
     - GoogleToolboxForMac
+    - libwebp
     - nanopb
     - Protobuf
     - SDWebImage
@@ -225,9 +254,11 @@ SPEC CHECKSUMS:
   FirebaseCore: 31d258ec80ea97e1e8e40ce00a7ba7297afb45c2
   FirebaseInstanceID: 4f7768a98c5c3c5bd9a4c9e431ea98dccc0a51f9
   FirebaseMessaging: 94579ae655d817287f029ebfebd5b0811fbb3a51
+  FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
   GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
+  libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
   React: 90adac468c7b72bf1fa6c64bf230650f851a8388
@@ -244,6 +275,6 @@ SPEC CHECKSUMS:
   SDWebImage: 6764b5fa0f73c203728052955dbefa2bf1f33282
   yoga: 2e571f113e8cbeb0eb752aeebc86c1bfe7a8200c
 
-PODFILE CHECKSUM: 39aacc38ff279454b2722f3f03db7ef2b0d61094
+PODFILE CHECKSUM: 0145e839f29994a918863125c862614f79901ada
 
 COCOAPODS: 1.6.1
