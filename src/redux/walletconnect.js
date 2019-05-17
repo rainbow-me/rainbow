@@ -71,16 +71,6 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (dispatch)
         dispatch(setPendingRequest(peerId, walletConnector));
 
         dispatch(walletConnectApproveSession(peerId, callback));
-        /*
-        if (previouslyApprovedDapps.includes(peerMeta.url)) {
-          dispatch(walletConnectApproveSession(peerId));
-        } else {
-          Navigation.handleAction({
-            routeName: 'WalletConnectConfirmationModal',
-            params: { peerId, peerMeta },
-          });
-        }
-        */
       });
     } catch (error) {
       Alert.alert(lang.t('wallet.wallet_connect.error'));
