@@ -45,6 +45,7 @@ class WalletScreen extends PureComponent {
   }
 
   componentDidMount = async () => {
+    this.props.onHideSplashScreen()
     try {
       const showShitcoins = await getShowShitcoinsSetting();
       if (showShitcoins !== null) {

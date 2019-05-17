@@ -26,6 +26,7 @@ PODS:
     - FirebaseInstanceID (~> 3.0)
     - GoogleToolboxForMac/Logger (~> 2.1)
     - Protobuf (~> 3.1)
+  - FLAnimatedImage (1.0.12)
   - Folly (2018.10.22.00):
     - boost-for-react-native
     - DoubleConversion
@@ -36,6 +37,30 @@ PODS:
     - GoogleToolboxForMac/Defines (= 2.2.0)
   - "GoogleToolboxForMac/NSData+zlib (2.2.0)":
     - GoogleToolboxForMac/Defines (= 2.2.0)
+  - libwebp (1.0.2):
+    - libwebp/core (= 1.0.2)
+    - libwebp/dec (= 1.0.2)
+    - libwebp/demux (= 1.0.2)
+    - libwebp/dsp (= 1.0.2)
+    - libwebp/enc (= 1.0.2)
+    - libwebp/mux (= 1.0.2)
+    - libwebp/utils (= 1.0.2)
+    - libwebp/webp (= 1.0.2)
+  - libwebp/core (1.0.2):
+    - libwebp/webp
+  - libwebp/dec (1.0.2):
+    - libwebp/core
+  - libwebp/demux (1.0.2):
+    - libwebp/core
+  - libwebp/dsp (1.0.2):
+    - libwebp/core
+  - libwebp/enc (1.0.2):
+    - libwebp/core
+  - libwebp/mux (1.0.2):
+    - libwebp/core
+  - libwebp/utils (1.0.2):
+    - libwebp/core
+  - libwebp/webp (1.0.2)
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
     - nanopb/encode (= 0.3.901)
@@ -135,8 +160,10 @@ DEPENDENCIES:
   - Fabric (~> 1.7.11)
   - Firebase/Core (~> 5.3.0)
   - Firebase/Messaging (~> 5.3.0)
+  - FLAnimatedImage
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - libwebp
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-camera (from `../node_modules/react-native-camera`)
   - react-native-fast-image (from `../node_modules/react-native-fast-image`)
@@ -178,7 +205,9 @@ SPEC REPOS:
     - FirebaseCore
     - FirebaseInstanceID
     - FirebaseMessaging
+    - FLAnimatedImage
     - GoogleToolboxForMac
+    - libwebp
     - nanopb
     - Protobuf
     - SDWebImage
@@ -225,25 +254,27 @@ SPEC CHECKSUMS:
   FirebaseCore: 62f1b792a49bb9e8b4073f24606d2c93ffc352f0
   FirebaseInstanceID: f3f0657372592ecdfdfe2cac604a5a75758376a6
   FirebaseMessaging: 6894b8fe0a0cf26c3b13dad729f1131654ae0bdb
+  FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
   GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
+  libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
-  React: 76e6aa2b87d05eb6cccb6926d72685c9a07df152
-  react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-camera: 9d04de6afc27ebbbe5b60847ed791f5ad99957f1
-  react-native-fast-image: 2fd0d5a88fd396cbb908c4307fe9f50c62be4163
-  react-native-netinfo: 39c221d058dca040a69e46a083e692bbd65d5ab5
-  react-native-version-number: 75301519bb72064ad209a498ed08b128cbcf10e7
-  RNCAsyncStorage: 0c3ef98facf3fecf455b518d6f52e10fc964c523
-  RNDeviceInfo: 367e1d3b3bbebb68f2bbabb3d93e6c8b851ec87d
-  RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
-  RNReanimated: c8dd490ca98a4edcba229bfa49f2516c95a43afb
-  RNScreens: 720a9e6968beb73e8196239801e887d8401f86ed
+  React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
+  react-native-blur: c35c1f6c2c76db7108bde7ed343bd2b01d64e0c0
+  react-native-camera: 9c50d7def800895e7991ccda6203929553ceec9c
+  react-native-fast-image: c631168273554de44bc59adf9053f5a2f44363fb
+  react-native-netinfo: f4039dc64d3a55da59d6d03d4bd667d0a9f5450e
+  react-native-version-number: 36c0d8eb57a275a6239a860f8dbab3d18299b0e0
+  RNCAsyncStorage: 6ae5aba8a41bfe0a9f21885ec91faf23ca3fe7ee
+  RNDeviceInfo: 5b5b42b12587207b6bd686441ac42d19d8e07933
+  RNLanguages: e3ae05ef105937645218272429dac0c3f7633451
+  RNReanimated: 45d9313b7a62318ed00d60a811937321e43e076e
+  RNScreens: 354046589421edc3d83d5c6212475bf1fb9a731d
   SDWebImage: 6764b5fa0f73c203728052955dbefa2bf1f33282
-  yoga: 92b2102c3d373d1a790db4ab761d2b0ffc634f64
+  yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 
-PODFILE CHECKSUM: 39aacc38ff279454b2722f3f03db7ef2b0d61094
+PODFILE CHECKSUM: 0145e839f29994a918863125c862614f79901ada
 
-COCOAPODS: 1.6.1
+COCOAPODS: 1.5.3
