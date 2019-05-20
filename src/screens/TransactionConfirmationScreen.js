@@ -43,7 +43,7 @@ class TransactionConfirmationScreen extends Component {
   static propTypes = {
     dappName: PropTypes.string,
     imageUrl: PropTypes.string,
-    onCancelTransaction: PropTypes.func,
+    onCancel: PropTypes.func,
     onConfirm: PropTypes.func,
     request: PropTypes.object,
     requestType: PropTypes.string,
@@ -170,7 +170,7 @@ class TransactionConfirmationScreen extends Component {
         <CancelButtonContainer>
           <Button
             backgroundColor={colors.blueGreyMedium}
-            onPress={this.props.onCancelTransaction}
+            onPress={this.props.onCancel}
             size="small"
             textProps={{ color: 'black', size: 'medium' }}
           >

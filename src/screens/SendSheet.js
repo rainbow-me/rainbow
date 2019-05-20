@@ -182,6 +182,8 @@ class SendSheet extends Component {
       this.setState({ isAuthorizing: false });
       sendClearFields();
       navigation.navigate('ProfileScreen');
+    }).catch(error => {
+      this.setState({ isAuthorizing: false });
     });
   }
 
