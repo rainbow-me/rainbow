@@ -71,16 +71,6 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (dispatch)
         dispatch(setPendingRequest(peerId, walletConnector));
 
         dispatch(walletConnectApproveSession(peerId, callback));
-        /*
-        if (previouslyApprovedDapps.includes(peerMeta.url)) {
-          dispatch(walletConnectApproveSession(peerId));
-        } else {
-          Navigation.handleAction({
-            routeName: 'WalletConnectConfirmationModal',
-            params: { peerId, peerMeta },
-          });
-        }
-        */
       });
     } catch (error) {
       Alert.alert(lang.t('wallet.wallet_connect.error'));
@@ -95,47 +85,24 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (dispatch)
 
 const listenOnNewMessages = walletConnector => (dispatch, getState) => {
   walletConnector.on('call_request', (error, payload) => {
-    if (error) {
-      throw error;
-    }
-
+    if (error) throw error;
     const { appInitTimestamp } = getState().walletconnect;
-    const { peerId, peerMeta } = walletConnector;
+    const { clientId, peerId, peerMeta } = walletConnector;
     const requestId = payload.id;
-    const autoOpened = true;
-
-    const transactionDetails = dispatch(addTransactionToApprove(peerId, requestId, payload, peerMeta));
-
-    if (transactionDetails) {
-      const transactionTimestamp = get(transactionDetails, 'transactionDisplayDetails.timestampInMs');
-      if (appInitTimestamp && (transactionTimestamp > appInitTimestamp)) {
-        Navigation.handleAction({
-          routeName: 'ConfirmRequest',
-          params: { transactionDetails, autoOpened },
-        });
-      }
-    } else {
-      Alert.alert('This request has expired.');
-    }
+    dispatch(addTransactionToApprove(clientId, peerId, requestId, payload, peerMeta));
   });
   walletConnector.on('disconnect', (error, payload) => {
-    if (error) {
-      throw error;
-    }
-
+    if (error) throw error;
     dispatch(walletConnectDisconnectAllByDappName(walletConnector.peerMeta.name));
   });
   return walletConnector;
 };
 
-export const walletConnectUpdateTimestamp = () => dispatch => dispatch({
-  payload: Date.now(),
-  type: WALLETCONNECT_INIT_TIMESTAMP,
-});
+export const walletConnectUpdateTimestamp = () => dispatch => dispatch({ payload: Date.now(), type: WALLETCONNECT_INIT_TIMESTAMP });
 
 export const walletConnectClearTimestamp = () => dispatch => dispatch({ type: WALLETCONNECT_CLEAR_TIMESTAMP });
 
-export const walletConnectInitAllConnectors = () => async (dispatch) => {
+export const walletConnectInitAllConnectors = () => async dispatch => {
   dispatch(walletConnectUpdateTimestamp());
   let walletConnectors = {};
   try {
@@ -145,9 +112,7 @@ export const walletConnectInitAllConnectors = () => async (dispatch) => {
 
     walletConnectors = mapValues(allSessions, session => {
       const walletConnector = new WalletConnect(
-        {
-          session,
-        },
+        { session },
         nativeOptions,
       );
       return dispatch(listenOnNewMessages(walletConnector));
