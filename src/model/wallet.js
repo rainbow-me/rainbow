@@ -80,7 +80,6 @@ export const signMessage = async (message, authenticationPrompt = lang.t('wallet
     try {
       return await wallet.signMessage(message);
     } catch (error) {
-      Alert.alert(lang.t('wallet.message_signing.failed_signing'));
       return null;
     }
   } catch (error) {
