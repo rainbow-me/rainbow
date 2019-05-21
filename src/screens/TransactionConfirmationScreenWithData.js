@@ -79,7 +79,7 @@ class TransactionConfirmationScreenWithData extends Component {
       await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, transactionHash);
       this.closeScreen();
     } else {
-      await this.handleCancelTransaction();
+      await this.handleCancelRequest();
     }
   };
 
@@ -93,7 +93,7 @@ class TransactionConfirmationScreenWithData extends Component {
       await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, flatFormatSignature);
       this.closeScreen();
     } else {
-      await this.handleCancelSignMessage();
+      await this.handleCancelRequest();
     }
   };
 
@@ -108,7 +108,7 @@ class TransactionConfirmationScreenWithData extends Component {
     }
   }
 
-  handleCancelTransaction = async () => {
+  handleCancelRequest = async () => {
     try {
       await this.sendFailedTransactionStatus();
       const { transactionDetails } = this.props.navigation.state.params;
@@ -142,7 +142,7 @@ class TransactionConfirmationScreenWithData extends Component {
         imageUrl={imageUrl || ''}
         request={payload}
         requestType={type}
-        onCancelTransaction={this.handleCancelTransaction}
+        onCancel={this.handleCancelRequest}
         onConfirm={this.handleConfirm}
       />
     );
