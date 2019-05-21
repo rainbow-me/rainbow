@@ -154,9 +154,8 @@ class Movable extends React.Component {
   ]);
 
   isOverX = and(
-    greaterThan(this.absoluteY, deviceUtils.dimensions.height - 90),
-    greaterThan(this.absoluteX, (deviceUtils.dimensions.width / 2) - 50),
-    lessThan(this.absoluteX, (deviceUtils.dimensions.width / 2) + 50),
+    greaterThan(this.absoluteY, deviceUtils.dimensions.height - 120),
+    greaterThan(this.absoluteX, deviceUtils.dimensions.width - 100),
   );
 
   calculateSelectedIndex = () => cond(

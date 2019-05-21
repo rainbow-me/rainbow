@@ -15,7 +15,7 @@ const Container = styled(Centered)`
   background-color: ${({ disabled, greyed }) => (disabled ? '#F6F7F9' : (greyed ? colors.grey : colors.paleBlue))};
 `;
 
-const buildFabShadow = disabled => (
+export const buildFabShadow = disabled => (
   disabled
     ? []
     : [
