@@ -1,12 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withNavigation } from 'react-navigation';
-import {
-  compose,
-  onlyUpdateForKeys,
-  pure,
-  withHandlers,
-} from 'recompact';
+import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import Icon from '../icons/Icon';
 import FloatingActionButton from './FloatingActionButton';
 
@@ -33,7 +28,6 @@ SendFab.propTypes = {
 };
 
 export default compose(
-  pure,
   withNavigation,
   withHandlers({
     onPress: ({ navigation }) => () => {
