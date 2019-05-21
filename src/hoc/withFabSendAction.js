@@ -6,8 +6,10 @@ import connect from 'react-redux/es/connect/connect';
 const mapStateToProps = ({
   selectedWithFab: {
     selectedId,
+    actionType,
   },
 }) => ({
+  actionType,
   selectedId,
 });
 
@@ -18,7 +20,9 @@ export default compose(
   lifecycle({
     componentDidUpdate(prevProps) {
       if (prevProps.highlight && !this.props.highlight && this.props.fabDropped) {
-        this.props.onPress();
+        if (this.props.actionType === 'send') {
+          this.props.onPress();
+        }
       }
     },
   }),

@@ -44,8 +44,6 @@ const UniqueTokenCard = (({
   ...props
 }) => {
   const backgroundColor = background || colors.lightestGrey;
-
-  console.log(highlight)
   return (
     <ButtonPressAnimation
       disabled={disabled}
