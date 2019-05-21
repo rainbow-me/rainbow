@@ -2,11 +2,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import stylePropType from 'react-style-proptype';
 import {
-  compose, withHandlers, withProps, shouldUpdate
+  compose, withHandlers, withProps, onlyUpdateForKeys,
 } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
-import { isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import InnerBorder from '../InnerBorder';
 import { Centered } from '../layout';
@@ -113,12 +112,5 @@ export default compose(
   }),
   withProps(({ item: { uniqueId } }) => ({ uniqueId })),
   withFabSendAction,
-  shouldUpdate((props, nextProps) => {
-    const isNewHeight = isNewValueForPath(props, nextProps, 'height');
-    const isNewUniqueId = isNewValueForPath(props, nextProps, 'uniqueId');
-    const isNewWidth = isNewValueForPath(props, nextProps, 'height');
-    const isNewHighlight = isNewValueForPath(props, nextProps, 'highlight');
-
-    return isNewHeight || isNewUniqueId || isNewWidth || isNewHighlight;
-  }),
+  onlyUpdateForKeys(['height', 'style', 'uniqueId', 'width']),
 )(UniqueTokenCard);
