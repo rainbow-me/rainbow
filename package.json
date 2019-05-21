@@ -205,7 +205,7 @@
   },
   "detox": {
     "configurations": {
-      "ios.sim.debug": {
+      "ios.sim.release": {
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/Rainbow.app",
         "build": "xcodebuild -workspace ios/Rainbow.xcworkspace/ -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet",
         "type": "ios.simulator",
