@@ -16,16 +16,18 @@ export const buildAssetUniqueIdentifier = (item) => {
 };
 
 export const buildUniqueTokenList = (uniqueTokens) => {
-  const list = [];
+  const rows = [];
 
   for (let i = 0; i < uniqueTokens.length; i += 2) {
-    list.push({
-      tokens: [uniqueTokens[i], uniqueTokens[i + 1]],
-      uniqueId: `${get(uniqueTokens, `[${i}].uniqueId`)}__${get(uniqueTokens, `[${i + 1}].uniqueId`)}`,
+    const tokens = compact([uniqueTokens[i], uniqueTokens[i + 1]]);
+
+    rows.push({
+      tokens,
+      uniqueId: tokens.map(({ uniqueId }) => uniqueId).join('__'),
     });
   }
 
-  return list;
+  return rows;
 };
 
 /* eslint-disable camelcase */

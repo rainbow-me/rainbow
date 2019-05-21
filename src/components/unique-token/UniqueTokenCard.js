@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import stylePropType from 'react-style-proptype';
 import {
-  compose, shouldUpdate, withHandlers, withProps,
+  compose, withHandlers, withProps, shouldUpdate
 } from 'recompact';
-import connect from 'react-redux/es/connect/connect';
 import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
 import { isNewValueForPath } from '../../utils';
@@ -17,17 +17,11 @@ import { withFabSendAction } from '../../hoc';
 
 const UniqueTokenCardBorderRadius = 16;
 
-const Container = styled(Centered)`
-  ${position.cover};
-  background-color: ${({ backgroundColor }) => backgroundColor};
-  border-radius: ${UniqueTokenCardBorderRadius};
-`;
-
 const Shadow = styled(Highlight)`
   background-color: ${({ highlight }) => (highlight ? '#FFFFFF33' : colors.transparent)};
 `;
 
-const UniqueTokenCard = (({
+const UniqueTokenCard = ({
   disabled,
   height,
   item: {
@@ -40,6 +34,7 @@ const UniqueTokenCard = (({
   highlight,
   resizeMode,
   shadows,
+  style,
   width,
   ...props
 }) => {
@@ -56,9 +51,16 @@ const UniqueTokenCard = (({
         borderRadius={UniqueTokenCardBorderRadius}
         height={height}
         shadows={shadows}
+        style={style}
         width={width}
       >
-        <Container backgroundColor={backgroundColor} shouldRasterizeIOS>
+        <Centered
+          style={{
+            ...position.coverAsObject,
+            backgroundColor,
+            borderRadius: UniqueTokenCardBorderRadius,
+          }}
+        >
           <UniqueTokenImage
             backgroundColor={backgroundColor}
             resizeMode={resizeMode}
@@ -69,12 +71,12 @@ const UniqueTokenCard = (({
             opacity={0.04}
             radius={UniqueTokenCardBorderRadius}
           />
-        </Container>
-        <Shadow highlight={highlight}/>
+          <Shadow highlight={highlight}/>
+        </Centered>
       </ShadowStack>
     </ButtonPressAnimation>
   );
-});
+};
 
 UniqueTokenCard.propTypes = {
   disabled: PropTypes.bool,
@@ -89,6 +91,7 @@ UniqueTokenCard.propTypes = {
   resizeMode: UniqueTokenImage.propTypes.resizeMode,
   shadows: PropTypes.array,
   size: PropTypes.number,
+  style: stylePropType,
   width: PropTypes.number,
 };
 
@@ -101,7 +104,6 @@ UniqueTokenCard.defaultProps = {
 
 
 export default compose(
-  shouldUpdate((...props) => isNewValueForPath(...props, 'uniqueId')),
   withHandlers({
     onPress: ({ item, onPress }) => () => {
       if (onPress) {

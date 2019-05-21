@@ -1,4 +1,4 @@
 import { connect } from 'react-redux';
-import { transactionsToApproveInit } from '../redux/transactionsToApprove';
+import { transactionsForTopic, transactionsToApproveInit } from '../redux/transactionsToApprove';
 
-export default Component => connect(null, { transactionsToApproveInit })(Component);
+export default Component => connect(null, { transactionsForTopic, transactionsToApproveInit })(Component);
