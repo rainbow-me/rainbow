@@ -1,4 +1,5 @@
 import {
+  get,
   groupBy,
   head,
   mapValues,
@@ -9,9 +10,8 @@ import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';
 import {
-  getValidWalletConnectors,
-  removeWalletConnectorByDapp,
-  setWalletConnectors,
+  walletConnectDisconnectAllByDappName,
+  walletConnectInitAllConnectors,
 } from '../redux/walletconnect';
 
 const mapStateToProps = ({ walletconnect: { walletConnectors } }) => ({ walletConnectors });
@@ -19,13 +19,14 @@ const mapStateToProps = ({ walletconnect: { walletConnectors } }) => ({ walletCo
 const walletConnectorsSelector = state => state.walletConnectors;
 
 const sortWalletConnectors = (walletConnectors) => {
-  const sortedWalletConnectors = sortList(Object.values(walletConnectors), 'expires');
-  const sortedWalletConnectorsByDappName = groupBy(sortedWalletConnectors, 'dappName');
+  const sortedWalletConnectors = sortList(Object.values(walletConnectors), 'peerMeta.name');
+  const sortedWalletConnectorsByDappName = groupBy(sortedWalletConnectors, 'peerMeta.url');
   const dappWalletConnector = mapValues(sortedWalletConnectorsByDappName, (connectors) => {
     const firstElement = head(connectors);
     return {
-      dappName: firstElement.dappName,
-      expires: firstElement.expires,
+      dappName: get(firstElement, 'peerMeta.name'),
+      dappIcon: get(firstElement, 'peerMeta.icons[0]'),
+      dappUrl: get(firstElement, 'peerMeta.url'),
     };
   });
   return {
@@ -42,9 +43,8 @@ const walletConnectSelector = createSelector(
 
 export default Component => compose(
   connect(mapStateToProps, {
-    getValidWalletConnectors,
-    removeWalletConnectorByDapp,
-    setWalletConnectors,
+    walletConnectDisconnectAllByDappName,
+    walletConnectInitAllConnectors,
   }),
   withProps(walletConnectSelector),
 )(Component);

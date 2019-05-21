@@ -271,7 +271,7 @@ class RecyclerAssetList extends PureComponent {
   };
 
   render() {
-    const { hideHeader, renderAheadOffset } = this.props;
+    const { hideHeader, renderAheadOffset, ...props } = this.props;
     const { dataProvider, headersIndices } = this.state;
 
     return (
@@ -279,8 +279,10 @@ class RecyclerAssetList extends PureComponent {
         <StickyContainer stickyHeaderIndices={headersIndices}>
           <RecyclerListView
             ref={ref => { this.rlv = ref; }}
+            {...props}
             layoutProvider={this.layoutProvider}
             dataProvider={dataProvider}
+            extendedState={{ headersIndices }}
             renderAheadOffset={renderAheadOffset}
             rowRenderer={this.rowRenderer}
             onScroll={event => {

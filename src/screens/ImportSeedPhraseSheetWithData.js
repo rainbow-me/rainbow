@@ -68,6 +68,9 @@ const ImportSeedPhraseSheetWithData = compose(
     },
   }),
   withHandlers({
+    getClipboardContents: ({ setClipboardContents }) => async () => {
+      return Clipboard.getString().then(setClipboardContents);
+    },
     onImportSeedPhrase: ({ setIsImporting }) => () => ConfirmImportAlert(() => setIsImporting(true)),
     onInputChange: ({ isImporting, setSeedPhrase }) => ({ nativeEvent }) => {
       if (!isImporting) {
@@ -83,13 +86,17 @@ const ImportSeedPhraseSheetWithData = compose(
   }),
   lifecycle({
     componentDidMount() {
-      InteractionManager.runAfterInteractions(async () => {
-        const { setClipboardContents } = this.props;
-        await Clipboard.getString().then(setClipboardContents);
-      });
+      this.props.getClipboardContents();
     },
     componentDidUpdate(prevProps) {
-      const { isImporting, navigation, importSeedPhrase } = this.props;
+      const {
+        getClipboardContents,
+        importSeedPhrase,
+        isImporting,
+        navigation,
+      } = this.props;
+
+      getClipboardContents();
 
       if (isImporting !== prevProps.isImporting) {
         navigation.setParams({ gesturesEnabled: !isImporting });

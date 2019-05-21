@@ -1,20 +1,18 @@
-import { distanceInWordsStrict } from 'date-fns';
-import { pickBy, values } from 'lodash';
 import lang from 'i18n-js';
+import { pickBy, values } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
-import { withWalletConnectConnections } from '../../hoc';
-import { walletConnectDisconnectAll } from '../../model/walletconnect';
-import { padding } from '../../styles';
+import { compose, withHandlers } from 'recompact';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import ContextMenu from '../ContextMenu';
+import { withWalletConnectConnections } from '../../hoc';
 import {
   Centered,
   ColumnWithMargins,
   FlexItem,
   Row,
 } from '../layout';
+import { padding } from '../../styles';
 import { Text, TruncatedText } from '../text';
 
 const ContainerPadding = 15;
@@ -26,25 +24,19 @@ const enhance = compose(
   withHandlers({
     onPressActionSheet: ({
       dappName,
-      getValidWalletConnectors,
-      removeWalletConnectorByDapp,
+      walletConnectDisconnectAllByDappName,
     }) => (buttonIndex) => {
       if (buttonIndex === 0) {
-        const validSessions = getValidWalletConnectors();
-        const dappSessions = values(pickBy(validSessions, (session) => session.dappName === dappName));
-
-        walletConnectDisconnectAll(dappSessions).then(() => {
-          removeWalletConnectorByDapp(dappName);
-        });
+        walletConnectDisconnectAllByDappName(dappName);
       }
     },
   }),
-  onlyUpdateForKeys(['expires']),
 );
 
 const WalletConnectListItem = enhance(({
   dappName,
-  expires,
+  dappIcon,
+  dappUrl,
   onPressActionSheet,
 }) => (
   <Row align="center" height={WalletConnectListItemHeight}>
@@ -56,6 +48,7 @@ const WalletConnectListItem = enhance(({
     >
       <RequestVendorLogoIcon
         dappName={dappName}
+        imageUrl={dappIcon}
         size={VendorLogoIconSize}
       />
       <ColumnWithMargins
@@ -66,9 +59,6 @@ const WalletConnectListItem = enhance(({
         <TruncatedText letterSpacing="tight" size="lmedium" weight="medium">
           {dappName || 'Unknown connection'}
         </TruncatedText>
-        <Text color="blueGreyLightest" size="medium">
-          Expires in {distanceInWordsStrict(Date.now(), expires)}
-        </Text>
       </ColumnWithMargins>
     </Row>
     <Centered>
@@ -88,7 +78,8 @@ const WalletConnectListItem = enhance(({
 
 WalletConnectListItem.propTypes = {
   dappName: PropTypes.string.isRequired,
-  expires: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+  dappIcon: PropTypes.string.isRequired,
+  dappUrl: PropTypes.string.isRequired,
   onPressActionSheet: PropTypes.func.isRequired,
 };
 

@@ -21,13 +21,6 @@ const QRScannerScreenHeader = styled(Header).attrs({ align: 'end', justify: 'sta
   top: 0;
 `;
 
-// // 😇️ use these for testing if u want LOL
-// import { times } from 'lodash';
-// const fakeDapps = times(5, (i) => ({
-//   dappName: `Balance Manager${i}`,
-//   expires: 1548966057000 * (i + 1),
-// }));
-
 const QRScannerScreen = ({
   enableScanning,
   isCameraAuthorized,

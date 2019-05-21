@@ -63,6 +63,7 @@ const RequestCoinRow = ({
           padding-right: 12;
         `}
         onPress={onPressOpen}
+        disabled={false}
         size="small"
         textProps={{ size: 'smedium' }}
       >

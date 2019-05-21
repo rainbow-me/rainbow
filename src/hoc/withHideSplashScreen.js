@@ -1,6 +1,6 @@
 import SplashScreen from 'react-native-splash-screen';
-import { withProps } from 'recompact';
+import { withHandlers } from 'recompact';
 
-export default Component => withProps({
-  onHideSplashScreen: () => SplashScreen.hide(),
+export default Component => withHandlers({
+  onHideSplashScreen: () => () => SplashScreen.hide(),
 })(Component);
