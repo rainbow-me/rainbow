@@ -14,6 +14,7 @@ import { Centered } from '../layout';
 
 const ProfileHeaderButton = ({ onPress, pendingRequestCount, ...props }) => (
   <HeaderButton
+    testID="goToProfile"
     onPress={onPress}
     shouldRasterizeIOS
     transformOrigin="left"

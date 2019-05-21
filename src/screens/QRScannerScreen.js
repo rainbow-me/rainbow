@@ -48,6 +48,7 @@ const QRScannerScreen = ({
     />
     <QRScannerScreenHeader>
       <BackButton
+        testID="goToBalancesFromScanner"
         color={colors.white}
         direction="left"
         onPress={onPressBackButton}
