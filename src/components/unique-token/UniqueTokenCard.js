@@ -112,5 +112,5 @@ export default compose(
   }),
   withProps(({ item: { uniqueId } }) => ({ uniqueId })),
   withFabSendAction,
-  onlyUpdateForKeys(['height', 'style', 'uniqueId', 'width']),
+  onlyUpdateForKeys(['height', 'style', 'uniqueId', 'width', 'highlight']),
 )(UniqueTokenCard);
