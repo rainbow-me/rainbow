@@ -36,6 +36,6 @@ const DeleteButton = ({ deleteButtonTranslate }) => (
 
 DeleteButton.propTypes = {
   deleteButtonTranslate: PropTypes.object,
-}
+};
 
 export default DeleteButton;
