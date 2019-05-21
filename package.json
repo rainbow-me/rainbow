@@ -15,7 +15,7 @@
     "@hocs/omit-props": "^0.4.0",
     "@hocs/safe-timers": "^0.4.0",
     "@hocs/with-view-layout-props": "^0.2.0",
-    "@rainbow-me/rainbow-common": "^0.8.1",
+    "@rainbow-me/rainbow-common": "^0.8.2",
     "@react-native-community/async-storage": "1.4.0",
     "@react-native-community/blur": "^3.3.1",
     "@react-native-community/netinfo": "^2.0.0",
@@ -126,6 +126,7 @@
     "babel-plugin-lodash": "^3.3.4",
     "babel-plugin-styled-components": "^1.9.2",
     "babel-plugin-transform-remove-console": "^6.9.4",
+    "detox": "^12.8.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
@@ -134,6 +135,7 @@
     "eslint-plugin-react-native-animation-linter": "^0.1.2",
     "jest": "^24.8.0",
     "metro-react-native-babel-preset": "^0.54.0",
+    "mocha": "^6.1.4",
     "react-test-renderer": "16.8.3",
     "schedule": "0.4.0"
   },
@@ -200,5 +202,16 @@
     "assets": [
       "./src/assets/fonts"
     ]
+  },
+  "detox": {
+    "configurations": {
+      "ios.sim.debug": {
+        "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/Rainbow.app",
+        "build": "xcodebuild -workspace ios/Rainbow.xcworkspace/ -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet",
+        "type": "ios.simulator",
+        "name": "iPhone 8"
+      }
+    },
+    "test-runner": "mocha"
   }
 }

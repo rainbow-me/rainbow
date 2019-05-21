@@ -1,9 +1,11 @@
 import BigNumber from 'bignumber.js';
 import {
+  filter,
   find,
   get,
   mapValues,
   omit,
+  values,
 } from 'lodash';
 import {
   convertAssetAmountToDisplaySpecific,
@@ -166,7 +168,7 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
   return null;
 };
 
-export const addTransactionToApprove = (peerId, requestId, payload, peerMeta) => (dispatch, getState) => {
+export const addTransactionToApprove = (clientId, peerId, requestId, payload, peerMeta) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
   const { accountAddress, network, nativeCurrency } = getState().settings;
   const { prices } = getState().prices;
@@ -175,6 +177,7 @@ export const addTransactionToApprove = (peerId, requestId, payload, peerMeta) =>
   const dappName = peerMeta.name;
   const imageUrl = get(peerMeta, 'icons[0]');
   const transaction = {
+    clientId,
     dappName,
     imageUrl,
     payload,
@@ -188,9 +191,9 @@ export const addTransactionToApprove = (peerId, requestId, payload, peerMeta) =>
   return transaction;
 };
 
-export const transactionIfExists = (requestId) => (dispatch, getState) => {
+export const transactionsForTopic = (topic) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
-  return transactionsToApprove && transactionsToApprove[requestId];
+  return filter(values(transactionsToApprove), { 'clientId': topic });
 };
 
 export const removeTransaction = (requestId) => (dispatch, getState) => {

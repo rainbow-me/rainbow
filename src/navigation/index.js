@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import { Animated, InteractionManager } from 'react-native';
 import { StackActions } from 'react-navigation';
 
@@ -18,6 +19,7 @@ function setTopLevelNavigator(navigatorRef) {
  * Gets the current screen from navigation state
  */
 function getActiveRouteName(navigationState) {
+  navigationState = navigationState || get(_navigator, 'state.nav');
   if (!navigationState) return null;
 
   const route = navigationState.routes[navigationState.index];

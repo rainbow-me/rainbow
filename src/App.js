@@ -1,4 +1,4 @@
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, last } from 'lodash';
 import PropTypes from 'prop-types';
 import {
   accountLoadState,
@@ -52,14 +52,15 @@ class App extends Component {
     settingsInitializeState: PropTypes.func,
     settingsUpdateAccountAddress: PropTypes.func,
     sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
+    transactionsForTopic: PropTypes.func,
     transactionsToApproveInit: PropTypes.func,
+    walletConnectClearTimestamp: PropTypes.func,
     walletConnectInitAllConnectors: PropTypes.func,
     walletConnectOnSessionRequest: PropTypes.func,
+    walletConnectUpdateTimestamp: PropTypes.func,
   }
 
   state = { appState: AppState.currentState }
-
-  navigatorRef = null
 
   handleOpenLinkingURL = ({ url }) => {
     Linking.canOpenURL(url).then((supported) => {
@@ -70,45 +71,67 @@ class App extends Component {
         this.props.walletConnectOnSessionRequest(uri, redirect);
       }
     });
-	}
+  }
+
+  onPushNotificationOpened = (topic, autoOpened = false, fromLocal = false) => {
+    const requests = this.props.transactionsForTopic(topic);
+    if (requests && requests.length === 1) {
+      const request = requests[0];
+      const transactionTimestamp = get(request, 'transactionDisplayDetails.timestampInMs');
+      if (!autoOpened || (this.props.appInitTimestamp
+            && (transactionTimestamp > this.props.appInitTimestamp))) {
+        return Navigation.handleAction({
+          routeName: 'ConfirmRequest',
+          params: { transactionDetails: request, autoOpened },
+        });
+      }
+    }
+    if (fromLocal) {
+      const request = last(requests);
+      return Navigation.handleAction({
+        routeName: 'ConfirmRequest',
+        params: { transactionDetails: request, autoOpened },
+      });
+    }
+    return Navigation.handleAction({ routeName: 'ProfileScreen' });
+  };
 
   async componentDidMount() {
+    AppState.addEventListener('change', this.handleAppStateChange);
     Linking.addEventListener('url', this.handleOpenLinkingURL);
     await this.handleWalletConfig();
     await this.props.refreshAccount();
+    firebase.notifications().getInitialNotification().then(notificationOpen => {
+      if (notificationOpen) {
+        const topic = get(notificationOpen, 'notification.data.topic');
+        this.onPushNotificationOpened(topic, false);
+      }
+    });
 
     saveFCMToken();
     this.onTokenRefreshListener = registerTokenRefreshListener();
 
-    /*
-    this.notificationListener = registerNotificationListener();
-
-    this.notificationOpenedListener = registerNotificationOpenedListener();
-
+    // notification while app in foreground
     this.notificationListener = firebase.notifications().onNotification(notification => {
-      const navState = get(this.navigatorRef, 'state.nav');
-      const route = Navigation.getActiveRouteName(navState);
-      const { callId, sessionId } = notification.data;
+      const route = Navigation.getActiveRouteName();
       if (route === 'ConfirmRequest') {
-        this.fetchAndAddWalletConnectRequest(callId, sessionId)
-          .then(transaction => {
-            const localNotification = new firebase.notifications.Notification()
-              .setTitle(notification.title)
-              .setBody(notification.body)
-              .setData(notification.data);
-
-            firebase.notifications().displayNotification(localNotification);
-          });
+        const localNotification = new firebase.notifications.Notification()
+          .setTitle(notification.title)
+          .setBody(notification.body)
+          .setData({ ...notification.data, fromLocal: true });
+        firebase.notifications().displayNotification(localNotification);
       } else {
-        this.onPushNotificationOpened(callId, sessionId, true);
+        const topic = get(notification, 'data.topic');
+        this.onPushNotificationOpened(topic, true);
       }
     });
 
+    // notification opened from background
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened(notificationOpen => {
-      const { callId, sessionId } = notificationOpen.notification.data;
-      this.onPushNotificationOpened(callId, sessionId, false);
+      const topic = get(notificationOpen, 'notification.data.topic');
+      const fromLocal = get(notificationOpen, 'notification.data.fromLocal', false);
+      this.onPushNotificationOpened(topic, false, fromLocal);
     });
-    */
   }
 
   handleWalletConfig = async (seedPhrase) => {
@@ -129,7 +152,19 @@ class App extends Component {
     }
   }
 
+  handleAppStateChange = async (nextAppState) => {
+    if (nextAppState === 'active') {
+      this.props.walletConnectUpdateTimestamp();
+      await firebase.notifications().removeAllDeliveredNotifications();
+    }
+    if (nextAppState === 'background') {
+      this.props.walletConnectClearTimestamp();
+    }
+    this.setState({ appState: nextAppState });
+  }
+
   componentWillUnmount() {
+    AppState.removeEventListener('change', this.handleAppStateChange);
     Linking.removeEventListener('url', this.handleOpenLinkingURL);
     this.notificationListener();
     this.notificationOpenedListener();
@@ -158,7 +193,7 @@ const AppWithRedux = compose(
   withWalletConnectConnections,
   withWalletConnectOnSessionRequest,
   connect(
-    null,
+    ({ walletconnect: { appInitTimestamp } }) => ({ appInitTimestamp }),
     {
       accountLoadState,
       settingsInitializeState,
