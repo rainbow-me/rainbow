@@ -6,8 +6,9 @@ import {
   shouldUpdate,
   withProps,
 } from 'recompact';
+import { css } from 'styled-components/primitives';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
-import { colors } from '../../styles';
+import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import Divider from '../Divider';
@@ -19,6 +20,11 @@ import CoinRow from './CoinRow';
 
 const dividerHeight = 22;
 const selectedHeight = 78;
+
+const selectedStyles = css`
+  ${padding(17, 14, 19, 13)};
+  height: ${selectedHeight};
+`;
 
 const BottomRow = ({ subtitle }) => (
   <Monospace
@@ -33,14 +39,18 @@ BottomRow.propTypes = {
   subtitle: PropTypes.string,
 };
 
-const TopRow = ({ name }) => (
-  <CoinName paddingRight={0}>
+const TopRow = ({ name, selected }) => (
+  <CoinName
+    paddingRight={selected ? undefined : 0}
+    weight={selected ? 'semibold' : 'regular'}
+  >
     {name}
   </CoinName>
 );
 
 TopRow.propTypes = {
   name: PropTypes.string,
+  selected: PropTypes.bool,
 };
 
 const enhanceUniqueTokenCoinIcon = onlyUpdateForKeys(['background', 'image_thumbnail_url']);
@@ -98,6 +108,7 @@ const CollectiblesSendRow = enhance(({
   item,
   isFirstRow,
   onPress,
+  selected,
   subtitle,
   ...props
 }) => (
@@ -113,6 +124,8 @@ const CollectiblesSendRow = enhance(({
         {...item}
         bottomRowRender={BottomRow}
         coinIconRender={UniqueTokenCoinIcon}
+        containerStyles={selected ? selectedStyles : null}
+        selected={selected}
         subtitle={subtitle}
         topRowRender={TopRow}
       />
@@ -121,8 +134,8 @@ const CollectiblesSendRow = enhance(({
 ));
 
 CollectiblesSendRow.propTypes = {
-  item: PropTypes.object,
   isFirstRow: PropTypes.bool,
+  item: PropTypes.object,
   onPress: PropTypes.func,
   selected: PropTypes.bool,
   subtitle: PropTypes.string,

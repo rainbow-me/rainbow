@@ -52,12 +52,12 @@ export const saveLocalRequests = async (accountAddress, network, requests) => {
  * @desc remove request
  * @param  {String}   [address]
  * @param  {String}   [network]
- * @param  {String}   [callId]
+ * @param  {String}   [requestId]
  * @return {Void}
  */
-export const removeLocalRequest = async (address, network, callId) => {
+export const removeLocalRequest = async (address, network, requestId) => {
   const requests = await getLocalRequests(address, network);
   const updatedRequests = { ...requests };
-  delete updatedRequests[callId];
+  delete updatedRequests[requestId];
   await saveLocalRequests(address, network, updatedRequests);
 };

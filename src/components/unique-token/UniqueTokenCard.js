@@ -27,8 +27,27 @@ const Shadow = styled(Highlight)`
   background-color: ${({ highlight }) => (highlight ? '#FFFFFF33' : colors.transparent)};
 `;
 
+const enhance = compose(
+  shouldUpdate((props, nextProps) => {
+    const isNewHeight = isNewValueForPath(props, nextProps, 'height');
+    const isNewUniqueId = isNewValueForPath(props, nextProps, 'uniqueId');
+    const isNewWidth = isNewValueForPath(props, nextProps, 'height');
 
-const UniqueTokenCard = ({
+    return isNewHeight || isNewUniqueId || isNewWidth;
+  }),
+  withHandlers({
+    onPress: ({ item, onPress }) => () => {
+      if (onPress) {
+        onPress(item);
+      }
+    },
+  }),
+);
+
+
+const UniqueTokenCard = enhance(({
+  disabled,
+  height,
   item: {
     background,
     image_preview_url,
@@ -37,28 +56,33 @@ const UniqueTokenCard = ({
   onPress,
   size,
   highlight,
+  resizeMode,
+  shadows,
+  width,
   ...props
 }) => {
   const backgroundColor = background || colors.lightestGrey;
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+    <ButtonPressAnimation
+      disabled={disabled}
+      onPress={onPress}
+      scaleTo={0.96}
+    >
       <ShadowStack
         {...props}
-        {...position.sizeAsObject(size)}
         backgroundColor={backgroundColor}
         borderRadius={UniqueTokenCardBorderRadius}
-        shadows={[
-          [0, 3, 5, colors.black, 0.04],
-          [0, 6, 10, colors.black, 0.04],
-        ]}
+        height={height}
+        shadows={shadows}
+        width={width}
       >
         <Container backgroundColor={backgroundColor} shouldRasterizeIOS>
           <UniqueTokenImage
             backgroundColor={backgroundColor}
+            resizeMode={resizeMode}
             imageUrl={image_preview_url} // eslint-disable-line camelcase
             item={item}
-            size={size}
           />
           <InnerBorder
             opacity={0.04}
@@ -69,9 +93,11 @@ const UniqueTokenCard = ({
       </ShadowStack>
     </ButtonPressAnimation>
   );
-};
+});
 
 UniqueTokenCard.propTypes = {
+  disabled: PropTypes.bool,
+  height: PropTypes.number,
   highlight: PropTypes.bool,
   item: PropTypes.shape({
     background: PropTypes.string,
@@ -79,7 +105,17 @@ UniqueTokenCard.propTypes = {
     image_preview_url: PropTypes.string,
   }),
   onPress: PropTypes.func,
+  resizeMode: UniqueTokenImage.propTypes.resizeMode,
+  shadows: PropTypes.array,
   size: PropTypes.number,
+  width: PropTypes.number,
+};
+
+UniqueTokenCard.defaultProps = {
+  shadows: [
+    [0, 3, 5, colors.black, 0.04],
+    [0, 6, 10, colors.black, 0.04],
+  ],
 };
 
 

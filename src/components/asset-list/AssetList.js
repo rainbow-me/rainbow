@@ -16,12 +16,14 @@ const AssetList = ({
   isEmpty,
   sections,
   scrollViewTracker,
+  ...props
 }) => (
   isEmpty
     ? <AssetListSkeleton />
     : (
       <RecyclerAssetList
         scrollViewTracker={scrollViewTracker}
+        {...props}
         enablePullToRefresh
         fetchData={fetchData}
         hideHeader={hideHeader}

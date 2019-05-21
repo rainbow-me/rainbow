@@ -2,40 +2,41 @@ import { get, isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import {
   accountLoadState,
-  commonStorage,
   settingsInitializeState,
   settingsUpdateAccountAddress,
 } from '@rainbow-me/rainbow-common';
 import React, { Component } from 'react';
-import { Alert, AppRegistry, AppState } from 'react-native';
-import { StackActions } from 'react-navigation';
+import {
+  Alert,
+  AppRegistry,
+  AppState,
+  Linking,
+} from 'react-native';
 import CodePush from 'react-native-code-push';
 import firebase from 'react-native-firebase';
 import { useScreens } from 'react-native-screens';
+import { StackActions } from 'react-navigation';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
-import { FlexItem } from './components/layout';
-import OfflineBadge from './components/OfflineBadge';
+import {
+  saveFCMToken,
+  registerTokenRefreshListener,
+  registerNotificationListener,
+  registerNotificationOpenedListener,
+} from './model/firebase';
 import {
   withAccountRefresh,
-  withHideSplashScreen,
+  withRequestsInit,
   withWalletConnectConnections,
+  withWalletConnectOnSessionRequest,
 } from './hoc';
-import {
-  addTransactionToApprove,
-  addTransactionsToApprove,
-  transactionIfExists,
-  transactionsToApproveInit,
-} from './redux/transactionsToApprove';
-import {
-  walletConnectInitAllConnectors,
-  walletConnectGetAllRequests,
-  walletConnectGetRequest,
-} from './model/walletconnect';
-import store from './redux/store';
-import { walletInit } from './model/wallet';
-import Routes from './screens/Routes';
+import { FlexItem } from './components/layout';
 import Navigation from './navigation';
+import OfflineBadge from './components/OfflineBadge';
+import Routes from './screens/Routes';
+import store from './redux/store';
+import { parseQueryParams } from './utils';
+import { walletInit } from './model/wallet';
 
 if (process.env.NODE_ENV === 'development') {
   console.disableYellowBox = true;
@@ -46,41 +47,43 @@ useScreens();
 class App extends Component {
   static propTypes = {
     accountLoadState: PropTypes.func,
-    addTransactionsToApprove: PropTypes.func,
-    addTransactionToApprove: PropTypes.func,
     getValidWalletConnectors: PropTypes.func,
-    onHideSplashScreen: PropTypes.func,
     refreshAccount: PropTypes.func,
     settingsInitializeState: PropTypes.func,
     settingsUpdateAccountAddress: PropTypes.func,
-    setWalletConnectors: PropTypes.func,
     sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
-    transactionIfExists: PropTypes.func,
     transactionsToApproveInit: PropTypes.func,
+    walletConnectInitAllConnectors: PropTypes.func,
+    walletConnectOnSessionRequest: PropTypes.func,
   }
 
   state = { appState: AppState.currentState }
 
   navigatorRef = null
 
-  async componentDidMount() {
-    await this.handleWalletConfig();
-    this.props.onHideSplashScreen();
-    await this.props.refreshAccount();
-    AppState.addEventListener('change', this.handleAppStateChange);
-    firebase.messaging().getToken()
-      .then(fcmToken => {
-        if (fcmToken) {
-          commonStorage.saveLocal('rainbowFcmToken', { data: fcmToken });
-        }
-      })
-      .catch(error => {
-        console.log('error getting fcm token', error);
-      });
+  handleOpenLinkingURL = ({ url }) => {
+    Linking.canOpenURL(url).then((supported) => {
+      if (supported) {
+        const { uri, redirectUrl } = parseQueryParams(url);
 
-    this.onTokenRefreshListener = firebase.messaging().onTokenRefresh(fcmToken => {
-      commonStorage.saveLocal('rainbowFcmToken', { data: fcmToken });
+        const redirect = () => Linking.openURL(redirectUrl);
+        this.props.walletConnectOnSessionRequest(uri, redirect);
+      }
     });
+	}
+
+  async componentDidMount() {
+    Linking.addEventListener('url', this.handleOpenLinkingURL);
+    await this.handleWalletConfig();
+    await this.props.refreshAccount();
+
+    saveFCMToken();
+    this.onTokenRefreshListener = registerTokenRefreshListener();
+
+    /*
+    this.notificationListener = registerNotificationListener();
+
+    this.notificationOpenedListener = registerNotificationOpenedListener();
 
     this.notificationListener = firebase.notifications().onNotification(notification => {
       const navState = get(this.navigatorRef, 'state.nav');
@@ -105,6 +108,7 @@ class App extends Component {
       const { callId, sessionId } = notificationOpen.notification.data;
       this.onPushNotificationOpened(callId, sessionId, false);
     });
+    */
   }
 
   handleWalletConfig = async (seedPhrase) => {
@@ -116,100 +120,23 @@ class App extends Component {
       }
       this.props.settingsInitializeState();
       this.props.accountLoadState();
+      this.props.walletConnectInitAllConnectors();
       this.props.transactionsToApproveInit();
-      try {
-        const allConnectors = await walletConnectInitAllConnectors();
-        if (allConnectors) {
-          this.props.setWalletConnectors(allConnectors);
-        }
-      } catch (error) {
-        console.log('Unable to init all WalletConnect sessions');
-      }
-      const notificationOpen = await firebase.notifications().getInitialNotification();
-      if (notificationOpen) {
-        const { callId, sessionId } = notificationOpen.notification.data;
-        this.onPushNotificationOpened(callId, sessionId, false);
-      }
-      this.fetchAllRequestsFromWalletConnectSessions();
       return walletAddress;
     } catch (error) {
       Alert.alert('Error: Failed to initialize wallet.');
       return null;
     }
-  };
-
-  handleAppStateChange = async (nextAppState) => {
-    if (this.state.appState.match(/unknown|background/) && nextAppState === 'active') {
-      this.fetchAllRequestsFromWalletConnectSessions();
-    }
-    this.setState({ appState: nextAppState });
   }
 
   componentWillUnmount() {
-    AppState.removeEventListener('change', this.handleAppStateChange);
+    Linking.removeEventListener('url', this.handleOpenLinkingURL);
     this.notificationListener();
     this.notificationOpenedListener();
     this.onTokenRefreshListener();
   }
 
-  handleNavigatorRef = (navigatorRef) => { this.navigatorRef = navigatorRef; }
-
-  handleOpenConfirmTransactionModal = (transactionDetails, autoOpened) => {
-    if (!this.navigatorRef) return;
-    const action = StackActions.push({
-      params: { autoOpened, transactionDetails },
-      routeName: 'ConfirmRequest',
-    });
-    Navigation.handleAction(this.navigatorRef, action);
-  }
-
-  fetchAllRequestsFromWalletConnectSessions = async () => {
-    try {
-      const allConnectors = this.props.getValidWalletConnectors();
-      if (!isEmpty(allConnectors)) {
-        const allRequests = await walletConnectGetAllRequests(allConnectors);
-        if (!isEmpty(allRequests)) {
-          this.props.addTransactionsToApprove(allRequests);
-          await firebase.notifications().removeAllDeliveredNotifications();
-        }
-      }
-    } catch (error) {
-      console.log('error fetching all requests from wallet connect', error);
-    }
-  }
-
-  onPushNotificationOpened = async (callId, sessionId, autoOpened) => {
-    const existingTransaction = this.props.transactionIfExists(callId);
-    if (existingTransaction) {
-      this.handleOpenConfirmTransactionModal(existingTransaction, autoOpened);
-    } else {
-      const transaction = await this.fetchAndAddWalletConnectRequest(callId, sessionId);
-      if (transaction) {
-        this.handleOpenConfirmTransactionModal(transaction, autoOpened);
-      } else {
-        const fetchedTransaction = this.props.transactionIfExists(callId);
-        if (fetchedTransaction) {
-          this.handleOpenConfirmTransactionModal(fetchedTransaction, autoOpened);
-        } else {
-          Alert.alert('This request has expired.');
-        }
-      }
-    }
-  }
-
-  fetchAndAddWalletConnectRequest = async (callId, sessionId) => {
-    try {
-      const walletConnector = this.props.sortedWalletConnectors.find(({ _sessionId }) => (_sessionId === sessionId));
-      const callData = await walletConnectGetRequest(callId, walletConnector);
-      if (!callData) return null;
-
-      const { dappName } = walletConnector;
-      return this.props.addTransactionToApprove(sessionId, callId, callData, dappName);
-    } catch (error) {
-      console.log('error fetching wallet connect request');
-      return null;
-    }
-  }
+  handleNavigatorRef = (navigatorRef) => Navigation.setTopLevelNavigator(navigatorRef)
 
   render = () => (
     <Provider store={store}>
@@ -227,18 +154,15 @@ class App extends Component {
 const AppWithRedux = compose(
   withProps({ store }),
   withAccountRefresh,
-  withHideSplashScreen,
+  withRequestsInit,
   withWalletConnectConnections,
+  withWalletConnectOnSessionRequest,
   connect(
     null,
     {
       accountLoadState,
-      addTransactionsToApprove,
-      addTransactionToApprove,
       settingsInitializeState,
       settingsUpdateAccountAddress,
-      transactionIfExists,
-      transactionsToApproveInit,
     },
   ),
 )(App);
