@@ -27,25 +27,7 @@ const Shadow = styled(Highlight)`
   background-color: ${({ highlight }) => (highlight ? '#FFFFFF33' : colors.transparent)};
 `;
 
-const enhance = compose(
-  shouldUpdate((props, nextProps) => {
-    const isNewHeight = isNewValueForPath(props, nextProps, 'height');
-    const isNewUniqueId = isNewValueForPath(props, nextProps, 'uniqueId');
-    const isNewWidth = isNewValueForPath(props, nextProps, 'height');
-
-    return isNewHeight || isNewUniqueId || isNewWidth;
-  }),
-  withHandlers({
-    onPress: ({ item, onPress }) => () => {
-      if (onPress) {
-        onPress(item);
-      }
-    },
-  }),
-);
-
-
-const UniqueTokenCard = enhance(({
+const UniqueTokenCard = (({
   disabled,
   height,
   item: {
@@ -63,6 +45,7 @@ const UniqueTokenCard = enhance(({
 }) => {
   const backgroundColor = background || colors.lightestGrey;
 
+  console.log(highlight)
   return (
     <ButtonPressAnimation
       disabled={disabled}
@@ -130,4 +113,12 @@ export default compose(
   }),
   withProps(({ item: { uniqueId } }) => ({ uniqueId })),
   withFabSendAction,
+  shouldUpdate((props, nextProps) => {
+    const isNewHeight = isNewValueForPath(props, nextProps, 'height');
+    const isNewUniqueId = isNewValueForPath(props, nextProps, 'uniqueId');
+    const isNewWidth = isNewValueForPath(props, nextProps, 'height');
+    const isNewHighlight = isNewValueForPath(props, nextProps, 'highlight');
+
+    return isNewHeight || isNewUniqueId || isNewWidth || isNewHighlight;
+  }),
 )(UniqueTokenCard);
