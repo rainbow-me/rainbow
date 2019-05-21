@@ -6,6 +6,12 @@ import { FlexItem, RowWithMargins } from '../layout';
 import SendFab from './SendFab';
 import Text from '../text/Text';
 import { hoistStatics, withProps } from 'recompact';
+import Icon from '../icons/Icon';
+import { ShadowStack } from '../shadow-stack';
+import { borders, colors } from '../../styles';
+import { ButtonPressAnimation } from '../animations';
+import { buildFabShadow } from './FloatingActionButton';
+import DeleteButton from './DeleteButton';
 
 const FabWrapperBottomPosition = 21;
 
@@ -14,18 +20,8 @@ const FabWrapper = ({
 }) => (
   <FlexItem>
     {children}
-    <Animated.Image
-      style={{
-        alignSelf: 'center',
-        bottom: 20,
-        height: 50,
-        position: 'absolute',
-        transform: [{
-          translateY: rest.deleteButtonTranslate,
-        }],
-        width: 50,
-      }}
-      source={require('../../assets/fab-delete.png')}
+    <DeleteButton
+      deleteButtonTranslate={rest.deleteButtonTranslate}
     />
     {!disabled && (
       <RowWithMargins
