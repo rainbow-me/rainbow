@@ -51,7 +51,6 @@ const UniqueTokenExpandedState = ({
         imageUrl={asset.image_preview_url}
         item={asset}
         resizeMode="contain"
-        size={maxImageHeight}
       />
     ),
     name: 'UniqueTokenImage',
@@ -109,6 +108,8 @@ const UniqueTokenExpandedState = ({
 
 UniqueTokenExpandedState.propTypes = {
   asset: PropTypes.object,
+  containerHeight: PropTypes.number,
+  containerWidth: PropTypes.number,
   imageDimensions: dimensionsPropType,
   maxImageHeight: PropTypes.number,
   onLayout: PropTypes.func.isRequired,
@@ -122,6 +123,28 @@ UniqueTokenExpandedState.propTypes = {
   title: PropTypes.string,
 };
 
+const buildPanelDimensions = ({
+  asset: { background },
+  imageDimensions,
+  maxImageHeight,
+  panelWidth,
+}) => {
+  const panelHeight = imageDimensions
+    ? ((panelWidth * imageDimensions.height) / imageDimensions.width)
+    : panelWidth;
+
+  const panelDimensions = { panelHeight };
+
+  if (panelHeight > maxImageHeight) {
+    panelDimensions.panelHeight = maxImageHeight;
+    panelDimensions.panelWidth = background
+      ? panelWidth
+      : ((maxImageHeight * imageDimensions.width) / imageDimensions.height);
+  }
+
+  return panelDimensions;
+};
+
 export default compose(
   withImageDimensionsCache,
   withViewLayoutProps(({ height: siblingHeight }) => {
@@ -129,10 +152,9 @@ export default compose(
 
     const viewportPadding = (bottom ? (bottom + top) : (top + top));
     const viewportHeight = deviceUtils.dimensions.height - viewportPadding;
+    const maxImageHeight = viewportHeight - siblingHeight - FloatingPanels.margin;
 
-    return {
-      maxImageHeight: viewportHeight - siblingHeight - FloatingPanels.margin,
-    };
+    return { maxImageHeight };
   }),
   withProps(({ asset, imageDimensionsCache }) => ({
     imageDimensions: imageDimensionsCache[asset.image_preview_url],
@@ -142,22 +164,7 @@ export default compose(
       : asset.asset_contract.name,
     title: buildUniqueTokenName(asset),
   })),
-  withProps(({ asset: { background }, imageDimensions, maxImageHeight, panelWidth }) => {
-    let panelHeight = imageDimensions
-        ? ((panelWidth * imageDimensions.height) / imageDimensions.width)
-        : panelWidth;
-
-    const panelDimensions = { panelHeight };
-
-    if (panelHeight > maxImageHeight) {
-      panelDimensions.panelHeight = maxImageHeight;
-      panelDimensions.panelWidth = background
-        ? panelWidth
-        : ((maxImageHeight * imageDimensions.width) / imageDimensions.height);
-    }
-
-    return panelDimensions;
-  }),
+  withProps(buildPanelDimensions),
   withHandlers({
     onPressSend: ({ navigation, asset }) => () => {
       navigation.goBack();
