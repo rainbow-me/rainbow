@@ -1,6 +1,6 @@
 import { isFunction } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { InteractionManager, StyleSheet } from 'react-native';
 import ReactNativeQRCodeScanner from 'react-native-qrcode-scanner';
 import stylePropType from 'react-style-proptype';
@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class QRCodeScannerCamera extends Component {
+export default class QRCodeScannerCamera extends PureComponent {
   static propTypes = {
     contentStyles: stylePropType,
     enableScanning: PropTypes.bool,
