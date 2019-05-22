@@ -10,17 +10,17 @@ const NETWORKS = [
   { disabled: true, name: 'Rinkeby' },
 ];
 
-const networkListItems = NETWORKS.map(({ disabled, name }) => ({
+const buildNetworkListItem = ({ disabled, name }) => ({
   disabled,
   key: name,
   label: name,
   value: name,
-}));
+});
 
 const NetworkSection = ({ network }) => (
   <RadioList
     extraData={network}
-    items={networkListItems}
+    items={NETWORKS.map(buildNetworkListItem)}
     renderItem={RadioListItem}
     value={network}
   />
@@ -28,6 +28,10 @@ const NetworkSection = ({ network }) => (
 
 NetworkSection.propTypes = {
   network: PropTypes.string,
+};
+
+NetworkSection.defaultProps = {
+  network: 'Mainnet',
 };
 
 export default onlyUpdateForKeys(['network'])(NetworkSection);
