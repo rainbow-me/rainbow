@@ -832,9 +832,16 @@
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
 
+<<<<<<< HEAD
 "@rainbow-me/rainbow-common@^0.8.3":
   version "0.8.3"
   resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.8.3.tgz#15d65fa5460631c6adf0e31d00afcbf4d195e6ef"
+=======
+"@rainbow-me/rainbow-common@^0.8.2":
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbow-common/-/rainbow-common-0.8.3.tgz#15d65fa5460631c6adf0e31d00afcbf4d195e6ef"
+  integrity sha512-z0wpg5gBovvrJnxwbH/9kZpha/u54ol/96Nxp8k7iXWF29WPDJaaWEZIYY+EeyXnRCFyLF8KpIzh6gsXUWMTNg==
+>>>>>>> 4b949d8... begin requests ui fixes
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
@@ -930,6 +937,10 @@
 "@react-native-community/cli@^1.2.1":
   version "1.9.5"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-1.9.5.tgz#f46e83f84ee3c2043e0ade1f1e22f1954ae8fbbb"
+<<<<<<< HEAD
+=======
+  integrity sha512-z7E8YP2pvqC3OcYmqbaRtEgTKac6awPzog84HvrB+8XreoSOIPN8AXOAcxwpaNE+g+3CgnuC82CkgcMefAgzsQ==
+>>>>>>> 4b949d8... begin requests ui fixes
   dependencies:
     chalk "^1.1.1"
     commander "^2.19.0"
@@ -1153,6 +1164,10 @@
 "@walletconnect/core@^1.0.0-beta.24":
   version "1.0.0-beta.24"
   resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.24.tgz#7676f0890a5d66e974dd5fe06ed931e38e445321"
+<<<<<<< HEAD
+=======
+  integrity sha512-hYLUP3SoRRhuzaCSUrzvemHBSxo2tqhBguRD/8Tc47lWUvdykDvpXF/huWK5Ap10ETv2T7A2bwN8Q2zi+3wP8Q==
+>>>>>>> 4b949d8... begin requests ui fixes
   dependencies:
     "@walletconnect/types" "^1.0.0-beta.23"
     "@walletconnect/utils" "^1.0.0-beta.24"
@@ -1160,6 +1175,10 @@
 "@walletconnect/react-native@^1.0.0-beta.20":
   version "1.0.0-beta.24"
   resolved "https://registry.yarnpkg.com/@walletconnect/react-native/-/react-native-1.0.0-beta.24.tgz#a8bbc4c79409eec2a80331bec4cfe65c3c9da5dd"
+<<<<<<< HEAD
+=======
+  integrity sha512-ZsgrdqtJvO2evIZ9VsDi7lvv/wxGg28TvXEHw2ZWE+UD2QODqOy4qDQFn6eUKaL+FBvCLV6OBSeAWCeBTYn+DA==
+>>>>>>> 4b949d8... begin requests ui fixes
   dependencies:
     "@walletconnect/core" "^1.0.0-beta.24"
     "@walletconnect/types" "^1.0.0-beta.23"
@@ -1168,10 +1187,18 @@
 "@walletconnect/types@^1.0.0-beta.23":
   version "1.0.0-beta.24"
   resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.0.0-beta.24.tgz#099ca2170cfdff696c0549893a79c85762b8983c"
+<<<<<<< HEAD
+=======
+  integrity sha512-Puk1osjWQSKlNHRwdBb0Odl/Dsivr9CW5kEbJ5u5cP3zULBwXi3hH5HohFEt0wOkuafD3Okv5H/G7R3Ya2uDbQ==
+>>>>>>> 4b949d8... begin requests ui fixes
 
 "@walletconnect/utils@^1.0.0-beta.24":
   version "1.0.0-beta.24"
   resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-1.0.0-beta.24.tgz#39db46a5f57e9d0e55dfd3045f2f8baea2c50414"
+<<<<<<< HEAD
+=======
+  integrity sha512-UcpAfyLWWCavkQPZ4LdKGetfL7tHrCagInmsXeWWacqM+s3tEUEHBdmmdgxAu8Ma9jr7smSdmW6i5lxn8m5u2g==
+>>>>>>> 4b949d8... begin requests ui fixes
   dependencies:
     "@walletconnect/types" "^1.0.0-beta.23"
     ethers "^4.0.27"
@@ -2470,6 +2497,10 @@ can-promise@0.0.1:
 caniuse-lite@^1.0.30000844, caniuse-lite@^1.0.30000957, caniuse-lite@^1.0.30000967:
   version "1.0.30000971"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000971.tgz#d1000e4546486a6977756547352bc96a4cfd2b13"
+<<<<<<< HEAD
+=======
+  integrity sha512-TQFYFhRS0O5rdsmSbF1Wn+16latXYsQJat66f7S7lizXW1PVpWJeZw9wqqVLIjuxDRz7s7xRUj13QCfd8hKn6g==
+>>>>>>> 4b949d8... begin requests ui fixes
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -3139,6 +3170,10 @@ detect-newline@^2.1.0:
 detox@^12.8.0:
   version "12.9.0"
   resolved "https://registry.yarnpkg.com/detox/-/detox-12.9.0.tgz#d8e3d21440d582b0d148a759364c55bf5c8cd25e"
+<<<<<<< HEAD
+=======
+  integrity sha512-Yo6OMPh1gDSVANRUQwwjrapYr+frusmyCFRyatp3niKBiGQP37wk+dkIUT487nEh6WSyYtTvCitdymvN73t48A==
+>>>>>>> 4b949d8... begin requests ui fixes
   dependencies:
     bunyan "^1.8.12"
     bunyan-debug-stream "^1.1.0"
@@ -3272,6 +3307,10 @@ ee-first@1.1.1:
 electron-to-chromium@^1.3.133, electron-to-chromium@^1.3.47:
   version "1.3.136"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.136.tgz#758a156109077536780cfa8207b1aeaa99843e33"
+<<<<<<< HEAD
+=======
+  integrity sha512-xHkYkbEi4kI+2w5v6yBGCQTRXL7N0PWscygTFZu/1bArnPSo2WR9xjdw4m06RR4J5PncrWJcuOVv+MAG2mK5JQ==
+>>>>>>> 4b949d8... begin requests ui fixes
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -6292,7 +6331,7 @@ metro-react-native-babel-preset@0.53.1:
     metro-babel7-plugin-react-transform "0.53.1"
     react-transform-hmr "^1.0.4"
 
-metro-react-native-babel-preset@^0.54.0:
+metro-react-native-babel-preset@^0.54.1:
   version "0.54.1"
   resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.54.1.tgz#b8f03865c381841d7f8912e7ba46804ea3a928b8"
   dependencies:
@@ -6836,8 +6875,14 @@ node-pre-gyp@^0.12.0:
     tar "^4"
 
 node-releases@^1.1.19:
+<<<<<<< HEAD
   version "1.1.20"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.20.tgz#f77f9f9a4fcb22e74ba88fe15732a3a8b037146d"
+=======
+  version "1.1.21"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.21.tgz#46c86f9adaceae4d63c75d3c2f2e6eee618e55f3"
+  integrity sha512-TwnURTCjc8a+ElJUjmDqU6+12jhli1Q61xOQmdZ7ECZVBZuQpN/1UnembiIHDM1wCcfLvh5wrWXUF5H6ufX64Q==
+>>>>>>> 4b949d8... begin requests ui fixes
   dependencies:
     semver "^5.3.0"
 
@@ -7618,6 +7663,10 @@ promise@^7.1.1:
 prompts@^2.0.1:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/prompts/-/prompts-2.1.0.tgz#bf90bc71f6065d255ea2bdc0fe6520485c1b45db"
+<<<<<<< HEAD
+=======
+  integrity sha512-+x5TozgqYdOwWsQFZizE/Tra3fKvAoy037kOyU6cgz84n8f6zxngLOV4O32kTwt9FcLCxAqw0P/c8rOr9y+Gfg==
+>>>>>>> 4b949d8... begin requests ui fixes
   dependencies:
     kleur "^3.0.2"
     sisteransi "^1.0.0"
@@ -7828,7 +7877,7 @@ react-native-actionsheet@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/react-native-actionsheet/-/react-native-actionsheet-2.4.2.tgz#6a00dd51a75ef2c8974312130e405af73191500f"
 
-react-native-camera@^2.8.0:
+react-native-camera@^2.9.0:
   version "2.9.0"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-2.9.0.tgz#5ef94a535dbbfd215d672deef8d0c45bf06b1f3a"
   dependencies:
@@ -7839,6 +7888,11 @@ react-native-circular-progress@^1.0.1:
   resolved "https://registry.yarnpkg.com/react-native-circular-progress/-/react-native-circular-progress-1.1.0.tgz#5cb3efe570796226c59bf15a35250fb8b0d45025"
   dependencies:
     prop-types "^15.6.2"
+
+react-native-clean-project@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-clean-project/-/react-native-clean-project-3.1.0.tgz#96a855a27bb7b6a40ce581d3d035555b0a7a56fd"
+  integrity sha512-l+xgtcnY/3t4t2fDiRRPfiz0bDZk9zZ728oGasPuawqn7DCtV32nj3DxYPa8sv5ldinm7CsNCTH1eP6lN0qnNQ==
 
 react-native-code-push@^5.6.0:
   version "5.6.0"
@@ -8118,7 +8172,7 @@ react-navigation-tabs@~1.1.4:
     react-lifecycles-compat "^3.0.4"
     react-native-tab-view "^1.4.1"
 
-react-navigation@^3.8.1:
+react-navigation@^3.11.0:
   version "3.11.0"
   resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-3.11.0.tgz#2c82217c452d07d8b9b0929bc7e77e2bcfaf9388"
   dependencies:
@@ -8784,8 +8838,14 @@ scrypt-js@2.0.4:
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.7.0.tgz#790a7cf6fea5459bac96110b29b60412dc8ff96b"
 
 semver@^6.0.0:
+<<<<<<< HEAD
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.0.0.tgz#05e359ee571e5ad7ed641a6eec1e547ba52dea65"
+=======
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-6.1.0.tgz#e95dc415d45ecf03f2f9f83b264a6b11f49c0cca"
+  integrity sha512-kCqEOOHoBcFs/2Ccuk4Xarm/KiWRSLEX9CAZF8xkJ6ZPlIoTZ8V5f7J16vYLJqDbR7KrxTJpR2lqjIEm2Qx9cQ==
+>>>>>>> 4b949d8... begin requests ui fixes
 
 semver@~2.3.1:
   version "2.3.2"
@@ -9754,10 +9814,18 @@ unist-util-find-all-after@^1.0.2:
 unist-util-is@^2.0.0, unist-util-is@^2.1.2:
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/unist-util-is/-/unist-util-is-2.1.3.tgz#459182db31f4742fceaea88d429693cbf0043d20"
+<<<<<<< HEAD
+=======
+  integrity sha512-4WbQX2iwfr/+PfM4U3zd2VNXY+dWtZsN1fLnWEi2QQXA4qyDYAZcDMfXUX0Cu6XZUHHAO9q4nyxxLT4Awk1qUA==
+>>>>>>> 4b949d8... begin requests ui fixes
 
 unist-util-remove-position@^1.0.0:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/unist-util-remove-position/-/unist-util-remove-position-1.1.3.tgz#d91aa8b89b30cb38bad2924da11072faa64fd972"
+<<<<<<< HEAD
+=======
+  integrity sha512-CtszTlOjP2sBGYc2zcKA/CvNdTdEs3ozbiJ63IPBxh8iZg42SCCb8m04f8z2+V1aSk5a7BxbZKEdoDjadmBkWA==
+>>>>>>> 4b949d8... begin requests ui fixes
   dependencies:
     unist-util-visit "^1.1.0"
 
