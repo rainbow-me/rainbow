@@ -928,8 +928,8 @@
     ws "^1.1.0"
 
 "@react-native-community/cli@^1.2.1":
-  version "1.9.4"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-1.9.4.tgz#51e4ba30aa6ee29f0c1e2bedf69ac7d1a4df1a8c"
+  version "1.9.5"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-1.9.5.tgz#f46e83f84ee3c2043e0ade1f1e22f1954ae8fbbb"
   dependencies:
     chalk "^1.1.1"
     commander "^2.19.0"
@@ -1150,30 +1150,30 @@
   version "12.0.12"
   resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-12.0.12.tgz#45dd1d0638e8c8f153e87d296907659296873916"
 
-"@walletconnect/core@^1.0.0-beta.22":
-  version "1.0.0-beta.22"
-  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.22.tgz#a0b3b755cf934618f2d4f55efc2bf176570d51d6"
+"@walletconnect/core@^1.0.0-beta.24":
+  version "1.0.0-beta.24"
+  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.24.tgz#7676f0890a5d66e974dd5fe06ed931e38e445321"
   dependencies:
-    "@walletconnect/types" "^1.0.0-beta.21"
-    "@walletconnect/utils" "^1.0.0-beta.22"
+    "@walletconnect/types" "^1.0.0-beta.23"
+    "@walletconnect/utils" "^1.0.0-beta.24"
 
 "@walletconnect/react-native@^1.0.0-beta.20":
-  version "1.0.0-beta.22"
-  resolved "https://registry.yarnpkg.com/@walletconnect/react-native/-/react-native-1.0.0-beta.22.tgz#62a87df079ef24580c233bdbbce7fed434e622d4"
+  version "1.0.0-beta.24"
+  resolved "https://registry.yarnpkg.com/@walletconnect/react-native/-/react-native-1.0.0-beta.24.tgz#a8bbc4c79409eec2a80331bec4cfe65c3c9da5dd"
   dependencies:
-    "@walletconnect/core" "^1.0.0-beta.22"
-    "@walletconnect/types" "^1.0.0-beta.21"
-    "@walletconnect/utils" "^1.0.0-beta.22"
+    "@walletconnect/core" "^1.0.0-beta.24"
+    "@walletconnect/types" "^1.0.0-beta.23"
+    "@walletconnect/utils" "^1.0.0-beta.24"
 
-"@walletconnect/types@^1.0.0-beta.21":
-  version "1.0.0-beta.22"
-  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.0.0-beta.22.tgz#af03e90a6b3e50911e6521423d3e61bf8e0527c3"
+"@walletconnect/types@^1.0.0-beta.23":
+  version "1.0.0-beta.24"
+  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.0.0-beta.24.tgz#099ca2170cfdff696c0549893a79c85762b8983c"
 
-"@walletconnect/utils@^1.0.0-beta.22":
-  version "1.0.0-beta.22"
-  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-1.0.0-beta.22.tgz#6f83515a3bc447d7eb2b005b18473779f7b0fca2"
+"@walletconnect/utils@^1.0.0-beta.24":
+  version "1.0.0-beta.24"
+  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-1.0.0-beta.24.tgz#39db46a5f57e9d0e55dfd3045f2f8baea2c50414"
   dependencies:
-    "@walletconnect/types" "^1.0.0-beta.21"
+    "@walletconnect/types" "^1.0.0-beta.23"
     ethers "^4.0.27"
 
 "@yarnpkg/lockfile@^1.0.0":
@@ -2468,8 +2468,8 @@ can-promise@0.0.1:
     window-or-global "^1.0.1"
 
 caniuse-lite@^1.0.30000844, caniuse-lite@^1.0.30000957, caniuse-lite@^1.0.30000967:
-  version "1.0.30000969"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000969.tgz#7664f571f2072657bde70b00a1fc1ba41f1942a9"
+  version "1.0.30000971"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000971.tgz#d1000e4546486a6977756547352bc96a4cfd2b13"
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -3137,8 +3137,8 @@ detect-newline@^2.1.0:
   resolved "https://registry.yarnpkg.com/detect-newline/-/detect-newline-2.1.0.tgz#f41f1c10be4b00e87b5f13da680759f2c5bfd3e2"
 
 detox@^12.8.0:
-  version "12.8.0"
-  resolved "https://registry.yarnpkg.com/detox/-/detox-12.8.0.tgz#68cf92ff02fcdb896f05c67b2b40a8c94d09b24b"
+  version "12.9.0"
+  resolved "https://registry.yarnpkg.com/detox/-/detox-12.9.0.tgz#d8e3d21440d582b0d148a759364c55bf5c8cd25e"
   dependencies:
     bunyan "^1.8.12"
     bunyan-debug-stream "^1.1.0"
@@ -3270,8 +3270,8 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
 
 electron-to-chromium@^1.3.133, electron-to-chromium@^1.3.47:
-  version "1.3.135"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.135.tgz#f5799b95f2bcd8de17cde47d63392d83a4477041"
+  version "1.3.136"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.136.tgz#758a156109077536780cfa8207b1aeaa99843e33"
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -6836,8 +6836,8 @@ node-pre-gyp@^0.12.0:
     tar "^4"
 
 node-releases@^1.1.19:
-  version "1.1.19"
-  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.19.tgz#c492d1e381fea0350b338b646c27867e88e91b3d"
+  version "1.1.20"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.20.tgz#f77f9f9a4fcb22e74ba88fe15732a3a8b037146d"
   dependencies:
     semver "^5.3.0"
 
@@ -7616,8 +7616,8 @@ promise@^7.1.1:
     asap "~2.0.3"
 
 prompts@^2.0.1:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/prompts/-/prompts-2.0.4.tgz#179f9d4db3128b9933aa35f93a800d8fce76a682"
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/prompts/-/prompts-2.1.0.tgz#bf90bc71f6065d255ea2bdc0fe6520485c1b45db"
   dependencies:
     kleur "^3.0.2"
     sisteransi "^1.0.0"
@@ -9752,12 +9752,12 @@ unist-util-find-all-after@^1.0.2:
     unist-util-is "^2.0.0"
 
 unist-util-is@^2.0.0, unist-util-is@^2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/unist-util-is/-/unist-util-is-2.1.2.tgz#1193fa8f2bfbbb82150633f3a8d2eb9a1c1d55db"
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/unist-util-is/-/unist-util-is-2.1.3.tgz#459182db31f4742fceaea88d429693cbf0043d20"
 
 unist-util-remove-position@^1.0.0:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/unist-util-remove-position/-/unist-util-remove-position-1.1.2.tgz#86b5dad104d0bbfbeb1db5f5c92f3570575c12cb"
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/unist-util-remove-position/-/unist-util-remove-position-1.1.3.tgz#d91aa8b89b30cb38bad2924da11072faa64fd972"
   dependencies:
     unist-util-visit "^1.1.0"
 
