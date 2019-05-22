@@ -116,15 +116,10 @@ export default class RecyclerActivityList extends PureComponent {
   };
 
   rowRenderer = (type, data) => {
-    if (type === ViewTypes.COMPONENT_HEADER) {
-      return data.header;
-    }
-    if (type === ViewTypes.HEADER) {
-      return <ActivityListHeader {...data} />;
-    }
-    if (type === ViewTypes.FOOTER) {
-      return <ListFooter />;
-    }
+    if (type === ViewTypes.COMPONENT_HEADER) return data.header;
+    if (type === ViewTypes.HEADER) return <ActivityListHeader {...data} />;
+    if (type === ViewTypes.FOOTER) return <ListFooter />;
+
     if (!data) return null;
     if (!data.hash) return <RequestCoinRow item={data} />;
     if (!data.symbol && data.dappName) return <ContractInteractionCoinRow item={data} />;
