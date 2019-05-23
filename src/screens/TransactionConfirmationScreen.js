@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import lang from 'i18n-js';
 import { Animated } from 'react-native';
 import TouchID from 'react-native-touch-id';
@@ -39,7 +39,7 @@ const TransactionType = styled(Text).attrs({ size: 'h5' })`
   margin-top: 6;
 `;
 
-class TransactionConfirmationScreen extends Component {
+export default class TransactionConfirmationScreen extends PureComponent {
   static propTypes = {
     dappName: PropTypes.string,
     imageUrl: PropTypes.string,
@@ -182,5 +182,3 @@ class TransactionConfirmationScreen extends Component {
     </Container>
   )
 }
-
-export default TransactionConfirmationScreen;
