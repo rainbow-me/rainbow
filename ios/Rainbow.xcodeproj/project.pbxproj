@@ -2252,7 +2252,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 50137FC674DB782F454AFA32 /* Pods-Rainbow.debug.xcconfig */;
+			baseConfigurationReference = 06E14A994B1D3A2E1CCBA545 /* Pods-Rainbow.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Rainbow/Rainbow.entitlements;
@@ -2305,7 +2305,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AF52B697F8A6DEC07D4A82AB /* Pods-Rainbow.release.xcconfig */;
+			baseConfigurationReference = 50750D914B8810145768DC57 /* Pods-Rainbow.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODEPUSH_KEY = "CHq9hB40PBZqHTxL-f-Wd_rK4anl1e7a8912-936f-4ce7-8505-32a075039f51";
@@ -2395,7 +2395,7 @@
 		};
 		2C6A799821127ED9003AFB37 /* Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3E98BFA4968FAACF85C68AB5 /* Pods-Rainbow.staging.xcconfig */;
+			baseConfigurationReference = 0EBA050ADF8AD8CB6B14A162 /* Pods-Rainbow.staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODEPUSH_KEY = "Xf8eimmB0-W22TRNCwL9tZNO9xev1e7a8912-936f-4ce7-8505-32a075039f51";
@@ -2530,7 +2530,7 @@
 		};
 		2C87B79A2197FA1900682EC4 /* LocalRelease */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A0BA96258CF7FFF7BBE552F4 /* Pods-Rainbow.localrelease.xcconfig */;
+			baseConfigurationReference = 069784542A6B83E8BB774757 /* Pods-Rainbow.localrelease.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODEPUSH_KEY = "";

@@ -2,7 +2,7 @@ import FastImage from 'react-native-fast-image';
 import { compose, withHandlers } from 'recompact';
 import { withImageDimensionsCache } from '../hoc';
 
-export default compose(
+const ImageWithCachedDimensions = compose(
   withImageDimensionsCache,
   withHandlers({
     onLoad: ({
@@ -31,3 +31,5 @@ export default compose(
     },
   }),
 )(FastImage);
+
+export default ImageWithCachedDimensions;

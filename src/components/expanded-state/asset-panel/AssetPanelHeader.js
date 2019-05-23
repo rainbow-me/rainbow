@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withProps } from 'recompact';
+import { onlyUpdateForPropTypes, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, padding } from '../../../styles';
-import { Column, ColumnWithMargins, Row } from '../../layout';
+import { ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import FloatingPanel from '../FloatingPanel';
 
@@ -35,7 +35,7 @@ const Subtitle = withProps({
 
 const Title = styled(TruncatedText).attrs(HeadingTextStyles)`
   flex: 1;
-  padding-right: ${FloatingPanel.padding.x * 1.25};
+  padding-right: ${({ paddingRight }) => paddingRight};
 `;
 
 const AssetPanelHeader = ({
@@ -46,7 +46,9 @@ const AssetPanelHeader = ({
 }) => (
   <Container justify="start">
     <HeaderRow>
-      <Title>{title}</Title>
+      <Title paddingRight={price ? FloatingPanel.padding.x * 1.25 : 0}>
+        {title}
+      </Title>
       {price && <Price>{price}</Price>}
     </HeaderRow>
     <HeaderRow style={{ opacity: 0.6 }}>
@@ -63,4 +65,4 @@ AssetPanelHeader.propTypes = {
   title: PropTypes.string,
 };
 
-export default AssetPanelHeader;
+export default onlyUpdateForPropTypes(AssetPanelHeader);

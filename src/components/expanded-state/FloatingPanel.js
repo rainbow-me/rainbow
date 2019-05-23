@@ -1,14 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import stylePropType from 'react-style-proptype';
-import {
-  compose,
-  hoistStatics,
-  pure,
-  setStatic,
-} from 'recompact';
-import { Column } from '../layout';
+import { pure } from 'recompact';
 import { colors, shadow } from '../../styles';
+import { Column } from '../layout';
 
 const FloatingPanelBorderRadius = 12;
 

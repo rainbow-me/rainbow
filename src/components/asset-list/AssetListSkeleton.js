@@ -18,8 +18,8 @@ const renderSkeleton = index => (
   />
 );
 
-const AssetListSkeleton = () => (
-  <Column style={position.sizeAsObject('100%')}>
+const AssetListSkeleton = (props) => (
+  <Column {...props} style={position.sizeAsObject('100%')}>
     <AssetListHeader title={lang.t('account.tab_balances')} />
     <Centered flex={1}>
       <Column style={position.coverAsObject}>

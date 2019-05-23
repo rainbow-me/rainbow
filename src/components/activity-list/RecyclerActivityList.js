@@ -1,7 +1,6 @@
-import { has, get } from 'lodash';
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { Dimensions } from 'react-native';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
@@ -39,7 +38,7 @@ const hasRowChanged = (r1, r2) => {
   return (r1Key !== r2Key)
     || isNewValueForPath(r1, r2, 'native.symbol')
     || isNewValueForPath(r1, r2, 'pending');
-}
+};
 
 export default class RecyclerActivityList extends PureComponent {
   static propTypes = {
@@ -117,15 +116,10 @@ export default class RecyclerActivityList extends PureComponent {
   };
 
   rowRenderer = (type, data) => {
-    if (type === ViewTypes.COMPONENT_HEADER) {
-      return data.header;
-    }
-    if (type === ViewTypes.HEADER) {
-      return <ActivityListHeader {...data} />;
-    }
-    if (type === ViewTypes.FOOTER) {
-      return <ListFooter />;
-    }
+    if (type === ViewTypes.COMPONENT_HEADER) return data.header;
+    if (type === ViewTypes.HEADER) return <ActivityListHeader {...data} />;
+    if (type === ViewTypes.FOOTER) return <ListFooter />;
+
     if (!data) return null;
     if (!data.hash) return <RequestCoinRow item={data} />;
     if (!data.symbol && data.dappName) return <ContractInteractionCoinRow item={data} />;
