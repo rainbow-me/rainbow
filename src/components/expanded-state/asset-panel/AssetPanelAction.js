@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
-import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
+import { withNeverRerender } from '../../../hoc';
 import { colors, padding, position } from '../../../styles';
 import { Icon } from '../../icons';
 import { Centered, FlexItem, Row } from '../../layout';
@@ -68,4 +68,4 @@ AssetPanelAction.defaultProps = {
   color: colors.sendScreen.brightBlue,
 };
 
-export default pure(AssetPanelAction);
+export default withNeverRerender(AssetPanelAction);
