@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { TextInput } from 'react-native';
-import { pure } from 'recompact';
 import { buildTextStyles, colors } from '../../styles';
 
 const Input = ({

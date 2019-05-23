@@ -5,13 +5,8 @@ import {
   isToday,
   isYesterday,
 } from 'date-fns';
-import {
-  get,
-  groupBy,
-  isEmpty,
-} from 'lodash';
+import { get, groupBy, isEmpty } from 'lodash';
 import { supportedNativeCurrencies } from '@rainbow-me/rainbow-common';
-import { createElement } from 'react';
 import { createSelector } from 'reselect';
 import TransactionStatusTypes from './transactionStatusTypes';
 
@@ -20,9 +15,9 @@ const nativeCurrencySelector = state => state.nativeCurrency;
 const requestsSelector = state => state.requests;
 const transactionsSelector = state => state.transactions;
 
-export const buildTransactionUniqueIdentifier = ({ hash, transactionDisplayDetails }) => {
-  return hash || get(transactionDisplayDetails, 'timestampInMs');
-}
+export const buildTransactionUniqueIdentifier = ({ hash, transactionDisplayDetails }) => (
+  hash || get(transactionDisplayDetails, 'timestampInMs')
+);
 
 export const getTransactionStatus = ({
   accountAddress,
@@ -79,8 +74,6 @@ const normalizeTransactions = ({ accountAddress, nativeCurrency, transactions })
   }))
 );
 
-const renderItemElement = renderItem => renderItemProps => createElement(renderItem, renderItemProps);
-
 const buildTransactionsSections = (
   accountAddress,
   nativeCurrency,
@@ -102,7 +95,6 @@ const buildTransactionsSections = (
       data: transactionsByDate[section],
       title: section,
     }));
-
   }
 
   let requestsToApprove = [];

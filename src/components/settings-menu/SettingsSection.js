@@ -53,6 +53,7 @@ const SettingsSection = ({
 }) => (
   <ScrollView
     contentContainerStyle={position.sizeAsObject('100%')}
+    scrollEventThrottle={32}
     style={position.coverAsObject}
   >
     <Column style={{ marginTop: 8 }}>
