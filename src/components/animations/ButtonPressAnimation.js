@@ -145,22 +145,18 @@ export default class ButtonPressAnimation extends PureComponent {
     });
   }
 
-  render() {
-    const { children, disabled, style, waitFor } = this.props;
-
-    return (
-      <TapGestureHandler
-        enabled={!disabled}
-        onHandlerStateChange={this.handleStateChange}
-        waitFor={waitFor}
+  render = () => (
+    <TapGestureHandler
+      enabled={!this.props.disabled}
+      onHandlerStateChange={this.handleStateChange}
+      waitFor={this.props.waitFor}
+    >
+      <Animated.View
+        onLayout={this.handleLayout}
+        style={[this.props.style, this.buildAnimationStyles()]}
       >
-        <Animated.View
-          onLayout={this.handleLayout}
-          style={[style, this.buildAnimationStyles()]}
-        >
-          {children}
-        </Animated.View>
-      </TapGestureHandler>
-    );
-  }
+        {this.props.children}
+      </Animated.View>
+    </TapGestureHandler>
+  )
 }
