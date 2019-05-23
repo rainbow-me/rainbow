@@ -1,6 +1,7 @@
+import { withSafeTimeout } from '@hocs/safe-timers';
 import { isFunction } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { InteractionManager, StyleSheet } from 'react-native';
 import ReactNativeQRCodeScanner from 'react-native-qrcode-scanner';
 import stylePropType from 'react-style-proptype';
@@ -19,7 +20,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class QRCodeScannerCamera extends Component {
+class QRCodeScannerCamera extends PureComponent {
   static propTypes = {
     contentStyles: stylePropType,
     enableScanning: PropTypes.bool,
@@ -27,6 +28,15 @@ export default class QRCodeScannerCamera extends Component {
     onMountError: PropTypes.func,
     onSuccess: PropTypes.func,
     scannerRef: PropTypes.func,
+    setSafeTimeout: PropTypes.func,
+  }
+
+  state = {
+    showAuthorizationView: false,
+  }
+
+  componentDidMount = () => {
+    this.props.setSafeTimeout(this.handleShowAuthorizationView, 500);
   }
 
   componentDidUpdate = () => {
@@ -61,6 +71,14 @@ export default class QRCodeScannerCamera extends Component {
 
   handleScannerRef = (ref) => { this.scannerRef = ref; }
 
+  handleShowAuthorizationView = () => this.setState({ showAuthorizationView: true })
+
+  renderAuthorizationView = () => (
+    this.state.showAuthorizationView
+      ? <QRCodeScannerNeedsAuthorization />
+      : null
+  )
+
   render = () => (
     <ReactNativeQRCodeScanner
       bottomViewStyle={styles.disableSection}
@@ -71,9 +89,9 @@ export default class QRCodeScannerCamera extends Component {
       }}
       cameraStyle={styles.fullscreen}
       containerStyle={styles.fullscreen}
-      notAuthorizedView={<QRCodeScannerNeedsAuthorization />}
+      notAuthorizedView={this.renderAuthorizationView()}
       onRead={this.props.onSuccess}
-      pendingAuthorizationView={<QRCodeScannerNeedsAuthorization />}
+      pendingAuthorizationView={this.renderAuthorizationView()}
       reactivate={true}
       reactivateTimeout={1000}
       ref={this.handleScannerRef}
@@ -82,3 +100,5 @@ export default class QRCodeScannerCamera extends Component {
     />
   )
 }
+
+export default withSafeTimeout(QRCodeScannerCamera);

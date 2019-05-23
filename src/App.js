@@ -1,4 +1,4 @@
-import { get, isEmpty, last } from 'lodash';
+import { get, last } from 'lodash';
 import PropTypes from 'prop-types';
 import {
   accountLoadState,
@@ -19,10 +19,10 @@ import { StackActions } from 'react-navigation';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import {
-  saveFCMToken,
-  registerTokenRefreshListener,
   registerNotificationListener,
   registerNotificationOpenedListener,
+  registerTokenRefreshListener,
+  saveFCMToken,
 } from './model/firebase';
 import {
   withAccountRefresh,
