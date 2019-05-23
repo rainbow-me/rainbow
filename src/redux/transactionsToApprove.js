@@ -82,21 +82,17 @@ const getRequestDisplayDetails = (payload, assets, prices, nativeCurrency) => {
   return null;
 };
 
-const getTypedDataDisplayDetails = (request, timestampInMs) => {
-  return {
-    payload: request,
-    timestampInMs,
-    type: 'message',
-  };
-};
+const getTypedDataDisplayDetails = (request, timestampInMs) => ({
+  payload: request,
+  timestampInMs,
+  type: 'message',
+});
 
-const getMessageDisplayDetails = (message, timestampInMs) => {
-  return {
-    payload: message,
-    timestampInMs,
-    type: 'message',
-  };
-};
+const getMessageDisplayDetails = (message, timestampInMs) => ({
+  payload: message,
+  timestampInMs,
+  type: 'message',
+});
 
 const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrency, timestampInMs) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;

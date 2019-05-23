@@ -24,7 +24,7 @@ import {
 } from '../components/send';
 import { withAccountRefresh, withAccountSettings } from '../hoc';
 import { colors } from '../styles';
-import { deviceUtils } from '../utils';
+import { deviceUtils, isNewValueForPath } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
 
 const Container = styled(Column)`
@@ -107,8 +107,10 @@ class SendSheet extends Component {
       Keyboard.dismiss();
     }
 
-    if (prevProps.isValidAddress !== isValidAddress
-        || prevProps.selected !== selected) {
+    const isNewSelected = isNewValueForPath(this.props, prevProps, 'selected');
+    const isNewValidAddress = isNewValueForPath(this.props, prevProps, 'isValidAddress');
+
+    if (isNewValidAddress || isNewSelected) {
       let verticalGestureResponseDistance = 0;
 
       if (isValidAddress) {

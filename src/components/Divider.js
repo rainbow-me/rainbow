@@ -6,6 +6,7 @@ import {
 } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { onlyUpdateForKeys } from 'recompact';
 import styled, { css } from 'styled-components/primitives';
 import { Row } from './layout';
 import { borders, colors, position } from '../styles';
@@ -59,7 +60,9 @@ const Container = styled(Row)`
   width: ${({ horizontal, size }) => (horizontal ? '100%' : size)};
 `;
 
-const Divider = ({
+const enhance = onlyUpdateForKeys(['color', 'inset']);
+
+const Divider = enhance(({
   color,
   horizontal,
   inset,
@@ -74,7 +77,7 @@ const Divider = ({
       inset={buildInsetFromProps(inset)}
     />
   </Container>
-);
+));
 
 Divider.propTypes = {
   color: PropTypes.string,

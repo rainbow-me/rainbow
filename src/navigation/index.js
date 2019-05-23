@@ -80,11 +80,11 @@ function setTransitionPosition(position) {
 }
 
 export default {
-  setTopLevelNavigator,
   getActiveRouteName,
   getTransitionPosition,
   handleAction,
   pauseNavigationActions,
   resumeNavigationActions,
+  setTopLevelNavigator,
   setTransitionPosition,
 };

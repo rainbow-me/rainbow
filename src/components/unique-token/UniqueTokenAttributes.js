@@ -20,18 +20,16 @@ import Tag from '../Tag';
 const AttributesPadding = 15;
 const scrollInsetBottom = AttributesPadding + (PagerControls.padding * 4);
 
-const AttributeItemTag = styled(Tag)`
-  ${margin(5)}
-`;
-
 const Wrapper = styled(Centered).attrs({ wrap: true })`
   ${padding(0, AttributesPadding * 1.125)}
   flex-grow: 1;
 `;
 
+/* eslint-disable camelcase */
 const AttributeItem = ({ trait_type: type, value }) => (
   type ? (
-    <AttributeItemTag
+    <Tag
+      css={margin(5)}
       key={`${type}${value}`}
       text={value}
       title={type}
@@ -63,10 +61,12 @@ const UniqueTokenAttributes = ({
         padding: willListOverflow ? AttributesPadding : 0,
         paddingBottom: willListOverflow ? scrollInsetBottom : AttributesPadding,
       }}
+      directionalLockEnabled={true}
       indicatorStyle={colors.isColorLight(background) ? 'white' : 'black'}
       onScroll={onScroll}
       overScrollMode="never"
       scrollEnabled={willListOverflow}
+      scrollEventThrottle={32}
       scrollIndicatorInsets={{
         bottom: (scrollInsetBottom - (PagerControls.padding * 2)),
         top: AttributesPadding,
@@ -111,5 +111,6 @@ const enhance = compose(
     onScroll: () => event => event.stopPropagation(),
   }),
 );
+/* eslint-enable camelcase */
 
 export default hoistStatics(enhance)(UniqueTokenAttributes);

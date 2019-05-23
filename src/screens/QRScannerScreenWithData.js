@@ -1,3 +1,4 @@
+import { withSafeTimeout } from '@hocs/safe-timers';
 import lang from 'i18n-js';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
@@ -7,7 +8,6 @@ import firebase from 'react-native-firebase';
 import Permissions from 'react-native-permissions';
 import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
-import { withSafeTimeout } from '@hocs/safe-timers';
 import { Alert } from '../components/alerts';
 import {
   withAccountAddress,
