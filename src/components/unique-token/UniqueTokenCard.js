@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import stylePropType from 'react-style-proptype';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
-import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import InnerBorder from '../InnerBorder';
