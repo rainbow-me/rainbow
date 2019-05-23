@@ -27,9 +27,10 @@ const ProfileScreen = ({
   <Page component={FlexItem} style={position.sizeAsObject('100%')}>
     <Header justify="space-between">
       <HeaderButton onPress={onPressSettings}>
-        <Icon name="gear" />
+        <Icon name="gear" testID="Gear icon"/>
       </HeaderButton>
       <BackButton
+        testID="goToBalancesFromProfile"
         direction="right"
         onPress={onPressBackButton}
       />
