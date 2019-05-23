@@ -12,6 +12,7 @@ const CameraHeaderButton = ({ onPress }) => (
     onPress={onPress}
     shouldRasterizeIOS
     transformOrigin="right"
+    testID="goToCamera"
   >
     <ShadowStack
       {...borders.buildCircleAsObject(34)}
