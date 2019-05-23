@@ -6,7 +6,6 @@ const FloatingPanelsMargin = 20;
 const FloatingPanels = compose(
   setDisplayName('FloatingPanels'),
   withProps({
-    align: 'center',
     margin: FloatingPanelsMargin,
     style: { width: '100%' },
   }),

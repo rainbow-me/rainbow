@@ -12,6 +12,7 @@ import { buildUniqueTokenName } from '../../helpers/assets';
 import { withImageDimensionsCache } from '../../hoc';
 import { colors } from '../../styles';
 import { deviceUtils, dimensionsPropType, safeAreaInsetValues } from '../../utils';
+import { Centered } from '../layout';
 import { Pager } from '../pager';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
 import {
@@ -66,31 +67,35 @@ const UniqueTokenExpandedState = ({
   return (
     <FloatingPanels>
       {!!maxImageHeight && (
-        <FloatingPanel color={panelColor} height={panelHeight} width={panelWidth}>
-          {/*
-              TODO XXX: THIS FLOATING PANEL SHOULD HAVE HORIZONTAL PADDING
-              IF THE IMAGE IS A PERFECT SQUARE
-          */}
-          <Pager
-            controlsProps={{
-              bottom: UniqueTokenAttributes.padding,
-              color: colors.getTextColorForBackground(panelColor, PagerControlsColorVariants),
-            }}
-            dimensions={{ height: panelHeight, width: panelWidth }}
-            pages={PanelPages}
-          />
-        </FloatingPanel>
+        <Centered>
+          <FloatingPanel color={panelColor} height={panelHeight} width={panelWidth}>
+            {/*
+                TODO XXX: THIS FLOATING PANEL SHOULD HAVE HORIZONTAL PADDING
+                IF THE IMAGE IS A PERFECT SQUARE
+            */}
+            <Pager
+              controlsProps={{
+                bottom: UniqueTokenAttributes.padding,
+                color: colors.getTextColorForBackground(panelColor, PagerControlsColorVariants),
+              }}
+              dimensions={{ height: panelHeight, width: panelWidth }}
+              pages={PanelPages}
+            />
+          </FloatingPanel>
+        </Centered>
       )}
       <AssetPanel onLayout={onLayout}>
         <AssetPanelHeader
           subtitle={subtitle}
           title={title}
         />
-        {asset.isSendable && (<AssetPanelAction
-          icon="send"
-          label="Send to..."
-          onPress={onPressSend}
-        />)}
+        {asset.isSendable && (
+          <AssetPanelAction
+            icon="send"
+            label="Send to..."
+            onPress={onPressSend}
+          />
+        )}
         <AssetPanelAction
           icon="compass"
           label="View on OpenSea"
