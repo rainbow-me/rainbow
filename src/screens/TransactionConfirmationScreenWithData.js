@@ -8,7 +8,7 @@ import { Alert, StatusBar, Vibration } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
 import { withTransactionConfirmationScreen } from '../hoc';
-import { signMessage, sendTransaction } from '../model/wallet';
+import { signPersonalMessage, signMessage, sendTransaction } from '../model/wallet';
 import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
 class TransactionConfirmationScreenWithData extends Component {

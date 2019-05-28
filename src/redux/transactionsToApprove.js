@@ -15,6 +15,7 @@ import {
   fromWei,
 } from '@rainbow-me/rainbow-common';
 import smartContractMethods from '@rainbow-me/rainbow-common/src/references/smartcontract-methods.json';
+import { convertHexToUtf8 } from '@walletconnect/utils'
 import {
   getLocalRequests,
   removeLocalRequest,
@@ -55,7 +56,7 @@ export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => 
   return { nativeAmount, nativeAmountDisplay };
 };
 
-const getTimestampFromPayload = payload => parseInt(payload.id.toString().slice(0, -3));
+const getTimestampFromPayload = payload => parseInt(payload.id.toString().slice(0, -3), 10);
 
 const getRequestDisplayDetails = (payload, assets, prices, nativeCurrency) => {
   const timestampInMs = getTimestampFromPayload(payload);
@@ -69,8 +70,12 @@ const getRequestDisplayDetails = (payload, assets, prices, nativeCurrency) => {
       timestampInMs,
     );
   }
-  if (payload.method === 'eth_sign' || payload.method === 'personal_sign') {
+  if (payload.method === 'eth_sign') {
     const message = get(payload, 'params[1]');
+    return getMessageDisplayDetails(message, timestampInMs);
+  } 
+  if (payload.method === 'personal_sign') {
+    const message = convertHexToUtf8(get(payload, 'params[0]'));
     return getMessageDisplayDetails(message, timestampInMs);
   }
   if (payload.method === 'eth_signTypedData'

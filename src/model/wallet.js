@@ -4,10 +4,7 @@ import { get } from 'lodash';
 import { web3Provider } from '@rainbow-me/rainbow-common';
 import { Alert } from 'react-native';
 import {
-  ACCESS_CONTROL,
-  ACCESSIBLE,
-  AUTHENTICATION_TYPE,
-  canImplyAuthentication,
+  ACCESS_CONTROL, ACCESSIBLE, AUTHENTICATION_TYPE, canImplyAuthentication,
 } from 'react-native-keychain';
 import * as keychain from './keychain';
 
@@ -32,7 +29,7 @@ export const walletInit = async (seedPhrase = null) => {
     walletAddress = await createWallet();
     isWalletBrandNew = true;
   }
-  return { isWalletBrandNew, walletAddress } ;
+  return { isWalletBrandNew, walletAddress };
 };
 
 export const loadWallet = async () => {
@@ -78,7 +75,25 @@ export const signMessage = async (message, authenticationPrompt = lang.t('wallet
   try {
     const wallet = await loadWallet(authenticationPrompt);
     try {
-      return await wallet.signMessage(message);
+      const signingKey = new ethers.utils.SigningKey(wallet.privateKey);
+      const sigParams = await signingKey.signDigest(ethers.utils.arrayify(message));
+      const result = await ethers.utils.joinSignature(sigParams);
+      return result;
+    } catch (error) {
+      return null;
+    }
+  } catch (error) {
+    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    return null;
+  }
+}
+
+export const signPersonalMessage = async (message, authenticationPrompt = lang.t('wallet.authenticate.please')) => {
+  try {
+    const wallet = await loadWallet(authenticationPrompt);
+    try {
+      const result = await wallet.signMessage(ethers.utils.isHexString(message) ? ethers.utils.arrayify(message) : message);
+      return result;
     } catch (error) {
       return null;
     }
@@ -101,7 +116,7 @@ export const loadAddress = async () => {
   }
 };
 
-const createWallet = async (seedPhrase) => {
+const createWallet = async seedPhrase => {
   const walletSeedPhrase = seedPhrase || generateSeedPhrase();
   const wallet = ethers.Wallet.fromMnemonic(walletSeedPhrase);
   saveWalletDetails(walletSeedPhrase, wallet.privateKey, wallet.address);
@@ -136,6 +151,6 @@ const loadPrivateKey = async (authenticationPrompt = lang.t('wallet.authenticate
   }
 };
 
-const saveAddress = async (address) => {
+const saveAddress = async address => {
   await keychain.saveString(addressKey, address);
 };
