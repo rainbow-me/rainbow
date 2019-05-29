@@ -18,25 +18,12 @@ PODS:
     - FirebaseInstanceID (~> 3.0)
     - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
     - nanopb (~> 0.3)
-<<<<<<< HEAD
   - FirebaseCore (5.0.4):
     - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
   - FirebaseInstanceID (3.1.1):
     - FirebaseCore (~> 5.0)
   - FirebaseMessaging (3.0.2):
     - FirebaseCore (~> 5.0)
-=======
-  - FirebaseAnalyticsInterop (1.1.0)
-  - FirebaseCore (5.1.10):
-    - GoogleUtilities/Logger (~> 5.2)
-  - FirebaseInstanceID (3.3.0):
-    - FirebaseCore (~> 5.1)
-    - GoogleUtilities/Environment (~> 5.3)
-    - GoogleUtilities/UserDefaults (~> 5.3)
-  - FirebaseMessaging (3.2.2):
-    - FirebaseAnalyticsInterop (~> 1.1)
-    - FirebaseCore (~> 5.1)
->>>>>>> 1d9d6bc... hoc for uniwap liquidity
     - FirebaseInstanceID (~> 3.0)
     - GoogleToolboxForMac/Logger (~> 2.1)
     - Protobuf (~> 3.1)
@@ -45,7 +32,6 @@ PODS:
     - boost-for-react-native
     - DoubleConversion
     - glog
-<<<<<<< HEAD
   - glog (0.3.5)
   - GoogleToolboxForMac/Defines (2.2.0)
   - GoogleToolboxForMac/Logger (2.2.0):
@@ -62,69 +48,37 @@ PODS:
     - libwebp/utils (= 1.0.2)
     - libwebp/webp (= 1.0.2)
   - libwebp/core (1.0.2):
-=======
-  - glog (0.3.4)
-  - GoogleAppMeasurement (5.4.0):
-    - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
-    - GoogleUtilities/MethodSwizzler (~> 5.2)
-    - GoogleUtilities/Network (~> 5.2)
-    - "GoogleUtilities/NSData+zlib (~> 5.2)"
-    - nanopb (~> 0.3)
-  - GoogleUtilities/AppDelegateSwizzler (5.3.7):
-    - GoogleUtilities/Environment
-    - GoogleUtilities/Logger
-    - GoogleUtilities/Network
-  - GoogleUtilities/Environment (5.3.7)
-  - GoogleUtilities/Logger (5.3.7):
-    - GoogleUtilities/Environment
-  - GoogleUtilities/MethodSwizzler (5.3.7):
-    - GoogleUtilities/Logger
-  - GoogleUtilities/Network (5.3.7):
-    - GoogleUtilities/Logger
-    - "GoogleUtilities/NSData+zlib"
-    - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (5.3.7)"
-  - GoogleUtilities/Reachability (5.3.7):
-    - GoogleUtilities/Logger
-  - GoogleUtilities/UserDefaults (5.3.7):
-    - GoogleUtilities/Logger
-  - libwebp (0.6.1):
-    - libwebp/core (= 0.6.1)
-    - libwebp/dec (= 0.6.1)
-    - libwebp/demux (= 0.6.1)
-    - libwebp/dsp (= 0.6.1)
-    - libwebp/enc (= 0.6.1)
-    - libwebp/mux (= 0.6.1)
-    - libwebp/utils (= 0.6.1)
-    - libwebp/webp (= 0.6.1)
-  - libwebp/core (0.6.1):
->>>>>>> 1d9d6bc... hoc for uniwap liquidity
     - libwebp/webp
-  - libwebp/dec (0.6.1):
+  - libwebp/dec (1.0.2):
     - libwebp/core
-  - libwebp/demux (0.6.1):
+  - libwebp/demux (1.0.2):
     - libwebp/core
-  - libwebp/dsp (0.6.1):
+  - libwebp/dsp (1.0.2):
     - libwebp/core
-  - libwebp/enc (0.6.1):
+  - libwebp/enc (1.0.2):
     - libwebp/core
-  - libwebp/mux (0.6.1):
+  - libwebp/mux (1.0.2):
     - libwebp/core
-  - libwebp/utils (0.6.1):
+  - libwebp/utils (1.0.2):
     - libwebp/core
-  - libwebp/webp (0.6.1)
+  - libwebp/webp (1.0.2)
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
 <<<<<<< HEAD
+<<<<<<< HEAD
   - Protobuf (3.7.0)
 =======
+=======
+>>>>>>> cffa4c75... after rebase
 <<<<<<< HEAD
   - Protobuf (3.8.0)
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> 0a615a0... after rebase
   - Protobuf (3.7.0)
 >>>>>>> da8b16e... hoc for uniwap liquidity
 >>>>>>> d2dd43b1... hoc for uniwap liquidity
@@ -145,6 +99,7 @@ PODS:
   - react-native-camera/RN (2.10.2):
 =======
   - react-native-camera/RN (2.9.0):
+<<<<<<< HEAD
 =======
   - Protobuf (3.6.1)
   - React (0.59.3):
@@ -162,7 +117,12 @@ PODS:
   - react-native-camera/RN (2.2.2):
 >>>>>>> 1d9d6bc... hoc for uniwap liquidity
 >>>>>>> d2dd43b1... hoc for uniwap liquidity
+<<<<<<< HEAD
 >>>>>>> b0893a0f... hoc for uniwap liquidity
+=======
+=======
+>>>>>>> cffa4c75... after rebase
+>>>>>>> 4763d9dc... after rebase
     - React
   - react-native-fast-image (6.0.3):
     - React
@@ -240,32 +200,27 @@ PODS:
   - RNScreens (1.0.0-alpha.22):
     - React
 <<<<<<< HEAD
+<<<<<<< HEAD
   - SDWebImage (5.0.2):
     - SDWebImage/Core (= 5.0.2)
   - SDWebImage/Core (5.0.2)
 =======
+=======
+>>>>>>> cffa4c75... after rebase
 <<<<<<< HEAD
   - SDWebImage (5.0.6):
     - SDWebImage/Core (= 5.0.6)
   - SDWebImage/Core (5.0.6)
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> 0a615a0... after rebase
   - SDWebImage (5.0.3):
     - SDWebImage/Core (= 5.0.3)
   - SDWebImage/Core (5.0.3)
 >>>>>>> da8b16e... hoc for uniwap liquidity
 >>>>>>> d2dd43b1... hoc for uniwap liquidity
   - yoga (0.59.8.React)
-=======
-  - SDWebImage/Core (4.4.3)
-  - SDWebImage/GIF (4.4.3):
-    - FLAnimatedImage (~> 1.0)
-    - SDWebImage/Core
-  - SDWebImage/WebP (4.4.3):
-    - libwebp (~> 0.5)
-    - SDWebImage/Core
-  - yoga (0.59.3.React)
->>>>>>> 1d9d6bc... hoc for uniwap liquidity
 
 DEPENDENCIES:
   - Crashlytics (~> 3.10.7)
@@ -371,6 +326,7 @@ SPEC CHECKSUMS:
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   Fabric: 25d0963b691fc97be566392243ff0ecef5a68338
 <<<<<<< HEAD
+<<<<<<< HEAD
   Firebase: 76ec2a7cde90fb4037793f83aeeca48451543487
   FirebaseAnalytics: b8bce8d5c40173328b8a4300da18c5c7e0a1908d
   FirebaseCore: 31d258ec80ea97e1e8e40ce00a7ba7297afb45c2
@@ -378,6 +334,8 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 94579ae655d817287f029ebfebd5b0811fbb3a51
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> cffa4c75... after rebase
   Firebase: 68afeeb05461db02d7c9e3215cda28068670f4aa
   FirebaseAnalytics: b3628aea54c50464c32c393fb2ea032566e7ecc2
   FirebaseCore: 62f1b792a49bb9e8b4073f24606d2c93ffc352f0
@@ -406,36 +364,7 @@ SPEC CHECKSUMS:
   RNScreens: 720a9e6968beb73e8196239801e887d8401f86ed
   SDWebImage: 6764b5fa0f73c203728052955dbefa2bf1f33282
   yoga: 92b2102c3d373d1a790db4ab761d2b0ffc634f64
-=======
-  Firebase: 8bb9268bff82374f2cbaaabb143e725743c316ae
-  FirebaseAnalytics: c06f9d70577d79074214700a71fd5d39de5550fb
-  FirebaseAnalyticsInterop: e5f21be9af6548372e2f0815834ff909bff395a2
-  FirebaseCore: 35747502d9e8c6ee217385ad04446c7c2aaf9c5c
-  FirebaseInstanceID: e2fa4cb35ef5558c200f7f0ad8a53e212215f93e
-  FirebaseMessaging: b412996f6a09337d232bb3a6676ce4d1f353d024
-  FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
-  Folly: de497beb10f102453a1afa9edbf8cf8a251890de
-  glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
-  GoogleAppMeasurement: 98b71f5e04142793729a5ef23e5b96651ff4b70f
-  GoogleUtilities: 111a012f4c3a29c9e7c954c082fafd6ee3c999c0
-  libwebp: 0f01098c6c17175391af621b2f14150f3ca16e16
-  nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
-  Protobuf: 6b0fc34ab8f2b7dbad2278a48be08a669427c59f
-  React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
-  react-native-async-storage: 8b91703e95887488a180f3cae839981f55687dd5
-  react-native-blur: c35c1f6c2c76db7108bde7ed343bd2b01d64e0c0
-  react-native-camera: 25e0f493dde6e15c814e734685934d55f46e45b2
-  react-native-fast-image: 4170ad074e9de6c428fc4580ecbaacabf74901a6
-  react-native-netinfo: f4039dc64d3a55da59d6d03d4bd667d0a9f5450e
-  react-native-version-number: 36c0d8eb57a275a6239a860f8dbab3d18299b0e0
-  RNDeviceInfo: 568c5641057313b4912d08a7742ff0b2f753ed5c
-  RNLanguages: e3ae05ef105937645218272429dac0c3f7633451
-  RNReanimated: 45d9313b7a62318ed00d60a811937321e43e076e
-  RNScreens: 354046589421edc3d83d5c6212475bf1fb9a731d
-  SDWebImage: c5594f1a19c48d526d321e548902b56b479cd508
-  yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
->>>>>>> 1d9d6bc... hoc for uniwap liquidity
 
 PODFILE CHECKSUM: 3ccba29e0a83202613947605e5c564508d36035f
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.6.1
