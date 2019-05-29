@@ -2,7 +2,7 @@ import BaseAlert from './BaseAlert';
 
 const Prompt = (options) => BaseAlert({
   ...options,
-  type: 'prompt',
+  alertType: 'prompt',
 });
 
 export default Prompt;

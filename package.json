@@ -60,7 +60,7 @@
     "react-native-code-push": "^5.6.0",
     "react-native-crypto": "^2.1.2",
     "react-native-device-info": "^1.6.2",
-    "react-native-emoji": "^1.6.0",
+    "react-native-emoji": "^1.7.0",
     "react-native-fast-image": "^6.0.0",
     "react-native-firebase": "^4.3.8",
     "react-native-gesture-handler": "^1.2.1",

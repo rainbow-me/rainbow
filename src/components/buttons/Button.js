@@ -51,6 +51,7 @@ const Button = ({
   borderOpacity,
   borderWidth,
   children,
+  color,
   containerStyles,
   disabled,
   onPress,
@@ -80,7 +81,7 @@ const Button = ({
         ? children
         : (
           <Text
-            color="white"
+            color={color}
             size={ButtonSizeTypes[size].fontSize}
             weight="semibold"
             {...textProps}
@@ -107,6 +108,7 @@ Button.propTypes = {
   borderOpacity: PropTypes.string,
   borderWidth: PropTypes.number,
   children: PropTypes.node.isRequired,
+  color: PropTypes.string,
   containerStyles: PropTypes.string,
   disabled: PropTypes.bool,
   onPress: PropTypes.func,
@@ -119,6 +121,7 @@ Button.propTypes = {
 
 Button.defaultProps = {
   backgroundColor: colors.grey,
+  color: colors.white,
   showShadow: true,
   size: 'default',
   type: ButtonShapeTypes.pill,

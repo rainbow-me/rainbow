@@ -2,7 +2,7 @@ import BaseAlert from './BaseAlert';
 
 const Alert = (options) => BaseAlert({
   ...options,
-  type: 'alert',
+  alertType: 'alert',
 });
 
 export default Alert;
