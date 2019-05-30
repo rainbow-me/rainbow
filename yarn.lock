@@ -8311,10 +8311,10 @@ realpath-native@^1.1.0:
   dependencies:
     util.promisify "^1.0.0"
 
-reanimated-bottom-sheet@^1.0.0-alpha.8:
-  version "1.0.0-alpha.8"
-  resolved "https://registry.yarnpkg.com/reanimated-bottom-sheet/-/reanimated-bottom-sheet-1.0.0-alpha.8.tgz#b4092b2d1bec40a697bae7c77f013fdf7698a0e8"
-  integrity sha512-vzwKx0IBlxx2r0fL1Ur5tBUBAQP1Ep9H0e7QJ9OEJcwIbNuMge0geWJgutAakNIOTrzbKfr2LMJLsl48S8v6JQ==
+reanimated-bottom-sheet@^1.0.0-alpha.10:
+  version "1.0.0-alpha.10"
+  resolved "https://registry.yarnpkg.com/reanimated-bottom-sheet/-/reanimated-bottom-sheet-1.0.0-alpha.10.tgz#2d96a70242cd8503bc5bb6207f810571d4045b32"
+  integrity sha512-xBsX5wC9nGkBTBit+wIFDPEAKFgw1KMsAln7B3TJ/uNlJAruLoII/BRTv9+5StaXC3Sc7DAzqsv0SlAuRRbBEA==
 
 recompact@^3.4.0:
   version "3.4.0"
