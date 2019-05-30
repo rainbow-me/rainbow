@@ -1,10 +1,13 @@
 import React from 'react';
 import { pure } from 'recompact';
+import { View } from 'react-native';
 import { margin, padding } from '../../styles';
 import Divider from '../Divider';
 import { Centered, Column } from '../layout';
 import WalletConnectExplainerItem from './WalletConnectExplainerItem';
 import WalletConnectLearnMoreButton from './WalletConnectLearnMoreButton';
+import BottomSheet from 'reanimated-bottom-sheet';
+
 
 const WalletConnectExplainer = () => (
   <Column css={padding(21, 0, 26, 19)}>

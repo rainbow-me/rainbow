@@ -4,7 +4,7 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Vibration } from 'react-native';
-import firebase from 'react-native-firebase';
+import Animated from 'react-native-reanimated';
 import Permissions from 'react-native-permissions';
 import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
@@ -14,7 +14,7 @@ import {
   withWalletConnectConnections,
   withWalletConnectOnSessionRequest,
 } from '../hoc';
-import { addressUtils } from '../utils';
+import { addressUtils, statusBar } from '../utils';
 import QRScannerScreen from './QRScannerScreen';
 import withStatusBarStyle from '../hoc/withStatusBarStyle';
 
@@ -86,14 +86,22 @@ class QRScannerScreenWithData extends Component {
     });
   }
 
+  onChangeExpandedBottomSheet = ([value]) => {
+    statusBar.setBarStyle(value === 0 ? 'dark-content' : 'light-content', true);
+  }
+
+  bottomSheetCallbackNode = new Animated.Value(1)
+
   render = () => (
     <QRScannerScreen
       {...this.props}
       {...this.state}
+      bottomSheetCallbackNode={this.bottomSheetCallbackNode}
       enableScanning={
         this.state.enableScanning
         && this.props.isFocused
       }
+      onChangeExpandedBottomSheet={this.onChangeExpandedBottomSheet}
       onPressBackButton={this.handlePressBackButton}
       onScanSuccess={this.handleScanSuccess}
       onSheetLayout={this.handleSheetLayout}

@@ -1,3 +1,4 @@
+import { Animated, Easing } from 'react-native';
 import {
   createAppContainer,
   createMaterialTopTabNavigator,
@@ -18,9 +19,18 @@ import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
+import { createFluidNavigator } from 'react-navigation-fluid-transitions';
+import ForYouExpanded from './ForYouExpanded';
 
 const onTransitionEnd = () => store.dispatch(updateTransitionProps({ isTransitioning: false }));
 const onTransitionStart = () => store.dispatch(updateTransitionProps({ isTransitioning: true }));
+
+const QRNavigator = createFluidNavigator({
+  ForYouExpanded: { screen: ForYouExpanded },
+  QRScannerScreenWithData: { screen: QRScannerScreenWithData },
+}, {
+  initialRouteName: 'QRScannerScreenWithData'
+});
 
 const SwipeStack = createMaterialTopTabNavigator({
   ProfileScreen: {
@@ -34,7 +44,7 @@ const SwipeStack = createMaterialTopTabNavigator({
   // eslint-disable-next-line sort-keys
   QRScannerScreen: {
     name: 'QRScannerScreen',
-    screen: QRScannerScreenWithData,
+    screen: QRNavigator,
   },
 }, {
   headerMode: 'none',
