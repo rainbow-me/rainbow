@@ -29,6 +29,7 @@ const FabWrapper = ({
           bottom: ${safeAreaInsetValues.bottom + FabWrapperBottomPosition};
           position: absolute;
           right: 12;
+          z-index: 2;
         `}
         direction="row-reverse"
         margin={12}
