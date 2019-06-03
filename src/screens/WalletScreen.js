@@ -72,15 +72,15 @@ class WalletScreen extends PureComponent {
 
     return (
       <Page style={{ flex: 1, ...position.sizeAsObject('100%') }}>
-        <Header justify="space-between">
-          <ProfileHeaderButton navigation={navigation} />
-          <CameraHeaderButton navigation={navigation} />
-        </Header>
         <FabWrapper
           sections={sections}
           disabled={isEmpty}
           scrollViewTracker={scrollViewTracker}
         >
+        <Header justify="space-between">
+          <ProfileHeaderButton navigation={navigation} />
+          <CameraHeaderButton navigation={navigation} />
+        </Header>
           <AssetList
             scrollViewTracker={scrollViewTracker}
             fetchData={refreshAccount}
