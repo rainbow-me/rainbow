@@ -19,7 +19,7 @@ const AssetList = ({
   ...props
 }) => (
   isEmpty
-    ? <AssetListSkeleton />
+    ? <AssetListSkeleton {...props} />
     : (
       <RecyclerAssetList
         scrollViewTracker={scrollViewTracker}

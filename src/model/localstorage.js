@@ -22,6 +22,11 @@ export const updateShowShitcoinsSetting = async (updatedSetting) => {
 
 const getRequestsKey = (accountAddress, network) => `requests-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 
+const isRequestStillValid = (request) => {
+  const createdAt = request.transactionDisplayDetails.timestampInMs;
+  return (differenceInMinutes(Date.now(), createdAt) < 60);
+};
+
 /**
  * @desc get account local requests
  * @param  {String}   [address]
@@ -30,7 +35,7 @@ const getRequestsKey = (accountAddress, network) => `requests-${accountAddress.t
 export const getLocalRequests = async (accountAddress, network) => {
   const requestsData = await commonStorage.getLocal(getRequestsKey(accountAddress, network));
   const requests = requestsData ? requestsData.data : {};
-  const openRequests = pickBy(requests, (request) => (differenceInMinutes(Date.now(), request.transactionDisplayDetails.timestampInMs) < 60));
+  const openRequests = pickBy(requests, isRequestStillValid);
   await saveLocalRequests(accountAddress, network, openRequests);
   return openRequests;
 };

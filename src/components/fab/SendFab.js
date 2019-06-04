@@ -70,7 +70,6 @@ SendFab.propTypes = {
 };
 
 export default compose(
-  pure,
   withNavigation,
   withHandlers({
     onPress: ({ navigation }) => () => {

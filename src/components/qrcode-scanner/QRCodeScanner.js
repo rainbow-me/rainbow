@@ -24,7 +24,6 @@ export default class QRCodeScanner extends PureComponent {
     isCameraAuthorized: PropTypes.bool,
     onCameraReady: PropTypes.func,
     onSuccess: PropTypes.func,
-    setSafeTimeout: PropTypes.func,
     showCrosshairText: PropTypes.bool,
   }
 

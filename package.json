@@ -1,8 +1,9 @@
 {
   "name": "Rainbow",
-  "version": "0.4.0-17",
+  "version": "1.0.0-1",
   "private": true,
   "scripts": {
+    "clean": "react-native-clean-project",
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
     "install-pods": "cd ios && pod install && cd ..",
@@ -15,7 +16,7 @@
     "@hocs/omit-props": "^0.4.0",
     "@hocs/safe-timers": "^0.4.0",
     "@hocs/with-view-layout-props": "^0.2.0",
-    "@rainbow-me/rainbow-common": "^0.8.2",
+    "@rainbow-me/rainbow-common": "^0.8.3",
     "@react-native-community/async-storage": "1.4.0",
     "@react-native-community/blur": "^3.3.1",
     "@react-native-community/netinfo": "^2.0.0",
@@ -23,7 +24,7 @@
     "@tradle/react-native-http": "^2.0.1",
     "@walletconnect/react-native": "^1.0.0-beta.20",
     "assert": "^1.4.1",
-    "axios": "^0.18.0",
+    "axios": "^0.19.0",
     "bignumber.js": "^8.1.1",
     "browserify-zlib": "^0.1.4",
     "buffer": "^4.9.1",
@@ -54,12 +55,12 @@
     "react-fast-compare": "^2.0.4",
     "react-native": "0.59.8",
     "react-native-actionsheet": "^2.4.2",
-    "react-native-camera": "^2.8.0",
+    "react-native-camera": "^2.9.0",
     "react-native-circular-progress": "^1.0.1",
     "react-native-code-push": "^5.6.0",
     "react-native-crypto": "^2.1.2",
     "react-native-device-info": "^1.6.2",
-    "react-native-emoji": "^1.6.0",
+    "react-native-emoji": "^1.7.0",
     "react-native-fast-image": "^6.0.0",
     "react-native-firebase": "^4.3.8",
     "react-native-gesture-handler": "^1.2.1",
@@ -89,7 +90,7 @@
     "react-native-touch-id": "^4.4.1",
     "react-native-udp": "^2.6.0",
     "react-native-version-number": "^0.3.5",
-    "react-navigation": "^3.8.1",
+    "react-navigation": "^3.11.0",
     "react-primitives": "^0.8.0",
     "react-redux": "^5.0.7",
     "react-spring": "^5.7.2",
@@ -105,7 +106,7 @@
     "rn-nodeify": "^10.0.1",
     "stream-browserify": "^1.0.0",
     "string_decoder": "^0.10.31",
-    "styled-components": "4.1.2",
+    "styled-components": "4.2.0",
     "stylelint": "^9.10.0",
     "svgs": "^4.1.0",
     "timers-browserify": "^1.4.2",
@@ -124,7 +125,7 @@
     "babel-jest": "^24.8.0",
     "babel-plugin-date-fns": "^0.2.1",
     "babel-plugin-lodash": "^3.3.4",
-    "babel-plugin-styled-components": "^1.9.2",
+    "babel-plugin-styled-components": "^1.10.0",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "detox": "^12.8.0",
     "eslint": "^5.16.0",
@@ -134,8 +135,9 @@
     "eslint-plugin-react-native": "^3.5.0",
     "eslint-plugin-react-native-animation-linter": "^0.1.2",
     "jest": "^24.8.0",
-    "metro-react-native-babel-preset": "^0.54.0",
+    "metro-react-native-babel-preset": "^0.54.1",
     "mocha": "^6.1.4",
+    "react-native-clean-project": "^3.1.0",
     "react-test-renderer": "16.8.3",
     "schedule": "0.4.0"
   },
@@ -205,11 +207,17 @@
   },
   "detox": {
     "configurations": {
-      "ios.sim.debug": {
+      "ios.sim.release": {
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/Rainbow.app",
         "build": "xcodebuild -workspace ios/Rainbow.xcworkspace/ -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet",
         "type": "ios.simulator",
         "name": "iPhone 8"
+      },
+      "ios.sim.debug.local": {
+        "binaryPath": "ios/build/Products/Debug-iphonesimulator/Rainbow.app",
+        "build": "xcodebuild -workspace ios/Rainbow.xcworkspace/ -scheme Rainbow -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet",
+        "type": "ios.simulator",
+        "name": "iPhone 6s"
       }
     },
     "test-runner": "mocha"

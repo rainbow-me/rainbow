@@ -1,10 +1,11 @@
-import { get, isEmpty, last } from 'lodash';
-import PropTypes from 'prop-types';
+
 import {
   accountLoadState,
   settingsInitializeState,
   settingsUpdateAccountAddress,
 } from '@rainbow-me/rainbow-common';
+import { get, last } from 'lodash';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
   Alert,
@@ -15,28 +16,22 @@ import {
 import CodePush from 'react-native-code-push';
 import firebase from 'react-native-firebase';
 import { useScreens } from 'react-native-screens';
-import { StackActions } from 'react-navigation';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
-import {
-  saveFCMToken,
-  registerTokenRefreshListener,
-  registerNotificationListener,
-  registerNotificationOpenedListener,
-} from './model/firebase';
+import { FlexItem } from './components/layout';
+import OfflineBadge from './components/OfflineBadge';
 import {
   withAccountRefresh,
   withRequestsInit,
   withWalletConnectConnections,
   withWalletConnectOnSessionRequest,
 } from './hoc';
-import { FlexItem } from './components/layout';
-import Navigation from './navigation';
-import OfflineBadge from './components/OfflineBadge';
-import Routes from './screens/Routes';
-import store from './redux/store';
-import { parseQueryParams } from './utils';
+import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import { walletInit } from './model/wallet';
+import Navigation from './navigation';
+import store from './redux/store';
+import Routes from './screens/Routes';
+import { parseQueryParams } from './utils';
 
 if (process.env.NODE_ENV === 'development') {
   console.disableYellowBox = true;
@@ -47,6 +42,7 @@ useScreens();
 class App extends Component {
   static propTypes = {
     accountLoadState: PropTypes.func,
+    appInitTimestamp: PropTypes.number,
     getValidWalletConnectors: PropTypes.func,
     refreshAccount: PropTypes.func,
     settingsInitializeState: PropTypes.func,
@@ -74,25 +70,30 @@ class App extends Component {
   }
 
   onPushNotificationOpened = (topic, autoOpened = false, fromLocal = false) => {
-    const requests = this.props.transactionsForTopic(topic);
+    const { appInitTimestamp, transactionsForTopic } = this.props;
+    const requests = transactionsForTopic(topic);
+
     if (requests && requests.length === 1) {
       const request = requests[0];
+
       const transactionTimestamp = get(request, 'transactionDisplayDetails.timestampInMs');
-      if (!autoOpened || (this.props.appInitTimestamp
-            && (transactionTimestamp > this.props.appInitTimestamp))) {
+      const isNewTransaction = appInitTimestamp && (transactionTimestamp > appInitTimestamp);
+
+      if (!autoOpened || isNewTransaction) {
         return Navigation.handleAction({
+          params: { autoOpened, transactionDetails: request },
           routeName: 'ConfirmRequest',
-          params: { transactionDetails: request, autoOpened },
         });
       }
     }
+
     if (fromLocal) {
-      const request = last(requests);
       return Navigation.handleAction({
+        params: { autoOpened, transactionDetails: last(requests) },
         routeName: 'ConfirmRequest',
-        params: { transactionDetails: request, autoOpened },
       });
     }
+
     return Navigation.handleAction({ routeName: 'ProfileScreen' });
   };
 

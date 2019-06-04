@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Animated, Easing } from 'react-native';
+import stylePropType from 'react-style-proptype';
 
 export default class SpinAnimation extends PureComponent {
   static propTypes = {
     children: PropTypes.node,
     duration: PropTypes.number,
+    style: stylePropType,
   }
 
   static defaultProps = {
@@ -35,9 +37,13 @@ export default class SpinAnimation extends PureComponent {
     })
   )
 
-  render = () => (
-    <Animated.View style={{ transform: [{ rotate: this.interpolatedAnimation() }] }}>
-      {this.props.children}
-    </Animated.View>
-  )
+  render = () => {
+    const { children, style } = this.props;
+
+    return (
+      <Animated.View style={[style, { transform: [{ rotate: this.interpolatedAnimation() }] }]}>
+        {children}
+      </Animated.View>
+    );
+  }
 }

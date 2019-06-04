@@ -38,7 +38,7 @@ const base = {
   paleBlue: '#5D9DF6',
   placeholder: '#C4C6CB', // 196, 198, 203
   primaryBlue: '#5d9df6', // '93, 157, 246'
-  primaryGreen: '#00a352', // '0, 163, 82'
+  primaryGreen: '#139E74', // '19, 158, 116'
   purple: '#32325d', // '50, 50, 93'
   red: '#d64b47', // '214, 75, 71'
   rowDivider: '#f9f9fa', // '249, 249, 250'

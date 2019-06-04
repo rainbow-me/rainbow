@@ -38,6 +38,7 @@ function handleAction(action) {
   if (!_navigator) return;
 
   action = StackActions.push(action);
+
   if (isPaused) {
     queuedNavigationActions.push(action);
   } else {
@@ -80,11 +81,11 @@ function setTransitionPosition(position) {
 }
 
 export default {
-  setTopLevelNavigator,
   getActiveRouteName,
   getTransitionPosition,
   handleAction,
   pauseNavigationActions,
   resumeNavigationActions,
+  setTopLevelNavigator,
   setTransitionPosition,
 };
