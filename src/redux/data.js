@@ -1,11 +1,11 @@
-import { get } from 'lodash';
+import { concat, get, uniqBy } from 'lodash';
 import { commonStorage } from '@rainbow-me/rainbow-common';
 import io from 'socket.io-client';
 import { parseAccountAssets } from '../helpers/parsers';
 
 // -- Constants --------------------------------------- //
 
-const DATA_INIT_ASSETS = 'data/DATA_INIT_ASSETS';
+const DATA_UPDATE_ASSETS = 'data/DATA_UPDATE_ASSETS';
 const DATA_LOAD_ASSETS_REQUEST = 'data/DATA_LOAD_ASSETS_REQUEST';
 const DATA_LOAD_ASSETS_SUCCESS = 'data/DATA_LOAD_ASSETS_SUCCESS';
 const DATA_LOAD_ASSETS_FAILURE = 'data/DATA_LOAD_ASSETS_FAILURE';
@@ -84,7 +84,7 @@ export const dataInit = () => (dispatch, getState) => {
   dispatch(listenOnNewMessages(addressSocket));
 };
 
-const listenOnNewMessages = socket => dispatch => {
+const listenOnNewMessages = socket => (dispatch, getState) => {
   socket.on(messages.TRANSACTIONS.RECEIVED, (e) => {
     console.log('on received transactions', e);
   });
@@ -106,13 +106,41 @@ const listenOnNewMessages = socket => dispatch => {
       commonStorage.saveAssets(address, parsedAssets, 'mainnet');
       dispatch({
         payload: parsedAssets,
-        type: DATA_INIT_ASSETS,
+        type: DATA_UPDATE_ASSETS,
+      });
+    }
+  });
+
+  socket.on(messages.ASSETS.APPENDED, (e) => {
+    console.log('on appended new assets', e);
+    const address = get(e, 'meta.address');
+    const newAssets = get(e, 'payload.assets', []);
+    if (address && newAssets.length) {
+      const parsedNewAssets = parseAccountAssets(newAssets);
+      const { assets } = getState().data;
+      const updatedAssets = concat(assets, parsedNewAssets);
+      commonStorage.saveAssets(address, updatedAssets, 'mainnet');
+      dispatch({
+        payload: updatedAssets,
+        type: DATA_UPDATE_ASSETS,
       });
     }
   });
 
   socket.on(messages.ASSETS.CHANGED, (e) => {
     console.log('on change address assets', e);
+    const address = get(e, 'meta.address');
+    const changedAssets = get(e, 'payload.assets', []);
+    if (address && changedAssets.length) {
+      const parsedChangedAssets = parseAccountAssets(changedAssets);
+      const { assets } = getState().data;
+      const updatedAssets = uniqBy(concat(parsedChangedAssets, assets), (item) => item.uniqueId);
+      commonStorage.saveAssets(address, updatedAssets, 'mainnet');
+      dispatch({
+        payload: updatedAssets,
+        type: DATA_UPDATE_ASSETS,
+      });
+    }
   });
 
   socket.on(messages.ERROR, (e) => {
@@ -132,7 +160,7 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-  case DATA_INIT_ASSETS:
+  case DATA_UPDATE_ASSETS:
     return { ...state, assets: action.payload };
   case DATA_LOAD_ASSETS_REQUEST:
     return {
