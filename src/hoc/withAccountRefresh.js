@@ -5,7 +5,10 @@ import { setAssetsFetched, setTransactionFetched } from '../redux/initialFetch';
 
 export default Component => compose(
   connect(null, {
-    assetsRefreshState, setAssetsFetched, setTransactionFetched, transactionsRefreshState,
+    assetsRefreshState,
+    setAssetsFetched,
+    setTransactionFetched,
+    transactionsRefreshState,
   }),
   withHandlers({
     refreshAccount: (ownProps) => async () => {

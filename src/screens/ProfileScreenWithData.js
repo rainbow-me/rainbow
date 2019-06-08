@@ -30,6 +30,6 @@ export default compose(
   }),
   withProps(({ areTransactionsFetched, isWalletEmpty, transactionsCount }) => ({
     isEmpty: isWalletEmpty && !transactionsCount,
-    showSpinner: !areTransactionsFetched && !isWalletEmpty,
+    isLoading: !areTransactionsFetched && !isWalletEmpty,
   })),
 )(ProfileScreen);
