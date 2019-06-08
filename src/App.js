@@ -41,6 +41,7 @@ useScreens();
 
 class App extends Component {
   static propTypes = {
+    assetsLoadState: PropTypes.func,
     accountLoadState: PropTypes.func,
     appInitTimestamp: PropTypes.number,
     dataInit: PropTypes.func,
@@ -145,6 +146,7 @@ class App extends Component {
       this.props.settingsInitializeState();
       this.props.dataInit();
       this.props.accountLoadState(); // TODO
+      this.props.assetsLoadState();
       this.props.walletConnectInitAllConnectors();
       this.props.transactionsToApproveInit();
       return walletAddress;

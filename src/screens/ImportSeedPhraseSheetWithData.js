@@ -40,6 +40,7 @@ const ImportSeedPhraseSheetWithData = compose(
   withHandlers({
     importSeedPhrase: ({
       accountClearState,
+      assetsClearState,
       navigation,
       refreshAccount,
       screenProps,
@@ -47,6 +48,7 @@ const ImportSeedPhraseSheetWithData = compose(
       setIsImporting,
     }) => () => {
       accountClearState();
+      assetsClearState();
 
       return screenProps
         .handleWalletConfig(seedPhrase.trim())

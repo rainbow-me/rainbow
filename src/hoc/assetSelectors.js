@@ -58,7 +58,6 @@ const parseAssetsNative = (
   assets,
   nativeCurrency,
 ) => {
-  console.log('parse assets', assets);
   let assetsNative = assets;
   assetsNative = map(assets, asset => {
     const assetNativePrice = get(asset, 'price');
@@ -73,15 +72,14 @@ const parseAssetsNative = (
     const balancePriceUnit = get(assetNativePrice, 'value', 0);
     const balanceRaw = multiply(balanceAmountUnit, balancePriceUnit);
     const balanceAmount = convertAmountToBigNumber(balanceRaw);
-    console.log('balanceAmount', balanceAmount);
     const balanceDisplay = simpleConvertAmountToDisplay(
       balanceAmount,
       nativeCurrency,
     );
-    console.log('balanceDisplay', balanceDisplay);
     const assetPrice = assetNativePrice.value;
     return {
       ...asset,
+      price: assetPrice,
       native: {
         balance: { amount: balanceAmount, display: balanceDisplay },
         price: assetPrice,

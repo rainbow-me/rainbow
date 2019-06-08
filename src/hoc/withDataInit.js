@@ -1,4 +1,4 @@
 import { connect } from 'react-redux';
-import { dataInit } from '../redux/data';
+import { assetsLoadState, dataInit } from '../redux/data';
 
-export default Component => connect(null, { dataInit })(Component);
+export default Component => connect(null, { assetsLoadState, dataInit })(Component);
