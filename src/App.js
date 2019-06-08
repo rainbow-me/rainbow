@@ -1,4 +1,3 @@
-
 import {
   accountLoadState,
   settingsInitializeState,
@@ -23,6 +22,7 @@ import OfflineBadge from './components/OfflineBadge';
 import {
   withAccountRefresh,
   withRequestsInit,
+  withDataInit,
   withWalletConnectConnections,
   withWalletConnectOnSessionRequest,
 } from './hoc';
@@ -43,7 +43,7 @@ class App extends Component {
   static propTypes = {
     accountLoadState: PropTypes.func,
     appInitTimestamp: PropTypes.number,
-    getValidWalletConnectors: PropTypes.func,
+    dataInit: PropTypes.func,
     refreshAccount: PropTypes.func,
     settingsInitializeState: PropTypes.func,
     settingsUpdateAccountAddress: PropTypes.func,
@@ -101,7 +101,7 @@ class App extends Component {
     AppState.addEventListener('change', this.handleAppStateChange);
     Linking.addEventListener('url', this.handleOpenLinkingURL);
     await this.handleWalletConfig();
-    await this.props.refreshAccount();
+    await this.props.refreshAccount(); // TODO won't need this anymore
     firebase.notifications().getInitialNotification().then(notificationOpen => {
       if (notificationOpen) {
         const topic = get(notificationOpen, 'notification.data.topic');
@@ -143,7 +143,8 @@ class App extends Component {
         return walletAddress;
       }
       this.props.settingsInitializeState();
-      this.props.accountLoadState();
+      this.props.dataInit();
+      this.props.accountLoadState(); // TODO
       this.props.walletConnectInitAllConnectors();
       this.props.transactionsToApproveInit();
       return walletAddress;
@@ -190,6 +191,7 @@ class App extends Component {
 const AppWithRedux = compose(
   withProps({ store }),
   withAccountRefresh,
+  withDataInit,
   withRequestsInit,
   withWalletConnectConnections,
   withWalletConnectOnSessionRequest,

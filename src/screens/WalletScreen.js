@@ -1,5 +1,5 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
-import { withAccountAssets } from '@rainbow-me/rainbow-common';
+import { withUniqueTokens } from '@rainbow-me/rainbow-common';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
@@ -17,6 +17,7 @@ import { Page } from '../components/layout';
 import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../model/localstorage';
 import {
+  withAccountData,
   withAccountRefresh,
   withAccountSettings,
   withBlurTransitionProps,
@@ -92,7 +93,8 @@ class WalletScreen extends PureComponent {
 }
 
 export default compose(
-  withAccountAssets,
+  withAccountData,
+  withUniqueTokens,
   withAccountRefresh,
   withAccountSettings,
   withFetchingPrices,

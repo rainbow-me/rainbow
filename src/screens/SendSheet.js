@@ -1,4 +1,4 @@
-import { withAccountAssets } from '@rainbow-me/rainbow-common';
+import { withUniqueTokens } from '@rainbow-me/rainbow-common';
 import {
   get,
   isEmpty,
@@ -22,7 +22,11 @@ import {
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
-import { withAccountRefresh, withAccountSettings } from '../hoc';
+import {
+  withAccountData,
+  withAccountRefresh,
+  withAccountSettings,
+} from '../hoc';
 import { colors } from '../styles';
 import { deviceUtils, isNewValueForPath } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
@@ -258,7 +262,8 @@ class SendSheet extends Component {
 }
 
 export default compose(
-  withAccountAssets,
+  withAccountData,
+  withUniqueTokens,
   withAccountSettings,
   withAccountRefresh,
   withHandlers({

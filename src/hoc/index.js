@@ -1,4 +1,5 @@
 export { default as withAccountAddress } from './withAccountAddress';
+export { default as withAccountData } from './withAccountData';
 export { default as withAccountRefresh } from './withAccountRefresh';
 export { default as withAccountReset } from './withAccountReset';
 export { default as withAccountSettings } from './withAccountSettings';
@@ -6,6 +7,7 @@ export { default as withAccountTransactions } from './withAccountTransactions';
 export { default as withActionSheetManager } from './withActionSheetManager';
 export { default as withAppState } from './withAppState';
 export { default as withBlurTransitionProps } from './withBlurTransitionProps';
+export { default as withDataInit } from './withDataInit';
 export { default as withFetchingPrices } from './withFetchingPrices';
 export { default as withHideSplashScreen } from './withHideSplashScreen';
 export { default as withImageDimensionsCache } from './withImageDimensionsCache';
