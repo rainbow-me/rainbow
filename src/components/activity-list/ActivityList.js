@@ -17,6 +17,7 @@ import RecyclerActivityList from './RecyclerActivityList';
 const ActivityList = ({ header, sections }) => (
   <RecyclerActivityList
     header={header}
+    isEmpty={!sections.length}
     sections={sections}
   />
 );
