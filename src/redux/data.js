@@ -57,13 +57,11 @@ export const assetsLoadState = () => (dispatch, getState) => {
   dispatch({ type: DATA_LOAD_ASSETS_REQUEST });
   commonStorage.getAssets(accountAddress, network)
     .then(assets => {
-      console.log('from storage', assets);
       dispatch({
         type: DATA_LOAD_ASSETS_SUCCESS,
         payload: assets,
       });
     }).catch(error => {
-      console.log('assets load state error', error);
       dispatch({ type: DATA_LOAD_ASSETS_FAILURE });
     });
 };
