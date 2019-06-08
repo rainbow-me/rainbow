@@ -47,7 +47,7 @@ export default compose(
     asset: { name, symbol, ...asset },
     nativeCurrencySymbol,
   }) => ({
-    price: get(asset, 'native.price.display', `${nativeCurrencySymbol}0.00`),
+    price: get(asset, 'native.price.display', null),
     subtitle: get(asset, 'balance.display', symbol),
     title: name,
   })),

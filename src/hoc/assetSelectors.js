@@ -77,12 +77,15 @@ const parseAssetsNative = (
       nativeCurrency,
     );
     const assetPrice = assetNativePrice.value;
+    const assetPriceDisplay = simpleConvertAmountToDisplay(
+      convertAmountToBigNumber(assetPrice),
+      nativeCurrency,
+    );
     return {
       ...asset,
-      price: assetPrice,
       native: {
         balance: { amount: balanceAmount, display: balanceDisplay },
-        price: assetPrice,
+        price: { amount: assetPrice, display: assetPriceDisplay },
         change:
           asset.symbol.toLowerCase() === nativeCurrency.toLowerCase()
             ? { display: '———' }
@@ -97,7 +100,6 @@ const parseAssetsNative = (
   );
   const totalDisplay = simpleConvertAmountToDisplay(totalAmount, nativeCurrency);
   const total = { amount: totalAmount, display: totalDisplay };
-  console.log('assets native', assetsNative);
   return { assetsNativePrices: assetsNative, total };
 };
 
