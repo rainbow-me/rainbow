@@ -9,9 +9,9 @@ import { combineReducers } from 'redux';
 
 import actionSheetManager from './actionSheetManager';
 import imageDimensionsCache from './imageDimensionsCache';
+import initialFetch from './initialFetch';
 import isWalletEmpty from './isWalletEmpty';
 import navigation from './navigation';
-import initialFetch from './initialFetch';
 import nonce from './nonce';
 import transactionsToApprove from './transactionsToApprove';
 import walletconnect from './walletconnect';

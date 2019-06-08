@@ -62,7 +62,7 @@ const hasRowChanged = (r1, r2) => {
 export default class RecyclerActivityList extends PureComponent {
   static propTypes = {
     header: PropTypes.node,
-    isEmpty: PropTypes.bool,
+    isLoading: PropTypes.bool,
     sections: PropTypes.arrayOf(PropTypes.shape({
       data: PropTypes.array,
       title: PropTypes.string.isRequired,
@@ -103,7 +103,7 @@ export default class RecyclerActivityList extends PureComponent {
         } else if (type === ViewTypes.HEADER) {
           dim.height = 35;
         } else {
-          dim.height = this.props.isEmpty ? deviceUtils.dimensions.height : 216;
+          dim.height = this.props.isLoading ? deviceUtils.dimensions.height : 216;
         }
       },
     );
@@ -137,7 +137,7 @@ export default class RecyclerActivityList extends PureComponent {
 
   rowRenderer = (type, data) => {
     if (type === ViewTypes.COMPONENT_HEADER) {
-      return this.props.isEmpty
+      return this.props.isLoading
         ? <LoadingState>{data.header}</LoadingState>
         : data.header;
     }
@@ -158,7 +158,7 @@ export default class RecyclerActivityList extends PureComponent {
           layoutProvider={this.layoutProvider}
           renderAheadOffset={deviceUtils.dimensions.height}
           rowRenderer={this.rowRenderer}
-          scrollEnabled={!this.props.isEmpty}
+          scrollEnabled={!this.props.isLoading}
           scrollIndicatorInsets={{
             bottom: safeAreaInsetValues.bottom,
           }}

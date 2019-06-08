@@ -9,7 +9,6 @@ import { FlexItem, Page } from '../components/layout';
 import { Icon } from '../components/icons';
 import { ProfileMasthead } from '../components/profile';
 import { colors, position } from '../styles';
-import { LoadingOverlay } from '../components/modal';
 
 const ProfileScreen = ({
   accountAddress,
@@ -23,7 +22,6 @@ const ProfileScreen = ({
   onPressSettings,
   requests,
   showBlur,
-  showSpinner,
   transactions,
   transactionsCount,
 }) => (
@@ -46,7 +44,6 @@ const ProfileScreen = ({
         onPress={onPressBackButton}
       />
     </Header>
-    {showSpinner && <LoadingOverlay />}
     <ActivityList
       accountAddress={accountAddress}
       hasPendingTransaction={hasPendingTransaction}
@@ -57,6 +54,7 @@ const ProfileScreen = ({
           showBottomDivider={!isEmpty}
         />
       )}
+      isEmpty={isEmpty}
       nativeCurrency={nativeCurrency}
       requests={requests}
       transactions={areTransactionsFetched}
@@ -78,7 +76,6 @@ ProfileScreen.propTypes = {
   onPressSettings: PropTypes.func,
   requests: PropTypes.array,
   showBlur: PropTypes.bool,
-  showSpinner: PropTypes.bool,
   transactions: PropTypes.array,
   transactionsCount: PropTypes.number,
 };
