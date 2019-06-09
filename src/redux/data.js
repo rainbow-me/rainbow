@@ -1,4 +1,14 @@
-import { concat, get, uniqBy } from 'lodash';
+import {
+  concat,
+  filter,
+  find,
+  findIndex,
+  get,
+  isEmpty,
+  partition,
+  slice,
+  uniqBy,
+} from 'lodash';
 import { commonStorage } from '@rainbow-me/rainbow-common';
 import io from 'socket.io-client';
 import { parseAccountAssets, parseTransactions } from '../helpers/parsers';
@@ -99,20 +109,46 @@ export const dataInit = () => (dispatch, getState) => {
 };
 
 const listenOnNewMessages = socket => (dispatch, getState) => {
-  const { nativeCurrency, network } = getState().settings;
 
   socket.on(messages.TRANSACTIONS.RECEIVED, (e) => {
+    const { nativeCurrency, network } = getState().settings;
     const address = get(e, 'meta.address');
-    const transactions = get(e, 'payload.transactions', []);
-    if (address && transactions.length) {
-      // TODO parse only latest ones based on last hash
+    let transactionData = get(e, 'payload.transactions', []);
+    console.log('on received transactions', transactionData);
 
-      const parsedTransactions = parseTransactions(transactions, nativeCurrency);
-      commonStorage.saveLocalTransactions(address, parsedTransactions, network);
-      dispatch({
-        payload: parsedTransactions,
-        type: DATA_UPDATE_TRANSACTIONS,
-      });
+    if (address && transactionData.length) {
+      const { transactions } = getState().data;
+      const lastSuccessfulTxn = find(transactions, (txn) => txn.hash && !txn.pending);
+      const lastTxHash = lastSuccessfulTxn ? lastSuccessfulTxn.hash : '';
+      if (lastTxHash) {
+        const lastTxnHashIndex = findIndex(transactionData, (txn) => { return lastTxHash.startsWith(txn.hash) });
+        if (lastTxnHashIndex > -1) {
+          transactionData = slice(transactionData, 0, lastTxnHashIndex);
+        }
+      }
+      if (!isEmpty(transactionData)) {
+        const partitions = partition(transactions, (txn) => txn.pending);
+        const pendingTransactions = partitions[0];
+        const remainingTransactions = partitions[1];
+
+        const parsedTransactions = parseTransactions(transactionData, nativeCurrency);
+        let updatedPendingTransactions = pendingTransactions;
+        if (pendingTransactions.length) {
+          updatedPendingTransactions = filter(updatedPendingTransactions, (pendingTxn) => {
+            const matchingElement = find(parsedTransactions, (txn) => txn.hash
+              && (txn.hash.startsWith(pendingTxn.hash)
+              || (txn.nonce && (txn.nonce >= pendingTxn.nonce))));
+            return !matchingElement;
+          });
+        }
+        const updatedResults = concat(updatedPendingTransactions, parsedTransactions, remainingTransactions);
+
+        commonStorage.saveLocalTransactions(address, updatedResults, network);
+        dispatch({
+          payload: updatedResults,
+          type: DATA_UPDATE_TRANSACTIONS,
+        });
+      }
     }
   });
 
@@ -125,6 +161,7 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
   });
 
   socket.on(messages.ASSETS.RECEIVED, (e) => {
+    const { network } = getState().settings;
     console.log('on received assets', e);
     const address = get(e, 'meta.address');
     const assets = get(e, 'payload.assets', []);
@@ -139,6 +176,7 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
   });
 
   socket.on(messages.ASSETS.APPENDED, (e) => {
+    const { network } = getState().settings;
     console.log('on appended new assets', e);
     const address = get(e, 'meta.address');
     const newAssets = get(e, 'payload.assets', []);
@@ -155,6 +193,7 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
   });
 
   socket.on(messages.ASSETS.CHANGED, (e) => {
+    const { network } = getState().settings;
     console.log('on change address assets', e);
     const address = get(e, 'meta.address');
     const changedAssets = get(e, 'payload.assets', []);
