@@ -1,4 +1,9 @@
-import { flatten, get, pick } from 'lodash';
+import {
+  flatten,
+  get,
+  pick,
+  reverse,
+} from 'lodash';
 import {
   convertAmountToDisplay,
   convertAssetAmountToBigNumber,
@@ -17,7 +22,7 @@ const parseTransaction = (txn, nativeCurrency) => {
   let transaction = pick(txn, ['hash', 'nonce', 'protocol', 'status', 'mined_at']);
   transaction['pending'] = false;
   const changes = get(txn, 'changes', []);
-  return changes.map((internalTxn, index) => {
+  const internalTransactions = changes.map((internalTxn, index) => {
     //TODO turn this into a util function
     const tokenBalance = convertAmountFromBigNumber(
       internalTxn.value,
@@ -53,7 +58,7 @@ const parseTransaction = (txn, nativeCurrency) => {
       }
     };
   });
-
+  return reverse(internalTransactions);
 };
 
 /**
