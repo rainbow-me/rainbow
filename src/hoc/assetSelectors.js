@@ -89,7 +89,7 @@ const parseAssetsNative = (
         change:
           asset.symbol.toLowerCase() === nativeCurrency.toLowerCase()
             ? { display: '———' }
-            : convertAmountToDisplay(convertAmountToBigNumber(assetNativePrice.relative_change_24h)), // TODO percentage
+            : convertAmountToDisplay(convertAmountToBigNumber(assetNativePrice.relative_change_24h)),
       },
     };
   });

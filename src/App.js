@@ -102,7 +102,7 @@ class App extends Component {
     AppState.addEventListener('change', this.handleAppStateChange);
     Linking.addEventListener('url', this.handleOpenLinkingURL);
     await this.handleWalletConfig();
-    await this.props.refreshAccount(); // TODO won't need this anymore
+    await this.props.refreshAccount();
     firebase.notifications().getInitialNotification().then(notificationOpen => {
       if (notificationOpen) {
         const topic = get(notificationOpen, 'notification.data.topic');
@@ -145,7 +145,7 @@ class App extends Component {
       }
       this.props.settingsInitializeState();
       this.props.dataInit();
-      this.props.accountLoadState(); // TODO
+      this.props.accountLoadState();
       this.props.assetsLoadState();
       this.props.walletConnectInitAllConnectors();
       this.props.transactionsToApproveInit();

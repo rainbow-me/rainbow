@@ -21,9 +21,9 @@ export const buildTransactionUniqueIdentifier = ({ hash, transactionDisplayDetai
 
 export const getTransactionStatus = ({
   accountAddress,
-  error,
   from,
   pending,
+  status,
   to,
 }) => {
   const isFromAccount = from.toLowerCase() === accountAddress.toLowerCase();
@@ -32,7 +32,7 @@ export const getTransactionStatus = ({
   if (pending && isFromAccount) return TransactionStatusTypes.sending;
   if (pending && isToAccount) return TransactionStatusTypes.receiving;
 
-  if (error) return TransactionStatusTypes.failed;
+  if (status === 'failed') return TransactionStatusTypes.failed;
 
   if (isFromAccount && isToAccount) return TransactionStatusTypes.self;
 
@@ -42,11 +42,10 @@ export const getTransactionStatus = ({
   return undefined;
 };
 
-const groupTransactionByDate = ({ pending, timestamp: time }) => {
+const groupTransactionByDate = ({ pending, mined_at: time }) => {
   if (pending) return 'Pending';
 
-  const { ms } = time;
-  const timestamp = new Date(parseInt(ms, 10));
+  const timestamp = new Date(parseInt(time) * 1000);
 
   if (isToday(timestamp)) return 'Today';
   if (isYesterday(timestamp)) return 'Yesterday';
@@ -58,17 +57,12 @@ const groupTransactionByDate = ({ pending, timestamp: time }) => {
 const normalizeTransactions = ({ accountAddress, nativeCurrency, transactions }) => (
   transactions.map(({
     asset,
-    native,
     value,
     ...tx
   }) => ({
     ...tx,
     balance: value,
     name: get(asset, 'name', ''),
-    native: {
-      ...supportedNativeCurrencies[nativeCurrency],
-      balance: get(native, `${nativeCurrency}.value`),
-    },
     status: getTransactionStatus({ accountAddress, ...tx }),
     symbol: get(asset, 'symbol', ''),
   }))

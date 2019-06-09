@@ -38,7 +38,7 @@ const BottomRow = ({ name, native, status }) => {
   if (isReceived) balanceTextColor = colors.primaryGreen;
   if (isSent) balanceTextColor = colors.blueGreyDark;
 
-  const nativeDisplay = get(native, 'balance.display');
+  const nativeDisplay = get(native, 'display');
   const balanceText = nativeDisplay
     ? compact([(isFailed || isSent) ? '-' : null, nativeDisplay]).join(' ')
     : '';

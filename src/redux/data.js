@@ -1,18 +1,22 @@
 import { concat, get, uniqBy } from 'lodash';
 import { commonStorage } from '@rainbow-me/rainbow-common';
 import io from 'socket.io-client';
-import { parseAccountAssets } from '../helpers/parsers';
+import { parseAccountAssets, parseTransactions } from '../helpers/parsers';
 
 // -- Constants --------------------------------------- //
 
 const DATA_UPDATE_ASSETS = 'data/DATA_UPDATE_ASSETS';
+const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
+
 const DATA_LOAD_ASSETS_REQUEST = 'data/DATA_LOAD_ASSETS_REQUEST';
 const DATA_LOAD_ASSETS_SUCCESS = 'data/DATA_LOAD_ASSETS_SUCCESS';
 const DATA_LOAD_ASSETS_FAILURE = 'data/DATA_LOAD_ASSETS_FAILURE';
 
-const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
+const DATA_LOAD_TRANSACTIONS_REQUEST = 'data/DATA_LOAD_TRANSACTIONS_REQUEST';
+const DATA_LOAD_TRANSACTIONS_SUCCESS = 'data/DATA_LOAD_TRANSACTIONS_SUCCESS';
+const DATA_LOAD_TRANSACTIONS_FAILURE = 'data/DATA_LOAD_TRANSACTIONS_FAILURE';
 
-// -- Actions ---------------------------------------- //
+const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
 
 const messages = {
   ASSETS: {
@@ -29,6 +33,8 @@ const messages = {
   },
 };
 
+// -- Actions ---------------------------------------- //
+
 const createSocket = endpoint => io(
   `wss://api.zerion.io/${endpoint}`,
   {
@@ -42,8 +48,7 @@ const createSocket = endpoint => io(
 const addressSubscription = (address, currency) => [
   'subscribe',
   {
-    //scope: ['assets', 'transactions'],
-    scope: ['assets'],
+    scope: ['assets', 'transactions'],
     payload: {
       address,
       currency,
@@ -64,11 +69,22 @@ export const assetsLoadState = () => (dispatch, getState) => {
     }).catch(error => {
       dispatch({ type: DATA_LOAD_ASSETS_FAILURE });
     });
+  dispatch({ type: DATA_LOAD_TRANSACTIONS_REQUEST });
+  commonStorage.getLocalTransactions(accountAddress, network)
+    .then(transactions => {
+      dispatch({
+        type: DATA_LOAD_TRANSACTIONS_SUCCESS,
+        payload: transactions,
+      });
+    }).catch(error => {
+      dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
+    });
 };
 
 const assetsClearState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   commonStorage.removeAssets(accountAddress, network);
+  commonStorage.removeLocalTransactions(accountAddress, network);
   dispatch({ type: DATA_CLEAR_STATE });
 };
 
@@ -83,8 +99,21 @@ export const dataInit = () => (dispatch, getState) => {
 };
 
 const listenOnNewMessages = socket => (dispatch, getState) => {
+  const { nativeCurrency, network } = getState().settings;
+
   socket.on(messages.TRANSACTIONS.RECEIVED, (e) => {
-    console.log('on received transactions', e);
+    const address = get(e, 'meta.address');
+    const transactions = get(e, 'payload.transactions', []);
+    if (address && transactions.length) {
+      // TODO parse only latest ones based on last hash
+
+      const parsedTransactions = parseTransactions(transactions, nativeCurrency);
+      commonStorage.saveLocalTransactions(address, parsedTransactions, network);
+      dispatch({
+        payload: parsedTransactions,
+        type: DATA_UPDATE_TRANSACTIONS,
+      });
+    }
   });
 
   socket.on(messages.TRANSACTIONS.APPENDED, (e) => {
@@ -101,7 +130,7 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
     const assets = get(e, 'payload.assets', []);
     if (address && assets.length) {
       const parsedAssets = parseAccountAssets(assets);
-      commonStorage.saveAssets(address, parsedAssets, 'mainnet');
+      commonStorage.saveAssets(address, parsedAssets, network);
       dispatch({
         payload: parsedAssets,
         type: DATA_UPDATE_ASSETS,
@@ -117,7 +146,7 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
       const parsedNewAssets = parseAccountAssets(newAssets);
       const { assets } = getState().data;
       const updatedAssets = concat(assets, parsedNewAssets);
-      commonStorage.saveAssets(address, updatedAssets, 'mainnet');
+      commonStorage.saveAssets(address, updatedAssets, network);
       dispatch({
         payload: updatedAssets,
         type: DATA_UPDATE_ASSETS,
@@ -133,7 +162,7 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
       const parsedChangedAssets = parseAccountAssets(changedAssets);
       const { assets } = getState().data;
       const updatedAssets = uniqBy(concat(parsedChangedAssets, assets), (item) => item.uniqueId);
-      commonStorage.saveAssets(address, updatedAssets, 'mainnet');
+      commonStorage.saveAssets(address, updatedAssets, network);
       dispatch({
         payload: updatedAssets,
         type: DATA_UPDATE_ASSETS,
@@ -154,12 +183,32 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
 const INITIAL_STATE = {
   assets: [],
   loadingAssets: false,
+  transactions: [],
+  loadingTransactions: false,
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
   case DATA_UPDATE_ASSETS:
     return { ...state, assets: action.payload };
+  case DATA_UPDATE_TRANSACTIONS:
+    return { ...state, transactions: action.payload };
+  case DATA_LOAD_TRANSACTIONS_REQUEST:
+    return {
+      ...state,
+      loadingTransactions: true,
+    };
+  case DATA_LOAD_TRANSACTIONS_SUCCESS:
+    return {
+      ...state,
+      loadingTransactions: false,
+      transactions: action.payload,
+    };
+  case DATA_LOAD_TRANSACTIONS_FAILURE:
+    return {
+      ...state,
+      loadingTransactions: false
+    };
   case DATA_LOAD_ASSETS_REQUEST:
     return {
       ...state,

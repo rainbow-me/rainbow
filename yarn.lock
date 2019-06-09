@@ -897,7 +897,7 @@
 
 "@rainbow-me/rainbow-common@git+https://github.com/rainbow-me/rainbow-common.git#testing-new-assets":
   version "0.8.3"
-  resolved "git+https://github.com/rainbow-me/rainbow-common.git#7d892fd7266e7eaed523b2cd14ed32f496db1f2c"
+  resolved "git+https://github.com/rainbow-me/rainbow-common.git#a287add434ea45e3c90886449d6c2d7681e9f6cf"
   dependencies:
     axios "^0.18.0"
     bignumber.js "^7.0.1"
