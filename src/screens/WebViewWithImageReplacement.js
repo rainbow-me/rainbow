@@ -26,9 +26,9 @@ const ForYouBadgeWebView = styled(View)`
 `;
 
 /**
- * This component is a super dirty hack used for handling fluid-transition problem.
+ * This component is a super dirty hack used for handling a fluid-transition issue.
  * Library in order to perform shared-transition needs to make a copy of a component which is shared.
- * If it's a WebView the website needs to be loaded again which takes some time and causes blinking.
+ * If it's a WebView the website needs to be loaded again which takes some time for fetching and causes blinking.
  * As a workaround we make a copy of this view (as an image), load it to the Image component and then
  * start the animation. It makes a copy and then we come back to normal WebView displaying which is beneath the image.
  */
@@ -56,7 +56,7 @@ class WebViewWithImageReplacement extends React.Component {
                 cachedImage: uri,
               }, () => this.props.onPress()),
             );
-          setTimeout(() => this.setState({ cachedImage: null }), 2000);
+          setImmediate(() => this.setState({ cachedImage: null }));
         }}
         scaleTo={0.96}
       >
