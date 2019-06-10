@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "0.4.0-18",
+  "version": "1.0.0-1",
   "private": true,
   "scripts": {
     "clean": "react-native-clean-project",
@@ -24,7 +24,7 @@
     "@tradle/react-native-http": "^2.0.1",
     "@walletconnect/react-native": "^1.0.0-beta.20",
     "assert": "^1.4.1",
-    "axios": "^0.18.0",
+    "axios": "^0.19.0",
     "bignumber.js": "^8.1.1",
     "browserify-zlib": "^0.1.4",
     "buffer": "^4.9.1",
@@ -60,7 +60,7 @@
     "react-native-code-push": "^5.6.0",
     "react-native-crypto": "^2.1.2",
     "react-native-device-info": "^1.6.2",
-    "react-native-emoji": "^1.6.0",
+    "react-native-emoji": "^1.7.0",
     "react-native-fast-image": "^6.0.0",
     "react-native-firebase": "^4.3.8",
     "react-native-gesture-handler": "^1.2.1",

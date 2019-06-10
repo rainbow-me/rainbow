@@ -8,7 +8,7 @@ import Animated from 'react-native-reanimated';
 import Permissions from 'react-native-permissions';
 import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
-import { Alert } from '../components/alerts';
+import { Alert, Prompt } from '../components/alerts';
 import {
   withAccountAddress,
   withWalletConnectConnections,
@@ -51,7 +51,18 @@ class QRScannerScreenWithData extends Component {
     this.setState({ sheetHeight: get(nativeEvent, 'layout.height') });
   }
 
+  handlePastedUri = async (uri) => this.props.walletConnectOnSessionRequest(uri)
+
   handlePressBackButton = () => this.props.navigation.navigate('WalletScreen')
+
+  handlePressPasteSessionUri = () => {
+    Prompt({
+      callback: this.handlePastedUri,
+      message: 'Paste WalletConnect URI below',
+      title: 'New WalletConnect Session',
+      type: 'plain-text',
+    });
+  }
 
   handleReenableScanning = () => this.setState({ enableScanning: true })
 
@@ -103,6 +114,7 @@ class QRScannerScreenWithData extends Component {
       }
       onChangeExpandedBottomSheet={this.onChangeExpandedBottomSheet}
       onPressBackButton={this.handlePressBackButton}
+      onPressPasteSessionUri={this.handlePressPasteSessionUri}
       onScanSuccess={this.handleScanSuccess}
       onSheetLayout={this.handleSheetLayout}
     />

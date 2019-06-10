@@ -3,7 +3,7 @@ import lang from 'i18n-js';
 import { get, isNil, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import { estimateGas, getTransactionCount, toHex } from '@rainbow-me/rainbow-common';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Alert, StatusBar, Vibration } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
@@ -11,7 +11,7 @@ import { withTransactionConfirmationScreen } from '../hoc';
 import { signMessage, sendTransaction } from '../model/wallet';
 import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
-class TransactionConfirmationScreenWithData extends Component {
+class TransactionConfirmationScreenWithData extends PureComponent {
   static propTypes = {
     isFocused: PropTypes.bool.isRequired,
     navigation: PropTypes.any,
@@ -24,7 +24,8 @@ class TransactionConfirmationScreenWithData extends Component {
 
   componentDidMount() {
     StatusBar.setBarStyle('light-content', true);
-    const { autoOpened } = this.props.navigation.state.params;
+
+    const autoOpened = get(this.props, 'navigation.state.params.autoOpened');
     if (autoOpened) {
       Vibration.vibrate();
     }
@@ -39,11 +40,13 @@ class TransactionConfirmationScreenWithData extends Component {
 
   handleConfirmTransaction = async () => {
     const { transactionDetails } = this.props.navigation.state.params;
+
     const txPayload = get(transactionDetails, 'payload.params[0]');
-    let gasLimit = txPayload.gasLimit;
+    let { gasLimit } = txPayload;
+
     if (isNil(gasLimit)) {
       try {
-        rawGasLimit = await estimateGas(txPayload);
+        const rawGasLimit = await estimateGas(txPayload);
         gasLimit = toHex(rawGasLimit);
       } catch (error) {
         console.log('error estimating gas', error);
@@ -53,8 +56,6 @@ class TransactionConfirmationScreenWithData extends Component {
     const maxTxnCount = Math.max(this.props.transactionCountNonce, web3TxnCount);
     const nonce = ethers.utils.hexlify(maxTxnCount);
     let txPayloadLatestNonce = { ...txPayload, nonce };
-    const symbol = get(transactionDetails, 'transactionDisplayDetails.payload.asset.symbol', 'unknown');
-    const address = get(transactionDetails, 'transactionDisplayDetails.payload.asset.address', '');
     txPayloadLatestNonce = omit(txPayloadLatestNonce, 'from');
     const transactionHash = await sendTransaction({
       transaction: txPayloadLatestNonce,
@@ -121,7 +122,7 @@ class TransactionConfirmationScreenWithData extends Component {
 
   closeScreen = () => {
     StatusBar.setBarStyle('dark-content', true);
-    this.props.navigation.goBack();
+    this.props.navigation.popToTop();
   }
 
   render = () => {

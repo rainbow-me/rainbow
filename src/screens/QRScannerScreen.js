@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { ScrollView } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 import { onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
 import BottomSheet from 'reanimated-bottom-sheet';
@@ -9,6 +9,7 @@ import Animated from 'react-native-reanimated'
 import RadialGradient from 'react-native-radial-gradient';
 import { Transition } from 'react-navigation-fluid-transitions';
 import { BubbleSheet } from '../components/bubble-sheet';
+import { Button } from '../components/buttons';
 import { BackButton, Header } from '../components/header';
 import { Centered, Row } from '../components/layout';
 import { QRCodeScanner } from '../components/qrcode-scanner';
@@ -33,7 +34,9 @@ const Container = styled(Centered)`
   overflow: hidden;
 `;
 
-const QRScannerScreenHeader = styled(Header).attrs({ align: 'end', justify: 'start' })`
+const QRScannerScreenHeader = styled(Header).attrs({
+  justify: 'space-between',
+})`
   position: absolute;
   top: 0;
 `;
@@ -119,6 +122,7 @@ const QRScannerScreen = ({
   navigation,
   onChangeExpandedBottomSheet,
   onPressBackButton,
+  onPressPasteSessionUri,
   onScanSuccess,
   onSheetLayout,
   sheetHeight,
@@ -216,6 +220,18 @@ const QRScannerScreen = ({
         direction="left"
         onPress={onPressBackButton}
       />
+      {DeviceInfo.isEmulator() && (
+        <Button
+          backgroundColor={colors.white}
+          color={colors.sendScreen.brightBlue}
+          onPress={onPressPasteSessionUri}
+          size="small"
+          style={{ marginBottom: 10 }}
+          type="pill"
+        >
+          Paste session URI
+        </Button>
+      )}
     </QRScannerScreenHeader>
     <BubbleSheet
       bottom={safeAreaInsetValues.bottom ? 21 : 0}
@@ -233,6 +249,7 @@ QRScannerScreen.propTypes = {
   navigation: PropTypes.object,
   onChangeExpandedBottomSheet: PropTypes.func,
   onPressBackButton: PropTypes.func,
+  onPressPasteSessionUri: PropTypes.func,
   onScanSuccess: PropTypes.func,
   onSheetLayout: PropTypes.func,
   sheetHeight: PropTypes.number,

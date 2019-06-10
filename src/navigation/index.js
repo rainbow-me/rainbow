@@ -38,6 +38,7 @@ function handleAction(action) {
   if (!_navigator) return;
 
   action = StackActions.push(action);
+
   if (isPaused) {
     queuedNavigationActions.push(action);
   } else {
