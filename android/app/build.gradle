@@ -153,6 +153,8 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-view-shot')
+    implementation project(':react-native-webview')
     implementation project(':react-native-firebase')
     implementation project(':@staltz_react-native-tcp')
     implementation project(':@react-native-community_blur')

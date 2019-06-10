@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import DeviceInfo from 'react-native-device-info';
+import { ScrollView, View, StyleSheet } from 'react-native';
 import { onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
 import BottomSheet from 'reanimated-bottom-sheet';
 import FastImage from 'react-native-fast-image';
-import Animated from 'react-native-reanimated'
+import Animated from 'react-native-reanimated';
 import RadialGradient from 'react-native-radial-gradient';
 import { Transition } from 'react-navigation-fluid-transitions';
 import { BubbleSheet } from '../components/bubble-sheet';
@@ -14,7 +15,7 @@ import { BackButton, Header } from '../components/header';
 import { Centered, Row } from '../components/layout';
 import { QRCodeScanner } from '../components/qrcode-scanner';
 import { colors, padding, position } from '../styles';
-import { deviceUtils, safeAreaInsetValues } from '../utils';
+import { safeAreaInsetValues } from '../utils';
 import Flex from '../components/layout/Flex';
 import Text from '../components/text/Text';
 import SimulatorFakeCameraImageSource from '../assets/simulator-fake-camera-image.jpg';
@@ -24,9 +25,10 @@ import Column from '../components/layout/Column';
 import { ButtonPressAnimation } from '../components/animations';
 import { Icon } from '../components/icons';
 import { Input } from '../components/inputs';
+import WebViewWithImageReplacement, { forYouBadgeHeight, forYouBadgeWidth } from './WebViewWithImageReplacement';
 
 
-const { onChange, eq, call, cond } = Animated;
+const { onChange, eq, call } = Animated;
 
 const Container = styled(Centered)`
   ${position.size('100%')};
@@ -94,10 +96,6 @@ const SearchInput = styled(Input)`
   borderRadius: 20px;
 `;
 
-// It's vital for good transition to have the same ratio as screen
-const forYouBadgeWidth = deviceUtils.dimensions.width / 2 - 26;
-const forYouBadgeHeight = forYouBadgeWidth * (deviceUtils.dimensions.height / deviceUtils.dimensions.width);
-
 
 const ForYouBadge = styled(FastImage)`
   position: relative;
@@ -105,6 +103,7 @@ const ForYouBadge = styled(FastImage)`
   height: ${forYouBadgeHeight};
   width: ${forYouBadgeWidth};
 `;
+
 
 const HandleIcon = styled(Icon).attrs({
   color: '#C4C6CB',
@@ -114,6 +113,7 @@ const HandleIcon = styled(Icon).attrs({
   margin-top: 8px;
   margin-bottom: 12px;
 `;
+
 const QRScannerScreen = ({
   bottomSheetCallbackNode,
   enableScanning,
@@ -176,15 +176,16 @@ const QRScannerScreen = ({
             🧭 Explore the Ethereum network
           </MarginedDescText>
           <Column>
-            {Array.from(Array(10), (_, i) => (
+            {Array.from(Array(3), (_, i) => (
               <RowContainer key={`row${i}`}>
-                {Array.from(Array(2), (_, j) => (
-                  <ButtonPressAnimation
+                {Array.from(Array(2), (__, j) => (j === 0
+                  ? <ButtonPressAnimation
                     activeOpacity={0.5}
                     onPress={() => navigation.navigate('ForYouExpanded', { fluidTargetName: `For You${i}_${j}` })}
                     scaleTo={0.96}
                   >
-                    <Transition shared={`For You${i}_${j}`}>
+                    <Transition
+                      shared={`For You${i}_${j}`}>
                       <ForYouBadge
                         key={`${i}_${j}`}
                         source={SimulatorFakeCameraImageSource}
@@ -193,7 +194,11 @@ const QRScannerScreen = ({
                         }}
                       />
                     </Transition>
-                  </ButtonPressAnimation>))}
+                  </ButtonPressAnimation>
+                  : <WebViewWithImageReplacement
+                    sharedLabel={`For You${i}_${j}`}
+                    onPress={() => navigation.navigate('ForYouExpanded', { fluidTargetName: `For You${i}_${j}`, website: 'https://google.pl' })}
+                  />))}
               </RowContainer>
             ))}
           </Column>

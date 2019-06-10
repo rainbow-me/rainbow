@@ -36,7 +36,7 @@ class QRCodeScannerCamera extends PureComponent {
   }
 
   componentDidMount = () => {
-    this.props.setSafeTimeout(this.handleShowAuthorizationView, 500);
+    this.handleShowAuthorizationView();
   }
 
   componentDidUpdate = () => {
