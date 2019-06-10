@@ -5,13 +5,9 @@ import {
   reverse,
 } from 'lodash';
 import {
-  convertAmountToDisplay,
-  convertAssetAmountToBigNumber,
-  convertAmountFromBigNumber,
-  convertAmountToBigNumber,
-  multiply,
-  simpleConvertAmountToDisplay,
-} from '@rainbow-me/rainbow-common';
+  convertRawAmountToBalance,
+  convertRawAmountToNativeDisplay,
+} from './utilities';
 
 export const parseTransactions = (data, nativeCurrency) => {
   const allTxns = data.map(txn => parseTransaction(txn, nativeCurrency));
@@ -23,39 +19,27 @@ const parseTransaction = (txn, nativeCurrency) => {
   transaction['pending'] = false;
   const changes = get(txn, 'changes', []);
   const internalTransactions = changes.map((internalTxn, index) => {
-    //TODO turn this into a util function
-    const tokenBalance = convertAmountFromBigNumber(
+    const symbol = get(internalTxn, 'asset.symbol', '');
+    const updatedAsset = {
+      ...internalTxn.asset,
+      symbol: symbol.toUpperCase(),
+    };
+    const priceUnit = internalTxn.price || 0;
+    const nativeDisplay = convertRawAmountToNativeDisplay(
       internalTxn.value,
       internalTxn.asset.decimals,
-    );
-    // TODO: balance Amount Unit to display
-    const nativePriceUnit = internalTxn.price || 0;
-    const nativeBalanceRaw = multiply(tokenBalance, nativePriceUnit);
-    const nativeDisplay = simpleConvertAmountToDisplay(
-      convertAmountToBigNumber(nativeBalanceRaw),
-      nativeCurrency,
+      priceUnit,
+      nativeCurrency
     );
 
-    const assetBalance = convertAssetAmountToBigNumber(
-      internalTxn.value,
-      internalTxn.asset.decimals,
-    );
     return {
       ...transaction,
-      asset: internalTxn.asset,
+      asset: updatedAsset,
+      balance: convertRawAmountToBalance(internalTxn.value, updatedAsset),
       hash: `${transaction.hash}-${index}`,
       from: internalTxn.address_from,
-      native: {
-        display: nativeDisplay,
-      },
+      native: nativeDisplay,
       to: internalTxn.address_to,
-      value: {
-        amount: tokenBalance,
-        display: convertAmountToDisplay(assetBalance, {
-          symbol: internalTxn.asset.symbol.toUpperCase(),
-          decimals: internalTxn.asset.decimals,
-        }),
-      }
     };
   });
   return reverse(internalTransactions);
@@ -80,19 +64,9 @@ export const parseAccountAssets = data => {
         symbol: assetData.asset.symbol.toUpperCase() || '———',
         uniqueId: assetData.asset.asset_code || name,
       };
-      const assetBalance = convertAssetAmountToBigNumber(
-        assetData.quantity,
-        asset.decimals,
-      );
       return {
         ...asset,
-        balance: {
-          amount: assetBalance,
-          display: convertAmountToDisplay(assetBalance, {
-            symbol: asset.symbol,
-            decimals: asset.decimals,
-          }),
-        },
+        balance: convertRawAmountToBalance(assetData.quantity, asset),
       };
     });
 

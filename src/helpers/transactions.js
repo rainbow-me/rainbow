@@ -57,11 +57,9 @@ const groupTransactionByDate = ({ pending, mined_at: time }) => {
 const normalizeTransactions = ({ accountAddress, nativeCurrency, transactions }) => (
   transactions.map(({
     asset,
-    value,
     ...tx
   }) => ({
     ...tx,
-    balance: value,
     name: get(asset, 'name', ''),
     status: getTransactionStatus({ accountAddress, ...tx }),
     symbol: get(asset, 'symbol', ''),

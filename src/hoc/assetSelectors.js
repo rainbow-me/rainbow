@@ -6,16 +6,13 @@ import {
   map,
   toNumber
 } from 'lodash';
+import { add, sortList } from '@rainbow-me/rainbow-common';
 import { createSelector } from 'reselect';
 import {
-  add,
-  convertAmountToDisplay,
-  convertAmountFromBigNumber,
-  convertAmountToBigNumber,
-  multiply,
-  simpleConvertAmountToDisplay,
-  sortList,
-} from '@rainbow-me/rainbow-common';
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountToNativeDisplay,
+  convertAmountToPercentageDisplay,
+} from '../helpers/utilities';
 
 const EMPTY_ARRAY = [];
 
@@ -65,31 +62,24 @@ const parseAssetsNative = (
       return asset;
     }
 
-    const balanceAmountUnit = convertAmountFromBigNumber(
+    const priceUnit = get(assetNativePrice, 'value', 0);
+    const nativeDisplay = convertAmountAndPriceToNativeDisplay(
       asset.balance.amount,
-      asset.decimals,
-    );
-    const balancePriceUnit = get(assetNativePrice, 'value', 0);
-    const balanceRaw = multiply(balanceAmountUnit, balancePriceUnit);
-    const balanceAmount = convertAmountToBigNumber(balanceRaw);
-    const balanceDisplay = simpleConvertAmountToDisplay(
-      balanceAmount,
-      nativeCurrency,
-    );
-    const assetPrice = assetNativePrice.value;
-    const assetPriceDisplay = simpleConvertAmountToDisplay(
-      convertAmountToBigNumber(assetPrice),
-      nativeCurrency,
+      priceUnit,
+      nativeCurrency
     );
     return {
       ...asset,
       native: {
-        balance: { amount: balanceAmount, display: balanceDisplay },
-        price: { amount: assetPrice, display: assetPriceDisplay },
+        balance: nativeDisplay,
+        price: {
+          amount: priceUnit,
+          display: convertAmountToNativeDisplay(priceUnit, nativeCurrency),
+        },
         change:
           asset.symbol.toLowerCase() === nativeCurrency.toLowerCase()
             ? { display: '———' }
-            : convertAmountToDisplay(convertAmountToBigNumber(assetNativePrice.relative_change_24h)),
+            : convertAmountToPercentageDisplay(assetNativePrice.relative_change_24h),
       },
     };
   });
@@ -98,7 +88,7 @@ const parseAssetsNative = (
     add(total, asset.native ? asset.native.balance.amount : 0),
     0,
   );
-  const totalDisplay = simpleConvertAmountToDisplay(totalAmount, nativeCurrency);
+  const totalDisplay = convertAmountToNativeDisplay(totalAmount, nativeCurrency);
   const total = { amount: totalAmount, display: totalDisplay };
   return { assetsNativePrices: assetsNative, total };
 };
