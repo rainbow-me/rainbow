@@ -79,6 +79,7 @@ class WebViewWithImageReplacement extends React.Component {
             }]}
 
           />
+          {/* View for intercepting touches */}
           <View style={StyleSheet.absoluteFillObject}/>
           <Transition
             shared={this.props.sharedLabel}>
