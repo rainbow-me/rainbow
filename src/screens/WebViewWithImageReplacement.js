@@ -54,9 +54,11 @@ class WebViewWithImageReplacement extends React.Component {
             .then(
               uri => this.setState({
                 cachedImage: uri,
-              }, () => this.props.onPress()),
+              }, () => {
+                this.props.onPress();
+                setTimeout(() => this.setState({ cachedImage: null }), 1000);
+              }),
             );
-          setImmediate(() => this.setState({ cachedImage: null }));
         }}
         scaleTo={0.96}
       >
