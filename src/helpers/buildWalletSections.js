@@ -7,6 +7,7 @@ import { createSelector } from 'reselect';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniqueTokenRow } from '../components/unique-token';
 import { buildUniqueTokenList } from './assets';
+import { TokenFamilyWrap } from '../components/token-family';
 
 const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
@@ -38,7 +39,7 @@ const TokenItem = enhanceRenderItem(BalanceCoinRow);
 const UniqueTokenItem = enhanceRenderItem(UniqueTokenRow);
 
 const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
-const collectiblesRenderItem = item => <UniqueTokenItem {...item} assetType="unique_token" />;
+const tokenFamilyItem = item => <TokenFamilyWrap {...item} />
 
 const filterWalletSections = sections => sections.filter(({ data, header }) => (
   data ? get(header, 'totalItems') : true
@@ -79,7 +80,7 @@ const buildWalletSections = (
         totalItems: uniqueTokens.length,
         totalValue: '',
       },
-      renderItem: collectiblesRenderItem,
+      renderItem: tokenFamilyItem,
       type: 'big',
     },
   ];
