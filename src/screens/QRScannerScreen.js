@@ -136,6 +136,9 @@ const QRScannerScreen = ({
       callbackNode={bottomSheetCallbackNode}
       snapPoints = {['100%', 100]}
       initialSnap={1}
+      springConfig={{
+        toss: 8.0,
+      }}
       renderContent = {() => (
         <BottomSheetContainer>
           <HandleIcon/>
