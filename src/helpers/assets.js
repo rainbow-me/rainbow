@@ -19,6 +19,7 @@ export const buildUniqueTokenList = (uniqueTokens) => {
   const rows = [];
 
   for (let i = 0; i < uniqueTokens.length; i += 2) {
+    uniqueTokens[i].rowNumber = i/2;
     const tokens = compact([uniqueTokens[i], uniqueTokens[i + 1]]);
 
     rows.push({
@@ -26,7 +27,6 @@ export const buildUniqueTokenList = (uniqueTokens) => {
       uniqueId: tokens.map(({ uniqueId }) => uniqueId).join('__'),
     });
   }
-
   return rows;
 };
 

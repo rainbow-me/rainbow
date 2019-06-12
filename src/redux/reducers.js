@@ -8,6 +8,7 @@ import {
 import { combineReducers } from 'redux';
 
 import actionSheetManager from './actionSheetManager';
+import openFamilyTabs from './openFamilyTabs';
 import imageDimensionsCache from './imageDimensionsCache';
 import isWalletEmpty from './isWalletEmpty';
 import navigation from './navigation';
@@ -18,6 +19,7 @@ import selectedWithFab from './selectedWithFab';
 
 export default combineReducers({
   actionSheetManager,
+  openFamilyTabs,
   assets,
   imageDimensionsCache,
   isWalletEmpty,

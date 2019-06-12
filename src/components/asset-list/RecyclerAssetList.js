@@ -22,13 +22,15 @@ import { CoinRow, CollectiblesSendRow } from '../coin-row';
 import { ListFooter } from '../list';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
+import { TokenFamilyWrap } from '../token-family';
+import { withOpenFamilyTabs } from '../../hoc';
 
 export const ViewTypes = {
   HEADER: 0,
   COIN_ROW: 1, // eslint-disable-line sort-keys
   COIN_ROW_LAST: 2,
   UNIQUE_TOKEN_ROW: 3,
-  UNIQUE_TOKEN_ROW_FIRST: 4,
+  UNIQUE_TOKEN_ROW_CLOSED: 4,
   UNIQUE_TOKEN_ROW_LAST: 5,
 };
 
@@ -109,6 +111,7 @@ class RecyclerAssetList extends PureComponent {
 
     this.layoutProvider = new LayoutProvider(
       index => {
+        console.log(index);
         const { sections } = this.props;
         const { headersIndices } = this.state;
 
@@ -129,12 +132,6 @@ class RecyclerAssetList extends PureComponent {
 
         if (areCollectiblesLoaded) {
           const idx = areBalancesLoaded ? 1 : 0;
-          if (index === headersIndices[idx] + 1) {
-            return ViewTypes.UNIQUE_TOKEN_ROW_FIRST;
-          }
-          if (index === this.state.length - 1) {
-            return ViewTypes.UNIQUE_TOKEN_ROW_LAST;
-          }
           if (index > headersIndices[idx]) {
             return ViewTypes.UNIQUE_TOKEN_ROW;
           }
@@ -162,13 +159,7 @@ class RecyclerAssetList extends PureComponent {
         }
 
         if (type === ViewTypes.UNIQUE_TOKEN_ROW) {
-          dim.height = UniqueTokenRow.getHeight(false, false);
-        } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_LAST) {
-          // We want to add enough spacing below the list so that when the user scrolls to the bottom,
-          // the bottom of the list content lines up with the top of the FABs (+ padding).
-          dim.height = UniqueTokenRow.getHeight(false, true) + (props.paddingBottom || 0);
-        } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST) {
-          dim.height = UniqueTokenRow.getHeight(true, false);
+          dim.height = 162 + 32 + 11 * 2;
         } else if (type === ViewTypes.COIN_ROW_LAST) {
           dim.height = this.state.areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height;
         } else if (type === ViewTypes.COIN_ROW) {
@@ -310,4 +301,4 @@ const mapStateToProps = ({
 }) => ({
   scrollingVelocity,
 });
-export default connect(mapStateToProps)(RecyclerAssetList);
+export default connect(mapStateToProps)(withOpenFamilyTabs(RecyclerAssetList));
