@@ -64,8 +64,12 @@ export const toHex = value => ethers.utils.hexlify(ethers.utils.bigNumberify(val
  * @return {Number} gas limit
  */
 export const estimateGas = async (estimateGasData) => {
-  const gasLimit = await web3Provider.estimateGas(estimateGasData);
-  return gasLimit.toNumber();
+  try {
+    const gasLimit = await web3Provider.estimateGas(estimateGasData);
+    return gasLimit.toNumber();
+  } catch (error) {
+    return 21000;
+  };
 };
 
 /**

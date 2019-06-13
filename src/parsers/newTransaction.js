@@ -1,4 +1,4 @@
-import { multiply } from '../helpers/utilities';
+import { multiply, convertAmountToBalanceDisplay } from '../helpers/utilities';
 import { getTransactionCount } from '../handlers/web3';
 
 /**
@@ -18,7 +18,6 @@ export const parseNewTransaction = async (
   let txFee = totalGas
     ? {
         amount: totalGas,
-      // TODO utils
         display: convertAmountToBalanceDisplay(totalGas, {
           symbol: 'ETH',
           decimals: 18,
@@ -31,7 +30,6 @@ export const parseNewTransaction = async (
     const amount = txDetails.amount;
     value = {
       amount,
-      // TODO utils
       display: convertAmountToBalanceDisplay(amount, txDetails.asset),
     };
   }
