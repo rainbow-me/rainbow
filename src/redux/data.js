@@ -35,9 +35,7 @@ const DATA_LOAD_TRANSACTIONS_REQUEST = 'data/DATA_LOAD_TRANSACTIONS_REQUEST';
 const DATA_LOAD_TRANSACTIONS_SUCCESS = 'data/DATA_LOAD_TRANSACTIONS_SUCCESS';
 const DATA_LOAD_TRANSACTIONS_FAILURE = 'data/DATA_LOAD_TRANSACTIONS_FAILURE';
 
-const DATA_ADD_NEW_TRANSACTION_REQUEST = 'data/DATA_ADD_NEW_TRANSACTION_REQUEST';
 const DATA_ADD_NEW_TRANSACTION_SUCCESS = 'data/DATA_ADD_NEW_TRANSACTION_SUCCESS';
-const DATA_ADD_NEW_TRANSACTION_FAILURE = 'data/DATA_ADD_NEW_TRANSACTION_FAILURE';
 
 const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
 
@@ -133,15 +131,6 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
       const { transactions } = getState().data;
       const lastSuccessfulTxn = find(transactions, (txn) => txn.hash && !txn.pending);
       const lastTxHash = lastSuccessfulTxn ? lastSuccessfulTxn.hash : '';
-      ///////////////////
-      const parsedTransactions = parseTransactions(transactionData, nativeCurrency);
-
-      saveLocalTransactions(address, parsedTransactions, network);
-      dispatch({
-        payload: parsedTransactions,
-        type: DATA_UPDATE_TRANSACTIONS,
-      });
-      /*
       if (lastTxHash) {
         const lastTxnHashIndex = findIndex(transactionData, (txn) => { return lastTxHash.startsWith(txn.hash) });
         if (lastTxnHashIndex > -1) {
@@ -171,7 +160,6 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
           type: DATA_UPDATE_TRANSACTIONS,
         });
       }
-      */
     }
   });
 
@@ -244,21 +232,19 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
 };
 
 export const dataAddNewTransaction = txDetails => (dispatch, getState) => new Promise((resolve, reject) => {
-  dispatch({ type: TRANSACTIONS_ADD_NEW_TRANSACTION_REQUEST });
-  const { transactions } = getState().transactions;
+  const { transactions } = getState().data;
   const { accountAddress, nativeCurrency, network } = getState().settings;
   parseNewTransaction(txDetails, nativeCurrency)
     .then(parsedTransaction => {
       let _transactions = [parsedTransaction, ...transactions];
       saveLocalTransactions(accountAddress, _transactions, network);
       dispatch({
-        type: TRANSACTIONS_ADD_NEW_TRANSACTION_SUCCESS,
+        type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
         payload: _transactions,
       });
       resolve(true);
     })
     .catch(error => {
-      dispatch({ type: TRANSACTIONS_ADD_NEW_TRANSACTION_FAILURE });
       reject(false);
     });
 });
