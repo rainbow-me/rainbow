@@ -1,5 +1,4 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
-import { withUniqueTokens } from '@rainbow-me/rainbow-common';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
@@ -21,9 +20,9 @@ import {
   withAccountRefresh,
   withAccountSettings,
   withBlurTransitionProps,
-  withFetchingPrices,
   withHideSplashScreen,
   withIsWalletEmpty,
+  withUniqueTokens,
 } from '../hoc';
 import { position } from '../styles';
 import withStatusBarStyle from '../hoc/withStatusBarStyle';
@@ -97,7 +96,6 @@ export default compose(
   withUniqueTokens,
   withAccountRefresh,
   withAccountSettings,
-  withFetchingPrices,
   withHideSplashScreen,
   withSafeTimeout,
   withNavigation,

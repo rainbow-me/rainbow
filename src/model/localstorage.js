@@ -1,13 +1,13 @@
 import { differenceInMinutes } from 'date-fns';
 import { pickBy } from 'lodash';
-import { commonStorage } from '@rainbow-me/rainbow-common';
+import { getLocal, saveLocal } from '../handlers/commonStorage';
 
 /**
  * @desc get show shitcoins setting
  * @return {True|False}
  */
 export const getShowShitcoinsSetting = async () => {
-  const showShitcoins = await commonStorage.getLocal('showShitcoins');
+  const showShitcoins = await getLocal('showShitcoins');
   return showShitcoins ? showShitcoins.data : null;
 };
 
@@ -17,7 +17,7 @@ export const getShowShitcoinsSetting = async () => {
  * @return {Void}
  */
 export const updateShowShitcoinsSetting = async (updatedSetting) => {
-  await commonStorage.saveLocal('showShitcoins', { data: updatedSetting });
+  await saveLocal('showShitcoins', { data: updatedSetting });
 };
 
 const getRequestsKey = (accountAddress, network) => `requests-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
@@ -33,7 +33,7 @@ const isRequestStillValid = (request) => {
  * @return {Object}
  */
 export const getLocalRequests = async (accountAddress, network) => {
-  const requestsData = await commonStorage.getLocal(getRequestsKey(accountAddress, network));
+  const requestsData = await getLocal(getRequestsKey(accountAddress, network));
   const requests = requestsData ? requestsData.data : {};
   const openRequests = pickBy(requests, isRequestStillValid);
   await saveLocalRequests(accountAddress, network, openRequests);
@@ -47,7 +47,7 @@ export const getLocalRequests = async (accountAddress, network) => {
  * @return {Void}
  */
 export const saveLocalRequests = async (accountAddress, network, requests) => {
-  await commonStorage.saveLocal(
+  await saveLocal(
     getRequestsKey(accountAddress, network),
     { data: requests },
   );

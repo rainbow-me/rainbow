@@ -1,4 +1,4 @@
-import { isValidAddress } from '@rainbow-me/rainbow-common';
+import { isValidAddress } from '../../helpers/validators';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Clipboard } from 'react-native';

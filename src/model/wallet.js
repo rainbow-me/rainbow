@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get } from 'lodash';
-import { web3Provider } from '@rainbow-me/rainbow-common';
+import { web3Provider } from '../handlers/web3';
 import { Alert } from 'react-native';
 import {
   ACCESS_CONTROL,

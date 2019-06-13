@@ -1,8 +1,165 @@
 import BigNumber from 'bignumber.js';
-import {
-  multiply,
-  supportedNativeCurrencies,
-} from '@rainbow-me/rainbow-common';
+import supportedNativeCurrencies from '../references/native-currencies.json';
+
+// TODO
+export const fromWei = (number, decimals = 18) => {
+  return new BigNumber(number.toString(10), 10)
+    .dividedBy(BigNumber(10).pow(decimals))
+    .toString(10);
+};
+
+/**
+ * @desc convert amount to raw amount
+ * @param  {String}   value
+ * @param  {Number}   decimals
+ * @return {String}
+ */
+export const convertAmountToRawAmount = (value, decimals) =>
+  BigNumber(value).times(BigNumber(10).pow(decimals));
+
+/**
+ * @desc convert from number to string
+ * @param  {Number}  value
+ * @return {String}
+ */
+export const convertNumberToString = value => BigNumber(`${value}`).toString();
+
+
+/**
+ * @desc compares if numberOne is greater than numberTwo
+ * @param  {Number}   numberOne
+ * @param  {Number}   numberTwo
+ * @return {String}
+ */
+export const greaterThan = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`).comparedTo(BigNumber(`${numberTwo}`)) === 1;
+
+/**
+ * @desc format fixed number of decimals
+ * @param  {String}   value
+ * @param  {Number}   decimals
+ * @return {String}
+ */
+export const formatFixedDecimals = (value, decimals) => {
+  const _value = convertNumberToString(value);
+  const _decimals = convertStringToNumber(decimals);
+  const result = BigNumber(BigNumber(_value).toFixed(_decimals)).toString();
+  return result;
+};
+
+/**
+ * @desc modulos of two numbers
+ * @param  {Number}   numberOne
+ * @param  {Number}   numberTwo
+ * @return {String}
+ */
+export const mod = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`)
+    .mod(BigNumber(`${numberTwo}`))
+    .toString();
+
+
+/**
+ * @desc compares if numberOne is greater than or equal to numberTwo
+ * @param  {Number}   numberOne
+ * @param  {Number}   numberTwo
+ * @return {String}
+ */
+export const greaterThanOrEqual = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`).comparedTo(BigNumber(`${numberTwo}`)) >= 0;
+
+
+/**
+ * @desc real floor divides two numbers
+ * @param  {Number}   numberOne
+ * @param  {Number}   numberTwo
+ * @return {String}
+ */
+export const floorDivide = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`)
+    .dividedToIntegerBy(BigNumber(`${numberTwo}`))
+    .toString();
+
+
+/**
+ * @desc format inputOne value to signficant decimals given inputTwo
+ * @param  {String}   inputOne
+ * @param  {String}   inputTwo
+ * @return {String}
+ */
+export const formatInputDecimals = (inputOne, inputTwo) => {
+  const _nativeAmountDecimalPlaces = countDecimalPlaces(inputTwo);
+  const decimals =
+    _nativeAmountDecimalPlaces > 8 ? _nativeAmountDecimalPlaces : 8;
+  const result = BigNumber(formatFixedDecimals(inputOne, decimals))
+    .toFormat()
+    .replace(/,/g, '');
+  return result;
+};
+
+/**
+ * @desc convert hex to number string
+ * @param  {String} hex
+ * @return {String}
+ */
+export const convertHexToString = hex => BigNumber(`${hex}`).toString();
+
+/**
+ * @desc convert number to string to hex
+ * @param  {String} string
+ * @return {String}
+ */
+export const convertStringToHex = string => BigNumber(`${string}`).toString(16);
+
+/**
+ * @desc adds two numbers
+ * @param  {Number}   numberOne
+ * @param  {Number}   numberTwo
+ * @return {String}
+ */
+export const add = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`)
+    .plus(BigNumber(`${numberTwo}`))
+    .toString();
+
+/**
+ * @desc multiplies two numbers
+ * @param  {Number}   numberOne
+ * @param  {Number}   numberTwo
+ * @return {String}
+ */
+export const multiply = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`)
+    .times(BigNumber(`${numberTwo}`))
+    .toString();
+
+/**
+ * @desc divides two numbers
+ * @param  {Number}   numberOne
+ * @param  {Number}   numberTwo
+ * @return {String}
+ */
+export const divide = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`)
+    .dividedBy(BigNumber(`${numberTwo}`))
+    .toString();
+
+/**
+ * @desc convert to asset amount units from native price value units
+ * @param  {String}   value
+ * @param  {Object}   asset
+ * @param  {Number}   priceUnit
+ * @return {String}
+ */
+export const convertAmountFromNativeValue = (
+  value,
+  asset,
+  priceUnit,
+) => {
+  return BigNumber(value)
+    .dividedBy(BigNumber(priceUnit))
+    .toString();
+};
 
 /**
  * @desc handle signficant decimals in display format
@@ -66,6 +223,18 @@ export const significantDecimals = (value, decimals, buffer) => {
 };
 
 /**
+ * @desc convert from asset BigNumber amount to native price BigNumber amount
+ * @param  {BigNumber}   value
+ * @param  {Object}   asset
+ * @param  {Object}   nativePrices
+ * @return {BigNumber}
+ */
+export const convertAmountToNativeAmount = (
+  amount,
+  priceUnit,
+) => multiply(amount, priceUnit);
+
+/**
  * @desc convert from amount to display formatted string
  * @param  {BigNumber}  value
  * @param  {String}     nativeCurrency
@@ -77,7 +246,7 @@ export const convertAmountAndPriceToNativeDisplay = (
   nativeCurrency,
   buffer
 ) => {
-  const nativeBalanceRaw = multiply(amount, priceUnit);
+  const nativeBalanceRaw = convertAmountToNativeAmount(amount, priceUnit);
   const nativeDisplay = convertAmountToNativeDisplay(
     nativeBalanceRaw,
     nativeCurrency,
@@ -127,12 +296,26 @@ export const convertRawAmountToBalance = (value, asset, buffer) => {
     value,
     decimals,
   );
-  const display = handleSignificantDecimals(assetBalance, decimals, buffer);
+
   return {
     amount: assetBalance,
-    display: `${display} ${asset.symbol}`,
+    display: convertAmountToBalanceDisplay(assetBalance, asset, buffer),
   }
 };
+
+/**
+ * @desc convert from amount value to display formatted string
+ * @param  {BigNumber}  value
+ * @param  {Object}     asset
+ * @param  {Number}     buffer
+ * @return {String}
+ */
+export const convertAmountToBalanceDisplay = (value, asset, buffer) => {
+  const decimals = asset.decimals || 18;
+  const display = handleSignificantDecimals(value, decimals, buffer);
+  return `${display} ${asset.symbol}`;
+};
+
 
 /**
  * @desc convert from amount to display formatted string

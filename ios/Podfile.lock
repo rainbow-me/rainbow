@@ -71,15 +71,15 @@ PODS:
     - React/Core (= 0.59.8)
   - react-native-blur (0.8.0):
     - React
-  - react-native-camera (2.9.0):
+  - react-native-camera (2.10.2):
     - React
-    - react-native-camera/RCT (= 2.9.0)
-    - react-native-camera/RN (= 2.9.0)
-  - react-native-camera/RCT (2.9.0):
+    - react-native-camera/RCT (= 2.10.2)
+    - react-native-camera/RN (= 2.10.2)
+  - react-native-camera/RCT (2.10.2):
     - React
-  - react-native-camera/RN (2.9.0):
+  - react-native-camera/RN (2.10.2):
     - React
-  - react-native-fast-image (6.0.1):
+  - react-native-fast-image (6.0.3):
     - React
     - SDWebImage (~> 5.0)
   - react-native-netinfo (2.0.10):
@@ -263,8 +263,8 @@ SPEC CHECKSUMS:
   Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
   React: 76e6aa2b87d05eb6cccb6926d72685c9a07df152
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-camera: 571e4cfe70e7021e9077c1699a53e659db971f96
-  react-native-fast-image: 3a421727f63d96f766c4b4a2d86fe4987f084c87
+  react-native-camera: 89f0367c52e3ed70dd042c6362891cf7869f8e1c
+  react-native-fast-image: 3390cc968d598f0c6b5c710df138f4b653a87231
   react-native-netinfo: 39c221d058dca040a69e46a083e692bbd65d5ab5
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   RNCAsyncStorage: 0c3ef98facf3fecf455b518d6f52e10fc964c523

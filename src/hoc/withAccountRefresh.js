@@ -1,4 +1,4 @@
-import { uniqueTokensRefreshState } from '@rainbow-me/rainbow-common';
+import { uniqueTokensRefreshState } from '../redux/assets';
 import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
 

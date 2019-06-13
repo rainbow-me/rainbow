@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import { isValidSeedPhrase as validateSeedPhrase } from '@rainbow-me/rainbow-common';
+import { isValidSeedPhrase as validateSeedPhrase } from '../helpers/validators';
 import { Clipboard, InteractionManager, Linking } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import {

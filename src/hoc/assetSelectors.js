@@ -6,9 +6,10 @@ import {
   map,
   toNumber
 } from 'lodash';
-import { add, sortList } from '@rainbow-me/rainbow-common';
 import { createSelector } from 'reselect';
+import { sortList } from '../helpers/sortList';
 import {
+  add,
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplay,

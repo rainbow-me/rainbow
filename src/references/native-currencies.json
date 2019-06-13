@@ -1,0 +1,42 @@
+{
+  "USD": {
+    "symbol": "$",
+    "currency": "USD",
+    "label": "United States Dollar",
+    "decimals": 2,
+    "alignment": "left",
+    "assetLimit": 1
+  },
+  "GBP": {
+    "symbol": "£",
+    "currency": "GBP",
+    "label": "British Pound",
+    "decimals": 2,
+    "alignment": "left",
+    "assetLimit": 1
+  },
+  "EUR": {
+    "symbol": "€",
+    "currency": "EUR",
+    "label": "Euro",
+    "decimals": 2,
+    "alignment": "left",
+    "assetLimit": 1
+  },
+  "BTC": {
+    "symbol": "₿",
+    "currency": "BTC",
+    "label": "Bitcoin",
+    "decimals": 8,
+    "alignment": "right",
+    "assetLimit": 0.0001
+  },
+  "ETH": {
+    "symbol": "Ξ",
+    "currency": "ETH",
+    "label": "Ethereum",
+    "decimals": 8,
+    "alignment": "right",
+    "assetLimit": 0.001
+  }
+}

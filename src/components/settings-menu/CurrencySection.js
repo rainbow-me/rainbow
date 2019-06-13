@@ -1,11 +1,11 @@
 import { omit } from 'lodash';
 import PropTypes from 'prop-types';
-import { supportedNativeCurrencies } from '@rainbow-me/rainbow-common';
 import React from 'react';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { withAccountSettings } from '../../hoc';
 import { CoinIcon } from '../coin-icon';
 import { RadioList, RadioListItem } from '../radio-list';
+import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { Emoji } from '../text';
 
 // Disable BTC native currency support until BTC wallet support exists

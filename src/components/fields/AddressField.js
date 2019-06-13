@@ -1,12 +1,13 @@
-import { isHexString, isValidAddress } from '@rainbow-me/rainbow-common';
 import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import styled from 'styled-components/primitives';
 import { Input } from '../inputs';
 import { Row } from '../layout';
-import { Label } from '../text';
 import { colors } from '../../styles';
+import { Label } from '../text';
+import { isValidAddress } from '../../helpers/validators';
+import { isHexString } from '../../handlers/web3';
 import { abbreviations, addressUtils, isNewValueForPath } from '../../utils';
 
 const AddressInput = styled(Input).attrs({ family: 'SFMono' })`
@@ -50,8 +51,7 @@ export default class AddressField extends PureComponent {
     }
 
     // Allow component state to be overwritten by parent component through the
-    // use of the 'address' prop. Assume that 'address' is valid because @rainbow-me/rainbow-common
-    // handles that for us.
+    // use of the 'address' prop. Assume that 'address' is valid because redux handles that for us.
     if (this.props.address && !this.state.address) {
       this.setState({
         address: this.props.address,

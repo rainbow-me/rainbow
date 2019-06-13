@@ -1,9 +1,9 @@
 import { get, keys, pickBy } from 'lodash';
 import PropTypes from 'prop-types';
-import { resources, supportedLanguages } from '@rainbow-me/rainbow-common';
 import React from 'react';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { withAccountSettings } from '../../hoc';
+import { resources, supportedLanguages } from '../../languages';
 import { RadioList, RadioListItem } from '../radio-list';
 
 // Only show languages that have 'wallet' translations available.

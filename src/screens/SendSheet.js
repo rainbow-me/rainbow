@@ -1,4 +1,3 @@
-import { withUniqueTokens } from '@rainbow-me/rainbow-common';
 import {
   get,
   isEmpty,
@@ -26,6 +25,7 @@ import {
   withAccountData,
   withAccountRefresh,
   withAccountSettings,
+  withUniqueTokens,
 } from '../hoc';
 import { colors } from '../styles';
 import { deviceUtils, isNewValueForPath } from '../utils';

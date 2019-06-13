@@ -1,8 +1,3 @@
-import {
-  accountLoadState,
-  settingsInitializeState,
-  settingsUpdateAccountAddress,
-} from '@rainbow-me/rainbow-common';
 import { get, last } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -30,6 +25,11 @@ import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import { walletInit } from './model/wallet';
 import Navigation from './navigation';
 import store from './redux/store';
+import { accountLoadState } from './redux/assets';
+import {
+  settingsInitializeState,
+  settingsUpdateAccountAddress,
+} from './redux/settings';
 import Routes from './screens/Routes';
 import { parseQueryParams } from './utils';
 

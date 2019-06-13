@@ -8,7 +8,6 @@ export { default as withActionSheetManager } from './withActionSheetManager';
 export { default as withAppState } from './withAppState';
 export { default as withBlurTransitionProps } from './withBlurTransitionProps';
 export { default as withDataInit } from './withDataInit';
-export { default as withFetchingPrices } from './withFetchingPrices';
 export { default as withHideSplashScreen } from './withHideSplashScreen';
 export { default as withImageDimensionsCache } from './withImageDimensionsCache';
 export { default as withIsWalletEmpty } from './withIsWalletEmpty';
@@ -22,6 +21,7 @@ export { default as withSafeAreaViewInsetValues } from './withSafeAreaViewInsetV
 export { default as withSendFeedback } from './withSendFeedback';
 export { default as withTransactionConfirmationScreen } from './withTransactionConfirmationScreen';
 export { default as withTransitionProps } from './withTransitionProps';
+export { default as withUniqueTokens } from './withUniqueTokens';
 export { default as withWalletConnectConfirmationModal } from './withWalletConnectConfirmationModal';
 export { default as withWalletConnectConnections } from './withWalletConnectConnections';
 export { default as withWalletConnectOnSessionRequest } from './withWalletConnectOnSessionRequest';

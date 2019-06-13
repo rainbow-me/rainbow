@@ -5,7 +5,7 @@ import {
   mapValues,
   values,
 } from 'lodash';
-import { sortList } from '@rainbow-me/rainbow-common';
+import { sortList } from '../helpers/sortList';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';

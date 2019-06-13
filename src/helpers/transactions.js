@@ -6,8 +6,8 @@ import {
   isYesterday,
 } from 'date-fns';
 import { get, groupBy, isEmpty } from 'lodash';
-import { supportedNativeCurrencies } from '@rainbow-me/rainbow-common';
 import { createSelector } from 'reselect';
+import supportedNativeCurrencies from '../references/native-currencies.json';
 import TransactionStatusTypes from './transactionStatusTypes';
 
 const accountAddressSelector = state => state.accountAddress;

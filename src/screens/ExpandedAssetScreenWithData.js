@@ -1,4 +1,3 @@
-import { withUniqueTokens } from '@rainbow-me/rainbow-common';
 import { get } from 'lodash';
 import {
   compose,
@@ -7,7 +6,11 @@ import {
   withProps,
 } from 'recompact';
 import { createSelector } from 'reselect';
-import { withAccountData, withNeverRerender } from '../hoc';
+import {
+  withAccountData,
+  withNeverRerender,
+  withUniqueTokens,
+} from '../hoc';
 import { deviceUtils } from '../utils';
 import ExpandedAssetScreen from './ExpandedAssetScreen';
 

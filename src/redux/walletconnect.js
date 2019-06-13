@@ -6,7 +6,11 @@ import {
   pickBy,
   values,
 } from 'lodash';
-import { commonStorage } from '@rainbow-me/rainbow-common';
+import {
+  getAllValidWalletConnectSessions,
+  saveWalletConnectSession,
+  removeWalletConnectSessions,
+} from '../handlers/commonStorage';
 import { Alert } from 'react-native';
 import lang from 'i18n-js';
 import WalletConnect from '@walletconnect/react-native';
@@ -106,7 +110,7 @@ export const walletConnectInitAllConnectors = () => async dispatch => {
   dispatch(walletConnectUpdateTimestamp());
   let walletConnectors = {};
   try {
-    const allSessions = await commonStorage.getAllValidWalletConnectSessions();
+    const allSessions = await getAllValidWalletConnectSessions();
 
     const nativeOptions = await getNativeOptions();
 
@@ -183,7 +187,7 @@ export const walletConnectApproveSession = (peerId, callback) => (dispatch, getS
   walletConnector.approveSession({ chainId, accounts: [accountAddress] });
 
   dispatch(removePendingRequest(peerId));
-  commonStorage.saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
+  saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
 
   const listeningWalletConnector = dispatch(listenOnNewMessages(walletConnector));
 
@@ -206,7 +210,7 @@ export const walletConnectDisconnectAllByDappName = dappName => async (dispatch,
   const matchingWalletConnectors = values(pickBy(walletConnectors, session => session.peerMeta.name === dappName));
   try {
     const peerIds = values(mapValues(matchingWalletConnectors, walletConnector => walletConnector.peerId));
-    await commonStorage.removeWalletConnectSessions(peerIds);
+    await removeWalletConnectSessions(peerIds);
     forEach(walletConnectors, walletConnector => walletConnector.killSession());
     dispatch({
       payload: omitBy(walletConnectors, (wc) => wc.peerMeta.name === dappName),
