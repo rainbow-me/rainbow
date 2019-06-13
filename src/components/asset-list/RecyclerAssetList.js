@@ -36,13 +36,13 @@ const Wrapper = styled.View`
   overflow: hidden;
 `;
 
-const NOOP = undefined;
+const NOOP = () => undefined;
 
 const layoutItemAnimator = {
-  animateDidMount: () => NOOP,
-  animateShift: () => NOOP,
-  animateWillMount: () => NOOP,
-  animateWillUnmount: () => NOOP,
+  animateDidMount: NOOP,
+  animateShift: NOOP,
+  animateWillMount: NOOP,
+  animateWillUnmount: NOOP,
   animateWillUpdate: () => LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut),
 };
 
