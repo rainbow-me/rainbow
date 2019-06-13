@@ -77,7 +77,7 @@ const getEthPriceUnit = (assets) => {
 
 export const sendModalInit = (options = {}) => (dispatch, getState) => {
   const { accountAddress, nativeCurrency } = getState().settings;
-  const { assets } = getState().assets;
+  const { assets } = getState().data;
   const { gasLimit } = getState().send;
   const ethPriceUnit = getEthPriceUnit(assets);
 
@@ -136,7 +136,7 @@ export const sendUpdateGasPrice = newGasPriceOption => (dispatch, getState) => {
     amount: assetAmount,
   })
     .then(gasLimit => {
-      const { assets } = getState().assets;
+      const { assets } = getState().data;
       const { nativeCurrency } = getState().settings;
       const ethPriceUnit = getEthPriceUnit(assets);
       gasPrices = parseGasPricesTxFee(gasPrices, ethPriceUnit, gasLimit, nativeCurrency);
@@ -248,7 +248,7 @@ export const sendUpdateRecipient = recipient => dispatch => {
 };
 
 export const sendUpdateAssetAmount = assetAmount => (dispatch, getState) => {
-  const { assets } = getState().assets;
+  const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
   const { gasPrice, selected } = getState().send;
   const _assetAmount = assetAmount.replace(/[^0-9.]/g, '');
@@ -275,7 +275,7 @@ export const sendUpdateAssetAmount = assetAmount => (dispatch, getState) => {
 };
 
 export const sendUpdateNativeAmount = nativeAmount => (dispatch, getState) => {
-  const { assets } = getState().assets;
+  const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
   const { gasPrice, selected } = getState().send;
   const _nativeAmount = nativeAmount.replace(/[^0-9.]/g, '');
@@ -326,7 +326,7 @@ export const sendUpdateSelected = (value) => (dispatch, getState) => {
 
 export const sendMaxBalance = () => (dispatch, getState) => {
   const { selected, gasPrice } = getState().send;
-  const { assets } = getState().assets;
+  const { assets } = getState().data;
   const balanceAmount = getBalanceAmount(assets, gasPrice, selected);
 
   dispatch(sendUpdateGasPrice());

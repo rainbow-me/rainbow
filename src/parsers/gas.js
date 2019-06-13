@@ -1,7 +1,14 @@
 import nativeCurrencies from '../references/native-currencies.json';
 import timeUnits from '../references/time-units.json';
+import ethUnits from '../references/ethereum-units.json';
 import { getTimeString } from '../helpers/time';
-import { divide, multiply } from '../helpers/utilities';
+import {
+  convertAmountToBalanceDisplay,
+  convertAmountToNativeAmount,
+  convertAmountToNativeDisplay,
+  divide,
+  multiply,
+} from '../helpers/utilities';
 
 /**
  * @desc parse ether gas prices
@@ -85,7 +92,6 @@ const getTxFee = (gasPrice, gasLimit) => {
   return {
     value: {
       amount,
-      // TODO utilities
       display: convertAmountToBalanceDisplay(
         amount,
         {
@@ -100,18 +106,14 @@ const getTxFee = (gasPrice, gasLimit) => {
 
 const convertGasPricesToNative = (priceUnit, gasPrices, nativeCurrency) => {
   const nativeGases = { ...gasPrices };
-  // TODO if prices is empty, still runs thru the logic below and just sets it to 0
-  if (prices) {
-    nativeGases.fast.txFee.native = getNativeGasPrice(priceUnit, gasPrices.fast.txFee.value.amount, nativeCurrency);
-    nativeGases.average.txFee.native = getNativeGasPrice(priceUnit, gasPrices.average.txFee.value.amount, nativeCurrency);
-    nativeGases.slow.txFee.native = getNativeGasPrice(priceUnit, gasPrices.slow.txFee.value.amount, nativeCurrency);
-  }
+  nativeGases.fast.txFee.native = getNativeGasPrice(priceUnit, gasPrices.fast.txFee.value.amount, nativeCurrency);
+  nativeGases.average.txFee.native = getNativeGasPrice(priceUnit, gasPrices.average.txFee.value.amount, nativeCurrency);
+  nativeGases.slow.txFee.native = getNativeGasPrice(priceUnit, gasPrices.slow.txFee.value.amount, nativeCurrency);
   return nativeGases;
 };
 
 const getNativeGasPrice = (priceUnit, feeAmount, nativeCurrency) => {
   const selected = nativeCurrencies[nativeCurrency];
-  // TODO utilities
   const { amount } = convertAmountToNativeAmount(
     feeAmount,
     priceUnit,
@@ -120,7 +122,6 @@ const getNativeGasPrice = (priceUnit, feeAmount, nativeCurrency) => {
     selected,
     value: {
       amount,
-      // TODO utilities
       display: convertAmountToNativeDisplay(
         amount,
         nativeCurrency,

@@ -143,8 +143,7 @@ const getTransactionDisplayDetails = (transaction, assets, nativeCurrency, times
 export const addTransactionToApprove = (clientId, peerId, requestId, payload, peerMeta) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
   const { accountAddress, network, nativeCurrency } = getState().settings;
-  // TODO  assets
-  const { assets } = getState().assets;
+  const { assets } = getState().data;
   const transactionDisplayDetails = getRequestDisplayDetails(payload, assets, nativeCurrency);
   const dappName = peerMeta.name;
   const imageUrl = get(peerMeta, 'icons[0]');

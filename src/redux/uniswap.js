@@ -43,7 +43,7 @@ export const uniswapClearState = () => (dispatch, getState) => {
 export const uniswapUpdateState = () => (dispatch, getState) => {
   return new Promise((resolve, reject) => {
     const { accountAddress, network } = getState().settings;
-    const { assets } = getState().assets;
+    const { assets } = getState().data;
 
     const liquidityTokens = filter(assets, ({ symbol }) => symbol === 'UNI-V1');
     const exchangeContracts = map(liquidityTokens, x => x.address);
