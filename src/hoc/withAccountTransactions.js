@@ -6,11 +6,7 @@ const transactionsSelector = state => state.transactions;
 
 const mapStateToProps = ({
   data: { transactions },
-  transactions: {
-    hasPendingTransaction,
-  },
 }) => ({
-  hasPendingTransaction,
   transactions,
 });
 

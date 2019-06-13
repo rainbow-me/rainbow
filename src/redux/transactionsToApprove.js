@@ -10,7 +10,6 @@ import {
 import {
   convertAmountAndPriceToNativeDisplay,
   convertHexToString,
-  formatInputDecimals,
   fromWei,
 } from '../helpers/utilities';
 import smartContractMethods from '../references/smartcontract-methods.json';

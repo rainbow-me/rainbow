@@ -57,7 +57,6 @@ export default compose(
     };
   }),
   onlyUpdateForKeys([
-    'hasPendingTransaction',
     'nativeCurrency',
     'pendingTransactionsCount',
     'sections',

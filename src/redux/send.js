@@ -2,12 +2,15 @@ import { find, get, isEmpty } from 'lodash';
 import { apiGetGasPrices } from '../handlers/api';
 import lang from '../languages';
 import ethUnits from '../references/ethereum-units.json';
+import { dataAddNewTransaction } from './data';
+import { ethereumUtils } from '../utils';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
   convertNumberToString,
   convertStringToNumber,
   formatInputDecimals,
+  fromWei,
   greaterThan,
   subtract,
 } from '../helpers/utilities';
@@ -19,10 +22,6 @@ import {
   createSignableTransaction,
   estimateGasLimit,
 } from '../handlers/web3';
-import {
-  transactionsAddNewTransaction,
-  transactionsUpdateHasPendingTransaction,
-} from './transactions';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -46,8 +45,6 @@ const SEND_UPDATE_RECIPIENT = 'send/SEND_UPDATE_RECIPIENT';
 const SEND_UPDATE_ASSET_AMOUNT = 'send/SEND_UPDATE_ASSET_AMOUNT';
 const SEND_UPDATE_SELECTED = 'send/SEND_UPDATE_SELECTED';
 const SEND_UPDATE_NFT_SELECTED = 'send/SEND_UPDATE_NFT_SELECTED';
-const SEND_UPDATE_HAS_PENDING_TRANSACTION =
-  'send/SEND_UPDATE_HAS_PENDING_TRANSACTION';
 
 const SEND_CLEAR_FIELDS = 'send/SEND_CLEAR_FIELDS';
 
@@ -55,9 +52,9 @@ function getBalanceAmount(assets, gasPrice, selected) {
   let amount = '';
 
   if (selected.address === 'eth') {
-    const ethereum = assets.filter(asset => asset.contract === 'eth');
-    const balanceAmount = get(ethereum, '[0].balance.amount', 0);
-    const txFeeAmount = gasPrice.txFee.value.amount;
+    const balanceAmount = get(selected, 'balance.amount', 0);
+    const txFeeRaw = get(gasPrice, 'txFee.value.amount');
+    const txFeeAmount = fromWei(txFeeRaw);
     const remaining = convertStringToNumber(
       subtract(balanceAmount, txFeeAmount),
     );
@@ -82,7 +79,7 @@ export const sendModalInit = (options = {}) => (dispatch, getState) => {
   const ethPriceUnit = getEthPriceUnit(assets);
 
   const fallbackGasPrices = parseGasPrices(null, ethPriceUnit, gasLimit, nativeCurrency, options.gasFormat === 'short');
-  const selected = assets.filter(asset => asset.symbol === options.defaultAsset)[0] || {};
+  const selected = assets.filter(asset => asset.address === options.defaultAsset)[0] || {};
 
   dispatch({
     type: SEND_GET_GAS_PRICES_REQUEST,
@@ -121,7 +118,6 @@ export const sendUpdateGasPrice = newGasPriceOption => (dispatch, getState) => {
     gasPriceOption,
     fetchingGasPrices,
   } = getState().send;
-
   if (isEmpty(selected)) return;
   if (fetchingGasPrices) return;
   let gasPrices = getState().send.gasPrices;
@@ -138,14 +134,14 @@ export const sendUpdateGasPrice = newGasPriceOption => (dispatch, getState) => {
     .then(gasLimit => {
       const { assets } = getState().data;
       const { nativeCurrency } = getState().settings;
-      const ethPriceUnit = getEthPriceUnit(assets);
+      const ethPriceUnit = getEthPriceUnit(assets); // TODO what if no ETH or if we filtered out ETH
       gasPrices = parseGasPricesTxFee(gasPrices, ethPriceUnit, gasLimit, nativeCurrency);
       _gasPrice = gasPriceOption ? gasPrices[_gasPriceOption] : gasPrice;
 
-      const ethereum = assets.filter(asset => asset.symbol === 'ETH');
+      const ethereum = ethereumUtils.getEth(assets);
 
-      const balanceAmount = get(ethereum, '[0].balance.amount', 0);
-      const txFeeAmount = _gasPrice.txFee.value.amount;
+      const balanceAmount = get(ethereum, 'balance.amount', 0);
+      const txFeeAmount = fromWei(_gasPrice.txFee.value.amount);
 
       dispatch({
         type: SEND_UPDATE_GAS_PRICE_SUCCESS,
@@ -206,7 +202,7 @@ export const sendTransaction = (transactionDetails, signAndSendTransactionCb) =>
       .then((txHash) => {
         if (!isEmpty(txHash)) {
           txDetails.hash = txHash;
-          dispatch(transactionsAddNewTransaction(txDetails))
+          dispatch(dataAddNewTransaction(txDetails))
             .then(success => {
               dispatch({
                 type: SEND_TRANSACTION_SUCCESS,
@@ -255,7 +251,7 @@ export const sendUpdateAssetAmount = assetAmount => (dispatch, getState) => {
   let _nativeAmount = '';
   if (_assetAmount.length) {
     const priceUnit = get(selected, 'price.value', 0);
-    const nativeAmount = convertAmountAndPriceToNativeDisplay(
+    const { amount: nativeAmount } = convertAmountAndPriceToNativeDisplay(
       _assetAmount,
       priceUnit,
       nativeCurrency,
@@ -314,9 +310,9 @@ export const sendUpdateSelected = (value) => (dispatch, getState) => {
   } else {
     const state = getState();
     const assetAmount = get(state, 'send.assetAmount', 0);
-    const assets = get(state, 'assets.assets', []);
+    const assets = get(state, 'data.assets', []);
     const nativeCurrency = get(state, 'settings.nativeCurrency', '');
-    const selected = assets.filter(asset => asset.symbol === value)[0] || {};
+    const selected = assets.filter(asset => asset.address === value)[0] || {};
 
     dispatch({ type: SEND_UPDATE_SELECTED, payload: selected });
     dispatch(sendUpdateGasPrice());
@@ -419,8 +415,6 @@ export default (state = INITIAL_STATE, action) => {
         txHash: '',
         confirm: false,
       };
-    case SEND_UPDATE_HAS_PENDING_TRANSACTION:
-      return { ...state, hasPendingTransaction: action.payload };
     case SEND_TOGGLE_CONFIRMATION_VIEW:
       return {
         ...state,

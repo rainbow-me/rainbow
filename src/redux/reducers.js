@@ -9,7 +9,6 @@ import navigation from './navigation';
 import nonce from './nonce';
 import send from './send';
 import settings from './settings';
-import transactions from './transactions';
 import transactionsToApprove from './transactionsToApprove';
 import walletconnect from './walletconnect';
 
@@ -23,7 +22,6 @@ export default combineReducers({
   nonce,
   send,
   settings,
-  transactions,
   transactionsToApprove,
   walletconnect,
 });

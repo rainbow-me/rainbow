@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { transactionsAddNewTransaction } from '../redux/transactions';
+import { dataAddNewTransaction } from '../redux/data';
 import { removeTransaction } from '../redux/transactionsToApprove';
 import { updateTransactionCountNonce } from '../redux/nonce';
 import { walletConnectSendStatus } from '../redux/walletconnect';
@@ -11,8 +11,8 @@ const mapStateToProps = ({
 });
 
 export default Component => connect(mapStateToProps, {
+  dataAddNewTransaction,
   removeTransaction,
-  transactionsAddNewTransaction,
   updateTransactionCountNonce,
   walletConnectSendStatus,
 })(Component);

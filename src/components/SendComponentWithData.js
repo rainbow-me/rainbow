@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { compose } from 'recompact';
 import { get } from 'lodash';
 import lang from '../languages';
-import { withUniqueTokens } from '../hoc';
+import { withAccountData, withUniqueTokens } from '../hoc';
 import {
   sendModalInit,
   sendUpdateGasPrice,
@@ -19,7 +19,7 @@ import {
 } from '../redux/send';
 import { isValidAddress } from '../helpers/validators';
 import { greaterThan } from '../helpers/utilities';
-import { transactionData } from '../utils';
+import { ethereumUtils } from '../utils';
 
 const mapStateToProps = ({ send, settings }) => ({
   address: settings.accountAddress,
@@ -100,7 +100,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
     }
 
     async componentDidUpdate(prevProps) {
-      const { assetAmount, recipient, selected, sendUpdateGasPrice } = this.props;
+      const { assetAmount, recipient, selected } = this.props;
 
       if (recipient !== prevProps.recipient) {
         const validAddress = await isValidAddress(recipient);
@@ -111,7 +111,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
         if ((selected.symbol !== prevProps.selected.symbol) ||
            (recipient !== prevProps.recipient) ||
            (assetAmount !== prevProps.assetAmount)) {
-          sendUpdateGasPrice();
+          this.props.sendUpdateGasPrice();
         }
       }
     }
@@ -151,12 +151,13 @@ export const withSendComponentWithData = (SendComponent, options) => {
 
       // Balance checks
       if (!this.props.confirm) {
+        const { assets, assetAmount, gasPrice } = this.props;
         const isAddressValid = await isValidAddress(this.props.recipient);
         if (!isAddressValid) {
           console.log(lang.t('notification.error.invalid_address'));
           return;
-        } else if (this.props.selected.symbol === 'ETH') {
-          const { requestedAmount, balance, amountWithFees } = transactionData(
+        } else if (this.props.selected.address === 'eth') {
+          const { requestedAmount, balance, amountWithFees } = ethereumUtils.transactionData(
             this.props.assets,
             this.props.assetAmount,
             this.props.gasPrice,
@@ -168,7 +169,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
             return;
           }
         } else if (!this.props.selected.isNft) {
-          const { requestedAmount, balance, txFee } = transactionData(
+          const { requestedAmount, balance, txFee } = ethereumUtils.transactionData(
             this.props.assets,
             this.props.assetAmount,
             this.props.gasPrice,
@@ -269,6 +270,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
       sendMaxBalance,
       sendToggleConfirmationView,
     }),
+    withAccountData,
     withUniqueTokens,
   )(SendComponentWithData);
 };

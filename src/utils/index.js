@@ -9,5 +9,4 @@ export { default as isNewValueForPath } from './isNewValueForPath';
 export { default as parseQueryParams } from './parseQueryParams';
 export { default as reduceStylesArrayToObject } from './reduceStylesArrayToObject';
 export { default as safeAreaInsetValues } from './safeAreaInsetValues';
-export { default as transactionData } from './transactionData';
 export { default as statusBar } from './statusBar';

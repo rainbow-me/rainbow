@@ -3,9 +3,8 @@ import timeUnits from '../references/time-units.json';
 import ethUnits from '../references/ethereum-units.json';
 import { getTimeString } from '../helpers/time';
 import {
-  convertAmountToBalanceDisplay,
-  convertAmountToNativeAmount,
-  convertAmountToNativeDisplay,
+  convertRawAmountToBalance,
+  convertRawAmountToNativeDisplay,
   divide,
   multiply,
 } from '../helpers/utilities';
@@ -80,7 +79,7 @@ const defaultGasPriceFormat = (option, timeAmount, valueAmount, valueDisplay, sh
  * @param {Object} prices
  * @param {Number} gasLimit
  */
-const parseGasPricesTxFee = (gasPrices, priceUnit, gasLimit, nativeCurrency) => {
+export const parseGasPricesTxFee = (gasPrices, priceUnit, gasLimit, nativeCurrency) => {
   gasPrices.fast.txFee = getTxFee(gasPrices.fast.value.amount, gasLimit);
   gasPrices.average.txFee = getTxFee(gasPrices.average.value.amount, gasLimit);
   gasPrices.slow.txFee = getTxFee(gasPrices.slow.value.amount, gasLimit);
@@ -92,7 +91,7 @@ const getTxFee = (gasPrice, gasLimit) => {
   return {
     value: {
       amount,
-      display: convertAmountToBalanceDisplay(
+      display: convertRawAmountToBalance(
         amount,
         {
           symbol: 'ETH',
@@ -114,19 +113,14 @@ const convertGasPricesToNative = (priceUnit, gasPrices, nativeCurrency) => {
 
 const getNativeGasPrice = (priceUnit, feeAmount, nativeCurrency) => {
   const selected = nativeCurrencies[nativeCurrency];
-  const { amount } = convertAmountToNativeAmount(
+  const nativeDisplay = convertRawAmountToNativeDisplay(
     feeAmount,
+    18,
     priceUnit,
+    nativeCurrency,
   );
   return {
-    selected,
-    value: {
-      amount,
-      display: convertAmountToNativeDisplay(
-        amount,
-        nativeCurrency,
-        2,
-      ),
-    },
+    selected, // TODO is this needed?
+    value: nativeDisplay,
   };
 };

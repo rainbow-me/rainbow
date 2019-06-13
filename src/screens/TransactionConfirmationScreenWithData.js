@@ -13,11 +13,11 @@ import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
 class TransactionConfirmationScreenWithData extends PureComponent {
   static propTypes = {
+    dataAddNewTransaction: PropTypes.func,
     isFocused: PropTypes.bool.isRequired,
     navigation: PropTypes.any,
     removeTransaction: PropTypes.func,
     transactionCountNonce: PropTypes.number,
-    transactionsAddNewTransaction: PropTypes.func,
     updateTransactionCountNonce: PropTypes.func,
     walletConnectSendStatus: PropTypes.func,
   }
@@ -75,7 +75,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
         to: get(transactionDetails, 'transactionDisplayDetails.payload.to'),
         value: get(transactionDetails, 'transactionDisplayDetails.payload.value'),
       };
-      this.props.transactionsAddNewTransaction(txDetails);
+      this.props.dataAddNewTransaction(txDetails);
       this.props.removeTransaction(transactionDetails.requestId);
       await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, transactionHash);
       this.closeScreen();

@@ -19,6 +19,7 @@ import {
 } from '../handlers/commonStorage';
 import io from 'socket.io-client';
 import { parseAccountAssets } from '../parsers/accounts';
+import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
 
 // -- Constants --------------------------------------- //
@@ -33,6 +34,10 @@ const DATA_LOAD_ASSETS_FAILURE = 'data/DATA_LOAD_ASSETS_FAILURE';
 const DATA_LOAD_TRANSACTIONS_REQUEST = 'data/DATA_LOAD_TRANSACTIONS_REQUEST';
 const DATA_LOAD_TRANSACTIONS_SUCCESS = 'data/DATA_LOAD_TRANSACTIONS_SUCCESS';
 const DATA_LOAD_TRANSACTIONS_FAILURE = 'data/DATA_LOAD_TRANSACTIONS_FAILURE';
+
+const DATA_ADD_NEW_TRANSACTION_REQUEST = 'data/DATA_ADD_NEW_TRANSACTION_REQUEST';
+const DATA_ADD_NEW_TRANSACTION_SUCCESS = 'data/DATA_ADD_NEW_TRANSACTION_SUCCESS';
+const DATA_ADD_NEW_TRANSACTION_FAILURE = 'data/DATA_ADD_NEW_TRANSACTION_FAILURE';
 
 const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
 
@@ -238,6 +243,26 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
   });
 };
 
+export const dataAddNewTransaction = txDetails => (dispatch, getState) => new Promise((resolve, reject) => {
+  dispatch({ type: TRANSACTIONS_ADD_NEW_TRANSACTION_REQUEST });
+  const { transactions } = getState().transactions;
+  const { accountAddress, nativeCurrency, network } = getState().settings;
+  parseNewTransaction(txDetails, nativeCurrency)
+    .then(parsedTransaction => {
+      let _transactions = [parsedTransaction, ...transactions];
+      saveLocalTransactions(accountAddress, _transactions, network);
+      dispatch({
+        type: TRANSACTIONS_ADD_NEW_TRANSACTION_SUCCESS,
+        payload: _transactions,
+      });
+      resolve(true);
+    })
+    .catch(error => {
+      dispatch({ type: TRANSACTIONS_ADD_NEW_TRANSACTION_FAILURE });
+      reject(false);
+    });
+});
+
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   assets: [],
@@ -283,6 +308,11 @@ export default (state = INITIAL_STATE, action) => {
     return {
       ...state,
       loadingAssets: false
+    };
+  case DATA_ADD_NEW_TRANSACTION_SUCCESS:
+    return {
+      ...state,
+      transactions: action.payload,
     };
   case DATA_CLEAR_STATE:
     return {

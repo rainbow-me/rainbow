@@ -8,7 +8,6 @@ import { convertRawAmountToBalance } from '../helpers/utilities';
 export const parseAccountAssets = data => {
   try {
     let assets = [...data];
-    console.log('assets', assets);
     assets = assets.map(assetData => {
       const name =
         assetData.asset.name || 'Unknown Token';

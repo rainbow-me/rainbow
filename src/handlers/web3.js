@@ -171,7 +171,7 @@ export const getTransferTokenTransaction = async (transaction) => {
  * @return {Promise}
  */
 export const createSignableTransaction = async (transaction) => {
-  if (get(transaction, 'asset.symbol') === 'ETH') {
+  if (get(transaction, 'asset.address') === 'eth') {
     return await getTxDetails(transaction);
   }
   const isNft = get(transaction, 'asset.isNft', false);

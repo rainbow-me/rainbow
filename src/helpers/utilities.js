@@ -9,6 +9,17 @@ export const fromWei = (number, decimals = 18) => {
 };
 
 /**
+ * @desc subtracts two numbers
+ * @param  {Number}   numberOne
+ * @param  {Number}   numberTwo
+ * @return {String}
+ */
+export const subtract = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`)
+    .minus(BigNumber(`${numberTwo}`))
+    .toString();
+
+/**
  * @desc convert amount to raw amount
  * @param  {String}   value
  * @param  {Number}   decimals
@@ -80,6 +91,13 @@ export const floorDivide = (numberOne, numberTwo) =>
     .dividedToIntegerBy(BigNumber(`${numberTwo}`))
     .toString();
 
+/**
+ * @desc count value's number of decimals places
+ * @param  {String}   value
+ * @return {String}
+ */
+export const countDecimalPlaces = value => BigNumber(`${value}`).dp();
+
 
 /**
  * @desc format inputOne value to signficant decimals given inputTwo
@@ -87,6 +105,7 @@ export const floorDivide = (numberOne, numberTwo) =>
  * @param  {String}   inputTwo
  * @return {String}
  */
+// TODO revisit logic, at least rename so it is not native amount dp
 export const formatInputDecimals = (inputOne, inputTwo) => {
   const _nativeAmountDecimalPlaces = countDecimalPlaces(inputTwo);
   const decimals =
