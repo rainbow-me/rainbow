@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withNavigation } from 'react-navigation';
+import { DrawerActions, withNavigation } from 'react-navigation';
 import { compose, pure, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, margin } from '../styles';
@@ -82,7 +82,7 @@ export default compose(
   pure,
   withNavigation,
   withHandlers({
-    onPressAddFunds: ({ navigation }) => () => navigation.navigate('ReceiveModal'),
+    onPressAddFunds: ({ navigation }) => () => navigation.dispatch(DrawerActions.openDrawer()),
     onPressImportWallet: ({ navigation }) => () => navigation.navigate('ImportSeedPhraseSheet'),
   }),
 )(AddFundsInterstitial);

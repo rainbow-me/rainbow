@@ -8098,6 +8098,11 @@ react-native-tab-view@^1.2.0, react-native-tab-view@^1.4.1:
   dependencies:
     prop-types "^15.6.1"
 
+react-native-tab-view@^2.3.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-2.6.0.tgz#1de6e8f4e221f21059df1b545a041e42d06dbcf0"
+  integrity sha512-cpdBMGtyk5Wt4k5eHiH7gFLU0khF9gu2mKwZoWLLio4vYQPY1+mk3GYxs0fnEwH94NiXBvnbWAKlHTiWg+j2Yw==
+
 react-native-tcp@^3.2.1:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/react-native-tcp/-/react-native-tcp-3.3.0.tgz#8eea75b7b2c2c6db4b91f38f171fba3b2a1b60ee"
@@ -8192,9 +8197,20 @@ react-navigation-drawer@~1.2.1:
   dependencies:
     react-native-tab-view "^1.2.0"
 
+<<<<<<< HEAD
 react-navigation-stack@~1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-1.4.0.tgz#69cdb029ea4ee5877d7e933b3117dc90bc841eb2"
+=======
+react-navigation-drawer@^2.0.0-alpha.3:
+  version "2.0.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/react-navigation-drawer/-/react-navigation-drawer-2.0.0-alpha.3.tgz#1132b9fe789eb56fda8dd257b1481feb9e59ae6e"
+  integrity sha512-cA5Pj1uhvRMc76tRR4Sv56gTMwSaVkJM8V0VBgeroC30wtndEWqpMKehHvyt7p2hYrU/rwqFsrlK1OLt3FXZ6w==
+
+react-navigation-stack@1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-1.3.0.tgz#34bbddb068c094c9ab843e36059b9fd92b728250"
+>>>>>>> 0d42b01... Fix opening distance
 
 react-navigation-tabs@~1.1.4:
   version "1.1.4"
@@ -8205,9 +8221,24 @@ react-navigation-tabs@~1.1.4:
     react-lifecycles-compat "^3.0.4"
     react-native-tab-view "^1.4.1"
 
+<<<<<<< HEAD
 react-navigation@^3.11.0:
   version "3.11.0"
   resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-3.11.0.tgz#2c82217c452d07d8b9b0929bc7e77e2bcfaf9388"
+=======
+react-navigation-tabs@^2.1.3:
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/react-navigation-tabs/-/react-navigation-tabs-2.1.3.tgz#fa91f44d824086fb528840e0e5764bea779f0810"
+  integrity sha512-Fh/aSek8LP/CpLSQEYwphrTHVOLiu64MTCDjm3xBMJYa/D4u6IXL3qirYRnR/tKBTqAMJ6csamwU23ZfyqhCSQ==
+  dependencies:
+    hoist-non-react-statics "^3.3.0"
+    react-lifecycles-compat "^3.0.4"
+    react-native-tab-view "^2.3.0"
+
+react-navigation@^3.8.1:
+  version "3.9.1"
+  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-3.9.1.tgz#2b2545f5c11905b534d96996c658d0691bc5f11f"
+>>>>>>> 0d42b01... Fix opening distance
   dependencies:
     "@react-navigation/core" "~3.4.1"
     "@react-navigation/native" "~3.5.0"
