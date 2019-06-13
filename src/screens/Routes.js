@@ -20,6 +20,7 @@ import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
+import QRScannerScreenWithData from './QRScannerScreenWithData';
 
 export const tab = React.createRef();
 export const tabActiveOffsetX = [-20, 20];
@@ -51,7 +52,10 @@ const SwipeStack = createMaterialTopTabNavigator({
     screen: WalletScreen,
   },
   // eslint-disable-next-line sort-keys
-
+  QRScannerScreen: {
+    name: 'QRScannerScreen',
+    screen: QRScannerScreenWithData,
+  },
 }, {
   gestureHandlerProps: {
     activeOffsetX: tabActiveOffsetX,
