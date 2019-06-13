@@ -1,8 +1,7 @@
 import { get, has } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { RefreshControl, ScrollView } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { RefreshControl, LayoutAnimation } from 'react-native';
 import { pure } from 'recompact';
 import {
   DataProvider,
@@ -20,9 +19,7 @@ import { colors } from '../../styles';
 import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
 import { CoinRow, CollectiblesSendRow } from '../coin-row';
 import { ListFooter } from '../list';
-import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
-import { TokenFamilyWrap } from '../token-family';
 import { withOpenFamilyTabs } from '../../hoc';
 
 export const ViewTypes = {
@@ -38,6 +35,17 @@ const Wrapper = styled.View`
   flex: 1;
   overflow: hidden;
 `;
+
+const NOOP = undefined;
+
+const layoutItemAnimator = {
+  animateDidMount: () => NOOP,
+  animateShift: () => NOOP,
+  animateWillMount: () => NOOP,
+  animateWillUnmount: () => NOOP,
+  animateWillUpdate: () => LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut),
+};
+
 
 // eslint-disable-next-line react/prop-types
 const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
@@ -74,6 +82,7 @@ class RecyclerAssetList extends PureComponent {
   static propTypes = {
     fetchData: PropTypes.func,
     hideHeader: PropTypes.bool,
+    openFamilyTabs: PropTypes.array,
     paddingBottom: PropTypes.number,
     renderAheadOffset: PropTypes.number,
     scrollingVelocity: PropTypes.number,
@@ -132,11 +141,10 @@ class RecyclerAssetList extends PureComponent {
         if (areCollectiblesLoaded) {
           const idx = areBalancesLoaded ? 1 : 0;
           if (index > headersIndices[idx]) {
-            if (openFamilyTabs[index - headersIndices[idx] -1]) {
-              return {get: ViewTypes.UNIQUE_TOKEN_ROW, size: 2};
-            } else {
-              return ViewTypes.UNIQUE_TOKEN_ROW_CLOSED;
+            if (openFamilyTabs[index - headersIndices[idx] - 1]) {
+              return { get: ViewTypes.UNIQUE_TOKEN_ROW, size: 1 };
             }
+            return ViewTypes.UNIQUE_TOKEN_ROW_CLOSED;
           }
         }
         return ViewTypes.COIN_ROW;
@@ -163,8 +171,8 @@ class RecyclerAssetList extends PureComponent {
 
         if (type.get === ViewTypes.UNIQUE_TOKEN_ROW) {
           dim.height = type.size * 162 + 54;
-        } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_CLOSED) { 
-          dim.height =  54;          
+        } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_CLOSED) {
+          dim.height = 54;
         } else if (type === ViewTypes.COIN_ROW_LAST) {
           dim.height = this.state.areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height;
         } else if (type === ViewTypes.COIN_ROW) {
@@ -280,6 +288,7 @@ class RecyclerAssetList extends PureComponent {
             dataProvider={dataProvider}
             extendedState={{ headersIndices }}
             renderAheadOffset={renderAheadOffset}
+            itemAnimator={layoutItemAnimator}
             rowRenderer={this.rowRenderer}
             onScroll={event => {
               this.position = event.nativeEvent.contentOffset.y;
