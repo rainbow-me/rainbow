@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Clipboard, Share, Animated } from 'react-native';
+import { Clipboard, Share } from 'react-native';
+import Animated from 'react-native-reanimated';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {
   compose,
@@ -58,6 +59,26 @@ const DescriptionText = styled(Text)`
   color: ${colors.white};
 `;
 
+
+/**
+ * There's need to block tab interaction if drawer is open.
+ * We managed to do that by overriding activeOffsetProperty for extremely
+ * large and then forcing update of gesture handler beneath.
+ */
+const HandleTabUpdate = ({ tab, drawerOpenProgress }) => (
+  <Animated.Code exec={Animated.onChange(Animated.lessOrEq(drawerOpenProgress, 0.01), Animated.call([drawerOpenProgress], ([p]) => {
+    tab.tabActiveOffsetX[0] = p <= 0.01 ? -20 : -10000
+    tab.tabActiveOffsetX[1] = p <= 0.01 ? 20 : 10000
+    tab.tabRef.current.forceUpdate()
+  }))}/>
+)
+
+HandleTabUpdate.propTypes = {
+  drawerOpenProgress: PropTypes.object,
+  tab: PropTypes.object,
+}
+
+
 const ReceiveScreen = ({
   accountAddress,
   drawerOpenProgress,
@@ -65,6 +86,7 @@ const ReceiveScreen = ({
   onCloseModal,
   onPressCopyAddress,
   onPressShareAddress,
+  tab,
 }) => (
   <Column height='100%' >
     <Content>
@@ -72,6 +94,7 @@ const ReceiveScreen = ({
         Send Ether, ERC-20 tokens, or<Br />
         collectibles to your wallet:
       </DescriptionText>
+      <HandleTabUpdate drawerOpenProgress={drawerOpenProgress} tab={tab} />
       <FloatingPanel style={{ padding: 10, paddingBottom: 10, width: null }}>
         <QRCodeDisplay
           size={QRCodeSize}
@@ -89,15 +112,15 @@ const ReceiveScreen = ({
     </Content>
     <Animated.View style={{
       transform: [{
-        translateY: drawerOpenProgress.interpolate({
+        translateY: Animated.interpolate(drawerOpenProgress, ({
           inputRange: [0, 0.9, 1],
           outputRange: [100, 100, 0],
-        }),
+        })),
       }, {
-        translateX: drawerOpenProgress.interpolate({
+        translateX: Animated.interpolate(drawerOpenProgress, ({
           inputRange: [0, 1],
           outputRange: [deviceUtils.dimensions.width, 0],
-        }),
+        })),
       }],
     }}
     >
@@ -155,7 +178,7 @@ export default compose(
   onlyUpdateForKeys(['accountAddress', 'emojiCount']),
   lifecycle({
     componentDidMount() {
-      const { drawerOpenProgress, navigation } = this.props;
+      const { navigation, drawerOpenProgress } = this.props;
       navigation.setParams({ drawerOpenProgress });
     },
   }),

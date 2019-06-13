@@ -1,9 +1,11 @@
+import React from 'react';
 import {
   createAppContainer,
-  createMaterialTopTabNavigator,
   createStackNavigator,
-  createDrawerNavigator,
 } from 'react-navigation';
+import { hoistStatics } from 'recompact';
+import { createDrawerNavigator } from 'react-navigation-drawer';
+import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import Navigation from '../navigation';
 import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import { updateTransitionProps } from '../redux/navigation';
@@ -12,7 +14,6 @@ import { deviceUtils } from '../utils';
 import ExpandedAssetScreen from './ExpandedAssetScreen';
 import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from './ProfileScreenWithData';
-import QRScannerScreenWithData from './QRScannerScreenWithData';
 import ReceiveModal from './ReceiveModal';
 // import ExamplePage from './ExamplePage';
 import SendSheetWithData from './SendSheetWithData';
@@ -20,34 +21,44 @@ import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
 
+export const tab = React.createRef();
+export const tabActiveOffsetX = [-20, 20];
+
 const onTransitionEnd = () => store.dispatch(updateTransitionProps({ isTransitioning: false }));
 const onTransitionStart = () => store.dispatch(updateTransitionProps({ isTransitioning: true }));
-
+const swipeToReceive = createDrawerNavigator({
+  ProfileScreenWithData: {
+    screen: ProfileScreenWithData,
+  },
+}, {
+  contentComponent: hoistStatics(props => (<ReceiveModal {...props} tab={{ tabActiveOffsetX, tabRef: tab }} />)),
+  drawerBackgroundColor: 'transparent',
+  drawerWidth: deviceUtils.dimensions.width,
+  edgeWidth: deviceUtils.dimensions.width,
+  gestureHandlerProps: {
+    id: 'drawer-view',
+    simultaneousHandlers: 'tab-view',
+  },
+  overlayColor: 'black',
+});
 const SwipeStack = createMaterialTopTabNavigator({
   ProfileScreen: {
     name: 'ProfileScreen',
-    // A bit hacky, but it does exactly what's expected
-    screen: createDrawerNavigator({
-      ProfileScreenWithData: {
-        screen: ProfileScreenWithData,
-      },
-    }, {
-      contentComponent: ReceiveModal,
-      drawerBackgroundColor: 'transparent',
-      drawerWidth: deviceUtils.dimensions.width,
-      overlayColor: 'black',
-    }),
+    screen: swipeToReceive,
   },
   WalletScreen: {
     name: 'WalletScreen',
     screen: WalletScreen,
   },
   // eslint-disable-next-line sort-keys
-  QRScannerScreen: {
-    name: 'QRScannerScreen',
-    screen: QRScannerScreenWithData,
-  },
+
 }, {
+  gestureHandlerProps: {
+    activeOffsetX: tabActiveOffsetX,
+    id: 'tab-view',
+    ref: tab,
+    simultaneousHandlers: 'drawer-view',
+  },
   headerMode: 'none',
   initialRouteName: 'WalletScreen',
   mode: 'modal',

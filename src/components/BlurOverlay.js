@@ -1,7 +1,8 @@
 import { VibrancyView } from '@react-native-community/blur';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { pure } from 'recompact';
 import { position } from '../styles';
 
