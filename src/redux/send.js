@@ -257,17 +257,16 @@ export const sendUpdateAssetAmount = assetAmount => (dispatch, getState) => {
       nativeCurrency,
     );
     _nativeAmount = formatInputDecimals(nativeAmount, _assetAmount);
+    const balanceAmount = getBalanceAmount(assets, gasPrice, selected);
+    dispatch({
+      type: SEND_UPDATE_ASSET_AMOUNT,
+      payload: {
+        assetAmount: _assetAmount,
+        nativeAmount: _nativeAmount,
+        isSufficientBalance: Number(_assetAmount) <= Number(balanceAmount),
+      },
+    });
   }
-
-  const balanceAmount = getBalanceAmount(assets, gasPrice, selected);
-  dispatch({
-    type: SEND_UPDATE_ASSET_AMOUNT,
-    payload: {
-      assetAmount: _assetAmount,
-      nativeAmount: _nativeAmount,
-      isSufficientBalance: Number(_assetAmount) <= Number(balanceAmount),
-    },
-  });
 };
 
 export const sendUpdateNativeAmount = nativeAmount => (dispatch, getState) => {
@@ -309,7 +308,7 @@ export const sendUpdateSelected = (value) => (dispatch, getState) => {
     }});
   } else {
     const state = getState();
-    const assetAmount = get(state, 'send.assetAmount', 0);
+    const assetAmount = get(state, 'send.assetAmount');
     const assets = get(state, 'data.assets', []);
     const nativeCurrency = get(state, 'settings.nativeCurrency', '');
     const selected = assets.filter(asset => asset.address === value)[0] || {};
