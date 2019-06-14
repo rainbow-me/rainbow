@@ -15,8 +15,8 @@ const nativeCurrencySelector = state => state.nativeCurrency;
 const requestsSelector = state => state.requests;
 const transactionsSelector = state => state.transactions;
 
-export const buildTransactionUniqueIdentifier = ({ hash, transactionDisplayDetails }) => (
-  hash || get(transactionDisplayDetails, 'timestampInMs')
+export const buildTransactionUniqueIdentifier = ({ hash, displayDetails }) => (
+  hash || get(displayDetails, 'timestampInMs')
 );
 
 export const getTransactionStatus = ({

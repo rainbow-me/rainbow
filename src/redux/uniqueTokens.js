@@ -3,77 +3,63 @@ import {
   getUniqueTokens,
   saveUniqueTokens,
   removeUniqueTokens,
-  removeWalletConnect,
 } from '../handlers/commonStorage';
 
 // -- Constants ------------------------------------------------------------- //
-const ASSETS_LOAD_UNIQUE_TOKENS_REQUEST =
-  'assets/ASSETS_LOAD_UNIQUE_TOKENS_REQUEST';
-const ASSETS_LOAD_UNIQUE_TOKENS_SUCCESS =
-  'assets/ASSETS_LOAD_UNIQUE_TOKENS_SUCCESS';
-const ASSETS_LOAD_UNIQUE_TOKENS_FAILURE =
-  'assets/ASSETS_LOAD_UNIQUE_TOKENS_FAILURE';
+const UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST =
+  'uniqueTokens/UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST';
+const UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_SUCCESS =
+  'uniqueTokens/UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_SUCCESS';
+const UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_FAILURE =
+  'uniqueTokens/UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_FAILURE';
 
-const ASSETS_GET_UNIQUE_TOKENS_REQUEST =
-  'assets/ASSETS_GET_UNIQUE_TOKENS_REQUEST';
-const ASSETS_GET_UNIQUE_TOKENS_SUCCESS =
-  'assets/ASSETS_GET_UNIQUE_TOKENS_SUCCESS';
-const ASSETS_GET_UNIQUE_TOKENS_FAILURE =
-  'assets/ASSETS_GET_UNIQUE_TOKENS_FAILURE';
+const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST =
+  'uniqueTokens/UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST';
+const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS =
+  'uniqueTokens/UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS';
+const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE =
+  'uniqueTokens/UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE';
 
-const ASSETS_CLEAR_STATE = 'assets/ASSETS_CLEAR_STATE';
+const UNIQUE_TOKENS_CLEAR_STATE = 'uniqueTokens/UNIQUE_TOKENS_CLEAR_STATE';
 
 // -- Actions --------------------------------------------------------------- //
 let getUniqueTokensInterval = null;
 
-export const accountClearState = () => dispatch => {
-  dispatch(assetsClearState());
-  removeWalletConnect();
-};
-
-export const accountLoadState = () => dispatch => {
-  dispatch(uniqueTokensLoadState());
-};
-
-const uniqueTokensLoadState = () => (dispatch, getState) => {
+export const uniqueTokensLoadState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  dispatch({ type: ASSETS_LOAD_UNIQUE_TOKENS_REQUEST });
+  dispatch({ type: UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST });
   getUniqueTokens(accountAddress, network).then(cachedUniqueTokens => {
     dispatch({
-      type: ASSETS_LOAD_UNIQUE_TOKENS_SUCCESS,
+      type: UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_SUCCESS,
       payload: cachedUniqueTokens,
     });
   })
   .catch(error => {
-    dispatch({ type: ASSETS_LOAD_UNIQUE_TOKENS_FAILURE });
+    dispatch({ type: UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_FAILURE });
   });
 };
 
-const assetsClearState = () => (dispatch, getState) => {
+export const uniqueTokensClearState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   removeUniqueTokens(accountAddress, network);
   clearInterval(getUniqueTokensInterval);
-  dispatch({ type: ASSETS_CLEAR_STATE });
+  dispatch({ type: UNIQUE_TOKENS_CLEAR_STATE });
 };
 
-export const uniqueTokensRefreshState = () => dispatch => {
-  return dispatch(assetsGetUniqueTokens());
-};
-
-const assetsGetUniqueTokens = () => (dispatch, getState) => new Promise((resolve, reject) => {
-  dispatch({ type: ASSETS_GET_UNIQUE_TOKENS_REQUEST });
+export const uniqueTokensRefreshState = () => (dispatch, getState) => new Promise((resolve, reject) => {
+  dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST });
   const { accountAddress, network } = getState().settings;
   const fetchUniqueTokens = () => new Promise((resolve, reject) => {
     apiGetAccountUniqueTokens(accountAddress)
       .then(uniqueTokens => {
         saveUniqueTokens(accountAddress, uniqueTokens, network);
         dispatch({
-          type: ASSETS_GET_UNIQUE_TOKENS_SUCCESS,
+          type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
           payload: uniqueTokens,
         });
         resolve(true);
       }).catch(error => {
-        dispatch({ type: ASSETS_GET_UNIQUE_TOKENS_FAILURE });
+        dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE });
         reject(error);
       });
   });
@@ -90,50 +76,50 @@ const assetsGetUniqueTokens = () => (dispatch, getState) => new Promise((resolve
 
 
 // -- Reducer --------------------------------------------------------------- //
-export const INITIAL_ASSETS_STATE = {
+export const INITIAL_UNIQUE_TOKENS_STATE = {
   fetchingUniqueTokens: false,
   loadingUniqueTokens: false,
   uniqueTokens: [],
 };
 
-export default (state = INITIAL_ASSETS_STATE, action) => {
+export default (state = INITIAL_UNIQUE_TOKENS_STATE, action) => {
   switch (action.type) {
-    case ASSETS_LOAD_UNIQUE_TOKENS_REQUEST:
+    case UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST:
       return {
         ...state,
         loadingUniqueTokens: true,
       };
-    case ASSETS_LOAD_UNIQUE_TOKENS_SUCCESS:
+    case UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_SUCCESS:
       return {
         ...state,
         loadingUniqueTokens: false,
         uniqueTokens: action.payload,
       };
-    case ASSETS_LOAD_UNIQUE_TOKENS_FAILURE:
+    case UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_FAILURE:
       return {
         ...state,
         loadingUniqueTokens: false
       };
-    case ASSETS_GET_UNIQUE_TOKENS_REQUEST:
+    case UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST:
       return {
         ...state,
         fetchingUniqueTokens: true,
       };
-    case ASSETS_GET_UNIQUE_TOKENS_SUCCESS:
+    case UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS:
       return {
         ...state,
         fetchingUniqueTokens: false,
         uniqueTokens: action.payload,
       };
-    case ASSETS_GET_UNIQUE_TOKENS_FAILURE:
+    case UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE:
       return {
         ...state,
         fetchingUniqueTokens: false
       };
-    case ASSETS_CLEAR_STATE:
+    case UNIQUE_TOKENS_CLEAR_STATE:
       return {
         ...state,
-        ...INITIAL_ASSETS_STATE,
+        ...INITIAL_UNIQUE_TOKENS_STATE,
       };
     default:
       return state;

@@ -17,9 +17,9 @@ import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../model/localstorage';
 import {
   withAccountData,
-  withAccountRefresh,
   withAccountSettings,
   withBlurTransitionProps,
+  withDataInit,
   withHideSplashScreen,
   withIsWalletEmpty,
   withUniqueTokens,
@@ -37,7 +37,7 @@ class WalletScreen extends PureComponent {
     isFocused: PropTypes.bool,
     navigation: PropTypes.object,
     onHideSplashScreen: PropTypes.func,
-    refreshAccount: PropTypes.func,
+    refreshAccountData: PropTypes.func,
     sections: PropTypes.array,
     setSafeTimeout: PropTypes.func,
     showBlur: PropTypes.bool,
@@ -66,7 +66,7 @@ class WalletScreen extends PureComponent {
       blurOpacity,
       isEmpty,
       navigation,
-      refreshAccount,
+      refreshAccountData,
       sections,
       showBlur,
     } = this.props;
@@ -79,7 +79,7 @@ class WalletScreen extends PureComponent {
         </Header>
         <FabWrapper disabled={isEmpty}>
           <AssetList
-            fetchData={refreshAccount}
+            fetchData={refreshAccountData}
             isEmpty={isEmpty}
             onLayout={this.hideSpashScreen}
             sections={sections}
@@ -94,8 +94,8 @@ class WalletScreen extends PureComponent {
 export default compose(
   withAccountData,
   withUniqueTokens,
-  withAccountRefresh,
   withAccountSettings,
+  withDataInit,
   withHideSplashScreen,
   withSafeTimeout,
   withNavigation,

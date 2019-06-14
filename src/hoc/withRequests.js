@@ -3,14 +3,14 @@ import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';
 
-const mapStateToProps = ({ transactionsToApprove: { transactionsToApprove } }) => ({
-  requests: transactionsToApprove,
+const mapStateToProps = ({ requests: { requests } }) => ({
+  requests,
 });
 
 const requestsSelector = state => state.requests;
 
 const withRequests = (requests) => {
-  const sortedRequests = reverse(sortBy(values(requests), 'transactionDisplayDetails.timestampInMs'));
+  const sortedRequests = reverse(sortBy(values(requests), 'displayDetails.timestampInMs'));
 
   return {
     pendingRequestCount: sortedRequests.length,

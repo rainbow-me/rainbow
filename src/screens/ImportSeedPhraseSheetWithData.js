@@ -11,7 +11,7 @@ import {
   withState,
 } from 'recompact';
 import { Alert } from '../components/alerts';
-import { withAccountRefresh, withAccountReset } from '../hoc';
+import { withDataInit } from '../hoc';
 import { deviceUtils } from '../utils';
 import ImportSeedPhraseSheet from './ImportSeedPhraseSheet';
 
@@ -31,34 +31,26 @@ const ConfirmImportAlert = onSuccess => (
 );
 
 const ImportSeedPhraseSheetWithData = compose(
-  withAccountReset,
-  withAccountRefresh,
+  withDataInit,
   withNavigation,
   withState('clipboardContents', 'setClipboardContents', ''),
   withState('isImporting', 'setIsImporting', false),
   withState('seedPhrase', 'setSeedPhrase', ''),
   withHandlers({
     importSeedPhrase: ({
-      accountClearState,
-      assetsClearState,
+      clearAccountData,
+      initializeWallet,
       navigation,
-      refreshAccount,
-      screenProps,
       seedPhrase,
       setIsImporting,
     }) => () => {
-      accountClearState();
-      assetsClearState();
+      clearAccountData();
 
-      return screenProps
-        .handleWalletConfig(seedPhrase.trim())
+      return initializeWallet(seedPhrase.trim())
         .then((address) => {
           if (address) {
-            refreshAccount()
-              .then(() => {
-                setIsImporting(false);
-                navigation.navigate('WalletScreen');
-              });
+            setIsImporting(false);
+            navigation.navigate('WalletScreen');
           } else {
             setIsImporting(false);
           }

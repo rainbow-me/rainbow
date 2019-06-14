@@ -1,6 +1,6 @@
 import { differenceInMinutes } from 'date-fns';
 import { pickBy } from 'lodash';
-import { getLocal, saveLocal } from '../handlers/commonStorage';
+import { getLocal, removeLocal, saveLocal } from '../handlers/commonStorage';
 
 /**
  * @desc get show shitcoins setting
@@ -23,7 +23,7 @@ export const updateShowShitcoinsSetting = async (updatedSetting) => {
 const getRequestsKey = (accountAddress, network) => `requests-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 
 const isRequestStillValid = (request) => {
-  const createdAt = request.transactionDisplayDetails.timestampInMs;
+  const createdAt = request.displayDetails.timestampInMs;
   return (differenceInMinutes(Date.now(), createdAt) < 60);
 };
 
@@ -65,4 +65,16 @@ export const removeLocalRequest = async (address, network, requestId) => {
   const updatedRequests = { ...requests };
   delete updatedRequests[requestId];
   await saveLocalRequests(address, network, updatedRequests);
+};
+
+/**
+ * @desc remove all requests
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @param  {String}   [requestId]
+ * @return {Void}
+ */
+export const removeLocalRequests = async (address, network) => {
+  const requestsKey = getRequestsKey(accountAddress, network);
+  await removeLocal(requestsKey);
 };

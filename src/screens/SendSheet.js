@@ -23,8 +23,8 @@ import {
 } from '../components/send';
 import {
   withAccountData,
-  withAccountRefresh,
   withAccountSettings,
+  withDataInit,
   withUniqueTokens,
 } from '../hoc';
 import { colors } from '../styles';
@@ -265,10 +265,10 @@ export default compose(
   withAccountData,
   withUniqueTokens,
   withAccountSettings,
-  withAccountRefresh,
+  withDataInit,
   withHandlers({
-    fetchData: ({ refreshAccount }) => async () => {
-      await refreshAccount();
+    fetchData: ({ refreshAccountData }) => async () => {
+      await refreshAccountData();
     },
   }),
 )(SendSheet);

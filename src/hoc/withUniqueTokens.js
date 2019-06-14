@@ -3,7 +3,7 @@ import { compose, withProps } from 'recompact';
 import { sendableUniqueTokensSelector } from './uniqueTokenSelectors';
 
 const mapStateToProps = ({
-  assets: {
+  uniqueTokens: {
     fetchingUniqueTokens,
     uniqueTokens,
   },

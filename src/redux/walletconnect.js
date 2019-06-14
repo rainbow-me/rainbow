@@ -9,13 +9,14 @@ import {
 import {
   getAllValidWalletConnectSessions,
   saveWalletConnectSession,
+  removeWalletConnect,
   removeWalletConnectSessions,
 } from '../handlers/commonStorage';
 import { Alert } from 'react-native';
 import lang from 'i18n-js';
 import WalletConnect from '@walletconnect/react-native';
 import { getFCMToken, checkPushNotificationPermissions } from '../model/firebase';
-import { addTransactionToApprove } from './transactionsToApprove';
+import { addRequestToApprove } from './requests';
 import Navigation from '../navigation';
 
 // -- Constants --------------------------------------- //
@@ -29,6 +30,7 @@ const WALLETCONNECT_REMOVE_SESSION = 'walletconnect/WALLETCONNECT_REMOVE_SESSION
 const WALLETCONNECT_INIT_SESSIONS = 'walletconnect/WALLETCONNECT_INIT_SESSIONS';
 const WALLETCONNECT_INIT_TIMESTAMP = 'walletconnect/WALLETCONNECT_INIT_TIMESTAMP';
 const WALLETCONNECT_CLEAR_TIMESTAMP = 'walletconnect/WALLETCONNECT_CLEAR_TIMESTAMP';
+const WALLETCONNECT_CLEAR_STATE = 'walletconnect/WALLETCONNECT_CLEAR_STATE';
 
 // -- Actions ---------------------------------------- //
 
@@ -93,7 +95,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     const { appInitTimestamp } = getState().walletconnect;
     const { clientId, peerId, peerMeta } = walletConnector;
     const requestId = payload.id;
-    dispatch(addTransactionToApprove(clientId, peerId, requestId, payload, peerMeta));
+    dispatch(addRequestToApprove(clientId, peerId, requestId, payload, peerMeta));
   });
   walletConnector.on('disconnect', (error, payload) => {
     if (error) throw error;
@@ -106,7 +108,12 @@ export const walletConnectUpdateTimestamp = () => dispatch => dispatch({ payload
 
 export const walletConnectClearTimestamp = () => dispatch => dispatch({ type: WALLETCONNECT_CLEAR_TIMESTAMP });
 
-export const walletConnectInitAllConnectors = () => async dispatch => {
+export const walletConnectClearState = () => (dispatch, getState) => {
+  removeWalletConnect();
+  dispatch({ type: WALLETCONNECT_CLEAR_STATE });
+};
+
+export const walletConnectLoadState = () => async dispatch => {
   dispatch(walletConnectUpdateTimestamp());
   let walletConnectors = {};
   try {
@@ -264,6 +271,8 @@ export default (state = INITIAL_STATE, action) => {
     return { ...state, appInitTimestamp: action.payload };
   case WALLETCONNECT_CLEAR_TIMESTAMP:
     return { ...state, appInitTimestamp: null };
+  case WALLETCONNECT_CLEAR_STATE:
+    return { ...state, ...INITIAL_STATE };
   default:
     return state;
   }

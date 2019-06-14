@@ -20,7 +20,7 @@ const SETTINGS_UPDATE_LANGUAGE_SUCCESS = 'settings/SETTINGS_UPDATE_LANGUAGE_SUCC
 const SETTINGS_UPDATE_LANGUAGE_FAILURE = 'settings/SETTINGS_UPDATE_LANGUAGE_FAILURE';
 
 // -- Actions --------------------------------------------------------------- //
-export const settingsInitializeState = () => dispatch => {
+export const settingsLoadState = () => dispatch => {
   getLanguage().then(language => {
     dispatch({
       type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,

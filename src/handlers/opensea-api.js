@@ -8,7 +8,7 @@ import { parseAccountUniqueTokens } from '../parsers/uniqueTokens';
  */
 const api = axios.create({
   baseURL: 'https://api.opensea.io/api/v1',
-  timeout: 30000, // 30 secs
+  timeout: 15000, // 15 secs
   headers: {
     Accept: 'application/json',
     'X-API-KEY': REACT_APP_OPENSEA_API_KEY,

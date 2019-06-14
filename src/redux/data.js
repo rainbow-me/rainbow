@@ -81,7 +81,14 @@ const addressSubscription = (address, currency) => [
   }
 ];
 
-export const assetsLoadState = () => (dispatch, getState) => {
+const addressUnsubscription = (address, currency) => [
+  'unsubscribe',
+  {
+    scope: ['assets', 'transactions'],
+  }
+];
+
+export const dataLoadState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   dispatch({ type: DATA_LOAD_ASSETS_REQUEST });
   getAssets(accountAddress, network)
@@ -105,7 +112,8 @@ export const assetsLoadState = () => (dispatch, getState) => {
     });
 };
 
-const assetsClearState = () => (dispatch, getState) => {
+const dataClearState = () => (dispatch, getState) => {
+  // TODO: unsubscribe on same address socket
   const { accountAddress, network } = getState().settings;
   removeAssets(accountAddress, network);
   removeLocalTransactions(accountAddress, network);
@@ -141,7 +149,6 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
     const { nativeCurrency, network } = getState().settings;
     const address = get(e, 'meta.address');
     let transactionData = get(e, 'payload.transactions', []);
-    console.log('on received transactions', transactionData);
 
     if (address && transactionData.length) {
       const { transactions } = getState().data;

@@ -16,17 +16,19 @@ import smartContractMethods from '../references/smartcontract-methods.json';
 import {
   getLocalRequests,
   removeLocalRequest,
+  removeLocalRequests,
   saveLocalRequests,
 } from '../model/localstorage';
 
 // -- Constants --------------------------------------- //
-const WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE = 'wallet/WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE';
+const REQUESTS_UPDATE_REQUESTS_TO_APPROVE = 'requests/REQUESTS_UPDATE_REQUESTS_TO_APPROVE';
+const REQUESTS_CLEAR_STATE = 'requests/REQUESTS_CLEAR_STATE';
 
-export const transactionsToApproveInit = () => (dispatch, getState) => {
+export const requestsLoadState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   getLocalRequests(accountAddress, network).then((requests) => {
-    const transactionsToApprove = requests || {};
-    dispatch({ payload: transactionsToApprove, type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE });
+    const _requests = requests || {};
+    dispatch({ payload: _requests, type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE });
   });
 };
 
@@ -139,53 +141,64 @@ const getTransactionDisplayDetails = (transaction, assets, nativeCurrency, times
   return null;
 };
 
-export const addTransactionToApprove = (clientId, peerId, requestId, payload, peerMeta) => (dispatch, getState) => {
-  const { transactionsToApprove } = getState().transactionsToApprove;
+export const addRequestToApprove = (clientId, peerId, requestId, payload, peerMeta) => (dispatch, getState) => {
+  const { requests } = getState().requests;
   const { accountAddress, network, nativeCurrency } = getState().settings;
   const { assets } = getState().data;
-  const transactionDisplayDetails = getRequestDisplayDetails(payload, assets, nativeCurrency);
+  const displayDetails = getRequestDisplayDetails(payload, assets, nativeCurrency);
   const dappName = peerMeta.name;
   const imageUrl = get(peerMeta, 'icons[0]');
-  const transaction = {
+  const request = {
     clientId,
     dappName,
     imageUrl,
     payload,
     peerId,
     requestId,
-    transactionDisplayDetails,
+    displayDetails,
   };
-  const updatedTransactions = { ...transactionsToApprove, [requestId]: transaction };
-  dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
-  saveLocalRequests(accountAddress, network, updatedTransactions);
-  return transaction;
+  const updatedRequests = { ...requests, [requestId]: request };
+  dispatch({ type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE, payload: updatedRequests });
+  saveLocalRequests(accountAddress, network, updatedRequests);
+  return request;
 };
 
-export const transactionsForTopic = (topic) => (dispatch, getState) => {
-  const { transactionsToApprove } = getState().transactionsToApprove;
-  return filter(values(transactionsToApprove), { 'clientId': topic });
+export const requestsForTopic = (topic) => (dispatch, getState) => {
+  const { requests } = getState().requests;
+  return filter(values(requests), { 'clientId': topic });
 };
 
-export const removeTransaction = (requestId) => (dispatch, getState) => {
+const requestsClearState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  const { transactionsToApprove } = getState().transactionsToApprove;
-  const updatedTransactions = omit(transactionsToApprove, [requestId]);
+  removeLocalRequests(address, network);
+  dispatch({ type: REQUESTS_CLEAR_STATE });
+};
+
+export const removeRequest = (requestId) => (dispatch, getState) => {
+  const { accountAddress, network } = getState().settings;
+  const { requests } = getState().requests;
+  const updatedRequests = omit(requests, [requestId]);
   removeLocalRequest(accountAddress, network, requestId);
-  dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
+  dispatch({ type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE, payload: updatedRequests });
 };
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   fetching: false,
-  transactionsToApprove: {},
+  requests: {},
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-  case WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE:
+  case REQUESTS_UPDATE_REQUESTS_TO_APPROVE:
     return {
       ...state,
-      transactionsToApprove: action.payload,
+      requests: action.payload,
+    };
+  case REQUESTS_CLEAR_STATE:
+    return {
+      ...state,
+      ...INITIAL_STATE,
     };
   default:
     return state;

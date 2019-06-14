@@ -16,7 +16,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     dataAddNewTransaction: PropTypes.func,
     isFocused: PropTypes.bool.isRequired,
     navigation: PropTypes.any,
-    removeTransaction: PropTypes.func,
+    removeRequest: PropTypes.func,
     transactionCountNonce: PropTypes.number,
     updateTransactionCountNonce: PropTypes.func,
     walletConnectSendStatus: PropTypes.func,
@@ -65,18 +65,18 @@ class TransactionConfirmationScreenWithData extends PureComponent {
       this.props.updateTransactionCountNonce(maxTxnCount + 1);
       // TODO add request type
       const txDetails = {
-        asset: get(transactionDetails, 'transactionDisplayDetails.payload.asset'),
+        asset: get(transactionDetails, 'displayDetails.payload.asset'),
         dappName: get(transactionDetails, 'dappName'),
-        from: get(transactionDetails, 'transactionDisplayDetails.payload.from'),
-        gasLimit: get(transactionDetails, 'transactionDisplayDetails.payload.gasLimit'),
-        gasPrice: get(transactionDetails, 'transactionDisplayDetails.payload.gasPrice'),
+        from: get(transactionDetails, 'displayDetails.payload.from'),
+        gasLimit: get(transactionDetails, 'displayDetails.payload.gasLimit'),
+        gasPrice: get(transactionDetails, 'displayDetails.payload.gasPrice'),
         hash: transactionHash,
-        nonce: get(transactionDetails, 'transactionDisplayDetails.payload.nonce'),
-        to: get(transactionDetails, 'transactionDisplayDetails.payload.to'),
-        value: get(transactionDetails, 'transactionDisplayDetails.payload.value'),
+        nonce: get(transactionDetails, 'displayDetails.payload.nonce'),
+        to: get(transactionDetails, 'displayDetails.payload.to'),
+        value: get(transactionDetails, 'displayDetails.payload.value'),
       };
       this.props.dataAddNewTransaction(txDetails);
-      this.props.removeTransaction(transactionDetails.requestId);
+      this.props.removeRequest(transactionDetails.requestId);
       await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, transactionHash);
       this.closeScreen();
     } else {
@@ -86,11 +86,11 @@ class TransactionConfirmationScreenWithData extends PureComponent {
 
   handleSignMessage = async () => {
     const { transactionDetails } = this.props.navigation.state.params;
-    const message = get(transactionDetails, 'transactionDisplayDetails.payload');
+    const message = get(transactionDetails, 'displayDetails.payload');
     const flatFormatSignature = await signMessage(message);
 
     if (flatFormatSignature) {
-      this.props.removeTransaction(transactionDetails.requestId);
+      this.props.removeRequest(transactionDetails.requestId);
       await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, flatFormatSignature);
       this.closeScreen();
     } else {
@@ -113,7 +113,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     try {
       await this.sendFailedTransactionStatus();
       const { transactionDetails } = this.props.navigation.state.params;
-      this.props.removeTransaction(transactionDetails.requestId);
+      this.props.removeRequest(transactionDetails.requestId);
     } catch (error) {
       this.closeScreen();
       Alert.alert('Failed to send rejected transaction status');
@@ -130,7 +130,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
       transactionDetails: {
         dappName,
         imageUrl,
-        transactionDisplayDetails: {
+        displayDetails: {
           type,
           payload,
         },
