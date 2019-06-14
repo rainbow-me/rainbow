@@ -251,7 +251,7 @@ export const estimateGasLimit = async ({
     const data = getDataForNftTransfer(address, _recipient, asset);
     estimateGasData = { from: address, to: contractAddress, data };
   } else if (asset.symbol !== 'ETH') {
-    const data = getDataForTokenTransfer(_amount, _recipient);
+    const data = getDataForTokenTransfer(value, _recipient);
     estimateGasData = { from: address, to: asset.address, data, value: '0x0' };
   }
   return await estimateGas(estimateGasData);

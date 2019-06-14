@@ -17,6 +17,19 @@ export const getEth = assets => assets.filter(asset => asset.address === 'eth')[
 export const removeHexPrefix = hex => hex.toLowerCase().replace('0x', '');
 
 /**
+ * @desc pad string to specific width and padding
+ * @param  {String} n
+ * @param  {Number} width
+ * @param  {String} z
+ * @return {String}
+ */
+export const padLeft = (n, width, z) => {
+  z = z || '0';
+  n = n + '';
+  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+};
+
+/**
  * @desc get ethereum contract call data string
  * @param  {String} func
  * @param  {Array}  arrVals

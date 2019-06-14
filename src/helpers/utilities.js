@@ -26,7 +26,7 @@ export const subtract = (numberOne, numberTwo) =>
  * @return {String}
  */
 export const convertAmountToRawAmount = (value, decimals) =>
-  BigNumber(value).times(BigNumber(10).pow(decimals));
+  BigNumber(value).times(BigNumber(10).pow(decimals)).toString();
 
 /**
  * @desc convert from number to string
