@@ -270,7 +270,8 @@ class RecyclerAssetList extends PureComponent {
         item: item.tokens ? item.tokens : item,
         shouldPrioritizeImageLoading: index < sections[0].data.length + 9,
         uniqueId: item.uniqueId,
-        familyName: item.familyName
+        familyName: item.familyName,
+        childrenAmount: item.childrenAmount,
       });
   };
 

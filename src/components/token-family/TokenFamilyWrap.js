@@ -8,6 +8,7 @@ import { View, Text } from 'react-primitives';
 import { withOpenFamilyTabs } from '../../hoc';
 import { Transitioning, Transition } from 'react-native-reanimated';
 import TokenFamilyHeader from './TokenFamilyHeader';
+import { ButtonPressAnimation } from '../animations';
 
 enhanceRenderItem = compose(
   withNavigation,
@@ -51,12 +52,15 @@ class TokenFamilyWrap extends PureComponent {
   render() {
     return (
       <View>
-        <TouchableHighlight 
+        <ButtonPressAnimation 
+          scaleTo={0.96}
           onPress={this.onHeaderPress}
-          underlayColor="none"  
         >
-        <TokenFamilyHeader familyName={this.props.familyName}/>
-        </TouchableHighlight>
+        <TokenFamilyHeader 
+          familyName={this.props.familyName}
+          childrenAmount={this.props.childrenAmount}
+        />
+        </ButtonPressAnimation>
         {header(this.collectiblesRenderItem(this.props))}
       </View>
     );
