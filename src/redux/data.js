@@ -4,8 +4,11 @@ import {
   find,
   findIndex,
   get,
+  includes,
   isEmpty,
+  map,
   partition,
+  remove,
   slice,
   uniqBy,
 } from 'lodash';
@@ -119,6 +122,19 @@ export const dataInit = () => (dispatch, getState) => {
   dispatch(listenOnNewMessages(addressSocket));
 };
 
+const dedupePendingTransactions = (pendingTransactions, parsedTransactions) => {
+  let updatedPendingTransactions = pendingTransactions;
+  if (pendingTransactions.length) {
+    updatedPendingTransactions = filter(updatedPendingTransactions, (pendingTxn) => {
+      const matchingElement = find(parsedTransactions, (txn) => txn.hash
+        && (txn.hash.toLowerCase().startsWith(pendingTxn.hash.toLowerCase())
+        || (txn.nonce && (txn.nonce >= pendingTxn.nonce))));
+      return !matchingElement;
+    });
+  }
+  return updatedPendingTransactions;
+};
+
 const listenOnNewMessages = socket => (dispatch, getState) => {
 
   socket.on(messages.TRANSACTIONS.RECEIVED, (e) => {
@@ -138,25 +154,19 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
         }
       }
       if (!isEmpty(transactionData)) {
+        const parsedTransactions = parseTransactions(transactionData, nativeCurrency);
+
         const partitions = partition(transactions, (txn) => txn.pending);
         const pendingTransactions = partitions[0];
         const remainingTransactions = partitions[1];
 
-        const parsedTransactions = parseTransactions(transactionData, nativeCurrency);
-        let updatedPendingTransactions = pendingTransactions;
-        if (pendingTransactions.length) {
-          updatedPendingTransactions = filter(updatedPendingTransactions, (pendingTxn) => {
-            const matchingElement = find(parsedTransactions, (txn) => txn.hash
-              && (txn.hash.startsWith(pendingTxn.hash)
-              || (txn.nonce && (txn.nonce >= pendingTxn.nonce))));
-            return !matchingElement;
-          });
-        }
+        const updatedPendingTransactions = dedupePendingTransactions(pendingTransactions, parsedTransactions)
         const updatedResults = concat(updatedPendingTransactions, parsedTransactions, remainingTransactions);
+        const dedupedResults = uniqBy(updatedResults, (txn) => txn.hash);
 
-        saveLocalTransactions(address, updatedResults, network);
+        saveLocalTransactions(address, dedupedResults, network);
         dispatch({
-          payload: updatedResults,
+          payload: dedupedResults,
           type: DATA_UPDATE_TRANSACTIONS,
         });
       }
@@ -164,13 +174,45 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
   });
 
   socket.on(messages.TRANSACTIONS.APPENDED, (e) => {
-    // TODO
-    console.log('on appended transactions', e);
+    const { nativeCurrency, network } = getState().settings;
+    const address = get(e, 'meta.address');
+    let transactionData = get(e, 'payload.transactions', []);
+    console.log('on appended transactions', transactionData);
+    if (address && transactionData.length) {
+      const { transactions } = getState().data;
+      const partitions = partition(transactions, (txn) => txn.pending);
+      const pendingTransactions = partitions[0];
+      const remainingTransactions = partitions[1];
+
+      const parsedTransactions = parseTransactions(transactionData, nativeCurrency);
+      const updatedPendingTransactions = dedupePendingTransactions(pendingTransactions, parsedTransactions)
+      const updatedResults = concat(updatedPendingTransactions, parsedTransactions, remainingTransactions);
+      const dedupedResults = uniqBy(updatedResults, (txn) => txn.hash);
+
+      saveLocalTransactions(address, updatedResults, network);
+      dispatch({
+        payload: dedupedResults,
+        type: DATA_UPDATE_TRANSACTIONS,
+      });
+    }
   });
 
   socket.on(messages.TRANSACTIONS.REMOVED, (e) => {
-    // TODO
-    console.log('on removed transactions', e);
+    const { nativeCurrency, network } = getState().settings;
+    const address = get(e, 'meta.address');
+    let transactionData = get(e, 'payload.transactions', []);
+    console.log('on removed transactions', transactionData);
+    if (address && transactionData.length) {
+      const { transactions } = getState().data;
+      const removeHashes = map(transactionData, txn => txn.hash);
+      const results = remove(transactions, (txn) => includes(removeHashes, txn.hash));
+
+      saveLocalTransactions(address, updatedResults, network);
+      dispatch({
+        payload: results,
+        type: DATA_UPDATE_TRANSACTIONS,
+      });
+    }
   });
 
   socket.on(messages.ASSETS.RECEIVED, (e) => {
