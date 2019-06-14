@@ -35,13 +35,17 @@ const header = (child) => {
 
 class TokenFamilyWrap extends PureComponent {
   collectiblesRenderItem = item => {
-    if (this.props.openFamilyTabs[item.item[0].rowNumber]) {
-      return <UniqueTokenItem isLastRow={item.isLastRow} isFirstRow={item.isFirstRow} item={item.item} assetType="unique_token" />
+    if (this.props.openFamilyTabs[item.item[0][0].rowNumber]) {
+      const tokens = [];
+      for(let i = 0; i < item.item.length; i++) {
+        tokens.push(<UniqueTokenItem isLastRow={item.isLastRow} isFirstRow={item.isFirstRow} item={item.item[i]} assetType="unique_token" />)
+      }
+      return tokens;
     }
   };
 
   onHeaderPress = () => {
-    this.props.setOpenFamilyTabs(this.props.item[0].rowNumber);
+    this.props.setOpenFamilyTabs(this.props.item[0][0].rowNumber);
   }
 
   render() {
@@ -51,7 +55,7 @@ class TokenFamilyWrap extends PureComponent {
           onPress={this.onHeaderPress}
           underlayColor="none"  
         >
-        <TokenFamilyHeader></TokenFamilyHeader>
+        <TokenFamilyHeader familyName={this.props.familyName}/>
         </TouchableHighlight>
         {header(this.collectiblesRenderItem(this.props))}
       </View>
