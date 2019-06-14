@@ -18,7 +18,11 @@ const parseTransaction = (txn, nativeCurrency) => {
   let transaction = pick(txn, ['hash', 'nonce', 'protocol', 'status', 'mined_at']);
   transaction['pending'] = false;
   const changes = get(txn, 'changes', []);
-  const internalTransactions = changes.map((internalTxn, index) => {
+  let internalTransactions = changes;
+  if (changes.length === 2 && get(changes, '[0].asset.asset_code') === get(changes, '[1].asset.asset_code')) {
+    internalTransactions = [changes[0]];
+  }
+  internalTransactions = internalTransactions.map((internalTxn, index) => {
     const symbol = get(internalTxn, 'asset.symbol', '');
     const updatedAsset = {
       ...internalTxn.asset,
