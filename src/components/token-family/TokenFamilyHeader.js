@@ -24,7 +24,7 @@ const Image = styled.View`
   border-radius: 10.3px;
 `;
 
-const TokenListHeader = () => (
+const TokenListHeader = (props) => (
   <Wrapper>
     <Image>
 
@@ -35,7 +35,7 @@ const TokenListHeader = () => (
       size="medium"
       weight="semibold"
     >
-      Family Name
+      {props.familyName}
     </TruncatedText>
   </Wrapper>
 );

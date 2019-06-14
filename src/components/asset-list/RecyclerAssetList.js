@@ -43,7 +43,7 @@ const layoutItemAnimator = {
   animateShift: NOOP,
   animateWillMount: NOOP,
   animateWillUnmount: NOOP,
-  animateWillUpdate: () => LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut),
+  animateWillUpdate: () => LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')),
 };
 
 
@@ -122,7 +122,6 @@ class RecyclerAssetList extends PureComponent {
       index => {
         const { sections, openFamilyTabs } = this.props;
         const { headersIndices } = this.state;
-
         if (headersIndices.includes(index)) {
           return ViewTypes.HEADER;
         }
@@ -142,7 +141,7 @@ class RecyclerAssetList extends PureComponent {
           const idx = areBalancesLoaded ? 1 : 0;
           if (index > headersIndices[idx]) {
             if (openFamilyTabs[index - headersIndices[idx] - 1]) {
-              return { get: ViewTypes.UNIQUE_TOKEN_ROW, size: 1 };
+              return { get: ViewTypes.UNIQUE_TOKEN_ROW, size: sections[1].data[index - headersIndices[idx] - 1].tokens.length };
             }
             return ViewTypes.UNIQUE_TOKEN_ROW_CLOSED;
           }
@@ -170,7 +169,7 @@ class RecyclerAssetList extends PureComponent {
         }
 
         if (type.get === ViewTypes.UNIQUE_TOKEN_ROW) {
-          dim.height = type.size * 162 + 54;
+          dim.height = type.size * 162 + 54 + 20 * (type.size - 1);
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_CLOSED) {
           dim.height = 54;
         } else if (type === ViewTypes.COIN_ROW_LAST) {
@@ -271,6 +270,7 @@ class RecyclerAssetList extends PureComponent {
         item: item.tokens ? item.tokens : item,
         shouldPrioritizeImageLoading: index < sections[0].data.length + 9,
         uniqueId: item.uniqueId,
+        familyName: item.familyName
       });
   };
 

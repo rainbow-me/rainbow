@@ -1,4 +1,4 @@
-import { compact, get } from 'lodash';
+import _, { compact, get } from 'lodash';
 
 export const buildAssetHeaderUniqueIdentifier = ({
   showShitcoins,
@@ -16,15 +16,25 @@ export const buildAssetUniqueIdentifier = (item) => {
 };
 
 export const buildUniqueTokenList = (uniqueTokens) => {
-  const rows = [];
+  let rows = [];
+  const grouped = _.groupBy(uniqueTokens, token => token.background);
+  const families = Object.keys(grouped);
+  for (let i = 0; i < families.length; i++) {
+    grouped[families[i]][0].rowNumber = i;
 
-  for (let i = 0; i < uniqueTokens.length; i += 2) {
-    uniqueTokens[i].rowNumber = i/2;
-    const tokens = compact([uniqueTokens[i], uniqueTokens[i + 1]]);
-
+    const tokensRow = []
+    for (let j = 0; j < grouped[families[i]].length; j += 2) {
+      if(grouped[families[i]][j+1]) {
+        tokensRow.push([grouped[families[i]][j], grouped[families[i]][j+1]]);
+      } else {
+        tokensRow.push([grouped[families[i]][j]]);
+      }
+    }
+    tokens = compact(tokensRow);
     rows.push({
       tokens,
-      uniqueId: tokens.map(({ uniqueId }) => uniqueId).join('__'),
+      uniqueId: tokensRow[0].map(({ uniqueId }) => uniqueId).join('__'),
+      familyName: families[i],
     });
   }
   return rows;
