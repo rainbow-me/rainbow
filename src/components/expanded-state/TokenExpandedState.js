@@ -52,11 +52,11 @@ export default compose(
     title: name,
   })),
   withHandlers({
-    onPressSend: ({ navigation, asset: { symbol } }) => () => {
+    onPressSend: ({ navigation, asset: { address } }) => () => {
       navigation.goBack();
 
       InteractionManager.runAfterInteractions(() => {
-        navigation.navigate('SendSheet', { asset: symbol });
+        navigation.navigate('SendSheet', { asset: address });
       });
     },
   }),
