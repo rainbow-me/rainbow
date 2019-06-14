@@ -14,6 +14,7 @@ const Wrapper = styled.View`
   padding: 11px 19px;
   align-items: center;
   flex-direction: row;
+  justify-content: space-between;
 `;
 
 const Image = styled.View`
@@ -24,19 +25,34 @@ const Image = styled.View`
   border-radius: 10.3px;
 `;
 
+const LeftView = styled.View`
+  align-items: center;
+  flex-direction: row;
+`;
+
 const TokenListHeader = (props) => (
   <Wrapper>
-    <Image>
+    <LeftView>
+      <Image>
 
-    </Image>
-    <TruncatedText
-      style={{paddingLeft: 9}}
-      lineHeight="normal"
-      size="medium"
-      weight="semibold"
-    >
-      {props.familyName}
-    </TruncatedText>
+      </Image>
+      <TruncatedText
+        style={{ paddingLeft: 9 }}
+        lineHeight="normal"
+        size="medium"
+        weight="semibold"
+      >
+        {props.familyName}
+      </TruncatedText>
+    </LeftView>
+    <View>
+      <TruncatedText
+        color="blueGreyDark"
+        size="lmedium"
+      >
+        {props.childrenAmount}
+      </TruncatedText>
+    </View>
   </Wrapper>
 );
 
