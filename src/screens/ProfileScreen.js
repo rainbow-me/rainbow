@@ -12,7 +12,6 @@ import { colors, position } from '../styles';
 
 const ProfileScreen = ({
   accountAddress,
-  areTransactionsFetched,
   blurOpacity,
   hasPendingTransaction,
   isEmpty,
@@ -57,7 +56,7 @@ const ProfileScreen = ({
       isEmpty={isEmpty}
       nativeCurrency={nativeCurrency}
       requests={requests}
-      transactions={areTransactionsFetched}
+      transactions={transactions}
       transactionsCount={transactionsCount}
     />
     {isEmpty && <AddFundsInterstitial />}
@@ -66,7 +65,6 @@ const ProfileScreen = ({
 
 ProfileScreen.propTypes = {
   accountAddress: PropTypes.string,
-  areTransactionsFetched: PropTypes.bool,
   blurOpacity: PropTypes.object,
   hasPendingTransaction: PropTypes.bool,
   isEmpty: PropTypes.bool,
