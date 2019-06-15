@@ -79,7 +79,7 @@ const parseAssetsNative = (
         },
         change:
           asset.symbol.toLowerCase() === nativeCurrency.toLowerCase()
-            ? { display: '———' }
+            ? '———'
             : convertAmountToPercentageDisplay(assetNativePrice.relative_change_24h),
       },
     };

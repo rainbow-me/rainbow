@@ -5,6 +5,7 @@ import {
   saveLanguage,
   saveNativeCurrency,
 } from '../handlers/commonStorage';
+import { dataClearState, dataInit } from './data';
 import { ethereumUtils } from '../utils';
 import { web3SetHttpProvider } from '../handlers/web3';
 
@@ -89,11 +90,13 @@ export const settingsChangeLanguage = language => dispatch => {
 export const settingsChangeNativeCurrency = nativeCurrency => (
   dispatch,
 ) => {
+  dispatch(dataClearState());
   saveNativeCurrency(nativeCurrency).then(() => {
     dispatch({
       type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
       payload: nativeCurrency,
     });
+    dispatch(dataInit());
   }).catch(error => {
     dispatch({
       type: SETTINGS_UPDATE_NATIVE_CURRENCY_FAILURE,

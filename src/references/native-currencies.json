@@ -5,15 +5,35 @@
     "label": "United States Dollar",
     "decimals": 2,
     "alignment": "left",
-    "assetLimit": 1
+    "assetLimit": 1,
+    "emojiName": "us"
   },
-  "GBP": {
-    "symbol": "£",
-    "currency": "GBP",
-    "label": "British Pound",
+  "CNY": {
+    "symbol": "¥",
+    "currency": "CNY",
+    "label": "Chinese Yuan",
     "decimals": 2,
     "alignment": "left",
-    "assetLimit": 1
+    "assetLimit": 1,
+    "emojiName": "cn"
+  },
+  "KRW": {
+    "symbol": "₩",
+    "currency": "KRW",
+    "label": "South Korean Won",
+    "decimals": 0,
+    "alignment": "left",
+    "assetLimit": 1,
+    "emojiName": "kr"
+  },
+  "RUB": {
+    "symbol": "₽",
+    "currency": "RUB",
+    "label": "Russian Ruble",
+    "decimals": 2,
+    "alignment": "right",
+    "assetLimit": 1,
+    "emojiName": "ru"
   },
   "EUR": {
     "symbol": "€",
@@ -21,15 +41,8 @@
     "label": "Euro",
     "decimals": 2,
     "alignment": "left",
-    "assetLimit": 1
-  },
-  "BTC": {
-    "symbol": "₿",
-    "currency": "BTC",
-    "label": "Bitcoin",
-    "decimals": 8,
-    "alignment": "right",
-    "assetLimit": 0.0001
+    "assetLimit": 1,
+    "emojiName": "flag-eu"
   },
   "ETH": {
     "symbol": "Ξ",

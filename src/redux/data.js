@@ -108,8 +108,13 @@ export const dataLoadState = () => (dispatch, getState) => {
     });
 };
 
-const unsubscribe = (addressSocket, accountAddress, nativeCurrency) => {
+const dataUnsubscribe = () => (dispatch, getState) => {
+  const { addressSocket } = getState().data;
+  const { accountAddress, nativeCurrency } = getState().settings;
+  console.log('account address', accountAddress);
+  console.log('native currency', nativeCurrency);
   if (!isNil(addressSocket)) {
+    console.log('able to emit');
     addressSocket.emit(...addressSubscription(
       accountAddress,
       nativeCurrency.toLowerCase(),
@@ -119,9 +124,8 @@ const unsubscribe = (addressSocket, accountAddress, nativeCurrency) => {
 };
 
 export const dataClearState = () => (dispatch, getState) => {
-  const { addressSocket } = getState().data;
-  const { accountAddress, nativeCurrency, network } = getState().settings;
-  unsubscribe(addressSocket, accountAddress, nativeCurrency);
+  dispatch(dataUnsubscribe());
+  const { accountAddress, network } = getState().settings;
   removeAssets(accountAddress, network);
   removeLocalTransactions(accountAddress, network);
   dispatch({ type: DATA_CLEAR_STATE });
