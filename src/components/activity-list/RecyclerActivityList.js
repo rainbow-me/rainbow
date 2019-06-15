@@ -1,16 +1,20 @@
-import { get } from 'lodash';
+import { get, times } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
 import { buildTransactionUniqueIdentifier } from '../../helpers/transactions';
+import { colors, position } from '../../styles';
 import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
+import { AssetListItemSkeleton } from '../asset-list';
 import {
   ContractInteractionCoinRow,
   RequestCoinRow,
   TransactionCoinRow,
 } from '../coin-row';
+import ActivityIndicator from '../ActivityIndicator';
+import { Centered, Column } from '../layout';
 import ListFooter from '../list/ListFooter';
 import ActivityListHeader from './ActivityListHeader';
 
@@ -26,6 +30,21 @@ const Wrapper = styled.View`
   overflow: hidden;
   width: 100%;
 `;
+
+const LoadingState = ({ children }) => (
+  <Column flex={1}>
+    {children}
+    <Column flex={1}>
+      <Centered style={{ paddingTop: 200, position: 'absolute', width: '100%' }}>
+        <ActivityIndicator
+          color={colors.alpha(colors.blueGreyLight, 0.666)}
+          size={32}
+        />
+      </Centered>
+      {times(11, index => <AssetListItemSkeleton key={`activitySkeleton${index}`} />)}
+    </Column>
+  </Column>
+);
 
 const hasRowChanged = (r1, r2) => {
   if (r1.hash === '_header' && isNewValueForPath(r1, r2, 'header.props.accountAddress')) {
@@ -43,6 +62,7 @@ const hasRowChanged = (r1, r2) => {
 export default class RecyclerActivityList extends PureComponent {
   static propTypes = {
     header: PropTypes.node,
+    isLoading: PropTypes.bool,
     sections: PropTypes.arrayOf(PropTypes.shape({
       data: PropTypes.array,
       title: PropTypes.string.isRequired,
@@ -83,7 +103,7 @@ export default class RecyclerActivityList extends PureComponent {
         } else if (type === ViewTypes.HEADER) {
           dim.height = 35;
         } else {
-          dim.height = 216;
+          dim.height = this.props.isLoading ? deviceUtils.dimensions.height : 216;
         }
       },
     );
@@ -116,7 +136,11 @@ export default class RecyclerActivityList extends PureComponent {
   };
 
   rowRenderer = (type, data) => {
-    if (type === ViewTypes.COMPONENT_HEADER) return data.header;
+    if (type === ViewTypes.COMPONENT_HEADER) {
+      return this.props.isLoading
+        ? <LoadingState>{data.header}</LoadingState>
+        : data.header;
+    }
     if (type === ViewTypes.HEADER) return <ActivityListHeader {...data} />;
     if (type === ViewTypes.FOOTER) return <ListFooter />;
 
@@ -134,6 +158,7 @@ export default class RecyclerActivityList extends PureComponent {
           layoutProvider={this.layoutProvider}
           renderAheadOffset={deviceUtils.dimensions.height}
           rowRenderer={this.rowRenderer}
+          scrollEnabled={!this.props.isLoading}
           scrollIndicatorInsets={{
             bottom: safeAreaInsetValues.bottom,
           }}

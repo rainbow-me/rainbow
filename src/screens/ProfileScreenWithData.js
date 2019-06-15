@@ -6,11 +6,11 @@ import {
 import { setDisplayName } from 'recompose';
 import {
   withAccountAddress,
+  withAccountSettings,
   withAccountTransactions,
   withBlurTransitionProps,
   withIsWalletEmpty,
   withRequests,
-  withAccountSettings,
 } from '../hoc';
 import ProfileScreen from './ProfileScreen';
 

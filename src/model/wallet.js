@@ -33,7 +33,7 @@ export const walletInit = async (seedPhrase = null) => {
     walletAddress = await createWallet();
     isWalletBrandNew = true;
   }
-  return { isWalletBrandNew, walletAddress } ;
+  return { isWalletBrandNew, walletAddress };
 };
 
 export const loadWallet = async () => {
