@@ -1,4 +1,5 @@
 import { get, has } from 'lodash';
+import styled from 'styled-components/primitives';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { RefreshControl } from 'react-native';
@@ -9,7 +10,6 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import styled from 'styled-components/primitives';
 import {
   buildAssetHeaderUniqueIdentifier,
   buildAssetUniqueIdentifier,
@@ -97,6 +97,7 @@ export default class RecyclerAssetList extends PureComponent {
     this.state = {
       dataProvider: new DataProvider(hasRowChanged, this.getStableId),
       headersIndices: [],
+      isRefreshing: false,
     };
 
     this.layoutProvider = new LayoutProvider(
@@ -215,6 +216,10 @@ export default class RecyclerAssetList extends PureComponent {
     if (this.state.isRefreshing) return;
     this.setState({ isRefreshing: true });
     this.props.fetchData().then(() => {
+      if (!this.isCancelled) {
+        this.setState({ isRefreshing: false });
+      }
+    }).catch(error => {
       if (!this.isCancelled) {
         this.setState({ isRefreshing: false });
       }

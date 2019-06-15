@@ -168,9 +168,9 @@ export const requestsForTopic = (topic) => (dispatch, getState) => {
   return filter(values(requests), { 'clientId': topic });
 };
 
-const requestsClearState = () => (dispatch, getState) => {
+export const requestsClearState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  removeLocalRequests(address, network);
+  removeLocalRequests(accountAddress, network);
   dispatch({ type: REQUESTS_CLEAR_STATE });
 };
 

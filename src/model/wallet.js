@@ -24,6 +24,7 @@ export const walletInit = async (seedPhrase = null) => {
   let isWalletBrandNew = false;
   if (seedPhrase) {
     walletAddress = await createWallet(seedPhrase);
+    isWalletBrandNew = true;
   }
   if (!walletAddress) {
     walletAddress = await loadAddress();

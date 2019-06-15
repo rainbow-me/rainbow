@@ -6,6 +6,7 @@ import {
   get,
   includes,
   isEmpty,
+  isNil,
   map,
   partition,
   remove,
@@ -29,6 +30,8 @@ import { parseTransactions } from '../parsers/transactions';
 
 const DATA_UPDATE_ASSETS = 'data/DATA_UPDATE_ASSETS';
 const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
+
+const DATA_UPDATE_ADDRESS_SOCKET = 'data/DATA_UPDATE_ADDRESS_SOCKET';
 
 const DATA_LOAD_ASSETS_REQUEST = 'data/DATA_LOAD_ASSETS_REQUEST';
 const DATA_LOAD_ASSETS_SUCCESS = 'data/DATA_LOAD_ASSETS_SUCCESS';
@@ -69,8 +72,8 @@ const createSocket = endpoint => io(
   },
 );
 
-const addressSubscription = (address, currency) => [
-  'subscribe',
+const addressSubscription = (address, currency, action='subscribe') => [
+  action,
   {
     scope: ['assets', 'transactions'],
     payload: {
@@ -78,13 +81,6 @@ const addressSubscription = (address, currency) => [
       currency,
       "transactions_limit": 1000,
     }
-  }
-];
-
-const addressUnsubscription = (address, currency) => [
-  'unsubscribe',
-  {
-    scope: ['assets', 'transactions'],
   }
 ];
 
@@ -112,18 +108,35 @@ export const dataLoadState = () => (dispatch, getState) => {
     });
 };
 
-const dataClearState = () => (dispatch, getState) => {
-  // TODO: unsubscribe on same address socket
-  const { accountAddress, network } = getState().settings;
+const unsubscribe = (addressSocket, accountAddress, nativeCurrency) => {
+  if (!isNil(addressSocket)) {
+    addressSocket.emit(...addressSubscription(
+      accountAddress,
+      nativeCurrency.toLowerCase(),
+      'unsubscribe'
+    ));
+  }
+};
+
+export const dataClearState = () => (dispatch, getState) => {
+  const { addressSocket } = getState().data;
+  const { accountAddress, nativeCurrency, network } = getState().settings;
+  unsubscribe(addressSocket, accountAddress, nativeCurrency);
   removeAssets(accountAddress, network);
   removeLocalTransactions(accountAddress, network);
   dispatch({ type: DATA_CLEAR_STATE });
 };
 
 export const dataInit = () => (dispatch, getState) => {
+  console.log('data init');
   const { accountAddress, nativeCurrency } = getState().settings;
   const addressSocket = createSocket('address');
+  dispatch({
+    payload: addressSocket,
+    type: DATA_UPDATE_ADDRESS_SOCKET,
+  });
   addressSocket.on(messages.CONNECT, () => {
+    console.log('on connect');
     addressSocket.emit(...addressSubscription(accountAddress, nativeCurrency.toLowerCase()));
   });
   // TODO need to move this up earlier or no?
@@ -149,6 +162,7 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
     const { nativeCurrency, network } = getState().settings;
     const address = get(e, 'meta.address');
     let transactionData = get(e, 'payload.transactions', []);
+    console.log('on transactions received', transactionData);
 
     if (address && transactionData.length) {
       const { transactions } = getState().data;
@@ -300,6 +314,7 @@ export const dataAddNewTransaction = txDetails => (dispatch, getState) => new Pr
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
+  addressSocket: null,
   assets: [],
   loadingAssets: false,
   transactions: [],
@@ -308,6 +323,8 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
+  case DATA_UPDATE_ADDRESS_SOCKET:
+    return { ...state, addressSocket: action.payload };
   case DATA_UPDATE_ASSETS:
     return { ...state, assets: action.payload };
   case DATA_UPDATE_TRANSACTIONS:
@@ -352,7 +369,7 @@ export default (state = INITIAL_STATE, action) => {
   case DATA_CLEAR_STATE:
     return {
       ...state,
-      ...INITIAL_ASSETS_STATE,
+      ...INITIAL_STATE,
     };
   default:
     return state;
