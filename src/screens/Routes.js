@@ -10,6 +10,7 @@ import Navigation from '../navigation';
 import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
+import { colors } from '../styles';
 import { deviceUtils } from '../utils';
 import ExpandedAssetScreenWithData from './ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
@@ -27,25 +28,37 @@ export const tabActiveOffsetX = [-20, 20];
 
 const onTransitionEnd = () => store.dispatch(updateTransitionProps({ isTransitioning: false }));
 const onTransitionStart = () => store.dispatch(updateTransitionProps({ isTransitioning: true }));
-const swipeToReceive = createDrawerNavigator({
+
+const SwipeToReceiveContent = (props) => (
+  <ReceiveModal
+    {...props}
+    tab={{
+      tabActiveOffsetX,
+      tabRef: tab,
+    }}
+  />
+);
+
+const SwipeToReceiveNavigator = createDrawerNavigator({
   ProfileScreenWithData: {
     screen: ProfileScreenWithData,
   },
 }, {
-  contentComponent: hoistStatics(props => (<ReceiveModal {...props} tab={{ tabActiveOffsetX, tabRef: tab }} />)),
-  drawerBackgroundColor: 'transparent',
+  contentComponent: hoistStatics(SwipeToReceiveContent),
+  drawerBackgroundColor: colors.transparent,
   drawerWidth: deviceUtils.dimensions.width,
   edgeWidth: deviceUtils.dimensions.width,
   gestureHandlerProps: {
     id: 'drawer-view',
     simultaneousHandlers: 'tab-view',
   },
-  overlayColor: 'black',
+  overlayColor: colors.alpha(colors.blueGreyDarker, 0.75),
 });
+
 const SwipeStack = createMaterialTopTabNavigator({
   ProfileScreen: {
     name: 'ProfileScreen',
-    screen: swipeToReceive,
+    screen: SwipeToReceiveNavigator,
   },
   WalletScreen: {
     name: 'WalletScreen',
@@ -90,15 +103,6 @@ const MainNavigator = createStackNavigator({
     },
     screen: ReceiveModal,
   },
-  WalletConnectConfirmationModal: {
-    navigationOptions: {
-      effect: 'expanded',
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height,
-      },
-    },
-    screen: WalletConnectConfirmationModal,
-  },
   SendSheet: SendSheetWithData,
   SettingsModal: {
     navigationOptions: {
@@ -108,6 +112,15 @@ const MainNavigator = createStackNavigator({
     screen: SettingsModal,
   },
   SwipeLayout: SwipeStack,
+  WalletConnectConfirmationModal: {
+    navigationOptions: {
+      effect: 'expanded',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height,
+      },
+    },
+    screen: WalletConnectConfirmationModal,
+  },
 }, {
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',

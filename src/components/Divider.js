@@ -30,14 +30,18 @@ const buildInsetFromProps = (inset) => {
 const horizontalBorderLineStyles = (inset) => css`
   ${inset[3] ? borders.buildRadius('left', 2) : null}
   ${inset[1] ? borders.buildRadius('right', 2) : null}
+  bottom: 0;
   left: ${inset[3]};
   right: ${inset[1]};
+  top: 0;
 `;
 
 const verticalBorderLineStyles = (inset) => css`
   ${inset[2] ? borders.buildRadius('bottom', 2) : null}
   ${inset[0] ? borders.buildRadius('top', 2) : null}
   bottom: ${inset[2]};
+  left: 0;
+  right: 0;
   top: ${inset[0]};
 `;
 
@@ -49,12 +53,10 @@ const BorderLine = styled.View`
       : verticalBorderLineStyles(inset)
   )};
   background-color: ${({ color }) => color};
-  bottom: 0;
-  top: 0;
 `;
 
 const Container = styled(Row)`
-  background-color: ${colors.white};
+  background-color: ${({ backgroundColor }) => (backgroundColor || colors.white)};
   flex-shrink: 0;
   height: ${({ horizontal, size }) => (horizontal ? size : '100%')};
   width: ${({ horizontal, size }) => (horizontal ? '100%' : size)};

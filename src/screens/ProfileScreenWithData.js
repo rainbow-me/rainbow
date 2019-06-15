@@ -41,17 +41,22 @@ export default compose(
 
     const drawerOpenProgress = topNav.getParam('drawerOpenProgress');
 
+    const buildInterpolation = outputRange => (
+      Animated.interpolate(drawerOpenProgress, ({
+        inputRange: [0, 0.1, 1],
+        outputRange,
+      }))
+    );
+
     // On opening drawer we firstly move BlurOverlay to screen and then set proper opacity
     // in order not to prevent gesture recognition while if drawer closed
-    const blurTranslateX = drawerOpenProgress ? Animated.interpolate(drawerOpenProgress, ({
-      inputRange: [0, 0.1, 1],
-      outputRange: [-width, 0, 0],
-    })) : -width;
+    const blurTranslateX = drawerOpenProgress
+      ? buildInterpolation([-width, 0, 0])
+      : -width;
 
-    const blurDrawerOpacity = drawerOpenProgress ? Animated.interpolate(drawerOpenProgress, ({
-      inputRange: [0, 0.1, 1],
-      outputRange: [0, 0, 1],
-    })) : 0;
+    const blurDrawerOpacity = drawerOpenProgress
+      ? buildInterpolation([0, 0, 1])
+      : 0;
 
     return {
       blurDrawerOpacity,

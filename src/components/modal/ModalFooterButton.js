@@ -1,45 +1,39 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import styled from 'styled-components';
 import { withNeverRerender } from '../../hoc';
-import { colors, position } from '../../styles';
+import { colors, padding, position } from '../../styles';
 import { Icon } from '../icons';
-import { Centered } from '../layout';
+import { Centered, RowWithMargins } from '../layout';
 import { Text } from '../text';
 
-const ButtonIcon = styled(Icon)`
-  ${position.maxSize('100%')};
-  margin-right: 7;
-`;
-
-const Container = styled(Centered)`
-  flex: 1;
-  height: 56;
-`;
-
-const IconContainer = styled(Centered)`
-  ${position.size(18)}
-  flex-grow: 0;
-  flex-shrink: 0;
-`;
-
 const ModalFooterButton = ({ icon, label, onPress }) => (
-  <Container component={BorderlessButton} onPress={onPress}>
-    <IconContainer>
-      <ButtonIcon
-        color={colors.appleBlue}
+  <RowWithMargins
+    align="center"
+    component={BorderlessButton}
+    css={padding(0, 25)}
+    flex={0}
+    height={56}
+    justify="center"
+    margin={7}
+    onPress={onPress}
+  >
+    <Centered css={position.size(18)} flex={0}>
+      <Icon
+        color={colors.paleBlue}
+        css={position.maxSize('100%')}
         name={icon}
       />
-    </IconContainer>
+    </Centered>
     <Text
       color="white"
+      letterSpacing="tight"
       size="large"
       weight="medium"
     >
       {label}
     </Text>
-  </Container>
+  </RowWithMargins>
 );
 
 ModalFooterButton.propTypes = {
