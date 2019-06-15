@@ -9,8 +9,8 @@ const base = {
   blueGreyDark: '#3C4252', // '60, 66, 82'
   blueGreyDarker: '#0F0F11', // '15, 15, 17'
   blueGreyLight: '#A1A5AC',
+  blueGreyLighter: '#666A73', // '102, 106, 115'
   blueGreyLightest: '#888D96', // '136, 141, 150'
-  blueGreyLigter: '#666A73', // '102, 106, 115'
   blueGreyMedium: '#636875', // '99, 104, 117'
   blueGreyMediumLight: '#7b7f8a', // '123, 127, 138'
   blueHover: '#6c87f5', // '108, 135, 245'
