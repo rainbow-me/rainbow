@@ -18,7 +18,7 @@ const AssetList = ({
   ...props
 }) => (
   isEmpty
-    ? <AssetListSkeleton {...props} />
+    ? <AssetListSkeleton />
     : (
       <RecyclerAssetList
         {...props}

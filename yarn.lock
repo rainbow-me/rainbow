@@ -972,8 +972,8 @@
     ws "^1.1.0"
 
 "@react-native-community/cli@^1.2.1":
-  version "1.9.8"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-1.9.8.tgz#8488699f78b146cab2d7451951c4218671812cdc"
+  version "1.9.9"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-1.9.9.tgz#79bba50258ad8cac2d66148ef649bdbf7b1a5aca"
   dependencies:
     chalk "^1.1.1"
     commander "^2.19.0"
@@ -3169,8 +3169,8 @@ deep-is@~0.1.3:
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.3.tgz#b369d6fb5dbc13eecf524f91b070feedc357cf34"
 
 deepmerge@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-3.2.0.tgz#58ef463a57c08d376547f8869fdc5bcee957f44e"
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-3.2.1.tgz#76a1f47854bcfcd66ee9a948d110540a8e12b261"
 
 defaults@^1.0.3:
   version "1.0.3"
@@ -3253,8 +3253,8 @@ detect-newline@^2.1.0:
   resolved "https://registry.yarnpkg.com/detect-newline/-/detect-newline-2.1.0.tgz#f41f1c10be4b00e87b5f13da680759f2c5bfd3e2"
 
 detox@^12.8.0:
-  version "12.11.0"
-  resolved "https://registry.yarnpkg.com/detox/-/detox-12.11.0.tgz#6b68541083cc5295e2b5d53355466be7c1645354"
+  version "12.11.1"
+  resolved "https://registry.yarnpkg.com/detox/-/detox-12.11.1.tgz#d383a92d69c1ed0a4acea1c70b835bdc9a268f43"
   dependencies:
     "@babel/core" "^7.4.5"
     bunyan "^1.8.12"
@@ -3391,8 +3391,8 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
 
 electron-to-chromium@^1.3.150, electron-to-chromium@^1.3.47:
-  version "1.3.158"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.158.tgz#5e16909dcfd25ab7cd1665114ee381083a3ee858"
+  version "1.3.160"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.160.tgz#0153f6c479869ba7f19b009296a56d954b284c11"
 
 elliptic@6.3.3:
   version "6.3.3"

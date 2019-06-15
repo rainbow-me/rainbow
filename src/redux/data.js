@@ -84,28 +84,28 @@ const addressSubscription = (address, currency, action='subscribe') => [
   }
 ];
 
-export const dataLoadState = () => (dispatch, getState) => {
+export const dataLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  dispatch({ type: DATA_LOAD_ASSETS_REQUEST });
-  getAssets(accountAddress, network)
-    .then(assets => {
-      dispatch({
-        type: DATA_LOAD_ASSETS_SUCCESS,
-        payload: assets,
-      });
-    }).catch(error => {
-      dispatch({ type: DATA_LOAD_ASSETS_FAILURE });
+  try {
+    dispatch({ type: DATA_LOAD_ASSETS_REQUEST });
+    const assets = await getAssets(accountAddress, network);
+    dispatch({
+      type: DATA_LOAD_ASSETS_SUCCESS,
+      payload: assets,
     });
-  dispatch({ type: DATA_LOAD_TRANSACTIONS_REQUEST });
-  getLocalTransactions(accountAddress, network)
-    .then(transactions => {
-      dispatch({
-        type: DATA_LOAD_TRANSACTIONS_SUCCESS,
-        payload: transactions,
-      });
-    }).catch(error => {
-      dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
+  } catch (error) {
+    dispatch({ type: DATA_LOAD_ASSETS_FAILURE });
+  }
+  try {
+    dispatch({ type: DATA_LOAD_TRANSACTIONS_REQUEST });
+    const transactions = await getLocalTransactions(accountAddress, network);
+    dispatch({
+      type: DATA_LOAD_TRANSACTIONS_SUCCESS,
+      payload: transactions,
     });
+  } catch (error) {
+    dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
+  }
 };
 
 const dataUnsubscribe = () => (dispatch, getState) => {

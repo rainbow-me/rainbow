@@ -21,28 +21,25 @@ const SETTINGS_UPDATE_LANGUAGE_SUCCESS = 'settings/SETTINGS_UPDATE_LANGUAGE_SUCC
 const SETTINGS_UPDATE_LANGUAGE_FAILURE = 'settings/SETTINGS_UPDATE_LANGUAGE_FAILURE';
 
 // -- Actions --------------------------------------------------------------- //
-export const settingsLoadState = () => dispatch => {
-  getLanguage().then(language => {
+export const settingsLoadState = () => async dispatch => {
+  try {
+    const language = await getLanguage();
     dispatch({
       type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
       payload: language
     });
-  }).catch(error => {
-    dispatch({
-      type: SETTINGS_UPDATE_LANGUAGE_FAILURE
-    });
-  });
-  getNativeCurrency().then(nativeCurrency => {
+  } catch (error) {
+    dispatch({ type: SETTINGS_UPDATE_LANGUAGE_FAILURE });
+  }
+  try {
+    const nativeCurrency = await getNativeCurrency();
     dispatch({
       type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
       payload: nativeCurrency,
     });
-  }).catch(error => {
-    dispatch({
-      type: SETTINGS_UPDATE_NATIVE_CURRENCY_FAILURE
-    });
-
-  });
+  } catch (error) {
+    dispatch({ type: SETTINGS_UPDATE_NATIVE_CURRENCY_FAILURE });
+  }
 };
 
 export const settingsUpdateAccountAddress = (accountAddress, accountType) => (

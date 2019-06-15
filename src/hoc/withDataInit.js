@@ -62,12 +62,12 @@ export default Component => compose(
     },
     loadAccountData: (ownProps) => async () => {
       try {
-        ownProps.settingsLoadState();
-        ownProps.dataLoadState();
+        await ownProps.settingsLoadState();
+        await ownProps.dataLoadState();
         ownProps.walletConnectLoadState();
         ownProps.uniswapLoadState();
         ownProps.requestsLoadState();
-        await ownProps.uniqueTokensLoadState();
+        ownProps.uniqueTokensLoadState();
       } catch (error) {
       }
     },
@@ -94,7 +94,7 @@ export default Component => compose(
         if (!isWalletBrandNew) {
           await ownProps.loadAccountData();
         }
-        await ownProps.initializeAccountData();
+        ownProps.initializeAccountData();
         return walletAddress;
       } catch (error) {
         Alert.alert('Error: Failed to initialize wallet.');

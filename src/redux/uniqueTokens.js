@@ -25,18 +25,18 @@ const UNIQUE_TOKENS_CLEAR_STATE = 'uniqueTokens/UNIQUE_TOKENS_CLEAR_STATE';
 // -- Actions --------------------------------------------------------------- //
 let getUniqueTokensInterval = null;
 
-export const uniqueTokensLoadState = () => (dispatch, getState) => {
+export const uniqueTokensLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   dispatch({ type: UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST });
-  getUniqueTokens(accountAddress, network).then(cachedUniqueTokens => {
+  try {
+    const cachedUniqueTokens = await getUniqueTokens(accountAddress, network);
     dispatch({
       type: UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_SUCCESS,
       payload: cachedUniqueTokens,
     });
-  })
-  .catch(error => {
+  } catch (error) {
     dispatch({ type: UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_FAILURE });
-  });
+  }
 };
 
 export const uniqueTokensClearState = () => (dispatch, getState) => {

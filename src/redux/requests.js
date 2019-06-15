@@ -24,12 +24,14 @@ import {
 const REQUESTS_UPDATE_REQUESTS_TO_APPROVE = 'requests/REQUESTS_UPDATE_REQUESTS_TO_APPROVE';
 const REQUESTS_CLEAR_STATE = 'requests/REQUESTS_CLEAR_STATE';
 
-export const requestsLoadState = () => (dispatch, getState) => {
+export const requestsLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  getLocalRequests(accountAddress, network).then((requests) => {
+  try {
+    const requests = await getLocalRequests(accountAddress, network);
     const _requests = requests || {};
     dispatch({ payload: _requests, type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE });
-  });
+  } catch (error) {
+  }
 };
 
 const getAssetDetails = (contractAddress, assets) => find(assets, (item) => item.address === contractAddress);
@@ -184,7 +186,6 @@ export const removeRequest = (requestId) => (dispatch, getState) => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  fetching: false,
   requests: {},
 };
 

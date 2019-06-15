@@ -19,19 +19,18 @@ const UNISWAP_UPDATE_FAILURE = 'uniswap/UNISWAP_UPDATE_FAILURE';
 const UNISWAP_CLEAR_STATE = 'uniswap/UNISWAP_CLEAR_STATE';
 
 // -- Actions --------------------------------------------------------------- //
-export const uniswapLoadState = () => (dispatch, getState) => {
+export const uniswapLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   dispatch({ type: UNISWAP_LOAD_REQUEST });
-  getUniswap(accountAddress, network)
-    .then(uniswap => {
-      dispatch({
-        type: UNISWAP_LOAD_SUCCESS,
-        payload: uniswap,
-      });
-    })
-    .catch(error => {
-      dispatch({ type: UNISWAP_LOAD_FAILURE });
+  try {
+    const uniswap = await getUniswap(accountAddress, network);
+    dispatch({
+      type: UNISWAP_LOAD_SUCCESS,
+      payload: uniswap,
     });
+  } catch (error) {
+    dispatch({ type: UNISWAP_LOAD_FAILURE });
+  }
 };
 
 export const uniswapClearState = () => (dispatch, getState) => {
