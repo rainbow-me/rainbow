@@ -3,8 +3,8 @@ import React, { PureComponent } from 'react';
 import { Clipboard } from 'react-native';
 import ToolTip from 'react-native-tooltip';
 import { withNavigation } from 'react-navigation';
-import { compose, onlyUpdateForKeys } from 'recompact';
 import { colors } from '../styles';
+import { isNewValueForPath } from '../utils';
 
 class CopyTooltip extends PureComponent {
   static propTypes = {
@@ -29,27 +29,32 @@ class CopyTooltip extends PureComponent {
 
   componentWillUnmount = () => this.handleHideTooltip()
 
+  shouldComponentUpdate = (nextProps) => (
+    isNewValueForPath(this.props, nextProps, 'textToCopy')
+    || isNewValueForPath(this.props, nextProps, 'tooltipText')
+  )
+
   handleCopy = () => Clipboard.setString(this.props.textToCopy)
 
   handleHideTooltip = () => this.tooltip.hideMenu()
 
-  handlePressIn = () => this.tooltip.showMenu()
-
   handleRef = (ref) => { this.tooltip = ref; }
+
+  handleShowTooltip = () => this.tooltip.showMenu()
 
   render = () => (
     <ToolTip
       {...this.props}
-      actions={[{ onPress: this.handleCopy, text: this.props.tooltipText }]}
+      actions={[{
+        onPress: this.handleCopy,
+        text: this.props.tooltipText,
+      }]}
       activeOpacity={this.props.activeOpacity}
-      onPressIn={this.handlePressIn}
+      onPressIn={this.handleShowTooltip}
       ref={this.handleRef}
       underlayColor={colors.transparent}
     />
   )
 }
 
-export default compose(
-  withNavigation,
-  onlyUpdateForKeys(['textToCopy', 'tooltipText']),
-)(CopyTooltip);
+export default withNavigation(CopyTooltip);

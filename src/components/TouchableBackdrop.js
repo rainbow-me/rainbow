@@ -3,12 +3,12 @@ import React from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { colors, position } from '../styles';
 
-const TouchableBackdrop = props => (
+const TouchableBackdrop = ({ zIndex, ...props }) => (
   <BorderlessButton
     css={`
       ${position.cover};
       background-color: ${colors.transparent};
-      z-index: ${({ zIndex }) => (zIndex)};
+      z-index: ${zIndex};
     `}
     {...props}
   />

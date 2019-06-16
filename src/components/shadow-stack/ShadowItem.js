@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
-import { pure } from 'recompact';
+import Animated from 'react-native-reanimated';
+import { pure, toClass } from 'recompact';
 import { colors, position, shadow as shadowUtil } from '../../styles';
 
-const ShadowItem = ({ backgroundColor, shadow, ...props }) => (
+const ShadowItem = pure(({ backgroundColor, shadow, ...props }) => (
   <View
     {...props}
     css={`
@@ -14,7 +15,7 @@ const ShadowItem = ({ backgroundColor, shadow, ...props }) => (
     `}
     shouldRasterizeIOS
   />
-);
+));
 
 ShadowItem.propTypes = {
   backgroundColor: PropTypes.string,
@@ -23,4 +24,5 @@ ShadowItem.propTypes = {
   width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
-export default pure(ShadowItem);
+export const AnimatedShadowItem = Animated.createAnimatedComponent(toClass(ShadowItem));
+export default ShadowItem;

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import QRCode from 'react-native-qrcode-svg';
-import { onlyUpdateForPropTypes } from 'recompact';
+import { withNeverRerender } from '../hoc';
 
 const QRCodeDisplay = ({ size, value, ...props }) => (
   <QRCode
@@ -13,11 +13,11 @@ const QRCodeDisplay = ({ size, value, ...props }) => (
 
 QRCodeDisplay.propTypes = {
   size: PropTypes.number,
-  value: PropTypes.string,
+  value: PropTypes.string.isRequired,
 };
 
 QRCodeDisplay.defaultProps = {
   size: 150,
 };
 
-export default onlyUpdateForPropTypes(QRCodeDisplay);
+export default withNeverRerender(QRCodeDisplay);

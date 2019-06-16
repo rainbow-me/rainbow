@@ -1,10 +1,8 @@
 import PropTypes from 'prop-types';
-import {
-  DrawerActions,
-} from 'react-navigation';
 import React from 'react';
 import { Clipboard } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import { DrawerActions } from 'react-navigation';
 import {
   compose,
   onlyUpdateForKeys,

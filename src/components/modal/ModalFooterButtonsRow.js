@@ -1,22 +1,24 @@
 import PropTypes from 'prop-types';
 import React, { Children, Fragment } from 'react';
+import styled from 'styled-components/primitives';
 import { colors, padding } from '../../styles';
-import { safeAreaInsetValues } from '../../utils';
-import { Row } from '../layout';
 import Divider from '../Divider';
+import InnerBorder from '../InnerBorder';
+import { Row } from '../layout';
+
+const ModalFooterBorderRadius = 30;
+
+const Container = styled(Row).attrs({
+  align: 'center',
+  flex: 0,
+})`
+  ${padding(0, 3.5)};
+  background-color: ${colors.dark};
+  border-radius: ${ModalFooterBorderRadius};
+`;
 
 const ModalFooterButtonsRow = ({ children, ...props }) => (
-  <Row
-    align="center"
-    css={`
-      ${padding(0, 3.5)};
-      background-color: ${colors.dark};
-      border-radius: 30px;
-      bottom: ${safeAreaInsetValues.bottom + 20};
-    `}
-    flex={0}
-    {...props}
-  >
+  <Container {...props}>
     {Children.map(children, (child, index) => (
       <Fragment>
         {child}
@@ -30,11 +32,14 @@ const ModalFooterButtonsRow = ({ children, ...props }) => (
         )}
       </Fragment>
     ))}
-  </Row>
+    <InnerBorder radius={ModalFooterBorderRadius} />
+  </Container>
 );
 
 ModalFooterButtonsRow.propTypes = {
   children: PropTypes.node,
 };
+
+ModalFooterButtonsRow.borderRadius = ModalFooterBorderRadius;
 
 export default ModalFooterButtonsRow;

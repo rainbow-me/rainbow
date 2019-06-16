@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  createAppContainer,
-  createStackNavigator,
-} from 'react-navigation';
+import { createAppContainer, createStackNavigator } from 'react-navigation';
 import { hoistStatics } from 'recompact';
 import { createDrawerNavigator } from 'react-navigation-drawer';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
@@ -52,7 +49,9 @@ const SwipeToReceiveNavigator = createDrawerNavigator({
     id: 'drawer-view',
     simultaneousHandlers: 'tab-view',
   },
-  overlayColor: colors.alpha(colors.blueGreyDarker, 0.75),
+  onTransitionEnd,
+  onTransitionStart,
+  overlayColor: colors.alpha(colors.blueGreyDarker, 0.69),
 });
 
 const SwipeStack = createMaterialTopTabNavigator({
@@ -79,6 +78,8 @@ const SwipeStack = createMaterialTopTabNavigator({
   headerMode: 'none',
   initialRouteName: 'WalletScreen',
   mode: 'modal',
+  onTransitionEnd,
+  onTransitionStart,
   tabBarComponent: null,
 });
 
