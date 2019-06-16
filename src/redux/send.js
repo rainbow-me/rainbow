@@ -257,16 +257,16 @@ export const sendUpdateAssetAmount = assetAmount => (dispatch, getState) => {
       nativeCurrency,
     );
     _nativeAmount = formatInputDecimals(nativeAmount, _assetAmount);
-    const balanceAmount = getBalanceAmount(assets, gasPrice, selected);
-    dispatch({
-      type: SEND_UPDATE_ASSET_AMOUNT,
-      payload: {
-        assetAmount: _assetAmount,
-        nativeAmount: _nativeAmount,
-        isSufficientBalance: Number(_assetAmount) <= Number(balanceAmount),
-      },
-    });
   }
+  const balanceAmount = getBalanceAmount(assets, gasPrice, selected);
+  dispatch({
+    type: SEND_UPDATE_ASSET_AMOUNT,
+    payload: {
+      assetAmount: _assetAmount,
+      nativeAmount: _nativeAmount,
+      isSufficientBalance: Number(_assetAmount) <= Number(balanceAmount),
+    },
+  });
 };
 
 export const sendUpdateNativeAmount = nativeAmount => (dispatch, getState) => {
