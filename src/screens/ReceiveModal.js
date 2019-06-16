@@ -17,7 +17,7 @@ import { Br, Monospace, Text } from '../components/text';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { withAccountAddress } from '../hoc';
 import { colors, padding, position } from '../styles';
-import { deviceUtils, safeAreaInsetValues } from '../utils';
+import { deviceUtils, safeAreaInsetValues, statusBar } from '../utils';
 
 const {
   block,
@@ -61,8 +61,11 @@ const HandleTabUpdate = ({ drawerOpenProgress, tab, tooltipRef }) => {
   const isDrawerOpen = lessOrEq(drawerOpenProgress, 0.99);
 
   const forceUpdateTab = call([drawerOpenProgress], ([p]) => {
-    tab.tabActiveOffsetX[0] = p <= endThreshold ? -20 : -10000;
-    tab.tabActiveOffsetX[1] = p <= endThreshold ? 20 : 10000;
+    const underThreshold = p <= endThreshold;
+    const statusBarStyle = underThreshold ? 'dark-content' : 'light-content';
+    statusBar.setBarStyle(statusBarStyle, true);
+    tab.tabActiveOffsetX[0] = underThreshold ? -20 : -10000;
+    tab.tabActiveOffsetX[1] = underThreshold ? 20 : 10000;
     tab.tabRef.current.forceUpdate();
   });
 
@@ -236,13 +239,14 @@ class ReceiveModal extends PureComponent {
         css={padding(25)}
         direction="column"
         flex={1}
+        pointerEvents="box-none"
       >
         <DescriptionText>
           Send Ether, ERC-20 tokens,<Br />
           or collectibles to your wallet:
         </DescriptionText>
         <CopyTooltip
-          activeOpacity={0.85}
+          activeOpacity={1}
           arrowDirection="up"
           onRef={this.tooltipRef}
           textToCopy={this.props.accountAddress}

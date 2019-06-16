@@ -4,10 +4,11 @@ import { get, isNil, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import { estimateGas, getTransactionCount, toHex } from '@rainbow-me/rainbow-common';
 import React, { PureComponent } from 'react';
-import { Alert, StatusBar, Vibration } from 'react-native';
+import { Alert, Vibration } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
 import { withTransactionConfirmationScreen } from '../hoc';
+import { statusBar } from '../utils';
 import { signMessage, sendTransaction } from '../model/wallet';
 import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
@@ -23,7 +24,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
   }
 
   componentDidMount() {
-    StatusBar.setBarStyle('light-content', true);
+    statusBar.setBarStyle('light-content', true);
 
     const autoOpened = get(this.props, 'navigation.state.params.autoOpened');
     if (autoOpened) {
@@ -121,7 +122,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
   }
 
   closeScreen = () => {
-    StatusBar.setBarStyle('dark-content', true);
+    statusBar.setBarStyle('dark-content', true);
     this.props.navigation.popToTop();
   }
 

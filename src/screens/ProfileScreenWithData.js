@@ -1,10 +1,10 @@
 import Animated from 'react-native-reanimated';
 import {
   compose,
+  setDisplayName,
   withHandlers,
   withProps,
 } from 'recompact';
-import { setDisplayName } from 'recompose';
 import {
   withAccountAddress,
   withAccountSettings,
@@ -18,7 +18,7 @@ import { deviceUtils } from '../utils';
 import ProfileScreen from './ProfileScreen';
 
 export default compose(
-  setDisplayName('ProfileScreen'),
+  setDisplayName('ProfileScreenWithData'),
   withAccountAddress,
   withAccountSettings,
   withAccountTransactions,
@@ -38,25 +38,24 @@ export default compose(
   }) => {
     const topNav = navigation.dangerouslyGetParent();
     const { width } = deviceUtils.dimensions;
-
     const drawerOpenProgress = topNav.getParam('drawerOpenProgress');
-
-    const buildInterpolation = outputRange => (
-      Animated.interpolate(drawerOpenProgress, ({
-        inputRange: [0, 0.1, 1],
-        outputRange,
-      }))
-    );
 
     // On opening drawer we firstly move BlurOverlay to screen and then set proper opacity
     // in order not to prevent gesture recognition while if drawer closed
-    const blurTranslateX = drawerOpenProgress
-      ? buildInterpolation([-width, 0, 0])
-      : -width;
+    let blurDrawerOpacity = 0;
+    let blurTranslateX = -width;
 
-    const blurDrawerOpacity = drawerOpenProgress
-      ? buildInterpolation([0, 0, 1])
-      : 0;
+    if (drawerOpenProgress) {
+      blurTranslateX = Animated.interpolate(drawerOpenProgress, {
+        inputRange: [0, 0.1, 1],
+        outputRange: [-width, 0, 0],
+      });
+
+      blurDrawerOpacity = Animated.interpolate(drawerOpenProgress, {
+        inputRange: [0, 0.1, 1],
+        outputRange: [0, 0, 1],
+      });
+    }
 
     return {
       blurDrawerOpacity,

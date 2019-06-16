@@ -17,7 +17,7 @@ const ModalFooterButton = withNeverRerender(({ icon, label, onPress }) => (
   >
     <RowWithMargins
       align="center"
-      css={padding(0, 25)}
+      css={padding(0, 25, 2)}
       flex={0}
       height={ModalFooterButtonHeight}
       justify="center"

@@ -23,9 +23,9 @@ import {
   withFetchingPrices,
   withHideSplashScreen,
   withIsWalletEmpty,
+  withStatusBarStyle,
 } from '../hoc';
 import { position } from '../styles';
-import withStatusBarStyle from '../hoc/withStatusBarStyle';
 
 class WalletScreen extends PureComponent {
   static propTypes = {
