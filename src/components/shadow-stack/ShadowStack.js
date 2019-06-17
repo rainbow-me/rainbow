@@ -6,24 +6,13 @@ import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
 import ShadowItem from './ShadowItem';
 
-const ChildrenWrapper = styled.View`
-  ${position.cover};
+const Container = styled.View`
   background-color: ${({ backgroundColor }) => backgroundColor || colors.transparent};
   border-radius: ${({ borderRadius }) => borderRadius};
-  overflow: ${({ overflow }) => overflow};;
-`;
-
-const ShadowStackContainer = styled.View`
-  background-color: ${({ backgroundColor }) => backgroundColor || colors.transparent};
-  border-radius: ${({ borderRadius }) => borderRadius};
-  height: ${({ height }) => height};
-  width: ${({ width }) => width};
-  z-index: 1;
 `;
 
 export default class ShadowStack extends PureComponent {
   static propTypes = {
-    borderRadius: PropTypes.number.isRequired,
     children: PropTypes.node,
     height: PropTypes.number.isRequired,
     itemStyles: stylePropType,
@@ -35,20 +24,17 @@ export default class ShadowStack extends PureComponent {
   }
 
   static defaultProps = {
+    itemStyles: {},
     overflow: 'hidden',
     renderItem: ShadowItem,
     shadows: [],
   }
 
-  renderItem = (shadow, index) => {
-    const {
-      itemStyles,
-      renderItem,
-      ...props
-    } = this.props;
+  renderShadowItem = (shadow, index) => {
+    const { itemStyles, renderItem, ...props } = this.props;
 
     return createElement(renderItem, {
-      ...omit(props, ['children', 'shadows', 'style']),
+      ...omit(props, ['children', 'overflow', 'style']),
       key: `${shadow.join('-')}${index}`,
       shadow,
       style: itemStyles,
@@ -66,16 +52,17 @@ export default class ShadowStack extends PureComponent {
     } = this.props;
 
     return (
-      <ShadowStackContainer {...props} style={style}>
-        {shadows.map(this.renderItem)}
-        <ChildrenWrapper
+      <Container {...props} style={style} zIndex={1}>
+        {shadows.map(this.renderShadowItem)}
+        <Container
           {...props}
+          css={position.cover}
           overflow={overflow}
-          style={{ zIndex: shadows.length + 2 }}
+          zIndex={shadows.length + 2}
         >
           {children}
-        </ChildrenWrapper>
-      </ShadowStackContainer>
+        </Container>
+      </Container>
     );
   }
 }

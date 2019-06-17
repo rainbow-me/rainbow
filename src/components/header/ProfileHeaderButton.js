@@ -14,9 +14,9 @@ import HeaderButton from './HeaderButton';
 
 const ProfileHeaderButton = ({ onPress, pendingRequestCount }) => (
   <HeaderButton
-    testID="goToProfile"
     onPress={onPress}
     shouldRasterizeIOS
+    testID="goToProfile"
     transformOrigin="left"
   >
     <Centered>
