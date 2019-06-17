@@ -15,10 +15,14 @@ export default Component => compose(
       try {
         await ownProps.assetsRefreshState();
         ownProps.setAssetsFetched();
+      } catch (error) {
+        ownProps.setAssetsFetched();
+      }
+      try {
         await ownProps.transactionsRefreshState();
         ownProps.setTransactionFetched();
       } catch (error) {
-        // TODO more granular error messaging depending on offline status
+        ownProps.setTransactionFetched();
       }
     },
   }),
