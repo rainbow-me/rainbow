@@ -24,7 +24,7 @@ import {
 import { Emoji } from '../text';
 
 const SettingsExternalURLs = {
-  about: 'http://rainbow.me',
+  about: 'https://twitter.com/rainbowdotme',
   feedback: 'http://rainbow.me',
   legal: 'https://github.com/rainbow-me/rainbow/blob/master/LICENSE',
 };
@@ -120,8 +120,8 @@ const SettingsSection = ({
       />
       <ListItemDivider />
       <ListItem
-        icon={<Emoji name="rainbow" />}
-        label="About Rainbow"
+        icon={<Emoji name="bird" />}
+        label="Follow Us"
         onPress={openWebView}
         value={SettingsExternalURLs.about}
       />

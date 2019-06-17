@@ -97,7 +97,7 @@ export default Component => compose(
         ownProps.initializeAccountData();
         return walletAddress;
       } catch (error) {
-        Alert.alert('Error: Failed to initialize wallet.');
+        Alert.alert('Import failed due to an invalid seed phrase. Please try again.');
         return null;
       }
     },
