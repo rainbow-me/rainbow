@@ -83,17 +83,6 @@ const ImportSeedPhraseSheet = ({
         />
       </Centered>
       <Row align="start" justify="space-between">
-        /*
-        <HelpButton onPress={onPressHelp}>
-          <Text
-            align="center"
-            color={colors.alpha(colors.blueGreyDark, 0.8)}
-            weight="medium"
-          >
-            Help
-          </Text>
-        </HelpButton>
-        */
         <ImportButton
           disabled={seedPhrase ? !isSeedPhraseValid : !isClipboardContentsValidSeedPhrase}
           onPress={seedPhrase ? onImportSeedPhrase : onPasteSeedPhrase}
