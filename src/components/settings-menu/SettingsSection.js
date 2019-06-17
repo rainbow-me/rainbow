@@ -120,7 +120,7 @@ const SettingsSection = ({
       />
       <ListItemDivider />
       <ListItem
-        icon={<Emoji name="bird" />}
+        icon={<Emoji name="rainbow" />}
         label="Follow Us"
         onPress={openWebView}
         value={SettingsExternalURLs.about}
