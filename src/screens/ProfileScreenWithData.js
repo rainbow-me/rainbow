@@ -8,7 +8,6 @@ import {
   withAccountAddress,
   withAccountSettings,
   withAccountTransactions,
-  withAreTransactionsFetched,
   withBlurTransitionProps,
   withIsWalletEmpty,
   withRequests,
@@ -22,14 +21,12 @@ export default compose(
   withAccountTransactions,
   withBlurTransitionProps,
   withIsWalletEmpty,
-  withAreTransactionsFetched,
   withRequests,
   withHandlers({
     onPressBackButton: ({ navigation }) => () => navigation.navigate('WalletScreen'),
     onPressSettings: ({ navigation }) => () => navigation.navigate('SettingsModal'),
   }),
-  withProps(({ areTransactionsFetched, isWalletEmpty, transactionsCount }) => ({
+  withProps(({ isWalletEmpty, transactionsCount }) => ({
     isEmpty: isWalletEmpty && !transactionsCount,
-    isLoading: !areTransactionsFetched && !isWalletEmpty,
   })),
 )(ProfileScreen);
