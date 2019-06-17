@@ -9,7 +9,6 @@ import { combineReducers } from 'redux';
 
 import actionSheetManager from './actionSheetManager';
 import imageDimensionsCache from './imageDimensionsCache';
-import initialFetch from './initialFetch';
 import isWalletEmpty from './isWalletEmpty';
 import navigation from './navigation';
 import nonce from './nonce';
@@ -20,7 +19,6 @@ export default combineReducers({
   actionSheetManager,
   assets,
   imageDimensionsCache,
-  initialFetch,
   isWalletEmpty,
   navigation,
   nonce,
