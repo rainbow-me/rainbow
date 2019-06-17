@@ -14,30 +14,22 @@ import {
 } from '../../hoc';
 import RecyclerActivityList from './RecyclerActivityList';
 
-const ActivityList = ({
-  hasPendingTransaction,
-  header,
-  nativeCurrency,
-  pendingTransactionsCount,
-  sections,
-}) => (
+const ActivityList = ({ header, isEmpty, sections }) => (
   <RecyclerActivityList
-    sections={sections}
     header={header}
+    isLoading={!isEmpty && !sections.length}
+    sections={sections}
   />
 );
 
 ActivityList.propTypes = {
-  hasPendingTransaction: PropTypes.bool,
   header: PropTypes.node,
-  nativeCurrency: PropTypes.string.isRequired,
-  pendingTransactionsCount: PropTypes.number,
+  isEmpty: PropTypes.bool,
   sections: PropTypes.arrayOf(PropTypes.shape({
     data: PropTypes.array,
     renderItem: PropTypes.func,
     title: PropTypes.string.isRequired,
   })),
-  transactionsCount: PropTypes.number,
 };
 
 export default compose(
@@ -68,6 +60,7 @@ export default compose(
   }),
   onlyUpdateForKeys([
     'hasPendingTransaction',
+    'isEmpty',
     'nativeCurrency',
     'pendingTransactionsCount',
     'sections',

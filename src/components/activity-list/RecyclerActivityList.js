@@ -1,11 +1,20 @@
-import { get } from 'lodash';
+import { get, times } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Dimensions } from 'react-native';
+import React, { PureComponent } from 'react';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import { RequestCoinRow, TransactionCoinRow } from '../coin-row';
+import { buildTransactionUniqueIdentifier } from '../../helpers/transactions';
+import { colors, position } from '../../styles';
+import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
+import { AssetListItemSkeleton } from '../asset-list';
+import {
+  ContractInteractionCoinRow,
+  RequestCoinRow,
+  TransactionCoinRow,
+} from '../coin-row';
+import ActivityIndicator from '../ActivityIndicator';
+import { Centered, Column } from '../layout';
 import ListFooter from '../list/ListFooter';
 import ActivityListHeader from './ActivityListHeader';
 
@@ -22,9 +31,38 @@ const Wrapper = styled.View`
   width: 100%;
 `;
 
-export default class RecyclerActivityList extends Component {
+const LoadingState = ({ children }) => (
+  <Column flex={1}>
+    {children}
+    <Column flex={1}>
+      <Centered style={{ paddingTop: 200, position: 'absolute', width: '100%' }}>
+        <ActivityIndicator
+          color={colors.alpha(colors.blueGreyLight, 0.666)}
+          size={32}
+        />
+      </Centered>
+      {times(11, index => <AssetListItemSkeleton key={`activitySkeleton${index}`} />)}
+    </Column>
+  </Column>
+);
+
+const hasRowChanged = (r1, r2) => {
+  if (r1.hash === '_header' && isNewValueForPath(r1, r2, 'header.props.accountAddress')) {
+    return true;
+  }
+
+  const r1Key = r1.hash ? r1.hash : get(r1, 'transactionDisplayDetails.timestampInMs', '');
+  const r2Key = r2.hash ? r2.hash : get(r2, 'transactionDisplayDetails.timestampInMs', '');
+
+  return (r1Key !== r2Key)
+    || isNewValueForPath(r1, r2, 'native.symbol')
+    || isNewValueForPath(r1, r2, 'pending');
+};
+
+export default class RecyclerActivityList extends PureComponent {
   static propTypes = {
     header: PropTypes.node,
+    isLoading: PropTypes.bool,
     sections: PropTypes.arrayOf(PropTypes.shape({
       data: PropTypes.array,
       title: PropTypes.string.isRequired,
@@ -33,24 +71,9 @@ export default class RecyclerActivityList extends Component {
 
   constructor(args) {
     super(args);
-    const { width } = Dimensions.get('window');
-    this.state = {
-      dataProvider: new DataProvider((r1, r2) => {
-        if (r1.hash === '_header') {
-          const r1Address = get(r1, 'header.props.accountAddress', '');
-          const r2Address = get(r2, 'header.props.accountAddress', '');
-          if (r1Address !== r2Address) {
-            return true;
-          }
-        }
-        
-        const r1Symbol = get(r1, 'native.symbol', '');
-        const r2Symbol = get(r2, 'native.symbol', '');
 
-        const r1Key = r1.hash ? r1.hash : get(r1, 'transactionDisplayDetails.timestampInMs', '');
-        const r2Key = r2.hash ? r2.hash : get(r2, 'transactionDisplayDetails.timestampInMs', '');
-				return (r1Key !== r2Key) || (r1Symbol !== r2Symbol);
-      }),
+    this.state = {
+      dataProvider: new DataProvider(hasRowChanged, this.getStableId),
       headersIndices: [],
     };
 
@@ -72,7 +95,7 @@ export default class RecyclerActivityList extends Component {
       },
       (type, dim) => {
         // This values has been hardcoded for omitting imports' cycle
-        dim.width = width;
+        dim.width = deviceUtils.dimensions.width;
         if (type === ViewTypes.ROW) {
           dim.height = 64;
         } else if (type === ViewTypes.FOOTER) {
@@ -80,7 +103,7 @@ export default class RecyclerActivityList extends Component {
         } else if (type === ViewTypes.HEADER) {
           dim.height = 35;
         } else {
-          dim.height = 184;
+          dim.height = this.props.isLoading ? deviceUtils.dimensions.height : 216;
         }
       },
     );
@@ -107,37 +130,40 @@ export default class RecyclerActivityList extends Component {
     };
   }
 
+  getStableId = (index) => {
+    const row = get(this.state, `dataProvider._data[${index}]`);
+    return buildTransactionUniqueIdentifier(row);
+  };
+
   rowRenderer = (type, data) => {
     if (type === ViewTypes.COMPONENT_HEADER) {
-      return data.header;
+      return this.props.isLoading
+        ? <LoadingState>{data.header}</LoadingState>
+        : data.header;
     }
-    if (type === ViewTypes.HEADER) {
-      return <ActivityListHeader {...data}/>;
-    }
-    if (type === ViewTypes.FOOTER) {
-      return <ListFooter/>;
-    }
-    if (!data) {
-      return null;
-    }
-    if (!data.hash) {
-      return <RequestCoinRow item={data} />;
-    }
+    if (type === ViewTypes.HEADER) return <ActivityListHeader {...data} />;
+    if (type === ViewTypes.FOOTER) return <ListFooter />;
+
+    if (!data) return null;
+    if (!data.hash) return <RequestCoinRow item={data} />;
+    if (!data.symbol && data.dappName) return <ContractInteractionCoinRow item={data} />;
     return <TransactionCoinRow item={data} />;
   }
 
-  render() {
-    return (
-      <Wrapper>
-        <StickyContainer stickyHeaderIndices={this.state.headersIndices}>
-          <RecyclerListView
-            dataProvider={this.state.dataProvider}
-            layoutProvider={this.layoutProvider}
-            renderAheadOffset={1000}
-            rowRenderer={this.rowRenderer}
-          />
-        </StickyContainer>
-      </Wrapper>
-    );
-  }
+  render = () => (
+    <Wrapper>
+      <StickyContainer stickyHeaderIndices={this.state.headersIndices}>
+        <RecyclerListView
+          dataProvider={this.state.dataProvider}
+          layoutProvider={this.layoutProvider}
+          renderAheadOffset={deviceUtils.dimensions.height}
+          rowRenderer={this.rowRenderer}
+          scrollEnabled={!this.props.isLoading}
+          scrollIndicatorInsets={{
+            bottom: safeAreaInsetValues.bottom,
+          }}
+        />
+      </StickyContainer>
+    </Wrapper>
+  )
 }

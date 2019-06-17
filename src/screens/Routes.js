@@ -1,15 +1,19 @@
-import { createAppContainer, createStackNavigator, createMaterialTopTabNavigator } from 'react-navigation';
+import {
+  createAppContainer,
+  createMaterialTopTabNavigator,
+  createStackNavigator,
+} from 'react-navigation';
 import Navigation from '../navigation';
 import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
 import { deviceUtils } from '../utils';
-import ExpandedAssetScreen from './ExpandedAssetScreen';
+import ExpandedAssetScreenWithData from './ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from './ProfileScreenWithData';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
 import ReceiveModal from './ReceiveModal';
-// import ExamplePage from './ExamplePage';
+import WalletConnectConfirmationModal from './WalletConnectConfirmationModal';
 import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
@@ -41,7 +45,6 @@ const SwipeStack = createMaterialTopTabNavigator({
 
 const MainNavigator = createStackNavigator({
   ConfirmRequest: TransactionConfirmationScreenWithData,
-  // ExamplePage: ExamplePage,
   ExpandedAssetScreen: {
     navigationOptions: {
       effect: 'expanded',
@@ -49,7 +52,7 @@ const MainNavigator = createStackNavigator({
         vertical: deviceUtils.dimensions.height,
       },
     },
-    screen: ExpandedAssetScreen,
+    screen: ExpandedAssetScreenWithData,
   },
   ImportSeedPhraseSheet: ImportSeedPhraseSheetWithData,
   ReceiveModal: {
@@ -60,6 +63,15 @@ const MainNavigator = createStackNavigator({
       },
     },
     screen: ReceiveModal,
+  },
+  WalletConnectConfirmationModal: {
+    navigationOptions: {
+      effect: 'expanded',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height,
+      },
+    },
+    screen: WalletConnectConfirmationModal,
   },
   SendSheet: SendSheetWithData,
   SettingsModal: {

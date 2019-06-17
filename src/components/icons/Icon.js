@@ -6,13 +6,13 @@ import ArrowCircledIcon from './svg/ArrowCircledIcon';
 import ArrowIcon from './svg/ArrowIcon';
 import AssetListItemSkeletonIcon from './svg/AssetListItemSkeletonIcon';
 import AvatarIcon from './svg/AvatarIcon';
-import RainbowLogoIcon from './svg/BalanceLogoIcon';
 import CameraIcon from './svg/CameraIcon';
 import CaretIcon from './svg/CaretIcon';
 import CaretThinIcon from './svg/CaretThinIcon';
 import CheckmarkCircledIcon from './svg/CheckmarkCircledIcon';
 import CheckmarkIcon from './svg/CheckmarkIcon';
 import ClockIcon from './svg/ClockIcon';
+import CloseCircledIcon from './svg/CloseCircledIcon';
 import CloseIcon from './svg/CloseIcon';
 import CompassIcon from './svg/CompassIcon';
 import CopyIcon from './svg/CopyIcon';
@@ -25,7 +25,9 @@ import InboxIcon from './svg/InboxIcon';
 import OfflineIcon from './svg/OfflineIcon';
 import ProgressIcon from './svg/ProgressIcon';
 import SendIcon from './svg/SendIcon';
+import SendSmallIcon from './svg/SendSmallIcon';
 import ShareIcon from './svg/ShareIcon';
+import SignatureIcon from './svg/SignatureIcon';
 import SpinnerIcon from './svg/SpinnerIcon';
 import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import TouchIdIcon from './svg/TouchIdIcon';
@@ -39,7 +41,6 @@ Icon.IconTypes = {
   arrowCircled: ArrowCircledIcon,
   assetListItemSkeleton: AssetListItemSkeletonIcon,
   avatar: AvatarIcon,
-  rainbowLogo: RainbowLogoIcon,
   camera: CameraIcon,
   caret: CaretIcon,
   caretThin: CaretThinIcon,
@@ -47,6 +48,7 @@ Icon.IconTypes = {
   checkmarkCircled: CheckmarkCircledIcon,
   clock: ClockIcon,
   close: CloseIcon,
+  closeCircled: CloseCircledIcon,
   compass: CompassIcon,
   copy: CopyIcon,
   crosshair: CrosshairIcon,
@@ -58,7 +60,9 @@ Icon.IconTypes = {
   offline: OfflineIcon,
   progress: ProgressIcon,
   send: SendIcon,
+  sendSmall: SendSmallIcon,
   share: ShareIcon,
+  signature: SignatureIcon,
   spinner: SpinnerIcon,
   threeDots: ThreeDotsIcon,
   touchid: TouchIdIcon,

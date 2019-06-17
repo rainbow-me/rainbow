@@ -1,0 +1,37 @@
+matrix:
+  include:
+  - language: objective-c
+    osx_image: xcode10.2
+    xcode_sdk: iphonesimulator12.2
+    xcode_destination: platform=iOS Simulator,OS=12.2,name=iPhone X
+    env: NODE_VERSION=10.15.3
+
+    branches:
+      only:
+      - master
+
+    cache: yarn
+
+    install:
+    - nvm --version
+    - echo $NODE_VERSION
+    - sudo launchctl limit maxfiles 2048 unlimited
+    - sudo ulimit -n 10000
+    - brew tap wix/brew
+    - brew install applesimutils
+    - brew update
+    - brew install watchman
+    - nvm install $NODE_VERSION
+    - nvm use $NODE_VERSION
+    - nvm alias default $NODE_VERSION
+    - brew install yarn
+    - yarn global add react-native-cli
+    - yarn global add detox-cli
+    - yarn
+    - yarn nodeify
+    - pod repo update
+    - yarn install-pods
+    - watchman watch-del-all
+    - FORCE_BUNDLING=1 detox build -c ios.sim.release
+    script:
+    - detox test -c ios.sim.release --no-color --headless --cleanup

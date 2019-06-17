@@ -1,9 +1,11 @@
 import BigNumber from 'bignumber.js';
 import {
+  filter,
   find,
   get,
   mapValues,
   omit,
+  values,
 } from 'lodash';
 import {
   convertAssetAmountToDisplaySpecific,
@@ -53,45 +55,47 @@ export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => 
   return { nativeAmount, nativeAmountDisplay };
 };
 
-const getRequestDisplayDetails = (callData, assets, prices, nativeCurrency) => {
-  if (callData.method === 'eth_sendTransaction') {
-    const transaction = get(callData, 'params[0]', null);
-    return getTransactionDisplayDetails(transaction, assets, prices, nativeCurrency);
+const getTimestampFromPayload = payload => parseInt(payload.id.toString().slice(0, -3));
+
+const getRequestDisplayDetails = (payload, assets, prices, nativeCurrency) => {
+  const timestampInMs = getTimestampFromPayload(payload);
+  if (payload.method === 'eth_sendTransaction') {
+    const transaction = get(payload, 'params[0]', null);
+    return getTransactionDisplayDetails(
+      transaction,
+      assets,
+      prices,
+      nativeCurrency,
+      timestampInMs,
+    );
   }
-  if (callData.method === 'eth_sign' || callData.method === 'personal_sign') {
-    const message = get(callData, 'params[1]');
-    return getMessageDisplayDetails(message);
+  if (payload.method === 'eth_sign' || payload.method === 'personal_sign') {
+    const message = get(payload, 'params[1]');
+    return getMessageDisplayDetails(message, timestampInMs);
   }
-  if (callData.method === 'eth_signTypedData'
-      || callData.method === 'eth_signTypedData_v3') {
-    const request = get(callData, 'params[1]', null);
+  if (payload.method === 'eth_signTypedData'
+    || payload.method === 'eth_signTypedData_v3') {
+    const request = get(payload, 'params[1]', null);
     const jsonRequest = JSON.stringify(request.message);
-    return getTypedDataDisplayDetails(jsonRequest);
+    return getTypedDataDisplayDetails(jsonRequest, timestampInMs);
   }
   return null;
 };
 
-const getTypedDataDisplayDetails = (request) => {
-  const timestampInMs = Date.now();
-  return {
-    payload: request,
-    timestampInMs,
-    type: 'message',
-  };
-};
+const getTypedDataDisplayDetails = (request, timestampInMs) => ({
+  payload: request,
+  timestampInMs,
+  type: 'message',
+});
 
-const getMessageDisplayDetails = (message) => {
-  const timestampInMs = Date.now();
-  return {
-    payload: message,
-    timestampInMs,
-    type: 'message',
-  };
-};
+const getMessageDisplayDetails = (message, timestampInMs) => ({
+  payload: message,
+  timestampInMs,
+  type: 'message',
+});
 
-const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrency) => {
+const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrency, timestampInMs) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
-  const timestampInMs = Date.now();
   if (transaction.data === '0x') {
     const value = fromWei(convertHexToString(transaction.value));
     const { nativeAmount, nativeAmountDisplay } = getNativeAmount(prices, nativeCurrency, value, 'ETH');
@@ -140,54 +144,60 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
       type: 'transaction',
     };
   }
+  if (transaction.data) {
+    const value = transaction.value ? fromWei(convertHexToString(transaction.value)) : 0;
+    return {
+      payload: {
+        data: transaction.data,
+        from: transaction.from,
+        gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
+        gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
+        nonce: Number(convertHexToString(transaction.nonce)),
+        to: transaction.to,
+        value,
+      },
+      timestampInMs,
+      type: 'default',
+    };
+  }
 
   return null;
 };
 
-export const addTransactionToApprove = (sessionId, callId, callData, dappName) => (dispatch, getState) => {
+export const addTransactionToApprove = (clientId, peerId, requestId, payload, peerMeta) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
   const { accountAddress, network, nativeCurrency } = getState().settings;
   const { prices } = getState().prices;
   const { assets } = getState().assets;
-  const transactionDisplayDetails = getRequestDisplayDetails(callData, assets, prices, nativeCurrency);
+  const transactionDisplayDetails = getRequestDisplayDetails(payload, assets, prices, nativeCurrency);
+  const dappName = peerMeta.name;
+  const imageUrl = get(peerMeta, 'icons[0]');
   const transaction = {
-    callData,
-    callId,
+    clientId,
     dappName,
-    sessionId,
+    imageUrl,
+    payload,
+    peerId,
+    requestId,
     transactionDisplayDetails,
   };
-  const updatedTransactions = { ...transactionsToApprove, [callId]: transaction };
-  dispatch({ payload: updatedTransactions, type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE });
+  const updatedTransactions = { ...transactionsToApprove, [requestId]: transaction };
+  dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
   saveLocalRequests(accountAddress, network, updatedTransactions);
   return transaction;
 };
 
-export const addTransactionsToApprove = (transactions) => (dispatch, getState) => {
+export const transactionsForTopic = (topic) => (dispatch, getState) => {
   const { transactionsToApprove } = getState().transactionsToApprove;
-  const { accountAddress, network, nativeCurrency } = getState().settings;
-  const { prices } = getState().prices;
-  const { assets } = getState().assets;
-  const transactionsWithDisplayDetails = mapValues(transactions, (transactionDetails) => {
-    const transactionDisplayDetails = getRequestDisplayDetails(transactionDetails.callData, assets, prices, nativeCurrency);
-    return { ...transactionDetails, transactionDisplayDetails };
-  });
-  const updatedTransactions = { ...transactionsToApprove, ...transactionsWithDisplayDetails };
-  dispatch({ payload: updatedTransactions, type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE });
-  saveLocalRequests(accountAddress, network, updatedTransactions);
+  return filter(values(transactionsToApprove), { 'clientId': topic });
 };
 
-export const transactionIfExists = (callId) => (dispatch, getState) => {
-  const { transactionsToApprove } = getState().transactionsToApprove;
-  return (transactionsToApprove && transactionsToApprove[callId]);
-};
-
-export const removeTransaction = (callId) => (dispatch, getState) => {
+export const removeTransaction = (requestId) => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { transactionsToApprove } = getState().transactionsToApprove;
-  const updatedTransactions = omit(transactionsToApprove, [callId]);
-  removeLocalRequest(accountAddress, network, callId);
-  dispatch({ payload: updatedTransactions, type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE });
+  const updatedTransactions = omit(transactionsToApprove, [requestId]);
+  removeLocalRequest(accountAddress, network, requestId);
+  dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
 };
 
 // -- Reducer ----------------------------------------- //

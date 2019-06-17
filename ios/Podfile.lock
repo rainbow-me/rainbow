@@ -1,6 +1,8 @@
 PODS:
+  - boost-for-react-native (1.63.0)
   - Crashlytics (3.10.9):
     - Fabric (~> 1.7.13)
+  - DoubleConversion (1.1.6)
   - Fabric (1.7.13)
   - Firebase/Core (5.3.0):
     - Firebase/CoreOnly
@@ -25,94 +27,177 @@ PODS:
     - GoogleToolboxForMac/Logger (~> 2.1)
     - Protobuf (~> 3.1)
   - FLAnimatedImage (1.0.12)
-  - GoogleToolboxForMac/Defines (2.1.4)
-  - GoogleToolboxForMac/Logger (2.1.4):
-    - GoogleToolboxForMac/Defines (= 2.1.4)
-  - "GoogleToolboxForMac/NSData+zlib (2.1.4)":
-    - GoogleToolboxForMac/Defines (= 2.1.4)
-  - libwebp (0.6.1):
-    - libwebp/core (= 0.6.1)
-    - libwebp/dec (= 0.6.1)
-    - libwebp/demux (= 0.6.1)
-    - libwebp/dsp (= 0.6.1)
-    - libwebp/enc (= 0.6.1)
-    - libwebp/mux (= 0.6.1)
-    - libwebp/utils (= 0.6.1)
-    - libwebp/webp (= 0.6.1)
-  - libwebp/core (0.6.1):
+  - Folly (2018.10.22.00):
+    - boost-for-react-native
+    - DoubleConversion
+    - glog
+  - glog (0.3.5)
+  - GoogleToolboxForMac/Defines (2.2.0)
+  - GoogleToolboxForMac/Logger (2.2.0):
+    - GoogleToolboxForMac/Defines (= 2.2.0)
+  - "GoogleToolboxForMac/NSData+zlib (2.2.0)":
+    - GoogleToolboxForMac/Defines (= 2.2.0)
+  - libwebp (1.0.2):
+    - libwebp/core (= 1.0.2)
+    - libwebp/dec (= 1.0.2)
+    - libwebp/demux (= 1.0.2)
+    - libwebp/dsp (= 1.0.2)
+    - libwebp/enc (= 1.0.2)
+    - libwebp/mux (= 1.0.2)
+    - libwebp/utils (= 1.0.2)
+    - libwebp/webp (= 1.0.2)
+  - libwebp/core (1.0.2):
     - libwebp/webp
-  - libwebp/dec (0.6.1):
+  - libwebp/dec (1.0.2):
     - libwebp/core
-  - libwebp/demux (0.6.1):
+  - libwebp/demux (1.0.2):
     - libwebp/core
-  - libwebp/dsp (0.6.1):
+  - libwebp/dsp (1.0.2):
     - libwebp/core
-  - libwebp/enc (0.6.1):
+  - libwebp/enc (1.0.2):
     - libwebp/core
-  - libwebp/mux (0.6.1):
+  - libwebp/mux (1.0.2):
     - libwebp/core
-  - libwebp/utils (0.6.1):
+  - libwebp/utils (1.0.2):
     - libwebp/core
-  - libwebp/webp (0.6.1)
+  - libwebp/webp (1.0.2)
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
-  - Protobuf (3.6.1)
-  - React (0.57.1):
-    - React/Core (= 0.57.1)
+  - Protobuf (3.7.0)
+  - React (0.59.8):
+    - React/Core (= 0.59.8)
   - react-native-blur (0.8.0):
     - React
-  - react-native-fast-image (5.2.0):
-    - FLAnimatedImage
+  - react-native-camera (2.10.2):
     - React
-    - SDWebImage/Core
-    - SDWebImage/GIF
-    - SDWebImage/WebP
-  - react-native-version-number (0.3.5):
+    - react-native-camera/RCT (= 2.10.2)
+    - react-native-camera/RN (= 2.10.2)
+  - react-native-camera/RCT (2.10.2):
     - React
-  - React/Core (0.57.1):
-    - yoga (= 0.57.1.React)
-  - React/RCTImage (0.57.1):
+  - react-native-camera/RN (2.10.2):
+    - React
+  - react-native-fast-image (6.0.3):
+    - React
+    - SDWebImage (~> 5.0)
+  - react-native-netinfo (2.0.10):
+    - React
+  - react-native-version-number (0.3.6):
+    - React
+  - React/Core (0.59.8):
+    - yoga (= 0.59.8.React)
+  - React/CxxBridge (0.59.8):
+    - Folly (= 2018.10.22.00)
+    - React/Core
+    - React/cxxreact
+    - React/jsiexecutor
+  - React/cxxreact (0.59.8):
+    - boost-for-react-native (= 1.63.0)
+    - DoubleConversion
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React/jsinspector
+  - React/DevSupport (0.59.8):
+    - React/Core
+    - React/RCTWebSocket
+  - React/fishhook (0.59.8)
+  - React/jsi (0.59.8):
+    - DoubleConversion
+    - Folly (= 2018.10.22.00)
+    - glog
+  - React/jsiexecutor (0.59.8):
+    - DoubleConversion
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React/cxxreact
+    - React/jsi
+  - React/jsinspector (0.59.8)
+  - React/RCTActionSheet (0.59.8):
+    - React/Core
+  - React/RCTAnimation (0.59.8):
+    - React/Core
+  - React/RCTBlob (0.59.8):
+    - React/Core
+  - React/RCTImage (0.59.8):
     - React/Core
     - React/RCTNetwork
-  - React/RCTNetwork (0.57.1):
+  - React/RCTLinkingIOS (0.59.8):
     - React/Core
-  - RNDeviceInfo (0.21.5):
+  - React/RCTNetwork (0.59.8):
+    - React/Core
+  - React/RCTPushNotification (0.59.8):
+    - React/Core
+  - React/RCTSettings (0.59.8):
+    - React/Core
+  - React/RCTText (0.59.8):
+    - React/Core
+  - React/RCTVibration (0.59.8):
+    - React/Core
+  - React/RCTWebSocket (0.59.8):
+    - React/Core
+    - React/fishhook
+    - React/RCTBlob
+  - RNCAsyncStorage (1.4.0):
+    - React
+  - RNDeviceInfo (1.8.0):
     - React
   - RNLanguages (3.0.2):
     - React
-  - RNReanimated (1.0.0-alpha.12):
+  - RNReanimated (1.0.1):
     - React
   - RNScreens (1.0.0-alpha.22):
     - React
-  - SDWebImage/Core (4.4.2)
-  - SDWebImage/GIF (4.4.2):
-    - FLAnimatedImage (~> 1.0)
-    - SDWebImage/Core
-  - SDWebImage/WebP (4.4.2):
-    - libwebp (~> 0.5)
-    - SDWebImage/Core
-  - yoga (0.57.1.React)
+  - SDWebImage (5.0.2):
+    - SDWebImage/Core (= 5.0.2)
+  - SDWebImage/Core (5.0.2)
+  - yoga (0.59.8.React)
 
 DEPENDENCIES:
   - Crashlytics (~> 3.10.7)
+  - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - Fabric (~> 1.7.11)
   - Firebase/Core (~> 5.3.0)
   - Firebase/Messaging (~> 5.3.0)
-  - react-native-blur (from `../node_modules/react-native-blur`)
+  - FLAnimatedImage
+  - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
+  - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - libwebp
+  - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
+  - react-native-camera (from `../node_modules/react-native-camera`)
   - react-native-fast-image (from `../node_modules/react-native-fast-image`)
+  - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-version-number (from `../node_modules/react-native-version-number`)
+  - React/Core (from `../node_modules/react-native`)
+  - React/CxxBridge (from `../node_modules/react-native`)
+  - React/cxxreact (from `../node_modules/react-native`)
+  - React/DevSupport (from `../node_modules/react-native`)
+  - React/fishhook (from `../node_modules/react-native`)
+  - React/jsi (from `../node_modules/react-native`)
+  - React/jsiexecutor (from `../node_modules/react-native`)
+  - React/jsinspector (from `../node_modules/react-native`)
+  - React/RCTActionSheet (from `../node_modules/react-native`)
+  - React/RCTAnimation (from `../node_modules/react-native`)
+  - React/RCTBlob (from `../node_modules/react-native`)
   - React/RCTImage (from `../node_modules/react-native`)
+  - React/RCTLinkingIOS (from `../node_modules/react-native`)
+  - React/RCTNetwork (from `../node_modules/react-native`)
+  - React/RCTPushNotification (from `../node_modules/react-native`)
+  - React/RCTSettings (from `../node_modules/react-native`)
+  - React/RCTText (from `../node_modules/react-native`)
+  - React/RCTVibration (from `../node_modules/react-native`)
+  - React/RCTWebSocket (from `../node_modules/react-native`)
+  - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNLanguages (from `../node_modules/react-native-languages`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
-  - yoga (from `../node_modules/react-native/ReactCommon/yoga/yoga.podspec`)
+  - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - boost-for-react-native
     - Crashlytics
     - Fabric
     - Firebase
@@ -128,14 +213,26 @@ SPEC REPOS:
     - SDWebImage
 
 EXTERNAL SOURCES:
+  DoubleConversion:
+    :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
+  Folly:
+    :podspec: "../node_modules/react-native/third-party-podspecs/Folly.podspec"
+  glog:
+    :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   React:
     :path: "../node_modules/react-native"
   react-native-blur:
-    :path: "../node_modules/react-native-blur"
+    :path: "../node_modules/@react-native-community/blur"
+  react-native-camera:
+    :path: "../node_modules/react-native-camera"
   react-native-fast-image:
     :path: "../node_modules/react-native-fast-image"
+  react-native-netinfo:
+    :path: "../node_modules/@react-native-community/netinfo"
   react-native-version-number:
     :path: "../node_modules/react-native-version-number"
+  RNCAsyncStorage:
+    :path: "../node_modules/@react-native-community/async-storage"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
   RNLanguages:
@@ -145,10 +242,12 @@ EXTERNAL SOURCES:
   RNScreens:
     :path: "../node_modules/react-native-screens"
   yoga:
-    :path: "../node_modules/react-native/ReactCommon/yoga/yoga.podspec"
+    :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Crashlytics: 55e24fc23989680285a21cb1146578d9d18e432c
+  DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   Fabric: 25d0963b691fc97be566392243ff0ecef5a68338
   Firebase: 76ec2a7cde90fb4037793f83aeeca48451543487
   FirebaseAnalytics: b8bce8d5c40173328b8a4300da18c5c7e0a1908d
@@ -156,21 +255,26 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: 4f7768a98c5c3c5bd9a4c9e431ea98dccc0a51f9
   FirebaseMessaging: 94579ae655d817287f029ebfebd5b0811fbb3a51
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
-  GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
-  libwebp: 0f01098c6c17175391af621b2f14150f3ca16e16
+  Folly: de497beb10f102453a1afa9edbf8cf8a251890de
+  glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
+  GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
+  libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
-  Protobuf: 6b0fc34ab8f2b7dbad2278a48be08a669427c59f
-  React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
-  react-native-blur: c35c1f6c2c76db7108bde7ed343bd2b01d64e0c0
-  react-native-fast-image: 4170ad074e9de6c428fc4580ecbaacabf74901a6
-  react-native-version-number: 36c0d8eb57a275a6239a860f8dbab3d18299b0e0
-  RNDeviceInfo: 568c5641057313b4912d08a7742ff0b2f753ed5c
-  RNLanguages: e3ae05ef105937645218272429dac0c3f7633451
-  RNReanimated: 45d9313b7a62318ed00d60a811937321e43e076e
-  RNScreens: 354046589421edc3d83d5c6212475bf1fb9a731d
-  SDWebImage: 4170dae6332a915d44c918675d51dc1c4c06b45f
-  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
+  Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
+  React: 76e6aa2b87d05eb6cccb6926d72685c9a07df152
+  react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
+  react-native-camera: 89f0367c52e3ed70dd042c6362891cf7869f8e1c
+  react-native-fast-image: 3390cc968d598f0c6b5c710df138f4b653a87231
+  react-native-netinfo: 39c221d058dca040a69e46a083e692bbd65d5ab5
+  react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
+  RNCAsyncStorage: 0c3ef98facf3fecf455b518d6f52e10fc964c523
+  RNDeviceInfo: 9e6a0aece8e7455515103ce23372b393843a7ee7
+  RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
+  RNReanimated: c8dd490ca98a4edcba229bfa49f2516c95a43afb
+  RNScreens: 720a9e6968beb73e8196239801e887d8401f86ed
+  SDWebImage: 6764b5fa0f73c203728052955dbefa2bf1f33282
+  yoga: 92b2102c3d373d1a790db4ab761d2b0ffc634f64
 
-PODFILE CHECKSUM: 967249ef40574ea7bd68a06a98fb6609fdd4457d
+PODFILE CHECKSUM: 0145e839f29994a918863125c862614f79901ada
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.6.1

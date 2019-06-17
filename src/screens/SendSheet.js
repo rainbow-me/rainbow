@@ -5,6 +5,7 @@ import {
   isFunction,
   isString,
   map,
+  upperFirst,
 } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -23,9 +24,8 @@ import {
 } from '../components/send';
 import { withAccountRefresh, withAccountSettings } from '../hoc';
 import { colors } from '../styles';
-import { deviceUtils } from '../utils';
+import { deviceUtils, isNewValueForPath } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
-import { uppercase } from '../utils/formatters';
 
 const Container = styled(Column)`
   background-color: ${colors.white};
@@ -39,7 +39,7 @@ const formatGasSpeedItems = (gasPrices) => ([
     const time = get(value, 'estimatedTime.display');
 
     return {
-      label: `${uppercase(key, 7)}: ${cost}  ~${time.slice(0, -1)}`,
+      label: `${upperFirst(key)}: ${cost}  ~${time.slice(0, -1)}`,
       value: key,
     };
   }),
@@ -60,6 +60,7 @@ class SendSheet extends Component {
     onSubmit: PropTypes.func,
     recipient: PropTypes.string,
     selected: PropTypes.object,
+    sendableUniqueTokens: PropTypes.arrayOf(PropTypes.object),
     sendClearFields: PropTypes.func,
     sendMaxBalance: PropTypes.func,
     sendUpdateAssetAmount: PropTypes.func,
@@ -67,7 +68,6 @@ class SendSheet extends Component {
     sendUpdateNativeAmount: PropTypes.func,
     sendUpdateRecipient: PropTypes.func,
     sendUpdateSelected: PropTypes.func,
-    uniqueTokens: PropTypes.arrayOf(PropTypes.object),
   }
 
   static defaultProps = {
@@ -107,8 +107,10 @@ class SendSheet extends Component {
       Keyboard.dismiss();
     }
 
-    if (prevProps.isValidAddress !== isValidAddress
-        || prevProps.selected !== selected) {
+    const isNewSelected = isNewValueForPath(this.props, prevProps, 'selected');
+    const isNewValidAddress = isNewValueForPath(this.props, prevProps, 'isValidAddress');
+
+    if (isNewValidAddress || isNewSelected) {
       let verticalGestureResponseDistance = 0;
 
       if (isValidAddress) {
@@ -166,7 +168,7 @@ class SendSheet extends Component {
 
   onResetAssetSelection = () => this.props.sendUpdateSelected('')
 
-  onSelectAsset = symbol => () => this.props.sendUpdateSelected(symbol)
+  onSelectAsset = symbol => this.props.sendUpdateSelected(symbol)
 
   sendTransaction = () => {
     const {
@@ -182,6 +184,8 @@ class SendSheet extends Component {
       this.setState({ isAuthorizing: false });
       sendClearFields();
       navigation.navigate('ProfileScreen');
+    }).catch(error => {
+      this.setState({ isAuthorizing: false });
     });
   }
 
@@ -194,11 +198,10 @@ class SendSheet extends Component {
       nativeCurrencySymbol,
       recipient,
       selected,
+      sendableUniqueTokens,
       sendUpdateRecipient,
-      uniqueTokens,
       ...props
     } = this.props;
-
     const showEmptyState = !isValidAddress;
     const showAssetList = isValidAddress && isEmpty(selected);
     const showAssetForm = isValidAddress && !isEmpty(selected);
@@ -218,7 +221,7 @@ class SendSheet extends Component {
                 allAssets={allAssets}
                 fetchData={fetchData}
                 onSelectAsset={this.onSelectAsset}
-                uniquetokens={uniqueTokens}
+                uniqueTokens={sendableUniqueTokens}
               />
             )}
             {showAssetForm && (

@@ -22,6 +22,11 @@ export const updateShowShitcoinsSetting = async (updatedSetting) => {
 
 const getRequestsKey = (accountAddress, network) => `requests-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 
+const isRequestStillValid = (request) => {
+  const createdAt = request.transactionDisplayDetails.timestampInMs;
+  return (differenceInMinutes(Date.now(), createdAt) < 60);
+};
+
 /**
  * @desc get account local requests
  * @param  {String}   [address]
@@ -30,7 +35,7 @@ const getRequestsKey = (accountAddress, network) => `requests-${accountAddress.t
 export const getLocalRequests = async (accountAddress, network) => {
   const requestsData = await commonStorage.getLocal(getRequestsKey(accountAddress, network));
   const requests = requestsData ? requestsData.data : {};
-  const openRequests = pickBy(requests, (request) => (differenceInMinutes(Date.now(), request.transactionDisplayDetails.timestampInMs) < 60));
+  const openRequests = pickBy(requests, isRequestStillValid);
   await saveLocalRequests(accountAddress, network, openRequests);
   return openRequests;
 };
@@ -52,12 +57,12 @@ export const saveLocalRequests = async (accountAddress, network, requests) => {
  * @desc remove request
  * @param  {String}   [address]
  * @param  {String}   [network]
- * @param  {String}   [callId]
+ * @param  {String}   [requestId]
  * @return {Void}
  */
-export const removeLocalRequest = async (address, network, callId) => {
+export const removeLocalRequest = async (address, network, requestId) => {
   const requests = await getLocalRequests(address, network);
   const updatedRequests = { ...requests };
-  delete updatedRequests[callId];
+  delete updatedRequests[requestId];
   await saveLocalRequests(address, network, updatedRequests);
 };

@@ -1,4 +1,4 @@
-import { isValidAddress } from '@rainbow-me/rainbow-common';
+import { isHexString, isValidAddress } from '@rainbow-me/rainbow-common';
 import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
@@ -7,7 +7,7 @@ import { Input } from '../inputs';
 import { Row } from '../layout';
 import { Label } from '../text';
 import { colors } from '../../styles';
-import { abbreviations } from '../../utils';
+import { abbreviations, addressUtils, isNewValueForPath } from '../../utils';
 
 const AddressInput = styled(Input).attrs({ family: 'SFMono' })`
   flex-grow: 1;
@@ -25,40 +25,53 @@ const PlaceholderText = styled(Label)`
   opacity: 0.45;
 `;
 
+const formatValue = value => (
+  (isHexString(value) && (value.length === addressUtils.maxLength))
+    ? abbreviations.address(value)
+    : value
+);
+
 export default class AddressField extends PureComponent {
   static propTypes = {
+    address: PropTypes.string,
     autoFocus: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
-    value: PropTypes.string,
   }
 
   state = {
+    address: '',
     isValid: false,
-    value: '',
   }
 
-  componentDidUpdate() {
-    if (this.props.value && !this.state.value) {
+  componentDidUpdate(prevProps, prevState) {
+    // Validate 'address' whenever its value changes
+    if (isNewValueForPath(this.state, prevState, 'address')) {
+      this.validateAddress(this.state.address);
+    }
+
+    // Allow component state to be overwritten by parent component through the
+    // use of the 'address' prop. Assume that 'address' is valid because @rainbow-me/rainbow-common
+    // handles that for us.
+    if (this.props.address && !this.state.address) {
       this.setState({
+        address: this.props.address,
         isValid: true,
-        value: abbreviations.address(this.props.value),
       });
     }
   }
 
   onChange = ({ nativeEvent }) => this.props.onChange(nativeEvent.text)
 
-  onChangeText = (inputValue) => {
-    const isValid = isValidAddress(inputValue);
-    this.setState({
-      isValid,
-      value: isValid ? abbreviations.address(inputValue) : inputValue,
-    });
+  onChangeText = address => this.setState({ address })
+
+  validateAddress = async (inputValue) => {
+    const isValid = await isValidAddress(inputValue);
+    return this.setState({ isValid });
   }
 
   render() {
     const { autoFocus, ...props } = this.props;
-    const { isValid, value } = this.state;
+    const { address, isValid } = this.state;
 
     return (
       <Row flex={1}>
@@ -68,16 +81,15 @@ export default class AddressField extends PureComponent {
           autoCorrect={false}
           autoFocus={autoFocus}
           color={isValid ? colors.appleBlue : colors.blueGreyDark}
-          keyboardType="name-phone-pad"
-          maxLength={42}
+          maxLength={addressUtils.maxLength}
           onChange={this.onChange}
           onChangeText={this.onChangeText}
           selectTextOnFocus={true}
-          value={value}
+          value={formatValue(address)}
         />
-        {!value && (
+        {!address && (
           <Placeholder>
-            <PlaceholderText>Ethereum Address (</PlaceholderText>
+            <PlaceholderText>ENS or Address (</PlaceholderText>
             <PlaceholderText family="SFMono">0x</PlaceholderText>
             <PlaceholderText>...)</PlaceholderText>
           </Placeholder>

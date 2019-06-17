@@ -1,61 +1,62 @@
-import { get, upperFirst } from 'lodash';
+import { includes, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { onlyUpdateForKeys } from 'recompact';
-import styled from 'styled-components/primitives';
+import FastImage from 'react-native-fast-image';
+import { onlyUpdateForPropTypes } from 'recompact';
+import SpinnerImageSource from '../../assets/spinner.png';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { colors, position } from '../../styles';
-import { Row } from '../layout';
+import { SpinAnimation } from '../animations';
 import Icon from '../icons/Icon';
+import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 
-const TransactionStatusProps = {
+const StatusProps = {
   failed: {
-    color: colors.red,
-    name: 'close',
+    name: 'closeCircled',
+    style: position.maxSizeAsObject(12),
   },
   received: {
-    color: colors.blueGreyDark,
     direction: 'down',
     name: 'arrow',
   },
-  receiving: {
-    color: colors.primaryBlue,
-    name: 'spinner',
-  },
   self: {
-    color: colors.blueGreyLight,
     name: 'dot',
   },
-  sending: {
-    color: colors.primaryBlue,
-    name: 'spinner',
-  },
   sent: {
-    color: colors.blueGreyMediumLight,
-    direction: 'up',
-    name: 'arrow',
+    name: 'sendSmall',
   },
 };
 
-const StatusIcon = styled(Icon)`
-  ${position.maxSize(10)}
-`;
+const TransactionStatusBadge = ({ pending, status }) => {
+  const statusColor = pending ? colors.primaryBlue : colors.blueGreyMediumLight;
 
-const StatusLabel = styled(Text).attrs({ weight: 'semibold' })`
-  margin-left: 6px;
-`;
-
-const TransactionStatusBadge = ({ status }) => (
-  <Row align="center">
-    {status && <StatusIcon {...TransactionStatusProps[status]} />}
-    <StatusLabel color={get(TransactionStatusProps, `[${status}].color`, colors.red)}>
-      {upperFirst(status || 'Error')}
-    </StatusLabel>
-  </Row>
-);
+  return (
+    <RowWithMargins align="center" margin={4}>
+      {pending && (
+        <SpinAnimation>
+          <FastImage
+            source={SpinnerImageSource}
+            style={position.sizeAsObject(12)}
+          />
+        </SpinAnimation>
+      )}
+      {(status && includes(Object.keys(StatusProps), status)) && (
+        <Icon
+          color={statusColor}
+          style={position.maxSizeAsObject(10)}
+          {...StatusProps[status]}
+        />
+      )}
+      <Text color={statusColor} size="smedium" weight="semibold">
+        {upperFirst(status || 'Unknown status')}
+      </Text>
+    </RowWithMargins>
+  );
+};
 
 TransactionStatusBadge.propTypes = {
+  pending: PropTypes.bool,
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
 };
 
@@ -63,4 +64,4 @@ TransactionStatusBadge.defaultProps = {
   status: TransactionStatusTypes.error,
 };
 
-export default onlyUpdateForKeys(['status'])(TransactionStatusBadge);
+export default onlyUpdateForPropTypes(TransactionStatusBadge);

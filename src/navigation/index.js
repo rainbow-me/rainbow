@@ -1,13 +1,25 @@
+import { get } from 'lodash';
 import { Animated, InteractionManager } from 'react-native';
+import { StackActions } from 'react-navigation';
 
 const queuedNavigationActions = [];
 let isPaused = false;
 let transitionPosition = new Animated.Value(0);
 
+let _navigator = null;
+
+/**
+ * Set Top Level Navigator
+ */
+function setTopLevelNavigator(navigatorRef) {
+  _navigator = navigatorRef;
+}
+
 /**
  * Gets the current screen from navigation state
  */
 function getActiveRouteName(navigationState) {
+  navigationState = navigationState || get(_navigator, 'state.nav');
   if (!navigationState) return null;
 
   const route = navigationState.routes[navigationState.index];
@@ -20,14 +32,17 @@ function getActiveRouteName(navigationState) {
 
 /**
  * Handle a navigation action or queue the action if navigation actions have been paused.
- * @param  {Object} navigation  The navigation object defined by react-navigation.
  * @param  {Object} action      The navigation action to run.
  */
-function handleAction(navigation, action) {
+function handleAction(action) {
+  if (!_navigator) return;
+
+  action = StackActions.push(action);
+
   if (isPaused) {
     queuedNavigationActions.push(action);
   } else {
-    navigation.dispatch(action);
+    _navigator.dispatch(action);
   }
 }
 
@@ -71,5 +86,6 @@ export default {
   handleAction,
   pauseNavigationActions,
   resumeNavigationActions,
+  setTopLevelNavigator,
   setTransitionPosition,
 };

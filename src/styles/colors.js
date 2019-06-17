@@ -8,8 +8,9 @@ const base = {
   blueActive: '#5a71cc', // '90, 113, 204'
   blueGreyDark: '#3C4252', // '60, 66, 82'
   blueGreyDarker: '#0F0F11', // '15, 15, 17'
-  blueGreyLight: '#A1A5AC', // '102, 106, 115'
-  blueGreyLighter: '#888D96', // '136, 141, 150'
+  blueGreyLight: '#A1A5AC',
+  blueGreyLightest: '#888D96', // '136, 141, 150'
+  blueGreyLigter: '#666A73', // '102, 106, 115'
   blueGreyMedium: '#636875', // '99, 104, 117'
   blueGreyMediumLight: '#7b7f8a', // '123, 127, 138'
   blueHover: '#6c87f5', // '108, 135, 245'
@@ -36,7 +37,7 @@ const base = {
   paleBlue: '#5D9DF6',
   placeholder: '#C4C6CB', // 196, 198, 203
   primaryBlue: '#5d9df6', // '93, 157, 246'
-  primaryGreen: '#00a352', // '0, 163, 82'
+  primaryGreen: '#139E74', // '19, 158, 116'
   purple: '#32325d', // '50, 50, 93'
   red: '#d64b47', // '214, 75, 71'
   rowDivider: '#f9f9fa', // '249, 249, 250'
@@ -65,11 +66,6 @@ assetIcon.random = () => {
   return assetIconColors[Math.floor(Math.random() * assetIconColors.length)];
 };
 
-const transparent = {
-  purpleTransparent: chroma(base.purple).alpha(0.7), // '50, 50, 93'
-  whiteTransparent: chroma(base.white).alpha(0.8), // '255, 255, 255'
-};
-
 const vendor = {
   etherscan: '#025c90', // '2, 92, 144'
   ethplorer: '#506685', // '80, 102, 133'
@@ -93,9 +89,21 @@ const getTextColorForBackground = (targetColor, textColors = {}) => {
   return isColorLight(targetColor) ? dark : light;
 };
 
+const getFallbackTextColor = bg => colors.getTextColorForBackground(bg, {
+  dark: colors.blueGreyLight,
+  light: colors.white,
+});
+
+const transparent = {
+  blueGreyDarkTransparent: buildRgba(base.blueGreyDark, 0.6),
+  purpleTransparent: buildRgba(base.purple, 0.7), // '50, 50, 93'
+  whiteTransparent: buildRgba(base.white, 0.8), // '255, 255, 255'
+};
+
 const colors = {
   alpha: buildRgba,
   assetIcon,
+  getFallbackTextColor,
   getTextColorForBackground,
   isColorLight,
   sendScreen,

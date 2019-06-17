@@ -1,5 +1,5 @@
 import React from 'react';
-import { pure } from 'recompact';
+import { withNeverRerender } from '../../hoc';
 import { margin, padding } from '../../styles';
 import Divider from '../Divider';
 import { Centered, Column } from '../layout';
@@ -26,4 +26,4 @@ const WalletConnectExplainer = () => (
   </Column>
 );
 
-export default pure(WalletConnectExplainer);
+export default withNeverRerender(WalletConnectExplainer);

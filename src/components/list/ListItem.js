@@ -1,7 +1,6 @@
 import { isString } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { BorderlessButton } from 'react-native-gesture-handler';
 import {
   compose,
   onlyUpdateForPropTypes,
@@ -10,8 +9,14 @@ import {
 } from 'recompact';
 import styled from 'styled-components';
 import { fonts, padding, position } from '../../styles';
+import { ButtonPressAnimation } from '../animations';
 import Icon from '../icons/Icon';
-import { Centered, FlexItem, Row } from '../layout';
+import {
+  Centered,
+  FlexItem,
+  Row,
+  RowWithMargins,
+} from '../layout';
 import { TruncatedText } from '../text';
 
 const ListItemHeight = 54;
@@ -46,26 +51,28 @@ const ListItem = ({
   onPress,
   ...props
 }) => (
-  <Container
+  <ButtonPressAnimation
     activeOpacity={activeOpacity}
-    component={BorderlessButton}
+    enableHapticFeedback={false}
     onPress={onPress}
-    {...props}
+    scaleTo={1}
   >
-    <Row align="center" flex={1}>
-      {icon && (
-        <Centered style={{ marginRight: iconMargin }}>
-          {renderListItemIcon(icon)}
+    <Container {...props}>
+      <RowWithMargins align="center" flex={1} margin={iconMargin}>
+        {icon && (
+          <Centered>
+            {renderListItemIcon(icon)}
+          </Centered>
+        )}
+        <Label>{label}</Label>
+      </RowWithMargins>
+      {children && (
+        <Centered component={FlexItem} shrink={0}>
+          {children}
         </Centered>
       )}
-      <Label>{label}</Label>
-    </Row>
-    {children && (
-      <Centered component={FlexItem} shrink={0}>
-        {children}
-      </Centered>
-    )}
-  </Container>
+    </Container>
+  </ButtonPressAnimation>
 );
 
 ListItem.propTypes = {

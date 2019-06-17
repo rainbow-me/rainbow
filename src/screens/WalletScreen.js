@@ -1,11 +1,11 @@
-import { isSameDay } from 'date-fns';
-import { get, join, map } from 'lodash';
-import PropTypes from 'prop-types';
+import { withSafeTimeout } from '@hocs/safe-timers';
 import { withAccountAssets } from '@rainbow-me/rainbow-common';
+import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { withNavigationFocus } from 'react-navigation';
+import { withNavigation, withNavigationFocus } from 'react-navigation';
 import {
   compose,
+  onlyUpdateForKeys,
   withHandlers,
   withProps,
   withState,
@@ -21,7 +21,7 @@ import {
   withAccountRefresh,
   withAccountSettings,
   withBlurTransitionProps,
-  withFetchingPrices,
+  withHideSplashScreen,
   withIsWalletEmpty,
 } from '../hoc';
 import { position } from '../styles';
@@ -36,25 +36,33 @@ class WalletScreen extends PureComponent {
     isEmpty: PropTypes.bool.isRequired,
     isFocused: PropTypes.bool,
     navigation: PropTypes.object,
-    onRefreshList: PropTypes.func.isRequired,
+    onHideSplashScreen: PropTypes.func,
     refreshAccount: PropTypes.func,
     sections: PropTypes.array,
+    setSafeTimeout: PropTypes.func,
     showBlur: PropTypes.bool,
     toggleShowShitcoins: PropTypes.func,
     uniqueTokens: PropTypes.array,
   }
 
   componentDidMount = async () => {
-    const { toggleShowShitcoins } = this.props;
-
     try {
       const showShitcoins = await getShowShitcoinsSetting();
       if (showShitcoins !== null) {
-        toggleShowShitcoins(showShitcoins);
+        this.props.toggleShowShitcoins(showShitcoins);
       }
     } catch (error) {
       // TODO
     }
+  }
+
+  shouldComponentUpdate = () => {
+    return this.props.isFocused;
+  };
+
+  hideSpashScreen = () => {
+    const { onHideSplashScreen, setSafeTimeout } = this.props;
+    setSafeTimeout(onHideSplashScreen, 150);
   }
 
   render = () => {
@@ -62,7 +70,7 @@ class WalletScreen extends PureComponent {
       blurOpacity,
       isEmpty,
       navigation,
-      onRefreshList,
+      refreshAccount,
       sections,
       showBlur,
     } = this.props;
@@ -75,8 +83,9 @@ class WalletScreen extends PureComponent {
         </Header>
         <FabWrapper disabled={isEmpty}>
           <AssetList
-            fetchData={onRefreshList}
+            fetchData={refreshAccount}
             isEmpty={isEmpty}
+            onLayout={this.hideSpashScreen}
             sections={sections}
           />
         </FabWrapper>
@@ -90,14 +99,15 @@ export default compose(
   withAccountAssets,
   withAccountRefresh,
   withAccountSettings,
-  withFetchingPrices,
+  withHideSplashScreen,
+  withSafeTimeout,
+  withNavigation,
   withNavigationFocus,
   withBlurTransitionProps,
   withIsWalletEmpty,
   withStatusBarStyle('dark-content'),
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
-    onRefreshList: ({ refreshAccount }) => async () => refreshAccount(),
     onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
       if (index === 0) {
         const updatedShowShitcoinsSetting = !showShitcoins;

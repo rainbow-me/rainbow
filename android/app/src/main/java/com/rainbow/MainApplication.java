@@ -3,6 +3,12 @@ package me.rainbow;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import io.invertase.firebase.RNFirebasePackage;
+import react-native-tcp.TcpSocketsModule;
+import com.cmcewen.blurview.BlurViewPackage;
+import com.reactnativecommunity.netinfo.NetInfoPackage;
+import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
+import org.reactnative.camera.RNCameraPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import com.swmansion.rnscreens.RNScreensPackage;
 import com.apsl.versionnumber.RNVersionNumberPackage;
@@ -12,7 +18,6 @@ import com.cmcewen.blurview.BlurViewPackage;
 import com.reactcommunity.rnlanguages.RNLanguagesPackage;
 import com.swmansion.reanimated.ReanimatedPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
-import io.invertase.firebase.RNFirebasePackage;
 import com.microsoft.codepush.react.CodePush;
 import com.reactlibrary.RNReactNativeHapticFeedbackPackage;
 import com.tradle.react.UdpSocketsModule;
@@ -26,7 +31,6 @@ import com.peel.react.rnos.RNOSModule;
 import com.chirag.RNMail.RNMail;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.oblador.keychain.KeychainPackage;
-import org.reactnative.camera.RNCameraPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -53,6 +57,12 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNFirebasePackage(),
+            new TcpSocketsModule(),
+            new BlurViewPackage(),
+            new NetInfoPackage(),
+            new AsyncStoragePackage(),
+            new RNCameraPackage(),
             new RNDeviceInfo(),
             new RNScreensPackage(),
             new RNVersionNumberPackage(),
@@ -62,7 +72,6 @@ public class MainApplication extends Application implements ReactApplication {
             new RNLanguagesPackage(),
             new ReanimatedPackage(),
             new RNGestureHandlerPackage(),
-            new RNFirebasePackage(),
             new CodePush(BuildConfig.CODEPUSH_KEY, getApplicationContext(), BuildConfig.DEBUG),
             new RNReactNativeHapticFeedbackPackage(),
             new UdpSocketsModule(),
@@ -75,8 +84,7 @@ public class MainApplication extends Application implements ReactApplication {
             new RNOSModule(),
             new RNMail(),
             new LinearGradientPackage(),
-            new KeychainPackage(),
-            new RNCameraPackage()
+            new KeychainPackage()
       );
     }
 

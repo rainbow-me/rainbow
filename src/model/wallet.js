@@ -1,6 +1,8 @@
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 import lang from 'i18n-js';
-import { AlertIOS } from 'react-native';
+import { get } from 'lodash';
+import { web3Provider } from '@rainbow-me/rainbow-common';
+import { Alert } from 'react-native';
 import {
   ACCESS_CONTROL,
   ACCESSIBLE,
@@ -14,7 +16,7 @@ const privateKeyKey = 'rainbowPrivateKey';
 const addressKey = 'rainbowAddressKey';
 
 export function generateSeedPhrase() {
-  return ethers.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
+  return ethers.utils.HDNode.entropyToMnemonic(ethers.utils.randomBytes(16));
 }
 
 export const walletInit = async (seedPhrase = null) => {
@@ -30,17 +32,20 @@ export const walletInit = async (seedPhrase = null) => {
     walletAddress = await createWallet();
     isWalletBrandNew = true;
   }
-  return { isWalletBrandNew, walletAddress } ;
+  return { isWalletBrandNew, walletAddress };
 };
 
 export const loadWallet = async () => {
   const privateKey = await loadPrivateKey();
   if (privateKey) {
-    const wallet = new ethers.Wallet(privateKey);
-    wallet.provider = ethers.providers.getDefaultProvider();
-    return wallet;
+    return new ethers.Wallet(privateKey, web3Provider);
   }
   return null;
+};
+
+export const getChainId = async () => {
+  const wallet = await loadWallet();
+  return get(wallet, 'provider.chainId');
 };
 
 export const createTransaction = async (to, data, value, gasLimit, gasPrice, nonce = null) => ({
@@ -55,18 +60,16 @@ export const createTransaction = async (to, data, value, gasLimit, gasPrice, non
 export const sendTransaction = async ({ transaction }) => {
   try {
     const wallet = await loadWallet();
-    if (!wallet) {
-      return null;
-    }
+    if (!wallet) return null;
     try {
       const result = await wallet.sendTransaction(transaction);
       return result.hash;
     } catch (error) {
-      AlertIOS.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
       return null;
     }
   } catch (error) {
-    AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
+    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
     return null;
   }
 };
@@ -77,11 +80,10 @@ export const signMessage = async (message, authenticationPrompt = lang.t('wallet
     try {
       return await wallet.signMessage(message);
     } catch (error) {
-      AlertIOS.alert(lang.t('wallet.message_signing.failed_signing'));
       return null;
     }
   } catch (error) {
-    AlertIOS.alert(lang.t('wallet.transaction.alert.authentication'));
+    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
     return null;
   }
 };
@@ -110,7 +112,7 @@ const saveWalletDetails = async (seedPhrase, privateKey, address) => {
   const canAuthenticate = await canImplyAuthentication({ authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS });
   let accessControlOptions = {};
   if (canAuthenticate) {
-    accessControlOptions = { accessControl: ACCESS_CONTROL.USER_PRESENCE, accessible: ACCESSIBLE.WHEN_UNLOCKED };
+    accessControlOptions = { accessControl: ACCESS_CONTROL.USER_PRESENCE, accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY };
   }
   saveSeedPhrase(seedPhrase, accessControlOptions);
   savePrivateKey(privateKey, accessControlOptions);

@@ -4,7 +4,6 @@ import FastImage from 'react-native-fast-image';
 import {
   compose,
   onlyUpdateForKeys,
-  pure,
   withHandlers,
   withProps,
   withState,
@@ -20,7 +19,19 @@ const FallbackTextColorVariants = {
   light: colors.white,
 };
 
-const UniqueTokenImage = ({
+const getFallbackTextColor = bg => colors.getTextColorForBackground(bg, FallbackTextColorVariants);
+
+const enhance = compose(
+  withState('error', 'handleErrorState', null),
+  withHandlers({ onError: ({ handleErrorState }) => error => handleErrorState(error) }),
+  withProps(({ backgroundColor, item }) => ({
+    fallbackTextColor: getFallbackTextColor(backgroundColor),
+    name: buildUniqueTokenName(item),
+  })),
+  onlyUpdateForKeys(['error', 'imageUrl']),
+);
+
+const UniqueTokenImage = enhance(({
   backgroundColor,
   borderRadius,
   error,
@@ -29,7 +40,6 @@ const UniqueTokenImage = ({
   name,
   onError,
   resizeMode,
-  size,
 }) => (
   <Centered shouldRasterizeIOS style={{ ...position.coverAsObject, backgroundColor }}>
     {(imageUrl && !error) ? (
@@ -51,7 +61,7 @@ const UniqueTokenImage = ({
       </Monospace>
     )}
   </Centered>
-);
+));
 
 UniqueTokenImage.propTypes = {
   backgroundColor: PropTypes.string,
@@ -62,7 +72,6 @@ UniqueTokenImage.propTypes = {
   name: PropTypes.string.isRequired,
   onError: PropTypes.func,
   resizeMode: PropTypes.oneOf(Object.values(FastImage.resizeMode)),
-  size: PropTypes.number.isRequired,
 };
 
 UniqueTokenImage.defaultProps = {
@@ -70,17 +79,4 @@ UniqueTokenImage.defaultProps = {
   resizeMode: 'cover',
 };
 
-const getFallbackTextColor = bg => colors.getTextColorForBackground(bg, FallbackTextColorVariants);
-
-export default compose(
-  pure,
-  withState('error', 'handleErrorState', null),
-  withHandlers({
-    onError: ({ handleErrorState }) => (error) => handleErrorState(error),
-  }),
-  withProps(({ backgroundColor, item }) => ({
-    fallbackTextColor: getFallbackTextColor(backgroundColor),
-    name: buildUniqueTokenName(item),
-  })),
-  onlyUpdateForKeys(['error', 'imageUrl']),
-)(UniqueTokenImage);
+export default UniqueTokenImage;

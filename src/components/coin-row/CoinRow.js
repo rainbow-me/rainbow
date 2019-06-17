@@ -1,10 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import {
-  compose,
-  pure,
-  setStatic,
-} from 'recompact';
+import { compose, pure } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withAccountSettings } from '../../hoc';
 import { colors, padding } from '../../styles';
@@ -25,7 +21,12 @@ const Content = styled(Column)`
   margin-left: ${CoinRowPaddingVertical};
 `;
 
-const CoinRow = ({
+const enhance = compose(
+  withAccountSettings,
+  pure,
+);
+
+const CoinRow = enhance(({
   bottomRowRender,
   children,
   coinIconRender,
@@ -51,7 +52,7 @@ const CoinRow = ({
       : children
     }
   </Container>
-);
+));
 
 CoinRow.propTypes = {
   bottomRowRender: PropTypes.func,
@@ -68,8 +69,6 @@ CoinRow.defaultProps = {
   coinIconRender: CoinIcon,
 };
 
-export default compose(
-  pure,
-  setStatic({ height: CoinIcon.size + (CoinRowPaddingVertical * 2) }),
-  withAccountSettings,
-)(CoinRow);
+CoinRow.height = CoinIcon.size + (CoinRowPaddingVertical * 2);
+
+export default CoinRow;

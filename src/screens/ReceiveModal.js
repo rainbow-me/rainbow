@@ -1,7 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Clipboard, Share } from 'react-native';
-import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import {
+  compose,
+  onlyUpdateForKeys,
+  withHandlers,
+  withState,
+} from 'recompact';
 import styled from 'styled-components/primitives';
 import Divider from '../components/Divider';
 import { Column } from '../components/layout';
@@ -12,6 +18,7 @@ import {
   ModalHeader,
 } from '../components/modal';
 import QRCodeDisplay from '../components/QRCodeDisplay';
+import { FloatingEmojis } from '../components/floating-emojis';
 import {
   Br,
   Monospace,
@@ -23,7 +30,7 @@ import { colors, padding } from '../styles';
 const QRCodeSize = 180;
 
 const AddressText = styled(Monospace).attrs({
-  color: colors.blueGreyLighter,
+  color: colors.blueGreyLightest,
 })`
   font-size: 13.86;
   line-height: 19;
@@ -52,6 +59,7 @@ const DescriptionText = styled(Text)`
 
 const ReceiveScreen = ({
   accountAddress,
+  emojiCount,
   onCloseModal,
   onPressCopyAddress,
   onPressShareAddress,
@@ -81,11 +89,19 @@ const ReceiveScreen = ({
       </AddressTextContainer>
     </Content>
     <ModalFooterButtonsRow>
-      <ModalFooterButton
-        icon="copy"
-        label="Copy"
-        onPress={onPressCopyAddress}
-      />
+      <Column flex={1}>
+        <ModalFooterButton
+          icon="copy"
+          label="Copy"
+          onPress={onPressCopyAddress}
+        />
+        <FloatingEmojis
+          count={emojiCount}
+          distance={130}
+          emoji="+1"
+          size="h2"
+        />
+      </Column>
       <ModalFooterButton
         icon="share"
         label="Share"
@@ -97,6 +113,7 @@ const ReceiveScreen = ({
 
 ReceiveScreen.propTypes = {
   accountAddress: PropTypes.string.isRequired,
+  emojiCount: PropTypes.number,
   navigation: PropTypes.object.isRequired,
   onCloseModal: PropTypes.func.isRequired,
   onPressCopyAddress: PropTypes.func,
@@ -105,9 +122,14 @@ ReceiveScreen.propTypes = {
 
 export default compose(
   withAccountAddress,
+  withState('emojiCount', 'setEmojiCount', 0),
   withHandlers({
     onCloseModal: ({ navigation }) => () => navigation.goBack(),
-    onPressCopyAddress: ({ accountAddress }) => () => Clipboard.setString(accountAddress),
+    onPressCopyAddress: ({ accountAddress, emojiCount, setEmojiCount }) => () => {
+      ReactNativeHapticFeedback.trigger('impactLight');
+      setEmojiCount(emojiCount + 1);
+      Clipboard.setString(accountAddress);
+    },
     onPressShareAddress: ({ accountAddress }) => () => (
       Share.share({
         message: accountAddress,
@@ -115,5 +137,5 @@ export default compose(
       })
     ),
   }),
-  onlyUpdateForKeys(['accountAddress']),
+  onlyUpdateForKeys(['accountAddress', 'emojiCount']),
 )(ReceiveScreen);

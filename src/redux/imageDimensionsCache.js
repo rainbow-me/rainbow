@@ -5,7 +5,7 @@ import { omit } from 'lodash';
 const MERGE = 'imageDimensionsCache/MERGE';
 const PRUNE = 'imageDimensionsCache/PRUNE';
 
-export const pruneImageDimensionsCache = (idsToPrune) => (dispatch) => dispatch({
+export const pruneImageDimensionsCache = idsToPrune => dispatch => dispatch({
   idsToPrune,
   type: PRUNE
 });
@@ -23,7 +23,11 @@ export default (state = INITIAL_STATE, action) =>
     switch (action.type) {
     case MERGE:
       draft[action.id] = action.dimensions;
+      break;
     case PRUNE:
       omit(draft, action.idsToPrune);
+      break;
+    default:
+      break;
     }
   });

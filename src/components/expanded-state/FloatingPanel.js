@@ -1,14 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import stylePropType from 'react-style-proptype';
-import {
-  compose,
-  hoistStatics,
-  pure,
-  setStatic,
-} from 'recompact';
-import { Column } from '../layout';
+import { pure } from 'recompact';
 import { colors, shadow } from '../../styles';
+import { Column } from '../layout';
 
 const FloatingPanelBorderRadius = 12;
 
@@ -17,7 +12,7 @@ export const FloatingPanelPadding = {
   y: 0,
 };
 
-const FloatingPanel = ({
+const FloatingPanel = pure(({
   color,
   height,
   hideShadow,
@@ -33,13 +28,12 @@ const FloatingPanel = ({
       opacity: 1;
       overflow: hidden;
       padding-bottom: 0px;
-      width: 100%;
       z-index: 1;
     `}
     style={hideShadow ? {} : style}
     {...props}
   />
-);
+));
 
 FloatingPanel.propTypes = {
   color: PropTypes.string,
@@ -56,9 +50,4 @@ FloatingPanel.defaultProps = {
 FloatingPanel.padding = FloatingPanelPadding;
 FloatingPanel.borderRadius = FloatingPanelBorderRadius;
 
-const enhance = compose(
-  pure,
-  setStatic({ padding: FloatingPanel.padding }),
-);
-
-export default hoistStatics(enhance)(FloatingPanel);
+export default FloatingPanel;

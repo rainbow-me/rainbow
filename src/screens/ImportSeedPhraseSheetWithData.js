@@ -68,8 +68,15 @@ const ImportSeedPhraseSheetWithData = compose(
     },
   }),
   withHandlers({
+    getClipboardContents: ({ setClipboardContents }) => async () => {
+      return Clipboard.getString().then(setClipboardContents);
+    },
     onImportSeedPhrase: ({ setIsImporting }) => () => ConfirmImportAlert(() => setIsImporting(true)),
-    onInputChange: ({ setSeedPhrase }) => ({ nativeEvent }) => setSeedPhrase(nativeEvent.text),
+    onInputChange: ({ isImporting, setSeedPhrase }) => ({ nativeEvent }) => {
+      if (!isImporting) {
+        setSeedPhrase(nativeEvent.text);
+      }
+    },
     onPasteSeedPhrase: ({ setSeedPhrase }) => () => {
       Clipboard.getString()
         .then(setSeedPhrase)
@@ -77,15 +84,29 @@ const ImportSeedPhraseSheetWithData = compose(
     },
     onPressHelp: () => () => Linking.openURL('http://rainbow.me'),
   }),
+  withProps(({ clipboardContents, seedPhrase }) => ({
+    isClipboardContentsValidSeedPhrase: validateSeedPhrase(clipboardContents),
+    isSeedPhraseValid: validateSeedPhrase(seedPhrase),
+  })),
+  onlyUpdateForKeys([
+    'isClipboardContentsValidSeedPhrase',
+    'isImporting',
+    'isSeedPhraseValid',
+    'seedPhrase',
+  ]),
   lifecycle({
     componentDidMount() {
-      InteractionManager.runAfterInteractions(async () => {
-        const { setClipboardContents } = this.props;
-        await Clipboard.getString().then(setClipboardContents);
-      });
+      this.props.getClipboardContents();
     },
     componentDidUpdate(prevProps) {
-      const { isImporting, navigation, importSeedPhrase } = this.props;
+      const {
+        getClipboardContents,
+        importSeedPhrase,
+        isImporting,
+        navigation,
+      } = this.props;
+
+      getClipboardContents();
 
       if (isImporting !== prevProps.isImporting) {
         navigation.setParams({ gesturesEnabled: !isImporting });
@@ -103,16 +124,6 @@ const ImportSeedPhraseSheetWithData = compose(
       }
     },
   }),
-  withProps(({ clipboardContents, seedPhrase }) => ({
-    isClipboardContentsValidSeedPhrase: validateSeedPhrase(clipboardContents),
-    isSeedPhraseValid: validateSeedPhrase(seedPhrase),
-  })),
-  onlyUpdateForKeys([
-    'isClipboardContentsValidSeedPhrase',
-    'isImporting',
-    'isSeedPhraseValid',
-    'seedPhrase',
-  ]),
 )(ImportSeedPhraseSheet);
 
 ImportSeedPhraseSheetWithData.navigationOptions = ({ navigation }) => ({
