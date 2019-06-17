@@ -5,6 +5,7 @@ import React, { PureComponent } from 'react';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
 import {
   compose,
+  onlyUpdateForKeys,
   withHandlers,
   withProps,
   withState,
@@ -20,7 +21,6 @@ import {
   withAccountRefresh,
   withAccountSettings,
   withBlurTransitionProps,
-  withFetchingPrices,
   withHideSplashScreen,
   withIsWalletEmpty,
 } from '../hoc';
@@ -55,6 +55,10 @@ class WalletScreen extends PureComponent {
       // TODO
     }
   }
+
+  shouldComponentUpdate = () => {
+    return this.props.isFocused;
+  };
 
   hideSpashScreen = () => {
     const { onHideSplashScreen, setSafeTimeout } = this.props;
@@ -95,7 +99,6 @@ export default compose(
   withAccountAssets,
   withAccountRefresh,
   withAccountSettings,
-  withFetchingPrices,
   withHideSplashScreen,
   withSafeTimeout,
   withNavigation,
