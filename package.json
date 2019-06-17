@@ -20,6 +20,7 @@
     "@react-native-community/async-storage": "1.4.0",
     "@react-native-community/blur": "^3.3.1",
     "@react-native-community/netinfo": "^2.0.0",
+    "@segment/analytics-react-native": "^1.0.1",
     "@staltz/react-native-tcp": "^3.3.1",
     "@tradle/react-native-http": "^2.0.1",
     "@walletconnect/react-native": "^1.0.0-beta.20",

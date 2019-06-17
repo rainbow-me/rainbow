@@ -1064,6 +1064,11 @@
     react-native-safe-area-view "^0.14.1"
     react-native-screens "^1.0.0 || ^1.0.0-alpha"
 
+"@segment/analytics-react-native@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@segment/analytics-react-native/-/analytics-react-native-1.0.1.tgz#7e974ae3a4b28bd4a4d760d0ec752512912a8ce7"
+  integrity sha512-872ojMYhRZSBGHRngSpNkRCE5SkD+pD4cVB9QoLyGVssune4jeqVaPwuXji/J9wuQ/u871n7Qt1MqtD500Jv7A==
+
 "@staltz/react-native-tcp@^3.3.1":
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/@staltz/react-native-tcp/-/react-native-tcp-3.3.1.tgz#c5be709adafd802ec12e4542b0aa350efa86b2dd"

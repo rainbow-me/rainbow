@@ -60,4 +60,6 @@ target 'Rainbow' do
 
   pod 'FLAnimatedImage'
   pod 'libwebp'
+  pod 'RNAnalytics', :path => '../node_modules/@segment/analytics-react-native'
+
 end
