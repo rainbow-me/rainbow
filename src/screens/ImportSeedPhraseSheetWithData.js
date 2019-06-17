@@ -84,6 +84,16 @@ const ImportSeedPhraseSheetWithData = compose(
     },
     onPressHelp: () => () => Linking.openURL('http://rainbow.me'),
   }),
+  withProps(({ clipboardContents, seedPhrase }) => ({
+    isClipboardContentsValidSeedPhrase: validateSeedPhrase(clipboardContents),
+    isSeedPhraseValid: validateSeedPhrase(seedPhrase),
+  })),
+  onlyUpdateForKeys([
+    'isClipboardContentsValidSeedPhrase',
+    'isImporting',
+    'isSeedPhraseValid',
+    'seedPhrase',
+  ]),
   lifecycle({
     componentDidMount() {
       this.props.getClipboardContents();
@@ -114,16 +124,6 @@ const ImportSeedPhraseSheetWithData = compose(
       }
     },
   }),
-  withProps(({ clipboardContents, seedPhrase }) => ({
-    isClipboardContentsValidSeedPhrase: validateSeedPhrase(clipboardContents),
-    isSeedPhraseValid: validateSeedPhrase(seedPhrase),
-  })),
-  onlyUpdateForKeys([
-    'isClipboardContentsValidSeedPhrase',
-    'isImporting',
-    'isSeedPhraseValid',
-    'seedPhrase',
-  ]),
 )(ImportSeedPhraseSheet);
 
 ImportSeedPhraseSheetWithData.navigationOptions = ({ navigation }) => ({
