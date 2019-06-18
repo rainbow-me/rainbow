@@ -1,6 +1,8 @@
 import { omit, pickBy } from 'lodash';
 
 const defaultVersion = '0.1.0';
+const transactionsVersion = '0.2.0';
+const assetsVersion = '0.2.0';
 
 /**
  * @desc save to storage
@@ -107,7 +109,7 @@ export const removeUniswap = (accountAddress, network) => {
  * @return {Object}
  */
 export const getAssets = async (accountAddress, network) => {
-  const assets = await getLocal(getAssetsKey(accountAddress, network));
+  const assets = await getLocal(getAssetsKey(accountAddress, network), assetsVersion);
   return assets ? assets.data : [];
 };
 
@@ -120,6 +122,7 @@ export const saveAssets = async (accountAddress, assets, network) => {
   await saveLocal(
     getAssetsKey(accountAddress, network),
     { data: assets },
+    assetsVersion,
   );
 };
 
@@ -131,7 +134,7 @@ export const saveAssets = async (accountAddress, assets, network) => {
  */
 export const removeAssets = (accountAddress, network) => {
   const key = getAssetsKey(accountAddress, network);
-  removeLocal(key);
+  removeLocal(key, assetsVersion);
 };
 
 /**
@@ -141,7 +144,7 @@ export const removeAssets = (accountAddress, network) => {
  * @return {Object}
  */
 export const getLocalTransactions = async (accountAddress, network) => {
-  const transactions = await getLocal(getTransactionsKey(accountAddress, network));
+  const transactions = await getLocal(getTransactionsKey(accountAddress, network), transactionsVersion);
   return transactions ? transactions.data : [];
 };
 
@@ -155,6 +158,7 @@ export const saveLocalTransactions = async (accountAddress, transactions, networ
   await saveLocal(
     getTransactionsKey(accountAddress, network),
     { data: transactions },
+    transactionsVersion,
   );
 };
 
@@ -166,7 +170,7 @@ export const saveLocalTransactions = async (accountAddress, transactions, networ
  */
 export const removeLocalTransactions = (accountAddress, network) => {
   const key = getTransactionsKey(accountAddress, network);
-  removeLocal(key);
+  removeLocal(key, transactionsVersion);
 };
 
 /**

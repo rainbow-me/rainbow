@@ -63,13 +63,19 @@ export default Component => compose(
     loadAccountData: (ownProps) => async () => {
       try {
         await ownProps.settingsLoadState();
-        await ownProps.dataLoadState();
-        ownProps.walletConnectLoadState();
-        ownProps.uniswapLoadState();
-        ownProps.requestsLoadState();
-        ownProps.uniqueTokensLoadState();
       } catch (error) {
       }
+      try {
+        await ownProps.uniqueTokensLoadState();
+      } catch (error) {
+      }
+      try {
+        await ownProps.dataLoadState();
+      } catch (error) {
+      }
+      ownProps.walletConnectLoadState();
+      ownProps.uniswapLoadState();
+      ownProps.requestsLoadState();
     },
     initializeAccountData: (ownProps) => async () => {
       try {
