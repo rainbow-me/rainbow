@@ -147,6 +147,8 @@ PODS:
     - React
   - RNDeviceInfo (1.8.0):
     - React
+  - RNIOS11DeviceCheck (0.0.3):
+    - React
   - RNLanguages (3.0.2):
     - React
   - RNReanimated (1.0.1):
@@ -195,6 +197,7 @@ DEPENDENCIES:
   - "RNAnalytics (from `../node_modules/@segment/analytics-react-native`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
+  - RNIOS11DeviceCheck (from `../node_modules/react-native-ios11-devicecheck/ios`)
   - RNLanguages (from `../node_modules/react-native-languages`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -243,6 +246,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/async-storage"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
+  RNIOS11DeviceCheck:
+    :path: "../node_modules/react-native-ios11-devicecheck/ios"
   RNLanguages:
     :path: "../node_modules/react-native-languages"
   RNReanimated:
@@ -279,12 +284,13 @@ SPEC CHECKSUMS:
   RNAnalytics: d110195618296fed3907830911f01cb6e9be53d0
   RNCAsyncStorage: 0c3ef98facf3fecf455b518d6f52e10fc964c523
   RNDeviceInfo: 9e6a0aece8e7455515103ce23372b393843a7ee7
+  RNIOS11DeviceCheck: a4a545fdd08230a17a8ce7608e95038ee23a32aa
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNReanimated: c8dd490ca98a4edcba229bfa49f2516c95a43afb
   RNScreens: 720a9e6968beb73e8196239801e887d8401f86ed
   SDWebImage: 920f1a2ff1ca8296ad34f6e0510a1ef1d70ac965
   yoga: 92b2102c3d373d1a790db4ab761d2b0ffc634f64
 
-PODFILE CHECKSUM: 5703583994c4e07fda423a59a3886ab172377bc8
+PODFILE CHECKSUM: 3ccba29e0a83202613947605e5c564508d36035f
 
 COCOAPODS: 1.6.1
