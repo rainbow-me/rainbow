@@ -13,6 +13,7 @@ import {
   slice,
   uniqBy,
 } from 'lodash';
+import { DATA_ORIGIN } from 'react-native-dotenv';
 import {
   getAssets,
   getLocalTransactions,
@@ -68,7 +69,7 @@ const createSocket = endpoint => io(
   {
     transports: ['websocket'],
     extraHeaders: {
-      'Origin': 'ios://rainbow-wallet', // TODO hide
+      'Origin': DATA_ORIGIN,
     },
   },
 );
