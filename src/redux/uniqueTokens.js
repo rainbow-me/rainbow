@@ -1,9 +1,12 @@
+import { map, uniq, without } from 'lodash';
 import { apiGetAccountUniqueTokens } from '../handlers/opensea-api.js';
 import {
   getUniqueTokens,
   saveUniqueTokens,
   removeUniqueTokens,
 } from '../handlers/commonStorage';
+import { dedupeAssetsWithFamilies } from './data';
+import { getFamilies } from '../parsers/uniqueTokens';
 
 // -- Constants ------------------------------------------------------------- //
 const UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST =
@@ -47,11 +50,18 @@ export const uniqueTokensClearState = () => (dispatch, getState) => {
 };
 
 export const uniqueTokensRefreshState = () => (dispatch, getState) => new Promise((resolve, reject) => {
-  dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST });
-  const { accountAddress, network } = getState().settings;
   const fetchUniqueTokens = () => new Promise((resolve, reject) => {
+    dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST });
+    const { accountAddress, network } = getState().settings;
+    const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
     apiGetAccountUniqueTokens(accountAddress)
       .then(uniqueTokens => {
+        const existingFamilies = getFamilies(existingUniqueTokens);
+        const newFamilies = getFamilies(uniqueTokens);
+        const incomingFamilies = without(newFamilies, ...existingFamilies);
+        if (incomingFamilies.length) {
+          dispatch(dedupeAssetsWithFamilies(incomingFamilies));
+        }
         saveUniqueTokens(accountAddress, uniqueTokens, network);
         dispatch({
           type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,

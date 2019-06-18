@@ -25,6 +25,7 @@ import io from 'socket.io-client';
 import { parseAccountAssets } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
+import { getFamilies } from '../parsers/uniqueTokens';
 
 // -- Constants --------------------------------------- //
 
@@ -111,10 +112,7 @@ export const dataLoadState = () => async (dispatch, getState) => {
 const dataUnsubscribe = () => (dispatch, getState) => {
   const { addressSocket } = getState().data;
   const { accountAddress, nativeCurrency } = getState().settings;
-  console.log('account address', accountAddress);
-  console.log('native currency', nativeCurrency);
   if (!isNil(addressSocket)) {
-    console.log('able to emit');
     addressSocket.emit(...addressSubscription(
       accountAddress,
       nativeCurrency.toLowerCase(),
@@ -158,6 +156,36 @@ const dedupePendingTransactions = (pendingTransactions, parsedTransactions) => {
     });
   }
   return updatedPendingTransactions;
+};
+
+export const dedupeAssetsWithFamilies = (families) => (dispatch, getState) => {
+  const { accountAddress, network } = getState().settings;
+  const { assets } = getState().data;
+  if (assets.length) {
+    const dedupedAssets = filter(assets, (asset) => {
+      const matchingElement = find(families, (family) =>
+        family === get(asset, 'address'));
+      return !matchingElement;
+    });
+    saveAssets(accountAddress, dedupedAssets, network);
+    dispatch({
+      payload: dedupedAssets,
+      type: DATA_UPDATE_ASSETS,
+    });
+  }
+};
+
+const dedupeUniqueTokens = (assets, uniqueTokens) => {
+  const uniqueTokenFamilies = getFamilies(uniqueTokens);
+  let updatedAssets = assets;
+  if (assets.length) {
+    updatedAssets = filter(updatedAssets, (asset) => {
+      const matchingElement = find(uniqueTokenFamilies, (uniqueTokenFamily) =>
+        uniqueTokenFamily === get(asset, 'asset.asset_code'));
+      return !matchingElement;
+    });
+  }
+  return updatedAssets;
 };
 
 const listenOnNewMessages = socket => (dispatch, getState) => {
@@ -242,11 +270,13 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
 
   socket.on(messages.ASSETS.RECEIVED, (e) => {
     const { network } = getState().settings;
+    const { uniqueTokens } = getState().uniqueTokens;
     console.log('on received assets', e);
     const address = get(e, 'meta.address');
     const assets = get(e, 'payload.assets', []);
-    if (address && assets.length) {
-      const parsedAssets = parseAccountAssets(assets);
+    const updatedAssets = dedupeUniqueTokens(assets, uniqueTokens);
+    if (address && updatedAssets.length) {
+      const parsedAssets = parseAccountAssets(updatedAssets);
       saveAssets(address, parsedAssets, network);
       dispatch({
         payload: parsedAssets,
@@ -257,11 +287,13 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
 
   socket.on(messages.ASSETS.APPENDED, (e) => {
     const { network } = getState().settings;
+    const { uniqueTokens } = getState().uniqueTokens;
     console.log('on appended new assets', e);
     const address = get(e, 'meta.address');
     const newAssets = get(e, 'payload.assets', []);
+    const updatedNewAssets = dedupeUniqueTokens(newAssets, uniqueTokens);
     if (address && newAssets.length) {
-      const parsedNewAssets = parseAccountAssets(newAssets);
+      const parsedNewAssets = parseAccountAssets(updatedNewAssets);
       const { assets } = getState().data;
       const updatedAssets = concat(assets, parsedNewAssets);
       saveAssets(address, updatedAssets, network);

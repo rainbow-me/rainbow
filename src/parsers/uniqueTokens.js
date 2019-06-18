@@ -1,4 +1,9 @@
-import { get, pick } from 'lodash';
+import {
+  get,
+  map,
+  pick,
+  uniq,
+} from 'lodash';
 
 /**
  * @desc parse unique tokens from opensea
@@ -47,3 +52,5 @@ export const parseAccountUniqueTokens = data =>
     ),
     uniqueId: `${get(asset_contract, 'address')}_${token_id}`,
   }));
+
+export const getFamilies = (uniqueTokens) => uniq(map(uniqueTokens, (u) => get(u, 'asset_contract.address', '')));
