@@ -1,4 +1,3 @@
-import { REACT_APP_OPENSEA_API_KEY } from 'react-native-dotenv';
 import axios from 'axios';
 import { parseAccountUniqueTokens } from '../parsers/uniqueTokens';
 
@@ -11,7 +10,6 @@ const api = axios.create({
   timeout: 20000, // 20 secs
   headers: {
     Accept: 'application/json',
-    'X-API-KEY': REACT_APP_OPENSEA_API_KEY,
   },
 });
 
