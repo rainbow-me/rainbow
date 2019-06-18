@@ -1,6 +1,7 @@
 import {
   flatten,
   get,
+  isEmpty,
   pick,
   reverse,
 } from 'lodash';
@@ -15,12 +16,35 @@ export const parseTransactions = (data, nativeCurrency) => {
 };
 
 const parseTransaction = (txn, nativeCurrency) => {
-  let transaction = pick(txn, ['hash', 'nonce', 'protocol', 'status', 'mined_at']);
+  let transaction = pick(txn, [
+    'hash',
+    'mined_at',
+    'nonce',
+    'protocol',
+    'status',
+    'type',
+  ]);
   transaction['pending'] = false;
+  transaction['from'] = txn.address_from;
+  transaction['to'] = txn.address_to;
   const changes = get(txn, 'changes', []);
   let internalTransactions = changes;
   if (changes.length === 2 && get(changes, '[0].asset.asset_code') === get(changes, '[1].asset.asset_code')) {
     internalTransactions = [changes[0]];
+  }
+  if (isEmpty(internalTransactions) && transaction.type === 'cancel') {
+    const ethInternalTransaction = {
+      address_from: transaction.from,
+      address_to: transaction.to,
+      asset: {
+        address: 'eth',
+        decimals: 18,
+        name: 'Ethereum',
+        symbol: 'ETH',
+      },
+      value: 0,
+    };
+    internalTransactions = [ethInternalTransaction];
   }
   internalTransactions = internalTransactions.map((internalTxn, index) => {
     const symbol = get(internalTxn, 'asset.symbol', '');

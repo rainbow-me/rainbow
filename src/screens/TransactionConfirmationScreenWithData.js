@@ -63,7 +63,6 @@ class TransactionConfirmationScreenWithData extends PureComponent {
 
     if (transactionHash) {
       this.props.updateTransactionCountNonce(maxTxnCount + 1);
-      // TODO add request type
       const txDetails = {
         asset: get(transactionDetails, 'displayDetails.payload.asset'),
         dappName: get(transactionDetails, 'dappName'),
@@ -77,7 +76,10 @@ class TransactionConfirmationScreenWithData extends PureComponent {
       };
       this.props.dataAddNewTransaction(txDetails);
       this.props.removeRequest(transactionDetails.requestId);
-      await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, transactionHash);
+      try {
+        await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, transactionHash);
+      } catch (error) {
+      }
       this.closeScreen();
     } else {
       await this.handleCancelRequest();

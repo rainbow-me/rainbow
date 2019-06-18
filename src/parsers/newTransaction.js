@@ -17,7 +17,7 @@ export const parseNewTransaction = async (
   nativeCurrency = '',
 ) => {
   let balance = null;
-  const amount = txDetails.amount;
+  const amount = txDetails.value;
   if (amount) {
     balance = {
       amount,
@@ -44,6 +44,7 @@ export const parseNewTransaction = async (
     ...tx,
     balance,
     error: false,
+    mined_at: null,
     native,
     pending: txDetails.hash ? true : false,
   };
