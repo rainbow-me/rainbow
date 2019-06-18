@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.0.0-6",
+  "version": "1.0.0-9",
   "private": true,
   "scripts": {
     "clean": "react-native-clean-project",
@@ -16,7 +16,7 @@
     "@hocs/omit-props": "^0.4.0",
     "@hocs/safe-timers": "^0.4.0",
     "@hocs/with-view-layout-props": "^0.2.0",
-    "@rainbow-me/rainbow-common": "0.8.3",
+    "@rainbow-me/rainbow-common": "^0.8.6",
     "@react-native-community/async-storage": "1.4.0",
     "@react-native-community/blur": "^3.3.1",
     "@react-native-community/netinfo": "^2.0.0",
@@ -53,7 +53,7 @@
     "punycode": "^1.4.1",
     "querystring-es3": "^0.2.1",
     "react": "16.8.3",
-    "react-coin-icon": "^0.1.7",
+    "react-coin-icon": "^0.1.8",
     "react-fast-compare": "^2.0.4",
     "react-native": "0.59.8",
     "react-native-actionsheet": "^2.4.2",
