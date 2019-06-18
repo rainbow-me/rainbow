@@ -39,15 +39,16 @@ class WalletScreen extends PureComponent {
     navigation: PropTypes.object,
     onHideSplashScreen: PropTypes.func,
     refreshAccount: PropTypes.func,
-    scrollViewTracker: PropTypes.object,
     sections: PropTypes.array,
-    setSafeTimeout: PropTypes.func,
     showBlur: PropTypes.bool,
     toggleShowShitcoins: PropTypes.func,
     uniqueTokens: PropTypes.array,
   }
 
+  scrollViewTracker = new Animated.Value(0)
+
   componentDidMount = async () => {
+    this.props.onHideSplashScreen()
     try {
       const showShitcoins = await getShowShitcoinsSetting();
       if (showShitcoins !== null) {
@@ -56,11 +57,7 @@ class WalletScreen extends PureComponent {
     } catch (error) {
       // TODO
     }
-  }
-
-  hideSpashScreen = () => {
-    const { onHideSplashScreen, setSafeTimeout } = this.props;
-    setSafeTimeout(onHideSplashScreen, 150);
+    setTimeout(() => this.props.onHideSplashScreen(), 1000);
   }
 
   render = () => {
@@ -69,27 +66,30 @@ class WalletScreen extends PureComponent {
       isEmpty,
       navigation,
       refreshAccount,
-      scrollViewTracker,
       sections,
       showBlur,
     } = this.props;
 
     return (
       <Page style={{ flex: 1, ...position.sizeAsObject('100%') }}>
+        {/* Line below appears to be needed for having scrollViewTracker persistent while
+        reattaching of react subviews */}
+        <Animated.Code
+          exec={this.scrollViewTracker}
+        />
         <FabWrapper
           sections={sections}
           disabled={isEmpty}
-          scrollViewTracker={scrollViewTracker}
+          scrollViewTracker={this.scrollViewTracker}
         >
-        <Header justify="space-between">
-          <ProfileHeaderButton navigation={navigation} />
-          <CameraHeaderButton navigation={navigation} />
-        </Header>
+          <Header justify="space-between">
+            <ProfileHeaderButton navigation={navigation} />
+            <CameraHeaderButton navigation={navigation} />
+          </Header>
           <AssetList
-            scrollViewTracker={scrollViewTracker}
+            scrollViewTracker={this.scrollViewTracker}
             fetchData={refreshAccount}
             isEmpty={isEmpty}
-            onLayout={this.hideSpashScreen}
             sections={sections}
           />
         </FabWrapper>
@@ -122,5 +122,4 @@ export default compose(
     },
   }),
   withProps(buildWalletSectionsSelector),
-  withProps({ scrollViewTracker: new Animated.Value(0) }),
 )(WalletScreen);
