@@ -129,7 +129,7 @@ export const walletConnectLoadState = () => async dispatch => {
       return dispatch(listenOnNewMessages(walletConnector));
     });
   } catch (error) {
-    Alert.alert('Unable to retrieve all WalletConnect sessions.');
+    //Alert.alert('Unable to retrieve all WalletConnect sessions.');
     walletConnectors = {};
   }
   if (walletConnectors) {

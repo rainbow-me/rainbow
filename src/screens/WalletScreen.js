@@ -4,7 +4,6 @@ import React, { PureComponent } from 'react';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
 import {
   compose,
-  onlyUpdateForKeys,
   withHandlers,
   withProps,
   withState,
@@ -56,10 +55,6 @@ class WalletScreen extends PureComponent {
       // TODO
     }
   }
-
-  shouldComponentUpdate = () => {
-    return this.props.isFocused;
-  };
 
   hideSpashScreen = () => {
     const { onHideSplashScreen, setSafeTimeout } = this.props;

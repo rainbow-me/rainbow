@@ -82,7 +82,7 @@ const ImportSeedPhraseSheet = ({
           weight="semibold"
         />
       </Centered>
-      <Row align="start" justify="space-between">
+      <Row align="start" justify="end">
         <ImportButton
           disabled={seedPhrase ? !isSeedPhraseValid : !isClipboardContentsValidSeedPhrase}
           onPress={seedPhrase ? onImportSeedPhrase : onPasteSeedPhrase}
