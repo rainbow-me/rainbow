@@ -1,4 +1,5 @@
 PODS:
+  - Analytics (3.6.10)
   - boost-for-react-native (1.63.0)
   - Crashlytics (3.10.9):
     - Fabric (~> 1.7.13)
@@ -139,9 +140,14 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
+  - RNAnalytics (1.0.1):
+    - Analytics
+    - React
   - RNCAsyncStorage (1.4.0):
     - React
   - RNDeviceInfo (1.8.0):
+    - React
+  - RNIOS11DeviceCheck (0.0.3):
     - React
   - RNLanguages (3.0.2):
     - React
@@ -188,8 +194,10 @@ DEPENDENCIES:
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTVibration (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
+  - "RNAnalytics (from `../node_modules/@segment/analytics-react-native`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
+  - RNIOS11DeviceCheck (from `../node_modules/react-native-ios11-devicecheck/ios`)
   - RNLanguages (from `../node_modules/react-native-languages`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -197,6 +205,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - Analytics
     - boost-for-react-native
     - Crashlytics
     - Fabric
@@ -231,10 +240,14 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-version-number:
     :path: "../node_modules/react-native-version-number"
+  RNAnalytics:
+    :path: "../node_modules/@segment/analytics-react-native"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-community/async-storage"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
+  RNIOS11DeviceCheck:
+    :path: "../node_modules/react-native-ios11-devicecheck/ios"
   RNLanguages:
     :path: "../node_modules/react-native-languages"
   RNReanimated:
@@ -245,6 +258,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  Analytics: 63744ad4afa65c3bcdcdb7a94b62515bde5b3900
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Crashlytics: 55e24fc23989680285a21cb1146578d9d18e432c
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
@@ -267,14 +281,16 @@ SPEC CHECKSUMS:
   react-native-fast-image: 3390cc968d598f0c6b5c710df138f4b653a87231
   react-native-netinfo: 39c221d058dca040a69e46a083e692bbd65d5ab5
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
+  RNAnalytics: d110195618296fed3907830911f01cb6e9be53d0
   RNCAsyncStorage: 0c3ef98facf3fecf455b518d6f52e10fc964c523
   RNDeviceInfo: 9e6a0aece8e7455515103ce23372b393843a7ee7
+  RNIOS11DeviceCheck: a4a545fdd08230a17a8ce7608e95038ee23a32aa
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNReanimated: c8dd490ca98a4edcba229bfa49f2516c95a43afb
   RNScreens: 720a9e6968beb73e8196239801e887d8401f86ed
   SDWebImage: 6764b5fa0f73c203728052955dbefa2bf1f33282
   yoga: 92b2102c3d373d1a790db4ab761d2b0ffc634f64
 
-PODFILE CHECKSUM: 0145e839f29994a918863125c862614f79901ada
+PODFILE CHECKSUM: 3ccba29e0a83202613947605e5c564508d36035f
 
 COCOAPODS: 1.6.1
