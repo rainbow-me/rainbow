@@ -71,20 +71,20 @@ PODS:
     - React/Core (= 0.59.8)
   - react-native-blur (0.8.0):
     - React
-  - react-native-camera (2.9.0):
+  - react-native-camera (2.8.0):
     - React
-    - react-native-camera/RCT (= 2.9.0)
-    - react-native-camera/RN (= 2.9.0)
-  - react-native-camera/RCT (2.9.0):
+    - react-native-camera/RCT (= 2.8.0)
+    - react-native-camera/RN (= 2.8.0)
+  - react-native-camera/RCT (2.8.0):
     - React
-  - react-native-camera/RN (2.9.0):
+  - react-native-camera/RN (2.8.0):
     - React
-  - react-native-fast-image (6.0.1):
+  - react-native-fast-image (6.0.0):
     - React
     - SDWebImage (~> 5.0)
   - react-native-netinfo (2.0.10):
     - React
-  - react-native-version-number (0.3.6):
+  - react-native-version-number (0.3.5):
     - React
   - React/Core (0.59.8):
     - yoga (= 0.59.8.React)
@@ -141,7 +141,7 @@ PODS:
     - React/RCTBlob
   - RNCAsyncStorage (1.4.0):
     - React
-  - RNDeviceInfo (1.8.0):
+  - RNDeviceInfo (1.6.2):
     - React
   - RNLanguages (3.0.2):
     - React
@@ -263,12 +263,12 @@ SPEC CHECKSUMS:
   Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
   React: 76e6aa2b87d05eb6cccb6926d72685c9a07df152
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-camera: 571e4cfe70e7021e9077c1699a53e659db971f96
-  react-native-fast-image: 3a421727f63d96f766c4b4a2d86fe4987f084c87
+  react-native-camera: 9d04de6afc27ebbbe5b60847ed791f5ad99957f1
+  react-native-fast-image: 2fd0d5a88fd396cbb908c4307fe9f50c62be4163
   react-native-netinfo: 39c221d058dca040a69e46a083e692bbd65d5ab5
-  react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
+  react-native-version-number: 75301519bb72064ad209a498ed08b128cbcf10e7
   RNCAsyncStorage: 0c3ef98facf3fecf455b518d6f52e10fc964c523
-  RNDeviceInfo: 9e6a0aece8e7455515103ce23372b393843a7ee7
+  RNDeviceInfo: 367e1d3b3bbebb68f2bbabb3d93e6c8b851ec87d
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNReanimated: c8dd490ca98a4edcba229bfa49f2516c95a43afb
   RNScreens: 720a9e6968beb73e8196239801e887d8401f86ed

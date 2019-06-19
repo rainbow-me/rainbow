@@ -12,6 +12,7 @@ import { CoinRow } from '../coin-row';
 import { ListFooter } from '../list';
 import { setActionType, setScrollingVelocity, updateSelectedID } from '../../redux/selectedWithFab';
 import { CardSize } from '../unique-token/UniqueTokenRow';
+import { withOpenFamilyTabs } from '../../hoc';
 
 const {
   set,
@@ -91,6 +92,7 @@ class Movable extends React.Component {
     setScrollingVelocity: PropTypes.func,
     tapRef: PropTypes.object,
     updateSelectedID: PropTypes.func,
+    openFamilyTabs: PropTypes.array,
   };
 
   static defaultProps = {
@@ -104,6 +106,8 @@ class Movable extends React.Component {
   absoluteX = new Animated.Value(0);
 
   absoluteY = new Animated.Value(0);
+
+  key = 0;
 
   dragY = new Animated.Value(0);
 
@@ -198,11 +202,11 @@ class Movable extends React.Component {
         >
 
           {this.props.areas && this.props.areas.length !== 0
-          && <Animated.Code
-            // Provoke change on reordering
-            key={this.props.areas[0].id}
-            exec={set(this.selectedIndex, this.calculateSelectedIndex())}
-          />}
+            && <Animated.Code
+              // Provoke change on reordering
+              key={this.key++}
+              exec={set(this.selectedIndex, this.calculateSelectedIndex())}
+            />}
           <Animated.Code
             exec={onChange(this.manageUpAndDownScrolling, [
               // eslint-disable-next-line no-nested-ternary
@@ -229,7 +233,7 @@ class Movable extends React.Component {
                 ),
                 onChange(
                   selectedIndexWithState,
-                  call([selectedIndexWithState], ([i]) => this.props.updateSelectedID(i < 0 ? i : this.props.areas[i].id)),
+                  call([selectedIndexWithState], ([i]) => { console.log(i); return this.props.updateSelectedID(i < 0 ? i : this.props.areas[i].id)}),
                 ),
                 onChange(
                   this.gestureState,
@@ -268,10 +272,12 @@ class Movable extends React.Component {
     );
   }
 }
-const traverseSectionsToDimensions = ({ sections }) => {
+
+const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
   if (sections && sections.length === 2) {
     const areas = [];
     const headerHeight = 35;
+    const familyHeaderHeight = 44;
     let height = 74 + headerHeight;
     for (let i = 0; i < sections[0].data.length; i++) {
       areas.push({
@@ -288,16 +294,30 @@ const traverseSectionsToDimensions = ({ sections }) => {
 
     for (let i = 0; i < sections[1].data.length; i++) {
       const { tokens } = sections[1].data[i];
+      areas.push({
+        bottom: height + familyHeaderHeight,
+        id: 200,
+        left: 0,
+        right: deviceUtils.dimensions.width,
+        top: height,
+      });
+      height += familyHeaderHeight;
       for (let j = 0; j < tokens.length; j++) {
-        areas.push({
-          bottom: height + CardSize,
-          id: tokens[j].isSendable ? tokens[j].uniqueId : extraStates.notSendable,
-          left: j === 0 ? 0 : deviceUtils.dimensions.width / 2,
-          right: deviceUtils.dimensions.width / (j === 0 ? 2 : 1),
-          top: height,
-        });
+        for (let k = 0; k < tokens[j].length; k++) {
+          areas.push({
+            bottom: height + CardSize,
+            id: tokens[j][k].isSendable ? tokens[j][k].uniqueId : extraStates.notSendable,
+            left: k === 0 ? 0 : deviceUtils.dimensions.width / 2,
+            right: deviceUtils.dimensions.width / (k === 0 ? 2 : 1),
+            top: height,
+          });
+        }
+        height += 15 + CardSize;
+        if(!openFamilyTabs[i]) {
+          console.log('sub');
+          height -= 15 + CardSize;
+        }
       }
-      height += 15 + CardSize;
     }
 
     return ({ areas });
@@ -311,4 +331,4 @@ const EnhancedMovable = compose(
 )(Movable);
 
 
-export default EnhancedMovable;
+export default withOpenFamilyTabs(EnhancedMovable);

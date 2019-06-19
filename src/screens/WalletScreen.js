@@ -72,6 +72,11 @@ class WalletScreen extends PureComponent {
 
     return (
       <Page style={{ flex: 1, ...position.sizeAsObject('100%') }}>
+        {/* Line below appears to be needed for having scrollViewTracker persistent while
+        reattaching of react subviews */}
+        <Animated.Code
+          exec={scrollViewTracker}
+        />
         <FabWrapper
           sections={sections}
           disabled={isEmpty}
