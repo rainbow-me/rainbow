@@ -1,5 +1,7 @@
+import analytics from '@segment/analytics-react-native';
 import { get, last } from 'lodash';
 import PropTypes from 'prop-types';
+import nanoid from 'nanoid/non-secure';
 import React, { Component } from 'react';
 import {
   AppRegistry,
@@ -7,7 +9,9 @@ import {
   Linking,
 } from 'react-native';
 import CodePush from 'react-native-code-push';
+import { REACT_APP_SEGMENT_API_WRITE_KEY } from 'react-native-dotenv';
 import firebase from 'react-native-firebase';
+import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { useScreens } from 'react-native-screens';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
@@ -20,6 +24,7 @@ import {
   withWalletConnectOnSessionRequest,
 } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
+import * as keychain from './model/keychain';
 import Navigation from './navigation';
 import store from './redux/store';
 import { requestsForTopic } from './redux/requests';
@@ -86,6 +91,8 @@ class App extends Component {
   };
 
   async componentDidMount() {
+    await this.handleInitializeAnalytics();
+
     AppState.addEventListener('change', this.handleAppStateChange);
     Linking.addEventListener('url', this.handleOpenLinkingURL);
     await this.props.initializeWallet();
@@ -121,6 +128,40 @@ class App extends Component {
       const fromLocal = get(notificationOpen, 'notification.data.fromLocal', false);
       this.onPushNotificationOpened(topic, false, fromLocal);
     });
+  }
+
+  handleInitializeAnalytics = async () => {
+    let userId = null;
+
+    await RNIOS11DeviceCheck.getToken()
+      .then((deviceId) => {
+        userId = deviceId;
+      })
+      .catch(async (error) => {
+        const storedUserId = await keychain.loadString('analyticsUserIdentifier');
+
+        if (storedUserId) {
+          userId = storedUserId;
+        } else {
+          userId = nanoid();
+          await keychain.saveString('analyticsUserIdentifier', userId);
+        }
+      });
+
+    await analytics.setup(REACT_APP_SEGMENT_API_WRITE_KEY, {
+      ios: {
+        trackDeepLinks: true,
+      },
+      // Record screen views automatically!
+      recordScreenViews: true,
+      // Record certain application events automatically!
+      trackAppLifecycleEvents: true,
+      trackAttributionData: true,
+    });
+
+    if (userId) {
+      analytics.identify(userId);
+    }
   }
 
   handleAppStateChange = async (nextAppState) => {

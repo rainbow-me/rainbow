@@ -12,5 +12,8 @@ module.exports = {
     'date-fns',
     ['lodash', { id: ['lodash', 'recompact', 'recompose'] }],
   ],
-  presets: ['module:metro-react-native-babel-preset'],
+  presets: [
+    'module:metro-react-native-babel-preset',
+    'module:react-native-dotenv',
+  ],
 };
