@@ -1,10 +1,10 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
+import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Vibration } from 'react-native';
-import firebase from 'react-native-firebase';
 import Permissions from 'react-native-permissions';
 import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
@@ -80,16 +80,19 @@ class QRScannerScreenWithData extends Component {
     const address = await addressUtils.getEthereumAddressFromQRCodeData(data);
 
     if (address) {
+      analytics.track('Scanned address QR code');
       navigation.navigate('WalletScreen');
       navigation.navigate('SendSheet', { address });
       return setSafeTimeout(this.handleReenableScanning, 1000);
     }
 
     if (data.startsWith('wc:')) {
+      analytics.track('Scanned WalletConnect QR code');
       await walletConnectOnSessionRequest(data);
       return setSafeTimeout(this.handleReenableScanning, 2000);
     }
 
+    analytics.track('Scanned broken or unsupported QR code', { qrCodeData: data });
     return Alert({
       callback: this.handleReenableScanning,
       message: lang.t('wallet.unrecognized_qrcode'),

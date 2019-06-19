@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { get, keys, pickBy } from 'lodash';
 import PropTypes from 'prop-types';
 import { resources, supportedLanguages } from '@rainbow-me/rainbow-common';
@@ -44,9 +45,10 @@ LanguageSection.propTypes = {
 export default compose(
   withAccountSettings,
   withHandlers({
-    onSelectLanguage: ({ settingsChangeLanguage }) => (language) => (
-      settingsChangeLanguage(language)
-    ),
+    onSelectLanguage: ({ settingsChangeLanguage }) => (language) => {
+      settingsChangeLanguage(language);
+      analytics.track('Changed language', { language });
+    },
   }),
   onlyUpdateForKeys(['language']),
 )(LanguageSection);

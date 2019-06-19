@@ -164,8 +164,6 @@ class App extends Component {
       ios: {
         trackDeepLinks: true,
       },
-      // Record screen views automatically!
-      recordScreenViews: true,
       // Record certain application events automatically!
       trackAppLifecycleEvents: true,
       trackAttributionData: true,

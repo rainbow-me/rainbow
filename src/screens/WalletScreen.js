@@ -1,5 +1,6 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
 import { withAccountAssets } from '@rainbow-me/rainbow-common';
+import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
@@ -108,6 +109,12 @@ export default compose(
         const updatedShowShitcoinsSetting = !showShitcoins;
         toggleShowShitcoins(updatedShowShitcoinsSetting);
         updateShowShitcoinsSetting(updatedShowShitcoinsSetting);
+
+        if (updatedShowShitcoinsSetting) {
+          analytics.track('Showed shitcoins');
+        } else {
+          analytics.track('Hid shitcoins');
+        }
       }
     },
   }),
