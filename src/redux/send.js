@@ -60,7 +60,7 @@ function getBalanceAmount(assets, gasPrice, selected) {
     );
     amount = convertNumberToString(remaining < 0 ? '0' : remaining);
   } else {
-    amount = selected.balance.amount;
+    amount = get(selected, 'balance.amount', 0);
   }
 
   return amount;
