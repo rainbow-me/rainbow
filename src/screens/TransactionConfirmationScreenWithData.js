@@ -1,8 +1,9 @@
+import { estimateGas, getTransactionCount, toHex } from '@rainbow-me/rainbow-common';
+import analytics from '@segment/analytics-react-native';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get, isNil, omit } from 'lodash';
 import PropTypes from 'prop-types';
-import { estimateGas, getTransactionCount, toHex } from '@rainbow-me/rainbow-common';
 import React, { PureComponent } from 'react';
 import { Alert, StatusBar, Vibration } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
@@ -78,6 +79,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
       this.props.transactionsAddNewTransaction(txDetails);
       this.props.removeTransaction(transactionDetails.requestId);
       await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, transactionHash);
+      analytics.track('Approved WalletConnect transaction request');
       this.closeScreen();
     } else {
       await this.handleCancelRequest();
@@ -92,6 +94,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     if (flatFormatSignature) {
       this.props.removeTransaction(transactionDetails.requestId);
       await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, flatFormatSignature);
+      analytics.track('Approved WalletConnect signature request');
       this.closeScreen();
     } else {
       await this.handleCancelRequest();
@@ -113,7 +116,10 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     try {
       await this.sendFailedTransactionStatus();
       const { transactionDetails } = this.props.navigation.state.params;
-      this.props.removeTransaction(transactionDetails.requestId);
+      const { requestId, transactionDisplayDetails: { requestType } } = transactionDetails;
+      this.props.removeTransaction(requestId);
+      const rejectionType = requestType === 'message' ? 'signature' : 'transaction';
+      analytics.track(`Rejected WalletConnect ${rejectionType} request`);
     } catch (error) {
       this.closeScreen();
       Alert.alert('Failed to send rejected transaction status');
