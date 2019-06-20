@@ -16,8 +16,12 @@ export const saveLocal = async (
   version = defaultVersion,
 ) => {
   try {
-    data['storageVersion'] = version;
-    await storage.save({ key, data, expires: null });
+    data.storageVersion = version;
+    await storage.save({
+      data,
+      expires: null,
+      key,
+    });
   } catch (error) {
     console.log('Storage: error saving to local for key', key);
   }
@@ -31,16 +35,18 @@ export const saveLocal = async (
 export const getLocal = async (key = '', version = defaultVersion) => {
   try {
     const result = await storage.load({
-      key,
       autoSync: false,
+      key,
       syncInBackground: false,
     });
     if (result && result.storageVersion === version) {
       return result;
-    } else if (result) {
+    }
+    if (result) {
       removeLocal(key);
       return null;
     }
+    return null;
   } catch (error) {
     console.log('Storage: error getting from local for key', key);
     return null;
@@ -283,7 +289,7 @@ export const getAllWalletConnectSessions = async () => {
   const allSessions = await getLocal(
     'walletconnect',
   );
-  return allSessions ? allSessions : {};
+  return allSessions || {};
 };
 
 /**
@@ -292,7 +298,7 @@ export const getAllWalletConnectSessions = async () => {
  * @param  {Object}   [session]
  */
 export const saveWalletConnectSession = async (peerId, session) => {
-  let allSessions = await getAllValidWalletConnectSessions();
+  const allSessions = await getAllValidWalletConnectSessions();
   allSessions[peerId] = session;
   await saveLocal('walletconnect', allSessions);
 };

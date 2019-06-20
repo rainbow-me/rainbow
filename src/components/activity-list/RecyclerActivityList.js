@@ -5,7 +5,7 @@ import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
 import { buildTransactionUniqueIdentifier } from '../../helpers/transactions';
-import { colors, position } from '../../styles';
+import { colors } from '../../styles';
 import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
 import { AssetListItemSkeleton } from '../asset-list';
 import {

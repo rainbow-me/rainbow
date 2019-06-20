@@ -6,40 +6,39 @@ import { get } from 'lodash';
 import lang from '../languages';
 import { withAccountData, withUniqueTokens } from '../hoc';
 import {
-  sendModalInit,
-  sendUpdateGasPrice,
-  sendTransaction,
   sendClearFields,
-  sendUpdateRecipient,
-  sendUpdateNativeAmount,
-  sendUpdateAssetAmount,
-  sendUpdateSelected,
   sendMaxBalance,
+  sendModalInit,
   sendToggleConfirmationView,
+  sendTransaction,
+  sendUpdateAssetAmount,
+  sendUpdateGasPrice,
+  sendUpdateNativeAmount,
+  sendUpdateRecipient,
+  sendUpdateSelected,
 } from '../redux/send';
 import { isValidAddress } from '../helpers/validators';
 import { greaterThan } from '../helpers/utilities';
 import { ethereumUtils } from '../utils';
 
 const mapStateToProps = ({ send, settings }) => ({
-  address: settings.accountAddress,
-  fetching: send.fetching,
-  recipient: send.recipient,
-  nativeAmount: send.nativeAmount,
-  assetAmount: send.assetAmount,
-  isSufficientGas: send.isSufficientGas,
-  isSufficientBalance: send.isSufficientBalance,
-  txHash: send.txHash,
-  address: send.address,
-  selected: send.selected,
-  gasPrices: send.gasPrices,
-  gasPrice: send.gasPrice,
-  gasLimit: send.gasLimit,
-  gasPriceOption: send.gasPriceOption,
-  confirm: send.confirm,
   accountType: settings.accountType,
-  network: settings.network,
+  address: send.address,
+  assetAmount: send.assetAmount,
+  confirm: send.confirm,
+  fetching: send.fetching,
+  gasLimit: send.gasLimit,
+  gasPrice: send.gasPrice,
+  gasPriceOption: send.gasPriceOption,
+  gasPrices: send.gasPrices,
+  isSufficientBalance: send.isSufficientBalance,
+  isSufficientGas: send.isSufficientGas,
+  nativeAmount: send.nativeAmount,
   nativeCurrency: settings.nativeCurrency,
+  network: settings.network,
+  recipient: send.recipient,
+  selected: send.selected,
+  txHash: send.txHash,
 });
 
 /**
@@ -53,33 +52,34 @@ const mapStateToProps = ({ send, settings }) => ({
 export const withSendComponentWithData = (SendComponent, options) => {
   class SendComponentWithData extends Component {
     static propTypes = {
-      sendModalInit: PropTypes.func.isRequired,
-      sendUpdateGasPrice: PropTypes.func.isRequired,
-      sendTransaction: PropTypes.func.isRequired,
-      sendClearFields: PropTypes.func.isRequired,
-      sendUpdateRecipient: PropTypes.func.isRequired,
-      sendUpdateNativeAmount: PropTypes.func.isRequired,
-      sendUpdateAssetAmount: PropTypes.func.isRequired,
-      sendUpdateSelected: PropTypes.func.isRequired,
-      sendMaxBalance: PropTypes.func.isRequired,
-      sendToggleConfirmationView: PropTypes.func.isRequired,
-      fetching: PropTypes.bool.isRequired,
-      recipient: PropTypes.string.isRequired,
-      nativeAmount: PropTypes.string.isRequired,
-      assetAmount: PropTypes.string.isRequired,
-      isSufficientGas: PropTypes.bool.isRequired,
-      isSufficientBalance: PropTypes.bool.isRequired,
-      txHash: PropTypes.string.isRequired,
-      selected: PropTypes.object.isRequired,
-      gasPrice: PropTypes.object.isRequired,
-      gasPrices: PropTypes.object.isRequired,
-      gasLimit: PropTypes.number.isRequired,
-      gasPriceOption: PropTypes.string.isRequired,
-      confirm: PropTypes.bool.isRequired,
-      assets: PropTypes.array.isRequired,
       accountType: PropTypes.string.isRequired,
-      network: PropTypes.string.isRequired,
+      address: PropTypes.string,
+      assetAmount: PropTypes.string.isRequired,
+      assets: PropTypes.array.isRequired,
+      confirm: PropTypes.bool.isRequired,
+      fetching: PropTypes.bool.isRequired,
+      gasLimit: PropTypes.number.isRequired,
+      gasPrice: PropTypes.object.isRequired,
+      gasPriceOption: PropTypes.string.isRequired,
+      gasPrices: PropTypes.object.isRequired,
+      isSufficientBalance: PropTypes.bool.isRequired,
+      isSufficientGas: PropTypes.bool.isRequired,
+      nativeAmount: PropTypes.string.isRequired,
       nativeCurrency: PropTypes.string.isRequired,
+      network: PropTypes.string.isRequired,
+      recipient: PropTypes.string.isRequired,
+      selected: PropTypes.object.isRequired,
+      sendClearFields: PropTypes.func.isRequired,
+      sendMaxBalance: PropTypes.func.isRequired,
+      sendModalInit: PropTypes.func.isRequired,
+      sendToggleConfirmationView: PropTypes.func.isRequired,
+      sendTransaction: PropTypes.func.isRequired,
+      sendUpdateAssetAmount: PropTypes.func.isRequired,
+      sendUpdateGasPrice: PropTypes.func.isRequired,
+      sendUpdateNativeAmount: PropTypes.func.isRequired,
+      sendUpdateRecipient: PropTypes.func.isRequired,
+      sendUpdateSelected: PropTypes.func.isRequired,
+      txHash: PropTypes.string.isRequired,
     };
 
     constructor(props) {
@@ -108,9 +108,9 @@ export const withSendComponentWithData = (SendComponent, options) => {
       }
 
       if (this.state.isValidAddress) {
-        if ((selected.symbol !== prevProps.selected.symbol) ||
-           (recipient !== prevProps.recipient) ||
-           (assetAmount !== prevProps.assetAmount)) {
+        if ((selected.symbol !== prevProps.selected.symbol)
+          || (recipient !== prevProps.recipient)
+          || (assetAmount !== prevProps.assetAmount)) {
           this.props.sendUpdateGasPrice();
         }
       }
@@ -151,12 +151,12 @@ export const withSendComponentWithData = (SendComponent, options) => {
 
       // Balance checks
       if (!this.props.confirm) {
-        const { assets, assetAmount, gasPrice } = this.props;
         const isAddressValid = await isValidAddress(this.props.recipient);
         if (!isAddressValid) {
           console.log(lang.t('notification.error.invalid_address'));
           return;
-        } else if (this.props.selected.address === 'eth') {
+        }
+        if (this.props.selected.address === 'eth') {
           const { requestedAmount, balance, amountWithFees } = ethereumUtils.transactionData(
             this.props.assets,
             this.props.assetAmount,
@@ -165,7 +165,8 @@ export const withSendComponentWithData = (SendComponent, options) => {
 
           if (greaterThan(requestedAmount, balance)) {
             return;
-          } else if (greaterThan(amountWithFees, balance)) {
+          }
+          if (greaterThan(amountWithFees, balance)) {
             return;
           }
         } else if (!this.props.selected.isNft) {
@@ -179,23 +180,23 @@ export const withSendComponentWithData = (SendComponent, options) => {
 
           if (greaterThan(requestedAmount, tokenBalance)) {
             return;
-          } else if (greaterThan(txFee, balance)) {
+          }
+          if (greaterThan(txFee, balance)) {
             return;
           }
         }
 
         this.props.sendToggleConfirmationView(true);
 
-        return this.props.sendTransaction({
+        this.props.sendTransaction({
           address: this.props.address,
-          recipient: this.props.recipient,
           amount: this.props.assetAmount,
           asset: this.props.selected,
-          gasPrice: this.props.gasPrice,
           gasLimit: this.props.gasLimit,
+          gasPrice: this.props.gasPrice,
+          recipient: this.props.recipient,
         }, this.sendTransactionCallback);
       }
-
     };
 
     updateGasPrice = gasPrice => {
@@ -211,8 +212,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
     };
 
     // QR Code Reader Handlers
-    toggleQRCodeReader = () =>
-      this.setState({ showQRCodeReader: !this.state.showQRCodeReader });
+    toggleQRCodeReader = () => this.setState({ showQRCodeReader: !this.state.showQRCodeReader });
 
     onQRCodeValidate = async (rawData) => {
       const data = rawData.match(/0x\w{40}/g)
@@ -222,9 +222,8 @@ export const withSendComponentWithData = (SendComponent, options) => {
       if (data) {
         result = await isValidAddress(data);
       }
-      const onError = () =>
-        console.log(lang.t('notification.error.invalid_address_scanned'));
-      return { data, result, onError };
+      const onError = () => console.log(lang.t('notification.error.invalid_address_scanned'));
+      return { data, onError, result };
     };
 
     onQRCodeScan = data => {
@@ -254,21 +253,21 @@ export const withSendComponentWithData = (SendComponent, options) => {
           {...this.props}
         />
       );
-    };
+    }
   }
 
   return compose(
     connect(mapStateToProps, {
-      sendModalInit,
-      sendUpdateGasPrice,
-      sendTransaction,
       sendClearFields,
-      sendUpdateRecipient,
-      sendUpdateNativeAmount,
-      sendUpdateAssetAmount,
-      sendUpdateSelected,
       sendMaxBalance,
+      sendModalInit,
       sendToggleConfirmationView,
+      sendTransaction,
+      sendUpdateAssetAmount,
+      sendUpdateGasPrice,
+      sendUpdateNativeAmount,
+      sendUpdateRecipient,
+      sendUpdateSelected,
     }),
     withAccountData,
     withUniqueTokens,

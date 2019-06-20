@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from 'styled-components/primitives';
 import { withNeverRerender } from '../../hoc';
 import { colors } from '../../styles';

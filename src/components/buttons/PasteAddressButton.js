@@ -1,10 +1,10 @@
-import { isValidAddress } from '../../helpers/validators';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Clipboard } from 'react-native';
+import Button from './Button';
 import { withAppState } from '../../hoc';
 import { colors } from '../../styles';
-import Button from './Button';
+import { isValidAddress } from '../../helpers/validators';
 
 class PasteAddressButton extends PureComponent {
   static propTypes = {

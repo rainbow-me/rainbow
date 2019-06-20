@@ -55,7 +55,6 @@ export const getUniswapLiquidityInfo = async (accountAddress, exchangeContracts)
       const tokenBalance = fromWei(divide(multiply(reserve, balance), totalSupply), decimals);
 
       return {
-        tokenAddress,
         balance,
         ethBalance,
         ethReserve,
@@ -65,6 +64,7 @@ export const getUniswapLiquidityInfo = async (accountAddress, exchangeContracts)
           name,
           symbol,
         },
+        tokenAddress,
         totalSupply,
         uniqueId: tokenAddress,
       };

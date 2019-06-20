@@ -29,7 +29,12 @@ const renderCurrencyIcon = (currency, emojiName) => {
 };
 
 // eslint-disable-next-line react/prop-types
-const renderCurrencyListItem = ({ currency, emojiName, label, ...item }) => (
+const renderCurrencyListItem = ({
+  currency,
+  emojiName,
+  label,
+  ...item
+}) => (
   <RadioListItem
     {...item}
     icon={renderCurrencyIcon(currency, emojiName)}

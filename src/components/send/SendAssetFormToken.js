@@ -1,11 +1,9 @@
 import PropTypes from 'prop-types';
-import React, { createElement } from 'react';
+import React from 'react';
 import { compose, withHandlers } from 'recompact';
-import styled from 'styled-components/primitives';
 import { withAccountSettings } from '../../hoc';
-import { colors, padding, position } from '../../styles';
 import { removeLeadingZeros } from '../../utils/formatters';
-import { Column, ColumnWithMargins } from '../layout';
+import { ColumnWithMargins } from '../layout';
 import SendAssetFormField from './SendAssetFormField';
 
 const SendAssetFormToken = ({
@@ -17,7 +15,7 @@ const SendAssetFormToken = ({
   onChangeNativeAmount,
   selected,
   sendMaxBalance,
-  ...props,
+  ...props
 }) => (
   <ColumnWithMargins
     {...props}

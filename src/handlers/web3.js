@@ -231,7 +231,6 @@ export const estimateGasLimit = async ({
   recipient,
   amount,
 }) => {
-  const data = '0x';
   const _amount = amount && Number(amount)
     ? convertAmountToRawAmount(amount, asset.decimals)
     : estimateAssetBalancePortion(asset);
@@ -239,7 +238,7 @@ export const estimateGasLimit = async ({
   let _recipient = await resolveNameOrAddress(recipient);
   _recipient = _recipient || '0x737e583620f4ac1842d4e354789ca0c5e0651fbb';
   let estimateGasData = {
-    data,
+    data: '0x',
     from: address,
     to: _recipient,
     value,
@@ -247,7 +246,11 @@ export const estimateGasLimit = async ({
   if (asset.isNft) {
     const contractAddress = get(asset, 'asset_contract.address');
     const data = getDataForNftTransfer(address, _recipient, asset);
-    estimateGasData = { from: address, to: contractAddress, data };
+    estimateGasData = {
+      data,
+      from: address,
+      to: contractAddress,
+    };
   } else if (asset.symbol !== 'ETH') {
     const transferData = getDataForTokenTransfer(value, _recipient);
     estimateGasData = {
