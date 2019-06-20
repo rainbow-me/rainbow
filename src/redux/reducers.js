@@ -23,7 +23,7 @@ export default combineReducers({
   requests,
   send,
   settings,
-  uniswap,
   uniqueTokens,
+  uniswap,
   walletconnect,
 });

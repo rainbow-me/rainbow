@@ -45,7 +45,7 @@ export const getTransactionStatus = ({
 const groupTransactionByDate = ({ pending, mined_at: time }) => {
   if (pending) return 'Pending';
 
-  const timestamp = new Date(parseInt(time) * 1000);
+  const timestamp = new Date(parseInt(time, 10) * 1000);
 
   if (isToday(timestamp)) return 'Today';
   if (isYesterday(timestamp)) return 'Yesterday';

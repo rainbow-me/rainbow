@@ -3,7 +3,6 @@ import {
   filter,
   find,
   get,
-  mapValues,
   omit,
   values,
 } from 'lodash';
@@ -36,7 +35,7 @@ export const requestsLoadState = () => async (dispatch, getState) => {
 
 const getAssetDetails = (contractAddress, assets) => find(assets, (item) => item.address === contractAddress);
 
-const getTimestampFromPayload = payload => parseInt(payload.id.toString().slice(0, -3));
+const getTimestampFromPayload = payload => parseInt(payload.id.toString().slice(0, -3), 10);
 
 const getRequestDisplayDetails = (payload, assets, nativeCurrency) => {
   const timestampInMs = getTimestampFromPayload(payload);
@@ -153,21 +152,24 @@ export const addRequestToApprove = (clientId, peerId, requestId, payload, peerMe
   const request = {
     clientId,
     dappName,
+    displayDetails,
     imageUrl,
     payload,
     peerId,
     requestId,
-    displayDetails,
   };
   const updatedRequests = { ...requests, [requestId]: request };
-  dispatch({ type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE, payload: updatedRequests });
+  dispatch({
+    payload: updatedRequests,
+    type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE,
+  });
   saveLocalRequests(accountAddress, network, updatedRequests);
   return request;
 };
 
 export const requestsForTopic = (topic) => (dispatch, getState) => {
   const { requests } = getState().requests;
-  return filter(values(requests), { 'clientId': topic });
+  return filter(values(requests), { clientId: topic });
 };
 
 export const requestsClearState = () => (dispatch, getState) => {
@@ -181,7 +183,10 @@ export const removeRequest = (requestId) => (dispatch, getState) => {
   const { requests } = getState().requests;
   const updatedRequests = omit(requests, [requestId]);
   removeLocalRequest(accountAddress, network, requestId);
-  dispatch({ type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE, payload: updatedRequests });
+  dispatch({
+    payload: updatedRequests,
+    type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE,
+  });
 };
 
 // -- Reducer ----------------------------------------- //
