@@ -1,4 +1,5 @@
 import { withAccountAssets } from '@rainbow-me/rainbow-common';
+import analytics from '@segment/analytics-react-native';
 import {
   get,
   isEmpty,
@@ -32,13 +33,19 @@ const Container = styled(Column)`
   height: 100%;
 `;
 
+const costForGasItem = item => get(item, 'txFee.native.value.display');
+const gweiForGasItem = item => get(item, 'value.display');
+const timeForGasItem = item => get(item, 'estimatedTime.display');
+
 const formatGasSpeedItems = (gasPrices) => ([
   { label: 'Cancel' },
   ...map(gasPrices, (value, key) => {
-    const cost = get(value, 'txFee.native.value.display');
-    const time = get(value, 'estimatedTime.display');
+    const cost = costForGasItem(value);
+    const gwei = gweiForGasItem(value);
+    const time = timeForGasItem(value);
 
     return {
+      gweiValue: gwei,
       label: `${upperFirst(key)}: ${cost}  ~${time.slice(0, -1)}`,
       value: key,
     };
@@ -130,12 +137,14 @@ class SendSheet extends Component {
   onChangeAssetAmount = (assetAmount) => {
     if (isString(assetAmount)) {
       this.props.sendUpdateAssetAmount(assetAmount);
+      analytics.track('Changed token input in Send flow');
     }
   }
 
   onChangeNativeAmount = (nativeAmount) => {
     if (isString(nativeAmount)) {
       this.props.sendUpdateNativeAmount(nativeAmount);
+      analytics.track('Changed native currency input in Send flow');
     }
   }
 
@@ -157,7 +166,10 @@ class SendSheet extends Component {
       options: options.map(option => option.label),
     }, (buttonIndex) => {
       if (buttonIndex > 0) {
-        this.props.sendUpdateGasPrice(options[buttonIndex].value);
+        const selectedGasPriceItem = options[buttonIndex];
+
+        this.props.sendUpdateGasPrice(selectedGasPriceItem.value);
+        analytics.track('Updated Gas Price', { gasPrice: selectedGasPriceItem.gweiValue });
       }
 
       if (isFunction(onSuccess)) {
@@ -166,7 +178,10 @@ class SendSheet extends Component {
     });
   }
 
-  onResetAssetSelection = () => this.props.sendUpdateSelected('')
+  onResetAssetSelection = () => {
+    analytics.track('Reset asset selection in Send flow');
+    this.props.sendUpdateSelected('');
+  }
 
   onSelectAsset = symbol => this.props.sendUpdateSelected(symbol)
 
@@ -175,6 +190,8 @@ class SendSheet extends Component {
       assetAmount,
       navigation,
       onSubmit,
+      recipient,
+      selected,
       sendClearFields,
     } = this.props;
 
@@ -182,6 +199,11 @@ class SendSheet extends Component {
 
     return onSubmit().then(() => {
       this.setState({ isAuthorizing: false });
+      analytics.track('Sent transaction', {
+        assetName: selected.name,
+        assetType: selected.isNft ? 'unique_token' : 'token',
+        isRecepientENS: recipient.slice(-4).toLowerCase() === '.eth',
+      });
       sendClearFields();
       navigation.navigate('ProfileScreen');
     }).catch(error => {

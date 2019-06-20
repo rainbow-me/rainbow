@@ -1,10 +1,11 @@
+import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import Animated from 'react-native-reanimated';
 import { compose, onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components';
 import { withNetInfo } from '../hoc';
-import { colors, padding } from '../styles';
+import { colors, padding, shadow } from '../styles';
 import { Icon } from './icons';
 import { RowWithMargins } from './layout';
 import { Text } from './text';
@@ -24,14 +25,11 @@ const Badge = styled(RowWithMargins).attrs({
   self: 'center',
 })`
   ${padding(10)};
+  ${shadow.build(0, 6, 10, colors.dark, 0.14)}
   background: ${colors.dark};
   border-radius: 50;
   bottom: 40;
   position: absolute;
-  shadow-color: ${colors.dark};
-  shadow-offset: 0px 6px;
-  shadow-opacity: 0.14;
-  shadow-radius: 10;
   z-index: 100;
 `;
 
@@ -52,19 +50,24 @@ class OfflineBadge extends PureComponent {
 
   componentDidUpdate = () => this.runAnimation()
 
-  buildAnimation = toValue => {
-    spring(this.animation, {
+  runAnimation = () => {
+    const { isConnected } = this.props;
+
+    return spring(this.animation, {
       damping: 14,
       mass: 1,
       overshootClamping: false,
       restDisplacementThreshold: 0.001,
       restSpeedThreshold: 0.001,
       stiffness: 121.6,
-      toValue,
-    }).start();
+      toValue: isConnected ? DefaultAnimationValue : 0,
+    }).start(({ finished }) => {
+      if (!finished) return null;
+      return isConnected
+        ? analytics.track('Reconnected after offline')
+        : analytics.track('Offline / lost connection');
+    });
   }
-
-  runAnimation = () => this.buildAnimation(this.props.isConnected ? DefaultAnimationValue : 0)
 
   render = () => (
     <Badge

@@ -1,18 +1,17 @@
+import { commonStorage } from '@rainbow-me/rainbow-common';
+import analytics from '@segment/analytics-react-native';
 import {
   forEach,
-  get,
   mapValues,
   omitBy,
   pickBy,
   values,
 } from 'lodash';
-import { commonStorage } from '@rainbow-me/rainbow-common';
 import { Alert } from 'react-native';
 import lang from 'i18n-js';
 import WalletConnect from '@walletconnect/react-native';
 import { getFCMToken, checkPushNotificationPermissions } from '../model/firebase';
 import { addTransactionToApprove } from './transactionsToApprove';
-import Navigation from '../navigation';
 
 // -- Constants --------------------------------------- //
 
@@ -39,17 +38,17 @@ const getNativeOptions = async () => {
   const nativeOptions = {
     clientMeta: {
       description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
-      url: 'https://rainbow.me',
       icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
       name: '🌈 Rainbow',
       ssl: true,
+      url: 'https://rainbow.me',
     },
     push: {
-      url: 'https://wcpush.rainbow.me',
-      type: 'fcm',
-      token,
-      peerMeta: true,
       language,
+      peerMeta: true,
+      token,
+      type: 'fcm',
+      url: 'https://wcpush.rainbow.me',
     },
   };
 
@@ -69,8 +68,11 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (dispatch)
 
         const { peerId, peerMeta } = payload.params[0];
         dispatch(setPendingRequest(peerId, walletConnector));
-
         dispatch(walletConnectApproveSession(peerId, callback));
+        analytics.track('Approved new WalletConnect session', {
+          dappName: peerMeta.name,
+          dappUrl: peerMeta.url,
+        });
       });
     } catch (error) {
       Alert.alert(lang.t('wallet.wallet_connect.error'));
