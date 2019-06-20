@@ -1,6 +1,6 @@
 import produce from 'immer';
 import {
-  filter,
+  concat,
   get,
   isEmpty,
   map,
@@ -35,8 +35,8 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
     const uniswap = await getUniswap(accountAddress, network);
     const liquidityTokens = await getUniswapLiquidityTokens(accountAddress, network);
     dispatch({
+      payload: { liquidityTokens, uniswap },
       type: UNISWAP_LOAD_SUCCESS,
-      payload: { uniswap, liquidityTokens },
     });
   } catch (error) {
     dispatch({ type: UNISWAP_LOAD_FAILURE });
@@ -54,8 +54,8 @@ export const uniswapUpdateLiquidityTokens = (liquidityTokens) => (dispatch, getS
   if (isEmpty(liquidityTokens)) return;
   const { accountAddress, network } = getState().settings;
   dispatch({
-    type: UNISWAP_UPDATE_LIQUIDITY_TOKENS,
     payload: liquidityTokens,
+    type: UNISWAP_UPDATE_LIQUIDITY_TOKENS,
   });
   saveUniswapLiquidityTokens(accountAddress, network);
   dispatch(uniswapUpdateState());
@@ -68,34 +68,32 @@ export const uniswapAddLiquidityTokens = (newLiquidityTokens) => (dispatch, getS
   const { liquidityTokens } = getState().uniswap;
   const updatedLiquidityTokens = concat(liquidityTokens, ...newLiquidityTokens);
   dispatch({
-    type: UNISWAP_UPDATE_LIQUIDITY_TOKENS,
     payload: updatedLiquidityTokens,
+    type: UNISWAP_UPDATE_LIQUIDITY_TOKENS,
   });
   saveUniswapLiquidityTokens(accountAddress, network);
   dispatch(uniswapUpdateState());
 };
 
-export const uniswapUpdateState = () => (dispatch, getState) => {
-  return new Promise((resolve, reject) => {
-    const { accountAddress, network } = getState().settings;
-    const { liquidityTokens } = getState().uniswap;
-    const exchangeContracts = map(liquidityTokens, x => get(x, 'asset.asset_code'));
+export const uniswapUpdateState = () => (dispatch, getState) => new Promise((resolve, reject) => {
+  const { accountAddress, network } = getState().settings;
+  const { liquidityTokens } = getState().uniswap;
+  const exchangeContracts = map(liquidityTokens, x => get(x, 'asset.asset_code'));
 
-    dispatch({ type: UNISWAP_UPDATE_REQUEST });
-    getUniswapLiquidityInfo(accountAddress, exchangeContracts)
-      .then(uniswap => {
-        saveUniswap(accountAddress, uniswap, network);
-        dispatch({
-          type: UNISWAP_UPDATE_SUCCESS,
-          payload: uniswap,
-        });
-      })
-      .catch(error => {
-        dispatch({ type: UNISWAP_UPDATE_FAILURE });
-        reject(error);
+  dispatch({ type: UNISWAP_UPDATE_REQUEST });
+  getUniswapLiquidityInfo(accountAddress, exchangeContracts)
+    .then(uniswap => {
+      saveUniswap(accountAddress, uniswap, network);
+      dispatch({
+        payload: uniswap,
+        type: UNISWAP_UPDATE_SUCCESS,
       });
-  });
-};
+    })
+    .catch(error => {
+      dispatch({ type: UNISWAP_UPDATE_FAILURE });
+      reject(error);
+    });
+});
 
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNISWAP_STATE = {
@@ -105,37 +103,36 @@ export const INITIAL_UNISWAP_STATE = {
   uniswap: {},
 };
 
-export default (state = INITIAL_UNISWAP_STATE, action) =>
-  produce(state, draft => {
-    switch (action.type) {
-      case UNISWAP_LOAD_REQUEST:
-        draft.loadingUniswap = true;
-        break;
-      case UNISWAP_LOAD_SUCCESS:
-        draft.loadingUniswap = false;
-        draft.uniswap = action.payload.uniswap;
-        draft.liquidityTokens = action.payload.liquidityTokens;
-        break;
-      case UNISWAP_LOAD_FAILURE:
-        draft.loadingUniswap = false;
-        break;
-      case UNISWAP_UPDATE_REQUEST:
-        draft.fetchingUniswap = true;
-        break;
-      case UNISWAP_UPDATE_SUCCESS:
-        draft.fetchingUniswap = false;
-        draft.uniswap = action.payload;
-        break;
-      case UNISWAP_UPDATE_FAILURE:
-        draft.fetchingUniswap = false;
-        break;
-      case UNISWAP_UPDATE_LIQUIDITY_TOKENS:
-        draft.liquidityTokens = action.payload;
-        break;
-      case UNISWAP_CLEAR_STATE:
-        draft = INITIAL_UNISWAP_STATE;
-        break;
-      default:
-        break;
-    }
-  });
+export default (state = INITIAL_UNISWAP_STATE, action) => produce(state, draft => {
+  switch (action.type) {
+  case UNISWAP_LOAD_REQUEST:
+    draft.loadingUniswap = true;
+    break;
+  case UNISWAP_LOAD_SUCCESS:
+    draft.loadingUniswap = false;
+    draft.uniswap = action.payload.uniswap;
+    draft.liquidityTokens = action.payload.liquidityTokens;
+    break;
+  case UNISWAP_LOAD_FAILURE:
+    draft.loadingUniswap = false;
+    break;
+  case UNISWAP_UPDATE_REQUEST:
+    draft.fetchingUniswap = true;
+    break;
+  case UNISWAP_UPDATE_SUCCESS:
+    draft.fetchingUniswap = false;
+    draft.uniswap = action.payload;
+    break;
+  case UNISWAP_UPDATE_FAILURE:
+    draft.fetchingUniswap = false;
+    break;
+  case UNISWAP_UPDATE_LIQUIDITY_TOKENS:
+    draft.liquidityTokens = action.payload;
+    break;
+  case UNISWAP_CLEAR_STATE:
+    draft = INITIAL_UNISWAP_STATE;
+    break;
+  default:
+    break;
+  }
+});

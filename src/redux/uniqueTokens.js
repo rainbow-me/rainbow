@@ -1,5 +1,5 @@
-import { map, uniq, without } from 'lodash';
-import { apiGetAccountUniqueTokens } from '../handlers/opensea-api.js';
+import { without } from 'lodash';
+import { apiGetAccountUniqueTokens } from '../handlers/opensea-api';
 import {
   getUniqueTokens,
   saveUniqueTokens,
@@ -9,19 +9,13 @@ import { dedupeAssetsWithFamilies } from './data';
 import { getFamilies } from '../parsers/uniqueTokens';
 
 // -- Constants ------------------------------------------------------------- //
-const UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST =
-  'uniqueTokens/UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST';
-const UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_SUCCESS =
-  'uniqueTokens/UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_SUCCESS';
-const UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_FAILURE =
-  'uniqueTokens/UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_FAILURE';
+const UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST = 'uniqueTokens/UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST';
+const UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_SUCCESS = 'uniqueTokens/UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_SUCCESS';
+const UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_FAILURE = 'uniqueTokens/UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_FAILURE';
 
-const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST =
-  'uniqueTokens/UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST';
-const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS =
-  'uniqueTokens/UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS';
-const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE =
-  'uniqueTokens/UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE';
+const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST = 'uniqueTokens/UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST';
+const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS = 'uniqueTokens/UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS';
+const UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE = 'uniqueTokens/UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE';
 
 const UNIQUE_TOKENS_CLEAR_STATE = 'uniqueTokens/UNIQUE_TOKENS_CLEAR_STATE';
 
@@ -34,8 +28,8 @@ export const uniqueTokensLoadState = () => async (dispatch, getState) => {
   try {
     const cachedUniqueTokens = await getUniqueTokens(accountAddress, network);
     dispatch({
-      type: UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_SUCCESS,
       payload: cachedUniqueTokens,
+      type: UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_SUCCESS,
     });
   } catch (error) {
     dispatch({ type: UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_FAILURE });
@@ -64,8 +58,8 @@ export const uniqueTokensRefreshState = () => (dispatch, getState) => new Promis
         }
         saveUniqueTokens(accountAddress, uniqueTokens, network);
         dispatch({
-          type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
           payload: uniqueTokens,
+          type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
         });
         resolve(true);
       }).catch(error => {
@@ -94,44 +88,44 @@ export const INITIAL_UNIQUE_TOKENS_STATE = {
 
 export default (state = INITIAL_UNIQUE_TOKENS_STATE, action) => {
   switch (action.type) {
-    case UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST:
-      return {
-        ...state,
-        loadingUniqueTokens: true,
-      };
-    case UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_SUCCESS:
-      return {
-        ...state,
-        loadingUniqueTokens: false,
-        uniqueTokens: action.payload,
-      };
-    case UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_FAILURE:
-      return {
-        ...state,
-        loadingUniqueTokens: false
-      };
-    case UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST:
-      return {
-        ...state,
-        fetchingUniqueTokens: true,
-      };
-    case UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS:
-      return {
-        ...state,
-        fetchingUniqueTokens: false,
-        uniqueTokens: action.payload,
-      };
-    case UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE:
-      return {
-        ...state,
-        fetchingUniqueTokens: false
-      };
-    case UNIQUE_TOKENS_CLEAR_STATE:
-      return {
-        ...state,
-        ...INITIAL_UNIQUE_TOKENS_STATE,
-      };
-    default:
-      return state;
+  case UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST:
+    return {
+      ...state,
+      loadingUniqueTokens: true,
+    };
+  case UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_SUCCESS:
+    return {
+      ...state,
+      loadingUniqueTokens: false,
+      uniqueTokens: action.payload,
+    };
+  case UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_FAILURE:
+    return {
+      ...state,
+      loadingUniqueTokens: false,
+    };
+  case UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST:
+    return {
+      ...state,
+      fetchingUniqueTokens: true,
+    };
+  case UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS:
+    return {
+      ...state,
+      fetchingUniqueTokens: false,
+      uniqueTokens: action.payload,
+    };
+  case UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE:
+    return {
+      ...state,
+      fetchingUniqueTokens: false,
+    };
+  case UNIQUE_TOKENS_CLEAR_STATE:
+    return {
+      ...state,
+      ...INITIAL_UNIQUE_TOKENS_STATE,
+    };
+  default:
+    return state;
   }
 };

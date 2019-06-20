@@ -25,8 +25,8 @@ export const settingsLoadState = () => async dispatch => {
   try {
     const language = await getLanguage();
     dispatch({
+      payload: language,
       type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
-      payload: language
     });
   } catch (error) {
     dispatch({ type: SETTINGS_UPDATE_LANGUAGE_FAILURE });
@@ -34,8 +34,8 @@ export const settingsLoadState = () => async dispatch => {
   try {
     const nativeCurrency = await getNativeCurrency();
     dispatch({
-      type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
       payload: nativeCurrency,
+      type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
     });
   } catch (error) {
     dispatch({ type: SETTINGS_UPDATE_NATIVE_CURRENCY_FAILURE });
@@ -47,8 +47,8 @@ export const settingsUpdateAccountAddress = (accountAddress, accountType) => (
   getState,
 ) => {
   dispatch({
-    type: SETTINGS_UPDATE_SETTINGS_ADDRESS,
     payload: { accountAddress, accountType },
+    type: SETTINGS_UPDATE_SETTINGS_ADDRESS,
   });
 };
 
@@ -72,10 +72,10 @@ export const settingsUpdateChainId = chainId => dispatch => {
 
 export const settingsChangeLanguage = language => dispatch => {
   updateLanguage(language);
-  saveLanguage(language).then( () => {
+  saveLanguage(language).then(() => {
     dispatch({
-      type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
       payload: language,
+      type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
     });
   }).catch(error => {
     dispatch({
@@ -90,8 +90,8 @@ export const settingsChangeNativeCurrency = nativeCurrency => (
   dispatch(dataClearState());
   saveNativeCurrency(nativeCurrency).then(() => {
     dispatch({
-      type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
       payload: nativeCurrency,
+      type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
     });
     dispatch(dataInit());
   }).catch(error => {
@@ -103,53 +103,53 @@ export const settingsChangeNativeCurrency = nativeCurrency => (
 
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_STATE = {
-  accountType: '',
   accountAddress: '',
+  accountType: '',
+  chainId: 1,
   language: 'en',
   nativeCurrency: 'USD',
-  chainId: 1,
   network: 'mainnet',
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case SETTINGS_UPDATE_SETTINGS_ADDRESS:
-      return {
-        ...state,
-        accountType: action.payload.accountType,
-        accountAddress: action.payload.accountAddress,
-      };
-    case SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS:
-      return {
-        ...state,
-        nativeCurrency: action.payload,
-      };
-    case SETTINGS_UPDATE_NATIVE_CURRENCY_FAILURE:
-      return {
-        ...state,
-      };
-    case SETTINGS_UPDATE_NETWORK:
-      return {
-        ...state,
-        network: action.payload.network,
-        chainId: action.payload.chainId
-      };
-    case SETTINGS_UPDATE_CHAIN_ID:
-      return {
-        ...state,
-        network: action.payload.network,
-        chainId: action.payload.chainId
-      };
-    case SETTINGS_UPDATE_LANGUAGE_SUCCESS:
-      return {
-        ...state,
-        language: action.payload,
-      };
-    case SETTINGS_UPDATE_LANGUAGE_FAILURE:
-      return {
-        ...state,
-      };
-    default:
-      return state;
+  case SETTINGS_UPDATE_SETTINGS_ADDRESS:
+    return {
+      ...state,
+      accountAddress: action.payload.accountAddress,
+      accountType: action.payload.accountType,
+    };
+  case SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS:
+    return {
+      ...state,
+      nativeCurrency: action.payload,
+    };
+  case SETTINGS_UPDATE_NATIVE_CURRENCY_FAILURE:
+    return {
+      ...state,
+    };
+  case SETTINGS_UPDATE_NETWORK:
+    return {
+      ...state,
+      chainId: action.payload.chainId,
+      network: action.payload.network,
+    };
+  case SETTINGS_UPDATE_CHAIN_ID:
+    return {
+      ...state,
+      chainId: action.payload.chainId,
+      network: action.payload.network,
+    };
+  case SETTINGS_UPDATE_LANGUAGE_SUCCESS:
+    return {
+      ...state,
+      language: action.payload,
+    };
+  case SETTINGS_UPDATE_LANGUAGE_FAILURE:
+    return {
+      ...state,
+    };
+  default:
+    return state;
   }
 };

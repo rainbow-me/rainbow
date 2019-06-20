@@ -1,23 +1,21 @@
 import {
   forEach,
-  get,
   mapValues,
   omitBy,
   pickBy,
   values,
 } from 'lodash';
+import { Alert } from 'react-native';
+import lang from 'i18n-js';
+import WalletConnect from '@walletconnect/react-native';
 import {
   getAllValidWalletConnectSessions,
   saveWalletConnectSession,
   removeWalletConnect,
   removeWalletConnectSessions,
 } from '../handlers/commonStorage';
-import { Alert } from 'react-native';
-import lang from 'i18n-js';
-import WalletConnect from '@walletconnect/react-native';
 import { getFCMToken, checkPushNotificationPermissions } from '../model/firebase';
 import { addRequestToApprove } from './requests';
-import Navigation from '../navigation';
 
 // -- Constants --------------------------------------- //
 
@@ -35,8 +33,10 @@ const WALLETCONNECT_CLEAR_STATE = 'walletconnect/WALLETCONNECT_CLEAR_STATE';
 // -- Actions ---------------------------------------- //
 
 // TODO store approved list
+/*
 const previouslyApprovedDapps = [
 ];
+*/
 
 const getNativeOptions = async () => {
   const language = 'en'; // TODO use lang from settings
@@ -45,17 +45,17 @@ const getNativeOptions = async () => {
   const nativeOptions = {
     clientMeta: {
       description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
-      url: 'https://rainbow.me',
       icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
       name: '🌈 Rainbow',
       ssl: true,
+      url: 'https://rainbow.me',
     },
     push: {
-      url: 'https://wcpush.rainbow.me',
-      type: 'fcm',
-      token,
-      peerMeta: true,
       language,
+      peerMeta: true,
+      token,
+      type: 'fcm',
+      url: 'https://wcpush.rainbow.me',
     },
   };
 
@@ -73,7 +73,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (dispatch)
           throw error;
         }
 
-        const { peerId, peerMeta } = payload.params[0];
+        const { peerId } = payload.params[0];
         dispatch(setPendingRequest(peerId, walletConnector));
 
         dispatch(walletConnectApproveSession(peerId, callback));
@@ -92,7 +92,6 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (dispatch)
 const listenOnNewMessages = walletConnector => (dispatch, getState) => {
   walletConnector.on('call_request', (error, payload) => {
     if (error) throw error;
-    const { appInitTimestamp } = getState().walletconnect;
     const { clientId, peerId, peerMeta } = walletConnector;
     const requestId = payload.id;
     dispatch(addRequestToApprove(clientId, peerId, requestId, payload, peerMeta));
@@ -129,7 +128,6 @@ export const walletConnectLoadState = () => async dispatch => {
       return dispatch(listenOnNewMessages(walletConnector));
     });
   } catch (error) {
-    //Alert.alert('Unable to retrieve all WalletConnect sessions.');
     walletConnectors = {};
   }
   if (walletConnectors) {
@@ -146,7 +144,10 @@ export const setPendingRequest = (peerId, walletConnector) => (dispatch, getStat
     ...pendingRequests,
     [peerId]: walletConnector,
   };
-  dispatch({ type: WALLETCONNECT_ADD_REQUEST, payload: updatedPendingRequests });
+  dispatch({
+    payload: updatedPendingRequests,
+    type: WALLETCONNECT_ADD_REQUEST,
+  });
 };
 
 export const getPendingRequest = (peerId) => (dispatch, getState) => {
@@ -160,7 +161,10 @@ export const removePendingRequest = (peerId) => (dispatch, getState) => {
   if (updatedPendingRequests[peerId]) {
     delete updatedPendingRequests[peerId];
   }
-  dispatch({ type: WALLETCONNECT_REMOVE_REQUEST, payload: updatedPendingRequests });
+  dispatch({
+    payload: updatedPendingRequests,
+    type: WALLETCONNECT_REMOVE_REQUEST,
+  });
 };
 
 export const setWalletConnector = (walletConnector) => (dispatch, getState) => {
@@ -169,7 +173,10 @@ export const setWalletConnector = (walletConnector) => (dispatch, getState) => {
     ...walletConnectors,
     [walletConnector.peerId]: walletConnector,
   };
-  dispatch({ type: WALLETCONNECT_ADD_SESSION, payload: updatedWalletConnectors });
+  dispatch({
+    payload: updatedWalletConnectors,
+    type: WALLETCONNECT_ADD_SESSION,
+  });
 };
 
 export const getWalletConnector = (peerId) => (dispatch, getState) => {
@@ -184,14 +191,20 @@ export const removeWalletConnector = (peerId) => (dispatch, getState) => {
   if (updatedWalletConnectors[peerId]) {
     delete updatedWalletConnectors[peerId];
   }
-  dispatch({ type: WALLETCONNECT_REMOVE_SESSION, payload: updatedWalletConnectors });
+  dispatch({
+    payload: updatedWalletConnectors,
+    type: WALLETCONNECT_REMOVE_SESSION,
+  });
 };
 
 export const walletConnectApproveSession = (peerId, callback) => (dispatch, getState) => {
   const { accountAddress, chainId } = getState().settings;
 
   const walletConnector = dispatch(getPendingRequest(peerId));
-  walletConnector.approveSession({ chainId, accounts: [accountAddress] });
+  walletConnector.approveSession({
+    accounts: [accountAddress],
+    chainId,
+  });
 
   dispatch(removePendingRequest(peerId));
   saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
@@ -250,9 +263,9 @@ export const walletConnectSendStatus = (peerId, requestId, result) => async (dis
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
+  appInitTimestamp: null,
   pendingRequests: {},
   walletConnectors: {},
-  appInitTimestamp: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
