@@ -1,18 +1,14 @@
-import { transactionsAddNewTransaction } from '@rainbow-me/rainbow-common';
 import { connect } from 'react-redux';
-import { removeTransaction } from '../redux/transactionsToApprove';
+import { dataAddNewTransaction } from '../redux/data';
+import { removeRequest } from '../redux/requests';
 import { updateTransactionCountNonce } from '../redux/nonce';
 import { walletConnectSendStatus } from '../redux/walletconnect';
 
-const mapStateToProps = ({
-  nonce: { transactionCountNonce },
-}) => ({
-  transactionCountNonce
-});
+const mapStateToProps = ({ nonce: { transactionCountNonce } }) => ({ transactionCountNonce });
 
 export default Component => connect(mapStateToProps, {
-  removeTransaction,
-  transactionsAddNewTransaction,
+  dataAddNewTransaction,
+  removeRequest,
   updateTransactionCountNonce,
   walletConnectSendStatus,
 })(Component);

@@ -1,0 +1,55 @@
+{
+  "USD": {
+    "symbol": "$",
+    "currency": "USD",
+    "label": "United States Dollar",
+    "decimals": 2,
+    "alignment": "left",
+    "assetLimit": 1,
+    "emojiName": "us"
+  },
+  "CNY": {
+    "symbol": "¥",
+    "currency": "CNY",
+    "label": "Chinese Yuan",
+    "decimals": 2,
+    "alignment": "left",
+    "assetLimit": 1,
+    "emojiName": "cn"
+  },
+  "KRW": {
+    "symbol": "₩",
+    "currency": "KRW",
+    "label": "South Korean Won",
+    "decimals": 0,
+    "alignment": "left",
+    "assetLimit": 1,
+    "emojiName": "kr"
+  },
+  "RUB": {
+    "symbol": "₽",
+    "currency": "RUB",
+    "label": "Russian Ruble",
+    "decimals": 2,
+    "alignment": "right",
+    "assetLimit": 1,
+    "emojiName": "ru"
+  },
+  "EUR": {
+    "symbol": "€",
+    "currency": "EUR",
+    "label": "Euro",
+    "decimals": 2,
+    "alignment": "left",
+    "assetLimit": 1,
+    "emojiName": "flag-eu"
+  },
+  "ETH": {
+    "symbol": "Ξ",
+    "currency": "ETH",
+    "label": "Ethereum",
+    "decimals": 8,
+    "alignment": "right",
+    "assetLimit": 0.001
+  }
+}

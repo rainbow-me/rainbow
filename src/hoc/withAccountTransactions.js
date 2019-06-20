@@ -5,12 +5,8 @@ import { createSelector } from 'reselect';
 const transactionsSelector = state => state.transactions;
 
 const mapStateToProps = ({
-  transactions: {
-    hasPendingTransaction,
-    transactions,
-  },
+  data: { transactions },
 }) => ({
-  hasPendingTransaction,
   transactions,
 });
 

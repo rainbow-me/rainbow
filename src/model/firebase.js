@@ -1,11 +1,11 @@
 import lang from 'i18n-js';
 import { get } from 'lodash';
-import { commonStorage } from '@rainbow-me/rainbow-common';
 import firebase from 'react-native-firebase';
 import { Alert } from '../components/alerts';
+import { getLocal, saveLocal } from '../handlers/commonStorage';
 
 export const getFCMToken = async () => {
-  const fcmTokenLocal = await commonStorage.getLocal('rainbowFcmToken');
+  const fcmTokenLocal = await getLocal('rainbowFcmToken');
   const fcmToken = get(fcmTokenLocal, 'data', null);
   if (!fcmToken) {
     throw new Error('Push notification token unavailable.');
@@ -17,7 +17,7 @@ export const saveFCMToken = async () => {
   try {
     const fcmToken = await firebase.messaging().getToken();
     if (fcmToken) {
-      commonStorage.saveLocal('rainbowFcmToken', { data: fcmToken });
+      saveLocal('rainbowFcmToken', { data: fcmToken });
     }
   } catch (error) {
     console.log('error getting fcm token');
@@ -50,7 +50,7 @@ export const checkPushNotificationPermissions = async () => {
 };
 
 export const registerTokenRefreshListener = () => firebase.messaging().onTokenRefresh(fcmToken => {
-  commonStorage.saveLocal('rainbowFcmToken', { data: fcmToken });
+  saveLocal('rainbowFcmToken', { data: fcmToken });
 });
 
 export const registerNotificationListener = () => firebase.notifications().onNotification(notification => {

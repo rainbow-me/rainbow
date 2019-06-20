@@ -1,4 +1,3 @@
-import { isValidSeedPhrase as validateSeedPhrase } from '@rainbow-me/rainbow-common';
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
 import { Clipboard, InteractionManager, Linking } from 'react-native';
@@ -12,9 +11,10 @@ import {
   withState,
 } from 'recompact';
 import { Alert } from '../components/alerts';
-import { withAccountRefresh, withAccountReset, withIsWalletEmpty } from '../hoc';
+import { withDataInit, withIsWalletEmpty } from '../hoc';
 import { deviceUtils } from '../utils';
 import ImportSeedPhraseSheet from './ImportSeedPhraseSheet';
+import { isValidSeedPhrase as validateSeedPhrase } from '../helpers/validators';
 
 const ConfirmImportAlert = onSuccess => (
   Alert({
@@ -32,8 +32,7 @@ const ConfirmImportAlert = onSuccess => (
 );
 
 const ImportSeedPhraseSheetWithData = compose(
-  withAccountReset,
-  withAccountRefresh,
+  withDataInit,
   withIsWalletEmpty,
   withNavigation,
   withState('clipboardContents', 'setClipboardContents', ''),
@@ -41,28 +40,23 @@ const ImportSeedPhraseSheetWithData = compose(
   withState('seedPhrase', 'setSeedPhrase', ''),
   withHandlers({
     importSeedPhrase: ({
-      accountClearState,
+      clearAccountData,
+      initializeWallet,
       isEmpty,
       navigation,
-      refreshAccount,
-      screenProps,
       seedPhrase,
       setIsImporting,
     }) => () => {
-      accountClearState();
+      clearAccountData();
 
-      return screenProps
-        .handleWalletConfig(seedPhrase.trim())
+      return initializeWallet(seedPhrase.trim())
         .then((address) => {
           if (address) {
-            refreshAccount()
-              .then(() => {
-                analytics.track('Imported seed phrase', {
-                  hadPreviousAddressWithValue: isEmpty,
-                });
-                setIsImporting(false);
-                navigation.navigate('WalletScreen');
-              });
+            analytics.track('Imported seed phrase', {
+              hadPreviousAddressWithValue: isEmpty,
+            });
+            setIsImporting(false);
+            navigation.navigate('WalletScreen');
           } else {
             setIsImporting(false);
           }
@@ -74,9 +68,7 @@ const ImportSeedPhraseSheetWithData = compose(
     },
   }),
   withHandlers({
-    getClipboardContents: ({ setClipboardContents }) => async () => {
-      return Clipboard.getString().then(setClipboardContents);
-    },
+    getClipboardContents: ({ setClipboardContents }) => async () => Clipboard.getString().then(setClipboardContents),
     onImportSeedPhrase: ({ setIsImporting }) => () => ConfirmImportAlert(() => setIsImporting(true)),
     onInputChange: ({ isImporting, setSeedPhrase }) => ({ nativeEvent }) => {
       if (!isImporting) {

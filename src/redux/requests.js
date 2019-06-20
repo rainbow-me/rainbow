@@ -3,68 +3,47 @@ import {
   filter,
   find,
   get,
-  mapValues,
   omit,
   values,
 } from 'lodash';
 import {
-  convertAssetAmountToDisplaySpecific,
-  convertAssetAmountToNativeValue,
+  convertAmountAndPriceToNativeDisplay,
   convertHexToString,
-  formatInputDecimals,
   fromWei,
-} from '@rainbow-me/rainbow-common';
-import smartContractMethods from '@rainbow-me/rainbow-common/src/references/smartcontract-methods.json';
+} from '../helpers/utilities';
+import smartContractMethods from '../references/smartcontract-methods.json';
 import {
   getLocalRequests,
   removeLocalRequest,
+  removeLocalRequests,
   saveLocalRequests,
 } from '../model/localstorage';
 
 // -- Constants --------------------------------------- //
-const WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE = 'wallet/WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE';
+const REQUESTS_UPDATE_REQUESTS_TO_APPROVE = 'requests/REQUESTS_UPDATE_REQUESTS_TO_APPROVE';
+const REQUESTS_CLEAR_STATE = 'requests/REQUESTS_CLEAR_STATE';
 
-export const transactionsToApproveInit = () => (dispatch, getState) => {
+export const requestsLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  getLocalRequests(accountAddress, network).then((requests) => {
-    const transactionsToApprove = requests || {};
-    dispatch({ payload: transactionsToApprove, type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE });
-  });
+  try {
+    const requests = await getLocalRequests(accountAddress, network);
+    const _requests = requests || {};
+    dispatch({ payload: _requests, type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE });
+  } catch (error) {
+  }
 };
 
 const getAssetDetails = (contractAddress, assets) => find(assets, (item) => item.address === contractAddress);
 
-export const getNativeAmount = (prices, nativeCurrency, assetAmount, symbol) => {
-  let nativeAmount = '';
-  let nativeAmountDisplay = '';
-  if (prices && prices[nativeCurrency] && prices[nativeCurrency][symbol]) {
-    nativeAmount = convertAssetAmountToNativeValue(
-      assetAmount,
-      { symbol },
-      prices,
-      nativeCurrency,
-    );
-    const _nativeAmount = formatInputDecimals(nativeAmount, assetAmount);
-    nativeAmountDisplay = convertAssetAmountToDisplaySpecific(_nativeAmount, nativeCurrency);
-    return {
-      nativeAmount,
-      nativeAmountDisplay,
-    };
-  }
+const getTimestampFromPayload = payload => parseInt(payload.id.toString().slice(0, -3), 10);
 
-  return { nativeAmount, nativeAmountDisplay };
-};
-
-const getTimestampFromPayload = payload => parseInt(payload.id.toString().slice(0, -3));
-
-const getRequestDisplayDetails = (payload, assets, prices, nativeCurrency) => {
+const getRequestDisplayDetails = (payload, assets, nativeCurrency) => {
   const timestampInMs = getTimestampFromPayload(payload);
   if (payload.method === 'eth_sendTransaction') {
     const transaction = get(payload, 'params[0]', null);
     return getTransactionDisplayDetails(
       transaction,
       assets,
-      prices,
       nativeCurrency,
       timestampInMs,
     );
@@ -94,24 +73,22 @@ const getMessageDisplayDetails = (message, timestampInMs) => ({
   type: 'message',
 });
 
-const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrency, timestampInMs) => {
+// TODO
+const getTransactionDisplayDetails = (transaction, assets, nativeCurrency, timestampInMs) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
   if (transaction.data === '0x') {
     const value = fromWei(convertHexToString(transaction.value));
-    const { nativeAmount, nativeAmountDisplay } = getNativeAmount(prices, nativeCurrency, value, 'ETH');
+    const asset = getAssetDetails('eth', assets);
+    const priceUnit = get(asset, 'price.value', 0);
+    const { amount, display } = convertAmountAndPriceToNativeDisplay(value, priceUnit, nativeCurrency);
     return {
       payload: {
-        asset: {
-          address: null,
-          decimals: 18,
-          name: 'Ethereum',
-          symbol: 'ETH',
-        },
+        asset,
         from: transaction.from,
         gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
         gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
-        nativeAmount,
-        nativeAmountDisplay,
+        nativeAmount: amount,
+        nativeAmountDisplay: display,
         nonce: Number(convertHexToString(transaction.nonce)),
         to: transaction.to,
         value,
@@ -127,15 +104,16 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
     const toAddress = `0x${dataPayload.slice(0, 64).replace(/^0+/, '')}`;
     const amount = `0x${dataPayload.slice(64, 128).replace(/^0+/, '')}`;
     const value = fromWei(convertHexToString(amount), asset.decimals);
-    const { nativeAmount, nativeAmountDisplay } = getNativeAmount(prices, nativeCurrency, value, asset.symbol);
+    const priceUnit = get(asset, 'price.value', 0);
+    const native = convertAmountAndPriceToNativeDisplay(value, priceUnit, nativeCurrency);
     return {
       payload: {
         asset,
         from: transaction.from,
         gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
         gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
-        nativeAmount,
-        nativeAmountDisplay,
+        nativeAmount: native.amount,
+        nativeAmountDisplay: native.display,
         nonce: Number(convertHexToString(transaction.nonce)),
         to: toAddress,
         value,
@@ -164,54 +142,69 @@ const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrenc
   return null;
 };
 
-export const addTransactionToApprove = (clientId, peerId, requestId, payload, peerMeta) => (dispatch, getState) => {
-  const { transactionsToApprove } = getState().transactionsToApprove;
+export const addRequestToApprove = (clientId, peerId, requestId, payload, peerMeta) => (dispatch, getState) => {
+  const { requests } = getState().requests;
   const { accountAddress, network, nativeCurrency } = getState().settings;
-  const { prices } = getState().prices;
-  const { assets } = getState().assets;
-  const transactionDisplayDetails = getRequestDisplayDetails(payload, assets, prices, nativeCurrency);
+  const { assets } = getState().data;
+  const displayDetails = getRequestDisplayDetails(payload, assets, nativeCurrency);
   const dappName = peerMeta.name;
   const imageUrl = get(peerMeta, 'icons[0]');
-  const transaction = {
+  const request = {
     clientId,
     dappName,
+    displayDetails,
     imageUrl,
     payload,
     peerId,
     requestId,
-    transactionDisplayDetails,
   };
-  const updatedTransactions = { ...transactionsToApprove, [requestId]: transaction };
-  dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
-  saveLocalRequests(accountAddress, network, updatedTransactions);
-  return transaction;
+  const updatedRequests = { ...requests, [requestId]: request };
+  dispatch({
+    payload: updatedRequests,
+    type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE,
+  });
+  saveLocalRequests(accountAddress, network, updatedRequests);
+  return request;
 };
 
-export const transactionsForTopic = (topic) => (dispatch, getState) => {
-  const { transactionsToApprove } = getState().transactionsToApprove;
-  return filter(values(transactionsToApprove), { 'clientId': topic });
+export const requestsForTopic = (topic) => (dispatch, getState) => {
+  const { requests } = getState().requests;
+  return filter(values(requests), { clientId: topic });
 };
 
-export const removeTransaction = (requestId) => (dispatch, getState) => {
+export const requestsClearState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  const { transactionsToApprove } = getState().transactionsToApprove;
-  const updatedTransactions = omit(transactionsToApprove, [requestId]);
+  removeLocalRequests(accountAddress, network);
+  dispatch({ type: REQUESTS_CLEAR_STATE });
+};
+
+export const removeRequest = (requestId) => (dispatch, getState) => {
+  const { accountAddress, network } = getState().settings;
+  const { requests } = getState().requests;
+  const updatedRequests = omit(requests, [requestId]);
   removeLocalRequest(accountAddress, network, requestId);
-  dispatch({ type: WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE, payload: updatedTransactions });
+  dispatch({
+    payload: updatedRequests,
+    type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE,
+  });
 };
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  fetching: false,
-  transactionsToApprove: {},
+  requests: {},
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-  case WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE:
+  case REQUESTS_UPDATE_REQUESTS_TO_APPROVE:
     return {
       ...state,
-      transactionsToApprove: action.payload,
+      requests: action.payload,
+    };
+  case REQUESTS_CLEAR_STATE:
+    return {
+      ...state,
+      ...INITIAL_STATE,
     };
   default:
     return state;

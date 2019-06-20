@@ -47,16 +47,16 @@ export default class LongPressButton extends Component {
           toValue: 0.975,
         }).start(() => {
           timing(this.scale, {
-            toValue: 1,
             duration: 150,
             easing: Easing.inOut(Easing.ease),
+            toValue: 1,
           }).start();
         });
       } else {
         timing(this.scale, {
-          toValue: 0.875,
           duration: 150,
           easing: Easing.inOut(Easing.ease),
+          toValue: 0.875,
         }).start();
 
         onPress();
@@ -81,9 +81,9 @@ export default class LongPressButton extends Component {
       ReactNativeHapticFeedback.trigger('impactHeavy');
 
       timing(this.scale, {
-        toValue: 1,
         duration: 150,
         easing: Easing.inOut(Easing.ease),
+        toValue: 1,
       }).start(() => {
         InteractionManager.runAfterInteractions(() => {
           onLongPress();

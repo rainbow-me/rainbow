@@ -47,16 +47,16 @@ export default compose(
     asset: { name, symbol, ...asset },
     nativeCurrencySymbol,
   }) => ({
-    price: get(asset, 'native.price.display', `${nativeCurrencySymbol}0.00`),
+    price: get(asset, 'native.price.display', null),
     subtitle: get(asset, 'balance.display', symbol),
     title: name,
   })),
   withHandlers({
-    onPressSend: ({ navigation, asset: { symbol } }) => () => {
+    onPressSend: ({ navigation, asset: { address } }) => () => {
       navigation.goBack();
 
       InteractionManager.runAfterInteractions(() => {
-        navigation.navigate('SendSheet', { asset: symbol });
+        navigation.navigate('SendSheet', { asset: address });
       });
     },
   }),

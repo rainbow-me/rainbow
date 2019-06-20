@@ -1,4 +1,3 @@
-import { withAccountAssets } from '@rainbow-me/rainbow-common';
 import analytics from '@segment/analytics-react-native';
 import {
   get,
@@ -23,7 +22,12 @@ import {
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
-import { withAccountRefresh, withAccountSettings } from '../hoc';
+import {
+  withAccountData,
+  withAccountSettings,
+  withDataInit,
+  withUniqueTokens,
+} from '../hoc';
 import { colors } from '../styles';
 import { deviceUtils, isNewValueForPath } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
@@ -280,12 +284,13 @@ class SendSheet extends Component {
 }
 
 export default compose(
-  withAccountAssets,
+  withAccountData,
+  withUniqueTokens,
   withAccountSettings,
-  withAccountRefresh,
+  withDataInit,
   withHandlers({
-    fetchData: ({ refreshAccount }) => async () => {
-      await refreshAccount();
+    fetchData: ({ refreshAccountData }) => async () => {
+      await refreshAccountData();
     },
   }),
 )(SendSheet);

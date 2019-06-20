@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { removeTransaction } from '../redux/transactionsToApprove';
+import { removeRequest } from '../redux/requests';
 
 const mapStateToProps = ({
   walletconnect: { walletConnectors },
@@ -8,5 +8,5 @@ const mapStateToProps = ({
 });
 
 export default Component => connect(mapStateToProps, {
-  removeTransaction,
+  removeRequest,
 })(Component);

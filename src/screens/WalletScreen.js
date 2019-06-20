@@ -1,5 +1,4 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
-import { withAccountAssets } from '@rainbow-me/rainbow-common';
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
@@ -18,11 +17,13 @@ import { Page } from '../components/layout';
 import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../model/localstorage';
 import {
-  withAccountRefresh,
+  withAccountData,
   withAccountSettings,
   withBlurTransitionProps,
+  withDataInit,
   withHideSplashScreen,
   withIsWalletEmpty,
+  withUniqueTokens,
   withStatusBarStyle,
 } from '../hoc';
 import { position } from '../styles';
@@ -38,7 +39,7 @@ class WalletScreen extends PureComponent {
     isFocused: PropTypes.bool,
     navigation: PropTypes.object,
     onHideSplashScreen: PropTypes.func,
-    refreshAccount: PropTypes.func,
+    refreshAccountData: PropTypes.func,
     sections: PropTypes.array,
     setSafeTimeout: PropTypes.func,
     showBlur: PropTypes.bool,
@@ -97,7 +98,7 @@ class WalletScreen extends PureComponent {
       blurOpacity,
       isEmpty,
       navigation,
-      refreshAccount,
+      refreshAccountData,
       sections,
       showBlur,
     } = this.props;
@@ -110,7 +111,7 @@ class WalletScreen extends PureComponent {
         </Header>
         <FabWrapper disabled={isEmpty}>
           <AssetList
-            fetchData={refreshAccount}
+            fetchData={refreshAccountData}
             isEmpty={isEmpty}
             onLayout={this.hideSpashScreen}
             sections={sections}
@@ -123,9 +124,10 @@ class WalletScreen extends PureComponent {
 }
 
 export default compose(
-  withAccountAssets,
-  withAccountRefresh,
+  withAccountData,
+  withUniqueTokens,
   withAccountSettings,
+  withDataInit,
   withHideSplashScreen,
   withSafeTimeout,
   withNavigation,

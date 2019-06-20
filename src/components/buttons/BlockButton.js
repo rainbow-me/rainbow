@@ -112,4 +112,4 @@ BlockButton.defaultProps = {
   rightIconProps: {},
 };
 
-export default withViewLayoutProps(({ width, height }) => ({ width, height }))(BlockButton);
+export default withViewLayoutProps(({ height, width }) => ({ height, width }))(BlockButton);

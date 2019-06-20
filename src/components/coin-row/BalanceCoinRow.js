@@ -20,7 +20,7 @@ const formatPercentageString = percentString => (
 );
 
 const BottomRow = ({ balance, native }) => {
-  const percentChange = get(native, 'change.display');
+  const percentChange = get(native, 'change');
   const percentageChangeDisplay = formatPercentageString(percentChange);
   const isPositive = (percentChange && (percentageChangeDisplay.charAt(0) !== '-'));
 

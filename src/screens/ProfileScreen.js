@@ -13,7 +13,6 @@ import { colors, position } from '../styles';
 const ProfileScreen = ({
   accountAddress,
   blurOpacity,
-  hasPendingTransaction,
   isEmpty,
   nativeCurrency,
   navigation,
@@ -45,7 +44,6 @@ const ProfileScreen = ({
     </Header>
     <ActivityList
       accountAddress={accountAddress}
-      hasPendingTransaction={hasPendingTransaction}
       header={(
         <ProfileMasthead
           accountAddress={accountAddress}
@@ -66,7 +64,6 @@ const ProfileScreen = ({
 ProfileScreen.propTypes = {
   accountAddress: PropTypes.string,
   blurOpacity: PropTypes.object,
-  hasPendingTransaction: PropTypes.bool,
   isEmpty: PropTypes.bool,
   nativeCurrency: PropTypes.string,
   navigation: PropTypes.object,

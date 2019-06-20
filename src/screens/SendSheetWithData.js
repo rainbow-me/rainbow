@@ -1,4 +1,4 @@
-import { withSendComponentWithData } from '@rainbow-me/rainbow-common';
+import { withSendComponentWithData } from '../components/SendComponentWithData';
 import { sendTransaction } from '../model/wallet';
 import SendSheet from './SendSheet';
 
