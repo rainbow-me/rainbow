@@ -88,6 +88,7 @@ export const uniswapUpdateState = () => (dispatch, getState) => new Promise((res
         payload: uniswap,
         type: UNISWAP_UPDATE_SUCCESS,
       });
+      resolve(true);
     })
     .catch(error => {
       dispatch({ type: UNISWAP_UPDATE_FAILURE });
