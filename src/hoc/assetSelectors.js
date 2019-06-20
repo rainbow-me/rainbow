@@ -65,16 +65,17 @@ const parseAssetsNative = (
 
     const priceUnit = get(assetNativePrice, 'value', 0);
     const nativeDisplay = convertAmountAndPriceToNativeDisplay(
-      asset.balance.amount,
+      get(asset, 'balance.amount', 0),
       priceUnit,
       nativeCurrency,
     );
+    const symbol = get(asset, 'symbol') || '';
     return {
       ...asset,
       native: {
         balance: nativeDisplay,
         change:
-          asset.symbol.toLowerCase() === nativeCurrency.toLowerCase()
+          symbol.toLowerCase() === nativeCurrency.toLowerCase()
             ? '———'
             : convertAmountToPercentageDisplay(assetNativePrice.relative_change_24h),
         price: {
@@ -87,7 +88,7 @@ const parseAssetsNative = (
   const totalAmount = assetsNative.reduce(
     (total, asset) => add(
       total,
-      asset.native ? asset.native.balance.amount : 0,
+      get(asset, 'native.balance.amount', 0),
     ), 0,
   );
   const totalDisplay = convertAmountToNativeDisplay(totalAmount, nativeCurrency);

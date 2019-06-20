@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import { convertRawAmountToBalance } from '../helpers/utilities';
 
 /**
@@ -9,14 +10,15 @@ export const parseAccountAssets = data => {
   try {
     let assets = [...data];
     assets = assets.map(assetData => {
-      const name = assetData.asset.name || 'Unknown Token';
+      const name = get(assetData, 'asset.name') || 'Unknown Token';
+      const symbol = get(assetData, 'asset.symbol') || '———';
       const asset = {
-        address: assetData.asset.asset_code || null,
-        decimals: assetData.asset.decimals,
+        address: get(assetData, 'asset.asset_code', null),
+        decimals: get(assetData, 'asset.decimals'),
         name,
-        price: assetData.asset.price,
-        symbol: assetData.asset.symbol.toUpperCase() || '———',
-        uniqueId: assetData.asset.asset_code || name,
+        price: get(assetData, 'asset.price'),
+        symbol: symbol.toUpperCase(),
+        uniqueId: get(assetData, 'asset.asset_code') || name,
       };
       return {
         ...asset,
@@ -25,7 +27,7 @@ export const parseAccountAssets = data => {
     });
 
     assets = assets.filter(
-      asset => !!Number(asset.balance.amount),
+      asset => !!Number(get(asset, 'balance.amount')),
     );
 
     return assets;

@@ -69,9 +69,9 @@ export const getChainIdFromNetwork = (network) => {
  */
 export const transactionData = (assets, assetAmount, gasPrice) => {
   const ethereum = getEth(assets);
-  const balance = ethereum.balance.amount;
+  const balance = get(ethereum, 'balance.amount', 0);
   const requestedAmount = convertNumberToString(assetAmount);
-  const txFee = fromWei(gasPrice.txFee.value.amount);
+  const txFee = fromWei(get(gasPrice, 'txFee.value.amount'));
   const amountWithFees = add(requestedAmount, txFee);
 
   return {
