@@ -1,7 +1,7 @@
-import _ from 'lodash';
+import { debounce } from 'lodash';
 import { StatusBar } from 'react-native';
 
-export const setBarStyle = _.debounce((...args) => {
+export const setBarStyle = debounce((...args) => {
   StatusBar.setBarStyle(...args);
 }, 100);
 

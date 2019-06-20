@@ -1,3 +1,5 @@
+import { commonStorage } from '@rainbow-me/rainbow-common';
+import analytics from '@segment/analytics-react-native';
 import {
   forEach,
   mapValues,
@@ -75,8 +77,11 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (dispatch)
 
         const { peerId } = payload.params[0];
         dispatch(setPendingRequest(peerId, walletConnector));
-
         dispatch(walletConnectApproveSession(peerId, callback));
+        analytics.track('Approved new WalletConnect session', {
+          dappName: peerMeta.name,
+          dappUrl: peerMeta.url,
+        });
       });
     } catch (error) {
       Alert.alert(lang.t('wallet.wallet_connect.error'));

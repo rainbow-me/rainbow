@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -23,10 +24,15 @@ const enhance = compose(
   withHandlers({
     onPressActionSheet: ({
       dappName,
+      dappUrl,
       walletConnectDisconnectAllByDappName,
     }) => (buttonIndex) => {
       if (buttonIndex === 0) {
         walletConnectDisconnectAllByDappName(dappName);
+        analytics.track('Manually disconnected from WalletConnect connection', {
+          dappName,
+          dappUrl,
+        });
       }
     },
   }),

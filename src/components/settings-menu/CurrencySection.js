@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -61,7 +62,10 @@ CurrencySection.propTypes = {
 export default compose(
   withAccountSettings,
   withHandlers({
-    onSelectCurrency: ({ settingsChangeNativeCurrency }) => (currency) => settingsChangeNativeCurrency(currency),
+    onSelectCurrency: ({ settingsChangeNativeCurrency }) => (currency) => {
+      settingsChangeNativeCurrency(currency);
+      analytics.track('Changed native currency', { currency });
+    },
   }),
   onlyUpdateForKeys(['nativeCurrency']),
 )(CurrencySection);

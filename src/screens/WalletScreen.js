@@ -1,4 +1,5 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
+import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
@@ -23,9 +24,10 @@ import {
   withHideSplashScreen,
   withIsWalletEmpty,
   withUniqueTokens,
+  withStatusBarStyle,
 } from '../hoc';
 import { position } from '../styles';
-import withStatusBarStyle from '../hoc/withStatusBarStyle';
+import { isNewValueForPath } from '../utils';
 
 class WalletScreen extends PureComponent {
   static propTypes = {
@@ -56,9 +58,39 @@ class WalletScreen extends PureComponent {
     }
   }
 
+  shouldComponentUpdate = (nextProps) => {
+    const isNewBlurOpacity = isNewValueForPath(this.props, nextProps, 'blurOpacity');
+    const isNewCurrency = isNewValueForPath(this.props, nextProps, 'nativeCurrency');
+    const isNewFetchingAssets = isNewValueForPath(this.props, nextProps, 'fetchingAssets');
+    const isNewFetchingUniqueTokens = isNewValueForPath(this.props, nextProps, 'fetchingUniqueTokens');
+    const isNewIsEmpty = isNewValueForPath(this.props, nextProps, 'isEmpty');
+    const isNewLanguage = isNewValueForPath(this.props, nextProps, 'language');
+    const isNewSections = isNewValueForPath(this.props, nextProps, 'sections');
+    const isNewShowBlur = isNewValueForPath(this.props, nextProps, 'showBlur');
+    const isNewShowShitcoins = isNewValueForPath(this.props, nextProps, 'showShitcoins');
+    const isNewTransitionProps = isNewValueForPath(this.props, nextProps, 'transitionProps');
+
+    if (!nextProps.isFocused && !nextProps.showBlur) {
+      return isNewBlurOpacity
+        || isNewShowBlur
+        || isNewTransitionProps;
+    }
+
+    return isNewFetchingAssets
+    || isNewFetchingUniqueTokens
+    || isNewIsEmpty
+    || isNewLanguage
+    || isNewCurrency
+    || isNewBlurOpacity
+    || isNewSections
+    || isNewShowShitcoins
+    || isNewTransitionProps
+    || isNewShowBlur;
+  }
+
   hideSpashScreen = () => {
     const { onHideSplashScreen, setSafeTimeout } = this.props;
-    setSafeTimeout(onHideSplashScreen, 150);
+    setSafeTimeout(onHideSplashScreen, 200);
   }
 
   render = () => {
@@ -110,6 +142,12 @@ export default compose(
         const updatedShowShitcoinsSetting = !showShitcoins;
         toggleShowShitcoins(updatedShowShitcoinsSetting);
         updateShowShitcoinsSetting(updatedShowShitcoinsSetting);
+
+        if (updatedShowShitcoinsSetting) {
+          analytics.track('Showed shitcoins');
+        } else {
+          analytics.track('Hid shitcoins');
+        }
       }
     },
   }),

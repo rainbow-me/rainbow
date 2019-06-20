@@ -1,7 +1,7 @@
+import { sortList } from '@rainbow-me/rainbow-common';
 import {
   get,
   groupBy,
-  head,
   mapValues,
   values,
 } from 'lodash';
@@ -22,14 +22,12 @@ const walletConnectorsSelector = state => state.walletConnectors;
 const sortWalletConnectors = (walletConnectors) => {
   const sortedWalletConnectors = sortList(Object.values(walletConnectors), 'peerMeta.name');
   const sortedWalletConnectorsByDappName = groupBy(sortedWalletConnectors, 'peerMeta.url');
-  const dappWalletConnector = mapValues(sortedWalletConnectorsByDappName, (connectors) => {
-    const firstElement = head(connectors);
-    return {
-      dappIcon: get(firstElement, 'peerMeta.icons[0]'),
-      dappName: get(firstElement, 'peerMeta.name'),
-      dappUrl: get(firstElement, 'peerMeta.url'),
-    };
-  });
+  const dappWalletConnector = mapValues(sortedWalletConnectorsByDappName, (connectors) => ({
+    dappIcon: get(connectors, '[0].peerMeta.icons[0]'),
+    dappName: get(connectors, '[0].peerMeta.name'),
+    dappUrl: get(connectors, '[0].peerMeta.url'),
+  }));
+
   return {
     sortedWalletConnectors,
     walletConnectorsByDappName: values(dappWalletConnector),

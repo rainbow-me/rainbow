@@ -1,3 +1,5 @@
+import { estimateGas, getTransactionCount, toHex } from '@rainbow-me/rainbow-common';
+import analytics from '@segment/analytics-react-native';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get, isNil, omit } from 'lodash';
@@ -80,6 +82,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
         await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, transactionHash);
       } catch (error) {
       }
+      analytics.track('Approved WalletConnect transaction request');
       this.closeScreen();
     } else {
       await this.handleCancelRequest();
@@ -94,6 +97,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     if (flatFormatSignature) {
       this.props.removeRequest(transactionDetails.requestId);
       await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, flatFormatSignature);
+      analytics.track('Approved WalletConnect signature request');
       this.closeScreen();
     } else {
       await this.handleCancelRequest();
@@ -115,7 +119,10 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     try {
       await this.sendFailedTransactionStatus();
       const { transactionDetails } = this.props.navigation.state.params;
-      this.props.removeRequest(transactionDetails.requestId);
+      const { requestId, displayDetails: { requestType } } = transactionDetails;
+      this.props.removeRequest(requestId);
+      const rejectionType = requestType === 'message' ? 'signature' : 'transaction';
+      analytics.track(`Rejected WalletConnect ${rejectionType} request`);
     } catch (error) {
       this.closeScreen();
       Alert.alert('Failed to send rejected transaction status');
