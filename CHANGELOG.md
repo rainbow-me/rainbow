@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.1.0-3](https://github.com/rainbow-me/rainbow/releases/tag/v1.1.0-3)
+### Added
+* New data provider
+
+### Removed
+* Removed rainbow-common dependency
+
 ## [1.0.0-11](https://github.com/rainbow-me/rainbow/releases/tag/v1.0.0-11)
 ### Added
 * Analytics
