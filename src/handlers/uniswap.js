@@ -1,5 +1,6 @@
+import contractMap from 'eth-contract-metadata';
 import { ethers } from 'ethers';
-import { map, zipObject } from 'lodash';
+import { get, map, zipObject } from 'lodash';
 import { divide, fromWei, multiply } from '../helpers/utilities';
 import exchangeABI from '../references/uniswap-exchange-abi.json';
 import erc20ABI from '../references/erc20-abi.json';
@@ -32,13 +33,24 @@ export const getUniswapLiquidityInfo = async (accountAddress, exchangeContracts)
 
       const [reserve, decimals] = await Promise.all([tokenReserveCall, tokenDecimalsCall]);
 
-      let symbol = '';
+      let name = '';
+      try {
+        name = await tokenContract.name().catch();
+      } catch (error) {
+        name = get(contractMap, `[${tokenAddress}].name`, '');
+        if (!name) {
+          console.log('error getting name for token: ', tokenAddress, ' Error = ', error);
+        }
+      }
+
+      let symbol = get(contractMap, `[${tokenAddress}].symbol`, '');
       try {
         symbol = await tokenContract.symbol().catch();
       } catch (error) {
-        console.log('error getting symbol', error);
+        if (!symbol) {
+          console.log('error getting symbol for token: ', tokenAddress, ' Error = ', error);
+        }
       }
-
       const ethBalance = fromWei(divide(multiply(ethReserve, balance), totalSupply));
       const tokenBalance = fromWei(divide(multiply(reserve, balance), totalSupply), decimals);
 
@@ -46,12 +58,15 @@ export const getUniswapLiquidityInfo = async (accountAddress, exchangeContracts)
         tokenAddress,
         balance,
         ethBalance,
+        ethReserve,
         token: {
           balance: tokenBalance,
           decimals,
+          name,
           symbol,
         },
         totalSupply,
+        uniqueId: tokenAddress,
       };
     } catch (error) {
       console.log('error getting uniswap info', error);

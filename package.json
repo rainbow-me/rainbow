@@ -37,6 +37,7 @@
     "date-fns": "^1.29.0",
     "dns.js": "^1.0.1",
     "domain-browser": "^1.2.0",
+    "eth-contract-metadata": "^1.9.2",
     "ethers": "^4.0.27",
     "events": "^1.1.1",
     "global": "^4.3.2",

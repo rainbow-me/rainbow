@@ -3379,6 +3379,10 @@ etag@~1.8.1:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
 
+eth-contract-metadata@^1.9.2:
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/eth-contract-metadata/-/eth-contract-metadata-1.9.2.tgz#6c23383e35de1014c1c00f2c8c787cd48d54ae20"
+
 ethers@^4.0.27:
   version "4.0.30"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.30.tgz#140653fd08adf2834bb2f3aceefa10d04205b47d"

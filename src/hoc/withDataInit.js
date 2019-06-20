@@ -18,6 +18,7 @@ import {
 import {
   uniswapLoadState,
   uniswapClearState,
+  uniswapUpdateState,
 } from '../redux/uniswap';
 import {
   uniqueTokensClearState,
@@ -42,6 +43,7 @@ export default Component => compose(
     settingsUpdateAccountAddress,
     uniswapClearState,
     uniswapLoadState,
+    uniswapUpdateState,
     uniqueTokensClearState,
     uniqueTokensLoadState,
     uniqueTokensRefreshState,
@@ -87,7 +89,9 @@ export default Component => compose(
     },
     refreshAccountData: (ownProps) => async () => {
       try {
-        return await ownProps.uniqueTokensRefreshState();
+        const getUniswap = ownProps.uniswapUpdateState();
+        const getUniqueTokens = ownProps.uniqueTokensRefreshState();
+        return Promise.all([getUniswap, getUniqueTokens]);
       } catch (error) {
       }
     },
