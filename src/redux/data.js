@@ -14,6 +14,8 @@ import {
   uniqBy,
 } from 'lodash';
 import { DATA_ORIGIN } from 'react-native-dotenv';
+import io from 'socket.io-client';
+import { parseAccountAssets } from '../parsers/accounts';
 import {
   getAssets,
   getLocalTransactions,
@@ -22,8 +24,6 @@ import {
   saveAssets,
   saveLocalTransactions,
 } from '../handlers/commonStorage';
-import io from 'socket.io-client';
-import { parseAccountAssets } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
 import { uniswapAddLiquidityTokens, uniswapUpdateLiquidityTokens } from './uniswap';
@@ -59,7 +59,8 @@ const messages = {
   ERROR: 'error',
   TRANSACTIONS: {
     APPENDED: 'appended address transactions',
-    RECEIVED: 'received address transactions', REMOVED: 'removed address transactions',
+    RECEIVED: 'received address transactions',
+    REMOVED: 'removed address transactions',
   },
 };
 
@@ -68,23 +69,21 @@ const messages = {
 const createSocket = endpoint => io(
   `wss://api.zerion.io/${endpoint}`,
   {
+    extraHeaders: { Origin: DATA_ORIGIN },
     transports: ['websocket'],
-    extraHeaders: {
-      'Origin': DATA_ORIGIN,
-    },
   },
 );
 
-const addressSubscription = (address, currency, action='subscribe') => [
+const addressSubscription = (address, currency, action = 'subscribe') => [
   action,
   {
-    scope: ['assets', 'transactions'],
     payload: {
       address,
       currency,
-      "transactions_limit": 1000,
-    }
-  }
+      transactions_limit: 1000,
+    },
+    scope: ['assets', 'transactions'],
+  },
 ];
 
 export const dataLoadState = () => async (dispatch, getState) => {
@@ -93,8 +92,8 @@ export const dataLoadState = () => async (dispatch, getState) => {
     dispatch({ type: DATA_LOAD_ASSETS_REQUEST });
     const assets = await getAssets(accountAddress, network);
     dispatch({
-      type: DATA_LOAD_ASSETS_SUCCESS,
       payload: assets,
+      type: DATA_LOAD_ASSETS_SUCCESS,
     });
   } catch (error) {
     dispatch({ type: DATA_LOAD_ASSETS_FAILURE });
@@ -103,8 +102,8 @@ export const dataLoadState = () => async (dispatch, getState) => {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_REQUEST });
     const transactions = await getLocalTransactions(accountAddress, network);
     dispatch({
-      type: DATA_LOAD_TRANSACTIONS_SUCCESS,
       payload: transactions,
+      type: DATA_LOAD_TRANSACTIONS_SUCCESS,
     });
   } catch (error) {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
@@ -118,7 +117,7 @@ const dataUnsubscribe = () => (dispatch, getState) => {
     addressSocket.emit(...addressSubscription(
       accountAddress,
       nativeCurrency.toLowerCase(),
-      'unsubscribe'
+      'unsubscribe',
     ));
   }
 };
@@ -165,8 +164,7 @@ export const dedupeAssetsWithFamilies = (families) => (dispatch, getState) => {
   const { assets } = getState().data;
   if (assets.length) {
     const dedupedAssets = filter(assets, (asset) => {
-      const matchingElement = find(families, (family) =>
-        family === get(asset, 'address'));
+      const matchingElement = find(families, (family) => family === get(asset, 'address'));
       return !matchingElement;
     });
     saveAssets(accountAddress, dedupedAssets, network);
@@ -182,8 +180,7 @@ const dedupeUniqueTokens = (assets, uniqueTokens) => {
   let updatedAssets = assets;
   if (assets.length) {
     updatedAssets = filter(updatedAssets, (asset) => {
-      const matchingElement = find(uniqueTokenFamilies, (uniqueTokenFamily) =>
-        uniqueTokenFamily === get(asset, 'asset.asset_code'));
+      const matchingElement = find(uniqueTokenFamilies, (uniqueTokenFamily) => uniqueTokenFamily === get(asset, 'asset.asset_code'));
       return !matchingElement;
     });
   }
@@ -191,7 +188,6 @@ const dedupeUniqueTokens = (assets, uniqueTokens) => {
 };
 
 const listenOnNewMessages = socket => (dispatch, getState) => {
-
   socket.on(messages.TRANSACTIONS.RECEIVED, (e) => {
     const { nativeCurrency, network } = getState().settings;
     const address = get(e, 'meta.address');
@@ -203,7 +199,7 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
       const lastSuccessfulTxn = find(transactions, (txn) => txn.hash && !txn.pending);
       const lastTxHash = lastSuccessfulTxn ? lastSuccessfulTxn.hash : '';
       if (lastTxHash) {
-        const lastTxnHashIndex = findIndex(transactionData, (txn) => { return lastTxHash.startsWith(txn.hash) });
+        const lastTxnHashIndex = findIndex(transactionData, (txn) => lastTxHash.startsWith(txn.hash));
         if (lastTxnHashIndex > -1) {
           transactionData = slice(transactionData, 0, lastTxnHashIndex);
         }
@@ -215,7 +211,7 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
         const pendingTransactions = partitions[0];
         const remainingTransactions = partitions[1];
 
-        const updatedPendingTransactions = dedupePendingTransactions(pendingTransactions, parsedTransactions)
+        const updatedPendingTransactions = dedupePendingTransactions(pendingTransactions, parsedTransactions);
         const updatedResults = concat(updatedPendingTransactions, parsedTransactions, remainingTransactions);
         const dedupedResults = uniqBy(updatedResults, (txn) => txn.hash);
 
@@ -231,7 +227,7 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
   socket.on(messages.TRANSACTIONS.APPENDED, (e) => {
     const { nativeCurrency, network } = getState().settings;
     const address = get(e, 'meta.address');
-    let transactionData = get(e, 'payload.transactions', []);
+    const transactionData = get(e, 'payload.transactions', []);
     console.log('on appended transactions', transactionData);
     if (address && transactionData.length) {
       const { transactions } = getState().data;
@@ -240,7 +236,7 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
       const remainingTransactions = partitions[1];
 
       const parsedTransactions = parseTransactions(transactionData, nativeCurrency);
-      const updatedPendingTransactions = dedupePendingTransactions(pendingTransactions, parsedTransactions)
+      const updatedPendingTransactions = dedupePendingTransactions(pendingTransactions, parsedTransactions);
       const updatedResults = concat(updatedPendingTransactions, parsedTransactions, remainingTransactions);
       const dedupedResults = uniqBy(updatedResults, (txn) => txn.hash);
 
@@ -253,18 +249,18 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
   });
 
   socket.on(messages.TRANSACTIONS.REMOVED, (e) => {
-    const { nativeCurrency, network } = getState().settings;
+    const { network } = getState().settings;
     const address = get(e, 'meta.address');
-    let transactionData = get(e, 'payload.transactions', []);
+    const transactionData = get(e, 'payload.transactions', []);
     console.log('on removed transactions', transactionData);
     if (address && transactionData.length) {
       const { transactions } = getState().data;
       const removeHashes = map(transactionData, txn => txn.hash);
-      const results = remove(transactions, (txn) => includes(removeHashes, txn.hash));
+      remove(transactions, (txn) => includes(removeHashes, txn.hash));
 
-      saveLocalTransactions(address, updatedResults, network);
+      saveLocalTransactions(address, transactions, network);
       dispatch({
-        payload: results,
+        payload: transactions,
         type: DATA_UPDATE_TRANSACTIONS,
       });
     }
@@ -278,7 +274,7 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
     const assets = get(e, 'payload.assets', []);
     const liquidityTokens = remove(assets, (asset) => {
       const symbol = get(asset, 'asset.symbol', '');
-      return symbol === 'uni-v1'
+      return symbol === 'uni-v1';
     });
     dispatch(uniswapUpdateLiquidityTokens(liquidityTokens));
     const updatedAssets = dedupeUniqueTokens(assets, uniqueTokens);
@@ -300,7 +296,7 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
     const newAssets = get(e, 'payload.assets', []);
     const liquidityTokens = remove(newAssets, (asset) => {
       const symbol = get(asset, 'asset.symbol', '');
-      return symbol === 'uni-v1'
+      return symbol === 'uni-v1';
     });
     dispatch(uniswapAddLiquidityTokens(liquidityTokens));
     const updatedNewAssets = dedupeUniqueTokens(newAssets, uniqueTokens);
@@ -347,16 +343,16 @@ export const dataAddNewTransaction = txDetails => (dispatch, getState) => new Pr
   const { accountAddress, nativeCurrency, network } = getState().settings;
   parseNewTransaction(txDetails, nativeCurrency)
     .then(parsedTransaction => {
-      let _transactions = [parsedTransaction, ...transactions];
+      const _transactions = [parsedTransaction, ...transactions];
       saveLocalTransactions(accountAddress, _transactions, network);
       dispatch({
-        type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
         payload: _transactions,
+        type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
       });
       resolve(true);
     })
     .catch(error => {
-      reject(false);
+      reject(error);
     });
 });
 
@@ -365,8 +361,8 @@ const INITIAL_STATE = {
   addressSocket: null,
   assets: [],
   loadingAssets: false,
-  transactions: [],
   loadingTransactions: false,
+  transactions: [],
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -391,7 +387,7 @@ export default (state = INITIAL_STATE, action) => {
   case DATA_LOAD_TRANSACTIONS_FAILURE:
     return {
       ...state,
-      loadingTransactions: false
+      loadingTransactions: false,
     };
   case DATA_LOAD_ASSETS_REQUEST:
     return {
@@ -401,13 +397,13 @@ export default (state = INITIAL_STATE, action) => {
   case DATA_LOAD_ASSETS_SUCCESS:
     return {
       ...state,
-      loadingAssets: false,
       assets: action.payload,
+      loadingAssets: false,
     };
   case DATA_LOAD_ASSETS_FAILURE:
     return {
       ...state,
-      loadingAssets: false
+      loadingAssets: false,
     };
   case DATA_ADD_NEW_TRANSACTION_SUCCESS:
     return {

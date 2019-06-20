@@ -17,14 +17,14 @@ import {
  */
 export const parseGasPrices = (data, priceUnit, gasLimit, nativeCurrency, short) => {
   const gasPrices = {
-    slow: null,
     average: null,
     fast: null,
+    slow: null,
   };
   if (!data) {
-    gasPrices.fast = defaultGasPriceFormat('fast', '30000','5000000000', '5 Gwei', short);
+    gasPrices.fast = defaultGasPriceFormat('fast', '30000', '5000000000', '5 Gwei', short);
     gasPrices.average = defaultGasPriceFormat('average', '360000', '2000000000', '2 Gwei', short);
-    gasPrices.slow = defaultGasPriceFormat('slow', '1800000','1000000000', '1 Gwei', short);
+    gasPrices.slow = defaultGasPriceFormat('slow', '1800000', '1000000000', '1 Gwei', short);
   } else {
     const fastTimeAmount = multiply(data.fastWait, timeUnits.ms.minute);
     const fastValueAmount = divide(data.fast, 10);
@@ -33,7 +33,7 @@ export const parseGasPrices = (data, priceUnit, gasLimit, nativeCurrency, short)
       fastTimeAmount,
       multiply(fastValueAmount, ethUnits.gwei),
       `${fastValueAmount} Gwei`,
-      short
+      short,
     );
 
     const avgTimeAmount = multiply(data.avgWait, timeUnits.ms.minute);
@@ -43,7 +43,7 @@ export const parseGasPrices = (data, priceUnit, gasLimit, nativeCurrency, short)
       avgTimeAmount,
       multiply(avgValueAmount, ethUnits.gwei),
       `${avgValueAmount} Gwei`,
-      short
+      short,
     );
 
     const slowTimeAmount = multiply(data.safeLowWait, timeUnits.ms.minute);
@@ -53,25 +53,23 @@ export const parseGasPrices = (data, priceUnit, gasLimit, nativeCurrency, short)
       slowTimeAmount,
       multiply(slowValueAmount, ethUnits.gwei),
       `${slowValueAmount} Gwei`,
-      short
+      short,
     );
   }
   return parseGasPricesTxFee(gasPrices, priceUnit, gasLimit, nativeCurrency);
 };
 
-const defaultGasPriceFormat = (option, timeAmount, valueAmount, valueDisplay, short) => {
-  return {
-    option,
-    estimatedTime: {
-      amount: timeAmount,
-      display: getTimeString(timeAmount, 'ms', short),
-    },
-    value: {
-      amount: valueAmount,
-      display: valueDisplay,
-    },
-  };
-};
+const defaultGasPriceFormat = (option, timeAmount, valueAmount, valueDisplay, short) => ({
+  estimatedTime: {
+    amount: timeAmount,
+    display: getTimeString(timeAmount, 'ms', short),
+  },
+  option,
+  value: {
+    amount: valueAmount,
+    display: valueDisplay,
+  },
+});
 
 /**
  * @desc parse ether gas prices with updated gas limit
@@ -89,17 +87,17 @@ export const parseGasPricesTxFee = (gasPrices, priceUnit, gasLimit, nativeCurren
 const getTxFee = (gasPrice, gasLimit) => {
   const amount = multiply(gasPrice, gasLimit);
   return {
+    native: null,
     value: {
       amount,
       display: convertRawAmountToBalance(
         amount,
         {
-          symbol: 'ETH',
           decimals: 18,
+          symbol: 'ETH',
         },
       ),
     },
-    native: null,
   };
 };
 

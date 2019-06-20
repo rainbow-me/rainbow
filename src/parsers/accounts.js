@@ -9,12 +9,11 @@ export const parseAccountAssets = data => {
   try {
     let assets = [...data];
     assets = assets.map(assetData => {
-      const name =
-        assetData.asset.name || 'Unknown Token';
+      const name = assetData.asset.name || 'Unknown Token';
       const asset = {
         address: assetData.asset.asset_code || null,
         decimals: assetData.asset.decimals,
-        name: name,
+        name,
         price: assetData.asset.price,
         symbol: assetData.asset.symbol.toUpperCase() || '———',
         uniqueId: assetData.asset.asset_code || name,

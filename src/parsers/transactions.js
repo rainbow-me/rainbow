@@ -16,7 +16,7 @@ export const parseTransactions = (data, nativeCurrency) => {
 };
 
 const parseTransaction = (txn, nativeCurrency) => {
-  let transaction = pick(txn, [
+  const transaction = pick(txn, [
     'hash',
     'mined_at',
     'nonce',
@@ -24,9 +24,9 @@ const parseTransaction = (txn, nativeCurrency) => {
     'status',
     'type',
   ]);
-  transaction['pending'] = false;
-  transaction['from'] = txn.address_from;
-  transaction['to'] = txn.address_to;
+  transaction.pending = false;
+  transaction.from = txn.address_from;
+  transaction.to = txn.address_to;
   const changes = get(txn, 'changes', []);
   let internalTransactions = changes;
   if (changes.length === 2 && get(changes, '[0].asset.asset_code') === get(changes, '[1].asset.asset_code')) {
@@ -57,15 +57,15 @@ const parseTransaction = (txn, nativeCurrency) => {
       internalTxn.value,
       internalTxn.asset.decimals,
       priceUnit,
-      nativeCurrency
+      nativeCurrency,
     );
 
     return {
       ...transaction,
       asset: updatedAsset,
       balance: convertRawAmountToBalance(internalTxn.value, updatedAsset),
-      hash: `${transaction.hash}-${index}`,
       from: internalTxn.address_from,
+      hash: `${transaction.hash}-${index}`,
       native: nativeDisplay,
       to: internalTxn.address_to,
     };

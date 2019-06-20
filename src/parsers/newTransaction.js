@@ -2,7 +2,6 @@ import { get, pick } from 'lodash';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
-  multiply,
 } from '../helpers/utilities';
 import { getTransactionCount } from '../handlers/web3';
 
@@ -27,11 +26,8 @@ export const parseNewTransaction = async (
   const native = convertAmountAndPriceToNativeDisplay(
     amount,
     get(txDetails, 'asset.price.value', 0),
-    nativeCurrency
+    nativeCurrency,
   );
-  const nonce =
-    txDetails.nonce ||
-    (txDetails.from ? await getTransactionCount(txDetails.from) : '');
   let tx = pick(txDetails, [
     'asset',
     'dappName',
@@ -40,13 +36,16 @@ export const parseNewTransaction = async (
     'nonce',
     'to',
   ]);
+  const nonce = tx.nonce
+    || (tx.from ? await getTransactionCount(tx.from) : '');
   tx = {
     ...tx,
     balance,
     error: false,
     mined_at: null,
     native,
-    pending: txDetails.hash ? true : false,
+    nonce,
+    pending: !!txDetails.hash,
   };
 
   return tx;
