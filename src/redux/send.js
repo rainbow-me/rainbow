@@ -298,7 +298,6 @@ export const sendUpdateNativeAmount = nativeAmount => (dispatch, getState) => {
 
 export const sendUpdateSelected = (value) => (dispatch, getState) => {
   if (get(value, 'isNft')) {
-    dispatch(sendUpdateGasPrice());
     dispatch({
       payload: {
         selected: {
@@ -308,6 +307,7 @@ export const sendUpdateSelected = (value) => (dispatch, getState) => {
       },
       type: SEND_UPDATE_NFT_SELECTED,
     });
+    dispatch(sendUpdateGasPrice());
   } else {
     const state = getState();
     const assetAmount = get(state, 'send.assetAmount');
@@ -318,8 +318,8 @@ export const sendUpdateSelected = (value) => (dispatch, getState) => {
       payload: selected,
       type: SEND_UPDATE_SELECTED,
     });
-    dispatch(sendUpdateGasPrice());
     dispatch(sendUpdateAssetAmount(assetAmount));
+    dispatch(sendUpdateGasPrice());
   }
 };
 
