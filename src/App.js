@@ -143,35 +143,23 @@ class App extends Component {
   }
 
   handleInitializeAnalytics = async () => {
-    let userId = null;
+    const storedIdentifier = await keychain.loadString('analyticsUserIdentifier');
 
-    await RNIOS11DeviceCheck.getToken()
-      .then((deviceId) => {
-        userId = deviceId;
-      })
-      .catch(async (error) => {
-        const storedUserId = await keychain.loadString('analyticsUserIdentifier');
-
-        if (storedUserId) {
-          userId = storedUserId;
-        } else {
-          userId = nanoid();
-          await keychain.saveString('analyticsUserIdentifier', userId);
-        }
-      });
+    if (!storedIdentifier) {
+      const identifier = await RNIOS11DeviceCheck.getToken()
+        .then((deviceId) => deviceId)
+        .catch(() => nanoid());
+      await keychain.saveString('analyticsUserIdentifier', identifier);
+      analytics.identify(identifier);
+    }
 
     await analytics.setup(REACT_APP_SEGMENT_API_WRITE_KEY, {
       ios: {
         trackDeepLinks: true,
       },
-      // Record certain application events automatically!
       trackAppLifecycleEvents: true,
       trackAttributionData: true,
     });
-
-    if (userId) {
-      analytics.identify(userId);
-    }
   }
 
   handleWalletConfig = async (seedPhrase) => {
