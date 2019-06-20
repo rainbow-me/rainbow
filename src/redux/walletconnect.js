@@ -1,4 +1,3 @@
-import { commonStorage } from '@rainbow-me/rainbow-common';
 import analytics from '@segment/analytics-react-native';
 import {
   forEach,

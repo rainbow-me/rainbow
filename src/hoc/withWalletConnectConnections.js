@@ -1,4 +1,3 @@
-import { sortList } from '@rainbow-me/rainbow-common';
 import {
   get,
   groupBy,

@@ -1,4 +1,3 @@
-import { estimateGas, getTransactionCount, toHex } from '@rainbow-me/rainbow-common';
 import analytics from '@segment/analytics-react-native';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
