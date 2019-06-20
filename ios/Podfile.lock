@@ -151,7 +151,7 @@ PODS:
     - React
   - RNLanguages (3.0.2):
     - React
-  - RNReanimated (1.0.1):
+  - RNReanimated (1.1.0):
     - React
   - RNScreens (1.0.0-alpha.22):
     - React
@@ -286,7 +286,7 @@ SPEC CHECKSUMS:
   RNDeviceInfo: 9e6a0aece8e7455515103ce23372b393843a7ee7
   RNIOS11DeviceCheck: a4a545fdd08230a17a8ce7608e95038ee23a32aa
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
-  RNReanimated: c8dd490ca98a4edcba229bfa49f2516c95a43afb
+  RNReanimated: 7a52c90473b5e81c13408d40d797b98387eaddde
   RNScreens: 720a9e6968beb73e8196239801e887d8401f86ed
   SDWebImage: 6764b5fa0f73c203728052955dbefa2bf1f33282
   yoga: 92b2102c3d373d1a790db4ab761d2b0ffc634f64

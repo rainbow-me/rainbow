@@ -82,7 +82,7 @@
     "react-native-qrcode-svg": "git+https://github.com/mikedemarais/react-native-qrcode-svg.git",
     "react-native-radial-gradient": "^1.0.5",
     "react-native-randombytes": "^3.5.2",
-    "react-native-reanimated": "1.0.1",
+    "react-native-reanimated": "1.1.0",
     "react-native-safe-area-view": "mikedemarais/react-native-safe-area-view",
     "react-native-screens": "^1.0.0-alpha.22",
     "react-native-shimmer-placeholder": "^1.0.29",
