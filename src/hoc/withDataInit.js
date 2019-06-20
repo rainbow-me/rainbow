@@ -91,7 +91,7 @@ export default Component => compose(
       try {
         const getUniswap = ownProps.uniswapUpdateState();
         const getUniqueTokens = ownProps.uniqueTokensRefreshState();
-        return Promise.all([getUniswap, getUniqueTokens]);
+        return await Promise.all([getUniswap, getUniqueTokens]);
       } catch (error) {
       }
     },

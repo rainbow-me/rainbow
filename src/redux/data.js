@@ -26,6 +26,7 @@ import io from 'socket.io-client';
 import { parseAccountAssets } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
+import { uniswapAddLiquidityTokens, uniswapUpdateLiquidityTokens } from './uniswap';
 import { getFamilies } from '../parsers/uniqueTokens';
 
 // -- Constants --------------------------------------- //
@@ -275,6 +276,11 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
     console.log('on received assets', e);
     const address = get(e, 'meta.address');
     const assets = get(e, 'payload.assets', []);
+    const liquidityTokens = remove(assets, (asset) => {
+      const symbol = get(asset, 'asset.symbol', '');
+      return symbol === 'uni-v1'
+    });
+    dispatch(uniswapUpdateLiquidityTokens(liquidityTokens));
     const updatedAssets = dedupeUniqueTokens(assets, uniqueTokens);
     if (address && updatedAssets.length) {
       const parsedAssets = parseAccountAssets(updatedAssets);
@@ -292,6 +298,11 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
     console.log('on appended new assets', e);
     const address = get(e, 'meta.address');
     const newAssets = get(e, 'payload.assets', []);
+    const liquidityTokens = remove(newAssets, (asset) => {
+      const symbol = get(asset, 'asset.symbol', '');
+      return symbol === 'uni-v1'
+    });
+    dispatch(uniswapAddLiquidityTokens(liquidityTokens));
     const updatedNewAssets = dedupeUniqueTokens(newAssets, uniqueTokens);
     if (address && newAssets.length) {
       const parsedNewAssets = parseAccountAssets(updatedNewAssets);
