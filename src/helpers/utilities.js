@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import BigNumber from 'bignumber.js';
 import supportedNativeCurrencies from '../references/native-currencies.json';
 
@@ -293,7 +294,7 @@ export const convertRawAmountToNativeDisplay = (
  * @return {Object}
  */
 export const convertRawAmountToBalance = (value, asset, buffer) => {
-  const decimals = asset.decimals || 18;
+  const decimals = get(asset, 'decimals', 18);
   const assetBalance = convertRawAmountToDecimalFormat(
     value,
     decimals,
@@ -313,7 +314,7 @@ export const convertRawAmountToBalance = (value, asset, buffer) => {
  * @return {String}
  */
 export const convertAmountToBalanceDisplay = (value, asset, buffer) => {
-  const decimals = asset.decimals || 18;
+  const decimals = get(asset, 'decimals', 18);
   const display = handleSignificantDecimals(value, decimals, buffer);
   return `${display} ${asset.symbol}`;
 };
