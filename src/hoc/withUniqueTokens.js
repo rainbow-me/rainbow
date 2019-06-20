@@ -4,12 +4,10 @@ import { sendableUniqueTokensSelector } from './uniqueTokenSelectors';
 
 const mapStateToProps = ({
   uniqueTokens: {
-    fetchingUniqueTokens,
     uniqueTokens,
   },
   settings: { nativeCurrency },
 }) => ({
-  fetchingUniqueTokens,
   nativeCurrency,
   uniqueTokens,
 });
