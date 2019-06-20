@@ -89,7 +89,7 @@ class WalletScreen extends PureComponent {
 
   hideSpashScreen = () => {
     const { onHideSplashScreen, setSafeTimeout } = this.props;
-    setSafeTimeout(onHideSplashScreen, 150);
+    setSafeTimeout(onHideSplashScreen, 200);
   }
 
   render = () => {
