@@ -20,7 +20,7 @@ function setTopLevelNavigator(navigatorRef) {
  */
 function getActiveRouteName(navigationState) {
   const route = getActiveRoute(navigationState);
-  return route.routeName;
+  return get(route, 'routeName');
 }
 
 function getActiveRoute(navigationState) {
