@@ -188,7 +188,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
 
         this.props.sendToggleConfirmationView(true);
 
-        this.props.sendTransaction({
+        return this.props.sendTransaction({
           address: this.props.address,
           amount: this.props.assetAmount,
           asset: this.props.selected,
