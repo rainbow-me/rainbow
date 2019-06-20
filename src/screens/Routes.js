@@ -64,15 +64,6 @@ const MainNavigator = createStackNavigator({
     },
     screen: ReceiveModal,
   },
-  WalletConnectConfirmationModal: {
-    navigationOptions: {
-      effect: 'expanded',
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height,
-      },
-    },
-    screen: WalletConnectConfirmationModal,
-  },
   SendSheet: SendSheetWithData,
   SettingsModal: {
     navigationOptions: {
@@ -82,6 +73,15 @@ const MainNavigator = createStackNavigator({
     screen: SettingsModal,
   },
   SwipeLayout: SwipeStack,
+  WalletConnectConfirmationModal: {
+    navigationOptions: {
+      effect: 'expanded',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height,
+      },
+    },
+    screen: WalletConnectConfirmationModal,
+  },
 }, {
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',

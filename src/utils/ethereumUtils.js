@@ -1,5 +1,5 @@
 import { find, get } from 'lodash';
-import chains from '../references/chains.json'
+import chains from '../references/chains.json';
 import {
   add,
   convertNumberToString,
@@ -49,7 +49,7 @@ export const getDataString = (func, arrVals) => {
 export const getNetworkFromChainId = (chainId) => {
   const networkData = find(chains, ['chain_id', chainId]);
   return get(networkData, 'network', 'mainnet');
-}
+};
 
 /**
  * @desc get chainId from network string
@@ -58,7 +58,7 @@ export const getNetworkFromChainId = (chainId) => {
 export const getChainIdFromNetwork = (network) => {
   const chainData = find(chains, ['network', network]);
   return get(chainData, 'chain_id', 1);
-}
+};
 
 /**
  * @desc returns an object
@@ -75,11 +75,11 @@ export const transactionData = (assets, assetAmount, gasPrice) => {
   const amountWithFees = add(requestedAmount, txFee);
 
   return {
-    ethereum,
+    amountWithFees,
     balance,
+    ethereum,
     requestedAmount,
     txFee,
-    amountWithFees,
   };
 };
 

@@ -1,7 +1,6 @@
 import { ethers } from 'ethers';
 import { get, replace } from 'lodash';
 import { REACT_APP_INFURA_PROJECT_ID } from 'react-native-dotenv';
-import { isValidAddress } from '../helpers/validators';
 import { ethereumUtils } from '../utils';
 import {
   convertAmountToRawAmount,

@@ -1,5 +1,4 @@
 import { get } from 'lodash';
-import { isValidSeedPhrase as validateSeedPhrase } from '../helpers/validators';
 import { Clipboard, InteractionManager, Linking } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import {
@@ -14,6 +13,7 @@ import { Alert } from '../components/alerts';
 import { withDataInit } from '../hoc';
 import { deviceUtils } from '../utils';
 import ImportSeedPhraseSheet from './ImportSeedPhraseSheet';
+import { isValidSeedPhrase as validateSeedPhrase } from '../helpers/validators';
 
 const ConfirmImportAlert = onSuccess => (
   Alert({
@@ -62,9 +62,7 @@ const ImportSeedPhraseSheetWithData = compose(
     },
   }),
   withHandlers({
-    getClipboardContents: ({ setClipboardContents }) => async () => {
-      return Clipboard.getString().then(setClipboardContents);
-    },
+    getClipboardContents: ({ setClipboardContents }) => async () => Clipboard.getString().then(setClipboardContents),
     onImportSeedPhrase: ({ setIsImporting }) => () => ConfirmImportAlert(() => setIsImporting(true)),
     onInputChange: ({ isImporting, setSeedPhrase }) => ({ nativeEvent }) => {
       if (!isImporting) {

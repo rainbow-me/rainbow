@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { KeyboardAvoidingView } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import { pure, withProps } from 'recompact';
+import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
 import { Icon } from '../components/icons';
 import { MultiLineInput } from '../components/inputs';
