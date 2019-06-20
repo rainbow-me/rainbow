@@ -180,7 +180,7 @@ export const getCountdown = miliseconds => {
   let remaining = miliseconds;
   let slots = [timeUnits.ms.hour, timeUnits.ms.minute, timeUnits.ms.second];
   slots = slots.map(pack => {
-    let result = floorDivide(remaining, pack);
+    const result = floorDivide(remaining, pack);
     remaining = mod(remaining, pack);
     if (greaterThanOrEqual(result, 1)) {
       return result.length < 2 ? `0${result}` : result;

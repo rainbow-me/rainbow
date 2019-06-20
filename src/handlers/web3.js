@@ -4,22 +4,18 @@ import { REACT_APP_INFURA_PROJECT_ID } from 'react-native-dotenv';
 import { ethereumUtils } from '../utils';
 import {
   convertAmountToRawAmount,
-  convertStringToNumber,
-  convertNumberToString,
-  convertHexToString,
   convertStringToHex,
   handleSignificantDecimals,
   multiply,
 } from '../helpers/utilities';
-import ethUnits from '../references/ethereum-units.json';
 import smartContractMethods from '../references/smartcontract-methods.json';
 
-const infura_url = `https://network.infura.io/v3/${REACT_APP_INFURA_PROJECT_ID}`;
+const infuraUrl = `https://network.infura.io/v3/${REACT_APP_INFURA_PROJECT_ID}`;
 
 /**
  * @desc web3 http instance
  */
-export let web3Provider = new ethers.providers.JsonRpcProvider(replace(infura_url, 'network', 'mainnet'));
+export let web3Provider = new ethers.providers.JsonRpcProvider(replace(infuraUrl, 'network', 'mainnet'));
 
 /**
  * @desc set a different web3 provider
@@ -27,7 +23,7 @@ export let web3Provider = new ethers.providers.JsonRpcProvider(replace(infura_ur
  */
 export const web3SetHttpProvider = network => {
   // TODO check network is valid network
-  web3Provider = new ethers.providers.JsonRpcProvider(replace(infura_url, 'network', network));
+  web3Provider = new ethers.providers.JsonRpcProvider(replace(infuraUrl, 'network', network));
 };
 
 /**
@@ -68,7 +64,7 @@ export const estimateGas = async (estimateGasData) => {
     return gasLimit.toNumber();
   } catch (error) {
     return 21000;
-  };
+  }
 };
 
 /**
@@ -95,8 +91,7 @@ export const toWei = ether => {
  * @param {String} address
  * @return {Promise}
  */
-export const getTransactionCount = address =>
-  web3Provider.getTransactionCount(address, 'pending');
+export const getTransactionCount = address => web3Provider.getTransactionCount(address, 'pending');
 
 /**
  * @desc get transaction details
@@ -104,13 +99,16 @@ export const getTransactionCount = address =>
  * @return {Object}
  */
 export const getTxDetails = async (transaction) => {
-  const from = transaction.from;
-  const to = transaction.to;
+  const { from, to } = transaction;
   const data = transaction.data ? transaction.data : '0x';
   const value = transaction.amount ? toWei(transaction.amount) : '0x00';
-  const estimateGasData = { from, to, data, value };
-  const _gasLimit =
-    transaction.gasLimit || (await estimateGas(estimateGasData));
+  const estimateGasData = {
+    data,
+    from,
+    to,
+    value,
+  };
+  const _gasLimit = transaction.gasLimit || (await estimateGas(estimateGasData));
   const _gasPrice = transaction.gasPrice || (await getGasPrice());
   const nonce = await getTransactionCount(from);
   const tx = {
@@ -126,7 +124,7 @@ export const getTxDetails = async (transaction) => {
 
 export const resolveNameOrAddress = async (nameOrAddress) => {
   if (!isHexString(nameOrAddress)) {
-    return await web3Provider.resolveName(nameOrAddress);
+    return web3Provider.resolveName(nameOrAddress);
   }
   return nameOrAddress;
 };
@@ -137,16 +135,16 @@ export const resolveNameOrAddress = async (nameOrAddress) => {
  * @return {Object}
  */
 export const getTransferNftTransaction = async (transaction) => {
-  let recipient = await resolveNameOrAddress(transaction.to);
-  let from = transaction.from;
+  const recipient = await resolveNameOrAddress(transaction.to);
+  const { from } = transaction;
   const contractAddress = get(transaction, 'asset.asset_contract.address');
   const data = getDataForNftTransfer(from, recipient, transaction.asset);
   return {
-    from,
-    to: contractAddress,
     data,
-    gasPrice: transaction.gasPrice,
+    from,
     gasLimit: transaction.gasLimit,
+    gasPrice: transaction.gasPrice,
+    to: contractAddress,
   };
 };
 
@@ -157,14 +155,14 @@ export const getTransferNftTransaction = async (transaction) => {
  */
 export const getTransferTokenTransaction = async (transaction) => {
   const value = convertAmountToRawAmount(transaction.amount, transaction.asset.decimals);
-  let recipient = await resolveNameOrAddress(transaction.to);
+  const recipient = await resolveNameOrAddress(transaction.to);
   const data = getDataForTokenTransfer(value, recipient);
   return {
-    from: transaction.from,
-    to: transaction.asset.address,
     data,
-    gasPrice: transaction.gasPrice,
+    from: transaction.from,
     gasLimit: transaction.gasLimit,
+    gasPrice: transaction.gasPrice,
+    to: transaction.asset.address,
   };
 };
 
@@ -175,12 +173,12 @@ export const getTransferTokenTransaction = async (transaction) => {
  */
 export const createSignableTransaction = async (transaction) => {
   if (get(transaction, 'asset.address') === 'eth') {
-    return await getTxDetails(transaction);
+    return getTxDetails(transaction);
   }
   const isNft = get(transaction, 'asset.isNft', false);
-  const result = isNft ? await getTransferNftTransaction(transaction) :
-    await getTransferTokenTransaction(transaction);
-  return await getTxDetails(result)
+  const result = isNft ? await getTransferNftTransaction(transaction)
+    : await getTransferTokenTransaction(transaction);
+  return getTxDetails(result);
 };
 
 const estimateAssetBalancePortion = (asset) => {
@@ -205,19 +203,19 @@ export const getDataForTokenTransfer = (value, to) => {
 
 export const getDataForNftTransfer = (from, to, asset) => {
   const nftVersion = get(asset, 'asset_contract.nft_version');
-  if (nftVersion === "3.0") {
+  if (nftVersion === '3.0') {
     const transferMethodHash = smartContractMethods.nft_transfer_from.hash;
     const data = ethereumUtils.getDataString(transferMethodHash, [
       ethereumUtils.removeHexPrefix(from),
       ethereumUtils.removeHexPrefix(to),
-      convertStringToHex(asset.id)
+      convertStringToHex(asset.id),
     ]);
     return data;
   }
   const transferMethodHash = smartContractMethods.nft_transfer.hash;
   const data = ethereumUtils.getDataString(transferMethodHash, [
     ethereumUtils.removeHexPrefix(to),
-    convertStringToHex(asset.id)
+    convertStringToHex(asset.id),
   ]);
   return data;
 };
@@ -233,25 +231,31 @@ export const estimateGasLimit = async ({
   recipient,
   amount,
 }) => {
-  let gasLimit = ethUnits.basic_tx;
-  let data = '0x';
-  let _amount =
-    amount && Number(amount)
-      ? convertAmountToRawAmount(amount, asset.decimals)
-      : estimateAssetBalancePortion(asset);
-  let value = _amount.toString();
+  const data = '0x';
+  const _amount = amount && Number(amount)
+    ? convertAmountToRawAmount(amount, asset.decimals)
+    : estimateAssetBalancePortion(asset);
+  const value = _amount.toString();
   let _recipient = await resolveNameOrAddress(recipient);
-  _recipient = _recipient
-      ? _recipient
-      : '0x737e583620f4ac1842d4e354789ca0c5e0651fbb';
-  let estimateGasData = { from: address, to: _recipient, data, value };
+  _recipient = _recipient || '0x737e583620f4ac1842d4e354789ca0c5e0651fbb';
+  let estimateGasData = {
+    data,
+    from: address,
+    to: _recipient,
+    value,
+  };
   if (asset.isNft) {
     const contractAddress = get(asset, 'asset_contract.address');
     const data = getDataForNftTransfer(address, _recipient, asset);
     estimateGasData = { from: address, to: contractAddress, data };
   } else if (asset.symbol !== 'ETH') {
-    const data = getDataForTokenTransfer(value, _recipient);
-    estimateGasData = { from: address, to: asset.address, data, value: '0x0' };
+    const transferData = getDataForTokenTransfer(value, _recipient);
+    estimateGasData = {
+      data: transferData,
+      from: address,
+      to: asset.address,
+      value: '0x0',
+    };
   }
-  return await estimateGas(estimateGasData);
+  return estimateGas(estimateGasData);
 };
