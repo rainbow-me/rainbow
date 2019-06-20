@@ -54,10 +54,8 @@ function getBalanceAmount(assets, gasPrice, selected) {
     const balanceAmount = get(selected, 'balance.amount', 0);
     const txFeeRaw = get(gasPrice, 'txFee.value.amount');
     const txFeeAmount = fromWei(txFeeRaw);
-    const remaining = convertStringToNumber(
-      subtract(balanceAmount, txFeeAmount),
-    );
-    amount = convertNumberToString(remaining < 0 ? '0' : remaining);
+    const remaining = subtract(balanceAmount, txFeeAmount);
+    amount = convertNumberToString(greaterThan(remaining, 0) ? remaining : 0);
   } else {
     amount = get(selected, 'balance.amount', 0);
   }
