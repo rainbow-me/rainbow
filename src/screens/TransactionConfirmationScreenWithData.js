@@ -65,6 +65,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     if (transactionHash) {
       this.props.updateTransactionCountNonce(maxTxnCount + 1);
       const txDetails = {
+        amount: get(transactionDetails, 'displayDetails.payload.value'),
         asset: get(transactionDetails, 'displayDetails.payload.asset'),
         dappName: get(transactionDetails, 'dappName'),
         from: get(transactionDetails, 'displayDetails.payload.from'),
@@ -73,7 +74,6 @@ class TransactionConfirmationScreenWithData extends PureComponent {
         hash: transactionHash,
         nonce: get(transactionDetails, 'displayDetails.payload.nonce'),
         to: get(transactionDetails, 'displayDetails.payload.to'),
-        value: get(transactionDetails, 'displayDetails.payload.value'),
       };
       this.props.dataAddNewTransaction(txDetails);
       this.props.removeRequest(transactionDetails.requestId);

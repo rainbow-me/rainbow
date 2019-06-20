@@ -16,7 +16,7 @@ export const parseNewTransaction = async (
   nativeCurrency = '',
 ) => {
   let balance = null;
-  const amount = txDetails.value;
+  const { amount } = txDetails;
   if (amount) {
     balance = {
       amount,
