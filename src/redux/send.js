@@ -328,8 +328,8 @@ export const sendMaxBalance = () => (dispatch, getState) => {
   const { assets } = getState().data;
   const balanceAmount = getBalanceAmount(assets, gasPrice, selected);
 
-  dispatch(sendUpdateGasPrice());
   dispatch(sendUpdateAssetAmount(balanceAmount));
+  dispatch(sendUpdateGasPrice());
 };
 
 export const sendClearFields = () => ({ type: SEND_CLEAR_FIELDS });
