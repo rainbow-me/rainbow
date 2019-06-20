@@ -1,5 +1,6 @@
-import { get } from 'lodash';
 import { isValidSeedPhrase as validateSeedPhrase } from '@rainbow-me/rainbow-common';
+import analytics from '@segment/analytics-react-native';
+import { get } from 'lodash';
 import { Clipboard, InteractionManager, Linking } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import {
@@ -11,7 +12,7 @@ import {
   withState,
 } from 'recompact';
 import { Alert } from '../components/alerts';
-import { withAccountRefresh, withAccountReset } from '../hoc';
+import { withAccountRefresh, withAccountReset, withIsWalletEmpty } from '../hoc';
 import { deviceUtils } from '../utils';
 import ImportSeedPhraseSheet from './ImportSeedPhraseSheet';
 
@@ -33,6 +34,7 @@ const ConfirmImportAlert = onSuccess => (
 const ImportSeedPhraseSheetWithData = compose(
   withAccountReset,
   withAccountRefresh,
+  withIsWalletEmpty,
   withNavigation,
   withState('clipboardContents', 'setClipboardContents', ''),
   withState('isImporting', 'setIsImporting', false),
@@ -40,6 +42,7 @@ const ImportSeedPhraseSheetWithData = compose(
   withHandlers({
     importSeedPhrase: ({
       accountClearState,
+      isEmpty,
       navigation,
       refreshAccount,
       screenProps,
@@ -54,6 +57,9 @@ const ImportSeedPhraseSheetWithData = compose(
           if (address) {
             refreshAccount()
               .then(() => {
+                analytics.track('Imported seed phrase', {
+                  hadPreviousAddressWithValue: isEmpty,
+                });
                 setIsImporting(false);
                 navigation.navigate('WalletScreen');
               });

@@ -1,5 +1,5 @@
+import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
-import { pickBy, values } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, withHandlers } from 'recompact';
@@ -13,7 +13,7 @@ import {
   Row,
 } from '../layout';
 import { padding } from '../../styles';
-import { Text, TruncatedText } from '../text';
+import { TruncatedText } from '../text';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
@@ -24,10 +24,15 @@ const enhance = compose(
   withHandlers({
     onPressActionSheet: ({
       dappName,
+      dappUrl,
       walletConnectDisconnectAllByDappName,
     }) => (buttonIndex) => {
       if (buttonIndex === 0) {
         walletConnectDisconnectAllByDappName(dappName);
+        analytics.track('Manually disconnected from WalletConnect connection', {
+          dappName,
+          dappUrl,
+        });
       }
     },
   }),
@@ -77,8 +82,8 @@ const WalletConnectListItem = enhance(({
 ));
 
 WalletConnectListItem.propTypes = {
-  dappName: PropTypes.string.isRequired,
   dappIcon: PropTypes.string.isRequired,
+  dappName: PropTypes.string.isRequired,
   dappUrl: PropTypes.string.isRequired,
   onPressActionSheet: PropTypes.func.isRequired,
 };

@@ -4,8 +4,10 @@ import {
   settingsInitializeState,
   settingsUpdateAccountAddress,
 } from '@rainbow-me/rainbow-common';
+import analytics from '@segment/analytics-react-native';
 import { get, last } from 'lodash';
 import PropTypes from 'prop-types';
+import nanoid from 'nanoid/non-secure';
 import React, { Component } from 'react';
 import {
   Alert,
@@ -14,7 +16,9 @@ import {
   Linking,
 } from 'react-native';
 import CodePush from 'react-native-code-push';
+import { REACT_APP_SEGMENT_API_WRITE_KEY } from 'react-native-dotenv';
 import firebase from 'react-native-firebase';
+import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { useScreens } from 'react-native-screens';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
@@ -27,6 +31,7 @@ import {
   withWalletConnectOnSessionRequest,
 } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
+import * as keychain from './model/keychain';
 import { walletInit } from './model/wallet';
 import Navigation from './navigation';
 import store from './redux/store';
@@ -98,6 +103,8 @@ class App extends Component {
   };
 
   async componentDidMount() {
+    await this.handleInitializeAnalytics();
+
     AppState.addEventListener('change', this.handleAppStateChange);
     Linking.addEventListener('url', this.handleOpenLinkingURL);
     await this.handleWalletConfig();
@@ -135,6 +142,26 @@ class App extends Component {
     });
   }
 
+  handleInitializeAnalytics = async () => {
+    const storedIdentifier = await keychain.loadString('analyticsUserIdentifier');
+
+    if (!storedIdentifier) {
+      const identifier = await RNIOS11DeviceCheck.getToken()
+        .then((deviceId) => deviceId)
+        .catch(() => nanoid());
+      await keychain.saveString('analyticsUserIdentifier', identifier);
+      analytics.identify(identifier);
+    }
+
+    await analytics.setup(REACT_APP_SEGMENT_API_WRITE_KEY, {
+      ios: {
+        trackDeepLinks: true,
+      },
+      trackAppLifecycleEvents: true,
+      trackAttributionData: true,
+    });
+  }
+
   handleWalletConfig = async (seedPhrase) => {
     try {
       const { isWalletBrandNew, walletAddress } = await walletInit(seedPhrase);
@@ -148,7 +175,7 @@ class App extends Component {
       this.props.transactionsToApproveInit();
       return walletAddress;
     } catch (error) {
-      Alert.alert('Error: Failed to initialize wallet.');
+      Alert.alert('Import failed due to an invalid seed phrase. Please try again.');
       return null;
     }
   }

@@ -17,6 +17,7 @@ export { default as withRequestsInit } from './withRequestsInit';
 export { default as withRotationForDirection } from './withRotationForDirection';
 export { default as withSafeAreaViewInsetValues } from './withSafeAreaViewInsetValues';
 export { default as withSendFeedback } from './withSendFeedback';
+export { default as withStatusBarStyle } from './withStatusBarStyle';
 export { default as withTransactionConfirmationScreen } from './withTransactionConfirmationScreen';
 export { default as withTransitionProps } from './withTransitionProps';
 export { default as withWalletConnectConfirmationModal } from './withWalletConnectConfirmationModal';

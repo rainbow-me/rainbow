@@ -19,15 +19,20 @@ function setTopLevelNavigator(navigatorRef) {
  * Gets the current screen from navigation state
  */
 function getActiveRouteName(navigationState) {
+  const route = getActiveRoute(navigationState);
+  return get(route, 'routeName');
+}
+
+function getActiveRoute(navigationState) {
   navigationState = navigationState || get(_navigator, 'state.nav');
   if (!navigationState) return null;
 
   const route = navigationState.routes[navigationState.index];
   // recursively dive into nested navigators
   if (route.routes) {
-    return getActiveRouteName(route);
+    return getActiveRoute(route);
   }
-  return route.routeName;
+  return route;
 }
 
 /**
@@ -81,6 +86,7 @@ function setTransitionPosition(position) {
 }
 
 export default {
+  getActiveRoute,
   getActiveRouteName,
   getTransitionPosition,
   handleAction,
