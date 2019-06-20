@@ -34,19 +34,19 @@ import {
 export default Component => compose(
   connect(null, {
     dataClearState,
-    dataLoadState,
     dataInit,
+    dataLoadState,
     nonceClearState,
     requestsClearState,
     requestsLoadState,
     settingsLoadState,
     settingsUpdateAccountAddress,
-    uniswapClearState,
-    uniswapLoadState,
-    uniswapUpdateState,
     uniqueTokensClearState,
     uniqueTokensLoadState,
     uniqueTokensRefreshState,
+    uniswapClearState,
+    uniswapLoadState,
+    uniswapUpdateState,
     walletConnectClearState,
     walletConnectLoadState,
   }),
@@ -61,6 +61,14 @@ export default Component => compose(
         ownProps.uniswapClearState();
       } catch (error) {
       }
+    },
+    initializeAccountData: (ownProps) => async () => {
+      try {
+        await ownProps.uniqueTokensRefreshState();
+      } catch (error) {
+        console.log('unique tokens refresh error', error);
+      }
+      ownProps.dataInit();
     },
     loadAccountData: (ownProps) => async () => {
       try {
@@ -79,19 +87,11 @@ export default Component => compose(
       ownProps.uniswapLoadState();
       ownProps.requestsLoadState();
     },
-    initializeAccountData: (ownProps) => async () => {
-      try {
-        await ownProps.uniqueTokensRefreshState();
-      } catch (error) {
-        console.log('unique tokens refresh error', error);
-      }
-      ownProps.dataInit();
-    },
     refreshAccountData: (ownProps) => async () => {
       try {
         const getUniswap = ownProps.uniswapUpdateState();
         const getUniqueTokens = ownProps.uniqueTokensRefreshState();
-        return await Promise.all([getUniswap, getUniqueTokens]);
+        await Promise.all([getUniswap, getUniqueTokens]);
       } catch (error) {
       }
     },

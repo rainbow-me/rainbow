@@ -9,14 +9,11 @@ import {
  * @param  {String}  email
  * @return {Boolean}
  */
-export const isValidEmail = email =>
-  !!email.match(
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-  );
+export const isValidEmail = email => !!email.match(
+  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+);
 
-export const isENSAddressFormat = (address) => {
-  return address.match(/.+\..+/g);
-};
+export const isENSAddressFormat = (address) => address.match(/.+\..+/g);
 
 /**
  * @desc validate ethereum address

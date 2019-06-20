@@ -75,6 +75,6 @@ export const removeLocalRequest = async (address, network, requestId) => {
  * @return {Void}
  */
 export const removeLocalRequests = async (address, network) => {
-  const requestsKey = getRequestsKey(accountAddress, network);
+  const requestsKey = getRequestsKey(address, network);
   await removeLocal(requestsKey);
 };

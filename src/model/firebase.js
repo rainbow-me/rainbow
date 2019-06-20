@@ -1,8 +1,8 @@
 import lang from 'i18n-js';
 import { get } from 'lodash';
-import { getLocal, saveLocal } from '../handlers/commonStorage';
 import firebase from 'react-native-firebase';
 import { Alert } from '../components/alerts';
+import { getLocal, saveLocal } from '../handlers/commonStorage';
 
 export const getFCMToken = async () => {
   const fcmTokenLocal = await getLocal('rainbowFcmToken');

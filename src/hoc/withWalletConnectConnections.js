@@ -5,10 +5,10 @@ import {
   mapValues,
   values,
 } from 'lodash';
-import { sortList } from '../helpers/sortList';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';
+import { sortList } from '../helpers/sortList';
 import {
   walletConnectClearTimestamp,
   walletConnectDisconnectAllByDappName,
@@ -25,8 +25,8 @@ const sortWalletConnectors = (walletConnectors) => {
   const dappWalletConnector = mapValues(sortedWalletConnectorsByDappName, (connectors) => {
     const firstElement = head(connectors);
     return {
-      dappName: get(firstElement, 'peerMeta.name'),
       dappIcon: get(firstElement, 'peerMeta.icons[0]'),
+      dappName: get(firstElement, 'peerMeta.name'),
       dappUrl: get(firstElement, 'peerMeta.url'),
     };
   });

@@ -4,7 +4,7 @@ import {
   isEmpty,
   isNil,
   map,
-  toNumber
+  toNumber,
 } from 'lodash';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
@@ -67,27 +67,28 @@ const parseAssetsNative = (
     const nativeDisplay = convertAmountAndPriceToNativeDisplay(
       asset.balance.amount,
       priceUnit,
-      nativeCurrency
+      nativeCurrency,
     );
     return {
       ...asset,
       native: {
         balance: nativeDisplay,
-        price: {
-          amount: priceUnit,
-          display: convertAmountToNativeDisplay(priceUnit, nativeCurrency),
-        },
         change:
           asset.symbol.toLowerCase() === nativeCurrency.toLowerCase()
             ? '———'
             : convertAmountToPercentageDisplay(assetNativePrice.relative_change_24h),
+        price: {
+          amount: priceUnit,
+          display: convertAmountToNativeDisplay(priceUnit, nativeCurrency),
+        },
       },
     };
   });
-  let totalAmount = assetsNative.reduce(
-    (total, asset) =>
-    add(total, asset.native ? asset.native.balance.amount : 0),
-    0,
+  const totalAmount = assetsNative.reduce(
+    (total, asset) => add(
+      total,
+      asset.native ? asset.native.balance.amount : 0,
+    ), 0,
   );
   const totalDisplay = convertAmountToNativeDisplay(totalAmount, nativeCurrency);
   const total = { amount: totalAmount, display: totalDisplay };
@@ -95,6 +96,6 @@ const parseAssetsNative = (
 };
 
 export const sortAssetsByNativeAmountSelector = createSelector(
-  [ assetsSelector, nativeCurrencySelector ],
-  sortAssetsByNativeAmount
+  [assetsSelector, nativeCurrencySelector],
+  sortAssetsByNativeAmount,
 );

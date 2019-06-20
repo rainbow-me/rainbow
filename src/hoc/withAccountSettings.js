@@ -1,12 +1,12 @@
 import lang from 'i18n-js';
+import { connect } from 'react-redux';
+import { compose, withProps } from 'recompact';
+import { createSelector } from 'reselect';
+import supportedNativeCurrencies from '../references/native-currencies.json';
 import {
   settingsChangeLanguage,
   settingsChangeNativeCurrency,
 } from '../redux/settings';
-import supportedNativeCurrencies from '../references/native-currencies.json';
-import { connect } from 'react-redux';
-import { compose, withProps } from 'recompact';
-import { createSelector } from 'reselect';
 
 const mapStateToProps = ({
   settings: {

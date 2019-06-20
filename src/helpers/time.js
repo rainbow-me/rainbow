@@ -39,8 +39,8 @@ export const getTimeString = (value = '', unit = 'ms', short = false) => {
         _unit = lang.t('time.milisecond');
         _unitShort = lang.t('time.ms');
       } else if (
-        _value >= timeUnits.ms.second &&
-        _value < timeUnits.ms.minute
+        _value >= timeUnits.ms.second
+        && _value < timeUnits.ms.minute
       ) {
         _value = formatFixedDecimals(divide(_value, timeUnits.ms.second), 2);
         if (_value === 1) {
@@ -95,8 +95,8 @@ export const getTimeString = (value = '', unit = 'ms', short = false) => {
           _unitShort = lang.t('time.ms');
         }
       } else if (
-        _value >= timeUnits.secs.minute &&
-        _value < timeUnits.secs.hour
+        _value >= timeUnits.secs.minute
+        && _value < timeUnits.secs.hour
       ) {
         _value = formatFixedDecimals(divide(_value, timeUnits.secs.minute), 2);
         if (_value === 1) {
@@ -167,9 +167,8 @@ export const getTimeString = (value = '', unit = 'ms', short = false) => {
   }
   if (short) {
     return `${_value} ${_unitShort}`;
-  } else {
-    return `${_value} ${_unit}`;
   }
+  return `${_value} ${_unit}`;
 };
 
 /**
@@ -185,9 +184,8 @@ export const getCountdown = miliseconds => {
     remaining = mod(remaining, pack);
     if (greaterThanOrEqual(result, 1)) {
       return result.length < 2 ? `0${result}` : result;
-    } else {
-      return null;
     }
+    return null;
   });
   return `${slots[0] ? `${slots[0]}:` : ''}${
     slots[1] ? `${slots[1]}:` : '00:'

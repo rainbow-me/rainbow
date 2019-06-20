@@ -1,7 +1,6 @@
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get } from 'lodash';
-import { web3Provider } from '../handlers/web3';
 import { Alert } from 'react-native';
 import {
   ACCESS_CONTROL,
@@ -10,6 +9,7 @@ import {
   canImplyAuthentication,
 } from 'react-native-keychain';
 import * as keychain from './keychain';
+import { web3Provider } from '../handlers/web3';
 
 const seedPhraseKey = 'rainbowSeedPhrase';
 const privateKeyKey = 'rainbowPrivateKey';
