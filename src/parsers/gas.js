@@ -110,7 +110,6 @@ const convertGasPricesToNative = (priceUnit, gasPrices, nativeCurrency) => {
 };
 
 const getNativeGasPrice = (priceUnit, feeAmount, nativeCurrency) => {
-  const selected = nativeCurrencies[nativeCurrency];
   const nativeDisplay = convertRawAmountToNativeDisplay(
     feeAmount,
     18,
@@ -118,7 +117,6 @@ const getNativeGasPrice = (priceUnit, feeAmount, nativeCurrency) => {
     nativeCurrency,
   );
   return {
-    selected, // TODO is this needed?
     value: nativeDisplay,
   };
 };

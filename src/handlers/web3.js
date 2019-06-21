@@ -22,7 +22,6 @@ export let web3Provider = new ethers.providers.JsonRpcProvider(replace(infuraUrl
  * @param {String} network
  */
 export const web3SetHttpProvider = network => {
-  // TODO check network is valid network
   web3Provider = new ethers.providers.JsonRpcProvider(replace(infuraUrl, 'network', network));
 };
 
