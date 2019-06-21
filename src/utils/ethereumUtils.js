@@ -6,8 +6,7 @@ import {
   fromWei,
 } from '../helpers/utilities';
 
-// TODO fix if eth does not exist and [0] is error
-export const getEth = assets => assets.filter(asset => asset.address === 'eth')[0];
+export const getEth = assets => find(assets, asset => asset.address === 'eth');
 
 /**
  * @desc remove hex prefix

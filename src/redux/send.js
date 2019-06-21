@@ -64,7 +64,7 @@ function getBalanceAmount(assets, gasPrice, selected) {
 
 // -- Actions --------------------------------------------------------------- //
 const getEthPriceUnit = (assets) => {
-  const ethAsset = find(assets, asset => asset.address === 'eth');
+  const ethAsset = ethereumUtils.getEth(assets);
   return get(ethAsset, 'price.value', 0);
 };
 
@@ -131,14 +131,13 @@ export const sendUpdateGasPrice = newGasPriceOption => (dispatch, getState) => {
     .then(gasLimit => {
       const { assets } = getState().data;
       const { nativeCurrency } = getState().settings;
-      const ethPriceUnit = getEthPriceUnit(assets); // TODO what if no ETH or if we filtered out ETH
+      const ethPriceUnit = getEthPriceUnit(assets);
       gasPrices = parseGasPricesTxFee(gasPrices, ethPriceUnit, gasLimit, nativeCurrency);
       _gasPrice = gasPriceOption ? gasPrices[_gasPriceOption] : gasPrice;
 
       const ethereum = ethereumUtils.getEth(assets);
-
       const balanceAmount = get(ethereum, 'balance.amount', 0);
-      const txFeeAmount = fromWei(_gasPrice.txFee.value.amount);
+      const txFeeAmount = fromWei(get(_gasPrice, 'txFee.value.amount', 0));
 
       dispatch({
         payload: {
