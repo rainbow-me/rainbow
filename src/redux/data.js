@@ -28,6 +28,7 @@ import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
 import { uniswapAddLiquidityTokens, uniswapUpdateLiquidityTokens } from './uniswap';
 import { getFamilies } from '../parsers/uniqueTokens';
+import { isLowerCaseMatch } from '../utils';
 
 // -- Constants --------------------------------------- //
 
@@ -187,154 +188,198 @@ const dedupeUniqueTokens = (assets, uniqueTokens) => {
   return updatedAssets;
 };
 
-const listenOnNewMessages = socket => (dispatch, getState) => {
-  socket.on(messages.TRANSACTIONS.RECEIVED, (e) => {
-    const { nativeCurrency, network } = getState().settings;
-    const address = get(e, 'meta.address');
-    let transactionData = get(e, 'payload.transactions', []);
-    console.log('on transactions received', transactionData);
+const checkMeta = message => (dispatch, getState) => {
+  const { accountAddress, nativeCurrency } = getState().settings;
+  const address = get(message, 'meta.address');
+  const currency = get(message, 'meta.currency');
+  return isLowerCaseMatch(address, accountAddress) && isLowerCaseMatch(currency, nativeCurrency);
+};
 
-    if (address && transactionData.length) {
-      const { transactions } = getState().data;
-      const lastSuccessfulTxn = find(transactions, (txn) => txn.hash && !txn.pending);
-      const lastTxHash = lastSuccessfulTxn ? lastSuccessfulTxn.hash : '';
-      if (lastTxHash) {
-        const lastTxnHashIndex = findIndex(transactionData, (txn) => lastTxHash.startsWith(txn.hash));
-        if (lastTxnHashIndex > -1) {
-          transactionData = slice(transactionData, 0, lastTxnHashIndex);
-        }
-      }
-      if (!isEmpty(transactionData)) {
-        const parsedTransactions = parseTransactions(transactionData, nativeCurrency);
+const transactionsReceived = message => (dispatch, getState) => {
+  console.log('on transactions received');
+  const isValidMeta = dispatch(checkMeta(message));
+  if (!isValidMeta) return;
 
-        const partitions = partition(transactions, (txn) => txn.pending);
-        const pendingTransactions = partitions[0];
-        const remainingTransactions = partitions[1];
+  let transactionData = get(message, 'payload.transactions', []);
 
-        const updatedPendingTransactions = dedupePendingTransactions(pendingTransactions, parsedTransactions);
-        const updatedResults = concat(updatedPendingTransactions, parsedTransactions, remainingTransactions);
-        const dedupedResults = uniqBy(updatedResults, (txn) => txn.hash);
+  if (transactionData.length) {
+    const { accountAddress, nativeCurrency, network } = getState().settings;
+    const { transactions } = getState().data;
 
-        saveLocalTransactions(address, dedupedResults, network);
-        dispatch({
-          payload: dedupedResults,
-          type: DATA_UPDATE_TRANSACTIONS,
-        });
+    const lastSuccessfulTxn = find(transactions, (txn) => txn.hash && !txn.pending);
+    const lastTxHash = lastSuccessfulTxn ? lastSuccessfulTxn.hash : '';
+    if (lastTxHash) {
+      const lastTxnHashIndex = findIndex(transactionData, (txn) => lastTxHash.startsWith(txn.hash));
+      if (lastTxnHashIndex > -1) {
+        transactionData = slice(transactionData, 0, lastTxnHashIndex);
       }
     }
-  });
+    if (!isEmpty(transactionData)) {
+      const parsedTransactions = parseTransactions(transactionData, nativeCurrency);
 
-  socket.on(messages.TRANSACTIONS.APPENDED, (e) => {
-    const { nativeCurrency, network } = getState().settings;
-    const address = get(e, 'meta.address');
-    const transactionData = get(e, 'payload.transactions', []);
-    console.log('on appended transactions', transactionData);
-    if (address && transactionData.length) {
-      const { transactions } = getState().data;
       const partitions = partition(transactions, (txn) => txn.pending);
       const pendingTransactions = partitions[0];
       const remainingTransactions = partitions[1];
 
-      const parsedTransactions = parseTransactions(transactionData, nativeCurrency);
       const updatedPendingTransactions = dedupePendingTransactions(pendingTransactions, parsedTransactions);
       const updatedResults = concat(updatedPendingTransactions, parsedTransactions, remainingTransactions);
       const dedupedResults = uniqBy(updatedResults, (txn) => txn.hash);
 
-      saveLocalTransactions(address, updatedResults, network);
+      saveLocalTransactions(accountAddress, dedupedResults, network);
       dispatch({
         payload: dedupedResults,
         type: DATA_UPDATE_TRANSACTIONS,
       });
     }
-  });
+  }
+};
 
-  socket.on(messages.TRANSACTIONS.REMOVED, (e) => {
-    const { network } = getState().settings;
-    const address = get(e, 'meta.address');
-    const transactionData = get(e, 'payload.transactions', []);
-    console.log('on removed transactions', transactionData);
-    if (address && transactionData.length) {
-      const { transactions } = getState().data;
-      const removeHashes = map(transactionData, txn => txn.hash);
-      remove(transactions, (txn) => includes(removeHashes, txn.hash));
+const transactionsAppended = message => (dispatch, getState) => {
+  console.log('on appended transactions');
+  const isValidMeta = dispatch(checkMeta(message));
+  if (!isValidMeta) return;
 
-      saveLocalTransactions(address, transactions, network);
-      dispatch({
-        payload: transactions,
-        type: DATA_UPDATE_TRANSACTIONS,
-      });
-    }
-  });
+  const transactionData = get(message, 'payload.transactions', []);
+  if (transactionData.length) {
+    const { accountAddress, nativeCurrency, network } = getState().settings;
+    const { transactions } = getState().data;
+    const partitions = partition(transactions, (txn) => txn.pending);
+    const pendingTransactions = partitions[0];
+    const remainingTransactions = partitions[1];
 
-  socket.on(messages.ASSETS.RECEIVED, (e) => {
-    const { network } = getState().settings;
-    const { uniqueTokens } = getState().uniqueTokens;
-    console.log('on received assets', e);
-    const address = get(e, 'meta.address');
-    const assets = get(e, 'payload.assets', []);
-    const liquidityTokens = remove(assets, (asset) => {
-      const symbol = get(asset, 'asset.symbol', '');
-      return symbol === 'uni-v1';
+    const parsedTransactions = parseTransactions(transactionData, nativeCurrency);
+    const updatedPendingTransactions = dedupePendingTransactions(pendingTransactions, parsedTransactions);
+    const updatedResults = concat(updatedPendingTransactions, parsedTransactions, remainingTransactions);
+    const dedupedResults = uniqBy(updatedResults, (txn) => txn.hash);
+
+    saveLocalTransactions(accountAddress, updatedResults, network);
+    dispatch({
+      payload: dedupedResults,
+      type: DATA_UPDATE_TRANSACTIONS,
     });
-    dispatch(uniswapUpdateLiquidityTokens(liquidityTokens));
-    const updatedAssets = dedupeUniqueTokens(assets, uniqueTokens);
-    if (address && updatedAssets.length) {
-      const parsedAssets = parseAccountAssets(updatedAssets);
-      saveAssets(address, parsedAssets, network);
-      dispatch({
-        payload: parsedAssets,
-        type: DATA_UPDATE_ASSETS,
-      });
-    }
-  });
+  }
+};
 
-  socket.on(messages.ASSETS.APPENDED, (e) => {
-    const { network } = getState().settings;
-    const { uniqueTokens } = getState().uniqueTokens;
-    console.log('on appended new assets', e);
-    const address = get(e, 'meta.address');
-    const newAssets = get(e, 'payload.assets', []);
-    const liquidityTokens = remove(newAssets, (asset) => {
-      const symbol = get(asset, 'asset.symbol', '');
-      return symbol === 'uni-v1';
+const transactionsRemoved = message => (dispatch, getState) => {
+  console.log('on removed transactions');
+  const isValidMeta = dispatch(checkMeta(message));
+  if (!isValidMeta) return;
+
+  const transactionData = get(message, 'payload.transactions', []);
+  if (transactionData.length) {
+    const { accountAddress, network } = getState().settings;
+    const { transactions } = getState().data;
+    const removeHashes = map(transactionData, txn => txn.hash);
+    remove(transactions, (txn) => includes(removeHashes, txn.hash));
+
+    saveLocalTransactions(accountAddress, transactions, network);
+    dispatch({
+      payload: transactions,
+      type: DATA_UPDATE_TRANSACTIONS,
     });
-    dispatch(uniswapAddLiquidityTokens(liquidityTokens));
-    const updatedNewAssets = dedupeUniqueTokens(newAssets, uniqueTokens);
-    if (address && newAssets.length) {
-      const parsedNewAssets = parseAccountAssets(updatedNewAssets);
-      const { assets } = getState().data;
-      const updatedAssets = concat(assets, parsedNewAssets);
-      saveAssets(address, updatedAssets, network);
-      dispatch({
-        payload: updatedAssets,
-        type: DATA_UPDATE_ASSETS,
-      });
-    }
+  }
+};
+
+const assetsReceived = message => (dispatch, getState) => {
+  console.log('on received assets');
+  const isValidMeta = dispatch(checkMeta(message));
+  if (!isValidMeta) return;
+
+  const { accountAddress, network } = getState().settings;
+  const { uniqueTokens } = getState().uniqueTokens;
+  const assets = get(message, 'payload.assets', []);
+  const liquidityTokens = remove(assets, (asset) => {
+    const symbol = get(asset, 'asset.symbol', '');
+    return symbol === 'uni-v1';
+  });
+  dispatch(uniswapUpdateLiquidityTokens(liquidityTokens));
+  const updatedAssets = dedupeUniqueTokens(assets, uniqueTokens);
+  if (updatedAssets.length) {
+    const parsedAssets = parseAccountAssets(updatedAssets);
+    saveAssets(accountAddress, parsedAssets, network);
+    dispatch({
+      payload: parsedAssets,
+      type: DATA_UPDATE_ASSETS,
+    });
+  }
+};
+
+const assetsAppended = message => (dispatch, getState) => {
+  console.log('on appended new assets');
+  const isValidMeta = dispatch(checkMeta(message));
+  if (!isValidMeta) return;
+
+  const { accountAddress, network } = getState().settings;
+  const { uniqueTokens } = getState().uniqueTokens;
+  const newAssets = get(message, 'payload.assets', []);
+  const liquidityTokens = remove(newAssets, (asset) => {
+    const symbol = get(asset, 'asset.symbol', '');
+    return symbol === 'uni-v1';
+  });
+  dispatch(uniswapAddLiquidityTokens(liquidityTokens));
+  const updatedNewAssets = dedupeUniqueTokens(newAssets, uniqueTokens);
+  if (newAssets.length) {
+    const parsedNewAssets = parseAccountAssets(updatedNewAssets);
+    const { assets } = getState().data;
+    const updatedAssets = concat(assets, parsedNewAssets);
+    saveAssets(accountAddress, updatedAssets, network);
+    dispatch({
+      payload: updatedAssets,
+      type: DATA_UPDATE_ASSETS,
+    });
+  }
+};
+
+const assetsChanged = message => (dispatch, getState) => {
+  console.log('on change address assets');
+  const isValidMeta = dispatch(checkMeta(message));
+  if (!isValidMeta) return;
+
+  const changedAssets = get(message, 'payload.assets', []);
+  if (changedAssets.length) {
+    const { accountAddress, network } = getState().settings;
+    const parsedChangedAssets = parseAccountAssets(changedAssets);
+    const { assets } = getState().data;
+    const updatedAssets = uniqBy(concat(parsedChangedAssets, assets), (item) => item.uniqueId);
+    saveAssets(accountAddress, updatedAssets, network);
+    dispatch({
+      payload: updatedAssets,
+      type: DATA_UPDATE_ASSETS,
+    });
+  }
+};
+
+const listenOnNewMessages = socket => (dispatch, getState) => {
+  socket.on(messages.TRANSACTIONS.RECEIVED, (message) => {
+    dispatch(transactionsReceived(message));
   });
 
-  socket.on(messages.ASSETS.CHANGED, (e) => {
-    const { network } = getState().settings;
-    console.log('on change address assets', e);
-    const address = get(e, 'meta.address');
-    const changedAssets = get(e, 'payload.assets', []);
-    if (address && changedAssets.length) {
-      const parsedChangedAssets = parseAccountAssets(changedAssets);
-      const { assets } = getState().data;
-      const updatedAssets = uniqBy(concat(parsedChangedAssets, assets), (item) => item.uniqueId);
-      saveAssets(address, updatedAssets, network);
-      dispatch({
-        payload: updatedAssets,
-        type: DATA_UPDATE_ASSETS,
-      });
-    }
+  socket.on(messages.TRANSACTIONS.APPENDED, (message) => {
+    dispatch(transactionsAppended(message));
   });
 
-  socket.on(messages.ERROR, (e) => {
-    console.log('on error', e);
+  socket.on(messages.TRANSACTIONS.REMOVED, (message) => {
+    dispatch(transactionsRemoved(message));
   });
 
-  socket.on(messages.DISCONNECT, (e) => {
-    console.log('disconnected', e);
+  socket.on(messages.ASSETS.RECEIVED, (message) => {
+    dispatch(assetsReceived(message));
+  });
+
+  socket.on(messages.ASSETS.APPENDED, (message) => {
+    dispatch(assetsAppended(message));
+  });
+
+  socket.on(messages.ASSETS.CHANGED, (message) => {
+    dispatch(assetsChanged(message));
+  });
+
+  socket.on(messages.ERROR, (message) => {
+    console.log('on error', message);
+  });
+
+  socket.on(messages.DISCONNECT, (message) => {
+    console.log('disconnected', message);
   });
 };
 
