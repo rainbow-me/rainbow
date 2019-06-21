@@ -14,6 +14,7 @@ import {
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplay,
 } from '../helpers/utilities';
+import { isLowerCaseMatch } from '../utils';
 
 const EMPTY_ARRAY = [];
 
@@ -69,13 +70,12 @@ const parseAssetsNative = (
       priceUnit,
       nativeCurrency,
     );
-    const symbol = get(asset, 'symbol') || '';
     return {
       ...asset,
       native: {
         balance: nativeDisplay,
         change:
-          symbol.toLowerCase() === nativeCurrency.toLowerCase()
+          isLowerCaseMatch(get(asset, 'symbol'), nativeCurrency)
             ? '———'
             : convertAmountToPercentageDisplay(assetNativePrice.relative_change_24h),
         price: {

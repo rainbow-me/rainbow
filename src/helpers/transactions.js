@@ -8,6 +8,7 @@ import {
 import { get, groupBy, isEmpty } from 'lodash';
 import { createSelector } from 'reselect';
 import TransactionStatusTypes from './transactionStatusTypes';
+import { isLowerCaseMatch } from '../utils';
 
 const accountAddressSelector = state => state.accountAddress;
 const nativeCurrencySelector = state => state.nativeCurrency;
@@ -25,8 +26,8 @@ export const getTransactionStatus = ({
   status,
   to,
 }) => {
-  const isFromAccount = from.toLowerCase() === accountAddress.toLowerCase();
-  const isToAccount = to.toLowerCase() === accountAddress.toLowerCase();
+  const isFromAccount = isLowerCaseMatch(from, accountAddress);
+  const isToAccount = isLowerCaseMatch(to, accountAddress);
 
   if (pending && isFromAccount) return TransactionStatusTypes.sending;
   if (pending && isToAccount) return TransactionStatusTypes.receiving;
