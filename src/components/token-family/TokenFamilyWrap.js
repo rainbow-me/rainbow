@@ -5,7 +5,7 @@ import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import { UniqueTokenRow } from '../unique-token';
 import { View, Text } from 'react-primitives';
-import { withOpenFamilyTabs } from '../../hoc';
+import { withOpenFamilyTabs, withFabSendAction } from '../../hoc';
 import { Transitioning, Transition } from 'react-native-reanimated';
 import TokenFamilyHeader from './TokenFamilyHeader';
 import { ButtonPressAnimation } from '../animations';
@@ -46,7 +46,7 @@ class TokenFamilyWrap extends PureComponent {
   };
 
   onHeaderPress = () => {
-    this.props.setOpenFamilyTabs(this.props.item[0][0].rowNumber);
+    this.props.setOpenFamilyTabs({index: this.props.item[0][0].rowNumber, state: !this.props.openFamilyTabs[this.props.item[0][0].rowNumber]});
   }
 
   render() {
