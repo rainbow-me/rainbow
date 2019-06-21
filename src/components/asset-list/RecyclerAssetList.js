@@ -271,6 +271,7 @@ class RecyclerAssetList extends PureComponent {
         shouldPrioritizeImageLoading: index < sections[0].data.length + 9,
         uniqueId: item.uniqueId,
         familyName: item.familyName,
+        familyId: item.familyId,
         childrenAmount: item.childrenAmount,
       });
   };

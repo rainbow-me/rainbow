@@ -2,7 +2,9 @@ import PropTypes from 'prop-types';
 import React, { PureComponent, useRef } from 'react';
 import { TouchableHighlight } from 'react-native';
 import { withNavigation } from 'react-navigation';
-import { compose, withHandlers } from 'recompact';
+import { 
+  compose, withHandlers, withProps, onlyUpdateForKeys,  
+} from 'recompact';
 import { UniqueTokenRow } from '../unique-token';
 import { View, Text } from 'react-primitives';
 import { withOpenFamilyTabs, withFabSendAction } from '../../hoc';
@@ -59,6 +61,7 @@ class TokenFamilyWrap extends PureComponent {
         <TokenFamilyHeader 
           familyName={this.props.familyName}
           childrenAmount={this.props.childrenAmount}
+          highlight={this.props.highlight}
         />
         </ButtonPressAnimation>
         {header(this.collectiblesRenderItem(this.props))}
@@ -73,4 +76,15 @@ TokenFamilyWrap.propTypes = {
 
 TokenFamilyWrap.getHeight = getHeight;
 
-export default withOpenFamilyTabs(TokenFamilyWrap);
+export default compose(
+  withHandlers({
+    onPress: ({ item, onPress }) => () => {
+      if (onPress) {
+        onPress(item);
+      }
+    },
+  }),
+  withProps(({ item: { uniqueId } }) => ({ uniqueId })),
+  withFabSendAction,
+  onlyUpdateForKeys(['height', 'style', 'uniqueId', 'width', 'highlight']),
+)(withOpenFamilyTabs(TokenFamilyWrap));

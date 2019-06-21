@@ -35,6 +35,7 @@ export const buildUniqueTokenList = (uniqueTokens) => {
       tokens,
       uniqueId: tokensRow[0].map(({ uniqueId }) => uniqueId).join('__'),
       familyName: families[i],
+      familyId: i,
       childrenAmount: grouped[families[i]].length,
     });
   }

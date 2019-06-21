@@ -16,24 +16,29 @@ const mapStateToProps = ({
 
 let openFamilyCheck = 0;
 let currentFamilyId = undefined;
+let timer = undefined;
 
 export default compose(
   connect(mapStateToProps, { setOpenFamilyTabs }),
-  withProps(({ selectedId, uniqueId }) => ({ fabDropped: selectedId === -3, highlight: selectedId === uniqueId, family: String(selectedId).search(`family`) > -1 ? selectedId : false })),
+  withProps(({ selectedId, uniqueId, familyName }) => ({
+    fabDropped: selectedId === -3,
+    highlight: selectedId === uniqueId || selectedId === familyName,
+    family: selectedId === familyName
+  })),
   omitProps('selectedId'),
   lifecycle({
     componentDidUpdate(prevProps) {
       if (this.props.family && !this.props.fabDropped) {
-        if( currentFamilyId != this.props.family) {
+        if (currentFamilyId != this.props.family) {
           openFamilyCheck = 0;
+          clearTimeout(timer);
         }
         if (++openFamilyCheck == 1) {
-          currentFamilyId = this.props.family;
-          setTimeout(() => {
+          timer = setTimeout(() => {
             if (this.props.family) {
-              this.props.setOpenFamilyTabs({ index: Number(this.props.family.replace('family_', '')), state: true });
+              this.props.setOpenFamilyTabs({ index: this.props.familyId, state: true });
             }
-          }, 500);
+          }, 1000);
         }
       } else {
         openFamilyCheck = 0;

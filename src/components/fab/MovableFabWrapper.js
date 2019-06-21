@@ -278,7 +278,6 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
     const areas = [];
     const headerHeight = 35;
     const familyHeaderHeight = 44;
-    let familyCounter = 0;
     let height = 74 + headerHeight;
     for (let i = 0; i < sections[0].data.length; i++) {
       areas.push({
@@ -297,7 +296,7 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
       const { tokens } = sections[1].data[i];
       areas.push({
         bottom: height + familyHeaderHeight,
-        id: `family_${familyCounter++}`,
+        id: sections[1].data[i].familyName,
         left: 0,
         right: deviceUtils.dimensions.width,
         top: height,
@@ -315,12 +314,10 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
         }
         height += 15 + CardSize;
         if(!openFamilyTabs[i]) {
-          console.log('sub');
           height -= 15 + CardSize;
         }
       }
     }
-    console.log(areas);
     return ({ areas });
   }
   return null;

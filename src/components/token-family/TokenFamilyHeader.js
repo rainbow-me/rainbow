@@ -7,6 +7,7 @@ import { Monospace } from '../text';
 import { ListHeader } from '../list';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
 import { TruncatedText } from '../text';
+import Highlight from '../Highlight';
 
 const Wrapper = styled.View`
   height: 56px;
@@ -32,6 +33,7 @@ const LeftView = styled.View`
 
 const TokenListHeader = (props) => (
   <Wrapper>
+    <Highlight highlight={props.highlight} />
     <LeftView>
       <Image>
 
