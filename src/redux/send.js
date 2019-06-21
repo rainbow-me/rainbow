@@ -7,7 +7,6 @@ import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
   convertNumberToString,
-  convertStringToNumber,
   formatInputDecimals,
   fromWei,
   greaterThan,
@@ -211,7 +210,7 @@ export const sendTransaction = (transactionDetails, signAndSendTransactionCb) =>
               });
           } else {
             dispatch({ type: SEND_TRANSACTION_FAILURE });
-            reject(false);
+            reject(new Error('No transaction hash.'));
           }
         }).catch(error => {
           dispatch({ type: SEND_TRANSACTION_FAILURE });

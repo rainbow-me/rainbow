@@ -74,7 +74,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (dispatch)
           throw error;
         }
 
-        const { peerId } = payload.params[0];
+        const { peerId, peerMeta } = payload.params[0];
         dispatch(setPendingRequest(peerId, walletConnector));
         dispatch(walletConnectApproveSession(peerId, callback));
         analytics.track('Approved new WalletConnect session', {
