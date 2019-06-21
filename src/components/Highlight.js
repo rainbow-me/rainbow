@@ -9,6 +9,6 @@ export default styled(Flex)`
   bottom: 0;
   position: absolute;
   margin: 7px;
-  background-color: ${({ highlight }) => (highlight ? colors.highlightBackground : colors.white)};
+  background-color: ${({ highlight }) => (highlight ? colors.highlightBackground : colors.transparent)};
   border-radius: 10;
 `;
