@@ -9,6 +9,7 @@ import {
 import {
   convertAmountAndPriceToNativeDisplay,
   convertHexToString,
+  convertRawAmountToDecimalFormat,
   fromWei,
 } from '../helpers/utilities';
 import smartContractMethods from '../references/smartcontract-methods.json';
@@ -73,7 +74,6 @@ const getMessageDisplayDetails = (message, timestampInMs) => ({
   type: 'message',
 });
 
-// TODO
 const getTransactionDisplayDetails = (transaction, assets, nativeCurrency, timestampInMs) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
   if (transaction.data === '0x') {
@@ -103,7 +103,7 @@ const getTransactionDisplayDetails = (transaction, assets, nativeCurrency, times
     const dataPayload = transaction.data.replace(tokenTransferHash, '');
     const toAddress = `0x${dataPayload.slice(0, 64).replace(/^0+/, '')}`;
     const amount = `0x${dataPayload.slice(64, 128).replace(/^0+/, '')}`;
-    const value = fromWei(convertHexToString(amount), asset.decimals);
+    const value = convertRawAmountToDecimalFormat(convertHexToString(amount), asset.decimals);
     const priceUnit = get(asset, 'price.value', 0);
     const native = convertAmountAndPriceToNativeDisplay(value, priceUnit, nativeCurrency);
     return {

@@ -151,12 +151,6 @@ export const sendUpdateGasPrice = newGasPriceOption => (dispatch, getState) => {
       });
     })
     .catch(error => {
-      if (assetAmount) {
-        const availableBalance = get(selected, 'balance.amount');
-        if (greaterThan(assetAmount, availableBalance)) {
-          // TODO
-        }
-      }
       dispatch({
         payload: {
           gasPrice: _gasPrice,

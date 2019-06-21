@@ -2,11 +2,6 @@ import { get } from 'lodash';
 import BigNumber from 'bignumber.js';
 import supportedNativeCurrencies from '../references/native-currencies.json';
 
-// TODO
-export const fromWei = (number, decimals = 18) => new BigNumber(number)
-  .dividedBy(BigNumber(10).pow(decimals))
-  .toFixed();
-
 /**
  * @desc subtracts two numbers
  * @param  {Number}   numberOne
@@ -353,9 +348,11 @@ export const convertAmountToNativeDisplay = (value, nativeCurrency, buffer) => {
  * @param  {Number}     decimals
  * @return {String}
  */
-export const convertRawAmountToDecimalFormat = (value, decimals) => BigNumber(`${value}`)
+export const convertRawAmountToDecimalFormat = (value, decimals = 18) => BigNumber(`${value}`)
   .dividedBy(BigNumber(10).pow(decimals))
   .toFixed();
+
+export const fromWei = (number) => convertRawAmountToDecimalFormat(number, 18);
 
 /**
  * @desc ellipse text to max maxLength

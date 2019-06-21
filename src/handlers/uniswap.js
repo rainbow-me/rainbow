@@ -1,7 +1,12 @@
 import contractMap from 'eth-contract-metadata';
 import { ethers } from 'ethers';
 import { get, map, zipObject } from 'lodash';
-import { divide, fromWei, multiply } from '../helpers/utilities';
+import {
+  convertRawAmountToDecimalFormat,
+  divide,
+  fromWei,
+  multiply,
+} from '../helpers/utilities';
 import exchangeABI from '../references/uniswap-exchange-abi.json';
 import erc20ABI from '../references/erc20-abi.json';
 import { web3Provider } from './web3';
@@ -52,7 +57,7 @@ export const getUniswapLiquidityInfo = async (accountAddress, exchangeContracts)
         }
       }
       const ethBalance = fromWei(divide(multiply(ethReserve, balance), totalSupply));
-      const tokenBalance = fromWei(divide(multiply(reserve, balance), totalSupply), decimals);
+      const tokenBalance = convertRawAmountToDecimalFormat(divide(multiply(reserve, balance), totalSupply), decimals);
 
       return {
         balance,
