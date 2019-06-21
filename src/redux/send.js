@@ -304,7 +304,7 @@ export const sendUpdateSelected = (value) => (dispatch, getState) => {
     const state = getState();
     const assetAmount = get(state, 'send.assetAmount');
     const assets = get(state, 'data.assets', []);
-    const selected = assets.filter(asset => asset.address === value)[0] || {};
+    const selected = find(assets, asset => asset.address === value) || {};
 
     dispatch({
       payload: selected,
