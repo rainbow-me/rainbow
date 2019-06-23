@@ -1,24 +1,24 @@
 import BigNumber from 'bignumber.js';
 import {
   filter,
-  find,
   get,
   omit,
   values,
 } from 'lodash';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  convertHexToString,
-  convertRawAmountToDecimalFormat,
-  fromWei,
-} from '../helpers/utilities';
-import smartContractMethods from '../references/smartcontract-methods.json';
 import {
   getLocalRequests,
   removeLocalRequest,
   removeLocalRequests,
   saveLocalRequests,
 } from '../model/localstorage';
+import smartContractMethods from '../references/smartcontract-methods.json';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertHexToString,
+  convertRawAmountToDecimalFormat,
+  fromWei,
+} from '../helpers/utilities';
+import { ethereumUtils } from '../utils';
 
 // -- Constants --------------------------------------- //
 const REQUESTS_UPDATE_REQUESTS_TO_APPROVE = 'requests/REQUESTS_UPDATE_REQUESTS_TO_APPROVE';
@@ -33,8 +33,6 @@ export const requestsLoadState = () => async (dispatch, getState) => {
   } catch (error) {
   }
 };
-
-const getAssetDetails = (contractAddress, assets) => find(assets, (item) => item.address === contractAddress);
 
 const getTimestampFromPayload = payload => parseInt(payload.id.toString().slice(0, -3), 10);
 
@@ -78,7 +76,7 @@ const getTransactionDisplayDetails = (transaction, assets, nativeCurrency, times
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
   if (transaction.data === '0x') {
     const value = fromWei(convertHexToString(transaction.value));
-    const asset = getAssetDetails('eth', assets);
+    const asset = ethereumUtils.getAsset(assets);
     const priceUnit = get(asset, 'price.value', 0);
     const { amount, display } = convertAmountAndPriceToNativeDisplay(value, priceUnit, nativeCurrency);
     return {
@@ -99,7 +97,7 @@ const getTransactionDisplayDetails = (transaction, assets, nativeCurrency, times
   }
   if (transaction.data.startsWith(tokenTransferHash)) {
     const contractAddress = transaction.to;
-    const asset = getAssetDetails(contractAddress, assets);
+    const asset = ethereumUtils.getAsset(assets, contractAddress);
     const dataPayload = transaction.data.replace(tokenTransferHash, '');
     const toAddress = `0x${dataPayload.slice(0, 64).replace(/^0+/, '')}`;
     const amount = `0x${dataPayload.slice(64, 128).replace(/^0+/, '')}`;

@@ -1,4 +1,4 @@
-import { find, get, isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { apiGetGasPrices } from '../handlers/api';
 import ethUnits from '../references/ethereum-units.json';
 import { dataAddNewTransaction } from './data';
@@ -304,7 +304,7 @@ export const sendUpdateSelected = (value) => (dispatch, getState) => {
     const state = getState();
     const assetAmount = get(state, 'send.assetAmount');
     const assets = get(state, 'data.assets', []);
-    const selected = find(assets, asset => asset.address === value) || {};
+    const selected = ethereumUtils.getAsset(assets, value) || {};
 
     dispatch({
       payload: selected,
