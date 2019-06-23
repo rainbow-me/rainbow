@@ -134,14 +134,12 @@ export const dataClearState = () => (dispatch, getState) => {
 
 export const dataInit = () => (dispatch, getState) => {
   const { accountAddress, nativeCurrency } = getState().settings;
-  console.log('data init', accountAddress, nativeCurrency);
   const addressSocket = createSocket('address');
   dispatch({
     payload: addressSocket,
     type: DATA_UPDATE_ADDRESS_SOCKET,
   });
   addressSocket.on(messages.CONNECT, () => {
-    console.log('on connect');
     addressSocket.emit(...addressSubscription(accountAddress, nativeCurrency.toLowerCase()));
     dispatch(listenOnNewMessages(addressSocket));
   });
@@ -196,7 +194,6 @@ const checkMeta = message => (dispatch, getState) => {
 };
 
 const transactionsReceived = message => (dispatch, getState) => {
-  console.log('on transactions received');
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
 
@@ -235,7 +232,6 @@ const transactionsReceived = message => (dispatch, getState) => {
 };
 
 const transactionsAppended = message => (dispatch, getState) => {
-  console.log('on appended transactions');
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
 
@@ -261,7 +257,6 @@ const transactionsAppended = message => (dispatch, getState) => {
 };
 
 const transactionsRemoved = message => (dispatch, getState) => {
-  console.log('on removed transactions');
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
 
@@ -281,7 +276,6 @@ const transactionsRemoved = message => (dispatch, getState) => {
 };
 
 const assetsReceived = message => (dispatch, getState) => {
-  console.log('on received assets');
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
 
@@ -305,7 +299,6 @@ const assetsReceived = message => (dispatch, getState) => {
 };
 
 const assetsAppended = message => (dispatch, getState) => {
-  console.log('on appended new assets');
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
 
@@ -331,7 +324,6 @@ const assetsAppended = message => (dispatch, getState) => {
 };
 
 const assetsChanged = message => (dispatch, getState) => {
-  console.log('on change address assets');
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
 
@@ -372,14 +364,6 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
 
   socket.on(messages.ASSETS.CHANGED, (message) => {
     dispatch(assetsChanged(message));
-  });
-
-  socket.on(messages.ERROR, (message) => {
-    console.log('on error', message);
-  });
-
-  socket.on(messages.DISCONNECT, (message) => {
-    console.log('disconnected', message);
   });
 };
 
