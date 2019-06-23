@@ -41,7 +41,7 @@ const SendAssetForm = ({
   txSpeedRenderer,
   ...props
 }) => {
-  const selectedAsset = allAssets.find(asset => asset.symbol === selected.symbol);
+  const selectedAsset = allAssets.find(asset => asset.address === selected.address);
 
   return (
     <Container>

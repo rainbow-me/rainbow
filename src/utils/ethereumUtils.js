@@ -6,7 +6,7 @@ import {
   fromWei,
 } from '../helpers/utilities';
 
-export const getEth = assets => find(assets, asset => asset.address === 'eth');
+export const getAsset = (assets, address = 'eth') => find(assets, asset => asset.address === address);
 
 /**
  * @desc remove hex prefix
@@ -67,7 +67,7 @@ export const getChainIdFromNetwork = (network) => {
  * @return {Object} ethereum, balanceAmount, balance, requestedAmount, txFeeAmount, txFee, amountWithFees
  */
 export const transactionData = (assets, assetAmount, gasPrice) => {
-  const ethereum = getEth(assets);
+  const ethereum = getAsset(assets);
   const balance = get(ethereum, 'balance.amount', 0);
   const requestedAmount = convertNumberToString(assetAmount);
   const txFee = fromWei(get(gasPrice, 'txFee.value.amount'));
@@ -83,9 +83,9 @@ export const transactionData = (assets, assetAmount, gasPrice) => {
 };
 
 export default {
+  getAsset,
   getChainIdFromNetwork,
   getDataString,
-  getEth,
   getNetworkFromChainId,
   removeHexPrefix,
   transactionData,

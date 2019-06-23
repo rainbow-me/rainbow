@@ -8,9 +8,10 @@ import {
   withHandlers,
   withProps,
 } from 'recompact';
-import { withAccountSettings } from '../../hoc';
 import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
+import { withAccountData, withAccountSettings } from '../../hoc';
+import { ethereumUtils } from '../../utils';
 
 const TokenExpandedState = ({
   onPressSend,
@@ -42,15 +43,20 @@ TokenExpandedState.propTypes = {
 };
 
 export default compose(
+  withAccountData,
   withAccountSettings,
   withProps(({
-    asset: { name, symbol, ...asset },
+    asset: { address, name, symbol, ...asset },
+    assets,
     nativeCurrencySymbol,
-  }) => ({
-    price: get(asset, 'native.price.display', null),
-    subtitle: get(asset, 'balance.display', symbol),
-    title: name,
-  })),
+  }) => {
+    const selectedAsset = ethereumUtils.getAsset(assets, address);
+    return {
+      price: get(selectedAsset, 'native.price.display', null),
+      subtitle: get(selectedAsset, 'balance.display', symbol),
+      title: name,
+    };
+  }),
   withHandlers({
     onPressSend: ({ navigation, asset: { address } }) => () => {
       navigation.goBack();
@@ -60,5 +66,5 @@ export default compose(
       });
     },
   }),
-  onlyUpdateForKeys(['price']),
+  onlyUpdateForKeys(['price', 'subtitle']),
 )(TokenExpandedState);
