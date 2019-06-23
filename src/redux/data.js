@@ -120,6 +120,7 @@ const dataUnsubscribe = () => (dispatch, getState) => {
       nativeCurrency.toLowerCase(),
       'unsubscribe',
     ));
+    addressSocket.close();
   }
 };
 
@@ -132,8 +133,8 @@ export const dataClearState = () => (dispatch, getState) => {
 };
 
 export const dataInit = () => (dispatch, getState) => {
-  console.log('data init');
   const { accountAddress, nativeCurrency } = getState().settings;
+  console.log('data init', accountAddress, nativeCurrency);
   const addressSocket = createSocket('address');
   dispatch({
     payload: addressSocket,
@@ -142,9 +143,8 @@ export const dataInit = () => (dispatch, getState) => {
   addressSocket.on(messages.CONNECT, () => {
     console.log('on connect');
     addressSocket.emit(...addressSubscription(accountAddress, nativeCurrency.toLowerCase()));
+    dispatch(listenOnNewMessages(addressSocket));
   });
-  // TODO need to move this up earlier or no?
-  dispatch(listenOnNewMessages(addressSocket));
 };
 
 const dedupePendingTransactions = (pendingTransactions, parsedTransactions) => {
