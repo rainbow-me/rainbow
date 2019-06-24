@@ -75,6 +75,7 @@ const createSocket = endpoint => io(
   },
 );
 
+/* eslint-disable camelcase */
 const addressSubscription = (address, currency, action = 'subscribe') => [
   action,
   {
@@ -86,6 +87,7 @@ const addressSubscription = (address, currency, action = 'subscribe') => [
     scope: ['assets', 'transactions'],
   },
 ];
+/* eslint-disable camelcase */
 
 export const dataLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;

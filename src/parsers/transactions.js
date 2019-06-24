@@ -25,8 +25,8 @@ const parseTransaction = (txn, nativeCurrency) => {
     'type',
   ]);
   transaction.pending = false;
-  transaction.from = txn.address_from;
-  transaction.to = txn.address_to;
+  transaction.from = txn.address_from; // eslint-disable-line camelcase
+  transaction.to = txn.address_to; // eslint-disable-line camelcase
   const changes = get(txn, 'changes', []);
   let internalTransactions = changes;
   if (changes.length === 2 && get(changes, '[0].asset.asset_code') === get(changes, '[1].asset.asset_code')) {
@@ -34,8 +34,8 @@ const parseTransaction = (txn, nativeCurrency) => {
   }
   if (isEmpty(internalTransactions) && transaction.type === 'cancel') {
     const ethInternalTransaction = {
-      address_from: transaction.from,
-      address_to: transaction.to,
+      address_from: transaction.from, // eslint-disable-line camelcase
+      address_to: transaction.to, // eslint-disable-line camelcase
       asset: {
         address: 'eth',
         decimals: 18,

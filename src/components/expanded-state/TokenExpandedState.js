@@ -46,7 +46,12 @@ export default compose(
   withAccountData,
   withAccountSettings,
   withProps(({
-    asset: { address, name, symbol, ...asset },
+    asset: {
+      address,
+      name,
+      symbol,
+      ...asset
+    },
     assets,
     nativeCurrencySymbol,
   }) => {

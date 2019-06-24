@@ -3,6 +3,7 @@ import React from 'react';
 import Svg, { Path } from 'svgs';
 import { colors } from '../../../styles';
 
+/* eslint-disable max-len */
 const SendIcon = ({ color, ...props }) => (
   <Svg viewBox="0 0 20 19" {...props}>
     <Path
@@ -12,6 +13,7 @@ const SendIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
+/* eslint-disable max-len */
 
 SendIcon.propTypes = {
   color: PropTypes.string,

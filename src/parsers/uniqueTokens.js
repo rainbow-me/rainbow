@@ -10,6 +10,7 @@ import {
  * @param  {Object}
  * @return {Array}
  */
+/* eslint-disable camelcase */
 export const parseAccountUniqueTokens = data => get(data, 'data.assets', []).map(({
   asset_contract,
   background_color,
@@ -56,5 +57,6 @@ export const parseAccountUniqueTokens = data => get(data, 'data.assets', []).map
   ),
   uniqueId: `${get(asset_contract, 'address')}_${token_id}`,
 }));
+/* eslint-disable camelcase */
 
 export const getFamilies = (uniqueTokens) => uniq(map(uniqueTokens, (u) => get(u, 'asset_contract.address', '')));

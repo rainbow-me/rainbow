@@ -1,4 +1,3 @@
-import nativeCurrencies from '../references/native-currencies.json';
 import timeUnits from '../references/time-units.json';
 import ethUnits from '../references/ethereum-units.json';
 import { getTimeString } from '../helpers/time';

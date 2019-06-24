@@ -4,6 +4,7 @@ import { Path } from 'svgs';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
+/* eslint-disable max-len */
 const CameraIcon = ({ color, ...props }) => (
   <Svg height="21" width="26" viewBox="0 0 26 21" {...props}>
     <Path
@@ -13,6 +14,7 @@ const CameraIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
+/* eslint-disable max-len */
 
 CameraIcon.propTypes = {
   color: PropTypes.string,

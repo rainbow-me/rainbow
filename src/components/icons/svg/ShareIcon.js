@@ -4,6 +4,7 @@ import { Path } from 'svgs';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
+/* eslint-disable max-len */
 const ShareIcon = ({ color, ...props }) => (
   <Svg height="26" width="18" viewBox="0 0 18 26" {...props}>
     <Path
@@ -13,6 +14,7 @@ const ShareIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
+/* eslint-disable max-len */
 
 ShareIcon.propTypes = {
   color: PropTypes.string,

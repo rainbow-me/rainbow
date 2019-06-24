@@ -42,7 +42,7 @@ export const parseNewTransaction = async (
     ...tx,
     balance,
     error: false,
-    mined_at: null,
+    mined_at: null, // eslint-disable-line camelcase
     native,
     nonce,
     pending: !!txDetails.hash,

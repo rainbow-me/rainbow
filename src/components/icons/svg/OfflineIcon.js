@@ -4,6 +4,7 @@ import { Path } from 'svgs';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
+/* eslint-disable max-len */
 const OfflineIcon = ({ color, ...props }) => (
   <Svg width="19" height="15" viewBox="0 0 15 19" {...props}>
     <Path
@@ -13,6 +14,7 @@ const OfflineIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
+/* eslint-disable max-len */
 
 OfflineIcon.propTypes = {
   color: PropTypes.string,
