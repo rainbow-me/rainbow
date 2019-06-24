@@ -17,7 +17,7 @@ export const buildAssetUniqueIdentifier = (item) => {
 
 export const buildUniqueTokenList = (uniqueTokens) => {
   let rows = [];
-  const grouped = _.groupBy(uniqueTokens, token => token.background);
+  const grouped = _.groupBy(uniqueTokens, token => token.asset_contract.name);
   const families = Object.keys(grouped);
   for (let i = 0; i < families.length; i++) {
     grouped[families[i]][0].rowNumber = i;

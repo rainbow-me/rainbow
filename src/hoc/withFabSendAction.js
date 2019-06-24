@@ -38,7 +38,7 @@ export default compose(
             if (this.props.family) {
               this.props.setOpenFamilyTabs({ index: this.props.familyId, state: true });
             }
-          }, 1000);
+          }, 300);
         }
       } else {
         openFamilyCheck = 0;

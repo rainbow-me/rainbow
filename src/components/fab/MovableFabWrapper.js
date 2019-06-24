@@ -277,7 +277,7 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
   if (sections && sections.length === 2) {
     const areas = [];
     const headerHeight = 35;
-    const familyHeaderHeight = 44;
+    const familyHeaderHeight = 52;
     let height = 74 + headerHeight;
     for (let i = 0; i < sections[0].data.length; i++) {
       areas.push({
@@ -312,9 +312,12 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
             top: height,
           });
         }
-        height += 15 + CardSize;
+        height += CardSize;
+        if(j > 0) {
+          height += 15;
+        }
         if(!openFamilyTabs[i]) {
-          height -= 15 + CardSize;
+          height -= CardSize;
         }
       }
     }

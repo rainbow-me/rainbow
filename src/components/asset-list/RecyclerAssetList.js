@@ -28,7 +28,7 @@ export const ViewTypes = {
   COIN_ROW_LAST: 2,
   UNIQUE_TOKEN_ROW: 3,
   UNIQUE_TOKEN_ROW_CLOSED: 4,
-  UNIQUE_TOKEN_ROW_LAST: 5,
+  UNIQUE_TOKEN_ROW_CLOSED_LAST: 5,
 };
 
 const Wrapper = styled.View`
@@ -141,7 +141,9 @@ class RecyclerAssetList extends PureComponent {
           const idx = areBalancesLoaded ? 1 : 0;
           if (index > headersIndices[idx]) {
             if (openFamilyTabs[index - headersIndices[idx] - 1]) {
-              return { get: ViewTypes.UNIQUE_TOKEN_ROW, size: sections[1].data[index - headersIndices[idx] - 1].tokens.length };
+              return { get: ViewTypes.UNIQUE_TOKEN_ROW, size: sections[1].data[index - headersIndices[idx] - 1].tokens.length, isLast: index === this.state.length - 1 };
+            } else if (index === this.state.length - 1) {
+              return ViewTypes.UNIQUE_TOKEN_ROW_CLOSED_LAST;
             }
             return ViewTypes.UNIQUE_TOKEN_ROW_CLOSED;
           }
@@ -169,9 +171,11 @@ class RecyclerAssetList extends PureComponent {
         }
 
         if (type.get === ViewTypes.UNIQUE_TOKEN_ROW) {
-          dim.height = type.size * 162 + 54 + 20 * (type.size - 1);
+          dim.height = type.size * 162 + 54 + 20 * (type.size - 1) + (type.isLast ? 90 : 0);
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_CLOSED) {
           dim.height = 54;
+        } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_CLOSED_LAST) {
+          dim.height = 54 + 90;
         } else if (type === ViewTypes.COIN_ROW_LAST) {
           dim.height = this.state.areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height;
         } else if (type === ViewTypes.COIN_ROW) {
