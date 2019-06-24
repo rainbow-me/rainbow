@@ -255,10 +255,13 @@ export const removeUniqueTokens = (accountAddress, network) => {
  * @return {Object}
  */
 export const getNativeCurrency = async () => {
-  const nativeCurrency = await getLocal(
-    'nativeCurrency',
-  );
-  return nativeCurrency ? nativeCurrency.data : 'USD';
+  const nativeCurrency = await getLocal('nativeCurrency');
+  const currency = nativeCurrency ? nativeCurrency.data : 'USD';
+  if (currency === 'GBP') {
+    await saveNativeCurrency('USD');
+    return 'USD';
+  }
+  return currency;
 };
 
 /**
