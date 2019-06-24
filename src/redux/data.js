@@ -176,7 +176,8 @@ export const dedupeAssetsWithFamilies = (families) => (dispatch, getState) => {
   }
 };
 
-const dedupeUniqueTokens = (assets, uniqueTokens) => {
+const dedupeUniqueTokens = assets => (dispatch, getState) => {
+  const { uniqueTokens } = getState().uniqueTokens;
   const uniqueTokenFamilies = getFamilies(uniqueTokens);
   let updatedAssets = assets;
   if (assets.length) {
@@ -277,70 +278,31 @@ const transactionsRemoved = message => (dispatch, getState) => {
   }
 };
 
-const assetsReceived = message => (dispatch, getState) => {
+const assetsReceived = (message, append = false, change = false) => (dispatch, getState) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
 
   const { accountAddress, network } = getState().settings;
-  const { uniqueTokens } = getState().uniqueTokens;
   const assets = get(message, 'payload.assets', []);
   const liquidityTokens = remove(assets, (asset) => {
     const symbol = get(asset, 'asset.symbol', '');
     return symbol === 'uni-v1';
   });
-  dispatch(uniswapUpdateLiquidityTokens(liquidityTokens));
-  const updatedAssets = dedupeUniqueTokens(assets, uniqueTokens);
-  if (updatedAssets.length) {
-    const parsedAssets = parseAccountAssets(updatedAssets);
-    saveAssets(accountAddress, parsedAssets, network);
-    dispatch({
-      payload: parsedAssets,
-      type: DATA_UPDATE_ASSETS,
-    });
+  if (!change) {
+    dispatch(uniswapAddLiquidityTokens(liquidityTokens));
   }
-};
-
-const assetsAppended = message => (dispatch, getState) => {
-  const isValidMeta = dispatch(checkMeta(message));
-  if (!isValidMeta) return;
-
-  const { accountAddress, network } = getState().settings;
-  const { uniqueTokens } = getState().uniqueTokens;
-  const newAssets = get(message, 'payload.assets', []);
-  const liquidityTokens = remove(newAssets, (asset) => {
-    const symbol = get(asset, 'asset.symbol', '');
-    return symbol === 'uni-v1';
+  const updatedAssets = dispatch(dedupeUniqueTokens(assets));
+  if (!updatedAssets.length) return;
+  let parsedAssets = parseAccountAssets(updatedAssets);
+  if (append || change) {
+    const { assets: existingAssets } = getState().data;
+    parsedAssets = uniqBy(concat(parsedAssets, existingAssets), (item) => item.uniqueId);
+  }
+  saveAssets(accountAddress, parsedAssets, network);
+  dispatch({
+    payload: parsedAssets,
+    type: DATA_UPDATE_ASSETS,
   });
-  dispatch(uniswapAddLiquidityTokens(liquidityTokens));
-  const updatedNewAssets = dedupeUniqueTokens(newAssets, uniqueTokens);
-  if (newAssets.length) {
-    const parsedNewAssets = parseAccountAssets(updatedNewAssets);
-    const { assets } = getState().data;
-    const updatedAssets = concat(assets, parsedNewAssets);
-    saveAssets(accountAddress, updatedAssets, network);
-    dispatch({
-      payload: updatedAssets,
-      type: DATA_UPDATE_ASSETS,
-    });
-  }
-};
-
-const assetsChanged = message => (dispatch, getState) => {
-  const isValidMeta = dispatch(checkMeta(message));
-  if (!isValidMeta) return;
-
-  const changedAssets = get(message, 'payload.assets', []);
-  if (changedAssets.length) {
-    const { accountAddress, network } = getState().settings;
-    const parsedChangedAssets = parseAccountAssets(changedAssets);
-    const { assets } = getState().data;
-    const updatedAssets = uniqBy(concat(parsedChangedAssets, assets), (item) => item.uniqueId);
-    saveAssets(accountAddress, updatedAssets, network);
-    dispatch({
-      payload: updatedAssets,
-      type: DATA_UPDATE_ASSETS,
-    });
-  }
 };
 
 const listenOnNewMessages = socket => (dispatch, getState) => {
@@ -361,11 +323,11 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
   });
 
   socket.on(messages.ASSETS.APPENDED, (message) => {
-    dispatch(assetsAppended(message));
+    dispatch(assetsReceived(message, true));
   });
 
   socket.on(messages.ASSETS.CHANGED, (message) => {
-    dispatch(assetsChanged(message));
+    dispatch(assetsReceived(message, false, true));
   });
 };
 
