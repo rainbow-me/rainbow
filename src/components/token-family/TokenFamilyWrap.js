@@ -48,6 +48,7 @@ class TokenFamilyWrap extends PureComponent {
   };
 
   onHeaderPress = () => {
+    console.log(this.props.openFamilyTabs);
     this.props.setOpenFamilyTabs({index: this.props.item[0][0].rowNumber, state: !this.props.openFamilyTabs[this.props.item[0][0].rowNumber]});
   }
 
@@ -62,6 +63,7 @@ class TokenFamilyWrap extends PureComponent {
           familyName={this.props.familyName}
           childrenAmount={this.props.childrenAmount}
           highlight={this.props.highlight}
+          isOpen={this.props.openFamilyTabs[this.props.item[0][0].rowNumber]}
         />
         </ButtonPressAnimation>
         {header(this.collectiblesRenderItem(this.props))}

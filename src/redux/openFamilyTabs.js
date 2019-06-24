@@ -16,7 +16,7 @@ export const pushOpenFamilyTab = payload => dispatch => dispatch({
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  openFamilyTabs: [true, true, true, true, true],
+  openFamilyTabs: [true, true, true, true, true, true, true, true, true],
 };
 
 export default (state = INITIAL_STATE, action) => (
