@@ -10,6 +10,8 @@ import Highlight from '../Highlight';
 import CloseIcon from '../icons/svg/CloseIcon';
 import { Icon } from '../icons';
 import { ButtonPressAnimation } from '../animations';
+import { ShadowStack } from '../shadow-stack';
+import { colors } from '../../styles';
 
 const Wrapper = styled.View`
   height: 56px;
@@ -30,13 +32,6 @@ const Image = styled.View`
 
 const LeftView = styled.View`
   align-items: center;
-  flex-direction: row;
-`;
-
-const RightView = styled.View`
-  display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: row;
 `;
 
@@ -64,9 +59,20 @@ const TokenListHeader = (props) => (
   <Wrapper>
     <Highlight highlight={props.highlight} />
     <LeftView>
+    <ShadowStack
+      borderRadius={10.3}
+      height={34}
+      width={34}
+      shadows={[
+        [0, 4, 6, colors.dark, 0.04],
+        [0, 1, 3, colors.dark, 0.08],
+      ]}
+      shouldRasterizeIOS
+    >
       <Image>
 
       </Image>
+      </ShadowStack>
       <TruncatedText
         style={{ paddingLeft: 9 }}
         lineHeight="normal"
