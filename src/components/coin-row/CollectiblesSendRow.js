@@ -13,7 +13,7 @@ import { ButtonPressAnimation } from '../animations';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import Divider from '../Divider';
 import { Centered } from '../layout';
-import { Monospace } from '../text';
+import { Monospace, TruncatedText } from '../text';
 import InnerBorder from '../InnerBorder';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
@@ -27,28 +27,30 @@ const selectedStyles = css`
 `;
 
 const BottomRow = ({ subtitle }) => (
-  <Monospace
+  <TruncatedText
     color={colors.alpha(colors.blueGreyDark, 0.6)}
+    component={Monospace}
     size="smedium"
   >
     {subtitle}
-  </Monospace>
+  </TruncatedText>
 );
 
 BottomRow.propTypes = {
   subtitle: PropTypes.string,
 };
 
-const TopRow = ({ name, selected }) => (
+const TopRow = ({ id, name, selected }) => (
   <CoinName
     paddingRight={selected ? undefined : 0}
     weight={selected ? 'semibold' : 'regular'}
   >
-    {name}
+    {name || `#${id}`}
   </CoinName>
 );
 
 TopRow.propTypes = {
+  id: PropTypes.any,
   name: PropTypes.string,
   selected: PropTypes.bool,
 };

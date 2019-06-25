@@ -1,0 +1,303 @@
+{
+  "translation": {
+    "homepage": {
+      "connect_metamask": {
+        "description": "Connect to the ",
+        "link_text": "MetaMask browser wallet",
+        "link_title": "MetaMask browser wallet",
+        "button": "Connect to MetaMask"
+      },
+      "connect_ledger": {
+        "description": "Connect and sign with your ",
+        "link_text": "Ledger hardware wallet",
+        "link_title": "Buy a Ledger hardware wallet",
+        "button": "Connect to Ledger"
+      },
+      "connect_trezor": {
+        "description": "Connect and sign with your ",
+        "link_text": "Trezor hardware wallet",
+        "link_title": "Buy a Trezor hardware wallet",
+        "button": "Connect to Trezor"
+      },
+      "connect_trustwallet": {
+        "description_part_one": "Use the ",
+        "description_part_two": " Ethereum ",
+        "description_part_three": " app to connect.",
+        "link_text_wallet": "Trust Wallet",
+        "link_title_wallet": "Discover Trust Wallet",
+        "link_text_browser": "dapp browser",
+        "link_title_browser": "Discover Trust DApp Browser",
+        "button": "Connect to Trust Wallet"
+      },
+	    "connect_walletconnect": {
+        "description": "Scan a QR code to link your mobile wallet ",
+        "description_mobile": "Connect to any wallet that supports ",
+        "link_text": "using WalletConnect",
+        "link_text_mobile": "WalletConnect",
+        "link_title": "Use WalletConnect",
+        "link_title_mobile": "Connect with WalletConnect",
+        "button": "Use WalletConnect",
+        "button_mobile": "Connect with WalletConnect"
+      },
+ 			"reassurance": {
+        "work_title": "How does Manager work?",
+        "work": "This is a web-based tool to help you manage the funds in your wallet. It does this by connecting to your wallet through its Application Programming Interface (API). Here are some important points about how we designed Balance Manager:",
+        "access_link": "No access to your funds",
+        "tracking_link": "We do not track you",
+        "security_title": "How secure is Manager?",
+        "security": "We work incredibly hard to make sure your funds are safe. This tool never touches your private keys, so that greatly reduces the surface area for attack. If you are familiar with programming, you can check out our code on GitHub.",
+        "source": "View our source code",
+        "assessment": "Results of our security assessment",
+        "text_mobile": "You need to use an Ethereum Wallet to access Balance Manager to view, send and exchange your Ether and Ethereum-based tokens."
+      },
+      "back": "Back to balance.io",
+      "coming_soon": "Coming soon."
+    },
+    "account": {
+      "tab_balances": "Balances",
+      "tab_balances_empty_state": "Balance",
+      "tab_collectibles": "Collectibles",
+      "tab_transactions": "Transactions",
+      "tab_interactions": "Interactions",
+      "tab_uniquetokens": "Unique Tokens",
+      "tab_balances_tooltip": "Ethereum and Token Balances",
+      "tab_transactions_tooltip": "Transactions and Token Transfers",
+      "tab_interactions_tooltip": "Smart Contract Interactions",
+      "tab_uniquetokens_tooltip": "Unique Tokens",
+      "label_asset": "Asset",
+      "label_quantity": "Quantity",
+      "label_price": "Price",
+      "label_24h": "24h",
+      "label_status": "Status",
+      "label_total": "Total",
+      "show": "Show",
+      "hide": "Hide",
+      "token": "token",
+      "tokens": "tokens",
+      "no_market_value": "with no market value",
+      "low_market_value": "with low market value",
+      "tx_hash": "Transaction Hash",
+      "tx_timestamp": "Timestamp",
+      "tx_fee": "Fee",
+      "tx_to": "To",
+      "tx_from": "From",
+      "tx_self": "Self",
+      "tx_sent": "Sent",
+      "tx_received": "Received",
+      "tx_failed": "Failed",
+      "tx_pending": "Pending",
+      "show_all": "Show all",
+      "show_less": "Show less",
+      "unknown_token": "Unknown Token"
+    },
+    "button": {
+      "connect_walletconnect": "Use WalletConnect",
+      "exchange": "Exchange",
+      "send": "Send",
+      "disconnect_account": "Log Out",
+      "donate": "Donate ETH",
+      "receive": "Receive",
+      "close": "Close",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "go_back": "Go Back",
+      "send_another": "Send Another",
+      "exchange_again": "Exchange Again",
+      "notify_me": "Get notified",
+      "try_again": "Try again",
+      "learn_more": "Learn more",
+      "view": "View"
+    },
+    "input": {
+      "recipient_address": "Recipient Address",
+      "private_key": "Private Key",
+      "donation_address": "Balance Manager Address",
+      "asset_amount": "Amount",
+      "email": "Email",
+      "password": "Password",
+      "input_text": "Input",
+      "email_placeholder": "your@email.com",
+      "password_placeholder": "••••••••••",
+      "input_placeholder": "Type here"
+    },
+    "modal": {
+      "receive_title": "Receive to {{walletName}}",
+      "exchange_title": "Exchange from {{walletName}}",
+      "donate_title": "Send from {{walletName}} to Balance Manager",
+      "send_title": "Send from {{walletName}}",
+      "approve_tx": "Approve transaction on {{walletType}}",
+      "confirm_tx": "Confirm transaction from {{walletName}}",
+      "invalid_address": "Invalid Address",
+      "send_max": "Send max",
+      "exchange_max": "Exchange max",
+      "default_wallet": " Wallet",
+      "gas_slow": "Slow",
+      "gas_average": "Average",
+      "gas_fast": "Fast",
+      "gas_fee": "Fee",
+      "tx_confirm_sender": "Sender",
+      "tx_confirm_recipient": "Recipient",
+      "tx_confirm_amount": "Amount",
+      "tx_confirm_fee": "Transaction Fee",
+      "tx_hash": "Transaction Hash",
+      "tx_verify": "Verify your transaction here",
+      "deposit_dropdown_label": "Exchange my",
+      "withdrawal_dropdown_label": "For",
+      "deposit_input_label": "Pay",
+      "withdrawal_input_label": "Get",
+      "tx_fee": "Transaction Fee",
+      "exchange_fee": "Exchange Fee",
+      "previous_short": "Prev.",
+      "new": "New",
+      "helper_balance": "Balance",
+      "helper_value": "Value",
+      "helper_rate": "Rate",
+      "helper_price": "Price",
+      "helper_min": "Min",
+      "helper_max": "Max"
+    },
+    "message": {
+      "web3_not_available": "Please install the MetaMask Chrome extension",
+      "web3_not_unlocked": "Please unlock your MetaMask wallet",
+      "walletconnect_not_unlocked": "Please connect using WalletConnect",
+      "web3_unknown_network": "Unknown network, please switch to another one",
+      "page_not_found": "404 Page Not Found",
+      "coming_soon": "Coming soon...",
+      "click_to_copy_to_clipboard": "Click to copy to clipboard",
+      "failed_request": "Failed request, please refresh",
+      "failed_ledger_connection": "Failed to connect to Ledger, please check your device",
+      "failed_trezor_connection": "Failed to connect to Trezor, please check your device",
+      "failed_trezor_popup_blocked": "Please allow popups on Balance to use your Trezor",
+      "no_transactions": "No transactions found for this account",
+      "no_unique_tokens": "No unique tokens found for this account",
+      "no_interactions": "No interactions found for this account",
+      "please_connect_ledger": "Please connect and unlock Ledger then select Ethereum",
+      "please_connect_trezor": "Please connect your Trezor and follow the instructions",
+      "opensea_footer": " is a market place for unique (or 'non-fungible') tokens. People trade on the marketspace and that gives them value. You can pawn your tokens to get money. All of this runs on Ethereum. ",
+      "opensea_header": "How does this work under the hood?",
+      "power_by": "Powered by",
+      "exchange_not_available": "We are no longer supporting Shapeshift due to their new KYC requirements. We are working on support for different exchange providers.",
+      "learn_more": "Learn more"
+    },
+    "notification": {
+      "error": {
+        "no_accounts_found": "No Ethereum Accounts Found",
+        "invalid_address": "Address is invalid, please check again",
+        "insufficient_balance": "Insufficient balance in this account",
+        "insufficient_for_fees": "Insufficient balance to cover transaction fees",
+        "invalid_address_scanned": "Invalid Address Scanned, please try again",
+        "invalid_private_key_scanned": "Invalid Private Key Scanned, please try again",
+        "failed_scanning_qr_code": "Failed to scan QR code, please try again",
+        "failed_get_gas_prices": "Failed to get Ethereum Gas prices",
+        "failed_get_tx_fee": "Failed to estimate Transaction fee",
+        "failed_get_account_tx": "Failed to get Account transactions",
+        "generic_error": "Something went wrong, please try again"
+      },
+      "info": {
+        "address_copied_to_clipboard": "Address copied to clipboard"
+      }
+    },
+    "warning": {
+      "user_is_offline": "Connection offline, please check your internet connection",
+      "user_is_online": "Connected! You're back online"
+    },
+    "subscribe_form": {
+      "email_already_subscribed": "Sorry, you've already signed up with this email",
+      "too_many_signup_request": "Too many signup requests, please try again later",
+      "successful": "Check your email",
+      "sending": "Sending...",
+      "generic_error": "Oops, something went wrong"
+    },
+    "time": {
+      "ms": "ms",
+      "milisecond": "milisecond",
+      "miliseconds": "miliseconds",
+      "s": "s",
+      "sec": "sec",
+      "secs": "secs",
+      "second": "second",
+      "seconds": "seconds",
+      "min": "min",
+      "mins": "mins",
+      "minute": "minute",
+      "minutes": "minutes",
+      "hr": "hr",
+      "hrs": "hrs",
+      "hour": "hour",
+      "hours": "hours",
+      "day": "day",
+      "days": "days",
+      "now": "Now"
+    },
+    "wallet": {
+      "action": {
+        "cancel": "Cancel",
+        "input": "Transaction Input",
+        "paste": "Paste",
+        "reject": "Reject",
+        "send": "Send",
+        "to": "To",
+        "value": "Value"
+      },
+      "authenticate": {
+        "please": "Please authenticate",
+        "please_seed_phrase": "Please authenticate to view seed phrase"
+      },
+      "push_notifications": {
+        "please_enable_title": "Rainbow would like to send you push notifications",
+        "please_enable_body": "It looks like you are using WalletConnect. Please enable push notifications to be notified of transaction requests from WalletConnect."
+      },
+      "assets": {
+        "no_price": "Small Balances"
+      },
+      "intro": {
+        "create_wallet": "Create a Wallet",
+        "instructions": "Please do not store more in your wallet than you are willing to lose.",
+        "warning": "This is alpha software.",
+        "welcome": "Welcome to Rainbow"
+      },
+      "feedback": {
+        "cancel": "No thanks",
+        "choice": "Would you like to manually copy our feedback email address to your clipboard?",
+        "copy_email_address": "Copy email address",
+        "email_subject": "📱 Rainbow Beta Feedback",
+        "error": "Error launching email client",
+        "send": "Send Feedback"
+      },
+      "loading": {
+        "error": "There has been an error loading the wallet. Please kill the app and retry.",
+        "message": "Loading"
+      },
+      "settings": {
+        "copy_address": "Copy Address",
+        "copy_seed_phrase": "Copy Seed Phrase",
+        "hide_seed_phrase": "Hide Seed Phrase",
+        "show_seed_phrase": "Show Seed Phrase"
+      },
+      "message_signing": {
+        "message": "Message",
+        "request": "Message Signing Request",
+        "sign": "Sign Message",
+        "failed_signing": "Failed to sign message"
+      },
+      "transaction": {
+        "alert": {
+          "authentication": "Authentication Failed",
+          "cancelled_transaction": "Failed to send cancelled transaction to WalletConnect",
+          "failed_transaction": "Failed to send transaction",
+          "failed_transaction_status": "Failed to send failed transaction status",
+          "transaction_status": "Failed to send transaction status"
+        },
+        "confirm": "Confirm transaction",
+        "request": "Transaction Request",
+        "send": "Send Transaction"
+      },
+      "unrecognized_qrcode": "Sorry, this QR code could not be recognized.",
+      "unrecognized_qrcode_title": "Unrecognized QR Code",
+      "wallet_connect": {
+        "missing_fcm": "Unable to initialize WalletConnect: missing push notification token. Please try again.",
+        "error": "Error initializing with WalletConnect"
+      }
+    }
+  }
+}

@@ -5,7 +5,7 @@ import styled from 'styled-components/primitives';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
 import transitions from '../../navigation/transitions';
 import { colors, padding, position } from '../../styles';
-import { deviceUtils, safeAreaInsetValues } from '../../utils';
+import { deviceUtils, ethereumUtils, safeAreaInsetValues } from '../../utils';
 import { SendCoinRow } from '../coin-row';
 import { DoubleArrowSelectionIcon } from '../icons';
 import { Column, ColumnWithMargins } from '../layout';
@@ -41,7 +41,7 @@ const SendAssetForm = ({
   txSpeedRenderer,
   ...props
 }) => {
-  const selectedAsset = allAssets.find(asset => asset.symbol === selected.symbol);
+  const selectedAsset = ethereumUtils.getAsset(allAssets, selected.address);
 
   return (
     <Container>

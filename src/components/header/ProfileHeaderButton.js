@@ -3,17 +3,18 @@ import React from 'react';
 import {
   compose,
   pickProps,
-  pure,
+  onlyUpdateForKeys,
   withHandlers,
 } from 'recompact';
 import { withRequests } from '../../hoc';
-import Avatar from '../Avatar';
-import HeaderButton from './HeaderButton';
 import { Badge } from '../badge';
 import { Centered } from '../layout';
+import Avatar from '../Avatar';
+import HeaderButton from './HeaderButton';
 
-const ProfileHeaderButton = ({ onPress, pendingRequestCount, ...props }) => (
+const ProfileHeaderButton = ({ onPress, pendingRequestCount }) => (
   <HeaderButton
+    testID="goToProfile"
     onPress={onPress}
     shouldRasterizeIOS
     transformOrigin="left"
@@ -22,7 +23,7 @@ const ProfileHeaderButton = ({ onPress, pendingRequestCount, ...props }) => (
       <Avatar size={32} />
       {pendingRequestCount > 0 && (
         <Badge
-          delay={2500}
+          delay={1500}
           value={pendingRequestCount}
           zIndex={1}
         />
@@ -37,8 +38,8 @@ ProfileHeaderButton.propTypes = {
 };
 
 export default compose(
-  pure,
   withRequests,
   withHandlers({ onPress: ({ navigation }) => () => navigation.navigate('ProfileScreen') }),
   pickProps(Object.keys(ProfileHeaderButton.propTypes)),
+  onlyUpdateForKeys(['pendingRequestCount']),
 )(ProfileHeaderButton);

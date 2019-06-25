@@ -1,5 +1,5 @@
+import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
-import { isValidSeedPhrase as validateSeedPhrase } from '@rainbow-me/rainbow-common';
 import { Clipboard, InteractionManager, Linking } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import {
@@ -11,9 +11,10 @@ import {
   withState,
 } from 'recompact';
 import { Alert } from '../components/alerts';
-import { withAccountRefresh, withAccountReset } from '../hoc';
+import { withDataInit, withIsWalletEmpty } from '../hoc';
 import { deviceUtils } from '../utils';
 import ImportSeedPhraseSheet from './ImportSeedPhraseSheet';
+import { isValidSeedPhrase as validateSeedPhrase } from '../helpers/validators';
 
 const ConfirmImportAlert = onSuccess => (
   Alert({
@@ -31,32 +32,31 @@ const ConfirmImportAlert = onSuccess => (
 );
 
 const ImportSeedPhraseSheetWithData = compose(
-  withAccountReset,
-  withAccountRefresh,
+  withDataInit,
+  withIsWalletEmpty,
   withNavigation,
   withState('clipboardContents', 'setClipboardContents', ''),
   withState('isImporting', 'setIsImporting', false),
   withState('seedPhrase', 'setSeedPhrase', ''),
   withHandlers({
     importSeedPhrase: ({
-      accountClearState,
+      clearAccountData,
+      initializeWallet,
+      isEmpty,
       navigation,
-      refreshAccount,
-      screenProps,
       seedPhrase,
       setIsImporting,
     }) => () => {
-      accountClearState();
+      clearAccountData();
 
-      return screenProps
-        .handleWalletConfig(seedPhrase.trim())
+      return initializeWallet(seedPhrase.trim())
         .then((address) => {
           if (address) {
-            refreshAccount()
-              .then(() => {
-                setIsImporting(false);
-                navigation.navigate('WalletScreen');
-              });
+            analytics.track('Imported seed phrase', {
+              hadPreviousAddressWithValue: isEmpty,
+            });
+            setIsImporting(false);
+            navigation.navigate('WalletScreen');
           } else {
             setIsImporting(false);
           }
@@ -68,9 +68,7 @@ const ImportSeedPhraseSheetWithData = compose(
     },
   }),
   withHandlers({
-    getClipboardContents: ({ setClipboardContents }) => async () => {
-      return Clipboard.getString().then(setClipboardContents);
-    },
+    getClipboardContents: ({ setClipboardContents }) => async () => Clipboard.getString().then(setClipboardContents),
     onImportSeedPhrase: ({ setIsImporting }) => () => ConfirmImportAlert(() => setIsImporting(true)),
     onInputChange: ({ isImporting, setSeedPhrase }) => ({ nativeEvent }) => {
       if (!isImporting) {
@@ -84,6 +82,16 @@ const ImportSeedPhraseSheetWithData = compose(
     },
     onPressHelp: () => () => Linking.openURL('http://rainbow.me'),
   }),
+  withProps(({ clipboardContents, seedPhrase }) => ({
+    isClipboardContentsValidSeedPhrase: validateSeedPhrase(clipboardContents),
+    isSeedPhraseValid: validateSeedPhrase(seedPhrase),
+  })),
+  onlyUpdateForKeys([
+    'isClipboardContentsValidSeedPhrase',
+    'isImporting',
+    'isSeedPhraseValid',
+    'seedPhrase',
+  ]),
   lifecycle({
     componentDidMount() {
       this.props.getClipboardContents();
@@ -114,16 +122,6 @@ const ImportSeedPhraseSheetWithData = compose(
       }
     },
   }),
-  withProps(({ clipboardContents, seedPhrase }) => ({
-    isClipboardContentsValidSeedPhrase: validateSeedPhrase(clipboardContents),
-    isSeedPhraseValid: validateSeedPhrase(seedPhrase),
-  })),
-  onlyUpdateForKeys([
-    'isClipboardContentsValidSeedPhrase',
-    'isImporting',
-    'isSeedPhraseValid',
-    'seedPhrase',
-  ]),
 )(ImportSeedPhraseSheet);
 
 ImportSeedPhraseSheetWithData.navigationOptions = ({ navigation }) => ({

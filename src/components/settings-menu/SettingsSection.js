@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { supportedLanguages } from '@rainbow-me/rainbow-common';
 import React from 'react';
 import { Linking, ScrollView } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -9,6 +8,7 @@ import BackupIcon from '../../assets/backup-icon.png';
 import CurrencyIcon from '../../assets/currency-icon.png';
 import LanguageIcon from '../../assets/language-icon.png';
 import NetworkIcon from '../../assets/network-icon.png';
+import { supportedLanguages } from '../../languages';
 // import SecurityIcon from '../../assets/security-icon.png';
 import { withAccountSettings, withSendFeedback } from '../../hoc';
 import { position } from '../../styles';
@@ -24,7 +24,7 @@ import {
 import { Emoji } from '../text';
 
 const SettingsExternalURLs = {
-  about: 'http://rainbow.me',
+  about: 'https://twitter.com/rainbowdotme',
   feedback: 'http://rainbow.me',
   legal: 'https://github.com/rainbow-me/rainbow/blob/master/LICENSE',
 };
@@ -53,6 +53,7 @@ const SettingsSection = ({
 }) => (
   <ScrollView
     contentContainerStyle={position.sizeAsObject('100%')}
+    scrollEventThrottle={32}
     style={position.coverAsObject}
   >
     <Column style={{ marginTop: 8 }}>
@@ -120,7 +121,7 @@ const SettingsSection = ({
       <ListItemDivider />
       <ListItem
         icon={<Emoji name="rainbow" />}
-        label="About Rainbow"
+        label="Follow Us"
         onPress={openWebView}
         value={SettingsExternalURLs.about}
       />

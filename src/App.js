@@ -1,42 +1,34 @@
-import { get, isEmpty, last } from 'lodash';
+import analytics from '@segment/analytics-react-native';
+import { get, last } from 'lodash';
 import PropTypes from 'prop-types';
-import {
-  accountLoadState,
-  settingsInitializeState,
-  settingsUpdateAccountAddress,
-} from '@rainbow-me/rainbow-common';
+import nanoid from 'nanoid/non-secure';
 import React, { Component } from 'react';
 import {
-  Alert,
   AppRegistry,
   AppState,
   Linking,
 } from 'react-native';
 import CodePush from 'react-native-code-push';
+import { REACT_APP_SEGMENT_API_WRITE_KEY } from 'react-native-dotenv';
 import firebase from 'react-native-firebase';
+import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { useScreens } from 'react-native-screens';
-import { StackActions } from 'react-navigation';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
+import { FlexItem } from './components/layout';
+import OfflineBadge from './components/OfflineBadge';
 import {
-  saveFCMToken,
-  registerTokenRefreshListener,
-  registerNotificationListener,
-  registerNotificationOpenedListener,
-} from './model/firebase';
-import {
-  withAccountRefresh,
-  withRequestsInit,
+  withDataInit,
   withWalletConnectConnections,
   withWalletConnectOnSessionRequest,
 } from './hoc';
-import { FlexItem } from './components/layout';
+import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
+import * as keychain from './model/keychain';
 import Navigation from './navigation';
-import OfflineBadge from './components/OfflineBadge';
-import Routes from './screens/Routes';
 import store from './redux/store';
+import { requestsForTopic } from './redux/requests';
+import Routes from './screens/Routes';
 import { parseQueryParams } from './utils';
-import { walletInit } from './model/wallet';
 
 if (process.env.NODE_ENV === 'development') {
   console.disableYellowBox = true;
@@ -46,16 +38,11 @@ useScreens();
 
 class App extends Component {
   static propTypes = {
-    accountLoadState: PropTypes.func,
-    getValidWalletConnectors: PropTypes.func,
-    refreshAccount: PropTypes.func,
-    settingsInitializeState: PropTypes.func,
-    settingsUpdateAccountAddress: PropTypes.func,
+    appInitTimestamp: PropTypes.number,
+    initializeWallet: PropTypes.func,
+    requestsForTopic: PropTypes.func,
     sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
-    transactionsForTopic: PropTypes.func,
-    transactionsToApproveInit: PropTypes.func,
     walletConnectClearTimestamp: PropTypes.func,
-    walletConnectInitAllConnectors: PropTypes.func,
     walletConnectOnSessionRequest: PropTypes.func,
     walletConnectUpdateTimestamp: PropTypes.func,
   }
@@ -74,33 +61,39 @@ class App extends Component {
   }
 
   onPushNotificationOpened = (topic, autoOpened = false, fromLocal = false) => {
-    const requests = this.props.transactionsForTopic(topic);
+    const { appInitTimestamp, requestsForTopic } = this.props;
+    const requests = requestsForTopic(topic);
+
     if (requests && requests.length === 1) {
       const request = requests[0];
-      const transactionTimestamp = get(request, 'transactionDisplayDetails.timestampInMs');
-      if (!autoOpened || (this.props.appInitTimestamp
-            && (transactionTimestamp > this.props.appInitTimestamp))) {
+
+      const transactionTimestamp = get(request, 'displayDetails.timestampInMs');
+      const isNewTransaction = appInitTimestamp && (transactionTimestamp > appInitTimestamp);
+
+      if (!autoOpened || isNewTransaction) {
         return Navigation.handleAction({
+          params: { autoOpened, transactionDetails: request },
           routeName: 'ConfirmRequest',
-          params: { transactionDetails: request, autoOpened },
         });
       }
     }
+
     if (fromLocal) {
-      const request = last(requests);
       return Navigation.handleAction({
+        params: { autoOpened, transactionDetails: last(requests) },
         routeName: 'ConfirmRequest',
-        params: { transactionDetails: request, autoOpened },
       });
     }
+
     return Navigation.handleAction({ routeName: 'ProfileScreen' });
   };
 
   async componentDidMount() {
+    await this.handleInitializeAnalytics();
+
     AppState.addEventListener('change', this.handleAppStateChange);
     Linking.addEventListener('url', this.handleOpenLinkingURL);
-    await this.handleWalletConfig();
-    await this.props.refreshAccount();
+    await this.props.initializeWallet();
     firebase.notifications().getInitialNotification().then(notificationOpen => {
       if (notificationOpen) {
         const topic = get(notificationOpen, 'notification.data.topic');
@@ -134,22 +127,24 @@ class App extends Component {
     });
   }
 
-  handleWalletConfig = async (seedPhrase) => {
-    try {
-      const { isWalletBrandNew, walletAddress } = await walletInit(seedPhrase);
-      this.props.settingsUpdateAccountAddress(walletAddress, 'RAINBOWWALLET');
-      if (isWalletBrandNew) {
-        return walletAddress;
-      }
-      this.props.settingsInitializeState();
-      this.props.accountLoadState();
-      this.props.walletConnectInitAllConnectors();
-      this.props.transactionsToApproveInit();
-      return walletAddress;
-    } catch (error) {
-      Alert.alert('Error: Failed to initialize wallet.');
-      return null;
+  handleInitializeAnalytics = async () => {
+    const storedIdentifier = await keychain.loadString('analyticsUserIdentifier');
+
+    if (!storedIdentifier) {
+      const identifier = await RNIOS11DeviceCheck.getToken()
+        .then((deviceId) => deviceId)
+        .catch(() => nanoid());
+      await keychain.saveString('analyticsUserIdentifier', identifier);
+      analytics.identify(identifier);
     }
+
+    await analytics.setup(REACT_APP_SEGMENT_API_WRITE_KEY, {
+      ios: {
+        trackDeepLinks: true,
+      },
+      trackAppLifecycleEvents: true,
+      trackAttributionData: true,
+    });
   }
 
   handleAppStateChange = async (nextAppState) => {
@@ -179,7 +174,6 @@ class App extends Component {
         <OfflineBadge />
         <Routes
           ref={this.handleNavigatorRef}
-          screenProps={{ handleWalletConfig: this.handleWalletConfig }}
         />
       </FlexItem>
     </Provider>
@@ -188,16 +182,13 @@ class App extends Component {
 
 const AppWithRedux = compose(
   withProps({ store }),
-  withAccountRefresh,
-  withRequestsInit,
+  withDataInit,
   withWalletConnectConnections,
   withWalletConnectOnSessionRequest,
   connect(
     ({ walletconnect: { appInitTimestamp } }) => ({ appInitTimestamp }),
     {
-      accountLoadState,
-      settingsInitializeState,
-      settingsUpdateAccountAddress,
+      requestsForTopic,
     },
   ),
 )(App);

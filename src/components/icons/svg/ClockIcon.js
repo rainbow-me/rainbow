@@ -4,6 +4,7 @@ import { Circle, G, Path } from 'svgs';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
+/* eslint-disable max-len */
 const ClockIcon = ({ color, ...props }) => (
   <Svg viewBox="0 0 30 30" {...props}>
     <G fill="none" fillRule="nonzero">
@@ -21,6 +22,7 @@ const ClockIcon = ({ color, ...props }) => (
     </G>
   </Svg>
 );
+/* eslint-disable max-len */
 
 ClockIcon.propTypes = {
   color: PropTypes.string,

@@ -1,6 +1,7 @@
+import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { pure } from 'recompact';
+import { compose, pure, withHandlers } from 'recompact';
 import { UnderlineField } from '../fields';
 import { RowWithMargins } from '../layout';
 import { Monospace } from '../text';
@@ -59,4 +60,15 @@ SendAssetFormField.defaultProps = {
   labelMaxLength: 6,
 };
 
-export default pure(SendAssetFormField);
+export default compose(
+  withHandlers({
+    onPressButton: ({ onPressButton }) => (event) => {
+      analytics.track('Clicked "Max" in Send flow input');
+
+      if (onPressButton) {
+        onPressButton(event);
+      }
+    },
+  }),
+  pure,
+)(SendAssetFormField);

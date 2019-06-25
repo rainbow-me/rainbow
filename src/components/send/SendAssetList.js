@@ -17,8 +17,8 @@ import { ListFooter } from '../list';
 const enhanceRenderItem = compose(
   withHandlers({
     onPress: ({ item }) => () => {
-      const { isNft, onSelectAsset, symbol } = item;
-      return onSelectAsset(isNft ? item : symbol);
+      const { isNft, onSelectAsset, address } = item;
+      return onSelectAsset(isNft ? item : address);
     },
   }),
   shouldUpdate((props, nextProps) => {

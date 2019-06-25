@@ -4,6 +4,7 @@ import { Path } from 'svgs';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
+/* eslint-disable max-len */
 const WalletConnectIcon = ({ color, ...props }) => (
   <Svg height="19" width="31" viewBox="0 0 31 19" {...props}>
     <Path
@@ -13,6 +14,7 @@ const WalletConnectIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
+/* eslint-disable max-len */
 
 WalletConnectIcon.propTypes = {
   color: PropTypes.string,

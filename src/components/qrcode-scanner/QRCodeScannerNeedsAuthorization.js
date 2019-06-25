@@ -1,7 +1,8 @@
-import { withSafeTimeout } from '@hocs/safe-timers';
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { Linking } from 'react-native';
+import { compose, withHandlers } from 'recompact';
+import { withNeverRerender } from '../../hoc';
 import {
   colors,
   margin,
@@ -12,50 +13,43 @@ import { Button } from '../buttons';
 import { Column } from '../layout';
 import { ErrorText, Monospace } from '../text';
 
-class QRCodeScannerNeedsAuthorization extends PureComponent {
-  static propTypes = {
-    setSafeTimeout: PropTypes.func,
-  }
+const QRCodeScannerNeedsAuthorization = ({ onPressSettings }) => (
+  <Column
+    align="start"
+    css={`
+      ${padding(30, 50, 60, 30)};
+      ${position.cover};
+    `}
+    justify="center"
+  >
+    <ErrorText
+      color={colors.white}
+      error="Camera not authorized"
+    />
+    <Monospace
+      color="mediumGrey"
+      css={margin(7, 0, 30)}
+      lineHeight="looser"
+    >
+      In order to use WalletConnect, you must first give Rainbow
+      permission to access your camera.
+    </Monospace>
+    <Button self="start" onPress={onPressSettings}>
+      Open settings
+    </Button>
+  </Column>
+);
 
-  state = { isVisible: false }
+QRCodeScannerNeedsAuthorization.propTypes = {
+  onPressSettings: PropTypes.func,
+};
 
-  componentDidMount = () => this.props.setSafeTimeout(this.enableVisibility, 500)
-
-  enableVisibility = () => this.setState({ isVisible: true })
-
-  onPressSettings = () => (
-    Linking.canOpenURL('app-settings:')
-      .then(() => Linking.openURL('app-settings:'))
-  )
-
-  render = () => (
-    this.state.isVisible ? (
-      <Column
-        align="start"
-        css={`
-          ${padding(30, 50, 60, 30)};
-          ${position.cover};
-        `}
-        justify="center"
-      >
-        <ErrorText
-          color={colors.white}
-          error="Camera not authorized"
-        />
-        <Monospace
-          color="mediumGrey"
-          css={margin(7, 0, 30)}
-          lineHeight="looser"
-        >
-          In order to use WalletConnect, you must first give Rainbow
-          permission to access your phone's camera.
-        </Monospace>
-        <Button self="start" onPress={this.onPressSettings}>
-          Open settings
-        </Button>
-      </Column>
-    ) : null
-  )
-}
-
-export default withSafeTimeout(QRCodeScannerNeedsAuthorization);
+export default compose(
+  withHandlers({
+    onPressSettings: () => () => (
+      Linking.canOpenURL('app-settings:')
+        .then(() => Linking.openURL('app-settings:'))
+    ),
+  }),
+  withNeverRerender,
+)(QRCodeScannerNeedsAuthorization);

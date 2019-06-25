@@ -13,8 +13,6 @@ const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
 const assetsSelector = state => state.assets;
 const assetsTotalSelector = state => state.assetsTotal;
-const fetchingAssetsSelector = state => state.fetchingAssets;
-const fetchingUniqueTokensSelector = state => state.fetchingUniqueTokens;
 const languageSelector = state => state.language;
 const nativeCurrencySelector = state => state.nativeCurrency;
 const onToggleShowShitcoinsSelector = state => state.onToggleShowShitcoins;
@@ -50,8 +48,6 @@ const buildWalletSections = (
   allAssetsCount,
   assets,
   assetsTotal,
-  fetchingAssets,
-  fetchingUniqueTokens,
   language,
   nativeCurrency,
   onToggleShowShitcoins,
@@ -118,8 +114,6 @@ export default createSelector(
     allAssetsCountSelector,
     assetsSelector,
     assetsTotalSelector,
-    fetchingAssetsSelector,
-    fetchingUniqueTokensSelector,
     languageSelector,
     nativeCurrencySelector,
     onToggleShowShitcoinsSelector,

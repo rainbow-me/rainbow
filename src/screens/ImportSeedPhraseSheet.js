@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { KeyboardAvoidingView } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import { pure, withProps } from 'recompact';
+import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
 import { Icon } from '../components/icons';
 import { MultiLineInput } from '../components/inputs';
@@ -82,16 +82,7 @@ const ImportSeedPhraseSheet = ({
           weight="semibold"
         />
       </Centered>
-      <Row align="start" justify="space-between">
-        <HelpButton onPress={onPressHelp}>
-          <Text
-            align="center"
-            color={colors.alpha(colors.blueGreyDark, 0.8)}
-            weight="medium"
-          >
-            Help
-          </Text>
-        </HelpButton>
+      <Row align="start" justify="end">
         <ImportButton
           disabled={seedPhrase ? !isSeedPhraseValid : !isClipboardContentsValidSeedPhrase}
           onPress={seedPhrase ? onImportSeedPhrase : onPasteSeedPhrase}

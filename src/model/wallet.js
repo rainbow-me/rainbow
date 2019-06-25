@@ -1,7 +1,6 @@
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get } from 'lodash';
-import { web3Provider } from '@rainbow-me/rainbow-common';
 import { Alert } from 'react-native';
 import {
   ACCESS_CONTROL,
@@ -10,6 +9,7 @@ import {
   canImplyAuthentication,
 } from 'react-native-keychain';
 import * as keychain from './keychain';
+import { web3Provider } from '../handlers/web3';
 
 const seedPhraseKey = 'rainbowSeedPhrase';
 const privateKeyKey = 'rainbowPrivateKey';
@@ -24,6 +24,7 @@ export const walletInit = async (seedPhrase = null) => {
   let isWalletBrandNew = false;
   if (seedPhrase) {
     walletAddress = await createWallet(seedPhrase);
+    isWalletBrandNew = true;
   }
   if (!walletAddress) {
     walletAddress = await loadAddress();
@@ -32,7 +33,7 @@ export const walletInit = async (seedPhrase = null) => {
     walletAddress = await createWallet();
     isWalletBrandNew = true;
   }
-  return { isWalletBrandNew, walletAddress } ;
+  return { isWalletBrandNew, walletAddress };
 };
 
 export const loadWallet = async () => {

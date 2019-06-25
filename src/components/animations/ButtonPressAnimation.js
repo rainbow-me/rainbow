@@ -28,6 +28,7 @@ export default class ButtonPressAnimation extends PureComponent {
     style: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
     tapRef: PropTypes.object,
     transformOrigin: directionPropType,
+    waitFor: PropTypes.any,
   }
 
   static defaultProps = {
@@ -152,17 +153,26 @@ export default class ButtonPressAnimation extends PureComponent {
     });
   }
 
-  render() {
+  render = () => {
     const {
       children,
       disabled,
       style,
       tapRef,
+      waitFor,
     } = this.props;
 
     return (
-      <TapGestureHandler enabled={!disabled} ref={tapRef} onHandlerStateChange={this.handleStateChange} >
-        <Animated.View onLayout={this.handleLayout} style={[style, this.buildAnimationStyles()]}>
+      <TapGestureHandler
+        enabled={!disabled}
+        ref={tapRef}
+        onHandlerStateChange={this.handleStateChange}
+        waitFor={this.props.waitFor}
+      >
+        <Animated.View
+          onLayout={this.handleLayout}
+          style={[style, this.buildAnimationStyles()]}
+        >
           {children}
         </Animated.View>
       </TapGestureHandler>

@@ -1,12 +1,12 @@
 import lang from 'i18n-js';
-import {
-  settingsChangeLanguage,
-  settingsChangeNativeCurrency,
-  supportedNativeCurrencies,
-} from '@rainbow-me/rainbow-common';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';
+import supportedNativeCurrencies from '../references/native-currencies.json';
+import {
+  settingsChangeLanguage,
+  settingsChangeNativeCurrency,
+} from '../redux/settings';
 
 const mapStateToProps = ({
   settings: {

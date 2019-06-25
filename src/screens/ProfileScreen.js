@@ -13,7 +13,6 @@ import { colors, position } from '../styles';
 const ProfileScreen = ({
   accountAddress,
   blurOpacity,
-  hasPendingTransaction,
   isEmpty,
   nativeCurrency,
   navigation,
@@ -25,6 +24,15 @@ const ProfileScreen = ({
   transactionsCount,
 }) => (
   <Page component={FlexItem} style={position.sizeAsObject('100%')}>
+    {showBlur && (
+      <FadeInAnimation duration={200} style={{ ...position.coverAsObject, zIndex: 1 }}>
+        <BlurOverlay
+          backgroundColor={colors.alpha(colors.blueGreyDarker, 0.4)}
+          blurType="light"
+          opacity={blurOpacity}
+        />
+      </FadeInAnimation>
+    )}
     <Header justify="space-between">
       <HeaderButton onPress={onPressSettings}>
         <Icon name="gear" />
@@ -36,7 +44,6 @@ const ProfileScreen = ({
     </Header>
     <ActivityList
       accountAddress={accountAddress}
-      hasPendingTransaction={hasPendingTransaction}
       header={(
         <ProfileMasthead
           accountAddress={accountAddress}
@@ -44,28 +51,19 @@ const ProfileScreen = ({
           showBottomDivider={!isEmpty}
         />
       )}
+      isEmpty={isEmpty}
       nativeCurrency={nativeCurrency}
       requests={requests}
       transactions={transactions}
       transactionsCount={transactionsCount}
     />
     {isEmpty && <AddFundsInterstitial />}
-    {showBlur && (
-      <FadeInAnimation duration={200} style={{ ...position.coverAsObject, zIndex: 1 }}>
-        <BlurOverlay
-          backgroundColor={colors.alpha(colors.blueGreyDarker, 0.4)}
-          blurType="light"
-          opacity={blurOpacity}
-        />
-      </FadeInAnimation>
-    )}
   </Page>
 );
 
 ProfileScreen.propTypes = {
   accountAddress: PropTypes.string,
   blurOpacity: PropTypes.object,
-  hasPendingTransaction: PropTypes.bool,
   isEmpty: PropTypes.bool,
   nativeCurrency: PropTypes.string,
   navigation: PropTypes.object,

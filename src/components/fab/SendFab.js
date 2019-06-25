@@ -1,3 +1,4 @@
+import connect from 'react-redux/es/connect/connect';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withNavigation } from 'react-navigation';
@@ -5,11 +6,9 @@ import {
   compose,
   omitProps,
   onlyUpdateForKeys,
-  pure,
   withHandlers,
   withProps,
 } from 'recompact';
-import connect from 'react-redux/es/connect/connect';
 import Icon from '../icons/Icon';
 import FloatingActionButton from './FloatingActionButton';
 import EnhancedMovable, { extraStates } from './MovableFabWrapper';
@@ -70,7 +69,6 @@ SendFab.propTypes = {
 };
 
 export default compose(
-  pure,
   withNavigation,
   withHandlers({
     onPress: ({ navigation }) => () => {

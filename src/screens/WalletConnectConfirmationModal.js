@@ -11,7 +11,7 @@ import {
   Bold,
   Text,
 } from '../components/text';
-import { Button } from '../components/buttons'
+import { Button } from '../components/buttons';
 import { padding } from '../styles';
 import { withWalletConnectConfirmationModal } from '../hoc';
 
@@ -54,8 +54,8 @@ const WalletConnectConfirmationModal = ({
 
 WalletConnectConfirmationModal.propTypes = {
   navigation: PropTypes.object.isRequired,
-  onCloseModal: PropTypes.func.isRequired,
   onApprove: PropTypes.func.isRequired,
+  onCloseModal: PropTypes.func.isRequired,
   onReject: PropTypes.func.isRequired,
   peerId: PropTypes.string.isRequired,
   peerMeta: PropTypes.object.isRequired,
@@ -63,7 +63,7 @@ WalletConnectConfirmationModal.propTypes = {
 
 export default compose(
   withWalletConnectConfirmationModal,
-  withProps(({ navigation}) => {
+  withProps(({ navigation }) => {
     const { peerId, peerMeta } = navigation.state.params;
     return { peerId, peerMeta };
   }),

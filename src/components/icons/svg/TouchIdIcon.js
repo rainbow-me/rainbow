@@ -3,6 +3,7 @@ import React from 'react';
 import Svg, { Path } from 'svgs';
 import { colors } from '../../../styles';
 
+/* eslint-disable max-len */
 const TouchIdIcon = ({ color, size, ...props }) => (
   <Svg height={size} width={size} viewBox="0 0 34 34" {...props}>
     <Path
@@ -12,6 +13,7 @@ const TouchIdIcon = ({ color, size, ...props }) => (
     />
   </Svg>
 );
+/* eslint-disable max-len */
 
 TouchIdIcon.propTypes = {
   color: PropTypes.string,

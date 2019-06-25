@@ -32,6 +32,6 @@ matrix:
     - pod repo update
     - yarn install-pods
     - watchman watch-del-all
-    - FORCE_BUNDLING=1 detox build
+    - FORCE_BUNDLING=1 detox build -c ios.sim.release
     script:
-    - detox test --no-color --headless --cleanup
+    - detox test -c ios.sim.release --no-color --headless --cleanup

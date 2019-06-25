@@ -3,6 +3,7 @@ import React from 'react';
 import { Path } from 'svgs';
 import Svg from '../Svg';
 
+/* eslint-disable max-len */
 const AvatarIcon = ({ size }) => (
   <Svg height={size} width={size} viewBox="0 0 30 30">
     <Path
@@ -19,6 +20,7 @@ const AvatarIcon = ({ size }) => (
     />
   </Svg>
 );
+/* eslint-disable max-len */
 
 AvatarIcon.propTypes = {
   size: PropTypes.number,

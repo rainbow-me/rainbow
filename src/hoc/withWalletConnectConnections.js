@@ -1,18 +1,16 @@
 import {
   get,
   groupBy,
-  head,
   mapValues,
   values,
 } from 'lodash';
-import { sortList } from '@rainbow-me/rainbow-common';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';
+import { sortList } from '../helpers/sortList';
 import {
   walletConnectClearTimestamp,
   walletConnectDisconnectAllByDappName,
-  walletConnectInitAllConnectors,
   walletConnectUpdateTimestamp,
 } from '../redux/walletconnect';
 
@@ -23,14 +21,12 @@ const walletConnectorsSelector = state => state.walletConnectors;
 const sortWalletConnectors = (walletConnectors) => {
   const sortedWalletConnectors = sortList(Object.values(walletConnectors), 'peerMeta.name');
   const sortedWalletConnectorsByDappName = groupBy(sortedWalletConnectors, 'peerMeta.url');
-  const dappWalletConnector = mapValues(sortedWalletConnectorsByDappName, (connectors) => {
-    const firstElement = head(connectors);
-    return {
-      dappName: get(firstElement, 'peerMeta.name'),
-      dappIcon: get(firstElement, 'peerMeta.icons[0]'),
-      dappUrl: get(firstElement, 'peerMeta.url'),
-    };
-  });
+  const dappWalletConnector = mapValues(sortedWalletConnectorsByDappName, (connectors) => ({
+    dappIcon: get(connectors, '[0].peerMeta.icons[0]'),
+    dappName: get(connectors, '[0].peerMeta.name'),
+    dappUrl: get(connectors, '[0].peerMeta.url'),
+  }));
+
   return {
     sortedWalletConnectors,
     walletConnectorsByDappName: values(dappWalletConnector),
@@ -47,7 +43,6 @@ export default Component => compose(
   connect(mapStateToProps, {
     walletConnectClearTimestamp,
     walletConnectDisconnectAllByDappName,
-    walletConnectInitAllConnectors,
     walletConnectUpdateTimestamp,
   }),
   withProps(walletConnectSelector),

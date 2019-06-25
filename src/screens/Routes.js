@@ -1,3 +1,6 @@
+import analytics from '@segment/analytics-react-native';
+import { get } from 'lodash';
+import React from 'react';
 import {
   createAppContainer,
   createMaterialTopTabNavigator,
@@ -64,15 +67,6 @@ const MainNavigator = createStackNavigator({
     },
     screen: ReceiveModal,
   },
-  WalletConnectConfirmationModal: {
-    navigationOptions: {
-      effect: 'expanded',
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height,
-      },
-    },
-    screen: WalletConnectConfirmationModal,
-  },
   SendSheet: SendSheetWithData,
   SettingsModal: {
     navigationOptions: {
@@ -82,6 +76,15 @@ const MainNavigator = createStackNavigator({
     screen: SettingsModal,
   },
   SwipeLayout: SwipeStack,
+  WalletConnectConfirmationModal: {
+    navigationOptions: {
+      effect: 'expanded',
+      gestureResponseDistance: {
+        vertical: deviceUtils.dimensions.height,
+      },
+    },
+    screen: WalletConnectConfirmationModal,
+  },
 }, {
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',
@@ -92,4 +95,37 @@ const MainNavigator = createStackNavigator({
   transparentCard: true,
 });
 
-export default createAppContainer(MainNavigator);
+const AppContainer = createAppContainer(MainNavigator);
+
+const AppContainerWithAnalytics = () => (
+  <AppContainer
+    onNavigationStateChange={(prevState, currentState, action) => {
+      const { params, routeName } = Navigation.getActiveRoute(currentState);
+      const prevRouteName = Navigation.getActiveRouteName(prevState);
+
+      if (routeName === 'SettingsModal') {
+        let subRoute = get(params, 'section.title');
+        if (subRoute === 'Settings') subRoute = null;
+        return analytics.screen(`${routeName}${subRoute ? `>${subRoute}` : ''}`);
+      }
+
+      if (routeName !== prevRouteName) {
+        let paramsToTrack = null;
+
+        if (routeName === 'ExpandedAssetScreen') {
+          const { asset, type } = params;
+          paramsToTrack = {
+            assetContractAddress: asset.address || get(asset, 'asset_contract.address'),
+            assetName: asset.name,
+            assetSymbol: asset.symbol || get(asset, 'asset_contract.symbol'),
+            assetType: type,
+          };
+        }
+
+        analytics.screen(routeName, paramsToTrack);
+      }
+    }}
+  />
+);
+
+export default React.memo(AppContainerWithAnalytics);

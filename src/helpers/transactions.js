@@ -5,39 +5,34 @@ import {
   isToday,
   isYesterday,
 } from 'date-fns';
-import {
-  get,
-  groupBy,
-  isEmpty,
-} from 'lodash';
-import { supportedNativeCurrencies } from '@rainbow-me/rainbow-common';
-import { createElement } from 'react';
+import { get, groupBy, isEmpty } from 'lodash';
 import { createSelector } from 'reselect';
 import TransactionStatusTypes from './transactionStatusTypes';
+import { isLowerCaseMatch } from '../utils';
 
 const accountAddressSelector = state => state.accountAddress;
 const nativeCurrencySelector = state => state.nativeCurrency;
 const requestsSelector = state => state.requests;
 const transactionsSelector = state => state.transactions;
 
-export const buildTransactionUniqueIdentifier = ({ hash, transactionDisplayDetails }) => {
-  return hash || get(transactionDisplayDetails, 'timestampInMs');
-}
+export const buildTransactionUniqueIdentifier = ({ hash, displayDetails }) => (
+  hash || get(displayDetails, 'timestampInMs')
+);
 
 export const getTransactionStatus = ({
   accountAddress,
-  error,
   from,
   pending,
+  status,
   to,
 }) => {
-  const isFromAccount = from.toLowerCase() === accountAddress.toLowerCase();
-  const isToAccount = to.toLowerCase() === accountAddress.toLowerCase();
+  const isFromAccount = isLowerCaseMatch(from, accountAddress);
+  const isToAccount = isLowerCaseMatch(to, accountAddress);
 
   if (pending && isFromAccount) return TransactionStatusTypes.sending;
   if (pending && isToAccount) return TransactionStatusTypes.receiving;
 
-  if (error) return TransactionStatusTypes.failed;
+  if (status === 'failed') return TransactionStatusTypes.failed;
 
   if (isFromAccount && isToAccount) return TransactionStatusTypes.self;
 
@@ -47,11 +42,10 @@ export const getTransactionStatus = ({
   return undefined;
 };
 
-const groupTransactionByDate = ({ pending, timestamp: time }) => {
+const groupTransactionByDate = ({ pending, mined_at: time }) => {
   if (pending) return 'Pending';
 
-  const { ms } = time;
-  const timestamp = new Date(parseInt(ms, 10));
+  const timestamp = new Date(parseInt(time, 10) * 1000);
 
   if (isToday(timestamp)) return 'Today';
   if (isYesterday(timestamp)) return 'Yesterday';
@@ -63,23 +57,14 @@ const groupTransactionByDate = ({ pending, timestamp: time }) => {
 const normalizeTransactions = ({ accountAddress, nativeCurrency, transactions }) => (
   transactions.map(({
     asset,
-    native,
-    value,
     ...tx
   }) => ({
     ...tx,
-    balance: value,
     name: get(asset, 'name', ''),
-    native: {
-      ...supportedNativeCurrencies[nativeCurrency],
-      balance: get(native, `${nativeCurrency}.value`),
-    },
     status: getTransactionStatus({ accountAddress, ...tx }),
     symbol: get(asset, 'symbol', ''),
   }))
 );
-
-const renderItemElement = renderItem => renderItemProps => createElement(renderItem, renderItemProps);
 
 const buildTransactionsSections = (
   accountAddress,
@@ -102,7 +87,6 @@ const buildTransactionsSections = (
       data: transactionsByDate[section],
       title: section,
     }));
-
   }
 
   let requestsToApprove = [];

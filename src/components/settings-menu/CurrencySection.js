@@ -1,28 +1,24 @@
-import { omit } from 'lodash';
+import analytics from '@segment/analytics-react-native';
+import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
-import { supportedNativeCurrencies } from '@rainbow-me/rainbow-common';
 import React from 'react';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { withAccountSettings } from '../../hoc';
 import { CoinIcon } from '../coin-icon';
 import { RadioList, RadioListItem } from '../radio-list';
+import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { Emoji } from '../text';
 
-// Disable BTC native currency support until BTC wallet support exists
-const currencies = omit(supportedNativeCurrencies || {}, 'BTC');
-const currencyListItems = Object.values(currencies).map(({ currency, ...item }) => ({
+const currencyListItems = Object.values(supportedNativeCurrencies).map(({ currency, ...item }) => ({
   ...item,
   currency,
   key: currency,
   value: currency,
 }));
 
-const renderCurrencyIcon = (currency) => {
+const renderCurrencyIcon = (currency, emojiName) => {
   if (!currency) return null;
-
-  if (currency === 'EUR') return <Emoji name="flag-eu" />;
-  if (currency === 'GBP') return <Emoji name="gb" />;
-  if (currency === 'USD') return <Emoji name="us" />;
+  if (!isNil(emojiName)) return <Emoji name={emojiName} />;
 
   return (
     <CoinIcon
@@ -34,10 +30,15 @@ const renderCurrencyIcon = (currency) => {
 };
 
 // eslint-disable-next-line react/prop-types
-const renderCurrencyListItem = ({ currency, label, ...item }) => (
+const renderCurrencyListItem = ({
+  currency,
+  emojiName,
+  label,
+  ...item
+}) => (
   <RadioListItem
     {...item}
-    icon={renderCurrencyIcon(currency)}
+    icon={renderCurrencyIcon(currency, emojiName)}
     label={`${label} (${currency})`}
     value={currency}
   />
@@ -61,7 +62,10 @@ CurrencySection.propTypes = {
 export default compose(
   withAccountSettings,
   withHandlers({
-    onSelectCurrency: ({ settingsChangeNativeCurrency }) => (currency) => settingsChangeNativeCurrency(currency),
+    onSelectCurrency: ({ settingsChangeNativeCurrency }) => (currency) => {
+      settingsChangeNativeCurrency(currency);
+      analytics.track('Changed native currency', { currency });
+    },
   }),
   onlyUpdateForKeys(['nativeCurrency']),
 )(CurrencySection);
