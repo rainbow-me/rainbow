@@ -21,6 +21,7 @@ import { CoinRow, CollectiblesSendRow } from '../coin-row';
 import { ListFooter } from '../list';
 import AssetListHeader from './AssetListHeader';
 import { withOpenFamilyTabs } from '../../hoc';
+import { CardSize } from '../unique-token/UniqueTokenRow';
 
 export const ViewTypes = {
   HEADER: 0,
@@ -176,9 +177,9 @@ class RecyclerAssetList extends PureComponent {
           }
           return;
         }
-
+        
         if (type.get === ViewTypes.UNIQUE_TOKEN_ROW) {
-          dim.height = type.size * 162 + 54 + 20 * (type.size - 1) + (type.isLast ? 90 : 0);
+          dim.height = type.size * CardSize + 54 + 20 * (type.size - 1) + (type.isLast ? 90 : 0);
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_CLOSED) {
           dim.height = 54;
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_CLOSED_LAST) {
