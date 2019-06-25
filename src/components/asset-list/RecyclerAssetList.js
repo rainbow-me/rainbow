@@ -142,7 +142,11 @@ class RecyclerAssetList extends PureComponent {
           const idx = areBalancesLoaded ? 1 : 0;
           if (index > headersIndices[idx]) {
             if (openFamilyTabs[index - headersIndices[idx] - 1]) {
-              return { get: ViewTypes.UNIQUE_TOKEN_ROW, size: sections[1].data[index - headersIndices[idx] - 1].tokens.length, isLast: index === this.state.length - 1 };
+              return {
+                get: ViewTypes.UNIQUE_TOKEN_ROW,
+                isLast: index === this.state.length - 1,
+                size: sections[1].data[index - headersIndices[idx] - 1].tokens.length,
+              };
             } else if (index === this.state.length - 1) {
               return ViewTypes.UNIQUE_TOKEN_ROW_CLOSED_LAST;
             }
