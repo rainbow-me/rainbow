@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, { PureComponent, useRef } from 'react';
 import { TouchableHighlight } from 'react-native';
 import { withNavigation } from 'react-navigation';
-import { 
-  compose, withHandlers, withProps, onlyUpdateForKeys,  
+import {
+  compose, withHandlers, withProps, onlyUpdateForKeys,
 } from 'recompact';
 import { UniqueTokenRow } from '../unique-token';
 import { View, Text } from 'react-primitives';
@@ -40,7 +40,7 @@ class TokenFamilyWrap extends PureComponent {
   collectiblesRenderItem = item => {
     if (this.props.openFamilyTabs[item.item[0][0].rowNumber]) {
       const tokens = [];
-      for(let i = 0; i < item.item.length; i++) {
+      for (let i = 0; i < item.item.length; i++) {
         tokens.push(<UniqueTokenItem isLastRow={item.isLastRow} isFirstRow={item.isFirstRow} item={item.item[i]} assetType="unique_token" />)
       }
       return tokens;
@@ -48,24 +48,19 @@ class TokenFamilyWrap extends PureComponent {
   };
 
   onHeaderPress = () => {
-    console.log(this.props.openFamilyTabs);
-    this.props.setOpenFamilyTabs({index: this.props.item[0][0].rowNumber, state: !this.props.openFamilyTabs[this.props.item[0][0].rowNumber]});
+    this.props.setOpenFamilyTabs({ index: this.props.item[0][0].rowNumber, state: !this.props.openFamilyTabs[this.props.item[0][0].rowNumber] });
   }
 
   render() {
     return (
       <View>
-        <ButtonPressAnimation 
-          scaleTo={0.96}
-          onPress={this.onHeaderPress}
-        >
-        <TokenFamilyHeader 
+        <TokenFamilyHeader
           familyName={this.props.familyName}
           childrenAmount={this.props.childrenAmount}
           highlight={this.props.highlight}
           isOpen={this.props.openFamilyTabs[this.props.item[0][0].rowNumber]}
+          onHeaderPress={this.onHeaderPress}
         />
-        </ButtonPressAnimation>
         {header(this.collectiblesRenderItem(this.props))}
       </View>
     );

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text } from 'react-primitives';
 import { onlyUpdateForKeys } from 'recompact';
 import Divider from '../Divider';
@@ -12,6 +12,9 @@ import { Icon } from '../icons';
 import { ButtonPressAnimation } from '../animations';
 import { ShadowStack } from '../shadow-stack';
 import { colors } from '../../styles';
+import Animated, { Easing } from 'react-native-reanimated';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Button, StyleSheet, Alert } from 'react-native';
 
 const Wrapper = styled.View`
   height: 56px;
@@ -40,80 +43,125 @@ const ArrowWrap = styled.View`
   transform: scale(0.8);
 `;
 
-const SendWrap = styled.View`
-  background-color: #f3f5f7;
-  border-radius: 15px;
-  height: 30px;
-  width: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
+const {
+  set,
+  cond,
+  eq,
+  and,
+  startClock,
+  stopClock,
+  clockRunning,
+  block,
+  timing,
+  Value,
+  Clock,
+  interpolate,
+  concat,
+} = Animated;
 
-const SendIconWrap = styled.View`
-  transform: scale(0.6);
-  opacity: 0.6;
-`;
+function runTiming(clock, value, dest, isOpen) {
+  const state = {
+    finished: new Value(1),
+    position: new Value(value),
+    time: new Value(0),
+    frameTime: new Value(0),
+  };
 
-const TokenListHeader = (props) => (
-  <Wrapper>
-    <Highlight highlight={props.highlight} />
-    <LeftView>
-    <ShadowStack
-      borderRadius={10.3}
-      height={34}
-      width={34}
-      shadows={[
-        [0, 4, 6, colors.dark, 0.04],
-        [0, 1, 3, colors.dark, 0.08],
-      ]}
-      shouldRasterizeIOS
-    >
-      <Image>
+  const config = {
+    duration: 200,
+    toValue: new Value(0),
+    easing: Easing.inOut(Easing.ease),
+  };
 
-      </Image>
-      </ShadowStack>
-      <TruncatedText
-        style={{ paddingLeft: 9 }}
-        lineHeight="normal"
-        size="medium"
-        weight="semibold"
-      >
-        {props.familyName}
-      </TruncatedText>
-      {!props.isOpen &&
-        <ArrowWrap>
-          <Icon
-            color={'black'}
-            name={'caret'}
-            direction={'right'}
-          />
-        </ArrowWrap>
-      }
-    </LeftView>
-    {!props.isOpen ?
-      <Monospace
-        color="blueGreyDark"
-        size="lmedium"
-      >
-        {props.childrenAmount}
-      </Monospace> :
+  const reset = [
+    set(state.finished, 0),
+    set(state.time, 0),
+    set(state.frameTime, 0),
+  ];
+
+  return block([
+    cond(state.finished, [
+      ...reset,
+      set(config.toValue, dest),
+    ]),
+    cond(clockRunning(clock), 0, startClock(clock)),
+    timing(clock, state, config),
+    state.position,
+  ]);
+}
+
+class TokenListHeader extends React.Component {
+  componentWillUpdate(prev) {
+    if (prev.isOpen !== undefined && prev.isOpen !== this.props.isOpen) {
+      console.log(this.props.isOpen);
+      const clock = new Clock();
+      let base = undefined;
+      this.props.isOpen ? base = runTiming(clock, -1, 1, this.props.isOpen) : base = runTiming(clock, 1, -1, this.props.isOpen);
+      this._transX = interpolate(base, {
+        inputRange: [-1, 1],
+        outputRange: [90, 0],
+      });
+    };
+  }
+
+  render() {
+    return (
       <ButtonPressAnimation
-        scaleTo={0.8}
-        onPress={() => {}}
+        scaleTo={0.96}
+        onPress={() => {
+          this.props.onHeaderPress();
+        }}
       >
-        <SendWrap>
-          <SendIconWrap>
-            <Icon
-              color={'#3c4252'}
-              name={'share'}
-            />
-          </SendIconWrap>
-        </SendWrap>
+        <Wrapper>
+          <Highlight highlight={this.props.highlight} />
+          <LeftView>
+            <ShadowStack
+              borderRadius={10.3}
+              height={34}
+              width={34}
+              shadows={[
+                [0, 4, 6, colors.dark, 0.04],
+                [0, 1, 3, colors.dark, 0.08],
+              ]}
+              shouldRasterizeIOS
+            >
+              <Image>
+
+              </Image>
+            </ShadowStack>
+            <TruncatedText
+              style={{ paddingLeft: 9 }}
+              lineHeight="normal"
+              size="medium"
+              weight="semibold"
+            >
+              {this.props.familyName}
+            </TruncatedText>
+            <ArrowWrap>
+              <Animated.View
+                style={{ transform: [{ rotate: this._transX ? concat(this._transX, 'deg') : '90deg' }] }}
+              >
+                <Icon
+                  color={'black'}
+                  name={'caret'}
+                  direction={'right'}
+                />
+              </Animated.View>
+            </ArrowWrap>
+          </LeftView>
+          {!this.props.isOpen &&
+            <Monospace
+              color="blueGreyDark"
+              size="lmedium"
+            >
+              {this.props.childrenAmount}
+            </Monospace>
+          }
+        </Wrapper>
       </ButtonPressAnimation>
-    }
-  </Wrapper>
-);
+    );
+  }
+};
 
 TokenListHeader.propTypes = {
 

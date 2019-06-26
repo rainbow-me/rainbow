@@ -233,6 +233,33 @@ class RecyclerAssetList extends PureComponent {
         this.rlv.scrollToOffset(0, this.position + this.props.scrollingVelocity * 10);
       }, 30);
     }
+    if (this.props.openFamilyTabs !== prev.openFamilyTabs) {
+      let i = 0;
+      while(i < this.props.openFamilyTabs.length) {
+        if(this.props.openFamilyTabs[i] === true && prev.openFamilyTabs[i] === false) {
+
+          setTimeout(() => {
+            let collectiblesHeight = 0;
+            for(let j = 0; j < i; j++) {
+              if(this.props.openFamilyTabs[j] === true) {
+                collectiblesHeight += this.props.sections[1].data[j].tokens.length * CardSize + 54 + 20 * (this.props.sections[1].data[j].tokens.length - 1);
+              } else {
+                collectiblesHeight += 54;
+              }
+            }
+            const diff = this.position - (CoinRow.height * this.props.sections[0].data.length + AssetListHeader.height * this.props.sections.length + collectiblesHeight) + (deviceUtils.dimensions.height - 210);
+            console.log(diff);
+            const renderSize = CardSize * this.props.sections[1].data[i].tokens.length + 20 * (this.props.sections[1].data[i].tokens.length - 1);
+            if( renderSize > diff) {
+              const scrollDistance = deviceUtils.dimensions.height - 210 > renderSize ? renderSize - diff : deviceUtils.dimensions.height - 250;
+              this.rlv.scrollToOffset(0, this.position + scrollDistance , true);
+            }
+          }, 50);
+          break;
+        }
+        i++;
+      }
+    }
   }
 
   componentWillUnmount = () => {
