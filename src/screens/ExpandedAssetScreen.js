@@ -8,6 +8,7 @@ import {
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import TouchableBackdrop from '../components/TouchableBackdrop';
+import { withNeverRerender } from '../hoc';
 import { padding } from '../styles';
 import { deviceUtils, safeAreaInsetValues } from '../utils';
 
@@ -22,7 +23,7 @@ const ScreenTypes = {
   uniswap: InvestmentExpandedState,
 };
 
-const ExpandedAssetScreen = ({
+const ExpandedAssetScreen = withNeverRerender(({
   containerPadding,
   onPressBackground,
   type,
@@ -37,7 +38,7 @@ const ExpandedAssetScreen = ({
     <TouchableBackdrop onPress={onPressBackground} />
     {createElement(ScreenTypes[type], props)}
   </Centered>
-);
+));
 
 ExpandedAssetScreen.propTypes = {
   asset: PropTypes.object,

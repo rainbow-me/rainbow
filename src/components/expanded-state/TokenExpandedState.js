@@ -2,16 +2,11 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { InteractionManager } from 'react-native';
-import {
-  compose,
-  onlyUpdateForKeys,
-  withHandlers,
-  withProps,
-} from 'recompact';
+import { compose, withHandlers, withProps } from 'recompact';
+import { withAccountData, withAccountSettings, withNeverRerender } from '../../hoc';
+import { ethereumUtils } from '../../utils';
 import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
-import { withAccountData, withAccountSettings } from '../../hoc';
-import { ethereumUtils } from '../../utils';
 
 const TokenExpandedState = ({
   onPressSend,
@@ -71,5 +66,5 @@ export default compose(
       });
     },
   }),
-  onlyUpdateForKeys(['price', 'subtitle']),
+  withNeverRerender,
 )(TokenExpandedState);
