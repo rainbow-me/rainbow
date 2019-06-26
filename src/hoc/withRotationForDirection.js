@@ -1,13 +1,13 @@
 import { mapProps } from 'recompact';
 import { calcDirectionToDegrees } from '../styles';
-import { reduceStylesArrayToObject } from '../utils';
+import { reduceArrayToObject } from '../utils';
 
 const withRotationForDirection = Component => mapProps(({ direction, style, ...props }) => {
-  const prevStyles = reduceStylesArrayToObject(style);
+  const prevStyles = reduceArrayToObject(style);
 
   return {
     ...props,
-    style: reduceStylesArrayToObject([
+    style: reduceArrayToObject([
       prevStyles,
       { transform: [{ rotate: `${calcDirectionToDegrees(direction)}deg` }] },
     ]),
