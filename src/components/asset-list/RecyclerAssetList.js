@@ -237,7 +237,7 @@ class RecyclerAssetList extends PureComponent {
       let i = 0;
       while(i < this.props.openFamilyTabs.length) {
         if(this.props.openFamilyTabs[i] === true && prev.openFamilyTabs[i] === false) {
-
+          console.log(deviceUtils.isSmallPhone);
           setTimeout(() => {
             let collectiblesHeight = 0;
             for(let j = 0; j < i; j++) {
@@ -247,11 +247,10 @@ class RecyclerAssetList extends PureComponent {
                 collectiblesHeight += 54;
               }
             }
-            const diff = this.position - (CoinRow.height * this.props.sections[0].data.length + AssetListHeader.height * this.props.sections.length + collectiblesHeight) + (deviceUtils.dimensions.height - 210);
-            console.log(diff);
+            const diff = this.position - (CoinRow.height * this.props.sections[0].data.length + AssetListHeader.height * this.props.sections.length + collectiblesHeight) + (deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235));
             const renderSize = CardSize * this.props.sections[1].data[i].tokens.length + 20 * (this.props.sections[1].data[i].tokens.length - 1);
             if( renderSize > diff) {
-              const scrollDistance = deviceUtils.dimensions.height - 210 > renderSize ? renderSize - diff : deviceUtils.dimensions.height - 250;
+              const scrollDistance = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235) > renderSize ? renderSize - diff : deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 250 : 280);
               this.rlv.scrollToOffset(0, this.position + scrollDistance , true);
             }
           }, 50);
