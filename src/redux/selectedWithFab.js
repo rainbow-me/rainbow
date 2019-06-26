@@ -12,7 +12,6 @@ export const setScrollingVelocity = (scrollingVelocity) => (dispatch) => {
 };
 
 export const setActionType = (actionType) => (dispatch) => {
-  console.log(actionType)
   dispatch({ actionType, type: UPDATE_ACTION_TYPE });
 };
 

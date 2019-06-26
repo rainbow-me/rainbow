@@ -233,7 +233,7 @@ class Movable extends React.Component {
                 ),
                 onChange(
                   selectedIndexWithState,
-                  call([selectedIndexWithState], ([i]) => { console.log(i); return this.props.updateSelectedID(i < 0 ? i : this.props.areas[i].id)}),
+                  call([selectedIndexWithState], ([i]) => this.props.updateSelectedID(i < 0 ? i : this.props.areas[i].id)),
                 ),
                 onChange(
                   this.gestureState,
