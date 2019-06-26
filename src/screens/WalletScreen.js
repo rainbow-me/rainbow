@@ -28,6 +28,7 @@ import {
   withIsWalletEmpty,
   withUniqueTokens,
   withStatusBarStyle,
+  withUniswapLiquidity,
 } from '../hoc';
 import { position } from '../styles';
 import { isNewValueForPath } from '../utils';
@@ -131,6 +132,7 @@ export default compose(
   withUniqueTokens,
   withAccountSettings,
   withDataInit,
+  withUniswapLiquidity,
   withHideSplashScreen,
   withSafeTimeout,
   withNavigation,

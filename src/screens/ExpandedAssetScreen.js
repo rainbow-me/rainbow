@@ -1,16 +1,26 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { createElement } from 'react';
 import { StatusBar } from 'react-native';
-import { TokenExpandedState, UniqueTokenExpandedState } from '../components/expanded-state';
+import {
+  InvestmentExpandedState,
+  TokenExpandedState,
+  UniqueTokenExpandedState,
+} from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { padding } from '../styles';
-import { safeAreaInsetValues } from '../utils';
+import { deviceUtils, safeAreaInsetValues } from '../utils';
 
 const {
   bottom: safeAreaBottom,
   top: safeAreaTop,
 } = safeAreaInsetValues;
+
+const ScreenTypes = {
+  token: TokenExpandedState,
+  unique_token: UniqueTokenExpandedState,
+  uniswap: InvestmentExpandedState,
+};
 
 const ExpandedAssetScreen = ({
   containerPadding,
@@ -19,16 +29,13 @@ const ExpandedAssetScreen = ({
   ...props
 }) => (
   <Centered
+    {...deviceUtils.dimensions}
     css={padding(safeAreaTop, containerPadding, safeAreaBottom || safeAreaTop)}
     direction="column"
-    height="100%"
   >
     <StatusBar barStyle="light-content" />
     <TouchableBackdrop onPress={onPressBackground} />
-    {type === 'token'
-      ? <TokenExpandedState {...props} />
-      : <UniqueTokenExpandedState {...props} />
-    }
+    {createElement(ScreenTypes[type], props)}
   </Centered>
 );
 
@@ -37,7 +44,7 @@ ExpandedAssetScreen.propTypes = {
   containerPadding: PropTypes.number.isRequired,
   onPressBackground: PropTypes.func,
   panelWidth: PropTypes.number,
-  type: PropTypes.oneOf(['token', 'unique_token']),
+  type: PropTypes.oneOf(['token', 'unique_token', 'uniswap']),
 };
 
 ExpandedAssetScreen.defaultProps = {

@@ -6,7 +6,7 @@ import {
   createMaterialTopTabNavigator,
   createStackNavigator,
 } from 'react-navigation';
-import Navigation from '../navigation';
+import { Navigation } from '../navigation';
 import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
@@ -43,7 +43,30 @@ const SwipeStack = createMaterialTopTabNavigator({
   headerMode: 'none',
   initialRouteName: 'WalletScreen',
   mode: 'modal',
+  springConfig: {
+    damping: 16,
+    mass: 0.3,
+    overshootClamping: false,
+    restDisplacementThreshold: 1,
+    restSpeedThreshold: 1,
+    stiffness: 140,
+   },
+  // swipeDistanceThreshold: 100,
+  // swipeVelocityThreshold: 100,
+  swipeDistanceThreshold: 30,
+  swipeVelocityThreshold: 10,
   tabBarComponent: null,
+
+
+  // XXX experimenting with these new values
+  initialLayout: deviceUtils.dimensions,
+  // {
+  //   height: 0,
+  //   width: deviceUtils.dimensions.width,
+  // },
+  // lazy: true,
+  // position: Navigation.transitionPosition,
+  // optimizationsEnabled: true,
 });
 
 const MainNavigator = createStackNavigator({
