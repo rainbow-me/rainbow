@@ -73,17 +73,20 @@ const TopRow = ({ balance, pending, status }) => (
 
 TopRow.propTypes = rowRenderPropTypes;
 
-const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
-  <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>
-    <CoinRow
-      {...item}
-      {...props}
-      bottomRowRender={BottomRow}
-      shouldRasterizeIOS={true}
-      topRowRender={TopRow}
-    />
-  </ButtonPressAnimation>
-);
+const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => {
+  console.log(item);
+  return (
+    <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>
+      <CoinRow
+        {...item}
+        {...props}
+        bottomRowRender={BottomRow}
+        shouldRasterizeIOS={true}
+        topRowRender={TopRow}
+      />
+    </ButtonPressAnimation>
+  )
+  };
 
 TransactionCoinRow.propTypes = rowRenderPropTypes;
 
@@ -104,13 +107,16 @@ export default compose(
     ...props,
   })),
   withHandlers({
-    onPressTransaction: ({ hash }) => () => {
+    onPressTransaction: ({ hash, item }) => () => {
       if (hash) {
         showActionSheetWithOptions({
-          cancelButtonIndex: 1,
-          options: ['View on Etherscan', 'Cancel'],
+          title: `${item.status} ${item.status === "sent" ? `to ${item.to}` : `from ${item.from}`} `,
+          cancelButtonIndex: 2,
+          options: ['asdfadsf', 'View on Etherscan', 'Cancel'],
         }, (buttonIndex) => {
           if (buttonIndex === 0) {
+            console.log(item);
+          } else if (buttonIndex === 1) {
             const normalizedHash = hash.replace(/-.*/g, '');
             Linking.openURL(`https://etherscan.io/tx/${normalizedHash}`);
           }
