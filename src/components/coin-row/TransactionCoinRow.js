@@ -20,6 +20,7 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 
+// XXX after rebase, not sure if still needed
 const containerStyles = css`
   paddingLeft: 15;
 `;
@@ -116,13 +117,16 @@ export default compose(
     ...props,
   })),
   withHandlers({
-    onPressTransaction: ({ hash }) => () => {
+    onPressTransaction: ({ hash, item }) => () => {
       if (hash) {
         showActionSheetWithOptions({
-          cancelButtonIndex: 1,
-          options: ['View on Etherscan', 'Cancel'],
+          title: `${item.status} ${item.status === "sent" ? `to ${item.to}` : `from ${item.from}`} `,
+          cancelButtonIndex: 2,
+          options: ['asdfadsf', 'View on Etherscan', 'Cancel'],
         }, (buttonIndex) => {
           if (buttonIndex === 0) {
+            console.log(item);
+          } else if (buttonIndex === 1) {
             const normalizedHash = hash.replace(/-.*/g, '');
             Linking.openURL(`https://etherscan.io/tx/${normalizedHash}`);
           }
