@@ -8,7 +8,11 @@ import { Alert, StatusBar, Vibration } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
 import { withTransactionConfirmationScreen } from '../hoc';
-import { signMessage, sendTransaction } from '../model/wallet';
+import {
+  signMessage,
+  signPersonalMessage,
+  sendTransaction,
+} from '../model/wallet';
 import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
 import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
@@ -33,8 +37,8 @@ class TransactionConfirmationScreenWithData extends PureComponent {
   }
 
   handleConfirm = async (requestType) => {
-    if (requestType === 'message') {
-      return this.handleSignMessage();
+    if (requestType === 'message' || requestType === 'messagePersonal') {
+      return this.handleSignMessage(requestType);
     }
     return this.handleConfirmTransaction();
   };
@@ -88,10 +92,15 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     }
   };
 
-  handleSignMessage = async () => {
+  handleSignMessage = async (requestType) => {
     const { transactionDetails } = this.props.navigation.state.params;
     const message = get(transactionDetails, 'displayDetails.payload');
-    const flatFormatSignature = await signMessage(message);
+    let flatFormatSignature = null;
+    if (requestType === 'message') {
+      flatFormatSignature = await signMessage(message);
+    } else if (requestType === 'messagePersonal') {
+      flatFormatSignature = await signPersonalMessage(message);
+    }
 
     if (flatFormatSignature) {
       this.props.removeRequest(transactionDetails.requestId);

@@ -97,7 +97,7 @@ const MainNavigator = createStackNavigator({
 
 const AppContainer = createAppContainer(MainNavigator);
 
-const AppContainerWithAnalytics = () => (
+const AppContainerWithAnalytics = ({ ref, screenProps }) => (
   <AppContainer
     onNavigationStateChange={(prevState, currentState, action) => {
       const { params, routeName } = Navigation.getActiveRoute(currentState);
@@ -125,6 +125,8 @@ const AppContainerWithAnalytics = () => (
         analytics.screen(routeName, paramsToTrack);
       }
     }}
+    ref={ref}
+    screenProps={screenProps}
   />
 );
 
