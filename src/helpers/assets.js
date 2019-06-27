@@ -36,6 +36,7 @@ export const buildUniqueTokenList = (uniqueTokens) => {
     rows.push({
       tokens,
       uniqueId: tokensRow[0].map(({ uniqueId }) => uniqueId).join('__'),
+      familyImage: get(tokensRow, '[0][0].familyImage', null),
       familyName: families[i],
       familyId: i,
       childrenAmount: grouped[families[i]].length,

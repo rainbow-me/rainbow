@@ -311,6 +311,7 @@ class RecyclerAssetList extends PureComponent {
         item: item.tokens ? item.tokens : item,
         shouldPrioritizeImageLoading: index < sections[0].data.length + 9,
         uniqueId: item.uniqueId,
+        familyImage: item.familyImage,
         familyName: item.familyName,
         familyId: item.familyId,
         childrenAmount: item.childrenAmount,

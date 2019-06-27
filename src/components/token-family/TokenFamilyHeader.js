@@ -35,6 +35,12 @@ const Image = styled.View`
   border-radius: 10.3px;
 `;
 
+const FamilyImage = styled(FastImage)`
+  height: 34px;
+  width: 34px;
+  border-radius: 10.3px;
+`;
+
 const LeftView = styled.View`
   align-items: center;
   flex-direction: row;
@@ -133,9 +139,15 @@ class TokenListHeader extends React.Component {
               ]}
               shouldRasterizeIOS
             >
+            {(this.props.familyImage) ? (
+              <FamilyImage
+                id={this.props.familyImage}
+                source={{ uri: this.props.familyImage }}
+              />
+            ) : (
               <Image>
-
               </Image>
+            )}
             </ShadowStack>
             <TruncatedText
               style={{ paddingLeft: 9 }}

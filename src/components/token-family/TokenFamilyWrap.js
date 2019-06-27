@@ -56,6 +56,7 @@ class TokenFamilyWrap extends PureComponent {
       <View>
         <TokenFamilyHeader
           familyName={this.props.familyName}
+          familyImage={this.props.familyImage}
           childrenAmount={this.props.childrenAmount}
           highlight={this.props.highlight}
           isOpen={this.props.openFamilyTabs[this.props.item[0][0].rowNumber]}
