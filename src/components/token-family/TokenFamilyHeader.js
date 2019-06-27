@@ -15,6 +15,8 @@ import { colors } from '../../styles';
 import Animated, { Easing } from 'react-native-reanimated';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Button, StyleSheet, Alert } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import Caret from '../../assets/family-dropdown-arrow.png';
 
 const Wrapper = styled.View`
   height: 56px;
@@ -42,6 +44,12 @@ const ArrowWrap = styled.View`
   padding-left: 9px;
   transform: scale(0.8);
 `;
+
+const SettingIcon = styled(FastImage)`
+height: 20px;
+width: 9px;
+`;
+
 
 const {
   set,
@@ -141,11 +149,7 @@ class TokenListHeader extends React.Component {
               <Animated.View
                 style={{ transform: [{ rotate: this._transX ? concat(this._transX, 'deg') : '90deg' }] }}
               >
-                <Icon
-                  color={'black'}
-                  name={'caret'}
-                  direction={'right'}
-                />
+               <SettingIcon source={Caret} />
               </Animated.View>
             </ArrowWrap>
           </LeftView>
