@@ -6,7 +6,7 @@ import { deviceUtils } from '../../utils';
 import { Row } from '../layout';
 import UniqueTokenCard from './UniqueTokenCard';
 
-const CardMargin = 15;
+export const CardMargin = 15;
 const RowPadding = 19;
 export const CardSize = (deviceUtils.dimensions.width - (RowPadding * 2) - CardMargin) / 2;
 

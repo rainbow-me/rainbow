@@ -11,7 +11,7 @@ import { deviceUtils } from '../../utils';
 import { CoinRow } from '../coin-row';
 import { ListFooter } from '../list';
 import { setActionType, setScrollingVelocity, updateSelectedID } from '../../redux/selectedWithFab';
-import { CardSize } from '../unique-token/UniqueTokenRow';
+import { CardSize, CardMargin } from '../unique-token/UniqueTokenRow';
 import { withOpenFamilyTabs } from '../../hoc';
 
 const {
@@ -290,7 +290,7 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
       height += CoinRow.height + (sections[0].data.length - 1 === i ? ListFooter.height : 0);
     }
 
-    height += 50;
+    height += 54;
 
     for (let i = 0; i < sections[1].data.length; i++) {
       const { tokens } = sections[1].data[i];
@@ -312,9 +312,11 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
             top: height,
           });
         }
-        height += CardSize + 15;
-        if(!openFamilyTabs[i]) {
-          height -= CardSize + 15;
+        if (openFamilyTabs[i]) {
+          height += CardSize;
+          if (j > 0) {
+            height += CardMargin;
+          }
         }
       }
     }

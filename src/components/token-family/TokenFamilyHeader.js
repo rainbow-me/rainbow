@@ -130,7 +130,7 @@ class TokenListHeader extends React.Component {
           <Highlight highlight={this.props.highlight} />
           <LeftView>
             <ShadowStack
-              borderRadius={10.3}
+              borderRadius={17}
               height={34}
               width={34}
               shadows={[
