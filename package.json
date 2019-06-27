@@ -23,7 +23,7 @@
     "@segment/analytics-react-native": "^1.0.1",
     "@staltz/react-native-tcp": "^3.3.1",
     "@tradle/react-native-http": "^2.0.1",
-    "@walletconnect/react-native": "^1.0.0-beta.20",
+    "@walletconnect/react-native": "^1.0.0-beta.25",
     "assert": "^1.4.1",
     "axios": "^0.19.0",
     "bignumber.js": "^8.1.1",

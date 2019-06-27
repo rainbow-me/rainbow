@@ -20,6 +20,7 @@ import {
   removeLocalRequest,
   saveLocalRequests,
 } from '../model/localstorage';
+import { convertHexToUtf8 } from '@walletconnect/utils';
 
 // -- Constants --------------------------------------- //
 const WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE = 'wallet/WALLETCONNECT_UPDATE_TRANSACTIONS_TO_APPROVE';
@@ -69,29 +70,27 @@ const getRequestDisplayDetails = (payload, assets, prices, nativeCurrency) => {
       timestampInMs,
     );
   }
-  if (payload.method === 'eth_sign' || payload.method === 'personal_sign') {
+  if (payload.method === 'eth_sign') {
     const message = get(payload, 'params[1]');
     return getMessageDisplayDetails(message, timestampInMs);
+  }
+  if (payload.method === 'personal_sign') {
+    const message = convertHexToUtf8(get(payload, 'params[0]'));
+    return getMessageDisplayDetails(message, timestampInMs, 'messagePersonal');
   }
   if (payload.method === 'eth_signTypedData'
     || payload.method === 'eth_signTypedData_v3') {
     const request = get(payload, 'params[1]', null);
     const jsonRequest = JSON.stringify(request.message);
-    return getTypedDataDisplayDetails(jsonRequest, timestampInMs);
+    return getMessageDisplayDetails(jsonRequest, timestampInMs);
   }
   return null;
 };
 
-const getTypedDataDisplayDetails = (request, timestampInMs) => ({
-  payload: request,
-  timestampInMs,
-  type: 'message',
-});
-
-const getMessageDisplayDetails = (message, timestampInMs) => ({
+const getMessageDisplayDetails = (message, timestampInMs, type = 'message') => ({
   payload: message,
   timestampInMs,
-  type: 'message',
+  type,
 });
 
 const getTransactionDisplayDetails = (transaction, assets, prices, nativeCurrency, timestampInMs) => {
