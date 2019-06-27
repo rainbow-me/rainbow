@@ -312,12 +312,9 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
             top: height,
           });
         }
-        height += CardSize;
-        if(j > 0) {
-          height += 15;
-        }
+        height += CardSize + 15;
         if(!openFamilyTabs[i]) {
-          height -= CardSize;
+          height -= CardSize + 15;
         }
       }
     }
