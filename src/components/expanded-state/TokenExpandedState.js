@@ -19,7 +19,9 @@ const TokenExpandedState = ({
   subtitle,
   title,
 }) => (
-  <FloatingPanels>
+  <FloatingPanels
+    width={100}
+  >
     <AssetPanel>
       <AssetPanelHeader
         price={price}

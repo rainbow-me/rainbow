@@ -35,6 +35,7 @@ const enhanceRenderItem = compose(
   withNavigation,
   withHandlers({
     onPress: ({ assetType, navigation }) => (item) => {
+      console.log(assetType); 
       navigation.navigate('ExpandedAssetScreen', {
         asset: item,
         type: assetType,

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import {
+  AddContactState,
   InvestmentExpandedState,
   TokenExpandedState,
   UniqueTokenExpandedState,
@@ -17,7 +18,9 @@ const {
 } = safeAreaInsetValues;
 
 const ScreenTypes = {
+  contact: AddContactState,
   token: TokenExpandedState,
+  // eslint-disable-next-line camelcase
   unique_token: UniqueTokenExpandedState,
   uniswap: InvestmentExpandedState,
 };
@@ -43,7 +46,7 @@ ExpandedAssetScreen.propTypes = {
   containerPadding: PropTypes.number.isRequired,
   onPressBackground: PropTypes.func,
   panelWidth: PropTypes.number,
-  type: PropTypes.oneOf(['token', 'unique_token', 'uniswap']),
+  type: PropTypes.oneOf(Object.keys(ScreenTypes)).isRequired,
 };
 
 ExpandedAssetScreen.defaultProps = {
