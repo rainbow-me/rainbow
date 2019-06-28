@@ -82,7 +82,7 @@ const getUniswapLiquidityKey = (accountAddress, network) => `uniswapliquidity-${
  */
 export const getUniswapLiquidityTokens = async (accountAddress, network) => {
   const uniswap = await getLocal(getUniswapLiquidityKey(accountAddress, network));
-  return uniswap ? uniswap.data : {};
+  return uniswap ? uniswap.data : [];
 };
 
 /**
