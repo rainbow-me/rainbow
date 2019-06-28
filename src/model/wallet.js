@@ -79,7 +79,23 @@ export const signMessage = async (message, authenticationPrompt = lang.t('wallet
   try {
     const wallet = await loadWallet(authenticationPrompt);
     try {
-      return await wallet.signMessage(message);
+      const signingKey = new ethers.utils.SigningKey(wallet.privateKey);
+      const sigParams = await signingKey.signDigest(ethers.utils.arrayify(message));
+      return await ethers.utils.joinSignature(sigParams);
+    } catch (error) {
+      return null;
+    }
+  } catch (error) {
+    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    return null;
+  }
+};
+
+export const signPersonalMessage = async (message, authenticationPrompt = lang.t('wallet.authenticate.please')) => {
+  try {
+    const wallet = await loadWallet(authenticationPrompt);
+    try {
+      return await wallet.signMessage(ethers.utils.isHexString(message) ? ethers.utils.arrayify(message) : message);
     } catch (error) {
       return null;
     }

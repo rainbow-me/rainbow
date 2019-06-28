@@ -89,11 +89,10 @@ class App extends Component {
   };
 
   async componentDidMount() {
-    await this.handleInitializeAnalytics();
-
     AppState.addEventListener('change', this.handleAppStateChange);
     Linking.addEventListener('url', this.handleOpenLinkingURL);
     await this.props.initializeWallet();
+    await this.handleInitializeAnalytics();
     firebase.notifications().getInitialNotification().then(notificationOpen => {
       if (notificationOpen) {
         const topic = get(notificationOpen, 'notification.data.topic');
