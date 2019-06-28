@@ -11,7 +11,11 @@ import {
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { withImageDimensionsCache } from '../../hoc';
 import { colors } from '../../styles';
-import { deviceUtils, dimensionsPropType, safeAreaInsetValues } from '../../utils';
+import {
+  deviceUtils,
+  dimensionsPropType,
+  safeAreaInsetValues,
+} from '../../utils';
 import { Centered } from '../layout';
 import { Pager } from '../pager';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
@@ -171,7 +175,7 @@ export default compose(
   })),
   withProps(buildPanelDimensions),
   withHandlers({
-    onPressSend: ({ navigation, asset }) => () => {
+    onPressSend: ({ asset, navigation }) => () => {
       navigation.goBack();
 
       InteractionManager.runAfterInteractions(() => {

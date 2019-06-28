@@ -288,13 +288,13 @@ export const sendUpdateNativeAmount = nativeAmount => (dispatch, getState) => {
   });
 };
 
-export const sendUpdateSelected = (value) => (dispatch, getState) => {
-  if (get(value, 'isNft')) {
+export const sendUpdateSelected = (asset) => (dispatch, getState) => {
+  if (get(asset, 'isNft')) {
     dispatch({
       payload: {
         selected: {
-          ...value,
-          symbol: value.asset_contract.name,
+          ...asset,
+          symbol: asset.asset_contract.name,
         },
       },
       type: SEND_UPDATE_NFT_SELECTED,
@@ -303,11 +303,8 @@ export const sendUpdateSelected = (value) => (dispatch, getState) => {
   } else {
     const state = getState();
     const assetAmount = get(state, 'send.assetAmount');
-    const assets = get(state, 'data.assets', []);
-    const selected = ethereumUtils.getAsset(assets, value) || {};
-
     dispatch({
-      payload: selected,
+      payload: asset,
       type: SEND_UPDATE_SELECTED,
     });
     dispatch(sendUpdateAssetAmount(assetAmount));
