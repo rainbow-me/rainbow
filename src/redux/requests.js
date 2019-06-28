@@ -10,7 +10,7 @@ import {
   removeLocalRequest,
   removeLocalRequests,
   saveLocalRequests,
-} from '../model/localstorage';
+} from '../handlers/commonStorage';
 import smartContractMethods from '../references/smartcontract-methods.json';
 import {
   convertAmountAndPriceToNativeDisplay,
