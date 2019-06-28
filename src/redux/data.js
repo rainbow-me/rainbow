@@ -58,6 +58,7 @@ const messages = {
   CONNECT: 'connect',
   DISCONNECT: 'disconnect',
   ERROR: 'error',
+  RECONNECT_ATTEMPT: 'reconnect_attempt',
   TRANSACTIONS: {
     APPENDED: 'appended address transactions',
     RECEIVED: 'received address transactions',
@@ -330,6 +331,9 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
     dispatch(assetsReceived(message, false, true));
   });
 
+  socket.on(messages.RECONNECT_ATTEMPT, () => {
+    socket.io.opts.transports = ['polling', 'websocket'];
+  });
 };
 
 export const dataAddNewTransaction = txDetails => (dispatch, getState) => new Promise((resolve, reject) => {
