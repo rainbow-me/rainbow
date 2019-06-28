@@ -18,6 +18,7 @@ import BalanceText from './BalanceText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
+import { withNavigation } from 'react-navigation';
 
 const rowRenderPropTypes = {
   balance: PropTypes.object,
@@ -106,16 +107,20 @@ export default compose(
     pending,
     ...props,
   })),
+  withNavigation,
   withHandlers({
-    onPressTransaction: ({ hash, item }) => () => {
+    onPressTransaction: ({ hash, item, navigation }) => () => {
       if (hash) {
         showActionSheetWithOptions({
           title: `${item.status} ${item.status === "sent" ? `to ${item.to}` : `from ${item.from}`} `,
           cancelButtonIndex: 2,
-          options: ['asdfadsf', 'View on Etherscan', 'Cancel'],
+          options: ['Add to Contacts', 'View on Etherscan', 'Cancel'],
         }, (buttonIndex) => {
           if (buttonIndex === 0) {
-            console.log(item);
+            navigation.navigate('ExpandedAssetScreen', {
+              asset: item,
+              type: 'contact',
+            });
           } else if (buttonIndex === 1) {
             const normalizedHash = hash.replace(/-.*/g, '');
             Linking.openURL(`https://etherscan.io/tx/${normalizedHash}`);

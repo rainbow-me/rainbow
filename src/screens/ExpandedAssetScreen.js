@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StatusBar } from 'react-native';
-import { TokenExpandedState, UniqueTokenExpandedState } from '../components/expanded-state';
+import { TokenExpandedState, UniqueTokenExpandedState, AddContactState } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { padding } from '../styles';
@@ -25,10 +25,9 @@ const ExpandedAssetScreen = ({
   >
     <StatusBar barStyle="light-content" />
     <TouchableBackdrop onPress={onPressBackground} />
-    {type === 'token'
-      ? <TokenExpandedState {...props} />
-      : <UniqueTokenExpandedState {...props} />
-    }
+    {type === 'token' && <TokenExpandedState {...props} />}
+    {type === 'unique_token' && <UniqueTokenExpandedState {...props} />}
+    {type === 'contact' && <AddContactState {...props} />}     
   </Centered>
 );
 

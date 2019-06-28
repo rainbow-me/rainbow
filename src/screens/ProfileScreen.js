@@ -33,7 +33,7 @@ const ProfileScreen = ({
         />
       </FadeInAnimation>
     )}
-    <Header justify="space-between">
+    <Header justify="space-between" style={{zIndex: 0}}>
       <HeaderButton onPress={onPressSettings}>
         <Icon name="gear" />
       </HeaderButton>

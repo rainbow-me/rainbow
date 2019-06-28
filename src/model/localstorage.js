@@ -78,3 +78,21 @@ export const removeLocalRequests = async (address, network) => {
   const requestsKey = getRequestsKey(address, network);
   await removeLocal(requestsKey);
 };
+
+// /**
+//  * @desc get show shitcoins setting
+//  * @return {True|False}
+//  */
+// export const getShowShitcoinsSetting = async () => {
+//   const showShitcoins = await getLocal('showShitcoins');
+//   return showShitcoins ? showShitcoins.data : null;
+// };
+
+// /**
+//  * @desc update show shitcoins setting
+//  * @param  {Boolean}   [updatedSetting]
+//  * @return {Void}
+//  */
+// export const updateShowShitcoinsSetting = async (updatedSetting) => {
+//   await saveLocal('showShitcoins', { data: updatedSetting });
+// };
