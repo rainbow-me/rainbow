@@ -11,14 +11,18 @@ import {
 import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
 import { withAccountData, withAccountSettings } from '../../hoc';
-import { ethereumUtils } from '../../utils';
+import { ethereumUtils, deviceUtils } from '../../utils';
 import styled from 'styled-components/primitives';
 import { Input } from '../inputs';
 import { colors } from '../../styles';
+import { Button } from '../buttons';
+import { Monospace } from '../text';
 
 const TopMenu = styled(View)`
   justify-content: center;
   align-items: center;
+  width: ${deviceUtils.dimensions.width - 110};
+  padding: 24px;
 `;
 
 const Container = styled(View)`
@@ -37,44 +41,68 @@ const NameCircle = styled(View)`
 `;
 
 
-const AddContactState = ({
-  onPressSend,
-  price,
-  subtitle,
-  title,
-}) => (
-    <KeyboardAvoidingView behavior="padding">
-      <Container>
-        <FloatingPanels
-          width={66}
-        >
+class AddContactState extends React.PureComponent {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      value: "",
+    };
+  }
+
+  format = (string) => (
+    this.props.format
+      ? this.props.format(string)
+      : string
+  )
+
+  onChange = (event) => {
+    const { nativeEvent } = event;
+
+    const value = this.format(nativeEvent.text);
+    console.log(value);
+    if (value !== this.value) {
+      this.setState({ value });
+    }
+  }
+
+  render() {
+    return <KeyboardAvoidingView behavior="padding">
+      <FloatingPanels
+        width={100}
+      >
+        <Container>
           <AssetPanel>
             <TopMenu>
               <NameCircle />
               <Input
                 autoFocus={true}
                 color={colors.blueGreyDark}
-                family="SFMono"
+                family={'SFProDisplay'}
+
                 // maxLength={maxLength}
                 // onBlur={this.onBlur}
-                // onChange={this.onChange}
+                onChange={this.onChange}
                 // onFocus={this.onFocus}
-                // placeholder={placeholder}
+                placeholder={'Name'}
                 size="h3"
-                // value={this.format(String(this.props.value || ''))}
+                value={this.format(String(this.props.value || ''))}
                 textAlign={'center'}
               />
+              <Monospace>
+                {this.props.asset.to}
+              </Monospace>
+              <Button backgroundColor={colors.appleBlue} width={215}>
+                Add Contact
+            </Button>
             </TopMenu>
-            <AssetPanelAction
-              icon="send"
-              label="Send to..."
-              onPress={onPressSend}
-            />
           </AssetPanel>
-        </FloatingPanels>
-      </Container>
+        </Container>
+      </FloatingPanels>
     </KeyboardAvoidingView>
-  );
+  }
+};
 
 AddContactState.propTypes = {
   onPressSend: PropTypes.func,
