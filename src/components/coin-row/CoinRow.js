@@ -36,6 +36,7 @@ const CoinRow = enhance(({
   highlight,
   selectedId,
   onPress,
+  onPressSend,
   symbol,
   topRowRender,
   ...props
@@ -65,6 +66,7 @@ CoinRow.propTypes = {
   containerStyles: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
   contentStyles: PropTypes.string,
   onPress: PropTypes.func,
+  onPressSend: PropTypes.func,
   symbol: PropTypes.string,
   topRowRender: PropTypes.func,
 };

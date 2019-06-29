@@ -21,6 +21,7 @@ const UniqueTokenRow = enhance(({
   isLastRow,
   item,
   onPress,
+  onPressSend,
 }) => (
   <Row
     align="center"
@@ -37,6 +38,7 @@ const UniqueTokenRow = enhance(({
         item={uniqueToken}
         key={uniqueToken.id}
         onPress={onPress}
+        onPressSend={onPressSend}
         style={{ marginLeft: (itemIndex >= 1) ? CardMargin : 0 }}
       />
     ))}
@@ -48,6 +50,7 @@ UniqueTokenRow.propTypes = {
   isLastRow: PropTypes.bool,
   item: PropTypes.array,
   onPress: PropTypes.func,
+  onPressSend: PropTypes.func,
 };
 
 UniqueTokenRow.getHeight = getHeight;

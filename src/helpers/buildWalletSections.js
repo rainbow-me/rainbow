@@ -30,6 +30,9 @@ const enhanceRenderItem = compose(
         type: assetType,
       });
     },
+    onPressSend: ({ navigation }) => (asset) => {
+      navigation.navigate('SendSheet', { asset });
+    },
   }),
 );
 

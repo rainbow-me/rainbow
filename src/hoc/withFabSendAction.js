@@ -49,7 +49,7 @@ export default compose(
       }
       if (prevProps.highlight && !this.props.highlight && this.props.fabDropped) {
         if (this.props.actionType === 'send') {
-          this.props.onPress();
+          this.props.onPressSend();
         }
       }
     },

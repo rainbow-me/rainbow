@@ -32,6 +32,7 @@ const UniqueTokenCard = ({
     ...item
   },
   onPress,
+  onPressSend,
   size,
   highlight,
   resizeMode,
@@ -45,6 +46,7 @@ const UniqueTokenCard = ({
     <ButtonPressAnimation
       disabled={disabled}
       onPress={onPress}
+      onPressSend={onPressSend}
       scaleTo={0.96}
     >
       <ShadowStack
@@ -90,6 +92,7 @@ UniqueTokenCard.propTypes = {
     image_preview_url: PropTypes.string,
   }),
   onPress: PropTypes.func,
+  onPressSend: PropTypes.func,
   resizeMode: UniqueTokenImage.propTypes.resizeMode,
   shadows: PropTypes.array,
   size: PropTypes.number,
@@ -110,6 +113,11 @@ export default compose(
     onPress: ({ item, onPress }) => () => {
       if (onPress) {
         onPress(item);
+      }
+    },
+    onPressSend: ({ item, onPressSend }) => () => {
+      if (onPressSend) {
+        onPressSend(item);
       }
     },
   }),

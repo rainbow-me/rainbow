@@ -21,6 +21,9 @@ enhanceRenderItem = compose(
         type: assetType,
       });
     },
+    onPressSend: ({ navigation }) => (asset) => {
+      navigation.navigate('SendSheet', { asset });
+    },
   }),
 );
 
@@ -79,6 +82,11 @@ export default compose(
     onPress: ({ item, onPress }) => () => {
       if (onPress) {
         onPress(item);
+      }
+    },
+    onPressSend: ({ item, onPressSend }) => () => {
+      if (onPressSend) {
+        onPressSend(item);
       }
     },
   }),
