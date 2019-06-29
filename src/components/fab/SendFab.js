@@ -29,7 +29,14 @@ const FloatingActionButtonWithDisabled = compose(
 )(FloatingActionButton);
 
 const SendFab = ({
-  disabled, onPress, deleteButtonTranslate, scrollViewTracker, areas, tapRef, sections, ...props
+  areas,
+  deleteButtonTranslate,
+  disabled,
+  onPress,
+  scrollViewTracker,
+  sections,
+  tapRef,
+  ...props
 }) => (
   <EnhancedMovable
     actionType="send"

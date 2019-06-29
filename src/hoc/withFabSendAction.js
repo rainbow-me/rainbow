@@ -1,5 +1,9 @@
 import {
-  compose, lifecycle, omitProps, pure, withProps,
+  compose,
+  lifecycle,
+  omitProps,
+  pure,
+  withProps,
 } from 'recompact';
 import connect from 'react-redux/es/connect/connect';
 import { setOpenFamilyTabs } from '../redux/openFamilyTabs';
