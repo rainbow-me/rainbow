@@ -145,11 +145,13 @@ class RecyclerAssetList extends PureComponent {
             const familyIndex = index - headersIndices[idx] - 1;
             if (openFamilyTabs[familyIndex]) {
               const collectiblesSection = (sections.length === 2) ? 1 : 0;
-              return {
-                get: ViewTypes.UNIQUE_TOKEN_ROW,
-                isLast: index === this.state.length - 1,
-                size: get(sections, `[${collectiblesSection}].data[${familyIndex}]`).tokens.length,
-              };
+              if(sections[collectiblesSection].data[familyIndex].tokens) {
+                return {
+                  get: ViewTypes.UNIQUE_TOKEN_ROW,
+                  isLast: index === this.state.length - 1,
+                  size: get(sections, `[${collectiblesSection}].data[${familyIndex}]`).tokens.length,
+                };
+              }
             } else if (index === this.state.length - 1) {
               return ViewTypes.UNIQUE_TOKEN_ROW_CLOSED_LAST;
             }
@@ -336,7 +338,9 @@ class RecyclerAssetList extends PureComponent {
             rowRenderer={this.rowRenderer}
             onScroll={event => {
               this.position = event.nativeEvent.contentOffset.y;
-              this.props.scrollViewTracker.setValue(event.nativeEvent.contentOffset.y);
+              if(this.props.scrollViewTracker) {
+                this.props.scrollViewTracker.setValue(event.nativeEvent.contentOffset.y);
+              }
             }}
             scrollIndicatorInsets={{
               bottom: safeAreaInsetValues.bottom,
