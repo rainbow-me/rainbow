@@ -23,6 +23,7 @@ import {
 import { colors } from '../../styles';
 import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
 import { CoinRow, CollectiblesSendRow } from '../coin-row';
+import { InvestmentCard, UniswapInvestmentCard } from '../investment-cards';
 import { ListFooter } from '../list';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
@@ -195,9 +196,9 @@ export default class RecyclerAssetList extends PureComponent {
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRow.height;
         } else if (type === ViewTypes.UNISWAP_ROW_LAST) {
-          dim.height = 114 + 15 + ListFooter.height;
+          dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical + ListFooter.height;
         } else if (type === ViewTypes.UNISWAP_ROW) {
-          dim.height = 114 + 15;
+          dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
         } else {
           dim.height = this.props.hideHeader ? 0 : AssetListHeader.height;
         }

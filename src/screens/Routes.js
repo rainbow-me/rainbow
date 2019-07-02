@@ -50,23 +50,10 @@ const SwipeStack = createMaterialTopTabNavigator({
     restDisplacementThreshold: 1,
     restSpeedThreshold: 1,
     stiffness: 140,
-   },
-  // swipeDistanceThreshold: 100,
-  // swipeVelocityThreshold: 100,
+  },
   swipeDistanceThreshold: 30,
   swipeVelocityThreshold: 10,
   tabBarComponent: null,
-
-
-  // XXX experimenting with these new values
-  initialLayout: deviceUtils.dimensions,
-  // {
-  //   height: 0,
-  //   width: deviceUtils.dimensions.width,
-  // },
-  // lazy: true,
-  // position: Navigation.transitionPosition,
-  // optimizationsEnabled: true,
 });
 
 const MainNavigator = createStackNavigator({
@@ -120,6 +107,7 @@ const MainNavigator = createStackNavigator({
 
 const AppContainer = createAppContainer(MainNavigator);
 
+// eslint-disable-next-line react/prop-types
 const AppContainerWithAnalytics = ({ ref, screenProps }) => (
   <AppContainer
     onNavigationStateChange={(prevState, currentState, action) => {
@@ -145,7 +133,7 @@ const AppContainerWithAnalytics = ({ ref, screenProps }) => (
           };
         }
 
-        analytics.screen(routeName, paramsToTrack);
+        return analytics.screen(routeName, paramsToTrack);
       }
     }}
     ref={ref}

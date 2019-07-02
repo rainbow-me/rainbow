@@ -4,7 +4,6 @@ import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import { createSelector } from 'reselect';
-// import { readableUniswapSelector } from '../hoc';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { UniqueTokenRow } from '../components/unique-token';
@@ -63,8 +62,8 @@ const buildWalletSections = (
   setIsWalletEmpty,
   shitcoinsCount,
   showShitcoins,
-  uniqueTokens,
-  uniswap,
+  uniqueTokens = [],
+  uniswap = [],
   uniswapTotal,
 ) => {
   const sections = [

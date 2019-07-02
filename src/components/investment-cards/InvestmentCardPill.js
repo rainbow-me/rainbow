@@ -56,4 +56,4 @@ InvestmentCardPill.propTypes = {
   value: PropTypes.string,
 };
 
-export default InvestmentCardPill;
+export default React.memo(InvestmentCardPill);

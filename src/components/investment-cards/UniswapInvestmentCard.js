@@ -1,7 +1,12 @@
 import { floor } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, withHandlers, withProps } from 'recompact';
+import {
+  compose,
+  pure,
+  withHandlers,
+  withProps,
+} from 'recompact';
 import { withAccountSettings } from '../../hoc';
 import { colors, padding } from '../../styles';
 import { removeCurrencySymbols } from '../../utils';
@@ -20,6 +25,7 @@ const AssetLabel = withProps({
 
 const enhance = compose(
   withAccountSettings,
+  pure,
   withHandlers({
     onPressContainer: ({ item, onPress }) => () => {
       if (onPress) {

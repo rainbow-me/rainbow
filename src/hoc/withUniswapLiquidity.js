@@ -1,11 +1,4 @@
 import {
-  convertAmountFromBigNumber,
-  convertAmountToBigNumber,
-  divide,
-  multiply,
-  simpleConvertAmountToDisplay,
-} from '@rainbow-me/rainbow-common';
-import {
   compact,
   floor,
   get,
@@ -17,25 +10,29 @@ import {
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompose';
 import { createSelector } from 'reselect';
-import { removeCurrencySymbols } from '../utils';
+import {
+  convertAmountToBigNumber,
+  divide,
+  multiply,
+  simpleConvertAmountToDisplay,
+} from '../helpers/utilities';
+import { ethereumUtils, removeCurrencySymbols } from '../utils';
 import withAccountSettings from './withAccountSettings';
 
 const mapStateToProps = ({
-  prices: { prices },
   settings: { nativeCurrency },
   uniswap: { uniswap },
 }) => ({
   nativeCurrency,
-  prices,
   uniswap,
 });
 
+const assetsSelector = state => state.assets;
 const nativeCurrencySelector = state => state.nativeCurrency;
 const nativeCurrencySymbolSelector = state => state.nativeCurrencySymbol;
-const pricesSelector = state => state.prices;
 const uniswapSelector = state => state.uniswap;
 
-export const transformPool = (liquidityPool, balancePriceUnit, nativeCurrency) => {
+export const transformPool = (liquidityPool, ethPrice, nativeCurrency) => {
   if (isEmpty(liquidityPool)) {
     return null;
   }
@@ -53,7 +50,7 @@ export const transformPool = (liquidityPool, balancePriceUnit, nativeCurrency) =
   } = liquidityPool;
 
   const percentageOwned = multiply(divide(balance, totalSupply), 100);
-  const balanceRaw = multiply(ethBalance, balancePriceUnit);
+  const balanceRaw = multiply(ethBalance, ethPrice);
   const balanceAmount = convertAmountToBigNumber(balanceRaw);
   const totalBalanceAmount = multiply(balanceAmount, 2);
 
@@ -81,13 +78,10 @@ export const transformPool = (liquidityPool, balancePriceUnit, nativeCurrency) =
   };
 };
 
-const buildUniswapCards = (nativeCurrency, nativeCurrencySymbol, prices, uniswap) => {
-  const assetNativePrice = get(prices, `[${nativeCurrency}]['ETH']`);
-  const balancePriceUnit = convertAmountFromBigNumber(
-    get(assetNativePrice, 'price.amount', 0),
-  );
+const buildUniswapCards = (nativeCurrency, nativeCurrencySymbol, assets, uniswap) => {
+  const ethPrice = get(ethereumUtils.getAsset(assets), 'price.value', 0);
 
-  const uniswapPools = compact(map(values(uniswap), (liquidityPool) => transformPool(liquidityPool, balancePriceUnit, nativeCurrency)));
+  const uniswapPools = compact(map(values(uniswap), (liquidityPool) => transformPool(liquidityPool, ethPrice, nativeCurrency)));
   const orderedUniswapPools = orderBy(uniswapPools, ['totalNativeDisplay'], ['desc']);
 
   let uniswapTotal = 0;
@@ -108,7 +102,7 @@ export const readableUniswapSelector = createSelector(
   [
     nativeCurrencySelector,
     nativeCurrencySymbolSelector,
-    pricesSelector,
+    assetsSelector,
     uniswapSelector,
   ],
   buildUniswapCards,

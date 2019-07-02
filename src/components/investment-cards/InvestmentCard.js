@@ -2,7 +2,7 @@ import withViewLayoutProps from '@hocs/with-view-layout-props';
 import PropTypes from 'prop-types';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import { compose, onlyUpdateForKeys } from 'recompact';
+import { compose, pure } from 'recompact';
 import { colors, margin, position } from '../../styles';
 import { deviceUtils } from '../../utils';
 import InnerBorder from '../InnerBorder';
@@ -10,14 +10,16 @@ import { Column } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import InvestmentCardHeader from './InvestmentCardHeader';
 
-const MarginHorizontal = 19;
-const MarginVertical = 15;
+const InvestmentCardMargin = {
+  horizontal: 19,
+  vertical: 15,
+};
 
 const DefaultContainerHeight = InvestmentCardHeader.height;
 
 const enhance = compose(
   withViewLayoutProps(({ height }) => ({ containerHeight: height || DefaultContainerHeight })),
-  onlyUpdateForKeys(['containerHeight']),
+  pure,
 );
 
 const InvestmentCard = enhance(({
@@ -33,10 +35,10 @@ const InvestmentCard = enhance(({
   <ShadowStack
     backgroundColor={gradientColors[0]}
     borderRadius={18}
-    css={margin(MarginVertical, MarginHorizontal)}
+    css={margin(InvestmentCardMargin.vertical, InvestmentCardMargin.horizontal)}
     height={containerHeight}
     shadows={shadows}
-    width={deviceUtils.dimensions.width - (MarginHorizontal * 2)}
+    width={deviceUtils.dimensions.width - (InvestmentCardMargin.horizontal * 2)}
     {...props}
   >
     <Column
@@ -82,5 +84,7 @@ InvestmentCard.defaultProps = {
     [0, 6, 10, colors.dark, 0.04],
   ],
 };
+
+InvestmentCard.margin = InvestmentCardMargin;
 
 export default InvestmentCard;

@@ -32,7 +32,6 @@ const InvestmentCardHeader = enhance(({
   title,
   titleColor,
   value,
-  ...props
 }) => (
   <Container>
     <Row align="center">

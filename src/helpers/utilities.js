@@ -1,5 +1,6 @@
 import { get } from 'lodash';
 import BigNumber from 'bignumber.js';
+import ethUnits from '../references/ethereum-units.json';
 import supportedNativeCurrencies from '../references/native-currencies.json';
 
 /**
@@ -396,4 +397,43 @@ export const ellipseAddress = (text = '') => {
     .join('');
   const result = `${firstFour}...${lastFour}`;
   return result;
+};
+
+/**
+ * @desc convert to amount value from BigNumber format
+ * @param  {BigNumber}  value
+ * @return {String}
+ */
+export const convertAmountFromBigNumber = value => (
+  BigNumber(`${value}`)
+    .dividedBy(ethUnits.ether)
+    .toString()
+);
+
+/**
+ * @desc convert from amount value to BigNumber format
+ * @param  {String|Number}  value
+ * @return {BigNumber}
+ */
+export const convertAmountToBigNumber = value => (
+  BigNumber(`${value}`)
+    .times(ethUnits.ether)
+    .toString()
+);
+
+/**
+ * @desc convert from amount value to display formatted string
+ * @param  {BigNumber}  value
+ * @param  {String}     nativeCurrency
+ * @return {String}
+ */
+export const simpleConvertAmountToDisplay = (value, nativeCurrency, buffer) => {
+  value = convertAmountFromBigNumber(value);
+  const nativeSelected = supportedNativeCurrencies[nativeCurrency];
+  const { decimals } = nativeSelected;
+  const display = handleSignificantDecimals(value, decimals, buffer);
+  if (nativeSelected.alignment === 'left') {
+    return `${nativeSelected.symbol}${display}`;
+  }
+  return `${display} ${nativeSelected.currency}`;
 };

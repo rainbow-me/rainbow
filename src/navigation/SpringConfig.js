@@ -1,5 +1,5 @@
-import { sortList } from '@rainbow-me/rainbow-common';
-import Animated from 'react-native-reanimated';
+// import Animated from 'react-native-reanimated';
+import sortList from '../helpers/sortList';
 import { reduceArrayToObject } from '../utils';
 
 // const { SpringUtils } = Animated;
