@@ -11,10 +11,10 @@ import { connect } from 'react-redux';
 import { compose, withProps } from 'recompose';
 import { createSelector } from 'reselect';
 import {
-  convertAmountToBigNumber,
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountToNativeDisplay,
   divide,
   multiply,
-  simpleConvertAmountToDisplay,
 } from '../helpers/utilities';
 import { ethereumUtils, removeCurrencySymbols } from '../utils';
 import withAccountSettings from './withAccountSettings';
@@ -50,21 +50,13 @@ export const transformPool = (liquidityPool, ethPrice, nativeCurrency) => {
   } = liquidityPool;
 
   const percentageOwned = multiply(divide(balance, totalSupply), 100);
-  const balanceRaw = multiply(ethBalance, ethPrice);
-  const balanceAmount = convertAmountToBigNumber(balanceRaw);
+  const {
+    amount: balanceAmount,
+    display: nativeDisplay,
+  } = convertAmountAndPriceToNativeDisplay(ethBalance, ethPrice, nativeCurrency);
   const totalBalanceAmount = multiply(balanceAmount, 2);
+  const totalNativeDisplay = convertAmountToNativeDisplay(totalBalanceAmount, nativeCurrency);
 
-  const nativeDisplay = simpleConvertAmountToDisplay(
-    balanceAmount,
-    nativeCurrency,
-  );
-
-  const totalNativeDisplay = simpleConvertAmountToDisplay(
-    totalBalanceAmount,
-    nativeCurrency,
-  );
-
-  // TODO: perhaps for future, may want to include an investment type enum
   return {
     ethBalance: floor(parseFloat(ethBalance), 4) || '< 0.0001',
     nativeDisplay,
