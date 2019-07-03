@@ -9,10 +9,16 @@ const blurOpacityInterpolation = {
 
 const transitionPropsSelector = state => state.transitionProps;
 
-const withBlurTransitionProps = ({ effect, isTransitioning, position }) => {
+const withBlurTransitionProps = ({
+  blurColor,
+  effect,
+  isTransitioning,
+  position,
+}) => {
   const blurOpacity = position.interpolate(blurOpacityInterpolation);
 
   return {
+    blurColor,
     blurOpacity,
     showBlur: (effect === 'expanded') && (isTransitioning || blurOpacity.__getValue() > 0),
   };

@@ -10,7 +10,6 @@ import {
   withProps,
   withState,
 } from 'recompact';
-import { FadeInAnimation } from '../components/animations';
 import { AssetList } from '../components/asset-list';
 import BlurOverlay from '../components/BlurOverlay';
 import { FabWrapper } from '../components/fab';
@@ -44,6 +43,7 @@ class WalletScreen extends Component {
     allAssetsCount: PropTypes.number,
     assets: PropTypes.array,
     assetsTotal: PropTypes.object,
+    blurColor: PropTypes.string,
     blurOpacity: PropTypes.object,
     initializeWallet: PropTypes.func,
     isEmpty: PropTypes.bool.isRequired,
@@ -72,6 +72,7 @@ class WalletScreen extends Component {
   }
 
   shouldComponentUpdate = (nextProps) => {
+    const isNewBlurColor = isNewValueForPath(this.props, nextProps, 'blurColor');
     const isNewBlurOpacity = isNewValueForPath(this.props, nextProps, 'blurOpacity');
     const isNewCurrency = isNewValueForPath(this.props, nextProps, 'nativeCurrency');
     const isNewFetchingAssets = isNewValueForPath(this.props, nextProps, 'fetchingAssets');
@@ -82,12 +83,11 @@ class WalletScreen extends Component {
     const isNewSections = isNewValueForPath(this.props, nextProps, 'sections');
     const isNewShowBlur = isNewValueForPath(this.props, nextProps, 'showBlur');
     const isNewShowShitcoins = isNewValueForPath(this.props, nextProps, 'showShitcoins');
-    const isNewTransitionProps = isNewValueForPath(this.props, nextProps, 'transitionProps');
 
     if (!nextProps.isFocused && !nextProps.showBlur) {
-      return isNewBlurOpacity
-        || isNewShowBlur
-        || isNewTransitionProps;
+      return isNewBlurColor
+        || isNewBlurOpacity
+        || isNewShowBlur;
     }
 
     return isNewFetchingAssets
@@ -96,15 +96,16 @@ class WalletScreen extends Component {
     || isNewIsWalletEthZero
     || isNewLanguage
     || isNewCurrency
+    || isNewBlurColor
     || isNewBlurOpacity
     || isNewSections
     || isNewShowShitcoins
-    || isNewTransitionProps
     || isNewShowBlur;
   }
 
   render = () => {
     const {
+      blurColor,
       blurOpacity,
       isEmpty,
       isWalletEthZero,
@@ -137,11 +138,12 @@ class WalletScreen extends Component {
             sections={sections}
           />
         </FabWrapper>
-        {showBlur && (
-          <FadeInAnimation css={position.cover} duration={315} zIndex={1}>
-            <BlurOverlay opacity={blurOpacity} />
-          </FadeInAnimation>
-        )}
+        <BlurOverlay
+          backgroundColor={blurColor}
+          blurAmount={10}
+          opacity={blurOpacity}
+          translateY={blurTranslateY}
+        />
       </Page>
     );
   }

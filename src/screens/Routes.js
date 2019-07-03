@@ -10,6 +10,7 @@ import { Navigation } from '../navigation';
 import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
+import { colors } from '../styles';
 import { deviceUtils } from '../utils';
 import ExpandedAssetScreenWithData from './ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
@@ -69,6 +70,7 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator({
   },
 }, {
   headerMode: 'none',
+  initialLayout: deviceUtils.dimensions,
   mode: 'modal',
   tabBarComponent: null,
   transparentCard: true,
@@ -77,7 +79,7 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator({
 
 // I need it for changing navigationOptions dynamically
 // for preventing swipe down to close on CurrencySelectScreen
-const EnhancedExchangeModalNavigator = props => <ExchangeModalNavigator {...props}/>;
+const EnhancedExchangeModalNavigator = props => <ExchangeModalNavigator {...props} />;
 EnhancedExchangeModalNavigator.router = ExchangeModalNavigator.router;
 EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => ({
   ...navigation.state.params,
@@ -162,6 +164,12 @@ const AppContainerWithAnalytics = ({ ref, screenProps }) => (
         let subRoute = get(params, 'section.title');
         if (subRoute === 'Settings') subRoute = null;
         return analytics.screen(`${routeName}${subRoute ? `>${subRoute}` : ''}`);
+      }
+
+      if (prevRouteName === 'MainExchangeScreen' && routeName === 'WalletScreen') {
+        store.dispatch(updateTransitionProps({ blurColor: null }));
+      } else if (routeName === 'MainExchangeScreen') {
+        store.dispatch(updateTransitionProps({ blurColor: colors.alpha(colors.black, 0.9) }));
       }
 
       if (routeName !== prevRouteName) {

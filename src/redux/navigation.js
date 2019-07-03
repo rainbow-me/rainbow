@@ -1,3 +1,4 @@
+import produce from 'immer';
 import { Animated } from 'react-native';
 
 // -- Constants --------------------------------------- //
@@ -10,6 +11,7 @@ export const updateTransitionProps = (payload) => (dispatch) => {
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   transitionProps: {
+    blurColor: null,
     effect: '',
     isTransitioning: false,
     nextIndex: 1,
@@ -18,17 +20,10 @@ const INITIAL_STATE = {
   },
 };
 
-export default (state = INITIAL_STATE, action) => {
-  switch (action.type) {
-  case UPDATE_TRANSITION_PROPS:
-    return {
-      ...state,
-      transitionProps: {
-        ...state.transitionProps,
-        ...action.payload,
-      },
-    };
-  default:
-    return state;
-  }
-};
+export default (state = INITIAL_STATE, action) => (
+  produce(state, draft => {
+    if (action.type === UPDATE_TRANSITION_PROPS) {
+      Object.assign(draft.transitionProps, action.payload);
+    }
+  })
+);
