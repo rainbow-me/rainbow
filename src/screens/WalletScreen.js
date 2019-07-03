@@ -29,9 +29,10 @@ import {
   withIsWalletEmpty,
   withUniqueTokens,
   withStatusBarStyle,
+  withUniswapLiquidity,
 } from '../hoc';
 import { position } from '../styles';
-import { isNewValueForPath } from '../utils';
+import { deviceUtils, isNewValueForPath } from '../utils';
 
 class WalletScreen extends PureComponent {
   static propTypes = {
@@ -106,8 +107,12 @@ class WalletScreen extends PureComponent {
       refreshAccountData,
       scrollViewTracker,
       sections,
-      showBlur,
     } = this.props;
+
+    const blurTranslateY = blurOpacity.interpolate({
+      inputRange: [0, 0.001, 1],
+      outputRange: [deviceUtils.dimensions.height, 0, 0],
+    });
 
     return (
       <Page style={{ flex: 1, ...position.sizeAsObject('100%') }}>
@@ -133,7 +138,11 @@ class WalletScreen extends PureComponent {
             sections={sections}
           />
         </FabWrapper>
-        {showBlur && <BlurOverlay opacity={blurOpacity} />}
+        <BlurOverlay
+          blurAmount={10}
+          opacity={blurOpacity}
+          translateY={blurTranslateY}
+        />
       </Page>
     );
   }
@@ -144,6 +153,7 @@ export default compose(
   withUniqueTokens,
   withAccountSettings,
   withDataInit,
+  withUniswapLiquidity,
   withHideSplashScreen,
   withSafeTimeout,
   withNavigation,

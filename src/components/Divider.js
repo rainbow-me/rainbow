@@ -54,7 +54,7 @@ const BorderLine = styled.View`
 `;
 
 const Container = styled(Row)`
-  background-color: ${colors.white};
+  background-color: ${({ backgroundColor }) => (backgroundColor || colors.white)};
   flex-shrink: 0;
   height: ${({ horizontal, size }) => (horizontal ? size : '100%')};
   width: ${({ horizontal, size }) => (horizontal ? '100%' : size)};

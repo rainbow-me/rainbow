@@ -7,7 +7,10 @@ import { ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import FloatingPanel from '../FloatingPanel';
 
-const Container = styled(ColumnWithMargins).attrs({ margin: 4 })`
+const Container = styled(ColumnWithMargins).attrs({
+  justify: 'start',
+  margin: 4,
+})`
   ${padding(15, FloatingPanel.padding.x)};
   height: 75;
 `;
@@ -44,7 +47,7 @@ const AssetPanelHeader = ({
   subtitle,
   title,
 }) => (
-  <Container justify="start">
+  <Container>
     <HeaderRow>
       <Title paddingRight={price ? FloatingPanel.padding.x * 1.25 : 0}>
         {title}
