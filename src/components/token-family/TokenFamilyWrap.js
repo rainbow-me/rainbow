@@ -51,7 +51,10 @@ class TokenFamilyWrap extends PureComponent {
   };
 
   onHeaderPress = () => {
-    this.props.setOpenFamilyTabs({ index: this.props.item[0][0].rowNumber, state: !this.props.openFamilyTabs[this.props.item[0][0].rowNumber] });
+    this.props.setOpenFamilyTabs({
+      index: this.props.item[0][0].rowNumber,
+      state: !this.props.openFamilyTabs[this.props.item[0][0].rowNumber],
+    });
   }
 
   render() {
