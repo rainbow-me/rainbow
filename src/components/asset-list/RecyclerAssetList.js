@@ -1,4 +1,5 @@
 import {
+  findIndex,
   get,
   has,
   indexOf,
@@ -93,6 +94,7 @@ export default class RecyclerAssetList extends PureComponent {
         totalItems: PropTypes.number,
         totalValue: PropTypes.string,
       }),
+      investments: PropTypes.bool,
       perData: PropTypes.object,
       renderItem: PropTypes.func.isRequired,
       type: PropTypes.string,
@@ -121,42 +123,39 @@ export default class RecyclerAssetList extends PureComponent {
           return ViewTypes.HEADER;
         }
 
-        // This logic appears to be quite complex since there might be some race conditions
-        // regarding order of received sections while importing from seeds
-        const sectionsByType = keyBy(sections, 'name');
+        const balancesIndex = findIndex(sections, ({ name }) => name === 'balances');
+        const collectiblesIndex = findIndex(sections, ({ name }) => name === 'collectibles');
+        const investmentsIndex = findIndex(sections, ({ name }) => name === 'investments');
 
-        const areBalancesLoaded = has(sectionsByType, 'balances');
-        const areCollectiblesLoaded = has(sectionsByType, 'collectibles');
-        const areInvestmentsLoaded = has(sectionsByType, 'investments');
-
-        if (areBalancesLoaded) {
-          if (index === headersIndices[1] - 1) {
+        if (balancesIndex > -1) {
+          const balanceItemsCount = get(sections, `[${balancesIndex}].data.length`, 0);
+          const lastBalanceIndex = headersIndices[balancesIndex] + balanceItemsCount;
+          if (index === lastBalanceIndex) {
             return ViewTypes.COIN_ROW_LAST;
           }
         }
 
-        if (areInvestmentsLoaded) {
-          const idx = indexOf(keys(sectionsByType), 'investments');
-          const nextSectionIdx = (headersIndices[idx + 1]);
+        if (investmentsIndex > -1) {
+          const investmentItemsCount = get(sections, `[${investmentsIndex}].data.length`, 0);
+          const lastInvestmentIndex = headersIndices[investmentsIndex] + investmentItemsCount;
 
-          if ((index > headersIndices[idx]) && (index < nextSectionIdx)) {
-            return index === nextSectionIdx - 1
+          if ((index > headersIndices[investmentsIndex]) && (index <= lastInvestmentIndex)) {
+            return index === lastInvestmentIndex
               ? ViewTypes.UNISWAP_ROW_LAST
               : ViewTypes.UNISWAP_ROW;
           }
         }
 
-        if (areCollectiblesLoaded) {
-          const idx = indexOf(keys(sectionsByType), 'collectibles');
-          const totalCollectibles = get(sectionsByType, 'collectibles.data.length');
+        if (collectiblesIndex) {
+          const totalCollectibles = get(sections, `[${collectiblesIndex}].data.length`, 0);
 
-          if (index === headersIndices[idx] + 1) {
+          if (index === headersIndices[collectiblesIndex] + 1) {
             return ViewTypes.UNIQUE_TOKEN_ROW_FIRST;
           }
-          if (index === (totalCollectibles + headersIndices[idx])) {
+          if (index === (totalCollectibles + headersIndices[collectiblesIndex])) {
             return ViewTypes.UNIQUE_TOKEN_ROW_LAST;
           }
-          if (index > headersIndices[idx]) {
+          if (index > headersIndices[collectiblesIndex]) {
             return ViewTypes.UNIQUE_TOKEN_ROW;
           }
         }
