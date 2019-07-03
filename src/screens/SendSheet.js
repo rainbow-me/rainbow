@@ -1,12 +1,12 @@
 import analytics from '@segment/analytics-react-native';
 import {
   get,
+  indexOf,
   isEmpty,
   isFunction,
   isString,
   map,
   property,
-  reverse,
   sortBy,
   upperFirst,
 } from 'lodash';
@@ -43,23 +43,20 @@ const Container = styled(Column)`
 const formatGastSpeedItem = (value, key) => {
   const cost = get(value, 'txFee.native.value.display');
   const gwei = get(value, 'value.display');
-  const ms = parseFloat(get(value, 'estimatedTime.amount', 0));
   const time = get(value, 'estimatedTime.display');
 
   return {
     gweiValue: gwei,
     label: `${upperFirst(key)}: ${cost}   ~${time.slice(0, -1)}`,
-    ms,
     value: key,
   };
 };
 
+const labelOrder = ['slow', 'average', 'fast'];
+
 const formatGasSpeedItems = (gasPrices) => {
   const gasItems = map(gasPrices, formatGastSpeedItem);
-
-  // Sort the gas prices so they always read "slow -> average -> fast"
-  const sortedGasItems = reverse(sortBy(gasItems, 'ms'));
-  return map(sortedGasItems, property('label'));
+  return sortBy(gasItems, ({ value }) => indexOf(labelOrder, value));
 };
 
 class SendSheet extends Component {
@@ -172,13 +169,13 @@ class SendSheet extends Component {
     const { gasPrices, sendUpdateGasPrice } = this.props;
 
     const options = [
-      'Cancel',
+      { label: 'Cancel' },
       ...formatGasSpeedItems(gasPrices),
     ];
 
     showActionSheetWithOptions({
       cancelButtonIndex: 0,
-      options,
+      options: options.map(property('label')),
     }, (buttonIndex) => {
       if (buttonIndex > 0) {
         const selectedGasPriceItem = options[buttonIndex];
