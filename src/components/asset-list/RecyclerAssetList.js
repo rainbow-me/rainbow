@@ -1,5 +1,5 @@
 import connect from 'react-redux/es/connect/connect';
-import { get, has } from 'lodash';
+import _, { get, has } from 'lodash';
 import styled from 'styled-components/primitives';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
@@ -144,7 +144,7 @@ class RecyclerAssetList extends PureComponent {
           if (index > headersIndices[idx]) {
             const familyIndex = index - headersIndices[idx] - 1;
             if (openFamilyTabs[familyIndex]) {
-              const collectiblesSection = (sections.length === 2) ? 1 : 0;
+              const collectiblesSection =  _.findIndex(sections, (section) => section.collectibles == true );
               if(sections[collectiblesSection].data[familyIndex].tokens) {
                 return {
                   get: ViewTypes.UNIQUE_TOKEN_ROW,
@@ -226,6 +226,16 @@ class RecyclerAssetList extends PureComponent {
 
   componentDidUpdate(prev) {
     // sorry
+    balances = [];
+    collectibles = []
+    this.props.sections.forEach(section => {
+      if(section.balances) {
+        balances = section;
+      } else if (section.collectibles) {
+        collectibles = section;
+      }
+    });
+    
     if (this.props.scrollingVelocity === 0) {
       clearInterval(this.interval);
     }
@@ -243,13 +253,13 @@ class RecyclerAssetList extends PureComponent {
             let collectiblesHeight = 0;
             for(let j = 0; j < i; j++) {
               if(this.props.openFamilyTabs[j] === true) {
-                collectiblesHeight += this.props.sections[1].data[j].tokens.length * CardSize + 54 + 20 * (this.props.sections[1].data[j].tokens.length - 1);
+                collectiblesHeight += collectibles.data[j].tokens.length * CardSize + 54 + 20 * (collectibles.data[j].tokens.length - 1);
               } else {
                 collectiblesHeight += 54;
               }
             }
-            const diff = this.position - (CoinRow.height * this.props.sections[0].data.length + AssetListHeader.height * this.props.sections.length + collectiblesHeight) + (deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235));
-            const renderSize = CardSize * this.props.sections[1].data[i].tokens.length + 20 * (this.props.sections[1].data[i].tokens.length - 1);
+            const diff = this.position - (CoinRow.height * balances.data.length + AssetListHeader.height * this.props.sections.length + collectiblesHeight) + (deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235));
+            const renderSize = CardSize * collectibles.data[i].tokens.length + 20 * (collectibles.data[i].tokens.length - 1);
             if( renderSize > diff) {
               const scrollDistance = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235) > renderSize ? renderSize - diff : deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 250 : 280);
               this.rlv.scrollToOffset(0, this.position + scrollDistance , true);

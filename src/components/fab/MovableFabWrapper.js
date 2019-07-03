@@ -274,29 +274,39 @@ class Movable extends React.Component {
 }
 
 const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
+  balances = [];
+  collectibles = []
+  sections.forEach(section => {
+    if(section.balances) {
+      balances = section;
+    } else if (section.collectibles) {
+      collectibles = section;
+    }
+  });
+
   if (sections && sections.length === 2) {
     const areas = [];
     const headerHeight = 35;
     const familyHeaderHeight = 52;
     let height = 74 + headerHeight;
-    for (let i = 0; i < sections[0].data.length; i++) {
+    for (let i = 0; i < balances.data.length; i++) {
       areas.push({
         bottom: height + CoinRow.height,
-        id: sections[0].data[i].uniqueId,
+        id: balances.data[i].uniqueId,
         left: 0,
         right: deviceUtils.dimensions.width,
         top: height,
       });
-      height += CoinRow.height + (sections[0].data.length - 1 === i ? ListFooter.height : 0);
+      height += CoinRow.height + (balances.data.length - 1 === i ? ListFooter.height : 0);
     }
 
     height += 54;
 
-    for (let i = 0; i < sections[1].data.length; i++) {
-      const { tokens } = sections[1].data[i];
+    for (let i = 0; i < collectibles.data.length; i++) {
+      const { tokens } = collectibles.data[i];
       areas.push({
         bottom: height + familyHeaderHeight,
-        id: sections[1].data[i].familyName,
+        id: collectibles.data[i].familyName,
         left: 0,
         right: deviceUtils.dimensions.width,
         top: height,

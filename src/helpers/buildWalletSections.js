@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { get } from 'lodash';
+import _, { get } from 'lodash';
 import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
@@ -88,7 +88,8 @@ const buildWalletSections = (
     // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
     const destructiveButtonIndex = showShitcoins ? 0 : 99;
 
-    sections[0].header.contextMenuOptions = {
+    const index = _.findIndex(sections, (section) => section.balances == true );
+    sections[index].header.contextMenuOptions = {
       cancelButtonIndex: 1,
       destructiveButtonIndex,
       onPressActionSheet: onToggleShowShitcoins,
