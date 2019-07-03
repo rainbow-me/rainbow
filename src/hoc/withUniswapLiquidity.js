@@ -5,6 +5,7 @@ import {
   isEmpty,
   map,
   orderBy,
+  sumBy,
   values,
 } from 'lodash';
 import { connect } from 'react-redux';
@@ -79,9 +80,7 @@ const buildUniswapCards = (nativeCurrency, nativeCurrencySymbol, assets, uniswap
   let uniswapTotal = 0;
 
   if (Array.isArray(orderedUniswapPools) && orderedUniswapPools.length) {
-    uniswapTotal = orderedUniswapPools
-      .map(({ totalBalanceAmount }) => Number(totalBalanceAmount))
-      .reduce((a, b) => (a + b), 0);
+    uniswapTotal = sumBy(orderedUniswapPools, ({ totalBalanceAmount }) => Number(totalBalanceAmount));
   }
 
   return {
