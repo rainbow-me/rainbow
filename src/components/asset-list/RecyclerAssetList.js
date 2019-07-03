@@ -146,7 +146,7 @@ export default class RecyclerAssetList extends PureComponent {
           }
         }
 
-        if (collectiblesIndex) {
+        if (collectiblesIndex > -1) {
           const totalCollectibles = get(sections, `[${collectiblesIndex}].data.length`, 0);
 
           if (index === headersIndices[collectiblesIndex] + 1) {
