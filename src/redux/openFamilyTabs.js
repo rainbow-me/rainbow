@@ -24,7 +24,7 @@ export default (state = INITIAL_STATE, action) => (
     if (action.type === SET_OPEN_FAMILY_TABS) {
       draft.openFamilyTabs[action.payload.index] = action.payload.state;
     } else if (action.type === PUSH_OPEN_FAMILY_TAB) {
-      draft.openFamilyTabs = state.openFamilyTabs.concat(true);
+      draft.openFamilyTabs = state.openFamilyTabs.concat(false);
     }
   })
 );

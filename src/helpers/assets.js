@@ -1,5 +1,6 @@
 import _, { compact, get, sortBy } from 'lodash';
 import store from '../redux/store';
+import { pushOpenFamilyTab } from '../redux/openFamilyTabs';
 
 export const buildAssetHeaderUniqueIdentifier = ({
   showShitcoins,
@@ -40,6 +41,10 @@ export const buildUniqueTokenList = (uniqueTokens) => {
       familyId: i,
       childrenAmount: grouped[families[i]].length,
     });
+  }
+
+  while(rows.length > store.getState().openFamilyTabs.openFamilyTabs.length) {
+    store.dispatch(pushOpenFamilyTab());
   }
   
   return sortBy(rows, ['familyName']);
