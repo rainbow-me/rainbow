@@ -36,5 +36,4 @@ export default compose(
   defaultProps(ExpandedAssetScreen.defaultProps),
   withProps(buildExpandedAssetsSelector),
   withHandlers({ onPressBackground: ({ navigation }) => () => navigation.goBack() }),
-  // withNeverRerender,
 )(ExpandedAssetScreen);
