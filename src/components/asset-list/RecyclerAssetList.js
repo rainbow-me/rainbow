@@ -1,5 +1,10 @@
-import { get, has } from 'lodash';
-import styled from 'styled-components/primitives';
+import {
+  get,
+  has,
+  indexOf,
+  keyBy,
+  keys,
+} from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { RefreshControl } from 'react-native';
@@ -10,6 +15,7 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
+import styled from 'styled-components/primitives';
 import {
   buildAssetHeaderUniqueIdentifier,
   buildAssetUniqueIdentifier,
@@ -17,6 +23,7 @@ import {
 import { colors } from '../../styles';
 import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
 import { CoinRow, CollectiblesSendRow } from '../coin-row';
+import { InvestmentCard, UniswapInvestmentCard } from '../investment-cards';
 import { ListFooter } from '../list';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
@@ -28,6 +35,8 @@ export const ViewTypes = {
   UNIQUE_TOKEN_ROW: 3,
   UNIQUE_TOKEN_ROW_FIRST: 4,
   UNIQUE_TOKEN_ROW_LAST: 5,
+  UNISWAP_ROW: 6,
+  UNISWAP_ROW_LAST: 7,
 };
 
 const Wrapper = styled.View`
@@ -49,9 +58,10 @@ const hasRowChanged = (r1, r2) => {
   }
 
   const isNewAsset = isNewValueForPath(r1, r2, 'item.uniqueId');
-
   const isNewTokenFirst = isNewValueForPath(r1, r2, 'item.tokens.[0].uniqueId');
   const isNewTokenSecond = isNewValueForPath(r1, r2, 'item.tokens.[1].uniqueId');
+  const isNewUniswapFirst = isNewValueForPath(r1, r2, 'item.tokens.[0].percentageOwned');
+  const isNewUniswapSecond = isNewValueForPath(r1, r2, 'item.tokens.[1].percentageOwned');
 
   const isCollectiblesRow = has(r1, 'item.tokens') && has(r2, 'item.tokens');
   let isNewAssetBalance = false;
@@ -63,7 +73,9 @@ const hasRowChanged = (r1, r2) => {
   return isNewAsset
     || isNewAssetBalance
     || isNewTokenFirst
-    || isNewTokenSecond;
+    || isNewTokenSecond
+    || isNewUniswapFirst
+    || isNewUniswapSecond;
 };
 
 export default class RecyclerAssetList extends PureComponent {
@@ -111,27 +123,44 @@ export default class RecyclerAssetList extends PureComponent {
 
         // This logic appears to be quite complex since there might be some race conditions
         // regarding order of received sections while importing from seeds
-        const areBalancesLoaded = get(sections, '[0].balances');
-        const areCollectiblesLoaded = sections.length === 2 || get(sections, '[0].collectibles');
+        const sectionsByType = keyBy(sections, 'name');
 
-        if (areBalancesLoaded && areCollectiblesLoaded) {
+        const areBalancesLoaded = has(sectionsByType, 'balances');
+        const areCollectiblesLoaded = has(sectionsByType, 'collectibles');
+        const areInvestmentsLoaded = has(sectionsByType, 'investments');
+
+        if (areBalancesLoaded) {
           if (index === headersIndices[1] - 1) {
             return ViewTypes.COIN_ROW_LAST;
           }
         }
 
+        if (areInvestmentsLoaded) {
+          const idx = indexOf(keys(sectionsByType), 'investments');
+          const nextSectionIdx = (headersIndices[idx + 1]);
+
+          if ((index > headersIndices[idx]) && (index < nextSectionIdx)) {
+            return index === nextSectionIdx - 1
+              ? ViewTypes.UNISWAP_ROW_LAST
+              : ViewTypes.UNISWAP_ROW;
+          }
+        }
+
         if (areCollectiblesLoaded) {
-          const idx = areBalancesLoaded ? 1 : 0;
+          const idx = indexOf(keys(sectionsByType), 'collectibles');
+          const totalCollectibles = get(sectionsByType, 'collectibles.data.length');
+
           if (index === headersIndices[idx] + 1) {
             return ViewTypes.UNIQUE_TOKEN_ROW_FIRST;
           }
-          if (index === this.state.length - 1) {
+          if (index === (totalCollectibles + headersIndices[idx])) {
             return ViewTypes.UNIQUE_TOKEN_ROW_LAST;
           }
           if (index > headersIndices[idx]) {
             return ViewTypes.UNIQUE_TOKEN_ROW;
           }
         }
+
         return ViewTypes.COIN_ROW;
       },
       (type, dim) => {
@@ -166,6 +195,10 @@ export default class RecyclerAssetList extends PureComponent {
           dim.height = this.state.areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRow.height;
+        } else if (type === ViewTypes.UNISWAP_ROW_LAST) {
+          dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical + ListFooter.height;
+        } else if (type === ViewTypes.UNISWAP_ROW) {
+          dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
         } else {
           dim.height = this.props.hideHeader ? 0 : AssetListHeader.height;
         }
@@ -175,7 +208,6 @@ export default class RecyclerAssetList extends PureComponent {
 
   static getDerivedStateFromProps({ sections }, state) {
     const headersIndices = [];
-
     const items = sections.reduce((ctx, section) => {
       headersIndices.push(ctx.length);
       return ctx
@@ -185,9 +217,7 @@ export default class RecyclerAssetList extends PureComponent {
         }])
         .concat(section.data.map(item => ({ item: { ...item, ...section.perData }, renderItem: section.renderItem })));
     }, []);
-
     const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(sections.find(e => e.collectibles));
-
     return {
       areSmallCollectibles,
       dataProvider: state.dataProvider.cloneWithRows(items),
@@ -242,12 +272,18 @@ export default class RecyclerAssetList extends PureComponent {
       return hideHeader ? null : <AssetListHeaderRenderer {...data} />;
     }
 
-    return (type === ViewTypes.COIN_ROW || type === ViewTypes.COIN_ROW_LAST)
+    const isUniqueToken = (
+      type === ViewTypes.UNIQUE_TOKEN_ROW
+      || type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST
+      || type === ViewTypes.UNIQUE_TOKEN_ROW_LAST
+    );
+
+    return !isUniqueToken
       ? renderItem({ item })
       : renderItem({
         isFirstRow: type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST,
         isLastRow: type === ViewTypes.UNIQUE_TOKEN_ROW_LAST,
-        item: item.tokens ? item.tokens : item,
+        item: item.tokens,
         shouldPrioritizeImageLoading: index < sections[0].data.length + 9,
         uniqueId: item.uniqueId,
       });

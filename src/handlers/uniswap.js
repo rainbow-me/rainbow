@@ -11,7 +11,7 @@ import exchangeABI from '../references/uniswap-exchange-abi.json';
 import erc20ABI from '../references/erc20-abi.json';
 import { web3Provider } from './web3';
 
-export const getUniswapLiquidityInfo = async (accountAddress, exchangeContracts) => {
+export default async function getUniswapLiquidityInfo(accountAddress, exchangeContracts) {
   const promises = map(exchangeContracts, async (exchangeAddress) => {
     try {
       const ethReserveCall = web3Provider.getBalance(exchangeAddress);
@@ -71,7 +71,7 @@ export const getUniswapLiquidityInfo = async (accountAddress, exchangeContracts)
         },
         tokenAddress,
         totalSupply,
-        uniqueId: tokenAddress,
+        uniqueId: `uniswap_${tokenAddress}`,
       };
     } catch (error) {
       console.log('error getting uniswap info', error);
@@ -81,4 +81,4 @@ export const getUniswapLiquidityInfo = async (accountAddress, exchangeContracts)
 
   const results = await Promise.all(promises);
   return zipObject(exchangeContracts, results);
-};
+}

@@ -45,7 +45,6 @@ const QRScannerScreen = ({
         bottom: sheetHeight,
         top: Header.height,
       }}
-      enableCamera={isFocused}
       enableScanning={enableScanning}
       isCameraAuthorized={isCameraAuthorized}
       onSuccess={onScanSuccess}
