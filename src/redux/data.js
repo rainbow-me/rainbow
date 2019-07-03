@@ -330,10 +330,6 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
   socket.on(messages.ASSETS.CHANGED, (message) => {
     dispatch(assetsReceived(message, false, true));
   });
-
-  socket.on(messages.RECONNECT_ATTEMPT, () => {
-    socket.io.opts.transports = ['polling', 'websocket'];
-  });
 };
 
 export const dataAddNewTransaction = txDetails => (dispatch, getState) => new Promise((resolve, reject) => {
