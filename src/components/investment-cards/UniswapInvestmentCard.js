@@ -7,9 +7,9 @@ import {
   withHandlers,
   withProps,
 } from 'recompact';
+import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { withAccountSettings } from '../../hoc';
 import { colors, padding } from '../../styles';
-import { removeCurrencySymbols } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import Divider from '../Divider';
 import { ColumnWithMargins, Row } from '../layout';
@@ -41,11 +41,12 @@ const UniswapInvestmentCard = enhance(({
     tokenBalance,
     tokenName,
     tokenSymbol,
+    totalBalanceAmount,
     totalNativeDisplay,
   },
   onPress,
   onPressContainer,
-  nativeCurrencySymbol,
+  nativeCurrency,
   ...props
 }) => (
   <ButtonPressAnimation
@@ -62,9 +63,9 @@ const UniswapInvestmentCard = enhance(({
         emoji: 'unicorn_face',
         title: 'Uniswap',
         titleColor: '#D040FF',
-        value: floor(parseFloat(removeCurrencySymbols(totalNativeDisplay)), 4)
+        value: floor(parseFloat(totalBalanceAmount), 4)
           ? totalNativeDisplay
-          : `< ${nativeCurrencySymbol}0.01`,
+          : `< ${convertAmountToNativeDisplay(0.01, nativeCurrency)}`,
       }}
     >
       <Divider

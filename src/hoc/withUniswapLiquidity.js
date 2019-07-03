@@ -16,7 +16,7 @@ import {
   divide,
   multiply,
 } from '../helpers/utilities';
-import { ethereumUtils, removeCurrencySymbols } from '../utils';
+import { ethereumUtils } from '../utils';
 import withAccountSettings from './withAccountSettings';
 
 const mapStateToProps = ({
@@ -74,19 +74,19 @@ const buildUniswapCards = (nativeCurrency, nativeCurrencySymbol, assets, uniswap
   const ethPrice = get(ethereumUtils.getAsset(assets), 'price.value', 0);
 
   const uniswapPools = compact(map(values(uniswap), (liquidityPool) => transformPool(liquidityPool, ethPrice, nativeCurrency)));
-  const orderedUniswapPools = orderBy(uniswapPools, ['totalNativeDisplay'], ['desc']);
+  const orderedUniswapPools = orderBy(uniswapPools, [({ totalBalanceAmount }) => Number(totalBalanceAmount)], ['desc']);
 
   let uniswapTotal = 0;
 
   if (Array.isArray(orderedUniswapPools) && orderedUniswapPools.length) {
     uniswapTotal = orderedUniswapPools
-      .map(({ totalNativeDisplay }) => removeCurrencySymbols(totalNativeDisplay))
+      .map(({ totalBalanceAmount }) => Number(totalBalanceAmount))
       .reduce((a, b) => (a + b), 0);
   }
 
   return {
     uniswap: orderedUniswapPools,
-    uniswapTotal: `${nativeCurrencySymbol}${uniswapTotal.toFixed(2)}`,
+    uniswapTotal: convertAmountToNativeDisplay(uniswapTotal, nativeCurrency),
   };
 };
 
