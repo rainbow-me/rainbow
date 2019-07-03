@@ -1,5 +1,6 @@
 import connect from 'react-redux/es/connect/connect';
-import _, {
+import {
+  findIndex,
   get,
   has,
   indexOf,
@@ -143,42 +144,38 @@ class RecyclerAssetList extends PureComponent {
           return ViewTypes.HEADER;
         }
 
-        // This logic appears to be quite complex since there might be some race conditions
-        // regarding order of received sections while importing from seeds
-        const sectionsByType = keyBy(sections, 'name');
+        const balancesIndex = findIndex(sections, ({ name }) => name === 'balances');
+        const collectiblesIndex = findIndex(sections, ({ name }) => name === 'collectibles');
+        const investmentsIndex = findIndex(sections, ({ name }) => name === 'investments');
 
-        const areBalancesLoaded = has(sectionsByType, 'balances');
-        const areCollectiblesLoaded = has(sectionsByType, 'collectibles');
-        const areInvestmentsLoaded = has(sectionsByType, 'investments');
-
-        if (areBalancesLoaded) {
-          if (index === headersIndices[1] - 1) {
+        if (balancesIndex > -1) {
+          const balanceItemsCount = get(sections, `[${balancesIndex}].data.length`, 0);
+          const lastBalanceIndex = headersIndices[balancesIndex] + balanceItemsCount;
+          if (index === lastBalanceIndex) {
             return ViewTypes.COIN_ROW_LAST;
           }
         }
 
-        if (areInvestmentsLoaded) {
-          const idx = indexOf(keys(sectionsByType), 'investments');
-          const nextSectionIdx = (headersIndices[idx + 1]);
+        if (investmentsIndex > -1) {
+          const investmentItemsCount = get(sections, `[${investmentsIndex}].data.length`, 0);
+          const lastInvestmentIndex = headersIndices[investmentsIndex] + investmentItemsCount;
 
-          if ((index > headersIndices[idx]) && (index < nextSectionIdx)) {
-            return index === nextSectionIdx - 1
+          if ((index > headersIndices[investmentsIndex]) && (index <= lastInvestmentIndex)) {
+            return index === lastInvestmentIndex
               ? ViewTypes.UNISWAP_ROW_LAST
               : ViewTypes.UNISWAP_ROW;
           }
         }
 
-        if (areCollectiblesLoaded) {
-          const idx = indexOf(keys(sectionsByType), 'collectibles');
-          if (index > headersIndices[idx]) {
-            const familyIndex = index - headersIndices[idx] - 1;
+        if (collectiblesIndex > -1) {
+          if (index > headersIndices[collectiblesIndex]) {
+            const familyIndex = index - headersIndices[collectiblesIndex] - 1;
             if (openFamilyTabs[familyIndex]) {
-              const collectiblesSection =  _.findIndex(sections, (section) => section.collectibles == true );
-              if(sections[collectiblesSection].data[familyIndex].tokens) {
+              if(sections[collectiblesIndex].data[familyIndex].tokens) {
                 return {
                   get: ViewTypes.UNIQUE_TOKEN_ROW,
                   isLast: index === this.state.length - 1,
-                  size: get(sections, `[${idx}].data[${familyIndex}]`).tokens.length,
+                  size: get(sections, `[${collectiblesIndex}].data[${familyIndex}]`).tokens.length,
                 };
               }
             } else if (index === this.state.length - 1) {

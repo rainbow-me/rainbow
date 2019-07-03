@@ -9,7 +9,6 @@ A mobile wallet for open finance and the decentralized web.
 * Install CocoaPods by running `sudo gem install cocoapods`
 * Install Watchman `brew install watchman`
 * Install the latest version of XCode: https://developer.apple.com/xcode/
-* Clone and install Rainbow Common, our shared library: https://github.com/rainbow-me/rainbow-common
 
 ## How to run the project
 
