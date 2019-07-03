@@ -4,10 +4,10 @@ import React from 'react';
 import {
   createAppContainer,
   createMaterialTopTabNavigator,
-  createStackNavigator,
 } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 import Navigation from '../navigation';
-import { buildTransitions, expanded, sheet } from '../navigation/transitions';
+// import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
 import { deviceUtils } from '../utils';
@@ -50,6 +50,7 @@ const MainNavigator = createStackNavigator({
   ConfirmRequest: TransactionConfirmationScreenWithData,
   ExpandedAssetScreen: {
     navigationOptions: {
+      cardTransparent: true,
       effect: 'expanded',
       gestureResponseDistance: {
         vertical: deviceUtils.dimensions.height,
@@ -60,6 +61,7 @@ const MainNavigator = createStackNavigator({
   ImportSeedPhraseSheet: ImportSeedPhraseSheetWithData,
   ReceiveModal: {
     navigationOptions: {
+      cardTransparent: true,
       effect: 'expanded',
       gestureResponseDistance: {
         vertical: deviceUtils.dimensions.height,
@@ -70,6 +72,7 @@ const MainNavigator = createStackNavigator({
   SendSheet: SendSheetWithData,
   SettingsModal: {
     navigationOptions: {
+      cardTransparent: true,
       effect: 'expanded',
       gesturesEnabled: false,
     },
@@ -78,6 +81,7 @@ const MainNavigator = createStackNavigator({
   SwipeLayout: SwipeStack,
   WalletConnectConfirmationModal: {
     navigationOptions: {
+      cardTransparent: true,
       effect: 'expanded',
       gestureResponseDistance: {
         vertical: deviceUtils.dimensions.height,
@@ -86,12 +90,13 @@ const MainNavigator = createStackNavigator({
     screen: WalletConnectConfirmationModal,
   },
 }, {
+  cardStyleInterpolator: () => { },
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',
   mode: 'modal',
   onTransitionEnd,
   onTransitionStart,
-  transitionConfig: buildTransitions(Navigation, { expanded, sheet }),
+  // transitionConfig: buildTransitions(Navigation, { expanded, sheet }),
   transparentCard: true,
 });
 

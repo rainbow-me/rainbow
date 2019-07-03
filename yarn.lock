@@ -9068,11 +9068,16 @@ react-navigation-drawer@~1.2.1:
   dependencies:
     react-native-tab-view "^1.2.0"
 
-"react-navigation-stack@https://github.com/react-navigation/stack#2.0.0-alpha.2", react-navigation-stack@~1.4.0:
+"react-navigation-stack@https://github.com/react-navigation/stack#2.0.0-alpha.2":
   version "2.0.0-alpha.2"
   resolved "https://github.com/react-navigation/stack#34e12dae8d9fbd9aff455ea82478639dc579df86"
   dependencies:
     react-native-safe-area-view "^0.14.5"
+
+react-navigation-stack@~1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-1.4.0.tgz#69cdb029ea4ee5877d7e933b3117dc90bc841eb2"
+  integrity sha512-zEe9wCA0Ot8agarYb//0nSWYW1GM+1R0tY/nydUV0EizeJ27At0EklYVWvYEuYU6C48va6cu8OPL7QD/CcJACw==
 
 react-navigation-tabs@~1.1.4:
   version "1.1.4"
