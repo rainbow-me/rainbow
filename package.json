@@ -154,7 +154,6 @@
   },
   "resolutions": {
     "**/eslint-plugin-import": "2.14.0",
-    "react-navigation/react-navigation-stack": "https://github.com/react-navigation/stack#2.0.0-alpha.2",
     "**/resolve": "1.8.1"
   },
   "jest": {

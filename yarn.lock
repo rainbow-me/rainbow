@@ -8901,6 +8901,7 @@ react-navigation-drawer@~1.4.0:
     react-native-tab-view "^1.2.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 react-navigation-stack@~1.5.0:
   version "1.5.5"
   resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-1.5.5.tgz#0b3cd98b7845a51d9ce9d7d678e9e3b9ed010bc3"
@@ -8909,16 +8910,31 @@ react-navigation-stack@~1.5.0:
     prop-types "^15.7.2"
 =======
 "react-navigation-stack@https://github.com/react-navigation/stack#2.0.0-alpha.2", react-navigation-stack@~1.4.0:
+=======
+"react-navigation-stack@https://github.com/react-navigation/stack#2.0.0-alpha.2":
+>>>>>>> 85ffae7a... Convert parts of the API to the new version
   version "2.0.0-alpha.2"
   resolved "https://github.com/react-navigation/stack#34e12dae8d9fbd9aff455ea82478639dc579df86"
   dependencies:
     react-native-safe-area-view "^0.14.5"
 >>>>>>> bc689cd3... Update react-navigation-stack to 2.0.0-alpha.2
 
+<<<<<<< HEAD
 react-navigation-tabs@~1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/react-navigation-tabs/-/react-navigation-tabs-1.2.0.tgz#602c147029bb4f1c569b26479ddba534fe3ebb19"
   integrity sha512-I6vq3XX4ub9KhWQzcrggznls+2Z2C6w2ro46vokDGGvJ02CBpQRar7J0ETV29Ot5AJY67HucNUmZdH3yDFckmQ==
+=======
+react-navigation-stack@~1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-1.4.0.tgz#69cdb029ea4ee5877d7e933b3117dc90bc841eb2"
+  integrity sha512-zEe9wCA0Ot8agarYb//0nSWYW1GM+1R0tY/nydUV0EizeJ27At0EklYVWvYEuYU6C48va6cu8OPL7QD/CcJACw==
+
+react-navigation-tabs@~1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/react-navigation-tabs/-/react-navigation-tabs-1.1.4.tgz#00a312250df3c519c60b7815a523ace5ee11163a"
+  integrity sha512-py2hLCRxPwXOzmY1W9XcY1rWXxdK6RGW/aXh56G9gIf8cpHNDhy/bJV4e46/JrVcse3ybFaN0liT09/DM/NdwQ==
+>>>>>>> 85ffae7a... Convert parts of the API to the new version
   dependencies:
     hoist-non-react-statics "^2.5.0"
     prop-types "^15.6.1"
