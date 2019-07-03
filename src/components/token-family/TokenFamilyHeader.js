@@ -159,7 +159,7 @@ class TokenListHeader extends React.Component {
             </TruncatedText>
             <ArrowWrap>
               <Animated.View
-                style={{ transform: [{ rotate: this._transX ? concat(this._transX, 'deg') : '90deg' }] }}
+                style={{ transform: [{ rotate: this._transX ? concat(this._transX, 'deg') : '0deg' }] }}
               >
                <SettingIcon source={Caret} />
               </Animated.View>
