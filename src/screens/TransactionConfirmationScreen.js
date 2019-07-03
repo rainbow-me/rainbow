@@ -159,7 +159,7 @@ export default class TransactionConfirmationScreen extends PureComponent {
         />
         <Text
           color="white"
-          letterSpacing="loose"
+          letterSpacing="looser"
           size="h4"
           weight="semibold"
         >

@@ -1,5 +1,6 @@
 import { get } from 'lodash';
 import BigNumber from 'bignumber.js';
+import ethUnits from '../references/ethereum-units.json';
 import supportedNativeCurrencies from '../references/native-currencies.json';
 
 /**

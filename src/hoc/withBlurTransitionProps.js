@@ -11,11 +11,10 @@ const transitionPropsSelector = state => state.transitionProps;
 
 const withBlurTransitionProps = ({ effect, isTransitioning, position }) => {
   const blurOpacity = position.interpolate(blurOpacityInterpolation);
-  const showBlur = (effect === 'expanded') && (isTransitioning || blurOpacity.__getValue() > 0);
 
   return {
     blurOpacity,
-    showBlur,
+    showBlur: (effect === 'expanded') && (isTransitioning || blurOpacity.__getValue() > 0),
   };
 };
 

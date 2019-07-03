@@ -44,7 +44,7 @@ const ModalHeader = ({
     <TitleContainer>
       <TruncatedText
         height={21}
-        letterSpacing="tight"
+        letterSpacing="tighter"
         size="large"
         weight="bold"
       >

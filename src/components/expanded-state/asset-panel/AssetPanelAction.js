@@ -52,7 +52,10 @@ const AssetPanelAction = ({
       </TruncatedText>
     </FlexItem>
     <AssetPanelIconContainer>
-      <AssetPanelIcon color={color} name={icon} />
+      <AssetPanelIcon
+        color={color}
+        name={icon}
+      />
     </AssetPanelIconContainer>
   </Container>
 );

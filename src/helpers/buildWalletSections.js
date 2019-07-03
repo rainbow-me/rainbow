@@ -5,6 +5,7 @@ import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import { createSelector } from 'reselect';
 import { BalanceCoinRow } from '../components/coin-row';
+import { UniswapInvestmentCard } from '../components/investment-cards';
 import { UniqueTokenRow } from '../components/unique-token';
 import { buildUniqueTokenList } from './assets';
 import { TokenFamilyWrap } from '../components/token-family';
@@ -20,6 +21,8 @@ const setIsWalletEmptySelector = state => state.setIsWalletEmpty;
 const shitcoinsCountSelector = state => state.shitcoinsCount;
 const showShitcoinsSelector = state => state.showShitcoins;
 const uniqueTokensSelector = state => state.uniqueTokens;
+const uniswapSelector = state => state.uniswap;
+const uniswapTotalSelector = state => state.uniswapTotal;
 
 const enhanceRenderItem = compose(
   withNavigation,
@@ -37,14 +40,19 @@ const enhanceRenderItem = compose(
 );
 
 const TokenItem = enhanceRenderItem(BalanceCoinRow);
-const UniqueTokenItem = enhanceRenderItem(UniqueTokenRow);
+const UniswapCardItem = enhanceRenderItem(UniswapInvestmentCard);
 
 const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
 const tokenFamilyItem = item => <TokenFamilyWrap {...item} />
+const uniswapRenderItem = item => <UniswapCardItem {...item} assetType="uniswap" />;
 
-const filterWalletSections = sections => sections.filter(({ data, header }) => (
-  data ? get(header, 'totalItems') : true
-));
+const filterWalletSections = sections => (
+  sections.filter(({ data, header }) => (
+    data
+      ? get(header, 'totalItems')
+      : true
+  ))
+);
 
 const buildWalletSections = (
   allAssets,
@@ -57,7 +65,9 @@ const buildWalletSections = (
   setIsWalletEmpty,
   shitcoinsCount,
   showShitcoins,
-  uniqueTokens,
+  uniqueTokens = [],
+  uniswap = [],
+  uniswapTotal,
 ) => {
   const sections = [
     {
@@ -69,7 +79,19 @@ const buildWalletSections = (
         totalItems: allAssetsCount,
         totalValue: get(assetsTotal, 'display', ''),
       },
+      name: 'balances',
       renderItem: balancesRenderItem,
+    },
+    {
+      data: uniswap,
+      header: {
+        title: 'Investments',
+        totalItems: uniswap.length,
+        totalValue: uniswapTotal,
+      },
+      investments: true,
+      name: 'investments',
+      renderItem: uniswapRenderItem,
     },
     {
       collectibles: true,
@@ -80,6 +102,7 @@ const buildWalletSections = (
         totalValue: '',
       },
       renderItem: tokenFamilyItem,
+      name: 'collectibles',
       type: 'big',
     },
   ];
@@ -124,6 +147,8 @@ export default createSelector(
     shitcoinsCountSelector,
     showShitcoinsSelector,
     uniqueTokensSelector,
+    uniswapSelector,
+    uniswapTotalSelector,
   ],
   buildWalletSections,
 );

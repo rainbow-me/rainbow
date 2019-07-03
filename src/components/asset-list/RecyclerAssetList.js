@@ -1,6 +1,11 @@
 import connect from 'react-redux/es/connect/connect';
-import { get, has } from 'lodash';
-import styled from 'styled-components/primitives';
+import {
+  get,
+  has,
+  indexOf,
+  keyBy,
+  keys,
+} from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { RefreshControl, LayoutAnimation } from 'react-native';
@@ -11,6 +16,7 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
+import styled from 'styled-components/primitives';
 import {
   buildAssetHeaderUniqueIdentifier,
   buildAssetUniqueIdentifier,
@@ -18,6 +24,7 @@ import {
 import { colors } from '../../styles';
 import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
 import { CoinRow, CollectiblesSendRow } from '../coin-row';
+import { InvestmentCard, UniswapInvestmentCard } from '../investment-cards';
 import { ListFooter } from '../list';
 import AssetListHeader from './AssetListHeader';
 import { withOpenFamilyTabs } from '../../hoc';
@@ -30,6 +37,10 @@ export const ViewTypes = {
   UNIQUE_TOKEN_ROW: 3,
   UNIQUE_TOKEN_ROW_CLOSED: 4,
   UNIQUE_TOKEN_ROW_CLOSED_LAST: 5,
+  UNIQUE_TOKEN_ROW_FIRST: 8, // TODO remove
+  UNIQUE_TOKEN_ROW_LAST: 9, // TODO remove
+  UNISWAP_ROW: 6,
+  UNISWAP_ROW_LAST: 7,
 };
 
 const Wrapper = styled.View`
@@ -62,9 +73,10 @@ const hasRowChanged = (r1, r2) => {
   }
 
   const isNewAsset = isNewValueForPath(r1, r2, 'item.uniqueId');
-
   const isNewTokenFirst = isNewValueForPath(r1, r2, 'item.tokens.[0].uniqueId');
   const isNewTokenSecond = isNewValueForPath(r1, r2, 'item.tokens.[1].uniqueId');
+  const isNewUniswapFirst = isNewValueForPath(r1, r2, 'item.tokens.[0].percentageOwned');
+  const isNewUniswapSecond = isNewValueForPath(r1, r2, 'item.tokens.[1].percentageOwned');
 
   const isCollectiblesRow = has(r1, 'item.tokens') && has(r2, 'item.tokens');
   let isNewAssetBalance = false;
@@ -76,7 +88,9 @@ const hasRowChanged = (r1, r2) => {
   return isNewAsset
     || isNewAssetBalance
     || isNewTokenFirst
-    || isNewTokenSecond;
+    || isNewTokenSecond
+    || isNewUniswapFirst
+    || isNewUniswapSecond;
 };
 
 class RecyclerAssetList extends PureComponent {
@@ -97,6 +111,7 @@ class RecyclerAssetList extends PureComponent {
         totalItems: PropTypes.number,
         totalValue: PropTypes.string,
       }),
+      investments: PropTypes.bool,
       perData: PropTypes.object,
       renderItem: PropTypes.func.isRequired,
       type: PropTypes.string,
@@ -130,26 +145,39 @@ class RecyclerAssetList extends PureComponent {
 
         // This logic appears to be quite complex since there might be some race conditions
         // regarding order of received sections while importing from seeds
-        const areBalancesLoaded = get(sections, '[0].balances');
-        const areCollectiblesLoaded = sections.length === 2 || get(sections, '[0].collectibles');
+        const sectionsByType = keyBy(sections, 'name');
 
-        if (areBalancesLoaded && areCollectiblesLoaded) {
+        const areBalancesLoaded = has(sectionsByType, 'balances');
+        const areCollectiblesLoaded = has(sectionsByType, 'collectibles');
+        const areInvestmentsLoaded = has(sectionsByType, 'investments');
+
+        if (areBalancesLoaded) {
           if (index === headersIndices[1] - 1) {
             return ViewTypes.COIN_ROW_LAST;
           }
         }
 
+        if (areInvestmentsLoaded) {
+          const idx = indexOf(keys(sectionsByType), 'investments');
+          const nextSectionIdx = (headersIndices[idx + 1]);
+
+          if ((index > headersIndices[idx]) && (index < nextSectionIdx)) {
+            return index === nextSectionIdx - 1
+              ? ViewTypes.UNISWAP_ROW_LAST
+              : ViewTypes.UNISWAP_ROW;
+          }
+        }
+
         if (areCollectiblesLoaded) {
-          const idx = areBalancesLoaded ? 1 : 0;
+          const idx = indexOf(keys(sectionsByType), 'collectibles');
           if (index > headersIndices[idx]) {
             const familyIndex = index - headersIndices[idx] - 1;
             if (openFamilyTabs[familyIndex]) {
-              const collectiblesSection = (sections.length === 2) ? 1 : 0;
-              if(sections[collectiblesSection].data[familyIndex].tokens) {
+              if(sections[idx].data[familyIndex].tokens) {
                 return {
                   get: ViewTypes.UNIQUE_TOKEN_ROW,
                   isLast: index === this.state.length - 1,
-                  size: get(sections, `[${collectiblesSection}].data[${familyIndex}]`).tokens.length,
+                  size: get(sections, `[${idx}].data[${familyIndex}]`).tokens.length,
                 };
               }
             } else if (index === this.state.length - 1) {
@@ -158,6 +186,7 @@ class RecyclerAssetList extends PureComponent {
             return ViewTypes.UNIQUE_TOKEN_ROW_CLOSED;
           }
         }
+
         return ViewTypes.COIN_ROW;
       },
       (type, dim) => {
@@ -190,6 +219,10 @@ class RecyclerAssetList extends PureComponent {
           dim.height = this.state.areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRow.height;
+        } else if (type === ViewTypes.UNISWAP_ROW_LAST) {
+          dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical + ListFooter.height;
+        } else if (type === ViewTypes.UNISWAP_ROW) {
+          dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
         } else {
           dim.height = this.props.hideHeader ? 0 : AssetListHeader.height;
         }
@@ -199,7 +232,6 @@ class RecyclerAssetList extends PureComponent {
 
   static getDerivedStateFromProps({ sections }, state) {
     const headersIndices = [];
-
     const items = sections.reduce((ctx, section) => {
       headersIndices.push(ctx.length);
       return ctx
@@ -209,9 +241,7 @@ class RecyclerAssetList extends PureComponent {
         }])
         .concat(section.data.map(item => ({ item: { ...item, ...section.perData }, renderItem: section.renderItem })));
     }, []);
-
     const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(sections.find(e => e.collectibles));
-
     return {
       areSmallCollectibles,
       dataProvider: state.dataProvider.cloneWithRows(items),
@@ -224,6 +254,7 @@ class RecyclerAssetList extends PureComponent {
     this.isCancelled = false;
   };
 
+  // TODO
   componentDidUpdate(prev) {
     // sorry
     if (this.props.scrollingVelocity === 0) {
@@ -250,7 +281,7 @@ class RecyclerAssetList extends PureComponent {
             }
             const diff = this.position - (CoinRow.height * this.props.sections[0].data.length + AssetListHeader.height * this.props.sections.length + collectiblesHeight) + (deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235));
             const renderSize = CardSize * this.props.sections[1].data[i].tokens.length + 20 * (this.props.sections[1].data[i].tokens.length - 1);
-            if( renderSize > diff) {
+            if(renderSize > diff) {
               const scrollDistance = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235) > renderSize ? renderSize - diff : deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 250 : 280);
               this.rlv.scrollToOffset(0, this.position + scrollDistance , true);
             }
@@ -305,12 +336,20 @@ class RecyclerAssetList extends PureComponent {
       return hideHeader ? null : <AssetListHeaderRenderer {...data} />;
     }
 
-    return (type === ViewTypes.COIN_ROW || type === ViewTypes.COIN_ROW_LAST)
+    const isNotUniqueToken = (
+      type === ViewTypes.COIN_ROW
+      || type === ViewTypes.COIN_ROW_LAST
+      || type === ViewTypes.UNISWAP_ROW
+      || type === ViewTypes.UNISWAP_ROW_LAST
+    );
+
+    // TODO sections
+    return isNotUniqueToken
       ? renderItem({ item })
       : renderItem({
         isFirstRow: type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST,
         isLastRow: type === ViewTypes.UNIQUE_TOKEN_ROW_LAST,
-        item: item.tokens ? item.tokens : item,
+        item: item.tokens,
         shouldPrioritizeImageLoading: index < sections[0].data.length + 9,
         uniqueId: item.uniqueId,
         familyImage: item.familyImage,
