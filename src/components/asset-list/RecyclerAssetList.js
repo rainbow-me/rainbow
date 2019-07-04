@@ -274,7 +274,7 @@ class RecyclerAssetList extends PureComponent {
       let i = 0;
       while (i < this.props.openFamilyTabs.length) {
         if (this.props.openFamilyTabs[i] === true && prev.openFamilyTabs[i] === false) {
-          // TODO things rely on balanc
+          // TODO no function creation in while loop
           setTimeout(() => {
             let collectiblesHeight = 0;
             for (let j = 0; j < i; j++) {
