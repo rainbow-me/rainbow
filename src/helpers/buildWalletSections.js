@@ -111,15 +111,17 @@ const buildWalletSections = (
     const destructiveButtonIndex = showShitcoins ? 0 : 99;
 
     const index = findIndex(sections, (section) => section.balances === true);
-    sections[index].header.contextMenuOptions = {
-      cancelButtonIndex: 1,
-      destructiveButtonIndex,
-      onPressActionSheet: onToggleShowShitcoins,
-      options: [
-        `${lang.t(`account.${showShitcoins ? 'hide' : 'show'}`)} ${lang.t('wallet.assets.no_price')}`,
-        lang.t('wallet.action.cancel'),
-      ],
-    };
+    if (index > -1) {
+      sections[index].header.contextMenuOptions = {
+        cancelButtonIndex: 1,
+        destructiveButtonIndex,
+        onPressActionSheet: onToggleShowShitcoins,
+        options: [
+          `${lang.t(`account.${showShitcoins ? 'hide' : 'show'}`)} ${lang.t('wallet.assets.no_price')}`,
+          lang.t('wallet.action.cancel'),
+        ],
+      };
+    }
   }
 
   const filteredSections = filterWalletSections(sections);
