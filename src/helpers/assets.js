@@ -23,11 +23,10 @@ export const buildAssetUniqueIdentifier = (item) => {
 };
 
 export const buildUniqueTokenList = (uniqueTokens) => {
-  const rows = [];
+  let rows = [];
   const grouped = groupBy(uniqueTokens, token => token.asset_contract.name);
   const families = Object.keys(grouped);
   for (let i = 0; i < families.length; i++) {
-    grouped[families[i]][0].rowNumber = i;
 
     const tokensRow = [];
     for (let j = 0; j < grouped[families[i]].length; j += 2) {
@@ -40,7 +39,6 @@ export const buildUniqueTokenList = (uniqueTokens) => {
     const tokens = compact(tokensRow);
     rows.push({
       childrenAmount: grouped[families[i]].length,
-      familyId: i,
       familyImage: get(tokensRow, '[0][0].familyImage', null),
       familyName: families[i],
       tokens,
@@ -51,7 +49,12 @@ export const buildUniqueTokenList = (uniqueTokens) => {
   while (rows.length > store.getState().openFamilyTabs.openFamilyTabs.length) {
     store.dispatch(pushOpenFamilyTab());
   }
-  return sortBy(rows, ['familyName']);
+  rows = sortBy(rows, ['familyName']);
+  rows.forEach((row, i) => {
+    row.familyId = i;
+    row.tokens[0][0].rowNumber = i;
+  });
+  return rows;
 };
 
 /* eslint-disable camelcase */
