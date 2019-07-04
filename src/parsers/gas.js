@@ -16,9 +16,9 @@ import {
  */
 export const parseGasPrices = (data, priceUnit, gasLimit, nativeCurrency, short) => {
   const gasPrices = {
+    slow: null,
     average: null,
     fast: null,
-    slow: null,
   };
   if (!data) {
     gasPrices.fast = defaultGasPriceFormat('fast', '30000', '5000000000', '5 Gwei', short);
