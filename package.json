@@ -97,6 +97,7 @@
     "react-native-udp": "^2.6.0",
     "react-native-version-number": "^0.3.5",
     "react-navigation": "^3.11.0",
+    "react-navigation-stack": "https://github.com/react-navigation/stack#2.0.0-alpha.2",
     "react-primitives": "^0.8.0",
     "react-redux": "^5.0.7",
     "react-spring": "^5.7.2",
