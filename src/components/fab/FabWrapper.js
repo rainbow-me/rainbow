@@ -1,22 +1,19 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import Animated from 'react-native-reanimated';
+import { hoistStatics, withProps } from 'recompact';
 import { safeAreaInsetValues } from '../../utils';
 import { FlexItem, RowWithMargins } from '../layout';
-import SendFab from './SendFab';
-import Text from '../text/Text';
-import { hoistStatics, withProps } from 'recompact';
-import Icon from '../icons/Icon';
-import { ShadowStack } from '../shadow-stack';
-import { borders, colors } from '../../styles';
-import { ButtonPressAnimation } from '../animations';
-import { buildFabShadow } from './FloatingActionButton';
 import DeleteButton from './DeleteButton';
+import SendFab from './SendFab';
 
 const FabWrapperBottomPosition = 21;
 
 const FabWrapper = ({
-  children, disabled, fabs, ...rest
+  children,
+  disabled,
+  fabs,
+  ...rest
 }) => (
   <FlexItem>
     {children}

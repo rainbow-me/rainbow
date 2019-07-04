@@ -1,7 +1,7 @@
-import connect from 'react-redux/es/connect/connect';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withNavigation } from 'react-navigation';
+import { connect } from 'react-redux';
 import {
   compose,
   omitProps,
@@ -24,7 +24,10 @@ const mapStateToProps = ({
 
 const FloatingActionButtonWithDisabled = compose(
   connect(mapStateToProps),
-  withProps(({ selectedId }) => ({ greyed: selectedId === extraStates.notSendable, size: FloatingActionButton.size })),
+  withProps(({ selectedId }) => ({
+    greyed: selectedId === extraStates.notSendable,
+    size: FloatingActionButton.size,
+  })),
   omitProps('selectedId'),
 )(FloatingActionButton);
 
@@ -40,16 +43,16 @@ const SendFab = ({
 }) => (
   <EnhancedMovable
     actionType="send"
+    deleteButtonTranslate={deleteButtonTranslate}
     tapRef={tapRef}
     scrollViewTracker={scrollViewTracker}
     sections={sections}
-    deleteButtonTranslate={deleteButtonTranslate}
   >
     <FloatingActionButtonWithDisabled
-      tapRef={tapRef}
-      scaleTo={1.1}
       disabled={disabled}
       onPress={onPress}
+      tapRef={tapRef}
+      scaleTo={1.1}
     >
       <Icon
         name="send"

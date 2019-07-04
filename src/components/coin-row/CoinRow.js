@@ -2,12 +2,11 @@ import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import { compose } from 'recompact';
 import styled from 'styled-components/primitives';
-import connect from 'react-redux/es/connect/connect';
+import { withAccountSettings, withFabSendAction } from '../../hoc';
 import { colors, padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
-import { Column, Row } from '../layout';
 import Highlight from '../Highlight';
-import { withAccountSettings, withFabSendAction } from '../../hoc';
+import { Column, Row } from '../layout';
 
 const CoinRowPaddingVertical = 12;
 
@@ -34,9 +33,6 @@ const CoinRow = enhance(({
   containerStyles,
   contentStyles,
   highlight,
-  selectedId,
-  onPress,
-  onPressSend,
   symbol,
   topRowRender,
   ...props
@@ -65,8 +61,7 @@ CoinRow.propTypes = {
   coinIconRender: PropTypes.func,
   containerStyles: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
   contentStyles: PropTypes.string,
-  onPress: PropTypes.func,
-  onPressSend: PropTypes.func,
+  highlight: PropTypes.string,
   symbol: PropTypes.string,
   topRowRender: PropTypes.func,
 };

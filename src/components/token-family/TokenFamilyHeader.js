@@ -1,27 +1,18 @@
 import PropTypes from 'prop-types';
-import React, { useRef, useState } from 'react';
-import { View, Text } from 'react-primitives';
-import { onlyUpdateForKeys } from 'recompact';
-import Divider from '../Divider';
-import { ListHeader } from '../list';
-import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import { TruncatedText, Monospace } from '../text';
-import Highlight from '../Highlight';
-import CloseIcon from '../icons/svg/CloseIcon';
-import { Icon } from '../icons';
-import { ButtonPressAnimation } from '../animations';
-import { ShadowStack } from '../shadow-stack';
-import { colors } from '../../styles';
-import Animated, { Easing } from 'react-native-reanimated';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Button, StyleSheet, Alert } from 'react-native';
+import React from 'react';
 import FastImage from 'react-native-fast-image';
+import Animated, { Easing } from 'react-native-reanimated';
+import styled from 'styled-components/primitives';
 import Caret from '../../assets/family-dropdown-arrow.png';
+import { colors } from '../../styles';
+import { ButtonPressAnimation } from '../animations';
+import Highlight from '../Highlight';
+import { ShadowStack } from '../shadow-stack';
+import { TruncatedText, Monospace } from '../text';
 
 const Wrapper = styled.View`
   height: 56px;
-  width: 100%;
-  padding: 11px 19px;
+  width: 100%; padding: 11px 19px;
   align-items: center;
   flex-direction: row;
   justify-content: space-between;
@@ -58,33 +49,30 @@ width: 9px;
 
 
 const {
-  set,
-  cond,
-  eq,
-  and,
-  startClock,
-  stopClock,
-  clockRunning,
   block,
+  Clock,
+  clockRunning,
+  concat,
+  cond,
+  interpolate,
+  set,
+  startClock,
   timing,
   Value,
-  Clock,
-  interpolate,
-  concat,
 } = Animated;
 
 function runTiming(clock, value, dest, isOpen) {
   const state = {
     finished: new Value(1),
+    frameTime: new Value(0),
     position: new Value(value),
     time: new Value(0),
-    frameTime: new Value(0),
   };
 
   const config = {
     duration: 200,
-    toValue: new Value(0),
     easing: Easing.inOut(Easing.ease),
+    toValue: new Value(0),
   };
 
   const reset = [
@@ -106,7 +94,8 @@ function runTiming(clock, value, dest, isOpen) {
 
 class TokenListHeader extends React.Component {
   componentWillUpdate(prev) {
-    if (prev.isOpen !== undefined && prev.isOpen !== this.props.isOpen) {
+    if (prev.isOpen !== undefined
+        && prev.isOpen !== this.props.isOpen) {
       console.log(this.props.isOpen);
       const clock = new Clock();
       let base = undefined;
@@ -115,7 +104,7 @@ class TokenListHeader extends React.Component {
         inputRange: [-1, 1],
         outputRange: [90, 0],
       });
-    };
+    }
   }
 
   render() {
@@ -139,15 +128,15 @@ class TokenListHeader extends React.Component {
               ]}
               shouldRasterizeIOS
             >
-            {(this.props.familyImage) ? (
-              <FamilyImage
-                id={this.props.familyImage}
-                source={{ uri: this.props.familyImage }}
-              />
-            ) : (
-              <Image>
-              </Image>
-            )}
+              {(this.props.familyImage) ? (
+                <FamilyImage
+                  id={this.props.familyImage}
+                  source={{ uri: this.props.familyImage }}
+                />
+              ) : (
+                <Image>
+                </Image>
+              )}
             </ShadowStack>
             <TruncatedText
               style={{ paddingLeft: 9 }}
@@ -161,7 +150,7 @@ class TokenListHeader extends React.Component {
               <Animated.View
                 style={{ transform: [{ rotate: this._transX ? concat(this._transX, 'deg') : '0deg' }] }}
               >
-               <SettingIcon source={Caret} />
+                <SettingIcon source={Caret} />
               </Animated.View>
             </ArrowWrap>
           </LeftView>
@@ -177,10 +166,15 @@ class TokenListHeader extends React.Component {
       </ButtonPressAnimation>
     );
   }
-};
+}
 
 TokenListHeader.propTypes = {
-
+  childrenAmount: PropTypes.number,
+  familyImage: PropTypes.string,
+  familyName: PropTypes.string,
+  highlight: PropTypes.string,
+  isOpen: PropTypes.bool,
+  onHeaderPress: PropTypes.func,
 };
 
 export default TokenListHeader;

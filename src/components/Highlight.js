@@ -1,6 +1,6 @@
-import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import Flex from './layout/Row';
+import styled from 'styled-components/primitives';
 import { colors } from '../styles/index';
+import Flex from './layout/Row';
 
 export default styled(Flex)`
   left: 0;

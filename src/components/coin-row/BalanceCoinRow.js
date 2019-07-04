@@ -62,7 +62,12 @@ TopRow.propTypes = {
   nativeCurrencySymbol: PropTypes.string,
 };
 
-const BalanceCoinRow = ({ item, onPress, onPressSend, ...props }) => (
+const BalanceCoinRow = ({
+  item,
+  onPress,
+  onPressSend,
+  ...props
+}) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
     <CoinRow
       onPress={onPress}

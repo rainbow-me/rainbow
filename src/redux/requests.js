@@ -1,3 +1,4 @@
+import { convertHexToUtf8 } from '@walletconnect/utils';
 import BigNumber from 'bignumber.js';
 import {
   filter,
@@ -11,15 +12,14 @@ import {
   removeLocalRequests,
   saveLocalRequests,
 } from '../handlers/commonStorage';
-import smartContractMethods from '../references/smartcontract-methods.json';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertHexToString,
   convertRawAmountToDecimalFormat,
   fromWei,
 } from '../helpers/utilities';
+import smartContractMethods from '../references/smartcontract-methods.json';
 import { ethereumUtils } from '../utils';
-import { convertHexToUtf8 } from '@walletconnect/utils';
 
 // -- Constants --------------------------------------- //
 const REQUESTS_UPDATE_REQUESTS_TO_APPROVE = 'requests/REQUESTS_UPDATE_REQUESTS_TO_APPROVE';

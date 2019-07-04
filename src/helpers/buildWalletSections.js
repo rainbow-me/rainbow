@@ -1,14 +1,13 @@
 import lang from 'i18n-js';
-import _, { get } from 'lodash';
+import { findIndex, get } from 'lodash';
 import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import { createSelector } from 'reselect';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
-import { UniqueTokenRow } from '../components/unique-token';
-import { buildUniqueTokenList } from './assets';
 import { TokenFamilyWrap } from '../components/token-family';
+import { buildUniqueTokenList } from './assets';
 
 const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
@@ -43,7 +42,7 @@ const TokenItem = enhanceRenderItem(BalanceCoinRow);
 const UniswapCardItem = enhanceRenderItem(UniswapInvestmentCard);
 
 const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
-const tokenFamilyItem = item => <TokenFamilyWrap {...item} />
+const tokenFamilyItem = item => <TokenFamilyWrap {...item} />;
 const uniswapRenderItem = item => <UniswapCardItem {...item} assetType="uniswap" />;
 
 const filterWalletSections = sections => (
@@ -101,8 +100,8 @@ const buildWalletSections = (
         totalItems: uniqueTokens.length,
         totalValue: '',
       },
-      renderItem: tokenFamilyItem,
       name: 'collectibles',
+      renderItem: tokenFamilyItem,
       type: 'big',
     },
   ];
@@ -111,7 +110,7 @@ const buildWalletSections = (
     // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
     const destructiveButtonIndex = showShitcoins ? 0 : 99;
 
-    const index = _.findIndex(sections, (section) => section.balances == true );
+    const index = findIndex(sections, (section) => section.balances === true);
     sections[index].header.contextMenuOptions = {
       cancelButtonIndex: 1,
       destructiveButtonIndex,

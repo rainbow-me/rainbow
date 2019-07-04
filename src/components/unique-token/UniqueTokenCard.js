@@ -8,14 +8,14 @@ import {
   withProps,
 } from 'recompact';
 import styled from 'styled-components/primitives';
+import { withFabSendAction } from '../../hoc';
 import { colors, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
+import Highlight from '../Highlight';
 import InnerBorder from '../InnerBorder';
 import { Centered } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import UniqueTokenImage from './UniqueTokenImage';
-import Highlight from '../Highlight';
-import { withFabSendAction } from '../../hoc';
 
 const UniqueTokenCardBorderRadius = 16;
 

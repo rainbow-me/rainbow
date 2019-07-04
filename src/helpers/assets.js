@@ -1,6 +1,11 @@
-import _, { compact, get, sortBy } from 'lodash';
-import store from '../redux/store';
+import {
+  compact,
+  get,
+  groupBy,
+  sortBy,
+} from 'lodash';
 import { pushOpenFamilyTab } from '../redux/openFamilyTabs';
+import store from '../redux/store';
 
 export const buildAssetHeaderUniqueIdentifier = ({
   showShitcoins,
@@ -18,13 +23,13 @@ export const buildAssetUniqueIdentifier = (item) => {
 };
 
 export const buildUniqueTokenList = (uniqueTokens) => {
-  let rows = [];
-  const grouped = _.groupBy(uniqueTokens, token => token.asset_contract.name);
+  const rows = [];
+  const grouped = groupBy(uniqueTokens, token => token.asset_contract.name);
   const families = Object.keys(grouped);
   for (let i = 0; i < families.length; i++) {
     grouped[families[i]][0].rowNumber = i;
 
-    const tokensRow = []
+    const tokensRow = [];
     for (let j = 0; j < grouped[families[i]].length; j += 2) {
       if (grouped[families[i]][j + 1]) {
         tokensRow.push([grouped[families[i]][j], grouped[families[i]][j + 1]]);
@@ -32,21 +37,20 @@ export const buildUniqueTokenList = (uniqueTokens) => {
         tokensRow.push([grouped[families[i]][j]]);
       }
     }
-    tokens = compact(tokensRow);
+    const tokens = compact(tokensRow);
     rows.push({
-      tokens,
-      uniqueId: tokensRow[0].map(({ uniqueId }) => uniqueId).join('__'),
+      childrenAmount: grouped[families[i]].length,
+      familyId: i,
       familyImage: get(tokensRow, '[0][0].familyImage', null),
       familyName: families[i],
-      familyId: i,
-      childrenAmount: grouped[families[i]].length,
+      tokens,
+      uniqueId: tokensRow[0].map(({ uniqueId }) => uniqueId).join('__'),
     });
   }
 
-  while(rows.length > store.getState().openFamilyTabs.openFamilyTabs.length) {
+  while (rows.length > store.getState().openFamilyTabs.openFamilyTabs.length) {
     store.dispatch(pushOpenFamilyTab());
   }
-  
   return sortBy(rows, ['familyName']);
 };
 

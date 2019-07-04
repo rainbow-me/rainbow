@@ -1,18 +1,18 @@
 import PropTypes from 'prop-types';
-import React, { PureComponent, useRef } from 'react';
-import { TouchableHighlight } from 'react-native';
+import React, { PureComponent } from 'react';
 import { withNavigation } from 'react-navigation';
+import { View } from 'react-primitives';
 import {
-  compose, withHandlers, withProps, onlyUpdateForKeys,
+  compose,
+  withHandlers,
+  withProps,
+  onlyUpdateForKeys,
 } from 'recompact';
-import { UniqueTokenRow } from '../unique-token';
-import { View, Text } from 'react-primitives';
 import { withOpenFamilyTabs, withFabSendAction } from '../../hoc';
-import { Transitioning, Transition } from 'react-native-reanimated';
+import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyHeader from './TokenFamilyHeader';
-import { ButtonPressAnimation } from '../animations';
 
-enhanceRenderItem = compose(
+const enhanceRenderItem = compose(
   withNavigation,
   withHandlers({
     onPress: ({ assetType, navigation }) => (item) => {
@@ -27,24 +27,29 @@ enhanceRenderItem = compose(
   }),
 );
 
-const UniqueTokenItem = this.enhanceRenderItem(UniqueTokenRow);
+const UniqueTokenItem = enhanceRenderItem(UniqueTokenRow);
 
 const getHeight = (openFamilyTab) => (
-  openFamilyTab ?
-    UniqueTokenRow.getHeight(false, false) + 100 :
-    100
-)
+  openFamilyTab
+    ? UniqueTokenRow.getHeight(false, false) + 100
+    : 100
+);
 
-const header = (child) => {
-  return child;
-}
+const header = (child) => child;
 
 class TokenFamilyWrap extends PureComponent {
   collectiblesRenderItem = item => {
     if (this.props.openFamilyTabs[item.item[0][0].rowNumber]) {
       const tokens = [];
       for (let i = 0; i < item.item.length; i++) {
-        tokens.push(<UniqueTokenItem isLastRow={item.isLastRow} isFirstRow={item.isFirstRow} item={item.item[i]} assetType="unique_token" />)
+        tokens.push(
+          <UniqueTokenItem
+            assetType="unique_token"
+            isLastRow={item.isLastRow}
+            isFirstRow={item.isFirstRow}
+            item={item.item[i]}
+          />
+        );
       }
       return tokens;
     }
@@ -55,7 +60,7 @@ class TokenFamilyWrap extends PureComponent {
       index: this.props.item[0][0].rowNumber,
       state: !this.props.openFamilyTabs[this.props.item[0][0].rowNumber],
     });
-  }
+  };
 
   render() {
     return (
@@ -75,7 +80,13 @@ class TokenFamilyWrap extends PureComponent {
 }
 
 TokenFamilyWrap.propTypes = {
+  childrenAmount: PropTypes.number,
+  familyImage: PropTypes.string,
+  familyName: PropTypes.string,
+  highlight: PropTypes.string,
   item: PropTypes.object,
+  openFamilyTabs: PropTypes.array,
+  setOpenFamilyTabs: PropTypes.func,
 };
 
 TokenFamilyWrap.getHeight = getHeight;
@@ -95,5 +106,11 @@ export default compose(
   }),
   withProps(({ item: { uniqueId } }) => ({ uniqueId })),
   withFabSendAction,
-  onlyUpdateForKeys(['height', 'style', 'uniqueId', 'width', 'highlight']),
+  onlyUpdateForKeys([
+    'height',
+    'style',
+    'uniqueId',
+    'width',
+    'highlight',
+  ]),
 )(withOpenFamilyTabs(TokenFamilyWrap));

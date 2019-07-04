@@ -2,42 +2,49 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
+import { connect } from 'react-redux';
+import { compose, withProps } from 'recompact';
+import { withOpenFamilyTabs } from '../../hoc';
 import {
-  compose,
-  withProps,
-} from 'recompact';
-import connect from 'react-redux/es/connect/connect';
+  setActionType,
+  setScrollingVelocity,
+  updateSelectedID,
+} from '../../redux/selectedWithFab';
 import { deviceUtils } from '../../utils';
 import { CoinRow } from '../coin-row';
 import { ListFooter } from '../list';
-import { setActionType, setScrollingVelocity, updateSelectedID } from '../../redux/selectedWithFab';
 import { CardSize, CardMargin } from '../unique-token/UniqueTokenRow';
-import { withOpenFamilyTabs } from '../../hoc';
 
 const {
-  set,
-  cond,
-  eq,
-  or,
   add,
   and,
-  greaterThan,
-  not,
-  lessThan,
-  spring,
-  call,
-  neq,
-  onChange,
   block,
+  call,
+  Clock,
+  clockRunning,
+  cond,
+  eq,
+  event,
+  greaterThan,
+  lessThan,
+  neq,
+  not,
+  onChange,
+  or,
+  set,
+  spring,
   startClock,
   stopClock,
-  clockRunning,
   Value,
-  Clock,
-  event,
 } = Animated;
 
-function runSpring(clock, value, velocity, dest, wasRunSpring = false) {
+function runSpring(
+  clock,
+  value,
+  velocity,
+  dest,
+  wasRunSpring = false,
+) {
   const state = {
     finished: new Value(0),
     position: new Value(0),
@@ -86,13 +93,13 @@ class Movable extends React.Component {
     areas: PropTypes.array,
     children: PropTypes.any,
     deleteButtonTranslate: PropTypes.object,
+    openFamilyTabs: PropTypes.array,
     scrollViewTracker: PropTypes.object,
     sections: PropTypes.array,
     setActionType: PropTypes.func,
     setScrollingVelocity: PropTypes.func,
     tapRef: PropTypes.object,
     updateSelectedID: PropTypes.func,
-    openFamilyTabs: PropTypes.array,
   };
 
   static defaultProps = {
@@ -274,10 +281,10 @@ class Movable extends React.Component {
 }
 
 const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
-  balances = [];
-  collectibles = []
+  let balances = [];
+  let collectibles = [];
   sections.forEach(section => {
-    if(section.balances) {
+    if (section.balances) {
       balances = section;
     } else if (section.collectibles) {
       collectibles = section;
@@ -336,7 +343,11 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
 };
 
 const EnhancedMovable = compose(
-  connect(null, { setActionType, setScrollingVelocity, updateSelectedID }),
+  connect(null, {
+    setActionType,
+    setScrollingVelocity,
+    updateSelectedID,
+  }),
   withProps(traverseSectionsToDimensions),
 )(Movable);
 

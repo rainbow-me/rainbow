@@ -1,3 +1,4 @@
+import { connect } from 'react-redux';
 import {
   compose,
   lifecycle,
@@ -5,39 +6,38 @@ import {
   pure,
   withProps,
 } from 'recompact';
-import connect from 'react-redux/es/connect/connect';
 import { setOpenFamilyTabs } from '../redux/openFamilyTabs';
 
 const mapStateToProps = ({
   selectedWithFab: {
     selectedId,
     actionType,
-  }
+  },
 }) => ({
   actionType,
   selectedId,
 });
 
 let openFamilyCheck = 0;
-let currentFamilyId = undefined;
-let timer = undefined;
+let currentFamilyId;
+let timer;
 
 export default compose(
   connect(mapStateToProps, { setOpenFamilyTabs }),
   withProps(({ selectedId, uniqueId, familyName }) => ({
     fabDropped: selectedId === -3,
+    family: selectedId === familyName,
     highlight: selectedId === uniqueId || selectedId === familyName,
-    family: selectedId === familyName
   })),
   omitProps('selectedId'),
   lifecycle({
     componentDidUpdate(prevProps) {
       if (this.props.family && !this.props.fabDropped) {
-        if (currentFamilyId != this.props.family) {
+        if (currentFamilyId !== this.props.family) {
           openFamilyCheck = 0;
           clearTimeout(timer);
         }
-        if (++openFamilyCheck == 1) {
+        if (++openFamilyCheck === 1) {
           timer = setTimeout(() => {
             if (this.props.family) {
               this.props.setOpenFamilyTabs({ index: this.props.familyId, state: true });

@@ -1,10 +1,10 @@
-import Animated from 'react-native-reanimated';
-import React from 'react';
 import PropTypes from 'prop-types';
-import { ShadowStack } from '../shadow-stack';
+import React from 'react';
+import Animated from 'react-native-reanimated';
 import { borders, colors } from '../../styles';
-import { buildFabShadow } from './FloatingActionButton';
 import Icon from '../icons/Icon';
+import { ShadowStack } from '../shadow-stack';
+import { buildFabShadow } from './FloatingActionButton';
 
 const DeleteButton = ({ deleteButtonTranslate }) => (
   <Animated.View
@@ -25,10 +25,10 @@ const DeleteButton = ({ deleteButtonTranslate }) => (
       shadows={buildFabShadow(false)}
     >
       <Icon
+        color="white"
+        height="11"
         name="close"
         width="11"
-        height="11"
-        color="white"
       />
     </ShadowStack>
   </Animated.View>

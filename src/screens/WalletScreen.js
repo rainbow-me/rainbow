@@ -126,10 +126,10 @@ class WalletScreen extends PureComponent {
           disabled={isEmpty}
           scrollViewTracker={scrollViewTracker}
         >
-        <Header justify="space-between">
-          <ProfileHeaderButton navigation={navigation} />
-          <CameraHeaderButton navigation={navigation} />
-        </Header>
+          <Header justify="space-between">
+            <ProfileHeaderButton navigation={navigation} />
+            <CameraHeaderButton navigation={navigation} />
+          </Header>
           <AssetList
             fetchData={refreshAccountData}
             isEmpty={isEmpty}

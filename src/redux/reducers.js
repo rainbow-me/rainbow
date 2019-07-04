@@ -8,21 +8,21 @@ import navigation from './navigation';
 import nonce from './nonce';
 import openFamilyTabs from './openFamilyTabs';
 import requests from './requests';
+import selectedWithFab from './selectedWithFab';
 import send from './send';
 import settings from './settings';
 import uniswap from './uniswap';
 import uniqueTokens from './uniqueTokens';
 import walletconnect from './walletconnect';
-import selectedWithFab from './selectedWithFab';
 
 export default combineReducers({
   actionSheetManager,
-  openFamilyTabs,
   data,
   imageDimensionsCache,
   isWalletEmpty,
   navigation,
   nonce,
+  openFamilyTabs,
   requests,
   selectedWithFab,
   send,

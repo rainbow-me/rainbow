@@ -1,15 +1,12 @@
-import connect from 'react-redux/es/connect/connect';
 import {
   findIndex,
   get,
   has,
-  indexOf,
-  keyBy,
-  keys,
 } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { RefreshControl, LayoutAnimation } from 'react-native';
+import { LayoutAnimation, RefreshControl } from 'react-native';
+import { connect } from 'react-redux';
 import { pure } from 'recompact';
 import {
   DataProvider,
@@ -22,14 +19,14 @@ import {
   buildAssetHeaderUniqueIdentifier,
   buildAssetUniqueIdentifier,
 } from '../../helpers/assets';
+import { withOpenFamilyTabs } from '../../hoc';
 import { colors } from '../../styles';
 import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
 import { CoinRow, CollectiblesSendRow } from '../coin-row';
 import { InvestmentCard, UniswapInvestmentCard } from '../investment-cards';
 import { ListFooter } from '../list';
-import AssetListHeader from './AssetListHeader';
-import { withOpenFamilyTabs } from '../../hoc';
 import { CardMargin, CardSize } from '../unique-token/UniqueTokenRow';
+import AssetListHeader from './AssetListHeader';
 
 export const ViewTypes = {
   HEADER: 0,
@@ -138,7 +135,7 @@ class RecyclerAssetList extends PureComponent {
 
     this.layoutProvider = new LayoutProvider(
       index => {
-        const { sections, openFamilyTabs } = this.props;
+        const { openFamilyTabs, sections } = this.props;
         const { headersIndices } = this.state;
         if (headersIndices.includes(index)) {
           return ViewTypes.HEADER;
@@ -171,7 +168,7 @@ class RecyclerAssetList extends PureComponent {
           if (index > headersIndices[collectiblesIndex]) {
             const familyIndex = index - headersIndices[collectiblesIndex] - 1;
             if (openFamilyTabs[familyIndex]) {
-              if(sections[collectiblesIndex].data[familyIndex].tokens) {
+              if (sections[collectiblesIndex].data[familyIndex].tokens) {
                 return {
                   get: ViewTypes.UNIQUE_TOKEN_ROW,
                   isLast: index === this.state.length - 1,
@@ -206,7 +203,6 @@ class RecyclerAssetList extends PureComponent {
           }
           return;
         }
-        
         if (type.get === ViewTypes.UNIQUE_TOKEN_ROW) {
           dim.height = type.size * CardSize + 54 + CardMargin * (type.size - 1) + (type.isLast ? 90 : 0);
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_CLOSED) {
@@ -255,16 +251,15 @@ class RecyclerAssetList extends PureComponent {
   // TODO
   componentDidUpdate(prev) {
     // sorry
-    balances = [];
-    collectibles = []
+    let balances = [];
+    let collectibles = [];
     this.props.sections.forEach(section => {
-      if(section.balances) {
+      if (section.balances) {
         balances = section;
       } else if (section.collectibles) {
         collectibles = section;
       }
     });
-    
     if (this.props.scrollingVelocity === 0) {
       clearInterval(this.interval);
     }
@@ -276,12 +271,13 @@ class RecyclerAssetList extends PureComponent {
     }
     if (this.props.openFamilyTabs !== prev.openFamilyTabs) {
       let i = 0;
-      while(i < this.props.openFamilyTabs.length) {
-        if(this.props.openFamilyTabs[i] === true && prev.openFamilyTabs[i] === false) {
+      while (i < this.props.openFamilyTabs.length) {
+        if (this.props.openFamilyTabs[i] === true && prev.openFamilyTabs[i] === false) {
+          // TODO don't make a function within a loop
           setTimeout(() => {
             let collectiblesHeight = 0;
-            for(let j = 0; j < i; j++) {
-              if(this.props.openFamilyTabs[j] === true) {
+            for (let j = 0; j < i; j++) {
+              if (this.props.openFamilyTabs[j] === true) {
                 collectiblesHeight += collectibles.data[j].tokens.length * CardSize + 54 + 20 * (collectibles.data[j].tokens.length - 1);
               } else {
                 collectiblesHeight += 54;
@@ -289,9 +285,9 @@ class RecyclerAssetList extends PureComponent {
             }
             const diff = this.position - (CoinRow.height * balances.data.length + AssetListHeader.height * this.props.sections.length + collectiblesHeight) + (deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235));
             const renderSize = CardSize * collectibles.data[i].tokens.length + 20 * (collectibles.data[i].tokens.length - 1);
-            if( renderSize > diff) {
+            if (renderSize > diff) {
               const scrollDistance = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235) > renderSize ? renderSize - diff : deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 250 : 280);
-              this.rlv.scrollToOffset(0, this.position + scrollDistance , true);
+              this.rlv.scrollToOffset(0, this.position + scrollDistance, true);
             }
           }, 50);
           break;
@@ -355,15 +351,15 @@ class RecyclerAssetList extends PureComponent {
     return isNotUniqueToken
       ? renderItem({ item })
       : renderItem({
+        childrenAmount: item.childrenAmount,
+        familyId: item.familyId,
+        familyImage: item.familyImage,
+        familyName: item.familyName,
         isFirstRow: type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST,
         isLastRow: type === ViewTypes.UNIQUE_TOKEN_ROW_LAST,
         item: item.tokens,
         shouldPrioritizeImageLoading: index < sections[0].data.length + 9,
         uniqueId: item.uniqueId,
-        familyImage: item.familyImage,
-        familyName: item.familyName,
-        familyId: item.familyId,
-        childrenAmount: item.childrenAmount,
       });
   };
 
@@ -385,7 +381,7 @@ class RecyclerAssetList extends PureComponent {
             rowRenderer={this.rowRenderer}
             onScroll={event => {
               this.position = event.nativeEvent.contentOffset.y;
-              if(this.props.scrollViewTracker) {
+              if (this.props.scrollViewTracker) {
                 this.props.scrollViewTracker.setValue(event.nativeEvent.contentOffset.y);
               }
             }}

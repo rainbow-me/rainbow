@@ -26,7 +26,7 @@ import {
 } from '../handlers/commonStorage';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
-import { uniswapAddLiquidityTokens, uniswapUpdateLiquidityTokens } from './uniswap';
+import { uniswapAddLiquidityTokens } from './uniswap';
 import { getFamilies } from '../parsers/uniqueTokens';
 import { isLowerCaseMatch } from '../utils';
 
