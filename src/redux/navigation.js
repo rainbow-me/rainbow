@@ -11,6 +11,7 @@ export const updateTransitionProps = (payload) => (dispatch) => {
 const INITIAL_STATE = {
   transitionProps: {
     effect: '',
+    isExpanded: false,
     isTransitioning: false,
     nextIndex: 1,
     position: new Animated.Value(0),
