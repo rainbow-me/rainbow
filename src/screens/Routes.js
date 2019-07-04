@@ -7,7 +7,7 @@ import {
 } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import Navigation from '../navigation';
-// import { buildTransitions, expanded, sheet } from '../navigation/transitions';
+import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
 import { deviceUtils } from '../utils';
@@ -23,35 +23,125 @@ import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
 
+import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
+const distanceFromTop = 14;
+const statusBarHeight = getStatusBarHeight(true);
+export const sheetVerticalOffset = distanceFromTop + statusBarHeight;
+
 import Animated from 'react-native-reanimated';
 const { call, block, concat, interpolate, color } = Animated;
 
-const cardStyleInterpolator = props => {
-  const { progress } = props;
+let previousEffect = undefined
 
+const cardStyleInterpolator = props => {
   const {
     progress: { current },
     layouts: { screen },
+    effect,
   } = props;
 
-  const translateY = interpolate(current, {
-    inputRange: [0, 1],
-    outputRange: [screen.height, 0],
-  });
+  console.log('xd', effect);
 
-  store.dispatch(updateTransitionProps({
-    effect: 'expanded',
-    position: progress.current,
-  }));
+  store.dispatch(updateTransitionProps({ effect, position: current }));
 
-  return {
-    cardStyle: {
-      transform: [{ translateY }],
-    },
-    containerStyle: {
-      backgroundColor: 'rgba(0,0,0,0.3)',
-    },
-  };
+  // expanded
+  const opacityEnd = 0.75;
+  const translateYStart = deviceUtils.dimensions.height;
+
+  // sheet
+  const scaleEnd = 1 - ((statusBarHeight + (isIphoneX() ? distanceFromTop : 0)) / deviceUtils.dimensions.height);
+  const heightEnd = statusBarHeight + distanceFromTop;
+  const borderRadiusEnd = 12;
+  const borderRadiusScaledEnd = borderRadiusEnd / scaleEnd;
+  const opacityEndSheet = 0.5;
+
+  if (!effect) {
+    if (previousEffect === 'expanded') {
+      const opacity = interpolate(current, {
+        inputRange: [0, 1],
+        outputRange: [1, opacityEnd],
+      });
+
+      return {
+        cardStyle: { opacity },
+      };
+    }
+
+    if (previousEffect === 'sheet') {
+      const translateY = interpolate(current, {
+        inputRange: [0, 1],
+        outputRange: [0, distanceFromTop],
+      });
+
+      const opacity = interpolate(current, {
+        inputRange: [0, 1],
+        outputRange: [1, opacityEndSheet],
+      });
+
+      const scale = interpolate(current, {
+        inputRange: [0, 1],
+        outputRange: [1, scaleEnd],
+      });
+
+      const borderRadius = interpolate(current, {
+        inputRange: [0, 1],
+        outputRange: [isIphoneX() ? 38.5 : 0, borderRadiusScaledEnd],
+      });
+
+      return {
+        containerStyle: {
+          borderTopLeftRadius: borderRadius,
+          borderTopRightRadius: borderRadius,
+          opacity,
+          // overflow: 'hidden',
+          transform: [{
+            translateY,
+          }, {
+            scale,
+          }],
+          // zIndex: 1,
+        },
+      };
+    }
+  } else {
+    // previousEffect = effect;
+
+    if (effect === 'expanded') {
+      const translateY = interpolate(current, {
+        inputRange: [0, 1],
+        outputRange: [translateYStart, 0],
+      });
+
+      return {
+        cardStyle: {
+          transform: [{ translateY }],
+        },
+      };
+    }
+
+    if (effect === 'sheet') {
+      const { height } = screen;
+      const translateY = interpolate(current, {
+        inputRange: [0, 1],
+        outputRange: [height, heightEnd],
+      });
+
+      return {
+        containerStyle: {
+          borderTopLeftRadius: borderRadiusEnd,
+          borderTopRightRadius: borderRadiusEnd,
+          height: height - heightEnd,
+          // overflow: 'hidden',
+          transform: [{
+            translateY,
+          }],
+          // zIndex: 2,
+        },
+      };
+    }
+  }
+
+  return {};
 };
 
 const onTransitionEnd = () => {
