@@ -1,16 +1,24 @@
 import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';
+import Animated from 'react-native-reanimated';
 import withTransitionProps from './withTransitionProps';
 
-const blurOpacityInterpolation = {
-  inputRange: [0, 0.01, 1],
-  outputRange: [0, 1, 1],
-};
+const { interpolate } = Animated;
 
 const transitionPropsSelector = state => state.transitionProps;
 
-const withBlurTransitionProps = ({ effect, isTransitioning, position }) => {
-  const blurOpacity = position.interpolate(blurOpacityInterpolation);
+const withBlurTransitionProps = ({
+  effect,
+  isTransitioning,
+  isExpanded,
+  position,
+}) => {
+  const blurOpacity = interpolate(position, {
+    inputRange: [0, 0.01, 1],
+    outputRange: [0, 0.8, 1],
+  });
+
+  const showBlur = (effect === 'expanded') && (isTransitioning || isExpanded);
 
   return {
     blurOpacity,

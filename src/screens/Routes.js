@@ -23,8 +23,46 @@ import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
 
-const onTransitionEnd = () => store.dispatch(updateTransitionProps({ isTransitioning: false }));
-const onTransitionStart = () => store.dispatch(updateTransitionProps({ isTransitioning: true }));
+import Animated from 'react-native-reanimated';
+const { call, block, concat, interpolate, color } = Animated;
+
+const cardStyleInterpolator = props => {
+  const { progress } = props;
+
+  const {
+    progress: { current },
+    layouts: { screen },
+  } = props;
+
+  const translateY = interpolate(current, {
+    inputRange: [0, 1],
+    outputRange: [screen.height, 0],
+  });
+
+  store.dispatch(updateTransitionProps({
+    effect: 'expanded',
+    position: progress.current,
+  }));
+
+  return {
+    cardStyle: {
+      transform: [{ translateY }],
+    },
+    containerStyle: {
+      backgroundColor: 'rgba(0,0,0,0.3)',
+    },
+  };
+};
+
+const onTransitionEnd = () => {
+  console.log('onTransitionEnd');
+  store.dispatch(updateTransitionProps({ isTransitioning: false }));
+};
+
+const onTransitionStart = () => {
+  console.log('onTransitionStart');
+  store.dispatch(updateTransitionProps({ isTransitioning: true }));
+};
 
 const SwipeStack = createMaterialTopTabNavigator({
   ProfileScreen: {
@@ -102,14 +140,20 @@ const MainNavigator = createStackNavigator({
     screen: WalletConnectConfirmationModal,
   },
 }, {
-  cardStyleInterpolator: () => { },
+  cardStyleInterpolator,
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',
   mode: 'modal',
-  onTransitionEnd,
+  wip: {
+    open: () => {
+      store.dispatch(updateTransitionProps({ isExpanded: true }));
+    },
+    close: () => {
+      store.dispatch(updateTransitionProps({ isExpanded: false }));
+      onTransitionEnd();
+    },
+  },
   onTransitionStart,
-  // transitionConfig: buildTransitions(Navigation, { expanded, sheet }),
-  transparentCard: true,
 });
 
 const AppContainer = createAppContainer(MainNavigator);
