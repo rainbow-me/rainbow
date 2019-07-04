@@ -168,11 +168,11 @@ class RecyclerAssetList extends PureComponent {
           if (index > headersIndices[collectiblesIndex]) {
             const familyIndex = index - headersIndices[collectiblesIndex] - 1;
             if (openFamilyTabs[familyIndex]) {
-              if (sections[collectiblesIndex].data[familyIndex].tokens) {
+              if (get(sections, `[${collectiblesIndex}].data[${familyIndex}].tokens`)) {
                 return {
                   get: ViewTypes.UNIQUE_TOKEN_ROW,
                   isLast: index === this.state.length - 1,
-                  size: get(sections, `[${collectiblesIndex}].data[${familyIndex}]`).tokens.length,
+                  size: get(sections, `[${collectiblesIndex}].data[${familyIndex}].tokens`, []).length,
                 };
               }
             } else if (index === this.state.length - 1) {
