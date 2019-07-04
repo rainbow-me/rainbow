@@ -248,16 +248,17 @@ class RecyclerAssetList extends PureComponent {
     this.isCancelled = false;
   };
 
-  // TODO
   componentDidUpdate(prev) {
-    // sorry
-    let balances = [];
-    let collectibles = [];
+    let balances = {};
+    let collectibles = {};
+    let investments = {};
     this.props.sections.forEach(section => {
       if (section.balances) {
         balances = section;
       } else if (section.collectibles) {
         collectibles = section;
+      } else if (section.investments) {
+        investments = section;
       }
     });
     if (this.props.scrollingVelocity === 0) {
@@ -273,20 +274,23 @@ class RecyclerAssetList extends PureComponent {
       let i = 0;
       while (i < this.props.openFamilyTabs.length) {
         if (this.props.openFamilyTabs[i] === true && prev.openFamilyTabs[i] === false) {
-          // TODO don't make a function within a loop
+          // TODO things rely on balanc
           setTimeout(() => {
             let collectiblesHeight = 0;
             for (let j = 0; j < i; j++) {
-              if (this.props.openFamilyTabs[j] === true) {
+              if (this.props.openFamilyTabs[j]) {
                 collectiblesHeight += collectibles.data[j].tokens.length * CardSize + 54 + 20 * (collectibles.data[j].tokens.length - 1);
               } else {
                 collectiblesHeight += 54;
               }
             }
-            const diff = this.position - (CoinRow.height * balances.data.length + AssetListHeader.height * this.props.sections.length + collectiblesHeight) + (deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235));
+            // TODO missing investments
+            const sectionsHeight = CoinRow.height * get(balances, 'data.length', 0) + AssetListHeader.height * this.props.sections.length + collectiblesHeight;
+            const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235);
+            const diff = this.position - sectionsHeight + deviceDimensions;
             const renderSize = CardSize * collectibles.data[i].tokens.length + 20 * (collectibles.data[i].tokens.length - 1);
             if (renderSize > diff) {
-              const scrollDistance = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235) > renderSize ? renderSize - diff : deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 250 : 280);
+              const scrollDistance = deviceDimensions > renderSize ? renderSize - diff : deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 250 : 280);
               this.rlv.scrollToOffset(0, this.position + scrollDistance, true);
             }
           }, 50);
