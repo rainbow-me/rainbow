@@ -14,6 +14,7 @@ import { deviceUtils } from '../../utils';
 import { CoinRow } from '../coin-row';
 import { ListFooter } from '../list';
 import { CardSize, CardMargin } from '../unique-token/UniqueTokenRow';
+import { InvestmentCard, UniswapInvestmentCard } from '../investment-cards';
 
 const {
   add,
@@ -240,7 +241,7 @@ class Movable extends React.Component {
                 ),
                 onChange(
                   selectedIndexWithState,
-                  call([selectedIndexWithState], ([i]) => this.props.updateSelectedID(i < 0 ? i : this.props.areas[i].id)),
+                  call([selectedIndexWithState], ([i]) => {console.log(i); this.props.updateSelectedID(i < 0 ? i : this.props.areas[i].id)}),
                 ),
                 onChange(
                   this.gestureState,
@@ -281,17 +282,21 @@ class Movable extends React.Component {
 }
 
 const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
-  let balances = [];
-  let collectibles = [];
+  let balances = false;
+  let collectibles = false;
+  let investments = false;
   sections.forEach(section => {
     if (section.balances) {
       balances = section;
     } else if (section.collectibles) {
       collectibles = section;
+    } else if (section.investments) {
+      investments = section;
     }
-  });
 
-  if (sections && sections.length === 2) {
+  });
+  console.log(investments);
+  if (sections && balances && collectibles) {
     const areas = [];
     const headerHeight = 35;
     const familyHeaderHeight = 52;
@@ -306,9 +311,12 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
       });
       height += CoinRow.height + (balances.data.length - 1 === i ? ListFooter.height : 0);
     }
-
     height += 54;
-
+    if(investments) {
+      height += 54;
+      height += investments.data.length * (UniswapInvestmentCard.height + InvestmentCard.margin.vertical );
+    }
+    
     for (let i = 0; i < collectibles.data.length; i++) {
       const { tokens } = collectibles.data[i];
       areas.push({
