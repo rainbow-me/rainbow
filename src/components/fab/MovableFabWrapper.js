@@ -241,7 +241,7 @@ class Movable extends React.Component {
                 ),
                 onChange(
                   selectedIndexWithState,
-                  call([selectedIndexWithState], ([i]) => {console.log(i); this.props.updateSelectedID(i < 0 ? i : this.props.areas[i].id)}),
+                  call([selectedIndexWithState], ([i]) => {this.props.updateSelectedID(i < 0 ? i : this.props.areas[i].id)}),
                 ),
                 onChange(
                   this.gestureState,
@@ -295,52 +295,55 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
     }
 
   });
-  console.log(investments);
-  if (sections && balances && collectibles) {
+  if (sections) {
     const areas = [];
     const headerHeight = 35;
     const familyHeaderHeight = 52;
     let height = 74 + headerHeight;
-    for (let i = 0; i < balances.data.length; i++) {
-      areas.push({
-        bottom: height + CoinRow.height,
-        id: balances.data[i].uniqueId,
-        left: 0,
-        right: deviceUtils.dimensions.width,
-        top: height,
-      });
-      height += CoinRow.height + (balances.data.length - 1 === i ? ListFooter.height : 0);
+    if (balances) {
+      for (let i = 0; i < balances.data.length; i++) {
+        areas.push({
+          bottom: height + CoinRow.height,
+          id: balances.data[i].uniqueId,
+          left: 0,
+          right: deviceUtils.dimensions.width,
+          top: height,
+        });
+        height += CoinRow.height + (balances.data.length - 1 === i ? ListFooter.height : 0);
+      }
+      height += 54;
     }
-    height += 54;
     if(investments) {
       height += 54;
       height += investments.data.length * (UniswapInvestmentCard.height + InvestmentCard.margin.vertical );
     }
     
-    for (let i = 0; i < collectibles.data.length; i++) {
-      const { tokens } = collectibles.data[i];
-      areas.push({
-        bottom: height + familyHeaderHeight,
-        id: collectibles.data[i].familyName,
-        left: 0,
-        right: deviceUtils.dimensions.width,
-        top: height,
-      });
-      height += familyHeaderHeight;
-      for (let j = 0; j < tokens.length; j++) {
-        for (let k = 0; k < tokens[j].length; k++) {
-          areas.push({
-            bottom: height + CardSize,
-            id: tokens[j][k].isSendable ? tokens[j][k].uniqueId : extraStates.notSendable,
-            left: k === 0 ? 0 : deviceUtils.dimensions.width / 2,
-            right: deviceUtils.dimensions.width / (k === 0 ? 2 : 1),
-            top: height,
-          });
-        }
-        if (openFamilyTabs[i]) {
-          height += CardSize;
-          if (j > 0) {
-            height += CardMargin;
+    if (collectibles) {
+      for (let i = 0; i < collectibles.data.length; i++) {
+        const { tokens } = collectibles.data[i];
+        areas.push({
+          bottom: height + familyHeaderHeight,
+          id: collectibles.data[i].familyName,
+          left: 0,
+          right: deviceUtils.dimensions.width,
+          top: height,
+        });
+        height += familyHeaderHeight;
+        for (let j = 0; j < tokens.length; j++) {
+          for (let k = 0; k < tokens[j].length; k++) {
+            areas.push({
+              bottom: height + CardSize,
+              id: tokens[j][k].isSendable ? tokens[j][k].uniqueId : extraStates.notSendable,
+              left: k === 0 ? 0 : deviceUtils.dimensions.width / 2,
+              right: deviceUtils.dimensions.width / (k === 0 ? 2 : 1),
+              top: height,
+            });
+          }
+          if (openFamilyTabs[i]) {
+            height += CardSize;
+            if (j > 0) {
+              height += CardMargin;
+            }
           }
         }
       }
