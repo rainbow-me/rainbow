@@ -172,7 +172,7 @@ TokenListHeader.propTypes = {
   childrenAmount: PropTypes.number,
   familyImage: PropTypes.string,
   familyName: PropTypes.string,
-  highlight: PropTypes.string,
+  highlight: PropTypes.bool,
   isOpen: PropTypes.bool,
   onHeaderPress: PropTypes.func,
 };

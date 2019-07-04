@@ -61,7 +61,7 @@ CoinRow.propTypes = {
   coinIconRender: PropTypes.func,
   containerStyles: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
   contentStyles: PropTypes.string,
-  highlight: PropTypes.string,
+  highlight: PropTypes.bool,
   symbol: PropTypes.string,
   topRowRender: PropTypes.func,
 };

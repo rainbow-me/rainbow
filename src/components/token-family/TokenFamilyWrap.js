@@ -83,7 +83,7 @@ TokenFamilyWrap.propTypes = {
   childrenAmount: PropTypes.number,
   familyImage: PropTypes.string,
   familyName: PropTypes.string,
-  highlight: PropTypes.string,
+  highlight: PropTypes.bool,
   item: PropTypes.object,
   openFamilyTabs: PropTypes.array,
   setOpenFamilyTabs: PropTypes.func,
