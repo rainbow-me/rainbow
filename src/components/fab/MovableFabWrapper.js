@@ -241,7 +241,9 @@ class Movable extends React.Component {
                 ),
                 onChange(
                   selectedIndexWithState,
-                  call([selectedIndexWithState], ([i]) => {this.props.updateSelectedID(i < 0 ? i : this.props.areas[i].id)}),
+                  call([selectedIndexWithState], ([i]) => {
+                    this.props.updateSelectedID(i < 0 ? i : this.props.areas[i].id);
+                  }),
                 ),
                 onChange(
                   this.gestureState,
@@ -293,7 +295,6 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
     } else if (section.investments) {
       investments = section;
     }
-
   });
   if (sections) {
     const areas = [];
@@ -313,11 +314,10 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
       }
       height += 54;
     }
-    if(investments) {
+    if (investments) {
       height += 54;
-      height += investments.data.length * (UniswapInvestmentCard.height + InvestmentCard.margin.vertical );
+      height += investments.data.length * (UniswapInvestmentCard.height + InvestmentCard.margin.vertical);
     }
-    
     if (collectibles) {
       for (let i = 0; i < collectibles.data.length; i++) {
         const { tokens } = collectibles.data[i];

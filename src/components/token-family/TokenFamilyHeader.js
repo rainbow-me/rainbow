@@ -96,7 +96,6 @@ class TokenListHeader extends React.Component {
   componentWillUpdate(prev) {
     if (prev.isOpen !== undefined
         && prev.isOpen !== this.props.isOpen) {
-      console.log(this.props.isOpen);
       const clock = new Clock();
       let base = undefined;
       this.props.isOpen ? base = runTiming(clock, -1, 1, this.props.isOpen) : base = runTiming(clock, 1, -1, this.props.isOpen);
