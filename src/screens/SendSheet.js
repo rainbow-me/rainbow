@@ -1,10 +1,13 @@
 import analytics from '@segment/analytics-react-native';
 import {
   get,
+  indexOf,
   isEmpty,
   isFunction,
   isString,
   map,
+  property,
+  sortBy,
   upperFirst,
 } from 'lodash';
 import PropTypes from 'prop-types';
@@ -37,24 +40,24 @@ const Container = styled(Column)`
   height: 100%;
 `;
 
-const costForGasItem = item => get(item, 'txFee.native.value.display');
-const gweiForGasItem = item => get(item, 'value.display');
-const timeForGasItem = item => get(item, 'estimatedTime.display');
+const formatGastSpeedItem = (value, key) => {
+  const cost = get(value, 'txFee.native.value.display');
+  const gwei = get(value, 'value.display');
+  const time = get(value, 'estimatedTime.display');
 
-const formatGasSpeedItems = (gasPrices) => ([
-  { label: 'Cancel' },
-  ...map(gasPrices, (value, key) => {
-    const cost = costForGasItem(value);
-    const gwei = gweiForGasItem(value);
-    const time = timeForGasItem(value);
+  return {
+    gweiValue: gwei,
+    label: `${upperFirst(key)}: ${cost}   ~${time.slice(0, -1)}`,
+    value: key,
+  };
+};
 
-    return {
-      gweiValue: gwei,
-      label: `${upperFirst(key)}: ${cost}  ~${time.slice(0, -1)}`,
-      value: key,
-    };
-  }),
-]);
+const labelOrder = ['slow', 'average', 'fast'];
+
+const formatGasSpeedItems = (gasPrices) => {
+  const gasItems = map(gasPrices, formatGastSpeedItem);
+  return sortBy(gasItems, ({ value }) => indexOf(labelOrder, value));
+};
 
 class SendSheet extends Component {
   static propTypes = {
@@ -162,17 +165,22 @@ class SendSheet extends Component {
     }
   }
 
-  onPressTransactionSpeed = onSuccess => {
-    const options = formatGasSpeedItems(this.props.gasPrices);
+  onPressTransactionSpeed = (onSuccess) => {
+    const { gasPrices, sendUpdateGasPrice } = this.props;
+
+    const options = [
+      { label: 'Cancel' },
+      ...formatGasSpeedItems(gasPrices),
+    ];
 
     showActionSheetWithOptions({
       cancelButtonIndex: 0,
-      options: options.map(option => option.label),
+      options: options.map(property('label')),
     }, (buttonIndex) => {
       if (buttonIndex > 0) {
         const selectedGasPriceItem = options[buttonIndex];
 
-        this.props.sendUpdateGasPrice(selectedGasPriceItem.value);
+        sendUpdateGasPrice(selectedGasPriceItem.value);
         analytics.track('Updated Gas Price', { gasPrice: selectedGasPriceItem.gweiValue });
       }
 

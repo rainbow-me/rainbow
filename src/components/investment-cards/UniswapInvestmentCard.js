@@ -57,7 +57,7 @@ const UniswapInvestmentCard = enhance(({
     <InvestmentCard
       {...props}
       flex={0}
-      gradientColors={['#F7FAFC', '#E0E6EC']}
+      gradientColors={['#ECF1F5', '#E4E9F0']}
       headerProps={{
         color: colors.dark,
         emoji: 'unicorn_face',

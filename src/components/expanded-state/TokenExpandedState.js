@@ -2,8 +2,13 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { InteractionManager } from 'react-native';
-import { compose, withHandlers, withProps } from 'recompact';
-import { withAccountData, withAccountSettings, withNeverRerender } from '../../hoc';
+import {
+  compose,
+  onlyUpdateForKeys,
+  withHandlers,
+  withProps,
+} from 'recompact';
+import { withAccountData, withAccountSettings } from '../../hoc';
 import { ethereumUtils } from '../../utils';
 import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
@@ -66,5 +71,5 @@ export default compose(
       });
     },
   }),
-  withNeverRerender,
+  onlyUpdateForKeys(['price', 'subtitle']),
 )(TokenExpandedState);
