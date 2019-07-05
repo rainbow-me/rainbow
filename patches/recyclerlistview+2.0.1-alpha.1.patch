@@ -2,15 +2,6 @@ diff --git a/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyHe
 index 7074f36..153ddb4 100644
 --- a/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyHeader.js
 +++ b/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyHeader.js
-@@ -39,7 +39,7 @@ var StickyHeader = /** @class */ (function (_super) {
-             }
-             else {
-                 this.stickyVisiblity = true;
--                var valueAndIndex = BinarySearch_1.default.findValueSmallerThanTarget(stickyIndices, smallestVisibleIndex);
-+                var valueAndIndex = BinarySearch_1.default.findValueSmallerThanTarget(stickyIndices, smallestVisibleIndex + 1);
-                 if (valueAndIndex) {
-                     this.currentIndex = valueAndIndex.index;
-                     this.currentStickyIndex = valueAndIndex.value;
 @@ -60,7 +60,7 @@ var StickyHeader = /** @class */ (function (_super) {
          return offsetY;
      };
