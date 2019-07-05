@@ -1,3 +1,4 @@
+import { groupBy } from 'lodash';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { sendableUniqueTokensSelector } from './uniqueTokenSelectors';
@@ -12,7 +13,22 @@ const mapStateToProps = ({
   uniqueTokens,
 });
 
-const sendableUniqueTokens = (state) => sendableUniqueTokensSelector(state);
+const sendableUniqueTokens = (state) => {
+  const sendableUniqueTokens = sendableUniqueTokensSelector(state).sendableUniqueTokens;
+  const grouped = groupBy(sendableUniqueTokens, token => token.asset_contract.name);
+  const families = Object.keys(grouped);
+  let sendableTokens = []
+  for (let i = 0; i < families.length; i++) {
+    let newObject = {};
+    newObject = {
+      name: families[i], 
+      familyId: i, 
+      data: grouped[families[i]],
+    };
+    sendableTokens.push(newObject);
+  };
+  return { sendableUniqueTokens: sendableTokens};
+}
 
 export default Component => compose(
   connect(mapStateToProps),

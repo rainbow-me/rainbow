@@ -13,75 +13,126 @@ import { FlyInAnimation } from '../animations';
 import { RecyclerAssetList } from '../asset-list';
 import { CoinRow, CollectiblesSendRow, SendCoinRow } from '../coin-row';
 import { ListFooter } from '../list';
+import { View, Text } from 'react-primitives';
+import { TouchableHighlight } from 'react-native-gesture-handler';
+import { RecyclerListView, LayoutProvider, DataProvider } from "recyclerlistview";
+import { LayoutAnimation } from 'react-native';
+import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 
-const enhanceRenderItem = compose(
-  withHandlers({
-    onPress: ({ item }) => () => {
-      const { onSelectAsset } = item;
-      return onSelectAsset(item);
-    },
-  }),
-  shouldUpdate((props, nextProps) => {
-    const itemIdentifier = buildAssetUniqueIdentifier(props.item);
-    const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.item);
+const NOOP = () => undefined;
 
-    return itemIdentifier !== nextItemIdentifier;
-  }),
-);
+const layoutItemAnimator = {
+  animateDidMount: NOOP,
+  animateShift: NOOP,
+  animateWillMount: NOOP,
+  animateWillUnmount: NOOP,
+  animateWillUpdate: () => LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')),
+};
 
-const TokenItem = React.memo(enhanceRenderItem(SendCoinRow));
-const UniqueTokenItem = React.memo(enhanceRenderItem(CollectiblesSendRow));
 
-const balancesRenderItem = item => <TokenItem {...item} />;
-const collectiblesRenderItem = item => <UniqueTokenItem {...item} />;
-
-const SendAssetList = ({
-  allAssets,
-  fetchData,
-  onSelectAsset,
-  uniqueTokens,
-}) => {
-  const sections = [
-    {
-      balances: true,
-      data: allAssets,
-      perData: {
-        onSelectAsset,
+class SendAssetList extends React.Component {
+  enhanceRenderItem = compose(
+    withHandlers({
+      onPress: ( item ) => () => {
+        // clean that up in next commit 
+        if(item.item){
+          return this.props.onSelectAsset(item.item);
+        }
+        return this.props.onSelectAsset(item);
       },
-      renderItem: balancesRenderItem,
-    },
-    {
-      collectibles: true,
-      data: uniqueTokens,
-      header: {
-        title: lang.t('account.tab_collectibles'),
-      },
-      perData: {
-        onSelectAsset,
-      },
-      renderItem: collectiblesRenderItem,
-      type: 'small',
-    },
-  ];
-
-  return (
-    <FlyInAnimation style={{ flex: 1, width: '100%' }}>
-      <RecyclerAssetList
-        fetchData={fetchData}
-        hideHeader
-        paddingBottom={CoinRow.height + ListFooter.height}
-        renderAheadOffset={deviceUtils.dimensions.height * 1.5}
-        sections={sections}
-      />
-    </FlyInAnimation>
+    }),
   );
-};
 
-SendAssetList.propTypes = {
-  allAssets: PropTypes.array,
-  fetchData: PropTypes.func,
-  onSelectAsset: PropTypes.func,
-  uniqueTokens: PropTypes.array,
-};
+  TokenItem = React.memo(this.enhanceRenderItem(SendCoinRow));
+  UniqueTokenItem = React.memo(this.enhanceRenderItem(CollectiblesSendRow));
 
-export default onlyUpdateForKeys(['allAssets', 'uniqueTokens'])(SendAssetList);
+  changeOpenTab = (index) => {
+    let openCards = this.state.openCards;
+    openCards[index] = !openCards[index];
+    this.setState({ openCards: openCards });
+  }
+
+  mapTokens = (collectibles) => {
+    items = collectibles.map((collectible) => {
+      let newItem = {}
+      newItem.item = collectible;
+      return <this.UniqueTokenItem {...newItem} />;
+    });
+    return items;
+  }
+
+  balancesRenderItem = item => <this.TokenItem {...item} />;
+  collectiblesRenderItem = item => {
+    return <View>
+      <TokenFamilyHeader
+        familyName={item.name}
+        familyImage={undefined}
+        childrenAmount={item.data.length}
+        highlight={false}
+        isOpen={this.state.openCards[item.familyId]}
+        onHeaderPress={() => { this.changeOpenTab(item.familyId) }}
+      />
+      {this.state.openCards[item.familyId] && this.mapTokens(item.data)}
+    </View>
+  }
+
+  constructor(args) {
+    super(args);
+    this.state = {
+      dataProvider: new DataProvider((r1, r2) => {
+        something = this.props.uniqueTokens;
+        return true
+      }).cloneWithRows(this.props.allAssets.concat(this.props.uniqueTokens)),
+      openCards: [false, false, false, false, false]
+    };
+
+    this._layoutProvider = new LayoutProvider((i) => {
+      if (i < this.props.allAssets.length) {
+        return 'COIN_ROW';
+      } else {
+        if (this.state.openCards[i - this.props.allAssets.length]) {
+          return { type: 'COLLECTIBLE_ROW', size: this.props.uniqueTokens[i - this.props.allAssets.length].data.length + 1 };
+        } else {
+          return { type: 'COLLECTIBLE_ROW', size: 1 };
+        }
+      }
+    }, (type, dim) => {
+      if (type == "COIN_ROW") {
+        dim.width = deviceUtils.dimensions.width;
+        dim.height = 64;
+      } else if (type.type == "COLLECTIBLE_ROW") {
+        dim.width = deviceUtils.dimensions.width;
+        dim.height = type.size * 64;
+      } else {
+        dim.width = 0;
+        dim.height = 0;
+      }
+    });
+    this._renderRow = this._renderRow.bind(this);
+  }
+
+  _renderRow(type, data) {
+    if (type == "COIN_ROW") {
+      return this.balancesRenderItem(data);
+    } else if (type.type == "COLLECTIBLE_ROW") {
+      return this.collectiblesRenderItem(data);
+    } else {
+      return null;
+    }
+  }
+
+  render() {
+    return (
+      <FlyInAnimation style={{ flex: 1, width: '100%' }}>
+        <RecyclerListView
+          rowRenderer={this._renderRow}
+          dataProvider={this.state.dataProvider}
+          layoutProvider={this._layoutProvider}
+          itemAnimator={layoutItemAnimator}
+        />
+      </FlyInAnimation>
+    );
+  };
+}
+
+export default SendAssetList;
