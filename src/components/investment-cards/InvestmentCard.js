@@ -46,6 +46,7 @@ const InvestmentCard = enhance(({
         background-color: ${gradientColors[0]};
         border-radius: 18;
         overflow: hidden;
+        width: 100%;
       `}
       onLayout={onLayout}
     >
