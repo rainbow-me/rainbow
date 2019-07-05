@@ -14,7 +14,7 @@ const FabWrapper = ({ children, disabled, fabs }) => (
         css={`
           bottom: ${safeAreaInsetValues.bottom + FabWrapperBottomPosition};
           position: absolute;
-          right: 12;
+          right: 15;
         `}
         direction="row-reverse"
         margin={12}

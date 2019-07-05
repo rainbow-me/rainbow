@@ -94,8 +94,8 @@ UniqueTokenCard.propTypes = {
 
 UniqueTokenCard.defaultProps = {
   shadows: [
-    [0, 3, 5, colors.black, 0.04],
-    [0, 6, 10, colors.black, 0.04],
+    [0, 1, 3, colors.dark, 0.06],
+    [0, 4, 6, colors.dark, 0.04],
   ],
 };
 

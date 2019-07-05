@@ -80,8 +80,8 @@ InvestmentCard.defaultProps = {
   containerHeight: DefaultContainerHeight,
   gradientColors: ['#F7FAFC', '#E0E6EC'],
   shadows: [
-    [0, 3, 5, colors.dark, 0.04],
-    [0, 6, 10, colors.dark, 0.04],
+    [0, 1, 3, colors.dark, 0.08],
+    [0, 4, 6, colors.dark, 0.04],
   ],
 };
 

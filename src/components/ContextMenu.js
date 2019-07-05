@@ -54,7 +54,7 @@ class ContextMenu extends PureComponent {
     <Fragment>
       <ButtonPressAnimation activeOpacity={0.2} onPress={this.showActionSheet}>
         <Centered
-          css={padding(0, 10)}
+          css={padding(2, 9, 0, 9)}
           height="100%"
           {...omit(this.props, ActionSheetProps)}
         >
