@@ -187,11 +187,11 @@ class RecyclerAssetList extends PureComponent {
       (type, dim) => {
         dim.width = deviceUtils.dimensions.width;
         if (this.state.areSmallCollectibles
-            && (
-              type === ViewTypes.UNIQUE_TOKEN_ROW_LAST
-              || type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST
-              || type === ViewTypes.UNIQUE_TOKEN_ROW
-            )
+          && (
+            type === ViewTypes.UNIQUE_TOKEN_ROW_LAST
+            || type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST
+            || type === ViewTypes.UNIQUE_TOKEN_ROW
+          )
         ) {
           dim.height = CoinRow.height;
           if (type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST) {
@@ -278,20 +278,27 @@ class RecyclerAssetList extends PureComponent {
           setTimeout(() => {
             let collectiblesHeight = 0;
             for (let j = 0; j < i; j++) {
-              if (this.props.openFamilyTabs[j]) {
+              if (this.props.openFamilyTabs[j] && collectibles.data[j].tokens) {
                 collectiblesHeight += collectibles.data[j].tokens.length * CardSize + 54 + 20 * (collectibles.data[j].tokens.length - 1);
               } else {
                 collectiblesHeight += 54;
               }
             }
             // TODO missing investments
-            const sectionsHeight = CoinRow.height * get(balances, 'data.length', 0) + AssetListHeader.height * this.props.sections.length + collectiblesHeight;
             const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235);
-            const diff = this.position - sectionsHeight + deviceDimensions;
+            const sectionBeforeCollectibles = AssetListHeader.height * (this.props.sections.length - 1) + ListFooter.height * (this.props.sections.length - 1) + CoinRow.height * get(balances, 'data.length', 0) + 135 * get(investments, 'data.length', 0);
+            const sectionsHeight = sectionBeforeCollectibles + collectiblesHeight;
             const renderSize = CardSize * collectibles.data[i].tokens.length + 20 * (collectibles.data[i].tokens.length - 1);
-            if (renderSize > diff) {
-              const scrollDistance = deviceDimensions > renderSize ? renderSize - diff : deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 250 : 280);
+
+            if (renderSize >= deviceDimensions) {
+              const scrollDistance = sectionsHeight - this.position;
               this.rlv.scrollToOffset(0, this.position + scrollDistance, true);
+            } else {
+              const diff = this.position - sectionsHeight + deviceDimensions;
+              if (renderSize > diff) {
+                const scrollDistance = deviceDimensions > renderSize ? renderSize - diff : deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 250 : 280);
+                this.rlv.scrollToOffset(0, this.position + scrollDistance, true);
+              }
             }
           }, 50);
           break;
