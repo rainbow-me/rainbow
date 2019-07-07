@@ -70,6 +70,7 @@ const SendAssetList = ({
         fetchData={fetchData}
         hideHeader
         paddingBottom={CoinRow.height + ListFooter.height}
+        paddingTop={3}
         renderAheadOffset={deviceUtils.dimensions.height * 1.5}
         sections={sections}
       />

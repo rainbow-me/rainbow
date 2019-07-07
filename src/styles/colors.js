@@ -27,7 +27,7 @@ const base = {
   grey: '#a9adb9', // '169, 173, 185'
   headerTitle: '#aaafbd', // '170, 175, 189'
   lightBlue: '#c5f2ff', // '197, 242, 255'
-  lightestGrey: '#eee9e8', // '238, 233, 232'
+  lightestGrey: '#E9EBEF', // '238, 233, 232'
   lightGreen: '#54d192', // '84, 209, 146'
   lightGrey: '#f7f7f8', // '247, 247, 248'
   limeGreen: '#3FCC18', // '58, 166, 134'

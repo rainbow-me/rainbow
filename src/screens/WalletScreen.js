@@ -9,6 +9,7 @@ import {
   withProps,
   withState,
 } from 'recompact';
+import { FadeInAnimation } from '../components/animations';
 import { AssetList } from '../components/asset-list';
 import BlurOverlay from '../components/BlurOverlay';
 import { FabWrapper } from '../components/fab';
@@ -30,7 +31,7 @@ import {
   withStatusBarStyle,
   withUniswapLiquidity,
 } from '../hoc';
-import { position } from '../styles';
+import { colors, position } from '../styles';
 import { deviceUtils, isNewValueForPath } from '../utils';
 
 class WalletScreen extends PureComponent {
@@ -104,12 +105,8 @@ class WalletScreen extends PureComponent {
       navigation,
       refreshAccountData,
       sections,
+      showBlur,
     } = this.props;
-
-    const blurTranslateY = blurOpacity.interpolate({
-      inputRange: [0, 0.001, 1],
-      outputRange: [deviceUtils.dimensions.height, 0, 0],
-    });
 
     return (
       <Page style={{ flex: 1, ...position.sizeAsObject('100%') }}>
@@ -125,11 +122,13 @@ class WalletScreen extends PureComponent {
             sections={sections}
           />
         </FabWrapper>
-        <BlurOverlay
-          blurAmount={10}
-          opacity={blurOpacity}
-          translateY={blurTranslateY}
-        />
+        {showBlur && (
+          <FadeInAnimation duration={315} style={{ ...position.coverAsObject, zIndex: 1 }}>
+            <BlurOverlay
+              opacity={blurOpacity}
+            />
+          </FadeInAnimation>
+        )}
       </Page>
     );
   }

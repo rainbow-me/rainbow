@@ -53,6 +53,7 @@ const FloatingActionButton = enhance(({
     onPress={onPress}
     onPressIn={onPressIn}
     onPressOut={onPressOut}
+    scaleTo={0.82}
     style={style}
   >
     <ShadowStack

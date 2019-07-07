@@ -9,7 +9,7 @@ import { Centered } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import UniqueTokenImage from './UniqueTokenImage';
 
-const UniqueTokenCardBorderRadius = 16;
+const UniqueTokenCardBorderRadius = 18;
 
 const enhance = compose(
   onlyUpdateForKeys(['height', 'style', 'uniqueId', 'width']),
@@ -43,7 +43,7 @@ const UniqueTokenCard = enhance(({
     <ButtonPressAnimation
       disabled={disabled}
       onPress={onPress}
-      scaleTo={0.96}
+      scaleTo={0.94}
     >
       <ShadowStack
         {...props}

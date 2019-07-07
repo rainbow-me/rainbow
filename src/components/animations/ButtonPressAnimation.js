@@ -126,7 +126,7 @@ export default class ButtonPressAnimation extends PureComponent {
     Animated.parallel(animationsArray).start();
 
     if (enableHapticFeedback && state === State.ACTIVE) {
-      ReactNativeHapticFeedback.trigger('impactLight');
+      ReactNativeHapticFeedback.trigger('selection');
     }
 
     if (state === State.END && onPress) {

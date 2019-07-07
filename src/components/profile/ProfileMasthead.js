@@ -59,6 +59,7 @@ const ProfileMasthead = ({
         <ProfileAction
           icon="copy"
           onPress={onPressCopy}
+          scaleTo={0.82}
           text="Copy"
         />
         <FloatingEmojis
@@ -71,6 +72,7 @@ const ProfileMasthead = ({
       <ProfileAction
         icon="inbox"
         onPress={onPressReceive}
+        scaleTo={0.82}
         text="Receive"
       />
     </RowWithMargins>

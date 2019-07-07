@@ -21,7 +21,7 @@ const HeaderRow = withProps({
 })(Row);
 
 const HeadingTextStyles = {
-  color: colors.blueGreyDark,
+  color: colors.dark,
   family: 'SFProText',
   size: 'larger',
   weight: 'semibold',
@@ -31,9 +31,9 @@ const Price = withProps(HeadingTextStyles)(Text);
 
 const Subtitle = withProps({
   color: colors.blueGreyDark,
-  family: 'SFMono',
+  family: 'SFProText',
   size: 'smedium',
-  weight: 'regular',
+  weight: 'medium',
 })(TruncatedText);
 
 const Title = styled(TruncatedText).attrs(HeadingTextStyles)`
@@ -54,7 +54,7 @@ const AssetPanelHeader = ({
       </Title>
       {price && <Price>{price}</Price>}
     </HeaderRow>
-    <HeaderRow style={{ opacity: 0.6 }}>
+    <HeaderRow style={{ opacity: 0.5 }}>
       <Subtitle>{subtitle}</Subtitle>
       {price && <Subtitle>{priceLabel || 'Price'}</Subtitle>}
     </HeaderRow>
