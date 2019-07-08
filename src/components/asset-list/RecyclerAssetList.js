@@ -191,11 +191,11 @@ export default class RecyclerAssetList extends PureComponent {
         } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST) {
           dim.height = UniqueTokenRow.getHeight(true, false);
         } else if (type === ViewTypes.COIN_ROW_LAST) {
-          dim.height = this.state.areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height;
+          dim.height = this.state.areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height - 1;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRow.height;
         } else if (type === ViewTypes.UNISWAP_ROW_LAST) {
-          dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical + ListFooter.height;
+          dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical + ListFooter.height + 7;
         } else if (type === ViewTypes.UNISWAP_ROW) {
           dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
         } else {

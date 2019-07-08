@@ -7,10 +7,11 @@ import { colors, padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
 
-const CoinRowPaddingVertical = 12;
+const CoinRowPaddingTop = 15;
+const CoinRowPaddingBottom = 7;
 
 const Container = styled(Row)`
-  ${padding(CoinRowPaddingVertical, 19, CoinRowPaddingVertical, 15)}
+  ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom, 15)}
   background-color: ${colors.white};
   width: 100%;
 `;
@@ -18,7 +19,7 @@ const Container = styled(Row)`
 const Content = styled(Column)`
   background-color: ${colors.white};
   height: ${CoinIcon.size};
-  margin-left: ${CoinRowPaddingVertical};
+  margin-left: 10;
 `;
 
 const enhance = compose(
@@ -69,6 +70,6 @@ CoinRow.defaultProps = {
   coinIconRender: CoinIcon,
 };
 
-CoinRow.height = CoinIcon.size + (CoinRowPaddingVertical * 2);
+CoinRow.height = CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom;
 
 export default CoinRow;

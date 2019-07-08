@@ -18,6 +18,7 @@ import CompassIcon from './svg/CompassIcon';
 import CopyIcon from './svg/CopyIcon';
 import CrosshairIcon from './svg/CrosshairIcon';
 import DotIcon from './svg/DotIcon';
+import DoubleCaretIcon from './svg/DoubleCaretIcon';
 import FaceIdIcon from './svg/FaceIdIcon';
 import GearIcon from './svg/GearIcon';
 import HandleIcon from './svg/HandleIcon';
@@ -53,6 +54,7 @@ Icon.IconTypes = {
   copy: CopyIcon,
   crosshair: CrosshairIcon,
   dot: DotIcon,
+  doubleCaret: DoubleCaretIcon,
   faceid: FaceIdIcon,
   gear: GearIcon,
   handle: HandleIcon,

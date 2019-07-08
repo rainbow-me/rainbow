@@ -25,7 +25,7 @@ const ProfileScreen = ({
 }) => (
   <Page component={FlexItem} style={position.sizeAsObject('100%')}>
     {showBlur && (
-      <FadeInAnimation duration={200} style={{ ...position.coverAsObject, zIndex: 1 }}>
+      <FadeInAnimation duration={315} style={{ ...position.coverAsObject, zIndex: 1 }}>
         <BlurOverlay
           backgroundColor={colors.alpha(colors.blueGreyDarker, 0.4)}
           blurType="light"
