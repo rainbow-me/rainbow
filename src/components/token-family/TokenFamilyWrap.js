@@ -11,6 +11,7 @@ import {
 import { withOpenFamilyTabs, withFabSendAction } from '../../hoc';
 import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyHeader from './TokenFamilyHeader';
+import { FadeInAnimation } from '../animations';
 
 const enhanceRenderItem = compose(
   withNavigation,
@@ -38,6 +39,37 @@ const getHeight = (openFamilyTab) => (
 const header = (child) => child;
 
 class TokenFamilyWrap extends PureComponent {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      opacity: 0,
+    };
+  }
+
+  shouldComponentUpdate = (prev, next) => {
+    const familyId = this.props.item[0][0].rowNumber;
+    console.log(prev);
+    if (this.props.openFamilyTabs[familyId] !== prev.openFamilyTabs[familyId]
+      || this.state.opacity != next.opacity
+      || this.props.highlight !== prev.highlight) {
+      return true;
+    }
+    return false;
+  }
+
+  componentDidUpdate = () => {
+    const familyId = this.props.item[0][0].rowNumber;
+    const newOpacity = this.props.openFamilyTabs[familyId] ? 1 : 0;
+    if (newOpacity) {
+      setTimeout(() => {
+        this.setState({ opacity: newOpacity });
+      }, 200);
+    } else {
+      this.setState({ opacity: newOpacity });
+    }
+  }
+
   collectiblesRenderItem = item => {
     if (this.props.openFamilyTabs[item.item[0][0].rowNumber]) {
       const tokens = [];
@@ -73,7 +105,11 @@ class TokenFamilyWrap extends PureComponent {
           isOpen={this.props.openFamilyTabs[this.props.item[0][0].rowNumber]}
           onHeaderPress={this.onHeaderPress}
         />
-        {header(this.collectiblesRenderItem(this.props))}
+        {this.state.opacity == 1 &&
+          <FadeInAnimation duration={200}>
+            {header(this.collectiblesRenderItem(this.props))}
+          </FadeInAnimation>
+        }
       </View>
     );
   }
