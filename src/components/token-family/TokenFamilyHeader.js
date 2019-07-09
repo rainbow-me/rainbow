@@ -12,23 +12,20 @@ import { TruncatedText, Monospace } from '../text';
 
 const Wrapper = styled.View`
   height: 56px;
-  width: 100%; padding: 11px 19px;
+  width: 100%; 
+  padding: 11px 16px;
   align-items: center;
   flex-direction: row;
   justify-content: space-between;
 `;
 
 const Image = styled.View`
-  height: 34px;
-  width: 34px;
   background-color: #ffd9fe;
   justify-content: center;
   border-radius: 10.3px;
 `;
 
 const FamilyImage = styled(FastImage)`
-  height: 34px;
-  width: 34px;
   border-radius: 10.3px;
 `;
 
@@ -43,10 +40,9 @@ const ArrowWrap = styled.View`
 `;
 
 const SettingIcon = styled(FastImage)`
-height: 20px;
-width: 9px;
+  height: 20px;
+  width: 9px;
 `;
-
 
 const {
   block,
@@ -99,7 +95,7 @@ class TokenListHeader extends React.Component {
       const clock = new Clock();
       let base = undefined;
       this.props.isOpen ? base = runTiming(clock, -1, 1, this.props.isOpen) : base = runTiming(clock, 1, -1, this.props.isOpen);
-      this._transX = interpolate(base, {
+      this._rotation = interpolate(base, {
         inputRange: [-1, 1],
         outputRange: [90, 0],
       });
@@ -107,6 +103,7 @@ class TokenListHeader extends React.Component {
   }
 
   render() {
+    dimension = this.props.isCoinRow ? 40 : 34;
     return (
       <ButtonPressAnimation
         scaleTo={0.96}
@@ -118,9 +115,9 @@ class TokenListHeader extends React.Component {
           <Highlight highlight={this.props.highlight} />
           <LeftView>
             <ShadowStack
-              borderRadius={17}
-              height={34}
-              width={34}
+              borderRadius={dimension/2}
+              height={dimension}
+              width={dimension}
               shadows={[
                 [0, 4, 6, colors.dark, 0.04],
                 [0, 1, 3, colors.dark, 0.08],
@@ -131,10 +128,10 @@ class TokenListHeader extends React.Component {
                 <FamilyImage
                   id={this.props.familyImage}
                   source={{ uri: this.props.familyImage }}
+                  style={{height: dimension, width: dimension}}
                 />
               ) : (
-                <Image>
-                </Image>
+                <Image style={{height: dimension, width: dimension}}/>
               )}
             </ShadowStack>
             <TruncatedText
@@ -147,7 +144,7 @@ class TokenListHeader extends React.Component {
             </TruncatedText>
             <ArrowWrap>
               <Animated.View
-                style={{ transform: [{ rotate: this._transX ? concat(this._transX, 'deg') : '0deg' }] }}
+                style={{ transform: [{ rotate: this._rotation ? concat(this._rotation, 'deg') : '0deg' }] }}
               >
                 <SettingIcon source={Caret} />
               </Animated.View>

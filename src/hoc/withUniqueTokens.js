@@ -22,6 +22,7 @@ const sendableUniqueTokens = (state) => {
     let newObject = {};
     newObject = {
       name: families[i], 
+      familyImage: grouped[families[i]][0].familyImage,
       familyId: i, 
       data: grouped[families[i]],
     };

@@ -33,12 +33,8 @@ const layoutItemAnimator = {
 class SendAssetList extends React.Component {
   enhanceRenderItem = compose(
     withHandlers({
-      onPress: ( item ) => () => {
-        // clean that up in next commit 
-        if(item.item){
-          return this.props.onSelectAsset(item.item);
-        }
-        return this.props.onSelectAsset(item);
+      onPress: (itemInfo) => () => {
+        return this.props.onSelectAsset(itemInfo.item ? itemInfo.item : itemInfo);
       },
     }),
   );
@@ -63,12 +59,13 @@ class SendAssetList extends React.Component {
 
   balancesRenderItem = item => <this.TokenItem {...item} />;
   collectiblesRenderItem = item => {
+    console.log(item);
     return <View>
       <TokenFamilyHeader
+        isCoinRow
         familyName={item.name}
-        familyImage={undefined}
+        familyImage={item.familyImage}
         childrenAmount={item.data.length}
-        highlight={false}
         isOpen={this.state.openCards[item.familyId]}
         onHeaderPress={() => { this.changeOpenTab(item.familyId) }}
       />
