@@ -49,7 +49,6 @@ class TokenFamilyWrap extends PureComponent {
 
   shouldComponentUpdate = (prev, next) => {
     const familyId = this.props.item[0][0].rowNumber;
-    console.log(prev);
     if (this.props.openFamilyTabs[familyId] !== prev.openFamilyTabs[familyId]
       || this.state.opacity != next.opacity
       || this.props.highlight !== prev.highlight) {

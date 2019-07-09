@@ -50,10 +50,10 @@ const NOOP = () => undefined;
 
 const layoutItemAnimator = {
   animateDidMount: NOOP,
-  animateShift: NOOP,
+  animateShift: () => LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')),
   animateWillMount: NOOP,
   animateWillUnmount: NOOP,
-  animateWillUpdate: () => LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')),
+  animateWillUpdate: NOOP,
 };
 
 
