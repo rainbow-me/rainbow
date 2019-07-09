@@ -19,16 +19,8 @@ import { RecyclerListView, LayoutProvider, DataProvider } from "recyclerlistview
 import { LayoutAnimation } from 'react-native';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 
-const NOOP = () => undefined;
-
-const layoutItemAnimator = {
-  animateDidMount: NOOP,
-  animateShift: NOOP,
-  animateWillMount: NOOP,
-  animateWillUnmount: NOOP,
-  animateWillUpdate: () => LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')),
-};
-
+const rowHeight = 64;
+const familyHeaderHeight = 64;
 
 class SendAssetList extends React.Component {
   enhanceRenderItem = compose(
@@ -42,24 +34,45 @@ class SendAssetList extends React.Component {
   TokenItem = React.memo(this.enhanceRenderItem(SendCoinRow));
   UniqueTokenItem = React.memo(this.enhanceRenderItem(CollectiblesSendRow));
 
+  rlv = React.createRef();
+
   changeOpenTab = (index) => {
     let openCards = this.state.openCards;
+    LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity'));
     openCards[index] = !openCards[index];
     this.setState({ openCards: openCards });
+    let familiesHeight = 0;
+    if(openCards[index]) {
+      for(let i = 0; i < index; i++) {
+        if(openCards[i]) {
+          familiesHeight += familyHeaderHeight + this.props.uniqueTokens[i].data.length * rowHeight;
+        } else {
+          familiesHeight += familyHeaderHeight;
+        }
+      }
+      const heightBelow = this.props.allAssets.length * rowHeight + familiesHeight;
+      const renderSize = familyHeaderHeight + this.props.uniqueTokens[index].data.length * rowHeight;
+      const screenHeight = this.position + this.componentHeight;
+      if(heightBelow + renderSize + 64 > screenHeight) {
+        setTimeout(() => {
+          this.rlv.scrollToOffset(0, this.position + (heightBelow + renderSize - screenHeight + familyHeaderHeight), true);
+        }, 10);
+      }
+
+    }
   }
 
   mapTokens = (collectibles) => {
     items = collectibles.map((collectible) => {
       let newItem = {}
       newItem.item = collectible;
-      return <this.UniqueTokenItem {...newItem} />;
+      return <this.UniqueTokenItem key={collectible.id} {...newItem} />;
     });
     return items;
   }
 
   balancesRenderItem = item => <this.TokenItem {...item} />;
   collectiblesRenderItem = item => {
-    console.log(item);
     return <View>
       <TokenFamilyHeader
         isCoinRow
@@ -77,8 +90,7 @@ class SendAssetList extends React.Component {
     super(args);
     this.state = {
       dataProvider: new DataProvider((r1, r2) => {
-        something = this.props.uniqueTokens;
-        return true
+        return false;
       }).cloneWithRows(this.props.allAssets.concat(this.props.uniqueTokens)),
       openCards: [false, false, false, false, false]
     };
@@ -90,7 +102,7 @@ class SendAssetList extends React.Component {
         if (this.state.openCards[i - this.props.allAssets.length]) {
           return { type: 'COLLECTIBLE_ROW', size: this.props.uniqueTokens[i - this.props.allAssets.length].data.length + 1 };
         } else {
-          return { type: 'COLLECTIBLE_ROW', size: 1 };
+          return 'COLLECTIBLE_ROW_CLOSED';
         }
       }
     }, (type, dim) => {
@@ -100,6 +112,9 @@ class SendAssetList extends React.Component {
       } else if (type.type == "COLLECTIBLE_ROW") {
         dim.width = deviceUtils.dimensions.width;
         dim.height = type.size * 64;
+      } else if (type == "COLLECTIBLE_ROW_CLOSED") {
+        dim.width = deviceUtils.dimensions.width;
+        dim.height = 64;
       } else {
         dim.width = 0;
         dim.height = 0;
@@ -113,19 +128,26 @@ class SendAssetList extends React.Component {
       return this.balancesRenderItem(data);
     } else if (type.type == "COLLECTIBLE_ROW") {
       return this.collectiblesRenderItem(data);
+    } else if (type == "COLLECTIBLE_ROW_CLOSED") {
+      return this.collectiblesRenderItem(data);
     } else {
       return null;
     }
   }
 
   render() {
+    console.log(this.props.uniqueTokens);
     return (
       <FlyInAnimation style={{ flex: 1, width: '100%' }}>
         <RecyclerListView
+          ref={ref => { this.rlv = ref; }}
           rowRenderer={this._renderRow}
           dataProvider={this.state.dataProvider}
           layoutProvider={this._layoutProvider}
-          itemAnimator={layoutItemAnimator}
+          onScroll={event => {
+            this.componentHeight = event.nativeEvent.layoutMeasurement.height;
+            this.position = event.nativeEvent.contentOffset.y;
+          }}
         />
       </FlyInAnimation>
     );

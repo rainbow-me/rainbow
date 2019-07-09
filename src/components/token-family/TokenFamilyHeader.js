@@ -13,7 +13,7 @@ import { TruncatedText, Monospace } from '../text';
 const Wrapper = styled.View`
   height: 56px;
   width: 100%; 
-  padding: 11px 16px;
+  padding: 11px;
   align-items: center;
   flex-direction: row;
   justify-content: space-between;
@@ -104,6 +104,7 @@ class TokenListHeader extends React.Component {
 
   render() {
     dimension = this.props.isCoinRow ? 40 : 34;
+    padding = this.props.isCoinRow ? 16 : 19;
     return (
       <ButtonPressAnimation
         scaleTo={0.96}
@@ -111,7 +112,7 @@ class TokenListHeader extends React.Component {
           this.props.onHeaderPress();
         }}
       >
-        <Wrapper>
+        <Wrapper style={{paddingLeft: padding, paddingRight: padding}}>
           <Highlight highlight={this.props.highlight} />
           <LeftView>
             <ShadowStack

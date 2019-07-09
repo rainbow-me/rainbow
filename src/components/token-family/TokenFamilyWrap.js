@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { withNavigation } from 'react-navigation';
 import { View } from 'react-primitives';
 import {
@@ -38,7 +38,7 @@ const getHeight = (openFamilyTab) => (
 
 const header = (child) => child;
 
-class TokenFamilyWrap extends PureComponent {
+class TokenFamilyWrap extends Component {
   constructor(props) {
     super(props);
 

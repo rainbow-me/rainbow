@@ -39,6 +39,7 @@ export const ViewTypes = {
   UNIQUE_TOKEN_ROW_LAST: 9, // TODO remove
   UNISWAP_ROW: 6,
   UNISWAP_ROW_LAST: 7,
+  FOOTER: 10,
 };
 
 const Wrapper = styled.View`
@@ -141,6 +142,10 @@ class RecyclerAssetList extends PureComponent {
           return ViewTypes.HEADER;
         }
 
+        if (index === this.state.length - 1) {
+          return ViewTypes.FOOTER;
+        }
+
         const balancesIndex = findIndex(sections, ({ name }) => name === 'balances');
         const collectiblesIndex = findIndex(sections, ({ name }) => name === 'collectibles');
         const investmentsIndex = findIndex(sections, ({ name }) => name === 'investments');
@@ -171,14 +176,15 @@ class RecyclerAssetList extends PureComponent {
               if (get(sections, `[${collectiblesIndex}].data[${familyIndex}].tokens`)) {
                 return {
                   get: ViewTypes.UNIQUE_TOKEN_ROW,
-                  isLast: index === this.state.length - 1,
+                  isLast: index === this.state.length - 2,
                   size: get(sections, `[${collectiblesIndex}].data[${familyIndex}].tokens`, []).length,
                 };
               }
-            } else if (index === this.state.length - 1) {
-              return ViewTypes.UNIQUE_TOKEN_ROW_CLOSED_LAST;
             }
-            return ViewTypes.UNIQUE_TOKEN_ROW_CLOSED;
+            return {
+              get: ViewTypes.UNIQUE_TOKEN_ROW_CLOSED,
+              isLast: index === this.state.length - 2,
+            };
           }
         }
 
@@ -205,10 +211,8 @@ class RecyclerAssetList extends PureComponent {
         }
         if (type.get === ViewTypes.UNIQUE_TOKEN_ROW) {
           dim.height = type.size * CardSize + 54 + CardMargin * (type.size - 1) + (type.isLast ? 90 : 0);
-        } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_CLOSED) {
-          dim.height = 54;
-        } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_CLOSED_LAST) {
-          dim.height = 54 + 90;
+        } else if (type.get === ViewTypes.UNIQUE_TOKEN_ROW_CLOSED) {
+          dim.height = 54 + (type.isLast ? 90 : 0);
         } else if (type === ViewTypes.COIN_ROW_LAST) {
           dim.height = this.state.areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height;
         } else if (type === ViewTypes.COIN_ROW) {
@@ -217,8 +221,10 @@ class RecyclerAssetList extends PureComponent {
           dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical + ListFooter.height;
         } else if (type === ViewTypes.UNISWAP_ROW) {
           dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
-        } else {
+        } else if (type == ViewTypes.HEADER) {
           dim.height = this.props.hideHeader ? 0 : AssetListHeader.height;
+        } else if (type == ViewTypes.FOOTER) {
+          dim.height = 0;
         }
       },
     );
@@ -235,6 +241,7 @@ class RecyclerAssetList extends PureComponent {
         }])
         .concat(section.data.map(item => ({ item: { ...item, ...section.perData }, renderItem: section.renderItem })));
     }, []);
+    items.push({ item: { isLastPlaceholder: true }, renderItem: () => NOOP });
     const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(sections.find(e => e.collectibles));
     return {
       areSmallCollectibles,
@@ -284,7 +291,6 @@ class RecyclerAssetList extends PureComponent {
                 collectiblesHeight += 54;
               }
             }
-            // TODO missing investments
             const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235);
             const sectionBeforeCollectibles = AssetListHeader.height * (this.props.sections.length - 1) + ListFooter.height * (this.props.sections.length - 1) + CoinRow.height * get(balances, 'data.length', 0) + 135 * get(investments, 'data.length', 0);
             const sectionsHeight = sectionBeforeCollectibles + collectiblesHeight;
