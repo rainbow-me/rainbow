@@ -63,7 +63,7 @@ class TokenFamilyWrap extends Component {
     if (newOpacity) {
       setTimeout(() => {
         this.setState({ opacity: newOpacity });
-      }, 200);
+      }, 100);
     } else {
       this.setState({ opacity: newOpacity });
     }
@@ -105,7 +105,7 @@ class TokenFamilyWrap extends Component {
           onHeaderPress={this.onHeaderPress}
         />
         {this.state.opacity == 1 &&
-          <FadeInAnimation duration={200}>
+          <FadeInAnimation duration={100}>
             {header(this.collectiblesRenderItem(this.props))}
           </FadeInAnimation>
         }
