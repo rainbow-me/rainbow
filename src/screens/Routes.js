@@ -7,7 +7,6 @@ import {
 } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import Navigation from '../navigation';
-import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
 import { deviceUtils } from '../utils';
@@ -22,135 +21,17 @@ import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
-
-import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
-const distanceFromTop = 14;
-const statusBarHeight = getStatusBarHeight(true);
-export const sheetVerticalOffset = distanceFromTop + statusBarHeight;
-
-import Animated from 'react-native-reanimated';
-const { call, block, concat, interpolate, color } = Animated;
-
-let previousEffect = undefined
-
-const cardStyleInterpolator = props => {
-  const {
-    progress: { current },
-    layouts: { screen },
-    effect,
-  } = props;
-
-  console.log('xd', effect);
-
-  store.dispatch(updateTransitionProps({ effect, position: current }));
-
-  // expanded
-  const opacityEnd = 0.75;
-  const translateYStart = deviceUtils.dimensions.height;
-
-  // sheet
-  const scaleEnd = 1 - ((statusBarHeight + (isIphoneX() ? distanceFromTop : 0)) / deviceUtils.dimensions.height);
-  const heightEnd = statusBarHeight + distanceFromTop;
-  const borderRadiusEnd = 12;
-  const borderRadiusScaledEnd = borderRadiusEnd / scaleEnd;
-  const opacityEndSheet = 0.5;
-
-  if (!effect) {
-    if (previousEffect === 'expanded') {
-      const opacity = interpolate(current, {
-        inputRange: [0, 1],
-        outputRange: [1, opacityEnd],
-      });
-
-      return {
-        cardStyle: { opacity },
-      };
-    }
-
-    if (previousEffect === 'sheet') {
-      const translateY = interpolate(current, {
-        inputRange: [0, 1],
-        outputRange: [0, distanceFromTop],
-      });
-
-      const opacity = interpolate(current, {
-        inputRange: [0, 1],
-        outputRange: [1, opacityEndSheet],
-      });
-
-      const scale = interpolate(current, {
-        inputRange: [0, 1],
-        outputRange: [1, scaleEnd],
-      });
-
-      const borderRadius = interpolate(current, {
-        inputRange: [0, 1],
-        outputRange: [isIphoneX() ? 38.5 : 0, borderRadiusScaledEnd],
-      });
-
-      return {
-        containerStyle: {
-          borderTopLeftRadius: borderRadius,
-          borderTopRightRadius: borderRadius,
-          opacity,
-          // overflow: 'hidden',
-          transform: [{
-            translateY,
-          }, {
-            scale,
-          }],
-          // zIndex: 1,
-        },
-      };
-    }
-  } else {
-    // previousEffect = effect;
-
-    if (effect === 'expanded') {
-      const translateY = interpolate(current, {
-        inputRange: [0, 1],
-        outputRange: [translateYStart, 0],
-      });
-
-      return {
-        cardStyle: {
-          transform: [{ translateY }],
-        },
-      };
-    }
-
-    if (effect === 'sheet') {
-      const { height } = screen;
-      const translateY = interpolate(current, {
-        inputRange: [0, 1],
-        outputRange: [height, heightEnd],
-      });
-
-      return {
-        containerStyle: {
-          borderTopLeftRadius: borderRadiusEnd,
-          borderTopRightRadius: borderRadiusEnd,
-          height: height - heightEnd,
-          // overflow: 'hidden',
-          transform: [{
-            translateY,
-          }],
-          // zIndex: 2,
-        },
-      };
-    }
-  }
-
-  return {};
-};
+import {
+  expandStyleInterpolator,
+  sheetStyleInterpolator,
+  backgroundStyleInterpolator,
+} from '../navigation/transitions/effects';
 
 const onTransitionEnd = () => {
-  console.log('onTransitionEnd');
   store.dispatch(updateTransitionProps({ isTransitioning: false }));
 };
 
 const onTransitionStart = () => {
-  console.log('onTransitionStart');
   store.dispatch(updateTransitionProps({ isTransitioning: true }));
 };
 
@@ -190,6 +71,7 @@ const MainNavigator = createStackNavigator({
   ExampleScreen,
   ExpandedAssetScreen: {
     navigationOptions: {
+      cardStyleInterpolator: expandStyleInterpolator,
       cardTransparent: true,
       effect: 'expanded',
       gestureResponseDistance: {
@@ -209,7 +91,12 @@ const MainNavigator = createStackNavigator({
     },
     screen: ReceiveModal,
   },
-  SendSheet: SendSheetWithData,
+  SendSheet: {
+    navigationOptions: {
+      cardStyleInterpolator: sheetStyleInterpolator,
+    },
+    screen: SendSheetWithData,
+  },
   SettingsModal: {
     navigationOptions: {
       cardTransparent: true,
@@ -218,7 +105,12 @@ const MainNavigator = createStackNavigator({
     },
     screen: SettingsModal,
   },
-  SwipeLayout: SwipeStack,
+  SwipeLayout: {
+    navigationOptions: {
+      cardStyleInterpolator: backgroundStyleInterpolator,
+    },
+    screen: SwipeStack,
+  },
   WalletConnectConfirmationModal: {
     navigationOptions: {
       cardTransparent: true,
@@ -230,20 +122,13 @@ const MainNavigator = createStackNavigator({
     screen: WalletConnectConfirmationModal,
   },
 }, {
-  cardStyleInterpolator,
+  defaultNavigationOptions: {
+    onTransitionEnd,
+    onTransitionStart,
+  },
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',
   mode: 'modal',
-  wip: {
-    open: () => {
-      store.dispatch(updateTransitionProps({ isExpanded: true }));
-    },
-    close: () => {
-      store.dispatch(updateTransitionProps({ isExpanded: false }));
-      onTransitionEnd();
-    },
-  },
-  onTransitionStart,
 });
 
 const AppContainer = createAppContainer(MainNavigator);
