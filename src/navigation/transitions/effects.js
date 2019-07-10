@@ -1,5 +1,6 @@
 import Animated from 'react-native-reanimated';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
+import chroma from 'chroma-js';
 import store from '../../redux/store';
 import { updateTransitionProps } from '../../redux/navigation';
 import { deviceUtils } from '../../utils';
@@ -87,6 +88,8 @@ export const sheetStyleInterpolator = ({
   closing,
   layouts: { screen: { height } },
 }) => {
+  if (!current || !closing || !height) return {};
+
   store.dispatch(updateTransitionProps({
     effect: 'sheet',
     position: current,
@@ -98,6 +101,7 @@ export const sheetStyleInterpolator = ({
     cardStyle: {
       borderTopLeftRadius: sheet.borderRadiusEnd,
       borderTopRightRadius: sheet.borderRadiusEnd,
+      overflow: 'hidden',
       transform: [{
         translateY: block([
           call([], () => {
@@ -143,18 +147,9 @@ export const backgroundStyleInterpolator = ({ progress: { next } }) => {
     ),
   );
 
-  // Expand opening
-
   const expandOpacity = interpolate(next, {
     inputRange: [0, 1],
     outputRange: [1, expand.opacityEnd],
-  });
-
-  // Sheet opening
-
-  const translateY = interpolate(next, {
-    inputRange: [0, 1],
-    outputRange: [0, sheet.distanceFromTop],
   });
 
   const sheetOpacity = interpolate(next, {
@@ -162,31 +157,9 @@ export const backgroundStyleInterpolator = ({ progress: { next } }) => {
     outputRange: [1, sheet.opacityEnd],
   });
 
-  const scale = interpolate(next, {
-    inputRange: [0, 1],
-    outputRange: [1, sheet.scaleEnd],
-  });
-
-  const sheetOpeningBorderRadius = interpolate(next, {
-    inputRange: [0, 1],
-    outputRange: [isIphoneX() ? 38.5 : 0, sheet.borderRadiusScaledEnd],
-  });
-
-  const sheetClosingBorderRadius = interpolate(next, {
-    inputRange: [0, 1],
-    outputRange: [0, sheet.borderRadiusEnd],
-  });
-
   return {
     cardStyle: {
-      borderTopLeftRadius: pick(sheetOpeningBorderRadius, sheetClosingBorderRadius, 0, 0),
-      borderTopRightRadius: pick(sheetOpeningBorderRadius, sheetClosingBorderRadius, 0, 0),
       opacity: pick(sheetOpacity, sheetOpacity, expandOpacity, expandOpacity),
-      transform: [{
-        scale: pick(scale, scale, 1, 1),
-      }, {
-        translateY: pick(translateY, translateY, 0, 0),
-      }],
     },
     containerStyle: {
       backgroundColor: color(0, 0, 0),
