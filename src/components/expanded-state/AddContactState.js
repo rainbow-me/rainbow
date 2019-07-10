@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { InteractionManager, TextInput, KeyboardAvoidingView, View } from 'react-native';
+import { InteractionManager, KeyboardAvoidingView, View } from 'react-native';
 import {
   compose,
   onlyUpdateForKeys,
@@ -16,7 +16,10 @@ import styled from 'styled-components/primitives';
 import { Input } from '../inputs';
 import { colors } from '../../styles';
 import { Button } from '../buttons';
-import { Monospace } from '../text';
+import { Monospace, TruncatedAddress } from '../text';
+import { Text } from 'react-primitives';
+import { abbreviations } from '../../utils';
+import { CancelButton } from '../buttons';
 
 const TopMenu = styled(View)`
   justify-content: center;
@@ -32,12 +35,43 @@ const Container = styled(View)`
 `;
 
 const NameCircle = styled(View)`
-  justify-content: center;
-  align-items: center;
   height: 60px;
   width: 60px;
   border-radius: 30px;
   background-color: ${colors.avatar1}
+  margin-bottom: 19px;
+`;
+
+const FirstLetter = styled(Text)`
+  width: 100%;
+  text-align: center;
+  line-height: 58px;
+  font-size: 27px;
+  color: #fff;
+  padding-left: 2px;
+  font-weight: 600;
+`;
+
+const AddressAbbreviation = styled(TruncatedAddress).attrs({
+  align: 'center',
+  firstSectionLength: abbreviations.defaultNumCharsPerSection,
+  size: 'lmedium',
+  truncationLength: 4,
+  weight: 'regular',
+  color: colors.blueGreyDark,
+})`
+  opacity: 0.6;
+  width: 100%;
+  margin-top: 9px;
+  margin-bottom: 5px;
+`;
+
+const Divider = styled(View)`
+  width: 93px;
+  margin: 19px 0;
+  height: 2px;
+  opacity: 0.05;
+  background-color: ${colors.blueGreyLigter};
 `;
 
 
@@ -61,7 +95,6 @@ class AddContactState extends React.PureComponent {
     const { nativeEvent } = event;
 
     const value = this.format(nativeEvent.text);
-    console.log(value);
     if (value !== this.value) {
       this.setState({ value });
     }
@@ -75,8 +108,13 @@ class AddContactState extends React.PureComponent {
         <Container>
           <AssetPanel>
             <TopMenu>
-              <NameCircle />
+              <NameCircle>
+                <FirstLetter>
+                  {this.state.value.length > 0 && this.state.value[0].toUpperCase()}
+                </FirstLetter>
+              </NameCircle>
               <Input
+                style={{ fontWeight: 600 }}
                 autoFocus={true}
                 color={colors.blueGreyDark}
                 family={'SFProDisplay'}
@@ -86,16 +124,24 @@ class AddContactState extends React.PureComponent {
                 onChange={this.onChange}
                 // onFocus={this.onFocus}
                 placeholder={'Name'}
-                size="h3"
-                value={this.format(String(this.props.value || ''))}
+                size="big"
                 textAlign={'center'}
               />
-              <Monospace>
-                {this.props.asset.to}
-              </Monospace>
-              <Button backgroundColor={colors.appleBlue} width={215}>
+              <AddressAbbreviation address={this.props.asset.to} />
+              <Divider />
+              <Button 
+                backgroundColor={this.state.value.length > 0 ? colors.appleBlue : undefined} 
+                width={215} 
+                showShadow
+                disabled = {!this.state.value.length > 0}
+              >
                 Add Contact
-            </Button>
+              </Button>
+              <CancelButton
+                style={{paddingTop: 11}}
+                onPress={() => {this.props.navigation.goBack()}}
+                text="Cancel"
+              />
             </TopMenu>
           </AssetPanel>
         </Container>
