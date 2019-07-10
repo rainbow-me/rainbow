@@ -57,7 +57,7 @@ export const uniswapUpdateLiquidityTokens = (liquidityTokens) => (dispatch, getS
     payload: liquidityTokens,
     type: UNISWAP_UPDATE_LIQUIDITY_TOKENS,
   });
-  saveUniswapLiquidityTokens(accountAddress, network);
+  saveUniswapLiquidityTokens(accountAddress, liquidityTokens, network);
   dispatch(uniswapUpdateState());
 };
 
@@ -71,7 +71,7 @@ export const uniswapAddLiquidityTokens = (newLiquidityTokens) => (dispatch, getS
     payload: updatedLiquidityTokens,
     type: UNISWAP_UPDATE_LIQUIDITY_TOKENS,
   });
-  saveUniswapLiquidityTokens(accountAddress, network);
+  saveUniswapLiquidityTokens(accountAddress, updatedLiquidityTokens, network);
   dispatch(uniswapUpdateState());
 };
 
@@ -131,8 +131,7 @@ export default (state = INITIAL_UNISWAP_STATE, action) => produce(state, draft =
     draft.liquidityTokens = action.payload;
     break;
   case UNISWAP_CLEAR_STATE:
-    draft = INITIAL_UNISWAP_STATE;
-    break;
+    return INITIAL_UNISWAP_STATE;
   default:
     break;
   }
