@@ -58,7 +58,6 @@ class SendAssetList extends React.Component {
           this.rlv.scrollToOffset(0, this.position + (heightBelow + renderSize - screenHeight + familyHeaderHeight), true);
         }, 10);
       }
-
     }
   }
 
@@ -92,7 +91,7 @@ class SendAssetList extends React.Component {
       dataProvider: new DataProvider((r1, r2) => {
         return false;
       }).cloneWithRows(this.props.allAssets.concat(this.props.uniqueTokens)),
-      openCards: [false, false, false, false, false]
+      openCards: []
     };
 
     this._layoutProvider = new LayoutProvider((i) => {
