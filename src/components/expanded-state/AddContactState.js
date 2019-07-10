@@ -118,11 +118,8 @@ class AddContactState extends React.PureComponent {
                 autoFocus={true}
                 color={colors.blueGreyDark}
                 family={'SFProDisplay'}
-
-                // maxLength={maxLength}
-                // onBlur={this.onBlur}
+                maxLength={20}
                 onChange={this.onChange}
-                // onFocus={this.onFocus}
                 placeholder={'Name'}
                 size="big"
                 textAlign={'center'}
@@ -133,7 +130,7 @@ class AddContactState extends React.PureComponent {
                 backgroundColor={this.state.value.length > 0 ? colors.appleBlue : undefined} 
                 width={215} 
                 showShadow
-                disabled = {!this.state.value.length > 0}
+                disabled={!this.state.value.length > 0}
               >
                 Add Contact
               </Button>

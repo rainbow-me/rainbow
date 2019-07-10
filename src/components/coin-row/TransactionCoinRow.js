@@ -20,6 +20,7 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 import { withNavigation } from 'react-navigation';
+import { abbreviations } from '../../utils';
 
 // XXX after rebase, not sure if still needed
 const containerStyles = css`
@@ -122,7 +123,7 @@ export default compose(
     onPressTransaction: ({ hash, item, navigation }) => () => {
       if (hash) {
         showActionSheetWithOptions({
-          title: `${item.status} ${item.status === "sent" ? `to ${item.to}` : `from ${item.from}`} `,
+          title: `${item.status} ${item.status === "sent" ? `to ${abbreviations.address(item.to, 4, 10)}` : `from ${abbreviations.address(item.from, 4, 10)}`} `,
           cancelButtonIndex: 2,
           options: ['Add to Contacts', 'View on Etherscan', 'Cancel'],
         }, (buttonIndex) => {
