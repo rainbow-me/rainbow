@@ -34,7 +34,7 @@ if (process.env.NODE_ENV === 'development') {
   console.disableYellowBox = true;
 }
 
-useScreens();
+useScreens(false);
 
 class App extends Component {
   static propTypes = {
