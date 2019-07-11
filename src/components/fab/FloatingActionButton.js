@@ -19,7 +19,7 @@ export const buildFabShadow = disabled => (
   disabled
     ? []
     : [
-      [0, 3, 5, colors.dark, 0.2],
+      [0, 2, 5, colors.dark, 0.2],
       [0, 6, 10, colors.dark, 0.14],
       [0, 1, 18, colors.dark, 0.12],
     ]
@@ -55,6 +55,7 @@ const FloatingActionButton = enhance(({
     onPress={onPress}
     onPressIn={onPressIn}
     onPressOut={onPressOut}
+    scaleTo={0.82}
     style={style}
     {...props}
   >

@@ -7,7 +7,7 @@ import transitions from '../../navigation/transitions';
 import { colors, padding, position } from '../../styles';
 import { deviceUtils, ethereumUtils, safeAreaInsetValues } from '../../utils';
 import { SendCoinRow } from '../coin-row';
-import { DoubleArrowSelectionIcon } from '../icons';
+import { Icon } from '../icons';
 import { Column, ColumnWithMargins } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
@@ -58,7 +58,7 @@ const SendAssetForm = ({
         width={deviceUtils.dimensions.width}
       >
         {createElement(selected.isNft ? CollectiblesSendRow : SendCoinRow, {
-          children: <DoubleArrowSelectionIcon />,
+          children: <Icon name="doubleCaret" />,
           item: selected.isNft ? selected : selectedAsset,
           onPress: onResetAssetSelection,
           selected: true,

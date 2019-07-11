@@ -57,9 +57,9 @@ const SendFab = ({
       <Icon
         name="send"
         style={{
-          height: 21,
-          marginBottom: 2,
-          width: 22,
+          height: 22,
+          marginBottom: 4,
+          width: 23,
         }}
       />
     </FloatingActionButtonWithDisabled>

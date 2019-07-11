@@ -63,12 +63,11 @@ export default Component => compose(
       }
     },
     initializeAccountData: (ownProps) => async () => {
+      ownProps.dataInit();
       try {
         await ownProps.uniqueTokensRefreshState();
       } catch (error) {
-        console.log('unique tokens refresh error', error);
       }
-      ownProps.dataInit();
     },
     loadAccountData: (ownProps) => async () => {
       try {

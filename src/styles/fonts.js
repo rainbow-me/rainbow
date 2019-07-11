@@ -37,6 +37,7 @@ font.size = {
   bmedium: '17px',
   large: '18px',
   larger: '20px',
+  blarge: '21px',
   big: '22px',
   bigger: '26px',
   h1: '42px',

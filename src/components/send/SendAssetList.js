@@ -10,7 +10,6 @@ import {
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
-import { RecyclerAssetList } from '../asset-list';
 import { CoinRow, CollectiblesSendRow, SendCoinRow } from '../coin-row';
 import { ListFooter } from '../list';
 import { View, Text } from 'react-primitives';

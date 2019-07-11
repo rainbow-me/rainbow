@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import { Animated } from 'react-native';
+import { Animated, Easing } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
 import { updateTransitionProps } from '../../redux/navigation';
 import store from '../../redux/store';
@@ -232,9 +232,9 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
       };
     },
     transitionSpec: {
-      friction: 9.8,
-      tension: 58,
-      timing: ((nextEffect === transitionName) && (nextIndex > prevIndex)) ? Animated.spring : Animated.timing,
+      duration: 375,
+      easing: Easing.bezier(0.19, 1, 0.22, 1),
+      timing: Animated.timing,
       useNativeDriver: true,
     },
   };

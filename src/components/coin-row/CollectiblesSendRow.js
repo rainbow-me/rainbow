@@ -28,7 +28,7 @@ const selectedStyles = css`
 
 const BottomRow = ({ subtitle }) => (
   <TruncatedText
-    color={colors.alpha(colors.blueGreyDark, 0.6)}
+    color={colors.alpha(colors.blueGreyDark, 0.5)}
     component={Monospace}
     size="smedium"
   >

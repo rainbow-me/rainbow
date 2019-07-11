@@ -289,8 +289,11 @@ const assetsReceived = (message, append = false, change = false) => (dispatch, g
     const symbol = get(asset, 'asset.symbol', '');
     return symbol === 'uni-v1';
   });
-  if (!change) {
+  if (append) {
     dispatch(uniswapAddLiquidityTokens(liquidityTokens));
+  }
+  if (!append && !change) {
+    dispatch(uniswapUpdateLiquidityTokens(liquidityTokens));
   }
   const updatedAssets = dispatch(dedupeUniqueTokens(assets));
   if (!updatedAssets.length) return;

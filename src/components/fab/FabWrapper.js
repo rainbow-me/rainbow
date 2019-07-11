@@ -25,7 +25,7 @@ const FabWrapper = ({
         css={`
           bottom: ${safeAreaInsetValues.bottom + FabWrapperBottomPosition};
           position: absolute;
-          right: 12;
+          right: 15;
           z-index: 2;
         `}
         direction="row-reverse"

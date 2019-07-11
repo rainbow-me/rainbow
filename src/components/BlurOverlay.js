@@ -48,7 +48,7 @@ BlurOverlay.propTypes = {
 };
 
 BlurOverlay.defaultProps = {
-  blurAmount: 5,
+  blurAmount: 15,
   blurType: 'dark',
   translateX: 0,
   translateY: 0,

@@ -27,7 +27,7 @@ const BottomRow = ({ balance, native }) => {
   return (
     <Fragment>
       <BottomRowText>{balance.display}</BottomRowText>
-      <BottomRowText color={isPositive ? colors.seaGreen : null}>
+      <BottomRowText color={isPositive ? colors.limeGreen : null}>
         {percentageChangeDisplay}
       </BottomRowText>
     </Fragment>

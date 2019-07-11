@@ -46,8 +46,8 @@ const ImportSeedPhraseSheetWithData = compose(
       navigation,
       seedPhrase,
       setIsImporting,
-    }) => () => {
-      clearAccountData();
+    }) => async () => {
+      await clearAccountData();
 
       return initializeWallet(seedPhrase.trim())
         .then((address) => {
