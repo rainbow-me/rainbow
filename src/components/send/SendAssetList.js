@@ -42,9 +42,9 @@ class SendAssetList extends React.Component {
     openCards[index] = !openCards[index];
     this.setState({ openCards: openCards });
     let familiesHeight = 0;
-    if(openCards[index]) {
-      for(let i = 0; i < index; i++) {
-        if(openCards[i]) {
+    if (openCards[index]) {
+      for (let i = 0; i < index; i++) {
+        if (openCards[i]) {
           familiesHeight += familyHeaderHeight + this.props.uniqueTokens[i].data.length * rowHeight;
         } else {
           familiesHeight += familyHeaderHeight;
@@ -104,10 +104,12 @@ class SendAssetList extends React.Component {
     const imageTokens = [];
     this.props.uniqueTokens.forEach(family => {
       family.data.forEach(token => {
-        imageTokens.push({
-          uri: token.image_thumbnail_url,
-          id: token.id
-        });
+        if (token.image_thumbnail_url) {
+          imageTokens.push({
+            uri: token.image_thumbnail_url,
+            id: token.id
+          });
+        }
       });
     });
     FastImage.preload(imageTokens);

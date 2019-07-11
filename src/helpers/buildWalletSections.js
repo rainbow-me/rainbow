@@ -107,13 +107,17 @@ const buildWalletSections = (
     },
   ];
 
-  const imageTokens = uniqueTokens.map((token) => {
-    return {
-      uri: token.image_preview_url,
-      id: token.id
+  const imageTokens = [];
+  uniqueTokens.forEach(token => {
+    if (token.image_preview_url) {
+      imageTokens.push({
+        uri: token.image_preview_url,
+        id: token.id
+      });
     }
   });
-  FastImage.preload(imageTokens)
+
+  FastImage.preload(imageTokens);
 
   if (shitcoinsCount) {
     // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
