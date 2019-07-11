@@ -172,4 +172,4 @@ class SendAssetList extends React.Component {
   };
 }
 
-export default SendAssetList;
+export default onlyUpdateForKeys(['allAssets', 'uniqueTokens'])(SendAssetList);
