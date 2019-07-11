@@ -321,6 +321,9 @@ class RecyclerAssetList extends PureComponent {
 
   getStableId = (index) => {
     const row = get(this.state, `dataProvider._data[${index}]`);
+    if (get(row, 'item.isLastPlaceholder', false)) {
+      return 'isLastPlaceholder';
+    }
 
     return has(row, 'isHeader')
       ? buildAssetHeaderUniqueIdentifier(row)
