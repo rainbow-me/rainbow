@@ -291,14 +291,15 @@ class RecyclerAssetList extends PureComponent {
                 collectiblesHeight += 54;
               }
             }
+            const verticalOffset = 10;
             const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235);
             const sectionBeforeCollectibles = AssetListHeader.height * (this.props.sections.length - 1) + ListFooter.height * (this.props.sections.length - 1) + CoinRow.height * get(balances, 'data.length', 0) + (UniswapInvestmentCard.height + InvestmentCard.margin.vertical) * get(investments, 'data.length', 0) + ListFooter.height;
             const sectionsHeight = sectionBeforeCollectibles + collectiblesHeight;
-            const renderSize = CardSize * collectibles.data[i].tokens.length + RowPadding * (collectibles.data[i].tokens.length - 1) - 10;
+            const renderSize = CardSize * collectibles.data[i].tokens.length + RowPadding * (collectibles.data[i].tokens.length - 1) - verticalOffset;
 
             if (renderSize >= deviceDimensions) {
               const scrollDistance = sectionsHeight - this.position;
-              this.rlv.scrollToOffset(0, this.position + scrollDistance, true);
+              this.rlv.scrollToOffset(0, this.position + scrollDistance - verticalOffset, true);
             } else {
               const diff = this.position - sectionsHeight + deviceDimensions;
               if (renderSize > diff) {
