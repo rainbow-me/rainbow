@@ -94,7 +94,7 @@ class WalletScreen extends PureComponent {
     || isNewShowBlur;
   }
 
-  hideSpashScreen = () => {
+  hideSplashScreen = () => {
     const { onHideSplashScreen, setSafeTimeout } = this.props;
     setSafeTimeout(onHideSplashScreen, 200);
   }
@@ -133,7 +133,7 @@ class WalletScreen extends PureComponent {
           <AssetList
             fetchData={refreshAccountData}
             isEmpty={isEmpty}
-            onLayout={this.hideSpashScreen}
+            onLayout={this.hideSplashScreen}
             scrollViewTracker={scrollViewTracker}
             sections={sections}
           />
