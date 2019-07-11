@@ -298,9 +298,9 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
   });
   if (sections) {
     const areas = [];
-    const headerHeight = 35;
+    const headerHeight = 54;
     const familyHeaderHeight = 52;
-    let height = 74 + headerHeight;
+    let height = 55 + headerHeight;
     if (balances) {
       for (let i = 0; i < balances.data.length; i++) {
         areas.push({
@@ -312,11 +312,11 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
         });
         height += CoinRow.height + (balances.data.length - 1 === i ? ListFooter.height : 0);
       }
-      height += 54;
+      height += headerHeight;
     }
     if (investments) {
-      height += 54;
-      height += investments.data.length * (UniswapInvestmentCard.height + InvestmentCard.margin.vertical);
+      height += headerHeight;
+      height += investments.data.length * (UniswapInvestmentCard.height + InvestmentCard.margin.vertical) + ListFooter.height;
     }
     if (collectibles) {
       for (let i = 0; i < collectibles.data.length; i++) {
