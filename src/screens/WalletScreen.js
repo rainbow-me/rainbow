@@ -1,7 +1,7 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import Animated from 'react-native-reanimated';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
 import {
@@ -35,7 +35,7 @@ import {
 import { colors, position } from '../styles';
 import { deviceUtils, isNewValueForPath } from '../utils';
 
-class WalletScreen extends PureComponent {
+class WalletScreen extends Component {
   static propTypes = {
     allAssetsCount: PropTypes.number,
     assets: PropTypes.array,
