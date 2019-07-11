@@ -8,6 +8,7 @@ import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { TokenFamilyWrap } from '../components/token-family';
 import { buildUniqueTokenList } from './assets';
+import FastImage from 'react-native-fast-image';
 
 const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
@@ -105,6 +106,14 @@ const buildWalletSections = (
       type: 'big',
     },
   ];
+
+  const imageTokens = uniqueTokens.map((token) => {
+    return {
+      uri: token.image_preview_url,
+      id: token.id
+    }
+  });
+  FastImage.preload(imageTokens)
 
   if (shitcoinsCount) {
     // 99 is an arbitrarily high number used to disable the 'destructiveButton' option

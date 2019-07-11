@@ -17,6 +17,7 @@ import { TouchableHighlight } from 'react-native-gesture-handler';
 import { RecyclerListView, LayoutProvider, DataProvider } from "recyclerlistview";
 import { LayoutAnimation } from 'react-native';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
+import FastImage from 'react-native-fast-image';
 
 const rowHeight = 64;
 const familyHeaderHeight = 64;
@@ -92,6 +93,17 @@ class SendAssetList extends React.Component {
       }).cloneWithRows(this.props.allAssets.concat(this.props.uniqueTokens)),
       openCards: []
     };
+
+    const imageTokens = [];
+    this.props.uniqueTokens.forEach(family => {
+      family.data.forEach(token => {
+        imageTokens.push({
+          uri: token.image_thumbnail_url,
+          id: token.id
+        });
+      });
+    });
+    FastImage.preload(imageTokens);
 
     this._layoutProvider = new LayoutProvider((i) => {
       if (i < this.props.allAssets.length) {
