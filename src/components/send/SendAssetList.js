@@ -96,7 +96,7 @@ class SendAssetList extends React.Component {
     super(args);
     this.state = {
       dataProvider: new DataProvider((r1, r2) => {
-        return false;
+        return r1 !== r2;
       }).cloneWithRows(this.props.allAssets.concat(this.props.uniqueTokens)),
       openCards: []
     };
