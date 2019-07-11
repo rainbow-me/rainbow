@@ -15,7 +15,10 @@ import { FabWrapper } from '../components/fab';
 import { CameraHeaderButton, Header, ProfileHeaderButton } from '../components/header';
 import { Page } from '../components/layout';
 import buildWalletSectionsSelector from '../helpers/buildWalletSections';
-import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../model/localstorage';
+import {
+  getShowShitcoinsSetting,
+  updateShowShitcoinsSetting,
+} from '../handlers/commonStorage';
 import {
   withAccountData,
   withAccountSettings,

@@ -184,10 +184,10 @@ class SendSheet extends Component {
 
   onResetAssetSelection = () => {
     analytics.track('Reset asset selection in Send flow');
-    this.props.sendUpdateSelected('');
+    this.props.sendUpdateSelected({});
   }
 
-  onSelectAsset = symbol => this.props.sendUpdateSelected(symbol)
+  onSelectAsset = asset => this.props.sendUpdateSelected(asset)
 
   sendTransaction = () => {
     const {

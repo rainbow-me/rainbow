@@ -13,7 +13,7 @@ import {
   slice,
   uniqBy,
 } from 'lodash';
-import { DATA_ORIGIN } from 'react-native-dotenv';
+import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 import { parseAccountAssets } from '../parsers/accounts';
 import {
@@ -58,6 +58,7 @@ const messages = {
   CONNECT: 'connect',
   DISCONNECT: 'disconnect',
   ERROR: 'error',
+  RECONNECT_ATTEMPT: 'reconnect_attempt',
   TRANSACTIONS: {
     APPENDED: 'appended address transactions',
     RECEIVED: 'received address transactions',
@@ -68,7 +69,7 @@ const messages = {
 // -- Actions ---------------------------------------- //
 
 const createSocket = endpoint => io(
-  `wss://api.zerion.io/${endpoint}`,
+  `wss://api.zerion.io/${endpoint}?api_token=${DATA_API_KEY}`,
   {
     extraHeaders: { Origin: DATA_ORIGIN },
     transports: ['websocket'],
@@ -328,6 +329,10 @@ const listenOnNewMessages = socket => (dispatch, getState) => {
 
   socket.on(messages.ASSETS.CHANGED, (message) => {
     dispatch(assetsReceived(message, false, true));
+  });
+
+  socket.on(messages.RECONNECT_ATTEMPT, () => {
+    socket.io.opts.transports = ['polling', 'websocket'];
   });
 };
 

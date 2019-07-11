@@ -65,11 +65,11 @@ export default compose(
     };
   }),
   withHandlers({
-    onPressSend: ({ navigation, asset: { address } }) => () => {
+    onPressSend: ({ navigation, asset }) => () => {
       navigation.goBack();
 
       InteractionManager.runAfterInteractions(() => {
-        navigation.navigate('SendSheet', { asset: address });
+        navigation.navigate('SendSheet', { asset });
       });
     },
   }),
