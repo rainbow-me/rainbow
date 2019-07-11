@@ -134,7 +134,6 @@ class SendAssetList extends React.Component {
   }
 
   render() {
-    console.log(this.props.uniqueTokens);
     return (
       <FlyInAnimation style={{ flex: 1, width: '100%' }}>
         <RecyclerListView
