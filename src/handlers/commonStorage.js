@@ -584,3 +584,31 @@ export const getAppStoreReviewRequestCount = async () => {
 export const setAppStoreReviewRequestCount = async (newCount) => {
   await saveLocal('appStoreReviewRequestCount', { data: newCount });
 };
+
+/**
+ * @desc get local contacts
+ * @return {True|False}
+ */
+export const getLocalContacts = async () => {
+  const localContacts = await getLocal('localContacts');
+  return localContacts ? localContacts.data : null;
+};
+
+/**
+ * @desc add new contact to the local contacts
+ * @param  {String}   [address]
+ * @param  {String}   [nickname]
+ * @param  {String}   [color]
+ * @return {Void}
+ */
+export const addNewLocalContact = async (address, nickname, color) => {
+  let contacts = await getLocalContacts();
+  if (!contacts) contacts = [];
+
+  contacts.push({
+    address,
+    color,
+    nickname,
+  });
+  await saveLocal('localContacts', { data: contacts });
+};
