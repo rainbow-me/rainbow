@@ -25,7 +25,7 @@ import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils
 import { CoinRow, CollectiblesSendRow } from '../coin-row';
 import { InvestmentCard, UniswapInvestmentCard } from '../investment-cards';
 import { ListFooter } from '../list';
-import { CardMargin, CardSize } from '../unique-token/UniqueTokenRow';
+import { CardMargin, CardSize, RowPadding } from '../unique-token/UniqueTokenRow';
 import AssetListHeader from './AssetListHeader';
 
 export const ViewTypes = {
@@ -286,15 +286,15 @@ class RecyclerAssetList extends PureComponent {
             let collectiblesHeight = 0;
             for (let j = 0; j < i; j++) {
               if (this.props.openFamilyTabs[j] && collectibles.data[j].tokens) {
-                collectiblesHeight += collectibles.data[j].tokens.length * CardSize + 54 + 20 * (collectibles.data[j].tokens.length - 1);
+                collectiblesHeight += collectibles.data[j].tokens.length * CardSize + 54 + RowPadding * (collectibles.data[j].tokens.length - 1);
               } else {
                 collectiblesHeight += 54;
               }
             }
             const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235);
-            const sectionBeforeCollectibles = AssetListHeader.height * (this.props.sections.length - 1) + ListFooter.height * (this.props.sections.length - 1) + CoinRow.height * get(balances, 'data.length', 0) + 135 * get(investments, 'data.length', 0);
+            const sectionBeforeCollectibles = AssetListHeader.height * (this.props.sections.length - 1) + ListFooter.height * (this.props.sections.length - 1) + CoinRow.height * get(balances, 'data.length', 0) + (UniswapInvestmentCard.height + InvestmentCard.margin.vertical) * get(investments, 'data.length', 0) + ListFooter.height;
             const sectionsHeight = sectionBeforeCollectibles + collectiblesHeight;
-            const renderSize = CardSize * collectibles.data[i].tokens.length + 20 * (collectibles.data[i].tokens.length - 1);
+            const renderSize = CardSize * collectibles.data[i].tokens.length + RowPadding * (collectibles.data[i].tokens.length - 1) - 10;
 
             if (renderSize >= deviceDimensions) {
               const scrollDistance = sectionsHeight - this.position;
