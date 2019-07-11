@@ -20,6 +20,9 @@ import { Monospace, TruncatedAddress } from '../text';
 import { Text } from 'react-primitives';
 import { abbreviations } from '../../utils';
 import { CancelButton } from '../buttons';
+import {
+  addNewLocalContact,
+} from '../../handlers/commonStorage';
 
 const TopMenu = styled(View)`
   justify-content: center;
@@ -100,6 +103,11 @@ class AddContactState extends React.PureComponent {
     }
   }
 
+  addContact = async () => {
+    await addNewLocalContact(this.props.asset.to, this.state.value, colors.avatar1);
+    this.props.navigation.goBack();
+  }
+
   render() {
     return <KeyboardAvoidingView behavior="padding">
       <FloatingPanels
@@ -131,6 +139,7 @@ class AddContactState extends React.PureComponent {
                 width={215} 
                 showShadow
                 disabled={!this.state.value.length > 0}
+                onPress={this.addContact}
               >
                 Add Contact
               </Button>

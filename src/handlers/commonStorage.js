@@ -425,3 +425,30 @@ export const removeLocalRequests = async (address, network) => {
   const requestsKey = getRequestsKey(address, network);
   await removeLocal(requestsKey);
 };
+
+/**
+ * @desc get local contacts
+ * @return {True|False}
+ */
+export const getLocalContacts = async () => {
+  const localContacts = await getLocal('localContacts');
+  return localContacts ? localContacts.data : null;
+};
+
+/**
+ * @desc add new contact to the local contacts
+ * @param  {String}   [address]
+ * @param  {String}   [nickname]
+ * @param  {String}   [color]
+ * @return {Void}
+ */
+export const addNewLocalContact = async (address, nickname, color) => {
+  const contacts = await getLocalContacts();
+  contacts ? contacts : contacts = [];
+  contacts.push({
+    address,
+    nickname,
+    color,
+  });
+  await saveLocal('localContacts', { data: contacts });
+};
