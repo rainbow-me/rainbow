@@ -54,9 +54,16 @@ class SendAssetList extends React.Component {
       const renderSize = familyHeaderHeight + this.props.uniqueTokens[index].data.length * rowHeight;
       const screenHeight = this.position + this.componentHeight;
       if(heightBelow + renderSize + 64 > screenHeight) {
-        setTimeout(() => {
-          this.rlv.scrollToOffset(0, this.position + (heightBelow + renderSize - screenHeight + familyHeaderHeight), true);
-        }, 10);
+        const diff = this.position + (heightBelow + renderSize - screenHeight + familyHeaderHeight);
+        if( renderSize < this.componentHeight) {
+          setTimeout(() => {
+            this.rlv.scrollToOffset(0, this.position + (heightBelow + renderSize - screenHeight + familyHeaderHeight), true);
+          }, 10);
+        } else {
+          setTimeout(() => {
+            this.rlv.scrollToOffset(0, this.position - (this.position - heightBelow), true);
+          }, 10);
+        }
       }
     }
   }

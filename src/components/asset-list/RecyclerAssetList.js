@@ -406,10 +406,6 @@ class RecyclerAssetList extends PureComponent {
                 this.props.scrollViewTracker.setValue(event.nativeEvent.contentOffset.y);
               }
             }}
-            scrollIndicatorInsets={{
-              bottom: safeAreaInsetValues.bottom,
-              top: hideHeader ? 0 : AssetListHeader.height,
-            }}
             scrollViewProps={{
               refreshControl: this.renderRefreshControl(),
             }}
