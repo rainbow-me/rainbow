@@ -14,6 +14,7 @@ const AssetList = ({
   fetchData,
   hideHeader,
   isEmpty,
+  isWalletEthZero,
   sections,
   ...props
 }) => (
@@ -35,7 +36,12 @@ AssetList.propTypes = {
   fetchData: PropTypes.func.isRequired,
   hideHeader: PropTypes.bool,
   isEmpty: PropTypes.bool,
+  isWalletEthZero: PropTypes.bool,
   sections: PropTypes.arrayOf(PropTypes.object),
 };
 
-export default onlyUpdateForKeys(['isEmpty', 'sections'])(AssetList);
+export default onlyUpdateForKeys([
+  'isEmpty',
+  'isWalletEthZero',
+  'sections',
+])(AssetList);

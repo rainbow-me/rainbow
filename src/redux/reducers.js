@@ -4,6 +4,7 @@ import actionSheetManager from './actionSheetManager';
 import data from './data';
 import imageDimensionsCache from './imageDimensionsCache';
 import isWalletEmpty from './isWalletEmpty';
+import isWalletEthZero from './isWalletEthZero';
 import navigation from './navigation';
 import nonce from './nonce';
 import requests from './requests';
@@ -18,6 +19,7 @@ export default combineReducers({
   data,
   imageDimensionsCache,
   isWalletEmpty,
+  isWalletEthZero,
   navigation,
   nonce,
   requests,

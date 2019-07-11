@@ -1,11 +1,13 @@
 import { Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
+import { hasEthBalance } from '../handlers/web3';
 import {
   dataClearState,
   dataLoadState,
   dataInit,
 } from '../redux/data';
+import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import { nonceClearState } from '../redux/nonce';
 import {
   requestsLoadState,
@@ -39,6 +41,7 @@ export default Component => compose(
     nonceClearState,
     requestsClearState,
     requestsLoadState,
+    setIsWalletEthZero,
     settingsLoadState,
     settingsUpdateAccountAddress,
     uniqueTokensClearState,
@@ -101,12 +104,18 @@ export default Component => compose(
       try {
         const { isWalletBrandNew, walletAddress } = await walletInit(seedPhrase);
         ownProps.settingsUpdateAccountAddress(walletAddress, 'RAINBOWWALLET');
+        try {
+          const ethBalance = await hasEthBalance(walletAddress);
+          this.props.setIsWalletEthZero(!ethBalance);
+        } catch (error) {
+        }
         if (!isWalletBrandNew) {
           await ownProps.loadAccountData();
         }
         ownProps.initializeAccountData();
         return walletAddress;
       } catch (error) {
+        // TODO specify error states more granular
         Alert.alert('Import failed due to an invalid seed phrase. Please try again.');
         return null;
       }

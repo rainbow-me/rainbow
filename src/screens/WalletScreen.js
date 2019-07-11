@@ -42,6 +42,7 @@ class WalletScreen extends PureComponent {
     blurOpacity: PropTypes.object,
     isEmpty: PropTypes.bool.isRequired,
     isFocused: PropTypes.bool,
+    isWalletEthZero: PropTypes.bool.isRequired,
     navigation: PropTypes.object,
     onHideSplashScreen: PropTypes.func,
     refreshAccountData: PropTypes.func,
@@ -69,6 +70,7 @@ class WalletScreen extends PureComponent {
     const isNewFetchingAssets = isNewValueForPath(this.props, nextProps, 'fetchingAssets');
     const isNewFetchingUniqueTokens = isNewValueForPath(this.props, nextProps, 'fetchingUniqueTokens');
     const isNewIsEmpty = isNewValueForPath(this.props, nextProps, 'isEmpty');
+    const isNewIsWalletEthZero = isNewValueForPath(this.props, nextProps, 'isWalletEthZero');
     const isNewLanguage = isNewValueForPath(this.props, nextProps, 'language');
     const isNewSections = isNewValueForPath(this.props, nextProps, 'sections');
     const isNewShowBlur = isNewValueForPath(this.props, nextProps, 'showBlur');
@@ -102,6 +104,7 @@ class WalletScreen extends PureComponent {
     const {
       blurOpacity,
       isEmpty,
+      isWalletEthZero,
       navigation,
       refreshAccountData,
       sections,
@@ -114,10 +117,11 @@ class WalletScreen extends PureComponent {
           <ProfileHeaderButton navigation={navigation} />
           <CameraHeaderButton navigation={navigation} />
         </Header>
-        <FabWrapper disabled={isEmpty}>
+        <FabWrapper disabled={isWalletEthZero}>
           <AssetList
             fetchData={refreshAccountData}
             isEmpty={isEmpty}
+            isWalletEthZero={isWalletEthZero}
             onLayout={this.hideSpashScreen}
             sections={sections}
           />
@@ -146,6 +150,7 @@ export default compose(
   withNavigationFocus,
   withBlurTransitionProps,
   withIsWalletEmpty,
+  withIsWalletEthZero,
   withStatusBarStyle('dark-content'),
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({
