@@ -18,9 +18,19 @@ import { RecyclerListView, LayoutProvider, DataProvider } from "recyclerlistview
 import { LayoutAnimation } from 'react-native';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import FastImage from 'react-native-fast-image';
+import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
+import { colors } from '../../styles';
 
 const rowHeight = 64;
 const familyHeaderHeight = 64;
+const dividerHeight = 18;
+
+const Divider = styled.View`
+  height: 2px;
+  background-color: ${colors.lightGrey};
+  margin: 10px 19px;
+  width: 100%;
+`;
 
 class SendAssetList extends React.Component {
   enhanceRenderItem = compose(
@@ -50,7 +60,7 @@ class SendAssetList extends React.Component {
           familiesHeight += familyHeaderHeight;
         }
       }
-      const heightBelow = this.props.allAssets.length * rowHeight + familiesHeight;
+      const heightBelow = this.props.allAssets.length * rowHeight + familiesHeight + dividerHeight;
       const renderSize = familyHeaderHeight + this.props.uniqueTokens[index].data.length * rowHeight;
       const screenHeight = this.position + this.componentHeight;
       if(heightBelow + renderSize + 64 > screenHeight) {
@@ -78,6 +88,12 @@ class SendAssetList extends React.Component {
   }
 
   balancesRenderItem = item => <this.TokenItem {...item} />;
+  balancesRenderLastItem = item => {return <>
+    <this.TokenItem {...item} />
+    <Divider />
+  </>
+  };
+  
   collectiblesRenderItem = item => {
     return <View>
       <TokenFamilyHeader
@@ -115,8 +131,10 @@ class SendAssetList extends React.Component {
     FastImage.preload(imageTokens);
 
     this._layoutProvider = new LayoutProvider((i) => {
-      if (i < this.props.allAssets.length) {
+      if (i < this.props.allAssets.length - 1) {
         return 'COIN_ROW';
+      } else if (i == this.props.allAssets.length - 1) {
+        return 'COIN_ROW_LAST';
       } else {
         if (this.state.openCards[i - this.props.allAssets.length]) {
           return { type: 'COLLECTIBLE_ROW', size: this.props.uniqueTokens[i - this.props.allAssets.length].data.length + 1 };
@@ -127,13 +145,16 @@ class SendAssetList extends React.Component {
     }, (type, dim) => {
       if (type == "COIN_ROW") {
         dim.width = deviceUtils.dimensions.width;
-        dim.height = 64;
+        dim.height = rowHeight;
+      } else if (type == "COIN_ROW_LAST") {
+        dim.width = deviceUtils.dimensions.width;
+        dim.height = rowHeight + dividerHeight;
       } else if (type.type == "COLLECTIBLE_ROW") {
         dim.width = deviceUtils.dimensions.width;
-        dim.height = type.size * 64;
+        dim.height = type.size * familyHeaderHeight;
       } else if (type == "COLLECTIBLE_ROW_CLOSED") {
         dim.width = deviceUtils.dimensions.width;
-        dim.height = 64;
+        dim.height = familyHeaderHeight;
       } else {
         dim.width = 0;
         dim.height = 0;
@@ -145,6 +166,8 @@ class SendAssetList extends React.Component {
   _renderRow(type, data) {
     if (type == "COIN_ROW") {
       return this.balancesRenderItem(data);
+    } if (type == "COIN_ROW_LAST") {
+      return this.balancesRenderLastItem(data);
     } else if (type.type == "COLLECTIBLE_ROW") {
       return this.collectiblesRenderItem(data);
     } else if (type == "COLLECTIBLE_ROW_CLOSED") {
