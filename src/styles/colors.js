@@ -35,7 +35,7 @@ const base = {
   orange: '#f6851b', // '246, 133, 27'
   orangeLight: '#FFAF24', // '255, 175, 36'
   orangeMedium: '#FCA247', // '252, 162, 71'
-  paleBlue: '#5D9DF6',
+  paleBlue: '#579DFF',
   placeholder: '#C4C6CB', // 196, 198, 203
   primaryBlue: '#5d9df6', // '93, 157, 246'
   primaryGreen: '#139E74', // '19, 158, 116'

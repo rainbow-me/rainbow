@@ -26,7 +26,7 @@ const CameraHeaderButton = ({ onPress }) => (
         <Icon
           color={colors.white}
           name="camera"
-          style={{ marginBottom: 2, maxWidth: 19 }}
+          style={{ marginBottom: 1, maxWidth: 18 }}
         />
       </Centered>
     </ShadowStack>
