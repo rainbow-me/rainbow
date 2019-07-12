@@ -14,7 +14,11 @@ import { FadeInAnimation } from '../components/animations';
 import { AssetList } from '../components/asset-list';
 import BlurOverlay from '../components/BlurOverlay';
 import { FabWrapper } from '../components/fab';
-import { CameraHeaderButton, Header, ProfileHeaderButton } from '../components/header';
+import {
+  CameraHeaderButton,
+  Header,
+  ProfileHeaderButton,
+} from '../components/header';
 import { Page } from '../components/layout';
 import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import {

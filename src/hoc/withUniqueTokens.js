@@ -1,4 +1,4 @@
-import { groupBy } from 'lodash';
+import { groupBy, sortBy } from 'lodash';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { sendableUniqueTokensSelector } from './uniqueTokenSelectors';
@@ -28,6 +28,7 @@ const sendableUniqueTokens = (state) => {
     };
     sendableTokens.push(newObject);
   };
+  sendableTokens = sortBy(sendableTokens, ['name']);
   return { sendableUniqueTokens: sendableTokens};
 }
 
