@@ -124,6 +124,9 @@ class RecyclerAssetList extends PureComponent {
   rlv = React.createRef();
 
   position = 0;
+  contentSize = 0;
+  layoutMeasurement = 0;
+  refresh = false;
 
   constructor(props) {
     super(props);
@@ -249,6 +252,16 @@ class RecyclerAssetList extends PureComponent {
       headersIndices,
       length: items.length,
     };
+  }
+
+  shouldComponentUpdate = (prev, next) => {
+    if(prev.openFamilyTabs !== this.props.openFamilyTabs) {
+      return true;
+    } else if (this.contentSize - this.layoutMeasurement < this.position && this.position !== 0 && this.position !== 60.5) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   componentDidMount = () => {
@@ -387,6 +400,7 @@ class RecyclerAssetList extends PureComponent {
   render() {
     const { hideHeader, renderAheadOffset, ...props } = this.props;
     const { dataProvider, headersIndices } = this.state;
+    console.log('rerender');
 
     return (
       <Wrapper>
@@ -401,9 +415,15 @@ class RecyclerAssetList extends PureComponent {
             itemAnimator={layoutItemAnimator}
             rowRenderer={this.rowRenderer}
             onScroll={(event, _offsetX, offsetY) => {
+              this.position = offsetY;
+              if(this.contentSize !== event.nativeEvent.contentSize.height) {
+                this.contentSize = event.nativeEvent.contentSize.height;
+              }
+              if(this.layoutMeasurement !== event.nativeEvent.layoutMeasurement.height) {
+                this.layoutMeasurement = event.nativeEvent.layoutMeasurement.height;
+              }
               if (event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height >= offsetY && offsetY >= 0 && Math.abs(this.position - offsetY) > 4
                 || offsetY < -60 && offsetY > -62) {
-                this.position = offsetY;
                 if (this.props.scrollViewTracker) {
                   this.props.scrollViewTracker.setValue(offsetY);
                 }
