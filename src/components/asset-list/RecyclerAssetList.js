@@ -400,11 +400,18 @@ class RecyclerAssetList extends PureComponent {
             renderAheadOffset={renderAheadOffset}
             itemAnimator={layoutItemAnimator}
             rowRenderer={this.rowRenderer}
-            onScroll={event => {
-              this.position = event.nativeEvent.contentOffset.y;
-              if (this.props.scrollViewTracker) {
-                this.props.scrollViewTracker.setValue(event.nativeEvent.contentOffset.y);
+            onScroll={(event, _offsetX, offsetY) => {
+              if (event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height >= offsetY && offsetY >= 0 && Math.abs(this.position - offsetY) > 4
+                || offsetY < -60 && offsetY > -62) {
+                this.position = offsetY;
+                if (this.props.scrollViewTracker) {
+                  this.props.scrollViewTracker.setValue(offsetY);
+                }
               }
+            }}
+            scrollIndicatorInsets={{
+              bottom: safeAreaInsetValues.bottom,
+              top: hideHeader ? 0 : AssetListHeader.height,
             }}
             scrollViewProps={{
               refreshControl: this.renderRefreshControl(),
