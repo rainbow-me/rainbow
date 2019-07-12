@@ -62,7 +62,7 @@ const getRequestDisplayDetails = (payload, assets, nativeCurrency) => {
     const jsonRequest = JSON.stringify(request.message);
     return getMessageDisplayDetails(jsonRequest, timestampInMs);
   }
-  return null;
+  return {};
 };
 
 const getMessageDisplayDetails = (message, timestampInMs, type = 'message') => ({
