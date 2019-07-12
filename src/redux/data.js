@@ -202,37 +202,35 @@ const transactionsReceived = message => (dispatch, getState) => {
   if (!isValidMeta) return;
 
   let transactionData = get(message, 'payload.transactions', []);
+  if (!transactionData.length) return;
 
-  if (transactionData.length) {
-    const { accountAddress, nativeCurrency, network } = getState().settings;
-    const { transactions } = getState().data;
+  const { accountAddress, nativeCurrency, network } = getState().settings;
+  const { transactions } = getState().data;
 
-    const lastSuccessfulTxn = find(transactions, (txn) => txn.hash && !txn.pending);
-    const lastTxHash = lastSuccessfulTxn ? lastSuccessfulTxn.hash : '';
-    if (lastTxHash) {
-      const lastTxnHashIndex = findIndex(transactionData, (txn) => lastTxHash.startsWith(txn.hash));
-      if (lastTxnHashIndex > -1) {
-        transactionData = slice(transactionData, 0, lastTxnHashIndex);
-      }
-    }
-    if (!isEmpty(transactionData)) {
-      const parsedTransactions = parseTransactions(transactionData, nativeCurrency);
-
-      const partitions = partition(transactions, (txn) => txn.pending);
-      const pendingTransactions = partitions[0];
-      const remainingTransactions = partitions[1];
-
-      const updatedPendingTransactions = dedupePendingTransactions(pendingTransactions, parsedTransactions);
-      const updatedResults = concat(updatedPendingTransactions, parsedTransactions, remainingTransactions);
-      const dedupedResults = uniqBy(updatedResults, (txn) => txn.hash);
-
-      saveLocalTransactions(accountAddress, dedupedResults, network);
-      dispatch({
-        payload: dedupedResults,
-        type: DATA_UPDATE_TRANSACTIONS,
-      });
+  const lastSuccessfulTxn = find(transactions, (txn) => txn.hash && !txn.pending);
+  const lastTxHash = lastSuccessfulTxn ? lastSuccessfulTxn.hash : '';
+  if (lastTxHash) {
+    const lastTxnHashIndex = findIndex(transactionData, (txn) => lastTxHash.startsWith(txn.hash));
+    if (lastTxnHashIndex > -1) {
+      transactionData = slice(transactionData, 0, lastTxnHashIndex);
     }
   }
+  if (!transactionData.length) return;
+
+  const parsedTransactions = parseTransactions(transactionData, nativeCurrency);
+  const partitions = partition(transactions, (txn) => txn.pending);
+  const pendingTransactions = partitions[0];
+  const remainingTransactions = partitions[1];
+
+  const updatedPendingTransactions = dedupePendingTransactions(pendingTransactions, parsedTransactions);
+  const updatedResults = concat(updatedPendingTransactions, parsedTransactions, remainingTransactions);
+  const dedupedResults = uniqBy(updatedResults, (txn) => txn.hash);
+
+  saveLocalTransactions(accountAddress, dedupedResults, network);
+  dispatch({
+    payload: dedupedResults,
+    type: DATA_UPDATE_TRANSACTIONS,
+  });
 };
 
 const transactionsAppended = message => (dispatch, getState) => {
@@ -240,24 +238,23 @@ const transactionsAppended = message => (dispatch, getState) => {
   if (!isValidMeta) return;
 
   const transactionData = get(message, 'payload.transactions', []);
-  if (transactionData.length) {
-    const { accountAddress, nativeCurrency, network } = getState().settings;
-    const { transactions } = getState().data;
-    const partitions = partition(transactions, (txn) => txn.pending);
-    const pendingTransactions = partitions[0];
-    const remainingTransactions = partitions[1];
+  if (!transactionData.length) return;
+  const { accountAddress, nativeCurrency, network } = getState().settings;
+  const { transactions } = getState().data;
+  const partitions = partition(transactions, (txn) => txn.pending);
+  const pendingTransactions = partitions[0];
+  const remainingTransactions = partitions[1];
 
-    const parsedTransactions = parseTransactions(transactionData, nativeCurrency);
-    const updatedPendingTransactions = dedupePendingTransactions(pendingTransactions, parsedTransactions);
-    const updatedResults = concat(updatedPendingTransactions, parsedTransactions, remainingTransactions);
-    const dedupedResults = uniqBy(updatedResults, (txn) => txn.hash);
+  const parsedTransactions = parseTransactions(transactionData, nativeCurrency);
+  const updatedPendingTransactions = dedupePendingTransactions(pendingTransactions, parsedTransactions);
+  const updatedResults = concat(updatedPendingTransactions, parsedTransactions, remainingTransactions);
+  const dedupedResults = uniqBy(updatedResults, (txn) => txn.hash);
 
-    saveLocalTransactions(accountAddress, updatedResults, network);
-    dispatch({
-      payload: dedupedResults,
-      type: DATA_UPDATE_TRANSACTIONS,
-    });
-  }
+  saveLocalTransactions(accountAddress, updatedResults, network);
+  dispatch({
+    payload: dedupedResults,
+    type: DATA_UPDATE_TRANSACTIONS,
+  });
 };
 
 const transactionsRemoved = message => (dispatch, getState) => {
@@ -265,18 +262,17 @@ const transactionsRemoved = message => (dispatch, getState) => {
   if (!isValidMeta) return;
 
   const transactionData = get(message, 'payload.transactions', []);
-  if (transactionData.length) {
-    const { accountAddress, network } = getState().settings;
-    const { transactions } = getState().data;
-    const removeHashes = map(transactionData, txn => txn.hash);
-    remove(transactions, (txn) => includes(removeHashes, txn.hash));
+  if (!transactionData.length) return;
+  const { accountAddress, network } = getState().settings;
+  const { transactions } = getState().data;
+  const removeHashes = map(transactionData, txn => txn.hash);
+  remove(transactions, (txn) => includes(removeHashes, txn.hash));
 
-    saveLocalTransactions(accountAddress, transactions, network);
-    dispatch({
-      payload: transactions,
-      type: DATA_UPDATE_TRANSACTIONS,
-    });
-  }
+  saveLocalTransactions(accountAddress, transactions, network);
+  dispatch({
+    payload: transactions,
+    type: DATA_UPDATE_TRANSACTIONS,
+  });
 };
 
 const assetsReceived = (message, append = false, change = false) => (dispatch, getState) => {
@@ -285,6 +281,8 @@ const assetsReceived = (message, append = false, change = false) => (dispatch, g
 
   const { accountAddress, network } = getState().settings;
   const assets = get(message, 'payload.assets', []);
+  if (!assets.length) return;
+
   const liquidityTokens = remove(assets, (asset) => {
     const symbol = get(asset, 'asset.symbol', '');
     return symbol === 'uni-v1';
