@@ -400,7 +400,6 @@ class RecyclerAssetList extends PureComponent {
   render() {
     const { hideHeader, renderAheadOffset, ...props } = this.props;
     const { dataProvider, headersIndices } = this.state;
-    console.log('rerender');
 
     return (
       <Wrapper>
@@ -422,7 +421,7 @@ class RecyclerAssetList extends PureComponent {
               if(this.layoutMeasurement !== event.nativeEvent.layoutMeasurement.height) {
                 this.layoutMeasurement = event.nativeEvent.layoutMeasurement.height;
               }
-              if (event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height >= offsetY && offsetY >= 0 && Math.abs(this.position - offsetY) > 4
+              if (event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height >= offsetY && offsetY >= 0
                 || offsetY < -60 && offsetY > -62) {
                 if (this.props.scrollViewTracker) {
                   this.props.scrollViewTracker.setValue(offsetY);
