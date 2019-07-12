@@ -54,7 +54,6 @@ class WalletScreen extends PureComponent {
 
   componentDidMount = async () => {
     try {
-      // TODO could also do a check here
       await this.props.initializeWallet();
       const showShitcoins = await getShowShitcoinsSetting();
       if (showShitcoins !== null) {

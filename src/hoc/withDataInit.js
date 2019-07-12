@@ -99,9 +99,7 @@ export default Component => compose(
       try {
         const ethBalance = await hasEthBalance(walletAddress);
         ownProps.setIsWalletEthZero(!ethBalance);
-        ownProps.onHideSplashScreen();
       } catch (error) {
-        ownProps.onHideSplashScreen();
       }
     },
   }),
@@ -112,20 +110,19 @@ export default Component => compose(
         ownProps.settingsUpdateAccountAddress(walletAddress, 'RAINBOWWALLET');
         if (isNew) {
           ownProps.setIsWalletEthZero(true);
-          ownProps.onHideSplashScreen();
         } else if (isImported) {
-          ownProps.checkEthBalance();
+          await ownProps.checkEthBalance();
         } else {
-          const isWalletEmpty = getIsWalletEmpty(walletAddress, network);
+          const isWalletEmpty = getIsWalletEmpty(walletAddress, 'mainnet');
           if (isNull(isWalletEmpty)) {
-            ownProps.checkEthBalance();
+            await ownProps.checkEthBalance();
           } else {
-          ownProps.setIsWalletEthZero(isWalletEmpty) 
-          ownProps.onHideSplashScreen();
+            ownProps.setIsWalletEthZero(isWalletEmpty) 
           }
         }
+        ownProps.onHideSplashScreen();
         if (!(isImported || isNew)) {
-          await ownProps.loadAccountData();
+          ownProps.loadAccountData();
         }
         ownProps.initializeAccountData();
         return walletAddress;
