@@ -1,12 +1,13 @@
 import { Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
+import { getIsWalletEmpty } from '../handlers/commonStorage';
 import { hasEthBalance } from '../handlers/web3';
 import {
   dataClearState,
-  dataLoadState,
-  dataInit,
+  dataLoadState, dataInit,
 } from '../redux/data';
+import { clearIsWalletEmpty, loadIsWalletEmpty } from '../redux/isWalletEmpty';
 import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import { nonceClearState } from '../redux/nonce';
 import {
@@ -53,10 +54,12 @@ export default Component => compose(
     walletConnectClearState,
     walletConnectLoadState,
   }),
+  withHideSplashScreen,
   withHandlers({
     clearAccountData: (ownProps) => async () => {
       try {
         ownProps.dataClearState();
+        ownProps.clearIsWalletEmpty();
         ownProps.uniqueTokensClearState();
         ownProps.walletConnectClearState();
         ownProps.nonceClearState();
@@ -77,14 +80,8 @@ export default Component => compose(
         await ownProps.settingsLoadState();
       } catch (error) {
       }
-      try {
-        await ownProps.uniqueTokensLoadState();
-      } catch (error) {
-      }
-      try {
-        await ownProps.dataLoadState();
-      } catch (error) {
-      }
+      ownProps.uniqueTokensLoadState();
+      ownProps.dataLoadState();
       ownProps.walletConnectLoadState();
       ownProps.uniswapLoadState();
       ownProps.requestsLoadState();
@@ -98,18 +95,36 @@ export default Component => compose(
         throw error;
       }
     },
+    checkEthBalance: (ownProps) => async () => {
+      try {
+        const ethBalance = await hasEthBalance(walletAddress);
+        ownProps.setIsWalletEthZero(!ethBalance);
+        ownProps.onHideSplashScreen();
+      } catch (error) {
+        ownProps.onHideSplashScreen();
+      }
+    },
   }),
   withHandlers({
     initializeWallet: (ownProps) => async (seedPhrase) => {
       try {
-        const { isWalletBrandNew, walletAddress } = await walletInit(seedPhrase);
+        const { isImported, isNew, walletAddress } = await walletInit(seedPhrase);
         ownProps.settingsUpdateAccountAddress(walletAddress, 'RAINBOWWALLET');
-        try {
-          const ethBalance = await hasEthBalance(walletAddress);
-          this.props.setIsWalletEthZero(!ethBalance);
-        } catch (error) {
+        if (isNew) {
+          ownProps.setIsWalletEthZero(true);
+          ownProps.onHideSplashScreen();
+        } else if (isImported) {
+          ownProps.checkEthBalance();
+        } else {
+          const isWalletEmpty = getIsWalletEmpty(walletAddress, network);
+          if (isNull(isWalletEmpty)) {
+            ownProps.checkEthBalance();
+          } else {
+          ownProps.setIsWalletEthZero(isWalletEmpty) 
+          ownProps.onHideSplashScreen();
+          }
         }
-        if (!isWalletBrandNew) {
+        if (!(isImported || isNew)) {
           await ownProps.loadAccountData();
         }
         ownProps.initializeAccountData();

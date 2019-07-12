@@ -14,7 +14,6 @@ const AssetList = ({
   fetchData,
   hideHeader,
   isEmpty,
-  isWalletEthZero,
   sections,
   ...props
 }) => (

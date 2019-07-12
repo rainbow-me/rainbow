@@ -14,8 +14,6 @@ import {
   uniqBy,
 } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
-import io from 'socket.io-client';
-import { parseAccountAssets } from '../parsers/accounts';
 import {
   getAssets,
   getLocalTransactions,
@@ -24,11 +22,13 @@ import {
   saveAssets,
   saveLocalTransactions,
 } from '../handlers/commonStorage';
+import { setIsWalletEmpty } from '../isWalletEmpty';
+import io from 'socket.io-client'; import { parseAccountAssets } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
-import { uniswapAddLiquidityTokens, uniswapUpdateLiquidityTokens } from './uniswap';
 import { getFamilies } from '../parsers/uniqueTokens';
 import { isLowerCaseMatch } from '../utils';
+import { uniswapAddLiquidityTokens, uniswapUpdateLiquidityTokens } from './uniswap';
 
 // -- Constants --------------------------------------- //
 
@@ -203,6 +203,7 @@ const transactionsReceived = message => (dispatch, getState) => {
 
   let transactionData = get(message, 'payload.transactions', []);
   if (!transactionData.length) return;
+  setIsWalletEmpty(false);
 
   const { accountAddress, nativeCurrency, network } = getState().settings;
   const { transactions } = getState().data;
@@ -241,6 +242,9 @@ const transactionsAppended = message => (dispatch, getState) => {
   if (!transactionData.length) return;
   const { accountAddress, nativeCurrency, network } = getState().settings;
   const { transactions } = getState().data;
+  if (isEmpty(transactions)) {
+    setIsWalletEmpty(false);
+  }
   const partitions = partition(transactions, (txn) => txn.pending);
   const pendingTransactions = partitions[0];
   const remainingTransactions = partitions[1];

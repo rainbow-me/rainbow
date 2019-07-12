@@ -25,7 +25,6 @@ import {
   withAccountSettings,
   withBlurTransitionProps,
   withDataInit,
-  withHideSplashScreen,
   withIsWalletEmpty,
   withUniqueTokens,
   withStatusBarStyle,
@@ -40,11 +39,11 @@ class WalletScreen extends PureComponent {
     assets: PropTypes.array,
     assetsTotal: PropTypes.object,
     blurOpacity: PropTypes.object,
-    isEmpty: PropTypes.bool.isRequired,
+    initializeWallet: PropTypes.func,
     isFocused: PropTypes.bool,
+    isWalletEmpty: PropTypes.bool.isRequired,
     isWalletEthZero: PropTypes.bool.isRequired,
     navigation: PropTypes.object,
-    onHideSplashScreen: PropTypes.func,
     refreshAccountData: PropTypes.func,
     sections: PropTypes.array,
     setSafeTimeout: PropTypes.func,
@@ -55,6 +54,8 @@ class WalletScreen extends PureComponent {
 
   componentDidMount = async () => {
     try {
+      // TODO could also do a check here
+      await this.props.initializeWallet();
       const showShitcoins = await getShowShitcoinsSetting();
       if (showShitcoins !== null) {
         this.props.toggleShowShitcoins(showShitcoins);
@@ -69,7 +70,7 @@ class WalletScreen extends PureComponent {
     const isNewCurrency = isNewValueForPath(this.props, nextProps, 'nativeCurrency');
     const isNewFetchingAssets = isNewValueForPath(this.props, nextProps, 'fetchingAssets');
     const isNewFetchingUniqueTokens = isNewValueForPath(this.props, nextProps, 'fetchingUniqueTokens');
-    const isNewIsEmpty = isNewValueForPath(this.props, nextProps, 'isEmpty');
+    const isNewIsWalletEmpty = isNewValueForPath(this.props, nextProps, 'isWalletEmpty');
     const isNewIsWalletEthZero = isNewValueForPath(this.props, nextProps, 'isWalletEthZero');
     const isNewLanguage = isNewValueForPath(this.props, nextProps, 'language');
     const isNewSections = isNewValueForPath(this.props, nextProps, 'sections');
@@ -85,7 +86,8 @@ class WalletScreen extends PureComponent {
 
     return isNewFetchingAssets
     || isNewFetchingUniqueTokens
-    || isNewIsEmpty
+    || isNewIsWalletEmpty
+    || isNewIsWalletEthZero
     || isNewLanguage
     || isNewCurrency
     || isNewBlurOpacity
@@ -95,15 +97,10 @@ class WalletScreen extends PureComponent {
     || isNewShowBlur;
   }
 
-  hideSpashScreen = () => {
-    const { onHideSplashScreen, setSafeTimeout } = this.props;
-    setSafeTimeout(onHideSplashScreen, 200);
-  }
-
   render = () => {
     const {
       blurOpacity,
-      isEmpty,
+      isWalletEmpty,
       isWalletEthZero,
       navigation,
       refreshAccountData,
@@ -120,9 +117,8 @@ class WalletScreen extends PureComponent {
         <FabWrapper disabled={isWalletEthZero}>
           <AssetList
             fetchData={refreshAccountData}
-            isEmpty={isEmpty}
+            isEmpty={isWalletEmpty}
             isWalletEthZero={isWalletEthZero}
-            onLayout={this.hideSpashScreen}
             sections={sections}
           />
         </FabWrapper>
@@ -144,7 +140,6 @@ export default compose(
   withAccountSettings,
   withDataInit,
   withUniswapLiquidity,
-  withHideSplashScreen,
   withSafeTimeout,
   withNavigation,
   withNavigationFocus,

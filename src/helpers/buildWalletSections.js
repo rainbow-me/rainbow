@@ -16,7 +16,6 @@ const assetsTotalSelector = state => state.assetsTotal;
 const languageSelector = state => state.language;
 const nativeCurrencySelector = state => state.nativeCurrency;
 const onToggleShowShitcoinsSelector = state => state.onToggleShowShitcoins;
-const setIsWalletEmptySelector = state => state.setIsWalletEmpty;
 const shitcoinsCountSelector = state => state.shitcoinsCount;
 const showShitcoinsSelector = state => state.showShitcoins;
 const uniqueTokensSelector = state => state.uniqueTokens;
@@ -59,7 +58,6 @@ const buildWalletSections = (
   language,
   nativeCurrency,
   onToggleShowShitcoins,
-  setIsWalletEmpty,
   shitcoinsCount,
   showShitcoins,
   uniqueTokens = [],
@@ -118,15 +116,8 @@ const buildWalletSections = (
       ],
     };
   }
-
   const filteredSections = filterWalletSections(sections);
-  const isEmpty = !filteredSections.length;
-
-  // Save wallet empty status to state
-  setIsWalletEmpty(isEmpty);
-
   return {
-    isEmpty,
     sections: filteredSections,
   };
 };
@@ -140,7 +131,6 @@ export default createSelector(
     languageSelector,
     nativeCurrencySelector,
     onToggleShowShitcoinsSelector,
-    setIsWalletEmptySelector,
     shitcoinsCountSelector,
     showShitcoinsSelector,
     uniqueTokensSelector,

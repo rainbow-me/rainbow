@@ -68,6 +68,7 @@ export const removeLocal = (key = '') => {
 };
 
 const getAssetsKey = (accountAddress, network) => `assets-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+const getIsWalletEmptyKey = (accountAddress, network) => `iswalletempty-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 const getRequestsKey = (accountAddress, network) => `requests-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 const getTransactionsKey = (accountAddress, network) => `transactions-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 const getUniqueTokensKey = (accountAddress, network) => `uniquetokens-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
@@ -211,6 +212,41 @@ export const saveLocalTransactions = async (accountAddress, transactions, networ
 export const removeLocalTransactions = (accountAddress, network) => {
   const key = getTransactionsKey(accountAddress, network);
   removeLocal(key, transactionsVersion);
+};
+
+/**
+ * @desc get is wallet empty
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Boolean}
+ */
+export const getIsWalletEmpty = async (accountAddress, network) => {
+  const isWalletEmpty = await getLocal(getIsWalletEmptyKey(accountAddress, network));
+  return isWalletEmpty;
+};
+
+/**
+ * @desc save is wallet empty
+ * @param  {String}   [address]
+ * @param  {Boolean}   [isWalletEmpty]
+ * @param  {String}   [network]
+ */
+export const saveIsWalletEmpty = async (accountAddress, isWalletEmpty, network) => {
+  await saveLocal(
+    getIsWalletEmptyKey(accountAddress, network),
+    isWalletEmpty,
+  );
+};
+
+/**
+ * @desc remove is wallet empty
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const removeIsWalletEmpty = (accountAddress, network) => {
+  const key = getIsWalletEmptyKey(accountAddress, network);
+  removeLocal(key);
 };
 
 /**
