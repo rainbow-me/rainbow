@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import { compose, pure } from 'recompact';
+import { compose } from 'recompact';
 import styled from 'styled-components/primitives';
-import { withAccountSettings } from '../../hoc';
+import { withAccountSettings, withFabSendAction } from '../../hoc';
 import { colors, padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
+import Highlight from '../Highlight';
 import { Column, Row } from '../layout';
 
 const CoinRowPaddingTop = 15;
@@ -17,14 +18,13 @@ const Container = styled(Row)`
 `;
 
 const Content = styled(Column)`
-  background-color: ${colors.white};
   height: ${CoinIcon.size};
   margin-left: 10;
 `;
 
 const enhance = compose(
   withAccountSettings,
-  pure,
+  withFabSendAction,
 );
 
 const CoinRow = enhance(({
@@ -33,12 +33,13 @@ const CoinRow = enhance(({
   coinIconRender,
   containerStyles,
   contentStyles,
-  onPress,
+  highlight,
   symbol,
   topRowRender,
   ...props
 }) => (
-  <Container align="center" css={containerStyles}>
+  <Container align="center" css={containerStyles} color="red">
+    <Highlight highlight={highlight}/>
     {createElement(coinIconRender, { symbol, ...props })}
     <Content flex={1} justify="space-between" css={contentStyles}>
       <Row align="center" justify="space-between">
@@ -61,7 +62,7 @@ CoinRow.propTypes = {
   coinIconRender: PropTypes.func,
   containerStyles: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
   contentStyles: PropTypes.string,
-  onPress: PropTypes.func,
+  highlight: PropTypes.bool,
   symbol: PropTypes.string,
   topRowRender: PropTypes.func,
 };
@@ -71,5 +72,6 @@ CoinRow.defaultProps = {
 };
 
 CoinRow.height = CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom;
+
 
 export default CoinRow;

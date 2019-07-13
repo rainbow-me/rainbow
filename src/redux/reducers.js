@@ -7,7 +7,9 @@ import isWalletEmpty from './isWalletEmpty';
 import isWalletEthZero from './isWalletEthZero';
 import navigation from './navigation';
 import nonce from './nonce';
+import openFamilyTabs from './openFamilyTabs';
 import requests from './requests';
+import selectedWithFab from './selectedWithFab';
 import send from './send';
 import settings from './settings';
 import uniswap from './uniswap';
@@ -22,7 +24,9 @@ export default combineReducers({
   isWalletEthZero,
   navigation,
   nonce,
+  openFamilyTabs,
   requests,
+  selectedWithFab,
   send,
   settings,
   uniqueTokens,

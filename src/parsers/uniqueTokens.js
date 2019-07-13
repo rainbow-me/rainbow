@@ -46,6 +46,7 @@ export const parseAccountUniqueTokens = data => get(data, 'data.assets', []).map
     'wiki_link',
   ]),
   background: background_color ? `#${background_color}` : null,
+  familyImage: asset_contract.image_url,
   id: token_id,
   isNft: true,
   isSendable: (asset_contract.nft_version === '1.0'

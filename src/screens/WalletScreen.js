@@ -1,7 +1,8 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
+import Animated from 'react-native-reanimated';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
 import {
   compose,
@@ -13,7 +14,11 @@ import { FadeInAnimation } from '../components/animations';
 import { AssetList } from '../components/asset-list';
 import BlurOverlay from '../components/BlurOverlay';
 import { FabWrapper } from '../components/fab';
-import { CameraHeaderButton, Header, ProfileHeaderButton } from '../components/header';
+import {
+  CameraHeaderButton,
+  Header,
+  ProfileHeaderButton,
+} from '../components/header';
 import { Page } from '../components/layout';
 import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import {
@@ -33,7 +38,7 @@ import {
 import { colors, position } from '../styles';
 import { deviceUtils, isNewValueForPath } from '../utils';
 
-class WalletScreen extends PureComponent {
+class WalletScreen extends Component {
   static propTypes = {
     allAssetsCount: PropTypes.number,
     assets: PropTypes.array,
@@ -45,6 +50,7 @@ class WalletScreen extends PureComponent {
     isWalletEthZero: PropTypes.bool.isRequired,
     navigation: PropTypes.object,
     refreshAccountData: PropTypes.func,
+    scrollViewTracker: PropTypes.object,
     sections: PropTypes.array,
     setSafeTimeout: PropTypes.func,
     showBlur: PropTypes.bool,
@@ -103,21 +109,33 @@ class WalletScreen extends PureComponent {
       isWalletEthZero,
       navigation,
       refreshAccountData,
+      scrollViewTracker,
       sections,
       showBlur,
     } = this.props;
 
     return (
       <Page style={{ flex: 1, ...position.sizeAsObject('100%') }}>
-        <Header justify="space-between">
-          <ProfileHeaderButton navigation={navigation} />
-          <CameraHeaderButton navigation={navigation} />
-        </Header>
-        <FabWrapper disabled={isWalletEthZero}>
+        {/* Line below appears to be needed for having scrollViewTracker persistent while
+        reattaching of react subviews */}
+        <Animated.Code
+          exec={scrollViewTracker}
+        />
+        <FabWrapper
+          sections={sections}
+          disabled={isWalletEthZero}
+          scrollViewTracker={scrollViewTracker}
+        >
+          <Header justify="space-between">
+            <ProfileHeaderButton navigation={navigation} />
+            <CameraHeaderButton navigation={navigation} />
+          </Header>
           <AssetList
             fetchData={refreshAccountData}
             isEmpty={isWalletEmpty}
             isWalletEthZero={isWalletEthZero}
+            onLayout={this.hideSplashScreen}
+            scrollViewTracker={scrollViewTracker}
             sections={sections}
           />
         </FabWrapper>
@@ -163,4 +181,5 @@ export default compose(
     },
   }),
   withProps(buildWalletSectionsSelector),
+  withProps({ scrollViewTracker: new Animated.Value(0) }),
 )(WalletScreen);

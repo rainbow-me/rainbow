@@ -1,4 +1,4 @@
-import { transformPool } from '../withUniswapLiquidity'
+import { transformPool } from '../withUniswapLiquidity';
 
 test('transformPool', async () => {
   const pool = {
