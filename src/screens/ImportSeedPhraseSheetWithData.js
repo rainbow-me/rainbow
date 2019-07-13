@@ -14,7 +14,7 @@ import { Alert } from '../components/alerts';
 import { withDataInit, withIsWalletEmpty } from '../hoc';
 import { deviceUtils } from '../utils';
 import ImportSeedPhraseSheet from './ImportSeedPhraseSheet';
-import { isValidSeedPhrase as validateSeedPhrase } from '../helpers/validators';
+import { isValidSeed as validateSeed } from '../helpers/validators';
 
 const ConfirmImportAlert = onSuccess => (
   Alert({
@@ -26,7 +26,7 @@ const ConfirmImportAlert = onSuccess => (
       text: 'Cancel',
     }],
     // eslint-disable-next-line
-    message: 'Importing this seed phrase will overwrite your existing wallet. Before continuing, please make sure you’ve transferred its contents or backed up its seed phrase.',
+    message: 'Importing this private key will overwrite your existing wallet. Before continuing, please make sure you’ve transferred its contents or backed up its private key.',
     title: 'Are you sure you want to import?',
   })
 );
@@ -83,8 +83,8 @@ const ImportSeedPhraseSheetWithData = compose(
     onPressHelp: () => () => Linking.openURL('http://rainbow.me'),
   }),
   withProps(({ clipboardContents, seedPhrase }) => ({
-    isClipboardContentsValidSeedPhrase: validateSeedPhrase(clipboardContents),
-    isSeedPhraseValid: validateSeedPhrase(seedPhrase),
+    isClipboardContentsValidSeedPhrase: validateSeed(clipboardContents),
+    isSeedPhraseValid: validateSeed(seedPhrase),
   })),
   onlyUpdateForKeys([
     'isClipboardContentsValidSeedPhrase',
