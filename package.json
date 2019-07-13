@@ -46,7 +46,7 @@
     "i18next": "^17.0.3",
     "immer": "^1.7.4",
     "inherits": "^2.0.3",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "nanoid": "^2.0.3",
     "path-browserify": "0.0.0",
     "postcss": "^7.0.13",
