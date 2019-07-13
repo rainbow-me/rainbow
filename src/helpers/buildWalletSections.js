@@ -4,6 +4,7 @@ import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import { createSelector } from 'reselect';
+import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { TokenFamilyWrap } from '../components/token-family';
@@ -43,6 +44,7 @@ const UniswapCardItem = enhanceRenderItem(UniswapInvestmentCard);
 
 const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
 const tokenFamilyItem = item => <TokenFamilyWrap {...item} />;
+const balancesSkeletonRenderItem = item => <AssetListItemSkeleton {...item} />;
 const uniswapRenderItem = item => <UniswapCardItem {...item} assetType="uniswap" />;
 
 const filterWalletSections = sections => (
@@ -67,18 +69,30 @@ const buildWalletSections = (
   uniswap = [],
   uniswapTotal,
 ) => {
+  const isLoadingLooolHelloooooJin = true;
+
+  let balanceSectionData = showShitcoins ? allAssets : assets;
+
+  if (isLoadingLooolHelloooooJin) {
+    // lol im not sure if this is gonna work but basically we just want this to
+    // be an empty "item".. but im not sure exactly how the list is gonna want it formatted
+    balanceSectionData = [{}];
+  }
+
   const sections = [
     {
       balances: true,
-      data: showShitcoins ? allAssets : assets,
+      data: balanceSectionData,
       header: {
         showShitcoins,
         title: lang.t('account.tab_balances'),
-        totalItems: allAssetsCount,
+        totalItems: isLoadingLooolHelloooooJin ? 1 : allAssetsCount,
         totalValue: get(assetsTotal, 'display', ''),
       },
       name: 'balances',
-      renderItem: balancesRenderItem,
+      renderItem: isLoadingLooolHelloooooJin
+        ? balancesSkeletonRenderItem
+        : balancesRenderItem,
     },
     {
       data: uniswap,

@@ -25,6 +25,8 @@ export const web3SetHttpProvider = network => {
   web3Provider = new ethers.providers.JsonRpcProvider(replace(infuraUrl, 'network', network));
 };
 
+export const sendRpcCall = async (payload) => web3Provider.send(payload.method, payload.params);
+
 /**
  * @desc check if hex string
  * @param {String} value

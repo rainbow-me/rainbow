@@ -147,6 +147,8 @@ PODS:
     - React
   - RNCAsyncStorage (1.5.0):
     - React
+  - RNCMaskedView (0.1.1):
+    - React
   - RNDeviceInfo (2.2.2):
     - React
   - RNIOS11DeviceCheck (0.0.3):
@@ -199,6 +201,7 @@ DEPENDENCIES:
   - React/RCTWebSocket (from `../node_modules/react-native`)
   - "RNAnalytics (from `../node_modules/@segment/analytics-react-native`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
+  - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNIOS11DeviceCheck (from `../node_modules/react-native-ios11-devicecheck/ios`)
   - RNLanguages (from `../node_modules/react-native-languages`)
@@ -249,6 +252,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@segment/analytics-react-native"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-community/async-storage"
+  RNCMaskedView:
+    :path: "../node_modules/@react-native-community/masked-view"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
   RNIOS11DeviceCheck:
@@ -289,6 +294,7 @@ SPEC CHECKSUMS:
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   RNAnalytics: d110195618296fed3907830911f01cb6e9be53d0
   RNCAsyncStorage: 9436928b444c5f5361960a7eea051a697c244b68
+  RNCMaskedView: b79e193409a90bf6b5170d421684f437ff4e2278
   RNDeviceInfo: 1215084f45c1059b031c530281442dc7079ccf0a
   RNIOS11DeviceCheck: a4a545fdd08230a17a8ce7608e95038ee23a32aa
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
@@ -297,6 +303,6 @@ SPEC CHECKSUMS:
   SDWebImage: 6764b5fa0f73c203728052955dbefa2bf1f33282
   yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
 
-PODFILE CHECKSUM: 36995f140ff80c2bc171b1dba21e18a683124fe8
+PODFILE CHECKSUM: 69f9700d74876f14f6f0acf5fd33a74d47eeb2c8
 
 COCOAPODS: 1.6.1
