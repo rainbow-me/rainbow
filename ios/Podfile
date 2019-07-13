@@ -64,4 +64,6 @@ target 'Rainbow' do
   pod 'libwebp'
   pod 'RNAnalytics', :path => '../node_modules/@segment/analytics-react-native'
 
+  pod 'RNCMaskedView', :path => '../node_modules/@react-native-community/masked-view'
+
 end

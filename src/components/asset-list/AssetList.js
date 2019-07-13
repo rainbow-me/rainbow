@@ -4,7 +4,7 @@ import { onlyUpdateForKeys } from 'recompact';
 import { safeAreaInsetValues } from '../../utils';
 import { FabWrapper, FloatingActionButton } from '../fab';
 import { ListFooter } from '../list';
-import AssetListSkeleton from './AssetListSkeleton';
+import EmptyAssetList from './EmptyAssetList';
 import RecyclerAssetList from './RecyclerAssetList';
 
 const FabSizeWithPadding = FloatingActionButton.size + (FabWrapper.bottomPosition * 2);
@@ -18,7 +18,7 @@ const AssetList = ({
   ...props
 }) => (
   isEmpty
-    ? <AssetListSkeleton {...props} />
+    ? <EmptyAssetList {...props} />
     : (
       <RecyclerAssetList
         {...props}

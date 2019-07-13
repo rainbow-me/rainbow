@@ -13,12 +13,14 @@ const InterstitialOffset = AssetListHeader.height + FabWrapper.bottomPosition;
 
 const renderSkeleton = index => (
   <AssetListItemSkeleton
+    animated={false}
+    descendingOpacity={true}
     index={index}
     key={`skeleton${index}`}
   />
 );
 
-const AssetListSkeleton = (props) => (
+const EmptyAssetList = (props) => (
   <Column {...props} style={position.sizeAsObject('100%')}>
     <AssetListHeader title={lang.t('account.tab_balances')} />
     <Centered flex={1}>
@@ -30,4 +32,4 @@ const AssetListSkeleton = (props) => (
   </Column>
 );
 
-export default withNeverRerender(AssetListSkeleton);
+export default withNeverRerender(EmptyAssetList);

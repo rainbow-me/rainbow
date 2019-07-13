@@ -42,6 +42,7 @@ const base = {
   purple: '#32325d', // '50, 50, 93'
   red: '#d64b47', // '214, 75, 71'
   rowDivider: '#f9f9fa', // '249, 249, 250'
+  shimmer: '#edeef1', // '237, 238, 241'
   skeleton: '#f7f7f8', // '247, 247, 248'
   teal: '#84f8da', // '132, 248, 218'
   transparent: 'transparent',
