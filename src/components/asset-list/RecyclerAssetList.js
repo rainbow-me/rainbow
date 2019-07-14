@@ -35,8 +35,6 @@ export const ViewTypes = {
   UNIQUE_TOKEN_ROW: 3,
   UNIQUE_TOKEN_ROW_CLOSED: 4,
   UNIQUE_TOKEN_ROW_CLOSED_LAST: 5,
-  UNIQUE_TOKEN_ROW_FIRST: 8, // TODO remove
-  UNIQUE_TOKEN_ROW_LAST: 9, // TODO remove
   UNISWAP_ROW: 6,
   UNISWAP_ROW_LAST: 7,
   FOOTER: 10,
@@ -197,20 +195,8 @@ class RecyclerAssetList extends Component {
       (type, dim) => {
         dim.width = deviceUtils.dimensions.width;
         if (this.state.areSmallCollectibles
-          && (
-            type === ViewTypes.UNIQUE_TOKEN_ROW_LAST
-            || type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST
-            || type === ViewTypes.UNIQUE_TOKEN_ROW
-          )
-        ) {
+            && type === ViewTypes.UNIQUE_TOKEN_ROW) {
           dim.height = CoinRow.height;
-          if (type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST) {
-            dim.height += CollectiblesSendRow.dividerHeight;
-          } else if (type === ViewTypes.UNIQUE_TOKEN_ROW_LAST) {
-            // We want to add enough spacing below the list so that when the user scrolls to the bottom,
-            // the bottom of the list content lines up with the top of the FABs (+ padding).
-            dim.height += (props.paddingBottom || 0);
-          }
           return;
         }
         if (type.get === ViewTypes.UNIQUE_TOKEN_ROW) {
@@ -391,8 +377,6 @@ class RecyclerAssetList extends Component {
         familyId: item.familyId,
         familyImage: item.familyImage,
         familyName: item.familyName,
-        isFirstRow: type === ViewTypes.UNIQUE_TOKEN_ROW_FIRST,
-        isLastRow: type === ViewTypes.UNIQUE_TOKEN_ROW_LAST,
         item: item.tokens,
         shouldPrioritizeImageLoading: index < sections[0].data.length + 9,
         uniqueId: item.uniqueId,
@@ -423,8 +407,8 @@ class RecyclerAssetList extends Component {
               if (this.layoutMeasurement !== event.nativeEvent.layoutMeasurement.height) {
                 this.layoutMeasurement = event.nativeEvent.layoutMeasurement.height;
               }
-              if (event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height >= offsetY && offsetY >= 0
-                || offsetY < -60 && offsetY > -62) {
+              if ((event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height >= offsetY && offsetY >= 0)
+                || (offsetY < -60 && offsetY > -62)) {
                 if (this.props.scrollViewTracker) {
                   this.props.scrollViewTracker.setValue(offsetY);
                 }
