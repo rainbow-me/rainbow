@@ -20,7 +20,7 @@ const renderSkeleton = (index, isWalletEthZero) => (
   />
 );
 
-const EmptyAssetList = (isWalletEthZero, ...props) => (
+const EmptyAssetList = ({ isWalletEthZero, ...props }) => (
   <Column {...props} style={position.sizeAsObject('100%')}>
     <AssetListHeader title={lang.t('account.tab_balances')} />
     <Centered flex={1}>
