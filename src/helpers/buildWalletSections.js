@@ -51,7 +51,6 @@ const balancesSkeletonRenderItem = item =>
   <AssetListItemSkeleton
     animated={true}
     descendingOpacity={false}
-    key={`skeleton${item.index}`}
     {...item}
   />;
 const uniswapRenderItem = item => <UniswapCardItem {...item} assetType="uniswap" />;
