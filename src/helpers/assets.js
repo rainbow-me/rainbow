@@ -12,7 +12,7 @@ export const buildAssetHeaderUniqueIdentifier = ({
   title,
   totalItems,
   totalValue,
-}) => ([showShitcoins, title, totalItems, totalValue].join('_'));
+}) => (compact([showShitcoins, title, totalItems, totalValue]).join('_'));
 
 export const buildAssetUniqueIdentifier = (item) => {
   const balance = get(item, 'balance.amount', '');

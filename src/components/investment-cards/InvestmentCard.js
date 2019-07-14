@@ -73,7 +73,7 @@ InvestmentCard.propTypes = {
   containerHeight: PropTypes.number,
   gradientColors: PropTypes.arrayOf(PropTypes.string).isRequired,
   headerProps: PropTypes.shape(InvestmentCardHeader.propTypes),
-  onLayout: PropTypes.func.isRequired,
+  onLayout: PropTypes.func,
   shadows: PropTypes.arrayOf(PropTypes.array),
 };
 

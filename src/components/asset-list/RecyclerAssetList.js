@@ -62,15 +62,10 @@ const layoutItemAnimator = {
 const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
 
 const hasRowChanged = (r1, r2) => {
-  if (has(r1, 'isHeader')) {
-    const isNewShowShitcoinsValue = isNewValueForPath(r1, r2, 'showShitcoins');
-    const isNewTitle = isNewValueForPath(r1, r2, 'title');
-    const isNewTotalItems = isNewValueForPath(r1, r2, 'totalItems');
-    const isNewTotalValue = isNewValueForPath(r1, r2, 'totalValue');
-
-    return isNewShowShitcoinsValue || isNewTitle || isNewTotalItems || isNewTotalValue;
-  }
-
+  const isNewShowShitcoinsValue = isNewValueForPath(r1, r2, 'showShitcoins');
+  const isNewTitle = isNewValueForPath(r1, r2, 'title');
+  const isNewTotalItems = isNewValueForPath(r1, r2, 'totalItems');
+  const isNewTotalValue = isNewValueForPath(r1, r2, 'totalValue');
   const isNewAsset = isNewValueForPath(r1, r2, 'item.uniqueId');
   const isNewTokenFamilyId = isNewValueForPath(r1, r2, 'item.familyId');
   const isNewTokenFamilyName = isNewValueForPath(r1, r2, 'item.familyName');
@@ -87,9 +82,13 @@ const hasRowChanged = (r1, r2) => {
 
   return isNewAsset
     || isNewAssetBalance
+    || isNewShowShitcoinsValue
+    || isNewTitle
     || isNewTokenFamilyId
     || isNewTokenFamilyName
     || isNewTokenFamilySize
+    || isNewTotalItems
+    || isNewTotalValue
     || isNewUniswapPercentageOwned
     || isNewUniswapToken;
 };
@@ -381,6 +380,7 @@ class RecyclerAssetList extends Component {
       || type === ViewTypes.COIN_ROW_LAST
       || type === ViewTypes.UNISWAP_ROW
       || type === ViewTypes.UNISWAP_ROW_LAST
+      || type === ViewTypes.FOOTER
     );
 
     // TODO sections
@@ -417,10 +417,10 @@ class RecyclerAssetList extends Component {
             rowRenderer={this.rowRenderer}
             onScroll={(event, _offsetX, offsetY) => {
               this.position = offsetY;
-              if(this.contentSize !== event.nativeEvent.contentSize.height) {
+              if (this.contentSize !== event.nativeEvent.contentSize.height) {
                 this.contentSize = event.nativeEvent.contentSize.height;
               }
-              if(this.layoutMeasurement !== event.nativeEvent.layoutMeasurement.height) {
+              if (this.layoutMeasurement !== event.nativeEvent.layoutMeasurement.height) {
                 this.layoutMeasurement = event.nativeEvent.layoutMeasurement.height;
               }
               if (event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height >= offsetY && offsetY >= 0
