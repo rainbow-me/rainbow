@@ -35,6 +35,7 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>9</string>
+>>>>>>> origin/wallet-zero
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
