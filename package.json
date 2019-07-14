@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.1.0-5",
+  "version": "1.1.0-7",
   "private": true,
   "scripts": {
     "clean": "react-native-clean-project",
@@ -10,7 +10,7 @@
     "ios": "react-native run-ios --simulator='iPhone X'",
     "lint": "eslint './**/*.js'",
     "nodeify": "./node_modules/.bin/rn-nodeify --install \"crypto\" --hack",
-    "postinstall": "rn-nodeify --install --hack"
+    "postinstall": "patch-package && rn-nodeify --install --hack"
   },
   "dependencies": {
     "@hocs/omit-props": "^0.4.0",
@@ -46,10 +46,12 @@
     "i18next": "^17.0.3",
     "immer": "^1.7.4",
     "inherits": "^2.0.3",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "nanoid": "^2.0.3",
+    "patch-package": "^6.1.2",
     "path-browserify": "0.0.0",
     "postcss": "^7.0.13",
+    "postinstall-postinstall": "^2.0.0",
     "process": "^0.11.10",
     "prop-types": "^15.6.1",
     "punycode": "^1.4.1",
@@ -112,7 +114,7 @@
     "socket.io-client": "^2.2.0",
     "stream-browserify": "^1.0.0",
     "string_decoder": "^0.10.31",
-    "styled-components": "5.0.0-beta.5",
+    "styled-components": "^5.0.0-beta.8",
     "stylelint": "^10.1.0",
     "svgs": "^4.1.0",
     "timers-browserify": "^1.4.2",

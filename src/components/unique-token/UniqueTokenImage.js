@@ -69,7 +69,7 @@ UniqueTokenImage.propTypes = {
   error: PropTypes.object,
   fallbackTextColor: PropTypes.string,
   imageUrl: PropTypes.string,
-  name: PropTypes.string.isRequired,
+  name: PropTypes.string,
   onError: PropTypes.func,
   resizeMode: PropTypes.oneOf(Object.values(FastImage.resizeMode)),
 };

@@ -1,0 +1,26 @@
+diff --git a/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyHeader.js b/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyHeader.js
+index 7074f36..5e72f6e 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyHeader.js
++++ b/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyHeader.js
+@@ -60,7 +60,7 @@ var StickyHeader = /** @class */ (function (_super) {
+         return offsetY;
+     };
+     StickyHeader.prototype.hasReachedBoundary = function (offsetY, distanceFromWindow, _windowBound) {
+-        return offsetY <= distanceFromWindow;
++        return offsetY < distanceFromWindow;
+     };
+     return StickyHeader;
+ }(StickyObject_1.default));
+diff --git a/node_modules/recyclerlistview/dist/reactnative/utils/BinarySearch.js b/node_modules/recyclerlistview/dist/reactnative/utils/BinarySearch.js
+index 0ad973f..74f37c5 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/utils/BinarySearch.js
++++ b/node_modules/recyclerlistview/dist/reactnative/utils/BinarySearch.js
+@@ -74,7 +74,7 @@ var BinarySearch = /** @class */ (function () {
+     BinarySearch.findValueSmallerThanTarget = function (values, target) {
+         var low = 0;
+         var high = values.length - 1;
+-        if (target > values[high]) {
++        if (target >= values[high]) {
+             return {
+                 value: values[high],
+                 index: high,
