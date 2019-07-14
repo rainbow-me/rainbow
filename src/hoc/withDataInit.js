@@ -100,7 +100,7 @@ export default Component => compose(
         const getUniqueTokens = ownProps.uniqueTokensRefreshState();
         return Promise.all([getUniswap, getUniqueTokens]);
       } catch (error) {
-        throw error;
+        console.log('Error refreshing data', error);
       }
     },
     checkEthBalance: (ownProps) => async (walletAddress) => {
