@@ -38,6 +38,7 @@ import {
 
 export default Component => compose(
   connect(null, {
+    clearIsWalletEmpty,
     dataClearState,
     dataInit,
     dataLoadState,
@@ -59,6 +60,7 @@ export default Component => compose(
   withHideSplashScreen,
   withHandlers({
     clearAccountData: (ownProps) => async () => {
+      // TODO
       try {
         ownProps.dataClearState();
         ownProps.clearIsWalletEmpty();
@@ -68,6 +70,7 @@ export default Component => compose(
         ownProps.requestsClearState();
         ownProps.uniswapClearState();
       } catch (error) {
+        console.log('ERROR', error);
       }
     },
     initializeAccountData: (ownProps) => async () => {
@@ -82,8 +85,11 @@ export default Component => compose(
         await ownProps.settingsLoadState();
       } catch (error) {
       }
+      try {
+        await ownProps.dataLoadState();
+      } catch (error) {
+      }
       ownProps.uniqueTokensLoadState();
-      ownProps.dataLoadState();
       ownProps.walletConnectLoadState();
       ownProps.uniswapLoadState();
       ownProps.requestsLoadState();
@@ -123,10 +129,10 @@ export default Component => compose(
             ownProps.setIsWalletEthZero(isWalletEmpty) 
           }
         }
-        ownProps.onHideSplashScreen();
         if (!(isImported || isNew)) {
-          ownProps.loadAccountData();
+          await ownProps.loadAccountData();
         }
+        ownProps.onHideSplashScreen();
         ownProps.initializeAccountData();
         return walletAddress;
       } catch (error) {
