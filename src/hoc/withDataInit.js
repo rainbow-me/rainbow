@@ -101,6 +101,7 @@ export default Component => compose(
         return Promise.all([getUniswap, getUniqueTokens]);
       } catch (error) {
         console.log('Error refreshing data', error);
+        throw error;
       }
     },
     checkEthBalance: (ownProps) => async (walletAddress) => {
