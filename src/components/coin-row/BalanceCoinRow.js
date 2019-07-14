@@ -62,9 +62,16 @@ TopRow.propTypes = {
   nativeCurrencySymbol: PropTypes.string,
 };
 
-const BalanceCoinRow = ({ item, onPress, ...props }) => (
+const BalanceCoinRow = ({
+  item,
+  onPress,
+  onPressSend,
+  ...props
+}) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
     <CoinRow
+      onPress={onPress}
+      onPressSend={onPressSend}
       {...item}
       {...props}
       bottomRowRender={BottomRow}
@@ -77,6 +84,7 @@ BalanceCoinRow.propTypes = {
   item: PropTypes.object,
   nativeCurrency: PropTypes.string.isRequired,
   onPress: PropTypes.func,
+  onPressSend: PropTypes.func,
 };
 
 export default compose(
@@ -85,6 +93,11 @@ export default compose(
     onPress: ({ item, onPress }) => () => {
       if (onPress) {
         onPress(item);
+      }
+    },
+    onPressSend: ({ item, onPressSend }) => () => {
+      if (onPressSend) {
+        onPressSend(item);
       }
     },
   }),

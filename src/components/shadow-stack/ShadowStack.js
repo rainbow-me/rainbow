@@ -11,6 +11,8 @@ const ChildrenWrapper = styled.View`
   background-color: ${({ backgroundColor }) => backgroundColor || colors.transparent};
   border-radius: ${({ borderRadius }) => borderRadius};
   overflow: hidden;
+  justify-content: center;
+  align-items: center;
 `;
 
 const ShadowStackContainer = styled.View`

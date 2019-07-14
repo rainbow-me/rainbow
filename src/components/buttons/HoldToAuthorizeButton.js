@@ -52,6 +52,7 @@ const Content = styled(Centered)`
   flex-grow: 0;
   height: ${ButtonHeight};
   overflow: hidden;
+  width: 100%;
 `;
 
 const IconContainer = styled(Centered)`

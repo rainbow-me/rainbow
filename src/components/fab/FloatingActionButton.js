@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -11,10 +12,10 @@ import { ShadowStack } from '../shadow-stack';
 
 const Container = styled(Centered)`
   ${position.cover}
-  background-color: ${({ disabled }) => (disabled ? '#F6F7F9' : colors.paleBlue)};
+  background-color: ${({ disabled, greyed }) => (disabled ? '#F6F7F9' : (greyed ? colors.grey : colors.paleBlue))};
 `;
 
-const buildFabShadow = disabled => (
+export const buildFabShadow = disabled => (
   disabled
     ? []
     : [
@@ -41,6 +42,7 @@ const enhance = compose(
 const FloatingActionButton = enhance(({
   children,
   disabled,
+  greyed,
   onPress,
   onPressIn,
   onPressOut,
@@ -55,13 +57,14 @@ const FloatingActionButton = enhance(({
     onPressOut={onPressOut}
     scaleTo={0.82}
     style={style}
+    {...props}
   >
     <ShadowStack
       {...borders.buildCircleAsObject(size)}
-      backgroundColor={disabled ? '#F6F7F9' : colors.paleBlue}
-      shadows={buildFabShadow(disabled)}
+      backgroundColor={(disabled || greyed) ? '#F6F7F9' : colors.paleBlue}
+      shadows={buildFabShadow(disabled || greyed)}
     >
-      <Container {...props} disabled={disabled}>
+      <Container {...props} disabled={disabled} greyed={greyed}>
         <Fragment>
           {(typeof children === 'function')
             ? children({ size })
@@ -82,10 +85,12 @@ const FloatingActionButton = enhance(({
 FloatingActionButton.propTypes = {
   children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
   disabled: PropTypes.bool,
+  greyed: PropTypes.bool,
   onPress: PropTypes.func,
   onPressIn: PropTypes.func,
   onPressOut: PropTypes.func,
   size: PropTypes.number,
+  tapRef: PropTypes.object,
 };
 
 FloatingActionButton.size = 56;

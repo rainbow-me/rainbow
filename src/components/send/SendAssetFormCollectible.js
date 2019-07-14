@@ -18,6 +18,9 @@ const enhance = compose(
     imageDimensions: imageDimensionsCache[image_preview_url],
   })),
   withProps(({ containerHeight, containerWidth, imageDimensions }) => {
+    if(!imageDimensions) {
+      imageDimensions = {height: 512, width: 512};
+    }
     let width = deviceUtils.dimensions.width - 30;
     let height = !imageDimensions
       ? width

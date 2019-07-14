@@ -74,15 +74,15 @@ PODS:
     - React/Core (= 0.59.9)
   - react-native-blur (0.8.0):
     - React
-  - react-native-camera (2.11.0):
+  - react-native-camera (2.11.1):
     - React
-    - react-native-camera/RCT (= 2.11.0)
-    - react-native-camera/RN (= 2.11.0)
-  - react-native-camera/RCT (2.11.0):
+    - react-native-camera/RCT (= 2.11.1)
+    - react-native-camera/RN (= 2.11.1)
+  - react-native-camera/RCT (2.11.1):
     - React
-  - react-native-camera/RN (2.11.0):
+  - react-native-camera/RN (2.11.1):
     - React
-  - react-native-fast-image (6.1.0):
+  - react-native-fast-image (6.1.1):
     - React
     - SDWebImage (~> 5.0)
   - react-native-netinfo (3.2.1):
@@ -147,7 +147,7 @@ PODS:
     - React
   - RNCAsyncStorage (1.5.0):
     - React
-  - RNDeviceInfo (2.1.3):
+  - RNDeviceInfo (2.2.2):
     - React
   - RNIOS11DeviceCheck (0.0.3):
     - React
@@ -155,7 +155,7 @@ PODS:
     - React
   - RNReanimated (1.1.0):
     - React
-  - RNScreens (1.0.0-alpha.22):
+  - RNScreens (1.0.0-alpha.23):
     - React
   - SDWebImage (5.0.2):
     - SDWebImage/Core (= 5.0.2)
@@ -283,17 +283,17 @@ SPEC CHECKSUMS:
   Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
   React: a86b92f00edbe1873a63e4a212c29b7a7ad5224f
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-camera: 0d18706a9fd6d30ece4fa7c9c50fe36f484c54fa
-  react-native-fast-image: 1d2a81ae1f7443664205b5683c879ede83cc9be3
+  react-native-camera: f1fbfc336ba8ca6de5296190341d1b6022c71cff
+  react-native-fast-image: fdfc612dba58fd73136cf5efdaeb8cfcad7f63b2
   react-native-netinfo: 0da34082d2cec3100c9b5073bb217e35f1142bdd
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   RNAnalytics: d110195618296fed3907830911f01cb6e9be53d0
   RNCAsyncStorage: 9436928b444c5f5361960a7eea051a697c244b68
-  RNDeviceInfo: a67eef80ee1e68e1824f3ed3dc0ccf9e2d4fdc59
+  RNDeviceInfo: 1215084f45c1059b031c530281442dc7079ccf0a
   RNIOS11DeviceCheck: a4a545fdd08230a17a8ce7608e95038ee23a32aa
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNReanimated: 7a52c90473b5e81c13408d40d797b98387eaddde
-  RNScreens: 720a9e6968beb73e8196239801e887d8401f86ed
+  RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
   SDWebImage: 6764b5fa0f73c203728052955dbefa2bf1f33282
   yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
 

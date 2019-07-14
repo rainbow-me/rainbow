@@ -53,7 +53,7 @@ InvestmentCardPill.propTypes = {
   hideIcon: PropTypes.bool,
   reverse: PropTypes.bool,
   symbol: PropTypes.string,
-  value: PropTypes.string,
+  value: PropTypes.number,
 };
 
 export default React.memo(InvestmentCardPill);

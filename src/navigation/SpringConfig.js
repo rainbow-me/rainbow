@@ -6,10 +6,10 @@ import { reduceArrayToObject } from '../utils';
 
 const DefaultConfig = {
   damping: 42,
-  mass: 0.666, //0.3, // 0.5 is dece too // 0.6, //
+  mass: 0.666, // 0.3, // 0.5 is dece too // 0.6, //
   overshootClamping: false,
-  restDisplacementThreshold: 40, //1, //40,
-  restSpeedThreshold: 50, //80,
+  restDisplacementThreshold: 40, // 1, //40,
+  restSpeedThreshold: 50, // 80,
   stiffness: 200,
   swipeVelocityImpact: 40,
 };

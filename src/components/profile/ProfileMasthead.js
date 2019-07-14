@@ -30,7 +30,7 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
   width: 100%;
 `;
 
-const Container = styled(Centered).attrs({ direction: 'column ' })`
+const Container = styled(Centered).attrs({ direction: 'column' })`
   margin-bottom: 24;
   padding-bottom: 32;
   padding-top: 3;
