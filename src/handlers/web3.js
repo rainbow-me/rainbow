@@ -60,7 +60,7 @@ export const toHex = value => ethers.utils.hexlify(ethers.utils.bigNumberify(val
  * @return {Boolean}
  */
 export const hasEthBalance = async (address) => {
-  const weiBalance = await web3Provider.getEthBalance(address, "pending");
+  const weiBalance = await web3Provider.getBalance(address, "pending");
   return weiBalance > 0;
 };
 

@@ -221,10 +221,7 @@ export const removeLocalTransactions = (accountAddress, network) => {
  * @param  {String}   [network]
  * @return {Boolean}
  */
-export const getIsWalletEmpty = async (accountAddress, network) => {
-  const isWalletEmpty = await getLocal(getIsWalletEmptyKey(accountAddress, network));
-  return isWalletEmpty;
-};
+export const getIsWalletEmpty = async (accountAddress, network) => await getLocal(getIsWalletEmptyKey(accountAddress, network));
 
 /**
  * @desc save is wallet empty

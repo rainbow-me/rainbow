@@ -4,7 +4,7 @@ import {
   has,
 } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { LayoutAnimation, RefreshControl } from 'react-native';
 import { connect } from 'react-redux';
 import { pure } from 'recompact';
@@ -92,7 +92,7 @@ const hasRowChanged = (r1, r2) => {
     || isNewUniswapSecond;
 };
 
-class RecyclerAssetList extends PureComponent {
+class RecyclerAssetList extends Component {
   static propTypes = {
     fetchData: PropTypes.func,
     hideHeader: PropTypes.bool,

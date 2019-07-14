@@ -15,9 +15,12 @@ const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
 const assetsSelector = state => state.assets;
 const assetsTotalSelector = state => state.assetsTotal;
+const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
+const isWalletEthZeroSelector = state => state.isWalletEthZero;
 const languageSelector = state => state.language;
 const nativeCurrencySelector = state => state.nativeCurrency;
 const onToggleShowShitcoinsSelector = state => state.onToggleShowShitcoins;
+const setIsWalletEmptySelector = state => state.setIsWalletEmpty;
 const shitcoinsCountSelector = state => state.shitcoinsCount;
 const showShitcoinsSelector = state => state.showShitcoins;
 const uniqueTokensSelector = state => state.uniqueTokens;
@@ -60,23 +63,22 @@ const buildWalletSections = (
   allAssetsCount,
   assets,
   assetsTotal,
+  isBalancesSectionEmpty,
+  isWalletEthZero,
   language,
   nativeCurrency,
   onToggleShowShitcoins,
+  setIsWalletEmpty,
   shitcoinsCount,
   showShitcoins,
   uniqueTokens = [],
   uniswap = [],
   uniswapTotal,
 ) => {
-  const isLoadingLooolHelloooooJin = true;
-
   let balanceSectionData = showShitcoins ? allAssets : assets;
-
-  if (isLoadingLooolHelloooooJin) {
-    // lol im not sure if this is gonna work but basically we just want this to
-    // be an empty "item".. but im not sure exactly how the list is gonna want it formatted
-    balanceSectionData = [{}];
+  const isLoadingBalances = (!isWalletEthZero && isBalancesSectionEmpty);
+  if (isLoadingBalances) {
+    balanceSectionData = [{ index: 0 }];
   }
 
   const sections = [
@@ -86,11 +88,11 @@ const buildWalletSections = (
       header: {
         showShitcoins,
         title: lang.t('account.tab_balances'),
-        totalItems: isLoadingLooolHelloooooJin ? 1 : allAssetsCount,
+        totalItems: isLoadingBalances ? 1 : allAssetsCount,
         totalValue: get(assetsTotal, 'display', ''),
       },
       name: 'balances',
-      renderItem: isLoadingLooolHelloooooJin
+      renderItem: isLoadingBalances
         ? balancesSkeletonRenderItem
         : balancesRenderItem,
     },
@@ -149,7 +151,11 @@ const buildWalletSections = (
     }
   }
   const filteredSections = filterWalletSections(sections);
+  const isEmpty = !filteredSections.length;
+  setIsWalletEmpty(isEmpty);
+
   return {
+    isEmpty,
     sections: filteredSections,
   };
 };
@@ -160,9 +166,12 @@ export default createSelector(
     allAssetsCountSelector,
     assetsSelector,
     assetsTotalSelector,
+    isBalancesSectionEmptySelector,
+    isWalletEthZeroSelector,
     languageSelector,
     nativeCurrencySelector,
     onToggleShowShitcoinsSelector,
+    setIsWalletEmptySelector,
     shitcoinsCountSelector,
     showShitcoinsSelector,
     uniqueTokensSelector,

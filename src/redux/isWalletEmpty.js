@@ -10,7 +10,7 @@ import {
 const SET_IS_WALLET_EMPTY = 'isWalletEmpty/SET_IS_WALLET_EMPTY';
 const CLEAR_IS_WALLET_EMPTY = 'isWalletEmpty/CLEAR_IS_WALLET_EMPTY';
 
-export loadIsWalletEmpty = () => (dispatch, getState) => {
+export const loadIsWalletEmpty = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const isWalletEmpty = getIsWalletEmpty(accountAddress, network);
   if (!isNull(isWalletEmpty)) {
@@ -21,14 +21,14 @@ export loadIsWalletEmpty = () => (dispatch, getState) => {
   }
 };
 
-export const setIsWalletEmpty = payload => dispatch => (
+export const setIsWalletEmpty = payload => (dispatch, getState) => {
   dispatch({
     payload,
     type: SET_IS_WALLET_EMPTY,
   });
   const { accountAddress, network } = getState().settings;
   saveIsWalletEmpty(accountAddress, payload, network);
-);
+};
 
 export const clearIsWalletEmpty = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;

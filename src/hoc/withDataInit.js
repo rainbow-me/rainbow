@@ -1,8 +1,10 @@
+import { isNull } from 'lodash';
 import { Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
 import { getIsWalletEmpty } from '../handlers/commonStorage';
 import { hasEthBalance } from '../handlers/web3';
+import { withHideSplashScreen } from '../hoc';
 import {
   dataClearState,
   dataLoadState, dataInit,
@@ -95,11 +97,12 @@ export default Component => compose(
         throw error;
       }
     },
-    checkEthBalance: (ownProps) => async () => {
+    checkEthBalance: (ownProps) => async (walletAddress) => {
       try {
         const ethBalance = await hasEthBalance(walletAddress);
         ownProps.setIsWalletEthZero(!ethBalance);
       } catch (error) {
+        console.log('Error: Checking eth balance', error);
       }
     },
   }),
@@ -111,11 +114,11 @@ export default Component => compose(
         if (isNew) {
           ownProps.setIsWalletEthZero(true);
         } else if (isImported) {
-          await ownProps.checkEthBalance();
+          await ownProps.checkEthBalance(walletAddress);
         } else {
-          const isWalletEmpty = getIsWalletEmpty(walletAddress, 'mainnet');
+          const isWalletEmpty = await getIsWalletEmpty(walletAddress, 'mainnet');
           if (isNull(isWalletEmpty)) {
-            await ownProps.checkEthBalance();
+            await ownProps.checkEthBalance(walletAddress);
           } else {
             ownProps.setIsWalletEthZero(isWalletEmpty) 
           }

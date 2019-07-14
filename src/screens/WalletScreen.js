@@ -31,6 +31,7 @@ import {
   withBlurTransitionProps,
   withDataInit,
   withIsWalletEmpty,
+  withIsWalletEthZero,
   withUniqueTokens,
   withStatusBarStyle,
   withUniswapLiquidity,
@@ -46,7 +47,7 @@ class WalletScreen extends Component {
     blurOpacity: PropTypes.object,
     initializeWallet: PropTypes.func,
     isFocused: PropTypes.bool,
-    isWalletEmpty: PropTypes.bool.isRequired,
+    isEmpty: PropTypes.bool.isRequired,
     isWalletEthZero: PropTypes.bool.isRequired,
     navigation: PropTypes.object,
     refreshAccountData: PropTypes.func,
@@ -75,7 +76,7 @@ class WalletScreen extends Component {
     const isNewCurrency = isNewValueForPath(this.props, nextProps, 'nativeCurrency');
     const isNewFetchingAssets = isNewValueForPath(this.props, nextProps, 'fetchingAssets');
     const isNewFetchingUniqueTokens = isNewValueForPath(this.props, nextProps, 'fetchingUniqueTokens');
-    const isNewIsWalletEmpty = isNewValueForPath(this.props, nextProps, 'isWalletEmpty');
+    const isNewIsWalletEmpty = isNewValueForPath(this.props, nextProps, 'isEmpty');
     const isNewIsWalletEthZero = isNewValueForPath(this.props, nextProps, 'isWalletEthZero');
     const isNewLanguage = isNewValueForPath(this.props, nextProps, 'language');
     const isNewSections = isNewValueForPath(this.props, nextProps, 'sections');
@@ -105,7 +106,7 @@ class WalletScreen extends Component {
   render = () => {
     const {
       blurOpacity,
-      isWalletEmpty,
+      isEmpty,
       isWalletEthZero,
       navigation,
       refreshAccountData,
@@ -132,9 +133,8 @@ class WalletScreen extends Component {
           </Header>
           <AssetList
             fetchData={refreshAccountData}
-            isEmpty={isWalletEmpty}
+            isEmpty={isEmpty}
             isWalletEthZero={isWalletEthZero}
-            onLayout={this.hideSplashScreen}
             scrollViewTracker={scrollViewTracker}
             sections={sections}
           />
