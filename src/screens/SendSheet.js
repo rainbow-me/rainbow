@@ -297,8 +297,6 @@ export default compose(
   withAccountSettings,
   withDataInit,
   withHandlers({
-    fetchData: ({ refreshAccountData }) => async () => {
-      await refreshAccountData();
-    },
+    fetchData: ({ refreshAccountData }) => async () => refreshAccountData(),
   }),
 )(SendSheet);
