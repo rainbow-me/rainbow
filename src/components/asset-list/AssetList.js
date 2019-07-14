@@ -4,7 +4,7 @@ import { onlyUpdateForKeys } from 'recompact';
 import { safeAreaInsetValues } from '../../utils';
 import { FabWrapper, FloatingActionButton } from '../fab';
 import { ListFooter } from '../list';
-import AssetListSkeleton from './AssetListSkeleton';
+import EmptyAssetList from './EmptyAssetList';
 import RecyclerAssetList from './RecyclerAssetList';
 
 const FabSizeWithPadding = FloatingActionButton.size + (FabWrapper.bottomPosition * 2);
@@ -19,7 +19,7 @@ const AssetList = ({
   ...props
 }) => (
   isEmpty
-    ? <AssetListSkeleton {...props} />
+    ? <EmptyAssetList {...props} />
     : (
       <RecyclerAssetList
         scrollViewTracker={scrollViewTracker}
@@ -37,8 +37,13 @@ AssetList.propTypes = {
   fetchData: PropTypes.func.isRequired,
   hideHeader: PropTypes.bool,
   isEmpty: PropTypes.bool,
+  isWalletEthZero: PropTypes.bool,
   scrollViewTracker: PropTypes.object,
   sections: PropTypes.arrayOf(PropTypes.object),
 };
 
-export default onlyUpdateForKeys(['isEmpty', 'sections'])(AssetList);
+export default onlyUpdateForKeys([
+  'isEmpty',
+  'isWalletEthZero',
+  'sections',
+])(AssetList);

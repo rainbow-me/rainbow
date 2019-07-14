@@ -14,8 +14,6 @@ import {
   uniqBy,
 } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
-import io from 'socket.io-client';
-import { parseAccountAssets } from '../parsers/accounts';
 import {
   getAssets,
   getLocalTransactions,
@@ -24,11 +22,12 @@ import {
   saveAssets,
   saveLocalTransactions,
 } from '../handlers/commonStorage';
+import io from 'socket.io-client'; import { parseAccountAssets } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
-import { uniswapAddLiquidityTokens, uniswapUpdateLiquidityTokens } from './uniswap';
 import { getFamilies } from '../parsers/uniqueTokens';
 import { isLowerCaseMatch } from '../utils';
+import { uniswapAddLiquidityTokens, uniswapUpdateLiquidityTokens } from './uniswap';
 
 // -- Constants --------------------------------------- //
 

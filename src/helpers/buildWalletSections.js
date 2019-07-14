@@ -4,6 +4,7 @@ import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import { createSelector } from 'reselect';
+import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { TokenFamilyWrap } from '../components/token-family';
@@ -14,6 +15,8 @@ const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
 const assetsSelector = state => state.assets;
 const assetsTotalSelector = state => state.assetsTotal;
+const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
+const isWalletEthZeroSelector = state => state.isWalletEthZero;
 const languageSelector = state => state.language;
 const nativeCurrencySelector = state => state.nativeCurrency;
 const onToggleShowShitcoinsSelector = state => state.onToggleShowShitcoins;
@@ -44,6 +47,12 @@ const UniswapCardItem = enhanceRenderItem(UniswapInvestmentCard);
 
 const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
 const tokenFamilyItem = item => <TokenFamilyWrap {...item} />;
+const balancesSkeletonRenderItem = item =>
+  <AssetListItemSkeleton
+    animated={true}
+    descendingOpacity={false}
+    {...item}
+  />;
 const uniswapRenderItem = item => <UniswapCardItem {...item} assetType="uniswap" />;
 
 const filterWalletSections = sections => (
@@ -59,6 +68,8 @@ const buildWalletSections = (
   allAssetsCount,
   assets,
   assetsTotal,
+  isBalancesSectionEmpty,
+  isWalletEthZero,
   language,
   nativeCurrency,
   onToggleShowShitcoins,
@@ -69,18 +80,26 @@ const buildWalletSections = (
   uniswap = [],
   uniswapTotal,
 ) => {
+  let balanceSectionData = showShitcoins ? allAssets : assets;
+  const isLoadingBalances = (!isWalletEthZero && isBalancesSectionEmpty);
+  if (isLoadingBalances) {
+    balanceSectionData = [{ index: 0, uniqueId: 'skeleton0' }];
+  }
+
   const sections = [
     {
       balances: true,
-      data: showShitcoins ? allAssets : assets,
+      data: balanceSectionData,
       header: {
         showShitcoins,
         title: lang.t('account.tab_balances'),
-        totalItems: allAssetsCount,
+        totalItems: isLoadingBalances ? 1 : allAssetsCount,
         totalValue: get(assetsTotal, 'display', ''),
       },
       name: 'balances',
-      renderItem: balancesRenderItem,
+      renderItem: isLoadingBalances
+        ? balancesSkeletonRenderItem
+        : balancesRenderItem,
     },
     {
       data: uniswap,
@@ -136,11 +155,8 @@ const buildWalletSections = (
       };
     }
   }
-
   const filteredSections = filterWalletSections(sections);
   const isEmpty = !filteredSections.length;
-
-  // Save wallet empty status to state
   setIsWalletEmpty(isEmpty);
 
   return {
@@ -155,6 +171,8 @@ export default createSelector(
     allAssetsCountSelector,
     assetsSelector,
     assetsTotalSelector,
+    isBalancesSectionEmptySelector,
+    isWalletEthZeroSelector,
     languageSelector,
     nativeCurrencySelector,
     onToggleShowShitcoinsSelector,

@@ -4,7 +4,7 @@ import {
   has,
 } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { LayoutAnimation, RefreshControl } from 'react-native';
 import { connect } from 'react-redux';
 import { pure } from 'recompact';
@@ -62,20 +62,16 @@ const layoutItemAnimator = {
 const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
 
 const hasRowChanged = (r1, r2) => {
-  if (has(r1, 'isHeader')) {
-    const isNewShowShitcoinsValue = isNewValueForPath(r1, r2, 'showShitcoins');
-    const isNewTitle = isNewValueForPath(r1, r2, 'title');
-    const isNewTotalItems = isNewValueForPath(r1, r2, 'totalItems');
-    const isNewTotalValue = isNewValueForPath(r1, r2, 'totalValue');
-
-    return isNewShowShitcoinsValue || isNewTitle || isNewTotalItems || isNewTotalValue;
-  }
-
+  const isNewShowShitcoinsValue = isNewValueForPath(r1, r2, 'showShitcoins');
+  const isNewTitle = isNewValueForPath(r1, r2, 'title');
+  const isNewTotalItems = isNewValueForPath(r1, r2, 'totalItems');
+  const isNewTotalValue = isNewValueForPath(r1, r2, 'totalValue');
   const isNewAsset = isNewValueForPath(r1, r2, 'item.uniqueId');
-  const isNewTokenFirst = isNewValueForPath(r1, r2, 'item.tokens.[0].uniqueId');
-  const isNewTokenSecond = isNewValueForPath(r1, r2, 'item.tokens.[1].uniqueId');
-  const isNewUniswapFirst = isNewValueForPath(r1, r2, 'item.tokens.[0].percentageOwned');
-  const isNewUniswapSecond = isNewValueForPath(r1, r2, 'item.tokens.[1].percentageOwned');
+  const isNewTokenFamilyId = isNewValueForPath(r1, r2, 'item.familyId');
+  const isNewTokenFamilyName = isNewValueForPath(r1, r2, 'item.familyName');
+  const isNewTokenFamilySize = isNewValueForPath(r1, r2, 'item.childrenAmount');
+  const isNewUniswapPercentageOwned = isNewValueForPath(r1, r2, 'item.percentageOwned');
+  const isNewUniswapToken = isNewValueForPath(r1, r2, 'item.tokenSymbol');
 
   const isCollectiblesRow = has(r1, 'item.tokens') && has(r2, 'item.tokens');
   let isNewAssetBalance = false;
@@ -86,13 +82,18 @@ const hasRowChanged = (r1, r2) => {
 
   return isNewAsset
     || isNewAssetBalance
-    || isNewTokenFirst
-    || isNewTokenSecond
-    || isNewUniswapFirst
-    || isNewUniswapSecond;
+    || isNewShowShitcoinsValue
+    || isNewTitle
+    || isNewTokenFamilyId
+    || isNewTokenFamilyName
+    || isNewTokenFamilySize
+    || isNewTotalItems
+    || isNewTotalValue
+    || isNewUniswapPercentageOwned
+    || isNewUniswapToken;
 };
 
-class RecyclerAssetList extends PureComponent {
+class RecyclerAssetList extends Component {
   static propTypes = {
     fetchData: PropTypes.func,
     hideHeader: PropTypes.bool,
@@ -379,6 +380,7 @@ class RecyclerAssetList extends PureComponent {
       || type === ViewTypes.COIN_ROW_LAST
       || type === ViewTypes.UNISWAP_ROW
       || type === ViewTypes.UNISWAP_ROW_LAST
+      || type === ViewTypes.FOOTER
     );
 
     // TODO sections
@@ -415,10 +417,10 @@ class RecyclerAssetList extends PureComponent {
             rowRenderer={this.rowRenderer}
             onScroll={(event, _offsetX, offsetY) => {
               this.position = offsetY;
-              if(this.contentSize !== event.nativeEvent.contentSize.height) {
+              if (this.contentSize !== event.nativeEvent.contentSize.height) {
                 this.contentSize = event.nativeEvent.contentSize.height;
               }
-              if(this.layoutMeasurement !== event.nativeEvent.layoutMeasurement.height) {
+              if (this.layoutMeasurement !== event.nativeEvent.layoutMeasurement.height) {
                 this.layoutMeasurement = event.nativeEvent.layoutMeasurement.height;
               }
               if (event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height >= offsetY && offsetY >= 0

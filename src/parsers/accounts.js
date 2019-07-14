@@ -27,8 +27,7 @@ export const parseAccountAssets = data => {
     });
 
     assets = assets.filter(
-      asset => (asset.address === 'eth'
-        || !!Number(get(asset, 'balance.amount'))),
+      asset => !!Number(get(asset, 'balance.amount')),
     );
 
     return assets;

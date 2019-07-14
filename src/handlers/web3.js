@@ -76,6 +76,16 @@ export const toChecksumAddress = async (address) => {
 export const toHex = value => ethers.utils.hexlify(ethers.utils.bigNumberify(value));
 
 /**
+ * @desc has ETH balance
+ * @param  {String} address
+ * @return {Boolean}
+ */
+export const hasEthBalance = async (address) => {
+  const weiBalance = await web3Provider.getBalance(address, "pending");
+  return weiBalance > 0;
+};
+
+/**
  * @desc estimate gas limit
  * @param  {String} address
  * @return {Number} gas limit

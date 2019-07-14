@@ -27,19 +27,20 @@ export function generateSeedPhrase() {
 
 export const walletInit = async (seedPhrase = null) => {
   let walletAddress = null;
-  let isWalletBrandNew = false;
+  let isImported = false;
+  let isNew = false;
   if (seedPhrase) {
     walletAddress = await createWallet(seedPhrase);
-    isWalletBrandNew = true;
+    isImported = true;
   }
   if (!walletAddress) {
     walletAddress = await loadAddress();
   }
   if (!walletAddress) {
     walletAddress = await createWallet();
-    isWalletBrandNew = true;
+    isNew = true;
   }
-  return { isWalletBrandNew, walletAddress };
+  return { isImported, isNew, walletAddress };
 };
 
 export const loadWallet = async () => {
