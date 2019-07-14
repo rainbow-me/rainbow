@@ -78,6 +78,7 @@ export const uniswapAddLiquidityTokens = (newLiquidityTokens) => (dispatch, getS
 export const uniswapUpdateState = () => (dispatch, getState) => new Promise((resolve, reject) => {
   const { accountAddress, network } = getState().settings;
   const { liquidityTokens } = getState().uniswap;
+  if (isEmpty(liquidityTokens)) return;
   const exchangeContracts = map(liquidityTokens, x => get(x, 'asset.asset_code'));
 
   dispatch({ type: UNISWAP_UPDATE_REQUEST });
