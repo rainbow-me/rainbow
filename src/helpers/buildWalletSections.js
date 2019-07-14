@@ -47,7 +47,13 @@ const UniswapCardItem = enhanceRenderItem(UniswapInvestmentCard);
 
 const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
 const tokenFamilyItem = item => <TokenFamilyWrap {...item} />;
-const balancesSkeletonRenderItem = item => <AssetListItemSkeleton {...item} />;
+const balancesSkeletonRenderItem = item =>
+  <AssetListItemSkeleton
+    animated={true}
+    descendingOpacity={false}
+    key={`skeleton${item.index}`}
+    {...item}
+  />;
 const uniswapRenderItem = item => <UniswapCardItem {...item} assetType="uniswap" />;
 
 const filterWalletSections = sections => (
@@ -78,7 +84,7 @@ const buildWalletSections = (
   let balanceSectionData = showShitcoins ? allAssets : assets;
   const isLoadingBalances = (!isWalletEthZero && isBalancesSectionEmpty);
   if (isLoadingBalances) {
-    balanceSectionData = [{ index: 0 }];
+    balanceSectionData = [{ index: 0, uniqueId: 'skeleton0' }];
   }
 
   const sections = [

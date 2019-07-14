@@ -72,10 +72,11 @@ const hasRowChanged = (r1, r2) => {
   }
 
   const isNewAsset = isNewValueForPath(r1, r2, 'item.uniqueId');
-  const isNewTokenFirst = isNewValueForPath(r1, r2, 'item.tokens.[0].uniqueId');
-  const isNewTokenSecond = isNewValueForPath(r1, r2, 'item.tokens.[1].uniqueId');
-  const isNewUniswapFirst = isNewValueForPath(r1, r2, 'item.tokens.[0].percentageOwned');
-  const isNewUniswapSecond = isNewValueForPath(r1, r2, 'item.tokens.[1].percentageOwned');
+  const isNewTokenFamilyId = isNewValueForPath(r1, r2, 'item.familyId');
+  const isNewTokenFamilyName = isNewValueForPath(r1, r2, 'item.familyName');
+  const isNewTokenFamilySize = isNewValueForPath(r1, r2, 'item.childrenAmount');
+  const isNewUniswapPercentageOwned = isNewValueForPath(r1, r2, 'item.percentageOwned');
+  const isNewUniswapToken = isNewValueForPath(r1, r2, 'item.tokenSymbol');
 
   const isCollectiblesRow = has(r1, 'item.tokens') && has(r2, 'item.tokens');
   let isNewAssetBalance = false;
@@ -86,10 +87,11 @@ const hasRowChanged = (r1, r2) => {
 
   return isNewAsset
     || isNewAssetBalance
-    || isNewTokenFirst
-    || isNewTokenSecond
-    || isNewUniswapFirst
-    || isNewUniswapSecond;
+    || isNewTokenFamilyId
+    || isNewTokenFamilyName
+    || isNewTokenFamilySize
+    || isNewUniswapPercentageOwned
+    || isNewUniswapToken;
 };
 
 class RecyclerAssetList extends Component {
