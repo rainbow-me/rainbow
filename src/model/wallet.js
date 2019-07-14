@@ -132,7 +132,7 @@ const createWallet = async (seed) => {
   if (isHexStringIgnorePrefix(walletSeed)
       && addHexPrefix(walletSeed).length === 66) {
 		wallet = new ethers.Wallet(walletSeed);
-  } else if (isValidMnemonic(value)) {
+  } else if (isValidMnemonic(walletSeed)) {
     wallet = ethers.Wallet.fromMnemonic(walletSeed);
   } else {
     let hdnode = ethers.utils.HDNode.fromSeed(walletSeed);
