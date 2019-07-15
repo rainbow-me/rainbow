@@ -428,11 +428,29 @@ export const removeLocalRequests = async (address, network) => {
 
 /**
  * @desc get local contacts
- * @return {True|False}
+ * @return {Table}
  */
 export const getLocalContacts = async () => {
   const localContacts = await getLocal('localContacts');
   return localContacts ? localContacts.data : null;
+};
+
+/**
+ * @desc get local contacts
+ * @param  {String}   [address]
+ * @return {True|False}
+ */
+export const getSelectedLocalContact = async (address) => {
+  const contacts = await getLocalContacts();
+  contacts ? contacts : contacts = [];
+  console.log(contacts);
+  let localContact = false;
+  contacts.forEach(contact => {
+    if (contact.address == address) {
+      localContact = contact;
+    }
+  });
+  return localContact;
 };
 
 /**
