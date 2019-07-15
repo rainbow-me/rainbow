@@ -16,8 +16,6 @@ const {
   eq,
   interpolate,
   multiply,
-  lessThan,
-  greaterThan,
   set,
   sub,
   Value,
@@ -27,7 +25,7 @@ const NO = 0;
 const EXPANDED = 1;
 const SHEET = 2;
 
-const CURRENT_EFFECT = new Value(NO);
+const CURRENT_EFFECT = new Value(EXPANDED);
 
 const statusBarHeight = getStatusBarHeight(true);
 
@@ -54,28 +52,30 @@ export const expandStyleInterpolator = ({
   progress: { current },
   closing,
 }) => {
+  if (!current || !closing) return {};
+
   const value = getInterpolated(current);
+
+  const onOpen = and(eq(closing, 0), eq(current, 0));
+  const onClose = and(eq(closing, 1), eq(current, 1));
+
   return {
     containerStyle: {
       transform: [{
         translateY: block([
-          call([], () => {
+          cond(onOpen, call([], () => {
             store.dispatch(updateTransitionProps({
               effect: 'expanded',
               position: current,
             }));
-          }),
+            store.dispatch(updateTransitionProps({ showingModal: true }));
+          })),
+          cond(onClose, call([], () => {
+            console.log('dupa');
+            store.dispatch(updateTransitionProps({ showingModal: false }));
+          })),
           set(CURRENT_EFFECT, EXPANDED),
           set(CLOSING, closing),
-          cond(
-            eq(closing, 1),
-            cond(lessThan(value, 0.5), call([], () => {
-              store.dispatch(updateTransitionProps({ showingModal: false }));
-            })),
-            cond(greaterThan(value, 0.5), call([], () => {
-              store.dispatch(updateTransitionProps({ showingModal: true }));
-            })),
-          ),
           multiply(expand.translateY, sub(1, value)),
         ]),
       }],
@@ -90,12 +90,10 @@ export const sheetStyleInterpolator = ({
 }) => {
   if (!current || !closing || !height) return {};
 
-  store.dispatch(updateTransitionProps({
-    effect: 'sheet',
-    position: current,
-  }));
-
   const value = getInterpolated(current);
+
+  const onOpen = and(eq(closing, 0), eq(current, 0));
+  const onClose = and(eq(closing, 1), eq(current, 1));
 
   return {
     cardStyle: {
@@ -104,12 +102,17 @@ export const sheetStyleInterpolator = ({
       overflow: 'hidden',
       transform: [{
         translateY: block([
-          call([], () => {
+          cond(onOpen, call([], () => {
             store.dispatch(updateTransitionProps({
               effect: 'sheet',
               position: current,
             }));
-          }),
+            store.dispatch(updateTransitionProps({ showingModal: true }));
+          })),
+          cond(onClose, call([], () => {
+            console.log('dupa');
+            store.dispatch(updateTransitionProps({ showingModal: false }));
+          })),
           set(CURRENT_EFFECT, SHEET),
           set(CLOSING, closing),
           add(
@@ -122,7 +125,7 @@ export const sheetStyleInterpolator = ({
   };
 };
 
-export const backgroundStyleInterpolator = ({ progress: { next } }) => {
+export const backgroundStyleInterpolator = ({ progress: { current, next } }) => {
   if (!next) return {};
 
   const pick = (
