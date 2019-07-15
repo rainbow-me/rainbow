@@ -9,7 +9,13 @@ import {
   canImplyAuthentication,
 } from 'react-native-keychain';
 import * as keychain from './keychain';
-import { web3Provider } from '../handlers/web3';
+import {
+  addHexPrefix,
+  isHexString,
+  isHexStringIgnorePrefix,
+  isValidMnemonic,
+  web3Provider,
+} from '../handlers/web3';
 
 const seedPhraseKey = 'rainbowSeedPhrase';
 const privateKeyKey = 'rainbowPrivateKey';
@@ -96,7 +102,7 @@ export const signPersonalMessage = async (message, authenticationPrompt = lang.t
   try {
     const wallet = await loadWallet(authenticationPrompt);
     try {
-      return await wallet.signMessage(ethers.utils.isHexString(message) ? ethers.utils.arrayify(message) : message);
+      return await wallet.signMessage(isHexString(message) ? ethers.utils.arrayify(message) : message);
     } catch (error) {
       return null;
     }
@@ -119,11 +125,25 @@ export const loadAddress = async () => {
   }
 };
 
-const createWallet = async (seedPhrase) => {
-  const walletSeedPhrase = seedPhrase || generateSeedPhrase();
-  const wallet = ethers.Wallet.fromMnemonic(walletSeedPhrase);
-  saveWalletDetails(walletSeedPhrase, wallet.privateKey, wallet.address);
-  return wallet.address;
+const createWallet = async (seed) => {
+  // TODO better error handling
+  const walletSeed = seed || generateSeedPhrase();
+  let wallet = null;
+  if (isHexStringIgnorePrefix(walletSeed)
+      && addHexPrefix(walletSeed).length === 66) {
+		wallet = new ethers.Wallet(walletSeed);
+  } else if (isValidMnemonic(walletSeed)) {
+    wallet = ethers.Wallet.fromMnemonic(walletSeed);
+  } else {
+    let hdnode = ethers.utils.HDNode.fromSeed(walletSeed);
+    let node = hdnode.derivePath("m/44'/60'/0'/0/0");
+    wallet = new ethers.Wallet(node.privateKey);
+  }
+  if (wallet) {
+    saveWalletDetails(walletSeed, wallet.privateKey, wallet.address);
+    return wallet.address;
+  }
+  return null;
 };
 
 const saveWalletDetails = async (seedPhrase, privateKey, address) => {
