@@ -432,6 +432,7 @@ export const removeLocalRequests = async (address, network) => {
  */
 export const getLocalContacts = async () => {
   const localContacts = await getLocal('localContacts');
+  console.log(localContacts.data);
   return localContacts ? localContacts.data : null;
 };
 
@@ -443,7 +444,6 @@ export const getLocalContacts = async () => {
 export const getSelectedLocalContact = async (address) => {
   const contacts = await getLocalContacts();
   contacts ? contacts : contacts = [];
-  console.log(contacts);
   let localContact = false;
   contacts.forEach(contact => {
     if (contact.address == address) {
@@ -463,6 +463,12 @@ export const getSelectedLocalContact = async (address) => {
 export const addNewLocalContact = async (address, nickname, color) => {
   const contacts = await getLocalContacts();
   contacts ? contacts : contacts = [];
+  for (let i = 0; i < contacts.length; i++) {
+    if(contacts[i].address == address) {
+      contacts.splice(i, 1);
+      i--;
+    }
+  }
   contacts.push({
     address,
     nickname,

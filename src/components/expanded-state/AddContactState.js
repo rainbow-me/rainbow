@@ -88,6 +88,12 @@ class AddContactState extends React.PureComponent {
     };
   }
 
+  componentDidMount = () => {
+    if (this.props.contact.nickname) {
+      this.setState({ value: this.props.contact.nickname});
+    }
+  }
+
   format = (string) => (
     this.props.format
       ? this.props.format(string)
@@ -131,21 +137,22 @@ class AddContactState extends React.PureComponent {
                 placeholder={'Name'}
                 size="big"
                 textAlign={'center'}
+                value={this.state.value}
               />
               <AddressAbbreviation address={this.props.asset.to} />
               <Divider />
-              <Button 
-                backgroundColor={this.state.value.length > 0 ? colors.appleBlue : undefined} 
-                width={215} 
+              <Button
+                backgroundColor={this.state.value.length > 0 ? colors.appleBlue : undefined}
+                width={215}
                 showShadow
                 disabled={!this.state.value.length > 0}
                 onPress={this.addContact}
               >
-                Add Contact
+                {this.props.contact? `Edit Contact` : `Add Contact`}
               </Button>
               <CancelButton
-                style={{paddingTop: 11}}
-                onPress={() => {this.props.navigation.goBack()}}
+                style={{ paddingTop: 11 }}
+                onPress={() => { this.props.navigation.goBack() }}
                 text="Cancel"
               />
             </TopMenu>
@@ -172,6 +179,10 @@ export default compose(
       name,
       symbol,
       ...asset
+    },
+    contact: {
+      nickname,
+      ...contact
     },
     assets,
     nativeCurrencySymbol,
