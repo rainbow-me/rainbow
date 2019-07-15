@@ -12,8 +12,8 @@ import requests from './requests';
 import selectedWithFab from './selectedWithFab';
 import send from './send';
 import settings from './settings';
-import uniswap from './uniswap';
 import uniqueTokens from './uniqueTokens';
+import uniswap from './uniswap';
 import walletconnect from './walletconnect';
 
 export default combineReducers({

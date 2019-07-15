@@ -1,13 +1,12 @@
 import produce from 'immer';
 
 // -- Constants --------------------------------------- //
-const SET_OPEN_FAMILY_TABS = 'openFamilyTabs/SET_OPEN_FAMILY_TABS';
-const PUSH_OPEN_FAMILY_TAB = 'openFamilyTabs/PUSH_OPEN_FAMILY_TAB';
 const CLEAR_OPEN_FAMILY_TAB = 'openFamilyTabs/CLEAR_OPEN_FAMILY_TAB';
+const PUSH_OPEN_FAMILY_TAB = 'openFamilyTabs/PUSH_OPEN_FAMILY_TAB';
+const SET_OPEN_FAMILY_TABS = 'openFamilyTabs/SET_OPEN_FAMILY_TABS';
 
-export const setOpenFamilyTabs = payload => dispatch => dispatch({
-  payload,
-  type: SET_OPEN_FAMILY_TABS,
+export const clearOpenFamilyTab = () => dispatch => dispatch({
+  type: CLEAR_OPEN_FAMILY_TAB,
 });
 
 export const pushOpenFamilyTab = payload => dispatch => dispatch({
@@ -15,8 +14,9 @@ export const pushOpenFamilyTab = payload => dispatch => dispatch({
   type: PUSH_OPEN_FAMILY_TAB,
 });
 
-export const clearOpenFamilyTab = () => dispatch => dispatch({
-  type: CLEAR_OPEN_FAMILY_TAB,
+export const setOpenFamilyTabs = payload => dispatch => dispatch({
+  payload,
+  type: SET_OPEN_FAMILY_TABS,
 });
 
 // -- Reducer ----------------------------------------- //

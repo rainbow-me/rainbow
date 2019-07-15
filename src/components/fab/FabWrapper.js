@@ -11,15 +11,14 @@ const FabWrapperBottomPosition = 21;
 
 const FabWrapper = ({
   children,
+  deleteButtonTranslate,
   disabled,
   fabs,
-  ...rest
+  ...props
 }) => (
   <FlexItem>
     {children}
-    <DeleteButton
-      deleteButtonTranslate={rest.deleteButtonTranslate}
-    />
+    <DeleteButton deleteButtonTranslate={deleteButtonTranslate} />
     {!disabled && (
       <RowWithMargins
         css={`
@@ -32,7 +31,12 @@ const FabWrapper = ({
         margin={12}
         marginKey="left"
       >
-        {fabs.map(fab => createElement(fab, rest))}
+        {fabs.map(fab => (
+          createElement(fab, {
+            ...props,
+            deleteButtonTranslate,
+          })
+        ))}
       </RowWithMargins>
     )}
   </FlexItem>

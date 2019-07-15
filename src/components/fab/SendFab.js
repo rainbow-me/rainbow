@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withNavigation } from 'react-navigation';
-import { connect } from 'react-redux';
 import {
   compose,
   omitProps,
@@ -9,21 +8,13 @@ import {
   withHandlers,
   withProps,
 } from 'recompact';
-import Icon from '../icons/Icon';
+import { withFabSelection } from '../../hoc';
+import { Icon } from '../icons';
 import FloatingActionButton from './FloatingActionButton';
-import EnhancedMovable, { extraStates } from './MovableFabWrapper';
-
-
-const mapStateToProps = ({
-  selectedWithFab: {
-    selectedId,
-  },
-}) => ({
-  selectedId,
-});
+import MovableFabWrapper, { extraStates } from './MovableFabWrapper';
 
 const FloatingActionButtonWithDisabled = compose(
-  connect(mapStateToProps),
+  withFabSelection,
   withProps(({ selectedId }) => ({
     greyed: selectedId === extraStates.notSendable,
     size: FloatingActionButton.size,
@@ -41,18 +32,18 @@ const SendFab = ({
   tapRef,
   ...props
 }) => (
-  <EnhancedMovable
+  <MovableFabWrapper
     actionType="send"
     deleteButtonTranslate={deleteButtonTranslate}
-    tapRef={tapRef}
     scrollViewTracker={scrollViewTracker}
     sections={sections}
+    tapRef={tapRef}
   >
     <FloatingActionButtonWithDisabled
       disabled={disabled}
       onPress={onPress}
-      tapRef={tapRef}
       scaleTo={1.1}
+      tapRef={tapRef}
     >
       <Icon
         name="send"
@@ -63,9 +54,8 @@ const SendFab = ({
         }}
       />
     </FloatingActionButtonWithDisabled>
-  </EnhancedMovable>
+  </MovableFabWrapper>
 );
-
 
 SendFab.propTypes = {
   areas: PropTypes.array,
@@ -80,13 +70,7 @@ SendFab.propTypes = {
 
 export default compose(
   withNavigation,
-  withHandlers({
-    onPress: ({ navigation }) => () => {
-      navigation.navigate('SendSheet');
-    },
-  }),
+  withHandlers({ onPress: ({ navigation }) => () => navigation.navigate('SendSheet') }),
   onlyUpdateForKeys(['disabled', 'sections']),
-  withProps({
-    tapRef: React.createRef(),
-  }),
+  withProps({ tapRef: React.createRef() }),
 )(SendFab);
