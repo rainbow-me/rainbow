@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { LayoutAnimation, RefreshControl } from 'react-native';
 import { connect } from 'react-redux';
-import { pure } from 'recompact';
+import { compose, pure } from 'recompact';
 import {
   DataProvider,
   LayoutProvider,
@@ -28,9 +28,10 @@ import { ListFooter } from '../list';
 import { CardMargin, CardSize, RowPadding } from '../unique-token/UniqueTokenRow';
 import AssetListHeader from './AssetListHeader';
 
+/* eslint-disable sort-keys */
 export const ViewTypes = {
   HEADER: 0,
-  COIN_ROW: 1, // eslint-disable-line sort-keys
+  COIN_ROW: 1,
   COIN_ROW_LAST: 2,
   UNIQUE_TOKEN_ROW: 3,
   UNIQUE_TOKEN_ROW_CLOSED: 4,
@@ -39,6 +40,7 @@ export const ViewTypes = {
   UNISWAP_ROW_LAST: 7,
   FOOTER: 10,
 };
+/* eslint-enable sort-keys */
 
 const Wrapper = styled.View`
   flex: 1;
@@ -54,7 +56,6 @@ const layoutItemAnimator = {
   animateWillUnmount: NOOP,
   animateWillUpdate: NOOP,
 };
-
 
 // eslint-disable-next-line react/prop-types
 const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
@@ -211,9 +212,9 @@ class RecyclerAssetList extends Component {
           dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical + ListFooter.height + 7;
         } else if (type === ViewTypes.UNISWAP_ROW) {
           dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
-        } else if (type == ViewTypes.HEADER) {
+        } else if (type === ViewTypes.HEADER) {
           dim.height = this.props.hideHeader ? 0 : AssetListHeader.height;
-        } else if (type == ViewTypes.FOOTER) {
+        } else if (type === ViewTypes.FOOTER) {
           dim.height = 0;
         }
       },
@@ -241,14 +242,20 @@ class RecyclerAssetList extends Component {
     };
   }
 
-  shouldComponentUpdate = (prev, next) => {
-    if(prev.openFamilyTabs !== this.props.openFamilyTabs) {
-      return true;
-    } else if (this.contentSize - this.layoutMeasurement < this.position && this.position !== 0 && this.position !== 60.5) {
-      return false;
-    } else {
+  shouldComponentUpdate = (nextProps, nextState) => {
+    if (nextProps.openFamilyTabs !== this.props.openFamilyTabs) {
       return true;
     }
+
+    if (nextState.isRefreshing !== this.state.isRefreshing) {
+      return true;
+    }
+
+    if (this.contentSize - this.layoutMeasurement < this.position && this.position !== 0 && this.position !== 60.5) {
+      return false;
+    }
+
+    return true;
   }
 
   componentDidMount = () => {
@@ -333,16 +340,39 @@ class RecyclerAssetList extends Component {
 
   handleRefresh = () => {
     if (this.state.isRefreshing) return;
-    this.setState({ isRefreshing: true });
-    this.props.fetchData().then(() => {
-      if (!this.isCancelled) {
-        this.setState({ isRefreshing: false });
-      }
-    }).catch(error => {
-      if (!this.isCancelled) {
-        this.setState({ isRefreshing: false });
-      }
+
+    this.setState({ isRefreshing: true }, () => {
+      this.props.fetchData().then(() => {
+        if (!this.isCancelled) {
+          this.setState({ isRefreshing: false });
+        }
+      }).catch(error => {
+        if (!this.isCancelled) {
+          this.setState({ isRefreshing: false });
+        }
+      });
     });
+  };
+
+  handleScroll = ({ nativeEvent }, _, offsetY) => {
+    const { contentSize, layoutMeasurement } = nativeEvent;
+
+    this.position = offsetY;
+
+    if (this.contentSize !== contentSize.height) {
+      this.contentSize = contentSize.height;
+    }
+
+    if (this.layoutMeasurement !== layoutMeasurement.height) {
+      this.layoutMeasurement = layoutMeasurement.height;
+    }
+
+    if ((contentSize.height - layoutMeasurement.height >= offsetY && offsetY >= 0)
+      || (offsetY < -60 && offsetY > -62)) {
+      if (this.props.scrollViewTracker) {
+        this.props.scrollViewTracker.setValue(offsetY);
+      }
+    }
   };
 
   renderRefreshControl = () => (
@@ -391,29 +421,15 @@ class RecyclerAssetList extends Component {
       <Wrapper>
         <StickyContainer stickyHeaderIndices={headersIndices}>
           <RecyclerListView
-            ref={ref => { this.rlv = ref; }}
             {...props}
-            layoutProvider={this.layoutProvider}
             dataProvider={dataProvider}
             extendedState={{ headersIndices }}
-            renderAheadOffset={renderAheadOffset}
             itemAnimator={layoutItemAnimator}
+            layoutProvider={this.layoutProvider}
+            onScroll={this.handleScroll}
+            ref={ref => { this.rlv = ref; }}
+            renderAheadOffset={renderAheadOffset}
             rowRenderer={this.rowRenderer}
-            onScroll={(event, _offsetX, offsetY) => {
-              this.position = offsetY;
-              if (this.contentSize !== event.nativeEvent.contentSize.height) {
-                this.contentSize = event.nativeEvent.contentSize.height;
-              }
-              if (this.layoutMeasurement !== event.nativeEvent.layoutMeasurement.height) {
-                this.layoutMeasurement = event.nativeEvent.layoutMeasurement.height;
-              }
-              if ((event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height >= offsetY && offsetY >= 0)
-                || (offsetY < -60 && offsetY > -62)) {
-                if (this.props.scrollViewTracker) {
-                  this.props.scrollViewTracker.setValue(offsetY);
-                }
-              }
-            }}
             scrollIndicatorInsets={{
               bottom: safeAreaInsetValues.bottom,
               top: hideHeader ? 0 : AssetListHeader.height,
@@ -428,11 +444,9 @@ class RecyclerAssetList extends Component {
   }
 }
 
-const mapStateToProps = ({
-  selectedWithFab: {
-    scrollingVelocity,
-  },
-}) => ({
-  scrollingVelocity,
-});
-export default connect(mapStateToProps)(withOpenFamilyTabs(RecyclerAssetList));
+const mapStateToProps = ({ selectedWithFab: { scrollingVelocity } }) => ({ scrollingVelocity });
+
+export default compose(
+  connect(mapStateToProps),
+  withOpenFamilyTabs,
+)(RecyclerAssetList);

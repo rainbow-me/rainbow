@@ -36,6 +36,7 @@
     "console-browserify": "^1.1.0",
     "constants-browserify": "^1.0.0",
     "date-fns": "^1.29.0",
+    "delay": "^4.3.0",
     "dns.js": "^1.0.1",
     "domain-browser": "^1.2.0",
     "eth-contract-metadata": "^1.9.2",
