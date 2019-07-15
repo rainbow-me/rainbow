@@ -12,7 +12,7 @@ index 7074f36..5e72f6e 100644
      return StickyHeader;
  }(StickyObject_1.default));
 diff --git a/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyObject.js b/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyObject.js
-index 8da004f..fdafdcf 100644
+index 8da004f..417bf8c 100644
 --- a/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyObject.js
 +++ b/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyObject.js
 @@ -32,6 +32,7 @@ var StickyObject = /** @class */ (function (_super) {
@@ -46,7 +46,7 @@ index 8da004f..fdafdcf 100644
      };
      StickyObject.prototype.onScroll = function (offsetY) {
 +        const prevVisibility = this.visibility;
-+        if(offsetY < 0 && prevVisibility == true) {
++        if(offsetY < 0 && prevVisibility == true || this._smallestVisibleIndex < this.currentStickyIndex) {
 +            this.visibility = false;
 +        } else if (offsetY >= 0 && prevVisibility == false) {
 +            this.visibility = true;
