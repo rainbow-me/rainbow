@@ -71,7 +71,6 @@ export const expandStyleInterpolator = ({
             store.dispatch(updateTransitionProps({ showingModal: true }));
           })),
           cond(onClose, call([], () => {
-            console.log('dupa');
             store.dispatch(updateTransitionProps({ showingModal: false }));
           })),
           set(CURRENT_EFFECT, EXPANDED),
@@ -110,7 +109,6 @@ export const sheetStyleInterpolator = ({
             store.dispatch(updateTransitionProps({ showingModal: true }));
           })),
           cond(onClose, call([], () => {
-            console.log('dupa');
             store.dispatch(updateTransitionProps({ showingModal: false }));
           })),
           set(CURRENT_EFFECT, SHEET),

@@ -4,14 +4,14 @@ import { PasteAddressButton } from '../buttons';
 import { Icon } from '../icons';
 import { Centered, Column, Row } from '../layout';
 import { withNeverRerender } from '../../hoc';
-import transitionConfig from '../../navigation/transitions';
+import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import { colors, padding } from '../../styles';
 
 const SendEmptyState = ({ onPressPaste }) => (
   <Column
     css={`
       background-color: ${colors.white};
-      padding-bottom: ${transitionConfig.sheetVerticalOffset + 19};
+      padding-bottom: ${sheetVerticalOffset + 19};
     `}
     flex={1}
     justify="space-between"
