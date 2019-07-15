@@ -1,10 +1,10 @@
+import delay from 'delay';
 import { isNull } from 'lodash';
 import { Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
 import { getIsWalletEmpty } from '../handlers/commonStorage';
 import { hasEthBalance } from '../handlers/web3';
-import { withHideSplashScreen } from '../hoc';
 import {
   dataClearState,
   dataLoadState, dataInit,
@@ -35,6 +35,7 @@ import {
   walletConnectLoadState,
   walletConnectClearState,
 } from '../redux/walletconnect';
+import withHideSplashScreen from './withHideSplashScreen';
 
 export default Component => compose(
   connect(null, {
@@ -59,6 +60,14 @@ export default Component => compose(
   }),
   withHideSplashScreen,
   withHandlers({
+    checkEthBalance: (ownProps) => async (walletAddress) => {
+      try {
+        const ethBalance = await hasEthBalance(walletAddress);
+        ownProps.setIsWalletEthZero(!ethBalance);
+      } catch (error) {
+        console.log('Error: Checking eth balance', error);
+      }
+    },
     clearAccountData: (ownProps) => async () => {
       // TODO
       try {
@@ -78,16 +87,19 @@ export default Component => compose(
       try {
         await ownProps.uniqueTokensRefreshState();
       } catch (error) {
+        // TODO
       }
     },
     loadAccountData: (ownProps) => async () => {
       try {
         await ownProps.settingsLoadState();
       } catch (error) {
+        // TODO
       }
       try {
         await ownProps.dataLoadState();
       } catch (error) {
+        // TODO
       }
       ownProps.uniqueTokensLoadState();
       ownProps.walletConnectLoadState();
@@ -98,18 +110,15 @@ export default Component => compose(
       try {
         const getUniswap = ownProps.uniswapUpdateState();
         const getUniqueTokens = ownProps.uniqueTokensRefreshState();
-        return Promise.all([getUniswap, getUniqueTokens]);
+
+        return Promise.all([
+          delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
+          getUniswap,
+          getUniqueTokens,
+        ]);
       } catch (error) {
         console.log('Error refreshing data', error);
         throw error;
-      }
-    },
-    checkEthBalance: (ownProps) => async (walletAddress) => {
-      try {
-        const ethBalance = await hasEthBalance(walletAddress);
-        ownProps.setIsWalletEthZero(!ethBalance);
-      } catch (error) {
-        console.log('Error: Checking eth balance', error);
       }
     },
   }),
@@ -127,7 +136,7 @@ export default Component => compose(
           if (isNull(isWalletEmpty)) {
             await ownProps.checkEthBalance(walletAddress);
           } else {
-            ownProps.setIsWalletEthZero(isWalletEmpty) 
+            ownProps.setIsWalletEthZero(isWalletEmpty);
           }
         }
         if (!(isImported || isNew)) {
