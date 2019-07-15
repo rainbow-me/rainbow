@@ -21,6 +21,7 @@ import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 import { withNavigation } from 'react-navigation';
 import { abbreviations } from '../../utils';
+import { getSelectedLocalContact } from '../../handlers/commonStorage';
 
 // XXX after rebase, not sure if still needed
 const containerStyles = css`
@@ -120,10 +121,26 @@ export default compose(
   })),
   withNavigation,
   withHandlers({
-    onPressTransaction: ({ hash, item, navigation }) => () => {
+    onPressTransaction: ({ hash, item, navigation }) => async () => {
+      let headerInfo = {
+        type: "",
+        divider: "",
+        address: "",
+      }
+      headerInfo.type = item.status.charAt(0).toUpperCase() + item.status.slice(1);
+      headerInfo.divider = item.status === "sent" ? "to" : "from";
+
+      const contactAddressNumber = item.status === "sent" ? item.to : item.from;
+      const contact = await getSelectedLocalContact(contactAddressNumber);
+      if (contact) {
+        headerInfo.address = contact.nickname;
+      } else {
+        headerInfo.address = abbreviations.address(contactAddressNumber, 4, 10);
+      }
+
       if (hash) {
         showActionSheetWithOptions({
-          title: `${item.status} ${item.status === "sent" ? `to ${abbreviations.address(item.to, 4, 10)}` : `from ${abbreviations.address(item.from, 4, 10)}`} `,
+          title: `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
           cancelButtonIndex: 2,
           options: ['Add to Contacts', 'View on Etherscan', 'Cancel'],
         }, (buttonIndex) => {
