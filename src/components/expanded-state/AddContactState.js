@@ -41,7 +41,6 @@ const NameCircle = styled(View)`
   height: 60px;
   width: 60px;
   border-radius: 30px;
-  background-color: ${colors.avatar1}
   margin-bottom: 19px;
 `;
 
@@ -110,7 +109,7 @@ class AddContactState extends React.PureComponent {
   }
 
   addContact = async () => {
-    await addNewLocalContact(this.props.asset.to, this.state.value, colors.avatar1);
+    await addNewLocalContact(this.props.address, this.state.value, this.props.color);
     this.props.navigation.goBack();
   }
 
@@ -122,7 +121,7 @@ class AddContactState extends React.PureComponent {
         <Container>
           <AssetPanel>
             <TopMenu>
-              <NameCircle>
+              <NameCircle style={{backgroundColor: colors.avatarColor[this.props.color]}}>
                 <FirstLetter>
                   {this.state.value.length > 0 && this.state.value[0].toUpperCase()}
                 </FirstLetter>
@@ -139,7 +138,7 @@ class AddContactState extends React.PureComponent {
                 textAlign={'center'}
                 value={this.state.value}
               />
-              <AddressAbbreviation address={this.props.asset.to} />
+              <AddressAbbreviation address={this.props.address} />
               <Divider />
               <Button
                 backgroundColor={this.state.value.length > 0 ? colors.appleBlue : undefined}
@@ -175,7 +174,6 @@ export default compose(
   withAccountSettings,
   withProps(({
     asset: {
-      address,
       name,
       symbol,
       ...asset
@@ -184,6 +182,8 @@ export default compose(
       nickname,
       ...contact
     },
+    address,
+    color,
     assets,
     nativeCurrencySymbol,
   }) => {

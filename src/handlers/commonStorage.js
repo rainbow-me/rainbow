@@ -438,12 +438,20 @@ export const getLocalContacts = async () => {
 
 /**
  * @desc get local contacts
+ * @return {Number}
+ */
+export const getNumberOfLocalContacts = async () => {
+  const contacts = await getLocalContacts();
+  return contacts.length;
+};
+
+/**
+ * @desc get local contacts
  * @param  {String}   [address]
- * @return {True|False}
+ * @return {Object}
  */
 export const getSelectedLocalContact = async (address) => {
   const contacts = await getLocalContacts();
-  contacts ? contacts : contacts = [];
   let localContact = false;
   contacts.forEach(contact => {
     if (contact.address == address) {
@@ -457,12 +465,11 @@ export const getSelectedLocalContact = async (address) => {
  * @desc add new contact to the local contacts
  * @param  {String}   [address]
  * @param  {String}   [nickname]
- * @param  {String}   [color]
+ * @param  {Number}   [color]
  * @return {Void}
  */
 export const addNewLocalContact = async (address, nickname, color) => {
   const contacts = await getLocalContacts();
-  contacts ? contacts : contacts = [];
   for (let i = 0; i < contacts.length; i++) {
     if(contacts[i].address == address) {
       contacts.splice(i, 1);
