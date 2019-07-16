@@ -24,7 +24,7 @@ import {
 } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
-import Navigation from './navigation';
+import { Navigation } from './navigation';
 import store from './redux/store';
 import { requestsForTopic } from './redux/requests';
 import Routes from './screens/Routes';
@@ -89,11 +89,10 @@ class App extends Component {
   };
 
   async componentDidMount() {
-    await this.handleInitializeAnalytics();
-
     AppState.addEventListener('change', this.handleAppStateChange);
     Linking.addEventListener('url', this.handleOpenLinkingURL);
     await this.props.initializeWallet();
+    await this.handleInitializeAnalytics();
     firebase.notifications().getInitialNotification().then(notificationOpen => {
       if (notificationOpen) {
         const topic = get(notificationOpen, 'notification.data.topic');

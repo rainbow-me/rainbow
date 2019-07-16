@@ -6,10 +6,9 @@ import {
   createMaterialTopTabNavigator,
 } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
-import Navigation from '../navigation';
+import { Navigation } from '../navigation';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
-import { deviceUtils } from '../utils';
 import ExpandedAssetScreenWithData from './ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from './ProfileScreenWithData';
@@ -52,6 +51,16 @@ const SwipeStack = createMaterialTopTabNavigator({
   headerMode: 'none',
   initialRouteName: 'WalletScreen',
   mode: 'modal',
+  springConfig: {
+    damping: 16,
+    mass: 0.3,
+    overshootClamping: false,
+    restDisplacementThreshold: 1,
+    restSpeedThreshold: 1,
+    stiffness: 140,
+  },
+  swipeDistanceThreshold: 30,
+  swipeVelocityThreshold: 10,
   tabBarComponent: null,
 });
 
@@ -107,7 +116,8 @@ const MainNavigator = createStackNavigator({
 
 const AppContainer = createAppContainer(MainNavigator);
 
-const AppContainerWithAnalytics = () => (
+// eslint-disable-next-line react/prop-types
+const AppContainerWithAnalytics = ({ ref, screenProps }) => (
   <AppContainer
     onNavigationStateChange={(prevState, currentState, action) => {
       const { params, routeName } = Navigation.getActiveRoute(currentState);
@@ -132,9 +142,11 @@ const AppContainerWithAnalytics = () => (
           };
         }
 
-        analytics.screen(routeName, paramsToTrack);
+        return analytics.screen(routeName, paramsToTrack);
       }
     }}
+    ref={ref}
+    screenProps={screenProps}
   />
 );
 

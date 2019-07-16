@@ -30,7 +30,7 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
   width: 100%;
 `;
 
-const Container = styled(Centered).attrs({ direction: 'column ' })`
+const Container = styled(Centered).attrs({ direction: 'column' })`
   margin-bottom: 24;
   padding-bottom: 32;
   padding-top: 3;
@@ -59,6 +59,7 @@ const ProfileMasthead = ({
         <ProfileAction
           icon="copy"
           onPress={onPressCopy}
+          scaleTo={0.82}
           text="Copy"
         />
         <FloatingEmojis
@@ -71,6 +72,7 @@ const ProfileMasthead = ({
       <ProfileAction
         icon="inbox"
         onPress={onPressReceive}
+        scaleTo={0.82}
         text="Receive"
       />
     </RowWithMargins>

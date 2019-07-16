@@ -35,7 +35,7 @@ const BottomRow = ({ name, native, status }) => {
   const isSent = status === TransactionStatusTypes.sent;
 
   let balanceTextColor = colors.blueGreyLight;
-  if (isReceived) balanceTextColor = colors.primaryGreen;
+  if (isReceived) balanceTextColor = colors.limeGreen;
   if (isSent) balanceTextColor = colors.blueGreyDark;
 
   const nativeDisplay = get(native, 'display');

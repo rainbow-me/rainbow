@@ -8,13 +8,13 @@ import { H1 } from '../text';
 import ContextMenu from '../ContextMenu';
 import Divider from '../Divider';
 
-const ListHeaderHeight = 35;
+const ListHeaderHeight = 42;
 
 const Header = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
 })`
-  ${padding(0, 19)}
+  ${padding(0, 19, 3, 19)}
   background-color: ${colors.white};
   height: ${ListHeaderHeight};
   width: 100%;

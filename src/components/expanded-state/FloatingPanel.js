@@ -5,7 +5,7 @@ import { pure } from 'recompact';
 import { colors, shadow } from '../../styles';
 import { Column } from '../layout';
 
-const FloatingPanelBorderRadius = 12;
+const FloatingPanelBorderRadius = 16;
 
 export const FloatingPanelPadding = {
   x: 19,

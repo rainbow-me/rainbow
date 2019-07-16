@@ -6,11 +6,7 @@ import {
   withProps,
 } from 'recompact';
 import { createSelector } from 'reselect';
-import {
-  withAccountData,
-  withNeverRerender,
-  withUniqueTokens,
-} from '../hoc';
+import { withAccountData, withUniqueTokens } from '../hoc';
 import { deviceUtils } from '../utils';
 import ExpandedAssetScreen from './ExpandedAssetScreen';
 
@@ -36,5 +32,4 @@ export default compose(
   defaultProps(ExpandedAssetScreen.defaultProps),
   withProps(buildExpandedAssetsSelector),
   withHandlers({ onPressBackground: ({ navigation }) => () => navigation.goBack() }),
-  withNeverRerender,
 )(ExpandedAssetScreen);

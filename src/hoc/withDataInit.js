@@ -63,12 +63,11 @@ export default Component => compose(
       }
     },
     initializeAccountData: (ownProps) => async () => {
+      ownProps.dataInit();
       try {
         await ownProps.uniqueTokensRefreshState();
       } catch (error) {
-        console.log('unique tokens refresh error', error);
       }
-      ownProps.dataInit();
     },
     loadAccountData: (ownProps) => async () => {
       try {
@@ -93,6 +92,7 @@ export default Component => compose(
         const getUniqueTokens = ownProps.uniqueTokensRefreshState();
         return Promise.all([getUniswap, getUniqueTokens]);
       } catch (error) {
+        console.log('Error refreshing data', error);
         throw error;
       }
     },

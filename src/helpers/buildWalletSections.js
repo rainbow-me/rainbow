@@ -1,12 +1,14 @@
 import lang from 'i18n-js';
-import { get } from 'lodash';
+import { findIndex, get } from 'lodash';
 import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import { createSelector } from 'reselect';
 import { BalanceCoinRow } from '../components/coin-row';
-import { UniqueTokenRow } from '../components/unique-token';
+import { UniswapInvestmentCard } from '../components/investment-cards';
+import { TokenFamilyWrap } from '../components/token-family';
 import { buildUniqueTokenList } from './assets';
+import FastImage from 'react-native-fast-image';
 
 const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
@@ -19,6 +21,8 @@ const setIsWalletEmptySelector = state => state.setIsWalletEmpty;
 const shitcoinsCountSelector = state => state.shitcoinsCount;
 const showShitcoinsSelector = state => state.showShitcoins;
 const uniqueTokensSelector = state => state.uniqueTokens;
+const uniswapSelector = state => state.uniswap;
+const uniswapTotalSelector = state => state.uniswapTotal;
 
 const enhanceRenderItem = compose(
   withNavigation,
@@ -29,18 +33,26 @@ const enhanceRenderItem = compose(
         type: assetType,
       });
     },
+    onPressSend: ({ navigation }) => (asset) => {
+      navigation.navigate('SendSheet', { asset });
+    },
   }),
 );
 
 const TokenItem = enhanceRenderItem(BalanceCoinRow);
-const UniqueTokenItem = enhanceRenderItem(UniqueTokenRow);
+const UniswapCardItem = enhanceRenderItem(UniswapInvestmentCard);
 
 const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
-const collectiblesRenderItem = item => <UniqueTokenItem {...item} assetType="unique_token" />;
+const tokenFamilyItem = item => <TokenFamilyWrap {...item} />;
+const uniswapRenderItem = item => <UniswapCardItem {...item} assetType="uniswap" />;
 
-const filterWalletSections = sections => sections.filter(({ data, header }) => (
-  data ? get(header, 'totalItems') : true
-));
+const filterWalletSections = sections => (
+  sections.filter(({ data, header }) => (
+    data
+      ? get(header, 'totalItems')
+      : true
+  ))
+);
 
 const buildWalletSections = (
   allAssets,
@@ -53,7 +65,9 @@ const buildWalletSections = (
   setIsWalletEmpty,
   shitcoinsCount,
   showShitcoins,
-  uniqueTokens,
+  uniqueTokens = [],
+  uniswap = [],
+  uniswapTotal,
 ) => {
   const sections = [
     {
@@ -65,7 +79,19 @@ const buildWalletSections = (
         totalItems: allAssetsCount,
         totalValue: get(assetsTotal, 'display', ''),
       },
+      name: 'balances',
       renderItem: balancesRenderItem,
+    },
+    {
+      data: uniswap,
+      header: {
+        title: 'Investments',
+        totalItems: uniswap.length,
+        totalValue: uniswapTotal,
+      },
+      investments: true,
+      name: 'investments',
+      renderItem: uniswapRenderItem,
     },
     {
       collectibles: true,
@@ -75,24 +101,40 @@ const buildWalletSections = (
         totalItems: uniqueTokens.length,
         totalValue: '',
       },
-      renderItem: collectiblesRenderItem,
+      name: 'collectibles',
+      renderItem: tokenFamilyItem,
       type: 'big',
     },
   ];
+
+  const imageTokens = [];
+  uniqueTokens.forEach(token => {
+    if (token.image_preview_url) {
+      imageTokens.push({
+        uri: token.image_preview_url,
+        id: token.id
+      });
+    }
+  });
+
+  FastImage.preload(imageTokens);
 
   if (shitcoinsCount) {
     // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
     const destructiveButtonIndex = showShitcoins ? 0 : 99;
 
-    sections[0].header.contextMenuOptions = {
-      cancelButtonIndex: 1,
-      destructiveButtonIndex,
-      onPressActionSheet: onToggleShowShitcoins,
-      options: [
-        `${lang.t(`account.${showShitcoins ? 'hide' : 'show'}`)} ${lang.t('wallet.assets.no_price')}`,
-        lang.t('wallet.action.cancel'),
-      ],
-    };
+    const index = findIndex(sections, (section) => section.balances === true);
+    if (index > -1) {
+      sections[index].header.contextMenuOptions = {
+        cancelButtonIndex: 1,
+        destructiveButtonIndex,
+        onPressActionSheet: onToggleShowShitcoins,
+        options: [
+          `${lang.t(`account.${showShitcoins ? 'hide' : 'show'}`)} ${lang.t('wallet.assets.no_price')}`,
+          lang.t('wallet.action.cancel'),
+        ],
+      };
+    }
   }
 
   const filteredSections = filterWalletSections(sections);
@@ -120,6 +162,8 @@ export default createSelector(
     shitcoinsCountSelector,
     showShitcoinsSelector,
     uniqueTokensSelector,
+    uniswapSelector,
+    uniswapTotalSelector,
   ],
   buildWalletSections,
 );

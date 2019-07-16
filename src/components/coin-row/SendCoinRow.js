@@ -13,7 +13,7 @@ import CoinRow from './CoinRow';
 const selectedHeight = 78;
 
 const selectedStyles = css`
-  ${padding(17, 14, 19, 13)};
+  ${padding(17, 15, 19, 15)};
   height: ${selectedHeight};
 `;
 

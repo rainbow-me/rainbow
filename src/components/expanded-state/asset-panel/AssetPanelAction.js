@@ -27,7 +27,7 @@ const AssetPanelIconContainer = styled(Centered)`
   flex-grow: 0;
   flex-shrink: 0;
   height: 100%;
-  padding-bottom: 3;
+  padding-bottom: 4;
   width: 24;
 `;
 
@@ -45,14 +45,18 @@ const AssetPanelAction = ({
     <FlexItem>
       <TruncatedText
         color={color}
-        size="bmedium"
+        size="large"
+        style={{ marginBottom: 4 }}
         weight="semibold"
       >
         {label}
       </TruncatedText>
     </FlexItem>
     <AssetPanelIconContainer>
-      <AssetPanelIcon color={color} name={icon} />
+      <AssetPanelIcon
+        color={color}
+        name={icon}
+      />
     </AssetPanelIconContainer>
   </Container>
 );

@@ -103,14 +103,15 @@ export default class TransactionConfirmationScreen extends PureComponent {
       isAuthorizing={this.state.isAuthorizing}
       onLongPress={this.onLongPressSend}
     >
-      {`Hold to ${(this.props.requestType === 'message') ? 'Sign' : 'Send'}`}
+      {`Hold to ${(this.props.requestType === 'message' || this.props.requestType === 'messagePersonal') ? 'Sign' : 'Send'}`}
     </HoldToAuthorizeButton>
   )
 
   renderTransactionSection = () => {
     const { request, requestType } = this.props;
 
-    if (requestType === 'message') {
+    if (requestType === 'message'
+        || requestType === 'messagePersonal') {
       return (
         <MessageSigningSection
           message={request}
@@ -158,7 +159,7 @@ export default class TransactionConfirmationScreen extends PureComponent {
         />
         <Text
           color="white"
-          letterSpacing="loose"
+          letterSpacing="looser"
           size="h4"
           weight="semibold"
         >

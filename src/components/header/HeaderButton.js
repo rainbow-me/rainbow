@@ -1,14 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { pure } from 'recompact';
-import styled from 'styled-components/primitives';
 import { padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Flex } from '../layout';
-
-const Container = styled(Flex)`
-  ${padding(10)};
-`;
 
 const HeaderButton = ({
   children,
@@ -17,9 +12,9 @@ const HeaderButton = ({
   ...props
 }) => (
   <ButtonPressAnimation onPress={onPress} transformOrigin={transformOrigin}>
-    <Container {...props}>
+    <Flex {...props} css={padding(10)}>
       {children}
-    </Container>
+    </Flex>
   </ButtonPressAnimation>
 );
 

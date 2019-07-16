@@ -8,10 +8,10 @@ import {
   withHandlers,
   withProps,
 } from 'recompact';
-import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
-import FloatingPanels from './FloatingPanels';
 import { withAccountData, withAccountSettings } from '../../hoc';
 import { ethereumUtils } from '../../utils';
+import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
+import FloatingPanels from './FloatingPanels';
 
 const TokenExpandedState = ({
   onPressSend,
@@ -63,11 +63,11 @@ export default compose(
     };
   }),
   withHandlers({
-    onPressSend: ({ navigation, asset: { address } }) => () => {
+    onPressSend: ({ navigation, asset }) => () => {
       navigation.goBack();
 
       InteractionManager.runAfterInteractions(() => {
-        navigation.navigate('SendSheet', { asset: address });
+        navigation.navigate('SendSheet', { asset });
       });
     },
   }),

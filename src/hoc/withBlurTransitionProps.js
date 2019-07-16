@@ -17,13 +17,9 @@ const withBlurTransitionProps = ({
     inputRange: [0, 0.01, 1],
     outputRange: [0, 0.8, 1],
   });
-
   const showBlur = (effect === 'expanded') && (isTransitioning || showingModal);
 
-  return {
-    blurOpacity,
-    showBlur,
-  };
+  return { blurOpacity, showBlur };
 };
 
 const withBlurTransitionPropsSelector = createSelector(

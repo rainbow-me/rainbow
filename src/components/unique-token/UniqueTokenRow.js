@@ -6,9 +6,9 @@ import { deviceUtils } from '../../utils';
 import { Row } from '../layout';
 import UniqueTokenCard from './UniqueTokenCard';
 
-const CardMargin = 15;
-const RowPadding = 19;
-const CardSize = (deviceUtils.dimensions.width - (RowPadding * 2) - CardMargin) / 2;
+export const CardMargin = 15;
+export const RowPadding = 19;
+export const CardSize = (deviceUtils.dimensions.width - (RowPadding * 2) - CardMargin) / 2;
 
 const getHeight = (isFirstRow, isLastRow) => CardSize
   + CardMargin * (isLastRow ? 1.25 : 1)
@@ -21,6 +21,7 @@ const UniqueTokenRow = enhance(({
   isLastRow,
   item,
   onPress,
+  onPressSend,
 }) => (
   <Row
     align="center"
@@ -37,6 +38,7 @@ const UniqueTokenRow = enhance(({
         item={uniqueToken}
         key={uniqueToken.id}
         onPress={onPress}
+        onPressSend={onPressSend}
         style={{ marginLeft: (itemIndex >= 1) ? CardMargin : 0 }}
       />
     ))}
@@ -48,6 +50,7 @@ UniqueTokenRow.propTypes = {
   isLastRow: PropTypes.bool,
   item: PropTypes.array,
   onPress: PropTypes.func,
+  onPressSend: PropTypes.func,
 };
 
 UniqueTokenRow.getHeight = getHeight;
