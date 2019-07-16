@@ -5,7 +5,6 @@ import store from '../../redux/store';
 import { updateTransitionProps } from '../../redux/navigation';
 import { deviceUtils } from '../../utils';
 import { colors } from '../../styles';
-import { TransitionIOSSpec } from 'react-navigation-stack/src/TransitionConfigs/TransitionSpecs';
 
 const {
   add,
@@ -20,7 +19,6 @@ const {
   set,
   sub,
   Value,
-  SpringUtils,
 } = Animated;
 
 const NO = 0;
@@ -167,7 +165,12 @@ const backgroundStyleInterpolator = ({ progress: { current, next } }) => {
       opacity: pick(sheetOpacity, sheetOpacity, expandOpacity, expandOpacity),
     },
     containerStyle: {
-      backgroundColor: color(0, 0, 0),
+      backgroundColor: pick(
+        color(0, 0, 0),
+        color(0, 0, 0),
+        chroma(colors.blueGreyDarker).num(),
+        chroma(colors.blueGreyDarker).num(),
+      ),
     },
   };
 };
