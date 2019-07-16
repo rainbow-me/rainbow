@@ -2,5 +2,6 @@
 export { default as Button } from './Button';
 export { default as CancelButton } from './CancelButton';
 export { default as PasteAddressButton } from './PasteAddressButton';
+export { default as AddContactButton } from './AddContactButton';
 export { default as HoldToAuthorizeButton } from './HoldToAuthorizeButton';
 // export { default as LongPressButton } from './LongPressButton';
