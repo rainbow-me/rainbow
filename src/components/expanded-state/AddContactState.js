@@ -22,6 +22,7 @@ import { abbreviations } from '../../utils';
 import { CancelButton } from '../buttons';
 import {
   addNewLocalContact,
+  deleteLocalContact,
 } from '../../handlers/commonStorage';
 
 const TopMenu = styled(View)`
@@ -89,7 +90,7 @@ class AddContactState extends React.PureComponent {
 
   componentDidMount = () => {
     if (this.props.contact.nickname) {
-      this.setState({ value: this.props.contact.nickname});
+      this.setState({ value: this.props.contact.nickname });
     }
   }
 
@@ -121,7 +122,7 @@ class AddContactState extends React.PureComponent {
         <Container>
           <AssetPanel>
             <TopMenu>
-              <NameCircle style={{backgroundColor: colors.avatarColor[this.props.color]}}>
+              <NameCircle style={{ backgroundColor: colors.avatarColor[this.props.color] }}>
                 <FirstLetter>
                   {this.state.value.length > 0 && this.state.value[0].toUpperCase()}
                 </FirstLetter>
@@ -147,13 +148,20 @@ class AddContactState extends React.PureComponent {
                 disabled={!this.state.value.length > 0}
                 onPress={this.addContact}
               >
-                {this.props.contact? `Edit Contact` : `Add Contact`}
+                {this.props.contact ? `Done` : `Add Contact`}
               </Button>
-              <CancelButton
-                style={{ paddingTop: 11 }}
-                onPress={() => { this.props.navigation.goBack() }}
-                text="Cancel"
-              />
+              {!this.props.contact ?
+                <CancelButton
+                  style={{ paddingTop: 11 }}
+                  onPress={() => { this.props.navigation.goBack() }}
+                  text="Cancel"
+                /> :
+                <CancelButton
+                  style={{ paddingTop: 11 }}
+                  onPress={async () => { await deleteLocalContact(this.props.address); this.props.navigation.goBack() }}
+                  text="Delete Contact"
+                />
+              }
             </TopMenu>
           </AssetPanel>
         </Container>

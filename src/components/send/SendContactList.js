@@ -131,6 +131,9 @@ class SendContactList extends React.Component {
   }
 
   render() {
+    let newAssets = Object.assign([], this.props.allAssets);
+    newAssets.reverse();
+    
     return (
       <FlyInAnimation style={{ flex: 1, width: '100%' }}>
         <RecyclerListView
@@ -138,7 +141,7 @@ class SendContactList extends React.Component {
           dataProvider={
             new DataProvider((r1, r2) => {
               return r1 !== r2;
-            }).cloneWithRows(this.props.allAssets)
+            }).cloneWithRows(newAssets)
           }
           layoutProvider={this._layoutProvider}
         />
