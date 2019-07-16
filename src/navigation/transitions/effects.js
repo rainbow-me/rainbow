@@ -183,6 +183,9 @@ const expandTransitionSpec = {
       tension: 100,
     }),
     timing: 'spring',
+    // duration: 315,
+    // easing: Easing.bezier(0.19, 1, 0.22, 1),
+    // timing: Animated.timing,
   },
 };
 
@@ -198,6 +201,9 @@ const sheetTransitionSpec = {
       tension: 58,
     }),
     timing: 'spring',
+    // duration: 375,
+    // easing: Easing.bezier(0.19, 1, 0.22, 1),
+    // timing: Animated.timing,
   },
 };
 
