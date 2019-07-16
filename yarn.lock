@@ -9268,6 +9268,7 @@ react-navigation-drawer@~1.4.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 react-navigation-stack@~1.5.0:
   version "1.5.5"
   resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-1.5.5.tgz#0b3cd98b7845a51d9ce9d7d678e9e3b9ed010bc3"
@@ -9299,6 +9300,11 @@ react-navigation-stack@~1.4.0:
 "react-navigation-stack@https://github.com/react-navigation/stack#2.0.0-alpha.5", react-navigation-stack@~1.4.0:
   version "2.0.0-alpha.5"
   resolved "https://github.com/react-navigation/stack#67a942dd5e880574f72ce214b02730ddf286109a"
+=======
+"react-navigation-stack@https://github.com/react-navigation/stack#2.0.0-alpha.6", react-navigation-stack@~1.4.0:
+  version "2.0.0-alpha.6"
+  resolved "https://github.com/react-navigation/stack#28359b3853ce234586302e98377c91638d75c585"
+>>>>>>> 3a2e4076... Bump version of react-navigation-stack to alpha.6
   dependencies:
     react-native-safe-area-view "^0.14.6"
 >>>>>>> 751dba29... Replace navigation animations with new effects

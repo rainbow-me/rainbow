@@ -100,7 +100,7 @@
     "react-native-udp": "^2.6.1",
     "react-native-version-number": "^0.3.6",
     "react-navigation": "^3.11.1",
-    "react-navigation-stack": "https://github.com/react-navigation/stack#2.0.0-alpha.5",
+    "react-navigation-stack": "https://github.com/react-navigation/stack#2.0.0-alpha.6",
     "react-primitives": "^0.8.0",
     "react-redux": "^5.0.7",
     "react-spring": "^5.7.2",
@@ -155,7 +155,7 @@
   },
   "resolutions": {
     "**/eslint-plugin-import": "2.14.0",
-    "**/react-navigation-stack": "https://github.com/react-navigation/stack#2.0.0-alpha.5",
+    "**/react-navigation-stack": "https://github.com/react-navigation/stack#2.0.0-alpha.6",
     "**/resolve": "1.8.1"
   },
   "jest": {
