@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
-import { pure } from 'recompact';
+import { compose } from 'recompact';
 import styled from 'styled-components/primitives';
 import Divider from '../Divider';
 import { AddressField } from '../fields';
@@ -10,6 +10,7 @@ import { Label } from '../text';
 import { colors, padding } from '../../styles';
 import { PasteAddressButton, AddContactButton } from '../buttons';
 import { Text } from 'react-native';
+import { withNavigation } from 'react-navigation';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
   ${padding(19, 15)}
@@ -26,7 +27,7 @@ const Nickname = styled(Text)`
   line-height: 45px;
 `;
 
-const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddress, contacts }) => {
+const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddress, contacts, navigation }) => {
   let headerName = "";
   for ( let i = 0; i < contacts.length; i++ ) {
     if(recipient == contacts[i].address){
@@ -51,7 +52,10 @@ const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddr
           onChange={onChangeAddressInput}
           headerName={headerName}
           />
-        {isValidAddress ? headerName.length > 0 ? <AddContactButton edit/> : <AddContactButton />  : <PasteAddressButton onPress={onPressPaste} />}
+        {isValidAddress ? headerName.length > 0 ? 
+        <AddContactButton edit onPress={() => {}}/> : 
+        <AddContactButton onPress={() => {}}/>  : 
+        <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
       <Divider
         color={colors.alpha(colors.blueGreyLight, 0.05)}
@@ -68,4 +72,4 @@ SendHeader.propTypes = {
   onPressPaste: PropTypes.func,
 };
 
-export default pure(SendHeader);
+export default compose(withNavigation)(SendHeader);
