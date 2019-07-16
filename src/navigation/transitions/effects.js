@@ -20,6 +20,7 @@ const {
   set,
   sub,
   Value,
+  SpringUtils,
 } = Animated;
 
 const NO = 0;
@@ -171,40 +172,20 @@ const backgroundStyleInterpolator = ({ progress: { current, next } }) => {
   };
 };
 
-const expandTransitionSpec = {
-  close: {
-    duration: 50,
-    easing: Easing.in(Easing.linear),
-    timing: 'timing',
+const expandedSpec = {
+  config: {
+    duration: 315,
+    easing: Easing.bezier(0.19, 1, 0.22, 1),
   },
-  open: {
-    config: SpringUtils.makeConfigFromOrigamiTensionAndFriction({
-      friction: 11,
-      tension: 100,
-    }),
-    timing: 'spring',
-    // duration: 315,
-    // easing: Easing.bezier(0.19, 1, 0.22, 1),
-    // timing: Animated.timing,
-  },
+  timing: 'timing',
 };
 
-const sheetTransitionSpec = {
-  close: {
-    duration: 50,
-    easing: Easing.in(Easing.linear),
-    timing: 'timing',
+const sheetSpec = {
+  config: {
+    duration: 375,
+    easing: Easing.bezier(0.19, 1, 0.22, 1),
   },
-  open: {
-    config: SpringUtils.makeConfigFromOrigamiTensionAndFriction({
-      friction: 9.8,
-      tension: 58,
-    }),
-    timing: 'spring',
-    // duration: 375,
-    // easing: Easing.bezier(0.19, 1, 0.22, 1),
-    // timing: Animated.timing,
-  },
+  timing: 'timing',
 };
 
 const gestureResponseDistance = {
@@ -217,7 +198,7 @@ export const expandedPreset = {
   effect: 'expanded',
   gestureDirection: 'vertical',
   gestureResponseDistance,
-  transitionSpec: { close: TransitionIOSSpec, open: TransitionIOSSpec },
+  transitionSpec: { close: expandedSpec, open: expandedSpec },
 };
 
 export const sheetPreset = {
@@ -226,7 +207,7 @@ export const sheetPreset = {
   effect: 'sheet',
   gestureDirection: 'vertical',
   gestureResponseDistance,
-  transitionSpec: { close: TransitionIOSSpec, open: TransitionIOSSpec },
+  transitionSpec: { close: sheetSpec, open: sheetSpec },
 };
 
 export const backgroundPreset = {
