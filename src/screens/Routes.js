@@ -107,7 +107,6 @@ const MainNavigator = createStackNavigator({
       gestureResponseDistance: {
         vertical: deviceUtils.dimensions.height,
       },
-      transitionSpec: expandedTransitionSpec,
     },
     screen: WalletConnectConfirmationModal,
   },
