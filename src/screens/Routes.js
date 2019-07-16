@@ -113,11 +113,13 @@ const MainNavigator = createStackNavigator({
   },
   WalletConnectConfirmationModal: {
     navigationOptions: {
+      cardStyleInterpolator: expandStyleInterpolator,
       cardTransparent: true,
       effect: 'expanded',
       gestureResponseDistance: {
         vertical: deviceUtils.dimensions.height,
       },
+      transitionSpec: expandedTransitionSpec,
     },
     screen: WalletConnectConfirmationModal,
   },
