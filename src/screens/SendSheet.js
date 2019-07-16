@@ -217,7 +217,7 @@ class SendSheet extends Component {
               recipient={recipient}
               onPressPaste={sendUpdateRecipient}
             />
-            {showEmptyState && <SendContactList allAssets={this.state.contacts} />}
+            {showEmptyState && <SendContactList allAssets={this.state.contacts} onPressContact={sendUpdateRecipient} />}
             {showAssetList && (
               <SendAssetList
                 allAssets={allAssets}

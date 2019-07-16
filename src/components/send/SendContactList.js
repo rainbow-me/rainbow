@@ -70,24 +70,32 @@ const BottomRow = styled(TruncatedAddress).attrs({
 `;
 
 
-const Avatar = (item) => {
-  return <ButtonPressAnimation scaleTo={0.96}>
-  <AvatarWrapper>
-    <AvatarCircle style={{backgroundColor: colors.avatarColor[item.color]}} >
-      <FirstLetter>{item.nickname[0].toUpperCase()}</FirstLetter>
-    </AvatarCircle>
-    <Column>
-      <TopRow>
-        {item.nickname}
-      </TopRow>
-      <BottomRow address={item.address} />
-    </Column>
-  </AvatarWrapper>
-  </ButtonPressAnimation>
+class Avatar extends React.PureComponent {
+
+  onPress = () => {
+    this.props.onPress(this.props.address);
+  }
+
+  render() {
+   const item = this.props;
+    return <ButtonPressAnimation onPress={this.onPress} scaleTo={0.96}>
+    <AvatarWrapper>
+      <AvatarCircle style= {{backgroundColor: colors.avatarColor[item.color]}} >
+        <FirstLetter>{item.nickname[0].toUpperCase()}</FirstLetter>
+      </AvatarCircle>
+      <Column>
+        <TopRow>
+          {item.nickname}
+        </TopRow>
+        <BottomRow address={item.address} />
+      </Column>
+    </AvatarWrapper>
+    </ButtonPressAnimation>
+  }
 }
 
 class SendContactList extends React.Component {
-  balancesRenderItem = item => <Avatar {...item} />
+  balancesRenderItem = item => <Avatar onPress={this.props.onPressContact} {...item} />
 
   constructor(args) {
     super(args);
