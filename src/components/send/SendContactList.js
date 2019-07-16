@@ -19,11 +19,75 @@ import { LayoutAnimation } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
 import { colors } from '../../styles';
+import { abbreviations } from '../../utils';
+import { Monospace, TruncatedAddress } from '../text';
+import { ButtonPressAnimation } from '../animations';
 
-const rowHeight = 64;
+const rowHeight = 62;
+
+const AvatarWrapper = styled(View)`
+  flex-direction: row;
+  margin: 11px 15px;
+`;
+
+const AvatarCircle = styled(View)`
+  height: 40px;
+  width: 40px;
+  border-radius: 20px;
+`;
+
+const FirstLetter = styled(Text)`
+  width: 100%;
+  text-align: center;
+  line-height: 40px;
+  font-size: 18px;
+  color: #fff;
+  font-weight: 600;
+`;
+
+const Column = styled(View)`
+  height: 40px;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-left: 11px;
+`;
+
+const TopRow = styled(Text)`
+  font-weight: 500,
+  font-size: 16
+`;
+
+const BottomRow = styled(TruncatedAddress).attrs({
+  align: 'left',
+  firstSectionLength: abbreviations.defaultNumCharsPerSection,
+  size: 'smedium',
+  truncationLength: 4,
+  weight: 'regular',
+  color: colors.blueGreyDark,
+})`
+  opacity: 0.4;
+  width: 100%;
+`;
+
+
+const Avatar = (item) => {
+  return <ButtonPressAnimation scaleTo={0.96}>
+  <AvatarWrapper>
+    <AvatarCircle style={{backgroundColor: colors.avatarColor[item.color]}} >
+      <FirstLetter>{item.nickname[0].toUpperCase()}</FirstLetter>
+    </AvatarCircle>
+    <Column>
+      <TopRow>
+        {item.nickname}
+      </TopRow>
+      <BottomRow address={item.address} />
+    </Column>
+  </AvatarWrapper>
+  </ButtonPressAnimation>
+}
 
 class SendContactList extends React.Component {
-  balancesRenderItem = item => {return <View style={{ height: 20, width: 200, backgroundColor: 'green' }}></View>; }
+  balancesRenderItem = item => <Avatar {...item} />
 
   constructor(args) {
     super(args);
