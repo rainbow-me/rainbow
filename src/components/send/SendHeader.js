@@ -8,7 +8,8 @@ import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Label } from '../text';
 import { colors, padding } from '../../styles';
-import { PasteAddressButton } from '../buttons';
+import { PasteAddressButton, AddContactButton } from '../buttons';
+import { Text } from 'react-native';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
   ${padding(19, 15)}
@@ -16,32 +17,50 @@ const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
   overflow: hidden;
   width: 100%;
 `;
+const Nickname = styled(Text)`
+  background-color: ${colors.white};
+  overflow: hidden;
+  height: 45px;
+  width: 76.5%;
+  margin-right: -20px;
+  line-height: 45px;
+`;
 
-const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste }) => (
-  <Fragment>
-    <Icon
-      color={colors.sendScreen.grey}
-      name="handle"
-      style={{ height: 11, marginTop: 13 }}
-    />
-    <AddressInputContainer>
-      <Label style={{ marginRight: 6, opacity: 0.45 }}>
-        To:
-      </Label>
-      <AddressField
-        address={recipient}
-        autoFocus
-        onChange={onChangeAddressInput}
+const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddress, contacts }) => {
+  let headerName = "";
+  for ( let i = 0; i < contacts.length; i++ ) {
+    if(recipient == contacts[i].address){
+      headerName = contacts[i].nickname;
+    }
+  }
+
+  return (
+    <Fragment>
+      <Icon
+        color={colors.sendScreen.grey}
+        name="handle"
+        style={{ height: 11, marginTop: 13 }}
       />
-      <PasteAddressButton onPress={onPressPaste}/>
-    </AddressInputContainer>
-    <Divider
-      color={colors.alpha(colors.blueGreyLight, 0.05)}
-      flex={0}
-      inset={false}
-    />
-  </Fragment>
-);
+      <AddressInputContainer>
+        <Label style={{ marginRight: 6, opacity: 0.45 }}>
+          To:
+        </Label>
+        <AddressField
+          address={recipient}
+          autoFocus
+          onChange={onChangeAddressInput}
+          headerName={headerName}
+          />
+        {isValidAddress ? <AddContactButton /> : <PasteAddressButton onPress={onPressPaste} />}
+      </AddressInputContainer>
+      <Divider
+        color={colors.alpha(colors.blueGreyLight, 0.05)}
+        flex={0}
+        inset={false}
+      />
+    </Fragment>
+  )
+};
 
 SendHeader.propTypes = {
   onChangeAddressInput: PropTypes.func,

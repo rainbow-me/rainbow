@@ -216,8 +216,15 @@ class SendSheet extends Component {
               onChangeAddressInput={sendUpdateRecipient}
               recipient={recipient}
               onPressPaste={sendUpdateRecipient}
+              contacts={this.state.contacts} 
+              isValidAddress={isValidAddress} 
             />
-            {showEmptyState && <SendContactList allAssets={this.state.contacts} onPressContact={sendUpdateRecipient} />}
+            {showEmptyState && (
+            <SendContactList 
+              allAssets={this.state.contacts} 
+              onPressContact={sendUpdateRecipient} 
+              />
+            )}
             {showAssetList && (
               <SendAssetList
                 allAssets={allAssets}
