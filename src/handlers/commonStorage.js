@@ -592,7 +592,6 @@ export const setAppStoreReviewRequestCount = async (newCount) => {
 export const getLocalContacts = async () => {
   try {
     const localContacts = await getLocal('localContacts');
-    console.log(localContacts.data);
     return localContacts ? localContacts.data : null;
   }
   catch {
@@ -644,5 +643,21 @@ export const addNewLocalContact = async (address, nickname, color) => {
     color,
     nickname,
   });
+  await saveLocal('localContacts', { data: contacts });
+};
+
+/**
+ * @desc delete contact from the local contacts
+ * @param  {String}   [address]
+ * @return {Void}
+ */
+export const deleteLocalContact = async (address) => {
+  const contacts = await getLocalContacts();
+  for (let i = 0; i < contacts.length; i++) {
+    if(contacts[i].address == address) {
+      contacts.splice(i, 1);
+      i--;
+    }
+  }
   await saveLocal('localContacts', { data: contacts });
 };
