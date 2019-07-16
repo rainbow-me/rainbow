@@ -46,6 +46,7 @@ const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste }) => (
 SendHeader.propTypes = {
   onChangeAddressInput: PropTypes.func,
   recipient: PropTypes.string,
+  onPressPaste: PropTypes.func,
 };
 
 export default pure(SendHeader);
