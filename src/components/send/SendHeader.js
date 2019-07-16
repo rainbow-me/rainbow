@@ -51,7 +51,7 @@ const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddr
           onChange={onChangeAddressInput}
           headerName={headerName}
           />
-        {isValidAddress ? <AddContactButton /> : <PasteAddressButton onPress={onPressPaste} />}
+        {isValidAddress ? headerName.length > 0 ? <AddContactButton edit/> : <AddContactButton />  : <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
       <Divider
         color={colors.alpha(colors.blueGreyLight, 0.05)}

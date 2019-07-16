@@ -49,7 +49,7 @@ class AddContactButton extends PureComponent {
         size="small"
         type="pill"
       >
-        Add
+        {this.props.edit ? `Edit` : `Add`}
       </Button>
     );
   }
