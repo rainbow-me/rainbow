@@ -22,9 +22,9 @@ import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
 import {
-  expandStyleInterpolator,
-  sheetStyleInterpolator,
-  backgroundStyleInterpolator,
+  expandedPreset,
+  sheetPreset,
+  backgroundPreset,
 } from '../navigation/transitions/effects';
 
 const onTransitionEnd = () => {
@@ -71,54 +71,39 @@ const MainNavigator = createStackNavigator({
   ExampleScreen,
   ExpandedAssetScreen: {
     navigationOptions: {
-      cardStyleInterpolator: expandStyleInterpolator,
-      cardTransparent: true,
-      effect: 'expanded',
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height,
-      },
+      ...expandedPreset,
     },
     screen: ExpandedAssetScreenWithData,
   },
   ImportSeedPhraseSheet: ImportSeedPhraseSheetWithData,
   ReceiveModal: {
     navigationOptions: {
-      cardTransparent: true,
-      effect: 'expanded',
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height,
-      },
+      ...expandedPreset,
     },
     screen: ReceiveModal,
   },
   SendSheet: {
     navigationOptions: {
-      cardStyleInterpolator: sheetStyleInterpolator,
+      ...sheetPreset,
     },
     screen: SendSheetWithData,
   },
   SettingsModal: {
     navigationOptions: {
-      cardTransparent: true,
-      effect: 'expanded',
       gesturesEnabled: false,
+      ...expandedPreset,
     },
     screen: SettingsModal,
   },
   SwipeLayout: {
     navigationOptions: {
-      cardStyleInterpolator: backgroundStyleInterpolator,
+      ...backgroundPreset,
     },
     screen: SwipeStack,
   },
   WalletConnectConfirmationModal: {
     navigationOptions: {
-      cardStyleInterpolator: expandStyleInterpolator,
-      cardTransparent: true,
-      effect: 'expanded',
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height,
-      },
+      ...expandedPreset,
     },
     screen: WalletConnectConfirmationModal,
   },
