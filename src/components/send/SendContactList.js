@@ -22,6 +22,9 @@ import { colors } from '../../styles';
 import { abbreviations } from '../../utils';
 import { Monospace, TruncatedAddress } from '../text';
 import { ButtonPressAnimation } from '../animations';
+import { Icon } from '../icons';
+import { Centered, Column, Row } from '../layout';
+import transitionConfig from '../../navigation/transitions';
 
 const rowHeight = 62;
 
@@ -45,7 +48,7 @@ const FirstLetter = styled(Text)`
   font-weight: 600;
 `;
 
-const Column = styled(View)`
+const ContactColumn = styled(View)`
   height: 40px;
   flex-direction: column;
   justify-content: space-between;
@@ -77,19 +80,19 @@ class Avatar extends React.PureComponent {
   }
 
   render() {
-   const item = this.props;
+    const item = this.props;
     return <ButtonPressAnimation onPress={this.onPress} scaleTo={0.96}>
-    <AvatarWrapper>
-      <AvatarCircle style= {{backgroundColor: colors.avatarColor[item.color]}} >
-        <FirstLetter>{item.nickname[0].toUpperCase()}</FirstLetter>
-      </AvatarCircle>
-      <Column>
-        <TopRow>
-          {item.nickname}
-        </TopRow>
-        <BottomRow address={item.address} />
-      </Column>
-    </AvatarWrapper>
+      <AvatarWrapper>
+        <AvatarCircle style={{ backgroundColor: colors.avatarColor[item.color] }} >
+          <FirstLetter>{item.nickname[0].toUpperCase()}</FirstLetter>
+        </AvatarCircle>
+        <ContactColumn>
+          <TopRow>
+            {item.nickname}
+          </TopRow>
+          <BottomRow address={item.address} />
+        </ContactColumn>
+      </AvatarWrapper>
     </ButtonPressAnimation>
   }
 }
@@ -122,8 +125,8 @@ class SendContactList extends React.Component {
     }
   }
 
-  shouldComponentUpdate (prev) {
-    if(this.props.allAssets !== prev.allAssets) {
+  shouldComponentUpdate(prev) {
+    if (this.props.allAssets !== prev.allAssets) {
       return true;
     } else {
       return false;
@@ -133,18 +136,37 @@ class SendContactList extends React.Component {
   render() {
     let newAssets = Object.assign([], this.props.allAssets);
     newAssets.reverse();
-    
+
     return (
       <FlyInAnimation style={{ flex: 1, width: '100%' }}>
-        <RecyclerListView
-          rowRenderer={this._renderRow}
-          dataProvider={
-            new DataProvider((r1, r2) => {
-              return r1 !== r2;
-            }).cloneWithRows(newAssets)
-          }
-          layoutProvider={this._layoutProvider}
-        />
+        {newAssets.length == 0 ?
+          <Column
+            css={`
+              background-color: ${colors.white};
+              padding-bottom: ${transitionConfig.sheetVerticalOffset + 19};
+            `}
+            flex={1}
+            justify="space-between"
+          >
+            <Centered flex={1} opacity={0.06}>
+              <Icon
+                color={colors.blueGreyDark}
+                name="send"
+                style={{ height: 88, width: 91 }}
+              />
+            </Centered>
+          </Column>
+        :
+          <RecyclerListView
+            rowRenderer={this._renderRow}
+            dataProvider={
+              new DataProvider((r1, r2) => {
+                return r1 !== r2;
+              }).cloneWithRows(newAssets)
+            }
+            layoutProvider={this._layoutProvider}
+          />
+        }
       </FlyInAnimation>
     );
   };
