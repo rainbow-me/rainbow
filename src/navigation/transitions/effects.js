@@ -1,10 +1,11 @@
-import Animated from 'react-native-reanimated';
+import Animated, { Easing } from 'react-native-reanimated';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
 import chroma from 'chroma-js';
 import store from '../../redux/store';
 import { updateTransitionProps } from '../../redux/navigation';
 import { deviceUtils } from '../../utils';
 import { colors } from '../../styles';
+import { TransitionIOSSpec } from 'react-navigation-stack/src/TransitionConfigs/TransitionSpecs';
 
 const {
   add,
@@ -46,9 +47,11 @@ sheet.heightEnd = statusBarHeight + sheet.distanceFromTop;
 sheet.borderRadiusScaledEnd = sheet.borderRadiusEnd / sheet.scaleEnd;
 sheet.opacityEnd = 0.5;
 
+export const sheetVerticalOffset = sheet.distanceFromTop + statusBarHeight;
+
 const CLOSING = new Value(-1);
 
-export const expandStyleInterpolator = ({
+const expandStyleInterpolator = ({
   progress: { current },
   closing,
 }) => {
@@ -123,7 +126,7 @@ export const sheetStyleInterpolator = ({
   };
 };
 
-export const backgroundStyleInterpolator = ({ progress: { current, next } }) => {
+const backgroundStyleInterpolator = ({ progress: { current, next } }) => {
   if (!next) return {};
 
   const pick = (
@@ -166,4 +169,60 @@ export const backgroundStyleInterpolator = ({ progress: { current, next } }) => 
       backgroundColor: color(0, 0, 0),
     },
   };
+};
+
+const expandTransitionSpec = {
+  close: {
+    duration: 50,
+    easing: Easing.in(Easing.linear),
+    timing: 'timing',
+  },
+  open: {
+    config: SpringUtils.makeConfigFromOrigamiTensionAndFriction({
+      friction: 11,
+      tension: 100,
+    }),
+    timing: 'spring',
+  },
+};
+
+const sheetTransitionSpec = {
+  close: {
+    duration: 50,
+    easing: Easing.in(Easing.linear),
+    timing: 'timing',
+  },
+  open: {
+    config: SpringUtils.makeConfigFromOrigamiTensionAndFriction({
+      friction: 9.8,
+      tension: 58,
+    }),
+    timing: 'spring',
+  },
+};
+
+const gestureResponseDistance = {
+  vertical: deviceUtils.dimensions.height,
+};
+
+export const expandedPreset = {
+  cardStyleInterpolator: expandStyleInterpolator,
+  cardTransparent: true,
+  effect: 'expanded',
+  gestureDirection: 'vertical',
+  gestureResponseDistance,
+  transitionSpec: { close: TransitionIOSSpec, open: TransitionIOSSpec },
+};
+
+export const sheetPreset = {
+  cardStyleInterpolator: sheetStyleInterpolator,
+  cardTransparent: true,
+  effect: 'sheet',
+  gestureDirection: 'vertical',
+  gestureResponseDistance,
+  transitionSpec: { close: TransitionIOSSpec, open: TransitionIOSSpec },
+};
+
+export const backgroundPreset = {
+  cardStyleInterpolator: backgroundStyleInterpolator,
 };
