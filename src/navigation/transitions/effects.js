@@ -17,6 +17,7 @@ const {
   interpolate,
   multiply,
   set,
+  SpringUtils,
   sub,
   Value,
 } = Animated;
@@ -175,20 +176,22 @@ const backgroundStyleInterpolator = ({ progress: { current, next } }) => {
   };
 };
 
-const expandedSpec = {
-  config: {
-    duration: 315,
-    easing: Easing.bezier(0.19, 1, 0.22, 1),
-  },
-  timing: 'timing',
+const expandedCloseSpec = {
+  config: SpringUtils.makeConfigFromBouncinessAndSpeed({
+    ...SpringUtils.makeDefaultConfig(),
+    bounciness: 0,
+    speed: 20,
+  }),
+  timing: 'spring',
 };
 
-const sheetSpec = {
-  config: {
-    duration: 375,
-    easing: Easing.bezier(0.19, 1, 0.22, 1),
-  },
-  timing: 'timing',
+const expandedOpenSpec = {
+  config: SpringUtils.makeConfigFromBouncinessAndSpeed({
+    ...SpringUtils.makeDefaultConfig(),
+    bounciness: 5,
+    speed: 20,
+  }),
+  timing: 'spring',
 };
 
 const gestureResponseDistance = {
@@ -201,7 +204,7 @@ export const expandedPreset = {
   effect: 'expanded',
   gestureDirection: 'vertical',
   gestureResponseDistance,
-  transitionSpec: { close: expandedSpec, open: expandedSpec },
+  transitionSpec: { close: expandedCloseSpec, open: expandedOpenSpec },
 };
 
 export const sheetPreset = {
@@ -210,7 +213,7 @@ export const sheetPreset = {
   effect: 'sheet',
   gestureDirection: 'vertical',
   gestureResponseDistance,
-  transitionSpec: { close: sheetSpec, open: sheetSpec },
+  transitionSpec: { close: expandedCloseSpec, open: expandedOpenSpec },
 };
 
 export const backgroundPreset = {
