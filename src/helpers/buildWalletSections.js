@@ -112,20 +112,17 @@ const withUniswapSection = (
   nativeCurrency,
   uniswap,
   uniswapTotal,
-) => {
-  const uniswap = {
-    data: uniswap,
-    header: {
-      title: 'Investments',
-      totalItems: uniswap.length,
-      totalValue: uniswapTotal,
-    },
-    investments: true,
-    name: 'investments',
-    renderItem: uniswapRenderItem,
-  };
-  return uniswap;
-};
+) => ({
+  data: uniswap,
+  header: {
+    title: 'Investments',
+    totalItems: uniswap.length,
+    totalValue: uniswapTotal,
+  },
+  investments: true,
+  name: 'investments',
+  renderItem: uniswapRenderItem,
+});
 
 const withBalanceSection = (
   allAssets,
@@ -193,6 +190,12 @@ const withUniqueTokenFamiliesSection = (
   return uniqueTokensSection;
 };
 
+const uniqueTokenDataSelector = createSelector(
+  [ uniqueTokensSelector ],
+  buildUniqueTokenList,
+);
+
+
 const balanceSectionSelector = createSelector(
   [
     allAssetsSelector,
@@ -225,11 +228,6 @@ const uniqueTokenFamiliesSelector = createSelector(
     uniqueTokenDataSelector,
   ],
   withUniqueTokenFamiliesSection,
-);
-
-const uniqueTokenDataSelector = createSelector(
-  [ uniqueTokensSelector ],
-  buildUniqueTokenList,
 );
 
 export default createSelector(
