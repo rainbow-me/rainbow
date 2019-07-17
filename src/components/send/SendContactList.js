@@ -15,8 +15,9 @@ import { Centered, Column, Row } from '../layout';
 import transitionConfig from '../../navigation/transitions';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { RectButton } from 'react-native-gesture-handler';
-import { Animated, StyleSheet } from 'react-native';
+import { Animated, LayoutAnimation } from 'react-native';
 import {
+  getLocalContacts,
   deleteLocalContact,
 } from '../../handlers/commonStorage';
 
@@ -66,6 +67,16 @@ const BottomRow = styled(TruncatedAddress).attrs({
   width: 100%;
 `;
 
+const NOOP = () => undefined;
+
+const layoutItemAnimator = {
+  animateDidMount: NOOP,
+  animateShift: NOOP,
+  animateWillMount: NOOP,
+  animateWillUnmount: NOOP,
+  animateWillUpdate:  () => LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')),
+};
+
 
 class Avatar extends React.PureComponent {
 
@@ -82,6 +93,7 @@ class Avatar extends React.PureComponent {
     const pressHandler = async () => {
       this.close();
       await deleteLocalContact(this.props.address);
+      this.props.onChange();
     };
 
     return (
@@ -146,7 +158,7 @@ class Avatar extends React.PureComponent {
 }
 
 class SendContactList extends React.Component {
-  balancesRenderItem = item => <Avatar onPress={this.props.onPressContact} {...item} />
+  balancesRenderItem = item => <Avatar onChange={this.onChangeContacts} onPress={this.props.onPressContact} {...item} />
 
   constructor(args) {
     super(args);
@@ -175,6 +187,13 @@ class SendContactList extends React.Component {
     } else {
       return this.balancesRenderItem(data);
     }
+  }
+
+  onChangeContacts = async () => {
+    const contacts = await getLocalContacts();
+    let newAssets = Object.assign([], contacts);
+    newAssets.reverse();
+    this.setState({ contacts: newAssets });
   }
 
   componentWillReceiveProps = (props) => {
@@ -214,6 +233,7 @@ class SendContactList extends React.Component {
               }).cloneWithRows(this.state.contacts)
             }
             layoutProvider={this._layoutProvider}
+            // itemAnimator={layoutItemAnimator}
           />
         }
       </FlyInAnimation>
