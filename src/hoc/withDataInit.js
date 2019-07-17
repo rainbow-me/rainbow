@@ -7,11 +7,13 @@ import { getIsWalletEmpty } from '../handlers/commonStorage';
 import { hasEthBalance } from '../handlers/web3';
 import {
   dataClearState,
-  dataLoadState, dataInit,
+  dataLoadState,
+  dataInit,
 } from '../redux/data';
 import { clearIsWalletEmpty, loadIsWalletEmpty } from '../redux/isWalletEmpty';
 import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import { nonceClearState } from '../redux/nonce';
+import { clearOpenFamilyTab } from '../redux/openFamilyTabs';
 import {
   requestsLoadState,
   requestsClearState,
@@ -40,6 +42,7 @@ import withHideSplashScreen from './withHideSplashScreen';
 export default Component => compose(
   connect(null, {
     clearIsWalletEmpty,
+    clearOpenFamilyTab,
     dataClearState,
     dataInit,
     dataLoadState,
@@ -74,6 +77,7 @@ export default Component => compose(
         ownProps.dataClearState();
         ownProps.clearIsWalletEmpty();
         ownProps.uniqueTokensClearState();
+        ownProps.clearOpenFamilyTab();
         ownProps.walletConnectClearState();
         ownProps.nonceClearState();
         ownProps.requestsClearState();
