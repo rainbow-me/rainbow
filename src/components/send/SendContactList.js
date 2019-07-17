@@ -1,30 +1,24 @@
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  compose,
-  onlyUpdateForKeys,
-  shouldUpdate,
-  withHandlers,
-} from 'recompact';
-import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
-import { CoinRow, CollectiblesSendRow, SendCoinRow } from '../coin-row';
-import { ListFooter } from '../list';
 import { View, Text } from 'react-primitives';
-import { TouchableHighlight } from 'react-native-gesture-handler';
 import { RecyclerListView, LayoutProvider, DataProvider } from "recyclerlistview";
-import { LayoutAnimation } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
 import { colors } from '../../styles';
 import { abbreviations } from '../../utils';
-import { Monospace, TruncatedAddress } from '../text';
+import { TruncatedAddress } from '../text';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Column, Row } from '../layout';
 import transitionConfig from '../../navigation/transitions';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { RectButton } from 'react-native-gesture-handler';
+import { Animated, StyleSheet } from 'react-native';
+import {
+  deleteLocalContact,
+} from '../../handlers/commonStorage';
 
 const rowHeight = 62;
 
@@ -79,21 +73,75 @@ class Avatar extends React.PureComponent {
     this.props.onPress(this.props.address);
   }
 
+  renderRightAction = (text, color, x, progress) => {
+    const trans = progress.interpolate({
+      inputRange: [0, 1],
+      outputRange: [x, 0],
+    });
+
+    const pressHandler = async () => {
+      this.close();
+      await deleteLocalContact(this.props.address);
+    };
+
+    return (
+      <Animated.View style={{ flex: 1, transform: [{ translateX: trans }] }}>
+        <RectButton
+          style={[{
+            alignItems: 'center',
+            flex: 1,
+            justifyContent: 'center',
+            backgroundColor: color 
+          }]}
+          onPress={pressHandler}>
+          <Text style={{
+            color: 'white',
+            fontSize: 16,
+            backgroundColor: 'transparent',
+            padding: 10,
+          }}>{text}</Text>
+        </RectButton>
+      </Animated.View>
+    );
+  };
+
+  renderRightActions = progress => (
+    <View style={{ width: 140, flexDirection: 'row' }}>
+      {this.renderRightAction('Edit', '#ffab00', 140, progress)}
+      {this.renderRightAction('Delete', '#dd2c00', 70, progress)}
+    </View>
+  );
+
+  updateRef = ref => {
+    this._swipeableRow = ref;
+  };
+  close = () => {
+    this._swipeableRow.close();
+  };
+
   render() {
     const item = this.props;
-    return <ButtonPressAnimation onPress={this.onPress} scaleTo={0.96}>
-      <AvatarWrapper>
-        <AvatarCircle style={{ backgroundColor: colors.avatarColor[item.color] }} >
-          <FirstLetter>{item.nickname[0].toUpperCase()}</FirstLetter>
-        </AvatarCircle>
-        <ContactColumn>
-          <TopRow>
-            {item.nickname}
-          </TopRow>
-          <BottomRow address={item.address} />
-        </ContactColumn>
-      </AvatarWrapper>
-    </ButtonPressAnimation>
+    return (
+      <Swipeable
+        ref={this.updateRef}
+        friction={2}
+        rightThreshold={40}
+        renderRightActions={this.renderRightActions}>
+        <ButtonPressAnimation onPress={this.onPress} scaleTo={0.96}>
+          <AvatarWrapper>
+            <AvatarCircle style={{ backgroundColor: colors.avatarColor[item.color] }} >
+              <FirstLetter>{item.nickname[0].toUpperCase()}</FirstLetter>
+            </AvatarCircle>
+            <ContactColumn>
+              <TopRow>
+                {item.nickname}
+              </TopRow>
+              <BottomRow address={item.address} />
+            </ContactColumn>
+          </AvatarWrapper>
+        </ButtonPressAnimation>
+      </Swipeable>
+    )
   }
 }
 
@@ -102,6 +150,10 @@ class SendContactList extends React.Component {
 
   constructor(args) {
     super(args);
+    
+    this.state = {
+      contacts: [],
+    }
 
     this._layoutProvider = new LayoutProvider((i) => {
       return 'COIN_ROW';
@@ -125,21 +177,18 @@ class SendContactList extends React.Component {
     }
   }
 
-  shouldComponentUpdate(prev) {
-    if (this.props.allAssets !== prev.allAssets) {
-      return true;
-    } else {
-      return false;
+  componentWillReceiveProps = (props) => {
+    let newAssets = Object.assign([], props.allAssets);
+    newAssets.reverse();
+    if(newAssets !== this.state.contacts) {
+      this.setState({ contacts: newAssets });
     }
   }
 
   render() {
-    let newAssets = Object.assign([], this.props.allAssets);
-    newAssets.reverse();
-
     return (
       <FlyInAnimation style={{ flex: 1, width: '100%' }}>
-        {newAssets.length == 0 ?
+        {this.state.contacts.length == 0 ?
           <Column
             css={`
               background-color: ${colors.white};
@@ -156,13 +205,13 @@ class SendContactList extends React.Component {
               />
             </Centered>
           </Column>
-        :
+          :
           <RecyclerListView
             rowRenderer={this._renderRow}
             dataProvider={
               new DataProvider((r1, r2) => {
                 return r1 !== r2;
-              }).cloneWithRows(newAssets)
+              }).cloneWithRows(this.state.contacts)
             }
             layoutProvider={this._layoutProvider}
           />

@@ -53,8 +53,16 @@ const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddr
           headerName={headerName}
           />
         {isValidAddress ? headerName.length > 0 ? 
-        <AddContactButton edit onPress={() => {}}/> : 
-        <AddContactButton onPress={() => {}}/>  : 
+        null : 
+        <AddContactButton onPress={() => {
+          navigation.navigate('ExpandedAssetScreen', {
+            address: recipient,
+            color: 1,
+            asset: contacts[0],
+            contact: false,
+            type: 'contact',
+          });
+        }}/>  : 
         <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
       <Divider
