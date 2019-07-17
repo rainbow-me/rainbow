@@ -117,7 +117,9 @@ export default class AddressField extends PureComponent {
         />
         {!address && (
           <Placeholder>
-            <PlaceholderText>ENS or Address (</PlaceholderText>
+            <TouchableWithoutFeedback onPress={this.onPressNickName} >
+              <PlaceholderText>ENS or Address (</PlaceholderText>
+            </TouchableWithoutFeedback>
             <PlaceholderText family="SFMono">0x</PlaceholderText>
             <PlaceholderText>...)</PlaceholderText>
           </Placeholder>

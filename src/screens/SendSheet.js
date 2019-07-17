@@ -70,7 +70,7 @@ class SendSheet extends Component {
     super(args);
     this.state = {
       isAuthorizing: false,
-      contacts: ["ads"],
+      contacts: [],
     }
   }
 
