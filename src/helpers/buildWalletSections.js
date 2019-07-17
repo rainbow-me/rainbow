@@ -64,79 +64,21 @@ const filterWalletSections = sections => (
 );
 
 const buildWalletSections = (
-  allAssets,
-  allAssetsCount,
-  assets,
-  assetsTotal,
-  isBalancesSectionEmpty,
-  isWalletEthZero,
+  balanceSection,
   language,
   nativeCurrency,
   onToggleShowShitcoins,
   setIsWalletEmpty,
   shitcoinsCount,
   showShitcoins,
-  uniqueTokens = [],
-  uniswap = [],
-  uniswapTotal,
+  uniqueTokenFamiliesSection,
+  uniswapSection,
 ) => {
-  let balanceSectionData = showShitcoins ? allAssets : assets;
-  const isLoadingBalances = (!isWalletEthZero && isBalancesSectionEmpty);
-  if (isLoadingBalances) {
-    balanceSectionData = [{ index: 0, uniqueId: 'skeleton0' }];
-  }
-
   const sections = [
-    {
-      balances: true,
-      data: balanceSectionData,
-      header: {
-        showShitcoins,
-        title: lang.t('account.tab_balances'),
-        totalItems: isLoadingBalances ? 1 : allAssetsCount,
-        totalValue: get(assetsTotal, 'display', ''),
-      },
-      name: 'balances',
-      renderItem: isLoadingBalances
-        ? balancesSkeletonRenderItem
-        : balancesRenderItem,
-    },
-    {
-      data: uniswap,
-      header: {
-        title: 'Investments',
-        totalItems: uniswap.length,
-        totalValue: uniswapTotal,
-      },
-      investments: true,
-      name: 'investments',
-      renderItem: uniswapRenderItem,
-    },
-    {
-      collectibles: true,
-      data: buildUniqueTokenList(uniqueTokens),
-      header: {
-        title: lang.t('account.tab_collectibles'),
-        totalItems: uniqueTokens.length,
-        totalValue: '',
-      },
-      name: 'collectibles',
-      renderItem: tokenFamilyItem,
-      type: 'big',
-    },
+    balanceSection,
+    uniswapSection,
+    uniqueTokenFamiliesSection,
   ];
-
-  const imageTokens = [];
-  uniqueTokens.forEach(token => {
-    if (token.image_preview_url) {
-      imageTokens.push({
-        uri: token.image_preview_url,
-        id: token.id
-      });
-    }
-  });
-
-  FastImage.preload(imageTokens);
 
   if (shitcoinsCount) {
     // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
@@ -165,7 +107,93 @@ const buildWalletSections = (
   };
 };
 
-export default createSelector(
+const withUniswapSection = (
+  language,
+  nativeCurrency,
+  uniswap,
+  uniswapTotal,
+) => {
+  const uniswap = {
+    data: uniswap,
+    header: {
+      title: 'Investments',
+      totalItems: uniswap.length,
+      totalValue: uniswapTotal,
+    },
+    investments: true,
+    name: 'investments',
+    renderItem: uniswapRenderItem,
+  };
+  return uniswap;
+};
+
+const withBalanceSection = (
+  allAssets,
+  allAssetsCount,
+  assets,
+  assetsTotal,
+  isBalancesSectionEmpty,
+  isWalletEthZero,
+  language,
+  nativeCurrency,
+  showShitcoins,
+) => {
+  let balanceSectionData = showShitcoins ? allAssets : assets;
+  const isLoadingBalances = (!isWalletEthZero && isBalancesSectionEmpty);
+  if (isLoadingBalances) {
+    balanceSectionData = [{ index: 0, uniqueId: 'skeleton0' }];
+  }
+
+  const balances = {
+    balances: true,
+    data: balanceSectionData,
+    header: {
+      showShitcoins,
+      title: lang.t('account.tab_balances'),
+      totalItems: isLoadingBalances ? 1 : allAssetsCount,
+      totalValue: get(assetsTotal, 'display', ''),
+    },
+    name: 'balances',
+    renderItem: isLoadingBalances
+      ? balancesSkeletonRenderItem
+      : balancesRenderItem,
+  };
+  return balances;
+};
+
+const withUniqueTokenFamiliesSection = (
+  language,
+  uniqueTokens,
+  uniqueTokenData,
+) => {
+  // TODO preload elsewhere?
+  const imageTokens = [];
+  uniqueTokens.forEach(token => {
+    if (token.image_preview_url) {
+      imageTokens.push({
+        uri: token.image_preview_url,
+        id: token.id
+      });
+    }
+  });
+  FastImage.preload(imageTokens);
+
+  const uniqueTokensSection = {
+    collectibles: true,
+    data: uniqueTokenData,
+    header: {
+      title: lang.t('account.tab_collectibles'),
+      totalItems: uniqueTokens.length,
+      totalValue: '',
+    },
+    name: 'collectibles',
+    renderItem: tokenFamilyItem,
+    type: 'big',
+  };
+  return uniqueTokensSection;
+};
+
+const balanceSectionSelector = createSelector(
   [
     allAssetsSelector,
     allAssetsCountSelector,
@@ -175,13 +203,46 @@ export default createSelector(
     isWalletEthZeroSelector,
     languageSelector,
     nativeCurrencySelector,
+    showShitcoinsSelector,
+  ],
+  withBalanceSection,
+);
+
+const uniswapSectionSelector = createSelector(
+  [
+    languageSelector,
+    nativeCurrencySelector,
+    uniswapSelector,
+    uniswapTotalSelector,
+  ],
+  withUniswapSection,
+);
+
+const uniqueTokenFamiliesSelector = createSelector(
+  [
+    languageSelector,
+    uniqueTokensSelector,
+    uniqueTokenDataSelector,
+  ],
+  withUniqueTokenFamiliesSection,
+);
+
+const uniqueTokenDataSelector = createSelector(
+  [ uniqueTokensSelector ],
+  buildUniqueTokenList,
+);
+
+export default createSelector(
+  [
+    balanceSectionSelector,
+    languageSelector,
+    nativeCurrencySelector,
     onToggleShowShitcoinsSelector,
     setIsWalletEmptySelector,
     shitcoinsCountSelector,
     showShitcoinsSelector,
-    uniqueTokensSelector,
-    uniswapSelector,
-    uniswapTotalSelector,
+    uniqueTokenFamiliesSelector,
+    uniswapSectionSelector,
   ],
   buildWalletSections,
 );
