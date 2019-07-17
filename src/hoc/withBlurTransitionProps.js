@@ -14,8 +14,8 @@ const withBlurTransitionProps = ({
   position,
 }) => {
   const blurOpacity = interpolate(position, {
-    inputRange: [0, 0.01, 1],
-    outputRange: [0, 0.8, 1],
+    inputRange: [0, 0.9, 1],
+    outputRange: [0, 0.1, 1],
   });
 
   const showBlur = (effect === 'expanded') && (isTransitioning || showingModal);

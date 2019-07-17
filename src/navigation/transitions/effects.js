@@ -45,7 +45,7 @@ sheet.borderRadiusEnd = 12;
 sheet.scaleEnd = 1 - ((statusBarHeight + (isIphoneX() ? sheet.distanceFromTop : 0)) / deviceUtils.dimensions.height);
 sheet.heightEnd = statusBarHeight + sheet.distanceFromTop;
 sheet.borderRadiusScaledEnd = sheet.borderRadiusEnd / sheet.scaleEnd;
-sheet.opacityEnd = 0.5;
+sheet.opacityEnd = 0.2;
 
 export const sheetVerticalOffset = sheet.distanceFromTop + statusBarHeight;
 

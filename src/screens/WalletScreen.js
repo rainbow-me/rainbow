@@ -142,11 +142,7 @@ class WalletScreen extends Component {
             sections={sections}
           />
         </FabWrapper>
-        {showBlur && (
-          <FadeInAnimation css={position.cover} duration={315} zIndex={1}>
-            <BlurOverlay opacity={blurOpacity} />
-          </FadeInAnimation>
-        )}
+        {showBlur && <BlurOverlay opacity={blurOpacity} />}
       </Page>
     );
   }
