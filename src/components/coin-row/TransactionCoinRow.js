@@ -145,6 +145,7 @@ export default compose(
               asset: item,
               contact: contact,
               type: 'contact',
+              onCloseModal: () => undefined,
             });
           } else if (buttonIndex === 1) {
             const normalizedHash = hash.replace(/-.*/g, '');

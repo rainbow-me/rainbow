@@ -435,7 +435,7 @@ export const removeLocalRequests = async (address, network) => {
 export const getLocalContacts = async () => {
   try {
     const localContacts = await getLocal('localContacts');
-    return localContacts ? localContacts.data : null;
+    return localContacts ? localContacts.data : [];
   }
   catch {
     return [];

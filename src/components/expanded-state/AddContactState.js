@@ -111,6 +111,7 @@ class AddContactState extends React.PureComponent {
 
   addContact = async () => {
     await addNewLocalContact(this.props.address, this.state.value, this.props.color);
+    this.props.onCloseModal();
     this.props.navigation.goBack();
   }
 
@@ -153,12 +154,12 @@ class AddContactState extends React.PureComponent {
               {!this.props.contact ?
                 <CancelButton
                   style={{ paddingTop: 11 }}
-                  onPress={() => { this.props.navigation.goBack() }}
+                  onPress={() => { this.props.onCloseModal(); this.props.navigation.goBack() }}
                   text="Cancel"
                 /> :
                 <CancelButton
                   style={{ paddingTop: 11 }}
-                  onPress={async () => { await deleteLocalContact(this.props.address); this.props.navigation.goBack() }}
+                  onPress={async () => { await deleteLocalContact(this.props.address); this.props.onCloseModal(); this.props.navigation.goBack() }}
                   text="Delete Contact"
                 />
               }

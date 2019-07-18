@@ -27,12 +27,16 @@ const Nickname = styled(Text)`
   line-height: 45px;
 `;
 
-const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddress, contacts, navigation }) => {
+const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddress, contacts, navigation, onUpdateContacts }) => {
   let headerName = "";
-  for ( let i = 0; i < contacts.length; i++ ) {
-    if(recipient == contacts[i].address){
-      headerName = contacts[i].nickname;
+  let contactColor = 0;
+  if( contacts ) {
+    for ( let i = 0; i < contacts.length; i++ ) {
+      if(recipient == contacts[i].address){
+        headerName = contacts[i].nickname;
+      }
     }
+    contactColor = contacts.length % 8;
   }
 
   return (
@@ -57,12 +61,13 @@ const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddr
         <AddContactButton onPress={() => {
           navigation.navigate('ExpandedAssetScreen', {
             address: recipient,
-            color: 1,
-            asset: contacts[0],
+            color: contactColor,
+            asset: [],
             contact: false,
             type: 'contact',
+            onCloseModal: onUpdateContacts,
           });
-        }}/>  : 
+        }}/> : 
         <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
       <Divider

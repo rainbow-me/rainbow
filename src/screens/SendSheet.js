@@ -106,8 +106,7 @@ class SendSheet extends Component {
     if (address) {
       sendUpdateRecipient(address);
     }
-    const contacts = await getLocalContacts();
-    this.setState({ contacts: contacts });
+    this.onUpdateContacts()    
   }
 
   componentDidUpdate(prevProps) {
@@ -230,6 +229,11 @@ class SendSheet extends Component {
     });
   }
 
+  onUpdateContacts = async () => {
+    const contacts = await getLocalContacts();
+    this.setState({ contacts: contacts });
+  }
+
   render() {
     const {
       allAssets,
@@ -258,11 +262,13 @@ class SendSheet extends Component {
               onPressPaste={sendUpdateRecipient}
               contacts={this.state.contacts} 
               isValidAddress={isValidAddress} 
+              onUpdateContacts={this.onUpdateContacts}
             />
             {showEmptyState && (
             <SendContactList 
               allAssets={this.state.contacts} 
               onPressContact={sendUpdateRecipient} 
+              onUpdateContacts={this.onUpdateContacts}
               />
             )}
             {showAssetList && (

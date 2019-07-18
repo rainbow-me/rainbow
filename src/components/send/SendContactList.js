@@ -12,7 +12,7 @@ import { TruncatedAddress } from '../text';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Column, Row } from '../layout';
-import transitionConfig from '../../navigation/transitions';
+import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { RectButton } from 'react-native-gesture-handler';
 import { Animated, LayoutAnimation } from 'react-native';
@@ -20,6 +20,8 @@ import {
   getLocalContacts,
   deleteLocalContact,
 } from '../../handlers/commonStorage';
+import { withNavigation } from 'react-navigation';
+import { compose } from 'recompact';
 
 const rowHeight = 62;
 
@@ -84,17 +86,11 @@ class Avatar extends React.PureComponent {
     this.props.onPress(this.props.address);
   }
 
-  renderRightAction = (text, color, x, progress) => {
+  renderRightAction = (text, color, x, progress, onPress) => {
     const trans = progress.interpolate({
       inputRange: [0, 1],
       outputRange: [x, 0],
     });
-
-    const pressHandler = async () => {
-      this.close();
-      await deleteLocalContact(this.props.address);
-      this.props.onChange();
-    };
 
     return (
       <Animated.View style={{ flex: 1, transform: [{ translateX: trans }] }}>
@@ -105,9 +101,9 @@ class Avatar extends React.PureComponent {
             justifyContent: 'center',
             backgroundColor: color 
           }]}
-          onPress={pressHandler}>
+          onPress={onPress}>
           <Text style={{
-            color: 'white',
+            color: 'white', 
             fontSize: 16,
             backgroundColor: 'transparent',
             padding: 10,
@@ -117,10 +113,33 @@ class Avatar extends React.PureComponent {
     );
   };
 
+  deleteHandler = async () => {
+    this.close();
+    await deleteLocalContact(this.props.address);
+    this.props.onChange();
+  };
+
+  editHandler = async () => {
+    console.log(this.props);
+    this.close();
+    this.props.navigation.navigate('ExpandedAssetScreen', {
+      address: this.props.address,
+      color: this.props.color,
+      asset: [],
+      contact: {
+        address: this.props.address,
+        color: this.props.color,
+        nickname: this.props.nickname,
+      },
+      type: 'contact',
+      onCloseModal: this.props.onChange,
+    });
+  };
+
   renderRightActions = progress => (
     <View style={{ width: 140, flexDirection: 'row' }}>
-      {this.renderRightAction('Edit', '#ffab00', 140, progress)}
-      {this.renderRightAction('Delete', '#dd2c00', 70, progress)}
+      {this.renderRightAction('Edit', '#ffab00', 140, progress, this.editHandler)}
+      {this.renderRightAction('Delete', '#dd2c00', 70, progress, this.deleteHandler)}
     </View>
   );
 
@@ -158,7 +177,14 @@ class Avatar extends React.PureComponent {
 }
 
 class SendContactList extends React.Component {
-  balancesRenderItem = item => <Avatar onChange={this.onChangeContacts} onPress={this.props.onPressContact} {...item} />
+  balancesRenderItem = item => (
+    <Avatar 
+      onChange={this.props.onUpdateContacts} 
+      onPress={this.props.onPressContact} 
+      navigation={this.props.navigation}
+      {...item} 
+    />
+  );
 
   constructor(args) {
     super(args);
@@ -189,13 +215,6 @@ class SendContactList extends React.Component {
     }
   }
 
-  onChangeContacts = async () => {
-    const contacts = await getLocalContacts();
-    let newAssets = Object.assign([], contacts);
-    newAssets.reverse();
-    this.setState({ contacts: newAssets });
-  }
-
   componentWillReceiveProps = (props) => {
     let newAssets = Object.assign([], props.allAssets);
     newAssets.reverse();
@@ -211,7 +230,7 @@ class SendContactList extends React.Component {
           <Column
             css={`
               background-color: ${colors.white};
-              padding-bottom: ${transitionConfig.sheetVerticalOffset + 19};
+              padding-bottom: ${sheetVerticalOffset + 19};
             `}
             flex={1}
             justify="space-between"
@@ -241,4 +260,4 @@ class SendContactList extends React.Component {
   };
 }
 
-export default SendContactList;
+export default compose(withNavigation)(SendContactList);
