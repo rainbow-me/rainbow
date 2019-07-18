@@ -35,11 +35,11 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - GoogleToolboxForMac/Defines (2.2.0)
-  - GoogleToolboxForMac/Logger (2.2.0):
-    - GoogleToolboxForMac/Defines (= 2.2.0)
-  - "GoogleToolboxForMac/NSData+zlib (2.2.0)":
-    - GoogleToolboxForMac/Defines (= 2.2.0)
+  - GoogleToolboxForMac/Defines (2.2.1)
+  - GoogleToolboxForMac/Logger (2.2.1):
+    - GoogleToolboxForMac/Defines (= 2.2.1)
+  - "GoogleToolboxForMac/NSData+zlib (2.2.1)":
+    - GoogleToolboxForMac/Defines (= 2.2.1)
   - libwebp (1.0.2):
     - libwebp/core (= 1.0.2)
     - libwebp/dec (= 1.0.2)
@@ -69,7 +69,7 @@ PODS:
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
-  - Protobuf (3.7.0)
+  - Protobuf (3.8.0)
   - React (0.59.9):
     - React/Core (= 0.59.9)
   - react-native-blur (0.8.0):
@@ -159,9 +159,9 @@ PODS:
     - React
   - RNScreens (1.0.0-alpha.23):
     - React
-  - SDWebImage (5.0.2):
-    - SDWebImage/Core (= 5.0.2)
-  - SDWebImage/Core (5.0.2)
+  - SDWebImage (5.0.6):
+    - SDWebImage/Core (= 5.0.6)
+  - SDWebImage/Core (5.0.6)
   - yoga (0.59.9.React)
 
 DEPENDENCIES:
@@ -282,10 +282,10 @@ SPEC CHECKSUMS:
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
-  GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
+  GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
   libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
-  Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
+  Protobuf: 3f617b9a6e73605565086864c9bc26b2bf2dd5a3
   React: a86b92f00edbe1873a63e4a212c29b7a7ad5224f
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: f1fbfc336ba8ca6de5296190341d1b6022c71cff
@@ -300,7 +300,7 @@ SPEC CHECKSUMS:
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNReanimated: 7a52c90473b5e81c13408d40d797b98387eaddde
   RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
-  SDWebImage: 6764b5fa0f73c203728052955dbefa2bf1f33282
+  SDWebImage: 920f1a2ff1ca8296ad34f6e0510a1ef1d70ac965
   yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
 
 PODFILE CHECKSUM: 69f9700d74876f14f6f0acf5fd33a74d47eeb2c8

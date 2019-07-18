@@ -94,6 +94,7 @@ FloatingActionButton.propTypes = {
 };
 
 FloatingActionButton.size = 56;
+FloatingActionButton.sizeWhileDragging = 74;
 
 FloatingActionButton.defaultProps = {
   size: FloatingActionButton.size,

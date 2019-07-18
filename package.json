@@ -88,6 +88,7 @@
     "react-native-radial-gradient": "shkatulo/react-native-radial-gradient",
     "react-native-randombytes": "^3.5.3",
     "react-native-reanimated": "1.1.0",
+    "react-native-redash": "^7.2.1",
     "react-native-safe-area-view": "mikedemarais/react-native-safe-area-view",
     "react-native-screens": "^1.0.0-alpha.23",
     "react-native-splash-screen": "^3.2.0",

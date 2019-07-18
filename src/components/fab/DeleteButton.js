@@ -1,37 +1,45 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Animated from 'react-native-reanimated';
+import { transformOrigin } from 'react-native-redash';
+import { onlyUpdateForKeys } from 'recompact';
 import { borders, colors, position } from '../../styles';
 import { Icon } from '../icons';
 import { ShadowStack } from '../shadow-stack';
-import FloatingActionButton, { buildFabShadow } from './FloatingActionButton';
+import { buildFabShadow } from './FloatingActionButton';
 
-const DeleteButton = ({ deleteButtonTranslate }) => (
+const size = 34;
+
+const enhance = onlyUpdateForKeys(['deleteButtonScale']);
+const DeleteButton = enhance(({ deleteButtonScale }) => (
   <Animated.View
     style={{
-      ...position.sizeAsObject(50),
-      bottom: 44,
+      ...position.centeredAsObject,
+      ...position.sizeAsObject(size),
       position: 'absolute',
-      right: (FloatingActionButton.size / 2) - (50 / 2),
-      transform: [{ translateY: deleteButtonTranslate }],
+      transform: transformOrigin(size / -8, size / -8, { scale: deleteButtonScale }),
     }}
   >
     <ShadowStack
-      {...borders.buildCircleAsObject(34)}
+      {...borders.buildCircleAsObject(size)}
       backgroundColor={colors.dark}
       shadows={buildFabShadow(false)}
     >
       <Icon
-        {...position.sizeAsObject(11)}
         color="white"
         name="close"
+        size={12}
       />
     </ShadowStack>
   </Animated.View>
-);
+));
 
 DeleteButton.propTypes = {
-  deleteButtonTranslate: PropTypes.object,
+  deleteButtonScale: PropTypes.object,
 };
+
+DeleteButton.size = size;
+
+DeleteButton.defaultScale = 1.25;
 
 export default DeleteButton;
