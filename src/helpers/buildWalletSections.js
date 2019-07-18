@@ -138,7 +138,7 @@ const withBalanceSection = (
   let balanceSectionData = showShitcoins ? allAssets : assets;
   const isLoadingBalances = (!isWalletEthZero && isBalancesSectionEmpty);
   if (isLoadingBalances) {
-    balanceSectionData = [{ index: 0, uniqueId: 'skeleton0' }];
+    balanceSectionData = [{ item: { uniqueId: 'skeleton0' } }];
   }
 
   const balances = {

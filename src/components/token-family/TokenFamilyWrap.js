@@ -70,10 +70,12 @@ class TokenFamilyWrap extends Component {
     if (this.props.openFamilyTabs[item.item[0][0].rowNumber]) {
       const tokens = [];
       for (let i = 0; i < item.item.length; i++) {
+        const rowKey = `uniqueTokenRow_${item.familyId}_${i}`;
         tokens.push(
           <UniqueTokenItem
             assetType="unique_token"
             item={item.item[i]}
+            key={rowKey}
           />
         );
       }

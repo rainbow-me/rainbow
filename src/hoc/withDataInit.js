@@ -83,7 +83,7 @@ export default Component => compose(
         ownProps.requestsClearState();
         ownProps.uniswapClearState();
       } catch (error) {
-        console.log('ERROR', error);
+        console.log('ERROR clearing account data', error);
       }
     },
     initializeAccountData: (ownProps) => async () => {
