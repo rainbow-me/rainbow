@@ -2,6 +2,7 @@ import {
   findIndex,
   get,
   has,
+  isNil,
 } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -384,6 +385,7 @@ class RecyclerAssetList extends Component {
   );
 
   rowRenderer = (type, data, index) => {
+    if (isNil(data) || isNil(index)) return null;
     const { item, renderItem } = data;
     const { hideHeader, sections } = this.props;
 
@@ -408,7 +410,7 @@ class RecyclerAssetList extends Component {
         familyImage: item.familyImage,
         familyName: item.familyName,
         item: item.tokens,
-        shouldPrioritizeImageLoading: index < sections[0].data.length + 9,
+        shouldPrioritizeImageLoading: index < get(sections, '[0].data.length', 0) + 9,
         uniqueId: item.uniqueId,
       });
   };
