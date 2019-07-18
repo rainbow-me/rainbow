@@ -40,7 +40,7 @@ const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddr
         contact = contacts[i];
       }
     }
-    nextContactColor = contacts.length % colors.avatarColor.length - 1;
+    nextContactColor = contacts.length % (colors.avatarColor.length - 1);
     if (nextContactColor == contacts[contacts.length - 1].color) {
       nextContactColor = nextContactColor + 1;
       nextContactColor = nextContactColor > colors.avatarColor.length - 1 ? 0 : nextContactColor;
