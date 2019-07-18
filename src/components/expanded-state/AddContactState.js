@@ -91,9 +91,13 @@ class AddContactState extends React.PureComponent {
   }
 
   componentDidMount = () => {
+    let newState = {
+      color: this.props.color,
+    };
     if (this.props.contact.nickname) {
-      this.setState({ value: this.props.contact.nickname, color: this.props.contact.color });
+      newState.value = this.props.contact.nickname;
     }
+    this.setState(newState);
   }
 
   format = (string) => (
@@ -131,7 +135,7 @@ class AddContactState extends React.PureComponent {
         <Container>
           <AssetPanel>
             <TopMenu>
-            <ButtonPressAnimation onPress={this.onChangeColor} scaleTo={0.96}>
+              <ButtonPressAnimation onPress={this.onChangeColor} scaleTo={0.96}>
                 <NameCircle style={{ backgroundColor: colors.avatarColor[this.state.color] }}>
                   <FirstLetter>
                     {this.state.value.length > 0 && this.state.value[0].toUpperCase()}
