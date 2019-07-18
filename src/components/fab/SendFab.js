@@ -4,7 +4,6 @@ import Animated from 'react-native-reanimated';
 import { withNavigation } from 'react-navigation';
 import {
   compose,
-  omitProps,
   onlyUpdateForKeys,
   withHandlers,
   withProps,
@@ -14,16 +13,9 @@ import { Icon } from '../icons';
 import { Centered } from '../layout';
 import DeleteButton from './DeleteButton';
 import FloatingActionButton from './FloatingActionButton';
-import MovableFabWrapper, { extraStates } from './MovableFabWrapper';
+import MovableFabWrapper from './MovableFabWrapper';
 
-const FloatingActionButtonWithDisabled = compose(
-  withFabSelection,
-  withProps(({ selectedId }) => ({
-    greyed: selectedId === extraStates.notSendable,
-    size: FloatingActionButton.size,
-  })),
-  omitProps('selectedId'),
-)(FloatingActionButton);
+const FloatingActionButtonWithDisabled = withFabSelection(FloatingActionButton);
 
 const SendFab = ({
   areas,

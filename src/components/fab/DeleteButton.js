@@ -6,7 +6,7 @@ import { onlyUpdateForKeys } from 'recompact';
 import { borders, colors, position } from '../../styles';
 import { Icon } from '../icons';
 import { ShadowStack } from '../shadow-stack';
-import { buildFabShadow } from './FloatingActionButton';
+import FloatingActionButton from './FloatingActionButton';
 
 const size = 34;
 
@@ -23,7 +23,7 @@ const DeleteButton = enhance(({ deleteButtonScale }) => (
     <ShadowStack
       {...borders.buildCircleAsObject(size)}
       backgroundColor={colors.dark}
-      shadows={buildFabShadow(false)}
+      shadows={FloatingActionButton.shadow}
     >
       <Icon
         color="white"
