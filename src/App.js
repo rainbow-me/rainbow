@@ -24,7 +24,7 @@ import {
 } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
-import Navigation from './navigation';
+import { Navigation } from './navigation';
 import store from './redux/store';
 import { requestsForTopic } from './redux/requests';
 import Routes from './screens/Routes';

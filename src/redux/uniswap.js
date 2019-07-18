@@ -13,7 +13,7 @@ import {
   saveUniswap,
   saveUniswapLiquidityTokens,
 } from '../handlers/commonStorage';
-import { getUniswapLiquidityInfo } from '../handlers/uniswap';
+import getUniswapLiquidityInfo from '../handlers/uniswap';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';
@@ -57,7 +57,7 @@ export const uniswapUpdateLiquidityTokens = (liquidityTokens) => (dispatch, getS
     payload: liquidityTokens,
     type: UNISWAP_UPDATE_LIQUIDITY_TOKENS,
   });
-  saveUniswapLiquidityTokens(accountAddress, network);
+  saveUniswapLiquidityTokens(accountAddress, liquidityTokens, network);
   dispatch(uniswapUpdateState());
 };
 
@@ -71,13 +71,14 @@ export const uniswapAddLiquidityTokens = (newLiquidityTokens) => (dispatch, getS
     payload: updatedLiquidityTokens,
     type: UNISWAP_UPDATE_LIQUIDITY_TOKENS,
   });
-  saveUniswapLiquidityTokens(accountAddress, network);
+  saveUniswapLiquidityTokens(accountAddress, updatedLiquidityTokens, network);
   dispatch(uniswapUpdateState());
 };
 
 export const uniswapUpdateState = () => (dispatch, getState) => new Promise((resolve, reject) => {
   const { accountAddress, network } = getState().settings;
   const { liquidityTokens } = getState().uniswap;
+  if (isEmpty(liquidityTokens)) return;
   const exchangeContracts = map(liquidityTokens, x => get(x, 'asset.asset_code'));
 
   dispatch({ type: UNISWAP_UPDATE_REQUEST });
@@ -131,8 +132,7 @@ export default (state = INITIAL_UNISWAP_STATE, action) => produce(state, draft =
     draft.liquidityTokens = action.payload;
     break;
   case UNISWAP_CLEAR_STATE:
-    draft = INITIAL_UNISWAP_STATE;
-    break;
+    return INITIAL_UNISWAP_STATE;
   default:
     break;
   }

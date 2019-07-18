@@ -8,10 +8,10 @@ import {
   withHandlers,
   withProps,
 } from 'recompact';
-import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
-import FloatingPanels from './FloatingPanels';
 import { withAccountData, withAccountSettings } from '../../hoc';
 import { ethereumUtils } from '../../utils';
+import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
+import FloatingPanels from './FloatingPanels';
 
 const TokenExpandedState = ({
   onPressSend,

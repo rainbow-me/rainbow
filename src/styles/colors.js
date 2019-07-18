@@ -9,7 +9,7 @@ const base = {
   blueGreyDark: '#3C4252', // '60, 66, 82'
   blueGreyDarker: '#0F0F11', // '15, 15, 17'
   blueGreyLight: '#A1A5AC',
-  blueGreyLightest: '#888D96', // '136, 141, 150'
+  blueGreyLightest: '#8A8E97', // '138, 142, 151'
   blueGreyLigter: '#666A73', // '102, 106, 115'
   blueGreyMedium: '#636875', // '99, 104, 117'
   blueGreyMediumLight: '#7b7f8a', // '123, 127, 138'
@@ -26,22 +26,23 @@ const base = {
   green: '#00994d', // '0, 153, 77'
   grey: '#a9adb9', // '169, 173, 185'
   headerTitle: '#aaafbd', // '170, 175, 189'
+  highlightBackground: '#f6f7f8', // '170, 175, 189'
   lightBlue: '#c5f2ff', // '197, 242, 255'
-  lightestGrey: '#eee9e8', // '238, 233, 232'
+  lightestGrey: '#E9EBEF', // '238, 233, 232'
   lightGreen: '#54d192', // '84, 209, 146'
   lightGrey: '#f7f7f8', // '247, 247, 248'
+  limeGreen: '#3FCC18', // '58, 166, 134'
   mediumGrey: '#a1a5b3', // '161, 165, 179'
   orange: '#f6851b', // '246, 133, 27'
   orangeLight: '#FFAF24', // '255, 175, 36'
   orangeMedium: '#FCA247', // '252, 162, 71'
-  paleBlue: '#5D9DF6',
+  paleBlue: '#579DFF',
   placeholder: '#C4C6CB', // 196, 198, 203
   primaryBlue: '#5d9df6', // '93, 157, 246'
   primaryGreen: '#139E74', // '19, 158, 116'
   purple: '#32325d', // '50, 50, 93'
   red: '#d64b47', // '214, 75, 71'
   rowDivider: '#f9f9fa', // '249, 249, 250'
-  seaGreen: '#3aa686', // '58, 166, 134'
   skeleton: '#f7f7f8', // '247, 247, 248'
   teal: '#84f8da', // '132, 248, 218'
   transparent: 'transparent',

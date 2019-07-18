@@ -1,15 +1,16 @@
 import { compose, setDisplayName, withProps } from 'recompact';
+import { position } from '../../styles';
 import { ColumnWithMargins } from '../layout';
 
 const FloatingPanelsMargin = 20;
 
 const FloatingPanels = compose(
   setDisplayName('FloatingPanels'),
-  withProps((props) => {
-    return {
-      margin: FloatingPanelsMargin,
-      style: { width: `${props.width}%` },
-    }
+  withProps({
+    justify: 'center',
+    margin: FloatingPanelsMargin,
+    pointerEvents: 'box-none',
+    style: position.sizeAsObject('100%'),
   }),
 )(ColumnWithMargins);
 

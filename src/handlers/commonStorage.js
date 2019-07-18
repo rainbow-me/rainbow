@@ -3,6 +3,7 @@ import { omit, pickBy } from 'lodash';
 
 const defaultVersion = '0.1.0';
 const transactionsVersion = '0.2.0';
+const uniqueTokensVersion = '0.2.0';
 const assetsVersion = '0.2.0';
 
 /**
@@ -220,7 +221,7 @@ export const removeLocalTransactions = (accountAddress, network) => {
  * @return {Object}
  */
 export const getUniqueTokens = async (accountAddress, network) => {
-  const uniqueTokens = await getLocal(getUniqueTokensKey(accountAddress, network));
+  const uniqueTokens = await getLocal(getUniqueTokensKey(accountAddress, network), uniqueTokensVersion);
   return uniqueTokens ? uniqueTokens.data : [];
 };
 
@@ -234,6 +235,7 @@ export const saveUniqueTokens = async (accountAddress, uniqueTokens, network) =>
   await saveLocal(
     getUniqueTokensKey(accountAddress, network),
     { data: uniqueTokens },
+    uniqueTokensVersion,
   );
 };
 
@@ -245,7 +247,7 @@ export const saveUniqueTokens = async (accountAddress, uniqueTokens, network) =>
  */
 export const removeUniqueTokens = (accountAddress, network) => {
   const key = getUniqueTokensKey(accountAddress, network);
-  removeLocal(key);
+  removeLocal(key, uniqueTokensVersion);
 };
 
 /**

@@ -17,8 +17,8 @@ const spring = {
     tension: 145,
   },
   default: {
-    friction: 44,
-    tension: 600,
+    friction: 11,
+    tension: 220,
   },
 };
 

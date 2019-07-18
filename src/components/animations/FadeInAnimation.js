@@ -28,8 +28,8 @@ export default class FadeInAnimation extends PureComponent {
   }
 
   static defaultProps = {
-    duration: 250,
-    easing: Easing.quad,
+    duration: 315,
+    easing: Easing.bezier(0.19, 1, 0.22, 1),
     from: 0,
     isInteraction: false,
     to: 1,

@@ -18,4 +18,4 @@ AssetPanel.propTypes = {
   children: PropTypes.node,
 };
 
-export default AssetPanel;
+export default React.memo(AssetPanel);

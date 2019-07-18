@@ -1,29 +1,30 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import { compose, pure } from 'recompact';
+import { compose } from 'recompact';
 import styled from 'styled-components/primitives';
-import { withAccountSettings } from '../../hoc';
+import { withAccountSettings, withFabSendAction } from '../../hoc';
 import { colors, padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
+import Highlight from '../Highlight';
 import { Column, Row } from '../layout';
 
-const CoinRowPaddingVertical = 12;
+const CoinRowPaddingTop = 15;
+const CoinRowPaddingBottom = 7;
 
 const Container = styled(Row)`
-  ${padding(CoinRowPaddingVertical, 19, CoinRowPaddingVertical, 15)}
+  ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom, 15)}
   background-color: ${colors.white};
   width: 100%;
 `;
 
 const Content = styled(Column)`
-  background-color: ${colors.white};
   height: ${CoinIcon.size};
-  margin-left: ${CoinRowPaddingVertical};
+  margin-left: 10;
 `;
 
 const enhance = compose(
   withAccountSettings,
-  pure,
+  withFabSendAction,
 );
 
 const CoinRow = enhance(({
@@ -32,12 +33,13 @@ const CoinRow = enhance(({
   coinIconRender,
   containerStyles,
   contentStyles,
-  onPress,
+  highlight,
   symbol,
   topRowRender,
   ...props
 }) => (
-  <Container align="center" css={containerStyles}>
+  <Container align="center" css={containerStyles} color="red">
+    <Highlight highlight={highlight}/>
     {createElement(coinIconRender, { symbol, ...props })}
     <Content flex={1} justify="space-between" css={contentStyles}>
       <Row align="center" justify="space-between">
@@ -60,7 +62,7 @@ CoinRow.propTypes = {
   coinIconRender: PropTypes.func,
   containerStyles: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
   contentStyles: PropTypes.string,
-  onPress: PropTypes.func,
+  highlight: PropTypes.bool,
   symbol: PropTypes.string,
   topRowRender: PropTypes.func,
 };
@@ -69,6 +71,7 @@ CoinRow.defaultProps = {
   coinIconRender: CoinIcon,
 };
 
-CoinRow.height = CoinIcon.size + (CoinRowPaddingVertical * 2);
+CoinRow.height = CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom;
+
 
 export default CoinRow;
