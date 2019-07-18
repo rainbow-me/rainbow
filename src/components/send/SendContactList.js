@@ -79,6 +79,7 @@ const layoutItemAnimator = {
   animateWillUpdate:  () => LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')),
 };
 
+let position = 0;
 
 class Avatar extends React.PureComponent {
 
@@ -223,9 +224,16 @@ class SendContactList extends React.Component {
     }
   }
 
+  shouldComponentUpdate = () => {
+    if(position < 0) {
+      return false;
+    }
+    return true;
+  }
+
   render() {
     return (
-      <FlyInAnimation style={{ flex: 1, width: '100%' }}>
+      <FlyInAnimation style={{ flex: 1, width: '100%', paddingBottom: 20 }}>
         {this.state.contacts.length == 0 ?
           <Column
             css={`
@@ -253,6 +261,10 @@ class SendContactList extends React.Component {
             }
             layoutProvider={this._layoutProvider}
             // itemAnimator={layoutItemAnimator}
+            onScroll={(event, _offsetX, offsetY) => {
+              position = offsetY;
+            }}
+            optimizeForInsertDeleteAnimations
           />
         }
       </FlyInAnimation>

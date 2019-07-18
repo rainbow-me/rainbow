@@ -28,19 +28,23 @@ const Nickname = styled(Text)`
 `;
 
 const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddress, contacts, navigation, onUpdateContacts }) => {
-  let contactColor = 0;
+  let nextContactColor = 0;
   let contact = {
     nickname: "",
     color: 0,
     address: "",
   }
-  if( contacts ) {
-    for ( let i = 0; i < contacts.length; i++ ) {
-      if(recipient == contacts[i].address){
+  if (contacts && contacts.length > 0) {
+    for (let i = 0; i < contacts.length; i++) {
+      if (recipient == contacts[i].address) {
         contact = contacts[i];
       }
     }
-    contactColor = contacts.length % 8;
+    nextContactColor = contacts.length % colors.avatarColor.length - 1;
+    if (nextContactColor == contacts[contacts.length - 1].color) {
+      nextContactColor = nextContactColor + 1;
+      nextContactColor = nextContactColor > colors.avatarColor.length - 1 ? 0 : nextContactColor;
+    }
   }
 
   return (
@@ -59,29 +63,29 @@ const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddr
           autoFocus
           onChange={onChangeAddressInput}
           headerName={contact.nickname}
-          />
-        {isValidAddress ? contact.nickname.length > 0 ? 
-        <AddContactButton edit onPress={() => {
-          navigation.navigate('ExpandedAssetScreen', {
-            address: recipient,
-            color: contact.color,
-            asset: [],
-            contact: contact,
-            type: 'contact',
-            onCloseModal: onUpdateContacts,
-          });
-        }}/> : 
-        <AddContactButton onPress={() => {
-          navigation.navigate('ExpandedAssetScreen', {
-            address: recipient,
-            color: contactColor,
-            asset: [],
-            contact: false,
-            type: 'contact',
-            onCloseModal: onUpdateContacts,
-          });
-        }}/> : 
-        <PasteAddressButton onPress={onPressPaste} />}
+        />
+        {isValidAddress ? contact.nickname.length > 0 ?
+          <AddContactButton edit onPress={() => {
+            navigation.navigate('ExpandedAssetScreen', {
+              address: recipient,
+              color: contact.color,
+              asset: [],
+              contact: contact,
+              type: 'contact',
+              onCloseModal: onUpdateContacts,
+            });
+          }} /> :
+          <AddContactButton onPress={() => {
+            navigation.navigate('ExpandedAssetScreen', {
+              address: recipient,
+              color: nextContactColor,
+              asset: [],
+              contact: false,
+              type: 'contact',
+              onCloseModal: onUpdateContacts,
+            });
+          }} /> :
+          <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
       <Divider
         color={colors.alpha(colors.blueGreyLight, 0.05)}
