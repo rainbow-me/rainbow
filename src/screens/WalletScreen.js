@@ -36,8 +36,8 @@ import {
   withStatusBarStyle,
   withUniswapLiquidity,
 } from '../hoc';
-import { colors, position } from '../styles';
-import { deviceUtils, isNewValueForPath } from '../utils';
+import { position } from '../styles';
+import { isNewValueForPath } from '../utils';
 
 class WalletScreen extends Component {
   static propTypes = {
@@ -116,16 +116,14 @@ class WalletScreen extends Component {
     } = this.props;
 
     return (
-      <Page style={{ flex: 1, ...position.sizeAsObject('100%') }}>
+      <Page {...position.sizeAsObject('100%')} flex={1}>
         {/* Line below appears to be needed for having scrollViewTracker persistent while
         reattaching of react subviews */}
-        <Animated.Code
-          exec={scrollViewTracker}
-        />
+        <Animated.Code exec={scrollViewTracker} />
         <FabWrapper
-          sections={sections}
           disabled={isWalletEthZero}
           scrollViewTracker={scrollViewTracker}
+          sections={sections}
         >
           <Header justify="space-between">
             <ProfileHeaderButton navigation={navigation} />
@@ -140,10 +138,8 @@ class WalletScreen extends Component {
           />
         </FabWrapper>
         {showBlur && (
-          <FadeInAnimation duration={315} style={{ ...position.coverAsObject, zIndex: 1 }}>
-            <BlurOverlay
-              opacity={blurOpacity}
-            />
+          <FadeInAnimation css={position.cover} duration={315} zIndex={1}>
+            <BlurOverlay opacity={blurOpacity} />
           </FadeInAnimation>
         )}
       </Page>

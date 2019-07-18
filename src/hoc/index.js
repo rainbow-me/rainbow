@@ -6,6 +6,7 @@ export { default as withActionSheetManager } from './withActionSheetManager';
 export { default as withAppState } from './withAppState';
 export { default as withBlurTransitionProps } from './withBlurTransitionProps';
 export { default as withDataInit } from './withDataInit';
+export { default as withFabSelection } from './withFabSelection';
 export { default as withFabSendAction } from './withFabSendAction';
 export { default as withHideSplashScreen } from './withHideSplashScreen';
 export { default as withImageDimensionsCache } from './withImageDimensionsCache';

@@ -31,6 +31,11 @@ position.cover = css`
   top: 0;
 `;
 
+position.centeredAsObject = {
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
 position.coverAsObject = StyleSheet.absoluteFillObject;
 
 const buildSizeKey = (prefix, key) => (prefix ? upperFirst(key) : key);
