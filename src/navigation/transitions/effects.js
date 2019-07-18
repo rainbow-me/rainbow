@@ -40,138 +40,67 @@ expand.opacityEnd = 0.75;
 expand.translateY = deviceUtils.dimensions.height;
 
 const sheet = {};
-sheet.distanceFromTop = 14;
-sheet.borderRadiusEnd = 12;
-sheet.scaleEnd = 1 - ((statusBarHeight + (isIphoneX() ? sheet.distanceFromTop : 0)) / deviceUtils.dimensions.height);
-sheet.heightEnd = statusBarHeight + sheet.distanceFromTop;
-sheet.borderRadiusScaledEnd = sheet.borderRadiusEnd / sheet.scaleEnd;
-sheet.opacityEnd = 0.2;
+sheet.borderRadiusEnd = 16;
 
-export const sheetVerticalOffset = sheet.distanceFromTop + statusBarHeight;
+export const sheetVerticalOffset = statusBarHeight;
 
 const CLOSING = new Value(-1);
 
 const expandStyleInterpolator = ({
   progress: { current },
-  closing,
+  layouts: { screen },
 }) => {
-  if (!current || !closing) return {};
+  const backgroundOpacity = interpolate(current, {
+    inputRange: [0, 0.975],
+    outputRange: [0, 0.7],
+    extrapolate: 'clamp',
+  });
 
-  const value = getInterpolated(current);
-
-  const onOpen = and(eq(closing, 0), eq(current, 0));
-  const onClose = and(eq(closing, 1), eq(current, 1));
+  const translateY = interpolate(current, {
+    inputRange: [0, 1],
+    outputRange: [screen.height, 0],
+  });
 
   return {
+    cardStyle: {
+      transform: [
+        // Translation for the animation of the current card
+        { translateY },
+      ],
+    },
     containerStyle: {
-      transform: [{
-        translateY: block([
-          cond(onOpen, call([], () => {
-            store.dispatch(updateTransitionProps({
-              effect: 'expanded',
-              position: current,
-            }));
-            store.dispatch(updateTransitionProps({ showingModal: true }));
-          })),
-          cond(onClose, call([], () => {
-            store.dispatch(updateTransitionProps({ showingModal: false }));
-          })),
-          set(CURRENT_EFFECT, EXPANDED),
-          set(CLOSING, closing),
-          multiply(expand.translateY, sub(1, value)),
-        ]),
-      }],
+      backgroundColor: color(37, 41, 46, backgroundOpacity),
     },
   };
 };
 
 export const sheetStyleInterpolator = ({
   progress: { current },
-  closing,
-  layouts: { screen: { height } },
+  layouts: { screen },
 }) => {
-  if (!current || !closing || !height) return {};
+  const backgroundOpacity = interpolate(current, {
+    inputRange: [0, 0.975],
+    outputRange: [0, 0.7],
+    extrapolate: 'clamp',
+  });
 
-  const value = getInterpolated(current);
-
-  const onOpen = and(eq(closing, 0), eq(current, 0));
-  const onClose = and(eq(closing, 1), eq(current, 1));
+  const translateY = interpolate(current, {
+    inputRange: [0, 1],
+    outputRange: [screen.height, statusBarHeight],
+  });
 
   return {
     cardStyle: {
       borderTopLeftRadius: sheet.borderRadiusEnd,
       borderTopRightRadius: sheet.borderRadiusEnd,
       overflow: 'hidden',
-      transform: [{
-        translateY: block([
-          cond(onOpen, call([], () => {
-            store.dispatch(updateTransitionProps({
-              effect: 'sheet',
-              position: current,
-            }));
-            store.dispatch(updateTransitionProps({ showingModal: true }));
-          })),
-          cond(onClose, call([], () => {
-            store.dispatch(updateTransitionProps({ showingModal: false }));
-          })),
-          set(CURRENT_EFFECT, SHEET),
-          set(CLOSING, closing),
-          add(
-            sheet.heightEnd,
-            multiply(sub(height, sheet.heightEnd), sub(1, value)),
-          ),
-        ]),
-      }],
-    },
-  };
-};
-
-const backgroundStyleInterpolator = ({ progress: { current, next } }) => {
-  if (!next) return {};
-
-  const pick = (
-    openingSheet,
-    closingSheet,
-    openingExpanded,
-    closingExpanded,
-  ) => cond(
-    eq(CURRENT_EFFECT, SHEET),
-    cond(
-      eq(CLOSING, 0),
-      openingSheet,
-      closingSheet,
-    ),
-    cond(
-      eq(CURRENT_EFFECT, EXPANDED),
-      cond(
-        eq(CLOSING, 0),
-        openingExpanded,
-        closingExpanded,
-      ),
-    ),
-  );
-
-  const expandOpacity = interpolate(next, {
-    inputRange: [0, 1],
-    outputRange: [1, expand.opacityEnd],
-  });
-
-  const sheetOpacity = interpolate(next, {
-    inputRange: [0, 1],
-    outputRange: [1, sheet.opacityEnd],
-  });
-
-  return {
-    cardStyle: {
-      opacity: pick(sheetOpacity, sheetOpacity, expandOpacity, expandOpacity),
+      transform: [
+        // Translation for the animation of the current card
+        { translateY },
+      ],
     },
     containerStyle: {
-      backgroundColor: pick(
-        color(0, 0, 0),
-        color(0, 0, 0),
-        chroma(colors.blueGreyDarker).num(),
-        chroma(colors.blueGreyDarker).num(),
-      ),
+      backgroundColor: color(37, 41, 46, backgroundOpacity),
     },
   };
 };
@@ -180,6 +109,7 @@ const expandedCloseSpec = {
   config: SpringUtils.makeConfigFromBouncinessAndSpeed({
     ...SpringUtils.makeDefaultConfig(),
     bounciness: 0,
+    overshootClamping: true,
     speed: 20,
   }),
   timing: 'spring',
@@ -214,8 +144,4 @@ export const sheetPreset = {
   gestureDirection: 'vertical',
   gestureResponseDistance,
   transitionSpec: { close: expandedCloseSpec, open: expandedOpenSpec },
-};
-
-export const backgroundPreset = {
-  cardStyleInterpolator: backgroundStyleInterpolator,
 };
