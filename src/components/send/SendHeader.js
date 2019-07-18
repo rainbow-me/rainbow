@@ -28,12 +28,16 @@ const Nickname = styled(Text)`
 `;
 
 const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddress, contacts, navigation, onUpdateContacts }) => {
-  let headerName = "";
   let contactColor = 0;
+  let contact = {
+    nickname: "",
+    color: 0,
+    address: "",
+  }
   if( contacts ) {
     for ( let i = 0; i < contacts.length; i++ ) {
       if(recipient == contacts[i].address){
-        headerName = contacts[i].nickname;
+        contact = contacts[i];
       }
     }
     contactColor = contacts.length % 8;
@@ -54,10 +58,19 @@ const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddr
           address={recipient}
           autoFocus
           onChange={onChangeAddressInput}
-          headerName={headerName}
+          headerName={contact.nickname}
           />
-        {isValidAddress ? headerName.length > 0 ? 
-        null : 
+        {isValidAddress ? contact.nickname.length > 0 ? 
+        <AddContactButton edit onPress={() => {
+          navigation.navigate('ExpandedAssetScreen', {
+            address: recipient,
+            color: contact.color,
+            asset: [],
+            contact: contact,
+            type: 'contact',
+            onCloseModal: onUpdateContacts,
+          });
+        }}/> : 
         <AddContactButton onPress={() => {
           navigation.navigate('ExpandedAssetScreen', {
             address: recipient,

@@ -182,11 +182,6 @@ export default compose(
   withAccountData,
   withAccountSettings,
   withProps(({
-    asset: {
-      name,
-      symbol,
-      ...asset
-    },
     contact: {
       nickname,
       ...contact
@@ -195,14 +190,7 @@ export default compose(
     color,
     assets,
     nativeCurrencySymbol,
-  }) => {
-    const selectedAsset = ethereumUtils.getAsset(assets, address);
-    return {
-      price: get(selectedAsset, 'native.price.display', null),
-      subtitle: get(selectedAsset, 'balance.display', symbol),
-      title: name,
-    };
-  }),
+  }) => {}),
   withHandlers({
     onPressSend: ({ navigation, asset: { address } }) => () => {
       navigation.goBack();
