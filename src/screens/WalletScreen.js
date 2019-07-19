@@ -10,7 +10,6 @@ import {
   withProps,
   withState,
 } from 'recompact';
-import { FadeInAnimation } from '../components/animations';
 import { AssetList } from '../components/asset-list';
 import BlurOverlay from '../components/BlurOverlay';
 import { FabWrapper } from '../components/fab';
@@ -36,8 +35,8 @@ import {
   withStatusBarStyle,
   withUniswapLiquidity,
 } from '../hoc';
-import { colors, position } from '../styles';
-import { deviceUtils, isNewValueForPath } from '../utils';
+import { position } from '../styles';
+import { isNewValueForPath } from '../utils';
 
 class WalletScreen extends Component {
   static propTypes = {
