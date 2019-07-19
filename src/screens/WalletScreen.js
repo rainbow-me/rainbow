@@ -10,7 +10,6 @@ import {
   withProps,
   withState,
 } from 'recompact';
-import { FadeInAnimation } from '../components/animations';
 import { AssetList } from '../components/asset-list';
 import BlurOverlay from '../components/BlurOverlay';
 import { FabWrapper } from '../components/fab';
@@ -20,6 +19,11 @@ import {
   ProfileHeaderButton,
 } from '../components/header';
 import { Page } from '../components/layout';
+import {
+  getSmallBalanceToggle,
+  getOpenInvestmentCards,
+  getOpenFamilies,
+} from '../handlers/commonStorage';
 import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import {
   withAccountData,
@@ -32,13 +36,12 @@ import {
   withStatusBarStyle,
   withUniswapLiquidity,
 } from '../hoc';
+import { setOpenSmallBalances } from '../redux/openBalances';
+import { pushOpenFamilyTab } from '../redux/openFamilyTabs';
+import { pushOpenInvestmentCard } from '../redux/openInvestmentCards';
 import store from '../redux/store';
 import { position } from '../styles';
 import { isNewValueForPath } from '../utils';
-import { getSmallBalanceToggle, getOpenInvestmentCards, getOpenFamilies } from '../handlers/commonStorage';
-import { setOpenSmallBalances } from '../redux/openBalances';
-import { pushOpenInvestmentCard } from '../redux/openInvestmentCards';
-import { pushOpenFamilyTab } from '../redux/openFamilyTabs';
 
 class WalletScreen extends Component {
   static propTypes = {
