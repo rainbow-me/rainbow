@@ -58,6 +58,7 @@ export default class AddressField extends PureComponent {
     address: '',
     isValid: false,
     focused: true,
+    forceShowNickname: false,
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -76,6 +77,12 @@ export default class AddressField extends PureComponent {
     }
   }
 
+  componentWillReceiveProps(props) {
+    if (props.headerName !== this.props.headerName) {
+      this.setState({forceShowNickname: true});
+    }
+  }
+
   onChange = ({ nativeEvent }) => this.props.onChange(nativeEvent.text)
 
   onChangeText = address => this.setState({ address })
@@ -89,7 +96,7 @@ export default class AddressField extends PureComponent {
     this.setState({ focused: false });
   }
   onPressNickName = () => {
-    this.setState({ focused: true });
+    this.setState({ focused: true, forceShowNickname: false });
     setTimeout(() => {
       input.focus();
     }, 50);
@@ -98,7 +105,7 @@ export default class AddressField extends PureComponent {
   render() {
     const { autoFocus, headerName, ...props } = this.props;
     const { address, isValid } = this.state;
-
+    
     return (
       <Row flex={1}>
         <AddressInput
@@ -124,7 +131,7 @@ export default class AddressField extends PureComponent {
             <PlaceholderText>...)</PlaceholderText>
           </Placeholder>
         )}
-        {headerName.length > 0 && !this.state.focused && (
+        {headerName.length > 0 && (!this.state.focused || this.state.forceShowNickname) && (
           <Placeholder>
             <TouchableWithoutFeedback onPress={this.onPressNickName} >
               <HeaderNameText>{headerName}</HeaderNameText>
