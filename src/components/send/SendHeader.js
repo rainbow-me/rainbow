@@ -28,7 +28,6 @@ const Nickname = styled(Text)`
 `;
 
 const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddress, contacts, navigation, onUpdateContacts }) => {
-  let nextContactColor = 0;
   let contact = {
     nickname: "",
     color: 0,
@@ -39,11 +38,6 @@ const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddr
       if (recipient == contacts[i].address) {
         contact = contacts[i];
       }
-    }
-    nextContactColor = contacts.length % (colors.avatarColor.length - 1);
-    if (nextContactColor == contacts[contacts.length - 1].color) {
-      nextContactColor = nextContactColor + 1;
-      nextContactColor = nextContactColor > colors.avatarColor.length - 1 ? 0 : nextContactColor;
     }
   }
 
@@ -76,9 +70,11 @@ const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddr
             });
           }} /> :
           <AddContactButton onPress={() => {
+            const contactColor = Math.floor(Math.random() * colors.avatarColor.length);
+
             navigation.navigate('ExpandedAssetScreen', {
               address: recipient,
-              color: nextContactColor,
+              color: contactColor,
               asset: [],
               contact: false,
               type: 'contact',

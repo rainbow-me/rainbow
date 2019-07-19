@@ -140,7 +140,7 @@ export default compose(
         contactColor = contact.color;
       } else {
         headerInfo.address = abbreviations.address(contactAddressNumber, 4, 10);
-        contactColor = contactsAmount % (colors.avatarColor.length - 1);
+        contactColor = Math.floor(Math.random() * colors.avatarColor.length);
       }
 
       if (hash) {
