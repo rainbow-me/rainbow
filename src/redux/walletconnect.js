@@ -1,4 +1,4 @@
-import { commonStorage } from '@rainbow-me/rainbow-common';
+import { commonStorage, web3Provider } from '@rainbow-me/rainbow-common';
 import analytics from '@segment/analytics-react-native';
 import {
   forEach,
@@ -30,6 +30,8 @@ const WALLETCONNECT_CLEAR_TIMESTAMP = 'walletconnect/WALLETCONNECT_CLEAR_TIMESTA
 // TODO store approved list
 const previouslyApprovedDapps = [
 ];
+
+const sendRpcCall = async (payload) => web3Provider.send(payload.method, payload.params);
 
 const getNativeOptions = async () => {
   const language = 'en'; // TODO use lang from settings
@@ -85,12 +87,35 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (dispatch)
   }
 };
 
+const signingMethods = [
+  "eth_sendTransaction",
+  "eth_signTransaction",
+  "personal_sign",
+  "eth_sign",
+  "eth_signTypedData",
+];
+
 const listenOnNewMessages = walletConnector => (dispatch, getState) => {
   walletConnector.on('call_request', (error, payload) => {
     if (error) throw error;
     const { appInitTimestamp } = getState().walletconnect;
     const { clientId, peerId, peerMeta } = walletConnector;
     const requestId = payload.id;
+    if (!signingMethods.includes(payload.method)) {
+      sendRpcCall(payload)
+        .then(result => {
+          walletConnector.approveRequest({
+            id: payload.id,
+            result,
+          });
+        }).catch(error => {
+          walletConnector.rejectRequest({
+            id: payload.id,
+            error: { message: "JSON RPC method not supported" },
+          });
+        });
+      return;
+    }
     dispatch(addTransactionToApprove(clientId, peerId, requestId, payload, peerMeta));
   });
   walletConnector.on('disconnect', (error, payload) => {

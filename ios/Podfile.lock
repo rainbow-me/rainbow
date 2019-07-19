@@ -72,15 +72,15 @@ PODS:
     - React/Core (= 0.59.8)
   - react-native-blur (0.8.0):
     - React
-  - react-native-camera (2.11.0):
+  - react-native-camera (2.11.1):
     - React
-    - react-native-camera/RCT (= 2.11.0)
-    - react-native-camera/RN (= 2.11.0)
-  - react-native-camera/RCT (2.11.0):
+    - react-native-camera/RCT (= 2.11.1)
+    - react-native-camera/RN (= 2.11.1)
+  - react-native-camera/RCT (2.11.1):
     - React
-  - react-native-camera/RN (2.11.0):
+  - react-native-camera/RN (2.11.1):
     - React
-  - react-native-fast-image (6.0.3):
+  - react-native-fast-image (6.1.1):
     - React
     - SDWebImage (~> 5.0)
   - react-native-netinfo (2.0.10):
@@ -153,7 +153,7 @@ PODS:
     - React
   - RNReanimated (1.1.0):
     - React
-  - RNScreens (1.0.0-alpha.22):
+  - RNScreens (1.0.0-alpha.23):
     - React
   - SDWebImage (5.0.2):
     - SDWebImage/Core (= 5.0.2)
@@ -277,8 +277,8 @@ SPEC CHECKSUMS:
   Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
   React: 76e6aa2b87d05eb6cccb6926d72685c9a07df152
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-camera: 0d18706a9fd6d30ece4fa7c9c50fe36f484c54fa
-  react-native-fast-image: 3390cc968d598f0c6b5c710df138f4b653a87231
+  react-native-camera: f1fbfc336ba8ca6de5296190341d1b6022c71cff
+  react-native-fast-image: fdfc612dba58fd73136cf5efdaeb8cfcad7f63b2
   react-native-netinfo: 39c221d058dca040a69e46a083e692bbd65d5ab5
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   RNAnalytics: d110195618296fed3907830911f01cb6e9be53d0
@@ -287,7 +287,7 @@ SPEC CHECKSUMS:
   RNIOS11DeviceCheck: a4a545fdd08230a17a8ce7608e95038ee23a32aa
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNReanimated: 7a52c90473b5e81c13408d40d797b98387eaddde
-  RNScreens: 720a9e6968beb73e8196239801e887d8401f86ed
+  RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
   SDWebImage: 6764b5fa0f73c203728052955dbefa2bf1f33282
   yoga: 92b2102c3d373d1a790db4ab761d2b0ffc634f64
 
