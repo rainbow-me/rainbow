@@ -37,6 +37,7 @@ const HeaderNameText = styled(Label)`
   z-index: 100;
   width: 300px;
   color: ${colors.appleBlue};
+  height: 40px;
 `;
 
 const formatValue = value => (
@@ -105,7 +106,7 @@ export default class AddressField extends PureComponent {
   render() {
     const { autoFocus, headerName, ...props } = this.props;
     const { address, isValid } = this.state;
-    
+
     return (
       <Row flex={1}>
         <AddressInput
