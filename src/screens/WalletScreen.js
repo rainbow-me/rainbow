@@ -52,7 +52,6 @@ class WalletScreen extends Component {
     scrollViewTracker: PropTypes.object,
     sections: PropTypes.array,
     setSafeTimeout: PropTypes.func,
-    showBlur: PropTypes.bool,
     toggleShowShitcoins: PropTypes.func,
     uniqueTokens: PropTypes.array,
   }
@@ -76,26 +75,22 @@ class WalletScreen extends Component {
     const isNewIsEmpty = isNewValueForPath(this.props, nextProps, 'isEmpty');
     const isNewLanguage = isNewValueForPath(this.props, nextProps, 'language');
     const isNewSections = isNewValueForPath(this.props, nextProps, 'sections');
-    const isNewShowBlur = isNewValueForPath(this.props, nextProps, 'showBlur');
     const isNewShowShitcoins = isNewValueForPath(this.props, nextProps, 'showShitcoins');
     const isNewTransitionProps = isNewValueForPath(this.props, nextProps, 'transitionProps');
 
-    if (!nextProps.isFocused && !nextProps.showBlur) {
-      return isNewBlurOpacity
-        || isNewShowBlur
-        || isNewTransitionProps;
+    if (!nextProps.isFocused) {
+      return isNewBlurOpacity || isNewTransitionProps;
     }
 
     return isNewFetchingAssets
-    || isNewFetchingUniqueTokens
-    || isNewIsEmpty
-    || isNewLanguage
-    || isNewCurrency
-    || isNewBlurOpacity
-    || isNewSections
-    || isNewShowShitcoins
-    || isNewTransitionProps
-    || isNewShowBlur;
+      || isNewFetchingUniqueTokens
+      || isNewIsEmpty
+      || isNewLanguage
+      || isNewCurrency
+      || isNewBlurOpacity
+      || isNewSections
+      || isNewShowShitcoins
+      || isNewTransitionProps;
   }
 
   hideSplashScreen = () => {
@@ -111,7 +106,6 @@ class WalletScreen extends Component {
       refreshAccountData,
       scrollViewTracker,
       sections,
-      showBlur,
     } = this.props;
 
     return (
@@ -138,7 +132,7 @@ class WalletScreen extends Component {
             sections={sections}
           />
         </FabWrapper>
-        {showBlur && <BlurOverlay opacity={blurOpacity} />}
+        <BlurOverlay opacity={blurOpacity} />
       </Page>
     );
   }

@@ -19,7 +19,6 @@ const ProfileScreen = ({
   onPressBackButton,
   onPressSettings,
   requests,
-  showBlur,
   transactions,
   transactionsCount,
 }) => (
@@ -49,15 +48,11 @@ const ProfileScreen = ({
       transactionsCount={transactionsCount}
     />
     {isEmpty && <AddFundsInterstitial />}
-    {showBlur && (
-      <FadeInAnimation duration={315} style={{ ...position.coverAsObject, zIndex: 1 }}>
-        <BlurOverlay
-          backgroundColor={colors.alpha(colors.blueGreyDarker, 0.4)}
-          blurType="light"
-          opacity={blurOpacity}
-        />
-      </FadeInAnimation>
-    )}
+    <BlurOverlay
+      backgroundColor={colors.alpha(colors.blueGreyDarker, 0.4)}
+      blurType="light"
+      opacity={blurOpacity}
+    />
   </Page>
 );
 
@@ -70,7 +65,6 @@ ProfileScreen.propTypes = {
   onPressBackButton: PropTypes.func,
   onPressSettings: PropTypes.func,
   requests: PropTypes.array,
-  showBlur: PropTypes.bool,
   transactions: PropTypes.array,
   transactionsCount: PropTypes.number,
 };

@@ -1,4 +1,6 @@
-import { Animated } from 'react-native';
+import Animated from 'react-native-reanimated';
+
+const { Value } = Animated;
 
 // -- Constants --------------------------------------- //
 const UPDATE_TRANSITION_PROPS = 'navigation/UPDATE_TRANSITION_PROPS';
@@ -10,12 +12,9 @@ export const updateTransitionProps = (payload) => (dispatch) => {
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   transitionProps: {
-    effect: '',
     isExpanded: false,
     isTransitioning: false,
-    nextIndex: 1,
-    position: new Animated.Value(0),
-    prevIndex: 0,
+    position: new Value(0),
   },
 };
 
