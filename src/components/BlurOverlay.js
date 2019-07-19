@@ -22,6 +22,7 @@ const BlurOverlay = ({
   translateY,
 }) => (
   <Animated.View
+    pointerEvents="none"
     style={[
       styles.overlay,
       {

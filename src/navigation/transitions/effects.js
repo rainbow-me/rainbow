@@ -1,13 +1,10 @@
-import Animated, { Easing } from 'react-native-reanimated';
-import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
-import chroma from 'chroma-js';
+import Animated from 'react-native-reanimated';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import store from '../../redux/store';
 import { updateTransitionProps } from '../../redux/navigation';
 import { deviceUtils } from '../../utils';
-import { colors } from '../../styles';
 
 const {
-  add,
   and,
   block,
   call,
@@ -15,25 +12,11 @@ const {
   cond,
   eq,
   interpolate,
-  multiply,
-  set,
+  or,
   SpringUtils,
-  sub,
-  Value,
 } = Animated;
 
-const NO = 0;
-const EXPANDED = 1;
-const SHEET = 2;
-
-const CURRENT_EFFECT = new Value(EXPANDED);
-
 const statusBarHeight = getStatusBarHeight(true);
-
-const getInterpolated = value => interpolate(
-  value,
-  { inputRange: [0, 1], outputRange: [0, 1] },
-);
 
 const expand = {};
 expand.opacityEnd = 0.75;
@@ -44,16 +27,15 @@ sheet.borderRadiusEnd = 16;
 
 export const sheetVerticalOffset = statusBarHeight;
 
-const CLOSING = new Value(-1);
-
 const expandStyleInterpolator = ({
-  progress: { current },
+  closing,
   layouts: { screen },
+  progress: { current },
 }) => {
   const backgroundOpacity = interpolate(current, {
+    extrapolate: 'clamp',
     inputRange: [0, 0.975],
     outputRange: [0, 0.7],
-    extrapolate: 'clamp',
   });
 
   const translateY = interpolate(current, {
@@ -61,12 +43,16 @@ const expandStyleInterpolator = ({
     outputRange: [screen.height, 0],
   });
 
+  const onStart = or(and(eq(closing, 0), eq(current, 0)), and(eq(closing, 1), eq(current, 1)));
+  const setShowingModal = call([], () => {
+    store.dispatch(updateTransitionProps({ showingModal: true }));
+  });
+
   return {
     cardStyle: {
-      transform: [
-        // Translation for the animation of the current card
-        { translateY },
-      ],
+      opacity: block([cond(onStart, setShowingModal), 1]),
+      // Translation for the animation of the current card
+      transform: [{ translateY }],
     },
     containerStyle: {
       backgroundColor: color(37, 41, 46, backgroundOpacity),
@@ -74,14 +60,14 @@ const expandStyleInterpolator = ({
   };
 };
 
-export const sheetStyleInterpolator = ({
+const sheetStyleInterpolator = ({
   progress: { current },
   layouts: { screen },
 }) => {
   const backgroundOpacity = interpolate(current, {
+    extrapolate: 'clamp',
     inputRange: [0, 0.975],
     outputRange: [0, 0.7],
-    extrapolate: 'clamp',
   });
 
   const translateY = interpolate(current, {
@@ -94,10 +80,8 @@ export const sheetStyleInterpolator = ({
       borderTopLeftRadius: sheet.borderRadiusEnd,
       borderTopRightRadius: sheet.borderRadiusEnd,
       overflow: 'hidden',
-      transform: [
-        // Translation for the animation of the current card
-        { translateY },
-      ],
+      // Translation for the animation of the current card
+      transform: [{ translateY }],
     },
     containerStyle: {
       backgroundColor: color(37, 41, 46, backgroundOpacity),
@@ -105,7 +89,14 @@ export const sheetStyleInterpolator = ({
   };
 };
 
-const expandedCloseSpec = {
+const backgroundInterpolator = ({ progress: { next } }) => {
+  const dispatch = cond(call([], () => {
+    store.dispatch(updateTransitionProps({ position: next }));
+  }));
+  return { cardStyle: { opacity: block([dispatch, 1]) } };
+};
+
+const closeSpec = {
   config: SpringUtils.makeConfigFromBouncinessAndSpeed({
     ...SpringUtils.makeDefaultConfig(),
     bounciness: 0,
@@ -115,7 +106,7 @@ const expandedCloseSpec = {
   timing: 'spring',
 };
 
-const expandedOpenSpec = {
+const openSpec = {
   config: SpringUtils.makeConfigFromBouncinessAndSpeed({
     ...SpringUtils.makeDefaultConfig(),
     bounciness: 5,
@@ -131,17 +122,19 @@ const gestureResponseDistance = {
 export const expandedPreset = {
   cardStyleInterpolator: expandStyleInterpolator,
   cardTransparent: true,
-  effect: 'expanded',
   gestureDirection: 'vertical',
   gestureResponseDistance,
-  transitionSpec: { close: expandedCloseSpec, open: expandedOpenSpec },
+  transitionSpec: { close: closeSpec, open: openSpec },
 };
 
 export const sheetPreset = {
   cardStyleInterpolator: sheetStyleInterpolator,
   cardTransparent: true,
-  effect: 'sheet',
   gestureDirection: 'vertical',
   gestureResponseDistance,
-  transitionSpec: { close: expandedCloseSpec, open: expandedOpenSpec },
+  transitionSpec: { close: closeSpec, open: openSpec },
+};
+
+export const backgroundPreset = {
+  cardStyleInterpolator: backgroundInterpolator,
 };

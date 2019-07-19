@@ -27,13 +27,9 @@ import {
   backgroundPreset,
 } from '../navigation/transitions/effects';
 
-const onTransitionEnd = () => {
-  store.dispatch(updateTransitionProps({ isTransitioning: false }));
-};
+const onTransitionEnd = () => store.dispatch(updateTransitionProps({ isTransitioning: false }));
 
-const onTransitionStart = () => {
-  store.dispatch(updateTransitionProps({ isTransitioning: true }));
-};
+const onTransitionStart = () => store.dispatch(updateTransitionProps({ isTransitioning: true }));
 
 const SwipeStack = createMaterialTopTabNavigator({
   ProfileScreen: {

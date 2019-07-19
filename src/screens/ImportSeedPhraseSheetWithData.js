@@ -122,7 +122,6 @@ const ImportSeedPhraseSheetWithData = compose(
 )(ImportSeedPhraseSheet);
 
 ImportSeedPhraseSheetWithData.navigationOptions = ({ navigation }) => ({
-  effect: 'sheet',
   gestureResponseDistance: {
     vertical: deviceUtils.dimensions.height / 2,
   },

@@ -58,7 +58,6 @@ class WalletScreen extends Component {
     scrollViewTracker: PropTypes.object,
     sections: PropTypes.array,
     setSafeTimeout: PropTypes.func,
-    showBlur: PropTypes.bool,
     uniqueTokens: PropTypes.array,
   }
 
@@ -90,13 +89,10 @@ class WalletScreen extends Component {
     const isNewIsWalletEthZero = isNewValueForPath(this.props, nextProps, 'isWalletEthZero');
     const isNewLanguage = isNewValueForPath(this.props, nextProps, 'language');
     const isNewSections = isNewValueForPath(this.props, nextProps, 'sections');
-    const isNewShowBlur = isNewValueForPath(this.props, nextProps, 'showBlur');
     const isNewTransitionProps = isNewValueForPath(this.props, nextProps, 'transitionProps');
 
-    if (!nextProps.isFocused && !nextProps.showBlur) {
-      return isNewBlurOpacity
-        || isNewShowBlur
-        || isNewTransitionProps;
+    if (!nextProps.isFocused) {
+      return isNewBlurOpacity || isNewTransitionProps;
     }
 
     return isNewFetchingAssets
@@ -107,8 +103,7 @@ class WalletScreen extends Component {
     || isNewCurrency
     || isNewBlurOpacity
     || isNewSections
-    || isNewTransitionProps
-    || isNewShowBlur;
+    || isNewTransitionProps;
   }
 
   render = () => {
@@ -120,7 +115,6 @@ class WalletScreen extends Component {
       refreshAccountData,
       scrollViewTracker,
       sections,
-      showBlur,
     } = this.props;
 
     return (
@@ -145,7 +139,7 @@ class WalletScreen extends Component {
             sections={sections}
           />
         </FabWrapper>
-        {showBlur && <BlurOverlay opacity={blurOpacity} />}
+        <BlurOverlay opacity={blurOpacity} />
       </Page>
     );
   }
