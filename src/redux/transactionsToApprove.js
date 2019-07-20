@@ -75,7 +75,12 @@ const getRequestDisplayDetails = (payload, assets, prices, nativeCurrency) => {
     return getMessageDisplayDetails(message, timestampInMs);
   }
   if (payload.method === 'personal_sign') {
-    const message = convertHexToUtf8(get(payload, 'params[0]'));
+    let message = '';
+    try {
+      message = convertHexToUtf8(get(payload, 'params[0]'));
+    } catch (error) {
+      message = get(payload, 'params[0]');
+    }
     return getMessageDisplayDetails(message, timestampInMs, 'messagePersonal');
   }
   if (payload.method === 'eth_signTypedData'
