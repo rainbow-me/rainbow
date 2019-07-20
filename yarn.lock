@@ -1467,7 +1467,7 @@
     "@walletconnect/types" "^1.0.0-beta.29"
     "@walletconnect/utils" "^1.0.0-beta.29"
 
-"@walletconnect/react-native@^1.0.0-beta.25":
+"@walletconnect/react-native@^1.0.0-beta.29":
   version "1.0.0-beta.29"
   resolved "https://registry.yarnpkg.com/@walletconnect/react-native/-/react-native-1.0.0-beta.29.tgz#8a6a2f506f03abef4ca777f4a5e49e3c4487b26e"
   integrity sha512-2DCqjkUvPsGmPxvRKSce/0xiU47pjXMq28w5Hh2pAquCvZombo6mmJx6MS0S+xJCc+wl1Aqz7U26W5gOb8gQxg==
