@@ -26,7 +26,7 @@ import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils
 import { CoinRow, CollectiblesSendRow } from '../coin-row';
 import { InvestmentCard, UniswapInvestmentCard } from '../investment-cards';
 import { ListFooter } from '../list';
-import { CardMargin, CardSize, RowPadding } from '../unique-token/UniqueTokenRow';
+import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
 
 /* eslint-disable sort-keys */
@@ -202,7 +202,7 @@ class RecyclerAssetList extends Component {
           return;
         }
         if (type.get === ViewTypes.UNIQUE_TOKEN_ROW) {
-          dim.height = type.size * CardSize + 54 + CardMargin * (type.size - 1) + (type.isLast ? 90 : 0);
+          dim.height = type.size * UniqueTokenRow.cardSize + 54 + UniqueTokenRow.cardMargin * (type.size - 1) + (type.isLast ? 90 : 0);
         } else if (type.get === ViewTypes.UNIQUE_TOKEN_ROW_CLOSED) {
           dim.height = 54 + (type.isLast ? 90 : 0);
         } else if (type === ViewTypes.COIN_ROW_LAST) {
@@ -294,7 +294,7 @@ class RecyclerAssetList extends Component {
             let collectiblesHeight = 0;
             for (let j = 0; j < i; j++) {
               if (this.props.openFamilyTabs[j] && collectibles.data[j].tokens) {
-                collectiblesHeight += collectibles.data[j].tokens.length * CardSize + 54 + RowPadding * (collectibles.data[j].tokens.length - 1);
+                collectiblesHeight += collectibles.data[j].tokens.length * UniqueTokenRow.cardSize + 54 + UniqueTokenRow.rowPadding * (collectibles.data[j].tokens.length - 1);
               } else {
                 collectiblesHeight += 54;
               }
@@ -303,7 +303,7 @@ class RecyclerAssetList extends Component {
             const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235);
             const sectionBeforeCollectibles = AssetListHeader.height * (this.props.sections.length - 1) + ListFooter.height * (this.props.sections.length - 1) + CoinRow.height * get(balances, 'data.length', 0) + (UniswapInvestmentCard.height + InvestmentCard.margin.vertical) * get(investments, 'data.length', 0) + ListFooter.height;
             const sectionsHeight = sectionBeforeCollectibles + collectiblesHeight;
-            const renderSize = CardSize * collectibles.data[i].tokens.length + RowPadding * (collectibles.data[i].tokens.length - 1) - verticalOffset;
+            const renderSize = UniqueTokenRow.cardSize * collectibles.data[i].tokens.length + UniqueTokenRow.rowPadding * (collectibles.data[i].tokens.length - 1) - verticalOffset;
 
             if (renderSize >= deviceDimensions) {
               const scrollDistance = sectionsHeight - this.position;

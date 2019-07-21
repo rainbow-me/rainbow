@@ -8,7 +8,7 @@ import { deviceUtils } from '../../utils';
 import { CoinRow } from '../coin-row';
 import { InvestmentCard, UniswapInvestmentCard } from '../investment-cards';
 import { ListFooter } from '../list';
-import { CardSize, CardMargin } from '../unique-token/UniqueTokenRow';
+import { UniqueTokenRow } from '../unique-token';
 import DeleteButton from './DeleteButton';
 
 const {
@@ -83,7 +83,7 @@ export const extraStates = {
   overX: -2,
 };
 
-class Movable extends PureComponent {
+class MovableFabWrapper extends PureComponent {
   static propTypes = {
     actionType: PropTypes.string,
     areas: PropTypes.array,
@@ -345,7 +345,7 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
         for (let j = 0; j < tokens.length; j++) {
           for (let k = 0; k < tokens[j].length; k++) {
             areas.push({
-              bottom: height + CardSize,
+              bottom: height + UniqueTokenRow.cardSize,
               id: tokens[j][k].isSendable ? tokens[j][k].uniqueId : extraStates.notSendable,
               left: k === 0 ? 0 : deviceUtils.dimensions.width / 2,
               right: deviceUtils.dimensions.width / (k === 0 ? 2 : 1),
@@ -353,9 +353,9 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
             });
           }
           if (openFamilyTabs[i]) {
-            height += CardSize;
+            height += UniqueTokenRow.cardSize;
             if (j > 0) {
-              height += CardMargin;
+              height += UniqueTokenRow.cardMargin;
             }
           }
         }
@@ -367,7 +367,7 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
 };
 
 export default compose(
-  withOpenFamilyTabs,
   withFabSelection,
+  withOpenFamilyTabs,
   withProps(traverseSectionsToDimensions),
-)(Movable);
+)(MovableFabWrapper);

@@ -10,7 +10,6 @@ import {
 } from 'recompact';
 import { withOpenFamilyTabs, withFabSendAction } from '../../hoc';
 import { UniqueTokenRow } from '../unique-token';
-import { RowHeight } from '../unique-token/UniqueTokenRow';
 import TokenFamilyHeader from './TokenFamilyHeader';
 import { FadeInAnimation } from '../animations';
 
@@ -31,7 +30,6 @@ const enhanceRenderItem = compose(
 
 const UniqueTokenItem = enhanceRenderItem(UniqueTokenRow);
 
-const getHeight = (openFamilyTab) => (openFamilyTab ? RowHeight + 100 : 100);
 
 const header = (child) => child;
 
@@ -89,6 +87,7 @@ class TokenFamilyWrap extends Component {
       state: !this.props.openFamilyTabs[this.props.item[0][0].rowNumber],
     });
   };
+const getHeight = (openFamilyTab) => (openFamilyTab ? UniqueTokenRow.height + 100 : 100);
 
   render() {
     return (

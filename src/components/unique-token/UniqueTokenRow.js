@@ -1,17 +1,16 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { onlyUpdateForKeys } from 'recompact';
+import { shouldUpdate } from 'recompact';
 import { padding, position } from '../../styles';
-import { deviceUtils } from '../../utils';
+import { deviceUtils, isNewValueForPath } from '../../utils';
 import { Row } from '../layout';
 import UniqueTokenCard from './UniqueTokenCard';
 
-export const CardMargin = 15;
-export const RowPadding = 19;
-export const CardSize = (deviceUtils.dimensions.width - (RowPadding * 2) - CardMargin) / 2;
-export const RowHeight = CardSize + CardMargin;
+const CardMargin = 15;
+const RowPadding = 19;
+const CardSize = (deviceUtils.dimensions.width - (RowPadding * 2) - CardMargin) / 2;
 
-const enhance = onlyUpdateForKeys(['uniqueId']);
+const enhance = shouldUpdate((...props) => isNewValueForPath(...props, 'item.uniqueId'));
 
 const UniqueTokenRow = enhance(({
   item,
@@ -31,7 +30,7 @@ const UniqueTokenRow = enhance(({
       <UniqueTokenCard
         {...position.sizeAsObject(CardSize)}
         item={uniqueToken}
-        key={uniqueToken.id}
+        key={uniqueToken.uniqueId}
         onPress={onPress}
         onPressSend={onPressSend}
         style={{ marginLeft: (itemIndex >= 1) ? CardMargin : 0 }}
@@ -45,5 +44,10 @@ UniqueTokenRow.propTypes = {
   onPress: PropTypes.func,
   onPressSend: PropTypes.func,
 };
+
+UniqueTokenRow.height = CardSize + CardMargin;
+UniqueTokenRow.cardSize = CardSize;
+UniqueTokenRow.cardMargin = CardMargin;
+UniqueTokenRow.rowPadding = RowPadding;
 
 export default UniqueTokenRow;
