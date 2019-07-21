@@ -1,177 +1,133 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PureComponent } from 'react';
+import { FallbackIcon } from 'react-coin-icon';
 import FastImage from 'react-native-fast-image';
 import Animated, { Easing } from 'react-native-reanimated';
+import { toRad } from 'react-native-redash';
+import { toClass, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
-import Caret from '../../assets/family-dropdown-arrow.png';
-import { colors } from '../../styles';
+import CaretImageSource from '../../assets/family-dropdown-arrow.png';
+import { borders, colors, padding } from '../../styles';
+import { initials, isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import Highlight from '../Highlight';
+import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
+import { Row, RowWithMargins } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import { TruncatedText, Monospace } from '../text';
 
-const Wrapper = styled.View`
+const { interpolate, timing, Value } = Animated;
+
+const AnimatedMonospace = Animated.createAnimatedComponent(toClass(Monospace));
+const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
+
+const FamilyIcon = withProps(({ familyImage }) => ({
+  id: familyImage,
+  source: { uri: familyImage },
+}))(ImageWithCachedDimensions);
+
+const FamilyIconShadow = withProps({
+  backgroundColor: colors.purpleLight,
+  shadows: [
+    [0, 4, 6, colors.dark, 0.04],
+    [0, 1, 3, colors.dark, 0.08],
+  ],
+})(ShadowStack);
+
+const Wrapper = styled(Row).attrs({
+  align: 'center',
+  justify: 'space-between',
+})`
+  ${({ isCoinRow }) => padding(7.5, isCoinRow ? 16 : 19)};
+  background-color: ${colors.white};
   height: 56px;
-  width: 100%; 
-  padding: 11px;
-  align-items: center;
-  flex-direction: row;
-  justify-content: space-between;
+  width: 100%;
 `;
 
-const Image = styled.View`
-  background-color: #ffd9fe;
-  justify-content: center;
-  border-radius: 10.3px;
-`;
+export default class TokenFamilyHeader extends PureComponent {
+  static propTypes = {
+    childrenAmount: PropTypes.number,
+    familyImage: PropTypes.string,
+    familyName: PropTypes.string,
+    highlight: PropTypes.bool,
+    isCoinRow: PropTypes.bool,
+    isOpen: PropTypes.bool,
+    onHeaderPress: PropTypes.func,
+  }
 
-const FamilyImage = styled(FastImage)`
-  border-radius: 10.3px;
-`;
+  animation = new Value(0)
 
-const LeftView = styled.View`
-  align-items: center;
-  flex-direction: row;
-`;
+  componentDidMount = () => this.runTiming()
 
-const ArrowWrap = styled.View`
-  padding-left: 9px;
-  transform: scale(0.8);
-`;
-
-const SettingIcon = styled(FastImage)`
-  height: 20px;
-  width: 9px;
-`;
-
-const {
-  block,
-  Clock,
-  clockRunning,
-  concat,
-  cond,
-  interpolate,
-  set,
-  startClock,
-  timing,
-  Value,
-} = Animated;
-
-function runTiming(clock, value, dest, isOpen) {
-  const state = {
-    finished: new Value(1),
-    frameTime: new Value(0),
-    position: new Value(value),
-    time: new Value(0),
-  };
-
-  const config = {
-    duration: 200,
-    easing: Easing.inOut(Easing.ease),
-    toValue: new Value(0),
-  };
-
-  const reset = [
-    set(state.finished, 0),
-    set(state.time, 0),
-    set(state.frameTime, 0),
-  ];
-
-  return block([
-    cond(state.finished, [
-      ...reset,
-      set(config.toValue, dest),
-    ]),
-    cond(clockRunning(clock), 0, startClock(clock)),
-    timing(clock, state, config),
-    state.position,
-  ]);
-}
-
-class TokenListHeader extends React.Component {
-  componentWillUpdate(prev) {
-    if (prev.isOpen !== undefined
-        && prev.isOpen !== this.props.isOpen) {
-      const clock = new Clock();
-      let base = undefined;
-      this.props.isOpen ? base = runTiming(clock, -1, 1, this.props.isOpen) : base = runTiming(clock, 1, -1, this.props.isOpen);
-      this._rotation = interpolate(base, {
-        inputRange: [-1, 1],
-        outputRange: [90, 0],
-      });
+  componentDidUpdate = (prevProps) => {
+    if (isNewValueForPath(this.props, prevProps, 'isOpen')) {
+      this.runTiming();
     }
   }
 
-  render() {
-    dimension = this.props.isCoinRow ? 40 : 34;
-    padding = this.props.isCoinRow ? 16 : 19;
+  runTiming = () => (
+    timing(this.animation, {
+      duration: 100,
+      easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
+      toValue: this.props.isOpen ? 1 : 0,
+    }).start()
+  )
+
+  renderFamilyIcon = () => {
+    const { familyImage, familyName, isCoinRow } = this.props;
+    const size = borders.buildCircleAsObject(isCoinRow ? 40 : 32);
+
     return (
-      <ButtonPressAnimation
-        scaleTo={0.96}
-        onPress={() => {
-          this.props.onHeaderPress();
-        }}
-      >
-        <Wrapper style={{paddingLeft: padding, paddingRight: padding}}>
-          <Highlight visible={highlight} />
-          <LeftView>
-            <ShadowStack
-              borderRadius={dimension/2}
-              height={dimension}
-              width={dimension}
-              shadows={[
-                [0, 4, 6, colors.dark, 0.04],
-                [0, 1, 3, colors.dark, 0.08],
-              ]}
-              shouldRasterizeIOS
-            >
-              {(this.props.familyImage) ? (
-                <FamilyImage
-                  id={this.props.familyImage}
-                  source={{ uri: this.props.familyImage }}
-                  style={{height: dimension, width: dimension}}
-                />
-              ) : (
-                <Image style={{height: dimension, width: dimension}}/>
-              )}
-            </ShadowStack>
-            <TruncatedText
-              style={{ paddingLeft: 9 }}
-              lineHeight="normal"
-              size="medium"
-              weight="semibold"
-            >
-              {this.props.familyName}
-            </TruncatedText>
-            <ArrowWrap>
-              <Animated.View
-                style={{ transform: [{ rotate: this._rotation ? concat(this._rotation, 'deg') : '0deg' }] }}
-              >
-                <SettingIcon source={Caret} />
-              </Animated.View>
-            </ArrowWrap>
-          </LeftView>
-          {!this.props.isOpen &&
-            <Monospace
-              color="blueGreyDark"
-              size="lmedium"
-            >
-              {this.props.childrenAmount}
-            </Monospace>
-          }
-        </Wrapper>
-      </ButtonPressAnimation>
+      <FamilyIconShadow {...size}>
+        {familyImage
+          ? <FamilyIcon familyImage={familyImage} style={size} />
+          : <FallbackIcon {...size} symbol={initials(familyName)} />
+        }
+      </FamilyIconShadow>
     );
   }
+
+  render = () => (
+    <ButtonPressAnimation onPress={this.props.onHeaderPress} scaleTo={0.96}>
+      <Wrapper isCoinRow={this.props.isCoinRow}>
+        <Highlight visible={this.props.highlight} />
+        <RowWithMargins align="center" margin={9}>
+          {this.renderFamilyIcon()}
+          <TruncatedText
+            lineHeight="normal"
+            size="medium"
+            weight="semibold"
+          >
+            {this.props.familyName}
+          </TruncatedText>
+          <AnimatedFastImage
+            resizeMode={FastImage.resizeMode.contain}
+            source={CaretImageSource}
+            style={{
+              height: 15,
+              transform: [{
+                rotate: toRad(interpolate(this.animation, {
+                  inputRange: [0, 1],
+                  outputRange: [0, 90],
+                })),
+              }],
+              width: 5.84,
+            }}
+          />
+        </RowWithMargins>
+        <AnimatedMonospace
+          color="blueGreyDark"
+          size="lmedium"
+          style={{
+            opacity: interpolate(this.animation, {
+              inputRange: [0, 1],
+              outputRange: [1, 0],
+            }),
+          }}
+        >
+          {this.props.childrenAmount}
+        </AnimatedMonospace>
+      </Wrapper>
+    </ButtonPressAnimation>
+  )
 }
-
-TokenListHeader.propTypes = {
-  childrenAmount: PropTypes.number,
-  familyImage: PropTypes.string,
-  familyName: PropTypes.string,
-  highlight: PropTypes.bool,
-  isOpen: PropTypes.bool,
-  onHeaderPress: PropTypes.func,
-};
-
-export default TokenListHeader;
