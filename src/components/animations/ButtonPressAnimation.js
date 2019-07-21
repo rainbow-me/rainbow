@@ -1,19 +1,26 @@
-import { compact } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { Animated } from 'react-native';
+import { InteractionManager } from 'react-native';
 import { State, TapGestureHandler } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import Animated from 'react-native-reanimated';
+import { transformOrigin as transformOriginUtil } from 'react-native-redash';
 import { animations } from '../../styles';
 import { directionPropType } from '../../utils';
 
-const ButtonKeyframes = animations.keyframes.button;
+const {
+  divide,
+  interpolate,
+  spring,
+  SpringUtils,
+  Value,
+} = Animated;
 
-const DefaultAnimatedValues = {
-  opacity: 1,
-  scale: ButtonKeyframes.from.scale,
-  transX: 0,
-};
+const springConfig = SpringUtils.makeConfigFromOrigamiTensionAndFriction({
+  ...SpringUtils.makeDefaultConfig(),
+  friction: new Value(28),
+  tension: 700,
+});
 
 let buttonExcludingMutex = null;
 
@@ -21,8 +28,10 @@ export default class ButtonPressAnimation extends PureComponent {
   static propTypes = {
     activeOpacity: PropTypes.number,
     children: PropTypes.any,
+    defaultScale: PropTypes.number,
     disabled: PropTypes.bool,
     enableHapticFeedback: PropTypes.bool,
+    isInteraction: PropTypes.bool,
     onPress: PropTypes.func,
     scaleTo: PropTypes.number,
     style: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
@@ -32,44 +41,44 @@ export default class ButtonPressAnimation extends PureComponent {
   }
 
   static defaultProps = {
+    activeOpacity: 1,
+    defaultScale: animations.keyframes.button.from.scale,
     enableHapticFeedback: true,
-    scaleTo: ButtonKeyframes.to.scale,
+    isInteraction: true,
+    scaleTo: animations.keyframes.button.to.scale,
   }
 
-  state = { scaleOffsetX: null }
-
-  opacity = new Animated.Value(DefaultAnimatedValues.opacity)
-
-  scale = new Animated.Value(DefaultAnimatedValues.scale)
-
-  transX = new Animated.Value(DefaultAnimatedValues.transX)
-
-  componentWillUnmount = () => {
-    this.opacity.stopAnimation();
-    this.scale.stopAnimation();
-    this.transX.stopAnimation();
+  state = {
+    scaleOffsetX: 0,
+    scaleOffsetY: 0,
   }
+
+  animation = new Value(1)
+
+  gestureState = null
+
+  componentDidMount = () => this.runSpring()
 
   handleLayout = ({ nativeEvent: { layout } }) => {
-    const { scaleTo, transformOrigin } = this.props;
+    const { transformOrigin } = this.props;
+    const { scaleOffsetX, scaleOffsetY } = this.state;
 
-    if (transformOrigin) {
-      const width = Math.floor(layout.width);
-      const scaleOffsetX = (width - (width * scaleTo)) / 2;
-      this.setState({ scaleOffsetX });
+    const isFirstRender = !scaleOffsetX && !scaleOffsetY;
+
+    if (isFirstRender && transformOrigin) {
+      const directionMultiple = (transformOrigin === 'left' || transformOrigin === 'top') ? -1 : 1;
+
+      this.setState({
+        scaleOffsetX: directionMultiple * Math.floor(layout.width) / 2,
+        scaleOffsetY: directionMultiple * Math.floor(layout.height) / 2,
+      });
     }
   }
 
-  handleStateChange = ({ nativeEvent: { state, absoluteX, absoluteY } }) => {
-    const {
-      activeOpacity,
-      enableHapticFeedback,
-      onPress,
-      scaleTo,
-      transformOrigin,
-    } = this.props;
-    const { scaleOffsetX } = this.state;
+  handleStateChange = ({ nativeEvent: { absoluteX, absoluteY, state } }) => {
+    const { enableHapticFeedback, onPress } = this.props;
 
+    this.gestureState = state;
     const isActive = state === State.BEGAN;
 
     if (buttonExcludingMutex !== this) {
@@ -79,52 +88,11 @@ export default class ButtonPressAnimation extends PureComponent {
         return;
       }
     }
+
+
     if (state === State.END || state === State.FAILED || state === State.CANCELLED) {
       buttonExcludingMutex = null;
     }
-
-    const animationsArray = [
-      // Default spring animation
-      animations.buildSpring({
-        config: {
-          isInteraction: false,
-        },
-        from: ButtonKeyframes.from.scale,
-        isActive,
-        to: scaleTo,
-        value: this.scale,
-      }),
-    ];
-
-    if (activeOpacity) {
-      // Opacity animation
-      animationsArray.push(animations.buildSpring({
-        config: {
-          isInteraction: false,
-        },
-        from: DefaultAnimatedValues.opacity,
-        isActive,
-        to: activeOpacity,
-        value: this.opacity,
-      }));
-    }
-
-    if (scaleOffsetX) {
-      // Fake 'transform-origin' support by abusing translateX
-      const directionMultiple = (transformOrigin === 'left') ? -1 : 1;
-      animationsArray.push(animations.buildSpring({
-        config: {
-          isInteraction: false,
-        },
-        from: DefaultAnimatedValues.transX,
-        isActive,
-        to: scaleOffsetX * (directionMultiple),
-        value: this.transX,
-      }));
-    }
-
-    // Start animations
-    Animated.parallel(animationsArray).start();
 
     if (enableHapticFeedback && state === State.ACTIVE) {
       ReactNativeHapticFeedback.trigger('selection');
@@ -133,45 +101,73 @@ export default class ButtonPressAnimation extends PureComponent {
     if (isActive) {
       this.initPos = { absoluteX, absoluteY };
     }
+    this.runSpring();
 
     if (state === State.END && onPress) {
       // condition below covers issue when tap is simultaneous with pan
-      if (Math.abs(this.initPos.absoluteX - absoluteX) < 5 && Math.abs(this.initPos.absoluteY - absoluteY) < 5) {
+      const isValidX = Math.abs(this.initPos.absoluteX - absoluteX) < 5;
+      const isValidY = Math.abs(this.initPos.absoluteY - absoluteY) < 5;
+
+      if (isValidX && isValidY) {
         onPress();
       }
     }
   }
 
-  buildAnimationStyles = () => {
-    const { activeOpacity, transformOrigin } = this.props;
-    return ({
-      ...(activeOpacity ? { opacity: this.opacity } : {}),
-      transform: compact([
-        transformOrigin ? { translateX: this.transX } : null,
-        { scale: this.scale },
-      ]),
+  runSpring = () => {
+    const { defaultScale, isInteraction, scaleTo } = this.props;
+
+    const handle = isInteraction && InteractionManager.createInteractionHandle();
+    const toValue = (this.gestureState === State.BEGAN || this.gestureState === State.ACTIVE) ? scaleTo : defaultScale;
+
+    const config = {
+      ...springConfig,
+      isInteraction,
+      toValue,
+    };
+
+    return spring(this.animation, config).start(({ finished }) => {
+      if (!finished || !isInteraction) return null;
+      return InteractionManager.clearInteractionHandle(handle);
     });
   }
 
   render = () => {
     const {
+      activeOpacity,
       children,
+      defaultScale,
       disabled,
+      scaleTo,
       style,
       tapRef,
+      transformOrigin,
       waitFor,
     } = this.props;
+
+    const { scaleOffsetX, scaleOffsetY } = this.state;
+
+    const opacity = (scaleTo > defaultScale)
+      ? activeOpacity
+      : interpolate(divide(this.animation, defaultScale), {
+        inputRange: [scaleTo, defaultScale],
+        outputRange: [activeOpacity, 1],
+      });
+
+    const offsetX = (transformOrigin === 'left' || transformOrigin === 'right') ? scaleOffsetX : 0;
+    const offsetY = (transformOrigin === 'bottom' || transformOrigin === 'top') ? scaleOffsetY : 0;
+    const transform = transformOriginUtil(offsetX, offsetY, { scale: this.animation });
 
     return (
       <TapGestureHandler
         enabled={!disabled}
-        ref={tapRef}
         onHandlerStateChange={this.handleStateChange}
-        waitFor={this.props.waitFor}
+        ref={tapRef}
+        waitFor={waitFor}
       >
         <Animated.View
           onLayout={this.handleLayout}
-          style={[style, this.buildAnimationStyles()]}
+          style={[{ opacity, transform }, style]}
         >
           {children}
         </Animated.View>
