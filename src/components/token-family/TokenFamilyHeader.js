@@ -113,7 +113,7 @@ class TokenListHeader extends React.Component {
         }}
       >
         <Wrapper style={{paddingLeft: padding, paddingRight: padding}}>
-          <Highlight highlight={this.props.highlight} />
+          <Highlight visible={highlight} />
           <LeftView>
             <ShadowStack
               borderRadius={dimension/2}

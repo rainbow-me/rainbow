@@ -39,7 +39,7 @@ const CoinRow = enhance(({
   ...props
 }) => (
   <Container align="center" css={containerStyles} color="red">
-    <Highlight highlight={highlight}/>
+    <Highlight visible={highlight}/>
     {createElement(coinIconRender, { symbol, ...props })}
     <Content flex={1} justify="space-between" css={contentStyles}>
       <Row align="center" justify="space-between">
@@ -72,6 +72,5 @@ CoinRow.defaultProps = {
 };
 
 CoinRow.height = CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom;
-
 
 export default CoinRow;
