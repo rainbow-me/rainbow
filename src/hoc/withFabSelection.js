@@ -8,7 +8,15 @@ import {
   updateSelectedID,
 } from '../redux/selectedWithFab';
 
-const mapStateToProps = ({ selectedWithFab: { selectedId } }) => ({ selectedId });
+const mapStateToProps = ({
+  selectedWithFab: {
+    scrollingVelocity,
+    selectedId,
+  },
+}) => ({
+  scrollingVelocity,
+  selectedId,
+});
 
 const fabSelectedIdSelector = state => state.selectedId;
 
@@ -21,11 +29,11 @@ const withFabSelectionValidationSelector = createSelector(
   withFabSelectionValidation,
 );
 
-export default Component => compose(
+export default compose(
   connect(mapStateToProps, {
     setActionType,
     setScrollingVelocity,
     updateSelectedID,
   }),
   withProps(withFabSelectionValidationSelector),
-)(Component);
+);

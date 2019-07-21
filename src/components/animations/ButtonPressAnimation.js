@@ -89,7 +89,6 @@ export default class ButtonPressAnimation extends PureComponent {
       }
     }
 
-
     if (state === State.END || state === State.FAILED || state === State.CANCELLED) {
       buttonExcludingMutex = null;
     }

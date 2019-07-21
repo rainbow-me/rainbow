@@ -269,7 +269,7 @@ class MovableFabWrapper extends PureComponent {
                       set(this.dragY, 0),
                     ],
                     cond(
-                      eq(this.gestureState, State.ACTIVE),
+                      eq(this.gestureState, State.BEGAN),
                       call([], () => this.props.setActionType(this.props.actionType)),
                     ),
                   ),

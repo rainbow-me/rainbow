@@ -7,7 +7,6 @@ import {
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { LayoutAnimation, RefreshControl } from 'react-native';
-import { connect } from 'react-redux';
 import { compose, pure } from 'recompact';
 import {
   DataProvider,
@@ -20,7 +19,7 @@ import {
   buildAssetHeaderUniqueIdentifier,
   buildAssetUniqueIdentifier,
 } from '../../helpers/assets';
-import { withOpenFamilyTabs } from '../../hoc';
+import { withFabSelection, withOpenFamilyTabs } from '../../hoc';
 import { colors } from '../../styles';
 import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
 import { CoinRow, CollectiblesSendRow } from '../coin-row';
@@ -446,9 +445,7 @@ class RecyclerAssetList extends Component {
   }
 }
 
-const mapStateToProps = ({ selectedWithFab: { scrollingVelocity } }) => ({ scrollingVelocity });
-
 export default compose(
-  connect(mapStateToProps),
+  withFabSelection,
   withOpenFamilyTabs,
 )(RecyclerAssetList);
