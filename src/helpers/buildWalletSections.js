@@ -1,5 +1,12 @@
 import lang from 'i18n-js';
-import { findIndex, get } from 'lodash';
+import {
+  compact,
+  findIndex,
+  flattenDeep,
+  get,
+  groupBy,
+  property,
+} from 'lodash';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
 import { withNavigation } from 'react-navigation';
@@ -158,27 +165,70 @@ const withBalanceSection = (
   };
 };
 
+let isPreloadComplete = false;
+const largeFamilyThreshold = 4;
+const jumboFamilyThreshold = largeFamilyThreshold * 2;
+const minTopFoldThreshold = 10;
+
+const buildImagesToPreloadArray = (family, index, families) => {
+  const isLargeFamily = family.tokens.length > largeFamilyThreshold;
+  const isJumboFamily = family.tokens.length >= jumboFamilyThreshold;
+  const isTopFold = index < Math.max(families.length / 2, minTopFoldThreshold);
+
+  return family.tokens.map((token, rowIndex) => {
+    let priority = FastImage.priority[isTopFold ? 'high' : 'normal'];
+
+    if (isTopFold && isLargeFamily) {
+      if (rowIndex <= largeFamilyThreshold) {
+        priority = FastImage.priority.high;
+      } else if (isJumboFamily) {
+        const isMedium = (rowIndex > largeFamilyThreshold) && (rowIndex <= jumboFamilyThreshold);
+        priority = FastImage.priority[isMedium ? 'normal' : 'low'];
+      } else {
+        priority = FastImage.priority.normal;
+      }
+    }
+
+    /* eslint-disable camelcase */
+    const images = token.map(({ image_preview_url, uniqueId }) => {
+      if (!image_preview_url) return null;
+      return ({
+        id: uniqueId,
+        priority,
+        uri: image_preview_url,
+      });
+    });
+    /* eslint-enable camelcase */
+
+    return images.length ? images : null;
+  });
+};
+
+const sortImagesToPreload = images => {
+  const filtered = compact(flattenDeep(images));
+  const grouped = groupBy(filtered, property('priority'));
+  return [
+    ...get(grouped, 'high', []),
+    ...get(grouped, 'normal', []),
+    ...get(grouped, 'low', []),
+  ];
+};
+
 const withUniqueTokenFamiliesSection = (
   language,
   uniqueTokens,
-  uniqueTokenData,
+  data,
 ) => {
   // TODO preload elsewhere?
-  const imageTokens = [];
-  // console.log('uniqueTokens', uniqueTokens);
-  uniqueTokens.forEach((token) => {
-    if (token.image_preview_url) {
-      imageTokens.push({
-        id: token.id,
-        uri: token.image_preview_url,
-      });
-    }
-  });
-  FastImage.preload(imageTokens);
+  if (!isPreloadComplete) {
+    const imagesToPreload = sortImagesToPreload(data.map(buildImagesToPreloadArray));
+    isPreloadComplete = !!imagesToPreload.length;
+    FastImage.preload(imagesToPreload);
+  }
 
   return {
     collectibles: true,
-    data: uniqueTokenData,
+    data,
     header: {
       title: lang.t('account.tab_collectibles'),
       totalItems: uniqueTokens.length,

@@ -24,10 +24,11 @@ export const buildAssetUniqueIdentifier = (item) => {
 
 export const buildUniqueTokenList = (uniqueTokens) => {
   let rows = [];
+
   const grouped = groupBy(uniqueTokens, token => token.asset_contract.name);
   const families = Object.keys(grouped);
-  for (let i = 0; i < families.length; i++) {
 
+  for (let i = 0; i < families.length; i++) {
     const tokensRow = [];
     for (let j = 0; j < grouped[families[i]].length; j += 2) {
       if (grouped[families[i]][j + 1]) {
@@ -49,6 +50,7 @@ export const buildUniqueTokenList = (uniqueTokens) => {
   while (rows.length > store.getState().openFamilyTabs.openFamilyTabs.length) {
     store.dispatch(pushOpenFamilyTab());
   }
+
   rows = sortBy(rows, ['familyName']);
   rows.forEach((row, i) => {
     row.familyId = i;
