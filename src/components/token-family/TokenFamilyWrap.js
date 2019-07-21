@@ -1,19 +1,22 @@
+import { times } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { View } from 'react-primitives';
 import {
   compose,
+  onlyUpdateForKeys,
   withHandlers,
   withProps,
-  onlyUpdateForKeys,
 } from 'recompact';
+import { createSelector } from 'reselect';
 import { withOpenFamilyTabs, withFabSendAction } from '../../hoc';
+import { colors } from '../../styles';
+import { FadeInAnimation } from '../animations';
 import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyHeader from './TokenFamilyHeader';
-import { FadeInAnimation } from '../animations';
 
-const enhanceRenderItem = compose(
+const EnhancedUniqueTokenRow = compose(
   withNavigation,
   withHandlers({
     onPress: ({ assetType, navigation }) => (item) => {
@@ -26,122 +29,85 @@ const enhanceRenderItem = compose(
       navigation.navigate('SendSheet', { asset });
     },
   }),
-);
+)(UniqueTokenRow);
 
-const UniqueTokenItem = enhanceRenderItem(UniqueTokenRow);
-
-
-const header = (child) => child;
-
-class TokenFamilyWrap extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      opacity: 0,
-    };
-  }
-
-  shouldComponentUpdate = (prev, next) => {
-    const familyId = this.props.item[0][0].rowNumber;
-    if (this.props.openFamilyTabs[familyId] !== prev.openFamilyTabs[familyId]
-      || this.state.opacity != next.opacity
-      || this.props.highlight !== prev.highlight) {
-      return true;
-    }
-    return false;
-  }
-
-  componentDidUpdate = () => {
-    const familyId = this.props.item[0][0].rowNumber;
-    const newOpacity = this.props.openFamilyTabs[familyId] ? 1 : 0;
-    if (newOpacity) {
-      setTimeout(() => {
-        this.setState({ opacity: newOpacity });
-      }, 100);
-    } else {
-      this.setState({ opacity: newOpacity });
-    }
-  }
-
-  collectiblesRenderItem = item => {
-    if (this.props.openFamilyTabs[item.item[0][0].rowNumber]) {
-      const tokens = [];
-      for (let i = 0; i < item.item.length; i++) {
-        const rowKey = `uniqueTokenRow_${item.familyId}_${i}`;
-        tokens.push(
-          <UniqueTokenItem
-            assetType="unique_token"
-            item={item.item[i]}
-            key={rowKey}
-          />
-        );
-      }
-      return tokens;
-    }
-  };
-
-  onHeaderPress = () => {
-    this.props.setOpenFamilyTabs({
-      index: this.props.item[0][0].rowNumber,
-      state: !this.props.openFamilyTabs[this.props.item[0][0].rowNumber],
-    });
-  };
 const getHeight = (openFamilyTab) => (openFamilyTab ? UniqueTokenRow.height + 100 : 100);
 
-  render() {
-    return (
-      <View>
-        <TokenFamilyHeader
-          familyName={this.props.familyName}
-          familyImage={this.props.familyImage}
-          childrenAmount={this.props.childrenAmount}
-          highlight={this.props.highlight}
-          isOpen={this.props.openFamilyTabs[this.props.item[0][0].rowNumber]}
-          onHeaderPress={this.onHeaderPress}
-        />
-        {this.state.opacity == 1 &&
-          <FadeInAnimation duration={100}>
-            {header(this.collectiblesRenderItem(this.props))}
-          </FadeInAnimation>
-        }
-      </View>
-    );
-  }
-}
+const TokenFamilyWrap = ({
+  childrenAmount,
+  familyImage,
+  familyName,
+  highlight,
+  isOpen,
+  item,
+  onPressFamilyHeader,
+  renderCollectibleItem,
+}) => (
+  <View backgroundColor={colors.white}>
+    <TokenFamilyHeader
+      childrenAmount={childrenAmount}
+      familyImage={familyImage}
+      familyName={familyName}
+      highlight={highlight}
+      isOpen={isOpen}
+      onHeaderPress={onPressFamilyHeader}
+    />
+    {isOpen && times(item.length, renderCollectibleItem)}
+  </View>
+);
 
 TokenFamilyWrap.propTypes = {
   childrenAmount: PropTypes.number,
   familyImage: PropTypes.string,
   familyName: PropTypes.string,
   highlight: PropTypes.bool,
+  isOpen: PropTypes.bool,
   item: PropTypes.array,
-  openFamilyTabs: PropTypes.array,
-  setOpenFamilyTabs: PropTypes.func,
+  onPressFamilyHeader: PropTypes.func,
+  renderCollectibleItem: PropTypes.func,
 };
 
 TokenFamilyWrap.getHeight = getHeight;
 
+const familyIdSelector = state => state.familyId;
+const openFamilyTabsSelector = state => state.openFamilyTabs;
+
+const isFamilyOpenSelector = (familyId, openFamilyTabs) => ({
+  isOpen: openFamilyTabs && openFamilyTabs[familyId],
+});
+
+const withFamilyOpenStateProps = createSelector(
+  [familyIdSelector, openFamilyTabsSelector],
+  isFamilyOpenSelector,
+);
+
 export default compose(
-  withHandlers({
-    onPress: ({ item, onPress }) => () => {
-      if (onPress) {
-        onPress(item);
-      }
-    },
-    onPressSend: ({ item, onPressSend }) => () => {
-      if (onPressSend) {
-        onPressSend(item);
-      }
-    },
-  }),
-  withProps(({ item: { uniqueId } }) => ({ uniqueId })),
   withFabSendAction,
+  withOpenFamilyTabs,
+  withProps(withFamilyOpenStateProps),
+  withHandlers({
+    onPressFamilyHeader: ({ familyId, isOpen, setOpenFamilyTabs }) => () => (
+      setOpenFamilyTabs({
+        index: familyId,
+        state: !isOpen,
+      })
+    ),
+    /* eslint-disable react/display-name */
+    renderCollectibleItem: ({ familyId, item }) => (index) => (
+      <FadeInAnimation duration={100} key={`uniqueTokenRow_${familyId}_${index}_fadeIn`}>
+        <EnhancedUniqueTokenRow
+          assetType="unique_token"
+          item={item[index]}
+          key={`uniqueTokenRow_${familyId}_${index}`}
+        />
+      </FadeInAnimation>
+    ),
+    /* eslint-enable react/display-name */
+  }),
   onlyUpdateForKeys([
-    'height',
-    'style',
-    'uniqueId',
-    'width',
+    'childrenAmount',
     'highlight',
+    'isOpen',
+    'uniqueId',
   ]),
-)(withOpenFamilyTabs(TokenFamilyWrap));
+)(TokenFamilyWrap);

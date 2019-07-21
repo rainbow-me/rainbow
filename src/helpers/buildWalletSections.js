@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import { findIndex, get } from 'lodash';
 import React from 'react';
+import FastImage from 'react-native-fast-image';
 import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import { createSelector } from 'reselect';
@@ -9,7 +10,6 @@ import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { TokenFamilyWrap } from '../components/token-family';
 import { buildUniqueTokenList } from './assets';
-import FastImage from 'react-native-fast-image';
 
 const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
@@ -45,14 +45,15 @@ const enhanceRenderItem = compose(
 const TokenItem = enhanceRenderItem(BalanceCoinRow);
 const UniswapCardItem = enhanceRenderItem(UniswapInvestmentCard);
 
-const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
-const tokenFamilyItem = item => <TokenFamilyWrap {...item} />;
-const balancesSkeletonRenderItem = item =>
+const balancesSkeletonRenderItem = item => (
   <AssetListItemSkeleton
     animated={true}
     descendingOpacity={false}
     {...item}
-  />;
+  />
+);
+const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
+const tokenFamilyItem = item => <TokenFamilyWrap {...item} uniqueId={item.uniqueId} />;
 const uniswapRenderItem = item => <UniswapCardItem {...item} assetType="uniswap" />;
 
 const filterWalletSections = sections => (
@@ -141,7 +142,7 @@ const withBalanceSection = (
     balanceSectionData = [{ item: { uniqueId: 'skeleton0' } }];
   }
 
-  const balances = {
+  return {
     balances: true,
     data: balanceSectionData,
     header: {
@@ -155,7 +156,6 @@ const withBalanceSection = (
       ? balancesSkeletonRenderItem
       : balancesRenderItem,
   };
-  return balances;
 };
 
 const withUniqueTokenFamiliesSection = (
@@ -165,17 +165,18 @@ const withUniqueTokenFamiliesSection = (
 ) => {
   // TODO preload elsewhere?
   const imageTokens = [];
-  uniqueTokens.forEach(token => {
+  // console.log('uniqueTokens', uniqueTokens);
+  uniqueTokens.forEach((token) => {
     if (token.image_preview_url) {
       imageTokens.push({
+        id: token.id,
         uri: token.image_preview_url,
-        id: token.id
       });
     }
   });
   FastImage.preload(imageTokens);
 
-  const uniqueTokensSection = {
+  return {
     collectibles: true,
     data: uniqueTokenData,
     header: {
@@ -187,14 +188,12 @@ const withUniqueTokenFamiliesSection = (
     renderItem: tokenFamilyItem,
     type: 'big',
   };
-  return uniqueTokensSection;
 };
 
 const uniqueTokenDataSelector = createSelector(
-  [ uniqueTokensSelector ],
+  [uniqueTokensSelector],
   buildUniqueTokenList,
 );
-
 
 const balanceSectionSelector = createSelector(
   [
