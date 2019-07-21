@@ -1,6 +1,7 @@
 import { upperFirst } from 'lodash';
 import { StyleSheet } from 'react-native';
 import { css } from 'styled-components';
+import buildLayoutStyles from './buildLayoutStyles';
 
 const position = {};
 
@@ -37,6 +38,8 @@ position.centeredAsObject = {
 };
 
 position.coverAsObject = StyleSheet.absoluteFillObject;
+
+position.layout = (...args) => buildLayoutStyles(args);
 
 const buildSizeKey = (prefix, key) => (prefix ? upperFirst(key) : key);
 
