@@ -69,7 +69,7 @@ PODS:
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
-  - Protobuf (3.8.0)
+  - Protobuf (3.9.0)
   - React (0.59.9):
     - React/Core (= 0.59.9)
   - react-native-blur (0.8.0):
@@ -285,7 +285,7 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
   libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
-  Protobuf: 3f617b9a6e73605565086864c9bc26b2bf2dd5a3
+  Protobuf: 1097ca58584c8d9be81bfbf2c5ff5975648dd87a
   React: a86b92f00edbe1873a63e4a212c29b7a7ad5224f
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: f1fbfc336ba8ca6de5296190341d1b6022c71cff
