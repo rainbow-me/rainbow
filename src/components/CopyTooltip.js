@@ -12,6 +12,7 @@ class CopyTooltip extends PureComponent {
     navigation: PropTypes.object,
     textToCopy: PropTypes.string,
     tooltipText: PropTypes.string,
+    waitForKeyboard: PropTypes.boolean,
   }
 
   static defaultProps = {
@@ -33,7 +34,15 @@ class CopyTooltip extends PureComponent {
 
   handleHideTooltip = () => this.tooltip.hideMenu()
 
-  handlePressIn = () => this.tooltip.showMenu()
+  handlePressIn = (isWaitingForKeyboard) => {
+    if (isWaitingForKeyboard) {
+      setTimeout(() => {
+        this.tooltip.showMenu();
+      }, 300);
+    } else {
+      this.tooltip.showMenu();
+    }
+  }
 
   handleRef = (ref) => { this.tooltip = ref; }
 
@@ -42,7 +51,7 @@ class CopyTooltip extends PureComponent {
       {...this.props}
       actions={[{ onPress: this.handleCopy, text: this.props.tooltipText }]}
       activeOpacity={this.props.activeOpacity}
-      onPressIn={this.handlePressIn}
+      onPressIn={() => this.handlePressIn(this.props.waitForKeyboard)}
       ref={this.handleRef}
       underlayColor={colors.transparent}
     />

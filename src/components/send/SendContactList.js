@@ -22,6 +22,7 @@ import {
 } from '../../handlers/commonStorage';
 import { withNavigation } from 'react-navigation';
 import { compose } from 'recompact';
+import { Alert } from '../alerts';
 
 const rowHeight = 62;
 
@@ -108,7 +109,9 @@ class Avatar extends React.PureComponent {
             fontSize: 16,
             backgroundColor: 'transparent',
             padding: 10,
-          }}>{text}</Text>
+          }}>
+            {text}
+          </Text>
         </RectButton>
       </Animated.View>
     );
@@ -117,6 +120,7 @@ class Avatar extends React.PureComponent {
   deleteHandler = async () => {
     this.close();
     await deleteLocalContact(this.props.address);
+    Alert({title: `Success`, message: `Contact has been deleted from your address book`})
     this.props.onChange();
   };
 
@@ -162,7 +166,11 @@ class Avatar extends React.PureComponent {
         <ButtonPressAnimation onPress={this.onPress} scaleTo={0.96}>
           <AvatarWrapper>
             <AvatarCircle style={{ backgroundColor: colors.avatarColor[item.color] }} >
-              <FirstLetter>{item.nickname[0].toUpperCase()}</FirstLetter>
+              <FirstLetter>
+                {item.nickname.charCodeAt(0) < 55000? 
+                item.nickname[0] : 
+                item.nickname.length > 1 && item.nickname.charCodeAt(0) > 55000 && item.nickname[0] + "" + item.nickname[1]}
+              </FirstLetter>
             </AvatarCircle>
             <ContactColumn>
               <TopRow>
