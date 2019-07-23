@@ -133,6 +133,7 @@
     "babel-jest": "^24.8.0",
     "babel-plugin-date-fns": "^0.2.1",
     "babel-plugin-lodash": "^3.3.4",
+    "babel-plugin-rewire": "^1.2.0",
     "babel-plugin-styled-components": "^1.10.2",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "detox": "^12.8.0",
@@ -154,7 +155,10 @@
     "**/resolve": "1.8.1"
   },
   "jest": {
-    "preset": "react-native"
+    "preset": "react-native",
+    "setupFiles": [
+      "./config/test/jest-setup.js"
+    ]
   },
   "rnpm": {
     "assets": [

@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
-import { get } from 'lodash';
+import { get, isEmpty, isNil } from 'lodash';
 import { Alert } from 'react-native';
 import {
   ACCESS_CONTROL,
@@ -22,13 +22,12 @@ export function generateSeedPhrase() {
 export const walletInit = async (seedPhrase = null) => {
   let walletAddress = null;
   let isWalletBrandNew = false;
-  if (seedPhrase) {
+  if (!isEmpty(seedPhrase)) {
     walletAddress = await createWallet(seedPhrase);
-    isWalletBrandNew = true;
+    isWalletBrandNew = !isNil(walletAddress);
+    return { isWalletBrandNew, walletAddress };
   }
-  if (!walletAddress) {
-    walletAddress = await loadAddress();
-  }
+  walletAddress = await loadAddress();
   if (!walletAddress) {
     walletAddress = await createWallet();
     isWalletBrandNew = true;
@@ -120,9 +119,13 @@ export const loadAddress = async () => {
 
 const createWallet = async (seedPhrase) => {
   const walletSeedPhrase = seedPhrase || generateSeedPhrase();
-  const wallet = ethers.Wallet.fromMnemonic(walletSeedPhrase);
-  saveWalletDetails(walletSeedPhrase, wallet.privateKey, wallet.address);
-  return wallet.address;
+  try {
+    const wallet = ethers.Wallet.fromMnemonic(walletSeedPhrase);
+    saveWalletDetails(walletSeedPhrase, wallet.privateKey, wallet.address);
+    return wallet.address;
+  } catch (error) {
+    return null;
+  }
 };
 
 const saveWalletDetails = async (seedPhrase, privateKey, address) => {

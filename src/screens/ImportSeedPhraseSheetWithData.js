@@ -40,15 +40,12 @@ const ImportSeedPhraseSheetWithData = compose(
   withState('seedPhrase', 'setSeedPhrase', ''),
   withHandlers({
     importSeedPhrase: ({
-      clearAccountData,
       initializeWallet,
       isEmpty,
       navigation,
       seedPhrase,
       setIsImporting,
     }) => async () => {
-      await clearAccountData();
-
       return initializeWallet(seedPhrase.trim())
         .then((address) => {
           if (address) {
