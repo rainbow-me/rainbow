@@ -40,8 +40,6 @@ const previouslyApprovedDapps = [
 ];
 */
 
-const sendRpcCall = async (payload) => web3Provider.send(payload.method, payload.params);
-
 const getNativeOptions = async () => {
   const language = 'en'; // TODO use lang from settings
   const token = await getFCMToken();
