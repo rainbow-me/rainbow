@@ -259,7 +259,7 @@ export const walletConnectDisconnectAllByDappName = dappName => async (dispatch,
   try {
     const peerIds = values(mapValues(matchingWalletConnectors, walletConnector => walletConnector.peerId));
     await removeWalletConnectSessions(peerIds);
-    forEach(walletConnectors, walletConnector => walletConnector.killSession());
+    forEach(matchingWalletConnectors, walletConnector => walletConnector.killSession());
     dispatch({
       payload: omitBy(walletConnectors, (wc) => wc.peerMeta.name === dappName),
       type: WALLETCONNECT_REMOVE_SESSION,
