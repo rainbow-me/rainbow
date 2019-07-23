@@ -24,6 +24,7 @@ import { withNavigation } from 'react-navigation';
 import { compose } from 'recompact';
 import { Alert } from '../alerts';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
+import GraphemeSplitter from 'grapheme-splitter';
 
 const rowHeight = 62;
 
@@ -176,9 +177,7 @@ class Avatar extends React.PureComponent {
           <AvatarWrapper>
             <AvatarCircle style={{ backgroundColor: colors.avatarColor[item.color] }} >
               <FirstLetter>
-                {item.nickname.charCodeAt(0) < 55000? 
-                item.nickname[0] : 
-                item.nickname.length > 1 && item.nickname.charCodeAt(0) > 55000 && item.nickname[0] + "" + item.nickname[1]}
+                {new GraphemeSplitter().splitGraphemes(item.nickname)[0]}
               </FirstLetter>
             </AvatarCircle>
             <ContactColumn>
