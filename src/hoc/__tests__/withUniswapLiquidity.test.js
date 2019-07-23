@@ -13,7 +13,6 @@ test('transformPool', async () => {
   };
   const balancePriceUnit = '1.01';
   const result = transformPool(pool, balancePriceUnit, 'USD');
-  console.log('result', result);
-  expect(result).toHaveProperty('ethBalance', '1.12');
+  expect(result).toHaveProperty('ethBalance', 1.12);
   expect(result).toHaveProperty('nativeDisplay');
 });

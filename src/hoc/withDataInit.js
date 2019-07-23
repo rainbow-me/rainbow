@@ -1,3 +1,4 @@
+import { isEmpty, isNil } from 'lodash';
 import { Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
@@ -101,6 +102,13 @@ export default Component => compose(
     initializeWallet: (ownProps) => async (seedPhrase) => {
       try {
         const { isWalletBrandNew, walletAddress } = await walletInit(seedPhrase);
+        if (isNil(walletAddress)) {
+          Alert.alert('Import failed due to an invalid seed phrase. Please try again.');
+          return null;
+        }
+        if (!isEmpty(seedPhrase)) {
+          await ownProps.clearAccountData();
+        }
         ownProps.settingsUpdateAccountAddress(walletAddress, 'RAINBOWWALLET');
         if (!isWalletBrandNew) {
           await ownProps.loadAccountData();
