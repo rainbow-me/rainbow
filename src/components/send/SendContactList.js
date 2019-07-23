@@ -23,6 +23,7 @@ import {
 import { withNavigation } from 'react-navigation';
 import { compose } from 'recompact';
 import { Alert } from '../alerts';
+import { showActionSheetWithOptions } from '../../utils/actionsheet';
 
 const rowHeight = 62;
 
@@ -119,9 +120,17 @@ class Avatar extends React.PureComponent {
 
   deleteHandler = async () => {
     this.close();
-    await deleteLocalContact(this.props.address);
-    Alert({title: `Success`, message: `Contact has been deleted from your address book`})
-    this.props.onChange();
+    showActionSheetWithOptions({
+      cancelButtonIndex: 1,
+      destructiveButtonIndex: 0,
+      options: [`Delete ${this.props.nickname}`, 'Cancel'],
+    }, async (buttonIndex) => {
+      if (buttonIndex === 0) {
+        await deleteLocalContact(this.props.address);
+        // Alert({title: `Success`, message: `Contact has been deleted from your address book`})
+        this.props.onChange();
+      }
+    });
   };
 
   editHandler = async () => {
