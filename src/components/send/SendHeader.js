@@ -9,7 +9,7 @@ import { Row } from '../layout';
 import { Label } from '../text';
 import { colors, padding } from '../../styles';
 import { PasteAddressButton, AddContactButton } from '../buttons';
-import { Text } from 'react-native';
+import { Text, Keyboard } from 'react-native';
 import { withNavigation } from 'react-navigation';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
@@ -58,6 +58,7 @@ const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddr
         />
         {isValidAddress ? contact.nickname.length > 0 ?
           <AddContactButton edit onPress={() => {
+            Keyboard.dismiss();
             navigation.navigate('ExpandedAssetScreen', {
               address: recipient,
               color: contact.color,
@@ -69,7 +70,7 @@ const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddr
           }} /> :
           <AddContactButton onPress={() => {
             const contactColor = Math.floor(Math.random() * colors.avatarColor.length);
-
+            Keyboard.dismiss();
             navigation.navigate('ExpandedAssetScreen', {
               address: recipient,
               color: contactColor,
