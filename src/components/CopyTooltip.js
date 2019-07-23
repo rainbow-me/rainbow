@@ -12,7 +12,7 @@ class CopyTooltip extends PureComponent {
     navigation: PropTypes.object,
     textToCopy: PropTypes.string,
     tooltipText: PropTypes.string,
-    waitForKeyboard: PropTypes.boolean,
+    waitForKeyboard: PropTypes.bool,
   }
 
   static defaultProps = {
