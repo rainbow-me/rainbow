@@ -54,7 +54,9 @@ const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddr
           address={recipient}
           autoFocus
           onChange={onChangeAddressInput}
-          headerName={contact.nickname}
+          currentContact={contact}
+          name={contact.nickname}
+          contacts={contacts}
         />
         {isValidAddress ? contact.nickname.length > 0 ?
           <AddContactButton edit onPress={() => {
