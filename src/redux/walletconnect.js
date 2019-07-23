@@ -40,6 +40,8 @@ const previouslyApprovedDapps = [
 ];
 */
 
+const sendRpcCall = async (payload) => web3Provider.send(payload.method, payload.params);
+
 const getNativeOptions = async () => {
   const language = 'en'; // TODO use lang from settings
   const token = await getFCMToken();
@@ -95,11 +97,11 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (dispatch)
 };
 
 const signingMethods = [
-	"eth_sendTransaction",
-	"eth_signTransaction",
-	"personal_sign",
-	"eth_sign",
-	"eth_signTypedData",
+  "eth_sendTransaction",
+  "eth_signTransaction",
+  "personal_sign",
+  "eth_sign",
+  "eth_signTypedData",
 ];
 
 const listenOnNewMessages = walletConnector => (dispatch, getState) => {

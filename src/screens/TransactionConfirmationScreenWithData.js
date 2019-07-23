@@ -94,11 +94,13 @@ class TransactionConfirmationScreenWithData extends PureComponent {
 
   handleSignMessage = async (requestType) => {
     const { transactionDetails } = this.props.navigation.state.params;
-    const message = get(transactionDetails, 'displayDetails.payload');
+    let message = null;
     let flatFormatSignature = null;
     if (requestType === 'message') {
+      message = get(transactionDetails, 'payload.params[1]');
       flatFormatSignature = await signMessage(message);
     } else if (requestType === 'messagePersonal') {
+      message = get(transactionDetails, 'payload.params[0]');
       flatFormatSignature = await signPersonalMessage(message);
     }
 
