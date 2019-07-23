@@ -34,6 +34,7 @@ import CopyTooltip from '../CopyTooltip';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { Alert } from '../alerts';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
+import GraphemeSplitter from 'grapheme-splitter';
 
 const TopMenu = styled(View)`
   justify-content: center;
@@ -166,9 +167,7 @@ class AddContactState extends React.PureComponent {
                   <ButtonPressAnimation onPress={this.onChangeColor} scaleTo={0.96}>
                     <NameCircle style={{ backgroundColor: colors.avatarColor[this.state.color] }}>
                       <FirstLetter>
-                        {this.state.value.length > 0 && this.state.value.charCodeAt(0) < 55000 ?
-                          this.state.value[0] :
-                          this.state.value.length > 1 && this.state.value.charCodeAt(0) > 55000 && this.state.value[0] + "" + this.state.value[1]}
+                        {new GraphemeSplitter().splitGraphemes(this.state.value)[0]}
                       </FirstLetter>
                     </NameCircle>
                   </ButtonPressAnimation>
@@ -180,7 +179,6 @@ class AddContactState extends React.PureComponent {
                     autoFocus={this.props.contact.nickname ? false : true}
                     color={colors.blueGreyDark}
                     family={'SFProDisplay'}
-                    maxLength={20}
                     onChange={this.onChange}
                     size="big"
                     textAlign={'center'}
