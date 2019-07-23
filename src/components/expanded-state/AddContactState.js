@@ -33,6 +33,7 @@ import { ButtonPressAnimation } from '../animations';
 import CopyTooltip from '../CopyTooltip';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { Alert } from '../alerts';
+import { showActionSheetWithOptions } from '../../utils/actionsheet';
 
 const TopMenu = styled(View)`
   justify-content: center;
@@ -140,6 +141,20 @@ class AddContactState extends React.PureComponent {
     this.setState({ color: newColor });
   }
 
+  onDeleteContact = () => {
+    showActionSheetWithOptions({
+      cancelButtonIndex: 1,
+      destructiveButtonIndex: 0,
+      options: [`Delete ${this.state.value}`, 'Cancel'],
+    }, async (buttonIndex) => {
+      if (buttonIndex === 0) {
+        await deleteLocalContact(this.props.address); 
+        this.props.onCloseModal(); 
+        this.props.navigation.goBack(); 
+      }
+    });
+  }
+
   render() {
     return <TouchableWithoutFeedback onPress={() => this.props.navigation.goBack()}>
       <KeyboardAvoidingView behavior="padding">
@@ -196,7 +211,7 @@ class AddContactState extends React.PureComponent {
                     /> :
                     <CancelButton
                       style={{ paddingTop: 11 }}
-                      onPress={async () => { await deleteLocalContact(this.props.address); this.props.onCloseModal(); this.props.navigation.goBack(); Alert({title: `Success`, message: `Contact has been deleted from your address book`})}}
+                      onPress={this.onDeleteContact}
                       text="Delete Contact"
                     />
                   }
