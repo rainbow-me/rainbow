@@ -9,6 +9,7 @@ import { FlexItem, Page } from '../components/layout';
 import { Icon } from '../components/icons';
 import { ProfileMasthead } from '../components/profile';
 import { colors, position } from '../styles';
+import { progressNode } from '../navigation/transitions/effects';
 
 const ProfileScreen = ({
   accountAddress,
@@ -51,7 +52,7 @@ const ProfileScreen = ({
     <BlurOverlay
       backgroundColor={colors.alpha(colors.blueGreyDarker, 0.4)}
       blurType="light"
-      opacity={blurOpacity}
+      opacity={progressNode}
     />
   </Page>
 );
