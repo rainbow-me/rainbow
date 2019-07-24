@@ -134,9 +134,11 @@ class AddContactState extends React.PureComponent {
   }
 
   addContact = async () => {
-    await addNewLocalContact(this.props.address, this.state.value, this.state.color);
-    this.props.onCloseModal();
-    this.props.navigation.goBack();
+    if (this.state.value.length > 0) {
+      await addNewLocalContact(this.props.address, this.state.value, this.state.color);
+      this.props.onCloseModal();
+      this.props.navigation.goBack();
+    }
   }
 
   onChangeColor = () => {
@@ -188,6 +190,7 @@ class AddContactState extends React.PureComponent {
                     value={this.state.value}
                     autoCapitalize
                     onSubmitEditing={this.addContact}
+                    returnKeyType={'done'}
                   />
                   <ButtonPressAnimation scaleTo={1} onPress={() => Keyboard.dismiss()}>
                     <CopyTooltip textToCopy={this.props.address} tooltipText="Copy Address" waitForKeyboard>
