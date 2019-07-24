@@ -12,7 +12,7 @@ import {
 } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Keyboard, KeyboardAvoidingView } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, StatusBar } from 'react-native';
 import { isIphoneX } from 'react-native-iphone-x-helper';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
@@ -242,6 +242,7 @@ class SendSheet extends Component {
 
     return (
       <Container>
+        <StatusBar barStyle="light-content" />
         <KeyboardAvoidingView behavior="padding" enabled={!showAssetList}>
           <Container align="center">
             <SendHeader
