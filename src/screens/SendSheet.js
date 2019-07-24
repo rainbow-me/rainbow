@@ -96,6 +96,7 @@ class SendSheet extends Component {
     this.state = {
       isAuthorizing: false,
       contacts: [],
+      currentInput: '',
     }
   }
 
@@ -234,6 +235,11 @@ class SendSheet extends Component {
     this.setState({ contacts: contacts });
   }
 
+  onChangeInput = (event) => {
+    this.setState({ currentInput: event });
+    this.props.sendUpdateRecipient(event);
+  }
+
   render() {
     const {
       allAssets,
@@ -257,7 +263,7 @@ class SendSheet extends Component {
           <Container align="center">
             <SendHeader
               isValid={isValidAddress}
-              onChangeAddressInput={sendUpdateRecipient}
+              onChangeAddressInput={this.onChangeInput}
               recipient={recipient}
               onPressPaste={sendUpdateRecipient}
               contacts={this.state.contacts} 
@@ -269,6 +275,7 @@ class SendSheet extends Component {
               allAssets={this.state.contacts} 
               onPressContact={sendUpdateRecipient} 
               onUpdateContacts={this.onUpdateContacts}
+              currentInput={this.state.currentInput}
               />
             )}
             {showAssetList && (

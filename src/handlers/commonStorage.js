@@ -1,5 +1,6 @@
 import { differenceInMinutes } from 'date-fns';
-import { omit, pickBy } from 'lodash';
+import { omit, pickBy, orderBy } from 'lodash';
+import { removeFirstEmojiFromString, makeSpaceAfterFirstEmoji } from '../helpers/emojiHandler';
 
 const defaultVersion = '0.1.0';
 const transactionsVersion = '0.2.0';
@@ -477,17 +478,26 @@ export const getSelectedLocalContact = async (address) => {
 export const addNewLocalContact = async (address, nickname, color) => {
   const contacts = await getLocalContacts();
   for (let i = 0; i < contacts.length; i++) {
-    if(contacts[i].address == address) {
+    if (contacts[i].address == address) {
       contacts.splice(i, 1);
       i--;
     }
   }
   contacts.push({
     address,
-    nickname,
+    nickname: makeSpaceAfterFirstEmoji(nickname),
     color,
   });
-  await saveLocal('localContacts', { data: contacts });
+  const sortedContacts = orderBy(
+    contacts,
+    [contact => {
+      let newContact = contact.nickname.toLowerCase();
+      newContact = removeFirstEmojiFromString(newContact);
+      return newContact;
+    }],
+    ['desc']
+  );
+  await saveLocal('localContacts', { data: sortedContacts });
 };
 
 /**
@@ -498,7 +508,7 @@ export const addNewLocalContact = async (address, nickname, color) => {
 export const deleteLocalContact = async (address) => {
   const contacts = await getLocalContacts();
   for (let i = 0; i < contacts.length; i++) {
-    if(contacts[i].address == address) {
+    if (contacts[i].address == address) {
       contacts.splice(i, 1);
       i--;
     }

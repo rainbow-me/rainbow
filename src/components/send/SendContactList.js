@@ -6,7 +6,7 @@ import { FlyInAnimation } from '../animations';
 import { View, Text } from 'react-primitives';
 import { RecyclerListView, LayoutProvider, DataProvider } from "recyclerlistview";
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import { colors } from '../../styles';
+import { colors, fonts } from '../../styles';
 import { abbreviations } from '../../utils';
 import { TruncatedAddress } from '../text';
 import { ButtonPressAnimation } from '../animations';
@@ -25,6 +25,10 @@ import { compose } from 'recompact';
 import { Alert } from '../alerts';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import GraphemeSplitter from 'grapheme-splitter';
+import FastImage from 'react-native-fast-image';
+import EditIcon from '../../assets/swipeToEdit.png';
+import DeleteIcon from '../../assets/swipeToDelete.png';
+import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
 
 const rowHeight = 62;
 
@@ -56,8 +60,8 @@ const ContactColumn = styled(View)`
 `;
 
 const TopRow = styled(Text)`
-  font-weight: 500,
-  font-size: 16
+  font-weight: 500;
+  font-size: 16;
 `;
 
 const BottomRow = styled(TruncatedAddress).attrs({
@@ -70,6 +74,21 @@ const BottomRow = styled(TruncatedAddress).attrs({
 })`
   opacity: 0.4;
   width: 100%;
+`;
+
+const RightActionText = styled(Text)`
+  font-weight: ${fonts.weight.medium};
+  font-size: ${fonts.size.smaller};
+  opacity: 0.4;
+  color: ${colors.blueGreyDark};
+  letter-spacing: ${fonts.letterSpacing.tight};
+  text-align: center;
+`;
+
+const ActionIcon = styled(FastImage)`
+  width: 35px;
+  height: 35px;
+  margin: 0px 10px 5px 10px;
 `;
 
 const NOOP = () => undefined;
@@ -90,31 +109,26 @@ class Avatar extends React.PureComponent {
     this.props.onPress(this.props.address);
   }
 
-  renderRightAction = (text, color, x, progress, onPress) => {
+  renderRightAction = (text, x, progress, onPress) => {
     const trans = progress.interpolate({
       inputRange: [0, 1],
       outputRange: [x, 0],
     });
 
     return (
-      <Animated.View style={{ flex: 1, transform: [{ translateX: trans }] }}>
-        <RectButton
-          style={[{
-            alignItems: 'center',
-            flex: 1,
-            justifyContent: 'center',
-            backgroundColor: color 
-          }]}
-          onPress={onPress}>
-          <Text style={{
-            color: 'white', 
-            fontSize: 16,
-            backgroundColor: 'transparent',
-            padding: 10,
-          }}>
+      <Animated.View style={{ 
+        flex: 1, 
+        transform: [{ translateX: trans }], 
+        alignItems: `center`, 
+        justifyContent: `center`, 
+        marginRight: text == 'Edit' ? 0 : 10 
+      }}>
+        <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
+          <ActionIcon source={text == 'Edit' ? EditIcon : DeleteIcon} />
+          <RightActionText>
             {text}
-          </Text>
-        </RectButton>
+          </RightActionText>
+        </ButtonPressAnimation>
       </Animated.View>
     );
   };
@@ -152,21 +166,37 @@ class Avatar extends React.PureComponent {
   };
 
   renderRightActions = progress => (
-    <View style={{ width: 140, flexDirection: 'row' }}>
-      {this.renderRightAction('Edit', '#ffab00', 140, progress, this.editHandler)}
-      {this.renderRightAction('Delete', '#dd2c00', 70, progress, this.deleteHandler)}
+    <View style={{ width: 120, flexDirection: 'row' }}>
+      {this.renderRightAction('Edit', 120, progress, this.editHandler)}
+      {this.renderRightAction('Delete', 90, progress, this.deleteHandler)}
     </View>
   );
 
   updateRef = ref => {
     this._swipeableRow = ref;
   };
+
   close = () => {
     this._swipeableRow.close();
   };
 
+  isEmoji = (str) => {
+    var ranges = [
+        '\ud83c[\udf00-\udfff]', // U+1F300 to U+1F3FF
+        '\ud83d[\udc00-\ude4f]', // U+1F400 to U+1F64F
+        '\ud83d[\ude80-\udeff]' // U+1F680 to U+1F6FF
+    ];
+    if (str.match(ranges.join('|'))) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
   render() {
     const item = this.props;
+    const displayName = removeFirstEmojiFromString(item.nickname)
+    
     return (
       <Swipeable
         ref={this.updateRef}
@@ -182,7 +212,7 @@ class Avatar extends React.PureComponent {
             </AvatarCircle>
             <ContactColumn>
               <TopRow>
-                {item.nickname}
+                {displayName}
               </TopRow>
               <BottomRow address={item.address} />
             </ContactColumn>
@@ -235,9 +265,30 @@ class SendContactList extends React.Component {
   componentWillReceiveProps = (props) => {
     let newAssets = Object.assign([], props.allAssets);
     newAssets.reverse();
+    newAssets = this.filterContactList(newAssets, props.currentInput, 'nickname');
     if(newAssets !== this.state.contacts) {
       this.setState({ contacts: newAssets });
     }
+  }
+
+  filterContactList = (list, searchPhrase, searchParameter = false, separator = ' ') => {
+    const filteredList = [];
+    if (list && searchPhrase.length > 0) {
+      for (let i = 0; i < list.length; i++) {
+        let searchedItem = searchParameter ? list[i][searchParameter] : list[i];
+        const splitedWordList = searchedItem.split(separator);
+        splitedWordList.push(searchedItem);
+        for (let j = 0; j < splitedWordList.length; j++) {
+          if (splitedWordList[j].startsWith(searchPhrase)) {
+            filteredList.push(list[i]);
+            break;
+          }
+        }
+      }
+    } else {
+      return list;
+    }
+    return filteredList;
   }
 
   shouldComponentUpdate = () => {
