@@ -1,11 +1,11 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { 
-  InteractionManager, 
-  KeyboardAvoidingView, 
-  View, 
-  Keyboard 
+import {
+  InteractionManager,
+  KeyboardAvoidingView,
+  View,
+  Keyboard
 } from 'react-native';
 import {
   compose,
@@ -149,14 +149,15 @@ class AddContactState extends React.PureComponent {
 
   onDeleteContact = () => {
     showActionSheetWithOptions({
+      title: `Are you sure you want to delete this contact?`,
       cancelButtonIndex: 1,
       destructiveButtonIndex: 0,
-      options: [`Delete ${this.state.value}`, 'Cancel'],
+      options: [`Delete Contact`, 'Cancel'],
     }, async (buttonIndex) => {
       if (buttonIndex === 0) {
-        await deleteLocalContact(this.props.address); 
-        this.props.onCloseModal(); 
-        this.props.navigation.goBack(); 
+        await deleteLocalContact(this.props.address);
+        this.props.onCloseModal();
+        this.props.navigation.goBack();
       }
     });
   }

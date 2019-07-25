@@ -34,7 +34,7 @@ const rowHeight = 62;
 
 const AvatarWrapper = styled(View)`
   flex-direction: row;
-  margin: 11px 15px;
+  margin: 17px 15px 5px 15px;
 `;
 
 const AvatarCircle = styled(View)`
@@ -46,7 +46,7 @@ const AvatarCircle = styled(View)`
 const FirstLetter = styled(Text)`
   width: 100%;
   text-align: center;
-  line-height: 40px;
+  line-height: 39px;
   font-size: 18px;
   color: #fff;
   font-weight: 600;
@@ -56,7 +56,7 @@ const ContactColumn = styled(View)`
   height: 40px;
   flex-direction: column;
   justify-content: space-between;
-  margin-left: 11px;
+  margin-left: 10px;
 `;
 
 const TopRow = styled(Text)`
@@ -117,12 +117,13 @@ class Avatar extends React.PureComponent {
     });
 
     return (
-      <Animated.View style={{ 
-        flex: 1, 
-        transform: [{ translateX: trans }], 
-        alignItems: `center`, 
-        justifyContent: `center`, 
-        marginRight: text == 'Edit' ? 0 : 10 
+      <Animated.View style={{
+        flex: 1,
+        transform: [{ translateX: trans }],
+        alignItems: `center`,
+        justifyContent: `center`,
+        marginRight: text == 'Edit' ? 0 : 10,
+        marginTop: 12
       }}>
         <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
           <ActionIcon source={text == 'Edit' ? EditIcon : DeleteIcon} />
@@ -137,9 +138,10 @@ class Avatar extends React.PureComponent {
   deleteHandler = async () => {
     this.close();
     showActionSheetWithOptions({
+      title: `Are you sure you want to delete this contact?`,
       cancelButtonIndex: 1,
       destructiveButtonIndex: 0,
-      options: [`Delete ${this.props.nickname}`, 'Cancel'],
+      options: [`Delete Contact`, 'Cancel'],
     }, async (buttonIndex) => {
       if (buttonIndex === 0) {
         await deleteLocalContact(this.props.address);
@@ -213,17 +215,17 @@ class Avatar extends React.PureComponent {
 
 class SendContactList extends React.Component {
   balancesRenderItem = item => (
-    <Avatar 
-      onChange={this.props.onUpdateContacts} 
-      onPress={this.props.onPressContact} 
+    <Avatar
+      onChange={this.props.onUpdateContacts}
+      onPress={this.props.onPressContact}
       navigation={this.props.navigation}
-      {...item} 
+      {...item}
     />
   );
 
   constructor(args) {
     super(args);
-    
+
     this.state = {
       contacts: [],
     }
@@ -288,7 +290,7 @@ class SendContactList extends React.Component {
 
   render() {
     return (
-      <FlyInAnimation style={{ flex: 1, width: '100%', paddingBottom: 20 }}>
+      <FlyInAnimation style={{ flex: 1, width: '100%', paddingBottom: sheetVerticalOffset }}>
         {this.state.contacts.length == 0 ?
           <Column
             css={`
