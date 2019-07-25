@@ -61,7 +61,12 @@ const SwipeStack = createMaterialTopTabNavigator({
 });
 
 const MainNavigator = createStackNavigator({
-  ConfirmRequest: TransactionConfirmationScreenWithData,
+  ConfirmRequest: {
+    navigationOptions: {
+      ...expandedPreset,
+    },
+    screen: TransactionConfirmationScreenWithData,
+  },
   ExpandedAssetScreen: {
     navigationOptions: {
       ...expandedPreset,
