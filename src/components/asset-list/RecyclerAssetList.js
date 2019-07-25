@@ -19,7 +19,7 @@ import {
   buildAssetHeaderUniqueIdentifier,
   buildAssetUniqueIdentifier,
 } from '../../helpers/assets';
-import { withOpenFamilyTabs } from '../../hoc';
+import { withOpenFamilyTabs, withOpenInvestmentCards } from '../../hoc';
 import { colors } from '../../styles';
 import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
 import { CoinRow, CollectiblesSendRow } from '../coin-row';
@@ -39,6 +39,8 @@ export const ViewTypes = {
   UNIQUE_TOKEN_ROW_LAST: 9, // TODO remove
   UNISWAP_ROW: 6,
   UNISWAP_ROW_LAST: 7,
+  UNISWAP_ROW_CLOSED: 8,
+  UNISWAP_ROW_CLOSED_LAST: 9,
   FOOTER: 10,
 };
 
@@ -97,6 +99,7 @@ class RecyclerAssetList extends PureComponent {
     fetchData: PropTypes.func,
     hideHeader: PropTypes.bool,
     openFamilyTabs: PropTypes.array,
+    openInvestmentCards: PropTypes.array,
     paddingBottom: PropTypes.number,
     renderAheadOffset: PropTypes.number,
     scrollingVelocity: PropTypes.number,
@@ -139,7 +142,7 @@ class RecyclerAssetList extends PureComponent {
 
     this.layoutProvider = new LayoutProvider(
       index => {
-        const { openFamilyTabs, sections } = this.props;
+        const { openFamilyTabs, openInvestmentCards, sections } = this.props;
         const { headersIndices } = this.state;
         if (headersIndices.includes(index)) {
           return ViewTypes.HEADER;
@@ -166,9 +169,15 @@ class RecyclerAssetList extends PureComponent {
           const lastInvestmentIndex = headersIndices[investmentsIndex] + investmentItemsCount;
 
           if ((index > headersIndices[investmentsIndex]) && (index <= lastInvestmentIndex)) {
-            return index === lastInvestmentIndex
-              ? ViewTypes.UNISWAP_ROW_LAST
-              : ViewTypes.UNISWAP_ROW;
+            if (!openInvestmentCards[index - headersIndices[investmentsIndex] - 1]) {
+              return index === lastInvestmentIndex
+                ? ViewTypes.UNISWAP_ROW_LAST
+                : ViewTypes.UNISWAP_ROW;
+            } else {
+              return index === lastInvestmentIndex
+                  ? ViewTypes.UNISWAP_ROW_CLOSED_LAST
+                  : ViewTypes.UNISWAP_ROW_CLOSED;
+            }
           }
         }
 
@@ -224,6 +233,10 @@ class RecyclerAssetList extends PureComponent {
           dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical + ListFooter.height + 7;
         } else if (type === ViewTypes.UNISWAP_ROW) {
           dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
+        } else if (type === ViewTypes.UNISWAP_ROW_CLOSED_LAST) {
+          dim.height = UniswapInvestmentCard.headerHeight + InvestmentCard.margin.vertical + ListFooter.height + 7;
+        } else if (type === ViewTypes.UNISWAP_ROW_CLOSED) {
+          dim.height = UniswapInvestmentCard.headerHeight + InvestmentCard.margin.vertical;
         } else if (type == ViewTypes.HEADER) {
           dim.height = this.props.hideHeader ? 0 : AssetListHeader.height;
         } else if (type == ViewTypes.FOOTER) {
@@ -379,6 +392,8 @@ class RecyclerAssetList extends PureComponent {
       || type === ViewTypes.COIN_ROW_LAST
       || type === ViewTypes.UNISWAP_ROW
       || type === ViewTypes.UNISWAP_ROW_LAST
+      || type === ViewTypes.UNISWAP_ROW_CLOSED
+      || type === ViewTypes.UNISWAP_ROW_CLOSED_LAST
     );
 
     // TODO sections
@@ -449,4 +464,4 @@ const mapStateToProps = ({
 }) => ({
   scrollingVelocity,
 });
-export default connect(mapStateToProps)(withOpenFamilyTabs(RecyclerAssetList));
+export default connect(mapStateToProps)(withOpenFamilyTabs(withOpenInvestmentCards(RecyclerAssetList)));

@@ -101,5 +101,6 @@ UniswapInvestmentCard.propTypes = {
 };
 
 UniswapInvestmentCard.height = 114;
+UniswapInvestmentCard.headerHeight = 45;
 
 export default withOpenInvestmentCards(UniswapInvestmentCard);
