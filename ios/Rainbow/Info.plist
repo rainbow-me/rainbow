@@ -151,6 +151,7 @@
 	<array>
 		<string>itms</string>
 		<string>itms-apps</string>
+		<string>twitter</string>
 	</array>
 </dict>
 </plist>

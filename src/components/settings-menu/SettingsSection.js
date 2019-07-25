@@ -31,7 +31,8 @@ import { Emoji } from '../text';
 
 const SettingsExternalURLs = {
   review: 'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review',
-  twitter: 'https://twitter.com/rainbowdotme',
+  twitterDeepLink: 'twitter://user?screen_name=rainbowdotme',
+  twitterWebUrl: 'https://twitter.com/rainbowdotme',
 };
 
 // ⚠️ Beware: magic numbers lol
@@ -52,9 +53,9 @@ const SettingsSection = ({
   onPressLanguage,
   onPressNetwork,
   onPressReview,
+  onPressTwitter,
   onSendFeedback,
   // onPressSecurity,
-  openWebView,
   ...props
 }) => (
   <ScrollView
@@ -132,7 +133,7 @@ const SettingsSection = ({
       <ListItem
         icon={<Emoji name="rainbow" />}
         label="Follow Us"
-        onPress={openWebView}
+        onPress={onPressTwitter}
         value={SettingsExternalURLs.twitter}
       />
       <ListItem
@@ -167,9 +168,9 @@ SettingsSection.propTypes = {
   onPressLanguage: PropTypes.func.isRequired,
   onPressNetwork: PropTypes.func,
   onPressReview: PropTypes.func,
-  onSendFeedback: PropTypes.func.isRequired,
   // onPressSecurity: PropTypes.func.isRequired,
-  openWebView: PropTypes.func,
+  onPressTwitter: PropTypes.func,
+  onSendFeedback: PropTypes.func.isRequired,
 };
 
 SettingsSection.defaultProps = {
@@ -180,21 +181,27 @@ SettingsSection.defaultProps = {
 export default compose(
   withAccountSettings,
   withSendFeedback,
-  withHandlers({ openWebView: () => uri => Linking.openURL(uri) }),
   withHandlers({
-    onPressReview: ({ onCloseModal, openWebView }) => async () => {
+    onPressReview: ({ onCloseModal }) => async () => {
       const maxRequestCount = 2;
       const count = await getAppStoreReviewRequestCount();
       const shouldDeeplinkToAppStore = (count >= maxRequestCount) || !StoreReview.isAvailable;
 
       if (shouldDeeplinkToAppStore && !DeviceInfo.isEmulator()) {
-        openWebView(SettingsExternalURLs.review);
+        Linking.openURL(SettingsExternalURLs.review);
       } else {
         onCloseModal();
         InteractionManager.runAfterInteractions(StoreReview.requestReview);
       }
 
       return setAppStoreReviewRequestCount(count + 1);
+    },
+    onPressTwitter: () => async () => {
+      Linking.canOpenURL(SettingsExternalURLs.twitterDeepLink).then((supported) => (
+        supported
+          ? Linking.openURL(SettingsExternalURLs.twitterDeepLink)
+          : Linking.openURL(SettingsExternalURLs.twitterWebUrl)
+      ));
     },
   }),
   onlyUpdateForKeys(['language', 'nativeCurrency']),
