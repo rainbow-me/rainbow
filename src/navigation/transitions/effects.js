@@ -3,6 +3,7 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import store from '../../redux/store';
 import { updateTransitionProps } from '../../redux/navigation';
 import { deviceUtils } from '../../utils';
+import { colors } from '../../styles';
 
 const {
   and,
@@ -55,6 +56,10 @@ const expandStyleInterpolator = ({
   return {
     cardStyle: {
       opacity: block([cond(onStart, setShowingModal), 1]),
+      shadowColor: colors.dark,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.6,
+      shadowRadius: 50,
       // Translation for the animation of the current card
       transform: [{ translateY }],
     },
@@ -124,6 +129,7 @@ const gestureResponseDistance = {
 };
 
 export const expandedPreset = {
+  cardShadowEnabled: true,
   cardStyleInterpolator: expandStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
