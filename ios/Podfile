@@ -59,6 +59,7 @@ target 'Rainbow' do
   pod 'RNLanguages', :path => '../node_modules/react-native-languages'
   pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
   pod 'RNScreens', :path => '../node_modules/react-native-screens'
+  pod 'RNStoreReview', :path => '../node_modules/react-native-store-review/ios'
 
   pod 'FLAnimatedImage'
   pod 'libwebp'

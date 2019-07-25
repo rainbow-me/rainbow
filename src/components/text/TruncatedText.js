@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { pure } from 'recompact';
 import { createElement } from 'react';
 import Text from './Text';
 
@@ -16,4 +17,4 @@ TruncatedText.defaultProps = {
   numberOfLines: 1,
 };
 
-export default TruncatedText;
+export default pure(TruncatedText);
