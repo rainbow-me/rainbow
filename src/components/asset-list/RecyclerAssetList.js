@@ -6,7 +6,7 @@ import {
 } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { LayoutAnimation, RefreshControl } from 'react-native';
+import { LayoutAnimation, RefreshControl, View } from 'react-native';
 import { compose, pure } from 'recompact';
 import {
   DataProvider,
@@ -14,7 +14,6 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import styled from 'styled-components/primitives';
 import {
   buildAssetHeaderUniqueIdentifier,
   buildAssetUniqueIdentifier,
@@ -41,11 +40,6 @@ export const ViewTypes = {
   FOOTER: 10,
 };
 /* eslint-enable sort-keys */
-
-const Wrapper = styled.View`
-  flex: 1;
-  overflow: hidden;
-`;
 
 const NOOP = () => undefined;
 
@@ -123,9 +117,12 @@ class RecyclerAssetList extends Component {
 
   rlv = React.createRef();
 
-  position = 0;
   contentSize = 0;
+
   layoutMeasurement = 0;
+
+  position = 0;
+
   refresh = false;
 
   constructor(props) {
@@ -338,6 +335,8 @@ class RecyclerAssetList extends Component {
       : buildAssetUniqueIdentifier(row.item);
   };
 
+  handleListRef = (ref) => { this.rlv = ref; }
+
   handleRefresh = () => {
     if (this.state.isRefreshing) return;
 
@@ -419,7 +418,7 @@ class RecyclerAssetList extends Component {
     const { dataProvider, headersIndices } = this.state;
 
     return (
-      <Wrapper>
+      <View backgroundColor={colors.white} flex={1} overflow="hidden">
         <StickyContainer stickyHeaderIndices={headersIndices}>
           <RecyclerListView
             {...props}
@@ -428,7 +427,7 @@ class RecyclerAssetList extends Component {
             itemAnimator={layoutItemAnimator}
             layoutProvider={this.layoutProvider}
             onScroll={this.handleScroll}
-            ref={ref => { this.rlv = ref; }}
+            ref={this.handleListRef}
             renderAheadOffset={renderAheadOffset}
             rowRenderer={this.rowRenderer}
             scrollIndicatorInsets={{
@@ -438,9 +437,12 @@ class RecyclerAssetList extends Component {
             scrollViewProps={{
               refreshControl: this.renderRefreshControl(),
             }}
+            style={{
+              backgroundColor: colors.white,
+            }}
           />
         </StickyContainer>
-      </Wrapper>
+      </View>
     );
   }
 }
