@@ -5,7 +5,7 @@ import { safeAreaInsetValues } from '../../utils';
 import { FlexItem, RowWithMargins } from '../layout';
 import SendFab from './SendFab';
 
-const bottomPosition = 21;
+const bottomPosition = 21 + safeAreaInsetValues.bottom;
 
 const enhance = onlyUpdateForKeys(['children', 'disabled']);
 const FabWrapper = enhance(({
@@ -19,7 +19,7 @@ const FabWrapper = enhance(({
     {!disabled && (
       <RowWithMargins
         css={`
-          bottom: ${safeAreaInsetValues.bottom + bottomPosition};
+          bottom: ${bottomPosition};
           position: absolute;
           right: 15;
           z-index: 2;

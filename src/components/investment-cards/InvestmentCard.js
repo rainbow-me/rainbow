@@ -1,8 +1,7 @@
-import withViewLayoutProps from '@hocs/with-view-layout-props';
 import PropTypes from 'prop-types';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import { compose, pure } from 'recompact';
+import { pure } from 'recompact';
 import { colors, margin, position } from '../../styles';
 import { deviceUtils } from '../../utils';
 import InnerBorder from '../InnerBorder';
@@ -15,19 +14,13 @@ const InvestmentCardMargin = {
   vertical: 15,
 };
 
-const DefaultContainerHeight = InvestmentCardHeader.height;
-
-const enhance = compose(
-  withViewLayoutProps(({ height }) => ({ containerHeight: height || DefaultContainerHeight })),
-  pure,
-);
-
-const InvestmentCard = enhance(({
+const InvestmentCard = pure(({
   children,
   collapsed,
   containerHeight,
   gradientColors,
   headerProps,
+  height,
   onLayout,
   shadows,
   ...props
@@ -36,7 +29,7 @@ const InvestmentCard = enhance(({
     backgroundColor={gradientColors[0]}
     borderRadius={18}
     css={margin(InvestmentCardMargin.vertical, InvestmentCardMargin.horizontal)}
-    height={containerHeight}
+    height={collapsed ? InvestmentCardHeader.height : height}
     shadows={shadows}
     width={deviceUtils.dimensions.width - (InvestmentCardMargin.horizontal * 2)}
     {...props}
@@ -70,16 +63,16 @@ const InvestmentCard = enhance(({
 InvestmentCard.propTypes = {
   children: PropTypes.node,
   collapsed: PropTypes.bool,
-  containerHeight: PropTypes.number,
   gradientColors: PropTypes.arrayOf(PropTypes.string).isRequired,
   headerProps: PropTypes.shape(InvestmentCardHeader.propTypes),
+  height: PropTypes.number.isRequired,
   onLayout: PropTypes.func,
   shadows: PropTypes.arrayOf(PropTypes.array),
 };
 
 InvestmentCard.defaultProps = {
-  containerHeight: DefaultContainerHeight,
   gradientColors: ['#F7FAFC', '#E0E6EC'],
+  height: InvestmentCardHeader.height,
   shadows: [
     [0, 1, 3, colors.dark, 0.08],
     [0, 4, 6, colors.dark, 0.04],

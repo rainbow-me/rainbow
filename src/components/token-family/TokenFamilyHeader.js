@@ -21,18 +21,12 @@ const { interpolate, timing, Value } = Animated;
 const AnimatedMonospace = Animated.createAnimatedComponent(toClass(Monospace));
 const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
 
+const TokenFamilyHeaderHeight = 54;
+
 const FamilyIcon = withProps(({ familyImage }) => ({
   id: familyImage,
   source: { uri: familyImage },
 }))(ImageWithCachedDimensions);
-
-const FamilyIconShadow = withProps({
-  backgroundColor: colors.purpleLight,
-  shadows: [
-    [0, 4, 6, colors.dark, 0.04],
-    [0, 1, 3, colors.dark, 0.08],
-  ],
-})(ShadowStack);
 
 const Wrapper = styled(Row).attrs({
   align: 'center',
@@ -40,7 +34,7 @@ const Wrapper = styled(Row).attrs({
 })`
   ${({ isCoinRow }) => padding(7.5, isCoinRow ? 16 : 19)};
   background-color: ${colors.white};
-  height: 56px;
+  height: ${TokenFamilyHeaderHeight};
   width: 100%;
 `;
 
@@ -54,6 +48,8 @@ export default class TokenFamilyHeader extends PureComponent {
     isOpen: PropTypes.bool,
     onHeaderPress: PropTypes.func,
   }
+
+  static height = TokenFamilyHeaderHeight;
 
   animation = new Value(0)
 
@@ -78,12 +74,19 @@ export default class TokenFamilyHeader extends PureComponent {
     const size = borders.buildCircleAsObject(isCoinRow ? 40 : 32);
 
     return (
-      <FamilyIconShadow {...size}>
+      <ShadowStack
+        {...size}
+        backgroundColor={familyImage ? colors.white : colors.purpleLight}
+        shadows={[
+          [0, 4, 6, colors.dark, 0.04],
+          [0, 1, 3, colors.dark, 0.08],
+        ]}
+      >
         {familyImage
           ? <FamilyIcon familyImage={familyImage} style={size} />
           : <FallbackIcon {...size} symbol={initials(familyName)} />
         }
-      </FamilyIconShadow>
+      </ShadowStack>
     );
   }
 

@@ -22,6 +22,8 @@ import { withFabSelection, withOpenFamilyTabs } from '../../hoc';
 import { colors } from '../../styles';
 import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
 import { CoinRow, CollectiblesSendRow } from '../coin-row';
+import { TokenFamilyHeader } from '../token-family';
+import { FloatingActionButton } from '../fab';
 import { InvestmentCard, UniswapInvestmentCard } from '../investment-cards';
 import { ListFooter } from '../list';
 import { UniqueTokenRow } from '../unique-token';
@@ -191,18 +193,26 @@ class RecyclerAssetList extends Component {
         return ViewTypes.COIN_ROW;
       },
       (type, dim) => {
+        const { hideHeader, paddingBottom } = this.props;
+        const { areSmallCollectibles } = this.state;
+
         dim.width = deviceUtils.dimensions.width;
-        if (this.state.areSmallCollectibles
-            && type === ViewTypes.UNIQUE_TOKEN_ROW) {
+
+        if (areSmallCollectibles && type === ViewTypes.UNIQUE_TOKEN_ROW) {
           dim.height = CoinRow.height;
           return;
         }
+
+        const fabPositionBottom = type.isLast ? (paddingBottom - (FloatingActionButton.size / 2)) : 0;
+        const TokenFamilyHeaderHeight = TokenFamilyHeader.height + fabPositionBottom;
+
         if (type.get === ViewTypes.UNIQUE_TOKEN_ROW) {
-          dim.height = type.size * UniqueTokenRow.cardSize + 54 + UniqueTokenRow.cardMargin * (type.size - 1) + (type.isLast ? 90 : 0);
+          const extraSpaceForDropShadow = 12;
+          dim.height = TokenFamilyHeaderHeight + (type.size * UniqueTokenRow.cardSize) + (UniqueTokenRow.cardMargin * (type.size - 1)) + extraSpaceForDropShadow;
         } else if (type.get === ViewTypes.UNIQUE_TOKEN_ROW_CLOSED) {
-          dim.height = 54 + (type.isLast ? 90 : 0);
+          dim.height = TokenFamilyHeaderHeight;
         } else if (type === ViewTypes.COIN_ROW_LAST) {
-          dim.height = this.state.areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height - 1;
+          dim.height = areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height - 1;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRow.height;
         } else if (type === ViewTypes.UNISWAP_ROW_LAST) {
@@ -210,7 +220,7 @@ class RecyclerAssetList extends Component {
         } else if (type === ViewTypes.UNISWAP_ROW) {
           dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
         } else if (type === ViewTypes.HEADER) {
-          dim.height = this.props.hideHeader ? 0 : AssetListHeader.height;
+          dim.height = hideHeader ? 0 : AssetListHeader.height;
         } else if (type === ViewTypes.FOOTER) {
           dim.height = 0;
         }
@@ -290,9 +300,9 @@ class RecyclerAssetList extends Component {
             let collectiblesHeight = 0;
             for (let j = 0; j < i; j++) {
               if (this.props.openFamilyTabs[j] && collectibles.data[j].tokens) {
-                collectiblesHeight += collectibles.data[j].tokens.length * UniqueTokenRow.cardSize + 54 + UniqueTokenRow.rowPadding * (collectibles.data[j].tokens.length - 1);
+                collectiblesHeight += collectibles.data[j].tokens.length * UniqueTokenRow.cardSize + TokenFamilyHeader.height + UniqueTokenRow.rowPadding * (collectibles.data[j].tokens.length - 1);
               } else {
-                collectiblesHeight += 54;
+                collectiblesHeight += TokenFamilyHeader.height;
               }
             }
             const verticalOffset = 10;
