@@ -11,8 +11,6 @@ import {
   RowWithMargins,
 } from '../layout';
 import { Emoji, Monospace, Text } from '../text';
-import { ButtonPressAnimation } from '../animations';
-import { withOpenInvestmentCards } from '../../hoc';
 
 const HeaderHeight = 48;
 
@@ -34,12 +32,7 @@ const InvestmentCardHeader = enhance(({
   title,
   titleColor,
   value,
-  openInvestmentCards,
-  setOpenInvestmentCards,
 }) => {
-  const onPress = () => {
-    setOpenInvestmentCards({ index: 0, state: !openInvestmentCards[0] });
-  }
 
   return (
   <Container>
@@ -72,7 +65,6 @@ const InvestmentCardHeader = enhance(({
       >
         {value}
       </Monospace>
-      <ButtonPressAnimation scaleTo={0.8} onPress={onPress}>
         {isCollapsible && (
           <Centered justify="end" style={position.sizeAsObject(19)}>
             <Centered
@@ -95,7 +87,6 @@ const InvestmentCardHeader = enhance(({
             </Centered>
           </Centered>
         )}
-      </ButtonPressAnimation>
     </RowWithMargins>
   </Container>
   )
@@ -118,4 +109,4 @@ InvestmentCardHeader.defaultProps = {
 
 InvestmentCardHeader.height = HeaderHeight;
 
-export default withOpenInvestmentCards(InvestmentCardHeader);
+export default InvestmentCardHeader;

@@ -50,11 +50,6 @@ const UniswapInvestmentCard = enhance(({
   openInvestmentCards,
   ...props
 }) => (
-  <ButtonPressAnimation
-    disabled={!onPress}
-    onPress={onPressContainer}
-    scaleTo={0.96}
-  >
     <InvestmentCard
       {...props}
       flex={0}
@@ -75,26 +70,31 @@ const UniswapInvestmentCard = enhance(({
         backgroundColor={colors.transparent}
         color={colors.alpha(colors.blueGreyDark, 0.02)}
       />
-      <ColumnWithMargins css={padding(8, 15, 15)} margin={6}>
-        <Row align="center" justify="space-between">
-          <AssetLabel>Ethereum</AssetLabel>
-          <AssetLabel>{tokenName}</AssetLabel>
-        </Row>
-        <Row align="center" justify="space-between">
-          <InvestmentCardPill
-            symbol="ETH"
-            value={ethBalance}
-          />
-          <InvestmentCardPill
-            reverse
-            symbol={tokenSymbol}
-            value={tokenBalance}
-          />
-        </Row>
-      </ColumnWithMargins>
+      <ButtonPressAnimation
+        disabled={!onPress}
+        onPress={onPressContainer}
+        scaleTo={0.96}
+      >
+        <ColumnWithMargins css={padding(8, 15, 15)} margin={6}>
+          <Row align="center" justify="space-between">
+            <AssetLabel>Ethereum</AssetLabel>
+            <AssetLabel>{tokenName}</AssetLabel>
+          </Row>
+          <Row align="center" justify="space-between">
+            <InvestmentCardPill
+              symbol="ETH"
+              value={ethBalance}
+            />
+            <InvestmentCardPill
+              reverse
+              symbol={tokenSymbol}
+              value={tokenBalance}
+            />
+          </Row>
+        </ColumnWithMargins>
+      </ButtonPressAnimation>
     </InvestmentCard>
-  </ButtonPressAnimation>
-));
+  ));
 
 UniswapInvestmentCard.propTypes = {
   item: PropTypes.object,
