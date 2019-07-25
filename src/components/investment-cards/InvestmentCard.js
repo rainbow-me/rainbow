@@ -19,13 +19,6 @@ const InvestmentCardMargin = {
   vertical: 15,
 };
 
-const DefaultContainerHeight = InvestmentCardHeader.height;
-
-const enhance = compose(
-  withViewLayoutProps(({ height }) => ({ containerHeight: height || DefaultContainerHeight })),
-  pure,
-);
-
 const InvestmentCard = ({
   children,
   collapsed,
@@ -36,18 +29,17 @@ const InvestmentCard = ({
   shadows,
   setOpenInvestmentCards,
   openInvestmentCards,
-  openHeight,
   ...props
 }) => {
   const transition = <Transition.Change interpolation="easeInOut" durationMs={200} />;
 
-  let [perc, setPerc] = useState(openHeight);
+  let [perc, setPerc] = useState(containerHeight);
   const ref = useRef();
 
   const onPress = () => {
     setOpenInvestmentCards({ index: 0, state: !openInvestmentCards[0] });
     ref.current.animateNextTransition();
-    setPerc(perc == openHeight ? InvestmentCardHeader.height : openHeight);
+    setPerc(perc == containerHeight ? InvestmentCardHeader.height : containerHeight);
   }
 
   return (
@@ -117,7 +109,7 @@ InvestmentCard.propTypes = {
 };
 
 InvestmentCard.defaultProps = {
-  containerHeight: DefaultContainerHeight,
+  containerHeight: InvestmentCardHeader.height,
   gradientColors: ['#F7FAFC', '#E0E6EC'],
   shadows: [
     [0, 1, 3, colors.dark, 0.08],
