@@ -20,7 +20,8 @@ const ConfirmImportAlert = onSuccess => (
   Alert({
     buttons: [{
       onPress: onSuccess,
-      text: 'Import',
+      style: 'destructive',
+      text: 'Delete and Import',
     }, {
       style: 'cancel',
       text: 'Cancel',
