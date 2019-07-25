@@ -55,6 +55,7 @@ const UniswapInvestmentCard = enhance(({
       flex={0}
       gradientColors={['#ECF1F5', '#E4E9F0']}
       collapsed={openInvestmentCards[0]}
+      openHeight={UniswapInvestmentCard.height}
       headerProps={{
         color: colors.dark,
         emoji: 'unicorn_face',
@@ -101,6 +102,5 @@ UniswapInvestmentCard.propTypes = {
 };
 
 UniswapInvestmentCard.height = 114;
-UniswapInvestmentCard.headerHeight = 45;
 
 export default withOpenInvestmentCards(UniswapInvestmentCard);

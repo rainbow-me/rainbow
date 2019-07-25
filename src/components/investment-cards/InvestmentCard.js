@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { useState, useRef } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { compose, pure } from 'recompact';
-import { colors, margin, position } from '../../styles';
+import { colors, margin, position, shadow as shadowUtil } from '../../styles';
 import { deviceUtils } from '../../utils';
 import InnerBorder from '../InnerBorder';
 import { Column } from '../layout';
@@ -12,6 +12,7 @@ import InvestmentCardHeader from './InvestmentCardHeader';
 import { Transitioning, Transition } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../animations';
 import { withOpenInvestmentCards } from '../../hoc';
+import { View } from 'react-native';
 
 const InvestmentCardMargin = {
   horizontal: 19,
@@ -35,17 +36,18 @@ const InvestmentCard = ({
   shadows,
   setOpenInvestmentCards,
   openInvestmentCards,
+  openHeight,
   ...props
 }) => {
   const transition = <Transition.Change interpolation="easeInOut" durationMs={200} />;
 
-  let [perc, setPerc] = useState(114);
+  let [perc, setPerc] = useState(openHeight);
   const ref = useRef();
 
   const onPress = () => {
     setOpenInvestmentCards({ index: 0, state: !openInvestmentCards[0] });
     ref.current.animateNextTransition();
-    setPerc(perc == 114 ? 50 : 114);
+    setPerc(perc == openHeight ? InvestmentCardHeader.height : openHeight);
   }
 
   return (
@@ -53,43 +55,54 @@ const InvestmentCard = ({
       ref={ref}
       transition={transition}
     >
-      <ShadowStack
-        backgroundColor={gradientColors[0]}
-        borderRadius={18}
-        css={margin(InvestmentCardMargin.vertical, InvestmentCardMargin.horizontal)}
-        childrenWrapperStyle={{justifyContent: `flex-start`}}
-        height={perc}
-        shadows={shadows}
-        width={deviceUtils.dimensions.width - (InvestmentCardMargin.horizontal * 2)}
-        {...props}
+      <View
+        style={{ 
+          paddingLeft: InvestmentCardMargin.horizontal,
+          paddingRight: InvestmentCardMargin.horizontal,
+          paddingTop: InvestmentCardMargin.vertical,
+          paddingBottom: InvestmentCardMargin.vertical,
+          shadowColor: colors.dark,
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.1,
+          shadowRadius: 3, 
+          height: perc + InvestmentCardMargin.vertical * 2 , 
+          overflow: 'hidden', 
+          borderRadius: 18
+        }}
       >
-        <Column
-          css={`
-          background-color: ${gradientColors[0]};
-          border-radius: 18;
-          overflow: hidden;
-          width: 100%;
-          justify-content: flex-start;
-        `}
-          onLayout={onLayout}
-        >
-          <LinearGradient
-            colors={gradientColors}
-            end={{ x: 1, y: 0.5 }}
-            pointerEvents="none"
-            start={{ x: 0, y: 0.5 }}
-            style={position.coverAsObject}
-          />
-          <ButtonPressAnimation scaleTo={0.96} onPress={onPress}>
-            <InvestmentCardHeader
-              {...headerProps}
-              collapsed={collapsed}
+          <Column
+            css={`
+            background-color: ${gradientColors[0]};
+            border-radius: 18;
+            overflow: hidden;
+            width: 100%;
+            justify-content: flex-start;
+            height: 100%;
+          `}
+          style={{ 
+            shadowColor: 'black',
+          shadowRadius: 10,
+          shadowOpacity: 1,
+        }}
+            onLayout={onLayout}
+          >
+            <LinearGradient
+              colors={gradientColors}
+              end={{ x: 1, y: 0.5 }}
+              pointerEvents="none"
+              start={{ x: 0, y: 0.5 }}
+              style={position.coverAsObject}
             />
-          </ButtonPressAnimation>
-          {children}
-          <InnerBorder radius={18} />
-        </Column>
-      </ShadowStack>
+            <ButtonPressAnimation scaleTo={0.96} onPress={onPress}>
+              <InvestmentCardHeader
+                {...headerProps}
+                collapsed={collapsed}
+              />
+            </ButtonPressAnimation>
+            {children}
+            <InnerBorder radius={18} />
+          </Column>
+      </View>
     </Transitioning.View>
   )};
 
@@ -107,8 +120,8 @@ InvestmentCard.defaultProps = {
   containerHeight: DefaultContainerHeight,
   gradientColors: ['#F7FAFC', '#E0E6EC'],
   shadows: [
-    [0, 1, 3, colors.dark, 0.00],
-    [0, 4, 6, colors.dark, 0.00],
+    [0, 1, 3, colors.dark, 0.08],
+    [0, 4, 6, colors.dark, 0.04],
   ],
 };
 

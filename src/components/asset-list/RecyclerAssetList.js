@@ -23,7 +23,7 @@ import { withOpenFamilyTabs, withOpenInvestmentCards } from '../../hoc';
 import { colors } from '../../styles';
 import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
 import { CoinRow, CollectiblesSendRow } from '../coin-row';
-import { InvestmentCard, UniswapInvestmentCard } from '../investment-cards';
+import { InvestmentCard, UniswapInvestmentCard, InvestmentCardHeader } from '../investment-cards';
 import { ListFooter } from '../list';
 import { CardMargin, CardSize, RowPadding } from '../unique-token/UniqueTokenRow';
 import AssetListHeader from './AssetListHeader';
@@ -234,9 +234,9 @@ class RecyclerAssetList extends PureComponent {
         } else if (type === ViewTypes.UNISWAP_ROW) {
           dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
         } else if (type === ViewTypes.UNISWAP_ROW_CLOSED_LAST) {
-          dim.height = UniswapInvestmentCard.headerHeight + InvestmentCard.margin.vertical + ListFooter.height + 7;
+          dim.height = InvestmentCardHeader.height + InvestmentCard.margin.vertical + ListFooter.height + 7;
         } else if (type === ViewTypes.UNISWAP_ROW_CLOSED) {
-          dim.height = UniswapInvestmentCard.headerHeight + InvestmentCard.margin.vertical;
+          dim.height = InvestmentCardHeader.height + InvestmentCard.margin.vertical;
         } else if (type == ViewTypes.HEADER) {
           dim.height = this.props.hideHeader ? 0 : AssetListHeader.height;
         } else if (type == ViewTypes.FOOTER) {
