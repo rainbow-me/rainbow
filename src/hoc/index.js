@@ -14,6 +14,7 @@ export { default as withMessageSigningScreen } from './withMessageSigningScreen'
 export { default as withNetInfo } from './withNetInfo';
 export { default as withNeverRerender } from './withNeverRerender';
 export { default as withOpenFamilyTabs } from './withOpenFamilyTabs';
+export { default as withOpenInvestmentCards } from './withOpenInvestmentCards';
 export { default as withRequests } from './withRequests';
 export { default as withRotationForDirection } from './withRotationForDirection';
 export { default as withSafeAreaViewInsetValues } from './withSafeAreaViewInsetValues';

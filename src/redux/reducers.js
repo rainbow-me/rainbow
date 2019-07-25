@@ -7,6 +7,7 @@ import isWalletEmpty from './isWalletEmpty';
 import navigation from './navigation';
 import nonce from './nonce';
 import openFamilyTabs from './openFamilyTabs';
+import openInvestmentCards from './openInvestmentCards';
 import requests from './requests';
 import selectedWithFab from './selectedWithFab';
 import send from './send';
@@ -23,6 +24,7 @@ export default combineReducers({
   navigation,
   nonce,
   openFamilyTabs,
+  openInvestmentCards,
   requests,
   selectedWithFab,
   send,

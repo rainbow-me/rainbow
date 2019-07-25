@@ -8,7 +8,7 @@ import {
   withProps,
 } from 'recompact';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
-import { withAccountSettings } from '../../hoc';
+import { withAccountSettings, withOpenInvestmentCards } from '../../hoc';
 import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import Divider from '../Divider';
@@ -47,6 +47,7 @@ const UniswapInvestmentCard = enhance(({
   onPress,
   onPressContainer,
   nativeCurrency,
+  openInvestmentCards,
   ...props
 }) => (
   <ButtonPressAnimation
@@ -58,6 +59,7 @@ const UniswapInvestmentCard = enhance(({
       {...props}
       flex={0}
       gradientColors={['#ECF1F5', '#E4E9F0']}
+      collapsed={openInvestmentCards[0]}
       headerProps={{
         color: colors.dark,
         emoji: 'unicorn_face',
@@ -66,6 +68,7 @@ const UniswapInvestmentCard = enhance(({
         value: floor(parseFloat(totalBalanceAmount), 4)
           ? totalNativeDisplay
           : `< ${convertAmountToNativeDisplay(0.01, nativeCurrency)}`,
+        isCollapsible: true,
       }}
     >
       <Divider
@@ -99,4 +102,4 @@ UniswapInvestmentCard.propTypes = {
 
 UniswapInvestmentCard.height = 114;
 
-export default UniswapInvestmentCard;
+export default withOpenInvestmentCards(UniswapInvestmentCard);

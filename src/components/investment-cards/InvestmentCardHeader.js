@@ -11,6 +11,8 @@ import {
   RowWithMargins,
 } from '../layout';
 import { Emoji, Monospace, Text } from '../text';
+import { ButtonPressAnimation } from '../animations';
+import { withOpenInvestmentCards } from '../../hoc';
 
 const HeaderHeight = 48;
 
@@ -32,7 +34,14 @@ const InvestmentCardHeader = enhance(({
   title,
   titleColor,
   value,
-}) => (
+  openInvestmentCards,
+  setOpenInvestmentCards,
+}) => {
+  const onPress = () => {
+    setOpenInvestmentCards({ index: 0, state: !openInvestmentCards[0] });
+  }
+
+  return (
   <Container>
     <Row align="center">
       <Column
@@ -63,31 +72,34 @@ const InvestmentCardHeader = enhance(({
       >
         {value}
       </Monospace>
-      {isCollapsible && (
-        <Centered justify="end" style={position.sizeAsObject(19)}>
-          <Centered
-            flex={0}
-            justify="end"
-            style={{
-              ...position.sizeAsObject(13),
-              paddingBottom: collapsed ? 1 : 0,
-              paddingTop: collapsed ? 0 : 2,
-              position: 'absolute',
-              right: 0,
-            }}
-          >
-            <Icon
-              color={color}
-              direction={collapsed ? 'right' : 'down'}
-              name="caretThin"
-              width={13}
-            />
+      <ButtonPressAnimation scaleTo={0.8} onPress={onPress}>
+        {isCollapsible && (
+          <Centered justify="end" style={position.sizeAsObject(19)}>
+            <Centered
+              flex={0}
+              justify="end"
+              style={{
+                ...position.sizeAsObject(13),
+                paddingBottom: collapsed ? 1 : 0,
+                paddingTop: collapsed ? 0 : 2,
+                position: 'absolute',
+                right: 0,
+              }}
+            >
+              <Icon
+                color={color}
+                direction={collapsed ? 'right' : 'down'}
+                name="caretThin"
+                width={13}
+              />
+            </Centered>
           </Centered>
-        </Centered>
-      )}
+        )}
+      </ButtonPressAnimation>
     </RowWithMargins>
   </Container>
-));
+  )
+});
 
 InvestmentCardHeader.propTypes = {
   collapsed: PropTypes.bool,
@@ -106,4 +118,4 @@ InvestmentCardHeader.defaultProps = {
 
 InvestmentCardHeader.height = HeaderHeight;
 
-export default InvestmentCardHeader;
+export default withOpenInvestmentCards(InvestmentCardHeader);
