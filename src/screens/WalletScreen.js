@@ -37,7 +37,6 @@ import {
 } from '../hoc';
 import { position } from '../styles';
 import { isNewValueForPath } from '../utils';
-import { progressNode } from '../navigation/transitions/effects';
 
 class WalletScreen extends Component {
   static propTypes = {
@@ -133,7 +132,7 @@ class WalletScreen extends Component {
             sections={sections}
           />
         </FabWrapper>
-        <BlurOverlay opacity={progressNode} />
+        <BlurOverlay opacity={blurOpacity} />
       </Page>
     );
   }
