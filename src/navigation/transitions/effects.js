@@ -18,9 +18,6 @@ const {
   SpringUtils,
 } = Animated;
 
-// eslint-disable-next-line import/no-mutable-exports
-export let progressNode = new Value(0);
-
 const statusBarHeight = getStatusBarHeight(true);
 
 const expand = {};
@@ -100,7 +97,7 @@ const sheetStyleInterpolator = ({
 
 const backgroundInterpolator = ({ progress: { next } }) => {
   const dispatch = cond(call([], () => {
-    progressNode = next;
+    store.dispatch(updateTransitionProps({ position: next }));
   }));
   return { cardStyle: { opacity: block([dispatch, 1]) } };
 };
