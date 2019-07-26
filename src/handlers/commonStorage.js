@@ -460,3 +460,15 @@ export const removeLocalRequests = async (address, network) => {
   const requestsKey = getRequestsKey(address, network);
   await removeLocal(requestsKey);
 };
+
+// apple restricts number of times developers are allowed to throw
+// the in-app AppStore Review interface.
+// see here for more: https://github.com/oblador/react-native-store-review
+export const getAppStoreReviewRequestCount = async () => {
+  const count = await getLocal('appStoreReviewRequestCount');
+  return count ? count.data : 0;
+};
+
+export const setAppStoreReviewRequestCount = async (newCount) => {
+  await saveLocal('appStoreReviewRequestCount', { data: newCount });
+};

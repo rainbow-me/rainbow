@@ -1,6 +1,6 @@
 import { compact, get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
+import React from 'react';
 import {
   compose,
   mapProps,
@@ -12,7 +12,7 @@ import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { colors } from '../../styles';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { ButtonPressAnimation } from '../animations';
-import { FlexItem, Row } from '../layout';
+import { FlexItem, Row, RowWithMargins } from '../layout';
 import BottomRowText from './BottomRowText';
 import BalanceText from './BalanceText';
 import CoinName from './CoinName';
@@ -60,15 +60,21 @@ const BottomRow = ({ name, native, status }) => {
 BottomRow.propTypes = rowRenderPropTypes;
 
 const TopRow = ({ balance, pending, status }) => (
-  <Fragment>
+  <RowWithMargins
+    align="center"
+    justify="space-between"
+    margin={19}
+  >
     <TransactionStatusBadge
       pending={pending}
       status={status}
     />
-    <BottomRowText>
-      {get(balance, 'display', '')}
-    </BottomRowText>
-  </Fragment>
+    <Row align="center" flex={1} justify="end">
+      <BottomRowText>
+        {get(balance, 'display', '')}
+      </BottomRowText>
+    </Row>
+  </RowWithMargins>
 );
 
 TopRow.propTypes = rowRenderPropTypes;

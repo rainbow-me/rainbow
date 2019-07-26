@@ -1,7 +1,7 @@
 PODS:
   - Analytics (3.6.10)
   - boost-for-react-native (1.63.0)
-  - BVLinearGradient (2.5.4):
+  - BVLinearGradient (2.5.5):
     - React
   - Crashlytics (3.10.9):
     - Fabric (~> 1.7.13)
@@ -69,7 +69,7 @@ PODS:
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
-  - Protobuf (3.8.0)
+  - Protobuf (3.9.0)
   - React (0.59.9):
     - React/Core (= 0.59.9)
   - react-native-blur (0.8.0):
@@ -149,7 +149,7 @@ PODS:
     - React
   - RNCMaskedView (0.1.1):
     - React
-  - RNDeviceInfo (2.2.2):
+  - RNDeviceInfo (2.3.0):
     - React
   - RNIOS11DeviceCheck (0.0.3):
     - React
@@ -158,6 +158,8 @@ PODS:
   - RNReanimated (1.1.0):
     - React
   - RNScreens (1.0.0-alpha.23):
+    - React
+  - RNStoreReview (0.1.5):
     - React
   - SDWebImage (5.0.6):
     - SDWebImage/Core (= 5.0.6)
@@ -207,6 +209,7 @@ DEPENDENCIES:
   - RNLanguages (from `../node_modules/react-native-languages`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNStoreReview (from `../node_modules/react-native-store-review/ios`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -264,13 +267,15 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNStoreReview:
+    :path: "../node_modules/react-native-store-review/ios"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   Analytics: 63744ad4afa65c3bcdcdb7a94b62515bde5b3900
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  BVLinearGradient: 8cbc5155c978f2e43098818c91d206d07aae6d30
+  BVLinearGradient: 443c2260a0757fbf0513a64e792abc2017db9a06
   Crashlytics: 55e24fc23989680285a21cb1146578d9d18e432c
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   Fabric: 25d0963b691fc97be566392243ff0ecef5a68338
@@ -285,7 +290,7 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
   libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
-  Protobuf: 3f617b9a6e73605565086864c9bc26b2bf2dd5a3
+  Protobuf: 1097ca58584c8d9be81bfbf2c5ff5975648dd87a
   React: a86b92f00edbe1873a63e4a212c29b7a7ad5224f
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: f1fbfc336ba8ca6de5296190341d1b6022c71cff
@@ -295,14 +300,15 @@ SPEC CHECKSUMS:
   RNAnalytics: d110195618296fed3907830911f01cb6e9be53d0
   RNCAsyncStorage: 9436928b444c5f5361960a7eea051a697c244b68
   RNCMaskedView: b79e193409a90bf6b5170d421684f437ff4e2278
-  RNDeviceInfo: 1215084f45c1059b031c530281442dc7079ccf0a
+  RNDeviceInfo: 65106cc87ad6f6f71ef2ecc667f4c59b840888e2
   RNIOS11DeviceCheck: a4a545fdd08230a17a8ce7608e95038ee23a32aa
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNReanimated: 7a52c90473b5e81c13408d40d797b98387eaddde
   RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
+  RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   SDWebImage: 920f1a2ff1ca8296ad34f6e0510a1ef1d70ac965
   yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
 
-PODFILE CHECKSUM: 69f9700d74876f14f6f0acf5fd33a74d47eeb2c8
+PODFILE CHECKSUM: 9a1477d30332ab86b10fd2ec7e7842ad52b5382e
 
 COCOAPODS: 1.6.1

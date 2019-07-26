@@ -29,12 +29,6 @@ const HandleIcon = styled(Icon).attrs({
   margin-bottom: 2;
 `;
 
-const HelpButton = styled(BorderlessButton)`
-  ${padding(6, 8)}
-  border: 1px solid #f6f7f7;
-  border-radius: 15px;
-`;
-
 const ImportButton = styled(Row).attrs({
   align: 'center',
   component: BorderlessButton,
@@ -74,7 +68,7 @@ const ImportSeedPhraseSheet = ({
           enablesReturnKeyAutomatically={true}
           onChange={onInputChange}
           onSubmitEditing={onPressEnterKey}
-          placeholder="Type your seed phrase or private key"
+          placeholder="Seed phrase or private key"
           returnKeyType="done"
           size="large"
           style={{ width: '100%' }}

@@ -6,8 +6,7 @@ import {
 } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { LayoutAnimation, RefreshControl } from 'react-native';
-import { connect } from 'react-redux';
+import { LayoutAnimation, RefreshControl, View } from 'react-native';
 import { compose, pure } from 'recompact';
 import {
   DataProvider,
@@ -15,18 +14,19 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import styled from 'styled-components/primitives';
 import {
   buildAssetHeaderUniqueIdentifier,
   buildAssetUniqueIdentifier,
 } from '../../helpers/assets';
-import { withOpenFamilyTabs } from '../../hoc';
+import { withFabSelection, withOpenFamilyTabs } from '../../hoc';
 import { colors } from '../../styles';
 import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
 import { CoinRow, CollectiblesSendRow } from '../coin-row';
+import { TokenFamilyHeader } from '../token-family';
+import { FloatingActionButton } from '../fab';
 import { InvestmentCard, UniswapInvestmentCard } from '../investment-cards';
 import { ListFooter } from '../list';
-import { CardMargin, CardSize, RowPadding } from '../unique-token/UniqueTokenRow';
+import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
 
 /* eslint-disable sort-keys */
@@ -42,11 +42,6 @@ export const ViewTypes = {
   FOOTER: 10,
 };
 /* eslint-enable sort-keys */
-
-const Wrapper = styled.View`
-  flex: 1;
-  overflow: hidden;
-`;
 
 const NOOP = () => undefined;
 
@@ -124,9 +119,12 @@ class RecyclerAssetList extends Component {
 
   rlv = React.createRef();
 
-  position = 0;
   contentSize = 0;
+
   layoutMeasurement = 0;
+
+  position = 0;
+
   refresh = false;
 
   constructor(props) {
@@ -195,18 +193,26 @@ class RecyclerAssetList extends Component {
         return ViewTypes.COIN_ROW;
       },
       (type, dim) => {
+        const { hideHeader, paddingBottom } = this.props;
+        const { areSmallCollectibles } = this.state;
+
         dim.width = deviceUtils.dimensions.width;
-        if (this.state.areSmallCollectibles
-            && type === ViewTypes.UNIQUE_TOKEN_ROW) {
+
+        if (areSmallCollectibles && type === ViewTypes.UNIQUE_TOKEN_ROW) {
           dim.height = CoinRow.height;
           return;
         }
+
+        const fabPositionBottom = type.isLast ? (paddingBottom - (FloatingActionButton.size / 2)) : 0;
+        const TokenFamilyHeaderHeight = TokenFamilyHeader.height + fabPositionBottom;
+
         if (type.get === ViewTypes.UNIQUE_TOKEN_ROW) {
-          dim.height = type.size * CardSize + 54 + CardMargin * (type.size - 1) + (type.isLast ? 90 : 0);
+          const extraSpaceForDropShadow = 12;
+          dim.height = TokenFamilyHeaderHeight + (type.size * UniqueTokenRow.cardSize) + (UniqueTokenRow.cardMargin * (type.size - 1)) + extraSpaceForDropShadow;
         } else if (type.get === ViewTypes.UNIQUE_TOKEN_ROW_CLOSED) {
-          dim.height = 54 + (type.isLast ? 90 : 0);
+          dim.height = TokenFamilyHeaderHeight;
         } else if (type === ViewTypes.COIN_ROW_LAST) {
-          dim.height = this.state.areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height - 1;
+          dim.height = areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height - 1;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRow.height;
         } else if (type === ViewTypes.UNISWAP_ROW_LAST) {
@@ -214,7 +220,7 @@ class RecyclerAssetList extends Component {
         } else if (type === ViewTypes.UNISWAP_ROW) {
           dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
         } else if (type === ViewTypes.HEADER) {
-          dim.height = this.props.hideHeader ? 0 : AssetListHeader.height;
+          dim.height = hideHeader ? 0 : AssetListHeader.height;
         } else if (type === ViewTypes.FOOTER) {
           dim.height = 0;
         }
@@ -294,16 +300,16 @@ class RecyclerAssetList extends Component {
             let collectiblesHeight = 0;
             for (let j = 0; j < i; j++) {
               if (this.props.openFamilyTabs[j] && collectibles.data[j].tokens) {
-                collectiblesHeight += collectibles.data[j].tokens.length * CardSize + 54 + RowPadding * (collectibles.data[j].tokens.length - 1);
+                collectiblesHeight += collectibles.data[j].tokens.length * UniqueTokenRow.cardSize + TokenFamilyHeader.height + UniqueTokenRow.rowPadding * (collectibles.data[j].tokens.length - 1);
               } else {
-                collectiblesHeight += 54;
+                collectiblesHeight += TokenFamilyHeader.height;
               }
             }
             const verticalOffset = 10;
             const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235);
             const sectionBeforeCollectibles = AssetListHeader.height * (this.props.sections.length - 1) + ListFooter.height * (this.props.sections.length - 1) + CoinRow.height * get(balances, 'data.length', 0) + (UniswapInvestmentCard.height + InvestmentCard.margin.vertical) * get(investments, 'data.length', 0) + ListFooter.height;
             const sectionsHeight = sectionBeforeCollectibles + collectiblesHeight;
-            const renderSize = CardSize * collectibles.data[i].tokens.length + RowPadding * (collectibles.data[i].tokens.length - 1) - verticalOffset;
+            const renderSize = UniqueTokenRow.cardSize * collectibles.data[i].tokens.length + UniqueTokenRow.rowPadding * (collectibles.data[i].tokens.length - 1) - verticalOffset;
 
             if (renderSize >= deviceDimensions) {
               const scrollDistance = sectionsHeight - this.position;
@@ -338,6 +344,8 @@ class RecyclerAssetList extends Component {
       ? buildAssetHeaderUniqueIdentifier(row)
       : buildAssetUniqueIdentifier(row.item);
   };
+
+  handleListRef = (ref) => { this.rlv = ref; }
 
   handleRefresh = () => {
     if (this.state.isRefreshing) return;
@@ -420,7 +428,7 @@ class RecyclerAssetList extends Component {
     const { dataProvider, headersIndices } = this.state;
 
     return (
-      <Wrapper>
+      <View backgroundColor={colors.white} flex={1} overflow="hidden">
         <StickyContainer stickyHeaderIndices={headersIndices}>
           <RecyclerListView
             {...props}
@@ -429,7 +437,7 @@ class RecyclerAssetList extends Component {
             itemAnimator={layoutItemAnimator}
             layoutProvider={this.layoutProvider}
             onScroll={this.handleScroll}
-            ref={ref => { this.rlv = ref; }}
+            ref={this.handleListRef}
             renderAheadOffset={renderAheadOffset}
             rowRenderer={this.rowRenderer}
             scrollIndicatorInsets={{
@@ -439,16 +447,17 @@ class RecyclerAssetList extends Component {
             scrollViewProps={{
               refreshControl: this.renderRefreshControl(),
             }}
+            style={{
+              backgroundColor: colors.white,
+            }}
           />
         </StickyContainer>
-      </Wrapper>
+      </View>
     );
   }
 }
 
-const mapStateToProps = ({ selectedWithFab: { scrollingVelocity } }) => ({ scrollingVelocity });
-
 export default compose(
-  connect(mapStateToProps),
+  withFabSelection,
   withOpenFamilyTabs,
 )(RecyclerAssetList);

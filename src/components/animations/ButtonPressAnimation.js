@@ -167,7 +167,7 @@ export default class ButtonPressAnimation extends PureComponent {
         enabled={!disabled}
         ref={tapRef}
         onHandlerStateChange={this.handleStateChange}
-        waitFor={this.props.waitFor}
+        waitFor={waitFor}
       >
         <Animated.View
           onLayout={this.handleLayout}
