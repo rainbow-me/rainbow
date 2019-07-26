@@ -11,6 +11,7 @@ import {
   RowWithMargins,
 } from '../layout';
 import { Emoji, Monospace, Text } from '../text';
+import Animated, { Easing } from 'react-native-reanimated';
 
 const HeaderHeight = 48;
 
@@ -22,75 +23,135 @@ const Container = styled(Row).attrs({
   height: ${HeaderHeight};
 `;
 
-const enhance = onlyUpdateForKeys(['collapsed', 'title', 'value']);
+const {
+  block,
+  Clock,
+  clockRunning,
+  concat,
+  cond,
+  interpolate,
+  set,
+  startClock,
+  timing,
+  Value,
+} = Animated;
 
-const InvestmentCardHeader = enhance(({
-  collapsed,
-  color,
-  emoji,
-  isCollapsible,
-  title,
-  titleColor,
-  value,
-}) => {
+function runTiming(clock, value, dest, isOpen) {
+  const state = {
+    finished: new Value(1),
+    frameTime: new Value(0),
+    position: new Value(value),
+    time: new Value(0),
+  };
 
-  return (
-  <Container>
-    <Row align="center">
-      <Column
-        align="start"
-        justify="center"
-        width={24}
-      >
-        <Emoji
-          name={emoji}
-          lineHeight="none"
-          size="smedium"
-        />
-      </Column>
-      <Text
-        color={titleColor || color}
-        letterSpacing="tight"
-        size="lmedium"
-        weight="medium"
-      >
-        {title}
-      </Text>
-    </Row>
-    <RowWithMargins align="center" margin={1}>
-      <Monospace
-        color={color}
-        size="lmedium"
-        weight="medium"
-      >
-        {value}
-      </Monospace>
-        {isCollapsible && (
-          <Centered justify="end" style={position.sizeAsObject(19)}>
-            <Centered
-              flex={0}
-              justify="end"
-              style={{
-                ...position.sizeAsObject(13),
-                paddingBottom: collapsed ? 1 : 0,
-                paddingTop: collapsed ? 0 : 2,
-                position: 'absolute',
-                right: 0,
-              }}
-            >
-              <Icon
-                color={color}
-                direction={collapsed ? 'right' : 'down'}
-                name="caretThin"
-                width={13}
-              />
+  const config = {
+    duration: 200,
+    easing: Easing.inOut(Easing.ease),
+    toValue: new Value(0),
+  };
+
+  const reset = [
+    set(state.finished, 0),
+    set(state.time, 0),
+    set(state.frameTime, 0),
+  ];
+
+  return block([
+    cond(state.finished, [
+      ...reset,
+      set(config.toValue, dest),
+    ]),
+    cond(clockRunning(clock), 0, startClock(clock)),
+    timing(clock, state, config),
+    state.position,
+  ]);
+}
+
+class InvestmentCardHeader extends React.Component {
+  componentWillUpdate(prev) {
+    if (prev.collapsed !== undefined
+      && prev.collapsed !== this.props.collapsed) {
+      const clock = new Clock();
+      let base = undefined;
+      this.props.collapsed ? base = runTiming(clock, -1, 1, this.props.collapsed) : base = runTiming(clock, 1, -1, this.props.collapsed);
+      this._rotation = interpolate(base, {
+        inputRange: [-1, 1],
+        outputRange: [0, 90],
+      });
+    }
+  }
+
+  render() {
+    let { collapsed,
+      color,
+      emoji,
+      isCollapsible,
+      title,
+      titleColor,
+      value, 
+    } = this.props;
+
+    return (
+      <Container>
+        <Row align="center">
+          <Column
+            align="start"
+            justify="center"
+            width={24}
+          >
+            <Emoji
+              name={emoji}
+              lineHeight="none"
+              size="smedium"
+            />
+          </Column>
+          <Text
+            color={titleColor || color}
+            letterSpacing="tight"
+            size="lmedium"
+            weight="medium"
+          >
+            {title}
+          </Text>
+        </Row>
+        <RowWithMargins align="center" margin={1}>
+          <Monospace
+            color={color}
+            size="lmedium"
+            weight="medium"
+          >
+            {value}
+          </Monospace>
+          {isCollapsible && (
+            <Centered justify="end" style={position.sizeAsObject(19)}>
+              <Centered
+                flex={0}
+                justify="end"
+                style={{
+                  ...position.sizeAsObject(13),
+                  paddingBottom: collapsed ? 1 : 0,
+                  paddingTop: collapsed ? 0 : 2,
+                  position: 'absolute',
+                  right: 0,
+                }}
+              >
+                <Animated.View
+                  style={{ transform: [{ rotate: this._rotation ? concat(this._rotation, 'deg') : '90deg' }] }}
+                >
+                  <Icon
+                    color={color}
+                    name="caretThin"
+                    width={13}
+                  />
+                </Animated.View>
+              </Centered>
             </Centered>
-          </Centered>
-        )}
-    </RowWithMargins>
-  </Container>
-  )
-});
+          )}
+        </RowWithMargins>
+      </Container>
+    )
+  }
+};
 
 InvestmentCardHeader.propTypes = {
   collapsed: PropTypes.bool,

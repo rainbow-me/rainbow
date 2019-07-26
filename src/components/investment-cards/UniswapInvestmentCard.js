@@ -49,6 +49,7 @@ const UniswapInvestmentCard = enhance(({
   onPressContainer,
   nativeCurrency,
   openInvestmentCards,
+  isCollapsible,
   ...props
 }) => (
     <InvestmentCard
@@ -66,7 +67,7 @@ const UniswapInvestmentCard = enhance(({
         value: floor(parseFloat(totalBalanceAmount), 4)
           ? totalNativeDisplay
           : `< ${convertAmountToNativeDisplay(0.01, nativeCurrency)}`,
-        isCollapsible: true,
+        isCollapsible: isCollapsible,
       }}
     >
       <Divider

@@ -30,6 +30,7 @@ const InvestmentCard = ({
   setOpenInvestmentCards,
   openInvestmentCards,
   uniqueId,
+  isCollapsible,
   ...props
 }) => {
   const transition = <Transition.Change interpolation="easeInOut" durationMs={200} />;
@@ -86,7 +87,7 @@ const InvestmentCard = ({
               start={{ x: 0, y: 0.5 }}
               style={position.coverAsObject}
             />
-            <ButtonPressAnimation scaleTo={0.96} onPress={onPress}>
+            <ButtonPressAnimation scaleTo={0.96} onPress={onPress} disabled={!headerProps.isCollapsible}>
               <InvestmentCardHeader
                 {...headerProps}
                 collapsed={collapsed}

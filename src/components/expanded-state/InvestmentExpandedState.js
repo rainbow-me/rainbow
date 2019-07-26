@@ -11,6 +11,7 @@ const InvestmentExpandedState = ({ asset }) => (
       css={margin(0)}
       item={asset}
       width="100%"
+      isCollapsible={false}
     />
   </FloatingPanels>
 );

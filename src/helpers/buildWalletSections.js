@@ -44,7 +44,7 @@ const UniswapCardItem = enhanceRenderItem(UniswapInvestmentCard);
 
 const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
 const tokenFamilyItem = item => <TokenFamilyWrap {...item} />;
-const uniswapRenderItem = item => <UniswapCardItem {...item} assetType="uniswap" />;
+const uniswapRenderItem = item => <UniswapCardItem {...item} assetType="uniswap" isCollapsible={true} />;
 
 const filterWalletSections = sections => (
   sections.filter(({ data, header }) => (
