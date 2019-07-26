@@ -149,7 +149,6 @@ class AddContactState extends React.PureComponent {
 
   onDeleteContact = () => {
     showActionSheetWithOptions({
-      title: `Are you sure you want to delete this contact?`,
       cancelButtonIndex: 1,
       destructiveButtonIndex: 0,
       options: [`Delete Contact`, 'Cancel'],
