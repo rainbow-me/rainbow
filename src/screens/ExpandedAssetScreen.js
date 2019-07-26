@@ -34,7 +34,6 @@ const ExpandedAssetScreen = withNeverRerender(({
     css={padding(safeAreaTop, containerPadding, safeAreaBottom || safeAreaTop)}
     direction="column"
   >
-    <StatusBar barStyle="light-content" />
     <TouchableBackdrop onPress={onPressBackground} />
     {createElement(ScreenTypes[type], props)}
   </Centered>

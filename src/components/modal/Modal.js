@@ -27,7 +27,6 @@ const Modal = ({
   ...props
 }) => (
   <Container direction="column">
-    <StatusBar barStyle={statusBarStyle} />
     <TouchableBackdrop onPress={onCloseModal} />
     <ModalElement
       {...props}

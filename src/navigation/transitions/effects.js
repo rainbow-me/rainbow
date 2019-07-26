@@ -1,3 +1,4 @@
+import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import store from '../../redux/store';
@@ -125,12 +126,21 @@ const gestureResponseDistance = {
   vertical: deviceUtils.dimensions.height,
 };
 
+const onTransitionStart = closing => {
+  if (closing) {
+    StatusBar.setBarStyle('dark-content');
+  } else {
+    StatusBar.setBarStyle('light-content');
+  }
+};
+
 export const expandedPreset = {
   cardShadowEnabled: true,
   cardStyleInterpolator: expandStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
+  onTransitionStart,
   transitionSpec: { close: closeSpec, open: openSpec },
 };
 
@@ -139,6 +149,7 @@ export const sheetPreset = {
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
+  onTransitionStart,
   transitionSpec: { close: closeSpec, open: openSpec },
 };
 

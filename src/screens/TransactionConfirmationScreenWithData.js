@@ -155,7 +155,6 @@ class TransactionConfirmationScreenWithData extends PureComponent {
 
     return (
       <>
-        <StatusBar barStyle="light-content" />
         <TransactionConfirmationScreen
           dappName={dappName || ''}
           imageUrl={imageUrl || ''}

@@ -242,7 +242,6 @@ class SendSheet extends Component {
 
     return (
       <Container>
-        <StatusBar barStyle="light-content" />
         <KeyboardAvoidingView behavior="padding" enabled={!showAssetList}>
           <Container align="center">
             <SendHeader
