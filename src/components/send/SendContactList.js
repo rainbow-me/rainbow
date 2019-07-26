@@ -73,6 +73,7 @@ const BottomRow = styled(TruncatedAddress).attrs({
   weight: 'regular',
   color: colors.blueGreyDark,
 })`
+  font-family: ${fonts.family.SFProText};
   opacity: 0.4;
   width: 100%;
 `;
@@ -190,7 +191,7 @@ class Avatar extends React.PureComponent {
       <Swipeable
         ref={this.updateRef}
         friction={2}
-        rightThreshold={40}
+        rightThreshold={0}
         renderRightActions={this.renderRightActions}>
         <ButtonPressAnimation onPress={this.onPress} scaleTo={0.96}>
           <AvatarWrapper>
