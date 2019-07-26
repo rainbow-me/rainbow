@@ -181,7 +181,7 @@ class AddContactState extends React.PureComponent {
                   </Placeholder>
                   <Input
                     style={{ fontWeight: 600, width: `100%` }}
-                    autoFocus={this.props.contact.nickname ? false : true}
+                    autoFocus={true}
                     color={colors.blueGreyDark}
                     family={'SFProDisplay'}
                     onChange={this.onChange}
