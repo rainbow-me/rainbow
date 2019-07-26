@@ -317,12 +317,14 @@ class RecyclerAssetList extends PureComponent {
                 collectiblesHeight += 54;
               }
             }
-            let investmentHeight = ListFooter.height;
-            for (let i = 0; i < investments.data.length; i++) {
-              if(!this.props.openInvestmentCards[ investments.data[i].uniqueId ]) {
-                investmentHeight += (UniswapInvestmentCard.height + InvestmentCard.margin.vertical);
-              } else {
-                investmentHeight += (InvestmentCardHeader.height + InvestmentCard.margin.vertical);
+            let investmentHeight = 0;
+            if (investments.data) {
+              for (let i = 0; i < investments.data.length; i++) {
+                if(!this.props.openInvestmentCards[ investments.data[i].uniqueId ]) {
+                  investmentHeight += (UniswapInvestmentCard.height + InvestmentCard.margin.vertical);
+                } else {
+                  investmentHeight += (InvestmentCardHeader.height + InvestmentCard.margin.vertical);
+                }
               }
             }
             const verticalOffset = 10;
