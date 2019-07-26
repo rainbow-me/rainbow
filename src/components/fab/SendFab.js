@@ -11,9 +11,9 @@ import {
 import { withFabSelection } from '../../hoc';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
-import DeleteButton from './DeleteButton';
+// import DeleteButton from './DeleteButton';
 import FloatingActionButton from './FloatingActionButton';
-import MovableFabWrapper from './MovableFabWrapper';
+// import MovableFabWrapper from './MovableFabWrapper';
 
 const FloatingActionButtonWithDisabled = withFabSelection(FloatingActionButton);
 
@@ -22,25 +22,27 @@ const SendFab = ({
   deleteButtonScale,
   disabled,
   onPress,
+  scaleTo,
   scrollViewTracker,
   sections,
   tapRef,
   ...props
 }) => (
   <Centered flex={0}>
-    <DeleteButton deleteButtonScale={deleteButtonScale} />
-    <MovableFabWrapper
-      actionType="send"
-      deleteButtonScale={deleteButtonScale}
-      opacity={0.15}
-      scrollViewTracker={scrollViewTracker}
-      sections={sections}
-      tapRef={tapRef}
-    >
+    {/*
+      <DeleteButton deleteButtonScale={deleteButtonScale} />
+      <MovableFabWrapper
+        actionType="send"
+        deleteButtonScale={deleteButtonScale}
+        scrollViewTracker={scrollViewTracker}
+        sections={sections}
+        tapRef={tapRef}
+      >
+    */}
       <FloatingActionButtonWithDisabled
         disabled={disabled}
         onPress={onPress}
-        scaleTo={FloatingActionButton.sizeWhileDragging / FloatingActionButton.size}
+        scaleTo={scaleTo}
         tapRef={tapRef}
       >
         <Icon
@@ -50,7 +52,9 @@ const SendFab = ({
           width={23}
         />
       </FloatingActionButtonWithDisabled>
-    </MovableFabWrapper>
+    {/*
+      </MovableFabWrapper>
+    */}
   </Centered>
 );
 
@@ -60,17 +64,22 @@ SendFab.propTypes = {
   deleteButtonScale: PropTypes.object,
   disabled: PropTypes.bool,
   onPress: PropTypes.func,
+  scaleTo: PropTypes.number,
   scrollViewTracker: PropTypes.object,
   sections: PropTypes.array,
   tapRef: PropTypes.object,
+};
+
+SendFab.defaultProps = {
+  // scaleTo: FloatingActionButton.sizeWhileDragging / FloatingActionButton.size
 };
 
 export default compose(
   withNavigation,
   withHandlers({ onPress: ({ navigation }) => () => navigation.navigate('SendSheet') }),
   onlyUpdateForKeys(['disabled', 'sections']),
-  withProps({
-    deleteButtonScale: new Animated.Value(DeleteButton.defaultScale),
-    tapRef: React.createRef(),
-  }),
+  // withProps({
+  //   deleteButtonScale: new Animated.Value(DeleteButton.defaultScale),
+  //   tapRef: React.createRef(),
+  // }),
 )(SendFab);
