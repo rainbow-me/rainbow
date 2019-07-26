@@ -41,31 +41,27 @@ const ImportSeedPhraseSheetWithData = compose(
   withState('seedPhrase', 'setSeedPhrase', ''),
   withHandlers({
     importSeedPhrase: ({
-      clearAccountData,
       initializeWallet,
       isEmpty,
       navigation,
       seedPhrase,
       setIsImporting,
     }) => async () => {
-      await clearAccountData();
-
-      return initializeWallet(seedPhrase.trim())
-        .then((address) => {
-          if (address) {
-            analytics.track('Imported seed phrase', {
-              hadPreviousAddressWithValue: isEmpty,
-            });
-            setIsImporting(false);
-            navigation.navigate('WalletScreen');
-          } else {
-            setIsImporting(false);
-          }
-        })
-        .catch((error) => {
+      try {
+        const address = await initializeWallet(seedPhrase.trim());
+        if (address) {
+          analytics.track('Imported seed phrase', {
+            hadPreviousAddressWithValue: isEmpty,
+          });
           setIsImporting(false);
-          console.error('error importing seed phrase: ', error);
-        });
+          navigation.navigate('WalletScreen');
+        } else {
+          setIsImporting(false);
+        }
+      } catch (error) {
+        setIsImporting(false);
+        console.error('error importing seed phrase: ', error);
+      }
     },
   }),
   withHandlers({

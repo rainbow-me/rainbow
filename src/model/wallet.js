@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
-import { get } from 'lodash';
+import { get, isEmpty, isNil } from 'lodash';
 import { Alert } from 'react-native';
 import {
   ACCESS_CONTROL,
@@ -29,13 +29,12 @@ export const walletInit = async (seedPhrase = null) => {
   let walletAddress = null;
   let isImported = false;
   let isNew = false;
-  if (seedPhrase) {
+  if (!isEmpty(seedPhrase)) {
     walletAddress = await createWallet(seedPhrase);
-    isImported = true;
+    isImported = !isNil(walletAddress);
+    return { isImported, isNew, walletAddress };
   }
-  if (!walletAddress) {
-    walletAddress = await loadAddress();
-  }
+  walletAddress = await loadAddress();
   if (!walletAddress) {
     walletAddress = await createWallet();
     isNew = true;
@@ -126,24 +125,27 @@ export const loadAddress = async () => {
 };
 
 const createWallet = async (seed) => {
-  // TODO better error handling
   const walletSeed = seed || generateSeedPhrase();
   let wallet = null;
-  if (isHexStringIgnorePrefix(walletSeed)
-      && addHexPrefix(walletSeed).length === 66) {
-		wallet = new ethers.Wallet(walletSeed);
-  } else if (isValidMnemonic(walletSeed)) {
-    wallet = ethers.Wallet.fromMnemonic(walletSeed);
-  } else {
-    let hdnode = ethers.utils.HDNode.fromSeed(walletSeed);
-    let node = hdnode.derivePath("m/44'/60'/0'/0/0");
-    wallet = new ethers.Wallet(node.privateKey);
+  try {
+    if (isHexStringIgnorePrefix(walletSeed)
+        && addHexPrefix(walletSeed).length === 66) {
+      wallet = new ethers.Wallet(walletSeed);
+    } else if (isValidMnemonic(walletSeed)) {
+      wallet = ethers.Wallet.fromMnemonic(walletSeed);
+    } else {
+      let hdnode = ethers.utils.HDNode.fromSeed(walletSeed);
+      let node = hdnode.derivePath("m/44'/60'/0'/0/0");
+      wallet = new ethers.Wallet(node.privateKey);
+    }
+    if (wallet) {
+      saveWalletDetails(walletSeed, wallet.privateKey, wallet.address);
+      return wallet.address;
+    }
+    return null;
+  } catch (error) {
+    return null;
   }
-  if (wallet) {
-    saveWalletDetails(walletSeed, wallet.privateKey, wallet.address);
-    return wallet.address;
-  }
-  return null;
 };
 
 const saveWalletDetails = async (seedPhrase, privateKey, address) => {
