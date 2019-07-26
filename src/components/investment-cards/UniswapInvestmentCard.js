@@ -43,6 +43,7 @@ const UniswapInvestmentCard = enhance(({
     tokenSymbol,
     totalBalanceAmount,
     totalNativeDisplay,
+    uniqueId
   },
   onPress,
   onPressContainer,
@@ -54,7 +55,8 @@ const UniswapInvestmentCard = enhance(({
       {...props}
       flex={0}
       gradientColors={['#ECF1F5', '#E4E9F0']}
-      collapsed={openInvestmentCards[0]}
+      collapsed={openInvestmentCards[uniqueId]}
+      uniqueId={uniqueId}
       containerHeight={UniswapInvestmentCard.height}
       headerProps={{
         color: colors.dark,

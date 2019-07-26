@@ -29,17 +29,18 @@ const InvestmentCard = ({
   shadows,
   setOpenInvestmentCards,
   openInvestmentCards,
+  uniqueId,
   ...props
 }) => {
   const transition = <Transition.Change interpolation="easeInOut" durationMs={200} />;
 
-  let [perc, setPerc] = useState(containerHeight);
+  let [perc, setPerc] = useState(collapsed ? InvestmentCardHeader.height : containerHeight);
   const ref = useRef();
 
   const onPress = () => {
-    setOpenInvestmentCards({ index: 0, state: !openInvestmentCards[0] });
+    setOpenInvestmentCards({ index: uniqueId , state: !openInvestmentCards[uniqueId] });
     ref.current.animateNextTransition();
-    setPerc(perc == containerHeight ? InvestmentCardHeader.height : containerHeight);
+    setPerc(!openInvestmentCards[uniqueId] ? InvestmentCardHeader.height : containerHeight);
   }
 
   return (

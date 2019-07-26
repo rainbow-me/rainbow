@@ -4,7 +4,7 @@ import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
-import { withOpenFamilyTabs } from '../../hoc';
+import { withOpenFamilyTabs, withOpenInvestmentCards } from '../../hoc';
 import {
   setActionType,
   setScrollingVelocity,
@@ -14,7 +14,7 @@ import { deviceUtils } from '../../utils';
 import { CoinRow } from '../coin-row';
 import { ListFooter } from '../list';
 import { CardSize, CardMargin } from '../unique-token/UniqueTokenRow';
-import { InvestmentCard, UniswapInvestmentCard } from '../investment-cards';
+import { InvestmentCard, UniswapInvestmentCard, InvestmentCardHeader } from '../investment-cards';
 
 const {
   add,
@@ -95,6 +95,7 @@ class Movable extends React.Component {
     children: PropTypes.any,
     deleteButtonTranslate: PropTypes.object,
     openFamilyTabs: PropTypes.array,
+    openInvestmentCards: PropTypes.array,
     scrollViewTracker: PropTypes.object,
     sections: PropTypes.array,
     setActionType: PropTypes.func,
@@ -283,7 +284,7 @@ class Movable extends React.Component {
   }
 }
 
-const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
+const traverseSectionsToDimensions = ({ sections, openFamilyTabs, openInvestmentCards }) => {
   let balances = false;
   let collectibles = false;
   let investments = false;
@@ -315,8 +316,14 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
       height += headerHeight;
     }
     if (investments) {
-      height += headerHeight;
-      height += investments.data.length * (UniswapInvestmentCard.height + InvestmentCard.margin.vertical) + ListFooter.height;
+      height += headerHeight + ListFooter.height;
+      for (let i = 0; i < investments.data.length; i++) {
+        if(!openInvestmentCards[ investments.data[i].uniqueId ]) {
+          height += (UniswapInvestmentCard.height + InvestmentCard.margin.vertical);
+        } else {
+          height += (InvestmentCardHeader.height + InvestmentCard.margin.vertical);
+        }
+      }
     }
     if (collectibles) {
       for (let i = 0; i < collectibles.data.length; i++) {
@@ -363,4 +370,4 @@ const EnhancedMovable = compose(
 )(Movable);
 
 
-export default withOpenFamilyTabs(EnhancedMovable);
+export default withOpenFamilyTabs(withOpenInvestmentCards(EnhancedMovable));

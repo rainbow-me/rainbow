@@ -169,7 +169,7 @@ class RecyclerAssetList extends PureComponent {
           const lastInvestmentIndex = headersIndices[investmentsIndex] + investmentItemsCount;
 
           if ((index > headersIndices[investmentsIndex]) && (index <= lastInvestmentIndex)) {
-            if (!openInvestmentCards[index - headersIndices[investmentsIndex] - 1]) {
+            if (!openInvestmentCards[ sections[investmentsIndex].data[index - headersIndices[investmentsIndex] - 1].uniqueId ]) {
               return index === lastInvestmentIndex
                 ? ViewTypes.UNISWAP_ROW_LAST
                 : ViewTypes.UNISWAP_ROW;
@@ -317,9 +317,17 @@ class RecyclerAssetList extends PureComponent {
                 collectiblesHeight += 54;
               }
             }
+            let investmentHeight = ListFooter.height;
+            for (let i = 0; i < investments.data.length; i++) {
+              if(!this.props.openInvestmentCards[ investments.data[i].uniqueId ]) {
+                investmentHeight += (UniswapInvestmentCard.height + InvestmentCard.margin.vertical);
+              } else {
+                investmentHeight += (InvestmentCardHeader.height + InvestmentCard.margin.vertical);
+              }
+            }
             const verticalOffset = 10;
             const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235);
-            const sectionBeforeCollectibles = AssetListHeader.height * (this.props.sections.length - 1) + ListFooter.height * (this.props.sections.length - 1) + CoinRow.height * get(balances, 'data.length', 0) + (UniswapInvestmentCard.height + InvestmentCard.margin.vertical) * get(investments, 'data.length', 0) + ListFooter.height;
+            const sectionBeforeCollectibles = AssetListHeader.height * (this.props.sections.length - 1) + ListFooter.height * (this.props.sections.length - 1) + CoinRow.height * get(balances, 'data.length', 0) + investmentHeight;
             const sectionsHeight = sectionBeforeCollectibles + collectiblesHeight;
             const renderSize = CardSize * collectibles.data[i].tokens.length + RowPadding * (collectibles.data[i].tokens.length - 1) - verticalOffset;
 

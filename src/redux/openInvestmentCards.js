@@ -16,7 +16,7 @@ export const pushOpenInvestmentCard = payload => dispatch => dispatch({
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  openInvestmentCards: [false],
+  openInvestmentCards: {},
 };
 
 export default (state = INITIAL_STATE, action) => (
