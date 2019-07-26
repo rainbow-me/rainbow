@@ -73,7 +73,12 @@ const MainNavigator = createStackNavigator({
     },
     screen: ExpandedAssetScreenWithData,
   },
-  ImportSeedPhraseSheet: ImportSeedPhraseSheetWithData,
+  ImportSeedPhraseSheet: {
+    navigationOptions: {
+      ...sheetPreset,
+    },
+    screen: ImportSeedPhraseSheetWithData,
+  },
   ReceiveModal: {
     navigationOptions: {
       ...expandedPreset,
