@@ -27,21 +27,23 @@ import { InvestmentCard, UniswapInvestmentCard, InvestmentCardHeader } from '../
 import { ListFooter } from '../list';
 import { CardMargin, CardSize, RowPadding } from '../unique-token/UniqueTokenRow';
 import AssetListHeader from './AssetListHeader';
+import CoinDivider from '../coin-divider/CoinDivider';
 
 export const ViewTypes = {
   HEADER: 0,
   COIN_ROW: 1, // eslint-disable-line sort-keys
   COIN_ROW_LAST: 2,
-  UNIQUE_TOKEN_ROW: 3,
-  UNIQUE_TOKEN_ROW_CLOSED: 4,
-  UNIQUE_TOKEN_ROW_CLOSED_LAST: 5,
+  COIN_SMALL_BALANCES: 3,
+  UNIQUE_TOKEN_ROW: 4,
+  UNIQUE_TOKEN_ROW_CLOSED: 5,
+  UNIQUE_TOKEN_ROW_CLOSED_LAST: 6,
   UNIQUE_TOKEN_ROW_FIRST: 8, // TODO remove
   UNIQUE_TOKEN_ROW_LAST: 9, // TODO remove
-  UNISWAP_ROW: 6,
-  UNISWAP_ROW_LAST: 7,
-  UNISWAP_ROW_CLOSED: 8,
-  UNISWAP_ROW_CLOSED_LAST: 9,
-  FOOTER: 10,
+  UNISWAP_ROW: 7,
+  UNISWAP_ROW_LAST: 8,
+  UNISWAP_ROW_CLOSED: 9,
+  UNISWAP_ROW_CLOSED_LAST: 10,
+  FOOTER: 11,
 };
 
 const Wrapper = styled.View`
@@ -160,7 +162,14 @@ class RecyclerAssetList extends PureComponent {
           const balanceItemsCount = get(sections, `[${balancesIndex}].data.length`, 0);
           const lastBalanceIndex = headersIndices[balancesIndex] + balanceItemsCount;
           if (index === lastBalanceIndex) {
-            return ViewTypes.COIN_ROW_LAST;
+            if (sections[balancesIndex].data[lastBalanceIndex - 1].smallBalancesContainer) {
+              return {
+                get: ViewTypes.COIN_SMALL_BALANCES,
+                size: get(sections, `[${balancesIndex}].data[${lastBalanceIndex - 1}].assets`, []).length,
+              }
+            } else {
+              return ViewTypes.COIN_ROW_LAST;
+            }
           }
         }
 
@@ -169,14 +178,14 @@ class RecyclerAssetList extends PureComponent {
           const lastInvestmentIndex = headersIndices[investmentsIndex] + investmentItemsCount;
 
           if ((index > headersIndices[investmentsIndex]) && (index <= lastInvestmentIndex)) {
-            if (!openInvestmentCards[ sections[investmentsIndex].data[index - headersIndices[investmentsIndex] - 1].uniqueId ]) {
+            if (!openInvestmentCards[sections[investmentsIndex].data[index - headersIndices[investmentsIndex] - 1].uniqueId]) {
               return index === lastInvestmentIndex
                 ? ViewTypes.UNISWAP_ROW_LAST
                 : ViewTypes.UNISWAP_ROW;
             } else {
               return index === lastInvestmentIndex
-                  ? ViewTypes.UNISWAP_ROW_CLOSED_LAST
-                  : ViewTypes.UNISWAP_ROW_CLOSED;
+                ? ViewTypes.UNISWAP_ROW_CLOSED_LAST
+                : ViewTypes.UNISWAP_ROW_CLOSED;
             }
           }
         }
@@ -227,6 +236,8 @@ class RecyclerAssetList extends PureComponent {
           dim.height = 54 + (type.isLast ? 90 : 0);
         } else if (type === ViewTypes.COIN_ROW_LAST) {
           dim.height = this.state.areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height - 1;
+        } else if (type.get === ViewTypes.COIN_SMALL_BALANCES) {
+          dim.height = this.state.areSmallCollectibles ? CoinDivider.height + (type.size * CoinRow.height) : CoinDivider.height +  (type.size * CoinRow.height) + ListFooter.height - 1;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRow.height;
         } else if (type === ViewTypes.UNISWAP_ROW_LAST) {
@@ -268,7 +279,7 @@ class RecyclerAssetList extends PureComponent {
   }
 
   shouldComponentUpdate = (prev, next) => {
-    if(prev.openFamilyTabs !== this.props.openFamilyTabs) {
+    if (prev.openFamilyTabs !== this.props.openFamilyTabs) {
       return true;
     } else if (this.contentSize - this.layoutMeasurement < this.position && this.position !== 0 && this.position !== 60.5) {
       return false;
@@ -320,7 +331,7 @@ class RecyclerAssetList extends PureComponent {
             let investmentHeight = 0;
             if (investments.data) {
               for (let i = 0; i < investments.data.length; i++) {
-                if(!this.props.openInvestmentCards[ investments.data[i].uniqueId ]) {
+                if (!this.props.openInvestmentCards[investments.data[i].uniqueId]) {
                   investmentHeight += (UniswapInvestmentCard.height + InvestmentCard.margin.vertical);
                 } else {
                   investmentHeight += (InvestmentCardHeader.height + InvestmentCard.margin.vertical);
@@ -329,7 +340,7 @@ class RecyclerAssetList extends PureComponent {
             }
             const verticalOffset = 10;
             const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235);
-            const sectionBeforeCollectibles = AssetListHeader.height * (this.props.sections.length - 1) + ListFooter.height * (this.props.sections.length - 1) + CoinRow.height * get(balances, 'data.length', 0) + investmentHeight;
+            const sectionBeforeCollectibles = AssetListHeader.height * (this.props.sections.length - 1) + ListFooter.height * (this.props.sections.length - 1) + CoinRow.height * get(balances, 'data.length', 0) + CoinDivider.height + investmentHeight;
             const sectionsHeight = sectionBeforeCollectibles + collectiblesHeight;
             const renderSize = CardSize * collectibles.data[i].tokens.length + RowPadding * (collectibles.data[i].tokens.length - 1) - verticalOffset;
 
@@ -397,6 +408,17 @@ class RecyclerAssetList extends PureComponent {
       return hideHeader ? null : <AssetListHeaderRenderer {...data} />;
     }
 
+    if (type.get === ViewTypes.COIN_SMALL_BALANCES) {
+      const renderList = [];
+      renderList.push(<CoinDivider />);
+      
+      for (let i = 0; i < item.assets.length; i++) {
+        const selectedItem = { item: item.assets[i] };
+        renderList.push(renderItem(selectedItem))
+      }
+      return renderList;
+    }
+
     const isNotUniqueToken = (
       type === ViewTypes.COIN_ROW
       || type === ViewTypes.COIN_ROW_LAST
@@ -440,10 +462,10 @@ class RecyclerAssetList extends PureComponent {
             rowRenderer={this.rowRenderer}
             onScroll={(event, _offsetX, offsetY) => {
               this.position = offsetY;
-              if(this.contentSize !== event.nativeEvent.contentSize.height) {
+              if (this.contentSize !== event.nativeEvent.contentSize.height) {
                 this.contentSize = event.nativeEvent.contentSize.height;
               }
-              if(this.layoutMeasurement !== event.nativeEvent.layoutMeasurement.height) {
+              if (this.layoutMeasurement !== event.nativeEvent.layoutMeasurement.height) {
                 this.layoutMeasurement = event.nativeEvent.layoutMeasurement.height;
               }
               if (event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height >= offsetY && offsetY >= 0

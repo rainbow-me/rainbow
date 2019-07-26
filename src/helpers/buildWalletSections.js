@@ -7,7 +7,7 @@ import { createSelector } from 'reselect';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { TokenFamilyWrap } from '../components/token-family';
-import { buildUniqueTokenList } from './assets';
+import { buildUniqueTokenList, buildCoinsList } from './assets';
 import FastImage from 'react-native-fast-image';
 
 const allAssetsSelector = state => state.allAssets;
@@ -72,7 +72,7 @@ const buildWalletSections = (
   const sections = [
     {
       balances: true,
-      data: showShitcoins ? allAssets : assets,
+      data: showShitcoins ? buildCoinsList(allAssets) : assets,
       header: {
         showShitcoins,
         title: lang.t('account.tab_balances'),

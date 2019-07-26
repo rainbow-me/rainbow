@@ -22,6 +22,23 @@ export const buildAssetUniqueIdentifier = (item) => {
   return compact([balance, nativePrice, uniqueId]).join('_');
 };
 
+export const buildCoinsList = (assets) => {
+  const newAssets = [];
+  const smallBalances = {
+    smallBalancesContainer: true,
+    assets: [],
+  };
+  for (let i = 0; i < assets.length; i++) {
+    if( assets[i].native && assets[i].native.balance.amount > 1) {
+      newAssets.push(assets[i]);
+    } else {
+      smallBalances.assets.push(assets[i]);
+    }
+  }
+
+  return newAssets.concat(smallBalances);
+};
+
 export const buildUniqueTokenList = (uniqueTokens) => {
   let rows = [];
   const grouped = groupBy(uniqueTokens, token => token.asset_contract.name);
