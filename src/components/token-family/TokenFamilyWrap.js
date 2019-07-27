@@ -1,3 +1,4 @@
+import { withSafeTimeout } from '@hocs/safe-timers';
 import { times } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -5,7 +6,9 @@ import { withNavigation } from 'react-navigation';
 import { View } from 'react-primitives';
 import {
   compose,
+  lifecycle,
   onlyUpdateForKeys,
+  withState,
   withHandlers,
   withProps,
 } from 'recompact';
@@ -34,33 +37,45 @@ const EnhancedUniqueTokenRow = compose(
 const getHeight = (openFamilyTab) => (openFamilyTab ? UniqueTokenRow.height + 100 : 100);
 
 const TokenFamilyWrap = ({
+  areChildrenVisible,
   childrenAmount,
+  familyId,
   familyImage,
   familyName,
   highlight,
-  isOpen,
+  isFamilyOpen,
   item,
   onPressFamilyHeader,
   renderCollectibleItem,
 }) => (
-  <View backgroundColor={colors.white}>
+  <View backgroundColor={colors.white} overflow="hidden">
     <TokenFamilyHeader
       childrenAmount={childrenAmount}
       familyImage={familyImage}
       familyName={familyName}
       highlight={highlight}
-      isOpen={isOpen}
+      isOpen={isFamilyOpen}
       onHeaderPress={onPressFamilyHeader}
     />
-    {isOpen && times(item.length, renderCollectibleItem)}
+    {areChildrenVisible && (
+      <FadeInAnimation
+        duration={TokenFamilyHeader.animationDuration}
+        key={`uniqueTokenRow_${familyId}_fadeIn`}
+      >
+        {times(item.length, renderCollectibleItem)}
+      </FadeInAnimation>
+    )}
   </View>
 );
 
 TokenFamilyWrap.propTypes = {
+  areChildrenVisible: PropTypes.bool,
   childrenAmount: PropTypes.number,
+  familyId: PropTypes.string,
   familyImage: PropTypes.string,
   familyName: PropTypes.string,
   highlight: PropTypes.bool,
+  isFamilyOpen: PropTypes.bool,
   isOpen: PropTypes.bool,
   item: PropTypes.array,
   onPressFamilyHeader: PropTypes.func,
@@ -73,7 +88,7 @@ const familyIdSelector = state => state.familyId;
 const openFamilyTabsSelector = state => state.openFamilyTabs;
 
 const isFamilyOpenSelector = (familyId, openFamilyTabs) => ({
-  isOpen: openFamilyTabs && openFamilyTabs[familyId],
+  isFamilyOpen: openFamilyTabs && openFamilyTabs[familyId],
 });
 
 const withFamilyOpenStateProps = createSelector(
@@ -82,32 +97,52 @@ const withFamilyOpenStateProps = createSelector(
 );
 
 export default compose(
+  withSafeTimeout,
   withFabSendAction,
   withOpenFamilyTabs,
   withProps(withFamilyOpenStateProps),
+  withState('areChildrenVisible', 'setAreChildrenVisible', false),
   withHandlers({
-    onPressFamilyHeader: ({ familyId, isOpen, setOpenFamilyTabs }) => () => (
+    onHideChildren: ({ areChildrenVisible, setAreChildrenVisible }) => () => {
+      if (areChildrenVisible) {
+        setAreChildrenVisible(false);
+      }
+    },
+    onPressFamilyHeader: ({ familyId, isFamilyOpen, setOpenFamilyTabs }) => () => (
       setOpenFamilyTabs({
         index: familyId,
-        state: !isOpen,
+        state: !isFamilyOpen,
       })
     ),
+    onShowChildren: ({ areChildrenVisible, setAreChildrenVisible }) => () => {
+      if (!areChildrenVisible) {
+        setAreChildrenVisible(true);
+      }
+    },
     /* eslint-disable react/display-name */
     renderCollectibleItem: ({ familyId, item }) => (index) => (
-      <FadeInAnimation duration={100} key={`uniqueTokenRow_${familyId}_${index}_fadeIn`}>
-        <EnhancedUniqueTokenRow
-          assetType="unique_token"
-          item={item[index]}
-          key={`uniqueTokenRow_${familyId}_${index}`}
-        />
-      </FadeInAnimation>
+      <EnhancedUniqueTokenRow
+        assetType="unique_token"
+        item={item[index]}
+        key={`uniqueTokenRow_${familyId}_${index}`}
+      />
     ),
     /* eslint-enable react/display-name */
   }),
+  lifecycle({
+    componentDidUpdate() {
+      if (!this.props.isFamilyOpen) {
+        this.props.onHideChildren();
+      } else if (!this.props.areChildrenVisible) {
+        this.props.setSafeTimeout(this.props.onShowChildren, TokenFamilyHeader.animationDuration);
+      }
+    },
+  }),
   onlyUpdateForKeys([
+    'areChildrenVisible',
     'childrenAmount',
     'highlight',
-    'isOpen',
+    'isFamilyOpen',
     'uniqueId',
   ]),
 )(TokenFamilyWrap);

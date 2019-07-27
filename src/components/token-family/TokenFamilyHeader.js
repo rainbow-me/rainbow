@@ -21,22 +21,13 @@ const { interpolate, timing, Value } = Animated;
 const AnimatedMonospace = Animated.createAnimatedComponent(toClass(Monospace));
 const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
 
+const TokenFamilyHeaderAnimationDuration = 200;
 const TokenFamilyHeaderHeight = 54;
 
 const FamilyIcon = withProps(({ familyImage }) => ({
   id: familyImage,
   source: { uri: familyImage },
 }))(ImageWithCachedDimensions);
-
-const Wrapper = styled(Row).attrs({
-  align: 'center',
-  justify: 'space-between',
-})`
-  ${({ isCoinRow }) => padding(7.5, isCoinRow ? 16 : 19)};
-  background-color: ${colors.white};
-  height: ${TokenFamilyHeaderHeight};
-  width: 100%;
-`;
 
 export default class TokenFamilyHeader extends PureComponent {
   static propTypes = {
@@ -48,6 +39,8 @@ export default class TokenFamilyHeader extends PureComponent {
     isOpen: PropTypes.bool,
     onHeaderPress: PropTypes.func,
   }
+
+  static animationDuration = TokenFamilyHeaderAnimationDuration;
 
   static height = TokenFamilyHeaderHeight;
 
@@ -63,7 +56,7 @@ export default class TokenFamilyHeader extends PureComponent {
 
   runTiming = () => (
     timing(this.animation, {
-      duration: 100,
+      duration: TokenFamilyHeaderAnimationDuration,
       easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
       toValue: this.props.isOpen ? 1 : 0,
     }).start()
@@ -91,8 +84,19 @@ export default class TokenFamilyHeader extends PureComponent {
   }
 
   render = () => (
-    <ButtonPressAnimation onPress={this.props.onHeaderPress} scaleTo={0.96}>
-      <Wrapper isCoinRow={this.props.isCoinRow}>
+    <ButtonPressAnimation
+      onPress={this.props.onHeaderPress}
+      scaleTo={0.96}
+    >
+      <Row
+        align="center"
+        backgroundColor={colors.white}
+        height={TokenFamilyHeaderHeight}
+        justify="space-between"
+        paddingHorizontal={this.props.isCoinRow ? 16 : 19}
+        paddingVertical={7.5}
+        width="100%"
+      >
         <Highlight visible={this.props.highlight} />
         <RowWithMargins align="center" margin={9}>
           {this.renderFamilyIcon()}
@@ -130,7 +134,7 @@ export default class TokenFamilyHeader extends PureComponent {
         >
           {this.props.childrenAmount}
         </AnimatedMonospace>
-      </Wrapper>
+      </Row>
     </ButtonPressAnimation>
   )
 }

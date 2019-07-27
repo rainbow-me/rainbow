@@ -305,7 +305,7 @@ class RecyclerAssetList extends Component {
                 collectiblesHeight += TokenFamilyHeader.height;
               }
             }
-            const verticalOffset = 10;
+            const verticalOffset = 17.5;
             const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235);
             const sectionBeforeCollectibles = AssetListHeader.height * (this.props.sections.length - 1) + ListFooter.height * (this.props.sections.length - 1) + CoinRow.height * get(balances, 'data.length', 0) + (UniswapInvestmentCard.height + InvestmentCard.margin.vertical) * get(investments, 'data.length', 0) + ListFooter.height;
             const sectionsHeight = sectionBeforeCollectibles + collectiblesHeight;
@@ -393,8 +393,11 @@ class RecyclerAssetList extends Component {
   );
 
   rowRenderer = (type, data, index) => {
-    if (isNil(data) || isNil(index)) return null;
-    const { item, renderItem } = data;
+    if (isNil(data) || isNil(index)) {
+      return null;
+    }
+
+    const { item = {}, renderItem } = data;
     const { hideHeader, sections } = this.props;
 
     if (type === ViewTypes.HEADER) {
