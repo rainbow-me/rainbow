@@ -9,7 +9,7 @@ import { isValidAddress } from '../../helpers/validators';
 import { isHexString } from '../../handlers/web3';
 import { abbreviations, addressUtils, isNewValueForPath } from '../../utils';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { TextInput } from 'react-native';
+import { TextInput, Clipboard } from 'react-native';
 
 const AddressInput = styled(TextInput)`
   flex-grow: 1;
@@ -32,7 +32,7 @@ const PlaceholderText = styled(Label)`
 
 const formatValue = value => (
   (isHexString(value) && (value.length === addressUtils.maxLength))
-    ? abbreviations.address(value)
+    ? abbreviations.address(value, 4, 10)
     : value
 );
 
@@ -50,12 +50,20 @@ export default class AddressField extends PureComponent {
     inputValue: '',
     address: '',
     isValid: false,
-    focused: true,
-    forceShowNickname: false,
+  }
+
+  shouldComponentUpdate(props, state) {
+    if (state.inputValue == this.state.inputValue && 
+      !(this.props.currentContact.nickname !== props.currentContact.nickname) && 
+      !(this.props.address && !this.state.address) &&
+      this.state.isValid == state.isValid) {
+      return false;
+    }
+    return true;
   }
 
   componentDidUpdate(props) {
-    if (this.props.currentContact.nickname !== props.currentContact.nickname ) {
+    if (this.props.currentContact.nickname !== props.currentContact.nickname) {
       this.setState({ 
         currentContact: this.props.currentContact,
         inputValue: this.props.currentContact.nickname ? this.props.currentContact.nickname : this.props.address,
@@ -72,14 +80,9 @@ export default class AddressField extends PureComponent {
   }
 
   onChange = ({ nativeEvent }) => {
-    const contact = this.findContactByNickname(nativeEvent.text);
-    if(contact) {
-      this.props.onChange(contact.address);
-      this.validateAddress(contact.address);
-      return true;
-    }
     this.props.onChange(nativeEvent.text);
     this.validateAddress(nativeEvent.text);
+    this.checkClipboard(this.state.address);
     return this.setState({ address: nativeEvent.text });
   }
 
@@ -90,11 +93,14 @@ export default class AddressField extends PureComponent {
     return this.setState({ isValid });
   }
 
-  findContactByNickname = (nickname) => {
-    for (let i = 0; i < this.props.contacts.length; i++) {
-      if (this.props.contacts[i].nickname == nickname) {
-        return this.props.contacts[i];
-      }
+  onBlur = () => {
+    this.checkClipboard(this.state.address);
+  }
+
+  checkClipboard = async (address) => {
+    const clipboard = await Clipboard.getString();
+    if (abbreviations.address(address, 4, 10) == clipboard) {
+      Clipboard.setString(address);
     }
   }
 
@@ -116,7 +122,7 @@ export default class AddressField extends PureComponent {
           onChangeText={this.onChangeText}
           selectTextOnFocus={true}
           value={formatValue(inputValue)}
-          onBlur={this.onBlur}
+          onBlur={this.onBlur}    
         />
         {!inputValue && (
           <Placeholder>
