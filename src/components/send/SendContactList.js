@@ -185,7 +185,7 @@ class Avatar extends React.PureComponent {
 
   render() {
     const item = this.props;
-    const displayName = removeFirstEmojiFromString(item.nickname)
+    const displayName = removeFirstEmojiFromString(item.nickname);
 
     return (
       <Swipeable
@@ -268,6 +268,7 @@ class SendContactList extends React.Component {
         let searchedItem = searchParameter ? list[i][searchParameter] : list[i];
         const splitedWordList = searchedItem.split(separator);
         splitedWordList.push(searchedItem);
+        splitedWordList.push(removeFirstEmojiFromString(searchedItem).join(""));
         for (let j = 0; j < splitedWordList.length; j++) {
           if (splitedWordList[j].toLowerCase().startsWith(searchPhrase.toLowerCase())) {
             filteredList.push(list[i]);
