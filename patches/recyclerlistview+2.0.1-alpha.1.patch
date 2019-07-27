@@ -1,18 +1,176 @@
+diff --git a/node_modules/recyclerlistview/dist/reactnative/core/RecyclerListView.js b/node_modules/recyclerlistview/dist/reactnative/core/RecyclerListView.js
+index c7a4bbe..67c65e1 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/core/RecyclerListView.js
++++ b/node_modules/recyclerlistview/dist/reactnative/core/RecyclerListView.js
+@@ -162,7 +162,7 @@ var RecyclerListView = /** @class */ (function (_super) {
+         };
+         _this._onScroll = function (offsetX, offsetY, rawEvent) {
+             //Adjusting offsets using distanceFromWindow
+-            _this._virtualRenderer.updateOffset(offsetX - _this.props.distanceFromWindow, offsetY - _this.props.distanceFromWindow);
++            _this._virtualRenderer.updateOffset(offsetX - _this.props.distanceFromWindow, offsetY - _this.props.distanceFromWindow, true);
+             if (_this.props.onScroll) {
+                 _this.props.onScroll(rawEvent, offsetX, offsetY);
+             }
+@@ -170,9 +170,7 @@ var RecyclerListView = /** @class */ (function (_super) {
+         };
+         _this._virtualRenderer = new VirtualRenderer_1.default(_this._renderStackWhenReady, function (offset) {
+             _this._pendingScrollToOffset = offset;
+-        }, function (index) {
+-            return _this.props.dataProvider.getStableId(index);
+-        }, !props.disableRecycling);
++        }, _this.props.dataProvider.getStableId, !props.disableRecycling);
+         _this.state = {
+             renderStack: {},
+         };
+@@ -303,7 +301,11 @@ var RecyclerListView = /** @class */ (function (_super) {
+     };
+     RecyclerListView.prototype.getCurrentScrollOffset = function () {
+         var viewabilityTracker = this._virtualRenderer.getViewabilityTracker();
+-        return viewabilityTracker ? viewabilityTracker.getLastActualOffset() + this.props.distanceFromWindow : 0;
++        if (viewabilityTracker) {
++            var actualOffset = viewabilityTracker.getLastActualOffset();
++            return actualOffset === undefined ? 0 : actualOffset + this.props.distanceFromWindow;
++        }
++        return 0;
+     };
+     RecyclerListView.prototype.findApproxFirstVisibleIndex = function () {
+         var viewabilityTracker = this._virtualRenderer.getViewabilityTracker();
+@@ -345,9 +347,16 @@ var RecyclerListView = /** @class */ (function (_super) {
+         this._params.itemCount = newProps.dataProvider.getSize();
+         this._virtualRenderer.setParamsAndDimensions(this._params, this._layout);
+         this._virtualRenderer.setLayoutProvider(newProps.layoutProvider);
+-        if (newProps.dataProvider.hasStableIds() && this.props.dataProvider !== newProps.dataProvider && newProps.dataProvider.requiresDataChangeHandling()) {
++        var hasStableIds = newProps.dataProvider.hasStableIds();
++        var isNewDataProvider = this.props.dataProvider !== newProps.dataProvider;
++        var requiresDataChangeHandling = newProps.dataProvider.requiresDataChangeHandling();
++        if (hasStableIds && isNewDataProvider && requiresDataChangeHandling) {
+             this._virtualRenderer.handleDataSetChange(newProps.dataProvider, this.props.optimizeForInsertDeleteAnimations);
+         }
++        if (hasStableIds && isNewDataProvider) {
++            // Future calls to get stable IDs must use the function provided by the new data provider.
++            this._virtualRenderer.setStableIdProvider(newProps.dataProvider.getStableId);
++        }
+         if (forceFullRender || this.props.layoutProvider !== newProps.layoutProvider || this.props.isHorizontal !== newProps.isHorizontal) {
+             //TODO:Talha use old layout manager
+             this._virtualRenderer.setLayoutManager(newProps.layoutProvider.newLayoutManager(this._layout, newProps.isHorizontal));
+diff --git a/node_modules/recyclerlistview/dist/reactnative/core/StickyContainer.js b/node_modules/recyclerlistview/dist/reactnative/core/StickyContainer.js
+index e3af431..8de1ec4 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/core/StickyContainer.js
++++ b/node_modules/recyclerlistview/dist/reactnative/core/StickyContainer.js
+@@ -54,14 +54,14 @@ var StickyContainer = /** @class */ (function (_super) {
+             }
+         };
+         _this._getStickyHeaderRef = function (stickyHeaderRef) {
+-            if (!_this._stickyHeaderRef) {
++            if (_this._stickyHeaderRef !== stickyHeaderRef) {
+                 _this._stickyHeaderRef = stickyHeaderRef;
+                 // TODO: Resetting state once ref is initialized. Can look for better solution.
+                 _this._callStickyObjectsOnVisibleIndicesChanged(_this._visibleIndicesAll);
+             }
+         };
+         _this._getStickyFooterRef = function (stickyFooterRef) {
+-            if (!_this._stickyFooterRef) {
++            if (_this._stickyFooterRef !== stickyFooterRef) {
+                 _this._stickyFooterRef = stickyFooterRef;
+                 // TODO: Resetting state once ref is initialized. Can look for better solution.
+                 _this._callStickyObjectsOnVisibleIndicesChanged(_this._visibleIndicesAll);
 diff --git a/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js b/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js
-index 26e19af..e2a2913 100644
+index 26e19af..13cca4b 100644
 --- a/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js
 +++ b/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js
-@@ -36,9 +36,8 @@ var ViewabilityTracker = /** @class */ (function () {
-         this._windowBound = isHorizontal ? dimension.width : dimension.height;
-     };
-     ViewabilityTracker.prototype.forceRefresh = function () {
--        var shouldForceScroll = this._currentOffset >= (this._maxOffset - this._windowBound);
-         this.forceRefreshWithOffset(this._currentOffset);
--        return shouldForceScroll;
-+        return false;
-     };
-     ViewabilityTracker.prototype.forceRefreshWithOffset = function (offset) {
+@@ -11,7 +11,6 @@ var ViewabilityTracker = /** @class */ (function () {
+             return _this._relevantDim.end;
+         };
+         this._currentOffset = Math.max(0, initialOffset);
+-        this._actualOffset = this._currentOffset;
+         this._maxOffset = 0;
+         this._renderAheadOffset = renderAheadOffset;
+         this._visibleWindow = { start: 0, end: 0 };
+@@ -44,8 +43,10 @@ var ViewabilityTracker = /** @class */ (function () {
          this._currentOffset = -1;
+         this.updateOffset(offset);
+     };
+-    ViewabilityTracker.prototype.updateOffset = function (offset) {
+-        this._actualOffset = offset;
++    ViewabilityTracker.prototype.updateOffset = function (offset, sourceIsOnScroll) {
++        if (sourceIsOnScroll) {
++            this._actualOffset = offset;
++        }
+         offset = Math.min(this._maxOffset, Math.max(0, offset));
+         if (this._currentOffset !== offset) {
+             this._currentOffset = offset;
+diff --git a/node_modules/recyclerlistview/dist/reactnative/core/VirtualRenderer.js b/node_modules/recyclerlistview/dist/reactnative/core/VirtualRenderer.js
+index 112354d..b9f9256 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/core/VirtualRenderer.js
++++ b/node_modules/recyclerlistview/dist/reactnative/core/VirtualRenderer.js
+@@ -64,16 +64,16 @@ var VirtualRenderer = /** @class */ (function () {
+         }
+         return { height: 0, width: 0 };
+     };
+-    VirtualRenderer.prototype.updateOffset = function (offsetX, offsetY) {
++    VirtualRenderer.prototype.updateOffset = function (offsetX, offsetY, sourceIsOnScroll) {
+         if (this._viewabilityTracker) {
+             if (!this._isViewTrackerRunning) {
+                 this.startViewabilityTracker();
+             }
+             if (this._params && this._params.isHorizontal) {
+-                this._viewabilityTracker.updateOffset(offsetX);
++                this._viewabilityTracker.updateOffset(offsetX, sourceIsOnScroll);
+             }
+             else {
+-                this._viewabilityTracker.updateOffset(offsetY);
++                this._viewabilityTracker.updateOffset(offsetY, sourceIsOnScroll);
+             }
+         }
+     };
+@@ -279,6 +279,9 @@ var VirtualRenderer = /** @class */ (function () {
+             }
+         }
+     };
++    VirtualRenderer.prototype.setStableIdProvider = function (getStableId) {
++        this._fetchStableId = getStableId;
++    };
+     VirtualRenderer.prototype._getCollisionAvoidingKey = function () {
+         return "#" + this._startKey++ + "_rlv_c";
+     };
+diff --git a/node_modules/recyclerlistview/dist/reactnative/core/dependencies/DataProvider.js b/node_modules/recyclerlistview/dist/reactnative/core/dependencies/DataProvider.js
+index 4a5318f..283757b 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/core/dependencies/DataProvider.js
++++ b/node_modules/recyclerlistview/dist/reactnative/core/dependencies/DataProvider.js
+@@ -21,6 +21,9 @@ var DataProvider = /** @class */ (function () {
+             this.getStableId = function (index) { return index.toString(); };
+         }
+     }
++    DataProvider.prototype.clone = function () {
++        return new DataProvider(this.rowHasChanged, this.getStableId);
++    };
+     DataProvider.prototype.getDataForIndex = function (index) {
+         return this._data[index];
+     };
+@@ -42,7 +45,7 @@ var DataProvider = /** @class */ (function () {
+     //No need to override this one
+     //If you already know the first row where rowHasChanged will be false pass it upfront to avoid loop
+     DataProvider.prototype.cloneWithRows = function (newData, firstModifiedIndex) {
+-        var dp = new DataProvider(this.rowHasChanged, this.getStableId);
++        var dp = this.clone();
+         var newSize = newData.length;
+         var iterCount = Math.min(this._size, newSize);
+         if (ts_object_utils_1.ObjectUtil.isNullOrUndefined(firstModifiedIndex)) {
+diff --git a/node_modules/recyclerlistview/dist/reactnative/core/layoutmanager/LayoutManager.js b/node_modules/recyclerlistview/dist/reactnative/core/layoutmanager/LayoutManager.js
+index 3851852..23075a0 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/core/layoutmanager/LayoutManager.js
++++ b/node_modules/recyclerlistview/dist/reactnative/core/layoutmanager/LayoutManager.js
+@@ -172,6 +172,10 @@ var WrapGridLayoutManager = /** @class */ (function (_super) {
+         }
+         var i = startIndex - 1;
+         for (; i >= 0; i--) {
++            if (!this._layouts[i]) {
++                console.warn("WrapGridLayoutManager layout at index", i, "does not exist"); //tslint:disable-line
++                continue;
++            }
+             if (this._isHorizontal) {
+                 if (this._layouts[i].y === 0) {
+                     break;
 diff --git a/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyHeader.js b/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyHeader.js
 index 7074f36..5e72f6e 100644
 --- a/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyHeader.js

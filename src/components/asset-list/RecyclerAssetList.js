@@ -394,14 +394,14 @@ class RecyclerAssetList extends Component {
 
   rowRenderer = (type, data, index) => {
     if (isNil(data) || isNil(index)) {
-      return null;
+      return NOOP;
     }
 
     const { item = {}, renderItem } = data;
     const { hideHeader, sections } = this.props;
 
     if (type === ViewTypes.HEADER) {
-      return hideHeader ? null : <AssetListHeaderRenderer {...data} />;
+      return hideHeader ? NOOP : <AssetListHeaderRenderer {...data} />;
     }
 
     const isNotUniqueToken = (
