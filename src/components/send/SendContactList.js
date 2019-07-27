@@ -29,6 +29,7 @@ import FastImage from 'react-native-fast-image';
 import EditIcon from '../../assets/swipeToEdit.png';
 import DeleteIcon from '../../assets/swipeToDelete.png';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
+import { ListFooter } from '../list';
 
 const rowHeight = 62;
 
@@ -92,16 +93,6 @@ const ActionIcon = styled(FastImage)`
   height: 35px;
   margin: 0px 10px 5px 10px;
 `;
-
-const NOOP = () => undefined;
-
-const layoutItemAnimator = {
-  animateDidMount: NOOP,
-  animateShift: NOOP,
-  animateWillMount: NOOP,
-  animateWillUnmount: NOOP,
-  animateWillUpdate:  () => LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')),
-};
 
 let position = 0;
 
@@ -231,11 +222,17 @@ class SendContactList extends React.Component {
     }
 
     this._layoutProvider = new LayoutProvider((i) => {
+      if (i == this.state.contacts.length - 1) {
+        return 'LAST_COIN_ROW';
+      }
       return 'COIN_ROW';
     }, (type, dim) => {
       if (type == "COIN_ROW") {
         dim.width = deviceUtils.dimensions.width;
         dim.height = rowHeight;
+      } else if (type == "LAST_COIN_ROW") {
+        dim.width = deviceUtils.dimensions.width;
+        dim.height = rowHeight + ListFooter.height;
       } else {
         dim.width = 0;
         dim.height = 0;
@@ -245,7 +242,7 @@ class SendContactList extends React.Component {
   }
 
   _renderRow(type, data) {
-    if (type == "COIN_ROW") {
+    if (type == "COIN_ROW" || type == "LAST_COIN_ROW") {
       return this.balancesRenderItem(data);
     } else {
       return this.balancesRenderItem(data);
@@ -256,7 +253,7 @@ class SendContactList extends React.Component {
     let newAssets = Object.assign([], props.allAssets);
     newAssets.reverse();
     newAssets = this.filterContactList(newAssets, props.currentInput, 'nickname');
-    if(newAssets !== this.state.contacts) {
+    if (newAssets !== this.state.contacts) {
       this.setState({ contacts: newAssets });
     }
   }
@@ -283,7 +280,7 @@ class SendContactList extends React.Component {
   }
 
   shouldComponentUpdate = () => {
-    if(position < 0) {
+    if (position < 0) {
       return false;
     }
     return true;
@@ -318,7 +315,6 @@ class SendContactList extends React.Component {
               }).cloneWithRows(this.state.contacts)
             }
             layoutProvider={this._layoutProvider}
-            // itemAnimator={layoutItemAnimator}
             onScroll={(event, _offsetX, offsetY) => {
               position = offsetY;
             }}
