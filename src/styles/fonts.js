@@ -9,6 +9,7 @@ font.family = {
 
 font.letterSpacing = {
   /* eslint-disable sort-keys */
+  tightest: -0.3,
   tighter: -0.2,
   tight: -0.1,
   loose: 0.15,

@@ -33,6 +33,8 @@ import { ListFooter } from '../list';
 
 const rowHeight = 62;
 
+const LastRowPadding = 12;
+
 const AvatarWrapper = styled(View)`
   flex-direction: row;
   margin: 17px 15px 5px 15px;
@@ -61,8 +63,10 @@ const ContactColumn = styled(View)`
 `;
 
 const TopRow = styled(Text)`
-  font-weight: 500;
+  font-family: ${fonts.family.SFProText};
   font-size: 16;
+  font-weight: 500;
+  letter-spacing: ${fonts.letterSpacing.tight};
   width: ${deviceUtils.dimensions.width - 90};
 `;
 
@@ -80,11 +84,12 @@ const BottomRow = styled(TruncatedAddress).attrs({
 `;
 
 const RightActionText = styled(Text)`
-  font-weight: ${fonts.weight.medium};
-  font-size: ${fonts.size.smaller};
-  opacity: 0.4;
   color: ${colors.blueGreyDark};
+  font-family: ${fonts.family.SFProText};
+  font-size: ${fonts.size.smaller};
+  font-weight: ${fonts.weight.medium};
   letter-spacing: ${fonts.letterSpacing.tight};
+  opacity: 0.4;
   text-align: center;
 `;
 
@@ -232,7 +237,7 @@ class SendContactList extends React.Component {
         dim.height = rowHeight;
       } else if (type == "LAST_COIN_ROW") {
         dim.width = deviceUtils.dimensions.width;
-        dim.height = rowHeight + ListFooter.height;
+        dim.height = rowHeight + LastRowPadding;
       } else {
         dim.width = 0;
         dim.height = 0;

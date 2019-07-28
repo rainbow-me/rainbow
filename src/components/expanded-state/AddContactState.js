@@ -182,10 +182,12 @@ class AddContactState extends React.PureComponent {
                   <Input
                     style={{ fontWeight: 600, width: `100%` }}
                     autoFocus={true}
-                    color={colors.blueGreyDark}
-                    family={'SFProDisplay'}
+                    color={colors.dark}
+                    family={'SFProText'}
+                    letterSpacing={'tightest'}
                     onChange={this.onChange}
                     size="big"
+                    spellCheck="false"
                     textAlign={'center'}
                     value={this.state.value}
                     autoCapitalize
