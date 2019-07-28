@@ -42,7 +42,7 @@ class ExpandedAssetScreen extends React.Component {
   }
 
   componentWillUnmount = async () => {
-    if (this.state.shouldSave && this.props.type == "contact") {
+    if (this.state.shouldSave && this.props.type == "contact" && this.state.value.length > 0) {
       await addNewLocalContact(this.props.address, this.state.value, this.state.color);
       this.props.onCloseModal();
     }
