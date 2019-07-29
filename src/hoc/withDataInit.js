@@ -72,43 +72,34 @@ export default Component => compose(
       }
     },
     clearAccountData: (ownProps) => async () => {
-      // TODO
-      try {
-        ownProps.dataClearState();
-        ownProps.clearIsWalletEmpty();
-        ownProps.uniqueTokensClearState();
-        ownProps.clearOpenFamilyTab();
-        ownProps.walletConnectClearState();
-        ownProps.nonceClearState();
-        ownProps.requestsClearState();
-        ownProps.uniswapClearState();
-      } catch (error) {
-        console.log('ERROR clearing account data', error);
-      }
+      const p1 = ownProps.dataClearState();
+      const p2 = ownProps.clearIsWalletEmpty();
+      const p3 = ownProps.uniqueTokensClearState();
+      const p4 = ownProps.clearOpenFamilyTab();
+      const p5 = ownProps.walletConnectClearState();
+      const p6 = ownProps.nonceClearState();
+      const p7 = ownProps.requestsClearState();
+      const p8 = ownProps.uniswapClearState();
+      const promises = [p1, p2, p3, p4, p5, p6, p7, p8];
+      await Promise.all(promises.map(p => p.catch(e => e)));
     },
     initializeAccountData: (ownProps) => async () => {
-      ownProps.dataInit();
       try {
+        ownProps.dataInit();
         await ownProps.uniqueTokensRefreshState();
       } catch (error) {
         // TODO
       }
     },
     loadAccountData: (ownProps) => async () => {
-      try {
-        await ownProps.settingsLoadState();
-      } catch (error) {
-        // TODO
-      }
-      try {
-        await ownProps.dataLoadState();
-      } catch (error) {
-        // TODO
-      }
-      ownProps.uniqueTokensLoadState();
-      ownProps.walletConnectLoadState();
-      ownProps.uniswapLoadState();
-      ownProps.requestsLoadState();
+      const p1 = ownProps.settingsLoadState();
+      const p2 = ownProps.dataLoadState();
+      const p3 = ownProps.uniqueTokensLoadState();
+      const p4 = ownProps.walletConnectLoadState();
+      const p5 = ownProps.uniswapLoadState();
+      const p6 = ownProps.requestsLoadState();
+      const promises = [p1, p2, p3, p4, p5, p6];
+      await Promise.all(promises.map(p => p.catch(e => e)));
     },
     refreshAccountData: (ownProps) => async () => {
       try {
