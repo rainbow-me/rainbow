@@ -28,6 +28,7 @@ import { ListFooter } from '../list';
 import { CardMargin, CardSize, RowPadding } from '../unique-token/UniqueTokenRow';
 import AssetListHeader from './AssetListHeader';
 import CoinDivider from '../coin-divider/CoinDivider';
+import SmallBalancesWrapper from '../coin-divider/SmallBalancesWrapper';
 
 export const ViewTypes = {
   HEADER: 0,
@@ -416,18 +417,16 @@ class RecyclerAssetList extends PureComponent {
     if (type === ViewTypes.HEADER) {
       return hideHeader ? null : <AssetListHeaderRenderer {...data} />;
     }
-
+     
     if (type.get === ViewTypes.COIN_SMALL_BALANCES) {
       const renderList = [];
-      renderList.push(<CoinDivider />);
-      
-      if (this.props.openSmallBalances) {
-        for (let i = 0; i < item.assets.length; i++) {
-          const selectedItem = { item: item.assets[i] };
-          renderList.push(renderItem(selectedItem))
-        }
+      for (let i = 0; i < item.assets.length; i++) {
+        const selectedItem = { item: item.assets[i] };
+        renderList.push(renderItem(selectedItem))
       }
-      return renderList;
+
+      wrappedRenderList = <SmallBalancesWrapper assets={renderList} />
+      return wrappedRenderList;
     }
 
     const isNotUniqueToken = (

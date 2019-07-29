@@ -1,11 +1,15 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
 import { View, Text } from 'react-native';
-import { colors, fonts } from '../../styles';
+import { colors, fonts, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
-import { withOpenBalances } from '../../hoc';
 import { deviceUtils } from '../../utils';
+import { Icon } from '../icons';
+import { Centered } from '../layout';
+import Animated from 'react-native-reanimated';
+
 
 const Wrapper = styled(View)`
   width: ${deviceUtils.dimensions.width};
@@ -14,13 +18,13 @@ const Wrapper = styled(View)`
 
 const Container = styled(View)`
   height: 30px;
-  width: 55px;
   background-color: ${colors.lightGrey};
   border-radius: 15px;
   margin-left: 15px;
   margin-top: 8px;
-  justify-content: center;
+  align-items: center;
   padding: 0 10px;
+  flex-direction: row;
 `;
 
 const Header = styled(Text)`
@@ -35,20 +39,49 @@ const Header = styled(Text)`
 
 const CoinDivider = ({
   openSmallBalances,
-  setOpenSmallBalances,
+  onChangeOpenBalances,
 }) => (
-  <Wrapper>
-    <ButtonPressAnimation scaleTo={0.9} onPress={() => {setOpenSmallBalances(!openSmallBalances)}}>
-      <Container>
-        <Header>
-          { openSmallBalances ? `Less` : `All` }
-        </Header>
-      </Container>
-    </ButtonPressAnimation>
-  </Wrapper>
-);
+    <Wrapper>
+      <ButtonPressAnimation scaleTo={0.9} onPress={onChangeOpenBalances}>
+        <Container>
+          <Header>
+            {openSmallBalances ? `Less` : `All`}
+          </Header>
+          <Centered justify="end" style={position.sizeAsObject(19)}>
+            <Centered
+              flex={0}
+              justify="end"
+              style={{
+                ...position.sizeAsObject(13),
+                paddingBottom: openSmallBalances ? 0 : 1,
+                paddingTop: openSmallBalances ? 0 : 0,
+                position: 'absolute',
+                right: 0,
+                opacity: 0.6,
+              }}
+            >
+              <Animated.View
+                style={{ transform: [{ rotate: openSmallBalances ? '-90deg' : '0deg' }] }}
+              >
+                <Icon
+                  color={colors.blueGreyDark}
+                  name="caretThin"
+                  width={13}
+                />
+              </Animated.View>
+            </Centered>
+          </Centered>
+        </Container>
+      </ButtonPressAnimation>
+    </Wrapper>
+  );
+
+CoinDivider.propTypes = {
+  openSmallBalances: PropTypes.bool,
+  onChangeOpenBalances: PropTypes.func,
+};
 
 CoinDivider.height = 38;
 
 
-export default withOpenBalances(CoinDivider);
+export default CoinDivider;
