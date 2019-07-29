@@ -104,6 +104,10 @@ export default class AddressField extends PureComponent {
     }
   }
 
+  onPressNickname = () => {
+    input.focus();
+  }
+
   render() {
     const { autoFocus, ...props } = this.props;
     const { inputValue, isValid } = this.state;
@@ -126,7 +130,7 @@ export default class AddressField extends PureComponent {
         />
         {!inputValue && (
           <Placeholder>
-            <TouchableWithoutFeedback onPress={this.onPressNickName} >
+            <TouchableWithoutFeedback onPress={this.onPressNickname} >
               <PlaceholderText>ENS or Address (</PlaceholderText>
             </TouchableWithoutFeedback>
             <PlaceholderText family="SFMono">0x</PlaceholderText>
