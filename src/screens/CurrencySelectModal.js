@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { compose } from 'recompact';
 import { View } from 'react-native'
-import { withAccountAssets } from '@rainbow-me/rainbow-common';
 import { NavigationEvents } from 'react-navigation';
+import styled from 'styled-components';
 import { Column, FlexItem, Row } from '../components/layout';
 import { Modal, ModalHeader } from '../components/modal';
 import AssetList from '../components/asset-list/RecyclerAssetList';
@@ -12,10 +12,10 @@ import GestureBlocker from '../components/GestureBlocker';
 import { Monospace, TruncatedText } from '../components/text';
 import { borders, colors } from '../styles';
 import StarIcon from '../components/icons/svg/StarIcon';
-import styled from 'styled-components';
 import { ModalHeaderHeight } from '../components/modal/ModalHeader';
 import { BackButton } from '../components/header';
 import Flex from '../components/layout/Flex';
+import { withAccountData } from '../hoc';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 
 const HeaderContainer = styled(Row).attrs({
@@ -160,5 +160,5 @@ SelectCurrencyModal.propTypes = {
 };
 
 export default compose(
-  withAccountAssets,
+  withAccountData,
 )(SelectCurrencyModal);
