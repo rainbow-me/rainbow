@@ -1,7 +1,10 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import {
-  TextInput, KeyboardAvoidingView, Keyboard, View,
+  TextInput,
+  KeyboardAvoidingView,
+  Keyboard,
+  View,
 } from 'react-native';
 import {
   compose,
@@ -10,23 +13,27 @@ import {
   withState,
 } from 'recompact';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import { withAccountAssets } from '@rainbow-me/rainbow-common';
+import { ButtonPressAnimation } from '../components/animations';
+import Button from '../components/buttons/Button';
+import BottomRowText from '../components/coin-row/BottomRowText';
+import CoinName from '../components/coin-row/CoinName';
+import CoinRow, { CoinRowPaddingVertical } from '../components/coin-row/CoinRow';
+import FloatingPanel from '../components/expanded-state/FloatingPanel';
+import FloatingPanels from '../components/expanded-state/FloatingPanels';
+import GestureBlocker from '../components/GestureBlocker';
+import { Icon } from '../components/icons';
 import {
-  Centered, Column, FlexItem, Row, RowWithMargins,
+  Centered,
+  Column,
+  FlexItem,
+  Row,
+  RowWithMargins,
 } from '../components/layout';
 import { ModalHeader } from '../components/modal';
+import { Text } from '../components/text';
+import { withAccountData } from '../hoc';
 import withBlockedHorizontalSwipe from '../hoc/withBlockedHorizontalSwipe';
 import { colors, padding, shadow } from '../styles';
-import { Icon } from '../components/icons';
-import FloatingPanels from '../components/expanded-state/FloatingPanels';
-import FloatingPanel from '../components/expanded-state/FloatingPanel';
-import CoinRow, { CoinRowPaddingVertical } from '../components/coin-row/CoinRow';
-import CoinName from '../components/coin-row/CoinName';
-import Button from '../components/buttons/Button';
-import { Text } from '../components/text';
-import GestureBlocker from '../components/GestureBlocker';
-import BottomRowText from '../components/coin-row/BottomRowText';
-import { ButtonPressAnimation } from '../components/animations';
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   background-color: transparent;
@@ -252,7 +259,7 @@ const withMockedPrices = withProps({
 });
 
 export default compose(
-  withAccountAssets,
+  withAccountData,
   withState('amountToExchange', 'setAmountToExchange', '0'),
   withState('selectedCurrency', 'setSelectedCurrency', null),
   withState('selectedTargetCurrency', 'setSelectedTargetCurrency', null),
