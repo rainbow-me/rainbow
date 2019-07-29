@@ -25,11 +25,11 @@ const SmallBalancesWrapper = ({
 
   return (
     <View>
-      <CoinDivider openSmallBalances={openSmallBalances} onChangeOpenBalances={onPress} />
       <Transitioning.View
         ref={ref}
         transition={transition}
       >
+        <CoinDivider openSmallBalances={openSmallBalances} onChangeOpenBalances={onPress} />
         <View
           style={{
             height: height,

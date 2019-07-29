@@ -25,6 +25,7 @@ const Container = styled(View)`
   align-items: center;
   padding: 0 10px;
   flex-direction: row;
+  justify-content: space-between;
 `;
 
 const Header = styled(Text)`
@@ -33,6 +34,7 @@ const Header = styled(Text)`
   font-size: ${fonts.size.lmedium};
   color: ${colors.blueGreyDark};
   font-weight: ${fonts.weight.semibold};
+  width: 40px;
   opacity: 0.6;
 `;
 
@@ -44,8 +46,8 @@ const CoinDivider = ({
     <Wrapper>
       <ButtonPressAnimation scaleTo={0.9} onPress={onChangeOpenBalances}>
         <Container>
-          <Header>
-            {openSmallBalances ? `Less` : `All`}
+          <Header style={{ marginRight: openSmallBalances ? 0 : -10 }}>
+            { openSmallBalances ? `Less` : `All` }
           </Header>
           <Centered justify="end" style={position.sizeAsObject(19)}>
             <Centered

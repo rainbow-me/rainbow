@@ -4,7 +4,7 @@ import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
-import { withOpenFamilyTabs, withOpenInvestmentCards } from '../../hoc';
+import { withOpenFamilyTabs, withOpenInvestmentCards, withOpenBalances } from '../../hoc';
 import {
   setActionType,
   setScrollingVelocity,
@@ -15,6 +15,7 @@ import { CoinRow } from '../coin-row';
 import { ListFooter } from '../list';
 import { CardSize, CardMargin } from '../unique-token/UniqueTokenRow';
 import { InvestmentCard, UniswapInvestmentCard, InvestmentCardHeader } from '../investment-cards';
+import CoinDivider from '../coin-divider/CoinDivider';
 
 const {
   add,
@@ -96,6 +97,7 @@ class Movable extends React.Component {
     deleteButtonTranslate: PropTypes.object,
     openFamilyTabs: PropTypes.array,
     openInvestmentCards: PropTypes.array,
+    openSmallBalances: PropTypes.bool,
     scrollViewTracker: PropTypes.object,
     sections: PropTypes.array,
     setActionType: PropTypes.func,
@@ -284,7 +286,7 @@ class Movable extends React.Component {
   }
 }
 
-const traverseSectionsToDimensions = ({ sections, openFamilyTabs, openInvestmentCards }) => {
+const traverseSectionsToDimensions = ({ sections, openFamilyTabs, openInvestmentCards, openSmallBalances }) => {
   let balances = false;
   let collectibles = false;
   let investments = false;
@@ -303,7 +305,7 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs, openInvestment
     const familyHeaderHeight = 52;
     let height = 55 + headerHeight;
     if (balances) {
-      for (let i = 0; i < balances.data.length; i++) {
+      for (let i = 0; i < balances.data.length - 1; i++) {
         areas.push({
           bottom: height + CoinRow.height,
           id: balances.data[i].uniqueId,
@@ -311,14 +313,28 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs, openInvestment
           right: deviceUtils.dimensions.width,
           top: height,
         });
-        height += CoinRow.height + (balances.data.length - 1 === i ? ListFooter.height : 0);
+        height += CoinRow.height;
       }
-      height += headerHeight;
+      height += CoinDivider.height;
+      if (openSmallBalances) {
+        let smallBalances = balances.data[balances.data.length - 1].assets;
+        for (let i = 0; i < smallBalances.length; i++) {
+          areas.push({
+            bottom: height + CoinRow.height,
+            id: smallBalances[i].uniqueId,
+            left: 0,
+            right: deviceUtils.dimensions.width,
+            top: height,
+          });
+          height += CoinRow.height;
+        }
+      }
+      height += ListFooter.height + headerHeight;
     }
     if (investments) {
       height += headerHeight + ListFooter.height;
       for (let i = 0; i < investments.data.length; i++) {
-        if(!openInvestmentCards[ investments.data[i].uniqueId ]) {
+        if (!openInvestmentCards[investments.data[i].uniqueId]) {
           height += (UniswapInvestmentCard.height + InvestmentCard.margin.vertical);
         } else {
           height += (InvestmentCardHeader.height + InvestmentCard.margin.vertical);
@@ -370,4 +386,4 @@ const EnhancedMovable = compose(
 )(Movable);
 
 
-export default withOpenFamilyTabs(withOpenInvestmentCards(EnhancedMovable));
+export default withOpenFamilyTabs(withOpenInvestmentCards(withOpenBalances(EnhancedMovable)));
