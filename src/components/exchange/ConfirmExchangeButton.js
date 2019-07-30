@@ -2,13 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForPropTypes } from 'recompact';
 import { colors } from '../../styles';
-
 import { HoldToAuthorizeButton } from '../buttons';
 
-const ConfirmExchangeButton = ({
-  disabled,
-  onPress,
-}) => (
+const ConfirmExchangeButton = ({ disabled, onPress }) => (
   <HoldToAuthorizeButton
     disabled={disabled}
     onLongPress={onPress}
