@@ -1,24 +1,13 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { TouchableWithoutFeedback } from 'react-native';
+import { withNeverRerender } from '../../hoc';
 import { colors, padding, position, shadow } from '../../styles';
 import { CoolButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
-import { Input } from '../inputs';
-import {
-  Centered,
-  ColumnWithMargins,
-  Row,
-  RowWithMargins,
-} from '../layout';
-import { Monospace, Text } from '../text';
 import { EmDash } from '../html-entities';
-
-import {
-  withNeverRerender,
-} from '../../hoc';
-import { Icon } from '../icons';
+import { Row, RowWithMargins } from '../layout';
 import { ShadowStack } from '../shadow-stack';
+import ExchangeInput from './ExchangeInput';
 
 const paddingValue = 15;
 
@@ -42,22 +31,12 @@ const FakeNotchThing = withNeverRerender(() => (
   />
 ));
 
-//  <ShadowStack>
-        // <CoinRow
-        //   amount={amountToExchange}
-        //   changeAmount={setAmountToExchange}
-        //   navigateToCurrencySelection={onPressSelectCurrency}
-        //   bottomRowRender={() => null}
-        //   topRowRender={() => null}
-        //   symbol={selectedOutputCurrency}
-        // />
-
-class ExchangeOutputField extends React.Component {
+class ExchangeOutputField extends PureComponent {
   static propTypes = {
-    amount: PropTypes.number,
     onPressSelectOutputCurrency: PropTypes.string,
-    selectedOutputCurrency: PropTypes.string,
-    setAmountToExchange: PropTypes.func,
+    outputAmount: PropTypes.number,
+    outputCurrency: PropTypes.string,
+    setOutputAmount: PropTypes.func,
   }
 
   inputRef = React.createRef()
@@ -66,16 +45,14 @@ class ExchangeOutputField extends React.Component {
 
   render = () => {
     const {
-      amount,
       onPressSelectOutputCurrency,
-      selectedOutputCurrency,
-      setAmountToExchange,
+      outputAmount,
+      outputCurrency,
+      setOutputAmount,
     } = this.props;
 
     const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
     const placeholderColor = colors.alpha(colors.blueGreyDark, 0.5);
-
-    console.log('selectedOutputCurrency', selectedOutputCurrency);
 
     return (
       <Row
@@ -97,33 +74,26 @@ class ExchangeOutputField extends React.Component {
           paddingLeft={paddingValue}
         >
           <CoinIcon
-            backgroundColor={skeletonColor}
-            bgColor={skeletonColor}
+            bgColor={outputCurrency ? undefined : skeletonColor}
             flex={0}
             size={31}
-            symbol={selectedOutputCurrency}
+            symbol={outputCurrency}
           />
-          <Input
-            flex={1}
-            mono
-            backgroundColor={colors.transparent}
-            keyboardAppearance="dark"
-            keyboardType="decimal-pad"
-            editable={!!selectedOutputCurrency}
-            onChangeText={setAmountToExchange}
-            value={amount}
-            placeholder={selectedOutputCurrency ? '0' : EmDash.unicode}
-            placeholderTextColor={selectedOutputCurrency ? placeholderColor : skeletonColor}
-            ref={this.inputRef}
-            selectionColor={colors.appleBlue}
-            size="h2"
+          <ExchangeInput
+            autoFocus={true}
+            editable={!!outputCurrency}
+            inputRef={this.inputRef}
+            onChangeText={setOutputAmount}
+            placeholder={outputCurrency ? '0' : EmDash.unicode}
+            placeholderTextColor={outputCurrency ? placeholderColor : skeletonColor}
+            value={outputAmount}
           />
         </RowWithMargins>
         <CoolButton
-          color={selectedOutputCurrency ? colors.dark : colors.appleBlue}
+          color={outputCurrency ? colors.dark : colors.appleBlue}
           onPress={onPressSelectOutputCurrency}
         >
-          {selectedOutputCurrency || 'Choose a Coin'}
+          {outputCurrency || 'Choose a Coin'}
         </CoolButton>
       </Row>
     );

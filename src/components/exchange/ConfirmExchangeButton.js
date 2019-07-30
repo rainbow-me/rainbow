@@ -1,56 +1,29 @@
-import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
-import {
-  // compose,
-  // withHandlers,
-  // withProps,
-  // withState,
-} from 'recompact';
-import styled from 'styled-components/primitives';
-import { colors, padding, position, shadow } from '../../styles';
+import React from 'react';
+import { onlyUpdateForPropTypes } from 'recompact';
+import { colors } from '../../styles';
 
-import { Button } from '../buttons';
-import { Icon } from '../icons';
-import { Text } from '../text';
-
-  // ${shadow.build(0, 6, 10, colors.purple, 0.14)};
-  // width:  100%;
-// const ConfirmExchangeButton = styled(Button)`
-//   padding-horizontal: 5;
-// `;
-  // height: 64;
+import { HoldToAuthorizeButton } from '../buttons';
 
 const ConfirmExchangeButton = ({
   disabled,
   onPress,
 }) => (
-  <Button
-    backgroundColor={disabled ? colors.blueGreyLighter : colors.appleBlue}
+  <HoldToAuthorizeButton
     disabled={disabled}
-    height={59}
-    onPress={onPress}
-    paddingHorizontal={5}
+    onLongPress={onPress}
+    shadows={[
+      [0, 3, 5, colors.black, 0.2],
+      [0, 6, 10, colors.black, 0.14],
+      [0, 1, 18, colors.black, 0.12],
+    ]}
+    theme="dark"
   >
     {disabled
       ? 'Enter an amount'
-      : (
-        <Fragment>
-          <Icon
-            {...position.sizeAsObject(32)}
-            color="white"
-            name='faceid'
-            style={{ left: 16, position: 'absolute' }}
-          />
-          <Text
-            color="white"
-            size='h5'
-            weight="semibold"
-          >
-            Hold to swap
-          </Text>
-        </Fragment>
-      )}
-  </Button>
+      : 'Hold to swap'
+    }
+  </HoldToAuthorizeButton>
 );
 
 ConfirmExchangeButton.propTypes = {
@@ -58,4 +31,4 @@ ConfirmExchangeButton.propTypes = {
   onPress: PropTypes.func,
 };
 
-export default ConfirmExchangeButton;
+export default onlyUpdateForPropTypes(ConfirmExchangeButton);

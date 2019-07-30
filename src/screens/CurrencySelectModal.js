@@ -1,41 +1,38 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PureComponent } from 'react';
 import { compose, withHandlers } from 'recompact';
-import { View } from 'react-native'
-import { NavigationEvents } from 'react-navigation';
+import { KeyboardAvoidingView, View } from 'react-native'
+import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import styled from 'styled-components/primitives';
-import { Column, FlexItem, Row } from '../components/layout';
+import { Centered, Column, FlexItem, Row } from '../components/layout';
+import { deviceUtils, safeAreaInsetValues } from '../utils';
 import { Modal, ModalHeader } from '../components/modal';
 import AssetList from '../components/asset-list/RecyclerAssetList';
 import { SendCoinRow } from '../components/coin-row';
 import GestureBlocker from '../components/GestureBlocker';
 import { Monospace, TruncatedText } from '../components/text';
 import { withAccountData } from '../hoc';
-import { borders, colors } from '../styles';
+import { borders, colors, position } from '../styles';
 import StarIcon from '../components/icons/svg/StarIcon';
 import { ModalHeaderHeight } from '../components/modal/ModalHeader';
 import { BackButton } from '../components/header';
 import Flex from '../components/layout/Flex';
+import { ExchangeSearch } from '../components/exchange';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 
-const HeaderContainer = styled(Row).attrs({
-  align: 'center',
+const HeaderContainer = styled(Centered).attrs({
   flex: 0,
-  justify: 'center',
 })`
   ${borders.buildRadius('top', 12)};
   background-color: ${colors.white};
-  height: ${ModalHeaderHeight};
+  height: 60;
   width: 100%;
 `;
 
-const BackButtonWrapper = styled(Flex).attrs({
-  align: 'center',
-  justify: 'center',
-})`
+const BackButtonWrapper = styled(Centered)`
   left: 0;
-  position: absolute;
   margin-left: 15;
+  position: absolute;
 `;
 
 const BottomRow = ({ balance, symbol }) => (
@@ -52,26 +49,20 @@ BottomRow.propTypes = {
   symbol: PropTypes.string,
 };
 
-const StarRender = ({ favorite }) => (
-  <FlexItem flex={0} style={{ marginLeft: 8 }}>
-    <StarIcon color={favorite ? colors.orangeLight : colors.grey} />
-  </FlexItem>
-);
-
-StarRender.propTypes = {
-  favorite: PropTypes.bool,
-};
-
-const CurrencyRenderItem = ({ item, onPress }) => (
+const CurrencyRenderItem = ({ favorite, item, onPress }) => (
   <SendCoinRow
     {...item}
     bottomRowRender={BottomRow}
     onPress={onPress}
-    starRender={StarRender}
-  />
+  >
+    <FlexItem flex={0} style={{ marginLeft: 8 }}>
+      <StarIcon color={favorite ? colors.orangeLight : colors.grey} />
+    </FlexItem>
+  </SendCoinRow>
 );
 
 CurrencyRenderItem.propTypes = {
+  favorite: PropTypes.bool,
   index: PropTypes.number,
   item: PropTypes.shape({ symbol: PropTypes.string }),
   onPress: PropTypes.func,
@@ -81,7 +72,7 @@ const EnhancedCurrencyRenderItem = withHandlers({
   onPress: ({ item: { symbol }, onPress }) => () => onPress(symbol),
 })(CurrencyRenderItem);
 
-class SelectCurrencyModal extends Component {
+class SelectCurrencyModal extends PureComponent {
   static propTypes = {
     allAssets: PropTypes.array,
     navigation: PropTypes.object,
@@ -89,12 +80,30 @@ class SelectCurrencyModal extends Component {
 
   callback = null
 
+  keyboardHeight = 0
+
+  viewportHeight = deviceUtils.dimensions.height
+
+  searchInputRef = React.createRef()
+
   componentDidMount() {
-    this.callback = this.props.navigation.getParam('onSelectCurrency');
+    this.getDataFromParams();
   }
 
   componentDidUpdate() {
-    this.callback = this.props.navigation.getParam('onSelectCurrency');
+    this.getDataFromParams();
+  }
+
+  getDataFromParams = () => {
+    const { navigation } = this.props;
+
+    this.callback = navigation.getParam('onSelectCurrency');
+    this.keyboardHeight = navigation.getParam('keyboardHeight');
+
+    // console.log('getDataFromParams this.keyboardHeight', this.keyboardHeight);
+
+    this.viewportHeight = deviceUtils.dimensions.height - this.keyboardHeight;
+    // console.log('getDataFromParams this.viewportHeight', this.viewportHeight);
   }
 
   dangerouslySetIsGestureBlocked = (isGestureBlocked) => {
@@ -123,7 +132,24 @@ class SelectCurrencyModal extends Component {
     />
   )
 
+  handleDidFocus = () => {
+    // setTimeout(() => this.searchInputRef.current.focus(), 500);
+  }
+
   render() {
+    const magicNumber = this.viewportHeight
+      ? (this.viewportHeight - 10) // - 5
+      : 0;
+
+    if (!!this.viewportHeight) {
+      // console.log(' ')
+      // console.log('SelectCurrencyModal -- isFocused', this.props.isFocused);
+      // console.log('magicNumber', magicNumber);
+      // console.log('SelectCurrencyModal -- this.props', this.props);
+      // console.log('this.viewportHeight', this.viewportHeight);
+      // console.log(' ')
+    }
+
     const fakeDataThatNeedsToBeHookedUp = [
       {
         balances: true,
@@ -133,47 +159,89 @@ class SelectCurrencyModal extends Component {
     ];
 
     return (
-      <Modal
-        containerPadding={4}
-        minHeight={580}
-        overflow="hidden"
-        radius={exchangeModalBorderRadius}
+      <View
+        style={{
+          ...deviceUtils.dimensions,
+          ...position.coverAsObject,
+          // height: deviceUtils.dimensions.height,
+          // width: deviceUtils.dimensions.width,
+          // flexDirection: 'column',
+          // alignItems: 'flex-end',//'stretch',
+          // justifyContent: 'flex-end',
+        }}
       >
-        <GestureBlocker type='top'/>
-        <NavigationEvents
-          onWillBlur={this.handleWillBlur}
-          onWillFocus={this.handleWillFocus}
-        />
-        <Column flex={1}>
-          <HeaderContainer>
-            <BackButtonWrapper>
-              <BackButton
-                color={colors.black}
-                direction="left"
-                onPress={this.handlePressBack}
-                size='8'
-              />
-            </BackButtonWrapper>
-            <TruncatedText
-              height={21}
-              letterSpacing="tight"
-              size="large"
-              weight="bold"
+        <KeyboardAvoidingView
+          behavior="height"
+          contentContainerStyle={{
+            // ...position.sizeAsObject('100%'),
+            // alignItems: 'center',
+          // alignItems="center"
+          // justifyContent="center"
+            // justifyContent: 'center',
+          }}
+        >
+
+          <Row style={{
+            ...position.sizeAsObject('100%'),
+            // position: 'absolute',
+            // top: safeAreaInsetValues.top,
+            // justifyContent: 'flex-end',
+            paddingBottom: 10,
+            paddingTop: safeAreaInsetValues.top,
+          }}>
+            <Modal
+              containerPadding={0}
+              height="100%"
+              overflow="hidden"
+              radius={exchangeModalBorderRadius}
             >
-              Receive
-            </TruncatedText>
-          </HeaderContainer>
-          <AssetList
-            hideHeader
-            sections={fakeDataThatNeedsToBeHookedUp}
-          />
-        </Column>
-        <GestureBlocker type='bottom'/>
-      </Modal>
+              <GestureBlocker type='top'/>
+              <NavigationEvents
+                onDidFocus={this.handleDidFocus}
+                onWillBlur={this.handleWillBlur}
+                onWillFocus={this.handleWillFocus}
+              />
+              <Column flex={1}>
+                <HeaderContainer>
+                  <BackButtonWrapper>
+                    <BackButton
+                      color={colors.black}
+                      direction="left"
+                      onPress={this.handlePressBack}
+                      size="9"
+                    />
+                  </BackButtonWrapper>
+                  <TruncatedText
+                    height={21}
+                    letterSpacing="tighter"
+                    lineHeight="loose"
+                    size="large"
+                    weight="bold"
+                  >
+                    Receive
+                  </TruncatedText>
+                </HeaderContainer>
+                <ExchangeSearch
+                  autoFocus={false}
+                  ref={this.searchInputRef}
+                />
+                <AssetList
+                  hideHeader
+                  flex={1}
+                  style={{ flex: 1 }}
+                  sections={fakeDataThatNeedsToBeHookedUp}
+                />
+              </Column>
+              <GestureBlocker type='bottom'/>
+            </Modal>
+          </Row>
+        </KeyboardAvoidingView>
+      </View>
     );
   }
 }
 
 export default compose(
   withAccountData,
+  withNavigationFocus,
 )(SelectCurrencyModal);

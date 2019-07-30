@@ -45,6 +45,7 @@ const SwipeStack = createMaterialTopTabNavigator({
   },
 }, {
   headerMode: 'none',
+  initialLayout: deviceUtils.dimensions,
   initialRouteName: 'WalletScreen',
   mode: 'modal',
   springConfig: {
@@ -71,11 +72,19 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator({
 }, {
   headerMode: 'none',
   initialLayout: deviceUtils.dimensions,
+  keyboardDismissMode: 'none',
   mode: 'modal',
+  springConfig: {
+    damping: 16,
+    mass: 0.3,
+    overshootClamping: false,
+    restDisplacementThreshold: 1,
+    restSpeedThreshold: 1,
+    stiffness: 140,
+  },
   tabBarComponent: null,
   transparentCard: true,
 });
-
 
 // I need it for changing navigationOptions dynamically
 // for preventing swipe down to close on CurrencySelectScreen
@@ -142,9 +151,9 @@ const MainNavigator = createStackNavigator({
     screen: WalletConnectConfirmationModal,
   },
 }, {
-  disableKeyboardHandling: true,
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',
+  keyboardDismissMode: true,
   mode: 'modal',
   onTransitionEnd,
   onTransitionStart,

@@ -1,38 +1,39 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { TouchableWithoutFeedback } from 'react-native';
-import { colors, position } from '../../styles';
+import { colors, fonts } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { CoolButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
-import { Input } from '../inputs';
 import {
-  Centered,
   ColumnWithMargins,
   Row,
   RowWithMargins,
 } from '../layout';
-import { Monospace, Text } from '../text';
+import { Emoji, Text } from '../text';
+import ExchangeInput from './ExchangeInput';
 
-import TextInputMask from 'react-native-text-input-mask';
-
-export default class ExchangeInputField extends PureComponent {
+export default class ExchangeInputField extends Component {
   static propTypes = {
-    amount: PropTypes.string,
+    autoFocus: PropTypes.bool,
+    inputAmount: PropTypes.string,
+    inputCurrency: PropTypes.string,
+    nativeAmount: PropTypes.string,
     onPressMaxBalance: PropTypes.func,
     onPressSelectInputCurrency: PropTypes.string,
-    selectedInputCurrency: PropTypes.string,
-    setAmountToExchange: PropTypes.func,
+    setInputAmount: PropTypes.func,
+    setNativeAmount: PropTypes.func,
   }
 
   inputRef = React.createRef()
 
   maskRef = null
 
+  dollarRef = null
+
   padding = 15
 
   handleFocusInput = () => {
-
     if (this.maskRef) {
       this.maskRef.focus();
     }
@@ -43,15 +44,24 @@ export default class ExchangeInputField extends PureComponent {
     this.maskRef = ref;
   }
 
+  handleDollarRef = (ref) => {
+    this.dollarRef = ref;
+  }
+
   render = () => {
     const {
-      amount,
+      autoFocus,
+      inputAmount,
+      inputCurrency,
+      nativeAmount,
       onPressMaxBalance,
       onPressSelectInputCurrency,
-      selectedInputCurrency,
-      setAmountToExchange,
+      setInputAmount,
+      setNativeAmount,
     } = this.props;
-                // mask="[0...][-][9...]"
+
+
+    // mask="[0...][-][9...]"
 
     return (
       <ColumnWithMargins flex={0} margin={14.5} width="100%">
@@ -65,63 +75,44 @@ export default class ExchangeInputField extends PureComponent {
             >
               <CoinIcon
                 size={31}
-                symbol={selectedInputCurrency}
+                symbol={inputCurrency}
               />
               <Row align="center" flex={1}>
-                <TextInputMask
-                  autoFocus={true}
-                  inputRef={this.handleMaskRef}
-                  mask="[099999999999].[9999999999999]"
-                  onChangeText={setAmountToExchange}
-                  style={{
-                    ...position.coverAsObject,
-                    color: colors.white,
-                    zIndex: 0,
-                  }}
+                <ExchangeInput
+                  autoFocus={autoFocus}
+                  refInput={this.props.refInput}
+                  onChangeText={setInputAmount}
+                  value={inputAmount}
                 />
-                <Input
-                  autoFocus={false}
-                  flex={1}
-                  keyboardAppearance="dark"
-                  keyboardType="decimal-pad"
-                  mono
-                  placeholder="0"
-                  placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.5)}
-                  ref={this.inputRef}
-                  onChangeText={setAmountToExchange}
-                  selectionColor={colors.appleBlue}
-                  size="h2"
-                  value={amount}
-                />
-               </Row>
+              </Row>
             </RowWithMargins>
           </TouchableWithoutFeedback>
           <CoolButton
-            color={selectedInputCurrency ? colors.dark : colors.appleBlue}
+            color={inputCurrency ? colors.dark : colors.appleBlue}
             onPress={onPressSelectInputCurrency}
           >
-            {selectedInputCurrency || 'Choose a Coin'}
+            {inputCurrency || 'Choose a Coin'}
           </CoolButton>
         </Row>
         <Row align="center" justify="space-between" paddingLeft={this.padding}>
-          <Centered paddingBottom={this.padding}>
-            <Monospace
-              size="large"
-              color={colors.alpha(colors.blueGreyDark, 0.5)}
-            >
-              $0.00
-            </Monospace>
-          </Centered>
+          <ExchangeInput
+            fontSize={fonts.size.large}
+            inputRef={this.handleDollarRef}
+            mask="{$}[099999999999]{.}[00]"
+            onChangeText={setNativeAmount}
+            placeholder="$0.00"
+            style={{ paddingBottom: this.padding }}
+            value={nativeAmount}
+          />
           <ButtonPressAnimation onPress={onPressMaxBalance}>
-            <Centered paddingHorizontal={this.padding}>
-              <Text
-                color="appleBlue"
-                size="medium"
-                weight="semibold"
-              >
-                💰Max
-              </Text>
-            </Centered>
+            <RowWithMargins
+              align="center"
+              margin={3}
+              paddingHorizontal={this.padding}
+            >
+              <Emoji lineHeight="none" name="moneybag" size="lmedium" />
+              <Text color="appleBlue" size="medium" weight="semibold">Max</Text>
+            </RowWithMargins>
           </ButtonPressAnimation>
         </Row>
       </ColumnWithMargins>
