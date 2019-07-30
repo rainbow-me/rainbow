@@ -153,7 +153,11 @@ android {
 }
 
 dependencies {
+<<<<<<< HEAD
     implementation project(':@react-native-community_masked-view')
+=======
+    implementation project(':react-native-text-input-mask')
+>>>>>>> d743296d... BREAK UP
     implementation project(':@segment_analytics-react-native')
     implementation project(':react-native-firebase')
     implementation project(':@staltz_react-native-tcp')
