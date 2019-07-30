@@ -147,9 +147,17 @@ PODS:
     - React
   - RNCAsyncStorage (1.5.0):
     - React
+<<<<<<< HEAD
   - RNCMaskedView (0.1.1):
     - React
+<<<<<<< HEAD
   - RNDeviceInfo (2.3.2):
+=======
+  - RNDeviceInfo (2.3.0):
+=======
+  - RNDeviceInfo (2.3.1):
+>>>>>>> b45c1992... fix conflicts after rebasing over latest wallet-zero branch
+>>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
     - React
   - RNIOS11DeviceCheck (0.0.3):
     - React
@@ -159,11 +167,23 @@ PODS:
     - React
   - RNScreens (1.0.0-alpha.23):
     - React
+<<<<<<< HEAD
   - RNStoreReview (0.1.5):
     - React
+<<<<<<< HEAD
   - SDWebImage (5.1.0):
     - SDWebImage/Core (= 5.1.0)
   - SDWebImage/Core (5.1.0)
+=======
+  - SDWebImage (5.0.2):
+    - SDWebImage/Core (= 5.0.2)
+  - SDWebImage/Core (5.0.2)
+=======
+  - SDWebImage (5.0.6):
+    - SDWebImage/Core (= 5.0.6)
+  - SDWebImage/Core (5.0.6)
+>>>>>>> b45c1992... fix conflicts after rebasing over latest wallet-zero branch
+>>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
   - yoga (0.59.9.React)
 
 DEPENDENCIES:
@@ -299,14 +319,30 @@ SPEC CHECKSUMS:
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   RNAnalytics: d110195618296fed3907830911f01cb6e9be53d0
   RNCAsyncStorage: 9436928b444c5f5361960a7eea051a697c244b68
+<<<<<<< HEAD
   RNCMaskedView: b79e193409a90bf6b5170d421684f437ff4e2278
+<<<<<<< HEAD
   RNDeviceInfo: 17e34f6dd902f08d88cbe2c0b7a01be948d43641
+=======
+  RNDeviceInfo: 65106cc87ad6f6f71ef2ecc667f4c59b840888e2
+=======
+  RNDeviceInfo: 74ee98a0b3ef57604ea9953f03eca549a9335160
+>>>>>>> b45c1992... fix conflicts after rebasing over latest wallet-zero branch
+>>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
   RNIOS11DeviceCheck: a4a545fdd08230a17a8ce7608e95038ee23a32aa
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNReanimated: 1b52415c4302f198cb581282a0166690bad62c43
   RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
+<<<<<<< HEAD
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
+<<<<<<< HEAD
   SDWebImage: fb387001955223213dde14bc08c8b73f371f8d8f
+=======
+  SDWebImage: 6764b5fa0f73c203728052955dbefa2bf1f33282
+=======
+  SDWebImage: 920f1a2ff1ca8296ad34f6e0510a1ef1d70ac965
+>>>>>>> b45c1992... fix conflicts after rebasing over latest wallet-zero branch
+>>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
   yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
 
 PODFILE CHECKSUM: 9a1477d30332ab86b10fd2ec7e7842ad52b5382e
