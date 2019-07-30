@@ -93,7 +93,7 @@ class SendAssetList extends React.Component {
     <Divider />
   </>
   };
-  
+
   collectiblesRenderItem = item => {
     return <View>
       <TokenFamilyHeader
