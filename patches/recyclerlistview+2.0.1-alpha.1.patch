@@ -1,3 +1,18 @@
+diff --git a/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js b/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js
+index 26e19af..e2a2913 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js
++++ b/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js
+@@ -36,9 +36,8 @@ var ViewabilityTracker = /** @class */ (function () {
+         this._windowBound = isHorizontal ? dimension.width : dimension.height;
+     };
+     ViewabilityTracker.prototype.forceRefresh = function () {
+-        var shouldForceScroll = this._currentOffset >= (this._maxOffset - this._windowBound);
+         this.forceRefreshWithOffset(this._currentOffset);
+-        return shouldForceScroll;
++        return false;
+     };
+     ViewabilityTracker.prototype.forceRefreshWithOffset = function (offset) {
+         this._currentOffset = -1;
 diff --git a/node_modules/recyclerlistview/dist/reactnative/core/StickyContainer.js b/node_modules/recyclerlistview/dist/reactnative/core/StickyContainer.js
 index e3af431..8de1ec4 100644
 --- a/node_modules/recyclerlistview/dist/reactnative/core/StickyContainer.js
