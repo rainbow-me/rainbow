@@ -370,6 +370,23 @@ class RecyclerAssetList extends PureComponent {
         i++;
       }
     }
+    if (this.props.openSmallBalances !== prev.openSmallBalances && this.props.openSmallBalances) {
+      const verticalOffset = 15;
+      const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235);
+      const sectionsHeight = CoinRow.height * (balances.data.length - 1);
+      const renderSize = (CoinRow.height * balances.data[balances.data.length - 1].assets.length) - verticalOffset;
+
+      if (renderSize >= deviceDimensions) {
+        const scrollDistance = sectionsHeight - this.position;
+        this.scrollToOffset(this.position + scrollDistance);
+      } else {
+        const diff = this.position - sectionsHeight + deviceDimensions;
+        if (renderSize > diff) {
+          const scrollDistance = deviceDimensions > renderSize ? renderSize - diff : deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 250 : 280);
+          this.scrollToOffset(this.position + scrollDistance);
+        }
+      }
+    }
   }
 
   componentWillUnmount = () => {
