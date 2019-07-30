@@ -24,6 +24,7 @@ import HandleIcon from './svg/HandleIcon';
 import InboxIcon from './svg/InboxIcon';
 import OfflineIcon from './svg/OfflineIcon';
 import ProgressIcon from './svg/ProgressIcon';
+import SearchIcon from './svg/SearchIcon';
 import SendIcon from './svg/SendIcon';
 import SendSmallIcon from './svg/SendSmallIcon';
 import ShareIcon from './svg/ShareIcon';
@@ -59,6 +60,7 @@ Icon.IconTypes = {
   inbox: InboxIcon,
   offline: OfflineIcon,
   progress: ProgressIcon,
+  search: SearchIcon,
   send: SendIcon,
   sendSmall: SendSmallIcon,
   share: ShareIcon,
