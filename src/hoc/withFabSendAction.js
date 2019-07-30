@@ -22,6 +22,7 @@ const mapStateToProps = ({
 let openFamilyCheck = 0;
 let currentFamilyId;
 let timer;
+let timerBlocker = false;
 
 export default compose(
   connect(mapStateToProps, { setOpenFamilyTabs, setOpenSmallBalances }),
@@ -49,9 +50,13 @@ export default compose(
       } else {
         openFamilyCheck = 0;
       }
-      if( this.props.isCoinDivider == true && !this.props.fabDropped ) {
+      if (this.props.isCoinDivider == true && !this.props.fabDropped && !timerBlocker) {
+        timerBlocker = true;
         timer = setTimeout(() => {
-          this.props.setOpenSmallBalances(true);
+          if (this.props.isCoinDivider) {
+            this.props.setOpenSmallBalances(true);
+          }
+          timerBlocker = false;
         }, 300);
       }
       if (prevProps.highlight && !this.props.highlight && this.props.fabDropped) {
