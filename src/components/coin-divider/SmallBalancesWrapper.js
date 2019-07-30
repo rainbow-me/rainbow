@@ -5,6 +5,18 @@ import { withOpenBalances } from '../../hoc';
 import CoinDivider from './CoinDivider';
 import { CoinRow } from '../coin-row';
 
+balancesSum = (balances) => {
+  let sum = 0;
+  for (let i = 0; i < balances.length; i++) {
+    if(balances[i].props.item.native) {
+      if(!isNaN(balances[i].props.item.native.balance.amount)) {
+        sum += Number(balances[i].props.item.native.balance.amount);
+      }
+    }
+  }
+  return `$${Number(sum).toFixed(2)}`;
+}
+
 const SmallBalancesWrapper = ({
   openSmallBalances,
   setOpenSmallBalances,
@@ -29,7 +41,7 @@ const SmallBalancesWrapper = ({
         ref={ref}
         transition={transition}
       >
-        <CoinDivider openSmallBalances={openSmallBalances} onChangeOpenBalances={onPress} />
+        <CoinDivider balancesSum={balancesSum(assets)} openSmallBalances={openSmallBalances} onChangeOpenBalances={onPress} />
         <View
           style={{
             height: height,

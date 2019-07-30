@@ -9,19 +9,24 @@ import { deviceUtils } from '../../utils';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import Animated from 'react-native-reanimated';
+import { Monospace } from '../text';
 
-
+const marginLeft = 15;
+const marginRight = 19;
 const Wrapper = styled(View)`
-  width: ${deviceUtils.dimensions.width};
+  margin-top: 8px;
+  margin-right: ${marginRight}px;
+  margin-left: ${marginLeft}px;
+  width: ${deviceUtils.dimensions.width - marginRight - marginLeft};
   flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 const Container = styled(View)`
   height: 30px;
   background-color: ${colors.lightGrey};
   border-radius: 15px;
-  margin-left: 15px;
-  margin-top: 8px;
   align-items: center;
   padding: 0 10px;
   flex-direction: row;
@@ -42,12 +47,13 @@ const Header = styled(Text)`
 const CoinDivider = ({
   openSmallBalances,
   onChangeOpenBalances,
+  balancesSum,
 }) => (
     <Wrapper>
       <ButtonPressAnimation scaleTo={0.9} onPress={onChangeOpenBalances}>
         <Container>
           <Header style={{ marginRight: openSmallBalances ? 0 : -10 }}>
-            { openSmallBalances ? `Less` : `All` }
+            {openSmallBalances ? `Less` : `All`}
           </Header>
           <Centered justify="end" style={position.sizeAsObject(19)}>
             <Centered
@@ -75,6 +81,12 @@ const CoinDivider = ({
           </Centered>
         </Container>
       </ButtonPressAnimation>
+      <Monospace
+        color="blueGreyDark"
+        size="lmedium"
+      >
+        {balancesSum}
+      </Monospace>
     </Wrapper>
   );
 
