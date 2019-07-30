@@ -29,10 +29,8 @@ const AssetList = ({
       />
     ) : (
       <RecyclerAssetList
-        enablePullToRefresh
         fetchData={fetchData}
         hideHeader={hideHeader}
-        isWalletEthZero={isWalletEthZero}
         paddingBottom={PaddingBottom}
         scrollViewTracker={scrollViewTracker}
         sections={sections}
