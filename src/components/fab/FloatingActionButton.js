@@ -17,6 +17,7 @@ const FabShadow = [
 
 export default class FloatingActionButton extends Component {
   static propTypes = {
+    backgroundColor: PropTypes.string,
     children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
     disabled: PropTypes.bool,
     isFabSelectionValid: PropTypes.bool,
@@ -58,6 +59,7 @@ export default class FloatingActionButton extends Component {
 
   render = () => {
     const {
+      backgroundColor,
       children,
       disabled,
       isFabSelectionValid,
@@ -84,7 +86,7 @@ export default class FloatingActionButton extends Component {
           <View
             {...position.centeredAsObject}
             {...position.coverAsObject}
-            backgroundColor={isDisabled ? colors.grey : colors.paleBlue}
+            backgroundColor={isDisabled ? colors.grey : backgroundColor}
             disabled={disabled}
             isFabSelectionValid={isFabSelectionValid}
           >

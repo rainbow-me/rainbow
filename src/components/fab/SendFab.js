@@ -9,6 +9,7 @@ import {
   withProps,
 } from 'recompact';
 import { withFabSelection } from '../../hoc';
+import { colors } from '../../styles';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 // import DeleteButton from './DeleteButton';
@@ -40,6 +41,7 @@ const SendFab = ({
       >
     */}
       <FloatingActionButtonWithDisabled
+        backgroundColor={colors.paleBlue}
         disabled={disabled}
         onPress={onPress}
         scaleTo={scaleTo}
