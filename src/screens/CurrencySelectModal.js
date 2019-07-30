@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { compose, withHandlers } from 'recompact';
 import { KeyboardAvoidingView, View } from 'react-native'
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
@@ -14,9 +14,7 @@ import { Monospace, TruncatedText } from '../components/text';
 import { withAccountData } from '../hoc';
 import { borders, colors, position } from '../styles';
 import StarIcon from '../components/icons/svg/StarIcon';
-import { ModalHeaderHeight } from '../components/modal/ModalHeader';
 import { BackButton } from '../components/header';
-import Flex from '../components/layout/Flex';
 import { ExchangeSearch } from '../components/exchange';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 

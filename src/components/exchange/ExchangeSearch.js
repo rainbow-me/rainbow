@@ -16,10 +16,12 @@ const Container = styled(RowWithMargins).attrs({
   ${padding(9, 13, 10)};
   background-color: ${colors.skeleton};
   border-radius: 20;
+  height: 40;
 `;
 
 class ExchangeSearch extends PureComponent {
   static propTypes = {
+    autoFocus: PropTypes.bool,
     onChangeText: PropTypes.func,
   }
 
