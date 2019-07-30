@@ -168,12 +168,14 @@ PODS:
     - React
   - RNCAsyncStorage (1.5.0):
     - React
-<<<<<<< HEAD
   - RNCMaskedView (0.1.1):
     - React
 <<<<<<< HEAD
+<<<<<<< HEAD
   - RNDeviceInfo (2.3.2):
 =======
+=======
+>>>>>>> 96db5a28... begin mike
 <<<<<<< HEAD
   - RNDeviceInfo (2.3.1):
 =======
@@ -182,7 +184,13 @@ PODS:
   - RNDeviceInfo (2.3.1):
 >>>>>>> b45c1992... fix conflicts after rebasing over latest wallet-zero branch
 >>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
+<<<<<<< HEAD
 >>>>>>> c2296ac1... fix conflicts after rebasing over latest wallet-zero branch
+=======
+=======
+  - RNDeviceInfo (2.3.1):
+>>>>>>> dc42f3f4... begin mike
+>>>>>>> 96db5a28... begin mike
     - React
   - RNIOS11DeviceCheck (0.0.3):
     - React
@@ -192,9 +200,9 @@ PODS:
     - React
   - RNScreens (1.0.0-alpha.23):
     - React
-<<<<<<< HEAD
   - RNStoreReview (0.1.5):
     - React
+<<<<<<< HEAD
 <<<<<<< HEAD
   - SDWebImage (5.1.1):
     - SDWebImage/Core (= 5.1.1)
@@ -205,10 +213,11 @@ PODS:
     - SDWebImage/Core (= 5.0.2)
   - SDWebImage/Core (5.0.2)
 =======
+=======
+>>>>>>> 96db5a28... begin mike
   - SDWebImage (5.0.6):
     - SDWebImage/Core (= 5.0.6)
   - SDWebImage/Core (5.0.6)
->>>>>>> b45c1992... fix conflicts after rebasing over latest wallet-zero branch
   - yoga (0.59.9.React)
 >>>>>>> c2296ac1... fix conflicts after rebasing over latest wallet-zero branch
 
@@ -401,11 +410,13 @@ SPEC CHECKSUMS:
   React-RCTWebSocket: cd932a16b7214898b6b7f788c8bddb3637246ac4
   RNAnalytics: d110195618296fed3907830911f01cb6e9be53d0
   RNCAsyncStorage: 9436928b444c5f5361960a7eea051a697c244b68
-<<<<<<< HEAD
   RNCMaskedView: b79e193409a90bf6b5170d421684f437ff4e2278
+<<<<<<< HEAD
 <<<<<<< HEAD
   RNDeviceInfo: 17e34f6dd902f08d88cbe2c0b7a01be948d43641
 =======
+=======
+>>>>>>> 96db5a28... begin mike
 <<<<<<< HEAD
   RNDeviceInfo: 74ee98a0b3ef57604ea9953f03eca549a9335160
 =======
@@ -414,21 +425,28 @@ SPEC CHECKSUMS:
   RNDeviceInfo: 74ee98a0b3ef57604ea9953f03eca549a9335160
 >>>>>>> b45c1992... fix conflicts after rebasing over latest wallet-zero branch
 >>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
+<<<<<<< HEAD
 >>>>>>> c2296ac1... fix conflicts after rebasing over latest wallet-zero branch
+=======
+=======
+  RNDeviceInfo: 74ee98a0b3ef57604ea9953f03eca549a9335160
+>>>>>>> dc42f3f4... begin mike
+>>>>>>> 96db5a28... begin mike
   RNIOS11DeviceCheck: a4a545fdd08230a17a8ce7608e95038ee23a32aa
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNReanimated: 1b52415c4302f198cb581282a0166690bad62c43
   RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
-<<<<<<< HEAD
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
+<<<<<<< HEAD
 <<<<<<< HEAD
   SDWebImage: 96d7f03415ccb28d299d765f93557ff8a617abd8
   yoga: 312528f5bbbba37b4dcea5ef00e8b4033fdd9411
 =======
   SDWebImage: 6764b5fa0f73c203728052955dbefa2bf1f33282
 =======
+=======
+>>>>>>> 96db5a28... begin mike
   SDWebImage: 920f1a2ff1ca8296ad34f6e0510a1ef1d70ac965
->>>>>>> b45c1992... fix conflicts after rebasing over latest wallet-zero branch
   yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
 >>>>>>> c2296ac1... fix conflicts after rebasing over latest wallet-zero branch
 

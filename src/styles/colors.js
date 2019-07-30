@@ -13,6 +13,7 @@ const base = {
   blueGreyMediumLight: '#7b7f8a', // '123, 127, 138'
   dark: '#25292E', // '37, 41, 46'
   darkGrey: '#71778a', // '113, 119, 138'
+  dodgerBlue: '#575CFF', // '87, 92, 255'
   green: '#00994d', // '0, 153, 77'
   grey: '#a9adb9', // '169, 173, 185'
   headerTitle: '#aaafbd', // '170, 175, 189'
