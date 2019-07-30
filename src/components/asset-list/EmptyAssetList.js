@@ -1,5 +1,6 @@
 import lang from 'i18n-js';
 import { times } from 'lodash';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { withNeverRerender } from '../../hoc';
 import { position } from '../../styles';
@@ -31,5 +32,9 @@ const EmptyAssetList = ({ isWalletEthZero, ...props }) => (
     </Centered>
   </Column>
 );
+
+EmptyAssetList.propTypes = {
+  isWalletEthZero: PropTypes.bool,
+};
 
 export default withNeverRerender(EmptyAssetList);
