@@ -326,7 +326,7 @@ class RecyclerAssetList extends PureComponent {
           let collectiblesHeight = 0;
           for (let j = 0; j < i; j++) {
             if (this.props.openFamilyTabs[j] && collectibles.data[j].tokens) {
-              collectiblesHeight += collectibles.data[j].tokens.length * CardSize + 54 + RowPadding * (collectibles.data[j].tokens.length - 1);
+              collectiblesHeight += collectibles.data[j].tokens.length * CardSize + 54 + (RowPadding - 4) * (collectibles.data[j].tokens.length - 1);
             } else {
               collectiblesHeight += 54;
             }
@@ -344,7 +344,7 @@ class RecyclerAssetList extends PureComponent {
           let balancesHeight = 0;
           if (balances.data) {
             balancesHeight += CoinRow.height * (balances.data.length - 1);
-            balancesHeight += CoinDivider.height;
+            balancesHeight += CoinDivider.height + ListFooter.height;
             if (this.props.openSmallBalances) {
               balancesHeight += CoinRow.height * balances.data[balances.data.length - 1].assets.length;
             }
