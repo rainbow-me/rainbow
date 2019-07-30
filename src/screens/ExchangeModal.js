@@ -14,6 +14,7 @@ import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import {
   withAccountData,
+  withAccountSettings,
   withBlockedHorizontalSwipe,
   withKeyboardFocusHistory,
   withNeverRerender,
@@ -264,6 +265,85 @@ const withMockedPrices = withProps({
 
 export default compose(
   withAccountData,
+  withAccountSettings,
+  withState('useInputAsExactAmount', 'setUseInputAsExactAmount', null),
+  withState('amountToExchange', 'setAmountToExchange', '0'),
+  withState('targetAmountToExchange', 'setTargetAmountToExchange', '0'),
+  withState('selectedCurrency', 'setSelectedCurrency', null),
+  withState('selectedTargetCurrency', 'setSelectedTargetCurrency', null),
+  withProps(({
+    selectedCurrency,
+    allAssets: [{ symbol }],
+  }) => ({ selectedCurrency: selectedCurrency || symbol })),
+  withHandlers({
+    getMarketDetails: ({
+      chainId,
+      selectedCurrency,
+      selectedTargetCurrency,
+      setAmountToExchange,
+      setTargetAmountToExchange,
+      useInputAsExactAmount,
+    }) => async () => {
+      try {
+        // TODO format amounts
+        let tradeDetails = null;
+        // normal amount to raw amount (no pricing)
+        // convertAmountToRawAmount(amountToExchange, selectedCurrency's decimals);
+        
+        if (selectedCurrency === null || selectedTargetCurrency === null || useInputAsExactAmount === null) return;
+        if (selectedCurrency === 'eth' && selectedTargetCurrency !== 'eth') {
+          tradeDetails = useInputAsExactAmount
+            ? await tradeExactEthForTokens(selectedTargetCurrency, amountToExchange, chainId)
+            : await tradeEthForExactTokens(selectedTargetCurrency, targetAmountToExchange, chainId);
+        } else if (selectedCurrency !== 'eth' && selectedTargetCurrency === 'eth') {
+          tradeDetails = useInputAsExactAmount
+            ? await tradeExactTokensForEth(selectedCurrency, amountToExchange, chainId)
+            : await tradeTokensForExactEth(selectedCurrency, targetAmountToExchange, chainId);
+        } else if (selectedCurrency !== 'eth' && selectedTargetCurrency !== 'eth') {
+          tradeDetails = useInputAsExactAmount
+            ? await tradeExactTokensForTokens(selectedCurrency, selectedTargetCurrency, amountToExchange, chainId)
+            : await tradeTokensForExactTokens(selectedCurrency, selectedTargetCurrency, targetAmountToExchange, chainId);
+        }
+        if (useInputAsExactAmount) {
+          // TODO format amounts
+          const updatedValue = get(tradeDetails, 'outputAmount.amount');
+          setTargetAmountToExchange(updatedValue);
+        } else {
+          // TODO format amounts
+          const updatedValue = get(tradeDetails, 'inputAmount.amount');
+          setAmountToExchange(updatedValue);
+        }
+      } catch (error) {
+        // TODO
+      }
+    },
+  }),
+  withHandlers({
+    onPressConfirmExchange:
+      ({ navigation }) => () => {
+        Keyboard.dismiss();
+        navigation.navigate('WalletScreen');
+      },
+    onChangeInputAmount: ({ getMarketDetails, setAmountToExchange, setUseInputAsExactAmount }) => async (amount) => {
+      setAmountToExchange(amount);
+      setUseInputAsExactAmount(true);
+      await getMarketDetails();
+    },
+    onChangeTargetAmount: ({ getMarketDetails, setTargetAmountToExchange, setUseInputAsExactAmount }) => async (amount) => {
+      setTargetAmountToExchange(amount);
+      setUseInputAsExactAmount(false);
+      await getMarketDetails();
+    },
+    onPressSelectCurrency: ({ navigation, setSelectedCurrency }) => () => {
+      Keyboard.dismiss();
+      navigation.navigate('CurrencySelectScreen', { setSelectedCurrency });
+    },
+    onPressSelectTargetCurrency:
+      ({ navigation, setSelectedTargetCurrency }) => () => {
+        Keyboard.dismiss();
+        navigation.navigate('CurrencySelectScreen', { setSelectedCurrency: setSelectedTargetCurrency });
+      },
+  }),
   withBlockedHorizontalSwipe,
   withNavigationFocus,
   withMockedPrices,
