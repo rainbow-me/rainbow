@@ -17,6 +17,8 @@ import { Text } from '../text';
 import InvestmentCard from './InvestmentCard';
 import InvestmentCardPill from './InvestmentCardPill';
 
+const UniswapInvestmentCardHeight = 114;
+
 const AssetLabel = withProps({
   color: 'blueGreyDarkTransparent',
   lineHeight: 'tight',
@@ -67,6 +69,7 @@ const UniswapInvestmentCard = enhance(({
           ? totalNativeDisplay
           : `< ${convertAmountToNativeDisplay(0.01, nativeCurrency)}`,
       }}
+      height={UniswapInvestmentCardHeight}
     >
       <Divider
         backgroundColor={colors.transparent}
@@ -95,8 +98,11 @@ const UniswapInvestmentCard = enhance(({
 
 UniswapInvestmentCard.propTypes = {
   item: PropTypes.object,
+  nativeCurrency: PropTypes.string,
+  onPress: PropTypes.func,
+  onPressContainer: PropTypes.func,
 };
 
-UniswapInvestmentCard.height = 114;
+UniswapInvestmentCard.height = UniswapInvestmentCardHeight;
 
 export default UniswapInvestmentCard;

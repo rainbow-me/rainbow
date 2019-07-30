@@ -30,14 +30,14 @@ import {
   withAccountSettings,
   withBlurTransitionProps,
   withDataInit,
-  withHideSplashScreen,
   withIsWalletEmpty,
+  withIsWalletEthZero,
   withUniqueTokens,
   withStatusBarStyle,
   withUniswapLiquidity,
 } from '../hoc';
-import { colors, position } from '../styles';
-import { deviceUtils, isNewValueForPath } from '../utils';
+import { position } from '../styles';
+import { isNewValueForPath } from '../utils';
 
 class WalletScreen extends Component {
   static propTypes = {
@@ -45,10 +45,11 @@ class WalletScreen extends Component {
     assets: PropTypes.array,
     assetsTotal: PropTypes.object,
     blurOpacity: PropTypes.object,
+    initializeWallet: PropTypes.func,
     isEmpty: PropTypes.bool.isRequired,
     isFocused: PropTypes.bool,
+    isWalletEthZero: PropTypes.bool.isRequired,
     navigation: PropTypes.object,
-    onHideSplashScreen: PropTypes.func,
     refreshAccountData: PropTypes.func,
     scrollViewTracker: PropTypes.object,
     sections: PropTypes.array,
@@ -60,6 +61,7 @@ class WalletScreen extends Component {
 
   componentDidMount = async () => {
     try {
+      await this.props.initializeWallet();
       const showShitcoins = await getShowShitcoinsSetting();
       if (showShitcoins !== null) {
         this.props.toggleShowShitcoins(showShitcoins);
@@ -74,7 +76,8 @@ class WalletScreen extends Component {
     const isNewCurrency = isNewValueForPath(this.props, nextProps, 'nativeCurrency');
     const isNewFetchingAssets = isNewValueForPath(this.props, nextProps, 'fetchingAssets');
     const isNewFetchingUniqueTokens = isNewValueForPath(this.props, nextProps, 'fetchingUniqueTokens');
-    const isNewIsEmpty = isNewValueForPath(this.props, nextProps, 'isEmpty');
+    const isNewIsWalletEmpty = isNewValueForPath(this.props, nextProps, 'isEmpty');
+    const isNewIsWalletEthZero = isNewValueForPath(this.props, nextProps, 'isWalletEthZero');
     const isNewLanguage = isNewValueForPath(this.props, nextProps, 'language');
     const isNewSections = isNewValueForPath(this.props, nextProps, 'sections');
     const isNewShowBlur = isNewValueForPath(this.props, nextProps, 'showBlur');
@@ -89,7 +92,8 @@ class WalletScreen extends Component {
 
     return isNewFetchingAssets
     || isNewFetchingUniqueTokens
-    || isNewIsEmpty
+    || isNewIsWalletEmpty
+    || isNewIsWalletEthZero
     || isNewLanguage
     || isNewCurrency
     || isNewBlurOpacity
@@ -99,15 +103,11 @@ class WalletScreen extends Component {
     || isNewShowBlur;
   }
 
-  hideSplashScreen = () => {
-    const { onHideSplashScreen, setSafeTimeout } = this.props;
-    setSafeTimeout(onHideSplashScreen, 200);
-  }
-
   render = () => {
     const {
       blurOpacity,
       isEmpty,
+      isWalletEthZero,
       navigation,
       refreshAccountData,
       scrollViewTracker,
@@ -116,16 +116,14 @@ class WalletScreen extends Component {
     } = this.props;
 
     return (
-      <Page style={{ flex: 1, ...position.sizeAsObject('100%') }}>
+      <Page {...position.sizeAsObject('100%')} flex={1}>
         {/* Line below appears to be needed for having scrollViewTracker persistent while
         reattaching of react subviews */}
-        <Animated.Code
-          exec={scrollViewTracker}
-        />
+        <Animated.Code exec={scrollViewTracker} />
         <FabWrapper
-          sections={sections}
-          disabled={isEmpty}
+          disabled={isWalletEthZero}
           scrollViewTracker={scrollViewTracker}
+          sections={sections}
         >
           <Header justify="space-between">
             <ProfileHeaderButton navigation={navigation} />
@@ -134,16 +132,14 @@ class WalletScreen extends Component {
           <AssetList
             fetchData={refreshAccountData}
             isEmpty={isEmpty}
-            onLayout={this.hideSplashScreen}
+            isWalletEthZero={isWalletEthZero}
             scrollViewTracker={scrollViewTracker}
             sections={sections}
           />
         </FabWrapper>
         {showBlur && (
-          <FadeInAnimation duration={315} style={{ ...position.coverAsObject, zIndex: 1 }}>
-            <BlurOverlay
-              opacity={blurOpacity}
-            />
+          <FadeInAnimation css={position.cover} duration={315} zIndex={1}>
+            <BlurOverlay opacity={blurOpacity} />
           </FadeInAnimation>
         )}
       </Page>
@@ -157,12 +153,12 @@ export default compose(
   withAccountSettings,
   withDataInit,
   withUniswapLiquidity,
-  withHideSplashScreen,
   withSafeTimeout,
   withNavigation,
   withNavigationFocus,
   withBlurTransitionProps,
   withIsWalletEmpty,
+  withIsWalletEthZero,
   withStatusBarStyle('dark-content'),
   withState('showShitcoins', 'toggleShowShitcoins', true),
   withHandlers({

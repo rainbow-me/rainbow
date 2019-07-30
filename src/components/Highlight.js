@@ -1,14 +1,34 @@
-import styled from 'styled-components/primitives';
-import { colors } from '../styles/index';
-import Flex from './layout/Row';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { onlyUpdateForKeys } from 'recompact';
+import { View } from 'react-primitives';
+import { colors, position } from '../styles';
 
-export default styled(Flex)`
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  position: absolute;
-  margin: 7px;
-  background-color: ${({ highlight }) => (highlight ? colors.highlightBackground : colors.transparent)};
-  border-radius: 10;
-`;
+const Highlight = ({
+  backgroundColor,
+  borderRadius,
+  visible,
+  ...props
+}) => (
+  <View
+    {...position.coverAsObject}
+    backgroundColor={backgroundColor}
+    borderRadius={borderRadius}
+    margin={7}
+    opacity={visible ? 1 : 0}
+    {...props}
+  />
+);
+
+Highlight.propTypes = {
+  backgroundColor: PropTypes.string,
+  borderRadius: PropTypes.number,
+  visible: PropTypes.bool,
+};
+
+Highlight.defaultProps = {
+  backgroundColor: colors.highlightBackground,
+  borderRadius: 10,
+};
+
+export default onlyUpdateForKeys(['visible'])(Highlight);

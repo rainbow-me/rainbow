@@ -18,7 +18,6 @@ import { compose, withProps } from 'recompact';
 import { FlexItem } from './components/layout';
 import OfflineBadge from './components/OfflineBadge';
 import {
-  withDataInit,
   withWalletConnectConnections,
   withWalletConnectOnSessionRequest,
 } from './hoc';
@@ -39,7 +38,6 @@ useScreens();
 class App extends Component {
   static propTypes = {
     appInitTimestamp: PropTypes.number,
-    initializeWallet: PropTypes.func,
     requestsForTopic: PropTypes.func,
     sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
     walletConnectClearTimestamp: PropTypes.func,
@@ -91,7 +89,6 @@ class App extends Component {
   async componentDidMount() {
     AppState.addEventListener('change', this.handleAppStateChange);
     Linking.addEventListener('url', this.handleOpenLinkingURL);
-    await this.props.initializeWallet();
     await this.handleInitializeAnalytics();
     firebase.notifications().getInitialNotification().then(notificationOpen => {
       if (notificationOpen) {
@@ -181,7 +178,6 @@ class App extends Component {
 
 const AppWithRedux = compose(
   withProps({ store }),
-  withDataInit,
   withWalletConnectConnections,
   withWalletConnectOnSessionRequest,
   connect(

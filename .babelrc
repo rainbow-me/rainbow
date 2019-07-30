@@ -10,7 +10,6 @@
     }
   },
   "plugins": [
-    "babel-plugin-rewire",
     "babel-plugin-styled-components",
     "date-fns", 
     [

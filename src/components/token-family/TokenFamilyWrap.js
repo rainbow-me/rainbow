@@ -1,19 +1,25 @@
+import { withSafeTimeout } from '@hocs/safe-timers';
+import { times } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { View } from 'react-primitives';
 import {
   compose,
+  lifecycle,
+  onlyUpdateForKeys,
+  withState,
   withHandlers,
   withProps,
-  onlyUpdateForKeys,
 } from 'recompact';
+import { createSelector } from 'reselect';
 import { withOpenFamilyTabs, withFabSendAction } from '../../hoc';
+import { colors } from '../../styles';
+import { FadeInAnimation } from '../animations';
 import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyHeader from './TokenFamilyHeader';
-import { FadeInAnimation } from '../animations';
 
-const enhanceRenderItem = compose(
+const EnhancedUniqueTokenRow = compose(
   withNavigation,
   withHandlers({
     onPress: ({ assetType, navigation }) => (item) => {
@@ -26,126 +32,117 @@ const enhanceRenderItem = compose(
       navigation.navigate('SendSheet', { asset });
     },
   }),
+)(UniqueTokenRow);
+
+const getHeight = (openFamilyTab) => (openFamilyTab ? UniqueTokenRow.height + 100 : 100);
+
+const TokenFamilyWrap = ({
+  areChildrenVisible,
+  childrenAmount,
+  familyId,
+  familyImage,
+  familyName,
+  highlight,
+  isFamilyOpen,
+  item,
+  onPressFamilyHeader,
+  renderCollectibleItem,
+}) => (
+  <View backgroundColor={colors.white} overflow="hidden">
+    <TokenFamilyHeader
+      childrenAmount={childrenAmount}
+      familyImage={familyImage}
+      familyName={familyName}
+      highlight={highlight}
+      isOpen={isFamilyOpen}
+      onHeaderPress={onPressFamilyHeader}
+    />
+    {areChildrenVisible && (
+      <FadeInAnimation
+        duration={TokenFamilyHeader.animationDuration}
+        key={`uniqueTokenRow_${familyId}_fadeIn`}
+      >
+        {times(item.length, renderCollectibleItem)}
+      </FadeInAnimation>
+    )}
+  </View>
 );
-
-const UniqueTokenItem = enhanceRenderItem(UniqueTokenRow);
-
-const getHeight = (openFamilyTab) => (
-  openFamilyTab
-    ? UniqueTokenRow.getHeight(false, false) + 100
-    : 100
-);
-
-const header = (child) => child;
-
-class TokenFamilyWrap extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      opacity: 0,
-    };
-  }
-
-  shouldComponentUpdate = (prev, next) => {
-    const familyId = this.props.item[0][0].rowNumber;
-    if (this.props.openFamilyTabs[familyId] !== prev.openFamilyTabs[familyId]
-      || this.state.opacity != next.opacity
-      || this.props.highlight !== prev.highlight) {
-      return true;
-    }
-    return false;
-  }
-
-  componentDidUpdate = () => {
-    const familyId = this.props.item[0][0].rowNumber;
-    const newOpacity = this.props.openFamilyTabs[familyId] ? 1 : 0;
-    if (newOpacity) {
-      setTimeout(() => {
-        this.setState({ opacity: newOpacity });
-      }, 100);
-    } else {
-      this.setState({ opacity: newOpacity });
-    }
-  }
-
-  collectiblesRenderItem = item => {
-    if (this.props.openFamilyTabs[item.item[0][0].rowNumber]) {
-      const tokens = [];
-      for (let i = 0; i < item.item.length; i++) {
-        tokens.push(
-          <UniqueTokenItem
-            assetType="unique_token"
-            isLastRow={item.isLastRow}
-            isFirstRow={item.isFirstRow}
-            item={item.item[i]}
-          />
-        );
-      }
-      return tokens;
-    }
-  };
-
-  onHeaderPress = () => {
-    this.props.setOpenFamilyTabs({
-      index: this.props.item[0][0].rowNumber,
-      state: !this.props.openFamilyTabs[this.props.item[0][0].rowNumber],
-    });
-  };
-
-  render() {
-    return (
-      <View>
-        <TokenFamilyHeader
-          familyName={this.props.familyName}
-          familyImage={this.props.familyImage}
-          childrenAmount={this.props.childrenAmount}
-          highlight={this.props.highlight}
-          isOpen={this.props.openFamilyTabs[this.props.item[0][0].rowNumber]}
-          onHeaderPress={this.onHeaderPress}
-        />
-        {this.state.opacity == 1 &&
-          <FadeInAnimation duration={100}>
-            {header(this.collectiblesRenderItem(this.props))}
-          </FadeInAnimation>
-        }
-      </View>
-    );
-  }
-}
 
 TokenFamilyWrap.propTypes = {
+  areChildrenVisible: PropTypes.bool,
   childrenAmount: PropTypes.number,
+  familyId: PropTypes.string,
   familyImage: PropTypes.string,
   familyName: PropTypes.string,
   highlight: PropTypes.bool,
+  isFamilyOpen: PropTypes.bool,
+  isOpen: PropTypes.bool,
   item: PropTypes.array,
-  openFamilyTabs: PropTypes.array,
-  setOpenFamilyTabs: PropTypes.func,
+  onPressFamilyHeader: PropTypes.func,
+  renderCollectibleItem: PropTypes.func,
 };
 
 TokenFamilyWrap.getHeight = getHeight;
 
+const familyIdSelector = state => state.familyId;
+const openFamilyTabsSelector = state => state.openFamilyTabs;
+
+const isFamilyOpenSelector = (familyId, openFamilyTabs) => ({
+  isFamilyOpen: openFamilyTabs && openFamilyTabs[familyId],
+});
+
+const withFamilyOpenStateProps = createSelector(
+  [familyIdSelector, openFamilyTabsSelector],
+  isFamilyOpenSelector,
+);
+
 export default compose(
+  withSafeTimeout,
+  withFabSendAction,
+  withOpenFamilyTabs,
+  withProps(withFamilyOpenStateProps),
+  withState('areChildrenVisible', 'setAreChildrenVisible', false),
   withHandlers({
-    onPress: ({ item, onPress }) => () => {
-      if (onPress) {
-        onPress(item);
+    onHideChildren: ({ areChildrenVisible, setAreChildrenVisible }) => () => {
+      if (areChildrenVisible) {
+        setAreChildrenVisible(false);
       }
     },
-    onPressSend: ({ item, onPressSend }) => () => {
-      if (onPressSend) {
-        onPressSend(item);
+    onPressFamilyHeader: ({ familyId, isFamilyOpen, setOpenFamilyTabs }) => () => (
+      setOpenFamilyTabs({
+        index: familyId,
+        state: !isFamilyOpen,
+      })
+    ),
+    onShowChildren: ({ areChildrenVisible, setAreChildrenVisible }) => () => {
+      if (!areChildrenVisible) {
+        setAreChildrenVisible(true);
+      }
+    },
+    /* eslint-disable react/display-name */
+    renderCollectibleItem: ({ familyId, item }) => (index) => (
+      <EnhancedUniqueTokenRow
+        assetType="unique_token"
+        item={item[index]}
+        key={`uniqueTokenRow_${familyId}_${index}`}
+      />
+    ),
+    /* eslint-enable react/display-name */
+  }),
+  lifecycle({
+    componentDidUpdate() {
+      if (!this.props.isFamilyOpen) {
+        this.props.onHideChildren();
+      } else if (!this.props.areChildrenVisible) {
+        this.props.setSafeTimeout(this.props.onShowChildren, TokenFamilyHeader.animationDuration);
       }
     },
   }),
-  withProps(({ item: { uniqueId } }) => ({ uniqueId })),
-  withFabSendAction,
   onlyUpdateForKeys([
-    'height',
-    'style',
-    'uniqueId',
-    'width',
+    'areChildrenVisible',
+    'childrenAmount',
     'highlight',
+    'isFamilyOpen',
+    'uniqueId',
   ]),
-)(withOpenFamilyTabs(TokenFamilyWrap));
+)(TokenFamilyWrap);

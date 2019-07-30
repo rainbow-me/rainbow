@@ -14,7 +14,7 @@ const CheckmarkCircledIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
-/* eslint-disable max-len */
+/* eslint-enable max-len */
 
 CheckmarkCircledIcon.propTypes = {
   color: PropTypes.string,

@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.1.0-9](https://github.com/rainbow-me/rainbow/releases/tag/v1.1.0-9)
+### Added
+* Support for importing private key and seed key
+
 ## [1.1.0-7](https://github.com/rainbow-me/rainbow/releases/tag/v1.1.0-7)
 ### Added
 * Collectibles grouped by families

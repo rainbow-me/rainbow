@@ -3,20 +3,27 @@ import React from 'react';
 import { pure } from 'recompact';
 import { colors } from '../../styles';
 import { Icon } from '../icons';
-import { Row } from '../layout';
+import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 
 const ListItemArrowGroup = ({ children }) => (
-  <Row align="center" justify="end" style={{ opacity: 0.6 }}>
-    <Text color="blueGreyDark" size="bmedium" style={{ marginRight: 6 }}>
-      {children}
-    </Text>
+  <RowWithMargins
+    align="center"
+    flex={0}
+    justify="end"
+    margin={6}
+    opacity={0.6}
+  >
+    {typeof children === 'string'
+      ? <Text color="blueGreyDark" size="bmedium">{children}</Text>
+      : children
+    }
     <Icon
       color={colors.blueGreyDark}
       name="caretThin"
       style={{ width: 11 }}
     />
-  </Row>
+  </RowWithMargins>
 );
 
 ListItemArrowGroup.propTypes = {
