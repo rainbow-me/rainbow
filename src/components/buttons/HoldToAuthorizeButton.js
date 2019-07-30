@@ -6,7 +6,6 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import RadialGradient from 'react-native-radial-gradient';
 import Animated, { Easing } from 'react-native-reanimated';
 import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
@@ -221,16 +220,9 @@ export default class HoldToAuthorizeButton extends PureComponent {
               height={ButtonHeight}
               shadows={ButtonShadows[theme]}
               shouldRasterizeIOS
-              width={'100%'}
+              width="100%"
             >
               <Content>
-                <RadialGradient
-                  center={[0, (ButtonHeight / 2)]}
-                  colors={[GradientColors[theme].from, GradientColors[theme].to]}
-                  css={position.cover}
-                  pointerEvents="none"
-                  radius={deviceUtils.dimensions.width - 30}
-                />
                 <HoldToAuthorizeButtonIcon
                   animatedValue={this.animation}
                   isAuthorizing={this.state.isAuthorizing}
