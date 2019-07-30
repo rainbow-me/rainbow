@@ -45,10 +45,11 @@ const TokenFamilyWrap = ({
   highlight,
   isFamilyOpen,
   item,
+  marginTop,
   onPressFamilyHeader,
   renderCollectibleItem,
 }) => (
-  <View backgroundColor={colors.white} overflow="hidden">
+  <View backgroundColor={colors.white} marginTop={marginTop} overflow="hidden">
     <TokenFamilyHeader
       childrenAmount={childrenAmount}
       familyImage={familyImage}
@@ -61,6 +62,7 @@ const TokenFamilyWrap = ({
       <FadeInAnimation
         duration={TokenFamilyHeader.animationDuration}
         key={`uniqueTokenRow_${familyId}_fadeIn`}
+        style={{ paddingTop: 6 }}
       >
         {times(item.length, renderCollectibleItem)}
       </FadeInAnimation>
@@ -76,6 +78,7 @@ TokenFamilyWrap.propTypes = {
   familyName: PropTypes.string,
   highlight: PropTypes.bool,
   isFamilyOpen: PropTypes.bool,
+  marginTop: PropTypes.number,
   isOpen: PropTypes.bool,
   item: PropTypes.array,
   onPressFamilyHeader: PropTypes.func,
@@ -142,6 +145,7 @@ export default compose(
     'areChildrenVisible',
     'childrenAmount',
     'highlight',
+    'marginTop',
     'isFamilyOpen',
     'uniqueId',
   ]),

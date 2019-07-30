@@ -22,7 +22,7 @@ const AnimatedMonospace = Animated.createAnimatedComponent(toClass(Monospace));
 const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
 
 const TokenFamilyHeaderAnimationDuration = 200;
-const TokenFamilyHeaderHeight = 54;
+const TokenFamilyHeaderHeight = 50;
 
 const FamilyIcon = withProps(({ familyImage }) => ({
   id: familyImage,
@@ -57,7 +57,7 @@ export default class TokenFamilyHeader extends PureComponent {
   runTiming = () => (
     timing(this.animation, {
       duration: TokenFamilyHeaderAnimationDuration,
-      easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
       toValue: this.props.isOpen ? 1 : 0,
     }).start()
   )
@@ -94,46 +94,52 @@ export default class TokenFamilyHeader extends PureComponent {
         height={TokenFamilyHeaderHeight}
         justify="space-between"
         paddingHorizontal={this.props.isCoinRow ? 16 : 19}
-        paddingVertical={7.5}
         width="100%"
       >
         <Highlight visible={this.props.highlight} />
-        <RowWithMargins align="center" margin={9}>
+        <RowWithMargins align="center" margin={10}>
           {this.renderFamilyIcon()}
           <TruncatedText
+            letterSpacing="tight"
             lineHeight="normal"
-            size="medium"
+            size="lmedium"
+            style={{ marginBottom: 1 }}
             weight="semibold"
           >
             {this.props.familyName}
           </TruncatedText>
+        </RowWithMargins>
+        <RowWithMargins align="center" margin={14}>
+          <AnimatedMonospace
+            color="dark"
+            size="lmedium"
+            style={{
+              marginBottom: 1,
+              opacity: interpolate(this.animation, {
+                inputRange: [0, 1],
+                outputRange: [1, 0],
+              }),
+            }}
+          >
+            {this.props.childrenAmount}
+          </AnimatedMonospace>
           <AnimatedFastImage
             resizeMode={FastImage.resizeMode.contain}
             source={CaretImageSource}
             style={{
-              height: 15,
+              height: 17,
+              marginBottom: 1,
+              right: 4,
               transform: [{
                 rotate: toRad(interpolate(this.animation, {
                   inputRange: [0, 1],
                   outputRange: [0, 90],
                 })),
               }],
-              width: 5.84,
+              width: 9,
             }}
           />
         </RowWithMargins>
-        <AnimatedMonospace
-          color="blueGreyDark"
-          size="lmedium"
-          style={{
-            opacity: interpolate(this.animation, {
-              inputRange: [0, 1],
-              outputRange: [1, 0],
-            }),
-          }}
-        >
-          {this.props.childrenAmount}
-        </AnimatedMonospace>
       </Row>
     </ButtonPressAnimation>
   )
