@@ -6,28 +6,38 @@ import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
 import ShadowItem from './ShadowItem';
 
+  // flex-shrink: 0;
 const ChildrenWrapper = styled.View`
   ${position.cover};
   background-color: ${({ backgroundColor }) => backgroundColor || colors.transparent};
   border-radius: ${({ borderRadius }) => borderRadius};
   overflow: hidden;
-  justify-content: center;
-  align-items: center;
+  z-index: ${({ zIndex }) => zIndex};
 `;
 
 const ShadowStackContainer = styled.View`
+  ${({ height }) => (
+    height
+      ? `height: ${height};`
+      : ''
+  )}
+  ${({ width }) => (
+    width
+      ? `width: ${width};`
+      : ''
+  )}
   background-color: ${({ backgroundColor }) => backgroundColor || colors.transparent};
   border-radius: ${({ borderRadius }) => borderRadius};
-  height: ${({ height }) => height};
-  width: ${({ width }) => width};
   z-index: 1;
 `;
+  // width: ${({ width }) => width};
+  // height: ${({ height }) => height};
 
 const ShadowItemPropBlacklist = ['children', 'shadowProps', 'shadows', 'style'];
 
 export default class ShadowStack extends PureComponent {
   static propTypes = {
-    borderRadius: PropTypes.number.isRequired,
+    borderRadius: PropTypes.number,
     children: PropTypes.node,
     childrenWrapperStyle: stylePropType,
     height: PropTypes.number.isRequired,
@@ -38,6 +48,7 @@ export default class ShadowStack extends PureComponent {
   }
 
   static defaultProps = {
+    borderRadius: 0,
     shadows: [],
   }
 
