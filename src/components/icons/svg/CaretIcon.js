@@ -3,6 +3,7 @@ import React from 'react';
 import { Path } from 'svgs';
 import { withRotationForDirection } from '../../../hoc';
 import { colors } from '../../../styles';
+import { directionPropType } from '../../../utils';
 import Svg from '../Svg';
 
 /* eslint-disable max-len */
@@ -29,6 +30,7 @@ const CaretIcon = ({
 
 CaretIcon.propTypes = {
   color: PropTypes.string,
+  direction: directionPropType,
   size: PropTypes.number,
 };
 

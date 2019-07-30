@@ -8,7 +8,7 @@ const base = {
   blueGreyDarker: '#0F0F11', // '15, 15, 17'
   blueGreyLight: '#A1A5AC',
   blueGreyLighter: '#666A73', // '102, 106, 115'
-  blueGreyLightest: '#8A8E97', // '138, 142, 151'
+  blueGreyLightest: '#888D96', // '136, 141, 150'
   blueGreyMedium: '#636875', // '99, 104, 117'
   blueGreyMediumLight: '#7b7f8a', // '123, 127, 138'
   dark: '#25292E', // '37, 41, 46'
