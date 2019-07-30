@@ -20,9 +20,10 @@ export default class ExchangeInputField extends PureComponent {
     inputCurrency: PropTypes.string,
     inputFieldRef: PropTypes.func,
     nativeAmount: PropTypes.string,
+    nativeCurrency: PropTypes.string,
     nativeFieldRef: PropTypes.func,
     onPressMaxBalance: PropTypes.func,
-    onPressSelectInputCurrency: PropTypes.string,
+    onPressSelectInputCurrency: PropTypes.func,
     setInputAmount: PropTypes.func,
     setNativeAmount: PropTypes.func,
   }
@@ -63,8 +64,8 @@ export default class ExchangeInputField extends PureComponent {
       setNativeAmount,
     } = this.props;
 
-    // mask="[0...][-][9...]"
-    //
+    const { mask, placeholder } = supportedNativeCurrencies[nativeCurrency];
+
     return (
       <ColumnWithMargins flex={0} margin={14.5} width="100%">
         <Row align="center">
@@ -96,10 +97,10 @@ export default class ExchangeInputField extends PureComponent {
         <Row align="center" justify="space-between" paddingLeft={this.padding}>
           <ExchangeInput
             fontSize={fonts.size.large}
-            mask="{$}[099999999999]{.}[00]"
+            mask={mask}
             onChangeText={setNativeAmount}
             onFocus={onFocus}
-            placeholder="$0.00"
+            placeholder={placeholder}
             refInput={this.handleNativeFieldRef}
             style={{ paddingBottom: this.padding }}
             value={nativeAmount}
