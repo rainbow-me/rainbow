@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { onlyUpdateForKeys } from 'recompact';
+import { compose, onlyUpdateForKeys } from 'recompact';
+import { withIsWalletImporting } from '../../hoc';
 import { safeAreaInsetValues } from '../../utils';
 import { FabWrapper, FloatingActionButton } from '../fab';
 import { ListFooter } from '../list';
@@ -14,21 +15,26 @@ const AssetList = ({
   fetchData,
   hideHeader,
   isEmpty,
-  sections,
+  isImporting,
+  isWalletEthZero,
   scrollViewTracker,
+  sections,
   ...props
 }) => (
-  isEmpty
-    ? <EmptyAssetList {...props} />
-    : (
-      <RecyclerAssetList
-        scrollViewTracker={scrollViewTracker}
+  (isEmpty || isImporting)
+    ? (
+      <EmptyAssetList
         {...props}
-        enablePullToRefresh
+        isWalletEthZero={isImporting ? false : isWalletEthZero}
+      />
+    ) : (
+      <RecyclerAssetList
         fetchData={fetchData}
         hideHeader={hideHeader}
         paddingBottom={PaddingBottom}
+        scrollViewTracker={scrollViewTracker}
         sections={sections}
+        {...props}
       />
     )
 );
@@ -37,13 +43,18 @@ AssetList.propTypes = {
   fetchData: PropTypes.func.isRequired,
   hideHeader: PropTypes.bool,
   isEmpty: PropTypes.bool,
+  isImporting: PropTypes.bool,
   isWalletEthZero: PropTypes.bool,
   scrollViewTracker: PropTypes.object,
   sections: PropTypes.arrayOf(PropTypes.object),
 };
 
-export default onlyUpdateForKeys([
-  'isEmpty',
-  'isWalletEthZero',
-  'sections',
-])(AssetList);
+export default compose(
+  withIsWalletImporting,
+  onlyUpdateForKeys([
+    'isEmpty',
+    'isImporting',
+    'isWalletEthZero',
+    'sections',
+  ]),
+)(AssetList);

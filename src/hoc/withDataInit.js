@@ -39,6 +39,13 @@ import {
 } from '../redux/walletconnect';
 import withHideSplashScreen from './withHideSplashScreen';
 
+const PromiseAllWithFails = async (promises) => (
+  Promise.all(promises.map(promise => (
+    (promise && promise.catch)
+      ? promise.catch(error => error)
+      : promise
+  ))));
+
 export default Component => compose(
   connect(null, {
     clearIsWalletEmpty,
@@ -80,8 +87,7 @@ export default Component => compose(
       const p6 = ownProps.nonceClearState();
       const p7 = ownProps.requestsClearState();
       const p8 = ownProps.uniswapClearState();
-      const promises = [p1, p2, p3, p4, p5, p6, p7, p8];
-      await Promise.all(promises.map(p => p.catch(e => e)));
+      return PromiseAllWithFails([p1, p2, p3, p4, p5, p6, p7, p8]);
     },
     initializeAccountData: (ownProps) => async () => {
       try {
@@ -98,8 +104,7 @@ export default Component => compose(
       const p4 = ownProps.walletConnectLoadState();
       const p5 = ownProps.uniswapLoadState();
       const p6 = ownProps.requestsLoadState();
-      const promises = [p1, p2, p3, p4, p5, p6];
-      await Promise.all(promises.map(p => p.catch(e => e)));
+      return PromiseAllWithFails([p1, p2, p3, p4, p5, p6]);
     },
     refreshAccountData: (ownProps) => async () => {
       try {
