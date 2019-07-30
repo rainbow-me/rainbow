@@ -30,6 +30,7 @@ import SendSmallIcon from './svg/SendSmallIcon';
 import ShareIcon from './svg/ShareIcon';
 import SignatureIcon from './svg/SignatureIcon';
 import SpinnerIcon from './svg/SpinnerIcon';
+import SwapIcon from './svg/SwapIcon';
 import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import TouchIdIcon from './svg/TouchIdIcon';
 import WalletConnectIcon from './svg/WalletConnectIcon';
@@ -66,6 +67,7 @@ Icon.IconTypes = {
   share: ShareIcon,
   signature: SignatureIcon,
   spinner: SpinnerIcon,
+  swap: SwapIcon,
   threeDots: ThreeDotsIcon,
   touchid: TouchIdIcon,
   walletConnect: WalletConnectIcon,

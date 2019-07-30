@@ -7,24 +7,23 @@ import {
   pure,
   withHandlers,
 } from 'recompact';
-import Icon from '../icons/Icon';
-import FloatingActionButton from './FloatingActionButton';
+import { withFabSelection } from '../../hoc';
 import { colors } from '../../styles';
+import { Icon } from '../icons';
+import FloatingActionButton from './FloatingActionButton';
 
 const ExchangeFab = ({ disabled, onPress, ...props }) => (
   <FloatingActionButton
     {...props}
+    backgroundColor={colors.dodgerBlue}
     disabled={disabled}
     onPress={onPress}
-    color={colors.fadedBlue}
   >
     <Icon
-      name="send"
-      style={{
-        height: 21,
-        marginBottom: 2,
-        width: 22,
-      }}
+      height={21}
+      marginBottom={2}
+      name="swap"
+      width={26}
     />
   </FloatingActionButton>
 );
@@ -35,7 +34,7 @@ ExchangeFab.propTypes = {
 };
 
 export default compose(
-  pure,
+  withFabSelection,
   withNavigation,
   withHandlers({
     onPress: ({ navigation }) => () => {
