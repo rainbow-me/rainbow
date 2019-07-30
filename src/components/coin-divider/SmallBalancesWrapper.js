@@ -59,7 +59,7 @@ const SmallBalancesWrapper = ({
         </View>
       </Transitioning.View>
     </View>
-  )
+  );
 };
 
 SmallBalancesWrapper.propTypes = {

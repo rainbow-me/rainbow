@@ -50,7 +50,7 @@ export default compose(
       } else {
         openFamilyCheck = 0;
       }
-      if (this.props.isCoinDivider == true && !this.props.fabDropped && !timerBlocker) {
+      if (this.props.isCoinDivider === true && !this.props.fabDropped && !timerBlocker) {
         timerBlocker = true;
         timer = setTimeout(() => {
           if (this.props.isCoinDivider) {

@@ -6,9 +6,9 @@ import imageDimensionsCache from './imageDimensionsCache';
 import isWalletEmpty from './isWalletEmpty';
 import navigation from './navigation';
 import nonce from './nonce';
+import openBalances from './openBalances';
 import openFamilyTabs from './openFamilyTabs';
 import openInvestmentCards from './openInvestmentCards';
-import openBalances from './openBalances';
 import requests from './requests';
 import selectedWithFab from './selectedWithFab';
 import send from './send';
@@ -24,9 +24,9 @@ export default combineReducers({
   isWalletEmpty,
   navigation,
   nonce,
+  openBalances,
   openFamilyTabs,
   openInvestmentCards,
-  openBalances,
   requests,
   selectedWithFab,
   send,

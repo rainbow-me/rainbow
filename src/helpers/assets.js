@@ -25,11 +25,11 @@ export const buildAssetUniqueIdentifier = (item) => {
 export const buildCoinsList = (assets) => {
   const newAssets = [];
   const smallBalances = {
-    smallBalancesContainer: true,
     assets: [],
+    smallBalancesContainer: true,
   };
   for (let i = 0; i < assets.length; i++) {
-    if( assets[i].native && assets[i].native.balance.amount > 1) {
+    if (assets[i].native && assets[i].native.balance.amount > 1) {
       newAssets.push(assets[i]);
     } else {
       smallBalances.assets.push(assets[i]);
@@ -44,7 +44,6 @@ export const buildUniqueTokenList = (uniqueTokens) => {
   const grouped = groupBy(uniqueTokens, token => token.asset_contract.name);
   const families = Object.keys(grouped);
   for (let i = 0; i < families.length; i++) {
-
     const tokensRow = [];
     for (let j = 0; j < grouped[families[i]].length; j += 2) {
       if (grouped[families[i]][j + 1]) {
