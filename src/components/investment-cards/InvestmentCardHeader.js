@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
+import Animated, { Easing } from 'react-native-reanimated';
 import { colors, padding, position } from '../../styles';
 import { Icon } from '../icons';
 import {
@@ -11,7 +11,6 @@ import {
   RowWithMargins,
 } from '../layout';
 import { Emoji, Monospace, Text } from '../text';
-import Animated, { Easing } from 'react-native-reanimated';
 
 const HeaderHeight = 48;
 
@@ -72,8 +71,7 @@ class InvestmentCardHeader extends React.Component {
     if (prev.collapsed !== undefined
       && prev.collapsed !== this.props.collapsed) {
       const clock = new Clock();
-      let base = undefined;
-      this.props.collapsed ? base = runTiming(clock, -1, 1, this.props.collapsed) : base = runTiming(clock, 1, -1, this.props.collapsed);
+      const base = this.props.collapsed ? runTiming(clock, -1, 1, this.props.collapsed) : runTiming(clock, 1, -1, this.props.collapsed);
       this._rotation = interpolate(base, {
         inputRange: [-1, 1],
         outputRange: [0, 90],
@@ -82,13 +80,14 @@ class InvestmentCardHeader extends React.Component {
   }
 
   render() {
-    let { collapsed,
+    const {
+      collapsed,
       color,
       emoji,
       isCollapsible,
       title,
       titleColor,
-      value, 
+      value,
     } = this.props;
 
     return (
@@ -149,9 +148,9 @@ class InvestmentCardHeader extends React.Component {
           )}
         </RowWithMargins>
       </Container>
-    )
+    );
   }
-};
+}
 
 InvestmentCardHeader.propTypes = {
   collapsed: PropTypes.bool,
