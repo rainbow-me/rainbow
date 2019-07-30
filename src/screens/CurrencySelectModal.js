@@ -1,21 +1,21 @@
 import PropTypes from 'prop-types';
-import React from 'react';
-import { compose } from 'recompact';
+import React, { Component } from 'react';
+import { compose, withHandlers } from 'recompact';
 import { View } from 'react-native'
 import { NavigationEvents } from 'react-navigation';
-import styled from 'styled-components';
+import styled from 'styled-components/primitives';
 import { Column, FlexItem, Row } from '../components/layout';
 import { Modal, ModalHeader } from '../components/modal';
 import AssetList from '../components/asset-list/RecyclerAssetList';
 import { SendCoinRow } from '../components/coin-row';
 import GestureBlocker from '../components/GestureBlocker';
 import { Monospace, TruncatedText } from '../components/text';
+import { withAccountData } from '../hoc';
 import { borders, colors } from '../styles';
 import StarIcon from '../components/icons/svg/StarIcon';
 import { ModalHeaderHeight } from '../components/modal/ModalHeader';
 import { BackButton } from '../components/header';
 import Flex from '../components/layout/Flex';
-import { withAccountData } from '../hoc';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 
 const HeaderContainer = styled(Row).attrs({
@@ -28,7 +28,6 @@ const HeaderContainer = styled(Row).attrs({
   height: ${ModalHeaderHeight};
   width: 100%;
 `;
-
 
 const BackButtonWrapper = styled(Flex).attrs({
   align: 'center',
@@ -53,12 +52,9 @@ BottomRow.propTypes = {
   symbol: PropTypes.string,
 };
 
-
 const StarRender = ({ favorite }) => (
   <FlexItem flex={0} style={{ marginLeft: 8 }}>
-    <StarIcon
-      color={favorite ? colors.orangeLight : colors.grey}
-    />
+    <StarIcon color={favorite ? colors.orangeLight : colors.grey} />
   </FlexItem>
 );
 
@@ -66,62 +62,87 @@ StarRender.propTypes = {
   favorite: PropTypes.bool,
 };
 
-const CurrencyRenderItem = ({
-  index,
-  item: { symbol, ...item },
-  section: { onSelectAsset },
-}) => (
+const CurrencyRenderItem = ({ item, onPress }) => (
   <SendCoinRow
     {...item}
-    onPress={onSelectAsset(symbol)}
-    symbol={symbol}
-    starRender={StarRender}
     bottomRowRender={BottomRow}
+    onPress={onPress}
+    starRender={StarRender}
   />
 );
-
 
 CurrencyRenderItem.propTypes = {
   index: PropTypes.number,
   item: PropTypes.shape({ symbol: PropTypes.string }),
-  section: PropTypes.shape({ onSelectAsset: PropTypes.func }),
+  onPress: PropTypes.func,
 };
 
-class SelectCurrencyModal extends React.Component {
+const EnhancedCurrencyRenderItem = withHandlers({
+  onPress: ({ item: { symbol }, onPress }) => () => onPress(symbol),
+})(CurrencyRenderItem);
+
+class SelectCurrencyModal extends Component {
+  static propTypes = {
+    allAssets: PropTypes.array,
+    navigation: PropTypes.object,
+  }
+
+  callback = null
+
+  componentDidMount() {
+    this.callback = this.props.navigation.getParam('onSelectCurrency');
+  }
+
+  componentDidUpdate() {
+    this.callback = this.props.navigation.getParam('onSelectCurrency');
+  }
+
+  dangerouslySetIsGestureBlocked = (isGestureBlocked) => {
+    // dangerouslyGetParent is a bad pattern in general, but in this case is exactly what we expect
+    this.props.navigation.dangerouslyGetParent().setParams({ isGestureBlocked });
+  }
+
+  handleWillBlur = () => this.dangerouslySetIsGestureBlocked(false)
+
+  handleWillFocus = () => this.dangerouslySetIsGestureBlocked(true)
+
+  handlePressBack = () => this.props.navigation.navigate('MainExchangeScreen')
+
+  handleSelectAsset = (symbol) => {
+    // It's a bit weird and I'm not sure why on invoking
+    // navigation.getParam('onSelectCurrency')(symbol)
+    // but this small hack seems to be a legit workaround
+    this.callback(symbol);
+    this.props.navigation.navigate('MainExchangeScreen');
+  }
+
+  renderCurrencyItem = (itemProps) => (
+    <EnhancedCurrencyRenderItem
+      {...itemProps}
+      onPress={this.handleSelectAsset}
+    />
+  )
+
   render() {
-    const {
-      allAssets,
-      navigation,
-    } = this.props;
-    const sections = [
+    const fakeDataThatNeedsToBeHookedUp = [
       {
         balances: true,
-        data: allAssets,
-        onSelectAsset: (symbol) => () => {
-          // It's a bit weird and I'm not sure why on invoking
-          // navigation.getParam('setSelectedCurrency')(symbol)
-          // but this small hack seems to be a legit workaround
-          this.callback(symbol);
-          navigation.navigate('MainExchangeScreen');
-        },
-        renderItem: CurrencyRenderItem,
+        data: this.props.allAssets,
+        renderItem: this.renderCurrencyItem,
       },
     ];
 
-    const currentCallback = navigation.getParam('setSelectedCurrency');
-    if (currentCallback) {
-      this.callback = currentCallback;
-    }
-
     return (
-      <Modal overflow="hidden" radius={exchangeModalBorderRadius} containerPadding={4} minHeight={580}>
+      <Modal
+        containerPadding={4}
+        minHeight={580}
+        overflow="hidden"
+        radius={exchangeModalBorderRadius}
+      >
         <GestureBlocker type='top'/>
         <NavigationEvents
-          // dangerouslyGetParent is a bad patter in general, but in this case is exactly what we expect
-          onWillFocus={() => navigation.dangerouslyGetParent()
-            .setParams({ isGestureBlocked: true })}
-          onWillBlur={() => navigation.dangerouslyGetParent()
-            .setParams({ isGestureBlocked: false })}
+          onWillBlur={this.handleWillBlur}
+          onWillFocus={this.handleWillFocus}
         />
         <Column flex={1}>
           <HeaderContainer>
@@ -129,7 +150,7 @@ class SelectCurrencyModal extends React.Component {
               <BackButton
                 color={colors.black}
                 direction="left"
-                onPress={() => navigation.navigate('MainExchangeScreen')}
+                onPress={this.handlePressBack}
                 size='8'
               />
             </BackButtonWrapper>
@@ -144,7 +165,7 @@ class SelectCurrencyModal extends React.Component {
           </HeaderContainer>
           <AssetList
             hideHeader
-            sections={sections}
+            sections={fakeDataThatNeedsToBeHookedUp}
           />
         </Column>
         <GestureBlocker type='bottom'/>
@@ -152,12 +173,6 @@ class SelectCurrencyModal extends React.Component {
     );
   }
 }
-
-
-SelectCurrencyModal.propTypes = {
-  allAssets: PropTypes.array,
-  navigation: PropTypes.object,
-};
 
 export default compose(
   withAccountData,
