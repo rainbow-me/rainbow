@@ -13,11 +13,7 @@ import {
 import { AssetList } from '../components/asset-list';
 import BlurOverlay from '../components/BlurOverlay';
 import { FabWrapper } from '../components/fab';
-import {
-  CameraHeaderButton,
-  Header,
-  ProfileHeaderButton,
-} from '../components/header';
+import { CameraHeaderButton, Header, ProfileHeaderButton } from '../components/header';
 import { Page } from '../components/layout';
 import {
   getSmallBalanceToggle,
@@ -32,8 +28,8 @@ import {
   withDataInit,
   withIsWalletEmpty,
   withIsWalletEthZero,
-  withUniqueTokens,
   withStatusBarStyle,
+  withUniqueTokens,
   withUniswapLiquidity,
 } from '../hoc';
 import { setOpenSmallBalances } from '../redux/openBalances';
@@ -41,7 +37,7 @@ import { pushOpenFamilyTab } from '../redux/openFamilyTabs';
 import { pushOpenInvestmentCard } from '../redux/openInvestmentCards';
 import store from '../redux/store';
 import { position } from '../styles';
-import { isNewValueForPath } from '../utils';
+import { deviceUtils, isNewValueForPath } from '../utils';
 
 class WalletScreen extends Component {
   static propTypes = {
@@ -116,6 +112,11 @@ class WalletScreen extends Component {
       scrollViewTracker,
       sections,
     } = this.props;
+
+    const blurTranslateY = blurOpacity.interpolate({
+      inputRange: [0, 0.001, 1],
+      outputRange: [deviceUtils.dimensions.height, 0, 0],
+    });
 
     return (
       <Page {...position.sizeAsObject('100%')} flex={1}>

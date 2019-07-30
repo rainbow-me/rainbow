@@ -45,11 +45,24 @@ PODS:
     - GoogleToolboxForMac/Defines (= 2.2.1)
   - "GoogleToolboxForMac/NSData+zlib (2.2.1)":
     - GoogleToolboxForMac/Defines (= 2.2.1)
+<<<<<<< HEAD
   - libwebp (1.0.3):
     - libwebp/demux (= 1.0.3)
     - libwebp/mux (= 1.0.3)
     - libwebp/webp (= 1.0.3)
   - libwebp/demux (1.0.3):
+=======
+  - libwebp (1.0.2):
+    - libwebp/core (= 1.0.2)
+    - libwebp/dec (= 1.0.2)
+    - libwebp/demux (= 1.0.2)
+    - libwebp/dsp (= 1.0.2)
+    - libwebp/enc (= 1.0.2)
+    - libwebp/mux (= 1.0.2)
+    - libwebp/utils (= 1.0.2)
+    - libwebp/webp (= 1.0.2)
+  - libwebp/core (1.0.2):
+>>>>>>> c2296ac1... fix conflicts after rebasing over latest wallet-zero branch
     - libwebp/webp
   - libwebp/mux (1.0.3):
     - libwebp/demux
@@ -60,6 +73,7 @@ PODS:
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
   - Protobuf (3.9.0)
+<<<<<<< HEAD
   - React (0.60.5):
     - React-Core (= 0.60.5)
     - React-DevSupport (= 0.60.5)
@@ -105,6 +119,10 @@ PODS:
     - React-cxxreact (= 0.60.5)
     - React-jsi (= 0.60.5)
   - React-jsinspector (0.60.5)
+=======
+  - React (0.59.9):
+    - React/Core (= 0.59.9)
+>>>>>>> c2296ac1... fix conflicts after rebasing over latest wallet-zero branch
   - react-native-blur (0.8.0):
     - React
   - react-native-camera (2.11.2):
@@ -150,9 +168,21 @@ PODS:
     - React
   - RNCAsyncStorage (1.5.0):
     - React
+<<<<<<< HEAD
   - RNCMaskedView (0.1.1):
     - React
+<<<<<<< HEAD
   - RNDeviceInfo (2.3.2):
+=======
+<<<<<<< HEAD
+  - RNDeviceInfo (2.3.1):
+=======
+  - RNDeviceInfo (2.3.0):
+=======
+  - RNDeviceInfo (2.3.1):
+>>>>>>> b45c1992... fix conflicts after rebasing over latest wallet-zero branch
+>>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
+>>>>>>> c2296ac1... fix conflicts after rebasing over latest wallet-zero branch
     - React
   - RNIOS11DeviceCheck (0.0.3):
     - React
@@ -162,12 +192,25 @@ PODS:
     - React
   - RNScreens (1.0.0-alpha.23):
     - React
+<<<<<<< HEAD
   - RNStoreReview (0.1.5):
     - React
+<<<<<<< HEAD
   - SDWebImage (5.1.1):
     - SDWebImage/Core (= 5.1.1)
   - SDWebImage/Core (5.1.1)
   - yoga (0.60.5.React)
+=======
+  - SDWebImage (5.0.2):
+    - SDWebImage/Core (= 5.0.2)
+  - SDWebImage/Core (5.0.2)
+=======
+  - SDWebImage (5.0.6):
+    - SDWebImage/Core (= 5.0.6)
+  - SDWebImage/Core (5.0.6)
+>>>>>>> b45c1992... fix conflicts after rebasing over latest wallet-zero branch
+  - yoga (0.59.9.React)
+>>>>>>> c2296ac1... fix conflicts after rebasing over latest wallet-zero branch
 
 DEPENDENCIES:
   - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
@@ -318,6 +361,7 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: f3f0657372592ecdfdfe2cac604a5a75758376a6
   FirebaseMessaging: 6894b8fe0a0cf26c3b13dad729f1131654ae0bdb
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
+<<<<<<< HEAD
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
@@ -331,6 +375,15 @@ SPEC CHECKSUMS:
   React-jsi: 4d8c9efb6312a9725b18d6fc818ffc103f60fec2
   React-jsiexecutor: 90ad2f9db09513fc763bc757fdc3c4ff8bde2a30
   React-jsinspector: e08662d1bf5b129a3d556eb9ea343a3f40353ae4
+=======
+  Folly: de497beb10f102453a1afa9edbf8cf8a251890de
+  glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
+  GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
+  libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
+  nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
+  Protobuf: 1097ca58584c8d9be81bfbf2c5ff5975648dd87a
+  React: a86b92f00edbe1873a63e4a212c29b7a7ad5224f
+>>>>>>> c2296ac1... fix conflicts after rebasing over latest wallet-zero branch
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: b5e6e34586ca6f588b0c736dcabfe0aad5ce2f3e
   react-native-fast-image: fdfc612dba58fd73136cf5efdaeb8cfcad7f63b2
@@ -348,15 +401,36 @@ SPEC CHECKSUMS:
   React-RCTWebSocket: cd932a16b7214898b6b7f788c8bddb3637246ac4
   RNAnalytics: d110195618296fed3907830911f01cb6e9be53d0
   RNCAsyncStorage: 9436928b444c5f5361960a7eea051a697c244b68
+<<<<<<< HEAD
   RNCMaskedView: b79e193409a90bf6b5170d421684f437ff4e2278
+<<<<<<< HEAD
   RNDeviceInfo: 17e34f6dd902f08d88cbe2c0b7a01be948d43641
+=======
+<<<<<<< HEAD
+  RNDeviceInfo: 74ee98a0b3ef57604ea9953f03eca549a9335160
+=======
+  RNDeviceInfo: 65106cc87ad6f6f71ef2ecc667f4c59b840888e2
+=======
+  RNDeviceInfo: 74ee98a0b3ef57604ea9953f03eca549a9335160
+>>>>>>> b45c1992... fix conflicts after rebasing over latest wallet-zero branch
+>>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
+>>>>>>> c2296ac1... fix conflicts after rebasing over latest wallet-zero branch
   RNIOS11DeviceCheck: a4a545fdd08230a17a8ce7608e95038ee23a32aa
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNReanimated: 1b52415c4302f198cb581282a0166690bad62c43
   RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
+<<<<<<< HEAD
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
+<<<<<<< HEAD
   SDWebImage: 96d7f03415ccb28d299d765f93557ff8a617abd8
   yoga: 312528f5bbbba37b4dcea5ef00e8b4033fdd9411
+=======
+  SDWebImage: 6764b5fa0f73c203728052955dbefa2bf1f33282
+=======
+  SDWebImage: 920f1a2ff1ca8296ad34f6e0510a1ef1d70ac965
+>>>>>>> b45c1992... fix conflicts after rebasing over latest wallet-zero branch
+  yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
+>>>>>>> c2296ac1... fix conflicts after rebasing over latest wallet-zero branch
 
 PODFILE CHECKSUM: c393ff0cebe4b167e23b61fa2c324eace3cbf57e
 
