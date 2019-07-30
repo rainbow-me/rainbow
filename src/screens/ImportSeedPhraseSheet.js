@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { KeyboardAvoidingView } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import { pure, withProps } from 'recompact';
+import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
 import { Icon } from '../components/icons';
 import { MultiLineInput } from '../components/inputs';
@@ -27,12 +27,6 @@ const HandleIcon = styled(Icon).attrs({
 })`
   margin-top: 16px;
   margin-bottom: 2;
-`;
-
-const HelpButton = styled(BorderlessButton)`
-  ${padding(6, 8)}
-  border: 1px solid #f6f7f7;
-  border-radius: 15px;
 `;
 
 const ImportButton = styled(Row).attrs({
@@ -74,7 +68,7 @@ const ImportSeedPhraseSheet = ({
           enablesReturnKeyAutomatically={true}
           onChange={onInputChange}
           onSubmitEditing={onPressEnterKey}
-          placeholder="Type your seed phrase"
+          placeholder="Seed phrase or private key"
           returnKeyType="done"
           size="large"
           style={{ width: '100%' }}

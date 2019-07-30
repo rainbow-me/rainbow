@@ -1,7 +1,7 @@
-import { settingsUpdateAccountAddress } from '@rainbow-me/rainbow-common';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompose';
 import { createSelector } from 'reselect';
+import { settingsUpdateAccountAddress } from '../redux/settings';
 
 const mapStateToProps = ({ settings: { accountAddress } }) => ({ accountAddress });
 

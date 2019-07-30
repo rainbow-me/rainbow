@@ -1,8 +1,9 @@
 import { withProps } from 'recompact';
 import { colors } from '../../styles';
-import { Monospace } from '../text';
+import { Monospace, TruncatedText } from '../text';
 
 export default withProps(({ color }) => ({
-  color: color || colors.blueGreyLight,
+  color: color || colors.alpha(colors.blueGreyDark, 0.5),
+  component: Monospace,
   size: 'smedium',
-}))(Monospace);
+}))(TruncatedText);

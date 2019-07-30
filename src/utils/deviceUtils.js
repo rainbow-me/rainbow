@@ -1,6 +1,5 @@
 import { pick } from 'lodash';
 import { Dimensions } from 'react-native';
-import safeAreaInsetValues from './safeAreaInsetValues';
 
 const { height, width } = pick(Dimensions.get('window'), ['height', 'width']);
 

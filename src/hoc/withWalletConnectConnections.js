@@ -1,4 +1,3 @@
-import { sortList } from '@rainbow-me/rainbow-common';
 import {
   get,
   groupBy,
@@ -8,10 +7,10 @@ import {
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';
+import { sortList } from '../helpers/sortList';
 import {
   walletConnectClearTimestamp,
   walletConnectDisconnectAllByDappName,
-  walletConnectInitAllConnectors,
   walletConnectUpdateTimestamp,
 } from '../redux/walletconnect';
 
@@ -44,7 +43,6 @@ export default Component => compose(
   connect(mapStateToProps, {
     walletConnectClearTimestamp,
     walletConnectDisconnectAllByDappName,
-    walletConnectInitAllConnectors,
     walletConnectUpdateTimestamp,
   }),
   withProps(walletConnectSelector),

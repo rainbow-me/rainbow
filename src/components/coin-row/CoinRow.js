@@ -1,29 +1,39 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import { compose, pure } from 'recompact';
+import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
-import { withAccountSettings } from '../../hoc';
+import { withAccountSettings, withFabSendAction } from '../../hoc';
 import { colors, padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
+import Highlight from '../Highlight';
 import { Column, Row } from '../layout';
 
-const CoinRowPaddingVertical = 12;
+const CoinRowPaddingTop = 10;
+const CoinRowPaddingBottom = 11.5;
 
 const Container = styled(Row)`
-  ${padding(CoinRowPaddingVertical, 19, CoinRowPaddingVertical, 15)}
+  ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom, 15)}
   background-color: ${colors.white};
   width: 100%;
 `;
 
-const Content = styled(Column)`
-  background-color: ${colors.white};
+const Content = styled(Column).attrs({
+  flex: 1,
+  justify: 'space-between',
+})`
   height: ${CoinIcon.size};
-  margin-left: ${CoinRowPaddingVertical};
+  margin-left: 10;
 `;
+
+const CoinRowHighlight = withProps({
+  borderRadius: 18,
+  margin: 2,
+  marginHorizontal: 8,
+})(Highlight);
 
 const enhance = compose(
   withAccountSettings,
-  pure,
+  withFabSendAction,
 );
 
 const CoinRow = enhance(({
@@ -32,14 +42,15 @@ const CoinRow = enhance(({
   coinIconRender,
   containerStyles,
   contentStyles,
-  onPress,
+  highlight,
   symbol,
   topRowRender,
   ...props
 }) => (
   <Container align="center" css={containerStyles}>
+    <CoinRowHighlight visible={highlight} />
     {createElement(coinIconRender, { symbol, ...props })}
-    <Content flex={1} justify="space-between" css={contentStyles}>
+    <Content css={contentStyles}>
       <Row align="center" justify="space-between">
         {topRowRender({ symbol, ...props })}
       </Row>
@@ -60,7 +71,7 @@ CoinRow.propTypes = {
   coinIconRender: PropTypes.func,
   containerStyles: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
   contentStyles: PropTypes.string,
-  onPress: PropTypes.func,
+  highlight: PropTypes.bool,
   symbol: PropTypes.string,
   topRowRender: PropTypes.func,
 };
@@ -69,6 +80,6 @@ CoinRow.defaultProps = {
   coinIconRender: CoinIcon,
 };
 
-CoinRow.height = CoinIcon.size + (CoinRowPaddingVertical * 2);
+CoinRow.height = CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom;
 
 export default CoinRow;

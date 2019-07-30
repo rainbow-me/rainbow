@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import { Animated } from 'react-native';
+import { Animated, Easing } from 'react-native';
 import { updateTransitionProps } from '../../redux/navigation';
 import store from '../../redux/store';
 import { colors } from '../../styles';
@@ -40,7 +40,7 @@ export default function expanded(navigation, transitionProps, prevTransitionProp
         prevIndex,
       }));
 
-      const opacityEnd = 0.75;
+      const opacityEnd = 1;
       const translateYStart = deviceUtils.dimensions.height;
 
       if (nextEffect === transitionName && scene.index === prevIndex && nextIndex > prevIndex) {
@@ -105,9 +105,9 @@ export default function expanded(navigation, transitionProps, prevTransitionProp
       };
     },
     transitionSpec: {
-      friction: 11,
-      tension: 100,
-      timing: ((nextEffect === transitionName) && (nextIndex > prevIndex)) ? Animated.spring : Animated.timing,
+      duration: 315,
+      easing: Easing.bezier(0.19, 1, 0.22, 1),
+      timing: Animated.timing,
       useNativeDriver: true,
     },
   };

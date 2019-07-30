@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Ethereum Mainnet",
+    "short_name": "eth",
+    "chain": "ETH",
+    "network": "mainnet",
+    "chain_id": 1,
+    "network_id": 1
+  },
+  {
+    "name": "Ethereum Ropsten",
+    "short_name": "rop",
+    "chain": "ETH",
+    "network": "ropsten",
+    "chain_id": 3,
+    "network_id": 3
+  },
+  {
+    "name": "Ethereum Rinkeby",
+    "short_name": "rin",
+    "chain": "ETH",
+    "network": "rinkeby",
+    "chain_id": 4,
+    "network_id": 4
+  },
+  {
+    "name": "Ethereum Kovan",
+    "short_name": "kov",
+    "chain": "ETH",
+    "network": "kovan",
+    "chain_id": 42,
+    "network_id": 42
+  }
+]

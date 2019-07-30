@@ -3,6 +3,7 @@ import React from 'react';
 import Svg, { Path } from 'svgs';
 import { colors } from '../../../styles';
 
+/* eslint-disable max-len */
 const CompassIcon = ({ color, size, ...props }) => (
   <Svg height={size || 24} width={size || 24} viewBox="0 0 24 24" {...props}>
     <Path
@@ -12,6 +13,7 @@ const CompassIcon = ({ color, size, ...props }) => (
     />
   </Svg>
 );
+/* eslint-disable max-len */
 
 CompassIcon.propTypes = {
   color: PropTypes.string,

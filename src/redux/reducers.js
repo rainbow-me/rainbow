@@ -1,31 +1,37 @@
-import {
-  assets,
-  prices,
-  send,
-  settings,
-  transactions,
-} from '@rainbow-me/rainbow-common';
 import { combineReducers } from 'redux';
 
 import actionSheetManager from './actionSheetManager';
+import data from './data';
 import imageDimensionsCache from './imageDimensionsCache';
 import isWalletEmpty from './isWalletEmpty';
+import isWalletEthZero from './isWalletEthZero';
+import isWalletImporting from './isWalletImporting';
 import navigation from './navigation';
 import nonce from './nonce';
-import transactionsToApprove from './transactionsToApprove';
+import openFamilyTabs from './openFamilyTabs';
+import requests from './requests';
+import selectedWithFab from './selectedWithFab';
+import send from './send';
+import settings from './settings';
+import uniqueTokens from './uniqueTokens';
+import uniswap from './uniswap';
 import walletconnect from './walletconnect';
 
 export default combineReducers({
   actionSheetManager,
-  assets,
+  data,
   imageDimensionsCache,
   isWalletEmpty,
+  isWalletEthZero,
+  isWalletImporting,
   navigation,
   nonce,
-  prices,
+  openFamilyTabs,
+  requests,
+  selectedWithFab,
   send,
   settings,
-  transactions,
-  transactionsToApprove,
+  uniqueTokens,
+  uniswap,
   walletconnect,
 });

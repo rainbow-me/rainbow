@@ -1,4 +1,4 @@
-import { isValidAddress } from '@rainbow-me/rainbow-common';
+import { isValidAddress } from '../helpers/validators';
 
 /**
  * @desc get ethereum address from raw QR Code data

@@ -1,0 +1,258 @@
+{
+  "translation": {
+    "homepage": {
+      "connect_metamask": {
+        "description": "Connectez-vous au ",
+        "link_text": "portefeuille navigateur MetaMask",
+        "link_title": "portefeuille navigateur MetaMask",
+        "button": "Se connecter à MetaMask"
+      },
+      "connect_ledger": {
+        "description": "Connectez-vous et signez vos transactions avec votre ",
+        "link_text": "portefeuille matériel Ledger",
+        "link_title": "Acheter un hardware wallet Ledger",
+        "button": "Se connecter à Ledger"
+      },
+      "connect_trezor": {
+        "description": " Connectez-vous et signez vos transactions avec votre ",
+        "link_text": "portefeuille matériel Trezor",
+        "link_title": "Acheter un hardware wallet Trezor",
+        "button": "Se connecter à Trezor"
+      },
+      "connect_walletconnect": {
+        "description": "Connectez-vous et signez vos transactions avec votre ",
+        "link_text": "portefeuille mobile WalletConnect",
+        "link_title": "portefeuille mobile WalletConnect",
+        "button": "Utilisez WalletConnect"
+      },
+      "coming_soon": "À venir."
+    },
+    "account": {
+      "tab_balances": "Soldes",
+      "tab_collectibles": "Collections",
+      "tab_transactions": "Transactions",
+      "tab_interactions": "Interactions",
+      "tab_uniquetokens": "Tokens uniques",
+      "tab_balances_tooltip": "Soldes en Ethereum et en tokens",
+      "tab_transactions_tooltip": "Transactions et transferts de tokens",
+      "tab_interactions_tooltip": "Interactions de smart-contracts",
+      "tab_uniquetokens_tooltip": "Tokens uniques",
+      "label_asset": "Actif",
+      "label_quantity": "Quantité",
+      "label_price": "Prix",
+      "label_24h": "24 h",
+      "label_status": "État",
+      "label_total": "Total",
+      "show": "Afficher",
+      "hide": "Masquer",
+      "token": "token",
+      "tokens": "tokens",
+      "no_market_value": "avec aucune valeur marchande",
+      "low_market_value": "avec une faible valeur marchande",
+      "tx_hash": "Hachage de transaction",
+      "tx_timestamp": "Horodatage",
+      "tx_fee": "Frais",
+      "tx_to": "À",
+      "tx_from": "De",
+      "tx_self": "Moi",
+      "tx_sent": "Envoyé",
+      "tx_received": "Reçu",
+      "tx_failed": "Échoué",
+      "tx_pending": "En attente",
+      "show_all": "Afficher tout",
+      "show_less": "Afficher moins",
+      "unknown_token": "Token inconnu"
+    },
+    "button": {
+      "connect_walletconnect": "Utiliser WalletConnect",
+      "exchange": "Échanger",
+      "send": "Envoyer",
+      "donate": "Donner de l’ETH",
+      "receive": "Recevoir",
+      "close": "Fermer",
+      "confirm": "Confirmer",
+      "cancel": "Annuler",
+      "go_back": "Retourner",
+      "send_another": "Envoyer un autre",
+      "exchange_again": "Échanger encore",
+      "notify_me": "Recevoir des notifications",
+      "try_again": "Réessayer",
+      "learn_more": "En savoir plus",
+      "view": "Affichage"
+    },
+    "input": {
+      "recipient_address": "Adresse du destinataire",
+      "private_key": "Clé privée",
+      "donation_address": "Adresse du Balance Manager",
+      "asset_amount": "Quantité",
+      "email": "Adresse de courriel",
+      "password": "Mot de passe",
+      "input_text": "Input",
+      "email_placeholder": "votre@courriel.com",
+      "password_placeholder": "••••••••••",
+      "input_placeholder": "Saisissez ici"
+    },
+    "modal": {
+      "receive_title": "Recevoir à {{walletName}}",
+      "exchange_title": "Échanger de {{walletName}}",
+      "donate_title": "Envoyer de {{walletName}} au Balance Manager",
+      "send_title": "Envoyer de {{walletName}}",
+      "approve_tx": "Permettre une transaction de {{walletType}}",
+      "confirm_tx": "Confirmer une transaction de {{walletName}}",
+      "invalid_address": "Adresse non valide",
+      "send_max": "Envoyer la valeur max",
+      "exchange_max": "Échanger la valeur max",
+      "default_wallet": " Wallet",
+      "gas_slow": "Lent",
+      "gas_average": "Moyen",
+      "gas_fast": "Vite",
+      "gas_fee": "Frais",
+      "tx_confirm_sender": "Payeur",
+      "tx_confirm_recipient": "Bénéficiaire",
+      "tx_confirm_amount": "Quantité",
+      "tx_confirm_fee": "Frais de transaction",
+      "tx_hash": "Hachage de transaction",
+      "tx_verify": "Vérifiez votre transaction ici",
+      "deposit_dropdown_label": "Échanger mes",
+      "withdrawal_dropdown_label": "pour",
+      "deposit_input_label": "Payer",
+      "withdrawal_input_label": "Obtenir",
+      "tx_fee": "Frais de transaction",
+      "exchange_fee": "Frais d’échange",
+      "previous_short": "Préc.",
+      "new": "New",
+      "helper_balance": "Solde",
+      "helper_value": "Valeur",
+      "helper_rate": "Taux",
+      "helper_price": "Prix",
+      "helper_min": "Min",
+      "helper_max": "Max"
+    },
+    "message": {
+      "web3_not_available": "Veuillez installer l’extension Chrome de MetaMask",
+      "web3_not_unlocked": "Veuillez déverrouiller votre wallet MetaMask",
+      "web3_unknown_network": "Réseau inconnu, veuillez basculer vers un autre",
+      "page_not_found": "404 Page introuvable",
+      "coming_soon": "À venir...",
+      "click_to_copy_to_clipboard": "Cliquez ici pour copier dans les presse-papiers",
+      "failed_request": "Requête échouée, veuillez rafraîchir la page",
+      "failed_ledger_connection": "Erreur de connexion à Ledger, veuillez vérifier votre appareil",
+      "failed_trezor_connection": "Erreur de connexion à Trezor, veuillez vérifier votre appareil",
+      "failed_trezor_popup_blocked": "Veuillez permettre l’affichage de fenêtres contextuelles de Balance",
+      "no_transactions": "Aucune transaction n’a été trouvée pour ce compte",
+      "no_unique_tokens": "Aucun token unique n’a été trouvé pour ce compte ",
+      "no_interactions": "Aucune interaction n’a été trouvée pour ce compte",
+      "please_connect_ledger": "Veuillez choisir Ethereum après la connexion et le déverrouillage de Ledger",
+      "please_connect_trezor": "Veuillez vous connecter à Trezor puis suivez les instructions",
+      "opensea_footer": " est un marché de tokens uniques (non-fongible). En échangeant sur ce marché, on augmente de la valeur de ces tokens. Vous pouvez vendre vos tokens pour de l’argent. Tout cela utilise l’Ethereum. ",
+      "opensea_header": "Comment est-ce que cela marche « sous le capot ? »",
+      "power_by": "Réalisé par",
+      "exchange_not_available": "L’échange n’est pas disponible dans votre région",
+      "learn_more": "En savoir plus"
+    },
+    "notification": {
+      "error": {
+        "no_accounts_found": "Aucun compte Ethereum n’a été trouvé",
+        "invalid_address": "Adresse non valide, veuillez la vérifier",
+        "insufficient_balance": "Ce compte a un solde insuffisant",
+        "insufficient_for_fees": "Solde insuffisant pour payer les frais de transaction",
+        "invalid_address_scanned": "Adresse non valide, veuillez réessayer",
+        "invalid_private_key_scanned": "Clé privée non valide, veuillez réessayer",
+        "failed_scanning_qr_code": "Impossible de scanner le code QR, veuillez réessayer",
+        "failed_get_gas_prices": "Échec de l’obtention des prix de Gas d’Ethereum",
+        "failed_get_tx_fee": "Échec de l’estimation des frais de transaction",
+        "failed_get_account_tx": "Échec de l’obtention des transactions de compte",
+        "generic_error": "Une erreur s’est produite, veuillez réessayer"
+      },
+      "info": {
+        "address_copied_to_clipboard": "L’adresse a été copiée dans le presse-papiers"
+      }
+    },
+    "warning": {
+      "user_is_offline": "Hors connexion, veuillez vérifier votre connexion Internet",
+      "user_is_online": "Connexion réussie ! Vous êtes encore connecté à Internet"
+    },
+    "subscribe_form": {
+      "email_already_subscribed": "Désolé, vous vous êtes déjà inscrit avec cette adresse de courriel",
+      "too_many_signup_request": "Nous avons détecté trop de demandes d’inscription, veuillez réessayer plus tard",
+      "successful": "Veuillez consulter vos courriels",
+      "sending": "En train d’en envoyer...",
+      "generic_error": "Oups, une erreur s’est produite"
+    },
+    "time": {
+      "ms": "ms",
+      "milisecond": "milliseconde",
+      "miliseconds": "millisecondes",
+      "s": "s",
+      "sec": "sec",
+      "secs": "secs",
+      "second": "seconde",
+      "seconds": "secondes",
+      "min": "min",
+      "mins": "mins",
+      "minute": "minute",
+      "minutes": "minutes",
+      "hr": "h",
+      "hrs": "hres",
+      "hour": "heure",
+      "hours": "heures",
+      "day": "jour",
+      "days": "jours",
+      "now": "Maintenant"
+      },
+    "wallet": {
+      "action": {
+        "cancel": "Annuler",
+        "paste": "Coller",
+        "reject": "Refuser",
+        "send": "Envoyer",
+        "to": "À"
+      },
+      "authenticate": {
+        "please": "Veuillez vous authentifier",
+        "please_seed_phrase": "Veuillez vous authentifier pour afficher votre clé mnémonique"
+      },
+      "assets": {
+        "no_price": "actifs sans données de prix"
+      },
+      "intro": {
+        "create_wallet": "Créez un portefeuille",
+        "instructions": "Veuillez ne pas stocker dans votre portefeuille plus que vous n'êtes prêt à perdre.",
+        "warning": "Ceci est une version alpha de l'application.",
+        "welcome": "Bienvenue sur Rainbow"
+      },
+      "feedback": {
+        "cancel": "Non merci",
+        "choice": "Souhaitez-vous copier manuellement l'adresse email de feedback dans votre presse papier ?",
+        "copy_email_address": "Copier adresse email",
+        "email_subject": "📱 Feedback pour l'alpha du wallet Rainbow",
+        "error": "Erreur lors du chargement de votre client mail",
+        "send": "Envoyer feedback"
+      },
+      "loading": {
+        "error": "Une erreur est survenue lors du chargement du portefeuille. Veuillez redémarrer l'application.",
+        "message": "Chargement"
+      },
+      "settings": {
+        "copy_address": "Copier adresse",
+        "copy_seed_phrase": "Copier clé mnémonique",
+        "hide_seed_phrase": "Cacher clé mnémonique",
+        "show_seed_phrase": "Afficher clé mnémonique"
+      },
+      "transaction": {
+        "alert": {
+          "authentication": "L'authentication a échouée",
+          "cancelled_transaction": "Échec de l'envoie de la transaction annulée à WalletConnect",
+          "failed_transaction_status": "Échec de l'envoie du status de la transaction échouée",
+          "transaction_status": "Échec de l'envoie du status de la transaction"
+        },
+        "confirm": "Confirmer transaction",
+        "request": "Demande de transaction",
+        "send": "Envoyer transaction"
+      },
+      "wallet_connect": {
+        "error": "Erreur d'initialisation avec WalletConnect"
+      }
+    }
+  }
+}

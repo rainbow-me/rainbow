@@ -29,10 +29,10 @@ const QRCodeScannerNeedsAuthorization = ({ onPressSettings }) => (
     <Monospace
       color="mediumGrey"
       css={margin(7, 0, 30)}
-      lineHeight="looser"
+      lineHeight="loose"
     >
       In order to use WalletConnect, you must first give Rainbow
-      permission to access your phone's camera.
+      permission to access your camera.
     </Monospace>
     <Button self="start" onPress={onPressSettings}>
       Open settings

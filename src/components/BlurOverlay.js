@@ -17,8 +17,19 @@ const BlurOverlay = ({
   blurAmount,
   blurType,
   opacity,
+  translateX,
+  translateY,
 }) => (
-  <Animated.View style={[styles.overlay, { backgroundColor, opacity }]}>
+  <Animated.View
+    style={[
+      styles.overlay,
+      {
+        backgroundColor,
+        opacity,
+        transform: [{ translateX }, { translateY }],
+      },
+    ]}
+  >
     <VibrancyView
       blurAmount={blurAmount}
       blurType={blurType}
@@ -32,11 +43,15 @@ BlurOverlay.propTypes = {
   blurAmount: PropTypes.number,
   blurType: PropTypes.oneOf(['dark', 'light', 'xlight']).isRequired,
   opacity: PropTypes.object,
+  translateX: PropTypes.any,
+  translateY: PropTypes.any,
 };
 
 BlurOverlay.defaultProps = {
-  blurAmount: 5,
+  blurAmount: 15,
   blurType: 'dark',
+  translateX: 0,
+  translateY: 0,
 };
 
 export default pure(BlurOverlay);

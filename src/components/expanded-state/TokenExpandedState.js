@@ -8,7 +8,8 @@ import {
   withHandlers,
   withProps,
 } from 'recompact';
-import { withAccountSettings } from '../../hoc';
+import { withAccountData, withAccountSettings } from '../../hoc';
+import { ethereumUtils } from '../../utils';
 import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
 
@@ -42,23 +43,33 @@ TokenExpandedState.propTypes = {
 };
 
 export default compose(
+  withAccountData,
   withAccountSettings,
   withProps(({
-    asset: { name, symbol, ...asset },
+    asset: {
+      address,
+      name,
+      symbol,
+      ...asset
+    },
+    assets,
     nativeCurrencySymbol,
-  }) => ({
-    price: get(asset, 'native.price.display', `${nativeCurrencySymbol}0.00`),
-    subtitle: get(asset, 'balance.display', symbol),
-    title: name,
-  })),
+  }) => {
+    const selectedAsset = ethereumUtils.getAsset(assets, address);
+    return {
+      price: get(selectedAsset, 'native.price.display', null),
+      subtitle: get(selectedAsset, 'balance.display', symbol),
+      title: name,
+    };
+  }),
   withHandlers({
-    onPressSend: ({ navigation, asset: { symbol } }) => () => {
+    onPressSend: ({ navigation, asset }) => () => {
       navigation.goBack();
 
       InteractionManager.runAfterInteractions(() => {
-        navigation.navigate('SendSheet', { asset: symbol });
+        navigation.navigate('SendSheet', { asset });
       });
     },
   }),
-  onlyUpdateForKeys(['price']),
+  onlyUpdateForKeys(['price', 'subtitle']),
 )(TokenExpandedState);

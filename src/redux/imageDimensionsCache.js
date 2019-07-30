@@ -7,18 +7,18 @@ const PRUNE = 'imageDimensionsCache/PRUNE';
 
 export const pruneImageDimensionsCache = idsToPrune => dispatch => dispatch({
   idsToPrune,
-  type: PRUNE
+  type: PRUNE,
 });
 
 export const updateImageDimensionsCache = payload => dispatch => dispatch({
   ...payload,
-  type: MERGE
+  type: MERGE,
 });
 
 // // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {};
 
-export default (state = INITIAL_STATE, action) =>
+export default (state = INITIAL_STATE, action) => (
   produce(state, draft => {
     switch (action.type) {
     case MERGE:
@@ -30,4 +30,5 @@ export default (state = INITIAL_STATE, action) =>
     default:
       break;
     }
-  });
+  })
+);

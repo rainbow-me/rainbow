@@ -5,11 +5,11 @@ import { padding } from '../../styles';
 import { Row } from '../layout';
 
 const StatusBarHeight = getStatusBarHeight(true);
-const HeaderHeight = 54;
+const HeaderHeight = 52;
 const HeaderHeightWithStatusBar = HeaderHeight + StatusBarHeight;
 
 const Container = styled(Row).attrs({ align: 'end' })`
-  ${padding(StatusBarHeight, 9, 1)}
+  ${padding(StatusBarHeight, 9, 0)};
   flex-shrink: 0;
   height: ${({ excludeStatusBarHeight }) => (
     (excludeStatusBarHeight === true)

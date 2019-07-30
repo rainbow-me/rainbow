@@ -6,7 +6,7 @@ import {
   toClass,
 } from 'recompact';
 import SvgPrimitive from 'svgs';
-import { reduceStylesArrayToObject } from '../../utils';
+import { reduceArrayToObject } from '../../utils';
 
 const BlacklistedSVGProps = ['direction'];
 
@@ -14,7 +14,7 @@ const Svg = compose(
   omitProps(...BlacklistedSVGProps),
   mapProps(({ style, ...props }) => ({
     ...props,
-    style: reduceStylesArrayToObject(style),
+    style: reduceArrayToObject(style),
   })),
 )(SvgPrimitive);
 

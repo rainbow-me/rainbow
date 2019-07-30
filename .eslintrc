@@ -22,7 +22,6 @@
     "class-methods-use-this": "off",
     "no-console": "off",
     "max-len": ["error", {"code": 160, "comments": 500}],
-    #"max-len": ["off", {"code": 160, "comments": 500}],
     "no-tabs": "error",
     "indent": ["error", 2],
     "no-use-before-define": ["error", {"functions": false, "variables": false}],

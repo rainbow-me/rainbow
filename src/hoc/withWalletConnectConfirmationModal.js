@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { 
+import {
   walletConnectApproveSession,
   walletConnectRejectSession,
 } from '../redux/walletconnect';

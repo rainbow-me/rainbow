@@ -1,4 +1,3 @@
-import { withAccountAssets } from '@rainbow-me/rainbow-common';
 import { get } from 'lodash';
 import {
   compose,
@@ -7,7 +6,7 @@ import {
   withProps,
 } from 'recompact';
 import { createSelector } from 'reselect';
-import { withNeverRerender } from '../hoc';
+import { withAccountData, withUniqueTokens } from '../hoc';
 import { deviceUtils } from '../utils';
 import ExpandedAssetScreen from './ExpandedAssetScreen';
 
@@ -28,9 +27,9 @@ const buildExpandedAssetsSelector = createSelector(
 );
 
 export default compose(
-  withAccountAssets,
+  withAccountData,
+  withUniqueTokens,
   defaultProps(ExpandedAssetScreen.defaultProps),
   withProps(buildExpandedAssetsSelector),
   withHandlers({ onPressBackground: ({ navigation }) => () => navigation.goBack() }),
-  withNeverRerender,
 )(ExpandedAssetScreen);

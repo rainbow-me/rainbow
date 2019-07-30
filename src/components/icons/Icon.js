@@ -4,7 +4,6 @@ import Flex from '../layout/Flex';
 
 import ArrowCircledIcon from './svg/ArrowCircledIcon';
 import ArrowIcon from './svg/ArrowIcon';
-import AssetListItemSkeletonIcon from './svg/AssetListItemSkeletonIcon';
 import AvatarIcon from './svg/AvatarIcon';
 import CameraIcon from './svg/CameraIcon';
 import CaretIcon from './svg/CaretIcon';
@@ -18,6 +17,7 @@ import CompassIcon from './svg/CompassIcon';
 import CopyIcon from './svg/CopyIcon';
 import CrosshairIcon from './svg/CrosshairIcon';
 import DotIcon from './svg/DotIcon';
+import DoubleCaretIcon from './svg/DoubleCaretIcon';
 import FaceIdIcon from './svg/FaceIdIcon';
 import GearIcon from './svg/GearIcon';
 import HandleIcon from './svg/HandleIcon';
@@ -39,7 +39,6 @@ const Icon = ({ name, ...props }) => createElement(Icon.IconTypes[name] || Flex,
 Icon.IconTypes = {
   arrow: ArrowIcon,
   arrowCircled: ArrowCircledIcon,
-  assetListItemSkeleton: AssetListItemSkeletonIcon,
   avatar: AvatarIcon,
   camera: CameraIcon,
   caret: CaretIcon,
@@ -53,6 +52,7 @@ Icon.IconTypes = {
   copy: CopyIcon,
   crosshair: CrosshairIcon,
   dot: DotIcon,
+  doubleCaret: DoubleCaretIcon,
   faceid: FaceIdIcon,
   gear: GearIcon,
   handle: HandleIcon,

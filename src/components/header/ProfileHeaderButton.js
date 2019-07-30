@@ -20,7 +20,7 @@ const ProfileHeaderButton = ({ onPress, pendingRequestCount }) => (
     transformOrigin="left"
   >
     <Centered>
-      <Avatar size={32} />
+      <Avatar size={34} />
       {pendingRequestCount > 0 && (
         <Badge
           delay={1500}

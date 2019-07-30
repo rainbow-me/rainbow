@@ -5,6 +5,7 @@ import { withRotationForDirection } from '../../../hoc';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
+/* eslint-disable max-len */
 const ArrowIcon = ({
   color,
   height,
@@ -18,6 +19,7 @@ const ArrowIcon = ({
     />
   </Svg>
 );
+/* eslint-disable max-len */
 
 ArrowIcon.propTypes = {
   color: PropTypes.string,

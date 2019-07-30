@@ -6,7 +6,7 @@ import {
   createMaterialTopTabNavigator,
   createStackNavigator,
 } from 'react-navigation';
-import Navigation from '../navigation';
+import { Navigation } from '../navigation';
 import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
@@ -16,6 +16,7 @@ import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from './ProfileScreenWithData';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
 import ReceiveModal from './ReceiveModal';
+import ExampleScreen from './ExampleScreen';
 import WalletConnectConfirmationModal from './WalletConnectConfirmationModal';
 import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
@@ -43,11 +44,22 @@ const SwipeStack = createMaterialTopTabNavigator({
   headerMode: 'none',
   initialRouteName: 'WalletScreen',
   mode: 'modal',
+  springConfig: {
+    damping: 16,
+    mass: 0.3,
+    overshootClamping: false,
+    restDisplacementThreshold: 1,
+    restSpeedThreshold: 1,
+    stiffness: 140,
+  },
+  swipeDistanceThreshold: 30,
+  swipeVelocityThreshold: 10,
   tabBarComponent: null,
 });
 
 const MainNavigator = createStackNavigator({
   ConfirmRequest: TransactionConfirmationScreenWithData,
+  ExampleScreen,
   ExpandedAssetScreen: {
     navigationOptions: {
       effect: 'expanded',
@@ -97,6 +109,7 @@ const MainNavigator = createStackNavigator({
 
 const AppContainer = createAppContainer(MainNavigator);
 
+// eslint-disable-next-line react/prop-types
 const AppContainerWithAnalytics = ({ ref, screenProps }) => (
   <AppContainer
     onNavigationStateChange={(prevState, currentState, action) => {
@@ -122,7 +135,7 @@ const AppContainerWithAnalytics = ({ ref, screenProps }) => (
           };
         }
 
-        analytics.screen(routeName, paramsToTrack);
+        return analytics.screen(routeName, paramsToTrack);
       }
     }}
     ref={ref}

@@ -28,11 +28,11 @@ const StatusProps = {
   },
 };
 
-const TransactionStatusBadge = ({ pending, status }) => {
+const TransactionStatusBadge = ({ pending, status, ...props }) => {
   const statusColor = pending ? colors.primaryBlue : colors.blueGreyMediumLight;
 
   return (
-    <RowWithMargins align="center" margin={4}>
+    <RowWithMargins align="center" margin={4} {...props}>
       {pending && (
         <SpinAnimation>
           <FastImage

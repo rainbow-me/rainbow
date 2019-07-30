@@ -1,5 +1,9 @@
 import NetInfo from '@react-native-community/netinfo';
-import { compose, lifecycle, withHandlers, withState } from 'recompact';
+import {
+  compose,
+  lifecycle,
+  withState,
+} from 'recompact';
 
 const withNetInfo = ComponentToWrap => compose(
   withState('isConnected', 'setIsConnected', true),

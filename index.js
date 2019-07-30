@@ -4,7 +4,7 @@ import './shim';
 /* eslint-disable import/first */
 import RNLanguages from 'react-native-languages';
 import lang from 'i18n-js';
-import { resources } from '@rainbow-me/rainbow-common';
+import { resources } from './src/languages';
 
 // eslint-disable-next-line
 import App from './src/App';

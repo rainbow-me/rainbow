@@ -4,7 +4,7 @@ import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
 import { compose, onlyUpdateForKeys, withProps } from 'recompact';
-import { removeTransaction } from '../../redux/transactionsToApprove';
+import { removeRequest } from '../../redux/requests';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Button } from '../buttons';
@@ -113,9 +113,9 @@ const getPercentageOfTimeElapsed = (startDate, endDate) => {
 };
 
 export default compose(
-  connect(null, { removeExpiredRequest: removeTransaction }),
+  connect(null, { removeExpiredRequest: removeRequest }),
   withNavigation,
-  withProps(({ item: { transactionDisplayDetails: { timestampInMs } } }) => {
+  withProps(({ item: { displayDetails: { timestampInMs } } }) => {
     const createdAt = new Date(timestampInMs);
     const expiresAt = addHours(createdAt, 1);
     const percentElapsed = getPercentageOfTimeElapsed(createdAt, expiresAt);

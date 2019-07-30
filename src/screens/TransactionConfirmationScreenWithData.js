@@ -1,4 +1,3 @@
-import { estimateGas, getTransactionCount, toHex } from '@rainbow-me/rainbow-common';
 import analytics from '@segment/analytics-react-native';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
@@ -14,15 +13,16 @@ import {
   signPersonalMessage,
   sendTransaction,
 } from '../model/wallet';
+import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
 import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
 class TransactionConfirmationScreenWithData extends PureComponent {
   static propTypes = {
+    dataAddNewTransaction: PropTypes.func,
     isFocused: PropTypes.bool.isRequired,
     navigation: PropTypes.any,
-    removeTransaction: PropTypes.func,
+    removeRequest: PropTypes.func,
     transactionCountNonce: PropTypes.number,
-    transactionsAddNewTransaction: PropTypes.func,
     updateTransactionCountNonce: PropTypes.func,
     walletConnectSendStatus: PropTypes.func,
   }
@@ -68,21 +68,23 @@ class TransactionConfirmationScreenWithData extends PureComponent {
 
     if (transactionHash) {
       this.props.updateTransactionCountNonce(maxTxnCount + 1);
-      // TODO add request type
       const txDetails = {
-        asset: get(transactionDetails, 'transactionDisplayDetails.payload.asset'),
+        amount: get(transactionDetails, 'displayDetails.payload.value'),
+        asset: get(transactionDetails, 'displayDetails.payload.asset'),
         dappName: get(transactionDetails, 'dappName'),
-        from: get(transactionDetails, 'transactionDisplayDetails.payload.from'),
-        gasLimit: get(transactionDetails, 'transactionDisplayDetails.payload.gasLimit'),
-        gasPrice: get(transactionDetails, 'transactionDisplayDetails.payload.gasPrice'),
+        from: get(transactionDetails, 'displayDetails.payload.from'),
+        gasLimit: get(transactionDetails, 'displayDetails.payload.gasLimit'),
+        gasPrice: get(transactionDetails, 'displayDetails.payload.gasPrice'),
         hash: transactionHash,
-        nonce: get(transactionDetails, 'transactionDisplayDetails.payload.nonce'),
-        to: get(transactionDetails, 'transactionDisplayDetails.payload.to'),
-        value: get(transactionDetails, 'transactionDisplayDetails.payload.value'),
+        nonce: get(transactionDetails, 'displayDetails.payload.nonce'),
+        to: get(transactionDetails, 'displayDetails.payload.to'),
       };
-      this.props.transactionsAddNewTransaction(txDetails);
-      this.props.removeTransaction(transactionDetails.requestId);
-      await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, transactionHash);
+      this.props.dataAddNewTransaction(txDetails);
+      this.props.removeRequest(transactionDetails.requestId);
+      try {
+        await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, transactionHash);
+      } catch (error) {
+      }
       analytics.track('Approved WalletConnect transaction request');
       this.closeScreen();
     } else {
@@ -103,7 +105,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     }
 
     if (flatFormatSignature) {
-      this.props.removeTransaction(transactionDetails.requestId);
+      this.props.removeRequest(transactionDetails.requestId);
       await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, flatFormatSignature);
       analytics.track('Approved WalletConnect signature request');
       this.closeScreen();
@@ -127,8 +129,8 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     try {
       await this.sendFailedTransactionStatus();
       const { transactionDetails } = this.props.navigation.state.params;
-      const { requestId, transactionDisplayDetails: { requestType } } = transactionDetails;
-      this.props.removeTransaction(requestId);
+      const { requestId, displayDetails: { requestType } } = transactionDetails;
+      this.props.removeRequest(requestId);
       const rejectionType = requestType === 'message' ? 'signature' : 'transaction';
       analytics.track(`Rejected WalletConnect ${rejectionType} request`);
     } catch (error) {
@@ -147,7 +149,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
       transactionDetails: {
         dappName,
         imageUrl,
-        transactionDisplayDetails: {
+        displayDetails: {
           type,
           payload,
         },

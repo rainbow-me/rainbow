@@ -5,6 +5,7 @@ import { withRotationForDirection } from '../../../hoc';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
+/* eslint-disable max-len */
 const ArrowCircledIcon = ({ color, ...props }) => (
   <Svg height="15" width="14" viewBox="0 0 14 15" {...props}>
     <Path
@@ -14,6 +15,7 @@ const ArrowCircledIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
+/* eslint-disable max-len */
 
 ArrowCircledIcon.propTypes = {
   color: PropTypes.string,

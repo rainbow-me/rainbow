@@ -1,27 +1,16 @@
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, withHandlers, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
+import { Button } from '../components/buttons';
 import Divider from '../components/Divider';
+import { Nbsp } from '../components/html-entities';
 import { Column } from '../components/layout';
-import {
-  Modal,
-} from '../components/modal';
-import {
-  Bold,
-  Text,
-} from '../components/text';
-import { Button } from '../components/buttons'
-import { padding } from '../styles';
+import { Modal } from '../components/modal';
+import { Bold, Text } from '../components/text';
 import { withWalletConnectConfirmationModal } from '../hoc';
-
-const Content = styled(Column).attrs({
-  align: 'center',
-  flex: 1,
-  justify: 'start',
-})`
-  ${padding(25)}
-`;
+import { padding } from '../styles';
 
 const DescriptionText = styled(Text)`
   line-height: 21;
@@ -30,32 +19,33 @@ const DescriptionText = styled(Text)`
 `;
 
 const WalletConnectConfirmationModal = ({
-  onCloseModal,
   onApprove,
+  onCloseModal,
   onReject,
   peerMeta,
 }) => (
   <Modal height={300} onCloseModal={onCloseModal}>
-    <Content>
+    <Column
+      align="center"
+      css={padding(25)}
+      flex={1}
+      justify="start"
+    >
       <DescriptionText>
-        <Bold>{`${peerMeta.name}`}</Bold>
-        {' wants to connect to your wallet.'}
+        <Bold>{get(peerMeta, 'name', 'Unknown dapp')}</Bold>
+        <DescriptionText><Nbsp />wants to connect to your wallet.</DescriptionText>
       </DescriptionText>
-    </Content>
+    </Column>
     <Divider insetLeft={16} insetRight={16} />
-    <Button onPress={onApprove}>
-      {'Connect'}
-    </Button>
-    <Button onPress={onReject}>
-      {'Cancel'}
-    </Button>
+    <Button onPress={onApprove}>Connect</Button>
+    <Button onPress={onReject}>Cancel</Button>
   </Modal>
 );
 
 WalletConnectConfirmationModal.propTypes = {
   navigation: PropTypes.object.isRequired,
-  onCloseModal: PropTypes.func.isRequired,
   onApprove: PropTypes.func.isRequired,
+  onCloseModal: PropTypes.func.isRequired,
   onReject: PropTypes.func.isRequired,
   peerId: PropTypes.string.isRequired,
   peerMeta: PropTypes.object.isRequired,
@@ -63,13 +53,11 @@ WalletConnectConfirmationModal.propTypes = {
 
 export default compose(
   withWalletConnectConfirmationModal,
-  withProps(({ navigation}) => {
-    const { peerId, peerMeta } = navigation.state.params;
-    return { peerId, peerMeta };
-  }),
-  withHandlers({
-    onCloseModal: ({ navigation }) => () => navigation.goBack(),
-  }),
+  withProps(({ navigation }) => ({
+    peerId: navigation.getParam('peerId'),
+    peerMeta: navigation.getParam('peerMeta'),
+  })),
+  withHandlers({ onCloseModal: ({ navigation }) => () => navigation.goBack() }),
   withHandlers({
     onApprove: ({ onCloseModal, peerId, walletConnectApproveSession }) => () => {
       walletConnectApproveSession(peerId);

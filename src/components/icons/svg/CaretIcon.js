@@ -5,6 +5,7 @@ import { withRotationForDirection } from '../../../hoc';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
+/* eslint-disable max-len */
 const CaretIcon = ({
   color,
   direction,
@@ -24,6 +25,7 @@ const CaretIcon = ({
     />
   </Svg>
 );
+/* eslint-disable max-len */
 
 CaretIcon.propTypes = {
   color: PropTypes.string,

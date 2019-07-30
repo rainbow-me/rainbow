@@ -4,22 +4,26 @@ import { Path } from 'svgs';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
-const CloseIcon = ({ color, ...props }) => (
-  <Svg height="30" width="30" viewBox="0 0 32 32" {...props}>
+/* eslint-disable max-len */
+const CloseIcon = ({ color, size, ...props }) => (
+  <Svg height={size} width={size} viewBox="0 0 12 12" {...props}>
     <Path
-      d="M31.384 31.387a2 2 0 0 1-2.828 0l-12.588-12.58L3.392 31.375a2 2 0 0 1-2.82-.008 1.998 1.998 0 0 1-.008-2.819L13.14 15.98.566 3.413A1.998 1.998 0 0 1 .586.608a2 2 0 0 1 2.808-.02l12.574 12.566L28.554.576a2 2 0 0 1 3.366.886 1.998 1.998 0 0 1-.539 1.94L18.796 15.98l12.588 12.58a1.997 1.997 0 0 1 0 2.827z"
+      d="M11.742 11.75a.857.857 0 0 1-1.212 0L5.992 7.213l-4.532 4.53a.857.857 0 0 1-1.212-1.21l4.533-4.53-4.532-4.53A.856.856 0 0 1 1.46.264l4.533 4.529L10.529.259a.857.857 0 1 1 1.212 1.21L7.204 6.004l4.538 4.535a.856.856 0 0 1 0 1.211z"
       fill={color}
       fillRule="nonzero"
     />
   </Svg>
 );
+/* eslint-disable max-len */
 
 CloseIcon.propTypes = {
   color: PropTypes.string,
+  size: PropTypes.number,
 };
 
 CloseIcon.defaultProps = {
   color: colors.black,
+  size: 12,
 };
 
 export default CloseIcon;

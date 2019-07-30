@@ -13,7 +13,7 @@ const Container = styled(Row).attrs({
   flex: 0,
   justify: 'space-between',
 })`
-  ${borders.buildRadius('top', 12)};
+  ${borders.buildRadius('top', 20)};
   background-color: ${colors.white};
   flex-shrink: 0;
   height: ${ModalHeaderHeight};
@@ -44,7 +44,7 @@ const ModalHeader = ({
     <TitleContainer>
       <TruncatedText
         height={21}
-        letterSpacing="tight"
+        letterSpacing="tighter"
         size="large"
         weight="bold"
       >

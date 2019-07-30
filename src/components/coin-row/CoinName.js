@@ -5,7 +5,7 @@ import { TruncatedText } from '../text';
 
 const CoinName = ({ paddingRight, ...props }) => (
   <TruncatedText
-    color="blueGreyDark"
+    color="dark"
     size="lmedium"
     style={{ paddingRight }}
     {...props}

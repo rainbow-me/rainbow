@@ -53,14 +53,18 @@ target 'Rainbow' do
   pod 'react-native-fast-image', :path => '../node_modules/react-native-fast-image'
   pod 'react-native-version-number', :path => '../node_modules/react-native-version-number'
 
+  pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
   pod 'RNDeviceInfo', :path => '../node_modules/react-native-device-info'
   pod 'RNIOS11DeviceCheck', :path => '../node_modules/react-native-ios11-devicecheck/ios'
   pod 'RNLanguages', :path => '../node_modules/react-native-languages'
   pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
   pod 'RNScreens', :path => '../node_modules/react-native-screens'
+  pod 'RNStoreReview', :path => '../node_modules/react-native-store-review/ios'
 
   pod 'FLAnimatedImage'
   pod 'libwebp'
   pod 'RNAnalytics', :path => '../node_modules/@segment/analytics-react-native'
+
+  pod 'RNCMaskedView', :path => '../node_modules/@react-native-community/masked-view'
 
 end
