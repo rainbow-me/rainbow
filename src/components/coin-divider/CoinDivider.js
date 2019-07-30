@@ -10,20 +10,24 @@ import { Icon } from '../icons';
 import { Centered } from '../layout';
 import Animated from 'react-native-reanimated';
 import { Monospace } from '../text';
+import { withFabSendAction } from '../../hoc';
+import { compose } from 'recompact';
+import Highlight from '../Highlight';
 
 const marginLeft = 15;
 const marginRight = 19;
 const Wrapper = styled(View)`
-  margin-top: 8px;
-  margin-right: ${marginRight}px;
-  margin-left: ${marginLeft}px;
-  width: ${deviceUtils.dimensions.width - marginRight - marginLeft};
+  padding-right: ${marginRight}px;
+  padding-left: ${marginLeft}px;
+  width: ${deviceUtils.dimensions.width};
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  height: 50px;
 `;
 
 const Container = styled(View)`
+  margin-top: 4px;
   height: 30px;
   background-color: ${colors.lightGrey};
   border-radius: 15px;
@@ -43,13 +47,18 @@ const Header = styled(Text)`
   opacity: 0.6;
 `;
 
+const enhance = compose(
+  withFabSendAction,
+);
 
-const CoinDivider = ({
+const CoinDivider = enhance(({
   openSmallBalances,
   onChangeOpenBalances,
   balancesSum,
+  isCoinDivider,
 }) => (
     <Wrapper>
+      <Highlight highlight={isCoinDivider} />
       <ButtonPressAnimation scaleTo={0.9} onPress={onChangeOpenBalances}>
         <Container>
           <Header style={{ marginRight: openSmallBalances ? 0 : -10 }}>
@@ -81,21 +90,24 @@ const CoinDivider = ({
           </Centered>
         </Container>
       </ButtonPressAnimation>
-      <Monospace
-        color="blueGreyDark"
-        size="lmedium"
-      >
-        {balancesSum}
-      </Monospace>
+      {!openSmallBalances &&
+        <Monospace
+          color="blueGreyDark"
+          size="lmedium"
+        >
+          {balancesSum}
+        </Monospace>
+      }
     </Wrapper>
-  );
+  ));
 
 CoinDivider.propTypes = {
   openSmallBalances: PropTypes.bool,
   onChangeOpenBalances: PropTypes.func,
+  balancesSum: PropTypes.string,
 };
 
-CoinDivider.height = 38;
+CoinDivider.height = 50;
 
 
 export default CoinDivider;

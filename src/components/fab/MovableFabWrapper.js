@@ -315,6 +315,13 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs, openInvestment
         });
         height += CoinRow.height;
       }
+      areas.push({
+        bottom: height + CoinDivider.height,
+        id: 'smallBalancesHeader',
+        left: 0,
+        right: deviceUtils.dimensions.width,
+        top: height,
+      });
       height += CoinDivider.height;
       if (openSmallBalances) {
         let smallBalances = balances.data[balances.data.length - 1].assets;

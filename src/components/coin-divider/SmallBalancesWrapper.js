@@ -28,11 +28,15 @@ const SmallBalancesWrapper = ({
   let [height, setHeight] = useState(0);
   const ref = useRef();
 
-
   const onPress = () => {
     ref.current.animateNextTransition();
     setHeight(!openSmallBalances ? (CoinRow.height * assets.length) : 0);
     setOpenSmallBalances(!openSmallBalances);
+  }
+
+  if (openSmallBalances && height === 0 ) {
+    ref.current.animateNextTransition();
+    setHeight(CoinRow.height * assets.length);
   }
 
   return (
@@ -41,7 +45,7 @@ const SmallBalancesWrapper = ({
         ref={ref}
         transition={transition}
       >
-        <CoinDivider balancesSum={balancesSum(assets)} openSmallBalances={openSmallBalances} onChangeOpenBalances={onPress} />
+        <CoinDivider coinDivider={true} balancesSum={balancesSum(assets)} openSmallBalances={openSmallBalances} onChangeOpenBalances={onPress} />
         <View
           style={{
             height: height,

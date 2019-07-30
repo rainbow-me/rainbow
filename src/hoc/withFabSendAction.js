@@ -7,6 +7,7 @@ import {
   withProps,
 } from 'recompact';
 import { setOpenFamilyTabs } from '../redux/openFamilyTabs';
+import { setOpenSmallBalances } from '../redux/openBalances';
 
 const mapStateToProps = ({
   selectedWithFab: {
@@ -23,11 +24,12 @@ let currentFamilyId;
 let timer;
 
 export default compose(
-  connect(mapStateToProps, { setOpenFamilyTabs }),
+  connect(mapStateToProps, { setOpenFamilyTabs, setOpenSmallBalances }),
   withProps(({ selectedId, uniqueId, familyName }) => ({
     fabDropped: selectedId === -3,
     family: selectedId === familyName,
     highlight: selectedId === uniqueId || selectedId === familyName,
+    isCoinDivider: selectedId === 'smallBalancesHeader',
   })),
   omitProps('selectedId'),
   lifecycle({
@@ -46,6 +48,11 @@ export default compose(
         }
       } else {
         openFamilyCheck = 0;
+      }
+      if( this.props.isCoinDivider == true && !this.props.fabDropped ) {
+        timer = setTimeout(() => {
+          this.props.setOpenSmallBalances(true);
+        }, 300);
       }
       if (prevProps.highlight && !this.props.highlight && this.props.fabDropped) {
         if (this.props.actionType === 'send') {
