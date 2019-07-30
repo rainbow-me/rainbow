@@ -7,10 +7,6 @@ import { deviceUtils } from '../../utils';
 import { Centered, Column } from '../layout';
 import TouchableBackdrop from '../TouchableBackdrop';
 
-const Container = styled(Centered)`
-  height: 100%;
-`;
-
 const ModalElement = styled(Column)`
   background-color: ${colors.white};
   border-radius: ${({ radius }) => radius || 12};
@@ -26,14 +22,19 @@ const Modal = ({
   containerPadding,
   ...props
 }) => (
-  <Container padding={containerPadding} direction="column">
+  <Centered
+    direction="column"
+    height="100%"
+    padding={containerPadding}
+    width="100%"
+  >
     <StatusBar barStyle={statusBarStyle} />
     <TouchableBackdrop onPress={onCloseModal} />
     <ModalElement
       {...props}
       height={height}
     />
-  </Container>
+  </Centered>
 );
 
 Modal.propTypes = {
