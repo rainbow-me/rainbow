@@ -86,7 +86,7 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator({
 
 // I need it for changing navigationOptions dynamically
 // for preventing swipe down to close on CurrencySelectScreen
-const EnhancedExchangeModalNavigator = props => <ExchangeModalNavigator {...props} />;
+const EnhancedExchangeModalNavigator = React.memo(props => <ExchangeModalNavigator {...props} />);
 EnhancedExchangeModalNavigator.router = ExchangeModalNavigator.router;
 EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => ({
   ...navigation.state.params,
@@ -190,6 +190,7 @@ const MainNavigator = createStackNavigator({
     onTransitionEnd,
     onTransitionStart,
   },
+  disableKeyboardHandling: true, // XXX not sure about this from rebase
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',
   mode: 'modal',
@@ -210,14 +211,14 @@ const AppContainerWithAnalytics = ({ ref, screenProps }) => (
         return analytics.screen(`${routeName}${subRoute ? `>${subRoute}` : ''}`);
       }
 
-      if (prevRouteName === 'MainExchangeScreen' && routeName === 'WalletScreen') {
-        store.dispatch(updateTransitionProps({ blurColor: null }));
-      } else if (routeName === 'MainExchangeScreen') {
-        store.dispatch(updateTransitionProps({ blurColor: colors.alpha(colors.black, 0.9) }));
-      }
-
       if (routeName !== prevRouteName) {
         let paramsToTrack = null;
+
+        if (prevRouteName === 'MainExchangeScreen' && routeName === 'WalletScreen') {
+          store.dispatch(updateTransitionProps({ blurColor: null }));
+        } else if (prevRouteName === 'WalletScreen' && routeName === 'MainExchangeScreen') {
+          store.dispatch(updateTransitionProps({ blurColor: colors.alpha(colors.black, 0.9) }));
+        }
 
         if (routeName === 'ExpandedAssetScreen') {
           const { asset, type } = params;
