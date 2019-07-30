@@ -54,7 +54,7 @@ const BackupSection = ({
           <CopyTooltip
             navigation={navigation}
             textToCopy={seedPhrase}
-            tooltipText="Copy Seed Phrase"
+            tooltipText="Copy Private Key"
           >
             <Monospace
               align="center"
@@ -81,7 +81,7 @@ const BackupSection = ({
       }
     </Content>
     <ToggleSeedPhraseButton onPress={toggleSeedPhrase}>
-      {seedPhrase ? 'Hide' : 'Show'} Seed Phrase
+      {seedPhrase ? 'Hide' : 'Show'} Private Key
     </ToggleSeedPhraseButton>
   </Column>
 );

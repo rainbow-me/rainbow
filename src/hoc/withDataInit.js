@@ -127,7 +127,7 @@ export default Component => compose(
       try {
         const { isImported, isNew, walletAddress } = await walletInit(seedPhrase);
         if (isNil(walletAddress)) {
-          Alert.alert('Import failed due to an invalid seed phrase. Please try again.');
+          Alert.alert('Import failed due to an invalid private key. Please try again.');
           return null;
         }
         if (isImported) {
@@ -155,7 +155,7 @@ export default Component => compose(
       } catch (error) {
         // TODO specify error states more granular
         ownProps.onHideSplashScreen();
-        Alert.alert('Import failed due to an invalid seed phrase. Please try again.');
+        Alert.alert('Import failed due to an invalid private key. Please try again.');
         return null;
       }
     },
