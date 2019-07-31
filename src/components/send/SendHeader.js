@@ -66,10 +66,10 @@ const SendHeader = ({
           && <AddContactButton edit onPress={() => {
             showActionSheetWithOptions({
               cancelButtonIndex: 3,
-              destructiveButtonIndex: 2,
-              options: ['Copy Address', 'Edit Contact', 'Delete Contact', 'Cancel'],
+              destructiveButtonIndex: 0,
+              options: ['Delete Contact', 'Edit Contact', 'Copy Address', 'Cancel'],
             }, async (buttonIndex) => {
-              if (buttonIndex === 0) {
+              if (buttonIndex === 2) {
                 Clipboard.setString(recipient);
               }
               if (buttonIndex === 1) {
@@ -83,7 +83,7 @@ const SendHeader = ({
                   type: 'contact',
                 });
               }
-              if (buttonIndex === 2) {
+              if (buttonIndex === 0) {
                 await deleteLocalContact(recipient);
                 onUpdateContacts();
               }
