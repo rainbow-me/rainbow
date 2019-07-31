@@ -339,7 +339,7 @@ export default class ButtonPressAnimation extends PureComponent {
             }
           }
         }}
-        minDurationMs={800}>
+        minDurationMs={500}>
         {this.tapGesture()}
       </LongPressGestureHandler>
     );
