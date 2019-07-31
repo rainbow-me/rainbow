@@ -43,7 +43,7 @@ class WalletScreen extends Component {
     allAssetsCount: PropTypes.number,
     assets: PropTypes.array,
     assetsTotal: PropTypes.object,
-    blurOpacity: PropTypes.object,
+    blurIntensity: PropTypes.object,
     isEmpty: PropTypes.bool.isRequired,
     isFocused: PropTypes.bool,
     navigation: PropTypes.object,
@@ -68,7 +68,7 @@ class WalletScreen extends Component {
   }
 
   shouldComponentUpdate = (nextProps) => {
-    const isNewBlurOpacity = isNewValueForPath(this.props, nextProps, 'blurOpacity');
+    const isNewBlurIntensity = isNewValueForPath(this.props, nextProps, 'blurIntensity');
     const isNewCurrency = isNewValueForPath(this.props, nextProps, 'nativeCurrency');
     const isNewFetchingAssets = isNewValueForPath(this.props, nextProps, 'fetchingAssets');
     const isNewFetchingUniqueTokens = isNewValueForPath(this.props, nextProps, 'fetchingUniqueTokens');
@@ -79,7 +79,7 @@ class WalletScreen extends Component {
     const isNewTransitionProps = isNewValueForPath(this.props, nextProps, 'transitionProps');
 
     if (!nextProps.isFocused) {
-      return isNewBlurOpacity || isNewTransitionProps;
+      return isNewBlurIntensity || isNewTransitionProps;
     }
 
     return isNewFetchingAssets
@@ -87,7 +87,7 @@ class WalletScreen extends Component {
       || isNewIsEmpty
       || isNewLanguage
       || isNewCurrency
-      || isNewBlurOpacity
+      || isNewBlurIntensity
       || isNewSections
       || isNewShowShitcoins
       || isNewTransitionProps;
@@ -100,7 +100,7 @@ class WalletScreen extends Component {
 
   render = () => {
     const {
-      blurOpacity,
+      blurIntensity,
       isEmpty,
       navigation,
       refreshAccountData,
@@ -132,7 +132,7 @@ class WalletScreen extends Component {
             sections={sections}
           />
         </FabWrapper>
-        <BlurOverlay opacity={blurOpacity} />
+        <BlurOverlay intensity={blurIntensity} />
       </Page>
     );
   }

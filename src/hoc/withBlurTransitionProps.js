@@ -12,12 +12,12 @@ const withBlurTransitionProps = ({
   showingModal,
   position,
 }) => {
-  const blurOpacity = interpolate(position, {
-    inputRange: [0, 0.9, 1],
-    outputRange: [0, 0.1, 1],
+  const blurIntensity = interpolate(position, {
+    inputRange: [0, 1],
+    outputRange: [0, 1],
   });
   const showBlur = !!(isTransitioning || showingModal);
-  return showBlur ? { blurOpacity } : { blurOpacity: new Value(0) };
+  return showBlur ? { blurIntensity } : { blurIntensity: new Value(0) };
 };
 
 const withBlurTransitionPropsSelector = createSelector(
