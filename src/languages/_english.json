@@ -241,7 +241,7 @@
       },
       "authenticate": {
         "please": "Please authenticate",
-        "please_seed_phrase": "Please authenticate to view seed phrase"
+        "please_seed_phrase": "Please authenticate to view private key"
       },
       "push_notifications": {
         "please_enable_title": "Rainbow would like to send you push notifications",

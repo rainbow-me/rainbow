@@ -11,7 +11,7 @@ export const setIsWalletEthZero = payload => dispatch => (
 );
 
 // -- Reducer ----------------------------------------- //
-const INITIAL_STATE = { isWalletEthZero: true };
+const INITIAL_STATE = { isWalletEthZero: false };
 
 export default (state = INITIAL_STATE, action) => (
   produce(state, draft => {

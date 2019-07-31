@@ -39,6 +39,13 @@ import {
 } from '../redux/walletconnect';
 import withHideSplashScreen from './withHideSplashScreen';
 
+const PromiseAllWithFails = async (promises) => (
+  Promise.all(promises.map(promise => (
+    (promise && promise.catch)
+      ? promise.catch(error => error)
+      : promise
+  ))));
+
 export default Component => compose(
   connect(null, {
     clearIsWalletEmpty,
@@ -80,8 +87,7 @@ export default Component => compose(
       const p6 = ownProps.nonceClearState();
       const p7 = ownProps.requestsClearState();
       const p8 = ownProps.uniswapClearState();
-      const promises = [p1, p2, p3, p4, p5, p6, p7, p8];
-      await Promise.all(promises.map(p => p.catch(e => e)));
+      return PromiseAllWithFails([p1, p2, p3, p4, p5, p6, p7, p8]);
     },
     initializeAccountData: (ownProps) => async () => {
       try {
@@ -98,8 +104,7 @@ export default Component => compose(
       const p4 = ownProps.walletConnectLoadState();
       const p5 = ownProps.uniswapLoadState();
       const p6 = ownProps.requestsLoadState();
-      const promises = [p1, p2, p3, p4, p5, p6];
-      await Promise.all(promises.map(p => p.catch(e => e)));
+      return PromiseAllWithFails([p1, p2, p3, p4, p5, p6]);
     },
     refreshAccountData: (ownProps) => async () => {
       try {
@@ -122,7 +127,7 @@ export default Component => compose(
       try {
         const { isImported, isNew, walletAddress } = await walletInit(seedPhrase);
         if (isNil(walletAddress)) {
-          Alert.alert('Import failed due to an invalid seed phrase. Please try again.');
+          Alert.alert('Import failed due to an invalid private key. Please try again.');
           return null;
         }
         if (isImported) {
@@ -136,7 +141,7 @@ export default Component => compose(
         } else {
           const isWalletEmpty = await getIsWalletEmpty(walletAddress, 'mainnet');
           if (isNil(isWalletEmpty)) {
-            await ownProps.checkEthBalance(walletAddress);
+            ownProps.checkEthBalance(walletAddress);
           } else {
             ownProps.setIsWalletEthZero(isWalletEmpty);
           }
@@ -150,7 +155,7 @@ export default Component => compose(
       } catch (error) {
         // TODO specify error states more granular
         ownProps.onHideSplashScreen();
-        Alert.alert('Import failed due to an invalid seed phrase. Please try again.');
+        Alert.alert('Import failed due to an invalid private key. Please try again.');
         return null;
       }
     },

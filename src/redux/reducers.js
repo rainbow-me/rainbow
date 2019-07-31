@@ -5,6 +5,7 @@ import data from './data';
 import imageDimensionsCache from './imageDimensionsCache';
 import isWalletEmpty from './isWalletEmpty';
 import isWalletEthZero from './isWalletEthZero';
+import isWalletImporting from './isWalletImporting';
 import navigation from './navigation';
 import nonce from './nonce';
 import openFamilyTabs from './openFamilyTabs';
@@ -22,6 +23,7 @@ export default combineReducers({
   imageDimensionsCache,
   isWalletEmpty,
   isWalletEthZero,
+  isWalletImporting,
   navigation,
   nonce,
   openFamilyTabs,

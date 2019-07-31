@@ -11,7 +11,7 @@ import {
   withState,
 } from 'recompact';
 import { Alert } from '../components/alerts';
-import { withDataInit, withIsWalletEmpty } from '../hoc';
+import { withDataInit, withIsWalletEmpty, withIsWalletImporting } from '../hoc';
 import { deviceUtils } from '../utils';
 import ImportSeedPhraseSheet from './ImportSeedPhraseSheet';
 import { isValidSeed as validateSeed } from '../helpers/validators';
@@ -35,9 +35,9 @@ const ConfirmImportAlert = onSuccess => (
 const ImportSeedPhraseSheetWithData = compose(
   withDataInit,
   withIsWalletEmpty,
+  withIsWalletImporting,
   withNavigation,
   withState('clipboardContents', 'setClipboardContents', ''),
-  withState('isImporting', 'setIsImporting', false),
   withState('seedPhrase', 'setSeedPhrase', ''),
   withHandlers({
     importSeedPhrase: ({
@@ -45,7 +45,7 @@ const ImportSeedPhraseSheetWithData = compose(
       isEmpty,
       navigation,
       seedPhrase,
-      setIsImporting,
+      setIsWalletImporting,
     }) => async () => {
       try {
         const address = await initializeWallet(seedPhrase.trim());
@@ -53,20 +53,20 @@ const ImportSeedPhraseSheetWithData = compose(
           analytics.track('Imported seed phrase', {
             hadPreviousAddressWithValue: isEmpty,
           });
-          setIsImporting(false);
+          setIsWalletImporting(false);
           navigation.navigate('WalletScreen');
         } else {
-          setIsImporting(false);
+          setIsWalletImporting(false);
         }
       } catch (error) {
-        setIsImporting(false);
+        setIsWalletImporting(false);
         console.error('error importing seed phrase: ', error);
       }
     },
   }),
   withHandlers({
     getClipboardContents: ({ setClipboardContents }) => async () => Clipboard.getString().then(setClipboardContents),
-    onImportSeedPhrase: ({ setIsImporting }) => () => ConfirmImportAlert(() => setIsImporting(true)),
+    onImportSeedPhrase: ({ setIsWalletImporting }) => () => ConfirmImportAlert(() => setIsWalletImporting(true)),
     onInputChange: ({ isImporting, setSeedPhrase }) => ({ nativeEvent }) => {
       if (!isImporting) {
         setSeedPhrase(nativeEvent.text);
