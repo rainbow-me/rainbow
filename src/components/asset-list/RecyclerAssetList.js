@@ -316,7 +316,7 @@ class RecyclerAssetList extends Component {
             }
           }
           const verticalOffset = 17.5;
-          const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 200 : 235);
+          const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 200 : 225);
           const sectionBeforeCollectibles = (AssetListHeader.height * (this.props.sections.length - 1)
             + ListFooter.height * (this.props.sections.length - 1) + CoinRow.height * get(balances, 'data.length', 0)
             + (UniswapInvestmentCard.height + InvestmentCard.margin.vertical) * get(investments, 'data.length', 0) + ListFooter.height);
