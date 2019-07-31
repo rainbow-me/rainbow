@@ -11,7 +11,7 @@ import { colors, position } from '../styles';
 
 const ProfileScreen = ({
   accountAddress,
-  blurOpacity,
+  blurIntensity,
   isEmpty,
   nativeCurrency,
   navigation,
@@ -48,16 +48,16 @@ const ProfileScreen = ({
     />
     {isEmpty && <AddFundsInterstitial />}
     <BlurOverlay
-      backgroundColor={colors.alpha(colors.blueGreyDarker, 0.4)}
+      // backgroundColor={colors.alpha(colors.blueGreyDarker, 0.4)}
       blurType="light"
-      opacity={blurOpacity}
+      intensity={blurIntensity}
     />
   </Page>
 );
 
 ProfileScreen.propTypes = {
   accountAddress: PropTypes.string,
-  blurOpacity: PropTypes.object,
+  blurIntensity: PropTypes.object,
   isEmpty: PropTypes.bool,
   nativeCurrency: PropTypes.string,
   navigation: PropTypes.object,

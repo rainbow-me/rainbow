@@ -1,59 +1,33 @@
-import { VibrancyView } from '@react-native-community/blur';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { StyleSheet, View } from 'react-native';
 import { pure } from 'recompact';
-import { position } from '../styles';
+import Animated from 'react-native-reanimated';
+import { BlurView } from '@react-native-community/blur';
 
-const styles = StyleSheet.create({
-  overlay: {
-    ...position.coverAsObject,
-    zIndex: 1,
-  },
-});
+const { Value, multiply, cond, lessThan } = Animated;
 
-const BlurOverlay = ({
-  backgroundColor,
-  blurAmount,
-  blurType,
-  opacity,
-  translateX,
-  translateY,
-}) => (
-  <Animated.View
-    pointerEvents="none"
-    style={[
-      styles.overlay,
-      {
-        backgroundColor,
-        opacity,
-        transform: [{ translateX }, { translateY }],
-      },
-    ]}
-  >
-    <VibrancyView
-      blurAmount={blurAmount}
+const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
+
+const BlurOverlay = ({ blurType, intensity }) => (
+  <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+    <AnimatedBlurView
+      opacity={cond(lessThan(intensity, 0.05), 0, 1)}
+      blurAmount={multiply(intensity, 15)}
       blurType={blurType}
-      style={styles.overlay}
+      style={StyleSheet.absoluteFill}
     />
-  </Animated.View>
+  </View>
 );
 
 BlurOverlay.propTypes = {
-  backgroundColor: PropTypes.string,
-  blurAmount: PropTypes.number,
-  blurType: PropTypes.oneOf(['dark', 'light', 'xlight']).isRequired,
-  opacity: PropTypes.object,
-  translateX: PropTypes.any,
-  translateY: PropTypes.any,
+  blurType: PropTypes.oneOf(['default', 'light', 'dark']).isRequired,
+  intensity: PropTypes.number,
 };
 
 BlurOverlay.defaultProps = {
-  blurAmount: 15,
   blurType: 'dark',
-  translateX: 0,
-  translateY: 0,
+  intensity: new Value(0),
 };
 
 export default pure(BlurOverlay);
