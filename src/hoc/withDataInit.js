@@ -141,7 +141,7 @@ export default Component => compose(
         } else {
           const isWalletEmpty = await getIsWalletEmpty(walletAddress, 'mainnet');
           if (isNil(isWalletEmpty)) {
-            await ownProps.checkEthBalance(walletAddress);
+            ownProps.checkEthBalance(walletAddress);
           } else {
             ownProps.setIsWalletEthZero(isWalletEmpty);
           }
