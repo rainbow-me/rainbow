@@ -94,7 +94,6 @@ const Placeholder = styled(Text)`
 
 
 class AddContactState extends React.PureComponent {
-
   constructor(props) {
     super(props);
 
@@ -150,10 +149,10 @@ class AddContactState extends React.PureComponent {
     showActionSheetWithOptions({
       cancelButtonIndex: 1,
       destructiveButtonIndex: 0,
-      options: [`Delete Contact`, 'Cancel'],
+      options: ['Delete Contact', 'Cancel'],
     }, async (buttonIndex) => {
       if (buttonIndex === 0) {
-        this.props.onUnmountModal("", 0, false);
+        this.props.onUnmountModal('', 0, false);
         await deleteLocalContact(this.props.address);
         this.props.onCloseModal();
         this.props.navigation.goBack();
@@ -162,81 +161,93 @@ class AddContactState extends React.PureComponent {
   }
 
   render() {
-    return <TouchableWithoutFeedback onPress={() => this.props.navigation.goBack()}>
-      <KeyboardAvoidingView behavior="padding">
-        <FloatingPanels>
-          <Container>
-            <TouchableWithoutFeedback>
-              <AssetPanel>
-                <TopMenu>
-                  <ButtonPressAnimation onPress={this.onChangeColor} scaleTo={0.96}>
-                    <NameCircle style={{ backgroundColor: colors.avatarColor[this.state.color] }}>
-                      <FirstLetter>
-                        {new GraphemeSplitter().splitGraphemes(this.state.value)[0]}
-                      </FirstLetter>
-                    </NameCircle>
-                  </ButtonPressAnimation>
-                  <Placeholder>
-                    {this.state.value.length > 0 ? ' ' : 'Name'}
-                  </Placeholder>
-                  <Input
-                    style={{ fontWeight: 600, width: `100%` }}
-                    autoFocus={true}
-                    color={colors.dark}
-                    family={'SFProText'}
-                    letterSpacing={'tightest'}
-                    onChange={this.onChange}
-                    size="big"
-                    spellCheck="false"
-                    textAlign={'center'}
-                    value={this.state.value}
-                    autoCapitalize
-                    onSubmitEditing={this.addContact}
-                    returnKeyType={'done'}
-                  />
-                  <ButtonPressAnimation scaleTo={1} onPress={() => Keyboard.dismiss()}>
-                    <CopyTooltip textToCopy={this.props.address} tooltipText="Copy Address" waitForKeyboard>
-                      <AddressAbbreviation address={this.props.address} />
-                    </CopyTooltip>
-                  </ButtonPressAnimation>
-                  <Divider />
-                  <Button
-                    backgroundColor={this.state.value.length > 0 ? colors.appleBlue : undefined}
-                    width={215}
-                    showShadow
-                    disabled={!this.state.value.length > 0}
-                    onPress={this.addContact}
-                  >
-                    {this.props.contact ? `Done` : `Add Contact`}
-                  </Button>
-                  {!this.props.contact ?
-                    <CancelButton
-                      style={{ paddingTop: 11 }}
-                      onPress={() => { 
-                        this.props.onUnmountModal("", 0, false);
-                        this.props.onCloseModal(); 
-                        this.props.navigation.goBack() 
-                      }}
-                      text="Cancel"
-                    /> :
-                    <CancelButton
-                      style={{ paddingTop: 11 }}
-                      onPress={this.onDeleteContact}
-                      text="Delete Contact"
+    return (
+      <TouchableWithoutFeedback
+        style={{ width: deviceUtils.dimensions.width }}
+        onPress={this.addContact}
+      >
+        <KeyboardAvoidingView behavior="padding">
+          <FloatingPanels>
+            <Container>
+              <TouchableWithoutFeedback>
+                <AssetPanel>
+                  <TopMenu>
+                    <ButtonPressAnimation onPress={this.onChangeColor} scaleTo={0.96}>
+                      <NameCircle style={{ backgroundColor: colors.avatarColor[this.state.color] }}>
+                        <FirstLetter>
+                          {new GraphemeSplitter().splitGraphemes(this.state.value)[0]}
+                        </FirstLetter>
+                      </NameCircle>
+                    </ButtonPressAnimation>
+                    <Placeholder>
+                      {this.state.value.length > 0 ? ' ' : 'Name'}
+                    </Placeholder>
+                    <Input
+                      style={{ fontWeight: 600, width: '100%' }}
+                      autoFocus={true}
+                      color={colors.dark}
+                      family={'SFProText'}
+                      letterSpacing={'tightest'}
+                      onChange={this.onChange}
+                      size="big"
+                      spellCheck="false"
+                      textAlign={'center'}
+                      value={this.state.value}
+                      autoCapitalize
+                      onSubmitEditing={this.addContact}
+                      returnKeyType={'done'}
                     />
-                  }
-                </TopMenu>
-              </AssetPanel>
-            </TouchableWithoutFeedback>
-          </Container>
-        </FloatingPanels>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+                    <ButtonPressAnimation scaleTo={1} onPress={() => Keyboard.dismiss()}>
+                      <CopyTooltip textToCopy={this.props.address} tooltipText="Copy Address" waitForKeyboard>
+                        <AddressAbbreviation address={this.props.address} />
+                      </CopyTooltip>
+                    </ButtonPressAnimation>
+                    <Divider />
+                    <Button
+                      backgroundColor={this.state.value.length > 0 ? colors.appleBlue : undefined}
+                      width={215}
+                      showShadow
+                      disabled={!this.state.value.length > 0}
+                      onPress={this.addContact}
+                    >
+                      {this.props.contact ? 'Done' : 'Add Contact'}
+                    </Button>
+                    {!this.props.contact
+                      ? <CancelButton
+                        style={{ paddingTop: 11 }}
+                        onPress={() => {
+                          this.props.onUnmountModal('', 0, false);
+                          this.props.onCloseModal();
+                          this.props.navigation.goBack();
+                        }}
+                        text="Cancel"
+                      />
+                      : <CancelButton
+                        style={{ paddingTop: 11 }}
+                        onPress={this.onDeleteContact}
+                        text="Delete Contact"
+                      />
+                    }
+                  </TopMenu>
+                </AssetPanel>
+              </TouchableWithoutFeedback>
+            </Container>
+          </FloatingPanels>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
+    );
   }
-};
+}
 
 AddContactState.propTypes = {
+  address: PropTypes.string,
+  color: PropTypes.number,
+  contact: PropTypes.object,
+  format: PropTypes.func,
+  navigation: PropTypes.object,
+  onCloseModal: PropTypes.func,
   onPressSend: PropTypes.func,
+  onUnmountModal: PropTypes.func,
   price: PropTypes.string,
   subtitle: PropTypes.string,
   title: PropTypes.string,
