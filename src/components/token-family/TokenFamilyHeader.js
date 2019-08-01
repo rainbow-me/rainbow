@@ -9,6 +9,7 @@ import { ButtonPressAnimation } from '../animations';
 import Highlight from '../Highlight';
 import { ShadowStack } from '../shadow-stack';
 import { TruncatedText, Monospace } from '../text';
+import RotationArrow from '../animations/RotationArrow';
 
 const Wrapper = styled.View`
   height: 56px;
@@ -44,64 +45,7 @@ const SettingIcon = styled(FastImage)`
   width: 9px;
 `;
 
-const {
-  block,
-  Clock,
-  clockRunning,
-  concat,
-  cond,
-  interpolate,
-  set,
-  startClock,
-  timing,
-  Value,
-} = Animated;
-
-function runTiming(clock, value, dest, isOpen) {
-  const state = {
-    finished: new Value(1),
-    frameTime: new Value(0),
-    position: new Value(value),
-    time: new Value(0),
-  };
-
-  const config = {
-    duration: 200,
-    easing: Easing.inOut(Easing.ease),
-    toValue: new Value(0),
-  };
-
-  const reset = [
-    set(state.finished, 0),
-    set(state.time, 0),
-    set(state.frameTime, 0),
-  ];
-
-  return block([
-    cond(state.finished, [
-      ...reset,
-      set(config.toValue, dest),
-    ]),
-    cond(clockRunning(clock), 0, startClock(clock)),
-    timing(clock, state, config),
-    state.position,
-  ]);
-}
-
 class TokenListHeader extends React.Component {
-  componentWillUpdate(prev) {
-    if (prev.isOpen !== undefined
-        && prev.isOpen !== this.props.isOpen) {
-      const clock = new Clock();
-      let base = undefined;
-      this.props.isOpen ? base = runTiming(clock, -1, 1, this.props.isOpen) : base = runTiming(clock, 1, -1, this.props.isOpen);
-      this._rotation = interpolate(base, {
-        inputRange: [-1, 1],
-        outputRange: [90, 0],
-      });
-    }
-  }
-
   render() {
     dimension = this.props.isCoinRow ? 40 : 34;
     padding = this.props.isCoinRow ? 16 : 19;
@@ -144,11 +88,9 @@ class TokenListHeader extends React.Component {
               {this.props.familyName}
             </TruncatedText>
             <ArrowWrap>
-              <Animated.View
-                style={{ transform: [{ rotate: this._rotation ? concat(this._rotation, 'deg') : '0deg' }] }}
-              >
+              <RotationArrow isOpen={this.props.isOpen} startingPosition={0} endingPosition={90}>
                 <SettingIcon source={Caret} />
-              </Animated.View>
+              </RotationArrow>
             </ArrowWrap>
           </LeftView>
           {!this.props.isOpen &&

@@ -4,6 +4,7 @@ import styled from 'styled-components/primitives';
 import { View, Text } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { compose } from 'recompact';
+import FastImage from 'react-native-fast-image';
 import { colors, fonts, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { deviceUtils } from '../../utils';
@@ -12,6 +13,8 @@ import { Centered } from '../layout';
 import { Monospace } from '../text';
 import { withFabSendAction } from '../../hoc';
 import Highlight from '../Highlight';
+import RotationArrow from '../animations/RotationArrow';
+import Caret from '../../assets/family-dropdown-arrow.png';
 
 const marginLeft = 15;
 const marginRight = 19;
@@ -46,6 +49,15 @@ const Header = styled(Text)`
   opacity: 0.6;
 `;
 
+const SettingIconWrap = styled(View)`
+  opacity: 0.6;
+`;
+
+const SettingIcon = styled(FastImage)`
+  height: 17px;
+  width: 8px;
+`;
+
 const enhance = compose(
   withFabSendAction,
 );
@@ -60,33 +72,14 @@ const CoinDivider = enhance(({
     <Highlight highlight={isCoinDivider} />
     <ButtonPressAnimation scaleTo={0.9} onPress={onChangeOpenBalances}>
       <Container>
-        <Header style={{ marginRight: openSmallBalances ? 0 : -10 }}>
+        <Header style={{ marginRight: openSmallBalances ? 5 : -5 }}>
           {openSmallBalances ? 'Less' : 'All'}
         </Header>
-        <Centered justify="end" style={position.sizeAsObject(19)}>
-          <Centered
-            flex={0}
-            justify="end"
-            style={{
-              ...position.sizeAsObject(13),
-              opacity: 0.6,
-              paddingBottom: openSmallBalances ? 0 : 1,
-              paddingTop: openSmallBalances ? 0 : 0,
-              position: 'absolute',
-              right: 0,
-            }}
-          >
-            <Animated.View
-              style={{ transform: [{ rotate: openSmallBalances ? '-90deg' : '0deg' }] }}
-            >
-              <Icon
-                color={colors.blueGreyDark}
-                name="caretThin"
-                width={13}
-              />
-            </Animated.View>
-          </Centered>
-        </Centered>
+        <SettingIconWrap>
+          <RotationArrow isOpen={openSmallBalances} startingPosition={0} endingPosition={-90}>
+            <SettingIcon source={Caret} />
+          </RotationArrow>
+        </SettingIconWrap>
       </Container>
     </ButtonPressAnimation>
     {!openSmallBalances
