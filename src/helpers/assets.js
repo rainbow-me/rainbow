@@ -36,7 +36,10 @@ export const buildCoinsList = (assets) => {
     }
   }
 
-  return newAssets.concat(smallBalances);
+  if (smallBalances.assets.length > 0) {
+    return newAssets.concat(smallBalances);
+  }
+  return newAssets;
 };
 
 export const buildUniqueTokenList = (uniqueTokens) => {

@@ -72,10 +72,10 @@ const CoinDivider = enhance(({
     <Highlight highlight={isCoinDivider} />
     <ButtonPressAnimation scaleTo={0.9} onPress={onChangeOpenBalances}>
       <Container>
-        <Header style={{ marginRight: openSmallBalances ? 5 : -5 }}>
+        <Header style={{ marginRight: openSmallBalances ? 5 : -3 }}>
           {openSmallBalances ? 'Less' : 'All'}
         </Header>
-        <SettingIconWrap>
+        <SettingIconWrap style={{ paddingRight: openSmallBalances ? 5 : 0 }}>
           <RotationArrow isOpen={openSmallBalances} startingPosition={0} endingPosition={-90}>
             <SettingIcon source={Caret} />
           </RotationArrow>

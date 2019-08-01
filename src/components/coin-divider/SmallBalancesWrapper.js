@@ -30,9 +30,11 @@ const SmallBalancesWrapper = ({
   const ref = useRef();
 
   const onPress = () => {
-    ref.current.animateNextTransition();
-    setHeight(!openSmallBalances ? (CoinRow.height * assets.length) : 0);
-    setOpenSmallBalances(!openSmallBalances);
+    if (ref.current) {
+      ref.current.animateNextTransition();
+      setHeight(!openSmallBalances ? (CoinRow.height * assets.length) : 0);
+      setOpenSmallBalances(!openSmallBalances);
+    }
   };
 
   if (openSmallBalances && height === 0) {
