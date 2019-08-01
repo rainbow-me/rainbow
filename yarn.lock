@@ -9198,6 +9198,7 @@ react-navigation-drawer@~1.4.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 react-navigation-stack@~1.5.0:
   version "1.5.5"
   resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-1.5.5.tgz#0b3cd98b7845a51d9ce9d7d678e9e3b9ed010bc3"
@@ -9235,6 +9236,15 @@ react-navigation-stack@~1.4.0:
   resolved "https://github.com/react-navigation/stack#28359b3853ce234586302e98377c91638d75c585"
 >>>>>>> 3a2e4076... Bump version of react-navigation-stack to alpha.6
 =======
+=======
+react-navigation-stack@^2.0.0-alpha.7:
+  version "2.0.0-alpha.7"
+  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-2.0.0-alpha.7.tgz#1534e31e0f9cfc9c3340f0d752e5c992a1961a89"
+  integrity sha512-9ltkEY+ayNRBnOMRRC7UCTAS6wqdH15Tg8hE004sYLvsZw3HwwTj2il0C5BWzDq+IwItj+LI+S9tDdHUxF1a1Q==
+  dependencies:
+    react-native-safe-area-view "^0.14.6"
+
+>>>>>>> 996fc4e7... Update react-navigation-stack to alpha.7
 "react-navigation-stack@https://github.com/react-navigation/stack#master", react-navigation-stack@~1.4.0:
   version "2.0.0-alpha.6"
   resolved "https://github.com/react-navigation/stack#2ddf3a4a3985047811c3c90f1d8263ea71994966"
