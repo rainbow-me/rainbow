@@ -15,7 +15,13 @@ const {
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
 const BlurOverlay = ({ blurType, intensity }) => (
-  <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+  <View
+    pointerEvents="none"
+    style={[
+      StyleSheet.absoluteFill,
+      { position: 'absolute', zIndex: 10 },
+    ]}
+  >
     <AnimatedBlurView
       opacity={cond(lessThan(intensity, 0.05), 0, 1)}
       blurAmount={multiply(intensity, 15)}
