@@ -9035,6 +9035,7 @@ react-native-redash@^7.2.1:
     use-memo-one "^1.1.1"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 react-native-safe-area-view@^0.14.1:
   version "0.14.8"
   resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.14.8.tgz#ef33c46ff8164ae77acad48c3039ec9c34873e5b"
@@ -9061,6 +9062,9 @@ react-native-safe-area-view@^0.14.6:
 =======
 react-native-safe-area-view@^0.14.1, react-native-safe-area-view@^0.14.6:
 >>>>>>> 3984235a... Bump react-navigation stack to current master
+=======
+react-native-safe-area-view@^0.14.1, react-native-safe-area-view@^0.14.6:
+>>>>>>> e162a3d6... Fix merge mistakes
   version "0.14.6"
   resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.14.6.tgz#9a9d37d9f8f3887d60c4076eae7b5d2319539446"
   integrity sha512-dbzuvaeHFV1VBpyMaC0gtJ2BqFt6ls/405A0t78YN1sXiTrVr3ki86Ysct8mzifWqLdvWzcWagE5wfMtdxnqoA==
