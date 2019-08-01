@@ -86,16 +86,15 @@ class WalletScreen extends Component {
     }
 
     return isNewFetchingAssets
-    || isNewFetchingUniqueTokens
-    || isNewIsWalletEmpty
-    || isNewIsWalletEthZero
-    || isNewLanguage
-    || isNewCurrency
-    || isNewBlurIntensity
-    || isNewSections
-    || isNewShowShitcoins
-    || isNewTransitionProps
-    || isNewShowBlur;
+      || isNewFetchingUniqueTokens
+      || isNewIsWalletEmpty
+      || isNewIsWalletEthZero
+      || isNewLanguage
+      || isNewCurrency
+      || isNewBlurIntensity
+      || isNewSections
+      || isNewShowShitcoins
+      || isNewTransitionProps;
   }
 
   render = () => {
