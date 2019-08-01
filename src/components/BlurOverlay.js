@@ -5,7 +5,12 @@ import { pure } from 'recompact';
 import Animated from 'react-native-reanimated';
 import { BlurView } from '@react-native-community/blur';
 
-const { Value, multiply, cond, lessThan } = Animated;
+const {
+  Value,
+  multiply,
+  cond,
+  lessThan,
+} = Animated;
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
