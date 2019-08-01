@@ -72,9 +72,8 @@ const buildWalletSections = (
   const sections = [
     {
       balances: true,
-      data: showShitcoins ? buildCoinsList(allAssets) : assets,
+      data: buildCoinsList(allAssets),
       header: {
-        showShitcoins,
         title: lang.t('account.tab_balances'),
         totalItems: allAssetsCount,
         totalValue: get(assetsTotal, 'display', ''),
@@ -118,24 +117,6 @@ const buildWalletSections = (
   });
 
   FastImage.preload(imageTokens);
-
-  if (shitcoinsCount) {
-    // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
-    const destructiveButtonIndex = showShitcoins ? 0 : 99;
-
-    const index = findIndex(sections, (section) => section.balances === true);
-    if (index > -1) {
-      sections[index].header.contextMenuOptions = {
-        cancelButtonIndex: 1,
-        destructiveButtonIndex,
-        onPressActionSheet: onToggleShowShitcoins,
-        options: [
-          `${lang.t(`account.${showShitcoins ? 'hide' : 'show'}`)} ${lang.t('wallet.assets.no_price')}`,
-          lang.t('wallet.action.cancel'),
-        ],
-      };
-    }
-  }
 
   const filteredSections = filterWalletSections(sections);
   const isEmpty = !filteredSections.length;

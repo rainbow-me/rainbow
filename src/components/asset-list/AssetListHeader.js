@@ -13,7 +13,7 @@ const AssetListHeader = enhance(({
   totalValue,
   ...props
 }) => (
-  <ListHeader showShitcoins={showShitcoins} title={title} {...props}>
+  <ListHeader title={title} {...props}>
     {totalValue ? (
       <Monospace size="larger" weight="semibold">
         {totalValue}

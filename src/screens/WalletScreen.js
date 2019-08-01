@@ -22,10 +22,6 @@ import {
 import { Page } from '../components/layout';
 import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import {
-  getShowShitcoinsSetting,
-  updateShowShitcoinsSetting,
-} from '../handlers/commonStorage';
-import {
   withAccountData,
   withAccountSettings,
   withBlurTransitionProps,
@@ -56,17 +52,6 @@ class WalletScreen extends Component {
     showBlur: PropTypes.bool,
     toggleShowShitcoins: PropTypes.func,
     uniqueTokens: PropTypes.array,
-  }
-
-  componentDidMount = async () => {
-    try {
-      const showShitcoins = await getShowShitcoinsSetting();
-      if (showShitcoins !== null) {
-        this.props.toggleShowShitcoins(showShitcoins);
-      }
-    } catch (error) {
-      // TODO
-    }
   }
 
   shouldComponentUpdate = (nextProps) => {

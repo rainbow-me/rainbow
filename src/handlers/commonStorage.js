@@ -353,24 +353,6 @@ export const saveLanguage = async language => {
   await saveLocal('language', { data: language });
 };
 
-/**
- * @desc get show shitcoins setting
- * @return {True|False}
- */
-export const getShowShitcoinsSetting = async () => {
-  const showShitcoins = await getLocal('showShitcoins');
-  return showShitcoins ? showShitcoins.data : null;
-};
-
-/**
- * @desc update show shitcoins setting
- * @param  {Boolean}   [updatedSetting]
- * @return {Void}
- */
-export const updateShowShitcoinsSetting = async (updatedSetting) => {
-  await saveLocal('showShitcoins', { data: updatedSetting });
-};
-
 const isRequestStillValid = (request) => {
   const createdAt = request.displayDetails.timestampInMs;
   return (differenceInMinutes(Date.now(), createdAt) < 60);

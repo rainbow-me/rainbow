@@ -38,8 +38,10 @@ const SmallBalancesWrapper = ({
   };
 
   if (openSmallBalances && height === 0) {
-    ref.current.animateNextTransition();
-    setHeight(CoinRow.height * assets.length);
+    if (ref.current) {
+      ref.current.animateNextTransition();
+      setHeight(CoinRow.height * assets.length);
+    }
   }
 
   return (
