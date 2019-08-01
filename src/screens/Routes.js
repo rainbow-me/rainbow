@@ -118,6 +118,7 @@ const MainNavigator = createStackNavigator({
     onTransitionEnd,
     onTransitionStart,
   },
+  disableKeyboardHandling: true,
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',
   mode: 'modal',
