@@ -84,8 +84,16 @@ const SendHeader = ({
                 });
               }
               if (buttonIndex === 0) {
-                await deleteLocalContact(recipient);
-                onUpdateContacts();
+                showActionSheetWithOptions({
+                  cancelButtonIndex: 1,
+                  destructiveButtonIndex: 0,
+                  options: ['Delete Contact', 'Cancel'],
+                }, async (deleteButtonIndex) => {
+                  if (deleteButtonIndex === 0) {
+                    await deleteLocalContact(recipient);
+                    onUpdateContacts();
+                  }
+                });
               }
             });
           }} />
