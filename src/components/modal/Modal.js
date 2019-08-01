@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StatusBar } from 'react-native';
 import styled from 'styled-components';
 import { colors, padding } from '../../styles';
 import { deviceUtils } from '../../utils';

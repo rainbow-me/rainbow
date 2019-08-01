@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import { StatusBar } from 'react-native';
 import {
   InvestmentExpandedState,
   TokenExpandedState,

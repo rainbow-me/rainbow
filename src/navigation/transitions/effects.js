@@ -15,7 +15,6 @@ const {
   eq,
   interpolate,
   or,
-  Value,
   SpringUtils,
 } = Animated;
 
