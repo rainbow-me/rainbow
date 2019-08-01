@@ -8,28 +8,34 @@ import { BlurView } from '@react-native-community/blur';
 const {
   Value,
   multiply,
-  cond,
-  lessThan,
+  interpolate,
+  min,
+  add,
 } = Animated;
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
-const BlurOverlay = ({ blurType, intensity }) => (
-  <View
-    pointerEvents="none"
-    style={[
-      StyleSheet.absoluteFill,
-      { position: 'absolute', zIndex: 10 },
-    ]}
-  >
-    <AnimatedBlurView
-      opacity={cond(lessThan(intensity, 0.05), 0, 1)}
-      blurAmount={multiply(intensity, 15)}
-      blurType={blurType}
-      style={StyleSheet.absoluteFill}
-    />
-  </View>
-);
+const BlurOverlay = ({ blurType, intensity }) => {
+  const opacity = interpolate(intensity, { inputRange: [0, 0.3, 1], outputRange: [0, 1, 1] });
+  const blurAmount = min(add(multiply(intensity, 15), 5), 100);
+
+  return (
+    <View
+      pointerEvents="none"
+      style={[
+        StyleSheet.absoluteFill,
+        { position: 'absolute', zIndex: 10 },
+      ]}
+    >
+      <AnimatedBlurView
+        opacity={opacity}
+        blurAmount={blurAmount}
+        blurType={blurType}
+        style={StyleSheet.absoluteFill}
+      />
+    </View>
+  );
+};
 
 BlurOverlay.propTypes = {
   blurType: PropTypes.oneOf(['default', 'light', 'dark']).isRequired,
