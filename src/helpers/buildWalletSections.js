@@ -4,11 +4,11 @@ import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import { createSelector } from 'reselect';
+import FastImage from 'react-native-fast-image';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { TokenFamilyWrap } from '../components/token-family';
 import { buildUniqueTokenList, buildCoinsList } from './assets';
-import FastImage from 'react-native-fast-image';
 
 const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
@@ -16,10 +16,8 @@ const assetsSelector = state => state.assets;
 const assetsTotalSelector = state => state.assetsTotal;
 const languageSelector = state => state.language;
 const nativeCurrencySelector = state => state.nativeCurrency;
-const onToggleShowShitcoinsSelector = state => state.onToggleShowShitcoins;
 const setIsWalletEmptySelector = state => state.setIsWalletEmpty;
 const shitcoinsCountSelector = state => state.shitcoinsCount;
-const showShitcoinsSelector = state => state.showShitcoins;
 const uniqueTokensSelector = state => state.uniqueTokens;
 const uniswapSelector = state => state.uniswap;
 const uniswapTotalSelector = state => state.uniswapTotal;
@@ -61,10 +59,8 @@ const buildWalletSections = (
   assetsTotal,
   language,
   nativeCurrency,
-  onToggleShowShitcoins,
   setIsWalletEmpty,
   shitcoinsCount,
-  showShitcoins,
   uniqueTokens = [],
   uniswap = [],
   uniswapTotal,
@@ -138,10 +134,8 @@ export default createSelector(
     assetsTotalSelector,
     languageSelector,
     nativeCurrencySelector,
-    onToggleShowShitcoinsSelector,
     setIsWalletEmptySelector,
     shitcoinsCountSelector,
-    showShitcoinsSelector,
     uniqueTokensSelector,
     uniswapSelector,
     uniswapTotalSelector,

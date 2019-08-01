@@ -68,12 +68,11 @@ const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
 
 const hasRowChanged = (r1, r2) => {
   if (has(r1, 'isHeader')) {
-    const isNewShowShitcoinsValue = isNewValueForPath(r1, r2, 'showShitcoins');
     const isNewTitle = isNewValueForPath(r1, r2, 'title');
     const isNewTotalItems = isNewValueForPath(r1, r2, 'totalItems');
     const isNewTotalValue = isNewValueForPath(r1, r2, 'totalValue');
 
-    return isNewShowShitcoinsValue || isNewTitle || isNewTotalItems || isNewTotalValue;
+    return isNewTitle || isNewTotalItems || isNewTotalValue;
   }
 
   const isNewAsset = isNewValueForPath(r1, r2, 'item.uniqueId');

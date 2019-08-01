@@ -8,11 +8,10 @@ import { pushOpenFamilyTab } from '../redux/openFamilyTabs';
 import store from '../redux/store';
 
 export const buildAssetHeaderUniqueIdentifier = ({
-  showShitcoins,
   title,
   totalItems,
   totalValue,
-}) => ([showShitcoins, title, totalItems, totalValue].join('_'));
+}) => ([title, totalItems, totalValue].join('_'));
 
 export const buildAssetUniqueIdentifier = (item) => {
   const balance = get(item, 'balance.amount', '');
