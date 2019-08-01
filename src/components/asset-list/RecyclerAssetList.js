@@ -21,13 +21,14 @@ import {
 import { withFabSelection, withOpenFamilyTabs } from '../../hoc';
 import { colors } from '../../styles';
 import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
-import { CoinRow, CollectiblesSendRow } from '../coin-row';
+import { CoinRow } from '../coin-row';
 import { TokenFamilyHeader } from '../token-family';
 import { FloatingActionButton } from '../fab';
 import { InvestmentCard, UniswapInvestmentCard } from '../investment-cards';
 import { ListFooter } from '../list';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
+import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
 
 /* eslint-disable sort-keys */
 export const ViewTypes = {
@@ -306,34 +307,55 @@ class RecyclerAssetList extends Component {
       let i = 0;
       while (i < this.props.openFamilyTabs.length) {
         if (this.props.openFamilyTabs[i] === true && prev.openFamilyTabs[i] === false) {
-          // TODO no function creation in while loop
-          setTimeout(() => {
-            let collectiblesHeight = 0;
-            for (let j = 0; j < i; j++) {
-              if (this.props.openFamilyTabs[j] && collectibles.data[j].tokens) {
-                collectiblesHeight += collectibles.data[j].tokens.length * UniqueTokenRow.cardSize + TokenFamilyHeader.height + UniqueTokenRow.rowPadding * (collectibles.data[j].tokens.length - 1);
-              } else {
-                collectiblesHeight += TokenFamilyHeader.height;
-              }
-            }
-            const verticalOffset = 17.5;
-            const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235);
-            const sectionBeforeCollectibles = AssetListHeader.height * (this.props.sections.length - 1) + ListFooter.height * (this.props.sections.length - 1) + CoinRow.height * get(balances, 'data.length', 0) + (UniswapInvestmentCard.height + InvestmentCard.margin.vertical) * get(investments, 'data.length', 0) + ListFooter.height;
-            const sectionsHeight = sectionBeforeCollectibles + collectiblesHeight;
-            const renderSize = UniqueTokenRow.cardSize * collectibles.data[i].tokens.length + UniqueTokenRow.rowPadding * (collectibles.data[i].tokens.length - 1) - verticalOffset;
-
-            if (renderSize >= deviceDimensions) {
-              const scrollDistance = sectionsHeight - this.position;
-              this.rlv.scrollToOffset(0, this.position + scrollDistance - verticalOffset, true);
+          let collectiblesHeight = 0;
+          for (let j = 0; j < i; j++) {
+            if (this.props.openFamilyTabs[j] && collectibles.data[j].tokens) {
+              collectiblesHeight += TokenFamilyHeader.height + collectibles.data[j].tokens.length * UniqueTokenRow.height + TokenFamilyWrapPaddingTop - 2;
             } else {
-              const diff = this.position - sectionsHeight + deviceDimensions;
-              if (renderSize > diff) {
-                const scrollDistance = deviceDimensions > renderSize ? renderSize - diff : deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 250 : 280);
-                this.rlv.scrollToOffset(0, this.position + scrollDistance, true);
-              }
+              collectiblesHeight += TokenFamilyHeader.height;
             }
-          }, 50);
+          }
+          const verticalOffset = 17.5;
+          const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 200 : 225);
+          const sectionBeforeCollectibles = (AssetListHeader.height * (this.props.sections.length - 1)
+            + ListFooter.height * (this.props.sections.length - 1) + CoinRow.height * get(balances, 'data.length', 0)
+            + (UniswapInvestmentCard.height + InvestmentCard.margin.vertical) * get(investments, 'data.length', 0) + ListFooter.height);
+          const sectionsHeight = sectionBeforeCollectibles + collectiblesHeight;
+          const renderSize = collectibles.data[i].tokens.length * UniqueTokenRow.height + TokenFamilyWrapPaddingTop;
+
+          if (renderSize >= deviceDimensions) {
+            const scrollDistance = sectionsHeight - this.position;
+            this.scrollToOffset(this.position + scrollDistance - verticalOffset, true);
+          } else {
+            const diff = this.position - sectionsHeight + deviceDimensions;
+            if (renderSize > diff) {
+              const scrollDistance = renderSize - diff;
+              this.scrollToOffset(this.position + scrollDistance, true);
+            }
+          }
           break;
+        }
+        if (this.props.openFamilyTabs[i] === false && prev.openFamilyTabs[i] === true) {
+          const balancesHeight = AssetListHeader.height + CoinRow.height * get(balances, 'data.length', 0);
+          const investmentHeight = (AssetListHeader.height + (UniswapInvestmentCard.height
+            + InvestmentCard.margin.vertical) * get(investments, 'data.length', 0));
+          let collectiblesHeight = collectibles.data.length > 0 ? AssetListHeader.height : 0;
+          for (let j = 0; j < collectibles.data.length; j++) {
+            if (this.props.openFamilyTabs[j] && collectibles.data[j].tokens) {
+              collectiblesHeight += TokenFamilyHeader.height + collectibles.data[j].tokens.length * UniqueTokenRow.height + TokenFamilyWrapPaddingTop - 2;
+            } else {
+              collectiblesHeight += TokenFamilyHeader.height;
+            }
+          }
+          const renderSize = balancesHeight + investmentHeight + collectiblesHeight + ListFooter.height;
+          const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 160 : 280);
+          if (this.position + deviceDimensions > renderSize) {
+            layoutItemAnimator.animateShift = () => LayoutAnimation.configureNext(LayoutAnimation.create(310, 'easeInEaseOut', 'opacity'));
+            this.scrollToOffset(renderSize - deviceDimensions, true);
+            setTimeout(() => {
+              layoutItemAnimator.animateShift = () => LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity'));
+            }, 300);
+          }
         }
         i++;
       }
@@ -344,6 +366,12 @@ class RecyclerAssetList extends Component {
     this.isCancelled = true;
     clearInterval(this.interval);
   };
+
+  scrollToOffset = (position, animated) => {
+    setTimeout(() => {
+      this.rlv.scrollToOffset(0, position, animated);
+    }, 5);
+  }
 
   getStableId = (index) => {
     const row = get(this.state, `dataProvider._data[${index}]`);
@@ -430,9 +458,9 @@ class RecyclerAssetList extends Component {
         childrenAmount: item.childrenAmount,
         familyId: item.familyId,
         familyImage: item.familyImage,
-        marginTop: type.isFirst ? 4 : 0,
         familyName: item.familyName,
         item: item.tokens,
+        marginTop: type.isFirst ? 4 : 0,
         shouldPrioritizeImageLoading: index < get(sections, '[0].data.length', 0) + 9,
         uniqueId: item.uniqueId,
       });

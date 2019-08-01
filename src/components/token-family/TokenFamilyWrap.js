@@ -19,6 +19,8 @@ import { FadeInAnimation } from '../animations';
 import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyHeader from './TokenFamilyHeader';
 
+export const TokenFamilyWrapPaddingTop = 6;
+
 const EnhancedUniqueTokenRow = compose(
   withNavigation,
   withHandlers({
@@ -62,7 +64,7 @@ const TokenFamilyWrap = ({
       <FadeInAnimation
         duration={TokenFamilyHeader.animationDuration}
         key={`uniqueTokenRow_${familyId}_fadeIn`}
-        style={{ paddingTop: 6 }}
+        style={{ paddingTop: TokenFamilyWrapPaddingTop }}
       >
         {times(item.length, renderCollectibleItem)}
       </FadeInAnimation>
@@ -78,9 +80,9 @@ TokenFamilyWrap.propTypes = {
   familyName: PropTypes.string,
   highlight: PropTypes.bool,
   isFamilyOpen: PropTypes.bool,
-  marginTop: PropTypes.number,
   isOpen: PropTypes.bool,
   item: PropTypes.array,
+  marginTop: PropTypes.number,
   onPressFamilyHeader: PropTypes.func,
   renderCollectibleItem: PropTypes.func,
 };
