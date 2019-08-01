@@ -47,6 +47,7 @@ const InvestmentCard = ({
     >
       <View
         style={{
+          backgroundColor: colors.white,
           borderRadius: 18,
           height: perc + InvestmentCardMargin.vertical * 2,
           overflow: 'hidden',
@@ -59,7 +60,7 @@ const InvestmentCard = ({
           shadowOpacity: 0.1,
           shadowRadius: 3,
         }}
-      >
+        >
         <Column
           css={`
             background-color: ${gradientColors[0]};
