@@ -12,7 +12,6 @@ export const updateTransitionProps = (payload) => (dispatch) => {
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   transitionProps: {
-    isExpanded: false,
     isTransitioning: false,
     position: new Value(0),
   },
