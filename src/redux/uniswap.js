@@ -75,27 +75,33 @@ export const uniswapAddLiquidityTokens = (newLiquidityTokens) => (dispatch, getS
   dispatch(uniswapUpdateState());
 };
 
-export const uniswapUpdateState = () => (dispatch, getState) => new Promise((resolve, reject) => {
-  const { accountAddress, network } = getState().settings;
-  const { liquidityTokens } = getState().uniswap;
-  if (isEmpty(liquidityTokens)) return;
-  const exchangeContracts = map(liquidityTokens, x => get(x, 'asset.asset_code'));
+export const uniswapUpdateState = () => (dispatch, getState) => (
+  new Promise((resolve, reject) => {
+    const { accountAddress, network } = getState().settings;
+    const { liquidityTokens } = getState().uniswap;
 
-  dispatch({ type: UNISWAP_UPDATE_REQUEST });
-  getUniswapLiquidityInfo(accountAddress, exchangeContracts)
-    .then(uniswap => {
-      saveUniswap(accountAddress, uniswap, network);
-      dispatch({
-        payload: uniswap,
-        type: UNISWAP_UPDATE_SUCCESS,
+    if (isEmpty(liquidityTokens)) {
+      return resolve(false);
+    }
+
+    dispatch({ type: UNISWAP_UPDATE_REQUEST });
+
+    const exchangeContracts = map(liquidityTokens, x => get(x, 'asset.asset_code'));
+    return getUniswapLiquidityInfo(accountAddress, exchangeContracts)
+      .then(uniswap => {
+        saveUniswap(accountAddress, uniswap, network);
+        dispatch({
+          payload: uniswap,
+          type: UNISWAP_UPDATE_SUCCESS,
+        });
+        resolve(true);
+      })
+      .catch(error => {
+        dispatch({ type: UNISWAP_UPDATE_FAILURE });
+        reject(error);
       });
-      resolve(true);
-    })
-    .catch(error => {
-      dispatch({ type: UNISWAP_UPDATE_FAILURE });
-      reject(error);
-    });
-});
+  })
+);
 
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNISWAP_STATE = {

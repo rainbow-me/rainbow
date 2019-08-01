@@ -1,6 +1,5 @@
 import omitProps from '@hocs/omit-props';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { View } from 'react-primitives';
 import { componentFromProp } from 'recompact';
 import styled from 'styled-components/primitives';
@@ -11,9 +10,7 @@ export const getFlexStyleKeysFromShorthand = style => (
     : style
 );
 
-const DefaultFlexView = props => <View {...props} />;
-
-const FlexPropBlacklist = ['align', 'direction', 'flex', 'justify', 'wrap'];
+const FlexPropBlacklist = ['align', 'direction', 'flex', 'justify', 'self', 'wrap'];
 const FlexElement = omitProps(...FlexPropBlacklist)(componentFromProp('component'));
 
 const Flex = styled(FlexElement)`
@@ -39,7 +36,7 @@ Flex.propTypes = {
 
 Flex.defaultProps = {
   align: 'stretch',
-  component: DefaultFlexView,
+  component: View,
   direction: 'row',
   justify: 'start',
 };

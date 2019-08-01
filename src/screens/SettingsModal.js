@@ -67,6 +67,7 @@ const SettingsModal = ({
           style={{ top: ModalHeader.height }}
         >
           <SettingsSection
+            onCloseModal={onCloseModal}
             onPressBackup={onPressSection(SettingsPages.backup)}
             onPressCurrency={onPressSection(SettingsPages.currency)}
             onPressImportSeedPhrase={onPressImportSeedPhrase}

@@ -1,3 +1,54 @@
+diff --git a/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js b/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js
+index 26e19af..e2a2913 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js
++++ b/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js
+@@ -36,9 +36,8 @@ var ViewabilityTracker = /** @class */ (function () {
+         this._windowBound = isHorizontal ? dimension.width : dimension.height;
+     };
+     ViewabilityTracker.prototype.forceRefresh = function () {
+-        var shouldForceScroll = this._currentOffset >= (this._maxOffset - this._windowBound);
+         this.forceRefreshWithOffset(this._currentOffset);
+-        return shouldForceScroll;
++        return false;
+     };
+     ViewabilityTracker.prototype.forceRefreshWithOffset = function (offset) {
+         this._currentOffset = -1;
+diff --git a/node_modules/recyclerlistview/dist/reactnative/core/StickyContainer.js b/node_modules/recyclerlistview/dist/reactnative/core/StickyContainer.js
+index e3af431..8de1ec4 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/core/StickyContainer.js
++++ b/node_modules/recyclerlistview/dist/reactnative/core/StickyContainer.js
+@@ -54,14 +54,14 @@ var StickyContainer = /** @class */ (function (_super) {
+             }
+         };
+         _this._getStickyHeaderRef = function (stickyHeaderRef) {
+-            if (!_this._stickyHeaderRef) {
++            if (_this._stickyHeaderRef !== stickyHeaderRef) {
+                 _this._stickyHeaderRef = stickyHeaderRef;
+                 // TODO: Resetting state once ref is initialized. Can look for better solution.
+                 _this._callStickyObjectsOnVisibleIndicesChanged(_this._visibleIndicesAll);
+             }
+         };
+         _this._getStickyFooterRef = function (stickyFooterRef) {
+-            if (!_this._stickyFooterRef) {
++            if (_this._stickyFooterRef !== stickyFooterRef) {
+                 _this._stickyFooterRef = stickyFooterRef;
+                 // TODO: Resetting state once ref is initialized. Can look for better solution.
+                 _this._callStickyObjectsOnVisibleIndicesChanged(_this._visibleIndicesAll);
+diff --git a/node_modules/recyclerlistview/dist/reactnative/core/layoutmanager/LayoutManager.js b/node_modules/recyclerlistview/dist/reactnative/core/layoutmanager/LayoutManager.js
+index 3851852..23075a0 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/core/layoutmanager/LayoutManager.js
++++ b/node_modules/recyclerlistview/dist/reactnative/core/layoutmanager/LayoutManager.js
+@@ -172,6 +172,10 @@ var WrapGridLayoutManager = /** @class */ (function (_super) {
+         }
+         var i = startIndex - 1;
+         for (; i >= 0; i--) {
++            if (!this._layouts[i]) {
++                console.warn("WrapGridLayoutManager layout at index", i, "does not exist"); //tslint:disable-line
++                continue;
++            }
+             if (this._isHorizontal) {
+                 if (this._layouts[i].y === 0) {
+                     break;
 diff --git a/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyHeader.js b/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyHeader.js
 index 7074f36..5e72f6e 100644
 --- a/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyHeader.js

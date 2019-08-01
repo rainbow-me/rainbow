@@ -44,6 +44,7 @@ const sortAssetsByNativeAmount = (originalAssets, nativeCurrency) => {
     assets: sortedAssets,
     assetsCount: sortedAssets.length,
     assetsTotal: total,
+    isBalancesSectionEmpty: isEmpty(allAssets),
     shitcoins: sortedShitcoins,
     shitcoinsCount: sortedShitcoins.length,
   };

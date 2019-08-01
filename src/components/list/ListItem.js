@@ -1,16 +1,10 @@
 import { isString } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  compose,
-  onlyUpdateForPropTypes,
-  setStatic,
-  withHandlers,
-} from 'recompact';
-import styled from 'styled-components';
+import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { fonts, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
-import Icon from '../icons/Icon';
+import { Icon } from '../icons';
 import {
   Centered,
   FlexItem,
@@ -21,28 +15,33 @@ import { TruncatedText } from '../text';
 
 const ListItemHeight = 54;
 
-const Container = styled(Row).attrs({
-  align: 'center',
-  justify: 'space-between',
-})`
-  ${padding(0, 16, 2)};
-  height: ${ListItemHeight};
-`;
-
-const Label = styled(TruncatedText).attrs({
-  size: 'bmedium',
-})`
-  flex: 1;
-  padding-right: ${fonts.size.bmedium};
-`;
-
-const renderListItemIcon = icon => (
+const renderIcon = icon => (
   isString(icon)
     ? <Icon name={icon} style={position.sizeAsObject('100%')} />
     : icon
 );
 
-const ListItem = ({
+const propTypes = {
+  activeOpacity: PropTypes.number,
+  children: PropTypes.node,
+  icon: PropTypes.oneOfType([Icon.propTypes.name, PropTypes.node]),
+  iconMargin: PropTypes.number,
+  label: PropTypes.string.isRequired,
+  onPress: PropTypes.func,
+};
+
+const enhance = compose(
+  onlyUpdateForKeys(Object.keys(propTypes)),
+  withHandlers({
+    onPress: ({ onPress, value }) => () => {
+      if (onPress) {
+        onPress(value);
+      }
+    },
+  }),
+);
+
+const ListItem = enhance(({
   activeOpacity,
   children,
   icon,
@@ -57,46 +56,39 @@ const ListItem = ({
     onPress={onPress}
     scaleTo={1}
   >
-    <Container {...props}>
+    <Row
+      align="center"
+      css={padding(0, 16, 2)}
+      height={ListItemHeight}
+      justify="space-between"
+      {...props}
+    >
       <RowWithMargins align="center" flex={1} margin={iconMargin}>
-        {icon && (
-          <Centered>
-            {renderListItemIcon(icon)}
-          </Centered>
-        )}
-        <Label>{label}</Label>
+        {icon && <Centered>{renderIcon(icon)}</Centered>}
+        <TruncatedText
+          flex={1}
+          paddingRight={fonts.size.bmedium}
+          size="bmedium"
+        >
+          {label}
+        </TruncatedText>
       </RowWithMargins>
       {children && (
         <Centered component={FlexItem} shrink={0}>
           {children}
         </Centered>
       )}
-    </Container>
+    </Row>
   </ButtonPressAnimation>
-);
+));
 
-ListItem.propTypes = {
-  activeOpacity: PropTypes.number,
-  children: PropTypes.node,
-  icon: PropTypes.oneOfType([Icon.propTypes.name, PropTypes.node]),
-  iconMargin: PropTypes.number,
-  label: PropTypes.string.isRequired,
-  onPress: PropTypes.func,
-};
+ListItem.propTypes = propTypes;
+
+ListItem.height = ListItemHeight;
 
 ListItem.defaultProps = {
   activeOpacity: 0.3,
   iconMargin: 9,
 };
 
-export default compose(
-  setStatic({ height: ListItemHeight }),
-  withHandlers({
-    onPress: ({ onPress, value }) => () => {
-      if (onPress) {
-        onPress(value);
-      }
-    },
-  }),
-  onlyUpdateForPropTypes,
-)(ListItem);
+export default ListItem;

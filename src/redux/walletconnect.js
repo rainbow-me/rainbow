@@ -95,11 +95,11 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (dispatch)
 };
 
 const signingMethods = [
-	"eth_sendTransaction",
-	"eth_signTransaction",
-	"personal_sign",
-	"eth_sign",
-	"eth_signTypedData",
+  "eth_sendTransaction",
+  "eth_signTransaction",
+  "personal_sign",
+  "eth_sign",
+  "eth_signTypedData",
 ];
 
 const listenOnNewMessages = walletConnector => (dispatch, getState) => {
@@ -259,7 +259,7 @@ export const walletConnectDisconnectAllByDappName = dappName => async (dispatch,
   try {
     const peerIds = values(mapValues(matchingWalletConnectors, walletConnector => walletConnector.peerId));
     await removeWalletConnectSessions(peerIds);
-    forEach(walletConnectors, walletConnector => walletConnector.killSession());
+    forEach(matchingWalletConnectors, walletConnector => walletConnector.killSession());
     dispatch({
       payload: omitBy(walletConnectors, (wc) => wc.peerMeta.name === dappName),
       type: WALLETCONNECT_REMOVE_SESSION,

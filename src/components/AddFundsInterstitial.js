@@ -62,7 +62,7 @@ const AddFundsInterstitial = ({
         Import Wallet
       </Button>
       <Paragraph>
-        Use your 12 to 24 word seed phrase from an existing wallet.
+        Use your private key or 12 to 24 word seed phrase from an existing wallet.
       </Paragraph>
     </ButtonContainer>
   </Container>

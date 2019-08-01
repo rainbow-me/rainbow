@@ -1,5 +1,9 @@
 import { ethers } from 'ethers';
-import { get, replace } from 'lodash';
+import {
+  get,
+  replace,
+  startsWith,
+} from 'lodash';
 import { REACT_APP_INFURA_PROJECT_ID } from 'react-native-dotenv';
 import { ethereumUtils } from '../utils';
 import {
@@ -34,6 +38,23 @@ export const sendRpcCall = async (payload) => web3Provider.send(payload.method, 
  */
 export const isHexString = value => ethers.utils.isHexString(value);
 
+export const isHexStringIgnorePrefix = value => {
+  const trimmedValue = value.trim();
+  const updatedValue = addHexPrefix(trimmedValue);
+  return isHexString(updatedValue);
+};
+
+export const addHexPrefix = value => (startsWith(value, '0x')) ? value : '0x' + value;
+
+export const mnemonicToSeed = value => ethers.utils.HDNode.mnemonicToSeed(value);
+
+/**
+ * @desc is valid mnemonic
+ * @param {String} value
+ * @return {Boolean}
+ */
+export const isValidMnemonic = value => ethers.utils.HDNode.isValidMnemonic(value);
+
 /**
  * @desc convert to checksum address
  * @param  {String} address
@@ -53,6 +74,16 @@ export const toChecksumAddress = async (address) => {
  * @return {String} hex value
  */
 export const toHex = value => ethers.utils.hexlify(ethers.utils.bigNumberify(value));
+
+/**
+ * @desc has ETH balance
+ * @param  {String} address
+ * @return {Boolean}
+ */
+export const hasEthBalance = async (address) => {
+  const weiBalance = await web3Provider.getBalance(address, "pending");
+  return weiBalance > 0;
+};
 
 /**
  * @desc estimate gas limit

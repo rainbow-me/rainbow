@@ -1,92 +1,85 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import Animated from 'react-native-reanimated';
 import { withNavigation } from 'react-navigation';
-import { connect } from 'react-redux';
 import {
   compose,
-  omitProps,
   onlyUpdateForKeys,
   withHandlers,
   withProps,
 } from 'recompact';
-import Icon from '../icons/Icon';
+import { withFabSelection } from '../../hoc';
+import { Icon } from '../icons';
+import { Centered } from '../layout';
+// import DeleteButton from './DeleteButton';
 import FloatingActionButton from './FloatingActionButton';
-import EnhancedMovable, { extraStates } from './MovableFabWrapper';
+// import MovableFabWrapper from './MovableFabWrapper';
 
-
-const mapStateToProps = ({
-  selectedWithFab: {
-    selectedId,
-  },
-}) => ({
-  selectedId,
-});
-
-const FloatingActionButtonWithDisabled = compose(
-  connect(mapStateToProps),
-  withProps(({ selectedId }) => ({
-    greyed: selectedId === extraStates.notSendable,
-    size: FloatingActionButton.size,
-  })),
-  omitProps('selectedId'),
-)(FloatingActionButton);
+const FloatingActionButtonWithDisabled = withFabSelection(FloatingActionButton);
 
 const SendFab = ({
   areas,
-  deleteButtonTranslate,
+  deleteButtonScale,
   disabled,
   onPress,
+  scaleTo,
   scrollViewTracker,
   sections,
   tapRef,
   ...props
 }) => (
-  <EnhancedMovable
-    actionType="send"
-    deleteButtonTranslate={deleteButtonTranslate}
-    tapRef={tapRef}
-    scrollViewTracker={scrollViewTracker}
-    sections={sections}
-  >
-    <FloatingActionButtonWithDisabled
-      disabled={disabled}
-      onPress={onPress}
-      tapRef={tapRef}
-      scaleTo={1.1}
-    >
-      <Icon
-        name="send"
-        style={{
-          height: 22,
-          marginBottom: 4,
-          width: 23,
-        }}
-      />
-    </FloatingActionButtonWithDisabled>
-  </EnhancedMovable>
+  <Centered flex={0}>
+    {/*
+      <DeleteButton deleteButtonScale={deleteButtonScale} />
+      <MovableFabWrapper
+        actionType="send"
+        deleteButtonScale={deleteButtonScale}
+        scrollViewTracker={scrollViewTracker}
+        sections={sections}
+        tapRef={tapRef}
+      >
+    */}
+      <FloatingActionButtonWithDisabled
+        disabled={disabled}
+        onPress={onPress}
+        scaleTo={scaleTo}
+        tapRef={tapRef}
+      >
+        <Icon
+          height={22}
+          marginBottom={4}
+          name="send"
+          width={23}
+        />
+      </FloatingActionButtonWithDisabled>
+    {/*
+      </MovableFabWrapper>
+    */}
+  </Centered>
 );
-
 
 SendFab.propTypes = {
   areas: PropTypes.array,
   children: PropTypes.any,
-  deleteButtonTranslate: PropTypes.object,
+  deleteButtonScale: PropTypes.object,
   disabled: PropTypes.bool,
   onPress: PropTypes.func,
+  scaleTo: PropTypes.number,
   scrollViewTracker: PropTypes.object,
   sections: PropTypes.array,
   tapRef: PropTypes.object,
 };
 
+SendFab.defaultProps = {
+  // scaleTo: FloatingActionButton.sizeWhileDragging / FloatingActionButton.size
+};
+
 export default compose(
   withNavigation,
-  withHandlers({
-    onPress: ({ navigation }) => () => {
-      navigation.navigate('SendSheet');
-    },
-  }),
+  withHandlers({ onPress: ({ navigation }) => () => navigation.navigate('SendSheet') }),
   onlyUpdateForKeys(['disabled', 'sections']),
-  withProps({
-    tapRef: React.createRef(),
-  }),
+  // withProps({
+  //   deleteButtonScale: new Animated.Value(DeleteButton.defaultScale),
+  //   tapRef: React.createRef(),
+  // }),
 )(SendFab);
