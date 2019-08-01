@@ -325,12 +325,12 @@ class RecyclerAssetList extends Component {
 
           if (renderSize >= deviceDimensions) {
             const scrollDistance = sectionsHeight - this.position;
-            this.scrollToOffset(this.position + scrollDistance - verticalOffset);
+            this.scrollToOffset(this.position + scrollDistance - verticalOffset, true);
           } else {
             const diff = this.position - sectionsHeight + deviceDimensions;
             if (renderSize > diff) {
               const scrollDistance = renderSize - diff;
-              this.scrollToOffset(this.position + scrollDistance);
+              this.scrollToOffset(this.position + scrollDistance, true);
             }
           }
           break;
@@ -348,9 +348,13 @@ class RecyclerAssetList extends Component {
             }
           }
           const renderSize = balancesHeight + investmentHeight + collectiblesHeight + ListFooter.height;
-          const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 270);
+          const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 160 : 280);
           if (this.position + deviceDimensions > renderSize) {
-            this.scrollToOffset(renderSize - deviceDimensions);
+            layoutItemAnimator.animateShift = () => LayoutAnimation.configureNext(LayoutAnimation.create(300, 'easeInEaseOut', 'opacity'));
+            this.scrollToOffset(renderSize - deviceDimensions, true);
+            setTimeout(() => {
+              layoutItemAnimator.animateShift = () => LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity'));
+            }, 300);
           }
         }
         i++;
@@ -363,10 +367,10 @@ class RecyclerAssetList extends Component {
     clearInterval(this.interval);
   };
 
-  scrollToOffset = (position) => {
+  scrollToOffset = (position, animated) => {
     setTimeout(() => {
-      this.rlv.scrollToOffset(0, position, true);
-    }, 50);
+      this.rlv.scrollToOffset(0, position, animated);
+    }, 5);
   }
 
   getStableId = (index) => {
