@@ -125,8 +125,8 @@ const gestureResponseDistance = {
   vertical: deviceUtils.dimensions.height,
 };
 
-const onTransitionStart = closing => {
-  if (closing) {
+const onTransitionStart = props => {
+  if (props.closing) {
     StatusBar.setBarStyle('dark-content');
   } else {
     StatusBar.setBarStyle('light-content');
