@@ -4,10 +4,19 @@ import { KeyboardAvoidingView, View } from 'react-native';
 import { compose, withProps } from 'recompact';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import {
+  tradeEthForExactTokens,
+  tradeExactEthForTokens,
+  tradeExactTokensForEth,
+  tradeExactTokensForTokens,
+  tradeTokensForExactEth,
+  tradeTokensForExactTokens,
+} from '@uniswap/sdk';
+import {
   Centered,
   Column,
   ColumnWithMargins,
 } from '../components/layout';
+import { convertAmountToRawAmount } from '../helpers/utilities';
 import {
   withAccountData,
   withAccountSettings,
@@ -50,9 +59,13 @@ const ExchangeModalHeader = withNeverRerender(() => (
 
 class ExchangeModal extends PureComponent {
   static propTypes = {
+    chainId: PropTypes.number,
+    inputAsExactAmount: PropTypes.bool,
     inputAmount: PropTypes.number,
+    inputCurrency: PropTypes.object,
     navigation: PropTypes.object,
     outputAmount: PropTypes.number,
+    outputCurrency: PropTypes.object,
     showConfirmButton: PropTypes.bool,
   }
 
@@ -70,11 +83,71 @@ class ExchangeModal extends PureComponent {
 
   inputFieldRef = null
 
-  setInputAmount = inputAmount => this.setState({ inputAmount })
+  getMarketDetails = async () => {
+    try {
+      let tradeDetails = null;
+      const { chainId } = this.props;
+      const {
+        inputAmount,
+        inputAsExactAmount,
+        inputCurrency,
+        outputAmount,
+        outputCurrency,
+      } = this.state;
+      if (inputCurrency === null || outputCurrency === null) return;
+      const {
+        address: inputCurrencyAddress,
+        decimals: inputDecimals,
+      } = inputCurrency;
+      const {
+        address: outputCurrencyAddress,
+        decimals: outputDecimals,
+      } = outputCurrency;
+      const rawInputAmount = convertAmountToRawAmount(inputAmount, inputDecimals);
+      const rawOutputAmount = convertAmountToRawAmount(outputAmount, outputDecimals);
+
+      if (inputCurrencyAddress === 'eth' && outputCurrencyAddress !== 'eth') {
+        tradeDetails = inputAsExactAmount
+          ? await tradeExactEthForTokens(outputCurrencyAddress, rawInputAmount, chainId)
+          : await tradeEthForExactTokens(outputCurrencyAddress, rawOutputAmount, chainId);
+      } else if (inputCurrencyAddress !== 'eth' && outputCurrencyAddress === 'eth') {
+        tradeDetails = inputAsExactAmount
+          ? await tradeExactTokensForEth(inputCurrencyAddress, rawInputAmount, chainId)
+          : await tradeTokensForExactEth(inputCurrencyAddress, rawOutputAmount, chainId);
+      } else if (inputCurrencyAddress !== 'eth' && outputCurrencyAddress !== 'eth') {
+        tradeDetails = inputAsExactAmount
+          ? await tradeExactTokensForTokens(inputCurrencyAddress, outputCurrencyAddress, rawInputAmount, chainId)
+          : await tradeTokensForExactTokens(inputCurrencyAddress, outputCurrencyAddress, rawOutputAmount, chainId);
+      } if (inputAsExactAmount) {
+        const updatedValue = get(tradeDetails, 'outputAmount.amount');
+        const rawUpdatedValue = convertRawAmountToDecimalFormat(updatedValue, outputDecimals);
+        this.setState({ outputAmount: rawUpdatedValue });
+      } else {
+        const updatedValue = get(tradeDetails, 'inputAmount.amount');
+        const rawUpdatedValue = convertRawAmountToDecimalFormat(updatedValue, inputDecimals);
+        this.setState({ inputAmount: rawUpdatedValue });
+      }
+    } catch (error) {
+      console.log('error getting market details', error);
+      // TODO
+    }
+  }
+
+  setInputAsExactAmount = (inputAsExactAmount) => this.setState({ inputAsExactAmount })
 
   setNativeAmount = nativeAmount => this.setState({ nativeAmount })
 
-  setOutputAmount = outputAmount => this.setState({ outputAmount })
+  setInputAmount = async inputAmount => {
+    this.setState({ inputAmount });
+    setInputAsExactAmount(true);
+    await getMarketDetails();
+  }
+
+  setOutputAmount = async outputAmount => {
+    this.setState({ outputAmount });
+    setInputAsExactAmount(false);
+    await getMarketDetails();
+  }
 
   setInputCurrency = inputCurrency => this.setState({ inputCurrency })
 
@@ -204,84 +277,6 @@ const withMockedPrices = withProps({
 export default compose(
   withAccountData,
   withAccountSettings,
-  withState('useInputAsExactAmount', 'setUseInputAsExactAmount', null),
-  withState('amountToExchange', 'setAmountToExchange', '0'),
-  withState('targetAmountToExchange', 'setTargetAmountToExchange', '0'),
-  withState('selectedCurrency', 'setSelectedCurrency', null),
-  withState('selectedTargetCurrency', 'setSelectedTargetCurrency', null),
-  withProps(({
-    selectedCurrency,
-    allAssets: [{ symbol }],
-  }) => ({ selectedCurrency: selectedCurrency || symbol })),
-  withHandlers({
-    getMarketDetails: ({
-      chainId,
-      selectedCurrency,
-      selectedTargetCurrency,
-      setAmountToExchange,
-      setTargetAmountToExchange,
-      useInputAsExactAmount,
-    }) => async () => {
-      try {
-        // TODO format amounts
-        let tradeDetails = null;
-        // normal amount to raw amount (no pricing)
-        // convertAmountToRawAmount(amountToExchange, selectedCurrency's decimals);
-        
-        if (selectedCurrency === null || selectedTargetCurrency === null || useInputAsExactAmount === null) return;
-        if (selectedCurrency === 'eth' && selectedTargetCurrency !== 'eth') {
-          tradeDetails = useInputAsExactAmount
-            ? await tradeExactEthForTokens(selectedTargetCurrency, amountToExchange, chainId)
-            : await tradeEthForExactTokens(selectedTargetCurrency, targetAmountToExchange, chainId);
-        } else if (selectedCurrency !== 'eth' && selectedTargetCurrency === 'eth') {
-          tradeDetails = useInputAsExactAmount
-            ? await tradeExactTokensForEth(selectedCurrency, amountToExchange, chainId)
-            : await tradeTokensForExactEth(selectedCurrency, targetAmountToExchange, chainId);
-        } else if (selectedCurrency !== 'eth' && selectedTargetCurrency !== 'eth') {
-          tradeDetails = useInputAsExactAmount
-            ? await tradeExactTokensForTokens(selectedCurrency, selectedTargetCurrency, amountToExchange, chainId)
-            : await tradeTokensForExactTokens(selectedCurrency, selectedTargetCurrency, targetAmountToExchange, chainId);
-        }
-        if (useInputAsExactAmount) {
-          // TODO format amounts
-          const updatedValue = get(tradeDetails, 'outputAmount.amount');
-          setTargetAmountToExchange(updatedValue);
-        } else {
-          // TODO format amounts
-          const updatedValue = get(tradeDetails, 'inputAmount.amount');
-          setAmountToExchange(updatedValue);
-        }
-      } catch (error) {
-        // TODO
-      }
-    },
-  }),
-  withHandlers({
-    onPressConfirmExchange:
-      ({ navigation }) => () => {
-        Keyboard.dismiss();
-        navigation.navigate('WalletScreen');
-      },
-    onChangeInputAmount: ({ getMarketDetails, setAmountToExchange, setUseInputAsExactAmount }) => async (amount) => {
-      setAmountToExchange(amount);
-      setUseInputAsExactAmount(true);
-      await getMarketDetails();
-    },
-    onChangeTargetAmount: ({ getMarketDetails, setTargetAmountToExchange, setUseInputAsExactAmount }) => async (amount) => {
-      setTargetAmountToExchange(amount);
-      setUseInputAsExactAmount(false);
-      await getMarketDetails();
-    },
-    onPressSelectCurrency: ({ navigation, setSelectedCurrency }) => () => {
-      Keyboard.dismiss();
-      navigation.navigate('CurrencySelectScreen', { setSelectedCurrency });
-    },
-    onPressSelectTargetCurrency:
-      ({ navigation, setSelectedTargetCurrency }) => () => {
-        Keyboard.dismiss();
-        navigation.navigate('CurrencySelectScreen', { setSelectedCurrency: setSelectedTargetCurrency });
-      },
-  }),
   withBlockedHorizontalSwipe,
   withNavigationFocus,
   withMockedPrices,

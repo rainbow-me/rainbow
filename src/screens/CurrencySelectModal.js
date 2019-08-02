@@ -62,12 +62,15 @@ const CurrencyRenderItem = ({ favorite, item, onPress }) => (
 CurrencyRenderItem.propTypes = {
   favorite: PropTypes.bool,
   index: PropTypes.number,
-  item: PropTypes.shape({ symbol: PropTypes.string }),
+  item: PropTypes.shape({
+    decimals: PropTypes.number,
+    symbol: PropTypes.string,
+  }),
   onPress: PropTypes.func,
 };
 
 const EnhancedCurrencyRenderItem = withHandlers({
-  onPress: ({ item: { symbol }, onPress }) => () => onPress(symbol),
+  onPress: ({ item, onPress }) => () => onPress(item),
 })(CurrencyRenderItem);
 
 class SelectCurrencyModal extends PureComponent {
@@ -115,11 +118,11 @@ class SelectCurrencyModal extends PureComponent {
 
   handlePressBack = () => this.props.navigation.navigate('MainExchangeScreen')
 
-  handleSelectAsset = (symbol) => {
+  handleSelectAsset = (item) => {
     // It's a bit weird and I'm not sure why on invoking
-    // navigation.getParam('onSelectCurrency')(symbol)
+    // navigation.getParam('onSelectCurrency')(item)
     // but this small hack seems to be a legit workaround
-    this.callback(symbol);
+    this.callback(item);
     this.props.navigation.navigate('MainExchangeScreen');
   }
 
