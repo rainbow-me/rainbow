@@ -12,6 +12,7 @@ import { withOpenFamilyTabs, withFabSendAction } from '../../hoc';
 import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyHeader from './TokenFamilyHeader';
 import { FadeInAnimation } from '../animations';
+import { colors } from '../../styles';
 
 const enhanceRenderItem = compose(
   withNavigation,
@@ -95,7 +96,7 @@ class TokenFamilyWrap extends Component {
 
   render() {
     return (
-      <View>
+      <View style={{ backgroundColor: colors.white }}>
         <TokenFamilyHeader
           familyName={this.props.familyName}
           familyImage={this.props.familyImage}

@@ -24,7 +24,13 @@ const SmallBalancesWrapper = ({
   assets,
   ...props
 }) => {
-  const transition = <Transition.Change interpolation="easeInOut" durationMs={200} />;
+  const transition = (
+    <Transition.Together>
+      <Transition.Out type="fade" />
+      <Transition.Change propagation="top" interpolation="easeInOut" durationMs={200} />
+      <Transition.In type="fade" />
+    </Transition.Together>
+  );
 
   const [height, setHeight] = useState(0);
   const ref = useRef();
@@ -51,16 +57,11 @@ const SmallBalancesWrapper = ({
         transition={transition}
       >
         <CoinDivider coinDivider={true} balancesSum={balancesSum(assets)} openSmallBalances={openSmallBalances} onChangeOpenBalances={onPress} />
-        <View
-          style={{
-            height,
-            overflow: 'hidden',
-          }}
-        >
-          <View style={{ height: CoinRow.height * assets.length }} >
+        {openSmallBalances
+          && <View style={{ height: CoinRow.height * assets.length }} >
             {assets}
           </View>
-        </View>
+        }
       </Transitioning.View>
     </View>
   );

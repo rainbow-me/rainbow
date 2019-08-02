@@ -2,19 +2,17 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
 import { View, Text } from 'react-native';
-import Animated from 'react-native-reanimated';
 import { compose } from 'recompact';
 import FastImage from 'react-native-fast-image';
-import { colors, fonts, position } from '../../styles';
+import { colors, fonts } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { deviceUtils } from '../../utils';
-import { Icon } from '../icons';
-import { Centered } from '../layout';
 import { Monospace } from '../text';
 import { withFabSendAction } from '../../hoc';
 import Highlight from '../Highlight';
 import RotationArrow from '../animations/RotationArrow';
 import Caret from '../../assets/family-dropdown-arrow.png';
+import OpacityToggler from '../animations/OpacityToggler';
 
 const marginLeft = 15;
 const marginRight = 19;
@@ -72,9 +70,16 @@ const CoinDivider = enhance(({
     <Highlight highlight={isCoinDivider} />
     <ButtonPressAnimation scaleTo={0.9} onPress={onChangeOpenBalances}>
       <Container>
-        <Header style={{ marginRight: openSmallBalances ? 5 : -3 }}>
-          {openSmallBalances ? 'Less' : 'All'}
-        </Header>
+        <OpacityToggler isVisible={openSmallBalances}>
+          <Header style={{ marginRight: -40 }}>
+            All
+          </Header>
+        </OpacityToggler>
+        <OpacityToggler isVisible={openSmallBalances} startingOpacity={0} endingOpacity={1}>
+          <Header style={{ marginRight: openSmallBalances ? 10 : -3 }}>
+            Less
+          </Header>
+        </OpacityToggler>
         <SettingIconWrap style={{ paddingRight: openSmallBalances ? 5 : 0 }}>
           <RotationArrow isOpen={openSmallBalances} startingPosition={0} endingPosition={-90}>
             <SettingIcon source={Caret} />
@@ -82,14 +87,14 @@ const CoinDivider = enhance(({
         </SettingIconWrap>
       </Container>
     </ButtonPressAnimation>
-    {!openSmallBalances
-        && <Monospace
-          color="blueGreyDark"
-          size="lmedium"
-        >
-          {balancesSum}
-        </Monospace>
-    }
+    <OpacityToggler isVisible={openSmallBalances}>
+      <Monospace
+        color="blueGreyDark"
+        size="lmedium"
+      >
+        {balancesSum}
+      </Monospace>
+    </OpacityToggler>
   </Wrapper>
 ));
 
