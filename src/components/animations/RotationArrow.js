@@ -11,28 +11,29 @@ const {
   interpolate,
   set,
   startClock,
-  timing,
+  spring,
   Value,
+  SpringUtils,
 } = Animated;
 
 function runTiming(clock, value, dest, isOpen) {
   const state = {
     finished: new Value(1),
-    frameTime: new Value(0),
     position: new Value(value),
     time: new Value(0),
+    velocity: new Value(0),
   };
 
-  const config = {
-    duration: 200,
-    easing: Easing.inOut(Easing.ease),
-    toValue: new Value(0),
-  };
+  const config = Animated.SpringUtils.makeConfigFromOrigamiTensionAndFriction({
+    ...SpringUtils.makeDefaultConfig(),
+    friction: 20,
+    tension: 200,
+  });
 
   const reset = [
     set(state.finished, 0),
     set(state.time, 0),
-    set(state.frameTime, 0),
+    set(state.velocity, 0),
   ];
 
   return block([
@@ -41,7 +42,7 @@ function runTiming(clock, value, dest, isOpen) {
       set(config.toValue, dest),
     ]),
     cond(clockRunning(clock), 0, startClock(clock)),
-    timing(clock, state, config),
+    spring(clock, state, config),
     state.position,
   ]);
 }
