@@ -2386,6 +2386,7 @@
     semver "5.5.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@walletconnect/core@^1.0.0-beta.35":
   version "1.0.0-beta.35"
   resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.35.tgz#47781b836966a1f7ef199c58e35482409a3cc3cf"
@@ -2413,10 +2414,33 @@
   resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-1.0.0-beta.35.tgz#6c8c86cb7da9aa94f5d460cf81d1ef73ebf3a0fb"
   integrity sha512-ru+IOU3vr9/BJvv3Vjgxnn0t5EW3zLzQinWBBR91GXvIfOCMn5uqhgtZ//pgVqaDi/EyHQXtUe4ZvPfqO5Zulw==
 =======
+=======
+=======
+<<<<<<< HEAD
+"@walletconnect/core@^1.0.0-beta.31":
+  version "1.0.0-beta.31"
+  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.31.tgz#ce9257c13a0da7a52a61829b66c45a9686cedca9"
+  integrity sha512-EggZFGdQ0EMjWZrtqAn6PJslLDlc5suyPBWfp4PP0247tYorcXXz/7OSiek0XWBVQ7dakCqeJAOteuc/FaQ+hw==
+=======
+"@uniswap/sdk@^1.0.0-beta.3":
+  version "1.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@uniswap/sdk/-/sdk-1.0.0-beta.3.tgz#a8229136cb5b1bb4900b6540e0ab1fc6c17c0a82"
+  integrity sha512-JfA/xGwTQt3c3p8Aznc7LFHYZkzYCXuPsv2dwPSV8U4PiN103CQ2euK9xh4x8aN2F2MXb7MeoYXTfXU0fbtkCg==
+  dependencies:
+    bignumber.js "^9.0.0"
+    ethers "^4.0.28"
+    lodash.clonedeepwith "^4.5.0"
+
+>>>>>>> a1921ad8... further sdk hookup
+>>>>>>> 9a1e3741... further sdk hookup
 "@walletconnect/core@^1.0.0-beta.32":
   version "1.0.0-beta.32"
   resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.32.tgz#e8125a877ab809bd2d74c7c03a07ad70401f9c34"
   integrity sha512-CvDQ+vupPbEvrGFwZOwTANeT1bz+c6TSkkOxo5lXz+DotxbZpQqL3tsFuaenTuVL7AqvNH2RARgA5Ez2HSjNaA==
+<<<<<<< HEAD
+=======
+>>>>>>> c851add0... further sdk hookup
+>>>>>>> a1921ad8... further sdk hookup
   dependencies:
     "@walletconnect/types" "^1.0.0-beta.32"
     "@walletconnect/utils" "^1.0.0-beta.32"
@@ -5406,6 +5430,7 @@ eth-contract-metadata@^1.9.2:
   integrity sha512-qDdH9n2yw5GqWW5E6wrh7KZ8WicpEzofrpuJG3FWiJew+Yt6RapnqtXN8ljvxY+UTZPd1QzLXswKfpJyzsH4Tw==
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ethers@^4.0.33:
   version "4.0.37"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.37.tgz#dfa70d59498663878c5e4a977d14356660ca5b90"
@@ -5416,6 +5441,12 @@ ethers@^4.0.27:
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.32.tgz#46378864cb3bf29b57c2effd17508b560743abf6"
   integrity sha512-r0k2tBNF6MYEsvwmINeP3VPppD/7eAZyiOk/ifDDawXGCKqr3iEQkPq6OZSDVD+4Jie38WPteS9thXzpn2+A5Q==
 >>>>>>> 751dba29... Replace navigation animations with new effects
+=======
+ethers@^4.0.28, ethers@^4.0.33:
+  version "4.0.33"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.33.tgz#f7b88d2419d731a39aefc37843a3f293e396f918"
+  integrity sha512-lAHkSPzBe0Vj+JrhmkEHLtUEKEheVktIjGDyE9gbzF4zf1vibjYgB57LraDHu4/ItqWVkztgsm8GWqcDMN+6vQ==
+>>>>>>> 9a1e3741... further sdk hookup
   dependencies:
     "@types/node" "^10.3.2"
     aes-js "3.0.0"
@@ -7921,6 +7952,11 @@ locate-path@^3.0.0:
   dependencies:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
+
+lodash.clonedeepwith@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.clonedeepwith/-/lodash.clonedeepwith-4.5.0.tgz#6ee30573a03a1a60d670a62ef33c10cf1afdbdd4"
+  integrity sha1-buMFc6A6GmDWcKYu8zwQzxr9vdQ=
 
 lodash.debounce@4.0.8:
   version "4.0.8"
