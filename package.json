@@ -23,6 +23,7 @@
     "@segment/analytics-react-native": "^1.0.1",
     "@staltz/react-native-tcp": "^3.3.1",
     "@tradle/react-native-http": "^2.0.1",
+    "@uniswap/sdk": "^1.0.0-beta.3",
     "@walletconnect/react-native": "^1.0.0-beta.29",
     "assert": "^1.4.1",
     "asyncstorage-down": "^4.2.0",
