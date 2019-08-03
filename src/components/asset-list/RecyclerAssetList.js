@@ -15,10 +15,6 @@ import {
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives';
-import {
-  buildAssetHeaderUniqueIdentifier,
-  buildAssetUniqueIdentifier,
-} from '../../helpers/assets';
 import { withOpenFamilyTabs, withOpenInvestmentCards, withOpenBalances } from '../../hoc';
 import { colors } from '../../styles';
 import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
@@ -35,6 +31,7 @@ export const ViewTypes = {
   COIN_ROW: 1, // eslint-disable-line sort-keys
   COIN_ROW_LAST: 2,
   COIN_SMALL_BALANCES: 3,
+  FOOTER: 11,
   UNIQUE_TOKEN_ROW: 4,
   UNIQUE_TOKEN_ROW_CLOSED: 5,
   UNIQUE_TOKEN_ROW_CLOSED_LAST: 6,
@@ -44,7 +41,6 @@ export const ViewTypes = {
   UNISWAP_ROW_CLOSED: 9,
   UNISWAP_ROW_CLOSED_LAST: 10,
   UNISWAP_ROW_LAST: 8,
-  FOOTER: 11,
 };
 
 const Wrapper = styled.View`
@@ -149,7 +145,7 @@ class RecyclerAssetList extends PureComponent {
     this.layoutProvider = new LayoutProvider(
       index => {
         const {
-          openFamilyTabs, openInvestmentCards, openSmallBalances, sections,
+          openFamilyTabs, openInvestmentCards, sections,
         } = this.props;
         const { headersIndices } = this.state;
         if (headersIndices.includes(index)) {
@@ -169,10 +165,7 @@ class RecyclerAssetList extends PureComponent {
           const lastBalanceIndex = headersIndices[balancesIndex] + balanceItemsCount;
           if (index === lastBalanceIndex) {
             if (sections[balancesIndex].data[lastBalanceIndex - 1].smallBalancesContainer) {
-              return {
-                get: ViewTypes.COIN_SMALL_BALANCES,
-                size: openSmallBalances ? get(sections, `[${balancesIndex}].data[${lastBalanceIndex - 1}].assets`, []).length : 0,
-              };
+              return ViewTypes.COIN_SMALL_BALANCES;
             }
             return ViewTypes.COIN_ROW_LAST;
           }
@@ -239,9 +232,11 @@ class RecyclerAssetList extends PureComponent {
         } else if (type.get === ViewTypes.UNIQUE_TOKEN_ROW_CLOSED) {
           dim.height = 54 + (type.isLast ? 90 : 0);
         } else if (type === ViewTypes.COIN_ROW_LAST) {
-          dim.height = this.state.areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height - 1;
-        } else if (type.get === ViewTypes.COIN_SMALL_BALANCES) {
-          dim.height = this.state.areSmallCollectibles ? CoinDivider.height + (type.size * CoinRow.height) : CoinDivider.height + (type.size * CoinRow.height) + ListFooter.height - 1;
+          dim.height = this.state.areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height;
+        } else if (type === ViewTypes.COIN_SMALL_BALANCES) {
+          const balancesIndex = findIndex(this.props.sections, ({ name }) => name === 'balances');
+          const size = this.props.sections[balancesIndex].data[this.props.sections[balancesIndex].data.length - 1].assets.length;
+          dim.height = this.props.openSmallBalances ? CoinDivider.height + (size * CoinRow.height) + ListFooter.height : CoinDivider.height + ListFooter.height;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRow.height;
         } else if (type === ViewTypes.UNISWAP_ROW_LAST) {
@@ -405,13 +400,32 @@ class RecyclerAssetList extends PureComponent {
 
   getStableId = (index) => {
     const row = get(this.state, `dataProvider._data[${index}]`);
-    if (get(row, 'item.isLastPlaceholder', false)) {
-      return 'isLastPlaceholder';
+    let stableId;
+    if (row.isHeader) {
+      return `header_${row.title}`;
     }
 
-    return has(row, 'isHeader')
-      ? buildAssetHeaderUniqueIdentifier(row)
-      : buildAssetUniqueIdentifier(row.item);
+    if (row.item && row.item.address) {
+      return `balance_${row.item.address}`;
+    }
+
+    if (row.item && row.item.uniqueId) {
+      return `investment_${row.item.uniqueId}`;
+    }
+
+    if (row.item && row.item.familyName) {
+      return `family_${row.item.familyName}`;
+    }
+
+    if (row.item && row.item.smallBalancesContainer) {
+      return `balance_${row.item.stableId}`;
+    }
+
+    if (index === this.state.dataProvider._data.length - 1) {
+      return 'footer';
+    }
+
+    return stableId;
   };
 
   handleRefresh = () => {
@@ -444,7 +458,7 @@ class RecyclerAssetList extends PureComponent {
       return hideHeader ? null : <AssetListHeaderRenderer {...data} />;
     }
 
-    if (type.get === ViewTypes.COIN_SMALL_BALANCES) {
+    if (type === ViewTypes.COIN_SMALL_BALANCES) {
       const renderList = [];
       for (let i = 0; i < item.assets.length; i++) {
         const selectedItem = { item: item.assets[i] };
@@ -492,7 +506,6 @@ class RecyclerAssetList extends PureComponent {
             {...props}
             layoutProvider={this.layoutProvider}
             dataProvider={dataProvider}
-            extendedState={{ headersIndices }}
             renderAheadOffset={renderAheadOffset}
             itemAnimator={layoutItemAnimator}
             rowRenderer={this.rowRenderer}

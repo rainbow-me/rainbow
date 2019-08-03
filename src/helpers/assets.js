@@ -28,15 +28,16 @@ export const buildCoinsList = (assets) => {
     smallBalancesContainer: true,
   };
   for (let i = 0; i < assets.length; i++) {
-    if (assets[i].native && assets[i].native.balance.amount > 1) {
+    if ((assets[i].native && assets[i].native.balance.amount > 1) || assets.address === 'eth' || assets.length < 4) {
       newAssets.push(assets[i]);
-    } else {
+    } else if (assets[i].native && assets[i].native.balance.amount <= 1) {
       smallBalances.assets.push(assets[i]);
     }
   }
 
   if (smallBalances.assets.length > 0) {
-    return newAssets.concat(smallBalances);
+    newAssets.push(smallBalances);
+    return newAssets;
   }
   return newAssets;
 };
@@ -59,6 +60,7 @@ export const buildUniqueTokenList = (uniqueTokens) => {
       childrenAmount: grouped[families[i]].length,
       familyImage: get(tokensRow, '[0][0].familyImage', null),
       familyName: families[i],
+      stableId: tokensRow[0].map(({ uniqueId }) => uniqueId).join('__'),
       tokens,
       uniqueId: tokensRow[0].map(({ uniqueId }) => uniqueId).join('__'),
     });
