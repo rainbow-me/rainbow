@@ -30,7 +30,7 @@ export const buildCoinsList = (assets) => {
   for (let i = 0; i < assets.length; i++) {
     if ((assets[i].native && assets[i].native.balance.amount > 1) || assets[i].address === 'eth' || assets.length < 4) {
       newAssets.push(assets[i]);
-    } else {
+    } else if (assets[i].native && assets[i].native.balance.amount <= 1) {
       smallBalances.assets.push(assets[i]);
     }
   }
