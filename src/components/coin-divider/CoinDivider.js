@@ -90,7 +90,7 @@ const CoinDivider = enhance(({
     </ButtonPressAnimation>
     <OpacityToggler isVisible={openSmallBalances}>
       <Monospace
-        color="blueGreyDark"
+        color="dark"
         size="lmedium"
         style={{ paddingBottom: 1 }}
       >
