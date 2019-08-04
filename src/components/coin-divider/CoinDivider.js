@@ -12,7 +12,7 @@ import { withFabSendAction } from '../../hoc';
 import Highlight from '../Highlight';
 import RotationArrow from '../animations/RotationArrow';
 import Caret from '../../assets/show-all-arrow.png';
-import OpacityToggler from '../animations/OpacityToggler';
+import { OpacityToggler, SizeToggler } from '../animations/OpacityToggler';
 
 const marginLeft = 19;
 const marginRight = 19;
@@ -35,6 +35,7 @@ const Container = styled(View)`
   padding: 0 10px;
   flex-direction: row;
   justify-content: space-between;
+  width: 100%;
 `;
 
 const Header = styled(Text)`
@@ -45,6 +46,8 @@ const Header = styled(Text)`
   letter-spacing: ${fonts.letterSpacing.tighter};
   opacity: 0.6;
   padding-bottom: 1;
+  position: absolute;
+  margin-top: -10px;
 `;
 
 const SettingIconWrap = styled(View)`
@@ -70,23 +73,27 @@ const CoinDivider = enhance(({
   <Wrapper>
     <Highlight highlight={isCoinDivider} />
     <ButtonPressAnimation scaleTo={0.8} onPress={onChangeOpenBalances}>
-      <Container>
-        <OpacityToggler isVisible={openSmallBalances}>
-          <Header style={{ marginRight: -40 }}>
-            All
-          </Header>
-        </OpacityToggler>
-        <OpacityToggler isVisible={openSmallBalances} startingOpacity={0} endingOpacity={1}>
-          <Header style={{ marginRight: openSmallBalances ? 10 : -10 }}>
-            Less
-          </Header>
-        </OpacityToggler>
-        <SettingIconWrap style={{ paddingRight: openSmallBalances ? 5 : 0.5 }}>
-          <RotationArrow isOpen={openSmallBalances} startingPosition={0} endingPosition={-90}>
-            <SettingIcon source={Caret} />
-          </RotationArrow>
-        </SettingIconWrap>
-      </Container>
+      <SizeToggler toggle={openSmallBalances} startingWidth={60} endingWidth={75} >
+        <Container>
+          <View>
+            <OpacityToggler isVisible={openSmallBalances}>
+              <Header >
+                All
+              </Header>
+            </OpacityToggler>
+            <OpacityToggler isVisible={openSmallBalances} startingOpacity={0} endingOpacity={1}>
+              <Header >
+                Less
+              </Header>
+            </OpacityToggler>
+          </View>
+          <SettingIconWrap>
+            <RotationArrow isOpen={openSmallBalances} startingPosition={0} endingPosition={-90}>
+              <SettingIcon source={Caret} />
+            </RotationArrow>
+          </SettingIconWrap>
+        </Container>
+      </SizeToggler>
     </ButtonPressAnimation>
     <OpacityToggler isVisible={openSmallBalances}>
       <Monospace

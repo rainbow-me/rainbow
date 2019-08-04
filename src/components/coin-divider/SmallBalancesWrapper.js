@@ -1,10 +1,9 @@
 import PropTypes from 'prop-types';
-import React, { useState, useRef } from 'react';
-import { Transitioning, Transition } from 'react-native-reanimated';
+import React from 'react';
 import { View } from 'react-native';
 import { withOpenBalances } from '../../hoc';
 import CoinDivider from './CoinDivider';
-import { CoinRow } from '../coin-row';
+import { OpacityToggler } from '../animations/OpacityToggler';
 
 const balancesSum = (balances) => {
   let sum = 0;
@@ -23,49 +22,19 @@ const SmallBalancesWrapper = ({
   setOpenSmallBalances,
   assets,
   ...props
-}) => {
-  const transition = (
-    <Transition.Together>
-      <Transition.Out type="fade" />
-      <Transition.Change propagation="top" interpolation="easeInOut" durationMs={200} />
-      <Transition.In type="fade" />
-    </Transition.Together>
-  );
-
-  const [height, setHeight] = useState(0);
-  const ref = useRef();
-
-  const onPress = () => {
-    if (ref.current) {
-      ref.current.animateNextTransition();
-      setHeight(!openSmallBalances ? (CoinRow.height * assets.length) : 0);
-      setOpenSmallBalances(!openSmallBalances);
-    }
-  };
-
-  if (openSmallBalances && height === 0) {
-    if (ref.current) {
-      ref.current.animateNextTransition();
-      setHeight(CoinRow.height * assets.length);
-    }
-  }
-
-  return (
-    <View>
-      <Transitioning.View
-        ref={ref}
-        transition={transition}
-      >
-        <CoinDivider coinDivider={true} balancesSum={balancesSum(assets)} openSmallBalances={openSmallBalances} onChangeOpenBalances={onPress} />
-        {openSmallBalances
-          && <View style={{ height: CoinRow.height * assets.length }} >
-            {assets}
-          </View>
-        }
-      </Transitioning.View>
-    </View>
-  );
-};
+}) => (
+  <View>
+    <CoinDivider
+      coinDivider={true}
+      balancesSum={balancesSum(assets)}
+      openSmallBalances={openSmallBalances}
+      onChangeOpenBalances={() => setOpenSmallBalances(!openSmallBalances)}
+    />
+    <OpacityToggler isVisible={openSmallBalances} startingOpacity={0} endingOpacity={1}>
+      {assets}
+    </OpacityToggler>
+  </View>
+);
 
 SmallBalancesWrapper.propTypes = {
   assets: PropTypes.array,

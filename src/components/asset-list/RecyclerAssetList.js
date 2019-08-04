@@ -52,7 +52,14 @@ const NOOP = () => undefined;
 
 const layoutItemAnimator = {
   animateDidMount: NOOP,
-  animateShift: () => LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')),
+  animateShift: () => LayoutAnimation.configureNext({
+    duration: 200,
+    update: {
+      initialVelocity: 0,
+      springDamping: 1,
+      type: LayoutAnimation.Types.spring,
+    },
+  }),
   animateWillMount: NOOP,
   animateWillUnmount: NOOP,
   animateWillUpdate: NOOP,
