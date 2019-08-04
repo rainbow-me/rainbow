@@ -1309,6 +1309,7 @@
   integrity sha512-kODY7Wzp6iPN82g4M56TWRsts6YAyyK2ekHr8gwAB9bg58fYqCL9e4EFT8m7/Gn9GtbrwQy6OSCurgBYyxVGjA==
 =======
 "@ethersproject/logger@>5.0.0-beta.0":
+<<<<<<< HEAD
   version "5.0.0-beta.128"
   resolved "https://registry.yarnpkg.com/@ethersproject/logger/-/logger-5.0.0-beta.128.tgz#1cfb0447b5aa98ce177d11df3b6a76a0e8783bbf"
   integrity sha512-9sPvKQRtuBmGCH+vnidQg0BvWXccB8HU2G8oOQAkbg9lAzaRwmFe9V4YwkR4raCZQtpQNdcuxYXF0O6o23XjwA==
@@ -1323,6 +1324,16 @@
   resolved "https://registry.yarnpkg.com/@ethersproject/properties/-/properties-5.0.0-beta.128.tgz#26e8a4cb95f0d048531f0a8da39773b16b4633b4"
   integrity sha512-4ABgX2WmpQLlmbyR6EwxoT5YTRYxV6fGRtK+1nt48dvG2Y8FSkg33JvCfei3w432RjEEHEN5IOmTf+nTr9n6VA==
 >>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
+=======
+  version "5.0.0-beta.128"
+  resolved "https://registry.yarnpkg.com/@ethersproject/logger/-/logger-5.0.0-beta.128.tgz#1cfb0447b5aa98ce177d11df3b6a76a0e8783bbf"
+  integrity sha512-9sPvKQRtuBmGCH+vnidQg0BvWXccB8HU2G8oOQAkbg9lAzaRwmFe9V4YwkR4raCZQtpQNdcuxYXF0O6o23XjwA==
+
+"@ethersproject/properties@>5.0.0-beta.0":
+  version "5.0.0-beta.130"
+  resolved "https://registry.yarnpkg.com/@ethersproject/properties/-/properties-5.0.0-beta.130.tgz#597c2537396943bcd57d68a28a0127c09356cbbf"
+  integrity sha512-8gdIFHZR7iBEFNpHw9PK9EXhbH/f2rPrgLCULMjKrmltcbkHgalHMws/L0XcEXiR0aQdwh2/oq1GpF1qq2hPEA==
+>>>>>>> a3543960... rebase cleanup
   dependencies:
     "@ethersproject/logger" ">5.0.0-beta.0"
 
@@ -1337,6 +1348,7 @@
 "@ethersproject/strings@^5.0.0-beta.125":
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "5.0.0-beta.131"
   resolved "https://registry.yarnpkg.com/@ethersproject/strings/-/strings-5.0.0-beta.131.tgz#98137914ff94a95858e88ad26187e266b354124b"
   integrity sha512-TEUr1U1XWTPGEehAitqkG7SMgVspsAtB1+ESXdniznaYaMoP/D3W3lsDuFdvIIPWlAb97ra1w2pnCKxVcMmc4A==
@@ -1347,6 +1359,8 @@
 =======
 =======
 >>>>>>> 317ce799... fix conflicts after rebasing over latest wallet-zero branch
+=======
+>>>>>>> 64f1594b... rebase cleanup
   version "5.0.0-beta.129"
   resolved "https://registry.yarnpkg.com/@ethersproject/strings/-/strings-5.0.0-beta.129.tgz#065fe106e3c2b9460e14ea6b401861070e91c7bc"
   integrity sha512-jhdHMML3mwjRfYjFqC61VvAzHCCsJwNcehho8MQoa2b5GaCYzFPA5aT+bxjjnDqTYl9ojeNHXweiGvqnCvvunQ==
@@ -1355,6 +1369,11 @@
   resolved "https://registry.yarnpkg.com/@ethersproject/strings/-/strings-5.0.0-beta.127.tgz#e07848b92cb1b615a11d7289449312c069a234e9"
   integrity sha512-FKQDBKgcX7Bc0J45TIwwT4PTnE1TvtDRka3dAkH1VX4odnj6DzpZ99QdkhX4mBL2J+6/XK+trA7m/HTDx+5YqA==
 >>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
+=======
+  version "5.0.0-beta.129"
+  resolved "https://registry.yarnpkg.com/@ethersproject/strings/-/strings-5.0.0-beta.129.tgz#065fe106e3c2b9460e14ea6b401861070e91c7bc"
+  integrity sha512-jhdHMML3mwjRfYjFqC61VvAzHCCsJwNcehho8MQoa2b5GaCYzFPA5aT+bxjjnDqTYl9ojeNHXweiGvqnCvvunQ==
+>>>>>>> a3543960... rebase cleanup
   dependencies:
     "@ethersproject/bytes" ">5.0.0-beta.0"
     "@ethersproject/constants" ">5.0.0-beta.0"
@@ -1626,8 +1645,20 @@
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.7.0.tgz#511d1db12c52d29cb87b6e4e84d63030ffa2c38d"
   integrity sha512-hO/gYqzLCeCFnLIgYiGlZhiQMAnMuTxNS6rCbC8leMnlGARzrarnWsepHhvottOKeSctVh0wzchLCLCBcw4zVA==
+<<<<<<< HEAD
 >>>>>>> 034f7aa3... Create Exchange related Input components
+<<<<<<< HEAD
 >>>>>>> 2216260a... Create Exchange related Input components
+=======
+=======
+=======
+"@react-native-community/cli-platform-android@^2.0.1", "@react-native-community/cli-platform-android@^2.7.0", "@react-native-community/cli-platform-android@^2.8.3":
+  version "2.8.3"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.8.3.tgz#097237769d69400ceaf254a780d645bb8284acd6"
+  integrity sha512-I0/knJYmyMgp1IkrgvgirifArnarFvm+EvrRKVQjEO0aEXhOjVU2DA7TshdjocZhjq1leKm/bSxz8D3WHpRJ9g==
+>>>>>>> 3291cb84... rebase cleanup
+>>>>>>> a3543960... rebase cleanup
+>>>>>>> 64f1594b... rebase cleanup
   dependencies:
     "@react-native-community/cli-tools" "^2.8.3"
     chalk "^2.4.2"
@@ -1745,20 +1776,35 @@
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.8.0.tgz#95cea3e8feab4d9525a96a9dcf56bd0d62633158"
   integrity sha512-a6DD4fnfJij8FicQ/5+4zgsqxRO92o6unt2XKZexIM8bqH3i8U5pvUsccOhRnsaIjXUFMbLU5knozRrFSaJBoQ==
+<<<<<<< HEAD
 >>>>>>> 034f7aa3... Create Exchange related Input components
+=======
+=======
+"@react-native-community/cli-platform-ios@^2.0.1", "@react-native-community/cli-platform-ios@^2.8.0", "@react-native-community/cli-platform-ios@^2.8.3":
+  version "2.8.3"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.8.3.tgz#2d77bf5c6fde753d7c675fd94f656f78c0d5f741"
+  integrity sha512-r2+xa4trWubLRqXvotYtDIFzQpepSwo9Zsjt0JT96BUJLdXNzsUSwTFZW2EmLPmnJiZJRNdWvoXaBYVqDthdTQ==
+>>>>>>> 3291cb84... rebase cleanup
+>>>>>>> a3543960... rebase cleanup
   dependencies:
     "@react-native-community/cli-tools" "^2.8.3"
     chalk "^2.4.2"
     xcode "^2.0.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a3543960... rebase cleanup
 "@react-native-community/cli-tools@^2.7.0", "@react-native-community/cli-tools@^2.8.3":
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.8.3.tgz#0e2249f48cf4603fb8d740a9f0715c31ac131ceb"
   integrity sha512-N5Pz+pR+GFq3JApjd0SW4jp9KC7kbKsMH65QLRh30JNsxdPvNkYox6/ZZdkvdXaI5ev3EckR7eqlcwi5gpVTYQ==
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> e1a27438... Cleanup ButtonPressAnimation
 =======
+=======
+>>>>>>> 64f1594b... rebase cleanup
 =======
 "@react-native-community/cli-tools@^2.0.0-rc.2", "@react-native-community/cli-tools@^2.7.0":
   version "2.7.0"
@@ -1785,7 +1831,12 @@
 =======
 =======
 >>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
+<<<<<<< HEAD
 >>>>>>> 317ce799... fix conflicts after rebasing over latest wallet-zero branch
+=======
+=======
+>>>>>>> a3543960... rebase cleanup
+>>>>>>> 64f1594b... rebase cleanup
   dependencies:
     chalk "^2.4.2"
     lodash "^4.17.5"
@@ -1844,17 +1895,32 @@
     ws "^1.1.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@react-native-community/eslint-config@^0.0.5":
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/@react-native-community/eslint-config/-/eslint-config-0.0.5.tgz#584f6493258202a57efc22e7be66966e43832795"
   integrity sha512-jwO2tnKaTPTLX5XYXMHGEnFdf543SU7jz98/OF5mDH3b7lP+BOaCD+jVfqqHoDRkcqyPlYiR1CgwVGWpi0vMWg==
 =======
+=======
+>>>>>>> 64f1594b... rebase cleanup
 "@react-native-community/cli@^1.2.1":
   version "1.9.11"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-1.9.11.tgz#b868b17201057b9cd16a3a20c30561176071f21a"
   integrity sha512-VVu/tmTTzODfW2xlqIz0pZgeELG2ppPAIgbBEKLgHCO9DMxNZIKSqmei/JqkAi0gEipqQoP6YPAemHPd43lyrA==
   dependencies:
     chalk "^1.1.1"
+=======
+"@react-native-community/cli@^2.0.1":
+  version "2.8.3"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.8.3.tgz#b59c4e44946a1ce6c464ae246328cf3a2ab47bd2"
+  integrity sha512-khlS6slD6fsIv8R6L0bbQvK2PQ/UJytmh8/XEZ835bDwgbn6U90Yqrf299r6JxKk2/tyckRu6QimQNAkEQxEHg==
+  dependencies:
+    "@hapi/joi" "^15.0.3"
+    "@react-native-community/cli-platform-android" "^2.8.3"
+    "@react-native-community/cli-platform-ios" "^2.8.3"
+    "@react-native-community/cli-tools" "^2.8.3"
+    chalk "^2.4.2"
+>>>>>>> 3291cb84... rebase cleanup
     commander "^2.19.0"
     compression "^1.7.1"
     connect "^3.6.5"
@@ -2211,6 +2277,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "12.7.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.7.5.tgz#e19436e7f8e9b4601005d73673b6dc4784ffcc2f"
   integrity sha512-9fq4jZVhPNW8r+UYKnxF1e2HkDWOWKM5bC2/7c9wPV835I0aOrVbS/Hw/pWPk2uKrNXQqg9Z959Kz+IYDd5p3w==
@@ -2247,6 +2314,8 @@
 >>>>>>> 2216260a... Create Exchange related Input components
 =======
 >>>>>>> 317ce799... fix conflicts after rebasing over latest wallet-zero branch
+=======
+>>>>>>> 64f1594b... rebase cleanup
   version "12.7.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.7.1.tgz#3b5c3a26393c19b400844ac422bd0f631a94d69d"
   integrity sha512-aK9jxMypeSrhiYofWWBf/T7O+KwaiAHzM4sveCdWPn71lzUSMimRnKzhXDKfKwV1kWoBo2P1aGgaIYGLf9/ljw==
@@ -2263,7 +2332,20 @@
   version "10.14.15"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.15.tgz#e8f7729b631be1b02ae130ff0b61f3e018000640"
   integrity sha512-CBR5avlLcu0YCILJiDIXeU2pTw7UK/NIxfC63m7d7CVamho1qDEzXKkOtEauQRPMy6MI8mLozth+JJkas7HY6g==
+<<<<<<< HEAD
 >>>>>>> 1d794746... Minor cleanup Header component
+=======
+=======
+  version "12.6.9"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.6.9.tgz#ffeee23afdc19ab16e979338e7b536fdebbbaeaf"
+  integrity sha512-+YB9FtyxXGyD54p8rXwWaN1EWEyar5L58GlGWgtH2I9rGmLGBQcw63+0jw+ujqVavNuO47S1ByAjm9zdHMnskw==
+
+"@types/node@^10.3.2":
+  version "10.14.14"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.14.tgz#a47955df2acf76ba7f0ac3b205d325da193dc9ad"
+  integrity sha512-xXD08vZsvpv4xptQXj1+ky22f7ZoKu5ZNI/4l+/BXG3X+XaeZsmaFbbTKuhSE3NjjvRuZFxFf9sQBMXIcZNFMQ==
+>>>>>>> a3543960... rebase cleanup
+>>>>>>> 64f1594b... rebase cleanup
 
 "@types/node@^8.0.7":
 <<<<<<< HEAD
@@ -2387,6 +2469,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@walletconnect/core@^1.0.0-beta.35":
   version "1.0.0-beta.35"
   resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.35.tgz#47781b836966a1f7ef199c58e35482409a3cc3cf"
@@ -2416,12 +2499,16 @@
 =======
 =======
 =======
+>>>>>>> 64f1594b... rebase cleanup
+=======
 <<<<<<< HEAD
 "@walletconnect/core@^1.0.0-beta.31":
   version "1.0.0-beta.31"
   resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.31.tgz#ce9257c13a0da7a52a61829b66c45a9686cedca9"
   integrity sha512-EggZFGdQ0EMjWZrtqAn6PJslLDlc5suyPBWfp4PP0247tYorcXXz/7OSiek0XWBVQ7dakCqeJAOteuc/FaQ+hw==
 =======
+=======
+>>>>>>> a3543960... rebase cleanup
 "@uniswap/sdk@^1.0.0-beta.3":
   version "1.0.0-beta.3"
   resolved "https://registry.yarnpkg.com/@uniswap/sdk/-/sdk-1.0.0-beta.3.tgz#a8229136cb5b1bb4900b6540e0ab1fc6c17c0a82"
@@ -2438,9 +2525,12 @@
   resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.32.tgz#e8125a877ab809bd2d74c7c03a07ad70401f9c34"
   integrity sha512-CvDQ+vupPbEvrGFwZOwTANeT1bz+c6TSkkOxo5lXz+DotxbZpQqL3tsFuaenTuVL7AqvNH2RARgA5Ez2HSjNaA==
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> c851add0... further sdk hookup
 >>>>>>> a1921ad8... further sdk hookup
+=======
+>>>>>>> a3543960... rebase cleanup
   dependencies:
     "@walletconnect/types" "^1.0.0-beta.32"
     "@walletconnect/utils" "^1.0.0-beta.32"
@@ -3691,6 +3781,7 @@ caniuse-lite@^1.0.30000980, caniuse-lite@^1.0.30000981:
 caniuse-lite@^1.0.30000980, caniuse-lite@^1.0.30000984:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.0.30000989"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000989.tgz#b9193e293ccf7e4426c5245134b8f2a56c0ac4b9"
   integrity sha512-vrMcvSuMz16YY6GSVZ0dWDTJP8jqk3iFQ/Aq5iqblPwxSVVZI+zxDyTX0VPqtQsDnfdrBDcsmhgTEOh5R8Lbpw==
@@ -3713,7 +3804,15 @@ caniuse-lite@^1.0.30000980, caniuse-lite@^1.0.30000981:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000987.tgz#bc6b47217afd8226a2b1964635c6bff62cdf5738"
   integrity sha512-O3VrjtRMTxoU5Cn5/QSmXeIR1gkVps4j9jqfIm4FLaQ5JzqBlVjMUG1xWnoYFv8N+H3Lp++aa05TekyIbjHL7g==
 >>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
+<<<<<<< HEAD
 >>>>>>> 317ce799... fix conflicts after rebasing over latest wallet-zero branch
+=======
+=======
+  version "1.0.30000988"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000988.tgz#742f35ec1b8b75b9628d705d7652eea1fef983db"
+  integrity sha512-lPj3T8poYrRc/bniW5SQPND3GRtSrQdUM/R4mCYTbZxyi3jQiggLvZH4+BYUuX0t4TXjU+vMM7KFDQg+rSzZUQ==
+>>>>>>> a3543960... rebase cleanup
+>>>>>>> 64f1594b... rebase cleanup
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -4022,10 +4121,17 @@ combined-stream@^1.0.6, combined-stream@~1.0.6:
     delayed-stream "~1.0.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 commander@^2.19.0, commander@^2.20.0, commander@~2.20.0:
 =======
 commander@^2.19.0, commander@^2.20.0, commander@^2.9.0, commander@~2.20.0:
 >>>>>>> 96db5a28... begin mike
+=======
+commander@^2.19.0, commander@^2.20.0, commander@^2.9.0, commander@~2.20.0:
+=======
+commander@^2.19.0, commander@^2.20.0, commander@~2.20.0:
+>>>>>>> 3291cb84... rebase cleanup
+>>>>>>> 64f1594b... rebase cleanup
   version "2.20.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
   integrity sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==
@@ -4896,6 +5002,7 @@ electron-to-chromium@^1.3.188:
 electron-to-chromium@^1.3.191:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.3.200"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.200.tgz#78fb858b466269e8eb46d31a52562f00c865127f"
   integrity sha512-PUurrpyDA74MuAjJRD+79ss5BqJlU3mdArRbuu4wO/dt6jc3Ic/6BDmFJxkdwbfq39cHf/XKm2vW98XSvut9Dg==
@@ -4929,7 +5036,15 @@ electron-to-chromium@^1.3.188:
   integrity sha512-VV+f2FVeFI5D/slUD7A3V1lTMDkQTUGWYH2dZGAijIutN5Aga4Fn/Hv4Gc+60OpXFVLYIq5HpXb2cG6NrGGQaA==
 >>>>>>> b45c1992... fix conflicts after rebasing over latest wallet-zero branch
 >>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
+<<<<<<< HEAD
 >>>>>>> 317ce799... fix conflicts after rebasing over latest wallet-zero branch
+=======
+=======
+  version "1.3.214"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.214.tgz#8b5b9a0415fd41b69c61f694007597cb8c8eb7e8"
+  integrity sha512-SU9yyql6uA0Fc8bWR7sCYNGBtxkC+tQb6UaC7ReaadN42Kx7Ka+dzx3lAIm9Ock+ULEawJuTFcVB2x34uOCg0Q==
+>>>>>>> a3543960... rebase cleanup
+>>>>>>> 64f1594b... rebase cleanup
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -5022,6 +5137,7 @@ entities@^1.1.1:
   resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.2.tgz#bdfa735299664dfafd34529ed4f8522a275fea56"
   integrity sha512-f2LZMYl1Fzu7YSBKg+RoROelpOaNrcGmE9AZubeDfrCEia483oW4MI4VyFd5VNHIgQ/7qm1I0wUHK1eJnn2y2w==
 
+<<<<<<< HEAD
 entities@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/entities/-/entities-2.0.0.tgz#68d6084cab1b079767540d80e56a39b423e4abf4"
@@ -5029,11 +5145,23 @@ entities@^2.0.0:
 <<<<<<< HEAD
 =======
 
+=======
+<<<<<<< HEAD
+>>>>>>> a3543960... rebase cleanup
 envinfo@^5.7.0:
   version "5.12.1"
   resolved "https://registry.yarnpkg.com/envinfo/-/envinfo-5.12.1.tgz#83068c33e0972eb657d6bc69a6df30badefb46ef"
   integrity sha512-pwdo0/G3CIkQ0y6PCXq4RdkvId2elvtPCJMG0konqlrfkWQbf1DWeH9K2b/cvu2YgGvPPTOnonZxXM1gikFu1w==
+<<<<<<< HEAD
 >>>>>>> e1a27438... Cleanup ButtonPressAnimation
+=======
+=======
+entities@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/entities/-/entities-2.0.0.tgz#68d6084cab1b079767540d80e56a39b423e4abf4"
+  integrity sha512-D9f7V0JSRwIxlRI2mjMqufDrRDnx8p+eEOz7aUM9SuvF8gsBzra0/6tbjl1m8eQHrZlYj6PxqE00hZ1SAIKPLw==
+>>>>>>> 3291cb84... rebase cleanup
+>>>>>>> 64f1594b... rebase cleanup
 
 envinfo@^7.1.0:
   version "7.3.1"
@@ -6542,6 +6670,7 @@ i18next@^17.0.3:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "17.0.14"
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.14.tgz#b736fcb8c84aa84c57bfad3caac7f8b5f92d85a4"
   integrity sha512-yEGSWX9UTpWQskPsFy03t8uhZh5wyZ7v9p+MCo08Sd2edTaFdg1gFA633dg9OqTxJ/z1rtCiacgOlDSBpgssgw==
@@ -6561,6 +6690,8 @@ i18next@^17.0.3:
   integrity sha512-EUsx6LGXA6m2bTKUtPHHBVhE1v48y0cHKCWP7c9cUfnAu3ZBpWYPy5QkrC3ppV+BByJP3Zww9c9hhtfgnOpGBg==
 >>>>>>> 1d794746... Minor cleanup Header component
 =======
+=======
+>>>>>>> 64f1594b... rebase cleanup
   version "17.0.10"
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.10.tgz#8f92ec815d84dc0a0752e8114dc22e1861522d71"
   integrity sha512-EUsx6LGXA6m2bTKUtPHHBVhE1v48y0cHKCWP7c9cUfnAu3ZBpWYPy5QkrC3ppV+BByJP3Zww9c9hhtfgnOpGBg==
@@ -6569,7 +6700,15 @@ i18next@^17.0.3:
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.7.tgz#aae8591634b109c0ecec755b46c6414b0d743e07"
   integrity sha512-fQn+gcyDaHb3qXIeahjCnGMsCeHaKveSORclang55stBjOL13oK7ZYxXVz1AaFV6p3SzOSu/KW+tgZcUuDdf6Q==
 >>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
+<<<<<<< HEAD
 >>>>>>> 317ce799... fix conflicts after rebasing over latest wallet-zero branch
+=======
+=======
+  version "17.0.8"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.8.tgz#0c7113a88ad156eb37b9025d83a7684e1bbc2e18"
+  integrity sha512-oojOrqEPQzKo1HDMDDOl19zTM/EaDwBRPobUSD4kEjNoTi2oERvUbngK2lkIm9nOGddh55jbMGbm6fusMBeoKQ==
+>>>>>>> a3543960... rebase cleanup
+>>>>>>> 64f1594b... rebase cleanup
   dependencies:
     "@babel/runtime" "^7.3.1"
 
@@ -10290,6 +10429,7 @@ react-native-device-info@^2.1.3:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-2.3.2.tgz#db2b8f135aaf2515583e367ab791dcc7d2f0d14c"
   integrity sha512-ccpPuUbwhw5uYdVwN1UJp6ykMZz6U/u82HNM3oJ7O6MP8RIMlMDkHbqR4O0sDtUSuRMGiqqRzFtmOLFYeQ0ODw==
@@ -10336,6 +10476,8 @@ react-native-device-info@^2.1.3:
   integrity sha512-ccpPuUbwhw5uYdVwN1UJp6ykMZz6U/u82HNM3oJ7O6MP8RIMlMDkHbqR4O0sDtUSuRMGiqqRzFtmOLFYeQ0ODw==
 >>>>>>> 1d794746... Minor cleanup Header component
 =======
+=======
+>>>>>>> 64f1594b... rebase cleanup
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-2.3.2.tgz#db2b8f135aaf2515583e367ab791dcc7d2f0d14c"
   integrity sha512-ccpPuUbwhw5uYdVwN1UJp6ykMZz6U/u82HNM3oJ7O6MP8RIMlMDkHbqR4O0sDtUSuRMGiqqRzFtmOLFYeQ0ODw==
@@ -10350,7 +10492,15 @@ react-native-device-info@^2.1.3:
   integrity sha512-4kIBeBdYB/IwNjbSTEvfnWgFB4cXL0drvdXKfcAgfI5vxmsLElR5HI6t9fqVkPyMCiRtI7mvS6PbG2kjGdbQMw==
 >>>>>>> b45c1992... fix conflicts after rebasing over latest wallet-zero branch
 >>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
+<<<<<<< HEAD
 >>>>>>> 317ce799... fix conflicts after rebasing over latest wallet-zero branch
+=======
+=======
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-2.3.2.tgz#db2b8f135aaf2515583e367ab791dcc7d2f0d14c"
+  integrity sha512-ccpPuUbwhw5uYdVwN1UJp6ykMZz6U/u82HNM3oJ7O6MP8RIMlMDkHbqR4O0sDtUSuRMGiqqRzFtmOLFYeQ0ODw==
+>>>>>>> a3543960... rebase cleanup
+>>>>>>> 64f1594b... rebase cleanup
 
 react-native-dotenv@^0.2.0:
   version "0.2.0"
@@ -10613,10 +10763,19 @@ react-native-svg@^9.5.1:
   integrity sha512-oL4EWGEYhaXDwZw3ULxAtXXh3xao0BiUt2UdVANdGuP3jdpSWuXUmXCd2HpgppOVsHwbSuR67sFmnduXPGaxuA==
 =======
 react-native-svg@^9.5.3:
+<<<<<<< HEAD
   version "9.6.2"
   resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.6.2.tgz#e29b626f115230e0f0f3693887f36e60b5b01408"
   integrity sha512-TwTEkGTe2aRh1VBemFIuc6bCvPmlVUAd2kk4HmZLuxyBDAzEAbWYFsvDSkGd9mZ06ghx1gDg+c0hrH3y0q/eDA==
+<<<<<<< HEAD
 >>>>>>> e1a27438... Cleanup ButtonPressAnimation
+=======
+=======
+  version "9.5.3"
+  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.5.3.tgz#2389f3ffd700c6441166496a1aeade31ead89c59"
+  integrity sha512-VUOe4TLz7RFdmm/XT9EH87VSwlRykx49qbwJMA+dh9eFM7KPY1qH3kEyN7uRCqJD2eE8toxt9NpjR6ByvtPNlA==
+>>>>>>> a3543960... rebase cleanup
+>>>>>>> 64f1594b... rebase cleanup
 
 react-native-tab-view@^1.2.0, react-native-tab-view@^1.4.1:
   version "1.4.1"
@@ -10650,6 +10809,7 @@ react-native-tcp@^3.2.1:
     util "^0.10.3"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 react-native-text-input-mask@^1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/react-native-text-input-mask/-/react-native-text-input-mask-1.0.6.tgz#21ca0c1886f5b547e9f6594ba2f4bb50d39fe3a1"
@@ -10666,6 +10826,12 @@ react-native-text-input-mask@^1.0.1:
   resolved "https://registry.yarnpkg.com/react-native-text-input-mask/-/react-native-text-input-mask-1.0.4.tgz#0fd644eaca9c9f29553841e15a3fc3a90a602552"
   integrity sha512-RBXj84y/fgOt5rRl0XBLr3eGcNSEZhT/vug0I6Ysa7M1uByNRxDGZE6VRNXtzFkh4ZD9Ysov6MfChU3m8y0JIA==
 >>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
+=======
+react-native-text-input-mask@^1.0.4:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/react-native-text-input-mask/-/react-native-text-input-mask-1.0.6.tgz#21ca0c1886f5b547e9f6594ba2f4bb50d39fe3a1"
+  integrity sha512-pCTYEnqiKw1F9VuEwxOt42Roaigilpp0xjb2JhjIeuVlc6Cvf9IqA+vzAXLJTOzoxImOOAasGxrZpTgdFYMvOQ==
+>>>>>>> a3543960... rebase cleanup
 
 react-native-tooltip@^5.2.0:
   version "5.2.0"
@@ -11531,6 +11697,7 @@ sax@^1.2.1, sax@^1.2.4, sax@~1.2.4:
   integrity sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 schedule@0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/schedule/-/schedule-0.4.0.tgz#fa20cfd0bfbf91c47d02272fd7096780d3170bbb"
@@ -11541,6 +11708,8 @@ sax@~1.1.1:
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.1.6.tgz#5d616be8a5e607d54e114afae55b7eaf2fcc3240"
   integrity sha1-XWFr6KXmB9VOEUr65Vt+ry/MMkA=
 
+=======
+>>>>>>> 64f1594b... rebase cleanup
 schedule@0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/schedule/-/schedule-0.5.0.tgz#c128fffa0b402488b08b55ae74bb9df55cc29cc8"
@@ -12746,6 +12915,7 @@ tslib@^1.8.1, tslib@^1.9.0:
 tsutils@^3.7.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "3.17.1"
   resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-3.17.1.tgz#ed719917f11ca0dee586272b2ac49e015a2dd759"
   integrity sha512-kzeQ5B8H3w60nFY2g8cJIuH7JDpsALXySGtwGJ0p2LSjLgay3NdIpqq5SoOBe46bKDW2iq25irHCr8wjomUS2g==
@@ -12759,6 +12929,16 @@ tsutils@^3.7.0:
   resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-3.17.1.tgz#ed719917f11ca0dee586272b2ac49e015a2dd759"
   integrity sha512-kzeQ5B8H3w60nFY2g8cJIuH7JDpsALXySGtwGJ0p2LSjLgay3NdIpqq5SoOBe46bKDW2iq25irHCr8wjomUS2g==
 >>>>>>> 1d794746... Minor cleanup Header component
+=======
+  version "3.17.1"
+  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-3.17.1.tgz#ed719917f11ca0dee586272b2ac49e015a2dd759"
+  integrity sha512-kzeQ5B8H3w60nFY2g8cJIuH7JDpsALXySGtwGJ0p2LSjLgay3NdIpqq5SoOBe46bKDW2iq25irHCr8wjomUS2g==
+=======
+  version "3.15.0"
+  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-3.15.0.tgz#3efabbf2c18a5d7c7496a878be0609eb90897ed6"
+  integrity sha512-or184xKZ6fLE1SrDcvsOs3Wkfb1JgizdKs5Fiag3cp/m9k7C7GWd4E7gs3K5LHAePaIP7K62C20ZZI3JQx8iBQ==
+>>>>>>> a3543960... rebase cleanup
+>>>>>>> 64f1594b... rebase cleanup
   dependencies:
     tslib "^1.8.1"
 
