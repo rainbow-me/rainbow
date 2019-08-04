@@ -87,7 +87,7 @@ const CoinDivider = enhance(({
             </OpacityToggler>
           </View>
           <SettingIconWrap>
-            <RotationArrow isOpen={openSmallBalances} startingPosition={0} endingPosition={-90}>
+            <RotationArrow isOpen={openSmallBalances} reversed={true} endingPosition={-90} endingOffset={-5}>
               <SettingIcon source={Caret} />
             </RotationArrow>
           </SettingIconWrap>

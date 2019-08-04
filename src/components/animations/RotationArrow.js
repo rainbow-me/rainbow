@@ -9,6 +9,7 @@ const {
   concat,
   cond,
   interpolate,
+  multiply,
   set,
   startClock,
   spring,
@@ -53,9 +54,9 @@ class RotationArrow extends React.Component {
         && prev.isOpen !== this.props.isOpen) {
       const clock = new Clock();
       const base = this.props.isOpen ? runTiming(clock, -1, 1, this.props.isOpen) : runTiming(clock, 1, -1, this.props.isOpen);
-      this._rotation = interpolate(base, {
+      this._transform = interpolate(base, {
         inputRange: [-1, 1],
-        outputRange: [this.props.endingPosition, this.props.startingPosition],
+        outputRange: this.props.reversed ? [1, 0] : [0, 1],
       });
     }
   }
@@ -63,7 +64,12 @@ class RotationArrow extends React.Component {
   render() {
     return (
       <Animated.View
-        style={{ transform: [{ rotate: this._rotation ? concat(this._rotation, 'deg') : `${this.props.startingPosition}deg` }] }}
+        style={{ transform: 
+          [{
+            rotate: this._transform ? concat(multiply(this._transform, this.props.endingPosition), 'deg') : this.props.reversed ? 0 : `${this.props.endingPosition}deg`,
+            translateY: this._transform ? multiply(this._transform, this.props.endingOffset) : 0,
+          }],
+        }}
       >
         {this.props.children}
       </Animated.View>
@@ -73,9 +79,10 @@ class RotationArrow extends React.Component {
 
 RotationArrow.propTypes = {
   children: PropTypes.any,
+  endingOffset: PropTypes.number,
   endingPosition: PropTypes.number,
   isOpen: PropTypes.bool,
-  startingPosition: PropTypes.number,
+  reversed: PropTypes.bool,
 };
 
 export default RotationArrow;
