@@ -44,20 +44,19 @@ const Header = styled(Text)`
   font-size: ${fonts.size.lmedium};
   font-weight: ${fonts.weight.semibold};
   letter-spacing: ${fonts.letterSpacing.tighter};
+  top: -10.25px;
   opacity: 0.6;
-  padding-bottom: 1;
   position: absolute;
-  margin-top: -10px;
 `;
 
 const SettingIconWrap = styled(View)`
   opacity: 0.6;
-  padding-bottom: 1;
+  padding-bottom: 1px;
 `;
 
 const SettingIcon = styled(FastImage)`
   height: 17px;
-  width: 8px;
+  width: 9px;
 `;
 
 const enhance = compose(
@@ -73,7 +72,7 @@ const CoinDivider = enhance(({
   <Wrapper>
     <Highlight highlight={isCoinDivider} />
     <ButtonPressAnimation scaleTo={0.8} onPress={onChangeOpenBalances}>
-      <SizeToggler toggle={openSmallBalances} startingWidth={60} endingWidth={75} >
+      <SizeToggler toggle={openSmallBalances} startingWidth={54} endingWidth={79} >
         <Container>
           <View>
             <OpacityToggler isVisible={openSmallBalances}>
