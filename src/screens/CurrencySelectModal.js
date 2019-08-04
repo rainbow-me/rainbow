@@ -1,3 +1,4 @@
+import { intersectionWith } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { compose, withHandlers } from 'recompact';
@@ -83,6 +84,8 @@ class SelectCurrencyModal extends PureComponent {
 
   keyboardHeight = 0
 
+  isInputAssets = true
+
   viewportHeight = deviceUtils.dimensions.height
 
   searchInputRef = React.createRef()
@@ -100,6 +103,7 @@ class SelectCurrencyModal extends PureComponent {
 
     this.callback = navigation.getParam('onSelectCurrency');
     this.keyboardHeight = navigation.getParam('keyboardHeight');
+    this.isInputAssets = navigation.getParam('isInputAssets');
 
     // console.log('getDataFromParams this.keyboardHeight', this.keyboardHeight);
 
@@ -137,6 +141,19 @@ class SelectCurrencyModal extends PureComponent {
     // setTimeout(() => this.searchInputRef.current.focus(), 500);
   }
 
+  const getAssets = () => {
+    const data = this.isInputAssets
+      ? intersectionWith(this.props.allAssets, this.props.uniswapAssets, (uniswapAsset, asset) => uniswapAsset.address.toLowerCase() === asset.address.toLowerCase())
+      : this.props.uniswapAssets;
+    return [
+      {
+        balances: true,
+        data,
+        renderItem: this.renderCurrencyItem,
+      },
+    ];
+  };
+
   render() {
     const magicNumber = this.viewportHeight
       ? (this.viewportHeight - 10) // - 5
@@ -150,14 +167,6 @@ class SelectCurrencyModal extends PureComponent {
       // console.log('this.viewportHeight', this.viewportHeight);
       // console.log(' ')
     }
-
-    const fakeDataThatNeedsToBeHookedUp = [
-      {
-        balances: true,
-        data: this.props.allAssets,
-        renderItem: this.renderCurrencyItem,
-      },
-    ];
 
     return (
       <View
@@ -230,7 +239,7 @@ class SelectCurrencyModal extends PureComponent {
                   hideHeader
                   flex={1}
                   style={{ flex: 1 }}
-                  sections={fakeDataThatNeedsToBeHookedUp}
+                  sections={this.getAssets()}
                 />
               </Column>
               <GestureBlocker type='bottom'/>

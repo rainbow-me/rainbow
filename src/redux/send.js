@@ -270,7 +270,6 @@ export const sendUpdateNativeAmount = nativeAmount => (dispatch, getState) => {
     const priceUnit = get(selected, 'price.value', 0);
     const assetAmount = convertAmountFromNativeValue(
       _nativeAmount,
-      selected,
       priceUnit,
     );
     _assetAmount = formatInputDecimals(assetAmount, _nativeAmount);

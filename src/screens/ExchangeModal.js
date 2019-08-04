@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { KeyboardAvoidingView, View } from 'react-native';
@@ -16,7 +17,11 @@ import {
   Column,
   ColumnWithMargins,
 } from '../components/layout';
-import { convertAmountToRawAmount } from '../helpers/utilities';
+import {
+  convertAmountFromNativeValue,
+  convertAmountToNativeAmount,
+  convertAmountToRawAmount,
+} from '../helpers/utilities';
 import {
   withAccountData,
   withAccountSettings,
@@ -59,6 +64,7 @@ const ExchangeModalHeader = withNeverRerender(() => (
 
 class ExchangeModal extends PureComponent {
   static propTypes = {
+    allAssets: PropTypes.array,
     chainId: PropTypes.number,
     inputAsExactAmount: PropTypes.bool,
     inputAmount: PropTypes.number,
@@ -77,6 +83,7 @@ class ExchangeModal extends PureComponent {
     outputAmount: null,
     outputCurrency: null,
     showConfirmButton: false,
+    slippage: null,
   }
 
   keyboardHeight = null
@@ -119,13 +126,16 @@ class ExchangeModal extends PureComponent {
           ? await tradeExactTokensForTokens(inputCurrencyAddress, outputCurrencyAddress, rawInputAmount, chainId)
           : await tradeTokensForExactTokens(inputCurrencyAddress, outputCurrencyAddress, rawOutputAmount, chainId);
       } if (inputAsExactAmount) {
+        // TODO reuse
         const updatedValue = get(tradeDetails, 'outputAmount.amount');
+        const slippage = get(tradeDetails, 'marketRateSlippage');
         const rawUpdatedValue = convertRawAmountToDecimalFormat(updatedValue, outputDecimals);
-        this.setState({ outputAmount: rawUpdatedValue });
+        this.setState({ outputAmount: rawUpdatedValue, slippage });
       } else {
         const updatedValue = get(tradeDetails, 'inputAmount.amount');
+        const slippage = get(tradeDetails, 'marketRateSlippage');
         const rawUpdatedValue = convertRawAmountToDecimalFormat(updatedValue, inputDecimals);
-        this.setState({ inputAmount: rawUpdatedValue });
+        this.setState({ inputAmount: rawUpdatedValue, slippage });
       }
     } catch (error) {
       console.log('error getting market details', error);
@@ -135,10 +145,18 @@ class ExchangeModal extends PureComponent {
 
   setInputAsExactAmount = (inputAsExactAmount) => this.setState({ inputAsExactAmount })
 
-  setNativeAmount = nativeAmount => this.setState({ nativeAmount })
+  setNativeAmount = nativeAmount => {
+    this.setState({ nativeAmount });
+    const inputAmount = convertAmountFromNativeValue(nativeAmount, get(this.inputCurrency, 'native.price.amount', 0));
+    this.setState({ inputAmount });
+    setInputAsExactAmount(true);
+    await getMarketDetails();
+  }
 
   setInputAmount = async inputAmount => {
     this.setState({ inputAmount });
+    const nativeAmount = convertAmountToNativeAmount(inputAmount, get(this.inputCurrency, 'native.price.amount', 0));
+    this.setState({ nativeAmount });
     setInputAsExactAmount(true);
     await getMarketDetails();
   }
@@ -149,12 +167,36 @@ class ExchangeModal extends PureComponent {
     await getMarketDetails();
   }
 
-  setInputCurrency = inputCurrency => this.setState({ inputCurrency })
+  setInputCurrency = inputCurrency => {
+    const previousInputCurrency = this.inputCurrency;
+    this.setState({ inputCurrency });
+    if (inputCurrency.address === this.outputCurrency.address) {
+      if (this.outputCurrency !== null
+          && previousInputCurrency !== null) {
+        this.setOutputCurrency(previousInputCurrency);
+      } else {
+        this.setOutputCurrency(null);
+      }
+    }
+  }
 
-  setOutputCurrency = outputCurrency => this.setState({ outputCurrency })
+  setOutputCurrency = outputCurrency => {
+    // TODO check that it is valid input currency
+    const previousOutputCurrency = this.outputCurrency;
+    this.setState({ outputCurrency })
+    if (outputCurrency.address === this.inputCurrency.address) {
+      if (this.inputCurrency !== null
+          && previousOutputCurrency !== null) {
+        this.setInputCurrency(previousOutputCurrency);
+      } else {
+        this.setInputCurrency(null);
+      }
+    }
+  }
 
   handleSelectInputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
+      isInputAssets: true,
       keyboardHeight: this.keyboardHeight,
       onSelectCurrency: this.setInputCurrency,
     });
@@ -162,6 +204,7 @@ class ExchangeModal extends PureComponent {
 
   handleSelectOutputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
+      isInputAssets: false,
       keyboardHeight: this.keyboardHeight,
       onSelectCurrency: this.setOutputCurrency,
     });
