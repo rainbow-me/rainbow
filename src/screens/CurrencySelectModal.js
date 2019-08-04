@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, intersectionWith } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { compose, withHandlers } from 'recompact';
@@ -46,6 +46,8 @@ class CurrencySelectModal extends PureComponent {
 
   callback = null
 
+  isInputAssets = true
+
   searchInputRef = React.createRef()
 
   componentDidMount() {
@@ -64,6 +66,9 @@ class CurrencySelectModal extends PureComponent {
     if (isFocused && (!isTransitioning && prevTransitioning)) {
       this.searchInputRef.current.focus();
     }
+
+    this.callback = navigation.getParam('onSelectCurrency');
+    this.isInputAssets = navigation.getParam('isInputAssets');
 
     this.getDataFromParams();
   }
@@ -102,23 +107,25 @@ class CurrencySelectModal extends PureComponent {
     this.props.pushKeyboardFocusHistory(currentTarget);
   }
 
+  const getAssets = () => {
+    const data = this.isInputAssets
+      ? intersectionWith(this.props.allAssets, this.props.uniswapAssets, (uniswapAsset, asset) => uniswapAsset.address.toLowerCase() === asset.address.toLowerCase())
+      : this.props.uniswapAssets;
+    return [
+      {
+        balances: true,
+        data,
+        renderItem: this.renderCurrencyItem,
+      },
+    ];
+  };
+
   render() {
     const {
       allAssets,
       navigation,
       transitionProps: { isTransitioning },
     } = this.props;
-
-    const fakeDataThatNeedsToBeHookedUp = [
-      {
-        balances: true,
-        data: [...allAssets, ...allAssets.map(({ uniqueId, ...asset }) => ({
-          ...asset,
-          uniqueId: `${uniqueId}_currency`,
-        }))],
-        renderItem: this.renderCurrencyItem,
-      },
-    ];
 
     return (
       <KeyboardFixedOpenLayout paddingTop={safeAreaInsetValues.top}>
@@ -172,12 +179,12 @@ class CurrencySelectModal extends PureComponent {
                 flex={0}
                 hideHeader
                 paddingBottom={100}
-                sections={fakeDataThatNeedsToBeHookedUp}
+                sections={this.getAssets()}
               />
             </Column>
             <GestureBlocker type='bottom'/>
           </Modal>
-          </Animated.View>
+        </Animated.View>
       </KeyboardFixedOpenLayout>
     );
   }
