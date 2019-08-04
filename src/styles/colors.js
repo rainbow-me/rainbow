@@ -10,7 +10,7 @@ const base = {
   blueGreyDarker: '#0F0F11', // '15, 15, 17'
   blueGreyLight: '#A1A5AC',
   blueGreyLightest: '#8A8E97', // '138, 142, 151'
-  blueGreyLigter: '#666A73', // '102, 106, 115'
+  blueGreyLighter: '#666A73', // '102, 106, 115'
   blueGreyMedium: '#636875', // '99, 104, 117'
   blueGreyMediumLight: '#7b7f8a', // '123, 127, 138'
   blueHover: '#6c87f5', // '108, 135, 245'
@@ -28,6 +28,7 @@ const base = {
   headerTitle: '#aaafbd', // '170, 175, 189'
   highlightBackground: '#f6f7f8', // '170, 175, 189'
   lightBlue: '#c5f2ff', // '197, 242, 255'
+  lightBlueGrey: '#F3F5F7', // '243, 245, 247'
   lightestGrey: '#E9EBEF', // '238, 233, 232'
   lightGreen: '#54d192', // '84, 209, 146'
   lightGrey: '#f7f7f8', // '247, 247, 248'

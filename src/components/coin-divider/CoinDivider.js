@@ -11,25 +11,25 @@ import { Monospace } from '../text';
 import { withFabSendAction } from '../../hoc';
 import Highlight from '../Highlight';
 import RotationArrow from '../animations/RotationArrow';
-import Caret from '../../assets/family-dropdown-arrow.png';
+import Caret from '../../assets/show-all-arrow.png';
 import OpacityToggler from '../animations/OpacityToggler';
 
-const marginLeft = 15;
+const marginLeft = 19;
 const marginRight = 19;
 const Wrapper = styled(View)`
+  margin: 8px 0 0 0;
   padding-right: ${marginRight}px;
   padding-left: ${marginLeft}px;
   width: ${deviceUtils.dimensions.width};
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  height: 50px;
+  height: 30px;
 `;
 
 const Container = styled(View)`
-  margin-top: 4px;
   height: 30px;
-  background-color: ${colors.lightGrey};
+  background-color: ${colors.lightBlueGrey};
   border-radius: 15px;
   align-items: center;
   padding: 0 10px;
@@ -38,17 +38,18 @@ const Container = styled(View)`
 `;
 
 const Header = styled(Text)`
-  font-family: ${fonts.family.SFProText};
-  letter-spacing: ${fonts.letterSpacing.tighter};
-  font-size: ${fonts.size.lmedium};
   color: ${colors.blueGreyDark};
+  font-family: ${fonts.family.SFProText};
+  font-size: ${fonts.size.lmedium};
   font-weight: ${fonts.weight.semibold};
-  width: 40px;
+  letter-spacing: ${fonts.letterSpacing.tighter};
   opacity: 0.6;
+  padding-bottom: 1;
 `;
 
 const SettingIconWrap = styled(View)`
   opacity: 0.6;
+  padding-bottom: 1;
 `;
 
 const SettingIcon = styled(FastImage)`
@@ -68,7 +69,7 @@ const CoinDivider = enhance(({
 }) => (
   <Wrapper>
     <Highlight highlight={isCoinDivider} />
-    <ButtonPressAnimation scaleTo={0.9} onPress={onChangeOpenBalances}>
+    <ButtonPressAnimation scaleTo={0.8} onPress={onChangeOpenBalances}>
       <Container>
         <OpacityToggler isVisible={openSmallBalances}>
           <Header style={{ marginRight: -40 }}>
@@ -76,11 +77,11 @@ const CoinDivider = enhance(({
           </Header>
         </OpacityToggler>
         <OpacityToggler isVisible={openSmallBalances} startingOpacity={0} endingOpacity={1}>
-          <Header style={{ marginRight: openSmallBalances ? 10 : -3 }}>
+          <Header style={{ marginRight: openSmallBalances ? 10 : -10 }}>
             Less
           </Header>
         </OpacityToggler>
-        <SettingIconWrap style={{ paddingRight: openSmallBalances ? 5 : 0 }}>
+        <SettingIconWrap style={{ paddingRight: openSmallBalances ? 5 : 0.5 }}>
           <RotationArrow isOpen={openSmallBalances} startingPosition={0} endingPosition={-90}>
             <SettingIcon source={Caret} />
           </RotationArrow>
@@ -91,6 +92,7 @@ const CoinDivider = enhance(({
       <Monospace
         color="blueGreyDark"
         size="lmedium"
+        style={{ paddingBottom: 1 }}
       >
         {balancesSum}
       </Monospace>
@@ -104,7 +106,7 @@ CoinDivider.propTypes = {
   openSmallBalances: PropTypes.bool,
 };
 
-CoinDivider.height = 50;
+CoinDivider.height = 30;
 
 
 export default CoinDivider;

@@ -232,19 +232,19 @@ class RecyclerAssetList extends PureComponent {
         } else if (type.get === ViewTypes.UNIQUE_TOKEN_ROW_CLOSED) {
           dim.height = 54 + (type.isLast ? 90 : 0);
         } else if (type === ViewTypes.COIN_ROW_LAST) {
-          dim.height = this.state.areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height;
+          dim.height = this.state.areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height + 1;
         } else if (type === ViewTypes.COIN_SMALL_BALANCES) {
           const balancesIndex = findIndex(this.props.sections, ({ name }) => name === 'balances');
           const size = this.props.sections[balancesIndex].data[this.props.sections[balancesIndex].data.length - 1].assets.length;
-          dim.height = this.props.openSmallBalances ? CoinDivider.height + (size * CoinRow.height) + ListFooter.height : CoinDivider.height + ListFooter.height;
+          dim.height = this.props.openSmallBalances ? CoinDivider.height + (size * CoinRow.height) + ListFooter.height + 9 : CoinDivider.height + ListFooter.height + 16;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRow.height;
         } else if (type === ViewTypes.UNISWAP_ROW_LAST) {
-          dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical + ListFooter.height + 7;
+          dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical + ListFooter.height + 8;
         } else if (type === ViewTypes.UNISWAP_ROW) {
           dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
         } else if (type === ViewTypes.UNISWAP_ROW_CLOSED_LAST) {
-          dim.height = InvestmentCardHeader.height + InvestmentCard.margin.vertical + ListFooter.height + 7;
+          dim.height = InvestmentCardHeader.height + InvestmentCard.margin.vertical + ListFooter.height + 8;
         } else if (type === ViewTypes.UNISWAP_ROW_CLOSED) {
           dim.height = InvestmentCardHeader.height + InvestmentCard.margin.vertical;
         } else if (type === ViewTypes.HEADER) {
