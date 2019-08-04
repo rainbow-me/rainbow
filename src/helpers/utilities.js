@@ -156,7 +156,6 @@ export const divide = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
  */
 export const convertAmountFromNativeValue = (
   value,
-  asset,
   priceUnit,
 ) => BigNumber(value)
   .dividedBy(BigNumber(priceUnit))
