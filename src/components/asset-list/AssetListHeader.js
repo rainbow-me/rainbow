@@ -10,9 +10,10 @@ const enhance = onlyUpdateForKeys(['title', 'totalValue']);
 const AssetListHeader = enhance(({
   title,
   totalValue,
+  isSticky,
   ...props
 }) => (
-  <ListHeader title={title} {...props}>
+  <ListHeader style={{ backgroundColor: isSticky ? 'white' : 'transparent' }} title={title} {...props}>
     {totalValue ? (
       <Monospace size="larger" weight="semibold">
         {totalValue}
@@ -22,8 +23,13 @@ const AssetListHeader = enhance(({
 ));
 
 AssetListHeader.propTypes = {
+  isSticky: PropTypes.bool,
   title: PropTypes.string,
   totalValue: PropTypes.string,
+};
+
+AssetListHeader.defaultProps = {
+  isSticky: false,
 };
 
 AssetListHeader.height = ListHeader.height + Divider.size;

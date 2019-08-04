@@ -47,7 +47,6 @@ const InvestmentCard = ({
     >
       <View
         style={{
-          backgroundColor: colors.white,
           borderRadius: 18,
           height: perc + InvestmentCardMargin.vertical * 2,
           overflow: 'hidden',

@@ -15,7 +15,6 @@ const Header = styled(Row).attrs({
   justify: 'space-between',
 })`
   ${padding(0, 19, 3, 19)}
-  background-color: ${colors.white};
   height: ${ListHeaderHeight};
   width: 100%;
 `;
@@ -26,9 +25,10 @@ const ListHeader = pure(({
   showDivider,
   title,
   titleRenderer,
+  style,
 }) => (
   <Fragment>
-    <Header>
+    <Header style={style}>
       <Row align="center">
         {createElement(titleRenderer, { children: title })}
         {contextMenuOptions && (<ContextMenu {...contextMenuOptions} />)}
