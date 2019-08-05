@@ -141,7 +141,7 @@ class SelectCurrencyModal extends PureComponent {
     // setTimeout(() => this.searchInputRef.current.focus(), 500);
   }
 
-  const getAssets = () => {
+  getAssets = () => {
     const data = this.isInputAssets
       ? intersectionWith(this.props.allAssets, this.props.uniswapAssets, (uniswapAsset, asset) => uniswapAsset.address.toLowerCase() === asset.address.toLowerCase())
       : this.props.uniswapAssets;
