@@ -96,7 +96,7 @@
     "react-native-store-review": "^0.1.5",
     "react-native-svg": "^9.5.3",
     "react-native-tcp": "^3.3.0",
-    "react-native-text-input-mask": "^1.0.4",
+    "react-native-text-input-mask": "1.0.4",
     "react-native-tooltip": "^5.2.0",
     "react-native-touch-id": "^4.4.1",
     "react-native-udp": "^2.6.1",
