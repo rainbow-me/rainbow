@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Animated, { Easing } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
 const {
   block,
@@ -64,14 +64,26 @@ class RotationArrow extends React.Component {
   render() {
     return (
       <Animated.View
-        style={{ transform: 
+        style={{
+          transform:
           [{
-            rotate: this._transform ? concat(multiply(this._transform, this.props.endingPosition), 'deg') : this.props.reversed ? 0 : `${this.props.endingPosition}deg`,
-            translateY: this._transform ? multiply(this._transform, this.props.endingOffset) : 0,
+            translateX: this._transform ? multiply(this._transform, this.props.endingOffset) : 0,
           }],
         }}
       >
-        {this.props.children}
+        <Animated.View
+          style={{
+            transform:
+            [{
+              // eslint-disable-next-line no-nested-ternary
+              rotate: this._transform
+                ? (concat(multiply(this._transform, this.props.endingPosition), 'deg'))
+                : (this.props.reversed ? 0 : `${this.props.endingPosition}deg`),
+            }],
+          }}
+        >
+          {this.props.children}
+        </Animated.View>
       </Animated.View>
     );
   }

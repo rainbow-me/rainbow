@@ -1,16 +1,21 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Animated from 'react-native-reanimated';
+import { View } from 'react-native';
 
 const {
+  add,
   block,
   Clock,
   clockRunning,
   cond,
+  divide,
   interpolate,
+  multiply,
   set,
   startClock,
   spring,
+  sub,
   Value,
   SpringUtils,
 } = Animated;
@@ -46,10 +51,9 @@ function runTiming(clock, value, dest) {
   ]);
 }
 
-export class OpacityToggler extends React.Component {
+export default class OpacityToggler extends React.Component {
   componentWillUpdate(prev) {
-    if (prev.isVisible !== undefined
-        && prev.isVisible !== this.props.isVisible) {
+    if (prev.isVisible !== undefined && prev.isVisible !== this.props.isVisible && !this.props.animationNode) {
       const clock = new Clock();
       const base = this.props.isVisible ? runTiming(clock, -1, 1) : runTiming(clock, 1, -1);
       this._opacity = interpolate(base, {
@@ -60,9 +64,10 @@ export class OpacityToggler extends React.Component {
   }
 
   render() {
+    
     return (
       <Animated.View
-        style={{ opacity: this._opacity ? this._opacity : this.props.startingOpacity }}
+        style={{ opacity: this.props.animationNode ? (this.props.startingOpacity === 0 ? this.props.animationNode : (multiply(add(this.props.animationNode, -1), -1))) : (this._opacity ? this._opacity : this.props.startingOpacity) }}
       >
         {this.props.children}
       </Animated.View>
@@ -71,6 +76,7 @@ export class OpacityToggler extends React.Component {
 }
 
 OpacityToggler.propTypes = {
+  animationNode: PropTypes.any,
   children: PropTypes.any,
   duration: PropTypes.number,
   endingOpacity: PropTypes.number,
@@ -79,49 +85,6 @@ OpacityToggler.propTypes = {
 };
 
 OpacityToggler.defaultProps = {
-  duration: 200,
-  endingOpacity: 0,
-  startingOpacity: 1,
-};
-
-export class SizeToggler extends React.Component {
-  componentWillMount() {
-    this._width = new Value(this.props.startingWidth);
-  }
-
-  componentWillUpdate(prev) {
-    if (prev.toggle !== undefined
-        && prev.toggle !== this.props.toggle) {
-      const clock = new Clock();
-      const base = this.props.toggle ? runTiming(clock, -1, 1) : runTiming(clock, 1, -1);
-      this._width = interpolate(base, {
-        inputRange: [-1, 1],
-        outputRange: [this.props.endingWidth, this.props.startingWidth],
-      });
-    }
-  }
-
-  render() {
-    console.log(this._width);
-    return (
-      <Animated.View
-        style={{ width: this._width }}
-      >
-        {this.props.children}
-      </Animated.View>
-    );
-  }
-}
-
-SizeToggler.propTypes = {
-  children: PropTypes.any,
-  duration: PropTypes.number,
-  endingWidth: PropTypes.number,
-  startingWidth: PropTypes.number,
-  toggle: PropTypes.bool,
-};
-
-SizeToggler.defaultProps = {
   duration: 200,
   endingOpacity: 0,
   startingOpacity: 1,

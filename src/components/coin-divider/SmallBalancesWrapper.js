@@ -3,7 +3,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { withOpenBalances } from '../../hoc';
 import CoinDivider from './CoinDivider';
-import { OpacityToggler } from '../animations/OpacityToggler';
+import OpacityToggler from '../animations/OpacityToggler';
 
 const balancesSum = (balances) => {
   let sum = 0;
