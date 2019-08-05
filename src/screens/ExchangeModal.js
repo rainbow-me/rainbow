@@ -183,7 +183,7 @@ class ExchangeModal extends PureComponent {
 
   setInputAsExactAmount = (inputAsExactAmount) => this.setState({ inputAsExactAmount })
 
-  setNativeAmount = nativeAmount => {
+  setNativeAmount = async nativeAmount => {
     this.setState({ nativeAmount });
     const inputAmount = convertAmountFromNativeValue(nativeAmount, get(this.inputCurrency, 'native.price.amount', 0));
     this.setState({ inputAmount });

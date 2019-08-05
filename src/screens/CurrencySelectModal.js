@@ -107,7 +107,7 @@ class CurrencySelectModal extends PureComponent {
     this.props.pushKeyboardFocusHistory(currentTarget);
   }
 
-  const getAssets = () => {
+  getAssets = () => {
     const data = this.isInputAssets
       ? intersectionWith(this.props.allAssets, this.props.uniswapAssets, (uniswapAsset, asset) => uniswapAsset.address.toLowerCase() === asset.address.toLowerCase())
       : this.props.uniswapAssets;
