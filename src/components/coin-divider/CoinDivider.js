@@ -35,7 +35,7 @@ const Container = styled(View)`
   padding: 0 10px;
   flex-direction: row;
   justify-content: space-between;
-  width: 100%;
+  min-width: 41.5px;
 `;
 
 const Header = styled(Text)`
