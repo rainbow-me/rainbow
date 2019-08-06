@@ -44,7 +44,6 @@ const CoinRow = enhance(({
   contentStyles,
   highlight,
   onPress,
-  starRender,
   symbol,
   topRowRender,
   ...props
@@ -64,7 +63,6 @@ const CoinRow = enhance(({
       ? children({ symbol, ...props })
       : children
     }
-    {starRender && createElement(starRender, props)}
   </Container>
 ));
 
@@ -76,7 +74,6 @@ CoinRow.propTypes = {
   contentStyles: PropTypes.string,
   highlight: PropTypes.bool,
   onPress: PropTypes.func,
-  starRender: PropTypes.func,
   symbol: PropTypes.string,
   topRowRender: PropTypes.func,
 };
