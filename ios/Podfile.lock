@@ -172,10 +172,13 @@ PODS:
     - React
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   - RNDeviceInfo (2.3.2):
 =======
 =======
 >>>>>>> 96db5a28... begin mike
+=======
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
 <<<<<<< HEAD
   - RNDeviceInfo (2.3.1):
 =======
@@ -190,7 +193,13 @@ PODS:
 =======
   - RNDeviceInfo (2.3.1):
 >>>>>>> dc42f3f4... begin mike
+<<<<<<< HEAD
 >>>>>>> 96db5a28... begin mike
+=======
+=======
+  - RNDeviceInfo (2.3.2):
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
     - React
   - RNIOS11DeviceCheck (0.0.3):
     - React
@@ -202,6 +211,7 @@ PODS:
     - React
   - RNStoreReview (0.1.5):
     - React
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   - SDWebImage (5.1.1):
@@ -218,6 +228,11 @@ PODS:
   - SDWebImage (5.0.6):
     - SDWebImage/Core (= 5.0.6)
   - SDWebImage/Core (5.0.6)
+=======
+  - SDWebImage (5.1.0):
+    - SDWebImage/Core (= 5.1.0)
+  - SDWebImage/Core (5.1.0)
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
   - yoga (0.59.9.React)
 >>>>>>> c2296ac1... fix conflicts after rebasing over latest wallet-zero branch
 
@@ -413,10 +428,13 @@ SPEC CHECKSUMS:
   RNCMaskedView: b79e193409a90bf6b5170d421684f437ff4e2278
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   RNDeviceInfo: 17e34f6dd902f08d88cbe2c0b7a01be948d43641
 =======
 =======
 >>>>>>> 96db5a28... begin mike
+=======
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
 <<<<<<< HEAD
   RNDeviceInfo: 74ee98a0b3ef57604ea9953f03eca549a9335160
 =======
@@ -431,12 +449,19 @@ SPEC CHECKSUMS:
 =======
   RNDeviceInfo: 74ee98a0b3ef57604ea9953f03eca549a9335160
 >>>>>>> dc42f3f4... begin mike
+<<<<<<< HEAD
 >>>>>>> 96db5a28... begin mike
+=======
+=======
+  RNDeviceInfo: 17e34f6dd902f08d88cbe2c0b7a01be948d43641
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
   RNIOS11DeviceCheck: a4a545fdd08230a17a8ce7608e95038ee23a32aa
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNReanimated: 1b52415c4302f198cb581282a0166690bad62c43
   RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   SDWebImage: 96d7f03415ccb28d299d765f93557ff8a617abd8
@@ -447,6 +472,9 @@ SPEC CHECKSUMS:
 =======
 >>>>>>> 96db5a28... begin mike
   SDWebImage: 920f1a2ff1ca8296ad34f6e0510a1ef1d70ac965
+=======
+  SDWebImage: fb387001955223213dde14bc08c8b73f371f8d8f
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
   yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
 >>>>>>> c2296ac1... fix conflicts after rebasing over latest wallet-zero branch
 

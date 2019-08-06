@@ -1010,6 +1010,7 @@
   integrity sha512-kBa+cDHOR9jpRJ+kcGMsysrls0leukrm68DmFQoMIWQcXdr2cZvyvypWuGYT7U+9kAExUE7+T7r6G3C3A6L8MQ==
 
 "@ethersproject/address@^5.0.0-beta.125":
+<<<<<<< HEAD
   version "5.0.0-beta.129"
   resolved "https://registry.yarnpkg.com/@ethersproject/address/-/address-5.0.0-beta.129.tgz#bc93d04d3f0e8b7d33dbe7b47a81081f02af5a0e"
   integrity sha512-ob+olQe+i7Gvq10nZyDa3XFGCdVc7ojG1VsfwwFdxt8/li2cv74fFueR4rjTpgKBhJuPM2bwTeHq6sGLsVxetw==
@@ -1056,10 +1057,52 @@
   resolved "https://registry.yarnpkg.com/@ethersproject/keccak256/-/keccak256-5.0.0-beta.125.tgz#ac2bd7d20a411ebcddddcfc686ebd426960eb112"
   integrity sha512-Vzood4ptHvWk64yqE5DMef7qLivEm3qH3S/60l66kWSAMmf5ISuSxeO+8Ss3o+p86zEGIhyipjpenb2LD6+/xA==
 >>>>>>> 751dba29... Replace navigation animations with new effects
+=======
+  version "5.0.0-beta.127"
+  resolved "https://registry.yarnpkg.com/@ethersproject/address/-/address-5.0.0-beta.127.tgz#2110938680d703f341bde765d6f9088f1d2e1b1b"
+  integrity sha512-xHENyIzB56DO98Bs8EM4x09ssSS5Iy/7ZCDDwPuXnYefMrLOCrlZYFw1+hKNz27gUVJSQMxIDK/g8J6Gs3pE6g==
+  dependencies:
+    "@ethersproject/bignumber" ">5.0.0-beta.0"
+    "@ethersproject/bytes" ">5.0.0-beta.0"
+    "@ethersproject/keccak256" ">5.0.0-beta.0"
+    "@ethersproject/logger" ">5.0.0-beta.0"
+    "@ethersproject/rlp" ">5.0.0-beta.0"
+    bn.js "^4.4.0"
+
+"@ethersproject/bignumber@>5.0.0-beta.0":
+  version "5.0.0-beta.129"
+  resolved "https://registry.yarnpkg.com/@ethersproject/bignumber/-/bignumber-5.0.0-beta.129.tgz#86260a2221b178e60cb082e68cb23b5a824e6515"
+  integrity sha512-uT8tnOWB9OwHq+17YrI/jppVOnqSNfj3WfTBXljb38Vq/oLKMlma7z8KFB4Ua3w0gtK2hawgpI+5M3uE+qxs5w==
+  dependencies:
+    "@ethersproject/bytes" ">5.0.0-beta.0"
+    "@ethersproject/logger" ">5.0.0-beta.0"
+    "@ethersproject/properties" ">5.0.0-beta.0"
+    bn.js "^4.4.0"
+
+"@ethersproject/bytes@>5.0.0-beta.0", "@ethersproject/bytes@^5.0.0-beta.126":
+  version "5.0.0-beta.128"
+  resolved "https://registry.yarnpkg.com/@ethersproject/bytes/-/bytes-5.0.0-beta.128.tgz#86300abd80d512be7dfa286eca5953206796d594"
+  integrity sha512-LvH0nZ7gR7pJAiAGWa3PxmSZcBtqhU70e9mTWFJirfOpXb8QqomGDdmU3I3cz9PsPnwkv3TD/NYwFRXzlpiiNw==
+  dependencies:
+    "@ethersproject/logger" ">5.0.0-beta.0"
+
+"@ethersproject/constants@>5.0.0-beta.0":
+  version "5.0.0-beta.127"
+  resolved "https://registry.yarnpkg.com/@ethersproject/constants/-/constants-5.0.0-beta.127.tgz#2b9c0acdbf6bf2f3284632d16a6dd3ce591caca4"
+  integrity sha512-JNsDHD4w50Rg3kB08FStN1f7vCZ2e428MsDckF7YOQK96l2poC14wrek/GEbaUV96MxubSXmLeV7uDffp8NFew==
+  dependencies:
+    "@ethersproject/bignumber" ">5.0.0-beta.0"
+
+"@ethersproject/keccak256@>5.0.0-beta.0":
+  version "5.0.0-beta.126"
+  resolved "https://registry.yarnpkg.com/@ethersproject/keccak256/-/keccak256-5.0.0-beta.126.tgz#19695119e16f95e6ff205dd90b35e7ac46194686"
+  integrity sha512-po/Yh+VakW1etttj7Ll8it9fZdoQBN2GD/6ZyHIIv5Oxh2bdNMruxKGfgsafxbuIvWZmBsQ+6FNJKO1ICdARzQ==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
   dependencies:
     "@ethersproject/bytes" ">=5.0.0-beta.129"
     js-sha3 "0.5.7"
 
+<<<<<<< HEAD
 "@ethersproject/logger@>=5.0.0-beta.129":
   version "5.0.0-beta.130"
   resolved "https://registry.yarnpkg.com/@ethersproject/logger/-/logger-5.0.0-beta.130.tgz#65fb67819ef59d16fe3a45ca04d50a4f7bc3953e"
@@ -1076,10 +1119,29 @@
   version "5.0.0-beta.127"
   resolved "https://registry.yarnpkg.com/@ethersproject/rlp/-/rlp-5.0.0-beta.127.tgz#b9b9ab962f7392ced7c5c220d3d617f5e9df5953"
   integrity sha512-kODY7Wzp6iPN82g4M56TWRsts6YAyyK2ekHr8gwAB9bg58fYqCL9e4EFT8m7/Gn9GtbrwQy6OSCurgBYyxVGjA==
+=======
+"@ethersproject/logger@>5.0.0-beta.0":
+  version "5.0.0-beta.128"
+  resolved "https://registry.yarnpkg.com/@ethersproject/logger/-/logger-5.0.0-beta.128.tgz#1cfb0447b5aa98ce177d11df3b6a76a0e8783bbf"
+  integrity sha512-9sPvKQRtuBmGCH+vnidQg0BvWXccB8HU2G8oOQAkbg9lAzaRwmFe9V4YwkR4raCZQtpQNdcuxYXF0O6o23XjwA==
+
+"@ethersproject/properties@>5.0.0-beta.0":
+  version "5.0.0-beta.130"
+  resolved "https://registry.yarnpkg.com/@ethersproject/properties/-/properties-5.0.0-beta.130.tgz#597c2537396943bcd57d68a28a0127c09356cbbf"
+  integrity sha512-8gdIFHZR7iBEFNpHw9PK9EXhbH/f2rPrgLCULMjKrmltcbkHgalHMws/L0XcEXiR0aQdwh2/oq1GpF1qq2hPEA==
+  dependencies:
+    "@ethersproject/logger" ">5.0.0-beta.0"
+
+"@ethersproject/rlp@>5.0.0-beta.0":
+  version "5.0.0-beta.125"
+  resolved "https://registry.yarnpkg.com/@ethersproject/rlp/-/rlp-5.0.0-beta.125.tgz#e203233cf1bdd7d4f1cc7aba37808be5faa831e2"
+  integrity sha512-Tn1HZ9+D2sV/6ekyhpYzfGXufulRuWXHrIJnOsm0TkP1cmEH73MvDWyspByN/onrXkkUM9jtBIHY8FmrwnQoOw==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
   dependencies:
     "@ethersproject/bytes" ">=5.0.0-beta.129"
 
 "@ethersproject/strings@^5.0.0-beta.125":
+<<<<<<< HEAD
   version "5.0.0-beta.131"
   resolved "https://registry.yarnpkg.com/@ethersproject/strings/-/strings-5.0.0-beta.131.tgz#98137914ff94a95858e88ad26187e266b354124b"
   integrity sha512-TEUr1U1XWTPGEehAitqkG7SMgVspsAtB1+ESXdniznaYaMoP/D3W3lsDuFdvIIPWlAb97ra1w2pnCKxVcMmc4A==
@@ -1087,6 +1149,15 @@
     "@ethersproject/bytes" ">=5.0.0-beta.129"
     "@ethersproject/constants" ">=5.0.0-beta.128"
     "@ethersproject/logger" ">=5.0.0-beta.129"
+=======
+  version "5.0.0-beta.129"
+  resolved "https://registry.yarnpkg.com/@ethersproject/strings/-/strings-5.0.0-beta.129.tgz#065fe106e3c2b9460e14ea6b401861070e91c7bc"
+  integrity sha512-jhdHMML3mwjRfYjFqC61VvAzHCCsJwNcehho8MQoa2b5GaCYzFPA5aT+bxjjnDqTYl9ojeNHXweiGvqnCvvunQ==
+  dependencies:
+    "@ethersproject/bytes" ">5.0.0-beta.0"
+    "@ethersproject/constants" ">5.0.0-beta.0"
+    "@ethersproject/logger" ">5.0.0-beta.0"
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
 
 "@hapi/address@2.x.x":
   version "2.1.1"
@@ -1326,11 +1397,17 @@
 "@react-native-community/cli-platform-android@^2.0.0-rc.2":
 =======
 "@react-native-community/cli-platform-android@^2.7.0":
+<<<<<<< HEAD
 >>>>>>> 96db5a28... begin mike
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.7.0.tgz#511d1db12c52d29cb87b6e4e84d63030ffa2c38d"
   integrity sha512-hO/gYqzLCeCFnLIgYiGlZhiQMAnMuTxNS6rCbC8leMnlGARzrarnWsepHhvottOKeSctVh0wzchLCLCBcw4zVA==
 >>>>>>> f7a61a13... Create Exchange related Input components
+=======
+  version "2.8.3"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.8.3.tgz#097237769d69400ceaf254a780d645bb8284acd6"
+  integrity sha512-I0/knJYmyMgp1IkrgvgirifArnarFvm+EvrRKVQjEO0aEXhOjVU2DA7TshdjocZhjq1leKm/bSxz8D3WHpRJ9g==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
   dependencies:
     "@react-native-community/cli-tools" "^2.8.3"
     chalk "^2.4.2"
@@ -1382,10 +1459,11 @@
 =======
 >>>>>>> c2296ac1... fix conflicts after rebasing over latest wallet-zero branch
     logkitty "^0.5.0"
-    slash "^2.0.0"
-    xmldoc "^0.4.0"
+    slash "^3.0.0"
+    xmldoc "^1.1.2"
 
 "@react-native-community/cli-platform-ios@^2.8.0":
+<<<<<<< HEAD
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.8.0.tgz#95cea3e8feab4d9525a96a9dcf56bd0d62633158"
   integrity sha512-a6DD4fnfJij8FicQ/5+4zgsqxRO92o6unt2XKZexIM8bqH3i8U5pvUsccOhRnsaIjXUFMbLU5knozRrFSaJBoQ==
@@ -1428,6 +1506,20 @@
 >>>>>>> f7a61a13... Create Exchange related Input components
 =======
 >>>>>>> c2296ac1... fix conflicts after rebasing over latest wallet-zero branch
+=======
+  version "2.8.3"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.8.3.tgz#2d77bf5c6fde753d7c675fd94f656f78c0d5f741"
+  integrity sha512-r2+xa4trWubLRqXvotYtDIFzQpepSwo9Zsjt0JT96BUJLdXNzsUSwTFZW2EmLPmnJiZJRNdWvoXaBYVqDthdTQ==
+  dependencies:
+    "@react-native-community/cli-tools" "^2.8.3"
+    chalk "^2.4.2"
+    xcode "^2.0.0"
+
+"@react-native-community/cli-tools@^2.7.0", "@react-native-community/cli-tools@^2.8.3":
+  version "2.8.3"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.8.3.tgz#0e2249f48cf4603fb8d740a9f0715c31ac131ceb"
+  integrity sha512-N5Pz+pR+GFq3JApjd0SW4jp9KC7kbKsMH65QLRh30JNsxdPvNkYox6/ZZdkvdXaI5ev3EckR7eqlcwi5gpVTYQ==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
   dependencies:
     chalk "^2.4.2"
     lodash "^4.17.5"
@@ -1848,6 +1940,7 @@
 "@types/node@*":
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "12.7.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.7.5.tgz#e19436e7f8e9b4601005d73673b6dc4784ffcc2f"
   integrity sha512-9fq4jZVhPNW8r+UYKnxF1e2HkDWOWKM5bC2/7c9wPV835I0aOrVbS/Hw/pWPk2uKrNXQqg9Z959Kz+IYDd5p3w==
@@ -1864,6 +1957,16 @@
   version "10.14.18"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.18.tgz#b7d45fc950e6ffd7edc685e890d13aa7b8535dce"
   integrity sha512-ryO3Q3++yZC/+b8j8BdKd/dn9JlzlHBPdm80656xwYUdmPkpTGTjkAdt6BByiNupGPE8w0FhBgvYy/fX9hRNGQ==
+=======
+  version "12.6.9"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.6.9.tgz#ffeee23afdc19ab16e979338e7b536fdebbbaeaf"
+  integrity sha512-+YB9FtyxXGyD54p8rXwWaN1EWEyar5L58GlGWgtH2I9rGmLGBQcw63+0jw+ujqVavNuO47S1ByAjm9zdHMnskw==
+
+"@types/node@^10.3.2":
+  version "10.14.14"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.14.tgz#a47955df2acf76ba7f0ac3b205d325da193dc9ad"
+  integrity sha512-xXD08vZsvpv4xptQXj1+ky22f7ZoKu5ZNI/4l+/BXG3X+XaeZsmaFbbTKuhSE3NjjvRuZFxFf9sQBMXIcZNFMQ==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
 
 "@types/node@^8.0.7":
 <<<<<<< HEAD
@@ -1976,6 +2079,7 @@
     lodash.unescape "4.0.1"
     semver "5.5.0"
 
+<<<<<<< HEAD
 "@walletconnect/core@^1.0.0-beta.35":
   version "1.0.0-beta.35"
   resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.35.tgz#47781b836966a1f7ef199c58e35482409a3cc3cf"
@@ -2002,11 +2106,43 @@
   version "1.0.0-beta.35"
   resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-1.0.0-beta.35.tgz#6c8c86cb7da9aa94f5d460cf81d1ef73ebf3a0fb"
   integrity sha512-ru+IOU3vr9/BJvv3Vjgxnn0t5EW3zLzQinWBBR91GXvIfOCMn5uqhgtZ//pgVqaDi/EyHQXtUe4ZvPfqO5Zulw==
+=======
+"@walletconnect/core@^1.0.0-beta.32":
+  version "1.0.0-beta.32"
+  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.32.tgz#e8125a877ab809bd2d74c7c03a07ad70401f9c34"
+  integrity sha512-CvDQ+vupPbEvrGFwZOwTANeT1bz+c6TSkkOxo5lXz+DotxbZpQqL3tsFuaenTuVL7AqvNH2RARgA5Ez2HSjNaA==
+  dependencies:
+    "@walletconnect/types" "^1.0.0-beta.32"
+    "@walletconnect/utils" "^1.0.0-beta.32"
+
+"@walletconnect/react-native@^1.0.0-beta.29":
+  version "1.0.0-beta.32"
+  resolved "https://registry.yarnpkg.com/@walletconnect/react-native/-/react-native-1.0.0-beta.32.tgz#4d6bd623a4687d658ae26ebe27f417b8ea83f897"
+  integrity sha512-6+Pamxq2c+K+Kz+q1oKJRZU58J5dg5U+SFJ5T5qkMpSsN0BCvpMvD3/6TPCzBYaFXCyjO5OJhvHsKmYa/IvA0g==
+  dependencies:
+    "@walletconnect/core" "^1.0.0-beta.32"
+    "@walletconnect/types" "^1.0.0-beta.32"
+    "@walletconnect/utils" "^1.0.0-beta.32"
+
+"@walletconnect/types@^1.0.0-beta.32":
+  version "1.0.0-beta.32"
+  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.0.0-beta.32.tgz#aeb3b41145a6028412b22c05d0fd63e23a7381db"
+  integrity sha512-vXBUHc51mOyFLaScrSzYyobS/ctPiNHFBWB6M0oydd43X29Ihl7C4c4B7ExDbfPlrBspebcZEkuKzHOZSZVKSg==
+
+"@walletconnect/utils@^1.0.0-beta.32":
+  version "1.0.0-beta.32"
+  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-1.0.0-beta.32.tgz#f87841eaf60d62441b26e78603aafbd9b7bc7f2e"
+  integrity sha512-ShnWCVPFv2fZcIKInNDhROCu/gEUD2+vjbBUCPTRB1M+ERTK8fyrMgl2vId8NOSTR/Sd3Ie4+hCbUluLZYvrGQ==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
   dependencies:
     "@ethersproject/address" "^5.0.0-beta.125"
     "@ethersproject/bytes" "^5.0.0-beta.126"
     "@ethersproject/strings" "^5.0.0-beta.125"
+<<<<<<< HEAD
     "@walletconnect/types" "^1.0.0-beta.35"
+=======
+    "@walletconnect/types" "^1.0.0-beta.32"
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
     bignumber.js "^8.1.1"
 
 "@yarnpkg/lockfile@^1.0.0", "@yarnpkg/lockfile@^1.1.0":
@@ -2069,9 +2205,15 @@ accepts@~1.3.5, accepts@~1.3.7:
     negotiator "0.6.2"
 
 acorn-globals@^4.1.0:
+<<<<<<< HEAD
   version "4.3.4"
   resolved "https://registry.yarnpkg.com/acorn-globals/-/acorn-globals-4.3.4.tgz#9fa1926addc11c97308c4e66d7add0d40c3272e7"
   integrity sha512-clfQEh21R+D0leSbUdWf3OcfqyaCSAQ8Ryq00bofSekfr9W8u1jyYZo6ir0xu9Gtcf7BjcHJpnbZH7JOCpP60A==
+=======
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/acorn-globals/-/acorn-globals-4.3.3.tgz#a86f75b69680b8780d30edd21eee4e0ea170c05e"
+  integrity sha512-vkR40VwS2SYO98AIeFvzWWh+xyc2qi9s7OoXSFEGIP/rOJKzjnhykaZJNnHdoq4BL2gGxI5EZOU16z896EYnOQ==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
   dependencies:
     acorn "^6.0.1"
     acorn-walk "^6.0.1"
@@ -2973,6 +3115,11 @@ bser@^2.0.0:
   dependencies:
     node-int64 "^0.4.0"
 
+btoa@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/btoa/-/btoa-1.2.1.tgz#01a9909f8b2c93f6bf680ba26131eb30f7fa3d73"
+  integrity sha512-SB4/MIGlsiVkMcHmT+pSmIPoNDoHg+7cMzmt3Uxt628MTz2487DKSqK/fuhFBrkuqrYv5UCEnACpF4dTFNKc/g==
+
 buffer-crc32@^0.2.13, buffer-crc32@~0.2.3:
   version "0.2.13"
   resolved "https://registry.yarnpkg.com/buffer-crc32/-/buffer-crc32-0.2.13.tgz#0d333e3f00eac50aa1454abd30ef8c2a5d9a7242"
@@ -3131,6 +3278,7 @@ caniuse-lite@^1.0.30000971, caniuse-lite@^1.0.30000975:
 caniuse-lite@^1.0.30000980, caniuse-lite@^1.0.30000984:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.0.30000987"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000987.tgz#bc6b47217afd8226a2b1964635c6bff62cdf5738"
   integrity sha512-O3VrjtRMTxoU5Cn5/QSmXeIR1gkVps4j9jqfIm4FLaQ5JzqBlVjMUG1xWnoYFv8N+H3Lp++aa05TekyIbjHL7g==
@@ -3153,7 +3301,15 @@ caniuse-lite@^1.0.30000980, caniuse-lite@^1.0.30000981:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000987.tgz#bc6b47217afd8226a2b1964635c6bff62cdf5738"
   integrity sha512-O3VrjtRMTxoU5Cn5/QSmXeIR1gkVps4j9jqfIm4FLaQ5JzqBlVjMUG1xWnoYFv8N+H3Lp++aa05TekyIbjHL7g==
 >>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
+<<<<<<< HEAD
 >>>>>>> c2296ac1... fix conflicts after rebasing over latest wallet-zero branch
+=======
+=======
+  version "1.0.30000989"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000989.tgz#b9193e293ccf7e4426c5245134b8f2a56c0ac4b9"
+  integrity sha512-vrMcvSuMz16YY6GSVZ0dWDTJP8jqk3iFQ/Aq5iqblPwxSVVZI+zxDyTX0VPqtQsDnfdrBDcsmhgTEOh5R8Lbpw==
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -3591,7 +3747,7 @@ contains-path@^0.1.0:
   resolved "https://registry.yarnpkg.com/contains-path/-/contains-path-0.1.0.tgz#fe8cf184ff6670b6baef01a9d4861a5cbec4120a"
   integrity sha1-/ozxhP9mcLa67wGp1IYaXL7EEgo=
 
-convert-source-map@^1.1.0, convert-source-map@^1.4.0:
+convert-source-map@^1.1.0, convert-source-map@^1.4.0, convert-source-map@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-1.6.0.tgz#51b537a8c43e0f04dec1993bffcdd504e758ac20"
   integrity sha512-eFu7XigvxdZ1ETfbgPBohgyQ/Z++C0eEhTor0qRwBw9unw+L0/6V8wkSuGgzdThkiS5lSpdptOQPD8Ak40a+7A==
@@ -4204,6 +4360,7 @@ ee-first@1.1.1:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 electron-to-chromium@^1.3.247:
   version "1.3.258"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.258.tgz#829b03be37424099b91aefb6815e8801bf30b509"
@@ -4217,7 +4374,15 @@ electron-to-chromium@^1.3.164:
 =======
 =======
 >>>>>>> c2296ac1... fix conflicts after rebasing over latest wallet-zero branch
+=======
+ejs@^2.6.2:
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/ejs/-/ejs-2.6.2.tgz#3a32c63d1cd16d11266cd4703b14fec4e74ab4f6"
+  integrity sha512-PcW2a0tyTuPHz3tWyYqtK6r1fZ3gp+3Sop8Ph+ZYN81Ob5rwmbHEzaqs10N3BEsaGTkh/ooniXK+WwszGlc2+Q==
+
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
 electron-to-chromium@^1.3.191:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4277,7 +4442,15 @@ electron-to-chromium@^1.3.188:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.205.tgz#084835a5ecca0765a805acb50a0fddc23d8d530e"
   integrity sha512-VV+f2FVeFI5D/slUD7A3V1lTMDkQTUGWYH2dZGAijIutN5Aga4Fn/Hv4Gc+60OpXFVLYIq5HpXb2cG6NrGGQaA==
 >>>>>>> dc42f3f4... begin mike
+<<<<<<< HEAD
 >>>>>>> 96db5a28... begin mike
+=======
+=======
+  version "1.3.215"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.215.tgz#c833cb31110c2e0a7dade1110648c2174f75233b"
+  integrity sha512-ZV3OnwF0FlIygwxAG2H92yt7WGjWBpawyFAFu8e9k7xJatY+BPowID0D0Bs3PMACYAJATEejw/I9cawO27ZvTg==
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -4374,6 +4547,14 @@ entities@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/entities/-/entities-2.0.0.tgz#68d6084cab1b079767540d80e56a39b423e4abf4"
   integrity sha512-D9f7V0JSRwIxlRI2mjMqufDrRDnx8p+eEOz7aUM9SuvF8gsBzra0/6tbjl1m8eQHrZlYj6PxqE00hZ1SAIKPLw==
+<<<<<<< HEAD
+=======
+
+envinfo@^5.7.0:
+  version "5.12.1"
+  resolved "https://registry.yarnpkg.com/envinfo/-/envinfo-5.12.1.tgz#83068c33e0972eb657d6bc69a6df30badefb46ef"
+  integrity sha512-pwdo0/G3CIkQ0y6PCXq4RdkvId2elvtPCJMG0konqlrfkWQbf1DWeH9K2b/cvu2YgGvPPTOnonZxXM1gikFu1w==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
 
 envinfo@^7.1.0:
   version "7.3.1"
@@ -4439,7 +4620,7 @@ es6-promisify@^5.0.0:
   dependencies:
     es6-promise "^4.0.3"
 
-escape-html@~1.0.3:
+escape-html@^1.0.3, escape-html@~1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/escape-html/-/escape-html-1.0.3.tgz#0258eae4d3d0c0974de1c169188ef0051d1d1988"
   integrity sha1-Aljq5NPQwJdN4cFpGI7wBR0dGYg=
@@ -4846,6 +5027,21 @@ execa@^1.0.0:
     p-finally "^1.0.0"
     signal-exit "^3.0.0"
     strip-eof "^1.0.0"
+
+execa@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/execa/-/execa-2.0.3.tgz#4b84301b33042cfb622771e886ed0b10e5634642"
+  integrity sha512-iM124nlyGSrXmuyZF1EMe83ESY2chIYVyDRZKgmcDynid2Q2v/+GuE7gNMl6Sy9Niwf4MC0DDxagOxeMPjuLsw==
+  dependencies:
+    cross-spawn "^6.0.5"
+    get-stream "^5.0.0"
+    is-stream "^2.0.0"
+    merge-stream "^2.0.0"
+    npm-run-path "^3.0.0"
+    onetime "^5.1.0"
+    p-finally "^2.0.0"
+    signal-exit "^3.0.2"
+    strip-final-newline "^2.0.0"
 
 execall@^2.0.0:
   version "2.0.0"
@@ -5398,6 +5594,13 @@ get-stream@^4.0.0:
   dependencies:
     pump "^3.0.0"
 
+get-stream@^5.0.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/get-stream/-/get-stream-5.1.0.tgz#01203cdc92597f9b909067c3e656cc1f4d3c4dc9"
+  integrity sha512-EXr1FOzrzTfGeL0gQdeFEvOMm2mzMOglyiOXSTpPC+iAjAKftbr3jpCMWynogwYnM+eSj9sHGc6wjIcDvYiygw==
+  dependencies:
+    pump "^3.0.0"
+
 get-uri@^2.0.0:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/get-uri/-/get-uri-2.0.3.tgz#fa13352269781d75162c6fc813c9e905323fbab5"
@@ -5569,6 +5772,7 @@ got@^6.7.1:
 
 graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.3, graceful-fs@^4.1.6, graceful-fs@^4.1.9:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "4.2.2"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.2.tgz#6f0952605d0140c1cfdb138ed005775b92d67b02"
   integrity sha512-IItsdsea19BoLC7ELy13q1iJFNmd7ofZH5+X/pJr90/nRoPEX0DJo1dHDbgtYWOhJhcCgMDTOw84RZ72q6lB+Q==
@@ -5577,6 +5781,11 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.3
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.0.tgz#8d8fdc73977cb04104721cb53666c1ca64cd328b"
   integrity sha512-jpSvDPV4Cq/bgtpndIWbI5hmYxhQGHPC4d4cqBPb4DLniCfhJokdXhwhaDuLBGLQdvvRum/UiX6ECVIPvDXqdg==
 >>>>>>> 751dba29... Replace navigation animations with new effects
+=======
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.1.tgz#1c1f0c364882c868f5bff6512146328336a11b1d"
+  integrity sha512-b9usnbDGnD928gJB3LrCmxoibr3VE4U2SMo5PBuBnokWyDADTqDPXg4YpwKF1trpH+UbGp7QLicO3+aWEy0+mw==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
 
 growl@1.10.5:
   version "1.10.5"
@@ -5745,9 +5954,17 @@ hoist-non-react-statics@^3.0.1, hoist-non-react-statics@^3.1.0, hoist-non-react-
     react-is "^16.7.0"
 
 hosted-git-info@^2.1.4:
+<<<<<<< HEAD
   version "2.8.4"
   resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.8.4.tgz#44119abaf4bc64692a16ace34700fed9c03e2546"
   integrity sha512-pzXIvANXEFrc5oFFXRMkbLPQ2rXRoDERwDLyrcUxGhaZhgP54BBSl9Oheh7Vv0T090cszWBxPjkQQ5Sq1PbBRQ==
+=======
+  version "2.8.2"
+  resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.8.2.tgz#a35c3f355ac1249f1093c0c2a542ace8818c171a"
+  integrity sha512-CyjlXII6LMsPMyUzxpTt8fzh5QwzGqPmQXgY/Jyf4Zfp27t/FvfhwoE/8laaMUcMy816CkWF20I7NeQhwwY88w==
+  dependencies:
+    lru-cache "^5.1.1"
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
 
 html-encoding-sniffer@^1.0.2:
   version "1.0.2"
@@ -5821,6 +6038,7 @@ i18n-js@^3.0.11:
 
 i18next@^17.0.3:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "17.0.14"
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.14.tgz#b736fcb8c84aa84c57bfad3caac7f8b5f92d85a4"
   integrity sha512-yEGSWX9UTpWQskPsFy03t8uhZh5wyZ7v9p+MCo08Sd2edTaFdg1gFA633dg9OqTxJ/z1rtCiacgOlDSBpgssgw==
@@ -5829,6 +6047,11 @@ i18next@^17.0.3:
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.6.tgz#01079cc2bcef408139ea8ce24d18ac0d512fbe85"
   integrity sha512-bdNhzhcM6RG5m82RypVguCrAQNie/ycxW0Q5C6K9UDWD5hqApZfdJFbj4Ikz9jxIR+Ja1eg0yCQLhlCT+opwIg==
 >>>>>>> 751dba29... Replace navigation animations with new effects
+=======
+  version "17.0.9"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.9.tgz#5f835e91a34fa5e7da1e5ae4c4586c81d7c4b17f"
+  integrity sha512-fCYpm3TDzcfPIPN3hmgvC/QJx17QHI+Ul88qbixwIrifN9nBmk2c2oVxVYSDxnV5FgBXZJJ0O4yBYiZ8v1bX2A==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
   dependencies:
     "@babel/runtime" "^7.3.1"
 
@@ -5867,9 +6090,15 @@ image-size@^0.6.0:
   integrity sha512-47xSUiQioGaB96nqtp5/q55m0aBQSQdyIloMOc/x+QVTDZLNmXE892IIDrJ0hM1A5vcNUDD5tDffkSP5lCaIIA==
 
 immer@^3.1.3:
+<<<<<<< HEAD
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/immer/-/immer-3.3.0.tgz#ee7cf3a248d5dd2d4eedfbe7dfc1e9be8c72041d"
   integrity sha512-vlWRjnZqoTHuEjadquVHK3GxsXe1gNoATffLEA8Qbrdd++Xb+wHEFiWtwAKTscMBoi1AsvEMXhYRzAXA8Ex9FQ==
+=======
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/immer/-/immer-3.2.0.tgz#53686471e9dd2b070e0fb5500c6fdecd3a99375f"
+  integrity sha512-+a2R8z9eELHst6aht++nzVzJ8LJ+Hsg49qttfg9Kc/vmoxEdPXw5/rV6+4DYWGgnq+B36KbLr4OTaGtS9mDjtg==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
 
 import-fresh@^2.0.0:
   version "2.0.0"
@@ -6327,6 +6556,11 @@ is-stream@^1.0.0, is-stream@^1.0.1, is-stream@^1.1.0:
   resolved "https://registry.yarnpkg.com/is-stream/-/is-stream-1.1.0.tgz#12d4a3dd4e68e0b79ceb8dbc84173ae80d91ca44"
   integrity sha1-EtSj3U5o4Lec6428hBc66A2RykQ=
 
+is-stream@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/is-stream/-/is-stream-2.0.0.tgz#bde9c32680d6fae04129d6ac9d921ce7815f78e3"
+  integrity sha512-XCoy+WlUr7d1+Z8GgSuXmpuUFC9fOhRXglJMx+dwLKTkL44Cjd4W1Z5P+BQZpr+cR93aGP4S/s7Ftw6Nd/kiEw==
+
 is-symbol@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/is-symbol/-/is-symbol-1.0.2.tgz#a055f6ae57192caee329e7a860118b497a950f38"
@@ -6339,7 +6573,11 @@ is-typedarray@~1.0.0:
   resolved "https://registry.yarnpkg.com/is-typedarray/-/is-typedarray-1.0.0.tgz#e479c80858df0c1b11ddda6940f96011fcda4a9a"
   integrity sha1-5HnICFjfDBsR3dppQPlgEfzaSpo=
 
+<<<<<<< HEAD
 is-what@^3.3.1:
+=======
+is-what@^3.2.4:
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/is-what/-/is-what-3.3.1.tgz#79502181f40226e2d8c09226999db90ef7c1bcbe"
   integrity sha512-seFn10yAXy+yJlTRO+8VfiafC+0QJanGLMPTBWLrJm/QPauuchy0UXh8B6H5o9VA8BAzk0iYievt6mNp6gfaqA==
@@ -7288,6 +7526,13 @@ lru-cache@^4.0.1, lru-cache@^4.1.2:
     pseudomap "^1.0.2"
     yallist "^2.1.2"
 
+lru-cache@^5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-5.1.1.tgz#1da27e6710271947695daf6848e847f01d84b920"
+  integrity sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==
+  dependencies:
+    yallist "^3.0.2"
+
 ltgt@^2.1.3:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/ltgt/-/ltgt-2.2.1.tgz#f35ca91c493f7b73da0e07495304f17b31f87ee5"
@@ -7448,6 +7693,14 @@ merge-stream@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/merge-stream/-/merge-stream-2.0.0.tgz#52823629a14dd00c9770fb6ad47dc6310f2c1f60"
   integrity sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==
+<<<<<<< HEAD
+=======
+
+merge2@^1.2.3:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/merge2/-/merge2-1.2.4.tgz#c9269589e6885a60cf80605d9522d4b67ca646e3"
+  integrity sha512-FYE8xI+6pjFOhokZu0We3S5NKCirLbCzSh2Usf3qEyr4X8U+0jNg9P8RZ4qz+V2UoECLVwSyzU3LxXBaLGtD3A==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
 
 merge2@^1.2.3:
   version "1.3.0"
@@ -7811,7 +8064,7 @@ mimic-fn@^1.0.0:
   resolved "https://registry.yarnpkg.com/mimic-fn/-/mimic-fn-1.2.0.tgz#820c86a39334640e99516928bd03fca88057d022"
   integrity sha512-jf84uxzwiuiIVKiOLpfYk7N46TSy8ubTonmneY9vrpHNAnp0QBt2BxWV9dO3/j+BoVAb+a5G6YDPW3M5HOdMWQ==
 
-mimic-fn@^2.0.0:
+mimic-fn@^2.0.0, mimic-fn@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/mimic-fn/-/mimic-fn-2.1.0.tgz#7ed2c2ccccaf84d3ffcb7a69b57711fc2083401b"
   integrity sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==
@@ -8097,10 +8350,17 @@ node-modules-regexp@^1.0.0:
   resolved "https://registry.yarnpkg.com/node-modules-regexp/-/node-modules-regexp-1.0.0.tgz#8d9dbe28964a4ac5712e9131642107c71e90ec40"
   integrity sha1-jZ2+KJZKSsVxLpExZCEHxx6Q7EA=
 
+<<<<<<< HEAD
 node-notifier@^5.2.1, node-notifier@^5.4.2:
   version "5.4.3"
   resolved "https://registry.yarnpkg.com/node-notifier/-/node-notifier-5.4.3.tgz#cb72daf94c93904098e28b9c590fd866e464bd50"
   integrity sha512-M4UBGcs4jeOK9CjTsYwkvH6/MzuUmGCyTW+kCY7uO+1ZVr0+FHGdPdIf5CCLqAaxnRrWidyoQlNkMIIVwbKB8Q==
+=======
+node-notifier@^5.2.1:
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/node-notifier/-/node-notifier-5.4.1.tgz#7c0192cc63aedb25cd99619174daa27902b10903"
+  integrity sha512-p52B+onAEHKW1OF9MGO/S7k/ahGEHfhP5/tvwYzog/5XLYOd8ZuD6vdNZdUuWMONRnKPneXV43v3s6Snx1wsCQ==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
   dependencies:
     growly "^1.3.0"
     is-wsl "^1.1.0"
@@ -8210,6 +8470,25 @@ npm-run-path@^2.0.0:
   dependencies:
     path-key "^2.0.0"
 
+<<<<<<< HEAD
+=======
+npm-run-path@^3.0.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/npm-run-path/-/npm-run-path-3.1.0.tgz#7f91be317f6a466efed3c9f2980ad8a4ee8b0fa5"
+  integrity sha512-Dbl4A/VfiVGLgQv29URL9xshU8XDY1GeLy+fsaZ1AA8JDSfjvr5P5+pzRbWqRSBxk6/DW7MIh8lTM/PaGnP2kg==
+  dependencies:
+    path-key "^3.0.0"
+
+npmlog@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/npmlog/-/npmlog-2.0.4.tgz#98b52530f2514ca90d09ec5b22c8846722375692"
+  integrity sha1-mLUlMPJRTKkNCexbIsiEZyI3VpI=
+  dependencies:
+    ansi "~0.3.1"
+    are-we-there-yet "~1.1.2"
+    gauge "~1.2.5"
+
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
 npmlog@^4.0.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/npmlog/-/npmlog-4.1.2.tgz#08a7f2a8bf734604779a9efa4ad5cc717abb954b"
@@ -8405,7 +8684,14 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
-open@^6.2.0:
+onetime@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/onetime/-/onetime-5.1.0.tgz#fff0f3c91617fe62bb50189636e99ac8a6df7be5"
+  integrity sha512-5NcSkPHhwTVFIQN+TUqXoS5+dlElHXdpAWu9I0HP20YOtIi+aZ0Ct82jdlILDxjLEAWwvm+qj1m6aEtsDVmm6Q==
+  dependencies:
+    mimic-fn "^2.1.0"
+
+open@^6.2.0, open@^6.3.0:
   version "6.4.0"
   resolved "https://registry.yarnpkg.com/open/-/open-6.4.0.tgz#5c13e96d0dc894686164f18965ecfe889ecfc8a9"
   integrity sha512-IFenVPgF70fSm1keSd2iDBIDIBZkroLeuffXq+wKTzTJlBpesFWojV9lb8mzOfaAzM1sr7HQHuO0vtV0zYekGg==
@@ -8540,6 +8826,11 @@ p-finally@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/p-finally/-/p-finally-1.0.0.tgz#3fbcfb15b899a44123b34b6dcc18b724336a2cae"
   integrity sha1-P7z7FbiZpEEjs0ttzBi3JDNqLK4=
+
+p-finally@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/p-finally/-/p-finally-2.0.1.tgz#bd6fcaa9c559a096b680806f4d657b3f0f240561"
+  integrity sha512-vpm09aKwq6H9phqRQzecoDpD8TmVyGw70qmWlyq5onxY7tqyTTFVvxMykxQSQKILBSFlbXpypIw2T1Ml7+DDtw==
 
 p-is-promise@^2.0.0:
   version "2.1.0"
@@ -8762,6 +9053,11 @@ path-key@^2.0.0, path-key@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/path-key/-/path-key-2.0.1.tgz#411cadb574c5a140d3a4b1910d40d80cc9f40b40"
   integrity sha1-QRyttXTFoUDTpLGRDUDYDMn0C0A=
+
+path-key@^3.0.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/path-key/-/path-key-3.1.0.tgz#99a10d870a803bdd5ee6f0470e58dfcd2f9a54d3"
+  integrity sha512-8cChqz0RP6SHJkMt48FW0A7+qUOn+OsnOsVtzI59tZ8m+5bCSk7hzwET0pulwOM2YMn9J1efb07KB9l9f30SGg==
 
 path-parse@^1.0.5:
   version "1.0.6"
@@ -9005,9 +9301,15 @@ postcss-value-parser@^3.3.0, postcss-value-parser@^3.3.1:
   integrity sha512-pISE66AbVkp4fDQ7VHBwRNXzAAKJjw4Vw7nWI/+Q3vuly7SNfgYXvm6i5IgFylHGK5sP/xHAbB7N49OS4gWNyQ==
 
 postcss-value-parser@^4.0.0:
+<<<<<<< HEAD
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/postcss-value-parser/-/postcss-value-parser-4.0.2.tgz#482282c09a42706d1fc9a069b73f44ec08391dc9"
   integrity sha512-LmeoohTpp/K4UiyQCwuGWlONxXamGzCMtFxLq4W1nZVGIQLYvMCJx3yAF9qyyuFpflABI9yVdtJAqbihOsCsJQ==
+=======
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/postcss-value-parser/-/postcss-value-parser-4.0.1.tgz#e3f6172cc91302912c89da55a42454025485250f"
+  integrity sha512-3Jk+/CVH0HBfgSSFWALKm9Hyzf4kumPjZfUxkRYZNcqFztELb2APKxv0nlX8HCdc1/ymePmT/nFf1ST6fjWH2A==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
 
 postcss@^7.0.0, postcss@^7.0.1, postcss@^7.0.13, postcss@^7.0.14, postcss@^7.0.17, postcss@^7.0.2, postcss@^7.0.7:
   version "7.0.18"
@@ -9159,6 +9461,7 @@ pseudomap@^1.0.2:
 
 psl@^1.1.24, psl@^1.1.28:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/psl/-/psl-1.4.0.tgz#5dd26156cdb69fa1fdb8ab1991667d3f80ced7c2"
   integrity sha512-HZzqCGPecFLyoRj5HLfuDSKYTJkAfB5thKBIkRHtGjWwY7p1dAyveIbXIq4tO0KYfDF2tHqPUgY9SDnGm00uFw==
@@ -9167,6 +9470,11 @@ psl@^1.1.24, psl@^1.1.28:
   resolved "https://registry.yarnpkg.com/psl/-/psl-1.2.0.tgz#df12b5b1b3a30f51c329eacbdef98f3a6e136dc6"
   integrity sha512-GEn74ZffufCmkDDLNcl3uuyF/aSD6exEyh1v/ZSdAomB82t6G9hzJVRx0jBmLDW+VfZqks3aScmMw9DszwUalA==
 >>>>>>> 751dba29... Replace navigation animations with new effects
+=======
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/psl/-/psl-1.3.0.tgz#e1ebf6a3b5564fa8376f3da2275da76d875ca1bd"
+  integrity sha512-avHdspHO+9rQTLbv1RO+MPYeP/SzsCoxofjVnHanETfQhTJrmB0HlDoW+EiN/R+C0BZ+gERab9NY0lPN2TxNag==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
 
 public-encrypt@^4.0.0:
   version "4.0.3"
@@ -9356,6 +9664,15 @@ react-native-actionsheet@^2.4.2:
   resolved "https://registry.yarnpkg.com/react-native-actionsheet/-/react-native-actionsheet-2.4.2.tgz#6a00dd51a75ef2c8974312130e405af73191500f"
   integrity sha512-DBoWIvVwuWXuptF4t46pBqkFxaUxS+rsIdHiA05t0n4BdTIDV2R4s9bLEUVOGzb94D7VxIamsXZPA/3mmw+SXg==
 
+react-native-bundle-visualizer@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-bundle-visualizer/-/react-native-bundle-visualizer-2.0.1.tgz#8847d3c89356bc6db3d634481b6ae57e8eaec575"
+  integrity sha512-MPjpbD12lwat1snp1EKGipT1rHulihznGb8h1QGR9J1hUBkjcQYnvaqG8Cd/t6zJEZd17b8f5zak/a7AB5h9TA==
+  dependencies:
+    execa "^2.0.3"
+    minimist "^1.2.0"
+    source-map-explorer "^2.0.1"
+
 react-native-camera@^2.11.0:
   version "2.11.2"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-2.11.2.tgz#4936bb0a484e8ba7d0b3ecf28fa7c161833b1ac0"
@@ -9407,12 +9724,15 @@ react-native-crypto@^2.1.2:
 react-native-device-info@^2.1.3:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-2.3.2.tgz#db2b8f135aaf2515583e367ab791dcc7d2f0d14c"
   integrity sha512-ccpPuUbwhw5uYdVwN1UJp6ykMZz6U/u82HNM3oJ7O6MP8RIMlMDkHbqR4O0sDtUSuRMGiqqRzFtmOLFYeQ0ODw==
 =======
 =======
 >>>>>>> 96db5a28... begin mike
+=======
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
 <<<<<<< HEAD
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-2.3.1.tgz#363267c4574dbd779290cdc06bb423f9c16d68d8"
@@ -9436,7 +9756,15 @@ react-native-device-info@^2.1.3:
   resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-2.3.1.tgz#363267c4574dbd779290cdc06bb423f9c16d68d8"
   integrity sha512-4kIBeBdYB/IwNjbSTEvfnWgFB4cXL0drvdXKfcAgfI5vxmsLElR5HI6t9fqVkPyMCiRtI7mvS6PbG2kjGdbQMw==
 >>>>>>> dc42f3f4... begin mike
+<<<<<<< HEAD
 >>>>>>> 96db5a28... begin mike
+=======
+=======
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-2.3.2.tgz#db2b8f135aaf2515583e367ab791dcc7d2f0d14c"
+  integrity sha512-ccpPuUbwhw5uYdVwN1UJp6ykMZz6U/u82HNM3oJ7O6MP8RIMlMDkHbqR4O0sDtUSuRMGiqqRzFtmOLFYeQ0ODw==
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
 
 react-native-dotenv@^0.2.0:
   version "0.2.0"
@@ -9470,10 +9798,16 @@ react-native-firebase@^4.3.8:
     postinstall-build "^5.0.1"
     prop-types "^15.6.1"
 
+<<<<<<< HEAD
 react-native-gesture-handler@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.4.1.tgz#c38d9e57637b95e221722a79f2bafac62e3aeb21"
   integrity sha512-Ffcs+SbEbkGaal0CClYL+v7A9y4OA5G5lW01qrzjxaqASp5C8BfnWSKuqYKE00s6bLwE5L4xnlHkG0yIxAtbrQ==
+=======
+react-native-gesture-handler@mikedemarais/react-native-gesture-handler#mike-hooks:
+  version "1.3.1"
+  resolved "https://codeload.github.com/mikedemarais/react-native-gesture-handler/tar.gz/beb63c2d8af5ae26cf264cb598376fb76d41c08c"
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
   dependencies:
     hammerjs "^2.0.8"
     hoist-non-react-statics "^2.3.1"
@@ -9520,7 +9854,7 @@ react-native-level-fs@^3.0.1:
     level-filesystem "^1.0.1"
     levelup "^0.18.2"
 
-react-native-linear-gradient@^2.5.4:
+react-native-linear-gradient@^2.5.6:
   version "2.5.6"
   resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.5.6.tgz#96215cbc5ec7a01247a20890888aa75b834d44a0"
   integrity sha512-HDwEaXcQIuXXCV70O+bK1rizFong3wj+5Q/jSyifKFLg0VWF95xh8XQgfzXwtq0NggL9vNjPKXa016KuFu+VFg==
@@ -9578,10 +9912,17 @@ react-native-reanimated@1.2.0:
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.2.0.tgz#9219227a52a5dfa4d34c324596d6726ccd874293"
   integrity sha512-vkWRHrPK5qfHP/ZawlRoo38oeYe9NZaaOH/lmFxRcsKzaSK6x3H5ZPXI8lK6MfTLveqwo1QhJje3zIKXO4nQQw==
 
+<<<<<<< HEAD
 react-native-redash@^7.2.1:
   version "7.5.1"
   resolved "https://registry.yarnpkg.com/react-native-redash/-/react-native-redash-7.5.1.tgz#79c52c9a629b8ddeeb17e73336216aba1cc2f689"
   integrity sha512-NidcTKlK57BtjCMC9OKhXJnH50TDlfb+vel4oLUfaYHO2kGY56jGj+IS29V3joZgB5iO1X+U5K5FYWuQuDnepA==
+=======
+react-native-redash@^7.5.0:
+  version "7.5.0"
+  resolved "https://registry.yarnpkg.com/react-native-redash/-/react-native-redash-7.5.0.tgz#fa72c7a23ad2f3f884a494ed76a0e79041ae70e1"
+  integrity sha512-y2J19HbBYWOYq4kq+3U86wfbsDusxv1/ak4a6KqvfTmt/E3i85mnnUDIF+nk1Shqz0aYcwNMB2KD7bEWsVK/sw==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
   dependencies:
     abs-svg-path "^0.1.1"
     normalize-svg-path "^1.0.1"
@@ -9656,10 +9997,17 @@ react-native-store-review@^0.1.5:
   resolved "https://registry.yarnpkg.com/react-native-store-review/-/react-native-store-review-0.1.5.tgz#9df69786a137580748e368641698d2104519e4cf"
   integrity sha512-vVx7NYaQva3bGU5MdqXn4yEB+o+GPdmjqAuj7PnkepfeCS6Bi3sqniiKoXmKOKDgRTfIobBZjUkHzWeHli1+3A==
 
+<<<<<<< HEAD
 react-native-svg@^9.5.1:
   version "9.9.3"
   resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.9.3.tgz#5dab1a44b20b13a3f35245a286f30882b9611d66"
   integrity sha512-oL4EWGEYhaXDwZw3ULxAtXXh3xao0BiUt2UdVANdGuP3jdpSWuXUmXCd2HpgppOVsHwbSuR67sFmnduXPGaxuA==
+=======
+react-native-svg@^9.5.3:
+  version "9.6.2"
+  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.6.2.tgz#e29b626f115230e0f0f3693887f36e60b5b01408"
+  integrity sha512-TwTEkGTe2aRh1VBemFIuc6bCvPmlVUAd2kk4HmZLuxyBDAzEAbWYFsvDSkGd9mZ06ghx1gDg+c0hrH3y0q/eDA==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
 
 react-native-tab-view@^1.2.0, react-native-tab-view@^1.4.1:
   version "1.4.1"
@@ -9684,10 +10032,10 @@ react-native-tcp@^3.2.1:
     process "^0.11.9"
     util "^0.10.3"
 
-react-native-text-input-mask@^1.0.1:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/react-native-text-input-mask/-/react-native-text-input-mask-1.0.4.tgz#0fd644eaca9c9f29553841e15a3fc3a90a602552"
-  integrity sha512-RBXj84y/fgOt5rRl0XBLr3eGcNSEZhT/vug0I6Ysa7M1uByNRxDGZE6VRNXtzFkh4ZD9Ysov6MfChU3m8y0JIA==
+react-native-text-input-mask@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/react-native-text-input-mask/-/react-native-text-input-mask-1.0.6.tgz#21ca0c1886f5b547e9f6594ba2f4bb50d39fe3a1"
+  integrity sha512-pCTYEnqiKw1F9VuEwxOt42Roaigilpp0xjb2JhjIeuVlc6Cvf9IqA+vzAXLJTOzoxImOOAasGxrZpTgdFYMvOQ==
 
 react-native-tooltip@^5.2.0:
   version "5.2.0"
@@ -10383,7 +10731,11 @@ retry@^0.12.0:
   resolved "https://registry.yarnpkg.com/retry/-/retry-0.12.0.tgz#1b42a6266a21f07421d1b0b54b7dc167b01c013b"
   integrity sha1-G0KmJmoh8HQh0bC1S33BZ7AcATs=
 
+<<<<<<< HEAD
 rimraf@2.6.3:
+=======
+rimraf@2.6.3, rimraf@^2.2.8, rimraf@^2.5.4, rimraf@^2.6.1, rimraf@^2.6.3, rimraf@~2.6.2:
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
   version "2.6.3"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.6.3.tgz#b2d104fe0d8fb27cf9e0a1cda8262dd3833c6cab"
   integrity sha512-mwqeW5XsA2qAejG46gYdENaxXjx9onRNCfn7L0duuP4hCuTIi/QO7PDK07KJfp1d+izWPrzEJDcSqBa0OZQriA==
@@ -10880,6 +11232,23 @@ socks@~2.3.2:
     ip "^1.1.5"
     smart-buffer "4.0.2"
 
+source-map-explorer@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/source-map-explorer/-/source-map-explorer-2.0.1.tgz#988721e8320d7b6925bc40289e5de658fe4cad4d"
+  integrity sha512-mv2sv2b6oN2L9n18O/eLrYiP5zfWEHESLq4utWBqNw8GnkbuRuXs8twVCOhMT5hxRzfQgS7Yxh7HlQaW8oeiAQ==
+  dependencies:
+    btoa "^1.2.1"
+    chalk "^2.4.2"
+    convert-source-map "^1.6.0"
+    ejs "^2.6.2"
+    escape-html "^1.0.3"
+    glob "^7.1.4"
+    lodash "^4.17.11"
+    open "^6.3.0"
+    source-map "^0.7.3"
+    temp "^0.9.0"
+    yargs "^13.2.4"
+
 source-map-resolve@^0.5.0:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/source-map-resolve/-/source-map-resolve-0.5.2.tgz#72e2cc34095543e43b2c62b2c4c10d4a9054f259"
@@ -10913,6 +11282,11 @@ source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
   integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
+
+source-map@^0.7.3:
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.7.3.tgz#5302f8169031735226544092e64981f751750383"
+  integrity sha512-CkCj6giN3S+n9qrYiBTX5gystlENnRW5jZeNLHpe6aue+SrHcG5VYwujhW9s4dY31mEGsxBDrHR6oI69fTXsaQ==
 
 spawn-sync@^1.0.15:
   version "1.0.15"
@@ -11166,6 +11540,11 @@ strip-eof@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/strip-eof/-/strip-eof-1.0.0.tgz#bb43ff5598a6eb05d89b59fcd129c983313606bf"
   integrity sha1-u0P/VZim6wXYm1n80SnJgzE2Br8=
+
+strip-final-newline@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/strip-final-newline/-/strip-final-newline-2.0.0.tgz#89b852fb2fcbe936f6f4b3187afb0a12c1ab58ad"
+  integrity sha512-BrpvfNAE3dcvq7ll3xVumzjKjZQ5tI1sEUIKr3Uoks0XUl45St3FlatVqef9prk4jRDzhW6WZg+3bk93y6pLjA==
 
 strip-indent@^2.0.0:
   version "2.0.0"
@@ -11427,9 +11806,15 @@ symbol-tree@^3.2.2:
   integrity sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==
 
 table@^5.2.3:
+<<<<<<< HEAD
   version "5.4.6"
   resolved "https://registry.yarnpkg.com/table/-/table-5.4.6.tgz#1292d19500ce3f86053b05f0e8e7e4a3bb21079e"
   integrity sha512-wmEc8m4fjnob4gt5riFRtTu/6+4rSe12TpAELNSqHMfF3IqnA+CH37USM6/YR3qRZv7e56kAEAtd6nKZaxe0Ug==
+=======
+  version "5.4.5"
+  resolved "https://registry.yarnpkg.com/table/-/table-5.4.5.tgz#c8f4ea2d8fee08c0027fac27b0ec0a4fe01dfa42"
+  integrity sha512-oGa2Hl7CQjfoaogtrOHEJroOcYILTx7BZWLGsJIlzoWmB2zmguhNfPJZsWPKYek/MgCxfco54gEi31d1uN2hFA==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
   dependencies:
     ajv "^6.10.2"
     lodash "^4.17.14"
@@ -11473,6 +11858,13 @@ temp@0.8.3:
   dependencies:
     os-tmpdir "^1.0.0"
     rimraf "~2.2.6"
+
+temp@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/temp/-/temp-0.9.0.tgz#61391795a11bd9738d4c4d7f55f012cb8f55edaa"
+  integrity sha512-YfUhPQCJoNQE5N+FJQcdPz63O3x3sdT4Xju69Gj4iZe0lBKOtnAMi0SLj9xKhGkcGhsxThvTJ/usxtFPo438zQ==
+  dependencies:
+    rimraf "~2.6.2"
 
 tempfile@^2.0.0:
   version "2.0.0"
@@ -11681,9 +12073,15 @@ tslib@^1.8.1, tslib@^1.9.0:
   integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
 
 tsutils@^3.7.0:
+<<<<<<< HEAD
   version "3.17.1"
   resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-3.17.1.tgz#ed719917f11ca0dee586272b2ac49e015a2dd759"
   integrity sha512-kzeQ5B8H3w60nFY2g8cJIuH7JDpsALXySGtwGJ0p2LSjLgay3NdIpqq5SoOBe46bKDW2iq25irHCr8wjomUS2g==
+=======
+  version "3.17.0"
+  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-3.17.0.tgz#c3ccab927a475aa2beef6a3695c2ff76da13cdf8"
+  integrity sha512-fyveWOtAXfumAxIqkcMHuPaaVyLBKjB8Y00ANZkqh+HITBAQscCbQIHwwBTJdvQq7RykLEbOPcUUnJ16X4NA0g==
+>>>>>>> e1a27438... Cleanup ButtonPressAnimation
   dependencies:
     tslib "^1.8.1"
 
@@ -11991,9 +12389,9 @@ uuid@^3.0.1, uuid@^3.3.2:
   integrity sha512-pW0No1RGHgzlpHJO1nsVrHKpOEIxkGg1xB+v0ZmdNH5OAeAwzAVrCnI2/6Mtx+Uys6iaylxa+D3g4j63IKKjSQ==
 
 v8-compile-cache@^2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/v8-compile-cache/-/v8-compile-cache-2.0.3.tgz#00f7494d2ae2b688cfe2899df6ed2c54bef91dbe"
-  integrity sha512-CNmdbwQMBjwr9Gsmohvm0pbL954tJrNzf6gWL3K+QMQf00PF7ERGrEiLgjuU3mKreLC2MeGhUsNV9ybTbLgd3w==
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/v8-compile-cache/-/v8-compile-cache-2.1.0.tgz#e14de37b31a6d194f5690d67efc4e7f6fc6ab30e"
+  integrity sha512-usZBT3PW+LOjM25wbqIlZwPeJV+3OSz3M1k1Ws8snlW39dZyYL9lOGC5FgPVHfk0jKmjiDV8Z0mIbVQPiwFs7g==
 
 validate-npm-package-license@^3.0.1:
   version "3.0.4"
@@ -12304,6 +12702,13 @@ xmldoc@^1.1.2:
   dependencies:
     sax "^1.2.1"
 
+xmldoc@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/xmldoc/-/xmldoc-1.1.2.tgz#6666e029fe25470d599cd30e23ff0d1ed50466d7"
+  integrity sha512-ruPC/fyPNck2BD1dpz0AZZyrEwMOrWTO5lDdIXS91rs3wtm4j+T8Rp2o+zoOYkkAxJTZRPOSnOGei1egoRmKMQ==
+  dependencies:
+    sax "^1.2.1"
+
 xmldom@0.1.x:
   version "0.1.27"
   resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.1.27.tgz#d501f97b3bdb403af8ef9ecc20573187aadac0e9"
@@ -12367,7 +12772,7 @@ yallist@^2.1.2:
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-2.1.2.tgz#1c11f9218f076089a47dd512f93c6699a6a81d52"
   integrity sha1-HBH5IY8HYImkfdUS+TxmmaaoHVI=
 
-yallist@^3.0.0, yallist@^3.0.3:
+yallist@^3.0.0, yallist@^3.0.2, yallist@^3.0.3:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-3.0.3.tgz#b4b049e314be545e3ce802236d6cd22cd91c3de9"
   integrity sha512-S+Zk8DEWE6oKpV+vI3qWkaK+jSbIK86pCwe2IF/xwIpQ8jEuxpw9NyaGjmp9+BoJv5FV2piqCDcoCtStppiq2A==

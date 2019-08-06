@@ -8,12 +8,11 @@ import { Centered, Column, FlexItem, Row } from '../components/layout';
 import { deviceUtils, safeAreaInsetValues } from '../utils';
 import { Modal, ModalHeader } from '../components/modal';
 import AssetList from '../components/asset-list/RecyclerAssetList';
-import { SendCoinRow } from '../components/coin-row';
+import { ExchangeCoinRow, SendCoinRow } from '../components/coin-row';
 import GestureBlocker from '../components/GestureBlocker';
 import { Monospace, TruncatedText } from '../components/text';
 import { withAccountData } from '../hoc';
 import { borders, colors, position } from '../styles';
-import StarIcon from '../components/icons/svg/StarIcon';
 import { BackButton } from '../components/header';
 import { ExchangeSearch } from '../components/exchange';
 import { exchangeModalBorderRadius } from './ExchangeModal';
@@ -32,43 +31,6 @@ const BackButtonWrapper = styled(Centered)`
   margin-left: 15;
   position: absolute;
 `;
-
-const BottomRow = ({ balance, symbol }) => (
-  <Monospace
-    color={colors.alpha(colors.blueGreyDark, 0.6)}
-    size="smedium"
-  >
-    {symbol}
-  </Monospace>
-);
-
-BottomRow.propTypes = {
-  balance: PropTypes.shape({ display: PropTypes.string }),
-  symbol: PropTypes.string,
-};
-
-const CurrencyRenderItem = ({ favorite, item, onPress }) => (
-  <SendCoinRow
-    {...item}
-    bottomRowRender={BottomRow}
-    onPress={onPress}
-  >
-    <FlexItem flex={0} style={{ marginLeft: 8 }}>
-      <StarIcon color={favorite ? colors.orangeLight : colors.grey} />
-    </FlexItem>
-  </SendCoinRow>
-);
-
-CurrencyRenderItem.propTypes = {
-  favorite: PropTypes.bool,
-  index: PropTypes.number,
-  item: PropTypes.shape({ symbol: PropTypes.string }),
-  onPress: PropTypes.func,
-};
-
-const EnhancedCurrencyRenderItem = withHandlers({
-  onPress: ({ item: { symbol }, onPress }) => () => onPress(symbol),
-})(CurrencyRenderItem);
 
 class SelectCurrencyModal extends PureComponent {
   static propTypes = {
@@ -124,7 +86,7 @@ class SelectCurrencyModal extends PureComponent {
   }
 
   renderCurrencyItem = (itemProps) => (
-    <EnhancedCurrencyRenderItem
+    <ExchangeCoinRow
       {...itemProps}
       onPress={this.handleSelectAsset}
     />
