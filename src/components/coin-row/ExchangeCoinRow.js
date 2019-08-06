@@ -1,17 +1,13 @@
-import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-// import { NavigationEvents, withNavigationFocus } from 'react-navigation';
-// import styled from 'styled-components/primitives';
-import { withProps } from 'recompact';
-import Animated from 'react-native-reanimated';
-import { borders, colors, position } from '../../styles';
-import { isNewValueForPath } from '../../utils';isNewValueForPath
+import { View } from 'react-native';
+import { colors, padding } from '../../styles';
+import { isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
+import { FloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
-import { Centered, Column, FlexItem, Row } from '../layout';
+import { Centered } from '../layout';
 import { Monospace } from '../text';
-import SendCoinRow from './SendCoinRow';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
@@ -45,20 +41,16 @@ export default class ExchangeCoinRow extends PureComponent {
 
   starRef = React.createRef()
 
-  shouldComponentUpdate = (nextProps) => {
-    const should = (
-      isNewValueForPath(this.props, nextProps, 'item.uniqueId')
-      || isNewValueForPath(this.props, nextProps, 'favorite')
-    );
-
-    // console.log('ExchangeCoinRow shouldComponentUpdate', should);
-
-    return true;
+  state = {
+    emojiCount: 0,
+    favorite: false,
   }
 
-  handleToggleFavorite = () => {
-    console.log('favorite');
-  }
+  shouldComponentUpdate = (nextProps, nextState) => (
+    isNewValueForPath(this.props, nextProps, 'item.uniqueId')
+    || isNewValueForPath(this.state, nextState, 'favorite')
+    || isNewValueForPath(this.state, nextState, 'emojiCount')
+  )
 
   handlePress = () => {
     const { item: { symbol }, onPress } = this.props;
@@ -68,38 +60,56 @@ export default class ExchangeCoinRow extends PureComponent {
     }
   }
 
-  render = () => {
-    const { favorite, item } = this.props;
+  handleToggleFavorite = () => {
+    this.setState(prevState => {
+      const favorite = !prevState.favorite;
+      return {
+        emojiCount: favorite ? prevState.emojiCount + 1 : prevState.emojiCount,
+        favorite,
+      };
+    });
+  }
 
-    console.log('item', item);
+  render = () => {
+    const { item, ...props } = this.props;
+    const { emojiCount, favorite } = this.state;
 
     return (
       <ButtonPressAnimation
+        {...props}
         onPress={this.handlePress}
         scaleTo={0.96}
       >
         <CoinRow
           {...item}
+          containerStyles={'padding-right: 0'}
           bottomRowRender={BottomRow}
           topRowRender={TopRow}
         >
-          <ButtonPressAnimation
-            onPress={this.handleToggleFavorite}
-            exclusive={true}
-            scaleTo={0.6}
-            tapRef={this.starRef}
-          >
-            <Centered
-              {...position.sizeAsObject(50)}
-              backgroundColor={colors.skeleton}
-              zIndex={9999}
+          <View>
+            <ButtonPressAnimation
+              onPress={this.handleToggleFavorite}
+              exclusive={true}
+              scaleTo={0.69}
+              tapRef={this.starRef}
             >
-              <Icon
-                color={favorite ? colors.orangeLight : colors.grey}
-                name="star"
-              />
-            </Centered>
-          </ButtonPressAnimation>
+              <Centered css={padding(19)}>
+                <Icon
+                  color={favorite ? colors.orangeMedium : colors.grey}
+                  name="star"
+                />
+              </Centered>
+            </ButtonPressAnimation>
+            <FloatingEmojis
+              count={emojiCount}
+              distance={69}
+              emoji="star"
+              range={[30, 30]}
+              size="big"
+              top={20}
+              zIndex={9999}
+            />
+          </View>
         </CoinRow>
       </ButtonPressAnimation>
     );
