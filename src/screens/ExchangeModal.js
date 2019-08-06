@@ -1,11 +1,4 @@
-import { get, isNil } from 'lodash';
-import PropTypes from 'prop-types';
-import React, { Fragment, PureComponent } from 'react';
-import { KeyboardAvoidingView, View } from 'react-native';
-import { compose, withProps } from 'recompact';
-import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import {
-  getExecutionDetails,
   tradeEthForExactTokens,
   tradeExactEthForTokens,
   tradeExactTokensForEth,
@@ -13,6 +6,12 @@ import {
   tradeTokensForExactEth,
   tradeTokensForExactTokens,
 } from '@uniswap/sdk';
+import { get, isNil } from 'lodash';
+import PropTypes from 'prop-types';
+import React, { Fragment, PureComponent } from 'react';
+import { KeyboardAvoidingView, View } from 'react-native';
+import { compose, withProps } from 'recompact';
+import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import {
   Centered,
   Column,
@@ -225,8 +224,7 @@ class ExchangeModal extends PureComponent {
 
   handleSubmit = async () => {
     const { tradeDetails } = this.state;
-    const executionDetails = getExecutionDetails(tradeDetails);
-    await executeSwap(executionDetails);
+    await executeSwap(tradeDetails);
     this.props.navigation.navigate('ProfileScreen');
   }
 
