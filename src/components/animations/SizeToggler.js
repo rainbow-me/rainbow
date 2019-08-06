@@ -17,7 +17,7 @@ const {
   SpringUtils,
 } = Animated;
 
-function runTiming(clock, value, dest) {
+function runTiming(clock, value, dest, friction, tension) {
   const state = {
     finished: new Value(1),
     position: new Value(value),
@@ -27,8 +27,8 @@ function runTiming(clock, value, dest) {
 
   const config = Animated.SpringUtils.makeConfigFromOrigamiTensionAndFriction({
     ...SpringUtils.makeDefaultConfig(),
-    friction: 20,
-    tension: 200,
+    friction,
+    tension,
   });
 
   const reset = [
@@ -56,7 +56,7 @@ export default class SizeToggler extends React.Component {
   componentWillUpdate(prev) {
     if (prev.toggle !== undefined && prev.toggle !== this.props.toggle && !this.props.animationNode) {
       const clock = new Clock();
-      const base = this.props.toggle ? runTiming(clock, -1, 1) : runTiming(clock, 1, -1);
+      const base = runTiming(clock, this.props.toggle ? -1 : 1, this.props.toggle ? 1 : -1, this.props.friction, this.props.tension);
       this._height = interpolate(base, {
         inputRange: [-1, 1],
         outputRange: [this.props.endingWidth, this.props.startingWidth],
@@ -78,14 +78,16 @@ export default class SizeToggler extends React.Component {
 SizeToggler.propTypes = {
   animationNode: PropTypes.any,
   children: PropTypes.any,
-  duration: PropTypes.number,
   endingWidth: PropTypes.number,
+  friction: PropTypes.number,
   startingWidth: PropTypes.number,
+  tension: PropTypes.number,
   toggle: PropTypes.bool,
 };
 
 SizeToggler.defaultProps = {
-  duration: 200,
   endingOpacity: 0,
+  friction: 20,
   startingOpacity: 1,
+  tension: 200,
 };

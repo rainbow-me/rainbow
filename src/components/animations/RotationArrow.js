@@ -17,7 +17,7 @@ const {
   SpringUtils,
 } = Animated;
 
-function runTiming(clock, value, dest, isOpen) {
+function runTiming(clock, value, dest, friction, tension) {
   const state = {
     finished: new Value(1),
     position: new Value(value),
@@ -27,8 +27,8 @@ function runTiming(clock, value, dest, isOpen) {
 
   const config = Animated.SpringUtils.makeConfigFromOrigamiTensionAndFriction({
     ...SpringUtils.makeDefaultConfig(),
-    friction: 20,
-    tension: 200,
+    friction,
+    tension,
   });
 
   const reset = [
@@ -53,7 +53,7 @@ class RotationArrow extends React.Component {
     if (prev.isOpen !== undefined
         && prev.isOpen !== this.props.isOpen) {
       const clock = new Clock();
-      const base = this.props.isOpen ? runTiming(clock, -1, 1, this.props.isOpen) : runTiming(clock, 1, -1, this.props.isOpen);
+      const base = runTiming(clock, this.props.isOpen ? -1 : 1, this.props.isOpen ? 1 : -1, this.props.friction, this.props.tension);
       this._transform = interpolate(base, {
         inputRange: [-1, 1],
         outputRange: this.props.reversed ? [1, 0] : [0, 1],
@@ -93,8 +93,15 @@ RotationArrow.propTypes = {
   children: PropTypes.any,
   endingOffset: PropTypes.number,
   endingPosition: PropTypes.number,
+  friction: PropTypes.number,
   isOpen: PropTypes.bool,
   reversed: PropTypes.bool,
+  tension: PropTypes.number,
+};
+
+RotationArrow.defaultProps = {
+  friction: 20,
+  tension: 200,
 };
 
 export default RotationArrow;
