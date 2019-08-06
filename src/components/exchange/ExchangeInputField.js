@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { TouchableWithoutFeedback } from 'react-native';
+import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { colors, fonts } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { CoolButton } from '../buttons';
@@ -55,9 +56,10 @@ export default class ExchangeInputField extends PureComponent {
       inputAmount,
       inputCurrency,
       inputFieldRef,
-      onFocus,
       nativeAmount,
+      nativeCurrency,
       nativeFieldRef,
+      onFocus,
       onPressMaxBalance,
       onPressSelectInputCurrency,
       setInputAmount,
