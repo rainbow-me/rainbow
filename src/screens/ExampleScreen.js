@@ -52,18 +52,11 @@ class ExampleScreen extends PureComponent {
         // ... i dont want to set up storybook right now
 
       */}
-     <View>
-        <Row>
-           <ExchangeCoinRow {...item} item={item} />
-        </Row>
-        </View>
+      <Centered width="100%">
+        <ExchangeCoinRow {...item} item={item} flex={1} />
+      </Centered>
     </Page>
   )
 }
 
-       // <Centered flex={1}>
-       //   <Centered height={300} flex={0}>
-       //    <ExchangeCoinRow {...item} transformOrigin="right" item={item} flex={0} />
-       //   </Centered>
-       // </Centered>
 export default withHideSplashScreen(ExampleScreen);
