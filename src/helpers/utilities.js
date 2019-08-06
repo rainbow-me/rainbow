@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, split } from 'lodash';
 import BigNumber from 'bignumber.js';
 import supportedNativeCurrencies from '../references/native-currencies.json';
 
@@ -339,6 +339,20 @@ export const convertAmountToNativeDisplay = (value, nativeCurrency, buffer) => {
     return `${nativeSelected.symbol}${display}`;
   }
   return `${display} ${nativeSelected.currency}`;
+};
+
+/**
+ * @desc convert to amount value from display formatted string
+ * @param  {String} formatted native value
+ * @param  {String} nativeCurrency
+ * @return {String}
+ */
+export const convertAmountFromNativeDisplay = (nativeDisplayValue, nativeCurrency) => {
+  const nativeSelected = supportedNativeCurrencies[nativeCurrency];
+  if (nativeSelected.alignment === 'left') {
+    return nativeDisplayValue.trim().slice(1);
+  }
+  return split(nativeDisplayValue, ' ')[0];
 };
 
 /**
