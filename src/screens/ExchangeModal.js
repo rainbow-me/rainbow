@@ -178,7 +178,11 @@ class ExchangeModal extends PureComponent {
       const decimals = inputAsExactAmount ? outputDecimals : inputDecimals;
       const path = inputAsExactAmount ? 'outputAmount.amount' : 'inputAmount.amount';
       const { rawUpdatedValue, slippage } = this.parseTradeDetails(path, tradeDetails, decimals);
-      this.setState({ outputAmount: rawUpdatedValue, slippage });
+      if (inputAsExactAmount) {
+        this.setState({ outputAmount: rawUpdatedValue, slippage });
+      } else {
+        this.setState({ inputAmount: rawUpdatedValue, slippage });
+      }
     } catch (error) {
       console.log('error getting market details', error);
       // TODO
