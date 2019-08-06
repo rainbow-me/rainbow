@@ -1,3 +1,4 @@
+import { getExecutionDetails } from '@uniswap/sdk';
 import contractMap from 'eth-contract-metadata';
 import { ethers } from 'ethers';
 import { get, map, zipObject } from 'lodash';
@@ -19,7 +20,8 @@ const convertValueForEthers = (value) => {
   return ethers.utils.hexlify(valueBigNumber);
 };
 
-export const executeSwap = async (executionDetails) => {
+export const executeSwap = async (tradeDetails) => {
+  const executionDetails = getExecutionDetails(tradeDetails);
   const wallet = await loadWallet();
   if (!wallet) return null;
   const {
@@ -29,68 +31,51 @@ export const executeSwap = async (executionDetails) => {
     value: rawValue,
   } = executionDetails;
   const exchange = new ethers.Contract(exchangeAddress, exchangeABI, wallet);
+  const updatedMethodArgs = convertArgsForEthers(methodArguments);
+  const value = convertValueForEthers(rawValue);
+  let txn = null;
   try {
     switch (methodName) {
     case 'ethToTokenSwapInput': {
-      const updatedMethodArgs = convertArgsForEthers(methodArguments);
-      const value = convertValueForEthers(rawValue);
       const gasLimit = await exchange.estimate.ethToTokenSwapInput(...updatedMethodArgs, { value });
-      const txn = await exchange.ethToTokenSwapInput(...updatedMethodArgs, { gasLimit, value });
-      // TODO add to new txn
-      console.log('eth to token input', txn);
-      return;
+      txn = await exchange.ethToTokenSwapInput(...updatedMethodArgs, { gasLimit, value });
+      break;
     }
     case 'ethToTokenSwapOutput': {
-      const updatedMethodArgs = convertArgsForEthers(methodArguments);
-      const value = convertValueForEthers(rawValue);
       const gasLimit = await exchange.estimate.ethToTokenSwapOutput(...updatedMethodArgs, { value });
-      const txn = await exchange.ethToTokenSwapOutput(...updatedMethodArgs, { gasLimit, value });
-      // TODO add to new txn
-      console.log('eth to token output', txn);
-      return;
+      txn = await exchange.ethToTokenSwapOutput(...updatedMethodArgs, { gasLimit, value });
+      break;
     }
     case 'tokenToEthSwapInput': {
-      const updatedMethodArgs = convertArgsForEthers(methodArguments);
-      const value = convertValueForEthers(rawValue);
+      // TODO approval check
       const gasLimit = await exchange.estimate.tokenToEthSwapInput(...updatedMethodArgs, { value });
-      const txn = await exchange.tokenToEthSwapInput(...updatedMethodArgs, { gasLimit, value });
-      // TODO add to new txn
-      console.log('token to eth input', txn);
-      return;
+      txn = await exchange.tokenToEthSwapInput(...updatedMethodArgs, { gasLimit, value });
+      break;
     }
     case 'tokenToEthSwapOutput': {
-      const updatedMethodArgs = convertArgsForEthers(methodArguments);
-      const value = convertValueForEthers(rawValue);
+      // TODO approval check
       const gasLimit = await exchange.estimate.tokenToEthSwapOutput(...updatedMethodArgs, { value });
-      const txn = await exchange.tokenToEthSwapOutput(...updatedMethodArgs, { gasLimit, value });
-      // TODO add to new txn
-      console.log('token to eth output', txn);
-      return;
+      txn = await exchange.tokenToEthSwapOutput(...updatedMethodArgs, { gasLimit, value });
+      break;
     }
     case 'tokenToTokenSwapInput': {
-      const updatedMethodArgs = convertArgsForEthers(methodArguments);
-      const value = convertValueForEthers(rawValue);
+      // TODO approval check
       const gasLimit = await exchange.estimate.tokenToTokenSwapInput(...updatedMethodArgs, { value });
-      const txn = await exchange.tokenToTokenSwapInput(...updatedMethodArgs, { gasLimit, value });
-      // TODO add to new txn
-      console.log('token to token input', txn);
-      return;
+      txn = await exchange.tokenToTokenSwapInput(...updatedMethodArgs, { gasLimit, value });
+      break;
     }
     case 'tokenToTokenSwapOutput': {
-      const updatedMethodArgs = convertArgsForEthers(methodArguments);
-      const value = convertValueForEthers(rawValue);
+      // TODO approval check
       const gasLimit = await exchange.estimate.tokenToTokenSwapOutput(...updatedMethodArgs, { value });
-      const txn = await exchange.tokenToTokenSwapOutput(...updatedMethodArgs, { gasLimit, value });
-      // TODO add to new txn
-      console.log('token to token output', txn);
-      return;
+      txn = await exchange.tokenToTokenSwapOutput(...updatedMethodArgs, { gasLimit, value });
+      break;
     }
     default:
-      return null;
-    }
+      break;
   } catch (error) {
     console.log('error exchanging', error);
   }
+  // TODO add to new txn
 };
 
 export const getUniswapLiquidityInfo = async (accountAddress, exchangeContracts) => {

@@ -1,5 +1,4 @@
 import {
-  getExecutionDetails,
   tradeEthForExactTokens,
   tradeExactEthForTokens,
   tradeExactTokensForEth,
@@ -261,8 +260,7 @@ class ExchangeModal extends PureComponent {
 
   handleSubmit = async () => {
     const { tradeDetails } = this.state;
-    const executionDetails = getExecutionDetails(tradeDetails);
-    await executeSwap(executionDetails);
+    await executeSwap(tradeDetails);
     this.props.navigation.navigate('ProfileScreen');
   }
 
