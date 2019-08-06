@@ -59,4 +59,9 @@ class ExampleScreen extends PureComponent {
   )
 }
 
+       // <Centered flex={1}>
+       //   <Centered height={300} flex={0}>
+       //    <ExchangeCoinRow {...item} transformOrigin="right" item={item} flex={0} />
+       //   </Centered>
+       // </Centered>
 export default withHideSplashScreen(ExampleScreen);
