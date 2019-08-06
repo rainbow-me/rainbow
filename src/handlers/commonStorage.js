@@ -409,3 +409,20 @@ export const removeLocalRequests = async (address, network) => {
   const requestsKey = getRequestsKey(address, network);
   await removeLocal(requestsKey);
 };
+
+/**
+ * @desc get open small balance toggle
+ * @return {Boolean}
+ */
+export const getSmallBalanceToggle = async () => {
+  const toggle = await getLocal('smallBalanceToggle');
+  return toggle.data || false;
+};
+
+/**
+ * @desc save open small balance toggle
+ * @param  {Boolean}   [language]
+ */
+export const saveSmallBalanceToggle = async toggle => {
+  await saveLocal('smallBalanceToggle', { data: toggle });
+};

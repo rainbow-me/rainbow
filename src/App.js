@@ -29,6 +29,8 @@ import store from './redux/store';
 import { requestsForTopic } from './redux/requests';
 import Routes from './screens/Routes';
 import { parseQueryParams } from './utils';
+import { setOpenSmallBalances } from './redux/openBalances';
+import { getSmallBalanceToggle } from './handlers/commonStorage';
 
 if (process.env.NODE_ENV === 'development') {
   console.disableYellowBox = true;
@@ -89,6 +91,8 @@ class App extends Component {
   };
 
   async componentDidMount() {
+    const toggle = await getSmallBalanceToggle();
+    await store.dispatch(setOpenSmallBalances(toggle));
     AppState.addEventListener('change', this.handleAppStateChange);
     Linking.addEventListener('url', this.handleOpenLinkingURL);
     await this.props.initializeWallet();
@@ -178,6 +182,7 @@ class App extends Component {
     </Provider>
   )
 }
+
 
 const AppWithRedux = compose(
   withProps({ store }),

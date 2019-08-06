@@ -90,8 +90,8 @@ export default class RoundButtonSizeToggler extends React.Component {
             style={{
               backgroundColor: colors.lightBlueGrey,
               transform: [
-                { scaleX: this.props.animationNode ? add(multiply(this.props.animationNode, (this.props.endingWidth / 100 - this.props.startingWidth / 100)), this.props.startingWidth / 100) : this.props.startingWidth / 100 },
-                { translateX: this.props.animationNode ? multiply(divide(sub(1, add(multiply(this.props.animationNode, (this.props.endingWidth / 100 - this.props.startingWidth / 100), this.props.startingWidth / 100), 100)), 2), -1) : this.props.startingWidth },
+                { scaleX: this.props.animationNode ? add(multiply(this.props.animationNode, (this.props.endingWidth / 100 - this.props.startingWidth / 100)), this.props.startingWidth / 100) : this.props.reversed ? this.props.startingWidth / 100 : ((this.props.startingWidth + this.props.endingWidth + 5) / 100) },
+                { translateX: this.props.animationNode ? multiply(divide(sub(1, add(multiply(this.props.animationNode, (this.props.endingWidth / 100 - this.props.startingWidth / 100), this.props.startingWidth / 100), 100)), 2), -1) : this.props.reversed ? this.props.startingWidth : this.props.endingWidth },
               ],
               width: 100,
             }}
@@ -106,7 +106,7 @@ export default class RoundButtonSizeToggler extends React.Component {
           height: 30,
           marginLeft: -11,
           transform: [
-            { translateX: this.props.animationNode ? multiply(-100, sub(1, add(multiply(this.props.animationNode, (this.props.endingWidth / 100 - this.props.startingWidth / 100)), this.props.startingWidth / 100))) : -1 * (95 - (this.props.startingWidth / 100)) },
+            { translateX: this.props.animationNode ? multiply(-100, sub(1, add(multiply(this.props.animationNode, (this.props.endingWidth / 100 - this.props.startingWidth / 100)), this.props.startingWidth / 100))) : this.props.reversed ? -1 * (100 - this.props.startingWidth) : -1 * (100 - this.props.endingWidth) },
           ],
           width: 30,
         }} />
@@ -121,6 +121,7 @@ RoundButtonSizeToggler.propTypes = {
   endingWidth: PropTypes.number,
   friction: PropTypes.number,
   isAbsolute: PropTypes.bool,
+  reversed: PropTypes.bool,
   startingWidth: PropTypes.number,
   tension: PropTypes.number,
   toggle: PropTypes.bool,

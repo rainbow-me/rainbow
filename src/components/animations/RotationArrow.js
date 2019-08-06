@@ -11,6 +11,7 @@ const {
   interpolate,
   multiply,
   set,
+  sub,
   startClock,
   spring,
   Value,
@@ -67,7 +68,7 @@ class RotationArrow extends React.Component {
         style={{
           transform:
           [{
-            translateX: this._transform ? multiply(this._transform, this.props.endingOffset) : 0,
+            translateX: this.props.endingOffset ? this._transform ? this.props.reversed ? multiply(this._transform, this.props.endingOffset) : sub(this.props.endingOffset, multiply(this._transform, this.props.endingOffset)) : this.props.reversed ? 0 : this.props.endingOffset : 0,
           }],
         }}
       >
@@ -77,7 +78,7 @@ class RotationArrow extends React.Component {
             [{
               // eslint-disable-next-line no-nested-ternary
               rotate: this._transform
-                ? (concat(multiply(this._transform, this.props.endingPosition), 'deg'))
+                ? (this.props.reversed ? concat(multiply(this._transform, this.props.endingPosition), 'deg') : concat(sub(this.props.endingPosition, multiply(this._transform, this.props.endingPosition)), 'deg'))
                 : (this.props.reversed ? 0 : `${this.props.endingPosition}deg`),
             }],
           }}

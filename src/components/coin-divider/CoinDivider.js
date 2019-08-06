@@ -3,6 +3,7 @@ import React from 'react';
 import styled from 'styled-components/primitives';
 import { View, Text } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import Animated from 'react-native-reanimated';
 import { colors, fonts } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { deviceUtils } from '../../utils';
@@ -11,7 +12,6 @@ import Highlight from '../Highlight';
 import RotationArrow from '../animations/RotationArrow';
 import Caret from '../../assets/show-all-arrow.png';
 import OpacityToggler from '../animations/OpacityToggler';
-import Animated from 'react-native-reanimated';
 import RoundButtonSizeToggler from '../animations/RoundButtonSizeToggler';
 
 const {
@@ -107,6 +107,10 @@ const SettingIcon = styled(FastImage)`
 `;
 
 class CoinDivider extends React.Component {
+  componentWillMount() {
+    this._initialState = this.props.openSmallBalances;
+  }
+
   componentWillUpdate(prev) {
     if (prev.openSmallBalances !== undefined
         && prev.openSmallBalances !== this.props.openSmallBalances) {
@@ -131,12 +135,12 @@ class CoinDivider extends React.Component {
       <Wrapper>
         <Highlight highlight={isCoinDivider} />
         <ButtonPressAnimation scaleTo={0.8} onPress={onChangeOpenBalances}>
-          <RoundButtonSizeToggler isAbsolute toggle={openSmallBalances} startingWidth={5} endingWidth={30} animationNode={this._node}>
+          <RoundButtonSizeToggler isAbsolute reversed={!this._initialState} toggle={openSmallBalances} startingWidth={5} endingWidth={30} animationNode={this._node}>
             <BackgroundColor />
           </RoundButtonSizeToggler>
           <Container>
             <View>
-              <OpacityToggler isVisible={openSmallBalances} animationNode={this._node}>
+              <OpacityToggler isVisible={openSmallBalances} startingOpacity={1} endingOpacity={0} animationNode={this._node}>
                 <Header >
                   All
                 </Header>
@@ -148,7 +152,7 @@ class CoinDivider extends React.Component {
               </OpacityToggler>
             </View>
             <SettingIconWrap>
-              <RotationArrow isOpen={openSmallBalances} reversed={true} endingPosition={-90} endingOffset={20}>
+              <RotationArrow isOpen={openSmallBalances} reversed={!this._initialState} endingPosition={-90} endingOffset={20}>
                 <SettingIcon source={Caret} />
               </RotationArrow>
             </SettingIconWrap>

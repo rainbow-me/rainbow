@@ -49,6 +49,12 @@ function runTiming(clock, value, dest, friction, tension) {
 }
 
 export default class OpacityToggler extends React.Component {
+  componentWillMount() {
+    if (!this.props.animationNode) {
+      this._isVisible = this.props.isVisible;
+    }
+  }
+
   componentWillUpdate(prev) {
     if (prev.isVisible !== undefined && prev.isVisible !== this.props.isVisible && !this.props.animationNode) {
       const clock = new Clock();
@@ -63,7 +69,7 @@ export default class OpacityToggler extends React.Component {
   render() {
     return (
       <Animated.View
-        style={{ opacity: this.props.animationNode ? (this.props.startingOpacity === 0 ? this.props.animationNode : (multiply(add(this.props.animationNode, -1), -1))) : (this._opacity ? this._opacity : this.props.startingOpacity) }}
+        style={{ opacity: this.props.animationNode ? (this.props.startingOpacity === 0 ? this.props.animationNode : (multiply(add(this.props.animationNode, -1), -1))) : (this._opacity ? this._opacity : !this._isVisible ? this.props.startingOpacity : this.props.endingOpacity) }}
       >
         {this.props.children}
       </Animated.View>
