@@ -1,4 +1,9 @@
-import { intersectionWith } from 'lodash';
+import {
+  filter,
+  findIndex,
+  keys,
+  map,
+} from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { compose, withHandlers } from 'recompact';
@@ -12,11 +17,12 @@ import AssetList from '../components/asset-list/RecyclerAssetList';
 import { SendCoinRow } from '../components/coin-row';
 import GestureBlocker from '../components/GestureBlocker';
 import { Monospace, TruncatedText } from '../components/text';
-import { withAccountData } from '../hoc';
+import { withAccountData, withUniswapAssets } from '../hoc';
 import { borders, colors, position } from '../styles';
 import StarIcon from '../components/icons/svg/StarIcon';
 import { BackButton } from '../components/header';
 import { ExchangeSearch } from '../components/exchange';
+import uniswapAssets from '../references/uniswap-pairs.json';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 
 const HeaderContainer = styled(Centered).attrs({
@@ -77,6 +83,7 @@ const EnhancedCurrencyRenderItem = withHandlers({
 class SelectCurrencyModal extends PureComponent {
   static propTypes = {
     allAssets: PropTypes.array,
+    sortedUniswapAssets: PropTypes.array,
     navigation: PropTypes.object,
   }
 
@@ -141,10 +148,15 @@ class SelectCurrencyModal extends PureComponent {
     // setTimeout(() => this.searchInputRef.current.focus(), 500);
   }
 
+  getAssetsAvailableOnUniswap = () => {
+    const uniswapAssetAddresses = map(keys(uniswapAssets), address => address.toLowerCase());
+    return filter(this.props.allAssets, asset => findIndex(uniswapAssetAddresses, uniswapAddress => uniswapAddress === asset.address) > -1);
+  };
+
   getAssets = () => {
     const data = this.isInputAssets
-      ? intersectionWith(this.props.allAssets, this.props.uniswapAssets, (uniswapAsset, asset) => uniswapAsset.address.toLowerCase() === asset.address.toLowerCase())
-      : this.props.uniswapAssets;
+      ? this.getAssetsAvailableOnUniswap()
+      : this.props.sortedUniswapAssets;
     return [
       {
         balances: true,
@@ -253,5 +265,6 @@ class SelectCurrencyModal extends PureComponent {
 
 export default compose(
   withAccountData,
+  withUniswapAssets,
   withNavigationFocus,
 )(SelectCurrencyModal);
