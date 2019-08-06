@@ -6,7 +6,7 @@ import {
   tradeTokensForExactEth,
   tradeTokensForExactTokens,
 } from '@uniswap/sdk';
-import { get } from 'lodash';
+import { get, isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { TextInput } from 'react-native';
@@ -27,7 +27,7 @@ import {
   withTransitionProps,
 } from '../hoc';
 import { colors, padding, position } from '../styles';
-import { deviceUtils, safeAreaInsetValues } from '../utils';
+import { deviceUtils, ethereumUtils, safeAreaInsetValues } from '../utils';
 import {
   ConfirmExchangeButton,
   ExchangeGasFeeButton,
@@ -80,7 +80,7 @@ class ExchangeModal extends PureComponent {
   state = {
     inputAmount: null,
     inputAsExactAmount: false,
-    inputCurrency: 'ETH',
+    inputCurrency: { address: 'eth', decimals: 18, name: 'Ethereum', symbol: 'ETH' },
     nativeAmount: null,
     outputAmount: null,
     outputCurrency: null,
@@ -208,7 +208,7 @@ class ExchangeModal extends PureComponent {
   setInputCurrency = inputCurrency => {
     const previousInputCurrency = this.inputCurrency;
     this.setState({ inputCurrency });
-    if (inputCurrency.address === this.outputCurrency.address) {
+    if (inputCurrency && this.outputCurrency && inputCurrency.address === this.outputCurrency.address) {
       if (this.outputCurrency !== null
           && previousInputCurrency !== null) {
         this.setOutputCurrency(previousInputCurrency);
@@ -219,12 +219,11 @@ class ExchangeModal extends PureComponent {
   }
 
   setOutputCurrency = outputCurrency => {
-    // TODO check that it is valid input currency
     const previousOutputCurrency = this.outputCurrency;
-    this.setState({ outputCurrency })
-    if (outputCurrency.address === this.inputCurrency.address) {
-      if (this.inputCurrency !== null
-          && previousOutputCurrency !== null) {
+    this.setState({ outputCurrency });
+    if (outputCurrency && this.inputCurrency && outputCurrency.address === this.inputCurrency.address) {
+      const asset = ethereumUtils.getAsset(this.props.allAssets, address);
+      if (this.inputCurrency !== null && previousOutputCurrency !== null && !isNil(asset)) {
         this.setInputCurrency(previousOutputCurrency);
       } else {
         this.setInputCurrency(null);
@@ -318,7 +317,7 @@ class ExchangeModal extends PureComponent {
               <Column align="center">
                 <ExchangeInputField
                   inputAmount={inputAmount}
-                  inputCurrency={inputCurrency}
+                  inputCurrency={get(inputCurrency, 'symbol', null)}
                   nativeAmount={nativeAmount}
                   inputFieldRef={this.handleInputFieldRef}
                   nativeFieldRef={this.handleNativeFieldRef}
@@ -331,7 +330,7 @@ class ExchangeModal extends PureComponent {
                   onPressSelectOutputCurrency={this.handleSelectOutputCurrency}
                   outputAmount={outputAmount}
                   onFocus={this.handleFocusField}
-                  outputCurrency={outputCurrency}
+                  outputCurrency={get(outputCurrency, 'symbol', null)}
                   outputFieldRef={this.handleOutputFieldRef}
                   setOutputAmount={this.setOutputAmount}
                 />
