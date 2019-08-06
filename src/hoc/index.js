@@ -30,6 +30,7 @@ export { default as withStatusBarStyle } from './withStatusBarStyle';
 export { default as withTransactionConfirmationScreen } from './withTransactionConfirmationScreen';
 export { default as withTransitionProps } from './withTransitionProps';
 export { default as withUniqueTokens } from './withUniqueTokens';
+export { default as withUniswapAssets } from './withUniswapAssets';
 export { default as withUniswapLiquidity, readableUniswapSelector } from './withUniswapLiquidity';
 export { default as withWalletConnectConfirmationModal } from './withWalletConnectConfirmationModal';
 export { default as withWalletConnectConnections } from './withWalletConnectConnections';

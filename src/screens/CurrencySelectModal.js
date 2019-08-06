@@ -1,4 +1,10 @@
-import { get, intersectionWith } from 'lodash';
+import {
+  filter,
+  findIndex,
+  get,
+  keys,
+  map,
+} from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { compose, withHandlers } from 'recompact';
@@ -17,10 +23,12 @@ import {
   withAccountData,
   withKeyboardFocusHistory,
   withTransitionProps,
+  withUniswapAssets,
 } from '../hoc';
 import { borders, colors, position } from '../styles';
 import { BackButton } from '../components/header';
 import { ExchangeSearch } from '../components/exchange';
+import uniswapAssets from '../references/uniswap-pairs.json';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 
 const HeaderContainer = styled(Centered).attrs({
@@ -41,6 +49,7 @@ const BackButtonWrapper = styled(Centered)`
 class CurrencySelectModal extends PureComponent {
   static propTypes = {
     allAssets: PropTypes.array,
+    sortedUniswapAssets: PropTypes.array,
     navigation: PropTypes.object,
   }
 
@@ -107,10 +116,15 @@ class CurrencySelectModal extends PureComponent {
     this.props.pushKeyboardFocusHistory(currentTarget);
   }
 
+  getAssetsAvailableOnUniswap = () => {
+    const uniswapAssetAddresses = map(keys(uniswapAssets), address => address.toLowerCase());
+    return filter(this.props.allAssets, asset => findIndex(uniswapAssetAddresses, uniswapAddress => uniswapAddress === asset.address) > -1);
+  };
+
   getAssets = () => {
     const data = this.isInputAssets
-      ? intersectionWith(this.props.allAssets, this.props.uniswapAssets, (uniswapAsset, asset) => uniswapAsset.address.toLowerCase() === asset.address.toLowerCase())
-      : this.props.uniswapAssets;
+      ? this.getAssetsAvailableOnUniswap()
+      : this.props.sortedUniswapAssets;
     return [
       {
         balances: true,
@@ -192,6 +206,7 @@ class CurrencySelectModal extends PureComponent {
 
 export default compose(
   withAccountData,
+  withUniswapAssets,
   withNavigationFocus,
   withTransitionProps,
   withKeyboardFocusHistory,
