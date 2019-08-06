@@ -13,7 +13,7 @@ const AssetListHeader = enhance(({
   isSticky,
   ...props
 }) => (
-  <ListHeader style={{ backgroundColor: isSticky ? 'white' : 'transparent' }} title={title} {...props}>
+  <ListHeader isSticky={isSticky} title={title} {...props}>
     {totalValue ? (
       <Monospace size="larger" weight="semibold">
         {totalValue}

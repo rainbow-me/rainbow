@@ -12,7 +12,7 @@ index 7074f36..5e72f6e 100644
      return StickyHeader;
  }(StickyObject_1.default));
 diff --git a/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyObject.js b/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyObject.js
-index 8da004f..28b61b6 100644
+index 8da004f..6964e85 100644
 --- a/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyObject.js
 +++ b/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyObject.js
 @@ -32,6 +32,7 @@ var StickyObject = /** @class */ (function (_super) {
@@ -57,11 +57,13 @@ index 8da004f..28b61b6 100644
          this._initParams();
          this._offsetY = offsetY;
          this.boundaryProcessing(offsetY, this.props.getDistanceFromWindow(), this._windowBound);
-@@ -179,6 +189,7 @@ var StickyObject = /** @class */ (function (_super) {
+@@ -179,6 +189,9 @@ var StickyObject = /** @class */ (function (_super) {
          var _stickyLayoutType = this.props.getLayoutTypeForIndex(this.currentStickyIndex);
          var _extendedState = this.props.getExtendedState();
          var _rowRenderer = this.props.getRowRenderer();
-+        _stickyData.isSticky = true;
++        if(_stickyData) {
++            _stickyData.isSticky = true;
++        }
          if (this.props.overrideRowRenderer) {
              return this.props.overrideRowRenderer(_stickyLayoutType, _stickyData, this.currentStickyIndex, _extendedState);
          }

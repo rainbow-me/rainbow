@@ -22,13 +22,13 @@ const Header = styled(Row).attrs({
 const ListHeader = pure(({
   children,
   contextMenuOptions,
+  isSticky,
   showDivider,
   title,
   titleRenderer,
-  style,
 }) => (
   <Fragment>
-    <Header style={style}>
+    <Header style={{ backgroundColor: isSticky ? 'white' : 'transparent' }}>
       <Row align="center">
         {createElement(titleRenderer, { children: title })}
         {contextMenuOptions && (<ContextMenu {...contextMenuOptions} />)}
