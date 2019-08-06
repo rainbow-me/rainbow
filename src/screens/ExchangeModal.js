@@ -337,6 +337,11 @@ class ExchangeModal extends PureComponent {
                 />
               </Column>
             </FloatingPanel>
+            <Centered>
+              <Text color={colors.white}>
+                Slippage {this.state.slippage}
+              </Text>
+            </Centered>
             <GestureBlocker type='bottom'/>
             {showConfirmButton && (
               <Fragment>
