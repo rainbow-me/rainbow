@@ -34,7 +34,7 @@ const FakeNotchThing = withNeverRerender(() => (
 class ExchangeOutputField extends PureComponent {
   static propTypes = {
     onPressSelectOutputCurrency: PropTypes.func,
-    outputAmount: PropTypes.number,
+    outputAmount: PropTypes.string,
     outputCurrency: PropTypes.string,
     setOutputAmount: PropTypes.func,
   }

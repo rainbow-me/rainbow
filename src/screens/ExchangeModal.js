@@ -18,9 +18,11 @@ import {
   ColumnWithMargins,
 } from '../components/layout';
 import {
+  convertAmountFromNativeDisplay,
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
   convertAmountToRawAmount,
+  convertRawAmountToDecimalFormat,
 } from '../helpers/utilities';
 import {
   withAccountData,
@@ -67,18 +69,18 @@ class ExchangeModal extends PureComponent {
     allAssets: PropTypes.array,
     chainId: PropTypes.number,
     inputAsExactAmount: PropTypes.bool,
-    inputAmount: PropTypes.number,
+    inputAmount: PropTypes.string,
     inputCurrency: PropTypes.object,
     nativeCurrency: PropTypes.string,
     navigation: PropTypes.object,
-    outputAmount: PropTypes.number,
+    outputAmount: PropTypes.string,
     outputCurrency: PropTypes.object,
     showConfirmButton: PropTypes.bool,
   }
 
   state = {
     inputAmount: null,
-    inputCurrency: { address: 'eth', decimals: 18, name: 'Ethereum', symbol: 'ETH' },
+    inputCurrency: ethereumUtils.getAsset(this.props.allAssets),
     // keyboardHeight: 0,
     nativeAmount: null,
     outputAmount: null,
@@ -90,6 +92,13 @@ class ExchangeModal extends PureComponent {
   keyboardHeight = null
 
   inputFieldRef = null
+
+  parseTradeDetails = (path, tradeDetails, decimals) => {
+    const updatedValue = get(tradeDetails, path);
+    const slippage = get(tradeDetails, 'marketRateSlippage');
+    const rawUpdatedValue = convertRawAmountToDecimalFormat(updatedValue, decimals);
+    return { rawUpdatedValue, slippage: slippage.toFixed() };
+  };
 
   getMarketDetails = async () => {
     try {
@@ -103,6 +112,7 @@ class ExchangeModal extends PureComponent {
         outputCurrency,
       } = this.state;
       if (inputCurrency === null || outputCurrency === null) return;
+      if (isNil(inputAmount) && isNil(outputAmount)) return;
       const {
         address: inputCurrencyAddress,
         decimals: inputDecimals,
@@ -111,8 +121,8 @@ class ExchangeModal extends PureComponent {
         address: outputCurrencyAddress,
         decimals: outputDecimals,
       } = outputCurrency;
-      const rawInputAmount = convertAmountToRawAmount(inputAmount, inputDecimals);
-      const rawOutputAmount = convertAmountToRawAmount(outputAmount, outputDecimals);
+      const rawInputAmount = convertAmountToRawAmount(inputAmount || 0, inputDecimals);
+      const rawOutputAmount = convertAmountToRawAmount(outputAmount || 0, outputDecimals);
 
       if (inputCurrencyAddress === 'eth' && outputCurrencyAddress !== 'eth') {
         tradeDetails = inputAsExactAmount
@@ -126,18 +136,11 @@ class ExchangeModal extends PureComponent {
         tradeDetails = inputAsExactAmount
           ? await tradeExactTokensForTokens(inputCurrencyAddress, outputCurrencyAddress, rawInputAmount, chainId)
           : await tradeTokensForExactTokens(inputCurrencyAddress, outputCurrencyAddress, rawOutputAmount, chainId);
-      } if (inputAsExactAmount) {
-        // TODO reuse
-        const updatedValue = get(tradeDetails, 'outputAmount.amount');
-        const slippage = get(tradeDetails, 'marketRateSlippage');
-        const rawUpdatedValue = convertRawAmountToDecimalFormat(updatedValue, outputDecimals);
-        this.setState({ outputAmount: rawUpdatedValue, slippage });
-      } else {
-        const updatedValue = get(tradeDetails, 'inputAmount.amount');
-        const slippage = get(tradeDetails, 'marketRateSlippage');
-        const rawUpdatedValue = convertRawAmountToDecimalFormat(updatedValue, inputDecimals);
-        this.setState({ inputAmount: rawUpdatedValue, slippage });
       }
+      const decimals = inputAsExactAmount ? outputDecimals : inputDecimals;
+      const path = inputAsExactAmount ? 'outputAmount.amount' : 'inputAmount.amount';
+      const { rawUpdatedValue, slippage } = this.parseTradeDetails(path, tradeDetails, decimals);
+      this.setState({ outputAmount: rawUpdatedValue, slippage });
     } catch (error) {
       console.log('error getting market details', error);
       // TODO
@@ -146,26 +149,27 @@ class ExchangeModal extends PureComponent {
 
   setInputAsExactAmount = (inputAsExactAmount) => this.setState({ inputAsExactAmount })
 
-  setNativeAmount = async nativeAmount => {
-    this.setState({ nativeAmount });
+  setNativeAmount = async nativeAmountDisplay => {
+    this.setState({ nativeAmount: nativeAmountDisplay });
+    const nativeAmount = convertAmountFromNativeDisplay(nativeAmountDisplay, this.props.nativeCurrency);
     const inputAmount = convertAmountFromNativeValue(nativeAmount, get(this.state.inputCurrency, 'native.price.amount', 0));
     this.setState({ inputAmount });
-    setInputAsExactAmount(true);
-    await getMarketDetails();
+    this.setInputAsExactAmount(true);
+    await this.getMarketDetails();
   }
 
   setInputAmount = async inputAmount => {
     this.setState({ inputAmount });
     const nativeAmount = convertAmountToNativeAmount(inputAmount, get(this.state.inputCurrency, 'native.price.amount', 0));
     this.setState({ nativeAmount });
-    setInputAsExactAmount(true);
-    await getMarketDetails();
+    this.setInputAsExactAmount(true);
+    await this.getMarketDetails();
   }
 
   setOutputAmount = async outputAmount => {
     this.setState({ outputAmount });
-    setInputAsExactAmount(false);
-    await getMarketDetails();
+    this.setInputAsExactAmount(false);
+    await this.getMarketDetails();
   }
 
   setInputCurrency = inputCurrency => {
