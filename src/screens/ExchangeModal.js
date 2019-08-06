@@ -1,4 +1,5 @@
 import {
+  getExecutionDetails,
   tradeEthForExactTokens,
   tradeExactEthForTokens,
   tradeExactTokensForEth,
@@ -13,6 +14,7 @@ import { TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import { compose, toClass, withProps } from 'recompact';
+import { executeSwap } from '../handlers/uniswap';
 import {
   convertAmountFromNativeDisplay,
   convertAmountFromNativeValue,
@@ -78,6 +80,7 @@ class ExchangeModal extends PureComponent {
     nativeCurrency: PropTypes.string,
     navigation: PropTypes.object,
     pushKeyboardFocusHistory: PropTypes.func,
+    tradeDetails: PropTypes.object,
   }
 
   state = {
@@ -89,6 +92,7 @@ class ExchangeModal extends PureComponent {
     outputCurrency: null,
     showConfirmButton: false,
     slippage: null,
+    tradeDetails: null,
   }
 
   componentDidMount = () => {
@@ -177,6 +181,7 @@ class ExchangeModal extends PureComponent {
       }
       const decimals = inputAsExactAmount ? outputDecimals : inputDecimals;
       const path = inputAsExactAmount ? 'outputAmount.amount' : 'inputAmount.amount';
+      this.setState({ tradeDetails });
       const { rawUpdatedValue, slippage } = this.parseTradeDetails(path, tradeDetails, decimals);
       if (inputAsExactAmount) {
         this.setState({ outputAmount: rawUpdatedValue, slippage });
@@ -254,8 +259,11 @@ class ExchangeModal extends PureComponent {
     });
   }
 
-  handleSubmit = () => {
-    this.props.navigation.navigate('WalletScreen');
+  handleSubmit = async () => {
+    const { tradeDetails } = this.state;
+    const executionDetails = getExecutionDetails(tradeDetails);
+    await executeSwap(executionDetails);
+    this.props.navigation.navigate('ProfileScreen');
   }
 
   handleWillFocus = ({ lastState }) => {
