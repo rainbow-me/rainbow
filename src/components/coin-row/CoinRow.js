@@ -12,7 +12,7 @@ const CoinRowPaddingTop = 15;
 const CoinRowPaddingBottom = 7;
 
 const Container = styled(Row)`
-  ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom, 15)}
+  ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom, 19)}
   background-color: ${colors.white};
   width: 100%;
 `;

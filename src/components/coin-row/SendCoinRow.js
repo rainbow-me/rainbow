@@ -10,10 +10,15 @@ import { Monospace } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
+const containerStyles = css`
+  paddingLeft: 15;
+  paddingTop: 17;
+`;
+
 const selectedHeight = 78;
 
 const selectedStyles = css`
-  ${padding(17, 15, 19, 15)};
+  ${padding(15, 15, 19, 15)};
   height: ${selectedHeight};
 `;
 
@@ -65,7 +70,7 @@ const SendCoinRow = enhance(({
       {...item}
       {...props}
       bottomRowRender={BottomRow}
-      containerStyles={selected ? selectedStyles : null}
+      containerStyles={selected ? selectedStyles : containerStyles}
       selected={selected}
       topRowRender={TopRow}
     />
