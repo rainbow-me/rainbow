@@ -810,6 +810,7 @@
 
 "@ethersproject/logger@>5.0.0-beta.0":
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "5.0.0-beta.128"
   resolved "https://registry.yarnpkg.com/@ethersproject/logger/-/logger-5.0.0-beta.128.tgz#1cfb0447b5aa98ce177d11df3b6a76a0e8783bbf"
   integrity sha512-9sPvKQRtuBmGCH+vnidQg0BvWXccB8HU2G8oOQAkbg9lAzaRwmFe9V4YwkR4raCZQtpQNdcuxYXF0O6o23XjwA==
@@ -826,6 +827,9 @@
 >>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
 =======
   version "5.0.0-beta.128"
+=======
+  version "5.0.0-beta.128"
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
   resolved "https://registry.yarnpkg.com/@ethersproject/logger/-/logger-5.0.0-beta.128.tgz#1cfb0447b5aa98ce177d11df3b6a76a0e8783bbf"
   integrity sha512-9sPvKQRtuBmGCH+vnidQg0BvWXccB8HU2G8oOQAkbg9lAzaRwmFe9V4YwkR4raCZQtpQNdcuxYXF0O6o23XjwA==
 
@@ -833,7 +837,10 @@
   version "5.0.0-beta.130"
   resolved "https://registry.yarnpkg.com/@ethersproject/properties/-/properties-5.0.0-beta.130.tgz#597c2537396943bcd57d68a28a0127c09356cbbf"
   integrity sha512-8gdIFHZR7iBEFNpHw9PK9EXhbH/f2rPrgLCULMjKrmltcbkHgalHMws/L0XcEXiR0aQdwh2/oq1GpF1qq2hPEA==
+<<<<<<< HEAD
 >>>>>>> a3543960... rebase cleanup
+=======
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
   dependencies:
     "@ethersproject/logger" ">5.0.0-beta.0"
 
@@ -845,6 +852,7 @@
     "@ethersproject/bytes" ">5.0.0-beta.0"
 
 "@ethersproject/strings@^5.0.0-beta.125":
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   version "5.0.0-beta.129"
@@ -860,6 +868,11 @@
   resolved "https://registry.yarnpkg.com/@ethersproject/strings/-/strings-5.0.0-beta.129.tgz#065fe106e3c2b9460e14ea6b401861070e91c7bc"
   integrity sha512-jhdHMML3mwjRfYjFqC61VvAzHCCsJwNcehho8MQoa2b5GaCYzFPA5aT+bxjjnDqTYl9ojeNHXweiGvqnCvvunQ==
 >>>>>>> a3543960... rebase cleanup
+=======
+  version "5.0.0-beta.129"
+  resolved "https://registry.yarnpkg.com/@ethersproject/strings/-/strings-5.0.0-beta.129.tgz#065fe106e3c2b9460e14ea6b401861070e91c7bc"
+  integrity sha512-jhdHMML3mwjRfYjFqC61VvAzHCCsJwNcehho8MQoa2b5GaCYzFPA5aT+bxjjnDqTYl9ojeNHXweiGvqnCvvunQ==
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
   dependencies:
     "@ethersproject/bytes" ">5.0.0-beta.0"
     "@ethersproject/constants" ">5.0.0-beta.0"
@@ -1097,6 +1110,7 @@
 
 "@react-native-community/cli-platform-android@^2.7.0":
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.8.3.tgz#097237769d69400ceaf254a780d645bb8284acd6"
   integrity sha512-I0/knJYmyMgp1IkrgvgirifArnarFvm+EvrRKVQjEO0aEXhOjVU2DA7TshdjocZhjq1leKm/bSxz8D3WHpRJ9g==
@@ -1120,6 +1134,11 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.8.3.tgz#097237769d69400ceaf254a780d645bb8284acd6"
   integrity sha512-I0/knJYmyMgp1IkrgvgirifArnarFvm+EvrRKVQjEO0aEXhOjVU2DA7TshdjocZhjq1leKm/bSxz8D3WHpRJ9g==
 >>>>>>> bdd78363... podfile lock for text input mask
+=======
+  version "2.8.3"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.8.3.tgz#097237769d69400ceaf254a780d645bb8284acd6"
+  integrity sha512-I0/knJYmyMgp1IkrgvgirifArnarFvm+EvrRKVQjEO0aEXhOjVU2DA7TshdjocZhjq1leKm/bSxz8D3WHpRJ9g==
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
   dependencies:
     "@react-native-community/cli-tools" "^2.8.3"
     chalk "^2.4.2"
@@ -1130,6 +1149,7 @@
     xmldoc "^1.1.2"
 
 "@react-native-community/cli-platform-ios@^2.8.0":
+<<<<<<< HEAD
 <<<<<<< HEAD
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.8.3.tgz#2d77bf5c6fde753d7c675fd94f656f78c0d5f741"
@@ -1154,6 +1174,11 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.8.3.tgz#2d77bf5c6fde753d7c675fd94f656f78c0d5f741"
   integrity sha512-r2+xa4trWubLRqXvotYtDIFzQpepSwo9Zsjt0JT96BUJLdXNzsUSwTFZW2EmLPmnJiZJRNdWvoXaBYVqDthdTQ==
 >>>>>>> bdd78363... podfile lock for text input mask
+=======
+  version "2.8.3"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.8.3.tgz#2d77bf5c6fde753d7c675fd94f656f78c0d5f741"
+  integrity sha512-r2+xa4trWubLRqXvotYtDIFzQpepSwo9Zsjt0JT96BUJLdXNzsUSwTFZW2EmLPmnJiZJRNdWvoXaBYVqDthdTQ==
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
   dependencies:
     "@react-native-community/cli-tools" "^2.8.3"
     chalk "^2.4.2"
@@ -1161,12 +1186,16 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> a3543960... rebase cleanup
+=======
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
 "@react-native-community/cli-tools@^2.7.0", "@react-native-community/cli-tools@^2.8.3":
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.8.3.tgz#0e2249f48cf4603fb8d740a9f0715c31ac131ceb"
   integrity sha512-N5Pz+pR+GFq3JApjd0SW4jp9KC7kbKsMH65QLRh30JNsxdPvNkYox6/ZZdkvdXaI5ev3EckR7eqlcwi5gpVTYQ==
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 "@react-native-community/cli-tools@^2.0.0-rc.2", "@react-native-community/cli-tools@^2.7.0":
@@ -1193,6 +1222,8 @@
 >>>>>>> 25875d99... fix conflicts after rebasing over latest wallet-zero branch
 =======
 >>>>>>> a3543960... rebase cleanup
+=======
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
   dependencies:
     chalk "^2.4.2"
     lodash "^4.17.5"
@@ -1550,6 +1581,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "12.7.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.7.1.tgz#3b5c3a26393c19b400844ac422bd0f631a94d69d"
   integrity sha512-aK9jxMypeSrhiYofWWBf/T7O+KwaiAHzM4sveCdWPn71lzUSMimRnKzhXDKfKwV1kWoBo2P1aGgaIYGLf9/ljw==
@@ -1576,6 +1608,16 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.14.tgz#a47955df2acf76ba7f0ac3b205d325da193dc9ad"
   integrity sha512-xXD08vZsvpv4xptQXj1+ky22f7ZoKu5ZNI/4l+/BXG3X+XaeZsmaFbbTKuhSE3NjjvRuZFxFf9sQBMXIcZNFMQ==
 >>>>>>> a3543960... rebase cleanup
+=======
+  version "12.6.9"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.6.9.tgz#ffeee23afdc19ab16e979338e7b536fdebbbaeaf"
+  integrity sha512-+YB9FtyxXGyD54p8rXwWaN1EWEyar5L58GlGWgtH2I9rGmLGBQcw63+0jw+ujqVavNuO47S1ByAjm9zdHMnskw==
+
+"@types/node@^10.3.2":
+  version "10.14.14"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.14.tgz#a47955df2acf76ba7f0ac3b205d325da193dc9ad"
+  integrity sha512-xXD08vZsvpv4xptQXj1+ky22f7ZoKu5ZNI/4l+/BXG3X+XaeZsmaFbbTKuhSE3NjjvRuZFxFf9sQBMXIcZNFMQ==
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
 
 "@types/node@^8.0.7":
   version "8.10.51"
@@ -1659,6 +1701,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 "@walletconnect/core@^1.0.0-beta.31":
@@ -1678,10 +1721,13 @@
     lodash.clonedeepwith "^4.5.0"
 
 >>>>>>> a1921ad8... further sdk hookup
+=======
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
 "@walletconnect/core@^1.0.0-beta.32":
   version "1.0.0-beta.32"
   resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.32.tgz#e8125a877ab809bd2d74c7c03a07ad70401f9c34"
   integrity sha512-CvDQ+vupPbEvrGFwZOwTANeT1bz+c6TSkkOxo5lXz+DotxbZpQqL3tsFuaenTuVL7AqvNH2RARgA5Ez2HSjNaA==
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -1689,6 +1735,8 @@
 >>>>>>> a1921ad8... further sdk hookup
 =======
 >>>>>>> a3543960... rebase cleanup
+=======
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
   dependencies:
     "@walletconnect/types" "^1.0.0-beta.32"
     "@walletconnect/utils" "^1.0.0-beta.32"
@@ -2799,6 +2847,7 @@ caniuse-lite@^1.0.30000980, caniuse-lite@^1.0.30000984:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.0.30000989"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000989.tgz#b9193e293ccf7e4426c5245134b8f2a56c0ac4b9"
   integrity sha512-vrMcvSuMz16YY6GSVZ0dWDTJP8jqk3iFQ/Aq5iqblPwxSVVZI+zxDyTX0VPqtQsDnfdrBDcsmhgTEOh5R8Lbpw==
@@ -2823,6 +2872,11 @@ caniuse-lite@^1.0.30000980, caniuse-lite@^1.0.30000981:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000988.tgz#742f35ec1b8b75b9628d705d7652eea1fef983db"
   integrity sha512-lPj3T8poYrRc/bniW5SQPND3GRtSrQdUM/R4mCYTbZxyi3jQiggLvZH4+BYUuX0t4TXjU+vMM7KFDQg+rSzZUQ==
 >>>>>>> a3543960... rebase cleanup
+=======
+  version "1.0.30000989"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000989.tgz#b9193e293ccf7e4426c5245134b8f2a56c0ac4b9"
+  integrity sha512-vrMcvSuMz16YY6GSVZ0dWDTJP8jqk3iFQ/Aq5iqblPwxSVVZI+zxDyTX0VPqtQsDnfdrBDcsmhgTEOh5R8Lbpw==
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -3826,11 +3880,15 @@ ee-first@1.1.1:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
 ejs@^2.6.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/ejs/-/ejs-2.6.2.tgz#3a32c63d1cd16d11266cd4703b14fec4e74ab4f6"
   integrity sha512-PcW2a0tyTuPHz3tWyYqtK6r1fZ3gp+3Sop8Ph+ZYN81Ob5rwmbHEzaqs10N3BEsaGTkh/ooniXK+WwszGlc2+Q==
 
+<<<<<<< HEAD
 electron-to-chromium@^1.3.191:
   version "1.3.221"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.221.tgz#421a58ac8d1931c8df400d55c7f6fd621710da10"
@@ -3878,6 +3936,12 @@ electron-to-chromium@^1.3.188:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.214.tgz#8b5b9a0415fd41b69c61f694007597cb8c8eb7e8"
   integrity sha512-SU9yyql6uA0Fc8bWR7sCYNGBtxkC+tQb6UaC7ReaadN42Kx7Ka+dzx3lAIm9Ock+ULEawJuTFcVB2x34uOCg0Q==
 >>>>>>> a3543960... rebase cleanup
+=======
+electron-to-chromium@^1.3.191:
+  version "1.3.215"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.215.tgz#c833cb31110c2e0a7dade1110648c2174f75233b"
+  integrity sha512-ZV3OnwF0FlIygwxAG2H92yt7WGjWBpawyFAFu8e9k7xJatY+BPowID0D0Bs3PMACYAJATEejw/I9cawO27ZvTg==
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -3966,6 +4030,7 @@ entities@^1.1.1:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 entities@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/entities/-/entities-2.0.0.tgz#68d6084cab1b079767540d80e56a39b423e4abf4"
@@ -3981,6 +4046,8 @@ envinfo@^5.7.0:
 =======
 =======
 >>>>>>> bdd78363... podfile lock for text input mask
+=======
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
 entities@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/entities/-/entities-2.0.0.tgz#68d6084cab1b079767540d80e56a39b423e4abf4"
@@ -5471,6 +5538,7 @@ i18n-js@^3.0.11:
 i18next@^17.0.3:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "17.0.10"
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.10.tgz#8f92ec815d84dc0a0752e8114dc22e1861522d71"
   integrity sha512-EUsx6LGXA6m2bTKUtPHHBVhE1v48y0cHKCWP7c9cUfnAu3ZBpWYPy5QkrC3ppV+BByJP3Zww9c9hhtfgnOpGBg==
@@ -5484,6 +5552,11 @@ i18next@^17.0.3:
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.8.tgz#0c7113a88ad156eb37b9025d83a7684e1bbc2e18"
   integrity sha512-oojOrqEPQzKo1HDMDDOl19zTM/EaDwBRPobUSD4kEjNoTi2oERvUbngK2lkIm9nOGddh55jbMGbm6fusMBeoKQ==
 >>>>>>> a3543960... rebase cleanup
+=======
+  version "17.0.9"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.9.tgz#5f835e91a34fa5e7da1e5ae4c4586c81d7c4b17f"
+  integrity sha512-fCYpm3TDzcfPIPN3hmgvC/QJx17QHI+Ul88qbixwIrifN9nBmk2c2oVxVYSDxnV5FgBXZJJ0O4yBYiZ8v1bX2A==
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
   dependencies:
     "@babel/runtime" "^7.3.1"
 
@@ -9068,9 +9141,15 @@ postcss-value-parser@^3.3.0, postcss-value-parser@^3.3.1:
   integrity sha512-pISE66AbVkp4fDQ7VHBwRNXzAAKJjw4Vw7nWI/+Q3vuly7SNfgYXvm6i5IgFylHGK5sP/xHAbB7N49OS4gWNyQ==
 
 postcss-value-parser@^4.0.0:
+<<<<<<< HEAD
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/postcss-value-parser/-/postcss-value-parser-4.0.2.tgz#482282c09a42706d1fc9a069b73f44ec08391dc9"
   integrity sha512-LmeoohTpp/K4UiyQCwuGWlONxXamGzCMtFxLq4W1nZVGIQLYvMCJx3yAF9qyyuFpflABI9yVdtJAqbihOsCsJQ==
+=======
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/postcss-value-parser/-/postcss-value-parser-4.0.1.tgz#e3f6172cc91302912c89da55a42454025485250f"
+  integrity sha512-3Jk+/CVH0HBfgSSFWALKm9Hyzf4kumPjZfUxkRYZNcqFztELb2APKxv0nlX8HCdc1/ymePmT/nFf1ST6fjWH2A==
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
 
 postcss@^7.0.0, postcss@^7.0.1, postcss@^7.0.13, postcss@^7.0.14, postcss@^7.0.17, postcss@^7.0.2, postcss@^7.0.7:
   version "7.0.17"
@@ -9485,6 +9564,7 @@ react-native-crypto@^2.1.2:
 react-native-device-info@^2.1.3:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-2.3.2.tgz#db2b8f135aaf2515583e367ab791dcc7d2f0d14c"
   integrity sha512-ccpPuUbwhw5uYdVwN1UJp6ykMZz6U/u82HNM3oJ7O6MP8RIMlMDkHbqR4O0sDtUSuRMGiqqRzFtmOLFYeQ0ODw==
@@ -9504,6 +9584,11 @@ react-native-device-info@^2.1.3:
   resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-2.3.2.tgz#db2b8f135aaf2515583e367ab791dcc7d2f0d14c"
   integrity sha512-ccpPuUbwhw5uYdVwN1UJp6ykMZz6U/u82HNM3oJ7O6MP8RIMlMDkHbqR4O0sDtUSuRMGiqqRzFtmOLFYeQ0ODw==
 >>>>>>> a3543960... rebase cleanup
+=======
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-2.3.2.tgz#db2b8f135aaf2515583e367ab791dcc7d2f0d14c"
+  integrity sha512-ccpPuUbwhw5uYdVwN1UJp6ykMZz6U/u82HNM3oJ7O6MP8RIMlMDkHbqR4O0sDtUSuRMGiqqRzFtmOLFYeQ0ODw==
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
 
 react-native-dotenv@^0.2.0:
   version "0.2.0"
@@ -9704,6 +9789,7 @@ react-native-store-review@^0.1.5:
 react-native-svg@^9.5.3:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "9.6.2"
   resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.6.2.tgz#e29b626f115230e0f0f3693887f36e60b5b01408"
   integrity sha512-TwTEkGTe2aRh1VBemFIuc6bCvPmlVUAd2kk4HmZLuxyBDAzEAbWYFsvDSkGd9mZ06ghx1gDg+c0hrH3y0q/eDA==
@@ -9717,6 +9803,11 @@ react-native-svg@^9.5.3:
   resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.6.1.tgz#4d2ba1e7ecd78d06603e8bf2fbc5072fc5852506"
   integrity sha512-X8WvZ5uNHyE+17Q4SSbdQZ1NsRyRxdvAFqipqDldL6D0oUB0pBI2tekx03N4taVtVN+p8Pg3T3SSmIxwXZmMYA==
 >>>>>>> bdd78363... podfile lock for text input mask
+=======
+  version "9.6.2"
+  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.6.2.tgz#e29b626f115230e0f0f3693887f36e60b5b01408"
+  integrity sha512-TwTEkGTe2aRh1VBemFIuc6bCvPmlVUAd2kk4HmZLuxyBDAzEAbWYFsvDSkGd9mZ06ghx1gDg+c0hrH3y0q/eDA==
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
 
 react-native-tab-view@^1.2.0, react-native-tab-view@^1.4.1:
   version "1.4.1"
@@ -9745,10 +9836,14 @@ react-native-tcp@^3.3.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
 react-native-text-input-mask@^1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/react-native-text-input-mask/-/react-native-text-input-mask-1.0.6.tgz#21ca0c1886f5b547e9f6594ba2f4bb50d39fe3a1"
   integrity sha512-pCTYEnqiKw1F9VuEwxOt42Roaigilpp0xjb2JhjIeuVlc6Cvf9IqA+vzAXLJTOzoxImOOAasGxrZpTgdFYMvOQ==
+<<<<<<< HEAD
 =======
 react-native-text-input-mask@^1.0.1:
 <<<<<<< HEAD
@@ -9773,6 +9868,8 @@ react-native-text-input-mask@1.0.4:
   resolved "https://registry.yarnpkg.com/react-native-text-input-mask/-/react-native-text-input-mask-1.0.4.tgz#0fd644eaca9c9f29553841e15a3fc3a90a602552"
   integrity sha512-RBXj84y/fgOt5rRl0XBLr3eGcNSEZhT/vug0I6Ysa7M1uByNRxDGZE6VRNXtzFkh4ZD9Ysov6MfChU3m8y0JIA==
 >>>>>>> bdd78363... podfile lock for text input mask
+=======
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
 
 react-native-tooltip@^5.2.0:
   version "5.2.0"
@@ -11728,6 +11825,7 @@ tslib@^1.8.1, tslib@^1.9.0:
 
 tsutils@^3.7.0:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "3.17.1"
   resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-3.17.1.tgz#ed719917f11ca0dee586272b2ac49e015a2dd759"
   integrity sha512-kzeQ5B8H3w60nFY2g8cJIuH7JDpsALXySGtwGJ0p2LSjLgay3NdIpqq5SoOBe46bKDW2iq25irHCr8wjomUS2g==
@@ -11736,6 +11834,11 @@ tsutils@^3.7.0:
   resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-3.15.0.tgz#3efabbf2c18a5d7c7496a878be0609eb90897ed6"
   integrity sha512-or184xKZ6fLE1SrDcvsOs3Wkfb1JgizdKs5Fiag3cp/m9k7C7GWd4E7gs3K5LHAePaIP7K62C20ZZI3JQx8iBQ==
 >>>>>>> a3543960... rebase cleanup
+=======
+  version "3.17.0"
+  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-3.17.0.tgz#c3ccab927a475aa2beef6a3695c2ff76da13cdf8"
+  integrity sha512-fyveWOtAXfumAxIqkcMHuPaaVyLBKjB8Y00ANZkqh+HITBAQscCbQIHwwBTJdvQq7RykLEbOPcUUnJ16X4NA0g==
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
   dependencies:
     tslib "^1.8.1"
 
@@ -12353,6 +12456,7 @@ xmldoc@^1.1.2:
   dependencies:
     sax "^1.2.1"
 
+<<<<<<< HEAD
 xmldoc@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/xmldoc/-/xmldoc-1.1.2.tgz#6666e029fe25470d599cd30e23ff0d1ed50466d7"
@@ -12360,6 +12464,8 @@ xmldoc@^1.1.2:
   dependencies:
     sax "^1.2.1"
 
+=======
+>>>>>>> b1697d93... Cleanup ButtonPressAnimation
 xmldom@0.1.x:
   version "0.1.27"
   resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.1.27.tgz#d501f97b3bdb403af8ef9ecc20573187aadac0e9"

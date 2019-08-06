@@ -86,6 +86,11 @@ export default class ExchangeCoinRow extends PureComponent {
           bottomRowRender={BottomRow}
           topRowRender={TopRow}
         >
+          {/*
+          TODO
+          XXX
+
+           Is this View necessary?????*/}
           <View>
             <ButtonPressAnimation
               onPress={this.handleToggleFavorite}
