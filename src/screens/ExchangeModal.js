@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { KeyboardAvoidingView, View } from 'react-native';
@@ -29,7 +29,7 @@ import {
   withNeverRerender,
 } from '../hoc';
 import { colors, padding, position } from '../styles';
-import { deviceUtils, safeAreaInsetValues } from '../utils';
+import { deviceUtils, ethereumUtils, safeAreaInsetValues } from '../utils';
 import FloatingPanels from '../components/expanded-state/FloatingPanels';
 import FloatingPanel from '../components/expanded-state/FloatingPanel';
 import { Text } from '../components/text';
@@ -77,7 +77,7 @@ class ExchangeModal extends PureComponent {
 
   state = {
     inputAmount: null,
-    inputCurrency: 'ETH',
+    inputCurrency: { address: 'eth', decimals: 18, name: 'Ethereum', symbol: 'ETH' },
     // keyboardHeight: 0,
     nativeAmount: null,
     outputAmount: null,
@@ -170,7 +170,7 @@ class ExchangeModal extends PureComponent {
   setInputCurrency = inputCurrency => {
     const previousInputCurrency = this.inputCurrency;
     this.setState({ inputCurrency });
-    if (inputCurrency.address === this.outputCurrency.address) {
+    if (inputCurrency && this.outputCurrency && inputCurrency.address === this.outputCurrency.address) {
       if (this.outputCurrency !== null
           && previousInputCurrency !== null) {
         this.setOutputCurrency(previousInputCurrency);
@@ -181,12 +181,11 @@ class ExchangeModal extends PureComponent {
   }
 
   setOutputCurrency = outputCurrency => {
-    // TODO check that it is valid input currency
     const previousOutputCurrency = this.outputCurrency;
-    this.setState({ outputCurrency })
-    if (outputCurrency.address === this.inputCurrency.address) {
-      if (this.inputCurrency !== null
-          && previousOutputCurrency !== null) {
+    this.setState({ outputCurrency });
+    if (outputCurrency && this.inputCurrency && outputCurrency.address === this.inputCurrency.address) {
+      const asset = ethereumUtils.getAsset(this.props.allAssets, address);
+      if (this.inputCurrency !== null && previousOutputCurrency !== null && !isNil(asset)) {
         this.setInputCurrency(previousOutputCurrency);
       } else {
         this.setInputCurrency(null);
@@ -273,7 +272,7 @@ class ExchangeModal extends PureComponent {
                   <ExchangeInputField
                     autoFocus={true}
                     inputAmount={inputAmount}
-                    inputCurrency={inputCurrency}
+                    inputCurrency={get(inputCurrency, 'symbol', null)}
                     nativeAmount={nativeAmount}
                     onPressSelectInputCurrency={this.handleSelectInputCurrency}
                     refInput={this.handleInputFieldRef}
@@ -283,7 +282,7 @@ class ExchangeModal extends PureComponent {
                   <ExchangeOutputField
                     onPressSelectOutputCurrency={this.handleSelectOutputCurrency}
                     outputAmount={outputAmount}
-                    outputCurrency={outputCurrency}
+                    outputCurrency={get(outputCurrency, 'symbol', null)}
                     setOutputAmount={this.setOutputAmount}
                   />
                 </Column>

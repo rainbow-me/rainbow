@@ -20,7 +20,7 @@ export default class ExchangeInputField extends Component {
     inputCurrency: PropTypes.string,
     nativeAmount: PropTypes.string,
     onPressMaxBalance: PropTypes.func,
-    onPressSelectInputCurrency: PropTypes.string,
+    onPressSelectInputCurrency: PropTypes.func,
     setInputAmount: PropTypes.func,
     setNativeAmount: PropTypes.func,
   }
