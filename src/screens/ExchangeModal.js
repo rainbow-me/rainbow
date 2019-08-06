@@ -69,6 +69,7 @@ class ExchangeModal extends PureComponent {
     inputAsExactAmount: PropTypes.bool,
     inputAmount: PropTypes.number,
     inputCurrency: PropTypes.object,
+    nativeCurrency: PropTypes.string,
     navigation: PropTypes.object,
     outputAmount: PropTypes.number,
     outputCurrency: PropTypes.object,
@@ -147,7 +148,7 @@ class ExchangeModal extends PureComponent {
 
   setNativeAmount = async nativeAmount => {
     this.setState({ nativeAmount });
-    const inputAmount = convertAmountFromNativeValue(nativeAmount, get(this.inputCurrency, 'native.price.amount', 0));
+    const inputAmount = convertAmountFromNativeValue(nativeAmount, get(this.state.inputCurrency, 'native.price.amount', 0));
     this.setState({ inputAmount });
     setInputAsExactAmount(true);
     await getMarketDetails();
@@ -155,7 +156,7 @@ class ExchangeModal extends PureComponent {
 
   setInputAmount = async inputAmount => {
     this.setState({ inputAmount });
-    const nativeAmount = convertAmountToNativeAmount(inputAmount, get(this.inputCurrency, 'native.price.amount', 0));
+    const nativeAmount = convertAmountToNativeAmount(inputAmount, get(this.state.inputCurrency, 'native.price.amount', 0));
     this.setState({ nativeAmount });
     setInputAsExactAmount(true);
     await getMarketDetails();
@@ -168,10 +169,10 @@ class ExchangeModal extends PureComponent {
   }
 
   setInputCurrency = inputCurrency => {
-    const previousInputCurrency = this.inputCurrency;
+    const previousInputCurrency = this.state.inputCurrency;
     this.setState({ inputCurrency });
-    if (inputCurrency && this.outputCurrency && inputCurrency.address === this.outputCurrency.address) {
-      if (this.outputCurrency !== null
+    if (inputCurrency && this.state.outputCurrency && inputCurrency.address === this.state.outputCurrency.address) {
+      if (this.state.outputCurrency !== null
           && previousInputCurrency !== null) {
         this.setOutputCurrency(previousInputCurrency);
       } else {
@@ -181,11 +182,11 @@ class ExchangeModal extends PureComponent {
   }
 
   setOutputCurrency = outputCurrency => {
-    const previousOutputCurrency = this.outputCurrency;
+    const previousOutputCurrency = this.state.outputCurrency;
     this.setState({ outputCurrency });
-    if (outputCurrency && this.inputCurrency && outputCurrency.address === this.inputCurrency.address) {
+    if (outputCurrency && this.state.inputCurrency && outputCurrency.address === this.state.inputCurrency.address) {
       const asset = ethereumUtils.getAsset(this.props.allAssets, address);
-      if (this.inputCurrency !== null && previousOutputCurrency !== null && !isNil(asset)) {
+      if (this.state.inputCurrency !== null && previousOutputCurrency !== null && !isNil(asset)) {
         this.setInputCurrency(previousOutputCurrency);
       } else {
         this.setInputCurrency(null);
@@ -236,7 +237,7 @@ class ExchangeModal extends PureComponent {
   }
 
   render = () => {
-    const { onPressConfirmExchange } = this.props;
+    const { nativeCurrency, onPressConfirmExchange } = this.props;
 
     const {
       inputAmount,
@@ -273,6 +274,7 @@ class ExchangeModal extends PureComponent {
                     autoFocus={true}
                     inputAmount={inputAmount}
                     inputCurrency={get(inputCurrency, 'symbol', null)}
+                    nativeCurrency={nativeCurrency}
                     nativeAmount={nativeAmount}
                     onPressSelectInputCurrency={this.handleSelectInputCurrency}
                     refInput={this.handleInputFieldRef}

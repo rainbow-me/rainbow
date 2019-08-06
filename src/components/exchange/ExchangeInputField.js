@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { TouchableWithoutFeedback } from 'react-native';
+import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { colors, fonts } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { CoolButton } from '../buttons';
@@ -19,6 +20,7 @@ export default class ExchangeInputField extends Component {
     inputAmount: PropTypes.string,
     inputCurrency: PropTypes.string,
     nativeAmount: PropTypes.string,
+    nativeCurrency: PropTypes.string,
     onPressMaxBalance: PropTypes.func,
     onPressSelectInputCurrency: PropTypes.func,
     setInputAmount: PropTypes.func,
@@ -54,14 +56,14 @@ export default class ExchangeInputField extends Component {
       inputAmount,
       inputCurrency,
       nativeAmount,
+      nativeCurrency,
       onPressMaxBalance,
       onPressSelectInputCurrency,
       setInputAmount,
       setNativeAmount,
     } = this.props;
 
-
-    // mask="[0...][-][9...]"
+    const { mask, placeholder } = supportedNativeCurrencies[nativeCurrency];
 
     return (
       <ColumnWithMargins flex={0} margin={14.5} width="100%">
@@ -98,9 +100,9 @@ export default class ExchangeInputField extends Component {
           <ExchangeInput
             fontSize={fonts.size.large}
             inputRef={this.handleDollarRef}
-            mask="{$}[099999999999]{.}[00]"
+            mask={mask}
             onChangeText={setNativeAmount}
-            placeholder="$0.00"
+            placeholder={placeholder}
             style={{ paddingBottom: this.padding }}
             value={nativeAmount}
           />
