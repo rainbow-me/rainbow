@@ -104,7 +104,7 @@ export default class RoundButtonSizeToggler extends React.Component {
           borderBottomRightRadius: 15,
           borderTopRightRadius: 15,
           height: 30,
-          marginLeft: -10,
+          marginLeft: -11,
           transform: [
             { translateX: this.props.animationNode ? multiply(-100, sub(1, add(multiply(this.props.animationNode, (this.props.endingWidth / 100 - this.props.startingWidth / 100)), this.props.startingWidth / 100))) : -1 * (95 - (this.props.startingWidth / 100)) },
           ],
