@@ -102,6 +102,7 @@
     "react-native-version-number": "^0.3.6",
     "react-navigation": "^3.11.1",
     "react-navigation-stack": "^2.0.0-alpha.9",
+    "react-navigation-tabs": "^2.3.0",
     "react-primitives": "^0.8.0",
     "react-redux": "^5.0.7",
     "react-spring": "^5.7.2",

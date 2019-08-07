@@ -33,8 +33,8 @@ export default class ExchangeInput extends PureComponent {
       mask,
       onChangeText,
       placeholder,
-      refInput,
       placeholderTextColor,
+      refInput,
       style,
       value,
     } = this.props;

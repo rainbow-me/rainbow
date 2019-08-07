@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
 import React from 'react';
+import Animated from 'react-native-reanimated';
 import {
   createAppContainer,
   createMaterialTopTabNavigator,
@@ -68,40 +69,54 @@ const SwipeStack = createMaterialTopTabNavigator({
   tabBarComponent: null,
 });
 
-const ExchangeModalNavigator = createMaterialTopTabNavigator({
-  MainExchangeScreen: {
-    screen: ExchangeModal,
-  },
-  // eslint-disable-next-line sort-keys
+const ExchangeModalTabPosition = new Animated.Value(0);
+
+const ExchangeModalNavigator = newTopTabNavigator({
   CurrencySelectScreen: {
+    params: {
+      position: ExchangeModalTabPosition,
+    },
     screen: CurrencySelectModal,
   },
+  MainExchangeScreen: {
+    params: {
+      position: ExchangeModalTabPosition,
+    },
+    screen: ExchangeModal,
+  },
 }, {
+  disableKeyboardHandling: true,
   headerMode: 'none',
   initialLayout: deviceUtils.dimensions,
-  keyboardDismissMode: 'none',
+  keyboardDismissMode: 'on-drag',
+  keyboardShouldPersistTaps: 'always',
   mode: 'modal',
+  onTransitionEnd,
+  onTransitionStart,
+  position: ExchangeModalTabPosition,
   springConfig: {
-    damping: 16,
-    mass: 0.3,
+    damping: 40,
+    mass: 1,
     overshootClamping: false,
-    restDisplacementThreshold: 1,
-    restSpeedThreshold: 1,
-    stiffness: 140,
+    restDisplacementThreshold: 0.01,
+    restSpeedThreshold: 0.01,
+    stiffness: 300,
   },
+  swipeDistanceMinimum: 0,
+  swipeVelocityImpact: 1,
+  swipeVelocityScale: 1,
   tabBarComponent: null,
   transparentCard: true,
 });
 
 // I need it for changing navigationOptions dynamically
 // for preventing swipe down to close on CurrencySelectScreen
-const EnhancedExchangeModalNavigator = props => <ExchangeModalNavigator {...props} />; // React.memo();
+const EnhancedExchangeModalNavigator = React.memo(props => <ExchangeModalNavigator {...props} />);
 EnhancedExchangeModalNavigator.router = ExchangeModalNavigator.router;
 EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => ({
   ...navigation.state.params,
   gesturesEnabled: !get(navigation, 'state.params.isGestureBlocked'),
 });
-
 
 const MainNavigator = createStackNavigator({
   ConfirmRequest: {

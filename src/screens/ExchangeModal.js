@@ -1,33 +1,46 @@
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
-import { KeyboardAvoidingView, View } from 'react-native';
-import { compose, withProps } from 'recompact';
-import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import {
-  Centered,
-  Column,
-  ColumnWithMargins,
-} from '../components/layout';
+  Dimensions,
+  InteractionManager,
+  Keyboard,
+  KeyboardAvoidingView,
+  TextInput,
+  View,
+} from 'react-native';
+import { compose, toClass, withProps } from 'recompact';
+import Animated from 'react-native-reanimated';
+import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import {
   withAccountData,
   withBlockedHorizontalSwipe,
+  withKeyboardFocusHistory,
   withNeverRerender,
+  withTransitionProps,
 } from '../hoc';
 import { colors, padding, position } from '../styles';
 import { deviceUtils, safeAreaInsetValues } from '../utils';
-import FloatingPanels from '../components/expanded-state/FloatingPanels';
-import FloatingPanel from '../components/expanded-state/FloatingPanel';
-import { Text } from '../components/text';
 import {
   ConfirmExchangeButton,
   ExchangeGasFeeButton,
   ExchangeInputField,
   ExchangeOutputField,
 } from '../components/exchange';
+import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
 import GestureBlocker from '../components/GestureBlocker';
+import {
+  Centered,
+  Column,
+  ColumnWithMargins,
+  KeyboardFixedOpenLayout,
+} from '../components/layout';
 import { SheetHandle } from '../components/sheet';
+import { Text } from '../components/text';
 
 export const exchangeModalBorderRadius = 30;
+
+const AnimatedFloatingPanels = Animated.createAnimatedComponent(toClass(FloatingPanels));
 
 const ExchangeModalHeader = withNeverRerender(() => (
   <ColumnWithMargins
@@ -49,25 +62,63 @@ const ExchangeModalHeader = withNeverRerender(() => (
 
 class ExchangeModal extends PureComponent {
   static propTypes = {
+    clearKeyboardFocusHistory: PropTypes.func,
     inputAmount: PropTypes.number,
+    keyboardFocusHistory: PropTypes.array,
     navigation: PropTypes.object,
     outputAmount: PropTypes.number,
+    pushKeyboardFocusHistory: PropTypes.func,
     showConfirmButton: PropTypes.bool,
   }
 
   state = {
     inputAmount: null,
     inputCurrency: 'ETH',
-    // keyboardHeight: 0,
     nativeAmount: null,
     outputAmount: null,
     outputCurrency: null,
     showConfirmButton: false,
   }
 
-  keyboardHeight = null
+  componentDidMount = () => {
+    // console.log('componentDidMount dangerouslyGetParent', this.props.navigation.dangerouslyGetParent())
+    // console.log('this.props.navigation', this.props.navigation);
+  }
+
+  componentDidUpdate = (prevProps) => {
+    const {
+      isFocused,
+      keyboardFocusHistory,
+      transitionProps: { isTransitioning },
+    } = this.props;
+
+    const prevTransitioning = get(prevProps, 'transitionProps.isTransitioning');
+
+    if (isFocused && (!isTransitioning && prevTransitioning)) {
+      const lastFocusedInput = keyboardFocusHistory[keyboardFocusHistory.length - 2];
+
+      if (lastFocusedInput) {
+        TextInput.State.focusTextInput(lastFocusedInput);
+      } else {
+        // console.log('ELSE')
+        // this.inputFieldRef.focus();
+      }
+    }
+
+    if (this.state.outputCurrency) {
+      this.setState({ showConfirmButton: true });
+    }
+  }
+
+  componentWillUnmount = () => {
+    this.props.clearKeyboardFocusHistory();
+  }
 
   inputFieldRef = null
+
+  nativeFieldRef = null
+
+  outputFieldRef = null
 
   setInputAmount = inputAmount => this.setState({ inputAmount })
 
@@ -81,14 +132,12 @@ class ExchangeModal extends PureComponent {
 
   handleSelectInputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
-      keyboardHeight: this.keyboardHeight,
       onSelectCurrency: this.setInputCurrency,
     });
   }
 
   handleSelectOutputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
-      keyboardHeight: this.keyboardHeight,
       onSelectCurrency: this.setOutputCurrency,
     });
   }
@@ -97,30 +146,38 @@ class ExchangeModal extends PureComponent {
     this.props.navigation.navigate('WalletScreen');
   }
 
-  handleWillFocus = () => {
-    if (this.state.outputCurrency) {
-      this.setState({ showConfirmButton: true });
+  handleWillFocus = ({ lastState }) => {
+
+    if (!lastState && this.inputFieldRef) {
+      return this.inputFieldRef.focus();
     }
   }
 
-  handleInputFieldRef = (ref) => {
-    this.inputFieldRef = ref;
-  }
+  handleInputFieldRef = (ref) => { this.inputFieldRef = ref; }
+
+  handleNativeFieldRef = (ref) => { this.nativeFieldRef = ref; }
+
+  handleOutputFieldRef = (ref) => { this.outputFieldRef = ref; }
 
   handleDidFocus = () => {
-    if (this.inputFieldRef) {
-      // setTimeout(() => this.inputFieldRef.focus(), 500);
-    }
+    // console.log('DID FOCUS', this.props.navigation)
+
+    // if (this.inputFieldRef) {
+    //   setTimeout(() => this.inputFieldRef.focus(), 250);
+    // }
   }
 
-  lolThing = ({ nativeEvent: { layout } }) => {
-    if (!this.keyboardHeight) {
-      this.keyboardHeight = deviceUtils.dimensions.height - layout.height;// - safeAreaInsetValues.bottom;
-    }
+  handleFocusField = ({ currentTarget }) => {
+    this.props.pushKeyboardFocusHistory(currentTarget);
   }
 
   render = () => {
-    const { onPressConfirmExchange } = this.props;
+    const {
+      keyboardFocusHistory,
+      onPressConfirmExchange,
+      navigation,
+      transitionProps,
+    } = this.props;
 
     const {
       inputAmount,
@@ -132,65 +189,70 @@ class ExchangeModal extends PureComponent {
     } = this.state;
 
     return (
-      <View
-        style={{
-          ...deviceUtils.dimensions,
-          ...position.coverAsObject,
-        }}
-      >
-        <KeyboardAvoidingView behavior="height">
-          <View
-            onLayout={this.lolThing}
-            style={position.coverAsObject}
-          />
-          <NavigationEvents
-            onDidFocus={this.handleDidFocus}
-            onWillFocus={this.handleWillFocus}
-          />
-          <Centered direction="column" {...position.sizeAsObject('100%')} backgroundColor={colors.transparent}>
-            <FloatingPanels>
-              <GestureBlocker type='top'/>
-              <FloatingPanel radius={exchangeModalBorderRadius}>
-                <ExchangeModalHeader />
-                <Column align="center">
-                  <ExchangeInputField
-                    autoFocus={true}
-                    inputAmount={inputAmount}
-                    inputCurrency={inputCurrency}
-                    nativeAmount={nativeAmount}
-                    onPressSelectInputCurrency={this.handleSelectInputCurrency}
-                    refInput={this.handleInputFieldRef}
-                    setInputAmount={this.setInputAmount}
-                    setNativeAmount={this.setNativeAmount}
+      <KeyboardFixedOpenLayout>
+        <NavigationEvents
+          onDidFocus={this.handleDidFocus}
+          onWillFocus={this.handleWillFocus}
+        />
+        <Centered
+          {...position.sizeAsObject('100%')}
+          backgroundColor={colors.transparent}
+          direction="column"
+          paddingTop={showConfirmButton ? 0 : 10}
+        >
+          <AnimatedFloatingPanels
+            style={{
+              opacity: Animated.interpolate(navigation.getParam('position'), {
+                extrapolate: 'clamp',
+                inputRange: [0, 1],
+                outputRange: [1, 0],
+              }),
+            }}
+          >
+            <GestureBlocker type='top'/>
+            <FloatingPanel radius={exchangeModalBorderRadius}>
+              <ExchangeModalHeader />
+              <Column align="center">
+                <ExchangeInputField
+                  inputAmount={inputAmount}
+                  inputCurrency={inputCurrency}
+                  nativeAmount={nativeAmount}
+                  inputFieldRef={this.handleInputFieldRef}
+                  nativeFieldRef={this.handleNativeFieldRef}
+                  onFocus={this.handleFocusField}
+                  onPressSelectInputCurrency={this.handleSelectInputCurrency}
+                  setInputAmount={this.setInputAmount}
+                  setNativeAmount={this.setNativeAmount}
+                />
+                <ExchangeOutputField
+                  onPressSelectOutputCurrency={this.handleSelectOutputCurrency}
+                  outputAmount={outputAmount}
+                  onFocus={this.handleFocusField}
+                  outputCurrency={outputCurrency}
+                  outputFieldRef={this.handleOutputFieldRef}
+                  setOutputAmount={this.setOutputAmount}
+                />
+              </Column>
+            </FloatingPanel>
+            <GestureBlocker type='bottom'/>
+            {showConfirmButton && (
+              <Fragment>
+                <View css={padding(0, 15, 24)} width="100%">
+                  <ConfirmExchangeButton
+                    disabled={!Number(inputAmount)}
+                    onPress={this.handleSubmit}
                   />
-                  <ExchangeOutputField
-                    onPressSelectOutputCurrency={this.handleSelectOutputCurrency}
-                    outputAmount={outputAmount}
-                    outputCurrency={outputCurrency}
-                    setOutputAmount={this.setOutputAmount}
+                </View>
+                {!!Number(inputAmount) && (
+                  <ExchangeGasFeeButton
+                    gasPrice={'$0.06'}
                   />
-                </Column>
-              </FloatingPanel>
-              <GestureBlocker type='bottom'/>
-              {showConfirmButton && (
-                <Fragment>
-                  <View css={padding(0, 15, 24)} width="100%">
-                    <ConfirmExchangeButton
-                      disabled={!Number(inputAmount)}
-                      onPress={this.handleSubmit}
-                    />
-                  </View>
-                  {!!Number(inputAmount) && (
-                    <ExchangeGasFeeButton
-                      gasPrice={'$0.06'}
-                    />
-                  )}
-                </Fragment>
-              )}
-            </FloatingPanels>
-          </Centered>
-        </KeyboardAvoidingView>
-      </View>
+                )}
+              </Fragment>
+            )}
+          </AnimatedFloatingPanels>
+        </Centered>
+      </KeyboardFixedOpenLayout>
     );
   }
 }
@@ -205,4 +267,6 @@ export default compose(
   withBlockedHorizontalSwipe,
   withNavigationFocus,
   withMockedPrices,
+  withKeyboardFocusHistory,
+  withTransitionProps,
 )(ExchangeModal);

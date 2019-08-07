@@ -514,12 +514,3 @@ export const getAppStoreReviewRequestCount = async () => {
 export const setAppStoreReviewRequestCount = async (newCount) => {
   await saveLocal('appStoreReviewRequestCount', { data: newCount });
 };
-
-export const getUndecoratedKeyboardHeight = async () => {
-  const height = await getLocal('undecoratedKeyboardHeight');
-  return height ? height.data : 0;
-};
-
-export const setUndecoratedKeyboardHeight = async (newHeight) => {
-  await saveLocal('undecoratedKeyboardHeight', { data: newHeight });
-};
