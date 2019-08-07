@@ -170,7 +170,7 @@ PODS:
     - React
   - RNLanguages (3.0.2):
     - React
-  - RNReanimated (1.1.0):
+  - RNReanimated (1.2.0):
     - React
   - RNScreens (1.0.0-alpha.23):
     - React
@@ -333,7 +333,7 @@ SPEC CHECKSUMS:
 >>>>>>> b1697d93... Cleanup ButtonPressAnimation
   RNIOS11DeviceCheck: a4a545fdd08230a17a8ce7608e95038ee23a32aa
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
-  RNReanimated: 7a52c90473b5e81c13408d40d797b98387eaddde
+  RNReanimated: 1b52415c4302f198cb581282a0166690bad62c43
   RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   SDWebImage: fb387001955223213dde14bc08c8b73f371f8d8f
