@@ -31,20 +31,31 @@ const FakeNotchThing = withNeverRerender(() => (
   />
 ));
 
-class ExchangeOutputField extends PureComponent {
+export default class ExchangeOutputField extends PureComponent {
   static propTypes = {
     onPressSelectOutputCurrency: PropTypes.string,
     outputAmount: PropTypes.number,
     outputCurrency: PropTypes.string,
+    outputFieldRef: PropTypes.func.isRequired,
     setOutputAmount: PropTypes.func,
   }
 
-  inputRef = React.createRef()
+  outputFieldRef = null
 
-  handleFocusInput = () => this.inputRef.current.focus()
+  handleFocusInput = () => {
+    if (this.outputFieldRef) {
+      this.outputFieldRef.focus();
+    }
+  }
+
+  handleOutputFieldRef = (ref) => {
+    this.outputFieldRef = ref;
+    this.props.outputFieldRef(ref);
+  }
 
   render = () => {
     const {
+      onFocus,
       onPressSelectOutputCurrency,
       outputAmount,
       outputCurrency,
@@ -80,12 +91,12 @@ class ExchangeOutputField extends PureComponent {
             symbol={outputCurrency}
           />
           <ExchangeInput
-            autoFocus={true}
             editable={!!outputCurrency}
-            inputRef={this.inputRef}
             onChangeText={setOutputAmount}
+            onFocus={onFocus}
             placeholder={outputCurrency ? '0' : EmDash.unicode}
             placeholderTextColor={outputCurrency ? placeholderColor : skeletonColor}
+            refInput={this.props.outputFieldRef}
             value={outputAmount}
           />
         </RowWithMargins>
@@ -99,5 +110,3 @@ class ExchangeOutputField extends PureComponent {
     );
   }
 }
-
-export default ExchangeOutputField;

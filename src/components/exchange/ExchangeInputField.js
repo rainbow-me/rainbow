@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { TouchableWithoutFeedback } from 'react-native';
 import { colors, fonts } from '../../styles';
@@ -13,39 +13,39 @@ import {
 import { Emoji, Text } from '../text';
 import ExchangeInput from './ExchangeInput';
 
-export default class ExchangeInputField extends Component {
+export default class ExchangeInputField extends PureComponent {
   static propTypes = {
     autoFocus: PropTypes.bool,
     inputAmount: PropTypes.string,
     inputCurrency: PropTypes.string,
+    inputFieldRef: PropTypes.func,
     nativeAmount: PropTypes.string,
+    nativeFieldRef: PropTypes.func,
     onPressMaxBalance: PropTypes.func,
     onPressSelectInputCurrency: PropTypes.string,
     setInputAmount: PropTypes.func,
     setNativeAmount: PropTypes.func,
   }
 
-  inputRef = React.createRef()
-
-  maskRef = null
-
-  dollarRef = null
+  inputFieldRef = undefined
+  nativeFieldRef = undefined
 
   padding = 15
 
-  handleFocusInput = () => {
-    if (this.maskRef) {
-      this.maskRef.focus();
+  handleFocusInputField = () => {
+    if (this.inputFieldRef) {
+      this.inputFieldRef.focus();
     }
   }
 
-
-  handleMaskRef = (ref) => {
-    this.maskRef = ref;
+  handleInputFieldRef = (ref) => {
+    this.inputFieldRef = ref;
+    this.props.inputFieldRef(ref);
   }
 
-  handleDollarRef = (ref) => {
-    this.dollarRef = ref;
+  handleNativeFieldRef = (ref) => {
+    this.nativeFieldRef = ref;
+    this.props.nativeFieldRef(ref);
   }
 
   render = () => {
@@ -53,35 +53,34 @@ export default class ExchangeInputField extends Component {
       autoFocus,
       inputAmount,
       inputCurrency,
+      inputFieldRef,
+      onFocus,
       nativeAmount,
+      nativeFieldRef,
       onPressMaxBalance,
       onPressSelectInputCurrency,
       setInputAmount,
       setNativeAmount,
     } = this.props;
 
-
     // mask="[0...][-][9...]"
-
+    //
     return (
       <ColumnWithMargins flex={0} margin={14.5} width="100%">
         <Row align="center">
-          <TouchableWithoutFeedback onPress={this.handleFocusInput}>
+          <TouchableWithoutFeedback onPress={this.handleFocusInputField}>
             <RowWithMargins
               align="center"
               flex={1}
               margin={11}
               paddingLeft={this.padding}
             >
-              <CoinIcon
-                size={31}
-                symbol={inputCurrency}
-              />
+              <CoinIcon size={31} symbol={inputCurrency} />
               <Row align="center" flex={1}>
                 <ExchangeInput
-                  autoFocus={autoFocus}
-                  refInput={this.props.refInput}
                   onChangeText={setInputAmount}
+                  onFocus={onFocus}
+                  refInput={this.handleInputFieldRef}
                   value={inputAmount}
                 />
               </Row>
@@ -97,10 +96,11 @@ export default class ExchangeInputField extends Component {
         <Row align="center" justify="space-between" paddingLeft={this.padding}>
           <ExchangeInput
             fontSize={fonts.size.large}
-            inputRef={this.handleDollarRef}
             mask="{$}[099999999999]{.}[00]"
             onChangeText={setNativeAmount}
+            onFocus={onFocus}
             placeholder="$0.00"
+            refInput={this.handleNativeFieldRef}
             style={{ paddingBottom: this.padding }}
             value={nativeAmount}
           />

@@ -58,6 +58,7 @@ class ExchangeSearch extends PureComponent {
             keyboardType="default"
             lineHeight="loose"
             onChangeText={this.props.onChangeText}
+            onFocus={this.props.onFocus}
             placeholder="Search"
             placeholderTextColor={colors.grey}
             ref={this.inputRef}
