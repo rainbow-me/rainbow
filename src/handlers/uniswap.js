@@ -20,14 +20,13 @@ const convertValueForEthers = (value) => {
   return ethers.utils.hexlify(valueBigNumber);
 };
 
+// TODO save txn hash somewhere
 export const approve = async (exchangeAddress) => {
   const wallet = await loadWallet();
   if (!wallet) return null;
   const exchange = new ethers.Contract(exchangeAddress, exchangeABI, wallet);
   const gasLimit = await exchange.estimate.approve(exchangeAddress, ethers.constants.MaxUint256);
-  const txn = await exchange.approve(exchangeAddress, ethers.constants.MaxUint256, { gasLimit });
-  // TODO MIKE save txn hash somewhere
-  return txn;
+  return exchange.approve(exchangeAddress, ethers.constants.MaxUint256, { gasLimit });
 };
 
 export const executeSwap = async (tradeDetails) => {
@@ -43,49 +42,43 @@ export const executeSwap = async (tradeDetails) => {
   const exchange = new ethers.Contract(exchangeAddress, exchangeABI, wallet);
   const updatedMethodArgs = convertArgsForEthers(methodArguments);
   const value = convertValueForEthers(rawValue);
-  let txn = null;
   try {
     switch (methodName) {
     case 'ethToTokenSwapInput': {
       const gasLimit = await exchange.estimate.ethToTokenSwapInput(...updatedMethodArgs, { value });
-      txn = await exchange.ethToTokenSwapInput(...updatedMethodArgs, { gasLimit, value });
-      break;
+      return exchange.ethToTokenSwapInput(...updatedMethodArgs, { gasLimit, value });
     }
     case 'ethToTokenSwapOutput': {
       const gasLimit = await exchange.estimate.ethToTokenSwapOutput(...updatedMethodArgs, { value });
-      txn = await exchange.ethToTokenSwapOutput(...updatedMethodArgs, { gasLimit, value });
-      break;
+      return exchange.ethToTokenSwapOutput(...updatedMethodArgs, { gasLimit, value });
     }
     case 'tokenToEthSwapInput': {
       // TODO approval check
       const gasLimit = await exchange.estimate.tokenToEthSwapInput(...updatedMethodArgs, { value });
-      txn = await exchange.tokenToEthSwapInput(...updatedMethodArgs, { gasLimit, value });
-      break;
+      return exchange.tokenToEthSwapInput(...updatedMethodArgs, { gasLimit, value });
     }
     case 'tokenToEthSwapOutput': {
       // TODO approval check
       const gasLimit = await exchange.estimate.tokenToEthSwapOutput(...updatedMethodArgs, { value });
-      txn = await exchange.tokenToEthSwapOutput(...updatedMethodArgs, { gasLimit, value });
-      break;
+      return exchange.tokenToEthSwapOutput(...updatedMethodArgs, { gasLimit, value });
     }
     case 'tokenToTokenSwapInput': {
       // TODO approval check
       const gasLimit = await exchange.estimate.tokenToTokenSwapInput(...updatedMethodArgs, { value });
-      txn = await exchange.tokenToTokenSwapInput(...updatedMethodArgs, { gasLimit, value });
-      break;
+      return exchange.tokenToTokenSwapInput(...updatedMethodArgs, { gasLimit, value });
     }
     case 'tokenToTokenSwapOutput': {
       // TODO approval check
       const gasLimit = await exchange.estimate.tokenToTokenSwapOutput(...updatedMethodArgs, { value });
-      txn = await exchange.tokenToTokenSwapOutput(...updatedMethodArgs, { gasLimit, value });
-      break;
+      return exchange.tokenToTokenSwapOutput(...updatedMethodArgs, { gasLimit, value });
     }
     default:
-      break;
+      return null;
+    }
   } catch (error) {
     console.log('error exchanging', error);
+    return null;
   }
-  // TODO add to new txn
 };
 
 export const getUniswapLiquidityInfo = async (accountAddress, exchangeContracts) => {
