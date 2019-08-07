@@ -6,6 +6,7 @@ import imageDimensionsCache from './imageDimensionsCache';
 import isWalletEmpty from './isWalletEmpty';
 import isWalletEthZero from './isWalletEthZero';
 import isWalletImporting from './isWalletImporting';
+import keyboardFocusHistory from './keyboardFocusHistory';
 import navigation from './navigation';
 import nonce from './nonce';
 import openBalances from './openBalances';
@@ -26,6 +27,7 @@ export default combineReducers({
   isWalletEmpty,
   isWalletEthZero,
   isWalletImporting,
+  keyboardFocusHistory,
   navigation,
   nonce,
   openBalances,
