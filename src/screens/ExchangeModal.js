@@ -22,11 +22,13 @@ import {
   convertRawAmountToDecimalFormat,
 } from '../helpers/utilities';
 import {
+  withAccountAddress,
   withAccountData,
   withAccountSettings,
   withBlockedHorizontalSwipe,
   withKeyboardFocusHistory,
   withNeverRerender,
+  withTransactionConfirmationScreen,
   withTransitionProps,
 } from '../hoc';
 import { colors, padding, position } from '../styles';
@@ -75,6 +77,7 @@ class ExchangeModal extends PureComponent {
     allAssets: PropTypes.array,
     chainId: PropTypes.number,
     clearKeyboardFocusHistory: PropTypes.func,
+    dataAddNewTransaction: PropTypes.func,
     keyboardFocusHistory: PropTypes.array,
     nativeCurrency: PropTypes.string,
     navigation: PropTypes.object,
@@ -260,8 +263,26 @@ class ExchangeModal extends PureComponent {
 
   handleSubmit = async () => {
     const { tradeDetails } = this.state;
-    await executeSwap(tradeDetails);
-    this.props.navigation.navigate('ProfileScreen');
+    try {
+      const txn = await executeSwap(tradeDetails);
+      if (txn) {
+        const txnDetails = {
+          amount: this.state.inputAmount,
+          asset: this.state.inputCurrency,
+          from: this.props.accountAddress,
+          hash: txn.hash,
+          nonce: get(txn, 'nonce'),
+          to: get(txn, 'to'),
+        };
+        this.props.dataAddNewTransaction(txnDetails);
+        this.props.navigation.navigate('ProfileScreen');
+      } else {
+        this.props.navigation.navigate('ProfileScreen');
+      }
+    } catch (error) {
+      console.log('error submitting swap', error);
+      this.props.navigation.navigate('WalletScreen');
+    }
   }
 
   handleWillFocus = ({ lastState }) => {
@@ -387,9 +408,11 @@ const withMockedPrices = withProps({
 });
 
 export default compose(
+  withAccountAddress,
   withAccountData,
   withAccountSettings,
   withBlockedHorizontalSwipe,
+  withTransactionConfirmationScreen,
   withNavigationFocus,
   withMockedPrices,
   withKeyboardFocusHistory,
