@@ -92,13 +92,18 @@ class App extends Component {
     return Navigation.handleAction({ routeName: 'ProfileScreen' });
   };
 
-  async componentDidMount() {
+  setInitialStatesForOpenAssets = async () => {
     const toggle = await getSmallBalanceToggle();
     const openInvestmentCards = await getOpenInvestmentCards();
     const openFamilies = await getOpenFamilies();
     await store.dispatch(setOpenSmallBalances(toggle));
     await store.dispatch(pushOpenInvestmentCard(openInvestmentCards));
     await store.dispatch(pushOpenFamilyTab(openFamilies));
+    return true;
+  }
+
+  async componentDidMount() {
+    await this.setInitialStatesForOpenAssets();
     AppState.addEventListener('change', this.handleAppStateChange);
     Linking.addEventListener('url', this.handleOpenLinkingURL);
     await this.props.initializeWallet();

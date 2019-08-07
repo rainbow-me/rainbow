@@ -416,7 +416,10 @@ export const removeLocalRequests = async (address, network) => {
  */
 export const getSmallBalanceToggle = async () => {
   const toggle = await getLocal('smallBalanceToggle');
-  return toggle.data || false;
+  if (toggle) {
+    return toggle.data;
+  }
+  return false;
 };
 
 /**
@@ -433,7 +436,10 @@ export const saveSmallBalanceToggle = async toggle => {
  */
 export const getOpenInvestmentCards = async () => {
   const openInvestmentCards = await getLocal('openInvestmentCards');
-  return openInvestmentCards.data || {};
+  if (openInvestmentCards) {
+    return openInvestmentCards.data;
+  }
+  return {};
 };
 
 /**
@@ -450,7 +456,10 @@ export const saveOpenInvestmentCards = async openInvestmentCards => {
  */
 export const getOpenFamilies = async () => {
   const openFamilies = await getLocal('openFamilies');
-  return openFamilies.data || {};
+  if (openFamilies) {
+    return openFamilies.data;
+  }
+  return {};
 };
 
 /**

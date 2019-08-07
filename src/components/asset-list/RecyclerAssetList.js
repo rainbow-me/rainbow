@@ -65,6 +65,8 @@ const layoutItemAnimator = {
   animateWillUpdate: NOOP,
 };
 
+const reloadHeightOfsetTop = -60;
+const reloadHeightOffsetBottom = -62;
 
 // eslint-disable-next-line react/prop-types
 const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
@@ -288,7 +290,7 @@ class RecyclerAssetList extends PureComponent {
     if (prev.openFamilyTabs !== this.props.openFamilyTabs) {
       return true;
     }
-    if (this.contentSize - this.layoutMeasurement < this.position && this.position !== 0 && this.position !== 60.5) {
+    if (this.contentSize - this.layoutMeasurement < this.position && this.position !== 0 && !(this.position <= reloadHeightOfsetTop && this.position > reloadHeightOffsetBottom)) {
       return false;
     }
     return true;
@@ -508,7 +510,7 @@ class RecyclerAssetList extends PureComponent {
                 this.layoutMeasurement = event.nativeEvent.layoutMeasurement.height;
               }
               if ((event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height >= offsetY && offsetY >= 0)
-                || (offsetY < -60 && offsetY > -62)) {
+                || (offsetY < reloadHeightOfsetTop && offsetY > reloadHeightOffsetBottom)) {
                 if (this.props.scrollViewTracker) {
                   this.props.scrollViewTracker.setValue(offsetY);
                 }
