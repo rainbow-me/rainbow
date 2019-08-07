@@ -197,7 +197,7 @@ class RecyclerAssetList extends PureComponent {
         if (collectiblesIndex > -1) {
           if (index > headersIndices[collectiblesIndex]) {
             const familyIndex = index - headersIndices[collectiblesIndex] - 1;
-            if (openFamilyTabs[familyIndex]) {
+            if (openFamilyTabs[sections[collectiblesIndex].data[familyIndex].familyName]) {
               if (get(sections, `[${collectiblesIndex}].data[${familyIndex}].tokens`)) {
                 return {
                   get: ViewTypes.UNIQUE_TOKEN_ROW,
@@ -322,11 +322,11 @@ class RecyclerAssetList extends PureComponent {
     }
     if (this.props.openFamilyTabs !== prev.openFamilyTabs) {
       let i = 0;
-      while (i < this.props.openFamilyTabs.length) {
-        if (this.props.openFamilyTabs[i] === true && prev.openFamilyTabs[i] === false) {
+      while (i < collectibles.data.length) {
+        if (this.props.openFamilyTabs[collectibles.data[i].familyName] === true && !prev.openFamilyTabs[collectibles.data[i].familyName]) {
           let collectiblesHeight = 0;
           for (let j = 0; j < i; j++) {
-            if (this.props.openFamilyTabs[j] && collectibles.data[j].tokens) {
+            if (this.props.openFamilyTabs[collectibles.data[j].familyName] && collectibles.data[j].tokens) {
               collectiblesHeight += collectibles.data[j].tokens.length * CardSize + 54 + (RowPadding - 4) * (collectibles.data[j].tokens.length - 1);
             } else {
               collectiblesHeight += 54;

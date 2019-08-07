@@ -429,7 +429,7 @@ export const saveSmallBalanceToggle = async toggle => {
 
 /**
  * @desc get open investment cards
- * @return {Boolean}
+ * @return {Object}
  */
 export const getOpenInvestmentCards = async () => {
   const openInvestmentCards = await getLocal('openInvestmentCards');
@@ -438,8 +438,25 @@ export const getOpenInvestmentCards = async () => {
 
 /**
  * @desc save open investment cards
- * @param  {Boolean}   [language]
+ * @param  {Object}   [openInvestmentCards]
  */
 export const saveOpenInvestmentCards = async openInvestmentCards => {
   await saveLocal('openInvestmentCards', { data: openInvestmentCards });
+};
+
+/**
+ * @desc get open families
+ * @return {Object}
+ */
+export const getOpenFamilies = async () => {
+  const openFamilies = await getLocal('openFamilies');
+  return openFamilies.data || {};
+};
+
+/**
+ * @desc save open families
+ * @param  {Object}   [openFamilies]
+ */
+export const saveOpenFamilies = async openFamilies => {
+  await saveLocal('openFamilies', { data: openFamilies });
 };

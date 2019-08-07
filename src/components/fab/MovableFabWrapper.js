@@ -369,7 +369,7 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs, openInvestment
               top: height,
             });
           }
-          if (openFamilyTabs[i]) {
+          if (openFamilyTabs[collectibles.data[i].familyName]) {
             height += CardSize;
             if (j > 0) {
               height += CardMargin;

@@ -4,8 +4,6 @@ import {
   groupBy,
   sortBy,
 } from 'lodash';
-import { pushOpenFamilyTab } from '../redux/openFamilyTabs';
-import store from '../redux/store';
 
 export const buildAssetHeaderUniqueIdentifier = ({
   title,
@@ -66,9 +64,6 @@ export const buildUniqueTokenList = (uniqueTokens) => {
     });
   }
 
-  while (rows.length > store.getState().openFamilyTabs.openFamilyTabs.length) {
-    store.dispatch(pushOpenFamilyTab());
-  }
   rows = sortBy(rows, ['familyName']);
   rows.forEach((row, i) => {
     row.familyId = i;

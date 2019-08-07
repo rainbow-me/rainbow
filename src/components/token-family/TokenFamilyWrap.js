@@ -49,7 +49,7 @@ class TokenFamilyWrap extends Component {
   }
 
   shouldComponentUpdate = (prev, next) => {
-    const familyId = this.props.item[0][0].rowNumber;
+    const familyId = this.props.item[0][0].asset_contract.name;
     if (this.props.openFamilyTabs[familyId] !== prev.openFamilyTabs[familyId]
       || this.state.opacity != next.opacity
       || this.props.highlight !== prev.highlight) {
@@ -59,7 +59,7 @@ class TokenFamilyWrap extends Component {
   }
 
   componentDidUpdate = () => {
-    const familyId = this.props.item[0][0].rowNumber;
+    const familyId = this.props.item[0][0].asset_contract.name;
     const newOpacity = this.props.openFamilyTabs[familyId] ? 1 : 0;
     if (newOpacity) {
       setTimeout(() => {
@@ -71,7 +71,7 @@ class TokenFamilyWrap extends Component {
   }
 
   collectiblesRenderItem = item => {
-    if (this.props.openFamilyTabs[item.item[0][0].rowNumber]) {
+    if (this.props.openFamilyTabs[item.item[0][0].asset_contract.name]) {
       const tokens = [];
       for (let i = 0; i < item.item.length; i++) {
         tokens.push(
@@ -89,8 +89,8 @@ class TokenFamilyWrap extends Component {
 
   onHeaderPress = () => {
     this.props.setOpenFamilyTabs({
-      index: this.props.item[0][0].rowNumber,
-      state: !this.props.openFamilyTabs[this.props.item[0][0].rowNumber],
+      index: this.props.item[0][0].asset_contract.name,
+      state: !this.props.openFamilyTabs[this.props.item[0][0].asset_contract.name],
     });
   };
 
@@ -102,7 +102,7 @@ class TokenFamilyWrap extends Component {
           familyImage={this.props.familyImage}
           childrenAmount={this.props.childrenAmount}
           highlight={this.props.highlight}
-          isOpen={this.props.openFamilyTabs[this.props.item[0][0].rowNumber]}
+          isOpen={this.props.openFamilyTabs[this.props.item[0][0].asset_contract.name]}
           onHeaderPress={this.onHeaderPress}
         />
         {this.state.opacity == 1 &&
