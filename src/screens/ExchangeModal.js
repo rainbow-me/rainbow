@@ -26,10 +26,12 @@ import {
   convertRawAmountToDecimalFormat,
 } from '../helpers/utilities';
 import {
+  withAccountAddress,
   withAccountData,
   withAccountSettings,
   withBlockedHorizontalSwipe,
   withNeverRerender,
+  withTransactionConfirmationScreen,
 } from '../hoc';
 import { colors, padding, position } from '../styles';
 import { deviceUtils, ethereumUtils, safeAreaInsetValues } from '../utils';
@@ -69,6 +71,7 @@ class ExchangeModal extends PureComponent {
   static propTypes = {
     allAssets: PropTypes.array,
     chainId: PropTypes.number,
+    dataAddNewTransaction: PropTypes.func,
     inputAsExactAmount: PropTypes.bool,
     inputAmount: PropTypes.string,
     inputCurrency: PropTypes.object,
@@ -224,8 +227,26 @@ class ExchangeModal extends PureComponent {
 
   handleSubmit = async () => {
     const { tradeDetails } = this.state;
-    await executeSwap(tradeDetails);
-    this.props.navigation.navigate('ProfileScreen');
+    try {
+      const txn = await executeSwap(tradeDetails);
+      if (txn) {
+        const txnDetails = {
+          amount: this.state.inputAmount,
+          asset: this.state.inputCurrency,
+          from: this.props.accountAddress,
+          hash: txn.hash,
+          nonce: get(txn, 'nonce'),
+          to: get(txn, 'to'),
+        };
+        this.props.dataAddNewTransaction(txnDetails);
+        this.props.navigation.navigate('ProfileScreen');
+      } else {
+        this.props.navigation.navigate('ProfileScreen');
+      }
+    } catch (error) {
+      console.log('error submitting swap', error);
+      this.props.navigation.navigate('WalletScreen');
+    }
   }
 
   handleWillFocus = () => {
@@ -338,9 +359,11 @@ const withMockedPrices = withProps({
 });
 
 export default compose(
+  withAccountAddress,
   withAccountData,
   withAccountSettings,
   withBlockedHorizontalSwipe,
+  withTransactionConfirmationScreen,
   withNavigationFocus,
   withMockedPrices,
 )(ExchangeModal);
