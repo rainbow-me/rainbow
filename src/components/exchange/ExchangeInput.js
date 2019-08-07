@@ -23,22 +23,8 @@ export default class ExchangeInput extends PureComponent {
   }
 
   onChangeText = (formatted, extracted) => {
-    // console.log('formatted', typeof extracted, !!formatted, formatted);
-    // console.log('extracted', typeof extracted, !!extracted, extracted);
-
-    const condition = !!extracted;
-
-    // console.log('CONDITION', condition);
-
-    const thing = condition ? formatted : '';
-    // console.log('thing', thing);
-
-
-
-
     // XXX TODO: some funky stuff is going on here related to the '$' symbol in the input mask
-
-    this.props.onChangeText(thing);
+    this.props.onChangeText(!!extracted ? formatted : '');
   }
 
   render = () => {
@@ -58,13 +44,13 @@ export default class ExchangeInput extends PureComponent {
         {...this.props}
         allowFontScaling={false}
         flex={1}
-        refInput={refInput}
         keyboardAppearance="dark"
         keyboardType="decimal-pad"
         mask={mask}
         onChangeText={this.onChangeText}
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
+        refInput={refInput}
         selectionColor={colors.appleBlue}
         style={[{
           fontFamily: fonts.family.SFMono,
