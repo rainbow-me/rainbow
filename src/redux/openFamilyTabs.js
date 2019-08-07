@@ -26,7 +26,7 @@ export default (state = INITIAL_STATE, action) => (
       draft.openFamilyTabs[action.payload.index] = action.payload.state;
       saveOpenFamilies(draft.openFamilyTabs);
     } else if (action.type === PUSH_OPEN_FAMILY_TAB) {
-      draft.openFamilyTabs = state.openFamilyTabs.concat(false);
+      draft.openFamilyTabs = action.payload;
     }
   })
 );

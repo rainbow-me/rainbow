@@ -37,8 +37,6 @@ const getHeight = (openFamilyTab) => (
     : 100
 );
 
-const header = (child) => child;
-
 class TokenFamilyWrap extends Component {
   constructor(props) {
     super(props);
@@ -71,7 +69,7 @@ class TokenFamilyWrap extends Component {
   }
 
   collectiblesRenderItem = item => {
-    if (this.props.openFamilyTabs[item.item[0][0].asset_contract.name]) {
+    if (this.props.openFamilyTabs[item.familyName]) {
       const tokens = [];
       for (let i = 0; i < item.item.length; i++) {
         tokens.push(
@@ -94,7 +92,15 @@ class TokenFamilyWrap extends Component {
     });
   };
 
+  componentDidMount = () => {
+    if (this.props.openFamilyTabs[this.props.familyName]) {
+      this.setState({ opacity: 1 });
+    }
+  }
+
   render() {
+    const content = this.collectiblesRenderItem(this.props);
+
     return (
       <View style={{ backgroundColor: colors.white }}>
         <TokenFamilyHeader
@@ -105,9 +111,9 @@ class TokenFamilyWrap extends Component {
           isOpen={this.props.openFamilyTabs[this.props.item[0][0].asset_contract.name]}
           onHeaderPress={this.onHeaderPress}
         />
-        {this.state.opacity == 1 &&
-          <FadeInAnimation duration={100}>
-            {header(this.collectiblesRenderItem(this.props))}
+        {this.state.opacity === 1
+          && <FadeInAnimation duration={100}>
+            {content}
           </FadeInAnimation>
         }
       </View>
