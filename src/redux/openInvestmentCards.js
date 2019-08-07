@@ -1,4 +1,5 @@
 import produce from 'immer';
+import { saveOpenInvestmentCards } from '../handlers/commonStorage';
 
 // -- Constants --------------------------------------- //
 const SET_OPEN_INVESTMENT_CARDS = 'openInvestmentCards/SET_OPEN_INVESTMENT_CARDS';
@@ -23,8 +24,9 @@ export default (state = INITIAL_STATE, action) => (
   produce(state, draft => {
     if (action.type === SET_OPEN_INVESTMENT_CARDS) {
       draft.openInvestmentCards[action.payload.index] = action.payload.state;
+      saveOpenInvestmentCards(draft.openInvestmentCards);
     } else if (action.type === PUSH_OPEN_INVESTMENT_CARD) {
-      draft.openInvestmentCards = state.openInvestmentCards.concat(false);
+      draft.openInvestmentCards = action.payload;
     }
   })
 );

@@ -77,7 +77,7 @@ class InvestmentCardHeader extends React.Component {
           </Monospace>
           {isCollapsible && (
             <SettingIconWrap>
-              <RotationArrow isOpen={collapsed} endingPosition={90} reversed={true}>
+              <RotationArrow isOpen={!collapsed} endingPosition={90}>
                 <SettingIcon source={Caret} />
               </RotationArrow>
             </SettingIconWrap>

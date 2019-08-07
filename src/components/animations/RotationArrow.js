@@ -50,6 +50,14 @@ function runTiming(clock, value, dest, friction, tension) {
 }
 
 class RotationArrow extends React.Component {
+  componentWillMount() {
+    if (!this.props.isOpen === true) {
+      this._transform = new Value(1);
+      return;
+    }
+    this._transform = new Value(0);
+  }
+
   componentWillUpdate(prev) {
     if (prev.isOpen !== undefined
         && prev.isOpen !== this.props.isOpen) {
@@ -57,7 +65,7 @@ class RotationArrow extends React.Component {
       const base = runTiming(clock, this.props.isOpen ? -1 : 1, this.props.isOpen ? 1 : -1, this.props.friction, this.props.tension);
       this._transform = interpolate(base, {
         inputRange: [-1, 1],
-        outputRange: this.props.reversed ? [1, 0] : [0, 1],
+        outputRange: [0, 1],
       });
     }
   }
@@ -68,7 +76,7 @@ class RotationArrow extends React.Component {
         style={{
           transform:
           [{
-            translateX: this.props.endingOffset ? this._transform ? this.props.reversed ? multiply(this._transform, this.props.endingOffset) : sub(this.props.endingOffset, multiply(this._transform, this.props.endingOffset)) : this.props.reversed ? 0 : this.props.endingOffset : 0,
+            translateX: this.props.endingOffset ? (this._transform ? sub(this.props.endingOffset, multiply(this._transform, this.props.endingOffset)) : this.props.endingOffset) : 0,
           }],
         }}
       >
@@ -78,8 +86,8 @@ class RotationArrow extends React.Component {
             [{
               // eslint-disable-next-line no-nested-ternary
               rotate: this._transform
-                ? (this.props.reversed ? concat(multiply(this._transform, this.props.endingPosition), 'deg') : concat(sub(this.props.endingPosition, multiply(this._transform, this.props.endingPosition)), 'deg'))
-                : (this.props.reversed ? 0 : `${this.props.endingPosition}deg`),
+                ? (concat(sub(this.props.endingPosition, multiply(this._transform, this.props.endingPosition)), 'deg'))
+                : (`${this.props.endingPosition}deg`),
             }],
           }}
         >

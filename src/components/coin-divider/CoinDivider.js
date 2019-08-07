@@ -152,7 +152,7 @@ class CoinDivider extends React.Component {
               </OpacityToggler>
             </View>
             <SettingIconWrap>
-              <RotationArrow isOpen={openSmallBalances} reversed={!this._initialState} endingPosition={-90} endingOffset={20}>
+              <RotationArrow isOpen={openSmallBalances} endingPosition={-90} endingOffset={20}>
                 <SettingIcon source={Caret} />
               </RotationArrow>
             </SettingIconWrap>

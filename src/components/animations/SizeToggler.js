@@ -50,7 +50,11 @@ function runTiming(clock, value, dest, friction, tension) {
 
 export default class SizeToggler extends React.Component {
   componentWillMount() {
-    this._height = new Value(this.props.startingWidth);
+    if (!this.props.toggle === true) {
+      this._height = new Value(this.props.startingWidth);
+      return;
+    }
+    this._height = new Value(this.props.endingWidth);
   }
 
   componentWillUpdate(prev) {

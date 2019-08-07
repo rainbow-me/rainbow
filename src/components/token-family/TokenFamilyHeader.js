@@ -88,7 +88,7 @@ class TokenListHeader extends React.Component {
               {this.props.familyName}
             </TruncatedText>
             <ArrowWrap>
-              <RotationArrow isOpen={this.props.isOpen} reversed endingPosition={90}>
+              <RotationArrow isOpen={this.props.isOpen} endingPosition={90}>
                 <SettingIcon source={Caret} />
               </RotationArrow>
             </ArrowWrap>
