@@ -1,10 +1,10 @@
 {
   "name": "Rainbow",
-  "version": "1.1.4-3",
+  "version": "1.1.5-1",
   "private": true,
   "scripts": {
     "clean": "react-native-clean-project",
-    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "start": "react-native start",
     "test": "jest test.js",
     "install-pods": "cd ios && pod install && cd ..",
     "ios": "react-native run-ios --simulator='iPhone X'",
@@ -57,9 +57,9 @@
     "prop-types": "^15.7.2",
     "punycode": "^1.4.1",
     "querystring-es3": "^0.2.1",
-    "react": "16.8.3",
+    "react": "16.8.6",
     "react-coin-icon": "^0.1.9",
-    "react-native": "0.59.9",
+    "react-native": "0.60.4",
     "react-native-actionsheet": "^2.4.2",
     "react-native-camera": "^2.11.0",
     "react-native-circular-progress": "^1.1.0",
@@ -127,8 +127,8 @@
     "vm-browserify": "0.0.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.5",
-    "@babel/runtime": "^7.4.5",
+    "@babel/core": "^7.5.5",
+    "@babel/runtime": "^7.5.5",
     "@react-native-community/cli": "2.0.0-rc.2",
     "@react-native-community/eslint-config": "^0.0.5",
     "babel-core": "7.0.0-bridge.0",
