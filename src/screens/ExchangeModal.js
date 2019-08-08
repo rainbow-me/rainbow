@@ -27,6 +27,7 @@ import {
   convertAmountToNativeAmount,
   convertAmountToRawAmount,
   convertRawAmountToDecimalFormat,
+  subtract,
 } from '../helpers/utilities';
 import {
   withAccountAddress,
@@ -262,6 +263,13 @@ class ExchangeModal extends PureComponent {
     return filter(this.props.allAssets, asset => findIndex(uniswapAssetAddresses, uniswapAddress => uniswapAddress === asset.address) > -1);
   };
 
+  onPressMaxBalance = () => {
+    const { inputCurrency } = this.state;
+    const balance = get(inputCurrency, 'balance.amount', 0);
+    const inputAmount = (inputCurrency.address === 'eth') ? subtract(balance, 0.01) : balance;
+    this.setState({ inputAmount });
+  }
+
   handleSelectInputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
       assets: this.getAssetsAvailableOnUniswap(),
@@ -377,6 +385,7 @@ class ExchangeModal extends PureComponent {
                   nativeCurrency={nativeCurrency}
                   nativeFieldRef={this.handleNativeFieldRef}
                   onFocus={this.handleFocusField}
+                  onPressMaxBalance={this.onPressMaxBalance}
                   onPressSelectInputCurrency={this.handleSelectInputCurrency}
                   setInputAmount={this.setInputAmount}
                   setNativeAmount={this.setNativeAmount}
