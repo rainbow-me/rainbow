@@ -7,7 +7,8 @@ import {
   createMaterialTopTabNavigator,
 } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
-import Navigation from '../navigation';
+import { createMaterialTopTabNavigator as newTopTabNavigator } from 'react-navigation-tabs';
+import { Navigation } from '../navigation';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
 import { colors } from '../styles';
@@ -88,8 +89,10 @@ const ExchangeModalNavigator = newTopTabNavigator({
   disableKeyboardHandling: true,
   headerMode: 'none',
   initialLayout: deviceUtils.dimensions,
-  keyboardDismissMode: 'on-drag',
+  keyboardDismissMode: 'none',
   keyboardShouldPersistTaps: 'always',
+  onSwipeStart: onTransitionStart,
+  onSwipeEnd: onTransitionEnd,
   mode: 'modal',
   onTransitionEnd,
   onTransitionStart,
@@ -187,16 +190,6 @@ const MainNavigator = createStackNavigator({
     mode: 'card',
     screen: ExchangeModal,
   },
-  ExchangeModal: {
-    navigationOptions: {
-      effect: 'expanded',
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height,
-      },
-      gesturesEnabled: true,
-    },
-    screen: ExchangeModalNavigator,
-  },
   SwipeLayout: {
     navigationOptions: {
       ...backgroundPreset,
@@ -217,7 +210,7 @@ const MainNavigator = createStackNavigator({
   disableKeyboardHandling: true, // XXX not sure about this from rebase
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',
-  keyboardDismissMode: true,
+  keyboardDismissMode: 'none', // true?
   mode: 'modal',
 });
 
