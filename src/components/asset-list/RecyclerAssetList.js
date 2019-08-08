@@ -428,7 +428,7 @@ class RecyclerAssetList extends Component {
             }
           }
           const renderSize = balancesHeight + investmentHeight + collectiblesHeight + ListFooter.height;
-          const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 240 : 280);
+          const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 240 : 360);
           if (this.position + deviceDimensions > renderSize) {
             layoutItemAnimator.animateShift = () => LayoutAnimation.configureNext(LayoutAnimation.create(310, 'easeInEaseOut', 'opacity'));
             this.scrollToOffset(renderSize - deviceDimensions, true);
