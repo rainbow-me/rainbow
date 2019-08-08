@@ -6,7 +6,14 @@ import {
   tradeTokensForExactEth,
   tradeTokensForExactTokens,
 } from '@uniswap/sdk';
-import { get, isNil } from 'lodash';
+import {
+  filter,
+  findIndex,
+  get,
+  isNil,
+  keys,
+  map,
+} from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { KeyboardAvoidingView, View } from 'react-native';
@@ -32,7 +39,9 @@ import {
   withBlockedHorizontalSwipe,
   withNeverRerender,
   withTransactionConfirmationScreen,
+  withUniswapAssets,
 } from '../hoc';
+import uniswapAssets from '../references/uniswap-pairs.json';
 import { colors, padding, position } from '../styles';
 import { deviceUtils, ethereumUtils, safeAreaInsetValues } from '../utils';
 import FloatingPanels from '../components/expanded-state/FloatingPanels';
@@ -80,6 +89,7 @@ class ExchangeModal extends PureComponent {
     outputAmount: PropTypes.string,
     outputCurrency: PropTypes.object,
     showConfirmButton: PropTypes.bool,
+    sortedUniswapAssets: PropTypes.array,
     tradeDetails: PropTypes.object,
   }
 
@@ -209,9 +219,14 @@ class ExchangeModal extends PureComponent {
     }
   }
 
+  getAssetsAvailableOnUniswap = () => {
+    const uniswapAssetAddresses = map(keys(uniswapAssets), address => address.toLowerCase());
+    return filter(this.props.allAssets, asset => findIndex(uniswapAssetAddresses, uniswapAddress => uniswapAddress === asset.address) > -1);
+  };
+
   handleSelectInputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
-      isInputAssets: true,
+      assets: this.getAssetsAvailableOnUniswap(),
       keyboardHeight: this.keyboardHeight,
       onSelectCurrency: this.setInputCurrency,
     });
@@ -219,7 +234,7 @@ class ExchangeModal extends PureComponent {
 
   handleSelectOutputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
-      isInputAssets: false,
+      assets: this.props.sortedUniswapAssets,
       keyboardHeight: this.keyboardHeight,
       onSelectCurrency: this.setOutputCurrency,
     });
@@ -364,6 +379,7 @@ export default compose(
   withAccountSettings,
   withBlockedHorizontalSwipe,
   withTransactionConfirmationScreen,
+  withUniswapAssets,
   withNavigationFocus,
   withMockedPrices,
 )(ExchangeModal);

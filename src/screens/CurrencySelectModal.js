@@ -1,9 +1,4 @@
-import {
-  filter,
-  findIndex,
-  keys,
-  map,
-} from 'lodash';
+import { isEmpty, map } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { compose, withHandlers } from 'recompact';
@@ -17,12 +12,11 @@ import AssetList from '../components/asset-list/RecyclerAssetList';
 import { SendCoinRow } from '../components/coin-row';
 import GestureBlocker from '../components/GestureBlocker';
 import { Monospace, TruncatedText } from '../components/text';
-import { withAccountData, withUniswapAssets } from '../hoc';
 import { borders, colors, position } from '../styles';
 import StarIcon from '../components/icons/svg/StarIcon';
 import { BackButton } from '../components/header';
 import { ExchangeSearch } from '../components/exchange';
-import uniswapAssets from '../references/uniswap-pairs.json';
+import { filterList } from '../utils/search';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 
 const HeaderContainer = styled(Centered).attrs({
@@ -82,18 +76,25 @@ const EnhancedCurrencyRenderItem = withHandlers({
 
 class SelectCurrencyModal extends PureComponent {
   static propTypes = {
-    allAssets: PropTypes.array,
-    sortedUniswapAssets: PropTypes.array,
     navigation: PropTypes.object,
   }
+
+  state = {
+    searchResults: [],
+  }
+
+  assets = []
 
   callback = null
 
   keyboardHeight = 0
 
-  isInputAssets = true
-
   viewportHeight = deviceUtils.dimensions.height
+
+  onChangeSearchText = (searchPhrase) => {
+    const searchResults = filterList(this.assets, searchPhrase, 'index');
+    this.setState({ searchResults });
+  }
 
   searchInputRef = React.createRef()
 
@@ -107,15 +108,12 @@ class SelectCurrencyModal extends PureComponent {
 
   getDataFromParams = () => {
     const { navigation } = this.props;
-
     this.callback = navigation.getParam('onSelectCurrency');
     this.keyboardHeight = navigation.getParam('keyboardHeight');
-    this.isInputAssets = navigation.getParam('isInputAssets');
-
-    // console.log('getDataFromParams this.keyboardHeight', this.keyboardHeight);
-
+    const assets = navigation.getParam('assets') || [];
+    const indexedAssets = map(assets, asset => ({ ...asset, index: `${asset.name} ${asset.symbol}` }));
+    this.assets = indexedAssets;
     this.viewportHeight = deviceUtils.dimensions.height - this.keyboardHeight;
-    // console.log('getDataFromParams this.viewportHeight', this.viewportHeight);
   }
 
   dangerouslySetIsGestureBlocked = (isGestureBlocked) => {
@@ -148,23 +146,15 @@ class SelectCurrencyModal extends PureComponent {
     // setTimeout(() => this.searchInputRef.current.focus(), 500);
   }
 
-  getAssetsAvailableOnUniswap = () => {
-    const uniswapAssetAddresses = map(keys(uniswapAssets), address => address.toLowerCase());
-    return filter(this.props.allAssets, asset => findIndex(uniswapAssetAddresses, uniswapAddress => uniswapAddress === asset.address) > -1);
-  };
+  getSections = () => {
+    const data = isEmpty(this.state.searchResults) ? this.assets : this.state.searchResults;
+    return [{
+      balances: true,
+      data,
+      renderItem: this.renderCurrencyItem,
+    }];
+  }
 
-  getAssets = () => {
-    const data = this.isInputAssets
-      ? this.getAssetsAvailableOnUniswap()
-      : this.props.sortedUniswapAssets;
-    return [
-      {
-        balances: true,
-        data,
-        renderItem: this.renderCurrencyItem,
-      },
-    ];
-  };
 
   render() {
     const magicNumber = this.viewportHeight
@@ -245,13 +235,14 @@ class SelectCurrencyModal extends PureComponent {
                 </HeaderContainer>
                 <ExchangeSearch
                   autoFocus={false}
+                  onChangeText={this.onChangeSearchText}
                   ref={this.searchInputRef}
                 />
                 <AssetList
                   hideHeader
                   flex={1}
                   style={{ flex: 1 }}
-                  sections={this.getAssets()}
+                  sections={this.getSections()}
                 />
               </Column>
               <GestureBlocker type='bottom'/>
@@ -264,7 +255,5 @@ class SelectCurrencyModal extends PureComponent {
 }
 
 export default compose(
-  withAccountData,
-  withUniswapAssets,
   withNavigationFocus,
 )(SelectCurrencyModal);
