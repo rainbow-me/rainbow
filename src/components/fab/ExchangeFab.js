@@ -1,12 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withNavigation } from 'react-navigation';
-import {
-  compose,
-  onlyUpdateForKeys,
-  pure,
-  withHandlers,
-} from 'recompact';
+import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { withFabSelection } from '../../hoc';
 import { colors } from '../../styles';
 import { Icon } from '../icons';
@@ -36,10 +31,6 @@ ExchangeFab.propTypes = {
 export default compose(
   withFabSelection,
   withNavigation,
-  withHandlers({
-    onPress: ({ navigation }) => () => {
-      navigation.navigate('ExchangeModal');
-    },
-  }),
+  withHandlers({ onPress: ({ navigation }) => () => navigation.navigate('ExchangeModal') }),
   onlyUpdateForKeys(['disabled']),
 )(ExchangeFab);

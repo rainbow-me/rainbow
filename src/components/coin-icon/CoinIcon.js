@@ -30,7 +30,6 @@ const CoinIcon = enhance(({
   symbol,
   ...props
 }) => (
-console.log('bgColor', bgColor),
   showShadow ? (
     <ShadowStack
       {...props}
