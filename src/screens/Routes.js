@@ -7,6 +7,7 @@ import {
   createMaterialTopTabNavigator,
   createStackNavigator,
 } from 'react-navigation';
+import { createMaterialTopTabNavigator as newTopTabNavigator } from 'react-navigation-tabs';
 import { Navigation } from '../navigation';
 import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import { updateTransitionProps } from '../redux/navigation';
@@ -81,8 +82,10 @@ const ExchangeModalNavigator = newTopTabNavigator({
   disableKeyboardHandling: true,
   headerMode: 'none',
   initialLayout: deviceUtils.dimensions,
-  keyboardDismissMode: 'on-drag',
+  keyboardDismissMode: 'none',
   keyboardShouldPersistTaps: 'always',
+  onSwipeStart: onTransitionStart,
+  onSwipeEnd: onTransitionEnd,
   mode: 'modal',
   onTransitionEnd,
   onTransitionStart,
@@ -168,7 +171,7 @@ const MainNavigator = createStackNavigator({
 }, {
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',
-  keyboardDismissMode: true,
+  keyboardDismissMode: 'none', // true?
   mode: 'modal',
   onTransitionEnd,
   onTransitionStart,
