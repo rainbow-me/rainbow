@@ -7,7 +7,6 @@ import {
   withHandlers,
   withProps,
 } from 'recompact';
-import styled from 'styled-components/primitives';
 import { withFabSendAction } from '../../hoc';
 import { colors, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
@@ -18,10 +17,6 @@ import { ShadowStack } from '../shadow-stack';
 import UniqueTokenImage from './UniqueTokenImage';
 
 const UniqueTokenCardBorderRadius = 18;
-
-const Shadow = styled(Highlight)`
-  background-color: ${({ highlight }) => (highlight ? '#FFFFFF33' : colors.transparent)};
-`;
 
 const UniqueTokenCard = ({
   disabled,
@@ -75,7 +70,10 @@ const UniqueTokenCard = ({
             opacity={0.04}
             radius={UniqueTokenCardBorderRadius}
           />
-          <Shadow highlight={highlight}/>
+          <Highlight
+            backgroundColor={colors.alpha(colors.white, 0.33)}
+            visible={highlight}
+          />
         </Centered>
       </ShadowStack>
     </ButtonPressAnimation>

@@ -4,6 +4,8 @@ import actionSheetManager from './actionSheetManager';
 import data from './data';
 import imageDimensionsCache from './imageDimensionsCache';
 import isWalletEmpty from './isWalletEmpty';
+import isWalletEthZero from './isWalletEthZero';
+import isWalletImporting from './isWalletImporting';
 import navigation from './navigation';
 import nonce from './nonce';
 import openBalances from './openBalances';
@@ -13,8 +15,8 @@ import requests from './requests';
 import selectedWithFab from './selectedWithFab';
 import send from './send';
 import settings from './settings';
-import uniswap from './uniswap';
 import uniqueTokens from './uniqueTokens';
+import uniswap from './uniswap';
 import walletconnect from './walletconnect';
 
 export default combineReducers({
@@ -22,6 +24,8 @@ export default combineReducers({
   data,
   imageDimensionsCache,
   isWalletEmpty,
+  isWalletEthZero,
+  isWalletImporting,
   navigation,
   nonce,
   openBalances,

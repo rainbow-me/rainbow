@@ -43,41 +43,43 @@ export const uniqueTokensClearState = () => (dispatch, getState) => {
   dispatch({ type: UNIQUE_TOKENS_CLEAR_STATE });
 };
 
-export const uniqueTokensRefreshState = () => (dispatch, getState) => new Promise((resolve, reject) => {
-  const fetchUniqueTokens = () => new Promise((resolve, reject) => {
-    dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST });
-    const { accountAddress, network } = getState().settings;
-    const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
-    apiGetAccountUniqueTokens(accountAddress)
-      .then(uniqueTokens => {
-        const existingFamilies = getFamilies(existingUniqueTokens);
-        const newFamilies = getFamilies(uniqueTokens);
-        const incomingFamilies = without(newFamilies, ...existingFamilies);
-        if (incomingFamilies.length) {
-          dispatch(dedupeAssetsWithFamilies(incomingFamilies));
-        }
-        saveUniqueTokens(accountAddress, uniqueTokens, network);
-        dispatch({
-          payload: uniqueTokens,
-          type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
+export const uniqueTokensRefreshState = () => (dispatch, getState) => (
+  new Promise((resolve, reject) => {
+    const fetchUniqueTokens = () => new Promise((fetchResolve, fetchReject) => {
+      dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST });
+      const { accountAddress, network } = getState().settings;
+      const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
+      apiGetAccountUniqueTokens(accountAddress)
+        .then(uniqueTokens => {
+          const existingFamilies = getFamilies(existingUniqueTokens);
+          const newFamilies = getFamilies(uniqueTokens);
+          const incomingFamilies = without(newFamilies, ...existingFamilies);
+          if (incomingFamilies.length) {
+            dispatch(dedupeAssetsWithFamilies(incomingFamilies));
+          }
+          saveUniqueTokens(accountAddress, uniqueTokens, network);
+          dispatch({
+            payload: uniqueTokens,
+            type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
+          });
+          fetchResolve(true);
+        }).catch(error => {
+          dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE });
+          fetchReject(error);
         });
-        resolve(true);
-      }).catch(error => {
-        dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE });
-        reject(error);
-      });
-  });
-  fetchUniqueTokens().then(() => {
-    clearInterval(getUniqueTokensInterval);
-    getUniqueTokensInterval = setInterval(fetchUniqueTokens, 15000); // 15 secs
-    resolve(true);
-  }).catch(error => {
-    clearInterval(getUniqueTokensInterval);
-    getUniqueTokensInterval = setInterval(fetchUniqueTokens, 15000); // 15 secs
-    reject(error);
-  });
-});
+    });
 
+    return fetchUniqueTokens().then(() => {
+      clearInterval(getUniqueTokensInterval);
+      getUniqueTokensInterval = setInterval(fetchUniqueTokens, 15000); // 15 secs
+      resolve(true);
+    }).catch(error => {
+      clearInterval(getUniqueTokensInterval);
+      getUniqueTokensInterval = setInterval(fetchUniqueTokens, 15000); // 15 secs
+      reject(error);
+    });
+  })
+);
 
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNIQUE_TOKENS_STATE = {

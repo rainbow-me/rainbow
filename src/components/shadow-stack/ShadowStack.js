@@ -23,11 +23,14 @@ const ShadowStackContainer = styled.View`
   z-index: 1;
 `;
 
+const ShadowItemPropBlacklist = ['children', 'shadowProps', 'shadows', 'style'];
+
 export default class ShadowStack extends PureComponent {
   static propTypes = {
     borderRadius: PropTypes.number.isRequired,
     children: PropTypes.node,
     height: PropTypes.number.isRequired,
+    shadowProps: PropTypes.object,
     shadows: PropTypes.arrayOf(PropTypes.array).isRequired,
     style: stylePropType,
     childrenWrapperStyle: stylePropType,
@@ -40,10 +43,11 @@ export default class ShadowStack extends PureComponent {
 
   renderItem = (shadow, index) => (
     <ShadowItem
-      {...omit(this.props, ['children', 'shadows', 'style'])}
+      {...omit(this.props, ShadowItemPropBlacklist)}
       key={`${shadow.join('-')}${index}`}
       shadow={shadow}
       zIndex={index + 2}
+      {...this.props.shadowProps}
     />
   )
 

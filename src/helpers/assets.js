@@ -9,7 +9,7 @@ export const buildAssetHeaderUniqueIdentifier = ({
   title,
   totalItems,
   totalValue,
-}) => ([title, totalItems, totalValue].join('_'));
+}) => (compact([title, totalItems, totalValue]).join('_'));
 
 export const buildAssetUniqueIdentifier = (item) => {
   const balance = get(item, 'balance.amount', '');
@@ -42,8 +42,10 @@ export const buildCoinsList = (assets) => {
 
 export const buildUniqueTokenList = (uniqueTokens) => {
   let rows = [];
+
   const grouped = groupBy(uniqueTokens, token => token.asset_contract.name);
   const families = Object.keys(grouped);
+
   for (let i = 0; i < families.length; i++) {
     const tokensRow = [];
     for (let j = 0; j < grouped[families[i]].length; j += 2) {

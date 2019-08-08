@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import { compose } from 'recompact';
+import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withAccountSettings, withFabSendAction } from '../../hoc';
 import { colors, padding } from '../../styles';
@@ -8,8 +8,8 @@ import { CoinIcon } from '../coin-icon';
 import Highlight from '../Highlight';
 import { Column, Row } from '../layout';
 
-const CoinRowPaddingTop = 15;
-const CoinRowPaddingBottom = 7;
+const CoinRowPaddingTop = 10;
+const CoinRowPaddingBottom = 11.5;
 
 const Container = styled(Row)`
   ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom, 19)}
@@ -17,10 +17,19 @@ const Container = styled(Row)`
   width: 100%;
 `;
 
-const Content = styled(Column)`
+const Content = styled(Column).attrs({
+  flex: 1,
+  justify: 'space-between',
+})`
   height: ${CoinIcon.size};
   margin-left: 10;
 `;
+
+const CoinRowHighlight = withProps({
+  borderRadius: 18,
+  margin: 2,
+  marginHorizontal: 8,
+})(Highlight);
 
 const enhance = compose(
   withAccountSettings,
@@ -38,10 +47,10 @@ const CoinRow = enhance(({
   topRowRender,
   ...props
 }) => (
-  <Container align="center" css={containerStyles} color="red">
-    <Highlight highlight={highlight}/>
+  <Container align="center" css={containerStyles}>
+    <CoinRowHighlight visible={highlight} />
     {createElement(coinIconRender, { symbol, ...props })}
-    <Content flex={1} justify="space-between" css={contentStyles}>
+    <Content css={contentStyles}>
       <Row align="center" justify="space-between">
         {topRowRender({ symbol, ...props })}
       </Row>
@@ -72,6 +81,5 @@ CoinRow.defaultProps = {
 };
 
 CoinRow.height = CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom;
-
 
 export default CoinRow;

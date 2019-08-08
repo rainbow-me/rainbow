@@ -1,5 +1,7 @@
 import {
   isHexString,
+  isHexStringIgnorePrefix,
+  isValidMnemonic,
   toChecksumAddress,
   web3Provider,
 } from '../handlers/web3';
@@ -41,7 +43,14 @@ export const isValidAddress = async (address) => {
  * @param  {String} seed phrase mnemonic
  * @return {Boolean}
  */
-export const isValidSeedPhrase = (seedPhrase) => {
+const isValidSeedPhrase = (seedPhrase) => {
   const phrases = seedPhrase.split(' ').filter(word => !!word).length;
-  return phrases >= 12 && phrases <= 24;
+  return phrases >= 12 && isValidMnemonic(seedPhrase);
 };
+
+/**
+ * @desc validate seed phrase mnemonic or private key
+ * @param  {String} seed phrase mnemonic or private key
+ * @return {Boolean}
+ */
+export const isValidSeed = (seed) => isHexStringIgnorePrefix(seed) || isValidSeedPhrase(seed);

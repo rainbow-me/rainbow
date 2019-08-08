@@ -6,18 +6,31 @@ import {
   pure,
   withProps,
 } from 'recompact';
-import { setOpenFamilyTabs } from '../redux/openFamilyTabs';
-import { setOpenSmallBalances } from '../redux/openBalances';
+import { createSelector } from 'reselect';
+import withFabSelection from './withFabSelection';
+import withOpenFamilyTabs from './withOpenFamilyTabs';
+import { extraStates } from '../components/fab/MovableFabWrapper';
 
-const mapStateToProps = ({
-  selectedWithFab: {
-    selectedId,
-    actionType,
-  },
-}) => ({
-  actionType,
-  selectedId,
+const mapStateToProps = ({ selectedWithFab: { actionType } }) => ({ actionType });
+
+const familyNameSelector = state => state.familyName;
+const selectedIdSelector = state => state.selectedId;
+const uniqueIdSelector = state => state.uniqueId;
+
+const derivePropsFromSelectedId = (familyName, selectedId, uniqueId) => ({
+  fabDropped: selectedId === extraStates.gestureInactive,
+  family: selectedId === familyName,
+  highlight: (selectedId === uniqueId) || (selectedId === familyName),
 });
+
+const withPropsDerivedFromSelectedId = createSelector(
+  [
+    familyNameSelector,
+    selectedIdSelector,
+    uniqueIdSelector,
+  ],
+  derivePropsFromSelectedId,
+);
 
 let openFamilyCheck = 0;
 let currentFamilyId;
@@ -25,43 +38,44 @@ let timer;
 let timerBlocker = false;
 
 export default compose(
-  connect(mapStateToProps, { setOpenFamilyTabs, setOpenSmallBalances }),
-  withProps(({ selectedId, uniqueId, familyName }) => ({
-    fabDropped: selectedId === -3,
-    family: selectedId === familyName,
-    highlight: selectedId === uniqueId || selectedId === familyName,
-    isCoinDivider: selectedId === 'smallBalancesHeader',
-  })),
+  connect(mapStateToProps),
+  withFabSelection,
+  withOpenFamilyTabs,
+  withProps(withPropsDerivedFromSelectedId),
   omitProps('selectedId'),
   lifecycle({
     componentDidUpdate(prevProps) {
-      if (this.props.family && !this.props.fabDropped) {
-        if (currentFamilyId !== this.props.family) {
+      const {
+        actionType,
+        fabDropped,
+        family,
+        familyId,
+        highlight,
+        onPressSend,
+        setOpenFamilyTabs,
+      } = this.props;
+
+      if (family && !fabDropped) {
+        if (currentFamilyId !== family) {
           openFamilyCheck = 0;
           clearTimeout(timer);
         }
+
         if (++openFamilyCheck === 1) {
           timer = setTimeout(() => {
-            if (this.props.family) {
-              this.props.setOpenFamilyTabs({ index: this.props.familyId, state: true });
+            if (family) {
+              setOpenFamilyTabs({ index: familyId, state: true });
             }
           }, 300);
         }
       } else {
         openFamilyCheck = 0;
       }
-      if (this.props.isCoinDivider === true && !this.props.fabDropped && !timerBlocker) {
-        timerBlocker = true;
-        timer = setTimeout(() => {
-          if (this.props.isCoinDivider) {
-            this.props.setOpenSmallBalances(true);
-          }
-          timerBlocker = false;
-        }, 300);
-      }
-      if (prevProps.highlight && !this.props.highlight && this.props.fabDropped) {
-        if (this.props.actionType === 'send') {
-          this.props.onPressSend();
+
+      const wasHighlighted = highlight || prevProps.highlight;
+      if (fabDropped && wasHighlighted) {
+        if (actionType === 'send' && onPressSend) {
+          onPressSend();
         }
       }
     },

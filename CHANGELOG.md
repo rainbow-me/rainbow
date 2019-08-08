@@ -12,11 +12,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
-## [1.1.0-7](https://github.com/rainbow-me/rainbow/releases/tag/v1.1.0-7)
+## [1.1.4-1](https://github.com/rainbow-me/rainbow/releases/tag/v1.1.4-1)
 ### Added
+* Support for importing private key and seed key
 * Collectibles grouped by families
 * Uniswap liquidity tokens
-* Drag-able send fab over tokens and collectibles
 
 ### Changed
 * WalletConnect support for RPC methods

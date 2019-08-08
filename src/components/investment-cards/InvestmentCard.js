@@ -21,6 +21,7 @@ const InvestmentCard = ({
   containerHeight,
   gradientColors,
   headerProps,
+  height,
   onLayout,
   shadows,
   setOpenInvestmentCards,
@@ -92,7 +93,6 @@ const InvestmentCard = ({
 InvestmentCard.propTypes = {
   children: PropTypes.node,
   collapsed: PropTypes.bool,
-  containerHeight: PropTypes.number,
   gradientColors: PropTypes.arrayOf(PropTypes.string).isRequired,
   headerProps: PropTypes.shape(InvestmentCardHeader.propTypes),
   isCollapsible: PropTypes.bool,
@@ -106,6 +106,7 @@ InvestmentCard.propTypes = {
 InvestmentCard.defaultProps = {
   containerHeight: InvestmentCardHeader.height,
   gradientColors: ['#F7FAFC', '#E0E6EC'],
+  height: InvestmentCardHeader.height,
   shadows: [
     [0, 1, 3, colors.dark, 0.08],
     [0, 4, 6, colors.dark, 0.04],

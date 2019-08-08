@@ -1,10 +1,9 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
-import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
-import { withOpenFamilyTabs, withOpenInvestmentCards, withOpenBalances } from '../../hoc';
+import { withFabSelection, withOpenFamilyTabs, withOpenInvestmentCards, withOpenBalances } from '../../hoc';
 import {
   setActionType,
   setScrollingVelocity,
@@ -16,8 +15,11 @@ import { ListFooter } from '../list';
 import { CardSize, CardMargin } from '../unique-token/UniqueTokenRow';
 import { InvestmentCard, UniswapInvestmentCard, InvestmentCardHeader } from '../investment-cards';
 import CoinDivider from '../coin-divider/CoinDivider';
+import { UniqueTokenRow } from '../unique-token';
+import DeleteButton from './DeleteButton';
 
 const {
+  abs,
   add,
   and,
   block,
@@ -88,13 +90,12 @@ export const extraStates = {
   overX: -2,
 };
 
-
-class Movable extends React.Component {
+class MovableFabWrapper extends PureComponent {
   static propTypes = {
     actionType: PropTypes.string,
     areas: PropTypes.array,
     children: PropTypes.any,
-    deleteButtonTranslate: PropTypes.object,
+    deleteButtonScale: PropTypes.object,
     openFamilyTabs: PropTypes.array,
     openInvestmentCards: PropTypes.array,
     openSmallBalances: PropTypes.bool,
@@ -110,15 +111,15 @@ class Movable extends React.Component {
     scrollOffset: new Animated.Value(0),
   };
 
-  dragX = new Animated.Value(0);
-
-  selectedIndex = new Animated.Value(0);
-
   absoluteX = new Animated.Value(0);
 
   absoluteY = new Animated.Value(0);
 
-  key = 0;
+  clockX = new Clock();
+
+  clockY = new Clock();
+
+  dragX = new Animated.Value(0);
 
   dragY = new Animated.Value(0);
 
@@ -128,19 +129,52 @@ class Movable extends React.Component {
 
   gestureState = new Animated.Value(0);
 
+  isOverDeleteButtonBoundary = position => greaterThan(abs(position), DeleteButton.size * 2);
+
+  key = 0;
+
+  selectedIndex = new Animated.Value(0);
+
   springOffsetX = new Animated.Value(0);
 
   springOffsetY = new Animated.Value(0);
 
-  clockX = new Clock();
+  translateX = add(this.dragX, this.springOffsetX);
 
-  clockY = new Clock();
+  translateY = add(this.dragY, this.springOffsetY);
 
   wasRunSpring = new Animated.Value(0);
 
   xClockHide = new Clock();
 
   xClockShow = new Clock();
+
+  calculateSelectedIndex = () => cond(
+    or(
+      lessThan(this.absoluteY, 109),
+      this.isOverX,
+    ),
+    extraStates.overX,
+    this.props.areas.reduce((prev, curr, i) => cond(
+      and(
+        greaterThan(this.absoluteX, curr.left),
+        greaterThan(add(this.absoluteY, this.props.scrollViewTracker), curr.top),
+        lessThan(add(this.absoluteY, this.props.scrollViewTracker), curr.bottom),
+        lessThan(this.absoluteX, curr.right),
+      ), i, prev,
+    ), extraStates.nothing),
+  );
+
+  isOverX = and(
+    greaterThan(this.absoluteY, deviceUtils.dimensions.height - 120),
+    greaterThan(this.absoluteX, deviceUtils.dimensions.width - 100),
+  );
+
+  manageUpAndDownScrolling = cond(
+    and(greaterThan(this.absoluteY, deviceUtils.dimensions.height - 20), not(this.isOverX)),
+    1,
+    cond(lessThan(this.absoluteY, 120), 2, 0),
+  );
 
   onGestureEvent = event([
     {
@@ -164,81 +198,66 @@ class Movable extends React.Component {
     },
   ]);
 
-  isOverX = and(
-    greaterThan(this.absoluteY, deviceUtils.dimensions.height - 120),
-    greaterThan(this.absoluteX, deviceUtils.dimensions.width - 100),
-  );
-
-  calculateSelectedIndex = () => cond(
-    or(
-      lessThan(this.absoluteY, 109),
-      this.isOverX,
-    ),
-    extraStates.overX,
-    this.props.areas.reduce((prev, curr, i) => cond(
-      and(
-        greaterThan(this.absoluteX, curr.left),
-        greaterThan(add(this.absoluteY, this.props.scrollViewTracker), curr.top),
-        lessThan(add(this.absoluteY, this.props.scrollViewTracker), curr.bottom),
-        lessThan(this.absoluteX, curr.right),
-      ), i, prev,
-    ), extraStates.nothing),
-  );
-
-  manageUpAndDownScrolling = cond(
-    and(greaterThan(this.absoluteY, deviceUtils.dimensions.height - 20), not(this.isOverX)),
-    1,
-    cond(lessThan(this.absoluteY, 120), 2, 0),
-  );
-
   render() {
-    const selectedIndexWithState = cond(eq(this.gestureState, State.ACTIVE), this.selectedIndex, extraStates.gestureInactive);
+    const selectedIndexWithState = cond(
+      eq(this.gestureState, State.ACTIVE),
+      this.selectedIndex,
+      extraStates.gestureInactive,
+    );
+
+    const showDeleteButton = or(
+      this.isOverDeleteButtonBoundary(this.translateX),
+      this.isOverDeleteButtonBoundary(this.translateY),
+    );
+
     return (
       <PanGestureHandler
-        simultaneousHandlers={this.props.tapRef}
         onGestureEvent={this.onGestureEvent}
         onHandlerStateChange={this.onHandlerStateChange}
+        simultaneousHandlers={this.props.tapRef}
       >
         <Animated.View
           style={{
             transform: [
-              {
-                translateY: add(this.dragY, this.springOffsetY),
-              },
-              {
-                translateX: add(this.dragX, this.springOffsetX),
-              },
+              { translateX: this.translateX },
+              { translateY: this.translateY },
             ],
           }}
         >
-
-          {this.props.areas && this.props.areas.length !== 0
-            && <Animated.Code
+          {(this.props.areas && this.props.areas.length !== 0) && (
+            <Animated.Code
               // Provoke change on reordering
               key={this.key++}
               exec={set(this.selectedIndex, this.calculateSelectedIndex())}
-            />}
+            />
+          )}
           <Animated.Code
-            exec={onChange(this.manageUpAndDownScrolling, [
-              // eslint-disable-next-line no-nested-ternary
-              call([this.manageUpAndDownScrolling], ([v]) => this.props.setScrollingVelocity(v === 1 ? 1 : (v === 2 ? -1 : 0))),
-            ])}
+            exec={(
+              onChange(this.manageUpAndDownScrolling, [
+                // eslint-disable-next-line no-nested-ternary
+                call([this.manageUpAndDownScrolling], ([v]) => this.props.setScrollingVelocity(v === 1 ? 1 : (v === 2 ? -1 : 0))),
+              ])
+            )}
           />
           <Animated.Code
             exec={
               block([
                 cond(
-                  and(eq(this.gestureState, State.ACTIVE), neq(this.props.deleteButtonTranslate, 0)),
+                  eq(this.gestureState, State.ACTIVE),
                   [
-                    set(this.props.deleteButtonTranslate, runSpring(this.xClockShow, this.props.deleteButtonTranslate, 0, 0)),
+                    cond(
+                      showDeleteButton,
+                      set(this.props.deleteButtonScale, runSpring(this.xClockShow, this.props.deleteButtonScale, 0, 1)),
+                      set(this.props.deleteButtonScale, runSpring(this.xClockShow, this.props.deleteButtonScale, 0, DeleteButton.defaultScale)),
+                    ),
                     stopClock(this.xClockHide),
                   ],
                 ),
                 cond(
-                  and(eq(this.gestureState, State.END), neq(this.props.deleteButtonTranslate, 100)),
+                  and(eq(this.gestureState, State.END), neq(this.props.deleteButtonScale, DeleteButton.defaultScale)),
                   [
                     call([], () => this.props.setScrollingVelocity(0)),
-                    set(this.props.deleteButtonTranslate, runSpring(this.xClockHide, this.props.deleteButtonTranslate, 0, 100)),
+                    set(this.props.deleteButtonScale, runSpring(this.xClockHide, this.props.deleteButtonScale, 0, DeleteButton.defaultScale)),
                     stopClock(this.xClockShow),
                   ],
                 ),
@@ -253,13 +272,13 @@ class Movable extends React.Component {
                   cond(
                     eq(this.gestureState, State.END),
                     [
-                      set(this.springOffsetX, add(this.dragX, this.springOffsetX)),
-                      set(this.springOffsetY, add(this.dragY, this.springOffsetY)),
+                      set(this.springOffsetX, this.translateX),
+                      set(this.springOffsetY, this.translateY),
                       set(this.dragX, 0),
                       set(this.dragY, 0),
                     ],
                     cond(
-                      eq(this.gestureState, State.ACTIVE),
+                      eq(this.gestureState, State.BEGAN),
                       call([], () => this.props.setActionType(this.props.actionType)),
                     ),
                   ),
@@ -362,7 +381,7 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs, openInvestment
         for (let j = 0; j < tokens.length; j++) {
           for (let k = 0; k < tokens[j].length; k++) {
             areas.push({
-              bottom: height + CardSize,
+              bottom: height + UniqueTokenRow.cardSize,
               id: tokens[j][k].isSendable ? tokens[j][k].uniqueId : extraStates.notSendable,
               left: k === 0 ? 0 : deviceUtils.dimensions.width / 2,
               right: deviceUtils.dimensions.width / (k === 0 ? 2 : 1),
@@ -370,9 +389,9 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs, openInvestment
             });
           }
           if (openFamilyTabs[collectibles.data[i].familyName]) {
-            height += CardSize;
+            height += UniqueTokenRow.cardSize;
             if (j > 0) {
-              height += CardMargin;
+              height += UniqueTokenRow.cardMargin;
             }
           }
         }
@@ -383,14 +402,10 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs, openInvestment
   return null;
 };
 
-const EnhancedMovable = compose(
-  connect(null, {
-    setActionType,
-    setScrollingVelocity,
-    updateSelectedID,
-  }),
+export default compose(
+  withFabSelection,
+  withOpenFamilyTabs,
+  withOpenInvestmentCards,
+  withOpenBalances,
   withProps(traverseSectionsToDimensions),
-)(Movable);
-
-
-export default withOpenFamilyTabs(withOpenInvestmentCards(withOpenBalances(EnhancedMovable)));
+)(MovableFabWrapper);

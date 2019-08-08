@@ -2,17 +2,22 @@ import produce from 'immer';
 import { saveOpenFamilies } from '../handlers/commonStorage';
 
 // -- Constants --------------------------------------- //
-const SET_OPEN_FAMILY_TABS = 'openFamilyTabs/SET_OPEN_FAMILY_TABS';
+const CLEAR_OPEN_FAMILY_TAB = 'openFamilyTabs/CLEAR_OPEN_FAMILY_TAB';
 const PUSH_OPEN_FAMILY_TAB = 'openFamilyTabs/PUSH_OPEN_FAMILY_TAB';
+const SET_OPEN_FAMILY_TABS = 'openFamilyTabs/SET_OPEN_FAMILY_TABS';
 
-export const setOpenFamilyTabs = payload => dispatch => dispatch({
-  payload,
-  type: SET_OPEN_FAMILY_TABS,
+export const clearOpenFamilyTab = () => dispatch => dispatch({
+  type: CLEAR_OPEN_FAMILY_TAB,
 });
 
 export const pushOpenFamilyTab = payload => dispatch => dispatch({
   payload,
   type: PUSH_OPEN_FAMILY_TAB,
+});
+
+export const setOpenFamilyTabs = payload => dispatch => dispatch({
+  payload,
+  type: SET_OPEN_FAMILY_TABS,
 });
 
 // -- Reducer ----------------------------------------- //
@@ -27,6 +32,8 @@ export default (state = INITIAL_STATE, action) => (
       saveOpenFamilies(draft.openFamilyTabs);
     } else if (action.type === PUSH_OPEN_FAMILY_TAB) {
       draft.openFamilyTabs = action.payload;
+    } else if (action.type === CLEAR_OPEN_FAMILY_TAB) {
+      return INITIAL_STATE;
     }
   })
 );

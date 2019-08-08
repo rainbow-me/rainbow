@@ -46,7 +46,7 @@ const BackupSection = ({
       size="large"
       weight="semibold"
     >
-      Your Seed Phrase
+      Your Private Key
     </Text>
     <Content flex={0} seedPhrase={seedPhrase}>
       {seedPhrase
@@ -54,7 +54,7 @@ const BackupSection = ({
           <CopyTooltip
             navigation={navigation}
             textToCopy={seedPhrase}
-            tooltipText="Copy Seed Phrase"
+            tooltipText="Copy Private Key"
           >
             <Monospace
               align="center"
@@ -72,7 +72,7 @@ const BackupSection = ({
             lineHeight="loose"
           >
             If you lose access to your device, the only way to restore your
-            funds is with your 12-word seed phrase.
+            funds is with your private key.
             <Br />
             <Br />
             Please store it in a safe place.
@@ -81,7 +81,7 @@ const BackupSection = ({
       }
     </Content>
     <ToggleSeedPhraseButton onPress={toggleSeedPhrase}>
-      {seedPhrase ? 'Hide' : 'Show'} Seed Phrase
+      {seedPhrase ? 'Hide' : 'Show'} Private Key
     </ToggleSeedPhraseButton>
   </Column>
 );

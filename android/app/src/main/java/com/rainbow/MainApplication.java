@@ -3,6 +3,7 @@ package me.rainbow;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import org.reactnative.maskedview.RNCMaskedViewPackage;
 import com.segment.analytics.reactnative.core.RNAnalyticsPackage;
 import io.invertase.firebase.RNFirebasePackage;
 import react-native-tcp.TcpSocketsModule;
@@ -58,6 +59,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNCMaskedViewPackage(),
             new RNAnalyticsPackage(),
             new RNFirebasePackage(),
             new TcpSocketsModule(),

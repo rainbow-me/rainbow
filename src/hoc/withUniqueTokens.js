@@ -1,4 +1,4 @@
-import { groupBy, sortBy } from 'lodash';
+import { groupBy } from 'lodash';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { sendableUniqueTokensSelector } from './uniqueTokenSelectors';
@@ -16,7 +16,7 @@ const mapStateToProps = ({
 const sendableUniqueTokens = (state) => {
   const sendableUniqueTokens = sendableUniqueTokensSelector(state).sendableUniqueTokens;
   const grouped = groupBy(sendableUniqueTokens, token => token.asset_contract.name);
-  const families = Object.keys(grouped);
+  const families = Object.keys(grouped).sort();
   let sendableTokens = []
   for (let i = 0; i < families.length; i++) {
     let newObject = {};
@@ -28,7 +28,6 @@ const sendableUniqueTokens = (state) => {
     };
     sendableTokens.push(newObject);
   };
-  sendableTokens = sortBy(sendableTokens, ['name']);
   return { sendableUniqueTokens: sendableTokens};
 }
 
