@@ -110,8 +110,7 @@ class SelectCurrencyModal extends PureComponent {
     const { navigation } = this.props;
     this.callback = navigation.getParam('onSelectCurrency');
     this.keyboardHeight = navigation.getParam('keyboardHeight');
-    const assets = navigation.getParam('assets') || [];
-    const indexedAssets = map(assets, asset => ({ ...asset, index: `${asset.name} ${asset.symbol}` }));
+    const indexedAssets = map(navigation.getParam('assets', []), asset => ({ ...asset, index: `${asset.name} ${asset.symbol}` }));
     this.assets = indexedAssets;
     this.viewportHeight = deviceUtils.dimensions.height - this.keyboardHeight;
   }
