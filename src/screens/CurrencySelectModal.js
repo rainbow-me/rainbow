@@ -95,8 +95,7 @@ class CurrencySelectModal extends PureComponent {
   getDataFromParams = () => {
     const { navigation } = this.props;
     this.callback = navigation.getParam('onSelectCurrency');
-    const assets = navigation.getParam('assets') || [];
-    const indexedAssets = map(assets, asset => ({ ...asset, index: `${asset.name} ${asset.symbol}` }));
+    const indexedAssets = map(navigation.getParam('assets', []), asset => ({ ...asset, index: `${asset.name} ${asset.symbol}` }));
     this.assets = indexedAssets;
   }
 
