@@ -6,7 +6,14 @@ import {
   tradeTokensForExactEth,
   tradeTokensForExactTokens,
 } from '@uniswap/sdk';
-import { get, isNil } from 'lodash';
+import {
+  filter,
+  findIndex,
+  get,
+  isNil,
+  keys,
+  map,
+} from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { TextInput } from 'react-native';
@@ -30,7 +37,9 @@ import {
   withNeverRerender,
   withTransactionConfirmationScreen,
   withTransitionProps,
+  withUniswapAssets,
 } from '../hoc';
+import uniswapAssets from '../references/uniswap-pairs.json';
 import { colors, padding, position } from '../styles';
 import { deviceUtils, ethereumUtils, safeAreaInsetValues } from '../utils';
 import {
@@ -82,6 +91,7 @@ class ExchangeModal extends PureComponent {
     nativeCurrency: PropTypes.string,
     navigation: PropTypes.object,
     pushKeyboardFocusHistory: PropTypes.func,
+    sortedUniswapAssets: PropTypes.array,
     tradeDetails: PropTypes.object,
   }
 
@@ -247,8 +257,14 @@ class ExchangeModal extends PureComponent {
     }
   }
 
+  getAssetsAvailableOnUniswap = () => {
+    const uniswapAssetAddresses = map(keys(uniswapAssets), address => address.toLowerCase());
+    return filter(this.props.allAssets, asset => findIndex(uniswapAssetAddresses, uniswapAddress => uniswapAddress === asset.address) > -1);
+  };
+
   handleSelectInputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
+      assets: this.getAssetsAvailableOnUniswap(),
       isInputAssets: true,
       onSelectCurrency: this.setInputCurrency,
     });
@@ -256,6 +272,7 @@ class ExchangeModal extends PureComponent {
 
   handleSelectOutputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
+      assets: this.props.sortedUniswapAssets,
       isInputAssets: false,
       onSelectCurrency: this.setOutputCurrency,
     });
@@ -413,6 +430,7 @@ export default compose(
   withAccountSettings,
   withBlockedHorizontalSwipe,
   withTransactionConfirmationScreen,
+  withUniswapAssets,
   withNavigationFocus,
   withMockedPrices,
   withKeyboardFocusHistory,

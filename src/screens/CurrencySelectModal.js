@@ -2,6 +2,7 @@ import {
   filter,
   findIndex,
   get,
+  isEmpty,
   keys,
   map,
 } from 'lodash';
@@ -28,7 +29,7 @@ import {
 import { borders, colors, position } from '../styles';
 import { BackButton } from '../components/header';
 import { ExchangeSearch } from '../components/exchange';
-import uniswapAssets from '../references/uniswap-pairs.json';
+import { filterList } from '../utils/search';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 
 const HeaderContainer = styled(Centered).attrs({
@@ -48,14 +49,23 @@ const BackButtonWrapper = styled(Centered)`
 
 class CurrencySelectModal extends PureComponent {
   static propTypes = {
-    allAssets: PropTypes.array,
-    sortedUniswapAssets: PropTypes.array,
     navigation: PropTypes.object,
   }
+
+  state = {
+    searchResults: [],
+  }
+
+  assets = []
 
   callback = null
 
   isInputAssets = true
+
+  onChangeSearchText = (searchPhrase) => {
+    const searchResults = filterList(this.assets, searchPhrase, 'index');
+    this.setState({ searchResults });
+  }
 
   searchInputRef = React.createRef()
 
@@ -83,7 +93,11 @@ class CurrencySelectModal extends PureComponent {
   }
 
   getDataFromParams = () => {
-    this.callback = this.props.navigation.getParam('onSelectCurrency');
+    const { navigation } = this.props;
+    this.callback = navigation.getParam('onSelectCurrency');
+    const assets = navigation.getParam('assets') || [];
+    const indexedAssets = map(assets, asset => ({ ...asset, index: `${asset.name} ${asset.symbol}` }));
+    this.assets = indexedAssets;
   }
 
   dangerouslySetIsGestureBlocked = (isGestureBlocked) => {
@@ -116,23 +130,15 @@ class CurrencySelectModal extends PureComponent {
     this.props.pushKeyboardFocusHistory(currentTarget);
   }
 
-  getAssetsAvailableOnUniswap = () => {
-    const uniswapAssetAddresses = map(keys(uniswapAssets), address => address.toLowerCase());
-    return filter(this.props.allAssets, asset => findIndex(uniswapAssetAddresses, uniswapAddress => uniswapAddress === asset.address) > -1);
-  };
+  getSections = () => {
+    const data = (this.state.searchResults) ? this.assets : this.state.searchResults;
+    return [{
+      balances: true,
+      data,
+      renderItem: this.renderCurrencyItem,
+    }];
+  }
 
-  getAssets = () => {
-    const data = this.isInputAssets
-      ? this.getAssetsAvailableOnUniswap()
-      : this.props.sortedUniswapAssets;
-    return [
-      {
-        balances: true,
-        data,
-        renderItem: this.renderCurrencyItem,
-      },
-    ];
-  };
 
   render() {
     const {
@@ -186,6 +192,7 @@ class CurrencySelectModal extends PureComponent {
               </HeaderContainer>
               <ExchangeSearch
                 autoFocus={false}
+                onChangeText={this.onChangeSearchText}
                 onFocus={this.handleFocusField}
                 ref={this.searchInputRef}
               />
@@ -193,7 +200,7 @@ class CurrencySelectModal extends PureComponent {
                 flex={0}
                 hideHeader
                 paddingBottom={100}
-                sections={this.getAssets()}
+                sections={this.getSections()}
               />
             </Column>
             <GestureBlocker type='bottom'/>
@@ -205,8 +212,6 @@ class CurrencySelectModal extends PureComponent {
 }
 
 export default compose(
-  withAccountData,
-  withUniswapAssets,
   withNavigationFocus,
   withTransitionProps,
   withKeyboardFocusHistory,
