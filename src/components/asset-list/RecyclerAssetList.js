@@ -546,6 +546,7 @@ class RecyclerAssetList extends Component {
       const renderList = [];
       for (let i = 0; i < item.assets.length; i++) {
         const selectedItem = { item: item.assets[i] };
+        selectedItem.item.isSmall = true;
         renderList.push(renderItem(selectedItem));
       }
 
