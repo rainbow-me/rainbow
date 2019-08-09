@@ -81,8 +81,6 @@ const buildWalletSections = (
     uniqueTokenFamiliesSection,
   ];
 
-  console.log(uniswapSection);
-
   const filteredSections = filterWalletSections(sections);
   const isEmpty = !filteredSections.length;
   setIsWalletEmpty(isEmpty);

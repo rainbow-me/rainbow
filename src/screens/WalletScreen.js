@@ -32,8 +32,13 @@ import {
   withStatusBarStyle,
   withUniswapLiquidity,
 } from '../hoc';
+import store from '../redux/store';
 import { position } from '../styles';
 import { isNewValueForPath } from '../utils';
+import { getSmallBalanceToggle, getOpenInvestmentCards, getOpenFamilies } from '../handlers/commonStorage';
+import { setOpenSmallBalances } from '../redux/openBalances';
+import { pushOpenInvestmentCard } from '../redux/openInvestmentCards';
+import { pushOpenFamilyTab } from '../redux/openFamilyTabs';
 
 class WalletScreen extends Component {
   static propTypes = {
@@ -54,8 +59,19 @@ class WalletScreen extends Component {
     uniqueTokens: PropTypes.array,
   }
 
+  setInitialStatesForOpenAssets = async () => {
+    const toggle = await getSmallBalanceToggle();
+    const openInvestmentCards = await getOpenInvestmentCards();
+    const openFamilies = await getOpenFamilies();
+    await store.dispatch(setOpenSmallBalances(toggle));
+    await store.dispatch(pushOpenInvestmentCard(openInvestmentCards));
+    await store.dispatch(pushOpenFamilyTab(openFamilies));
+    return true;
+  }
+
   componentDidMount = async () => {
     try {
+      await this.setInitialStatesForOpenAssets();
       await this.props.initializeWallet();
     } catch (error) {
       // TODO

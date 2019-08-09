@@ -28,10 +28,6 @@ import store from './redux/store';
 import { requestsForTopic } from './redux/requests';
 import Routes from './screens/Routes';
 import { parseQueryParams } from './utils';
-import { setOpenSmallBalances } from './redux/openBalances';
-import { getSmallBalanceToggle, getOpenInvestmentCards, getOpenFamilies } from './handlers/commonStorage';
-import { pushOpenInvestmentCard } from './redux/openInvestmentCards';
-import { pushOpenFamilyTab } from './redux/openFamilyTabs';
 
 if (process.env.NODE_ENV === 'development') {
   console.disableYellowBox = true;
@@ -90,18 +86,7 @@ class App extends Component {
     return Navigation.handleAction({ routeName: 'ProfileScreen' });
   };
 
-  setInitialStatesForOpenAssets = async () => {
-    const toggle = await getSmallBalanceToggle();
-    const openInvestmentCards = await getOpenInvestmentCards();
-    const openFamilies = await getOpenFamilies();
-    await store.dispatch(setOpenSmallBalances(toggle));
-    await store.dispatch(pushOpenInvestmentCard(openInvestmentCards));
-    await store.dispatch(pushOpenFamilyTab(openFamilies));
-    return true;
-  }
-
   async componentDidMount() {
-    await this.setInitialStatesForOpenAssets();
     AppState.addEventListener('change', this.handleAppStateChange);
     Linking.addEventListener('url', this.handleOpenLinkingURL);
     await this.handleInitializeAnalytics();

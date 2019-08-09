@@ -1,6 +1,13 @@
+import { withSafeTimeout } from '@hocs/safe-timers';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
+import {
+  compose,
+  lifecycle,
+  withState,
+  withHandlers,
+} from 'recompact';
 import { withOpenBalances } from '../../hoc';
 import CoinDivider from './CoinDivider';
 import OpacityToggler from '../animations/OpacityToggler';
@@ -18,6 +25,7 @@ const balancesSum = (balances) => {
 };
 
 const SmallBalancesWrapper = ({
+  areChildrenVisible,
   openSmallBalances,
   setOpenSmallBalances,
   assets,
@@ -31,16 +39,49 @@ const SmallBalancesWrapper = ({
       onChangeOpenBalances={() => setOpenSmallBalances(!openSmallBalances)}
     />
     <OpacityToggler isVisible={openSmallBalances} startingOpacity={0} endingOpacity={1}>
-      {assets}
+      {areChildrenVisible && assets}
     </OpacityToggler>
   </View>
 );
 
 SmallBalancesWrapper.propTypes = {
+  areChildrenVisible: PropTypes.bool,
   assets: PropTypes.array,
   balancesSum: PropTypes.string,
   openSmallBalances: PropTypes.bool,
   setOpenSmallBalances: PropTypes.func,
 };
 
-export default withOpenBalances(SmallBalancesWrapper);
+export default compose(
+  withSafeTimeout,
+  withOpenBalances,
+  withState('areChildrenVisible', 'setAreChildrenVisible', true),
+  withHandlers({
+    onHideChildren: ({ areChildrenVisible, setAreChildrenVisible }) => () => {
+      if (areChildrenVisible) {
+        setAreChildrenVisible(false);
+      }
+    },
+    onShowChildren: ({ areChildrenVisible, setAreChildrenVisible }) => () => {
+      if (!areChildrenVisible) {
+        setAreChildrenVisible(true);
+      }
+    },
+  }),
+  lifecycle({
+    componentDidMount() {
+      this.props.onShowChildren();
+    },
+    componentDidUpdate() {
+      if (!this.props.openSmallBalances) {
+        setTimeout(() => {
+          if (!this.props.openSmallBalance) {
+            this.props.onHideChildren();
+          }
+        }, 200);
+      } else {
+        this.props.onShowChildren();
+      }
+    },
+  }),
+)(SmallBalancesWrapper);
