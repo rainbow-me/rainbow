@@ -368,12 +368,12 @@ class RecyclerAssetList extends Component {
           if (balances.data) {
             balancesHeight += CoinRow.height * (balances.data.length - 1);
             if (balances.data[balances.data.length - 1].smallBalancesContainer) {
-              balancesHeight += CoinDivider.height + ListFooter.height;
+              balancesHeight += CoinDivider.height + ListFooter.height + 9;
               if (this.props.openSmallBalances) {
                 balancesHeight += CoinRow.height * balances.data[balances.data.length - 1].assets.length;
               }
             } else {
-              balancesHeight += CoinRow.height + ListFooter.height;
+              balancesHeight += CoinDivider.height + ListFooter.height + 16;
             }
           }
           const verticalOffset = 10;
