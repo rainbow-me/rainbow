@@ -300,22 +300,6 @@ class RecyclerAssetList extends Component {
     };
   }
 
-  shouldComponentUpdate = (nextProps, nextState) => {
-    if (nextProps.openFamilyTabs !== this.props.openFamilyTabs) {
-      return true;
-    }
-
-    if (nextState.isRefreshing !== this.state.isRefreshing) {
-      return true;
-    }
-
-    if (this.contentSize - this.layoutMeasurement < this.position && this.position !== 0 && !(this.position <= reloadHeightOfsetTop && this.position > reloadHeightOffsetBottom)) {
-      return false;
-    }
-
-    return true;
-  }
-
   componentDidMount = () => {
     this.isCancelled = false;
   };
