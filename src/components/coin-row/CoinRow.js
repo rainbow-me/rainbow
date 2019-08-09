@@ -8,8 +8,8 @@ import { CoinIcon } from '../coin-icon';
 import Highlight from '../Highlight';
 import { Column, Row } from '../layout';
 
-const CoinRowPaddingTop = 10;
-const CoinRowPaddingBottom = 11.5;
+const CoinRowPaddingTop = 15;
+const CoinRowPaddingBottom = 7;
 
 const Container = styled(Row)`
   ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom, 19)}
