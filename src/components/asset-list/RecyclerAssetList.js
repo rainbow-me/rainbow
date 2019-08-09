@@ -395,7 +395,6 @@ class RecyclerAssetList extends Component {
           break;
         }
         if (this.props.openFamilyTabs[i] === false && prev.openFamilyTabs[i] === true) {
-          layoutItemAnimator.animateShift = () => LayoutAnimation.configureNext(LayoutAnimation.create(310, 'easeInEaseOut', 'opacity'));
           let balancesHeight = 0;
           if (balances.data) {
             balancesHeight += CoinRow.height * (balances.data.length - 1);
@@ -430,12 +429,13 @@ class RecyclerAssetList extends Component {
           }
           const renderSize = balancesHeight + investmentHeight + collectiblesHeight + ListFooter.height;
           const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 240 : 360);
-          if (this.position + deviceDimensions > renderSize) {
+          if (this.position + deviceDimensions > renderSize && renderSize > deviceDimensions) {
+            layoutItemAnimator.animateShift = () => LayoutAnimation.configureNext(LayoutAnimation.create(310, 'easeInEaseOut', 'opacity'));
             this.scrollToOffset(renderSize - deviceDimensions, true);
+            setTimeout(() => {
+              layoutItemAnimator.animateShift = () => LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity'));
+            }, 300);
           }
-          setTimeout(() => {
-            layoutItemAnimator.animateShift = () => LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity'));
-          }, 300);
         }
         i++;
       }
