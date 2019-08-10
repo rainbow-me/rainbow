@@ -280,7 +280,6 @@ class RecyclerAssetList extends Component {
 
   static getDerivedStateFromProps({ sections }, state) {
     const headersIndices = [];
-    console.log(sections);
     const items = sections.reduce((ctx, section) => {
       headersIndices.push(ctx.length);
       return ctx
@@ -378,50 +377,74 @@ class RecyclerAssetList extends Component {
           }
           break;
         }
+        i++;
+      }
+    }
+
+    let shouldAutoscrollBack = false;
+    if (collectibles.data) {
+      for (let i = 0; i < collectibles.data.length; i++) {
         if (this.props.openFamilyTabs[i] === false && prev.openFamilyTabs[i] === true) {
-          let balancesHeight = 0;
-          if (balances.data) {
-            balancesHeight += CoinRow.height * (balances.data.length - 1);
-            if (balances.data[balances.data.length - 1].smallBalancesContainer) {
-              balancesHeight += CoinDivider.height + ListFooter.height;
-              if (this.props.openSmallBalances) {
-                balancesHeight += CoinRow.height * balances.data[balances.data.length - 1].assets.length;
-              }
-            } else {
-              balancesHeight += CoinRow.height + ListFooter.height;
-            }
-          }
+          shouldAutoscrollBack = true;
+          break;
+        }
+      }
+    }
 
-          let investmentHeight = 0;
-          if (investments.data) {
-            for (let k = 0; k < investments.data.length; k++) {
-              if (!this.props.openInvestmentCards[investments.data[k].uniqueId]) {
-                investmentHeight += (UniswapInvestmentCard.height + InvestmentCard.margin.vertical);
-              } else {
-                investmentHeight += (InvestmentCardHeader.height + InvestmentCard.margin.vertical);
-              }
-            }
-          }
+    if (investments.data && !shouldAutoscrollBack) {
+      for (let i = 0; i < investments.data.length; i++) {
+        if (this.props.openInvestmentCards[investments.data[i].uniqueId] === true && prev.openInvestmentCards[investments.data[i].uniqueId] === false) {
+          shouldAutoscrollBack = true;
+          break;
+        }
+      }
+    }
 
-          let collectiblesHeight = collectibles.data.length > 0 ? AssetListHeader.height : 0;
-          for (let j = 0; j < collectibles.data.length; j++) {
-            if (this.props.openFamilyTabs[j] && collectibles.data[j].tokens) {
-              collectiblesHeight += TokenFamilyHeader.height + collectibles.data[j].tokens.length * UniqueTokenRow.height + TokenFamilyWrapPaddingTop - 2;
-            } else {
-              collectiblesHeight += TokenFamilyHeader.height;
-            }
+    if (shouldAutoscrollBack
+    || (this.props.openSmallBalances === false && prev.openSmallBalances === true)) {
+      let balancesHeight = 0;
+      if (balances.data) {
+        balancesHeight += CoinRow.height * (balances.data.length - 1);
+        if (balances.data[balances.data.length - 1].smallBalancesContainer) {
+          balancesHeight += CoinDivider.height + ListFooter.height;
+          if (this.props.openSmallBalances) {
+            balancesHeight += CoinRow.height * balances.data[balances.data.length - 1].assets.length;
           }
-          const renderSize = balancesHeight + investmentHeight + collectiblesHeight + ListFooter.height;
-          const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 240 : 360);
-          if (this.position + deviceDimensions > renderSize && renderSize > deviceDimensions) {
-            layoutItemAnimator.animateShift = () => LayoutAnimation.configureNext(LayoutAnimation.create(310, 'easeInEaseOut', 'opacity'));
-            this.scrollToOffset(renderSize - deviceDimensions, true);
-            setTimeout(() => {
-              layoutItemAnimator.animateShift = () => LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity'));
-            }, 300);
+        } else {
+          balancesHeight += CoinRow.height + ListFooter.height;
+        }
+      }
+
+      let investmentHeight = 0;
+      if (investments.data) {
+        for (let k = 0; k < investments.data.length; k++) {
+          if (!this.props.openInvestmentCards[investments.data[k].uniqueId]) {
+            investmentHeight += (UniswapInvestmentCard.height + InvestmentCard.margin.vertical);
+          } else {
+            investmentHeight += (InvestmentCardHeader.height + InvestmentCard.margin.vertical);
           }
         }
-        i++;
+      }
+
+      let collectiblesHeight = 0;
+      if (balances.data) {
+        collectiblesHeight = collectibles.data.length > 0 ? AssetListHeader.height : 0;
+        for (let j = 0; j < collectibles.data.length; j++) {
+          if (this.props.openFamilyTabs[j] && collectibles.data[j].tokens) {
+            collectiblesHeight += TokenFamilyHeader.height + collectibles.data[j].tokens.length * UniqueTokenRow.height + TokenFamilyWrapPaddingTop - 2;
+          } else {
+            collectiblesHeight += TokenFamilyHeader.height;
+          }
+        }
+      }
+      const renderSize = balancesHeight + investmentHeight + collectiblesHeight + ListFooter.height;
+      const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 240 : 360);
+      if (this.position + deviceDimensions > renderSize && renderSize > deviceDimensions) {
+        layoutItemAnimator.animateShift = () => LayoutAnimation.configureNext(LayoutAnimation.create(310, 'easeInEaseOut', 'opacity'));
+        this.scrollToOffset(renderSize - deviceDimensions, true);
+        setTimeout(() => {
+          layoutItemAnimator.animateShift = () => LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity'));
+        }, 300);
       }
     }
   }
