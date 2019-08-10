@@ -61,7 +61,8 @@ const UniswapInvestmentCard = enhance(({
       collapsed={openInvestmentCards[uniqueId]}
       uniqueId={uniqueId}
       containerHeight={UniswapInvestmentCard.height}
-      headerProps={{
+      isExtendedState={!onPress}
+        headerProps={{
         color: colors.dark,
         emoji: 'unicorn_face',
         title: 'Uniswap',

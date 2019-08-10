@@ -20,6 +20,7 @@ const InvestmentCard = ({
   collapsed,
   containerHeight,
   gradientColors,
+  isExtendedState,
   headerProps,
   height,
   onLayout,
@@ -37,8 +38,8 @@ const InvestmentCard = ({
   return (
     <View style={{
       paddingBottom: InvestmentCardMargin.vertical,
-      paddingLeft: InvestmentCardMargin.horizontal,
-      paddingRight: InvestmentCardMargin.horizontal,
+      paddingLeft: isExtendedState ? 0 : InvestmentCardMargin.horizontal,
+      paddingRight: isExtendedState ? 0 : InvestmentCardMargin.horizontal,
       paddingTop: InvestmentCardMargin.vertical,
       shadowColor: colors.dark,
       shadowOffset: { height: 1, width: 0 },
@@ -96,6 +97,7 @@ InvestmentCard.propTypes = {
   gradientColors: PropTypes.arrayOf(PropTypes.string).isRequired,
   headerProps: PropTypes.shape(InvestmentCardHeader.propTypes),
   isCollapsible: PropTypes.bool,
+  isExtendedState: PropTypes.bool,
   onLayout: PropTypes.func.isRequired,
   openInvestmentCards: PropTypes.bool,
   setOpenInvestmentCards: PropTypes.func,
