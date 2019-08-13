@@ -1,13 +1,16 @@
-import { mapValues, sortBy, values } from 'lodash';
+import {
+  mapValues,
+  sortBy,
+  property,
+  values,
+} from 'lodash';
 import { compose, withProps } from 'recompact';
-import uniswapAssets from '../references/uniswap-pairs.json';
+import uniswapAssetsRaw from '../references/uniswap-pairs.json';
 
-const sortUniswapAssetsByName = () => {
-  const assetList = values(mapValues(uniswapAssets, (asset, address) => ({ ...asset, address })));
-  return sortBy(assetList, asset => asset.name);
-}
+const mapUniswapAssetItem = (asset, address) => ({ ...asset, address });
 
-export default Component => compose(
-  withProps({ sortedUniswapAssets: sortUniswapAssetsByName() }),
-)(Component);
+const uniswapAssets = values(mapValues(uniswapAssetsRaw, mapUniswapAssetItem));
+const sortedUniswapAssets = sortBy(uniswapAssets, property('name'));
+
+export default withProps({ sortedUniswapAssets });
 

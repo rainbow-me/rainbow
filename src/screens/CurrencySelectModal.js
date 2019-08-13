@@ -1,34 +1,33 @@
 import {
-  filter,
-  findIndex,
   get,
-  isEmpty,
-  keys,
-  map,
 } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
-import { compose, withHandlers } from 'recompact';
-import { InteractionManager, KeyboardAvoidingView, View } from 'react-native'
+import React, { Component, PureComponent } from 'react';
+import { compose } from 'recompact';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
+import { ReText } from 'react-native-redash';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
-import { Centered, Column, FlexItem, KeyboardFixedOpenLayout, Row } from '../components/layout';
-import { deviceUtils, safeAreaInsetValues } from '../utils';
-import { Modal, ModalHeader } from '../components/modal';
-import { RecyclerAssetList } from '../components/asset-list';
-import { ExchangeCoinRow, SendCoinRow } from '../components/coin-row';
-import GestureBlocker from '../components/GestureBlocker';
-import { Monospace, TruncatedText } from '../components/text';
 import {
-  withAccountData,
+  Centered,
+  Column,
+  FlexItem,
+  KeyboardFixedOpenLayout,
+  Row,
+} from '../components/layout';
+import { safeAreaInsetValues } from '../utils';
+import { Modal } from '../components/modal';
+import { ExchangeCoinRow } from '../components/coin-row';
+import GestureBlocker from '../components/GestureBlocker';
+import { TruncatedText } from '../components/text';
+import {
   withKeyboardFocusHistory,
   withTransitionProps,
-  withUniswapAssets,
 } from '../hoc';
 import { borders, colors, position } from '../styles';
+import { EmptyAssetList } from '../components/asset-list';
 import { BackButton } from '../components/header';
-import { ExchangeSearch } from '../components/exchange';
+import { ExchangeAssetList, ExchangeSearch } from '../components/exchange';
 import { filterList } from '../utils/search';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 
@@ -47,23 +46,27 @@ const BackButtonWrapper = styled(Centered)`
   position: absolute;
 `;
 
-class CurrencySelectModal extends PureComponent {
+const appendAssetWithSearchableKey = (asset) => ({
+  ...asset,
+  uniqueId: `${asset.name} ${asset.symbol}`,
+});
+
+class CurrencySelectModal extends PureComponent { //Component {
   static propTypes = {
     navigation: PropTypes.object,
   }
 
   state = {
+    assets: [],
     searchResults: [],
   }
 
-  assets = []
+  headerTitle = 'Receive'
 
-  callback = null
-
-  isInputAssets = true
+  position = undefined
 
   onChangeSearchText = (searchPhrase) => {
-    const searchResults = filterList(this.assets, searchPhrase, 'index');
+    const searchResults = filterList(this.state.assets, searchPhrase, 'uniqueId');
     this.setState({ searchResults });
   }
 
@@ -77,6 +80,7 @@ class CurrencySelectModal extends PureComponent {
     const {
       isFocused,
       keyboardFocusHistory,
+      navigation,
       transitionProps: { isTransitioning },
     } = this.props;
 
@@ -86,17 +90,29 @@ class CurrencySelectModal extends PureComponent {
       this.searchInputRef.current.focus();
     }
 
-    this.callback = navigation.getParam('onSelectCurrency');
-    this.isInputAssets = navigation.getParam('isInputAssets');
-
     this.getDataFromParams();
   }
 
   getDataFromParams = () => {
     const { navigation } = this.props;
-    this.callback = navigation.getParam('onSelectCurrency');
-    const indexedAssets = map(navigation.getParam('assets', []), asset => ({ ...asset, index: `${asset.name} ${asset.symbol}` }));
-    this.assets = indexedAssets;
+    // this.callback = ;
+
+    this.headerTitle = navigation.getParam('headerTitle');
+    // console.log('nav get params', navigation.getScreenProps());
+    // console.log('nav get params', navigation);
+
+    // console.log('getDataFromParams -- assets --', assets);
+
+    if (!this.state.assets.length) {
+      const thing = navigation.getParam('assets', []).map(appendAssetWithSearchableKey);
+      // console.log('assets',assets );
+      // console.log('THIGN', thing);
+      // console.log('this.state.assets', this.state.assets);
+      if (!!thing.length) {
+        // console.log('THE THING,,,,,, its happening')
+        this.setState({ assets: thing });
+      }
+    }
   }
 
   dangerouslySetIsGestureBlocked = (isGestureBlocked) => {
@@ -111,17 +127,21 @@ class CurrencySelectModal extends PureComponent {
   handlePressBack = () => this.props.navigation.navigate('MainExchangeScreen')
 
   handleSelectAsset = (symbol) => {
+    const { navigation } = this.props;
     // It's a bit weird and I'm not sure why on invoking
     // navigation.getParam('onSelectCurrency')(symbol)
     // but this small hack seems to be a legit workaround
-    this.callback(symbol);
-    this.props.navigation.navigate('MainExchangeScreen');
+    const onSelectCurrency = navigation.getParam('onSelectCurrency');
+    onSelectCurrency(symbol);
+    navigation.navigate('MainExchangeScreen');
   }
 
-  renderCurrencyItem = (itemProps) => (
+      // {...itemProps}
+  renderCurrencyItem = (item) => (
     <ExchangeCoinRow
-      {...itemProps}
+      item={item}
       onPress={this.handleSelectAsset}
+      uniqueId={item.uniqueId}
     />
   )
 
@@ -129,22 +149,15 @@ class CurrencySelectModal extends PureComponent {
     this.props.pushKeyboardFocusHistory(currentTarget);
   }
 
-  getSections = () => {
-    const data = (this.state.searchResults) ? this.assets : this.state.searchResults;
-    return [{
-      balances: true,
-      data,
-      renderItem: this.renderCurrencyItem,
-    }];
-  }
-
-
-  render() {
+  render = () => {
     const {
       allAssets,
       navigation,
       transitionProps: { isTransitioning },
     } = this.props;
+
+    const { assets, searchResults } = this.state;
+    const items = searchResults.length ? searchResults : assets;
 
     return (
       <KeyboardFixedOpenLayout paddingTop={safeAreaInsetValues.top}>
@@ -186,7 +199,7 @@ class CurrencySelectModal extends PureComponent {
                   size="large"
                   weight="bold"
                 >
-                  Receive
+                  {this.headerTitle}
                 </TruncatedText>
               </HeaderContainer>
               <ExchangeSearch
@@ -195,12 +208,15 @@ class CurrencySelectModal extends PureComponent {
                 onFocus={this.handleFocusField}
                 ref={this.searchInputRef}
               />
-              <RecyclerAssetList
-                flex={0}
-                hideHeader
-                paddingBottom={100}
-                sections={this.getSections()}
-              />
+              {(items.length === 0) ? (
+                <EmptyAssetList />
+               ) : (
+                 <ExchangeAssetList
+                  items={items}
+                  renderItem={this.renderCurrencyItem}
+                />
+               )}
+
             </Column>
             <GestureBlocker type='bottom'/>
           </Modal>
@@ -210,6 +226,14 @@ class CurrencySelectModal extends PureComponent {
   }
 }
 
+
+
+               // <ReText text={opacity} style={{ color: 'black' }} />
+                  //
+                // flex={0}
+                  // style={{ backgroundColor: 'blue', height: 400 }}
+                  // paddingBottom={100}
+                  // height={400}
 export default compose(
   withNavigationFocus,
   withTransitionProps,

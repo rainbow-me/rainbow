@@ -73,17 +73,17 @@ const SwipeStack = createMaterialTopTabNavigator({
 const ExchangeModalTabPosition = new Animated.Value(0);
 
 const ExchangeModalNavigator = newTopTabNavigator({
-  CurrencySelectScreen: {
-    params: {
-      position: ExchangeModalTabPosition,
-    },
-    screen: CurrencySelectModal,
-  },
   MainExchangeScreen: {
     params: {
       position: ExchangeModalTabPosition,
     },
     screen: ExchangeModal,
+  },
+  CurrencySelectScreen: {
+    params: {
+      position: ExchangeModalTabPosition,
+    },
+    screen: CurrencySelectModal,
   },
 }, {
   disableKeyboardHandling: true,
@@ -91,9 +91,9 @@ const ExchangeModalNavigator = newTopTabNavigator({
   initialLayout: deviceUtils.dimensions,
   keyboardDismissMode: 'none',
   keyboardShouldPersistTaps: 'always',
-  onSwipeStart: onTransitionStart,
-  onSwipeEnd: onTransitionEnd,
   mode: 'modal',
+  // onSwipeEnd: onTransitionEnd,
+  // onSwipeStart: onTransitionStart,
   onTransitionEnd,
   onTransitionStart,
   position: ExchangeModalTabPosition,
@@ -114,7 +114,7 @@ const ExchangeModalNavigator = newTopTabNavigator({
 
 // I need it for changing navigationOptions dynamically
 // for preventing swipe down to close on CurrencySelectScreen
-const EnhancedExchangeModalNavigator = React.memo(props => <ExchangeModalNavigator {...props} />);
+const EnhancedExchangeModalNavigator = props => <ExchangeModalNavigator {...props} />;//React.memo();
 EnhancedExchangeModalNavigator.router = ExchangeModalNavigator.router;
 EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => ({
   ...navigation.state.params,

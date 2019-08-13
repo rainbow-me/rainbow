@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Fragment } from 'react';
 import {
   compose,
   onlyUpdateForKeys,
@@ -90,12 +90,12 @@ class SendAssetList extends React.Component {
 
   balancesRenderItem = item => <this.TokenItem {...item} />;
 
-  balancesRenderLastItem = item => {
-    return <>
+  balancesRenderLastItem = item => (
+    <Fragment>
       <this.TokenItem {...item} />
       <Divider />
-    </>;
-  };
+    </Fragment>
+  );
 
   collectiblesRenderItem = item => {
     return <View>

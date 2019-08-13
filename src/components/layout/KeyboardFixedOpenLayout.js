@@ -72,5 +72,5 @@ class KeyboardFixedOpenLayout extends PureComponent {
 
 export default compose(
   withKeyboardHeight,
-  onlyUpdateForKeys(['height']),
+  // onlyUpdateForKeys(['height']),
 )(KeyboardFixedOpenLayout);

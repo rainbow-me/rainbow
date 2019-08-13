@@ -21,12 +21,17 @@ const renderSkeleton = (index, isWalletEthZero) => (
   />
 );
 
-const EmptyAssetList = ({ isWalletEthZero, ...props }) => (
+const EmptyAssetList = ({
+  hideHeader,
+  isWalletEthZero,
+  skeletonCount,
+  ...props
+}) => (
   <Column {...props} style={position.sizeAsObject('100%')}>
-    <AssetListHeader title={lang.t('account.tab_balances')} />
+    {hideHeader && <AssetListHeader title={lang.t('account.tab_balances')} />}
     <Centered flex={1}>
       <Column style={position.coverAsObject}>
-        {times(5, index => renderSkeleton(index, isWalletEthZero))}
+        {times(skeletonCount, index => renderSkeleton(index, isWalletEthZero))}
       </Column>
       {isWalletEthZero && (<AddFundsInterstitial offsetY={InterstitialOffset * -1} />)}
     </Centered>
@@ -34,7 +39,13 @@ const EmptyAssetList = ({ isWalletEthZero, ...props }) => (
 );
 
 EmptyAssetList.propTypes = {
+  hideHeader: PropTypes.bool,
   isWalletEthZero: PropTypes.bool,
+  skeletonCount: PropTypes.number,
+};
+
+EmptyAssetList.defaultProps = {
+  skeletonCount: 5,
 };
 
 export default withNeverRerender(EmptyAssetList);
