@@ -18,7 +18,7 @@ import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { NavigationEvents, withNavigationFocus } from 'react-navigation';
+import { NavigationActions, NavigationEvents, withNavigationFocus } from 'react-navigation';
 import { compose, toClass, withProps } from 'recompact';
 import { executeSwap } from '../handlers/uniswap';
 import {
@@ -261,7 +261,7 @@ class ExchangeModal extends PureComponent {
   getAssetsAvailableOnUniswap = () => {
     const uniswapAssetAddresses = map(keys(uniswapAssets), address => address.toLowerCase());
     return filter(this.props.allAssets, asset => findIndex(uniswapAssetAddresses, uniswapAddress => uniswapAddress === asset.address) > -1);
-  };
+  }
 
   onPressMaxBalance = () => {
     const { inputCurrency } = this.state;
@@ -273,7 +273,7 @@ class ExchangeModal extends PureComponent {
   handleSelectInputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
       assets: this.getAssetsAvailableOnUniswap(),
-      isInputAssets: true,
+      headerTitle: 'Swap',
       onSelectCurrency: this.setInputCurrency,
     });
   }
@@ -281,7 +281,7 @@ class ExchangeModal extends PureComponent {
   handleSelectOutputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
       assets: this.props.sortedUniswapAssets,
-      isInputAssets: false,
+      headerTitle: 'Receive',
       onSelectCurrency: this.setOutputCurrency,
     });
   }
@@ -438,10 +438,10 @@ export default compose(
   withAccountData,
   withAccountSettings,
   withBlockedHorizontalSwipe,
-  withTransactionConfirmationScreen,
-  withUniswapAssets,
-  withNavigationFocus,
-  withMockedPrices,
   withKeyboardFocusHistory,
+  withMockedPrices,
+  withNavigationFocus,
+  withTransactionConfirmationScreen,
   withTransitionProps,
+  withUniswapAssets,
 )(ExchangeModal);

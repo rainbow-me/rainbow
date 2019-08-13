@@ -109,6 +109,8 @@ const buildWalletSections = (
   const isEmpty = !filteredSections.length;
   setIsWalletEmpty(isEmpty);
 
+  // console.log('filteredSections', filteredSections)
+
   return {
     isEmpty,
     sections: filteredSections,

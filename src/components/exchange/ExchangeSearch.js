@@ -37,6 +37,8 @@ class ExchangeSearch extends PureComponent {
     }
   }
 
+            //
+          //  autoCapitalize="words"
   render = () => {
     return (
       <TouchableWithoutFeedback
@@ -61,7 +63,10 @@ class ExchangeSearch extends PureComponent {
             onFocus={this.props.onFocus}
             placeholder="Search"
             placeholderTextColor={colors.grey}
+            blurOnSubmit={false}
+            clearButtonMode="always"
             ref={this.inputRef}
+            returnKeyType="search"
             selectionColor={colors.appleBlue}
             size="large"
             value={this.state.searchQuery}

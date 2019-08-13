@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { View } from 'react-native';
 import { colors, padding } from '../../styles';
 import { isNewValueForPath } from '../../utils';
@@ -31,12 +31,13 @@ TopRow.propTypes = {
   name: PropTypes.string,
 };
 
-export default class ExchangeCoinRow extends PureComponent {
+export default class ExchangeCoinRow extends Component {
   static propTypes = {
     favorite: PropTypes.bool,
     index: PropTypes.number,
     item: PropTypes.shape({ symbol: PropTypes.string }),
     onPress: PropTypes.func,
+    uniqueId: PropTypes.string,
   }
 
   starRef = React.createRef()
@@ -47,7 +48,7 @@ export default class ExchangeCoinRow extends PureComponent {
   }
 
   shouldComponentUpdate = (nextProps, nextState) => (
-    isNewValueForPath(this.props, nextProps, 'item.uniqueId')
+    isNewValueForPath(this.props, nextProps, 'uniqueId')
     || isNewValueForPath(this.state, nextState, 'favorite')
     || isNewValueForPath(this.state, nextState, 'emojiCount')
   )
@@ -74,9 +75,12 @@ export default class ExchangeCoinRow extends PureComponent {
     const { item, ...props } = this.props;
     const { emojiCount, favorite } = this.state;
 
+    // console.log('this.props', this.props);
+
     return (
       <ButtonPressAnimation
         {...props}
+        height={CoinRow.height}
         onPress={this.handlePress}
         scaleTo={0.96}
       >
@@ -86,11 +90,13 @@ export default class ExchangeCoinRow extends PureComponent {
           bottomRowRender={BottomRow}
           topRowRender={TopRow}
         >
-          {/*
-          TODO
-          XXX
-
-           Is this View necessary?????*/}
+          {
+            /*
+              TODO
+              XXX
+              Is this View necessary?????
+            */
+          }
           <View>
             <ButtonPressAnimation
               onPress={this.handleToggleFavorite}
