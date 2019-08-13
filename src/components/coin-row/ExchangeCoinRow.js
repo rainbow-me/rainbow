@@ -54,10 +54,10 @@ export default class ExchangeCoinRow extends Component {
   )
 
   handlePress = () => {
-    const { item: { symbol }, onPress } = this.props;
+    const { item, onPress } = this.props;
 
     if (onPress) {
-      onPress(symbol);
+      onPress(item);
     }
   }
 

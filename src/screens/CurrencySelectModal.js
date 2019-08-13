@@ -126,13 +126,13 @@ class CurrencySelectModal extends PureComponent { //Component {
 
   handlePressBack = () => this.props.navigation.navigate('MainExchangeScreen')
 
-  handleSelectAsset = (symbol) => {
+  handleSelectAsset = (item) => {
     const { navigation } = this.props;
     // It's a bit weird and I'm not sure why on invoking
-    // navigation.getParam('onSelectCurrency')(symbol)
+    // navigation.getParam('onSelectCurrency')(item)
     // but this small hack seems to be a legit workaround
     const onSelectCurrency = navigation.getParam('onSelectCurrency');
-    onSelectCurrency(symbol);
+    onSelectCurrency(item);
     navigation.navigate('MainExchangeScreen');
   }
 
