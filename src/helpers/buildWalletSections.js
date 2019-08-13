@@ -27,7 +27,6 @@ const isWalletEthZeroSelector = state => state.isWalletEthZero;
 const languageSelector = state => state.language;
 const nativeCurrencySelector = state => state.nativeCurrency;
 const setIsWalletEmptySelector = state => state.setIsWalletEmpty;
-const shitcoinsCountSelector = state => state.shitcoinsCount;
 const uniqueTokensSelector = state => state.uniqueTokens;
 const uniswapSelector = state => state.uniswap;
 const uniswapTotalSelector = state => state.uniswapTotal;
