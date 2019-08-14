@@ -47,7 +47,7 @@ const parseTransaction = (txn, nativeCurrency) => {
     internalTransactions = [ethInternalTransaction];
   }
   internalTransactions = internalTransactions.map((internalTxn, index) => {
-    const symbol = get(internalTxn, 'asset.symbol', '');
+    const symbol = get(internalTxn, 'asset.symbol') || '';
     const updatedAsset = {
       ...internalTxn.asset,
       symbol: symbol.toUpperCase(),
