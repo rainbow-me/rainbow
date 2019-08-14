@@ -72,7 +72,7 @@ export const executeSwap = async (tradeDetails) => {
   }
 };
 
-export const getUniswapLiquidityInfo = async (accountAddress, exchangeContracts) => {
+export const getLiquidityInfo = async (accountAddress, exchangeContracts) => {
   const promises = map(exchangeContracts, async (exchangeAddress) => {
     try {
       const ethReserveCall = web3Provider.getBalance(exchangeAddress);
