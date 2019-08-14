@@ -1,12 +1,15 @@
 import { ethers } from 'ethers';
 import { web3Provider } from '../handlers/web3';
+import { convertRawAmountToDecimalFormat } from '../helpers/utilities';
 import { loadWallet } from '../model/wallet';
 import erc20ABI from '../references/erc20-abi.json';
 
-export const getAllowance = async (owner, tokenAddress, spender) => {
+export const getAllowance = async (owner, token, spender) => {
+  const { address: tokenAddress, decimals } = token;
   const tokenContract = new ethers.Contract(tokenAddress, erc20ABI, web3Provider);
   const allowance = await tokenContract.allowance(owner, spender);
-  return ethers.utils.bigNumberify(allowance.toString());
+  const rawAllowance = ethers.utils.bigNumberify(allowance.toString());
+  return convertRawAmountToDecimalFormat(rawAllowance, decimals);
 };
 
 export const approve = async (tokenAddress, spender) => {
