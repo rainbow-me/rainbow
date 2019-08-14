@@ -6,14 +6,14 @@ import {
   map,
 } from 'lodash';
 import {
-  getUniswap,
+  getUniswapLiquidityInfo,
   getUniswapLiquidityTokens,
-  removeUniswap,
+  removeUniswapLiquidityInfo,
   removeUniswapLiquidityTokens,
-  saveUniswap,
+  saveUniswapLiquidityInfo,
   saveUniswapLiquidityTokens,
 } from '../handlers/commonStorage';
-import { getUniswapLiquidityInfo } from '../handlers/uniswap';
+import { getLiquidityInfo } from '../handlers/uniswap';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';
@@ -32,7 +32,7 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   dispatch({ type: UNISWAP_LOAD_REQUEST });
   try {
-    const uniswap = await getUniswap(accountAddress, network);
+    const uniswap = await getUniswapLiquidityInfo(accountAddress, network);
     const liquidityTokens = await getUniswapLiquidityTokens(accountAddress, network);
     dispatch({
       payload: { liquidityTokens, uniswap },
@@ -45,7 +45,7 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
 
 export const uniswapClearState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  removeUniswap(accountAddress, network);
+  removeUniswapLiquidityInfo(accountAddress, network);
   removeUniswapLiquidityTokens(accountAddress, network);
   dispatch({ type: UNISWAP_CLEAR_STATE });
 };
@@ -87,9 +87,9 @@ export const uniswapUpdateState = () => (dispatch, getState) => (
     dispatch({ type: UNISWAP_UPDATE_REQUEST });
 
     const exchangeContracts = map(liquidityTokens, x => get(x, 'asset.asset_code'));
-    return getUniswapLiquidityInfo(accountAddress, exchangeContracts)
+    return getLiquidityInfo(accountAddress, exchangeContracts)
       .then(uniswap => {
-        saveUniswap(accountAddress, uniswap, network);
+        saveUniswapLiquidityInfo(accountAddress, uniswap, network);
         dispatch({
           payload: uniswap,
           type: UNISWAP_UPDATE_SUCCESS,
