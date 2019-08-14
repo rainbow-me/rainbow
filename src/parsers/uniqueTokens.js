@@ -13,8 +13,7 @@ import {
  */
 /* eslint-disable camelcase */
 export const parseAccountUniqueTokens = data => {
-  const assets = get(data, 'data.assets', []);
-  const erc721s = filter(assets, asset => get(asset, 'asset_contract.schema_name') === 'ERC721');
+  const erc721s = get(data, 'data.assets', []);
   return erc721s.map(({
     asset_contract,
     background_color,

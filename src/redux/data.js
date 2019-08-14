@@ -280,12 +280,10 @@ const assetsReceived = (message, append = false, change = false) => (dispatch, g
 
   const { accountAddress, network } = getState().settings;
   const assets = get(message, 'payload.assets', []);
-  if (!assets.length) return;
-
-  const liquidityTokens = remove(assets, (asset) => {
-    const symbol = get(asset, 'asset.symbol', '');
-    return symbol === 'uni-v1';
-  });
+  const liquidityTokens = remove(
+    assets,
+    asset => get(asset, 'asset.symbol', '') === 'UNI'
+  );
   if (append) {
     dispatch(uniswapAddLiquidityTokens(liquidityTokens));
   }

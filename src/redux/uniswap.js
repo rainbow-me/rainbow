@@ -50,8 +50,12 @@ export const uniswapClearState = () => (dispatch, getState) => {
   dispatch({ type: UNISWAP_CLEAR_STATE });
 };
 
-export const uniswapUpdateLiquidityTokens = (liquidityTokens) => (dispatch, getState) => {
-  if (isEmpty(liquidityTokens)) return;
+export const uniswapUpdateLiquidityTokens = liquidityTokens => (
+  dispatch,
+  getState
+) => {
+  const { liquidityTokens: existingLiquidityTokens } = getState().uniswap;
+  if (isEmpty(liquidityTokens) && isEmpty(existingLiquidityTokens)) return;
   const { accountAddress, network } = getState().settings;
   dispatch({
     payload: liquidityTokens,
