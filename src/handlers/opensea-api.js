@@ -6,7 +6,7 @@ import { parseAccountUniqueTokens } from '../parsers/uniqueTokens';
  * @type axios instance
  */
 const api = axios.create({
-  baseURL: 'https://api.opensea.io/api/v1',
+  baseURL: 'https://api.opensea.io/api/v1?exclude_currencies=true',
   headers: {
     Accept: 'application/json',
   },

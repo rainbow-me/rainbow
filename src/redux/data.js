@@ -252,10 +252,10 @@ export const addressAssetsReceived = (
 
   const { accountAddress, network } = getState().settings;
   const assets = get(message, 'payload.assets', []);
-  const liquidityTokens = remove(assets, asset => {
-    const symbol = get(asset, 'asset.symbol', '');
-    return symbol === 'uni-v1';
-  });
+  const liquidityTokens = remove(
+    assets,
+    asset => get(asset, 'asset.symbol', '') === 'UNI'
+  );
   if (append) {
     dispatch(uniswapAddLiquidityTokens(liquidityTokens));
   }
