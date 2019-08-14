@@ -20,15 +20,6 @@ const convertValueForEthers = (value) => {
   return ethers.utils.hexlify(valueBigNumber);
 };
 
-// TODO save txn hash somewhere
-export const approve = async (exchangeAddress) => {
-  const wallet = await loadWallet();
-  if (!wallet) return null;
-  const exchange = new ethers.Contract(exchangeAddress, exchangeABI, wallet);
-  const gasLimit = await exchange.estimate.approve(exchangeAddress, ethers.constants.MaxUint256);
-  return exchange.approve(exchangeAddress, ethers.constants.MaxUint256, { gasLimit });
-};
-
 export const executeSwap = async (tradeDetails) => {
   const executionDetails = getExecutionDetails(tradeDetails);
   const wallet = await loadWallet();
