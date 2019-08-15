@@ -27,6 +27,7 @@ import {
   convertAmountToNativeAmount,
   convertAmountToRawAmount,
   convertRawAmountToDecimalFormat,
+  greaterThan,
   subtract,
 } from '../helpers/utilities';
 import {
@@ -41,7 +42,12 @@ import {
   withUniswapAssets,
 } from '../hoc';
 import { colors, padding, position } from '../styles';
-import { deviceUtils, ethereumUtils, safeAreaInsetValues } from '../utils';
+import {
+  contractUtils,
+  deviceUtils,
+  ethereumUtils,
+  safeAreaInsetValues,
+} from '../utils';
 import {
   ConfirmExchangeButton,
   ExchangeGasFeeButton,
@@ -65,17 +71,18 @@ const AnimatedFloatingPanels = Animated.createAnimatedComponent(toClass(Floating
 
 class ExchangeModal extends PureComponent {
   static propTypes = {
+    accountAddress: PropTypes.string,
     allAssets: PropTypes.array,
     allowances: PropTypes.object,
     chainId: PropTypes.number,
     clearKeyboardFocusHistory: PropTypes.func,
     dataAddNewTransaction: PropTypes.func,
-    getCurrencyAllowance: PropTypes.func,
     keyboardFocusHistory: PropTypes.array,
     nativeCurrency: PropTypes.string,
     navigation: PropTypes.object,
     pushKeyboardFocusHistory: PropTypes.func,
     tradeDetails: PropTypes.object,
+    uniswapUpdateAllowances: PropTypes.func,
   }
 
   state = {
@@ -84,6 +91,7 @@ class ExchangeModal extends PureComponent {
     inputAsExactAmount: false,
     inputCurrency: ethereumUtils.getAsset(this.props.allAssets),
     nativeAmount: null,
+    needsApproval: false,
     outputAmount: null,
     outputCurrency: null,
     showConfirmButton: false,
@@ -91,16 +99,12 @@ class ExchangeModal extends PureComponent {
     tradeDetails: null,
   }
 
-  componentDidUpdate = (prevProps) => {
+  componentDidUpdate = (prevProps, prevState) => {
     const {
       isFocused,
       isTransitioning,
       keyboardFocusHistory,
     } = this.props;
-
-    // TODO if inputCurrency has changed
-    // TODO include input amount
-    // this.props.getCurrencyAllowance(inputCurrency);
 
     if (isFocused && (!isTransitioning && prevProps.isTransitioning)) {
       const lastFocusedInput = keyboardFocusHistory[keyboardFocusHistory.length - 2];
@@ -117,6 +121,10 @@ class ExchangeModal extends PureComponent {
 
     if (this.state.outputCurrency) {
       this.setState({ showConfirmButton: true });
+    }
+
+    if (this.state.inputCurrency.address !== prevState.inputCurrency.address) {
+      this.getCurrencyAllowance();
     }
   }
 
@@ -135,6 +143,24 @@ class ExchangeModal extends PureComponent {
     const slippage = get(tradeDetails, 'marketRateSlippage');
     const rawUpdatedValue = convertRawAmountToDecimalFormat(updatedValue, decimals);
     return { rawUpdatedValue, slippage: slippage.toFixed() };
+  };
+
+  getCurrencyAllowance = async () => {
+    const { accountAddress, allowances, uniswapUpdateAllowances } = this.props;
+    const { inputCurrency } = this.state;
+    if (inputCurrency.address === 'eth') {
+      this.setState({ needsApproval: false });
+      return;
+    }
+    const allowance = allowances[inputCurrency.address];
+    if (isNil(allowance)) {
+      this.setState({ needsApproval: true });
+    } else {
+      this.setState({ needsApproval: !greaterThan(allowance, 0) });
+    }
+    const newAllowance = await contractUtils.getAllowance(accountAddress, inputCurrency, inputCurrency.exchangeAddress);
+    uniswapUpdateAllowances(inputCurrency.address, newAllowance);
+    this.setState({ needsApproval: !greaterThan(newAllowance, 0) });
   };
 
   getMarketDetails = async () => {
@@ -322,6 +348,7 @@ class ExchangeModal extends PureComponent {
       inputAmount,
       inputCurrency,
       nativeAmount,
+      needsApproval,
       outputAmount,
       outputCurrency,
       showConfirmButton,
@@ -359,6 +386,7 @@ class ExchangeModal extends PureComponent {
                   nativeAmount={nativeAmount}
                   nativeCurrency={nativeCurrency}
                   nativeFieldRef={this.handleNativeFieldRef}
+                  needsApproval={needsApproval}
                   onFocus={this.handleFocusField}
                   onPressMaxBalance={this.onPressMaxBalance}
                   onPressSelectInputCurrency={this.handleSelectInputCurrency}

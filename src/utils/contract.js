@@ -20,3 +20,7 @@ export const approve = async (tokenAddress, spender) => {
   return exchange.approve(spender, ethers.constants.MaxUint256, { gasLimit });
 };
 
+export default {
+  approve,
+  getAllowance,
+};

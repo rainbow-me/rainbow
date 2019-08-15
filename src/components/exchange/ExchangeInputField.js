@@ -23,6 +23,7 @@ export default class ExchangeInputField extends PureComponent {
     nativeAmount: PropTypes.string,
     nativeCurrency: PropTypes.string,
     nativeFieldRef: PropTypes.func,
+    needsApproval: PropTypes.bool,
     onPressMaxBalance: PropTypes.func,
     onPressSelectInputCurrency: PropTypes.func,
     setInputAmount: PropTypes.func,
@@ -59,6 +60,7 @@ export default class ExchangeInputField extends PureComponent {
       nativeAmount,
       nativeCurrency,
       nativeFieldRef,
+      needsApproval,
       onFocus,
       onPressMaxBalance,
       onPressSelectInputCurrency,
@@ -113,8 +115,10 @@ export default class ExchangeInputField extends PureComponent {
               margin={3}
               paddingHorizontal={this.padding}
             >
-              <Emoji lineHeight="none" name="moneybag" size="lmedium" />
-              <Text color="appleBlue" size="medium" weight="semibold">Max</Text>
+              {!needsApproval && <Emoji lineHeight="none" name="moneybag" size="lmedium" />}
+              <Text color="appleBlue" size="medium" weight="semibold">
+                {needsApproval ? 'Approve' : 'Max'}
+              </Text>
             </RowWithMargins>
           </ButtonPressAnimation>
         </Row>
