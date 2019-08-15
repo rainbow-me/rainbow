@@ -110,7 +110,7 @@
     "readable-stream": "^1.0.33",
     "recompact": "^3.4.0",
     "recompose": "^0.30.0",
-    "recyclerlistview": "^2.0.1-alpha.1",
+    "recyclerlistview": "Flipkart/recyclerlistview#master",
     "redux": "^4.0.1",
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
