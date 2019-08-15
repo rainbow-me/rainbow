@@ -36,6 +36,8 @@ import {
   withKeyboardFocusHistory,
   withTransactionConfirmationScreen,
   withTransitionProps,
+  withUniswapAllowances,
+  withUniswapAssets,
 } from '../hoc';
 import { colors, padding, position } from '../styles';
 import { deviceUtils, ethereumUtils, safeAreaInsetValues } from '../utils';
@@ -74,9 +76,11 @@ const isSameAsset = (firstAsset, secondAsset) => {
 class ExchangeModal extends PureComponent {
   static propTypes = {
     allAssets: PropTypes.array,
+    allowances: PropTypes.object,
     chainId: PropTypes.number,
     clearKeyboardFocusHistory: PropTypes.func,
     dataAddNewTransaction: PropTypes.func,
+    getCurrencyAllowance: PropTypes.func,
     keyboardFocusHistory: PropTypes.array,
     nativeCurrency: PropTypes.string,
     navigation: PropTypes.object,
@@ -85,6 +89,7 @@ class ExchangeModal extends PureComponent {
   }
 
   state = {
+    inputAllowance: null,
     inputAmount: null,
     inputAsExactAmount: false,
     inputCurrency: ethereumUtils.getAsset(this.props.allAssets),
@@ -99,6 +104,10 @@ class ExchangeModal extends PureComponent {
   componentDidUpdate = (prevProps) => {
     const { isFocused, isTransitioning, keyboardFocusHistory} = this.props;
     const { inputAmount, outputAmount, outputCurrency } = this.state;
+
+    // TODO if inputCurrency has changed
+    // TODO include input amount
+    // this.props.getCurrencyAllowance(inputCurrency);
 
     if (isFocused && (!isTransitioning && prevProps.isTransitioning)) {
       const lastFocusedInput = keyboardFocusHistory[keyboardFocusHistory.length - 2];
@@ -429,13 +438,15 @@ export default compose(
   withNavigationFocus,
   withTransactionConfirmationScreen,
   withTransitionProps,
+  withUniswapAllowances,
+  withUniswapAssets,
   mapProps(({
     navigation,
     tabsTransitionProps: {
       isTransitioning: isTabsTransitioning,
     },
     stackTransitionProps: {
-      isTransitioning:  isStacksTransitioning,
+      isTransitioning: isStacksTransitioning,
     },
     ...props,
   }) => ({
