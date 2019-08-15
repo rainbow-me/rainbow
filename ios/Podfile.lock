@@ -216,7 +216,7 @@ PODS:
   - react-native-fast-image (6.1.1):
     - React
     - SDWebImage (~> 5.0)
-  - react-native-netinfo (3.2.1):
+  - react-native-netinfo (4.1.4):
     - React
   - react-native-version-number (0.3.6):
     - React
@@ -246,7 +246,7 @@ PODS:
   - RNAnalytics (1.0.1):
     - Analytics
     - React
-  - RNCAsyncStorage (1.5.0):
+  - RNCAsyncStorage (1.6.1):
     - React
   - RNCMaskedView (0.1.1):
     - React
@@ -321,7 +321,7 @@ PODS:
     - React
   - RNLanguages (3.0.2):
     - React
-  - RNReanimated (1.2.0):
+  - RNReanimated (1.3.0-alpha):
     - React
   - RNScreens (1.0.0-alpha.23):
     - React
@@ -621,7 +621,7 @@ SPEC CHECKSUMS:
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: b5e6e34586ca6f588b0c736dcabfe0aad5ce2f3e
   react-native-fast-image: fdfc612dba58fd73136cf5efdaeb8cfcad7f63b2
-  react-native-netinfo: 0da34082d2cec3100c9b5073bb217e35f1142bdd
+  react-native-netinfo: 2aa34e02a38ae66e583bcae8c489ae0edd32b31f
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   React-RCTActionSheet: b0f1ea83f4bf75fb966eae9bfc47b78c8d3efd90
   React-RCTAnimation: 359ba1b5690b1e87cc173558a78e82d35919333e
@@ -634,7 +634,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: 2105b2e0e2b66a6408fc69a46c8a7fb5b2fdade0
   React-RCTWebSocket: cd932a16b7214898b6b7f788c8bddb3637246ac4
   RNAnalytics: d110195618296fed3907830911f01cb6e9be53d0
-  RNCAsyncStorage: 9436928b444c5f5361960a7eea051a697c244b68
+  RNCAsyncStorage: 2e2e3feb9bdadc752a026703d8c4065ca912e75a
   RNCMaskedView: b79e193409a90bf6b5170d421684f437ff4e2278
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -704,7 +704,7 @@ SPEC CHECKSUMS:
 >>>>>>> dca19a02... very work in progress
   RNIOS11DeviceCheck: a4a545fdd08230a17a8ce7608e95038ee23a32aa
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
-  RNReanimated: 1b52415c4302f198cb581282a0166690bad62c43
+  RNReanimated: da57ffa32f04cebe2107da0b281999a01c0d1ecc
   RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
 <<<<<<< HEAD
