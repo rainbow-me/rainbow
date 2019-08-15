@@ -3,7 +3,7 @@ export const filterList = (list, searchPhrase, searchParameter = false, separato
   if (list && searchPhrase.length > 0) {
     for (let i = 0; i < list.length; i++) {
       let searchedItem = searchParameter ? list[i][searchParameter] : list[i];
-      const splitedWordList = searchedItem.split(separator);
+      const splitedWordList = (searchedItem || '').split(separator);
       splitedWordList.push(searchedItem);
       for (let j = 0; j < splitedWordList.length; j++) {
         if (splitedWordList[j].toLowerCase().startsWith(searchPhrase.toLowerCase())) {

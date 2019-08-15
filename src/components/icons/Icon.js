@@ -10,6 +10,7 @@ import CaretIcon from './svg/CaretIcon';
 import CaretThinIcon from './svg/CaretThinIcon';
 import CheckmarkCircledIcon from './svg/CheckmarkCircledIcon';
 import CheckmarkIcon from './svg/CheckmarkIcon';
+import ClearInputIcon from './svg/ClearInputIcon';
 import ClockIcon from './svg/ClockIcon';
 import CloseCircledIcon from './svg/CloseCircledIcon';
 import CloseIcon from './svg/CloseIcon';
@@ -48,6 +49,7 @@ Icon.IconTypes = {
   caretThin: CaretThinIcon,
   checkmark: CheckmarkIcon,
   checkmarkCircled: CheckmarkCircledIcon,
+  clearInput: ClearInputIcon,
   clock: ClockIcon,
   close: CloseIcon,
   closeCircled: CloseCircledIcon,

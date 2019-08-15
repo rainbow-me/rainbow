@@ -2,7 +2,6 @@ import lang from 'i18n-js';
 import { times } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withNeverRerender } from '../../hoc';
 import { position } from '../../styles';
 import AddFundsInterstitial from '../AddFundsInterstitial';
 import { FabWrapper } from '../fab';
@@ -48,4 +47,4 @@ EmptyAssetList.defaultProps = {
   skeletonCount: 5,
 };
 
-export default withNeverRerender(EmptyAssetList);
+export default React.memo(EmptyAssetList);
