@@ -37,6 +37,8 @@ import {
   withKeyboardFocusHistory,
   withTransactionConfirmationScreen,
   withTransitionProps,
+  withUniswapAllowances,
+  withUniswapAssets,
 } from '../hoc';
 import { colors, padding, position } from '../styles';
 import { deviceUtils, ethereumUtils, safeAreaInsetValues } from '../utils';
@@ -64,9 +66,11 @@ const AnimatedFloatingPanels = Animated.createAnimatedComponent(toClass(Floating
 class ExchangeModal extends PureComponent {
   static propTypes = {
     allAssets: PropTypes.array,
+    allowances: PropTypes.object,
     chainId: PropTypes.number,
     clearKeyboardFocusHistory: PropTypes.func,
     dataAddNewTransaction: PropTypes.func,
+    getCurrencyAllowance: PropTypes.func,
     keyboardFocusHistory: PropTypes.array,
     nativeCurrency: PropTypes.string,
     navigation: PropTypes.object,
@@ -75,6 +79,7 @@ class ExchangeModal extends PureComponent {
   }
 
   state = {
+    inputAllowance: null,
     inputAmount: null,
     inputAsExactAmount: false,
     inputCurrency: ethereumUtils.getAsset(this.props.allAssets),
@@ -92,6 +97,10 @@ class ExchangeModal extends PureComponent {
       isTransitioning,
       keyboardFocusHistory,
     } = this.props;
+
+    // TODO if inputCurrency has changed
+    // TODO include input amount
+    // this.props.getCurrencyAllowance(inputCurrency);
 
     if (isFocused && (!isTransitioning && prevProps.isTransitioning)) {
       const lastFocusedInput = keyboardFocusHistory[keyboardFocusHistory.length - 2];
@@ -374,12 +383,10 @@ class ExchangeModal extends PureComponent {
             <GestureBlocker type='bottom'/>
             {showConfirmButton && (
               <Fragment>
-                <Centered css={padding(0, 15, 24)} width="100%">
-                  <ConfirmExchangeButton
-                    disabled={!Number(inputAmount)}
-                    onPress={this.handleSubmit}
-                  />
-                </Centered>
+                <ConfirmExchangeButton
+                  disabled={!Number(inputAmount)}
+                  onPress={this.handleSubmit}
+                />
                 {!!Number(inputAmount) && (
                   <ExchangeGasFeeButton
                     gasPrice={'$0.06'}
@@ -409,6 +416,8 @@ export default compose(
   withNavigationFocus,
   withTransactionConfirmationScreen,
   withTransitionProps,
+  withUniswapAllowances,
+  withUniswapAssets,
   mapProps(({
     navigation,
     transitionProps: { isTransitioning },
