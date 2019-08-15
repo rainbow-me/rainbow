@@ -73,8 +73,43 @@ const getIsWalletEmptyKey = (accountAddress, network) => `iswalletempty-${accoun
 const getRequestsKey = (accountAddress, network) => `requests-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 const getTransactionsKey = (accountAddress, network) => `transactions-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 const getUniqueTokensKey = (accountAddress, network) => `uniquetokens-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+const getUniswapAllowancesKey = (accountAddress, network) => `uniswapallowances-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 const getUniswapLiquidityInfoKey = (accountAddress, network) => `uniswap-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 const getUniswapLiquidityKey = (accountAddress, network) => `uniswapliquidity-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+
+/**
+ * @desc get Uniswap allowances
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getUniswapAllowances = async (accountAddress, network) => {
+  const allowances = await getLocal(getUniswapAllowancesKey(accountAddress, network));
+  return allowances ? allowances.data : {};
+};
+
+/**
+ * @desc save Uniswap allowances
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const saveUniswapAllowances = async (accountAddress, allowances, network) => {
+  await saveLocal(
+    getUniswapAllowancesKey(accountAddress, network),
+    { data: allowances },
+  );
+};
+
+/**
+ * @desc remove Uniswap allowances
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const removeUniswapAllowances = (accountAddress, network) => {
+  const key = getUniswapAllowancesKey(accountAddress, network);
+  removeLocal(key);
+};
 
 /**
  * @desc get Uniswap liquidity tokens
