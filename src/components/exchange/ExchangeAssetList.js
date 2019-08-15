@@ -1,19 +1,9 @@
-import { get } from 'lodash';
+import { get, property } from 'lodash';
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
-import React, { Fragment, Component, PureComponent } from 'react';
-import { LayoutAnimation } from 'react-native';
-import {
-  compose,
-  onlyUpdateForKeys,
-  shouldUpdate,
-  withHandlers,
-} from 'recompact';
-import {
-  DataProvider,
-  LayoutProvider,
-  RecyclerListView,
-} from "recyclerlistview";
+import React, { PureComponent } from 'react';
+import { View } from 'react-native';
+import { DataProvider, LayoutProvider, RecyclerListView } from "recyclerlistview";
 import styled from 'styled-components/primitives';
 import { deviceUtils, isNewValueForPath } from '../../utils';
 import { colors } from '../../styles';
@@ -24,12 +14,13 @@ const ViewTypes = {
   COIN_ROW: 0,
 };
 
-const hasRowChanged = (r1, r2) => isNewValueForPath(r1, r2, 'uniqueId')
+const hasRowChanged = (...rows) => isNewValueForPath(...rows, 'uniqueId');
+
+const buildUniqueIdForListData = (items = []) => items.map(property('address')).join('_');
 
 export default class ExchangeAssetList extends PureComponent {
   static propTypes = {
     items: PropTypes.arrayOf(PropTypes.object),
-    itemsCount: PropTypes.number,
     renderItem: PropTypes.func,
   }
 
@@ -40,7 +31,9 @@ export default class ExchangeAssetList extends PureComponent {
       dataProvider: new DataProvider(hasRowChanged, this.getStableId),
     }
 
-    this.layoutProvider = new LayoutProvider((index) => {
+    // this.state.dataProvider._requiresDataChangeHandling = true;
+
+    this.layoutProvider = new LayoutProvider(() => {
       return ViewTypes.COIN_ROW;
     }, (type, dim) => {
       if (type === ViewTypes.COIN_ROW) {
@@ -53,12 +46,15 @@ export default class ExchangeAssetList extends PureComponent {
     })
   }
 
+  rlvRef = React.createRef()
+
   componentDidMount = () => {
     this.updateList();
   }
 
   componentDidUpdate = (prevProps, prevState) => {
-    if (this.props.items !== prevProps.items) {
+    if (this.props.items.length !== prevProps.items.length) {
+      // this.rlvRef.current.forceRerender();
       this.updateList();
     }
   }
@@ -73,20 +69,25 @@ export default class ExchangeAssetList extends PureComponent {
 
   renderRow = (type, data) => this.props.renderItem(data)
 
-  render = () => {
-    const { isEmpty, items, ...props } = this.props;
-    const { dataProvider } = this.state;
-
-    console.log('dataProvider', dataProvider);
-
-    return (
+  render = () => (
+    <View backgroundColor={colors.white} flex={1} overflow="hidden">
       <RecyclerListView
-        {...props}
-        dataProvider={dataProvider}
+        {...this.props}
+        dataProvider={this.state.dataProvider}
         layoutProvider={this.layoutProvider}
-        renderAheadOffset={deviceUtils.dimensions.height}
+        onContentSizeChange={this.onContentSizeChange}
+        onViewableItemsChanged={this.onViewableItemsChanged}
+        optimizeForInsertDeleteAnimations={true}
+        ref={this.rlvRef}
+        renderAheadOffset={deviceUtils.dimensions.height / 2}
         rowRenderer={this.renderRow}
+        scrollViewProps={{
+          directionalLockEnabled: true,
+          keyboardDismissMode: 'none',
+          keyboardShouldPersistTaps: 'always',
+          scrollEventThrottle: 32,
+        }}
       />
-    );
-  };
+    </View>
+  )
 }

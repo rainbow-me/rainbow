@@ -16,10 +16,10 @@ import {
 } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
-import { TextInput } from 'react-native';
+import { InteractionManager, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationActions, NavigationEvents, withNavigationFocus } from 'react-navigation';
-import { compose, toClass, withProps } from 'recompact';
+import { compose, mapProps, toClass, withProps } from 'recompact';
 import { executeSwap } from '../handlers/uniswap';
 import {
   convertAmountFromNativeDisplay,
@@ -35,18 +35,16 @@ import {
   withAccountSettings,
   withBlockedHorizontalSwipe,
   withKeyboardFocusHistory,
-  withNeverRerender,
   withTransactionConfirmationScreen,
   withTransitionProps,
-  withUniswapAssets,
 } from '../hoc';
-import uniswapAssets from '../references/uniswap-pairs.json';
 import { colors, padding, position } from '../styles';
 import { deviceUtils, ethereumUtils, safeAreaInsetValues } from '../utils';
 import {
   ConfirmExchangeButton,
   ExchangeGasFeeButton,
   ExchangeInputField,
+  ExchangeModalHeader,
   ExchangeOutputField,
 } from '../components/exchange';
 import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
@@ -54,33 +52,14 @@ import GestureBlocker from '../components/GestureBlocker';
 import {
   Centered,
   Column,
-  ColumnWithMargins,
   KeyboardFixedOpenLayout,
 } from '../components/layout';
-import { SheetHandle } from '../components/sheet';
 import { Text } from '../components/text';
+import { CurrencySelectionTypes } from './CurrencySelectModal';
 
 export const exchangeModalBorderRadius = 30;
 
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(toClass(FloatingPanels));
-
-const ExchangeModalHeader = withNeverRerender(() => (
-  <ColumnWithMargins
-    align="center"
-    css={padding(9, 0)}
-    margin={6}
-  >
-    <SheetHandle />
-    <Text
-      letterSpacing="tighter"
-      lineHeight="loose"
-      size="large"
-      weight="bold"
-    >
-      Swap
-    </Text>
-  </ColumnWithMargins>
-));
 
 class ExchangeModal extends PureComponent {
   static propTypes = {
@@ -92,7 +71,6 @@ class ExchangeModal extends PureComponent {
     nativeCurrency: PropTypes.string,
     navigation: PropTypes.object,
     pushKeyboardFocusHistory: PropTypes.func,
-    sortedUniswapAssets: PropTypes.array,
     tradeDetails: PropTypes.object,
   }
 
@@ -108,25 +86,20 @@ class ExchangeModal extends PureComponent {
     tradeDetails: null,
   }
 
-  componentDidMount = () => {
-    // console.log('componentDidMount dangerouslyGetParent', this.props.navigation.dangerouslyGetParent())
-    // console.log('this.props.navigation', this.props.navigation);
-  }
-
   componentDidUpdate = (prevProps) => {
     const {
       isFocused,
+      isTransitioning,
       keyboardFocusHistory,
-      transitionProps: { isTransitioning },
     } = this.props;
 
-    const prevTransitioning = get(prevProps, 'transitionProps.isTransitioning');
-
-    if (isFocused && (!isTransitioning && prevTransitioning)) {
+    if (isFocused && (!isTransitioning && prevProps.isTransitioning)) {
       const lastFocusedInput = keyboardFocusHistory[keyboardFocusHistory.length - 2];
 
       if (lastFocusedInput) {
-        TextInput.State.focusTextInput(lastFocusedInput);
+        InteractionManager.runAfterInteractions(() => {
+          TextInput.State.focusTextInput(lastFocusedInput);
+        });
       } else {
         // console.log('ELSE')
         // this.inputFieldRef.focus();
@@ -258,11 +231,6 @@ class ExchangeModal extends PureComponent {
     }
   }
 
-  getAssetsAvailableOnUniswap = () => {
-    const uniswapAssetAddresses = map(keys(uniswapAssets), address => address.toLowerCase());
-    return filter(this.props.allAssets, asset => findIndex(uniswapAssetAddresses, uniswapAddress => uniswapAddress === asset.address) > -1);
-  }
-
   onPressMaxBalance = () => {
     const { inputCurrency } = this.state;
     const balance = get(inputCurrency, 'balance.amount', 0);
@@ -272,16 +240,14 @@ class ExchangeModal extends PureComponent {
 
   handleSelectInputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
-      assets: this.getAssetsAvailableOnUniswap(),
-      headerTitle: 'Swap',
+      type: CurrencySelectionTypes.input,
       onSelectCurrency: this.setInputCurrency,
     });
   }
 
   handleSelectOutputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
-      assets: this.props.sortedUniswapAssets,
-      headerTitle: 'Receive',
+      type: CurrencySelectionTypes.output,
       onSelectCurrency: this.setOutputCurrency,
     });
   }
@@ -340,7 +306,7 @@ class ExchangeModal extends PureComponent {
       nativeCurrency,
       navigation,
       onPressConfirmExchange,
-      transitionProps,
+      transitionPosition,
     } = this.props;
 
     const {
@@ -366,7 +332,7 @@ class ExchangeModal extends PureComponent {
         >
           <AnimatedFloatingPanels
             style={{
-              opacity: Animated.interpolate(navigation.getParam('position'), {
+              opacity: Animated.interpolate(transitionPosition, {
                 extrapolate: 'clamp',
                 inputRange: [0, 1],
                 outputRange: [1, 0],
@@ -443,5 +409,14 @@ export default compose(
   withNavigationFocus,
   withTransactionConfirmationScreen,
   withTransitionProps,
-  withUniswapAssets,
+  mapProps(({
+    navigation,
+    transitionProps: { isTransitioning },
+    ...props,
+  }) => ({
+    ...props,
+    isTransitioning,
+    navigation,
+    transitionPosition: get(navigation, 'state.params.position'),
+  })),
 )(ExchangeModal);
