@@ -1,44 +1,30 @@
-import {
-  get,
-} from 'lodash';
+import { get, map, property } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, PureComponent } from 'react';
-import { compose } from 'recompact';
+import { InteractionManager, View } from 'react-native';
+import { compose, mapProps, withProps } from 'recompact';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
-import { ReText } from 'react-native-redash';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import {
-  Centered,
-  Column,
-  FlexItem,
-  KeyboardFixedOpenLayout,
-  Row,
-} from '../components/layout';
-import { safeAreaInsetValues } from '../utils';
-import { Modal } from '../components/modal';
-import { ExchangeCoinRow } from '../components/coin-row';
-import GestureBlocker from '../components/GestureBlocker';
-import { TruncatedText } from '../components/text';
-import {
   withKeyboardFocusHistory,
   withTransitionProps,
+  withUniswapAssets,
 } from '../hoc';
 import { borders, colors, position } from '../styles';
-import { EmptyAssetList } from '../components/asset-list';
-import { BackButton } from '../components/header';
-import { ExchangeAssetList, ExchangeSearch } from '../components/exchange';
+import { isNewValueForPath, safeAreaInsetValues } from '../utils';
 import { filterList } from '../utils/search';
+import { EmptyAssetList } from '../components/asset-list';
+import { ExchangeCoinRow } from '../components/coin-row';
+import { ExchangeAssetList, ExchangeSearch } from '../components/exchange';
+import GestureBlocker from '../components/GestureBlocker';
+import { BackButton } from '../components/header';
+import { Centered, Column, KeyboardFixedOpenLayout } from '../components/layout';
+import { Modal } from '../components/modal';
+import { TruncatedText } from '../components/text';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 
-const HeaderContainer = styled(Centered).attrs({
-  flex: 0,
-})`
-  ${borders.buildRadius('top', 12)};
-  background-color: ${colors.white};
-  height: 60;
-  width: 100%;
-`;
+const EMPTY_ARRAY = [];
 
 const BackButtonWrapper = styled(Centered)`
   left: 0;
@@ -46,73 +32,98 @@ const BackButtonWrapper = styled(Centered)`
   position: absolute;
 `;
 
+const HeaderContainer = styled(Centered).attrs({ flex: 0 })`
+  ${borders.buildRadius('top', 12)};
+  background-color: ${colors.white};
+  height: 60;
+  width: 100%;
+`;
+
+const HeaderTitle = withProps({
+  height: 21,
+  letterSpacing: 'tighter',
+  lineHeight: 'loose',
+  size: 'large',
+  weight: 'bold',
+})(TruncatedText);
+
 const appendAssetWithSearchableKey = (asset) => ({
   ...asset,
   uniqueId: `${asset.name} ${asset.symbol}`,
 });
 
-class CurrencySelectModal extends PureComponent { //Component {
+const buildUniqueIdForListData = (items = EMPTY_ARRAY) => items.map(property('address')).join('_');
+
+const normalizeAssetItems = (assetsArray) => map(assetsArray, appendAssetWithSearchableKey);
+
+export const CurrencySelectionTypes = {
+  input: 'input',
+  output: 'output',
+};
+
+class CurrencySelectModal extends PureComponent {
   static propTypes = {
+    assetsAvailableOnUniswap: PropTypes.arrayOf(PropTypes.object),
+    isFocused: PropTypes.bool,
+    isTransitioning: PropTypes.bool,
     navigation: PropTypes.object,
+    sortedUniswapAssets: PropTypes.array,
+    transitionPosition: PropTypes.object,
+    type: PropTypes.oneOf(Object.keys(CurrencySelectionTypes)),
   }
 
   state = {
-    assets: [],
-    searchResults: [],
-  }
-
-  headerTitle = 'Receive'
-
-  position = undefined
-
-  onChangeSearchText = (searchPhrase) => {
-    const searchResults = filterList(this.state.assets, searchPhrase, 'uniqueId');
-    this.setState({ searchResults });
+    searchQuery: '',
   }
 
   searchInputRef = React.createRef()
 
-  componentDidMount() {
-    this.getDataFromParams();
-  }
-
   componentDidUpdate(prevProps) {
-    const {
-      isFocused,
-      keyboardFocusHistory,
-      navigation,
-      transitionProps: { isTransitioning },
-    } = this.props;
+    const { isFocused, isTransitioning } = this.props;
 
-    const prevTransitioning = get(prevProps, 'transitionProps.isTransitioning');
-
-    if (isFocused && (!isTransitioning && prevTransitioning)) {
-      this.searchInputRef.current.focus();
-    }
-
-    this.getDataFromParams();
-  }
-
-  getDataFromParams = () => {
-    const { navigation } = this.props;
-    // this.callback = ;
-
-    this.headerTitle = navigation.getParam('headerTitle');
-    // console.log('nav get params', navigation.getScreenProps());
-    // console.log('nav get params', navigation);
-
-    // console.log('getDataFromParams -- assets --', assets);
-
-    if (!this.state.assets.length) {
-      const thing = navigation.getParam('assets', []).map(appendAssetWithSearchableKey);
-      // console.log('assets',assets );
-      // console.log('THIGN', thing);
-      // console.log('this.state.assets', this.state.assets);
-      if (!!thing.length) {
-        // console.log('THE THING,,,,,, its happening')
-        this.setState({ assets: thing });
+    if (isFocused && (!isTransitioning && prevProps.isTransitioning)) {
+      if (this.searchInputRef.current) {
+        InteractionManager.runAfterInteractions(() => {
+          this.searchInputRef.current.focus();
+        });
       }
     }
+  }
+
+  shouldComponentUpdate = (nextProps, nextState) => {
+    const currentTransitioning = this.props.isTransitioning;
+    const nextTransitioning = nextProps.isTransitioning;
+
+    if (!currentTransitioning && nextTransitioning) {
+      return false;
+    }
+
+    let currentAssets = this.props.sortedUniswapAssets;
+    let nextAssets = EMPTY_ARRAY;
+
+    if (nextProps.type === CurrencySelectionTypes.input) {
+      currentAssets = this.props.assetsAvailableOnUniswap;
+      nextAssets = nextProps.assetsAvailableOnUniswap;
+    } else if (nextProps.type === CurrencySelectionTypes.output) {
+      nextAssets = nextProps.sortedUniswapAssets;
+    }
+
+    const currentAssetsUniqueId = buildUniqueIdForListData(currentAssets);
+    const nextAssetsUniqueId = buildUniqueIdForListData(nextAssets);
+
+    const isNewAssets = currentAssetsUniqueId !== nextAssetsUniqueId;
+    const isNewFocus = isNewValueForPath(this.props, nextProps, 'isFocused');
+    const isNewSearchQuery = isNewValueForPath(this.state, nextState, 'searchQuery');
+    const isNewTransitioning = isNewValueForPath(this.props, nextProps, 'isTransitioning');
+    const isNewType = isNewValueForPath(this.props, nextProps, 'type');
+
+    return (
+      isNewAssets
+      || isNewSearchQuery
+      || isNewType
+      || isNewFocus
+      || isNewTransitioning
+    );
   }
 
   dangerouslySetIsGestureBlocked = (isGestureBlocked) => {
@@ -136,7 +147,10 @@ class CurrencySelectModal extends PureComponent { //Component {
     navigation.navigate('MainExchangeScreen');
   }
 
-      // {...itemProps}
+  onChangeSearchText = (searchQuery) => {
+    this.setState({ searchQuery });
+  }
+
   renderCurrencyItem = (item) => (
     <ExchangeCoinRow
       item={item}
@@ -151,24 +165,43 @@ class CurrencySelectModal extends PureComponent { //Component {
 
   render = () => {
     const {
-      allAssets,
-      navigation,
-      transitionProps: { isTransitioning },
+      assetsAvailableOnUniswap,
+      isFocused,
+      isTransitioning,
+      sortedUniswapAssets,
+      transitionPosition,
+      type,
     } = this.props;
 
-    const { assets, searchResults } = this.state;
-    const items = searchResults.length ? searchResults : assets;
+    const { searchQuery } = this.state;
+
+    let headerTitle = '';
+    let assets = sortedUniswapAssets;
+    if (type === CurrencySelectionTypes.input) {
+      headerTitle = 'Swap';
+      assets = assetsAvailableOnUniswap;
+    } else if (type === CurrencySelectionTypes.output) {
+      headerTitle = 'Receive';
+    }
+
+    const listItems = filterList(assets, searchQuery, 'uniqueId');
+
+    const isLoading = (
+      isTransitioning
+      || listItems.length === 0
+      || !isFocused
+    );
 
     return (
       <KeyboardFixedOpenLayout paddingTop={safeAreaInsetValues.top}>
         <Animated.View
           style={{
             ...position.sizeAsObject('100%'),
-            opacity: Animated.interpolate(navigation.getParam('position'), {
+            opacity: Animated.interpolate(transitionPosition, {
               extrapolate: 'clamp',
               inputRange: [0, 1],
               outputRange: [0, 1],
-            }),
+            })
           }}
         >
           <Modal
@@ -192,15 +225,9 @@ class CurrencySelectModal extends PureComponent { //Component {
                     size="9"
                   />
                 </BackButtonWrapper>
-                <TruncatedText
-                  height={21}
-                  letterSpacing="tighter"
-                  lineHeight="loose"
-                  size="large"
-                  weight="bold"
-                >
-                  {this.headerTitle}
-                </TruncatedText>
+                <HeaderTitle>
+                  {headerTitle}
+                </HeaderTitle>
               </HeaderContainer>
               <ExchangeSearch
                 autoFocus={false}
@@ -208,15 +235,21 @@ class CurrencySelectModal extends PureComponent { //Component {
                 onFocus={this.handleFocusField}
                 ref={this.searchInputRef}
               />
-              {(items.length === 0) ? (
-                <EmptyAssetList />
-               ) : (
-                 <ExchangeAssetList
-                  items={items}
+              <View flex={1}>
+                <ExchangeAssetList
+                  items={listItems}
                   renderItem={this.renderCurrencyItem}
+                  scrollIndicatorInsets={{
+                    bottom: exchangeModalBorderRadius,
+                  }}
                 />
-               )}
-
+                <EmptyAssetList
+                  {...position.coverAsObject}
+                  backgroundColor={colors.white}
+                  opacity={isLoading ? 1 : 0}
+                  pointerEvents="none"
+                />
+              </View>
             </Column>
             <GestureBlocker type='bottom'/>
           </Modal>
@@ -226,16 +259,24 @@ class CurrencySelectModal extends PureComponent { //Component {
   }
 }
 
-
-
-               // <ReText text={opacity} style={{ color: 'black' }} />
-                  //
-                // flex={0}
-                  // style={{ backgroundColor: 'blue', height: 400 }}
-                  // paddingBottom={100}
-                  // height={400}
 export default compose(
   withNavigationFocus,
   withTransitionProps,
   withKeyboardFocusHistory,
+  withUniswapAssets,
+  mapProps(({
+    assetsAvailableOnUniswap,
+    navigation,
+    sortedUniswapAssets,
+    transitionProps: { isTransitioning },
+    ...props,
+  }) => ({
+    ...props,
+    assetsAvailableOnUniswap: normalizeAssetItems(assetsAvailableOnUniswap),
+    isTransitioning,
+    navigation,
+    sortedUniswapAssets: normalizeAssetItems(sortedUniswapAssets),
+    transitionPosition: get(navigation, 'state.params.position'),
+    type: get(navigation, 'state.params.type', null),
+  })),
 )(CurrencySelectModal);

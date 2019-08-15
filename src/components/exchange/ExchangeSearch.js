@@ -7,7 +7,7 @@ import { colors, margin, padding, position } from '../../styles';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
 import InnerBorder from '../InnerBorder';
-import { RowWithMargins } from '../layout';
+import { Centered, RowWithMargins } from '../layout';
 
 const Container = styled(RowWithMargins).attrs({
   margin: 6.5,
@@ -54,6 +54,8 @@ class ExchangeSearch extends PureComponent {
           <Input
             allowFontScaling={false}
             autoFocus={this.props.autoFocus}
+            blurOnSubmit={false}
+            clearTextOnFocus={true}
             color={colors.dark}
             flex={1}
             keyboardAppearance="dark"
@@ -63,14 +65,31 @@ class ExchangeSearch extends PureComponent {
             onFocus={this.props.onFocus}
             placeholder="Search"
             placeholderTextColor={colors.grey}
-            blurOnSubmit={false}
-            clearButtonMode="always"
             ref={this.inputRef}
             returnKeyType="search"
             selectionColor={colors.appleBlue}
             size="large"
             value={this.state.searchQuery}
           />
+          <Centered
+            flex={0}
+            css={`
+              ${padding(0, 10, 0, 20)};
+              bottom: 0;
+              position: absolute;
+              height: 40;
+              width: 40;
+              right: 0;
+              z-index: 99999;
+              top: 0;
+            `}
+          >
+            <Icon
+              color={colors.blueGreyDark}
+              name="clearInput"
+              opacity={0.4}
+            />
+          </Centered>
           <InnerBorder
             color={colors.dark}
             opacity={0.01}

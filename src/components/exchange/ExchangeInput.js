@@ -53,8 +53,10 @@ export default class ExchangeInput extends PureComponent {
         refInput={refInput}
         selectionColor={colors.appleBlue}
         style={[{
-          fontFamily: fonts.family.SFMono,
+          fontFamily: fonts.family.SFProDisplay,
           fontSize: parseFloat(fontSize),
+          fontVariant: ['tabular-nums'],
+          fontWeight: fonts.weight.medium,
         }, style]}
         value={value}
       />
