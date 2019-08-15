@@ -10,6 +10,7 @@ import {
   filter,
   findIndex,
   get,
+  isEmpty,
   isNil,
   keys,
   map,
@@ -105,6 +106,13 @@ class ExchangeModal extends PureComponent {
       isTransitioning,
       keyboardFocusHistory,
     } = this.props;
+    const {
+      inputAmount,
+      inputCurrency,
+      nativeAmount,
+      outputAmount,
+      outputCurrency,
+    } = this.state;
 
     if (isFocused && (!isTransitioning && prevProps.isTransitioning)) {
       const lastFocusedInput = keyboardFocusHistory[keyboardFocusHistory.length - 2];
@@ -119,11 +127,17 @@ class ExchangeModal extends PureComponent {
       }
     }
 
-    if (this.state.outputCurrency) {
+    if (outputCurrency) {
       this.setState({ showConfirmButton: true });
     }
 
-    if (this.state.inputCurrency.address !== prevState.inputCurrency.address) {
+    if ((!isEmpty(nativeAmount) && nativeAmount !== prevState.nativeAmount)
+        || (!isEmpty(inputAmount) && inputAmount !== prevState.inputAmount)
+        || (!isEmpty(outputAmount) && outputAmount !== prevState.outputAmount)) {
+      this.getMarketDetails();
+    }
+
+    if (inputCurrency.address !== prevState.inputCurrency.address) {
       this.getCurrencyAllowance();
     }
   }
@@ -171,11 +185,12 @@ class ExchangeModal extends PureComponent {
         inputAmount,
         inputAsExactAmount,
         inputCurrency,
+        nativeAmount,
         outputAmount,
         outputCurrency,
       } = this.state;
       if (inputCurrency === null || outputCurrency === null) return;
-      if (isNil(inputAmount) && isNil(outputAmount)) return;
+      if (isEmpty(inputAmount) && isEmpty(outputAmount)) return;
       const {
         address: inputCurrencyAddress,
         decimals: inputDecimals,
@@ -223,7 +238,6 @@ class ExchangeModal extends PureComponent {
     const inputAmount = convertAmountFromNativeValue(nativeAmount, get(this.state.inputCurrency, 'native.price.amount', 0));
     this.setState({ inputAmount });
     this.setInputAsExactAmount(true);
-    await this.getMarketDetails();
   }
 
   setInputAmount = async inputAmount => {
@@ -231,37 +245,37 @@ class ExchangeModal extends PureComponent {
     const nativeAmount = convertAmountToNativeAmount(inputAmount, get(this.state.inputCurrency, 'native.price.amount', 0));
     this.setState({ nativeAmount });
     this.setInputAsExactAmount(true);
-    await this.getMarketDetails();
   }
 
   setOutputAmount = async outputAmount => {
     this.setState({ outputAmount });
     this.setInputAsExactAmount(false);
-    await this.getMarketDetails();
   }
 
   setInputCurrency = inputCurrency => {
-    const previousInputCurrency = this.state.inputCurrency;
+    const { inputCurrency: previousInputCurrency, outputCurrency } = this.state;
     this.setState({ inputCurrency });
-    if (inputCurrency && this.state.outputCurrency && inputCurrency.address === this.state.outputCurrency.address) {
-      if (this.state.outputCurrency !== null
-          && previousInputCurrency !== null) {
-        this.setOutputCurrency(previousInputCurrency);
+    if (inputCurrency
+        && outputCurrency
+        && inputCurrency.address.toLowerCase() === outputCurrency.address.toLowerCase()) {
+      if (previousInputCurrency) {
+        this.setState({ outputCurrency: previousInputCurrency });
       } else {
-        this.setOutputCurrency(null);
+        this.setState({ outputCurrency: null });
       }
     }
   }
 
   setOutputCurrency = outputCurrency => {
-    const previousOutputCurrency = this.state.outputCurrency;
+    const { inputCurrency, outputCurrency: previousOutputCurrency } = this.state;
     this.setState({ outputCurrency });
-    if (outputCurrency && this.state.inputCurrency && outputCurrency.address === this.state.inputCurrency.address) {
-      const asset = ethereumUtils.getAsset(this.props.allAssets, address);
-      if (this.state.inputCurrency !== null && previousOutputCurrency !== null && !isNil(asset)) {
-        this.setInputCurrency(previousOutputCurrency);
+    if (outputCurrency
+        && inputCurrency
+        && outputCurrency.address.toLowerCase() === inputCurrency.address.toLowerCase()) {
+      if (previousOutputCurrency) {
+        this.setState({ inputCurrency: previousOutputCurrency });
       } else {
-        this.setInputCurrency(null);
+        this.setState({ inputCurrency: null });
       }
     }
   }
