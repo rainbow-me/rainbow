@@ -26,6 +26,7 @@ export default class ExchangeInputField extends Component {
     nativeAmount: PropTypes.string,
     nativeCurrency: PropTypes.string,
     nativeFieldRef: PropTypes.func,
+    needsApproval: PropTypes.bool,
     onPressMaxBalance: PropTypes.func,
     onPressSelectInputCurrency: PropTypes.func,
     setInputAmount: PropTypes.func,
@@ -80,6 +81,7 @@ export default class ExchangeInputField extends Component {
       nativeAmount,
       nativeCurrency,
       nativeFieldRef,
+      needsApproval,
       onFocus,
       setNativeAmount,
     } = this.props;
@@ -172,26 +174,29 @@ export default class ExchangeInputField extends Component {
             {inputCurrency || 'Choose a Coin'}
           </CoolButton>
         </Row>
-        <Row
-          align="center"
-          justify="space-between"
-          paddingLeft={this.padding}
-        >
-          {this.renderNativeField()}
-          {isAssetApproved ? (
-            <ButtonPressAnimation onPress={onPressMaxBalance}>
-              <RowWithMargins
-                align="center"
-                margin={3}
-                paddingHorizontal={this.padding}
-              >
-                <Emoji lineHeight="none" name="moneybag" size="lmedium" />
-                <Text color="appleBlue" size="medium" weight="semibold">Max</Text>
-              </RowWithMargins>
-            </ButtonPressAnimation>
-          ) : (
-            <UnlockAssetButton onPress={onPressUnlockAsset} />
-          )}
+        <Row align="center" justify="space-between" paddingLeft={this.padding}>
+          <ExchangeInput
+            fontSize={fonts.size.large}
+            mask={mask}
+            onChangeText={setNativeAmount}
+            onFocus={onFocus}
+            placeholder={placeholder}
+            refInput={this.handleNativeFieldRef}
+            style={{ paddingBottom: this.padding }}
+            value={nativeAmount}
+          />
+          <ButtonPressAnimation onPress={onPressMaxBalance}>
+            <RowWithMargins
+              align="center"
+              margin={3}
+              paddingHorizontal={this.padding}
+            >
+              {!needsApproval && <Emoji lineHeight="none" name="moneybag" size="lmedium" />}
+              <Text color="appleBlue" size="medium" weight="semibold">
+                {needsApproval ? 'Approve' : 'Max'}
+              </Text>
+            </RowWithMargins>
+          </ButtonPressAnimation>
         </Row>
       </ColumnWithMargins>
     );

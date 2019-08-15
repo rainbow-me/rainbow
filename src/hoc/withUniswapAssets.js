@@ -1,7 +1,9 @@
 import {
   filter,
+  get,
   keys,
   map,
+  mapKeys,
   mapValues,
   property,
   sortBy,
@@ -16,17 +18,24 @@ import withAccountData from './withAccountData';
 const allAssetsSelector = state => state.allAssets;
 const unsortedUniswapAssetsSelector = state => state.unsortedUniswapAssets;
 
-const uniswapAssetAddresses = map(keys(uniswapAssetsRaw), toLower);
+const uniswapAssetsRawLoweredKeys = mapKeys(uniswapAssetsRaw, (value, key) => toLower(key));
+const uniswapAssetAddresses = keys(uniswapAssetsRawLoweredKeys);
 const filterUniswapAssetsByAvailability = ({ address }) => uniswapAssetAddresses.includes(address);
-const withAssetsAvailableOnUniswap = (allAssets) => ({
-  assetsAvailableOnUniswap: filter(allAssets, filterUniswapAssetsByAvailability),
-});
 
-const mapUniswapAssetItem = ({ exchange_address, ...asset }, address) => ({
+const withAssetsAvailableOnUniswap = (allAssets) => {
+  const availableAssets = filter(allAssets, filterUniswapAssetsByAvailability);
+  const assetsAvailableOnUniswap = map(availableAssets, (asset) => ({
+    ...asset,
+    exchangeAddress: get(uniswapAssetsRawLoweredKeys, `${asset.address}.exchangeAddress`),
+  }));
+  return { assetsAvailableOnUniswap };
+};
+
+const mapUniswapAssetItem = ({ exchangeAddress, ...asset }, address) => ({
   ...asset,
   address,
-  exchange_address,
-  uniqueId: exchange_address,
+  exchangeAddress,
+  uniqueId: exchangeAddress,
 });
 
 const unsortedUniswapAssets = values(mapValues(uniswapAssetsRaw, mapUniswapAssetItem));
