@@ -47,12 +47,6 @@
     "decimals": 18,
     "exchangeAddress": "0x09cabEC1eAd1c0Ba254B09efb3EE13841712bE14"
   },
-  "0xE0B7927c4aF23765Cb51314A0E0521A9645F0E2A": {
-    "name": "DigixDAO",
-    "symbol": "DGD",
-    "decimals": 9,
-    "exchangeAddress": "0xD55C1cA9F5992A2e5E379DCe49Abf24294ABe055"
-  },
   "0x4f3AfEC4E5a3F2A6a1A411DEF7D7dFe50eE057bF": {
     "name": "Digix Gold Token",
     "symbol": "DGX",

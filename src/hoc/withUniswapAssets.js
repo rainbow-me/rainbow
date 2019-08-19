@@ -19,7 +19,8 @@ const allAssetsSelector = state => state.allAssets;
 const unsortedUniswapAssetsSelector = state => state.unsortedUniswapAssets;
 
 const uniswapAssetsRawLoweredKeys = mapKeys(uniswapAssetsRaw, (value, key) => toLower(key));
-const uniswapAssetAddresses = keys(uniswapAssetsRawLoweredKeys);
+
+export const uniswapAssetAddresses = keys(uniswapAssetsRawLoweredKeys);
 const filterUniswapAssetsByAvailability = ({ address }) => uniswapAssetAddresses.includes(address);
 
 const withAssetsAvailableOnUniswap = (allAssets) => {
