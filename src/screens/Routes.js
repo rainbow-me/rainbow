@@ -7,9 +7,8 @@ import {
   createMaterialTopTabNavigator,
 } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
-import { createMaterialTopTabNavigator as newTopTabNavigator } from 'react-navigation-tabs';
-import { Navigation } from '../navigation';
-import { updateTransitionProps } from '../redux/navigation';
+import { ExchangeModalNavigator, Navigation } from '../navigation';
+import { updateStackTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
 import { colors } from '../styles';
 import { deviceUtils } from '../utils';
@@ -31,12 +30,9 @@ import {
   onTransitionStart as onTransitionStartEffect,
 } from '../navigation/transitions/effects';
 import restoreKeyboard from './restoreKeyboard';
-import ExchangeModal from './ExchangeModal';
-import CurrencySelectModal from './CurrencySelectModal';
 
-const onTransitionEnd = () => store.dispatch(updateTransitionProps({ isTransitioning: false }));
-
-const onTransitionStart = () => store.dispatch(updateTransitionProps({ isTransitioning: true }));
+const onTransitionEnd = () => store.dispatch(updateStackTransitionProps({ isTransitioning: false }));
+const onTransitionStart = () => store.dispatch(updateStackTransitionProps({ isTransitioning: true }));
 
 const SwipeStack = createMaterialTopTabNavigator({
   ProfileScreen: {
@@ -70,57 +66,6 @@ const SwipeStack = createMaterialTopTabNavigator({
   tabBarComponent: null,
 });
 
-const ExchangeModalTabPosition = new Animated.Value(0);
-
-const ExchangeModalNavigator = newTopTabNavigator({
-  MainExchangeScreen: {
-    params: {
-      position: ExchangeModalTabPosition,
-    },
-    screen: ExchangeModal,
-  },
-  CurrencySelectScreen: {
-    params: {
-      position: ExchangeModalTabPosition,
-    },
-    screen: CurrencySelectModal,
-  },
-}, {
-  disableKeyboardHandling: true,
-  headerMode: 'none',
-  initialLayout: deviceUtils.dimensions,
-  keyboardDismissMode: 'none',
-  keyboardShouldPersistTaps: 'always',
-  mode: 'modal',
-  // onSwipeEnd: onTransitionEnd,
-  // onSwipeStart: onTransitionStart,
-  onTransitionEnd,
-  onTransitionStart,
-  position: ExchangeModalTabPosition,
-  springConfig: {
-    damping: 40,
-    mass: 1,
-    overshootClamping: false,
-    restDisplacementThreshold: 0.01,
-    restSpeedThreshold: 0.01,
-    stiffness: 300,
-  },
-  swipeDistanceMinimum: 0,
-  swipeVelocityImpact: 1,
-  swipeVelocityScale: 1,
-  tabBarComponent: null,
-  transparentCard: true,
-});
-
-// I need it for changing navigationOptions dynamically
-// for preventing swipe down to close on CurrencySelectScreen
-const EnhancedExchangeModalNavigator = props => <ExchangeModalNavigator {...props} />;//React.memo();
-EnhancedExchangeModalNavigator.router = ExchangeModalNavigator.router;
-EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => ({
-  ...navigation.state.params,
-  gesturesEnabled: !get(navigation, 'state.params.isGestureBlocked'),
-});
-
 const MainNavigator = createStackNavigator({
   ConfirmRequest: {
     navigationOptions: {
@@ -139,7 +84,7 @@ const MainNavigator = createStackNavigator({
     params: {
       isGestureBlocked: false,
     },
-    screen: EnhancedExchangeModalNavigator,
+    screen: ExchangeModalNavigator,
   },
   ExpandedAssetScreen: {
     navigationOptions: {
@@ -233,9 +178,9 @@ const AppContainerWithAnalytics = ({ ref, screenProps }) => (
         let paramsToTrack = null;
 
         if (prevRouteName === 'MainExchangeScreen' && routeName === 'WalletScreen') {
-          store.dispatch(updateTransitionProps({ blurColor: null }));
+          store.dispatch(updateStackTransitionProps({ blurColor: null }));
         } else if (prevRouteName === 'WalletScreen' && routeName === 'MainExchangeScreen') {
-          store.dispatch(updateTransitionProps({ blurColor: colors.alpha(colors.black, 0.9) }));
+          store.dispatch(updateStackTransitionProps({ blurColor: colors.alpha(colors.black, 0.9) }));
         }
 
         if (routeName === 'ExpandedAssetScreen') {

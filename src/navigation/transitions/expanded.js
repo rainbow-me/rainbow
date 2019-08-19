@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 import { Animated, Easing } from 'react-native';
-import { updateTransitionProps } from '../../redux/navigation';
+import { updateStackTransitionProps } from '../../redux/navigation';
 import store from '../../redux/store';
 import { colors } from '../../styles';
 import { deviceUtils, statusBar } from '../../utils';
@@ -33,7 +33,7 @@ export default function expanded(navigation, transitionProps, prevTransitionProp
         scene,
       } = sceneProps;
 
-      store.dispatch(updateTransitionProps({
+      store.dispatch(updateStackTransitionProps({
         effect: transitionName,
         nextIndex,
         position,
