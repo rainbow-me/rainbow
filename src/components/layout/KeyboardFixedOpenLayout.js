@@ -4,7 +4,7 @@ import { Keyboard, KeyboardAvoidingView } from 'react-native';
 import { compose, onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withKeyboardHeight } from '../../hoc';
-import { colors, position } from '../../styles';
+import { colors, padding, position } from '../../styles';
 import { deviceUtils, safeAreaInsetValues } from '../../utils';
 import { Centered } from '../layout';
 
@@ -18,9 +18,9 @@ const Container = styled.View`
 `;
 
 const InnerWrapper = styled(Centered)`
+  ${padding(safeAreaInsetValues.top, 0, 10)};
   ${position.size('100%')};
   background-color: ${colors.transparent};
-  padding-bottom: 10;
 `;
 
 class KeyboardFixedOpenLayout extends PureComponent {

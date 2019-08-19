@@ -13,6 +13,7 @@
     "postinstall": "patch-package && rn-nodeify --install --hack"
   },
   "dependencies": {
+    "@bankify/react-native-animate-number": "^0.2.1",
     "@hocs/omit-props": "^0.4.0",
     "@hocs/safe-timers": "^0.4.0",
     "@hocs/with-view-layout-props": "^0.2.0",

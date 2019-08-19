@@ -1164,6 +1164,13 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
+"@bankify/react-native-animate-number@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@bankify/react-native-animate-number/-/react-native-animate-number-0.2.1.tgz#80b2d700d0556b2d57ec1757a37454fcfbd968b8"
+  integrity sha512-rBIiZZWAU6Nfr7bqJ6Dc0vAqk8Xf0LU3otrad9jbrJQOUJRUSUf9nWttQVLW4/alKTYq1kXkGYJ1l4dsTQbLmA==
+  dependencies:
+    babel-plugin-syntax-async-functions "^6.8.0"
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.3.tgz#099139eaec7ebf07a27c1786a3ff64f39464d2ef"
@@ -3320,6 +3327,11 @@ babel-plugin-rewire@^1.2.0:
     "@babel/helper-module-imports" "^7.0.0"
     babel-plugin-syntax-jsx "^6.18.0"
     lodash "^4.17.11"
+
+babel-plugin-syntax-async-functions@^6.8.0:
+  version "6.13.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-syntax-async-functions/-/babel-plugin-syntax-async-functions-6.13.0.tgz#cad9cad1191b5ad634bf30ae0872391e0647be95"
+  integrity sha1-ytnK0RkbWtY0vzCuCHI5HgZHvpU=
 
 babel-plugin-syntax-jsx@^6.18.0:
   version "6.18.0"
