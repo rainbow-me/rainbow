@@ -24,7 +24,6 @@ const CancelButtonContainer = styled.View`
 
 const Container = styled(Column)`
   ${position.size('100%')}
-  background-color: ${colors.black};
   flex: 1;
 `;
 
