@@ -7,7 +7,7 @@ const blurOpacityInterpolation = {
   outputRange: [0, 1, 1],
 };
 
-const transitionPropsSelector = state => state.transitionProps;
+const stackTransitionPropsSelector = state => state.stackTransitionProps;
 
 const withBlurTransitionProps = ({
   blurColor,
@@ -25,7 +25,7 @@ const withBlurTransitionProps = ({
 };
 
 const withBlurTransitionPropsSelector = createSelector(
-  [transitionPropsSelector],
+  [stackTransitionPropsSelector],
   withBlurTransitionProps,
 );
 

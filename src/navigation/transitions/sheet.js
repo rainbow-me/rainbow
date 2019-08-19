@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import { Animated, Easing } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
-import { updateTransitionProps } from '../../redux/navigation';
+import { updateStackTransitionProps } from '../../redux/navigation';
 import store from '../../redux/store';
 import { colors } from '../../styles';
 import { deviceUtils, statusBar } from '../../utils';
@@ -38,7 +38,7 @@ export default function sheet(navigation, transitionProps, prevTransitionProps) 
         scene,
       } = sceneProps;
 
-      store.dispatch(updateTransitionProps({
+      store.dispatch(updateStackTransitionProps({
         effect: transitionName,
         nextIndex,
         position,
