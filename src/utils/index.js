@@ -9,6 +9,7 @@ export { initials, removeLeadingZeros } from './formatters';
 export { default as isLowerCaseMatch } from './isLowerCaseMatch';
 export { default as isNewValueForPath } from './isNewValueForPath';
 export { default as parseQueryParams } from './parseQueryParams';
+export { default as promiseUtils } from './promise';
 export { default as reduceArrayToObject } from './reduceArrayToObject';
 export { default as safeAreaInsetValues } from './safeAreaInsetValues';
 export { default as statusBar } from './statusBar';

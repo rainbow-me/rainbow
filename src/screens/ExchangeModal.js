@@ -189,8 +189,9 @@ class ExchangeModal extends PureComponent {
         outputAmount,
         outputCurrency,
       } = this.state;
-      if (inputCurrency === null || outputCurrency === null) return;
-      if (isEmpty(inputAmount) && isEmpty(outputAmount)) return;
+      if (isNil(inputCurrency)
+          || isNil(outputCurrency)
+          || (isEmpty(inputAmount) && isEmpty(outputAmount))) return;
       const {
         address: inputCurrencyAddress,
         decimals: inputDecimals,

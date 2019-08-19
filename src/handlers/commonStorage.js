@@ -76,6 +76,7 @@ const getUniqueTokensKey = (accountAddress, network) => `uniquetokens-${accountA
 const getUniswapAllowancesKey = (accountAddress, network) => `uniswapallowances-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 const getUniswapLiquidityInfoKey = (accountAddress, network) => `uniswap-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 const getUniswapLiquidityKey = (accountAddress, network) => `uniswapliquidity-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+const getUniswapTokenReservesKey = (accountAddress, network) => `uniswapreserves-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 
 /**
  * @desc get Uniswap allowances
@@ -108,6 +109,40 @@ export const saveUniswapAllowances = async (accountAddress, allowances, network)
  */
 export const removeUniswapAllowances = (accountAddress, network) => {
   const key = getUniswapAllowancesKey(accountAddress, network);
+  removeLocal(key);
+};
+
+/**
+ * @desc get Uniswap token reserves
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getUniswapTokenReserves = async (accountAddress, network) => {
+  const reserves = await getLocal(getUniswapTokenReservesKey(accountAddress, network));
+  return reserves ? reserves.data : {};
+};
+
+/**
+ * @desc save Uniswap token reserves
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const saveUniswapTokenReserves = async (accountAddress, reserves, network) => {
+  await saveLocal(
+    getUniswapTokenReservesKey(accountAddress, network),
+    { data: reserves },
+  );
+};
+
+/**
+ * @desc remove Uniswap token reserves
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const removeUniswapTokenReserves = (accountAddress, network) => {
+  const key = getUniswapTokenReservesKey(accountAddress, network);
   removeLocal(key);
 };
 

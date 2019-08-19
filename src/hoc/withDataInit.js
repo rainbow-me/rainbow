@@ -25,6 +25,7 @@ import {
 import {
   uniswapLoadState,
   uniswapClearState,
+  uniswapTokenReservesRefreshState,
   uniswapUpdateState,
 } from '../redux/uniswap';
 import {
@@ -37,14 +38,8 @@ import {
   walletConnectLoadState,
   walletConnectClearState,
 } from '../redux/walletconnect';
+import { promiseUtils } from '../utils';
 import withHideSplashScreen from './withHideSplashScreen';
-
-const PromiseAllWithFails = async (promises) => (
-  Promise.all(promises.map(promise => (
-    (promise && promise.catch)
-      ? promise.catch(error => error)
-      : promise
-  ))));
 
 export default Component => compose(
   connect(null, {
@@ -64,6 +59,7 @@ export default Component => compose(
     uniqueTokensRefreshState,
     uniswapClearState,
     uniswapLoadState,
+    uniswapTokenReservesRefreshState,
     uniswapUpdateState,
     walletConnectClearState,
     walletConnectLoadState,
@@ -87,11 +83,12 @@ export default Component => compose(
       const p6 = ownProps.nonceClearState();
       const p7 = ownProps.requestsClearState();
       const p8 = ownProps.uniswapClearState();
-      return PromiseAllWithFails([p1, p2, p3, p4, p5, p6, p7, p8]);
+      return promiseUtils.PromiseAllWithFails([p1, p2, p3, p4, p5, p6, p7, p8]);
     },
     initializeAccountData: (ownProps) => async () => {
       try {
         ownProps.dataInit();
+        ownProps.uniswapTokenReservesRefreshState();
         await ownProps.uniqueTokensRefreshState();
       } catch (error) {
         // TODO
@@ -104,7 +101,7 @@ export default Component => compose(
       const p4 = ownProps.walletConnectLoadState();
       const p5 = ownProps.uniswapLoadState();
       const p6 = ownProps.requestsLoadState();
-      return PromiseAllWithFails([p1, p2, p3, p4, p5, p6]);
+      return promiseUtils.PromiseAllWithFails([p1, p2, p3, p4, p5, p6]);
     },
     refreshAccountData: (ownProps) => async () => {
       try {
