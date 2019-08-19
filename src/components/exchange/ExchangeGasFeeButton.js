@@ -1,19 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, pure, withHandlers } from 'recompact';
+import { compose, pure, withHandlers, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, padding, shadow } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
-import { RowWithMargins } from '../layout';
+import { Nbsp } from '../html-entities';
+import { Column, Row } from '../layout';
 import { Emoji, Text } from '../text';
 
-const Container = styled(RowWithMargins)`
-  ${padding(5.5, 10)};
-  ${shadow.build(0, 0, 1, colors.dark, 1)};
-  border-color: ${colors.alpha(colors.white, 0.15)};
-  border-radius: 16;
-  border-width: 1.75;
-`;
+const Label = withProps({
+  color: colors.alpha(colors.white, 0.4),
+  size: 'smedium',
+  weight: 'medium',
+})(Text);
+
+const Title = withProps({
+  color: colors.white,
+  letterSpacing: 'tight',
+  size: 'lmedium',
+  weight: 'semibold',
+})(Text);
 
 const enhance = compose(
   pure,
@@ -28,21 +34,29 @@ const enhance = compose(
 
 const ExchangeGasFeeButton = enhance(({ gasPrice, onPress }) => (
   <ButtonPressAnimation onPress={onPress}>
-    <Container align="center" margin={5} self="center">
-      <Emoji
-        name="fuelpump"
-        size="small"
-      />
-      <Text
-        color={colors.alpha(colors.white, 0.8)}
-        lineHeight="tight"
-        marginBottom={1}
-        size="medium"
-        weight="medium"
-      >
-        {`Fee: ${gasPrice}`}
-      </Text>
-    </Container>
+    <Column css={padding(14, 19, 0)} width="100%">
+      <Row align="center" justify="space-between">
+        <Title>{gasPrice}</Title>
+        <Row align="center" justify="end" height={26}>
+          <Emoji
+            letterSpacing="tight"
+            name="stopwatch"
+            size="lmedium"
+          />
+          <Nbsp />
+          <Title>
+            Normal
+          </Title>
+        </Row>
+      </Row>
+      <Row align="center" justify="space-between">
+        <Label>Fee</Label>
+        <Row align="center" justify="end">
+          <Label>Swaps in ~</Label>
+          <Label><Nbsp />2 min</Label>
+        </Row>
+      </Row>
+    </Column>
   </ButtonPressAnimation>
 ));
 

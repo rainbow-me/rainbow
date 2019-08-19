@@ -11,6 +11,8 @@ const base = {
   blueGreyLightest: '#888D96', // '136, 141, 150'
   blueGreyMedium: '#636875', // '99, 104, 117'
   blueGreyMediumLight: '#7b7f8a', // '123, 127, 138'
+  brightOrange: '#FFB624', // '255, 182, 36'
+  brightRed: '#FF4B19', // '255, 75, 25'
   dark: '#25292E', // '37, 41, 46'
   darkGrey: '#71778a', // '113, 119, 138'
   dodgerBlue: '#575CFF', // '87, 92, 255'

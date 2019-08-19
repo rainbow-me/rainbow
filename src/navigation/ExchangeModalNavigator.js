@@ -54,7 +54,7 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator({
 
 // I need it for changing navigationOptions dynamically
 // for preventing swipe down to close on CurrencySelectScreen
-const EnhancedExchangeModalNavigator = React.memo(props => <ExchangeModalNavigator {...props} />);
+const EnhancedExchangeModalNavigator = props => <ExchangeModalNavigator {...props} />;//React.memo();
 
 EnhancedExchangeModalNavigator.router = ExchangeModalNavigator.router;
 EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => ({

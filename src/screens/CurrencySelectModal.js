@@ -94,9 +94,10 @@ class CurrencySelectModal extends PureComponent {
     const currentTransitioning = this.props.isTransitioning;
     const nextTransitioning = nextProps.isTransitioning;
 
-    if (!currentTransitioning && nextTransitioning) {
-      return false;
-    }
+    // if (currentTransitioning) {
+    //   console.log('blocking');
+    //   return false;
+    // }
 
     let currentAssets = this.props.sortedUniswapAssets;
     let nextAssets = EMPTY_ARRAY;
@@ -119,10 +120,10 @@ class CurrencySelectModal extends PureComponent {
 
     return (
       isNewAssets
-      || isNewSearchQuery
-      || isNewType
       || isNewFocus
+      || isNewSearchQuery
       || isNewTransitioning
+      || isNewType
     );
   }
 
@@ -169,8 +170,8 @@ class CurrencySelectModal extends PureComponent {
       isFocused,
       isTransitioning,
       sortedUniswapAssets,
-      transitionPosition,
       type,
+      transitionPosition,
     } = this.props;
 
     const { searchQuery } = this.state;
@@ -187,13 +188,13 @@ class CurrencySelectModal extends PureComponent {
     const listItems = filterList(assets, searchQuery, 'uniqueId');
 
     const isLoading = (
-      isTransitioning
-      || listItems.length === 0
-      || !isFocused
+      isTransitioning || listItems.length === 0
     );
 
+    // console.log('isFocused', isFocused ? '👍️' : '👎️', ' ', isFocused);
+
     return (
-      <KeyboardFixedOpenLayout paddingTop={safeAreaInsetValues.top}>
+      <KeyboardFixedOpenLayout>
         <Animated.View
           style={{
             ...position.sizeAsObject('100%'),
@@ -268,7 +269,7 @@ export default compose(
     assetsAvailableOnUniswap,
     navigation,
     sortedUniswapAssets,
-    transitionProps: { isTransitioning },
+    tabsTransitionProps: { isTransitioning },
     ...props,
   }) => ({
     ...props,

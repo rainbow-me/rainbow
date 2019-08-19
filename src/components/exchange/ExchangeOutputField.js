@@ -4,7 +4,7 @@ import { withNeverRerender } from '../../hoc';
 import { colors, padding, position, shadow } from '../../styles';
 import { CoolButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
-import { EmDash } from '../html-entities';
+import { EnDash } from '../html-entities';
 import { Row, RowWithMargins } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import ExchangeInput from './ExchangeInput';
@@ -63,7 +63,6 @@ export default class ExchangeOutputField extends PureComponent {
     } = this.props;
 
     const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
-    const placeholderColor = colors.alpha(colors.blueGreyDark, 0.5);
 
     return (
       <Row
@@ -87,15 +86,15 @@ export default class ExchangeOutputField extends PureComponent {
           <CoinIcon
             bgColor={outputCurrency ? undefined : skeletonColor}
             flex={0}
-            size={31}
+            size={40}
             symbol={outputCurrency}
           />
           <ExchangeInput
             editable={!!outputCurrency}
             onChangeText={setOutputAmount}
             onFocus={onFocus}
-            placeholder={outputCurrency ? '0' : EmDash.unicode}
-            placeholderTextColor={outputCurrency ? placeholderColor : skeletonColor}
+            placeholder={outputCurrency ? '0' : EnDash.unicode}
+            placeholderTextColor={outputCurrency ? undefined : skeletonColor}
             refInput={this.props.outputFieldRef}
             value={outputAmount}
           />

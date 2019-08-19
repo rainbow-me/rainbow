@@ -16,13 +16,12 @@ import {
 } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
-import { InteractionManager, TextInput } from 'react-native';
+import { InteractionManager, LayoutAnimation, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationActions, NavigationEvents, withNavigationFocus } from 'react-navigation';
 import { compose, mapProps, toClass, withProps } from 'recompact';
 import { executeSwap } from '../handlers/uniswap';
 import {
-  convertAmountFromNativeDisplay,
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
   convertAmountToRawAmount,
@@ -46,6 +45,7 @@ import {
   ExchangeInputField,
   ExchangeModalHeader,
   ExchangeOutputField,
+  SlippageWarning,
 } from '../components/exchange';
 import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
 import GestureBlocker from '../components/GestureBlocker';
@@ -60,6 +60,16 @@ import { CurrencySelectionTypes } from './CurrencySelectModal';
 export const exchangeModalBorderRadius = 30;
 
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(toClass(FloatingPanels));
+
+const isSameAsset = (firstAsset, secondAsset) => {
+  if (!firstAsset || !secondAsset) {
+    return false;
+  }
+
+  const firstAddress = get(firstAsset, 'address', '').toLowerCase();
+  const secondAddress = get(firstAsset, 'address', '').toLowerCase();
+  return firstAddress === secondAddress;
+}
 
 class ExchangeModal extends PureComponent {
   static propTypes = {
@@ -87,11 +97,8 @@ class ExchangeModal extends PureComponent {
   }
 
   componentDidUpdate = (prevProps) => {
-    const {
-      isFocused,
-      isTransitioning,
-      keyboardFocusHistory,
-    } = this.props;
+    const { isFocused, isTransitioning, keyboardFocusHistory} = this.props;
+    const { inputAmount, outputAmount, outputCurrency } = this.state;
 
     if (isFocused && (!isTransitioning && prevProps.isTransitioning)) {
       const lastFocusedInput = keyboardFocusHistory[keyboardFocusHistory.length - 2];
@@ -106,7 +113,12 @@ class ExchangeModal extends PureComponent {
       }
     }
 
-    if (this.state.outputCurrency) {
+    if (inputAmount || outputAmount) {
+      LayoutAnimation.easeInEaseOut();
+    }
+
+    if (outputCurrency) {
+      console.log('should showConfirmButton');
       this.setState({ showConfirmButton: true });
     }
   }
@@ -182,51 +194,63 @@ class ExchangeModal extends PureComponent {
 
   setInputAsExactAmount = (inputAsExactAmount) => this.setState({ inputAsExactAmount })
 
-  setNativeAmount = async nativeAmountDisplay => {
-    this.setState({ nativeAmount: nativeAmountDisplay });
-    const nativeAmount = convertAmountFromNativeDisplay(nativeAmountDisplay, this.props.nativeCurrency);
-    const inputAmount = convertAmountFromNativeValue(nativeAmount, get(this.state.inputCurrency, 'native.price.amount', 0));
-    this.setState({ inputAmount });
-    this.setInputAsExactAmount(true);
-    await this.getMarketDetails();
-  }
-
-  setInputAmount = async inputAmount => {
-    this.setState({ inputAmount });
-    const nativeAmount = convertAmountToNativeAmount(inputAmount, get(this.state.inputCurrency, 'native.price.amount', 0));
+  setNativeAmount = async (nativeAmount) => {
     this.setState({ nativeAmount });
+    const nativePrice = get(this.state.inputCurrency, 'native.price.amount', 0);
+    this.setState({ inputAmount: convertAmountFromNativeValue(nativeAmount, nativePrice) });
     this.setInputAsExactAmount(true);
     await this.getMarketDetails();
   }
 
-  setOutputAmount = async outputAmount => {
+  setInputAmount = async (inputAmount) => {
+    this.setState({ inputAmount });
+
+    let newNativeAmount = null;
+    if (inputAmount) {
+      const nativePrice = get(this.state.inputCurrency, 'native.price.amount', 0);
+      newNativeAmount = convertAmountToNativeAmount(inputAmount, nativePrice);
+    }
+
+    this.setState({ nativeAmount: newNativeAmount });
+    this.setInputAsExactAmount(true);
+    await this.getMarketDetails();
+  }
+
+  setOutputAmount = async (outputAmount) => {
     this.setState({ outputAmount });
     this.setInputAsExactAmount(false);
     await this.getMarketDetails();
   }
 
-  setInputCurrency = inputCurrency => {
-    const previousInputCurrency = this.state.inputCurrency;
-    this.setState({ inputCurrency });
-    if (inputCurrency && this.state.outputCurrency && inputCurrency.address === this.state.outputCurrency.address) {
-      if (this.state.outputCurrency !== null
-          && previousInputCurrency !== null) {
-        this.setOutputCurrency(previousInputCurrency);
-      } else {
-        this.setOutputCurrency(null);
+  setInputCurrency = (inputCurrencySelection, force) => {
+    const { inputCurrency, outputCurrency } = this.state;
+
+    this.setState({ inputCurrency: inputCurrencySelection });
+
+    if (!force && isSameAsset(inputCurrency, outputCurrency)) {
+      if (outputCurrency !== null && inputCurrency !== null) {
+        return this.setOutputCurrency(null, true);
       }
+
+      return this.setOutputCurrency(inputCurrency, true);
     }
   }
 
-  setOutputCurrency = outputCurrency => {
-    const previousOutputCurrency = this.state.outputCurrency;
+  setOutputCurrency = (outputCurrency, force) => {
+    const { allAssets } = this.props;
+    const { inputCurrency } = this.state;
+
     this.setState({ outputCurrency });
-    if (outputCurrency && this.state.inputCurrency && outputCurrency.address === this.state.inputCurrency.address) {
-      const asset = ethereumUtils.getAsset(this.props.allAssets, address);
-      if (this.state.inputCurrency !== null && previousOutputCurrency !== null && !isNil(asset)) {
-        this.setInputCurrency(previousOutputCurrency);
+
+    if (!force && isSameAsset(inputCurrency, outputCurrency)) {
+      const asset = ethereumUtils.getAsset(allAssets, outputCurrency.address.toLowerCase());
+
+      console.log('asset', asset);
+      //
+      if (inputCurrency !== null && outputCurrency !== null && !isNil(asset)) {
+        this.setInputCurrency(null, true);
       } else {
-        this.setInputCurrency(null);
+        this.setInputCurrency(outputCurrency, true);
       }
     }
   }
@@ -253,26 +277,25 @@ class ExchangeModal extends PureComponent {
   }
 
   handleSubmit = async () => {
-    const { tradeDetails } = this.state;
+    const { accountAddress, dataAddNewTransaction, navigation } = this.props;
+    const { inputAmount, inputCurrency, tradeDetails } = this.state;
+
     try {
       const txn = await executeSwap(tradeDetails);
       if (txn) {
-        const txnDetails = {
-          amount: this.state.inputAmount,
-          asset: this.state.inputCurrency,
-          from: this.props.accountAddress,
+        dataAddNewTransaction({
+          amount: inputAmount,
+          asset: inputCurrency,
+          from: accountAddress,
           hash: txn.hash,
           nonce: get(txn, 'nonce'),
           to: get(txn, 'to'),
-        };
-        this.props.dataAddNewTransaction(txnDetails);
-        this.props.navigation.navigate('ProfileScreen');
-      } else {
-        this.props.navigation.navigate('ProfileScreen');
+        });
       }
+      navigation.navigate('ProfileScreen');
     } catch (error) {
       console.log('error submitting swap', error);
-      this.props.navigation.navigate('WalletScreen');
+      navigation.navigate('WalletScreen');
     }
   }
 
@@ -316,6 +339,7 @@ class ExchangeModal extends PureComponent {
       outputAmount,
       outputCurrency,
       showConfirmButton,
+      slippage,
     } = this.state;
 
     return (
@@ -328,9 +352,9 @@ class ExchangeModal extends PureComponent {
           {...position.sizeAsObject('100%')}
           backgroundColor={colors.transparent}
           direction="column"
-          paddingTop={showConfirmButton ? 0 : 10}
         >
           <AnimatedFloatingPanels
+            margin={0}
             style={{
               opacity: Animated.interpolate(transitionPosition, {
                 extrapolate: 'clamp',
@@ -342,7 +366,7 @@ class ExchangeModal extends PureComponent {
             <GestureBlocker type='top'/>
             <FloatingPanel radius={exchangeModalBorderRadius}>
               <ExchangeModalHeader />
-              <Column align="center">
+              <Column align="center" flex={0}>
                 <ExchangeInputField
                   inputAmount={inputAmount}
                   inputCurrency={get(inputCurrency, 'symbol', null)}
@@ -366,27 +390,25 @@ class ExchangeModal extends PureComponent {
                 />
               </Column>
             </FloatingPanel>
-            <Centered>
-              <Text color={colors.white}>
-                Slippage {this.state.slippage}
-              </Text>
-            </Centered>
-            <GestureBlocker type='bottom'/>
+            <SlippageWarning slippage={slippage} />
             {showConfirmButton && (
               <Fragment>
-                <Centered css={padding(0, 15, 24)} width="100%">
+                <Centered
+                  css={padding(19, 15, 0)}
+                  flexShrink={0}
+                  width="100%"
+                >
                   <ConfirmExchangeButton
                     disabled={!Number(inputAmount)}
                     onPress={this.handleSubmit}
                   />
                 </Centered>
-                {!!Number(inputAmount) && (
-                  <ExchangeGasFeeButton
-                    gasPrice={'$0.06'}
-                  />
-                )}
+                <ExchangeGasFeeButton
+                  gasPrice={'$0.06'}
+                />
               </Fragment>
             )}
+            <GestureBlocker type='bottom'/>
           </AnimatedFloatingPanels>
         </Centered>
       </KeyboardFixedOpenLayout>
@@ -411,11 +433,16 @@ export default compose(
   withTransitionProps,
   mapProps(({
     navigation,
-    transitionProps: { isTransitioning },
+    tabsTransitionProps: {
+      isTransitioning: isTabsTransitioning,
+    },
+    stackTransitionProps: {
+      isTransitioning:  isStacksTransitioning,
+    },
     ...props,
   }) => ({
     ...props,
-    isTransitioning,
+    isTransitioning: isStacksTransitioning || isTabsTransitioning,
     navigation,
     transitionPosition: get(navigation, 'state.params.position'),
   })),

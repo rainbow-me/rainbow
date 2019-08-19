@@ -2,7 +2,7 @@ import { get, property } from 'lodash';
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { View } from 'react-native';
+import { LayoutAnimation, View } from 'react-native';
 import { DataProvider, LayoutProvider, RecyclerListView } from "recyclerlistview";
 import styled from 'styled-components/primitives';
 import { deviceUtils, isNewValueForPath } from '../../utils';
@@ -14,9 +14,31 @@ const ViewTypes = {
   COIN_ROW: 0,
 };
 
-const hasRowChanged = (...rows) => isNewValueForPath(...rows, 'uniqueId');
+const NOOP = () => undefined;
+
+const layoutItemAnimator = {
+  animateDidMount: NOOP,
+  animateShift: () => LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')),
+  animateWillMount: NOOP,
+  animateWillUnmount: NOOP,
+  animateWillUpdate: NOOP,
+};
 
 const buildUniqueIdForListData = (items = []) => items.map(property('address')).join('_');
+
+const getLayoutTypeForIndex = () => ViewTypes.COIN_ROW;
+
+const hasRowChanged = (r1, r2) => isNewValueForPath(r1, r2, 'uniqueId');
+
+const setLayoutForType = (type, dim) => {
+  if (type === ViewTypes.COIN_ROW) {
+    dim.width = deviceUtils.dimensions.width;
+    dim.height = CoinRow.height;
+  } else {
+    dim.width = 0;
+    dim.height = 0;
+  }
+};
 
 export default class ExchangeAssetList extends PureComponent {
   static propTypes = {
@@ -31,19 +53,9 @@ export default class ExchangeAssetList extends PureComponent {
       dataProvider: new DataProvider(hasRowChanged, this.getStableId),
     }
 
-    // this.state.dataProvider._requiresDataChangeHandling = true;
+    this.state.dataProvider._requiresDataChangeHandling = true;
 
-    this.layoutProvider = new LayoutProvider(() => {
-      return ViewTypes.COIN_ROW;
-    }, (type, dim) => {
-      if (type === ViewTypes.COIN_ROW) {
-        dim.width = deviceUtils.dimensions.width;
-        dim.height = CoinRow.height;
-      } else {
-        dim.width = 0;
-        dim.height = 0;
-      }
-    })
+    this.layoutProvider = new LayoutProvider(getLayoutTypeForIndex, setLayoutForType)
   }
 
   rlvRef = React.createRef()
@@ -54,7 +66,7 @@ export default class ExchangeAssetList extends PureComponent {
 
   componentDidUpdate = (prevProps, prevState) => {
     if (this.props.items.length !== prevProps.items.length) {
-      // this.rlvRef.current.forceRerender();
+      this.rlvRef.current.forceRerender();
       this.updateList();
     }
   }
@@ -75,11 +87,12 @@ export default class ExchangeAssetList extends PureComponent {
         {...this.props}
         dataProvider={this.state.dataProvider}
         layoutProvider={this.layoutProvider}
+        itemAnimator={layoutItemAnimator}
         onContentSizeChange={this.onContentSizeChange}
         onViewableItemsChanged={this.onViewableItemsChanged}
         optimizeForInsertDeleteAnimations={true}
         ref={this.rlvRef}
-        renderAheadOffset={deviceUtils.dimensions.height / 2}
+        renderAheadOffset={deviceUtils.dimensions.height}
         rowRenderer={this.renderRow}
         scrollViewProps={{
           directionalLockEnabled: true,

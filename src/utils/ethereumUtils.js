@@ -100,6 +100,7 @@ export const transactionData = (assets, assetAmount, gasPrice) => {
 
 export default {
   getAsset,
+  getBalanceAmount,
   getChainIdFromNetwork,
   getDataString,
   getNetworkFromChainId,

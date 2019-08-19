@@ -6,8 +6,8 @@
     "decimals": 2,
     "emojiName": "us",
     "label": "United States Dollar",
-    "mask": "{$}[099999999999]{.}[00]",
-    "placeholder": "$0.00",
+    "mask": "[099999999999]{.}[00]",
+    "placeholder": "0.00",
     "symbol": "$"
   },
   "CNY": {
@@ -17,8 +17,8 @@
     "decimals": 2,
     "emojiName": "cn",
     "label": "Chinese Yuan",
-    "mask": "{¥}[099999999999]{.}[00]",
-    "placeholder": "¥0.00",
+    "mask": "[099999999999]{.}[00]",
+    "placeholder": "0.00",
     "symbol": "¥"
   },
   "KRW": {
@@ -28,8 +28,8 @@
     "decimals": 0,
     "emojiName": "kr",
     "label": "South Korean Won",
-    "mask": "{₩}[099999999999]{.}[00]",
-    "placeholder": "₩0.00",
+    "mask": "[099999999999]{.}[00]",
+    "placeholder": "0.00",
     "symbol": "₩"
   },
   "RUB": {
@@ -39,8 +39,8 @@
     "decimals": 2,
     "emojiName": "ru",
     "label": "Russian Ruble",
-    "mask": "{₽}[099999999999]{.}[00]",
-    "placeholder": "₽0.00",
+    "mask": "[099999999999]{.}[00]",
+    "placeholder": "0.00",
     "symbol": "₽"
   },
   "EUR": {
@@ -50,8 +50,8 @@
     "decimals": 2,
     "emojiName": "flag-eu",
     "label": "Euro",
-    "mask": "{€}[099999999999]{.}[00]",
-    "placeholder": "€0.00",
+    "mask": "[099999999999]{.}[00]",
+    "placeholder": "0.00",
     "symbol": "€"
   },
   "ETH": {
