@@ -23,6 +23,7 @@ import FaceIdIcon from './svg/FaceIdIcon';
 import GearIcon from './svg/GearIcon';
 import HandleIcon from './svg/HandleIcon';
 import InboxIcon from './svg/InboxIcon';
+import LockIcon from './svg/LockIcon';
 import OfflineIcon from './svg/OfflineIcon';
 import ProgressIcon from './svg/ProgressIcon';
 import SearchIcon from './svg/SearchIcon';
@@ -62,6 +63,7 @@ Icon.IconTypes = {
   gear: GearIcon,
   handle: HandleIcon,
   inbox: InboxIcon,
+  lock: LockIcon,
   offline: OfflineIcon,
   progress: ProgressIcon,
   search: SearchIcon,
