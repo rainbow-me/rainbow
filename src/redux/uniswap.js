@@ -19,7 +19,11 @@ import {
   saveUniswapLiquidityTokens,
   saveUniswapTokenReserves,
 } from '../handlers/commonStorage';
-import { getLiquidityInfo, getReserves } from '../handlers/uniswap';
+import {
+  getLiquidityInfo,
+  getReserve,
+  getReserves,
+} from '../handlers/uniswap';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';
@@ -62,6 +66,31 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
     dispatch({ type: UNISWAP_LOAD_FAILURE });
   }
 };
+
+export const uniswapGetTokenReserve = (tokenAddress) => (dispatch, getState) => (
+  new Promise((resolve, reject) => {
+    tokenAddress = tokenAddress.toLowerCase();
+    dispatch({ type: UNISWAP_GET_TOKEN_RESERVES_REQUEST });
+    const { accountAddress, network } = getState().settings;
+    const { tokenReserves } = getState().uniswap;
+    getReserve(tokenAddress)
+      .then(tokenReserve => {
+        const updatedTokenReserves = {
+          ...tokenReserves,
+          [tokenAddress]: tokenReserve,
+        };
+        dispatch({
+          payload: updatedTokenReserves,
+          type: UNISWAP_GET_TOKEN_RESERVES_SUCCESS,
+        });
+        saveUniswapTokenReserves(accountAddress, updatedTokenReserves, network);
+        resolve(tokenReserve);
+      }).catch(error => {
+        dispatch({ type: UNISWAP_GET_TOKEN_RESERVES_FAILURE });
+        reject(null);
+      });
+  })
+);
 
 export const uniswapTokenReservesRefreshState = () => (dispatch, getState) => (
   new Promise((resolve, reject) => {
@@ -209,7 +238,7 @@ export default (state = INITIAL_UNISWAP_STATE, action) => produce(state, draft =
     draft.allowances = action.payload;
     break;
   case UNISWAP_GET_TOKEN_RESERVES_SUCCESS:
-    draft.tokenResercves = action.payload;
+    draft.tokenReserves = action.payload;
     break;
   case UNISWAP_CLEAR_STATE:
     return INITIAL_UNISWAP_STATE;

@@ -1,9 +1,9 @@
 import { connect } from 'react-redux';
 import { compose } from 'recompact';
-import { uniswapUpdateAllowances } from '../redux/uniswap';
+import { uniswapGetTokenReserve, uniswapUpdateAllowances } from '../redux/uniswap';
 
-const mapStateToProps = ({ uniswap: { allowances } }) => ({ allowances });
+const mapStateToProps = ({ uniswap: { allowances, tokenReserves } }) => ({ allowances, tokenReserves });
 
 export default Component => compose(
-  connect(mapStateToProps, { uniswapUpdateAllowances }),
+  connect(mapStateToProps, { uniswapGetTokenReserve, uniswapUpdateAllowances }),
 )(Component);

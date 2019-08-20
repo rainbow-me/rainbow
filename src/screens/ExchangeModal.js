@@ -1,10 +1,10 @@
 import {
-  tradeEthForExactTokens,
-  tradeExactEthForTokens,
-  tradeExactTokensForEth,
-  tradeExactTokensForTokens,
-  tradeTokensForExactEth,
-  tradeTokensForExactTokens,
+  tradeEthForExactTokensWithData,
+  tradeExactEthForTokensWithData,
+  tradeExactTokensForEthWithData,
+  tradeExactTokensForTokensWithData,
+  tradeTokensForExactEthWithData,
+  tradeTokensForExactTokensWithData,
 } from '@uniswap/sdk';
 import {
   filter,
@@ -92,6 +92,7 @@ class ExchangeModal extends PureComponent {
     navigation: PropTypes.object,
     pushKeyboardFocusHistory: PropTypes.func,
     tradeDetails: PropTypes.object,
+    uniswapGetTokenReserve: PropTypes.func,
     uniswapUpdateAllowances: PropTypes.func,
   }
 
@@ -175,6 +176,14 @@ class ExchangeModal extends PureComponent {
     this.setState({ needsApproval: !greaterThan(newAllowance, 0) });
   };
 
+  getReserveData = async tokenAddress => {
+    let reserve = this.props.tokenReserves[tokenAddress.toLowerCase()];
+    if (isNil(reserve)) {
+      reserve = await this.props.uniswapGetTokenReserve(tokenAddress);
+    }
+    return reserve;
+  };
+
   getMarketDetails = async () => {
     try {
       let tradeDetails = null;
@@ -200,17 +209,21 @@ class ExchangeModal extends PureComponent {
       const rawOutputAmount = convertAmountToRawAmount(outputAmount || 0, outputDecimals);
 
       if (inputCurrencyAddress === 'eth' && outputCurrencyAddress !== 'eth') {
+        const outputCurrencyReserve = await this.getReserveData(outputCurrencyAddress);
         tradeDetails = inputAsExactAmount
-          ? await tradeExactEthForTokens(outputCurrencyAddress, rawInputAmount, chainId)
-          : await tradeEthForExactTokens(outputCurrencyAddress, rawOutputAmount, chainId);
+          ? tradeExactEthForTokensWithData(outputCurrencyReserve, rawInputAmount, chainId)
+          : tradeEthForExactTokensWithData(outputCurrencyReserve, rawOutputAmount, chainId);
       } else if (inputCurrencyAddress !== 'eth' && outputCurrencyAddress === 'eth') {
+        const inputCurrencyReserve = await this.getReserveData(inputCurrencyAddress);
         tradeDetails = inputAsExactAmount
-          ? await tradeExactTokensForEth(inputCurrencyAddress, rawInputAmount, chainId)
-          : await tradeTokensForExactEth(inputCurrencyAddress, rawOutputAmount, chainId);
+          ? tradeExactTokensForEthWthData(inputCurrencyReserve, rawInputAmount, chainId)
+          : tradeTokensForExactEthWithData(inputCurrencyReserve, rawOutputAmount, chainId);
       } else if (inputCurrencyAddress !== 'eth' && outputCurrencyAddress !== 'eth') {
+        const inputCurrencyReserve = await this.getReserveData(inputCurrencyAddress);
+        const outputCurrencyReserve = await this.getReserveData(outputCurrencyAddress);
         tradeDetails = inputAsExactAmount
-          ? await tradeExactTokensForTokens(inputCurrencyAddress, outputCurrencyAddress, rawInputAmount, chainId)
-          : await tradeTokensForExactTokens(inputCurrencyAddress, outputCurrencyAddress, rawOutputAmount, chainId);
+          ? tradeExactTokensForTokensWithData(inputCurrencyReserve, outputCurrencyReserve, rawInputAmount, chainId)
+          : tradeTokensForExactTokensWithData(inputCurrencyReserve, outputCurrencyReserve, rawOutputAmount, chainId);
       }
       const decimals = inputAsExactAmount ? outputDecimals : inputDecimals;
       const path = inputAsExactAmount ? 'outputAmount.amount' : 'inputAmount.amount';

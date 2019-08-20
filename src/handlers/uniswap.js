@@ -29,6 +29,8 @@ const convertValueForEthers = (value) => {
   return ethers.utils.hexlify(valueBigNumber);
 };
 
+export const getReserve = tokenAddress => getTokenReserves(tokenAddress);
+
 export const getReserves = async () => {
   const uniswapTokens = slice(uniswapAssetAddresses, 1);
   const reserves = await promiseUtils.PromiseAllWithFails(map(uniswapTokens, (token) => getTokenReserves(token)));
