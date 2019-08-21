@@ -4,7 +4,7 @@ import {
   getIsWalletEmpty,
   removeIsWalletEmpty,
   saveIsWalletEmpty,
-} from '../handlers/commonStorage';
+} from '../handlers/localstorage/storage';
 
 // -- Constants --------------------------------------- //
 const SET_IS_WALLET_EMPTY = 'isWalletEmpty/SET_IS_WALLET_EMPTY';
