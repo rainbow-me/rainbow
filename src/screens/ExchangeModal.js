@@ -20,7 +20,12 @@ import React, { Fragment, PureComponent } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationActions, NavigationEvents, withNavigationFocus } from 'react-navigation';
-import { compose, mapProps, toClass, withProps } from 'recompact';
+import {
+  compose,
+  mapProps,
+  toClass,
+  withProps,
+} from 'recompact';
 import { executeSwap } from '../handlers/uniswap';
 import {
   convertAmountFromNativeDisplay,
@@ -30,6 +35,7 @@ import {
   convertRawAmountToDecimalFormat,
   greaterThan,
   subtract,
+  updatePrecisionToDisplay,
 } from '../helpers/utilities';
 import {
   withAccountAddress,
@@ -234,8 +240,12 @@ class ExchangeModal extends PureComponent {
       this.setState({ tradeDetails });
       const { rawUpdatedValue, slippage } = this.parseTradeDetails(path, tradeDetails, decimals);
       if (inputAsExactAmount) {
+        // const outputAmountToDisplay = updatePrecisionToDisplay(rawUpdatedValue, outputCurrency);
+        console.log('output currency', outputCurrency);
         this.setState({ outputAmount: rawUpdatedValue, slippage });
+        // TODO: if native: update input too
       } else {
+        // const inputAmountToDisplay = updatePrecisionToDisplay(rawUpdatedValue, inputCurrency);
         this.setState({ inputAmount: rawUpdatedValue, slippage });
       }
     } catch (error) {
@@ -244,26 +254,30 @@ class ExchangeModal extends PureComponent {
     }
   }
 
-  setInputAsExactAmount = (inputAsExactAmount) => this.setState({ inputAsExactAmount })
-
   setNativeAmount = async nativeAmountDisplay => {
-    this.setState({ nativeAmount: nativeAmountDisplay });
     const nativeAmount = convertAmountFromNativeDisplay(nativeAmountDisplay, this.props.nativeCurrency);
     const inputAmount = convertAmountFromNativeValue(nativeAmount, get(this.state.inputCurrency, 'native.price.amount', 0));
-    this.setState({ inputAmount });
-    this.setInputAsExactAmount(true);
+    this.setState({
+      inputAmount,
+      inputAsExactAmount: true,
+      nativeAmount: nativeAmountDisplay,
+    });
   }
 
   setInputAmount = async inputAmount => {
-    this.setState({ inputAmount });
-    const nativeAmount = convertAmountToNativeAmount(inputAmount, get(this.state.inputCurrency, 'native.price.amount', 0));
-    this.setState({ nativeAmount });
-    this.setInputAsExactAmount(true);
+    const nativeAmount = convertAmountToNativeAmount(
+      inputAmount,
+      get(this.state.inputCurrency, 'native.price.amount', 0)
+    );
+    this.setState({
+      inputAmount,
+      inputAsExactAmount: true,
+      nativeAmount,
+    });
   }
 
   setOutputAmount = async outputAmount => {
-    this.setState({ outputAmount });
-    this.setInputAsExactAmount(false);
+    this.setState({ outputAmount, inputAsExactAmount: false });
   }
 
   setInputCurrency = inputCurrency => {
@@ -298,7 +312,7 @@ class ExchangeModal extends PureComponent {
     const { inputCurrency } = this.state;
     const balance = get(inputCurrency, 'balance.amount', 0);
     const inputAmount = (inputCurrency.address === 'eth') ? subtract(balance, 0.01) : balance;
-    this.setState({ inputAmount });
+    this.setState({ inputAmount, inputAsExactAmount: true });
   }
 
   handleSelectInputCurrency = () => {
@@ -320,6 +334,7 @@ class ExchangeModal extends PureComponent {
     try {
       const txn = await executeSwap(tradeDetails);
       if (txn) {
+        // TODO
         const txnDetails = {
           amount: this.state.inputAmount,
           asset: this.state.inputCurrency,
@@ -372,6 +387,7 @@ class ExchangeModal extends PureComponent {
       transitionPosition,
     } = this.props;
 
+    // TODO display
     const {
       inputAmount,
       inputCurrency,
