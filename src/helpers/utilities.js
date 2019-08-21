@@ -86,6 +86,14 @@ export const floorDivide = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
  */
 export const countDecimalPlaces = value => BigNumber(`${value}`).dp();
 
+export const determinePrecisionToDisplay = (amount, nativePrice) => {
+  const totalDigits = BigNumber(`${nativePrice}`)
+    .shiftedBy(2)
+    .sd(true);
+  return BigNumber(`${amount}`)
+    .decimalPlaces(totalDigits, BigNumber.ROUND_HALF_UP)
+    .toFixed();
+};
 
 /**
  * @desc format inputOne value to signficant decimals given inputTwo
