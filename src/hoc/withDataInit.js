@@ -3,7 +3,7 @@ import { isNil } from 'lodash';
 import { Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
-import { getIsWalletEmpty } from '../handlers/commonStorage';
+import { getIsWalletEmpty } from '../handlers/localstorage/storage';
 import { hasEthBalance } from '../handlers/web3';
 import {
   dataClearState,

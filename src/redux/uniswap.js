@@ -1,24 +1,16 @@
 import produce from 'immer';
 import {
   concat,
+  forEach,
   get,
   isEmpty,
   map,
 } from 'lodash';
 import {
-  getUniswapAllowances,
-  getUniswapLiquidityInfo,
-  getUniswapLiquidityTokens,
-  getUniswapTokenReserves,
-  removeUniswapAllowances,
-  removeUniswapLiquidityInfo,
-  removeUniswapLiquidityTokens,
-  removeUniswapTokenReserves,
-  saveUniswapAllowances,
-  saveUniswapLiquidityInfo,
-  saveUniswapLiquidityTokens,
-  saveUniswapTokenReserves,
-} from '../handlers/commonStorage';
+  getAccountLocal,
+  removeAccountLocal,
+  saveAccountLocal,
+} from '../handlers/localstorage/common';
 import {
   getLiquidityInfo,
   getReserve,
@@ -42,6 +34,12 @@ const UNISWAP_UPDATE_ALLOWANCES = 'uniswap/UNISWAP_UPDATE_ALLOWANCES';
 const UNISWAP_UPDATE_LIQUIDITY_TOKENS = 'uniswap/UNISWAP_UPDATE_LIQUIDITY_TOKENS';
 const UNISWAP_CLEAR_STATE = 'uniswap/UNISWAP_CLEAR_STATE';
 
+// Localstorage keys
+export const ALLOWANCES = 'uniswapallowances';
+export const LIQUIDITY = 'uniswapliquidity';
+export const LIQUIDITY_INFO = 'uniswap';
+export const RESERVES = 'uniswapreserves';
+
 // -- Actions --------------------------------------------------------------- //
 let getTokenReservesInterval = null;
 
@@ -49,10 +47,10 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   dispatch({ type: UNISWAP_LOAD_REQUEST });
   try {
-    const uniswap = await getUniswapLiquidityInfo(accountAddress, network);
-    const liquidityTokens = await getUniswapLiquidityTokens(accountAddress, network);
-    const allowances = await getUniswapAllowances(accountAddress, network);
-    const tokenReserves = await getUniswapTokenReserves(accountAddress, network);
+    const uniswap = await getAccountLocal(LIQUIDITY_INFO, accountAddress, network, {});
+    const liquidityTokens = await getAccountLocal(LIQUIDITY, accountAddress, network);
+    const allowances = await getAccountLocal(ALLOWANCES, accountAddress, network, {});
+    const tokenReserves = await getAccountLocal(RESERVES, accountAddress, network, {});
     dispatch({
       payload: {
         allowances,
@@ -83,7 +81,7 @@ export const uniswapGetTokenReserve = (tokenAddress) => (dispatch, getState) => 
           payload: updatedTokenReserves,
           type: UNISWAP_GET_TOKEN_RESERVES_SUCCESS,
         });
-        saveUniswapTokenReserves(accountAddress, updatedTokenReserves, network);
+        saveAccountLocal(RESERVES, updatedTokenReserves, accountAddress, network);
         resolve(tokenReserve);
       }).catch(error => {
         dispatch({ type: UNISWAP_GET_TOKEN_RESERVES_FAILURE });
@@ -103,7 +101,7 @@ export const uniswapTokenReservesRefreshState = () => (dispatch, getState) => (
             payload: tokenReserves,
             type: UNISWAP_GET_TOKEN_RESERVES_SUCCESS,
           });
-          saveUniswapTokenReserves(accountAddress, tokenReserves, network);
+          saveAccountLocal(RESERVES, tokenReserves, accountAddress, network);
           fetchResolve(true);
         }).catch(error => {
           dispatch({ type: UNISWAP_GET_TOKEN_RESERVES_FAILURE });
@@ -125,10 +123,8 @@ export const uniswapTokenReservesRefreshState = () => (dispatch, getState) => (
 
 export const uniswapClearState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  removeUniswapAllowances(accountAddress, network);
-  removeUniswapLiquidityInfo(accountAddress, network);
-  removeUniswapLiquidityTokens(accountAddress, network);
-  removeUniswapTokenReserves(accountAddress, network);
+  const storageKeys = [ALLOWANCES, LIQUIDITY_INFO, LIQUIDITY, RESERVES];
+  forEach(storageKeys, key => removeAccountLocal(key, accountAddress, network));
   clearInterval(getTokenReservesInterval);
   dispatch({ type: UNISWAP_CLEAR_STATE });
 };
@@ -141,7 +137,7 @@ export const uniswapUpdateAllowances = (tokenAddress, allowance) => (dispatch, g
     payload: updatedAllowances,
     type: UNISWAP_UPDATE_ALLOWANCES,
   });
-  saveUniswapAllowances(accountAddress, updatedAllowances, network);
+  saveAccountLocal(ALLOWANCES, updatedAllowances, accountAddress, network);
 };
 
 export const uniswapUpdateLiquidityTokens = (liquidityTokens) => (dispatch, getState) => {
@@ -151,7 +147,7 @@ export const uniswapUpdateLiquidityTokens = (liquidityTokens) => (dispatch, getS
     payload: liquidityTokens,
     type: UNISWAP_UPDATE_LIQUIDITY_TOKENS,
   });
-  saveUniswapLiquidityTokens(accountAddress, liquidityTokens, network);
+  saveAccountLocal(LIQUIDITY, liquidityTokens, accountAddress, network);
   dispatch(uniswapUpdateState());
 };
 
@@ -164,7 +160,7 @@ export const uniswapAddLiquidityTokens = (newLiquidityTokens) => (dispatch, getS
     payload: updatedLiquidityTokens,
     type: UNISWAP_UPDATE_LIQUIDITY_TOKENS,
   });
-  saveUniswapLiquidityTokens(accountAddress, updatedLiquidityTokens, network);
+  saveAccountLocal(LIQUIDITY, updatedLiquidityTokens, accountAddress, network);
   dispatch(uniswapUpdateState());
 };
 
@@ -182,7 +178,7 @@ export const uniswapUpdateState = () => (dispatch, getState) => (
     const exchangeContracts = map(liquidityTokens, x => get(x, 'asset.asset_code'));
     return getLiquidityInfo(accountAddress, exchangeContracts)
       .then(uniswap => {
-        saveUniswapLiquidityInfo(accountAddress, uniswap, network);
+        saveAccountLocal(LIQUIDITY_INFO, uniswap, accountAddress, network);
         dispatch({
           payload: uniswap,
           type: UNISWAP_UPDATE_SUCCESS,
