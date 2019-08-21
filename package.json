@@ -17,7 +17,7 @@
     "@hocs/safe-timers": "^0.4.0",
     "@hocs/with-view-layout-props": "^0.2.0",
     "@react-native-community/async-storage": "1.5.0",
-    "@react-native-community/blur": "willcosgrove/react-native-blur#animate",
+    "@react-native-community/blur": "@react-native-community/blur",
     "@react-native-community/masked-view": "^0.1.1",
     "@react-native-community/netinfo": "^3.2.1",
     "@segment/analytics-react-native": "^1.0.1",
