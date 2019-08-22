@@ -28,8 +28,6 @@ class TransactionConfirmationScreenWithData extends PureComponent {
   }
 
   componentDidMount() {
-    StatusBar.setBarStyle('light-content', true);
-
     const autoOpened = get(this.props, 'navigation.state.params.autoOpened');
     if (autoOpened) {
       Vibration.vibrate();
@@ -140,7 +138,6 @@ class TransactionConfirmationScreenWithData extends PureComponent {
   }
 
   closeScreen = () => {
-    StatusBar.setBarStyle('dark-content', true);
     this.props.navigation.popToTop();
   }
 
@@ -157,14 +154,16 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     } = this.props.navigation.state.params;
 
     return (
-      <TransactionConfirmationScreen
-        dappName={dappName || ''}
-        imageUrl={imageUrl || ''}
-        request={payload}
-        requestType={type}
-        onCancel={this.handleCancelRequest}
-        onConfirm={this.handleConfirm}
-      />
+      <>
+        <TransactionConfirmationScreen
+          dappName={dappName || ''}
+          imageUrl={imageUrl || ''}
+          request={payload}
+          requestType={type}
+          onCancel={this.handleCancelRequest}
+          onConfirm={this.handleConfirm}
+        />
+      </>
     );
   }
 }

@@ -1,18 +1,16 @@
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
 import React from 'react';
-import Animated from 'react-native-reanimated';
 import {
   createAppContainer,
   createMaterialTopTabNavigator,
-  createStackNavigator,
 } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 import { ExchangeModalNavigator, Navigation } from '../navigation';
-import { buildTransitions, expanded, sheet } from '../navigation/transitions';
 import { updateStackTransitionProps } from '../redux/navigation';
+import { deviceUtils } from '../utils';
 import store from '../redux/store';
 import { colors } from '../styles';
-import { deviceUtils } from '../utils';
 import ExpandedAssetScreenWithData from './ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from './ProfileScreenWithData';
@@ -24,6 +22,11 @@ import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
+import {
+  expandedPreset,
+  sheetPreset,
+  backgroundPreset,
+} from '../navigation/transitions/effects';
 
 const onTransitionEnd = () => store.dispatch(updateStackTransitionProps({ isTransitioning: false }));
 const onTransitionStart = () => store.dispatch(updateStackTransitionProps({ isTransitioning: true }));
@@ -61,14 +64,16 @@ const SwipeStack = createMaterialTopTabNavigator({
 });
 
 const MainNavigator = createStackNavigator({
-  ConfirmRequest: TransactionConfirmationScreenWithData,
+  ConfirmRequest: {
+    navigationOptions: {
+      ...expandedPreset,
+    },
+    screen: TransactionConfirmationScreenWithData,
+  },
   ExampleScreen,
   ExchangeModal: {
     navigationOptions: {
-      effect: 'expanded',
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height,
-      },
+      ...expandedPreset,
     },
     params: {
       isGestureBlocked: false,
@@ -77,52 +82,56 @@ const MainNavigator = createStackNavigator({
   },
   ExpandedAssetScreen: {
     navigationOptions: {
-      effect: 'expanded',
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height,
-      },
+      ...expandedPreset,
     },
     screen: ExpandedAssetScreenWithData,
   },
-  ImportSeedPhraseSheet: ImportSeedPhraseSheetWithData,
+  ImportSeedPhraseSheet: {
+    navigationOptions: {
+      ...sheetPreset,
+    },
+    screen: ImportSeedPhraseSheetWithData,
+  },
   ReceiveModal: {
     navigationOptions: {
-      effect: 'expanded',
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height,
-      },
+      ...expandedPreset,
     },
     screen: ReceiveModal,
   },
-  SendSheet: SendSheetWithData,
+  SendSheet: {
+    navigationOptions: {
+      ...sheetPreset,
+    },
+    screen: SendSheetWithData,
+  },
   SettingsModal: {
     navigationOptions: {
-      effect: 'expanded',
+      ...expandedPreset,
       gesturesEnabled: false,
     },
     screen: SettingsModal,
-    transparentCard: true,
-
   },
-  SwipeLayout: SwipeStack,
+  SwipeLayout: {
+    navigationOptions: {
+      ...backgroundPreset,
+    },
+    screen: SwipeStack,
+  },
   WalletConnectConfirmationModal: {
     navigationOptions: {
-      effect: 'expanded',
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height,
-      },
+      ...expandedPreset,
     },
     screen: WalletConnectConfirmationModal,
   },
 }, {
+  defaultNavigationOptions: {
+    onTransitionEnd,
+    onTransitionStart,
+  },
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',
   keyboardDismissMode: 'none', // true?
   mode: 'modal',
-  onTransitionEnd,
-  onTransitionStart,
-  transitionConfig: buildTransitions(Navigation, { expanded, sheet }),
-  transparentCard: true,
 });
 
 const AppContainer = createAppContainer(MainNavigator);

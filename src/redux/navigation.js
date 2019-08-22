@@ -1,6 +1,8 @@
 import produce from 'immer';
 import { Animated } from 'react-native';
 
+const { Value } = Animated;
+
 // -- Constants --------------------------------------- //
 const UPDATE_STACK_TRANSITION_PROPS = 'navigation/UPDATE_STACK_TRANSITION_PROPS';
 const UPDATE_TABS_TRANSITION_PROPS = 'navigation/UPDATE_TABS_TRANSITION_PROPS';
@@ -16,12 +18,8 @@ export const updateTabsTransitionProps = (payload) => (dispatch) => {
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   stackTransitionProps: {
-    blurColor: null,
-    effect: '',
     isTransitioning: false,
-    nextIndex: 1,
-    position: new Animated.Value(0),
-    prevIndex: 0,
+    position: new Value(0),
   },
   tabsTransitionProps: {
     isTransitioning: false,
