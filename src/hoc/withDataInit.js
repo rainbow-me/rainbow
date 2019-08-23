@@ -8,8 +8,11 @@ import { hasEthBalance } from '../handlers/web3';
 import {
   dataClearState,
   dataLoadState,
-  dataInit,
 } from '../redux/data';
+import {
+  explorerClearState,
+  explorerInit,
+} from '../redux/explorer';
 import { clearIsWalletEmpty, loadIsWalletEmpty } from '../redux/isWalletEmpty';
 import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import { nonceClearState } from '../redux/nonce';
@@ -46,8 +49,9 @@ export default Component => compose(
     clearIsWalletEmpty,
     clearOpenFamilyTab,
     dataClearState,
-    dataInit,
     dataLoadState,
+    explorerClearState,
+    explorerInit,
     nonceClearState,
     requestsClearState,
     requestsLoadState,
@@ -75,6 +79,7 @@ export default Component => compose(
       }
     },
     clearAccountData: (ownProps) => async () => {
+      const p0 = ownProps.explorerClearState();
       const p1 = ownProps.dataClearState();
       const p2 = ownProps.clearIsWalletEmpty();
       const p3 = ownProps.uniqueTokensClearState();
@@ -83,11 +88,11 @@ export default Component => compose(
       const p6 = ownProps.nonceClearState();
       const p7 = ownProps.requestsClearState();
       const p8 = ownProps.uniswapClearState();
-      return promiseUtils.PromiseAllWithFails([p1, p2, p3, p4, p5, p6, p7, p8]);
+      return promiseUtils.PromiseAllWithFails([p0, p1, p2, p3, p4, p5, p6, p7, p8]);
     },
     initializeAccountData: (ownProps) => async () => {
       try {
-        ownProps.dataInit();
+        ownProps.explorerInit();
         ownProps.uniswapTokenReservesRefreshState();
         await ownProps.uniqueTokensRefreshState();
       } catch (error) {
