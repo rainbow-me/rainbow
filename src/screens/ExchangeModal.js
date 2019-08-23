@@ -99,11 +99,13 @@ class ExchangeModal extends PureComponent {
   state = {
     inputAllowance: null,
     inputAmount: null,
+    inputAmountDisplay: null,
     inputAsExactAmount: false,
     inputCurrency: ethereumUtils.getAsset(this.props.allAssets),
     nativeAmount: null,
     needsApproval: false,
     outputAmount: null,
+    outputAmountDisplay: null,
     outputCurrency: null,
     showConfirmButton: false,
     slippage: null,
@@ -230,9 +232,11 @@ class ExchangeModal extends PureComponent {
       this.setState({ tradeDetails });
       const { rawUpdatedValue, slippage } = this.parseTradeDetails(path, tradeDetails, decimals);
       if (inputAsExactAmount) {
-        this.setState({ outputAmount: rawUpdatedValue, slippage });
+        const outputAmountDisplay = updatePrecisionToDisplay(rawUpdatedValue, get(outputCurrency, 'price.value'));
+        this.setState({ outputAmount: rawUpdatedValue, outputAmountDisplay, slippage });
       } else {
-        this.setState({ inputAmount: rawUpdatedValue, slippage });
+        const inputAmountDisplay = updatePrecisionToDisplay(rawUpdatedValue, get(inputCurrency, 'price.value'));
+        this.setState({ inputAmount: rawUpdatedValue, inputAmountDisplay, slippage });
       }
     } catch (error) {
       console.log('error getting market details', error);
@@ -240,34 +244,37 @@ class ExchangeModal extends PureComponent {
     }
   }
 
-  setInputAsExactAmount = (inputAsExactAmount) => this.setState({ inputAsExactAmount })
-
-  setNativeAmount = async (nativeAmount) => {
-    this.setState({ nativeAmount });
-    const nativePrice = get(this.state.inputCurrency, 'native.price.amount', 0);
-    this.setState({ inputAmount: convertAmountFromNativeValue(nativeAmount, nativePrice) });
-    this.setInputAsExactAmount(true);
-    await this.getMarketDetails();
+  setNativeAmount = async nativeAmountDisplay => {
+    const nativeAmount = convertAmountFromNativeDisplay(nativeAmountDisplay, this.props.nativeCurrency);
+    const inputAmount = convertAmountFromNativeValue(nativeAmount, get(this.state.inputCurrency, 'native.price.amount', 0));
+    const inputAmountDisplay = updatePrecisionToDisplay(inputAmount, get(inputCurrency, 'price.value'));
+    this.setState({
+      inputAmount,
+      inputAmountDisplay,
+      inputAsExactAmount: true,
+      nativeAmount: nativeAmountDisplay,
+    });
   }
 
-  setInputAmount = async (inputAmount) => {
-    this.setState({ inputAmount });
-
-    let newNativeAmount = null;
-    if (inputAmount) {
-      const nativePrice = get(this.state.inputCurrency, 'native.price.amount', 0);
-      newNativeAmount = convertAmountToNativeAmount(inputAmount, nativePrice);
-    }
-
-    this.setState({ nativeAmount: newNativeAmount });
-    this.setInputAsExactAmount(true);
-    await this.getMarketDetails();
+  setInputAmount = async inputAmount => {
+    const nativeAmount = convertAmountToNativeAmount(
+      inputAmount,
+      get(this.state.inputCurrency, 'native.price.amount', 0)
+    );
+    this.setState({
+      inputAmount,
+      inputAmountDisplay: inputAmount,
+      inputAsExactAmount: true,
+      nativeAmount,
+    });
   }
 
-  setOutputAmount = async (outputAmount) => {
-    this.setState({ outputAmount });
-    this.setInputAsExactAmount(false);
-    await this.getMarketDetails();
+  setOutputAmount = async outputAmount => {
+    this.setState({
+      inputAsExactAmount: false,
+      outputAmount,
+      outputAmountDisplay: outputAmount,
+    });
   }
 
   setInputCurrency = (inputCurrencySelection, force) => {
@@ -381,11 +388,11 @@ class ExchangeModal extends PureComponent {
     } = this.props;
 
     const {
-      inputAmount,
+      inputAmountDisplay,
       inputCurrency,
       nativeAmount,
       needsApproval,
-      outputAmount,
+      outputAmountDisplay,
       outputCurrency,
       showConfirmButton,
       slippage,
@@ -416,7 +423,7 @@ class ExchangeModal extends PureComponent {
               <ExchangeModalHeader />
               <Column align="center" flex={0}>
                 <ExchangeInputField
-                  inputAmount={inputAmount}
+                  inputAmount={inputAmountDisplay}
                   inputCurrency={get(inputCurrency, 'symbol', null)}
                   inputFieldRef={this.handleInputFieldRef}
                   nativeAmount={nativeAmount}
@@ -431,7 +438,7 @@ class ExchangeModal extends PureComponent {
                 />
                 <ExchangeOutputField
                   onPressSelectOutputCurrency={this.handleSelectOutputCurrency}
-                  outputAmount={outputAmount}
+                  outputAmount={outputAmountDisplay}
                   onFocus={this.handleFocusField}
                   outputCurrency={get(outputCurrency, 'symbol', null)}
                   outputFieldRef={this.handleOutputFieldRef}
@@ -448,7 +455,7 @@ class ExchangeModal extends PureComponent {
                   width="100%"
                 >
                   <ConfirmExchangeButton
-                    disabled={!Number(inputAmount)}
+                    disabled={!Number(inputAmountDisplay)}
                     onPress={this.handleSubmit}
                   />
                 </Centered>
