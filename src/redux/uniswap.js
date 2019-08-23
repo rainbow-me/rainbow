@@ -4,6 +4,7 @@ import {
   forEach,
   get,
   isEmpty,
+  keyBy,
   map,
 } from 'lodash';
 import {
@@ -30,6 +31,7 @@ const UNISWAP_GET_TOKEN_RESERVES_REQUEST = 'uniswap/UNISWAP_GET_TOKEN_RESERVES_R
 const UNISWAP_GET_TOKEN_RESERVES_SUCCESS = 'uniswap/UNISWAP_GET_TOKEN_RESERVES_SUCCESS';
 const UNISWAP_GET_TOKEN_RESERVES_FAILURE = 'uniswap/UNISWAP_GET_TOKEN_RESERVES_FAILURE';
 
+const UNISWAP_UPDATE_ASSETS = 'uniswap/UNISWAP_UPDATE_ASSETS';
 const UNISWAP_UPDATE_ALLOWANCES = 'uniswap/UNISWAP_UPDATE_ALLOWANCES';
 const UNISWAP_UPDATE_LIQUIDITY_TOKENS = 'uniswap/UNISWAP_UPDATE_LIQUIDITY_TOKENS';
 const UNISWAP_CLEAR_STATE = 'uniswap/UNISWAP_CLEAR_STATE';
@@ -39,6 +41,7 @@ export const ALLOWANCES = 'uniswapallowances';
 export const LIQUIDITY = 'uniswapliquidity';
 export const LIQUIDITY_INFO = 'uniswap';
 export const RESERVES = 'uniswapreserves';
+export const ASSETS = 'uniswapassets';
 
 // -- Actions --------------------------------------------------------------- //
 let getTokenReservesInterval = null;
@@ -51,12 +54,14 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
     const liquidityTokens = await getAccountLocal(LIQUIDITY, accountAddress, network);
     const allowances = await getAccountLocal(ALLOWANCES, accountAddress, network, {});
     const tokenReserves = await getAccountLocal(RESERVES, accountAddress, network, {});
+    const uniswapAssets = await getAccountLocal(ASSETS, accountAddress, network, {});
     dispatch({
       payload: {
         allowances,
         liquidityTokens,
         tokenReserves,
         uniswap,
+        uniswapAssets,
       },
       type: UNISWAP_LOAD_SUCCESS,
     });
@@ -123,7 +128,7 @@ export const uniswapTokenReservesRefreshState = () => (dispatch, getState) => (
 
 export const uniswapClearState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  const storageKeys = [ALLOWANCES, LIQUIDITY_INFO, LIQUIDITY, RESERVES];
+  const storageKeys = [ASSETS, ALLOWANCES, LIQUIDITY_INFO, LIQUIDITY, RESERVES];
   forEach(storageKeys, key => removeAccountLocal(key, accountAddress, network));
   clearInterval(getTokenReservesInterval);
   dispatch({ type: UNISWAP_CLEAR_STATE });
@@ -138,6 +143,32 @@ export const uniswapUpdateAllowances = (tokenAddress, allowance) => (dispatch, g
     type: UNISWAP_UPDATE_ALLOWANCES,
   });
   saveAccountLocal(ALLOWANCES, updatedAllowances, accountAddress, network);
+};
+
+export const uniswapUpdateAssets = (assets) => {
+  const { accountAddress, network } = getState().settings;
+  const mappedAssets = keyBy(assets, (asset) => asset.address.toLowerCase());
+  dispatch({
+    payload: mappedAssets,
+    type: UNISWAP_UPDATE_ASSETS,
+  });
+  saveAccountLocal(ASSETS, mappedAssets, accountAddress, network);
+};
+
+export const uniswapUpdateAssetPrice = (address, price) => {
+  const addressKey = address.toLowerCase();
+  const { accountAddress, network } = getState().settings;
+  const { uniswapAssets } = getState().uniswap;
+  const updatedAsset = { ...uniswapAssets[addressKey], price };
+  const updatedAssets = {
+    ...uniswapAssets,
+    [addressKey]: updatedAsset,
+  };
+  dispatch({
+    payload: updatedAssets,
+    type: UNISWAP_UPDATE_ASSETS,
+  });
+  saveAccountLocal(ASSETS, updatedAssets, accountAddress, network);
 };
 
 export const uniswapUpdateLiquidityTokens = (liquidityTokens) => (dispatch, getState) => {
@@ -200,6 +231,7 @@ export const INITIAL_UNISWAP_STATE = {
   loadingUniswap: false,
   tokenReserves: {},
   uniswap: {},
+  uniswapAssets: {},
 };
 
 export default (state = INITIAL_UNISWAP_STATE, action) => produce(state, draft => {
@@ -211,6 +243,7 @@ export default (state = INITIAL_UNISWAP_STATE, action) => produce(state, draft =
     draft.loadingUniswap = false;
     draft.allowances = action.payload.allowances;
     draft.uniswap = action.payload.uniswap;
+    draft.uniswapAssets = action.payload.uniswapAssets;
     draft.liquidityTokens = action.payload.liquidityTokens;
     draft.tokenReserves = action.payload.tokenReserves;
     break;
@@ -232,6 +265,9 @@ export default (state = INITIAL_UNISWAP_STATE, action) => produce(state, draft =
     break;
   case UNISWAP_UPDATE_ALLOWANCES:
     draft.allowances = action.payload;
+    break;
+  case UNISWAP_UPDATE_ASSETS:
+    draft.uniswapAssets = action.payload;
     break;
   case UNISWAP_GET_TOKEN_RESERVES_SUCCESS:
     draft.tokenReserves = action.payload;

@@ -21,13 +21,20 @@ import {
   removeLocalTransactions,
   saveAssets,
   saveLocalTransactions,
-} from '../handlers/commonStorage';
-import io from 'socket.io-client'; import { parseAccountAssets } from '../parsers/accounts';
+} from '../handlers/localstorage/storage';
+import { uniswapAssetAddresses } from '../hoc/withUniswapAssets';
+import io from 'socket.io-client';
+import { parseAccountAssets, parseAsset } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
 import { getFamilies } from '../parsers/uniqueTokens';
 import { isLowerCaseMatch } from '../utils';
-import { uniswapAddLiquidityTokens, uniswapUpdateLiquidityTokens } from './uniswap';
+import {
+  uniswapAddLiquidityTokens,
+  uniswapUpdateAssetPrice,
+  uniswapUpdateAssets,
+  uniswapUpdateLiquidityTokens,
+} from './uniswap';
 
 // -- Constants --------------------------------------- //
 
@@ -48,47 +55,7 @@ const DATA_ADD_NEW_TRANSACTION_SUCCESS = 'data/DATA_ADD_NEW_TRANSACTION_SUCCESS'
 
 const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
 
-const messages = {
-  ASSETS: {
-    APPENDED: 'appended address assets',
-    CHANGED: 'changed address assets',
-    RECEIVED: 'received address assets',
-  },
-  CONNECT: 'connect',
-  DISCONNECT: 'disconnect',
-  ERROR: 'error',
-  RECONNECT_ATTEMPT: 'reconnect_attempt',
-  TRANSACTIONS: {
-    APPENDED: 'appended address transactions',
-    RECEIVED: 'received address transactions',
-    REMOVED: 'removed address transactions',
-  },
-};
-
 // -- Actions ---------------------------------------- //
-
-const createSocket = endpoint => io(
-  `wss://api.zerion.io/${endpoint}?api_token=${DATA_API_KEY}`,
-  {
-    extraHeaders: { Origin: DATA_ORIGIN },
-    transports: ['websocket'],
-  },
-);
-
-/* eslint-disable camelcase */
-const addressSubscription = (address, currency, action = 'subscribe') => [
-  action,
-  {
-    payload: {
-      address,
-      currency,
-      transactions_limit: 1000,
-    },
-    scope: ['assets', 'transactions'],
-  },
-];
-/* eslint-disable camelcase */
-
 export const dataLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   try {
@@ -113,38 +80,11 @@ export const dataLoadState = () => async (dispatch, getState) => {
   }
 };
 
-const dataUnsubscribe = () => (dispatch, getState) => {
-  const { addressSocket } = getState().data;
-  const { accountAddress, nativeCurrency } = getState().settings;
-  if (!isNil(addressSocket)) {
-    addressSocket.emit(...addressSubscription(
-      accountAddress,
-      nativeCurrency.toLowerCase(),
-      'unsubscribe',
-    ));
-    addressSocket.close();
-  }
-};
-
 export const dataClearState = () => (dispatch, getState) => {
-  dispatch(dataUnsubscribe());
   const { accountAddress, network } = getState().settings;
   removeAssets(accountAddress, network);
   removeLocalTransactions(accountAddress, network);
   dispatch({ type: DATA_CLEAR_STATE });
-};
-
-export const dataInit = () => (dispatch, getState) => {
-  const { accountAddress, nativeCurrency } = getState().settings;
-  const addressSocket = createSocket('address');
-  dispatch({
-    payload: addressSocket,
-    type: DATA_UPDATE_ADDRESS_SOCKET,
-  });
-  addressSocket.on(messages.CONNECT, () => {
-    addressSocket.emit(...addressSubscription(accountAddress, nativeCurrency.toLowerCase()));
-    dispatch(listenOnNewMessages(addressSocket));
-  });
 };
 
 const dedupePendingTransactions = (pendingTransactions, parsedTransactions) => {
@@ -196,7 +136,7 @@ const checkMeta = message => (dispatch, getState) => {
   return isLowerCaseMatch(address, accountAddress) && isLowerCaseMatch(currency, nativeCurrency);
 };
 
-const transactionsReceived = message => (dispatch, getState) => {
+export const transactionsReceived = message => (dispatch, getState) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
 
@@ -232,7 +172,7 @@ const transactionsReceived = message => (dispatch, getState) => {
   });
 };
 
-const transactionsAppended = message => (dispatch, getState) => {
+export const transactionsAppended = message => (dispatch, getState) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
 
@@ -256,7 +196,7 @@ const transactionsAppended = message => (dispatch, getState) => {
   });
 };
 
-const transactionsRemoved = message => (dispatch, getState) => {
+export const transactionsRemoved = message => (dispatch, getState) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
 
@@ -274,7 +214,7 @@ const transactionsRemoved = message => (dispatch, getState) => {
   });
 };
 
-const assetsReceived = (message, append = false, change = false) => (dispatch, getState) => {
+export const addressAssetsReceived = (message, append = false, change = false) => (dispatch, getState) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
 
@@ -306,30 +246,21 @@ const assetsReceived = (message, append = false, change = false) => (dispatch, g
   });
 };
 
-const listenOnNewMessages = socket => (dispatch, getState) => {
-  socket.on(messages.TRANSACTIONS.RECEIVED, (message) => {
-    dispatch(transactionsReceived(message));
-  });
+export const assetsReceived = (message) => (dispatch, getState) => {
+  const assets = get(message, 'payload.assets', []);
+  if (!assets.length) return;
+  let parsedAssets = map(assets, asset => parseAsset(asset));
+  dispatch(uniswapUpdateAssets(parsedAssets));
+};
 
-  socket.on(messages.TRANSACTIONS.APPENDED, (message) => {
-    dispatch(transactionsAppended(message));
-  });
+export const priceChanged = (message) => (dispatch, getState) => {
+  const isValidMeta = dispatch(checkMeta(message));
+  // TODO is it asset_code in meta?
+  const address = get(message, 'meta.asset_code');
 
-  socket.on(messages.TRANSACTIONS.REMOVED, (message) => {
-    dispatch(transactionsRemoved(message));
-  });
-
-  socket.on(messages.ASSETS.RECEIVED, (message) => {
-    dispatch(assetsReceived(message));
-  });
-
-  socket.on(messages.ASSETS.APPENDED, (message) => {
-    dispatch(assetsReceived(message, true));
-  });
-
-  socket.on(messages.ASSETS.CHANGED, (message) => {
-    dispatch(assetsReceived(message, false, true));
-  });
+  const price = get(message, 'payload.price');
+  if (isNil(price)) return;
+  dispatch(uniswapUpdateAssetPrice(address, price));
 };
 
 export const dataAddNewTransaction = txDetails => (dispatch, getState) => new Promise((resolve, reject) => {
@@ -352,7 +283,6 @@ export const dataAddNewTransaction = txDetails => (dispatch, getState) => new Pr
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
-  addressSocket: null,
   assets: [],
   loadingAssets: false,
   loadingTransactions: false,
@@ -361,8 +291,6 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-  case DATA_UPDATE_ADDRESS_SOCKET:
-    return { ...state, addressSocket: action.payload };
   case DATA_UPDATE_ASSETS:
     return { ...state, assets: action.payload };
   case DATA_UPDATE_TRANSACTIONS:
