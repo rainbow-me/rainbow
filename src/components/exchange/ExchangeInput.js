@@ -6,7 +6,10 @@ import { colors, fonts } from '../../styles';
 
 export default class ExchangeInput extends PureComponent {
   static propTypes = {
+    disableTabularNums: PropTypes.bool,
+    fontFamily: PropTypes.string,
     fontSize: PropTypes.string,
+    fontWeight: PropTypes.number,
     mask: PropTypes.string,
     onChangeText: PropTypes.func,
     placeholder: PropTypes.string,
@@ -16,7 +19,9 @@ export default class ExchangeInput extends PureComponent {
   }
 
   static defaultProps = {
+    fontFamily: fonts.family.SFProDisplay,
     fontSize: fonts.size.h2,
+    fontWeight: fonts.weight.medium,
     mask: '[099999999999].[9999999999999]',
     placeholder: '0',
     placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.5),
@@ -29,7 +34,10 @@ export default class ExchangeInput extends PureComponent {
 
   render = () => {
     const {
+      disableTabularNums,
+      fontFamily,
       fontSize,
+      fontWeight,
       mask,
       onChangeText,
       placeholder,
@@ -53,10 +61,11 @@ export default class ExchangeInput extends PureComponent {
         refInput={refInput}
         selectionColor={colors.appleBlue}
         style={[{
-          fontFamily: fonts.family.SFProDisplay,
+          color: colors.dark,
+          fontFamily,
           fontSize: parseFloat(fontSize),
-          fontVariant: ['tabular-nums'],
-          fontWeight: fonts.weight.medium,
+          fontVariant: disableTabularNums ? undefined : ['tabular-nums'],
+          fontWeight,
         }, style]}
         value={value}
       />

@@ -649,6 +649,13 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
+"@bankify/react-native-animate-number@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@bankify/react-native-animate-number/-/react-native-animate-number-0.2.1.tgz#80b2d700d0556b2d57ec1757a37454fcfbd968b8"
+  integrity sha512-rBIiZZWAU6Nfr7bqJ6Dc0vAqk8Xf0LU3otrad9jbrJQOUJRUSUf9nWttQVLW4/alKTYq1kXkGYJ1l4dsTQbLmA==
+  dependencies:
+    babel-plugin-syntax-async-functions "^6.8.0"
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.3.tgz#099139eaec7ebf07a27c1786a3ff64f39464d2ef"
@@ -986,10 +993,9 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/async-storage/-/async-storage-1.6.1.tgz#19be07fc1d65c77bdeb20f46108ba12076aad1c5"
   integrity sha512-1WA28xfdhG+unkTEk/lXnqI2izv6belo0CYw7UdvaeHm8TIYT6eTmIIdGR7oiCa2xSKEnaPQqRMH6h7gyLNbww==
 
-"@react-native-community/blur@^3.3.1":
+"@react-native-community/blur@@react-native-community/blur"
   version "3.3.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/blur/-/blur-3.3.1.tgz#bc9ecd6d85d89739d8180138716535ac7cfa4680"
-  integrity sha512-UfH2ut/l4GpZHeq/TGx3BrmyXSCSBBwBCVx1DhPodP3k959zJ2ajgXa3PiU/qjutftTUw6KH9Frsh2U0ax9dMQ==
+  resolved "https://codeload.github.com/willcosgrove/react-native-blur/tar.gz/88ec0250b18f361b774b3f4d7006663b3f2fe17f"
   dependencies:
     prop-types "^15.5.10"
 
@@ -2090,6 +2096,11 @@ babel-plugin-rewire@^1.2.0:
     "@babel/helper-module-imports" "^7.0.0"
     babel-plugin-syntax-jsx "^6.18.0"
     lodash "^4.17.11"
+
+babel-plugin-syntax-async-functions@^6.8.0:
+  version "6.13.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-syntax-async-functions/-/babel-plugin-syntax-async-functions-6.13.0.tgz#cad9cad1191b5ad634bf30ae0872391e0647be95"
+  integrity sha1-ytnK0RkbWtY0vzCuCHI5HgZHvpU=
 
 babel-plugin-syntax-jsx@^6.18.0:
   version "6.18.0"
@@ -9300,10 +9311,10 @@ react-native-redash@^7.5.1:
     parse-svg-path "^0.1.2"
     use-memo-one "^1.1.1"
 
-react-native-safe-area-view@^0.14.1:
-  version "0.14.7"
-  resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.14.7.tgz#e1dd1c4d25a90677df2c15347fdddb2306ba5971"
-  integrity sha512-fmuBYpvKDJK33bimo4JXrK2BN2CGw7nof1y1LDRgzqv+FZ3eADSDGshprN8WeQqSZjQ20hJx1CiWk28Edg/v4Q==
+react-native-safe-area-view@^0.14.1, react-native-safe-area-view@^0.14.6:
+  version "0.14.6"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.14.6.tgz#9a9d37d9f8f3887d60c4076eae7b5d2319539446"
+  integrity sha512-dbzuvaeHFV1VBpyMaC0gtJ2BqFt6ls/405A0t78YN1sXiTrVr3ki86Ysct8mzifWqLdvWzcWagE5wfMtdxnqoA==
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
@@ -9460,10 +9471,18 @@ react-navigation-drawer@~1.2.1:
   dependencies:
     react-native-tab-view "^1.2.0"
 
-react-navigation-stack@~1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-1.4.0.tgz#69cdb029ea4ee5877d7e933b3117dc90bc841eb2"
-  integrity sha512-zEe9wCA0Ot8agarYb//0nSWYW1GM+1R0tY/nydUV0EizeJ27At0EklYVWvYEuYU6C48va6cu8OPL7QD/CcJACw==
+react-navigation-stack@^2.0.0-alpha.7:
+  version "2.0.0-alpha.7"
+  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-2.0.0-alpha.7.tgz#1534e31e0f9cfc9c3340f0d752e5c992a1961a89"
+  integrity sha512-9ltkEY+ayNRBnOMRRC7UCTAS6wqdH15Tg8hE004sYLvsZw3HwwTj2il0C5BWzDq+IwItj+LI+S9tDdHUxF1a1Q==
+  dependencies:
+    react-native-safe-area-view "^0.14.6"
+
+"react-navigation-stack@https://github.com/react-navigation/stack#master", react-navigation-stack@~1.4.0:
+  version "2.0.0-alpha.6"
+  resolved "https://github.com/react-navigation/stack#2ddf3a4a3985047811c3c90f1d8263ea71994966"
+  dependencies:
+    react-native-safe-area-view "^0.14.6"
 
 react-navigation-tabs@^2.3.0:
   version "2.3.0"
