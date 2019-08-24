@@ -73,8 +73,78 @@ const getIsWalletEmptyKey = (accountAddress, network) => `iswalletempty-${accoun
 const getRequestsKey = (accountAddress, network) => `requests-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 const getTransactionsKey = (accountAddress, network) => `transactions-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 const getUniqueTokensKey = (accountAddress, network) => `uniquetokens-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
-const getUniswapKey = (accountAddress, network) => `uniswap-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+const getUniswapAllowancesKey = (accountAddress, network) => `uniswapallowances-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+const getUniswapLiquidityInfoKey = (accountAddress, network) => `uniswap-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 const getUniswapLiquidityKey = (accountAddress, network) => `uniswapliquidity-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+const getUniswapTokenReservesKey = (accountAddress, network) => `uniswapreserves-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+
+/**
+ * @desc get Uniswap allowances
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getUniswapAllowances = async (accountAddress, network) => {
+  const allowances = await getLocal(getUniswapAllowancesKey(accountAddress, network));
+  return allowances ? allowances.data : {};
+};
+
+/**
+ * @desc save Uniswap allowances
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const saveUniswapAllowances = async (accountAddress, allowances, network) => {
+  await saveLocal(
+    getUniswapAllowancesKey(accountAddress, network),
+    { data: allowances },
+  );
+};
+
+/**
+ * @desc remove Uniswap allowances
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const removeUniswapAllowances = (accountAddress, network) => {
+  const key = getUniswapAllowancesKey(accountAddress, network);
+  removeLocal(key);
+};
+
+/**
+ * @desc get Uniswap token reserves
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getUniswapTokenReserves = async (accountAddress, network) => {
+  const reserves = await getLocal(getUniswapTokenReservesKey(accountAddress, network));
+  return reserves ? reserves.data : {};
+};
+
+/**
+ * @desc save Uniswap token reserves
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const saveUniswapTokenReserves = async (accountAddress, reserves, network) => {
+  await saveLocal(
+    getUniswapTokenReservesKey(accountAddress, network),
+    { data: reserves },
+  );
+};
+
+/**
+ * @desc remove Uniswap token reserves
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const removeUniswapTokenReserves = (accountAddress, network) => {
+  const key = getUniswapTokenReservesKey(accountAddress, network);
+  removeLocal(key);
+};
 
 /**
  * @desc get Uniswap liquidity tokens
@@ -111,36 +181,36 @@ export const removeUniswapLiquidityTokens = (accountAddress, network) => {
 };
 
 /**
- * @desc get Uniswap
+ * @desc get Uniswap liquidity info
  * @param  {String}   [address]
  * @param  {String}   [network]
  * @return {Object}
  */
-export const getUniswap = async (accountAddress, network) => {
-  const uniswap = await getLocal(getUniswapKey(accountAddress, network));
+export const getUniswapLiquidityInfo = async (accountAddress, network) => {
+  const uniswap = await getLocal(getUniswapLiquidityInfoKey(accountAddress, network));
   return uniswap ? uniswap.data : {};
 };
 
 /**
- * @desc save Uniswap
+ * @desc save Uniswap liquidity info
  * @param  {String}   [address]
  * @param  {String}   [network]
  */
-export const saveUniswap = async (accountAddress, uniswap, network) => {
+export const saveUniswapLiquidityInfo = async (accountAddress, uniswap, network) => {
   await saveLocal(
-    getUniswapKey(accountAddress, network),
+    getUniswapLiquidityInfoKey(accountAddress, network),
     { data: uniswap },
   );
 };
 
 /**
- * @desc remove Uniswap
+ * @desc remove Uniswap liquidity info
  * @param  {String}   [address]
  * @param  {String}   [network]
  * @return {Object}
  */
-export const removeUniswap = (accountAddress, network) => {
-  const key = getUniswapKey(accountAddress, network);
+export const removeUniswapLiquidityInfo = (accountAddress, network) => {
+  const key = getUniswapLiquidityInfoKey(accountAddress, network);
   removeLocal(key);
 };
 

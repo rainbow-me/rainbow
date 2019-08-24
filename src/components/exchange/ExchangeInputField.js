@@ -26,6 +26,7 @@ export default class ExchangeInputField extends Component {
     nativeAmount: PropTypes.string,
     nativeCurrency: PropTypes.string,
     nativeFieldRef: PropTypes.func,
+    needsApproval: PropTypes.bool,
     onPressMaxBalance: PropTypes.func,
     onPressSelectInputCurrency: PropTypes.func,
     setInputAmount: PropTypes.func,
@@ -80,6 +81,7 @@ export default class ExchangeInputField extends Component {
       nativeAmount,
       nativeCurrency,
       nativeFieldRef,
+      needsApproval,
       onFocus,
       setNativeAmount,
     } = this.props;
