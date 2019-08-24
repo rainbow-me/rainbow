@@ -993,7 +993,7 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/async-storage/-/async-storage-1.6.1.tgz#19be07fc1d65c77bdeb20f46108ba12076aad1c5"
   integrity sha512-1WA28xfdhG+unkTEk/lXnqI2izv6belo0CYw7UdvaeHm8TIYT6eTmIIdGR7oiCa2xSKEnaPQqRMH6h7gyLNbww==
 
-"@react-native-community/blur@willcosgrove/react-native-blur#animate":
+"@react-native-community/blur@@react-native-community/blur"
   version "3.3.1"
   resolved "https://codeload.github.com/willcosgrove/react-native-blur/tar.gz/88ec0250b18f361b774b3f4d7006663b3f2fe17f"
   dependencies:

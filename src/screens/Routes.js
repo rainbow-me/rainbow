@@ -26,7 +26,9 @@ import {
   expandedPreset,
   sheetPreset,
   backgroundPreset,
+  onTransitionStart as onTransitionStartEffect,
 } from '../navigation/transitions/effects';
+import restoreKeyboard from './restoreKeyboard';
 
 const onTransitionEnd = () => store.dispatch(updateStackTransitionProps({ isTransitioning: false }));
 const onTransitionStart = () => store.dispatch(updateStackTransitionProps({ isTransitioning: true }));
@@ -101,6 +103,10 @@ const MainNavigator = createStackNavigator({
   SendSheet: {
     navigationOptions: {
       ...sheetPreset,
+      onTransitionStart: props => {
+        onTransitionStartEffect(props);
+        restoreKeyboard();
+      },
     },
     screen: SendSheetWithData,
   },
