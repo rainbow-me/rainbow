@@ -1,21 +1,26 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components/primitives';
-import Icon from '../icons/Icon';
-import { Row } from '../layout';
-import Monospace from './Monospace';
+import { withNeverRerender } from '../../hoc';
 import { colors, fonts } from '../../styles';
-
-const Text = styled(Monospace).attrs({ size: 'lmedium', weight: 'medium' })`
-  line-height: ${fonts.lineHeight.looser};
-  margin-left: ${fonts.size.micro};
-`;
+import { Icon } from '../icons';
+import { RowWithMargins } from '../layout';
+import Monospace from './Monospace';
 
 const ErrorText = ({ color, error }) => (
-  <Row align="center">
-    <Icon color={color} name="warning" />
-    <Text color={color}>{error}</Text>
-  </Row>
+  <RowWithMargins align="center" margin={fonts.size.micro}>
+    <Icon
+      color={color}
+      name="warning"
+    />
+    <Monospace
+      color={color}
+      lineHeight="looser"
+      size="lmedium"
+      weight="medium"
+    >
+      {error}
+    </Monospace>
+  </RowWithMargins>
 );
 
 ErrorText.propTypes = {
@@ -27,4 +32,4 @@ ErrorText.defaultProps = {
   color: colors.red,
 };
 
-export default ErrorText;
+export default withNeverRerender(ErrorText);

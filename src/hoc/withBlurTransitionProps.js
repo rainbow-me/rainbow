@@ -5,7 +5,7 @@ import withTransitionProps from './withTransitionProps';
 
 const { interpolate, Value } = Animated;
 
-const transitionPropsSelector = state => state.transitionProps;
+const stackTransitionPropsSelector = state => state.stackTransitionProps;
 
 const withBlurTransitionProps = ({
   isTransitioning,
@@ -21,7 +21,7 @@ const withBlurTransitionProps = ({
 };
 
 const withBlurTransitionPropsSelector = createSelector(
-  [transitionPropsSelector],
+  [stackTransitionPropsSelector],
   withBlurTransitionProps,
 );
 

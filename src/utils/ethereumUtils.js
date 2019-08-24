@@ -4,7 +4,23 @@ import {
   add,
   convertNumberToString,
   fromWei,
+  greaterThan,
+  subtract,
 } from '../helpers/utilities';
+
+export const getBalanceAmount = (gasPrice, selected) => {
+  let amount = '';
+  if (selected.address === 'eth') {
+    const balanceAmount = get(selected, 'balance.amount', 0);
+    const txFeeRaw = get(gasPrice, 'txFee.value.amount');
+    const txFeeAmount = fromWei(txFeeRaw);
+    const remaining = subtract(balanceAmount, txFeeAmount);
+    amount = convertNumberToString(greaterThan(remaining, 0) ? remaining : 0);
+  } else {
+    amount = get(selected, 'balance.amount', 0);
+  }
+  return amount;
+};
 
 export const getAsset = (assets, address = 'eth') => find(assets, asset => asset.address === address);
 
@@ -84,6 +100,7 @@ export const transactionData = (assets, assetAmount, gasPrice) => {
 
 export default {
   getAsset,
+  getBalanceAmount,
   getChainIdFromNetwork,
   getDataString,
   getNetworkFromChainId,

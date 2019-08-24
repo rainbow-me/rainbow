@@ -1,5 +1,6 @@
 export { default as abbreviations } from './abbreviations';
 export { default as addressUtils } from './address';
+export { default as contractUtils } from './contract';
 export { default as deviceUtils } from './deviceUtils';
 export { default as dimensionsPropType } from './dimensionsPropType';
 export { default as directionPropType } from './directionPropType';

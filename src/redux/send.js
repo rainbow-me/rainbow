@@ -6,11 +6,8 @@ import { ethereumUtils } from '../utils';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
-  convertNumberToString,
   formatInputDecimals,
   fromWei,
-  greaterThan,
-  subtract,
 } from '../helpers/utilities';
 import {
   parseGasPrices,
@@ -45,22 +42,6 @@ const SEND_UPDATE_SELECTED = 'send/SEND_UPDATE_SELECTED';
 const SEND_UPDATE_NFT_SELECTED = 'send/SEND_UPDATE_NFT_SELECTED';
 
 const SEND_CLEAR_FIELDS = 'send/SEND_CLEAR_FIELDS';
-
-function getBalanceAmount(assets, gasPrice, selected) {
-  let amount = '';
-
-  if (selected.address === 'eth') {
-    const balanceAmount = get(selected, 'balance.amount', 0);
-    const txFeeRaw = get(gasPrice, 'txFee.value.amount');
-    const txFeeAmount = fromWei(txFeeRaw);
-    const remaining = subtract(balanceAmount, txFeeAmount);
-    amount = convertNumberToString(greaterThan(remaining, 0) ? remaining : 0);
-  } else {
-    amount = get(selected, 'balance.amount', 0);
-  }
-
-  return amount;
-}
 
 // -- Actions --------------------------------------------------------------- //
 const getEthPriceUnit = (assets) => {
@@ -236,7 +217,6 @@ export const sendUpdateRecipient = recipient => dispatch => {
 };
 
 export const sendUpdateAssetAmount = assetAmount => (dispatch, getState) => {
-  const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
   const { gasPrice, selected } = getState().send;
   const _assetAmount = assetAmount.replace(/[^0-9.]/g, '');
@@ -250,7 +230,7 @@ export const sendUpdateAssetAmount = assetAmount => (dispatch, getState) => {
     );
     _nativeAmount = formatInputDecimals(nativeAmount, _assetAmount);
   }
-  const balanceAmount = getBalanceAmount(assets, gasPrice, selected);
+  const balanceAmount = ethereumUtils.getBalanceAmount(gasPrice, selected);
   dispatch({
     payload: {
       assetAmount: _assetAmount,
@@ -262,7 +242,6 @@ export const sendUpdateAssetAmount = assetAmount => (dispatch, getState) => {
 };
 
 export const sendUpdateNativeAmount = nativeAmount => (dispatch, getState) => {
-  const { assets } = getState().data;
   const { gasPrice, selected } = getState().send;
   const _nativeAmount = nativeAmount.replace(/[^0-9.]/g, '');
   let _assetAmount = '';
@@ -270,13 +249,12 @@ export const sendUpdateNativeAmount = nativeAmount => (dispatch, getState) => {
     const priceUnit = get(selected, 'price.value', 0);
     const assetAmount = convertAmountFromNativeValue(
       _nativeAmount,
-      selected,
       priceUnit,
     );
     _assetAmount = formatInputDecimals(assetAmount, _nativeAmount);
   }
 
-  const balanceAmount = getBalanceAmount(assets, gasPrice, selected);
+  const balanceAmount = ethereumUtils.getBalanceAmount(gasPrice, selected);
 
   dispatch({
     payload: {
@@ -314,8 +292,7 @@ export const sendUpdateSelected = (asset) => (dispatch, getState) => {
 
 export const sendMaxBalance = () => (dispatch, getState) => {
   const { gasPrice, selected } = getState().send;
-  const { assets } = getState().data;
-  const balanceAmount = getBalanceAmount(assets, gasPrice, selected);
+  const balanceAmount = ethereumUtils.getBalanceAmount(gasPrice, selected);
 
   dispatch(sendUpdateAssetAmount(balanceAmount));
   dispatch(sendUpdateGasPrice());

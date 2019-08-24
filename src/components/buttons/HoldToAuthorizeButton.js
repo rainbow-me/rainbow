@@ -1,18 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import {
-  LongPressGestureHandler,
-  State,
-  TapGestureHandler,
-} from 'react-native-gesture-handler';
+import { LongPressGestureHandler, State, TapGestureHandler } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import RadialGradient from 'react-native-radial-gradient';
 import Animated, { Easing } from 'react-native-reanimated';
 import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, padding, position } from '../../styles';
-import { deviceUtils } from '../../utils';
-import { ScaleInAnimation } from '../animations';
+import { FadeInAnimation, ScaleInAnimation } from '../animations';
 import { BiometryIcon, Icon } from '../icons';
 import InnerBorder from '../InnerBorder';
 import { Centered } from '../layout';
@@ -32,6 +26,12 @@ const {
 
 const ButtonBorderRadius = 30;
 const ButtonHeight = 59;
+
+const ButtonDisabledBgColor = {
+  dark: colors.darkGrey,// blueGreyLighter,
+  light: colors.lighterGrey,
+};
+
 const ButtonShadows = {
   default: [
     [0, 3, 5, colors.dark, 0.2],
@@ -47,7 +47,7 @@ const ButtonShadows = {
 const progressDurationMs = 500; // @christian approves
 
 const Content = styled(Centered)`
-  ${padding(15)}
+  ${padding(15)};
   border-radius: ${ButtonBorderRadius};
   flex-grow: 0;
   height: ${ButtonHeight};
@@ -55,8 +55,9 @@ const Content = styled(Centered)`
   width: 100%;
 `;
 
+const BiometryIconSize = 31;
 const IconContainer = styled(Centered)`
-  ${position.size(34)}
+  ${position.size(BiometryIconSize)};
   left: 19;
   margin-bottom: 2;
   position: absolute;
@@ -68,17 +69,6 @@ const Title = withProps({
   style: { marginBottom: 2 },
   weight: 'semibold',
 })(Text);
-
-const GradientColors = {
-  default: {
-    from: colors.primaryBlue,
-    to: '#006FFF',
-  },
-  disabled: {
-    from: colors.grey,
-    to: colors.grey,
-  },
-};
 
 const buildAnimation = (value, options) => {
   const {
@@ -105,15 +95,17 @@ const HoldToAuthorizeButtonIcon = ({ animatedValue, isAuthorizing }) => {
 
   return (
     <IconContainer>
-      <ScaleInAnimation value={animatedValue}>
-        <BiometryIcon />
-      </ScaleInAnimation>
-      <ScaleInAnimation
-        scaleTo={0.001}
-        value={cond(isSpinnerVisible, spinnerIn, spinnerOut)}
-      >
-        <Icon name="progress" progress={animatedValue} />
-      </ScaleInAnimation>
+      <FadeInAnimation duration={200}>
+        <ScaleInAnimation value={animatedValue}>
+          <BiometryIcon size={BiometryIconSize} />
+        </ScaleInAnimation>
+        <ScaleInAnimation
+          scaleTo={0.001}
+          value={cond(isSpinnerVisible, spinnerIn, spinnerOut)}
+        >
+          <Icon name="progress" progress={animatedValue} />
+        </ScaleInAnimation>
+      </FadeInAnimation>
     </IconContainer>
   );
 };
@@ -125,15 +117,20 @@ HoldToAuthorizeButtonIcon.propTypes = {
 
 export default class HoldToAuthorizeButton extends PureComponent {
   static propTypes = {
+    backgroundColor: PropTypes.string,
     children: PropTypes.any,
     disabled: PropTypes.bool,
     isAuthorizing: PropTypes.bool,
     onLongPress: PropTypes.func.isRequired,
+    shadows: PropTypes.arrayOf(PropTypes.array),
     style: PropTypes.object,
+    theme: PropTypes.oneOf(['light', 'dark']),
   }
 
   static defaultProps = {
+    backgroundColor: colors.appleBlue,
     disabled: false,
+    theme: 'light',
   }
 
   state = {
@@ -201,13 +198,17 @@ export default class HoldToAuthorizeButton extends PureComponent {
 
   render() {
     const {
+      backgroundColor,
       children,
       disabled,
+      shadows,
       style,
+      theme,
       ...props
     } = this.props;
+    const { isAuthorizing } = this.state;
 
-    const theme = disabled ? 'disabled' : 'default';
+    const bgColor = disabled ? ButtonDisabledBgColor[theme] : backgroundColor;
 
     return (
       <TapGestureHandler onHandlerStateChange={this.onTapChange}>
@@ -217,29 +218,21 @@ export default class HoldToAuthorizeButton extends PureComponent {
         >
           <View {...props} style={[style, { transform: [{ scale: this.scale }] }]}>
             <ShadowStack
+              backgroundColor={bgColor}
               borderRadius={ButtonBorderRadius}
               height={ButtonHeight}
-              shadows={ButtonShadows[theme]}
-              shouldRasterizeIOS
-              width={'100%'}
+              shadows={shadows || ButtonShadows[disabled ? 'disabled' : 'default']}
+              width="100%"
             >
-              <Content>
-                <RadialGradient
-                  center={[0, (ButtonHeight / 2)]}
-                  colors={[GradientColors[theme].from, GradientColors[theme].to]}
-                  css={position.cover}
-                  pointerEvents="none"
-                  radius={deviceUtils.dimensions.width - 30}
-                />
-                <HoldToAuthorizeButtonIcon
-                  animatedValue={this.animation}
-                  isAuthorizing={this.state.isAuthorizing}
-                />
+              <Content backgroundColor={bgColor}>
+                {!disabled && (
+                  <HoldToAuthorizeButtonIcon
+                    animatedValue={this.animation}
+                    isAuthorizing={isAuthorizing}
+                  />
+                )}
                 <Title>
-                  {this.state.isAuthorizing
-                    ? 'Authorizing'
-                    : children
-                  }
+                  {isAuthorizing ? 'Authorizing' : children}
                 </Title>
                 <InnerBorder radius={ButtonBorderRadius} />
               </Content>

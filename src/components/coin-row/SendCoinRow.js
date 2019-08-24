@@ -63,11 +63,11 @@ const SendCoinRow = enhance(({
   <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
     <CoinRow
       {...item}
-      {...props}
       bottomRowRender={BottomRow}
       containerStyles={selected ? selectedStyles : null}
       selected={selected}
       topRowRender={TopRow}
+      {...props}
     />
   </ButtonPressAnimation>
 ));

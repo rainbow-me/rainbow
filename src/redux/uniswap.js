@@ -13,7 +13,7 @@ import {
   saveUniswap,
   saveUniswapLiquidityTokens,
 } from '../handlers/commonStorage';
-import getUniswapLiquidityInfo from '../handlers/uniswap';
+import { getUniswapLiquidityInfo } from '../handlers/uniswap';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';

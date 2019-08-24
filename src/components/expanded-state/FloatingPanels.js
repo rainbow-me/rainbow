@@ -6,12 +6,12 @@ const FloatingPanelsMargin = 20;
 
 const FloatingPanels = compose(
   setDisplayName('FloatingPanels'),
-  withProps({
+  withProps(({ margin = FloatingPanelsMargin, style }) => ({
     justify: 'center',
-    margin: FloatingPanelsMargin,
+    margin,
     pointerEvents: 'box-none',
-    style: position.sizeAsObject('100%'),
-  }),
+    style: [position.sizeAsObject('100%'), style],
+  })),
 )(ColumnWithMargins);
 
 FloatingPanels.margin = FloatingPanelsMargin;

@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, split } from 'lodash';
 import BigNumber from 'bignumber.js';
 import supportedNativeCurrencies from '../references/native-currencies.json';
 
@@ -156,7 +156,6 @@ export const divide = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
  */
 export const convertAmountFromNativeValue = (
   value,
-  asset,
   priceUnit,
 ) => BigNumber(value)
   .dividedBy(BigNumber(priceUnit))
