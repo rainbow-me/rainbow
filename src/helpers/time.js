@@ -2,24 +2,10 @@ import {
   convertStringToNumber,
   divide,
   formatFixedDecimals,
-  floorDivide,
-  greaterThanOrEqual,
-  mod,
   multiply,
 } from './utilities';
 import timeUnits from '../references/time-units.json';
 import lang from '../languages';
-
-/**
- * @desc get local time & date string
- * @param  {Number} [timestamp=null]
- * @return {String}
- */
-export const getLocalTimeDate = (timestamp = null) => {
-  timestamp = Number(timestamp) || Date.now();
-  const date = new Date(timestamp);
-  return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-};
 
 /**
  * @desc get time string for minimal unit
@@ -169,25 +155,4 @@ export const getTimeString = (value = '', unit = 'ms', short = false) => {
     return `${_value} ${_unitShort}`;
   }
   return `${_value} ${_unit}`;
-};
-
-/**
- * @desc get countdown (hrs:mins:secs)
- * @param  {Number} [miliseconds]
- * @return {String}
- */
-export const getCountdown = miliseconds => {
-  let remaining = miliseconds;
-  let slots = [timeUnits.ms.hour, timeUnits.ms.minute, timeUnits.ms.second];
-  slots = slots.map(pack => {
-    const result = floorDivide(remaining, pack);
-    remaining = mod(remaining, pack);
-    if (greaterThanOrEqual(result, 1)) {
-      return result.length < 2 ? `0${result}` : result;
-    }
-    return null;
-  });
-  return `${slots[0] ? `${slots[0]}:` : ''}${
-    slots[1] ? `${slots[1]}:` : '00:'
-  }${slots[1] ? slots[2] || '00' : slots[2]}`;
 };
