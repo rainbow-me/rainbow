@@ -22,7 +22,15 @@ export const getBalanceAmount = (gasPrice, selected) => {
   return amount;
 };
 
-export const getAsset = (assets, address = 'eth') => find(assets, asset => asset.address === address);
+export const getAsset = (assets, address = 'eth') => {
+  return find(assets, asset => {
+    // console.log('asset', asset);
+    // console.log('asset.address', asset.address);
+    // console.log('address', address)
+
+    return asset.address === address
+  });
+}
 
 /**
  * @desc remove hex prefix

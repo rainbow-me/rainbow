@@ -61,4 +61,3 @@ export default compose(
   withProps(withAssetsAvailableOnUniswapSelector),
   omitProps('unsortedUniswapAssets'),
 );
-

@@ -57,9 +57,14 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator({
 const EnhancedExchangeModalNavigator = props => <ExchangeModalNavigator {...props} />;//React.memo();
 
 EnhancedExchangeModalNavigator.router = ExchangeModalNavigator.router;
-EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => ({
-  ...navigation.state.params,
-  gesturesEnabled: !get(navigation, 'state.params.isGestureBlocked'),
-});
+EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => {
+  // console.log('navigation', navigation);
+
+
+  return ({
+    ...navigation.state.params,
+    gesturesEnabled: !get(navigation, 'state.params.isGestureBlocked'),
+  });
+}
 
 export default EnhancedExchangeModalNavigator;

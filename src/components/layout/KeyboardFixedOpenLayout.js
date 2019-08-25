@@ -6,7 +6,7 @@ import styled from 'styled-components/primitives';
 import { withKeyboardHeight } from '../../hoc';
 import { colors, padding, position } from '../../styles';
 import { deviceUtils, safeAreaInsetValues } from '../../utils';
-import { Centered } from '../layout';
+import Centered from './Centered';
 
 const FallbackKeyboardHeight = Math.floor(deviceUtils.dimensions.height * 0.333);
 
@@ -44,7 +44,7 @@ class KeyboardFixedOpenLayout extends PureComponent {
     if (this.willShowListener) {
       console.log('this.willShowListener', this.willShowListener);
 
-      // this.willShowListener.remove();
+      this.willShowListener.remove();
     }
   }
 
