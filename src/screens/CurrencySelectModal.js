@@ -191,6 +191,8 @@ class CurrencySelectModal extends PureComponent {
       isTransitioning || listItems.length === 0
     );
 
+    console.log('listItems', listItems);
+
     // console.log('isFocused', isFocused ? '👍️' : '👎️', ' ', isFocused);
 
     return (
@@ -202,7 +204,7 @@ class CurrencySelectModal extends PureComponent {
               extrapolate: 'clamp',
               inputRange: [0, 1],
               outputRange: [0, 1],
-            })
+            }),
           }}
         >
           <Modal

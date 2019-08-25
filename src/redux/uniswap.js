@@ -242,7 +242,7 @@ export const INITIAL_UNISWAP_STATE = {
   uniswapAssets: {},
 };
 
-export default (state = INITIAL_UNISWAP_STATE, action) => produce(state, draft => {
+export default (state = INITIAL_UNISWAP_STATE, action) => produce(state, (draft) => {
   switch (action.type) {
   case UNISWAP_LOAD_REQUEST:
     draft.loadingUniswap = true;

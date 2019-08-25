@@ -1,5 +1,5 @@
 PODS:
-  - Analytics (3.6.10)
+  - Analytics (3.7.0)
   - boost-for-react-native (1.63.0)
   - BVLinearGradient (2.5.6):
     - React
@@ -40,40 +40,26 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - GoogleToolboxForMac/Defines (2.2.0)
-  - GoogleToolboxForMac/Logger (2.2.0):
-    - GoogleToolboxForMac/Defines (= 2.2.0)
-  - "GoogleToolboxForMac/NSData+zlib (2.2.0)":
-    - GoogleToolboxForMac/Defines (= 2.2.0)
-  - libwebp (1.0.2):
-    - libwebp/core (= 1.0.2)
-    - libwebp/dec (= 1.0.2)
-    - libwebp/demux (= 1.0.2)
-    - libwebp/dsp (= 1.0.2)
-    - libwebp/enc (= 1.0.2)
-    - libwebp/mux (= 1.0.2)
-    - libwebp/utils (= 1.0.2)
-    - libwebp/webp (= 1.0.2)
-  - libwebp/core (1.0.2):
+  - GoogleToolboxForMac/Defines (2.2.1)
+  - GoogleToolboxForMac/Logger (2.2.1):
+    - GoogleToolboxForMac/Defines (= 2.2.1)
+  - "GoogleToolboxForMac/NSData+zlib (2.2.1)":
+    - GoogleToolboxForMac/Defines (= 2.2.1)
+  - libwebp (1.0.3):
+    - libwebp/demux (= 1.0.3)
+    - libwebp/mux (= 1.0.3)
+    - libwebp/webp (= 1.0.3)
+  - libwebp/demux (1.0.3):
     - libwebp/webp
-  - libwebp/dec (1.0.2):
-    - libwebp/core
-  - libwebp/demux (1.0.2):
-    - libwebp/core
-  - libwebp/dsp (1.0.2):
-    - libwebp/core
-  - libwebp/enc (1.0.2):
-    - libwebp/core
-  - libwebp/mux (1.0.2):
-    - libwebp/core
-  - libwebp/utils (1.0.2):
-    - libwebp/core
-  - libwebp/webp (1.0.2)
+  - libwebp/mux (1.0.3):
+    - libwebp/demux
+  - libwebp/webp (1.0.3)
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
+<<<<<<< HEAD
 <<<<<<< HEAD
   - Protobuf (3.9.0)
   - React (0.60.5):
@@ -123,6 +109,9 @@ PODS:
   - React-jsinspector (0.60.5)
 =======
   - Protobuf (3.7.0)
+=======
+  - Protobuf (3.9.0)
+>>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
   - React (0.59.9):
     - React/Core (= 0.59.9)
 >>>>>>> 730537c6... catching up with latest mike-swap-ui changes
@@ -139,7 +128,11 @@ PODS:
   - react-native-fast-image (6.1.1):
     - React
     - SDWebImage (~> 5.0)
+<<<<<<< HEAD
   - react-native-netinfo (4.2.1):
+=======
+  - react-native-netinfo (4.1.5):
+>>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
     - React
   - react-native-version-number (0.3.6):
     - React
@@ -186,6 +179,7 @@ PODS:
   - RNStoreReview (0.1.5):
     - React
 <<<<<<< HEAD
+<<<<<<< HEAD
   - SDWebImage (5.1.1):
     - SDWebImage/Core (= 5.1.1)
   - SDWebImage/Core (5.1.1)
@@ -194,6 +188,11 @@ PODS:
   - SDWebImage (5.0.2):
     - SDWebImage/Core (= 5.0.2)
   - SDWebImage/Core (5.0.2)
+=======
+  - SDWebImage (5.1.0):
+    - SDWebImage/Core (= 5.1.0)
+  - SDWebImage/Core (5.1.0)
+>>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
   - yoga (0.59.9.React)
 >>>>>>> 730537c6... catching up with latest mike-swap-ui changes
 
@@ -334,17 +333,17 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Analytics: 63744ad4afa65c3bcdcdb7a94b62515bde5b3900
+  Analytics: 77fd5fb102a4a5eedafa2c2b0245ceb7b7c15e45
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
   Crashlytics: 55e24fc23989680285a21cb1146578d9d18e432c
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   Fabric: 25d0963b691fc97be566392243ff0ecef5a68338
-  Firebase: 76ec2a7cde90fb4037793f83aeeca48451543487
-  FirebaseAnalytics: b8bce8d5c40173328b8a4300da18c5c7e0a1908d
-  FirebaseCore: 31d258ec80ea97e1e8e40ce00a7ba7297afb45c2
-  FirebaseInstanceID: 4f7768a98c5c3c5bd9a4c9e431ea98dccc0a51f9
-  FirebaseMessaging: 94579ae655d817287f029ebfebd5b0811fbb3a51
+  Firebase: 68afeeb05461db02d7c9e3215cda28068670f4aa
+  FirebaseAnalytics: b3628aea54c50464c32c393fb2ea032566e7ecc2
+  FirebaseCore: 62f1b792a49bb9e8b4073f24606d2c93ffc352f0
+  FirebaseInstanceID: f3f0657372592ecdfdfe2cac604a5a75758376a6
+  FirebaseMessaging: 6894b8fe0a0cf26c3b13dad729f1131654ae0bdb
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
 <<<<<<< HEAD
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
@@ -363,16 +362,20 @@ SPEC CHECKSUMS:
 =======
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
-  GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
-  libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
+  GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
+  libwebp: 057912d6d0abfb6357d8bb05c0ea470301f5d61e
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
-  Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
+  Protobuf: 1097ca58584c8d9be81bfbf2c5ff5975648dd87a
   React: a86b92f00edbe1873a63e4a212c29b7a7ad5224f
 >>>>>>> 730537c6... catching up with latest mike-swap-ui changes
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: b5e6e34586ca6f588b0c736dcabfe0aad5ce2f3e
   react-native-fast-image: fdfc612dba58fd73136cf5efdaeb8cfcad7f63b2
+<<<<<<< HEAD
   react-native-netinfo: aeb1752abb78a9c15cdcea067a6c95d596dcfc45
+=======
+  react-native-netinfo: 0e563248a4b9a99c33ec29bd03c2d50767db22a6
+>>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   React-RCTActionSheet: b0f1ea83f4bf75fb966eae9bfc47b78c8d3efd90
   React-RCTAnimation: 359ba1b5690b1e87cc173558a78e82d35919333e
@@ -394,10 +397,14 @@ SPEC CHECKSUMS:
   RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
 <<<<<<< HEAD
+<<<<<<< HEAD
   SDWebImage: 96d7f03415ccb28d299d765f93557ff8a617abd8
   yoga: 312528f5bbbba37b4dcea5ef00e8b4033fdd9411
 =======
   SDWebImage: 6764b5fa0f73c203728052955dbefa2bf1f33282
+=======
+  SDWebImage: fb387001955223213dde14bc08c8b73f371f8d8f
+>>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
   yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
 >>>>>>> 730537c6... catching up with latest mike-swap-ui changes
 

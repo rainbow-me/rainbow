@@ -75,9 +75,9 @@ const isSameAsset = (firstAsset, secondAsset) => {
   }
 
   const firstAddress = get(firstAsset, 'address', '').toLowerCase();
-  const secondAddress = get(firstAsset, 'address', '').toLowerCase();
+  const secondAddress = get(secondAsset, 'address', '').toLowerCase();
   return firstAddress === secondAddress;
-}
+};
 
 class ExchangeModal extends PureComponent {
   static propTypes = {
@@ -134,7 +134,7 @@ class ExchangeModal extends PureComponent {
     }
 
     if (outputCurrency) {
-      console.log('should showConfirmButton');
+      // console.log('should showConfirmButton');
       this.setState({ showConfirmButton: true });
     }
 
@@ -278,8 +278,11 @@ class ExchangeModal extends PureComponent {
   }
 
   setInputCurrency = (inputCurrencySelection, force) => {
+    const { accountAddress } = this.props;
     const { inputCurrency, outputCurrency } = this.state;
 
+    console.log('inputCurrencySelection', inputCurrencySelection);
+    const allowance = contractUtils.getAllowance(accountAddress);
     this.setState({ inputCurrency: inputCurrencySelection });
 
     if (!force && isSameAsset(inputCurrency, outputCurrency)) {
@@ -298,10 +301,11 @@ class ExchangeModal extends PureComponent {
     this.setState({ outputCurrency });
 
     if (!force && isSameAsset(inputCurrency, outputCurrency)) {
+      console.log('outputCurrency', outputCurrency);
       const asset = ethereumUtils.getAsset(allAssets, outputCurrency.address.toLowerCase());
 
       console.log('asset', asset);
-      //
+
       if (inputCurrency !== null && outputCurrency !== null && !isNil(asset)) {
         this.setInputCurrency(null, true);
       } else {
@@ -356,7 +360,7 @@ class ExchangeModal extends PureComponent {
 
   handleWillFocus = ({ lastState }) => {
     if (!lastState && this.inputFieldRef) {
-      return this.inputFieldRef.focus();
+      this.inputFieldRef.focus();
     }
   }
 
@@ -398,6 +402,12 @@ class ExchangeModal extends PureComponent {
       slippage,
     } = this.state;
 
+    console.log(' ')
+    console.log('ExchangeModal -- this.props', this.props);
+    console.log('ExchangeModal -- this.state', this.state);
+    console.log(' ')
+
+
     return (
       <KeyboardFixedOpenLayout>
         <NavigationEvents
@@ -426,6 +436,7 @@ class ExchangeModal extends PureComponent {
                   inputAmount={inputAmountDisplay}
                   inputCurrency={get(inputCurrency, 'symbol', null)}
                   inputFieldRef={this.handleInputFieldRef}
+                  isAssetApproved={false}
                   nativeAmount={nativeAmount}
                   nativeCurrency={nativeCurrency}
                   nativeFieldRef={this.handleNativeFieldRef}

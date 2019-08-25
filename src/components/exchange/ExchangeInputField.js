@@ -26,14 +26,16 @@ export default class ExchangeInputField extends Component {
     nativeAmount: PropTypes.string,
     nativeCurrency: PropTypes.string,
     nativeFieldRef: PropTypes.func,
-    needsApproval: PropTypes.bool,
+    onFocus: PropTypes.func,
     onPressMaxBalance: PropTypes.func,
     onPressSelectInputCurrency: PropTypes.func,
+    onPressUnlockAsset: PropTypes.func,
     setInputAmount: PropTypes.func,
     setNativeAmount: PropTypes.func,
   }
 
   inputFieldRef = undefined
+
   nativeFieldRef = undefined
 
   padding = 15
@@ -51,7 +53,7 @@ export default class ExchangeInputField extends Component {
       || isNewAssetApproved
       || isNewNativeAmount
       || isNewNativeCurrency
-    )
+    );
   }
 
   handleFocusInputField = () => {
@@ -80,29 +82,22 @@ export default class ExchangeInputField extends Component {
     const {
       nativeAmount,
       nativeCurrency,
-      nativeFieldRef,
-      needsApproval,
       onFocus,
       setNativeAmount,
     } = this.props;
 
     const { mask, placeholder, symbol } = supportedNativeCurrencies[nativeCurrency];
 
-    const symbolColor = (
-      !!nativeAmount
-        ? colors.dark
-        : ExchangeInput.defaultProps.placeholderTextColor
-    );
-
     return (
-      <TouchableWithoutFeedback onPress={this.handleFocusNativeField}>
+      <TouchableWithoutFeedback flex={0} onPress={this.handleFocusNativeField}>
         <Row
           align="center"
           margin={0}
+          flex={1}
           paddingBottom={this.padding}
         >
           <Text
-            color={symbolColor}
+            color={nativeAmount ? colors.dark : ExchangeInput.defaultProps.placeholderTextColor}
             flex={0}
             size="large"
             weight="regular"
