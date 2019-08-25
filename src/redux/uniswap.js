@@ -85,9 +85,9 @@ export const uniswapGetTokenReserve = (tokenAddress) => (dispatch, getState) => 
         });
         saveUniswapTokenReserves(accountAddress, updatedTokenReserves, network);
         resolve(tokenReserve);
-      }).catch(error => {
+      }).catch((error) => {
         dispatch({ type: UNISWAP_GET_TOKEN_RESERVES_FAILURE });
-        reject(null);
+        reject(error);
       });
   })
 );
