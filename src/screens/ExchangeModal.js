@@ -6,20 +6,18 @@ import {
   tradeTokensForExactEthWithData,
   tradeTokensForExactTokensWithData,
 } from '@uniswap/sdk';
-import {
-  filter,
-  findIndex,
-  get,
-  isNil,
-  keys,
-  map,
-} from 'lodash';
+import { get, isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { InteractionManager, LayoutAnimation, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { NavigationActions, NavigationEvents, withNavigationFocus } from 'react-navigation';
-import { compose, mapProps, toClass, withProps } from 'recompact';
+import { NavigationEvents, withNavigationFocus } from 'react-navigation';
+import {
+  compose,
+  mapProps,
+  toClass,
+  withProps,
+} from 'recompact';
 import { executeSwap } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
@@ -41,12 +39,7 @@ import {
   withUniswapAssets,
 } from '../hoc';
 import { colors, padding, position } from '../styles';
-import {
-  contractUtils,
-  deviceUtils,
-  ethereumUtils,
-  safeAreaInsetValues,
-} from '../utils';
+import { contractUtils, ethereumUtils, isNewValueForPath } from '../utils';
 import {
   ConfirmExchangeButton,
   ExchangeGasFeeButton,
@@ -62,7 +55,6 @@ import {
   Column,
   KeyboardFixedOpenLayout,
 } from '../components/layout';
-import { Text } from '../components/text';
 import { CurrencySelectionTypes } from './CurrencySelectModal';
 
 export const exchangeModalBorderRadius = 30;
@@ -87,11 +79,15 @@ class ExchangeModal extends PureComponent {
     chainId: PropTypes.number,
     clearKeyboardFocusHistory: PropTypes.func,
     dataAddNewTransaction: PropTypes.func,
+    isFocused: PropTypes.bool,
+    isTransitioning: PropTypes.bool,
     keyboardFocusHistory: PropTypes.array,
     nativeCurrency: PropTypes.string,
     navigation: PropTypes.object,
     pushKeyboardFocusHistory: PropTypes.func,
+    tokenReserves: PropTypes.array,
     tradeDetails: PropTypes.object,
+    transitionPosition: PropTypes.object, // animated value
     uniswapGetTokenReserve: PropTypes.func,
     uniswapUpdateAllowances: PropTypes.func,
   }
@@ -99,13 +95,11 @@ class ExchangeModal extends PureComponent {
   state = {
     inputAllowance: null,
     inputAmount: null,
-    inputAmountDisplay: null,
     inputAsExactAmount: false,
     inputCurrency: ethereumUtils.getAsset(this.props.allAssets),
+    isAssetApproved: true,
     nativeAmount: null,
-    needsApproval: false,
     outputAmount: null,
-    outputAmountDisplay: null,
     outputCurrency: null,
     showConfirmButton: false,
     slippage: null,
@@ -113,8 +107,11 @@ class ExchangeModal extends PureComponent {
   }
 
   componentDidUpdate = (prevProps, prevState) => {
-    const { isFocused, isTransitioning, keyboardFocusHistory} = this.props;
-    const { inputAmount, outputAmount, outputCurrency } = this.state;
+    const {
+      isFocused,
+      isTransitioning,
+      keyboardFocusHistory,
+    } = this.props;
 
     if (isFocused && (!isTransitioning && prevProps.isTransitioning)) {
       const lastFocusedInput = keyboardFocusHistory[keyboardFocusHistory.length - 2];
@@ -129,16 +126,20 @@ class ExchangeModal extends PureComponent {
       }
     }
 
-    if (inputAmount || outputAmount) {
-      LayoutAnimation.easeInEaseOut();
-    }
-
-    if (outputCurrency) {
-      // console.log('should showConfirmButton');
+    if (this.state.outputCurrency) {
       this.setState({ showConfirmButton: true });
     }
 
-    if (this.state.inputCurrency.address !== prevState.inputCurrency.address) {
+    const isNewNativeAmount = isNewValueForPath(this.state, prevState, 'nativeAmount');
+    const isNewInputAmount = isNewValueForPath(this.state, prevState, 'inputAmount');
+    const isNewOutputAmount = isNewValueForPath(this.state, prevState, 'outputAmount');
+
+    if (isNewNativeAmount || isNewInputAmount || isNewOutputAmount) {
+      this.getMarketDetails();
+      LayoutAnimation.easeInEaseOut();
+    }
+
+    if (isNewValueForPath(this.state, prevState, 'inputCurrency.address')) {
       this.getCurrencyAllowance();
     }
   }
@@ -147,150 +148,157 @@ class ExchangeModal extends PureComponent {
     this.props.clearKeyboardFocusHistory();
   }
 
+  /* eslint-disable lines-between-class-members */
   inputFieldRef = null
-
   nativeFieldRef = null
-
   outputFieldRef = null
 
-  parseTradeDetails = (path, tradeDetails, decimals) => {
-    const updatedValue = get(tradeDetails, path);
-    const slippage = get(tradeDetails, 'marketRateSlippage');
-    const rawUpdatedValue = convertRawAmountToDecimalFormat(updatedValue, decimals);
-    return { rawUpdatedValue, slippage: slippage.toFixed() };
-  };
+  assignInputFieldRef = (ref) => { this.inputFieldRef = ref; }
+  assignNativeFieldRef = (ref) => { this.nativeFieldRef = ref; }
+  assignOutputFieldRef = (ref) => { this.outputFieldRef = ref; }
+  /* eslint-enable lines-between-class-members */
 
   getCurrencyAllowance = async () => {
     const { accountAddress, allowances, uniswapUpdateAllowances } = this.props;
     const { inputCurrency } = this.state;
-    if (inputCurrency.address === 'eth') {
-      this.setState({ needsApproval: false });
-      return;
-    }
-    const allowance = allowances[inputCurrency.address];
-    if (isNil(allowance)) {
-      this.setState({ needsApproval: true });
-    } else {
-      this.setState({ needsApproval: !greaterThan(allowance, 0) });
-    }
-    const newAllowance = await contractUtils.getAllowance(accountAddress, inputCurrency, inputCurrency.exchangeAddress);
-    uniswapUpdateAllowances(inputCurrency.address, newAllowance);
-    this.setState({ needsApproval: !greaterThan(newAllowance, 0) });
-  };
+    const { address: inputAddress, exchangeAddress } = inputCurrency;
 
-  getReserveData = async tokenAddress => {
-    let reserve = this.props.tokenReserves[tokenAddress.toLowerCase()];
-    if (isNil(reserve)) {
-      reserve = await this.props.uniswapGetTokenReserve(tokenAddress);
+    if (inputAddress === 'eth') {
+      return this.setState({ isAssetApproved: true });
     }
+
+    let allowance = allowances[inputAddress];
+    if (!allowance) {
+      allowance = await contractUtils.getAllowance(accountAddress, inputCurrency, exchangeAddress);
+      uniswapUpdateAllowances(inputAddress, allowance);
+    }
+
+    return this.setState({ isAssetApproved: greaterThan(allowance, 0) });
+  }
+
+  getReserveData = async (tokenAddress) => {
+    const { tokenReserves, uniswapGetTokenReserve } = this.props;
+
+    if (tokenAddress === 'eth') {
+      return null;
+    }
+
+    let reserve = tokenReserves[tokenAddress.toLowerCase()];
+    if (!reserve) {
+      reserve = await uniswapGetTokenReserve(tokenAddress);
+    }
+
     return reserve;
-  };
+  }
 
   getMarketDetails = async () => {
+    const { chainId } = this.props;
+    const {
+      inputAmount,
+      inputAsExactAmount,
+      inputCurrency,
+      nativeAmount,
+      outputAmount,
+      outputCurrency,
+    } = this.state;
+
+    const isMissingAmounts = !inputAmount && !outputAmount;
+    const isMissingCurrency = !inputCurrency || !outputCurrency;
+    if (isMissingAmounts || isMissingCurrency) {
+      return;
+    }
+
     try {
-      let tradeDetails = null;
-      const { chainId } = this.props;
-      const {
-        inputAmount,
-        inputAsExactAmount,
-        inputCurrency,
-        outputAmount,
-        outputCurrency,
-      } = this.state;
-      if (inputCurrency === null || outputCurrency === null) return;
-      if (isNil(inputAmount) && isNil(outputAmount)) return;
-      const {
-        address: inputCurrencyAddress,
-        decimals: inputDecimals,
-      } = inputCurrency;
-      const {
-        address: outputCurrencyAddress,
-        decimals: outputDecimals,
-      } = outputCurrency;
+      const { address: inputAddress, decimals: inputDecimals } = inputCurrency;
+      const { address: outputAddress, decimals: outputDecimals } = outputCurrency;
+
+      const isInputEth = inputAddress === 'eth';
+      const isOutputEth = outputAddress === 'eth';
+
+      const inputReserve = await this.getReserveData(inputAddress);
+      const outputReserve = await this.getReserveData(outputAddress);
+
       const rawInputAmount = convertAmountToRawAmount(inputAmount || 0, inputDecimals);
       const rawOutputAmount = convertAmountToRawAmount(outputAmount || 0, outputDecimals);
 
-      if (inputCurrencyAddress === 'eth' && outputCurrencyAddress !== 'eth') {
-        const outputCurrencyReserve = await this.getReserveData(outputCurrencyAddress);
+      let tradeDetails = null;
+
+      if (isInputEth && !isOutputEth) {
         tradeDetails = inputAsExactAmount
-          ? tradeExactEthForTokensWithData(outputCurrencyReserve, rawInputAmount, chainId)
-          : tradeEthForExactTokensWithData(outputCurrencyReserve, rawOutputAmount, chainId);
-      } else if (inputCurrencyAddress !== 'eth' && outputCurrencyAddress === 'eth') {
-        const inputCurrencyReserve = await this.getReserveData(inputCurrencyAddress);
+          ? tradeExactEthForTokensWithData(outputReserve, rawInputAmount, chainId)
+          : tradeEthForExactTokensWithData(outputReserve, rawOutputAmount, chainId);
+      } else if (!isInputEth && isOutputEth) {
         tradeDetails = inputAsExactAmount
-          ? tradeExactTokensForEthWthData(inputCurrencyReserve, rawInputAmount, chainId)
-          : tradeTokensForExactEthWithData(inputCurrencyReserve, rawOutputAmount, chainId);
-      } else if (inputCurrencyAddress !== 'eth' && outputCurrencyAddress !== 'eth') {
-        const inputCurrencyReserve = await this.getReserveData(inputCurrencyAddress);
-        const outputCurrencyReserve = await this.getReserveData(outputCurrencyAddress);
+          ? tradeExactTokensForEthWithData(inputReserve, rawInputAmount, chainId)
+          : tradeTokensForExactEthWithData(inputReserve, rawOutputAmount, chainId);
+      } else if (!isInputEth && !isOutputEth) {
         tradeDetails = inputAsExactAmount
-          ? tradeExactTokensForTokensWithData(inputCurrencyReserve, outputCurrencyReserve, rawInputAmount, chainId)
-          : tradeTokensForExactTokensWithData(inputCurrencyReserve, outputCurrencyReserve, rawOutputAmount, chainId);
+          ? tradeExactTokensForTokensWithData(inputReserve, outputReserve, rawInputAmount, chainId)
+          : tradeTokensForExactTokensWithData(inputReserve, outputReserve, rawOutputAmount, chainId);
       }
+
+      const updatedAmountKey = inputAsExactAmount ? 'outputAmount' : 'inputAmount';
+      const amountToUpdate = get(tradeDetails, `${updatedAmountKey}.amount`);
       const decimals = inputAsExactAmount ? outputDecimals : inputDecimals;
-      const path = inputAsExactAmount ? 'outputAmount.amount' : 'inputAmount.amount';
-      this.setState({ tradeDetails });
-      const { rawUpdatedValue, slippage } = this.parseTradeDetails(path, tradeDetails, decimals);
-      if (inputAsExactAmount) {
-        const outputAmountDisplay = updatePrecisionToDisplay(rawUpdatedValue, get(outputCurrency, 'price.value'));
-        this.setState({ outputAmount: rawUpdatedValue, outputAmountDisplay, slippage });
-      } else {
-        const inputAmountDisplay = updatePrecisionToDisplay(rawUpdatedValue, get(inputCurrency, 'price.value'));
-        this.setState({ inputAmount: rawUpdatedValue, inputAmountDisplay, slippage });
-      }
+
+      this.setState({
+        slippage: get(tradeDetails, 'marketRateSlippage', 0).toFixed(),
+        tradeDetails,
+        [updatedAmountKey]: convertRawAmountToDecimalFormat(amountToUpdate, decimals),
+      });
     } catch (error) {
       console.log('error getting market details', error);
       // TODO
     }
   }
 
-  setNativeAmount = async nativeAmountDisplay => {
-    const nativeAmount = convertAmountFromNativeDisplay(nativeAmountDisplay, this.props.nativeCurrency);
-    const inputAmount = convertAmountFromNativeValue(nativeAmount, get(this.state.inputCurrency, 'native.price.amount', 0));
-    const inputAmountDisplay = updatePrecisionToDisplay(inputAmount, get(inputCurrency, 'price.value'));
-    this.setState({
-      inputAmount,
-      inputAmountDisplay,
-      inputAsExactAmount: true,
-      nativeAmount: nativeAmountDisplay,
+  setInputAmount = (inputAmount) => {
+    this.setState(({ inputCurrency }) => {
+      const nativePrice = get(inputCurrency, 'native.price.amount', 0);
+
+      let nativeAmount = null;
+      if (inputAmount) {
+        nativeAmount = convertAmountToNativeAmount(inputAmount, nativePrice);
+      }
+
+      return {
+        inputAmount,
+        inputAsExactAmount: true,
+        nativeAmount,
+      };
     });
   }
 
-  setInputAmount = async inputAmount => {
-    const nativeAmount = convertAmountToNativeAmount(
-      inputAmount,
-      get(this.state.inputCurrency, 'native.price.amount', 0)
-    );
-    this.setState({
-      inputAmount,
-      inputAmountDisplay: inputAmount,
-      inputAsExactAmount: true,
-      nativeAmount,
+  setNativeAmount = (nativeAmount) => {
+    this.setState(({ inputCurrency }) => {
+      const nativePrice = get(inputCurrency, 'native.price.amount', 0);
+
+      return {
+        inputAmount: convertAmountFromNativeValue(nativeAmount, nativePrice),
+        inputAsExactAmount: true,
+        nativeAmount,
+      };
     });
   }
 
-  setOutputAmount = async outputAmount => {
+  setOutputAmount = (outputAmount) => {
     this.setState({
       inputAsExactAmount: false,
       outputAmount,
-      outputAmountDisplay: outputAmount,
     });
   }
 
-  setInputCurrency = (inputCurrencySelection, force) => {
-    const { accountAddress } = this.props;
-    const { inputCurrency, outputCurrency } = this.state;
+  setInputCurrency = (inputCurrency, force) => {
+    const { outputCurrency } = this.state;
 
-    console.log('inputCurrencySelection', inputCurrencySelection);
-    const allowance = contractUtils.getAllowance(accountAddress);
-    this.setState({ inputCurrency: inputCurrencySelection });
+    this.setState({ inputCurrency });
 
     if (!force && isSameAsset(inputCurrency, outputCurrency)) {
-      if (outputCurrency !== null && inputCurrency !== null) {
-        return this.setOutputCurrency(null, true);
+      if (!isNil(inputCurrency) && !isNil(outputCurrency)) {
+        this.setOutputCurrency(null, true);
+      } else {
+        this.setOutputCurrency(inputCurrency, true);
       }
-
-      return this.setOutputCurrency(inputCurrency, true);
     }
   }
 
@@ -301,12 +309,10 @@ class ExchangeModal extends PureComponent {
     this.setState({ outputCurrency });
 
     if (!force && isSameAsset(inputCurrency, outputCurrency)) {
-      console.log('outputCurrency', outputCurrency);
-      const asset = ethereumUtils.getAsset(allAssets, outputCurrency.address.toLowerCase());
+      const outputAddress = outputCurrency.address.toLowerCase();
+      const asset = ethereumUtils.getAsset(allAssets, outputAddress);
 
-      console.log('asset', asset);
-
-      if (inputCurrency !== null && outputCurrency !== null && !isNil(asset)) {
+      if (!isNil(asset) && !isNil(inputCurrency) && !isNil(outputCurrency)) {
         this.setInputCurrency(null, true);
       } else {
         this.setInputCurrency(outputCurrency, true);
@@ -316,22 +322,26 @@ class ExchangeModal extends PureComponent {
 
   onPressMaxBalance = () => {
     const { inputCurrency } = this.state;
-    const balance = get(inputCurrency, 'balance.amount', 0);
-    const inputAmount = (inputCurrency.address === 'eth') ? subtract(balance, 0.01) : balance;
-    this.setState({ inputAmount });
+
+    let maxBalance = get(inputCurrency, 'balance.amount', 0);
+    if (inputCurrency.address === 'eth') {
+      maxBalance = subtract(maxBalance, 0.01);
+    }
+
+    return this.setInputAmount(maxBalance);
   }
 
   handleSelectInputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
-      type: CurrencySelectionTypes.input,
       onSelectCurrency: this.setInputCurrency,
+      type: CurrencySelectionTypes.input,
     });
   }
 
   handleSelectOutputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
-      type: CurrencySelectionTypes.output,
       onSelectCurrency: this.setOutputCurrency,
+      type: CurrencySelectionTypes.output,
     });
   }
 
@@ -364,18 +374,8 @@ class ExchangeModal extends PureComponent {
     }
   }
 
-  handleInputFieldRef = (ref) => { this.inputFieldRef = ref; }
-
-  handleNativeFieldRef = (ref) => { this.nativeFieldRef = ref; }
-
-  handleOutputFieldRef = (ref) => { this.outputFieldRef = ref; }
-
   handleDidFocus = () => {
     // console.log('DID FOCUS', this.props.navigation)
-
-    // if (this.inputFieldRef) {
-    //   setTimeout(() => this.inputFieldRef.focus(), 250);
-    // }
   }
 
   handleFocusField = ({ currentTarget }) => {
@@ -383,30 +383,18 @@ class ExchangeModal extends PureComponent {
   }
 
   render = () => {
-    const {
-      keyboardFocusHistory,
-      nativeCurrency,
-      navigation,
-      onPressConfirmExchange,
-      transitionPosition,
-    } = this.props;
+    const { nativeCurrency, transitionPosition } = this.props;
 
     const {
-      inputAmountDisplay,
+      inputAmount,
       inputCurrency,
+      isAssetApproved,
       nativeAmount,
-      needsApproval,
-      outputAmountDisplay,
+      outputAmount,
       outputCurrency,
       showConfirmButton,
       slippage,
     } = this.state;
-
-    console.log(' ')
-    console.log('ExchangeModal -- this.props', this.props);
-    console.log('ExchangeModal -- this.state', this.state);
-    console.log(' ')
-
 
     return (
       <KeyboardFixedOpenLayout>
@@ -429,18 +417,18 @@ class ExchangeModal extends PureComponent {
               }),
             }}
           >
+            <GestureBlocker type='top'/>
             <FloatingPanel radius={exchangeModalBorderRadius}>
               <ExchangeModalHeader />
               <Column align="center" flex={0}>
                 <ExchangeInputField
-                  inputAmount={inputAmountDisplay}
+                  inputAmount={inputAmount}
                   inputCurrency={get(inputCurrency, 'symbol', null)}
-                  inputFieldRef={this.handleInputFieldRef}
-                  isAssetApproved={false}
+                  inputFieldRef={this.assignInputFieldRef}
+                  isAssetApproved={isAssetApproved}
                   nativeAmount={nativeAmount}
                   nativeCurrency={nativeCurrency}
-                  nativeFieldRef={this.handleNativeFieldRef}
-                  needsApproval={needsApproval}
+                  nativeFieldRef={this.assignNativeFieldRef}
                   onFocus={this.handleFocusField}
                   onPressMaxBalance={this.onPressMaxBalance}
                   onPressSelectInputCurrency={this.handleSelectInputCurrency}
@@ -448,11 +436,11 @@ class ExchangeModal extends PureComponent {
                   setNativeAmount={this.setNativeAmount}
                 />
                 <ExchangeOutputField
-                  onPressSelectOutputCurrency={this.handleSelectOutputCurrency}
-                  outputAmount={outputAmountDisplay}
                   onFocus={this.handleFocusField}
+                  onPressSelectOutputCurrency={this.handleSelectOutputCurrency}
+                  outputAmount={outputAmount}
                   outputCurrency={get(outputCurrency, 'symbol', null)}
-                  outputFieldRef={this.handleOutputFieldRef}
+                  outputFieldRef={this.assignOutputFieldRef}
                   setOutputAmount={this.setOutputAmount}
                 />
               </Column>
@@ -466,7 +454,7 @@ class ExchangeModal extends PureComponent {
                   width="100%"
                 >
                   <ConfirmExchangeButton
-                    disabled={!Number(inputAmountDisplay)}
+                    disabled={!Number(inputAmount)}
                     onPress={this.handleSubmit}
                   />
                 </Centered>
@@ -475,6 +463,7 @@ class ExchangeModal extends PureComponent {
                 />
               </Fragment>
             )}
+            <GestureBlocker type='bottom'/>
           </AnimatedFloatingPanels>
         </Centered>
       </KeyboardFixedOpenLayout>
@@ -501,13 +490,13 @@ export default compose(
   withUniswapAssets,
   mapProps(({
     navigation,
-    tabsTransitionProps: {
-      isTransitioning: isTabsTransitioning,
-    },
     stackTransitionProps: {
       isTransitioning: isStacksTransitioning,
     },
-    ...props,
+    tabsTransitionProps: {
+      isTransitioning: isTabsTransitioning,
+    },
+    ...props
   }) => ({
     ...props,
     isTransitioning: isStacksTransitioning || isTabsTransitioning,
