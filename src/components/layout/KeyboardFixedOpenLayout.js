@@ -42,7 +42,7 @@ class KeyboardFixedOpenLayout extends PureComponent {
 
   clearKeyboardListeners = () => {
     if (this.willShowListener) {
-      console.log('this.willShowListener', this.willShowListener);
+      // console.log('this.willShowListener', this.willShowListener);
 
       this.willShowListener.remove();
     }
