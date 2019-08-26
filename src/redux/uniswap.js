@@ -89,9 +89,9 @@ export const uniswapGetTokenReserve = (tokenAddress) => (dispatch, getState) => 
         });
         saveAccountLocal(RESERVES, updatedTokenReserves, accountAddress, network);
         resolve(tokenReserve);
-      }).catch(error => {
+      }).catch((error) => {
         dispatch({ type: UNISWAP_GET_TOKEN_RESERVES_FAILURE });
-        reject(null);
+        reject(error);
       });
   })
 );
@@ -242,7 +242,7 @@ export const INITIAL_UNISWAP_STATE = {
   uniswapAssets: {},
 };
 
-export default (state = INITIAL_UNISWAP_STATE, action) => produce(state, draft => {
+export default (state = INITIAL_UNISWAP_STATE, action) => produce(state, (draft) => {
   switch (action.type) {
   case UNISWAP_LOAD_REQUEST:
     draft.loadingUniswap = true;

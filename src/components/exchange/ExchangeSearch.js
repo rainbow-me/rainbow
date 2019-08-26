@@ -59,7 +59,7 @@ class ExchangeSearch extends PureComponent {
             color={colors.dark}
             flex={1}
             keyboardAppearance="dark"
-            keyboardType="default"
+            keyboardType="ascii-capable"
             lineHeight="loose"
             onChangeText={this.props.onChangeText}
             onFocus={this.props.onFocus}

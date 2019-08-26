@@ -6,17 +6,25 @@ import { colors, fonts } from '../../styles';
 
 export default class ExchangeInput extends PureComponent {
   static propTypes = {
+    color: PropTypes.string,
+    disableTabularNums: PropTypes.bool,
+    fontFamily: PropTypes.string,
     fontSize: PropTypes.string,
+    fontWeight: PropTypes.number,
     mask: PropTypes.string,
     onChangeText: PropTypes.func,
     placeholder: PropTypes.string,
     placeholderTextColor: PropTypes.string,
+    refInput: PropTypes.func,
     style: stylePropType,
     value: PropTypes.string,
   }
 
   static defaultProps = {
+    color: colors.dark,
+    fontFamily: fonts.family.SFProDisplay,
     fontSize: fonts.size.h2,
+    fontWeight: fonts.weight.medium,
     mask: '[099999999999].[9999999999999]',
     placeholder: '0',
     placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.5),
@@ -24,14 +32,17 @@ export default class ExchangeInput extends PureComponent {
 
   onChangeText = (formatted, extracted) => {
     // XXX TODO: some funky stuff is going on here related to the '$' symbol in the input mask
-    this.props.onChangeText(!!extracted ? formatted : '');
+    this.props.onChangeText(extracted ? formatted : '');
   }
 
   render = () => {
     const {
+      color,
+      disableTabularNums,
+      fontFamily,
       fontSize,
+      fontWeight,
       mask,
-      onChangeText,
       placeholder,
       placeholderTextColor,
       refInput,
@@ -53,10 +64,11 @@ export default class ExchangeInput extends PureComponent {
         refInput={refInput}
         selectionColor={colors.appleBlue}
         style={[{
-          fontFamily: fonts.family.SFProDisplay,
+          color,
+          fontFamily,
           fontSize: parseFloat(fontSize),
-          fontVariant: ['tabular-nums'],
-          fontWeight: fonts.weight.medium,
+          fontVariant: disableTabularNums ? undefined : ['tabular-nums'],
+          fontWeight,
         }, style]}
         value={value}
       />

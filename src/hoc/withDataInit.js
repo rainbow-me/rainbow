@@ -13,7 +13,7 @@ import {
   explorerClearState,
   explorerInit,
 } from '../redux/explorer';
-import { clearIsWalletEmpty, loadIsWalletEmpty } from '../redux/isWalletEmpty';
+import { clearIsWalletEmpty } from '../redux/isWalletEmpty';
 import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import { nonceClearState } from '../redux/nonce';
 import { clearOpenFamilyTab } from '../redux/openFamilyTabs';

@@ -15,18 +15,18 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" fixedFrame="YES" image="SplashIcon" translatesAutoresizingMaskIntoConstraints="NO" id="kXn-Ms-coN">
-                    <rect key="frame" x="167" y="408" width="80" height="80"/>
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="SplashIcon" translatesAutoresizingMaskIntoConstraints="NO" id="Ai3-za-9WT">
+                    <rect key="frame" x="169" y="410" width="76" height="76"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                 </imageView>
             </subviews>
-            <color key="backgroundColor" red="0.14509803921568626" green="0.0078431372549019607" blue="0.62745098039215685" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color key="backgroundColor" red="0.0" green="0.11764705882352941" blue="0.34901960784313724" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <nil key="simulatedStatusBarMetrics"/>
             <modalPageSheetSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="547.20000000000005" y="454.43349753694582"/>
         </view>
     </objects>
     <resources>
-        <image name="SplashIcon" width="80" height="80"/>
+        <image name="SplashIcon" width="76" height="76"/>
     </resources>
 </document>

@@ -9,7 +9,7 @@ import { MultiLineInput } from '../components/inputs';
 import { Centered, Column, Row } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { Text } from '../components/text';
-import transitionConfig from '../navigation/transitions';
+import { sheetVerticalOffset } from '../navigation/transitions/effects';
 import { borders, colors, padding } from '../styles';
 
 const Container = styled(Column).attrs({
@@ -58,7 +58,7 @@ const ImportSeedPhraseSheet = ({
     <Text size="large" weight="bold">Import</Text>
     <KeyboardAvoidingView
       behavior="padding"
-      keyboardVerticalOffset={transitionConfig.sheetVerticalOffset + 19}
+      keyboardVerticalOffset={sheetVerticalOffset + 19}
     >
       <Centered css={padding(0, 50)} flex={1}>
         <MultiLineInput

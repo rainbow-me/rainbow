@@ -3,7 +3,7 @@ import React, { createElement } from 'react';
 import { pure } from 'recompose';
 import styled from 'styled-components/primitives';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
-import transitions from '../../navigation/transitions';
+import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import { colors, padding, position } from '../../styles';
 import { deviceUtils, ethereumUtils, safeAreaInsetValues } from '../../utils';
 import { SendCoinRow } from '../coin-row';
@@ -21,7 +21,7 @@ const Container = styled(Column)`
 `;
 
 const nftPaddingBottom = safeAreaInsetValues.bottom + 19;
-const tokenPaddingBottom = transitions.sheetVerticalOffset + 19;
+const tokenPaddingBottom = sheetVerticalOffset + 19;
 
 const TransactionContainer = styled(Column).attrs({
   align: 'end',

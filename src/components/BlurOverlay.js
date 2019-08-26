@@ -1,57 +1,55 @@
-import { VibrancyView } from '@react-native-community/blur';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { pure } from 'recompact';
-import { position } from '../styles';
+import Animated from 'react-native-reanimated';
+import { BlurView } from '@react-native-community/blur';
 
-const styles = StyleSheet.create({
-  overlay: {
-    ...position.coverAsObject,
-    zIndex: 1,
-  },
-});
+const {
+  Value,
+  multiply,
+  interpolate,
+  min,
+  add,
+} = Animated;
 
-const BlurOverlay = ({
-  backgroundColor,
-  blurAmount,
-  blurType,
-  opacity,
-  translateX,
-  translateY,
-}) => (
-  <Animated.View
-    style={[
-      styles.overlay,
-      {
-        backgroundColor,
-        opacity,
-        transform: [{ translateX }, { translateY }],
-      },
-    ]}
-  >
-    <VibrancyView
-      blurAmount={blurAmount}
-      blurType={blurType}
-      style={styles.overlay}
-    />
-  </Animated.View>
-);
+const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
+
+const BlurOverlay = ({ blurType, intensity }) => {
+  const opacity = interpolate(
+    intensity,
+    {
+      inputRange: [0, 0.1, 1],
+      outputRange: [0, 0, 1],
+    },
+  );
+
+  return (
+    <View
+      pointerEvents="none"
+      style={[
+        StyleSheet.absoluteFill,
+        { position: 'absolute', zIndex: 10 },
+      ]}
+    >
+      <AnimatedBlurView
+        opacity={opacity}
+        blurAmount={15}
+        blurType={blurType}
+        style={StyleSheet.absoluteFill}
+      />
+    </View>
+  );
+};
 
 BlurOverlay.propTypes = {
-  backgroundColor: PropTypes.string,
-  blurAmount: PropTypes.number,
-  blurType: PropTypes.oneOf(['dark', 'light', 'xlight']).isRequired,
-  opacity: PropTypes.object,
-  translateX: PropTypes.any,
-  translateY: PropTypes.any,
+  blurType: PropTypes.oneOf(['default', 'light', 'dark']).isRequired,
+  intensity: PropTypes.number,
 };
 
 BlurOverlay.defaultProps = {
-  blurAmount: 15,
   blurType: 'dark',
-  translateX: 0,
-  translateY: 0,
+  intensity: new Value(0),
 };
 
 export default pure(BlurOverlay);
