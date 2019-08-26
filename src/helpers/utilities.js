@@ -87,9 +87,8 @@ export const floorDivide = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
 export const countDecimalPlaces = value => BigNumber(`${value}`).dp();
 
 export const updatePrecisionToDisplay = (amount, nativePrice) => {
-  const totalDigits = BigNumber(`${nativePrice}`)
-    .shiftedBy(2)
-    .sd(true);
+  const significantDigits = BigNumber(`${nativePrice}`).decimalPlaces(0, BigNumber.ROUND_DOWN).sd(true);
+  const totalDigits = BigNumber(significantDigits).plus(2, 10).toNumber();
   return BigNumber(`${amount}`)
     .decimalPlaces(totalDigits, BigNumber.ROUND_HALF_UP)
     .toFixed();

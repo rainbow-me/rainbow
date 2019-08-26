@@ -10,7 +10,12 @@ import {
   toLower,
   values,
 } from 'lodash';
-import { compose, omitProps, withProps } from 'recompact';
+import { connect } from 'react-redux';
+import {
+  compose,
+  omitProps,
+  withProps,
+} from 'recompact';
 import { createSelector } from 'reselect';
 import uniswapAssetsRaw from '../references/uniswap-pairs.json';
 import withAccountData from './withAccountData';

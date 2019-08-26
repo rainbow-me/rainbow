@@ -146,7 +146,7 @@ export const uniswapUpdateAllowances = (tokenAddress, allowance) => (dispatch, g
   saveAccountLocal(ALLOWANCES, updatedAllowances, accountAddress, network);
 };
 
-export const uniswapUpdateAssets = (assets) => {
+export const uniswapUpdateAssets = (assets) => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const uniswapAssetPrices = map(assets, asset => {
     const loweredAddress = asset.address.toLowerCase();
@@ -163,7 +163,7 @@ export const uniswapUpdateAssets = (assets) => {
   saveAccountLocal(ASSETS, mappedAssets, accountAddress, network);
 };
 
-export const uniswapUpdateAssetPrice = (address, price) => {
+export const uniswapUpdateAssetPrice = (address, price) => (dispatch, getState) => {
   const addressKey = address.toLowerCase();
   const { accountAddress, network } = getState().settings;
   const { uniswapAssets } = getState().uniswap;

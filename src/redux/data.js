@@ -254,10 +254,7 @@ export const assetsReceived = (message) => (dispatch, getState) => {
 };
 
 export const priceChanged = (message) => (dispatch, getState) => {
-  const isValidMeta = dispatch(checkMeta(message));
-  // TODO is it asset_code in meta?
   const address = get(message, 'meta.asset_code');
-
   const price = get(message, 'payload.price');
   if (isNil(price)) return;
   dispatch(uniswapUpdateAssetPrice(address, price));
