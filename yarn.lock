@@ -1685,6 +1685,7 @@
 =======
 =======
 "@react-native-community/cli-platform-android@^2.8.3":
+<<<<<<< HEAD
 >>>>>>> 9bae1b8d... bump deps
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.8.3.tgz#097237769d69400ceaf254a780d645bb8284acd6"
@@ -1704,11 +1705,17 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.8.3.tgz#097237769d69400ceaf254a780d645bb8284acd6"
   integrity sha512-I0/knJYmyMgp1IkrgvgirifArnarFvm+EvrRKVQjEO0aEXhOjVU2DA7TshdjocZhjq1leKm/bSxz8D3WHpRJ9g==
 >>>>>>> dca19a02... very work in progress
+=======
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.9.0.tgz#28831e61ce565a2c7d1905852fce1eecfd33cb5e"
+  integrity sha512-VEQs4Q6R5tnlYFrQIFoPEWjLc43whRHC9HeH+idbFymwDqysLVUffQbb9D6PJUj+C/AvrDhBhU6S3tDjGbSsag==
+>>>>>>> fabd9f7f... Update yarn.lock
   dependencies:
     "@react-native-community/cli-tools" "^2.8.3"
     chalk "^2.4.2"
     execa "^1.0.0"
     jetifier "^1.6.2"
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1764,6 +1771,9 @@
 =======
 >>>>>>> 317ce799... fix conflicts after rebasing over latest wallet-zero branch
     logkitty "^0.5.0"
+=======
+    logkitty "^0.6.0"
+>>>>>>> fabd9f7f... Update yarn.lock
     slash "^3.0.0"
     xmldoc "^1.1.2"
 
@@ -1843,10 +1853,16 @@
 >>>>>>> dca19a02... very work in progress
 =======
 "@react-native-community/cli-platform-ios@^2.8.3":
+<<<<<<< HEAD
 >>>>>>> 9bae1b8d... bump deps
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.8.3.tgz#2d77bf5c6fde753d7c675fd94f656f78c0d5f741"
   integrity sha512-r2+xa4trWubLRqXvotYtDIFzQpepSwo9Zsjt0JT96BUJLdXNzsUSwTFZW2EmLPmnJiZJRNdWvoXaBYVqDthdTQ==
+=======
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.9.0.tgz#21adb8ee813d6ca6fd9d4d9be63f92024f7e2fe7"
+  integrity sha512-vg6EOamtFaaQ02FiWu+jzJTfeTJ0OVjJSAoR2rhJKNye6RgJLoQlfp0Hg3waF6XrO72a7afYZsPdKSlN3ewlHg==
+>>>>>>> fabd9f7f... Update yarn.lock
   dependencies:
     "@react-native-community/cli-tools" "^2.8.3"
     chalk "^2.4.2"
@@ -2050,9 +2066,9 @@
   integrity sha512-EyJVSbarZkOPYq+zCZLx9apMcpwkX9HvH6R+6CeVL29q88kEFemnLO/IhmE4YX/0MfalsduI8eTi7fuQh/5VeA==
 
 "@react-native-community/netinfo@^4.1.4":
-  version "4.1.4"
-  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-4.1.4.tgz#512be0395bab6f2432c6e26d7a00ace3c78e05ff"
-  integrity sha512-Iry24dLG0/oDWa60pjYbCcKVxcnvIvOl9PiB1WHvC0Zsykl1gT7dVeW7bWY4X98ZUb6+gVd4CekZiP7URQBeLQ==
+  version "4.1.5"
+  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-4.1.5.tgz#4bb44842db6a1a18f00a0f061b0e3dcc638f67dd"
+  integrity sha512-lagdZr9UiVAccNXYfTEj+aUcPCx9ykbMe9puffeIyF3JsRuMmlu3BjHYx1klUHX7wNRmFNC8qVP0puxUt1sZ0A==
 
 "@react-navigation/core@~3.5.0":
   version "3.5.0"
@@ -2064,10 +2080,17 @@
     query-string "^6.4.2"
     react-is "^16.8.6"
 
+<<<<<<< HEAD
 "@react-navigation/native@~3.6.1":
   version "3.6.2"
   resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-3.6.2.tgz#3634697b6350cc5189657ae4551f2d52b57fbbf0"
   integrity sha512-Cybeou6N82ZeRmgnGlu+wzlV3z5BZQR2dmYaNFV1TNLUGHqtvv8E7oNw9uYcz9Ox5LFbiX+FdNTn2d6ZPlK0kg==
+=======
+"@react-navigation/native@~3.6.0":
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-3.6.0.tgz#dabf93382f75037c01dfdd2a03807e40b48a4d61"
+  integrity sha512-MmsEF4Gf3DD7rtZlbOLULQOBCxE2nGz6FdPYxtlEI+N/E2I5OrdxrTNAA7EGWsIiaJEapU4bp0a+tLjh/9PQpA==
+>>>>>>> fabd9f7f... Update yarn.lock
   dependencies:
     hoist-non-react-statics "^3.0.1"
     react-native-safe-area-view "^0.14.1"
@@ -2404,6 +2427,7 @@
 >>>>>>> 9bae1b8d... bump deps
 
 "@types/node@^10.3.2":
+<<<<<<< HEAD
   version "10.14.15"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.15.tgz#e8f7729b631be1b02ae130ff0b61f3e018000640"
   integrity sha512-CBR5avlLcu0YCILJiDIXeU2pTw7UK/NIxfC63m7d7CVamho1qDEzXKkOtEauQRPMy6MI8mLozth+JJkas7HY6g==
@@ -2475,6 +2499,16 @@
 >>>>>>> 2216260a... Create Exchange related Input components
 =======
 >>>>>>> 317ce799... fix conflicts after rebasing over latest wallet-zero branch
+=======
+  version "10.14.16"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.16.tgz#4d690c96cbb7b2728afea0e260d680501b3da5cf"
+  integrity sha512-/opXIbfn0P+VLt+N8DE4l8Mn8rbhiJgabU96ZJ0p9mxOkIks5gh6RUnpHak7Yh0SFkyjO/ODbxsQQPV2bpMmyA==
+
+"@types/node@^8.0.7":
+  version "8.10.52"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.52.tgz#ef0ca1809994e20186090408b8cb7f2a6877d5f9"
+  integrity sha512-2RbW7WXeLex6RI+kQSxq6Ym0GiVcODeQ4Km7MnnTX5BHdOGQnqVa+s6AUmAW+OFYAJ8wv9QxvNZXm7/kBdGTVw==
+>>>>>>> fabd9f7f... Update yarn.lock
 
 "@types/q@^1.5.1":
   version "1.5.2"
@@ -2509,9 +2543,15 @@
     "@types/vfile-message" "*"
 
 "@types/yargs-parser@*":
+<<<<<<< HEAD
   version "13.1.0"
   resolved "https://registry.yarnpkg.com/@types/yargs-parser/-/yargs-parser-13.1.0.tgz#c563aa192f39350a1d18da36c5a8da382bbd8228"
   integrity sha512-gCubfBUZ6KxzoibJ+SCUc/57Ms1jz5NjHe4+dI2krNmU5zCPAphyLJYyTOg06ueIyfj+SaCUqmzun7ImlxDcKg==
+=======
+  version "13.0.0"
+  resolved "https://registry.yarnpkg.com/@types/yargs-parser/-/yargs-parser-13.0.0.tgz#453743c5bbf9f1bed61d959baab5b06be029b2d0"
+  integrity sha512-wBlsw+8n21e6eTd4yVv8YD/E3xq0O6nNnJIquutAsFGE7EyMKz7W6RNT6BRu1SmdgmlCZ9tb0X+j+D6HGr8pZw==
+>>>>>>> fabd9f7f... Update yarn.lock
 
 "@types/yargs@^13.0.0":
   version "13.0.2"
@@ -2616,6 +2656,7 @@
     lodash.clonedeepwith "^4.5.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> a1921ad8... further sdk hookup
 <<<<<<< HEAD
 >>>>>>> 9a1e3741... further sdk hookup
@@ -2629,38 +2670,55 @@
   version "1.0.0-beta.32"
   resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.32.tgz#e8125a877ab809bd2d74c7c03a07ad70401f9c34"
   integrity sha512-CvDQ+vupPbEvrGFwZOwTANeT1bz+c6TSkkOxo5lXz+DotxbZpQqL3tsFuaenTuVL7AqvNH2RARgA5Ez2HSjNaA==
+=======
+"@walletconnect/core@^1.0.0-beta.33":
+  version "1.0.0-beta.33"
+  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.33.tgz#ba8c4d1682c00630124cfacd8c3ac28a37737ffc"
+  integrity sha512-VnipTAEiVJx0fKR7kVKQ/KIaEDCFjIEF4wGSl73uuhp+YPBZSN0fXQ0/joF00dGUxVY6RiwmCQlmz5ZKpcGWYw==
+>>>>>>> fabd9f7f... Update yarn.lock
   dependencies:
-    "@walletconnect/types" "^1.0.0-beta.32"
-    "@walletconnect/utils" "^1.0.0-beta.32"
+    "@walletconnect/types" "^1.0.0-beta.33"
+    "@walletconnect/utils" "^1.0.0-beta.33"
 
 "@walletconnect/react-native@^1.0.0-beta.29":
-  version "1.0.0-beta.32"
-  resolved "https://registry.yarnpkg.com/@walletconnect/react-native/-/react-native-1.0.0-beta.32.tgz#4d6bd623a4687d658ae26ebe27f417b8ea83f897"
-  integrity sha512-6+Pamxq2c+K+Kz+q1oKJRZU58J5dg5U+SFJ5T5qkMpSsN0BCvpMvD3/6TPCzBYaFXCyjO5OJhvHsKmYa/IvA0g==
+  version "1.0.0-beta.33"
+  resolved "https://registry.yarnpkg.com/@walletconnect/react-native/-/react-native-1.0.0-beta.33.tgz#21542022f8204648e924a40c6f79c93bde109f5a"
+  integrity sha512-AFGiXFZXQ1HINGiQESRciMlu7R6s0e2s7LeC5g+EdQrtDDqSsEx9W6Lb8VMPQPnPREmcmcaz4B9L/wyUjNXXew==
   dependencies:
-    "@walletconnect/core" "^1.0.0-beta.32"
-    "@walletconnect/types" "^1.0.0-beta.32"
-    "@walletconnect/utils" "^1.0.0-beta.32"
+    "@walletconnect/core" "^1.0.0-beta.33"
+    "@walletconnect/types" "^1.0.0-beta.33"
+    "@walletconnect/utils" "^1.0.0-beta.33"
 
-"@walletconnect/types@^1.0.0-beta.32":
-  version "1.0.0-beta.32"
-  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.0.0-beta.32.tgz#aeb3b41145a6028412b22c05d0fd63e23a7381db"
-  integrity sha512-vXBUHc51mOyFLaScrSzYyobS/ctPiNHFBWB6M0oydd43X29Ihl7C4c4B7ExDbfPlrBspebcZEkuKzHOZSZVKSg==
+"@walletconnect/types@^1.0.0-beta.33":
+  version "1.0.0-beta.33"
+  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.0.0-beta.33.tgz#2c95191e0a2986b24e4f66baeeeaa79f87dc52f4"
+  integrity sha512-RGC5F4Qb9IApPaOIZwiQVzT4b6K+vmgh0mi/7qHICzSylMJ9BZmvdDOn61+jgSBCjzQ/lmJROsQeXAABCU08rw==
 
+<<<<<<< HEAD
 "@walletconnect/utils@^1.0.0-beta.32":
   version "1.0.0-beta.32"
   resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-1.0.0-beta.32.tgz#f87841eaf60d62441b26e78603aafbd9b7bc7f2e"
   integrity sha512-ShnWCVPFv2fZcIKInNDhROCu/gEUD2+vjbBUCPTRB1M+ERTK8fyrMgl2vId8NOSTR/Sd3Ie4+hCbUluLZYvrGQ==
 >>>>>>> e1a27438... Cleanup ButtonPressAnimation
+=======
+"@walletconnect/utils@^1.0.0-beta.33":
+  version "1.0.0-beta.33"
+  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-1.0.0-beta.33.tgz#59ff7edc74608398a341264bad781f24b4cf599f"
+  integrity sha512-BAKV+tVoN5QGoMDzF/JleO0s80wLoeJFAsw8/IG9QCSnHi4swZsin0Zk2TRYVb+gC/ZuDmMvwMHVkmVUqz7fOg==
+>>>>>>> fabd9f7f... Update yarn.lock
   dependencies:
     "@ethersproject/address" "^5.0.0-beta.125"
     "@ethersproject/bytes" "^5.0.0-beta.126"
     "@ethersproject/strings" "^5.0.0-beta.125"
 <<<<<<< HEAD
+<<<<<<< HEAD
     "@walletconnect/types" "^1.0.0-beta.35"
 =======
     "@walletconnect/types" "^1.0.0-beta.32"
 >>>>>>> e1a27438... Cleanup ButtonPressAnimation
+=======
+    "@walletconnect/types" "^1.0.0-beta.33"
+>>>>>>> fabd9f7f... Update yarn.lock
     bignumber.js "^8.1.1"
 
 "@yarnpkg/lockfile@^1.0.0", "@yarnpkg/lockfile@^1.1.0":
@@ -2736,7 +2794,11 @@ acorn-globals@^4.1.0:
     acorn "^6.0.1"
     acorn-walk "^6.0.1"
 
+<<<<<<< HEAD
 acorn-jsx@^5.0.0:
+=======
+acorn-jsx@^5.0.2:
+>>>>>>> fabd9f7f... Update yarn.lock
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.0.2.tgz#84b68ea44b373c4f8686023a551f61a21b7c4a4f"
   integrity sha512-tiNTrP1MP0QrChmD2DdupCr6HWSFeKVw5d/dHTu4Y7rkAkRhU/Dt7dphAfIUyxtHpl/eBVip5uTNSpQJHylpAw==
@@ -2751,6 +2813,7 @@ acorn@^5.5.3:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.7.3.tgz#67aa231bf8812974b85235a96771eb6bd07ea279"
   integrity sha512-T/zvzYRfbVojPWahDsE5evJdHb3oJoQfFbsrKM7w5Zcs++Tr257tia3BmMP8XYVjp1S9RZXQMh7gao96BlqZOw==
 
+<<<<<<< HEAD
 acorn@^6.0.1, acorn@^6.0.7:
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2787,10 +2850,18 @@ acorn@^6.0.1, acorn@^6.0.7:
   integrity sha512-JD0xT5FCRDNyjDda3Lrg/IxFscp9q4tiYtxE1/nOzlKCk7hIRuYjhq1kCNkbPjMRMZuFq20HNQn1I9k8Oj0E+Q==
 >>>>>>> 317ce799... fix conflicts after rebasing over latest wallet-zero branch
 =======
+=======
+acorn@^6.0.1:
+>>>>>>> fabd9f7f... Update yarn.lock
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-6.3.0.tgz#0087509119ffa4fc0a0041d1e93a417e68cb856e"
   integrity sha512-/czfa8BwS88b9gWQVhc8eknunSA2DoJpJyTQkhheIf5E48u1N0R4q/YxxsAeqRrmK9TQ/uYfgLDfZo91UlANIA==
 >>>>>>> dca19a02... very work in progress
+
+acorn@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/acorn/-/acorn-7.0.0.tgz#26b8d1cd9a9b700350b71c0905546f64d1284e7a"
+  integrity sha512-PaF/MduxijYYt7unVGRuds1vBC9bFxbNf+VWqhOClfdgy7RlVkQqt610ig1/yxTgsDIfW1cWDel5EBbOy3jdtQ==
 
 aes-js@3.0.0:
   version "3.0.0"
@@ -2865,17 +2936,10 @@ ansi-escapes@^1.1.0:
   resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-1.4.0.tgz#d3a8a83b319aa67793662b13e761c7911422306e"
   integrity sha1-06ioOzGapneTZisT52HHkRQiMG4=
 
-ansi-escapes@^3.0.0:
+ansi-escapes@^3.0.0, ansi-escapes@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-3.2.0.tgz#8780b98ff9dbf5638152d1f1fe5c1d7b4442976b"
   integrity sha512-cBhpre4ma+U0T1oM5fXg7Dy1Jw7zzwv7lt/GoCpr+hDQJoYnKVPLL4dCvSEFMmQurOQvSrwT7SL/DAlhBI97RQ==
-
-ansi-escapes@^4.2.1:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-4.2.1.tgz#4dccdb846c3eee10f6d64dea66273eab90c37228"
-  integrity sha512-Cg3ymMAdN10wOk/VYfLV7KCQyv7EDirJ64500sU7n9UlmioEtDuU5Gd+hj73hXSU/ex7tHJSssmyftDdkMLO8Q==
-  dependencies:
-    type-fest "^0.5.2"
 
 ansi-fragments@^0.2.1:
   version "0.2.1"
@@ -3194,16 +3258,16 @@ babel-eslint@10.0.1:
     eslint-visitor-keys "^1.0.0"
 
 babel-eslint@^10.0.2:
-  version "10.0.2"
-  resolved "https://registry.yarnpkg.com/babel-eslint/-/babel-eslint-10.0.2.tgz#182d5ac204579ff0881684b040560fdcc1558456"
-  integrity sha512-UdsurWPtgiPgpJ06ryUnuaSXC2s0WoSZnQmEpbAH65XZSdwowgN5MvyP7e88nW07FYXv72erVtpBkxyDVKhH1Q==
+  version "10.0.3"
+  resolved "https://registry.yarnpkg.com/babel-eslint/-/babel-eslint-10.0.3.tgz#81a2c669be0f205e19462fed2482d33e4687a88a"
+  integrity sha512-z3U7eMY6r/3f3/JB9mTsLjyxrv0Yb1zb8PCWCLpguxfCzBIZUwy23R1t/XKewP+8mEN2Ck8Dtr4q20z6ce6SoA==
   dependencies:
     "@babel/code-frame" "^7.0.0"
     "@babel/parser" "^7.0.0"
     "@babel/traverse" "^7.0.0"
     "@babel/types" "^7.0.0"
-    eslint-scope "3.7.1"
     eslint-visitor-keys "^1.0.0"
+    resolve "^1.12.0"
 
 babel-jest@^24.8.0, babel-jest@^24.9.0:
   version "24.9.0"
@@ -4105,13 +4169,6 @@ cli-cursor@^2.1.0:
   dependencies:
     restore-cursor "^2.0.0"
 
-cli-cursor@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/cli-cursor/-/cli-cursor-3.1.0.tgz#264305a7ae490d1d03bf0c9ba7c925d1753af307"
-  integrity sha512-I/zHAwsKf9FqGoXM4WWRACob9+SNukZTd94DWF57E4toouRulbCxcUh6RKUEOQlYTHJnzkPMySvPNaaSLNfLZw==
-  dependencies:
-    restore-cursor "^3.1.0"
-
 cli-spinners@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/cli-spinners/-/cli-spinners-2.2.0.tgz#e8b988d9206c692302d8ee834e7a85c0144d8f77"
@@ -4676,9 +4733,15 @@ date-now@^0.1.4:
   integrity sha1-6vQ5/U1ISK105cx9vvIAZyueNFs=
 
 dayjs@^1.8.15:
+<<<<<<< HEAD
   version "1.8.16"
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.16.tgz#2a3771de537255191b947957af2fd90012e71e64"
   integrity sha512-XPmqzWz/EJiaRHjBqSJ2s6hE/BUoCIHKgdS2QPtTQtKcS9E4/Qn0WomoH1lXanWCzri+g7zPcuNV4aTZ8PMORQ==
+=======
+  version "1.8.15"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.15.tgz#7121bc04e6a7f2621ed6db566be4a8aaf8c3913e"
+  integrity sha512-HYHCI1nohG52B45vCQg8Re3hNDZbMroWPkhz50yaX7Lu0ATyjGsTdoYZBpjED9ar6chqTx2dmSmM8A51mojnAg==
+>>>>>>> fabd9f7f... Update yarn.lock
 
 debounce@^1.2.0:
   version "1.2.0"
@@ -5168,6 +5231,7 @@ electron-to-chromium@^1.3.191:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.3.200"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.200.tgz#78fb858b466269e8eb46d31a52562f00c865127f"
   integrity sha512-PUurrpyDA74MuAjJRD+79ss5BqJlU3mdArRbuu4wO/dt6jc3Ic/6BDmFJxkdwbfq39cHf/XKm2vW98XSvut9Dg==
@@ -5231,6 +5295,11 @@ electron-to-chromium@^1.3.191:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.228.tgz#8b1804bae329e2029ad6b25fbb15d9200fb12894"
   integrity sha512-m3k/OYd9sCLFOAtvl6vqgXfzbG8iY1mLYg0fQjQGB46LpPudYDUFUmiSmj2meJsHEUABWXH1ZRSCeWj265v2RQ==
 >>>>>>> 9bae1b8d... bump deps
+=======
+  version "1.3.241"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.241.tgz#859dc49ab7f90773ed698767372d384190f60cb1"
+  integrity sha512-Gb9E6nWZlbgjDDNe5cAvMJixtn79krNJ70EDpq/M10lkGo7PGtBUe7Y0CYVHsBScRwi6ybCS+YetXAN9ysAHDg==
+>>>>>>> fabd9f7f... Update yarn.lock
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -5652,22 +5721,26 @@ eslint-scope@^5.0.0:
     esrecurse "^4.1.0"
     estraverse "^4.1.1"
 
+<<<<<<< HEAD
 eslint-utils@^1.3.1:
+=======
+eslint-utils@^1.3.1, eslint-utils@^1.4.2:
+>>>>>>> fabd9f7f... Update yarn.lock
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/eslint-utils/-/eslint-utils-1.4.2.tgz#166a5180ef6ab7eb462f162fd0e6f2463d7309ab"
   integrity sha512-eAZS2sEUMlIeCjBeubdj45dmBHQwPHWyBcT1VSYB7o9x9WRRqKxyUoiXlRjyAwzN7YEzHJlYg0NmzDRWx6GP4Q==
   dependencies:
     eslint-visitor-keys "^1.0.0"
 
-eslint-visitor-keys@^1.0.0:
+eslint-visitor-keys@^1.0.0, eslint-visitor-keys@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-1.1.0.tgz#e2a82cea84ff246ad6fb57f9bde5b46621459ec2"
   integrity sha512-8y9YjtM1JBJU/A9Kc+SbaOV4y29sSWckBwMHa+FGtVj5gN/sbnKDf6xJUl+8g7FAij9LVaP8C24DUiH/f/2Z9A==
 
 eslint@^6.1.0:
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-6.1.0.tgz#06438a4a278b1d84fb107d24eaaa35471986e646"
-  integrity sha512-QhrbdRD7ofuV09IuE2ySWBz0FyXCq0rriLTZXZqaWSI79CVtHVRdkFuFTViiqzZhkCgfOh9USpriuGN2gIpZDQ==
+  version "6.2.2"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-6.2.2.tgz#03298280e7750d81fcd31431f3d333e43d93f24f"
+  integrity sha512-mf0elOkxHbdyGX1IJEUsNBzCDdyoUgljF3rRlgfyYh0pwGnreLc0jjD6ZuleOibjmnUWZLY2eXwSooeOgGJ2jw==
   dependencies:
     "@babel/code-frame" "^7.0.0"
     ajv "^6.10.0"
@@ -5676,9 +5749,9 @@ eslint@^6.1.0:
     debug "^4.0.1"
     doctrine "^3.0.0"
     eslint-scope "^5.0.0"
-    eslint-utils "^1.3.1"
-    eslint-visitor-keys "^1.0.0"
-    espree "^6.0.0"
+    eslint-utils "^1.4.2"
+    eslint-visitor-keys "^1.1.0"
+    espree "^6.1.1"
     esquery "^1.0.1"
     esutils "^2.0.2"
     file-entry-cache "^5.0.1"
@@ -5707,14 +5780,14 @@ eslint@^6.1.0:
     text-table "^0.2.0"
     v8-compile-cache "^2.0.3"
 
-espree@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/espree/-/espree-6.0.0.tgz#716fc1f5a245ef5b9a7fdb1d7b0d3f02322e75f6"
-  integrity sha512-lJvCS6YbCn3ImT3yKkPe0+tJ+mH6ljhGNjHQH9mRtiO6gjhVAOhVXW1yjnwqGwTkK3bGbye+hb00nFNmu0l/1Q==
+espree@^6.1.1:
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/espree/-/espree-6.1.1.tgz#7f80e5f7257fc47db450022d723e356daeb1e5de"
+  integrity sha512-EYbr8XZUhWbYCqQRW0duU5LxzL5bETN6AjKBGy1302qqzPaCH10QbRg3Wvco79Z8x9WbiE8HYB4e75xl6qUYvQ==
   dependencies:
-    acorn "^6.0.7"
-    acorn-jsx "^5.0.0"
-    eslint-visitor-keys "^1.0.0"
+    acorn "^7.0.0"
+    acorn-jsx "^5.0.2"
+    eslint-visitor-keys "^1.1.0"
 
 esprima@3.x.x, esprima@^3.1.3:
   version "3.1.3"
@@ -5774,10 +5847,16 @@ ethers@^4.0.27:
 >>>>>>> 751dba29... Replace navigation animations with new effects
 =======
 ethers@^4.0.28, ethers@^4.0.33:
+<<<<<<< HEAD
   version "4.0.33"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.33.tgz#f7b88d2419d731a39aefc37843a3f293e396f918"
   integrity sha512-lAHkSPzBe0Vj+JrhmkEHLtUEKEheVktIjGDyE9gbzF4zf1vibjYgB57LraDHu4/ItqWVkztgsm8GWqcDMN+6vQ==
 >>>>>>> 9a1e3741... further sdk hookup
+=======
+  version "4.0.36"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.36.tgz#96519fd3cc9317f938c8ee4d22050f34e3c2ef0e"
+  integrity sha512-rWdchEhUyXx01GiwexH6Sha97CQ9tJdQwe6FtYKxShC7VEZV41nuKt+lzCQ4OqvQwZK5PcAKaAZv2GDsCH33SA==
+>>>>>>> fabd9f7f... Update yarn.lock
   dependencies:
     "@types/node" "^10.3.2"
     aes-js "3.0.0"
@@ -5852,9 +5931,9 @@ execa@^1.0.0:
     strip-eof "^1.0.0"
 
 execa@^2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/execa/-/execa-2.0.3.tgz#4b84301b33042cfb622771e886ed0b10e5634642"
-  integrity sha512-iM124nlyGSrXmuyZF1EMe83ESY2chIYVyDRZKgmcDynid2Q2v/+GuE7gNMl6Sy9Niwf4MC0DDxagOxeMPjuLsw==
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/execa/-/execa-2.0.4.tgz#2f5cc589c81db316628627004ea4e37b93391d8e"
+  integrity sha512-VcQfhuGD51vQUQtKIq2fjGDLDbL6N1DTQVpYzxZ7LPIXw3HqTuIz6uxRmpV1qf8i31LHf2kjiaGI+GdHwRgbnQ==
   dependencies:
     cross-spawn "^6.0.5"
     get-stream "^5.0.0"
@@ -5896,6 +5975,16 @@ expand-brackets@^2.1.4:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
+<<<<<<< HEAD
+=======
+expand-range@^1.8.1:
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/expand-range/-/expand-range-1.8.2.tgz#a299effd335fe2721ebae8e257ec79644fc85337"
+  integrity sha1-opnv/TNf4nIeuujiV+x5ZE/IUzc=
+  dependencies:
+    fill-range "^2.1.0"
+
+>>>>>>> fabd9f7f... Update yarn.lock
 expect@^24.9.0:
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/expect/-/expect-24.9.0.tgz#b75165b4817074fa4a157794f46fe9f1ba15b6ca"
@@ -6100,13 +6189,6 @@ figures@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/figures/-/figures-2.0.0.tgz#3ab1a2d2a62c8bfb431a0c94cb797a2fce27c962"
   integrity sha1-OrGi0qYsi/tDGgyUy3l6L84nyWI=
-  dependencies:
-    escape-string-regexp "^1.0.5"
-
-figures@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/figures/-/figures-3.0.0.tgz#756275c964646163cc6f9197c7a0295dbfd04de9"
-  integrity sha512-HKri+WoWoUgr83pehn/SIgLOMZ9nAWC6dcGj26RY2R4F50u4+RTUz0RCrUlOV3nKRAICW1UGzyb+kcX2qK1S/g==
   dependencies:
     escape-string-regexp "^1.0.5"
 
@@ -6895,6 +6977,7 @@ i18next@^17.0.3:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "17.0.14"
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.14.tgz#b736fcb8c84aa84c57bfad3caac7f8b5f92d85a4"
   integrity sha512-yEGSWX9UTpWQskPsFy03t8uhZh5wyZ7v9p+MCo08Sd2edTaFdg1gFA633dg9OqTxJ/z1rtCiacgOlDSBpgssgw==
@@ -6948,6 +7031,11 @@ i18next@^17.0.3:
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.11.tgz#36424dc01f6de391fae87878d24f5ff713565c27"
   integrity sha512-O+yzoNi0usYcd4oi85EFY4WuwZ8NNsYJLauZ629YSjwgIi2D7eYDSQxy6aAR67V++b//GNuZEk7hx/i3L9Rxag==
 >>>>>>> dca19a02... very work in progress
+=======
+  version "17.0.12"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.12.tgz#d732a6c1131fc3b02305a8241eac25ec0d1cf663"
+  integrity sha512-FoYYnORcAMNznVXSpwJ1zVGL8kXcv1JUmvTqoQyuPPRncBq9rd7Mi0I/oVXkGR3YIek5dDiunvA/NGG2o+mMuw==
+>>>>>>> fabd9f7f... Update yarn.lock
   dependencies:
     "@babel/runtime" "^7.3.1"
 
@@ -7145,6 +7233,7 @@ inquirer@^6.2.2:
 =======
 inquirer@^6.4.1:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "6.5.0"
   resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-6.5.0.tgz#2303317efc9a4ea7ec2e2df6f86569b734accf42"
   integrity sha512-scfHejeG/lVZSpvCXpsB4j/wQNPM5JC8kiElOI0OUTwmc1RTpXr4H32/HOlQHcZiYl2z2VElwuCVDRG8vFmbnA==
@@ -7154,18 +7243,23 @@ inquirer@^6.4.1:
   resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-6.5.1.tgz#8bfb7a5ac02dac6ff641ac4c5ff17da112fcdb42"
   integrity sha512-uxNHBeQhRXIoHWTSNYUFhQVrHYFThIt6IVo2fFmSe8aBwdR3/w6b58hJpiL/fMukFkvGzjg+hSxFtwvVmKZmXw==
 >>>>>>> dca19a02... very work in progress
+=======
+  version "6.5.2"
+  resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-6.5.2.tgz#ad50942375d036d327ff528c08bd5fab089928ca"
+  integrity sha512-cntlB5ghuB0iuO65Ovoi8ogLHiWGs/5yNrtUcKjFhSSiVeAIVpD7koaSU9RM8mpXw5YDi9RdYXGQMaOURB7ycQ==
+>>>>>>> fabd9f7f... Update yarn.lock
   dependencies:
-    ansi-escapes "^4.2.1"
+    ansi-escapes "^3.2.0"
     chalk "^2.4.2"
-    cli-cursor "^3.1.0"
+    cli-cursor "^2.1.0"
     cli-width "^2.0.0"
     external-editor "^3.0.3"
-    figures "^3.0.0"
-    lodash "^4.17.15"
-    mute-stream "0.0.8"
+    figures "^2.0.0"
+    lodash "^4.17.12"
+    mute-stream "0.0.7"
     run-async "^2.2.0"
     rxjs "^6.4.0"
-    string-width "^4.1.0"
+    string-width "^2.1.0"
     strip-ansi "^5.1.0"
     through "^2.3.6"
 
@@ -7476,10 +7570,14 @@ is-typedarray@~1.0.0:
   integrity sha1-5HnICFjfDBsR3dppQPlgEfzaSpo=
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 is-what@^3.3.1:
 =======
 is-what@^3.2.4:
 >>>>>>> e1a27438... Cleanup ButtonPressAnimation
+=======
+is-what@^3.3.1:
+>>>>>>> fabd9f7f... Update yarn.lock
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/is-what/-/is-what-3.3.1.tgz#79502181f40226e2d8c09226999db90ef7c1bcbe"
   integrity sha512-seFn10yAXy+yJlTRO+8VfiafC+0QJanGLMPTBWLrJm/QPauuchy0UXh8B6H5o9VA8BAzk0iYievt6mNp6gfaqA==
@@ -7715,6 +7813,22 @@ jest-get-type@^24.9.0:
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/jest-get-type/-/jest-get-type-24.9.0.tgz#1684a0c8a50f2e4901b6644ae861f579eed2ef0e"
   integrity sha512-lUseMzAley4LhIcpSP9Jf+fTrQ4a1yHQwLNeeVa2cEmbCGeoZAtYPOIv8JaxLD/sUpKxetKGP+gsHl8f8TSj8Q==
+<<<<<<< HEAD
+=======
+
+jest-haste-map@24.0.0-alpha.6:
+  version "24.0.0-alpha.6"
+  resolved "https://registry.yarnpkg.com/jest-haste-map/-/jest-haste-map-24.0.0-alpha.6.tgz#fb2c785080f391b923db51846b86840d0d773076"
+  integrity sha512-+NO2HMbjvrG8BC39ieLukdpFrcPhhjCJGhpbHodHNZygH1Tt06WrlNYGpZtWKx/zpf533tCtMQXO/q59JenjNw==
+  dependencies:
+    fb-watchman "^2.0.0"
+    graceful-fs "^4.1.11"
+    invariant "^2.2.4"
+    jest-serializer "^24.0.0-alpha.6"
+    jest-worker "^24.0.0-alpha.6"
+    micromatch "^2.3.11"
+    sane "^3.0.0"
+>>>>>>> fabd9f7f... Update yarn.lock
 
 jest-haste-map@^24.7.1, jest-haste-map@^24.9.0:
   version "24.9.0"
@@ -7885,6 +7999,14 @@ jest-serializer@^24.4.0, jest-serializer@^24.9.0:
   resolved "https://registry.yarnpkg.com/jest-serializer/-/jest-serializer-24.9.0.tgz#e6d7d7ef96d31e8b9079a714754c5d5c58288e73"
   integrity sha512-DxYipDr8OvfrKH3Kel6NdED3OXxjvxXZ1uIY2I9OFbGg+vUkkg7AGvi65qbhbWNPvDckXmzMPbK3u3HaDO49bQ==
 
+<<<<<<< HEAD
+=======
+jest-serializer@^24.0.0-alpha.6, jest-serializer@^24.4.0, jest-serializer@^24.9.0:
+  version "24.9.0"
+  resolved "https://registry.yarnpkg.com/jest-serializer/-/jest-serializer-24.9.0.tgz#e6d7d7ef96d31e8b9079a714754c5d5c58288e73"
+  integrity sha512-DxYipDr8OvfrKH3Kel6NdED3OXxjvxXZ1uIY2I9OFbGg+vUkkg7AGvi65qbhbWNPvDckXmzMPbK3u3HaDO49bQ==
+
+>>>>>>> fabd9f7f... Update yarn.lock
 jest-snapshot@^24.9.0:
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/jest-snapshot/-/jest-snapshot-24.9.0.tgz#ec8e9ca4f2ec0c5c87ae8f925cf97497b0e951ba"
@@ -7947,7 +8069,18 @@ jest-watcher@^24.9.0:
     jest-util "^24.9.0"
     string-length "^2.0.0"
 
+<<<<<<< HEAD
 jest-worker@^24.6.0, jest-worker@^24.9.0:
+=======
+jest-worker@24.0.0-alpha.6:
+  version "24.0.0-alpha.6"
+  resolved "https://registry.yarnpkg.com/jest-worker/-/jest-worker-24.0.0-alpha.6.tgz#463681b92c117c57107135c14b9b9d6cd51d80ce"
+  integrity sha512-iXtH7MR9bjWlNnlnRBcrBRrb4cSVxML96La5vsnmBvDI+mJnkP5uEt6Fgpo5Y8f3z9y2Rd7wuPnKRxqQsiU/dA==
+  dependencies:
+    merge-stream "^1.0.1"
+
+jest-worker@^24.0.0-alpha.6, jest-worker@^24.6.0, jest-worker@^24.9.0:
+>>>>>>> fabd9f7f... Update yarn.lock
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/jest-worker/-/jest-worker-24.9.0.tgz#5dbfdb5b2d322e98567898238a9697bcce67b3e5"
   integrity sha512-51PE4haMSXcHohnSMdM42anbvZANYTqMrr52tVKPqqsPJMzoP6FYYDVqahX/HrAoKEKz3uUPzSvKs9A3qR4iVw==
@@ -8372,7 +8505,7 @@ lodash.unescape@4.0.1:
   resolved "https://registry.yarnpkg.com/lodash.unescape/-/lodash.unescape-4.0.1.tgz#bf2249886ce514cda112fae9218cdc065211fc9c"
   integrity sha1-vyJJiGzlFM2hEvrpIYzcBlIR/Jw=
 
-lodash@4.x.x, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.3.0, lodash@^4.6.1:
+lodash@4.x.x, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.3.0, lodash@^4.6.1:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
@@ -9045,9 +9178,15 @@ minimist@~0.0.1:
   integrity sha1-3j+YVD2/lggr5IrRoMfNqDYwHc8=
 
 minipass@^2.2.1, minipass@^2.3.5:
+<<<<<<< HEAD
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/minipass/-/minipass-2.5.1.tgz#cf435a9bf9408796ca3a3525a8b851464279c9b8"
   integrity sha512-dmpSnLJtNQioZFI5HfQ55Ad0DzzsMAb+HfokwRTNXwEQjepbTkl5mtIlSVxGIkOkxlpX7wIn5ET/oAd9fZ/Y/Q==
+=======
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/minipass/-/minipass-2.4.0.tgz#38f0af94f42fb6f34d3d7d82a90e2c99cd3ff485"
+  integrity sha512-6PmOuSP4NnZXzs2z6rbwzLJu/c5gdzYg1mRI/WIYdx45iiX7T+a4esOzavD6V/KmBzAaopFSTZPZcUx73bqKWA==
+>>>>>>> fabd9f7f... Update yarn.lock
   dependencies:
     safe-buffer "^5.1.2"
     yallist "^3.0.0"
@@ -9152,11 +9291,6 @@ mute-stream@0.0.7:
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
   integrity sha1-MHXOk7whuPq0PhvE2n6BFe0ee6s=
 
-mute-stream@0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.8.tgz#1630c42b2251ff81e2a283de96a5497ea92e5e0d"
-  integrity sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==
-
 mv@~2:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/mv/-/mv-2.1.1.tgz#ae6ce0d6f6d5e0a4f7d893798d03c1ea9559b6a2"
@@ -9172,9 +9306,15 @@ nan@^2.12.1, nan@^2.14.0:
   integrity sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==
 
 nanoid@^2.0.3:
+<<<<<<< HEAD
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-2.1.1.tgz#524fd4acd45c126e0c87cd43ab5ee8346e695df9"
   integrity sha512-0YbJdaL4JFoejIOoawgLcYValFGJ2iyUuVDIWL3g8Es87SSOWFbWdRUMV3VMSiyPs3SQ3QxCIxFX00q5DLkMCw==
+=======
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-2.0.4.tgz#4889355c9ce8e24efad7c65945a4a2875ac3e8f4"
+  integrity sha512-sOJnBmY3TJQBVIBqKHoifuwygrocXg3NjS9rZSMnVl05XWSHK7Qxb177AIZQyMDjP86bz+yneozj/h9qsPLcCA==
+>>>>>>> fabd9f7f... Update yarn.lock
 
 nanomatch@^1.2.9:
   version "1.2.13"
@@ -9279,16 +9419,22 @@ node-modules-regexp@^1.0.0:
   integrity sha1-jZ2+KJZKSsVxLpExZCEHxx6Q7EA=
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> fabd9f7f... Update yarn.lock
 node-notifier@^5.2.1, node-notifier@^5.4.2:
   version "5.4.3"
   resolved "https://registry.yarnpkg.com/node-notifier/-/node-notifier-5.4.3.tgz#cb72daf94c93904098e28b9c590fd866e464bd50"
   integrity sha512-M4UBGcs4jeOK9CjTsYwkvH6/MzuUmGCyTW+kCY7uO+1ZVr0+FHGdPdIf5CCLqAaxnRrWidyoQlNkMIIVwbKB8Q==
+<<<<<<< HEAD
 =======
 node-notifier@^5.2.1:
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/node-notifier/-/node-notifier-5.4.1.tgz#7c0192cc63aedb25cd99619174daa27902b10903"
   integrity sha512-p52B+onAEHKW1OF9MGO/S7k/ahGEHfhP5/tvwYzog/5XLYOd8ZuD6vdNZdUuWMONRnKPneXV43v3s6Snx1wsCQ==
 >>>>>>> e1a27438... Cleanup ButtonPressAnimation
+=======
+>>>>>>> fabd9f7f... Update yarn.lock
   dependencies:
     growly "^1.3.0"
     is-wsl "^1.1.0"
@@ -9326,10 +9472,16 @@ node-releases@^1.1.23:
 >>>>>>> 751dba29... Replace navigation animations with new effects
 =======
 node-releases@^1.1.25:
+<<<<<<< HEAD
   version "1.1.27"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.27.tgz#b19ec8add2afe9a826a99dceccc516104c1edaf4"
   integrity sha512-9iXUqHKSGo6ph/tdXVbHFbhRVQln4ZDTIBJCzsa90HimnBYc5jw8RWYt4wBYFHehGyC3koIz5O4mb2fHrbPOuA==
 >>>>>>> dca19a02... very work in progress
+=======
+  version "1.1.28"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.28.tgz#503c3c70d0e4732b84e7aaa2925fbdde10482d4a"
+  integrity sha512-AQw4emh6iSXnCpDiFe0phYcThiccmkNWMZnFZ+lDJjAP8J0m2fVd59duvUUyuTirQOhIAajTFkzG6FHCLBO59g==
+>>>>>>> fabd9f7f... Update yarn.lock
   dependencies:
     semver "^5.3.0"
 
@@ -10308,6 +10460,17 @@ prettier@^1.17.1:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.18.2.tgz#6823e7c5900017b4bd3acf46fe9ac4b4d7bda9ea"
   integrity sha512-OeHeMc0JhFE9idD4ZdtNibzY0+TPHSpSSb9h8FqtP+YnoZZ1sl8Vc9b1sasjfymH3SonAF4QcA2+mzHPhMvIiw==
 
+<<<<<<< HEAD
+=======
+pretty-format@24.0.0-alpha.6:
+  version "24.0.0-alpha.6"
+  resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-24.0.0-alpha.6.tgz#25ad2fa46b342d6278bf241c5d2114d4376fbac1"
+  integrity sha512-zG2m6YJeuzwBFqb5EIdmwYVf30sap+iMRuYNPytOccEXZMAJbPIFGKVJ/U0WjQegmnQbRo9CI7j6j3HtDaifiA==
+  dependencies:
+    ansi-regex "^4.0.0"
+    ansi-styles "^3.2.0"
+
+>>>>>>> fabd9f7f... Update yarn.lock
 pretty-format@^24.7.0, pretty-format@^24.9.0:
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-24.9.0.tgz#12fac31b37019a4eea3c11aa9a959eb7628aa7c9"
@@ -10907,6 +11070,7 @@ react-native-mail@^3.0.6:
 
 react-native-os@^1.2.2:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/react-native-os/-/react-native-os-1.2.5.tgz#4b10b010b8734bb300e8c0017f01bc67cad98e7a"
   integrity sha512-cueg5nhzqA9vGwRXzX5/f/95JdhWjy7pNf9r5XW9YEfVf0C36CHzz5LNLrZQqJukmCWoeOEBDmtvllfpXVIpcA==
@@ -10915,6 +11079,11 @@ react-native-os@^1.2.2:
   resolved "https://registry.yarnpkg.com/react-native-os/-/react-native-os-1.2.4.tgz#f9ea7423cc9a9e865bc9cad590941ce37b7a3aee"
   integrity sha512-ohlP5BxJxvWp8JZ99g8+xdZ2s8Z4bEoP6g99VDeytz04m+VYdVrCP7Xovy6FoEqA4qxyUbv4xeGHR+pzNnkZeg==
 >>>>>>> 751dba29... Replace navigation animations with new effects
+=======
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/react-native-os/-/react-native-os-1.2.5.tgz#4b10b010b8734bb300e8c0017f01bc67cad98e7a"
+  integrity sha512-cueg5nhzqA9vGwRXzX5/f/95JdhWjy7pNf9r5XW9YEfVf0C36CHzz5LNLrZQqJukmCWoeOEBDmtvllfpXVIpcA==
+>>>>>>> fabd9f7f... Update yarn.lock
 
 react-native-permissions@^1.1.1:
   version "1.2.0"
@@ -11016,6 +11185,7 @@ react-native-safe-area-view@^0.14.1, react-native-safe-area-view@^0.14.6:
 >>>>>>> 3984235a... Bump react-navigation stack to current master
 =======
 react-native-safe-area-view@^0.14.1, react-native-safe-area-view@^0.14.6:
+<<<<<<< HEAD
 >>>>>>> e162a3d6... Fix merge mistakes
   version "0.14.6"
   resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.14.6.tgz#9a9d37d9f8f3887d60c4076eae7b5d2319539446"
@@ -11025,6 +11195,11 @@ react-native-safe-area-view@^0.14.1, react-native-safe-area-view@^0.14.6:
   resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.14.7.tgz#e1dd1c4d25a90677df2c15347fdddb2306ba5971"
   integrity sha512-fmuBYpvKDJK33bimo4JXrK2BN2CGw7nof1y1LDRgzqv+FZ3eADSDGshprN8WeQqSZjQ20hJx1CiWk28Edg/v4Q==
 >>>>>>> dca19a02... very work in progress
+=======
+  version "0.14.7"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.14.7.tgz#e1dd1c4d25a90677df2c15347fdddb2306ba5971"
+  integrity sha512-fmuBYpvKDJK33bimo4JXrK2BN2CGw7nof1y1LDRgzqv+FZ3eADSDGshprN8WeQqSZjQ20hJx1CiWk28Edg/v4Q==
+>>>>>>> fabd9f7f... Update yarn.lock
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
@@ -11069,6 +11244,7 @@ react-native-svg@^9.5.1:
 react-native-svg@^9.5.3:
 =======
 react-native-svg@^9.6.2:
+<<<<<<< HEAD
 >>>>>>> 9bae1b8d... bump deps
   version "9.6.2"
   resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.6.2.tgz#e29b626f115230e0f0f3693887f36e60b5b01408"
@@ -11101,6 +11277,11 @@ react-native-svg@^9.6.2:
 >>>>>>> 908925bc... Cleanup ButtonPressAnimation
 =======
 >>>>>>> dca19a02... very work in progress
+=======
+  version "9.7.0"
+  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.7.0.tgz#2d0bf1d31d5f1dd061587215b50deb29e626df18"
+  integrity sha512-8E1snfe2YYbfu6SP5DOoQgRhCdv7D0F4VewUAV+IgAn+IScrA/uuLB8LCodRdO+9U4Rm5dJ4yIwsVhPHRtuBkw==
+>>>>>>> fabd9f7f... Update yarn.lock
 
 react-native-tab-view@^1.2.0, react-native-tab-view@^1.4.1:
   version "1.4.1"
@@ -11210,6 +11391,7 @@ react-navigation-drawer@~1.4.0:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 react-navigation-stack@~1.5.0:
   version "1.5.5"
   resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-1.5.5.tgz#0b3cd98b7845a51d9ce9d7d678e9e3b9ed010bc3"
@@ -11260,6 +11442,18 @@ react-navigation-stack@^2.0.0-alpha.7:
   version "2.0.0-alpha.6"
   resolved "https://github.com/react-navigation/stack#2ddf3a4a3985047811c3c90f1d8263ea71994966"
 >>>>>>> 3984235a... Bump react-navigation stack to current master
+=======
+react-navigation-stack@^2.0.0-alpha.9:
+  version "2.0.0-alpha.9"
+  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-2.0.0-alpha.9.tgz#6e0382f3f4e37235c94badf6712c7095415d4a6d"
+  integrity sha512-Lze5CuCDr9FtGIJyxG8e1YXbpyd77XjOgLnQN5PRG9qx7YNmAbkbybPrhsmlRVWiyosC8IEVFbnot0EDcR+O/w==
+  dependencies:
+    react-native-safe-area-view "^0.14.6"
+
+"react-navigation-stack@https://github.com/react-navigation/stack#master", react-navigation-stack@~1.5.0:
+  version "2.0.0-alpha.7"
+  resolved "https://github.com/react-navigation/stack#95fe56e11b6f8bca3c4d24b619295651944d4d03"
+>>>>>>> fabd9f7f... Update yarn.lock
   dependencies:
     react-native-safe-area-view "^0.14.6"
 >>>>>>> 751dba29... Replace navigation animations with new effects
@@ -11273,23 +11467,39 @@ react-navigation-tabs@^2.3.0:
     react-lifecycles-compat "^3.0.4"
     react-native-tab-view "^2.9.0"
 
+<<<<<<< HEAD
 react-navigation-tabs@~1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/react-navigation-tabs/-/react-navigation-tabs-1.1.4.tgz#00a312250df3c519c60b7815a523ace5ee11163a"
   integrity sha512-py2hLCRxPwXOzmY1W9XcY1rWXxdK6RGW/aXh56G9gIf8cpHNDhy/bJV4e46/JrVcse3ybFaN0liT09/DM/NdwQ==
 >>>>>>> 85ffae7a... Convert parts of the API to the new version
+=======
+react-navigation-tabs@~1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-navigation-tabs/-/react-navigation-tabs-1.2.0.tgz#602c147029bb4f1c569b26479ddba534fe3ebb19"
+  integrity sha512-I6vq3XX4ub9KhWQzcrggznls+2Z2C6w2ro46vokDGGvJ02CBpQRar7J0ETV29Ot5AJY67HucNUmZdH3yDFckmQ==
+>>>>>>> fabd9f7f... Update yarn.lock
   dependencies:
     hoist-non-react-statics "^2.5.0"
     prop-types "^15.6.1"
     react-native-tab-view "^1.4.1"
 
 react-navigation@^3.11.1:
+<<<<<<< HEAD
   version "3.12.1"
   resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-3.12.1.tgz#f86246e65030ab16160e9cbfa8585f3822450e38"
   integrity sha512-WLjQis/A40cIMpFlw4o26nSLN+CvrZp8MGvJoL5K5H7DMZ/TdwgPa/Nm2sAQA27Hw7hOohQGj+diyxFRZi89Iw==
   dependencies:
     "@react-navigation/core" "~3.5.0"
     "@react-navigation/native" "~3.6.1"
+=======
+  version "3.12.0"
+  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-3.12.0.tgz#31cc6c7d778c968965e86a820f12f1e1a66e20b9"
+  integrity sha512-Lr0l0lbZsFsajUx040I1HYm0yIfa+F9SCEeaNkS1eiey6k2G04eY5hYGZfo4i3kaMj99Yi8tuRcSN7DS0QZu8w==
+  dependencies:
+    "@react-navigation/core" "~3.5.0"
+    "@react-navigation/native" "~3.6.0"
+>>>>>>> fabd9f7f... Update yarn.lock
     react-navigation-drawer "~1.4.0"
     react-navigation-stack "~1.5.0"
     react-navigation-tabs "~1.2.0"
@@ -11516,9 +11726,14 @@ recyclerlistview@2.0.1-alpha.1:
   integrity sha512-UaeJyxG9LL8lcfiAqkp0kPLxvjbYg95Dcq1U/QUvzwXU4+H2khg/LAws/FssxPX6CXNMw7BLcT2YHAhkFElqRQ==
 =======
 recyclerlistview@Flipkart/recyclerlistview#master:
+<<<<<<< HEAD
   version "2.0.10"
   resolved "https://codeload.github.com/Flipkart/recyclerlistview/tar.gz/1d310dffc80d63e4303bf1213d2f6b0ce498c33a"
 >>>>>>> 9bae1b8d... bump deps
+=======
+  version "2.0.13"
+  resolved "https://codeload.github.com/Flipkart/recyclerlistview/tar.gz/6c191661214a53f6ba24567528f0de7902ffda6c"
+>>>>>>> fabd9f7f... Update yarn.lock
   dependencies:
     lodash.debounce "4.0.8"
     prop-types "15.5.8"
@@ -11825,7 +12040,7 @@ resolve-url@^0.2.1:
   resolved "https://registry.yarnpkg.com/resolve-url/-/resolve-url-0.2.1.tgz#2c637fe77c893afd2a663fe21aa9080068e2052a"
   integrity sha1-LGN/53yJOv0qZj/iGqkIAGjiBSo=
 
-resolve@1.1.7, resolve@1.8.1, resolve@^1.10.0, resolve@^1.10.1, resolve@^1.11.0, resolve@^1.3.2, resolve@^1.5.0, resolve@^1.6.0, resolve@^1.8.1, resolve@^1.9.0:
+resolve@1.1.7, resolve@1.8.1, resolve@^1.10.0, resolve@^1.10.1, resolve@^1.11.0, resolve@^1.12.0, resolve@^1.3.2, resolve@^1.5.0, resolve@^1.6.0, resolve@^1.8.1, resolve@^1.9.0:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.8.1.tgz#82f1ec19a423ac1fbd080b0bab06ba36e84a7a26"
   integrity sha512-AicPrAC7Qu1JxPCZ9ZgCZlY35QgFnNqc+0LtbRNxnVw4TXvjQ72wnuL9JQcEBgXkI9JM8MsT9kaQoHcpCRJOYA==
@@ -11846,14 +12061,6 @@ restore-cursor@^2.0.0:
   integrity sha1-n37ih/gv0ybU/RYpI9YhKe7g368=
   dependencies:
     onetime "^2.0.0"
-    signal-exit "^3.0.2"
-
-restore-cursor@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/restore-cursor/-/restore-cursor-3.1.0.tgz#39f67c54b3a7a58cea5236d95cf0034239631f7e"
-  integrity sha512-l+sSefzHpj5qimhFSE5a8nufZYAM3sBSVMAPtYkmC+4EH2anSGaEMXSD0izRQbu9nfyQ9y5JrVmp7E8oZrUjvA==
-  dependencies:
-    onetime "^5.1.0"
     signal-exit "^3.0.2"
 
 ret@~0.1.10:
@@ -12098,10 +12305,14 @@ semver@5.5.0:
   integrity sha512-4SJ3dm0WAwWy/NVeioZh5AntkdJoWKxHxcmyP622fOkgHa4z3R0TdBJICINyaSDE6uNwVc8gZr+ZinwZAH4xIA==
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 semver@^6.0.0, semver@^6.1.1, semver@^6.2.0:
 =======
 semver@^6.0.0, semver@^6.1.1, semver@^6.1.2:
 >>>>>>> 96db5a28... begin mike
+=======
+semver@^6.0.0, semver@^6.1.1, semver@^6.1.2, semver@^6.2.0:
+>>>>>>> fabd9f7f... Update yarn.lock
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
@@ -12999,6 +13210,7 @@ symbol-tree@^3.2.2:
 
 table@^5.2.3:
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "5.4.6"
   resolved "https://registry.yarnpkg.com/table/-/table-5.4.6.tgz#1292d19500ce3f86053b05f0e8e7e4a3bb21079e"
   integrity sha512-wmEc8m4fjnob4gt5riFRtTu/6+4rSe12TpAELNSqHMfF3IqnA+CH37USM6/YR3qRZv7e56kAEAtd6nKZaxe0Ug==
@@ -13007,6 +13219,11 @@ table@^5.2.3:
   resolved "https://registry.yarnpkg.com/table/-/table-5.4.5.tgz#c8f4ea2d8fee08c0027fac27b0ec0a4fe01dfa42"
   integrity sha512-oGa2Hl7CQjfoaogtrOHEJroOcYILTx7BZWLGsJIlzoWmB2zmguhNfPJZsWPKYek/MgCxfco54gEi31d1uN2hFA==
 >>>>>>> e1a27438... Cleanup ButtonPressAnimation
+=======
+  version "5.4.6"
+  resolved "https://registry.yarnpkg.com/table/-/table-5.4.6.tgz#1292d19500ce3f86053b05f0e8e7e4a3bb21079e"
+  integrity sha512-wmEc8m4fjnob4gt5riFRtTu/6+4rSe12TpAELNSqHMfF3IqnA+CH37USM6/YR3qRZv7e56kAEAtd6nKZaxe0Ug==
+>>>>>>> fabd9f7f... Update yarn.lock
   dependencies:
     ajv "^6.10.2"
     lodash "^4.17.14"
@@ -13339,11 +13556,6 @@ type-fest@^0.7.1:
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.7.1.tgz#8dda65feaf03ed78f0a3f9678f1869147f7c5c48"
   integrity sha512-Ne2YiiGN8bmrmJJEuTWTLJR32nh/JdL1+PSicowtNb0WFpn59GK8/lfD61bVtzguz7b3PBt74nxpv/Pw5po5Rg==
-
-type-fest@^0.5.2:
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.5.2.tgz#d6ef42a0356c6cd45f49485c3b6281fc148e48a2"
-  integrity sha512-DWkS49EQKVX//Tbupb9TFa19c7+MK1XmzkrZUR8TAktmE/DizXoaoJV6TZ/tSIPXipqNiRI6CyAe7x69Jb6RSw==
 
 typedarray@^0.0.6:
   version "0.0.6"
@@ -14091,6 +14303,7 @@ yargs@^12.0.5:
     yargs-parser "^11.1.1"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 yargs@^13.0.0, yargs@^13.2.4, yargs@^13.3.0:
 =======
 yargs@^13.0.0, yargs@^13.2.4:
@@ -14105,6 +14318,9 @@ yargs@^13.0.0, yargs@^13.2.4:
 >>>>>>> 2216260a... Create Exchange related Input components
 =======
 >>>>>>> 317ce799... fix conflicts after rebasing over latest wallet-zero branch
+=======
+yargs@^13.0.0, yargs@^13.2.4, yargs@^13.3.0:
+>>>>>>> fabd9f7f... Update yarn.lock
   version "13.3.0"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-13.3.0.tgz#4c657a55e07e5f2cf947f8a366567c04a0dedc83"
   integrity sha512-2eehun/8ALW8TLoIl7MVaRUrg+yCnenu8B4kBlRxj3GJGDKU1Og7sMXPNm1BYyM1DOJmTZ4YeN/Nwxv+8XJsUA==
