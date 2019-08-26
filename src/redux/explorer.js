@@ -123,7 +123,7 @@ const listenOnAssetMessages = socket => (dispatch, getState) => {
   });
 
   socket.on(messages.ASSETS.CHANGED, (message) => {
-    // dispatch(priceChanged(message));
+    dispatch(priceChanged(message));
   });
 };
 
