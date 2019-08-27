@@ -87,11 +87,17 @@ export const floorDivide = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
 export const countDecimalPlaces = value => BigNumber(`${value}`).dp();
 
 export const updatePrecisionToDisplay = (amount, nativePrice) => {
-  const significantDigits = BigNumber(`${nativePrice}`).decimalPlaces(0, BigNumber.ROUND_DOWN).sd(true);
-  const totalDigits = BigNumber(significantDigits).plus(2, 10).toNumber();
-  return BigNumber(`${amount}`)
-    .decimalPlaces(totalDigits, BigNumber.ROUND_HALF_UP)
-    .toFixed();
+  const bnAmount = BigNumber(`${amount}`);
+  const significantDigits = BigNumber(`${nativePrice}`)
+    .decimalPlaces(0, BigNumber.ROUND_DOWN)
+    .sd(true);
+  const truncatedPrecision = BigNumber(significantDigits)
+    .plus(2, 10)
+    .toNumber();
+  const result = bnAmount.decimalPlaces(truncatedPrecision, BigNumber.ROUND_DOWN);
+  return result.isZero()
+    ?  BigNumber(bnAmount.toPrecision(1, BigNumber.ROUND_DOWN)).toFixed()
+    : result.toFixed();
 };
 
 /**
