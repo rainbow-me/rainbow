@@ -363,7 +363,6 @@ class ExchangeModal extends PureComponent {
               }),
             }}
           >
-            <GestureBlocker type='top'/>
             <FloatingPanel radius={exchangeModalBorderRadius}>
               <ExchangeModalHeader />
               <Column align="center" flex={0}>
@@ -408,7 +407,6 @@ class ExchangeModal extends PureComponent {
                 />
               </Fragment>
             )}
-            <GestureBlocker type='bottom'/>
           </AnimatedFloatingPanels>
         </Centered>
       </KeyboardFixedOpenLayout>
