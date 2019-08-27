@@ -1,6 +1,6 @@
 import { get, map, property } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { InteractionManager, View } from 'react-native';
 import { compose, mapProps, withProps } from 'recompact';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
@@ -12,7 +12,7 @@ import {
   withUniswapAssets,
 } from '../hoc';
 import { borders, colors, position } from '../styles';
-import { isNewValueForPath, safeAreaInsetValues } from '../utils';
+import { isNewValueForPath } from '../utils';
 import { filterList } from '../utils/search';
 import { EmptyAssetList } from '../components/asset-list';
 import { ExchangeCoinRow } from '../components/coin-row';
@@ -94,9 +94,10 @@ class CurrencySelectModal extends PureComponent {
     const currentTransitioning = this.props.isTransitioning;
     const nextTransitioning = nextProps.isTransitioning;
 
-    if (!currentTransitioning && nextTransitioning) {
-      return false;
-    }
+    // if (currentTransitioning) {
+    //   console.log('blocking');
+    //   return false;
+    // }
 
     let currentAssets = this.props.sortedUniswapAssets;
     let nextAssets = EMPTY_ARRAY;
@@ -119,10 +120,10 @@ class CurrencySelectModal extends PureComponent {
 
     return (
       isNewAssets
-      || isNewSearchQuery
-      || isNewType
       || isNewFocus
+      || isNewSearchQuery
       || isNewTransitioning
+      || isNewType
     );
   }
 
@@ -169,8 +170,8 @@ class CurrencySelectModal extends PureComponent {
       isFocused,
       isTransitioning,
       sortedUniswapAssets,
-      transitionPosition,
       type,
+      transitionPosition,
     } = this.props;
 
     const { searchQuery } = this.state;
@@ -187,13 +188,15 @@ class CurrencySelectModal extends PureComponent {
     const listItems = filterList(assets, searchQuery, 'uniqueId');
 
     const isLoading = (
-      isTransitioning
-      || listItems.length === 0
-      || !isFocused
+      isTransitioning || listItems.length === 0
     );
 
+    // console.log('listItems', listItems);
+
+    // console.log('isFocused', isFocused ? '👍️' : '👎️', ' ', isFocused);
+
     return (
-      <KeyboardFixedOpenLayout paddingTop={safeAreaInsetValues.top}>
+      <KeyboardFixedOpenLayout>
         <Animated.View
           style={{
             ...position.sizeAsObject('100%'),
@@ -201,7 +204,7 @@ class CurrencySelectModal extends PureComponent {
               extrapolate: 'clamp',
               inputRange: [0, 1],
               outputRange: [0, 1],
-            })
+            }),
           }}
         >
           <Modal
@@ -268,7 +271,7 @@ export default compose(
     assetsAvailableOnUniswap,
     navigation,
     sortedUniswapAssets,
-    transitionProps: { isTransitioning },
+    tabsTransitionProps: { isTransitioning },
     ...props,
   }) => ({
     ...props,

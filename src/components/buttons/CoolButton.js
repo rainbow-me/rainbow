@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, onlyUpdateForPropTypes, withProps } from 'recompact';
+import { compose, onlyUpdateForKeys, withProps } from 'recompact';
 import { withNeverRerender } from '../../hoc';
 import {
   colors,
@@ -32,7 +32,9 @@ const CoolLabel = withProps({
   weight: 'semibold',
 })(Text);
 
-const CoolButton = ({
+const enhance = onlyUpdateForKeys(['children', 'color']);
+
+const CoolButton = enhance(({
   borderRadius,
   children,
   color,
@@ -59,7 +61,7 @@ const CoolButton = ({
       <InnerBorder radius={borderRadius} />
     </Row>
   </ButtonPressAnimation>
-);
+));
 
 CoolButton.propTypes = {
   borderRadius: PropTypes.number,
@@ -78,4 +80,4 @@ CoolButton.defaultProps = {
   ],
 };
 
-export default onlyUpdateForPropTypes(CoolButton);
+export default CoolButton;

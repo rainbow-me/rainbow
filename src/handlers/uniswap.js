@@ -1,16 +1,25 @@
-import { getExecutionDetails } from '@uniswap/sdk';
+import { getExecutionDetails, getTokenReserves } from '@uniswap/sdk';
 import contractMap from 'eth-contract-metadata';
 import { ethers } from 'ethers';
-import { get, map, zipObject } from 'lodash';
+import {
+  compact,
+  get,
+  keyBy,
+  map,
+  slice,
+  zipObject,
+} from 'lodash';
 import {
   convertRawAmountToDecimalFormat,
   divide,
   fromWei,
   multiply,
 } from '../helpers/utilities';
+import { uniswapAssetAddresses } from '../hoc/withUniswapAssets';
 import { loadWallet } from '../model/wallet';
 import exchangeABI from '../references/uniswap-exchange-abi.json';
 import erc20ABI from '../references/erc20-abi.json';
+import { promiseUtils } from '../utils';
 import { web3Provider } from './web3';
 
 const convertArgsForEthers = (methodArguments) => methodArguments.map(arg => (typeof arg === 'object') ? ethers.utils.bigNumberify(arg.toFixed()) : arg);
@@ -18,6 +27,17 @@ const convertArgsForEthers = (methodArguments) => methodArguments.map(arg => (ty
 const convertValueForEthers = (value) => {
   const valueBigNumber = ethers.utils.bigNumberify(value.toString());
   return ethers.utils.hexlify(valueBigNumber);
+};
+
+export const getReserve = tokenAddress => getTokenReserves(tokenAddress);
+
+export const getReserves = async () => {
+  const uniswapTokens = slice(uniswapAssetAddresses, 1);
+  const reserves = await promiseUtils.PromiseAllWithFails(map(uniswapTokens, (token) => getTokenReserves(token)));
+  return keyBy(compact(reserves), reserve => {
+    const address = get(reserve, 'token.address') || '';
+    return address.toLowerCase();
+  });
 };
 
 export const executeSwap = async (tradeDetails) => {
@@ -72,7 +92,7 @@ export const executeSwap = async (tradeDetails) => {
   }
 };
 
-export const getUniswapLiquidityInfo = async (accountAddress, exchangeContracts) => {
+export const getLiquidityInfo = async (accountAddress, exchangeContracts) => {
   const promises = map(exchangeContracts, async (exchangeAddress) => {
     try {
       const ethReserveCall = web3Provider.getBalance(exchangeAddress);

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { View } from 'react-native';
+import { withNeverRerender } from '../../hoc';
 import { colors, padding } from '../../styles';
 import { isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
@@ -47,11 +48,17 @@ export default class ExchangeCoinRow extends Component {
     favorite: false,
   }
 
-  shouldComponentUpdate = (nextProps, nextState) => (
-    isNewValueForPath(this.props, nextProps, 'uniqueId')
-    || isNewValueForPath(this.state, nextState, 'favorite')
-    || isNewValueForPath(this.state, nextState, 'emojiCount')
-  )
+  shouldComponentUpdate = (nextProps, nextState) => {
+    const isNewAsset = isNewValueForPath(this.props, nextProps, 'uniqueId');
+    const isNewFavorite = isNewValueForPath(this.state, nextState, 'favorite');
+    const isNewEmojiCount = isNewValueForPath(this.state, nextState, 'emojiCount');
+
+    return (
+      isNewAsset
+      || isNewFavorite
+      || isNewEmojiCount
+    );
+  }
 
   handlePress = () => {
     const { item, onPress } = this.props;
@@ -74,8 +81,6 @@ export default class ExchangeCoinRow extends Component {
   render = () => {
     const { item, ...props } = this.props;
     const { emojiCount, favorite } = this.state;
-
-    // console.log('this.props', this.props);
 
     return (
       <ButtonPressAnimation

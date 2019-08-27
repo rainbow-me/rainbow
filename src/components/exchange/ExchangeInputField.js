@@ -1,11 +1,12 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { TouchableWithoutFeedback } from 'react-native';
-import supportedNativeCurrencies from '../../references/native-currencies.json';
-import { colors, fonts } from '../../styles';
+import { colors } from '../../styles';
+import { isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { CoolButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
+import { EnDash } from '../html-entities';
 import {
   ColumnWithMargins,
   Row,
@@ -13,26 +14,45 @@ import {
 } from '../layout';
 import { Emoji, Text } from '../text';
 import ExchangeInput from './ExchangeInput';
+import ExchangeNativeField from './ExchangeNativeField';
+import UnlockAssetButton from './UnlockAssetButton';
 
-export default class ExchangeInputField extends PureComponent {
+export default class ExchangeInputField extends Component {
   static propTypes = {
-    autoFocus: PropTypes.bool,
     inputAmount: PropTypes.string,
     inputCurrency: PropTypes.string,
     inputFieldRef: PropTypes.func,
+    isAssetApproved: PropTypes.bool,
     nativeAmount: PropTypes.string,
     nativeCurrency: PropTypes.string,
     nativeFieldRef: PropTypes.func,
+    onFocus: PropTypes.func,
     onPressMaxBalance: PropTypes.func,
     onPressSelectInputCurrency: PropTypes.func,
+    onPressUnlockAsset: PropTypes.func,
     setInputAmount: PropTypes.func,
     setNativeAmount: PropTypes.func,
   }
 
   inputFieldRef = undefined
-  nativeFieldRef = undefined
 
   padding = 15
+
+  shouldComponentUpdate = (nextProps, nextState) => {
+    const isNewInputAmount = isNewValueForPath(this.props, nextProps, 'inputAmount');
+    const isNewInputCurrency = isNewValueForPath(this.props, nextProps, 'inputCurrency');
+    const isNewAssetApproved = isNewValueForPath(this.props, nextProps, 'isAssetApproved');
+    const isNewNativeAmount = isNewValueForPath(this.props, nextProps, 'nativeAmount');
+    const isNewNativeCurrency = isNewValueForPath(this.props, nextProps, 'nativeCurrency');
+
+    return (
+      isNewInputAmount
+      || isNewInputCurrency
+      || isNewAssetApproved
+      || isNewNativeAmount
+      || isNewNativeCurrency
+    );
+  }
 
   handleFocusInputField = () => {
     if (this.inputFieldRef) {
@@ -45,31 +65,26 @@ export default class ExchangeInputField extends PureComponent {
     this.props.inputFieldRef(ref);
   }
 
-  handleNativeFieldRef = (ref) => {
-    this.nativeFieldRef = ref;
-    this.props.nativeFieldRef(ref);
-  }
-
   render = () => {
     const {
-      autoFocus,
       inputAmount,
       inputCurrency,
-      inputFieldRef,
+      isAssetApproved,
       nativeAmount,
       nativeCurrency,
       nativeFieldRef,
       onFocus,
       onPressMaxBalance,
       onPressSelectInputCurrency,
+      onPressUnlockAsset,
       setInputAmount,
       setNativeAmount,
     } = this.props;
 
-    const { mask, placeholder } = supportedNativeCurrencies[nativeCurrency];
+    const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
     return (
-      <ColumnWithMargins flex={0} margin={14.5} width="100%">
+      <ColumnWithMargins flex={0} margin={12} width="100%">
         <Row align="center">
           <TouchableWithoutFeedback onPress={this.handleFocusInputField}>
             <RowWithMargins
@@ -78,15 +93,21 @@ export default class ExchangeInputField extends PureComponent {
               margin={11}
               paddingLeft={this.padding}
             >
-              <CoinIcon size={31} symbol={inputCurrency} />
-              <Row align="center" flex={1}>
-                <ExchangeInput
-                  onChangeText={setInputAmount}
-                  onFocus={onFocus}
-                  refInput={this.handleInputFieldRef}
-                  value={inputAmount}
-                />
-              </Row>
+              <CoinIcon
+                bgColor={inputCurrency ? undefined : skeletonColor}
+                flex={0}
+                size={40}
+                symbol={inputCurrency}
+              />
+              <ExchangeInput
+                editable={!!inputCurrency}
+                onChangeText={setInputAmount}
+                onFocus={onFocus}
+                placeholder={inputCurrency ? '0' : EnDash.unicode}
+                placeholderTextColor={inputCurrency ? undefined : skeletonColor}
+                refInput={this.handleInputFieldRef}
+                value={inputAmount}
+              />
             </RowWithMargins>
           </TouchableWithoutFeedback>
           <CoolButton
@@ -96,27 +117,38 @@ export default class ExchangeInputField extends PureComponent {
             {inputCurrency || 'Choose a Coin'}
           </CoolButton>
         </Row>
-        <Row align="center" justify="space-between" paddingLeft={this.padding}>
-          <ExchangeInput
-            fontSize={fonts.size.large}
-            mask={mask}
-            onChangeText={setNativeAmount}
+        <Row
+          align="center"
+          height={32}
+          justify="space-between"
+          paddingLeft={this.padding}
+        >
+          <ExchangeNativeField
+            height={32}
+            nativeAmount={nativeAmount}
+            nativeCurrency={nativeCurrency}
+            nativeFieldRef={nativeFieldRef}
             onFocus={onFocus}
-            placeholder={placeholder}
-            refInput={this.handleNativeFieldRef}
-            style={{ paddingBottom: this.padding }}
-            value={nativeAmount}
+            setNativeAmount={setNativeAmount}
           />
-          <ButtonPressAnimation onPress={onPressMaxBalance}>
-            <RowWithMargins
-              align="center"
-              margin={3}
-              paddingHorizontal={this.padding}
+          {isAssetApproved ? (
+            <ButtonPressAnimation
+              marginRight={4}
+              onPress={onPressMaxBalance}
             >
-              <Emoji lineHeight="none" name="moneybag" size="lmedium" />
-              <Text color="appleBlue" size="medium" weight="semibold">Max</Text>
-            </RowWithMargins>
-          </ButtonPressAnimation>
+              <RowWithMargins
+                align="center"
+                height={32}
+                margin={3}
+                paddingHorizontal={this.padding}
+              >
+                <Emoji lineHeight="none" name="moneybag" size="lmedium" />
+                <Text color="appleBlue" size="medium" weight="semibold">Max</Text>
+              </RowWithMargins>
+            </ButtonPressAnimation>
+          ) : (
+            <UnlockAssetButton onPress={onPressUnlockAsset} />
+          )}
         </Row>
       </ColumnWithMargins>
     );

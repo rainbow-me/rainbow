@@ -10,16 +10,7 @@ export const parseAccountAssets = data => {
   try {
     let assets = [...data];
     assets = assets.map(assetData => {
-      const name = get(assetData, 'asset.name') || 'Unknown Token';
-      const symbol = get(assetData, 'asset.symbol') || '———';
-      const asset = {
-        address: get(assetData, 'asset.asset_code', null),
-        decimals: get(assetData, 'asset.decimals'),
-        name,
-        price: get(assetData, 'asset.price'),
-        symbol: symbol.toUpperCase(),
-        uniqueId: get(assetData, 'asset.asset_code') || name,
-      };
+      const asset = parseAsset(assetData.asset);
       return {
         ...asset,
         balance: convertRawAmountToBalance(assetData.quantity, asset),
@@ -34,4 +25,23 @@ export const parseAccountAssets = data => {
   } catch (error) {
     throw error;
   }
+};
+
+/**
+ * @desc parse asset
+ * @param  {Object} assetData
+ * @return {Object}
+ */
+export const parseAsset = assetData => {
+  const name = get(assetData, 'name') || 'Unknown Token';
+  const symbol = get(assetData, 'symbol') || '———';
+  const asset = {
+    address: get(assetData, 'asset_code', null),
+    decimals: get(assetData, 'decimals'),
+    name,
+    price: get(assetData, 'price'),
+    symbol: symbol.toUpperCase(),
+    uniqueId: get(assetData, 'asset_code') || name,
+  };
+  return asset;
 };

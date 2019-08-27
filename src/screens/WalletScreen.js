@@ -15,7 +15,10 @@ import BlurOverlay from '../components/BlurOverlay';
 import { FabWrapper } from '../components/fab';
 import { CameraHeaderButton, Header, ProfileHeaderButton } from '../components/header';
 import { Page } from '../components/layout';
-import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../handlers/commonStorage';
+import {
+  getShowShitcoinsSetting,
+  updateShowShitcoinsSetting,
+} from '../handlers/localstorage/globalSettings';
 import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import {
   withAccountData,
@@ -36,8 +39,7 @@ class WalletScreen extends Component {
     allAssetsCount: PropTypes.number,
     assets: PropTypes.array,
     assetsTotal: PropTypes.object,
-    blurColor: PropTypes.string,
-    blurOpacity: PropTypes.object,
+    blurIntensity: PropTypes.object,
     initializeWallet: PropTypes.func,
     isEmpty: PropTypes.bool.isRequired,
     isFocused: PropTypes.bool,
@@ -47,7 +49,6 @@ class WalletScreen extends Component {
     scrollViewTracker: PropTypes.object,
     sections: PropTypes.array,
     setSafeTimeout: PropTypes.func,
-    showBlur: PropTypes.bool,
     toggleShowShitcoins: PropTypes.func,
     uniqueTokens: PropTypes.array,
   }
@@ -65,8 +66,7 @@ class WalletScreen extends Component {
   }
 
   shouldComponentUpdate = (nextProps) => {
-    const isNewBlurColor = isNewValueForPath(this.props, nextProps, 'blurColor');
-    const isNewBlurOpacity = isNewValueForPath(this.props, nextProps, 'blurOpacity');
+    const isNewBlurIntensity = isNewValueForPath(this.props, nextProps, 'blurIntensity');
     const isNewCurrency = isNewValueForPath(this.props, nextProps, 'nativeCurrency');
     const isNewFetchingAssets = isNewValueForPath(this.props, nextProps, 'fetchingAssets');
     const isNewFetchingUniqueTokens = isNewValueForPath(this.props, nextProps, 'fetchingUniqueTokens');
@@ -74,32 +74,22 @@ class WalletScreen extends Component {
     const isNewIsWalletEthZero = isNewValueForPath(this.props, nextProps, 'isWalletEthZero');
     const isNewLanguage = isNewValueForPath(this.props, nextProps, 'language');
     const isNewSections = isNewValueForPath(this.props, nextProps, 'sections');
-    const isNewShowBlur = isNewValueForPath(this.props, nextProps, 'showBlur');
     const isNewShowShitcoins = isNewValueForPath(this.props, nextProps, 'showShitcoins');
 
-    if (!nextProps.isFocused && !nextProps.showBlur) {
-      return isNewBlurColor
-        || isNewBlurOpacity
-        || isNewShowBlur;
-    }
-
     return isNewFetchingAssets
-    || isNewFetchingUniqueTokens
-    || isNewIsWalletEmpty
-    || isNewIsWalletEthZero
-    || isNewLanguage
-    || isNewCurrency
-    || isNewBlurColor
-    || isNewBlurOpacity
-    || isNewSections
-    || isNewShowShitcoins
-    || isNewShowBlur;
+      || isNewFetchingUniqueTokens
+      || isNewIsWalletEmpty
+      || isNewIsWalletEthZero
+      || isNewLanguage
+      || isNewCurrency
+      || isNewBlurIntensity
+      || isNewSections
+      || isNewShowShitcoins;
   }
 
   render = () => {
     const {
-      blurColor,
-      blurOpacity,
+      blurIntensity,
       isEmpty,
       isWalletEthZero,
       navigation,
@@ -107,11 +97,6 @@ class WalletScreen extends Component {
       scrollViewTracker,
       sections,
     } = this.props;
-
-    const blurTranslateY = blurOpacity.interpolate({
-      inputRange: [0, 0.001, 1],
-      outputRange: [deviceUtils.dimensions.height, 0, 0],
-    });
 
     return (
       <Page {...position.sizeAsObject('100%')} flex={1}>
@@ -135,12 +120,7 @@ class WalletScreen extends Component {
             sections={sections}
           />
         </FabWrapper>
-        <BlurOverlay
-          backgroundColor={blurColor}
-          blurAmount={10}
-          opacity={blurOpacity}
-          translateY={blurTranslateY}
-        />
+        <BlurOverlay intensity={blurIntensity} />
       </Page>
     );
   }
