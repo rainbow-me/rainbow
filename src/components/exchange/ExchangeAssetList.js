@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import { DataProvider, LayoutProvider, RecyclerListView } from "recyclerlistview";
+import { PanGestureHandler } from 'react-native-gesture-handler';
 import styled from 'styled-components/primitives';
 import { deviceUtils, isNewValueForPath } from '../../utils';
 import { colors } from '../../styles';
@@ -74,7 +75,7 @@ export default class ExchangeAssetList extends PureComponent {
   updateList = () => {
     this.setState((prevState) => ({
       dataProvider: prevState.dataProvider.cloneWithRows(this.props.items),
-    }))
+    }));
   }
 
   getStableId = (index) => get(this.state, `dataProvider._data[${index}].uniqueId`)
@@ -83,24 +84,29 @@ export default class ExchangeAssetList extends PureComponent {
 
   render = () => (
     <View backgroundColor={colors.white} flex={1} overflow="hidden">
-      <RecyclerListView
-        {...this.props}
-        dataProvider={this.state.dataProvider}
-        layoutProvider={this.layoutProvider}
-        itemAnimator={layoutItemAnimator}
-        onContentSizeChange={this.onContentSizeChange}
-        onViewableItemsChanged={this.onViewableItemsChanged}
-        optimizeForInsertDeleteAnimations={true}
-        ref={this.rlvRef}
-        renderAheadOffset={deviceUtils.dimensions.height}
-        rowRenderer={this.renderRow}
-        scrollViewProps={{
-          directionalLockEnabled: true,
-          keyboardDismissMode: 'none',
-          keyboardShouldPersistTaps: 'always',
-          scrollEventThrottle: 32,
-        }}
-      />
+      <PanGestureHandler
+        minDeltaY={1}
+        minDeltaX={1}
+      >
+        <RecyclerListView
+          {...this.props}
+          dataProvider={this.state.dataProvider}
+          layoutProvider={this.layoutProvider}
+          itemAnimator={layoutItemAnimator}
+          onContentSizeChange={this.onContentSizeChange}
+          onViewableItemsChanged={this.onViewableItemsChanged}
+          optimizeForInsertDeleteAnimations={true}
+          ref={this.rlvRef}
+          renderAheadOffset={deviceUtils.dimensions.height}
+          rowRenderer={this.renderRow}
+          scrollViewProps={{
+            directionalLockEnabled: true,
+            keyboardDismissMode: 'none',
+            keyboardShouldPersistTaps: 'always',
+            scrollEventThrottle: 32,
+          }}
+        />
+      </PanGestureHandler>
     </View>
   )
 }
