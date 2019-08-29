@@ -11,7 +11,7 @@ import {
   removeLocalRequest,
   removeLocalRequests,
   saveLocalRequests,
-} from '../handlers/commonStorage';
+} from '../handlers/localstorage/walletconnect';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertHexToString,

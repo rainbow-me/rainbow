@@ -10,17 +10,21 @@ import {
   toLower,
   values,
 } from 'lodash';
-import { compose, omitProps, withProps } from 'recompact';
+import { connect } from 'react-redux';
+import {
+  compose,
+  omitProps,
+  withProps,
+} from 'recompact';
 import { createSelector } from 'reselect';
 import uniswapAssetsRaw from '../references/uniswap-pairs.json';
 import withAccountData from './withAccountData';
 
 const allAssetsSelector = state => state.allAssets;
-const unsortedUniswapAssetsSelector = state => state.unsortedUniswapAssets;
-
-const uniswapAssetsRawLoweredKeys = mapKeys(uniswapAssetsRaw, (value, key) => toLower(key));
-
+const uniswapAssetsSelector = state => state.uniswapAssets;
+export const uniswapAssetsRawLoweredKeys = mapKeys(uniswapAssetsRaw, (value, key) => toLower(key));
 export const uniswapAssetAddresses = keys(uniswapAssetsRawLoweredKeys);
+
 const filterUniswapAssetsByAvailability = ({ address }) => uniswapAssetAddresses.includes(address);
 
 const withAssetsAvailableOnUniswap = (allAssets) => {
@@ -32,16 +36,8 @@ const withAssetsAvailableOnUniswap = (allAssets) => {
   return { assetsAvailableOnUniswap };
 };
 
-const mapUniswapAssetItem = ({ exchangeAddress, ...asset }, address) => ({
-  ...asset,
-  address,
-  exchangeAddress,
-  uniqueId: exchangeAddress,
-});
-
-const unsortedUniswapAssets = values(mapValues(uniswapAssetsRaw, mapUniswapAssetItem));
 const withSortedUniswapAssets = (unsortedUniswapAssets) => ({
-  sortedUniswapAssets: sortBy(unsortedUniswapAssets, property('name')),
+  sortedUniswapAssets: sortBy(values(unsortedUniswapAssets), property('name')),
 });
 
 const withAssetsAvailableOnUniswapSelector = createSelector(
@@ -50,14 +46,20 @@ const withAssetsAvailableOnUniswapSelector = createSelector(
 );
 
 const withSortedUniswapAssetsSelector = createSelector(
-  [unsortedUniswapAssetsSelector],
+  [uniswapAssetsSelector],
   withSortedUniswapAssets,
 );
 
+const mapStateToProps = ({
+  uniswap: { uniswapAssets },
+}) => ({
+  uniswapAssets,
+});
+
+
 export default compose(
+  connect(mapStateToProps),
   withAccountData,
-  withProps({ unsortedUniswapAssets }),
   withProps(withSortedUniswapAssetsSelector),
   withProps(withAssetsAvailableOnUniswapSelector),
-  omitProps('unsortedUniswapAssets'),
 );

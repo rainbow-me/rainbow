@@ -15,7 +15,10 @@ import BlurOverlay from '../components/BlurOverlay';
 import { FabWrapper } from '../components/fab';
 import { CameraHeaderButton, Header, ProfileHeaderButton } from '../components/header';
 import { Page } from '../components/layout';
-import { getShowShitcoinsSetting, updateShowShitcoinsSetting } from '../handlers/commonStorage';
+import {
+  getShowShitcoinsSetting,
+  updateShowShitcoinsSetting,
+} from '../handlers/localstorage/globalSettings';
 import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import {
   withAccountData,
