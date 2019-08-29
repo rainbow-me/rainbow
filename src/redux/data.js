@@ -5,7 +5,6 @@ import {
   findIndex,
   get,
   includes,
-  isEmpty,
   isNil,
   map,
   partition,
@@ -13,7 +12,6 @@ import {
   slice,
   uniqBy,
 } from 'lodash';
-import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import {
   getAssets,
   getLocalTransactions,
@@ -22,8 +20,6 @@ import {
   saveAssets,
   saveLocalTransactions,
 } from '../handlers/localstorage/storage';
-import { uniswapAssetAddresses } from '../hoc/withUniswapAssets';
-import io from 'socket.io-client';
 import { parseAccountAssets, parseAsset } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import { parseTransactions } from '../parsers/transactions';
@@ -40,8 +36,6 @@ import {
 
 const DATA_UPDATE_ASSETS = 'data/DATA_UPDATE_ASSETS';
 const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
-
-const DATA_UPDATE_ADDRESS_SOCKET = 'data/DATA_UPDATE_ADDRESS_SOCKET';
 
 const DATA_LOAD_ASSETS_REQUEST = 'data/DATA_LOAD_ASSETS_REQUEST';
 const DATA_LOAD_ASSETS_SUCCESS = 'data/DATA_LOAD_ASSETS_SUCCESS';
@@ -220,8 +214,6 @@ export const addressAssetsReceived = (message, append = false, change = false) =
 
   const { accountAddress, network } = getState().settings;
   const assets = get(message, 'payload.assets', []);
-  if (!assets.length) return;
-
   const liquidityTokens = remove(assets, (asset) => {
     const symbol = get(asset, 'asset.symbol', '');
     return symbol === 'uni-v1';
@@ -233,8 +225,9 @@ export const addressAssetsReceived = (message, append = false, change = false) =
     dispatch(uniswapUpdateLiquidityTokens(liquidityTokens));
   }
   const updatedAssets = dispatch(dedupeUniqueTokens(assets));
-  if (!updatedAssets.length) return;
+
   let parsedAssets = parseAccountAssets(updatedAssets);
+
   if (append || change) {
     const { assets: existingAssets } = getState().data;
     parsedAssets = uniqBy(concat(parsedAssets, existingAssets), (item) => item.uniqueId);
@@ -249,7 +242,7 @@ export const addressAssetsReceived = (message, append = false, change = false) =
 export const assetsReceived = (message) => (dispatch, getState) => {
   const assets = get(message, 'payload.assets', []);
   if (!assets.length) return;
-  let parsedAssets = map(assets, asset => parseAsset(asset));
+  const parsedAssets = map(assets, asset => parseAsset(asset));
   dispatch(uniswapUpdateAssets(parsedAssets));
 };
 
