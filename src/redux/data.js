@@ -225,9 +225,7 @@ export const addressAssetsReceived = (message, append = false, change = false) =
     dispatch(uniswapUpdateLiquidityTokens(liquidityTokens));
   }
   const updatedAssets = dispatch(dedupeUniqueTokens(assets));
-
   let parsedAssets = parseAccountAssets(updatedAssets);
-
   if (append || change) {
     const { assets: existingAssets } = getState().data;
     parsedAssets = uniqBy(concat(parsedAssets, existingAssets), (item) => item.uniqueId);
