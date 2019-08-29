@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { withNeverRerender } from '../../hoc';
-import { colors, padding, position, shadow } from '../../styles';
+import { colors, padding } from '../../styles';
 import { CoolButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
 import { EnDash } from '../html-entities';

@@ -28,9 +28,9 @@ export const getAsset = (assets, address = 'eth') => {
     // console.log('asset.address', asset.address);
     // console.log('address', address)
 
-    return asset.address === address
+    return asset.address === address;
   });
-}
+};
 
 /**
  * @desc remove hex prefix

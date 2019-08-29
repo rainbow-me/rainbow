@@ -15,7 +15,7 @@ import {
   fromWei,
   multiply,
 } from '../helpers/utilities';
-import { uniswapAssetAddresses } from '../hoc/withUniswapAssets';
+import { uniswapAssetAddresses } from '../references';
 import { loadWallet } from '../model/wallet';
 import exchangeABI from '../references/uniswap-exchange-abi.json';
 import erc20ABI from '../references/erc20-abi.json';
