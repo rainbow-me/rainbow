@@ -17,7 +17,7 @@ import {
   getReserve,
   getReserves,
 } from '../handlers/uniswap';
-import { uniswapAssetsRawLoweredKeys } from '../hoc/withUniswapAssets';
+import { uniswapAssetsClean } from '../references';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';
@@ -152,7 +152,7 @@ export const uniswapUpdateAssets = (assets) => (dispatch, getState) => {
     const loweredAddress = asset.address.toLowerCase();
     return {
       ...asset,
-      exchangeAddress: get(uniswapAssetsRawLoweredKeys, `[${loweredAddress}].exchangeAddress`),
+      exchangeAddress: get(uniswapAssetsClean, `[${loweredAddress}].exchangeAddress`),
     };
   });
   const mappedAssets = keyBy(uniswapAssetPrices, (asset) => asset.address.toLowerCase());

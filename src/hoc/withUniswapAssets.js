@@ -1,41 +1,35 @@
 import {
   filter,
   get,
-  keys,
   map,
-  mapKeys,
   property,
   sortBy,
-  toLower,
   values,
 } from 'lodash';
 import { connect } from 'react-redux';
-import { compose, withProps } from 'recompact';
+import {
+  compose,
+  withProps,
+} from 'recompact';
 import { createSelector } from 'reselect';
-import uniswapAssetsRaw from '../references/uniswap-pairs.json';
+import {
+  uniswapAssetAddresses,
+  uniswapAssetsClean,
+} from '../references';
 import withAccountData from './withAccountData';
 
 const allAssetsSelector = state => state.allAssets;
 const uniswapAssetsSelector = state => state.uniswapAssets;
 
-export const uniswapAssetsRawLoweredKeys = mapKeys(uniswapAssetsRaw, (value, key) => toLower(key));
-export const uniswapAssetAddresses = keys(uniswapAssetsRawLoweredKeys);
-
 const filterUniswapAssetsByAvailability = ({ address }) => uniswapAssetAddresses.includes(address);
-
-const mapUniswapAssetItem = (asset) => {
-  const exchangeAddress = get(uniswapAssetsRawLoweredKeys, `${asset.address}.exchangeAddress`);
-
-  return {
-    ...asset,
-    exchangeAddress,
-    uniqueId: exchangeAddress,
-  };
-};
 
 const withAssetsAvailableOnUniswap = (allAssets) => {
   const availableAssets = filter(allAssets, filterUniswapAssetsByAvailability);
-  return { assetsAvailableOnUniswap: map(availableAssets, mapUniswapAssetItem) };
+  const assetsAvailableOnUniswap = map(availableAssets, (asset) => ({
+    ...asset,
+    exchangeAddress: get(uniswapAssetsClean, `${asset.address}.exchangeAddress`),
+  }));
+  return { assetsAvailableOnUniswap };
 };
 
 const withSortedUniswapAssets = (unsortedUniswapAssets) => ({
@@ -52,7 +46,12 @@ const withSortedUniswapAssetsSelector = createSelector(
   withSortedUniswapAssets,
 );
 
-const mapStateToProps = ({ uniswap: { uniswapAssets } }) => ({ uniswapAssets });
+const mapStateToProps = ({
+  uniswap: { uniswapAssets },
+}) => ({
+  uniswapAssets,
+});
+
 
 export default compose(
   connect(mapStateToProps),
