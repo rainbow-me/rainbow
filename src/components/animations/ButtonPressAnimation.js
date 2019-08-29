@@ -135,15 +135,17 @@ export default class ButtonPressAnimation extends PureComponent {
     }
   }
 
-  createInteraction = () => {
+  handleActive = () => {
     if (this.props.isInteraction) {
       this.handle = InteractionManager.createInteractionHandle();
+    } else {
+      this.handlePress();
     }
   }
 
-  handleHaptic = () => {
-    if (this.props.enableHapticFeedback) {
-      ReactNativeHapticFeedback.trigger('selection');
+  handleEnd = () => {
+    if (this.props.isInteraction) {
+      InteractionManager.runAfterInteractions(this.handlePress);
     }
   }
 
@@ -155,16 +157,14 @@ export default class ButtonPressAnimation extends PureComponent {
   }
 
   handlePress = () => {
+    if (this.props.enableHapticFeedback) {
+      ReactNativeHapticFeedback.trigger('selection');
+    }
+
     if (this.props.onPress) {
       this.props.onPress();
     }
   }
-
-  handleRunInteraction = () => (
-    this.props.isInteraction
-      ? InteractionManager.runAfterInteractions(this.handlePress)
-      : this.handlePress()
-  )
 
   render = () => {
     const {
@@ -238,14 +238,11 @@ export default class ButtonPressAnimation extends PureComponent {
                 this.gestureState,
                 cond(
                   eq(this.gestureState, ACTIVE),
-                  call([], this.createInteraction),
+                  call([], this.handleActive),
                   // else if
                   cond(
                     eq(this.gestureState, END),
-                    [
-                      call([], this.handleHaptic),
-                      call([], this.handleRunInteraction),
-                    ],
+                    call([], this.handleEnd),
                   ),
                 ),
               ),
