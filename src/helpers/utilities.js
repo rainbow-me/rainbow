@@ -59,7 +59,6 @@ export const mod = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
   .mod(BigNumber(`${numberTwo}`))
   .toFixed();
 
-
 /**
  * @desc compares if numberOne is greater than or equal to numberTwo
  * @param  {Number}   numberOne
