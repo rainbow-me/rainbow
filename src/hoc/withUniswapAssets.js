@@ -11,17 +11,14 @@ import {
   values,
 } from 'lodash';
 import { connect } from 'react-redux';
-import {
-  compose,
-  omitProps,
-  withProps,
-} from 'recompact';
+import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';
 import uniswapAssetsRaw from '../references/uniswap-pairs.json';
 import withAccountData from './withAccountData';
 
 const allAssetsSelector = state => state.allAssets;
 const uniswapAssetsSelector = state => state.uniswapAssets;
+
 export const uniswapAssetsRawLoweredKeys = mapKeys(uniswapAssetsRaw, (value, key) => toLower(key));
 export const uniswapAssetAddresses = keys(uniswapAssetsRawLoweredKeys);
 

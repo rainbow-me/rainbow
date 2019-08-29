@@ -13,12 +13,7 @@ import React, { Fragment, PureComponent } from 'react';
 import { InteractionManager, LayoutAnimation, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
-import {
-  compose,
-  mapProps,
-  toClass,
-  withProps,
-} from 'recompact';
+import { compose, mapProps, toClass } from 'recompact';
 import { Text } from '../components/text';
 import { executeSwap } from '../handlers/uniswap';
 import {
@@ -204,7 +199,6 @@ class ExchangeModal extends PureComponent {
       inputAmount,
       inputAsExactAmount,
       inputCurrency,
-      nativeAmount,
       outputAmount,
       outputCurrency,
     } = this.state;
@@ -440,7 +434,6 @@ class ExchangeModal extends PureComponent {
       slippage,
     } = this.state;
 
-
     return (
       <KeyboardFixedOpenLayout>
         <NavigationEvents
@@ -517,18 +510,12 @@ class ExchangeModal extends PureComponent {
   }
 }
 
-const withMockedPrices = withProps({
-  currencyToDollar: 3,
-  targetCurrencyToDollar: 2,
-});
-
 export default compose(
   withAccountAddress,
   withAccountData,
   withAccountSettings,
   withBlockedHorizontalSwipe,
   withKeyboardFocusHistory,
-  withMockedPrices,
   withNavigationFocus,
   withTransactionConfirmationScreen,
   withTransitionProps,
