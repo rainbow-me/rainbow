@@ -61,6 +61,7 @@ PODS:
   - nanopb/encode (0.3.901)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   - Protobuf (3.9.0)
   - React (0.60.5):
     - React-Core (= 0.60.5)
@@ -112,6 +113,9 @@ PODS:
 =======
   - Protobuf (3.9.0)
 >>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
+=======
+  - Protobuf (3.9.0)
+>>>>>>> 011e4f4a... cleanup after merging decimal-logic
   - React (0.59.9):
     - React/Core (= 0.59.9)
 >>>>>>> 730537c6... catching up with latest mike-swap-ui changes
@@ -180,6 +184,7 @@ PODS:
     - React
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   - SDWebImage (5.1.1):
     - SDWebImage/Core (= 5.1.1)
   - SDWebImage/Core (5.1.1)
@@ -193,6 +198,11 @@ PODS:
     - SDWebImage/Core (= 5.1.0)
   - SDWebImage/Core (5.1.0)
 >>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
+=======
+  - SDWebImage (5.1.0):
+    - SDWebImage/Core (= 5.1.0)
+  - SDWebImage/Core (5.1.0)
+>>>>>>> 011e4f4a... cleanup after merging decimal-logic
   - yoga (0.59.9.React)
 >>>>>>> 730537c6... catching up with latest mike-swap-ui changes
 
@@ -398,6 +408,7 @@ SPEC CHECKSUMS:
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   SDWebImage: 96d7f03415ccb28d299d765f93557ff8a617abd8
   yoga: 312528f5bbbba37b4dcea5ef00e8b4033fdd9411
 =======
@@ -405,6 +416,9 @@ SPEC CHECKSUMS:
 =======
   SDWebImage: fb387001955223213dde14bc08c8b73f371f8d8f
 >>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
+=======
+  SDWebImage: fb387001955223213dde14bc08c8b73f371f8d8f
+>>>>>>> 011e4f4a... cleanup after merging decimal-logic
   yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
 >>>>>>> 730537c6... catching up with latest mike-swap-ui changes
 
