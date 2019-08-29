@@ -22,7 +22,7 @@ const UnlockAssetButton = ({
   onPress,
   shadows,
 }) => (
-  <ButtonPressAnimation onPress={onPress}>
+  <ButtonPressAnimation isInteraction={true} onPress={onPress}>
     <Row flex={0} css={margin(0, 15)}>
       <ShadowStack
         {...position.coverAsObject}
@@ -57,8 +57,14 @@ const UnlockAssetButton = ({
   </ButtonPressAnimation>
 );
 
-UnlockAssetButton.propTypes = CoolButton.propTypes;
+UnlockAssetButton.propTypes = {
+  // see CoolButton's proptypes
+  ...CoolButton.propTypes,
+};
 
-UnlockAssetButton.defaultProps = CoolButton.defaultProps;
+UnlockAssetButton.defaultProps = {
+  // see CoolButton's default props
+  ...CoolButton.defaultProps,
+};
 
 export default withNeverRerender(UnlockAssetButton);

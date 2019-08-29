@@ -1,9 +1,37 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { onlyUpdateForPropTypes } from 'recompact';
 import { colors } from '../../styles';
 import { HoldToAuthorizeButton } from '../buttons';
+import { Icon } from '../icons';
+import { Centered, RowWithMargins } from '../layout';
+import { Text } from '../text';
 import { SlippageWarningTheshold } from './SlippageWarning';
+
+const UnlockingSpinner = ({ ...props }) => {
+  // lol this isnt done
+  return (
+    <Centered direction="column">
+      <RowWithMargins margin={8}>
+        <Icon name="spinner" />
+        <Text
+          color="white"
+          size="large"
+          weight="semibold"
+        >
+          Unlocking
+        </Text>
+      </RowWithMargins>
+      <Text
+        color="white"
+        opacity={0.4}
+        size="smedium"
+        weight="medium"
+      >
+        {`~ 12s Remaining`}
+      </Text>
+    </Centered>
+  );
+};
 
 const ConfirmExchangeButton = ({
   disabled,
@@ -11,7 +39,8 @@ const ConfirmExchangeButton = ({
   isAssetApproved,
   isSufficientBalance,
   isUnlockingAsset,
-  onPress,
+  onSubmit,
+  onUnlockAsset,
   slippage,
   ...props
 }) => {
@@ -28,10 +57,13 @@ const ConfirmExchangeButton = ({
 
   return (
     <HoldToAuthorizeButton
-      disabled={disabled}
+      disabled={disabled || !isSufficientBalance || isUnlockingAsset}
+      disabledBackgroundColor={colors.grey20}
       flex={1}
-      hideBiometricIcon={isUnlockingAsset}
-      onLongPress={onPress}
+      hideBiometricIcon={isUnlockingAsset || !isAssetApproved}
+      label={label}
+      onLongPress={isAssetApproved ? onSubmit : null}
+      onPress={isAssetApproved ? null : onUnlockAsset}
       shadows={[
         [0, 3, 5, colors.black, 0.2],
         [0, 6, 10, colors.black, 0.14],
@@ -40,7 +72,10 @@ const ConfirmExchangeButton = ({
       theme="dark"
       {...props}
     >
-      {label}
+      {isUnlockingAsset
+        ? <UnlockingSpinner />
+        : undefined
+      }
     </HoldToAuthorizeButton>
   );
 };
@@ -51,8 +86,9 @@ ConfirmExchangeButton.propTypes = {
   isAssetApproved: PropTypes.bool,
   isSufficientBalance: PropTypes.bool,
   isUnlockingAsset: PropTypes.bool,
-  onPress: PropTypes.func,
+  onSubmit: PropTypes.func,
+  onUnlockAsset: PropTypes.func,
   slippage: PropTypes.number,
 };
 
-export default ConfirmExchangeButton;//onlyUpdateForPropTypes();
+export default ConfirmExchangeButton;

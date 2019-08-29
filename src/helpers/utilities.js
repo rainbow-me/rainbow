@@ -95,7 +95,7 @@ export const updatePrecisionToDisplay = (amount, nativePrice) => {
     .toNumber();
   const result = bnAmount.decimalPlaces(truncatedPrecision, BigNumber.ROUND_DOWN);
   return result.isZero()
-    ?  BigNumber(bnAmount.toPrecision(1, BigNumber.ROUND_DOWN)).toFixed()
+    ? BigNumber(bnAmount.toPrecision(1, BigNumber.ROUND_DOWN)).toFixed()
     : result.toFixed();
 };
 

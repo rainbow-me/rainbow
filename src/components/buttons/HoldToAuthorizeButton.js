@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { LongPressGestureHandler, State, TapGestureHandler } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing } from 'react-native-reanimated';
@@ -28,7 +28,7 @@ const ButtonBorderRadius = 30;
 const ButtonHeight = 59;
 
 const ButtonDisabledBgColor = {
-  dark: colors.darkGrey,// blueGreyLighter,
+  dark: colors.darkGrey, // blueGreyLighter,
   light: colors.lighterGrey,
 };
 
@@ -120,9 +120,12 @@ export default class HoldToAuthorizeButton extends PureComponent {
     backgroundColor: PropTypes.string,
     children: PropTypes.any,
     disabled: PropTypes.bool,
+    disabledBackgroundColor: PropTypes.string,
     hideBiometricIcon: PropTypes.bool,
     isAuthorizing: PropTypes.bool,
+    label: PropTypes.string,
     onLongPress: PropTypes.func.isRequired,
+    onPress: PropTypes.func,
     shadows: PropTypes.arrayOf(PropTypes.array),
     style: PropTypes.object,
     theme: PropTypes.oneOf(['light', 'dark']),
@@ -152,12 +155,12 @@ export default class HoldToAuthorizeButton extends PureComponent {
     }
   }
 
-  onTapChange = ({ nativeEvent }) => {
-    const { disabled } = this.props;
+  onTapChange = ({ nativeEvent: { state } }) => {
+    const { disabled, onPress } = this.props;
 
-    this.tapHandlerState = nativeEvent.state;
+    this.tapHandlerState = state;
 
-    if (nativeEvent.state === State.BEGAN) {
+    if (state === State.BEGAN) {
       if (disabled) {
         ReactNativeHapticFeedback.trigger('notificationWarning');
         buildAnimation(this.scale, { toValue: 0.99 }).start(() => {
@@ -170,7 +173,11 @@ export default class HoldToAuthorizeButton extends PureComponent {
           toValue: 100,
         }).start();
       }
-    } else if (!disabled && nativeEvent.state === State.END) {
+    } else if (!disabled && state === State.ACTIVE) {
+      if (onPress) {
+        onPress();
+      }
+    } else if (!disabled && state === State.END) {
       buildAnimation(this.scale, { toValue: 1 }).start();
       buildAnimation(this.animation, {
         duration: calculateReverseDuration(this.animation),
@@ -197,20 +204,50 @@ export default class HoldToAuthorizeButton extends PureComponent {
     }
   }
 
-  render() {
+  renderContent = () => {
     const {
-      backgroundColor,
       children,
       disabled,
       hideBiometricIcon,
+      label,
+    } = this.props;
+
+    const { isAuthorizing } = this.state;
+
+    if (children) {
+      return children;
+    }
+
+    return (
+      <Fragment>
+        {(!disabled && !hideBiometricIcon) && (
+          <HoldToAuthorizeButtonIcon
+            animatedValue={this.animation}
+            isAuthorizing={isAuthorizing}
+          />
+        )}
+        <Title>
+          {isAuthorizing ? 'Authorizing' : label}
+        </Title>
+      </Fragment>
+    );
+  }
+
+  render() {
+    const {
+      backgroundColor,
+      disabled,
+      disabledBackgroundColor,
       shadows,
       style,
       theme,
       ...props
     } = this.props;
-    const { isAuthorizing } = this.state;
 
-    const bgColor = disabled ? ButtonDisabledBgColor[theme] : backgroundColor;
+    let bgColor = backgroundColor;
+    if (disabled) {
+      bgColor = disabledBackgroundColor || ButtonDisabledBgColor[theme];
+    }
 
     return (
       <TapGestureHandler onHandlerStateChange={this.onTapChange}>
@@ -227,15 +264,7 @@ export default class HoldToAuthorizeButton extends PureComponent {
               width="100%"
             >
               <Content backgroundColor={bgColor}>
-                {(!disabled && !hideBiometricIcon) && (
-                  <HoldToAuthorizeButtonIcon
-                    animatedValue={this.animation}
-                    isAuthorizing={isAuthorizing}
-                  />
-                )}
-                <Title>
-                  {isAuthorizing ? 'Authorizing' : children}
-                </Title>
+                {this.renderContent()}
                 <InnerBorder radius={ButtonBorderRadius} />
               </Content>
             </ShadowStack>
