@@ -6,6 +6,7 @@ import {
   tradeTokensForExactEthWithData,
   tradeTokensForExactTokensWithData,
 } from '@uniswap/sdk';
+import BigNumber from 'bignumber.js';
 import { get, isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
@@ -18,10 +19,12 @@ import {
   toClass,
   withProps,
 } from 'recompact';
+import { Text } from '../components/text';
 import { executeSwap } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
+  convertAmountToNativeDisplay,
   convertAmountToRawAmount,
   convertRawAmountToDecimalFormat,
   greaterThan,
@@ -99,11 +102,15 @@ class ExchangeModal extends PureComponent {
     inputAmountDisplay: null,
     inputAsExactAmount: false,
     inputCurrency: ethereumUtils.getAsset(this.props.allAssets),
+    inputExecutionRate: null,
+    inputNativePrice: null,
     isAssetApproved: true,
     nativeAmount: null,
     outputAmount: null,
     outputAmountDisplay: null,
     outputCurrency: null,
+    outputExecutionRate: null,
+    outputNativePrice: null,
     showConfirmButton: false,
     slippage: null,
     tradeDetails: null,
@@ -195,7 +202,7 @@ class ExchangeModal extends PureComponent {
   }
 
   getMarketDetails = async () => {
-    const { chainId } = this.props;
+    const { chainId, nativeCurrency } = this.props;
     const {
       inputAmount,
       inputAsExactAmount,
@@ -245,7 +252,38 @@ class ExchangeModal extends PureComponent {
       const amountToUpdate = get(tradeDetails, `${updatedAmountKey}.amount`);
       const decimals = inputAsExactAmount ? outputDecimals : inputDecimals;
       const rawUpdatedValue = convertRawAmountToDecimalFormat(amountToUpdate, decimals);
+
+      let inputExecutionRate = '';
+      let outputExecutionRate = '';
+      let inputNativePrice = '';
+      let outputNativePrice = '';
+
+      if (inputCurrency) {
+        inputExecutionRate = updatePrecisionToDisplay(
+          get(tradeDetails, 'executionRate.rate', BigNumber(0)),
+          get(inputCurrency, 'price.value'),
+        );
+        inputNativePrice = convertAmountToNativeDisplay(
+          get(inputCurrency, 'price.value', 0),
+          nativeCurrency,
+        );
+      }
+      if (outputCurrency) {
+        outputExecutionRate = updatePrecisionToDisplay(
+          get(tradeDetails, 'executionRate.rateInverted', BigNumber(0)),
+          get(outputCurrency, 'price.value'),
+        );
+
+        outputNativePrice = convertAmountToNativeDisplay(
+          get(outputCurrency, 'price.value', 0),
+          nativeCurrency,
+        );
+      }
       this.setState({
+        inputExecutionRate,
+        inputNativePrice,
+        outputExecutionRate,
+        outputNativePrice,
         slippage: get(tradeDetails, 'marketRateSlippage', 0).toFixed(),
         tradeDetails,
         [updatedAmountDisplayKey]: updatePrecisionToDisplay(rawUpdatedValue, get(inputAsExactAmount ? outputCurrency : inputCurrency, 'price.value')),
@@ -397,13 +435,18 @@ class ExchangeModal extends PureComponent {
     const {
       inputAmountDisplay,
       inputCurrency,
+      inputExecutionRate,
+      inputNativePrice,
       isAssetApproved,
       nativeAmount,
       outputAmountDisplay,
       outputCurrency,
+      outputExecutionRate,
+      outputNativePrice,
       showConfirmButton,
       slippage,
     } = this.state;
+
 
     return (
       <KeyboardFixedOpenLayout>
@@ -455,6 +498,7 @@ class ExchangeModal extends PureComponent {
               </Column>
             </FloatingPanel>
             <SlippageWarning slippage={slippage} />
+            <Text>${inputExecutionRate} ${outputExecutionRate} ${inputNativePrice} ${outputNativePrice}</Text>
             {showConfirmButton && (
               <Fragment>
                 <Centered
