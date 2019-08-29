@@ -6,22 +6,20 @@ import {
   tradeTokensForExactEthWithData,
   tradeTokensForExactTokensWithData,
 } from '@uniswap/sdk';
+import BigNumber from 'bignumber.js';
 import { get, isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { InteractionManager, LayoutAnimation, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
-import {
-  compose,
-  mapProps,
-  toClass,
-  withProps,
-} from 'recompact';
+import { compose, mapProps, toClass } from 'recompact';
+import { Text } from '../components/text';
 import { executeSwap } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
+  convertAmountToNativeDisplay,
   convertAmountToRawAmount,
   convertRawAmountToDecimalFormat,
   greaterThan,
@@ -99,11 +97,16 @@ class ExchangeModal extends PureComponent {
     inputAmountDisplay: null,
     inputAsExactAmount: false,
     inputCurrency: ethereumUtils.getAsset(this.props.allAssets),
+    inputExecutionRate: null,
+    inputNativePrice: null,
     isAssetApproved: true,
+    isSufficientBalance: true,
     nativeAmount: null,
     outputAmount: null,
     outputAmountDisplay: null,
     outputCurrency: null,
+    outputExecutionRate: null,
+    outputNativePrice: null,
     showConfirmButton: false,
     slippage: null,
     tradeDetails: null,
@@ -137,7 +140,13 @@ class ExchangeModal extends PureComponent {
     const isNewInputAmount = isNewValueForPath(this.state, prevState, 'inputAmount');
     const isNewOutputAmount = isNewValueForPath(this.state, prevState, 'outputAmount');
 
-    if (isNewNativeAmount || isNewInputAmount || isNewOutputAmount) {
+    const isNewInputCurrency = isNewValueForPath(this.state, prevState, 'inputCurrency');
+    const isNewOutputCurrency = isNewValueForPath(this.state, prevState, 'outputCurrency');
+
+    const isNewAmount = isNewNativeAmount || isNewInputAmount || isNewOutputAmount;
+    const isNewCurrency = isNewInputCurrency || isNewOutputCurrency;
+
+    if (isNewAmount || isNewCurrency) {
       this.getMarketDetails();
       LayoutAnimation.easeInEaseOut();
     }
@@ -195,12 +204,11 @@ class ExchangeModal extends PureComponent {
   }
 
   getMarketDetails = async () => {
-    const { chainId } = this.props;
+    const { chainId, nativeCurrency } = this.props;
     const {
       inputAmount,
       inputAsExactAmount,
       inputCurrency,
-      nativeAmount,
       outputAmount,
       outputCurrency,
     } = this.state;
@@ -212,8 +220,15 @@ class ExchangeModal extends PureComponent {
     }
 
     try {
-      const { address: inputAddress, decimals: inputDecimals } = inputCurrency;
-      const { address: outputAddress, decimals: outputDecimals } = outputCurrency;
+      const {
+        address: inputAddress,
+        balance: { amount: inputBalance },
+        decimals: inputDecimals,
+      } = inputCurrency;
+      const {
+        address: outputAddress,
+        decimals: outputDecimals,
+      } = outputCurrency;
 
       const isInputEth = inputAddress === 'eth';
       const isOutputEth = outputAddress === 'eth';
@@ -240,24 +255,60 @@ class ExchangeModal extends PureComponent {
           : tradeTokensForExactTokensWithData(inputReserve, outputReserve, rawOutputAmount, chainId);
       }
 
-      const updatedAmountKey = inputAsExactAmount ? 'outputAmount' : 'inputAmount';
-      const updatedAmountDisplayKey = inputAsExactAmount ? 'outputAmountDisplay' : 'inputAmountDisplay';
-      const amountToUpdate = get(tradeDetails, `${updatedAmountKey}.amount`);
-      const decimals = inputAsExactAmount ? outputDecimals : inputDecimals;
-      const rawUpdatedValue = convertRawAmountToDecimalFormat(amountToUpdate, decimals);
+      let inputExecutionRate = '';
+      let outputExecutionRate = '';
+      let inputNativePrice = '';
+      let outputNativePrice = '';
+
+      if (inputCurrency) {
+        inputExecutionRate = updatePrecisionToDisplay(
+          get(tradeDetails, 'executionRate.rate', BigNumber(0)),
+          get(inputCurrency, 'price.value'),
+        );
+        inputNativePrice = convertAmountToNativeDisplay(
+          get(inputCurrency, 'price.value', 0),
+          nativeCurrency,
+        );
+      }
+
+      if (outputCurrency) {
+        outputExecutionRate = updatePrecisionToDisplay(
+          get(tradeDetails, 'executionRate.rateInverted', BigNumber(0)),
+          get(outputCurrency, 'price.value'),
+        );
+
+        outputNativePrice = convertAmountToNativeDisplay(
+          get(outputCurrency, 'price.value', 0),
+          nativeCurrency,
+        );
+      }
+
       this.setState({
+        inputExecutionRate,
+        inputNativePrice,
+        isSufficientBalance: Number(inputBalance) >= Number(inputAmount),
+        outputExecutionRate,
+        outputNativePrice,
         slippage: get(tradeDetails, 'marketRateSlippage', 0).toFixed(),
         tradeDetails,
-        [updatedAmountDisplayKey]: updatePrecisionToDisplay(rawUpdatedValue, get(inputAsExactAmount ? outputCurrency : inputCurrency, 'price.value')),
-        [updatedAmountKey]: rawUpdatedValue,
       });
+
+      if (inputAsExactAmount) {
+        const updatedAmount = get(tradeDetails, 'outputAmount.amount');
+        const rawUpdatedAmount = convertRawAmountToDecimalFormat(updatedAmount, outputDecimals);
+        this.setOutputAmount(rawUpdatedAmount, false); // should this be true?
+      } else {
+        const updatedAmount = get(tradeDetails, 'inputAmount.amount');
+        const rawUpdatedAmount = convertRawAmountToDecimalFormat(updatedAmount, inputDecimals);
+        this.setInputAmount(rawUpdatedAmount, false); // should this be true?
+      }
     } catch (error) {
       console.log('error getting market details', error);
       // TODO
     }
   }
 
-  setInputAmount = (inputAmount) => {
+  setInputAmount = (inputAmount, isExact = true) => {
     this.setState(({ inputCurrency }) => {
       const nativePrice = get(inputCurrency, 'native.price.amount', 0);
 
@@ -268,34 +319,33 @@ class ExchangeModal extends PureComponent {
 
       return {
         inputAmount,
-        inputAmountDisplay: inputAmount,
-        inputAsExactAmount: true,
+        inputAmountDisplay: updatePrecisionToDisplay(inputAmount, get(inputCurrency, 'price.value')),
+        inputAsExactAmount: isExact,
         nativeAmount,
       };
     });
   }
 
-  setNativeAmount = (nativeAmount) => {
+  setNativeAmount = (nativeAmount, isExact = true) => {
     this.setState(({ inputCurrency }) => {
       const nativePrice = get(inputCurrency, 'native.price.amount', 0);
       const inputAmount = convertAmountFromNativeValue(nativeAmount, nativePrice);
-      const inputAmountDisplay = updatePrecisionToDisplay(inputAmount, get(inputCurrency, 'price.value'));
 
       return {
         inputAmount,
-        inputAmountDisplay,
-        inputAsExactAmount: true,
+        inputAmountDisplay: updatePrecisionToDisplay(inputAmount, get(inputCurrency, 'price.value')),
+        inputAsExactAmount: isExact,
         nativeAmount,
       };
     });
   }
 
-  setOutputAmount = (outputAmount) => {
-    this.setState({
-      inputAsExactAmount: false,
+  setOutputAmount = (outputAmount, isExact = false) => {
+    this.setState(({ outputCurrency }) => ({
+      inputAsExactAmount: isExact,
       outputAmount,
-      outputAmountDisplay: outputAmount,
-    });
+      outputAmountDisplay: updatePrecisionToDisplay(outputAmount, get(outputCurrency, 'price.value')),
+    }));
   }
 
   setInputCurrency = (inputCurrency, force) => {
@@ -397,10 +447,15 @@ class ExchangeModal extends PureComponent {
     const {
       inputAmountDisplay,
       inputCurrency,
+      inputExecutionRate,
+      inputNativePrice,
       isAssetApproved,
+      isSufficientBalance,
       nativeAmount,
       outputAmountDisplay,
       outputCurrency,
+      outputExecutionRate,
+      outputNativePrice,
       showConfirmButton,
       slippage,
     } = this.state;
@@ -455,6 +510,13 @@ class ExchangeModal extends PureComponent {
               </Column>
             </FloatingPanel>
             <SlippageWarning slippage={slippage} />
+            <Centered
+              css={padding(19, 15, 0)}
+              flexShrink={0}
+              width="100%"
+            >
+              <Text color="white">{inputExecutionRate} {outputExecutionRate} {inputNativePrice} {outputNativePrice}</Text>
+            </Centered>
             {showConfirmButton && (
               <Fragment>
                 <Centered
@@ -463,8 +525,13 @@ class ExchangeModal extends PureComponent {
                   width="100%"
                 >
                   <ConfirmExchangeButton
-                    disabled={!Number(inputAmountDisplay)}
+                    disabled={!Number(inputAmountDisplay) || !isSufficientBalance}
+                    inputCurrencyName={get(inputCurrency, 'name')}
+                    isAssetApproved={isAssetApproved}
+                    isSufficientBalance={isSufficientBalance}
+                    isUnlockingAsset={false}
                     onPress={this.handleSubmit}
+                    slippage={slippage}
                   />
                 </Centered>
                 <ExchangeGasFeeButton
@@ -480,18 +547,12 @@ class ExchangeModal extends PureComponent {
   }
 }
 
-const withMockedPrices = withProps({
-  currencyToDollar: 3,
-  targetCurrencyToDollar: 2,
-});
-
 export default compose(
   withAccountAddress,
   withAccountData,
   withAccountSettings,
   withBlockedHorizontalSwipe,
   withKeyboardFocusHistory,
-  withMockedPrices,
   withNavigationFocus,
   withTransactionConfirmationScreen,
   withTransitionProps,
