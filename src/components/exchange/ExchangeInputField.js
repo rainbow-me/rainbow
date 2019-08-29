@@ -20,16 +20,17 @@ import UnlockAssetButton from './UnlockAssetButton';
 export default class ExchangeInputField extends Component {
   static propTypes = {
     inputAmount: PropTypes.string,
-    inputCurrency: PropTypes.string,
+    inputCurrencySymbol: PropTypes.string,
     inputFieldRef: PropTypes.func,
     isAssetApproved: PropTypes.bool,
+    isUnlockingAsset: PropTypes.bool,
     nativeAmount: PropTypes.string,
     nativeCurrency: PropTypes.string,
     nativeFieldRef: PropTypes.func,
     onFocus: PropTypes.func,
     onPressMaxBalance: PropTypes.func,
     onPressSelectInputCurrency: PropTypes.func,
-    onPressUnlockAsset: PropTypes.func,
+    onUnlockAsset: PropTypes.func,
     setInputAmount: PropTypes.func,
     setNativeAmount: PropTypes.func,
   }
@@ -39,18 +40,20 @@ export default class ExchangeInputField extends Component {
   padding = 15
 
   shouldComponentUpdate = (nextProps, nextState) => {
-    const isNewInputAmount = isNewValueForPath(this.props, nextProps, 'inputAmount');
-    const isNewInputCurrency = isNewValueForPath(this.props, nextProps, 'inputCurrency');
     const isNewAssetApproved = isNewValueForPath(this.props, nextProps, 'isAssetApproved');
+    const isNewInputAmount = isNewValueForPath(this.props, nextProps, 'inputAmount');
+    const isNewInputCurrency = isNewValueForPath(this.props, nextProps, 'inputCurrencySymbol');
     const isNewNativeAmount = isNewValueForPath(this.props, nextProps, 'nativeAmount');
     const isNewNativeCurrency = isNewValueForPath(this.props, nextProps, 'nativeCurrency');
+    const isNewUnlockingAsset = isNewValueForPath(this.props, nextProps, 'isUnlockingAsset');
 
     return (
-      isNewInputAmount
+      isNewAssetApproved
+      || isNewInputAmount
       || isNewInputCurrency
-      || isNewAssetApproved
       || isNewNativeAmount
       || isNewNativeCurrency
+      || isNewUnlockingAsset
     );
   }
 
@@ -68,15 +71,16 @@ export default class ExchangeInputField extends Component {
   render = () => {
     const {
       inputAmount,
-      inputCurrency,
+      inputCurrencySymbol,
       isAssetApproved,
+      isUnlockingAsset,
       nativeAmount,
       nativeCurrency,
       nativeFieldRef,
       onFocus,
       onPressMaxBalance,
       onPressSelectInputCurrency,
-      onPressUnlockAsset,
+      onUnlockAsset,
       setInputAmount,
       setNativeAmount,
     } = this.props;
@@ -94,27 +98,27 @@ export default class ExchangeInputField extends Component {
               paddingLeft={this.padding}
             >
               <CoinIcon
-                bgColor={inputCurrency ? undefined : skeletonColor}
+                bgColor={inputCurrencySymbol ? undefined : skeletonColor}
                 flex={0}
                 size={40}
-                symbol={inputCurrency}
+                symbol={inputCurrencySymbol}
               />
               <ExchangeInput
-                editable={!!inputCurrency}
+                editable={!!inputCurrencySymbol}
                 onChangeText={setInputAmount}
                 onFocus={onFocus}
-                placeholder={inputCurrency ? '0' : EnDash.unicode}
-                placeholderTextColor={inputCurrency ? undefined : skeletonColor}
+                placeholder={inputCurrencySymbol ? '0' : EnDash.unicode}
+                placeholderTextColor={inputCurrencySymbol ? undefined : skeletonColor}
                 refInput={this.handleInputFieldRef}
                 value={inputAmount}
               />
             </RowWithMargins>
           </TouchableWithoutFeedback>
           <CoolButton
-            color={inputCurrency ? colors.dark : colors.appleBlue}
+            color={inputCurrencySymbol ? colors.dark : colors.appleBlue}
             onPress={onPressSelectInputCurrency}
           >
-            {inputCurrency || 'Choose a Coin'}
+            {inputCurrencySymbol || 'Choose a Coin'}
           </CoolButton>
         </Row>
         <Row
@@ -131,7 +135,7 @@ export default class ExchangeInputField extends Component {
             onFocus={onFocus}
             setNativeAmount={setNativeAmount}
           />
-          {isAssetApproved ? (
+          {(isAssetApproved || isUnlockingAsset) ? (
             <ButtonPressAnimation
               marginRight={4}
               onPress={onPressMaxBalance}
@@ -147,7 +151,7 @@ export default class ExchangeInputField extends Component {
               </RowWithMargins>
             </ButtonPressAnimation>
           ) : (
-            <UnlockAssetButton onPress={onPressUnlockAsset} />
+            <UnlockAssetButton onPress={onUnlockAsset} />
           )}
         </Row>
       </ColumnWithMargins>

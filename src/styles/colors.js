@@ -17,6 +17,7 @@ const base = {
   darkGrey: '#71778a', // '113, 119, 138'
   dodgerBlue: '#575CFF', // '87, 92, 255'
   green: '#00994d', // '0, 153, 77'
+  grey20: '#333333', // '51, 51, 51'
   grey: '#a9adb9', // '169, 173, 185'
   headerTitle: '#aaafbd', // '170, 175, 189'
   highlightBackground: '#F0F7FF', // '240, 247, 255'

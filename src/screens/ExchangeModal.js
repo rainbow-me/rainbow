@@ -101,6 +101,7 @@ class ExchangeModal extends PureComponent {
     inputNativePrice: null,
     isAssetApproved: true,
     isSufficientBalance: true,
+    isUnlockingAsset: false,
     nativeAmount: null,
     outputAmount: null,
     outputAmountDisplay: null,
@@ -441,6 +442,19 @@ class ExchangeModal extends PureComponent {
     this.props.pushKeyboardFocusHistory(currentTarget);
   }
 
+  handleUnlockAsset = async () => {
+    const {
+      inputCurrency: {
+        address: tokenAddress,
+        exchangeAddress: spender,
+      },
+    } = this.state;
+
+    // const approval = await contractUtils.approve(tokenAddress, spender);
+
+    this.setState({ isUnlockingAsset: true });
+  }
+
   render = () => {
     const { nativeCurrency, transitionPosition } = this.props;
 
@@ -451,6 +465,7 @@ class ExchangeModal extends PureComponent {
       inputNativePrice,
       isAssetApproved,
       isSufficientBalance,
+      isUnlockingAsset,
       nativeAmount,
       outputAmountDisplay,
       outputCurrency,
@@ -487,15 +502,17 @@ class ExchangeModal extends PureComponent {
               <Column align="center" flex={0}>
                 <ExchangeInputField
                   inputAmount={inputAmountDisplay}
-                  inputCurrency={get(inputCurrency, 'symbol', null)}
+                  inputCurrencySymbol={get(inputCurrency, 'symbol', null)}
                   inputFieldRef={this.assignInputFieldRef}
                   isAssetApproved={isAssetApproved}
+                  isUnlockingAsset={isUnlockingAsset}
                   nativeAmount={nativeAmount}
                   nativeCurrency={nativeCurrency}
                   nativeFieldRef={this.assignNativeFieldRef}
                   onFocus={this.handleFocusField}
                   onPressMaxBalance={this.onPressMaxBalance}
                   onPressSelectInputCurrency={this.handleSelectInputCurrency}
+                  onUnlockAsset={this.handleUnlockAsset}
                   setInputAmount={this.setInputAmount}
                   setNativeAmount={this.setNativeAmount}
                 />
@@ -509,14 +526,7 @@ class ExchangeModal extends PureComponent {
                 />
               </Column>
             </FloatingPanel>
-            <SlippageWarning slippage={slippage} />
-            <Centered
-              css={padding(19, 15, 0)}
-              flexShrink={0}
-              width="100%"
-            >
-              <Text color="white">{inputExecutionRate} {outputExecutionRate} {inputNativePrice} {outputNativePrice}</Text>
-            </Centered>
+            {isSufficientBalance && <SlippageWarning slippage={slippage} />}
             {showConfirmButton && (
               <Fragment>
                 <Centered
@@ -525,12 +535,13 @@ class ExchangeModal extends PureComponent {
                   width="100%"
                 >
                   <ConfirmExchangeButton
-                    disabled={!Number(inputAmountDisplay) || !isSufficientBalance}
-                    inputCurrencyName={get(inputCurrency, 'name')}
+                    disabled={isAssetApproved && !Number(inputAmountDisplay)}
+                    inputCurrencyName={get(inputCurrency, 'symbol')}
                     isAssetApproved={isAssetApproved}
                     isSufficientBalance={isSufficientBalance}
-                    isUnlockingAsset={false}
-                    onPress={this.handleSubmit}
+                    isUnlockingAsset={isUnlockingAsset}
+                    onSubmit={this.handleSubmit}
+                    onUnlockAsset={this.handleUnlockAsset}
                     slippage={slippage}
                   />
                 </Centered>
