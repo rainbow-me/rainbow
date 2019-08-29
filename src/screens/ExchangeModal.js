@@ -14,7 +14,6 @@ import { InteractionManager, LayoutAnimation, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import { compose, mapProps, toClass } from 'recompact';
-import { Text } from '../components/text';
 import { executeSwap } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
@@ -137,12 +136,18 @@ class ExchangeModal extends PureComponent {
       this.setState({ showConfirmButton: true });
     }
 
-    const isNewNativeAmount = isNewValueForPath(this.state, prevState, 'nativeAmount');
     const isNewInputAmount = isNewValueForPath(this.state, prevState, 'inputAmount');
     const isNewOutputAmount = isNewValueForPath(this.state, prevState, 'outputAmount');
 
-    const isNewInputCurrency = isNewValueForPath(this.state, prevState, 'inputCurrency');
-    const isNewOutputCurrency = isNewValueForPath(this.state, prevState, 'outputCurrency');
+    const isNewNativeAmount = (
+      // Only consider 'new' if the native input isnt focused,
+      // otherwise itll fight with the user's keystrokes
+      isNewValueForPath(this.state, prevState, 'nativeAmount')
+      && this.nativeFieldRef.isFocused()
+    );
+
+    const isNewInputCurrency = isNewValueForPath(this.state, prevState, 'inputCurrency.uniqueId');
+    const isNewOutputCurrency = isNewValueForPath(this.state, prevState, 'outputCurrency.uniqueId');
 
     const isNewAmount = isNewNativeAmount || isNewInputAmount || isNewOutputAmount;
     const isNewCurrency = isNewInputCurrency || isNewOutputCurrency;
@@ -170,6 +175,8 @@ class ExchangeModal extends PureComponent {
   assignNativeFieldRef = (ref) => { this.nativeFieldRef = ref; }
   assignOutputFieldRef = (ref) => { this.outputFieldRef = ref; }
   /* eslint-enable lines-between-class-members */
+
+  clearInputField = () => this.inputFieldRef.clear()
 
   getCurrencyAllowance = async () => {
     const { accountAddress, allowances, uniswapUpdateAllowances } = this.props;
@@ -287,24 +294,45 @@ class ExchangeModal extends PureComponent {
         );
       }
 
+      const slippage = get(tradeDetails, 'marketRateSlippage', 0).toFixed();
+
       this.setState({
         inputExecutionRate,
         inputNativePrice,
         isSufficientBalance: Number(inputBalance) >= Number(inputAmount),
         outputExecutionRate,
         outputNativePrice,
-        slippage: get(tradeDetails, 'marketRateSlippage', 0).toFixed(),
+        slippage,
         tradeDetails,
       });
 
-      if (inputAsExactAmount) {
+      if (inputAsExactAmount && !this.outputFieldRef.isFocused()) {
         const updatedAmount = get(tradeDetails, 'outputAmount.amount');
         const rawUpdatedAmount = convertRawAmountToDecimalFormat(updatedAmount, outputDecimals);
-        this.setOutputAmount(rawUpdatedAmount, false); // should this be true?
-      } else {
-        const updatedAmount = get(tradeDetails, 'inputAmount.amount');
-        const rawUpdatedAmount = convertRawAmountToDecimalFormat(updatedAmount, inputDecimals);
-        this.setInputAmount(rawUpdatedAmount, true); // should this be true?
+
+        const updatedAmountDisplay = updatePrecisionToDisplay(
+          rawUpdatedAmount,
+          get(outputCurrency, 'price.value'),
+        );
+
+        this.setOutputAmount(rawUpdatedAmount, updatedAmountDisplay);
+      }
+
+      if (!inputAsExactAmount && !this.inputFieldRef.isFocused()) {
+        if (Number(slippage) === 0) {
+          // this isnt working
+          this.setInputAmount(0, undefined, this.clearInputField);
+        } else {
+          const updatedAmount = get(tradeDetails, 'inputAmount.amount');
+          const rawUpdatedAmount = convertRawAmountToDecimalFormat(updatedAmount, inputDecimals);
+
+          const updatedAmountDisplay = updatePrecisionToDisplay(
+            rawUpdatedAmount,
+            get(inputCurrency, 'price.value'),
+          );
+
+          this.setInputAmount(rawUpdatedAmount, updatedAmountDisplay);
+        }
       }
     } catch (error) {
       console.log('error getting market details', error);
@@ -312,25 +340,24 @@ class ExchangeModal extends PureComponent {
     }
   }
 
-  setInputAmount = (inputAmount, isExact = true) => {
+  setInputAmount = (inputAmount, amountDisplay, callback) => {
     this.setState(({ inputCurrency }) => {
-      const nativePrice = get(inputCurrency, 'native.price.amount', 0);
+      const newState = {
+        inputAmount,
+        inputAmountDisplay: amountDisplay !== undefined ? amountDisplay : inputAmount,
+        inputAsExactAmount: true,
+      };
 
-      let nativeAmount = null;
-      if (inputAmount) {
-        nativeAmount = convertAmountToNativeAmount(inputAmount, nativePrice);
+      if (!this.nativeFieldRef.isFocused()) {
+        const nativePrice = get(inputCurrency, 'native.price.amount', 0);
+        newState.nativeAmount = convertAmountToNativeAmount(inputAmount, nativePrice);
       }
 
-      return {
-        inputAmount,
-        inputAmountDisplay: updatePrecisionToDisplay(inputAmount, get(inputCurrency, 'price.value')),
-        inputAsExactAmount: isExact,
-        nativeAmount,
-      };
-    });
+      return newState;
+    }, callback);
   }
 
-  setNativeAmount = (nativeAmount, isExact = true) => {
+  setNativeAmount = (nativeAmount) => {
     this.setState(({ inputCurrency }) => {
       const nativePrice = get(inputCurrency, 'native.price.amount', 0);
       const inputAmount = convertAmountFromNativeValue(nativeAmount, nativePrice);
@@ -338,17 +365,17 @@ class ExchangeModal extends PureComponent {
       return {
         inputAmount,
         inputAmountDisplay: updatePrecisionToDisplay(inputAmount, get(inputCurrency, 'price.value')),
-        inputAsExactAmount: isExact,
+        inputAsExactAmount: true,
         nativeAmount,
       };
     });
   }
 
-  setOutputAmount = (outputAmount, isExact = false) => {
+  setOutputAmount = (outputAmount, amountDisplay) => {
     this.setState(({ outputCurrency }) => ({
-      inputAsExactAmount: isExact,
+      inputAsExactAmount: false,
       outputAmount,
-      outputAmountDisplay: updatePrecisionToDisplay(outputAmount, get(outputCurrency, 'price.value')),
+      outputAmountDisplay: amountDisplay !== undefined ? amountDisplay : outputAmount,
     }));
   }
 
