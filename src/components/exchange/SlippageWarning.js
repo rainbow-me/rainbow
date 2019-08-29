@@ -12,7 +12,8 @@ import { Icon } from '../icons';
 import { Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 
-const SevereSlippageThreshold = 10;
+export const SlippageWarningTheshold = 5;
+const SevereSlippageThreshold = SlippageWarningTheshold * 2;
 
 const Container = styled(Row).attrs({
   align: 'center',
@@ -54,7 +55,7 @@ const SlippageWarning = enhance(({
   severityColor,
   slippage,
 }) => (
-  (slippage < (SevereSlippageThreshold / 2))
+  (slippage < SlippageWarningTheshold)
     ? null
     : (
       <Container>

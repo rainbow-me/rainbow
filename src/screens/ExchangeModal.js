@@ -100,6 +100,7 @@ class ExchangeModal extends PureComponent {
     inputExecutionRate: null,
     inputNativePrice: null,
     isAssetApproved: true,
+    isSufficientBalance: true,
     nativeAmount: null,
     outputAmount: null,
     outputAmountDisplay: null,
@@ -213,8 +214,15 @@ class ExchangeModal extends PureComponent {
     }
 
     try {
-      const { address: inputAddress, decimals: inputDecimals } = inputCurrency;
-      const { address: outputAddress, decimals: outputDecimals } = outputCurrency;
+      const {
+        address: inputAddress,
+        balance: { amount: inputBalance },
+        decimals: inputDecimals,
+      } = inputCurrency;
+      const {
+        address: outputAddress,
+        decimals: outputDecimals,
+      } = outputCurrency;
 
       const isInputEth = inputAddress === 'eth';
       const isOutputEth = outputAddress === 'eth';
@@ -276,6 +284,7 @@ class ExchangeModal extends PureComponent {
       this.setState({
         inputExecutionRate,
         inputNativePrice,
+        isSufficientBalance: Number(inputBalance) >= Number(inputAmount),
         outputExecutionRate,
         outputNativePrice,
         slippage: get(tradeDetails, 'marketRateSlippage', 0).toFixed(),
@@ -432,6 +441,7 @@ class ExchangeModal extends PureComponent {
       inputExecutionRate,
       inputNativePrice,
       isAssetApproved,
+      isSufficientBalance,
       nativeAmount,
       outputAmountDisplay,
       outputCurrency,
@@ -500,8 +510,13 @@ class ExchangeModal extends PureComponent {
                   width="100%"
                 >
                   <ConfirmExchangeButton
-                    disabled={!Number(inputAmountDisplay)}
+                    disabled={!Number(inputAmountDisplay) || !isSufficientBalance}
+                    inputCurrencyName={get(inputCurrency, 'name')}
+                    isAssetApproved={isAssetApproved}
+                    isSufficientBalance={isSufficientBalance}
+                    isUnlockingAsset={false}
                     onPress={this.handleSubmit}
+                    slippage={slippage}
                   />
                 </Centered>
                 <ExchangeGasFeeButton

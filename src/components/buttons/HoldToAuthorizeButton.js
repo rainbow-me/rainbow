@@ -120,6 +120,7 @@ export default class HoldToAuthorizeButton extends PureComponent {
     backgroundColor: PropTypes.string,
     children: PropTypes.any,
     disabled: PropTypes.bool,
+    hideBiometricIcon: PropTypes.bool,
     isAuthorizing: PropTypes.bool,
     onLongPress: PropTypes.func.isRequired,
     shadows: PropTypes.arrayOf(PropTypes.array),
@@ -201,6 +202,7 @@ export default class HoldToAuthorizeButton extends PureComponent {
       backgroundColor,
       children,
       disabled,
+      hideBiometricIcon,
       shadows,
       style,
       theme,
@@ -225,7 +227,7 @@ export default class HoldToAuthorizeButton extends PureComponent {
               width="100%"
             >
               <Content backgroundColor={bgColor}>
-                {!disabled && (
+                {(!disabled && !hideBiometricIcon) && (
                   <HoldToAuthorizeButtonIcon
                     animatedValue={this.animation}
                     isAuthorizing={isAuthorizing}
