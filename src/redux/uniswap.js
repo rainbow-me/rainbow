@@ -6,6 +6,7 @@ import {
   isEmpty,
   keyBy,
   map,
+  toLower,
 } from 'lodash';
 import {
   getAccountLocal,
@@ -73,7 +74,7 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
 
 export const uniswapGetTokenReserve = (tokenAddress) => (dispatch, getState) => (
   new Promise((resolve, reject) => {
-    tokenAddress = tokenAddress.toLowerCase();
+    tokenAddress = toLower(tokenAddress);
     dispatch({ type: UNISWAP_GET_TOKEN_RESERVES_REQUEST });
     const { accountAddress, network } = getState().settings;
     const { tokenReserves } = getState().uniswap;
@@ -149,13 +150,13 @@ export const uniswapUpdateAllowances = (tokenAddress, allowance) => (dispatch, g
 export const uniswapUpdateAssets = (assets) => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const uniswapAssetPrices = map(assets, asset => {
-    const loweredAddress = asset.address.toLowerCase();
+    const loweredAddress = toLower(asset.address);
     return {
       ...asset,
       exchangeAddress: get(uniswapAssetsClean, `[${loweredAddress}].exchangeAddress`),
     };
   });
-  const mappedAssets = keyBy(uniswapAssetPrices, (asset) => asset.address.toLowerCase());
+  const mappedAssets = keyBy(uniswapAssetPrices, asset => toLower(asset.address));
   dispatch({
     payload: mappedAssets,
     type: UNISWAP_UPDATE_ASSETS,
@@ -164,7 +165,7 @@ export const uniswapUpdateAssets = (assets) => (dispatch, getState) => {
 };
 
 export const uniswapUpdateAssetPrice = (address, price) => (dispatch, getState) => {
-  const addressKey = address.toLowerCase();
+  const addressKey = toLower(address);
   const { accountAddress, network } = getState().settings;
   const { uniswapAssets } = getState().uniswap;
   const updatedAsset = { ...uniswapAssets[addressKey], price };

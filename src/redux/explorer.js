@@ -1,9 +1,7 @@
-import { get, isNil } from 'lodash';
+import { isNil } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
-import { uniswapAssetAddresses } from '../hoc/withUniswapAssets';
 import io from 'socket.io-client';
-import { parseAccountAssets } from '../parsers/accounts';
-import { isLowerCaseMatch } from '../utils';
+import { uniswapAssetAddresses } from '../references';
 import {
   addressAssetsReceived,
   assetsReceived,
@@ -24,6 +22,11 @@ const messages = {
     CHANGED: 'changed address assets',
     RECEIVED: 'received address assets',
   },
+  ADDRESS_TRANSACTIONS: {
+    APPENDED: 'appended address transactions',
+    RECEIVED: 'received address transactions',
+    REMOVED: 'removed address transactions',
+  },
   ASSETS: {
     CHANGED: 'changed price',
     RECEIVED: 'received assets',
@@ -32,11 +35,6 @@ const messages = {
   DISCONNECT: 'disconnect',
   ERROR: 'error',
   RECONNECT_ATTEMPT: 'reconnect_attempt',
-  ADDRESS_TRANSACTIONS: {
-    APPENDED: 'appended address transactions',
-    RECEIVED: 'received address transactions',
-    REMOVED: 'removed address transactions',
-  },
 };
 
 // -- Actions ---------------------------------------- //
@@ -141,7 +139,6 @@ const listenOnAddressMessages = socket => (dispatch, getState) => {
   });
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, (message) => {
-    console.log('ADDRESS received', message);
     dispatch(addressAssetsReceived(message));
   });
 
