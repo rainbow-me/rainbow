@@ -262,24 +262,27 @@ class ExchangeModal extends PureComponent {
       let outputNativePrice = '';
 
       if (inputCurrency) {
+        const inputPriceValue = get(inputCurrency, 'price.value', 0);
         inputExecutionRate = updatePrecisionToDisplay(
           get(tradeDetails, 'executionRate.rate', BigNumber(0)),
-          get(inputCurrency, 'price.value'),
+          inputPriceValue,
         );
+
         inputNativePrice = convertAmountToNativeDisplay(
-          get(inputCurrency, 'price.value', 0),
+          inputPriceValue,
           nativeCurrency,
         );
       }
 
       if (outputCurrency) {
+        const outputPriceValue = get(outputCurrency, 'price.value', 0);
         outputExecutionRate = updatePrecisionToDisplay(
           get(tradeDetails, 'executionRate.rateInverted', BigNumber(0)),
-          get(outputCurrency, 'price.value'),
+          outputPriceValue,
         );
 
         outputNativePrice = convertAmountToNativeDisplay(
-          get(outputCurrency, 'price.value', 0),
+          outputPriceValue,
           nativeCurrency,
         );
       }
@@ -301,7 +304,7 @@ class ExchangeModal extends PureComponent {
       } else {
         const updatedAmount = get(tradeDetails, 'inputAmount.amount');
         const rawUpdatedAmount = convertRawAmountToDecimalFormat(updatedAmount, inputDecimals);
-        this.setInputAmount(rawUpdatedAmount, false); // should this be true?
+        this.setInputAmount(rawUpdatedAmount, true); // should this be true?
       }
     } catch (error) {
       console.log('error getting market details', error);
@@ -461,16 +464,16 @@ class ExchangeModal extends PureComponent {
     const {
       inputAmountDisplay,
       inputCurrency,
-      inputExecutionRate,
-      inputNativePrice,
+      // inputExecutionRate,
+      // inputNativePrice,
       isAssetApproved,
       isSufficientBalance,
       isUnlockingAsset,
       nativeAmount,
       outputAmountDisplay,
       outputCurrency,
-      outputExecutionRate,
-      outputNativePrice,
+      // outputExecutionRate,
+      // outputNativePrice,
       showConfirmButton,
       slippage,
     } = this.state;
