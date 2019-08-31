@@ -14,7 +14,7 @@ import { InteractionManager, LayoutAnimation, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import { compose, mapProps, toClass } from 'recompact';
-import { executeSwap } from '../handlers/uniswap';
+import { estimateSwapGasLimit, executeSwap } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
@@ -82,7 +82,8 @@ class ExchangeModal extends PureComponent {
     chainId: PropTypes.number,
     clearKeyboardFocusHistory: PropTypes.func,
     dataAddNewTransaction: PropTypes.func,
-    gasUpdateGasPrice: PropTypes.func,
+    gasLimit: PropTypes.number,
+    gasUpdateTxFee: PropTypes.func,
     isFocused: PropTypes.bool,
     isTransitioning: PropTypes.bool,
     keyboardFocusHistory: PropTypes.array,
@@ -343,12 +344,14 @@ class ExchangeModal extends PureComponent {
           this.setInputAmount(rawUpdatedAmount, updatedAmountDisplay);
         }
       }
+      const gasLimit = await estimateSwapGasLimit(tradeDetails);
+      if (gasLimit) {
+        this.props.gasUpdateTxFee(gasLimit.toNumber());
+      }
     } catch (error) {
       console.log('error getting market details', error);
       // TODO error state
     }
-    // TODO JIN
-    // this.props.gasUpdateGasPrice(address, assetAmount, selected, recipient);
   }
 
   getReserveData = async (tokenAddress) => {
@@ -375,11 +378,16 @@ class ExchangeModal extends PureComponent {
   }
 
   handleSubmit = async () => {
-    const { accountAddress, dataAddNewTransaction, navigation } = this.props;
+    const {
+      accountAddress,
+      dataAddNewTransaction,
+      gasLimit,
+      navigation,
+    } = this.props;
     const { inputAmount, inputCurrency, tradeDetails } = this.state;
 
     try {
-      const txn = await executeSwap(tradeDetails);
+      const txn = await executeSwap(tradeDetails, gasLimit);
       if (txn) {
         dataAddNewTransaction({
           amount: inputAmount,
@@ -523,12 +531,12 @@ class ExchangeModal extends PureComponent {
 
   render = () => {
     const {
+      gasLimit,
       nativeCurrency,
       nativeCurrencySymbol,
       selectedGasPrice,
       transitionPosition,
     } = this.props;
-
     const {
       inputAmountDisplay,
       inputCurrency,
