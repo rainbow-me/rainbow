@@ -18,7 +18,7 @@ const GAS_PRICES_FAILURE = 'gas/GAS_PRICES_FAILURE';
 const GAS_UPDATE_TX_FEE = 'gas/GAS_UPDATE_TX_FEE';
 const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
 const GAS_CLEAR_FIELDS = 'gas/GAS_CLEAR_FIELDS';
-const GAS_CLEAR_TXN_SPECIFIC_FIELDS = 'gas/GAS_CLEAR_TXN_SPECIFIC_FIELDS';
+const GAS_RESET_FIELDS = 'gas/GAS_RESET_FIELDS';
 
 // -- Actions --------------------------------------------------------------- //
 let getGasPricesInterval = null;
@@ -28,7 +28,7 @@ const getEthPriceUnit = (assets) => {
   return get(ethAsset, 'price.value', 0);
 };
 
-export const gasPricesInit = () => (dispatch, getState) => new Promise((resolve, reject) => {
+const getDefaultTxFees = () => (dispatch, getState) => {
   const { assets } = getState().data;
   const { gasLimit } = getState().gas;
   const { nativeCurrency } = getState().settings;
@@ -39,6 +39,15 @@ export const gasPricesInit = () => (dispatch, getState) => new Promise((resolve,
     ...txFees.average,
     ...fallbackGasPrices.average,
   };
+  return {
+    fallbackGasPrices,
+    selectedGasPrice,
+    txFees,
+  };
+};
+
+export const gasPricesInit = () => (dispatch, getState) => new Promise((resolve, reject) => {
+  const { fallbackGasPrices, selectedGasPrice, txFees } = dispatch(getDefaultTxFees());
   dispatch({
     payload: {
       gasPrices: fallbackGasPrices,
@@ -129,7 +138,14 @@ const getSelectedGasPrice = (assets, gasPrices, txFees, selectedGasPriceOption) 
 };
 
 export const resetGasTxFees = () => (dispatch) => {
-  dispatch({ type: GAS_CLEAR_TXN_SPECIFIC_FIELDS });
+  const { selectedGasPrice, txFees } = dispatch(getDefaultTxFees());
+  dispatch({
+    payload: {
+      selectedGasPrice,
+      txFees,
+    },
+    type: GAS_RESET_FIELDS,
+  });
 };
 
 export const gasClearFields = () => (dispatch) => {
@@ -186,13 +202,14 @@ export default (state = INITIAL_STATE, action) => {
       selectedGasPrice: action.payload.selectedGasPrice,
       selectedGasPriceOption: action.payload.selectedGasPriceOption,
     };
-  case GAS_CLEAR_FIELDS:
-    return { ...state, ...INITIAL_STATE };
-  case GAS_CLEAR_TXN_SPECIFIC_FIELDS: {
+  case GAS_RESET_FIELDS: {
     return {
       ...INITIAL_STATE,
       fetchingGasPrices: state.fetchingGasPrices,
       gasPrices: state.gasPrices,
+      selectedGasPrice: action.payload.selectedGasPrice,
+      selectedGasPriceOption: state.selectedGasPriceOption,
+      txFees: action.payload.txFees,
     };
   }
   default:
