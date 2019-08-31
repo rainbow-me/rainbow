@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { compose } from 'recompact';
-import { gasUpdateGasPrice, gasUpdateGasPriceOption } from '../redux/gas';
+import { gasUpdateGasPriceOption, gasUpdateTxFee } from '../redux/gas';
 
 const mapStateToProps = ({ gas }) => ({
   gasLimit: gas.gasLimit,
@@ -13,7 +13,7 @@ const mapStateToProps = ({ gas }) => ({
 
 export default Component => compose(
   connect(mapStateToProps, {
-    gasUpdateGasPrice,
     gasUpdateGasPriceOption,
+    gasUpdateTxFee,
   }),
 )(Component);

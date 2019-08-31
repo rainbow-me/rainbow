@@ -1,6 +1,5 @@
 import { get, isEmpty } from 'lodash';
 import { apiGetGasPrices } from '../handlers/gasPrices';
-import { estimateGasLimit } from '../handlers/web3';
 import { fromWei } from '../helpers/utilities';
 import {
   getFallbackGasPrices,
@@ -12,11 +11,11 @@ import { ethereumUtils } from '../utils';
 
 // -- Constants ------------------------------------------------------------- //
 
-const GAS_PRICES_REQUEST = 'gas/GAS_PRICES_REQUEST';
+const GAS_PRICES_DEFAULT = 'gas/GAS_PRICES_DEFAULT';
 const GAS_PRICES_SUCCESS = 'gas/GAS_PRICES_SUCCESS';
 const GAS_PRICES_FAILURE = 'gas/GAS_PRICES_FAILURE';
 
-const GAS_UPDATE_TX_FEE_SUCCESS = 'gas/GAS_UPDATE_TX_FEE_SUCCESS';
+const GAS_UPDATE_TX_FEE = 'gas/GAS_UPDATE_TX_FEE';
 const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
 const GAS_CLEAR_FIELDS = 'gas/GAS_CLEAR_FIELDS';
 const GAS_CLEAR_TXN_SPECIFIC_FIELDS = 'gas/GAS_CLEAR_TXN_SPECIFIC_FIELDS';
@@ -45,7 +44,7 @@ export const gasPricesInit = () => (dispatch, getState) => new Promise((resolve,
       gasPrices: fallbackGasPrices,
       selectedGasPrice,
     },
-    type: GAS_PRICES_REQUEST,
+    type: GAS_PRICES_DEFAULT,
   });
 
   const getGasPrices = () => new Promise((fetchResolve, fetchReject) => {
@@ -82,48 +81,35 @@ export const gasPricesInit = () => (dispatch, getState) => new Promise((resolve,
   });
 });
 
-export const gasUpdateGasPriceOption = (newGasPriceOption) => (dispatch) => {
-  dispatch({
-    payload: newGasPriceOption,
-    type: GAS_UPDATE_GAS_PRICE_OPTION,
-  });
-};
+export const gasUpdateGasPriceOption = (newGasPriceOption) => (dispatch) => dispatch({
+  payload: newGasPriceOption,
+  type: GAS_UPDATE_GAS_PRICE_OPTION,
+});
 
-export const gasUpdateGasPrice = (address, amount, asset, recipient) => (dispatch, getState) => {
+export const gasUpdateTxFee = (gasLimit) => (dispatch, getState) => {
   const { gasPrices, selectedGasPriceOption } = getState().gas;
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
   const ethAsset = ethereumUtils.getAsset(assets);
-  if (isEmpty(asset)) return;
   if (isEmpty(gasPrices)) return;
-  estimateGasLimit({
-    address,
-    amount,
-    asset,
-    recipient,
-  })
-    .then(gasLimit => {
-      const ethPriceUnit = getEthPriceUnit(assets);
-      const txFees = parseTxFees(gasPrices, ethPriceUnit, gasLimit, nativeCurrency);
-      const txFee = txFees[selectedGasPriceOption];
-      const balanceAmount = get(ethAsset, 'balance.amount', 0);
-      const txFeeAmount = fromWei(get(txFee, 'value.amount', 0));
-      const selectedGasPrice = {
-        ...txFee,
-        ...gasPrices[selectedGasPriceOption],
-      };
-      dispatch({
-        payload: {
-          gasLimit,
-          isSufficientGas: Number(balanceAmount) > Number(txFeeAmount),
-          selectedGasPrice,
-          txFees,
-        },
-        type: GAS_UPDATE_TX_FEE_SUCCESS,
-      });
-    })
-    .catch(error => {
-    });
+  const ethPriceUnit = getEthPriceUnit(assets);
+  const txFees = parseTxFees(gasPrices, ethPriceUnit, gasLimit, nativeCurrency);
+  const txFee = txFees[selectedGasPriceOption];
+  const balanceAmount = get(ethAsset, 'balance.amount', 0);
+  const txFeeAmount = fromWei(get(txFee, 'value.amount', 0));
+  const selectedGasPrice = {
+    ...txFee,
+    ...gasPrices[selectedGasPriceOption],
+  };
+  dispatch({
+    payload: {
+      gasLimit,
+      isSufficientGas: Number(balanceAmount) > Number(txFeeAmount),
+      selectedGasPrice,
+      txFees,
+    },
+    type: GAS_UPDATE_TX_FEE,
+  });
 };
 
 export const resetGasTxFees = () => (dispatch) => {
@@ -149,7 +135,7 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-  case GAS_PRICES_REQUEST:
+  case GAS_PRICES_DEFAULT:
     return {
       ...state,
       fetchingGasPrices: true,
@@ -168,7 +154,7 @@ export default (state = INITIAL_STATE, action) => {
       fetchingGasPrices: false,
       gasPrices: action.payload,
     };
-  case GAS_UPDATE_TX_FEE_SUCCESS:
+  case GAS_UPDATE_TX_FEE:
     return {
       ...state,
       gasLimit: action.payload.gasLimit,
