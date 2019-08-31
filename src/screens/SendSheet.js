@@ -1,14 +1,10 @@
 import analytics from '@segment/analytics-react-native';
 import {
   get,
-  indexOf,
   isEmpty,
   isFunction,
   isString,
-  map,
   property,
-  sortBy,
-  upperFirst,
 } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -32,7 +28,7 @@ import {
   withUniqueTokens,
 } from '../hoc';
 import { colors } from '../styles';
-import { deviceUtils, isNewValueForPath } from '../utils';
+import { deviceUtils, gasUtils, isNewValueForPath } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
 
 const Container = styled(Column)`
@@ -40,32 +36,13 @@ const Container = styled(Column)`
   height: 100%;
 `;
 
-const formatGastSpeedItem = (value, key) => {
-  const cost = get(value, 'txFee.native.value.display');
-  const gwei = get(value, 'value.display');
-  const time = get(value, 'estimatedTime.display');
-
-  return {
-    gweiValue: gwei,
-    label: `${upperFirst(key)}: ${cost}   ~${time.slice(0, -1)}`,
-    value: key,
-  };
-};
-
-const labelOrder = ['slow', 'average', 'fast'];
-
-const formatGasSpeedItems = (gasPrices) => {
-  const gasItems = map(gasPrices, formatGastSpeedItem);
-  return sortBy(gasItems, ({ value }) => indexOf(labelOrder, value));
-};
-
 class SendSheet extends Component {
   static propTypes = {
     allAssets: PropTypes.array,
     assetAmount: PropTypes.string,
     fetchData: PropTypes.func,
-    gasPrice: PropTypes.object,
     gasPrices: PropTypes.object,
+    gasUpdateGasPrice: PropTypes.func,
     isSufficientBalance: PropTypes.bool,
     isSufficientGas: PropTypes.bool,
     isValidAddress: PropTypes.bool,
@@ -74,14 +51,15 @@ class SendSheet extends Component {
     onSubmit: PropTypes.func,
     recipient: PropTypes.string,
     selected: PropTypes.object,
+    selectedGasPrice: PropTypes.object,
     sendableUniqueTokens: PropTypes.arrayOf(PropTypes.object),
     sendClearFields: PropTypes.func,
     sendMaxBalance: PropTypes.func,
     sendUpdateAssetAmount: PropTypes.func,
-    sendUpdateGasPrice: PropTypes.func,
     sendUpdateNativeAmount: PropTypes.func,
     sendUpdateRecipient: PropTypes.func,
     sendUpdateSelected: PropTypes.func,
+    txFees: PropTypes.object,
   }
 
   static defaultProps = {
@@ -166,11 +144,15 @@ class SendSheet extends Component {
   }
 
   onPressTransactionSpeed = (onSuccess) => {
-    const { gasPrices, sendUpdateGasPrice } = this.props;
+    const {
+      gasPrices,
+      gasUpdateGasPrice,
+      txFees,
+    } = this.props;
 
     const options = [
       { label: 'Cancel' },
-      ...formatGasSpeedItems(gasPrices),
+      ...gasUtils.formatGasSpeedItems(gasPrices, txFees),
     ];
 
     showActionSheetWithOptions({
@@ -180,7 +162,7 @@ class SendSheet extends Component {
       if (buttonIndex > 0) {
         const selectedGasPriceItem = options[buttonIndex];
 
-        sendUpdateGasPrice(selectedGasPriceItem.value);
+        gasUpdateGasPrice(selectedGasPriceItem.value);
         analytics.track('Updated Gas Price', { gasPrice: selectedGasPriceItem.gweiValue });
       }
 
@@ -227,11 +209,11 @@ class SendSheet extends Component {
     const {
       allAssets,
       fetchData,
-      gasPrice,
       isValidAddress,
       nativeCurrencySymbol,
       recipient,
       selected,
+      selectedGasPrice,
       sendableUniqueTokens,
       sendUpdateRecipient,
       ...props
@@ -276,7 +258,7 @@ class SendSheet extends Component {
                 txSpeedRenderer={(
                   isIphoneX() && (
                     <SendTransactionSpeed
-                      gasPrice={gasPrice}
+                      gasPrice={selectedGasPrice}
                       nativeCurrencySymbol={nativeCurrencySymbol}
                       onPressTransactionSpeed={this.onPressTransactionSpeed}
                     />

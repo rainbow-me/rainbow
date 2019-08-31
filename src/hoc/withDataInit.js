@@ -9,15 +9,12 @@ import {
   dataClearState,
   dataLoadState,
 } from '../redux/data';
-<<<<<<< HEAD
-import { clearIsWalletEmpty } from '../redux/isWalletEmpty';
-=======
 import {
   explorerClearState,
   explorerInit,
 } from '../redux/explorer';
-import { clearIsWalletEmpty, loadIsWalletEmpty } from '../redux/isWalletEmpty';
->>>>>>> 6d69f680... separate out explorer api from asset/txns data
+import { gasClearFields, gasPricesInit } from '../redux/gas';
+import { clearIsWalletEmpty } from '../redux/isWalletEmpty';
 import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import { nonceClearState } from '../redux/nonce';
 import { clearOpenFamilyTab } from '../redux/openFamilyTabs';
@@ -56,6 +53,8 @@ export default Component => compose(
     dataLoadState,
     explorerClearState,
     explorerInit,
+    gasClearFields,
+    gasPricesInit,
     nonceClearState,
     requestsClearState,
     requestsLoadState,
@@ -92,15 +91,17 @@ export default Component => compose(
       const p6 = ownProps.nonceClearState();
       const p7 = ownProps.requestsClearState();
       const p8 = ownProps.uniswapClearState();
-      return promiseUtils.PromiseAllWithFails([p0, p1, p2, p3, p4, p5, p6, p7, p8]);
+      const p9 = ownProps.gasClearState();
+      return promiseUtils.PromiseAllWithFails([p0, p1, p2, p3, p4, p5, p6, p7, p8, p9]);
     },
     initializeAccountData: (ownProps) => async () => {
       try {
         ownProps.explorerInit();
+        ownProps.gasPricesInit();
         ownProps.uniswapTokenReservesRefreshState();
         await ownProps.uniqueTokensRefreshState();
       } catch (error) {
-        // TODO
+        // TODO error state
       }
     },
     loadAccountData: (ownProps) => async () => {

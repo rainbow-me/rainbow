@@ -72,7 +72,7 @@ class WalletScreen extends Component {
       await this.setInitialStatesForOpenAssets();
       await this.props.initializeWallet();
     } catch (error) {
-      // TODO
+      // TODO error state
     }
   }
 

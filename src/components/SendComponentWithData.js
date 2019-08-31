@@ -5,6 +5,7 @@ import { compose } from 'recompact';
 import { get } from 'lodash';
 import lang from '../languages';
 import { withAccountData, withUniqueTokens } from '../hoc';
+import { gasUpdateGasPrice } from '../redux/gas';
 import {
   sendClearFields,
   sendMaxBalance,
@@ -12,7 +13,6 @@ import {
   sendToggleConfirmationView,
   sendTransaction,
   sendUpdateAssetAmount,
-  sendUpdateGasPrice,
   sendUpdateNativeAmount,
   sendUpdateRecipient,
   sendUpdateSelected,
@@ -21,23 +21,23 @@ import { isValidAddress } from '../helpers/validators';
 import { greaterThan } from '../helpers/utilities';
 import { ethereumUtils } from '../utils';
 
-const mapStateToProps = ({ send, settings }) => ({
+const mapStateToProps = ({ gas, send, settings }) => ({
   accountType: settings.accountType,
   address: send.address,
   assetAmount: send.assetAmount,
   confirm: send.confirm,
   fetching: send.fetching,
-  gasLimit: send.gasLimit,
-  gasPrice: send.gasPrice,
-  gasPriceOption: send.gasPriceOption,
-  gasPrices: send.gasPrices,
+  gasLimit: gas.gasLimit,
+  gasPrices: gas.gasPrices,
   isSufficientBalance: send.isSufficientBalance,
-  isSufficientGas: send.isSufficientGas,
+  isSufficientGas: gas.isSufficientGas,
   nativeAmount: send.nativeAmount,
   nativeCurrency: settings.nativeCurrency,
   network: settings.network,
   recipient: send.recipient,
   selected: send.selected,
+  selectedGasPrice: gas.selectedGasPrice,
+  txFees: gas.txFees,
   txHash: send.txHash,
 });
 
@@ -59,9 +59,8 @@ export const withSendComponentWithData = (SendComponent, options) => {
       confirm: PropTypes.bool.isRequired,
       fetching: PropTypes.bool.isRequired,
       gasLimit: PropTypes.number.isRequired,
-      gasPrice: PropTypes.object.isRequired,
-      gasPriceOption: PropTypes.string.isRequired,
       gasPrices: PropTypes.object.isRequired,
+      gasUpdateGasPrice: PropTypes.func.isRequired,
       isSufficientBalance: PropTypes.bool.isRequired,
       isSufficientGas: PropTypes.bool.isRequired,
       nativeAmount: PropTypes.string.isRequired,
@@ -69,16 +68,17 @@ export const withSendComponentWithData = (SendComponent, options) => {
       network: PropTypes.string.isRequired,
       recipient: PropTypes.string.isRequired,
       selected: PropTypes.object.isRequired,
+      selectedGasPrice: PropTypes.shape({ txFee: PropTypes.object }),
       sendClearFields: PropTypes.func.isRequired,
       sendMaxBalance: PropTypes.func.isRequired,
       sendModalInit: PropTypes.func.isRequired,
       sendToggleConfirmationView: PropTypes.func.isRequired,
       sendTransaction: PropTypes.func.isRequired,
       sendUpdateAssetAmount: PropTypes.func.isRequired,
-      sendUpdateGasPrice: PropTypes.func.isRequired,
       sendUpdateNativeAmount: PropTypes.func.isRequired,
       sendUpdateRecipient: PropTypes.func.isRequired,
       sendUpdateSelected: PropTypes.func.isRequired,
+      txFees: PropTypes.object.isRequired,
       txHash: PropTypes.string.isRequired,
     };
 
@@ -111,7 +111,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
         if ((selected.symbol !== prevProps.selected.symbol)
           || (recipient !== prevProps.recipient)
           || (assetAmount !== prevProps.assetAmount)) {
-          this.props.sendUpdateGasPrice();
+          this.props.gasUpdateGasPrice();
         }
       }
     }
@@ -145,7 +145,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
         event.preventDefault();
       }
 
-      if (!this.props.gasPrice.txFee) {
+      if (!this.props.selectedGasPrice.txFee) {
         return;
       }
 
@@ -160,7 +160,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
           const { requestedAmount, balance, amountWithFees } = ethereumUtils.transactionData(
             this.props.assets,
             this.props.assetAmount,
-            this.props.gasPrice,
+            this.props.selectedGasPrice,
           );
 
           if (greaterThan(requestedAmount, balance)) {
@@ -173,7 +173,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
           const { requestedAmount, balance, txFee } = ethereumUtils.transactionData(
             this.props.assets,
             this.props.assetAmount,
-            this.props.gasPrice,
+            this.props.selectedGasPrice,
           );
 
           const tokenBalance = get(this.props, 'selected.balance.amount');
@@ -193,22 +193,14 @@ export const withSendComponentWithData = (SendComponent, options) => {
           amount: this.props.assetAmount,
           asset: this.props.selected,
           gasLimit: this.props.gasLimit,
-          gasPrice: this.props.gasPrice,
+          gasPrice: this.props.selectedGasPrice,
           recipient: this.props.recipient,
         }, this.sendTransactionCallback);
       }
     };
 
-    updateGasPrice = gasPrice => {
-      this.props.sendUpdateGasPrice(gasPrice);
-    };
-
     onClose = () => {
       this.props.sendClearFields();
-    };
-
-    updateGasPrice = gasPrice => {
-      this.props.sendUpdateGasPrice(gasPrice);
     };
 
     // QR Code Reader Handlers
@@ -249,7 +241,6 @@ export const withSendComponentWithData = (SendComponent, options) => {
           onSubmit={this.onSubmit}
           showQRCodeReader={this.state.showQRCodeReader}
           toggleQRCodeReader={this.toggleQRCodeReader}
-          updateGasPrice={this.updateGasPrice}
           {...this.props}
         />
       );
@@ -258,13 +249,13 @@ export const withSendComponentWithData = (SendComponent, options) => {
 
   return compose(
     connect(mapStateToProps, {
+      gasUpdateGasPrice,
       sendClearFields,
       sendMaxBalance,
       sendModalInit,
       sendToggleConfirmationView,
       sendTransaction,
       sendUpdateAssetAmount,
-      sendUpdateGasPrice,
       sendUpdateNativeAmount,
       sendUpdateRecipient,
       sendUpdateSelected,

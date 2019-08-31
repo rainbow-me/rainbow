@@ -337,7 +337,7 @@ class ExchangeModal extends PureComponent {
       }
     } catch (error) {
       console.log('error getting market details', error);
-      // TODO
+      // TODO error state
     }
   }
 

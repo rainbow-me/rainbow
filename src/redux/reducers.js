@@ -3,6 +3,7 @@ import { combineReducers } from 'redux';
 import actionSheetManager from './actionSheetManager';
 import data from './data';
 import explorer from './explorer';
+import gas from './gas';
 import imageDimensionsCache from './imageDimensionsCache';
 import isWalletEmpty from './isWalletEmpty';
 import isWalletEthZero from './isWalletEthZero';
@@ -26,6 +27,7 @@ export default combineReducers({
   actionSheetManager,
   data,
   explorer,
+  gas,
   imageDimensionsCache,
   isWalletEmpty,
   isWalletEthZero,
