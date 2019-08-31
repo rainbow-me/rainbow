@@ -16,11 +16,10 @@ const GAS_PRICES_REQUEST = 'gas/GAS_PRICES_REQUEST';
 const GAS_PRICES_SUCCESS = 'gas/GAS_PRICES_SUCCESS';
 const GAS_PRICES_FAILURE = 'gas/GAS_PRICES_FAILURE';
 
-const GAS_UPDATE_TX_FEE_SUCCESS = 'send/GAS_UPDATE_TX_FEE_SUCCESS';
-const GAS_UPDATE_TX_FEE_FAILURE = 'send/GAS_UPDATE_TX_FEE_FAILURE';
-
-const GAS_CLEAR_FIELDS = 'send/GAS_CLEAR_FIELDS';
-const GAS_CLEAR_TXN_SPECIFIC_FIELDS = 'send/GAS_CLEAR_TXN_SPECIFIC_FIELDS';
+const GAS_UPDATE_TX_FEE_SUCCESS = 'gas/GAS_UPDATE_TX_FEE_SUCCESS';
+const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
+const GAS_CLEAR_FIELDS = 'gas/GAS_CLEAR_FIELDS';
+const GAS_CLEAR_TXN_SPECIFIC_FIELDS = 'gas/GAS_CLEAR_TXN_SPECIFIC_FIELDS';
 
 // -- Actions --------------------------------------------------------------- //
 let getGasPricesInterval = null;
@@ -83,52 +82,47 @@ export const gasPricesInit = () => (dispatch, getState) => new Promise((resolve,
   });
 });
 
-export const gasUpdateGasPrice = newGasPriceOption => (dispatch, getState) => {
-  const {
-    address,
-    recipient,
-    assetAmount,
-    selected,
-  } = getState().send;
+export const gasUpdateGasPriceOption = (newGasPriceOption) => (dispatch) => {
+  dispatch({
+    payload: newGasPriceOption,
+    type: GAS_UPDATE_GAS_PRICE_OPTION,
+  });
+};
+
+export const gasUpdateGasPrice = (address, amount, asset, recipient) => (dispatch, getState) => {
   const { gasPrices, selectedGasPriceOption } = getState().gas;
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
-  const _gasPriceOption = newGasPriceOption || selectedGasPriceOption;
   const ethAsset = ethereumUtils.getAsset(assets);
-  if (isEmpty(selected)) return;
+  if (isEmpty(asset)) return;
   if (isEmpty(gasPrices)) return;
   estimateGasLimit({
     address,
-    amount: assetAmount,
-    asset: selected,
+    amount,
+    asset,
     recipient,
   })
     .then(gasLimit => {
       const ethPriceUnit = getEthPriceUnit(assets);
       const txFees = parseTxFees(gasPrices, ethPriceUnit, gasLimit, nativeCurrency);
-      const txFee = txFees[_gasPriceOption];
+      const txFee = txFees[selectedGasPriceOption];
       const balanceAmount = get(ethAsset, 'balance.amount', 0);
       const txFeeAmount = fromWei(get(txFee, 'value.amount', 0));
       const selectedGasPrice = {
         ...txFee,
-        ...gasPrices[_gasPriceOption],
+        ...gasPrices[selectedGasPriceOption],
       };
       dispatch({
         payload: {
           gasLimit,
           isSufficientGas: Number(balanceAmount) > Number(txFeeAmount),
           selectedGasPrice,
-          selectedGasPriceOption: _gasPriceOption,
           txFees,
         },
         type: GAS_UPDATE_TX_FEE_SUCCESS,
       });
     })
     .catch(error => {
-      dispatch({
-        payload: _gasPriceOption,
-        type: GAS_UPDATE_TX_FEE_FAILURE,
-      });
     });
 };
 
@@ -180,10 +174,9 @@ export default (state = INITIAL_STATE, action) => {
       gasLimit: action.payload.gasLimit,
       isSufficientGas: action.payload.isSufficientGas,
       selectedGasPrice: action.payload.selectedGasPrice,
-      selectedGasPriceOption: action.payload.selectedGasPriceOption,
       txFees: action.payload.txFees,
     };
-  case GAS_UPDATE_TX_FEE_FAILURE:
+  case GAS_UPDATE_GAS_PRICE_OPTION:
     return {
       ...state,
       selectedGasPriceOption: action.payload,

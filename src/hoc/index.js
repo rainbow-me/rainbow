@@ -9,6 +9,7 @@ export { default as withBlurTransitionProps } from './withBlurTransitionProps';
 export { default as withDataInit } from './withDataInit';
 export { default as withFabSelection } from './withFabSelection';
 export { default as withFabSendAction } from './withFabSendAction';
+export { default as withGas } from './withGas';
 export { default as withHideSplashScreen } from './withHideSplashScreen';
 export { default as withImageDimensionsCache } from './withImageDimensionsCache';
 export { default as withIsWalletEmpty } from './withIsWalletEmpty';

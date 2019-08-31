@@ -30,6 +30,7 @@ import {
   withAccountData,
   withAccountSettings,
   withBlockedHorizontalSwipe,
+  withGas,
   withKeyboardFocusHistory,
   withTransactionConfirmationScreen,
   withTransitionProps,
@@ -37,7 +38,11 @@ import {
   withUniswapAssets,
 } from '../hoc';
 import { colors, padding, position } from '../styles';
-import { contractUtils, ethereumUtils, isNewValueForPath } from '../utils';
+import {
+  contractUtils,
+  ethereumUtils,
+  isNewValueForPath,
+} from '../utils';
 import {
   ConfirmExchangeButton,
   ExchangeGasFeeButton,
@@ -77,12 +82,15 @@ class ExchangeModal extends PureComponent {
     chainId: PropTypes.number,
     clearKeyboardFocusHistory: PropTypes.func,
     dataAddNewTransaction: PropTypes.func,
+    gasUpdateGasPrice: PropTypes.func,
     isFocused: PropTypes.bool,
     isTransitioning: PropTypes.bool,
     keyboardFocusHistory: PropTypes.array,
     nativeCurrency: PropTypes.string,
+    nativeCurrencySymbol: PropTypes.string,
     navigation: PropTypes.object,
     pushKeyboardFocusHistory: PropTypes.func,
+    selectedGasPrice: PropTypes.object,
     tokenReserves: PropTypes.array,
     tradeDetails: PropTypes.object,
     transitionPosition: PropTypes.object, // animated value
@@ -339,6 +347,8 @@ class ExchangeModal extends PureComponent {
       console.log('error getting market details', error);
       // TODO error state
     }
+    // TODO JIN
+    // this.props.gasUpdateGasPrice(address, assetAmount, selected, recipient);
   }
 
   getReserveData = async (tokenAddress) => {
@@ -512,7 +522,12 @@ class ExchangeModal extends PureComponent {
   }
 
   render = () => {
-    const { nativeCurrency, transitionPosition } = this.props;
+    const {
+      nativeCurrency,
+      nativeCurrencySymbol,
+      selectedGasPrice,
+      transitionPosition,
+    } = this.props;
 
     const {
       inputAmountDisplay,
@@ -602,7 +617,8 @@ class ExchangeModal extends PureComponent {
                   />
                 </Centered>
                 <ExchangeGasFeeButton
-                  gasPrice={'$0.06'}
+                  gasPrice={selectedGasPrice}
+                  nativeCurrencySymbol={nativeCurrencySymbol}
                 />
               </Fragment>
             )}
@@ -619,6 +635,7 @@ export default compose(
   withAccountData,
   withAccountSettings,
   withBlockedHorizontalSwipe,
+  withGas,
   withKeyboardFocusHistory,
   withNavigationFocus,
   withTransactionConfirmationScreen,

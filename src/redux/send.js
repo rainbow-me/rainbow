@@ -5,7 +5,7 @@ import {
   formatInputDecimals,
 } from '../helpers/utilities';
 import { createSignableTransaction } from '../handlers/web3';
-import { gasUpdateGasPrice, resetGasTxFees } from './gas';
+import { resetGasTxFees } from './gas';
 import { ethereumUtils } from '../utils';
 import { dataAddNewTransaction } from './data';
 
@@ -182,7 +182,6 @@ export const sendUpdateSelected = (asset) => (dispatch, getState) => {
       },
       type: SEND_UPDATE_NFT_SELECTED,
     });
-    dispatch(gasUpdateGasPrice());
   } else {
     const state = getState();
     const assetAmount = get(state, 'send.assetAmount');
@@ -191,7 +190,6 @@ export const sendUpdateSelected = (asset) => (dispatch, getState) => {
       type: SEND_UPDATE_SELECTED,
     });
     dispatch(sendUpdateAssetAmount(assetAmount));
-    dispatch(gasUpdateGasPrice());
   }
 };
 
@@ -200,7 +198,6 @@ export const sendMaxBalance = () => (dispatch, getState) => {
   const { selectedGasPrice } = getState().gas;
   const balanceAmount = ethereumUtils.getBalanceAmount(selectedGasPrice, selected);
   dispatch(sendUpdateAssetAmount(balanceAmount));
-  dispatch(gasUpdateGasPrice());
 };
 
 export const sendClearFields = () => ({ type: SEND_CLEAR_FIELDS });

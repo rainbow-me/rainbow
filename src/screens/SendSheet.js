@@ -42,7 +42,7 @@ class SendSheet extends Component {
     assetAmount: PropTypes.string,
     fetchData: PropTypes.func,
     gasPrices: PropTypes.object,
-    gasUpdateGasPrice: PropTypes.func,
+    gasUpdateGasPriceOption: PropTypes.func,
     isSufficientBalance: PropTypes.bool,
     isSufficientGas: PropTypes.bool,
     isValidAddress: PropTypes.bool,
@@ -146,7 +146,7 @@ class SendSheet extends Component {
   onPressTransactionSpeed = (onSuccess) => {
     const {
       gasPrices,
-      gasUpdateGasPrice,
+      gasUpdateGasPriceOption,
       txFees,
     } = this.props;
 
@@ -162,7 +162,7 @@ class SendSheet extends Component {
       if (buttonIndex > 0) {
         const selectedGasPriceItem = options[buttonIndex];
 
-        gasUpdateGasPrice(selectedGasPriceItem.value);
+        gasUpdateGasPriceOption(selectedGasPriceItem.value);
         analytics.track('Updated Gas Price', { gasPrice: selectedGasPriceItem.gweiValue });
       }
 
