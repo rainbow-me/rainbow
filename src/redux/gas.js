@@ -81,34 +81,49 @@ export const gasPricesInit = () => (dispatch, getState) => new Promise((resolve,
   });
 });
 
-export const gasUpdateGasPriceOption = (newGasPriceOption) => (dispatch) => dispatch({
-  payload: newGasPriceOption,
-  type: GAS_UPDATE_GAS_PRICE_OPTION,
-});
+export const gasUpdateGasPriceOption = (newGasPriceOption) => (dispatch, getState) => {
+  const { gasPrices, txFees } = getState().gas;
+  if (isEmpty(gasPrices)) return;
+  const { assets } = getState().data;
+  const results = getSelectedGasPrice(assets, gasPrices, txFees, newGasPriceOption);
+  dispatch({
+    payload: {
+      ...results,
+      selectedGasPriceOption: newGasPriceOption,
+    },
+    type: GAS_UPDATE_GAS_PRICE_OPTION,
+  });
+};
 
 export const gasUpdateTxFee = (gasLimit) => (dispatch, getState) => {
   const { gasPrices, selectedGasPriceOption } = getState().gas;
+  if (isEmpty(gasPrices)) return;
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
-  const ethAsset = ethereumUtils.getAsset(assets);
-  if (isEmpty(gasPrices)) return;
   const ethPriceUnit = getEthPriceUnit(assets);
   const txFees = parseTxFees(gasPrices, ethPriceUnit, gasLimit, nativeCurrency);
-  const txFee = txFees[selectedGasPriceOption];
-  const balanceAmount = get(ethAsset, 'balance.amount', 0);
-  const txFeeAmount = fromWei(get(txFee, 'value.amount', 0));
-  const selectedGasPrice = {
-    ...txFee,
-    ...gasPrices[selectedGasPriceOption],
-  };
+  const results = getSelectedGasPrice(assets, gasPrices, txFees, selectedGasPriceOption);
   dispatch({
     payload: {
+      ...results,
       gasLimit,
-      isSufficientGas: Number(balanceAmount) > Number(txFeeAmount),
-      selectedGasPrice,
       txFees,
     },
     type: GAS_UPDATE_TX_FEE,
+  });
+};
+
+const getSelectedGasPrice = (assets, gasPrices, txFees, selectedGasPriceOption) => {
+  const txFee = txFees[selectedGasPriceOption];
+  const ethAsset = ethereumUtils.getAsset(assets);
+  const balanceAmount = get(ethAsset, 'balance.amount', 0);
+  const txFeeAmount = fromWei(get(txFee, 'value.amount', 0));
+  return ({
+    isSufficientGas: Number(balanceAmount) > Number(txFeeAmount),
+    selectedGasPrice: {
+      ...txFee,
+      ...gasPrices[selectedGasPriceOption],
+    },
   });
 };
 
@@ -165,7 +180,9 @@ export default (state = INITIAL_STATE, action) => {
   case GAS_UPDATE_GAS_PRICE_OPTION:
     return {
       ...state,
-      selectedGasPriceOption: action.payload,
+      isSufficientGas: action.payload.isSufficientGas,
+      selectedGasPrice: action.payload.selectedGasPrice,
+      selectedGasPriceOption: action.payload.selectedGasPriceOption,
     };
   case GAS_CLEAR_FIELDS:
     return { ...state, ...INITIAL_STATE };

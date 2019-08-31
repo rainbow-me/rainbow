@@ -41,6 +41,7 @@ import { colors, padding, position } from '../styles';
 import {
   contractUtils,
   ethereumUtils,
+  gasUtils,
   isNewValueForPath,
 } from '../utils';
 import {
@@ -83,6 +84,8 @@ class ExchangeModal extends PureComponent {
     clearKeyboardFocusHistory: PropTypes.func,
     dataAddNewTransaction: PropTypes.func,
     gasLimit: PropTypes.number,
+    gasPrices: PropTypes.object,
+    gasUpdateGasPriceOption: PropTypes.string,
     gasUpdateTxFee: PropTypes.func,
     isFocused: PropTypes.bool,
     isTransitioning: PropTypes.bool,
@@ -95,6 +98,7 @@ class ExchangeModal extends PureComponent {
     tokenReserves: PropTypes.array,
     tradeDetails: PropTypes.object,
     transitionPosition: PropTypes.object, // animated value
+    txFees: PropTypes.object,
     uniswapGetTokenReserve: PropTypes.func,
     uniswapUpdateAllowances: PropTypes.func,
   }
@@ -165,7 +169,6 @@ class ExchangeModal extends PureComponent {
       this.getMarketDetails();
       LayoutAnimation.easeInEaseOut();
     }
-
     if (isNewValueForPath(this.state, prevState, 'inputCurrency.address')) {
       this.getCurrencyAllowance();
     }
@@ -221,7 +224,7 @@ class ExchangeModal extends PureComponent {
   }
 
   getMarketDetails = async () => {
-    const { chainId, nativeCurrency } = this.props;
+    const { chainId, gasUpdateTxFee, nativeCurrency } = this.props;
     const {
       inputAmount,
       inputAsExactAmount,
@@ -344,7 +347,7 @@ class ExchangeModal extends PureComponent {
       }
       const gasLimit = await estimateSwapGasLimit(tradeDetails);
       if (gasLimit) {
-        this.props.gasUpdateTxFee(gasLimit.toNumber());
+        gasUpdateTxFee(gasLimit.toNumber());
       }
     } catch (error) {
       console.log('error getting market details', error);
@@ -433,6 +436,16 @@ class ExchangeModal extends PureComponent {
     return this.setInputAmount(maxBalance);
   }
 
+  onPressTransactionSpeed = () => {
+    const {
+      gasPrices,
+      gasUpdateGasPriceOption,
+      txFees,
+    } = this.props;
+
+    gasUtils.showTransactionSpeedOptions(gasPrices, txFees, gasUpdateGasPriceOption);
+  }
+
   handleSelectInputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
       onSelectCurrency: this.setInputCurrency,
@@ -504,7 +517,6 @@ class ExchangeModal extends PureComponent {
 
   render = () => {
     const {
-      gasLimit,
       nativeCurrency,
       nativeCurrencySymbol,
       selectedGasPrice,
@@ -600,6 +612,7 @@ class ExchangeModal extends PureComponent {
                 <ExchangeGasFeeButton
                   gasPrice={selectedGasPrice}
                   nativeCurrencySymbol={nativeCurrencySymbol}
+                  onPress={this.onPressTransactionSpeed}
                 />
               </Fragment>
             )}

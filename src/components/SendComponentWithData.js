@@ -105,7 +105,6 @@ export const withSendComponentWithData = (SendComponent, options) => {
         assetAmount,
         recipient,
         selected,
-        selectedGasPriceOption,
       } = this.props;
 
       if (recipient !== prevProps.recipient) {
@@ -115,7 +114,6 @@ export const withSendComponentWithData = (SendComponent, options) => {
 
       if (this.state.isValidAddress) {
         if ((selected.symbol !== prevProps.selected.symbol)
-          || (selectedGasPriceOption !== prevProps.selectedGasPriceOption)
           || (recipient !== prevProps.recipient)
           || (assetAmount !== prevProps.assetAmount)) {
           estimateGasLimit({
