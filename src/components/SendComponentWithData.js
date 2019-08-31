@@ -4,8 +4,11 @@ import { connect } from 'react-redux';
 import { compose } from 'recompact';
 import { get } from 'lodash';
 import lang from '../languages';
-import { withAccountData, withUniqueTokens } from '../hoc';
-import { gasUpdateGasPrice } from '../redux/gas';
+import {
+  withAccountData,
+  withGas,
+  withUniqueTokens,
+} from '../hoc';
 import {
   sendClearFields,
   sendMaxBalance,
@@ -21,23 +24,18 @@ import { isValidAddress } from '../helpers/validators';
 import { greaterThan } from '../helpers/utilities';
 import { ethereumUtils } from '../utils';
 
-const mapStateToProps = ({ gas, send, settings }) => ({
+const mapStateToProps = ({ send, settings }) => ({
   accountType: settings.accountType,
   address: send.address,
   assetAmount: send.assetAmount,
   confirm: send.confirm,
   fetching: send.fetching,
-  gasLimit: gas.gasLimit,
-  gasPrices: gas.gasPrices,
   isSufficientBalance: send.isSufficientBalance,
-  isSufficientGas: gas.isSufficientGas,
   nativeAmount: send.nativeAmount,
   nativeCurrency: settings.nativeCurrency,
   network: settings.network,
   recipient: send.recipient,
   selected: send.selected,
-  selectedGasPrice: gas.selectedGasPrice,
-  txFees: gas.txFees,
   txHash: send.txHash,
 });
 
@@ -69,6 +67,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
       recipient: PropTypes.string.isRequired,
       selected: PropTypes.object.isRequired,
       selectedGasPrice: PropTypes.shape({ txFee: PropTypes.object }),
+      selectedGasPriceOption: PropTypes.string.isRequired,
       sendClearFields: PropTypes.func.isRequired,
       sendMaxBalance: PropTypes.func.isRequired,
       sendModalInit: PropTypes.func.isRequired,
@@ -100,7 +99,13 @@ export const withSendComponentWithData = (SendComponent, options) => {
     }
 
     async componentDidUpdate(prevProps) {
-      const { assetAmount, recipient, selected } = this.props;
+      const {
+        address,
+        assetAmount,
+        recipient,
+        selected,
+        selectedGasPriceOption,
+      } = this.props;
 
       if (recipient !== prevProps.recipient) {
         const validAddress = await isValidAddress(recipient);
@@ -109,9 +114,10 @@ export const withSendComponentWithData = (SendComponent, options) => {
 
       if (this.state.isValidAddress) {
         if ((selected.symbol !== prevProps.selected.symbol)
+          || (selectedGasPriceOption !== prevProps.selectedGasPriceOption)
           || (recipient !== prevProps.recipient)
           || (assetAmount !== prevProps.assetAmount)) {
-          this.props.gasUpdateGasPrice();
+          this.props.gasUpdateGasPrice(address, assetAmount, selected, recipient);
         }
       }
     }
@@ -249,7 +255,6 @@ export const withSendComponentWithData = (SendComponent, options) => {
 
   return compose(
     connect(mapStateToProps, {
-      gasUpdateGasPrice,
       sendClearFields,
       sendMaxBalance,
       sendModalInit,
@@ -260,6 +265,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
       sendUpdateRecipient,
       sendUpdateSelected,
     }),
+    withGas,
     withAccountData,
     withUniqueTokens,
   )(SendComponentWithData);

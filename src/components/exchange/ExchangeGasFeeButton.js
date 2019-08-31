@@ -1,8 +1,13 @@
+import { get } from 'lodash';
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, pure, withHandlers, withProps } from 'recompact';
-import styled from 'styled-components/primitives';
-import { colors, padding, shadow } from '../../styles';
+import {
+  compose,
+  pure,
+  withHandlers,
+  withProps,
+} from 'recompact';
+import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Nbsp } from '../html-entities';
 import { Column, Row } from '../layout';
@@ -32,36 +37,45 @@ const enhance = compose(
   }),
 );
 
-const ExchangeGasFeeButton = enhance(({ gasPrice, onPress }) => (
-  <ButtonPressAnimation onPress={onPress}>
-    <Column css={padding(14, 19, 0)} width="100%">
-      <Row align="center" justify="space-between">
-        <Title>{gasPrice}</Title>
-        <Row align="center" justify="end" height={26}>
-          <Emoji
-            letterSpacing="tight"
-            name="stopwatch"
-            size="lmedium"
-          />
-          <Nbsp />
-          <Title>
-            Normal
-          </Title>
+const ExchangeGasFeeButton = enhance(({
+  gasPrice,
+  nativeCurrencySymbol,
+  onPress,
+}) => {
+  const fee = get(gasPrice, 'txFee.native.value.display', `${nativeCurrencySymbol}0.00`);
+  const time = get(gasPrice, 'estimatedTime.display', '');
+  return (
+    <ButtonPressAnimation onPress={onPress}>
+      <Column css={padding(14, 19, 0)} width="100%">
+        <Row align="center" justify="space-between">
+          <Title>{fee}</Title>
+          <Row align="center" justify="end" height={26}>
+            <Emoji
+              letterSpacing="tight"
+              name="stopwatch"
+              size="lmedium"
+            />
+            <Nbsp />
+            <Title>
+              Normal
+            </Title>
+          </Row>
         </Row>
-      </Row>
-      <Row align="center" justify="space-between">
-        <Label>Fee</Label>
-        <Row align="center" justify="end">
-          <Label>Swaps in ~</Label>
-          <Label><Nbsp />2 min</Label>
+        <Row align="center" justify="space-between">
+          <Label>Fee</Label>
+          <Row align="center" justify="end">
+            <Label>Swaps in ~</Label>
+            <Label><Nbsp />{time}</Label>
+          </Row>
         </Row>
-      </Row>
-    </Column>
-  </ButtonPressAnimation>
-));
+      </Column>
+    </ButtonPressAnimation>
+  );
+});
 
 ExchangeGasFeeButton.propTypes = {
   gasPrice: PropTypes.string,
+  nativeCurrencySymbol: PropTypes.string,
   onPress: PropTypes.func,
 };
 
