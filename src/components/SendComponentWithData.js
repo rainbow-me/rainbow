@@ -1,14 +1,17 @@
-import React, { Component } from 'react';
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompact';
-import { get } from 'lodash';
-import lang from '../languages';
+import { estimateGasLimit } from '../handlers/web3';
+import { greaterThan } from '../helpers/utilities';
+import { isValidAddress } from '../helpers/validators';
 import {
   withAccountData,
   withGas,
   withUniqueTokens,
 } from '../hoc';
+import lang from '../languages';
 import {
   sendClearFields,
   sendMaxBalance,
@@ -20,8 +23,6 @@ import {
   sendUpdateRecipient,
   sendUpdateSelected,
 } from '../redux/send';
-import { isValidAddress } from '../helpers/validators';
-import { greaterThan } from '../helpers/utilities';
 import { ethereumUtils } from '../utils';
 
 const mapStateToProps = ({ send, settings }) => ({
@@ -58,7 +59,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
       fetching: PropTypes.bool.isRequired,
       gasLimit: PropTypes.number.isRequired,
       gasPrices: PropTypes.object.isRequired,
-      gasUpdateGasPrice: PropTypes.func.isRequired,
+      gasUpdateTxFee: PropTypes.func.isRequired,
       isSufficientBalance: PropTypes.bool.isRequired,
       isSufficientGas: PropTypes.bool.isRequired,
       nativeAmount: PropTypes.string.isRequired,
@@ -117,7 +118,15 @@ export const withSendComponentWithData = (SendComponent, options) => {
           || (selectedGasPriceOption !== prevProps.selectedGasPriceOption)
           || (recipient !== prevProps.recipient)
           || (assetAmount !== prevProps.assetAmount)) {
-          this.props.gasUpdateGasPrice(address, assetAmount, selected, recipient);
+          estimateGasLimit({
+            address,
+            amount: assetAmount,
+            asset: selected,
+            recipient,
+          }).then(gasLimit => {
+            this.props.gasUpdateTxFee(gasLimit);
+          }).catch(error => {
+          });
         }
       }
     }
