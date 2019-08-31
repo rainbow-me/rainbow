@@ -43,6 +43,7 @@ export const gasPricesInit = () => (dispatch, getState) => new Promise((resolve,
     payload: {
       gasPrices: fallbackGasPrices,
       selectedGasPrice,
+      txFees,
     },
     type: GAS_PRICES_DEFAULT,
   });
@@ -156,6 +157,7 @@ export default (state = INITIAL_STATE, action) => {
       fetchingGasPrices: true,
       gasPrices: action.payload.gasPrices,
       selectedGasPrice: action.payload.selectedGasPrice,
+      txFees: action.payload.txFees,
     };
   case GAS_PRICES_SUCCESS:
     return {
