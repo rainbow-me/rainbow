@@ -2,9 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import {
   get,
   isEmpty,
-  isFunction,
   isString,
-  property,
 } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -29,7 +27,6 @@ import {
 } from '../hoc';
 import { colors } from '../styles';
 import { deviceUtils, gasUtils, isNewValueForPath } from '../utils';
-import { showActionSheetWithOptions } from '../utils/actionsheet';
 
 const Container = styled(Column)`
   background-color: ${colors.white};
@@ -150,26 +147,7 @@ class SendSheet extends Component {
       txFees,
     } = this.props;
 
-    const options = [
-      { label: 'Cancel' },
-      ...gasUtils.formatGasSpeedItems(gasPrices, txFees),
-    ];
-
-    showActionSheetWithOptions({
-      cancelButtonIndex: 0,
-      options: options.map(property('label')),
-    }, (buttonIndex) => {
-      if (buttonIndex > 0) {
-        const selectedGasPriceItem = options[buttonIndex];
-
-        gasUpdateGasPriceOption(selectedGasPriceItem.value);
-        analytics.track('Updated Gas Price', { gasPrice: selectedGasPriceItem.gweiValue });
-      }
-
-      if (isFunction(onSuccess)) {
-        onSuccess();
-      }
-    });
+    gasUtils.showTransactionSpeedOptions(gasPrices, txFees, gasUpdateGasPriceOption, onSuccess);
   }
 
   onResetAssetSelection = () => {

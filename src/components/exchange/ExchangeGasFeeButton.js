@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, upperFirst } from 'lodash';
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -41,37 +41,31 @@ const ExchangeGasFeeButton = enhance(({
   gasPrice,
   nativeCurrencySymbol,
   onPress,
-}) => {
-  const fee = get(gasPrice, 'txFee.native.value.display', `${nativeCurrencySymbol}0.00`);
-  const time = get(gasPrice, 'estimatedTime.display', '');
-  return (
-    <ButtonPressAnimation onPress={onPress}>
-      <Column css={padding(14, 19, 0)} width="100%">
-        <Row align="center" justify="space-between">
-          <Title>{fee}</Title>
-          <Row align="center" justify="end" height={26}>
-            <Emoji
-              letterSpacing="tight"
-              name="stopwatch"
-              size="lmedium"
-            />
-            <Nbsp />
-            <Title>
-              Normal
-            </Title>
-          </Row>
+}) => (
+  <ButtonPressAnimation onPress={onPress}>
+    <Column css={padding(14, 19, 0)} width="100%">
+      <Row align="center" justify="space-between">
+        <Title>{get(gasPrice, 'txFee.native.value.display', `${nativeCurrencySymbol}0.00`)}</Title>
+        <Row align="center" justify="end" height={26}>
+          <Emoji
+            letterSpacing="tight"
+            name="stopwatch"
+            size="lmedium"
+          />
+          <Nbsp />
+          <Title>{upperFirst(get(gasPrice, 'option', 'average'))}</Title>
         </Row>
-        <Row align="center" justify="space-between">
-          <Label>Fee</Label>
-          <Row align="center" justify="end">
-            <Label>Swaps in ~</Label>
-            <Label><Nbsp />{time}</Label>
-          </Row>
+      </Row>
+      <Row align="center" justify="space-between">
+        <Label>Fee</Label>
+        <Row align="center" justify="end">
+          <Label>Swaps in ~</Label>
+          <Label><Nbsp />{get(gasPrice, 'estimatedTime.display', '')}</Label>
         </Row>
-      </Column>
-    </ButtonPressAnimation>
-  );
-});
+      </Row>
+    </Column>
+  </ButtonPressAnimation>
+));
 
 ExchangeGasFeeButton.propTypes = {
   gasPrice: PropTypes.string,
