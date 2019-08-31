@@ -19,9 +19,9 @@ export const getFallbackGasPrices = (short = true) => {
     fast: null,
     slow: null,
   };
-  gasPrices.fast = defaultGasPriceFormat('fast', '30000', '5000000000', '5 Gwei', short);
-  gasPrices.average = defaultGasPriceFormat('average', '360000', '2000000000', '2 Gwei', short);
-  gasPrices.slow = defaultGasPriceFormat('slow', '1800000', '1000000000', '1 Gwei', short);
+  gasPrices.fast = defaultGasPriceFormat('fast', '0.5', '200', short);
+  gasPrices.average = defaultGasPriceFormat('average', '2.5', '100', short);
+  gasPrices.slow = defaultGasPriceFormat('slow', '2.5', '100', short);
   return gasPrices;
 };
 
