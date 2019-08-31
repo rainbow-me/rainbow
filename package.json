@@ -95,7 +95,7 @@
     "react-native-splash-screen": "^3.2.0",
     "react-native-storage": "^1.0.1",
     "react-native-store-review": "^0.1.5",
-    "react-native-svg": "^9.6.2",
+    "react-native-svg": "9.7.1",
     "react-native-tcp": "^3.3.0",
     "react-native-text-input-mask": "quixley/react-native-text-input-mask#development",
     "react-native-tooltip": "^5.2.0",
