@@ -34,7 +34,6 @@ export const sendModalInit = (options = {}) => (dispatch, getState) => {
   const { accountAddress } = getState().settings;
   const { assets } = getState().data;
   const selected = assets.filter(asset => asset.address === options.defaultAsset)[0] || {};
-
   dispatch({
     payload: {
       address: accountAddress,
@@ -42,6 +41,7 @@ export const sendModalInit = (options = {}) => (dispatch, getState) => {
     },
     type: SEND_MODAL_INIT,
   });
+  dispatch(resetGasTxFees());
 };
 
 export const sendTransaction = (transactionDetails, signAndSendTransactionCb) => (dispatch, getState) => new Promise((resolve, reject) => {
@@ -79,10 +79,8 @@ export const sendTransaction = (transactionDetails, signAndSendTransactionCb) =>
                   payload: txHash,
                   type: SEND_TRANSACTION_SUCCESS,
                 });
-                dispatch(resetGasTxFees());
                 resolve(txHash);
               }).catch(error => {
-                dispatch(resetGasTxFees());
                 reject(error);
               });
           } else {
