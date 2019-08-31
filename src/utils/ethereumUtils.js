@@ -8,11 +8,11 @@ import {
   subtract,
 } from '../helpers/utilities';
 
-export const getBalanceAmount = (gasPrice, selected) => {
+export const getBalanceAmount = (selectedGasPrice, selected) => {
   let amount = '';
   if (selected.address === 'eth') {
     const balanceAmount = get(selected, 'balance.amount', 0);
-    const txFeeRaw = get(gasPrice, 'txFee.value.amount');
+    const txFeeRaw = get(selectedGasPrice, 'txFee.value.amount');
     const txFeeAmount = fromWei(txFeeRaw);
     const remaining = subtract(balanceAmount, txFeeAmount);
     amount = convertNumberToString(greaterThan(remaining, 0) ? remaining : 0);
@@ -22,15 +22,7 @@ export const getBalanceAmount = (gasPrice, selected) => {
   return amount;
 };
 
-export const getAsset = (assets, address = 'eth') => {
-  return find(assets, asset => {
-    // console.log('asset', asset);
-    // console.log('asset.address', asset.address);
-    // console.log('address', address)
-
-    return asset.address === address;
-  });
-};
+export const getAsset = (assets, address = 'eth') => find(assets, asset => asset.address === address);
 
 /**
  * @desc remove hex prefix
