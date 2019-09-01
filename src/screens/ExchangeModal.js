@@ -362,7 +362,7 @@ class ExchangeModal extends PureComponent {
       if (isAssetApproved) {
         const gasLimit = await estimateSwapGasLimit(tradeDetails);
         if (gasLimit) {
-          gasUpdateTxFee(gasLimit.toFixed());
+          gasUpdateTxFee(gasLimit.toString());
         }
       }
     } catch (error) {
