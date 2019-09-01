@@ -83,7 +83,7 @@ class ExchangeModal extends PureComponent {
     chainId: PropTypes.number,
     clearKeyboardFocusHistory: PropTypes.func,
     dataAddNewTransaction: PropTypes.func,
-    gasLimit: PropTypes.number,
+    gasLimit: PropTypes.string,
     gasPrices: PropTypes.object,
     gasUpdateGasPriceOption: PropTypes.string,
     gasUpdateTxFee: PropTypes.func,
@@ -206,8 +206,16 @@ class ExchangeModal extends PureComponent {
       allowance = await contractUtils.getAllowance(accountAddress, inputCurrency, exchangeAddress);
       uniswapUpdateAllowances(inputAddress, allowance);
     }
-
-    return this.setState({ isAssetApproved: greaterThan(allowance, 0) });
+    const isAssetApproved = greaterThan(allowance, 0);
+    if (isAssetApproved) {
+      return this.setState({ isAssetApproved });
+    }
+    try {
+      const gasLimit = await contractUtils.estimateApprove(inputCurrency.address, exchangeAddress);
+      return this.setState({ gasLimit: gasLimit.toFixed(), isAssetApproved });
+    } catch (error) {
+      return this.setState({ isAssetApproved });
+    }
   }
 
   getReserveData = async (tokenAddress) => {
@@ -231,6 +239,7 @@ class ExchangeModal extends PureComponent {
       inputAmount,
       inputAsExactAmount,
       inputCurrency,
+      isAssetApproved,
       outputAmount,
       outputCurrency,
     } = this.state;
@@ -347,9 +356,11 @@ class ExchangeModal extends PureComponent {
           this.setInputAmount(rawUpdatedAmount, updatedAmountDisplay);
         }
       }
-      const gasLimit = await estimateSwapGasLimit(tradeDetails);
-      if (gasLimit) {
-        gasUpdateTxFee(gasLimit.toNumber());
+      if (isAssetApproved) {
+        const gasLimit = await estimateSwapGasLimit(tradeDetails);
+        if (gasLimit) {
+          gasUpdateTxFee(gasLimit.toFixed());
+        }
       }
     } catch (error) {
       console.log('error getting market details', error);
@@ -505,12 +516,14 @@ class ExchangeModal extends PureComponent {
   }
 
   handleUnlockAsset = async () => {
+    /*
     const {
       inputCurrency: {
         address: tokenAddress,
         exchangeAddress: spender,
       },
     } = this.state;
+    */
 
     // const approval = await contractUtils.approve(tokenAddress, spender);
 
