@@ -68,7 +68,7 @@ const ExchangeGasFeeButton = enhance(({
 ));
 
 ExchangeGasFeeButton.propTypes = {
-  gasPrice: PropTypes.string,
+  gasPrice: PropTypes.object,
   nativeCurrencySymbol: PropTypes.string,
   onPress: PropTypes.func,
 };
