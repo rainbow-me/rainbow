@@ -81,9 +81,29 @@ export const sendTransaction = async ({ transaction }) => {
   }
 };
 
-export const signMessage = async (message, authenticationPrompt = lang.t('wallet.authenticate.please')) => {
+export const signTransaction = async ({ transaction }) => {
+  try {
+    const wallet = await loadWallet();
+    if (!wallet) return null;
+    try {
+      return await wallet.sign(transaction);
+    } catch (error) {
+      Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      return null;
+    }
+  } catch (error) {
+    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    return null;
+  }
+};
+
+export const signMessage = async (
+  message,
+  authenticationPrompt = lang.t('wallet.authenticate.please'),
+) => {
   try {
     const wallet = await loadWallet(authenticationPrompt);
+    if (!wallet) return null;
     try {
       const signingKey = new ethers.utils.SigningKey(wallet.privateKey);
       const sigParams = await signingKey.signDigest(ethers.utils.arrayify(message));
@@ -100,6 +120,7 @@ export const signMessage = async (message, authenticationPrompt = lang.t('wallet
 export const signPersonalMessage = async (message, authenticationPrompt = lang.t('wallet.authenticate.please')) => {
   try {
     const wallet = await loadWallet(authenticationPrompt);
+    if (!wallet) return null;
     try {
       return await wallet.signMessage(isHexString(message) ? ethers.utils.arrayify(message) : message);
     } catch (error) {

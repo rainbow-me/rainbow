@@ -7,6 +7,9 @@ export { default as ethereumUtils } from './ethereumUtils';
 export { initials, removeLeadingZeros } from './formatters';
 export { default as isLowerCaseMatch } from './isLowerCaseMatch';
 export { default as isNewValueForPath } from './isNewValueForPath';
+export {
+  default as parseObjectToUrlQueryString,
+} from './parseObjectToUrlQueryString';
 export { default as parseQueryParams } from './parseQueryParams';
 export { default as reduceArrayToObject } from './reduceArrayToObject';
 export { default as safeAreaInsetValues } from './safeAreaInsetValues';

@@ -15,6 +15,5 @@ export default queryString => {
       );
     }
   }
-
   return result;
 };

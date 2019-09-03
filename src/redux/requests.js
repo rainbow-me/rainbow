@@ -1,10 +1,5 @@
-import { convertHexToUtf8 } from '@walletconnect/utils';
-import BigNumber from 'bignumber.js';
 import {
-  filter,
-  get,
-  omit,
-  values,
+  filter, get, omit, values,
 } from 'lodash';
 import {
   getLocalRequests,
@@ -12,14 +7,7 @@ import {
   removeLocalRequests,
   saveLocalRequests,
 } from '../handlers/commonStorage';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  convertHexToString,
-  convertRawAmountToDecimalFormat,
-  fromWei,
-} from '../helpers/utilities';
-import smartContractMethods from '../references/smartcontract-methods.json';
-import { ethereumUtils } from '../utils';
+import { getRequestDisplayDetails } from '../parsers/requests';
 
 // -- Constants --------------------------------------- //
 const REQUESTS_UPDATE_REQUESTS_TO_APPROVE = 'requests/REQUESTS_UPDATE_REQUESTS_TO_APPROVE';
@@ -35,116 +23,13 @@ export const requestsLoadState = () => async (dispatch, getState) => {
   }
 };
 
-const getTimestampFromPayload = payload => parseInt(payload.id.toString().slice(0, -3), 10);
-
-const getRequestDisplayDetails = (payload, assets, nativeCurrency) => {
-  const timestampInMs = getTimestampFromPayload(payload);
-  if (payload.method === 'eth_sendTransaction') {
-    const transaction = get(payload, 'params[0]', null);
-    return getTransactionDisplayDetails(
-      transaction,
-      assets,
-      nativeCurrency,
-      timestampInMs,
-    );
-  }
-  if (payload.method === 'eth_sign') {
-    const message = get(payload, 'params[1]');
-    return getMessageDisplayDetails(message, timestampInMs);
-  }
-  if (payload.method === 'personal_sign') {
-    let message = '';
-    try {
-      message = convertHexToUtf8(get(payload, 'params[0]'));
-    } catch (error) {
-      message = get(payload, 'params[0]');
-    }
-    return getMessageDisplayDetails(message, timestampInMs, 'messagePersonal');
-  }
-  if (payload.method === 'eth_signTypedData'
-    || payload.method === 'eth_signTypedData_v3') {
-    const request = get(payload, 'params[1]', null);
-    const jsonRequest = JSON.stringify(request.message);
-    return getMessageDisplayDetails(jsonRequest, timestampInMs);
-  }
-  return {};
-};
-
-const getMessageDisplayDetails = (message, timestampInMs, type = 'message') => ({
-  payload: message,
-  timestampInMs,
-  type,
-});
-
-const getTransactionDisplayDetails = (transaction, assets, nativeCurrency, timestampInMs) => {
-  const tokenTransferHash = smartContractMethods.token_transfer.hash;
-  if (transaction.data === '0x') {
-    const value = fromWei(convertHexToString(transaction.value));
-    const asset = ethereumUtils.getAsset(assets);
-    const priceUnit = get(asset, 'price.value', 0);
-    const { amount, display } = convertAmountAndPriceToNativeDisplay(value, priceUnit, nativeCurrency);
-    return {
-      payload: {
-        asset,
-        from: transaction.from,
-        gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
-        gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
-        nativeAmount: amount,
-        nativeAmountDisplay: display,
-        nonce: Number(convertHexToString(transaction.nonce)),
-        to: transaction.to,
-        value,
-      },
-      timestampInMs,
-      type: 'transaction',
-    };
-  }
-  if (transaction.data.startsWith(tokenTransferHash)) {
-    const contractAddress = transaction.to;
-    const asset = ethereumUtils.getAsset(assets, contractAddress);
-    const dataPayload = transaction.data.replace(tokenTransferHash, '');
-    const toAddress = `0x${dataPayload.slice(0, 64).replace(/^0+/, '')}`;
-    const amount = `0x${dataPayload.slice(64, 128).replace(/^0+/, '')}`;
-    const value = convertRawAmountToDecimalFormat(convertHexToString(amount), asset.decimals);
-    const priceUnit = get(asset, 'price.value', 0);
-    const native = convertAmountAndPriceToNativeDisplay(value, priceUnit, nativeCurrency);
-    return {
-      payload: {
-        asset,
-        from: transaction.from,
-        gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
-        gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
-        nativeAmount: native.amount,
-        nativeAmountDisplay: native.display,
-        nonce: Number(convertHexToString(transaction.nonce)),
-        to: toAddress,
-        value,
-      },
-      timestampInMs,
-      type: 'transaction',
-    };
-  }
-  if (transaction.data) {
-    const value = transaction.value ? fromWei(convertHexToString(transaction.value)) : 0;
-    return {
-      payload: {
-        data: transaction.data,
-        from: transaction.from,
-        gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
-        gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
-        nonce: Number(convertHexToString(transaction.nonce)),
-        to: transaction.to,
-        value,
-      },
-      timestampInMs,
-      type: 'default',
-    };
-  }
-
-  return null;
-};
-
-export const addRequestToApprove = (clientId, peerId, requestId, payload, peerMeta) => (dispatch, getState) => {
+export const addRequestToApprove = (
+  clientId,
+  peerId,
+  requestId,
+  payload,
+  peerMeta,
+) => (dispatch, getState) => {
   const { requests } = getState().requests;
   const { accountAddress, network, nativeCurrency } = getState().settings;
   const { assets } = getState().data;

@@ -18,6 +18,7 @@ import { compose, withProps } from 'recompact';
 import { FlexItem } from './components/layout';
 import OfflineBadge from './components/OfflineBadge';
 import {
+  withDeepLink,
   withWalletConnectConnections,
   withWalletConnectOnSessionRequest,
 } from './hoc';
@@ -37,6 +38,7 @@ useScreens();
 
 class App extends Component {
   static propTypes = {
+    addDeepLinkRequest: PropTypes.func,
     appInitTimestamp: PropTypes.number,
     requestsForTopic: PropTypes.func,
     sortedWalletConnectors: PropTypes.arrayOf(PropTypes.object),
@@ -46,45 +48,6 @@ class App extends Component {
   }
 
   state = { appState: AppState.currentState }
-
-  handleOpenLinkingURL = ({ url }) => {
-    Linking.canOpenURL(url).then((supported) => {
-      if (supported) {
-        const { uri, redirectUrl } = parseQueryParams(url);
-
-        const redirect = () => Linking.openURL(redirectUrl);
-        this.props.walletConnectOnSessionRequest(uri, redirect);
-      }
-    });
-  }
-
-  onPushNotificationOpened = (topic, autoOpened = false, fromLocal = false) => {
-    const { appInitTimestamp, requestsForTopic } = this.props;
-    const requests = requestsForTopic(topic);
-
-    if (requests && requests.length === 1) {
-      const request = requests[0];
-
-      const transactionTimestamp = get(request, 'displayDetails.timestampInMs');
-      const isNewTransaction = appInitTimestamp && (transactionTimestamp > appInitTimestamp);
-
-      if (!autoOpened || isNewTransaction) {
-        return Navigation.handleAction({
-          params: { autoOpened, transactionDetails: request },
-          routeName: 'ConfirmRequest',
-        });
-      }
-    }
-
-    if (fromLocal) {
-      return Navigation.handleAction({
-        params: { autoOpened, transactionDetails: last(requests) },
-        routeName: 'ConfirmRequest',
-      });
-    }
-
-    return Navigation.handleAction({ routeName: 'ProfileScreen' });
-  };
 
   async componentDidMount() {
     AppState.addEventListener('change', this.handleAppStateChange);
@@ -122,6 +85,50 @@ class App extends Component {
       this.onPushNotificationOpened(topic, false, fromLocal);
     });
   }
+
+  handleOpenLinkingURL = ({ url }) => {
+    const { addDeepLinkRequest, walletConnectOnSessionRequest } = this.props;
+    Linking.canOpenURL(url).then(supported => {
+      if (supported) {
+        const { type, ...remainingParams } = parseQueryParams(url);
+        if (type && type === 'walletconnect') {
+          const { uri, redirectUrl } = remainingParams;
+          const redirect = () => Linking.openURL(redirectUrl);
+          walletConnectOnSessionRequest(uri, redirect);
+        } else {
+          addDeepLinkRequest(remainingParams);
+        }
+      }
+    });
+  }
+
+  onPushNotificationOpened = (topic, autoOpened = false, fromLocal = false) => {
+    const { appInitTimestamp } = this.props;
+    const requests = this.props.requestsForTopic(topic);
+
+    if (requests && requests.length === 1) {
+      const request = requests[0];
+
+      const transactionTimestamp = get(request, 'displayDetails.timestampInMs');
+      const isNewTransaction = appInitTimestamp && transactionTimestamp > appInitTimestamp;
+
+      if (!autoOpened || isNewTransaction) {
+        return Navigation.handleAction({
+          params: { autoOpened, transactionDetails: request },
+          routeName: 'ConfirmRequest',
+        });
+      }
+    }
+
+    if (fromLocal) {
+      return Navigation.handleAction({
+        params: { autoOpened, transactionDetails: last(requests) },
+        routeName: 'ConfirmRequest',
+      });
+    }
+
+    return Navigation.handleAction({ routeName: 'ProfileScreen' });
+  };
 
   handleInitializeAnalytics = async () => {
     const storedIdentifier = await keychain.loadString('analyticsUserIdentifier');
@@ -178,6 +185,7 @@ class App extends Component {
 
 const AppWithRedux = compose(
   withProps({ store }),
+  withDeepLink,
   withWalletConnectConnections,
   withWalletConnectOnSessionRequest,
   connect(

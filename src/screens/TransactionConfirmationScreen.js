@@ -15,6 +15,11 @@ import {
 } from '../components/transaction';
 import { Text } from '../components/text';
 import { colors, position } from '../styles';
+import {
+  isMessageDisplayType,
+  isTransactionDisplayType,
+  SEND_TRANSACTION,
+} from '../utils/signingMethods';
 
 const CancelButtonContainer = styled.View`
   bottom: 22;
@@ -43,11 +48,11 @@ export default class TransactionConfirmationScreen extends PureComponent {
   static propTypes = {
     dappName: PropTypes.string,
     imageUrl: PropTypes.string,
+    method: PropTypes.string,
     onCancel: PropTypes.func,
     onConfirm: PropTypes.func,
     request: PropTypes.object,
-    requestType: PropTypes.string,
-  }
+  };
 
   state = {
     biometryType: null,
@@ -87,7 +92,7 @@ export default class TransactionConfirmationScreen extends PureComponent {
   }
 
   onLongPressSend = async () => {
-    const { onConfirm, requestType } = this.props;
+    const { onConfirm } = this.props;
     const { sendLongPressProgress } = this.state;
 
     Animated.timing(sendLongPressProgress, {
@@ -95,23 +100,22 @@ export default class TransactionConfirmationScreen extends PureComponent {
       toValue: 0,
     }).start();
 
-    await onConfirm(requestType);
-  }
+    await onConfirm();
+  };
 
   renderSendButton = () => (
     <HoldToAuthorizeButton
       isAuthorizing={this.state.isAuthorizing}
       onLongPress={this.onLongPressSend}
     >
-      {`Hold to ${(this.props.requestType === 'message' || this.props.requestType === 'messagePersonal') ? 'Sign' : 'Send'}`}
+      {`Hold to ${this.props.method === SEND_TRANSACTION ? 'Send' : 'Sign'}`}
     </HoldToAuthorizeButton>
-  )
+  );
 
   renderTransactionSection = () => {
-    const { request, requestType } = this.props;
+    const { request, method } = this.props;
 
-    if (requestType === 'message'
-        || requestType === 'messagePersonal') {
+    if (isMessageDisplayType(method)) {
       return (
         <MessageSigningSection
           message={request}
@@ -120,7 +124,7 @@ export default class TransactionConfirmationScreen extends PureComponent {
       );
     }
 
-    if (requestType === 'transaction') {
+    if (isTransactionDisplayType(method)) {
       return (
         <TransactionConfirmationSection
           asset={{

@@ -1,14 +1,8 @@
 import analytics from '@segment/analytics-react-native';
-import {
-  forEach,
-  mapValues,
-  omitBy,
-  pickBy,
-  values,
-} from 'lodash';
-import { Alert } from 'react-native';
-import lang from 'i18n-js';
 import WalletConnect from '@walletconnect/react-native';
+import lang from 'i18n-js';
+import { forEach, mapValues, omitBy, pickBy, values } from 'lodash';
+import { Alert } from 'react-native';
 import {
   getAllValidWalletConnectSessions,
   saveWalletConnectSession,
@@ -17,6 +11,7 @@ import {
 } from '../handlers/commonStorage';
 import { sendRpcCall } from '../handlers/web3';
 import { getFCMToken, checkPushNotificationPermissions } from '../model/firebase';
+import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove } from './requests';
 
 // -- Constants --------------------------------------- //
@@ -94,20 +89,12 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (dispatch)
   }
 };
 
-const signingMethods = [
-  "eth_sendTransaction",
-  "eth_signTransaction",
-  "personal_sign",
-  "eth_sign",
-  "eth_signTypedData",
-];
-
-const listenOnNewMessages = walletConnector => (dispatch, getState) => {
+const listenOnNewMessages = walletConnector => dispatch => {
   walletConnector.on('call_request', (error, payload) => {
     if (error) throw error;
     const { clientId, peerId, peerMeta } = walletConnector;
     const requestId = payload.id;
-    if (!signingMethods.includes(payload.method)) {
+    if (!isSigningMethod(payload.method)) {
       sendRpcCall(payload)
         .then(result => {
           walletConnector.approveRequest({
