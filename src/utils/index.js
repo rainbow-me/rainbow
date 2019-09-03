@@ -9,6 +9,9 @@ export { default as gasUtils } from './gas';
 export { getFirstGrapheme, initials, removeLeadingZeros } from './formatters';
 export { default as isLowerCaseMatch } from './isLowerCaseMatch';
 export { default as isNewValueForPath } from './isNewValueForPath';
+export {
+  default as parseObjectToUrlQueryString,
+} from './parseObjectToUrlQueryString';
 export { default as parseQueryParams } from './parseQueryParams';
 export { default as promiseUtils } from './promise';
 export { default as reduceArrayToObject } from './reduceArrayToObject';

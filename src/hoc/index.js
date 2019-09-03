@@ -9,6 +9,7 @@ export {
 } from './withBlockedHorizontalSwipe';
 export { default as withBlurTransitionProps } from './withBlurTransitionProps';
 export { default as withDataInit } from './withDataInit';
+export { default as withDeepLink } from './withDeepLink';
 export { default as withFabSelection } from './withFabSelection';
 export { default as withFabSendAction } from './withFabSendAction';
 export { default as withGas } from './withGas';
