@@ -111,6 +111,13 @@ export default class TransactionConfirmationScreen extends PureComponent {
     </HoldToAuthorizeButton>
   );
 
+  requestHeader = () => {
+    const { method } = this.props;
+    return isMessageDisplayType(method)
+      ? lang.t('wallet.message_signing.request')
+      : lang.t('wallet.transaction.request');
+  };
+
   renderTransactionSection = () => {
     const { request, method } = this.props;
 
@@ -164,7 +171,7 @@ export default class TransactionConfirmationScreen extends PureComponent {
           {this.props.dappName}
         </Text>
         <TransactionType>
-          {lang.t('wallet.transaction.request')}
+          {this.requestHeader()}
         </TransactionType>
         <CancelButtonContainer>
           <Button
