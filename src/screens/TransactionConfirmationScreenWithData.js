@@ -166,7 +166,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
         },
       } = this.props.navigation.state.params;
       if (callback) {
-        callback({ error: 'Error' });
+        callback({ error: 'User cancelled the request' });
       }
       if (requestId) {
         await this.props.walletConnectSendStatus(peerId, requestId, null);

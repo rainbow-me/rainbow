@@ -7,10 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 ### Added
+* Support for deeplinking
 
 ### Changed
-
-### Removed
+* Updated icons and splash screen
 
 ## [1.1.5-2](https://github.com/rainbow-me/rainbow/releases/tag/v1.1.5-2)
 ### Changed

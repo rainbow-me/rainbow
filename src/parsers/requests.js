@@ -1,6 +1,7 @@
 import { convertHexToUtf8 } from '@walletconnect/utils';
 import BigNumber from 'bignumber.js';
 import { get } from 'lodash';
+import { isHexString } from '../handlers/web3';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertHexToString,
@@ -41,11 +42,13 @@ export const getRequestDisplayDetails = (payload, assets, nativeCurrency) => {
     return result;
   }
   if (payload.method === PERSONAL_SIGN) {
-    let message = '';
+    let message = get(payload, 'params[0]');
     try {
-      message = convertHexToUtf8(get(payload, 'params[0]'));
+      if (isHexString(message)) {
+        message = convertHexToUtf8(message);
+      }
     } catch (error) {
-      message = get(payload, 'params[0]');
+      // TODO error handling
     }
     return getMessageDisplayDetails(message, timestampInMs);
   }

@@ -1,10 +1,16 @@
 import { Linking } from 'react-native';
 import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
+import { Navigation } from '../navigation';
 import { getRequestDisplayDetails } from '../parsers/requests';
 // eslint-disable-next-line import/default
 import parseObjectToUrlQueryString from '../utils';
-import { Navigation } from '../navigation';
+import {
+  PERSONAL_SIGN,
+  SEND_TRANSACTION,
+  SIGN,
+  SIGN_TRANSACTION,
+} from '../utils/signingMethods';
 import withAccountSettings from './withAccountSettings';
 
 const mapStateToProps = ({
@@ -43,7 +49,7 @@ export default Component =>
         let payload = {};
         let redirect = results => parseResultsForRedirect(results, redirectUrl);
         switch (method) {
-          case 'eth_sign': {
+          case SIGN: {
             const { message } = remainingParams;
             const params = [accountAddress, message];
             payload = {
@@ -60,9 +66,9 @@ export default Component =>
             };
             break;
           }
-          case 'personal_sign': {
+          case PERSONAL_SIGN: {
             const { message } = remainingParams;
-            const params = [accountAddress, message];
+            const params = [message, accountAddress];
             payload = {
               method,
               params,
@@ -77,7 +83,7 @@ export default Component =>
             };
             break;
           }
-          case 'eth_sendTransaction': {
+          case SEND_TRANSACTION: {
             const { data, to, value } = remainingParams;
             const transaction = {
               data,
@@ -92,7 +98,7 @@ export default Component =>
             };
             break;
           }
-          case 'eth_signTransaction': {
+          case SIGN_TRANSACTION: {
             const { data, to, value } = remainingParams;
             const transaction = {
               data,
