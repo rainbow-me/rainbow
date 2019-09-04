@@ -181,7 +181,7 @@ const MainNavigator = createStackNavigator(
 
 const AppContainer = createAppContainer(MainNavigator);
 
-const AppContainerWithAnalytics = ({ ref, screenProps }) => (
+const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
   <AppContainer
     onNavigationStateChange={(prevState, currentState) => {
       const { params, routeName } = Navigation.getActiveRoute(currentState);
@@ -229,8 +229,7 @@ const AppContainerWithAnalytics = ({ ref, screenProps }) => (
       }
     }}
     ref={ref}
-    screenProps={screenProps}
   />
-);
+));
 
 export default React.memo(AppContainerWithAnalytics);

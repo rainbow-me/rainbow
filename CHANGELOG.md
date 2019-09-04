@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.1.5-2](https://github.com/rainbow-me/rainbow/releases/tag/v1.1.5-2)
+### Changed
+* Bugfix for transaction history with null symbol
+
 ## [1.1.4-1](https://github.com/rainbow-me/rainbow/releases/tag/v1.1.4-1)
 ### Added
 * Support for importing private key and seed key

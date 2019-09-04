@@ -42,29 +42,37 @@ export default Component =>
         let payload = {};
         let redirect = results => parseResultsForRedirect(results, redirectUrl);
         switch (method) {
-          case 'connect_sign': {
-            const { message } = remainingParams;
-            const params = [accountAddress, message];
-            payload = {
-              method: 'eth_sign',
-              params,
-            };
-            redirect = results => {
-              const updatedResults = {
-                ...results,
-                address: accountAddress,
-                message,
-              };
-              return parseResultsForRedirect(updatedResults, redirectUrl);
-            };
-            break;
-          }
           case 'eth_sign': {
             const { message } = remainingParams;
             const params = [accountAddress, message];
             payload = {
               method,
               params,
+            };
+            redirect = results => {
+              const updatedResults = {
+                ...results,
+                address: accountAddress,
+                msg: message,
+              };
+              return parseResultsForRedirect(updatedResults, redirectUrl);
+            };
+            break;
+          }
+          case 'personal_sign': {
+            const { message } = remainingParams;
+            const params = [accountAddress, message];
+            payload = {
+              method,
+              params,
+            };
+            redirect = results => {
+              const updatedResults = {
+                ...results,
+                address: accountAddress,
+                msg: message,
+              };
+              return parseResultsForRedirect(updatedResults, redirectUrl);
             };
             break;
           }

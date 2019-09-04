@@ -136,9 +136,6 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     }
 
     if (flatFormatSignature) {
-      if (callback) {
-        callback({ signature: flatFormatSignature });
-      }
       analytics.track('Approved WalletConnect signature request');
       if (requestId) {
         this.props.removeRequest(requestId);
@@ -147,6 +144,9 @@ class TransactionConfirmationScreenWithData extends PureComponent {
           requestId,
           flatFormatSignature
         );
+      }
+      if (callback) {
+        callback({ sig: flatFormatSignature });
       }
       this.closeScreen();
     } else {
@@ -176,6 +176,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
         method === SEND_TRANSACTION ? 'transaction' : 'signature';
       analytics.track(`Rejected WalletConnect ${rejectionType} request`);
     } catch (error) {
+      console.log('error while handling cancel request', error);
       this.closeScreen();
       Alert.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
     }
