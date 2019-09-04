@@ -18,7 +18,8 @@ const mapStateToProps = ({
 
 const parseResultsForRedirect = (results, redirectUrl) => {
   const queryString = parseObjectToUrlQueryString(results);
-  const updatedRedirectUrl = `${redirectUrl}?${queryString}`;
+  const querySeparator = redirectUrl.includes('?') ? '&' : '?';
+  const updatedRedirectUrl = `${redirectUrl}${querySeparator}${queryString}`;
   return Linking.openURL(updatedRedirectUrl);
 };
 
