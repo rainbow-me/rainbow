@@ -11,6 +11,7 @@ import { withTransactionConfirmationScreen } from '../hoc';
 import {
   signMessage,
   signPersonalMessage,
+  signTransaction,
   sendTransaction,
 } from '../model/wallet';
 import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
@@ -57,13 +58,14 @@ class TransactionConfirmationScreenWithData extends PureComponent {
       transactionDetails: {
         dappName,
         displayDetails,
-        payload,
+        payload: { method, params },
         peerId,
         requestId,
       },
     } = this.props.navigation.state.params;
 
-    const txPayload = get(payload, 'params[0]');
+    const sendInsteadOfSign = method === SEND_TRANSACTION;
+    const txPayload = get(params, '[0]');
     let { gasLimit } = txPayload;
 
     if (isNil(gasLimit)) {
@@ -82,36 +84,40 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     const nonce = ethers.utils.hexlify(maxTxnCount);
     let txPayloadLatestNonce = { ...txPayload, nonce };
     txPayloadLatestNonce = omit(txPayloadLatestNonce, 'from');
-    const transactionHash = await sendTransaction({
-      transaction: txPayloadLatestNonce,
-    });
+    let result = null;
+    if (sendInsteadOfSign) {
+      result = await sendTransaction({
+        transaction: txPayloadLatestNonce,
+      });
+    } else {
+      result = await signTransaction({
+        transaction: txPayloadLatestNonce,
+      });
+    }
 
-    if (transactionHash) {
+    if (result) {
       if (callback) {
-        // TODO JIN what about for sign txn (no txn hash)
-        callback({ hash: transactionHash });
+        callback({ result });
       }
-      this.props.updateTransactionCountNonce(maxTxnCount + 1);
-      const txDetails = {
-        amount: get(displayDetails, 'request.value'),
-        asset: get(displayDetails, 'request.asset'),
-        dappName,
-        from: get(displayDetails, 'request.from'),
-        gasLimit: get(displayDetails, 'request.gasLimit'),
-        gasPrice: get(displayDetails, 'request.gasPrice'),
-        hash: transactionHash,
-        nonce: get(displayDetails, 'request.nonce'),
-        to: get(displayDetails, 'request.to'),
-      };
-      this.props.dataAddNewTransaction(txDetails);
+      if (sendInsteadOfSign) {
+        this.props.updateTransactionCountNonce(maxTxnCount + 1);
+        const txDetails = {
+          amount: get(displayDetails, 'request.value'),
+          asset: get(displayDetails, 'request.asset'),
+          dappName,
+          from: get(displayDetails, 'request.from'),
+          gasLimit: get(displayDetails, 'request.gasLimit'),
+          gasPrice: get(displayDetails, 'request.gasPrice'),
+          hash: result,
+          nonce: get(displayDetails, 'request.nonce'),
+          to: get(displayDetails, 'request.to'),
+        };
+        this.props.dataAddNewTransaction(txDetails);
+      }
       analytics.track('Approved WalletConnect transaction request');
       if (requestId) {
         this.props.removeRequest(requestId);
-        await this.props.walletConnectSendStatus(
-          peerId,
-          requestId,
-          transactionHash
-        );
+        await this.props.walletConnectSendStatus(peerId, requestId, result);
       }
       this.closeScreen();
     } else {
@@ -122,16 +128,19 @@ class TransactionConfirmationScreenWithData extends PureComponent {
   handleSignMessage = async () => {
     const {
       callback,
-      transactionDetails: { payload, peerId, requestId },
+      transactionDetails: {
+        payload: { method, params },
+        peerId,
+        requestId,
+      },
     } = this.props.navigation.state.params;
     let message = null;
     let flatFormatSignature = null;
-    const method = get(payload, 'method');
     if (isSignFirstParamType(method)) {
-      message = get(payload, 'params[0]');
+      message = get(params, '[0]');
       flatFormatSignature = await signPersonalMessage(message);
     } else if (isSignSecondParamType(method)) {
-      message = get(payload, 'params[1]');
+      message = get(params, '[1]');
       flatFormatSignature = await signMessage(message);
     }
 

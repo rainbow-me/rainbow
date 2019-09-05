@@ -181,6 +181,7 @@ const MainNavigator = createStackNavigator(
 
 const AppContainer = createAppContainer(MainNavigator);
 
+// eslint-disable-next-line react/display-name
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
   <AppContainer
     onNavigationStateChange={(prevState, currentState) => {

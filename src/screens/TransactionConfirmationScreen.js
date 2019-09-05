@@ -170,9 +170,7 @@ export default class TransactionConfirmationScreen extends PureComponent {
         <Text color="white" letterSpacing="looser" size="h4" weight="semibold">
           {this.props.dappName}
         </Text>
-        <TransactionType>
-          {this.requestHeader()}
-        </TransactionType>
+        <TransactionType>{this.requestHeader()}</TransactionType>
         <CancelButtonContainer>
           <Button
             backgroundColor={colors.blueGreyMedium}
