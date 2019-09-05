@@ -155,8 +155,8 @@ const createWallet = async (seed) => {
     } else if (isValidMnemonic(walletSeed)) {
       wallet = ethers.Wallet.fromMnemonic(walletSeed);
     } else {
-      let hdnode = ethers.utils.HDNode.fromSeed(walletSeed);
-      let node = hdnode.derivePath("m/44'/60'/0'/0/0");
+      const hdnode = ethers.utils.HDNode.fromSeed(walletSeed);
+      const node = hdnode.derivePath("m/44'/60'/0'/0/0");
       wallet = new ethers.Wallet(node.privateKey);
     }
     if (wallet) {
