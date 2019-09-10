@@ -27,7 +27,6 @@ export const convertAmountToRawAmount = (value, decimals) => BigNumber(value).ti
  */
 export const convertNumberToString = value => BigNumber(`${value}`).toFixed();
 
-
 /**
  * @desc compares if numberOne is greater than numberTwo
  * @param  {Number}   numberOne
@@ -66,7 +65,6 @@ export const mod = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
  * @return {String}
  */
 export const greaterThanOrEqual = (numberOne, numberTwo) => BigNumber(`${numberOne}`).comparedTo(BigNumber(`${numberTwo}`)) >= 0;
-
 
 /**
  * @desc real floor divides two numbers
