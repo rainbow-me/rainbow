@@ -1,5 +1,6 @@
 import { get } from 'lodash';
 import { convertRawAmountToBalance } from '../helpers/utilities';
+import { loweredTokenOverrides } from '../references';
 
 /**
  * @desc parse account assets
@@ -17,11 +18,9 @@ export const parseAccountAssets = data => {
       };
     });
 
-    assets = assets.filter(
+    return assets.filter(
       asset => !!Number(get(asset, 'balance.amount')),
     );
-
-    return assets;
   } catch (error) {
     throw error;
   }
@@ -33,15 +32,17 @@ export const parseAccountAssets = data => {
  * @return {Object}
  */
 export const parseAsset = assetData => {
+  const address = get(assetData, 'asset_code', null);
   const name = get(assetData, 'name') || 'Unknown Token';
   const symbol = get(assetData, 'symbol') || '———';
   const asset = {
-    address: get(assetData, 'asset_code', null),
+    address,
     decimals: get(assetData, 'decimals'),
     name,
     price: get(assetData, 'price'),
     symbol: symbol.toUpperCase(),
-    uniqueId: get(assetData, 'asset_code') || name,
+    uniqueId: address || name,
+    ...loweredTokenOverrides[address],
   };
   return asset;
 };
