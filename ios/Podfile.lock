@@ -133,10 +133,14 @@ PODS:
     - React
     - SDWebImage (~> 5.0)
 <<<<<<< HEAD
+<<<<<<< HEAD
   - react-native-netinfo (4.2.1):
 =======
   - react-native-netinfo (4.1.5):
 >>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
+=======
+  - react-native-netinfo (4.2.1):
+>>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
     - React
   - react-native-version-number (0.3.6):
     - React
@@ -382,10 +386,14 @@ SPEC CHECKSUMS:
   react-native-camera: b5e6e34586ca6f588b0c736dcabfe0aad5ce2f3e
   react-native-fast-image: fdfc612dba58fd73136cf5efdaeb8cfcad7f63b2
 <<<<<<< HEAD
+<<<<<<< HEAD
   react-native-netinfo: aeb1752abb78a9c15cdcea067a6c95d596dcfc45
 =======
   react-native-netinfo: 0e563248a4b9a99c33ec29bd03c2d50767db22a6
 >>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
+=======
+  react-native-netinfo: aeb1752abb78a9c15cdcea067a6c95d596dcfc45
+>>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   React-RCTActionSheet: b0f1ea83f4bf75fb966eae9bfc47b78c8d3efd90
   React-RCTAnimation: 359ba1b5690b1e87cc173558a78e82d35919333e
