@@ -29,7 +29,7 @@ const ButtonHeight = 59;
 
 const ButtonDisabledBgColor = {
   dark: colors.darkGrey, // blueGreyLighter,
-  light: colors.lighterGrey,
+  light: colors.lightGrey,
 };
 
 const ButtonShadows = {

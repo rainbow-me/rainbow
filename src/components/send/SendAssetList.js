@@ -27,7 +27,7 @@ const dividerHeight = 18;
 
 const Divider = styled.View`
   height: 2px;
-  background-color: ${colors.lightGrey};
+  background-color: ${colors.lighterGrey};
   margin: 10px 19px;
   width: 100%;
 `;
