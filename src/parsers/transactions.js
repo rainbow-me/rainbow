@@ -1,15 +1,57 @@
-import { flatten, get, isEmpty, pick, reverse } from 'lodash';
+import {
+  concat,
+  filter,
+  find,
+  findIndex,
+  flatten,
+  get,
+  isEmpty,
+  partition,
+  pick,
+  reverse,
+  slice,
+  startsWith,
+  toLower,
+  toUpper,
+  uniqBy,
+} from 'lodash';
+import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
 } from '../helpers/utilities';
+import { isLowerCaseMatch } from '../utils';
 
-export const parseTransactions = (data, nativeCurrency) => {
-  const allTxns = data.map(txn => parseTransaction(txn, nativeCurrency));
-  return flatten(allTxns);
+const dataFromLastTxHash = (transactionData, transactions) => {
+  const lastSuccessfulTxn = find(transactions, (txn) => txn.hash && !txn.pending);
+  const lastTxHash = lastSuccessfulTxn ? lastSuccessfulTxn.hash : '';
+  if (lastTxHash) {
+    const lastTxnHashIndex = findIndex(transactionData, (txn) => lastTxHash.startsWith(txn.hash));
+    if (lastTxnHashIndex > -1) {
+      return slice(transactionData, 0, lastTxnHashIndex);
+    }
+  }
+  return transactionData;
 };
 
-const parseTransaction = (txn, nativeCurrency) => {
+export default (
+  transactionData,
+  accountAddress,
+  nativeCurrency,
+  existingTransactions,
+  appended = false,
+) => {
+  const data = appended ? dataFromLastTxHash(transactionData, existingTransactions) : transactionData;
+  const parsedNewTransactions = flatten(data.map(txn => parseTransaction(txn, accountAddress, nativeCurrency)));
+  const [pendingTransactions, remainingTransactions] = partition(existingTransactions, (txn) => txn.pending);
+  const [approvalTransactions, parsedTransactions] = partition(parsedNewTransactions, txn => txn.type === 'authorize');
+  const updatedPendingTransactions = dedupePendingTransactions(pendingTransactions, parsedTransactions);
+  const updatedResults = concat(updatedPendingTransactions, parsedTransactions, remainingTransactions);
+  const dedupedResults = uniqBy(updatedResults, (txn) => txn.hash);
+  return { approvalTransactions, dedupedResults };
+};
+
+const parseTransaction = (txn, accountAddress, nativeCurrency) => {
   const transaction = pick(txn, [
     'hash',
     'mined_at',
@@ -23,13 +65,20 @@ const parseTransaction = (txn, nativeCurrency) => {
   transaction.to = txn.address_to;
   const changes = get(txn, 'changes', []);
   let internalTransactions = changes;
-  if (
-    changes.length === 2 &&
-    get(changes, '[0].asset.asset_code') ===
-      get(changes, '[1].asset.asset_code')
-  ) {
+  if (isEmpty(changes) && txn.type === 'authorize') {
+    const assetInternalTransaction = {
+      address_from: transaction.from, // eslint-disable-line camelcase
+      address_to: transaction.to, // eslint-disable-line camelcase
+      asset: get(txn, 'meta.asset'),
+      spender: get(txn, 'meta.spender'),
+    };
+    internalTransactions = [assetInternalTransaction];
+  }
+  // logic below: prevent sending yourself money to be seen as a trade
+  if (changes.length === 2 && get(changes, '[0].asset.asset_code') === get(changes, '[1].asset.asset_code')) {
     internalTransactions = [changes[0]];
   }
+  // logic below: prevent sending a WalletConnect 0 amount to be seen as a Cancel
   if (isEmpty(internalTransactions) && transaction.type === 'cancel') {
     const ethInternalTransaction = {
       address_from: transaction.from,
@@ -48,7 +97,7 @@ const parseTransaction = (txn, nativeCurrency) => {
     const symbol = get(internalTxn, 'asset.symbol') || '';
     const updatedAsset = {
       ...internalTxn.asset,
-      symbol: symbol.toUpperCase(),
+      symbol: toUpper(symbol),
     };
     const priceUnit = internalTxn.price || 0;
     const nativeDisplay = convertRawAmountToNativeDisplay(
@@ -58,15 +107,61 @@ const parseTransaction = (txn, nativeCurrency) => {
       nativeCurrency
     );
 
+    const status = getTransactionLabel(
+      accountAddress,
+      internalTxn.address_from,
+      transaction.pending,
+      transaction.status,
+      internalTxn.address_to,
+    );
+
     return {
       ...transaction,
-      asset: updatedAsset,
       balance: convertRawAmountToBalance(internalTxn.value, updatedAsset),
       from: internalTxn.address_from,
       hash: `${transaction.hash}-${index}`,
+      name: get(updatedAsset, 'name', ''),
       native: nativeDisplay,
+      status,
+      symbol: get(updatedAsset, 'symbol', ''),
       to: internalTxn.address_to,
     };
   });
   return reverse(internalTransactions);
+};
+
+const dedupePendingTransactions = (pendingTransactions, parsedTransactions) => {
+  let updatedPendingTransactions = pendingTransactions;
+  if (pendingTransactions.length) {
+    updatedPendingTransactions = filter(updatedPendingTransactions, (pendingTxn) => {
+      const matchingElement = find(parsedTransactions, (txn) => txn.hash
+        && (startsWith(toLower(txn.hash), toLower(pendingTxn.hash))
+        || (txn.nonce && (txn.nonce >= pendingTxn.nonce))));
+      return !matchingElement;
+    });
+  }
+  return updatedPendingTransactions;
+};
+
+const getTransactionLabel = (
+  accountAddress,
+  from,
+  pending,
+  status,
+  to,
+) => {
+  const isFromAccount = isLowerCaseMatch(from, accountAddress);
+  const isToAccount = isLowerCaseMatch(to, accountAddress);
+
+  if (pending && isFromAccount) return TransactionStatusTypes.sending;
+  if (pending && isToAccount) return TransactionStatusTypes.receiving;
+
+  if (status === 'failed') return TransactionStatusTypes.failed;
+
+  if (isFromAccount && isToAccount) return TransactionStatusTypes.self;
+
+  if (isFromAccount) return TransactionStatusTypes.sent;
+  if (isToAccount) return TransactionStatusTypes.received;
+
+  return TransactionStatusTypes.unknown;
 };

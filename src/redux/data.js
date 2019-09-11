@@ -1,15 +1,10 @@
 import {
   concat,
-  filter,
-  find,
-  findIndex,
   get,
   includes,
   isNil,
   map,
-  partition,
   remove,
-  slice,
   uniqBy,
 } from 'lodash';
 import {
@@ -22,11 +17,11 @@ import {
 } from '../handlers/localstorage/storage';
 import { parseAccountAssets, parseAsset } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
-import { parseTransactions } from '../parsers/transactions';
-import { getFamilies } from '../parsers/uniqueTokens';
+import parseTransactions from '../parsers/transactions';
 import { isLowerCaseMatch } from '../utils';
 import {
   uniswapAddLiquidityTokens,
+  uniswapRemovePendingApproval,
   uniswapUpdateAssetPrice,
   uniswapUpdateAssets,
   uniswapUpdateLiquidityTokens,
@@ -82,60 +77,15 @@ export const dataClearState = () => (dispatch, getState) => {
   dispatch({ type: DATA_CLEAR_STATE });
 };
 
-const dedupePendingTransactions = (pendingTransactions, parsedTransactions) => {
-  let updatedPendingTransactions = pendingTransactions;
-  if (pendingTransactions.length) {
-    updatedPendingTransactions = filter(
-      updatedPendingTransactions,
-      pendingTxn => {
-        const matchingElement = find(
-          parsedTransactions,
-          txn =>
-            txn.hash &&
-            (txn.hash.toLowerCase().startsWith(pendingTxn.hash.toLowerCase()) ||
-              (txn.nonce && txn.nonce >= pendingTxn.nonce))
-        );
-        return !matchingElement;
-      }
-    );
-  }
-  return updatedPendingTransactions;
-};
-
-export const dedupeAssetsWithFamilies = families => (dispatch, getState) => {
+export const dataUpdateAssets = (assets) => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  const { assets } = getState().data;
   if (assets.length) {
-    const dedupedAssets = filter(assets, asset => {
-      const matchingElement = find(
-        families,
-        family => family === get(asset, 'address')
-      );
-      return !matchingElement;
-    });
-    saveAssets(accountAddress, dedupedAssets, network);
+    saveAssets(accountAddress, assets, network);
     dispatch({
-      payload: dedupedAssets,
+      payload: assets,
       type: DATA_UPDATE_ASSETS,
     });
   }
-};
-
-const dedupeUniqueTokens = assets => (dispatch, getState) => {
-  const { uniqueTokens } = getState().uniqueTokens;
-  const uniqueTokenFamilies = getFamilies(uniqueTokens);
-  let updatedAssets = assets;
-  if (assets.length) {
-    updatedAssets = filter(updatedAssets, asset => {
-      const matchingElement = find(
-        uniqueTokenFamilies,
-        uniqueTokenFamily =>
-          uniqueTokenFamily === get(asset, 'asset.asset_code')
-      );
-      return !matchingElement;
-    });
-  }
-  return updatedAssets;
 };
 
 const checkMeta = message => (dispatch, getState) => {
@@ -148,76 +98,24 @@ const checkMeta = message => (dispatch, getState) => {
   );
 };
 
-export const transactionsReceived = message => (dispatch, getState) => {
+export const transactionsReceived = (message, appended = false) => (dispatch, getState) => {
+  console.log('txns received', message);
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
-
-  let transactionData = get(message, 'payload.transactions', []);
-  if (!transactionData.length) return;
-
-  const { accountAddress, nativeCurrency, network } = getState().settings;
-  const { transactions } = getState().data;
-
-  const lastSuccessfulTxn = find(transactions, txn => txn.hash && !txn.pending);
-  const lastTxHash = lastSuccessfulTxn ? lastSuccessfulTxn.hash : '';
-  if (lastTxHash) {
-    const lastTxnHashIndex = findIndex(transactionData, txn =>
-      lastTxHash.startsWith(txn.hash)
-    );
-    if (lastTxnHashIndex > -1) {
-      transactionData = slice(transactionData, 0, lastTxnHashIndex);
-    }
-  }
-  if (!transactionData.length) return;
-
-  const parsedTransactions = parseTransactions(transactionData, nativeCurrency);
-  const partitions = partition(transactions, txn => txn.pending);
-  const pendingTransactions = partitions[0];
-  const remainingTransactions = partitions[1];
-
-  const updatedPendingTransactions = dedupePendingTransactions(
-    pendingTransactions,
-    parsedTransactions
-  );
-  const updatedResults = concat(
-    updatedPendingTransactions,
-    parsedTransactions,
-    remainingTransactions
-  );
-  const dedupedResults = uniqBy(updatedResults, txn => txn.hash);
-
-  saveLocalTransactions(accountAddress, dedupedResults, network);
-  dispatch({
-    payload: dedupedResults,
-    type: DATA_UPDATE_TRANSACTIONS,
-  });
-};
-
-export const transactionsAppended = message => (dispatch, getState) => {
-  const isValidMeta = dispatch(checkMeta(message));
-  if (!isValidMeta) return;
-
   const transactionData = get(message, 'payload.transactions', []);
   if (!transactionData.length) return;
   const { accountAddress, nativeCurrency, network } = getState().settings;
   const { transactions } = getState().data;
-  const partitions = partition(transactions, txn => txn.pending);
-  const pendingTransactions = partitions[0];
-  const remainingTransactions = partitions[1];
-
-  const parsedTransactions = parseTransactions(transactionData, nativeCurrency);
-  const updatedPendingTransactions = dedupePendingTransactions(
-    pendingTransactions,
-    parsedTransactions
+  if (!transactionData.length) return;
+  const { approvalTransactions, dedupedResults } = parseTransactions(
+    transactionData,
+    accountAddress,
+    nativeCurrency,
+    transactions,
+    appended,
   );
-  const updatedResults = concat(
-    updatedPendingTransactions,
-    parsedTransactions,
-    remainingTransactions
-  );
-  const dedupedResults = uniqBy(updatedResults, txn => txn.hash);
-
-  saveLocalTransactions(accountAddress, updatedResults, network);
+  dispatch(uniswapRemovePendingApproval(approvalTransactions));
+  saveLocalTransactions(accountAddress, dedupedResults, network);
   dispatch({
     payload: dedupedResults,
     type: DATA_UPDATE_TRANSACTIONS,
@@ -251,6 +149,7 @@ export const addressAssetsReceived = (
   if (!isValidMeta) return;
 
   const { accountAddress, network } = getState().settings;
+  const { uniqueTokens } = getState().uniqueTokens;
   const assets = get(message, 'payload.assets', []);
   const liquidityTokens = remove(assets, asset => {
     const symbol = get(asset, 'asset.symbol', '');
@@ -262,8 +161,7 @@ export const addressAssetsReceived = (
   if (!append && !change) {
     dispatch(uniswapUpdateLiquidityTokens(liquidityTokens));
   }
-  const updatedAssets = dispatch(dedupeUniqueTokens(assets));
-  let parsedAssets = parseAccountAssets(updatedAssets);
+  let parsedAssets = parseAccountAssets(assets, uniqueTokens);
   if (append || change) {
     const { assets: existingAssets } = getState().data;
     parsedAssets = uniqBy(

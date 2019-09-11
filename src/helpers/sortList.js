@@ -1,4 +1,9 @@
-import { get, isFunction, isString } from 'lodash';
+import {
+  get,
+  isFunction,
+  isString,
+  toLower,
+} from 'lodash';
 
 export const sortList = (
   array = [],
@@ -24,8 +29,8 @@ export const sortList = (
     }
 
     if (isString(itemA) && isString(itemB)) {
-      itemA = itemA.toLowerCase();
-      itemB = itemB.toLowerCase();
+      itemA = toLower(itemA);
+      itemB = toLower(itemB);
     }
 
     if (itemA < itemB) return isAscending ? -1 : 1;

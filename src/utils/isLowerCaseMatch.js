@@ -1,5 +1,5 @@
+import { toLower } from 'lodash';
+
 export default function isLowerCaseMatch(a, b) {
-  const _a = a || '';
-  const _b = b || '';
-  return _a.toLowerCase() === _b.toLowerCase();
+  return toLower(a) === toLower(b);
 }

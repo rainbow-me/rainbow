@@ -1,27 +1,26 @@
-import { get } from 'lodash';
+import { get, toUpper } from 'lodash';
 import { convertRawAmountToBalance } from '../helpers/utilities';
 import { loweredTokenOverrides } from '../references';
+import { dedupeUniqueTokens } from './uniqueTokens';
 
 /**
  * @desc parse account assets
  * @param  {Object} [data]
  * @return {Array}
  */
-export const parseAccountAssets = data => {
-  try {
-    let assets = [...data];
-    assets = assets.map(assetData => {
-      const asset = parseAsset(assetData.asset);
-      return {
-        ...asset,
-        balance: convertRawAmountToBalance(assetData.quantity, asset),
-      };
-    });
+export const parseAccountAssets = (data, uniqueTokens) => {
+  const dedupedAssets = dedupeUniqueTokens(data, uniqueTokens);
+  let assets = dedupedAssets.map(assetData => {
+    const asset = parseAsset(assetData.asset);
+    return {
+      ...asset,
+      balance: convertRawAmountToBalance(assetData.quantity, asset),
+    };
+  });
 
-    return assets.filter(asset => !!Number(get(asset, 'balance.amount')));
-  } catch (error) {
-    throw error;
-  }
+  return assets.filter(
+    asset => !!Number(get(asset, 'balance.amount')),
+  );
 };
 
 /**
@@ -38,7 +37,7 @@ export const parseAsset = assetData => {
     decimals: get(assetData, 'decimals'),
     name,
     price: get(assetData, 'price'),
-    symbol: symbol.toUpperCase(),
+    symbol: toUpper(symbol),
     uniqueId: address || name,
     ...loweredTokenOverrides[address],
   };

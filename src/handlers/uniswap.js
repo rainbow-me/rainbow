@@ -1,7 +1,15 @@
 import { getExecutionDetails, getTokenReserves } from '@uniswap/sdk';
 import contractMap from 'eth-contract-metadata';
 import { ethers } from 'ethers';
-import { compact, get, keyBy, map, slice, zipObject } from 'lodash';
+import {
+  compact,
+  get,
+  keyBy,
+  map,
+  slice,
+  toLower,
+  zipObject,
+} from 'lodash';
 import {
   convertRawAmountToDecimalFormat,
   divide,
@@ -32,10 +40,7 @@ export const getReserves = async () => {
   const reserves = await promiseUtils.PromiseAllWithFails(
     map(uniswapTokens, token => getTokenReserves(token))
   );
-  return keyBy(compact(reserves), reserve => {
-    const address = get(reserve, 'token.address') || '';
-    return address.toLowerCase();
-  });
+  return keyBy(compact(reserves), reserve => toLower(get(reserve, 'token.address')));
 };
 
 const getGasLimit = (exchange, methodName, updatedMethodArgs, value) => {

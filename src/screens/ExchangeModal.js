@@ -7,7 +7,7 @@ import {
   tradeTokensForExactTokensWithData,
 } from '@uniswap/sdk';
 import BigNumber from 'bignumber.js';
-import { get, isNil } from 'lodash';
+import { get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { InteractionManager, LayoutAnimation, TextInput } from 'react-native';
@@ -72,8 +72,8 @@ const isSameAsset = (firstAsset, secondAsset) => {
     return false;
   }
 
-  const firstAddress = get(firstAsset, 'address', '').toLowerCase();
-  const secondAddress = get(secondAsset, 'address', '').toLowerCase();
+  const firstAddress = toLower(get(firstAsset, 'address', ''));
+  const secondAddress = toLower(get(secondAsset, 'address', ''));
   return firstAddress === secondAddress;
 };
 
@@ -94,6 +94,7 @@ class ExchangeModal extends PureComponent {
     keyboardFocusHistory: PropTypes.array,
     nativeCurrency: PropTypes.string,
     navigation: PropTypes.object,
+    pendingApprovals: PropTypes.object,
     pushKeyboardFocusHistory: PropTypes.func,
     resetGasTxFees: PropTypes.func,
     selectedGasPrice: PropTypes.object,
@@ -103,9 +104,11 @@ class ExchangeModal extends PureComponent {
     txFees: PropTypes.object,
     uniswapGetTokenReserve: PropTypes.func,
     uniswapUpdateAllowances: PropTypes.func,
+    uniswapUpdatePendingApprovals: PropTypes.func,
   };
 
   state = {
+    approvalCreationTimestamp: null,
     inputAllowance: null,
     inputAmount: null,
     inputAmountDisplay: null,
@@ -218,7 +221,12 @@ class ExchangeModal extends PureComponent {
   };
 
   getCurrencyAllowance = async () => {
-    const { accountAddress, allowances, uniswapUpdateAllowances } = this.props;
+    const {
+      accountAddress,
+      allowances,
+      pendingApprovals,
+      uniswapUpdateAllowances,
+    } = this.props;
     const { inputCurrency } = this.state;
     const { address: inputAddress, exchangeAddress } = inputCurrency;
 
@@ -233,20 +241,33 @@ class ExchangeModal extends PureComponent {
         inputCurrency,
         exchangeAddress
       );
-      uniswapUpdateAllowances(inputAddress, allowance);
+      uniswapUpdateAllowances({ [toLower(inputAddress)]: allowance });
     }
     const isAssetApproved = greaterThan(allowance, 0);
     if (isAssetApproved) {
-      return this.setState({ isAssetApproved });
+      return this.setState({
+        isAssetApproved,
+        isUnlockingAsset: false,
+      });
     }
+    const pendingApproval = pendingApprovals[toLower(inputCurrency.address)];
+    const isUnlockingAsset = !!pendingApproval;
+
     try {
       const gasLimit = await contractUtils.estimateApprove(
         inputCurrency.address,
         exchangeAddress
       );
-      return this.setState({ gasLimit: gasLimit.toFixed(), isAssetApproved });
+      return this.setState({
+        gasLimit: gasLimit.toFixed(),
+        isAssetApproved,
+        isUnlockingAsset,
+      });
     } catch (error) {
-      return this.setState({ isAssetApproved });
+      return this.setState({
+        isAssetApproved,
+        isUnlockingAsset: false,
+      });
     }
   };
 
@@ -445,7 +466,6 @@ class ExchangeModal extends PureComponent {
     if (!reserve) {
       reserve = await uniswapGetTokenReserve(tokenAddress);
     }
-
     return reserve;
   };
 
@@ -512,19 +532,15 @@ class ExchangeModal extends PureComponent {
   };
 
   handleUnlockAsset = async () => {
-    /*
-    const {
-      inputCurrency: {
-        address: tokenAddress,
-        exchangeAddress: spender,
-      },
-    } = this.state;
-    */
-
-    // const approval = await contractUtils.approve(tokenAddress, spender);
-
-    this.setState({ isUnlockingAsset: true });
-  };
+    const { inputCurrency } = this.state;
+    const { uniswapUpdatePendingApprovals } = this.props;
+    const { creationTimestamp, approval: { hash } } = await contractUtils.approve(inputCurrency.address, inputCurrency.exchangeAddress);
+    uniswapUpdatePendingApprovals(inputCurrency.address, hash);
+    this.setState({
+      approvalCreationTimestamp: creationTimestamp,
+      isUnlockingAsset: true,
+    });
+  }
 
   navigateToSelectInputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
@@ -716,6 +732,7 @@ class ExchangeModal extends PureComponent {
                     onSubmit={this.handleSubmit}
                     onUnlockAsset={this.handleUnlockAsset}
                     slippage={slippage}
+                    timeRemaining={get(selectedGasPrice, 'estimatedTime.display')}
                   />
                 </Centered>
                 <GasSpeedButton />

@@ -9,6 +9,7 @@ import {
   property,
   sortBy,
   upperFirst,
+  toLower,
 } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -227,7 +228,7 @@ class SendSheet extends Component {
         analytics.track('Sent transaction', {
           assetName: selected.name,
           assetType: selected.isNft ? 'unique_token' : 'token',
-          isRecepientENS: recipient.slice(-4).toLowerCase() === '.eth',
+          isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
         });
         sendClearFields();
         navigation.navigate('ProfileScreen');

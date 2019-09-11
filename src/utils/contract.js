@@ -17,7 +17,12 @@ const approve = async (tokenAddress, spender) => {
   if (!wallet) return null;
   const exchange = new ethers.Contract(tokenAddress, erc20ABI, wallet);
   const gasLimit = await estimateApproveWithExchange(spender, exchange);
-  return exchange.approve(spender, ethers.constants.MaxUint256, { gasLimit });
+  const creationTimestamp = Date.now();
+  const approval = await exchange.approve(spender, ethers.constants.MaxUint256, { gasLimit });
+  return {
+    approval,
+    creationTimestamp,
+  };
 };
 
 const getAllowance = async (owner, token, spender) => {
