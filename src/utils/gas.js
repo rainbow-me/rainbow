@@ -10,7 +10,7 @@ import {
 } from 'lodash';
 import { showActionSheetWithOptions } from './actionsheet';
 
-const labelOrder = ['slow', 'average', 'fast'];
+const labelOrder = ['slow', 'normal', 'fast'];
 
 const showTransactionSpeedOptions = (
   gasPrices,
@@ -41,14 +41,19 @@ const showTransactionSpeedOptions = (
 };
 
 const formatGasSpeedItems = (gasPrices, txFees) => {
-  const gasItems = map(labelOrder, speed => {
+  const gasItems = map(labelOrder, (label) => {
+    let speed = label;
+    if (label === 'normal') {
+      speed = 'average';
+    }
+
     const cost = get(txFees, `[${speed}].txFee.native.value.display`);
     const gwei = get(gasPrices, `[${speed}].value.display`);
     const time = get(gasPrices, `[${speed}].estimatedTime.display`);
 
     return {
       gweiValue: gwei,
-      label: `${upperFirst(speed)}: ${cost}   ~${time.slice(0, -1)}`,
+      label: `${upperFirst(label)}: ${cost}   ~${time.slice(0, -1)}`,
       value: speed,
     };
   });

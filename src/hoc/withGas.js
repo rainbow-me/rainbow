@@ -1,5 +1,4 @@
 import { connect } from 'react-redux';
-import { compose } from 'recompact';
 import {
   gasUpdateGasPriceOption,
   gasUpdateTxFee,
@@ -15,10 +14,10 @@ const mapStateToProps = ({ gas }) => ({
   txFees: gas.txFees,
 });
 
-export default Component => compose(
+export default Component => (
   connect(mapStateToProps, {
     gasUpdateGasPriceOption,
     gasUpdateTxFee,
     resetGasTxFees,
-  }),
-)(Component);
+  })(Component)
+);
