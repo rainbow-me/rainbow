@@ -30,6 +30,10 @@ export default class ExchangeInput extends PureComponent {
     placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.5),
   }
 
+  handleChangeText = (formatted, extracted) => {
+    this.props.onChangeText(extracted ? formatted : '');
+  }
+
   render = () => {
     const {
       color,
@@ -38,7 +42,6 @@ export default class ExchangeInput extends PureComponent {
       fontSize,
       fontWeight,
       mask,
-      onChangeText,
       placeholder,
       placeholderTextColor,
       refInput,
@@ -54,7 +57,7 @@ export default class ExchangeInput extends PureComponent {
         keyboardAppearance="dark"
         keyboardType="decimal-pad"
         mask={mask}
-        onChangeText={onChangeText}
+        onChangeText={this.handleChangeText}
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
         refInput={refInput}
