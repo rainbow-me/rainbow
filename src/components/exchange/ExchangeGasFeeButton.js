@@ -1,8 +1,13 @@
+import { get, upperFirst } from 'lodash';
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, pure, withHandlers, withProps } from 'recompact';
-import styled from 'styled-components/primitives';
-import { colors, padding, shadow } from '../../styles';
+import {
+  compose,
+  pure,
+  withHandlers,
+  withProps,
+} from 'recompact';
+import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Nbsp } from '../html-entities';
 import { Column, Row } from '../layout';
@@ -32,11 +37,15 @@ const enhance = compose(
   }),
 );
 
-const ExchangeGasFeeButton = enhance(({ gasPrice, onPress }) => (
+const ExchangeGasFeeButton = enhance(({
+  gasPrice,
+  nativeCurrencySymbol,
+  onPress,
+}) => (
   <ButtonPressAnimation onPress={onPress}>
     <Column css={padding(14, 19, 0)} width="100%">
       <Row align="center" justify="space-between">
-        <Title>{gasPrice}</Title>
+        <Title>{get(gasPrice, 'txFee.native.value.display', `${nativeCurrencySymbol}0.00`)}</Title>
         <Row align="center" justify="end" height={26}>
           <Emoji
             letterSpacing="tight"
@@ -44,16 +53,14 @@ const ExchangeGasFeeButton = enhance(({ gasPrice, onPress }) => (
             size="lmedium"
           />
           <Nbsp />
-          <Title>
-            Normal
-          </Title>
+          <Title>{upperFirst(get(gasPrice, 'option', 'average'))}</Title>
         </Row>
       </Row>
       <Row align="center" justify="space-between">
         <Label>Fee</Label>
         <Row align="center" justify="end">
           <Label>Swaps in ~</Label>
-          <Label><Nbsp />2 min</Label>
+          <Label><Nbsp />{get(gasPrice, 'estimatedTime.display', '')}</Label>
         </Row>
       </Row>
     </Column>
@@ -61,7 +68,8 @@ const ExchangeGasFeeButton = enhance(({ gasPrice, onPress }) => (
 ));
 
 ExchangeGasFeeButton.propTypes = {
-  gasPrice: PropTypes.string,
+  gasPrice: PropTypes.object,
+  nativeCurrencySymbol: PropTypes.string,
   onPress: PropTypes.func,
 };
 

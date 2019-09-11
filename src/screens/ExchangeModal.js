@@ -14,7 +14,7 @@ import { InteractionManager, LayoutAnimation, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import { compose, mapProps, toClass } from 'recompact';
-import { executeSwap } from '../handlers/uniswap';
+import { estimateSwapGasLimit, executeSwap } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
@@ -30,6 +30,7 @@ import {
   withAccountData,
   withAccountSettings,
   withBlockedHorizontalSwipe,
+  withGas,
   withKeyboardFocusHistory,
   withTransactionConfirmationScreen,
   withTransitionProps,
@@ -37,7 +38,12 @@ import {
   withUniswapAssets,
 } from '../hoc';
 import { colors, padding, position } from '../styles';
-import { contractUtils, ethereumUtils, isNewValueForPath } from '../utils';
+import {
+  contractUtils,
+  ethereumUtils,
+  gasUtils,
+  isNewValueForPath,
+} from '../utils';
 import {
   ConfirmExchangeButton,
   ExchangeGasFeeButton,
@@ -77,15 +83,23 @@ class ExchangeModal extends PureComponent {
     chainId: PropTypes.number,
     clearKeyboardFocusHistory: PropTypes.func,
     dataAddNewTransaction: PropTypes.func,
+    gasLimit: PropTypes.string,
+    gasPrices: PropTypes.object,
+    gasUpdateGasPriceOption: PropTypes.string,
+    gasUpdateTxFee: PropTypes.func,
     isFocused: PropTypes.bool,
     isTransitioning: PropTypes.bool,
     keyboardFocusHistory: PropTypes.array,
     nativeCurrency: PropTypes.string,
+    nativeCurrencySymbol: PropTypes.string,
     navigation: PropTypes.object,
     pushKeyboardFocusHistory: PropTypes.func,
+    resetGasTxFees: PropTypes.func,
+    selectedGasPrice: PropTypes.object,
     tokenReserves: PropTypes.array,
     tradeDetails: PropTypes.object,
     transitionPosition: PropTypes.object, // animated value
+    txFees: PropTypes.object,
     uniswapGetTokenReserve: PropTypes.func,
     uniswapUpdateAllowances: PropTypes.func,
   }
@@ -163,6 +177,7 @@ class ExchangeModal extends PureComponent {
   }
 
   componentWillUnmount = () => {
+    this.props.resetGasTxFees();
     this.props.clearKeyboardFocusHistory();
   }
 
@@ -196,16 +211,25 @@ class ExchangeModal extends PureComponent {
       allowance = await contractUtils.getAllowance(accountAddress, inputCurrency, exchangeAddress);
       uniswapUpdateAllowances(inputAddress, allowance);
     }
-
-    return this.setState({ isAssetApproved: greaterThan(allowance, 0) });
+    const isAssetApproved = greaterThan(allowance, 0);
+    if (isAssetApproved) {
+      return this.setState({ isAssetApproved });
+    }
+    try {
+      const gasLimit = await contractUtils.estimateApprove(inputCurrency.address, exchangeAddress);
+      return this.setState({ gasLimit: gasLimit.toFixed(), isAssetApproved });
+    } catch (error) {
+      return this.setState({ isAssetApproved });
+    }
   }
 
   getMarketDetails = async () => {
-    const { chainId, nativeCurrency } = this.props;
+    const { chainId, gasUpdateTxFee, nativeCurrency } = this.props;
     const {
       inputAmount,
       inputAsExactAmount,
       inputCurrency,
+      isAssetApproved,
       nativeAmount,
       outputAmount,
       outputCurrency,
@@ -335,9 +359,15 @@ class ExchangeModal extends PureComponent {
           this.setInputAmount(rawUpdatedAmount, updatedAmountDisplay);
         }
       }
+      if (isAssetApproved) {
+        const gasLimit = await estimateSwapGasLimit(tradeDetails);
+        if (gasLimit) {
+          gasUpdateTxFee(gasLimit.toString());
+        }
+      }
     } catch (error) {
       console.log('error getting market details', error);
-      // TODO
+      // TODO error state
     }
   }
 
@@ -364,12 +394,27 @@ class ExchangeModal extends PureComponent {
     return this.setInputAmount(maxBalance);
   }
 
+  handlePressTransactionSpeed = () => {
+    const {
+      gasPrices,
+      gasUpdateGasPriceOption,
+      txFees,
+    } = this.props;
+
+    gasUtils.showTransactionSpeedOptions(gasPrices, txFees, gasUpdateGasPriceOption);
+  }
+
   handleSubmit = async () => {
-    const { accountAddress, dataAddNewTransaction, navigation } = this.props;
+    const {
+      accountAddress,
+      dataAddNewTransaction,
+      gasLimit,
+      navigation,
+    } = this.props;
     const { inputAmount, inputCurrency, tradeDetails } = this.state;
 
     try {
-      const txn = await executeSwap(tradeDetails);
+      const txn = await executeSwap(tradeDetails, gasLimit);
       if (txn) {
         dataAddNewTransaction({
           amount: inputAmount,
@@ -402,12 +447,14 @@ class ExchangeModal extends PureComponent {
   }
 
   handleUnlockAsset = async () => {
+    /*
     const {
       inputCurrency: {
         address: tokenAddress,
         exchangeAddress: spender,
       },
     } = this.state;
+    */
 
     // const approval = await contractUtils.approve(tokenAddress, spender);
 
@@ -512,7 +559,12 @@ class ExchangeModal extends PureComponent {
   }
 
   render = () => {
-    const { nativeCurrency, transitionPosition } = this.props;
+    const {
+      nativeCurrency,
+      nativeCurrencySymbol,
+      selectedGasPrice,
+      transitionPosition,
+    } = this.props;
 
     const {
       inputAmountDisplay,
@@ -602,7 +654,9 @@ class ExchangeModal extends PureComponent {
                   />
                 </Centered>
                 <ExchangeGasFeeButton
-                  gasPrice={'$0.06'}
+                  gasPrice={selectedGasPrice}
+                  nativeCurrencySymbol={nativeCurrencySymbol}
+                  onPress={this.handlePressTransactionSpeed}
                 />
               </Fragment>
             )}
@@ -619,6 +673,7 @@ export default compose(
   withAccountData,
   withAccountSettings,
   withBlockedHorizontalSwipe,
+  withGas,
   withKeyboardFocusHistory,
   withNavigationFocus,
   withTransactionConfirmationScreen,

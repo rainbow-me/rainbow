@@ -61,7 +61,7 @@ class WalletScreen extends Component {
         this.props.toggleShowShitcoins(showShitcoins);
       }
     } catch (error) {
-      // TODO
+      // TODO error state
     }
   }
 
