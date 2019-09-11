@@ -28,7 +28,7 @@ const TransactionContainer = styled(Column).attrs({
   justify: 'space-between',
 })`
   ${({ isNft }) => padding(22, 15, isNft ? nftPaddingBottom : tokenPaddingBottom)};
-  background-color: ${colors.lightGrey};
+  background-color: ${colors.lighterGrey};
   flex: 1;
   width: 100%;
 `;

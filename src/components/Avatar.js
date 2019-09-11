@@ -9,7 +9,7 @@ import { ShadowStack } from './shadow-stack';
 
 const Container = styled(Centered)`
   ${position.cover}
-  background-color: ${colors.lightGrey};
+  background-color: ${colors.lighterGrey};
   border-radius: ${({ size }) => size};
 `;
 

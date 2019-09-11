@@ -86,7 +86,7 @@ Divider.propTypes = {
 };
 
 Divider.defaultProps = {
-  color: colors.lightGrey,
+  color: colors.lighterGrey,
   horizontal: true,
   inset: [0, 0, 0, 19],
   size: DefaultDividerSize,
