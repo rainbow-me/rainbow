@@ -109,6 +109,7 @@ class ExchangeModal extends PureComponent {
 
   state = {
     approvalCreationTimestamp: null,
+    approvalEstimatedTimeInMs: null,
     inputAllowance: null,
     inputAmount: null,
     inputAmountDisplay: null,
@@ -131,8 +132,12 @@ class ExchangeModal extends PureComponent {
   };
 
   componentDidUpdate = (prevProps, prevState) => {
-    const { isFocused, isTransitioning, keyboardFocusHistory } = this.props;
-
+    const {
+      isFocused,
+      isTransitioning,
+      pendingApprovals,
+      keyboardFocusHistory,
+    } = this.props;
     if (isFocused && (!isTransitioning && prevProps.isTransitioning)) {
       const lastFocusedInput =
         keyboardFocusHistory[keyboardFocusHistory.length - 1];
@@ -185,12 +190,15 @@ class ExchangeModal extends PureComponent {
       isNewNativeAmount || isNewInputAmount || isNewOutputAmount;
     const isNewCurrency = isNewInputCurrency || isNewOutputCurrency;
 
+    const input = toLower(get(this.state.inputCurrency, 'address'));
+    const removedFromPending = (!get(pendingApprovals, `[${input}]`, null)
+      && get(prevProps, `pendingApprovals[${input}]`, null));
+
     if (isNewAmount || isNewCurrency) {
       this.getMarketDetails();
       LayoutAnimation.easeInEaseOut();
     }
-
-    if (isNewValueForPath(this.state, prevState, 'inputCurrency.address')) {
+    if (removedFromPending || isNewValueForPath(this.state, prevState, 'inputCurrency.address')) {
       this.getCurrencyAllowance();
     }
   };
@@ -246,6 +254,8 @@ class ExchangeModal extends PureComponent {
     const isAssetApproved = greaterThan(allowance, 0);
     if (isAssetApproved) {
       return this.setState({
+        approvalCreationTimestamp: null,
+        approvalEstimatedTimeInMs: null,
         isAssetApproved,
         isUnlockingAsset: false,
       });
@@ -259,12 +269,16 @@ class ExchangeModal extends PureComponent {
         exchangeAddress
       );
       return this.setState({
+        approvalCreationTimestamp: isUnlockingAsset ? pendingApproval.creationTimestamp : null,
+        approvalEstimatedTimeInMs: isUnlockingAsset ? pendingApproval.estimatedTimeInMs : null,
         gasLimit: gasLimit.toFixed(),
         isAssetApproved,
         isUnlockingAsset,
       });
     } catch (error) {
       return this.setState({
+        approvalCreationTimestamp: null,
+        approvalEstimatedTimeInMs: null,
         isAssetApproved,
         isUnlockingAsset: false,
       });
@@ -533,11 +547,16 @@ class ExchangeModal extends PureComponent {
 
   handleUnlockAsset = async () => {
     const { inputCurrency } = this.state;
-    const { uniswapUpdatePendingApprovals } = this.props;
-    const { creationTimestamp, approval: { hash } } = await contractUtils.approve(inputCurrency.address, inputCurrency.exchangeAddress);
-    uniswapUpdatePendingApprovals(inputCurrency.address, hash);
+    const { selectedGasPrice, uniswapUpdatePendingApprovals } = this.props;
+    const {
+      creationTimestamp: approvalCreationTimestamp,
+      approval: { hash },
+    } = await contractUtils.approve(inputCurrency.address, inputCurrency.exchangeAddress);
+    const approvalEstimatedTimeInMs = get(selectedGasPrice, 'estimatedTime.value');
+    uniswapUpdatePendingApprovals(inputCurrency.address, hash, approvalCreationTimestamp, approvalEstimatedTimeInMs);
     this.setState({
-      approvalCreationTimestamp: creationTimestamp,
+      approvalCreationTimestamp,
+      approvalEstimatedTimeInMs,
       isUnlockingAsset: true,
     });
   }
@@ -648,6 +667,8 @@ class ExchangeModal extends PureComponent {
     const { nativeCurrency, transitionPosition } = this.props;
 
     const {
+      approvalCreationTimestamp,
+      approvalEstimatedTimeInMs,
       inputAmountDisplay,
       inputCurrency,
       // inputExecutionRate,
@@ -724,6 +745,7 @@ class ExchangeModal extends PureComponent {
               <Fragment>
                 <Centered css={padding(19, 15, 0)} flexShrink={0} width="100%">
                   <ConfirmExchangeButton
+                    creationTimestamp={approvalCreationTimestamp}
                     disabled={isAssetApproved && !Number(inputAmountDisplay)}
                     inputCurrencyName={get(inputCurrency, 'symbol')}
                     isAssetApproved={isAssetApproved}
@@ -732,7 +754,7 @@ class ExchangeModal extends PureComponent {
                     onSubmit={this.handleSubmit}
                     onUnlockAsset={this.handleUnlockAsset}
                     slippage={slippage}
-                    timeRemaining={get(selectedGasPrice, 'estimatedTime.display')}
+                    timeRemaining={approvalEstimatedTimeInMs}
                   />
                 </Centered>
                 <GasSpeedButton />

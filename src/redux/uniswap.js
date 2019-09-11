@@ -5,7 +5,7 @@ import {
   forEach,
   fromPairs,
   get,
-  invert,
+  invertBy,
   isEmpty,
   keyBy,
   map,
@@ -196,10 +196,22 @@ export const uniswapClearState = () => (dispatch, getState) => {
   dispatch({ type: UNISWAP_CLEAR_STATE });
 };
 
-export const uniswapUpdatePendingApprovals = (tokenAddress, txHash) => (dispatch, getState) => {
+export const uniswapUpdatePendingApprovals = (
+  tokenAddress,
+  txHash,
+  creationTimestamp,
+  estimatedTimeInMs,
+) => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { pendingApprovals } = getState().uniswap;
-  const updatedPendingApprovals = { ...pendingApprovals, [toLower(tokenAddress)]: toLower(txHash) };
+  const updatedPendingApprovals = {
+    ...pendingApprovals,
+    [toLower(tokenAddress)]: {
+      creationTimestamp,
+      estimatedTimeInMs,
+      hash: toLower(txHash),
+    },
+  };
   dispatch({
     payload: updatedPendingApprovals,
     type: UNISWAP_UPDATE_PENDING_APPROVALS,
@@ -229,7 +241,7 @@ const updateAllowancesForSuccessfulTransactions = (assetAddresses) => (dispatch,
 export const uniswapRemovePendingApproval = (newTransactions) => (dispatch, getState) => {
   const { pendingApprovals } = getState().uniswap;
   const loweredTxHashes = map(newTransactions, txn => toLower(txn.hash));
-  const invertedPendingApprovals = invert(pendingApprovals);
+  const invertedPendingApprovals = invertBy(pendingApprovals, value => value.hash);
   const updatedAddresses = compact(map(loweredTxHashes, hash => invertedPendingApprovals[hash]));
   const updatedPendingApprovals = omit(pendingApprovals, ...updatedAddresses);
   dispatch({

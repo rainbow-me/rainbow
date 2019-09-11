@@ -32,10 +32,12 @@ const UnlockingSpinner = ({ timeRemaining, ...props }) => (
 );
 
 UnlockingSpinner.propTypes = {
+  creationTimestamp: PropTypes.string,
   timeRemaining: PropTypes.string,
 };
 
 const ConfirmExchangeButton = ({
+  creationTimestamp,
   disabled,
   inputCurrencyName,
   isAssetApproved,
@@ -76,7 +78,10 @@ const ConfirmExchangeButton = ({
       {...props}
     >
       {isUnlockingAsset
-        ? <UnlockingSpinner timeRemaining={timeRemaining} />
+        ? <UnlockingSpinner
+          creationTimestamp={creationTimestamp}
+          timeRemaining={timeRemaining}
+        />
         : undefined
       }
     </HoldToAuthorizeButton>
@@ -84,6 +89,7 @@ const ConfirmExchangeButton = ({
 };
 
 ConfirmExchangeButton.propTypes = {
+  creationTimestamp: PropTypes.string,
   disabled: PropTypes.bool,
   inputCurrencyName: PropTypes.string,
   isAssetApproved: PropTypes.bool,
