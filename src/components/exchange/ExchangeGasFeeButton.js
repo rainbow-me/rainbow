@@ -1,10 +1,10 @@
+import AnimateNumber from '@bankify/react-native-animate-number';
 import { get, upperFirst } from 'lodash';
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import {
   compose,
-  pure,
-  withHandlers,
+  mapProps,
   withProps,
 } from 'recompact';
 import { colors, padding } from '../../styles';
@@ -12,6 +12,12 @@ import { ButtonPressAnimation } from '../animations';
 import { Nbsp } from '../html-entities';
 import { Column, Row } from '../layout';
 import { Emoji, Text } from '../text';
+
+const EmojiForGasSpeedType = {
+  fast: 'rocket', // 🚀️
+  normal: 'stopwatch', // ⏱️
+  slow: 'snail', // 🐌️
+};
 
 const Label = withProps({
   color: colors.alpha(colors.white, 0.4),
@@ -26,51 +32,86 @@ const Title = withProps({
   weight: 'semibold',
 })(Text);
 
-const enhance = compose(
-  pure,
-  withHandlers({
-    onPress: ({ onPress }) => (event) => {
-      if (onPress) {
-        onPress(event);
-      }
-    },
-  }),
+const renderGasPriceText = (displayValue) => (
+  <Title color="white" size="smedium" weight="semibold">
+    {displayValue}
+  </Title>
 );
 
-const ExchangeGasFeeButton = enhance(({
-  gasPrice,
-  nativeCurrencySymbol,
-  onPress,
-}) => (
-  <ButtonPressAnimation onPress={onPress}>
-    <Column css={padding(14, 19, 0)} width="100%">
-      <Row align="center" justify="space-between">
-        <Title>{get(gasPrice, 'txFee.native.value.display', `${nativeCurrencySymbol}0.00`)}</Title>
-        <Row align="center" justify="end" height={26}>
-          <Emoji
-            letterSpacing="tight"
-            name="stopwatch"
-            size="lmedium"
-          />
-          <Nbsp />
-          <Title>{upperFirst(get(gasPrice, 'option', 'average'))}</Title>
-        </Row>
-      </Row>
-      <Row align="center" justify="space-between">
-        <Label>Fee</Label>
-        <Row align="center" justify="end">
-          <Label>Swaps in ~</Label>
-          <Label><Nbsp />{get(gasPrice, 'estimatedTime.display', '')}</Label>
-        </Row>
-      </Row>
-    </Column>
-  </ButtonPressAnimation>
-));
+class ExchangeGasFeeButton extends PureComponent {
+  static propTypes = {
+    estimatedTime: PropTypes.string,
+    label: PropTypes.string,
+    nativeCurrencySymbol: PropTypes.string,
+    onPress: PropTypes.func,
+    price: PropTypes.string,
+  }
 
-ExchangeGasFeeButton.propTypes = {
-  gasPrice: PropTypes.object,
-  nativeCurrencySymbol: PropTypes.string,
-  onPress: PropTypes.func,
-};
+  handlePress = (event) => {
+    if (this.props.onPress) {
+      this.props.onPress(event);
+    }
+  }
 
-export default ExchangeGasFeeButton;
+  formatAnimatedGasPrice = (gasPrice) => {
+    const price = parseFloat(gasPrice || '0.00').toFixed(3);
+    return `${this.props.nativeCurrencySymbol}${price}`;
+  }
+
+  render = () => {
+    const {
+      estimatedTime,
+      label,
+      price,
+    } = this.props;
+
+    return (
+      <ButtonPressAnimation onPress={this.handlePress}>
+        <Column css={padding(14, 19, 0)} width="100%">
+          <Row align="center" justify="space-between">
+            <AnimateNumber
+              formatter={this.formatAnimatedGasPrice}
+              interval={1}
+              renderContent={renderGasPriceText}
+              steps={12}
+              timing="linear"
+              value={price}
+            />
+            <Row align="center" justify="end" height={26}>
+              <Emoji
+                letterSpacing="tight"
+                name={EmojiForGasSpeedType[label] || EmojiForGasSpeedType.normal}
+                size="lmedium"
+              />
+              <Nbsp />
+              <Title>{upperFirst(label)}</Title>
+            </Row>
+          </Row>
+          <Row align="center" justify="space-between">
+            <Label>Fee</Label>
+            <Row align="center" justify="end">
+              <Label>Swaps in ~</Label>
+              <Label><Nbsp />{estimatedTime}</Label>
+            </Row>
+          </Row>
+        </Column>
+      </ButtonPressAnimation>
+    );
+  }
+}
+
+export default compose(
+  mapProps(({ gasPrice, ...props }) => {
+    let label = get(gasPrice, 'option', 'normal');
+    if (label === 'average') {
+      label = 'normal';
+    }
+
+    return {
+      estimatedTime: get(gasPrice, 'estimatedTime.display', ''),
+      label,
+      price: get(gasPrice, 'txFee.native.value.amount', '0.00'),
+      ...props,
+    };
+  }),
+)(ExchangeGasFeeButton);
