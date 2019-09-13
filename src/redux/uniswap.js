@@ -9,6 +9,7 @@ import {
   isEmpty,
   keyBy,
   map,
+  mapValues,
   omit,
   reject,
   toLower,
@@ -221,6 +222,7 @@ export const uniswapUpdatePendingApprovals = (
 
 
 const updateAllowancesForSuccessfulTransactions = (assetAddresses) => (dispatch, getState) => {
+  if (isEmpty(assetAddresses)) return;
   const { accountAddress } = getState().settings;
   promiseUtils.PromiseAllWithFails(map(assetAddresses, async (assetAddress) => {
     const asset = uniswapAssetsRawLoweredKeys[assetAddress];
@@ -231,18 +233,22 @@ const updateAllowancesForSuccessfulTransactions = (assetAddresses) => (dispatch,
     );
   })).then(allowances => {
     const tokenAddressAllowances = fromPairs(zip(assetAddresses, allowances));
-    console.log('token address allowances', tokenAddressAllowances);
     dispatch(uniswapUpdateAllowances(tokenAddressAllowances));
   }).catch(error => {
     // TODO error handling
   });
 };
 
-export const uniswapRemovePendingApproval = (newTransactions) => (dispatch, getState) => {
+export const uniswapRemovePendingApproval = (transactions) => (dispatch, getState) => {
+  const newTransactions = map(transactions, txn => ({
+    ...txn,
+    hash: toLower(txn.hash).split('-')[0],
+  }));
   const { pendingApprovals } = getState().uniswap;
-  const loweredTxHashes = map(newTransactions, txn => toLower(txn.hash));
-  const invertedPendingApprovals = invertBy(pendingApprovals, value => value.hash);
+  const loweredTxHashes = map(newTransactions, txn => txn.hash);
+  const invertedPendingApprovals = mapValues(invertBy(pendingApprovals, value => value.hash), value => get(value, '[0]'));
   const updatedAddresses = compact(map(loweredTxHashes, hash => invertedPendingApprovals[hash]));
+  if (isEmpty(updatedAddresses)) return;
   const updatedPendingApprovals = omit(pendingApprovals, ...updatedAddresses);
   dispatch({
     payload: updatedPendingApprovals,

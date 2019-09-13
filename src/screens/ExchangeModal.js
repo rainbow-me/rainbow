@@ -87,7 +87,7 @@ class ExchangeModal extends PureComponent {
     dataAddNewTransaction: PropTypes.func,
     gasLimit: PropTypes.string,
     gasPrices: PropTypes.object,
-    gasUpdateGasPriceOption: PropTypes.string,
+    gasUpdateGasPriceOption: PropTypes.func,
     gasUpdateTxFee: PropTypes.func,
     isFocused: PropTypes.bool,
     isTransitioning: PropTypes.bool,
@@ -98,7 +98,7 @@ class ExchangeModal extends PureComponent {
     pushKeyboardFocusHistory: PropTypes.func,
     resetGasTxFees: PropTypes.func,
     selectedGasPrice: PropTypes.object,
-    tokenReserves: PropTypes.array,
+    tokenReserves: PropTypes.object,
     tradeDetails: PropTypes.object,
     transitionPosition: PropTypes.object, // animated value
     txFees: PropTypes.object,
@@ -243,7 +243,7 @@ class ExchangeModal extends PureComponent {
     }
 
     let allowance = allowances[inputAddress];
-    if (!allowance) {
+    if (!greaterThan(allowance, 0)) {
       allowance = await contractUtils.getAllowance(
         accountAddress,
         inputCurrency,
@@ -252,7 +252,7 @@ class ExchangeModal extends PureComponent {
       uniswapUpdateAllowances({ [toLower(inputAddress)]: allowance });
     }
     const isAssetApproved = greaterThan(allowance, 0);
-    if (isAssetApproved) {
+    if (greaterThan(allowance, 0)) {
       return this.setState({
         approvalCreationTimestamp: null,
         approvalEstimatedTimeInMs: null,
@@ -271,11 +271,12 @@ class ExchangeModal extends PureComponent {
       return this.setState({
         approvalCreationTimestamp: isUnlockingAsset ? pendingApproval.creationTimestamp : null,
         approvalEstimatedTimeInMs: isUnlockingAsset ? pendingApproval.estimatedTimeInMs : null,
-        gasLimit: gasLimit.toFixed(),
+        gasLimit: gasLimit.toString(),
         isAssetApproved,
         isUnlockingAsset,
       });
     } catch (error) {
+      console.log('error getting gas limit', error);
       return this.setState({
         approvalCreationTimestamp: null,
         approvalEstimatedTimeInMs: null,
@@ -402,7 +403,7 @@ class ExchangeModal extends PureComponent {
         );
       }
 
-      const slippage = get(tradeDetails, 'marketRateSlippage', 0).toFixed();
+      const slippage = get(tradeDetails, 'marketRateSlippage', 0).toString();
 
       this.setState({
         inputExecutionRate,
@@ -552,8 +553,13 @@ class ExchangeModal extends PureComponent {
       creationTimestamp: approvalCreationTimestamp,
       approval: { hash },
     } = await contractUtils.approve(inputCurrency.address, inputCurrency.exchangeAddress);
-    const approvalEstimatedTimeInMs = get(selectedGasPrice, 'estimatedTime.value');
-    uniswapUpdatePendingApprovals(inputCurrency.address, hash, approvalCreationTimestamp, approvalEstimatedTimeInMs);
+    const approvalEstimatedTimeInMs = get(selectedGasPrice, 'estimatedTime.amount');
+    uniswapUpdatePendingApprovals(
+      inputCurrency.address,
+      hash,
+      approvalCreationTimestamp,
+      approvalEstimatedTimeInMs,
+    );
     this.setState({
       approvalCreationTimestamp,
       approvalEstimatedTimeInMs,
@@ -684,7 +690,6 @@ class ExchangeModal extends PureComponent {
       showConfirmButton,
       slippage,
     } = this.state;
-
     return (
       <KeyboardFixedOpenLayout>
         <NavigationEvents

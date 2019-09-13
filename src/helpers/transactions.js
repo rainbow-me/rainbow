@@ -15,10 +15,10 @@ const transactionsSelector = state => state.transactions;
 export const buildTransactionUniqueIdentifier = ({ hash, displayDetails }) =>
   hash || get(displayDetails, 'timestampInMs');
 
-const groupTransactionByDate = ({ pending, mined_at: time }) => {
+const groupTransactionByDate = ({ pending, minedAt }) => {
   if (pending) return 'Pending';
 
-  const timestamp = new Date(parseInt(time, 10) * 1000);
+  const timestamp = new Date(parseInt(minedAt, 10) * 1000);
 
   if (isToday(timestamp)) return 'Today';
   if (isYesterday(timestamp)) return 'Yesterday';

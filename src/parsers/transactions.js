@@ -54,15 +54,15 @@ export default (
 const parseTransaction = (txn, accountAddress, nativeCurrency) => {
   const transaction = pick(txn, [
     'hash',
-    'mined_at',
     'nonce',
     'protocol',
     'status',
     'type',
   ]);
+  transaction.from = txn.address_from; // eslint-disable-line camelcase
+  transaction.minedAt = txn.mined_at; // eslint-disable-line camelcase
   transaction.pending = false;
-  transaction.from = txn.address_from;
-  transaction.to = txn.address_to;
+  transaction.to = txn.address_to; // eslint-disable-line camelcase
   const changes = get(txn, 'changes', []);
   let internalTransactions = changes;
   if (isEmpty(changes) && txn.type === 'authorize') {

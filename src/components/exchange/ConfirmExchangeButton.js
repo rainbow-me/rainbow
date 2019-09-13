@@ -32,7 +32,7 @@ const UnlockingSpinner = ({ timeRemaining, ...props }) => (
 );
 
 UnlockingSpinner.propTypes = {
-  creationTimestamp: PropTypes.string,
+  creationTimestamp: PropTypes.number,
   timeRemaining: PropTypes.string,
 };
 
@@ -89,7 +89,7 @@ const ConfirmExchangeButton = ({
 };
 
 ConfirmExchangeButton.propTypes = {
-  creationTimestamp: PropTypes.string,
+  creationTimestamp: PropTypes.number,
   disabled: PropTypes.bool,
   inputCurrencyName: PropTypes.string,
   isAssetApproved: PropTypes.bool,
