@@ -67,6 +67,16 @@ const AnimatedRawButton = createNativeWrapper(
 
 const NOOP = () => undefined;
 
+const HapticFeedbackTypes = {
+  impactHeavy: 'impactHeavy',
+  impactLight: 'impactLight',
+  impactMedium: 'impactMedium',
+  notificationError: 'notificationError',
+  notificationSuccess: 'notificationSuccess',
+  notificationWarning: 'notificationWarning',
+  selection: 'selection',
+};
+
 export default class ButtonPressAnimation extends PureComponent {
   static propTypes = {
     activeOpacity: PropTypes.number,
@@ -77,6 +87,7 @@ export default class ButtonPressAnimation extends PureComponent {
     easing: PropTypes.object,
     enableHapticFeedback: PropTypes.bool,
     exclusive: PropTypes.bool,
+    hapticType: PropTypes.oneOf(Object.keys(HapticFeedbackTypes)),
     isInteraction: PropTypes.bool,
     onPress: PropTypes.func,
     scaleTo: PropTypes.number,
@@ -92,6 +103,7 @@ export default class ButtonPressAnimation extends PureComponent {
     easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
     enableHapticFeedback: true,
     exclusive: true,
+    hapticType: HapticFeedbackTypes.selection,
     scaleTo: animations.keyframes.button.to.scale,
   }
 
@@ -142,8 +154,10 @@ export default class ButtonPressAnimation extends PureComponent {
   }
 
   handleHaptic = () => {
-    if (this.props.enableHapticFeedback) {
-      ReactNativeHapticFeedback.trigger('selection');
+    const { enableHapticFeedback, hapticType } = this.props;
+
+    if (enableHapticFeedback) {
+      ReactNativeHapticFeedback.trigger(hapticType);
     }
   }
 

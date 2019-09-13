@@ -46,13 +46,13 @@ import {
 } from '../utils';
 import {
   ConfirmExchangeButton,
-  ExchangeGasFeeButton,
   ExchangeInputField,
   ExchangeModalHeader,
   ExchangeOutputField,
   SlippageWarning,
 } from '../components/exchange';
 import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
+import { GasSpeedButton } from '../components/gas';
 import GestureBlocker from '../components/GestureBlocker';
 import {
   Centered,
@@ -91,7 +91,6 @@ class ExchangeModal extends PureComponent {
     isTransitioning: PropTypes.bool,
     keyboardFocusHistory: PropTypes.array,
     nativeCurrency: PropTypes.string,
-    nativeCurrencySymbol: PropTypes.string,
     navigation: PropTypes.object,
     pushKeyboardFocusHistory: PropTypes.func,
     resetGasTxFees: PropTypes.func,
@@ -559,12 +558,7 @@ class ExchangeModal extends PureComponent {
   }
 
   render = () => {
-    const {
-      nativeCurrency,
-      nativeCurrencySymbol,
-      selectedGasPrice,
-      transitionPosition,
-    } = this.props;
+    const { nativeCurrency, transitionPosition } = this.props;
 
     const {
       inputAmountDisplay,
@@ -653,11 +647,7 @@ class ExchangeModal extends PureComponent {
                     slippage={slippage}
                   />
                 </Centered>
-                <ExchangeGasFeeButton
-                  gasPrice={selectedGasPrice}
-                  nativeCurrencySymbol={nativeCurrencySymbol}
-                  onPress={this.handlePressTransactionSpeed}
-                />
+                <GasSpeedButton />
               </Fragment>
             )}
             <GestureBlocker type='bottom'/>

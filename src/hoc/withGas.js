@@ -5,13 +5,22 @@ import {
   resetGasTxFees,
 } from '../redux/gas';
 
-const mapStateToProps = ({ gas }) => ({
-  gasLimit: gas.gasLimit,
-  gasPrices: gas.gasPrices,
-  isSufficientGas: gas.isSufficientGas,
-  selectedGasPrice: gas.selectedGasPrice,
-  selectedGasPriceOption: gas.selectedGasPriceOption,
-  txFees: gas.txFees,
+const mapStateToProps = ({
+  gas: {
+    gasLimit,
+    gasPrices,
+    isSufficientGas,
+    selectedGasPrice,
+    selectedGasPriceOption,
+    txFees,
+  },
+}) => ({
+  gasLimit,
+  gasPrices,
+  isSufficientGas,
+  selectedGasPrice,
+  selectedGasPriceOption,
+  txFees,
 });
 
 export default Component => (

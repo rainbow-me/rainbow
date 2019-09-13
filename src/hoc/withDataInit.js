@@ -102,6 +102,7 @@ export default Component => compose(
         await ownProps.uniqueTokensRefreshState();
       } catch (error) {
         // TODO error state
+        console.log('Error initializing account data: ', error);
       }
     },
     loadAccountData: (ownProps) => async () => {
