@@ -189,6 +189,7 @@ PODS:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   - SDWebImage (5.1.1):
     - SDWebImage/Core (= 5.1.1)
   - SDWebImage/Core (5.1.1)
@@ -207,6 +208,11 @@ PODS:
     - SDWebImage/Core (= 5.1.0)
   - SDWebImage/Core (5.1.0)
 >>>>>>> 011e4f4a... cleanup after merging decimal-logic
+=======
+  - SDWebImage (5.1.1):
+    - SDWebImage/Core (= 5.1.1)
+  - SDWebImage/Core (5.1.1)
+>>>>>>> 8f2ed039... Create animated GasSpeedButton component
   - yoga (0.59.9.React)
 >>>>>>> 730537c6... catching up with latest mike-swap-ui changes
 
@@ -417,6 +423,7 @@ SPEC CHECKSUMS:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   SDWebImage: 96d7f03415ccb28d299d765f93557ff8a617abd8
   yoga: 312528f5bbbba37b4dcea5ef00e8b4033fdd9411
 =======
@@ -427,6 +434,9 @@ SPEC CHECKSUMS:
 =======
   SDWebImage: fb387001955223213dde14bc08c8b73f371f8d8f
 >>>>>>> 011e4f4a... cleanup after merging decimal-logic
+=======
+  SDWebImage: 96d7f03415ccb28d299d765f93557ff8a617abd8
+>>>>>>> 8f2ed039... Create animated GasSpeedButton component
   yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
 >>>>>>> 730537c6... catching up with latest mike-swap-ui changes
 

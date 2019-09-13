@@ -21,7 +21,7 @@ font.lineHeight = {
   tight: 16,
   normal: 20,
   loose: 21,
-  looser: 25,
+  looser: 26,
   loosest: 28,
 };
 

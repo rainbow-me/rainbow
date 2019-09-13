@@ -1,50 +1,29 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { View } from 'react-native';
-import { ExchangeCoinRow } from '../components/coin-row';
-import { Centered, Row, Page } from '../components/layout';
-import { withHideSplashScreen } from '../hoc';
-import { position } from '../styles';
-
-const item = {
-  address: "eth",
-  balance: {
-    amount: "0.07429230016603229",
-    display: "0.0743 ETH",
-  },
-  decimals: 18,
-  name: "Ethereum",
-  native: {
-    balance: {
-      amount: "17.1696934913717225419",
-      display: "$17.17",
-    },
-    change: "5.28%",
-    price: {
-      amount: 231.11,
-      display: "$231.11",
-    },
-  },
-  price: {
-    changed_at: 1564999503,
-    relative_change_24h: 5.279701166180759,
-    value: 231.11,
-  },
-  symbol: "ETH",
-  uniqueId: "eth",
-};
+import { compose } from 'recompact';
+import { GasSpeedButton } from '../components/gas';
+import { Centered, Page } from '../components/layout';
+import { withDataInit, withAccountData } from '../hoc';
+import { colors, position } from '../styles';
 
 class ExampleScreen extends PureComponent {
   static propTypes = {
-    onHideSplashScreen: PropTypes.func,
+    initializeWallet: PropTypes.func,
   }
 
-  componentDidMount = () => this.props.onHideSplashScreen()
+  componentDidMount = async () => {
+    try {
+      await this.props.initializeWallet();
+    } catch (error) {
+      console.log('lol error on ExampleScreen like a n00b: ', error);
+    }
+  }
 
   render = () => (
     <Page
       {...position.centeredAsObject}
       {...position.sizeAsObject('100%')}
+      color={colors.dark}
       flex={1}
     >
       {/*
@@ -53,10 +32,15 @@ class ExampleScreen extends PureComponent {
 
       */}
       <Centered width="100%">
-        <ExchangeCoinRow {...item} item={item} flex={1} />
+        <GasSpeedButton
+          flex={1}
+        />
       </Centered>
     </Page>
   )
 }
 
-export default withHideSplashScreen(ExampleScreen);
+export default compose(
+  withAccountData,
+  withDataInit,
+)(ExampleScreen);
