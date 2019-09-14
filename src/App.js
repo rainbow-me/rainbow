@@ -176,7 +176,6 @@ class App extends Component {
   )
 }
 
-
 const AppWithRedux = compose(
   withProps({ store }),
   withWalletConnectConnections,
