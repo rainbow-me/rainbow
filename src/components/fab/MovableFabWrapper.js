@@ -3,18 +3,17 @@ import React, { PureComponent } from 'react';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { compose, withProps } from 'recompact';
-import { withFabSelection, withOpenFamilyTabs, withOpenInvestmentCards, withOpenBalances } from '../../hoc';
 import {
-  setActionType,
-  setScrollingVelocity,
-  updateSelectedID,
-} from '../../redux/selectedWithFab';
+  withFabSelection,
+  withOpenBalances,
+  withOpenFamilyTabs,
+  withOpenInvestmentCards,
+} from '../../hoc';
 import { deviceUtils } from '../../utils';
 import { CoinRow } from '../coin-row';
 import { ListFooter } from '../list';
-import { CardSize, CardMargin } from '../unique-token/UniqueTokenRow';
-import { InvestmentCard, UniswapInvestmentCard, InvestmentCardHeader } from '../investment-cards';
-import CoinDivider from '../coin-divider/CoinDivider';
+import { InvestmentCard, InvestmentCardHeader, UniswapInvestmentCard } from '../investment-cards';
+import { CoinDivider } from '../coin-divider';
 import { UniqueTokenRow } from '../unique-token';
 import DeleteButton from './DeleteButton';
 
@@ -305,11 +304,17 @@ class MovableFabWrapper extends PureComponent {
   }
 }
 
-const traverseSectionsToDimensions = ({ sections, openFamilyTabs, openInvestmentCards, openSmallBalances }) => {
+const traverseSectionsToDimensions = ({
+  openFamilyTabs,
+  openInvestmentCards,
+  openSmallBalances,
+  sections,
+}) => {
   let balances = false;
   let collectibles = false;
   let investments = false;
-  sections.forEach(section => {
+
+  sections.forEach((section) => {
     if (section.balances) {
       balances = section;
     } else if (section.collectibles) {
@@ -318,6 +323,7 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs, openInvestment
       investments = section;
     }
   });
+
   if (sections) {
     const areas = [];
     const headerHeight = 54;
@@ -343,7 +349,7 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs, openInvestment
       });
       height += CoinDivider.height;
       if (openSmallBalances) {
-        let smallBalances = balances.data[balances.data.length - 1].assets;
+        const smallBalances = balances.data[balances.data.length - 1].assets;
         for (let i = 0; i < smallBalances.length; i++) {
           areas.push({
             bottom: height + CoinRow.height,
