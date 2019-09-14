@@ -23,6 +23,7 @@ import {
 } from '../../hoc';
 import { colors } from '../../styles';
 import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
+import { CoinDivider, SmallBalancesWrapper } from '../coin-divider';
 import { CoinRow } from '../coin-row';
 import { TokenFamilyHeader } from '../token-family';
 import { FloatingActionButton } from '../fab';
@@ -30,8 +31,6 @@ import { InvestmentCard, UniswapInvestmentCard, InvestmentCardHeader } from '../
 import { ListFooter } from '../list';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
-import CoinDivider from '../coin-divider/CoinDivider';
-import SmallBalancesWrapper from '../coin-divider/SmallBalancesWrapper';
 import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
 
 /* eslint-disable sort-keys */

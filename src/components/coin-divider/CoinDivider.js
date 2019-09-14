@@ -1,18 +1,21 @@
+import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
-import styled from 'styled-components/primitives';
-import { View, Text } from 'react-native';
+import React, { PureComponent } from 'react';
+import { View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Animated from 'react-native-reanimated';
-import { colors, fonts } from '../../styles';
-import { ButtonPressAnimation } from '../animations';
-import { deviceUtils } from '../../utils';
-import { Monospace } from '../text';
-import Highlight from '../Highlight';
-import RotationArrow from '../animations/RotationArrow';
 import Caret from '../../assets/show-all-arrow.png';
-import OpacityToggler from '../animations/OpacityToggler';
-import RoundButtonSizeToggler from '../animations/RoundButtonSizeToggler';
+import { deviceUtils } from '../../utils';
+import {
+  ButtonPressAnimation,
+  OpacityToggler,
+  RotationArrow,
+  RoundButtonSizeToggler,
+} from '../animations';
+import Highlight from '../Highlight';
+import { Row } from '../layout';
+import { Monospace } from '../text';
+import CoinDividerButtonLabel from './CoinDividerButtonLabel';
 
 const {
   block,
@@ -21,11 +24,13 @@ const {
   cond,
   interpolate,
   set,
-  startClock,
   spring,
-  Value,
   SpringUtils,
+  startClock,
+  Value,
 } = Animated;
+
+const CoinDividerHeight = 30;
 
 function runTiming(clock, value, dest, isOpen) {
   const state = {
@@ -35,7 +40,7 @@ function runTiming(clock, value, dest, isOpen) {
     velocity: new Value(0),
   };
 
-  const config = Animated.SpringUtils.makeConfigFromOrigamiTensionAndFriction({
+  const config = SpringUtils.makeConfigFromOrigamiTensionAndFriction({
     ...SpringUtils.makeDefaultConfig(),
     friction: 20,
     tension: 200,
@@ -58,64 +63,29 @@ function runTiming(clock, value, dest, isOpen) {
   ]);
 }
 
-const marginLeft = 19;
-const marginRight = 19;
-const Wrapper = styled(View)`
-  margin: 8px 0 0 0;
-  padding-right: ${marginRight}px;
-  padding-left: ${marginLeft}px;
-  width: ${deviceUtils.dimensions.width};
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  height: 30px;
-`;
+export default class CoinDivider extends PureComponent {
+  static propTypes = {
+    balancesSum: PropTypes.string,
+    isCoinDivider: PropTypes.bool,
+    onPress: PropTypes.func,
+    openSmallBalances: PropTypes.bool,
+  }
 
-const Container = styled(View)`
-  height: 30px;
-  border-radius: 15px;
-  align-items: center;
-  padding: 0 10px;
-  flex-direction: row;
-  justify-content: space-between;
-  min-width: 41.5px;
-`;
+  static height = CoinDividerHeight
 
-const BackgroundColor = styled(View)`
-  height: 30px;
-`;
-
-const Header = styled(Text)`
-  color: ${colors.blueGreyDark};
-  font-family: ${fonts.family.SFProText};
-  font-size: ${fonts.size.lmedium};
-  font-weight: ${fonts.weight.semibold};
-  letter-spacing: ${fonts.letterSpacing.tighter};
-  top: -10.25px;
-  opacity: 0.6;
-  position: absolute;
-`;
-
-const SettingIconWrap = styled(View)`
-  opacity: 0.6;
-  padding-bottom: 1px;
-`;
-
-const SettingIcon = styled(FastImage)`
-  height: 17px;
-  width: 9px;
-`;
-
-class CoinDivider extends React.Component {
   componentWillMount() {
     this._initialState = this.props.openSmallBalances;
   }
 
-  componentWillUpdate(prev) {
-    if (prev.openSmallBalances !== undefined
-        && prev.openSmallBalances !== this.props.openSmallBalances) {
+  componentWillUpdate(prevProps) {
+    const { openSmallBalances } = this.props;
+
+    if (!isNil(prevProps.openSmallBalances) && prevProps.openSmallBalances !== openSmallBalances) {
       const clock = new Clock();
-      const base = this.props.openSmallBalances ? runTiming(clock, -1, 1, this.props.openSmallBalances) : runTiming(clock, 1, -1, this.props.openSmallBalances);
+      const base = openSmallBalances
+        ? runTiming(clock, -1, 1, openSmallBalances)
+        : runTiming(clock, 1, -1, openSmallBalances);
+
       this._node = interpolate(base, {
         inputRange: [-1, 1],
         outputRange: [1, 0],
@@ -125,61 +95,73 @@ class CoinDivider extends React.Component {
 
   render() {
     const {
-      openSmallBalances,
-      onChangeOpenBalances,
       balancesSum,
       isCoinDivider,
+      onPress,
+      openSmallBalances,
     } = this.props;
 
     return (
-      <Wrapper>
+      <Row
+        align="center"
+        height={CoinDividerHeight}
+        justify="space-between"
+        marginTop={8}
+        paddingHorizontal={19}
+        width={deviceUtils.dimensions.width}
+      >
         <Highlight highlight={isCoinDivider} />
-        <ButtonPressAnimation scaleTo={0.8} onPress={onChangeOpenBalances}>
-          <RoundButtonSizeToggler isAbsolute reversed={!this._initialState} toggle={openSmallBalances} startingWidth={5} endingWidth={30} animationNode={this._node}>
-            <BackgroundColor />
-          </RoundButtonSizeToggler>
-          <Container>
+        <ButtonPressAnimation onPress={onPress} scaleTo={0.8}>
+          <RoundButtonSizeToggler
+            animationNode={this._node}
+            endingWidth={CoinDividerHeight}
+            isAbsolute
+            reversed={!this._initialState}
+            startingWidth={5}
+            toggle={openSmallBalances}
+          />
+          <Row
+            align="center"
+            borderRadius={RoundButtonSizeToggler.capSize / 2}
+            height={CoinDividerHeight}
+            justify="space-between"
+            minWidth={41.5}
+            paddingHorizontal={10}
+          >
             <View>
-              <OpacityToggler isVisible={openSmallBalances} startingOpacity={1} endingOpacity={0} animationNode={this._node}>
-                <Header >
-                  All
-                </Header>
-              </OpacityToggler>
-              <OpacityToggler isVisible={openSmallBalances} startingOpacity={0} endingOpacity={1} animationNode={this._node}>
-                <Header >
-                  Less
-                </Header>
-              </OpacityToggler>
+              <CoinDividerButtonLabel
+                isVisible={openSmallBalances}
+                label="All"
+                node={this._node}
+                steps={[1, 0]}
+              />
+              <CoinDividerButtonLabel
+                isVisible={openSmallBalances}
+                label="Less"
+                node={this._node}
+                steps={[0, 1]}
+              />
             </View>
-            <SettingIconWrap>
-              <RotationArrow isOpen={openSmallBalances} endingPosition={-90} endingOffset={20}>
-                <SettingIcon source={Caret} />
+            <View style={{ opacity: 0.6, paddingBottom: 1 }}>
+              <RotationArrow
+                endingOffset={20}
+                endingPosition={-90}
+                isOpen={openSmallBalances}
+              >
+                <FastImage
+                  source={Caret}
+                  style={{ height: 17, width: 9 }}
+                />
               </RotationArrow>
-            </SettingIconWrap>
-          </Container>
+            </View>
+          </Row>
         </ButtonPressAnimation>
         <OpacityToggler isVisible={openSmallBalances} animationNode={this._node}>
-          <Monospace
-            color="dark"
-            size="lmedium"
-            style={{ paddingBottom: 1 }}
-          >
+          <Monospace color="dark" size="lmedium" style={{ paddingBottom: 1 }}>
             {balancesSum}
           </Monospace>
         </OpacityToggler>
-      </Wrapper>
+      </Row>
     );
   }
 }
-
-CoinDivider.propTypes = {
-  balancesSum: PropTypes.string,
-  isCoinDivider: PropTypes.bool,
-  onChangeOpenBalances: PropTypes.func,
-  openSmallBalances: PropTypes.bool,
-};
-
-CoinDivider.height = 30;
-
-
-export default CoinDivider;

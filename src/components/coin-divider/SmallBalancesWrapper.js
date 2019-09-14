@@ -1,87 +1,90 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
+import { get, isNumber } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { View } from 'react-native';
-import {
-  compose,
-  lifecycle,
-  withState,
-  withHandlers,
-} from 'recompact';
-import { withOpenBalances } from '../../hoc';
+import React, { Fragment, PureComponent } from 'react';
+import { compose, withProps } from 'recompact';
+import { withAccountSettings, withOpenBalances } from '../../hoc';
+import { OpacityToggler } from '../animations';
 import CoinDivider from './CoinDivider';
-import OpacityToggler from '../animations/OpacityToggler';
 
-const balancesSum = (balances) => {
-  let sum = 0;
-  for (let i = 0; i < balances.length; i++) {
-    if (balances[i].props.item.native) {
-      if (!isNaN(balances[i].props.item.native.balance.amount)) {
-        sum += Number(balances[i].props.item.native.balance.amount);
-      }
+class SmallBalancesWrapper extends PureComponent {
+  static propTypes = {
+    areChildrenVisible: PropTypes.bool,
+    assets: PropTypes.array,
+    balancesSum: PropTypes.string,
+    openSmallBalances: PropTypes.bool,
+    setOpenSmallBalances: PropTypes.func,
+    setSafeTimeout: PropTypes.func,
+  }
+
+  state = { areChildrenVisible: true }
+
+  componentDidMount() {
+    this.toggleChildrenVisibility(true);
+  }
+
+  componentDidUpdate() {
+    const { openSmallBalances, setSafeTimeout } = this.props;
+
+    if (!openSmallBalances) {
+      setSafeTimeout(this.hideChildren, 200);
+    } else {
+      this.toggleChildrenVisibility(true);
     }
   }
-  return `$${Number(sum).toFixed(2)}`;
-};
 
-const SmallBalancesWrapper = ({
-  areChildrenVisible,
-  openSmallBalances,
-  setOpenSmallBalances,
-  assets,
-  ...props
-}) => (
-  <View>
-    <CoinDivider
-      coinDivider={true}
-      balancesSum={balancesSum(assets)}
-      openSmallBalances={openSmallBalances}
-      onChangeOpenBalances={() => setOpenSmallBalances(!openSmallBalances)}
-    />
-    <OpacityToggler isVisible={openSmallBalances} startingOpacity={0} endingOpacity={1}>
-      {areChildrenVisible && assets}
-    </OpacityToggler>
-  </View>
-);
+  handlePress = () => this.props.setOpenSmallBalances(!this.props.openSmallBalances)
 
-SmallBalancesWrapper.propTypes = {
-  areChildrenVisible: PropTypes.bool,
-  assets: PropTypes.array,
-  balancesSum: PropTypes.string,
-  openSmallBalances: PropTypes.bool,
-  setOpenSmallBalances: PropTypes.func,
+  hideChildren = () => {
+    if (!this.props.openSmallBalances) {
+      this.toggleChildrenVisibility(false);
+    }
+  }
+
+  toggleChildrenVisibility = (nextVisibility) => {
+    if (this.state.areChildrenVisible !== nextVisibility) {
+      this.setState({ areChildrenVisible: nextVisibility });
+    }
+  }
+
+  render = () => {
+    const { assets, balancesSum, openSmallBalances } = this.props;
+    const { areChildrenVisible } = this.state;
+
+    return (
+      <Fragment>
+        <CoinDivider
+          balancesSum={balancesSum}
+          onPress={this.handlePress}
+          openSmallBalances={openSmallBalances}
+        />
+        <OpacityToggler
+          endingOpacity={1}
+          isVisible={openSmallBalances}
+          startingOpacity={0}
+        >
+          {areChildrenVisible ? assets : null}
+        </OpacityToggler>
+      </Fragment>
+    );
+  }
+}
+
+const getBalanceFromAsset = asset => Number(get(asset, 'props.item.native.balance.amount', 0));
+const reduceBalances = (accumulator, currentValue) => {
+  const balance = getBalanceFromAsset(currentValue);
+  const sum = isNumber(accumulator) ? accumulator : getBalanceFromAsset(accumulator);
+  return sum + balance;
 };
 
 export default compose(
-  withSafeTimeout,
+  withAccountSettings,
   withOpenBalances,
-  withState('areChildrenVisible', 'setAreChildrenVisible', true),
-  withHandlers({
-    onHideChildren: ({ areChildrenVisible, setAreChildrenVisible }) => () => {
-      if (areChildrenVisible) {
-        setAreChildrenVisible(false);
-      }
-    },
-    onShowChildren: ({ areChildrenVisible, setAreChildrenVisible }) => () => {
-      if (!areChildrenVisible) {
-        setAreChildrenVisible(true);
-      }
-    },
-  }),
-  lifecycle({
-    componentDidMount() {
-      this.props.onShowChildren();
-    },
-    componentDidUpdate() {
-      if (!this.props.openSmallBalances) {
-        setTimeout(() => {
-          if (!this.props.openSmallBalance) {
-            this.props.onHideChildren();
-          }
-        }, 200);
-      } else {
-        this.props.onShowChildren();
-      }
-    },
+  withSafeTimeout,
+  withProps(({ assets, nativeCurrencySymbol }) => {
+    const balance = assets.reduce(reduceBalances, 0);
+    return isNumber(balance)
+      ? { balancesSum: `${nativeCurrencySymbol}${balance.toFixed(2)}` }
+      : {};
   }),
 )(SmallBalancesWrapper);
