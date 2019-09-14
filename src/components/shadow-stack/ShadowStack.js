@@ -29,11 +29,11 @@ export default class ShadowStack extends PureComponent {
   static propTypes = {
     borderRadius: PropTypes.number.isRequired,
     children: PropTypes.node,
+    childrenWrapperStyle: stylePropType,
     height: PropTypes.number.isRequired,
     shadowProps: PropTypes.object,
     shadows: PropTypes.arrayOf(PropTypes.array).isRequired,
     style: stylePropType,
-    childrenWrapperStyle: stylePropType,
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   }
 
@@ -54,16 +54,19 @@ export default class ShadowStack extends PureComponent {
   render = () => {
     const {
       children,
+      childrenWrapperStyle,
       shadows,
       style,
-      childrenWrapperStyle,
       ...props
     } = this.props;
 
     return (
       <ShadowStackContainer {...props} style={style}>
         {shadows.map(this.renderItem)}
-        <ChildrenWrapper {...props} style={[childrenWrapperStyle, { zIndex: shadows.length + 2 }]}>
+        <ChildrenWrapper
+          {...props}
+          style={[childrenWrapperStyle, { zIndex: shadows.length + 2 }]}
+        >
           {children}
         </ChildrenWrapper>
       </ShadowStackContainer>
