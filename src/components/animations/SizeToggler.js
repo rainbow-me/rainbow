@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Component } from 'react';
 import Animated from 'react-native-reanimated';
 
 const {
@@ -11,10 +11,10 @@ const {
   interpolate,
   multiply,
   set,
-  startClock,
   spring,
-  Value,
   SpringUtils,
+  startClock,
+  Value,
 } = Animated;
 
 function runTiming(clock, value, dest, friction, tension) {
@@ -48,50 +48,70 @@ function runTiming(clock, value, dest, friction, tension) {
   ]);
 }
 
-export default class SizeToggler extends React.Component {
-  componentWillMount() {
-    if (!this.props.toggle === true) {
-      this._height = new Value(this.props.startingWidth);
-      return;
-    }
-    this._height = new Value(this.props.endingWidth);
+export default class SizeToggler extends Component {
+  static propTypes = {
+    animationNode: PropTypes.any,
+    children: PropTypes.any,
+    endingWidth: PropTypes.number,
+    friction: PropTypes.number,
+    startingWidth: PropTypes.number,
+    tension: PropTypes.number,
+    toggle: PropTypes.bool,
   }
 
-  componentWillUpdate(prev) {
-    if (prev.toggle !== undefined && prev.toggle !== this.props.toggle && !this.props.animationNode) {
+  static defaultProps = {
+    endingOpacity: 0,
+    friction: 20,
+    startingOpacity: 1,
+    tension: 200,
+  }
+
+  componentWillMount() {
+    const { endingWidth, startingWidth, toggle } = this.props;
+
+    if (!toggle === true) {
+      this._height = new Value(startingWidth);
+    } else {
+      this._height = new Value(endingWidth);
+    }
+  }
+
+  componentWillUpdate(prevProps) {
+    const {
+      animationNode,
+      endingWidth,
+      friction,
+      startingWidth,
+      tension,
+      toggle,
+    } = this.props;
+
+    if (prevProps.toggle !== undefined && prevProps.toggle !== toggle && !animationNode) {
       const clock = new Clock();
-      const base = runTiming(clock, this.props.toggle ? -1 : 1, this.props.toggle ? 1 : -1, this.props.friction, this.props.tension);
+      const base = runTiming(clock, toggle ? -1 : 1, toggle ? 1 : -1, friction, tension);
       this._height = interpolate(base, {
         inputRange: [-1, 1],
-        outputRange: [this.props.endingWidth, this.props.startingWidth],
+        outputRange: [endingWidth, startingWidth],
       });
     }
   }
 
   render() {
+    const {
+      animationNode,
+      children,
+      endingWidth,
+      startingWidth,
+    } = this.props;
+
+    const height = animationNode
+      ? add(multiply(animationNode, (endingWidth - startingWidth)), startingWidth)
+      : this._height;
+
     return (
-      <Animated.View
-        style={{ height: this.props.animationNode ? add(multiply(this.props.animationNode, (this.props.endingWidth - this.props.startingWidth)), this.props.startingWidth) : this._height }}
-      >
-        {this.props.children}
+      <Animated.View style={{ height }}>
+        {children}
       </Animated.View>
     );
   }
 }
-
-SizeToggler.propTypes = {
-  animationNode: PropTypes.any,
-  children: PropTypes.any,
-  endingWidth: PropTypes.number,
-  friction: PropTypes.number,
-  startingWidth: PropTypes.number,
-  tension: PropTypes.number,
-  toggle: PropTypes.bool,
-};
-
-SizeToggler.defaultProps = {
-  endingOpacity: 0,
-  friction: 20,
-  startingOpacity: 1,
-  tension: 200,
-};

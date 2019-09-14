@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Component } from 'react';
 import Animated from 'react-native-reanimated';
 
 const {
@@ -11,11 +11,11 @@ const {
   interpolate,
   multiply,
   set,
-  sub,
-  startClock,
   spring,
-  Value,
   SpringUtils,
+  startClock,
+  sub,
+  Value,
 } = Animated;
 
 function runTiming(clock, value, dest, friction, tension) {
@@ -49,20 +49,36 @@ function runTiming(clock, value, dest, friction, tension) {
   ]);
 }
 
-class RotationArrow extends React.Component {
+export default class RotationArrow extends Component {
+  static propTypes = {
+    children: PropTypes.any,
+    endingOffset: PropTypes.number,
+    endingPosition: PropTypes.number,
+    friction: PropTypes.number,
+    isOpen: PropTypes.bool,
+    reversed: PropTypes.bool,
+    tension: PropTypes.number,
+  }
+
+  static defaultProps = {
+    friction: 20,
+    tension: 200,
+  }
+
   componentWillMount() {
     if (!this.props.isOpen === true) {
       this._transform = new Value(1);
-      return;
+    } else {
+      this._transform = new Value(0);
     }
-    this._transform = new Value(0);
   }
 
-  componentWillUpdate(prev) {
-    if (prev.isOpen !== undefined
-        && prev.isOpen !== this.props.isOpen) {
+  componentWillUpdate(prevProps) {
+    const { friction, isOpen, tension } = this.props;
+
+    if (prevProps.isOpen !== undefined && prevProps.isOpen !== isOpen) {
       const clock = new Clock();
-      const base = runTiming(clock, this.props.isOpen ? -1 : 1, this.props.isOpen ? 1 : -1, this.props.friction, this.props.tension);
+      const base = runTiming(clock, isOpen ? -1 : 1, isOpen ? 1 : -1, friction, tension);
       this._transform = interpolate(base, {
         inputRange: [-1, 1],
         outputRange: [0, 1],
@@ -71,46 +87,30 @@ class RotationArrow extends React.Component {
   }
 
   render() {
+    const {
+      children,
+      endingOffset,
+      endingPosition,
+    } = this.props;
+
+    let translateX = 0;
+    if (endingOffset) {
+      translateX = this._transform
+        ? sub(endingOffset, multiply(this._transform, endingOffset))
+        : endingOffset;
+    }
+
+    let rotate = `${endingPosition}deg`;
+    if (this._transform) {
+      rotate = concat(sub(endingPosition, multiply(this._transform, endingPosition)), 'deg');
+    }
+
     return (
-      <Animated.View
-        style={{
-          transform:
-          [{
-            translateX: this.props.endingOffset ? (this._transform ? sub(this.props.endingOffset, multiply(this._transform, this.props.endingOffset)) : this.props.endingOffset) : 0,
-          }],
-        }}
-      >
-        <Animated.View
-          style={{
-            transform:
-            [{
-              // eslint-disable-next-line no-nested-ternary
-              rotate: this._transform
-                ? (concat(sub(this.props.endingPosition, multiply(this._transform, this.props.endingPosition)), 'deg'))
-                : (`${this.props.endingPosition}deg`),
-            }],
-          }}
-        >
-          {this.props.children}
+      <Animated.View style={{ transform: [{ translateX }] }}>
+        <Animated.View style={{ transform: [{ rotate }] }}>
+          {children}
         </Animated.View>
       </Animated.View>
     );
   }
 }
-
-RotationArrow.propTypes = {
-  children: PropTypes.any,
-  endingOffset: PropTypes.number,
-  endingPosition: PropTypes.number,
-  friction: PropTypes.number,
-  isOpen: PropTypes.bool,
-  reversed: PropTypes.bool,
-  tension: PropTypes.number,
-};
-
-RotationArrow.defaultProps = {
-  friction: 20,
-  tension: 200,
-};
-
-export default RotationArrow;

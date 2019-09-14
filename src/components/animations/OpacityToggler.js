@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Component } from 'react';
 import Animated from 'react-native-reanimated';
 
 const {
@@ -11,10 +11,10 @@ const {
   interpolate,
   multiply,
   set,
-  startClock,
   spring,
-  Value,
   SpringUtils,
+  startClock,
+  Value,
 } = Animated;
 
 function runTiming(clock, value, dest, friction, tension) {
@@ -48,48 +48,72 @@ function runTiming(clock, value, dest, friction, tension) {
   ]);
 }
 
-export default class OpacityToggler extends React.Component {
+export default class OpacityToggler extends Component {
+  static propTypes = {
+    animationNode: PropTypes.any,
+    children: PropTypes.any,
+    endingOpacity: PropTypes.number,
+    friction: PropTypes.number,
+    isVisible: PropTypes.bool,
+    startingOpacity: PropTypes.number,
+    tension: PropTypes.number,
+  }
+
+  static defaultProps = {
+    endingOpacity: 0,
+    friction: 20,
+    startingOpacity: 1,
+    tension: 200,
+  }
+
   componentWillMount() {
     if (!this.props.animationNode) {
       this._isVisible = this.props.isVisible;
     }
   }
 
-  componentWillUpdate(prev) {
-    if (prev.isVisible !== undefined && prev.isVisible !== this.props.isVisible && !this.props.animationNode) {
+  componentWillUpdate(prevProps) {
+    const {
+      animationNode,
+      endingOpacity,
+      friction,
+      isVisible,
+      startingOpacity,
+      tension,
+    } = this.props;
+
+    if (prevProps.isVisible !== undefined && prevProps.isVisible !== isVisible && !animationNode) {
       const clock = new Clock();
-      const base = runTiming(clock, this.props.isVisible ? -1 : 1, this.props.isVisible ? 1 : -1, this.props.friction, this.props.tension);
+      const base = runTiming(clock, isVisible ? -1 : 1, isVisible ? 1 : -1, friction, tension);
       this._opacity = interpolate(base, {
         inputRange: [-1, 1],
-        outputRange: [this.props.endingOpacity, this.props.startingOpacity],
+        outputRange: [endingOpacity, startingOpacity],
       });
     }
   }
 
   render() {
+    const {
+      animationNode,
+      children,
+      endingOpacity,
+      startingOpacity,
+    } = this.props;
+
+    let opacity = !this._isVisible ? startingOpacity : endingOpacity;
+
+    if (animationNode) {
+      opacity = (startingOpacity === 0)
+        ? animationNode
+        : multiply(add(animationNode, -1), -1);
+    } else if (this._opacity) {
+      opacity = this._opacity;
+    }
+
     return (
-      <Animated.View
-        style={{ opacity: this.props.animationNode ? (this.props.startingOpacity === 0 ? this.props.animationNode : (multiply(add(this.props.animationNode, -1), -1))) : (this._opacity ? this._opacity : !this._isVisible ? this.props.startingOpacity : this.props.endingOpacity) }}
-      >
-        {this.props.children}
+      <Animated.View style={{ opacity }}>
+        {children}
       </Animated.View>
     );
   }
 }
-
-OpacityToggler.propTypes = {
-  animationNode: PropTypes.any,
-  children: PropTypes.any,
-  endingOpacity: PropTypes.number,
-  friction: PropTypes.number,
-  isVisible: PropTypes.bool,
-  startingOpacity: PropTypes.number,
-  tension: PropTypes.number,
-};
-
-OpacityToggler.defaultProps = {
-  endingOpacity: 0,
-  friction: 20,
-  startingOpacity: 1,
-  tension: 200,
-};

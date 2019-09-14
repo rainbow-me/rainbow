@@ -1,8 +1,10 @@
+import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PureComponent } from 'react';
 import Animated from 'react-native-reanimated';
-import { View } from 'react-native';
-import { colors } from '../../styles';
+import { View } from 'react-primitives';
+import styled from 'styled-components/primitives';
+import { borders, colors, position } from '../../styles';
 
 const {
   add,
@@ -14,12 +16,19 @@ const {
   interpolate,
   multiply,
   set,
-  startClock,
   spring,
+  SpringUtils,
+  startClock,
   sub,
   Value,
-  SpringUtils,
 } = Animated;
+
+const RoundButtonCapSize = 30;
+const RoundButtonCap = styled(Animated.View)`
+  ${({ capDirection }) => borders.buildRadius(capDirection, RoundButtonCapSize / 2)};
+  ${position.size(RoundButtonCapSize)};
+  background-color: ${({ color }) => color};
+`;
 
 function runTiming(clock, value, dest, friction, tension) {
   const state = {
@@ -29,7 +38,7 @@ function runTiming(clock, value, dest, friction, tension) {
     velocity: new Value(0),
   };
 
-  const config = Animated.SpringUtils.makeConfigFromOrigamiTensionAndFriction({
+  const config = SpringUtils.makeConfigFromOrigamiTensionAndFriction({
     ...SpringUtils.makeDefaultConfig(),
     friction,
     tension,
@@ -52,15 +61,42 @@ function runTiming(clock, value, dest, friction, tension) {
   ]);
 }
 
-export default class RoundButtonSizeToggler extends React.Component {
+export default class RoundButtonSizeToggler extends PureComponent {
+  static propTypes = {
+    animationNode: PropTypes.any,
+    color: PropTypes.string,
+    endingWidth: PropTypes.number,
+    friction: PropTypes.number,
+    isAbsolute: PropTypes.bool,
+    reversed: PropTypes.bool,
+    startingWidth: PropTypes.number,
+    tension: PropTypes.number,
+    toggle: PropTypes.bool,
+  }
+
+  static defaultProps = {
+    color: colors.lightBlueGrey,
+    friction: 20,
+    tension: 200,
+  }
+
+  static capSize = RoundButtonCapSize;
+
   componentWillMount() {
     this._width = new Value(this.props.startingWidth);
   }
 
-  componentWillUpdate(prev) {
-    if (prev.toggle !== undefined && prev.toggle !== this.props.toggle && !this.props.animationNode) {
+  componentWillUpdate(prevProps) {
+    const {
+      animationNode,
+      friction,
+      tension,
+      toggle,
+    } = this.props;
+
+    if (!isNil(prevProps.toggle) && prevProps.toggle !== toggle && !animationNode) {
       const clock = new Clock();
-      const base = runTiming(clock, this.props.toggle ? -1 : 1, this.props.toggle ? 1 : -1, this.props.friction, this.props.tension);
+      const base = runTiming(clock, toggle ? -1 : 1, toggle ? 1 : -1, friction, tension);
       this._width = interpolate(base, {
         inputRange: [-1, 1],
         outputRange: [1, 0],
@@ -69,65 +105,53 @@ export default class RoundButtonSizeToggler extends React.Component {
   }
 
   render() {
+    const {
+      animationNode,
+      color,
+      endingWidth,
+      isAbsolute,
+      reversed,
+      startingWidth,
+    } = this.props;
+
+    let contentScaleX = (startingWidth + (reversed ? 0 : (endingWidth + 5))) / 100;
+    if (animationNode) {
+      // eslint-disable-next-line max-len
+      contentScaleX = add(multiply(animationNode, (endingWidth / 100 - startingWidth / 100)), startingWidth / 100);
+    }
+
+    let contentTranslateX = reversed ? startingWidth : endingWidth;
+    if (animationNode) {
+      contentTranslateX = multiply(divide(sub(1, contentScaleX, 100), 2), -1);
+    }
+
+    let rightCapTranslateX = (-1 * (100 - (reversed ? startingWidth : endingWidth)) - 11);
+    if (animationNode) {
+      rightCapTranslateX = sub(multiply(-100, sub(1, contentScaleX)), 11);
+    }
+
     return (
-      <View style={{
-        flexDirection: 'row',
-        position: this.props.isAbsolute ? 'absolute' : 'relative',
-      }}>
-        <View style={{
-          backgroundColor: colors.lightBlueGrey,
-          borderBottomLeftRadius: 15,
-          borderTopLeftRadius: 15,
-          height: 30,
-          width: 30,
-        }} />
-        <View style={{
-          transform: [
-            { translateX: -60 },
-          ],
-        }}>
+      <View flexDirection="row" position={isAbsolute ? 'absolute' : 'relative'}>
+        <RoundButtonCap
+          capDirection="left"
+          color={color}
+        />
+        <View style={{ transform: [{ translateX: RoundButtonCapSize * -2 }] }}>
           <Animated.View
             style={{
-              backgroundColor: colors.lightBlueGrey,
-              transform: [
-                { scaleX: this.props.animationNode ? add(multiply(this.props.animationNode, (this.props.endingWidth / 100 - this.props.startingWidth / 100)), this.props.startingWidth / 100) : this.props.reversed ? this.props.startingWidth / 100 : ((this.props.startingWidth + this.props.endingWidth + 5) / 100) },
-                { translateX: this.props.animationNode ? multiply(divide(sub(1, add(multiply(this.props.animationNode, (this.props.endingWidth / 100 - this.props.startingWidth / 100), this.props.startingWidth / 100), 100)), 2), -1) : this.props.reversed ? this.props.startingWidth : this.props.endingWidth },
-              ],
+              backgroundColor: color,
+              height: RoundButtonCapSize,
+              transform: [{ scaleX: contentScaleX }, { translateX: contentTranslateX }],
               width: 100,
             }}
-          >
-            {this.props.children}
-          </Animated.View>
+          />
         </View>
-        <Animated.View style={{
-          backgroundColor: colors.lightBlueGrey,
-          borderBottomRightRadius: 15,
-          borderTopRightRadius: 15,
-          height: 30,
-          marginLeft: -11,
-          transform: [
-            { translateX: this.props.animationNode ? multiply(-100, sub(1, add(multiply(this.props.animationNode, (this.props.endingWidth / 100 - this.props.startingWidth / 100)), this.props.startingWidth / 100))) : this.props.reversed ? -1 * (100 - this.props.startingWidth) : -1 * (100 - this.props.endingWidth) },
-          ],
-          width: 30,
-        }} />
+        <RoundButtonCap
+          capDirection="right"
+          color={color}
+          style={{ transform: [{ translateX: rightCapTranslateX }] }}
+        />
       </View>
     );
   }
 }
-
-RoundButtonSizeToggler.propTypes = {
-  animationNode: PropTypes.any,
-  children: PropTypes.any,
-  endingWidth: PropTypes.number,
-  friction: PropTypes.number,
-  isAbsolute: PropTypes.bool,
-  reversed: PropTypes.bool,
-  startingWidth: PropTypes.number,
-  tension: PropTypes.number,
-  toggle: PropTypes.bool,
-};
-
-RoundButtonSizeToggler.defaultProps = {
-  friction: 20,
-  tension: 200,
-};
