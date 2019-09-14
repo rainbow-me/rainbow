@@ -1,7 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
-import { get, isNil, omit } from 'lodash';
+import { get, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Alert, Vibration } from 'react-native';
@@ -13,7 +13,7 @@ import {
   signPersonalMessage,
   sendTransaction,
 } from '../model/wallet';
-import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
+import { getTransactionCount } from '../handlers/web3';
 import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
 class TransactionConfirmationScreenWithData extends PureComponent {
@@ -44,16 +44,6 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     const { transactionDetails } = this.props.navigation.state.params;
 
     const txPayload = get(transactionDetails, 'payload.params[0]');
-    let { gasLimit } = txPayload;
-
-    if (isNil(gasLimit)) {
-      try {
-        const rawGasLimit = await estimateGas(txPayload);
-        gasLimit = toHex(rawGasLimit);
-      } catch (error) {
-        console.log('error estimating gas', error);
-      }
-    }
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(
       this.props.transactionCountNonce,

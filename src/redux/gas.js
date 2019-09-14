@@ -11,6 +11,7 @@ import { ethereumUtils } from '../utils';
 
 // -- Constants ------------------------------------------------------------- //
 
+const GAS_LIMIT_DEFAULT = 'gas/GAS_LIMIT_DEFAULT';
 const GAS_PRICES_DEFAULT = 'gas/GAS_PRICES_DEFAULT';
 const GAS_PRICES_SUCCESS = 'gas/GAS_PRICES_SUCCESS';
 const GAS_PRICES_FAILURE = 'gas/GAS_PRICES_FAILURE';
@@ -121,13 +122,23 @@ export const gasUpdateGasPriceOption = newGasPriceOption => (
   });
 };
 
+export const gasUpdateDefaultGasLimit = (gasLimit = ethUnits.basic_tx) => dispatch => dispatch({
+  payload: gasLimit,
+  type: GAS_LIMIT_DEFAULT,
+});
+
 export const gasUpdateTxFee = gasLimit => (dispatch, getState) => {
-  const { gasPrices, selectedGasPriceOption } = getState().gas;
+  const {
+    defaultGasLimit,
+    gasPrices,
+    selectedGasPriceOption,
+  } = getState().gas;
+  const _gasLimit = gasLimit || defaultGasLimit;
   if (isEmpty(gasPrices)) return;
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
   const ethPriceUnit = getEthPriceUnit(assets);
-  const txFees = parseTxFees(gasPrices, ethPriceUnit, gasLimit, nativeCurrency);
+  const txFees = parseTxFees(gasPrices, ethPriceUnit, _gasLimit, nativeCurrency);
   const results = getSelectedGasPrice(
     assets,
     gasPrices,
@@ -181,8 +192,9 @@ export const gasClearFields = () => dispatch => {
 
 // -- Reducer --------------------------------------------------------------- //
 const INITIAL_STATE = {
+  defaultGasLimit: ethUnits.basic_tx,
   fetchingGasPrices: false,
-  gasLimit: ethUnits.basic_tx,
+  gasLimit: null,
   gasPrices: {},
   isSufficientGas: false,
   selectedGasPrice: {},
@@ -193,52 +205,57 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case GAS_PRICES_DEFAULT:
-      return {
-        ...state,
-        fetchingGasPrices: true,
-        gasPrices: action.payload.gasPrices,
-        selectedGasPrice: action.payload.selectedGasPrice,
-        txFees: action.payload.txFees,
-      };
-    case GAS_PRICES_SUCCESS:
-      return {
-        ...state,
-        fetchingGasPrices: false,
-        gasPrices: action.payload,
-      };
-    case GAS_PRICES_FAILURE:
-      return {
-        ...state,
-        fetchingGasPrices: false,
-        gasPrices: action.payload,
-      };
-    case GAS_UPDATE_TX_FEE:
-      return {
-        ...state,
-        gasLimit: action.payload.gasLimit,
-        isSufficientGas: action.payload.isSufficientGas,
-        selectedGasPrice: action.payload.selectedGasPrice,
-        txFees: action.payload.txFees,
-      };
-    case GAS_UPDATE_GAS_PRICE_OPTION:
-      return {
-        ...state,
-        isSufficientGas: action.payload.isSufficientGas,
-        selectedGasPrice: action.payload.selectedGasPrice,
-        selectedGasPriceOption: action.payload.selectedGasPriceOption,
-      };
-    case GAS_RESET_FIELDS: {
-      return {
-        ...INITIAL_STATE,
-        fetchingGasPrices: state.fetchingGasPrices,
-        gasPrices: state.gasPrices,
-        selectedGasPrice: action.payload.selectedGasPrice,
-        selectedGasPriceOption: state.selectedGasPriceOption,
-        txFees: action.payload.txFees,
-      };
-    }
-    default:
-      return state;
+  case GAS_LIMIT_DEFAULT:
+    return {
+      ...state,
+      gasLimit: action.payload,
+    };
+  case GAS_PRICES_DEFAULT:
+    return {
+      ...state,
+      fetchingGasPrices: true,
+      gasPrices: action.payload.gasPrices,
+      selectedGasPrice: action.payload.selectedGasPrice,
+      txFees: action.payload.txFees,
+    };
+  case GAS_PRICES_SUCCESS:
+    return {
+      ...state,
+      fetchingGasPrices: false,
+      gasPrices: action.payload,
+    };
+  case GAS_PRICES_FAILURE:
+    return {
+      ...state,
+      fetchingGasPrices: false,
+      gasPrices: action.payload,
+    };
+  case GAS_UPDATE_TX_FEE:
+    return {
+      ...state,
+      gasLimit: action.payload.gasLimit,
+      isSufficientGas: action.payload.isSufficientGas,
+      selectedGasPrice: action.payload.selectedGasPrice,
+      txFees: action.payload.txFees,
+    };
+  case GAS_UPDATE_GAS_PRICE_OPTION:
+    return {
+      ...state,
+      isSufficientGas: action.payload.isSufficientGas,
+      selectedGasPrice: action.payload.selectedGasPrice,
+      selectedGasPriceOption: action.payload.selectedGasPriceOption,
+    };
+  case GAS_RESET_FIELDS: {
+    return {
+      ...INITIAL_STATE,
+      fetchingGasPrices: state.fetchingGasPrices,
+      gasPrices: state.gasPrices,
+      selectedGasPrice: action.payload.selectedGasPrice,
+      selectedGasPriceOption: state.selectedGasPriceOption,
+      txFees: action.payload.txFees,
+    };
+  }
+  default:
+    return state;
   }
 };

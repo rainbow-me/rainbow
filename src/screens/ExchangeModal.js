@@ -37,6 +37,7 @@ import {
   withUniswapAllowances,
   withUniswapAssets,
 } from '../hoc';
+import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
 import {
   contractUtils,
@@ -87,6 +88,7 @@ class ExchangeModal extends PureComponent {
     dataAddNewTransaction: PropTypes.func,
     gasLimit: PropTypes.string,
     gasPrices: PropTypes.object,
+    gasUpdateDefaultGasLimit: PropTypes.func,
     gasUpdateGasPriceOption: PropTypes.func,
     gasUpdateTxFee: PropTypes.func,
     isFocused: PropTypes.bool,
@@ -130,6 +132,10 @@ class ExchangeModal extends PureComponent {
     slippage: null,
     tradeDetails: null,
   };
+
+  componentDidMount = () => {
+    this.props.gasUpdateDefaultGasLimit(ethUnits.basic_swap);
+  }
 
   componentDidUpdate = (prevProps, prevState) => {
     const {
@@ -271,7 +277,7 @@ class ExchangeModal extends PureComponent {
       return this.setState({
         approvalCreationTimestamp: isUnlockingAsset ? pendingApproval.creationTimestamp : null,
         approvalEstimatedTimeInMs: isUnlockingAsset ? pendingApproval.estimatedTimeInMs : null,
-        gasLimit: gasLimit.toString(),
+        gasLimit,
         isAssetApproved,
         isUnlockingAsset,
       });
@@ -280,6 +286,7 @@ class ExchangeModal extends PureComponent {
       return this.setState({
         approvalCreationTimestamp: null,
         approvalEstimatedTimeInMs: null,
+        gasLimit: null,
         isAssetApproved,
         isUnlockingAsset: false,
       });
@@ -462,9 +469,7 @@ class ExchangeModal extends PureComponent {
       }
       if (isAssetApproved) {
         const gasLimit = await estimateSwapGasLimit(tradeDetails);
-        if (gasLimit) {
-          gasUpdateTxFee(gasLimit.toString());
-        }
+        gasUpdateTxFee(gasLimit);
       }
     } catch (error) {
       console.log('error getting market details', error);
@@ -510,11 +515,13 @@ class ExchangeModal extends PureComponent {
       dataAddNewTransaction,
       gasLimit,
       navigation,
+      selectedGasPrice,
     } = this.props;
     const { inputAmount, inputCurrency, tradeDetails } = this.state;
 
     try {
-      const txn = await executeSwap(tradeDetails, gasLimit);
+      const gasPrice = get(selectedGasPrice, 'value.amount');
+      const txn = await executeSwap(tradeDetails, gasLimit, gasPrice);
       if (txn) {
         dataAddNewTransaction({
           amount: inputAmount,
@@ -548,11 +555,20 @@ class ExchangeModal extends PureComponent {
 
   handleUnlockAsset = async () => {
     const { inputCurrency } = this.state;
-    const { selectedGasPrice, uniswapUpdatePendingApprovals } = this.props;
+    const {
+      gasLimit,
+      selectedGasPrice,
+      uniswapUpdatePendingApprovals,
+    } = this.props;
     const {
       creationTimestamp: approvalCreationTimestamp,
       approval: { hash },
-    } = await contractUtils.approve(inputCurrency.address, inputCurrency.exchangeAddress);
+    } = await contractUtils.approve(
+      inputCurrency.address,
+      inputCurrency.exchangeAddress,
+      gasLimit,
+      get(selectedGasPrice, 'value.amount'),
+    );
     const approvalEstimatedTimeInMs = get(selectedGasPrice, 'estimatedTime.amount');
     uniswapUpdatePendingApprovals(
       inputCurrency.address,

@@ -45,7 +45,8 @@ export const parseGasPrices = (data, short = true) =>
 
 const defaultGasPriceFormat = (option, timeWait, value) => {
   const timeAmount = multiply(timeWait, timeUnits.ms.minute);
-  const valueAmount = multiply(divide(value, 10), ethUnits.gwei);
+  const gweiAmount = divide(value, 10);
+  const weiAmount = multiply(gweiAmount, ethUnits.gwei);
 
   return {
     estimatedTime: {
@@ -54,8 +55,8 @@ const defaultGasPriceFormat = (option, timeWait, value) => {
     },
     option,
     value: {
-      amount: valueAmount,
-      display: `${valueAmount} Gwei`,
+      amount: weiAmount,
+      display: `${gweiAmount} Gwei`,
     },
   };
 };

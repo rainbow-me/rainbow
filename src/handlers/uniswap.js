@@ -21,7 +21,7 @@ import { loadWallet } from '../model/wallet';
 import exchangeABI from '../references/uniswap-exchange-abi.json';
 import erc20ABI from '../references/erc20-abi.json';
 import { promiseUtils } from '../utils';
-import { web3Provider } from './web3';
+import { toHex, web3Provider } from './web3';
 
 const convertArgsForEthers = methodArguments =>
   methodArguments.map(arg =>
@@ -74,14 +74,19 @@ const getGasLimit = (exchange, methodName, updatedMethodArgs, value) => {
   }
 };
 
-export const estimateSwapGasLimit = tradeDetails => {
+export const estimateSwapGasLimit = async tradeDetails => {
   const {
     exchange,
     methodName,
     updatedMethodArgs,
     value,
   } = getContractExecutionDetails(tradeDetails, web3Provider);
-  return getGasLimit(exchange, methodName, updatedMethodArgs, value);
+  try {
+    const gasLimit = await getGasLimit(exchange, methodName, updatedMethodArgs, value);
+    return gasLimit ? gasLimit.toString : null;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const getContractExecutionDetails = (tradeDetails, providerOrSigner) => {
@@ -107,7 +112,7 @@ export const getContractExecutionDetails = (tradeDetails, providerOrSigner) => {
   };
 };
 
-export const executeSwap = async (tradeDetails, gasLimit) => {
+export const executeSwap = async (tradeDetails, gasLimit, gasPrice) => {
   const wallet = await loadWallet();
   if (!wallet) return null;
   const {
@@ -116,47 +121,44 @@ export const executeSwap = async (tradeDetails, gasLimit) => {
     updatedMethodArgs,
     value,
   } = getContractExecutionDetails(tradeDetails, wallet);
+  const transactionParams = {
+    gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+    gasPrice: gasPrice ? toHex(gasPrice) : undefined,
+    value,
+  };
   switch (methodName) {
-    case 'ethToTokenSwapInput':
-      return exchange.ethToTokenSwapInput(...updatedMethodArgs, {
-        gasLimit,
-        value,
-      });
-    case 'ethToTokenSwapOutput':
-      return exchange.ethToTokenSwapOutput(...updatedMethodArgs, {
-        gasLimit,
-        value,
-      });
-    case 'tokenToEthSwapInput': {
-      // TODO approval check
-      return exchange.tokenToEthSwapInput(...updatedMethodArgs, {
-        gasLimit,
-        value,
-      });
-    }
-    case 'tokenToEthSwapOutput': {
-      // TODO approval check
-      return exchange.tokenToEthSwapOutput(...updatedMethodArgs, {
-        gasLimit,
-        value,
-      });
-    }
-    case 'tokenToTokenSwapInput': {
-      // TODO approval check
-      return exchange.tokenToTokenSwapInput(...updatedMethodArgs, {
-        gasLimit,
-        value,
-      });
-    }
-    case 'tokenToTokenSwapOutput': {
-      // TODO approval check
-      return exchange.tokenToTokenSwapOutput(...updatedMethodArgs, {
-        gasLimit,
-        value,
-      });
-    }
-    default:
-      return null;
+  case 'ethToTokenSwapInput':
+    return exchange.ethToTokenSwapInput(
+      ...updatedMethodArgs,
+      transactionParams,
+    );
+  case 'ethToTokenSwapOutput':
+    return exchange.ethToTokenSwapOutput(
+      ...updatedMethodArgs,
+      transactionParams,
+    );
+  case 'tokenToEthSwapInput':
+    return exchange.tokenToEthSwapInput(
+      ...updatedMethodArgs,
+      transactionParams,
+    );
+  case 'tokenToEthSwapOutput':
+    return exchange.tokenToEthSwapOutput(
+      ...updatedMethodArgs,
+      transactionParams,
+    );
+  case 'tokenToTokenSwapInput':
+    return exchange.tokenToTokenSwapInput(
+      ...updatedMethodArgs,
+      transactionParams,
+    );
+  case 'tokenToTokenSwapOutput':
+    return exchange.tokenToTokenSwapOutput(
+      ...updatedMethodArgs,
+      transactionParams,
+    );
+  default:
+    return null;
   }
 };
 
