@@ -1,40 +1,37 @@
 import PropTypes from 'prop-types';
 import React, { createElement, Fragment } from 'react';
 import { pure } from 'recompact';
-import styled from 'styled-components/primitives';
 import { colors, padding } from '../../styles';
 import { Row } from '../layout';
 import { H1 } from '../text';
 import ContextMenu from '../ContextMenu';
 import Divider from '../Divider';
 
-const ListHeaderHeight = 42;
-
-const Header = styled(Row).attrs({
-  align: 'center',
-  justify: 'space-between',
-})`
-  ${padding(0, 19, 3, 19)}
-  background-color: ${colors.white};
-  height: ${ListHeaderHeight};
-  width: 100%;
-`;
+const height = 42;
 
 const ListHeader = pure(({
   children,
   contextMenuOptions,
+  isSticky,
   showDivider,
   title,
   titleRenderer,
 }) => (
   <Fragment>
-    <Header>
+    <Row
+      align="center"
+      backgroundColor={isSticky ? colors.white : colors.transparent}
+      css={padding(0, 19, 3, 19)}
+      height={height}
+      justify="space-between"
+      width="100%"
+    >
       <Row align="center">
         {createElement(titleRenderer, { children: title })}
         {contextMenuOptions && (<ContextMenu {...contextMenuOptions} />)}
       </Row>
       {children}
-    </Header>
+    </Row>
     {showDivider && <Divider />}
   </Fragment>
 ));
@@ -52,6 +49,6 @@ ListHeader.defaultProps = {
   titleRenderer: H1,
 };
 
-ListHeader.height = ListHeaderHeight;
+ListHeader.height = height;
 
 export default ListHeader;

@@ -15,6 +15,7 @@ import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
 import { Row, RowWithMargins } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import { TruncatedText, Monospace } from '../text';
+import RotationArrow from '../animations/RotationArrow';
 
 const { interpolate, timing, Value } = Animated;
 
@@ -44,9 +45,7 @@ export default class TokenFamilyHeader extends PureComponent {
 
   static height = TokenFamilyHeaderHeight;
 
-  animation = new Value(0)
-
-  componentDidMount = () => this.runTiming()
+  animation = new Value(this.props.isOpen ? 1 : 0);
 
   componentDidUpdate = (prevProps) => {
     if (isNewValueForPath(this.props, prevProps, 'isOpen')) {

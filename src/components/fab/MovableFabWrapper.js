@@ -3,11 +3,17 @@ import React, { PureComponent } from 'react';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { compose, withProps } from 'recompact';
-import { withFabSelection, withOpenFamilyTabs } from '../../hoc';
+import {
+  withFabSelection,
+  withOpenBalances,
+  withOpenFamilyTabs,
+  withOpenInvestmentCards,
+} from '../../hoc';
 import { deviceUtils } from '../../utils';
 import { CoinRow } from '../coin-row';
-import { InvestmentCard, UniswapInvestmentCard } from '../investment-cards';
 import { ListFooter } from '../list';
+import { InvestmentCard, InvestmentCardHeader, UniswapInvestmentCard } from '../investment-cards';
+import { CoinDivider } from '../coin-divider';
 import { UniqueTokenRow } from '../unique-token';
 import DeleteButton from './DeleteButton';
 
@@ -90,6 +96,8 @@ class MovableFabWrapper extends PureComponent {
     children: PropTypes.any,
     deleteButtonScale: PropTypes.object,
     openFamilyTabs: PropTypes.array,
+    openInvestmentCards: PropTypes.array,
+    openSmallBalances: PropTypes.bool,
     scrollViewTracker: PropTypes.object,
     sections: PropTypes.array,
     setActionType: PropTypes.func,
@@ -296,11 +304,17 @@ class MovableFabWrapper extends PureComponent {
   }
 }
 
-const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
+const traverseSectionsToDimensions = ({
+  openFamilyTabs,
+  openInvestmentCards,
+  openSmallBalances,
+  sections,
+}) => {
   let balances = false;
   let collectibles = false;
   let investments = false;
-  sections.forEach(section => {
+
+  sections.forEach((section) => {
     if (section.balances) {
       balances = section;
     } else if (section.collectibles) {
@@ -309,13 +323,14 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
       investments = section;
     }
   });
+
   if (sections) {
     const areas = [];
     const headerHeight = 54;
     const familyHeaderHeight = 52;
     let height = 55 + headerHeight;
     if (balances) {
-      for (let i = 0; i < balances.data.length; i++) {
+      for (let i = 0; i < balances.data.length - 1; i++) {
         areas.push({
           bottom: height + CoinRow.height,
           id: balances.data[i].uniqueId,
@@ -323,13 +338,40 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
           right: deviceUtils.dimensions.width,
           top: height,
         });
-        height += CoinRow.height + (balances.data.length - 1 === i ? ListFooter.height : 0);
+        height += CoinRow.height;
       }
-      height += headerHeight;
+      areas.push({
+        bottom: height + CoinDivider.height,
+        id: 'smallBalancesHeader',
+        left: 0,
+        right: deviceUtils.dimensions.width,
+        top: height,
+      });
+      height += CoinDivider.height;
+      if (openSmallBalances) {
+        const smallBalances = balances.data[balances.data.length - 1].assets;
+        for (let i = 0; i < smallBalances.length; i++) {
+          areas.push({
+            bottom: height + CoinRow.height,
+            id: smallBalances[i].uniqueId,
+            left: 0,
+            right: deviceUtils.dimensions.width,
+            top: height,
+          });
+          height += CoinRow.height;
+        }
+      }
+      height += ListFooter.height + headerHeight;
     }
     if (investments) {
-      height += headerHeight;
-      height += investments.data.length * (UniswapInvestmentCard.height + InvestmentCard.margin.vertical) + ListFooter.height;
+      height += headerHeight + ListFooter.height;
+      for (let i = 0; i < investments.data.length; i++) {
+        if (!openInvestmentCards[investments.data[i].uniqueId]) {
+          height += (UniswapInvestmentCard.height + InvestmentCard.margin.vertical);
+        } else {
+          height += (InvestmentCardHeader.height + InvestmentCard.margin.vertical);
+        }
+      }
     }
     if (collectibles) {
       for (let i = 0; i < collectibles.data.length; i++) {
@@ -352,7 +394,7 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
               top: height,
             });
           }
-          if (openFamilyTabs[i]) {
+          if (openFamilyTabs[collectibles.data[i].familyName]) {
             height += UniqueTokenRow.cardSize;
             if (j > 0) {
               height += UniqueTokenRow.cardMargin;
@@ -369,5 +411,7 @@ const traverseSectionsToDimensions = ({ sections, openFamilyTabs }) => {
 export default compose(
   withFabSelection,
   withOpenFamilyTabs,
+  withOpenInvestmentCards,
+  withOpenBalances,
   withProps(traverseSectionsToDimensions),
 )(MovableFabWrapper);

@@ -8,6 +8,7 @@ import {
   withHandlers,
 } from 'recompact';
 import { Linking } from 'react-native';
+import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { colors } from '../../styles';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
@@ -18,6 +19,10 @@ import BalanceText from './BalanceText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
+
+const containerStyles = css`
+  paddingLeft: 15;
+`;
 
 const rowRenderPropTypes = {
   balance: PropTypes.object,
@@ -85,6 +90,7 @@ const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
       {...item}
       {...props}
       bottomRowRender={BottomRow}
+      containerStyles={containerStyles}
       shouldRasterizeIOS={true}
       topRowRender={TopRow}
     />

@@ -22,10 +22,6 @@ import {
 import { Page } from '../components/layout';
 import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import {
-  getShowShitcoinsSetting,
-  updateShowShitcoinsSetting,
-} from '../handlers/commonStorage';
-import {
   withAccountData,
   withAccountSettings,
   withBlurTransitionProps,
@@ -36,8 +32,13 @@ import {
   withStatusBarStyle,
   withUniswapLiquidity,
 } from '../hoc';
+import store from '../redux/store';
 import { position } from '../styles';
 import { isNewValueForPath } from '../utils';
+import { getSmallBalanceToggle, getOpenInvestmentCards, getOpenFamilies } from '../handlers/commonStorage';
+import { setOpenSmallBalances } from '../redux/openBalances';
+import { pushOpenInvestmentCard } from '../redux/openInvestmentCards';
+import { pushOpenFamilyTab } from '../redux/openFamilyTabs';
 
 class WalletScreen extends Component {
   static propTypes = {
@@ -55,17 +56,23 @@ class WalletScreen extends Component {
     sections: PropTypes.array,
     setSafeTimeout: PropTypes.func,
     showBlur: PropTypes.bool,
-    toggleShowShitcoins: PropTypes.func,
     uniqueTokens: PropTypes.array,
+  }
+
+  setInitialStatesForOpenAssets = async () => {
+    const toggle = await getSmallBalanceToggle();
+    const openInvestmentCards = await getOpenInvestmentCards();
+    const openFamilies = await getOpenFamilies();
+    await store.dispatch(setOpenSmallBalances(toggle));
+    await store.dispatch(pushOpenInvestmentCard(openInvestmentCards));
+    await store.dispatch(pushOpenFamilyTab(openFamilies));
+    return true;
   }
 
   componentDidMount = async () => {
     try {
+      await this.setInitialStatesForOpenAssets();
       await this.props.initializeWallet();
-      const showShitcoins = await getShowShitcoinsSetting();
-      if (showShitcoins !== null) {
-        this.props.toggleShowShitcoins(showShitcoins);
-      }
     } catch (error) {
       // TODO
     }
@@ -81,7 +88,6 @@ class WalletScreen extends Component {
     const isNewLanguage = isNewValueForPath(this.props, nextProps, 'language');
     const isNewSections = isNewValueForPath(this.props, nextProps, 'sections');
     const isNewShowBlur = isNewValueForPath(this.props, nextProps, 'showBlur');
-    const isNewShowShitcoins = isNewValueForPath(this.props, nextProps, 'showShitcoins');
     const isNewTransitionProps = isNewValueForPath(this.props, nextProps, 'transitionProps');
 
     if (!nextProps.isFocused && !nextProps.showBlur) {
@@ -98,7 +104,6 @@ class WalletScreen extends Component {
     || isNewCurrency
     || isNewBlurOpacity
     || isNewSections
-    || isNewShowShitcoins
     || isNewTransitionProps
     || isNewShowBlur;
   }
@@ -160,22 +165,6 @@ export default compose(
   withIsWalletEmpty,
   withIsWalletEthZero,
   withStatusBarStyle('dark-content'),
-  withState('showShitcoins', 'toggleShowShitcoins', true),
-  withHandlers({
-    onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
-      if (index === 0) {
-        const updatedShowShitcoinsSetting = !showShitcoins;
-        toggleShowShitcoins(updatedShowShitcoinsSetting);
-        updateShowShitcoinsSetting(updatedShowShitcoinsSetting);
-
-        if (updatedShowShitcoinsSetting) {
-          analytics.track('Showed shitcoins');
-        } else {
-          analytics.track('Hid shitcoins');
-        }
-      }
-    },
-  }),
   withProps(buildWalletSectionsSelector),
   withProps({ scrollViewTracker: new Animated.Value(0) }),
 )(WalletScreen);

@@ -42,15 +42,16 @@ class SendAssetList extends React.Component {
   );
 
   TokenItem = React.memo(this.enhanceRenderItem(SendCoinRow));
+
   UniqueTokenItem = React.memo(this.enhanceRenderItem(CollectiblesSendRow));
 
   rlv = React.createRef();
 
   changeOpenTab = (index) => {
-    let openCards = this.state.openCards;
+    const { openCards } = this.state;
     LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity'));
     openCards[index] = !openCards[index];
-    this.setState({ openCards: openCards });
+    this.setState({ openCards });
     let familiesHeight = 0;
     if (openCards[index]) {
       for (let i = 0; i < index; i++) {
@@ -79,8 +80,8 @@ class SendAssetList extends React.Component {
   }
 
   mapTokens = (collectibles) => {
-    items = collectibles.map((collectible) => {
-      let newItem = {}
+    const items = collectibles.map((collectible) => {
+      const newItem = {};
       newItem.item = collectible;
       return <this.UniqueTokenItem key={collectible.id} {...newItem} />;
     });
@@ -88,12 +89,14 @@ class SendAssetList extends React.Component {
   }
 
   balancesRenderItem = item => <this.TokenItem {...item} />;
-  balancesRenderLastItem = item => {return <>
-    <this.TokenItem {...item} />
-    <Divider />
-  </>
+
+  balancesRenderLastItem = item => {
+    return <>
+      <this.TokenItem {...item} />
+      <Divider />
+    </>;
   };
-  
+
   collectiblesRenderItem = item => {
     return <View>
       <TokenFamilyHeader
@@ -102,10 +105,10 @@ class SendAssetList extends React.Component {
         familyImage={item.familyImage}
         childrenAmount={item.data.length}
         isOpen={this.state.openCards[item.familyId]}
-        onHeaderPress={() => { this.changeOpenTab(item.familyId) }}
+        onHeaderPress={() => { this.changeOpenTab(item.familyId); }}
       />
       {this.state.openCards[item.familyId] && this.mapTokens(item.data)}
-    </View>
+    </View>;
   }
 
   constructor(args) {
@@ -136,7 +139,7 @@ class SendAssetList extends React.Component {
       } else if (i == this.props.allAssets.length - 1) {
         return 'COIN_ROW_LAST';
       } else {
-        if (this.state.openCards[i - this.props.allAssets.length]) {
+        if (this.state.openCards[this.props.uniqueTokens[i - this.props.allAssets.length].familyId]) {
           return { type: 'COLLECTIBLE_ROW', size: this.props.uniqueTokens[i - this.props.allAssets.length].data.length + 1 };
         } else {
           return 'COLLECTIBLE_ROW_CLOSED';

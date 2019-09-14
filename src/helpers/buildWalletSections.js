@@ -16,7 +16,7 @@ import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { TokenFamilyWrap } from '../components/token-family';
-import { buildUniqueTokenList } from './assets';
+import { buildUniqueTokenList, buildCoinsList } from './assets';
 
 const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
@@ -26,10 +26,7 @@ const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
 const isWalletEthZeroSelector = state => state.isWalletEthZero;
 const languageSelector = state => state.language;
 const nativeCurrencySelector = state => state.nativeCurrency;
-const onToggleShowShitcoinsSelector = state => state.onToggleShowShitcoins;
 const setIsWalletEmptySelector = state => state.setIsWalletEmpty;
-const shitcoinsCountSelector = state => state.shitcoinsCount;
-const showShitcoinsSelector = state => state.showShitcoins;
 const uniqueTokensSelector = state => state.uniqueTokens;
 const uniswapSelector = state => state.uniswap;
 const uniswapTotalSelector = state => state.uniswapTotal;
@@ -61,7 +58,7 @@ const balancesSkeletonRenderItem = item => (
 );
 const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
 const tokenFamilyItem = item => <TokenFamilyWrap {...item} uniqueId={item.uniqueId} />;
-const uniswapRenderItem = item => <UniswapCardItem {...item} assetType="uniswap" />;
+const uniswapRenderItem = item => <UniswapCardItem {...item} assetType="uniswap" isCollapsible={true} />;
 
 const filterWalletSections = sections => (
   sections.filter(({ data, header }) => (
@@ -73,12 +70,7 @@ const filterWalletSections = sections => (
 
 const buildWalletSections = (
   balanceSection,
-  language,
-  nativeCurrency,
-  onToggleShowShitcoins,
   setIsWalletEmpty,
-  shitcoinsCount,
-  showShitcoins,
   uniqueTokenFamiliesSection,
   uniswapSection,
 ) => {
@@ -88,23 +80,6 @@ const buildWalletSections = (
     uniqueTokenFamiliesSection,
   ];
 
-  if (shitcoinsCount) {
-    // 99 is an arbitrarily high number used to disable the 'destructiveButton' option
-    const destructiveButtonIndex = showShitcoins ? 0 : 99;
-
-    const index = findIndex(sections, (section) => section.balances === true);
-    if (index > -1) {
-      sections[index].header.contextMenuOptions = {
-        cancelButtonIndex: 1,
-        destructiveButtonIndex,
-        onPressActionSheet: onToggleShowShitcoins,
-        options: [
-          `${lang.t(`account.${showShitcoins ? 'hide' : 'show'}`)} ${lang.t('wallet.assets.no_price')}`,
-          lang.t('wallet.action.cancel'),
-        ],
-      };
-    }
-  }
   const filteredSections = filterWalletSections(sections);
   const isEmpty = !filteredSections.length;
   setIsWalletEmpty(isEmpty);
@@ -120,17 +95,19 @@ const withUniswapSection = (
   nativeCurrency,
   uniswap,
   uniswapTotal,
-) => ({
-  data: uniswap,
-  header: {
-    title: 'Investments',
-    totalItems: uniswap.length,
-    totalValue: uniswapTotal,
-  },
-  investments: true,
-  name: 'investments',
-  renderItem: uniswapRenderItem,
-});
+) => {
+  return {
+    data: uniswap,
+    header: {
+      title: 'Investments',
+      totalItems: uniswap.length,
+      totalValue: uniswapTotal,
+    },
+    investments: true,
+    name: 'investments',
+    renderItem: uniswapRenderItem,
+  };
+};
 
 const withBalanceSection = (
   allAssets,
@@ -143,7 +120,7 @@ const withBalanceSection = (
   nativeCurrency,
   showShitcoins,
 ) => {
-  let balanceSectionData = showShitcoins ? allAssets : assets;
+  let balanceSectionData = buildCoinsList(allAssets);
   const isLoadingBalances = (!isWalletEthZero && isBalancesSectionEmpty);
   if (isLoadingBalances) {
     balanceSectionData = [{ item: { uniqueId: 'skeleton0' } }];
@@ -255,7 +232,6 @@ const balanceSectionSelector = createSelector(
     isWalletEthZeroSelector,
     languageSelector,
     nativeCurrencySelector,
-    showShitcoinsSelector,
   ],
   withBalanceSection,
 );
@@ -282,12 +258,7 @@ const uniqueTokenFamiliesSelector = createSelector(
 export default createSelector(
   [
     balanceSectionSelector,
-    languageSelector,
-    nativeCurrencySelector,
-    onToggleShowShitcoinsSelector,
     setIsWalletEmptySelector,
-    shitcoinsCountSelector,
-    showShitcoinsSelector,
     uniqueTokenFamiliesSelector,
     uniswapSectionSelector,
   ],

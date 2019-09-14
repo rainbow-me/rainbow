@@ -386,24 +386,6 @@ export const saveLanguage = async language => {
   await saveLocal('language', { data: language });
 };
 
-/**
- * @desc get show shitcoins setting
- * @return {True|False}
- */
-export const getShowShitcoinsSetting = async () => {
-  const showShitcoins = await getLocal('showShitcoins');
-  return showShitcoins ? showShitcoins.data : null;
-};
-
-/**
- * @desc update show shitcoins setting
- * @param  {Boolean}   [updatedSetting]
- * @return {Void}
- */
-export const updateShowShitcoinsSetting = async (updatedSetting) => {
-  await saveLocal('showShitcoins', { data: updatedSetting });
-};
-
 const isRequestStillValid = (request) => {
   const createdAt = request.displayDetails.timestampInMs;
   return (differenceInMinutes(Date.now(), createdAt) < 60);
@@ -459,6 +441,66 @@ export const removeLocalRequest = async (address, network, requestId) => {
 export const removeLocalRequests = async (address, network) => {
   const requestsKey = getRequestsKey(address, network);
   await removeLocal(requestsKey);
+};
+
+/**
+ * @desc get open small balance toggle
+ * @return {Boolean}
+ */
+export const getSmallBalanceToggle = async () => {
+  const toggle = await getLocal('smallBalanceToggle');
+  if (toggle) {
+    return toggle.data;
+  }
+  return false;
+};
+
+/**
+ * @desc save open small balance toggle
+ * @param  {Boolean}   [language]
+ */
+export const saveSmallBalanceToggle = async toggle => {
+  await saveLocal('smallBalanceToggle', { data: toggle });
+};
+
+/**
+ * @desc get open investment cards
+ * @return {Object}
+ */
+export const getOpenInvestmentCards = async () => {
+  const openInvestmentCards = await getLocal('openInvestmentCards');
+  if (openInvestmentCards) {
+    return openInvestmentCards.data;
+  }
+  return {};
+};
+
+/**
+ * @desc save open investment cards
+ * @param  {Object}   [openInvestmentCards]
+ */
+export const saveOpenInvestmentCards = async openInvestmentCards => {
+  await saveLocal('openInvestmentCards', { data: openInvestmentCards });
+};
+
+/**
+ * @desc get open families
+ * @return {Object}
+ */
+export const getOpenFamilies = async () => {
+  const openFamilies = await getLocal('openFamilies');
+  if (openFamilies) {
+    return openFamilies.data;
+  }
+  return {};
+};
+
+/**
+ * @desc save open families
+ * @param  {Object}   [openFamilies]
+ */
+export const saveOpenFamilies = async openFamilies => {
+  await saveLocal('openFamilies', { data: openFamilies });
 };
 
 // apple restricts number of times developers are allowed to throw

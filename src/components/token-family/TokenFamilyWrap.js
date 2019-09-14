@@ -135,6 +135,9 @@ export default compose(
     /* eslint-enable react/display-name */
   }),
   lifecycle({
+    componentDidMount() {
+      this.props.onShowChildren();
+    },
     componentDidUpdate() {
       if (!this.props.isFamilyOpen) {
         this.props.onHideChildren();
