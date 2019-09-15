@@ -7,8 +7,7 @@ import {
   parseTxFees,
 } from '../parsers/gas';
 import ethUnits from '../references/ethereum-units.json';
-import { ethereumUtils } from '../utils';
-import { GasSpeed } from '../utils/gas';
+import { ethereumUtils, gasUtils } from '../utils';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -43,8 +42,8 @@ const getDefaultTxFees = () => (dispatch, getState) => {
     nativeCurrency
   );
   const selectedGasPrice = {
-    ...txFees.average,
-    ...fallbackGasPrices.average,
+    ...txFees[gasUtils.NORMAL],
+    ...fallbackGasPrices[gasUtils.NORMAL],
   };
   return {
     fallbackGasPrices,
@@ -202,7 +201,7 @@ const INITIAL_STATE = {
   gasPrices: {},
   isSufficientGas: false,
   selectedGasPrice: {},
-  selectedGasPriceOption: GasSpeed.normal,
+  selectedGasPriceOption: gasUtils.NORMAL,
   txFees: {},
   useShortGasFormat: true,
 };

@@ -10,13 +10,11 @@ import {
 } from 'lodash';
 import { showActionSheetWithOptions } from './actionsheet';
 
-export const GasSpeed = {
-  fast: 'fast',
-  normal: 'normal',
-  slow: 'slow',
-};
+const FAST = 'fast';
+const NORMAL = 'normal';
+const SLOW = 'slow';
 
-const labelOrder = [GasSpeed.slow, GasSpeed.normal, GasSpeed.fast];
+const GasSpeedOrder = [SLOW, NORMAL, FAST];
 
 const showTransactionSpeedOptions = (
   gasPrices,
@@ -51,7 +49,7 @@ const showTransactionSpeedOptions = (
 };
 
 const formatGasSpeedItems = (gasPrices, txFees) => {
-  const gasItems = map(labelOrder, (speed) => {
+  const gasItems = map(GasSpeedOrder, (speed) => {
     const cost = get(txFees, `[${speed}].txFee.native.value.display`);
     const gwei = get(gasPrices, `[${speed}].value.display`);
     const time = get(gasPrices, `[${speed}].estimatedTime.display`);
@@ -62,10 +60,13 @@ const formatGasSpeedItems = (gasPrices, txFees) => {
       speed,
     };
   });
-  return sortBy(gasItems, ({ speed }) => indexOf(labelOrder, speed));
+  return sortBy(gasItems, ({ speed }) => indexOf(GasSpeedOrder, speed));
 };
 
 export default {
-  GasSpeedTypes,
+  FAST,
+  GasSpeedOrder,
+  NORMAL,
   showTransactionSpeedOptions,
+  SLOW,
 };

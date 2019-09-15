@@ -1,7 +1,6 @@
 import {
   get,
   map,
-  values,
   zipObject,
 } from 'lodash';
 import { getMinimalTimeUnitStringForMs } from '../helpers/time';
@@ -13,7 +12,7 @@ import {
 } from '../helpers/utilities';
 import timeUnits from '../references/time-units.json';
 import ethUnits from '../references/ethereum-units.json';
-import { GasSpeed } from '../utils/gas';
+import { gasUtils } from '../utils';
 
 /**
  * @desc parse ether gas prices
@@ -21,9 +20,9 @@ import { GasSpeed } from '../utils/gas';
  * @param {Boolean} short - use short format or not
  */
 export const getFallbackGasPrices = (short = true) => ({
-  [GasSpeed.fast]: defaultGasPriceFormat(GasSpeed.fast, '0.5', '200', short),
-  [GasSpeed.normal]: defaultGasPriceFormat(GasSpeed.normal, '2.5', '100', short),
-  [GasSpeed.slow]: defaultGasPriceFormat(GasSpeed.slow, '2.5', '100', short),
+  [gasUtils.FAST]: defaultGasPriceFormat(gasUtils.FAST, '0.5', '200', short),
+  [gasUtils.NORMAL]: defaultGasPriceFormat(gasUtils.NORMAL, '2.5', '100', short),
+  [gasUtils.SLOW]: defaultGasPriceFormat(gasUtils.SLOW, '2.5', '100', short),
 });
 
 /**
@@ -35,9 +34,9 @@ export const parseGasPrices = (data, short = true) =>
   !data
     ? getFallbackGasPrices()
     : ({
-      [GasSpeed.fast]: defaultGasPriceFormat(GasSpeed.fast, data.fastWait, data.fast, short),
-      [GasSpeed.normal]: defaultGasPriceFormat(GasSpeed.normal, data.avgWait, data.average, short),
-      [GasSpeed.slow]: defaultGasPriceFormat(GasSpeed.slow, data.safeLowWait, data.safeLow, short),
+      [gasUtils.FAST]: defaultGasPriceFormat(gasUtils.FAST, data.fastWait, data.fast, short),
+      [gasUtils.NORMAL]: defaultGasPriceFormat(gasUtils.NORMAL, data.avgWait, data.average, short),
+      [gasUtils.SLOW]: defaultGasPriceFormat(gasUtils.SLOW, data.safeLowWait, data.safeLow, short),
     })
 );
 
@@ -65,14 +64,13 @@ const defaultGasPriceFormat = (option, timeWait, value) => {
  * @param {Number} gasLimit
  */
 export const parseTxFees = (gasPrices, priceUnit, gasLimit, nativeCurrency) => {
-  const gasSpeedLabels = values(GasSpeed);
-  const txFees = map(gasSpeedLabels, (speed) => {
+  const txFees = map(gasUtils.GasSpeedOrder, (speed) => {
     const gasPrice = get(gasPrices, `${speed}.value.amount`);
     return {
       txFee: getTxFee(gasPrice, gasLimit, priceUnit, nativeCurrency),
     };
   });
-  return zipObject(gasSpeedLabels, txFees);
+  return zipObject(gasUtils.GasSpeedOrder, txFees);
 };
 
 const getTxFee = (gasPrice, gasLimit, priceUnit, nativeCurrency) => {
