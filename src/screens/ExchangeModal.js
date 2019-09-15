@@ -238,6 +238,7 @@ class ExchangeModal extends PureComponent {
     const {
       accountAddress,
       allowances,
+      gasUpdateTxFee,
       pendingApprovals,
       uniswapUpdateAllowances,
     } = this.props;
@@ -274,19 +275,18 @@ class ExchangeModal extends PureComponent {
         inputCurrency.address,
         exchangeAddress
       );
+      gasUpdateTxFee(gasLimit);
       return this.setState({
         approvalCreationTimestamp: isUnlockingAsset ? pendingApproval.creationTimestamp : null,
         approvalEstimatedTimeInMs: isUnlockingAsset ? pendingApproval.estimatedTimeInMs : null,
-        gasLimit,
         isAssetApproved,
         isUnlockingAsset,
       });
     } catch (error) {
-      console.log('error getting gas limit', error);
+      gasUpdateTxFee();
       return this.setState({
         approvalCreationTimestamp: null,
         approvalEstimatedTimeInMs: null,
-        gasLimit: null,
         isAssetApproved,
         isUnlockingAsset: false,
       });
@@ -554,33 +554,42 @@ class ExchangeModal extends PureComponent {
   };
 
   handleUnlockAsset = async () => {
-    const { inputCurrency } = this.state;
-    const {
-      gasLimit,
-      selectedGasPrice,
-      uniswapUpdatePendingApprovals,
-    } = this.props;
-    const {
-      creationTimestamp: approvalCreationTimestamp,
-      approval: { hash },
-    } = await contractUtils.approve(
-      inputCurrency.address,
-      inputCurrency.exchangeAddress,
-      gasLimit,
-      get(selectedGasPrice, 'value.amount'),
-    );
-    const approvalEstimatedTimeInMs = get(selectedGasPrice, 'estimatedTime.amount');
-    uniswapUpdatePendingApprovals(
-      inputCurrency.address,
-      hash,
-      approvalCreationTimestamp,
-      approvalEstimatedTimeInMs,
-    );
-    this.setState({
-      approvalCreationTimestamp,
-      approvalEstimatedTimeInMs,
-      isUnlockingAsset: true,
-    });
+    try {
+      const { inputCurrency } = this.state;
+      const {
+        gasLimit,
+        selectedGasPrice,
+        uniswapUpdatePendingApprovals,
+      } = this.props;
+      const {
+        creationTimestamp: approvalCreationTimestamp,
+        approval: { hash },
+      } = await contractUtils.approve(
+        inputCurrency.address,
+        inputCurrency.exchangeAddress,
+        gasLimit,
+        get(selectedGasPrice, 'value.amount'),
+      );
+      const approvalEstimatedTimeInMs = get(selectedGasPrice, 'estimatedTime.amount');
+      uniswapUpdatePendingApprovals(
+        inputCurrency.address,
+        hash,
+        approvalCreationTimestamp,
+        approvalEstimatedTimeInMs,
+      );
+      this.setState({
+        approvalCreationTimestamp,
+        approvalEstimatedTimeInMs,
+        isUnlockingAsset: true,
+      });
+    } catch (error) {
+      console.log('could not unlock asset', error);
+      this.setState({
+        approvalCreationTimestamp: null,
+        approvalEstimatedTimeInMs: null,
+        isUnlockingAsset: false,
+      });
+    }
   }
 
   navigateToSelectInputCurrency = () => {

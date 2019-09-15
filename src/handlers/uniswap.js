@@ -75,16 +75,17 @@ const getGasLimit = (exchange, methodName, updatedMethodArgs, value) => {
 };
 
 export const estimateSwapGasLimit = async tradeDetails => {
-  const {
-    exchange,
-    methodName,
-    updatedMethodArgs,
-    value,
-  } = getContractExecutionDetails(tradeDetails, web3Provider);
   try {
+    const {
+      exchange,
+      methodName,
+      updatedMethodArgs,
+      value,
+    } = getContractExecutionDetails(tradeDetails, web3Provider);
     const gasLimit = await getGasLimit(exchange, methodName, updatedMethodArgs, value);
-    return gasLimit ? gasLimit.toString : null;
+    return gasLimit ? gasLimit.toString() : null;
   } catch (error) {
+    console.log('error getting swap gas limit', error);
     return null;
   }
 };

@@ -46,8 +46,7 @@ const getAllowance = async (owner, token, spender) => {
     web3Provider
   );
   const allowance = await tokenContract.allowance(owner, spender);
-  const rawAllowance = ethers.utils.bigNumberify(allowance.toString());
-  return convertRawAmountToDecimalFormat(rawAllowance, decimals);
+  return convertRawAmountToDecimalFormat(allowance.toString(), decimals);
 };
 
 export default {
