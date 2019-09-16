@@ -142,11 +142,12 @@ export default compose(
         showActionSheetWithOptions({
           title: `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
           cancelButtonIndex: 2,
-          options: ['Add to Contacts', 'View on Etherscan', 'Cancel'],
+          options: [contact ? 'View Contact' : 'Add to Contacts', 'View on Etherscan', 'Cancel'],
         }, (buttonIndex) => {
           if (buttonIndex === 0) {
             navigation.navigate('ExpandedAssetScreen', {
               asset: item,
+              contact: contact,
               type: 'contact',
             });
           } else if (buttonIndex === 1) {

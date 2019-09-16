@@ -1,5 +1,5 @@
 import { differenceInMinutes } from 'date-fns';
-import { omit, pickBy } from 'lodash';
+import { find, omit, pickBy } from 'lodash';
 
 const defaultVersion = '0.1.0';
 const transactionsVersion = '0.2.0';
@@ -591,6 +591,7 @@ export const setAppStoreReviewRequestCount = async (newCount) => {
  */
 export const getLocalContacts = async () => {
   const localContacts = await getLocal('localContacts');
+  console.log(localContacts.data);
   return localContacts ? localContacts.data : null;
 };
 
@@ -600,16 +601,10 @@ export const getLocalContacts = async () => {
  * @return {True|False}
  */
 export const getSelectedLocalContact = async (address) => {
-  const contacts = await getLocalContacts();
-  contacts ? contacts : contacts = [];
-  console.log(contacts);
-  let localContact = false;
-  contacts.forEach(contact => {
-    if (contact.address == address) {
-      localContact = contact;
-    }
-  });
-  return localContact;
+  let contacts = await getLocalContacts();
+  if (!contacts) contacts = [];
+  const localContact = find(contacts, (contact) => (contact.address === address));
+  return localContact || false;
 };
 
 /**
@@ -622,6 +617,13 @@ export const getSelectedLocalContact = async (address) => {
 export const addNewLocalContact = async (address, nickname, color) => {
   let contacts = await getLocalContacts();
   if (!contacts) contacts = [];
+
+  for (let i = 0; i < contacts.length; i++) {
+    if (contacts[i].address === address) {
+      contacts.splice(i, 1);
+      i--;
+    }
+  }
 
   contacts.push({
     address,
