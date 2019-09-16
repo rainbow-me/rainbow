@@ -598,9 +598,8 @@ export const setAppStoreReviewRequestCount = async (newCount) => {
 export const getLocalContacts = async () => {
   try {
     const localContacts = await getLocal('localContacts');
-    return localContacts ? localContacts.data : null;
-  }
-  catch {
+    return localContacts ? localContacts.data : [];
+  } catch {
     return [];
   }
 };
@@ -657,7 +656,7 @@ export const addNewLocalContact = async (address, nickname, color) => {
       newContact = removeFirstEmojiFromString(newContact);
       return newContact;
     }],
-    ['desc']
+    ['desc'],
   );
   await saveLocal('localContacts', { data: sortedContacts });
 };

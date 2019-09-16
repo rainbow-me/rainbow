@@ -2,14 +2,14 @@ import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import styled from 'styled-components/primitives';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { TextInput, Clipboard } from 'react-native';
 import { Row } from '../layout';
 import { colors, fonts } from '../../styles';
 import { Label } from '../text';
 import { isValidAddress } from '../../helpers/validators';
 import { isHexString } from '../../handlers/web3';
-import { abbreviations, addressUtils, isNewValueForPath } from '../../utils';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { TextInput, Clipboard } from 'react-native';
+import { abbreviations, addressUtils } from '../../utils';
 
 const AddressInput = styled(TextInput)`
   flex-grow: 1;
@@ -40,23 +40,23 @@ export default class AddressField extends PureComponent {
   static propTypes = {
     address: PropTypes.string,
     autoFocus: PropTypes.bool,
-    onChange: PropTypes.func.isRequired,
     contacts: PropTypes.array,
     currentContact: PropTypes.object,
+    onChange: PropTypes.func.isRequired,
   }
 
   state = {
+    address: '',
     currentContact: false,
     inputValue: '',
-    address: '',
     isValid: false,
   }
 
   shouldComponentUpdate(props, state) {
-    if (state.inputValue == this.state.inputValue && 
-      !(this.props.currentContact.nickname !== props.currentContact.nickname) && 
-      !(this.props.address && !this.state.address) &&
-      this.state.isValid == state.isValid) {
+    if (state.inputValue === this.state.inputValue
+      && !(this.props.currentContact.nickname !== props.currentContact.nickname)
+      && !(this.props.address && !this.state.address)
+      && this.state.isValid === state.isValid) {
       return false;
     }
     return true;
@@ -64,16 +64,16 @@ export default class AddressField extends PureComponent {
 
   componentDidUpdate(props) {
     if (this.props.currentContact.nickname !== props.currentContact.nickname) {
-      this.setState({ 
+      this.setState({
+        address: this.props.address,
         currentContact: this.props.currentContact,
         inputValue: this.props.currentContact.nickname ? this.props.currentContact.nickname : this.props.address,
-        address: this.props.address,
         isValid: true,
       });
     } else if (this.props.address && !this.state.address) {
       this.setState({
-        inputValue: this.props.currentContact.nickname ? this.props.currentContact.nickname : this.props.address,
         address: this.props.address,
+        inputValue: this.props.currentContact.nickname ? this.props.currentContact.nickname : this.props.address,
         isValid: true,
       });
     }
@@ -99,7 +99,7 @@ export default class AddressField extends PureComponent {
 
   checkClipboard = async (address) => {
     const clipboard = await Clipboard.getString();
-    if (abbreviations.address(address, 4, 10) == clipboard) {
+    if (abbreviations.address(address, 4, 10) === clipboard) {
       Clipboard.setString(address);
     }
   }
@@ -111,7 +111,7 @@ export default class AddressField extends PureComponent {
   render() {
     const { autoFocus, ...props } = this.props;
     const { inputValue, isValid } = this.state;
-    
+
     return (
       <Row flex={1}>
         <AddressInput
@@ -126,7 +126,7 @@ export default class AddressField extends PureComponent {
           onChangeText={this.onChangeText}
           selectTextOnFocus={true}
           value={formatValue(inputValue)}
-          onBlur={this.onBlur}    
+          onBlur={this.onBlur}
         />
         {!inputValue && (
           <Placeholder>
