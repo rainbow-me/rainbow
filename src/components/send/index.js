@@ -5,3 +5,4 @@ export { default as SendEmptyState } from './SendEmptyState';
 export { default as SendHeader } from './SendHeader';
 export { default as SendTransactionSpeed } from './SendTransactionSpeed';
 export { default as SendAssetFormField } from './SendAssetFormField';
+export { default as SendContactList } from './SendContactList';

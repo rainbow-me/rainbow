@@ -590,9 +590,14 @@ export const setAppStoreReviewRequestCount = async (newCount) => {
  * @return {Table}
  */
 export const getLocalContacts = async () => {
-  const localContacts = await getLocal('localContacts');
-  console.log(localContacts.data);
-  return localContacts ? localContacts.data : null;
+  try {
+    const localContacts = await getLocal('localContacts');
+    console.log(localContacts.data);
+    return localContacts ? localContacts.data : null;
+  }
+  catch {
+    return [];
+  }
 };
 
 /**

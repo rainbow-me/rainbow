@@ -15,10 +15,11 @@ import {
   SendAssetForm,
   SendAssetList,
   SendButton,
-  SendEmptyState,
+  SendContactList,
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
+import { getLocalContacts } from '../handlers/commonStorage';
 import {
   withAccountData,
   withAccountSettings,
@@ -65,17 +66,23 @@ class SendSheet extends Component {
     isValidAddress: false,
   }
 
-  state = {
-    isAuthorizing: false,
+  constructor(args) {
+    super(args);
+    this.state = {
+      isAuthorizing: false,
+      contacts: ["ads"],
+    }
   }
 
-  componentDidMount() {
+  componentDidMount = async () => {
     const { navigation, sendUpdateRecipient } = this.props;
     const address = get(navigation, 'state.params.address');
 
     if (address) {
       sendUpdateRecipient(address);
     }
+    const contacts = await getLocalContacts();
+    this.setState({ contacts: contacts });
   }
 
   componentDidUpdate(prevProps) {
@@ -209,7 +216,7 @@ class SendSheet extends Component {
               onChangeAddressInput={sendUpdateRecipient}
               recipient={recipient}
             />
-            {showEmptyState && <SendEmptyState onPressPaste={sendUpdateRecipient} />}
+            {showEmptyState && <SendContactList allAssets={this.state.contacts} />}
             {showAssetList && (
               <SendAssetList
                 allAssets={allAssets}
