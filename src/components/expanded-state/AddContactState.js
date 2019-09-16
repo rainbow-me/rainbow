@@ -1,11 +1,10 @@
-import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {
   InteractionManager,
   KeyboardAvoidingView,
   View,
-  Keyboard
+  Keyboard,
 } from 'react-native';
 import {
   compose,
@@ -13,28 +12,26 @@ import {
   withHandlers,
   withProps,
 } from 'recompact';
-import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
+import GraphemeSplitter from 'grapheme-splitter';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { Text } from 'react-primitives';
+import styled from 'styled-components/primitives';
+import { AssetPanel } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
 import { withAccountData, withAccountSettings } from '../../hoc';
-import { ethereumUtils, deviceUtils } from '../../utils';
-import styled from 'styled-components/primitives';
 import { Input } from '../inputs';
 import { colors, fonts } from '../../styles';
-import { Button } from '../buttons';
-import { Monospace, TruncatedAddress } from '../text';
-import { Text } from 'react-primitives';
-import { abbreviations } from '../../utils';
-import { CancelButton } from '../buttons';
+import { Button, CancelButton } from '../buttons';
+import { TruncatedAddress } from '../text';
+import { abbreviations, deviceUtils } from '../../utils';
+
 import {
   addNewLocalContact,
   deleteLocalContact,
 } from '../../handlers/commonStorage';
 import { ButtonPressAnimation } from '../animations';
 import CopyTooltip from '../CopyTooltip';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { Alert } from '../alerts';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
-import GraphemeSplitter from 'grapheme-splitter';
 
 const TopMenu = styled(View)`
   justify-content: center;
@@ -67,11 +64,11 @@ const FirstLetter = styled(Text)`
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
+  color: colors.blueGreyDark,
   firstSectionLength: abbreviations.defaultNumCharsPerSection,
   size: 'lmedium',
   truncationLength: 4,
   weight: 'regular',
-  color: colors.blueGreyDark,
 })`
   opacity: 0.6;
   width: 100%;
@@ -102,15 +99,15 @@ class AddContactState extends React.PureComponent {
     super(props);
 
     this.state = {
-      value: "",
       color: 0,
+      value: '',
     };
   }
 
   componentDidMount = () => {
-    let newState = {
+    const newState = {
       color: this.props.color,
-      value: "",
+      value: '',
     };
     if (this.props.contact.nickname) {
       newState.value = this.props.contact.nickname;

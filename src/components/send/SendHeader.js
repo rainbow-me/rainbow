@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import { compose } from 'recompact';
 import styled from 'styled-components/primitives';
+import { Keyboard, Clipboard } from 'react-native';
+import { withNavigation } from 'react-navigation';
 import Divider from '../Divider';
 import { AddressField } from '../fields';
 import { Icon } from '../icons';
@@ -9,8 +11,8 @@ import { Row } from '../layout';
 import { Label } from '../text';
 import { colors, padding } from '../../styles';
 import { PasteAddressButton, AddContactButton } from '../buttons';
-import { Text, Keyboard } from 'react-native';
-import { withNavigation } from 'react-navigation';
+import { showActionSheetWithOptions } from '../../utils/actionsheet';
+import { deleteLocalContact } from '../../handlers/commonStorage';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
   ${padding(19, 15)}
@@ -18,22 +20,24 @@ const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
   overflow: hidden;
   width: 100%;
 `;
-const Nickname = styled(Text)`
-  background-color: ${colors.white};
-  overflow: hidden;
-  width: 76.5%;
-  margin-right: -20px;
-`;
 
-const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddress, contacts, navigation, onUpdateContacts }) => {
+const SendHeader = ({
+  onChangeAddressInput,
+  recipient,
+  onPressPaste,
+  isValidAddress,
+  contacts,
+  navigation,
+  onUpdateContacts,
+}) => {
   let contact = {
-    nickname: "",
+    address: '',
     color: 0,
-    address: "",
-  }
+    nickname: '',
+  };
   if (contacts && contacts.length > 0) {
     for (let i = 0; i < contacts.length; i++) {
-      if (recipient == contacts[i].address) {
+      if (recipient === contacts[i].address) {
         contact = contacts[i];
       }
     }
@@ -58,31 +62,49 @@ const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddr
           name={contact.nickname}
           contacts={contacts}
         />
-        {isValidAddress ? contact.nickname.length > 0 ?
-          <AddContactButton edit onPress={() => {
-            Keyboard.dismiss();
-            navigation.navigate('ExpandedAssetScreen', {
-              address: recipient,
-              color: contact.color,
-              asset: [],
-              contact: contact,
-              type: 'contact',
-              onCloseModal: onUpdateContacts,
+        {isValidAddress && contact.nickname.length > 0
+          && <AddContactButton edit onPress={() => {
+            showActionSheetWithOptions({
+              cancelButtonIndex: 3,
+              destructiveButtonIndex: 2,
+              options: ['Copy Address', 'Edit Contact', 'Delete Contact', 'Cancel'],
+            }, async (buttonIndex) => {
+              if (buttonIndex === 0) {
+                Clipboard.setString(recipient);
+              }
+              if (buttonIndex === 1) {
+                Keyboard.dismiss();
+                navigation.navigate('ExpandedAssetScreen', {
+                  address: recipient,
+                  asset: [],
+                  color: contact.color,
+                  contact,
+                  onCloseModal: onUpdateContacts,
+                  type: 'contact',
+                });
+              }
+              if (buttonIndex === 2) {
+                await deleteLocalContact(recipient);
+                onUpdateContacts();
+              }
             });
-          }} /> :
-          <AddContactButton onPress={() => {
+          }} />
+        }
+        {isValidAddress && contact.nickname.length === 0
+          && <AddContactButton onPress={() => {
             const contactColor = Math.floor(Math.random() * colors.avatarColor.length);
             Keyboard.dismiss();
             navigation.navigate('ExpandedAssetScreen', {
               address: recipient,
-              color: contactColor,
               asset: [],
+              color: contactColor,
               contact: false,
-              type: 'contact',
               onCloseModal: onUpdateContacts,
+              type: 'contact',
             });
-          }} /> :
-          <PasteAddressButton onPress={onPressPaste} />}
+          }} />
+        }
+        {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
       <Divider
         color={colors.alpha(colors.blueGreyLight, 0.05)}
@@ -90,12 +112,16 @@ const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddr
         inset={false}
       />
     </Fragment>
-  )
+  );
 };
 
 SendHeader.propTypes = {
+  contacts: PropTypes.array,
+  isValidAddress: PropTypes.bool,
+  navigation: PropTypes.any,
   onChangeAddressInput: PropTypes.func,
   onPressPaste: PropTypes.func,
+  onUpdateContacts: PropTypes.func,
   recipient: PropTypes.string,
 };
 
