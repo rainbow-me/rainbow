@@ -131,6 +131,7 @@ class AddContactState extends React.PureComponent {
       value = value.substring(1);
     }
     this.setState({ value });
+    this.props.onUnmountModal(value, this.state.color, true);
   }
 
   addContact = async () => {
@@ -141,10 +142,11 @@ class AddContactState extends React.PureComponent {
     }
   }
 
-  onChangeColor = () => {
+  onChangeColor = async () => {
     let newColor = this.state.color;
     newColor = ++newColor > colors.avatarColor.length - 1 ? 0 : newColor++;
     this.setState({ color: newColor });
+    this.props.onUnmountModal(this.state.value, newColor, true);
   }
 
   onDeleteContact = () => {
@@ -154,6 +156,7 @@ class AddContactState extends React.PureComponent {
       options: [`Delete Contact`, 'Cancel'],
     }, async (buttonIndex) => {
       if (buttonIndex === 0) {
+        this.props.onUnmountModal("", 0, false);
         await deleteLocalContact(this.props.address);
         this.props.onCloseModal();
         this.props.navigation.goBack();
@@ -212,7 +215,11 @@ class AddContactState extends React.PureComponent {
                   {!this.props.contact ?
                     <CancelButton
                       style={{ paddingTop: 11 }}
-                      onPress={() => { this.props.onCloseModal(); this.props.navigation.goBack() }}
+                      onPress={() => { 
+                        this.props.onUnmountModal("", 0, false);
+                        this.props.onCloseModal(); 
+                        this.props.navigation.goBack() 
+                      }}
                       text="Cancel"
                     /> :
                     <CancelButton
