@@ -31,13 +31,14 @@ const PlaceholderText = styled(Label)`
 `;
 
 const HeaderNameText = styled(Label)`
-  margin-top: 0.5px;
+  margin-top: -0.5px;
   opacity: 1;
   background-color: white;
   z-index: 100;
   width: 300px;
   color: ${colors.appleBlue};
-  height: 40px;
+  height: 22px;
+  line-height: 23px;
 `;
 
 const formatValue = value => (

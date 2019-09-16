@@ -21,10 +21,8 @@ const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
 const Nickname = styled(Text)`
   background-color: ${colors.white};
   overflow: hidden;
-  height: 45px;
   width: 76.5%;
   margin-right: -20px;
-  line-height: 45px;
 `;
 
 const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddress, contacts, navigation, onUpdateContacts }) => {
