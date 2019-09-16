@@ -597,8 +597,17 @@ export const getLocalContacts = async () => {
 
 /**
  * @desc get local contacts
+ * @return {Number}
+ */
+export const getNumberOfLocalContacts = async () => {
+  const contacts = await getLocalContacts();
+  return contacts.length;
+};
+
+/**
+ * @desc get local contacts
  * @param  {String}   [address]
- * @return {True|False}
+ * @return {Object}
  */
 export const getSelectedLocalContact = async (address) => {
   let contacts = await getLocalContacts();
@@ -611,7 +620,7 @@ export const getSelectedLocalContact = async (address) => {
  * @desc add new contact to the local contacts
  * @param  {String}   [address]
  * @param  {String}   [nickname]
- * @param  {String}   [color]
+ * @param  {Number}   [color]
  * @return {Void}
  */
 export const addNewLocalContact = async (address, nickname, color) => {

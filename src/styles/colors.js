@@ -41,17 +41,17 @@ const base = {
   white: '#ffffff', // '255, 255, 255'
 };
 
-const avatarColor = {
-  avatar1: '#ff494a', // '255, 73, 74'
-  avatar2: '#02d3ff', // '2, 211, 255'
-  avatar3: '#fb60c4', // '251, 96, 196'
-  avatar4: '#3f6aff', // '63, 106, 255'
-  avatar5: '#fada3d', // '250, 218, 61'
-  avatar6: '#b140ff', // '177, 64, 255'
-  avatar7: '#40ebc1', // '64, 235, 193'
-  avatar8: '#f46e38', // '244, 110, 56'
-  avatar9: '#6d7e8f', // '109, 126, 143'
-}
+const avatarColor = [
+  '#ff494a', // '255, 73, 74'
+  '#02d3ff', // '2, 211, 255'
+  '#fb60c4', // '251, 96, 196'
+  '#3f6aff', // '63, 106, 255'
+  '#fada3d', // '250, 218, 61'
+  '#b140ff', // '177, 64, 255'
+  '#40ebc1', // '64, 235, 193'
+  '#f46e38', // '244, 110, 56'
+  '#6d7e8f', // '109, 126, 143'
+]
 
 const assetIcon = {
   blue: '#7dabf0', // '125, 171, 240'
@@ -112,8 +112,8 @@ const colors = {
   getTextColorForBackground,
   isColorLight,
   sendScreen,
+  avatarColor,
   ...base,
-  ...avatarColor,
   ...transparent,
   ...vendor,
 };

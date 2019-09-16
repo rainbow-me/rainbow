@@ -21,7 +21,7 @@ import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 import { withNavigation } from 'react-navigation';
 import { abbreviations } from '../../utils';
-import { getSelectedLocalContact } from '../../handlers/commonStorage';
+import { getSelectedLocalContact, getNumberOfLocalContacts } from '../../handlers/commonStorage';
 
 // XXX after rebase, not sure if still needed
 const containerStyles = css`
@@ -132,10 +132,15 @@ export default compose(
 
       const contactAddressNumber = item.status === "sent" ? item.to : item.from;
       const contact = await getSelectedLocalContact(contactAddressNumber);
+      const contactsAmount = await getNumberOfLocalContacts();
+      let contactColor = 0;
+
       if (contact) {
         headerInfo.address = contact.nickname;
+        contactColor = contact.color;
       } else {
         headerInfo.address = abbreviations.address(contactAddressNumber, 4, 10);
+        contactColor = contactsAmount % 8;
       }
 
       if (hash) {
@@ -146,6 +151,8 @@ export default compose(
         }, (buttonIndex) => {
           if (buttonIndex === 0) {
             navigation.navigate('ExpandedAssetScreen', {
+              address: contactAddressNumber,
+              color: contactColor,
               asset: item,
               contact: contact,
               type: 'contact',
