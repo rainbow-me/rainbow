@@ -27,11 +27,19 @@ const Nickname = styled(Text)`
   line-height: 45px;
 `;
 
-const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddress, contacts, navigation }) => {
-  let headerName = "";
-  for ( let i = 0; i < contacts.length; i++ ) {
-    if(recipient == contacts[i].address){
-      headerName = contacts[i].nickname;
+const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddress, contacts, navigation, onUpdateContacts }) => {
+  let contactColor = 0;
+  let contact = {
+    nickname: "",
+    color: 0,
+    address: "",
+  }
+
+  if( contacts ) {
+    for ( let i = 0; i < contacts.length; i++ ) {
+      if(recipient == contacts[i].address){
+        contact = contacts[i];
+      }
     }
   }
 
@@ -50,10 +58,19 @@ const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddr
           address={recipient}
           autoFocus
           onChange={onChangeAddressInput}
-          headerName={headerName}
+          headerName={contact.nickname}
           />
-        {isValidAddress ? headerName.length > 0 ? 
-        null : 
+        {isValidAddress ? contact.nickname.length > 0 ?
+        <AddContactButton edit onPress={() => {
+          navigation.navigate('ExpandedAssetScreen', {
+            address: recipient,
+            color: contact.color,
+            asset: [],
+            contact: contact,
+            type: 'contact',
+            onCloseModal: onUpdateContacts,
+          });
+        }}/> :
         <AddContactButton onPress={() => {
           navigation.navigate('ExpandedAssetScreen', {
             address: recipient,
@@ -62,7 +79,7 @@ const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddr
             contact: false,
             type: 'contact',
           });
-        }}/>  : 
+        }}/>  :
         <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
       <Divider
@@ -76,8 +93,8 @@ const SendHeader = ({ onChangeAddressInput, recipient, onPressPaste, isValidAddr
 
 SendHeader.propTypes = {
   onChangeAddressInput: PropTypes.func,
-  recipient: PropTypes.string,
   onPressPaste: PropTypes.func,
+  recipient: PropTypes.string,
 };
 
 export default compose(withNavigation)(SendHeader);
