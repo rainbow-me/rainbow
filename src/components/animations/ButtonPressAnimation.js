@@ -7,7 +7,13 @@ import {
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { InteractionManager } from 'react-native';
-import { createNativeWrapper, PureNativeButton, State } from 'react-native-gesture-handler';
+import {
+  createNativeWrapper,
+  LongPressGestureHandler,
+  PureNativeButton,
+  State,
+  TapGestureHandler,
+} from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing } from 'react-native-reanimated';
 import {
@@ -70,6 +76,12 @@ const AnimatedRawButton = createNativeWrapper(
   },
 );
 
+const AnimatedRawButtonPropBlacklist = [
+  'onLongPress',
+  'onPress',
+  'onPressStart',
+];
+
 const NOOP = () => undefined;
 
 const HapticFeedbackTypes = {
@@ -94,6 +106,7 @@ export default class ButtonPressAnimation extends PureComponent {
     exclusive: PropTypes.bool,
     hapticType: PropTypes.oneOf(Object.keys(HapticFeedbackTypes)),
     isInteraction: PropTypes.bool,
+    onLongPress: PropTypes.func,
     onPress: PropTypes.func,
     onPressStart: PropTypes.func,
     scaleTo: PropTypes.number,
@@ -199,7 +212,7 @@ export default class ButtonPressAnimation extends PureComponent {
       : action();
   }
 
-  render = () => {
+  tapGesture = () => {
     const {
       activeOpacity,
       children,
@@ -240,7 +253,7 @@ export default class ButtonPressAnimation extends PureComponent {
     return (
       <Fragment>
         <AnimatedRawButton
-          {...omit(props, 'onPress')}
+          {...omit(props, AnimatedRawButtonPropBlacklist)}
           backgroundColor={colors.transparent}
           enabled={!disabled}
           exclusive={exclusive}
@@ -310,5 +323,34 @@ export default class ButtonPressAnimation extends PureComponent {
         />
       </Fragment>
     );
+  }
+
+  longPressGesture = () => {
+    const {
+      onLongPress,
+    } = this.props;
+
+    return (
+      <LongPressGestureHandler
+        onHandlerStateChange={({ nativeEvent }) => {
+          if (nativeEvent.state === State.ACTIVE) {
+            if (onLongPress) {
+              onLongPress();
+            }
+          }
+        }}
+        minDurationMs={800}>
+        {this.tapGesture()}
+      </LongPressGestureHandler>
+    );
+  }
+
+  render = () => {
+    const { onLongPress } = this.props;
+
+    if (onLongPress) {
+      return this.longPressGesture();
+    }
+    return this.tapGesture();
   }
 }

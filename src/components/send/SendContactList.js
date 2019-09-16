@@ -1,35 +1,28 @@
-import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { deviceUtils } from '../../utils';
-import { FlyInAnimation } from '../animations';
-import { View, Text } from 'react-primitives';
-import { RecyclerListView, LayoutProvider, DataProvider } from "recyclerlistview";
+import { RecyclerListView, LayoutProvider, DataProvider } from 'recyclerlistview';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import { colors, fonts } from '../../styles';
-import { abbreviations } from '../../utils';
-import { TruncatedAddress } from '../text';
-import { ButtonPressAnimation } from '../animations';
-import { Icon } from '../icons';
-import { Centered, Column, Row } from '../layout';
-import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { RectButton } from 'react-native-gesture-handler';
-import { Animated, LayoutAnimation } from 'react-native';
-import {
-  getLocalContacts,
-  deleteLocalContact,
-} from '../../handlers/commonStorage';
+import { Animated } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { compose } from 'recompact';
-import { Alert } from '../alerts';
-import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import GraphemeSplitter from 'grapheme-splitter';
 import FastImage from 'react-native-fast-image';
+import { View, Text } from 'react-primitives';
+import { abbreviations, deviceUtils } from '../../utils';
+import { colors, fonts } from '../../styles';
+import { TruncatedAddress } from '../text';
+import { ButtonPressAnimation, FlyInAnimation } from '../animations';
+import { Icon } from '../icons';
+import { Centered, Column } from '../layout';
+import { sheetVerticalOffset } from '../../navigation/transitions/effects';
+import {
+  deleteLocalContact,
+} from '../../handlers/commonStorage';
+import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import EditIcon from '../../assets/swipeToEdit.png';
 import DeleteIcon from '../../assets/swipeToDelete.png';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
-import { ListFooter } from '../list';
 
 const rowHeight = 62;
 
@@ -72,11 +65,11 @@ const TopRow = styled(Text)`
 
 const BottomRow = styled(TruncatedAddress).attrs({
   align: 'left',
+  color: colors.blueGreyDark,
   firstSectionLength: abbreviations.defaultNumCharsPerSection,
   size: 'smedium',
   truncationLength: 4,
   weight: 'regular',
-  color: colors.blueGreyDark,
 })`
   font-family: ${fonts.family.SFProText};
   opacity: 0.4;
@@ -109,6 +102,10 @@ class Avatar extends React.PureComponent {
 
   onPress = () => {
     this.props.onPress(this.props.address);
+  }
+
+  onLongPress = () => {
+    this._swipeableRow.openRight();
   }
 
   renderRightAction = (text, x, progress, onPress) => {
@@ -194,7 +191,7 @@ class Avatar extends React.PureComponent {
         rightThreshold={0}
         renderRightActions={this.renderRightActions}
         onSwipeableWillOpen={() => this.props.onTransitionEnd(item.address)} >
-        <ButtonPressAnimation onPressStart={() => this.props.onTouch(item.address)} onPress={this.onPress} scaleTo={0.96}>
+        <ButtonPressAnimation onPressStart={() => this.props.onTouch(item.address)} onLongPress={this.onLongPress} onPress={this.onPress} scaleTo={0.96}>
           <AvatarWrapper>
             <AvatarCircle style={{ backgroundColor: colors.avatarColor[item.color] }} >
               <FirstLetter>
