@@ -24,6 +24,7 @@ import {
   addNewLocalContact,
   deleteLocalContact,
 } from '../../handlers/commonStorage';
+import { ButtonPressAnimation } from '../animations';
 
 const TopMenu = styled(View)`
   justify-content: center;
@@ -85,12 +86,13 @@ class AddContactState extends React.PureComponent {
 
     this.state = {
       value: "",
+      color: 0,
     };
   }
 
   componentDidMount = () => {
     if (this.props.contact.nickname) {
-      this.setState({ value: this.props.contact.nickname });
+      this.setState({ value: this.props.contact.nickname, color: this.props.contact.color });
     }
   }
 
@@ -110,8 +112,15 @@ class AddContactState extends React.PureComponent {
   }
 
   addContact = async () => {
-    await addNewLocalContact(this.props.address, this.state.value, this.props.color);
+    await addNewLocalContact(this.props.address, this.state.value, this.state.color);
+    this.props.onCloseModal();
     this.props.navigation.goBack();
+  }
+
+  onChangeColor = () => {
+    let newColor = this.state.color;
+    newColor = ++newColor > colors.avatarColor.length - 1 ? 0 : newColor++;
+    this.setState({ color: newColor });
   }
 
   render() {
@@ -122,11 +131,13 @@ class AddContactState extends React.PureComponent {
         <Container>
           <AssetPanel>
             <TopMenu>
-              <NameCircle style={{ backgroundColor: colors.avatarColor[this.props.color] }}>
-                <FirstLetter>
-                  {this.state.value.length > 0 && this.state.value[0].toUpperCase()}
-                </FirstLetter>
-              </NameCircle>
+            <ButtonPressAnimation onPress={this.onChangeColor} scaleTo={0.96}>
+                <NameCircle style={{ backgroundColor: colors.avatarColor[this.state.color] }}>
+                  <FirstLetter>
+                    {this.state.value.length > 0 && this.state.value[0].toUpperCase()}
+                  </FirstLetter>
+                </NameCircle>
+              </ButtonPressAnimation>
               <Input
                 style={{ fontWeight: 600 }}
                 autoFocus={true}
