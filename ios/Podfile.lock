@@ -59,9 +59,6 @@ PODS:
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   - Protobuf (3.9.0)
   - React (0.60.5):
     - React-Core (= 0.60.5)
@@ -108,17 +105,6 @@ PODS:
     - React-cxxreact (= 0.60.5)
     - React-jsi (= 0.60.5)
   - React-jsinspector (0.60.5)
-=======
-  - Protobuf (3.7.0)
-=======
-  - Protobuf (3.9.0)
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
-  - Protobuf (3.9.0)
->>>>>>> 011e4f4a... cleanup after merging decimal-logic
-  - React (0.59.9):
-    - React/Core (= 0.59.9)
->>>>>>> 730537c6... catching up with latest mike-swap-ui changes
   - react-native-blur (0.8.0):
     - React
   - react-native-camera (2.11.2):
@@ -132,15 +118,7 @@ PODS:
   - react-native-fast-image (6.1.1):
     - React
     - SDWebImage (~> 5.0)
-<<<<<<< HEAD
-<<<<<<< HEAD
   - react-native-netinfo (4.2.1):
-=======
-  - react-native-netinfo (4.1.5):
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
-  - react-native-netinfo (4.2.1):
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
     - React
   - react-native-version-number (0.3.6):
     - React
@@ -186,35 +164,10 @@ PODS:
     - React
   - RNStoreReview (0.1.5):
     - React
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   - SDWebImage (5.1.1):
     - SDWebImage/Core (= 5.1.1)
   - SDWebImage/Core (5.1.1)
   - yoga (0.60.5.React)
-=======
-  - SDWebImage (5.0.2):
-    - SDWebImage/Core (= 5.0.2)
-  - SDWebImage/Core (5.0.2)
-=======
-  - SDWebImage (5.1.0):
-    - SDWebImage/Core (= 5.1.0)
-  - SDWebImage/Core (5.1.0)
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
-  - SDWebImage (5.1.0):
-    - SDWebImage/Core (= 5.1.0)
-  - SDWebImage/Core (5.1.0)
->>>>>>> 011e4f4a... cleanup after merging decimal-logic
-=======
-  - SDWebImage (5.1.1):
-    - SDWebImage/Core (= 5.1.1)
-  - SDWebImage/Core (5.1.1)
->>>>>>> 8f2ed039... Create animated GasSpeedButton component
-  - yoga (0.59.9.React)
->>>>>>> 730537c6... catching up with latest mike-swap-ui changes
 
 DEPENDENCIES:
   - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
@@ -365,7 +318,6 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: f3f0657372592ecdfdfe2cac604a5a75758376a6
   FirebaseMessaging: 6894b8fe0a0cf26c3b13dad729f1131654ae0bdb
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
-<<<<<<< HEAD
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
@@ -379,27 +331,10 @@ SPEC CHECKSUMS:
   React-jsi: 4d8c9efb6312a9725b18d6fc818ffc103f60fec2
   React-jsiexecutor: 90ad2f9db09513fc763bc757fdc3c4ff8bde2a30
   React-jsinspector: e08662d1bf5b129a3d556eb9ea343a3f40353ae4
-=======
-  Folly: de497beb10f102453a1afa9edbf8cf8a251890de
-  glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
-  GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
-  libwebp: 057912d6d0abfb6357d8bb05c0ea470301f5d61e
-  nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
-  Protobuf: 1097ca58584c8d9be81bfbf2c5ff5975648dd87a
-  React: a86b92f00edbe1873a63e4a212c29b7a7ad5224f
->>>>>>> 730537c6... catching up with latest mike-swap-ui changes
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: b5e6e34586ca6f588b0c736dcabfe0aad5ce2f3e
   react-native-fast-image: fdfc612dba58fd73136cf5efdaeb8cfcad7f63b2
-<<<<<<< HEAD
-<<<<<<< HEAD
   react-native-netinfo: aeb1752abb78a9c15cdcea067a6c95d596dcfc45
-=======
-  react-native-netinfo: 0e563248a4b9a99c33ec29bd03c2d50767db22a6
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
-  react-native-netinfo: aeb1752abb78a9c15cdcea067a6c95d596dcfc45
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   React-RCTActionSheet: b0f1ea83f4bf75fb966eae9bfc47b78c8d3efd90
   React-RCTAnimation: 359ba1b5690b1e87cc173558a78e82d35919333e
@@ -420,25 +355,8 @@ SPEC CHECKSUMS:
   RNReanimated: da57ffa32f04cebe2107da0b281999a01c0d1ecc
   RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   SDWebImage: 96d7f03415ccb28d299d765f93557ff8a617abd8
   yoga: 312528f5bbbba37b4dcea5ef00e8b4033fdd9411
-=======
-  SDWebImage: 6764b5fa0f73c203728052955dbefa2bf1f33282
-=======
-  SDWebImage: fb387001955223213dde14bc08c8b73f371f8d8f
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
-  SDWebImage: fb387001955223213dde14bc08c8b73f371f8d8f
->>>>>>> 011e4f4a... cleanup after merging decimal-logic
-=======
-  SDWebImage: 96d7f03415ccb28d299d765f93557ff8a617abd8
->>>>>>> 8f2ed039... Create animated GasSpeedButton component
-  yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
->>>>>>> 730537c6... catching up with latest mike-swap-ui changes
 
 PODFILE CHECKSUM: c393ff0cebe4b167e23b61fa2c324eace3cbf57e
 

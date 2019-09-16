@@ -17,6 +17,8 @@ import ExchangeInput from './ExchangeInput';
 import ExchangeNativeField from './ExchangeNativeField';
 import UnlockAssetButton from './UnlockAssetButton';
 
+const BottomRowHeight = 32;
+
 export default class ExchangeInputField extends Component {
   static propTypes = {
     inputAmount: PropTypes.string,
@@ -123,12 +125,12 @@ export default class ExchangeInputField extends Component {
         </Row>
         <Row
           align="center"
-          height={32}
+          height={BottomRowHeight}
           justify="space-between"
           paddingLeft={this.padding}
         >
           <ExchangeNativeField
-            height={32}
+            height={BottomRowHeight}
             nativeAmount={nativeAmount}
             nativeCurrency={nativeCurrency}
             nativeFieldRef={nativeFieldRef}
@@ -142,7 +144,7 @@ export default class ExchangeInputField extends Component {
             >
               <RowWithMargins
                 align="center"
-                height={32}
+                height={BottomRowHeight}
                 margin={3}
                 paddingHorizontal={this.padding}
               >

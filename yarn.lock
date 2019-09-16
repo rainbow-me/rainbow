@@ -233,23 +233,7 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 "@babel/parser@^7.0.0", "@babel/parser@^7.1.0", "@babel/parser@^7.4.3", "@babel/parser@^7.6.0":
-  version "7.6.0"
-  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.6.0.tgz#3e05d0647432a8326cb28d0de03895ae5a57f39b"
-  integrity sha512-+o2q111WEx4srBs7L9eJmcwi655eD8sXniLqMB93TBK9GrNzGrxDWSjiqz2hLU0Ha8MTXFIP0yd9fNdP+m43ZQ==
-=======
-"@babel/parser@^7.0.0", "@babel/parser@^7.1.0", "@babel/parser@^7.4.3":
-  version "7.5.5"
-  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.5.5.tgz#02f077ac8817d3df4a832ef59de67565e71cca4b"
-  integrity sha512-E5BN68cqR7dhKan1SfqgPGhQ178bkVKpXTPEXnFJBrEt8/DKRZlybmy+IgYLTeN7tp1R5Ccmbm2rBk17sHYU3g==
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
-
-"@babel/parser@^7.6.0":
-=======
-"@babel/parser@^7.0.0", "@babel/parser@^7.1.0", "@babel/parser@^7.4.3", "@babel/parser@^7.6.0":
->>>>>>> 8f2ed039... Create animated GasSpeedButton component
   version "7.6.0"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.6.0.tgz#3e05d0647432a8326cb28d0de03895ae5a57f39b"
   integrity sha512-+o2q111WEx4srBs7L9eJmcwi655eD8sXniLqMB93TBK9GrNzGrxDWSjiqz2hLU0Ha8MTXFIP0yd9fNdP+m43ZQ==
@@ -1012,11 +996,7 @@
   dependencies:
     prop-types "^15.5.10"
 
-<<<<<<< HEAD
 "@react-native-community/cli-platform-android@^2.6.0", "@react-native-community/cli-platform-android@^2.9.0":
-=======
-"@react-native-community/cli-platform-android@^2.8.3":
->>>>>>> 730537c6... catching up with latest mike-swap-ui changes
   version "2.9.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.9.0.tgz#28831e61ce565a2c7d1905852fce1eecfd33cb5e"
   integrity sha512-VEQs4Q6R5tnlYFrQIFoPEWjLc43whRHC9HeH+idbFymwDqysLVUffQbb9D6PJUj+C/AvrDhBhU6S3tDjGbSsag==
@@ -1029,11 +1009,7 @@
     slash "^3.0.0"
     xmldoc "^1.1.2"
 
-<<<<<<< HEAD
 "@react-native-community/cli-platform-ios@^2.4.1", "@react-native-community/cli-platform-ios@^2.9.0":
-=======
-"@react-native-community/cli-platform-ios@^2.8.3":
->>>>>>> 730537c6... catching up with latest mike-swap-ui changes
   version "2.9.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.9.0.tgz#21adb8ee813d6ca6fd9d4d9be63f92024f7e2fe7"
   integrity sha512-vg6EOamtFaaQ02FiWu+jzJTfeTJ0OVjJSAoR2rhJKNye6RgJLoQlfp0Hg3waF6XrO72a7afYZsPdKSlN3ewlHg==
@@ -1114,68 +1090,24 @@
   integrity sha512-EyJVSbarZkOPYq+zCZLx9apMcpwkX9HvH6R+6CeVL29q88kEFemnLO/IhmE4YX/0MfalsduI8eTi7fuQh/5VeA==
 
 "@react-native-community/netinfo@^4.1.4":
-<<<<<<< HEAD
-<<<<<<< HEAD
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-4.2.1.tgz#b6309f078da500807ef8afa4d659e56ccd14dee4"
   integrity sha512-kAnmYp8vXpZToPw8rgE7uO+MqmqHSR9VEDPkuZT0DnFMBJmIXCSD2NLAD28HGKVY/kujVWCknC/FuVWr5/A3uA==
 
-"@react-navigation/core@~3.5.0":
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-3.5.1.tgz#7a2339fca3496979305fb3a8ab88c2ca8d8c214d"
-  integrity sha512-q7NyhWVYOhVIWqL2GZKa6G78YarXaVTTtOlSDkvy4ZIggo40wZzamlnrJRvsaQX46gsgw45FAWb5SriHh8o7eA==
-=======
-  version "4.1.5"
-  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-4.1.5.tgz#4bb44842db6a1a18f00a0f061b0e3dcc638f67dd"
-  integrity sha512-lagdZr9UiVAccNXYfTEj+aUcPCx9ykbMe9puffeIyF3JsRuMmlu3BjHYx1klUHX7wNRmFNC8qVP0puxUt1sZ0A==
-=======
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-4.2.1.tgz#b6309f078da500807ef8afa4d659e56ccd14dee4"
-  integrity sha512-kAnmYp8vXpZToPw8rgE7uO+MqmqHSR9VEDPkuZT0DnFMBJmIXCSD2NLAD28HGKVY/kujVWCknC/FuVWr5/A3uA==
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
-
-<<<<<<< HEAD
-"@react-navigation/core@~3.5.0":
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-3.5.0.tgz#73d1a12448e2bd71855e0080b95a7f51ede0cd9e"
-  integrity sha512-NLm24lA51R8o8c+iFnwtN9elqRzm4OJ8f1qPBCUNIYW1sb8M5yCD53vRP0fRcPFpr/6Xzs2TJMsWnnebwFp0Rw==
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
 "@react-navigation/core@~3.4.1":
   version "3.4.2"
   resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-3.4.2.tgz#bec563e94fde40fbab3730cdc97f22afbb2a1498"
   integrity sha512-7G+iDzLSTeOUU4vVZeRZKJ+Bd7ds7ZxYNqZcB8i0KlBeQEQfR74Ounfu/p0KIEq2RiNnaE3QT7WVP3C87sebzw==
->>>>>>> 8e6e4f48... fix the react-navigation-stacks version to previous release for now
   dependencies:
     hoist-non-react-statics "^3.3.0"
     path-to-regexp "^1.7.0"
     query-string "^6.4.2"
     react-is "^16.8.6"
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 011e4f4a... cleanup after merging decimal-logic
-"@react-navigation/native@~3.6.1":
-  version "3.6.2"
-  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-3.6.2.tgz#3634697b6350cc5189657ae4551f2d52b57fbbf0"
-  integrity sha512-Cybeou6N82ZeRmgnGlu+wzlV3z5BZQR2dmYaNFV1TNLUGHqtvv8E7oNw9uYcz9Ox5LFbiX+FdNTn2d6ZPlK0kg==
-<<<<<<< HEAD
-=======
-"@react-navigation/native@~3.6.0":
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-3.6.0.tgz#dabf93382f75037c01dfdd2a03807e40b48a4d61"
-  integrity sha512-MmsEF4Gf3DD7rtZlbOLULQOBCxE2nGz6FdPYxtlEI+N/E2I5OrdxrTNAA7EGWsIiaJEapU4bp0a+tLjh/9PQpA==
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
->>>>>>> 011e4f4a... cleanup after merging decimal-logic
-=======
 "@react-navigation/native@~3.5.0":
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-3.5.0.tgz#f5d16e0845ac26d1147d1caa481f18a00740e7ae"
   integrity sha512-TmGOis++ejEXG3sqNJhCSKqB0/qLu3FQgDtO959qpqif36R/diR8SQwJqeSdofoEiK3CepdhFlTCeHdS1/+MsQ==
->>>>>>> 8e6e4f48... fix the react-navigation-stacks version to previous release for now
   dependencies:
     hoist-non-react-statics "^3.0.1"
     react-native-safe-area-view "^0.14.1"
@@ -1404,14 +1336,11 @@
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
 
 "@types/node@*":
-<<<<<<< HEAD
-<<<<<<< HEAD
   version "12.7.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.7.5.tgz#e19436e7f8e9b4601005d73673b6dc4784ffcc2f"
   integrity sha512-9fq4jZVhPNW8r+UYKnxF1e2HkDWOWKM5bC2/7c9wPV835I0aOrVbS/Hw/pWPk2uKrNXQqg9Z959Kz+IYDd5p3w==
 
 "@types/node@^10.3.2":
-<<<<<<< HEAD
   version "10.14.18"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.18.tgz#b7d45fc950e6ffd7edc685e890d13aa7b8535dce"
   integrity sha512-ryO3Q3++yZC/+b8j8BdKd/dn9JlzlHBPdm80656xwYUdmPkpTGTjkAdt6BByiNupGPE8w0FhBgvYy/fX9hRNGQ==
@@ -1420,42 +1349,6 @@
   version "8.10.54"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.54.tgz#1c88eb253ac1210f1a5876953fb70f7cc4928402"
   integrity sha512-kaYyLYf6ICn6/isAyD4K1MyWWd5Q3JgH6bnMN089LUx88+s4W8GvK9Q6JMBVu5vsFFp7pMdSxdKmlBXwH/VFRg==
-=======
-  version "10.14.16"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.16.tgz#4d690c96cbb7b2728afea0e260d680501b3da5cf"
-  integrity sha512-/opXIbfn0P+VLt+N8DE4l8Mn8rbhiJgabU96ZJ0p9mxOkIks5gh6RUnpHak7Yh0SFkyjO/ODbxsQQPV2bpMmyA==
-
-"@types/node@^8.0.7":
-  version "8.10.52"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.52.tgz#ef0ca1809994e20186090408b8cb7f2a6877d5f9"
-  integrity sha512-2RbW7WXeLex6RI+kQSxq6Ym0GiVcODeQ4Km7MnnTX5BHdOGQnqVa+s6AUmAW+OFYAJ8wv9QxvNZXm7/kBdGTVw==
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
-  version "12.7.4"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.7.4.tgz#64db61e0359eb5a8d99b55e05c729f130a678b04"
-  integrity sha512-W0+n1Y+gK/8G2P/piTkBBN38Qc5Q1ZSO6B5H3QmPCUewaiXOo2GCAWZ4ElZCcNhjJuBSUSLGFUJnmlCn5+nxOQ==
-=======
-  version "12.7.5"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.7.5.tgz#e19436e7f8e9b4601005d73673b6dc4784ffcc2f"
-  integrity sha512-9fq4jZVhPNW8r+UYKnxF1e2HkDWOWKM5bC2/7c9wPV835I0aOrVbS/Hw/pWPk2uKrNXQqg9Z959Kz+IYDd5p3w==
->>>>>>> 8f2ed039... Create animated GasSpeedButton component
-
-"@types/node@^10.3.2":
-  version "10.14.18"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.18.tgz#b7d45fc950e6ffd7edc685e890d13aa7b8535dce"
-  integrity sha512-ryO3Q3++yZC/+b8j8BdKd/dn9JlzlHBPdm80656xwYUdmPkpTGTjkAdt6BByiNupGPE8w0FhBgvYy/fX9hRNGQ==
-
-"@types/node@^8.0.7":
-<<<<<<< HEAD
-  version "8.10.53"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.53.tgz#5fa08eef810b08b2c03073e360b54f7bad899db1"
-  integrity sha512-aOmXdv1a1/vYUn1OT1CED8ftbkmmYbKhKGSyMDeJiidLvKRKvZUQOdXwG/wcNY7T1Qb0XTlVdiYjIq00U7pLrQ==
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
-=======
-  version "8.10.54"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.54.tgz#1c88eb253ac1210f1a5876953fb70f7cc4928402"
-  integrity sha512-kaYyLYf6ICn6/isAyD4K1MyWWd5Q3JgH6bnMN089LUx88+s4W8GvK9Q6JMBVu5vsFFp7pMdSxdKmlBXwH/VFRg==
->>>>>>> 8f2ed039... Create animated GasSpeedButton component
 
 "@types/q@^1.5.1":
   version "1.5.2"
@@ -1490,21 +1383,9 @@
     "@types/vfile-message" "*"
 
 "@types/yargs-parser@*":
-<<<<<<< HEAD
-<<<<<<< HEAD
   version "13.1.0"
   resolved "https://registry.yarnpkg.com/@types/yargs-parser/-/yargs-parser-13.1.0.tgz#c563aa192f39350a1d18da36c5a8da382bbd8228"
   integrity sha512-gCubfBUZ6KxzoibJ+SCUc/57Ms1jz5NjHe4+dI2krNmU5zCPAphyLJYyTOg06ueIyfj+SaCUqmzun7ImlxDcKg==
-=======
-  version "13.0.0"
-  resolved "https://registry.yarnpkg.com/@types/yargs-parser/-/yargs-parser-13.0.0.tgz#453743c5bbf9f1bed61d959baab5b06be029b2d0"
-  integrity sha512-wBlsw+8n21e6eTd4yVv8YD/E3xq0O6nNnJIquutAsFGE7EyMKz7W6RNT6BRu1SmdgmlCZ9tb0X+j+D6HGr8pZw==
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
-  version "13.1.0"
-  resolved "https://registry.yarnpkg.com/@types/yargs-parser/-/yargs-parser-13.1.0.tgz#c563aa192f39350a1d18da36c5a8da382bbd8228"
-  integrity sha512-gCubfBUZ6KxzoibJ+SCUc/57Ms1jz5NjHe4+dI2krNmU5zCPAphyLJYyTOg06ueIyfj+SaCUqmzun7ImlxDcKg==
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
 
 "@types/yargs@^13.0.0":
   version "13.0.2"
@@ -1560,9 +1441,6 @@
     ethers "^4.0.28"
     lodash.clonedeepwith "^4.5.0"
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 "@walletconnect/core@^1.0.0-beta.36":
   version "1.0.0-beta.36"
   resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.36.tgz#671f70f739d1d9857456e45060727548317fe86a"
@@ -1589,77 +1467,11 @@
   version "1.0.0-beta.36"
   resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-1.0.0-beta.36.tgz#34c9def70f9db1ffcdd8e5fc94d9ce30dc716b8a"
   integrity sha512-SlAqiWJLs/EG+eqxqWO/zOZRz06GYBKGlfK5OX203UjOl6Ps8WLN/D7l8llX97TdGzcGw5+b9Wq+kKuWR2HFQA==
-=======
-"@walletconnect/core@^1.0.0-beta.33":
-  version "1.0.0-beta.33"
-  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.33.tgz#ba8c4d1682c00630124cfacd8c3ac28a37737ffc"
-  integrity sha512-VnipTAEiVJx0fKR7kVKQ/KIaEDCFjIEF4wGSl73uuhp+YPBZSN0fXQ0/joF00dGUxVY6RiwmCQlmz5ZKpcGWYw==
-=======
-"@walletconnect/core@^1.0.0-beta.34":
-  version "1.0.0-beta.34"
-  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.34.tgz#76ad24610ba288a0a5f2ec146d15214fa9683261"
-  integrity sha512-Uu1biiWl/t/FzmHxqSK7Ij2s0tXjOF/0qV4IG4qzmfx4k2h1WR4luvF5oLTBMRsoFVSGF1M/FgYYllPEj1nfjQ==
->>>>>>> 011e4f4a... cleanup after merging decimal-logic
-=======
-"@walletconnect/core@^1.0.0-beta.35":
-  version "1.0.0-beta.35"
-  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-1.0.0-beta.35.tgz#47781b836966a1f7ef199c58e35482409a3cc3cf"
-  integrity sha512-VnS4exaqaNJQy6xc+HX+1psjmIjKimCir9xypbx4kMz1F8Tm8/m1bMv3h4c1Q7wyiZHsSTlMZmb64UuVhM2pqw==
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
-  dependencies:
-    "@walletconnect/types" "^1.0.0-beta.35"
-    "@walletconnect/utils" "^1.0.0-beta.35"
-
-"@walletconnect/react-native@^1.0.0-beta.29":
-  version "1.0.0-beta.35"
-  resolved "https://registry.yarnpkg.com/@walletconnect/react-native/-/react-native-1.0.0-beta.35.tgz#318d1d067cae5261755b502a3a5b27dd23c6a815"
-  integrity sha512-npRV1XicayiSMk84+he5JEASC5oFHkYsL2S9yuHfCVzctIGE6kIX0gpuBKUbzCxkve1yezIeaQOYfwVKlLRp5w==
-  dependencies:
-    "@walletconnect/core" "^1.0.0-beta.35"
-    "@walletconnect/types" "^1.0.0-beta.35"
-    "@walletconnect/utils" "^1.0.0-beta.35"
-
-"@walletconnect/types@^1.0.0-beta.35":
-  version "1.0.0-beta.35"
-  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.0.0-beta.35.tgz#02577da82a85361c68518350fe6139dee4a43445"
-  integrity sha512-xlcSt0ZdEkiYmCpuO6cleLk1MmjyMPCCT5o1/z0zcRV15uDxfb+N9J/S2uVZBoLtnBtUK1m+11sRF3KrIo9FgQ==
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-"@walletconnect/utils@^1.0.0-beta.33":
-  version "1.0.0-beta.33"
-  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-1.0.0-beta.33.tgz#59ff7edc74608398a341264bad781f24b4cf599f"
-  integrity sha512-BAKV+tVoN5QGoMDzF/JleO0s80wLoeJFAsw8/IG9QCSnHi4swZsin0Zk2TRYVb+gC/ZuDmMvwMHVkmVUqz7fOg==
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
-"@walletconnect/utils@^1.0.0-beta.34":
-  version "1.0.0-beta.34"
-  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-1.0.0-beta.34.tgz#af74d522826ecaff5d6cea85b960ba16b71a23d0"
-  integrity sha512-nGdcCaoL4UpSQptlxAdox5WdgGyvZms6kCu9m7TH4qxnL+nCkitQg13Y7m05o1RjzRPmf/4ukfqBrEWTz3heUQ==
->>>>>>> 011e4f4a... cleanup after merging decimal-logic
-=======
-"@walletconnect/utils@^1.0.0-beta.35":
-  version "1.0.0-beta.35"
-  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-1.0.0-beta.35.tgz#6c8c86cb7da9aa94f5d460cf81d1ef73ebf3a0fb"
-  integrity sha512-ru+IOU3vr9/BJvv3Vjgxnn0t5EW3zLzQinWBBR91GXvIfOCMn5uqhgtZ//pgVqaDi/EyHQXtUe4ZvPfqO5Zulw==
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
   dependencies:
     "@ethersproject/address" "^5.0.0-beta.125"
     "@ethersproject/bytes" "^5.0.0-beta.126"
     "@ethersproject/strings" "^5.0.0-beta.125"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     "@walletconnect/types" "^1.0.0-beta.36"
-=======
-    "@walletconnect/types" "^1.0.0-beta.33"
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
-    "@walletconnect/types" "^1.0.0-beta.34"
->>>>>>> 011e4f4a... cleanup after merging decimal-logic
-=======
-    "@walletconnect/types" "^1.0.0-beta.35"
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
     bignumber.js "^8.1.1"
 
 "@yarnpkg/lockfile@^1.0.0", "@yarnpkg/lockfile@^1.1.0":
@@ -2611,21 +2423,9 @@ buffer@^4.9.1:
     isarray "^1.0.0"
 
 buffer@^5.0.0:
-<<<<<<< HEAD
-<<<<<<< HEAD
   version "5.4.3"
   resolved "https://registry.yarnpkg.com/buffer/-/buffer-5.4.3.tgz#3fbc9c69eb713d323e3fc1a895eee0710c072115"
   integrity sha512-zvj65TkFeIt3i6aj5bIvJDzjjQQGs4o/sNoezg1F1kYap9Nu2jcUdpwzRSJTHMMzG0H7bZkn4rNQpImhuxWX2A==
-=======
-  version "5.4.2"
-  resolved "https://registry.yarnpkg.com/buffer/-/buffer-5.4.2.tgz#2012872776206182480eccb2c0fba5f672a2efef"
-  integrity sha512-iy9koArjAFCzGnx3ZvNA6Z0clIbbFgbdWQ0mKD3hO0krOrZh8UgA6qMKcZvwLJxS+D6iVR76+5/pV56yMNYTag==
->>>>>>> 011e4f4a... cleanup after merging decimal-logic
-=======
-  version "5.4.3"
-  resolved "https://registry.yarnpkg.com/buffer/-/buffer-5.4.3.tgz#3fbc9c69eb713d323e3fc1a895eee0710c072115"
-  integrity sha512-zvj65TkFeIt3i6aj5bIvJDzjjQQGs4o/sNoezg1F1kYap9Nu2jcUdpwzRSJTHMMzG0H7bZkn4rNQpImhuxWX2A==
->>>>>>> 8f2ed039... Create animated GasSpeedButton component
   dependencies:
     base64-js "^1.0.2"
     ieee754 "^1.1.4"
@@ -3395,21 +3195,9 @@ date-now@^0.1.4:
   integrity sha1-6vQ5/U1ISK105cx9vvIAZyueNFs=
 
 dayjs@^1.8.15:
-<<<<<<< HEAD
-<<<<<<< HEAD
   version "1.8.16"
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.16.tgz#2a3771de537255191b947957af2fd90012e71e64"
   integrity sha512-XPmqzWz/EJiaRHjBqSJ2s6hE/BUoCIHKgdS2QPtTQtKcS9E4/Qn0WomoH1lXanWCzri+g7zPcuNV4aTZ8PMORQ==
-=======
-  version "1.8.15"
-  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.15.tgz#7121bc04e6a7f2621ed6db566be4a8aaf8c3913e"
-  integrity sha512-HYHCI1nohG52B45vCQg8Re3hNDZbMroWPkhz50yaX7Lu0ATyjGsTdoYZBpjED9ar6chqTx2dmSmM8A51mojnAg==
->>>>>>> 730537c6... catching up with latest mike-swap-ui changes
-=======
-  version "1.8.16"
-  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.16.tgz#2a3771de537255191b947957af2fd90012e71e64"
-  integrity sha512-XPmqzWz/EJiaRHjBqSJ2s6hE/BUoCIHKgdS2QPtTQtKcS9E4/Qn0WomoH1lXanWCzri+g7zPcuNV4aTZ8PMORQ==
->>>>>>> 011e4f4a... cleanup after merging decimal-logic
 
 debounce@^1.2.0:
   version "1.2.0"
@@ -3765,42 +3553,10 @@ ejs@^2.6.2:
   resolved "https://registry.yarnpkg.com/ejs/-/ejs-2.7.1.tgz#5b5ab57f718b79d4aca9254457afecd36fa80228"
   integrity sha512-kS/gEPzZs3Y1rRsbGX4UOSjtP/CeJP0CxSNZHYxGfVM/VgLcv0ZqM7C45YyTj2DI2g7+P9Dd24C+IMIg6D0nYQ==
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 electron-to-chromium@^1.3.247:
-  version "1.3.259"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.259.tgz#d0b14836df3c89e86fa47be67315daa642fe9d5c"
-  integrity sha512-NMHS8iQzAYwiFZ1jL/rNOfrZJhvoowKN5uHrbbHOeNgBT5W762wpe/SRLo9kJoTiJ4d2R8i01/NQHwndo9N5PQ==
-=======
-electron-to-chromium@^1.3.191:
-<<<<<<< HEAD
-<<<<<<< HEAD
-  version "1.3.229"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.229.tgz#accc9a08dd07d0a4d6c76937821bc94eb2e49eae"
-  integrity sha512-N6pUbSuKFBeUifxBZp9hODS1N9jFobJYW47QT2VvZIr+G5AWnHK/iG3ON9RPRGH7lHDQ6KUDVhzpNkj4ZiznoA==
->>>>>>> 730537c6... catching up with latest mike-swap-ui changes
-=======
-  version "1.3.238"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.238.tgz#6d6496e393a709b7b186823281d49b1a5d96a6cf"
-  integrity sha512-k+s6EIiSTgfOm7WiMlGBMMMtBQXSui8OfLN1sXU3RohJOuLGVq0lVm7hXyDIDBcbPM0MeZabAdIPQOSEZT3ZLg==
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
-  version "1.3.243"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.243.tgz#32f64f00fa121532d1d49f5c0a15fd77f52ae889"
-  integrity sha512-+edFdHGxLSmAKftXa5xZIg19rHkkJLiW+tRu0VMVG3RKztyeKX7d3pXf707lS6+BxB9uBun3RShbxCI1PtBAgQ==
->>>>>>> 011e4f4a... cleanup after merging decimal-logic
-=======
-electron-to-chromium@^1.3.247:
-<<<<<<< HEAD
-  version "1.3.254"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.254.tgz#af9795b9b2af0729997331a033ddc767af758224"
-  integrity sha512-7I5/OkgR6JKy6RFLJeru0kc0RMmmMu1UnkHBKInFKRrg1/4EQKIqOaUqITSww/SZ1LqWwp1qc/LLoIGy449eYw==
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
-=======
-  version "1.3.257"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.257.tgz#35da0ad5833b27184c8298804c498a4d2f4ed27d"
-  integrity sha512-EcKVmUeHCZelPA0wnIaSmpAN8karKhKBwFb+xLUjSVZ8sGRE1l3fst1zQZ7KJUkyJ7H5edPd4RP94pzC9sG00A==
->>>>>>> 8f2ed039... Create animated GasSpeedButton component
+  version "1.3.260"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.260.tgz#ffd686b4810bab0e1a428e7af5f08c21fe7c1fa2"
+  integrity sha512-wGt+OivF1C1MPwaSv3LJ96ebNbLAWlx3HndivDDWqwIVSQxmhL17Y/YmwUdEMtS/bPyommELt47Dct0/VZNQBQ==
 
 elliptic@6.3.3:
   version "6.3.3"
@@ -4163,21 +3919,9 @@ eslint-visitor-keys@^1.0.0, eslint-visitor-keys@^1.1.0:
   integrity sha512-8y9YjtM1JBJU/A9Kc+SbaOV4y29sSWckBwMHa+FGtVj5gN/sbnKDf6xJUl+8g7FAij9LVaP8C24DUiH/f/2Z9A==
 
 eslint@^6.1.0:
-<<<<<<< HEAD
-<<<<<<< HEAD
   version "6.4.0"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-6.4.0.tgz#5aa9227c3fbe921982b2eda94ba0d7fae858611a"
   integrity sha512-WTVEzK3lSFoXUovDHEbkJqCVPEPwbhCq4trDktNI6ygs7aO41d4cDT0JFAT5MivzZeVLWlg7vHL+bgrQv/t3vA==
-=======
-  version "6.2.2"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-6.2.2.tgz#03298280e7750d81fcd31431f3d333e43d93f24f"
-  integrity sha512-mf0elOkxHbdyGX1IJEUsNBzCDdyoUgljF3rRlgfyYh0pwGnreLc0jjD6ZuleOibjmnUWZLY2eXwSooeOgGJ2jw==
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-6.3.0.tgz#1f1a902f67bfd4c354e7288b81e40654d927eb6a"
-  integrity sha512-ZvZTKaqDue+N8Y9g0kp6UPZtS4FSY3qARxBs7p4f0H0iof381XHduqVerFWtK8DPtKmemqbqCFENWSQgPR/Gow==
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
   dependencies:
     "@babel/code-frame" "^7.0.0"
     ajv "^6.10.0"
@@ -4271,21 +4015,9 @@ eth-contract-metadata@^1.9.2:
   integrity sha512-qDdH9n2yw5GqWW5E6wrh7KZ8WicpEzofrpuJG3FWiJew+Yt6RapnqtXN8ljvxY+UTZPd1QzLXswKfpJyzsH4Tw==
 
 ethers@^4.0.28, ethers@^4.0.33:
-<<<<<<< HEAD
-<<<<<<< HEAD
   version "4.0.37"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.37.tgz#dfa70d59498663878c5e4a977d14356660ca5b90"
   integrity sha512-B7bDdyQ45A5lPr6k2HOkEKMtYOuqlfy+nNf8glnRvWidkDQnToKw1bv7UyrwlbsIgY2mE03UxTVtouXcT6Vvcw==
-=======
-  version "4.0.36"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.36.tgz#96519fd3cc9317f938c8ee4d22050f34e3c2ef0e"
-  integrity sha512-rWdchEhUyXx01GiwexH6Sha97CQ9tJdQwe6FtYKxShC7VEZV41nuKt+lzCQ4OqvQwZK5PcAKaAZv2GDsCH33SA==
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
-  version "4.0.37"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.37.tgz#dfa70d59498663878c5e4a977d14356660ca5b90"
-  integrity sha512-B7bDdyQ45A5lPr6k2HOkEKMtYOuqlfy+nNf8glnRvWidkDQnToKw1bv7UyrwlbsIgY2mE03UxTVtouXcT6Vvcw==
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
   dependencies:
     "@types/node" "^10.3.2"
     aes-js "3.0.0"
@@ -4404,16 +4136,6 @@ expand-brackets@^2.1.4:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
-<<<<<<< HEAD
-=======
-expand-range@^1.8.1:
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/expand-range/-/expand-range-1.8.2.tgz#a299effd335fe2721ebae8e257ec79644fc85337"
-  integrity sha1-opnv/TNf4nIeuujiV+x5ZE/IUzc=
-  dependencies:
-    fill-range "^2.1.0"
-
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
 expect@^24.9.0:
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/expect/-/expect-24.9.0.tgz#b75165b4817074fa4a157794f46fe9f1ba15b6ca"
@@ -5346,21 +5068,9 @@ i18n-js@^3.0.11:
   integrity sha512-+m8jh84IIWlFwEJgwrWCkeIwIES9ilJKBOj5qx8ZTLLmlPz7bjKnCdxf254wRf6M4pkQHtgXGT9r9lGk0e9aug==
 
 i18next@^17.0.3:
-<<<<<<< HEAD
-<<<<<<< HEAD
   version "17.0.15"
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.15.tgz#a4a378910fa06ca1c34f9e481ff6642acdb16dba"
   integrity sha512-d+DLqZY1G15jDhSLRtsCVd/+KAWKmcmX1bp/5RjamIhftEFDvSXVgWXXkzsBFIl41VHhBV1y5JORukgz1s3GCQ==
-=======
-  version "17.0.12"
-  resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.12.tgz#d732a6c1131fc3b02305a8241eac25ec0d1cf663"
-  integrity sha512-FoYYnORcAMNznVXSpwJ1zVGL8kXcv1JUmvTqoQyuPPRncBq9rd7Mi0I/oVXkGR3YIek5dDiunvA/NGG2o+mMuw==
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
-  version "17.0.14"
-  resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.14.tgz#b736fcb8c84aa84c57bfad3caac7f8b5f92d85a4"
-  integrity sha512-yEGSWX9UTpWQskPsFy03t8uhZh5wyZ7v9p+MCo08Sd2edTaFdg1gFA633dg9OqTxJ/z1rtCiacgOlDSBpgssgw==
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
   dependencies:
     "@babel/runtime" "^7.3.1"
 
@@ -5399,21 +5109,9 @@ image-size@^0.6.0:
   integrity sha512-47xSUiQioGaB96nqtp5/q55m0aBQSQdyIloMOc/x+QVTDZLNmXE892IIDrJ0hM1A5vcNUDD5tDffkSP5lCaIIA==
 
 immer@^3.1.3:
-<<<<<<< HEAD
-<<<<<<< HEAD
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/immer/-/immer-3.3.0.tgz#ee7cf3a248d5dd2d4eedfbe7dfc1e9be8c72041d"
   integrity sha512-vlWRjnZqoTHuEjadquVHK3GxsXe1gNoATffLEA8Qbrdd++Xb+wHEFiWtwAKTscMBoi1AsvEMXhYRzAXA8Ex9FQ==
-=======
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/immer/-/immer-3.2.1.tgz#e3070a96508ffdb7331f8bf681f2a55f8729d0cd"
-  integrity sha512-tRu/ipavNRwxKcRSUW2jOJ6cZCitHAHdI5WdH9fYfFt35PvZXJ7GmNVR0s1ATt6DGhgQJMnu3tVtZ2C/UzTUQw==
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
-=======
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/immer/-/immer-3.3.0.tgz#ee7cf3a248d5dd2d4eedfbe7dfc1e9be8c72041d"
-  integrity sha512-vlWRjnZqoTHuEjadquVHK3GxsXe1gNoATffLEA8Qbrdd++Xb+wHEFiWtwAKTscMBoi1AsvEMXhYRzAXA8Ex9FQ==
->>>>>>> 8f2ed039... Create animated GasSpeedButton component
 
 import-fresh@^2.0.0:
   version "2.0.0"
@@ -6117,22 +5815,6 @@ jest-get-type@^24.9.0:
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/jest-get-type/-/jest-get-type-24.9.0.tgz#1684a0c8a50f2e4901b6644ae861f579eed2ef0e"
   integrity sha512-lUseMzAley4LhIcpSP9Jf+fTrQ4a1yHQwLNeeVa2cEmbCGeoZAtYPOIv8JaxLD/sUpKxetKGP+gsHl8f8TSj8Q==
-<<<<<<< HEAD
-=======
-
-jest-haste-map@24.0.0-alpha.6:
-  version "24.0.0-alpha.6"
-  resolved "https://registry.yarnpkg.com/jest-haste-map/-/jest-haste-map-24.0.0-alpha.6.tgz#fb2c785080f391b923db51846b86840d0d773076"
-  integrity sha512-+NO2HMbjvrG8BC39ieLukdpFrcPhhjCJGhpbHodHNZygH1Tt06WrlNYGpZtWKx/zpf533tCtMQXO/q59JenjNw==
-  dependencies:
-    fb-watchman "^2.0.0"
-    graceful-fs "^4.1.11"
-    invariant "^2.2.4"
-    jest-serializer "^24.0.0-alpha.6"
-    jest-worker "^24.0.0-alpha.6"
-    micromatch "^2.3.11"
-    sane "^3.0.0"
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
 
 jest-haste-map@^24.7.1, jest-haste-map@^24.9.0:
   version "24.9.0"
@@ -6297,18 +5979,8 @@ jest-runtime@^24.9.0:
     slash "^2.0.0"
     strip-bom "^3.0.0"
     yargs "^13.3.0"
-<<<<<<< HEAD
 
 jest-serializer@^24.4.0, jest-serializer@^24.9.0:
-=======
-
-jest-serializer@24.0.0-alpha.6:
-  version "24.0.0-alpha.6"
-  resolved "https://registry.yarnpkg.com/jest-serializer/-/jest-serializer-24.0.0-alpha.6.tgz#27d2fee4b1a85698717a30c3ec2ab80767312597"
-  integrity sha512-IPA5T6/GhlE6dedSk7Cd7YfuORnYjN0VD5iJVFn1Q81RJjpj++Hen5kJbKcg547vXsQ1TddV15qOA/zeIfOCLw==
-
-jest-serializer@^24.0.0-alpha.6, jest-serializer@^24.4.0, jest-serializer@^24.9.0:
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/jest-serializer/-/jest-serializer-24.9.0.tgz#e6d7d7ef96d31e8b9079a714754c5d5c58288e73"
   integrity sha512-DxYipDr8OvfrKH3Kel6NdED3OXxjvxXZ1uIY2I9OFbGg+vUkkg7AGvi65qbhbWNPvDckXmzMPbK3u3HaDO49bQ==
@@ -6383,17 +6055,6 @@ jest-worker@^24.6.0, jest-worker@^24.9.0:
     merge-stream "^2.0.0"
     supports-color "^6.1.0"
 
-<<<<<<< HEAD
-=======
-jest-worker@^24.0.0-alpha.6, jest-worker@^24.6.0, jest-worker@^24.9.0:
-  version "24.9.0"
-  resolved "https://registry.yarnpkg.com/jest-worker/-/jest-worker-24.9.0.tgz#5dbfdb5b2d322e98567898238a9697bcce67b3e5"
-  integrity sha512-51PE4haMSXcHohnSMdM42anbvZANYTqMrr52tVKPqqsPJMzoP6FYYDVqahX/HrAoKEKz3uUPzSvKs9A3qR4iVw==
-  dependencies:
-    merge-stream "^2.0.0"
-    supports-color "^6.1.0"
-
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
 jest@^24.8.0:
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/jest/-/jest-24.9.0.tgz#987d290c05a08b52c56188c1002e368edb007171"
@@ -7037,14 +6698,6 @@ merge2@^1.2.3:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/merge2/-/merge2-1.3.0.tgz#5b366ee83b2f1582c48f87e47cf1a9352103ca81"
   integrity sha512-2j4DAdlBOkiSZIsaXk4mTE3sRS02yBHAtfy127xRV3bQUFqXkjHCHLW6Scv7DwNRbIWNHH8zpnz9zMaKXIdvYw==
-<<<<<<< HEAD
-=======
-
-merge@^1.2.0:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/merge/-/merge-1.2.1.tgz#38bebf80c3220a8a487b6fcfb3941bb11720c145"
-  integrity sha512-VjFo4P5Whtj4vsLzsYBu5ayHhoHJ0UqNm7ibvShmbmoz7tGi0vXaoJbGdB+GmDMLUdg8DpQXEIeVDAe8MaABvQ==
->>>>>>> 8f2ed039... Create animated GasSpeedButton component
 
 methods@^1.1.2:
   version "1.1.2"
@@ -7461,27 +7114,9 @@ minimist@~0.0.1:
   integrity sha1-3j+YVD2/lggr5IrRoMfNqDYwHc8=
 
 minipass@^2.2.1, minipass@^2.3.5:
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/minipass/-/minipass-2.5.1.tgz#cf435a9bf9408796ca3a3525a8b851464279c9b8"
   integrity sha512-dmpSnLJtNQioZFI5HfQ55Ad0DzzsMAb+HfokwRTNXwEQjepbTkl5mtIlSVxGIkOkxlpX7wIn5ET/oAd9fZ/Y/Q==
-=======
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/minipass/-/minipass-2.4.0.tgz#38f0af94f42fb6f34d3d7d82a90e2c99cd3ff485"
-  integrity sha512-6PmOuSP4NnZXzs2z6rbwzLJu/c5gdzYg1mRI/WIYdx45iiX7T+a4esOzavD6V/KmBzAaopFSTZPZcUx73bqKWA==
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/minipass/-/minipass-2.5.0.tgz#dddb1d001976978158a05badfcbef4a771612857"
-  integrity sha512-9FwMVYhn6ERvMR8XFdOavRz4QK/VJV8elU1x50vYexf9lslDcWe/f4HBRxCPd185ekRSjU6CfYyJCECa/CQy7Q==
->>>>>>> 011e4f4a... cleanup after merging decimal-logic
-=======
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/minipass/-/minipass-2.5.1.tgz#cf435a9bf9408796ca3a3525a8b851464279c9b8"
-  integrity sha512-dmpSnLJtNQioZFI5HfQ55Ad0DzzsMAb+HfokwRTNXwEQjepbTkl5mtIlSVxGIkOkxlpX7wIn5ET/oAd9fZ/Y/Q==
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
   dependencies:
     safe-buffer "^5.1.2"
     yallist "^3.0.0"
@@ -7601,27 +7236,9 @@ nan@^2.12.1, nan@^2.14.0:
   integrity sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==
 
 nanoid@^2.0.3:
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-2.1.1.tgz#524fd4acd45c126e0c87cd43ab5ee8346e695df9"
   integrity sha512-0YbJdaL4JFoejIOoawgLcYValFGJ2iyUuVDIWL3g8Es87SSOWFbWdRUMV3VMSiyPs3SQ3QxCIxFX00q5DLkMCw==
-=======
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-2.0.4.tgz#4889355c9ce8e24efad7c65945a4a2875ac3e8f4"
-  integrity sha512-sOJnBmY3TJQBVIBqKHoifuwygrocXg3NjS9rZSMnVl05XWSHK7Qxb177AIZQyMDjP86bz+yneozj/h9qsPLcCA==
->>>>>>> 011e4f4a... cleanup after merging decimal-logic
-=======
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-2.1.0.tgz#3de3dbd68cfb2f3bd52550e2bfd439cf75040eb2"
-  integrity sha512-g5WwS+p6Cm+zQhO2YOpRbQThZVnNb7DDq74h8YDCLfAGynrEOrbx2E16dc8ciENiP1va5sqaAruqn2sN+xpkWg==
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
-=======
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-2.1.1.tgz#524fd4acd45c126e0c87cd43ab5ee8346e695df9"
-  integrity sha512-0YbJdaL4JFoejIOoawgLcYValFGJ2iyUuVDIWL3g8Es87SSOWFbWdRUMV3VMSiyPs3SQ3QxCIxFX00q5DLkMCw==
->>>>>>> 8f2ed039... Create animated GasSpeedButton component
 
 nanomatch@^1.2.9:
   version "1.2.13"
@@ -7752,23 +7369,10 @@ node-pre-gyp@^0.12.0:
     semver "^5.3.0"
     tar "^4"
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
 node-releases@^1.1.29:
   version "1.1.30"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.30.tgz#35eebf129c63baeb6d8ddeda3c35b05abfd37f7f"
   integrity sha512-BHcr1g6NeUH12IL+X3Flvs4IOnl1TL0JczUhEZjDE+FXXPQcVCNr8NEPb01zqGxzhTpdyJL5GXemaCW7aw6Khw==
-<<<<<<< HEAD
-=======
-node-releases@^1.1.25:
-  version "1.1.28"
-  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.28.tgz#503c3c70d0e4732b84e7aaa2925fbdde10482d4a"
-  integrity sha512-AQw4emh6iSXnCpDiFe0phYcThiccmkNWMZnFZ+lDJjAP8J0m2fVd59duvUUyuTirQOhIAajTFkzG6FHCLBO59g==
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
   dependencies:
     semver "^5.3.0"
 
@@ -7917,20 +7521,11 @@ object-copy@^0.1.0:
     define-property "^0.2.5"
     kind-of "^3.0.3"
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
 object-inspect@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/object-inspect/-/object-inspect-1.6.0.tgz#c70b6cbf72f274aab4c34c0c82f5167bf82cf15b"
   integrity sha512-GJzfBZ6DgDAmnuaM3104jR4s1Myxr3Y3zfIyN4z3UdqN69oSRacNK8UhnobDdC+7J2AHCjGwxQubNJfE70SXXQ==
 
-<<<<<<< HEAD
-=======
->>>>>>> 011e4f4a... cleanup after merging decimal-logic
-=======
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
 object-is@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/object-is/-/object-is-1.0.1.tgz#0aa60ec9989a0b3ed795cf4d06f62cf1ad6539b6"
@@ -8382,21 +7977,9 @@ pascalcase@^0.1.1:
   integrity sha1-s2PlXoAGym/iF4TS2yK9FdeRfxQ=
 
 patch-package@^6.1.2:
-<<<<<<< HEAD
-<<<<<<< HEAD
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/patch-package/-/patch-package-6.2.0.tgz#677de858e352b6ca4e6cb48a6efde2cec9fde566"
   integrity sha512-HWlQflaBBMjLBfOWomfolF8aqsFDeNbSNro1JDUgYqnVvPM5OILJ9DQdwIRiKmGaOsmHvhkl1FYkvv1I9r2ZJw==
-=======
-  version "6.1.4"
-  resolved "https://registry.yarnpkg.com/patch-package/-/patch-package-6.1.4.tgz#3a3201e9f62d2fc119a0fd115e1e5e6dbd5f0036"
-  integrity sha512-4lKS4wKT7OEUdzyACeGJtMvz36PdzjQ3o6pRc9DFDLpA8jPlq1IWeh7yleOXv/+fJDv+bNPpnAhid35pUVHaSA==
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
-=======
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/patch-package/-/patch-package-6.2.0.tgz#677de858e352b6ca4e6cb48a6efde2cec9fde566"
-  integrity sha512-HWlQflaBBMjLBfOWomfolF8aqsFDeNbSNro1JDUgYqnVvPM5OILJ9DQdwIRiKmGaOsmHvhkl1FYkvv1I9r2ZJw==
->>>>>>> 8f2ed039... Create animated GasSpeedButton component
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
     chalk "^2.4.2"
@@ -8732,17 +8315,6 @@ prettier@^1.17.1:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.18.2.tgz#6823e7c5900017b4bd3acf46fe9ac4b4d7bda9ea"
   integrity sha512-OeHeMc0JhFE9idD4ZdtNibzY0+TPHSpSSb9h8FqtP+YnoZZ1sl8Vc9b1sasjfymH3SonAF4QcA2+mzHPhMvIiw==
 
-<<<<<<< HEAD
-=======
-pretty-format@24.0.0-alpha.6:
-  version "24.0.0-alpha.6"
-  resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-24.0.0-alpha.6.tgz#25ad2fa46b342d6278bf241c5d2114d4376fbac1"
-  integrity sha512-zG2m6YJeuzwBFqb5EIdmwYVf30sap+iMRuYNPytOccEXZMAJbPIFGKVJ/U0WjQegmnQbRo9CI7j6j3HtDaifiA==
-  dependencies:
-    ansi-regex "^4.0.0"
-    ansi-styles "^3.2.0"
-
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
 pretty-format@^24.7.0, pretty-format@^24.9.0:
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-24.9.0.tgz#12fac31b37019a4eea3c11aa9a959eb7628aa7c9"
@@ -9131,11 +8703,6 @@ react-native-haptic-feedback@^1.8.2:
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.8.2.tgz#532dfcdfe2eaaaf3c30ff5dff97973ff05399fcd"
   integrity sha512-arY2vsQtcF6Z/HggcfASTFzXm5HLUvK08rj6xPs6b95mpUDyStxEoC2c6MCFx+GSqnpBuOQvQCf42Zp0ATnWoQ==
 
-react-native-hooks@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/react-native-hooks/-/react-native-hooks-0.9.0.tgz#589fc2390296d9afe03327298dabcf0a1f350910"
-  integrity sha512-yqSAH0zxqjYHYPo6mPut3dEROoB5qMvsAbN3EK0MDQrWA5zdqmzgTEpS9/qwXaIyllk6hQbHxYnRTWq2uq4tJQ==
-
 react-native-indicators@^0.13.0:
   version "0.13.0"
   resolved "https://registry.yarnpkg.com/react-native-indicators/-/react-native-indicators-0.13.0.tgz#001824bba194b1ca6e654d903beaf0168d4e6ac8"
@@ -9233,21 +8800,9 @@ react-native-redash@^7.5.1:
     use-memo-one "^1.1.1"
 
 react-native-safe-area-view@^0.14.1, react-native-safe-area-view@^0.14.6:
-<<<<<<< HEAD
-<<<<<<< HEAD
   version "0.14.8"
   resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.14.8.tgz#ef33c46ff8164ae77acad48c3039ec9c34873e5b"
   integrity sha512-MtRSIcZNstxv87Jet+UsPhEd1tpGe8cVskDXlP657x6rHpSrbrc+y13ZNXrwAgGNNhqQNX7UJT68ZIq//ZRmvw==
-=======
-  version "0.14.7"
-  resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.14.7.tgz#e1dd1c4d25a90677df2c15347fdddb2306ba5971"
-  integrity sha512-fmuBYpvKDJK33bimo4JXrK2BN2CGw7nof1y1LDRgzqv+FZ3eADSDGshprN8WeQqSZjQ20hJx1CiWk28Edg/v4Q==
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
-  version "0.14.8"
-  resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.14.8.tgz#ef33c46ff8164ae77acad48c3039ec9c34873e5b"
-  integrity sha512-MtRSIcZNstxv87Jet+UsPhEd1tpGe8cVskDXlP657x6rHpSrbrc+y13ZNXrwAgGNNhqQNX7UJT68ZIq//ZRmvw==
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
@@ -9282,26 +8837,10 @@ react-native-store-review@^0.1.5:
   resolved "https://registry.yarnpkg.com/react-native-store-review/-/react-native-store-review-0.1.5.tgz#9df69786a137580748e368641698d2104519e4cf"
   integrity sha512-vVx7NYaQva3bGU5MdqXn4yEB+o+GPdmjqAuj7PnkepfeCS6Bi3sqniiKoXmKOKDgRTfIobBZjUkHzWeHli1+3A==
 
-<<<<<<< HEAD
-react-native-svg@^9.6.2:
-<<<<<<< HEAD
-<<<<<<< HEAD
-  version "9.9.3"
-  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.9.3.tgz#5dab1a44b20b13a3f35245a286f30882b9611d66"
-  integrity sha512-oL4EWGEYhaXDwZw3ULxAtXXh3xao0BiUt2UdVANdGuP3jdpSWuXUmXCd2HpgppOVsHwbSuR67sFmnduXPGaxuA==
-=======
-  version "9.6.4"
-  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.6.4.tgz#f9ceb228efd07317a5f9c378c6b9c5e13ff50cd0"
-  integrity sha512-6SlbGx0vlXHyDPQXSpX+8o6bNjxKFNJsISoboAkR7YWW6hdnkMg/HJXCgT6oJC0/ClKtSO7ZPrQcK4HR65kDNg==
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
-=======
 react-native-svg@9.7.1:
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
   version "9.7.1"
   resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.7.1.tgz#a6d270cd51f8f238de7623338211debf4ff9cf5c"
   integrity sha512-Yr54SyLPCdovLCJ08V7syJUe1iKrTYG9V5wB08z6lh/9FdC2R9CtBnMyz83GDLKfzUONqqH9nN1l+o61CgD3tg==
->>>>>>> 011e4f4a... cleanup after merging decimal-logic
 
 react-native-tab-view@^1.2.0, react-native-tab-view@^1.4.1:
   version "1.4.1"
@@ -9398,50 +8937,9 @@ react-navigation-drawer@~1.2.1:
   dependencies:
     react-native-tab-view "^1.2.0"
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-"react-navigation-stack@https://github.com/react-navigation/stack#95fe56e11b6f8bca3c4d24b619295651944d4d03", react-navigation-stack@~1.5.0:
-=======
-react-navigation-stack@^2.0.0-alpha.9:
-=======
-react-navigation-stack@2.0.0-alpha.9:
->>>>>>> 8e6e4f48... fix the react-navigation-stacks version to previous release for now
-  version "2.0.0-alpha.9"
-  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-2.0.0-alpha.9.tgz#6e0382f3f4e37235c94badf6712c7095415d4a6d"
-  integrity sha512-Lze5CuCDr9FtGIJyxG8e1YXbpyd77XjOgLnQN5PRG9qx7YNmAbkbybPrhsmlRVWiyosC8IEVFbnot0EDcR+O/w==
-  dependencies:
-    react-native-safe-area-view "^0.14.6"
-
-<<<<<<< HEAD
-"react-navigation-stack@https://github.com/react-navigation/stack#master", react-navigation-stack@~1.5.0:
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
+"react-navigation-stack@https://github.com/react-navigation/stack#95fe56e11b6f8bca3c4d24b619295651944d4d03", react-navigation-stack@~1.4.0:
   version "2.0.0-alpha.7"
   resolved "https://github.com/react-navigation/stack#95fe56e11b6f8bca3c4d24b619295651944d4d03"
-=======
-react-navigation-stack@^2.0.0-alpha.9, "react-navigation-stack@https://github.com/react-navigation/stack#master", react-navigation-stack@~1.5.0:
-=======
-"react-navigation-stack@https://github.com/react-navigation/stack#master", react-navigation-stack@~1.4.0:
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 8e6e4f48... fix the react-navigation-stacks version to previous release for now
-  version "2.0.0-alpha.10"
-  resolved "https://github.com/react-navigation/stack#95c9fcad62fdf9f5fe3861bbf182d83d9e6b0edd"
->>>>>>> 011e4f4a... cleanup after merging decimal-logic
-  dependencies:
-    react-native-safe-area-view "^0.14.6"
-
-react-navigation-tabs@^2.3.0:
-  version "2.5.2"
-  resolved "https://registry.yarnpkg.com/react-navigation-tabs/-/react-navigation-tabs-2.5.2.tgz#80812254e32c5720722fed9a26b6e109ed0f4ac1"
-  integrity sha512-f5OlXROO6VtnvgmSBzvS+2X8+KEMjJ4JM3S3IsmHa2J1dc/ssZE9QNEjttmsNxDi79vHVNaC+oiXI9GUtb3+YA==
-=======
-  version "2.0.0-alpha.12"
-  resolved "https://github.com/react-navigation/stack#143701d50532e37f54f0e027d899164fd8ede32a"
-=======
-  version "2.0.0-alpha.13"
-  resolved "https://github.com/react-navigation/stack#3450a72ab624183fddaf80f54951db8ca9ccfdbd"
->>>>>>> 8f2ed039... Create animated GasSpeedButton component
   dependencies:
     react-native-safe-area-view "^0.14.6"
 
@@ -9449,11 +8947,9 @@ react-navigation-tabs@2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/react-navigation-tabs/-/react-navigation-tabs-2.3.0.tgz#0288830e6ac5157f203ee3947bc29b0d6eda66b1"
   integrity sha512-0LiTwXEVt7XdzVT02fvg14NMz90zfPUyw1g2mIrWA70+M56br5k6tXKrZg8NjH1MgWVz5TWBx90SI0MhD2OssA==
->>>>>>> 50ca8411... fix ‘react-navigation-tabs’ at version 2.3.0 due to breaking changes
   dependencies:
     hoist-non-react-statics "^3.3.0"
     react-lifecycles-compat "^3.0.4"
-    react-native-safe-area-view "^0.14.6"
     react-native-tab-view "^2.9.0"
 
 react-navigation-tabs@~1.1.4:
@@ -9466,36 +8962,6 @@ react-navigation-tabs@~1.1.4:
     react-lifecycles-compat "^3.0.4"
     react-native-tab-view "^1.4.1"
 
-<<<<<<< HEAD
-react-navigation@^3.11.1:
-<<<<<<< HEAD
-<<<<<<< HEAD
-  version "3.12.1"
-  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-3.12.1.tgz#f86246e65030ab16160e9cbfa8585f3822450e38"
-  integrity sha512-WLjQis/A40cIMpFlw4o26nSLN+CvrZp8MGvJoL5K5H7DMZ/TdwgPa/Nm2sAQA27Hw7hOohQGj+diyxFRZi89Iw==
-  dependencies:
-    "@react-navigation/core" "~3.5.0"
-    "@react-navigation/native" "~3.6.1"
-=======
-  version "3.12.0"
-  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-3.12.0.tgz#31cc6c7d778c968965e86a820f12f1e1a66e20b9"
-  integrity sha512-Lr0l0lbZsFsajUx040I1HYm0yIfa+F9SCEeaNkS1eiey6k2G04eY5hYGZfo4i3kaMj99Yi8tuRcSN7DS0QZu8w==
-  dependencies:
-    "@react-navigation/core" "~3.5.0"
-    "@react-navigation/native" "~3.6.0"
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
-  version "3.12.1"
-  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-3.12.1.tgz#f86246e65030ab16160e9cbfa8585f3822450e38"
-  integrity sha512-WLjQis/A40cIMpFlw4o26nSLN+CvrZp8MGvJoL5K5H7DMZ/TdwgPa/Nm2sAQA27Hw7hOohQGj+diyxFRZi89Iw==
-  dependencies:
-    "@react-navigation/core" "~3.5.0"
-    "@react-navigation/native" "~3.6.1"
->>>>>>> 011e4f4a... cleanup after merging decimal-logic
-    react-navigation-drawer "~1.4.0"
-    react-navigation-stack "~1.5.0"
-    react-navigation-tabs "~1.2.0"
-=======
 react-navigation@3.11.1:
   version "3.11.1"
   resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-3.11.1.tgz#ba696ad6b512088a97a20cc7e6a250c53dbddd26"
@@ -9506,7 +8972,6 @@ react-navigation@3.11.1:
     react-navigation-drawer "~1.2.1"
     react-navigation-stack "~1.4.0"
     react-navigation-tabs "~1.1.4"
->>>>>>> 8e6e4f48... fix the react-navigation-stacks version to previous release for now
 
 react-primitives@^0.8.0:
   version "0.8.0"
@@ -9717,22 +9182,10 @@ recursive-readdir@^2.2.2:
   dependencies:
     minimatch "3.0.4"
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 recyclerlistview@2.0.1-alpha.1:
   version "2.0.1-alpha.1"
   resolved "https://registry.yarnpkg.com/recyclerlistview/-/recyclerlistview-2.0.1-alpha.1.tgz#881955e6917911fb54a9b272004e39e5c0d64f4a"
   integrity sha512-UaeJyxG9LL8lcfiAqkp0kPLxvjbYg95Dcq1U/QUvzwXU4+H2khg/LAws/FssxPX6CXNMw7BLcT2YHAhkFElqRQ==
-=======
-recyclerlistview@Flipkart/recyclerlistview#master:
-  version "2.0.13"
-  resolved "https://codeload.github.com/Flipkart/recyclerlistview/tar.gz/6c191661214a53f6ba24567528f0de7902ffda6c"
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
-recyclerlistview@Flipkart/recyclerlistview#1d310dffc80d63e4303bf1213d2f6b0ce498c33a:
-  version "2.0.10"
-  resolved "https://codeload.github.com/Flipkart/recyclerlistview/tar.gz/1d310dffc80d63e4303bf1213d2f6b0ce498c33a"
->>>>>>> 011e4f4a... cleanup after merging decimal-logic
   dependencies:
     lodash.debounce "4.0.8"
     prop-types "15.5.8"
@@ -10093,11 +9546,7 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-<<<<<<< HEAD
 rn-nodeify@10.1.0:
-=======
-rn-nodeify@^10.0.1:
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
   version "10.1.0"
   resolved "https://registry.yarnpkg.com/rn-nodeify/-/rn-nodeify-10.1.0.tgz#e36c4aa25d6bf1dbde7d9f733ab30168772d50c6"
   integrity sha512-EW9I7OWt1aTShdJEnnS/qoEvfb2myLee6uWcAMxJWcisn3z3DxWTTLfm5bqwn/2eYjcs6j677JLY6nL02uMaaQ==
@@ -11372,23 +10821,10 @@ type-check@~0.3.2:
   dependencies:
     prelude-ls "~1.1.2"
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 8f2ed039... Create animated GasSpeedButton component
 type-fest@^0.7.1:
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.7.1.tgz#8dda65feaf03ed78f0a3f9678f1869147f7c5c48"
   integrity sha512-Ne2YiiGN8bmrmJJEuTWTLJR32nh/JdL1+PSicowtNb0WFpn59GK8/lfD61bVtzguz7b3PBt74nxpv/Pw5po5Rg==
-<<<<<<< HEAD
-=======
-type-fest@^0.3.0:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.3.1.tgz#63d00d204e059474fe5e1b7c011112bbd1dc29e1"
-  integrity sha512-cUGJnCdr4STbePCgqNFbpVNCepa+kAVohJs1sLhxzdH+gnEoOd8VhbYa7pD3zZYGiURWM2xzEII3fQcRizDkYQ==
->>>>>>> b318d04e... begin fixing up the ExchangeModal input logic
-=======
->>>>>>> 8f2ed039... Create animated GasSpeedButton component
 
 typedarray@^0.0.6:
   version "0.0.6"
