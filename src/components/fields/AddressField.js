@@ -15,7 +15,7 @@ const AddressInput = styled(TextInput)`
   flex-grow: 1;
   margin-top: 1;
   z-index: 1;
-  font-family: ${fonts.family.SFMono};
+  font-family: ${fonts.family.SFProText};
   font-weight: ${fonts.weight.semibold};
   font-size: ${fonts.size.bmedium};
 `;

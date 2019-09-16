@@ -1,5 +1,11 @@
 import { differenceInMinutes } from 'date-fns';
-import { find, omit, pickBy } from 'lodash';
+import {
+  find,
+  omit,
+  orderBy,
+  pickBy,
+} from 'lodash';
+import { removeFirstEmojiFromString, makeSpaceAfterFirstEmoji } from '../helpers/emojiHandler';
 
 const defaultVersion = '0.1.0';
 const transactionsVersion = '0.2.0';
@@ -641,9 +647,19 @@ export const addNewLocalContact = async (address, nickname, color) => {
   contacts.push({
     address,
     color,
-    nickname,
+    nickname: makeSpaceAfterFirstEmoji(nickname),
   });
-  await saveLocal('localContacts', { data: contacts });
+
+  const sortedContacts = orderBy(
+    contacts,
+    [contact => {
+      let newContact = contact.nickname.toLowerCase();
+      newContact = removeFirstEmojiFromString(newContact);
+      return newContact;
+    }],
+    ['desc']
+  );
+  await saveLocal('localContacts', { data: sortedContacts });
 };
 
 /**
@@ -654,7 +670,7 @@ export const addNewLocalContact = async (address, nickname, color) => {
 export const deleteLocalContact = async (address) => {
   const contacts = await getLocalContacts();
   for (let i = 0; i < contacts.length; i++) {
-    if(contacts[i].address == address) {
+    if (contacts[i].address === address) {
       contacts.splice(i, 1);
       i--;
     }

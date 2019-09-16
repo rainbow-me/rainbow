@@ -127,6 +127,9 @@ class AddContactState extends React.PureComponent {
   onChange = (event) => {
     const { nativeEvent } = event;
     let value = nativeEvent.text;
+    if (value.charCodeAt(0) === 32) {
+      value = value.substring(1);
+    }
     this.setState({ value });
   }
 
