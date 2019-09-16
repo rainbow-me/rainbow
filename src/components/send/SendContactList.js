@@ -103,6 +103,10 @@ let position = 0;
 
 class Avatar extends React.PureComponent {
 
+  componentWillReceiveProps = () => {
+    this.close();
+  }
+
   onPress = () => {
     this.props.onPress(this.props.address);
   }
@@ -188,8 +192,9 @@ class Avatar extends React.PureComponent {
         ref={this.updateRef}
         friction={2}
         rightThreshold={0}
-        renderRightActions={this.renderRightActions}>
-        <ButtonPressAnimation onPress={this.onPress} scaleTo={0.96}>
+        renderRightActions={this.renderRightActions}
+        onSwipeableWillOpen={() => this.props.onTransitionEnd(item.address)} >
+        <ButtonPressAnimation onPressStart={() => this.props.onTouch(item.address)} onPress={this.onPress} scaleTo={0.96}>
           <AvatarWrapper>
             <AvatarCircle style={{ backgroundColor: colors.avatarColor[item.color] }} >
               <FirstLetter>
@@ -210,11 +215,25 @@ class Avatar extends React.PureComponent {
 }
 
 class SendContactList extends React.Component {
+
+  changeCurrentlyUsedContact = (address) => {
+    this.currentlyOpenContact = address;
+  }
+
+  closeAllDifferentContacts = (address) => {
+    this.touchedContact = address;
+    this.recentlyRendered = false;
+    this.setState({ touchedContact: address });
+  }
+
   balancesRenderItem = item => (
     <Avatar
+      onTouch={this.closeAllDifferentContacts}
+      onTransitionEnd={this.changeCurrentlyUsedContact}
       onChange={this.props.onUpdateContacts}
       onPress={this.props.onPressContact}
       navigation={this.props.navigation}
+      currentlyOpenContact={this.touchedContact}
       {...item}
     />
   );
@@ -244,6 +263,9 @@ class SendContactList extends React.Component {
       }
     });
     this._renderRow = this._renderRow.bind(this);
+    this.currentlyOpenContact = undefined;
+    this.touchedContact = undefined;
+    this.recentlyRendered = false;
   }
 
   _renderRow(type, data) {
@@ -316,7 +338,14 @@ class SendContactList extends React.Component {
             rowRenderer={this._renderRow}
             dataProvider={
               new DataProvider((r1, r2) => {
-                return r1 !== r2;
+                if (this.touchedContact && this.currentlyOpenContact && this.touchedContact !== this.currentlyOpenContact && !this.recentlyRendered) {
+                  if (r2 == this.state.contacts[this.state.contacts.length - 1]) {
+                    this.recentlyRendered = true;
+                  }
+                  return true;
+                } else if (r1 !== r2) {
+                  return true;
+                }
               }).cloneWithRows(this.state.contacts)
             }
             layoutProvider={this._layoutProvider}

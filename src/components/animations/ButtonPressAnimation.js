@@ -1,4 +1,9 @@
-import { omit, pick, toUpper } from 'lodash';
+import {
+  isFunction,
+  omit,
+  pick,
+  toUpper,
+} from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { InteractionManager } from 'react-native';
@@ -90,6 +95,7 @@ export default class ButtonPressAnimation extends PureComponent {
     hapticType: PropTypes.oneOf(Object.keys(HapticFeedbackTypes)),
     isInteraction: PropTypes.bool,
     onPress: PropTypes.func,
+    onPressStart: PropTypes.func,
     scaleTo: PropTypes.number,
     style: stylePropType,
     tapRef: PropTypes.object,
@@ -139,16 +145,19 @@ export default class ButtonPressAnimation extends PureComponent {
     }]);
   }
 
-  componentWillUnmount = () => this.clearInteraction()
+  componentWillUnmount = () => {
+    this.clearInteraction();
+  }
 
   clearInteraction = () => {
     if (this.props.isInteraction && this.handle) {
       InteractionManager.clearInteractionHandle(this.handle);
+      this.handle = undefined;
     }
   }
 
   createInteraction = () => {
-    if (this.props.isInteraction) {
+    if (this.props.isInteraction && !this.handle) {
       this.handle = InteractionManager.createInteractionHandle();
     }
   }
@@ -174,11 +183,21 @@ export default class ButtonPressAnimation extends PureComponent {
     }
   }
 
-  handleRunInteraction = () => (
-    this.props.isInteraction
-      ? InteractionManager.runAfterInteractions(this.handlePress)
-      : this.handlePress()
-  )
+  handlePressStart = () => {
+    const { onPressStart } = this.props;
+
+    if (onPressStart) {
+      this.handleRunInteraction(onPressStart);
+    }
+  }
+
+  handleRunInteraction = (functionToRun) => {
+    const action = isFunction(functionToRun) ? functionToRun : this.handlePress;
+
+    return this.props.isInteraction
+      ? InteractionManager.runAfterInteractions(action)
+      : action();
+  }
 
   render = () => {
     const {
@@ -251,15 +270,23 @@ export default class ButtonPressAnimation extends PureComponent {
               onChange(
                 this.gestureState,
                 cond(
-                  eq(this.gestureState, ACTIVE),
-                  call([], this.createInteraction),
+                  eq(this.gestureState, BEGAN),
+                  call([], [
+                    this.createInteraction,
+                    this.handlePressStart,
+                  ]),
                   // else if
                   cond(
-                    eq(this.gestureState, END),
-                    [
-                      call([], this.handleHaptic),
-                      call([], this.handleRunInteraction),
-                    ],
+                    eq(this.gestureState, ACTIVE),
+                    call([], this.createInteraction),
+                    // else if
+                    cond(
+                      eq(this.gestureState, END),
+                      [
+                        call([], this.handleHaptic),
+                        call([], this.handleRunInteraction),
+                      ],
+                    ),
                   ),
                 ),
               ),
