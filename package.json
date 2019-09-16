@@ -97,13 +97,13 @@
     "react-native-store-review": "^0.1.5",
     "react-native-svg": "^9.6.2",
     "react-native-tcp": "^3.3.0",
-    "react-native-text-input-mask": "quixley/react-native-text-input-mask#development",
+    "react-native-text-input-mask": "react-native-community/react-native-text-input-mask#abf0e7f538036bbc5719024fbd67a1efd756c4b9",
     "react-native-tooltip": "^5.2.0",
     "react-native-touch-id": "^4.4.1",
     "react-native-udp": "^2.6.1",
     "react-native-version-number": "^0.3.6",
     "react-navigation": "^3.11.1",
-    "react-navigation-stack": "^2.0.0-alpha.9",
+    "react-navigation-stack": "https://github.com/react-navigation/stack#95fe56e11b6f8bca3c4d24b619295651944d4d03",
     "react-navigation-tabs": "^2.3.0",
     "react-primitives": "^0.8.0",
     "react-redux": "^5.0.7",
@@ -117,7 +117,7 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
-    "rn-nodeify": "^10.0.1",
+    "rn-nodeify": "10.1.0",
     "socket.io-client": "^2.2.0",
     "stream-browserify": "^1.0.0",
     "string_decoder": "^0.10.31",
@@ -160,7 +160,7 @@
   },
   "resolutions": {
     "**/eslint-plugin-import": "2.14.0",
-    "**/react-navigation-stack": "https://github.com/react-navigation/stack#master",
+    "**/react-navigation-stack": "https://github.com/react-navigation/stack#95fe56e11b6f8bca3c4d24b619295651944d4d03",
     "**/resolve": "1.8.1"
   },
   "jest": {

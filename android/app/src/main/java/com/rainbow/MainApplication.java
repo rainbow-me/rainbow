@@ -3,6 +3,7 @@ package me.rainbow;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.RNTextInputMask.RNTextInputMaskPackage;
 import org.reactnative.maskedview.RNCMaskedViewPackage;
 import com.RNTextInputMask.RNTextInputMaskPackage;
 import com.segment.analytics.reactnative.core.RNAnalyticsPackage;
@@ -60,6 +61,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNTextInputMaskPackage(),
             new RNCMaskedViewPackage(),
             new RNTextInputMaskPackage(),
             new RNAnalyticsPackage(),

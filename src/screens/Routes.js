@@ -1,7 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
 import React from 'react';
-import Animated from 'react-native-reanimated';
 import {
   createAppContainer,
   createMaterialTopTabNavigator,
@@ -76,7 +75,7 @@ const MainNavigator = createStackNavigator({
   ExampleScreen,
   ExchangeModal: {
     navigationOptions: {
-      effect: 'expanded',
+      ...expandedPreset,
       gestureResponseDistance: {
         vertical: deviceUtils.dimensions.height,
       },
@@ -122,18 +121,6 @@ const MainNavigator = createStackNavigator({
     screen: SettingsModal,
     transparentCard: true,
 
-  },
-  ExchangeModal2: {
-    navigationOptions: {
-      effect: 'sheet',
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height,
-      },
-      mode: 'card',
-      gesturesEnabled: true,
-    },
-    mode: 'card',
-    screen: ExchangeModal,
   },
   SwipeLayout: {
     navigationOptions: {

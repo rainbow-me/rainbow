@@ -6,13 +6,11 @@ import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
 import ShadowItem from './ShadowItem';
 
-  // flex-shrink: 0;
 const ChildrenWrapper = styled.View`
   ${position.cover};
   background-color: ${({ backgroundColor }) => backgroundColor || colors.transparent};
   border-radius: ${({ borderRadius }) => borderRadius};
   overflow: hidden;
-  z-index: ${({ zIndex }) => zIndex};
 `;
 
 const ShadowStackContainer = styled.View`
@@ -30,8 +28,6 @@ const ShadowStackContainer = styled.View`
   border-radius: ${({ borderRadius }) => borderRadius};
   z-index: 1;
 `;
-  // width: ${({ width }) => width};
-  // height: ${({ height }) => height};
 
 const ShadowItemPropBlacklist = ['children', 'shadowProps', 'shadows', 'style'];
 

@@ -113,11 +113,6 @@ class WalletScreen extends Component {
       sections,
     } = this.props;
 
-    const blurTranslateY = blurOpacity.interpolate({
-      inputRange: [0, 0.001, 1],
-      outputRange: [deviceUtils.dimensions.height, 0, 0],
-    });
-
     return (
       <Page {...position.sizeAsObject('100%')} flex={1}>
         {/* Line below appears to be needed for having scrollViewTracker persistent while
