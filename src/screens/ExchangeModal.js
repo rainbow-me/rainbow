@@ -294,7 +294,12 @@ class ExchangeModal extends PureComponent {
   };
 
   getMarketDetails = async () => {
-    const { chainId, gasUpdateTxFee, nativeCurrency } = this.props;
+    const {
+      accountAddress,
+      chainId,
+      gasUpdateTxFee,
+      nativeCurrency,
+    } = this.props;
     const {
       inputAmount,
       inputAsExactAmount,
@@ -468,7 +473,7 @@ class ExchangeModal extends PureComponent {
         }
       }
       if (isAssetApproved) {
-        const gasLimit = await estimateSwapGasLimit(tradeDetails);
+        const gasLimit = await estimateSwapGasLimit(accountAddress, tradeDetails);
         gasUpdateTxFee(gasLimit);
       }
     } catch (error) {

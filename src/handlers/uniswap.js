@@ -43,38 +43,45 @@ export const getReserves = async () => {
   return keyBy(compact(reserves), reserve => toLower(get(reserve, 'token.address')));
 };
 
-const getGasLimit = (exchange, methodName, updatedMethodArgs, value) => {
+const getGasLimit = async (accountAddress, exchange, methodName, updatedMethodArgs, value) => {
+  const params = { from: accountAddress, value };
   switch (methodName) {
-    case 'ethToTokenSwapInput':
-      return exchange.estimate.ethToTokenSwapInput(...updatedMethodArgs, {
-        value,
-      });
-    case 'ethToTokenSwapOutput':
-      return exchange.estimate.ethToTokenSwapOutput(...updatedMethodArgs, {
-        value,
-      });
-    case 'tokenToEthSwapInput':
-      return exchange.estimate.tokenToEthSwapInput(...updatedMethodArgs, {
-        value,
-      });
-    case 'tokenToEthSwapOutput':
-      return exchange.estimate.tokenToEthSwapOutput(...updatedMethodArgs, {
-        value,
-      });
-    case 'tokenToTokenSwapInput':
-      return exchange.estimate.tokenToTokenSwapInput(...updatedMethodArgs, {
-        value,
-      });
-    case 'tokenToTokenSwapOutput':
-      return exchange.estimate.tokenToTokenSwapOutput(...updatedMethodArgs, {
-        value,
-      });
-    default:
-      return null;
+  case 'ethToTokenSwapInput':
+    return exchange.estimate.ethToTokenSwapInput(
+      ...updatedMethodArgs,
+      params,
+    );
+  case 'ethToTokenSwapOutput':
+    return exchange.estimate.ethToTokenSwapOutput(
+      ...updatedMethodArgs,
+      params,
+    );
+  case 'tokenToEthSwapInput':
+    return exchange.estimate.tokenToEthSwapInput(
+      ...updatedMethodArgs,
+      params,
+    );
+  case 'tokenToEthSwapOutput':
+    return exchange.estimate.tokenToEthSwapOutput(
+      ...updatedMethodArgs,
+      params,
+    );
+  case 'tokenToTokenSwapInput':
+    return exchange.estimate.tokenToTokenSwapInput(
+      ...updatedMethodArgs,
+      params,
+    );
+  case 'tokenToTokenSwapOutput':
+    return exchange.estimate.tokenToTokenSwapOutput(
+      ...updatedMethodArgs,
+      params,
+    );
+  default:
+    return null;
   }
 };
 
-export const estimateSwapGasLimit = async tradeDetails => {
+export const estimateSwapGasLimit = async (accountAddress, tradeDetails) => {
   try {
     const {
       exchange,
@@ -82,10 +89,9 @@ export const estimateSwapGasLimit = async tradeDetails => {
       updatedMethodArgs,
       value,
     } = getContractExecutionDetails(tradeDetails, web3Provider);
-    const gasLimit = await getGasLimit(exchange, methodName, updatedMethodArgs, value);
+    const gasLimit = await getGasLimit(accountAddress, exchange, methodName, updatedMethodArgs, value);
     return gasLimit ? gasLimit.toString() : null;
   } catch (error) {
-    console.log('error getting swap gas limit', error);
     return null;
   }
 };
