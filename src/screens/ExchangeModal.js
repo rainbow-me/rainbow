@@ -193,7 +193,9 @@ class ExchangeModal extends PureComponent {
     );
 
     const isNewAmount =
-      isNewNativeAmount || isNewInputAmount || isNewOutputAmount;
+      (this.state.inputAsExactAmount
+        && (isNewNativeAmount || isNewInputAmount))
+      || (!this.state.inputAsExactAmount && isNewOutputAmount);
     const isNewCurrency = isNewInputCurrency || isNewOutputCurrency;
 
     const input = toLower(get(this.state.inputCurrency, 'address'));
@@ -450,7 +452,7 @@ class ExchangeModal extends PureComponent {
             get(outputCurrency, 'price.value')
           );
 
-          this.setOutputAmount(rawUpdatedAmount, updatedAmountDisplay);
+          this.setOutputAmount(rawUpdatedAmount, updatedAmountDisplay, inputAsExactAmount);
         }
       }
 
@@ -469,7 +471,7 @@ class ExchangeModal extends PureComponent {
             get(inputCurrency, 'price.value')
           );
 
-          this.setInputAmount(rawUpdatedAmount, updatedAmountDisplay);
+          this.setInputAmount(rawUpdatedAmount, updatedAmountDisplay, inputAsExactAmount);
         }
       }
       if (isAssetApproved) {
@@ -611,13 +613,13 @@ class ExchangeModal extends PureComponent {
     });
   };
 
-  setInputAmount = (inputAmount, amountDisplay) => {
+  setInputAmount = (inputAmount, amountDisplay, inputAsExactAmount = true) => {
     this.setState(({ inputCurrency }) => {
       const newState = {
         inputAmount,
         inputAmountDisplay:
           amountDisplay !== undefined ? amountDisplay : inputAmount,
-        inputAsExactAmount: true,
+        inputAsExactAmount,
       };
 
       if (!this.nativeFieldRef.isFocused()) {
@@ -672,9 +674,9 @@ class ExchangeModal extends PureComponent {
     });
   };
 
-  setOutputAmount = (outputAmount, amountDisplay) => {
-    this.setState(() => ({
-      inputAsExactAmount: false,
+  setOutputAmount = (outputAmount, amountDisplay, inputAsExactAmount = false) => {
+    this.setState(({ outputCurrency }) => ({
+      inputAsExactAmount,
       outputAmount,
       outputAmountDisplay:
         amountDisplay !== undefined ? amountDisplay : outputAmount,
