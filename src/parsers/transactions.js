@@ -1,4 +1,5 @@
 import {
+  compact,
   concat,
   filter,
   find,
@@ -19,8 +20,11 @@ import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
+  subtract,
 } from '../helpers/utilities';
 import { isLowerCaseMatch } from '../utils';
+
+const DIRECTION_OUT = 'out';
 
 const dataFromLastTxHash = (transactionData, transactions) => {
   const lastSuccessfulTxn = find(transactions, (txn) => txn.hash && !txn.pending);
@@ -49,6 +53,24 @@ export default (
   const updatedResults = concat(updatedPendingTransactions, parsedTransactions, remainingTransactions);
   const dedupedResults = uniqBy(updatedResults, (txn) => txn.hash);
   return { approvalTransactions, dedupedResults };
+};
+
+const transformUniswapRefund = (internalTransactions) => {
+  const [txnsOut, txnsIn] = partition(internalTransactions, txn => txn.direction === DIRECTION_OUT);
+  const isSuccessfulSwap = txnsOut.length === 1 && (txnsIn.length === 1 || txnsIn.length === 2);
+  if (!isSuccessfulSwap) return internalTransactions;
+
+  const txnOut = txnsOut[0];
+  const txnIn = find(txnsIn, (txn) => txn.asset.asset_code !== txnOut.asset.asset_code);
+  const refund = find(txnsIn, (txn) => txn.asset.asset_code === txnOut.asset.asset_code);
+  let updatedOut = txnOut;
+  if (refund && txnOut) {
+    updatedOut = {
+      ...txnOut,
+      value: txnOut.value - refund.value,
+    };
+  }
+  return compact([updatedOut, txnIn]);
 };
 
 const parseTransaction = (txn, accountAddress, nativeCurrency) => {
@@ -92,6 +114,9 @@ const parseTransaction = (txn, accountAddress, nativeCurrency) => {
       value: 0,
     };
     internalTransactions = [ethInternalTransaction];
+  }
+  if (transaction.type === 'trade' && transaction.protocol === 'uniswap') {
+    internalTransactions = transformUniswapRefund(internalTransactions);
   }
   internalTransactions = internalTransactions.map((internalTxn, index) => {
     const symbol = get(internalTxn, 'asset.symbol') || '';
