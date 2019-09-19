@@ -15,13 +15,13 @@ import {
   sendTransaction,
 } from '../model/wallet';
 import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
-import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 import {
   isMessageDisplayType,
   isSignFirstParamType,
   isSignSecondParamType,
   SEND_TRANSACTION,
 } from '../utils/signingMethods';
+import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 
 class TransactionConfirmationScreenWithData extends PureComponent {
   static propTypes = {

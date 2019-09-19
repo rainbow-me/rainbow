@@ -13,11 +13,7 @@ import {
   ProfileHeaderButton,
 } from '../components/header';
 import { Page } from '../components/layout';
-import {
-  getSmallBalanceToggle,
-  getOpenInvestmentCards,
-  getOpenFamilies,
-} from '../handlers/commonStorage';
+import { getGlobal } from '../handlers/localstorage/common';
 import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import {
   withAccountData,
@@ -36,6 +32,10 @@ import { pushOpenInvestmentCard } from '../redux/openInvestmentCards';
 import store from '../redux/store';
 import { position } from '../styles';
 import { isNewValueForPath } from '../utils';
+
+const SMALL_BALANCE_TOGGLE = 'smallBalanceToggle';
+const OPEN_INVESTMENT_CARDS = 'openInvestmentCards';
+const OPEN_FAMILIES = 'openFamilies';
 
 class WalletScreen extends Component {
   static propTypes = {
@@ -122,9 +122,9 @@ class WalletScreen extends Component {
   };
 
   setInitialStatesForOpenAssets = async () => {
-    const toggle = await getSmallBalanceToggle();
-    const openInvestmentCards = await getOpenInvestmentCards();
-    const openFamilies = await getOpenFamilies();
+    const toggle = await getGlobal(SMALL_BALANCE_TOGGLE, false);
+    const openInvestmentCards = await getGlobal(OPEN_INVESTMENT_CARDS, {});
+    const openFamilies = await getGlobal(OPEN_FAMILIES, {});
     await store.dispatch(setOpenSmallBalances(toggle));
     await store.dispatch(pushOpenInvestmentCard(openInvestmentCards));
     await store.dispatch(pushOpenFamilyTab(openFamilies));
