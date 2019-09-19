@@ -1,16 +1,23 @@
+import {
+  find,
+  get,
+  isEmpty,
+  isNumber,
+} from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
-import { compose } from 'recompact';
+import React, { Fragment, PureComponent } from 'react';
+import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { Keyboard, Clipboard } from 'react-native';
 import { withNavigation } from 'react-navigation';
+import { withNeverRerender } from '../../hoc';
 import Divider from '../Divider';
 import { AddressField } from '../fields';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Label } from '../text';
 import { colors, padding } from '../../styles';
-import { PasteAddressButton, AddContactButton } from '../buttons';
+import { AddContactButton, PasteAddressButton } from '../buttons';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { deleteLocalContact } from '../../handlers/commonStorage';
 
@@ -21,116 +28,159 @@ const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
   width: 100%;
 `;
 
-const SendHeader = ({
-  onChangeAddressInput,
-  recipient,
-  onPressPaste,
-  isValidAddress,
-  contacts,
-  navigation,
-  onUpdateContacts,
-}) => {
-  let contact = {
-    address: '',
-    color: 0,
-    nickname: '',
+const SheetHandle = compose(
+  withNeverRerender,
+  withProps({
+    color: colors.sendScreen.grey,
+    height: 11,
+    marginTop: 13,
+    name: 'handle',
+  }),
+)(Icon);
+
+const contactPropType = PropTypes.shape({
+  address: PropTypes.string,
+  color: PropTypes.number,
+  nickname: PropTypes.string,
+});
+
+const DefaultContactItem = {
+  address: '',
+  color: 0,
+  nickname: '',
+};
+
+const getContactForRecipient = ({ contacts, recipient }) => {
+  let contact = DefaultContactItem;
+  if (recipient && contacts.length) {
+    const localContact = find(contacts, ({ address }) => (address === recipient));
+    contact = localContact || DefaultContactItem;
+  }
+
+  return { contact };
+};
+
+const openConfirmDeleteContactActionSheet = (handleSelection) => {
+  const config = {
+    cancelButtonIndex: 1,
+    destructiveButtonIndex: 0,
+    options: ['Delete Contact', 'Cancel'],
   };
-  if (contacts && contacts.length > 0) {
-    for (let i = 0; i < contacts.length; i++) {
-      if (recipient === contacts[i].address) {
-        contact = contacts[i];
-      }
+  return showActionSheetWithOptions(config, handleSelection);
+};
+
+const openContactActionSheet = (handleSelection) => {
+  const config = {
+    cancelButtonIndex: 3,
+    destructiveButtonIndex: 0,
+    options: [
+      'Delete Contact', // <-- destructiveButtonIndex
+      'Edit Contact',
+      'Copy Address',
+      'Cancel', // <-- cancelButtonIndex
+    ],
+  };
+  return showActionSheetWithOptions(config, handleSelection);
+};
+
+class SendHeader extends PureComponent {
+  static propTypes = {
+    contact: contactPropType,
+    contacts: PropTypes.arrayOf(contactPropType),
+    isValidAddress: PropTypes.bool,
+    navigation: PropTypes.any,
+    onChangeAddressInput: PropTypes.func,
+    onPressPaste: PropTypes.func,
+    onUpdateContacts: PropTypes.func,
+    recipient: PropTypes.string,
+  }
+
+  handleConfirmDeleteContactSelection = async (buttonIndex) => {
+    if (buttonIndex === 0) {
+      await deleteLocalContact(this.props.recipient);
+      this.props.onUpdateContacts();
     }
   }
 
-  return (
-    <Fragment>
-      <Icon
-        color={colors.sendScreen.grey}
-        name="handle"
-        style={{ height: 11, marginTop: 13 }}
-      />
-      <AddressInputContainer>
-        <Label style={{ marginRight: 6, opacity: 0.45 }}>
-          To:
-        </Label>
-        <AddressField
-          address={recipient}
-          autoFocus
-          onChange={onChangeAddressInput}
-          currentContact={contact}
-          name={contact.nickname}
-          contacts={contacts}
+  handleContactActionSheetSelection = async (buttonIndex) => {
+    if (buttonIndex === 0) {
+      openConfirmDeleteContactActionSheet(this.handleConfirmDeleteContactSelection);
+    } else if (buttonIndex === 1) {
+      this.navigateToContact(this.props.contact);
+    } else if (buttonIndex === 2) {
+      Clipboard.setString(this.props.recipient);
+    }
+  }
+
+  navigateToContact = (contact = {}) => {
+    const { navigation, onUpdateContacts, recipient } = this.props;
+
+    let color = get(contact, 'color');
+    if (!isNumber(color)) {
+      color = Math.floor(Math.random() * colors.avatarColor.length);
+    }
+
+    Keyboard.dismiss();
+    navigation.navigate('ExpandedAssetScreen', {
+      address: recipient,
+      asset: [],
+      color,
+      contact: isEmpty(contact) ? false : contact,
+      onCloseModal: onUpdateContacts,
+      type: 'contact',
+    });
+  }
+
+  openActionSheet = () => openContactActionSheet(this.handleContactActionSheetSelection)
+
+  render = () => {
+    const {
+      contact,
+      isValidAddress,
+      onChangeAddressInput,
+      onPressPaste,
+      recipient,
+    } = this.props;
+
+    const isPreExistingContact = contact.nickname.length > 0;
+
+    return (
+      <Fragment>
+        <SheetHandle />
+        <AddressInputContainer>
+          <Label style={{ marginRight: 6, opacity: 0.45 }}>
+            To:
+          </Label>
+          <AddressField
+            address={recipient}
+            autoFocus
+            currentContact={contact}
+            name={contact.nickname}
+            onChange={onChangeAddressInput}
+          />
+          {isValidAddress && (
+            <AddContactButton
+              edit={isPreExistingContact}
+              onPress={(
+                isPreExistingContact
+                  ? this.openActionSheet
+                  : this.navigateToContact
+              )}
+            />
+          )}
+          {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
+        </AddressInputContainer>
+        <Divider
+          color={colors.alpha(colors.blueGreyLight, 0.05)}
+          flex={0}
+          inset={false}
         />
-        {isValidAddress && contact.nickname.length > 0
-          && <AddContactButton edit onPress={() => {
-            showActionSheetWithOptions({
-              cancelButtonIndex: 3,
-              destructiveButtonIndex: 0,
-              options: ['Delete Contact', 'Edit Contact', 'Copy Address', 'Cancel'],
-            }, async (buttonIndex) => {
-              if (buttonIndex === 2) {
-                Clipboard.setString(recipient);
-              }
-              if (buttonIndex === 1) {
-                Keyboard.dismiss();
-                navigation.navigate('ExpandedAssetScreen', {
-                  address: recipient,
-                  asset: [],
-                  color: contact.color,
-                  contact,
-                  onCloseModal: onUpdateContacts,
-                  type: 'contact',
-                });
-              }
-              if (buttonIndex === 0) {
-                showActionSheetWithOptions({
-                  cancelButtonIndex: 1,
-                  destructiveButtonIndex: 0,
-                  options: ['Delete Contact', 'Cancel'],
-                }, async (deleteButtonIndex) => {
-                  if (deleteButtonIndex === 0) {
-                    await deleteLocalContact(recipient);
-                    onUpdateContacts();
-                  }
-                });
-              }
-            });
-          }} />
-        }
-        {isValidAddress && contact.nickname.length === 0
-          && <AddContactButton onPress={() => {
-            const contactColor = Math.floor(Math.random() * colors.avatarColor.length);
-            Keyboard.dismiss();
-            navigation.navigate('ExpandedAssetScreen', {
-              address: recipient,
-              asset: [],
-              color: contactColor,
-              contact: false,
-              onCloseModal: onUpdateContacts,
-              type: 'contact',
-            });
-          }} />
-        }
-        {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
-      </AddressInputContainer>
-      <Divider
-        color={colors.alpha(colors.blueGreyLight, 0.05)}
-        flex={0}
-        inset={false}
-      />
-    </Fragment>
-  );
-};
+      </Fragment>
+    );
+  }
+}
 
-SendHeader.propTypes = {
-  contacts: PropTypes.array,
-  isValidAddress: PropTypes.bool,
-  navigation: PropTypes.any,
-  onChangeAddressInput: PropTypes.func,
-  onPressPaste: PropTypes.func,
-  onUpdateContacts: PropTypes.func,
-  recipient: PropTypes.string,
-};
-
-export default compose(withNavigation)(SendHeader);
+export default compose(
+  withNavigation,
+  withProps(getContactForRecipient),
+)(SendHeader);

@@ -1,48 +1,30 @@
 import PropTypes from 'prop-types';
-import React from 'react';
-import { RecyclerListView, LayoutProvider, DataProvider } from 'recyclerlistview';
+import React, { Component } from 'react';
+import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 import { withNavigation } from 'react-navigation';
-import { compose } from 'recompact';
 import { deviceUtils } from '../../utils';
-import { colors } from '../../styles';
 import { FlyInAnimation } from '../animations';
-import { Icon } from '../icons';
-import { Centered, Column } from '../layout';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
-import SendAvatar from './SendAvatar';
-
-const rowHeight = 62;
+import { SwipeableContactRow } from '../contacts';
+import SendEmptyState from './SendEmptyState';
 
 const LastRowPadding = 12;
+const rowHeight = 62;
 
 let position = 0;
 
 const COIN_ROW = 1;
 const LAST_COIN_ROW = 1;
 
-class SendContactList extends React.Component {
-  changeCurrentlyUsedContact = (address) => {
-    this.currentlyOpenContact = address;
+class SendContactList extends Component {
+  static propTypes = {
+    allAssets: PropTypes.array,
+    currentInput: PropTypes.string,
+    navigation: PropTypes.object,
+    onPressContact: PropTypes.func,
+    onUpdateContacts: PropTypes.array,
   }
-
-  closeAllDifferentContacts = (address) => {
-    this.touchedContact = address;
-    this.recentlyRendered = false;
-    this.setState({ touchedContact: address });
-  }
-
-  balancesRenderItem = item => (
-    <SendAvatar
-      onTouch={this.closeAllDifferentContacts}
-      onTransitionEnd={this.changeCurrentlyUsedContact}
-      onChange={this.props.onUpdateContacts}
-      onPress={this.props.onPressContact}
-      navigation={this.props.navigation}
-      currentlyOpenContact={this.touchedContact}
-      {...item}
-    />
-  );
 
   constructor(args) {
     super(args);
@@ -51,6 +33,10 @@ class SendContactList extends React.Component {
       contacts: [],
     };
 
+    this.currentlyOpenContact = undefined;
+    this.recentlyRendered = false;
+    this.touchedContact = undefined;
+
     this._layoutProvider = new LayoutProvider((i) => {
       if (i === this.state.contacts.length - 1) {
         return LAST_COIN_ROW;
@@ -58,24 +44,23 @@ class SendContactList extends React.Component {
       return COIN_ROW;
     }, (type, dim) => {
       if (type === COIN_ROW) {
-        dim.width = deviceUtils.dimensions.width;
         dim.height = rowHeight;
-      } else if (type === LAST_COIN_ROW) {
         dim.width = deviceUtils.dimensions.width;
+      } else if (type === LAST_COIN_ROW) {
         dim.height = rowHeight + LastRowPadding;
+        dim.width = deviceUtils.dimensions.width;
       } else {
-        dim.width = 0;
         dim.height = 0;
+        dim.width = 0;
       }
     });
-    this._renderRow = this._renderRow.bind(this);
-    this.currentlyOpenContact = undefined;
-    this.touchedContact = undefined;
-    this.recentlyRendered = false;
   }
 
-  _renderRow(type, data) {
-    return this.balancesRenderItem(data);
+  shouldComponentUpdate = () => {
+    if (position < 0) {
+      return false;
+    }
+    return true;
   }
 
   componentWillReceiveProps = (props) => {
@@ -85,6 +70,15 @@ class SendContactList extends React.Component {
     if (newAssets !== this.state.contacts) {
       this.setState({ contacts: newAssets });
     }
+  }
+
+  changeCurrentlyUsedContact = (address) => {
+    this.currentlyOpenContact = address;
+  }
+
+  closeAllDifferentContacts = (address) => {
+    this.touchedContact = address;
+    this.recentlyRendered = false;
   }
 
   filterContactList = (list, searchPhrase, searchParameter = false, separator = ' ') => {
@@ -108,66 +102,52 @@ class SendContactList extends React.Component {
     return filteredList;
   }
 
-  shouldComponentUpdate = () => {
-    if (position < 0) {
-      return false;
-    }
-    return true;
+  handleScroll = (event, offsetX, offsetY) => {
+    position = offsetY;
   }
 
-  render() {
-    return (
-      <FlyInAnimation style={{ flex: 1, paddingBottom: sheetVerticalOffset, width: '100%' }}>
-        {this.state.contacts.length === 0
-          ? <Column
-            css={`
-              background-color: ${colors.white};
-              padding-bottom: ${sheetVerticalOffset + 19};
-            `}
-            flex={1}
-            justify="space-between"
-          >
-            <Centered flex={1} opacity={0.06}>
-              <Icon
-                color={colors.blueGreyDark}
-                name="send"
-                style={{ height: 88, width: 91 }}
-              />
-            </Centered>
-          </Column>
-          : <RecyclerListView
-            rowRenderer={this._renderRow}
-            dataProvider={
-              new DataProvider((r1, r2) => {
-                if (this.touchedContact && this.currentlyOpenContact && this.touchedContact !== this.currentlyOpenContact && !this.recentlyRendered) {
-                  if (r2 === this.state.contacts[this.state.contacts.length - 1]) {
-                    this.recentlyRendered = true;
-                  }
-                  return true;
-                } if (r1 !== r2) {
-                  return true;
-                }
-                return false;
-              }).cloneWithRows(this.state.contacts)
-            }
-            layoutProvider={this._layoutProvider}
-            onScroll={(event, _offsetX, offsetY) => {
-              position = offsetY;
-            }}
-            optimizeForInsertDeleteAnimations
-          />
-        }
-      </FlyInAnimation>
-    );
+  hasRowChanged = (r1, r2) => {
+    const { contacts } = this.state;
+
+    if (this.touchedContact && this.currentlyOpenContact && this.touchedContact !== this.currentlyOpenContact && !this.recentlyRendered) {
+      if (r2 === contacts[contacts.length - 1]) {
+        this.recentlyRendered = true;
+      }
+      return true;
+    } if (r1 !== r2) {
+      return true;
+    }
+    return false;
   }
+
+  renderItem = (type, item) => (
+    <SwipeableContactRow
+      currentlyOpenContact={this.touchedContact}
+      navigation={this.props.navigation}
+      onChange={this.props.onUpdateContacts}
+      onPress={this.props.onPressContact}
+      onTouch={this.closeAllDifferentContacts}
+      onTransitionEnd={this.changeCurrentlyUsedContact}
+      {...item}
+    />
+  )
+
+  render = () => (
+    <FlyInAnimation style={{ flex: 1, paddingBottom: sheetVerticalOffset, width: '100%' }}>
+      {this.state.contacts.length === 0
+        ? <SendEmptyState />
+        : (
+          <RecyclerListView
+            dataProvider={new DataProvider(this.hasRowChanged).cloneWithRows(this.state.contacts)}
+            layoutProvider={this._layoutProvider}
+            onScroll={this.handleScroll}
+            optimizeForInsertDeleteAnimations
+            rowRenderer={this.renderItem}
+          />
+        )
+      }
+    </FlyInAnimation>
+  )
 }
 
-SendContactList.propTypes = {
-  allAssets: PropTypes.array,
-  currentInput: PropTypes.string,
-  navigation: PropTypes.object,
-  onPressContact: PropTypes.func,
-  onUpdateContacts: PropTypes.array,
-};
-
-export default compose(withNavigation)(SendContactList);
+export default withNavigation(SendContactList);

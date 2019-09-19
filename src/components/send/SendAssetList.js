@@ -26,8 +26,8 @@ const familyHeaderHeight = 64;
 const dividerHeight = 18;
 
 const Divider = styled.View`
-  height: 2px;
   background-color: ${colors.lighterGrey};
+  height: 2px;
   margin: 10px 19px;
   width: 100%;
 `;
@@ -65,8 +65,7 @@ class SendAssetList extends React.Component {
       const renderSize = familyHeaderHeight + this.props.uniqueTokens[index].data.length * rowHeight;
       const screenHeight = this.position + this.componentHeight;
       if(heightBelow + renderSize + 64 > screenHeight) {
-        const diff = this.position + (heightBelow + renderSize - screenHeight + familyHeaderHeight);
-        if( renderSize < this.componentHeight) {
+        if(renderSize < this.componentHeight) {
           setTimeout(() => {
             this.rlv.scrollToOffset(0, this.position + (heightBelow + renderSize - screenHeight + familyHeaderHeight), true);
           }, 10);

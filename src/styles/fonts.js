@@ -41,6 +41,7 @@ font.size = {
   blarge: '21px',
   big: '22px',
   bigger: '26px',
+  biggest: '27px',
   h1: '42px',
   h2: '30px',
   h3: '24px',

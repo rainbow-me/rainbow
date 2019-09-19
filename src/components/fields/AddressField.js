@@ -9,15 +9,15 @@ import { colors, fonts } from '../../styles';
 import { Label } from '../text';
 import { isValidAddress } from '../../helpers/validators';
 import { isHexString } from '../../handlers/web3';
-import { abbreviations, addressUtils } from '../../utils';
+import { abbreviations, addressUtils, isNewValueForPath } from '../../utils';
 
 const AddressInput = styled(TextInput)`
   flex-grow: 1;
+  font-family: ${fonts.family.SFProText};
+  font-size: ${fonts.size.bmedium};
+  font-weight: ${fonts.weight.semibold};
   margin-top: 1;
   z-index: 1;
-  font-family: ${fonts.family.SFProText};
-  font-weight: ${fonts.weight.semibold};
-  font-size: ${fonts.size.bmedium};
 `;
 
 const Placeholder = styled(Row)`
@@ -52,41 +52,52 @@ export default class AddressField extends PureComponent {
     isValid: false,
   }
 
-  shouldComponentUpdate(props, state) {
-    if (state.inputValue === this.state.inputValue
-      && !(this.props.currentContact.nickname !== props.currentContact.nickname)
-      && !(this.props.address && !this.state.address)
-      && this.state.isValid === state.isValid) {
-      return false;
-    }
-    return true;
+  inputRef = undefined
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const isNewAddress = isNewValueForPath(this.props, this.state, 'address');
+    const isNewInputValue = isNewValueForPath(this.state, nextState, 'inputValue');
+    const isNewNickname = isNewValueForPath(this.props, nextProps, 'currentContact.nickname');
+    const isNewValid = isNewValueForPath(this.state, nextState, 'isValid');
+    return (
+      isNewAddress
+      || isNewInputValue
+      || isNewNickname
+      || isNewValid
+    );
   }
 
-  componentDidUpdate(props) {
-    if (this.props.currentContact.nickname !== props.currentContact.nickname) {
-      this.setState({
-        address: this.props.address,
-        currentContact: this.props.currentContact,
-        inputValue: this.props.currentContact.nickname ? this.props.currentContact.nickname : this.props.address,
+  componentDidUpdate(prevProps) {
+    const { address, currentContact } = this.props;
+
+    const isNewNickname = isNewValueForPath(this.props, prevProps, 'currentContact.nickname');
+    const isNewAddress = address !== this.state.address;
+
+    if (isNewAddress || isNewNickname) {
+      const newState = {
+        address,
+        inputValue: currentContact.nickname ? currentContact.nickname : address,
         isValid: true,
-      });
-    } else if (this.props.address && !this.state.address) {
-      this.setState({
-        address: this.props.address,
-        inputValue: this.props.currentContact.nickname ? this.props.currentContact.nickname : this.props.address,
-        isValid: true,
-      });
+      };
+
+      if (isNewNickname) {
+        newState.currentContact = currentContact;
+      }
+
+      this.setState(newState);
     }
   }
 
-  onChange = ({ nativeEvent }) => {
-    this.props.onChange(nativeEvent.text);
-    this.validateAddress(nativeEvent.text);
+  handleInputRef = (ref) => { this.inputRef = ref; }
+
+  onChange = ({ nativeEvent: { text } }) => {
+    this.props.onChange(text);
+    this.validateAddress(text);
     this.checkClipboard(this.state.address);
-    return this.setState({ address: nativeEvent.text });
+    return this.setState({ address: text });
   }
 
-  onChangeText = inputValue => this.setState({ inputValue });
+  onChangeText = inputValue => this.setState({ inputValue })
 
   validateAddress = async (address) => {
     const isValid = await isValidAddress(address);
@@ -105,7 +116,7 @@ export default class AddressField extends PureComponent {
   }
 
   onPressNickname = () => {
-    input.focus();
+    this.inputRef.focus();
   }
 
   render() {
@@ -115,18 +126,18 @@ export default class AddressField extends PureComponent {
     return (
       <Row flex={1}>
         <AddressInput
-          ref={x => input = x}
           {...props}
           {...omit(Label.textProps, 'opacity')}
           autoCorrect={false}
           autoFocus={autoFocus}
           color={isValid ? colors.appleBlue : colors.blueGreyDark}
           maxLength={addressUtils.maxLength}
+          onBlur={this.onBlur}
           onChange={this.onChange}
           onChangeText={this.onChangeText}
+          ref={this.handleInputRef}
           selectTextOnFocus={true}
           value={formatValue(inputValue)}
-          onBlur={this.onBlur}
         />
         {!inputValue && (
           <Placeholder>

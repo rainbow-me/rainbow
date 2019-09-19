@@ -1,31 +1,47 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { abbreviations } from '../../utils';
-import Monospace from './Monospace';
+import Text from './Text';
 
 const TruncatedAddress = ({
   address,
   firstSectionLength,
+  monospace,
+  shouldTruncate,
   truncationLength,
   ...props
-}) => (
-  <Monospace
-    {...props}
-    adjustsFontSizeToFit={true}
-    minimumFontScale={0.5}
-    numberOfLines={1}
-  >
-    {address
+}) => {
+  let text = 'Error displaying address';
+  if (address) {
+    text = shouldTruncate
       ? abbreviations.address(address, truncationLength, firstSectionLength)
-      : 'Error displaying address'
-    }
-  </Monospace>
-);
+      : address;
+  }
+
+  return (
+    <Text
+      {...props}
+      adjustsFontSizeToFit={true}
+      minimumFontScale={0.5}
+      monospace={monospace}
+      numberOfLines={1}
+    >
+      {text}
+    </Text>
+  );
+};
 
 TruncatedAddress.propTypes = {
   address: PropTypes.string,
   firstSectionLength: PropTypes.number,
+  monospace: PropTypes.bool,
+  shouldTruncate: PropTypes.bool,
   truncationLength: PropTypes.number,
+};
+
+TruncatedAddress.defaultProps = {
+  monospace: true,
+  shouldTruncate: true,
 };
 
 export default TruncatedAddress;

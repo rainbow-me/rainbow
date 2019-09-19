@@ -51,7 +51,7 @@ const avatarColor = [
   '#40ebc1', // '64, 235, 193'
   '#f46e38', // '244, 110, 56'
   '#6d7e8f', // '109, 126, 143'
-]
+];
 
 const assetIcon = {
   blue: '#7dabf0', // '125, 171, 240'
@@ -108,11 +108,11 @@ const transparent = {
 const colors = {
   alpha: buildRgba,
   assetIcon,
+  avatarColor,
   getFallbackTextColor,
   getTextColorForBackground,
   isColorLight,
   sendScreen,
-  avatarColor,
   ...base,
   ...transparent,
   ...vendor,

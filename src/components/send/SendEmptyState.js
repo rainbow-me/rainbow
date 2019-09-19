@@ -1,36 +1,51 @@
 import PropTypes from 'prop-types';
-import React from 'react';
-import { PasteAddressButton } from '../buttons';
+import React, { useEffect, useRef } from 'react';
+import { Transitioning, Transition } from 'react-native-reanimated';
 import { Icon } from '../icons';
-import { Centered, Column, Row } from '../layout';
-import { withNeverRerender } from '../../hoc';
+import { Centered } from '../layout';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';
-import { colors, padding } from '../../styles';
+import { colors } from '../../styles';
 
-const SendEmptyState = ({ onPressPaste }) => (
-  <Column
-    css={`
-      background-color: ${colors.white};
-      padding-bottom: ${sheetVerticalOffset + 19};
-    `}
-    flex={1}
-    justify="space-between"
-  >
-    <Centered flex={1} opacity={0.06}>
-      <Icon
-        color={colors.blueGreyDark}
-        name="send"
-        style={{ height: 88, width: 91 }}
-      />
-    </Centered>
-    <Row css={padding(0, 15)} justify="end" width="100%">
-      <PasteAddressButton onPress={onPressPaste}/>
-    </Row>
-  </Column>
+const duration = 200;
+const transition = (
+  <Transition.Sequence>
+    <Transition.Out durationMs={duration} interpolation="easeIn" type="fade" />
+    <Transition.Change durationMs={duration} interpolation="easeInOut" />
+    <Transition.Together>
+      <Transition.In delayMs={duration} durationMs={duration} interpolation="easeOut" type="fade" />
+      <Transition.In delayMs={duration} durationMs={duration / 2} interpolation="easeIn" type="scale" />
+      <Transition.In delayMs={duration} durationMs={duration} interpolation="easeInOut" type="slide-bottom" />
+    </Transition.Together>
+  </Transition.Sequence>
 );
+
+const SendEmptyState = () => {
+  const ref = useRef();
+  useEffect(() => (ref && ref.current ? ref.current.animateNextTransition() : undefined));
+
+  return (
+    <Centered
+      backgroundColor={colors.white}
+      flex={1}
+      justify="space-between"
+      paddingBottom={sheetVerticalOffset + 19}
+    >
+      <Transitioning.View ref={ref} transition={transition}>
+        <Icon
+          color={colors.alpha(colors.blueGreyDark, 0.06)}
+          name="send"
+          style={{
+            height: 88,
+            width: 91,
+          }}
+        />
+      </Transitioning.View>
+    </Centered>
+  );
+};
 
 SendEmptyState.propTypes = {
   onPressPaste: PropTypes.func.isRequired,
 };
 
-export default withNeverRerender(SendEmptyState);
+export default SendEmptyState;

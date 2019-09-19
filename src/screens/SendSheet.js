@@ -91,13 +91,10 @@ class SendSheet extends Component {
     isValidAddress: false,
   }
 
-  constructor(args) {
-    super(args);
-    this.state = {
-      isAuthorizing: false,
-      contacts: [],
-      currentInput: '',
-    }
+  state = {
+    contacts: [],
+    currentInput: '',
+    isAuthorizing: false,
   }
 
   componentDidMount = async () => {
@@ -232,7 +229,7 @@ class SendSheet extends Component {
 
   onUpdateContacts = async () => {
     const contacts = await getLocalContacts();
-    this.setState({ contacts: contacts });
+    this.setState({ contacts });
   }
 
   onChangeInput = (event) => {
@@ -262,13 +259,13 @@ class SendSheet extends Component {
         <KeyboardAvoidingView behavior="padding" enabled={!showAssetList}>
           <Container align="center">
             <SendHeader
-              isValid={isValidAddress}
-              onChangeAddressInput={this.onChangeInput}
-              recipient={recipient}
-              onPressPaste={sendUpdateRecipient}
               contacts={this.state.contacts}
+              isValid={isValidAddress}
               isValidAddress={isValidAddress}
+              onChangeAddressInput={this.onChangeInput}
+              onPressPaste={sendUpdateRecipient}
               onUpdateContacts={this.onUpdateContacts}
+              recipient={recipient}
             />
             {showEmptyState && (
               <SendContactList
