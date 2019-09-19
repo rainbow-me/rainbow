@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { createElement } from 'react';
+import React, { Component, createElement } from 'react';
 import { StatusBar } from 'react-native';
 import {
   AddContactState,
@@ -26,64 +26,59 @@ const ScreenTypes = {
   uniswap: InvestmentExpandedState,
 };
 
-class ExpandedAssetScreen extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      value: "",
-      color: 0,
-      shouldSave: false,
-    };
+export default class ExpandedAssetScreen extends Component {
+  static propTypes = {
+    address: PropTypes.string,
+    asset: PropTypes.object,
+    containerPadding: PropTypes.number.isRequired,
+    onCloseModal: PropTypes.func,
+    onPressBackground: PropTypes.func,
+    panelWidth: PropTypes.number,
+    type: PropTypes.oneOf(Object.keys(ScreenTypes)).isRequired,
   }
 
-  shouldComponentUpdate = () => {
-    return false;
+  static defaultProps = {
+    containerPadding: 15,
   }
+
+  state = {
+    color: 0,
+    shouldSave: false,
+    value: '',
+  }
+
+  shouldComponentUpdate = () => false
 
   componentWillUnmount = async () => {
-    if (this.state.shouldSave && this.props.type == "contact" && this.state.value.length > 0) {
-      await addNewLocalContact(this.props.address, this.state.value, this.state.color);
-      this.props.onCloseModal();
+    const { address, onCloseModal, type } = this.props;
+    const { color, shouldSave, value } = this.state;
+
+    if (type === 'contact' && shouldSave && value.length > 0) {
+      await addNewLocalContact(address, value, color);
+      onCloseModal();
     }
   }
 
   setNewValuesToSave = (value, color, shouldSave = true) => {
     this.setState({
-      value: value,
-      color: color,
-      shouldSave: shouldSave,
+      color,
+      shouldSave,
+      value,
     });
   }
 
-  render() {
-  let newProps = Object.assign({}, this.props);
-  newProps.onUnmountModal = this.setNewValuesToSave;
-
-  return (
-  <Centered
-    {...deviceUtils.dimensions}
-    css={padding(safeAreaTop, this.props.containerPadding, safeAreaBottom || safeAreaTop)}
-    direction="column"
-  >
-    <StatusBar barStyle="light-content" />
-    <TouchableBackdrop onPress={this.props.onPressBackground} />
-    {createElement(ScreenTypes[this.props.type], newProps)}
-  </Centered>
+  render = () => (
+    <Centered
+      {...deviceUtils.dimensions}
+      css={padding(safeAreaTop, this.props.containerPadding, safeAreaBottom || safeAreaTop)}
+      direction="column"
+    >
+      <StatusBar barStyle="light-content" />
+      <TouchableBackdrop onPress={this.props.onPressBackground} />
+      {createElement(ScreenTypes[this.props.type], {
+        ...this.props,
+        onUnmountModal: this.setNewValuesToSave,
+      })}
+    </Centered>
   )
-  }
-};
-
-ExpandedAssetScreen.propTypes = {
-  asset: PropTypes.object,
-  containerPadding: PropTypes.number.isRequired,
-  onPressBackground: PropTypes.func,
-  panelWidth: PropTypes.number,
-  type: PropTypes.oneOf(Object.keys(ScreenTypes)).isRequired,
-};
-
-ExpandedAssetScreen.defaultProps = {
-  containerPadding: 15,
-};
-
-export default ExpandedAssetScreen;
+}
