@@ -8,22 +8,21 @@ import {
   withHandlers,
 } from 'recompact';
 import { Linking } from 'react-native';
+import { withNavigation } from 'react-navigation';
 import { css } from 'styled-components/primitives';
+import { getSelectedLocalContact } from '../../handlers/commonStorage';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { colors } from '../../styles';
+import { abbreviations } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { ButtonPressAnimation } from '../animations';
 import { FlexItem, Row, RowWithMargins } from '../layout';
-import BottomRowText from './BottomRowText';
 import BalanceText from './BalanceText';
+import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
-import { withNavigation } from 'react-navigation';
-import { abbreviations } from '../../utils';
-import { getSelectedLocalContact, getNumberOfLocalContacts } from '../../handlers/commonStorage';
 
-// XXX after rebase, not sure if still needed
 const containerStyles = css`
   paddingLeft: 15;
 `;
@@ -69,15 +68,8 @@ const BottomRow = ({ name, native, status }) => {
 BottomRow.propTypes = rowRenderPropTypes;
 
 const TopRow = ({ balance, pending, status }) => (
-  <RowWithMargins
-    align="center"
-    justify="space-between"
-    margin={19}
-  >
-    <TransactionStatusBadge
-      pending={pending}
-      status={status}
-    />
+  <RowWithMargins align="center" justify="space-between" margin={19}>
+    <TransactionStatusBadge pending={pending} status={status}/>
     <Row align="center" flex={1} justify="end">
       <BottomRowText>
         {get(balance, 'display', '')}
@@ -122,39 +114,39 @@ export default compose(
   withNavigation,
   withHandlers({
     onPressTransaction: ({ hash, item, navigation }) => async () => {
-      let headerInfo = {
-        type: "",
-        divider: "",
-        address: "",
-      }
-      headerInfo.type = item.status.charAt(0).toUpperCase() + item.status.slice(1);
-      headerInfo.divider = item.status === "sent" ? "to" : "from";
+      const { from, to, status } = item;
+      const isSent = status === 'sent';
 
-      const contactAddressNumber = item.status === "sent" ? item.to : item.from;
-      const contact = await getSelectedLocalContact(contactAddressNumber);
-      const contactsAmount = await getNumberOfLocalContacts();
+      const headerInfo = {
+        address: '',
+        divider: isSent ? 'to' : 'from',
+        type: status.charAt(0).toUpperCase() + status.slice(1),
+      };
+
+      const contactAddress = isSent ? to : from;
+      const contact = await getSelectedLocalContact(contactAddress);
       let contactColor = 0;
 
       if (contact) {
         headerInfo.address = contact.nickname;
         contactColor = contact.color;
       } else {
-        headerInfo.address = abbreviations.address(contactAddressNumber, 4, 10);
+        headerInfo.address = abbreviations.address(contactAddress, 4, 10);
         contactColor = Math.floor(Math.random() * colors.avatarColor.length);
       }
 
       if (hash) {
         showActionSheetWithOptions({
-          title: `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
           cancelButtonIndex: 2,
           options: [contact ? 'View Contact' : 'Add to Contacts', 'View on Etherscan', 'Cancel'],
+          title: `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
         }, (buttonIndex) => {
           if (buttonIndex === 0) {
             navigation.navigate('ExpandedAssetScreen', {
-              address: contactAddressNumber,
-              color: contactColor,
+              address: contactAddress,
               asset: item,
-              contact: contact,
+              color: contactColor,
+              contact,
               type: 'contact',
             });
           } else if (buttonIndex === 1) {
