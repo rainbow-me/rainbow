@@ -1,18 +1,8 @@
-import {
-  isFunction,
-  omit,
-  pick,
-  toUpper,
-} from 'lodash';
+import { omit, pick, toUpper } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { InteractionManager } from 'react-native';
-import {
-  createNativeWrapper,
-  LongPressGestureHandler,
-  PureNativeButton,
-  State,
-} from 'react-native-gesture-handler';
+import { createNativeWrapper, PureNativeButton, State } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing } from 'react-native-reanimated';
 import {
@@ -71,7 +61,7 @@ const AnimatedRawButton = createNativeWrapper(
   createAnimatedComponent(PureNativeButton),
   {
     shouldActivateOnStart: true,
-    shouldCancelWhenOutside: false,
+    shouldCancelWhenOutside: true,
   },
 );
 
@@ -105,6 +95,7 @@ export default class ButtonPressAnimation extends PureComponent {
     exclusive: PropTypes.bool,
     hapticType: PropTypes.oneOf(Object.keys(HapticFeedbackTypes)),
     isInteraction: PropTypes.bool,
+    minLongPressDuration: PropTypes.number,
     onLongPress: PropTypes.func,
     onPress: PropTypes.func,
     onPressStart: PropTypes.func,
@@ -122,6 +113,7 @@ export default class ButtonPressAnimation extends PureComponent {
     enableHapticFeedback: true,
     exclusive: true,
     hapticType: HapticFeedbackTypes.selection,
+    minLongPressDuration: 500,
     scaleTo: animations.keyframes.button.to.scale,
   }
 
@@ -131,6 +123,8 @@ export default class ButtonPressAnimation extends PureComponent {
     this.clock = new Clock();
     this.gestureState = new Value(UNDETERMINED);
     this.handle = undefined;
+    this.longPressDetected = false;
+    this.longPressTimeout = undefined;
     this.scale = new Value(1);
     this.shouldSpring = new Value(-1);
 
@@ -158,7 +152,7 @@ export default class ButtonPressAnimation extends PureComponent {
   }
 
   componentWillUnmount = () => {
-    this.clearInteraction();
+    this.reset();
   }
 
   clearInteraction = () => {
@@ -168,9 +162,23 @@ export default class ButtonPressAnimation extends PureComponent {
     }
   }
 
+  clearLongPressListener = () => {
+    this.longPressDetected = false;
+    if (this.longPressTimeout) {
+      clearTimeout(this.longPressTimeout);
+    }
+  }
+
   createInteraction = () => {
     if (this.props.isInteraction && !this.handle) {
       this.handle = InteractionManager.createInteractionHandle();
+    }
+  }
+
+  createLongPressListener = () => {
+    const { minLongPressDuration, onLongPress } = this.props;
+    if (onLongPress) {
+      this.longPressTimeout = setTimeout(this.handleDetectedLongPress, minLongPressDuration);
     }
   }
 
@@ -189,37 +197,35 @@ export default class ButtonPressAnimation extends PureComponent {
     }
   }
 
-  handleLongPress = ({ nativeEvent: { state } }) => {
-    const { onLongPress } = this.props;
-
-    if (state === State.ACTIVE && onLongPress) {
-      onLongPress();
-    }
+  handleDetectedLongPress = () => {
+    this.longPressDetected = true;
+    this.props.onLongPress();
   }
 
   handlePress = () => {
-    if (this.props.onPress) {
+    if (!this.longPressDetected && this.props.onPress) {
       this.props.onPress();
     }
   }
 
   handlePressStart = () => {
-    const { onPressStart } = this.props;
-
-    if (onPressStart) {
-      this.handleRunInteraction(onPressStart);
+    if (this.props.onPressStart) {
+      this.props.onPressStart();
     }
   }
 
-  handleRunInteraction = (functionToRun) => {
-    const action = isFunction(functionToRun) ? functionToRun : this.handlePress;
+  handleRunInteraction = () => (
+    this.props.isInteraction
+      ? InteractionManager.runAfterInteractions(this.handlePress)
+      : this.handlePress()
+  )
 
-    return this.props.isInteraction
-      ? InteractionManager.runAfterInteractions(action)
-      : action();
+  reset = () => {
+    this.clearInteraction();
+    this.clearLongPressListener();
   }
 
-  renderButton = () => {
+  render = () => {
     const {
       activeOpacity,
       children,
@@ -285,37 +291,39 @@ export default class ButtonPressAnimation extends PureComponent {
               ),
               cond(
                 contains([FAILED, CANCELLED], this.gestureState),
-                set(this.shouldSpring, 0),
+                [
+                  set(this.shouldSpring, 0),
+                  this.reset(),
+                ],
               ),
               onChange(
                 this.gestureState,
                 cond(
-                  eq(this.gestureState, BEGAN),
-                  call([], [
-                    this.createInteraction,
-                    this.handlePressStart,
-                  ]),
+                  eq(this.gestureState, ACTIVE),
+                  [
+                    call([], this.createInteraction),
+                    call([], this.createLongPressListener),
+                    call([], this.handlePressStart),
+                  ],
                   // else if
                   cond(
-                    eq(this.gestureState, ACTIVE),
-                    call([], this.createInteraction),
-                    // else if
-                    cond(
-                      eq(this.gestureState, END),
-                      [
-                        call([], this.handleHaptic),
-                        call([], this.handleRunInteraction),
-                      ],
-                    ),
+                    eq(this.gestureState, END),
+                    [
+                      call([], this.handleHaptic),
+                      call([], this.handleRunInteraction),
+                    ],
                   ),
                 ),
               ),
               cond(
                 eq(this.gestureState, END),
-                runDelay([
-                  set(this.shouldSpring, 0),
-                  call([], this.clearInteraction),
-                ], duration),
+                runDelay(
+                  [
+                    set(this.shouldSpring, 0),
+                    call([], this.clearInteraction),
+                  ],
+                  duration,
+                ),
               ),
               set(
                 this.scale,
@@ -331,19 +339,4 @@ export default class ButtonPressAnimation extends PureComponent {
       </Fragment>
     );
   }
-
-  renderLongPressButton = () => (
-    <LongPressGestureHandler
-      minDurationMs={500}
-      onHandlerStateChange={this.handleLongPress}
-    >
-      {this.renderButton()}
-    </LongPressGestureHandler>
-  )
-
-  render = () => (
-    this.props.onLongPress
-      ? this.renderLongPressButton()
-      : this.renderButton()
-  )
 }
