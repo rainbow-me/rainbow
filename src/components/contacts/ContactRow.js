@@ -48,7 +48,6 @@ const ContactRow = ({
         <TruncatedContactAddress
           address={address}
           firstSectionLength={abbreviations.defaultNumCharsPerSection}
-          shouldTruncate={(address || '').substring(0, 2).toLowerCase() === '0x'}
           truncationLength={4}
         />
       </Column>
