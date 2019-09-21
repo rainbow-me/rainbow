@@ -293,7 +293,7 @@ export default class ButtonPressAnimation extends PureComponent {
                 contains([FAILED, CANCELLED], this.gestureState),
                 [
                   set(this.shouldSpring, 0),
-                  this.reset(),
+                  call([], this.reset),
                 ],
               ),
               onChange(
