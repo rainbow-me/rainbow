@@ -7,15 +7,9 @@ import {
   values,
 } from 'lodash';
 import { connect } from 'react-redux';
-import {
-  compose,
-  withProps,
-} from 'recompact';
+import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';
-import {
-  uniswapAssetAddresses,
-  uniswapAssetsClean,
-} from '../references';
+import { uniswapAssetAddresses, uniswapAssetsClean } from '../references';
 import withAccountData from './withAccountData';
 
 const allAssetsSelector = state => state.allAssets;
@@ -46,12 +40,7 @@ const withSortedUniswapAssetsSelector = createSelector(
   withSortedUniswapAssets,
 );
 
-const mapStateToProps = ({
-  uniswap: { uniswapAssets },
-}) => ({
-  uniswapAssets,
-});
-
+const mapStateToProps = ({ uniswap: { uniswapAssets } }) => ({ uniswapAssets });
 
 export default compose(
   connect(mapStateToProps),

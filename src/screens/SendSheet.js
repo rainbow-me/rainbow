@@ -41,7 +41,7 @@ const Container = styled(Column)`
   height: 100%;
 `;
 
-const formatGastSpeedItem = (value, key) => {
+const formatGasSpeedItem = (value, key) => {
   const cost = get(value, 'txFee.native.value.display');
   const gwei = get(value, 'value.display');
   const time = get(value, 'estimatedTime.display');
@@ -56,7 +56,7 @@ const formatGastSpeedItem = (value, key) => {
 const labelOrder = ['slow', 'average', 'fast'];
 
 const formatGasSpeedItems = (gasPrices) => {
-  const gasItems = map(gasPrices, formatGastSpeedItem);
+  const gasItems = map(gasPrices, formatGasSpeedItem);
   return sortBy(gasItems, ({ value }) => indexOf(labelOrder, value));
 };
 

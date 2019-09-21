@@ -82,7 +82,7 @@ export default class SwipeableContactRow extends PureComponent {
   handleDeleteContact = async () => {
     const { address, nickname, onChange } = this.props;
     this.close();
-    showdeletecontactactionsheet({
+    showDeleteContactActionSheet({
       address,
       nickname,
       onDelete: onChange,
