@@ -3,22 +3,14 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import styled from 'styled-components/primitives';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { TextInput, Clipboard } from 'react-native';
-import { Row } from '../layout';
-import { colors, fonts } from '../../styles';
-import { Label } from '../text';
+import { Clipboard } from 'react-native';
 import { isValidAddress } from '../../helpers/validators';
 import { isHexString } from '../../handlers/web3';
+import { colors, fonts } from '../../styles';
 import { abbreviations, addressUtils, isNewValueForPath } from '../../utils';
-
-const AddressInput = styled(TextInput)`
-  flex-grow: 1;
-  font-family: ${fonts.family.SFProText};
-  font-size: ${fonts.size.bmedium};
-  font-weight: ${fonts.weight.semibold};
-  margin-top: 1;
-  z-index: 1;
-`;
+import { Input } from '../inputs';
+import { Row } from '../layout';
+import { Label } from '../text';
 
 const Placeholder = styled(Row)`
   position: absolute;
@@ -125,7 +117,7 @@ export default class AddressField extends PureComponent {
 
     return (
       <Row flex={1}>
-        <AddressInput
+        <Input
           {...props}
           {...omit(Label.textProps, 'opacity')}
           autoCorrect={false}
@@ -137,7 +129,15 @@ export default class AddressField extends PureComponent {
           onChangeText={this.onChangeText}
           ref={this.handleInputRef}
           selectTextOnFocus={true}
+          spellCheck={true}
+          size="bmedium"
+          style={{
+            flexGrow: 1,
+            marginTop: 1,
+            zIndex: 1,
+          }}
           value={formatValue(inputValue)}
+          weight="semibold"
         />
         {!inputValue && (
           <Placeholder>
