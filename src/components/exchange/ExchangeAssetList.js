@@ -67,7 +67,7 @@ export default class ExchangeAssetList extends PureComponent {
 
   componentDidUpdate = (prevProps, prevState) => {
     if (this.props.items.length !== prevProps.items.length) {
-      this.rlvRef.current.forceRerender();
+      //this.rlvRef.current.forceRerender();
       this.updateList();
     }
   }
@@ -97,6 +97,7 @@ export default class ExchangeAssetList extends PureComponent {
           onViewableItemsChanged={this.onViewableItemsChanged}
           optimizeForInsertDeleteAnimations={true}
           ref={this.rlvRef}
+          disableRecycling={true}
           renderAheadOffset={deviceUtils.dimensions.height}
           rowRenderer={this.renderRow}
           scrollViewProps={{

@@ -113,11 +113,17 @@ class CurrencySelectModal extends PureComponent {
     const nextAssetsUniqueId = buildUniqueIdForListData(nextAssets);
 
     const isNewAssets = currentAssetsUniqueId !== nextAssetsUniqueId;
+    console.log(this.props, nextProps)
     const isNewFocus = isNewValueForPath(this.props, nextProps, 'isFocused');
     const isNewSearchQuery = isNewValueForPath(this.state, nextState, 'searchQuery');
     const isNewTransitioning = isNewValueForPath(this.props, nextProps, 'isTransitioning');
     const isNewType = isNewValueForPath(this.props, nextProps, 'type');
 
+    console.log( isNewAssets
+      , isNewFocus
+      , isNewSearchQuery
+      , isNewTransitioning
+      , isNewType)
     return (
       isNewAssets
       || isNewFocus
@@ -128,6 +134,7 @@ class CurrencySelectModal extends PureComponent {
   }
 
   dangerouslySetIsGestureBlocked = (isGestureBlocked) => {
+    console.error('xxx', isGestureBlocked)
     // dangerouslyGetParent is a bad pattern in general, but in this case is exactly what we expect
     this.props.navigation.dangerouslyGetParent().setParams({ isGestureBlocked });
   }
@@ -215,6 +222,7 @@ class CurrencySelectModal extends PureComponent {
           >
             <GestureBlocker type='top'/>
             <NavigationEvents
+              onDidBlur={() => console.log("XXXxx§")}
               onWillBlur={this.handleWillBlur}
               onWillFocus={this.handleWillFocus}
             />
