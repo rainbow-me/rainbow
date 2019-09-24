@@ -61,7 +61,7 @@ EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => {
 
   return ({
     ...navigation.state.params,
-    gesturesEnabled: !get(navigation, 'state.params.isGestureBlocked'),
+    gestureEnabled: !get(navigation, 'state.params.isGestureBlocked'),
   });
 };
 
