@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import {
   compact,
-  findIndex,
   flattenDeep,
   get,
   groupBy,
@@ -35,7 +34,6 @@ const enhanceRenderItem = compose(
   withNavigation,
   withHandlers({
     onPress: ({ assetType, navigation }) => (item) => {
-      console.log(assetType); 
       navigation.navigate('ExpandedAssetScreen', {
         asset: item,
         type: assetType,
@@ -85,8 +83,6 @@ const buildWalletSections = (
   const isEmpty = !filteredSections.length;
   setIsWalletEmpty(isEmpty);
 
-  // console.log('filteredSections', filteredSections)
-
   return {
     isEmpty,
     sections: filteredSections,
@@ -98,19 +94,17 @@ const withUniswapSection = (
   nativeCurrency,
   uniswap,
   uniswapTotal,
-) => {
-  return {
-    data: uniswap,
-    header: {
-      title: 'Investments',
-      totalItems: uniswap.length,
-      totalValue: uniswapTotal,
-    },
-    investments: true,
-    name: 'investments',
-    renderItem: uniswapRenderItem,
-  };
-};
+) => ({
+  data: uniswap,
+  header: {
+    title: 'Investments',
+    totalItems: uniswap.length,
+    totalValue: uniswapTotal,
+  },
+  investments: true,
+  name: 'investments',
+  renderItem: uniswapRenderItem,
+});
 
 const withBalanceSection = (
   allAssets,
