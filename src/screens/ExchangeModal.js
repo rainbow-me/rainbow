@@ -133,7 +133,7 @@ class ExchangeModal extends PureComponent {
     } = this.props;
 
     if (isFocused && (!isTransitioning && prevProps.isTransitioning)) {
-      const lastFocusedInput = keyboardFocusHistory[keyboardFocusHistory.length - 2];
+      const lastFocusedInput = keyboardFocusHistory[keyboardFocusHistory.length - 1];
 
       if (lastFocusedInput) {
         InteractionManager.runAfterInteractions(() => {
