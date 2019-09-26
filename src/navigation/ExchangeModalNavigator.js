@@ -6,7 +6,6 @@ import { updateTabsTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
 import ExchangeModal from '../screens/ExchangeModal';
-import { colors } from '../styles';
 import { deviceUtils } from '../utils';
 
 const onTransitionEnd = () => store.dispatch(updateTabsTransitionProps({ isTransitioning: false }));

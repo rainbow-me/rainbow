@@ -18,6 +18,7 @@ const FloatingPanel = pure(({
   hideShadow,
   style,
   radius,
+  overflow,
   ...props
 }) => (
   <Column
@@ -27,7 +28,7 @@ const FloatingPanel = pure(({
       border-radius: ${radius || FloatingPanelBorderRadius};
       min-height: ${height || 'auto'};
       opacity: 1;
-      overflow: hidden;
+      overflow: ${overflow || 'hidden'};
       padding-bottom: 0px;
       z-index: 1;
     `}
@@ -40,6 +41,7 @@ FloatingPanel.propTypes = {
   color: PropTypes.string,
   height: PropTypes.number,
   hideShadow: PropTypes.bool,
+  overflow: PropTypes.number,
   radius: PropTypes.number,
   style: stylePropType,
   width: PropTypes.number,

@@ -598,35 +598,34 @@ class ExchangeModal extends PureComponent {
               }),
             }}
           >
-            <GestureBlocker type='top'/>
-            <FloatingPanel radius={exchangeModalBorderRadius}>
+            <FloatingPanel radius={exchangeModalBorderRadius} overflow='visible'>
+              <GestureBlocker type='top'/>
               <ExchangeModalHeader />
-              <Column align="center" flex={0}>
-                <ExchangeInputField
-                  inputAmount={inputAmountDisplay}
-                  inputCurrencySymbol={get(inputCurrency, 'symbol', null)}
-                  inputFieldRef={this.assignInputFieldRef}
-                  isAssetApproved={isAssetApproved}
-                  isUnlockingAsset={isUnlockingAsset}
-                  nativeAmount={nativeAmount}
-                  nativeCurrency={nativeCurrency}
-                  nativeFieldRef={this.assignNativeFieldRef}
-                  onFocus={this.handleFocusField}
-                  onPressMaxBalance={this.handlePressMaxBalance}
-                  onPressSelectInputCurrency={this.navigateToSelectInputCurrency}
-                  onUnlockAsset={this.handleUnlockAsset}
-                  setInputAmount={this.setInputAmount}
-                  setNativeAmount={this.setNativeAmount}
-                />
-                <ExchangeOutputField
-                  onFocus={this.handleFocusField}
-                  onPressSelectOutputCurrency={this.navigateToSelectOutputCurrency}
-                  outputAmount={outputAmountDisplay}
-                  outputCurrency={get(outputCurrency, 'symbol', null)}
-                  outputFieldRef={this.assignOutputFieldRef}
-                  setOutputAmount={this.setOutputAmount}
-                />
-              </Column>
+              <ExchangeInputField
+                inputAmount={inputAmountDisplay}
+                inputCurrencySymbol={get(inputCurrency, 'symbol', null)}
+                inputFieldRef={this.assignInputFieldRef}
+                isAssetApproved={isAssetApproved}
+                isUnlockingAsset={isUnlockingAsset}
+                nativeAmount={nativeAmount}
+                nativeCurrency={nativeCurrency}
+                nativeFieldRef={this.assignNativeFieldRef}
+                onFocus={this.handleFocusField}
+                onPressMaxBalance={this.handlePressMaxBalance}
+                onPressSelectInputCurrency={this.navigateToSelectInputCurrency}
+                onUnlockAsset={this.handleUnlockAsset}
+                setInputAmount={this.setInputAmount}
+                setNativeAmount={this.setNativeAmount}
+              />
+              <ExchangeOutputField
+                onFocus={this.handleFocusField}
+                onPressSelectOutputCurrency={this.navigateToSelectOutputCurrency}
+                outputAmount={outputAmountDisplay}
+                outputCurrency={get(outputCurrency, 'symbol', null)}
+                outputFieldRef={this.assignOutputFieldRef}
+                setOutputAmount={this.setOutputAmount}
+                bottomRadius={exchangeModalBorderRadius}
+              />
             </FloatingPanel>
             {isSufficientBalance && <SlippageWarning slippage={slippage} />}
             {showConfirmButton && (
@@ -650,7 +649,9 @@ class ExchangeModal extends PureComponent {
                 <GasSpeedButton />
               </Fragment>
             )}
-            <GestureBlocker type='bottom'/>
+            <Column>
+              <GestureBlocker type='bottom'/>
+            </Column>
           </AnimatedFloatingPanels>
         </Centered>
       </KeyboardFixedOpenLayout>
