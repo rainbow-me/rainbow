@@ -239,13 +239,14 @@ class CurrencySelectModal extends PureComponent {
                 ref={this.searchInputRef}
               />
               <View flex={1}>
-                <ExchangeAssetList
+                {isFocused ? <ExchangeAssetList
+                  key={`ExchangeAssetListCurrencySelectionModal-${type}`}
                   items={listItems}
                   renderItem={this.renderCurrencyItem}
                   scrollIndicatorInsets={{
                     bottom: exchangeModalBorderRadius,
                   }}
-                />
+                /> : null}
                 <EmptyAssetList
                   {...position.coverAsObject}
                   backgroundColor={colors.white}
