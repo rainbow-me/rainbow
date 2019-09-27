@@ -19,7 +19,7 @@ import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 
 const containerStyles = css`
-  paddingleft: 15;
+  padding-left: 15;
 `;
 
 const rowRenderPropTypes = {
