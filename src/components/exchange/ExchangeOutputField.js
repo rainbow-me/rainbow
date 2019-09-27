@@ -33,6 +33,7 @@ const FakeNotchThing = withNeverRerender(() => (
 
 export default class ExchangeOutputField extends PureComponent {
   static propTypes = {
+    bottomRadius: PropTypes.number,
     onFocus: PropTypes.func,
     onPressSelectOutputCurrency: PropTypes.func,
     outputAmount: PropTypes.string,
@@ -61,6 +62,7 @@ export default class ExchangeOutputField extends PureComponent {
       outputAmount,
       outputCurrency,
       setOutputAmount,
+      bottomRadius,
     } = this.props;
 
     const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
@@ -74,6 +76,8 @@ export default class ExchangeOutputField extends PureComponent {
           ${padding(25 + paddingValue, 0, 25)};
           background-color: ${colors.white};
           overflow: hidden;
+          border-bottom-left-radius: ${bottomRadius}px;
+          border-bottom-right-radius: ${bottomRadius}px;
         `}
       >
         <FakeNotchThing />

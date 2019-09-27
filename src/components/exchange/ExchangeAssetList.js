@@ -25,8 +25,6 @@ const layoutItemAnimator = {
   animateWillUpdate: NOOP,
 };
 
-const buildUniqueIdForListData = (items = []) => items.map(property('address')).join('_');
-
 const getLayoutTypeForIndex = () => ViewTypes.COIN_ROW;
 
 const hasRowChanged = (r1, r2) => isNewValueForPath(r1, r2, 'uniqueId');
@@ -67,7 +65,7 @@ export default class ExchangeAssetList extends PureComponent {
 
   componentDidUpdate = (prevProps, prevState) => {
     if (this.props.items.length !== prevProps.items.length) {
-      this.rlvRef.current.forceRerender();
+      //this.rlvRef.current.forceRerender();
       this.updateList();
     }
   }
@@ -84,29 +82,24 @@ export default class ExchangeAssetList extends PureComponent {
 
   render = () => (
     <View backgroundColor={colors.white} flex={1} overflow="hidden">
-      <PanGestureHandler
-        minDeltaY={1}
-        minDeltaX={1}
-      >
-        <RecyclerListView
-          {...this.props}
-          dataProvider={this.state.dataProvider}
-          layoutProvider={this.layoutProvider}
-          itemAnimator={layoutItemAnimator}
-          onContentSizeChange={this.onContentSizeChange}
-          onViewableItemsChanged={this.onViewableItemsChanged}
-          optimizeForInsertDeleteAnimations={true}
-          ref={this.rlvRef}
-          renderAheadOffset={deviceUtils.dimensions.height}
-          rowRenderer={this.renderRow}
-          scrollViewProps={{
-            directionalLockEnabled: true,
-            keyboardDismissMode: 'none',
-            keyboardShouldPersistTaps: 'always',
-            scrollEventThrottle: 32,
-          }}
-        />
-      </PanGestureHandler>
+      <RecyclerListView
+        {...this.props}
+        dataProvider={this.state.dataProvider}
+        layoutProvider={this.layoutProvider}
+        itemAnimator={layoutItemAnimator}
+        onContentSizeChange={this.onContentSizeChange}
+        onViewableItemsChanged={this.onViewableItemsChanged}
+        optimizeForInsertDeleteAnimations={true}
+        ref={this.rlvRef}
+        renderAheadOffset={deviceUtils.dimensions.height}
+        rowRenderer={this.renderRow}
+        scrollViewProps={{
+          directionalLockEnabled: true,
+          keyboardDismissMode: 'none',
+          keyboardShouldPersistTaps: 'always',
+          scrollEventThrottle: 32,
+        }}
+      />
     </View>
   )
 }
