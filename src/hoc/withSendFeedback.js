@@ -6,23 +6,29 @@ import { Alert } from '../components/alerts';
 
 const FeedbackEmailAddress = 'support@rainbow.me';
 
-const setClipboardToFeedbackEmail = () => Clipboard.setString(FeedbackEmailAddress);
+const setClipboardToFeedbackEmail = () =>
+  Clipboard.setString(FeedbackEmailAddress);
 
-const FeedbackErrorAlert = () => Alert({
-  buttons: [{
-    onPress: setClipboardToFeedbackEmail,
-    text: 'Copy email address',
-  }, {
-    style: 'cancel',
-    text: 'No thanks',
-  }],
-  message: 'Would you like to manually copy our feedback email address to your clipboard?',
-  title: 'Error launching email client',
-});
+const FeedbackErrorAlert = () =>
+  Alert({
+    buttons: [
+      {
+        onPress: setClipboardToFeedbackEmail,
+        text: 'Copy email address',
+      },
+      {
+        style: 'cancel',
+        text: 'No thanks',
+      },
+    ],
+    message:
+      'Would you like to manually copy our feedback email address to your clipboard?',
+    title: 'Error launching email client',
+  });
 
 const handleMailError = debounce(
   error => (error ? FeedbackErrorAlert() : null),
-  250,
+  250
 );
 
 const feedbackEmailOptions = {
@@ -30,8 +36,10 @@ const feedbackEmailOptions = {
   subject: '🌈️ Rainbow Feedback',
 };
 
-const withSendFeedback = ComponentToWrap => withHandlers({
-  onSendFeedback: () => () => Mailer.mail(feedbackEmailOptions, handleMailError),
-})(ComponentToWrap);
+const withSendFeedback = ComponentToWrap =>
+  withHandlers({
+    onSendFeedback: () => () =>
+      Mailer.mail(feedbackEmailOptions, handleMailError),
+  })(ComponentToWrap);
 
 export default withSendFeedback;

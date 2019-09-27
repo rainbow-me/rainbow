@@ -25,7 +25,7 @@ export default class FadeInAnimation extends PureComponent {
     isInteraction: PropTypes.bool,
     style: PropTypes.object,
     to: PropTypes.number,
-  }
+  };
 
   static defaultProps = {
     duration: 315,
@@ -33,18 +33,13 @@ export default class FadeInAnimation extends PureComponent {
     from: 0,
     isInteraction: false,
     to: 1,
-  }
+  };
 
   runTiming = () => {
-    const {
-      duration,
-      easing,
-      from,
-      isInteraction,
-      to,
-    } = this.props;
+    const { duration, easing, from, isInteraction, to } = this.props;
 
-    const handle = isInteraction && InteractionManager.createInteractionHandle();
+    const handle =
+      isInteraction && InteractionManager.createInteractionHandle();
 
     const state = {
       finished: new Value(0),
@@ -73,21 +68,22 @@ export default class FadeInAnimation extends PureComponent {
       timing(clock, state, config),
       cond(state.finished, [
         stopClock(clock),
-        call([], () => isInteraction && InteractionManager.clearInteractionHandle(handle)),
+        call(
+          [],
+          () =>
+            isInteraction && InteractionManager.clearInteractionHandle(handle)
+        ),
       ]),
       state.position,
     ]);
-  }
+  };
 
   animatedOpacity = this.runTiming();
 
   render = () => (
     <Animated.View
       {...this.props}
-      style={[
-        this.props.style,
-        { opacity: this.animatedOpacity },
-      ]}
+      style={[this.props.style, { opacity: this.animatedOpacity }]}
     />
-  )
+  );
 }

@@ -40,20 +40,20 @@ export default class ExchangeOutputField extends PureComponent {
     outputCurrency: PropTypes.string,
     outputFieldRef: PropTypes.func.isRequired,
     setOutputAmount: PropTypes.func,
-  }
+  };
 
-  outputFieldRef = null
+  outputFieldRef = null;
 
   handleFocusInput = () => {
     if (this.outputFieldRef) {
       this.outputFieldRef.focus();
     }
-  }
+  };
 
-  handleOutputFieldRef = (ref) => {
+  handleOutputFieldRef = ref => {
     this.outputFieldRef = ref;
     this.props.outputFieldRef(ref);
-  }
+  };
 
   render = () => {
     const {
@@ -112,5 +112,5 @@ export default class ExchangeOutputField extends PureComponent {
         </CoolButton>
       </Row>
     );
-  }
+  };
 }

@@ -1,4 +1,9 @@
-export const filterList = (list, searchPhrase, searchParameter = false, separator = ' ') => {
+export const filterList = (
+  list,
+  searchPhrase,
+  searchParameter = false,
+  separator = ' '
+) => {
   const filteredList = [];
   if (list && searchPhrase.length > 0) {
     for (let i = 0; i < list.length; i++) {
@@ -6,7 +11,11 @@ export const filterList = (list, searchPhrase, searchParameter = false, separato
       const splitedWordList = (searchedItem || '').split(separator);
       splitedWordList.push(searchedItem);
       for (let j = 0; j < splitedWordList.length; j++) {
-        if (splitedWordList[j].toLowerCase().startsWith(searchPhrase.toLowerCase())) {
+        if (
+          splitedWordList[j]
+            .toLowerCase()
+            .startsWith(searchPhrase.toLowerCase())
+        ) {
           filteredList.push(list[i]);
           break;
         }
@@ -16,4 +25,4 @@ export const filterList = (list, searchPhrase, searchParameter = false, separato
     return list;
   }
   return filteredList;
-}
+};

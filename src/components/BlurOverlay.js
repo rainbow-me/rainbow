@@ -14,10 +14,7 @@ const interpolationConfig = {
 const BlurOverlay = ({ blurType, intensity }) => (
   <View
     pointerEvents="none"
-    style={[
-      StyleSheet.absoluteFill,
-      { position: 'absolute', zIndex: 10 },
-    ]}
+    style={[StyleSheet.absoluteFill, { position: 'absolute', zIndex: 10 }]}
   >
     <AnimatedBlurView
       blurAmount={15}

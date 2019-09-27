@@ -11,18 +11,19 @@ import {
  * @param  {String}  email
  * @return {Boolean}
  */
-export const isValidEmail = email => !!email.match(
-  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-);
+export const isValidEmail = email =>
+  !!email.match(
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  );
 
-export const isENSAddressFormat = (address) => address.match(/.+\..+/g);
+export const isENSAddressFormat = address => address.match(/.+\..+/g);
 
 /**
  * @desc validate ethereum address
  * @param  {String} address or ENS
  * @return {Boolean}
  */
-export const isValidAddress = async (address) => {
+export const isValidAddress = async address => {
   if (isENSAddressFormat(address)) {
     try {
       const resolvedAddress = await web3Provider.resolveName(address);
@@ -33,9 +34,12 @@ export const isValidAddress = async (address) => {
   }
   if (!isHexString(address)) return false;
   if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) return false;
-  if (/^(0x)?[0-9a-f]{40}$/.test(address)
-    || /^(0x)?[0-9A-F]{40}$/.test(address)) return true;
-  return address === await toChecksumAddress(address);
+  if (
+    /^(0x)?[0-9a-f]{40}$/.test(address) ||
+    /^(0x)?[0-9A-F]{40}$/.test(address)
+  )
+    return true;
+  return address === (await toChecksumAddress(address));
 };
 
 /**
@@ -43,7 +47,7 @@ export const isValidAddress = async (address) => {
  * @param  {String} seed phrase mnemonic
  * @return {Boolean}
  */
-const isValidSeedPhrase = (seedPhrase) => {
+const isValidSeedPhrase = seedPhrase => {
   const phrases = seedPhrase.split(' ').filter(word => !!word).length;
   return phrases >= 12 && isValidMnemonic(seedPhrase);
 };
@@ -53,4 +57,5 @@ const isValidSeedPhrase = (seedPhrase) => {
  * @param  {String} seed phrase mnemonic or private key
  * @return {Boolean}
  */
-export const isValidSeed = (seed) => isHexStringIgnorePrefix(seed) || isValidSeedPhrase(seed);
+export const isValidSeed = seed =>
+  isHexStringIgnorePrefix(seed) || isValidSeedPhrase(seed);

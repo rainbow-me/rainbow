@@ -41,11 +41,7 @@ export const transformPool = (liquidityPool, ethPrice, nativeCurrency) => {
   const {
     balance,
     ethBalance,
-    token: {
-      balance: tokenBalance,
-      name: tokenName,
-      symbol: tokenSymbol,
-    },
+    token: { balance: tokenBalance, name: tokenName, symbol: tokenSymbol },
     totalSupply,
     uniqueId,
   } = liquidityPool;
@@ -54,9 +50,16 @@ export const transformPool = (liquidityPool, ethPrice, nativeCurrency) => {
   const {
     amount: balanceAmount,
     display: nativeDisplay,
-  } = convertAmountAndPriceToNativeDisplay(ethBalance, ethPrice, nativeCurrency);
+  } = convertAmountAndPriceToNativeDisplay(
+    ethBalance,
+    ethPrice,
+    nativeCurrency
+  );
   const totalBalanceAmount = multiply(balanceAmount, 2);
-  const totalNativeDisplay = convertAmountToNativeDisplay(totalBalanceAmount, nativeCurrency);
+  const totalNativeDisplay = convertAmountToNativeDisplay(
+    totalBalanceAmount,
+    nativeCurrency
+  );
 
   return {
     ethBalance: floor(parseFloat(ethBalance), 4) || '< 0.0001',
@@ -71,16 +74,31 @@ export const transformPool = (liquidityPool, ethPrice, nativeCurrency) => {
   };
 };
 
-const buildUniswapCards = (nativeCurrency, nativeCurrencySymbol, assets, uniswap) => {
+const buildUniswapCards = (
+  nativeCurrency,
+  nativeCurrencySymbol,
+  assets,
+  uniswap
+) => {
   const ethPrice = get(ethereumUtils.getAsset(assets), 'price.value', 0);
 
-  const uniswapPools = compact(map(values(uniswap), (liquidityPool) => transformPool(liquidityPool, ethPrice, nativeCurrency)));
-  const orderedUniswapPools = orderBy(uniswapPools, [({ totalBalanceAmount }) => Number(totalBalanceAmount)], ['desc']);
+  const uniswapPools = compact(
+    map(values(uniswap), liquidityPool =>
+      transformPool(liquidityPool, ethPrice, nativeCurrency)
+    )
+  );
+  const orderedUniswapPools = orderBy(
+    uniswapPools,
+    [({ totalBalanceAmount }) => Number(totalBalanceAmount)],
+    ['desc']
+  );
 
   let uniswapTotal = 0;
 
   if (Array.isArray(orderedUniswapPools) && orderedUniswapPools.length) {
-    uniswapTotal = sumBy(orderedUniswapPools, ({ totalBalanceAmount }) => Number(totalBalanceAmount));
+    uniswapTotal = sumBy(orderedUniswapPools, ({ totalBalanceAmount }) =>
+      Number(totalBalanceAmount)
+    );
   }
 
   return {
@@ -96,11 +114,12 @@ export const readableUniswapSelector = createSelector(
     assetsSelector,
     uniswapSelector,
   ],
-  buildUniswapCards,
+  buildUniswapCards
 );
 
-export default Component => compose(
-  withAccountSettings,
-  connect(mapStateToProps),
-  withProps(readableUniswapSelector),
-)(Component);
+export default Component =>
+  compose(
+    withAccountSettings,
+    connect(mapStateToProps),
+    withProps(readableUniswapSelector)
+  )(Component);

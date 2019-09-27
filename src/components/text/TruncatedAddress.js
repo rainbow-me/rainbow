@@ -22,7 +22,7 @@ const TruncatedAddress = ({
   return (
     <Text
       {...props}
-      adjustsFontSizeToFit={true}
+      adjustsFontSizeToFit
       minimumFontScale={0.5}
       monospace={monospace}
       numberOfLines={1}

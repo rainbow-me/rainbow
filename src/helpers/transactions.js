@@ -15,9 +15,8 @@ const nativeCurrencySelector = state => state.nativeCurrency;
 const requestsSelector = state => state.requests;
 const transactionsSelector = state => state.transactions;
 
-export const buildTransactionUniqueIdentifier = ({ hash, displayDetails }) => (
-  hash || get(displayDetails, 'timestampInMs')
-);
+export const buildTransactionUniqueIdentifier = ({ hash, displayDetails }) =>
+  hash || get(displayDetails, 'timestampInMs');
 
 export const getTransactionStatus = ({
   accountAddress,
@@ -54,23 +53,19 @@ const groupTransactionByDate = ({ pending, mined_at: time }) => {
   return format(timestamp, `MMMM${isThisYear(timestamp) ? '' : ' YYYY'}`);
 };
 
-const normalizeTransactions = ({ accountAddress, nativeCurrency, transactions }) => (
-  transactions.map(({
-    asset,
-    ...tx
-  }) => ({
+const normalizeTransactions = ({ accountAddress, transactions }) =>
+  transactions.map(({ asset, ...tx }) => ({
     ...tx,
     name: get(asset, 'name', ''),
     status: getTransactionStatus({ accountAddress, ...tx }),
     symbol: get(asset, 'symbol', ''),
-  }))
-);
+  }));
 
 const buildTransactionsSections = (
   accountAddress,
   nativeCurrency,
   requests,
-  transactions,
+  transactions
 ) => {
   let sectionedTransactions = [];
 
@@ -81,7 +76,10 @@ const buildTransactionsSections = (
       transactions,
     });
 
-    const transactionsByDate = groupBy(normalizedTransactions, groupTransactionByDate);
+    const transactionsByDate = groupBy(
+      normalizedTransactions,
+      groupTransactionByDate
+    );
 
     sectionedTransactions = Object.keys(transactionsByDate).map(section => ({
       data: transactionsByDate[section],
@@ -91,17 +89,16 @@ const buildTransactionsSections = (
 
   let requestsToApprove = [];
   if (!isEmpty(requests)) {
-    requestsToApprove = [{
-      data: requests,
-      title: 'Requests',
-    }];
+    requestsToApprove = [
+      {
+        data: requests,
+        title: 'Requests',
+      },
+    ];
   }
 
   return {
-    sections: [
-      ...requestsToApprove,
-      ...sectionedTransactions,
-    ],
+    sections: [...requestsToApprove, ...sectionedTransactions],
   };
 };
 
@@ -112,5 +109,5 @@ export const buildTransactionsSectionsSelector = createSelector(
     requestsSelector,
     transactionsSelector,
   ],
-  buildTransactionsSections,
+  buildTransactionsSections
 );

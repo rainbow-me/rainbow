@@ -15,12 +15,7 @@ import showDeleteContactActionSheet from './showDeleteContactActionSheet';
 
 const AnimatedCentered = Animated.createAnimatedComponent(toClass(Centered));
 
-const RightAction = ({
-  onPress,
-  progress,
-  text,
-  x,
-}) => {
+const RightAction = ({ onPress, progress, text, x }) => {
   const isEdit = text === 'Edit';
   const translateX = progress.interpolate({
     inputRange: [0, 1],
@@ -71,13 +66,13 @@ export default class SwipeableContactRow extends PureComponent {
     onPress: PropTypes.func,
     onTouch: PropTypes.func,
     onTransitionEnd: PropTypes.func,
-  }
+  };
 
-  componentWillReceiveProps = () => this.close()
+  componentWillReceiveProps = () => this.close();
 
-  swipeableRef = undefined
+  swipeableRef = undefined;
 
-  close = () => this.swipeableRef.close()
+  close = () => this.swipeableRef.close();
 
   handleDeleteContact = async () => {
     const { address, nickname, onChange } = this.props;
@@ -87,16 +82,10 @@ export default class SwipeableContactRow extends PureComponent {
       nickname,
       onDelete: onChange,
     });
-  }
+  };
 
   handleEditContact = () => {
-    const {
-      address,
-      color,
-      navigation,
-      nickname,
-      onChange,
-    } = this.props;
+    const { address, color, navigation, nickname, onChange } = this.props;
 
     this.close();
     navigation.navigate('ExpandedAssetScreen', {
@@ -107,19 +96,22 @@ export default class SwipeableContactRow extends PureComponent {
       onCloseModal: onChange,
       type: 'contact',
     });
-  }
+  };
 
-  handleLongPress = () => this.swipeableRef.openRight()
+  handleLongPress = () => this.swipeableRef.openRight();
 
-  handlePress = () => this.props.onPress(this.props.address)
+  handlePress = () => this.props.onPress(this.props.address);
 
-  handlePressStart = () => this.props.onTouch(this.props.address)
+  handlePressStart = () => this.props.onTouch(this.props.address);
 
-  handleSwipeableWillOpen = () => this.props.onTransitionEnd(this.props.address)
+  handleSwipeableWillOpen = () =>
+    this.props.onTransitionEnd(this.props.address);
 
-  handleRef = (ref) => { this.swipeableRef = ref; }
+  handleRef = ref => {
+    this.swipeableRef = ref;
+  };
 
-  renderRightActions = (progress) => (
+  renderRightActions = progress => (
     <Row width={120}>
       <RightAction
         onPress={this.handleEditContact}
@@ -134,7 +126,7 @@ export default class SwipeableContactRow extends PureComponent {
         x={90}
       />
     </Row>
-  )
+  );
 
   render = () => (
     <Swipeable
@@ -151,5 +143,5 @@ export default class SwipeableContactRow extends PureComponent {
         onPressStart={this.handlePressStart}
       />
     </Swipeable>
-  )
+  );
 }

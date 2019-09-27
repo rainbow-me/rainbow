@@ -14,17 +14,8 @@ const CheckmarkContainer = styled(Centered)`
   flex-shrink: 0;
 `;
 
-const RadioListItem = ({
-  disabled,
-  onPress,
-  selected,
-  ...props
-}) => (
-  <ListItem
-    opacity={disabled ? 0.420 : 1}
-    onPress={onPress}
-    {...props}
-  >
+const RadioListItem = ({ disabled, onPress, selected, ...props }) => (
+  <ListItem opacity={disabled ? 0.42 : 1} onPress={onPress} {...props}>
     <CheckmarkContainer>
       {selected && (
         <Icon

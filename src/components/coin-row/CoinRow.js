@@ -33,38 +33,38 @@ const CoinRowHighlight = withProps({
 
 const enhance = compose(
   withAccountSettings,
-  withFabSendAction,
+  withFabSendAction
 );
 
-const CoinRow = enhance(({
-  bottomRowRender,
-  children,
-  coinIconRender,
-  containerStyles,
-  contentStyles,
-  highlight,
-  onPress,
-  symbol,
-  topRowRender,
-  ...props
-}) => (
-  <Container align="center" css={containerStyles}>
-    <CoinRowHighlight visible={highlight} />
-    {createElement(coinIconRender, { symbol, ...props })}
-    <Content css={contentStyles}>
-      <Row align="center" justify="space-between">
-        {topRowRender({ symbol, ...props })}
-      </Row>
-      <Row align="center" justify="space-between">
-        {bottomRowRender({ symbol, ...props })}
-      </Row>
-    </Content>
-    {(typeof children === 'function')
-      ? children({ symbol, ...props })
-      : children
-    }
-  </Container>
-));
+const CoinRow = enhance(
+  ({
+    bottomRowRender,
+    children,
+    coinIconRender,
+    containerStyles,
+    contentStyles,
+    highlight,
+    symbol,
+    topRowRender,
+    ...props
+  }) => (
+    <Container align="center" css={containerStyles}>
+      <CoinRowHighlight visible={highlight} />
+      {createElement(coinIconRender, { symbol, ...props })}
+      <Content css={contentStyles}>
+        <Row align="center" justify="space-between">
+          {topRowRender({ symbol, ...props })}
+        </Row>
+        <Row align="center" justify="space-between">
+          {bottomRowRender({ symbol, ...props })}
+        </Row>
+      </Content>
+      {typeof children === 'function'
+        ? children({ symbol, ...props })
+        : children}
+    </Container>
+  )
+);
 
 CoinRow.propTypes = {
   bottomRowRender: PropTypes.func,

@@ -51,7 +51,7 @@ const enhance = compose(
     text: upperFirst(text),
     title: upperCase(title),
   })),
-  onlyUpdateForKeys(['text', 'title']),
+  onlyUpdateForKeys(['text', 'title'])
 );
 
 const Tag = enhance(({ text, title, ...props }) => (

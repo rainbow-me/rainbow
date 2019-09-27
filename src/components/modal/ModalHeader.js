@@ -22,7 +22,7 @@ const Container = styled(Row).attrs({
 
 const TitleContainer = styled(Centered)`
   ${position.cover};
-  zIndex: 0;
+  zindex: 0;
 `;
 
 const ModalHeader = ({
@@ -53,11 +53,7 @@ const ModalHeader = ({
       </TruncatedText>
     </TitleContainer>
     {showDoneButton && (
-      <ModalHeaderButton
-        label="Done"
-        onPress={onPressClose}
-        side="right"
-      />
+      <ModalHeaderButton label="Done" onPress={onPressClose} side="right" />
     )}
   </Container>
 );

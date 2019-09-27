@@ -8,9 +8,10 @@ import supportedNativeCurrencies from '../references/native-currencies.json';
  * @param  {Number}   numberTwo
  * @return {String}
  */
-export const subtract = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
-  .minus(BigNumber(`${numberTwo}`))
-  .toFixed();
+export const subtract = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`)
+    .minus(BigNumber(`${numberTwo}`))
+    .toFixed();
 
 /**
  * @desc convert amount to raw amount
@@ -18,7 +19,10 @@ export const subtract = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
  * @param  {Number}   decimals
  * @return {String}
  */
-export const convertAmountToRawAmount = (value, decimals) => BigNumber(value).times(BigNumber(10).pow(decimals)).toFixed();
+export const convertAmountToRawAmount = (value, decimals) =>
+  BigNumber(value)
+    .times(BigNumber(10).pow(decimals))
+    .toFixed();
 
 /**
  * @desc convert from number to string
@@ -33,7 +37,8 @@ export const convertNumberToString = value => BigNumber(`${value}`).toFixed();
  * @param  {Number}   numberTwo
  * @return {String}
  */
-export const greaterThan = (numberOne, numberTwo) => BigNumber(`${numberOne}`).comparedTo(BigNumber(`${numberTwo}`)) === 1;
+export const greaterThan = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`).comparedTo(BigNumber(`${numberTwo}`)) === 1;
 
 /**
  * @desc format fixed number of decimals
@@ -54,9 +59,10 @@ export const formatFixedDecimals = (value, decimals) => {
  * @param  {Number}   numberTwo
  * @return {String}
  */
-export const mod = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
-  .mod(BigNumber(`${numberTwo}`))
-  .toFixed();
+export const mod = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`)
+    .mod(BigNumber(`${numberTwo}`))
+    .toFixed();
 
 /**
  * @desc compares if numberOne is greater than or equal to numberTwo
@@ -64,17 +70,18 @@ export const mod = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
  * @param  {Number}   numberTwo
  * @return {String}
  */
-export const greaterThanOrEqual = (numberOne, numberTwo) => BigNumber(`${numberOne}`).comparedTo(BigNumber(`${numberTwo}`)) >= 0;
-
+export const greaterThanOrEqual = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`).comparedTo(BigNumber(`${numberTwo}`)) >= 0;
 /**
  * @desc real floor divides two numbers
  * @param  {Number}   numberOne
  * @param  {Number}   numberTwo
  * @return {String}
  */
-export const floorDivide = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
-  .dividedToIntegerBy(BigNumber(`${numberTwo}`))
-  .toFixed();
+export const floorDivide = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`)
+    .dividedToIntegerBy(BigNumber(`${numberTwo}`))
+    .toFixed();
 
 /**
  * @desc count value's number of decimals places
@@ -91,7 +98,10 @@ export const updatePrecisionToDisplay = (amount, nativePrice) => {
   const truncatedPrecision = BigNumber(significantDigits)
     .plus(2, 10)
     .toNumber();
-  const result = bnAmount.decimalPlaces(truncatedPrecision, BigNumber.ROUND_DOWN);
+  const result = bnAmount.decimalPlaces(
+    truncatedPrecision,
+    BigNumber.ROUND_DOWN
+  );
   return result.isZero()
     ? BigNumber(bnAmount.toPrecision(1, BigNumber.ROUND_DOWN)).toFixed()
     : result.toFixed();
@@ -106,7 +116,8 @@ export const updatePrecisionToDisplay = (amount, nativePrice) => {
 // TODO revisit logic, at least rename so it is not native amount dp
 export const formatInputDecimals = (inputOne, inputTwo) => {
   const _nativeAmountDecimalPlaces = countDecimalPlaces(inputTwo);
-  const decimals = _nativeAmountDecimalPlaces > 8 ? _nativeAmountDecimalPlaces : 8;
+  const decimals =
+    _nativeAmountDecimalPlaces > 8 ? _nativeAmountDecimalPlaces : 8;
   const result = BigNumber(formatFixedDecimals(inputOne, decimals))
     .toFormat()
     .replace(/,/g, '');
@@ -133,9 +144,10 @@ export const convertStringToHex = string => BigNumber(`${string}`).toString(16);
  * @param  {Number}   numberTwo
  * @return {String}
  */
-export const add = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
-  .plus(BigNumber(`${numberTwo}`))
-  .toFixed();
+export const add = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`)
+    .plus(BigNumber(`${numberTwo}`))
+    .toFixed();
 
 /**
  * @desc multiplies two numbers
@@ -143,9 +155,10 @@ export const add = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
  * @param  {Number}   numberTwo
  * @return {String}
  */
-export const multiply = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
-  .times(BigNumber(`${numberTwo}`))
-  .toFixed();
+export const multiply = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`)
+    .times(BigNumber(`${numberTwo}`))
+    .toFixed();
 
 /**
  * @desc divides two numbers
@@ -153,9 +166,10 @@ export const multiply = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
  * @param  {Number}   numberTwo
  * @return {String}
  */
-export const divide = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
-  .dividedBy(BigNumber(`${numberTwo}`))
-  .toFixed();
+export const divide = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`)
+    .dividedBy(BigNumber(`${numberTwo}`))
+    .toFixed();
 
 /**
  * @desc convert to asset amount units from native price value units
@@ -164,12 +178,10 @@ export const divide = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
  * @param  {Number}   priceUnit
  * @return {String}
  */
-export const convertAmountFromNativeValue = (
-  value,
-  priceUnit,
-) => BigNumber(value)
-  .dividedBy(BigNumber(priceUnit))
-  .toFixed();
+export const convertAmountFromNativeValue = (value, priceUnit) =>
+  BigNumber(value)
+    .dividedBy(BigNumber(priceUnit))
+    .toFixed();
 
 /**
  * @desc handle signficant decimals in display format
@@ -198,7 +210,8 @@ export const convertStringToNumber = value => BigNumber(`${value}`).toNumber();
  * @param  {Number}   numberTwo
  * @return {String}
  */
-export const smallerThan = (numberOne, numberTwo) => BigNumber(`${numberOne}`).comparedTo(BigNumber(`${numberTwo}`)) === -1;
+export const smallerThan = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`).comparedTo(BigNumber(`${numberTwo}`)) === -1;
 
 /**
  * @desc handle signficant decimals
@@ -208,18 +221,21 @@ export const smallerThan = (numberOne, numberTwo) => BigNumber(`${numberOne}`).c
  * @return {String}
  */
 export const significantDecimals = (value, decimals, buffer) => {
-  if (!BigNumber(`${decimals}`).isInteger()
-      || (buffer && !BigNumber(`${buffer}`).isInteger())) {
+  if (
+    !BigNumber(`${decimals}`).isInteger() ||
+    (buffer && !BigNumber(`${buffer}`).isInteger())
+  ) {
     return null;
   }
   buffer = buffer ? convertStringToNumber(buffer) : 3;
   decimals = convertStringToNumber(decimals);
   if (smallerThan(BigNumber(`${value}`).abs(), 1)) {
-    decimals = BigNumber(`${value}`)
-      .toFixed()
-      .slice(2)
-      .slice('')
-      .search(/[^0]/g) + buffer;
+    decimals =
+      BigNumber(`${value}`)
+        .toFixed()
+        .slice(2)
+        .slice('')
+        .search(/[^0]/g) + buffer;
     decimals = decimals < 8 ? decimals : 8;
   } else {
     decimals = decimals < buffer ? decimals : buffer;
@@ -236,10 +252,8 @@ export const significantDecimals = (value, decimals, buffer) => {
  * @param  {Object}   nativePrices
  * @return {BigNumber}
  */
-export const convertAmountToNativeAmount = (
-  amount,
-  priceUnit,
-) => multiply(amount, priceUnit);
+export const convertAmountToNativeAmount = (amount, priceUnit) =>
+  multiply(amount, priceUnit);
 
 /**
  * @desc convert from amount to display formatted string
@@ -251,13 +265,13 @@ export const convertAmountAndPriceToNativeDisplay = (
   amount,
   priceUnit,
   nativeCurrency,
-  buffer,
+  buffer
 ) => {
   const nativeBalanceRaw = convertAmountToNativeAmount(amount, priceUnit);
   const nativeDisplay = convertAmountToNativeDisplay(
     nativeBalanceRaw,
     nativeCurrency,
-    buffer,
+    buffer
   );
   return {
     amount: nativeBalanceRaw,
@@ -276,17 +290,17 @@ export const convertRawAmountToNativeDisplay = (
   assetDecimals,
   priceUnit,
   nativeCurrency,
-  buffer,
+  buffer
 ) => {
   const assetBalance = convertRawAmountToDecimalFormat(
     rawAmount,
-    assetDecimals,
+    assetDecimals
   );
   return convertAmountAndPriceToNativeDisplay(
     assetBalance,
     priceUnit,
     nativeCurrency,
-    buffer,
+    buffer
   );
 };
 
@@ -299,10 +313,7 @@ export const convertRawAmountToNativeDisplay = (
  */
 export const convertRawAmountToBalance = (value, asset, buffer) => {
   const decimals = get(asset, 'decimals', 18);
-  const assetBalance = convertRawAmountToDecimalFormat(
-    value,
-    decimals,
-  );
+  const assetBalance = convertRawAmountToDecimalFormat(value, decimals);
 
   return {
     amount: assetBalance,
@@ -322,7 +333,6 @@ export const convertAmountToBalanceDisplay = (value, asset, buffer) => {
   const display = handleSignificantDecimals(value, decimals, buffer);
   return `${display} ${asset.symbol}`;
 };
-
 
 /**
  * @desc convert from amount to display formatted string
@@ -357,8 +367,9 @@ export const convertAmountToNativeDisplay = (value, nativeCurrency, buffer) => {
  * @param  {Number}     decimals
  * @return {String}
  */
-export const convertRawAmountToDecimalFormat = (value, decimals = 18) => BigNumber(`${value}`)
-  .dividedBy(BigNumber(10).pow(decimals))
-  .toFixed();
+export const convertRawAmountToDecimalFormat = (value, decimals = 18) =>
+  BigNumber(`${value}`)
+    .dividedBy(BigNumber(10).pow(decimals))
+    .toFixed();
 
-export const fromWei = (number) => convertRawAmountToDecimalFormat(number, 18);
+export const fromWei = number => convertRawAmountToDecimalFormat(number, 18);

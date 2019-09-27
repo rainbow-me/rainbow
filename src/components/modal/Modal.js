@@ -30,10 +30,7 @@ const Modal = ({
   >
     <StatusBar barStyle={statusBarStyle} />
     <TouchableBackdrop onPress={onCloseModal} />
-    <ModalElement
-      {...props}
-      height={height}
-    />
+    <ModalElement {...props} height={height} />
   </Centered>
 );
 

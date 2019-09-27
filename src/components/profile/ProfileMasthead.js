@@ -2,12 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Clipboard } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {
-  compose,
-  onlyUpdateForKeys,
-  withHandlers,
-  withState,
-} from 'recompact';
+import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
 import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
 import { borders, margin } from '../../styles';
@@ -76,7 +71,9 @@ const ProfileMasthead = ({
         text="Receive"
       />
     </RowWithMargins>
-    {showBottomDivider && <Divider style={{ bottom: 0, position: 'absolute' }} />}
+    {showBottomDivider && (
+      <Divider style={{ bottom: 0, position: 'absolute' }} />
+    )}
   </Container>
 );
 
@@ -99,7 +96,8 @@ export default compose(
       setEmojiCount(emojiCount + 1);
       Clipboard.setString(accountAddress);
     },
-    onPressReceive: ({ navigation }) => () => navigation.navigate('ReceiveModal'),
+    onPressReceive: ({ navigation }) => () =>
+      navigation.navigate('ReceiveModal'),
   }),
-  onlyUpdateForKeys(['accountAddress', 'emojiCount', 'showBottomDivider']),
+  onlyUpdateForKeys(['accountAddress', 'emojiCount', 'showBottomDivider'])
 )(ProfileMasthead);

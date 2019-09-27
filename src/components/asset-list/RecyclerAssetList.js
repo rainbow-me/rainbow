@@ -1,9 +1,4 @@
-import {
-  findIndex,
-  get,
-  has,
-  isNil,
-} from 'lodash';
+import { findIndex, get, has, isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { LayoutAnimation, RefreshControl, View } from 'react-native';
@@ -14,7 +9,6 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import styled from 'styled-components/primitives';
 import {
   withFabSelection,
   withOpenBalances,
@@ -22,12 +16,20 @@ import {
   withOpenInvestmentCards,
 } from '../../hoc';
 import { colors } from '../../styles';
-import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
+import {
+  deviceUtils,
+  isNewValueForPath,
+  safeAreaInsetValues,
+} from '../../utils';
 import { CoinDivider, SmallBalancesWrapper } from '../coin-divider';
 import { CoinRow } from '../coin-row';
 import { TokenFamilyHeader } from '../token-family';
 import { FloatingActionButton } from '../fab';
-import { InvestmentCard, UniswapInvestmentCard, InvestmentCardHeader } from '../investment-cards';
+import {
+  InvestmentCard,
+  UniswapInvestmentCard,
+  InvestmentCardHeader,
+} from '../investment-cards';
 import { ListFooter } from '../list';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
@@ -56,14 +58,15 @@ const NOOP = () => undefined;
 
 const layoutItemAnimator = {
   animateDidMount: NOOP,
-  animateShift: () => LayoutAnimation.configureNext({
-    duration: 200,
-    update: {
-      initialVelocity: 0,
-      springDamping: 1,
-      type: LayoutAnimation.Types.spring,
-    },
-  }),
+  animateShift: () =>
+    LayoutAnimation.configureNext({
+      duration: 200,
+      update: {
+        initialVelocity: 0,
+        springDamping: 1,
+        type: LayoutAnimation.Types.spring,
+      },
+    }),
   animateWillMount: NOOP,
   animateWillUnmount: NOOP,
   animateWillUpdate: NOOP,
@@ -72,7 +75,6 @@ const layoutItemAnimator = {
 const reloadHeightOffsetTop = -60;
 const reloadHeightOffsetBottom = -62;
 
-// eslint-disable-next-line react/prop-types
 const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
 
 const hasRowChanged = (r1, r2) => {
@@ -84,27 +86,37 @@ const hasRowChanged = (r1, r2) => {
   const isNewTokenFamilyId = isNewValueForPath(r1, r2, 'item.familyId');
   const isNewTokenFamilyName = isNewValueForPath(r1, r2, 'item.familyName');
   const isNewTokenFamilySize = isNewValueForPath(r1, r2, 'item.childrenAmount');
-  const isNewUniswapPercentageOwned = isNewValueForPath(r1, r2, 'item.percentageOwned');
+  const isNewUniswapPercentageOwned = isNewValueForPath(
+    r1,
+    r2,
+    'item.percentageOwned'
+  );
   const isNewUniswapToken = isNewValueForPath(r1, r2, 'item.tokenSymbol');
 
   const isCollectiblesRow = has(r1, 'item.tokens') && has(r2, 'item.tokens');
   let isNewAssetBalance = false;
 
   if (!isCollectiblesRow) {
-    isNewAssetBalance = isNewValueForPath(r1, r2, 'item.native.balance.display');
+    isNewAssetBalance = isNewValueForPath(
+      r1,
+      r2,
+      'item.native.balance.display'
+    );
   }
 
-  return isNewAsset
-    || isNewAssetBalance
-    || isNewShowShitcoinsValue
-    || isNewTitle
-    || isNewTokenFamilyId
-    || isNewTokenFamilyName
-    || isNewTokenFamilySize
-    || isNewTotalItems
-    || isNewTotalValue
-    || isNewUniswapPercentageOwned
-    || isNewUniswapToken;
+  return (
+    isNewAsset ||
+    isNewAssetBalance ||
+    isNewShowShitcoinsValue ||
+    isNewTitle ||
+    isNewTokenFamilyId ||
+    isNewTokenFamilyName ||
+    isNewTokenFamilySize ||
+    isNewTotalItems ||
+    isNewTotalValue ||
+    isNewUniswapPercentageOwned ||
+    isNewUniswapToken
+  );
 };
 
 class RecyclerAssetList extends Component {
@@ -119,35 +131,27 @@ class RecyclerAssetList extends Component {
     renderAheadOffset: PropTypes.number,
     scrollingVelocity: PropTypes.number,
     scrollViewTracker: PropTypes.object,
-    sections: PropTypes.arrayOf(PropTypes.shape({
-      balances: PropTypes.bool,
-      collectibles: PropTypes.bool,
-      data: PropTypes.array.isRequired,
-      header: PropTypes.shape({
-        title: PropTypes.string,
-        totalItems: PropTypes.number,
-        totalValue: PropTypes.string,
-      }),
-      investments: PropTypes.bool,
-      perData: PropTypes.object,
-      renderItem: PropTypes.func.isRequired,
-      type: PropTypes.string,
-    })),
+    sections: PropTypes.arrayOf(
+      PropTypes.shape({
+        balances: PropTypes.bool,
+        collectibles: PropTypes.bool,
+        data: PropTypes.array.isRequired,
+        header: PropTypes.shape({
+          title: PropTypes.string,
+          totalItems: PropTypes.number,
+          totalValue: PropTypes.string,
+        }),
+        investments: PropTypes.bool,
+        perData: PropTypes.object,
+        renderItem: PropTypes.func.isRequired,
+        type: PropTypes.string,
+      })
+    ),
   };
 
   static defaultProps = {
     renderAheadOffset: deviceUtils.dimensions.height,
   };
-
-  rlv = React.createRef();
-
-  contentSize = 0;
-
-  layoutMeasurement = 0;
-
-  position = 0;
-
-  refresh = false;
 
   constructor(props) {
     super(props);
@@ -161,9 +165,7 @@ class RecyclerAssetList extends Component {
 
     this.layoutProvider = new LayoutProvider(
       index => {
-        const {
-          openFamilyTabs, openInvestmentCards, sections,
-        } = this.props;
+        const { openFamilyTabs, openInvestmentCards, sections } = this.props;
 
         const { headersIndices } = this.state;
         if (headersIndices.includes(index)) {
@@ -174,15 +176,32 @@ class RecyclerAssetList extends Component {
           return ViewTypes.FOOTER;
         }
 
-        const balancesIndex = findIndex(sections, ({ name }) => name === 'balances');
-        const collectiblesIndex = findIndex(sections, ({ name }) => name === 'collectibles');
-        const investmentsIndex = findIndex(sections, ({ name }) => name === 'investments');
+        const balancesIndex = findIndex(
+          sections,
+          ({ name }) => name === 'balances'
+        );
+        const collectiblesIndex = findIndex(
+          sections,
+          ({ name }) => name === 'collectibles'
+        );
+        const investmentsIndex = findIndex(
+          sections,
+          ({ name }) => name === 'investments'
+        );
 
         if (balancesIndex > -1) {
-          const balanceItemsCount = get(sections, `[${balancesIndex}].data.length`, 0);
-          const lastBalanceIndex = headersIndices[balancesIndex] + balanceItemsCount;
+          const balanceItemsCount = get(
+            sections,
+            `[${balancesIndex}].data.length`,
+            0
+          );
+          const lastBalanceIndex =
+            headersIndices[balancesIndex] + balanceItemsCount;
           if (index === lastBalanceIndex) {
-            if (sections[balancesIndex].data[lastBalanceIndex - 1].smallBalancesContainer) {
+            if (
+              sections[balancesIndex].data[lastBalanceIndex - 1]
+                .smallBalancesContainer
+            ) {
               return ViewTypes.COIN_SMALL_BALANCES;
             }
             return ViewTypes.COIN_ROW_LAST;
@@ -190,11 +209,25 @@ class RecyclerAssetList extends Component {
         }
 
         if (investmentsIndex > -1) {
-          const investmentItemsCount = get(sections, `[${investmentsIndex}].data.length`, 0);
-          const lastInvestmentIndex = headersIndices[investmentsIndex] + investmentItemsCount;
+          const investmentItemsCount = get(
+            sections,
+            `[${investmentsIndex}].data.length`,
+            0
+          );
+          const lastInvestmentIndex =
+            headersIndices[investmentsIndex] + investmentItemsCount;
 
-          if ((index > headersIndices[investmentsIndex]) && (index <= lastInvestmentIndex)) {
-            if (!openInvestmentCards[sections[investmentsIndex].data[index - headersIndices[investmentsIndex] - 1].uniqueId]) {
+          if (
+            index > headersIndices[investmentsIndex] &&
+            index <= lastInvestmentIndex
+          ) {
+            if (
+              !openInvestmentCards[
+                sections[investmentsIndex].data[
+                  index - headersIndices[investmentsIndex] - 1
+                ].uniqueId
+              ]
+            ) {
               return index === lastInvestmentIndex
                 ? ViewTypes.UNISWAP_ROW_LAST
                 : ViewTypes.UNISWAP_ROW;
@@ -209,12 +242,21 @@ class RecyclerAssetList extends Component {
           if (index > headersIndices[collectiblesIndex]) {
             const familyIndex = index - headersIndices[collectiblesIndex] - 1;
             if (openFamilyTabs[familyIndex]) {
-              if (get(sections, `[${collectiblesIndex}].data[${familyIndex}].tokens`)) {
+              if (
+                get(
+                  sections,
+                  `[${collectiblesIndex}].data[${familyIndex}].tokens`
+                )
+              ) {
                 return {
                   get: ViewTypes.UNIQUE_TOKEN_ROW,
                   isFirst: index === headersIndices[collectiblesIndex] + 1,
                   isLast: index === this.state.itemsCount - 2,
-                  rowCount: get(sections, `[${collectiblesIndex}].data[${familyIndex}].tokens`, []).length,
+                  rowCount: get(
+                    sections,
+                    `[${collectiblesIndex}].data[${familyIndex}].tokens`,
+                    []
+                  ).length,
                 };
               }
             }
@@ -245,47 +287,68 @@ class RecyclerAssetList extends Component {
           return;
         }
 
-        const fabPositionBottom = type.isLast ? (paddingBottom - (FloatingActionButton.size / 2)) : 0;
-        const TokenFamilyHeaderHeight = TokenFamilyHeader.height + fabPositionBottom;
+        const fabPositionBottom = type.isLast
+          ? paddingBottom - FloatingActionButton.size / 2
+          : 0;
+        const TokenFamilyHeaderHeight =
+          TokenFamilyHeader.height + fabPositionBottom;
 
         const firstRowExtraTopPadding = type.isFirst ? 4 : 0;
         if (type.get === ViewTypes.UNIQUE_TOKEN_ROW) {
           const heightOfRows = type.rowCount * UniqueTokenRow.cardSize;
-          const heightOfRowMargins = UniqueTokenRow.cardMargin * (type.rowCount - 1);
+          const heightOfRowMargins =
+            UniqueTokenRow.cardMargin * (type.rowCount - 1);
           const extraSpaceForDropShadow = 19;
-          dim.height = (
-            TokenFamilyHeaderHeight
-            + heightOfRows
-            + heightOfRowMargins
-            + firstRowExtraTopPadding
-            + extraSpaceForDropShadow
-          );
+          dim.height =
+            TokenFamilyHeaderHeight +
+            heightOfRows +
+            heightOfRowMargins +
+            firstRowExtraTopPadding +
+            extraSpaceForDropShadow;
         } else if (type.get === ViewTypes.UNIQUE_TOKEN_ROW_CLOSED) {
           dim.height = TokenFamilyHeaderHeight + firstRowExtraTopPadding;
         } else if (type === ViewTypes.COIN_ROW_LAST) {
-          dim.height = areSmallCollectibles ? CoinRow.height : CoinRow.height + ListFooter.height + 1;
+          dim.height = areSmallCollectibles
+            ? CoinRow.height
+            : CoinRow.height + ListFooter.height + 1;
         } else if (type === ViewTypes.COIN_SMALL_BALANCES) {
-          const balancesIndex = findIndex(sections, ({ name }) => name === 'balances');
-          const size = sections[balancesIndex].data[sections[balancesIndex].data.length - 1].assets.length;
+          const balancesIndex = findIndex(
+            sections,
+            ({ name }) => name === 'balances'
+          );
+          const size =
+            sections[balancesIndex].data[
+              sections[balancesIndex].data.length - 1
+            ].assets.length;
           dim.height = openSmallBalances
-            ? CoinDivider.height + (size * CoinRow.height) + ListFooter.height + 9
+            ? CoinDivider.height + size * CoinRow.height + ListFooter.height + 9
             : CoinDivider.height + ListFooter.height + 16;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRow.height;
         } else if (type === ViewTypes.UNISWAP_ROW_LAST) {
-          dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical + ListFooter.height + 8;
+          dim.height =
+            UniswapInvestmentCard.height +
+            InvestmentCard.margin.vertical +
+            ListFooter.height +
+            8;
         } else if (type === ViewTypes.UNISWAP_ROW) {
-          dim.height = UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
+          dim.height =
+            UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
         } else if (type === ViewTypes.UNISWAP_ROW_CLOSED_LAST) {
-          dim.height = InvestmentCardHeader.height + InvestmentCard.margin.vertical + ListFooter.height + 8;
+          dim.height =
+            InvestmentCardHeader.height +
+            InvestmentCard.margin.vertical +
+            ListFooter.height +
+            8;
         } else if (type === ViewTypes.UNISWAP_ROW_CLOSED) {
-          dim.height = InvestmentCardHeader.height + InvestmentCard.margin.vertical;
+          dim.height =
+            InvestmentCardHeader.height + InvestmentCard.margin.vertical;
         } else if (type === ViewTypes.HEADER) {
           dim.height = hideHeader ? 0 : AssetListHeader.height;
         } else if (type === ViewTypes.FOOTER) {
           dim.height = 0;
         }
-      },
+      }
     );
   }
 
@@ -294,14 +357,23 @@ class RecyclerAssetList extends Component {
     const items = sections.reduce((ctx, section) => {
       headersIndices.push(ctx.length);
       return ctx
-        .concat([{
-          isHeader: true,
-          ...section.header,
-        }])
-        .concat(section.data.map(item => ({ item: { ...item, ...section.perData }, renderItem: section.renderItem })));
+        .concat([
+          {
+            isHeader: true,
+            ...section.header,
+          },
+        ])
+        .concat(
+          section.data.map(item => ({
+            item: { ...item, ...section.perData },
+            renderItem: section.renderItem,
+          }))
+        );
     }, []);
     items.push({ item: { isLastPlaceholder: true }, renderItem: () => NOOP });
-    const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(sections.find(e => e.collectibles));
+    const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(
+      sections.find(e => e.collectibles)
+    );
     return {
       areSmallCollectibles,
       dataProvider: state.dataProvider.cloneWithRows(items),
@@ -327,7 +399,7 @@ class RecyclerAssetList extends Component {
     let collectibles = {};
     let investments = {};
 
-    sections.forEach((section) => {
+    sections.forEach(section => {
       if (section.balances) {
         balances = section;
       } else if (section.collectibles) {
@@ -341,7 +413,10 @@ class RecyclerAssetList extends Component {
       clearInterval(this.interval);
     }
 
-    if (scrollingVelocity && scrollingVelocity !== prevProps.scrollingVelocity) {
+    if (
+      scrollingVelocity &&
+      scrollingVelocity !== prevProps.scrollingVelocity
+    ) {
       clearInterval(this.interval);
       this.interval = setInterval(() => {
         this.rlv.scrollToOffset(0, this.position + scrollingVelocity * 10);
@@ -355,7 +430,11 @@ class RecyclerAssetList extends Component {
           let collectiblesHeight = 0;
           for (let j = 0; j < i; j++) {
             if (openFamilyTabs[j] && collectibles.data[j].tokens) {
-              collectiblesHeight += TokenFamilyHeader.height + collectibles.data[j].tokens.length * UniqueTokenRow.height + TokenFamilyWrapPaddingTop - 2;
+              collectiblesHeight +=
+                TokenFamilyHeader.height +
+                collectibles.data[j].tokens.length * UniqueTokenRow.height +
+                TokenFamilyWrapPaddingTop -
+                2;
             } else {
               collectiblesHeight += TokenFamilyHeader.height;
             }
@@ -364,33 +443,50 @@ class RecyclerAssetList extends Component {
           if (investments.data) {
             for (let k = 0; k < investments.data.length; k++) {
               if (!openInvestmentCards[investments.data[k].uniqueId]) {
-                investmentHeight += (UniswapInvestmentCard.height + InvestmentCard.margin.vertical);
+                investmentHeight +=
+                  UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
               } else {
-                investmentHeight += (InvestmentCardHeader.height + InvestmentCard.margin.vertical);
+                investmentHeight +=
+                  InvestmentCardHeader.height + InvestmentCard.margin.vertical;
               }
             }
           }
           let balancesHeight = 0;
           if (balances.data) {
             balancesHeight += CoinRow.height * (balances.data.length - 1);
-            if (balances.data[balances.data.length - 1].smallBalancesContainer) {
+            if (
+              balances.data[balances.data.length - 1].smallBalancesContainer
+            ) {
               balancesHeight += CoinDivider.height + ListFooter.height + 9;
               if (openSmallBalances) {
-                balancesHeight += CoinRow.height * balances.data[balances.data.length - 1].assets.length;
+                balancesHeight +=
+                  CoinRow.height *
+                  balances.data[balances.data.length - 1].assets.length;
               }
             } else {
               balancesHeight += CoinDivider.height + ListFooter.height + 16;
             }
           }
           const verticalOffset = 10;
-          const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 210 : 235);
-          const sectionBeforeCollectibles = AssetListHeader.height * (sections.length - 1) + ListFooter.height * (sections.length - 1) + balancesHeight + investmentHeight;
+          const deviceDimensions =
+            deviceUtils.dimensions.height -
+            (deviceUtils.isSmallPhone ? 210 : 235);
+          const sectionBeforeCollectibles =
+            AssetListHeader.height * (sections.length - 1) +
+            ListFooter.height * (sections.length - 1) +
+            balancesHeight +
+            investmentHeight;
           const sectionsHeight = sectionBeforeCollectibles + collectiblesHeight;
-          const renderSize = collectibles.data[i].tokens.length * UniqueTokenRow.height + TokenFamilyWrapPaddingTop;
+          const renderSize =
+            collectibles.data[i].tokens.length * UniqueTokenRow.height +
+            TokenFamilyWrapPaddingTop;
 
           if (renderSize >= deviceDimensions) {
             const scrollDistance = sectionsHeight - this.position;
-            this.scrollToOffset(this.position + scrollDistance - verticalOffset, true);
+            this.scrollToOffset(
+              this.position + scrollDistance - verticalOffset,
+              true
+            );
           } else {
             const diff = this.position - sectionsHeight + deviceDimensions;
             if (renderSize > diff) {
@@ -407,7 +503,10 @@ class RecyclerAssetList extends Component {
     let shouldAutoscrollBack = false;
     if (collectibles.data) {
       for (let i = 0; i < collectibles.data.length; i++) {
-        if (openFamilyTabs[i] === false && prevProps.openFamilyTabs[i] === true) {
+        if (
+          openFamilyTabs[i] === false &&
+          prevProps.openFamilyTabs[i] === true
+        ) {
           shouldAutoscrollBack = true;
           break;
         }
@@ -416,22 +515,29 @@ class RecyclerAssetList extends Component {
 
     if (investments.data && !shouldAutoscrollBack) {
       for (let i = 0; i < investments.data.length; i++) {
-        if (openInvestmentCards[investments.data[i].uniqueId] === true && prevProps.openInvestmentCards[investments.data[i].uniqueId] === false) {
+        if (
+          openInvestmentCards[investments.data[i].uniqueId] === true &&
+          prevProps.openInvestmentCards[investments.data[i].uniqueId] === false
+        ) {
           shouldAutoscrollBack = true;
           break;
         }
       }
     }
 
-    if (shouldAutoscrollBack
-    || (openSmallBalances === false && prevProps.openSmallBalances === true)) {
+    if (
+      shouldAutoscrollBack ||
+      (openSmallBalances === false && prevProps.openSmallBalances === true)
+    ) {
       let balancesHeight = 0;
       if (balances.data) {
         balancesHeight += CoinRow.height * (balances.data.length - 1);
         if (balances.data[balances.data.length - 1].smallBalancesContainer) {
           balancesHeight += CoinDivider.height + ListFooter.height;
           if (openSmallBalances) {
-            balancesHeight += CoinRow.height * balances.data[balances.data.length - 1].assets.length;
+            balancesHeight +=
+              CoinRow.height *
+              balances.data[balances.data.length - 1].assets.length;
           }
         } else {
           balancesHeight += CoinRow.height + ListFooter.height;
@@ -442,31 +548,52 @@ class RecyclerAssetList extends Component {
       if (investments.data) {
         for (let k = 0; k < investments.data.length; k++) {
           if (!openInvestmentCards[investments.data[k].uniqueId]) {
-            investmentHeight += (UniswapInvestmentCard.height + InvestmentCard.margin.vertical);
+            investmentHeight +=
+              UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
           } else {
-            investmentHeight += (InvestmentCardHeader.height + InvestmentCard.margin.vertical);
+            investmentHeight +=
+              InvestmentCardHeader.height + InvestmentCard.margin.vertical;
           }
         }
       }
 
       let collectiblesHeight = 0;
       if (balances.data) {
-        collectiblesHeight = collectibles.data.length > 0 ? AssetListHeader.height : 0;
+        collectiblesHeight =
+          collectibles.data.length > 0 ? AssetListHeader.height : 0;
         for (let j = 0; j < collectibles.data.length; j++) {
           if (openFamilyTabs[j] && collectibles.data[j].tokens) {
-            collectiblesHeight += TokenFamilyHeader.height + collectibles.data[j].tokens.length * UniqueTokenRow.height + TokenFamilyWrapPaddingTop - 2;
+            collectiblesHeight +=
+              TokenFamilyHeader.height +
+              collectibles.data[j].tokens.length * UniqueTokenRow.height +
+              TokenFamilyWrapPaddingTop -
+              2;
           } else {
             collectiblesHeight += TokenFamilyHeader.height;
           }
         }
       }
-      const renderSize = balancesHeight + investmentHeight + collectiblesHeight + ListFooter.height;
-      const deviceDimensions = deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 240 : 360);
-      if (this.position + deviceDimensions > renderSize && renderSize > deviceDimensions) {
-        layoutItemAnimator.animateShift = () => LayoutAnimation.configureNext(LayoutAnimation.create(310, 'easeInEaseOut', 'opacity'));
+      const renderSize =
+        balancesHeight +
+        investmentHeight +
+        collectiblesHeight +
+        ListFooter.height;
+      const deviceDimensions =
+        deviceUtils.dimensions.height - (deviceUtils.isSmallPhone ? 240 : 360);
+      if (
+        this.position + deviceDimensions > renderSize &&
+        renderSize > deviceDimensions
+      ) {
+        layoutItemAnimator.animateShift = () =>
+          LayoutAnimation.configureNext(
+            LayoutAnimation.create(310, 'easeInEaseOut', 'opacity')
+          );
         this.scrollToOffset(renderSize - deviceDimensions, true);
         setTimeout(() => {
-          layoutItemAnimator.animateShift = () => LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity'));
+          layoutItemAnimator.animateShift = () =>
+            LayoutAnimation.configureNext(
+              LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+            );
         }, 300);
       }
     }
@@ -477,13 +604,21 @@ class RecyclerAssetList extends Component {
     clearInterval(this.interval);
   };
 
+  rlv = React.createRef();
+
+  contentSize = 0;
+
+  layoutMeasurement = 0;
+
+  position = 0;
+
   scrollToOffset = (position, animated) => {
     setTimeout(() => {
       this.rlv.scrollToOffset(0, position, animated);
     }, 5);
-  }
+  };
 
-  getStableId = (index) => {
+  getStableId = index => {
     const { dataProvider } = this.state;
     const row = get(dataProvider, `_data[${index}]`);
 
@@ -514,21 +649,26 @@ class RecyclerAssetList extends Component {
     return index;
   };
 
-  handleListRef = (ref) => { this.rlv = ref; }
+  handleListRef = ref => {
+    this.rlv = ref;
+  };
 
   handleRefresh = () => {
     if (this.state.isRefreshing) return;
 
     this.setState({ isRefreshing: true }, () => {
-      this.props.fetchData().then(() => {
-        if (!this.isCancelled) {
-          this.setState({ isRefreshing: false });
-        }
-      }).catch(error => {
-        if (!this.isCancelled) {
-          this.setState({ isRefreshing: false });
-        }
-      });
+      this.props
+        .fetchData()
+        .then(() => {
+          if (!this.isCancelled) {
+            this.setState({ isRefreshing: false });
+          }
+        })
+        .catch(() => {
+          if (!this.isCancelled) {
+            this.setState({ isRefreshing: false });
+          }
+        });
     });
   };
 
@@ -545,8 +685,11 @@ class RecyclerAssetList extends Component {
       this.layoutMeasurement = layoutMeasurement.height;
     }
 
-    if ((contentSize.height - layoutMeasurement.height >= offsetY && offsetY >= 0)
-      || (offsetY < reloadHeightOffsetTop && offsetY > reloadHeightOffsetBottom)) {
+    if (
+      (contentSize.height - layoutMeasurement.height >= offsetY &&
+        offsetY >= 0) ||
+      (offsetY < reloadHeightOffsetTop && offsetY > reloadHeightOffsetBottom)
+    ) {
       if (this.props.scrollViewTracker) {
         this.props.scrollViewTracker.setValue(offsetY);
       }
@@ -576,40 +719,42 @@ class RecyclerAssetList extends Component {
     if (type === ViewTypes.COIN_SMALL_BALANCES) {
       const renderList = [];
       for (let i = 0; i < item.assets.length; i++) {
-        renderList.push(renderItem({
-          item: {
-            ...item.assets[i],
-            isSmall: true,
-          },
-        }));
+        renderList.push(
+          renderItem({
+            item: {
+              ...item.assets[i],
+              isSmall: true,
+            },
+          })
+        );
       }
 
       return <SmallBalancesWrapper assets={renderList} />;
     }
 
-    const isNotUniqueToken = (
-      type === ViewTypes.COIN_ROW
-      || type === ViewTypes.COIN_ROW_LAST
-      || type === ViewTypes.UNISWAP_ROW
-      || type === ViewTypes.UNISWAP_ROW_LAST
-      || type === ViewTypes.UNISWAP_ROW_CLOSED
-      || type === ViewTypes.UNISWAP_ROW_CLOSED_LAST
-      || type === ViewTypes.FOOTER
-    );
+    const isNotUniqueToken =
+      type === ViewTypes.COIN_ROW ||
+      type === ViewTypes.COIN_ROW_LAST ||
+      type === ViewTypes.UNISWAP_ROW ||
+      type === ViewTypes.UNISWAP_ROW_LAST ||
+      type === ViewTypes.UNISWAP_ROW_CLOSED ||
+      type === ViewTypes.UNISWAP_ROW_CLOSED_LAST ||
+      type === ViewTypes.FOOTER;
 
     // TODO sections
     return isNotUniqueToken
       ? renderItem({ item })
       : renderItem({
-        childrenAmount: item.childrenAmount,
-        familyId: item.familyId,
-        familyImage: item.familyImage,
-        familyName: item.familyName,
-        item: item.tokens,
-        marginTop: type.isFirst ? 4 : 0,
-        shouldPrioritizeImageLoading: index < get(sections, '[0].data.length', 0) + 9,
-        uniqueId: item.uniqueId,
-      });
+          childrenAmount: item.childrenAmount,
+          familyId: item.familyId,
+          familyImage: item.familyImage,
+          familyName: item.familyName,
+          item: item.tokens,
+          marginTop: type.isFirst ? 4 : 0,
+          shouldPrioritizeImageLoading:
+            index < get(sections, '[0].data.length', 0) + 9,
+          uniqueId: item.uniqueId,
+        });
   };
 
   render() {
@@ -657,5 +802,5 @@ export default compose(
   withFabSelection,
   withOpenFamilyTabs,
   withOpenInvestmentCards,
-  withOpenBalances,
+  withOpenBalances
 )(RecyclerAssetList);

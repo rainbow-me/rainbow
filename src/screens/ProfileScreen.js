@@ -26,20 +26,17 @@ const ProfileScreen = ({
       <HeaderButton onPress={onPressSettings}>
         <Icon name="gear" />
       </HeaderButton>
-      <BackButton
-        direction="right"
-        onPress={onPressBackButton}
-      />
+      <BackButton direction="right" onPress={onPressBackButton} />
     </Header>
     <ActivityList
       accountAddress={accountAddress}
-      header={(
+      header={
         <ProfileMasthead
           accountAddress={accountAddress}
           navigation={navigation}
           showBottomDivider={!isEmpty}
         />
-      )}
+      }
       isEmpty={isEmpty}
       nativeCurrency={nativeCurrency}
       requests={requests}
@@ -47,10 +44,7 @@ const ProfileScreen = ({
       transactionsCount={transactionsCount}
     />
     {isEmpty && <AddFundsInterstitial />}
-    <BlurOverlay
-      blurType="light"
-      intensity={blurIntensity}
-    />
+    <BlurOverlay blurType="light" intensity={blurIntensity} />
   </Page>
 );
 

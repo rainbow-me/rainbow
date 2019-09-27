@@ -22,7 +22,8 @@ export const getBalanceAmount = (selectedGasPrice, selected) => {
   return amount;
 };
 
-export const getAsset = (assets, address = 'eth') => find(assets, asset => asset.address === address);
+export const getAsset = (assets, address = 'eth') =>
+  find(assets, asset => asset.address === address);
 
 /**
  * @desc remove hex prefix
@@ -61,7 +62,7 @@ export const getDataString = (func, arrVals) => {
  * @desc get network string from chainId
  * @param  {Number} chainId
  */
-export const getNetworkFromChainId = (chainId) => {
+export const getNetworkFromChainId = chainId => {
   const networkData = find(chains, ['chain_id', chainId]);
   return get(networkData, 'network', 'mainnet');
 };
@@ -70,7 +71,7 @@ export const getNetworkFromChainId = (chainId) => {
  * @desc get chainId from network string
  * @param  {String} network
  */
-export const getChainIdFromNetwork = (network) => {
+export const getChainIdFromNetwork = network => {
   const chainData = find(chains, ['network', network]);
   return get(chainData, 'chain_id', 1);
 };

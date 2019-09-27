@@ -12,19 +12,20 @@ import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import StarIcon from '../icons/svg/StarIcon';
-import { SendCoinRow } from './index';
 
-const formatPercentageString = percentString => (
+const formatPercentageString = percentString =>
   percentString
-    ? percentString.split('-').join('- ').split('%').join(' %')
-    : '-'
-);
+    ? percentString
+        .split('-')
+        .join('- ')
+        .split('%')
+        .join(' %')
+    : '-';
 
 const BottomRow = ({ balance, native }) => {
   const percentChange = get(native, 'change');
   const percentageChangeDisplay = formatPercentageString(percentChange);
-  const isPositive = (percentChange && (percentageChangeDisplay.charAt(0) !== '-'));
+  const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
 
   return (
     <Fragment>
@@ -64,14 +65,7 @@ TopRow.propTypes = {
   nativeCurrencySymbol: PropTypes.string,
 };
 
-const BalanceCoinRow = ({
-  isSmall,
-  item,
-  onPress,
-  onPressSend,
-  openSmallBalances,
-  ...props
-}) => (
+const BalanceCoinRow = ({ item, onPress, onPressSend, ...props }) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
     <CoinRow
       onPress={onPress}
@@ -108,13 +102,18 @@ export default compose(
     },
   }),
   shouldUpdate((props, nextProps) => {
-    const isChangeInOpenAssets = props.openSmallBalances !== nextProps.openSmallBalances;
+    const isChangeInOpenAssets =
+      props.openSmallBalances !== nextProps.openSmallBalances;
     const itemIdentifier = buildAssetUniqueIdentifier(props.item);
     const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.item);
 
     const isNewItem = itemIdentifier !== nextItemIdentifier;
-    const isNewNativeCurrency = isNewValueForPath(props, nextProps, 'nativeCurrency');
+    const isNewNativeCurrency = isNewValueForPath(
+      props,
+      nextProps,
+      'nativeCurrency'
+    );
 
     return isNewItem || isNewNativeCurrency || isChangeInOpenAssets;
-  }),
+  })
 )(BalanceCoinRow);

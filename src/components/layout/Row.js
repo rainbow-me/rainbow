@@ -3,5 +3,5 @@ import Flex from './Flex';
 
 export default compose(
   setDisplayName('Row'),
-  withProps({ direction: 'row' }),
+  withProps({ direction: 'row' })
 )(Flex);

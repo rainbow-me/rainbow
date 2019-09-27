@@ -12,7 +12,11 @@ const SendTransactionSpeed = ({
   nativeCurrencySymbol,
   onPressTransactionSpeed,
 }) => {
-  const fee = get(gasPrice, 'txFee.native.value.display', `${nativeCurrencySymbol}0.00`);
+  const fee = get(
+    gasPrice,
+    'txFee.native.value.display',
+    `${nativeCurrencySymbol}0.00`
+  );
   const time = get(gasPrice, 'estimatedTime.display', '');
 
   return (
@@ -21,7 +25,7 @@ const SendTransactionSpeed = ({
         backgroundColor={colors.white}
         borderColor={colors.dark}
         borderWidth={1}
-        disabled={true}
+        disabled
         showShadow={false}
         size="small"
         textProps={{ color: colors.blueGreyLightest }}

@@ -1,10 +1,4 @@
-import {
-  flatten,
-  get,
-  isEmpty,
-  pick,
-  reverse,
-} from 'lodash';
+import { flatten, get, isEmpty, pick, reverse } from 'lodash';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
@@ -25,17 +19,21 @@ const parseTransaction = (txn, nativeCurrency) => {
     'type',
   ]);
   transaction.pending = false;
-  transaction.from = txn.address_from; // eslint-disable-line camelcase
-  transaction.to = txn.address_to; // eslint-disable-line camelcase
+  transaction.from = txn.address_from;
+  transaction.to = txn.address_to;
   const changes = get(txn, 'changes', []);
   let internalTransactions = changes;
-  if (changes.length === 2 && get(changes, '[0].asset.asset_code') === get(changes, '[1].asset.asset_code')) {
+  if (
+    changes.length === 2 &&
+    get(changes, '[0].asset.asset_code') ===
+      get(changes, '[1].asset.asset_code')
+  ) {
     internalTransactions = [changes[0]];
   }
   if (isEmpty(internalTransactions) && transaction.type === 'cancel') {
     const ethInternalTransaction = {
-      address_from: transaction.from, // eslint-disable-line camelcase
-      address_to: transaction.to, // eslint-disable-line camelcase
+      address_from: transaction.from,
+      address_to: transaction.to,
       asset: {
         address: 'eth',
         decimals: 18,
@@ -47,7 +45,7 @@ const parseTransaction = (txn, nativeCurrency) => {
     internalTransactions = [ethInternalTransaction];
   }
   internalTransactions = internalTransactions.map((internalTxn, index) => {
-    const symbol = get(internalTxn, 'asset.symbol', '');
+    const symbol = get(internalTxn, 'asset.symbol') || '';
     const updatedAsset = {
       ...internalTxn.asset,
       symbol: symbol.toUpperCase(),
@@ -57,7 +55,7 @@ const parseTransaction = (txn, nativeCurrency) => {
       internalTxn.value,
       internalTxn.asset.decimals,
       priceUnit,
-      nativeCurrency,
+      nativeCurrency
     );
 
     return {

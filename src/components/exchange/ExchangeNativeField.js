@@ -21,50 +21,50 @@ class ExchangeNativeField extends Component {
     placeholder: PropTypes.string,
     setNativeAmount: PropTypes.func,
     symbol: PropTypes.string,
-  }
+  };
 
-  state = { isFocused: false }
-
-  nativeFieldRef = undefined
+  state = { isFocused: false };
 
   shouldComponentUpdate = (nextProps, nextState) => {
-    const isNewAmount = isNewValueForPath(this.props, nextProps, 'nativeAmount');
+    const isNewAmount = isNewValueForPath(
+      this.props,
+      nextProps,
+      'nativeAmount'
+    );
     const isNewFocus = isNewValueForPath(this.state, nextState, 'isFocused');
     const isNewSymbol = isNewValueForPath(this.props, nextProps, 'symbol');
 
-    return (
-      isNewAmount
-      || isNewFocus
-      || isNewSymbol
-    );
-  }
+    return isNewAmount || isNewFocus || isNewSymbol;
+  };
+
+  nativeFieldRef = undefined;
 
   focusNativeField = () => {
     if (this.nativeFieldRef) {
       this.nativeFieldRef.focus();
     }
-  }
+  };
 
-  handleBlur = (event) => {
+  handleBlur = event => {
     this.setState({ isFocused: false });
 
     if (this.props.onBlur) {
       this.props.onBlur(event);
     }
-  }
+  };
 
-  handleFocus = (event) => {
+  handleFocus = event => {
     this.setState({ isFocused: true });
 
     if (this.props.onFocus) {
       this.props.onFocus(event);
     }
-  }
+  };
 
-  handleNativeFieldRef = (ref) => {
+  handleNativeFieldRef = ref => {
     this.nativeFieldRef = ref;
     this.props.nativeFieldRef(ref);
-  }
+  };
 
   render = () => {
     const {
@@ -92,7 +92,7 @@ class ExchangeNativeField extends Component {
           </Text>
           <ExchangeInput
             color={colors.alpha(colors.dark, opacity)}
-            disableTabularNums={true}
+            disableTabularNums
             fontFamily={fonts.family.SFProText}
             fontSize={fonts.size.large}
             fontWeight={fonts.weight.regular}
@@ -107,13 +107,13 @@ class ExchangeNativeField extends Component {
         </Row>
       </TouchableWithoutFeedback>
     );
-  }
+  };
 }
 
-export default withProps(({ nativeCurrency }) => (
+export default withProps(({ nativeCurrency }) =>
   pick(supportedNativeCurrencies[nativeCurrency], [
     'mask',
     'placeholder',
     'symbol',
   ])
-))(ExchangeNativeField);
+)(ExchangeNativeField);

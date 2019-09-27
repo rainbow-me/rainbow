@@ -23,22 +23,13 @@ const CoinIconFallback = fallbackProps => (
 
 const enhance = onlyUpdateForKeys(['bgColor', 'symbol']);
 
-const CoinIcon = enhance(({
-  bgColor,
-  showShadow,
-  size,
-  symbol,
-  ...props
-}) => (
+const CoinIcon = enhance(({ bgColor, showShadow, size, symbol, ...props }) =>
   showShadow ? (
     <ShadowStack
       {...props}
       {...borders.buildCircleAsObject(size)}
       backgroundColor={bgColor}
-      shadows={[
-        [0, 4, 6, colors.dark, 0.04],
-        [0, 1, 3, colors.dark, 0.08],
-      ]}
+      shadows={[[0, 4, 6, colors.dark, 0.04], [0, 1, 3, colors.dark, 0.08]]}
       shouldRasterizeIOS
     >
       <ReactCoinIcon
@@ -57,7 +48,7 @@ const CoinIcon = enhance(({
       symbol={symbol}
     />
   )
-));
+);
 
 CoinIcon.propTypes = {
   bgColor: PropTypes.string,

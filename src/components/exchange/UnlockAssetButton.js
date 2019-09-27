@@ -1,12 +1,6 @@
 import React from 'react';
 import { withNeverRerender } from '../../hoc';
-import {
-  colors,
-  fonts,
-  margin,
-  padding,
-  position,
-} from '../../styles';
+import { colors, fonts, margin, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { CoolButton } from '../buttons';
 import { Icon } from '../icons';
@@ -15,14 +9,8 @@ import { Row, RowWithMargins } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import { Text } from '../text';
 
-const UnlockAssetButton = ({
-  borderRadius,
-  children,
-  color,
-  onPress,
-  shadows,
-}) => (
-  <ButtonPressAnimation isInteraction={true} onPress={onPress}>
+const UnlockAssetButton = ({ borderRadius, onPress, shadows }) => (
+  <ButtonPressAnimation isInteraction onPress={onPress}>
     <Row flex={0} css={margin(0, 15)}>
       <ShadowStack
         {...position.coverAsObject}
@@ -36,12 +24,7 @@ const UnlockAssetButton = ({
         margin={4.8}
         zIndex={1}
       >
-        <Icon
-          color={colors.white}
-          flex={0}
-          lineHeight={0}
-          name="lock"
-        />
+        <Icon color={colors.white} flex={0} lineHeight={0} name="lock" />
         <Text
           color={colors.white}
           flex={1}

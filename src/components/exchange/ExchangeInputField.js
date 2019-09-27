@@ -7,11 +7,7 @@ import { ButtonPressAnimation } from '../animations';
 import { CoolButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
 import { EnDash } from '../html-entities';
-import {
-  ColumnWithMargins,
-  Row,
-  RowWithMargins,
-} from '../layout';
+import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 import ExchangeInput from './ExchangeInput';
 import ExchangeNativeField from './ExchangeNativeField';
@@ -35,40 +31,64 @@ export default class ExchangeInputField extends Component {
     onUnlockAsset: PropTypes.func,
     setInputAmount: PropTypes.func,
     setNativeAmount: PropTypes.func,
-  }
+  };
 
-  inputFieldRef = undefined
-
-  padding = 15
-
-  shouldComponentUpdate = (nextProps, nextState) => {
-    const isNewAssetApproved = isNewValueForPath(this.props, nextProps, 'isAssetApproved');
-    const isNewInputAmount = isNewValueForPath(this.props, nextProps, 'inputAmount');
-    const isNewInputCurrency = isNewValueForPath(this.props, nextProps, 'inputCurrencySymbol');
-    const isNewNativeAmount = isNewValueForPath(this.props, nextProps, 'nativeAmount');
-    const isNewNativeCurrency = isNewValueForPath(this.props, nextProps, 'nativeCurrency');
-    const isNewUnlockingAsset = isNewValueForPath(this.props, nextProps, 'isUnlockingAsset');
+  shouldComponentUpdate = nextProps => {
+    const isNewAssetApproved = isNewValueForPath(
+      this.props,
+      nextProps,
+      'isAssetApproved'
+    );
+    const isNewInputAmount = isNewValueForPath(
+      this.props,
+      nextProps,
+      'inputAmount'
+    );
+    const isNewInputCurrency = isNewValueForPath(
+      this.props,
+      nextProps,
+      'inputCurrencySymbol'
+    );
+    const isNewNativeAmount = isNewValueForPath(
+      this.props,
+      nextProps,
+      'nativeAmount'
+    );
+    const isNewNativeCurrency = isNewValueForPath(
+      this.props,
+      nextProps,
+      'nativeCurrency'
+    );
+    const isNewUnlockingAsset = isNewValueForPath(
+      this.props,
+      nextProps,
+      'isUnlockingAsset'
+    );
 
     return (
-      isNewAssetApproved
-      || isNewInputAmount
-      || isNewInputCurrency
-      || isNewNativeAmount
-      || isNewNativeCurrency
-      || isNewUnlockingAsset
+      isNewAssetApproved ||
+      isNewInputAmount ||
+      isNewInputCurrency ||
+      isNewNativeAmount ||
+      isNewNativeCurrency ||
+      isNewUnlockingAsset
     );
-  }
+  };
+
+  inputFieldRef = undefined;
+
+  padding = 15;
 
   handleFocusInputField = () => {
     if (this.inputFieldRef) {
       this.inputFieldRef.focus();
     }
-  }
+  };
 
-  handleInputFieldRef = (ref) => {
+  handleInputFieldRef = ref => {
     this.inputFieldRef = ref;
     this.props.inputFieldRef(ref);
-  }
+  };
 
   render = () => {
     const {
@@ -110,7 +130,9 @@ export default class ExchangeInputField extends Component {
                 onChangeText={setInputAmount}
                 onFocus={onFocus}
                 placeholder={inputCurrencySymbol ? '0' : EnDash.unicode}
-                placeholderTextColor={inputCurrencySymbol ? undefined : skeletonColor}
+                placeholderTextColor={
+                  inputCurrencySymbol ? undefined : skeletonColor
+                }
                 refInput={this.handleInputFieldRef}
                 value={inputAmount}
               />
@@ -137,11 +159,8 @@ export default class ExchangeInputField extends Component {
             onFocus={onFocus}
             setNativeAmount={setNativeAmount}
           />
-          {(isAssetApproved || isUnlockingAsset) ? (
-            <ButtonPressAnimation
-              marginRight={4}
-              onPress={onPressMaxBalance}
-            >
+          {isAssetApproved || isUnlockingAsset ? (
+            <ButtonPressAnimation marginRight={4} onPress={onPressMaxBalance}>
               <RowWithMargins
                 align="center"
                 height={BottomRowHeight}
@@ -149,7 +168,9 @@ export default class ExchangeInputField extends Component {
                 paddingHorizontal={this.padding}
               >
                 <Emoji lineHeight="none" name="moneybag" size="lmedium" />
-                <Text color="appleBlue" size="medium" weight="semibold">Max</Text>
+                <Text color="appleBlue" size="medium" weight="semibold">
+                  Max
+                </Text>
               </RowWithMargins>
             </ButtonPressAnimation>
           ) : (
@@ -158,5 +179,5 @@ export default class ExchangeInputField extends Component {
         </Row>
       </ColumnWithMargins>
     );
-  }
+  };
 }

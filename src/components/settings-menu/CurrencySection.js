@@ -9,32 +9,23 @@ import { RadioList, RadioListItem } from '../radio-list';
 import supportedNativeCurrencies from '../../references/native-currencies.json';
 import { Emoji } from '../text';
 
-const currencyListItems = Object.values(supportedNativeCurrencies).map(({ currency, ...item }) => ({
-  ...item,
-  currency,
-  key: currency,
-  value: currency,
-}));
+const currencyListItems = Object.values(supportedNativeCurrencies).map(
+  ({ currency, ...item }) => ({
+    ...item,
+    currency,
+    key: currency,
+    value: currency,
+  })
+);
 
 const renderCurrencyIcon = (currency, emojiName) => {
   if (!currency) return null;
   if (!isNil(emojiName)) return <Emoji name={emojiName} />;
 
-  return (
-    <CoinIcon
-      showShadow={false}
-      size={23}
-      symbol={currency}
-    />
-  );
+  return <CoinIcon showShadow={false} size={23} symbol={currency} />;
 };
 
-const CurrencyListItem = ({
-  currency,
-  emojiName,
-  label,
-  ...item
-}) => (
+const CurrencyListItem = ({ currency, emojiName, label, ...item }) => (
   <RadioListItem
     {...item}
     icon={renderCurrencyIcon(currency, emojiName)}
@@ -67,10 +58,10 @@ CurrencySection.propTypes = {
 export default compose(
   withAccountSettings,
   withHandlers({
-    onSelectCurrency: ({ settingsChangeNativeCurrency }) => (currency) => {
+    onSelectCurrency: ({ settingsChangeNativeCurrency }) => currency => {
       settingsChangeNativeCurrency(currency);
       analytics.track('Changed native currency', { currency });
     },
   }),
-  onlyUpdateForKeys(['nativeCurrency']),
+  onlyUpdateForKeys(['nativeCurrency'])
 )(CurrencySection);

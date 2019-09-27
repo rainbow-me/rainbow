@@ -4,13 +4,7 @@ import { View } from 'react-primitives';
 import { onlyUpdateForPropTypes } from 'recompact';
 import { colors, position } from '../styles';
 
-const InnerBorder = ({
-  color,
-  opacity,
-  radius,
-  width,
-  ...props
-}) => (
+const InnerBorder = ({ color, opacity, radius, width, ...props }) => (
   <View
     {...props}
     css={`

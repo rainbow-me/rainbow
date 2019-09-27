@@ -9,12 +9,7 @@ import ExchangeFab from './ExchangeFab';
 const bottomPosition = 21 + safeAreaInsetValues.bottom;
 
 const enhance = onlyUpdateForKeys(['children', 'disabled']);
-const FabWrapper = enhance(({
-  children,
-  disabled,
-  fabs,
-  ...props
-}) => (
+const FabWrapper = enhance(({ children, disabled, fabs, ...props }) => (
   <FlexItem>
     {children}
     {!disabled && (

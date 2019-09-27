@@ -2,15 +2,14 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import Animated, { Easing } from 'react-native-reanimated';
 
-const buildAnimation = (value, toValue) => (
+const buildAnimation = (value, toValue) =>
   Animated.timing(value, {
     duration: 175,
     easing: Easing.bezier(0.165, 0.84, 0.44, 1),
     isInteraction: false,
     toValue,
     useNativeDriver: true,
-  }).start()
-);
+  }).start();
 
 export default class FlyInAnimation extends PureComponent {
   static propTypes = {
@@ -18,18 +17,17 @@ export default class FlyInAnimation extends PureComponent {
     style: PropTypes.object,
   };
 
-  animation = new Animated.Value(0)
+  componentDidMount = () => buildAnimation(this.animation, 1);
 
-  componentDidMount = () => buildAnimation(this.animation, 1)
+  componentWillUnmount = () => buildAnimation(this.animation, 0);
 
-  componentWillUnmount = () => buildAnimation(this.animation, 0)
+  animation = new Animated.Value(0);
 
-  buildInterpolation = outputRange => (
+  buildInterpolation = outputRange =>
     Animated.interpolate(this.animation, {
       inputRange: [0, 1],
       outputRange,
-    })
-  )
+    });
 
   render = () => (
     <Animated.View
@@ -41,5 +39,5 @@ export default class FlyInAnimation extends PureComponent {
     >
       {this.props.children}
     </Animated.View>
-  )
+  );
 }

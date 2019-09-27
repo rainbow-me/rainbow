@@ -41,7 +41,7 @@ const TransactionStatusBadge = ({ pending, status, ...props }) => {
           />
         </SpinAnimation>
       )}
-      {(status && includes(Object.keys(StatusProps), status)) && (
+      {status && includes(Object.keys(StatusProps), status) && (
         <Icon
           color={statusColor}
           style={position.maxSizeAsObject(10)}

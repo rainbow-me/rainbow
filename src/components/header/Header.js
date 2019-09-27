@@ -7,7 +7,8 @@ const StatusBarHeight = getStatusBarHeight(true);
 const HeaderHeight = 52;
 const HeaderHeightWithStatusBar = HeaderHeight + StatusBarHeight;
 
-const Header = React.memo((props) => (
+// eslint-disable-next-line react/display-name
+const Header = React.memo(props => (
   <Row
     {...props}
     align="end"

@@ -8,8 +8,10 @@ import { ListFooter } from '../list';
 import EmptyAssetList from './EmptyAssetList';
 import RecyclerAssetList from './RecyclerAssetList';
 
-const FabSizeWithPadding = FloatingActionButton.size + (FabWrapper.bottomPosition * 2);
-const PaddingBottom = (safeAreaInsetValues.bottom + FabSizeWithPadding) - ListFooter.height;
+const FabSizeWithPadding =
+  FloatingActionButton.size + FabWrapper.bottomPosition * 2;
+const PaddingBottom =
+  safeAreaInsetValues.bottom + FabSizeWithPadding - ListFooter.height;
 
 const AssetList = ({
   fetchData,
@@ -20,25 +22,23 @@ const AssetList = ({
   scrollViewTracker,
   sections,
   ...props
-}) => (
-  (isEmpty || isImporting)
-    ? (
-      <EmptyAssetList
-        {...props}
-        hideHeader={hideHeader}
-        isWalletEthZero={isImporting ? false : isWalletEthZero}
-      />
-    ) : (
-      <RecyclerAssetList
-        fetchData={fetchData}
-        hideHeader={hideHeader}
-        paddingBottom={PaddingBottom}
-        scrollViewTracker={scrollViewTracker}
-        sections={sections}
-        {...props}
-      />
-    )
-);
+}) =>
+  isEmpty || isImporting ? (
+    <EmptyAssetList
+      {...props}
+      hideHeader={hideHeader}
+      isWalletEthZero={isImporting ? false : isWalletEthZero}
+    />
+  ) : (
+    <RecyclerAssetList
+      fetchData={fetchData}
+      hideHeader={hideHeader}
+      paddingBottom={PaddingBottom}
+      scrollViewTracker={scrollViewTracker}
+      sections={sections}
+      {...props}
+    />
+  );
 
 AssetList.propTypes = {
   fetchData: PropTypes.func.isRequired,
@@ -52,10 +52,5 @@ AssetList.propTypes = {
 
 export default compose(
   withIsWalletImporting,
-  onlyUpdateForKeys([
-    'isEmpty',
-    'isImporting',
-    'isWalletEthZero',
-    'sections',
-  ]),
+  onlyUpdateForKeys(['isEmpty', 'isImporting', 'isWalletEthZero', 'sections'])
 )(AssetList);

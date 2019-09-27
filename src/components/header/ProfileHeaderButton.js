@@ -1,11 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  compose,
-  pickProps,
-  onlyUpdateForKeys,
-  withHandlers,
-} from 'recompact';
+import { compose, pickProps, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { withRequests } from '../../hoc';
 import { Badge } from '../badge';
 import { Centered } from '../layout';
@@ -22,11 +17,7 @@ const ProfileHeaderButton = ({ onPress, pendingRequestCount }) => (
     <Centered>
       <Avatar size={34} />
       {pendingRequestCount > 0 && (
-        <Badge
-          delay={1500}
-          value={pendingRequestCount}
-          zIndex={1}
-        />
+        <Badge delay={1500} value={pendingRequestCount} zIndex={1} />
       )}
     </Centered>
   </HeaderButton>
@@ -39,7 +30,9 @@ ProfileHeaderButton.propTypes = {
 
 export default compose(
   withRequests,
-  withHandlers({ onPress: ({ navigation }) => () => navigation.navigate('ProfileScreen') }),
+  withHandlers({
+    onPress: ({ navigation }) => () => navigation.navigate('ProfileScreen'),
+  }),
   pickProps(Object.keys(ProfileHeaderButton.propTypes)),
-  onlyUpdateForKeys(['pendingRequestCount']),
+  onlyUpdateForKeys(['pendingRequestCount'])
 )(ProfileHeaderButton);

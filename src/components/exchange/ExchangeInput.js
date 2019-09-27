@@ -18,7 +18,7 @@ export default class ExchangeInput extends PureComponent {
     refInput: PropTypes.func,
     style: stylePropType,
     value: PropTypes.string,
-  }
+  };
 
   static defaultProps = {
     color: colors.dark,
@@ -28,11 +28,11 @@ export default class ExchangeInput extends PureComponent {
     mask: '[099999999999].[9999999999999]',
     placeholder: '0',
     placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.5),
-  }
+  };
 
   handleChangeText = (formatted, extracted) => {
     this.props.onChangeText(extracted ? formatted : '');
-  }
+  };
 
   render = () => {
     const {
@@ -62,15 +62,18 @@ export default class ExchangeInput extends PureComponent {
         placeholderTextColor={placeholderTextColor}
         refInput={refInput}
         selectionColor={colors.appleBlue}
-        style={[{
-          color,
-          fontFamily,
-          fontSize: parseFloat(fontSize),
-          fontVariant: disableTabularNums ? undefined : ['tabular-nums'],
-          fontWeight,
-        }, style]}
+        style={[
+          {
+            color,
+            fontFamily,
+            fontSize: parseFloat(fontSize),
+            fontVariant: disableTabularNums ? undefined : ['tabular-nums'],
+            fontWeight,
+          },
+          style,
+        ]}
         value={value}
       />
     );
-  }
+  };
 }

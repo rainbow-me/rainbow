@@ -6,11 +6,7 @@ import { compose } from 'recompact';
 import { estimateGasLimit } from '../handlers/web3';
 import { greaterThan } from '../helpers/utilities';
 import { isValidAddress } from '../helpers/validators';
-import {
-  withAccountData,
-  withGas,
-  withUniqueTokens,
-} from '../hoc';
+import { withAccountData, withGas, withUniqueTokens } from '../hoc';
 import lang from '../languages';
 import {
   sendClearFields,
@@ -92,39 +88,42 @@ export const withSendComponentWithData = (SendComponent, options) => {
 
       this.defaultAsset = options.defaultAsset;
       this.gasFormat = options.gasFormat || 'long';
-      this.sendTransactionCallback = options.sendTransactionCallback || function noop() {};
+      this.sendTransactionCallback =
+        options.sendTransactionCallback || function noop() {};
     }
 
     componentDidMount() {
-      this.props.sendModalInit({ defaultAsset: this.defaultAsset, gasFormat: this.gasFormat });
+      this.props.sendModalInit({
+        defaultAsset: this.defaultAsset,
+        gasFormat: this.gasFormat,
+      });
     }
 
     async componentDidUpdate(prevProps) {
-      const {
-        address,
-        assetAmount,
-        recipient,
-        selected,
-      } = this.props;
+      const { address, assetAmount, recipient, selected } = this.props;
 
       if (recipient !== prevProps.recipient) {
         const validAddress = await isValidAddress(recipient);
+        // eslint-disable-next-line react/no-did-update-set-state
         this.setState({ isValidAddress: validAddress });
       }
 
       if (this.state.isValidAddress) {
-        if ((selected.symbol !== prevProps.selected.symbol)
-          || (recipient !== prevProps.recipient)
-          || (assetAmount !== prevProps.assetAmount)) {
+        if (
+          selected.symbol !== prevProps.selected.symbol ||
+          recipient !== prevProps.recipient ||
+          assetAmount !== prevProps.assetAmount
+        ) {
           estimateGasLimit({
             address,
             amount: assetAmount,
             asset: selected,
             recipient,
-          }).then(gasLimit => {
-            this.props.gasUpdateTxFee(gasLimit);
-          }).catch(error => {
-          });
+          })
+            .then(gasLimit => {
+              this.props.gasUpdateTxFee(gasLimit);
+            })
+            .catch(() => {});
         }
       }
     }
@@ -153,7 +152,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
       this.props.sendModalInit({ defaultAsset: this.defaultAsset });
     };
 
-    onSubmit = async (event) => {
+    onSubmit = async event => {
       if (event && typeof event.preventDefault === 'function') {
         event.preventDefault();
       }
@@ -170,10 +169,14 @@ export const withSendComponentWithData = (SendComponent, options) => {
           return;
         }
         if (this.props.selected.address === 'eth') {
-          const { requestedAmount, balance, amountWithFees } = ethereumUtils.transactionData(
+          const {
+            requestedAmount,
+            balance,
+            amountWithFees,
+          } = ethereumUtils.transactionData(
             this.props.assets,
             this.props.assetAmount,
-            this.props.selectedGasPrice,
+            this.props.selectedGasPrice
           );
 
           if (greaterThan(requestedAmount, balance)) {
@@ -183,10 +186,14 @@ export const withSendComponentWithData = (SendComponent, options) => {
             return;
           }
         } else if (!this.props.selected.isNft) {
-          const { requestedAmount, balance, txFee } = ethereumUtils.transactionData(
+          const {
+            requestedAmount,
+            balance,
+            txFee,
+          } = ethereumUtils.transactionData(
             this.props.assets,
             this.props.assetAmount,
-            this.props.selectedGasPrice,
+            this.props.selectedGasPrice
           );
 
           const tokenBalance = get(this.props, 'selected.balance.amount');
@@ -201,14 +208,17 @@ export const withSendComponentWithData = (SendComponent, options) => {
 
         this.props.sendToggleConfirmationView(true);
 
-        return this.props.sendTransaction({
-          address: this.props.address,
-          amount: this.props.assetAmount,
-          asset: this.props.selected,
-          gasLimit: this.props.gasLimit,
-          gasPrice: this.props.selectedGasPrice,
-          recipient: this.props.recipient,
-        }, this.sendTransactionCallback);
+        return this.props.sendTransaction(
+          {
+            address: this.props.address,
+            amount: this.props.assetAmount,
+            asset: this.props.selected,
+            gasLimit: this.props.gasLimit,
+            gasPrice: this.props.selectedGasPrice,
+            recipient: this.props.recipient,
+          },
+          this.sendTransactionCallback
+        );
       }
     };
 
@@ -217,9 +227,12 @@ export const withSendComponentWithData = (SendComponent, options) => {
     };
 
     // QR Code Reader Handlers
-    toggleQRCodeReader = () => this.setState({ showQRCodeReader: !this.state.showQRCodeReader });
+    toggleQRCodeReader = () =>
+      this.setState(prevState => ({
+        showQRCodeReader: !prevState.showQRCodeReader,
+      }));
 
-    onQRCodeValidate = async (rawData) => {
+    onQRCodeValidate = async rawData => {
       const data = rawData.match(/0x\w{40}/g)
         ? rawData.match(/0x\w{40}/g)[0]
         : null;
@@ -227,7 +240,8 @@ export const withSendComponentWithData = (SendComponent, options) => {
       if (data) {
         result = await isValidAddress(data);
       }
-      const onError = () => console.log(lang.t('notification.error.invalid_address_scanned'));
+      const onError = () =>
+        console.log(lang.t('notification.error.invalid_address_scanned'));
       return { data, onError, result };
     };
 
@@ -261,19 +275,23 @@ export const withSendComponentWithData = (SendComponent, options) => {
   }
 
   return compose(
-    connect(mapStateToProps, {
-      sendClearFields,
-      sendMaxBalance,
-      sendModalInit,
-      sendToggleConfirmationView,
-      sendTransaction,
-      sendUpdateAssetAmount,
-      sendUpdateNativeAmount,
-      sendUpdateRecipient,
-      sendUpdateSelected,
-    }),
+    connect(
+      mapStateToProps,
+      {
+        sendClearFields,
+        sendMaxBalance,
+        sendModalInit,
+        sendToggleConfirmationView,
+        sendTransaction,
+        sendUpdateAssetAmount,
+
+        sendUpdateNativeAmount,
+        sendUpdateRecipient,
+        sendUpdateSelected,
+      }
+    ),
     withGas,
     withAccountData,
-    withUniqueTokens,
+    withUniqueTokens
   )(SendComponentWithData);
 };

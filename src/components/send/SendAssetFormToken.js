@@ -17,14 +17,9 @@ const SendAssetFormToken = ({
   sendMaxBalance,
   ...props
 }) => (
-  <ColumnWithMargins
-    {...props}
-    flex={0}
-    margin={18}
-    width="100%"
-  >
+  <ColumnWithMargins {...props} flex={0} margin={18} width="100%">
     <SendAssetFormField
-      autoFocus={true}
+      autoFocus
       format={removeLeadingZeros}
       label={selected.symbol}
       onChange={onChangeAssetAmount}
@@ -59,14 +54,14 @@ export default compose(
   withAccountSettings,
   withHandlers({
     formatNativeInput: ({ nativeCurrency }) => (value = '') => {
-      const nativeCurrencyDecimals = (nativeCurrency !== 'ETH') ? 2 : 18;
+      const nativeCurrencyDecimals = nativeCurrency !== 'ETH' ? 2 : 18;
       const formattedValue = removeLeadingZeros(value);
       const parts = formattedValue.split('.');
       const decimals = parts[1] || '';
 
-      return (decimals.length > nativeCurrencyDecimals)
+      return decimals.length > nativeCurrencyDecimals
         ? `${parts[0]}.${decimals.substring(0, nativeCurrencyDecimals)}`
         : formattedValue;
     },
-  }),
+  })
 )(SendAssetFormToken);

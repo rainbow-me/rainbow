@@ -1,11 +1,9 @@
 import { differenceInMinutes } from 'date-fns';
+import { find, omit, orderBy, pickBy } from 'lodash';
 import {
-  find,
-  omit,
-  orderBy,
-  pickBy,
-} from 'lodash';
-import { removeFirstEmojiFromString, makeSpaceAfterFirstEmoji } from '../helpers/emojiHandler';
+  removeFirstEmojiFromString,
+  makeSpaceAfterFirstEmoji,
+} from '../helpers/emojiHandler';
 
 const defaultVersion = '0.1.0';
 const transactionsVersion = '0.2.0';
@@ -21,10 +19,11 @@ const assetsVersion = '0.2.0';
 export const saveLocal = async (
   key = '',
   data = {},
-  version = defaultVersion,
+  version = defaultVersion
 ) => {
   try {
     data.storageVersion = version;
+    // eslint-disable-next-line no-undef
     await storage.save({
       data,
       expires: null,
@@ -42,6 +41,7 @@ export const saveLocal = async (
  */
 export const getLocal = async (key = '', version = defaultVersion) => {
   try {
+    // eslint-disable-next-line no-undef
     const result = await storage.load({
       autoSync: false,
       key,
@@ -68,21 +68,31 @@ export const getLocal = async (key = '', version = defaultVersion) => {
  */
 export const removeLocal = (key = '') => {
   try {
+    // eslint-disable-next-line no-undef
     storage.remove({ key });
   } catch (error) {
     console.log('Storage: error removing local with key', key);
   }
 };
 
-const getAssetsKey = (accountAddress, network) => `assets-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
-const getIsWalletEmptyKey = (accountAddress, network) => `iswalletempty-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
-const getRequestsKey = (accountAddress, network) => `requests-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
-const getTransactionsKey = (accountAddress, network) => `transactions-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
-const getUniqueTokensKey = (accountAddress, network) => `uniquetokens-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
-const getUniswapAllowancesKey = (accountAddress, network) => `uniswapallowances-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
-const getUniswapLiquidityInfoKey = (accountAddress, network) => `uniswap-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
-const getUniswapLiquidityKey = (accountAddress, network) => `uniswapliquidity-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
-const getUniswapTokenReservesKey = (accountAddress, network) => `uniswapreserves-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+const getAssetsKey = (accountAddress, network) =>
+  `assets-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+const getIsWalletEmptyKey = (accountAddress, network) =>
+  `iswalletempty-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+const getRequestsKey = (accountAddress, network) =>
+  `requests-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+const getTransactionsKey = (accountAddress, network) =>
+  `transactions-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+const getUniqueTokensKey = (accountAddress, network) =>
+  `uniquetokens-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+const getUniswapAllowancesKey = (accountAddress, network) =>
+  `uniswapallowances-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+const getUniswapLiquidityInfoKey = (accountAddress, network) =>
+  `uniswap-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+const getUniswapLiquidityKey = (accountAddress, network) =>
+  `uniswapliquidity-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+const getUniswapTokenReservesKey = (accountAddress, network) =>
+  `uniswapreserves-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 
 /**
  * @desc get Uniswap allowances
@@ -91,7 +101,9 @@ const getUniswapTokenReservesKey = (accountAddress, network) => `uniswapreserves
  * @return {Object}
  */
 export const getUniswapAllowances = async (accountAddress, network) => {
-  const allowances = await getLocal(getUniswapAllowancesKey(accountAddress, network));
+  const allowances = await getLocal(
+    getUniswapAllowancesKey(accountAddress, network)
+  );
   return allowances ? allowances.data : {};
 };
 
@@ -100,11 +112,14 @@ export const getUniswapAllowances = async (accountAddress, network) => {
  * @param  {String}   [address]
  * @param  {String}   [network]
  */
-export const saveUniswapAllowances = async (accountAddress, allowances, network) => {
-  await saveLocal(
-    getUniswapAllowancesKey(accountAddress, network),
-    { data: allowances },
-  );
+export const saveUniswapAllowances = async (
+  accountAddress,
+  allowances,
+  network
+) => {
+  await saveLocal(getUniswapAllowancesKey(accountAddress, network), {
+    data: allowances,
+  });
 };
 
 /**
@@ -125,7 +140,9 @@ export const removeUniswapAllowances = (accountAddress, network) => {
  * @return {Object}
  */
 export const getUniswapTokenReserves = async (accountAddress, network) => {
-  const reserves = await getLocal(getUniswapTokenReservesKey(accountAddress, network));
+  const reserves = await getLocal(
+    getUniswapTokenReservesKey(accountAddress, network)
+  );
   return reserves ? reserves.data : {};
 };
 
@@ -134,11 +151,14 @@ export const getUniswapTokenReserves = async (accountAddress, network) => {
  * @param  {String}   [address]
  * @param  {String}   [network]
  */
-export const saveUniswapTokenReserves = async (accountAddress, reserves, network) => {
-  await saveLocal(
-    getUniswapTokenReservesKey(accountAddress, network),
-    { data: reserves },
-  );
+export const saveUniswapTokenReserves = async (
+  accountAddress,
+  reserves,
+  network
+) => {
+  await saveLocal(getUniswapTokenReservesKey(accountAddress, network), {
+    data: reserves,
+  });
 };
 
 /**
@@ -159,7 +179,9 @@ export const removeUniswapTokenReserves = (accountAddress, network) => {
  * @return {Object}
  */
 export const getUniswapLiquidityTokens = async (accountAddress, network) => {
-  const uniswap = await getLocal(getUniswapLiquidityKey(accountAddress, network));
+  const uniswap = await getLocal(
+    getUniswapLiquidityKey(accountAddress, network)
+  );
   return uniswap ? uniswap.data : [];
 };
 
@@ -168,11 +190,14 @@ export const getUniswapLiquidityTokens = async (accountAddress, network) => {
  * @param  {String}   [address]
  * @param  {String}   [network]
  */
-export const saveUniswapLiquidityTokens = async (accountAddress, uniswap, network) => {
-  await saveLocal(
-    getUniswapLiquidityKey(accountAddress, network),
-    { data: uniswap },
-  );
+export const saveUniswapLiquidityTokens = async (
+  accountAddress,
+  uniswap,
+  network
+) => {
+  await saveLocal(getUniswapLiquidityKey(accountAddress, network), {
+    data: uniswap,
+  });
 };
 
 /**
@@ -193,7 +218,9 @@ export const removeUniswapLiquidityTokens = (accountAddress, network) => {
  * @return {Object}
  */
 export const getUniswapLiquidityInfo = async (accountAddress, network) => {
-  const uniswap = await getLocal(getUniswapLiquidityInfoKey(accountAddress, network));
+  const uniswap = await getLocal(
+    getUniswapLiquidityInfoKey(accountAddress, network)
+  );
   return uniswap ? uniswap.data : {};
 };
 
@@ -202,11 +229,14 @@ export const getUniswapLiquidityInfo = async (accountAddress, network) => {
  * @param  {String}   [address]
  * @param  {String}   [network]
  */
-export const saveUniswapLiquidityInfo = async (accountAddress, uniswap, network) => {
-  await saveLocal(
-    getUniswapLiquidityInfoKey(accountAddress, network),
-    { data: uniswap },
-  );
+export const saveUniswapLiquidityInfo = async (
+  accountAddress,
+  uniswap,
+  network
+) => {
+  await saveLocal(getUniswapLiquidityInfoKey(accountAddress, network), {
+    data: uniswap,
+  });
 };
 
 /**
@@ -227,7 +257,10 @@ export const removeUniswapLiquidityInfo = (accountAddress, network) => {
  * @return {Object}
  */
 export const getAssets = async (accountAddress, network) => {
-  const assets = await getLocal(getAssetsKey(accountAddress, network), assetsVersion);
+  const assets = await getLocal(
+    getAssetsKey(accountAddress, network),
+    assetsVersion
+  );
   return assets ? assets.data : [];
 };
 
@@ -240,7 +273,7 @@ export const saveAssets = async (accountAddress, assets, network) => {
   await saveLocal(
     getAssetsKey(accountAddress, network),
     { data: assets },
-    assetsVersion,
+    assetsVersion
   );
 };
 
@@ -262,7 +295,10 @@ export const removeAssets = (accountAddress, network) => {
  * @return {Object}
  */
 export const getLocalTransactions = async (accountAddress, network) => {
-  const transactions = await getLocal(getTransactionsKey(accountAddress, network), transactionsVersion);
+  const transactions = await getLocal(
+    getTransactionsKey(accountAddress, network),
+    transactionsVersion
+  );
   return transactions ? transactions.data : [];
 };
 
@@ -272,11 +308,15 @@ export const getLocalTransactions = async (accountAddress, network) => {
  * @param  {Array}   [transactions]
  * @param  {String}   [network]
  */
-export const saveLocalTransactions = async (accountAddress, transactions, network) => {
+export const saveLocalTransactions = async (
+  accountAddress,
+  transactions,
+  network
+) => {
   await saveLocal(
     getTransactionsKey(accountAddress, network),
     { data: transactions },
-    transactionsVersion,
+    transactionsVersion
   );
 };
 
@@ -297,7 +337,8 @@ export const removeLocalTransactions = (accountAddress, network) => {
  * @param  {String}   [network]
  * @return {Boolean}
  */
-export const getIsWalletEmpty = async (accountAddress, network) => await getLocal(getIsWalletEmptyKey(accountAddress, network));
+export const getIsWalletEmpty = async (accountAddress, network) =>
+  await getLocal(getIsWalletEmptyKey(accountAddress, network));
 
 /**
  * @desc save is wallet empty
@@ -305,11 +346,12 @@ export const getIsWalletEmpty = async (accountAddress, network) => await getLoca
  * @param  {Boolean}   [isWalletEmpty]
  * @param  {String}   [network]
  */
-export const saveIsWalletEmpty = async (accountAddress, isWalletEmpty, network) => {
-  await saveLocal(
-    getIsWalletEmptyKey(accountAddress, network),
-    isWalletEmpty,
-  );
+export const saveIsWalletEmpty = async (
+  accountAddress,
+  isWalletEmpty,
+  network
+) => {
+  await saveLocal(getIsWalletEmptyKey(accountAddress, network), isWalletEmpty);
 };
 
 /**
@@ -330,7 +372,10 @@ export const removeIsWalletEmpty = (accountAddress, network) => {
  * @return {Object}
  */
 export const getUniqueTokens = async (accountAddress, network) => {
-  const uniqueTokens = await getLocal(getUniqueTokensKey(accountAddress, network), uniqueTokensVersion);
+  const uniqueTokens = await getLocal(
+    getUniqueTokensKey(accountAddress, network),
+    uniqueTokensVersion
+  );
   return uniqueTokens ? uniqueTokens.data : [];
 };
 
@@ -340,11 +385,15 @@ export const getUniqueTokens = async (accountAddress, network) => {
  * @param  {Array}   [uniqueTokens]
  * @param  {String}   [network]
  */
-export const saveUniqueTokens = async (accountAddress, uniqueTokens, network) => {
+export const saveUniqueTokens = async (
+  accountAddress,
+  uniqueTokens,
+  network
+) => {
   await saveLocal(
     getUniqueTokensKey(accountAddress, network),
     { data: uniqueTokens },
-    uniqueTokensVersion,
+    uniqueTokensVersion
   );
 };
 
@@ -378,10 +427,7 @@ export const getNativeCurrency = async () => {
  * @param  {String}   [currency]
  */
 export const saveNativeCurrency = async nativeCurrency => {
-  await saveLocal(
-    'nativeCurrency',
-    { data: nativeCurrency },
-  );
+  await saveLocal('nativeCurrency', { data: nativeCurrency });
 };
 
 /**
@@ -398,9 +444,7 @@ export const getAllValidWalletConnectSessions = async () => {
  * @return {Object}
  */
 export const getAllWalletConnectSessions = async () => {
-  const allSessions = await getLocal(
-    'walletconnect',
-  );
+  const allSessions = await getLocal('walletconnect');
   return allSessions || {};
 };
 
@@ -419,7 +463,7 @@ export const saveWalletConnectSession = async (peerId, session) => {
  * @desc remove wallet connect session
  * @param  {String}   [peerId]
  */
-export const removeWalletConnectSession = async (peerId) => {
+export const removeWalletConnectSession = async peerId => {
   const allSessions = await getAllWalletConnectSessions();
   const session = allSessions ? allSessions[peerId] : null;
   const resultingSessions = omit(allSessions, [peerId]);
@@ -431,7 +475,7 @@ export const removeWalletConnectSession = async (peerId) => {
  * @desc remove wallet connect sessions
  * @param  {String}   [sessionId]
  */
-export const removeWalletConnectSessions = async (sessionIds) => {
+export const removeWalletConnectSessions = async sessionIds => {
   const allSessions = await getAllWalletConnectSessions();
   const resultingSessions = omit(allSessions, sessionIds);
   await saveLocal('walletconnect', resultingSessions);
@@ -462,9 +506,9 @@ export const saveLanguage = async language => {
   await saveLocal('language', { data: language });
 };
 
-const isRequestStillValid = (request) => {
+const isRequestStillValid = request => {
   const createdAt = request.displayDetails.timestampInMs;
-  return (differenceInMinutes(Date.now(), createdAt) < 60);
+  return differenceInMinutes(Date.now(), createdAt) < 60;
 };
 
 /**
@@ -487,10 +531,7 @@ export const getLocalRequests = async (accountAddress, network) => {
  * @return {Void}
  */
 export const saveLocalRequests = async (accountAddress, network, requests) => {
-  await saveLocal(
-    getRequestsKey(accountAddress, network),
-    { data: requests },
-  );
+  await saveLocal(getRequestsKey(accountAddress, network), { data: requests });
 };
 
 /**
@@ -587,7 +628,7 @@ export const getAppStoreReviewRequestCount = async () => {
   return count ? count.data : 0;
 };
 
-export const setAppStoreReviewRequestCount = async (newCount) => {
+export const setAppStoreReviewRequestCount = async newCount => {
   await saveLocal('appStoreReviewRequestCount', { data: newCount });
 };
 
@@ -618,10 +659,10 @@ export const getNumberOfLocalContacts = async () => {
  * @param  {String}   [address]
  * @return {Object}
  */
-export const getSelectedLocalContact = async (address) => {
+export const getSelectedLocalContact = async address => {
   let contacts = await getLocalContacts();
   if (!contacts) contacts = [];
-  const localContact = find(contacts, (contact) => (contact.address === address));
+  const localContact = find(contacts, contact => contact.address === address);
   return localContact || false;
 };
 
@@ -651,12 +692,14 @@ export const addNewLocalContact = async (address, nickname, color) => {
 
   const sortedContacts = orderBy(
     contacts,
-    [contact => {
-      let newContact = contact.nickname.toLowerCase();
-      newContact = removeFirstEmojiFromString(newContact);
-      return newContact;
-    }],
-    ['desc'],
+    [
+      contact => {
+        let newContact = contact.nickname.toLowerCase();
+        newContact = removeFirstEmojiFromString(newContact);
+        return newContact;
+      },
+    ],
+    ['desc']
   );
   await saveLocal('localContacts', { data: sortedContacts });
 };
@@ -666,7 +709,7 @@ export const addNewLocalContact = async (address, nickname, color) => {
  * @param  {String}   [address]
  * @return {Void}
  */
-export const deleteLocalContact = async (address) => {
+export const deleteLocalContact = async address => {
   const contacts = await getLocalContacts();
   for (let i = 0; i < contacts.length; i++) {
     if (contacts[i].address === address) {

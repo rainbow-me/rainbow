@@ -1,9 +1,4 @@
-import {
-  find,
-  get,
-  isEmpty,
-  isNumber,
-} from 'lodash';
+import { find, get, isEmpty, isNumber } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { compose, withProps } from 'recompact';
@@ -35,7 +30,7 @@ const SheetHandle = compose(
     height: 11,
     marginTop: 13,
     name: 'handle',
-  }),
+  })
 )(Icon);
 
 const contactPropType = PropTypes.shape({
@@ -53,14 +48,14 @@ const DefaultContactItem = {
 const getContactForRecipient = ({ contacts, recipient }) => {
   let contact = DefaultContactItem;
   if (recipient && contacts.length) {
-    const localContact = find(contacts, ({ address }) => (address === recipient));
+    const localContact = find(contacts, ({ address }) => address === recipient);
     contact = localContact || DefaultContactItem;
   }
 
   return { contact };
 };
 
-const openConfirmDeleteContactActionSheet = (handleSelection) => {
+const openConfirmDeleteContactActionSheet = handleSelection => {
   const config = {
     cancelButtonIndex: 1,
     destructiveButtonIndex: 0,
@@ -69,7 +64,7 @@ const openConfirmDeleteContactActionSheet = (handleSelection) => {
   return showActionSheetWithOptions(config, handleSelection);
 };
 
-const openContactActionSheet = (handleSelection) => {
+const openContactActionSheet = handleSelection => {
   const config = {
     cancelButtonIndex: 3,
     destructiveButtonIndex: 0,
@@ -86,31 +81,32 @@ const openContactActionSheet = (handleSelection) => {
 class SendHeader extends PureComponent {
   static propTypes = {
     contact: contactPropType,
-    contacts: PropTypes.arrayOf(contactPropType),
     isValidAddress: PropTypes.bool,
     navigation: PropTypes.any,
     onChangeAddressInput: PropTypes.func,
     onPressPaste: PropTypes.func,
     onUpdateContacts: PropTypes.func,
     recipient: PropTypes.string,
-  }
+  };
 
-  handleConfirmDeleteContactSelection = async (buttonIndex) => {
+  handleConfirmDeleteContactSelection = async buttonIndex => {
     if (buttonIndex === 0) {
       await deleteLocalContact(this.props.recipient);
       this.props.onUpdateContacts();
     }
-  }
+  };
 
-  handleContactActionSheetSelection = async (buttonIndex) => {
+  handleContactActionSheetSelection = async buttonIndex => {
     if (buttonIndex === 0) {
-      openConfirmDeleteContactActionSheet(this.handleConfirmDeleteContactSelection);
+      openConfirmDeleteContactActionSheet(
+        this.handleConfirmDeleteContactSelection
+      );
     } else if (buttonIndex === 1) {
       this.navigateToContact(this.props.contact);
     } else if (buttonIndex === 2) {
       Clipboard.setString(this.props.recipient);
     }
-  }
+  };
 
   navigateToContact = (contact = {}) => {
     const { navigation, onUpdateContacts, recipient } = this.props;
@@ -129,9 +125,10 @@ class SendHeader extends PureComponent {
       onCloseModal: onUpdateContacts,
       type: 'contact',
     });
-  }
+  };
 
-  openActionSheet = () => openContactActionSheet(this.handleContactActionSheetSelection)
+  openActionSheet = () =>
+    openContactActionSheet(this.handleContactActionSheetSelection);
 
   render = () => {
     const {
@@ -148,9 +145,7 @@ class SendHeader extends PureComponent {
       <Fragment>
         <SheetHandle />
         <AddressInputContainer>
-          <Label style={{ marginRight: 6, opacity: 0.45 }}>
-            To:
-          </Label>
+          <Label style={{ marginRight: 6, opacity: 0.45 }}>To:</Label>
           <AddressField
             address={recipient}
             autoFocus
@@ -161,11 +156,11 @@ class SendHeader extends PureComponent {
           {isValidAddress && (
             <AddContactButton
               edit={isPreExistingContact}
-              onPress={(
+              onPress={
                 isPreExistingContact
                   ? this.openActionSheet
                   : this.navigateToContact
-              )}
+              }
             />
           )}
           {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
@@ -177,10 +172,10 @@ class SendHeader extends PureComponent {
         />
       </Fragment>
     );
-  }
+  };
 }
 
 export default compose(
   withNavigation,
-  withProps(getContactForRecipient),
+  withProps(getContactForRecipient)
 )(SendHeader);

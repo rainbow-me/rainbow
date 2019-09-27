@@ -1,17 +1,12 @@
-import {
-  compact,
-  get,
-  groupBy,
-  sortBy,
-} from 'lodash';
+import { compact, get, groupBy, sortBy } from 'lodash';
 
 export const buildAssetHeaderUniqueIdentifier = ({
   title,
   totalItems,
   totalValue,
-}) => (compact([title, totalItems, totalValue]).join('_'));
+}) => compact([title, totalItems, totalValue]).join('_');
 
-export const buildAssetUniqueIdentifier = (item) => {
+export const buildAssetUniqueIdentifier = item => {
   const balance = get(item, 'balance.amount', '');
   const nativePrice = get(item, 'native.price.display', '');
   const uniqueId = get(item, 'uniqueId');
@@ -19,14 +14,18 @@ export const buildAssetUniqueIdentifier = (item) => {
   return compact([balance, nativePrice, uniqueId]).join('_');
 };
 
-export const buildCoinsList = (assets) => {
+export const buildCoinsList = assets => {
   const newAssets = [];
   const smallBalances = {
     assets: [],
     smallBalancesContainer: true,
   };
   for (let i = 0; i < assets.length; i++) {
-    if ((assets[i].native && assets[i].native.balance.amount > 1) || assets[i].address === 'eth' || assets.length < 4) {
+    if (
+      (assets[i].native && assets[i].native.balance.amount > 1) ||
+      assets[i].address === 'eth' ||
+      assets.length < 4
+    ) {
       newAssets.push(assets[i]);
     } else {
       smallBalances.assets.push(assets[i]);
@@ -40,7 +39,7 @@ export const buildCoinsList = (assets) => {
   return newAssets;
 };
 
-export const buildUniqueTokenList = (uniqueTokens) => {
+export const buildUniqueTokenList = uniqueTokens => {
   let rows = [];
 
   const grouped = groupBy(uniqueTokens, token => token.asset_contract.name);
@@ -74,8 +73,5 @@ export const buildUniqueTokenList = (uniqueTokens) => {
   return rows;
 };
 
-/* eslint-disable camelcase */
-export const buildUniqueTokenName = ({ asset_contract, id, name }) => (
-  name || `${asset_contract.name} #${id}`
-);
-/* eslint-enable camelcase */
+export const buildUniqueTokenName = ({ asset_contract, id, name }) =>
+  name || `${asset_contract.name} #${id}`;

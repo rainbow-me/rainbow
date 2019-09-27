@@ -55,7 +55,7 @@ const formatGasSpeedItem = (value, key) => {
 
 const labelOrder = ['slow', 'average', 'fast'];
 
-const formatGasSpeedItems = (gasPrices) => {
+const formatGasSpeedItems = gasPrices => {
   const gasItems = map(gasPrices, formatGasSpeedItem);
   return sortBy(gasItems, ({ value }) => indexOf(labelOrder, value));
 };
@@ -83,19 +83,19 @@ class SendSheet extends Component {
     sendUpdateNativeAmount: PropTypes.func,
     sendUpdateRecipient: PropTypes.func,
     sendUpdateSelected: PropTypes.func,
-  }
+  };
 
   static defaultProps = {
     isSufficientBalance: false,
     isSufficientGas: false,
     isValidAddress: false,
-  }
+  };
 
   state = {
     contacts: [],
     currentInput: '',
     isAuthorizing: false,
-  }
+  };
 
   componentDidMount = async () => {
     const { navigation, sendUpdateRecipient } = this.props;
@@ -104,8 +104,8 @@ class SendSheet extends Component {
     if (address) {
       sendUpdateRecipient(address);
     }
-    this.onUpdateContacts()
-  }
+    this.onUpdateContacts();
+  };
 
   componentDidUpdate(prevProps) {
     const {
@@ -126,13 +126,19 @@ class SendSheet extends Component {
     }
 
     const isNewSelected = isNewValueForPath(this.props, prevProps, 'selected');
-    const isNewValidAddress = isNewValueForPath(this.props, prevProps, 'isValidAddress');
+    const isNewValidAddress = isNewValueForPath(
+      this.props,
+      prevProps,
+      'isValidAddress'
+    );
 
     if (isNewValidAddress || isNewSelected) {
       let verticalGestureResponseDistance = 0;
 
       if (isValidAddress) {
-        verticalGestureResponseDistance = isEmpty(selected) ? 150 : deviceUtils.dimensions.height;
+        verticalGestureResponseDistance = isEmpty(selected)
+          ? 150
+          : deviceUtils.dimensions.height;
       } else {
         verticalGestureResponseDistance = deviceUtils.dimensions.height;
       }
@@ -145,19 +151,19 @@ class SendSheet extends Component {
     this.props.sendClearFields();
   }
 
-  onChangeAssetAmount = (assetAmount) => {
+  onChangeAssetAmount = assetAmount => {
     if (isString(assetAmount)) {
       this.props.sendUpdateAssetAmount(assetAmount);
       analytics.track('Changed token input in Send flow');
     }
-  }
+  };
 
-  onChangeNativeAmount = (nativeAmount) => {
+  onChangeNativeAmount = nativeAmount => {
     if (isString(nativeAmount)) {
       this.props.sendUpdateNativeAmount(nativeAmount);
       analytics.track('Changed native currency input in Send flow');
     }
-  }
+  };
 
   onLongPressSend = () => {
     this.setState({ isAuthorizing: true });
@@ -167,39 +173,41 @@ class SendSheet extends Component {
     } else {
       this.onPressTransactionSpeed(this.sendTransaction);
     }
-  }
+  };
 
-  onPressTransactionSpeed = (onSuccess) => {
+  onPressTransactionSpeed = onSuccess => {
     const { gasPrices, sendUpdateGasPrice } = this.props;
 
-    const options = [
-      { label: 'Cancel' },
-      ...formatGasSpeedItems(gasPrices),
-    ];
+    const options = [{ label: 'Cancel' }, ...formatGasSpeedItems(gasPrices)];
 
-    showActionSheetWithOptions({
-      cancelButtonIndex: 0,
-      options: options.map(property('label')),
-    }, (buttonIndex) => {
-      if (buttonIndex > 0) {
-        const selectedGasPriceItem = options[buttonIndex];
+    showActionSheetWithOptions(
+      {
+        cancelButtonIndex: 0,
+        options: options.map(property('label')),
+      },
+      buttonIndex => {
+        if (buttonIndex > 0) {
+          const selectedGasPriceItem = options[buttonIndex];
 
-        sendUpdateGasPrice(selectedGasPriceItem.value);
-        analytics.track('Updated Gas Price', { gasPrice: selectedGasPriceItem.gweiValue });
+          sendUpdateGasPrice(selectedGasPriceItem.value);
+          analytics.track('Updated Gas Price', {
+            gasPrice: selectedGasPriceItem.gweiValue,
+          });
+        }
+
+        if (isFunction(onSuccess)) {
+          onSuccess();
+        }
       }
-
-      if (isFunction(onSuccess)) {
-        onSuccess();
-      }
-    });
-  }
+    );
+  };
 
   onResetAssetSelection = () => {
     analytics.track('Reset asset selection in Send flow');
     this.props.sendUpdateSelected({});
-  }
+  };
 
-  onSelectAsset = asset => this.props.sendUpdateSelected(asset)
+  onSelectAsset = asset => this.props.sendUpdateSelected(asset);
 
   sendTransaction = () => {
     const {
@@ -213,29 +221,31 @@ class SendSheet extends Component {
 
     if (Number(assetAmount) <= 0) return false;
 
-    return onSubmit().then(() => {
-      this.setState({ isAuthorizing: false });
-      analytics.track('Sent transaction', {
-        assetName: selected.name,
-        assetType: selected.isNft ? 'unique_token' : 'token',
-        isRecepientENS: recipient.slice(-4).toLowerCase() === '.eth',
+    return onSubmit()
+      .then(() => {
+        this.setState({ isAuthorizing: false });
+        analytics.track('Sent transaction', {
+          assetName: selected.name,
+          assetType: selected.isNft ? 'unique_token' : 'token',
+          isRecepientENS: recipient.slice(-4).toLowerCase() === '.eth',
+        });
+        sendClearFields();
+        navigation.navigate('ProfileScreen');
+      })
+      .catch(() => {
+        this.setState({ isAuthorizing: false });
       });
-      sendClearFields();
-      navigation.navigate('ProfileScreen');
-    }).catch(error => {
-      this.setState({ isAuthorizing: false });
-    });
-  }
+  };
 
   onUpdateContacts = async () => {
     const contacts = await getLocalContacts();
     this.setState({ contacts });
-  }
+  };
 
-  onChangeInput = (event) => {
+  onChangeInput = event => {
     this.setState({ currentInput: event });
     this.props.sendUpdateRecipient(event);
-  }
+  };
 
   render() {
     const {
@@ -287,18 +297,18 @@ class SendSheet extends Component {
               <SendAssetForm
                 {...props}
                 allAssets={allAssets}
-                buttonRenderer={(
+                buttonRenderer={
                   <SendButton
                     {...props}
                     isAuthorizing={this.state.isAuthorizing}
                     onLongPress={this.onLongPressSend}
                   />
-                )}
+                }
                 onChangeAssetAmount={this.onChangeAssetAmount}
                 onChangeNativeAmount={this.onChangeNativeAmount}
                 onResetAssetSelection={this.onResetAssetSelection}
                 selected={selected}
-                txSpeedRenderer={(
+                txSpeedRenderer={
                   isIphoneX() && (
                     <SendTransactionSpeed
                       gasPrice={gasPrice}
@@ -306,7 +316,7 @@ class SendSheet extends Component {
                       onPressTransactionSpeed={this.onPressTransactionSpeed}
                     />
                   )
-                )}
+                }
               />
             )}
           </Container>
@@ -323,5 +333,5 @@ export default compose(
   withDataInit,
   withHandlers({
     fetchData: ({ refreshAccountData }) => async () => refreshAccountData(),
-  }),
+  })
 )(SendSheet);

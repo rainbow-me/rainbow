@@ -1,14 +1,16 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
-import { compose, onlyUpdateForKeys } from 'recompact';
+import { compose } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withKeyboardHeight } from '../../hoc';
 import { padding, position } from '../../styles';
 import { deviceUtils, safeAreaInsetValues } from '../../utils';
 import Centered from './Centered';
 
-const FallbackKeyboardHeight = Math.floor(deviceUtils.dimensions.height * 0.333);
+const FallbackKeyboardHeight = Math.floor(
+  deviceUtils.dimensions.height * 0.333
+);
 
 const Container = styled.View`
   left: 0;
@@ -27,17 +29,20 @@ class KeyboardFixedOpenLayout extends PureComponent {
     children: PropTypes.node,
     keyboardHeight: PropTypes.number,
     setKeyboardHeight: PropTypes.func,
-  }
-
-  willShowListener = undefined
+  };
 
   componentDidMount = () => {
     if (!this.props.keyboardHeight) {
-      this.willShowListener = Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
+      this.willShowListener = Keyboard.addListener(
+        'keyboardWillShow',
+        this.keyboardWillShow
+      );
     }
-  }
+  };
 
-  componentWillUnmount = () => this.clearKeyboardListeners()
+  componentWillUnmount = () => this.clearKeyboardListeners();
+
+  willShowListener = undefined;
 
   clearKeyboardListeners = () => {
     if (this.willShowListener) {
@@ -45,33 +50,31 @@ class KeyboardFixedOpenLayout extends PureComponent {
 
       this.willShowListener.remove();
     }
-  }
+  };
 
   keyboardWillShow = async ({ endCoordinates: { height } }) => {
     this.props.setKeyboardHeight(Math.floor(height));
     this.clearKeyboardListeners();
-  }
+  };
 
   render = () => {
     const { keyboardHeight } = this.props;
 
     const resolvedKeyboardHeight = keyboardHeight || FallbackKeyboardHeight;
-    const containerHeight = deviceUtils.dimensions.height - resolvedKeyboardHeight;
+    const containerHeight =
+      deviceUtils.dimensions.height - resolvedKeyboardHeight;
 
     return (
       <Container height={containerHeight}>
-        <KeyboardAvoidingView
-          behavior="height"
-          enabled={!keyboardHeight}
-        >
+        <KeyboardAvoidingView behavior="height" enabled={!keyboardHeight}>
           <InnerWrapper {...this.props} />
         </KeyboardAvoidingView>
       </Container>
     );
-  }
+  };
 }
 
 export default compose(
-  withKeyboardHeight,
+  withKeyboardHeight
   // onlyUpdateForKeys(['height']),
 )(KeyboardFixedOpenLayout);

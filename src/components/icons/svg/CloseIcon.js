@@ -4,7 +4,6 @@ import { Path } from 'svgs';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
-/* eslint-disable max-len */
 const CloseIcon = ({ color, size, ...props }) => (
   <Svg height={size} width={size} viewBox="0 0 12 12" {...props}>
     <Path
@@ -14,7 +13,6 @@ const CloseIcon = ({ color, size, ...props }) => (
     />
   </Svg>
 );
-/* eslint-disable max-len */
 
 CloseIcon.propTypes = {
   color: PropTypes.string,

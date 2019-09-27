@@ -3,12 +3,7 @@ import React from 'react';
 import { Linking } from 'react-native';
 import { compose, withHandlers } from 'recompact';
 import { withNeverRerender } from '../../hoc';
-import {
-  colors,
-  margin,
-  padding,
-  position,
-} from '../../styles';
+import { colors, margin, padding, position } from '../../styles';
 import { Button } from '../buttons';
 import { Column } from '../layout';
 import { ErrorText, Monospace } from '../text';
@@ -22,17 +17,10 @@ const QRCodeScannerNeedsAuthorization = ({ onPressSettings }) => (
     `}
     justify="center"
   >
-    <ErrorText
-      color={colors.white}
-      error="Camera not authorized"
-    />
-    <Monospace
-      color="mediumGrey"
-      css={margin(7, 0, 30)}
-      lineHeight="loose"
-    >
-      In order to use WalletConnect, you must first give Rainbow
-      permission to access your camera.
+    <ErrorText color={colors.white} error="Camera not authorized" />
+    <Monospace color="mediumGrey" css={margin(7, 0, 30)} lineHeight="loose">
+      In order to use WalletConnect, you must first give Rainbow permission to
+      access your camera.
     </Monospace>
     <Button self="start" onPress={onPressSettings}>
       Open settings
@@ -46,10 +34,10 @@ QRCodeScannerNeedsAuthorization.propTypes = {
 
 export default compose(
   withHandlers({
-    onPressSettings: () => () => (
-      Linking.canOpenURL('app-settings:')
-        .then(() => Linking.openURL('app-settings:'))
-    ),
+    onPressSettings: () => () =>
+      Linking.canOpenURL('app-settings:').then(() =>
+        Linking.openURL('app-settings:')
+      ),
   }),
-  withNeverRerender,
+  withNeverRerender
 )(QRCodeScannerNeedsAuthorization);

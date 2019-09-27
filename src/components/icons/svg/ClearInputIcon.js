@@ -4,7 +4,6 @@ import { Path } from 'svgs';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
-/* eslint-disable max-len */
 const ClearInputIcon = ({ color, ...props }) => (
   <Svg height="20" width="20" {...props}>
     <Path
@@ -14,7 +13,6 @@ const ClearInputIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
-/* eslint-disable max-len */
 
 ClearInputIcon.propTypes = {
   color: PropTypes.string,

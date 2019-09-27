@@ -1,12 +1,20 @@
 import { get, times } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
+import {
+  RecyclerListView,
+  DataProvider,
+  LayoutProvider,
+} from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
 import { buildTransactionUniqueIdentifier } from '../../helpers/transactions';
 import { colors } from '../../styles';
-import { deviceUtils, isNewValueForPath, safeAreaInsetValues } from '../../utils';
+import {
+  deviceUtils,
+  isNewValueForPath,
+  safeAreaInsetValues,
+} from '../../utils';
 import { AssetListItemSkeleton } from '../asset-list';
 import {
   ContractInteractionCoinRow,
@@ -35,38 +43,49 @@ const LoadingState = ({ children }) => (
   <Column flex={1}>
     {children}
     <Column flex={1}>
-      <Centered style={{ paddingTop: 200, position: 'absolute', width: '100%' }}>
+      <Centered
+        style={{ paddingTop: 200, position: 'absolute', width: '100%' }}
+      >
         <ActivityIndicator
           color={colors.alpha(colors.blueGreyLight, 0.666)}
           size={32}
         />
       </Centered>
-      {times(11, index => <AssetListItemSkeleton key={`activitySkeleton${index}`} />)}
+      {times(11, index => (
+        <AssetListItemSkeleton key={`activitySkeleton${index}`} />
+      ))}
     </Column>
   </Column>
 );
 
 const hasRowChanged = (r1, r2) => {
-  if (r1.hash === '_header' && isNewValueForPath(r1, r2, 'header.props.accountAddress')) {
+  if (
+    r1.hash === '_header' &&
+    isNewValueForPath(r1, r2, 'header.props.accountAddress')
+  ) {
     return true;
   }
 
   const r1Key = r1.hash ? r1.hash : get(r1, 'displayDetails.timestampInMs', '');
   const r2Key = r2.hash ? r2.hash : get(r2, 'displayDetails.timestampInMs', '');
 
-  return (r1Key !== r2Key)
-    || isNewValueForPath(r1, r2, 'native.symbol')
-    || isNewValueForPath(r1, r2, 'pending');
+  return (
+    r1Key !== r2Key ||
+    isNewValueForPath(r1, r2, 'native.symbol') ||
+    isNewValueForPath(r1, r2, 'pending')
+  );
 };
 
 export default class RecyclerActivityList extends PureComponent {
   static propTypes = {
     header: PropTypes.node,
     isLoading: PropTypes.bool,
-    sections: PropTypes.arrayOf(PropTypes.shape({
-      data: PropTypes.array,
-      title: PropTypes.string.isRequired,
-    })),
+    sections: PropTypes.arrayOf(
+      PropTypes.shape({
+        data: PropTypes.array,
+        title: PropTypes.string.isRequired,
+      })
+    ),
   };
 
   constructor(args) {
@@ -103,24 +122,31 @@ export default class RecyclerActivityList extends PureComponent {
         } else if (type === ViewTypes.HEADER) {
           dim.height = 35;
         } else {
-          dim.height = this.props.isLoading ? deviceUtils.dimensions.height : 204;
+          dim.height = this.props.isLoading
+            ? deviceUtils.dimensions.height
+            : 204;
         }
-      },
+      }
     );
   }
 
   static getDerivedStateFromProps(props, state) {
     const headersIndices = [];
-    const items = props.sections.reduce((ctx, section) => {
-      headersIndices.push(ctx.length);
-      return ctx
-        .concat([{
-          hash: section.title,
-          title: section.title,
-        }])
-        .concat(section.data)
-        .concat([{ hash: `${section.title}_end` }]); // footer
-    }, [{ hash: '_header', header: props.header }]); // header
+    const items = props.sections.reduce(
+      (ctx, section) => {
+        headersIndices.push(ctx.length);
+        return ctx
+          .concat([
+            {
+              hash: section.title,
+              title: section.title,
+            },
+          ])
+          .concat(section.data)
+          .concat([{ hash: `${section.title}_end` }]); // footer
+      },
+      [{ hash: '_header', header: props.header }]
+    ); // header
     if (items.length > 1) {
       items.pop(); // remove last footer
     }
@@ -130,25 +156,28 @@ export default class RecyclerActivityList extends PureComponent {
     };
   }
 
-  getStableId = (index) => {
+  getStableId = index => {
     const row = get(this.state, `dataProvider._data[${index}]`);
     return buildTransactionUniqueIdentifier(row);
   };
 
   rowRenderer = (type, data) => {
     if (type === ViewTypes.COMPONENT_HEADER) {
-      return this.props.isLoading
-        ? <LoadingState>{data.header}</LoadingState>
-        : data.header;
+      return this.props.isLoading ? (
+        <LoadingState>{data.header}</LoadingState>
+      ) : (
+        data.header
+      );
     }
     if (type === ViewTypes.HEADER) return <ActivityListHeader {...data} />;
     if (type === ViewTypes.FOOTER) return <ListFooter />;
 
     if (!data) return null;
     if (!data.hash) return <RequestCoinRow item={data} />;
-    if (!data.symbol && data.dappName) return <ContractInteractionCoinRow item={data} />;
+    if (!data.symbol && data.dappName)
+      return <ContractInteractionCoinRow item={data} />;
     return <TransactionCoinRow item={data} />;
-  }
+  };
 
   render = () => (
     <Wrapper>
@@ -165,5 +194,5 @@ export default class RecyclerActivityList extends PureComponent {
         />
       </StickyContainer>
     </Wrapper>
-  )
+  );
 }

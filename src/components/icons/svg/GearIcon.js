@@ -4,7 +4,6 @@ import { Path } from 'svgs';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
-/* eslint-disable max-len */
 const GearIcon = ({ color, ...props }) => (
   <Svg height="24" width="24" viewBox="0 0 24 24" {...props}>
     <Path
@@ -14,7 +13,6 @@ const GearIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
-/* eslint-disable max-len */
 
 GearIcon.propTypes = {
   color: PropTypes.string,

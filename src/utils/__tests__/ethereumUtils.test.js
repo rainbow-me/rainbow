@@ -4,11 +4,11 @@ const gasPrice = {
   txFee: {
     value: {
       amount: 21000,
-    }
-  }
+    },
+  },
 };
 
-test('getBalanceAmountEth', () => {
+it('getBalanceAmountEth', () => {
   const selected = {
     address: 'eth',
     balance: { amount: '1' },
@@ -17,7 +17,7 @@ test('getBalanceAmountEth', () => {
   expect(updatedBalance).toBe('0.999999999999979');
 });
 
-test('getBalanceAmountInsufficientEth', () => {
+it('getBalanceAmountInsufficientEth', () => {
   const selected = {
     address: 'eth',
     balance: { amount: '0.00000000000000001' },
@@ -26,7 +26,7 @@ test('getBalanceAmountInsufficientEth', () => {
   expect(updatedBalance).toBe('0');
 });
 
-test('getBalanceAmountToken', () => {
+it('getBalanceAmountToken', () => {
   const selected = {
     address: '0x12345',
     balance: { amount: '1' },
@@ -34,4 +34,3 @@ test('getBalanceAmountToken', () => {
   const updatedBalance = getBalanceAmount(gasPrice, selected);
   expect(updatedBalance).toBe('1');
 });
-

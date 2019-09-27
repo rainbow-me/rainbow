@@ -17,12 +17,7 @@ import Icon from './Icon';
 
 const DefaultBiometryType = 'FaceID';
 
-const BiometryIcon = ({
-  isFaceID,
-  size,
-  style,
-  ...props
-}) => (
+const BiometryIcon = ({ isFaceID, size, style, ...props }) => (
   <Centered
     {...props}
     {...position.sizeAsObject(size)}
@@ -49,7 +44,7 @@ BiometryIcon.defaultProps = {
 export default compose(
   withState('biometryType', 'setBiometryType', DefaultBiometryType),
   withHandlers({
-    setBiometryType: ({ setBiometryType }) => (biometryType) => {
+    setBiometryType: ({ setBiometryType }) => biometryType => {
       setBiometryType(biometryType || DefaultBiometryType);
     },
   }),
@@ -58,7 +53,9 @@ export default compose(
       TouchID.isSupported().then(this.props.setBiometryType);
     },
   }),
-  withProps(({ biometryType }) => ({ isFaceID: biometryType === DefaultBiometryType })),
+  withProps(({ biometryType }) => ({
+    isFaceID: biometryType === DefaultBiometryType,
+  })),
   onlyUpdateForKeys(['biometryType', 'size']),
-  omitProps('biometryType', 'setBiometryType'),
+  omitProps('biometryType', 'setBiometryType')
 )(BiometryIcon);

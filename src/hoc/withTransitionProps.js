@@ -1,10 +1,7 @@
 import { connect } from 'react-redux';
 
 const mapStateToProps = ({
-  navigation: {
-    stackTransitionProps,
-    tabsTransitionProps,
-  },
+  navigation: { stackTransitionProps, tabsTransitionProps },
 }) => ({
   stackTransitionProps,
   tabsTransitionProps,

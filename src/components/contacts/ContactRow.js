@@ -17,23 +17,9 @@ const TruncatedContactAddress = withProps({
   width: '100%',
 })(TruncatedAddress);
 
-const ContactRow = ({
-  address,
-  color,
-  nickname,
-  ...props
-}) => (
-  <ButtonPressAnimation
-    exclusive={true}
-    isInteraction={true}
-    scaleTo={0.96}
-    {...props}
-  >
-    <RowWithMargins
-      css={margin(17, 15, 5)}
-      height={40}
-      margin={10}
-    >
+const ContactRow = ({ address, color, nickname, ...props }) => (
+  <ButtonPressAnimation exclusive isInteraction scaleTo={0.96} {...props}>
+    <RowWithMargins css={margin(17, 15, 5)} height={40} margin={10}>
       <ContactAvatar color={color} value={nickname} />
       <Column justify="space-between">
         <Text

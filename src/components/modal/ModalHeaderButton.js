@@ -26,15 +26,10 @@ const Text = styled(UnstyledText).attrs({
   margin-left: ${({ showBackArrow }) => (showBackArrow ? 4 : 0)};
 `;
 
-const ModalHeaderButton = ({
-  label,
-  showBackArrow,
-  side,
-  ...props
-}) => (
+const ModalHeaderButton = ({ label, showBackArrow, side, ...props }) => (
   <Container
     component={BorderlessButton}
-    justify={(side === 'left') ? 'start' : 'end'}
+    justify={side === 'left' ? 'start' : 'end'}
     side={side}
     {...props}
   >
@@ -46,9 +41,7 @@ const ModalHeaderButton = ({
         name="caret"
       />
     )}
-    <Text showBackArrow={showBackArrow}>
-      {label}
-    </Text>
+    <Text showBackArrow={showBackArrow}>{label}</Text>
   </Container>
 );
 

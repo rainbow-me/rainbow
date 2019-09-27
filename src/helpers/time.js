@@ -1,20 +1,9 @@
-import {
-  findKey,
-  isObjectLike,
-  isString,
-  omitBy,
-  pick,
-} from 'lodash';
+import { findKey, isObjectLike, isString, omitBy, pick } from 'lodash';
 import parseMilliseconds from 'parse-ms';
 import lang from '../languages';
 import { convertStringToNumber } from './utilities';
 
-const MinimalTimeUnitWhitelist = [
-  'days',
-  'hours',
-  'minutes',
-  'seconds',
-];
+const MinimalTimeUnitWhitelist = ['days', 'hours', 'minutes', 'seconds'];
 
 const buildLocalizedTimeUnitString = ({ plural, short, unit }) => {
   const length = short ? 'short' : 'long';
@@ -23,7 +12,7 @@ const buildLocalizedTimeUnitString = ({ plural, short, unit }) => {
   return lang.t(`time.${unit}.${length}.${plurality}`);
 };
 
-const getHighestResolutionUnit = (timeUnitValues) => {
+const getHighestResolutionUnit = timeUnitValues => {
   const highestResolutionUnit = findKey(timeUnitValues);
   return {
     unit: highestResolutionUnit,
@@ -31,7 +20,7 @@ const getHighestResolutionUnit = (timeUnitValues) => {
   };
 };
 
-const isZero = number => (number === 0);
+const isZero = number => number === 0;
 
 /**
  * @desc get time string for minimal unit
@@ -40,14 +29,19 @@ const isZero = number => (number === 0);
  * @param {Boolean} [plural=false]
  * @return {String}
  */
-export const getMinimalTimeUnitStringForMs = (value = 0, short = true, plural) => {
-  const ms = (isObjectLike(value) || isString(value))
-    ? convertStringToNumber(value)
-    : value;
+export const getMinimalTimeUnitStringForMs = (
+  value = 0,
+  short = true,
+  plural
+) => {
+  const ms =
+    isObjectLike(value) || isString(value)
+      ? convertStringToNumber(value)
+      : value;
 
   const parsedMs = omitBy(
     pick(parseMilliseconds(Number(ms)), MinimalTimeUnitWhitelist),
-    isZero,
+    isZero
   );
 
   const {

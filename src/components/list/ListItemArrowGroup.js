@@ -14,15 +14,14 @@ const ListItemArrowGroup = ({ children }) => (
     margin={6}
     opacity={0.6}
   >
-    {typeof children === 'string'
-      ? <Text color="blueGreyDark" size="bmedium">{children}</Text>
-      : children
-    }
-    <Icon
-      color={colors.blueGreyDark}
-      name="caretThin"
-      style={{ width: 11 }}
-    />
+    {typeof children === 'string' ? (
+      <Text color="blueGreyDark" size="bmedium">
+        {children}
+      </Text>
+    ) : (
+      children
+    )}
+    <Icon color={colors.blueGreyDark} name="caretThin" style={{ width: 11 }} />
   </RowWithMargins>
 );
 

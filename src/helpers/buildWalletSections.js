@@ -1,11 +1,5 @@
 import lang from 'i18n-js';
-import {
-  compact,
-  flattenDeep,
-  get,
-  groupBy,
-  property,
-} from 'lodash';
+import { compact, flattenDeep, get, groupBy, property } from 'lodash';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
 import { withNavigation } from 'react-navigation';
@@ -33,51 +27,44 @@ const uniswapTotalSelector = state => state.uniswapTotal;
 const enhanceRenderItem = compose(
   withNavigation,
   withHandlers({
-    onPress: ({ assetType, navigation }) => (item) => {
+    onPress: ({ assetType, navigation }) => item => {
       navigation.navigate('ExpandedAssetScreen', {
         asset: item,
         type: assetType,
       });
     },
-    onPressSend: ({ navigation }) => (asset) => {
+    onPressSend: ({ navigation }) => asset => {
       navigation.navigate('SendSheet', { asset });
     },
-  }),
+  })
 );
 
 const TokenItem = enhanceRenderItem(BalanceCoinRow);
 const UniswapCardItem = enhanceRenderItem(UniswapInvestmentCard);
 
 const balancesSkeletonRenderItem = item => (
-  <AssetListItemSkeleton
-    animated={true}
-    descendingOpacity={false}
-    {...item}
-  />
+  <AssetListItemSkeleton animated descendingOpacity={false} {...item} />
 );
 const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
-const tokenFamilyItem = item => <TokenFamilyWrap {...item} uniqueId={item.uniqueId} />;
-const uniswapRenderItem = item => <UniswapCardItem {...item} assetType="uniswap" isCollapsible={true} />;
-
-const filterWalletSections = sections => (
-  sections.filter(({ data, header }) => (
-    data
-      ? get(header, 'totalItems')
-      : true
-  ))
+const tokenFamilyItem = item => (
+  <TokenFamilyWrap {...item} uniqueId={item.uniqueId} />
 );
+const uniswapRenderItem = item => (
+  <UniswapCardItem {...item} assetType="uniswap" isCollapsible />
+);
+
+const filterWalletSections = sections =>
+  sections.filter(({ data, header }) =>
+    data ? get(header, 'totalItems') : true
+  );
 
 const buildWalletSections = (
   balanceSection,
   setIsWalletEmpty,
   uniqueTokenFamiliesSection,
-  uniswapSection,
+  uniswapSection
 ) => {
-  const sections = [
-    balanceSection,
-    uniswapSection,
-    uniqueTokenFamiliesSection,
-  ];
+  const sections = [balanceSection, uniswapSection, uniqueTokenFamiliesSection];
 
   const filteredSections = filterWalletSections(sections);
   const isEmpty = !filteredSections.length;
@@ -93,7 +80,7 @@ const withUniswapSection = (
   language,
   nativeCurrency,
   uniswap,
-  uniswapTotal,
+  uniswapTotal
 ) => ({
   data: uniswap,
   header: {
@@ -115,10 +102,10 @@ const withBalanceSection = (
   isWalletEthZero,
   language,
   nativeCurrency,
-  showShitcoins,
+  showShitcoins
 ) => {
   let balanceSectionData = buildCoinsList(allAssets);
-  const isLoadingBalances = (!isWalletEthZero && isBalancesSectionEmpty);
+  const isLoadingBalances = !isWalletEthZero && isBalancesSectionEmpty;
   if (isLoadingBalances) {
     balanceSectionData = [{ item: { uniqueId: 'skeleton0' } }];
   }
@@ -156,23 +143,22 @@ const buildImagesToPreloadArray = (family, index, families) => {
       if (rowIndex <= largeFamilyThreshold) {
         priority = FastImage.priority.high;
       } else if (isJumboFamily) {
-        const isMedium = (rowIndex > largeFamilyThreshold) && (rowIndex <= jumboFamilyThreshold);
+        const isMedium =
+          rowIndex > largeFamilyThreshold && rowIndex <= jumboFamilyThreshold;
         priority = FastImage.priority[isMedium ? 'normal' : 'low'];
       } else {
         priority = FastImage.priority.normal;
       }
     }
 
-    /* eslint-disable camelcase */
     const images = token.map(({ image_preview_url, uniqueId }) => {
       if (!image_preview_url) return null;
-      return ({
+      return {
         id: uniqueId,
         priority,
         uri: image_preview_url,
-      });
+      };
     });
-    /* eslint-enable camelcase */
 
     return images.length ? images : null;
   });
@@ -188,14 +174,12 @@ const sortImagesToPreload = images => {
   ];
 };
 
-const withUniqueTokenFamiliesSection = (
-  language,
-  uniqueTokens,
-  data,
-) => {
+const withUniqueTokenFamiliesSection = (language, uniqueTokens, data) => {
   // TODO preload elsewhere?
   if (!isPreloadComplete) {
-    const imagesToPreload = sortImagesToPreload(data.map(buildImagesToPreloadArray));
+    const imagesToPreload = sortImagesToPreload(
+      data.map(buildImagesToPreloadArray)
+    );
     isPreloadComplete = !!imagesToPreload.length;
     FastImage.preload(imagesToPreload);
   }
@@ -216,7 +200,7 @@ const withUniqueTokenFamiliesSection = (
 
 const uniqueTokenDataSelector = createSelector(
   [uniqueTokensSelector],
-  buildUniqueTokenList,
+  buildUniqueTokenList
 );
 
 const balanceSectionSelector = createSelector(
@@ -230,7 +214,7 @@ const balanceSectionSelector = createSelector(
     languageSelector,
     nativeCurrencySelector,
   ],
-  withBalanceSection,
+  withBalanceSection
 );
 
 const uniswapSectionSelector = createSelector(
@@ -240,16 +224,12 @@ const uniswapSectionSelector = createSelector(
     uniswapSelector,
     uniswapTotalSelector,
   ],
-  withUniswapSection,
+  withUniswapSection
 );
 
 const uniqueTokenFamiliesSelector = createSelector(
-  [
-    languageSelector,
-    uniqueTokensSelector,
-    uniqueTokenDataSelector,
-  ],
-  withUniqueTokenFamiliesSection,
+  [languageSelector, uniqueTokensSelector, uniqueTokenDataSelector],
+  withUniqueTokenFamiliesSection
 );
 
 export default createSelector(
@@ -259,5 +239,5 @@ export default createSelector(
     uniqueTokenFamiliesSelector,
     uniswapSectionSelector,
   ],
-  buildWalletSections,
+  buildWalletSections
 );

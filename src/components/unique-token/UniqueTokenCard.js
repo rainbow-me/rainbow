@@ -1,12 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import stylePropType from 'react-style-proptype';
-import {
-  compose,
-  onlyUpdateForKeys,
-  withHandlers,
-  withProps,
-} from 'recompact';
+import { compose, onlyUpdateForKeys, withHandlers, withProps } from 'recompact';
 import { withFabSendAction } from '../../hoc';
 import { colors, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
@@ -21,14 +16,9 @@ const UniqueTokenCardBorderRadius = 18;
 const UniqueTokenCard = ({
   disabled,
   height,
-  item: {
-    background,
-    image_preview_url,
-    ...item
-  },
+  item: { background, image_preview_url, ...item },
   onPress,
   onPressSend,
-  size,
   highlight,
   resizeMode,
   shadows,
@@ -63,13 +53,10 @@ const UniqueTokenCard = ({
           <UniqueTokenImage
             backgroundColor={backgroundColor}
             resizeMode={resizeMode}
-            imageUrl={image_preview_url} // eslint-disable-line camelcase
+            imageUrl={image_preview_url}
             item={item}
           />
-          <InnerBorder
-            opacity={0.04}
-            radius={UniqueTokenCardBorderRadius}
-          />
+          <InnerBorder opacity={0.04} radius={UniqueTokenCardBorderRadius} />
           <Highlight
             backgroundColor={colors.alpha(colors.white, 0.33)}
             visible={highlight}
@@ -86,7 +73,6 @@ UniqueTokenCard.propTypes = {
   highlight: PropTypes.bool,
   item: PropTypes.shape({
     background: PropTypes.string,
-    // eslint-disable-next-line camelcase
     image_preview_url: PropTypes.string,
   }),
   onPress: PropTypes.func,
@@ -99,12 +85,8 @@ UniqueTokenCard.propTypes = {
 };
 
 UniqueTokenCard.defaultProps = {
-  shadows: [
-    [0, 1, 3, colors.dark, 0.06],
-    [0, 4, 6, colors.dark, 0.04],
-  ],
+  shadows: [[0, 1, 3, colors.dark, 0.06], [0, 4, 6, colors.dark, 0.04]],
 };
-
 
 export default compose(
   withHandlers({
@@ -121,5 +103,5 @@ export default compose(
   }),
   withProps(({ item: { uniqueId } }) => ({ uniqueId })),
   withFabSendAction,
-  onlyUpdateForKeys(['height', 'style', 'uniqueId', 'width', 'highlight']),
+  onlyUpdateForKeys(['height', 'style', 'uniqueId', 'width', 'highlight'])
 )(UniqueTokenCard);

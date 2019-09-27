@@ -40,11 +40,11 @@ export default class UnderlineField extends PureComponent {
     onPressButton: PropTypes.func,
     placeholder: PropTypes.string,
     value: PropTypes.any,
-  }
+  };
 
   static defaultProps = {
     autoFocus: false,
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -55,21 +55,18 @@ export default class UnderlineField extends PureComponent {
     };
   }
 
-  animation = new Animated.Value(0)
-
   componentDidUpdate(prevProps) {
     const { value } = this.props;
 
     if (value !== prevProps.value) {
+      // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ value });
     }
   }
 
-  format = (string) => (
-    this.props.format
-      ? this.props.format(string)
-      : string
-  )
+  animation = new Animated.Value(0);
+
+  format = string => (this.props.format ? this.props.format(string) : string);
 
   onBlur = (...props) => {
     Animated.timing(this.animation, {
@@ -81,9 +78,9 @@ export default class UnderlineField extends PureComponent {
     this.setState({ isFocused: false });
 
     if (this.props.onBlur) this.props.onBlur(...props);
-  }
+  };
 
-  onChange = (event) => {
+  onChange = event => {
     const { nativeEvent } = event;
 
     const value = this.format(nativeEvent.text);
@@ -93,7 +90,7 @@ export default class UnderlineField extends PureComponent {
 
       if (this.props.onChange) this.props.onChange(String(value));
     }
-  }
+  };
 
   onFocus = (...props) => {
     Animated.timing(this.animation, {
@@ -105,7 +102,7 @@ export default class UnderlineField extends PureComponent {
     this.setState({ isFocused: true });
 
     if (this.props.onFocus) this.props.onFocus(...props);
-  }
+  };
 
   render() {
     const {
@@ -156,7 +153,9 @@ export default class UnderlineField extends PureComponent {
         </Row>
         <UnderlineContainer>
           <Underline />
-          <UnderlineAnimated style={{ transform: [{ scaleX: this.animation }] }} />
+          <UnderlineAnimated
+            style={{ transform: [{ scaleX: this.animation }] }}
+          />
         </UnderlineContainer>
       </Column>
     );

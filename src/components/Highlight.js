@@ -4,12 +4,7 @@ import { onlyUpdateForKeys } from 'recompact';
 import { View } from 'react-primitives';
 import { colors, position } from '../styles';
 
-const Highlight = ({
-  backgroundColor,
-  borderRadius,
-  visible,
-  ...props
-}) => (
+const Highlight = ({ backgroundColor, borderRadius, visible, ...props }) => (
   <View
     {...position.coverAsObject}
     backgroundColor={backgroundColor}

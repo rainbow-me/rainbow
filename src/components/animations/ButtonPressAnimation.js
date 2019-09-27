@@ -2,7 +2,11 @@ import { omit, pick, toUpper } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { InteractionManager } from 'react-native';
-import { createNativeWrapper, PureNativeButton, State } from 'react-native-gesture-handler';
+import {
+  createNativeWrapper,
+  PureNativeButton,
+  State,
+} from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing } from 'react-native-reanimated';
 import {
@@ -34,14 +38,7 @@ const {
   Value,
 } = Animated;
 
-const {
-  ACTIVE,
-  BEGAN,
-  CANCELLED,
-  END,
-  FAILED,
-  UNDETERMINED,
-} = State;
+const { ACTIVE, BEGAN, CANCELLED, END, FAILED, UNDETERMINED } = State;
 
 const TransformOriginMap = {
   BOTTOM: 3,
@@ -50,19 +47,14 @@ const TransformOriginMap = {
   TOP: 1,
 };
 
-const {
-  BOTTOM,
-  LEFT,
-  RIGHT,
-  TOP,
-} = TransformOriginMap;
+const { BOTTOM, LEFT, RIGHT, TOP } = TransformOriginMap;
 
 const AnimatedRawButton = createNativeWrapper(
   createAnimatedComponent(PureNativeButton),
   {
     shouldActivateOnStart: true,
     shouldCancelWhenOutside: true,
-  },
+  }
 );
 
 const AnimatedRawButtonPropBlacklist = [
@@ -103,7 +95,7 @@ export default class ButtonPressAnimation extends PureComponent {
     style: stylePropType,
     tapRef: PropTypes.object,
     transformOrigin: directionPropType,
-  }
+  };
 
   static defaultProps = {
     activeOpacity: 1,
@@ -115,7 +107,7 @@ export default class ButtonPressAnimation extends PureComponent {
     hapticType: HapticFeedbackTypes.selection,
     minLongPressDuration: 500,
     scaleTo: animations.keyframes.button.to.scale,
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -139,48 +131,53 @@ export default class ButtonPressAnimation extends PureComponent {
 
     const isDirectionNegative = or(
       eq(this.transformOrigin, LEFT),
-      eq(this.transformOrigin, TOP),
+      eq(this.transformOrigin, TOP)
     );
 
     this.directionMultiple = cond(isDirectionNegative, -1, 1);
 
-    this.onGestureEvent = event([{
-      nativeEvent: {
-        state: this.gestureState,
+    this.onGestureEvent = event([
+      {
+        nativeEvent: {
+          state: this.gestureState,
+        },
       },
-    }]);
+    ]);
   }
 
   componentWillUnmount = () => {
     this.reset();
-  }
+  };
 
   clearInteraction = () => {
     if (this.props.isInteraction && this.handle) {
       InteractionManager.clearInteractionHandle(this.handle);
       this.handle = undefined;
     }
-  }
+  };
 
   clearLongPressListener = () => {
     this.longPressDetected = false;
     if (this.longPressTimeout) {
       clearTimeout(this.longPressTimeout);
     }
-  }
+  };
 
   createInteraction = () => {
     if (this.props.isInteraction && !this.handle) {
       this.handle = InteractionManager.createInteractionHandle();
     }
-  }
+  };
 
   createLongPressListener = () => {
     const { minLongPressDuration, onLongPress } = this.props;
     if (onLongPress) {
-      this.longPressTimeout = setTimeout(this.handleDetectedLongPress, minLongPressDuration);
+      this.longPressTimeout = setTimeout(
+        this.handleDetectedLongPress,
+        minLongPressDuration
+      );
     }
-  }
+  };
 
   handleHaptic = () => {
     const { enableHapticFeedback, hapticType } = this.props;
@@ -188,42 +185,43 @@ export default class ButtonPressAnimation extends PureComponent {
     if (enableHapticFeedback) {
       ReactNativeHapticFeedback.trigger(hapticType);
     }
-  }
+  };
 
   handleLayout = ({ nativeEvent: { layout } }) => {
     // only setState if height+width dont already exist
     if (!Object.values(this.state).reduce((a, b) => a + b)) {
+      // TODO ???
+      // eslint-disable-next-line react/no-access-state-in-setstate
       this.setState(pick(layout, Object.keys(this.state)));
     }
-  }
+  };
 
   handleDetectedLongPress = () => {
     this.longPressDetected = true;
     this.props.onLongPress();
-  }
+  };
 
   handlePress = () => {
     if (!this.longPressDetected && this.props.onPress) {
       this.props.onPress();
     }
-  }
+  };
 
   handlePressStart = () => {
     if (this.props.onPressStart) {
       this.props.onPressStart();
     }
-  }
+  };
 
-  handleRunInteraction = () => (
+  handleRunInteraction = () =>
     this.props.isInteraction
       ? InteractionManager.runAfterInteractions(this.handlePress)
-      : this.handlePress()
-  )
+      : this.handlePress();
 
   reset = () => {
     this.clearInteraction();
     this.clearLongPressListener();
-  }
+  };
 
   render = () => {
     const {
@@ -243,13 +241,13 @@ export default class ButtonPressAnimation extends PureComponent {
     const offsetX = cond(
       or(eq(this.transformOrigin, LEFT), eq(this.transformOrigin, RIGHT)),
       divide(multiply(floor(this.state.width), this.directionMultiple), 2),
-      0,
+      0
     );
 
     const offsetY = cond(
       or(eq(this.transformOrigin, BOTTOM), eq(this.transformOrigin, TOP)),
       divide(multiply(floor(this.state.height), this.directionMultiple), 2),
-      0,
+      0
     );
 
     const opacity = cond(
@@ -258,10 +256,12 @@ export default class ButtonPressAnimation extends PureComponent {
       interpolate(divide(this.scale, defaultScale), {
         inputRange: [scaleTo, defaultScale],
         outputRange: [activeOpacity, 1],
-      }),
+      })
     );
 
-    const transform = transformOriginUtil(offsetX, offsetY, { scale: this.scale });
+    const transform = transformOriginUtil(offsetX, offsetY, {
+      scale: this.scale,
+    });
 
     return (
       <Fragment>
@@ -283,60 +283,49 @@ export default class ButtonPressAnimation extends PureComponent {
           </Animated.View>
         </AnimatedRawButton>
         <Animated.Code
-          exec={
-            block([
+          exec={block([
+            cond(
+              or(eq(this.gestureState, ACTIVE), eq(this.gestureState, BEGAN)),
+              set(this.shouldSpring, 1)
+            ),
+            cond(contains([FAILED, CANCELLED], this.gestureState), [
+              set(this.shouldSpring, 0),
+              call([], this.reset),
+            ]),
+            onChange(
+              this.gestureState,
               cond(
-                or(eq(this.gestureState, ACTIVE), eq(this.gestureState, BEGAN)),
-                set(this.shouldSpring, 1),
-              ),
-              cond(
-                contains([FAILED, CANCELLED], this.gestureState),
+                eq(this.gestureState, ACTIVE),
                 [
-                  set(this.shouldSpring, 0),
-                  call([], this.reset),
+                  call([], this.createInteraction),
+                  call([], this.createLongPressListener),
+                  call([], this.handlePressStart),
                 ],
-              ),
-              onChange(
-                this.gestureState,
-                cond(
-                  eq(this.gestureState, ACTIVE),
-                  [
-                    call([], this.createInteraction),
-                    call([], this.createLongPressListener),
-                    call([], this.handlePressStart),
-                  ],
-                  // else if
-                  cond(
-                    eq(this.gestureState, END),
-                    [
-                      call([], this.handleHaptic),
-                      call([], this.handleRunInteraction),
-                    ],
-                  ),
-                ),
-              ),
-              cond(
-                eq(this.gestureState, END),
-                runDelay(
-                  [
-                    set(this.shouldSpring, 0),
-                    call([], this.clearInteraction),
-                  ],
-                  duration,
-                ),
-              ),
-              set(
-                this.scale,
-                runTiming(this.clock, this.scale, {
-                  duration,
-                  easing,
-                  toValue: cond(eq(this.shouldSpring, 1), scaleTo, defaultScale),
-                }),
-              ),
-            ])
-          }
+                // else if
+                cond(eq(this.gestureState, END), [
+                  call([], this.handleHaptic),
+                  call([], this.handleRunInteraction),
+                ])
+              )
+            ),
+            cond(
+              eq(this.gestureState, END),
+              runDelay(
+                [set(this.shouldSpring, 0), call([], this.clearInteraction)],
+                duration
+              )
+            ),
+            set(
+              this.scale,
+              runTiming(this.clock, this.scale, {
+                duration,
+                easing,
+                toValue: cond(eq(this.shouldSpring, 1), scaleTo, defaultScale),
+              })
+            ),
+          ])}
         />
       </Fragment>
     );
-  }
+  };
 }

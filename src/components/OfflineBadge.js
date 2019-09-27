@@ -10,12 +10,7 @@ import { Icon } from './icons';
 import { RowWithMargins } from './layout';
 import { Text } from './text';
 
-const {
-  interpolate,
-  spring,
-  Value,
-  View,
-} = Animated;
+const { interpolate, spring, Value, View } = Animated;
 
 const Badge = styled(RowWithMargins).attrs({
   align: 'center',
@@ -38,17 +33,17 @@ const DefaultAnimationValue = 60;
 class OfflineBadge extends PureComponent {
   static propTypes = {
     isConnected: PropTypes.bool,
-  }
+  };
 
   static defaultProps = {
     isConnected: true,
-  }
+  };
 
-  animation = new Value(DefaultAnimationValue)
+  componentDidMount = () => this.runAnimation();
 
-  componentDidMount = () => this.runAnimation()
+  componentDidUpdate = () => this.runAnimation();
 
-  componentDidUpdate = () => this.runAnimation()
+  animation = new Value(DefaultAnimationValue);
 
   runAnimation = () => {
     const { isConnected } = this.props;
@@ -67,7 +62,7 @@ class OfflineBadge extends PureComponent {
         ? analytics.track('Reconnected after offline')
         : analytics.track('Offline / lost connection');
     });
-  }
+  };
 
   render = () => (
     <Badge
@@ -80,19 +75,15 @@ class OfflineBadge extends PureComponent {
         transform: [{ translateY: this.animation }],
       }}
     >
-      <Icon
-        color={colors.white}
-        name="offline"
-        style={{ marginBottom: -3 }}
-      />
+      <Icon color={colors.white} name="offline" style={{ marginBottom: -3 }} />
       <Text color={colors.white} size="smedium" weight="semibold">
         Offline
       </Text>
     </Badge>
-  )
+  );
 }
 
 export default compose(
   withNetInfo,
-  onlyUpdateForKeys(['isConnected']),
+  onlyUpdateForKeys(['isConnected'])
 )(OfflineBadge);

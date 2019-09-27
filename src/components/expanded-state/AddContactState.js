@@ -40,17 +40,14 @@ class AddContactState extends PureComponent {
     navigation: PropTypes.object,
     onCloseModal: PropTypes.func,
     onUnmountModal: PropTypes.func,
-    price: PropTypes.string,
-    subtitle: PropTypes.string,
-    title: PropTypes.string,
-  }
+  };
 
   state = {
     color: this.props.color || 0,
     value: get(this.props, 'contact.nickname', ''),
-  }
+  };
 
-  inputRef = undefined
+  inputRef = undefined;
 
   handleAddContact = async () => {
     const { address, navigation, onCloseModal } = this.props;
@@ -61,22 +58,20 @@ class AddContactState extends PureComponent {
       onCloseModal();
       navigation.goBack();
     }
-  }
+  };
 
   handleCancel = () => {
     this.props.onUnmountModal('', 0, false);
     this.props.onCloseModal();
     this.props.navigation.goBack();
-  }
+  };
 
   handleChange = ({ nativeEvent: { text } }) => {
-    const value = text.charCodeAt(0) === 32
-      ? text.substring(1)
-      : text;
+    const value = text.charCodeAt(0) === 32 ? text.substring(1) : text;
 
     this.setState({ value });
     this.props.onUnmountModal(value, this.state.color, true);
-  }
+  };
 
   handleChangeColor = async () => {
     const { color, value } = this.state;
@@ -88,23 +83,24 @@ class AddContactState extends PureComponent {
 
     this.setState({ color: newColor });
     this.props.onUnmountModal(value, newColor, true);
-  }
+  };
 
-  handleDeleteContact = () => (
+  handleDeleteContact = () =>
     showDeleteContactActionSheet({
       address: this.props.address,
       nickname: this.state.value,
       onDelete: this.handleCancel,
-    })
-  )
+    });
 
   handleFocusInput = () => {
     if (this.inputRef) {
       this.inputRef.focus();
     }
-  }
+  };
 
-  handleInputRef = (ref) => { this.inputRef = ref; }
+  handleInputRef = ref => {
+    this.inputRef = ref;
+  };
 
   render() {
     const { address, contact } = this.props;
@@ -116,7 +112,10 @@ class AddContactState extends PureComponent {
         <FloatingPanels maxWidth={deviceUtils.dimensions.width - 110}>
           <AssetPanel>
             <Centered css={padding(24, 25)} direction="column">
-              <ButtonPressAnimation onPress={this.handleChangeColor} scaleTo={0.96}>
+              <ButtonPressAnimation
+                onPress={this.handleChangeColor}
+                scaleTo={0.96}
+              >
                 <ContactAvatar
                   color={color}
                   large
@@ -134,7 +133,7 @@ class AddContactState extends PureComponent {
               </Text>
               <Input
                 autoCapitalize
-                autoFocus={true}
+                autoFocus
                 letterSpacing="tightest"
                 onChange={this.handleChange}
                 onSubmitEditing={this.handleAddContact}
@@ -158,7 +157,9 @@ class AddContactState extends PureComponent {
                 <Divider inset={false} />
               </Centered>
               <Button
-                backgroundColor={value.length > 0 ? colors.appleBlue : undefined}
+                backgroundColor={
+                  value.length > 0 ? colors.appleBlue : undefined
+                }
                 disabled={!value.length > 0}
                 height={43}
                 onPress={this.handleAddContact}
@@ -200,5 +201,5 @@ class AddContactState extends PureComponent {
 export default compose(
   withAccountData,
   withAccountSettings,
-  onlyUpdateForKeys(['price', 'subtitle']),
+  onlyUpdateForKeys(['price', 'subtitle'])
 )(AddContactState);

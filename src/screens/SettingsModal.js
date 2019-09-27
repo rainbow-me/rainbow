@@ -1,14 +1,8 @@
-
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import { InteractionManager } from 'react-native';
-import {
-  compose,
-  onlyUpdateForKeys,
-  withHandlers,
-  withProps,
-} from 'recompact';
+import { compose, onlyUpdateForKeys, withHandlers, withProps } from 'recompact';
 import { Column } from '../components/layout';
 import { Modal, ModalHeader } from '../components/modal';
 import { AnimatedPager } from '../components/pager';
@@ -93,18 +87,24 @@ SettingsModal.propTypes = {
 
 export default compose(
   withProps(({ navigation }) => ({
-    currentSettingsPage: get(navigation, 'state.params.section', SettingsPages.default),
+    currentSettingsPage: get(
+      navigation,
+      'state.params.section',
+      SettingsPages.default
+    ),
   })),
   withHandlers({
     onCloseModal: ({ navigation }) => () => navigation.goBack(),
-    onPressBack: ({ navigation }) => () => navigation.setParams({ section: SettingsPages.default }),
-    onPressImportSeedPhrase: ({ navigation, setSafeTimeout }) => () => {
+    onPressBack: ({ navigation }) => () =>
+      navigation.setParams({ section: SettingsPages.default }),
+    onPressImportSeedPhrase: ({ navigation }) => () => {
       navigation.goBack();
       InteractionManager.runAfterInteractions(() => {
         navigation.navigate('ImportSeedPhraseSheet');
       });
     },
-    onPressSection: ({ navigation }) => (section) => () => navigation.setParams({ section }),
+    onPressSection: ({ navigation }) => section => () =>
+      navigation.setParams({ section }),
   }),
-  onlyUpdateForKeys(['currentSettingsPage']),
+  onlyUpdateForKeys(['currentSettingsPage'])
 )(SettingsModal);

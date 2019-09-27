@@ -1,6 +1,12 @@
 import { get, isFunction, isString } from 'lodash';
 
-export const sortList = (array = [], sortByKey, direction, defaultValue, formatter) => (
+export const sortList = (
+  array = [],
+  sortByKey,
+  direction,
+  defaultValue,
+  formatter
+) =>
   array.slice(0).sort((a, b) => {
     const isAscending = direction === 'asc';
 
@@ -26,5 +32,4 @@ export const sortList = (array = [], sortByKey, direction, defaultValue, formatt
     if (itemA > itemB) return isAscending ? 1 : -1;
 
     return 0;
-  })
-);
+  });

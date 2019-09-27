@@ -1,9 +1,4 @@
-import {
-  compose,
-  defaultProps,
-  setDisplayName,
-  withProps,
-} from 'recompact';
+import { compose, defaultProps, setDisplayName, withProps } from 'recompact';
 import LayoutWithMargins from './LayoutWithMargins';
 
 export default compose(
@@ -12,5 +7,5 @@ export default compose(
   withProps({
     direction: 'column',
     marginKey: 'marginBottom',
-  }),
+  })
 )(LayoutWithMargins);

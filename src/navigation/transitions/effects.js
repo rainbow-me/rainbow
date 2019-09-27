@@ -45,7 +45,10 @@ const expandStyleInterpolator = ({
     outputRange: [screen.height, 0],
   });
 
-  const onStart = or(and(eq(closing, 0), eq(current, 0)), and(eq(closing, 1), eq(current, 1)));
+  const onStart = or(
+    and(eq(closing, 0), eq(current, 0)),
+    and(eq(closing, 1), eq(current, 1))
+  );
   const setShowingModal = call([], () => {
     store.dispatch(updateStackTransitionProps({ showingModal: true }));
   });
@@ -84,7 +87,8 @@ const sheetStyleInterpolator = ({
     interpolate(current, {
       inputRange: [0, 1],
       outputRange: [screen.height, statusBarHeight],
-    })]);
+    }),
+  ]);
 
   return {
     cardStyle: {
@@ -100,37 +104,40 @@ const sheetStyleInterpolator = ({
   };
 };
 
-const backgroundInterpolator = ({ next: { progress: next } = { next: undefined } }) => {
+const backgroundInterpolator = ({
+  next: { progress: next } = { next: undefined },
+}) => {
   if (next === undefined) {
     return { cardStyle: {} };
   }
-  const dispatch = cond(call([], () => {
-    store.dispatch(updateStackTransitionProps({ position: next }));
-  }));
+  const dispatch = cond(
+    call([], () => {
+      store.dispatch(updateStackTransitionProps({ position: next }));
+    })
+  );
   return { cardStyle: { opacity: block([dispatch, 1]) } };
 };
 
 const closeSpec = {
+  animation: 'spring',
   config: SpringUtils.makeConfigFromBouncinessAndSpeed({
     ...SpringUtils.makeDefaultConfig(),
     bounciness: 0,
+    mass: 1,
     overshootClamping: true,
     speed: 20,
-    mass: 1,
   }),
-  animation: 'spring',
 };
 
 const openSpec = {
+  animation: 'spring',
   config: SpringUtils.makeConfigFromBouncinessAndSpeed({
     ...SpringUtils.makeDefaultConfig(),
     bounciness: 5,
-    speed: 20,
     mass: 1,
+    speed: 20,
   }),
-  animation: 'spring',
 };
-
 
 const gestureResponseDistance = {
   vertical: deviceUtils.dimensions.height,
@@ -149,7 +156,7 @@ export const expandedPreset = {
   cardStyleInterpolator: expandStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
- // gestureResponseDistance,
+  gestureResponseDistance,
   onTransitionStart,
   transitionSpec: { close: closeSpec, open: openSpec },
 };
@@ -158,7 +165,7 @@ export const sheetPreset = {
   cardStyleInterpolator: sheetStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
-  //gestureResponseDistance,
+  gestureResponseDistance,
   onTransitionStart,
   transitionSpec: { close: closeSpec, open: openSpec },
 };

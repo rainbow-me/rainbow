@@ -5,12 +5,7 @@ import { getFirstGrapheme } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
 
-const ContactAvatar = ({
-  color,
-  large,
-  value,
-  ...props
-}) => (
+const ContactAvatar = ({ color, large, value, ...props }) => (
   <Centered
     {...props}
     {...borders.buildCircleAsObject(large ? 60 : 40)}

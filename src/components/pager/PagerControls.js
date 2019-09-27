@@ -18,27 +18,23 @@ const Container = styled(Centered)`
 
 const enhance = onlyUpdateForKeys(['selectedIndex']);
 
-const PagerControls = enhance(({
-  color,
-  length,
-  selectedIndex,
-  size,
-  ...props
-}) => (
-  <Container {...props}>
-    {times(length, index => (
-      <View
-        key={index}
-        style={{
-          ...borders.buildCircleAsObject(size),
-          backgroundColor: color,
-          marginRight: (index < length - 1) ? PagerPadding : 0,
-          opacity: (index === selectedIndex) ? 1 : 0.3,
-        }}
-      />
-    ))}
-  </Container>
-));
+const PagerControls = enhance(
+  ({ color, length, selectedIndex, size, ...props }) => (
+    <Container {...props}>
+      {times(length, index => (
+        <View
+          key={index}
+          style={{
+            ...borders.buildCircleAsObject(size),
+            backgroundColor: color,
+            marginRight: index < length - 1 ? PagerPadding : 0,
+            opacity: index === selectedIndex ? 1 : 0.3,
+          }}
+        />
+      ))}
+    </Container>
+  )
+);
 
 PagerControls.propTypes = {
   color: PropTypes.string,

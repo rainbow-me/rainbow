@@ -4,7 +4,6 @@ import { Path } from 'svgs';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
-/* eslint-disable max-len */
 const LockIcon = ({ color, ...props }) => (
   <Svg height="14" width="10" {...props}>
     <Path
@@ -14,7 +13,6 @@ const LockIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
-/* eslint-disable max-len */
 
 LockIcon.propTypes = {
   color: PropTypes.string,

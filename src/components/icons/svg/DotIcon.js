@@ -6,12 +6,7 @@ import Svg from '../Svg';
 
 const DotIcon = ({ color, ...props }) => (
   <Svg height="7" width="7" viewBox="0 0 7 7" {...props}>
-    <Circle
-      cx="3.5"
-      cy="3.5"
-      r="3.5"
-      fill={color}
-    />
+    <Circle cx="3.5" cy="3.5" r="3.5" fill={color} />
   </Svg>
 );
 

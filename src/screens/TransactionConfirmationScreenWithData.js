@@ -4,7 +4,7 @@ import lang from 'i18n-js';
 import { get, isNil, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { Alert, StatusBar, Vibration } from 'react-native';
+import { Alert, Vibration } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
 import { withTransactionConfirmationScreen } from '../hoc';
@@ -19,13 +19,12 @@ import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 class TransactionConfirmationScreenWithData extends PureComponent {
   static propTypes = {
     dataAddNewTransaction: PropTypes.func,
-    isFocused: PropTypes.bool.isRequired,
     navigation: PropTypes.any,
     removeRequest: PropTypes.func,
     transactionCountNonce: PropTypes.number,
     updateTransactionCountNonce: PropTypes.func,
     walletConnectSendStatus: PropTypes.func,
-  }
+  };
 
   componentDidMount() {
     const autoOpened = get(this.props, 'navigation.state.params.autoOpened');
@@ -34,7 +33,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     }
   }
 
-  handleConfirm = async (requestType) => {
+  handleConfirm = async requestType => {
     if (requestType === 'message' || requestType === 'messagePersonal') {
       return this.handleSignMessage(requestType);
     }
@@ -56,7 +55,10 @@ class TransactionConfirmationScreenWithData extends PureComponent {
       }
     }
     const web3TxnCount = await getTransactionCount(txPayload.from);
-    const maxTxnCount = Math.max(this.props.transactionCountNonce, web3TxnCount);
+    const maxTxnCount = Math.max(
+      this.props.transactionCountNonce,
+      web3TxnCount
+    );
     const nonce = ethers.utils.hexlify(maxTxnCount);
     let txPayloadLatestNonce = { ...txPayload, nonce };
     txPayloadLatestNonce = omit(txPayloadLatestNonce, 'from');
@@ -80,9 +82,13 @@ class TransactionConfirmationScreenWithData extends PureComponent {
       this.props.dataAddNewTransaction(txDetails);
       this.props.removeRequest(transactionDetails.requestId);
       try {
-        await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, transactionHash);
-      } catch (error) {
-      }
+        await this.props.walletConnectSendStatus(
+          transactionDetails.peerId,
+          transactionDetails.requestId,
+          transactionHash
+        );
+        // eslint-disable-next-line no-empty
+      } catch (error) {}
       analytics.track('Approved WalletConnect transaction request');
       this.closeScreen();
     } else {
@@ -90,7 +96,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     }
   };
 
-  handleSignMessage = async (requestType) => {
+  handleSignMessage = async requestType => {
     const { transactionDetails } = this.props.navigation.state.params;
     let message = null;
     let flatFormatSignature = null;
@@ -104,7 +110,11 @@ class TransactionConfirmationScreenWithData extends PureComponent {
 
     if (flatFormatSignature) {
       this.props.removeRequest(transactionDetails.requestId);
-      await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, flatFormatSignature);
+      await this.props.walletConnectSendStatus(
+        transactionDetails.peerId,
+        transactionDetails.requestId,
+        flatFormatSignature
+      );
       analytics.track('Approved WalletConnect signature request');
       this.closeScreen();
     } else {
@@ -116,40 +126,45 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     try {
       this.closeScreen();
       const { transactionDetails } = this.props.navigation.state.params;
-      await this.props.walletConnectSendStatus(transactionDetails.peerId, transactionDetails.requestId, null);
+      await this.props.walletConnectSendStatus(
+        transactionDetails.peerId,
+        transactionDetails.requestId,
+        null
+      );
     } catch (error) {
       this.closeScreen();
       Alert.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
     }
-  }
+  };
 
   handleCancelRequest = async () => {
     try {
       await this.sendFailedTransactionStatus();
       const { transactionDetails } = this.props.navigation.state.params;
-      const { requestId, displayDetails: { requestType } } = transactionDetails;
+      const {
+        requestId,
+        displayDetails: { requestType },
+      } = transactionDetails;
       this.props.removeRequest(requestId);
-      const rejectionType = requestType === 'message' ? 'signature' : 'transaction';
+      const rejectionType =
+        requestType === 'message' ? 'signature' : 'transaction';
       analytics.track(`Rejected WalletConnect ${rejectionType} request`);
     } catch (error) {
       this.closeScreen();
       Alert.alert('Failed to send rejected transaction status');
     }
-  }
+  };
 
   closeScreen = () => {
     this.props.navigation.popToTop();
-  }
+  };
 
   render = () => {
     const {
       transactionDetails: {
         dappName,
         imageUrl,
-        displayDetails: {
-          type,
-          payload,
-        },
+        displayDetails: { type, payload },
       },
     } = this.props.navigation.state.params;
 
@@ -165,10 +180,10 @@ class TransactionConfirmationScreenWithData extends PureComponent {
         />
       </>
     );
-  }
+  };
 }
 
 export default compose(
   withNavigationFocus,
-  withTransactionConfirmationScreen,
+  withTransactionConfirmationScreen
 )(TransactionConfirmationScreenWithData);

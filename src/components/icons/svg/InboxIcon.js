@@ -3,7 +3,6 @@ import React from 'react';
 import Svg, { Path } from 'svgs';
 import { colors } from '../../../styles';
 
-/* eslint-disable max-len */
 const InboxIcon = ({ color, ...props }) => (
   <Svg height="17" width="16" viewBox="0 0 16 17" {...props}>
     <Path
@@ -13,7 +12,6 @@ const InboxIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
-/* eslint-disable max-len */
 
 InboxIcon.propTypes = {
   color: PropTypes.string,

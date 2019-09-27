@@ -8,16 +8,8 @@ import Monospace from './Monospace';
 
 const ErrorText = ({ color, error }) => (
   <RowWithMargins align="center" margin={fonts.size.micro}>
-    <Icon
-      color={color}
-      name="warning"
-    />
-    <Monospace
-      color={color}
-      lineHeight="looser"
-      size="lmedium"
-      weight="medium"
-    >
+    <Icon color={color} name="warning" />
+    <Monospace color={color} lineHeight="looser" size="lmedium" weight="medium">
       {error}
     </Monospace>
   </RowWithMargins>

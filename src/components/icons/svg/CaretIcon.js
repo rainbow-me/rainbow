@@ -6,13 +6,7 @@ import { colors } from '../../../styles';
 import { directionPropType } from '../../../utils';
 import Svg from '../Svg';
 
-/* eslint-disable max-len */
-const CaretIcon = ({
-  color,
-  direction,
-  size,
-  ...props
-}) => (
+const CaretIcon = ({ color, size, ...props }) => (
   <Svg
     {...props}
     height={size ? size * 1.9 : '19'}
@@ -26,7 +20,6 @@ const CaretIcon = ({
     />
   </Svg>
 );
-/* eslint-disable max-len */
 
 CaretIcon.propTypes = {
   color: PropTypes.string,

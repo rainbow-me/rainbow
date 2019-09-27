@@ -3,4 +3,7 @@ import { setKeyboardHeight } from '../redux/keyboardHeight';
 
 const mapStateToProps = ({ keyboardHeight }) => keyboardHeight;
 
-export default connect(mapStateToProps, { setKeyboardHeight });
+export default connect(
+  mapStateToProps,
+  { setKeyboardHeight }
+);

@@ -5,27 +5,14 @@ import { colors, padding } from '../../styles';
 import { Column, FlexItem, Row } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
 
-const WalletConnectExplainerItem = ({
-  children,
-  content,
-  emoji,
-  title,
-}) => (
-  <Row
-    align="start"
-    css={padding(0, 36, 0, 0)}
-    flex={0}
-  >
+const WalletConnectExplainerItem = ({ children, content, emoji, title }) => (
+  <Row align="start" css={padding(0, 36, 0, 0)} flex={0}>
     <FlexItem flex={0}>
       <Emoji name={emoji} size="bmedium" />
     </FlexItem>
     <Column flex={1} style={{ paddingLeft: 8 }}>
       <FlexItem>
-        <TruncatedText
-          lineHeight="normal"
-          size="bmedium"
-          weight="semibold"
-        >
+        <TruncatedText lineHeight="normal" size="bmedium" weight="semibold">
           {title}
         </TruncatedText>
       </FlexItem>

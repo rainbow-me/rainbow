@@ -5,13 +5,7 @@ import { withRotationForDirection } from '../../../hoc';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
-/* eslint-disable max-len */
-const ArrowIcon = ({
-  color,
-  height,
-  width,
-  ...props
-}) => (
+const ArrowIcon = ({ color, height, width, ...props }) => (
   <Svg height={height} width={width} {...props}>
     <Path
       d="M5.614 4.186v1.92a.349.349 0 0 0 .552.278L9.554 3.56a.344.344 0 0 0 0-.562L6.166.174a.349.349 0 0 0-.552.278v1.922H1.41a.77.77 0 0 0-.77.77v.272c0 .425.345.77.77.77h4.204z"
@@ -19,7 +13,6 @@ const ArrowIcon = ({
     />
   </Svg>
 );
-/* eslint-disable max-len */
 
 ArrowIcon.propTypes = {
   color: PropTypes.string,

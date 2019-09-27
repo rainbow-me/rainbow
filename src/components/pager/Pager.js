@@ -24,14 +24,13 @@ const getItemLayout = (data, index) => {
   };
 };
 
-const keyExtractor = ({ name }, index) => (`${name}_${index}`);
+const keyExtractor = ({ name }, index) => `${name}_${index}`;
 
 const renderItem = props => <PagerItem {...props} />;
 
 const Pager = ({
   controlsProps,
   currentIndex,
-  dimensions,
   onScroll,
   onScrollEndDrag,
   pages,
@@ -86,7 +85,9 @@ export default compose(
     scrollEnabled: pages.length > 1,
   })),
   withHandlers({
-    onScroll: ({ currentIndex, dimensions, setCurrentIndex }) => ({ nativeEvent }) => {
+    onScroll: ({ currentIndex, dimensions, setCurrentIndex }) => ({
+      nativeEvent,
+    }) => {
       const currentOffsetX = get(nativeEvent, 'contentOffset.x', 0);
 
       const startOffsetX = currentIndex * dimensions.width;
@@ -112,5 +113,5 @@ export default compose(
       return setCurrentIndex(currentScreenIndex < 0 ? 0 : currentScreenIndex);
     },
   }),
-  onlyUpdateForKeys(['currentIndex']),
+  onlyUpdateForKeys(['currentIndex'])
 )(Pager);

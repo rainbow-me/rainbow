@@ -24,36 +24,36 @@ export default class AnimatedPager extends Component {
     children: PropTypes.node,
     isOpen: PropTypes.bool.isRequired,
     width: PropTypes.number,
-  }
+  };
 
   static defaultProps = {
     width: deviceUtils.dimensions.width - 31,
-  }
+  };
 
-  translateValues = {
-    page1: new Animated.Value(0),
-    page2: new Animated.Value(this.props.width),
-  }
-
-  componentDidUpdate = () => this.onAnimatePages(this.props.isOpen)
+  componentDidUpdate = () => this.onAnimatePages(this.props.isOpen);
 
   componentWillUnmount() {
     this.translateValues.page1.stopAnimation();
     this.translateValues.page2.stopAnimation();
   }
 
-  onAnimatePages = (isOpen) => {
+  translateValues = {
+    page1: new Animated.Value(0),
+    page2: new Animated.Value(this.props.width),
+  };
+
+  onAnimatePages = isOpen => {
     const { width } = this.props;
     const { page1, page2 } = this.translateValues;
 
-    const page1TargetValue = isOpen ? (width * -1) : 0;
+    const page1TargetValue = isOpen ? width * -1 : 0;
     const page2TargetValue = isOpen ? 0 : width;
 
     return Animated.parallel([
       Animated.timing(page1, buildPagerAnimation(page1TargetValue)).start(),
       Animated.timing(page2, buildPagerAnimation(page2TargetValue)).start(),
     ]);
-  }
+  };
 
   render = () => {
     const { children, ...props } = this.props;
@@ -69,5 +69,5 @@ export default class AnimatedPager extends Component {
         </AnimatedPagerItem>
       </Container>
     );
-  }
+  };
 }

@@ -50,12 +50,13 @@ const ImportSeedPhraseSheet = ({
   onInputChange,
   onPasteSeedPhrase,
   onPressEnterKey,
-  onPressHelp,
   seedPhrase,
 }) => (
   <Container>
     <HandleIcon />
-    <Text size="large" weight="bold">Import</Text>
+    <Text size="large" weight="bold">
+      Import
+    </Text>
     <KeyboardAvoidingView
       behavior="padding"
       keyboardVerticalOffset={sheetVerticalOffset + 19}
@@ -65,7 +66,7 @@ const ImportSeedPhraseSheet = ({
           align="center"
           autoFocus
           editable={!isImporting}
-          enablesReturnKeyAutomatically={true}
+          enablesReturnKeyAutomatically
           onChange={onInputChange}
           onSubmitEditing={onPressEnterKey}
           placeholder="Seed phrase or private key"
@@ -78,7 +79,11 @@ const ImportSeedPhraseSheet = ({
       </Centered>
       <Row align="start" justify="end">
         <ImportButton
-          disabled={seedPhrase ? !isSeedPhraseValid : !isClipboardContentsValidSeedPhrase}
+          disabled={
+            seedPhrase
+              ? !isSeedPhraseValid
+              : !isClipboardContentsValidSeedPhrase
+          }
           onPress={seedPhrase ? onImportSeedPhrase : onPasteSeedPhrase}
         >
           {!!seedPhrase && (
@@ -99,9 +104,7 @@ const ImportSeedPhraseSheet = ({
         </ImportButton>
       </Row>
     </KeyboardAvoidingView>
-    {isImporting && (
-      <LoadingOverlay title="Importing..." />
-    )}
+    {isImporting && <LoadingOverlay title="Importing..." />}
   </Container>
 );
 
@@ -109,15 +112,12 @@ ImportSeedPhraseSheet.propTypes = {
   isClipboardContentsValidSeedPhrase: PropTypes.bool,
   isImporting: PropTypes.bool,
   isSeedPhraseValid: PropTypes.bool,
-  navigation: PropTypes.object,
   onImportSeedPhrase: PropTypes.func,
   onInputChange: PropTypes.func,
   onPasteSeedPhrase: PropTypes.func,
   onPressEnterKey: PropTypes.func,
-  onPressHelp: PropTypes.func,
   screenProps: PropTypes.shape({ handleWalletConfig: PropTypes.func }),
   seedPhrase: PropTypes.string,
-  setSeedPhrase: PropTypes.func,
 };
 
 export default pure(ImportSeedPhraseSheet);

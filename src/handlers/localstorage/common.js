@@ -1,6 +1,8 @@
+/* eslint-disable no-undef */
 const defaultVersion = '0.1.0';
 
-export const getKey = (prefix, accountAddress, network) => `${prefix}-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+export const getKey = (prefix, accountAddress, network) =>
+  `${prefix}-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 
 /**
  * @desc save to storage
@@ -11,7 +13,7 @@ export const getKey = (prefix, accountAddress, network) => `${prefix}-${accountA
 export const saveLocal = async (
   key = '',
   data = {},
-  version = defaultVersion,
+  version = defaultVersion
 ) => {
   try {
     data.storageVersion = version;
@@ -64,13 +66,12 @@ export const removeLocal = (key = '') => {
   }
 };
 
-
 export const getAccountLocal = async (
   prefix,
   accountAddress,
   network,
   emptyState = [],
-  version = defaultVersion,
+  version = defaultVersion
 ) => {
   const key = getKey(prefix, accountAddress, network);
   const result = await getLocal(key, version);
@@ -82,18 +83,14 @@ export const saveAccountLocal = (
   data,
   accountAddress,
   network,
-  version = defaultVersion,
-) => saveLocal(
-  getKey(prefix, accountAddress, network),
-  { data },
-  version,
-);
+  version = defaultVersion
+) => saveLocal(getKey(prefix, accountAddress, network), { data }, version);
 
 export const removeAccountLocal = (
   prefix,
   accountAddress,
   network,
-  version = defaultVersion,
+  version = defaultVersion
 ) => {
   const key = getKey(prefix, accountAddress, network);
   removeLocal(key, version);

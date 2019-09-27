@@ -22,10 +22,11 @@ const withBlurTransitionProps = ({
 
 const withBlurTransitionPropsSelector = createSelector(
   [stackTransitionPropsSelector],
-  withBlurTransitionProps,
+  withBlurTransitionProps
 );
 
-export default Component => compose(
-  withTransitionProps,
-  withProps(withBlurTransitionPropsSelector),
-)(Component);
+export default Component =>
+  compose(
+    withTransitionProps,
+    withProps(withBlurTransitionPropsSelector)
+  )(Component);

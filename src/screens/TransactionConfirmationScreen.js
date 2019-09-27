@@ -46,12 +46,12 @@ export default class TransactionConfirmationScreen extends PureComponent {
     onConfirm: PropTypes.func,
     request: PropTypes.object,
     requestType: PropTypes.string,
-  }
+  };
 
   state = {
     biometryType: null,
     sendLongPressProgress: new Animated.Value(0),
-  }
+  };
 
   componentDidMount() {
     TouchID.isSupported()
@@ -74,7 +74,7 @@ export default class TransactionConfirmationScreen extends PureComponent {
       duration: 800,
       toValue: 100,
     }).start();
-  }
+  };
 
   onReleaseSend = () => {
     const { sendLongPressProgress } = this.state;
@@ -83,7 +83,7 @@ export default class TransactionConfirmationScreen extends PureComponent {
       duration: (sendLongPressProgress._value / 100) * 800,
       toValue: 0,
     }).start();
-  }
+  };
 
   onLongPressSend = async () => {
     const { onConfirm, requestType } = this.props;
@@ -95,11 +95,12 @@ export default class TransactionConfirmationScreen extends PureComponent {
     }).start();
 
     await onConfirm(requestType);
-  }
+  };
 
   renderSendButton = () => {
     const { requestType } = this.props;
-    const isMessage = requestType === 'message' || requestType === 'messagePersonal';
+    const isMessage =
+      requestType === 'message' || requestType === 'messagePersonal';
 
     return (
       <HoldToAuthorizeButton
@@ -108,13 +109,12 @@ export default class TransactionConfirmationScreen extends PureComponent {
         onLongPress={this.onLongPressSend}
       />
     );
-  }
+  };
 
   renderTransactionSection = () => {
     const { request, requestType } = this.props;
 
-    if (requestType === 'message'
-        || requestType === 'messagePersonal') {
+    if (requestType === 'message' || requestType === 'messagePersonal') {
       return (
         <MessageSigningSection
           message={request}
@@ -148,7 +148,7 @@ export default class TransactionConfirmationScreen extends PureComponent {
         sendButton={this.renderSendButton()}
       />
     );
-  }
+  };
 
   render = () => (
     <Container>
@@ -156,16 +156,11 @@ export default class TransactionConfirmationScreen extends PureComponent {
         <RequestVendorLogoIcon
           dappName={this.props.dappName}
           imageUrl={this.props.imageUrl}
-          showLargeShadow={true}
+          showLargeShadow
           size={60}
           style={{ marginBottom: 24 }}
         />
-        <Text
-          color="white"
-          letterSpacing="looser"
-          size="h4"
-          weight="semibold"
-        >
+        <Text color="white" letterSpacing="looser" size="h4" weight="semibold">
           {this.props.dappName}
         </Text>
         <TransactionType>
@@ -184,5 +179,5 @@ export default class TransactionConfirmationScreen extends PureComponent {
       </Masthead>
       {this.renderTransactionSection()}
     </Container>
-  )
+  );
 }

@@ -4,12 +4,7 @@ import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { LayoutAnimation } from 'react-native';
-import {
-  compose,
-  mapProps,
-  onlyUpdateForKeys,
-  withProps,
-} from 'recompact';
+import { compose, mapProps, onlyUpdateForKeys, withProps } from 'recompact';
 import { withAccountSettings, withGas } from '../../hoc';
 import { colors, padding } from '../../styles';
 import { gasUtils } from '../../utils';
@@ -24,17 +19,12 @@ const Label = withProps({
   weight: 'medium',
 })(Text);
 
-const renderEstimatedTimeText = (animatedNumber) => (
+const renderEstimatedTimeText = animatedNumber => (
   <Label>{animatedNumber}</Label>
 );
 
-const renderGasPriceText = (animatedNumber) => (
-  <Text
-    color="white"
-    letterSpacing="tight"
-    size="lmedium"
-    weight="semibold"
-  >
+const renderGasPriceText = animatedNumber => (
+  <Text color="white" letterSpacing="tight" size="lmedium" weight="semibold">
     {animatedNumber}
   </Text>
 );
@@ -47,11 +37,10 @@ class GasSpeedButton extends PureComponent {
     gasUpdateGasPriceOption: PropTypes.func,
     label: PropTypes.string,
     nativeCurrencySymbol: PropTypes.string,
-    onPress: PropTypes.func,
     price: PropTypes.string,
-  }
+  };
 
-  getLabel = (nextLabel) => {
+  getLabel = nextLabel => {
     let label = nextLabel || this.props.label;
     const shouldReverse = !!nextLabel;
 
@@ -62,7 +51,7 @@ class GasSpeedButton extends PureComponent {
     }
 
     return label;
-  }
+  };
 
   handlePress = () => {
     const { gasPrices, gasUpdateGasPriceOption } = this.props;
@@ -72,7 +61,7 @@ class GasSpeedButton extends PureComponent {
     const currentSpeedIndex = gasUtils.GasSpeedTypes.indexOf(this.getLabel());
 
     let nextSpeedIndex = currentSpeedIndex + 1;
-    if (nextSpeedIndex > (gasUtils.GasSpeedTypes.length - 1)) {
+    if (nextSpeedIndex > gasUtils.GasSpeedTypes.length - 1) {
       nextSpeedIndex = 0;
     }
 
@@ -81,17 +70,17 @@ class GasSpeedButton extends PureComponent {
 
     gasUpdateGasPriceOption(nextSpeed);
     analytics.track('Updated Gas Price', { gasPrice: nextSpeedGweiValue });
-  }
+  };
 
-  formatAnimatedGasPrice = (gasPrice) => {
+  formatAnimatedGasPrice = gasPrice => {
     const price = parseFloat(gasPrice || '0.00').toFixed(3);
     return `${this.props.nativeCurrencySymbol}${price}`;
-  }
+  };
 
-  formatAnimatedEstimatedTime = (estimatedTime) => {
+  formatAnimatedEstimatedTime = estimatedTime => {
     const time = parseFloat(estimatedTime || 0).toFixed(0);
     return `Swaps in ~ ${time} ${this.props.estimatedTimeUnit}`;
-  }
+  };
 
   render = () => (
     <ButtonPressAnimation
@@ -125,14 +114,18 @@ class GasSpeedButton extends PureComponent {
         </Row>
       </Column>
     </ButtonPressAnimation>
-  )
+  );
 }
 
 export default compose(
   withAccountSettings,
   withGas,
   mapProps(({ selectedGasPrice, ...props }) => {
-    const estimatedTime = get(selectedGasPrice, 'estimatedTime.display', '').split(' ');
+    const estimatedTime = get(
+      selectedGasPrice,
+      'estimatedTime.display',
+      ''
+    ).split(' ');
 
     return {
       estimatedTimeUnit: estimatedTime[1] || 'min',
@@ -142,5 +135,10 @@ export default compose(
       ...props,
     };
   }),
-  onlyUpdateForKeys(['estimatedTimeUnit', 'estimatedTimeValue', 'label', 'price']),
+  onlyUpdateForKeys([
+    'estimatedTimeUnit',
+    'estimatedTimeValue',
+    'label',
+    'price',
+  ])
 )(GasSpeedButton);

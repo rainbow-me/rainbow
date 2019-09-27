@@ -1,12 +1,7 @@
 import { compact, get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  compose,
-  mapProps,
-  onlyUpdateForKeys,
-  withHandlers,
-} from 'recompact';
+import { compose, mapProps, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { Linking } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { css } from 'styled-components/primitives';
@@ -24,16 +19,10 @@ import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 
 const containerStyles = css`
-  paddingLeft: 15;
+  padding-left: 15;
 `;
 
 const rowRenderPropTypes = {
-  balance: PropTypes.object,
-  item: PropTypes.object,
-  name: PropTypes.string,
-  native: PropTypes.object,
-  onPressTransaction: PropTypes.func,
-  pending: PropTypes.bool,
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
 };
 
@@ -48,7 +37,7 @@ const BottomRow = ({ name, native, status }) => {
 
   const nativeDisplay = get(native, 'display');
   const balanceText = nativeDisplay
-    ? compact([(isFailed || isSent) ? '-' : null, nativeDisplay]).join(' ')
+    ? compact([isFailed || isSent ? '-' : null, nativeDisplay]).join(' ')
     : '';
 
   return (
@@ -57,9 +46,7 @@ const BottomRow = ({ name, native, status }) => {
         <CoinName>{name}</CoinName>
       </FlexItem>
       <FlexItem flex={0}>
-        <BalanceText color={balanceTextColor}>
-          {balanceText}
-        </BalanceText>
+        <BalanceText color={balanceTextColor}>{balanceText}</BalanceText>
       </FlexItem>
     </Row>
   );
@@ -69,11 +56,9 @@ BottomRow.propTypes = rowRenderPropTypes;
 
 const TopRow = ({ balance, pending, status }) => (
   <RowWithMargins align="center" justify="space-between" margin={19}>
-    <TransactionStatusBadge pending={pending} status={status}/>
+    <TransactionStatusBadge pending={pending} status={status} />
     <Row align="center" flex={1} justify="end">
-      <BottomRowText>
-        {get(balance, 'display', '')}
-      </BottomRowText>
+      <BottomRowText>{get(balance, 'display', '')}</BottomRowText>
     </Row>
   </RowWithMargins>
 );
@@ -87,7 +72,7 @@ const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
       {...props}
       bottomRowRender={BottomRow}
       containerStyles={containerStyles}
-      shouldRasterizeIOS={true}
+      shouldRasterizeIOS
       topRowRender={TopRow}
     />
   </ButtonPressAnimation>
@@ -96,15 +81,7 @@ const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
 TransactionCoinRow.propTypes = rowRenderPropTypes;
 
 export default compose(
-  mapProps(({
-    item: {
-      hash,
-      native,
-      pending,
-      ...item
-    },
-    ...props
-  }) => ({
+  mapProps(({ item: { hash, native, pending, ...item }, ...props }) => ({
     hash,
     item,
     native,
@@ -136,26 +113,33 @@ export default compose(
       }
 
       if (hash) {
-        showActionSheetWithOptions({
-          cancelButtonIndex: 2,
-          options: [contact ? 'View Contact' : 'Add to Contacts', 'View on Etherscan', 'Cancel'],
-          title: `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
-        }, (buttonIndex) => {
-          if (buttonIndex === 0) {
-            navigation.navigate('ExpandedAssetScreen', {
-              address: contactAddress,
-              asset: item,
-              color: contactColor,
-              contact,
-              type: 'contact',
-            });
-          } else if (buttonIndex === 1) {
-            const normalizedHash = hash.replace(/-.*/g, '');
-            Linking.openURL(`https://etherscan.io/tx/${normalizedHash}`);
+        showActionSheetWithOptions(
+          {
+            cancelButtonIndex: 2,
+            options: [
+              contact ? 'View Contact' : 'Add to Contacts',
+              'View on Etherscan',
+              'Cancel',
+            ],
+            title: `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
+          },
+          buttonIndex => {
+            if (buttonIndex === 0) {
+              navigation.navigate('ExpandedAssetScreen', {
+                address: contactAddress,
+                asset: item,
+                color: contactColor,
+                contact,
+                type: 'contact',
+              });
+            } else if (buttonIndex === 1) {
+              const normalizedHash = hash.replace(/-.*/g, '');
+              Linking.openURL(`https://etherscan.io/tx/${normalizedHash}`);
+            }
           }
-        });
+        );
       }
     },
   }),
-  onlyUpdateForKeys(['hash', 'native', 'pending']),
+  onlyUpdateForKeys(['hash', 'native', 'pending'])
 )(TransactionCoinRow);

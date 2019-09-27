@@ -26,7 +26,8 @@ export const saveFCMToken = async () => {
 
 export const hasPermission = async () => firebase.messaging().hasPermission();
 
-export const requestPermission = async () => firebase.messaging().requestPermission();
+export const requestPermission = async () =>
+  firebase.messaging().requestPermission();
 
 export const checkPushNotificationPermissions = async () => {
   const arePushNotificationsAuthorized = await hasPermission();
@@ -49,18 +50,23 @@ export const checkPushNotificationPermissions = async () => {
   }
 };
 
-export const registerTokenRefreshListener = () => firebase.messaging().onTokenRefresh(fcmToken => {
-  saveLocal('rainbowFcmToken', { data: fcmToken });
-});
+export const registerTokenRefreshListener = () =>
+  firebase.messaging().onTokenRefresh(fcmToken => {
+    saveLocal('rainbowFcmToken', { data: fcmToken });
+  });
 
-export const registerNotificationListener = () => firebase.notifications().onNotification(notification => {
-  console.log('onNotification');
-});
+export const registerNotificationListener = () =>
+  firebase.notifications().onNotification(() => {
+    console.log('onNotification');
+  });
 
 // TODO this.onPushNotificationOpened
-export const registerNotificationOpenedListener = () => firebase.notifications().onNotificationOpened(notificationOpen => {
-  const { callId, sessionId } = notificationOpen.notification.data;
-  this.onPushNotificationOpened(callId, sessionId, false);
-});
+export const registerNotificationOpenedListener = () =>
+  firebase.notifications().onNotificationOpened(notificationOpen => {
+    const { callId, sessionId } = notificationOpen.notification.data;
+    // eslint-disable-next-line babel/no-invalid-this
+    this.onPushNotificationOpened(callId, sessionId, false);
+  });
 
-export const getInitialNotification = () => firebase.notifications().getInitialNotification();
+export const getInitialNotification = () =>
+  firebase.notifications().getInitialNotification();

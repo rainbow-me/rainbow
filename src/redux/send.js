@@ -33,7 +33,8 @@ const SEND_CLEAR_FIELDS = 'send/SEND_CLEAR_FIELDS';
 export const sendModalInit = (options = {}) => (dispatch, getState) => {
   const { accountAddress } = getState().settings;
   const { assets } = getState().data;
-  const selected = assets.filter(asset => asset.address === options.defaultAsset)[0] || {};
+  const selected =
+    assets.filter(asset => asset.address === options.defaultAsset)[0] || {};
   dispatch({
     payload: {
       address: accountAddress,
@@ -44,59 +45,65 @@ export const sendModalInit = (options = {}) => (dispatch, getState) => {
   dispatch(resetGasTxFees());
 };
 
-export const sendTransaction = (transactionDetails, signAndSendTransactionCb) => (dispatch, getState) => new Promise((resolve, reject) => {
-  dispatch({ type: SEND_TRANSACTION_REQUEST });
-  const {
-    address,
-    recipient,
-    amount,
-    asset,
-    gasPrice,
-    gasLimit,
-  } = transactionDetails;
-  const { accountType } = getState().settings;
-  const txDetails = {
-    amount,
-    asset,
-    from: address,
-    gasLimit,
-    gasPrice: gasPrice.value.amount,
-    nonce: null,
-    to: recipient,
-  };
-  return createSignableTransaction(txDetails)
-    .then(signableTransactionDetails => {
-      signAndSendTransactionCb({
-        accountType,
-        transaction: signableTransactionDetails,
-      })
-        .then((txHash) => {
-          if (!isEmpty(txHash)) {
-            txDetails.hash = txHash;
-            dispatch(dataAddNewTransaction(txDetails))
-              .then(success => {
-                dispatch({
-                  payload: txHash,
-                  type: SEND_TRANSACTION_SUCCESS,
+export const sendTransaction = (
+  transactionDetails,
+  signAndSendTransactionCb
+) => (dispatch, getState) =>
+  new Promise((resolve, reject) => {
+    dispatch({ type: SEND_TRANSACTION_REQUEST });
+    const {
+      address,
+      recipient,
+      amount,
+      asset,
+      gasPrice,
+      gasLimit,
+    } = transactionDetails;
+    const { accountType } = getState().settings;
+    const txDetails = {
+      amount,
+      asset,
+      from: address,
+      gasLimit,
+      gasPrice: gasPrice.value.amount,
+      nonce: null,
+      to: recipient,
+    };
+    return createSignableTransaction(txDetails)
+      .then(signableTransactionDetails => {
+        signAndSendTransactionCb({
+          accountType,
+          transaction: signableTransactionDetails,
+        })
+          .then(txHash => {
+            if (!isEmpty(txHash)) {
+              txDetails.hash = txHash;
+              dispatch(dataAddNewTransaction(txDetails))
+                .then(() => {
+                  dispatch({
+                    payload: txHash,
+                    type: SEND_TRANSACTION_SUCCESS,
+                  });
+                  resolve(txHash);
+                })
+                .catch(error => {
+                  reject(error);
                 });
-                resolve(txHash);
-              }).catch(error => {
-                reject(error);
-              });
-          } else {
+            } else {
+              dispatch({ type: SEND_TRANSACTION_FAILURE });
+              reject(new Error('No transaction hash.'));
+            }
+          })
+          .catch(error => {
             dispatch({ type: SEND_TRANSACTION_FAILURE });
-            reject(new Error('No transaction hash.'));
-          }
-        }).catch(error => {
-          dispatch({ type: SEND_TRANSACTION_FAILURE });
-          reject(error);
-        });
-    })
-    .catch(error => {
-      dispatch({ type: SEND_TRANSACTION_FAILURE });
-      reject(error);
-    });
-});
+            reject(error);
+          });
+      })
+      .catch(error => {
+        dispatch({ type: SEND_TRANSACTION_FAILURE });
+        reject(error);
+      });
+  });
 
 export const sendToggleConfirmationView = boolean => (dispatch, getState) => {
   let confirm = boolean;
@@ -128,11 +135,14 @@ export const sendUpdateAssetAmount = assetAmount => (dispatch, getState) => {
     const { amount: nativeAmount } = convertAmountAndPriceToNativeDisplay(
       _assetAmount,
       priceUnit,
-      nativeCurrency,
+      nativeCurrency
     );
     _nativeAmount = formatInputDecimals(nativeAmount, _assetAmount);
   }
-  const balanceAmount = ethereumUtils.getBalanceAmount(selectedGasPrice, selected);
+  const balanceAmount = ethereumUtils.getBalanceAmount(
+    selectedGasPrice,
+    selected
+  );
   dispatch({
     payload: {
       assetAmount: _assetAmount,
@@ -150,14 +160,14 @@ export const sendUpdateNativeAmount = nativeAmount => (dispatch, getState) => {
   let _assetAmount = '';
   if (_nativeAmount.length) {
     const priceUnit = get(selected, 'price.value', 0);
-    const assetAmount = convertAmountFromNativeValue(
-      _nativeAmount,
-      priceUnit,
-    );
+    const assetAmount = convertAmountFromNativeValue(_nativeAmount, priceUnit);
     _assetAmount = formatInputDecimals(assetAmount, _nativeAmount);
   }
 
-  const balanceAmount = ethereumUtils.getBalanceAmount(selectedGasPrice, selected);
+  const balanceAmount = ethereumUtils.getBalanceAmount(
+    selectedGasPrice,
+    selected
+  );
 
   dispatch({
     payload: {
@@ -169,7 +179,7 @@ export const sendUpdateNativeAmount = nativeAmount => (dispatch, getState) => {
   });
 };
 
-export const sendUpdateSelected = (asset) => (dispatch, getState) => {
+export const sendUpdateSelected = asset => (dispatch, getState) => {
   if (get(asset, 'isNft')) {
     dispatch({
       payload: {
@@ -194,7 +204,10 @@ export const sendUpdateSelected = (asset) => (dispatch, getState) => {
 export const sendMaxBalance = () => (dispatch, getState) => {
   const { selected } = getState().send;
   const { selectedGasPrice } = getState().gas;
-  const balanceAmount = ethereumUtils.getBalanceAmount(selectedGasPrice, selected);
+  const balanceAmount = ethereumUtils.getBalanceAmount(
+    selectedGasPrice,
+    selected
+  );
   dispatch(sendUpdateAssetAmount(balanceAmount));
 };
 
@@ -215,51 +228,51 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-  case SEND_MODAL_INIT:
-    return {
-      ...state,
-      address: action.payload.address,
-      selected: action.payload.selected,
-    };
-  case SEND_TRANSACTION_REQUEST:
-    return { ...state, fetching: true };
-  case SEND_TRANSACTION_SUCCESS:
-    return {
-      ...state,
-      fetching: false,
-      txHash: action.payload,
-    };
-  case SEND_TRANSACTION_FAILURE:
-    return {
-      ...state,
-      confirm: false,
-      fetching: false,
-      txHash: '',
-    };
-  case SEND_TOGGLE_CONFIRMATION_VIEW:
-    return { ...state, confirm: action.payload };
-  case SEND_UPDATE_RECIPIENT:
-    return { ...state, recipient: action.payload };
-  case SEND_UPDATE_NATIVE_AMOUNT:
-  case SEND_UPDATE_ASSET_AMOUNT:
-    return {
-      ...state,
-      assetAmount: action.payload.assetAmount,
-      isSufficientBalance: action.payload.isSufficientBalance,
-      nativeAmount: action.payload.nativeAmount,
-    };
-  case SEND_UPDATE_SELECTED:
-    return { ...state, selected: action.payload };
-  case SEND_UPDATE_NFT_SELECTED:
-    return {
-      ...state,
-      assetAmount: '1',
-      isSufficientBalance: true,
-      selected: action.payload.selected,
-    };
-  case SEND_CLEAR_FIELDS:
-    return { ...state, ...INITIAL_STATE };
-  default:
-    return state;
+    case SEND_MODAL_INIT:
+      return {
+        ...state,
+        address: action.payload.address,
+        selected: action.payload.selected,
+      };
+    case SEND_TRANSACTION_REQUEST:
+      return { ...state, fetching: true };
+    case SEND_TRANSACTION_SUCCESS:
+      return {
+        ...state,
+        fetching: false,
+        txHash: action.payload,
+      };
+    case SEND_TRANSACTION_FAILURE:
+      return {
+        ...state,
+        confirm: false,
+        fetching: false,
+        txHash: '',
+      };
+    case SEND_TOGGLE_CONFIRMATION_VIEW:
+      return { ...state, confirm: action.payload };
+    case SEND_UPDATE_RECIPIENT:
+      return { ...state, recipient: action.payload };
+    case SEND_UPDATE_NATIVE_AMOUNT:
+    case SEND_UPDATE_ASSET_AMOUNT:
+      return {
+        ...state,
+        assetAmount: action.payload.assetAmount,
+        isSufficientBalance: action.payload.isSufficientBalance,
+        nativeAmount: action.payload.nativeAmount,
+      };
+    case SEND_UPDATE_SELECTED:
+      return { ...state, selected: action.payload };
+    case SEND_UPDATE_NFT_SELECTED:
+      return {
+        ...state,
+        assetAmount: '1',
+        isSufficientBalance: true,
+        selected: action.payload.selected,
+      };
+    case SEND_CLEAR_FIELDS:
+      return { ...state, ...INITIAL_STATE };
+    default:
+      return state;
   }
 };

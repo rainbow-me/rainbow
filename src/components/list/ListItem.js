@@ -5,21 +5,17 @@ import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { fonts, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
-import {
-  Centered,
-  FlexItem,
-  Row,
-  RowWithMargins,
-} from '../layout';
+import { Centered, FlexItem, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 
 const ListItemHeight = 54;
 
-const renderIcon = icon => (
-  isString(icon)
-    ? <Icon name={icon} style={position.sizeAsObject('100%')} />
-    : icon
-);
+const renderIcon = icon =>
+  isString(icon) ? (
+    <Icon name={icon} style={position.sizeAsObject('100%')} />
+  ) : (
+    icon
+  );
 
 const propTypes = {
   activeOpacity: PropTypes.number,
@@ -38,49 +34,43 @@ const enhance = compose(
         onPress(value);
       }
     },
-  }),
+  })
 );
 
-const ListItem = enhance(({
-  activeOpacity,
-  children,
-  icon,
-  iconMargin,
-  label,
-  onPress,
-  ...props
-}) => (
-  <ButtonPressAnimation
-    activeOpacity={activeOpacity}
-    enableHapticFeedback={false}
-    onPress={onPress}
-    scaleTo={1}
-  >
-    <Row
-      align="center"
-      css={padding(0, 16, 2)}
-      height={ListItemHeight}
-      justify="space-between"
-      {...props}
+const ListItem = enhance(
+  ({ activeOpacity, children, icon, iconMargin, label, onPress, ...props }) => (
+    <ButtonPressAnimation
+      activeOpacity={activeOpacity}
+      enableHapticFeedback={false}
+      onPress={onPress}
+      scaleTo={1}
     >
-      <RowWithMargins align="center" flex={1} margin={iconMargin}>
-        {icon && <Centered>{renderIcon(icon)}</Centered>}
-        <TruncatedText
-          flex={1}
-          paddingRight={fonts.size.bmedium}
-          size="bmedium"
-        >
-          {label}
-        </TruncatedText>
-      </RowWithMargins>
-      {children && (
-        <Centered component={FlexItem} shrink={0}>
-          {children}
-        </Centered>
-      )}
-    </Row>
-  </ButtonPressAnimation>
-));
+      <Row
+        align="center"
+        css={padding(0, 16, 2)}
+        height={ListItemHeight}
+        justify="space-between"
+        {...props}
+      >
+        <RowWithMargins align="center" flex={1} margin={iconMargin}>
+          {icon && <Centered>{renderIcon(icon)}</Centered>}
+          <TruncatedText
+            flex={1}
+            paddingRight={fonts.size.bmedium}
+            size="bmedium"
+          >
+            {label}
+          </TruncatedText>
+        </RowWithMargins>
+        {children && (
+          <Centered component={FlexItem} shrink={0}>
+            {children}
+          </Centered>
+        )}
+      </Row>
+    </ButtonPressAnimation>
+  )
+);
 
 ListItem.propTypes = propTypes;
 

@@ -41,7 +41,7 @@ const Paragraph = styled(Text).attrs({
 const buildInterstitialTransform = offsetY => ({
   transform: [
     { translateX: (ButtonContainerWidth / 2) * -1 },
-    { translateY: ((ButtonContainerHeight / 2) * -1) + 25 + offsetY },
+    { translateY: (ButtonContainerHeight / 2) * -1 + 25 + offsetY },
   ],
 });
 
@@ -62,7 +62,8 @@ const AddFundsInterstitial = ({
         Import Wallet
       </Button>
       <Paragraph>
-        Use your private key or 12 to 24 word seed phrase from an existing wallet.
+        Use your private key or 12 to 24 word seed phrase from an existing
+        wallet.
       </Paragraph>
     </ButtonContainer>
   </Container>
@@ -82,7 +83,9 @@ export default compose(
   pure,
   withNavigation,
   withHandlers({
-    onPressAddFunds: ({ navigation }) => () => navigation.navigate('ReceiveModal'),
-    onPressImportWallet: ({ navigation }) => () => navigation.navigate('ImportSeedPhraseSheet'),
-  }),
+    onPressAddFunds: ({ navigation }) => () =>
+      navigation.navigate('ReceiveModal'),
+    onPressImportWallet: ({ navigation }) => () =>
+      navigation.navigate('ImportSeedPhraseSheet'),
+  })
 )(AddFundsInterstitial);

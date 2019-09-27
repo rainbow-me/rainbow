@@ -1,12 +1,11 @@
 import './global';
 import './shim';
 
-/* eslint-disable import/first */
 import RNLanguages from 'react-native-languages';
 import lang from 'i18n-js';
 import { resources } from './src/languages';
 
-// eslint-disable-next-line
+// eslint-disable-next-line no-unused-vars,import/default
 import App from './src/App';
 
 // Languages (i18n)
@@ -16,7 +15,7 @@ lang.fallbacks = true;
 
 lang.translations = Object.assign(
   {},
-  ...Object.keys(resources).map((key, index) => ({
+  ...Object.keys(resources).map(key => ({
     [key]: resources[key].translation,
-  })),
+  }))
 );

@@ -1,6 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
-import { LongPressGestureHandler, State, TapGestureHandler } from 'react-native-gesture-handler';
+import {
+  LongPressGestureHandler,
+  State,
+  TapGestureHandler,
+} from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing } from 'react-native-reanimated';
 import { withProps } from 'recompact';
@@ -38,10 +42,7 @@ const ButtonShadows = {
     [0, 6, 10, colors.dark, 0.14],
     [0, 1, 18, colors.dark, 0.12],
   ],
-  disabled: [
-    [0, 2, 6, colors.dark, 0.06],
-    [0, 3, 9, colors.dark, 0.08],
-  ],
+  disabled: [[0, 2, 6, colors.dark, 0.06], [0, 3, 9, colors.dark, 0.08]],
 };
 
 const progressDurationMs = 500; // @christian approves
@@ -71,11 +72,7 @@ const Title = withProps({
 })(Text);
 
 const buildAnimation = (value, options) => {
-  const {
-    duration = 150,
-    isInteraction = false,
-    toValue,
-  } = options;
+  const { duration = 150, isInteraction = false, toValue } = options;
 
   return timing(value, {
     duration,
@@ -86,9 +83,10 @@ const buildAnimation = (value, options) => {
   });
 };
 
-const calculateReverseDuration = progess => multiply(divide(progess, 100), progressDurationMs);
+const calculateReverseDuration = progess =>
+  multiply(divide(progess, 100), progressDurationMs);
 
-const HoldToAuthorizeButtonIcon = ({ animatedValue, isAuthorizing }) => {
+const HoldToAuthorizeButtonIcon = ({ animatedValue }) => {
   const isSpinnerVisible = greaterThan(animatedValue, 0);
   const spinnerIn = sub(22, animatedValue);
   const spinnerOut = divide(1, animatedValue);
@@ -112,7 +110,6 @@ const HoldToAuthorizeButtonIcon = ({ animatedValue, isAuthorizing }) => {
 
 HoldToAuthorizeButtonIcon.propTypes = {
   animatedValue: PropTypes.object,
-  isAuthorizing: PropTypes.bool,
 };
 
 export default class HoldToAuthorizeButton extends PureComponent {
@@ -129,31 +126,30 @@ export default class HoldToAuthorizeButton extends PureComponent {
     shadows: PropTypes.arrayOf(PropTypes.array),
     style: PropTypes.object,
     theme: PropTypes.oneOf(['light', 'dark']),
-  }
+  };
 
   static defaultProps = {
     backgroundColor: colors.appleBlue,
     disabled: false,
     theme: 'light',
-  }
+  };
 
   state = {
     isAuthorizing: false,
-  }
-
-  animation = new Value(0)
-
-  progress = new Value(0)
-
-  scale = new Value(1)
-
-  tapHandlerState = 1
+  };
 
   componentDidUpdate = () => {
     if (this.state.isAuthorizing && !this.props.isAuthorizing) {
+      // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ isAuthorizing: false });
     }
-  }
+  };
+
+  scale = new Value(1);
+
+  tapHandlerState = 1;
+
+  animation = new Value(0);
 
   onTapChange = ({ nativeEvent: { state } }) => {
     const { disabled, onPress } = this.props;
@@ -185,7 +181,7 @@ export default class HoldToAuthorizeButton extends PureComponent {
         toValue: 0,
       }).start();
     }
-  }
+  };
 
   onLongPressChange = ({ nativeEvent }) => {
     const { disabled, onLongPress } = this.props;
@@ -202,15 +198,10 @@ export default class HoldToAuthorizeButton extends PureComponent {
         onLongPress();
       }
     }
-  }
+  };
 
   renderContent = () => {
-    const {
-      children,
-      disabled,
-      hideBiometricIcon,
-      label,
-    } = this.props;
+    const { children, disabled, hideBiometricIcon, label } = this.props;
 
     const { isAuthorizing } = this.state;
 
@@ -220,18 +211,16 @@ export default class HoldToAuthorizeButton extends PureComponent {
 
     return (
       <Fragment>
-        {(!disabled && !hideBiometricIcon) && (
+        {!disabled && !hideBiometricIcon && (
           <HoldToAuthorizeButtonIcon
             animatedValue={this.animation}
             isAuthorizing={isAuthorizing}
           />
         )}
-        <Title>
-          {isAuthorizing ? 'Authorizing' : label}
-        </Title>
+        <Title>{isAuthorizing ? 'Authorizing' : label}</Title>
       </Fragment>
     );
-  }
+  };
 
   render() {
     const {
@@ -255,12 +244,17 @@ export default class HoldToAuthorizeButton extends PureComponent {
           minDurationMs={progressDurationMs}
           onHandlerStateChange={this.onLongPressChange}
         >
-          <View {...props} style={[style, { transform: [{ scale: this.scale }] }]}>
+          <View
+            {...props}
+            style={[style, { transform: [{ scale: this.scale }] }]}
+          >
             <ShadowStack
               backgroundColor={bgColor}
               borderRadius={ButtonBorderRadius}
               height={ButtonHeight}
-              shadows={shadows || ButtonShadows[disabled ? 'disabled' : 'default']}
+              shadows={
+                shadows || ButtonShadows[disabled ? 'disabled' : 'default']
+              }
               width="100%"
             >
               <Content backgroundColor={bgColor}>

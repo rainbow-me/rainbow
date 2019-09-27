@@ -10,7 +10,9 @@ export async function saveString(key, value, accessControlOptions) {
     await setInternetCredentials(key, key, value, accessControlOptions);
     console.log(`Keychain: saved string for key: ${key}`);
   } catch (err) {
-    console.log(`Keychain: failed to save string for key: ${key} error: ${err}`);
+    console.log(
+      `Keychain: failed to save string for key: ${key} error: ${err}`
+    );
   }
 }
 
@@ -23,7 +25,9 @@ export async function loadString(key, authenticationPrompt) {
     }
     console.log(`Keychain: string does not exist for key: ${key}`);
   } catch (err) {
-    console.log(`Keychain: failed to load string for key: ${key} error: ${err}`);
+    console.log(
+      `Keychain: failed to load string for key: ${key} error: ${err}`
+    );
   }
   return null;
 }
@@ -40,7 +44,9 @@ export async function loadObject(key) {
     console.log(`Keychain: parsed object for key: ${key}`);
     return objectValue;
   } catch (err) {
-    console.log(`Keychain: failed to parse object for key: ${key} error: ${err}`);
+    console.log(
+      `Keychain: failed to parse object for key: ${key} error: ${err}`
+    );
   }
   return null;
 }
@@ -50,6 +56,8 @@ export async function remove(key) {
     await resetInternetCredentials(key);
     console.log(`Keychain: removed value for key: ${key}`);
   } catch (err) {
-    console.log(`Keychain: failed to remove value for key: ${key} error: ${err}`);
+    console.log(
+      `Keychain: failed to remove value for key: ${key} error: ${err}`
+    );
   }
 }

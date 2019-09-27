@@ -5,12 +5,12 @@ import { isValidAddress } from '../helpers/validators';
  * @param  {String}  data - qr code data
  * @return {String}  address - ethereum address
  */
-export const getEthereumAddressFromQRCodeData = async (data) => {
+export const getEthereumAddressFromQRCodeData = async data => {
   if (!data) return null;
 
   const parts = data.split(':');
 
-  if (parts[0] === 'ethereum' && await isValidAddress(parts[1])) {
+  if (parts[0] === 'ethereum' && (await isValidAddress(parts[1]))) {
     return parts[1];
   }
   if (await isValidAddress(parts[0])) {
