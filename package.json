@@ -12,6 +12,11 @@
     "nodeify": "./node_modules/.bin/rn-nodeify --install \"crypto\" --hack",
     "postinstall": "patch-package && rn-nodeify --install --hack"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint && yarn test"
+    }
+  },
   "dependencies": {
     "@bankify/react-native-animate-number": "^0.2.1",
     "@hocs/omit-props": "^0.4.0",
@@ -47,6 +52,7 @@
     "global": "^4.3.2",
     "grapheme-splitter": "^1.0.4",
     "https-browserify": "0.0.1",
+    "husky": "^2.4.0",
     "i18n-js": "^3.0.11",
     "i18next": "^17.0.3",
     "immer": "^3.1.3",
