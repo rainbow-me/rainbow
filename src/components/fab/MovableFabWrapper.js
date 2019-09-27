@@ -12,7 +12,11 @@ import {
 import { deviceUtils } from '../../utils';
 import { CoinRow } from '../coin-row';
 import { ListFooter } from '../list';
-import { InvestmentCard, InvestmentCardHeader, UniswapInvestmentCard } from '../investment-cards';
+import {
+  InvestmentCard,
+  InvestmentCardHeader,
+  UniswapInvestmentCard,
+} from '../investment-cards';
 import { CoinDivider } from '../coin-divider';
 import { UniqueTokenRow } from '../unique-token';
 import DeleteButton from './DeleteButton';
@@ -86,9 +90,6 @@ class MovableFabWrapper extends PureComponent {
     areas: PropTypes.array,
     children: PropTypes.any,
     deleteButtonScale: PropTypes.object,
-    openFamilyTabs: PropTypes.array,
-    openInvestmentCards: PropTypes.array,
-    openSmallBalances: PropTypes.bool,
     scrollViewTracker: PropTypes.object,
     setActionType: PropTypes.func,
     setScrollingVelocity: PropTypes.func,
@@ -361,7 +362,7 @@ const traverseSectionsToDimensions = ({
   let collectibles = false;
   let investments = false;
 
-  sections.forEach((section) => {
+  sections.forEach(section => {
     if (section.balances) {
       balances = section;
     } else if (section.collectibles) {
@@ -385,8 +386,7 @@ const traverseSectionsToDimensions = ({
           right: deviceUtils.dimensions.width,
           top: height,
         });
-        height +=
-          CoinRow.height ;
+        height += CoinRow.height;
       }
       areas.push({
         bottom: height + CoinDivider.height,
@@ -413,13 +413,13 @@ const traverseSectionsToDimensions = ({
     }
     if (investments) {
       height += headerHeight + ListFooter.height;
-      for (let i = 0; i <
-        investments.data.length ; i++) {
+      for (let i = 0; i < investments.data.length; i++) {
         if (!openInvestmentCards[investments.data[i].uniqueId]) {
           height +=
-          (UniswapInvestmentCard.height + InvestmentCard.margin.vertical) ;
+            UniswapInvestmentCard.height + InvestmentCard.margin.vertical;
         } else {
-          height += (InvestmentCardHeader.height + InvestmentCard.margin.vertical);
+          height +=
+            InvestmentCardHeader.height + InvestmentCard.margin.vertical;
         }
       }
     }

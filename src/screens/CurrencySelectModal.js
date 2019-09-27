@@ -1,6 +1,6 @@
 import { get, map, property } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { InteractionManager, View } from 'react-native';
 import { compose, mapProps, withProps } from 'recompact';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
@@ -19,7 +19,11 @@ import { ExchangeCoinRow } from '../components/coin-row';
 import { ExchangeAssetList, ExchangeSearch } from '../components/exchange';
 import GestureBlocker from '../components/GestureBlocker';
 import { BackButton } from '../components/header';
-import { Centered, Column, KeyboardFixedOpenLayout } from '../components/layout';
+import {
+  Centered,
+  Column,
+  KeyboardFixedOpenLayout,
+} from '../components/layout';
 import { Modal } from '../components/modal';
 import { TruncatedText } from '../components/text';
 import { exchangeModalBorderRadius } from './ExchangeModal';
@@ -47,21 +51,23 @@ const HeaderTitle = withProps({
   weight: 'bold',
 })(TruncatedText);
 
-const appendAssetWithSearchableKey = (asset) => ({
+const appendAssetWithSearchableKey = asset => ({
   ...asset,
   uniqueId: `${asset.name} ${asset.symbol}`,
 });
 
-const buildUniqueIdForListData = (items = EMPTY_ARRAY) => items.map(property('address')).join('_');
+const buildUniqueIdForListData = (items = EMPTY_ARRAY) =>
+  items.map(property('address')).join('_');
 
-const normalizeAssetItems = (assetsArray) => map(assetsArray, appendAssetWithSearchableKey);
+const normalizeAssetItems = assetsArray =>
+  map(assetsArray, appendAssetWithSearchableKey);
 
 export const CurrencySelectionTypes = {
   input: 'input',
   output: 'output',
 };
 
-class CurrencySelectModal extends PureComponent {
+class CurrencySelectModal extends React.Component {
   static propTypes = {
     assetsAvailableOnUniswap: PropTypes.arrayOf(PropTypes.object),
     isFocused: PropTypes.bool,
@@ -70,29 +76,15 @@ class CurrencySelectModal extends PureComponent {
     sortedUniswapAssets: PropTypes.array,
     transitionPosition: PropTypes.object,
     type: PropTypes.oneOf(Object.keys(CurrencySelectionTypes)),
-  }
+  };
 
   state = {
     searchQuery: '',
-  }
-
-  searchInputRef = React.createRef()
-
-  componentDidUpdate(prevProps) {
-    const { isFocused, isTransitioning } = this.props;
-
-    if (isFocused && (!isTransitioning && prevProps.isTransitioning)) {
-      if (this.searchInputRef.current) {
-        InteractionManager.runAfterInteractions(() => {
-          this.searchInputRef.current.focus();
-        });
-      }
-    }
-  }
+  };
 
   shouldComponentUpdate = (nextProps, nextState) => {
-    const currentTransitioning = this.props.isTransitioning;
-    const nextTransitioning = nextProps.isTransitioning;
+    // const currentTransitioning = this.props.isTransitioning;
+    // const nextTransitioning = nextProps.isTransitioning;
 
     // if (currentTransitioning) {
     //   console.log('blocking');
@@ -114,31 +106,55 @@ class CurrencySelectModal extends PureComponent {
 
     const isNewAssets = currentAssetsUniqueId !== nextAssetsUniqueId;
     const isNewFocus = isNewValueForPath(this.props, nextProps, 'isFocused');
-    const isNewSearchQuery = isNewValueForPath(this.state, nextState, 'searchQuery');
-    const isNewTransitioning = isNewValueForPath(this.props, nextProps, 'isTransitioning');
+    const isNewSearchQuery = isNewValueForPath(
+      this.state,
+      nextState,
+      'searchQuery'
+    );
+    const isNewTransitioning = isNewValueForPath(
+      this.props,
+      nextProps,
+      'isTransitioning'
+    );
     const isNewType = isNewValueForPath(this.props, nextProps, 'type');
 
     return (
-      isNewAssets
-      || isNewFocus
-      || isNewSearchQuery
-      || isNewTransitioning
-      || isNewType
+      isNewAssets ||
+      isNewFocus ||
+      isNewSearchQuery ||
+      isNewTransitioning ||
+      isNewType
     );
+  };
+
+  componentDidUpdate(prevProps) {
+    const { isFocused, isTransitioning } = this.props;
+
+    if (isFocused && (!isTransitioning && prevProps.isTransitioning)) {
+      if (this.searchInputRef.current) {
+        InteractionManager.runAfterInteractions(() => {
+          this.searchInputRef.current.focus();
+        });
+      }
+    }
   }
 
-  dangerouslySetIsGestureBlocked = (isGestureBlocked) => {
+  searchInputRef = React.createRef();
+
+  dangerouslySetIsGestureBlocked = isGestureBlocked => {
     // dangerouslyGetParent is a bad pattern in general, but in this case is exactly what we expect
-    this.props.navigation.dangerouslyGetParent().setParams({ isGestureBlocked });
-  }
+    this.props.navigation
+      .dangerouslyGetParent()
+      .setParams({ isGestureBlocked });
+  };
 
-  handleWillBlur = () => this.dangerouslySetIsGestureBlocked(false)
+  handleWillBlur = () => this.dangerouslySetIsGestureBlocked(false);
 
-  handleWillFocus = () => this.dangerouslySetIsGestureBlocked(true)
+  handleWillFocus = () => this.dangerouslySetIsGestureBlocked(true);
 
-  handlePressBack = () => this.props.navigation.navigate('MainExchangeScreen')
+  handlePressBack = () => this.props.navigation.navigate('MainExchangeScreen');
 
-  handleSelectAsset = (item) => {
+  handleSelectAsset = item => {
     const { navigation } = this.props;
     // It's a bit weird and I'm not sure why on invoking
     // navigation.getParam('onSelectCurrency')(item)
@@ -146,23 +162,23 @@ class CurrencySelectModal extends PureComponent {
     const onSelectCurrency = navigation.getParam('onSelectCurrency');
     onSelectCurrency(item);
     navigation.navigate('MainExchangeScreen');
-  }
+  };
 
-  onChangeSearchText = (searchQuery) => {
+  onChangeSearchText = searchQuery => {
     this.setState({ searchQuery });
-  }
+  };
 
-  renderCurrencyItem = (item) => (
+  renderCurrencyItem = item => (
     <ExchangeCoinRow
       item={item}
       onPress={this.handleSelectAsset}
       uniqueId={item.uniqueId}
     />
-  )
+  );
 
   handleFocusField = ({ currentTarget }) => {
     this.props.pushKeyboardFocusHistory(currentTarget);
-  }
+  };
 
   render = () => {
     const {
@@ -187,9 +203,7 @@ class CurrencySelectModal extends PureComponent {
 
     const listItems = filterList(assets, searchQuery, 'uniqueId');
 
-    const isLoading = (
-      isTransitioning || listItems.length === 0
-    );
+    const isLoading = isTransitioning || listItems.length === 0;
 
     // console.log('listItems', listItems);
 
@@ -213,7 +227,7 @@ class CurrencySelectModal extends PureComponent {
             overflow="hidden"
             radius={exchangeModalBorderRadius}
           >
-            <GestureBlocker type='top'/>
+            <GestureBlocker type="top" />
             <NavigationEvents
               onWillBlur={this.handleWillBlur}
               onWillFocus={this.handleWillFocus}
@@ -228,9 +242,7 @@ class CurrencySelectModal extends PureComponent {
                     size="9"
                   />
                 </BackButtonWrapper>
-                <HeaderTitle>
-                  {headerTitle}
-                </HeaderTitle>
+                <HeaderTitle>{headerTitle}</HeaderTitle>
               </HeaderContainer>
               <ExchangeSearch
                 autoFocus={false}
@@ -239,14 +251,16 @@ class CurrencySelectModal extends PureComponent {
                 ref={this.searchInputRef}
               />
               <View flex={1}>
-                {isFocused ? <ExchangeAssetList
-                  key={`ExchangeAssetListCurrencySelectionModal-${type}`}
-                  items={listItems}
-                  renderItem={this.renderCurrencyItem}
-                  scrollIndicatorInsets={{
-                    bottom: exchangeModalBorderRadius,
-                  }}
-                /> : null}
+                {isFocused ? (
+                  <ExchangeAssetList
+                    key={`ExchangeAssetListCurrencySelectionModal-${type}`}
+                    items={listItems}
+                    renderItem={this.renderCurrencyItem}
+                    scrollIndicatorInsets={{
+                      bottom: exchangeModalBorderRadius,
+                    }}
+                  />
+                ) : null}
                 <EmptyAssetList
                   {...position.coverAsObject}
                   backgroundColor={colors.white}
@@ -255,12 +269,12 @@ class CurrencySelectModal extends PureComponent {
                 />
               </View>
             </Column>
-            <GestureBlocker type='bottom'/>
+            <GestureBlocker type="bottom" />
           </Modal>
         </Animated.View>
       </KeyboardFixedOpenLayout>
     );
-  }
+  };
 }
 
 export default compose(
@@ -268,19 +282,21 @@ export default compose(
   withTransitionProps,
   withKeyboardFocusHistory,
   withUniswapAssets,
-  mapProps(({
-    assetsAvailableOnUniswap,
-    navigation,
-    sortedUniswapAssets,
-    tabsTransitionProps: { isTransitioning },
-    ...props
-  }) => ({
-    ...props,
-    assetsAvailableOnUniswap: normalizeAssetItems(assetsAvailableOnUniswap),
-    isTransitioning,
-    navigation,
-    sortedUniswapAssets: normalizeAssetItems(sortedUniswapAssets),
-    transitionPosition: get(navigation, 'state.params.position'),
-    type: get(navigation, 'state.params.type', null),
-  })),
+  mapProps(
+    ({
+      assetsAvailableOnUniswap,
+      navigation,
+      sortedUniswapAssets,
+      tabsTransitionProps: { isTransitioning },
+      ...props
+    }) => ({
+      ...props,
+      assetsAvailableOnUniswap: normalizeAssetItems(assetsAvailableOnUniswap),
+      isTransitioning,
+      navigation,
+      sortedUniswapAssets: normalizeAssetItems(sortedUniswapAssets),
+      transitionPosition: get(navigation, 'state.params.position'),
+      type: get(navigation, 'state.params.type', null),
+    })
+  )
 )(CurrencySelectModal);

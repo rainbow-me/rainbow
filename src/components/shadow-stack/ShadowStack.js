@@ -15,16 +15,8 @@ const ChildrenWrapper = styled.View`
 `;
 
 const ShadowStackContainer = styled.View`
-  ${({ height }) => (
-    height
-      ? `height: ${height};`
-      : ''
-  )}
-  ${({ width }) => (
-    width
-      ? `width: ${width};`
-      : ''
-  )}
+  ${({ height }) => (height ? `height: ${height};` : '')}
+  ${({ width }) => (width ? `width: ${width};` : '')}
   background-color: ${({ backgroundColor }) =>
     backgroundColor || colors.transparent};
   border-radius: ${({ borderRadius }) => borderRadius};
@@ -61,7 +53,13 @@ export default class ShadowStack extends PureComponent {
   );
 
   render = () => {
-    const { children,childrenWrapperStyle, shadows, style, ...props } = this.props;
+    const {
+      children,
+      childrenWrapperStyle,
+      shadows,
+      style,
+      ...props
+    } = this.props;
 
     return (
       <ShadowStackContainer {...props} style={style}>

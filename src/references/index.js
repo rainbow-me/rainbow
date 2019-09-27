@@ -1,20 +1,13 @@
-import {
-  keys,
-  mapKeys,
-  mapValues,
-  toLower,
-} from 'lodash';
+import { keys, mapKeys, mapValues, toLower } from 'lodash';
 import tokenOverrides from './token-overrides.json';
 import uniswapAssetsRaw from './uniswap-pairs.json';
 
-export const loweredTokenOverrides = mapKeys(
-  tokenOverrides,
-  (value, address) => toLower(address),
+export const loweredTokenOverrides = mapKeys(tokenOverrides, (value, address) =>
+  toLower(address)
 );
 
-const uniswapAssetsRawLoweredKeys = mapKeys(
-  uniswapAssetsRaw,
-  (value, key) => toLower(key),
+const uniswapAssetsRawLoweredKeys = mapKeys(uniswapAssetsRaw, (value, key) =>
+  toLower(key)
 );
 
 export const uniswapAssetsClean = mapValues(
@@ -22,7 +15,7 @@ export const uniswapAssetsClean = mapValues(
   (value, key) => ({
     ...value,
     ...loweredTokenOverrides[key],
-  }),
+  })
 );
 
 export const uniswapAssetAddresses = keys(uniswapAssetsRawLoweredKeys);

@@ -5,12 +5,7 @@ import stylePropType from 'react-style-proptype';
 import { colors, fonts } from '../../styles';
 import { Emoji } from '../text';
 
-const {
-  concat,
-  interpolate,
-  timing,
-  Value,
-} = Animated;
+const { concat, interpolate, timing, Value } = Animated;
 
 export default class FloatingEmoji extends PureComponent {
   static propTypes = {
@@ -47,13 +42,7 @@ export default class FloatingEmoji extends PureComponent {
   handleAnimationComplete = () => this.props.onComplete(this.props.id);
 
   render() {
-    const {
-      emoji,
-      right,
-      size,
-      style,
-      top,
-    } = this.props;
+    const { emoji, right, size, style, top } = this.props;
 
     const distance = Math.ceil(this.props.distance);
     const negativeHeight = distance * -1;

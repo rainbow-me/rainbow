@@ -2,7 +2,6 @@ import { differenceInMinutes } from 'date-fns';
 import { omit, pickBy } from 'lodash';
 import {
   getAccountLocal,
-  getKey,
   getLocal,
   removeAccountLocal,
   removeLocal,
@@ -45,7 +44,7 @@ export const saveWalletConnectSession = async (peerId, session) => {
  * @desc remove wallet connect session
  * @param  {String}   [peerId]
  */
-export const removeWalletConnectSession = async (peerId) => {
+export const removeWalletConnectSession = async peerId => {
   const allSessions = await getAllWalletConnectSessions();
   const session = allSessions ? allSessions[peerId] : null;
   const resultingSessions = omit(allSessions, [peerId]);
@@ -57,7 +56,7 @@ export const removeWalletConnectSession = async (peerId) => {
  * @desc remove wallet connect sessions
  * @param  {String}   [sessionId]
  */
-export const removeWalletConnectSessions = async (sessionIds) => {
+export const removeWalletConnectSessions = async sessionIds => {
   const allSessions = await getAllWalletConnectSessions();
   const resultingSessions = omit(allSessions, sessionIds);
   await saveLocal('walletconnect', resultingSessions);
@@ -69,9 +68,9 @@ export const removeWalletConnectSessions = async (sessionIds) => {
  */
 export const removeWalletConnect = () => removeLocal('walletconnect');
 
-const isRequestStillValid = (request) => {
+const isRequestStillValid = request => {
   const createdAt = request.displayDetails.timestampInMs;
-  return (differenceInMinutes(Date.now(), createdAt) < 60);
+  return differenceInMinutes(Date.now(), createdAt) < 60;
 };
 
 /**
@@ -92,12 +91,8 @@ export const getLocalRequests = async (accountAddress, network) => {
  * @param  {String}   [network]
  * @return {Void}
  */
-export const saveLocalRequests = async (accountAddress, network, requests) => saveAccountLocal(
-  REQUESTS,
-  requests,
-  accountAddress,
-  network,
-);
+export const saveLocalRequests = async (accountAddress, network, requests) =>
+  saveAccountLocal(REQUESTS, requests, accountAddress, network);
 
 /**
  * @desc remove request
@@ -120,4 +115,5 @@ export const removeLocalRequest = async (address, network, requestId) => {
  * @param  {String}   [requestId]
  * @return {Void}
  */
-export const removeLocalRequests = async (accountAddress, network) => removeAccountLocal(REQUESTS, accountAddress, network);
+export const removeLocalRequests = async (accountAddress, network) =>
+  removeAccountLocal(REQUESTS, accountAddress, network);

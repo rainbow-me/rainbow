@@ -38,10 +38,7 @@ function runTiming(clock, value, dest, friction, tension) {
   ];
 
   return block([
-    cond(state.finished, [
-      ...reset,
-      set(config.toValue, dest),
-    ]),
+    cond(state.finished, [...reset, set(config.toValue, dest)]),
     cond(clockRunning(clock), 0, startClock(clock)),
     spring(clock, state, config),
     state.position,
@@ -57,14 +54,14 @@ export default class SizeToggler extends Component {
     startingWidth: PropTypes.number,
     tension: PropTypes.number,
     toggle: PropTypes.bool,
-  }
+  };
 
   static defaultProps = {
     endingOpacity: 0,
     friction: 20,
     startingOpacity: 1,
     tension: 200,
-  }
+  };
 
   componentWillMount() {
     const { endingWidth, startingWidth, toggle } = this.props;
@@ -86,9 +83,19 @@ export default class SizeToggler extends Component {
       toggle,
     } = this.props;
 
-    if (prevProps.toggle !== undefined && prevProps.toggle !== toggle && !animationNode) {
+    if (
+      prevProps.toggle !== undefined &&
+      prevProps.toggle !== toggle &&
+      !animationNode
+    ) {
       const clock = new Clock();
-      const base = runTiming(clock, toggle ? -1 : 1, toggle ? 1 : -1, friction, tension);
+      const base = runTiming(
+        clock,
+        toggle ? -1 : 1,
+        toggle ? 1 : -1,
+        friction,
+        tension
+      );
       this._height = interpolate(base, {
         inputRange: [-1, 1],
         outputRange: [endingWidth, startingWidth],
@@ -97,21 +104,12 @@ export default class SizeToggler extends Component {
   }
 
   render() {
-    const {
-      animationNode,
-      children,
-      endingWidth,
-      startingWidth,
-    } = this.props;
+    const { animationNode, children, endingWidth, startingWidth } = this.props;
 
     const height = animationNode
-      ? add(multiply(animationNode, (endingWidth - startingWidth)), startingWidth)
+      ? add(multiply(animationNode, endingWidth - startingWidth), startingWidth)
       : this._height;
 
-    return (
-      <Animated.View style={{ height }}>
-        {children}
-      </Animated.View>
-    );
+    return <Animated.View style={{ height }}>{children}</Animated.View>;
   }
 }

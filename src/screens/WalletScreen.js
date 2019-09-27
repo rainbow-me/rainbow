@@ -1,14 +1,17 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
-import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Animated from 'react-native-reanimated';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
-import { compose, withHandlers, withProps, withState } from 'recompact';
+import { compose, withProps } from 'recompact';
 import { AssetList } from '../components/asset-list';
 import BlurOverlay from '../components/BlurOverlay';
 import { FabWrapper } from '../components/fab';
-import { CameraHeaderButton, Header, ProfileHeaderButton } from '../components/header';
+import {
+  CameraHeaderButton,
+  Header,
+  ProfileHeaderButton,
+} from '../components/header';
 import { Page } from '../components/layout';
 import {
   getSmallBalanceToggle,
@@ -32,7 +35,7 @@ import { pushOpenFamilyTab } from '../redux/openFamilyTabs';
 import { pushOpenInvestmentCard } from '../redux/openInvestmentCards';
 import store from '../redux/store';
 import { position } from '../styles';
-import { deviceUtils, isNewValueForPath } from '../utils';
+import { isNewValueForPath } from '../utils';
 
 class WalletScreen extends Component {
   static propTypes = {
@@ -51,16 +54,6 @@ class WalletScreen extends Component {
     setSafeTimeout: PropTypes.func,
     uniqueTokens: PropTypes.array,
   };
-
-  setInitialStatesForOpenAssets = async () => {
-    const toggle = await getSmallBalanceToggle();
-    const openInvestmentCards = await getOpenInvestmentCards();
-    const openFamilies = await getOpenFamilies();
-    await store.dispatch(setOpenSmallBalances(toggle));
-    await store.dispatch(pushOpenInvestmentCard(openInvestmentCards));
-    await store.dispatch(pushOpenFamilyTab(openFamilies));
-    return true;
-  }
 
   componentDidMount = async () => {
     try {
@@ -115,16 +108,28 @@ class WalletScreen extends Component {
       return isNewBlurIntensity || isNewTransitionProps;
     }
 
-    return isNewFetchingAssets
-    || isNewFetchingUniqueTokens
-    || isNewIsWalletEmpty
-    || isNewIsWalletEthZero
-    || isNewLanguage
-    || isNewCurrency
-    || isNewBlurIntensity
-    || isNewSections
-    || isNewTransitionProps;
-  }
+    return (
+      isNewFetchingAssets ||
+      isNewFetchingUniqueTokens ||
+      isNewIsWalletEmpty ||
+      isNewIsWalletEthZero ||
+      isNewLanguage ||
+      isNewCurrency ||
+      isNewBlurIntensity ||
+      isNewSections ||
+      isNewTransitionProps
+    );
+  };
+
+  setInitialStatesForOpenAssets = async () => {
+    const toggle = await getSmallBalanceToggle();
+    const openInvestmentCards = await getOpenInvestmentCards();
+    const openFamilies = await getOpenFamilies();
+    await store.dispatch(setOpenSmallBalances(toggle));
+    await store.dispatch(pushOpenInvestmentCard(openInvestmentCards));
+    await store.dispatch(pushOpenFamilyTab(openFamilies));
+    return true;
+  };
 
   render = () => {
     const {

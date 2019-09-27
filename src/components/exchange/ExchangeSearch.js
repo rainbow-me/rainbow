@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { compose, withHandlers } from 'recompact';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import styled from 'styled-components/primitives';
-import { colors, margin, padding, position } from '../../styles';
+import { colors, margin, padding } from '../../styles';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
 import InnerBorder from '../InnerBorder';
@@ -23,39 +22,32 @@ class ExchangeSearch extends PureComponent {
   static propTypes = {
     autoFocus: PropTypes.bool,
     onChangeText: PropTypes.func,
-  }
+  };
 
   state = {
     searchQuery: null,
-  }
+  };
 
-  inputRef = React.createRef()
+  inputRef = React.createRef();
 
-  focus = (event) => {
+  focus = event => {
     if (this.inputRef && this.inputRef.current) {
       this.inputRef.current.focus(event);
     }
-  }
+  };
 
-            //
-          //  autoCapitalize="words"
+  //
+  //  autoCapitalize="words"
   render = () => {
     return (
-      <TouchableWithoutFeedback
-        onPress={this.focus}
-        paddingHorizontal={15}
-      >
+      <TouchableWithoutFeedback onPress={this.focus} paddingHorizontal={15}>
         <Container margin={6.5}>
-          <Icon
-            color={colors.grey}
-            flex={0}
-            name="search"
-          />
+          <Icon color={colors.grey} flex={0} name="search" />
           <Input
             allowFontScaling={false}
             autoFocus={this.props.autoFocus}
             blurOnSubmit={false}
-            clearTextOnFocus={true}
+            clearTextOnFocus
             color={colors.dark}
             flex={1}
             keyboardAppearance="dark"
@@ -84,21 +76,13 @@ class ExchangeSearch extends PureComponent {
               top: 0;
             `}
           >
-            <Icon
-              color={colors.blueGreyDark}
-              name="clearInput"
-              opacity={0.4}
-            />
+            <Icon color={colors.blueGreyDark} name="clearInput" opacity={0.4} />
           </Centered>
-          <InnerBorder
-            color={colors.dark}
-            opacity={0.01}
-            radius={20}
-          />
+          <InnerBorder color={colors.dark} opacity={0.01} radius={20} />
         </Container>
       </TouchableWithoutFeedback>
     );
-  }
+  };
 }
 
 export default ExchangeSearch;

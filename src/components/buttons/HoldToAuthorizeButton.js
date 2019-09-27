@@ -1,6 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
-import { LongPressGestureHandler, State, TapGestureHandler } from 'react-native-gesture-handler';
+import {
+  LongPressGestureHandler,
+  State,
+  TapGestureHandler,
+} from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing } from 'react-native-reanimated';
 import { withProps } from 'recompact';
@@ -197,12 +201,7 @@ export default class HoldToAuthorizeButton extends PureComponent {
   };
 
   renderContent = () => {
-    const {
-      children,
-      disabled,
-      hideBiometricIcon,
-      label,
-    } = this.props;
+    const { children, disabled, hideBiometricIcon, label } = this.props;
 
     const { isAuthorizing } = this.state;
 
@@ -212,22 +211,27 @@ export default class HoldToAuthorizeButton extends PureComponent {
 
     return (
       <Fragment>
-        {(!disabled && !hideBiometricIcon) && (
+        {!disabled && !hideBiometricIcon && (
           <HoldToAuthorizeButtonIcon
             animatedValue={this.animation}
             isAuthorizing={isAuthorizing}
           />
         )}
-        <Title>
-          {isAuthorizing ? 'Authorizing' : label}
-        </Title>
+        <Title>{isAuthorizing ? 'Authorizing' : label}</Title>
       </Fragment>
     );
-  }
+  };
 
   render() {
-    const { backgroundColor, disabled,disabledBackgroundColor,
-      shadows, style,theme, ...props } = this.props;
+    const {
+      backgroundColor,
+      disabled,
+      disabledBackgroundColor,
+      shadows,
+      style,
+      theme,
+      ...props
+    } = this.props;
 
     let bgColor = backgroundColor;
     if (disabled) {
@@ -248,7 +252,9 @@ export default class HoldToAuthorizeButton extends PureComponent {
               backgroundColor={bgColor}
               borderRadius={ButtonBorderRadius}
               height={ButtonHeight}
-              shadows={shadows || ButtonShadows[disabled ? 'disabled' : 'default']}
+              shadows={
+                shadows || ButtonShadows[disabled ? 'disabled' : 'default']
+              }
               width="100%"
             >
               <Content backgroundColor={bgColor}>

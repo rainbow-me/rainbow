@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { View } from 'react-native';
-import { withNeverRerender } from '../../hoc';
 import { colors, padding } from '../../styles';
 import { isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
@@ -12,11 +11,8 @@ import { Monospace } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
-const BottomRow = ({ balance, symbol }) => (
-  <Monospace
-    color={colors.alpha(colors.blueGreyDark, 0.6)}
-    size="smedium"
-  >
+const BottomRow = ({ symbol }) => (
+  <Monospace color={colors.alpha(colors.blueGreyDark, 0.6)} size="smedium">
     {symbol}
   </Monospace>
 );
@@ -39,26 +35,26 @@ export default class ExchangeCoinRow extends Component {
     item: PropTypes.shape({ symbol: PropTypes.string }),
     onPress: PropTypes.func,
     uniqueId: PropTypes.string,
-  }
-
-  starRef = React.createRef()
+  };
 
   state = {
     emojiCount: 0,
     favorite: false,
-  }
+  };
 
   shouldComponentUpdate = (nextProps, nextState) => {
     const isNewAsset = isNewValueForPath(this.props, nextProps, 'uniqueId');
     const isNewFavorite = isNewValueForPath(this.state, nextState, 'favorite');
-    const isNewEmojiCount = isNewValueForPath(this.state, nextState, 'emojiCount');
-
-    return (
-      isNewAsset
-      || isNewFavorite
-      || isNewEmojiCount
+    const isNewEmojiCount = isNewValueForPath(
+      this.state,
+      nextState,
+      'emojiCount'
     );
-  }
+
+    return isNewAsset || isNewFavorite || isNewEmojiCount;
+  };
+
+  starRef = React.createRef();
 
   handlePress = () => {
     const { item, onPress } = this.props;
@@ -66,7 +62,7 @@ export default class ExchangeCoinRow extends Component {
     if (onPress) {
       onPress(item);
     }
-  }
+  };
 
   handleToggleFavorite = () => {
     this.setState(prevState => {
@@ -76,7 +72,7 @@ export default class ExchangeCoinRow extends Component {
         favorite,
       };
     });
-  }
+  };
 
   render = () => {
     const { item, ...props } = this.props;
@@ -91,21 +87,19 @@ export default class ExchangeCoinRow extends Component {
       >
         <CoinRow
           {...item}
-          containerStyles={'padding-right: 0'}
+          containerStyles="padding-right: 0"
           bottomRowRender={BottomRow}
           topRowRender={TopRow}
         >
-          {
-            /*
+          {/*
               TODO
               XXX
               Is this View necessary?????
-            */
-          }
+            */}
           <View>
             <ButtonPressAnimation
               onPress={this.handleToggleFavorite}
-              exclusive={true}
+              exclusive
               scaleTo={0.69}
               tapRef={this.starRef}
             >
@@ -129,5 +123,5 @@ export default class ExchangeCoinRow extends Component {
         </CoinRow>
       </ButtonPressAnimation>
     );
-  }
+  };
 }

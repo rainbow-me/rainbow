@@ -3,7 +3,6 @@ import React from 'react';
 import Svg, { Path } from 'svgs';
 import { colors } from '../../../styles';
 
-/* eslint-disable max-len */
 const SwapIcon = ({ color, ...props }) => (
   <Svg height="21" width="26" viewBox="0 0 26 21" {...props}>
     <Path
@@ -13,7 +12,6 @@ const SwapIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
-/* eslint-disable max-len */
 
 SwapIcon.propTypes = {
   color: PropTypes.string,

@@ -14,7 +14,6 @@ import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
 import { Row, RowWithMargins } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import { TruncatedText, Monospace } from '../text';
-import RotationArrow from '../animations/RotationArrow';
 
 const { interpolate, timing, Value } = Animated;
 
@@ -44,15 +43,13 @@ export default class TokenFamilyHeader extends PureComponent {
 
   static height = TokenFamilyHeaderHeight;
 
-  animation = new Value(this.props.isOpen ? 1 : 0);
-
-  componentDidUpdate = (prevProps) => {
+  componentDidUpdate = prevProps => {
     if (isNewValueForPath(this.props, prevProps, 'isOpen')) {
       this.runTiming();
     }
   };
 
-  animation = new Value(0);
+  animation = new Value(this.props.isOpen ? 1 : 0);
 
   runTiming = () =>
     timing(this.animation, {
@@ -93,8 +90,13 @@ export default class TokenFamilyHeader extends PureComponent {
         <Highlight visible={this.props.highlight} />
         <RowWithMargins align="center" margin={10}>
           {this.renderFamilyIcon()}
-          <TruncatedTextletterSpacing="tight" lineHeight="normal" size="lmedium"
-            style={{ marginBottom: 1 }} weight="semibold">
+          <TruncatedText
+            letterSpacing="tight"
+            lineHeight="normal"
+            size="lmedium"
+            style={{ marginBottom: 1 }}
+            weight="semibold"
+          >
             {this.props.familyName}
           </TruncatedText>
         </RowWithMargins>

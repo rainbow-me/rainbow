@@ -44,7 +44,7 @@ const CoinRow = enhance(
     containerStyles,
     contentStyles,
     highlight,
-    onPress,symbol,
+    symbol,
     topRowRender,
     ...props
   }) => (

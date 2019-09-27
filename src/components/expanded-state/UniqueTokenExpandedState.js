@@ -64,9 +64,7 @@ const UniqueTokenExpandedState = ({
   }
 
   return (
-    <FloatingPanels
-      width={100}
-    >
+    <FloatingPanels width={100}>
       {!!maxImageHeight && (
         <Centered>
           <FloatingPanel

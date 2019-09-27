@@ -2,12 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, onlyUpdateForKeys, withProps } from 'recompact';
 import { withNeverRerender } from '../../hoc';
-import {
-  colors,
-  margin,
-  padding,
-  position,
-} from '../../styles';
+import { colors, margin, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import InnerBorder from '../InnerBorder';
@@ -22,7 +17,7 @@ const CoolCaretIcon = compose(
     flex: 0,
     name: 'caret',
     size: 7.5,
-  }),
+  })
 )(Icon);
 
 const CoolLabel = withProps({
@@ -34,34 +29,30 @@ const CoolLabel = withProps({
 
 const enhance = onlyUpdateForKeys(['children', 'color']);
 
-const CoolButton = enhance(({
-  borderRadius,
-  children,
-  color,
-  onPress,
-  shadows,
-}) => (
-  <ButtonPressAnimation onPress={onPress}>
-    <Row flex={0} css={margin(0, 15)}>
-      <ShadowStack
-        {...position.coverAsObject}
-        backgroundColor={color}
-        borderRadius={borderRadius}
-        shadows={shadows}
-      />
-      <RowWithMargins
-        align="center"
-        css={padding(9, 15, 12)}
-        margin={9.02}
-        zIndex={1}
-      >
-        <CoolLabel>{children}</CoolLabel>
-        <CoolCaretIcon />
-      </RowWithMargins>
-      <InnerBorder radius={borderRadius} />
-    </Row>
-  </ButtonPressAnimation>
-));
+const CoolButton = enhance(
+  ({ borderRadius, children, color, onPress, shadows }) => (
+    <ButtonPressAnimation onPress={onPress}>
+      <Row flex={0} css={margin(0, 15)}>
+        <ShadowStack
+          {...position.coverAsObject}
+          backgroundColor={color}
+          borderRadius={borderRadius}
+          shadows={shadows}
+        />
+        <RowWithMargins
+          align="center"
+          css={padding(9, 15, 12)}
+          margin={9.02}
+          zIndex={1}
+        >
+          <CoolLabel>{children}</CoolLabel>
+          <CoolCaretIcon />
+        </RowWithMargins>
+        <InnerBorder radius={borderRadius} />
+      </Row>
+    </ButtonPressAnimation>
+  )
+);
 
 CoolButton.propTypes = {
   borderRadius: PropTypes.number,

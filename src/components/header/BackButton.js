@@ -20,8 +20,7 @@ const Container = styled(ContainerElement).attrs({ align: 'end' })`
 const BackButton = ({ color, direction, onPress, ...props }) => (
   <HeaderButton onPress={onPress} transformOrigin={direction}>
     <Container direction={direction} {...props}>
-      <Icon color={color} direction={direction} name="caret"{...props}
-      />
+      <Icon color={color} direction={direction} name="caret" {...props} />
     </Container>
   </HeaderButton>
 );

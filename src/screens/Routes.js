@@ -1,9 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
 import React from 'react';
-import {
-  createAppContainer,
-} from 'react-navigation';
+import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator } from 'react-navigation-stack';
 import { ExchangeModalNavigator, Navigation } from '../navigation';
@@ -26,7 +24,6 @@ import {
   expandedPreset,
   sheetPreset,
   backgroundPreset,
-  onTransitionStart as onTransitionStartEffect,
 } from '../navigation/transitions/effects';
 import restoreKeyboard from './restoreKeyboard';
 
@@ -53,7 +50,8 @@ const SwipeStack = createMaterialTopTabNavigator(
   },
   {
     headerMode: 'none',
-    initialLayout: deviceUtils.dimensions,initialRouteName: 'WalletScreen',
+    initialLayout: deviceUtils.dimensions,
+    initialRouteName: 'WalletScreen',
     mode: 'modal',
     springConfig: {
       damping: 16,
@@ -72,88 +70,112 @@ const SwipeStack = createMaterialTopTabNavigator(
 const MainNavigator = createStackNavigator(
   {
     ConfirmRequest: {
-    navigationOptions: {
-      ...expandedPreset,
-      onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart(); },
+      navigationOptions: {
+        ...expandedPreset,
+        onTransitionStart: props => {
+          expandedPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
+      },
+      screen: TransactionConfirmationScreenWithData,
     },
-    screen: TransactionConfirmationScreenWithData,
-  },
     ExampleScreen,
     ExchangeModal: {
       navigationOptions: {
         ...expandedPreset,
         gestureResponseDistance: {
           vertical: deviceUtils.dimensions.height,
-        },onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart(); },
+        },
+        onTransitionStart: props => {
+          expandedPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
+      },
+      params: {
+        isGestureBlocked: false,
+      },
+      screen: ExchangeModalNavigator,
     },
-    params: {
-      isGestureBlocked: false,
-    },
-    screen: ExchangeModalNavigator,
-  },
-  ExpandedAssetScreen: {
-    navigationOptions: {
-      ...expandedPreset,
-      onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart(); },
+    ExpandedAssetScreen: {
+      navigationOptions: {
+        ...expandedPreset,
+        onTransitionStart: props => {
+          expandedPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
       },
       screen: ExpandedAssetScreenWithData,
     },
     ImportSeedPhraseSheet: {
-    navigationOptions: {
-      ...sheetPreset,
-      onTransitionStart: props => { sheetPreset.onTransitionStart(props); onTransitionStart(); },
+      navigationOptions: {
+        ...sheetPreset,
+        onTransitionStart: props => {
+          sheetPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
+      },
+      screen: ImportSeedPhraseSheetWithData,
     },
-    screen: ImportSeedPhraseSheetWithData,
-  },
     ReceiveModal: {
       navigationOptions: {
         ...expandedPreset,
-        onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart();},
+        onTransitionStart: props => {
+          expandedPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
       },
       screen: ReceiveModal,
     },
     SendSheet: {
-    navigationOptions: {
-      ...sheetPreset,
-      onTransitionStart: props => {
-        onTransitionStart(props);
-        sheetPreset.onTransitionStart(props)
-        restoreKeyboard();
+      navigationOptions: {
+        ...sheetPreset,
+        onTransitionStart: props => {
+          onTransitionStart(props);
+          sheetPreset.onTransitionStart(props);
+          restoreKeyboard();
+        },
       },
+      screen: SendSheetWithData,
     },
-    screen: SendSheetWithData,
-  },
     SettingsModal: {
       navigationOptions: {
-
         gesturesEnabled: false,
-      ...expandedPreset,
-      onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart(); },},
+        ...expandedPreset,
+        onTransitionStart: props => {
+          expandedPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
+      },
       screen: SettingsModal,
-    transparentCard: true,},
-    SwipeLayout: {
-    navigationOptions: {
-      ...backgroundPreset,
+      transparentCard: true,
     },
-    screen:SwipeStack,
-    },WalletConnectConfirmationModal: {
+    SwipeLayout: {
+      navigationOptions: {
+        ...backgroundPreset,
+      },
+      screen: SwipeStack,
+    },
+    WalletConnectConfirmationModal: {
       navigationOptions: {
         ...expandedPreset,
-        onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart();},
+        onTransitionStart: props => {
+          expandedPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
       },
       screen: WalletConnectConfirmationModal,
     },
   },
   {
-  defaultNavigationOptions: {
-    onTransitionEnd,
-    onTransitionStart,
-  },
-  disableKeyboardHandling: true, // XXX not sure about this from rebase
+    defaultNavigationOptions: {
+      onTransitionEnd,
+      onTransitionStart,
+    },
+    disableKeyboardHandling: true, // XXX not sure about this from rebase
     headerMode: 'none',
-    initialRouteName: 'SwipeLayout',keyboardDismissMode: 'none', // true?
+    initialRouteName: 'SwipeLayout',
+    keyboardDismissMode: 'none', // true?
     mode: 'modal',
-
   }
 );
 
@@ -176,10 +198,20 @@ const AppContainerWithAnalytics = ({ ref, screenProps }) => (
       if (routeName !== prevRouteName) {
         let paramsToTrack = null;
 
-        if (prevRouteName === 'MainExchangeScreen' && routeName === 'WalletScreen') {
+        if (
+          prevRouteName === 'MainExchangeScreen' &&
+          routeName === 'WalletScreen'
+        ) {
           store.dispatch(updateStackTransitionProps({ blurColor: null }));
-        } else if (prevRouteName === 'WalletScreen' && routeName === 'MainExchangeScreen') {
-          store.dispatch(updateStackTransitionProps({ blurColor: colors.alpha(colors.black, 0.9) }));
+        } else if (
+          prevRouteName === 'WalletScreen' &&
+          routeName === 'MainExchangeScreen'
+        ) {
+          store.dispatch(
+            updateStackTransitionProps({
+              blurColor: colors.alpha(colors.black, 0.9),
+            })
+          );
         }
 
         if (routeName === 'ExpandedAssetScreen') {

@@ -11,7 +11,7 @@ const FloatingPanels = compose(
     margin,
     pointerEvents: 'box-none',
     style: [position.sizeAsObject('100%'), style],
-  })),
+  }))
 )(ColumnWithMargins);
 
 FloatingPanels.margin = FloatingPanelsMargin;

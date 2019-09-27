@@ -6,11 +6,7 @@ import { compose } from 'recompact';
 import { estimateGasLimit } from '../handlers/web3';
 import { greaterThan } from '../helpers/utilities';
 import { isValidAddress } from '../helpers/validators';
-import {
-  withAccountData,
-  withGas,
-  withUniqueTokens,
-} from '../hoc';
+import { withAccountData, withGas, withUniqueTokens } from '../hoc';
 import lang from '../languages';
 import {
   sendClearFields,
@@ -104,12 +100,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
     }
 
     async componentDidUpdate(prevProps) {
-      const {
-        address,
-        assetAmount,
-        recipient,
-        selected,
-      } = this.props;
+      const { address, assetAmount, recipient, selected } = this.props;
 
       if (recipient !== prevProps.recipient) {
         const validAddress = await isValidAddress(recipient);
@@ -128,10 +119,11 @@ export const withSendComponentWithData = (SendComponent, options) => {
             amount: assetAmount,
             asset: selected,
             recipient,
-          }).then(gasLimit => {
-            this.props.gasUpdateTxFee(gasLimit);
-          }).catch(error => {
-          });
+          })
+            .then(gasLimit => {
+              this.props.gasUpdateTxFee(gasLimit);
+            })
+            .catch(() => {});
         }
       }
     }
@@ -184,7 +176,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
           } = ethereumUtils.transactionData(
             this.props.assets,
             this.props.assetAmount,
-            this.props.selectedGasPrice,
+            this.props.selectedGasPrice
           );
 
           if (greaterThan(requestedAmount, balance)) {
@@ -201,7 +193,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
           } = ethereumUtils.transactionData(
             this.props.assets,
             this.props.assetAmount,
-            this.props.selectedGasPrice,
+            this.props.selectedGasPrice
           );
 
           const tokenBalance = get(this.props, 'selected.balance.amount');
@@ -297,7 +289,8 @@ export const withSendComponentWithData = (SendComponent, options) => {
         sendUpdateRecipient,
         sendUpdateSelected,
       }
-    ),withGas,
+    ),
+    withGas,
     withAccountData,
     withUniqueTokens
   )(SendComponentWithData);

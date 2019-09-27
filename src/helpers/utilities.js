@@ -98,7 +98,10 @@ export const updatePrecisionToDisplay = (amount, nativePrice) => {
   const truncatedPrecision = BigNumber(significantDigits)
     .plus(2, 10)
     .toNumber();
-  const result = bnAmount.decimalPlaces(truncatedPrecision, BigNumber.ROUND_DOWN);
+  const result = bnAmount.decimalPlaces(
+    truncatedPrecision,
+    BigNumber.ROUND_DOWN
+  );
   return result.isZero()
     ? BigNumber(bnAmount.toPrecision(1, BigNumber.ROUND_DOWN)).toFixed()
     : result.toFixed();
@@ -175,7 +178,7 @@ export const divide = (numberOne, numberTwo) =>
  * @param  {Number}   priceUnit
  * @return {String}
  */
-export const convertAmountFromNativeValue = (value,  priceUnit) =>
+export const convertAmountFromNativeValue = (value, priceUnit) =>
   BigNumber(value)
     .dividedBy(BigNumber(priceUnit))
     .toFixed();

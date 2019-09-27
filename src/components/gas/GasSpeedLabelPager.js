@@ -10,7 +10,7 @@ const GasSpeedLabelPager = ({ label }) => {
 
   return (
     <Row align="center" height={GasSpeedLabelPagerItem.height} justify="end">
-      {gasUtils.GasSpeedTypes.map((speed) => (
+      {gasUtils.GasSpeedTypes.map(speed => (
         <GasSpeedLabelPagerItem
           key={speed}
           label={speed}

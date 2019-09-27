@@ -38,10 +38,7 @@ function runTiming(clock, value, dest, friction, tension) {
   ];
 
   return block([
-    cond(state.finished, [
-      ...reset,
-      set(config.toValue, dest),
-    ]),
+    cond(state.finished, [...reset, set(config.toValue, dest)]),
     cond(clockRunning(clock), 0, startClock(clock)),
     spring(clock, state, config),
     state.position,
@@ -57,14 +54,14 @@ export default class OpacityToggler extends Component {
     isVisible: PropTypes.bool,
     startingOpacity: PropTypes.number,
     tension: PropTypes.number,
-  }
+  };
 
   static defaultProps = {
     endingOpacity: 0,
     friction: 20,
     startingOpacity: 1,
     tension: 200,
-  }
+  };
 
   componentWillMount() {
     if (!this.props.animationNode) {
@@ -82,9 +79,19 @@ export default class OpacityToggler extends Component {
       tension,
     } = this.props;
 
-    if (prevProps.isVisible !== undefined && prevProps.isVisible !== isVisible && !animationNode) {
+    if (
+      prevProps.isVisible !== undefined &&
+      prevProps.isVisible !== isVisible &&
+      !animationNode
+    ) {
       const clock = new Clock();
-      const base = runTiming(clock, isVisible ? -1 : 1, isVisible ? 1 : -1, friction, tension);
+      const base = runTiming(
+        clock,
+        isVisible ? -1 : 1,
+        isVisible ? 1 : -1,
+        friction,
+        tension
+      );
       this._opacity = interpolate(base, {
         inputRange: [-1, 1],
         outputRange: [endingOpacity, startingOpacity],
@@ -103,17 +110,14 @@ export default class OpacityToggler extends Component {
     let opacity = !this._isVisible ? startingOpacity : endingOpacity;
 
     if (animationNode) {
-      opacity = (startingOpacity === 0)
-        ? animationNode
-        : multiply(add(animationNode, -1), -1);
+      opacity =
+        startingOpacity === 0
+          ? animationNode
+          : multiply(add(animationNode, -1), -1);
     } else if (this._opacity) {
       opacity = this._opacity;
     }
 
-    return (
-      <Animated.View style={{ opacity }}>
-        {children}
-      </Animated.View>
-    );
+    return <Animated.View style={{ opacity }}>{children}</Animated.View>;
   }
 }

@@ -9,9 +9,7 @@ import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
 
 const TokenExpandedState = ({ onPressSend, price, subtitle, title }) => (
-  <FloatingPanels
-    width={100}
-  >
+  <FloatingPanels width={100}>
     <AssetPanel>
       <AssetPanelHeader price={price} subtitle={subtitle} title={title} />
       <AssetPanelAction icon="send" label="Send to..." onPress={onPressSend} />

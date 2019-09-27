@@ -19,7 +19,7 @@ import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 
 const containerStyles = css`
-  paddingLeft: 15;
+  paddingleft: 15;
 `;
 
 const rowRenderPropTypes = {
@@ -116,19 +116,23 @@ export default compose(
         showActionSheetWithOptions(
           {
             cancelButtonIndex: 2,
-            options: [contact ? 'View Contact' : 'Add to Contacts', 'View on Etherscan', 'Cancel'],
-          title: `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
+            options: [
+              contact ? 'View Contact' : 'Add to Contacts',
+              'View on Etherscan',
+              'Cancel',
+            ],
+            title: `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
           },
           buttonIndex => {
             if (buttonIndex === 0) {
-            navigation.navigate('ExpandedAssetScreen', {
-              address: contactAddress,
-              asset: item,
-              color: contactColor,
-              contact,
-              type: 'contact',
-            });
-          } else if (buttonIndex === 1) {
+              navigation.navigate('ExpandedAssetScreen', {
+                address: contactAddress,
+                asset: item,
+                color: contactColor,
+                contact,
+                type: 'contact',
+              });
+            } else if (buttonIndex === 1) {
               const normalizedHash = hash.replace(/-.*/g, '');
               Linking.openURL(`https://etherscan.io/tx/${normalizedHash}`);
             }

@@ -1,11 +1,5 @@
 import lang from 'i18n-js';
-import {
-  compact,
-  flattenDeep,
-  get,
-  groupBy,
-  property,
-} from 'lodash';
+import { compact, flattenDeep, get, groupBy, property } from 'lodash';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
 import { withNavigation } from 'react-navigation';
@@ -56,7 +50,7 @@ const tokenFamilyItem = item => (
   <TokenFamilyWrap {...item} uniqueId={item.uniqueId} />
 );
 const uniswapRenderItem = item => (
-  <UniswapCardItem {...item} assetType="uniswap" isCollapsible={true} />
+  <UniswapCardItem {...item} assetType="uniswap" isCollapsible />
 );
 
 const filterWalletSections = sections =>

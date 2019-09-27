@@ -44,10 +44,7 @@ const ProfileScreen = ({
       transactionsCount={transactionsCount}
     />
     {isEmpty && <AddFundsInterstitial />}
-    <BlurOverlay
-      blurType="light"
-      intensity={blurIntensity}
-    />
+    <BlurOverlay blurType="light" intensity={blurIntensity} />
   </Page>
 );
 

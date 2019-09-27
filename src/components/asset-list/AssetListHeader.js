@@ -7,12 +7,7 @@ import { ListHeader } from '../list';
 
 const enhance = onlyUpdateForKeys(['title', 'totalValue']);
 
-const AssetListHeader = enhance(({
-  title,
-  totalValue,
-  isSticky,
-  ...props
-}) => (
+const AssetListHeader = enhance(({ title, totalValue, isSticky, ...props }) => (
   <ListHeader isSticky={isSticky} title={title} {...props}>
     {totalValue ? (
       <Monospace size="larger" weight="semibold">

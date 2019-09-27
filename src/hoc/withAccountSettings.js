@@ -8,10 +8,9 @@ import {
   settingsChangeNativeCurrency,
 } from '../redux/settings';
 
-const mapStateToProps = ({ settings: {chainId, language, nativeCurrency } }) => ({chainId,
-  language,
-  nativeCurrency,
-});
+const mapStateToProps = ({
+  settings: { chainId, language, nativeCurrency },
+}) => ({ chainId, language, nativeCurrency });
 
 const languageSelector = state => state.language;
 const nativeCurrencySelector = state => state.nativeCurrency;

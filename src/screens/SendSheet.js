@@ -104,8 +104,8 @@ class SendSheet extends Component {
     if (address) {
       sendUpdateRecipient(address);
     }
-    this.onUpdateContacts()
-  }
+    this.onUpdateContacts();
+  };
 
   componentDidUpdate(prevProps) {
     const {
@@ -240,12 +240,12 @@ class SendSheet extends Component {
   onUpdateContacts = async () => {
     const contacts = await getLocalContacts();
     this.setState({ contacts });
-  }
+  };
 
-  onChangeInput = (event) => {
+  onChangeInput = event => {
     this.setState({ currentInput: event });
     this.props.sendUpdateRecipient(event);
-  }
+  };
 
   render() {
     const {

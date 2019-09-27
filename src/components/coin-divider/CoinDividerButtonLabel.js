@@ -4,12 +4,7 @@ import { onlyUpdateForKeys } from 'recompact';
 import { OpacityToggler } from '../animations';
 import { Text } from '../text';
 
-const CoinDividerButtonLabel = ({
-  isVisible,
-  label,
-  node,
-  steps,
-}) => (
+const CoinDividerButtonLabel = ({ isVisible, label, node, steps }) => (
   <OpacityToggler
     animationNode={node}
     endingOpacity={steps[1]}

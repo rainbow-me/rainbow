@@ -14,14 +14,16 @@ const fallbackTextStyles = css`
 `;
 
 const CoinIconFallback = fallbackProps => (
-  <FallbackIcon {...fallbackProps} textStyles={fallbackTextStyles}symbol={fallbackProps.symbol || ''}
+  <FallbackIcon
+    {...fallbackProps}
+    textStyles={fallbackTextStyles}
+    symbol={fallbackProps.symbol || ''}
   />
 );
 
 const enhance = onlyUpdateForKeys(['bgColor', 'symbol']);
 
-const CoinIcon = enhance(({
-  bgColor, showShadow, size, symbol, ...props }) =>
+const CoinIcon = enhance(({ bgColor, showShadow, size, symbol, ...props }) =>
   showShadow ? (
     <ShadowStack
       {...props}
@@ -46,7 +48,7 @@ const CoinIcon = enhance(({
       symbol={symbol}
     />
   )
-));
+);
 
 CoinIcon.propTypes = {
   bgColor: PropTypes.string,

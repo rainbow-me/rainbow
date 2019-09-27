@@ -23,10 +23,12 @@ const mapStateToProps = ({
   txFees,
 });
 
-export default Component => (
-  connect(mapStateToProps, {
-    gasUpdateGasPriceOption,
-    gasUpdateTxFee,
-    resetGasTxFees,
-  })(Component)
-);
+export default Component =>
+  connect(
+    mapStateToProps,
+    {
+      gasUpdateGasPriceOption,
+      gasUpdateTxFee,
+      resetGasTxFees,
+    }
+  )(Component);

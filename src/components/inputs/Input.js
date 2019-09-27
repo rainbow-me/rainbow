@@ -11,7 +11,7 @@ export default class Input extends PureComponent {
     keyboardType: PropTypes.string,
     placeholderTextColor: PropTypes.string,
     spellCheck: PropTypes.bool,
-  }
+  };
 
   static defaultProps = {
     allowFontScaling: false,
@@ -19,11 +19,11 @@ export default class Input extends PureComponent {
     autoCorrect: false,
     placeholderTextColor: colors.placeholder,
     spellCheck: true,
-  }
+  };
 
-  ref = React.createRef()
+  ref = React.createRef();
 
-  focus = event => this.ref.current.focus(event)
+  focus = event => this.ref.current.focus(event);
 
   render = () => {
     const {
@@ -49,5 +49,5 @@ export default class Input extends PureComponent {
         spellCheck={spellCheck}
       />
     );
-  }
+  };
 }

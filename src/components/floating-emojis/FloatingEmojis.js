@@ -7,7 +7,7 @@ import FloatingEmoji from './FloatingEmoji';
 
 const getRandomNumber = (min, max) => Math.random() * (max - min) + min;
 
-const createEmojiItem = (range) => {
+const createEmojiItem = range => {
   const right = `${getRandomNumber(...range)}%`;
 
   return {
@@ -50,11 +50,13 @@ export default class FloatingEmojis extends PureComponent {
     const newEmojis = items.map((_, i) => oldCount + i).map(this.createItem);
 
     // TODO
-    // eslint-disable-next-line react/no-will-update-set-state,react/no-access-state-in-setstate
-    this.setState({ emojis: this.state.emojis.concat(newEmojis) });
+    // eslint-disable-next-line react/no-did-update-set-state
+    this.setState(prevState => ({
+      emojis: prevState.emojis.concat(newEmojis),
+    }));
   }
 
-  createItem = () => createEmojiItem(this.props.range)
+  createItem = () => createEmojiItem(this.props.range);
 
   removeEmoji = id => {
     this.setState(prevState => ({

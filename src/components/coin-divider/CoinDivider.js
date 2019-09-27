@@ -32,7 +32,7 @@ const {
 
 const CoinDividerHeight = 30;
 
-function runTiming(clock, value, dest, isOpen) {
+function runTiming(clock, value, dest) {
   const state = {
     finished: new Value(1),
     position: new Value(value),
@@ -53,10 +53,7 @@ function runTiming(clock, value, dest, isOpen) {
   ];
 
   return block([
-    cond(state.finished, [
-      ...reset,
-      set(config.toValue, dest),
-    ]),
+    cond(state.finished, [...reset, set(config.toValue, dest)]),
     cond(clockRunning(clock), 0, startClock(clock)),
     spring(clock, state, config),
     state.position,
@@ -69,9 +66,9 @@ export default class CoinDivider extends PureComponent {
     isCoinDivider: PropTypes.bool,
     onPress: PropTypes.func,
     openSmallBalances: PropTypes.bool,
-  }
+  };
 
-  static height = CoinDividerHeight
+  static height = CoinDividerHeight;
 
   componentWillMount() {
     this._initialState = this.props.openSmallBalances;
@@ -80,7 +77,10 @@ export default class CoinDivider extends PureComponent {
   componentWillUpdate(prevProps) {
     const { openSmallBalances } = this.props;
 
-    if (!isNil(prevProps.openSmallBalances) && prevProps.openSmallBalances !== openSmallBalances) {
+    if (
+      !isNil(prevProps.openSmallBalances) &&
+      prevProps.openSmallBalances !== openSmallBalances
+    ) {
       const clock = new Clock();
       const base = openSmallBalances
         ? runTiming(clock, -1, 1, openSmallBalances)
@@ -148,15 +148,15 @@ export default class CoinDivider extends PureComponent {
                 endingPosition={-90}
                 isOpen={openSmallBalances}
               >
-                <FastImage
-                  source={Caret}
-                  style={{ height: 17, width: 9 }}
-                />
+                <FastImage source={Caret} style={{ height: 17, width: 9 }} />
               </RotationArrow>
             </View>
           </Row>
         </ButtonPressAnimation>
-        <OpacityToggler isVisible={openSmallBalances} animationNode={this._node}>
+        <OpacityToggler
+          isVisible={openSmallBalances}
+          animationNode={this._node}
+        >
           <Monospace color="dark" size="lmedium" style={{ paddingBottom: 1 }}>
             {balancesSum}
           </Monospace>

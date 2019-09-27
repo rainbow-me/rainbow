@@ -1,15 +1,15 @@
-import { get, property } from 'lodash';
-import lang from 'i18n-js';
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { LayoutAnimation, View } from 'react-native';
-import { DataProvider, LayoutProvider, RecyclerListView } from "recyclerlistview";
-import { PanGestureHandler } from 'react-native-gesture-handler';
-import styled from 'styled-components/primitives';
+import {
+  DataProvider,
+  LayoutProvider,
+  RecyclerListView,
+} from 'recyclerlistview';
 import { deviceUtils, isNewValueForPath } from '../../utils';
 import { colors } from '../../styles';
-import { EmptyAssetList } from '../asset-list';
-import { ExchangeCoinRow, CoinRow } from '../coin-row';
+import { CoinRow } from '../coin-row';
 
 const ViewTypes = {
   COIN_ROW: 0,
@@ -19,7 +19,10 @@ const NOOP = () => undefined;
 
 const layoutItemAnimator = {
   animateDidMount: NOOP,
-  animateShift: () => LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')),
+  animateShift: () =>
+    LayoutAnimation.configureNext(
+      LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
+    ),
   animateWillMount: NOOP,
   animateWillUnmount: NOOP,
   animateWillUpdate: NOOP,
@@ -43,42 +46,46 @@ export default class ExchangeAssetList extends PureComponent {
   static propTypes = {
     items: PropTypes.arrayOf(PropTypes.object),
     renderItem: PropTypes.func,
-  }
+  };
 
   constructor(props) {
     super(props);
 
     this.state = {
       dataProvider: new DataProvider(hasRowChanged, this.getStableId),
-    }
+    };
 
     this.state.dataProvider._requiresDataChangeHandling = true;
 
-    this.layoutProvider = new LayoutProvider(getLayoutTypeForIndex, setLayoutForType)
+    this.layoutProvider = new LayoutProvider(
+      getLayoutTypeForIndex,
+      setLayoutForType
+    );
   }
-
-  rlvRef = React.createRef()
 
   componentDidMount = () => {
     this.updateList();
-  }
+  };
 
-  componentDidUpdate = (prevProps, prevState) => {
+  componentDidUpdate = prevProps => {
     if (this.props.items.length !== prevProps.items.length) {
       //this.rlvRef.current.forceRerender();
       this.updateList();
     }
-  }
+  };
+
+  rlvRef = React.createRef();
 
   updateList = () => {
-    this.setState((prevState) => ({
+    this.setState(prevState => ({
       dataProvider: prevState.dataProvider.cloneWithRows(this.props.items),
     }));
-  }
+  };
 
-  getStableId = (index) => get(this.state, `dataProvider._data[${index}].uniqueId`)
+  getStableId = index =>
+    get(this.state, `dataProvider._data[${index}].uniqueId`);
 
-  renderRow = (type, data) => this.props.renderItem(data)
+  renderRow = (type, data) => this.props.renderItem(data);
 
   render = () => (
     <View backgroundColor={colors.white} flex={1} overflow="hidden">
@@ -89,7 +96,7 @@ export default class ExchangeAssetList extends PureComponent {
         itemAnimator={layoutItemAnimator}
         onContentSizeChange={this.onContentSizeChange}
         onViewableItemsChanged={this.onViewableItemsChanged}
-        optimizeForInsertDeleteAnimations={true}
+        optimizeForInsertDeleteAnimations
         ref={this.rlvRef}
         renderAheadOffset={deviceUtils.dimensions.height}
         rowRenderer={this.renderRow}
@@ -101,5 +108,5 @@ export default class ExchangeAssetList extends PureComponent {
         }}
       />
     </View>
-  )
+  );
 }

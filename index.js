@@ -5,7 +5,7 @@ import RNLanguages from 'react-native-languages';
 import lang from 'i18n-js';
 import { resources } from './src/languages';
 
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-vars,import/default
 import App from './src/App';
 
 // Languages (i18n)

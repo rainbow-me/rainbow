@@ -18,33 +18,32 @@ const { bottom: safeAreaBottom, top: safeAreaTop } = safeAreaInsetValues;
 const ScreenTypes = {
   contact: AddContactState,
   token: TokenExpandedState,
-  // eslint-disable-next-line camelcase
   unique_token: UniqueTokenExpandedState,
   uniswap: InvestmentExpandedState,
 };
 
 export default class ExpandedAssetScreen extends Component {
-    static propTypes = {
-      address: PropTypes.string,
+  static propTypes = {
+    address: PropTypes.string,
     asset: PropTypes.object,
     containerPadding: PropTypes.number.isRequired,
     onCloseModal: PropTypes.func,
     onPressBackground: PropTypes.func,
     panelWidth: PropTypes.number,
     type: PropTypes.oneOf(Object.keys(ScreenTypes)).isRequired,
-  }
+  };
 
   static defaultProps = {
     containerPadding: 15,
-  }
+  };
 
   state = {
     color: 0,
     shouldSave: false,
     value: '',
-  }
+  };
 
-  shouldComponentUpdate = () => false
+  shouldComponentUpdate = () => false;
 
   componentWillUnmount = async () => {
     const { address, onCloseModal, type } = this.props;
@@ -54,7 +53,7 @@ export default class ExpandedAssetScreen extends Component {
       await addNewLocalContact(address, value, color);
       onCloseModal();
     }
-  }
+  };
 
   setNewValuesToSave = (value, color, shouldSave = true) => {
     this.setState({
@@ -62,12 +61,16 @@ export default class ExpandedAssetScreen extends Component {
       shouldSave,
       value,
     });
-  }
+  };
 
   render = () => (
     <Centered
       {...deviceUtils.dimensions}
-      css={padding(safeAreaTop, this.props.containerPadding, safeAreaBottom || safeAreaTop)}
+      css={padding(
+        safeAreaTop,
+        this.props.containerPadding,
+        safeAreaBottom || safeAreaTop
+      )}
       direction="column"
     >
       <StatusBar barStyle="light-content" />
@@ -77,5 +80,5 @@ export default class ExpandedAssetScreen extends Component {
         onUnmountModal: this.setNewValuesToSave,
       })}
     </Centered>
-  )
+  );
 }

@@ -4,7 +4,7 @@ import lang from 'i18n-js';
 import { get, isNil, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { Alert, StatusBar, Vibration } from 'react-native';
+import { Alert, Vibration } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
 import { withTransactionConfirmationScreen } from '../hoc';

@@ -27,7 +27,6 @@ const withPropsDerivedFromSelectedId = createSelector(
 let openFamilyCheck = 0;
 let currentFamilyId;
 let timer;
-let timerBlocker = false;
 
 export default compose(
   connect(mapStateToProps),

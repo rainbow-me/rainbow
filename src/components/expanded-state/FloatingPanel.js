@@ -12,10 +12,10 @@ export const FloatingPanelPadding = {
   y: 0,
 };
 
-const FloatingPanel = pure(({ color, height, hideShadow, style,radius,
-  overflow, ...props }) => (
-  <Column
-    css={`
+const FloatingPanel = pure(
+  ({ color, height, hideShadow, style, radius, overflow, ...props }) => (
+    <Column
+      css={`
       ${shadow.build(0, 10, 50, colors.dark, 0.4)}
       background-color: ${color};
       border-radius: ${radius || FloatingPanelBorderRadius};
@@ -25,10 +25,11 @@ const FloatingPanel = pure(({ color, height, hideShadow, style,radius,
       padding-bottom: 0px;
       z-index: 1;
     `}
-    style={hideShadow ? {} : style}
-    {...props}
-  />
-));
+      style={hideShadow ? {} : style}
+      {...props}
+    />
+  )
+);
 
 FloatingPanel.propTypes = {
   color: PropTypes.string,

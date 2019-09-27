@@ -26,7 +26,8 @@ const AssetList = ({
   isEmpty || isImporting ? (
     <EmptyAssetList
       {...props}
-      hideHeader={hideHeader}isWalletEthZero={isImporting ? false : isWalletEthZero}
+      hideHeader={hideHeader}
+      isWalletEthZero={isImporting ? false : isWalletEthZero}
     />
   ) : (
     <RecyclerAssetList

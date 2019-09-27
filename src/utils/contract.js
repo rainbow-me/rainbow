@@ -4,7 +4,8 @@ import { convertRawAmountToDecimalFormat } from '../helpers/utilities';
 import { loadWallet } from '../model/wallet';
 import erc20ABI from '../references/erc20-abi.json';
 
-const estimateApproveWithExchange = (spender, exchange) => exchange.estimate.approve(spender, ethers.constants.MaxUint256);
+const estimateApproveWithExchange = (spender, exchange) =>
+  exchange.estimate.approve(spender, ethers.constants.MaxUint256);
 
 const estimateApprove = (tokenAddress, spender) => {
   const exchange = new ethers.Contract(tokenAddress, erc20ABI, web3Provider);
@@ -21,7 +22,11 @@ const approve = async (tokenAddress, spender) => {
 
 const getAllowance = async (owner, token, spender) => {
   const { address: tokenAddress, decimals } = token;
-  const tokenContract = new ethers.Contract(tokenAddress, erc20ABI, web3Provider);
+  const tokenContract = new ethers.Contract(
+    tokenAddress,
+    erc20ABI,
+    web3Provider
+  );
   const allowance = await tokenContract.allowance(owner, spender);
   const rawAllowance = ethers.utils.bigNumberify(allowance.toString());
   return convertRawAmountToDecimalFormat(rawAllowance, decimals);

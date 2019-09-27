@@ -4,7 +4,9 @@ export { default as withAccountSettings } from './withAccountSettings';
 export { default as withAccountTransactions } from './withAccountTransactions';
 export { default as withActionSheetManager } from './withActionSheetManager';
 export { default as withAppState } from './withAppState';
-export { default as withBlockedHorizontalSwipe } from './withBlockedHorizontalSwipe';
+export {
+  default as withBlockedHorizontalSwipe,
+} from './withBlockedHorizontalSwipe';
 export { default as withBlurTransitionProps } from './withBlurTransitionProps';
 export { default as withDataInit } from './withDataInit';
 export { default as withFabSelection } from './withFabSelection';
@@ -17,7 +19,9 @@ export {
 export { default as withIsWalletEmpty } from './withIsWalletEmpty';
 export { default as withIsWalletEthZero } from './withIsWalletEthZero';
 export { default as withIsWalletImporting } from './withIsWalletImporting';
-export { default as withKeyboardFocusHistory } from './withKeyboardFocusHistory';
+export {
+  default as withKeyboardFocusHistory,
+} from './withKeyboardFocusHistory';
 export { default as withKeyboardHeight } from './withKeyboardHeight';
 export {
   default as withMessageSigningScreen,

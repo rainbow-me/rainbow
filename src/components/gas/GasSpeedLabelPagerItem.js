@@ -1,7 +1,11 @@
 import { upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useRef } from 'react';
-import Animated, { Easing, Transitioning, Transition } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  Transitioning,
+  Transition,
+} from 'react-native-reanimated';
 import { useTransition } from 'react-native-redash';
 import { withProps } from 'recompact';
 import { gasUtils } from '../../utils';
@@ -9,12 +13,7 @@ import { Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedEmoji from './GasSpeedEmoji';
 
-const {
-  cond,
-  eq,
-  interpolate,
-  neq,
-} = Animated;
+const { cond, eq, interpolate, neq } = Animated;
 
 const containerStyle = {
   bottom: 0,
@@ -33,7 +32,9 @@ const GasSpeedLabel = withProps({
 const distance = 20;
 const duration = 150;
 const height = 28;
-const transition = <Transition.Change durationMs={duration} interpolation="easeOut" />;
+const transition = (
+  <Transition.Change durationMs={duration} interpolation="easeOut" />
+);
 
 const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate }) => {
   const ref = useRef();
@@ -50,7 +51,7 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate }) => {
     neq(selected, label),
     eq(selected, label),
     duration + (isFirst ? 50 : 0),
-    Easing.out(Easing.ease),
+    Easing.out(Easing.ease)
   );
 
   const defaultOpacity = cond(selected, 1, 0);
@@ -67,9 +68,9 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate }) => {
       interpolate(transitionVal, {
         inputRange: [0, 0.333, 1],
         outputRange: [1, 0.666, 0],
-      }),
+      })
     ),
-    defaultOpacity,
+    defaultOpacity
   );
 
   const defaultTranslateX = 0;
@@ -86,13 +87,17 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate }) => {
       interpolate(transitionVal, {
         inputRange: [0, 1],
         outputRange: [0, cond(isLast, distance * 2, distance * -2)],
-      }),
+      })
     ),
-    defaultTranslateX,
+    defaultTranslateX
   );
 
   return (
-    <Transitioning.View ref={ref} style={containerStyle} transition={transition}>
+    <Transitioning.View
+      ref={ref}
+      style={containerStyle}
+      transition={transition}
+    >
       <Animated.View style={{ opacity, transform: [{ translateX }] }}>
         <Row align="end" height={height} justify="end">
           <GasSpeedEmoji label={label} />

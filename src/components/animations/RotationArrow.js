@@ -39,10 +39,7 @@ function runTiming(clock, value, dest, friction, tension) {
   ];
 
   return block([
-    cond(state.finished, [
-      ...reset,
-      set(config.toValue, dest),
-    ]),
+    cond(state.finished, [...reset, set(config.toValue, dest)]),
     cond(clockRunning(clock), 0, startClock(clock)),
     spring(clock, state, config),
     state.position,
@@ -56,14 +53,13 @@ export default class RotationArrow extends Component {
     endingPosition: PropTypes.number,
     friction: PropTypes.number,
     isOpen: PropTypes.bool,
-    reversed: PropTypes.bool,
     tension: PropTypes.number,
-  }
+  };
 
   static defaultProps = {
     friction: 20,
     tension: 200,
-  }
+  };
 
   componentWillMount() {
     if (!this.props.isOpen === true) {
@@ -78,7 +74,13 @@ export default class RotationArrow extends Component {
 
     if (prevProps.isOpen !== undefined && prevProps.isOpen !== isOpen) {
       const clock = new Clock();
-      const base = runTiming(clock, isOpen ? -1 : 1, isOpen ? 1 : -1, friction, tension);
+      const base = runTiming(
+        clock,
+        isOpen ? -1 : 1,
+        isOpen ? 1 : -1,
+        friction,
+        tension
+      );
       this._transform = interpolate(base, {
         inputRange: [-1, 1],
         outputRange: [0, 1],
@@ -87,11 +89,7 @@ export default class RotationArrow extends Component {
   }
 
   render() {
-    const {
-      children,
-      endingOffset,
-      endingPosition,
-    } = this.props;
+    const { children, endingOffset, endingPosition } = this.props;
 
     let translateX = 0;
     if (endingOffset) {
@@ -102,7 +100,10 @@ export default class RotationArrow extends Component {
 
     let rotate = `${endingPosition}deg`;
     if (this._transform) {
-      rotate = concat(sub(endingPosition, multiply(this._transform, endingPosition)), 'deg');
+      rotate = concat(
+        sub(endingPosition, multiply(this._transform, endingPosition)),
+        'deg'
+      );
     }
 
     return (

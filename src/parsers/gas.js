@@ -24,17 +24,26 @@ export const getFallbackGasPrices = (short = true) => ({
  * @param {Object} data
  * @param {Boolean} short - use short format or not
  */
-export const parseGasPrices = (data, short = true) => (
+export const parseGasPrices = (data, short = true) =>
   !data
     ? getFallbackGasPrices()
-    : ({
-      average: defaultGasPriceFormat('average', data.avgWait, data.average, short),
-      fast: defaultGasPriceFormat('fast', data.fastWait, data.fast, short),
-      slow: defaultGasPriceFormat('slow', data.safeLowWait, data.safeLow, short),
-    })
-);
+    : {
+        average: defaultGasPriceFormat(
+          'average',
+          data.avgWait,
+          data.average,
+          short
+        ),
+        fast: defaultGasPriceFormat('fast', data.fastWait, data.fast, short),
+        slow: defaultGasPriceFormat(
+          'slow',
+          data.safeLowWait,
+          data.safeLow,
+          short
+        ),
+      };
 
-const defaultGasPriceFormat = (option, timeWait, value, short) => {
+const defaultGasPriceFormat = (option, timeWait, value) => {
   const timeAmount = multiply(timeWait, timeUnits.ms.minute);
   const valueAmount = multiply(divide(value, 10), ethUnits.gwei);
 
@@ -69,7 +78,10 @@ export const parseTxFees = (gasPrices, priceUnit, gasLimit, nativeCurrency) => {
 
 const getTxFee = (gasPrice, gasLimit) => {
   const amount = multiply(gasPrice, gasLimit);
-  const display = convertRawAmountToBalance(amount, { decimals: 18, symbol: 'ETH' });
+  const display = convertRawAmountToBalance(amount, {
+    decimals: 18,
+    symbol: 'ETH',
+  });
 
   return {
     native: null,
@@ -79,9 +91,21 @@ const getTxFee = (gasPrice, gasLimit) => {
 
 const convertTxFeesToNative = (priceUnit, txFees, nativeCurrency) => {
   const nativeTxFees = { ...txFees };
-  nativeTxFees.fast.txFee.native = getNativeTxFee(priceUnit, txFees.fast.txFee.value.amount, nativeCurrency);
-  nativeTxFees.average.txFee.native = getNativeTxFee(priceUnit, txFees.average.txFee.value.amount, nativeCurrency);
-  nativeTxFees.slow.txFee.native = getNativeTxFee(priceUnit, txFees.slow.txFee.value.amount, nativeCurrency);
+  nativeTxFees.fast.txFee.native = getNativeTxFee(
+    priceUnit,
+    txFees.fast.txFee.value.amount,
+    nativeCurrency
+  );
+  nativeTxFees.average.txFee.native = getNativeTxFee(
+    priceUnit,
+    txFees.average.txFee.value.amount,
+    nativeCurrency
+  );
+  nativeTxFees.slow.txFee.native = getNativeTxFee(
+    priceUnit,
+    txFees.slow.txFee.value.amount,
+    nativeCurrency
+  );
   return nativeTxFees;
 };
 
@@ -90,6 +114,6 @@ const getNativeTxFee = (priceUnit, feeAmount, nativeCurrency) => ({
     feeAmount,
     18,
     priceUnit,
-    nativeCurrency,
+    nativeCurrency
   ),
 });

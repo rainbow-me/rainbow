@@ -6,7 +6,10 @@ import {
 
 const mapStateToProps = ({ keyboardFocusHistory }) => keyboardFocusHistory;
 
-export default connect(mapStateToProps, {
-  clearKeyboardFocusHistory,
-  pushKeyboardFocusHistory,
-});
+export default connect(
+  mapStateToProps,
+  {
+    clearKeyboardFocusHistory,
+    pushKeyboardFocusHistory,
+  }
+);

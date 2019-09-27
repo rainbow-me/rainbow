@@ -36,7 +36,8 @@ const SendFab = ({
       >
     */}
     <FloatingActionButtonWithDisabled
-      backgroundColor={colors.paleBlue}disabled={disabled}
+      backgroundColor={colors.paleBlue}
+      disabled={disabled}
       onPress={onPress}
       scaleTo={scaleTo}
       tapRef={tapRef}

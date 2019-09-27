@@ -16,32 +16,37 @@ const showTransactionSpeedOptions = (
   gasPrices,
   txFees,
   updateGasOption,
-  onSuccess,
+  onSuccess
 ) => {
   const options = [
     { label: 'Cancel' },
     ...formatGasSpeedItems(gasPrices, txFees),
   ];
 
-  showActionSheetWithOptions({
-    cancelButtonIndex: 0,
-    options: options.map(property('label')),
-  }, (buttonIndex) => {
-    if (buttonIndex > 0) {
-      const selectedGasPriceItem = options[buttonIndex];
+  showActionSheetWithOptions(
+    {
+      cancelButtonIndex: 0,
+      options: options.map(property('label')),
+    },
+    buttonIndex => {
+      if (buttonIndex > 0) {
+        const selectedGasPriceItem = options[buttonIndex];
 
-      updateGasOption(selectedGasPriceItem.value);
-      analytics.track('Updated Gas Price', { gasPrice: selectedGasPriceItem.gweiValue });
-    }
+        updateGasOption(selectedGasPriceItem.value);
+        analytics.track('Updated Gas Price', {
+          gasPrice: selectedGasPriceItem.gweiValue,
+        });
+      }
 
-    if (isFunction(onSuccess)) {
-      onSuccess();
+      if (isFunction(onSuccess)) {
+        onSuccess();
+      }
     }
-  });
+  );
 };
 
 const formatGasSpeedItems = (gasPrices, txFees) => {
-  const gasItems = map(GasSpeedTypes, (label) => {
+  const gasItems = map(GasSpeedTypes, label => {
     let speed = label;
     if (label === 'normal') {
       speed = 'average';

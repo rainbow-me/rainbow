@@ -1,7 +1,4 @@
-import {
-  getLocal,
-  saveLocal,
-} from './common';
+import { getLocal, saveLocal } from './common';
 
 /**
  * @desc get native currency
@@ -22,10 +19,7 @@ export const getNativeCurrency = async () => {
  * @param  {String}   [currency]
  */
 export const saveNativeCurrency = async nativeCurrency => {
-  await saveLocal(
-    'nativeCurrency',
-    { data: nativeCurrency },
-  );
+  await saveLocal('nativeCurrency', { data: nativeCurrency });
 };
 
 /**
@@ -59,7 +53,7 @@ export const getShowShitcoinsSetting = async () => {
  * @param  {Boolean}   [updatedSetting]
  * @return {Void}
  */
-export const updateShowShitcoinsSetting = async (updatedSetting) => {
+export const updateShowShitcoinsSetting = async updatedSetting => {
   await saveLocal('showShitcoins', { data: updatedSetting });
 };
 
@@ -71,6 +65,6 @@ export const getAppStoreReviewRequestCount = async () => {
   return count ? count.data : 0;
 };
 
-export const setAppStoreReviewRequestCount = async (newCount) => {
+export const setAppStoreReviewRequestCount = async newCount => {
   await saveLocal('appStoreReviewRequestCount', { data: newCount });
 };

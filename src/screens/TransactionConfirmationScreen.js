@@ -99,7 +99,8 @@ export default class TransactionConfirmationScreen extends PureComponent {
 
   renderSendButton = () => {
     const { requestType } = this.props;
-    const isMessage = requestType === 'message' || requestType === 'messagePersonal';
+    const isMessage =
+      requestType === 'message' || requestType === 'messagePersonal';
 
     return (
       <HoldToAuthorizeButton
@@ -108,7 +109,7 @@ export default class TransactionConfirmationScreen extends PureComponent {
         onLongPress={this.onLongPressSend}
       />
     );
-  }
+  };
 
   renderTransactionSection = () => {
     const { request, requestType } = this.props;

@@ -23,7 +23,7 @@ const GAS_RESET_FIELDS = 'gas/GAS_RESET_FIELDS';
 // -- Actions --------------------------------------------------------------- //
 let getGasPricesInterval = null;
 
-const getEthPriceUnit = (assets) => {
+const getEthPriceUnit = assets => {
   const ethAsset = ethereumUtils.getAsset(assets);
   return get(ethAsset, 'price.value', 0);
 };
@@ -34,7 +34,12 @@ const getDefaultTxFees = () => (dispatch, getState) => {
   const { nativeCurrency } = getState().settings;
   const fallbackGasPrices = getFallbackGasPrices();
   const ethPriceUnit = getEthPriceUnit(assets);
-  const txFees = parseTxFees(fallbackGasPrices, ethPriceUnit, gasLimit, nativeCurrency);
+  const txFees = parseTxFees(
+    fallbackGasPrices,
+    ethPriceUnit,
+    gasLimit,
+    nativeCurrency
+  );
   const selectedGasPrice = {
     ...txFees.average,
     ...fallbackGasPrices.average,
@@ -46,56 +51,67 @@ const getDefaultTxFees = () => (dispatch, getState) => {
   };
 };
 
-export const gasPricesInit = () => (dispatch, getState) => new Promise((resolve, reject) => {
-  const { fallbackGasPrices, selectedGasPrice, txFees } = dispatch(getDefaultTxFees());
-  dispatch({
-    payload: {
-      gasPrices: fallbackGasPrices,
-      selectedGasPrice,
-      txFees,
-    },
-    type: GAS_PRICES_DEFAULT,
-  });
+export const gasPricesInit = () => (dispatch, getState) =>
+  new Promise((resolve, reject) => {
+    const { fallbackGasPrices, selectedGasPrice, txFees } = dispatch(
+      getDefaultTxFees()
+    );
+    dispatch({
+      payload: {
+        gasPrices: fallbackGasPrices,
+        selectedGasPrice,
+        txFees,
+      },
+      type: GAS_PRICES_DEFAULT,
+    });
 
-  const getGasPrices = () => new Promise((fetchResolve, fetchReject) => {
-    const { useShortGasFormat } = getState().gas;
-    apiGetGasPrices()
-      .then(({ data }) => {
-        const gasPrices = parseGasPrices(
-          data,
-          useShortGasFormat,
-        );
-        dispatch({
-          payload: gasPrices,
-          type: GAS_PRICES_SUCCESS,
-        });
-        fetchResolve(true);
+    const getGasPrices = () =>
+      new Promise((fetchResolve, fetchReject) => {
+        const { useShortGasFormat } = getState().gas;
+        apiGetGasPrices()
+          .then(({ data }) => {
+            const gasPrices = parseGasPrices(data, useShortGasFormat);
+            dispatch({
+              payload: gasPrices,
+              type: GAS_PRICES_SUCCESS,
+            });
+            fetchResolve(true);
+          })
+          .catch(error => {
+            console.error(error);
+            dispatch({
+              payload: fallbackGasPrices,
+              type: GAS_PRICES_FAILURE,
+            });
+            fetchReject(error);
+          });
+      });
+    return getGasPrices()
+      .then(() => {
+        clearInterval(getGasPricesInterval);
+        getGasPricesInterval = setInterval(getGasPrices, 15000); // 15 secs
+        resolve(true);
       })
       .catch(error => {
-        console.error(error);
-        dispatch({
-          payload: fallbackGasPrices,
-          type: GAS_PRICES_FAILURE,
-        });
-        fetchReject(error);
+        clearInterval(getGasPricesInterval);
+        getGasPricesInterval = setInterval(getGasPrices, 15000); // 15 secs
+        reject(error);
       });
   });
-  return getGasPrices().then(() => {
-    clearInterval(getGasPricesInterval);
-    getGasPricesInterval = setInterval(getGasPrices, 15000); // 15 secs
-    resolve(true);
-  }).catch(error => {
-    clearInterval(getGasPricesInterval);
-    getGasPricesInterval = setInterval(getGasPrices, 15000); // 15 secs
-    reject(error);
-  });
-});
 
-export const gasUpdateGasPriceOption = (newGasPriceOption) => (dispatch, getState) => {
+export const gasUpdateGasPriceOption = newGasPriceOption => (
+  dispatch,
+  getState
+) => {
   const { gasPrices, txFees } = getState().gas;
   if (isEmpty(gasPrices)) return;
   const { assets } = getState().data;
-  const results = getSelectedGasPrice(assets, gasPrices, txFees, newGasPriceOption);
+  const results = getSelectedGasPrice(
+    assets,
+    gasPrices,
+    txFees,
+    newGasPriceOption
+  );
   dispatch({
     payload: {
       ...results,
@@ -105,14 +121,19 @@ export const gasUpdateGasPriceOption = (newGasPriceOption) => (dispatch, getStat
   });
 };
 
-export const gasUpdateTxFee = (gasLimit) => (dispatch, getState) => {
+export const gasUpdateTxFee = gasLimit => (dispatch, getState) => {
   const { gasPrices, selectedGasPriceOption } = getState().gas;
   if (isEmpty(gasPrices)) return;
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
   const ethPriceUnit = getEthPriceUnit(assets);
   const txFees = parseTxFees(gasPrices, ethPriceUnit, gasLimit, nativeCurrency);
-  const results = getSelectedGasPrice(assets, gasPrices, txFees, selectedGasPriceOption);
+  const results = getSelectedGasPrice(
+    assets,
+    gasPrices,
+    txFees,
+    selectedGasPriceOption
+  );
   dispatch({
     payload: {
       ...results,
@@ -123,21 +144,26 @@ export const gasUpdateTxFee = (gasLimit) => (dispatch, getState) => {
   });
 };
 
-const getSelectedGasPrice = (assets, gasPrices, txFees, selectedGasPriceOption) => {
+const getSelectedGasPrice = (
+  assets,
+  gasPrices,
+  txFees,
+  selectedGasPriceOption
+) => {
   const txFee = txFees[selectedGasPriceOption];
   const ethAsset = ethereumUtils.getAsset(assets);
   const balanceAmount = get(ethAsset, 'balance.amount', 0);
   const txFeeAmount = fromWei(get(txFee, 'value.amount', 0));
-  return ({
+  return {
     isSufficientGas: Number(balanceAmount) > Number(txFeeAmount),
     selectedGasPrice: {
       ...txFee,
       ...gasPrices[selectedGasPriceOption],
     },
-  });
+  };
 };
 
-export const resetGasTxFees = () => (dispatch) => {
+export const resetGasTxFees = () => dispatch => {
   const { selectedGasPrice, txFees } = dispatch(getDefaultTxFees());
   dispatch({
     payload: {
@@ -148,7 +174,7 @@ export const resetGasTxFees = () => (dispatch) => {
   });
 };
 
-export const gasClearFields = () => (dispatch) => {
+export const gasClearFields = () => dispatch => {
   clearInterval(getGasPricesInterval);
   dispatch({ type: GAS_CLEAR_FIELDS });
 };
@@ -167,52 +193,52 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-  case GAS_PRICES_DEFAULT:
-    return {
-      ...state,
-      fetchingGasPrices: true,
-      gasPrices: action.payload.gasPrices,
-      selectedGasPrice: action.payload.selectedGasPrice,
-      txFees: action.payload.txFees,
-    };
-  case GAS_PRICES_SUCCESS:
-    return {
-      ...state,
-      fetchingGasPrices: false,
-      gasPrices: action.payload,
-    };
-  case GAS_PRICES_FAILURE:
-    return {
-      ...state,
-      fetchingGasPrices: false,
-      gasPrices: action.payload,
-    };
-  case GAS_UPDATE_TX_FEE:
-    return {
-      ...state,
-      gasLimit: action.payload.gasLimit,
-      isSufficientGas: action.payload.isSufficientGas,
-      selectedGasPrice: action.payload.selectedGasPrice,
-      txFees: action.payload.txFees,
-    };
-  case GAS_UPDATE_GAS_PRICE_OPTION:
-    return {
-      ...state,
-      isSufficientGas: action.payload.isSufficientGas,
-      selectedGasPrice: action.payload.selectedGasPrice,
-      selectedGasPriceOption: action.payload.selectedGasPriceOption,
-    };
-  case GAS_RESET_FIELDS: {
-    return {
-      ...INITIAL_STATE,
-      fetchingGasPrices: state.fetchingGasPrices,
-      gasPrices: state.gasPrices,
-      selectedGasPrice: action.payload.selectedGasPrice,
-      selectedGasPriceOption: state.selectedGasPriceOption,
-      txFees: action.payload.txFees,
-    };
-  }
-  default:
-    return state;
+    case GAS_PRICES_DEFAULT:
+      return {
+        ...state,
+        fetchingGasPrices: true,
+        gasPrices: action.payload.gasPrices,
+        selectedGasPrice: action.payload.selectedGasPrice,
+        txFees: action.payload.txFees,
+      };
+    case GAS_PRICES_SUCCESS:
+      return {
+        ...state,
+        fetchingGasPrices: false,
+        gasPrices: action.payload,
+      };
+    case GAS_PRICES_FAILURE:
+      return {
+        ...state,
+        fetchingGasPrices: false,
+        gasPrices: action.payload,
+      };
+    case GAS_UPDATE_TX_FEE:
+      return {
+        ...state,
+        gasLimit: action.payload.gasLimit,
+        isSufficientGas: action.payload.isSufficientGas,
+        selectedGasPrice: action.payload.selectedGasPrice,
+        txFees: action.payload.txFees,
+      };
+    case GAS_UPDATE_GAS_PRICE_OPTION:
+      return {
+        ...state,
+        isSufficientGas: action.payload.isSufficientGas,
+        selectedGasPrice: action.payload.selectedGasPrice,
+        selectedGasPriceOption: action.payload.selectedGasPriceOption,
+      };
+    case GAS_RESET_FIELDS: {
+      return {
+        ...INITIAL_STATE,
+        fetchingGasPrices: state.fetchingGasPrices,
+        gasPrices: state.gasPrices,
+        selectedGasPrice: action.payload.selectedGasPrice,
+        selectedGasPriceOption: state.selectedGasPriceOption,
+        txFees: action.payload.txFees,
+      };
+    }
+    default:
+      return state;
   }
 };

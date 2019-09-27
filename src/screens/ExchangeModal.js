@@ -63,7 +63,9 @@ import { CurrencySelectionTypes } from './CurrencySelectModal';
 
 export const exchangeModalBorderRadius = 30;
 
-const AnimatedFloatingPanels = Animated.createAnimatedComponent(toClass(FloatingPanels));
+const AnimatedFloatingPanels = Animated.createAnimatedComponent(
+  toClass(FloatingPanels)
+);
 
 const isSameAsset = (firstAsset, secondAsset) => {
   if (!firstAsset || !secondAsset) {
@@ -101,7 +103,7 @@ class ExchangeModal extends PureComponent {
     txFees: PropTypes.object,
     uniswapGetTokenReserve: PropTypes.func,
     uniswapUpdateAllowances: PropTypes.func,
-  }
+  };
 
   state = {
     inputAllowance: null,
@@ -123,17 +125,14 @@ class ExchangeModal extends PureComponent {
     showConfirmButton: false,
     slippage: null,
     tradeDetails: null,
-  }
+  };
 
   componentDidUpdate = (prevProps, prevState) => {
-    const {
-      isFocused,
-      isTransitioning,
-      keyboardFocusHistory,
-    } = this.props;
+    const { isFocused, isTransitioning, keyboardFocusHistory } = this.props;
 
     if (isFocused && (!isTransitioning && prevProps.isTransitioning)) {
-      const lastFocusedInput = keyboardFocusHistory[keyboardFocusHistory.length - 1];
+      const lastFocusedInput =
+        keyboardFocusHistory[keyboardFocusHistory.length - 1];
 
       if (lastFocusedInput) {
         InteractionManager.runAfterInteractions(() => {
@@ -146,23 +145,41 @@ class ExchangeModal extends PureComponent {
     }
 
     if (this.state.outputCurrency) {
+      // TODO
+      // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ showConfirmButton: true });
     }
 
-    const isNewInputAmount = isNewValueForPath(this.state, prevState, 'inputAmount');
-    const isNewOutputAmount = isNewValueForPath(this.state, prevState, 'outputAmount');
-
-    const isNewNativeAmount = (
-      // Only consider 'new' if the native input isnt focused,
-      // otherwise itll fight with the user's keystrokes
-      isNewValueForPath(this.state, prevState, 'nativeAmount')
-      && this.nativeFieldRef.isFocused()
+    const isNewInputAmount = isNewValueForPath(
+      this.state,
+      prevState,
+      'inputAmount'
+    );
+    const isNewOutputAmount = isNewValueForPath(
+      this.state,
+      prevState,
+      'outputAmount'
     );
 
-    const isNewInputCurrency = isNewValueForPath(this.state, prevState, 'inputCurrency.uniqueId');
-    const isNewOutputCurrency = isNewValueForPath(this.state, prevState, 'outputCurrency.uniqueId');
+    const isNewNativeAmount =
+      // Only consider 'new' if the native input isnt focused,
+      // otherwise itll fight with the user's keystrokes
+      isNewValueForPath(this.state, prevState, 'nativeAmount') &&
+      this.nativeFieldRef.isFocused();
 
-    const isNewAmount = isNewNativeAmount || isNewInputAmount || isNewOutputAmount;
+    const isNewInputCurrency = isNewValueForPath(
+      this.state,
+      prevState,
+      'inputCurrency.uniqueId'
+    );
+    const isNewOutputCurrency = isNewValueForPath(
+      this.state,
+      prevState,
+      'outputCurrency.uniqueId'
+    );
+
+    const isNewAmount =
+      isNewNativeAmount || isNewInputAmount || isNewOutputAmount;
     const isNewCurrency = isNewInputCurrency || isNewOutputCurrency;
 
     if (isNewAmount || isNewCurrency) {
@@ -173,28 +190,32 @@ class ExchangeModal extends PureComponent {
     if (isNewValueForPath(this.state, prevState, 'inputCurrency.address')) {
       this.getCurrencyAllowance();
     }
-  }
+  };
 
   componentWillUnmount = () => {
     this.props.resetGasTxFees();
     this.props.clearKeyboardFocusHistory();
-  }
+  };
 
-  /* eslint-disable lines-between-class-members */
-  inputFieldRef = null
-  nativeFieldRef = null
-  outputFieldRef = null
+  inputFieldRef = null;
+  nativeFieldRef = null;
+  outputFieldRef = null;
 
-  assignInputFieldRef = (ref) => { this.inputFieldRef = ref; }
-  assignNativeFieldRef = (ref) => { this.nativeFieldRef = ref; }
-  assignOutputFieldRef = (ref) => { this.outputFieldRef = ref; }
-  /* eslint-enable lines-between-class-members */
+  assignInputFieldRef = ref => {
+    this.inputFieldRef = ref;
+  };
+  assignNativeFieldRef = ref => {
+    this.nativeFieldRef = ref;
+  };
+  assignOutputFieldRef = ref => {
+    this.outputFieldRef = ref;
+  };
 
   clearForm = () => {
     if (this.inputFieldRef) this.inputFieldRef.clear();
     if (this.nativeFieldRef) this.nativeFieldRef.clear();
     if (this.outputFieldRef) this.outputFieldRef.clear();
-  }
+  };
 
   getCurrencyAllowance = async () => {
     const { accountAddress, allowances, uniswapUpdateAllowances } = this.props;
@@ -207,7 +228,11 @@ class ExchangeModal extends PureComponent {
 
     let allowance = allowances[inputAddress];
     if (!allowance) {
-      allowance = await contractUtils.getAllowance(accountAddress, inputCurrency, exchangeAddress);
+      allowance = await contractUtils.getAllowance(
+        accountAddress,
+        inputCurrency,
+        exchangeAddress
+      );
       uniswapUpdateAllowances(inputAddress, allowance);
     }
     const isAssetApproved = greaterThan(allowance, 0);
@@ -215,12 +240,15 @@ class ExchangeModal extends PureComponent {
       return this.setState({ isAssetApproved });
     }
     try {
-      const gasLimit = await contractUtils.estimateApprove(inputCurrency.address, exchangeAddress);
+      const gasLimit = await contractUtils.estimateApprove(
+        inputCurrency.address,
+        exchangeAddress
+      );
       return this.setState({ gasLimit: gasLimit.toFixed(), isAssetApproved });
     } catch (error) {
       return this.setState({ isAssetApproved });
     }
-  }
+  };
 
   getMarketDetails = async () => {
     const { chainId, gasUpdateTxFee, nativeCurrency } = this.props;
@@ -257,23 +285,55 @@ class ExchangeModal extends PureComponent {
       const inputReserve = await this.getReserveData(inputAddress);
       const outputReserve = await this.getReserveData(outputAddress);
 
-      const rawInputAmount = convertAmountToRawAmount(inputAmount || 0, inputDecimals);
-      const rawOutputAmount = convertAmountToRawAmount(outputAmount || 0, outputDecimals);
+      const rawInputAmount = convertAmountToRawAmount(
+        inputAmount || 0,
+        inputDecimals
+      );
+      const rawOutputAmount = convertAmountToRawAmount(
+        outputAmount || 0,
+        outputDecimals
+      );
 
       let tradeDetails = null;
 
       if (isInputEth && !isOutputEth) {
         tradeDetails = inputAsExactAmount
-          ? tradeExactEthForTokensWithData(outputReserve, rawInputAmount, chainId)
-          : tradeEthForExactTokensWithData(outputReserve, rawOutputAmount, chainId);
+          ? tradeExactEthForTokensWithData(
+              outputReserve,
+              rawInputAmount,
+              chainId
+            )
+          : tradeEthForExactTokensWithData(
+              outputReserve,
+              rawOutputAmount,
+              chainId
+            );
       } else if (!isInputEth && isOutputEth) {
         tradeDetails = inputAsExactAmount
-          ? tradeExactTokensForEthWithData(inputReserve, rawInputAmount, chainId)
-          : tradeTokensForExactEthWithData(inputReserve, rawOutputAmount, chainId);
+          ? tradeExactTokensForEthWithData(
+              inputReserve,
+              rawInputAmount,
+              chainId
+            )
+          : tradeTokensForExactEthWithData(
+              inputReserve,
+              rawOutputAmount,
+              chainId
+            );
       } else if (!isInputEth && !isOutputEth) {
         tradeDetails = inputAsExactAmount
-          ? tradeExactTokensForTokensWithData(inputReserve, outputReserve, rawInputAmount, chainId)
-          : tradeTokensForExactTokensWithData(inputReserve, outputReserve, rawOutputAmount, chainId);
+          ? tradeExactTokensForTokensWithData(
+              inputReserve,
+              outputReserve,
+              rawInputAmount,
+              chainId
+            )
+          : tradeTokensForExactTokensWithData(
+              inputReserve,
+              outputReserve,
+              rawOutputAmount,
+              chainId
+            );
       }
 
       let inputExecutionRate = '';
@@ -285,12 +345,12 @@ class ExchangeModal extends PureComponent {
         const inputPriceValue = get(inputCurrency, 'price.value', 0);
         inputExecutionRate = updatePrecisionToDisplay(
           get(tradeDetails, 'executionRate.rate', BigNumber(0)),
-          inputPriceValue,
+          inputPriceValue
         );
 
         inputNativePrice = convertAmountToNativeDisplay(
           inputPriceValue,
-          nativeCurrency,
+          nativeCurrency
         );
       }
 
@@ -298,12 +358,12 @@ class ExchangeModal extends PureComponent {
         const outputPriceValue = get(outputCurrency, 'price.value', 0);
         outputExecutionRate = updatePrecisionToDisplay(
           get(tradeDetails, 'executionRate.rateInverted', BigNumber(0)),
-          outputPriceValue,
+          outputPriceValue
         );
 
         outputNativePrice = convertAmountToNativeDisplay(
           outputPriceValue,
-          nativeCurrency,
+          nativeCurrency
         );
       }
 
@@ -332,11 +392,14 @@ class ExchangeModal extends PureComponent {
           this.clearForm();
         } else {
           const updatedAmount = get(tradeDetails, 'outputAmount.amount');
-          const rawUpdatedAmount = convertRawAmountToDecimalFormat(updatedAmount, outputDecimals);
+          const rawUpdatedAmount = convertRawAmountToDecimalFormat(
+            updatedAmount,
+            outputDecimals
+          );
 
           const updatedAmountDisplay = updatePrecisionToDisplay(
             rawUpdatedAmount,
-            get(outputCurrency, 'price.value'),
+            get(outputCurrency, 'price.value')
           );
 
           this.setOutputAmount(rawUpdatedAmount, updatedAmountDisplay);
@@ -348,11 +411,14 @@ class ExchangeModal extends PureComponent {
           this.clearForm();
         } else {
           const updatedAmount = get(tradeDetails, 'inputAmount.amount');
-          const rawUpdatedAmount = convertRawAmountToDecimalFormat(updatedAmount, inputDecimals);
+          const rawUpdatedAmount = convertRawAmountToDecimalFormat(
+            updatedAmount,
+            inputDecimals
+          );
 
           const updatedAmountDisplay = updatePrecisionToDisplay(
             rawUpdatedAmount,
-            get(inputCurrency, 'price.value'),
+            get(inputCurrency, 'price.value')
           );
 
           this.setInputAmount(rawUpdatedAmount, updatedAmountDisplay);
@@ -368,9 +434,9 @@ class ExchangeModal extends PureComponent {
       console.log('error getting market details', error);
       // TODO error state
     }
-  }
+  };
 
-  getReserveData = async (tokenAddress) => {
+  getReserveData = async tokenAddress => {
     if (tokenAddress === 'eth') return null;
 
     const { tokenReserves, uniswapGetTokenReserve } = this.props;
@@ -381,7 +447,7 @@ class ExchangeModal extends PureComponent {
     }
 
     return reserve;
-  }
+  };
 
   handlePressMaxBalance = () => {
     const { inputCurrency } = this.state;
@@ -391,17 +457,17 @@ class ExchangeModal extends PureComponent {
     }
 
     return this.setInputAmount(maxBalance);
-  }
+  };
 
   handlePressTransactionSpeed = () => {
-    const {
-      gasPrices,
-      gasUpdateGasPriceOption,
-      txFees,
-    } = this.props;
+    const { gasPrices, gasUpdateGasPriceOption, txFees } = this.props;
 
-    gasUtils.showTransactionSpeedOptions(gasPrices, txFees, gasUpdateGasPriceOption);
-  }
+    gasUtils.showTransactionSpeedOptions(
+      gasPrices,
+      txFees,
+      gasUpdateGasPriceOption
+    );
+  };
 
   handleSubmit = async () => {
     const {
@@ -429,21 +495,21 @@ class ExchangeModal extends PureComponent {
       console.log('error submitting swap', error);
       navigation.navigate('WalletScreen');
     }
-  }
+  };
 
   handleWillFocus = ({ lastState }) => {
     if (!lastState && this.inputFieldRef) {
       this.inputFieldRef.focus();
     }
-  }
+  };
 
   handleDidFocus = () => {
     // console.log('DID FOCUS', this.props.navigation)
-  }
+  };
 
   handleFocusField = ({ currentTarget }) => {
     this.props.pushKeyboardFocusHistory(currentTarget);
-  }
+  };
 
   handleUnlockAsset = async () => {
     /*
@@ -458,27 +524,28 @@ class ExchangeModal extends PureComponent {
     // const approval = await contractUtils.approve(tokenAddress, spender);
 
     this.setState({ isUnlockingAsset: true });
-  }
+  };
 
   navigateToSelectInputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
       onSelectCurrency: this.setInputCurrency,
       type: CurrencySelectionTypes.input,
     });
-  }
+  };
 
   navigateToSelectOutputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
       onSelectCurrency: this.setOutputCurrency,
       type: CurrencySelectionTypes.output,
     });
-  }
+  };
 
   setInputAmount = (inputAmount, amountDisplay) => {
     this.setState(({ inputCurrency }) => {
       const newState = {
         inputAmount,
-        inputAmountDisplay: amountDisplay !== undefined ? amountDisplay : inputAmount,
+        inputAmountDisplay:
+          amountDisplay !== undefined ? amountDisplay : inputAmount,
         inputAsExactAmount: true,
       };
 
@@ -495,7 +562,7 @@ class ExchangeModal extends PureComponent {
 
       return newState;
     });
-  }
+  };
 
   setInputCurrency = (inputCurrency, force) => {
     const { outputCurrency } = this.state;
@@ -509,9 +576,9 @@ class ExchangeModal extends PureComponent {
         this.setOutputCurrency(inputCurrency, true);
       }
     }
-  }
+  };
 
-  setNativeAmount = (nativeAmount) => {
+  setNativeAmount = nativeAmount => {
     this.setState(({ inputCurrency }) => {
       let inputAmount = null;
       let inputAmountDisplay = null;
@@ -519,7 +586,10 @@ class ExchangeModal extends PureComponent {
       if (nativeAmount) {
         const nativePrice = get(inputCurrency, 'native.price.amount', 0);
         inputAmount = convertAmountFromNativeValue(nativeAmount, nativePrice);
-        inputAmountDisplay = updatePrecisionToDisplay(inputAmount, get(inputCurrency, 'price.value'));
+        inputAmountDisplay = updatePrecisionToDisplay(
+          inputAmount,
+          get(inputCurrency, 'price.value')
+        );
       }
 
       return {
@@ -529,15 +599,16 @@ class ExchangeModal extends PureComponent {
         nativeAmount,
       };
     });
-  }
+  };
 
   setOutputAmount = (outputAmount, amountDisplay) => {
-    this.setState(({ outputCurrency }) => ({
+    this.setState(() => ({
       inputAsExactAmount: false,
       outputAmount,
-      outputAmountDisplay: amountDisplay !== undefined ? amountDisplay : outputAmount,
+      outputAmountDisplay:
+        amountDisplay !== undefined ? amountDisplay : outputAmount,
     }));
-  }
+  };
 
   setOutputCurrency = (outputCurrency, force) => {
     const { allAssets } = this.props;
@@ -555,7 +626,7 @@ class ExchangeModal extends PureComponent {
         this.setInputCurrency(outputCurrency, true);
       }
     }
-  }
+  };
 
   render = () => {
     const { nativeCurrency, transitionPosition } = this.props;
@@ -598,8 +669,11 @@ class ExchangeModal extends PureComponent {
               }),
             }}
           >
-            <FloatingPanel radius={exchangeModalBorderRadius} overflow='visible'>
-              <GestureBlocker type='top'/>
+            <FloatingPanel
+              radius={exchangeModalBorderRadius}
+              overflow="visible"
+            >
+              <GestureBlocker type="top" />
               <ExchangeModalHeader />
               <ExchangeInputField
                 inputAmount={inputAmountDisplay}
@@ -619,7 +693,9 @@ class ExchangeModal extends PureComponent {
               />
               <ExchangeOutputField
                 onFocus={this.handleFocusField}
-                onPressSelectOutputCurrency={this.navigateToSelectOutputCurrency}
+                onPressSelectOutputCurrency={
+                  this.navigateToSelectOutputCurrency
+                }
                 outputAmount={outputAmountDisplay}
                 outputCurrency={get(outputCurrency, 'symbol', null)}
                 outputFieldRef={this.assignOutputFieldRef}
@@ -630,11 +706,7 @@ class ExchangeModal extends PureComponent {
             {isSufficientBalance && <SlippageWarning slippage={slippage} />}
             {showConfirmButton && (
               <Fragment>
-                <Centered
-                  css={padding(19, 15, 0)}
-                  flexShrink={0}
-                  width="100%"
-                >
+                <Centered css={padding(19, 15, 0)} flexShrink={0} width="100%">
                   <ConfirmExchangeButton
                     disabled={isAssetApproved && !Number(inputAmountDisplay)}
                     inputCurrencyName={get(inputCurrency, 'symbol')}
@@ -650,13 +722,13 @@ class ExchangeModal extends PureComponent {
               </Fragment>
             )}
             <Column>
-              <GestureBlocker type='bottom'/>
+              <GestureBlocker type="bottom" />
             </Column>
           </AnimatedFloatingPanels>
         </Centered>
       </KeyboardFixedOpenLayout>
     );
-  }
+  };
 }
 
 export default compose(
@@ -671,19 +743,17 @@ export default compose(
   withTransitionProps,
   withUniswapAllowances,
   withUniswapAssets,
-  mapProps(({
-    navigation,
-    stackTransitionProps: {
-      isTransitioning: isStacksTransitioning,
-    },
-    tabsTransitionProps: {
-      isTransitioning: isTabsTransitioning,
-    },
-    ...props
-  }) => ({
-    ...props,
-    isTransitioning: isStacksTransitioning || isTabsTransitioning,
-    navigation,
-    transitionPosition: get(navigation, 'state.params.position'),
-  })),
+  mapProps(
+    ({
+      navigation,
+      stackTransitionProps: { isTransitioning: isStacksTransitioning },
+      tabsTransitionProps: { isTransitioning: isTabsTransitioning },
+      ...props
+    }) => ({
+      ...props,
+      isTransitioning: isStacksTransitioning || isTabsTransitioning,
+      navigation,
+      transitionPosition: get(navigation, 'state.params.position'),
+    })
+  )
 )(ExchangeModal);

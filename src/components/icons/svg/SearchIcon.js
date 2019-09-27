@@ -4,7 +4,6 @@ import { Path } from 'svgs';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
-/* eslint-disable max-len */
 const SearchIcon = ({ color, ...props }) => (
   <Svg height="18" width="18" viewBox="0 0 18 18" {...props}>
     <Path
@@ -14,7 +13,6 @@ const SearchIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
-/* eslint-disable max-len */
 
 SearchIcon.propTypes = {
   color: PropTypes.string,

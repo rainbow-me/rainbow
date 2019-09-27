@@ -39,15 +39,12 @@ const messages = {
 
 // -- Actions ---------------------------------------- //
 
-const createSocket = endpoint => io(
-  `wss://api.zerion.io/${endpoint}?api_token=${DATA_API_KEY}`,
-  {
+const createSocket = endpoint =>
+  io(`wss://api.zerion.io/${endpoint}?api_token=${DATA_API_KEY}`, {
     extraHeaders: { Origin: DATA_ORIGIN },
     transports: ['websocket'],
-  },
-);
+  });
 
-/* eslint-disable camelcase */
 const addressSubscription = (address, currency, action = 'subscribe') => [
   action,
   {
@@ -69,30 +66,29 @@ const assetsSubscription = (assetCodes, currency, action = 'subscribe') => [
     },
   },
 ];
-/* eslint-disable camelcase */
 
 const explorerUnsubscribe = () => (dispatch, getState) => {
   const { addressSocket, assetsSocket } = getState().explorer;
   const { accountAddress, nativeCurrency } = getState().settings;
   if (!isNil(addressSocket)) {
-    addressSocket.emit(...addressSubscription(
-      accountAddress,
-      nativeCurrency,
-      'unsubscribe',
-    ));
+    addressSocket.emit(
+      ...addressSubscription(accountAddress, nativeCurrency, 'unsubscribe')
+    );
     addressSocket.close();
   }
   if (!isNil(assetsSocket)) {
-    assetsSocket.emit(...assetsSubscription(
-      uniswapAssetAddresses,
-      nativeCurrency,
-      'unsubscribe',
-    ));
+    assetsSocket.emit(
+      ...assetsSubscription(
+        uniswapAssetAddresses,
+        nativeCurrency,
+        'unsubscribe'
+      )
+    );
     assetsSocket.close();
   }
 };
 
-export const explorerClearState = () => (dispatch, getState) => {
+export const explorerClearState = () => dispatch => {
   dispatch(explorerUnsubscribe());
   dispatch({ type: EXPLORER_CLEAR_STATE });
 };
@@ -106,7 +102,9 @@ export const explorerInit = () => (dispatch, getState) => {
     type: EXPLORER_UPDATE_SOCKETS,
   });
   assetsSocket.on(messages.CONNECT, () => {
-    assetsSocket.emit(...assetsSubscription(uniswapAssetAddresses, nativeCurrency));
+    assetsSocket.emit(
+      ...assetsSubscription(uniswapAssetAddresses, nativeCurrency)
+    );
     dispatch(listenOnAssetMessages(assetsSocket));
   });
   addressSocket.on(messages.CONNECT, () => {
@@ -115,38 +113,38 @@ export const explorerInit = () => (dispatch, getState) => {
   });
 };
 
-const listenOnAssetMessages = socket => (dispatch, getState) => {
-  socket.on(messages.ASSETS.RECEIVED, (message) => {
+const listenOnAssetMessages = socket => dispatch => {
+  socket.on(messages.ASSETS.RECEIVED, message => {
     dispatch(assetsReceived(message));
   });
 
-  socket.on(messages.ASSETS.CHANGED, (message) => {
+  socket.on(messages.ASSETS.CHANGED, message => {
     dispatch(priceChanged(message));
   });
 };
 
-const listenOnAddressMessages = socket => (dispatch, getState) => {
-  socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED, (message) => {
+const listenOnAddressMessages = socket => dispatch => {
+  socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED, message => {
     dispatch(transactionsReceived(message));
   });
 
-  socket.on(messages.ADDRESS_TRANSACTIONS.APPENDED, (message) => {
+  socket.on(messages.ADDRESS_TRANSACTIONS.APPENDED, message => {
     dispatch(transactionsAppended(message));
   });
 
-  socket.on(messages.ADDRESS_TRANSACTIONS.REMOVED, (message) => {
+  socket.on(messages.ADDRESS_TRANSACTIONS.REMOVED, message => {
     dispatch(transactionsRemoved(message));
   });
 
-  socket.on(messages.ADDRESS_ASSETS.RECEIVED, (message) => {
+  socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
     dispatch(addressAssetsReceived(message));
   });
 
-  socket.on(messages.ADDRESS_ASSETS.APPENDED, (message) => {
+  socket.on(messages.ADDRESS_ASSETS.APPENDED, message => {
     dispatch(addressAssetsReceived(message, true));
   });
 
-  socket.on(messages.ADDRESS_ASSETS.CHANGED, (message) => {
+  socket.on(messages.ADDRESS_ASSETS.CHANGED, message => {
     dispatch(addressAssetsReceived(message, false, true));
   });
 };
@@ -159,18 +157,18 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-  case EXPLORER_UPDATE_SOCKETS:
-    return {
-      ...state,
-      addressSocket: action.payload.addressSocket,
-      assetsSocket: action.payload.assetsSocket,
-    };
-  case EXPLORER_CLEAR_STATE:
-    return {
-      ...state,
-      ...INITIAL_STATE,
-    };
-  default:
-    return state;
+    case EXPLORER_UPDATE_SOCKETS:
+      return {
+        ...state,
+        addressSocket: action.payload.addressSocket,
+        assetsSocket: action.payload.assetsSocket,
+      };
+    case EXPLORER_CLEAR_STATE:
+      return {
+        ...state,
+        ...INITIAL_STATE,
+      };
+    default:
+      return state;
   }
 };

@@ -14,12 +14,7 @@ const ExchangeFab = ({ disabled, onPress, ...props }) => (
     disabled={disabled}
     onPress={onPress}
   >
-    <Icon
-      height={21}
-      marginBottom={2}
-      name="swap"
-      width={26}
-    />
+    <Icon height={21} marginBottom={2} name="swap" width={26} />
   </FloatingActionButton>
 );
 
@@ -31,6 +26,8 @@ ExchangeFab.propTypes = {
 export default compose(
   withFabSelection,
   withNavigation,
-  withHandlers({ onPress: ({ navigation }) => () => navigation.navigate('ExchangeModal') }),
-  onlyUpdateForKeys(['disabled']),
+  withHandlers({
+    onPress: ({ navigation }) => () => navigation.navigate('ExchangeModal'),
+  }),
+  onlyUpdateForKeys(['disabled'])
 )(ExchangeFab);

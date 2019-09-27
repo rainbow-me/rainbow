@@ -22,7 +22,8 @@ const UNIQUE_TOKENS = 'uniquetokens';
  * @param  {String}   [network]
  * @return {Object}
  */
-export const getAssets = (accountAddress, network) => getAccountLocal(ASSETS, accountAddress, network, [], assetsVersion);
+export const getAssets = (accountAddress, network) =>
+  getAccountLocal(ASSETS, accountAddress, network, [], assetsVersion);
 
 /**
  * @desc save assets
@@ -30,13 +31,8 @@ export const getAssets = (accountAddress, network) => getAccountLocal(ASSETS, ac
  * @param  {Array}    [assets]
  * @param  {String}   [network]
  */
-export const saveAssets = (accountAddress, assets, network) => saveAccountLocal(
-  ASSETS,
-  assets,
-  accountAddress,
-  network,
-  assetsVersion,
-);
+export const saveAssets = (accountAddress, assets, network) =>
+  saveAccountLocal(ASSETS, assets, accountAddress, network, assetsVersion);
 
 /**
  * @desc remove assets
@@ -44,7 +40,8 @@ export const saveAssets = (accountAddress, assets, network) => saveAccountLocal(
  * @param  {String}   [network]
  * @return {Object}
  */
-export const removeAssets = (accountAddress, network) => removeAccountLocal(ASSETS, accountAddress, network, assetsVersion);
+export const removeAssets = (accountAddress, network) =>
+  removeAccountLocal(ASSETS, accountAddress, network, assetsVersion);
 
 /**
  * @desc get transactions
@@ -52,7 +49,14 @@ export const removeAssets = (accountAddress, network) => removeAccountLocal(ASSE
  * @param  {String}   [network]
  * @return {Object}
  */
-export const getLocalTransactions = (accountAddress, network) => getAccountLocal(TRANSACTIONS, accountAddress, network, [], transactionsVersion);
+export const getLocalTransactions = (accountAddress, network) =>
+  getAccountLocal(
+    TRANSACTIONS,
+    accountAddress,
+    network,
+    [],
+    transactionsVersion
+  );
 
 /**
  * @desc save transactions
@@ -60,13 +64,14 @@ export const getLocalTransactions = (accountAddress, network) => getAccountLocal
  * @param  {Array}   [transactions]
  * @param  {String}   [network]
  */
-export const saveLocalTransactions = (accountAddress, transactions, network) => saveAccountLocal(
-  TRANSACTIONS,
-  transactions,
-  accountAddress,
-  network,
-  transactionsVersion,
-);
+export const saveLocalTransactions = (accountAddress, transactions, network) =>
+  saveAccountLocal(
+    TRANSACTIONS,
+    transactions,
+    accountAddress,
+    network,
+    transactionsVersion
+  );
 
 /**
  * @desc remove transactions
@@ -74,7 +79,13 @@ export const saveLocalTransactions = (accountAddress, transactions, network) => 
  * @param  {String}   [network]
  * @return {Object}
  */
-export const removeLocalTransactions = (accountAddress, network) => removeAccountLocal(TRANSACTIONS, accountAddress, network, transactionsVersion);
+export const removeLocalTransactions = (accountAddress, network) =>
+  removeAccountLocal(
+    TRANSACTIONS,
+    accountAddress,
+    network,
+    transactionsVersion
+  );
 
 /**
  * @desc get is wallet empty
@@ -82,7 +93,8 @@ export const removeLocalTransactions = (accountAddress, network) => removeAccoun
  * @param  {String}   [network]
  * @return {Boolean}
  */
-export const getIsWalletEmpty = async (accountAddress, network) => await getLocal(getKey(WALLET_EMPTY, accountAddress, network));
+export const getIsWalletEmpty = async (accountAddress, network) =>
+  await getLocal(getKey(WALLET_EMPTY, accountAddress, network));
 
 /**
  * @desc save is wallet empty
@@ -90,11 +102,12 @@ export const getIsWalletEmpty = async (accountAddress, network) => await getLoca
  * @param  {Boolean}   [isWalletEmpty]
  * @param  {String}   [network]
  */
-export const saveIsWalletEmpty = async (accountAddress, isWalletEmpty, network) => {
-  await saveLocal(
-    getKey(WALLET_EMPTY, accountAddress, network),
-    isWalletEmpty,
-  );
+export const saveIsWalletEmpty = async (
+  accountAddress,
+  isWalletEmpty,
+  network
+) => {
+  await saveLocal(getKey(WALLET_EMPTY, accountAddress, network), isWalletEmpty);
 };
 
 /**
@@ -103,7 +116,8 @@ export const saveIsWalletEmpty = async (accountAddress, isWalletEmpty, network) 
  * @param  {String}   [network]
  * @return {Object}
  */
-export const removeIsWalletEmpty = (accountAddress, network) => removeAccountLocal(WALLET_EMPTY, accountAddress, network);
+export const removeIsWalletEmpty = (accountAddress, network) =>
+  removeAccountLocal(WALLET_EMPTY, accountAddress, network);
 
 /**
  * @desc get unique tokens
@@ -111,7 +125,14 @@ export const removeIsWalletEmpty = (accountAddress, network) => removeAccountLoc
  * @param  {String}   [network]
  * @return {Object}
  */
-export const getUniqueTokens = (accountAddress, network) => getAccountLocal(UNIQUE_TOKENS, accountAddress, network, [], uniqueTokensVersion);
+export const getUniqueTokens = (accountAddress, network) =>
+  getAccountLocal(
+    UNIQUE_TOKENS,
+    accountAddress,
+    network,
+    [],
+    uniqueTokensVersion
+  );
 
 /**
  * @desc save unique tokens
@@ -119,13 +140,14 @@ export const getUniqueTokens = (accountAddress, network) => getAccountLocal(UNIQ
  * @param  {Array}    [uniqueTokens]
  * @param  {String}   [network]
  */
-export const saveUniqueTokens = (accountAddress, uniqueTokens, network) => saveAccountLocal(
-  UNIQUE_TOKENS,
-  uniqueTokens,
-  accountAddress,
-  network,
-  uniqueTokensVersion,
-);
+export const saveUniqueTokens = (accountAddress, uniqueTokens, network) =>
+  saveAccountLocal(
+    UNIQUE_TOKENS,
+    uniqueTokens,
+    accountAddress,
+    network,
+    uniqueTokensVersion
+  );
 
 /**
  * @desc remove unique tokens
@@ -133,4 +155,10 @@ export const saveUniqueTokens = (accountAddress, uniqueTokens, network) => saveA
  * @param  {String}   [network]
  * @return {Object}
  */
-export const removeUniqueTokens = (accountAddress, network) => removeAccountLocal(UNIQUE_TOKENS, accountAddress, network, uniqueTokensVersion);
+export const removeUniqueTokens = (accountAddress, network) =>
+  removeAccountLocal(
+    UNIQUE_TOKENS,
+    accountAddress,
+    network,
+    uniqueTokensVersion
+  );

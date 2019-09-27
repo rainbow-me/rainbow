@@ -11,8 +11,8 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
 const containerStyles = css`
-  paddingLeft: 15;
-  paddingTop: 17;
+  paddingleft: 15;
+  paddingtop: 17;
 `;
 
 const selectedHeight = 78;

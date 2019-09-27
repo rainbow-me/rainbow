@@ -17,7 +17,7 @@ class ExampleScreen extends PureComponent {
     } catch (error) {
       console.log('lol error on ExampleScreen like a n00b: ', error);
     }
-  }
+  };
 
   render = () => (
     <Page
@@ -32,9 +32,7 @@ class ExampleScreen extends PureComponent {
 
       */}
       <Centered width="100%">
-        <GasSpeedButton
-          flex={1}
-        />
+        <GasSpeedButton flex={1} />
       </Centered>
     </Page>
   );
@@ -42,5 +40,5 @@ class ExampleScreen extends PureComponent {
 
 export default compose(
   withAccountData,
-  withDataInit,
+  withDataInit
 )(ExampleScreen);

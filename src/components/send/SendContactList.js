@@ -1,6 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
+import {
+  DataProvider,
+  LayoutProvider,
+  RecyclerListView,
+} from 'recyclerlistview';
 import { withNavigation } from 'react-navigation';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
@@ -24,7 +28,7 @@ class SendContactList extends Component {
     navigation: PropTypes.object,
     onPressContact: PropTypes.func,
     onUpdateContacts: PropTypes.array,
-  }
+  };
 
   constructor(args) {
     super(args);
@@ -37,60 +41,78 @@ class SendContactList extends Component {
     this.recentlyRendered = false;
     this.touchedContact = undefined;
 
-    this._layoutProvider = new LayoutProvider((i) => {
-      if (i === this.state.contacts.length - 1) {
-        return LAST_COIN_ROW;
+    this._layoutProvider = new LayoutProvider(
+      i => {
+        if (i === this.state.contacts.length - 1) {
+          return LAST_COIN_ROW;
+        }
+        return COIN_ROW;
+      },
+      (type, dim) => {
+        if (type === COIN_ROW) {
+          dim.height = rowHeight;
+          dim.width = deviceUtils.dimensions.width;
+        } else if (type === LAST_COIN_ROW) {
+          dim.height = rowHeight + LastRowPadding;
+          dim.width = deviceUtils.dimensions.width;
+        } else {
+          dim.height = 0;
+          dim.width = 0;
+        }
       }
-      return COIN_ROW;
-    }, (type, dim) => {
-      if (type === COIN_ROW) {
-        dim.height = rowHeight;
-        dim.width = deviceUtils.dimensions.width;
-      } else if (type === LAST_COIN_ROW) {
-        dim.height = rowHeight + LastRowPadding;
-        dim.width = deviceUtils.dimensions.width;
-      } else {
-        dim.height = 0;
-        dim.width = 0;
-      }
-    });
+    );
   }
+
+  componentWillReceiveProps = props => {
+    let newAssets = Object.assign([], props.allAssets);
+    newAssets.reverse();
+    newAssets = this.filterContactList(
+      newAssets,
+      props.currentInput,
+      'nickname'
+    );
+    if (newAssets !== this.state.contacts) {
+      this.setState({ contacts: newAssets });
+    }
+  };
 
   shouldComponentUpdate = () => {
     if (position < 0) {
       return false;
     }
     return true;
-  }
+  };
 
-  componentWillReceiveProps = (props) => {
-    let newAssets = Object.assign([], props.allAssets);
-    newAssets.reverse();
-    newAssets = this.filterContactList(newAssets, props.currentInput, 'nickname');
-    if (newAssets !== this.state.contacts) {
-      this.setState({ contacts: newAssets });
-    }
-  }
-
-  changeCurrentlyUsedContact = (address) => {
+  changeCurrentlyUsedContact = address => {
     this.currentlyOpenContact = address;
-  }
+  };
 
-  closeAllDifferentContacts = (address) => {
+  closeAllDifferentContacts = address => {
     this.touchedContact = address;
     this.recentlyRendered = false;
-  }
+  };
 
-  filterContactList = (list, searchPhrase, searchParameter = false, separator = ' ') => {
+  filterContactList = (
+    list,
+    searchPhrase,
+    searchParameter = false,
+    separator = ' '
+  ) => {
     const filteredList = [];
     if (list && searchPhrase.length > 0) {
       for (let i = 0; i < list.length; i++) {
-        const searchedItem = searchParameter ? list[i][searchParameter] : list[i];
+        const searchedItem = searchParameter
+          ? list[i][searchParameter]
+          : list[i];
         const splitedWordList = searchedItem.split(separator);
         splitedWordList.push(searchedItem);
         splitedWordList.push(removeFirstEmojiFromString(searchedItem).join(''));
         for (let j = 0; j < splitedWordList.length; j++) {
-          if (splitedWordList[j].toLowerCase().startsWith(searchPhrase.toLowerCase())) {
+          if (
+            splitedWordList[j]
+              .toLowerCase()
+              .startsWith(searchPhrase.toLowerCase())
+          ) {
             filteredList.push(list[i]);
             break;
           }
@@ -100,25 +122,31 @@ class SendContactList extends Component {
       return list;
     }
     return filteredList;
-  }
+  };
 
   handleScroll = (event, offsetX, offsetY) => {
     position = offsetY;
-  }
+  };
 
   hasRowChanged = (r1, r2) => {
     const { contacts } = this.state;
 
-    if (this.touchedContact && this.currentlyOpenContact && this.touchedContact !== this.currentlyOpenContact && !this.recentlyRendered) {
+    if (
+      this.touchedContact &&
+      this.currentlyOpenContact &&
+      this.touchedContact !== this.currentlyOpenContact &&
+      !this.recentlyRendered
+    ) {
       if (r2 === contacts[contacts.length - 1]) {
         this.recentlyRendered = true;
       }
       return true;
-    } if (r1 !== r2) {
+    }
+    if (r1 !== r2) {
       return true;
     }
     return false;
-  }
+  };
 
   renderItem = (type, item) => (
     <SwipeableContactRow
@@ -130,24 +158,27 @@ class SendContactList extends Component {
       onTransitionEnd={this.changeCurrentlyUsedContact}
       {...item}
     />
-  )
+  );
 
   render = () => (
-    <FlyInAnimation style={{ flex: 1, paddingBottom: sheetVerticalOffset, width: '100%' }}>
-      {this.state.contacts.length === 0
-        ? <SendEmptyState />
-        : (
-          <RecyclerListView
-            dataProvider={new DataProvider(this.hasRowChanged).cloneWithRows(this.state.contacts)}
-            layoutProvider={this._layoutProvider}
-            onScroll={this.handleScroll}
-            optimizeForInsertDeleteAnimations
-            rowRenderer={this.renderItem}
-          />
-        )
-      }
+    <FlyInAnimation
+      style={{ flex: 1, paddingBottom: sheetVerticalOffset, width: '100%' }}
+    >
+      {this.state.contacts.length === 0 ? (
+        <SendEmptyState />
+      ) : (
+        <RecyclerListView
+          dataProvider={new DataProvider(this.hasRowChanged).cloneWithRows(
+            this.state.contacts
+          )}
+          layoutProvider={this._layoutProvider}
+          onScroll={this.handleScroll}
+          optimizeForInsertDeleteAnimations
+          rowRenderer={this.renderItem}
+        />
+      )}
     </FlyInAnimation>
-  )
+  );
 }
 
 export default withNavigation(SendContactList);

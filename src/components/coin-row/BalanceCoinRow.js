@@ -12,8 +12,6 @@ import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import StarIcon from '../icons/svg/StarIcon';
-import { SendCoinRow } from './index';
 
 const formatPercentageString = percentString =>
   percentString
@@ -67,7 +65,7 @@ TopRow.propTypes = {
   nativeCurrencySymbol: PropTypes.string,
 };
 
-const BalanceCoinRow = ({isSmall, item, onPress, onPressSend,openSmallBalances, ...props }) => (
+const BalanceCoinRow = ({ item, onPress, onPressSend, ...props }) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
     <CoinRow
       onPress={onPress}
@@ -104,7 +102,8 @@ export default compose(
     },
   }),
   shouldUpdate((props, nextProps) => {
-    const isChangeInOpenAssets = props.openSmallBalances !== nextProps.openSmallBalances;
+    const isChangeInOpenAssets =
+      props.openSmallBalances !== nextProps.openSmallBalances;
     const itemIdentifier = buildAssetUniqueIdentifier(props.item);
     const nextItemIdentifier = buildAssetUniqueIdentifier(nextProps.item);
 

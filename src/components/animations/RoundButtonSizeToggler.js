@@ -25,7 +25,8 @@ const {
 
 const RoundButtonCapSize = 30;
 const RoundButtonCap = styled(Animated.View)`
-  ${({ capDirection }) => borders.buildRadius(capDirection, RoundButtonCapSize / 2)};
+  ${({ capDirection }) =>
+    borders.buildRadius(capDirection, RoundButtonCapSize / 2)};
   ${position.size(RoundButtonCapSize)};
   background-color: ${({ color }) => color};
 `;
@@ -51,10 +52,7 @@ function runTiming(clock, value, dest, friction, tension) {
   ];
 
   return block([
-    cond(state.finished, [
-      ...reset,
-      set(config.toValue, dest),
-    ]),
+    cond(state.finished, [...reset, set(config.toValue, dest)]),
     cond(clockRunning(clock), 0, startClock(clock)),
     spring(clock, state, config),
     state.position,
@@ -72,13 +70,13 @@ export default class RoundButtonSizeToggler extends PureComponent {
     startingWidth: PropTypes.number,
     tension: PropTypes.number,
     toggle: PropTypes.bool,
-  }
+  };
 
   static defaultProps = {
     color: colors.lightBlueGrey,
     friction: 20,
     tension: 200,
-  }
+  };
 
   static capSize = RoundButtonCapSize;
 
@@ -87,16 +85,21 @@ export default class RoundButtonSizeToggler extends PureComponent {
   }
 
   componentWillUpdate(prevProps) {
-    const {
-      animationNode,
-      friction,
-      tension,
-      toggle,
-    } = this.props;
+    const { animationNode, friction, tension, toggle } = this.props;
 
-    if (!isNil(prevProps.toggle) && prevProps.toggle !== toggle && !animationNode) {
+    if (
+      !isNil(prevProps.toggle) &&
+      prevProps.toggle !== toggle &&
+      !animationNode
+    ) {
       const clock = new Clock();
-      const base = runTiming(clock, toggle ? -1 : 1, toggle ? 1 : -1, friction, tension);
+      const base = runTiming(
+        clock,
+        toggle ? -1 : 1,
+        toggle ? 1 : -1,
+        friction,
+        tension
+      );
       this._width = interpolate(base, {
         inputRange: [-1, 1],
         outputRange: [1, 0],
@@ -114,10 +117,13 @@ export default class RoundButtonSizeToggler extends PureComponent {
       startingWidth,
     } = this.props;
 
-    let contentScaleX = (startingWidth + (reversed ? 0 : (endingWidth + 5))) / 100;
+    let contentScaleX =
+      (startingWidth + (reversed ? 0 : endingWidth + 5)) / 100;
     if (animationNode) {
-      // eslint-disable-next-line max-len
-      contentScaleX = add(multiply(animationNode, (endingWidth / 100 - startingWidth / 100)), startingWidth / 100);
+      contentScaleX = add(
+        multiply(animationNode, endingWidth / 100 - startingWidth / 100),
+        startingWidth / 100
+      );
     }
 
     let contentTranslateX = reversed ? startingWidth : endingWidth;
@@ -125,23 +131,24 @@ export default class RoundButtonSizeToggler extends PureComponent {
       contentTranslateX = multiply(divide(sub(1, contentScaleX, 100), 2), -1);
     }
 
-    let rightCapTranslateX = (-1 * (100 - (reversed ? startingWidth : endingWidth)) - 11);
+    let rightCapTranslateX =
+      -1 * (100 - (reversed ? startingWidth : endingWidth)) - 11;
     if (animationNode) {
       rightCapTranslateX = sub(multiply(-100, sub(1, contentScaleX)), 11);
     }
 
     return (
       <View flexDirection="row" position={isAbsolute ? 'absolute' : 'relative'}>
-        <RoundButtonCap
-          capDirection="left"
-          color={color}
-        />
+        <RoundButtonCap capDirection="left" color={color} />
         <View style={{ transform: [{ translateX: RoundButtonCapSize * -2 }] }}>
           <Animated.View
             style={{
               backgroundColor: color,
               height: RoundButtonCapSize,
-              transform: [{ scaleX: contentScaleX }, { translateX: contentTranslateX }],
+              transform: [
+                { scaleX: contentScaleX },
+                { translateX: contentTranslateX },
+              ],
               width: 100,
             }}
           />

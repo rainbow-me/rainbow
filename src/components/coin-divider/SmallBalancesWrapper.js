@@ -9,15 +9,14 @@ import CoinDivider from './CoinDivider';
 
 class SmallBalancesWrapper extends PureComponent {
   static propTypes = {
-    areChildrenVisible: PropTypes.bool,
     assets: PropTypes.array,
     balancesSum: PropTypes.string,
     openSmallBalances: PropTypes.bool,
     setOpenSmallBalances: PropTypes.func,
     setSafeTimeout: PropTypes.func,
-  }
+  };
 
-  state = { areChildrenVisible: true }
+  state = { areChildrenVisible: true };
 
   componentDidMount() {
     this.toggleChildrenVisibility(true);
@@ -33,19 +32,20 @@ class SmallBalancesWrapper extends PureComponent {
     }
   }
 
-  handlePress = () => this.props.setOpenSmallBalances(!this.props.openSmallBalances)
+  handlePress = () =>
+    this.props.setOpenSmallBalances(!this.props.openSmallBalances);
 
   hideChildren = () => {
     if (!this.props.openSmallBalances) {
       this.toggleChildrenVisibility(false);
     }
-  }
+  };
 
-  toggleChildrenVisibility = (nextVisibility) => {
+  toggleChildrenVisibility = nextVisibility => {
     if (this.state.areChildrenVisible !== nextVisibility) {
       this.setState({ areChildrenVisible: nextVisibility });
     }
-  }
+  };
 
   render = () => {
     const { assets, balancesSum, openSmallBalances } = this.props;
@@ -67,13 +67,16 @@ class SmallBalancesWrapper extends PureComponent {
         </OpacityToggler>
       </Fragment>
     );
-  }
+  };
 }
 
-const getBalanceFromAsset = asset => Number(get(asset, 'props.item.native.balance.amount', 0));
+const getBalanceFromAsset = asset =>
+  Number(get(asset, 'props.item.native.balance.amount', 0));
 const reduceBalances = (accumulator, currentValue) => {
   const balance = getBalanceFromAsset(currentValue);
-  const sum = isNumber(accumulator) ? accumulator : getBalanceFromAsset(accumulator);
+  const sum = isNumber(accumulator)
+    ? accumulator
+    : getBalanceFromAsset(accumulator);
   return sum + balance;
 };
 
@@ -86,5 +89,5 @@ export default compose(
     return isNumber(balance)
       ? { balancesSum: `${nativeCurrencySymbol}${balance.toFixed(2)}` }
       : {};
-  }),
+  })
 )(SmallBalancesWrapper);
