@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-tooltip/ToolTip.ios.js b/node_modules/react-native-tooltip/ToolTip.ios.js
+index 83bfbfe..56bba0e 100644
+--- a/node_modules/react-native-tooltip/ToolTip.ios.js
++++ b/node_modules/react-native-tooltip/ToolTip.ios.js
+@@ -65,7 +65,7 @@ export default class ToolTip extends PureComponent {
+         if (this.props.longPress) {
+             props.onLongPress = this.showMenu;
+         } else {
+-            props.onPress = this.showMenu;
++            // props.onPress = this.showMenu;
+         }
+ 
+         return props;

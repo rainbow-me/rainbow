@@ -1,5 +1,11 @@
 import { differenceInMinutes } from 'date-fns';
-import { omit, pickBy } from 'lodash';
+import {
+  find,
+  omit,
+  orderBy,
+  pickBy,
+} from 'lodash';
+import { removeFirstEmojiFromString, makeSpaceAfterFirstEmoji } from '../helpers/emojiHandler';
 
 const defaultVersion = '0.1.0';
 const transactionsVersion = '0.2.0';
@@ -583,4 +589,90 @@ export const getAppStoreReviewRequestCount = async () => {
 
 export const setAppStoreReviewRequestCount = async (newCount) => {
   await saveLocal('appStoreReviewRequestCount', { data: newCount });
+};
+
+/**
+ * @desc get local contacts
+ * @return {Table}
+ */
+export const getLocalContacts = async () => {
+  try {
+    const localContacts = await getLocal('localContacts');
+    return localContacts ? localContacts.data : [];
+  } catch {
+    return [];
+  }
+};
+
+/**
+ * @desc get local contacts
+ * @return {Number}
+ */
+export const getNumberOfLocalContacts = async () => {
+  const contacts = await getLocalContacts();
+  return contacts.length;
+};
+
+/**
+ * @desc get local contacts
+ * @param  {String}   [address]
+ * @return {Object}
+ */
+export const getSelectedLocalContact = async (address) => {
+  let contacts = await getLocalContacts();
+  if (!contacts) contacts = [];
+  const localContact = find(contacts, (contact) => (contact.address === address));
+  return localContact || false;
+};
+
+/**
+ * @desc add new contact to the local contacts
+ * @param  {String}   [address]
+ * @param  {String}   [nickname]
+ * @param  {Number}   [color]
+ * @return {Void}
+ */
+export const addNewLocalContact = async (address, nickname, color) => {
+  let contacts = await getLocalContacts();
+  if (!contacts) contacts = [];
+
+  for (let i = 0; i < contacts.length; i++) {
+    if (contacts[i].address === address) {
+      contacts.splice(i, 1);
+      i--;
+    }
+  }
+
+  contacts.push({
+    address,
+    color,
+    nickname: makeSpaceAfterFirstEmoji(nickname),
+  });
+
+  const sortedContacts = orderBy(
+    contacts,
+    [contact => {
+      let newContact = contact.nickname.toLowerCase();
+      newContact = removeFirstEmojiFromString(newContact);
+      return newContact;
+    }],
+    ['desc'],
+  );
+  await saveLocal('localContacts', { data: sortedContacts });
+};
+
+/**
+ * @desc delete contact from the local contacts
+ * @param  {String}   [address]
+ * @return {Void}
+ */
+export const deleteLocalContact = async (address) => {
+  const contacts = await getLocalContacts();
+  for (let i = 0; i < contacts.length; i++) {
+    if (contacts[i].address === address) {
+      contacts.splice(i, 1);
+      i--;
+    }
+  }
+  await saveLocal('localContacts', { data: contacts });
 };

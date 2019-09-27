@@ -1,0 +1,49 @@
+diff --git a/node_modules/react-native-gesture-handler/Swipeable.js b/node_modules/react-native-gesture-handler/Swipeable.js
+index 22284a3..185e88b 100644
+--- a/node_modules/react-native-gesture-handler/Swipeable.js
++++ b/node_modules/react-native-gesture-handler/Swipeable.js
+@@ -183,8 +183,8 @@ export default class Swipeable extends Component<PropType, StateType> {
+       rightThreshold = rightWidth / 2,
+     } = this.props;
+ 
+-    const startOffsetX = this._currentOffset() + dragX / friction;
+-    const translationX = (dragX + DRAG_TOSS * velocityX) / friction;
++    const startOffsetX = this._currentOffset() + dragX;
++    const translationX = dragX + DRAG_TOSS * velocityX;
+ 
+     let toValue = 0;
+     if (rowState === 0) {
+@@ -205,7 +205,7 @@ export default class Swipeable extends Component<PropType, StateType> {
+       }
+     }
+ 
+-    this._animateRow(startOffsetX, toValue, velocityX / friction);
++    this._animateRow(startOffsetX, toValue, velocityX);
+   };
+ 
+   _animateRow = (fromValue, toValue, velocityX) => {
+diff --git a/node_modules/react-native-gesture-handler/ios/RNGestureHandler.xcodeproj/xcuserdata/christian.xcuserdatad/xcschemes/xcschememanagement.plist b/node_modules/react-native-gesture-handler/ios/RNGestureHandler.xcodeproj/xcuserdata/christian.xcuserdatad/xcschemes/xcschememanagement.plist
+new file mode 100644
+index 0000000..cf96c26
+--- /dev/null
++++ b/node_modules/react-native-gesture-handler/ios/RNGestureHandler.xcodeproj/xcuserdata/christian.xcuserdatad/xcschemes/xcschememanagement.plist
+@@ -0,0 +1,19 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
++<plist version="1.0">
++<dict>
++	<key>SchemeUserState</key>
++	<dict>
++		<key>RNGestureHandler-tvOS.xcscheme_^#shared#^_</key>
++		<dict>
++			<key>orderHint</key>
++			<integer>86</integer>
++		</dict>
++		<key>RNGestureHandler.xcscheme_^#shared#^_</key>
++		<dict>
++			<key>orderHint</key>
++			<integer>85</integer>
++		</dict>
++	</dict>
++</dict>
++</plist>

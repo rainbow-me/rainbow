@@ -1,8 +1,14 @@
 import analytics from '@segment/analytics-react-native';
 import {
   get,
+  indexOf,
   isEmpty,
+  isFunction,
   isString,
+  map,
+  property,
+  sortBy,
+  upperFirst,
 } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -15,7 +21,7 @@ import {
   SendAssetForm,
   SendAssetList,
   SendButton,
-  SendEmptyState,
+  SendContactList,
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
@@ -26,20 +32,41 @@ import {
   withUniqueTokens,
 } from '../hoc';
 import { colors } from '../styles';
-import { deviceUtils, gasUtils, isNewValueForPath } from '../utils';
+import { deviceUtils, isNewValueForPath } from '../utils';
+import { showActionSheetWithOptions } from '../utils/actionsheet';
+import { getLocalContacts } from '../handlers/commonStorage';
 
 const Container = styled(Column)`
   background-color: ${colors.white};
   height: 100%;
 `;
 
+const formatGasSpeedItem = (value, key) => {
+  const cost = get(value, 'txFee.native.value.display');
+  const gwei = get(value, 'value.display');
+  const time = get(value, 'estimatedTime.display');
+
+  return {
+    gweiValue: gwei,
+    label: `${upperFirst(key)}: ${cost}   ~${time.slice(0, -1)}`,
+    value: key,
+  };
+};
+
+const labelOrder = ['slow', 'average', 'fast'];
+
+const formatGasSpeedItems = (gasPrices) => {
+  const gasItems = map(gasPrices, formatGasSpeedItem);
+  return sortBy(gasItems, ({ value }) => indexOf(labelOrder, value));
+};
+
 class SendSheet extends Component {
   static propTypes = {
     allAssets: PropTypes.array,
     assetAmount: PropTypes.string,
     fetchData: PropTypes.func,
+    gasPrice: PropTypes.object,
     gasPrices: PropTypes.object,
-    gasUpdateGasPriceOption: PropTypes.func,
     isSufficientBalance: PropTypes.bool,
     isSufficientGas: PropTypes.bool,
     isValidAddress: PropTypes.bool,
@@ -48,15 +75,14 @@ class SendSheet extends Component {
     onSubmit: PropTypes.func,
     recipient: PropTypes.string,
     selected: PropTypes.object,
-    selectedGasPrice: PropTypes.object,
     sendableUniqueTokens: PropTypes.arrayOf(PropTypes.object),
     sendClearFields: PropTypes.func,
     sendMaxBalance: PropTypes.func,
     sendUpdateAssetAmount: PropTypes.func,
+    sendUpdateGasPrice: PropTypes.func,
     sendUpdateNativeAmount: PropTypes.func,
     sendUpdateRecipient: PropTypes.func,
     sendUpdateSelected: PropTypes.func,
-    txFees: PropTypes.object,
   }
 
   static defaultProps = {
@@ -66,16 +92,19 @@ class SendSheet extends Component {
   }
 
   state = {
+    contacts: [],
+    currentInput: '',
     isAuthorizing: false,
   }
 
-  componentDidMount() {
+  componentDidMount = async () => {
     const { navigation, sendUpdateRecipient } = this.props;
     const address = get(navigation, 'state.params.address');
 
     if (address) {
       sendUpdateRecipient(address);
     }
+    this.onUpdateContacts()
   }
 
   componentDidUpdate(prevProps) {
@@ -141,13 +170,28 @@ class SendSheet extends Component {
   }
 
   onPressTransactionSpeed = (onSuccess) => {
-    const {
-      gasPrices,
-      gasUpdateGasPriceOption,
-      txFees,
-    } = this.props;
+    const { gasPrices, sendUpdateGasPrice } = this.props;
 
-    gasUtils.showTransactionSpeedOptions(gasPrices, txFees, gasUpdateGasPriceOption, onSuccess);
+    const options = [
+      { label: 'Cancel' },
+      ...formatGasSpeedItems(gasPrices),
+    ];
+
+    showActionSheetWithOptions({
+      cancelButtonIndex: 0,
+      options: options.map(property('label')),
+    }, (buttonIndex) => {
+      if (buttonIndex > 0) {
+        const selectedGasPriceItem = options[buttonIndex];
+
+        sendUpdateGasPrice(selectedGasPriceItem.value);
+        analytics.track('Updated Gas Price', { gasPrice: selectedGasPriceItem.gweiValue });
+      }
+
+      if (isFunction(onSuccess)) {
+        onSuccess();
+      }
+    });
   }
 
   onResetAssetSelection = () => {
@@ -183,15 +227,25 @@ class SendSheet extends Component {
     });
   }
 
+  onUpdateContacts = async () => {
+    const contacts = await getLocalContacts();
+    this.setState({ contacts });
+  }
+
+  onChangeInput = (event) => {
+    this.setState({ currentInput: event });
+    this.props.sendUpdateRecipient(event);
+  }
+
   render() {
     const {
       allAssets,
       fetchData,
+      gasPrice,
       isValidAddress,
       nativeCurrencySymbol,
       recipient,
       selected,
-      selectedGasPrice,
       sendableUniqueTokens,
       sendUpdateRecipient,
       ...props
@@ -205,11 +259,22 @@ class SendSheet extends Component {
         <KeyboardAvoidingView behavior="padding" enabled={!showAssetList}>
           <Container align="center">
             <SendHeader
+              contacts={this.state.contacts}
               isValid={isValidAddress}
-              onChangeAddressInput={sendUpdateRecipient}
+              isValidAddress={isValidAddress}
+              onChangeAddressInput={this.onChangeInput}
+              onPressPaste={sendUpdateRecipient}
+              onUpdateContacts={this.onUpdateContacts}
               recipient={recipient}
             />
-            {showEmptyState && <SendEmptyState onPressPaste={sendUpdateRecipient} />}
+            {showEmptyState && (
+              <SendContactList
+                allAssets={this.state.contacts}
+                currentInput={this.state.currentInput}
+                onPressContact={sendUpdateRecipient}
+                onUpdateContacts={this.onUpdateContacts}
+              />
+            )}
             {showAssetList && (
               <SendAssetList
                 allAssets={allAssets}
@@ -236,7 +301,7 @@ class SendSheet extends Component {
                 txSpeedRenderer={(
                   isIphoneX() && (
                     <SendTransactionSpeed
-                      gasPrice={selectedGasPrice}
+                      gasPrice={gasPrice}
                       nativeCurrencySymbol={nativeCurrencySymbol}
                       onPressTransactionSpeed={this.onPressTransactionSpeed}
                     />

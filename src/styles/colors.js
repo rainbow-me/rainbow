@@ -41,6 +41,18 @@ const base = {
   white: '#ffffff', // '255, 255, 255'
 };
 
+const avatarColor = [
+  '#ff494a', // '255, 73, 74'
+  '#02d3ff', // '2, 211, 255'
+  '#fb60c4', // '251, 96, 196'
+  '#3f6aff', // '63, 106, 255'
+  '#fada3d', // '250, 218, 61'
+  '#b140ff', // '177, 64, 255'
+  '#40ebc1', // '64, 235, 193'
+  '#f46e38', // '244, 110, 56'
+  '#6d7e8f', // '109, 126, 143'
+];
+
 const assetIcon = {
   blue: '#7dabf0', // '125, 171, 240'
   orange: '#f2bb3a', // '242, 187, 58'
@@ -96,6 +108,7 @@ const transparent = {
 const colors = {
   alpha: buildRgba,
   assetIcon,
+  avatarColor,
   getFallbackTextColor,
   getTextColorForBackground,
   isColorLight,

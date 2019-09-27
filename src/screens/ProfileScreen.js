@@ -7,7 +7,7 @@ import { BackButton, Header, HeaderButton } from '../components/header';
 import { FlexItem, Page } from '../components/layout';
 import { Icon } from '../components/icons';
 import { ProfileMasthead } from '../components/profile';
-import { colors, position } from '../styles';
+import { position } from '../styles';
 
 const ProfileScreen = ({
   accountAddress,
@@ -48,7 +48,6 @@ const ProfileScreen = ({
     />
     {isEmpty && <AddFundsInterstitial />}
     <BlurOverlay
-      // backgroundColor={colors.alpha(colors.blueGreyDarker, 0.4)}
       blurType="light"
       intensity={blurIntensity}
     />
