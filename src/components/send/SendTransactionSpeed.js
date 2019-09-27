@@ -7,7 +7,11 @@ import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text } from '../text';
 
-const SendTransactionSpeed = ({ gasPrice, nativeCurrencySymbol, onPressTransactionSpeed }) => {
+const SendTransactionSpeed = ({
+  gasPrice,
+  nativeCurrencySymbol,
+  onPressTransactionSpeed,
+}) => {
   const fee = get(gasPrice, 'txFee.native.value.display', `${nativeCurrencySymbol}0.00`);
   const time = get(gasPrice, 'estimatedTime.display', '');
 

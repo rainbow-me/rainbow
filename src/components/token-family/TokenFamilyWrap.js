@@ -19,6 +19,8 @@ import { FadeInAnimation } from '../animations';
 import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyHeader from './TokenFamilyHeader';
 
+export const TokenFamilyWrapPaddingTop = 6;
+
 const EnhancedUniqueTokenRow = compose(
   withNavigation,
   withHandlers({
@@ -45,10 +47,11 @@ const TokenFamilyWrap = ({
   highlight,
   isFamilyOpen,
   item,
+  marginTop,
   onPressFamilyHeader,
   renderCollectibleItem,
 }) => (
-  <View backgroundColor={colors.white} overflow="hidden">
+  <View backgroundColor={colors.white} marginTop={marginTop} overflow="hidden">
     <TokenFamilyHeader
       childrenAmount={childrenAmount}
       familyImage={familyImage}
@@ -61,6 +64,7 @@ const TokenFamilyWrap = ({
       <FadeInAnimation
         duration={TokenFamilyHeader.animationDuration}
         key={`uniqueTokenRow_${familyId}_fadeIn`}
+        style={{ paddingTop: TokenFamilyWrapPaddingTop }}
       >
         {times(item.length, renderCollectibleItem)}
       </FadeInAnimation>
@@ -78,6 +82,7 @@ TokenFamilyWrap.propTypes = {
   isFamilyOpen: PropTypes.bool,
   isOpen: PropTypes.bool,
   item: PropTypes.array,
+  marginTop: PropTypes.number,
   onPressFamilyHeader: PropTypes.func,
   renderCollectibleItem: PropTypes.func,
 };
@@ -130,6 +135,9 @@ export default compose(
     /* eslint-enable react/display-name */
   }),
   lifecycle({
+    componentDidMount() {
+      this.props.onShowChildren();
+    },
     componentDidUpdate() {
       if (!this.props.isFamilyOpen) {
         this.props.onHideChildren();
@@ -142,6 +150,7 @@ export default compose(
     'areChildrenVisible',
     'childrenAmount',
     'highlight',
+    'marginTop',
     'isFamilyOpen',
     'uniqueId',
   ]),

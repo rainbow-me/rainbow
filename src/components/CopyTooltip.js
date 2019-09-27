@@ -10,6 +10,7 @@ class CopyTooltip extends PureComponent {
   static propTypes = {
     activeOpacity: PropTypes.number,
     navigation: PropTypes.object,
+    setSafeTimeout: PropTypes.func,
     textToCopy: PropTypes.string,
     tooltipText: PropTypes.string,
   }

@@ -2,7 +2,6 @@ import lang from 'i18n-js';
 import { times } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withNeverRerender } from '../../hoc';
 import { position } from '../../styles';
 import AddFundsInterstitial from '../AddFundsInterstitial';
 import { FabWrapper } from '../fab';
@@ -21,12 +20,17 @@ const renderSkeleton = (index, isWalletEthZero) => (
   />
 );
 
-const EmptyAssetList = ({ isWalletEthZero, ...props }) => (
+const EmptyAssetList = ({
+  hideHeader,
+  isWalletEthZero,
+  skeletonCount,
+  ...props
+}) => (
   <Column {...props} style={position.sizeAsObject('100%')}>
-    <AssetListHeader title={lang.t('account.tab_balances')} />
+    {hideHeader && <AssetListHeader title={lang.t('account.tab_balances')} />}
     <Centered flex={1}>
       <Column style={position.coverAsObject}>
-        {times(5, index => renderSkeleton(index, isWalletEthZero))}
+        {times(skeletonCount, index => renderSkeleton(index, isWalletEthZero))}
       </Column>
       {isWalletEthZero && (<AddFundsInterstitial offsetY={InterstitialOffset * -1} />)}
     </Centered>
@@ -34,7 +38,13 @@ const EmptyAssetList = ({ isWalletEthZero, ...props }) => (
 );
 
 EmptyAssetList.propTypes = {
+  hideHeader: PropTypes.bool,
   isWalletEthZero: PropTypes.bool,
+  skeletonCount: PropTypes.number,
 };
 
-export default withNeverRerender(EmptyAssetList);
+EmptyAssetList.defaultProps = {
+  skeletonCount: 5,
+};
+
+export default React.memo(EmptyAssetList);

@@ -3,14 +3,18 @@ import { isNil } from 'lodash';
 import { Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
-import { getIsWalletEmpty } from '../handlers/commonStorage';
+import { getIsWalletEmpty } from '../handlers/localstorage/storage';
 import { hasEthBalance } from '../handlers/web3';
 import {
   dataClearState,
   dataLoadState,
-  dataInit,
 } from '../redux/data';
-import { clearIsWalletEmpty, loadIsWalletEmpty } from '../redux/isWalletEmpty';
+import {
+  explorerClearState,
+  explorerInit,
+} from '../redux/explorer';
+import { gasClearFields, gasPricesInit } from '../redux/gas';
+import { clearIsWalletEmpty } from '../redux/isWalletEmpty';
 import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import { nonceClearState } from '../redux/nonce';
 import { clearOpenFamilyTab } from '../redux/openFamilyTabs';
@@ -25,6 +29,7 @@ import {
 import {
   uniswapLoadState,
   uniswapClearState,
+  uniswapTokenReservesRefreshState,
   uniswapUpdateState,
 } from '../redux/uniswap';
 import {
@@ -37,22 +42,19 @@ import {
   walletConnectLoadState,
   walletConnectClearState,
 } from '../redux/walletconnect';
+import { promiseUtils } from '../utils';
 import withHideSplashScreen from './withHideSplashScreen';
-
-const PromiseAllWithFails = async (promises) => (
-  Promise.all(promises.map(promise => (
-    (promise && promise.catch)
-      ? promise.catch(error => error)
-      : promise
-  ))));
 
 export default Component => compose(
   connect(null, {
     clearIsWalletEmpty,
     clearOpenFamilyTab,
     dataClearState,
-    dataInit,
     dataLoadState,
+    explorerClearState,
+    explorerInit,
+    gasClearFields,
+    gasPricesInit,
     nonceClearState,
     requestsClearState,
     requestsLoadState,
@@ -64,6 +66,7 @@ export default Component => compose(
     uniqueTokensRefreshState,
     uniswapClearState,
     uniswapLoadState,
+    uniswapTokenReservesRefreshState,
     uniswapUpdateState,
     walletConnectClearState,
     walletConnectLoadState,
@@ -79,6 +82,7 @@ export default Component => compose(
       }
     },
     clearAccountData: (ownProps) => async () => {
+      const p0 = ownProps.explorerClearState();
       const p1 = ownProps.dataClearState();
       const p2 = ownProps.clearIsWalletEmpty();
       const p3 = ownProps.uniqueTokensClearState();
@@ -87,14 +91,18 @@ export default Component => compose(
       const p6 = ownProps.nonceClearState();
       const p7 = ownProps.requestsClearState();
       const p8 = ownProps.uniswapClearState();
-      return PromiseAllWithFails([p1, p2, p3, p4, p5, p6, p7, p8]);
+      const p9 = ownProps.gasClearState();
+      return promiseUtils.PromiseAllWithFails([p0, p1, p2, p3, p4, p5, p6, p7, p8, p9]);
     },
     initializeAccountData: (ownProps) => async () => {
       try {
-        ownProps.dataInit();
+        ownProps.explorerInit();
+        ownProps.gasPricesInit();
+        ownProps.uniswapTokenReservesRefreshState();
         await ownProps.uniqueTokensRefreshState();
       } catch (error) {
-        // TODO
+        // TODO error state
+        console.log('Error initializing account data: ', error);
       }
     },
     loadAccountData: (ownProps) => async () => {
@@ -104,7 +112,7 @@ export default Component => compose(
       const p4 = ownProps.walletConnectLoadState();
       const p5 = ownProps.uniswapLoadState();
       const p6 = ownProps.requestsLoadState();
-      return PromiseAllWithFails([p1, p2, p3, p4, p5, p6]);
+      return promiseUtils.PromiseAllWithFails([p1, p2, p3, p4, p5, p6]);
     },
     refreshAccountData: (ownProps) => async () => {
       try {
@@ -127,7 +135,7 @@ export default Component => compose(
       try {
         const { isImported, isNew, walletAddress } = await walletInit(seedPhrase);
         if (isNil(walletAddress)) {
-          Alert.alert('Import failed due to an invalid seed phrase. Please try again.');
+          Alert.alert('Import failed due to an invalid private key. Please try again.');
           return null;
         }
         if (isImported) {
@@ -141,7 +149,7 @@ export default Component => compose(
         } else {
           const isWalletEmpty = await getIsWalletEmpty(walletAddress, 'mainnet');
           if (isNil(isWalletEmpty)) {
-            await ownProps.checkEthBalance(walletAddress);
+            ownProps.checkEthBalance(walletAddress);
           } else {
             ownProps.setIsWalletEthZero(isWalletEmpty);
           }
@@ -155,7 +163,7 @@ export default Component => compose(
       } catch (error) {
         // TODO specify error states more granular
         ownProps.onHideSplashScreen();
-        Alert.alert('Import failed due to an invalid seed phrase. Please try again.');
+        Alert.alert('Import failed due to an invalid private key. Please try again.');
         return null;
       }
     },

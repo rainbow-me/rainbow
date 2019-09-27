@@ -14,7 +14,7 @@ import NetworkIcon from '../../assets/network-icon.png';
 import {
   getAppStoreReviewRequestCount,
   setAppStoreReviewRequestCount,
-} from '../../handlers/commonStorage';
+} from '../../handlers/localstorage/globalSettings';
 import { withAccountSettings, withSendFeedback } from '../../hoc';
 import { supportedLanguages } from '../../languages';
 import { colors, position } from '../../styles';

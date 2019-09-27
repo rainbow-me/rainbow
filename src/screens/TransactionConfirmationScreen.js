@@ -24,7 +24,6 @@ const CancelButtonContainer = styled.View`
 
 const Container = styled(Column)`
   ${position.size('100%')}
-  background-color: ${colors.black};
   flex: 1;
 `;
 
@@ -98,14 +97,18 @@ export default class TransactionConfirmationScreen extends PureComponent {
     await onConfirm(requestType);
   }
 
-  renderSendButton = () => (
-    <HoldToAuthorizeButton
-      isAuthorizing={this.state.isAuthorizing}
-      onLongPress={this.onLongPressSend}
-    >
-      {`Hold to ${(this.props.requestType === 'message' || this.props.requestType === 'messagePersonal') ? 'Sign' : 'Send'}`}
-    </HoldToAuthorizeButton>
-  )
+  renderSendButton = () => {
+    const { requestType } = this.props;
+    const isMessage = requestType === 'message' || requestType === 'messagePersonal';
+
+    return (
+      <HoldToAuthorizeButton
+        isAuthorizing={this.state.isAuthorizing}
+        label={`Hold to ${isMessage ? 'Sign' : 'Send'}`}
+        onLongPress={this.onLongPressSend}
+      />
+    );
+  }
 
   renderTransactionSection = () => {
     const { request, requestType } = this.props;

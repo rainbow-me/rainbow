@@ -8,16 +8,24 @@ import {
   withHandlers,
 } from 'recompact';
 import { Linking } from 'react-native';
+import { withNavigation } from 'react-navigation';
+import { css } from 'styled-components/primitives';
+import { getSelectedLocalContact } from '../../handlers/commonStorage';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { colors } from '../../styles';
+import { abbreviations } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { ButtonPressAnimation } from '../animations';
 import { FlexItem, Row, RowWithMargins } from '../layout';
-import BottomRowText from './BottomRowText';
 import BalanceText from './BalanceText';
+import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
+
+const containerStyles = css`
+  paddingLeft: 15;
+`;
 
 const rowRenderPropTypes = {
   balance: PropTypes.object,
@@ -60,15 +68,8 @@ const BottomRow = ({ name, native, status }) => {
 BottomRow.propTypes = rowRenderPropTypes;
 
 const TopRow = ({ balance, pending, status }) => (
-  <RowWithMargins
-    align="center"
-    justify="space-between"
-    margin={19}
-  >
-    <TransactionStatusBadge
-      pending={pending}
-      status={status}
-    />
+  <RowWithMargins align="center" justify="space-between" margin={19}>
+    <TransactionStatusBadge pending={pending} status={status}/>
     <Row align="center" flex={1} justify="end">
       <BottomRowText>
         {get(balance, 'display', '')}
@@ -85,6 +86,7 @@ const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
       {...item}
       {...props}
       bottomRowRender={BottomRow}
+      containerStyles={containerStyles}
       shouldRasterizeIOS={true}
       topRowRender={TopRow}
     />
@@ -109,14 +111,45 @@ export default compose(
     pending,
     ...props,
   })),
+  withNavigation,
   withHandlers({
-    onPressTransaction: ({ hash }) => () => {
+    onPressTransaction: ({ hash, item, navigation }) => async () => {
+      const { from, to, status } = item;
+      const isSent = status === 'sent';
+
+      const headerInfo = {
+        address: '',
+        divider: isSent ? 'to' : 'from',
+        type: status.charAt(0).toUpperCase() + status.slice(1),
+      };
+
+      const contactAddress = isSent ? to : from;
+      const contact = await getSelectedLocalContact(contactAddress);
+      let contactColor = 0;
+
+      if (contact) {
+        headerInfo.address = contact.nickname;
+        contactColor = contact.color;
+      } else {
+        headerInfo.address = abbreviations.address(contactAddress, 4, 10);
+        contactColor = Math.floor(Math.random() * colors.avatarColor.length);
+      }
+
       if (hash) {
         showActionSheetWithOptions({
-          cancelButtonIndex: 1,
-          options: ['View on Etherscan', 'Cancel'],
+          cancelButtonIndex: 2,
+          options: [contact ? 'View Contact' : 'Add to Contacts', 'View on Etherscan', 'Cancel'],
+          title: `${headerInfo.type} ${headerInfo.divider} ${headerInfo.address}`,
         }, (buttonIndex) => {
           if (buttonIndex === 0) {
+            navigation.navigate('ExpandedAssetScreen', {
+              address: contactAddress,
+              asset: item,
+              color: contactColor,
+              contact,
+              type: 'contact',
+            });
+          } else if (buttonIndex === 1) {
             const normalizedHash = hash.replace(/-.*/g, '');
             Linking.openURL(`https://etherscan.io/tx/${normalizedHash}`);
           }

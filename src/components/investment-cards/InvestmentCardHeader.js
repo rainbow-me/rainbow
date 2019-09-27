@@ -1,30 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { onlyUpdateForKeys } from 'recompact';
-import styled from 'styled-components/primitives';
-import { colors, padding, position } from '../../styles';
-import { Icon } from '../icons';
-import {
-  Centered,
-  Column,
-  Row,
-  RowWithMargins,
-} from '../layout';
+import FastImage from 'react-native-fast-image';
+import { View } from 'react-primitives';
+import { pure } from 'recompact';
+import Caret from '../../assets/family-dropdown-arrow.png';
+import { colors } from '../../styles';
+import { Column, Row, RowWithMargins } from '../layout';
 import { Emoji, Monospace, Text } from '../text';
+import { RotationArrow } from '../animations';
 
-const HeaderHeight = 48;
+const height = 48;
 
-const Container = styled(Row).attrs({
-  align: 'center',
-  justify: 'space-between',
-})`
-  ${padding(0, 15)};
-  height: ${HeaderHeight};
-`;
-
-const enhance = onlyUpdateForKeys(['collapsed', 'title', 'value']);
-
-const InvestmentCardHeader = enhance(({
+const InvestmentCardHeader = pure(({
   collapsed,
   color,
   emoji,
@@ -33,18 +20,15 @@ const InvestmentCardHeader = enhance(({
   titleColor,
   value,
 }) => (
-  <Container>
+  <Row
+    align="center"
+    height={height}
+    justify="space-between"
+    paddingHorizontal={15}
+  >
     <Row align="center">
-      <Column
-        align="start"
-        justify="center"
-        width={24}
-      >
-        <Emoji
-          name={emoji}
-          lineHeight="none"
-          size="smedium"
-        />
+      <Column align="start" justify="center" width={24}>
+        <Emoji name={emoji} lineHeight="none" size="smedium" />
       </Column>
       <Text
         color={titleColor || color}
@@ -56,37 +40,24 @@ const InvestmentCardHeader = enhance(({
       </Text>
     </Row>
     <RowWithMargins align="center" margin={1}>
-      <Monospace
-        color={color}
-        size="lmedium"
-        weight="medium"
-      >
+      <Monospace color={color} size="lmedium" weight="medium">
         {value}
       </Monospace>
       {isCollapsible && (
-        <Centered justify="end" style={position.sizeAsObject(19)}>
-          <Centered
-            flex={0}
-            justify="end"
-            style={{
-              ...position.sizeAsObject(13),
-              paddingBottom: collapsed ? 1 : 0,
-              paddingTop: collapsed ? 0 : 2,
-              position: 'absolute',
-              right: 0,
-            }}
-          >
-            <Icon
-              color={color}
-              direction={collapsed ? 'right' : 'down'}
-              name="caretThin"
-              width={13}
+        <View paddingLeft={10}>
+          <RotationArrow isOpen={!collapsed} endingPosition={90}>
+            <FastImage
+              source={Caret}
+              style={{
+                height: 13.5,
+                width: 6.5,
+              }}
             />
-          </Centered>
-        </Centered>
+          </RotationArrow>
+        </View>
       )}
     </RowWithMargins>
-  </Container>
+  </Row>
 ));
 
 InvestmentCardHeader.propTypes = {
@@ -104,6 +75,6 @@ InvestmentCardHeader.defaultProps = {
   isCollapsible: false,
 };
 
-InvestmentCardHeader.height = HeaderHeight;
+InvestmentCardHeader.height = height;
 
 export default InvestmentCardHeader;

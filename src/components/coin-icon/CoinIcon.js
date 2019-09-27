@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { css } from 'styled-components/primitives';
 import ReactCoinIcon, { FallbackIcon } from 'react-coin-icon';
-import { hoistStatics, onlyUpdateForKeys } from 'recompact';
+import { onlyUpdateForKeys } from 'recompact';
 import { borders, colors, fonts } from '../../styles';
 import { ShadowStack } from '../shadow-stack';
 
@@ -17,10 +17,14 @@ const CoinIconFallback = fallbackProps => (
   <FallbackIcon
     {...fallbackProps}
     textStyles={fallbackTextStyles}
+    symbol={fallbackProps.symbol || ''}
   />
 );
 
-const CoinIcon = ({
+const enhance = onlyUpdateForKeys(['bgColor', 'symbol']);
+
+const CoinIcon = enhance(({
+  bgColor,
   showShadow,
   size,
   symbol,
@@ -30,6 +34,7 @@ const CoinIcon = ({
     <ShadowStack
       {...props}
       {...borders.buildCircleAsObject(size)}
+      backgroundColor={bgColor}
       shadows={[
         [0, 4, 6, colors.dark, 0.04],
         [0, 1, 3, colors.dark, 0.08],
@@ -37,24 +42,25 @@ const CoinIcon = ({
       shouldRasterizeIOS
     >
       <ReactCoinIcon
+        bgColor={bgColor}
         fallbackRenderer={CoinIconFallback}
         size={size}
         symbol={symbol}
-        shouldRasterizeIOS
       />
     </ShadowStack>
   ) : (
     <ReactCoinIcon
       {...props}
+      bgColor={bgColor}
       fallbackRenderer={CoinIconFallback}
       size={size}
       symbol={symbol}
-      shouldRasterizeIOS
     />
   )
-);
+));
 
 CoinIcon.propTypes = {
+  bgColor: PropTypes.string,
   showShadow: PropTypes.bool,
   size: PropTypes.number,
   symbol: PropTypes.string,
@@ -67,5 +73,4 @@ CoinIcon.defaultProps = {
 
 CoinIcon.size = CoinIconSize;
 
-const enhance = onlyUpdateForKeys(['symbol']);
-export default hoistStatics(enhance)(CoinIcon);
+export default CoinIcon;

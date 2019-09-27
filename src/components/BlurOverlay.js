@@ -1,57 +1,41 @@
-import { VibrancyView } from '@react-native-community/blur';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Animated, StyleSheet } from 'react-native';
-import { pure } from 'recompact';
-import { position } from '../styles';
+import { StyleSheet, View } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { BlurView } from '@react-native-community/blur';
 
-const styles = StyleSheet.create({
-  overlay: {
-    ...position.coverAsObject,
-    zIndex: 1,
-  },
-});
+const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
-const BlurOverlay = ({
-  backgroundColor,
-  blurAmount,
-  blurType,
-  opacity,
-  translateX,
-  translateY,
-}) => (
-  <Animated.View
+const interpolationConfig = {
+  inputRange: [0, 0.1, 1],
+  outputRange: [0, 0, 1],
+};
+
+const BlurOverlay = ({ blurType, intensity }) => (
+  <View
+    pointerEvents="none"
     style={[
-      styles.overlay,
-      {
-        backgroundColor,
-        opacity,
-        transform: [{ translateX }, { translateY }],
-      },
+      StyleSheet.absoluteFill,
+      { position: 'absolute', zIndex: 10 },
     ]}
   >
-    <VibrancyView
-      blurAmount={blurAmount}
+    <AnimatedBlurView
+      blurAmount={15}
       blurType={blurType}
-      style={styles.overlay}
+      opacity={Animated.interpolate(intensity, interpolationConfig)}
+      style={StyleSheet.absoluteFill}
     />
-  </Animated.View>
+  </View>
 );
 
 BlurOverlay.propTypes = {
-  backgroundColor: PropTypes.string,
-  blurAmount: PropTypes.number,
-  blurType: PropTypes.oneOf(['dark', 'light', 'xlight']).isRequired,
-  opacity: PropTypes.object,
-  translateX: PropTypes.any,
-  translateY: PropTypes.any,
+  blurType: PropTypes.oneOf(['default', 'light', 'dark']).isRequired,
+  intensity: PropTypes.number,
 };
 
 BlurOverlay.defaultProps = {
-  blurAmount: 15,
   blurType: 'dark',
-  translateX: 0,
-  translateY: 0,
+  intensity: new Animated.Value(0),
 };
 
-export default pure(BlurOverlay);
+export default React.memo(BlurOverlay);

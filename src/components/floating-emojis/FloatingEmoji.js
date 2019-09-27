@@ -10,7 +10,6 @@ const {
   interpolate,
   timing,
   Value,
-  View,
 } = Animated;
 
 export default class FloatingEmoji extends PureComponent {
@@ -23,6 +22,7 @@ export default class FloatingEmoji extends PureComponent {
     right: PropTypes.string.isRequired,
     size: PropTypes.string.isRequired,
     style: stylePropType,
+    top: PropTypes.number,
   }
 
   static defaultProps = {
@@ -52,6 +52,7 @@ export default class FloatingEmoji extends PureComponent {
       right,
       size,
       style,
+      top,
     } = this.props;
 
     const distance = Math.ceil(this.props.distance);
@@ -85,14 +86,14 @@ export default class FloatingEmoji extends PureComponent {
     });
 
     return (
-      <View
+      <Animated.View
         style={{
           ...style,
           backgroundColor: colors.transparent,
           opacity: this.opacityAnimation,
           position: 'absolute',
           right,
-          top: sizeAsNumber * -0.5,
+          top: top || sizeAsNumber * -0.5,
           transform: [
             { rotate: concat(this.rotateAnimation, 'deg') },
             { scale: this.scaleAnimation },
@@ -102,7 +103,7 @@ export default class FloatingEmoji extends PureComponent {
         }}
       >
         <Emoji name={emoji} size={size} />
-      </View>
+      </Animated.View>
     );
   }
 }

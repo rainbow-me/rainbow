@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Fragment } from 'react';
 import {
   compose,
   onlyUpdateForKeys,
@@ -26,8 +26,8 @@ const familyHeaderHeight = 64;
 const dividerHeight = 18;
 
 const Divider = styled.View`
+  background-color: ${colors.lighterGrey};
   height: 2px;
-  background-color: ${colors.lightGrey};
   margin: 10px 19px;
   width: 100%;
 `;
@@ -42,15 +42,16 @@ class SendAssetList extends React.Component {
   );
 
   TokenItem = React.memo(this.enhanceRenderItem(SendCoinRow));
+
   UniqueTokenItem = React.memo(this.enhanceRenderItem(CollectiblesSendRow));
 
   rlv = React.createRef();
 
   changeOpenTab = (index) => {
-    let openCards = this.state.openCards;
+    const { openCards } = this.state;
     LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity'));
     openCards[index] = !openCards[index];
-    this.setState({ openCards: openCards });
+    this.setState({ openCards });
     let familiesHeight = 0;
     if (openCards[index]) {
       for (let i = 0; i < index; i++) {
@@ -64,8 +65,7 @@ class SendAssetList extends React.Component {
       const renderSize = familyHeaderHeight + this.props.uniqueTokens[index].data.length * rowHeight;
       const screenHeight = this.position + this.componentHeight;
       if(heightBelow + renderSize + 64 > screenHeight) {
-        const diff = this.position + (heightBelow + renderSize - screenHeight + familyHeaderHeight);
-        if( renderSize < this.componentHeight) {
+        if(renderSize < this.componentHeight) {
           setTimeout(() => {
             this.rlv.scrollToOffset(0, this.position + (heightBelow + renderSize - screenHeight + familyHeaderHeight), true);
           }, 10);
@@ -79,8 +79,8 @@ class SendAssetList extends React.Component {
   }
 
   mapTokens = (collectibles) => {
-    items = collectibles.map((collectible) => {
-      let newItem = {}
+    const items = collectibles.map((collectible) => {
+      const newItem = {};
       newItem.item = collectible;
       return <this.UniqueTokenItem key={collectible.id} {...newItem} />;
     });
@@ -88,12 +88,14 @@ class SendAssetList extends React.Component {
   }
 
   balancesRenderItem = item => <this.TokenItem {...item} />;
-  balancesRenderLastItem = item => {return <>
-    <this.TokenItem {...item} />
-    <Divider />
-  </>
-  };
-  
+
+  balancesRenderLastItem = item => (
+    <Fragment>
+      <this.TokenItem {...item} />
+      <Divider />
+    </Fragment>
+  );
+
   collectiblesRenderItem = item => {
     return <View>
       <TokenFamilyHeader
@@ -102,10 +104,10 @@ class SendAssetList extends React.Component {
         familyImage={item.familyImage}
         childrenAmount={item.data.length}
         isOpen={this.state.openCards[item.familyId]}
-        onHeaderPress={() => { this.changeOpenTab(item.familyId) }}
+        onHeaderPress={() => { this.changeOpenTab(item.familyId); }}
       />
       {this.state.openCards[item.familyId] && this.mapTokens(item.data)}
-    </View>
+    </View>;
   }
 
   constructor(args) {
@@ -136,7 +138,7 @@ class SendAssetList extends React.Component {
       } else if (i == this.props.allAssets.length - 1) {
         return 'COIN_ROW_LAST';
       } else {
-        if (this.state.openCards[i - this.props.allAssets.length]) {
+        if (this.state.openCards[this.props.uniqueTokens[i - this.props.allAssets.length].familyId]) {
           return { type: 'COLLECTIBLE_ROW', size: this.props.uniqueTokens[i - this.props.allAssets.length].data.length + 1 };
         } else {
           return 'COLLECTIBLE_ROW_CLOSED';

@@ -3,13 +3,13 @@ import { get } from 'lodash';
 import React from 'react';
 import {
   createAppContainer,
-  createMaterialTopTabNavigator,
-  createStackNavigator,
 } from 'react-navigation';
-import { Navigation } from '../navigation';
-import { buildTransitions, expanded, sheet } from '../navigation/transitions';
-import { updateTransitionProps } from '../redux/navigation';
+import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
+import { createStackNavigator } from 'react-navigation-stack';
+import { ExchangeModalNavigator, Navigation } from '../navigation';
+import { updateStackTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
+import { colors } from '../styles';
 import { deviceUtils } from '../utils';
 import ExpandedAssetScreenWithData from './ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
@@ -22,9 +22,16 @@ import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
+import {
+  expandedPreset,
+  sheetPreset,
+  backgroundPreset,
+  onTransitionStart as onTransitionStartEffect,
+} from '../navigation/transitions/effects';
+import restoreKeyboard from './restoreKeyboard';
 
-const onTransitionEnd = () => store.dispatch(updateTransitionProps({ isTransitioning: false }));
-const onTransitionStart = () => store.dispatch(updateTransitionProps({ isTransitioning: true }));
+const onTransitionEnd = () => store.dispatch(updateStackTransitionProps({ isTransitioning: false }));
+const onTransitionStart = () => store.dispatch(updateStackTransitionProps({ isTransitioning: true }));
 
 const SwipeStack = createMaterialTopTabNavigator({
   ProfileScreen: {
@@ -42,6 +49,7 @@ const SwipeStack = createMaterialTopTabNavigator({
   },
 }, {
   headerMode: 'none',
+  initialLayout: deviceUtils.dimensions,
   initialRouteName: 'WalletScreen',
   mode: 'modal',
   springConfig: {
@@ -58,53 +66,92 @@ const SwipeStack = createMaterialTopTabNavigator({
 });
 
 const MainNavigator = createStackNavigator({
-  ConfirmRequest: TransactionConfirmationScreenWithData,
-  ExampleScreen,
-  ExpandedAssetScreen: {
+  ConfirmRequest: {
     navigationOptions: {
-      effect: 'expanded',
+      ...expandedPreset,
+      onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart(); },
+    },
+    screen: TransactionConfirmationScreenWithData,
+  },
+  ExampleScreen,
+  ExchangeModal: {
+    navigationOptions: {
+      ...expandedPreset,
       gestureResponseDistance: {
         vertical: deviceUtils.dimensions.height,
       },
+      onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart(); },
+    },
+    params: {
+      isGestureBlocked: false,
+    },
+    screen: ExchangeModalNavigator,
+  },
+  ExpandedAssetScreen: {
+    navigationOptions: {
+      ...expandedPreset,
+      onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart(); },
     },
     screen: ExpandedAssetScreenWithData,
   },
-  ImportSeedPhraseSheet: ImportSeedPhraseSheetWithData,
+  ImportSeedPhraseSheet: {
+    navigationOptions: {
+      ...sheetPreset,
+      onTransitionStart: props => { sheetPreset.onTransitionStart(props); onTransitionStart(); },
+    },
+    screen: ImportSeedPhraseSheetWithData,
+  },
   ReceiveModal: {
     navigationOptions: {
-      effect: 'expanded',
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height,
-      },
+      ...expandedPreset,
+      onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart(); },
     },
     screen: ReceiveModal,
   },
-  SendSheet: SendSheetWithData,
+  SendSheet: {
+    navigationOptions: {
+      ...sheetPreset,
+      onTransitionStart: props => {
+        onTransitionStart(props);
+        sheetPreset.onTransitionStart(props)
+        restoreKeyboard();
+      },
+    },
+    screen: SendSheetWithData,
+  },
   SettingsModal: {
     navigationOptions: {
-      effect: 'expanded',
       gesturesEnabled: false,
+      ...expandedPreset,
+      onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart(); },
     },
     screen: SettingsModal,
+    transparentCard: true,
+
   },
-  SwipeLayout: SwipeStack,
+  SwipeLayout: {
+    navigationOptions: {
+      ...backgroundPreset,
+    },
+    screen: SwipeStack,
+  },
   WalletConnectConfirmationModal: {
     navigationOptions: {
-      effect: 'expanded',
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height,
-      },
+      ...expandedPreset,
+      onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart(); },
     },
     screen: WalletConnectConfirmationModal,
   },
 }, {
+  defaultNavigationOptions: {
+    onTransitionEnd,
+    onTransitionStart,
+  },
+  disableKeyboardHandling: true, // XXX not sure about this from rebase
   headerMode: 'none',
   initialRouteName: 'SwipeLayout',
+  keyboardDismissMode: 'none', // true?
   mode: 'modal',
-  onTransitionEnd,
-  onTransitionStart,
-  transitionConfig: buildTransitions(Navigation, { expanded, sheet }),
-  transparentCard: true,
 });
 
 const AppContainer = createAppContainer(MainNavigator);
@@ -124,6 +171,12 @@ const AppContainerWithAnalytics = ({ ref, screenProps }) => (
 
       if (routeName !== prevRouteName) {
         let paramsToTrack = null;
+
+        if (prevRouteName === 'MainExchangeScreen' && routeName === 'WalletScreen') {
+          store.dispatch(updateStackTransitionProps({ blurColor: null }));
+        } else if (prevRouteName === 'WalletScreen' && routeName === 'MainExchangeScreen') {
+          store.dispatch(updateStackTransitionProps({ blurColor: colors.alpha(colors.black, 0.9) }));
+        }
 
         if (routeName === 'ExpandedAssetScreen') {
           const { asset, type } = params;

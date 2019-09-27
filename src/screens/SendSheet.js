@@ -21,7 +21,7 @@ import {
   SendAssetForm,
   SendAssetList,
   SendButton,
-  SendEmptyState,
+  SendContactList,
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
@@ -34,13 +34,14 @@ import {
 import { colors } from '../styles';
 import { deviceUtils, isNewValueForPath } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
+import { getLocalContacts } from '../handlers/commonStorage';
 
 const Container = styled(Column)`
   background-color: ${colors.white};
   height: 100%;
 `;
 
-const formatGastSpeedItem = (value, key) => {
+const formatGasSpeedItem = (value, key) => {
   const cost = get(value, 'txFee.native.value.display');
   const gwei = get(value, 'value.display');
   const time = get(value, 'estimatedTime.display');
@@ -55,7 +56,7 @@ const formatGastSpeedItem = (value, key) => {
 const labelOrder = ['slow', 'average', 'fast'];
 
 const formatGasSpeedItems = (gasPrices) => {
-  const gasItems = map(gasPrices, formatGastSpeedItem);
+  const gasItems = map(gasPrices, formatGasSpeedItem);
   return sortBy(gasItems, ({ value }) => indexOf(labelOrder, value));
 };
 
@@ -91,16 +92,19 @@ class SendSheet extends Component {
   }
 
   state = {
+    contacts: [],
+    currentInput: '',
     isAuthorizing: false,
   }
 
-  componentDidMount() {
+  componentDidMount = async () => {
     const { navigation, sendUpdateRecipient } = this.props;
     const address = get(navigation, 'state.params.address');
 
     if (address) {
       sendUpdateRecipient(address);
     }
+    this.onUpdateContacts()
   }
 
   componentDidUpdate(prevProps) {
@@ -223,6 +227,16 @@ class SendSheet extends Component {
     });
   }
 
+  onUpdateContacts = async () => {
+    const contacts = await getLocalContacts();
+    this.setState({ contacts });
+  }
+
+  onChangeInput = (event) => {
+    this.setState({ currentInput: event });
+    this.props.sendUpdateRecipient(event);
+  }
+
   render() {
     const {
       allAssets,
@@ -245,11 +259,22 @@ class SendSheet extends Component {
         <KeyboardAvoidingView behavior="padding" enabled={!showAssetList}>
           <Container align="center">
             <SendHeader
+              contacts={this.state.contacts}
               isValid={isValidAddress}
-              onChangeAddressInput={sendUpdateRecipient}
+              isValidAddress={isValidAddress}
+              onChangeAddressInput={this.onChangeInput}
+              onPressPaste={sendUpdateRecipient}
+              onUpdateContacts={this.onUpdateContacts}
               recipient={recipient}
             />
-            {showEmptyState && <SendEmptyState onPressPaste={sendUpdateRecipient} />}
+            {showEmptyState && (
+              <SendContactList
+                allAssets={this.state.contacts}
+                currentInput={this.state.currentInput}
+                onPressContact={sendUpdateRecipient}
+                onUpdateContacts={this.onUpdateContacts}
+              />
+            )}
             {showAssetList && (
               <SendAssetList
                 allAssets={allAssets}

@@ -1,3 +1,4 @@
+import { toLower } from 'lodash';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompose';
 import { createSelector } from 'reselect';
@@ -9,7 +10,7 @@ const accountAddressSelector = state => state.accountAddress;
 
 const lowerAccountAddressSelector = createSelector(
   [accountAddressSelector],
-  (accountAddress) => ({ accountAddress: accountAddress.toLowerCase() }),
+  (accountAddress) => ({ accountAddress: toLower(accountAddress) }),
 );
 
 export default Component => compose(
