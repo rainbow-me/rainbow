@@ -209,25 +209,62 @@
       "generic_error": "Oops, something went wrong"
     },
     "time": {
-      "ms": "ms",
-      "milisecond": "milisecond",
-      "miliseconds": "miliseconds",
-      "s": "s",
-      "sec": "sec",
-      "secs": "secs",
-      "second": "second",
-      "seconds": "seconds",
-      "min": "min",
-      "mins": "mins",
-      "minute": "minute",
-      "minutes": "minutes",
-      "hr": "hr",
-      "hrs": "hrs",
-      "hour": "hour",
-      "hours": "hours",
-      "day": "day",
-      "days": "days",
-      "now": "Now"
+      "days": {
+        "long": {
+          "singular": "day",
+          "plural": "days"
+        },
+        "micro": "d",
+        "short": {
+          "singular": "day",
+          "plural": "days"
+        }
+      },
+      "hours": {
+        "long": {
+          "singular": "hour",
+          "plural": "hours"
+        },
+        "micro": "h",
+        "short": {
+          "singular": "hr",
+          "plural": "hrs"
+        }
+      },
+      "milliseconds": {
+        "long": {
+          "singular": "millisecond",
+          "plural": "milliseconds"
+        },
+        "micro": "ms",
+        "short": {
+          "singular": "ms",
+          "plural": "ms"
+        }
+      },
+      "minutes": {
+        "long": {
+          "singular": "minute",
+          "plural": "minutes"
+        },
+        "micro": "m",
+        "short": {
+          "singular": "min",
+          "plural": "mins"
+        }
+      },
+      "now": "Now",
+      "seconds": {
+        "long": {
+          "singular": "second",
+          "plural": "seconds"
+        },
+        "micro": "s",
+        "short": {
+          "singular": "sec",
+          "plural": "secs"
+        }
+      }
     },
     "wallet": {
       "action": {

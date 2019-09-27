@@ -12,6 +12,8 @@ import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import StarIcon from '../icons/svg/StarIcon';
+import { SendCoinRow } from './index';
 
 const formatPercentageString = percentString => (
   percentString
@@ -70,7 +72,7 @@ const BalanceCoinRow = ({
   openSmallBalances,
   ...props
 }) => (
-  <ButtonPressAnimation onPress={(openSmallBalances || !item.isSmall) && onPress} scaleTo={0.96}>
+  <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
     <CoinRow
       onPress={onPress}
       onPressSend={onPressSend}

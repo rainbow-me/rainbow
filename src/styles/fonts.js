@@ -9,6 +9,7 @@ font.family = {
 
 font.letterSpacing = {
   /* eslint-disable sort-keys */
+  tightest: -0.3,
   tighter: -0.2,
   tight: -0.1,
   loose: 0.15,
@@ -21,7 +22,7 @@ font.lineHeight = {
   tight: 16,
   normal: 20,
   loose: 21,
-  looser: 25,
+  looser: 26,
   loosest: 28,
 };
 
@@ -40,6 +41,7 @@ font.size = {
   blarge: '21px',
   big: '22px',
   bigger: '26px',
+  biggest: '27px',
   h1: '42px',
   h2: '30px',
   h3: '24px',

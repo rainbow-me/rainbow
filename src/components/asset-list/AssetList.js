@@ -25,6 +25,7 @@ const AssetList = ({
     ? (
       <EmptyAssetList
         {...props}
+        hideHeader={hideHeader}
         isWalletEthZero={isImporting ? false : isWalletEthZero}
       />
     ) : (

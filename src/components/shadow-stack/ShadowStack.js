@@ -11,15 +11,21 @@ const ChildrenWrapper = styled.View`
   background-color: ${({ backgroundColor }) => backgroundColor || colors.transparent};
   border-radius: ${({ borderRadius }) => borderRadius};
   overflow: hidden;
-  justify-content: center;
-  align-items: center;
 `;
 
 const ShadowStackContainer = styled.View`
+  ${({ height }) => (
+    height
+      ? `height: ${height};`
+      : ''
+  )}
+  ${({ width }) => (
+    width
+      ? `width: ${width};`
+      : ''
+  )}
   background-color: ${({ backgroundColor }) => backgroundColor || colors.transparent};
   border-radius: ${({ borderRadius }) => borderRadius};
-  height: ${({ height }) => height};
-  width: ${({ width }) => width};
   z-index: 1;
 `;
 
@@ -27,7 +33,7 @@ const ShadowItemPropBlacklist = ['children', 'shadowProps', 'shadows', 'style'];
 
 export default class ShadowStack extends PureComponent {
   static propTypes = {
-    borderRadius: PropTypes.number.isRequired,
+    borderRadius: PropTypes.number,
     children: PropTypes.node,
     childrenWrapperStyle: stylePropType,
     height: PropTypes.number.isRequired,
@@ -38,6 +44,7 @@ export default class ShadowStack extends PureComponent {
   }
 
   static defaultProps = {
+    borderRadius: 0,
     shadows: [],
   }
 

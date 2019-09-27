@@ -109,6 +109,7 @@ const hasRowChanged = (r1, r2) => {
 
 class RecyclerAssetList extends Component {
   static propTypes = {
+    externalScrollView: PropTypes.any,
     fetchData: PropTypes.func,
     hideHeader: PropTypes.bool,
     openFamilyTabs: PropTypes.object,
@@ -155,6 +156,7 @@ class RecyclerAssetList extends Component {
       dataProvider: new DataProvider(hasRowChanged, this.getStableId),
       headersIndices: [],
       isRefreshing: false,
+      itemsCount: 0,
     };
 
     this.layoutProvider = new LayoutProvider(
@@ -168,7 +170,7 @@ class RecyclerAssetList extends Component {
           return ViewTypes.HEADER;
         }
 
-        if (index === this.state.length - 1) {
+        if (index === this.state.itemsCount - 1) {
           return ViewTypes.FOOTER;
         }
 
@@ -211,7 +213,7 @@ class RecyclerAssetList extends Component {
                 return {
                   get: ViewTypes.UNIQUE_TOKEN_ROW,
                   isFirst: index === headersIndices[collectiblesIndex] + 1,
-                  isLast: index === this.state.length - 2,
+                  isLast: index === this.state.itemsCount - 2,
                   rowCount: get(sections, `[${collectiblesIndex}].data[${familyIndex}].tokens`, []).length,
                 };
               }
@@ -219,7 +221,7 @@ class RecyclerAssetList extends Component {
             return {
               get: ViewTypes.UNIQUE_TOKEN_ROW_CLOSED,
               isFirst: index === headersIndices[collectiblesIndex] + 1,
-              isLast: index === this.state.length - 2,
+              isLast: index === this.state.itemsCount - 2,
             };
           }
         }
@@ -304,7 +306,7 @@ class RecyclerAssetList extends Component {
       areSmallCollectibles,
       dataProvider: state.dataProvider.cloneWithRows(items),
       headersIndices,
-      length: items.length,
+      itemsCount: items.length,
     };
   }
 
@@ -611,7 +613,13 @@ class RecyclerAssetList extends Component {
   };
 
   render() {
-    const { hideHeader, renderAheadOffset, ...props } = this.props;
+    const {
+      externalScrollView,
+      fetchData,
+      hideHeader,
+      renderAheadOffset,
+      ...props
+    } = this.props;
     const { dataProvider, headersIndices } = this.state;
 
     return (
@@ -620,8 +628,9 @@ class RecyclerAssetList extends Component {
           <RecyclerListView
             {...props}
             dataProvider={dataProvider}
-            extendedState={{ headersIndices }}
+            extendedState={headersIndices}
             itemAnimator={layoutItemAnimator}
+            externalScrollView={externalScrollView}
             layoutProvider={this.layoutProvider}
             onScroll={this.handleScroll}
             ref={this.handleListRef}
@@ -632,7 +641,7 @@ class RecyclerAssetList extends Component {
               top: hideHeader ? 0 : AssetListHeader.height,
             }}
             scrollViewProps={{
-              refreshControl: this.renderRefreshControl(),
+              refreshControl: fetchData && this.renderRefreshControl(),
             }}
             style={{
               backgroundColor: colors.white,

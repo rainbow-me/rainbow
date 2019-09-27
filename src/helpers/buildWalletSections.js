@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import {
   compact,
-  findIndex,
   flattenDeep,
   get,
   groupBy,
@@ -95,19 +94,17 @@ const withUniswapSection = (
   nativeCurrency,
   uniswap,
   uniswapTotal,
-) => {
-  return {
-    data: uniswap,
-    header: {
-      title: 'Investments',
-      totalItems: uniswap.length,
-      totalValue: uniswapTotal,
-    },
-    investments: true,
-    name: 'investments',
-    renderItem: uniswapRenderItem,
-  };
-};
+) => ({
+  data: uniswap,
+  header: {
+    title: 'Investments',
+    totalItems: uniswap.length,
+    totalValue: uniswapTotal,
+  },
+  investments: true,
+  name: 'investments',
+  renderItem: uniswapRenderItem,
+});
 
 const withBalanceSection = (
   allAssets,

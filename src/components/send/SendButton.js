@@ -32,10 +32,9 @@ const SendButton = ({
       {...props}
       disabled={disabled}
       isAuthorizing={isAuthorizing}
+      label={label}
       onLongPress={onLongPress}
-    >
-      {label}
-    </HoldToAuthorizeButton>
+    />
   );
 };
 

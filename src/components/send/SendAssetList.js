@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Fragment } from 'react';
 import {
   compose,
   onlyUpdateForKeys,
@@ -26,8 +26,8 @@ const familyHeaderHeight = 64;
 const dividerHeight = 18;
 
 const Divider = styled.View`
+  background-color: ${colors.lighterGrey};
   height: 2px;
-  background-color: ${colors.lightGrey};
   margin: 10px 19px;
   width: 100%;
 `;
@@ -65,8 +65,7 @@ class SendAssetList extends React.Component {
       const renderSize = familyHeaderHeight + this.props.uniqueTokens[index].data.length * rowHeight;
       const screenHeight = this.position + this.componentHeight;
       if(heightBelow + renderSize + 64 > screenHeight) {
-        const diff = this.position + (heightBelow + renderSize - screenHeight + familyHeaderHeight);
-        if( renderSize < this.componentHeight) {
+        if(renderSize < this.componentHeight) {
           setTimeout(() => {
             this.rlv.scrollToOffset(0, this.position + (heightBelow + renderSize - screenHeight + familyHeaderHeight), true);
           }, 10);
@@ -90,12 +89,12 @@ class SendAssetList extends React.Component {
 
   balancesRenderItem = item => <this.TokenItem {...item} />;
 
-  balancesRenderLastItem = item => {
-    return <>
+  balancesRenderLastItem = item => (
+    <Fragment>
       <this.TokenItem {...item} />
       <Divider />
-    </>;
-  };
+    </Fragment>
+  );
 
   collectiblesRenderItem = item => {
     return <View>

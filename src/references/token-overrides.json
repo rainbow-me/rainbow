@@ -1,0 +1,161 @@
+{
+  "ETH": {
+    "name": "Ethereum"
+  },
+  "0x960b236A07cf122663c4303350609A66A7B288C0": {
+    "name": "Aragon"
+  },
+  "0x0D8775F648430679A709E98d2b0Cb6250d2887EF": {
+    "name": "Basic Attention Token"
+  },
+  "0x107c4504cd79C5d2696Ea0030a8dD4e92601B82e": {
+    "name": "Bloom"
+  },
+  "0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C": {
+    "name": "Bancor"
+  },
+  "0xF5DCe57282A584D2746FaF1593d3121Fcac444dC": {
+    "name": "Compound Dai"
+  },
+  "0x41e5560054824eA6B0732E656E3Ad64E20e94E45": {
+    "name": "Civic"
+  },
+  "0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359": {
+    "name": "Dai"
+  },
+  "0x4f3AfEC4E5a3F2A6a1A411DEF7D7dFe50eE057bF": {
+    "name": "Digix Gold Token"
+  },
+  "0x4946Fcea7C692606e8908002e55A582af44AC121": {
+    "name": "FOAM"
+  },
+  "0x419D0d8BdD9aF5e606Ae2232ed285Aff190E711b": {
+    "name": "FunFair"
+  },
+  "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf": {
+    "name": "DAOstack"
+  },
+  "0x6810e776880C02933D47DB1b9fc05908e5386b96": {
+    "name": "Gnosis"
+  },
+  "0xa74476443119A942dE498590Fe1f2454d7D4aC0d": {
+    "name": "Golem"
+  },
+  "0x12B19D3e2ccc14Da04FAe33e63652ce469b3F2FD": {
+    "name": "Grid+"
+  },
+  "0x818Fc6C2Ec5986bc6E2CBf00939d90556aB12ce5": {
+    "name": "Kin"
+  },
+  "0xdd974D5C2e2928deA5F71b9825b8b646686BD200": {
+    "name": "Kyber Network"
+  },
+  "0x514910771AF9Ca656af840dff83E8264EcF986CA": {
+    "name": "Chainlink"
+  },
+  "0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD": {
+    "name": "Loopring"
+  },
+  "0x6c6EE5e31d828De241282B9606C8e98Ea48526E2": {
+    "name": "Holo"
+  },
+  "0xA4e8C3Ec456107eA67d3075bF9e3DF3A75823DB0": {
+    "name": "LoomToken"
+  },
+  "0x58b6A8A3302369DAEc383334672404Ee733aB239": {
+    "name": "Livepeer"
+  },
+  "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942": {
+    "name": "Decentraland"
+  },
+  "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0": {
+    "name": "Matic Network"
+  },
+  "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2": {
+    "name": "Maker"
+  },
+  "0xec67005c4E498Ec7f55E092bd1d35cbC47C91892": {
+    "name": "Melon"
+  },
+  "0xB62132e35a6c13ee1EE0f84dC5d40bad8d815206": {
+    "name": "Nexo"
+  },
+  "0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671": {
+    "name": "Numeraire"
+  },
+  "0x8E870D67F660D95d5be530380D0eC0bd388289E1": {
+    "name": "Paxos Standard"
+  },
+  "0x93ED3FBe21207Ec2E8f2d3c3de6e058Cb73Bc04d": {
+    "name": "Kleros"
+  },
+  "0x6758B7d441a9739b98552B373703d8d3d14f9e62": {
+    "name": "POA Network"
+  },
+  "0x255Aa6DF07540Cb5d3d297f0D0D4D84cb52bc8e6": {
+    "name": "Raiden"
+  },
+  "0x408e41876cCCDC0F92210600ef50372656052a38": {
+    "name": "Republic"
+  },
+  "0x1985365e9f78359a9B6AD760e32412f4a445E862": {
+    "name": "Augur"
+  },
+  "0x607F4C5BB672230e8672085532f7e901544a7375": {
+    "name": "iExec"
+  },
+  "0xB4EFd85c19999D84251304bDA99E90B92300Bd93": {
+    "name": "Rocket Pool"
+  },
+  "0x4156D3342D5c385a87D264F90653733592000581": {
+    "name": "SALT"
+  },
+  "0x42456D7084eacF4083f1140d3229471bbA2949A8": {
+    "name": "Synthetix ETH"
+  },
+  "0x744d70FDBE2Ba4CF95131626614a1763DF805B9E": {
+    "name": "Status"
+  },
+  "0x2Dea20405c52Fb477ecCa8Fe622661d316Ac5400": {
+    "name": "Synthetix"
+  },
+  "0x42d6622deCe394b54999Fbd73D108123806f6a18": {
+    "name": "SpankChain"
+  },
+  "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC": {
+    "name": "Storj"
+  },
+  "0x0cbe2df57ca9191b64a7af3baa3f946fa7df2f25": {
+    "name": "Synthetix USD"
+  },
+  "0xaAAf91D9b90dF800Df4F55c205fd6989c977E73a": {
+    "name": "Monolith"
+  },
+  "0xdac17f958d2ee523a2206206994597c13d831ec7": {
+    "name": "Tether"
+  },
+  "0x8dd5fbCe2F6a956C3022bA3663759011Dd51e73E": {
+    "name": "TrueUSD"
+  },
+  "0x09cabEC1eAd1c0Ba254B09efb3EE13841712bE14": {
+    "name": "Uniswap V1"
+  },
+  "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48": {
+    "name": "USD Coin"
+  },
+  "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599": {
+    "name": "Wrapped Bitcoin"
+  },
+  "0x09fE5f0236F0Ea5D930197DCE254d77B04128075": {
+    "name": "Wrapped CryptoKitties"
+  },
+  "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2": {
+    "name": "Wrapped Ether"
+  },
+  "0xB4272071eCAdd69d933AdcD19cA99fe80664fc08": {
+    "name": "CryptoFranc"
+  },
+  "0xE41d2489571d322189246DaFA5ebDe1F4699F498": {
+    "name": "0x"
+  }
+}

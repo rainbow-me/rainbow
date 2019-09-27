@@ -1,55 +1,67 @@
 {
   "USD": {
-    "symbol": "$",
-    "currency": "USD",
-    "label": "United States Dollar",
-    "decimals": 2,
     "alignment": "left",
     "assetLimit": 1,
-    "emojiName": "us"
+    "currency": "USD",
+    "decimals": 2,
+    "emojiName": "us",
+    "label": "United States Dollar",
+    "mask": "[099999999999]{.}[00]",
+    "placeholder": "0.00",
+    "symbol": "$"
   },
   "CNY": {
-    "symbol": "¥",
-    "currency": "CNY",
-    "label": "Chinese Yuan",
-    "decimals": 2,
     "alignment": "left",
     "assetLimit": 1,
-    "emojiName": "cn"
+    "currency": "CNY",
+    "decimals": 2,
+    "emojiName": "cn",
+    "label": "Chinese Yuan",
+    "mask": "[099999999999]{.}[00]",
+    "placeholder": "0.00",
+    "symbol": "¥"
   },
   "KRW": {
-    "symbol": "₩",
-    "currency": "KRW",
-    "label": "South Korean Won",
-    "decimals": 0,
     "alignment": "left",
     "assetLimit": 1,
-    "emojiName": "kr"
+    "currency": "KRW",
+    "decimals": 0,
+    "emojiName": "kr",
+    "label": "South Korean Won",
+    "mask": "[099999999999]{.}[00]",
+    "placeholder": "0.00",
+    "symbol": "₩"
   },
   "RUB": {
-    "symbol": "₽",
-    "currency": "RUB",
-    "label": "Russian Ruble",
-    "decimals": 2,
     "alignment": "right",
     "assetLimit": 1,
-    "emojiName": "ru"
+    "currency": "RUB",
+    "decimals": 2,
+    "emojiName": "ru",
+    "label": "Russian Ruble",
+    "mask": "[099999999999]{.}[00]",
+    "placeholder": "0.00",
+    "symbol": "₽"
   },
   "EUR": {
-    "symbol": "€",
-    "currency": "EUR",
-    "label": "Euro",
-    "decimals": 2,
     "alignment": "left",
     "assetLimit": 1,
-    "emojiName": "flag-eu"
+    "currency": "EUR",
+    "decimals": 2,
+    "emojiName": "flag-eu",
+    "label": "Euro",
+    "mask": "[099999999999]{.}[00]",
+    "placeholder": "0.00",
+    "symbol": "€"
   },
   "ETH": {
-    "symbol": "Ξ",
-    "currency": "ETH",
-    "label": "Ethereum",
-    "decimals": 8,
     "alignment": "right",
-    "assetLimit": 0.001
+    "assetLimit": 0.001,
+    "currency": "ETH",
+    "decimals": 8,
+    "label": "Ethereum",
+    "mask": "[99999999999]{.}[999999999999999999]{ ETH}",
+    "placeholder": "0 ETH",
+    "symbol": "Ξ"
   }
 }

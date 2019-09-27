@@ -27,7 +27,6 @@ export const convertAmountToRawAmount = (value, decimals) => BigNumber(value).ti
  */
 export const convertNumberToString = value => BigNumber(`${value}`).toFixed();
 
-
 /**
  * @desc compares if numberOne is greater than numberTwo
  * @param  {Number}   numberOne
@@ -59,7 +58,6 @@ export const mod = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
   .mod(BigNumber(`${numberTwo}`))
   .toFixed();
 
-
 /**
  * @desc compares if numberOne is greater than or equal to numberTwo
  * @param  {Number}   numberOne
@@ -67,7 +65,6 @@ export const mod = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
  * @return {String}
  */
 export const greaterThanOrEqual = (numberOne, numberTwo) => BigNumber(`${numberOne}`).comparedTo(BigNumber(`${numberTwo}`)) >= 0;
-
 
 /**
  * @desc real floor divides two numbers
@@ -86,6 +83,19 @@ export const floorDivide = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
  */
 export const countDecimalPlaces = value => BigNumber(`${value}`).dp();
 
+export const updatePrecisionToDisplay = (amount, nativePrice) => {
+  const bnAmount = BigNumber(`${amount}`);
+  const significantDigits = BigNumber(`${nativePrice}`)
+    .decimalPlaces(0, BigNumber.ROUND_DOWN)
+    .sd(true);
+  const truncatedPrecision = BigNumber(significantDigits)
+    .plus(2, 10)
+    .toNumber();
+  const result = bnAmount.decimalPlaces(truncatedPrecision, BigNumber.ROUND_DOWN);
+  return result.isZero()
+    ? BigNumber(bnAmount.toPrecision(1, BigNumber.ROUND_DOWN)).toFixed()
+    : result.toFixed();
+};
 
 /**
  * @desc format inputOne value to signficant decimals given inputTwo
@@ -156,7 +166,6 @@ export const divide = (numberOne, numberTwo) => BigNumber(`${numberOne}`)
  */
 export const convertAmountFromNativeValue = (
   value,
-  asset,
   priceUnit,
 ) => BigNumber(value)
   .dividedBy(BigNumber(priceUnit))
@@ -353,47 +362,3 @@ export const convertRawAmountToDecimalFormat = (value, decimals = 18) => BigNumb
   .toFixed();
 
 export const fromWei = (number) => convertRawAmountToDecimalFormat(number, 18);
-
-/**
- * @desc ellipse text to max maxLength
- * @param  {String}  [text = '']
- * @param  {Number}  [maxLength = 9999]
- * @return {Intercom}
- */
-export const ellipseText = (text = '', maxLength = 9999) => {
-  if (text.length <= maxLength) return text;
-  const _maxLength = maxLength - 3;
-  let ellipse = false;
-  let currentLength = 0;
-  const result = `${text
-    .split(' ')
-    .filter(word => {
-      currentLength += word.length;
-      if (ellipse || currentLength >= _maxLength) {
-        ellipse = true;
-        return false;
-      }
-      return true;
-    })
-    .join(' ')}...`;
-  return result;
-};
-
-/**
- * @desc ellipse text to max maxLength
- * @param  {String}  [text = '']
- * @param  {Number}  [maxLength = 9999]
- * @return {Intercom}
- */
-export const ellipseAddress = (text = '') => {
-  const addressArr = text.split('');
-  const firstFour = text.split('', 4).join('');
-  const lastFour = addressArr
-    .reverse()
-    .join('')
-    .split('', 4)
-    .reverse()
-    .join('');
-  const result = `${firstFour}...${lastFour}`;
-  return result;
-};

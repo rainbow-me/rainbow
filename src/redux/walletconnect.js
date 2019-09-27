@@ -14,7 +14,7 @@ import {
   saveWalletConnectSession,
   removeWalletConnect,
   removeWalletConnectSessions,
-} from '../handlers/commonStorage';
+} from '../handlers/localstorage/walletconnect';
 import { sendRpcCall } from '../handlers/web3';
 import { getFCMToken, checkPushNotificationPermissions } from '../model/firebase';
 import { addRequestToApprove } from './requests';

@@ -10,10 +10,12 @@ import {
 
 const mapStateToProps = ({
   settings: {
+    chainId,
     language,
     nativeCurrency,
   },
 }) => ({
+  chainId,
   language,
   nativeCurrency,
 });

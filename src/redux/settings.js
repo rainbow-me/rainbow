@@ -4,7 +4,7 @@ import {
   getNativeCurrency,
   saveLanguage,
   saveNativeCurrency,
-} from '../handlers/commonStorage';
+} from '../handlers/localstorage/globalSettings';
 import { dataClearState, dataInit } from './data';
 import { ethereumUtils } from '../utils';
 import { web3SetHttpProvider } from '../handlers/web3';

@@ -1,5 +1,11 @@
 import { differenceInMinutes } from 'date-fns';
-import { omit, pickBy } from 'lodash';
+import {
+  find,
+  omit,
+  orderBy,
+  pickBy,
+} from 'lodash';
+import { removeFirstEmojiFromString, makeSpaceAfterFirstEmoji } from '../helpers/emojiHandler';
 
 const defaultVersion = '0.1.0';
 const transactionsVersion = '0.2.0';
@@ -73,8 +79,78 @@ const getIsWalletEmptyKey = (accountAddress, network) => `iswalletempty-${accoun
 const getRequestsKey = (accountAddress, network) => `requests-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 const getTransactionsKey = (accountAddress, network) => `transactions-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 const getUniqueTokensKey = (accountAddress, network) => `uniquetokens-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
-const getUniswapKey = (accountAddress, network) => `uniswap-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+const getUniswapAllowancesKey = (accountAddress, network) => `uniswapallowances-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+const getUniswapLiquidityInfoKey = (accountAddress, network) => `uniswap-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
 const getUniswapLiquidityKey = (accountAddress, network) => `uniswapliquidity-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+const getUniswapTokenReservesKey = (accountAddress, network) => `uniswapreserves-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+
+/**
+ * @desc get Uniswap allowances
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getUniswapAllowances = async (accountAddress, network) => {
+  const allowances = await getLocal(getUniswapAllowancesKey(accountAddress, network));
+  return allowances ? allowances.data : {};
+};
+
+/**
+ * @desc save Uniswap allowances
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const saveUniswapAllowances = async (accountAddress, allowances, network) => {
+  await saveLocal(
+    getUniswapAllowancesKey(accountAddress, network),
+    { data: allowances },
+  );
+};
+
+/**
+ * @desc remove Uniswap allowances
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const removeUniswapAllowances = (accountAddress, network) => {
+  const key = getUniswapAllowancesKey(accountAddress, network);
+  removeLocal(key);
+};
+
+/**
+ * @desc get Uniswap token reserves
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getUniswapTokenReserves = async (accountAddress, network) => {
+  const reserves = await getLocal(getUniswapTokenReservesKey(accountAddress, network));
+  return reserves ? reserves.data : {};
+};
+
+/**
+ * @desc save Uniswap token reserves
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ */
+export const saveUniswapTokenReserves = async (accountAddress, reserves, network) => {
+  await saveLocal(
+    getUniswapTokenReservesKey(accountAddress, network),
+    { data: reserves },
+  );
+};
+
+/**
+ * @desc remove Uniswap token reserves
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const removeUniswapTokenReserves = (accountAddress, network) => {
+  const key = getUniswapTokenReservesKey(accountAddress, network);
+  removeLocal(key);
+};
 
 /**
  * @desc get Uniswap liquidity tokens
@@ -111,36 +187,36 @@ export const removeUniswapLiquidityTokens = (accountAddress, network) => {
 };
 
 /**
- * @desc get Uniswap
+ * @desc get Uniswap liquidity info
  * @param  {String}   [address]
  * @param  {String}   [network]
  * @return {Object}
  */
-export const getUniswap = async (accountAddress, network) => {
-  const uniswap = await getLocal(getUniswapKey(accountAddress, network));
+export const getUniswapLiquidityInfo = async (accountAddress, network) => {
+  const uniswap = await getLocal(getUniswapLiquidityInfoKey(accountAddress, network));
   return uniswap ? uniswap.data : {};
 };
 
 /**
- * @desc save Uniswap
+ * @desc save Uniswap liquidity info
  * @param  {String}   [address]
  * @param  {String}   [network]
  */
-export const saveUniswap = async (accountAddress, uniswap, network) => {
+export const saveUniswapLiquidityInfo = async (accountAddress, uniswap, network) => {
   await saveLocal(
-    getUniswapKey(accountAddress, network),
+    getUniswapLiquidityInfoKey(accountAddress, network),
     { data: uniswap },
   );
 };
 
 /**
- * @desc remove Uniswap
+ * @desc remove Uniswap liquidity info
  * @param  {String}   [address]
  * @param  {String}   [network]
  * @return {Object}
  */
-export const removeUniswap = (accountAddress, network) => {
-  const key = getUniswapKey(accountAddress, network);
+export const removeUniswapLiquidityInfo = (accountAddress, network) => {
+  const key = getUniswapLiquidityInfoKey(accountAddress, network);
   removeLocal(key);
 };
 
@@ -513,4 +589,90 @@ export const getAppStoreReviewRequestCount = async () => {
 
 export const setAppStoreReviewRequestCount = async (newCount) => {
   await saveLocal('appStoreReviewRequestCount', { data: newCount });
+};
+
+/**
+ * @desc get local contacts
+ * @return {Table}
+ */
+export const getLocalContacts = async () => {
+  try {
+    const localContacts = await getLocal('localContacts');
+    return localContacts ? localContacts.data : [];
+  } catch {
+    return [];
+  }
+};
+
+/**
+ * @desc get local contacts
+ * @return {Number}
+ */
+export const getNumberOfLocalContacts = async () => {
+  const contacts = await getLocalContacts();
+  return contacts.length;
+};
+
+/**
+ * @desc get local contacts
+ * @param  {String}   [address]
+ * @return {Object}
+ */
+export const getSelectedLocalContact = async (address) => {
+  let contacts = await getLocalContacts();
+  if (!contacts) contacts = [];
+  const localContact = find(contacts, (contact) => (contact.address === address));
+  return localContact || false;
+};
+
+/**
+ * @desc add new contact to the local contacts
+ * @param  {String}   [address]
+ * @param  {String}   [nickname]
+ * @param  {Number}   [color]
+ * @return {Void}
+ */
+export const addNewLocalContact = async (address, nickname, color) => {
+  let contacts = await getLocalContacts();
+  if (!contacts) contacts = [];
+
+  for (let i = 0; i < contacts.length; i++) {
+    if (contacts[i].address === address) {
+      contacts.splice(i, 1);
+      i--;
+    }
+  }
+
+  contacts.push({
+    address,
+    color,
+    nickname: makeSpaceAfterFirstEmoji(nickname),
+  });
+
+  const sortedContacts = orderBy(
+    contacts,
+    [contact => {
+      let newContact = contact.nickname.toLowerCase();
+      newContact = removeFirstEmojiFromString(newContact);
+      return newContact;
+    }],
+    ['desc'],
+  );
+  await saveLocal('localContacts', { data: sortedContacts });
+};
+
+/**
+ * @desc delete contact from the local contacts
+ * @param  {String}   [address]
+ * @return {Void}
+ */
+export const deleteLocalContact = async (address) => {
+  const contacts = await getLocalContacts();
+  for (let i = 0; i < contacts.length; i++) {
+    if (contacts[i].address === address) {
+      contacts.splice(i, 1);
+      i--;
+    }
+  }
+  await saveLocal('localContacts', { data: contacts });
 };

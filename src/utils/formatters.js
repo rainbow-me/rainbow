@@ -1,6 +1,11 @@
 import { isString } from 'lodash';
+import GraphemeSplitter from 'grapheme-splitter';
+
+const grapheme = new GraphemeSplitter();
 
 const firstCharacterOfString = n => n.charAt(0);
+
+export const getFirstGrapheme = string => grapheme.splitGraphemes(string)[0];
 
 export const initials = (string) => (
   (!string || !isString(string))
@@ -25,6 +30,7 @@ export function removeLeadingZeros(value = '') {
 }
 
 export default {
+  getFirstGrapheme,
   initials,
   removeLeadingZeros,
 };

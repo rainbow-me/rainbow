@@ -4,7 +4,7 @@ import {
   getUniqueTokens,
   saveUniqueTokens,
   removeUniqueTokens,
-} from '../handlers/commonStorage';
+} from '../handlers/localstorage/storage';
 import { dedupeAssetsWithFamilies } from './data';
 import { getFamilies } from '../parsers/uniqueTokens';
 
