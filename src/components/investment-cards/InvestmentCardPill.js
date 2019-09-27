@@ -12,27 +12,14 @@ const Pill = styled(Centered)`
   border-radius: 9.5;
 `;
 
-const InvestmentCardPill = ({
-  hideIcon,
-  reverse,
-  symbol,
-  value,
-}) => {
+const InvestmentCardPill = ({ hideIcon, reverse, symbol, value }) => {
   const icon = hideIcon ? null : (
-    <CoinIcon
-      showShadow={false}
-      size={18}
-      symbol={symbol}
-    />
+    <CoinIcon showShadow={false} size={18} symbol={symbol} />
   );
 
   const label = (
     <Pill>
-      <Text
-        letterSpacing="loose"
-        size="smaller"
-        weight="semibold"
-      >
+      <Text letterSpacing="loose" size="smaller" weight="semibold">
         {`${value} ${symbol}`}
       </Text>
     </Pill>
@@ -41,10 +28,7 @@ const InvestmentCardPill = ({
   const children = [icon, label];
   return (
     <RowWithMargins margin={5}>
-      {reverse
-        ? children.reverse()
-        : children
-      }
+      {reverse ? children.reverse() : children}
     </RowWithMargins>
   );
 };

@@ -1,8 +1,4 @@
-import {
-  compose,
-  withHandlers,
-  withProps,
-} from 'recompact';
+import { compose, withHandlers, withProps } from 'recompact';
 import { setDisplayName } from 'recompose';
 import {
   withAccountAddress,
@@ -23,10 +19,12 @@ export default compose(
   withIsWalletEmpty,
   withRequests,
   withHandlers({
-    onPressBackButton: ({ navigation }) => () => navigation.navigate('WalletScreen'),
-    onPressSettings: ({ navigation }) => () => navigation.navigate('SettingsModal'),
+    onPressBackButton: ({ navigation }) => () =>
+      navigation.navigate('WalletScreen'),
+    onPressSettings: ({ navigation }) => () =>
+      navigation.navigate('SettingsModal'),
   }),
   withProps(({ isWalletEmpty, transactionsCount }) => ({
     isEmpty: isWalletEmpty && !transactionsCount,
-  })),
+  }))
 )(ProfileScreen);

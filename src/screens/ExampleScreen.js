@@ -9,7 +9,7 @@ import { colors, position } from '../styles';
 class ExampleScreen extends PureComponent {
   static propTypes = {
     initializeWallet: PropTypes.func,
-  }
+  };
 
   componentDidMount = async () => {
     try {
@@ -37,7 +37,7 @@ class ExampleScreen extends PureComponent {
         />
       </Centered>
     </Page>
-  )
+  );
 }
 
 export default compose(

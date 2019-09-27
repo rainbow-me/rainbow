@@ -1,10 +1,5 @@
 import { get } from 'lodash';
-import {
-  compose,
-  defaultProps,
-  withHandlers,
-  withProps,
-} from 'recompact';
+import { compose, defaultProps, withHandlers, withProps } from 'recompact';
 import { createSelector } from 'reselect';
 import { withAccountData, withUniqueTokens } from '../hoc';
 import { deviceUtils } from '../utils';
@@ -15,15 +10,12 @@ const navigationSelector = state => state.navigation;
 
 const withExpandedAssets = (containerPadding, navigation) => ({
   ...get(navigation, 'state.params', {}),
-  panelWidth: deviceUtils.dimensions.width - (containerPadding * 2),
+  panelWidth: deviceUtils.dimensions.width - containerPadding * 2,
 });
 
 const buildExpandedAssetsSelector = createSelector(
-  [
-    containerPaddingSelector,
-    navigationSelector,
-  ],
-  withExpandedAssets,
+  [containerPaddingSelector, navigationSelector],
+  withExpandedAssets
 );
 
 export default compose(
@@ -31,5 +23,7 @@ export default compose(
   withUniqueTokens,
   defaultProps(ExpandedAssetScreen.defaultProps),
   withProps(buildExpandedAssetsSelector),
-  withHandlers({ onPressBackground: ({ navigation }) => () => navigation.goBack() }),
+  withHandlers({
+    onPressBackground: ({ navigation }) => () => navigation.goBack(),
+  })
 )(ExpandedAssetScreen);

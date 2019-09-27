@@ -1,7 +1,7 @@
+/* eslint-disable no-undef */
 jest.autoMockOff();
 jest.mock('react-native-keychain', () => ({
-  setGenericPassword: jest.fn(),
   getGenericPassword: jest.fn(),
-  resetGenericPassword: jest.fn()
+  resetGenericPassword: jest.fn(),
+  setGenericPassword: jest.fn(),
 }));
-

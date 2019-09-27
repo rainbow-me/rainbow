@@ -24,19 +24,20 @@ export const TokenFamilyWrapPaddingTop = 6;
 const EnhancedUniqueTokenRow = compose(
   withNavigation,
   withHandlers({
-    onPress: ({ assetType, navigation }) => (item) => {
+    onPress: ({ assetType, navigation }) => item => {
       navigation.navigate('ExpandedAssetScreen', {
         asset: item,
         type: assetType,
       });
     },
-    onPressSend: ({ navigation }) => (asset) => {
+    onPressSend: ({ navigation }) => asset => {
       navigation.navigate('SendSheet', { asset });
     },
-  }),
+  })
 )(UniqueTokenRow);
 
-const getHeight = (openFamilyTab) => (openFamilyTab ? UniqueTokenRow.height + 100 : 100);
+const getHeight = openFamilyTab =>
+  openFamilyTab ? UniqueTokenRow.height + 100 : 100;
 
 const TokenFamilyWrap = ({
   areChildrenVisible,
@@ -80,7 +81,6 @@ TokenFamilyWrap.propTypes = {
   familyName: PropTypes.string,
   highlight: PropTypes.bool,
   isFamilyOpen: PropTypes.bool,
-  isOpen: PropTypes.bool,
   item: PropTypes.array,
   marginTop: PropTypes.number,
   onPressFamilyHeader: PropTypes.func,
@@ -98,7 +98,7 @@ const isFamilyOpenSelector = (familyId, openFamilyTabs) => ({
 
 const withFamilyOpenStateProps = createSelector(
   [familyIdSelector, openFamilyTabsSelector],
-  isFamilyOpenSelector,
+  isFamilyOpenSelector
 );
 
 export default compose(
@@ -113,19 +113,22 @@ export default compose(
         setAreChildrenVisible(false);
       }
     },
-    onPressFamilyHeader: ({ familyId, isFamilyOpen, setOpenFamilyTabs }) => () => (
+    onPressFamilyHeader: ({
+      familyId,
+      isFamilyOpen,
+      setOpenFamilyTabs,
+    }) => () =>
       setOpenFamilyTabs({
         index: familyId,
         state: !isFamilyOpen,
-      })
-    ),
+      }),
     onShowChildren: ({ areChildrenVisible, setAreChildrenVisible }) => () => {
       if (!areChildrenVisible) {
         setAreChildrenVisible(true);
       }
     },
     /* eslint-disable react/display-name */
-    renderCollectibleItem: ({ familyId, item }) => (index) => (
+    renderCollectibleItem: ({ familyId, item }) => index => (
       <EnhancedUniqueTokenRow
         assetType="unique_token"
         item={item[index]}
@@ -142,7 +145,10 @@ export default compose(
       if (!this.props.isFamilyOpen) {
         this.props.onHideChildren();
       } else if (!this.props.areChildrenVisible) {
-        this.props.setSafeTimeout(this.props.onShowChildren, TokenFamilyHeader.animationDuration);
+        this.props.setSafeTimeout(
+          this.props.onShowChildren,
+          TokenFamilyHeader.animationDuration
+        );
       }
     },
   }),
@@ -153,5 +159,5 @@ export default compose(
     'marginTop',
     'isFamilyOpen',
     'uniqueId',
-  ]),
+  ])
 )(TokenFamilyWrap);

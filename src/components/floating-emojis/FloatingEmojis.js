@@ -10,10 +10,10 @@ const getRandomNumber = (min, max) => Math.random() * (max - min) + min;
 const createEmojiItem = (range) => {
   const right = `${getRandomNumber(...range)}%`;
 
-  return ({
+  return {
     id: right,
     right,
-  });
+  };
 };
 
 export default class FloatingEmojis extends PureComponent {
@@ -27,17 +27,17 @@ export default class FloatingEmojis extends PureComponent {
     size: PropTypes.string.isRequired,
     style: stylePropType,
     top: PropTypes.number,
-  }
+  };
 
   static defaultProps = {
     count: -1,
     range: [0, 80],
     size: 'h2',
-  }
+  };
 
   state = {
     emojis: [],
-  }
+  };
 
   componentDidUpdate(prevProps) {
     const oldCount = prevProps.count;
@@ -49,22 +49,21 @@ export default class FloatingEmojis extends PureComponent {
     const items = Array(numEmojis).fill();
     const newEmojis = items.map((_, i) => oldCount + i).map(this.createItem);
 
+    // TODO
+    // eslint-disable-next-line react/no-will-update-set-state,react/no-access-state-in-setstate
     this.setState({ emojis: this.state.emojis.concat(newEmojis) });
   }
 
   createItem = () => createEmojiItem(this.props.range)
 
-  removeEmoji = (id) => {
-    const newEmojis = this.state.emojis.filter(emoji => emoji.id !== id);
-    this.setState({ emojis: newEmojis });
-  }
+  removeEmoji = id => {
+    this.setState(prevState => ({
+      emojis: prevState.emojis.filter(emoji => emoji.id !== id),
+    }));
+  };
 
   render = () => (
-    <View
-      css={position.cover}
-      pointerEvents="none"
-      style={this.props.style}
-    >
+    <View css={position.cover} pointerEvents="none" style={this.props.style}>
       {this.state.emojis.map(({ id, ...item }) => (
         <FloatingEmoji
           {...item}
@@ -79,5 +78,5 @@ export default class FloatingEmojis extends PureComponent {
         />
       ))}
     </View>
-  )
+  );
 }

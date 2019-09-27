@@ -13,10 +13,7 @@ import { padding } from '../styles';
 import { deviceUtils, safeAreaInsetValues } from '../utils';
 import { addNewLocalContact } from '../handlers/commonStorage';
 
-const {
-  bottom: safeAreaBottom,
-  top: safeAreaTop,
-} = safeAreaInsetValues;
+const { bottom: safeAreaBottom, top: safeAreaTop } = safeAreaInsetValues;
 
 const ScreenTypes = {
   contact: AddContactState,
@@ -27,8 +24,8 @@ const ScreenTypes = {
 };
 
 export default class ExpandedAssetScreen extends Component {
-  static propTypes = {
-    address: PropTypes.string,
+    static propTypes = {
+      address: PropTypes.string,
     asset: PropTypes.object,
     containerPadding: PropTypes.number.isRequired,
     onCloseModal: PropTypes.func,

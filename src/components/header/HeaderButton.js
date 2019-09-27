@@ -5,12 +5,7 @@ import { padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Flex } from '../layout';
 
-const HeaderButton = ({
-  children,
-  onPress,
-  transformOrigin,
-  ...props
-}) => (
+const HeaderButton = ({ children, onPress, transformOrigin, ...props }) => (
   <ButtonPressAnimation onPress={onPress} transformOrigin={transformOrigin}>
     <Flex {...props} css={padding(10)}>
       {children}

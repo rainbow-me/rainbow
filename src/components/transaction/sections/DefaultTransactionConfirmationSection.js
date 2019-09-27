@@ -23,7 +23,7 @@ const DefaultTransactionConfirmationSection = ({
         truncationLength={15}
       />
     </TransactionRow>
-    {!!(value) && (
+    {!!value && (
       <TransactionRow title={lang.t('wallet.action.value')}>
         <Monospace
           color={colors.blueGreyDarkTransparent}
@@ -34,7 +34,7 @@ const DefaultTransactionConfirmationSection = ({
         </Monospace>
       </TransactionRow>
     )}
-    {!!(data) && (
+    {!!data && (
       <TransactionRow title={lang.t('wallet.action.input')}>
         <TransactionMessage message={data} />
       </TransactionRow>
@@ -54,5 +54,5 @@ export default compose(
     ...props,
     ...asset,
   })),
-  pure,
+  pure
 )(DefaultTransactionConfirmationSection);

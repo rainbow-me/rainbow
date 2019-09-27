@@ -29,14 +29,13 @@ const buildSpring = ({
   to,
   useNativeDriver = true,
   value,
-}) => (
+}) =>
   Animated.spring(value, {
     ...spring.default,
     toValue: isActive ? to : from,
     useNativeDriver,
     ...config,
-  })
-);
+  });
 
 export default {
   buildSpring,

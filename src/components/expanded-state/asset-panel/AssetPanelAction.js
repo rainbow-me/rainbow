@@ -31,17 +31,8 @@ const AssetPanelIconContainer = styled(Centered)`
   width: 24;
 `;
 
-const AssetPanelAction = ({
-  color,
-  icon,
-  label,
-  onPress,
-}) => (
-  <Container
-    activeOpacity={0.5}
-    component={TouchableOpacity}
-    onPress={onPress}
-  >
+const AssetPanelAction = ({ color, icon, label, onPress }) => (
+  <Container activeOpacity={0.5} component={TouchableOpacity} onPress={onPress}>
     <FlexItem>
       <TruncatedText
         color={color}
@@ -53,10 +44,7 @@ const AssetPanelAction = ({
       </TruncatedText>
     </FlexItem>
     <AssetPanelIconContainer>
-      <AssetPanelIcon
-        color={color}
-        name={icon}
-      />
+      <AssetPanelIcon color={color} name={icon} />
     </AssetPanelIconContainer>
   </Container>
 );

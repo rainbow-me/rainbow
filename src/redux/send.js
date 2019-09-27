@@ -81,16 +81,16 @@ export const sendTransaction = (transactionDetails, signAndSendTransactionCb) =>
                 });
                 resolve(txHash);
               }).catch(error => {
-                reject(error);
-              });
+              reject(error);
+            });
           } else {
             dispatch({ type: SEND_TRANSACTION_FAILURE });
             reject(new Error('No transaction hash.'));
           }
         }).catch(error => {
-          dispatch({ type: SEND_TRANSACTION_FAILURE });
-          reject(error);
-        });
+        dispatch({ type: SEND_TRANSACTION_FAILURE });
+        reject(error);
+      });
     })
     .catch(error => {
       dispatch({ type: SEND_TRANSACTION_FAILURE });

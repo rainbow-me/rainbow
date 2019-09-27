@@ -80,24 +80,23 @@ const vendor = {
 
 const buildRgba = (color, alpha) => `rgba(${chroma(color).rgb()}, ${alpha})`;
 
-const isColorLight = targetColor => (chroma(targetColor || base.white).luminance() > 0.5);
+const isColorLight = targetColor =>
+  chroma(targetColor || base.white).luminance() > 0.5;
 
-const isHex = (color = '') => ((color.length >= 3) && (color.charAt(0) === '#'));
-const isRGB = (color = '') => (color.toLowerCase().substring(0, 3) === 'rgb');
+const isHex = (color = '') => color.length >= 3 && color.charAt(0) === '#';
+const isRGB = (color = '') => color.toLowerCase().substring(0, 3) === 'rgb';
 
 const getTextColorForBackground = (targetColor, textColors = {}) => {
-  const {
-    dark = base.black,
-    light = base.white,
-  } = textColors;
+  const { dark = base.black, light = base.white } = textColors;
 
   return isColorLight(targetColor) ? dark : light;
 };
 
-const getFallbackTextColor = bg => colors.getTextColorForBackground(bg, {
-  dark: colors.blueGreyLight,
-  light: colors.white,
-});
+const getFallbackTextColor = bg =>
+  colors.getTextColorForBackground(bg, {
+    dark: colors.blueGreyLight,
+    light: colors.white,
+  });
 
 const transparent = {
   blueGreyDarkTransparent: buildRgba(base.blueGreyDark, 0.6),
@@ -128,8 +127,5 @@ const getColorForString = (colorString = '') => {
 export default {
   ...colors,
   get: getColorForString,
-  propType: PropTypes.oneOf([
-    ...Object.keys(colors),
-    ...Object.values(colors),
-  ]),
+  propType: PropTypes.oneOf([...Object.keys(colors), ...Object.values(colors)]),
 };

@@ -27,7 +27,8 @@ const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 const Container = styled.View`
   height: ${CoinRow.height};
-  opacity: ${({ descendingOpacity, index }) => (1 - (0.2 * (descendingOpacity ? index : 0)))};
+  opacity: ${({ descendingOpacity, index }) =>
+    1 - 0.2 * (descendingOpacity ? index : 0)};
   width: 100%;
 `;
 
@@ -54,7 +55,7 @@ const Wrapper = styled(RowWithMargins).attrs({
   justify: 'space-between',
   margin: 11,
 })`
-  ${({ index }) => padding((index === 0 ? 15 : 12.5), 19, 12.5, 15)};
+  ${({ index }) => padding(index === 0 ? 15 : 12.5, 19, 12.5, 15)};
   ${position.size('100%')};
   background-color: ${colors.transparent};
 `;
@@ -64,12 +65,12 @@ export default class AssetListItemSkeleton extends PureComponent {
     animated: PropTypes.bool,
     descendingOpacity: PropTypes.bool,
     index: PropTypes.number,
-  }
+  };
 
   static defaultProps = {
     animated: true,
     index: 0,
-  }
+  };
 
   startShimmerLoop = () => {
     const clock = new Clock();
@@ -100,9 +101,9 @@ export default class AssetListItemSkeleton extends PureComponent {
       ]),
       state.position,
     ]);
-  }
+  };
 
-  animation = this.startShimmerLoop()
+  animation = this.startShimmerLoop();
 
   renderShimmer = () => {
     const gradientColors = [
@@ -134,7 +135,7 @@ export default class AssetListItemSkeleton extends PureComponent {
         />
       </View>
     );
-  }
+  };
 
   render = () => {
     const { animated, descendingOpacity, index } = this.props;
@@ -161,11 +162,14 @@ export default class AssetListItemSkeleton extends PureComponent {
 
     return (
       <Container descendingOpacity={descendingOpacity} index={index}>
-        {animated
-          ? <MaskedView maskElement={skeletonElement}>{this.renderShimmer()}</MaskedView>
-          : skeletonElement
-        }
+        {animated ? (
+          <MaskedView maskElement={skeletonElement}>
+            {this.renderShimmer()}
+          </MaskedView>
+        ) : (
+          skeletonElement
+        )}
       </Container>
     );
-  }
+  };
 }

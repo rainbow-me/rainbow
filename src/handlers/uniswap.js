@@ -123,11 +123,18 @@ export const executeSwap = async (tradeDetails, gasLimit) => {
   }
 };
 
-export const getLiquidityInfo = async (accountAddress, exchangeContracts) => {
-  const promises = map(exchangeContracts, async (exchangeAddress) => {
+export const getLiquidityInfo = async (
+  accountAddress,
+  exchangeContracts
+) => {
+  const promises = map(exchangeContracts, async exchangeAddress => {
     try {
       const ethReserveCall = web3Provider.getBalance(exchangeAddress);
-      const exchange = new ethers.Contract(exchangeAddress, exchangeABI, web3Provider);
+      const exchange = new ethers.Contract(
+        exchangeAddress,
+        exchangeABI,
+        web3Provider
+      );
       const tokenAddressCall = exchange.tokenAddress();
       const balanceCall = exchange.balanceOf(accountAddress);
       const totalSupplyCall = exchange.totalSupply();
@@ -144,11 +151,18 @@ export const getLiquidityInfo = async (accountAddress, exchangeContracts) => {
         totalSupplyCall,
       ]);
 
-      const tokenContract = new ethers.Contract(tokenAddress, erc20ABI, web3Provider);
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        erc20ABI,
+        web3Provider
+      );
       const tokenReserveCall = tokenContract.balanceOf(exchangeAddress);
       const tokenDecimalsCall = tokenContract.decimals();
 
-      const [reserve, decimals] = await Promise.all([tokenReserveCall, tokenDecimalsCall]);
+      const [reserve, decimals] = await Promise.all([
+        tokenReserveCall,
+        tokenDecimalsCall,
+      ]);
 
       let name = '';
       try {
@@ -156,7 +170,12 @@ export const getLiquidityInfo = async (accountAddress, exchangeContracts) => {
       } catch (error) {
         name = get(contractMap, `[${tokenAddress}].name`, '');
         if (!name) {
-          console.log('error getting name for token: ', tokenAddress, ' Error = ', error);
+          console.log(
+            'error getting name for token: ',
+            tokenAddress,
+            ' Error = ',
+            error
+          );
         }
       }
 
@@ -165,11 +184,21 @@ export const getLiquidityInfo = async (accountAddress, exchangeContracts) => {
         symbol = await tokenContract.symbol().catch();
       } catch (error) {
         if (!symbol) {
-          console.log('error getting symbol for token: ', tokenAddress, ' Error = ', error);
+          console.log(
+            'error getting symbol for token: ',
+            tokenAddress,
+            ' Error = ',
+            error
+          );
         }
       }
-      const ethBalance = fromWei(divide(multiply(ethReserve, balance), totalSupply));
-      const tokenBalance = convertRawAmountToDecimalFormat(divide(multiply(reserve, balance), totalSupply), decimals);
+      const ethBalance = fromWei(
+        divide(multiply(ethReserve, balance), totalSupply)
+      );
+      const tokenBalance = convertRawAmountToDecimalFormat(
+        divide(multiply(reserve, balance), totalSupply),
+        decimals
+      );
 
       return {
         balance,

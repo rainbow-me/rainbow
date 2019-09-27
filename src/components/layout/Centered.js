@@ -3,5 +3,5 @@ import Flex from './Flex';
 
 export default compose(
   setDisplayName('Centered'),
-  withProps({ align: 'center', justify: 'center' }),
+  withProps({ align: 'center', justify: 'center' })
 )(Flex);

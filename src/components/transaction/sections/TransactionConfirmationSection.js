@@ -44,13 +44,7 @@ const TokenSymbol = styled(Amount)`
 `;
 
 const TransactionConfirmationSection = ({
-  asset: {
-    address,
-    amount,
-    name,
-    nativeAmountDisplay,
-    symbol,
-  },
+  asset: { address, amount, name, nativeAmountDisplay, symbol },
   sendButton,
 }) => (
   <TransactionSheet sendButton={sendButton}>
@@ -63,7 +57,12 @@ const TransactionConfirmationSection = ({
       />
     </TransactionRow>
     <AmountRow>
-      <ColumnWithMargins css={`padding-right: ${fonts.size.lmedium}`} margin={6}>
+      <ColumnWithMargins
+        css={`
+          padding-right: ${fonts.size.lmedium};
+        `}
+        margin={6}
+      >
         <RowWithMargins align="center" margin={6}>
           <CoinIcon size={22} symbol={symbol} />
           <TruncatedText size="lmedium" weight="medium">
@@ -72,7 +71,10 @@ const TransactionConfirmationSection = ({
         </RowWithMargins>
         <Row align="center">
           <TokenAmount>{amount}</TokenAmount>
-          <TokenSymbol><Nbsp />{symbol}</TokenSymbol>
+          <TokenSymbol>
+            <Nbsp />
+            {symbol}
+          </TokenSymbol>
         </Row>
       </ColumnWithMargins>
       <NativeAmount>{nativeAmountDisplay}</NativeAmount>

@@ -17,12 +17,7 @@ const SafeArea = styled.View`
   padding-top: ${({ topInset }) => topInset};
 `;
 
-const Page = ({
-  safeAreaInset,
-  showBottomInset,
-  showTopInset,
-  ...props
-}) => (
+const Page = ({ safeAreaInset, showBottomInset, showTopInset, ...props }) => (
   <SafeArea
     {...props}
     bottomInset={showBottomInset ? safeAreaInset.bottom : 0}

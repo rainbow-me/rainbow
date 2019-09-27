@@ -7,12 +7,7 @@ import FloatingPanels from './FloatingPanels';
 
 const InvestmentExpandedState = ({ asset }) => (
   <FloatingPanels>
-    <UniswapInvestmentCard
-      css={margin(0)}
-      isCollapsible={false}
-      item={asset}
-      width="100%"
-    />
+    <UniswapInvestmentCard css={margin(0)}isCollapsible={false} item={asset} width="100%" />
   </FloatingPanels>
 );
 

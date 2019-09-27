@@ -4,7 +4,6 @@ import { Path } from 'svgs';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
-/* eslint-disable max-len */
 const CrosshairIcon = ({ color, ...props }) => (
   <Svg viewBox="0 0 259 259" {...props}>
     <Path
@@ -17,7 +16,6 @@ const CrosshairIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
-/* eslint-disable max-len */
 
 CrosshairIcon.propTypes = {
   color: PropTypes.string,

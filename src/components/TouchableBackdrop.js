@@ -9,7 +9,7 @@ const TouchableBackdrop = props => (
     css={`
       ${position.cover};
       background-color: ${colors.transparent};
-      z-index: ${({ zIndex }) => (zIndex)};
+      z-index: ${({ zIndex }) => zIndex};
     `}
     {...props}
   />

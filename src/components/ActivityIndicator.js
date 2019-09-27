@@ -6,12 +6,7 @@ import stylePropType from 'react-style-proptype';
 import { pure } from 'recompact';
 import { colors, position } from '../styles';
 
-const ActivityIndicator = ({
-  color,
-  isInteraction,
-  size,
-  style,
-}) => (
+const ActivityIndicator = ({ color, isInteraction, size, style }) => (
   <View style={[position.sizeAsObject(size), style]}>
     <UIActivityIndicator
       color={color}

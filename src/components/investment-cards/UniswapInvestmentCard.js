@@ -1,12 +1,7 @@
 import { floor } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  compose,
-  pure,
-  withHandlers,
-  withProps,
-} from 'recompact';
+import { compose, pure, withHandlers, withProps } from 'recompact';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { withAccountSettings, withOpenInvestmentCards } from '../../hoc';
 import { colors, padding } from '../../styles';
@@ -34,7 +29,7 @@ const enhance = compose(
         onPress(item);
       }
     },
-  }),
+  })
 );
 
 const UniswapInvestmentCard = enhance(({

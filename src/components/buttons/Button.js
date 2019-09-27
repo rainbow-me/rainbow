@@ -35,15 +35,12 @@ const Container = styled(Centered)`
   ${({ showShadow }) => (showShadow ? shadowStyles : '')}
   ${({ size }) => padding(...ButtonSizeTypes[size].padding)}
   background-color: ${({ backgroundColor }) => backgroundColor};
-  border-radius: ${({ type }) => ((type === 'rounded') ? 14 : 50)};
+  border-radius: ${({ type }) => (type === 'rounded' ? 14 : 50)};
   flex-grow: 0;
 `;
 
-const shouldRenderChildrenAsText = (children) => (
-  isArray(children)
-    ? isString(children[0])
-    : isString(children)
-);
+const shouldRenderChildrenAsText = children =>
+  isArray(children) ? isString(children[0]) : isString(children);
 
 const Button = ({
   backgroundColor,
@@ -77,24 +74,23 @@ const Button = ({
       style={style}
       type={type}
     >
-      {!shouldRenderChildrenAsText(children)
-        ? children
-        : (
-          <Text
-            color={color}
-            size={ButtonSizeTypes[size].fontSize}
-            weight="semibold"
-            {...textProps}
-          >
-            {children}
-          </Text>
-        )
-      }
+      {!shouldRenderChildrenAsText(children) ? (
+        children
+      ) : (
+        <Text
+          color={color}
+          size={ButtonSizeTypes[size].fontSize}
+          weight="semibold"
+          {...textProps}
+        >
+          {children}
+        </Text>
+      )}
       {(!onPress || !disabled) && (
         <InnerBorder
           color={borderColor}
           opacity={borderOpacity}
-          radius={(type === 'rounded') ? 14 : 50}
+          radius={type === 'rounded' ? 14 : 50}
           width={borderWidth}
         />
       )}

@@ -1,9 +1,4 @@
-import {
-  compose,
-  onlyUpdateForKeys,
-  pickProps,
-  withProps,
-} from 'recompact';
+import { compose, onlyUpdateForKeys, pickProps, withProps } from 'recompact';
 import { ListHeader } from '../list';
 import { Text } from '../text';
 
@@ -20,5 +15,5 @@ export default compose(
     showDivider: false,
     titleRenderer,
   }),
-  onlyUpdateForKeys(['title']),
+  onlyUpdateForKeys(['title'])
 )(ListHeader);

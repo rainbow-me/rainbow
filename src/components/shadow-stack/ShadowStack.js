@@ -8,7 +8,8 @@ import ShadowItem from './ShadowItem';
 
 const ChildrenWrapper = styled.View`
   ${position.cover};
-  background-color: ${({ backgroundColor }) => backgroundColor || colors.transparent};
+  background-color: ${({ backgroundColor }) =>
+    backgroundColor || colors.transparent};
   border-radius: ${({ borderRadius }) => borderRadius};
   overflow: hidden;
 `;
@@ -24,7 +25,8 @@ const ShadowStackContainer = styled.View`
       ? `width: ${width};`
       : ''
   )}
-  background-color: ${({ backgroundColor }) => backgroundColor || colors.transparent};
+  background-color: ${({ backgroundColor }) =>
+    backgroundColor || colors.transparent};
   border-radius: ${({ borderRadius }) => borderRadius};
   z-index: 1;
 `;
@@ -41,12 +43,12 @@ export default class ShadowStack extends PureComponent {
     shadows: PropTypes.arrayOf(PropTypes.array).isRequired,
     style: stylePropType,
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-  }
+  };
 
   static defaultProps = {
     borderRadius: 0,
     shadows: [],
-  }
+  };
 
   renderItem = (shadow, index) => (
     <ShadowItem
@@ -56,16 +58,10 @@ export default class ShadowStack extends PureComponent {
       zIndex={index + 2}
       {...this.props.shadowProps}
     />
-  )
+  );
 
   render = () => {
-    const {
-      children,
-      childrenWrapperStyle,
-      shadows,
-      style,
-      ...props
-    } = this.props;
+    const { children,childrenWrapperStyle, shadows, style, ...props } = this.props;
 
     return (
       <ShadowStackContainer {...props} style={style}>
@@ -78,5 +74,5 @@ export default class ShadowStack extends PureComponent {
         </ChildrenWrapper>
       </ShadowStackContainer>
     );
-  }
+  };
 }

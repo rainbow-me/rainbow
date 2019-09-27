@@ -25,12 +25,10 @@ const TransactionSheet = ({ children, sendButton, ...props }) => (
     {Children.map(children, (child, index) => (
       <Fragment>
         {child}
-        {(index < children.length - 1) && <Divider />}
+        {index < children.length - 1 && <Divider />}
       </Fragment>
     ))}
-    <SendButtonContainer>
-      {sendButton}
-    </SendButtonContainer>
+    <SendButtonContainer>{sendButton}</SendButtonContainer>
   </Container>
 );
 

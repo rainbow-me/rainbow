@@ -9,10 +9,7 @@ import {
 } from '../redux/selectedWithFab';
 
 const mapStateToProps = ({
-  selectedWithFab: {
-    scrollingVelocity,
-    selectedId,
-  },
+  selectedWithFab: { scrollingVelocity, selectedId },
 }) => ({
   scrollingVelocity,
   selectedId,
@@ -26,14 +23,17 @@ const withFabSelectionValidation = selectedId => ({
 
 const withFabSelectionValidationSelector = createSelector(
   [fabSelectedIdSelector],
-  withFabSelectionValidation,
+  withFabSelectionValidation
 );
 
 export default compose(
-  connect(mapStateToProps, {
-    setActionType,
-    setScrollingVelocity,
-    updateSelectedID,
-  }),
-  withProps(withFabSelectionValidationSelector),
+  connect(
+    mapStateToProps,
+    {
+      setActionType,
+      setScrollingVelocity,
+      updateSelectedID,
+    }
+  ),
+  withProps(withFabSelectionValidationSelector)
 );

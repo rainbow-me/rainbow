@@ -5,40 +5,37 @@ import RadioListItem from './RadioListItem';
 
 export default class RadioList extends PureComponent {
   static propTypes = {
-    items: PropTypes.arrayOf(PropTypes.shape({
-      value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-    })),
+    items: PropTypes.arrayOf(
+      PropTypes.shape({
+        value: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+          .isRequired,
+      })
+    ),
     onChange: PropTypes.func,
     renderItem: PropTypes.func,
     value: PropTypes.string,
-  }
+  };
 
   static defaultProps = {
     renderItem: RadioListItem,
-  }
+  };
 
-  state = { selected: this.props.value }
+  state = { selected: this.props.value };
 
-  handleChange = (selected) => {
+  handleChange = selected => {
     this.setState({ selected }, () => {
       if (this.props.onChange) {
         this.props.onChange(selected);
       }
     });
-  }
+  };
 
-  renderItem = ({ item }) => (
+  renderItem = ({ item }) =>
     createElement(this.props.renderItem, {
       ...item,
       onPress: this.handleChange,
       selected: item.value === this.state.selected,
-    })
-  )
+    });
 
-  render = () => (
-    <List
-      {...this.props}
-      renderItem={this.renderItem}
-    />
-  )
+  render = () => <List {...this.props} renderItem={this.renderItem} />;
 }

@@ -35,7 +35,7 @@
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     "react-native-animation-linter/must-tear-down-animations": 2,
-    "sort-keys": ["error", "asc", {"caseSensitive": false, "natural": false}]
+
   },
   "globals": {
     "fetch": false

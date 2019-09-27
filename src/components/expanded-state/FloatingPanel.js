@@ -12,15 +12,8 @@ export const FloatingPanelPadding = {
   y: 0,
 };
 
-const FloatingPanel = pure(({
-  color,
-  height,
-  hideShadow,
-  style,
-  radius,
-  overflow,
-  ...props
-}) => (
+const FloatingPanel = pure(({ color, height, hideShadow, style,radius,
+  overflow, ...props }) => (
   <Column
     css={`
       ${shadow.build(0, 10, 50, colors.dark, 0.4)}

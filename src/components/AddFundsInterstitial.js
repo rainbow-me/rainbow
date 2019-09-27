@@ -41,7 +41,7 @@ const Paragraph = styled(Text).attrs({
 const buildInterstitialTransform = offsetY => ({
   transform: [
     { translateX: (ButtonContainerWidth / 2) * -1 },
-    { translateY: ((ButtonContainerHeight / 2) * -1) + 25 + offsetY },
+    { translateY: (ButtonContainerHeight / 2) * -1 + 25 + offsetY },
   ],
 });
 
@@ -82,7 +82,9 @@ export default compose(
   pure,
   withNavigation,
   withHandlers({
-    onPressAddFunds: ({ navigation }) => () => navigation.navigate('ReceiveModal'),
-    onPressImportWallet: ({ navigation }) => () => navigation.navigate('ImportSeedPhraseSheet'),
-  }),
+    onPressAddFunds: ({ navigation }) => () =>
+      navigation.navigate('ReceiveModal'),
+    onPressImportWallet: ({ navigation }) => () =>
+      navigation.navigate('ImportSeedPhraseSheet'),
+  })
 )(AddFundsInterstitial);

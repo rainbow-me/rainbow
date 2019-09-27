@@ -8,14 +8,7 @@ import {
   settingsChangeNativeCurrency,
 } from '../redux/settings';
 
-const mapStateToProps = ({
-  settings: {
-    chainId,
-    language,
-    nativeCurrency,
-  },
-}) => ({
-  chainId,
+const mapStateToProps = ({ settings: {chainId, language, nativeCurrency } }) => ({chainId,
   language,
   nativeCurrency,
 });
@@ -23,7 +16,7 @@ const mapStateToProps = ({
 const languageSelector = state => state.language;
 const nativeCurrencySelector = state => state.nativeCurrency;
 
-const withLanguage = (language) => {
+const withLanguage = language => {
   if (language !== lang.locale) {
     lang.locale = language;
   }
@@ -37,19 +30,23 @@ const withNativeCurrencySymbol = nativeCurrency => ({
 
 const withLanguageSelector = createSelector(
   [languageSelector],
-  withLanguage,
+  withLanguage
 );
 
 const withNativeCurrencySelector = createSelector(
   [nativeCurrencySelector],
-  withNativeCurrencySymbol,
+  withNativeCurrencySymbol
 );
 
-export default Component => compose(
-  connect(mapStateToProps, {
-    settingsChangeLanguage,
-    settingsChangeNativeCurrency,
-  }),
-  withProps(withLanguageSelector),
-  withProps(withNativeCurrencySelector),
-)(Component);
+export default Component =>
+  compose(
+    connect(
+      mapStateToProps,
+      {
+        settingsChangeLanguage,
+        settingsChangeNativeCurrency,
+      }
+    ),
+    withProps(withLanguageSelector),
+    withProps(withNativeCurrencySelector)
+  )(Component);

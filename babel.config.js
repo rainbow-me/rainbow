@@ -1,7 +1,13 @@
+// eslint-disable-next-line import/no-commonjs
 module.exports = {
   env: {
     development: {
-      plugins: [['transform-remove-console', { exclude: ['disableYellowBox', 'error', 'info', 'log'] }]],
+      plugins: [
+        [
+          'transform-remove-console',
+          { exclude: ['disableYellowBox', 'error', 'info', 'log'] },
+        ],
+      ],
     },
     production: {
       plugins: [['transform-remove-console', { exclude: ['error'] }]],

@@ -7,7 +7,7 @@ const { Value } = Animated;
 const UPDATE_STACK_TRANSITION_PROPS = 'navigation/UPDATE_STACK_TRANSITION_PROPS';
 const UPDATE_TABS_TRANSITION_PROPS = 'navigation/UPDATE_TABS_TRANSITION_PROPS';
 
-export const updateStackTransitionProps = (payload) => (dispatch) => {
+export const updateStackTransitionProps = payload => dispatch => {
   dispatch({ payload, type: UPDATE_STACK_TRANSITION_PROPS });
 };
 
@@ -30,11 +30,11 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => (
   produce(state, draft => {
-    if (action.type === UPDATE_STACK_TRANSITION_PROPS) {
-      Object.assign(draft.stackTransitionProps, action.payload);
-    }
-    if (action.type === UPDATE_TABS_TRANSITION_PROPS) {
-      Object.assign(draft.tabsTransitionProps, action.payload);
-    }
+        if (action.type === UPDATE_STACK_TRANSITION_PROPS) {
+          Object.assign(draft.stackTransitionProps, action.payload);
+        }
+      if (action.type === UPDATE_TABS_TRANSITION_PROPS) {
+    Object.assign(draft.tabsTransitionProps, action.payload);
+      }
   })
 );

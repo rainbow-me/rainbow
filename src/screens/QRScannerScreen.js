@@ -8,7 +8,10 @@ import { Button } from '../components/buttons';
 import { BackButton, Header } from '../components/header';
 import { Centered } from '../components/layout';
 import { QRCodeScanner } from '../components/qrcode-scanner';
-import { WalletConnectExplainer, WalletConnectList } from '../components/walletconnect-list';
+import {
+  WalletConnectExplainer,
+  WalletConnectList,
+} from '../components/walletconnect-list';
 import { colors, position } from '../styles';
 import { safeAreaInsetValues } from '../utils';
 
@@ -75,10 +78,11 @@ const QRScannerScreen = ({
       bottom={safeAreaInsetValues.bottom ? 21 : 0}
       onLayout={onSheetLayout}
     >
-      {walletConnectorsCount
-        ? <WalletConnectList items={walletConnectorsByDappName} />
-        : <WalletConnectExplainer />
-      }
+      {walletConnectorsCount ? (
+        <WalletConnectList items={walletConnectorsByDappName} />
+      ) : (
+        <WalletConnectExplainer />
+      )}
     </BubbleSheet>
   </Container>
 );

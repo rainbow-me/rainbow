@@ -41,13 +41,7 @@ const {
   Value,
 } = Animated;
 
-function runSpring(
-  clock,
-  value,
-  velocity,
-  dest,
-  wasRunSpring = false,
-) {
+function runSpring(clock, value, velocity, dest, wasRunSpring = false) {
   const state = {
     finished: new Value(0),
     position: new Value(0),
@@ -74,10 +68,7 @@ function runSpring(
       startClock(clock),
     ]),
     spring(clock, state, config),
-    cond(state.finished, [
-      stopClock(clock),
-      set(wasRunSpring, 1),
-    ]),
+    cond(state.finished, [stopClock(clock), set(wasRunSpring, 1)]),
     state.position,
   ];
 }
@@ -99,7 +90,6 @@ class MovableFabWrapper extends PureComponent {
     openInvestmentCards: PropTypes.array,
     openSmallBalances: PropTypes.bool,
     scrollViewTracker: PropTypes.object,
-    sections: PropTypes.array,
     setActionType: PropTypes.func,
     setScrollingVelocity: PropTypes.func,
     tapRef: PropTypes.object,
@@ -128,7 +118,8 @@ class MovableFabWrapper extends PureComponent {
 
   gestureState = new Animated.Value(0);
 
-  isOverDeleteButtonBoundary = position => greaterThan(abs(position), DeleteButton.size * 2);
+  isOverDeleteButtonBoundary = position =>
+    greaterThan(abs(position), DeleteButton.size * 2);
 
   key = 0;
 
@@ -148,31 +139,44 @@ class MovableFabWrapper extends PureComponent {
 
   xClockShow = new Clock();
 
-  calculateSelectedIndex = () => cond(
-    or(
-      lessThan(this.absoluteY, 109),
-      this.isOverX,
-    ),
-    extraStates.overX,
-    this.props.areas.reduce((prev, curr, i) => cond(
-      and(
-        greaterThan(this.absoluteX, curr.left),
-        greaterThan(add(this.absoluteY, this.props.scrollViewTracker), curr.top),
-        lessThan(add(this.absoluteY, this.props.scrollViewTracker), curr.bottom),
-        lessThan(this.absoluteX, curr.right),
-      ), i, prev,
-    ), extraStates.nothing),
-  );
+  calculateSelectedIndex = () =>
+    cond(
+      or(lessThan(this.absoluteY, 109), this.isOverX),
+      extraStates.overX,
+      this.props.areas.reduce(
+        (prev, curr, i) =>
+          cond(
+            and(
+              greaterThan(this.absoluteX, curr.left),
+              greaterThan(
+                add(this.absoluteY, this.props.scrollViewTracker),
+                curr.top
+              ),
+              lessThan(
+                add(this.absoluteY, this.props.scrollViewTracker),
+                curr.bottom
+              ),
+              lessThan(this.absoluteX, curr.right)
+            ),
+            i,
+            prev
+          ),
+        extraStates.nothing
+      )
+    );
 
   isOverX = and(
     greaterThan(this.absoluteY, deviceUtils.dimensions.height - 120),
-    greaterThan(this.absoluteX, deviceUtils.dimensions.width - 100),
+    greaterThan(this.absoluteX, deviceUtils.dimensions.width - 100)
   );
 
   manageUpAndDownScrolling = cond(
-    and(greaterThan(this.absoluteY, deviceUtils.dimensions.height - 20), not(this.isOverX)),
+    and(
+      greaterThan(this.absoluteY, deviceUtils.dimensions.height - 20),
+      not(this.isOverX)
+    ),
     1,
-    cond(lessThan(this.absoluteY, 120), 2, 0),
+    cond(lessThan(this.absoluteY, 120), 2, 0)
   );
 
   onGestureEvent = event([
@@ -201,12 +205,12 @@ class MovableFabWrapper extends PureComponent {
     const selectedIndexWithState = cond(
       eq(this.gestureState, State.ACTIVE),
       this.selectedIndex,
-      extraStates.gestureInactive,
+      extraStates.gestureInactive
     );
 
     const showDeleteButton = or(
       this.isOverDeleteButtonBoundary(this.translateX),
-      this.isOverDeleteButtonBoundary(this.translateY),
+      this.isOverDeleteButtonBoundary(this.translateY)
     );
 
     return (
@@ -223,7 +227,7 @@ class MovableFabWrapper extends PureComponent {
             ],
           }}
         >
-          {(this.props.areas && this.props.areas.length !== 0) && (
+          {this.props.areas && this.props.areas.length !== 0 && (
             <Animated.Code
               // Provoke change on reordering
               key={this.key++}
@@ -231,71 +235,114 @@ class MovableFabWrapper extends PureComponent {
             />
           )}
           <Animated.Code
-            exec={(
-              onChange(this.manageUpAndDownScrolling, [
-                // eslint-disable-next-line no-nested-ternary
-                call([this.manageUpAndDownScrolling], ([v]) => this.props.setScrollingVelocity(v === 1 ? 1 : (v === 2 ? -1 : 0))),
-              ])
-            )}
+            exec={onChange(this.manageUpAndDownScrolling, [
+              call([this.manageUpAndDownScrolling], ([v]) =>
+                this.props.setScrollingVelocity(v === 1 ? 1 : v === 2 ? -1 : 0)
+              ),
+            ])}
           />
           <Animated.Code
-            exec={
-              block([
+            exec={block([
+              cond(eq(this.gestureState, State.ACTIVE), [
                 cond(
-                  eq(this.gestureState, State.ACTIVE),
-                  [
-                    cond(
-                      showDeleteButton,
-                      set(this.props.deleteButtonScale, runSpring(this.xClockShow, this.props.deleteButtonScale, 0, 1)),
-                      set(this.props.deleteButtonScale, runSpring(this.xClockShow, this.props.deleteButtonScale, 0, DeleteButton.defaultScale)),
-                    ),
-                    stopClock(this.xClockHide),
-                  ],
-                ),
-                cond(
-                  and(eq(this.gestureState, State.END), neq(this.props.deleteButtonScale, DeleteButton.defaultScale)),
-                  [
-                    call([], () => this.props.setScrollingVelocity(0)),
-                    set(this.props.deleteButtonScale, runSpring(this.xClockHide, this.props.deleteButtonScale, 0, DeleteButton.defaultScale)),
-                    stopClock(this.xClockShow),
-                  ],
-                ),
-                onChange(
-                  selectedIndexWithState,
-                  call([selectedIndexWithState], ([i]) => {
-                    this.props.updateSelectedID(i < 0 ? i : this.props.areas[i].id);
-                  }),
-                ),
-                onChange(
-                  this.gestureState,
-                  cond(
-                    eq(this.gestureState, State.END),
-                    [
-                      set(this.springOffsetX, this.translateX),
-                      set(this.springOffsetY, this.translateY),
-                      set(this.dragX, 0),
-                      set(this.dragY, 0),
-                    ],
-                    cond(
-                      eq(this.gestureState, State.BEGAN),
-                      call([], () => this.props.setActionType(this.props.actionType)),
-                    ),
+                  showDeleteButton,
+                  set(
+                    this.props.deleteButtonScale,
+                    runSpring(
+                      this.xClockShow,
+                      this.props.deleteButtonScale,
+                      0,
+                      1
+                    )
                   ),
+                  set(
+                    this.props.deleteButtonScale,
+                    runSpring(
+                      this.xClockShow,
+                      this.props.deleteButtonScale,
+                      0,
+                      DeleteButton.defaultScale
+                    )
+                  )
                 ),
+                stopClock(this.xClockHide),
+              ]),
+              cond(
+                and(
+                  eq(this.gestureState, State.END),
+                  neq(this.props.deleteButtonScale, DeleteButton.defaultScale)
+                ),
+                [
+                  call([], () => this.props.setScrollingVelocity(0)),
+                  set(
+                    this.props.deleteButtonScale,
+                    runSpring(
+                      this.xClockHide,
+                      this.props.deleteButtonScale,
+                      0,
+                      DeleteButton.defaultScale
+                    )
+                  ),
+                  stopClock(this.xClockShow),
+                ]
+              ),
+              onChange(
+                selectedIndexWithState,
+                call([selectedIndexWithState], ([i]) => {
+                  this.props.updateSelectedID(
+                    i < 0 ? i : this.props.areas[i].id
+                  );
+                })
+              ),
+              onChange(
+                this.gestureState,
                 cond(
                   eq(this.gestureState, State.END),
                   [
-                    set(this.springOffsetX, runSpring(this.clockX, this.springOffsetX, this.dragVX, 0, this.wasRunSpring)),
-                    set(this.springOffsetY, runSpring(this.clockY, this.springOffsetY, this.dragVY, 0, this.wasRunSpring)),
+                    set(this.springOffsetX, this.translateX),
+                    set(this.springOffsetY, this.translateY),
+                    set(this.dragX, 0),
+                    set(this.dragY, 0),
                   ],
-                  [
-                    stopClock(this.clockX),
-                    stopClock(this.clockY),
-                    set(this.wasRunSpring, 0),
-                  ],
-                ),
-              ])
-            }
+                  cond(
+                    eq(this.gestureState, State.BEGAN),
+                    call([], () =>
+                      this.props.setActionType(this.props.actionType)
+                    )
+                  )
+                )
+              ),
+              cond(
+                eq(this.gestureState, State.END),
+                [
+                  set(
+                    this.springOffsetX,
+                    runSpring(
+                      this.clockX,
+                      this.springOffsetX,
+                      this.dragVX,
+                      0,
+                      this.wasRunSpring
+                    )
+                  ),
+                  set(
+                    this.springOffsetY,
+                    runSpring(
+                      this.clockY,
+                      this.springOffsetY,
+                      this.dragVY,
+                      0,
+                      this.wasRunSpring
+                    )
+                  ),
+                ],
+                [
+                  stopClock(this.clockX),
+                  stopClock(this.clockY),
+                  set(this.wasRunSpring, 0),
+                ]
+              ),
+            ])}
           />
           {this.props.children}
         </Animated.View>
@@ -338,7 +385,8 @@ const traverseSectionsToDimensions = ({
           right: deviceUtils.dimensions.width,
           top: height,
         });
-        height += CoinRow.height;
+        height +=
+          CoinRow.height ;
       }
       areas.push({
         bottom: height + CoinDivider.height,
@@ -365,9 +413,11 @@ const traverseSectionsToDimensions = ({
     }
     if (investments) {
       height += headerHeight + ListFooter.height;
-      for (let i = 0; i < investments.data.length; i++) {
+      for (let i = 0; i <
+        investments.data.length ; i++) {
         if (!openInvestmentCards[investments.data[i].uniqueId]) {
-          height += (UniswapInvestmentCard.height + InvestmentCard.margin.vertical);
+          height +=
+          (UniswapInvestmentCard.height + InvestmentCard.margin.vertical) ;
         } else {
           height += (InvestmentCardHeader.height + InvestmentCard.margin.vertical);
         }
@@ -388,7 +438,9 @@ const traverseSectionsToDimensions = ({
           for (let k = 0; k < tokens[j].length; k++) {
             areas.push({
               bottom: height + UniqueTokenRow.cardSize,
-              id: tokens[j][k].isSendable ? tokens[j][k].uniqueId : extraStates.notSendable,
+              id: tokens[j][k].isSendable
+                ? tokens[j][k].uniqueId
+                : extraStates.notSendable,
               left: k === 0 ? 0 : deviceUtils.dimensions.width / 2,
               right: deviceUtils.dimensions.width / (k === 0 ? 2 : 1),
               top: height,
@@ -403,7 +455,7 @@ const traverseSectionsToDimensions = ({
         }
       }
     }
-    return ({ areas });
+    return { areas };
   }
   return null;
 };
@@ -413,5 +465,5 @@ export default compose(
   withOpenFamilyTabs,
   withOpenInvestmentCards,
   withOpenBalances,
-  withProps(traverseSectionsToDimensions),
+  withProps(traverseSectionsToDimensions)
 )(MovableFabWrapper);

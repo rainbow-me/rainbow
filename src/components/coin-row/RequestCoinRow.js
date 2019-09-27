@@ -39,34 +39,29 @@ class RequestCoinRow extends React.PureComponent {
     ...TopRow.propTypes,
     item: PropTypes.object,
     onPressOpen: PropTypes.func,
-  }
+  };
 
-  componentDidMount = () => this.handleExpiredRequests()
+  componentDidMount = () => this.handleExpiredRequests();
 
-  componentDidUpdate = () => this.handleExpiredRequests()
+  componentDidUpdate = () => this.handleExpiredRequests();
 
-  buttonRef = React.createRef()
+  buttonRef = React.createRef();
 
   handleExpiredRequests = () => {
     if (isPast(this.props.expiresAt)) {
       this.props.removeExpiredRequest(this.props.item.requestId);
     }
-  }
+  };
 
   handlePressOpen = () => {
     this.props.navigation.navigate({
       params: { transactionDetails: this.props.item },
       routeName: 'ConfirmRequest',
     });
-  }
+  };
 
   render = () => {
-    const {
-      expirationColor,
-      expiresAt,
-      item,
-      ...props
-    } = this.props;
+    const { expirationColor, expiresAt, item, ...props } = this.props;
 
     return (
       <ButtonPressAnimation
@@ -102,7 +97,7 @@ class RequestCoinRow extends React.PureComponent {
         </CoinRow>
       </ButtonPressAnimation>
     );
-  }
+  };
 }
 
 const getPercentageOfTimeElapsed = (startDate, endDate) => {
@@ -113,7 +108,10 @@ const getPercentageOfTimeElapsed = (startDate, endDate) => {
 };
 
 export default compose(
-  connect(null, { removeExpiredRequest: removeRequest }),
+  connect(
+    null,
+    { removeExpiredRequest: removeRequest }
+  ),
   withNavigation,
   withProps(({ item: { displayDetails: { timestampInMs } } }) => {
     const createdAt = new Date(timestampInMs);
@@ -122,10 +120,11 @@ export default compose(
 
     return {
       createdAt,
-      expirationColor: (percentElapsed > 25) ? colors.primaryBlue : colors.orangeMedium,
+      expirationColor:
+        percentElapsed > 25 ? colors.primaryBlue : colors.orangeMedium,
       expiresAt,
       percentElapsed,
     };
   }),
-  onlyUpdateForKeys(['expirationColor', 'expiresAt', 'percentElapsed']),
+  onlyUpdateForKeys(['expirationColor', 'expiresAt', 'percentElapsed'])
 )(RequestCoinRow);

@@ -12,30 +12,22 @@ import {
 } from 'recompact';
 import { sortList } from '../../helpers/sortList';
 import { colors, margin, padding } from '../../styles';
-import { dimensionsPropType } from '../../utils';
 import { Centered, FlexItem } from '../layout';
 import { PagerControls } from '../pager';
 import Tag from '../Tag';
 
 const AttributesPadding = 15;
-const scrollInsetBottom = AttributesPadding + (PagerControls.padding * 4);
+const scrollInsetBottom = AttributesPadding + PagerControls.padding * 4;
 
 const Wrapper = styled(Centered).attrs({ wrap: true })`
   ${padding(0, AttributesPadding * 1.125)}
   flex-grow: 1;
 `;
 
-/* eslint-disable camelcase */
-const AttributeItem = ({ trait_type: type, value }) => (
+const AttributeItem = ({ trait_type: type, value }) =>
   type ? (
-    <Tag
-      css={margin(5)}
-      key={`${type}${value}`}
-      text={value}
-      title={type}
-    />
-  ) : null
-);
+    <Tag css={margin(5)} key={`${type}${value}`} text={value} title={type} />
+  ) : null;
 
 AttributeItem.propTypes = {
   trait_type: PropTypes.string.isRequired,
@@ -61,14 +53,14 @@ const UniqueTokenAttributes = ({
         padding: willListOverflow ? AttributesPadding : 0,
         paddingBottom: willListOverflow ? scrollInsetBottom : AttributesPadding,
       }}
-      directionalLockEnabled={true}
+      directionalLockEnabled
       indicatorStyle={colors.isColorLight(background) ? 'white' : 'black'}
       onScroll={onScroll}
       overScrollMode="never"
       scrollEnabled={willListOverflow}
       scrollEventThrottle={32}
       scrollIndicatorInsets={{
-        bottom: (scrollInsetBottom - (PagerControls.padding * 2)),
+        bottom: scrollInsetBottom - PagerControls.padding * 2,
         top: AttributesPadding,
       }}
       showsHorizontalScrollIndicator={false}
@@ -76,22 +68,21 @@ const UniqueTokenAttributes = ({
         paddingBottom: PagerControls.padding,
       }}
     >
-      <Wrapper onLayout={onListLayout}>
-        {traits.map(AttributeItem)}
-      </Wrapper>
+      <Wrapper onLayout={onListLayout}>{traits.map(AttributeItem)}</Wrapper>
     </ScrollView>
   </FlexItem>
 );
 
 UniqueTokenAttributes.propTypes = {
   background: PropTypes.string,
-  dimensions: dimensionsPropType,
   onListLayout: PropTypes.func,
   onScroll: PropTypes.func,
-  traits: PropTypes.arrayOf(PropTypes.shape({
-    trait_type: PropTypes.string.isRequired,
-    value: PropTypes.node.isRequired,
-  })),
+  traits: PropTypes.arrayOf(
+    PropTypes.shape({
+      trait_type: PropTypes.string.isRequired,
+      value: PropTypes.node.isRequired,
+    })
+  ),
   willListOverflow: PropTypes.bool,
 };
 
@@ -105,12 +96,13 @@ const enhance = compose(
     traits: sortList(traits, 'trait_type', 'asc'),
   })),
   withHandlers({
-    onListLayout: ({ dimensions, setWillListOverflow }) => ({ nativeEvent: { layout } }) => {
+    onListLayout: ({ dimensions, setWillListOverflow }) => ({
+      nativeEvent: { layout },
+    }) => {
       setWillListOverflow(layout.height > dimensions.height);
     },
     onScroll: () => event => event.stopPropagation(),
-  }),
+  })
 );
-/* eslint-enable camelcase */
 
 export default hoistStatics(enhance)(UniqueTokenAttributes);

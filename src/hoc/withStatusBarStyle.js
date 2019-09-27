@@ -2,10 +2,12 @@ import React, { Fragment } from 'react';
 import { NavigationEvents } from 'react-navigation';
 import { statusBar } from '../utils';
 
-const withStatusBarStyle = (statusBarStyle) => (ComponentToWrap) => {
-  const ComponentWithStatusBarStyle = (props) => (
+const withStatusBarStyle = statusBarStyle => ComponentToWrap => {
+  const ComponentWithStatusBarStyle = props => (
     <Fragment>
-      <NavigationEvents onDidFocus={() => statusBar.setBarStyle(statusBarStyle, true)} />
+      <NavigationEvents
+        onDidFocus={() => statusBar.setBarStyle(statusBarStyle, true)}
+      />
       <ComponentToWrap {...props} />
     </Fragment>
   );

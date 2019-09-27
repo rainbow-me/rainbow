@@ -10,12 +10,7 @@ const getListItemLayout = (data, index) => ({
   offset: ListItem.height * index,
 });
 
-const List = ({
-  getItemLayout,
-  items,
-  renderItem,
-  ...props
-}) => (
+const List = ({ getItemLayout, items, renderItem, ...props }) => (
   <FlatList
     data={items}
     getItemLayout={getItemLayout}
@@ -29,9 +24,11 @@ const List = ({
 
 List.propTypes = {
   getItemLayout: PropTypes.func.isRequired,
-  items: PropTypes.arrayOf(PropTypes.shape({
-    key: PropTypes.string.isRequired,
-  })).isRequired,
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string.isRequired,
+    })
+  ).isRequired,
   renderItem: PropTypes.func.isRequired,
 };
 

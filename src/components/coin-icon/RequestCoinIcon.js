@@ -24,7 +24,7 @@ const RequestCoinIcon = ({
       <RequestVendorLogoIcon
         borderRadius={size}
         dappName={dappName}
-        showLargeShadow={true}
+        showLargeShadow
       />
     )}
   </CircularProgress>

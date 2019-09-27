@@ -424,7 +424,7 @@ class RecyclerAssetList extends Component {
     }
 
     if (shouldAutoscrollBack
-    || (openSmallBalances === false && prevProps.openSmallBalances === true)) {
+      || (openSmallBalances === false && prevProps.openSmallBalances === true)) {
       let balancesHeight = 0;
       if (balances.data) {
         balancesHeight += CoinRow.height * (balances.data.length - 1);

@@ -30,57 +30,61 @@ import {
 } from '../navigation/transitions/effects';
 import restoreKeyboard from './restoreKeyboard';
 
-const onTransitionEnd = () => store.dispatch(updateStackTransitionProps({ isTransitioning: false }));
-const onTransitionStart = () => store.dispatch(updateStackTransitionProps({ isTransitioning: true }));
+const onTransitionEnd = () =>
+  store.dispatch(updateStackTransitionProps({ isTransitioning: false }));
+const onTransitionStart = () =>
+  store.dispatch(updateStackTransitionProps({ isTransitioning: true }));
 
-const SwipeStack = createMaterialTopTabNavigator({
-  ProfileScreen: {
-    name: 'ProfileScreen',
-    screen: ProfileScreenWithData,
+const SwipeStack = createMaterialTopTabNavigator(
+  {
+    ProfileScreen: {
+      name: 'ProfileScreen',
+      screen: ProfileScreenWithData,
+    },
+    WalletScreen: {
+      name: 'WalletScreen',
+      screen: WalletScreen,
+    },
+    // eslint-disable-next-line sort-keys
+    QRScannerScreen: {
+      name: 'QRScannerScreen',
+      screen: QRScannerScreenWithData,
+    },
   },
-  WalletScreen: {
-    name: 'WalletScreen',
-    screen: WalletScreen,
-  },
-  // eslint-disable-next-line sort-keys
-  QRScannerScreen: {
-    name: 'QRScannerScreen',
-    screen: QRScannerScreenWithData,
-  },
-}, {
-  headerMode: 'none',
-  initialLayout: deviceUtils.dimensions,
-  initialRouteName: 'WalletScreen',
-  mode: 'modal',
-  springConfig: {
-    damping: 16,
-    mass: 0.3,
-    overshootClamping: false,
-    restDisplacementThreshold: 1,
-    restSpeedThreshold: 1,
-    stiffness: 140,
-  },
-  swipeDistanceThreshold: 30,
-  swipeVelocityThreshold: 10,
-  tabBarComponent: null,
-});
+  {
+    headerMode: 'none',
+    initialLayout: deviceUtils.dimensions,initialRouteName: 'WalletScreen',
+    mode: 'modal',
+    springConfig: {
+      damping: 16,
+      mass: 0.3,
+      overshootClamping: false,
+      restDisplacementThreshold: 1,
+      restSpeedThreshold: 1,
+      stiffness: 140,
+    },
+    swipeDistanceThreshold: 30,
+    swipeVelocityThreshold: 10,
+    tabBarComponent: null,
+  }
+);
 
-const MainNavigator = createStackNavigator({
-  ConfirmRequest: {
+const MainNavigator = createStackNavigator(
+  {
+    ConfirmRequest: {
     navigationOptions: {
       ...expandedPreset,
       onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart(); },
     },
     screen: TransactionConfirmationScreenWithData,
   },
-  ExampleScreen,
-  ExchangeModal: {
-    navigationOptions: {
-      ...expandedPreset,
-      gestureResponseDistance: {
-        vertical: deviceUtils.dimensions.height,
-      },
-      onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart(); },
+    ExampleScreen,
+    ExchangeModal: {
+      navigationOptions: {
+        ...expandedPreset,
+        gestureResponseDistance: {
+          vertical: deviceUtils.dimensions.height,
+        },onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart(); },
     },
     params: {
       isGestureBlocked: false,
@@ -91,24 +95,24 @@ const MainNavigator = createStackNavigator({
     navigationOptions: {
       ...expandedPreset,
       onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart(); },
+      },
+      screen: ExpandedAssetScreenWithData,
     },
-    screen: ExpandedAssetScreenWithData,
-  },
-  ImportSeedPhraseSheet: {
+    ImportSeedPhraseSheet: {
     navigationOptions: {
       ...sheetPreset,
       onTransitionStart: props => { sheetPreset.onTransitionStart(props); onTransitionStart(); },
     },
     screen: ImportSeedPhraseSheetWithData,
   },
-  ReceiveModal: {
-    navigationOptions: {
-      ...expandedPreset,
-      onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart(); },
+    ReceiveModal: {
+      navigationOptions: {
+        ...expandedPreset,
+        onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart();},
+      },
+      screen: ReceiveModal,
     },
-    screen: ReceiveModal,
-  },
-  SendSheet: {
+    SendSheet: {
     navigationOptions: {
       ...sheetPreset,
       onTransitionStart: props => {
@@ -119,54 +123,54 @@ const MainNavigator = createStackNavigator({
     },
     screen: SendSheetWithData,
   },
-  SettingsModal: {
-    navigationOptions: {
-      gesturesEnabled: false,
-      ...expandedPreset,
-      onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart(); },
-    },
-    screen: SettingsModal,
-    transparentCard: true,
+    SettingsModal: {
+      navigationOptions: {
 
-  },
-  SwipeLayout: {
+        gesturesEnabled: false,
+      ...expandedPreset,
+      onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart(); },},
+      screen: SettingsModal,
+    transparentCard: true,},
+    SwipeLayout: {
     navigationOptions: {
       ...backgroundPreset,
     },
-    screen: SwipeStack,
-  },
-  WalletConnectConfirmationModal: {
-    navigationOptions: {
-      ...expandedPreset,
-      onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart(); },
+    screen:SwipeStack,
+    },WalletConnectConfirmationModal: {
+      navigationOptions: {
+        ...expandedPreset,
+        onTransitionStart: props => { expandedPreset.onTransitionStart(props); onTransitionStart();},
+      },
+      screen: WalletConnectConfirmationModal,
     },
-    screen: WalletConnectConfirmationModal,
   },
-}, {
+  {
   defaultNavigationOptions: {
     onTransitionEnd,
     onTransitionStart,
   },
   disableKeyboardHandling: true, // XXX not sure about this from rebase
-  headerMode: 'none',
-  initialRouteName: 'SwipeLayout',
-  keyboardDismissMode: 'none', // true?
-  mode: 'modal',
-});
+    headerMode: 'none',
+    initialRouteName: 'SwipeLayout',keyboardDismissMode: 'none', // true?
+    mode: 'modal',
+
+  }
+);
 
 const AppContainer = createAppContainer(MainNavigator);
 
-// eslint-disable-next-line react/prop-types
 const AppContainerWithAnalytics = ({ ref, screenProps }) => (
   <AppContainer
-    onNavigationStateChange={(prevState, currentState, action) => {
+    onNavigationStateChange={(prevState, currentState) => {
       const { params, routeName } = Navigation.getActiveRoute(currentState);
       const prevRouteName = Navigation.getActiveRouteName(prevState);
 
       if (routeName === 'SettingsModal') {
         let subRoute = get(params, 'section.title');
         if (subRoute === 'Settings') subRoute = null;
-        return analytics.screen(`${routeName}${subRoute ? `>${subRoute}` : ''}`);
+        return analytics.screen(
+          `${routeName}${subRoute ? `>${subRoute}` : ''}`
+        );
       }
 
       if (routeName !== prevRouteName) {
@@ -181,7 +185,8 @@ const AppContainerWithAnalytics = ({ ref, screenProps }) => (
         if (routeName === 'ExpandedAssetScreen') {
           const { asset, type } = params;
           paramsToTrack = {
-            assetContractAddress: asset.address || get(asset, 'asset_contract.address'),
+            assetContractAddress:
+              asset.address || get(asset, 'asset_contract.address'),
             assetName: asset.name,
             assetSymbol: asset.symbol || get(asset, 'asset_contract.symbol'),
             assetType: type,

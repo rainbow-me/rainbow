@@ -22,19 +22,18 @@ export default class QRCodeScanner extends PureComponent {
     enableCamera: PropTypes.bool,
     enableScanning: PropTypes.bool,
     isCameraAuthorized: PropTypes.bool,
-    onCameraReady: PropTypes.func,
     onSuccess: PropTypes.func,
     showCrosshairText: PropTypes.bool,
-  }
+  };
 
   state = {
     error: null,
     isInitialized: false,
-  }
+  };
 
-  handleCameraReady = () => this.setState({ isInitialized: true })
+  handleCameraReady = () => this.setState({ isInitialized: true });
 
-  handleMountError = () => this.setState({ error: 'mounting' })
+  handleMountError = () => this.setState({ error: 'mounting' });
 
   renderCamera = () => {
     if (DeviceInfo.isEmulator()) {
@@ -54,7 +53,7 @@ export default class QRCodeScanner extends PureComponent {
         onSuccess={this.props.onSuccess}
       />
     ) : null;
-  }
+  };
 
   render = () => {
     const { contentStyles, isCameraAuthorized, showCrosshairText } = this.props;
@@ -69,10 +68,7 @@ export default class QRCodeScanner extends PureComponent {
         {isCameraAuthorized && (
           <Centered style={[position.coverAsObject, contentStyles]}>
             {showErrorMessage && (
-              <ErrorText
-                color={colors.red}
-                error={`Error ${error} camera`}
-              />
+              <ErrorText color={colors.red} error={`Error ${error} camera`} />
             )}
             {showCrosshair && (
               <QRCodeScannerCrosshair
@@ -84,5 +80,5 @@ export default class QRCodeScanner extends PureComponent {
         )}
       </Container>
     );
-  }
+  };
 }

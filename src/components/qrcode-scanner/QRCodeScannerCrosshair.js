@@ -15,10 +15,7 @@ const Container = styled(Centered)`
 
 const QRCodeScannerCrosshair = ({ showText, text }) => (
   <Container>
-    <Icon
-      css={position.cover}
-      name="crosshair"
-    />
+    <Icon css={position.cover} name="crosshair" />
     {showText ? (
       <Text
         color="white"

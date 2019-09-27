@@ -1,6 +1,6 @@
 import { transformPool } from '../withUniswapLiquidity';
 
-test('transformPool', async () => {
+it('transformPool', async () => {
   const pool = {
     balance: '1',
     ethBalance: '1.12',

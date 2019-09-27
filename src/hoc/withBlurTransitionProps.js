@@ -7,25 +7,22 @@ const { interpolate, Value } = Animated;
 
 const stackTransitionPropsSelector = state => state.stackTransitionProps;
 
-const withBlurTransitionProps = ({
-  isTransitioning,
-  showingModal,
-  position,
-}) => {
-  const blurIntensity = interpolate(position, {
-    inputRange: [0, 1],
-    outputRange: [0, 1],
-  });
-  const showBlur = !!(isTransitioning || showingModal);
-  return showBlur ? { blurIntensity } : { blurIntensity: new Value(0) };
+const withBlurTransitionProps = ({ effect, isTransitioning, position }) => {
+  const blurOpacity = position.interpolate(blurOpacityInterpolation);
+
+  return {
+    blurOpacity,
+    showBlur: (effect === 'expanded') && (isTransitioning || blurOpacity.__getValue() > 0),
+  };
 };
 
 const withBlurTransitionPropsSelector = createSelector(
   [stackTransitionPropsSelector],
-  withBlurTransitionProps,
+  withBlurTransitionProps
 );
 
-export default Component => compose(
-  withTransitionProps,
-  withProps(withBlurTransitionPropsSelector),
-)(Component);
+export default Component =>
+  compose(
+    withTransitionProps,
+    withProps(withBlurTransitionPropsSelector)
+  )(Component);

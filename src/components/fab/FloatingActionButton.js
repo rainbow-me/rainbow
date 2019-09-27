@@ -26,36 +26,35 @@ export default class FloatingActionButton extends Component {
     scaleTo: PropTypes.number,
     size: PropTypes.number,
     tapRef: PropTypes.object,
-  }
+  };
 
   static defaultProps = {
     scaleTo: 0.82,
     size: FabSize,
-  }
+  };
 
-  static size = FabSize
+  static size = FabSize;
 
-  static sizeWhileDragging = 74
+  static sizeWhileDragging = 74;
 
-  static shadow = FabShadow
+  static shadow = FabShadow;
 
-  shouldComponentUpdate = nextProps => (
-    isNewValueForPath(this.props, nextProps, 'disabled')
-    || isNewValueForPath(this.props, nextProps, 'isFabSelectionValid')
-    || isNewValueForPath(this.props, nextProps, 'scaleTo')
-  )
+  shouldComponentUpdate = nextProps =>
+    isNewValueForPath(this.props, nextProps, 'disabled') ||
+    isNewValueForPath(this.props, nextProps, 'isFabSelectionValid') ||
+    isNewValueForPath(this.props, nextProps, 'scaleTo');
 
-  handlePress = (event) => {
+  handlePress = event => {
     const { onPress } = this.props;
     ReactNativeHapticFeedback.trigger('impactLight');
     if (onPress) onPress(event);
-  }
+  };
 
-  handlePressIn = (event) => {
+  handlePressIn = event => {
     const { onPressIn } = this.props;
     ReactNativeHapticFeedback.trigger('impactLight');
     if (onPressIn) onPressIn(event);
-  }
+  };
 
   render = () => {
     const {
@@ -90,19 +89,11 @@ export default class FloatingActionButton extends Component {
             disabled={disabled}
             isFabSelectionValid={isFabSelectionValid}
           >
-            {(typeof children === 'function')
-              ? children({ size })
-              : children
-            }
-            {!disabled && (
-              <InnerBorder
-                opacity={0.06}
-                radius={size / 2}
-              />
-            )}
+            {typeof children === 'function' ? children({ size }) : children}
+            {!disabled && <InnerBorder opacity={0.06} radius={size / 2} />}
           </View>
         </ShadowStack>
       </ButtonPressAnimation>
     );
-  }
+  };
 }

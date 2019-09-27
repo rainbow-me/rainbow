@@ -4,7 +4,6 @@ import { Path } from 'svgs';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
-/* eslint-disable max-len */
 const CopyIcon = ({ color, ...props }) => (
   <Svg height="16" width="17" viewBox="0 0 16 17" {...props}>
     <Path
@@ -14,7 +13,6 @@ const CopyIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
-/* eslint-disable max-len */
 
 CopyIcon.propTypes = {
   color: PropTypes.string,

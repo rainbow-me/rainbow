@@ -3,7 +3,6 @@ import React from 'react';
 import Svg, { Path } from 'svgs';
 import { colors } from '../../../styles';
 
-/* eslint-disable max-len */
 const FaceIdIcon = ({ color, ...props }) => (
   <Svg viewBox="0 0 32 32" {...props}>
     <Path
@@ -13,7 +12,6 @@ const FaceIdIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
-/* eslint-disable max-len */
 
 FaceIdIcon.propTypes = {
   color: PropTypes.string,

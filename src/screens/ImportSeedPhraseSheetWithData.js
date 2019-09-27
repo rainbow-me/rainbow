@@ -16,21 +16,23 @@ import { deviceUtils } from '../utils';
 import ImportSeedPhraseSheet from './ImportSeedPhraseSheet';
 import { isValidSeed as validateSeed } from '../helpers/validators';
 
-const ConfirmImportAlert = onSuccess => (
+const ConfirmImportAlert = onSuccess =>
   Alert({
-    buttons: [{
-      onPress: onSuccess,
-      style: 'destructive',
-      text: 'Delete and Import',
-    }, {
-      style: 'cancel',
-      text: 'Cancel',
-    }],
-    // eslint-disable-next-line
-    message: 'Importing this private key will overwrite your existing wallet. Before continuing, please make sure you’ve transferred its contents or backed up its private key.',
+    buttons: [
+      {
+        onPress: onSuccess,
+        style: 'destructive',
+        text: 'Delete and Import',
+      },
+      {
+        style: 'cancel',
+        text: 'Cancel',
+      },
+    ],
+    message:
+      'Importing this private key will overwrite your existing wallet. Before continuing, please make sure you’ve transferred its contents or backed up its private key.',
     title: 'Are you sure you want to import?',
-  })
-);
+  });
 
 const ImportSeedPhraseSheetWithData = compose(
   withDataInit,
@@ -65,8 +67,10 @@ const ImportSeedPhraseSheetWithData = compose(
     },
   }),
   withHandlers({
-    getClipboardContents: ({ setClipboardContents }) => async () => Clipboard.getString().then(setClipboardContents),
-    onImportSeedPhrase: ({ setIsWalletImporting }) => () => ConfirmImportAlert(() => setIsWalletImporting(true)),
+    getClipboardContents: ({ setClipboardContents }) => async () =>
+      Clipboard.getString().then(setClipboardContents),
+    onImportSeedPhrase: ({ setIsWalletImporting }) => () =>
+      ConfirmImportAlert(() => setIsWalletImporting(true)),
     onInputChange: ({ isImporting, setSeedPhrase }) => ({ nativeEvent }) => {
       if (!isImporting) {
         setSeedPhrase(nativeEvent.text);
@@ -113,12 +117,12 @@ const ImportSeedPhraseSheetWithData = compose(
     },
   }),
   withHandlers({
-    onPressEnterKey: ({ onImportSeedPhrase, seedPhrase }) => ({ nativeEvent: { key } }) => {
+    onPressEnterKey: ({ onImportSeedPhrase, seedPhrase }) => () => {
       if (seedPhrase) {
         onImportSeedPhrase();
       }
     },
-  }),
+  })
 )(ImportSeedPhraseSheet);
 
 ImportSeedPhraseSheetWithData.navigationOptions = ({ navigation }) => ({

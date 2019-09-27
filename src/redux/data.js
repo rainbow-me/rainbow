@@ -87,7 +87,7 @@ const dedupePendingTransactions = (pendingTransactions, parsedTransactions) => {
     updatedPendingTransactions = filter(updatedPendingTransactions, (pendingTxn) => {
       const matchingElement = find(parsedTransactions, (txn) => txn.hash
         && (txn.hash.toLowerCase().startsWith(pendingTxn.hash.toLowerCase())
-        || (txn.nonce && (txn.nonce >= pendingTxn.nonce))));
+          || (txn.nonce && (txn.nonce >= pendingTxn.nonce))));
       return !matchingElement;
     });
   }

@@ -5,9 +5,8 @@ import FastImage from 'react-native-fast-image';
 import Animated, { Easing } from 'react-native-reanimated';
 import { toRad } from 'react-native-redash';
 import { toClass, withProps } from 'recompact';
-import styled from 'styled-components/primitives';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
-import { borders, colors, padding } from '../../styles';
+import { borders, colors } from '../../styles';
 import { initials, isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import Highlight from '../Highlight';
@@ -39,7 +38,7 @@ export default class TokenFamilyHeader extends PureComponent {
     isCoinRow: PropTypes.bool,
     isOpen: PropTypes.bool,
     onHeaderPress: PropTypes.func,
-  }
+  };
 
   static animationDuration = TokenFamilyHeaderAnimationDuration;
 
@@ -51,15 +50,16 @@ export default class TokenFamilyHeader extends PureComponent {
     if (isNewValueForPath(this.props, prevProps, 'isOpen')) {
       this.runTiming();
     }
-  }
+  };
 
-  runTiming = () => (
+  animation = new Value(0);
+
+  runTiming = () =>
     timing(this.animation, {
       duration: TokenFamilyHeaderAnimationDuration,
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
       toValue: this.props.isOpen ? 1 : 0,
-    }).start()
-  )
+    }).start();
 
   renderFamilyIcon = () => {
     const { familyImage, familyName, isCoinRow } = this.props;
@@ -69,24 +69,19 @@ export default class TokenFamilyHeader extends PureComponent {
       <ShadowStack
         {...size}
         backgroundColor={familyImage ? colors.white : colors.purpleLight}
-        shadows={[
-          [0, 4, 6, colors.dark, 0.04],
-          [0, 1, 3, colors.dark, 0.08],
-        ]}
+        shadows={[[0, 4, 6, colors.dark, 0.04], [0, 1, 3, colors.dark, 0.08]]}
       >
-        {familyImage
-          ? <FamilyIcon familyImage={familyImage} style={size} />
-          : <FallbackIcon {...size} symbol={initials(familyName)} />
-        }
+        {familyImage ? (
+          <FamilyIcon familyImage={familyImage} style={size} />
+        ) : (
+          <FallbackIcon {...size} symbol={initials(familyName)} />
+        )}
       </ShadowStack>
     );
-  }
+  };
 
   render = () => (
-    <ButtonPressAnimation
-      onPress={this.props.onHeaderPress}
-      scaleTo={0.96}
-    >
+    <ButtonPressAnimation onPress={this.props.onHeaderPress} scaleTo={0.96}>
       <Row
         align="center"
         backgroundColor={colors.white}
@@ -98,13 +93,8 @@ export default class TokenFamilyHeader extends PureComponent {
         <Highlight visible={this.props.highlight} />
         <RowWithMargins align="center" margin={10}>
           {this.renderFamilyIcon()}
-          <TruncatedText
-            letterSpacing="tight"
-            lineHeight="normal"
-            size="lmedium"
-            style={{ marginBottom: 1 }}
-            weight="semibold"
-          >
+          <TruncatedTextletterSpacing="tight" lineHeight="normal" size="lmedium"
+            style={{ marginBottom: 1 }} weight="semibold">
             {this.props.familyName}
           </TruncatedText>
         </RowWithMargins>
@@ -129,17 +119,21 @@ export default class TokenFamilyHeader extends PureComponent {
               height: 17,
               marginBottom: 1,
               right: 4,
-              transform: [{
-                rotate: toRad(interpolate(this.animation, {
-                  inputRange: [0, 1],
-                  outputRange: [0, 90],
-                })),
-              }],
+              transform: [
+                {
+                  rotate: toRad(
+                    interpolate(this.animation, {
+                      inputRange: [0, 1],
+                      outputRange: [0, 90],
+                    })
+                  ),
+                },
+              ],
               width: 9,
             }}
           />
         </RowWithMargins>
       </Row>
     </ButtonPressAnimation>
-  )
+  );
 }

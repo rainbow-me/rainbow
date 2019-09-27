@@ -35,7 +35,8 @@ const UNISWAP_GET_TOKEN_RESERVES_FAILURE = 'uniswap/UNISWAP_GET_TOKEN_RESERVES_F
 
 const UNISWAP_UPDATE_ASSETS = 'uniswap/UNISWAP_UPDATE_ASSETS';
 const UNISWAP_UPDATE_ALLOWANCES = 'uniswap/UNISWAP_UPDATE_ALLOWANCES';
-const UNISWAP_UPDATE_LIQUIDITY_TOKENS = 'uniswap/UNISWAP_UPDATE_LIQUIDITY_TOKENS';
+const UNISWAP_UPDATE_LIQUIDITY_TOKENS =
+  'uniswap/UNISWAP_UPDATE_LIQUIDITY_TOKENS';
 const UNISWAP_CLEAR_STATE = 'uniswap/UNISWAP_CLEAR_STATE';
 
 // Localstorage keys
@@ -56,7 +57,10 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
     const liquidityTokens = await getAccountLocal(LIQUIDITY, accountAddress, network);
     const allowances = await getAccountLocal(ALLOWANCES, accountAddress, network, {});
     const tokenReserves = await getAccountLocal(RESERVES, accountAddress, network, {});
-    const uniswapAssets = await getAccountLocal(ASSETS, accountAddress, network, {});
+    const uniswapAssets = await getAccountLocal(ASSETS,
+      accountAddress,
+      network
+    , {});
     dispatch({
       payload: {
         allowances,
@@ -180,7 +184,10 @@ export const uniswapUpdateAssetPrice = (address, price) => (dispatch, getState) 
   saveAccountLocal(ASSETS, updatedAssets, accountAddress, network);
 };
 
-export const uniswapUpdateLiquidityTokens = (liquidityTokens) => (dispatch, getState) => {
+export const uniswapUpdateLiquidityTokens = liquidityTokens => (
+  dispatch,
+  getState
+) => {
   if (isEmpty(liquidityTokens)) return;
   const { accountAddress, network } = getState().settings;
   dispatch({
@@ -191,7 +198,10 @@ export const uniswapUpdateLiquidityTokens = (liquidityTokens) => (dispatch, getS
   dispatch(uniswapUpdateState());
 };
 
-export const uniswapAddLiquidityTokens = (newLiquidityTokens) => (dispatch, getState) => {
+export const uniswapAddLiquidityTokens = newLiquidityTokens => (
+  dispatch,
+  getState
+) => {
   if (isEmpty(newLiquidityTokens)) return;
   const { accountAddress, network } = getState().settings;
   const { liquidityTokens } = getState().uniswap;
@@ -204,7 +214,7 @@ export const uniswapAddLiquidityTokens = (newLiquidityTokens) => (dispatch, getS
   dispatch(uniswapUpdateState());
 };
 
-export const uniswapUpdateState = () => (dispatch, getState) => (
+export const uniswapUpdateState = () => (dispatch, getState) =>
   new Promise((resolve, reject) => {
     const { accountAddress, network } = getState().settings;
     const { liquidityTokens } = getState().uniswap;
@@ -215,7 +225,9 @@ export const uniswapUpdateState = () => (dispatch, getState) => (
 
     dispatch({ type: UNISWAP_UPDATE_REQUEST });
 
-    const exchangeContracts = map(liquidityTokens, x => get(x, 'asset.asset_code'));
+    const exchangeContracts = map(liquidityTokens, x =>
+      get(x, 'asset.asset_code')
+    );
     return getLiquidityInfo(accountAddress, exchangeContracts)
       .then(uniswap => {
         saveAccountLocal(LIQUIDITY_INFO, uniswap, accountAddress, network);
@@ -229,8 +241,7 @@ export const uniswapUpdateState = () => (dispatch, getState) => (
         dispatch({ type: UNISWAP_UPDATE_FAILURE });
         reject(error);
       });
-  })
-);
+  });
 
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNISWAP_STATE = {
@@ -243,34 +254,34 @@ export const INITIAL_UNISWAP_STATE = {
   uniswapAssets: {},
 };
 
-export default (state = INITIAL_UNISWAP_STATE, action) => produce(state, (draft) => {
-  switch (action.type) {
-  case UNISWAP_LOAD_REQUEST:
-    draft.loadingUniswap = true;
-    break;
-  case UNISWAP_LOAD_SUCCESS:
-    draft.loadingUniswap = false;
-    draft.allowances = action.payload.allowances;
-    draft.uniswap = action.payload.uniswap;
-    draft.uniswapAssets = action.payload.uniswapAssets;
+export default (state = INITIAL_UNISWAP_STATE, action) =>
+  produce(state, (draft) => {
+    switch (action.type) {
+      case UNISWAP_LOAD_REQUEST:
+        draft.loadingUniswap = true;
+        break;
+      case UNISWAP_LOAD_SUCCESS:
+        draft.loadingUniswap = false;
+        draft.allowances = action.payload.allowances;draft.uniswap = action.payload.uniswap;
+        draft.uniswapAssets = action.payload.uniswapAssets;
     draft.liquidityTokens = action.payload.liquidityTokens;
     draft.tokenReserves = action.payload.tokenReserves;
-    break;
-  case UNISWAP_LOAD_FAILURE:
-    draft.loadingUniswap = false;
-    break;
-  case UNISWAP_UPDATE_REQUEST:
-    draft.fetchingUniswap = true;
-    break;
-  case UNISWAP_UPDATE_SUCCESS:
-    draft.fetchingUniswap = false;
-    draft.uniswap = action.payload;
-    break;
-  case UNISWAP_UPDATE_FAILURE:
-    draft.fetchingUniswap = false;
-    break;
-  case UNISWAP_UPDATE_LIQUIDITY_TOKENS:
-    draft.liquidityTokens = action.payload;
+        break;
+      case UNISWAP_LOAD_FAILURE:
+        draft.loadingUniswap = false;
+        break;
+      case UNISWAP_UPDATE_REQUEST:
+        draft.fetchingUniswap = true;
+        break;
+      case UNISWAP_UPDATE_SUCCESS:
+        draft.fetchingUniswap = false;
+        draft.uniswap = action.payload;
+        break;
+      case UNISWAP_UPDATE_FAILURE:
+        draft.fetchingUniswap = false;
+        break;
+      case UNISWAP_UPDATE_LIQUIDITY_TOKENS:
+        draft.liquidityTokens = action.payload;
     break;
   case UNISWAP_UPDATE_ALLOWANCES:
     draft.allowances = action.payload;
@@ -279,11 +290,11 @@ export default (state = INITIAL_UNISWAP_STATE, action) => produce(state, (draft)
     draft.uniswapAssets = action.payload;
     break;
   case UNISWAP_GET_TOKEN_RESERVES_SUCCESS:
-    draft.tokenReserves = action.payload;
-    break;
-  case UNISWAP_CLEAR_STATE:
-    return INITIAL_UNISWAP_STATE;
-  default:
-    break;
-  }
-});
+    draft.tokenReserves =action.payload;
+        break;
+      case UNISWAP_CLEAR_STATE:
+        return INITIAL_UNISWAP_STATE;
+      default:
+        break;
+    }
+  });

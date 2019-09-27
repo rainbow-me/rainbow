@@ -4,7 +4,6 @@ import { Path } from 'svgs';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
-/* eslint-disable max-len */
 const SignatureIcon = ({ color, ...props }) => (
   <Svg height="10" width="10" viewBox="0 0 10 10" {...props}>
     <Path
@@ -14,7 +13,6 @@ const SignatureIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
-/* eslint-disable max-len */
 
 SignatureIcon.propTypes = {
   color: PropTypes.string,

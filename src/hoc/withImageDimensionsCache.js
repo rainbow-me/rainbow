@@ -4,9 +4,15 @@ import {
   updateImageDimensionsCache,
 } from '../redux/imageDimensionsCache';
 
-const mapStateToProps = ({ imageDimensionsCache }) => ({ imageDimensionsCache });
+const mapStateToProps = ({ imageDimensionsCache }) => ({
+  imageDimensionsCache,
+});
 
-export default Component => connect(mapStateToProps, {
-  pruneCache: pruneImageDimensionsCache,
-  updateCache: updateImageDimensionsCache,
-})(Component);
+export default Component =>
+  connect(
+    mapStateToProps,
+    {
+      pruneCache: pruneImageDimensionsCache,
+      updateCache: updateImageDimensionsCache,
+    }
+  )(Component);

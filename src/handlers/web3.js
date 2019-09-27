@@ -1,9 +1,5 @@
 import { ethers } from 'ethers';
-import {
-  get,
-  replace,
-  startsWith,
-} from 'lodash';
+import { get, replace, startsWith } from 'lodash';
 import { REACT_APP_INFURA_PROJECT_ID } from 'react-native-dotenv';
 import { ethereumUtils } from '../utils';
 import {
@@ -19,17 +15,22 @@ const infuraUrl = `https://network.infura.io/v3/${REACT_APP_INFURA_PROJECT_ID}`;
 /**
  * @desc web3 http instance
  */
-export let web3Provider = new ethers.providers.JsonRpcProvider(replace(infuraUrl, 'network', 'mainnet'));
+export let web3Provider = new ethers.providers.JsonRpcProvider(
+  replace(infuraUrl, 'network', 'mainnet')
+);
 
 /**
  * @desc set a different web3 provider
  * @param {String} network
  */
 export const web3SetHttpProvider = network => {
-  web3Provider = new ethers.providers.JsonRpcProvider(replace(infuraUrl, 'network', network));
+  web3Provider = new ethers.providers.JsonRpcProvider(
+    replace(infuraUrl, 'network', network)
+  );
 };
 
-export const sendRpcCall = async (payload) => web3Provider.send(payload.method, payload.params);
+export const sendRpcCall = async payload =>
+  web3Provider.send(payload.method, payload.params);
 
 /**
  * @desc check if hex string
@@ -44,23 +45,26 @@ export const isHexStringIgnorePrefix = value => {
   return isHexString(updatedValue);
 };
 
-export const addHexPrefix = value => (startsWith(value, '0x')) ? value : '0x' + value;
+export const addHexPrefix = value =>
+  startsWith(value, '0x') ? value : '0x' + value;
 
-export const mnemonicToSeed = value => ethers.utils.HDNode.mnemonicToSeed(value);
+export const mnemonicToSeed = value =>
+  ethers.utils.HDNode.mnemonicToSeed(value);
 
 /**
  * @desc is valid mnemonic
  * @param {String} value
  * @return {Boolean}
  */
-export const isValidMnemonic = value => ethers.utils.HDNode.isValidMnemonic(value);
+export const isValidMnemonic = value =>
+  ethers.utils.HDNode.isValidMnemonic(value);
 
 /**
  * @desc convert to checksum address
  * @param  {String} address
  * @return {String} checksum address
  */
-export const toChecksumAddress = async (address) => {
+export const toChecksumAddress = async address => {
   try {
     return await ethers.utils.getAddress(address);
   } catch (error) {
@@ -73,15 +77,16 @@ export const toChecksumAddress = async (address) => {
  * @param  {String|Number} value
  * @return {String} hex value
  */
-export const toHex = value => ethers.utils.hexlify(ethers.utils.bigNumberify(value));
+export const toHex = value =>
+  ethers.utils.hexlify(ethers.utils.bigNumberify(value));
 
 /**
  * @desc has ETH balance
  * @param  {String} address
  * @return {Boolean}
  */
-export const hasEthBalance = async (address) => {
-  const weiBalance = await web3Provider.getBalance(address, "pending");
+export const hasEthBalance = async address => {
+  const weiBalance = await web3Provider.getBalance(address, 'pending');
   return weiBalance > 0;
 };
 
@@ -90,7 +95,7 @@ export const hasEthBalance = async (address) => {
  * @param  {String} address
  * @return {Number} gas limit
  */
-export const estimateGas = async (estimateGasData) => {
+export const estimateGas = async estimateGasData => {
   try {
     const gasLimit = await web3Provider.estimateGas(estimateGasData);
     return gasLimit.toNumber();
@@ -123,14 +128,15 @@ export const toWei = ether => {
  * @param {String} address
  * @return {Promise}
  */
-export const getTransactionCount = address => web3Provider.getTransactionCount(address, 'pending');
+export const getTransactionCount = address =>
+  web3Provider.getTransactionCount(address, 'pending');
 
 /**
  * @desc get transaction details
  * @param  {Object} transaction { from, to, data, value, gasPrice, gasLimit }
  * @return {Object}
  */
-export const getTxDetails = async (transaction) => {
+export const getTxDetails = async transaction => {
   const { from, to } = transaction;
   const data = transaction.data ? transaction.data : '0x';
   const value = transaction.amount ? toWei(transaction.amount) : '0x00';
@@ -140,7 +146,8 @@ export const getTxDetails = async (transaction) => {
     to,
     value,
   };
-  const _gasLimit = transaction.gasLimit || (await estimateGas(estimateGasData));
+  const _gasLimit =
+    transaction.gasLimit || (await estimateGas(estimateGasData));
   const _gasPrice = transaction.gasPrice || (await getGasPrice());
   const nonce = await getTransactionCount(from);
   const tx = {
@@ -154,7 +161,7 @@ export const getTxDetails = async (transaction) => {
   return tx;
 };
 
-export const resolveNameOrAddress = async (nameOrAddress) => {
+export const resolveNameOrAddress = async nameOrAddress => {
   if (!isHexString(nameOrAddress)) {
     return web3Provider.resolveName(nameOrAddress);
   }
@@ -166,7 +173,7 @@ export const resolveNameOrAddress = async (nameOrAddress) => {
  * @param  {Object}  transaction { asset, from, to, gasPrice }
  * @return {Object}
  */
-export const getTransferNftTransaction = async (transaction) => {
+export const getTransferNftTransaction = async transaction => {
   const recipient = await resolveNameOrAddress(transaction.to);
   const { from } = transaction;
   const contractAddress = get(transaction, 'asset.asset_contract.address');
@@ -185,8 +192,11 @@ export const getTransferNftTransaction = async (transaction) => {
  * @param  {Object}  transaction { asset, from, to, amount, gasPrice }
  * @return {Object}
  */
-export const getTransferTokenTransaction = async (transaction) => {
-  const value = convertAmountToRawAmount(transaction.amount, transaction.asset.decimals);
+export const getTransferTokenTransaction = async transaction => {
+  const value = convertAmountToRawAmount(
+    transaction.amount,
+    transaction.asset.decimals
+  );
   const recipient = await resolveNameOrAddress(transaction.to);
   const data = getDataForTokenTransfer(value, recipient);
   return {
@@ -203,17 +213,18 @@ export const getTransferTokenTransaction = async (transaction) => {
  * @param {Object} transaction { asset, from, to, amount, gasPrice }
  * @return {Promise}
  */
-export const createSignableTransaction = async (transaction) => {
+export const createSignableTransaction = async transaction => {
   if (get(transaction, 'asset.address') === 'eth') {
     return getTxDetails(transaction);
   }
   const isNft = get(transaction, 'asset.isNft', false);
-  const result = isNft ? await getTransferNftTransaction(transaction)
+  const result = isNft
+    ? await getTransferNftTransaction(transaction)
     : await getTransferTokenTransaction(transaction);
   return getTxDetails(result);
 };
 
-const estimateAssetBalancePortion = (asset) => {
+const estimateAssetBalancePortion = asset => {
   if (!asset.isNft) {
     const assetBalance = get(asset, 'balance.amount');
     const decimals = get(asset, 'decimals');
@@ -263,9 +274,10 @@ export const estimateGasLimit = async ({
   recipient,
   amount,
 }) => {
-  const _amount = amount && Number(amount)
-    ? convertAmountToRawAmount(amount, asset.decimals)
-    : estimateAssetBalancePortion(asset);
+  const _amount =
+    amount && Number(amount)
+      ? convertAmountToRawAmount(amount, asset.decimals)
+      : estimateAssetBalancePortion(asset);
   const value = _amount.toString();
   let _recipient = await resolveNameOrAddress(recipient);
   _recipient = _recipient || '0x737e583620f4ac1842d4e354789ca0c5e0651fbb';

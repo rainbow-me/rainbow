@@ -10,9 +10,10 @@ const mapStateToProps = ({
   nativeCurrency,
 });
 
-const sortAssets = (state) => sortAssetsByNativeAmountSelector(state);
+const sortAssets = state => sortAssetsByNativeAmountSelector(state);
 
-export default Component => compose(
-  connect(mapStateToProps),
-  withProps(sortAssets),
-)(Component);
+export default Component =>
+  compose(
+    connect(mapStateToProps),
+    withProps(sortAssets)
+  )(Component);

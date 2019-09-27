@@ -15,13 +15,7 @@ const ModalElement = styled(Column)`
   width: 100%;
 `;
 
-const Modal = ({
-  height,
-  onCloseModal,
-  statusBarStyle,
-  containerPadding,
-  ...props
-}) => (
+const Modal = ({ height, onCloseModal, statusBarStyle,containerPadding, ...props }) => (
   <Centered
     direction="column"
     height="100%"
@@ -30,10 +24,7 @@ const Modal = ({
   >
     <StatusBar barStyle={statusBarStyle} />
     <TouchableBackdrop onPress={onCloseModal} />
-    <ModalElement
-      {...props}
-      height={height}
-    />
+    <ModalElement {...props} height={height} />
   </Centered>
 );
 

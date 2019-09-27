@@ -29,19 +29,13 @@ const LoadingOverlay = ({ title }) => (
   <Centered
     activeOpacity={1}
     component={TouchableBackdrop}
-    disabled={true}
+    disabled
     zIndex={999}
   >
-    <FadeInAnimation
-      isInteraction
-    >
-      <Overlay
-        blurAmount={20}
-        blurType="light"
-        component={BlurView}
-      >
+    <FadeInAnimation isInteraction>
+      <Overlay blurAmount={20} blurType="light" component={BlurView}>
         <ActivityIndicator />
-        {title && (<Title>{title}</Title>)}
+        {title && <Title>{title}</Title>}
       </Overlay>
     </FadeInAnimation>
   </Centered>

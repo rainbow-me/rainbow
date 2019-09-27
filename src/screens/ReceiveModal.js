@@ -2,12 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Clipboard, Share } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import {
-  compose,
-  onlyUpdateForKeys,
-  withHandlers,
-  withState,
-} from 'recompact';
+import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
 import styled from 'styled-components/primitives';
 import Divider from '../components/Divider';
 import { Column } from '../components/layout';
@@ -19,11 +14,7 @@ import {
 } from '../components/modal';
 import QRCodeDisplay from '../components/QRCodeDisplay';
 import { FloatingEmojis } from '../components/floating-emojis';
-import {
-  Br,
-  Monospace,
-  Text,
-} from '../components/text';
+import { Br, Monospace, Text } from '../components/text';
 import { withAccountAddress } from '../hoc';
 import { colors, padding } from '../styles';
 
@@ -65,20 +56,15 @@ const ReceiveScreen = ({
   onPressShareAddress,
 }) => (
   <Modal height={472} onCloseModal={onCloseModal}>
-    <ModalHeader
-      onPressClose={onCloseModal}
-      title="Receive"
-    />
+    <ModalHeader onPressClose={onCloseModal} title="Receive" />
     <Divider inset={[0, 16]} />
     <Content>
       <DescriptionText>
-        Send Ether, ERC-20 tokens, or<Br />
+        Send Ether, ERC-20 tokens, or
+        <Br />
         collectibles to your wallet:
       </DescriptionText>
-      <QRCodeDisplay
-        size={QRCodeSize}
-        value={accountAddress}
-      />
+      <QRCodeDisplay size={QRCodeSize} value={accountAddress} />
       <AddressTextContainer>
         <AddressText>
           {accountAddress.substring(0, accountAddress.length / 2)}
@@ -114,7 +100,6 @@ const ReceiveScreen = ({
 ReceiveScreen.propTypes = {
   accountAddress: PropTypes.string.isRequired,
   emojiCount: PropTypes.number,
-  navigation: PropTypes.object.isRequired,
   onCloseModal: PropTypes.func.isRequired,
   onPressCopyAddress: PropTypes.func,
   onPressShareAddress: PropTypes.func,
@@ -125,17 +110,20 @@ export default compose(
   withState('emojiCount', 'setEmojiCount', 0),
   withHandlers({
     onCloseModal: ({ navigation }) => () => navigation.goBack(),
-    onPressCopyAddress: ({ accountAddress, emojiCount, setEmojiCount }) => () => {
+    onPressCopyAddress: ({
+      accountAddress,
+      emojiCount,
+      setEmojiCount,
+    }) => () => {
       ReactNativeHapticFeedback.trigger('impactLight');
       setEmojiCount(emojiCount + 1);
       Clipboard.setString(accountAddress);
     },
-    onPressShareAddress: ({ accountAddress }) => () => (
+    onPressShareAddress: ({ accountAddress }) => () =>
       Share.share({
         message: accountAddress,
         title: 'My account address:',
-      })
-    ),
+      }),
   }),
-  onlyUpdateForKeys(['accountAddress', 'emojiCount']),
+  onlyUpdateForKeys(['accountAddress', 'emojiCount'])
 )(ReceiveScreen);

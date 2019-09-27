@@ -13,7 +13,7 @@ import { getTransactionCount } from '../handlers/web3';
  */
 export const parseNewTransaction = async (
   txDetails = null,
-  nativeCurrency = '',
+  nativeCurrency = ''
 ) => {
   let balance = null;
   const { amount } = txDetails;
@@ -26,7 +26,7 @@ export const parseNewTransaction = async (
   const native = convertAmountAndPriceToNativeDisplay(
     amount,
     get(txDetails, 'asset.price.value', 0),
-    nativeCurrency,
+    nativeCurrency
   );
   let tx = pick(txDetails, [
     'asset',
@@ -36,13 +36,12 @@ export const parseNewTransaction = async (
     'nonce',
     'to',
   ]);
-  const nonce = tx.nonce
-    || (tx.from ? await getTransactionCount(tx.from) : '');
+  const nonce = tx.nonce || (tx.from ? await getTransactionCount(tx.from) : '');
   tx = {
     ...tx,
     balance,
     error: false,
-    mined_at: null, // eslint-disable-line camelcase
+    mined_at: null,
     native,
     nonce,
     pending: !!txDetails.hash,

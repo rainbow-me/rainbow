@@ -4,12 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Animated from 'react-native-reanimated';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
-import {
-  compose,
-  withHandlers,
-  withProps,
-  withState,
-} from 'recompact';
+import { compose, withHandlers, withProps, withState } from 'recompact';
 import { AssetList } from '../components/asset-list';
 import BlurOverlay from '../components/BlurOverlay';
 import { FabWrapper } from '../components/fab';
@@ -55,7 +50,7 @@ class WalletScreen extends Component {
     sections: PropTypes.array,
     setSafeTimeout: PropTypes.func,
     uniqueTokens: PropTypes.array,
-  }
+  };
 
   setInitialStatesForOpenAssets = async () => {
     const toggle = await getSmallBalanceToggle();
@@ -74,18 +69,47 @@ class WalletScreen extends Component {
     } catch (error) {
       // TODO error state
     }
-  }
+  };
 
-  shouldComponentUpdate = (nextProps) => {
-    const isNewBlurIntensity = isNewValueForPath(this.props, nextProps, 'blurIntensity');
-    const isNewCurrency = isNewValueForPath(this.props, nextProps, 'nativeCurrency');
-    const isNewFetchingAssets = isNewValueForPath(this.props, nextProps, 'fetchingAssets');
-    const isNewFetchingUniqueTokens = isNewValueForPath(this.props, nextProps, 'fetchingUniqueTokens');
-    const isNewIsWalletEmpty = isNewValueForPath(this.props, nextProps, 'isEmpty');
-    const isNewIsWalletEthZero = isNewValueForPath(this.props, nextProps, 'isWalletEthZero');
+  shouldComponentUpdate = nextProps => {
+    const isNewBlurIntensity = isNewValueForPath(
+      this.props,
+      nextProps,
+      'blurIntensity'
+    );
+    const isNewCurrency = isNewValueForPath(
+      this.props,
+      nextProps,
+      'nativeCurrency'
+    );
+    const isNewFetchingAssets = isNewValueForPath(
+      this.props,
+      nextProps,
+      'fetchingAssets'
+    );
+    const isNewFetchingUniqueTokens = isNewValueForPath(
+      this.props,
+      nextProps,
+      'fetchingUniqueTokens'
+    );
+    const isNewIsWalletEmpty = isNewValueForPath(
+      this.props,
+      nextProps,
+      'isEmpty'
+    );
+    const isNewIsWalletEthZero = isNewValueForPath(
+      this.props,
+      nextProps,
+      'isWalletEthZero'
+    );
     const isNewLanguage = isNewValueForPath(this.props, nextProps, 'language');
     const isNewSections = isNewValueForPath(this.props, nextProps, 'sections');
-    const isNewTransitionProps = isNewValueForPath(this.props, nextProps, 'transitionProps');
+
+    const isNewTransitionProps = isNewValueForPath(
+      this.props,
+      nextProps,
+      'transitionProps'
+    );
 
     if (!nextProps.isFocused) {
       return isNewBlurIntensity || isNewTransitionProps;
@@ -138,7 +162,7 @@ class WalletScreen extends Component {
         <BlurOverlay intensity={blurIntensity} />
       </Page>
     );
-  }
+  };
 }
 
 export default compose(
@@ -155,5 +179,5 @@ export default compose(
   withIsWalletEthZero,
   withStatusBarStyle('dark-content'),
   withProps(buildWalletSectionsSelector),
-  withProps({ scrollViewTracker: new Animated.Value(0) }),
+  withProps({ scrollViewTracker: new Animated.Value(0) })
 )(WalletScreen);

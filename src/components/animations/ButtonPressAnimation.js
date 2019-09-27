@@ -103,7 +103,7 @@ export default class ButtonPressAnimation extends PureComponent {
     style: stylePropType,
     tapRef: PropTypes.object,
     transformOrigin: directionPropType,
-  }
+  };
 
   static defaultProps = {
     activeOpacity: 1,
@@ -188,14 +188,20 @@ export default class ButtonPressAnimation extends PureComponent {
     if (enableHapticFeedback) {
       ReactNativeHapticFeedback.trigger(hapticType);
     }
-  }
+  };
+
+  opacity = new Animated.Value(DefaultAnimatedValues.opacity);
+
+  scale = new Animated.Value(DefaultAnimatedValues.scale);
+
+  transX = new Animated.Value(DefaultAnimatedValues.transX);
 
   handleLayout = ({ nativeEvent: { layout } }) => {
     // only setState if height+width dont already exist
     if (!Object.values(this.state).reduce((a, b) => a + b)) {
       this.setState(pick(layout, Object.keys(this.state)));
     }
-  }
+  };
 
   handleDetectedLongPress = () => {
     this.longPressDetected = true;
@@ -203,8 +209,9 @@ export default class ButtonPressAnimation extends PureComponent {
   }
 
   handlePress = () => {
-    if (!this.longPressDetected && this.props.onPress) {
-      this.props.onPress();
+          if (!this.longPressDetected && this.props.onPress) {
+        this.props.onPress(
+      );
     }
   }
 
@@ -338,5 +345,5 @@ export default class ButtonPressAnimation extends PureComponent {
         />
       </Fragment>
     );
-  }
+  };
 }

@@ -4,7 +4,11 @@ import {
   walletConnectRejectSession,
 } from '../redux/walletconnect';
 
-export default Component => connect(null, {
-  walletConnectApproveSession,
-  walletConnectRejectSession,
-})(Component);
+export default Component =>
+  connect(
+    null,
+    {
+      walletConnectApproveSession,
+      walletConnectRejectSession,
+    }
+  )(Component);

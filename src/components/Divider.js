@@ -1,9 +1,4 @@
-import {
-  constant,
-  isNil,
-  isNumber,
-  times,
-} from 'lodash';
+import { constant, isNil, isNumber, times } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForKeys } from 'recompact';
@@ -12,7 +7,7 @@ import { borders, colors, position } from '../styles';
 
 const DefaultDividerSize = 2;
 
-const buildInsetFromProps = (inset) => {
+const buildInsetFromProps = inset => {
   if (!inset) return times(4, constant(0));
   if (isNumber(inset)) return times(4, inset);
 
@@ -26,14 +21,14 @@ const buildInsetFromProps = (inset) => {
   ];
 };
 
-const horizontalBorderLineStyles = (inset) => css`
+const horizontalBorderLineStyles = inset => css`
   ${inset[3] ? borders.buildRadius('left', 2) : null}
   ${inset[1] ? borders.buildRadius('right', 2) : null}
   left: ${inset[3]};
   right: ${inset[1]};
 `;
 
-const verticalBorderLineStyles = (inset) => css`
+const verticalBorderLineStyles = inset => css`
   ${inset[2] ? borders.buildRadius('bottom', 2) : null}
   ${inset[0] ? borders.buildRadius('top', 2) : null}
   bottom: ${inset[2]};
@@ -42,18 +37,17 @@ const verticalBorderLineStyles = (inset) => css`
 
 const BorderLine = styled.View`
   ${position.cover};
-  ${({ horizontal, inset }) => (
+  ${({ horizontal, inset }) =>
     horizontal
       ? horizontalBorderLineStyles(inset)
-      : verticalBorderLineStyles(inset)
-  )};
+      : verticalBorderLineStyles(inset)};
   background-color: ${({ color }) => color};
   bottom: 0;
   top: 0;
 `;
 
 const Container = styled.View`
-  background-color: ${({ backgroundColor }) => (backgroundColor || colors.white)};
+  background-color: ${({ backgroundColor }) => backgroundColor || colors.white};
   flex-shrink: 0;
   height: ${({ horizontal, size }) => (horizontal ? size : '100%')};
   width: ${({ horizontal, size }) => (horizontal ? '100%' : size)};
@@ -61,13 +55,7 @@ const Container = styled.View`
 
 const enhance = onlyUpdateForKeys(['color', 'inset']);
 
-const Divider = enhance(({
-  color,
-  horizontal,
-  inset,
-  size,
-  ...props
-}) => (
+const Divider = enhance(({ color, horizontal, inset, size, ...props }) => (
   <Container {...props} horizontal={horizontal} size={size}>
     <BorderLine
       {...props}
@@ -81,7 +69,10 @@ const Divider = enhance(({
 Divider.propTypes = {
   color: PropTypes.string,
   horizontal: PropTypes.bool,
-  inset: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.number), PropTypes.bool]),
+  inset: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.number),
+    PropTypes.bool,
+  ]),
   size: PropTypes.number,
 };
 

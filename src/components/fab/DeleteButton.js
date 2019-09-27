@@ -17,7 +17,9 @@ const DeleteButton = enhance(({ deleteButtonScale }) => (
       ...position.centeredAsObject,
       ...position.sizeAsObject(size),
       position: 'absolute',
-      transform: transformOrigin(size / -8, size / -8, { scale: deleteButtonScale }),
+      transform: transformOrigin(size / -8, size / -8, {
+        scale: deleteButtonScale,
+      }),
     }}
   >
     <ShadowStack
@@ -25,11 +27,7 @@ const DeleteButton = enhance(({ deleteButtonScale }) => (
       backgroundColor={colors.dark}
       shadows={FloatingActionButton.shadow}
     >
-      <Icon
-        color="white"
-        name="close"
-        size={12}
-      />
+      <Icon color="white" name="close" size={12} />
     </ShadowStack>
   </Animated.View>
 ));

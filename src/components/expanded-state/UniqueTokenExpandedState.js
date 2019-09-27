@@ -19,11 +19,7 @@ import {
 import { Centered } from '../layout';
 import { Pager } from '../pager';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
-import {
-  AssetPanel,
-  AssetPanelAction,
-  AssetPanelHeader,
-} from './asset-panel';
+import { AssetPanel, AssetPanelAction, AssetPanelHeader } from './asset-panel';
 import FloatingPanel from './FloatingPanel';
 import FloatingPanels from './FloatingPanels';
 
@@ -34,9 +30,6 @@ const PagerControlsColorVariants = {
 
 const UniqueTokenExpandedState = ({
   asset,
-  containerHeight,
-  containerWidth,
-  imageDimensions,
   maxImageHeight,
   onLayout,
   onPressSend,
@@ -48,18 +41,20 @@ const UniqueTokenExpandedState = ({
   subtitle,
   title,
 }) => {
-  const PanelPages = [{
-    component: (
-      <UniqueTokenImage
-        backgroundColor={asset.background}
-        borderRadius={FloatingPanel.borderRadius}
-        imageUrl={asset.image_preview_url}
-        item={asset}
-        resizeMode="contain"
-      />
-    ),
-    name: 'UniqueTokenImage',
-  }];
+  const PanelPages = [
+    {
+      component: (
+        <UniqueTokenImage
+          backgroundColor={asset.background}
+          borderRadius={FloatingPanel.borderRadius}
+          imageUrl={asset.image_preview_url}
+          item={asset}
+          resizeMode="contain"
+        />
+      ),
+      name: 'UniqueTokenImage',
+    },
+  ];
 
   if (asset.traits.length) {
     PanelPages.push({
@@ -74,7 +69,11 @@ const UniqueTokenExpandedState = ({
     >
       {!!maxImageHeight && (
         <Centered>
-          <FloatingPanel color={panelColor} height={panelHeight} width={panelWidth}>
+          <FloatingPanel
+            color={panelColor}
+            height={panelHeight}
+            width={panelWidth}
+          >
             {/*
                 TODO XXX: THIS FLOATING PANEL SHOULD HAVE HORIZONTAL PADDING
                 IF THE IMAGE IS A PERFECT SQUARE
@@ -82,7 +81,10 @@ const UniqueTokenExpandedState = ({
             <Pager
               controlsProps={{
                 bottom: UniqueTokenAttributes.padding,
-                color: colors.getTextColorForBackground(panelColor, PagerControlsColorVariants),
+                color: colors.getTextColorForBackground(
+                  panelColor,
+                  PagerControlsColorVariants
+                ),
               }}
               dimensions={{ height: panelHeight, width: panelWidth }}
               pages={PanelPages}
@@ -91,10 +93,7 @@ const UniqueTokenExpandedState = ({
         </Centered>
       )}
       <AssetPanel onLayout={onLayout}>
-        <AssetPanelHeader
-          subtitle={subtitle}
-          title={title}
-        />
+        <AssetPanelHeader subtitle={subtitle} title={title} />
         {asset.isSendable && (
           <AssetPanelAction
             icon="send"
@@ -107,11 +106,7 @@ const UniqueTokenExpandedState = ({
           label="View on OpenSea"
           onPress={onPressView}
         />
-        <AssetPanelAction
-          icon="share"
-          label="Share"
-          onPress={onPressShare}
-        />
+        <AssetPanelAction icon="share" label="Share" onPress={onPressShare} />
       </AssetPanel>
     </FloatingPanels>
   );
@@ -141,7 +136,7 @@ const buildPanelDimensions = ({
   panelWidth,
 }) => {
   const panelHeight = imageDimensions
-    ? ((panelWidth * imageDimensions.height) / imageDimensions.width)
+    ? (panelWidth * imageDimensions.height) / imageDimensions.width
     : panelWidth;
 
   const panelDimensions = { panelHeight };
@@ -150,7 +145,7 @@ const buildPanelDimensions = ({
     panelDimensions.panelHeight = maxImageHeight;
     panelDimensions.panelWidth = background
       ? panelWidth
-      : ((maxImageHeight * imageDimensions.width) / imageDimensions.height);
+      : (maxImageHeight * imageDimensions.width) / imageDimensions.height;
   }
 
   return panelDimensions;
@@ -161,9 +156,10 @@ export default compose(
   withViewLayoutProps(({ height: siblingHeight }) => {
     const { bottom, top } = safeAreaInsetValues;
 
-    const viewportPadding = (bottom ? (bottom + top) : (top + top));
+    const viewportPadding = bottom ? bottom + top : top + top;
     const viewportHeight = deviceUtils.dimensions.height - viewportPadding;
-    const maxImageHeight = viewportHeight - siblingHeight - FloatingPanels.margin;
+    const maxImageHeight =
+      viewportHeight - siblingHeight - FloatingPanels.margin;
 
     return { maxImageHeight };
   }),
@@ -194,5 +190,5 @@ export default compose(
       Linking.openURL(permalink);
     },
   }),
-  onlyUpdateForPropTypes,
+  onlyUpdateForPropTypes
 )(UniqueTokenExpandedState);

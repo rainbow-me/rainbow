@@ -2,19 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-primitives';
 import { animated, interpolate, Transition } from 'react-spring/dist/native';
-import {
-  compose,
-  defaultProps,
-  onlyUpdateForKeys,
-  withProps,
-} from 'recompact';
+import { compose, defaultProps, onlyUpdateForKeys, withProps } from 'recompact';
 import styled, { css } from 'styled-components/primitives';
-import {
-  animations,
-  borders,
-  colors,
-  padding,
-} from '../../styles';
+import { animations, borders, colors, padding } from '../../styles';
 import { Centered } from '../layout';
 import { Text } from '../text';
 
@@ -23,13 +13,13 @@ const AnimatedView = animated(View);
 const Container = styled(Centered)`
   height: ${({ size }) => size};
   position: absolute;
-  right: ${({ offset }) => (offset * -1)};
-  top: ${({ offset }) => (offset * -1)};
+  right: ${({ offset }) => offset * -1};
+  top: ${({ offset }) => offset * -1};
 `;
 
 const MultiDigitValue = css`
   ${padding(2, 5.5, 3)}
-  transform: translateX(${({ offset }) => (Math.floor(offset / 2))}px);
+  transform: translateX(${({ offset }) => Math.floor(offset / 2)}px);
 `;
 
 const SingleDigitValue = css`
@@ -38,11 +28,8 @@ const SingleDigitValue = css`
 `;
 
 const Circle = styled(Centered)`
-  ${({ valueLength }) => (
-    (valueLength === 1)
-      ? SingleDigitValue
-      : MultiDigitValue
-  )}
+  ${({ valueLength }) =>
+    valueLength === 1 ? SingleDigitValue : MultiDigitValue}
   background-color: ${colors.primaryBlue};
   border-radius: 15;
 `;
@@ -96,6 +83,6 @@ export default compose(
   onlyUpdateForKeys(['value']),
   withProps(({ value }) => ({ valueLength: value.toString().length })),
   withProps(({ maxLength, value, valueLength }) => ({
-    value: (valueLength > maxLength) ? `${'9'.repeat(maxLength)}+` : value,
-  })),
+    value: valueLength > maxLength ? `${'9'.repeat(maxLength)}+` : value,
+  }))
 )(Badge);

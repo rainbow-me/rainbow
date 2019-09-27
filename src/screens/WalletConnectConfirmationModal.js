@@ -25,15 +25,13 @@ const WalletConnectConfirmationModal = ({
   peerMeta,
 }) => (
   <Modal height={300} onCloseModal={onCloseModal}>
-    <Column
-      align="center"
-      css={padding(25)}
-      flex={1}
-      justify="start"
-    >
+    <Column align="center" css={padding(25)} flex={1} justify="start">
       <DescriptionText>
         <Bold>{get(peerMeta, 'name', 'Unknown dapp')}</Bold>
-        <DescriptionText><Nbsp />wants to connect to your wallet.</DescriptionText>
+        <DescriptionText>
+          <Nbsp />
+          wants to connect to your wallet.
+        </DescriptionText>
       </DescriptionText>
     </Column>
     <Divider insetLeft={16} insetRight={16} />
@@ -43,11 +41,9 @@ const WalletConnectConfirmationModal = ({
 );
 
 WalletConnectConfirmationModal.propTypes = {
-  navigation: PropTypes.object.isRequired,
   onApprove: PropTypes.func.isRequired,
   onCloseModal: PropTypes.func.isRequired,
   onReject: PropTypes.func.isRequired,
-  peerId: PropTypes.string.isRequired,
   peerMeta: PropTypes.object.isRequired,
 };
 
@@ -59,7 +55,11 @@ export default compose(
   })),
   withHandlers({ onCloseModal: ({ navigation }) => () => navigation.goBack() }),
   withHandlers({
-    onApprove: ({ onCloseModal, peerId, walletConnectApproveSession }) => () => {
+    onApprove: ({
+      onCloseModal,
+      peerId,
+      walletConnectApproveSession,
+    }) => () => {
       walletConnectApproveSession(peerId);
       return onCloseModal();
     },
@@ -67,5 +67,5 @@ export default compose(
       walletConnectRejectSession(peerId);
       onCloseModal();
     },
-  }),
+  })
 )(WalletConnectConfirmationModal);

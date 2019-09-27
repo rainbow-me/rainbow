@@ -9,12 +9,7 @@ const textProps = {
   weight: 'semibold',
 };
 
-const Label = props => (
-  <Text
-    {...textProps}
-    {...props}
-  />
-);
+const Label = props => <Text {...textProps} {...props} />;
 
 Label.textProps = textProps;
 

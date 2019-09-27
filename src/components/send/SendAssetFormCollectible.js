@@ -10,25 +10,27 @@ import { UniqueTokenCard } from '../unique-token';
 
 const enhance = compose(
   withImageDimensionsCache,
-  withViewLayoutProps(({ width: containerWidth, height: containerHeight, y }) => ({
-    containerHeight: containerHeight - (y * 2),
-    containerWidth,
-  })),
+  withViewLayoutProps(
+    ({ width: containerWidth, height: containerHeight, y }) => ({
+      containerHeight: containerHeight - y * 2,
+      containerWidth,
+    })
+  ),
   withProps(({ image_preview_url, imageDimensionsCache }) => ({
     imageDimensions: imageDimensionsCache[image_preview_url],
   })),
-  withProps(({ containerHeight, containerWidth, imageDimensions }) => {
-    if(!imageDimensions) {
-      imageDimensions = {height: 512, width: 512};
+  withProps(({ containerHeight, imageDimensions }) => {
+    if (!imageDimensions) {
+      imageDimensions = { height: 512, width: 512 };
     }
     let width = deviceUtils.dimensions.width - 30;
     let height = !imageDimensions
       ? width
-      : ((width * imageDimensions.height) / imageDimensions.width);
+      : (width * imageDimensions.height) / imageDimensions.width;
 
     if (height > containerHeight) {
       height = containerHeight;
-      width = ((height * imageDimensions.width) / imageDimensions.height);
+      width = (height * imageDimensions.width) / imageDimensions.height;
     }
 
     return {
@@ -36,41 +38,26 @@ const enhance = compose(
       width,
     };
   }),
-  onlyUpdateForKeys([
-    'containerHeight',
-    'containerWidth',
-    'height',
-    'width',
-  ]),
+  onlyUpdateForKeys(['containerHeight', 'containerWidth', 'height', 'width'])
 );
 
-const SendAssetFormCollectible = enhance(({
-  containerHeight,
-  containerWidth,
-  height,
-  onLayout,
-  width,
-  ...props
-}) => (
-  <Column
-    align="center"
-    flex={1}
-    onLayout={onLayout}
-    width="100%"
-  >
-    {(!!containerHeight && !!containerWidth) && (
-      <UniqueTokenCard
-        {...props}
-        disabled={true}
-        height={height}
-        item={props}
-        resizeMode="contain"
-        shadows={[[0, 10, 50, colors.black, 0.4]]}
-        width={width}
-      />
-    )}
-  </Column>
-));
+const SendAssetFormCollectible = enhance(
+  ({ containerHeight, containerWidth, height, onLayout, width, ...props }) => (
+    <Column align="center" flex={1} onLayout={onLayout} width="100%">
+      {!!containerHeight && !!containerWidth && (
+        <UniqueTokenCard
+          {...props}
+          disabled
+          height={height}
+          item={props}
+          resizeMode="contain"
+          shadows={[[0, 10, 50, colors.black, 0.4]]}
+          width={width}
+        />
+      )}
+    </Column>
+  )
+);
 
 SendAssetFormCollectible.propTypes = {
   containerHeight: PropTypes.number,

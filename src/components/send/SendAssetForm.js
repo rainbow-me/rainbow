@@ -27,7 +27,8 @@ const TransactionContainer = styled(Column).attrs({
   align: 'end',
   justify: 'space-between',
 })`
-  ${({ isNft }) => padding(22, 15, isNft ? nftPaddingBottom : tokenPaddingBottom)};
+  ${({ isNft }) =>
+    padding(22, 15, isNft ? nftPaddingBottom : tokenPaddingBottom)};
   background-color: ${colors.lighterGrey};
   flex: 1;
   width: 100%;
@@ -54,7 +55,7 @@ const SendAssetForm = ({
           [0, 4, 12, colors.dark, 0.04],
           [0, 8, 23, colors.dark, 0.05],
         ]}
-        shouldRasterizeIOS={true}
+        shouldRasterizeIOS
         width={deviceUtils.dimensions.width}
       >
         {createElement(selected.isNft ? CollectiblesSendRow : SendCoinRow, {
@@ -65,13 +66,14 @@ const SendAssetForm = ({
         })}
       </ShadowStack>
       <TransactionContainer isNft={selected.isNft}>
-        {selected.isNft
-          ? <SendAssetFormCollectible {...selected} />
-          : <SendAssetFormToken {...props} selected={selected} />
-        }
+        {selected.isNft ? (
+          <SendAssetFormCollectible {...selected} />
+        ) : (
+          <SendAssetFormToken {...props} selected={selected} />
+        )}
         <ColumnWithMargins
           flex={0}
-          margin={(deviceUtils.dimensions.height < 812) ? 15.5 : 31}
+          margin={deviceUtils.dimensions.height < 812 ? 15.5 : 31}
           style={{ zIndex: 3 }}
           width="100%"
         >

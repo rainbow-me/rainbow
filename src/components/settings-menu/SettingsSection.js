@@ -17,10 +17,9 @@ import {
 } from '../../handlers/localstorage/globalSettings';
 import { withAccountSettings, withSendFeedback } from '../../hoc';
 import { supportedLanguages } from '../../languages';
-import { colors, position } from '../../styles';
+import { position } from '../../styles';
 import AppVersionStamp from '../AppVersionStamp';
-import { Icon } from '../icons';
-import { Centered, Column, ColumnWithDividers } from '../layout';
+import { Column, ColumnWithDividers } from '../layout';
 import {
   ListFooter,
   ListItem,
@@ -30,7 +29,8 @@ import {
 import { Emoji } from '../text';
 
 const SettingsExternalURLs = {
-  review: 'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review',
+  review:
+    'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review',
   twitterDeepLink: 'twitter://user?screen_name=rainbowdotme',
   twitterWebUrl: 'https://twitter.com/rainbowdotme',
 };
@@ -55,8 +55,6 @@ const SettingsSection = ({
   onPressReview,
   onPressTwitter,
   onSendFeedback,
-  // onPressSecurity,
-  ...props
 }) => (
   <ScrollView
     contentContainerStyle={position.sizeAsObject('100%')}
@@ -90,18 +88,14 @@ const SettingsSection = ({
         onPress={onPressNetwork}
         label="Network"
       >
-        <ListItemArrowGroup>
-          {network || ''}
-        </ListItemArrowGroup>
+        <ListItemArrowGroup>{network || ''}</ListItemArrowGroup>
       </ListItem>
       <ListItem
         icon={<SettingIcon source={CurrencyIcon} />}
         onPress={onPressCurrency}
         label="Currency"
       >
-        <ListItemArrowGroup>
-          {nativeCurrency || ''}
-        </ListItemArrowGroup>
+        <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
       </ListItem>
       <ListItem
         icon={<SettingIcon source={LanguageIcon} />}
@@ -147,12 +141,7 @@ const SettingsSection = ({
         onPress={onPressReview}
       />
     </ColumnWithDividers>
-    <Column
-      align="center"
-      flex={1}
-      justify="end"
-      paddingBottom={24}
-    >
+    <Column align="center" flex={1} justify="end" paddingBottom={24}>
       <AppVersionStamp />
     </Column>
   </ScrollView>
@@ -185,7 +174,8 @@ export default compose(
     onPressReview: ({ onCloseModal }) => async () => {
       const maxRequestCount = 2;
       const count = await getAppStoreReviewRequestCount();
-      const shouldDeeplinkToAppStore = (count >= maxRequestCount) || !StoreReview.isAvailable;
+      const shouldDeeplinkToAppStore =
+        count >= maxRequestCount || !StoreReview.isAvailable;
 
       if (shouldDeeplinkToAppStore && !DeviceInfo.isEmulator()) {
         Linking.openURL(SettingsExternalURLs.review);
@@ -197,12 +187,12 @@ export default compose(
       return setAppStoreReviewRequestCount(count + 1);
     },
     onPressTwitter: () => async () => {
-      Linking.canOpenURL(SettingsExternalURLs.twitterDeepLink).then((supported) => (
+      Linking.canOpenURL(SettingsExternalURLs.twitterDeepLink).then(supported =>
         supported
           ? Linking.openURL(SettingsExternalURLs.twitterDeepLink)
           : Linking.openURL(SettingsExternalURLs.twitterWebUrl)
-      ));
+      );
     },
   }),
-  onlyUpdateForKeys(['language', 'nativeCurrency']),
+  onlyUpdateForKeys(['language', 'nativeCurrency'])
 )(SettingsSection);

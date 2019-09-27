@@ -1,5 +1,5 @@
 // import Animated from 'react-native-reanimated';
-import sortList from '../helpers/sortList';
+import { sortList } from '../helpers/sortList';
 import { reduceArrayToObject } from '../utils';
 
 // const { SpringUtils } = Animated;
@@ -18,14 +18,16 @@ let config = { ...DefaultConfig };
 
 const getSpringConfig = () => config;
 
-const setSpringConfig = (changesToConfig) => {
+const setSpringConfig = changesToConfig => {
   const newConfig = {
     ...config,
     ...changesToConfig,
   };
 
   const alphabeticalConfigKeys = sortList(Object.keys(newConfig));
-  const arrayOfConfigObjects = alphabeticalConfigKeys.map(key => ({ [key]: newConfig[key] }));
+  const arrayOfConfigObjects = alphabeticalConfigKeys.map(key => ({
+    [key]: newConfig[key],
+  }));
 
   config = reduceArrayToObject(arrayOfConfigObjects);
 };

@@ -23,16 +23,14 @@ export default class FloatingEmoji extends PureComponent {
     size: PropTypes.string.isRequired,
     style: stylePropType,
     top: PropTypes.number,
-  }
+  };
 
   static defaultProps = {
     distance: 100,
     duration: 2000,
     emoji: '+1',
     right: 0,
-  }
-
-  position = new Value(0)
+  };
 
   componentDidMount() {
     const animationConfig = {
@@ -44,7 +42,9 @@ export default class FloatingEmoji extends PureComponent {
     timing(this.position, animationConfig).start(this.handleAnimationComplete);
   }
 
-  handleAnimationComplete = () => this.props.onComplete(this.props.id)
+  position = new Value(0);
+
+  handleAnimationComplete = () => this.props.onComplete(this.props.id);
 
   render() {
     const {
