@@ -1,0 +1,16 @@
+{
+  "extends": "satya164",
+  "settings": {
+    "react": { "version": "16" }
+  },
+  "rules": {
+    "sort-keys": ["error", "asc", {"caseSensitive": false, "natural": false}],
+    "jest/no-truthy-falsy": 0,
+    "react-native/no-inline-styles": 0,
+    "import/named": 0,
+    "react/display-name": 2,
+    "jest/no-test-prefixes": 0, //TODO
+    "jest/no-disabled-tests": 0 //TODO
+  },
+  "env": { "browser": true, "node": true }
+}
