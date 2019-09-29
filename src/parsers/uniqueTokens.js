@@ -1,4 +1,4 @@
-import { filter, get, map, pick, uniq } from 'lodash';
+import { get, map, pick, uniq } from 'lodash';
 
 /**
  * @desc parse unique tokens from opensea
@@ -6,11 +6,7 @@ import { filter, get, map, pick, uniq } from 'lodash';
  * @return {Array}
  */
 export const parseAccountUniqueTokens = data => {
-  const assets = get(data, 'data.assets', []);
-  const erc721s = filter(
-    assets,
-    asset => get(asset, 'asset_contract.schema_name') === 'ERC721'
-  );
+  const erc721s = get(data, 'data.assets', []);
   return erc721s.map(
     ({ asset_contract, background_color, token_id, ...asset }) => ({
       ...pick(asset, [
