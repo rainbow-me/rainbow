@@ -1,15 +1,7 @@
 import { getExecutionDetails, getTokenReserves } from '@uniswap/sdk';
 import contractMap from 'eth-contract-metadata';
 import { ethers } from 'ethers';
-import {
-  compact,
-  get,
-  keyBy,
-  map,
-  slice,
-  toLower,
-  zipObject,
-} from 'lodash';
+import { compact, get, keyBy, map, slice, toLower, zipObject } from 'lodash';
 import {
   convertRawAmountToDecimalFormat,
   divide,
@@ -40,44 +32,52 @@ export const getReserves = async () => {
   const reserves = await promiseUtils.PromiseAllWithFails(
     map(uniswapTokens, token => getTokenReserves(token))
   );
-  return keyBy(compact(reserves), reserve => toLower(get(reserve, 'token.address')));
+  return keyBy(compact(reserves), reserve =>
+    toLower(get(reserve, 'token.address'))
+  );
 };
 
-const getGasLimit = async (accountAddress, exchange, methodName, updatedMethodArgs, value) => {
+const getGasLimit = async (
+  accountAddress,
+  exchange,
+  methodName,
+  updatedMethodArgs,
+  value
+) => {
   const params = { from: accountAddress, value };
   switch (methodName) {
-  case 'ethToTokenSwapInput':
-    return exchange.estimate.ethToTokenSwapInput(
-      ...updatedMethodArgs,
-      params,
-    );
-  case 'ethToTokenSwapOutput':
-    return exchange.estimate.ethToTokenSwapOutput(
-      ...updatedMethodArgs,
-      params,
-    );
-  case 'tokenToEthSwapInput':
-    return exchange.estimate.tokenToEthSwapInput(
-      ...updatedMethodArgs,
-      params,
-    );
-  case 'tokenToEthSwapOutput':
-    return exchange.estimate.tokenToEthSwapOutput(
-      ...updatedMethodArgs,
-      params,
-    );
-  case 'tokenToTokenSwapInput':
-    return exchange.estimate.tokenToTokenSwapInput(
-      ...updatedMethodArgs,
-      params,
-    );
-  case 'tokenToTokenSwapOutput':
-    return exchange.estimate.tokenToTokenSwapOutput(
-      ...updatedMethodArgs,
-      params,
-    );
-  default:
-    return null;
+    case 'ethToTokenSwapInput':
+      return exchange.estimate.ethToTokenSwapInput(
+        ...updatedMethodArgs,
+        params
+      );
+    case 'ethToTokenSwapOutput':
+      return exchange.estimate.ethToTokenSwapOutput(
+        ...updatedMethodArgs,
+        params
+      );
+    case 'tokenToEthSwapInput':
+      return exchange.estimate.tokenToEthSwapInput(
+        ...updatedMethodArgs,
+        params
+      );
+    case 'tokenToEthSwapOutput':
+      return exchange.estimate.tokenToEthSwapOutput(
+        ...updatedMethodArgs,
+        params
+      );
+    case 'tokenToTokenSwapInput':
+      return exchange.estimate.tokenToTokenSwapInput(
+        ...updatedMethodArgs,
+        params
+      );
+    case 'tokenToTokenSwapOutput':
+      return exchange.estimate.tokenToTokenSwapOutput(
+        ...updatedMethodArgs,
+        params
+      );
+    default:
+      return null;
   }
 };
 
@@ -89,7 +89,13 @@ export const estimateSwapGasLimit = async (accountAddress, tradeDetails) => {
       updatedMethodArgs,
       value,
     } = getContractExecutionDetails(tradeDetails, web3Provider);
-    const gasLimit = await getGasLimit(accountAddress, exchange, methodName, updatedMethodArgs, value);
+    const gasLimit = await getGasLimit(
+      accountAddress,
+      exchange,
+      methodName,
+      updatedMethodArgs,
+      value
+    );
     return gasLimit ? gasLimit.toString() : null;
   } catch (error) {
     return null;
@@ -134,38 +140,38 @@ export const executeSwap = async (tradeDetails, gasLimit, gasPrice) => {
     value,
   };
   switch (methodName) {
-  case 'ethToTokenSwapInput':
-    return exchange.ethToTokenSwapInput(
-      ...updatedMethodArgs,
-      transactionParams,
-    );
-  case 'ethToTokenSwapOutput':
-    return exchange.ethToTokenSwapOutput(
-      ...updatedMethodArgs,
-      transactionParams,
-    );
-  case 'tokenToEthSwapInput':
-    return exchange.tokenToEthSwapInput(
-      ...updatedMethodArgs,
-      transactionParams,
-    );
-  case 'tokenToEthSwapOutput':
-    return exchange.tokenToEthSwapOutput(
-      ...updatedMethodArgs,
-      transactionParams,
-    );
-  case 'tokenToTokenSwapInput':
-    return exchange.tokenToTokenSwapInput(
-      ...updatedMethodArgs,
-      transactionParams,
-    );
-  case 'tokenToTokenSwapOutput':
-    return exchange.tokenToTokenSwapOutput(
-      ...updatedMethodArgs,
-      transactionParams,
-    );
-  default:
-    return null;
+    case 'ethToTokenSwapInput':
+      return exchange.ethToTokenSwapInput(
+        ...updatedMethodArgs,
+        transactionParams
+      );
+    case 'ethToTokenSwapOutput':
+      return exchange.ethToTokenSwapOutput(
+        ...updatedMethodArgs,
+        transactionParams
+      );
+    case 'tokenToEthSwapInput':
+      return exchange.tokenToEthSwapInput(
+        ...updatedMethodArgs,
+        transactionParams
+      );
+    case 'tokenToEthSwapOutput':
+      return exchange.tokenToEthSwapOutput(
+        ...updatedMethodArgs,
+        transactionParams
+      );
+    case 'tokenToTokenSwapInput':
+      return exchange.tokenToTokenSwapInput(
+        ...updatedMethodArgs,
+        transactionParams
+      );
+    case 'tokenToTokenSwapOutput':
+      return exchange.tokenToTokenSwapOutput(
+        ...updatedMethodArgs,
+        transactionParams
+      );
+    default:
+      return null;
   }
 };
 

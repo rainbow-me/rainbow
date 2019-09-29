@@ -1,9 +1,4 @@
-import {
-  find,
-  get,
-  replace,
-  toLower,
-} from 'lodash';
+import { find, get, replace, toLower } from 'lodash';
 import chains from '../references/chains.json';
 import {
   add,

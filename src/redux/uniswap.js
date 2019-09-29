@@ -20,11 +20,7 @@ import {
   removeAccountLocal,
   saveAccountLocal,
 } from '../handlers/localstorage/common';
-import {
-  getLiquidityInfo,
-  getReserve,
-  getReserves,
-} from '../handlers/uniswap';
+import { getLiquidityInfo, getReserve, getReserves } from '../handlers/uniswap';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import { uniswapAssetsClean } from '../references';
 import { contractUtils, promiseUtils } from '../utils';
@@ -45,7 +41,8 @@ const UNISWAP_GET_TOKEN_RESERVES_SUCCESS =
 const UNISWAP_GET_TOKEN_RESERVES_FAILURE =
   'uniswap/UNISWAP_GET_TOKEN_RESERVES_FAILURE';
 
-const UNISWAP_UPDATE_PENDING_APPROVALS = 'uniswap/UNISWAP_UPDATE_PENDING_APPROVALS';
+const UNISWAP_UPDATE_PENDING_APPROVALS =
+  'uniswap/UNISWAP_UPDATE_PENDING_APPROVALS';
 const UNISWAP_UPDATE_ASSETS = 'uniswap/UNISWAP_UPDATE_ASSETS';
 const UNISWAP_UPDATE_ALLOWANCES = 'uniswap/UNISWAP_UPDATE_ALLOWANCES';
 const UNISWAP_UPDATE_LIQUIDITY_TOKENS =
@@ -100,7 +97,7 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
       PENDING_APPROVALS,
       accountAddress,
       network,
-      {},
+      {}
     );
     dispatch({
       payload: {
@@ -201,7 +198,7 @@ export const uniswapUpdatePendingApprovals = (
   tokenAddress,
   txHash,
   creationTimestamp,
-  estimatedTimeInMs,
+  estimatedTimeInMs
 ) => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const { pendingApprovals } = getState().uniswap;
@@ -217,51 +214,87 @@ export const uniswapUpdatePendingApprovals = (
     payload: updatedPendingApprovals,
     type: UNISWAP_UPDATE_PENDING_APPROVALS,
   });
-  saveAccountLocal(PENDING_APPROVALS, updatedPendingApprovals, accountAddress, network);
+  saveAccountLocal(
+    PENDING_APPROVALS,
+    updatedPendingApprovals,
+    accountAddress,
+    network
+  );
 };
 
-
-const updateAllowancesForSuccessfulTransactions = (assetAddresses) => (dispatch, getState) => {
+const updateAllowancesForSuccessfulTransactions = assetAddresses => (
+  dispatch,
+  getState
+) => {
   if (isEmpty(assetAddresses)) return;
   const { accountAddress } = getState().settings;
-  promiseUtils.PromiseAllWithFails(map(assetAddresses, async (assetAddress) => {
-    const asset = uniswapAssetsRawLoweredKeys[assetAddress];
-    return contractUtils.getAllowance(
-      accountAddress,
-      asset,
-      asset.exchangeAddress,
-    );
-  })).then(allowances => {
-    const tokenAddressAllowances = fromPairs(zip(assetAddresses, allowances));
-    dispatch(uniswapUpdateAllowances(tokenAddressAllowances));
-  }).catch(error => {
-    // TODO error handling
-  });
+  promiseUtils
+    .PromiseAllWithFails(
+      map(assetAddresses, async assetAddress => {
+        const asset = uniswapAssetsClean[assetAddress];
+        return contractUtils.getAllowance(
+          accountAddress,
+          asset,
+          asset.exchangeAddress
+        );
+      })
+    )
+    .then(allowances => {
+      const tokenAddressAllowances = fromPairs(zip(assetAddresses, allowances));
+      dispatch(uniswapUpdateAllowances(tokenAddressAllowances));
+    })
+    .catch(() => {});
 };
 
-export const uniswapRemovePendingApproval = (transactions) => (dispatch, getState) => {
+export const uniswapRemovePendingApproval = transactions => (
+  dispatch,
+  getState
+) => {
   const newTransactions = map(transactions, txn => ({
     ...txn,
     hash: toLower(txn.hash).split('-')[0],
   }));
   const { pendingApprovals } = getState().uniswap;
   const loweredTxHashes = map(newTransactions, txn => txn.hash);
-  const invertedPendingApprovals = mapValues(invertBy(pendingApprovals, value => value.hash), value => get(value, '[0]'));
-  const updatedAddresses = compact(map(loweredTxHashes, hash => invertedPendingApprovals[hash]));
+  const invertedPendingApprovals = mapValues(
+    invertBy(pendingApprovals, value => value.hash),
+    value => get(value, '[0]')
+  );
+  const updatedAddresses = compact(
+    map(loweredTxHashes, hash => invertedPendingApprovals[hash])
+  );
   if (isEmpty(updatedAddresses)) return;
   const updatedPendingApprovals = omit(pendingApprovals, ...updatedAddresses);
   dispatch({
     payload: updatedPendingApprovals,
     type: UNISWAP_UPDATE_PENDING_APPROVALS,
   });
-  const successfulApprovalHashes = map(reject(newTransactions, txn => txn.status === TransactionStatusTypes.failed), txn => toLower(txn.hash));
-  const successfullyApprovedAddresses = compact(map(successfulApprovalHashes, hash => invertedPendingApprovals[hash]));
-  dispatch(updateAllowancesForSuccessfulTransactions(successfullyApprovedAddresses));
+  const successfulApprovalHashes = map(
+    reject(
+      newTransactions,
+      txn => txn.status === TransactionStatusTypes.failed
+    ),
+    txn => toLower(txn.hash)
+  );
+  const successfullyApprovedAddresses = compact(
+    map(successfulApprovalHashes, hash => invertedPendingApprovals[hash])
+  );
+  dispatch(
+    updateAllowancesForSuccessfulTransactions(successfullyApprovedAddresses)
+  );
   const { accountAddress, network } = getState().settings;
-  saveAccountLocal(PENDING_APPROVALS, updatedPendingApprovals, accountAddress, network);
+  saveAccountLocal(
+    PENDING_APPROVALS,
+    updatedPendingApprovals,
+    accountAddress,
+    network
+  );
 };
 
-export const uniswapUpdateAllowances = (tokenAddressAllowances) => (dispatch, getState) => {
+export const uniswapUpdateAllowances = tokenAddressAllowances => (
+  dispatch,
+  getState
+) => {
   const { accountAddress, network } = getState().settings;
   const { allowances } = getState().uniswap;
   const updatedAllowances = {
@@ -390,49 +423,49 @@ export const INITIAL_UNISWAP_STATE = {
 export default (state = INITIAL_UNISWAP_STATE, action) =>
   produce(state, draft => {
     switch (action.type) {
-    case UNISWAP_LOAD_REQUEST:
-      draft.loadingUniswap = true;
-      break;
-    case UNISWAP_LOAD_SUCCESS:
-      draft.allowances = action.payload.allowances;
-      draft.liquidityTokens = action.payload.liquidityTokens;
-      draft.loadingUniswap = false;
-      draft.pendingApprovals = action.payload.pendingApprovals;
-      draft.tokenReserves = action.payload.tokenReserves;
-      draft.uniswap = action.payload.uniswap;
-      draft.uniswapAssets = action.payload.uniswapAssets;
-      break;
-    case UNISWAP_LOAD_FAILURE:
-      draft.loadingUniswap = false;
-      break;
-    case UNISWAP_UPDATE_REQUEST:
-      draft.fetchingUniswap = true;
-      break;
-    case UNISWAP_UPDATE_SUCCESS:
-      draft.fetchingUniswap = false;
-      draft.uniswap = action.payload;
-      break;
-    case UNISWAP_UPDATE_FAILURE:
-      draft.fetchingUniswap = false;
-      break;
-    case UNISWAP_UPDATE_LIQUIDITY_TOKENS:
-      draft.liquidityTokens = action.payload;
-      break;
-    case UNISWAP_UPDATE_PENDING_APPROVALS:
-      draft.pendingApprovals = action.payload;
-      break;
-    case UNISWAP_UPDATE_ALLOWANCES:
-      draft.allowances = action.payload;
-      break;
-    case UNISWAP_UPDATE_ASSETS:
-      draft.uniswapAssets = action.payload;
-      break;
-    case UNISWAP_GET_TOKEN_RESERVES_SUCCESS:
-      draft.tokenReserves = action.payload;
-      break;
-    case UNISWAP_CLEAR_STATE:
-      return INITIAL_UNISWAP_STATE;
-    default:
-      break;
+      case UNISWAP_LOAD_REQUEST:
+        draft.loadingUniswap = true;
+        break;
+      case UNISWAP_LOAD_SUCCESS:
+        draft.allowances = action.payload.allowances;
+        draft.liquidityTokens = action.payload.liquidityTokens;
+        draft.loadingUniswap = false;
+        draft.pendingApprovals = action.payload.pendingApprovals;
+        draft.tokenReserves = action.payload.tokenReserves;
+        draft.uniswap = action.payload.uniswap;
+        draft.uniswapAssets = action.payload.uniswapAssets;
+        break;
+      case UNISWAP_LOAD_FAILURE:
+        draft.loadingUniswap = false;
+        break;
+      case UNISWAP_UPDATE_REQUEST:
+        draft.fetchingUniswap = true;
+        break;
+      case UNISWAP_UPDATE_SUCCESS:
+        draft.fetchingUniswap = false;
+        draft.uniswap = action.payload;
+        break;
+      case UNISWAP_UPDATE_FAILURE:
+        draft.fetchingUniswap = false;
+        break;
+      case UNISWAP_UPDATE_LIQUIDITY_TOKENS:
+        draft.liquidityTokens = action.payload;
+        break;
+      case UNISWAP_UPDATE_PENDING_APPROVALS:
+        draft.pendingApprovals = action.payload;
+        break;
+      case UNISWAP_UPDATE_ALLOWANCES:
+        draft.allowances = action.payload;
+        break;
+      case UNISWAP_UPDATE_ASSETS:
+        draft.uniswapAssets = action.payload;
+        break;
+      case UNISWAP_GET_TOKEN_RESERVES_SUCCESS:
+        draft.tokenReserves = action.payload;
+        break;
+      case UNISWAP_CLEAR_STATE:
+        return INITIAL_UNISWAP_STATE;
+      default:
+        break;
     }
-});
+  });

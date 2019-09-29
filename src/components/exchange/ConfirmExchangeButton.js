@@ -8,36 +8,25 @@ import { Text } from '../text';
 import { SlippageWarningTheshold } from './SlippageWarning';
 
 // lol this isnt done
-const UnlockingSpinner = ({ timeRemaining, ...props }) => (
+const UnlockingSpinner = ({ timeRemaining }) => (
   <Centered direction="column">
     <RowWithMargins margin={8}>
       <Icon name="spinner" />
-      <Text
-        color="white"
-        size="large"
-        weight="semibold"
-      >
+      <Text color="white" size="large" weight="semibold">
         Unlocking
       </Text>
     </RowWithMargins>
-    <Text
-      color="white"
-      opacity={0.4}
-      size="smedium"
-      weight="medium"
-    >
+    <Text color="white" opacity={0.4} size="smedium" weight="medium">
       {`~ ${timeRemaining} Remaining`}
     </Text>
   </Centered>
 );
 
 UnlockingSpinner.propTypes = {
-  creationTimestamp: PropTypes.number,
   timeRemaining: PropTypes.string,
 };
 
 const ConfirmExchangeButton = ({
-  creationTimestamp,
   disabled,
   inputCurrencyName,
   isAssetApproved,
@@ -77,19 +66,16 @@ const ConfirmExchangeButton = ({
       theme="dark"
       {...props}
     >
-      {isUnlockingAsset
-        ? <UnlockingSpinner
-          creationTimestamp={creationTimestamp}
-          timeRemaining={timeRemaining}
-        />
-        : undefined
-      }
+      {isUnlockingAsset ? (
+        <UnlockingSpinner timeRemaining={timeRemaining} />
+      ) : (
+        undefined
+      )}
     </HoldToAuthorizeButton>
   );
 };
 
 ConfirmExchangeButton.propTypes = {
-  creationTimestamp: PropTypes.number,
   disabled: PropTypes.bool,
   inputCurrencyName: PropTypes.string,
   isAssetApproved: PropTypes.bool,

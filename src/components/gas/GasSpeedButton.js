@@ -38,7 +38,7 @@ class GasSpeedButton extends PureComponent {
     nativeCurrencySymbol: PropTypes.string,
     price: PropTypes.string,
     selectedGasPriceOption: PropTypes.oneOf(gasUtils.GasSpeedOrder),
-  }
+  };
 
   handlePress = () => {
     const {
@@ -49,8 +49,11 @@ class GasSpeedButton extends PureComponent {
 
     LayoutAnimation.easeInEaseOut();
 
-    const currentSpeedIndex = gasUtils.GasSpeedOrder.indexOf(selectedGasPriceOption);
-    const nextSpeedIndex = (currentSpeedIndex + 1) % gasUtils.GasSpeedOrder.length;
+    const currentSpeedIndex = gasUtils.GasSpeedOrder.indexOf(
+      selectedGasPriceOption
+    );
+    const nextSpeedIndex =
+      (currentSpeedIndex + 1) % gasUtils.GasSpeedOrder.length;
 
     const nextSpeed = gasUtils.GasSpeedOrder[nextSpeedIndex];
     const nextSpeedGweiValue = get(gasPrices, `[${nextSpeed}].value.display`);

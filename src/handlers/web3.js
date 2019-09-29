@@ -46,7 +46,7 @@ export const isHexStringIgnorePrefix = value => {
 };
 
 export const addHexPrefix = value =>
-  ((startsWith(value, '0x')) ? value : `0x${value}`);
+  startsWith(value, '0x') ? value : `0x${value}`;
 
 export const mnemonicToSeed = value =>
   ethers.utils.HDNode.mnemonicToSeed(value);

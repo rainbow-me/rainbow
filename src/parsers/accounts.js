@@ -18,9 +18,7 @@ export const parseAccountAssets = (data, uniqueTokens) => {
     };
   });
 
-  return assets.filter(
-    asset => !!Number(get(asset, 'balance.amount')),
-  );
+  return assets.filter(asset => !!Number(get(asset, 'balance.amount')));
 };
 
 /**

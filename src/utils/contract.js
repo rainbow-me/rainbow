@@ -6,7 +6,10 @@ import erc20ABI from '../references/erc20-abi.json';
 
 const estimateApproveWithExchange = async (spender, exchange) => {
   try {
-    const gasLimit = await exchange.estimate.approve(spender, ethers.constants.MaxUint256);
+    const gasLimit = await exchange.estimate.approve(
+      spender,
+      ethers.constants.MaxUint256
+    );
     return gasLimit ? gasLimit.toString() : null;
   } catch (error) {
     console.log('error estimating approval', error);
@@ -30,7 +33,7 @@ const approve = async (tokenAddress, spender, gasLimit, gasPrice) => {
     {
       gasLimit: gasLimit ? toHex(gasLimit) : undefined,
       gasPrice: gasPrice ? toHex(gasPrice) : undefined,
-    },
+    }
   );
   return {
     approval,

@@ -63,7 +63,10 @@ export const uniqueTokensRefreshState = () => (dispatch, getState) =>
             const newFamilies = getFamilies(uniqueTokens);
             const incomingFamilies = without(newFamilies, ...existingFamilies);
             if (incomingFamilies.length) {
-              const dedupedAssets = dedupeAssetsWithFamilies(assets, incomingFamilies);
+              const dedupedAssets = dedupeAssetsWithFamilies(
+                assets,
+                incomingFamilies
+              );
               dispatch(dataUpdateAssets(dedupedAssets));
             }
             saveUniqueTokens(accountAddress, uniqueTokens, network);

@@ -27,11 +27,7 @@ const groupTransactionByDate = ({ pending, minedAt }) => {
   return format(timestamp, `MMMM${isThisYear(timestamp) ? '' : ' YYYY'}`);
 };
 
-const buildTransactionsSections = (
-  accountAddress,
-  requests,
-  transactions
-) => {
+const buildTransactionsSections = (accountAddress, requests, transactions) => {
   let sectionedTransactions = [];
 
   if (!isEmpty(transactions)) {
@@ -59,10 +55,6 @@ const buildTransactionsSections = (
 };
 
 export const buildTransactionsSectionsSelector = createSelector(
-  [
-    accountAddressSelector,
-    requestsSelector,
-    transactionsSelector,
-  ],
+  [accountAddressSelector, requestsSelector, transactionsSelector],
   buildTransactionsSections
 );

@@ -1,8 +1,4 @@
-import {
-  get,
-  map,
-  zipObject,
-} from 'lodash';
+import { get, map, zipObject } from 'lodash';
 import { getMinimalTimeUnitStringForMs } from '../helpers/time';
 import {
   convertRawAmountToBalance,
@@ -21,7 +17,12 @@ import { gasUtils } from '../utils';
  */
 export const getFallbackGasPrices = (short = true) => ({
   [gasUtils.FAST]: defaultGasPriceFormat(gasUtils.FAST, '0.5', '200', short),
-  [gasUtils.NORMAL]: defaultGasPriceFormat(gasUtils.NORMAL, '2.5', '100', short),
+  [gasUtils.NORMAL]: defaultGasPriceFormat(
+    gasUtils.NORMAL,
+    '2.5',
+    '100',
+    short
+  ),
   [gasUtils.SLOW]: defaultGasPriceFormat(gasUtils.SLOW, '2.5', '100', short),
 });
 
@@ -33,12 +34,26 @@ export const getFallbackGasPrices = (short = true) => ({
 export const parseGasPrices = (data, short = true) =>
   !data
     ? getFallbackGasPrices()
-    : ({
-      [gasUtils.FAST]: defaultGasPriceFormat(gasUtils.FAST, data.fastWait, data.fast, short),
-      [gasUtils.NORMAL]: defaultGasPriceFormat(gasUtils.NORMAL, data.avgWait, data.average, short),
-      [gasUtils.SLOW]: defaultGasPriceFormat(gasUtils.SLOW, data.safeLowWait, data.safeLow, short),
-    })
-);
+    : {
+        [gasUtils.FAST]: defaultGasPriceFormat(
+          gasUtils.FAST,
+          data.fastWait,
+          data.fast,
+          short
+        ),
+        [gasUtils.NORMAL]: defaultGasPriceFormat(
+          gasUtils.NORMAL,
+          data.avgWait,
+          data.average,
+          short
+        ),
+        [gasUtils.SLOW]: defaultGasPriceFormat(
+          gasUtils.SLOW,
+          data.safeLowWait,
+          data.safeLow,
+          short
+        ),
+      };
 
 const defaultGasPriceFormat = (option, timeWait, value) => {
   const timeAmount = multiply(timeWait, timeUnits.ms.minute);
@@ -64,7 +79,7 @@ const defaultGasPriceFormat = (option, timeWait, value) => {
  * @param {Number} gasLimit
  */
 export const parseTxFees = (gasPrices, priceUnit, gasLimit, nativeCurrency) => {
-  const txFees = map(gasUtils.GasSpeedOrder, (speed) => {
+  const txFees = map(gasUtils.GasSpeedOrder, speed => {
     const gasPrice = get(gasPrices, `${speed}.value.amount`);
     return {
       txFee: getTxFee(gasPrice, gasLimit, priceUnit, nativeCurrency),
@@ -81,18 +96,15 @@ const getTxFee = (gasPrice, gasLimit, priceUnit, nativeCurrency) => {
         amount,
         18,
         priceUnit,
-        nativeCurrency,
+        nativeCurrency
       ),
     },
     value: {
       amount,
-      display: convertRawAmountToBalance(
-        amount,
-        {
-          decimals: 18,
-          symbol: 'ETH',
-        },
-      ),
+      display: convertRawAmountToBalance(amount, {
+        decimals: 18,
+        symbol: 'ETH',
+      }),
     },
   };
 };

@@ -1,11 +1,4 @@
-import {
-  filter,
-  find,
-  get,
-  map,
-  pick,
-  uniq,
-} from 'lodash';
+import { filter, find, get, map, pick, uniq } from 'lodash';
 
 /**
  * @desc parse unique tokens from opensea
@@ -68,12 +61,20 @@ export const dedupeUniqueTokens = (assets, uniqueTokens) => {
   const uniqueTokenFamilies = getFamilies(uniqueTokens);
   let updatedAssets = assets;
   if (assets.length) {
-    updatedAssets = filter(updatedAssets, (asset) => {
-      const matchingElement = find(uniqueTokenFamilies, (uniqueTokenFamily) => uniqueTokenFamily === get(asset, 'asset.asset_code'));
+    updatedAssets = filter(updatedAssets, asset => {
+      const matchingElement = find(
+        uniqueTokenFamilies,
+        uniqueTokenFamily =>
+          uniqueTokenFamily === get(asset, 'asset.asset_code')
+      );
       return !matchingElement;
     });
   }
   return updatedAssets;
 };
 
-export const dedupeAssetsWithFamilies = (assets, families) => filter(assets, (asset) => !find(families, (family) => family === get(asset, 'address')));
+export const dedupeAssetsWithFamilies = (assets, families) =>
+  filter(
+    assets,
+    asset => !find(families, family => family === get(asset, 'address'))
+  );

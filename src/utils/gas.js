@@ -49,7 +49,7 @@ const showTransactionSpeedOptions = (
 };
 
 const formatGasSpeedItems = (gasPrices, txFees) => {
-  const gasItems = map(GasSpeedOrder, (speed) => {
+  const gasItems = map(GasSpeedOrder, speed => {
     const cost = get(txFees, `[${speed}].txFee.native.value.display`);
     const gwei = get(gasPrices, `[${speed}].value.display`);
     const time = get(gasPrices, `[${speed}].estimatedTime.display`);

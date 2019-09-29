@@ -1,12 +1,4 @@
-import {
-  concat,
-  get,
-  includes,
-  isNil,
-  map,
-  remove,
-  uniqBy,
-} from 'lodash';
+import { concat, get, includes, isNil, map, remove, uniqBy } from 'lodash';
 import {
   getAssets,
   getLocalTransactions,
@@ -77,7 +69,7 @@ export const dataClearState = () => (dispatch, getState) => {
   dispatch({ type: DATA_CLEAR_STATE });
 };
 
-export const dataUpdateAssets = (assets) => (dispatch, getState) => {
+export const dataUpdateAssets = assets => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   if (assets.length) {
     saveAssets(accountAddress, assets, network);
@@ -98,8 +90,10 @@ const checkMeta = message => (dispatch, getState) => {
   );
 };
 
-export const transactionsReceived = (message, appended = false) => (dispatch, getState) => {
-  console.log('txns received', message);
+export const transactionsReceived = (message, appended = false) => (
+  dispatch,
+  getState
+) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
   const transactionData = get(message, 'payload.transactions', []);
@@ -112,7 +106,7 @@ export const transactionsReceived = (message, appended = false) => (dispatch, ge
     accountAddress,
     nativeCurrency,
     transactions,
-    appended,
+    appended
   );
   dispatch(uniswapRemovePendingApproval(approvalTransactions));
   saveLocalTransactions(accountAddress, dedupedResults, network);

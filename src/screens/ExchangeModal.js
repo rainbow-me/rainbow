@@ -135,7 +135,7 @@ class ExchangeModal extends PureComponent {
 
   componentDidMount = () => {
     this.props.gasUpdateDefaultGasLimit(ethUnits.basic_swap);
-  }
+  };
 
   componentDidUpdate = (prevProps, prevState) => {
     const {
@@ -193,20 +193,24 @@ class ExchangeModal extends PureComponent {
     );
 
     const isNewAmount =
-      (this.state.inputAsExactAmount
-        && (isNewNativeAmount || isNewInputAmount))
-      || (!this.state.inputAsExactAmount && isNewOutputAmount);
+      (this.state.inputAsExactAmount &&
+        (isNewNativeAmount || isNewInputAmount)) ||
+      (!this.state.inputAsExactAmount && isNewOutputAmount);
     const isNewCurrency = isNewInputCurrency || isNewOutputCurrency;
 
     const input = toLower(get(this.state.inputCurrency, 'address'));
-    const removedFromPending = (!get(pendingApprovals, `[${input}]`, null)
-      && get(prevProps, `pendingApprovals[${input}]`, null));
+    const removedFromPending =
+      !get(pendingApprovals, `[${input}]`, null) &&
+      get(prevProps, `pendingApprovals[${input}]`, null);
 
     if (isNewAmount || isNewCurrency) {
       this.getMarketDetails();
       LayoutAnimation.easeInEaseOut();
     }
-    if (removedFromPending || isNewValueForPath(this.state, prevState, 'inputCurrency.address')) {
+    if (
+      removedFromPending ||
+      isNewValueForPath(this.state, prevState, 'inputCurrency.address')
+    ) {
       this.getCurrencyAllowance();
     }
   };
@@ -279,8 +283,12 @@ class ExchangeModal extends PureComponent {
       );
       gasUpdateTxFee(gasLimit);
       return this.setState({
-        approvalCreationTimestamp: isUnlockingAsset ? pendingApproval.creationTimestamp : null,
-        approvalEstimatedTimeInMs: isUnlockingAsset ? pendingApproval.estimatedTimeInMs : null,
+        approvalCreationTimestamp: isUnlockingAsset
+          ? pendingApproval.creationTimestamp
+          : null,
+        approvalEstimatedTimeInMs: isUnlockingAsset
+          ? pendingApproval.estimatedTimeInMs
+          : null,
         isAssetApproved,
         isUnlockingAsset,
       });
@@ -452,7 +460,11 @@ class ExchangeModal extends PureComponent {
             get(outputCurrency, 'price.value')
           );
 
-          this.setOutputAmount(rawUpdatedAmount, updatedAmountDisplay, inputAsExactAmount);
+          this.setOutputAmount(
+            rawUpdatedAmount,
+            updatedAmountDisplay,
+            inputAsExactAmount
+          );
         }
       }
 
@@ -471,11 +483,18 @@ class ExchangeModal extends PureComponent {
             get(inputCurrency, 'price.value')
           );
 
-          this.setInputAmount(rawUpdatedAmount, updatedAmountDisplay, inputAsExactAmount);
+          this.setInputAmount(
+            rawUpdatedAmount,
+            updatedAmountDisplay,
+            inputAsExactAmount
+          );
         }
       }
       if (isAssetApproved) {
-        const gasLimit = await estimateSwapGasLimit(accountAddress, tradeDetails);
+        const gasLimit = await estimateSwapGasLimit(
+          accountAddress,
+          tradeDetails
+        );
         gasUpdateTxFee(gasLimit);
       }
     } catch (error) {
@@ -575,14 +594,17 @@ class ExchangeModal extends PureComponent {
         inputCurrency.address,
         inputCurrency.exchangeAddress,
         gasLimit,
-        get(selectedGasPrice, 'value.amount'),
+        get(selectedGasPrice, 'value.amount')
       );
-      const approvalEstimatedTimeInMs = get(selectedGasPrice, 'estimatedTime.amount');
+      const approvalEstimatedTimeInMs = get(
+        selectedGasPrice,
+        'estimatedTime.amount'
+      );
       uniswapUpdatePendingApprovals(
         inputCurrency.address,
         hash,
         approvalCreationTimestamp,
-        approvalEstimatedTimeInMs,
+        approvalEstimatedTimeInMs
       );
       this.setState({
         approvalCreationTimestamp,
@@ -597,7 +619,7 @@ class ExchangeModal extends PureComponent {
         isUnlockingAsset: false,
       });
     }
-  }
+  };
 
   navigateToSelectInputCurrency = () => {
     this.props.navigation.navigate('CurrencySelectScreen', {
@@ -651,7 +673,7 @@ class ExchangeModal extends PureComponent {
     }
   };
 
-  setNativeAmount = nativeAmount => {
+  setNativeAmount = nativeAmount =>
     this.setState(({ inputCurrency }) => {
       let inputAmount = null;
       let inputAmountDisplay = null;
@@ -672,16 +694,14 @@ class ExchangeModal extends PureComponent {
         nativeAmount,
       };
     });
-  };
 
-  setOutputAmount = (outputAmount, amountDisplay, inputAsExactAmount = false) => {
-    this.setState(({ outputCurrency }) => ({
+  setOutputAmount = (outputAmount, amountDisplay, inputAsExactAmount = false) =>
+    this.setState({
       inputAsExactAmount,
       outputAmount,
       outputAmountDisplay:
         amountDisplay !== undefined ? amountDisplay : outputAmount,
-    }));
-  };
+    });
 
   setOutputCurrency = (outputCurrency, force) => {
     const { allAssets } = this.props;

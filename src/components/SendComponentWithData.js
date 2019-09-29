@@ -55,7 +55,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
       fetching: PropTypes.bool.isRequired,
       gasLimit: PropTypes.number,
       gasPrices: PropTypes.object.isRequired,
-      gasUpdateDefaultGasLimit: PropTypes.func,
+      gasUpdateDefaultGasLimit: PropTypes.func.isRequired,
       gasUpdateTxFee: PropTypes.func.isRequired,
       isSufficientBalance: PropTypes.bool.isRequired,
       isSufficientGas: PropTypes.bool.isRequired,
@@ -121,11 +121,13 @@ export const withSendComponentWithData = (SendComponent, options) => {
             amount: assetAmount,
             asset: selected,
             recipient,
-          }).then(gasLimit => {
-            this.props.gasUpdateTxFee(gasLimit);
-          }).catch(error => {
-            this.props.gasUpdateTxFee(null);
-          });
+          })
+            .then(gasLimit => {
+              this.props.gasUpdateTxFee(gasLimit);
+            })
+            .catch(() => {
+              this.props.gasUpdateTxFee(null);
+            });
         }
       }
     }

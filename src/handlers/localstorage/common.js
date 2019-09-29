@@ -1,3 +1,4 @@
+/*global storage*/
 import { toLower } from 'lodash';
 
 const defaultVersion = '0.1.0';
