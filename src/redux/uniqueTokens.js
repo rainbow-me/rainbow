@@ -5,8 +5,8 @@ import {
   saveUniqueTokens,
   removeUniqueTokens,
 } from '../handlers/localstorage/storage';
-import { dedupeAssetsWithFamilies } from './data';
-import { getFamilies } from '../parsers/uniqueTokens';
+import { dedupeAssetsWithFamilies, getFamilies } from '../parsers/uniqueTokens';
+import { dataUpdateAssets } from './data';
 
 // -- Constants ------------------------------------------------------------- //
 const UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST =
@@ -55,6 +55,7 @@ export const uniqueTokensRefreshState = () => (dispatch, getState) =>
       new Promise((fetchResolve, fetchReject) => {
         dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST });
         const { accountAddress, network } = getState().settings;
+        const { assets } = getState().data;
         const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
         apiGetAccountUniqueTokens(accountAddress)
           .then(uniqueTokens => {
@@ -62,7 +63,11 @@ export const uniqueTokensRefreshState = () => (dispatch, getState) =>
             const newFamilies = getFamilies(uniqueTokens);
             const incomingFamilies = without(newFamilies, ...existingFamilies);
             if (incomingFamilies.length) {
-              dispatch(dedupeAssetsWithFamilies(incomingFamilies));
+              const dedupedAssets = dedupeAssetsWithFamilies(
+                assets,
+                incomingFamilies
+              );
+              dispatch(dataUpdateAssets(dedupedAssets));
             }
             saveUniqueTokens(accountAddress, uniqueTokens, network);
             dispatch({

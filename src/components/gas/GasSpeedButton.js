@@ -35,37 +35,27 @@ class GasSpeedButton extends PureComponent {
     estimatedTimeValue: PropTypes.string,
     gasPrices: PropTypes.object,
     gasUpdateGasPriceOption: PropTypes.func,
-    label: PropTypes.string,
     nativeCurrencySymbol: PropTypes.string,
     price: PropTypes.string,
-  };
-
-  getLabel = nextLabel => {
-    let label = nextLabel || this.props.label;
-    const shouldReverse = !!nextLabel;
-
-    if (shouldReverse && label === 'normal') {
-      label = 'average';
-    } else if (label === 'average') {
-      label = 'normal';
-    }
-
-    return label;
+    selectedGasPriceOption: PropTypes.oneOf(gasUtils.GasSpeedOrder),
   };
 
   handlePress = () => {
-    const { gasPrices, gasUpdateGasPriceOption } = this.props;
+    const {
+      gasPrices,
+      gasUpdateGasPriceOption,
+      selectedGasPriceOption,
+    } = this.props;
 
     LayoutAnimation.easeInEaseOut();
 
-    const currentSpeedIndex = gasUtils.GasSpeedTypes.indexOf(this.getLabel());
+    const currentSpeedIndex = gasUtils.GasSpeedOrder.indexOf(
+      selectedGasPriceOption
+    );
+    const nextSpeedIndex =
+      (currentSpeedIndex + 1) % gasUtils.GasSpeedOrder.length;
 
-    let nextSpeedIndex = currentSpeedIndex + 1;
-    if (nextSpeedIndex > gasUtils.GasSpeedTypes.length - 1) {
-      nextSpeedIndex = 0;
-    }
-
-    const nextSpeed = this.getLabel(gasUtils.GasSpeedTypes[nextSpeedIndex]);
+    const nextSpeed = gasUtils.GasSpeedOrder[nextSpeedIndex];
     const nextSpeedGweiValue = get(gasPrices, `[${nextSpeed}].value.display`);
 
     gasUpdateGasPriceOption(nextSpeed);
@@ -99,7 +89,7 @@ class GasSpeedButton extends PureComponent {
             timing="linear"
             value={this.props.price}
           />
-          <GasSpeedLabelPager label={this.getLabel()} />
+          <GasSpeedLabelPager label={this.props.selectedGasPriceOption} />
         </Row>
         <Row align="center" justify="space-between">
           <Label>Fee</Label>
@@ -130,7 +120,6 @@ export default compose(
     return {
       estimatedTimeUnit: estimatedTime[1] || 'min',
       estimatedTimeValue: estimatedTime[0] || 0,
-      label: get(selectedGasPrice, 'option', 'normal'),
       price: get(selectedGasPrice, 'txFee.native.value.amount', '0.00'),
       ...props,
     };
@@ -138,7 +127,7 @@ export default compose(
   onlyUpdateForKeys([
     'estimatedTimeUnit',
     'estimatedTimeValue',
-    'label',
     'price',
+    'selectedGasPriceOption',
   ])
 )(GasSpeedButton);

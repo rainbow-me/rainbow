@@ -7,15 +7,15 @@ import { gasUtils } from '../../utils';
 import { Emoji } from '../text';
 
 const EmojiForGasSpeedType = {
-  fast: {
+  [gasUtils.FAST]: {
     emoji: 'rocket', // 🚀️
     position: [1, 2], // x: 1, y: 2
   },
-  normal: {
+  [gasUtils.NORMAL]: {
     emoji: 'stopwatch', // ⏱️
     position: [2, 1], // x: 2, y: 1
   },
-  slow: {
+  [gasUtils.SLOW]: {
     emoji: 'snail', // 🐌️
     position: [1, 0], // x: 1, y: 0
   },
@@ -24,7 +24,7 @@ const EmojiForGasSpeedType = {
 const GasSpeedEmoji = ({ label }) => {
   const gasSpeed = has(EmojiForGasSpeedType, label)
     ? EmojiForGasSpeedType[label]
-    : EmojiForGasSpeedType.normal;
+    : EmojiForGasSpeedType[gasUtils.NORMAL];
 
   return (
     <View height={28} width={25}>
@@ -43,7 +43,7 @@ const GasSpeedEmoji = ({ label }) => {
 };
 
 GasSpeedEmoji.propTypes = {
-  label: PropTypes.oneOf(gasUtils.GasSpeedTypes),
+  label: PropTypes.oneOf(gasUtils.GasSpeedOrder),
 };
 
 export default onlyUpdateForKeys(['label'])(GasSpeedEmoji);

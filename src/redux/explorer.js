@@ -1,4 +1,4 @@
-import { isNil } from 'lodash';
+import { isNil, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 import { uniswapAssetAddresses } from '../references';
@@ -6,7 +6,6 @@ import {
   addressAssetsReceived,
   assetsReceived,
   priceChanged,
-  transactionsAppended,
   transactionsReceived,
   transactionsRemoved,
 } from './data';
@@ -50,7 +49,7 @@ const addressSubscription = (address, currency, action = 'subscribe') => [
   {
     payload: {
       address,
-      currency: currency.toLowerCase(),
+      currency: toLower(currency),
       transactions_limit: 1000,
     },
     scope: ['assets', 'transactions'],
@@ -62,7 +61,7 @@ const assetsSubscription = (assetCodes, currency, action = 'subscribe') => [
   {
     payload: {
       asset_codes: assetCodes,
-      currency: currency.toLowerCase(),
+      currency: toLower(currency),
     },
   },
 ];
@@ -129,7 +128,7 @@ const listenOnAddressMessages = socket => dispatch => {
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.APPENDED, message => {
-    dispatch(transactionsAppended(message));
+    dispatch(transactionsReceived(message, true));
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.REMOVED, message => {

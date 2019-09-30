@@ -53,8 +53,9 @@ export const withSendComponentWithData = (SendComponent, options) => {
       assets: PropTypes.array.isRequired,
       confirm: PropTypes.bool.isRequired,
       fetching: PropTypes.bool.isRequired,
-      gasLimit: PropTypes.number.isRequired,
+      gasLimit: PropTypes.number,
       gasPrices: PropTypes.object.isRequired,
+      gasUpdateDefaultGasLimit: PropTypes.func.isRequired,
       gasUpdateTxFee: PropTypes.func.isRequired,
       isSufficientBalance: PropTypes.bool.isRequired,
       isSufficientGas: PropTypes.bool.isRequired,
@@ -97,6 +98,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
         defaultAsset: this.defaultAsset,
         gasFormat: this.gasFormat,
       });
+      this.props.gasUpdateDefaultGasLimit();
     }
 
     async componentDidUpdate(prevProps) {
@@ -123,7 +125,9 @@ export const withSendComponentWithData = (SendComponent, options) => {
             .then(gasLimit => {
               this.props.gasUpdateTxFee(gasLimit);
             })
-            .catch(() => {});
+            .catch(() => {
+              this.props.gasUpdateTxFee(null);
+            });
         }
       }
     }

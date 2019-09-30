@@ -7,10 +7,11 @@ import {
   parseTxFees,
 } from '../parsers/gas';
 import ethUnits from '../references/ethereum-units.json';
-import { ethereumUtils } from '../utils';
+import { ethereumUtils, gasUtils } from '../utils';
 
 // -- Constants ------------------------------------------------------------- //
 
+const GAS_UPDATE_DEFAULT_GAS_LIMIT = 'gas/GAS_UPDATE_DEFAULT_GAS_LIMIT';
 const GAS_PRICES_DEFAULT = 'gas/GAS_PRICES_DEFAULT';
 const GAS_PRICES_SUCCESS = 'gas/GAS_PRICES_SUCCESS';
 const GAS_PRICES_FAILURE = 'gas/GAS_PRICES_FAILURE';
@@ -41,8 +42,8 @@ const getDefaultTxFees = () => (dispatch, getState) => {
     nativeCurrency
   );
   const selectedGasPrice = {
-    ...txFees.average,
-    ...fallbackGasPrices.average,
+    ...txFees[gasUtils.NORMAL],
+    ...fallbackGasPrices[gasUtils.NORMAL],
   };
   return {
     fallbackGasPrices,
@@ -121,13 +122,29 @@ export const gasUpdateGasPriceOption = newGasPriceOption => (
   });
 };
 
+export const gasUpdateDefaultGasLimit = (
+  defaultGasLimit = ethUnits.basic_tx
+) => dispatch => {
+  dispatch({
+    payload: defaultGasLimit,
+    type: GAS_UPDATE_DEFAULT_GAS_LIMIT,
+  });
+  dispatch(gasUpdateTxFee(defaultGasLimit));
+};
+
 export const gasUpdateTxFee = gasLimit => (dispatch, getState) => {
-  const { gasPrices, selectedGasPriceOption } = getState().gas;
+  const { defaultGasLimit, gasPrices, selectedGasPriceOption } = getState().gas;
+  const _gasLimit = gasLimit || defaultGasLimit;
   if (isEmpty(gasPrices)) return;
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
   const ethPriceUnit = getEthPriceUnit(assets);
-  const txFees = parseTxFees(gasPrices, ethPriceUnit, gasLimit, nativeCurrency);
+  const txFees = parseTxFees(
+    gasPrices,
+    ethPriceUnit,
+    _gasLimit,
+    nativeCurrency
+  );
   const results = getSelectedGasPrice(
     assets,
     gasPrices,
@@ -181,18 +198,24 @@ export const gasClearFields = () => dispatch => {
 
 // -- Reducer --------------------------------------------------------------- //
 const INITIAL_STATE = {
+  defaultGasLimit: ethUnits.basic_tx,
   fetchingGasPrices: false,
-  gasLimit: ethUnits.basic_tx,
+  gasLimit: null,
   gasPrices: {},
   isSufficientGas: false,
   selectedGasPrice: {},
-  selectedGasPriceOption: 'average',
+  selectedGasPriceOption: gasUtils.NORMAL,
   txFees: {},
   useShortGasFormat: true,
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
+    case GAS_UPDATE_DEFAULT_GAS_LIMIT:
+      return {
+        ...state,
+        defaultGasLimit: action.payload,
+      };
     case GAS_PRICES_DEFAULT:
       return {
         ...state,

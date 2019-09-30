@@ -42,9 +42,9 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate }) => {
     ref.current.animateNextTransition();
   }
 
-  const index = gasUtils.GasSpeedTypes.indexOf(label);
+  const index = gasUtils.GasSpeedOrder.indexOf(label);
   const isFirst = index === 0;
-  const isLast = index === gasUtils.GasSpeedTypes.length - 1;
+  const isLast = index === gasUtils.GasSpeedOrder.length - 1;
 
   const transitionVal = useTransition(
     selected,
@@ -111,7 +111,7 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate }) => {
 };
 
 GasSpeedLabelPagerItem.propTypes = {
-  label: PropTypes.oneOf(gasUtils.GasSpeedTypes),
+  label: PropTypes.oneOf(gasUtils.GasSpeedOrder),
   selected: PropTypes.bool,
   shouldAnimate: PropTypes.bool,
 };

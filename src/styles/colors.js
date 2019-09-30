@@ -1,4 +1,5 @@
 import chroma from 'chroma-js';
+import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
 
 const base = {
@@ -84,7 +85,7 @@ const isColorLight = targetColor =>
   chroma(targetColor || base.white).luminance() > 0.5;
 
 const isHex = (color = '') => color.length >= 3 && color.charAt(0) === '#';
-const isRGB = (color = '') => color.toLowerCase().substring(0, 3) === 'rgb';
+const isRGB = (color = '') => toLower(color).substring(0, 3) === 'rgb';
 
 const getTextColorForBackground = (targetColor, textColors = {}) => {
   const { dark = base.black, light = base.white } = textColors;

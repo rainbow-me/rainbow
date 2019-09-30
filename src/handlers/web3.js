@@ -46,7 +46,7 @@ export const isHexStringIgnorePrefix = value => {
 };
 
 export const addHexPrefix = value =>
-  startsWith(value, '0x') ? value : '0x' + value;
+  startsWith(value, '0x') ? value : `0x${value}`;
 
 export const mnemonicToSeed = value =>
   ethers.utils.HDNode.mnemonicToSeed(value);
@@ -100,7 +100,7 @@ export const estimateGas = async estimateGasData => {
     const gasLimit = await web3Provider.estimateGas(estimateGasData);
     return gasLimit.toNumber();
   } catch (error) {
-    return 21000;
+    return null;
   }
 };
 
@@ -140,20 +140,17 @@ export const getTxDetails = async transaction => {
   const { from, to } = transaction;
   const data = transaction.data ? transaction.data : '0x';
   const value = transaction.amount ? toWei(transaction.amount) : '0x00';
-  const estimateGasData = {
-    data,
-    from,
-    to,
-    value,
-  };
-  const _gasLimit =
-    transaction.gasLimit || (await estimateGas(estimateGasData));
-  const _gasPrice = transaction.gasPrice || (await getGasPrice());
+  const gasLimit = transaction.gasLimit
+    ? toHex(transaction.gasLimit)
+    : undefined;
+  const gasPrice = transaction.gasPrice
+    ? toHex(transaction.gasPrice)
+    : undefined;
   const nonce = await getTransactionCount(from);
   const tx = {
     data,
-    gasLimit: toHex(_gasLimit),
-    gasPrice: toHex(_gasPrice),
+    gasLimit,
+    gasPrice,
     nonce: toHex(nonce),
     to,
     value: toHex(value),

@@ -1,3 +1,5 @@
+import { startsWith, toLower } from 'lodash';
+
 export const filterList = (
   list,
   searchPhrase,
@@ -7,15 +9,11 @@ export const filterList = (
   const filteredList = [];
   if (list && searchPhrase.length > 0) {
     for (let i = 0; i < list.length; i++) {
-      let searchedItem = searchParameter ? list[i][searchParameter] : list[i];
+      const searchedItem = searchParameter ? list[i][searchParameter] : list[i];
       const splitedWordList = (searchedItem || '').split(separator);
       splitedWordList.push(searchedItem);
       for (let j = 0; j < splitedWordList.length; j++) {
-        if (
-          splitedWordList[j]
-            .toLowerCase()
-            .startsWith(searchPhrase.toLowerCase())
-        ) {
+        if (startsWith(toLower(splitedWordList[j]), toLower(searchPhrase))) {
           filteredList.push(list[i]);
           break;
         }

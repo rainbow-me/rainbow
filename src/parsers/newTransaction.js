@@ -4,6 +4,7 @@ import {
   convertAmountToBalanceDisplay,
 } from '../helpers/utilities';
 import { getTransactionCount } from '../handlers/web3';
+import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 
 /**
  * @desc parse transactions from native prices
@@ -28,23 +29,18 @@ export const parseNewTransaction = async (
     get(txDetails, 'asset.price.value', 0),
     nativeCurrency
   );
-  let tx = pick(txDetails, [
-    'asset',
-    'dappName',
-    'from',
-    'hash',
-    'nonce',
-    'to',
-  ]);
+  let tx = pick(txDetails, ['dappName', 'from', 'hash', 'nonce', 'to']);
   const nonce = tx.nonce || (tx.from ? await getTransactionCount(tx.from) : '');
   tx = {
     ...tx,
     balance,
-    error: false,
-    mined_at: null,
+    minedAt: null,
+    name: get(txDetails, 'asset.name'),
     native,
     nonce,
     pending: !!txDetails.hash,
+    status: TransactionStatusTypes.sending,
+    symbol: get(txDetails, 'asset.symbol'),
   };
 
   return tx;
