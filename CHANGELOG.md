@@ -7,10 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 ### Added
+* Support for deeplinking
+* Support eth_signTransaction
 
 ### Changed
+* Updated icons and splash screen
 
-### Removed
+## [1.1.5-2](https://github.com/rainbow-me/rainbow/releases/tag/v1.1.5-2)
+### Changed
+* Bugfix for transaction history with null symbol
 
 ## [1.1.4-1](https://github.com/rainbow-me/rainbow/releases/tag/v1.1.4-1)
 ### Added
