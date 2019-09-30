@@ -190,9 +190,7 @@ export default class ButtonPressAnimation extends PureComponent {
   handleLayout = ({ nativeEvent: { layout } }) => {
     // only setState if height+width dont already exist
     if (!Object.values(this.state).reduce((a, b) => a + b)) {
-      // TODO ???
-      // eslint-disable-next-line react/no-access-state-in-setstate
-      this.setState(pick(layout, Object.keys(this.state)));
+      this.setState(prevState => pick(layout, Object.keys(prevState)));
     }
   };
 

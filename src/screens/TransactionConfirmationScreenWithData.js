@@ -1,7 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
-import { get, omit } from 'lodash';
+import { get, isNil, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Alert, Vibration } from 'react-native';
@@ -14,7 +14,7 @@ import {
   signTransaction,
   sendTransaction,
 } from '../model/wallet';
-import { getTransactionCount } from '../handlers/web3';
+import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
 import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 import {
   isMessageDisplayType,

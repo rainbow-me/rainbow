@@ -49,7 +49,8 @@ export default class FloatingEmojis extends PureComponent {
     const items = Array(numEmojis).fill();
     const newEmojis = items.map((_, i) => oldCount + i).map(this.createItem);
 
-    // TODO
+    // TODO: refactor this component to utilize hooks, so that we can stop
+    // having to call setState inside componentDidUpdate.
     // eslint-disable-next-line react/no-did-update-set-state
     this.setState(prevState => ({
       emojis: prevState.emojis.concat(newEmojis),
