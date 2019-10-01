@@ -111,23 +111,27 @@ export default class CoinDivider extends PureComponent {
         width={deviceUtils.dimensions.width}
       >
         <Highlight highlight={isCoinDivider} />
-        <ButtonPressAnimation onPress={onPress} scaleTo={0.8}>
-          <RoundButtonSizeToggler
-            animationNode={this._node}
-            endingWidth={CoinDividerHeight}
-            isAbsolute
-            reversed={!this._initialState}
-            startingWidth={5}
-            toggle={openSmallBalances}
-          />
+        <ButtonPressAnimation
+          onPress={onPress}
+          scaleTo={0.8}
+          style={{ width: openSmallBalances ? 80 : 54 }}
+        >
           <Row
             align="center"
             borderRadius={RoundButtonSizeToggler.capSize / 2}
             height={CoinDividerHeight}
             justify="space-between"
-            minWidth={41.5}
+            width={54}
             paddingHorizontal={10}
           >
+            <RoundButtonSizeToggler
+              animationNode={this._node}
+              endingWidth={CoinDividerHeight}
+              isAbsolute
+              reversed={!this._initialState}
+              startingWidth={5}
+              toggle={openSmallBalances}
+            />
             <View>
               <CoinDividerButtonLabel
                 isVisible={openSmallBalances}
