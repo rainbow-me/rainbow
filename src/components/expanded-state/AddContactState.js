@@ -55,14 +55,18 @@ class AddContactState extends PureComponent {
 
     if (value.length > 0) {
       await addNewLocalContact(address, value, color);
-      onCloseModal();
+      if (onCloseModal) {
+        onCloseModal();
+      }
       navigation.goBack();
     }
   };
 
   handleCancel = () => {
     this.props.onUnmountModal('', 0, false);
-    this.props.onCloseModal();
+    if (this.props.onCloseModal) {
+      this.props.onCloseModal();
+    }
     this.props.navigation.goBack();
   };
 
