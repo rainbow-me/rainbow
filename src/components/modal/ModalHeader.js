@@ -22,7 +22,7 @@ const Container = styled(Row).attrs({
 
 const TitleContainer = styled(Centered)`
   ${position.cover};
-  zindex: 0;
+  z-index: 0;
 `;
 
 const ModalHeader = ({
