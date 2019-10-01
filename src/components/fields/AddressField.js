@@ -4,7 +4,7 @@ import React from 'react';
 import styled from 'styled-components/primitives';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { Clipboard } from 'react-native';
-import { isValidAddress } from '../../helpers/validators';
+import { checkIsValidAddress } from '../../helpers/validators';
 import { isHexString } from '../../handlers/web3';
 import { colors } from '../../styles';
 import { abbreviations, addressUtils, isNewValueForPath } from '../../utils';
@@ -101,7 +101,7 @@ export default class AddressField extends React.Component {
   onChangeText = inputValue => this.setState({ inputValue });
 
   validateAddress = async address => {
-    const isValid = await isValidAddress(address);
+    const isValid = await checkIsValidAddress(address);
     return this.setState({ isValid });
   };
 
