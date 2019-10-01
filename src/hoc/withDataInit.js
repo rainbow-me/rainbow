@@ -151,7 +151,7 @@ export default Component =>
           if (isImported) {
             await ownProps.clearAccountData();
           }
-          ownProps.settingsUpdateAccountAddress(walletAddress, 'RAINBOWWALLET');
+          ownProps.settingsUpdateAccountAddress(walletAddress);
           if (isNew) {
             ownProps.setIsWalletEthZero(true);
           } else if (isImported) {
