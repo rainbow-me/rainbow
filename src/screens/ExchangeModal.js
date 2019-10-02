@@ -90,7 +90,6 @@ class ExchangeModal extends PureComponent {
     navigation: PropTypes.object,
     pendingApprovals: PropTypes.object,
     pushKeyboardFocusHistory: PropTypes.func,
-    resetGasTxFees: PropTypes.func,
     selectedGasPrice: PropTypes.object,
     tokenReserves: PropTypes.object,
     tradeDetails: PropTypes.object,
@@ -208,7 +207,6 @@ class ExchangeModal extends PureComponent {
   };
 
   componentWillUnmount = () => {
-    this.props.resetGasTxFees();
     this.props.clearKeyboardFocusHistory();
   };
 
