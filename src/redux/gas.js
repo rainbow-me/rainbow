@@ -18,7 +18,6 @@ const GAS_PRICES_FAILURE = 'gas/GAS_PRICES_FAILURE';
 
 const GAS_UPDATE_TX_FEE = 'gas/GAS_UPDATE_TX_FEE';
 const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
-const GAS_CLEAR_FIELDS = 'gas/GAS_CLEAR_FIELDS';
 const GAS_RESET_FIELDS = 'gas/GAS_RESET_FIELDS';
 
 // -- Actions --------------------------------------------------------------- //
@@ -191,9 +190,8 @@ export const resetGasTxFees = () => dispatch => {
   });
 };
 
-export const gasClearFields = () => dispatch => {
+export const gasClearState = () => dispatch => {
   clearInterval(getGasPricesInterval);
-  dispatch({ type: GAS_CLEAR_FIELDS });
 };
 
 // -- Reducer --------------------------------------------------------------- //
