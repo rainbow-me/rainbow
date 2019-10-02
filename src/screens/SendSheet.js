@@ -267,7 +267,7 @@ class SendSheet extends Component {
 
     return (
       <Container>
-        <KeyboardAvoidingView behavior="padding" enabled={!showAssetList}>
+        <KeyboardAvoidingView behavior="padding">
           <Container align="center">
             <SendHeader
               contacts={this.state.contacts}
