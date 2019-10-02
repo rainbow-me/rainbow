@@ -196,11 +196,13 @@ export default class ButtonPressAnimation extends PureComponent {
 
   handleDetectedLongPress = () => {
     this.longPressDetected = true;
+    this.handleHaptic();
     this.props.onLongPress();
   };
 
   handlePress = () => {
     if (!this.longPressDetected && this.props.onPress) {
+      this.handleHaptic();
       this.props.onPress();
     }
   };
@@ -301,7 +303,6 @@ export default class ButtonPressAnimation extends PureComponent {
                 ],
                 // else if
                 cond(eq(this.gestureState, END), [
-                  call([], this.handleHaptic),
                   call([], this.handleRunInteraction),
                 ])
               )

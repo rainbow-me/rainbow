@@ -780,6 +780,7 @@ class RecyclerAssetList extends Component {
             onScroll={this.handleScroll}
             ref={this.handleListRef}
             renderAheadOffset={renderAheadOffset}
+            disableRecycling
             rowRenderer={this.rowRenderer}
             scrollIndicatorInsets={{
               bottom: safeAreaInsetValues.bottom,

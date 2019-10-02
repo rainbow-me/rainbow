@@ -72,13 +72,11 @@ class AddContactState extends PureComponent {
 
   handleChange = ({ nativeEvent: { text } }) => {
     const value = text.charCodeAt(0) === 32 ? text.substring(1) : text;
-
     this.setState({ value });
-    this.props.onUnmountModal(value, this.state.color, true);
   };
 
   handleChangeColor = async () => {
-    const { color, value } = this.state;
+    const { color } = this.state;
 
     let newColor = color + 1;
     if (newColor > colors.avatarColor.length - 1) {
@@ -86,7 +84,6 @@ class AddContactState extends PureComponent {
     }
 
     this.setState({ color: newColor });
-    this.props.onUnmountModal(value, newColor, true);
   };
 
   handleDeleteContact = () =>
