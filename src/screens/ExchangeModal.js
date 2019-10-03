@@ -272,6 +272,7 @@ class ExchangeModal extends Component {
       chainId,
       gasUpdateTxFee,
       nativeCurrency,
+      selectedGasPrice,
     } = this.props;
     const {
       inputAmount,
@@ -290,11 +291,7 @@ class ExchangeModal extends Component {
     }
 
     try {
-      const {
-        address: inputAddress,
-        balance: { amount: inputBalance },
-        decimals: inputDecimals,
-      } = inputCurrency;
+      const { address: inputAddress, decimals: inputDecimals } = inputCurrency;
       const {
         address: outputAddress,
         decimals: outputDecimals,
@@ -389,7 +386,10 @@ class ExchangeModal extends Component {
       }
 
       const slippage = get(tradeDetails, 'marketRateSlippage', 0).toString();
-
+      const inputBalance = ethereumUtils.getBalanceAmount(
+        selectedGasPrice,
+        inputCurrency
+      );
       this.setState({
         inputExecutionRate,
         inputNativePrice,
