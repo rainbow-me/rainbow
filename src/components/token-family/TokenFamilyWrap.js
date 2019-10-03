@@ -48,11 +48,15 @@ const TokenFamilyWrap = ({
   highlight,
   isFamilyOpen,
   item,
-  marginTop,
+  paddingTop,
   onPressFamilyHeader,
   renderCollectibleItem,
 }) => (
-  <View backgroundColor={colors.white} marginTop={marginTop} overflow="hidden">
+  <View
+    backgroundColor={colors.white}
+    paddingTop={paddingTop}
+    overflow="hidden"
+  >
     <TokenFamilyHeader
       childrenAmount={childrenAmount}
       familyImage={familyImage}
@@ -82,8 +86,8 @@ TokenFamilyWrap.propTypes = {
   highlight: PropTypes.bool,
   isFamilyOpen: PropTypes.bool,
   item: PropTypes.array,
-  marginTop: PropTypes.number,
   onPressFamilyHeader: PropTypes.func,
+  paddingTop: PropTypes.number,
   renderCollectibleItem: PropTypes.func,
 };
 
@@ -156,7 +160,7 @@ export default compose(
     'areChildrenVisible',
     'childrenAmount',
     'highlight',
-    'marginTop',
+    'paddingTop',
     'isFamilyOpen',
     'uniqueId',
   ])
