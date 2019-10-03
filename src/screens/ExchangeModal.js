@@ -14,6 +14,7 @@ import { LayoutAnimation, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import { compose, toClass, withProps } from 'recompact';
+import { interpolate } from '../components/animations';
 import { estimateSwapGasLimit, executeSwap } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
@@ -37,8 +38,12 @@ import {
 } from '../hoc';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
-import { contractUtils, ethereumUtils, isNewValueForPath } from '../utils';
-import { interpolate } from '../components/animations';
+import {
+  contractUtils,
+  ethereumUtils,
+  gasUtils,
+  isNewValueForPath,
+} from '../utils';
 import {
   ConfirmExchangeButton,
   ExchangeInputField,
@@ -239,7 +244,7 @@ class ExchangeModal extends Component {
         inputCurrency.address,
         exchangeAddress
       );
-      gasUpdateTxFee(gasLimit);
+      gasUpdateTxFee(gasLimit, gasUtils.FAST);
       return this.setState({
         approvalCreationTimestamp: isUnlockingAsset
           ? pendingApproval.creationTimestamp
@@ -524,11 +529,8 @@ class ExchangeModal extends Component {
   handleUnlockAsset = async () => {
     try {
       const { inputCurrency } = this.state;
-      const {
-        gasLimit,
-        selectedGasPrice,
-        uniswapUpdatePendingApprovals,
-      } = this.props;
+      const { gasLimit, gasPrices, uniswapUpdatePendingApprovals } = this.props;
+      const fastGasPrice = get(gasPrices, `[${gasUtils.FAST}]`);
       const {
         creationTimestamp: approvalCreationTimestamp,
         approval: { hash },
@@ -536,10 +538,10 @@ class ExchangeModal extends Component {
         inputCurrency.address,
         inputCurrency.exchangeAddress,
         gasLimit,
-        get(selectedGasPrice, 'value.amount')
+        get(fastGasPrice, 'value.amount')
       );
       const approvalEstimatedTimeInMs = get(
-        selectedGasPrice,
+        fastGasPrice,
         'estimatedTime.amount'
       );
       uniswapUpdatePendingApprovals(

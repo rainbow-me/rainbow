@@ -126,7 +126,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
               this.props.gasUpdateTxFee(gasLimit);
             })
             .catch(() => {
-              this.props.gasUpdateTxFee(null);
+              this.props.gasUpdateTxFee();
             });
         }
       }
