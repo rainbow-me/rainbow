@@ -5,7 +5,7 @@ import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator } from 'react-navigation-stack';
 import { ExchangeModalNavigator, Navigation } from '../navigation';
-import { updateStackTransitionProps } from '../redux/navigation';
+import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
 import { colors } from '../styles';
 import { deviceUtils } from '../utils';
@@ -28,9 +28,9 @@ import {
 import restoreKeyboard from './restoreKeyboard';
 
 const onTransitionEnd = () =>
-  store.dispatch(updateStackTransitionProps({ isTransitioning: false }));
+  store.dispatch(updateTransitionProps({ isTransitioning: false }));
 const onTransitionStart = () =>
-  store.dispatch(updateStackTransitionProps({ isTransitioning: true }));
+  store.dispatch(updateTransitionProps({ isTransitioning: true }));
 
 const SwipeStack = createMaterialTopTabNavigator(
   {
@@ -203,13 +203,13 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
           prevRouteName === 'MainExchangeScreen' &&
           routeName === 'WalletScreen'
         ) {
-          store.dispatch(updateStackTransitionProps({ blurColor: null }));
+          store.dispatch(updateTransitionProps({ blurColor: null }));
         } else if (
           prevRouteName === 'WalletScreen' &&
           routeName === 'MainExchangeScreen'
         ) {
           store.dispatch(
-            updateStackTransitionProps({
+            updateTransitionProps({
               blurColor: colors.alpha(colors.black, 0.9),
             })
           );

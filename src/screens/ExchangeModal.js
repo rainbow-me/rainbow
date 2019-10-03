@@ -32,7 +32,6 @@ import {
   withGas,
   withKeyboardFocusHistory,
   withTransactionConfirmationScreen,
-  withTransitionProps,
   withUniswapAllowances,
   withUniswapAssets,
 } from '../hoc';
@@ -84,7 +83,6 @@ class ExchangeModal extends PureComponent {
     gasUpdateDefaultGasLimit: PropTypes.func,
     gasUpdateTxFee: PropTypes.func,
     isFocused: PropTypes.bool,
-    isTransitioning: PropTypes.bool,
     keyboardFocusHistory: PropTypes.array,
     nativeCurrency: PropTypes.string,
     navigation: PropTypes.object,
@@ -815,7 +813,6 @@ export default compose(
   withKeyboardFocusHistory,
   withNavigationFocus,
   withTransactionConfirmationScreen,
-  withTransitionProps,
   withUniswapAllowances,
   withUniswapAssets,
   mapProps(

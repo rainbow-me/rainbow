@@ -2,7 +2,7 @@ import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import store from '../../redux/store';
-import { updateStackTransitionProps } from '../../redux/navigation';
+import { updateTransitionProps } from '../../redux/navigation';
 import { deviceUtils } from '../../utils';
 import { colors } from '../../styles';
 
@@ -50,7 +50,7 @@ const expandStyleInterpolator = ({
     and(eq(closing, 1), eq(current, 1))
   );
   const setShowingModal = call([], () => {
-    store.dispatch(updateStackTransitionProps({ showingModal: true }));
+    store.dispatch(updateTransitionProps({ showingModal: true }));
   });
 
   return {
@@ -112,7 +112,7 @@ const backgroundInterpolator = ({
   }
   const dispatch = cond(
     call([], () => {
-      store.dispatch(updateStackTransitionProps({ position: next }));
+      store.dispatch(updateTransitionProps({ position: next }));
     })
   );
   return { cardStyle: { opacity: block([dispatch, 1]) } };

@@ -8,7 +8,6 @@ import Animated from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import {
   withKeyboardFocusHistory,
-  withTransitionProps,
   withUniswapAssets,
 } from '../hoc';
 import { borders, colors, position } from '../styles';
@@ -71,7 +70,6 @@ class CurrencySelectModal extends Component {
   static propTypes = {
     assetsAvailableOnUniswap: PropTypes.arrayOf(PropTypes.object),
     isFocused: PropTypes.bool,
-    isTransitioning: PropTypes.bool,
     navigation: PropTypes.object,
     sortedUniswapAssets: PropTypes.array,
     transitionPosition: PropTypes.object,
@@ -83,14 +81,6 @@ class CurrencySelectModal extends Component {
   };
 
   shouldComponentUpdate = (nextProps, nextState) => {
-    // const currentTransitioning = this.props.isTransitioning;
-    // const nextTransitioning = nextProps.isTransitioning;
-
-    // if (currentTransitioning) {
-    //   console.log('blocking');
-    //   return false;
-    // }
-
     let currentAssets = this.props.sortedUniswapAssets;
     let nextAssets = EMPTY_ARRAY;
 
@@ -111,18 +101,12 @@ class CurrencySelectModal extends Component {
       nextState,
       'searchQuery'
     );
-    const isNewTransitioning = isNewValueForPath(
-      this.props,
-      nextProps,
-      'isTransitioning'
-    );
     const isNewType = isNewValueForPath(this.props, nextProps, 'type');
 
     return (
       isNewAssets ||
       isNewFocus ||
       isNewSearchQuery ||
-      isNewTransitioning ||
       isNewType
     );
   };
@@ -184,7 +168,6 @@ class CurrencySelectModal extends Component {
     const {
       assetsAvailableOnUniswap,
       isFocused,
-      isTransitioning,
       sortedUniswapAssets,
       type,
       transitionPosition,
@@ -203,11 +186,7 @@ class CurrencySelectModal extends Component {
 
     const listItems = filterList(assets, searchQuery, 'uniqueId');
 
-    const isLoading = isTransitioning || listItems.length === 0;
-
-    // console.log('listItems', listItems);
-
-    // console.log('isFocused', isFocused ? '👍️' : '👎️', ' ', isFocused);
+    const isLoading = !isFocused || listItems.length === 0;
 
     return (
       <KeyboardFixedOpenLayout>
@@ -279,7 +258,6 @@ class CurrencySelectModal extends Component {
 
 export default compose(
   withNavigationFocus,
-  withTransitionProps,
   withKeyboardFocusHistory,
   withUniswapAssets,
   mapProps(
@@ -287,12 +265,10 @@ export default compose(
       assetsAvailableOnUniswap,
       navigation,
       sortedUniswapAssets,
-      tabsTransitionProps: { isTransitioning },
       ...props
     }) => ({
       ...props,
       assetsAvailableOnUniswap: normalizeAssetItems(assetsAvailableOnUniswap),
-      isTransitioning,
       navigation,
       sortedUniswapAssets: normalizeAssetItems(sortedUniswapAssets),
       transitionPosition: get(navigation, 'state.params.position'),
