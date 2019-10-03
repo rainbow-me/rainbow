@@ -21,9 +21,11 @@ export default class Input extends PureComponent {
     spellCheck: true,
   };
 
-  ref = React.createRef();
+  clear = () => this.ref.current.clear();
 
   focus = event => this.ref.current.focus(event);
+
+  ref = React.createRef();
 
   render = () => {
     const {

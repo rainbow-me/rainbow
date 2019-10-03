@@ -104,7 +104,7 @@
     "react-native-splash-screen": "^3.2.0",
     "react-native-storage": "^1.0.1",
     "react-native-store-review": "^0.1.5",
-    "react-native-svg": "9.7.1",
+    "react-native-svg": "9.10.1",
     "react-native-tcp": "^3.3.0",
     "react-native-text-input-mask": "react-native-community/react-native-text-input-mask#abf0e7f538036bbc5719024fbd67a1efd756c4b9",
     "react-native-tooltip": "^5.2.0",

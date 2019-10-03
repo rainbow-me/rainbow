@@ -228,6 +228,7 @@ class CurrencySelectModal extends Component {
                 onChangeText={this.onChangeSearchText}
                 onFocus={this.handleFocusField}
                 ref={this.searchInputRef}
+                searchQuery={searchQuery}
               />
               <View flex={1}>
                 {isFocused ? (
