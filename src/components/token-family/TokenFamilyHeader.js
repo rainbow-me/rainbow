@@ -39,15 +39,15 @@ export default class TokenFamilyHeader extends PureComponent {
     onHeaderPress: PropTypes.func,
   };
 
-  static animationDuration = TokenFamilyHeaderAnimationDuration;
-
-  static height = TokenFamilyHeaderHeight;
-
   componentDidUpdate = prevProps => {
     if (isNewValueForPath(this.props, prevProps, 'isOpen')) {
       this.runTiming();
     }
   };
+
+  static animationDuration = TokenFamilyHeaderAnimationDuration;
+
+  static height = TokenFamilyHeaderHeight;
 
   animation = new Value(this.props.isOpen ? 1 : 0);
 

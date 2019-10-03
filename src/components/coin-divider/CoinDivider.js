@@ -68,8 +68,6 @@ export default class CoinDivider extends PureComponent {
     openSmallBalances: PropTypes.bool,
   };
 
-  static height = CoinDividerHeight;
-
   componentWillMount() {
     this._initialState = this.props.openSmallBalances;
   }
@@ -92,6 +90,8 @@ export default class CoinDivider extends PureComponent {
       });
     }
   }
+
+  static height = CoinDividerHeight;
 
   render() {
     const {
