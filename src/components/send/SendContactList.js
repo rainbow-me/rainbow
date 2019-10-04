@@ -37,9 +37,9 @@ class SendContactList extends Component {
       contacts: [],
     };
 
-    this.currentlyOpenContact = undefined;
     this.recentlyRendered = false;
     this.touchedContact = undefined;
+    this.contacts = {};
 
     this._layoutProvider = new LayoutProvider(
       i => {
@@ -83,11 +83,10 @@ class SendContactList extends Component {
     return true;
   };
 
-  changeCurrentlyUsedContact = address => {
-    this.currentlyOpenContact = address;
-  };
-
   closeAllDifferentContacts = address => {
+    if (this.touchedContact) {
+      this.contacts[this.touchedContact].close();
+    }
     this.touchedContact = address;
     this.recentlyRendered = false;
   };
@@ -129,19 +128,6 @@ class SendContactList extends Component {
   };
 
   hasRowChanged = (r1, r2) => {
-    const { contacts } = this.state;
-
-    if (
-      this.touchedContact &&
-      this.currentlyOpenContact &&
-      this.touchedContact !== this.currentlyOpenContact &&
-      !this.recentlyRendered
-    ) {
-      if (r2 === contacts[contacts.length - 1]) {
-        this.recentlyRendered = true;
-      }
-      return true;
-    }
     if (r1 !== r2) {
       return true;
     }
@@ -150,12 +136,13 @@ class SendContactList extends Component {
 
   renderItem = (type, item) => (
     <SwipeableContactRow
-      currentlyOpenContact={this.touchedContact}
+      ref={component => {
+        this.contacts[item.address] = component;
+      }}
       navigation={this.props.navigation}
       onChange={this.props.onUpdateContacts}
       onPress={this.props.onPressContact}
       onTouch={this.closeAllDifferentContacts}
-      onTransitionEnd={this.changeCurrentlyUsedContact}
       {...item}
     />
   );
