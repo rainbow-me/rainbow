@@ -46,15 +46,11 @@ export const settingsLoadState = () => async dispatch => {
   }
 };
 
-export const settingsUpdateAccountAddress = (
-  accountAddress,
-  accountType
-) => dispatch => {
+export const settingsUpdateAccountAddress = accountAddress => dispatch =>
   dispatch({
-    payload: { accountAddress, accountType },
+    payload: accountAddress,
     type: SETTINGS_UPDATE_SETTINGS_ADDRESS,
   });
-};
 
 export const settingsUpdateNetwork = network => dispatch => {
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
@@ -110,7 +106,6 @@ export const settingsChangeNativeCurrency = nativeCurrency => dispatch => {
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_STATE = {
   accountAddress: '',
-  accountType: '',
   chainId: 1,
   language: 'en',
   nativeCurrency: 'USD',
@@ -122,8 +117,7 @@ export default (state = INITIAL_STATE, action) => {
     case SETTINGS_UPDATE_SETTINGS_ADDRESS:
       return {
         ...state,
-        accountAddress: action.payload.accountAddress,
-        accountType: action.payload.accountType,
+        accountAddress: action.payload,
       };
     case SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS:
       return {

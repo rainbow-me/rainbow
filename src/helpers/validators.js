@@ -23,7 +23,7 @@ export const isENSAddressFormat = address => address.match(/.+\..+/g);
  * @param  {String} address or ENS
  * @return {Boolean}
  */
-export const isValidAddress = async address => {
+export const checkIsValidAddress = async address => {
   if (isENSAddressFormat(address)) {
     try {
       const resolvedAddress = await web3Provider.resolveName(address);

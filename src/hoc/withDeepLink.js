@@ -13,13 +13,8 @@ import {
 } from '../utils/signingMethods';
 import withAccountSettings from './withAccountSettings';
 
-const mapStateToProps = ({
-  data: { assets },
-  settings: { accountAddress, nativeCurrency },
-}) => ({
-  accountAddress,
+const mapStateToProps = ({ data: { assets } }) => ({
   assets,
-  nativeCurrency,
 });
 
 const parseResultsForRedirect = (results, redirectUrl) => {

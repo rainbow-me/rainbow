@@ -9,8 +9,8 @@ import {
 } from '../redux/settings';
 
 const mapStateToProps = ({
-  settings: { chainId, language, nativeCurrency },
-}) => ({ chainId, language, nativeCurrency });
+  settings: { accountAddress, chainId, language, nativeCurrency, network },
+}) => ({ accountAddress, chainId, language, nativeCurrency, network });
 
 const languageSelector = state => state.language;
 const nativeCurrencySelector = state => state.nativeCurrency;

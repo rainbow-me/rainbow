@@ -26,7 +26,6 @@ import {
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
 import {
-  withAccountAddress,
   withAccountData,
   withAccountSettings,
   withBlockedHorizontalSwipe,
@@ -39,12 +38,7 @@ import {
 } from '../hoc';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
-import {
-  contractUtils,
-  ethereumUtils,
-  gasUtils,
-  isNewValueForPath,
-} from '../utils';
+import { contractUtils, ethereumUtils, isNewValueForPath } from '../utils';
 import {
   ConfirmExchangeButton,
   ExchangeInputField,
@@ -87,9 +81,7 @@ class ExchangeModal extends PureComponent {
     clearKeyboardFocusHistory: PropTypes.func,
     dataAddNewTransaction: PropTypes.func,
     gasLimit: PropTypes.string,
-    gasPrices: PropTypes.object,
     gasUpdateDefaultGasLimit: PropTypes.func,
-    gasUpdateGasPriceOption: PropTypes.func,
     gasUpdateTxFee: PropTypes.func,
     isFocused: PropTypes.bool,
     isTransitioning: PropTypes.bool,
@@ -98,7 +90,6 @@ class ExchangeModal extends PureComponent {
     navigation: PropTypes.object,
     pendingApprovals: PropTypes.object,
     pushKeyboardFocusHistory: PropTypes.func,
-    resetGasTxFees: PropTypes.func,
     selectedGasPrice: PropTypes.object,
     tokenReserves: PropTypes.object,
     tradeDetails: PropTypes.object,
@@ -216,7 +207,6 @@ class ExchangeModal extends PureComponent {
   };
 
   componentWillUnmount = () => {
-    this.props.resetGasTxFees();
     this.props.clearKeyboardFocusHistory();
   };
 
@@ -525,16 +515,6 @@ class ExchangeModal extends PureComponent {
     return this.setInputAmount(maxBalance);
   };
 
-  handlePressTransactionSpeed = () => {
-    const { gasPrices, gasUpdateGasPriceOption, txFees } = this.props;
-
-    gasUtils.showTransactionSpeedOptions(
-      gasPrices,
-      txFees,
-      gasUpdateGasPriceOption
-    );
-  };
-
   handleSubmit = async () => {
     const {
       accountAddress,
@@ -828,7 +808,6 @@ class ExchangeModal extends PureComponent {
 }
 
 export default compose(
-  withAccountAddress,
   withAccountData,
   withAccountSettings,
   withBlockedHorizontalSwipe,

@@ -12,7 +12,6 @@ import { parseNewTransaction } from '../parsers/newTransaction';
 import parseTransactions from '../parsers/transactions';
 import { isLowerCaseMatch } from '../utils';
 import {
-  uniswapAddLiquidityTokens,
   uniswapRemovePendingApproval,
   uniswapUpdateAssetPrice,
   uniswapUpdateAssets,
@@ -145,16 +144,11 @@ export const addressAssetsReceived = (
   const { accountAddress, network } = getState().settings;
   const { uniqueTokens } = getState().uniqueTokens;
   const assets = get(message, 'payload.assets', []);
-  const liquidityTokens = remove(
-    assets,
-    asset => get(asset, 'asset.symbol', '') === 'UNI'
-  );
-  if (append) {
-    dispatch(uniswapAddLiquidityTokens(liquidityTokens));
-  }
-  if (!append && !change) {
-    dispatch(uniswapUpdateLiquidityTokens(liquidityTokens));
-  }
+  const liquidityTokens = remove(assets, asset => {
+    const symbol = get(asset, 'asset.symbol', '');
+    return symbol === 'UNI' || symbol === 'uni-v1';
+  });
+  dispatch(uniswapUpdateLiquidityTokens(liquidityTokens, append || change));
   let parsedAssets = parseAccountAssets(assets, uniqueTokens);
   if (append || change) {
     const { assets: existingAssets } = getState().data;

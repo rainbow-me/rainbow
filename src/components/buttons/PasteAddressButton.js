@@ -4,7 +4,7 @@ import { Clipboard } from 'react-native';
 import Button from './Button';
 import { withAppState } from '../../hoc';
 import { colors } from '../../styles';
-import { isValidAddress } from '../../helpers/validators';
+import { checkIsValidAddress } from '../../helpers/validators';
 
 class PasteAddressButton extends PureComponent {
   static propTypes = {
@@ -37,7 +37,7 @@ class PasteAddressButton extends PureComponent {
   };
 
   setClipboardContents = async clipboardContents => {
-    if (await isValidAddress(clipboardContents)) {
+    if (await checkIsValidAddress(clipboardContents)) {
       this.setState({ clipboardContents });
     }
   };

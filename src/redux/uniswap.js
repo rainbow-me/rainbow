@@ -2,6 +2,7 @@ import produce from 'immer';
 import {
   compact,
   concat,
+  filter,
   forEach,
   fromPairs,
   get,
@@ -14,7 +15,6 @@ import {
   reject,
   toLower,
   uniq,
-  without,
   zip,
 } from 'lodash';
 import {
@@ -373,29 +373,22 @@ export const uniswapUpdateAssetPrice = (address, price) => (
   saveAccountLocal(ASSETS, updatedAssets, accountAddress, network);
 };
 
-export const uniswapUpdateLiquidityTokens = liquidityTokens => (
-  dispatch,
-  getState
-) => {
-  const { liquidityTokens: existingLiquidityTokens } = getState().uniswap;
-  if (isEmpty(liquidityTokens) && isEmpty(existingLiquidityTokens)) return;
+export const uniswapUpdateLiquidityTokens = (
+  liquidityTokens,
+  appendOrChange
+) => (dispatch, getState) => {
+  let updatedLiquidityTokens = filter(
+    liquidityTokens,
+    token => token.quantity > 0
+  );
+  if (appendOrChange) {
+    const { liquidityTokens: existingLiquidityTokens } = getState().uniswap;
+    updatedLiquidityTokens = uniq(
+      concat(existingLiquidityTokens, ...updatedLiquidityTokens),
+      token => get(token, 'asset.asset_code')
+    );
+  }
   const { accountAddress, network } = getState().settings;
-  dispatch({
-    payload: liquidityTokens,
-    type: UNISWAP_UPDATE_LIQUIDITY_TOKENS,
-  });
-  saveAccountLocal(LIQUIDITY, liquidityTokens, accountAddress, network);
-  dispatch(uniswapUpdateState());
-};
-
-export const uniswapAddLiquidityTokens = newLiquidityTokens => (
-  dispatch,
-  getState
-) => {
-  if (isEmpty(newLiquidityTokens)) return;
-  const { accountAddress, network } = getState().settings;
-  const { liquidityTokens } = getState().uniswap;
-  const updatedLiquidityTokens = concat(liquidityTokens, ...newLiquidityTokens);
   dispatch({
     payload: updatedLiquidityTokens,
     type: UNISWAP_UPDATE_LIQUIDITY_TOKENS,

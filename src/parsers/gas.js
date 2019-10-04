@@ -37,20 +37,20 @@ export const parseGasPrices = (data, short = true) =>
     : {
         [gasUtils.FAST]: defaultGasPriceFormat(
           gasUtils.FAST,
-          data.fastWait,
-          data.fast,
+          data.fastestWait,
+          data.fastest,
           short
         ),
         [gasUtils.NORMAL]: defaultGasPriceFormat(
           gasUtils.NORMAL,
-          data.avgWait,
-          data.average,
+          data.fastWait,
+          data.fast,
           short
         ),
         [gasUtils.SLOW]: defaultGasPriceFormat(
           gasUtils.SLOW,
-          data.safeLowWait,
-          data.safeLow,
+          data.avgWait,
+          data.average,
           short
         ),
       };

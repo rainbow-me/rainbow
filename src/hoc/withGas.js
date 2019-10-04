@@ -3,7 +3,6 @@ import {
   gasUpdateDefaultGasLimit,
   gasUpdateGasPriceOption,
   gasUpdateTxFee,
-  resetGasTxFees,
 } from '../redux/gas';
 
 const mapStateToProps = ({
@@ -31,6 +30,5 @@ export default Component =>
       gasUpdateDefaultGasLimit,
       gasUpdateGasPriceOption,
       gasUpdateTxFee,
-      resetGasTxFees,
     }
   )(Component);

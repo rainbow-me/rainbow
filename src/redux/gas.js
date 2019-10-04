@@ -18,8 +18,6 @@ const GAS_PRICES_FAILURE = 'gas/GAS_PRICES_FAILURE';
 
 const GAS_UPDATE_TX_FEE = 'gas/GAS_UPDATE_TX_FEE';
 const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
-const GAS_CLEAR_FIELDS = 'gas/GAS_CLEAR_FIELDS';
-const GAS_RESET_FIELDS = 'gas/GAS_RESET_FIELDS';
 
 // -- Actions --------------------------------------------------------------- //
 let getGasPricesInterval = null;
@@ -122,6 +120,7 @@ export const gasUpdateGasPriceOption = newGasPriceOption => (
   });
 };
 
+// TODO JIN and option
 export const gasUpdateDefaultGasLimit = (
   defaultGasLimit = ethUnits.basic_tx
 ) => dispatch => {
@@ -180,26 +179,13 @@ const getSelectedGasPrice = (
   };
 };
 
-export const resetGasTxFees = () => dispatch => {
-  const { selectedGasPrice, txFees } = dispatch(getDefaultTxFees());
-  dispatch({
-    payload: {
-      selectedGasPrice,
-      txFees,
-    },
-    type: GAS_RESET_FIELDS,
-  });
-};
-
-export const gasClearFields = () => dispatch => {
+export const gasClearState = () => dispatch => {
   clearInterval(getGasPricesInterval);
-  dispatch({ type: GAS_CLEAR_FIELDS });
 };
 
 // -- Reducer --------------------------------------------------------------- //
 const INITIAL_STATE = {
   defaultGasLimit: ethUnits.basic_tx,
-  fetchingGasPrices: false,
   gasLimit: null,
   gasPrices: {},
   isSufficientGas: false,
@@ -219,7 +205,6 @@ export default (state = INITIAL_STATE, action) => {
     case GAS_PRICES_DEFAULT:
       return {
         ...state,
-        fetchingGasPrices: true,
         gasPrices: action.payload.gasPrices,
         selectedGasPrice: action.payload.selectedGasPrice,
         txFees: action.payload.txFees,
@@ -227,13 +212,11 @@ export default (state = INITIAL_STATE, action) => {
     case GAS_PRICES_SUCCESS:
       return {
         ...state,
-        fetchingGasPrices: false,
         gasPrices: action.payload,
       };
     case GAS_PRICES_FAILURE:
       return {
         ...state,
-        fetchingGasPrices: false,
         gasPrices: action.payload,
       };
     case GAS_UPDATE_TX_FEE:
@@ -251,16 +234,6 @@ export default (state = INITIAL_STATE, action) => {
         selectedGasPrice: action.payload.selectedGasPrice,
         selectedGasPriceOption: action.payload.selectedGasPriceOption,
       };
-    case GAS_RESET_FIELDS: {
-      return {
-        ...INITIAL_STATE,
-        fetchingGasPrices: state.fetchingGasPrices,
-        gasPrices: state.gasPrices,
-        selectedGasPrice: action.payload.selectedGasPrice,
-        selectedGasPriceOption: state.selectedGasPriceOption,
-        txFees: action.payload.txFees,
-      };
-    }
     default:
       return state;
   }
