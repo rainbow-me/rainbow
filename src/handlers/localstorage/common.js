@@ -68,6 +68,18 @@ export const removeLocal = (key = '') => {
   }
 };
 
+export const getGlobal = async (
+  key,
+  emptyState = [],
+  version = defaultVersion
+) => {
+  const result = await getLocal(key, version);
+  return result ? result.data : emptyState;
+};
+
+export const saveGlobal = (key, data, version = defaultVersion) =>
+  saveLocal(key, { data }, version);
+
 export const getAccountLocal = async (
   prefix,
   accountAddress,

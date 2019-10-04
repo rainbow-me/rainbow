@@ -1,6 +1,6 @@
 import { get, map, property } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Component } from 'react';
 import { InteractionManager, View } from 'react-native';
 import { compose, mapProps, withProps } from 'recompact';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
@@ -67,7 +67,7 @@ export const CurrencySelectionTypes = {
   output: 'output',
 };
 
-class CurrencySelectModal extends React.Component {
+class CurrencySelectModal extends Component {
   static propTypes = {
     assetsAvailableOnUniswap: PropTypes.arrayOf(PropTypes.object),
     isFocused: PropTypes.bool,

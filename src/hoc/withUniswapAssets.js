@@ -1,4 +1,14 @@
-import { filter, get, map, property, sortBy, values } from 'lodash';
+import {
+  concat,
+  filter,
+  get,
+  indexOf,
+  map,
+  partition,
+  property,
+  sortBy,
+  values,
+} from 'lodash';
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';
@@ -7,6 +17,7 @@ import withAccountData from './withAccountData';
 
 const allAssetsSelector = state => state.allAssets;
 const uniswapAssetsSelector = state => state.uniswapAssets;
+const uniswapFavoritesSelector = state => state.favorites;
 
 const filterUniswapAssetsByAvailability = ({ address }) =>
   uniswapAssetAddresses.includes(address);
@@ -23,9 +34,20 @@ const withAssetsAvailableOnUniswap = allAssets => {
   return { assetsAvailableOnUniswap };
 };
 
-const withSortedUniswapAssets = unsortedUniswapAssets => ({
-  sortedUniswapAssets: sortBy(values(unsortedUniswapAssets), property('name')),
-});
+const withSortedUniswapAssets = (unsortedUniswapAssets, favorites) => {
+  const sortedAssets = sortBy(values(unsortedUniswapAssets), property('name'));
+  const [favoriteAssets, remainingAssets] = partition(
+    sortedAssets,
+    asset => indexOf(favorites, asset.address) > -1
+  );
+  const labeledFavorites = map(favoriteAssets, asset => ({
+    ...asset,
+    favorite: true,
+  }));
+  return {
+    sortedUniswapAssets: concat(labeledFavorites, remainingAssets),
+  };
+};
 
 const withAssetsAvailableOnUniswapSelector = createSelector(
   [allAssetsSelector],
@@ -33,11 +55,14 @@ const withAssetsAvailableOnUniswapSelector = createSelector(
 );
 
 const withSortedUniswapAssetsSelector = createSelector(
-  [uniswapAssetsSelector],
+  [uniswapAssetsSelector, uniswapFavoritesSelector],
   withSortedUniswapAssets
 );
 
-const mapStateToProps = ({ uniswap: { uniswapAssets } }) => ({ uniswapAssets });
+const mapStateToProps = ({ uniswap: { favorites, uniswapAssets } }) => ({
+  favorites,
+  uniswapAssets,
+});
 
 export default compose(
   connect(mapStateToProps),

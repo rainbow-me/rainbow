@@ -13,12 +13,16 @@ import {
   omit,
   reject,
   toLower,
+  uniq,
+  without,
   zip,
 } from 'lodash';
 import {
   getAccountLocal,
+  getGlobal,
   removeAccountLocal,
   saveAccountLocal,
+  saveGlobal,
 } from '../handlers/localstorage/common';
 import { getLiquidityInfo, getReserve, getReserves } from '../handlers/uniswap';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
@@ -41,6 +45,7 @@ const UNISWAP_GET_TOKEN_RESERVES_SUCCESS =
 const UNISWAP_GET_TOKEN_RESERVES_FAILURE =
   'uniswap/UNISWAP_GET_TOKEN_RESERVES_FAILURE';
 
+const UNISWAP_UPDATE_FAVORITES = 'uniswap/UNISWAP_UPDATE_FAVORITES';
 const UNISWAP_UPDATE_PENDING_APPROVALS =
   'uniswap/UNISWAP_UPDATE_PENDING_APPROVALS';
 const UNISWAP_UPDATE_ASSETS = 'uniswap/UNISWAP_UPDATE_ASSETS';
@@ -51,11 +56,12 @@ const UNISWAP_CLEAR_STATE = 'uniswap/UNISWAP_CLEAR_STATE';
 
 // Localstorage keys
 export const ALLOWANCES = 'uniswapallowances';
+export const ASSETS = 'uniswapassets';
+export const FAVORITES = 'favorites';
 export const LIQUIDITY = 'uniswapliquidity';
 export const LIQUIDITY_INFO = 'uniswap';
 export const PENDING_APPROVALS = 'uniswappendingapprovals';
 export const RESERVES = 'uniswapreserves';
-export const ASSETS = 'uniswapassets';
 
 // -- Actions --------------------------------------------------------------- //
 let getTokenReservesInterval = null;
@@ -70,6 +76,7 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
       network,
       {}
     );
+    const favorites = await getGlobal(FAVORITES, []);
     const liquidityTokens = await getAccountLocal(
       LIQUIDITY,
       accountAddress,
@@ -102,6 +109,7 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
     dispatch({
       payload: {
         allowances,
+        favorites,
         liquidityTokens,
         pendingApprovals,
         tokenReserves,
@@ -291,6 +299,22 @@ export const uniswapRemovePendingApproval = transactions => (
   );
 };
 
+export const uniswapUpdateFavorites = (assetAddress, add = true) => (
+  dispatch,
+  getState
+) => {
+  const address = toLower(assetAddress);
+  const { favorites } = getState().uniswap;
+  const updatedFavorites = add
+    ? uniq(concat(favorites, address))
+    : without(favorites, address);
+  dispatch({
+    payload: updatedFavorites,
+    type: UNISWAP_UPDATE_FAVORITES,
+  });
+  saveGlobal(FAVORITES, updatedFavorites);
+};
+
 export const uniswapUpdateAllowances = tokenAddressAllowances => (
   dispatch,
   getState
@@ -412,6 +436,7 @@ export const uniswapUpdateState = () => (dispatch, getState) =>
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNISWAP_STATE = {
   allowances: {},
+  favorites: [],
   fetchingUniswap: false,
   liquidityTokens: [],
   loadingUniswap: false,
@@ -429,12 +454,16 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         break;
       case UNISWAP_LOAD_SUCCESS:
         draft.allowances = action.payload.allowances;
+        draft.favorites = action.payload.favorites;
         draft.liquidityTokens = action.payload.liquidityTokens;
         draft.loadingUniswap = false;
         draft.pendingApprovals = action.payload.pendingApprovals;
         draft.tokenReserves = action.payload.tokenReserves;
         draft.uniswap = action.payload.uniswap;
         draft.uniswapAssets = action.payload.uniswapAssets;
+        break;
+      case UNISWAP_UPDATE_FAVORITES:
+        draft.favorites = action.payload;
         break;
       case UNISWAP_LOAD_FAILURE:
         draft.loadingUniswap = false;
