@@ -1,11 +1,7 @@
 import { updateLanguage } from '../languages';
-import {
-  getLanguage,
-  getNativeCurrency,
-  saveLanguage,
-  saveNativeCurrency,
-} from '../handlers/localstorage/globalSettings';
-import { dataClearState, dataInit } from './data';
+import { getGlobal, saveGlobal } from '../handlers/localstorage/common';
+import { dataClearState } from './data';
+import { explorerInit } from './explorer';
 import { ethereumUtils } from '../utils';
 import { web3SetHttpProvider } from '../handlers/web3';
 
@@ -25,10 +21,13 @@ const SETTINGS_UPDATE_LANGUAGE_SUCCESS =
 const SETTINGS_UPDATE_LANGUAGE_FAILURE =
   'settings/SETTINGS_UPDATE_LANGUAGE_FAILURE';
 
+const LANGUAGE = 'language';
+const NATIVE_CURRENCY = 'nativeCurrency';
+
 // -- Actions --------------------------------------------------------------- //
 export const settingsLoadState = () => async dispatch => {
   try {
-    const language = await getLanguage();
+    const language = await getGlobal(LANGUAGE, 'en');
     dispatch({
       payload: language,
       type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
@@ -37,7 +36,7 @@ export const settingsLoadState = () => async dispatch => {
     dispatch({ type: SETTINGS_UPDATE_LANGUAGE_FAILURE });
   }
   try {
-    const nativeCurrency = await getNativeCurrency();
+    const nativeCurrency = await getGlobal(NATIVE_CURRENCY, 'USD');
     dispatch({
       payload: nativeCurrency,
       type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
@@ -73,29 +72,29 @@ export const settingsUpdateChainId = chainId => dispatch => {
 
 export const settingsChangeLanguage = language => dispatch => {
   updateLanguage(language);
-  saveLanguage(language)
-    .then(() => {
+  saveGlobal(LANGUAGE, language)
+    .then(() =>
       dispatch({
         payload: language,
         type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
-      });
-    })
-    .catch(() => {
+      })
+    )
+    .catch(() =>
       dispatch({
         type: SETTINGS_UPDATE_LANGUAGE_FAILURE,
-      });
-    });
+      })
+    );
 };
 
 export const settingsChangeNativeCurrency = nativeCurrency => dispatch => {
   dispatch(dataClearState());
-  saveNativeCurrency(nativeCurrency)
+  saveGlobal(NATIVE_CURRENCY, nativeCurrency)
     .then(() => {
       dispatch({
         payload: nativeCurrency,
         type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
       });
-      dispatch(dataInit());
+      dispatch(explorerInit());
     })
     .catch(() => {
       dispatch({
