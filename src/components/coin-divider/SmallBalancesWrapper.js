@@ -1,6 +1,7 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
 import { get, isNumber } from 'lodash';
 import PropTypes from 'prop-types';
+import { View } from 'react-native';
 import React, { Fragment, PureComponent } from 'react';
 import { compose, withProps } from 'recompact';
 import { withAccountSettings, withOpenBalances } from '../../hoc';
@@ -18,38 +19,11 @@ class SmallBalancesWrapper extends PureComponent {
 
   state = { areChildrenVisible: true };
 
-  componentDidMount() {
-    this.toggleChildrenVisibility(true);
-  }
-
-  componentDidUpdate() {
-    const { openSmallBalances, setSafeTimeout } = this.props;
-
-    if (!openSmallBalances) {
-      setSafeTimeout(this.hideChildren, 200);
-    } else {
-      this.toggleChildrenVisibility(true);
-    }
-  }
-
   handlePress = () =>
     this.props.setOpenSmallBalances(!this.props.openSmallBalances);
 
-  hideChildren = () => {
-    if (!this.props.openSmallBalances) {
-      this.toggleChildrenVisibility(false);
-    }
-  };
-
-  toggleChildrenVisibility = nextVisibility => {
-    if (this.state.areChildrenVisible !== nextVisibility) {
-      this.setState({ areChildrenVisible: nextVisibility });
-    }
-  };
-
   render = () => {
     const { assets, balancesSum, openSmallBalances } = this.props;
-    const { areChildrenVisible } = this.state;
 
     return (
       <Fragment>
@@ -63,7 +37,9 @@ class SmallBalancesWrapper extends PureComponent {
           isVisible={openSmallBalances}
           startingOpacity={0}
         >
-          {areChildrenVisible ? assets : null}
+          <View pointerEvents={openSmallBalances ? 'auto' : 'none'}>
+            {assets}
+          </View>
         </OpacityToggler>
       </Fragment>
     );

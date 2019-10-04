@@ -558,7 +558,7 @@ class RecyclerAssetList extends Component {
       }
 
       let collectiblesHeight = 0;
-      if (balances.data) {
+      if (collectibles.data) {
         collectiblesHeight =
           collectibles.data.length > 0 ? AssetListHeader.height : 0;
         for (let j = 0; j < collectibles.data.length; j++) {
@@ -750,7 +750,7 @@ class RecyclerAssetList extends Component {
           familyImage: item.familyImage,
           familyName: item.familyName,
           item: item.tokens,
-          marginTop: type.isFirst ? 4 : 0,
+          paddingTop: type.isFirst ? 4 : 0,
           shouldPrioritizeImageLoading:
             index < get(sections, '[0].data.length', 0) + 9,
           uniqueId: item.uniqueId,
