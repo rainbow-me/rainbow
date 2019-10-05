@@ -1,14 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { View } from 'react-native';
 import { connect } from 'react-redux';
 import { uniswapUpdateFavorites } from '../../redux/uniswap';
-import { colors, padding } from '../../styles';
+import { colors, position } from '../../styles';
 import { isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { FloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
-import { Centered } from '../layout';
 import { Monospace } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
@@ -43,27 +40,16 @@ class ExchangeCoinRow extends Component {
     uniswapUpdateFavorites: PropTypes.func,
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      emojiCount: 0,
-      favorite: !!props.item.favorite,
-    };
-  }
+  state = {
+    favorite: !!this.props.item.favorite,
+  };
 
   shouldComponentUpdate = (nextProps, nextState) => {
     const isNewAsset = isNewValueForPath(this.props, nextProps, 'uniqueId');
     const isNewFavorite = isNewValueForPath(this.state, nextState, 'favorite');
-    const isNewEmojiCount = isNewValueForPath(
-      this.state,
-      nextState,
-      'emojiCount'
-    );
 
-    return isNewAsset || isNewFavorite || isNewEmojiCount;
+    return isNewAsset || isNewFavorite;
   };
-
-  starRef = React.createRef();
 
   handlePress = () => {
     const { item, onPress } = this.props;
@@ -73,21 +59,18 @@ class ExchangeCoinRow extends Component {
     }
   };
 
-  handleToggleFavorite = () => {
-    const { item } = this.props;
+  toggleFavorite = () => {
+    const { item, uniswapUpdateFavorites } = this.props;
     this.setState(prevState => {
       const favorite = !prevState.favorite;
-      this.props.uniswapUpdateFavorites(item.address, favorite);
-      return {
-        emojiCount: favorite ? prevState.emojiCount + 1 : prevState.emojiCount,
-        favorite,
-      };
+      uniswapUpdateFavorites(item.address, favorite);
+      return { favorite };
     });
   };
 
   render = () => {
     const { item, ...props } = this.props;
-    const { emojiCount, favorite } = this.state;
+    const { favorite } = this.state;
 
     return (
       <ButtonPressAnimation
@@ -98,39 +81,24 @@ class ExchangeCoinRow extends Component {
       >
         <CoinRow
           {...item}
-          containerStyles="padding-right: 0"
           bottomRowRender={BottomRow}
+          containerStyles="padding-right: 0"
           topRowRender={TopRow}
         >
-          {/*
-              TODO
-              XXX
-              Is this View necessary?????
-            */}
-          <View>
-            <ButtonPressAnimation
-              onPress={this.handleToggleFavorite}
-              exclusive
-              scaleTo={0.69}
-              tapRef={this.starRef}
-            >
-              <Centered css={padding(19)}>
-                <Icon
-                  color={favorite ? colors.orangeMedium : colors.grey}
-                  name="star"
-                />
-              </Centered>
-            </ButtonPressAnimation>
-            <FloatingEmojis
-              count={emojiCount}
-              distance={69}
-              emoji="star"
-              range={[30, 30]}
-              size="big"
-              top={20}
-              zIndex={9999}
+          <ButtonPressAnimation
+            exclusive
+            onPress={this.toggleFavorite}
+            scaleTo={0.69}
+            style={{
+              ...position.centeredAsObject,
+              paddingHorizontal: 19,
+            }}
+          >
+            <Icon
+              color={favorite ? colors.orangeLight : '#E2E3E5'}
+              name="star"
             />
-          </View>
+          </ButtonPressAnimation>
         </CoinRow>
       </ButtonPressAnimation>
     );

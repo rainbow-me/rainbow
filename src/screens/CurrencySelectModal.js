@@ -1,16 +1,11 @@
 import { get, map, property } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { InteractionManager, View } from 'react-native';
-import { compose, mapProps, withProps } from 'recompact';
-import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import Animated from 'react-native-reanimated';
+import { NavigationEvents, withNavigationFocus } from 'react-navigation';
+import { compose, mapProps, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
-import {
-  withKeyboardFocusHistory,
-  withTransitionProps,
-  withUniswapAssets,
-} from '../hoc';
+import { withUniswapAssets } from '../hoc';
 import { borders, colors, position } from '../styles';
 import { isNewValueForPath } from '../utils';
 import { filterList } from '../utils/search';
@@ -22,6 +17,7 @@ import { BackButton } from '../components/header';
 import {
   Centered,
   Column,
+  FlexItem,
   KeyboardFixedOpenLayout,
 } from '../components/layout';
 import { Modal } from '../components/modal';
@@ -71,7 +67,6 @@ class CurrencySelectModal extends Component {
   static propTypes = {
     assetsAvailableOnUniswap: PropTypes.arrayOf(PropTypes.object),
     isFocused: PropTypes.bool,
-    isTransitioning: PropTypes.bool,
     navigation: PropTypes.object,
     sortedUniswapAssets: PropTypes.array,
     transitionPosition: PropTypes.object,
@@ -83,14 +78,6 @@ class CurrencySelectModal extends Component {
   };
 
   shouldComponentUpdate = (nextProps, nextState) => {
-    // const currentTransitioning = this.props.isTransitioning;
-    // const nextTransitioning = nextProps.isTransitioning;
-
-    // if (currentTransitioning) {
-    //   console.log('blocking');
-    //   return false;
-    // }
-
     let currentAssets = this.props.sortedUniswapAssets;
     let nextAssets = EMPTY_ARRAY;
 
@@ -111,35 +98,10 @@ class CurrencySelectModal extends Component {
       nextState,
       'searchQuery'
     );
-    const isNewTransitioning = isNewValueForPath(
-      this.props,
-      nextProps,
-      'isTransitioning'
-    );
     const isNewType = isNewValueForPath(this.props, nextProps, 'type');
 
-    return (
-      isNewAssets ||
-      isNewFocus ||
-      isNewSearchQuery ||
-      isNewTransitioning ||
-      isNewType
-    );
+    return isNewAssets || isNewFocus || isNewSearchQuery || isNewType;
   };
-
-  componentDidUpdate(prevProps) {
-    const { isFocused, isTransitioning } = this.props;
-
-    if (isFocused && (!isTransitioning && prevProps.isTransitioning)) {
-      if (this.searchInputRef.current) {
-        InteractionManager.runAfterInteractions(() => {
-          this.searchInputRef.current.focus();
-        });
-      }
-    }
-  }
-
-  searchInputRef = React.createRef();
 
   dangerouslySetIsGestureBlocked = isGestureBlocked => {
     // dangerouslyGetParent is a bad pattern in general, but in this case is exactly what we expect
@@ -148,11 +110,13 @@ class CurrencySelectModal extends Component {
       .setParams({ isGestureBlocked });
   };
 
-  handleWillBlur = () => this.dangerouslySetIsGestureBlocked(false);
+  handleChangeSearchText = searchQuery => {
+    this.setState({ searchQuery });
+  };
 
-  handleWillFocus = () => this.dangerouslySetIsGestureBlocked(true);
-
-  handlePressBack = () => this.props.navigation.navigate('MainExchangeScreen');
+  handlePressBack = () => {
+    this.props.navigation.navigate('MainExchangeScreen');
+  };
 
   handleSelectAsset = item => {
     const { navigation } = this.props;
@@ -164,8 +128,13 @@ class CurrencySelectModal extends Component {
     navigation.navigate('MainExchangeScreen');
   };
 
-  onChangeSearchText = searchQuery => {
-    this.setState({ searchQuery });
+  handleWillBlur = () => this.dangerouslySetIsGestureBlocked(false);
+
+  handleWillFocus = () => {
+    this.dangerouslySetIsGestureBlocked(true);
+    if (this.searchInputRef.current) {
+      this.searchInputRef.current.focus();
+    }
   };
 
   renderCurrencyItem = item => (
@@ -176,18 +145,15 @@ class CurrencySelectModal extends Component {
     />
   );
 
-  handleFocusField = ({ currentTarget }) => {
-    this.props.pushKeyboardFocusHistory(currentTarget);
-  };
+  searchInputRef = React.createRef();
 
   render = () => {
     const {
       assetsAvailableOnUniswap,
       isFocused,
-      isTransitioning,
       sortedUniswapAssets,
-      type,
       transitionPosition,
+      type,
     } = this.props;
 
     const { searchQuery } = this.state;
@@ -203,11 +169,7 @@ class CurrencySelectModal extends Component {
 
     const listItems = filterList(assets, searchQuery, 'uniqueId');
 
-    const isLoading = isTransitioning || listItems.length === 0;
-
-    // console.log('listItems', listItems);
-
-    // console.log('isFocused', isFocused ? '👍️' : '👎️', ' ', isFocused);
+    const isLoading = !isFocused || listItems.length === 0;
 
     return (
       <KeyboardFixedOpenLayout>
@@ -246,11 +208,11 @@ class CurrencySelectModal extends Component {
               </HeaderContainer>
               <ExchangeSearch
                 autoFocus={false}
-                onChangeText={this.onChangeSearchText}
-                onFocus={this.handleFocusField}
+                onChangeText={this.handleChangeSearchText}
                 ref={this.searchInputRef}
+                searchQuery={searchQuery}
               />
-              <View flex={1}>
+              <FlexItem>
                 {isFocused ? (
                   <ExchangeAssetList
                     key={`ExchangeAssetListCurrencySelectionModal-${type}`}
@@ -267,7 +229,7 @@ class CurrencySelectModal extends Component {
                   opacity={isLoading ? 1 : 0}
                   pointerEvents="none"
                 />
-              </View>
+              </FlexItem>
             </Column>
             <GestureBlocker type="bottom" />
           </Modal>
@@ -279,20 +241,16 @@ class CurrencySelectModal extends Component {
 
 export default compose(
   withNavigationFocus,
-  withTransitionProps,
-  withKeyboardFocusHistory,
   withUniswapAssets,
   mapProps(
     ({
       assetsAvailableOnUniswap,
       navigation,
       sortedUniswapAssets,
-      tabsTransitionProps: { isTransitioning },
       ...props
     }) => ({
       ...props,
       assetsAvailableOnUniswap: normalizeAssetItems(assetsAvailableOnUniswap),
-      isTransitioning,
       navigation,
       sortedUniswapAssets: normalizeAssetItems(sortedUniswapAssets),
       transitionPosition: get(navigation, 'state.params.position'),

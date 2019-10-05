@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Transitioning, Transition } from 'react-native-reanimated';
+import React, { useRef } from 'react';
+import { Transition, Transitioning } from 'react-native-reanimated';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';
@@ -35,9 +35,10 @@ const transition = (
 
 const SendEmptyState = () => {
   const ref = useRef();
-  useEffect(() =>
-    ref && ref.current ? ref.current.animateNextTransition() : undefined
-  );
+
+  if (ref.current) {
+    ref.current.animateNextTransition();
+  }
 
   return (
     <Centered

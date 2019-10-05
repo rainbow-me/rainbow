@@ -31,11 +31,11 @@ export default class RequestVendorLogoIcon extends PureComponent {
     size: CoinIcon.size,
   };
 
-  static size = CoinIcon.size;
-
   state = {
     error: null,
   };
+
+  static size = CoinIcon.size;
 
   handleError = error => this.setState({ error });
 

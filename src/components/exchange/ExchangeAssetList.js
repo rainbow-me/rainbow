@@ -74,7 +74,8 @@ export default class ExchangeAssetList extends PureComponent {
     }
   };
 
-  rlvRef = React.createRef();
+  getStableId = index =>
+    get(this.state, `dataProvider._data[${index}].uniqueId`);
 
   updateList = () => {
     this.setState(prevState => ({
@@ -82,10 +83,9 @@ export default class ExchangeAssetList extends PureComponent {
     }));
   };
 
-  getStableId = index =>
-    get(this.state, `dataProvider._data[${index}].uniqueId`);
-
   renderRow = (type, data) => this.props.renderItem(data);
+
+  rlvRef = React.createRef();
 
   render = () => (
     <View backgroundColor={colors.white} flex={1} overflow="hidden">

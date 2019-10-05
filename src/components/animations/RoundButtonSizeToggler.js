@@ -78,8 +78,6 @@ export default class RoundButtonSizeToggler extends PureComponent {
     tension: 200,
   };
 
-  static capSize = RoundButtonCapSize;
-
   componentWillMount() {
     this._width = new Value(this.props.startingWidth);
   }
@@ -106,6 +104,8 @@ export default class RoundButtonSizeToggler extends PureComponent {
       });
     }
   }
+
+  static capSize = RoundButtonCapSize;
 
   render() {
     const {

@@ -45,7 +45,7 @@ target 'Rainbow' do
 
   # Third Party packages
   pod 'react-native-camera', :path => '../node_modules/react-native-camera'
-  pod 'react-native-fast-image', :path => '../node_modules/react-native-fast-image'
+  pod 'RNFastImage', :path => '../node_modules/react-native-fast-image'
   pod 'react-native-version-number', :path => '../node_modules/react-native-version-number'
 
   pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
