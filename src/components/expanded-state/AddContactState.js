@@ -18,6 +18,7 @@ import { Text, TruncatedAddress } from '../text';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { AssetPanel } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
+import PlaceholderText from '../text/PlaceholderText';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
@@ -47,6 +48,12 @@ class AddContactState extends PureComponent {
     value: get(this.props, 'contact.nickname', ''),
   };
 
+  componentDidMount = () => {
+    if (this.state.value.length === 0) {
+      this._text.updateValue('Name');
+    }
+  };
+
   inputRef = undefined;
 
   handleAddContact = async () => {
@@ -72,6 +79,11 @@ class AddContactState extends PureComponent {
 
   handleChange = ({ nativeEvent: { text } }) => {
     const value = text.charCodeAt(0) === 32 ? text.substring(1) : text;
+    if (value.length > 0) {
+      this._text.updateValue(' ');
+    } else {
+      this._text.updateValue('Name');
+    }
     this.setState({ value });
   };
 
@@ -124,14 +136,11 @@ class AddContactState extends PureComponent {
                   value={value}
                 />
               </ButtonPressAnimation>
-              <Text
-                color={colors.alpha(colors.blueGreyDark, 0.3)}
-                size="big"
-                style={{ marginBottom: -27 }}
-                weight="semibold"
-              >
-                {value.length > 0 ? ' ' : 'Name'}
-              </Text>
+              <PlaceholderText
+                ref={component => {
+                  this._text = component;
+                }}
+              />
               <Input
                 autoCapitalize
                 autoFocus

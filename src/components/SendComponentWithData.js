@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { compose } from 'recompact';
 import { estimateGasLimit } from '../handlers/web3';
 import { greaterThan } from '../helpers/utilities';
-import { isValidAddress } from '../helpers/validators';
+import { checkIsValidAddress } from '../helpers/validators';
 import { withAccountData, withGas, withUniqueTokens } from '../hoc';
 import lang from '../languages';
 import {
@@ -105,7 +105,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
       const { address, assetAmount, recipient, selected } = this.props;
 
       if (recipient !== prevProps.recipient) {
-        const validAddress = await isValidAddress(recipient);
+        const validAddress = await checkIsValidAddress(recipient);
         // eslint-disable-next-line react/no-did-update-set-state
         this.setState({ isValidAddress: validAddress });
       }

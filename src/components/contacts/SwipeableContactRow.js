@@ -68,8 +68,6 @@ export default class SwipeableContactRow extends PureComponent {
     onTransitionEnd: PropTypes.func,
   };
 
-  componentWillReceiveProps = () => this.close();
-
   swipeableRef = undefined;
 
   close = () => this.swipeableRef.close();
@@ -104,9 +102,6 @@ export default class SwipeableContactRow extends PureComponent {
 
   handlePressStart = () => this.props.onTouch(this.props.address);
 
-  handleSwipeableWillOpen = () =>
-    this.props.onTransitionEnd(this.props.address);
-
   handleRef = ref => {
     this.swipeableRef = ref;
   };
@@ -131,7 +126,6 @@ export default class SwipeableContactRow extends PureComponent {
   render = () => (
     <Swipeable
       friction={2}
-      onSwipeableWillOpen={this.handleSwipeableWillOpen}
       ref={this.handleRef}
       renderRightActions={this.renderRightActions}
       rightThreshold={0}
