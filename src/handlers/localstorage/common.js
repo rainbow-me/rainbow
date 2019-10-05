@@ -1,8 +1,10 @@
-/* eslint-disable no-undef */
+/*global storage*/
+import { toLower } from 'lodash';
+
 const defaultVersion = '0.1.0';
 
 export const getKey = (prefix, accountAddress, network) =>
-  `${prefix}-${accountAddress.toLowerCase()}-${network.toLowerCase()}`;
+  `${prefix}-${toLower(accountAddress)}-${toLower(network)}`;
 
 /**
  * @desc save to storage
@@ -65,6 +67,18 @@ export const removeLocal = (key = '') => {
     console.log('Storage: error removing local with key', key);
   }
 };
+
+export const getGlobal = async (
+  key,
+  emptyState = [],
+  version = defaultVersion
+) => {
+  const result = await getLocal(key, version);
+  return result ? result.data : emptyState;
+};
+
+export const saveGlobal = (key, data, version = defaultVersion) =>
+  saveLocal(key, { data }, version);
 
 export const getAccountLocal = async (
   prefix,

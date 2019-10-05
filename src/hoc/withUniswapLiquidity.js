@@ -20,11 +20,7 @@ import {
 import { ethereumUtils } from '../utils';
 import withAccountSettings from './withAccountSettings';
 
-const mapStateToProps = ({
-  settings: { nativeCurrency },
-  uniswap: { uniswap },
-}) => ({
-  nativeCurrency,
+const mapStateToProps = ({ uniswap: { uniswap } }) => ({
   uniswap,
 });
 

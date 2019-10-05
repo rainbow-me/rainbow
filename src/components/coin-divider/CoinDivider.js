@@ -8,6 +8,7 @@ import Caret from '../../assets/show-all-arrow.png';
 import { deviceUtils } from '../../utils';
 import {
   ButtonPressAnimation,
+  interpolate,
   OpacityToggler,
   RotationArrow,
   RoundButtonSizeToggler,
@@ -22,7 +23,6 @@ const {
   Clock,
   clockRunning,
   cond,
-  interpolate,
   set,
   spring,
   SpringUtils,
@@ -68,8 +68,6 @@ export default class CoinDivider extends PureComponent {
     openSmallBalances: PropTypes.bool,
   };
 
-  static height = CoinDividerHeight;
-
   componentWillMount() {
     this._initialState = this.props.openSmallBalances;
   }
@@ -93,6 +91,8 @@ export default class CoinDivider extends PureComponent {
     }
   }
 
+  static height = CoinDividerHeight;
+
   render() {
     const {
       balancesSum,
@@ -111,23 +111,27 @@ export default class CoinDivider extends PureComponent {
         width={deviceUtils.dimensions.width}
       >
         <Highlight highlight={isCoinDivider} />
-        <ButtonPressAnimation onPress={onPress} scaleTo={0.8}>
-          <RoundButtonSizeToggler
-            animationNode={this._node}
-            endingWidth={CoinDividerHeight}
-            isAbsolute
-            reversed={!this._initialState}
-            startingWidth={5}
-            toggle={openSmallBalances}
-          />
+        <ButtonPressAnimation
+          onPress={onPress}
+          scaleTo={0.8}
+          style={{ width: openSmallBalances ? 80 : 54 }}
+        >
           <Row
             align="center"
             borderRadius={RoundButtonSizeToggler.capSize / 2}
             height={CoinDividerHeight}
             justify="space-between"
-            minWidth={41.5}
+            width={54}
             paddingHorizontal={10}
           >
+            <RoundButtonSizeToggler
+              animationNode={this._node}
+              endingWidth={CoinDividerHeight}
+              isAbsolute
+              reversed={!this._initialState}
+              startingWidth={5}
+              toggle={openSmallBalances}
+            />
             <View>
               <CoinDividerButtonLabel
                 isVisible={openSmallBalances}

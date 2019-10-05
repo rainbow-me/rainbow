@@ -2,16 +2,9 @@ import { get } from 'lodash';
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
-import { updateTabsTransitionProps } from '../redux/navigation';
-import store from '../redux/store';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
 import ExchangeModal from '../screens/ExchangeModal';
 import { deviceUtils } from '../utils';
-
-const onTransitionEnd = () =>
-  store.dispatch(updateTabsTransitionProps({ isTransitioning: false }));
-const onTransitionStart = () =>
-  store.dispatch(updateTabsTransitionProps({ isTransitioning: true }));
 
 const ExchangeModalTabPosition = new Animated.Value(0);
 
@@ -38,8 +31,6 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator(
     keyboardDismissMode: 'none',
     keyboardShouldPersistTaps: 'always',
     mode: 'modal',
-    onTransitionEnd,
-    onTransitionStart,
     position: ExchangeModalTabPosition,
     springConfig: {
       damping: 40,
@@ -65,13 +56,9 @@ const EnhancedExchangeModalNavigator = React.memo(props => (
   <ExchangeModalNavigator {...props} />
 ));
 EnhancedExchangeModalNavigator.router = ExchangeModalNavigator.router;
-EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => {
-  // console.log('navigation', navigation);
-
-  return {
-    ...navigation.state.params,
-    gestureEnabled: !get(navigation, 'state.params.isGestureBlocked'),
-  };
-};
+EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => ({
+  ...navigation.state.params,
+  gestureEnabled: !get(navigation, 'state.params.isGestureBlocked'),
+});
 
 export default EnhancedExchangeModalNavigator;

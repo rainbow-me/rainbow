@@ -33,16 +33,16 @@ export default class FloatingActionButton extends Component {
     size: FabSize,
   };
 
+  shouldComponentUpdate = nextProps =>
+    isNewValueForPath(this.props, nextProps, 'disabled') ||
+    isNewValueForPath(this.props, nextProps, 'isFabSelectionValid') ||
+    isNewValueForPath(this.props, nextProps, 'scaleTo');
+
   static size = FabSize;
 
   static sizeWhileDragging = 74;
 
   static shadow = FabShadow;
-
-  shouldComponentUpdate = nextProps =>
-    isNewValueForPath(this.props, nextProps, 'disabled') ||
-    isNewValueForPath(this.props, nextProps, 'isFabSelectionValid') ||
-    isNewValueForPath(this.props, nextProps, 'scaleTo');
 
   handlePress = event => {
     const { onPress } = this.props;

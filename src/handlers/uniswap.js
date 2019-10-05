@@ -1,7 +1,7 @@
 import { getExecutionDetails, getTokenReserves } from '@uniswap/sdk';
 import contractMap from 'eth-contract-metadata';
 import { ethers } from 'ethers';
-import { compact, get, keyBy, map, slice, zipObject } from 'lodash';
+import { compact, get, keyBy, map, slice, toLower, zipObject } from 'lodash';
 import {
   convertRawAmountToDecimalFormat,
   divide,
@@ -13,7 +13,7 @@ import { loadWallet } from '../model/wallet';
 import exchangeABI from '../references/uniswap-exchange-abi.json';
 import erc20ABI from '../references/erc20-abi.json';
 import { promiseUtils } from '../utils';
-import { web3Provider } from './web3';
+import { toHex, web3Provider } from './web3';
 
 const convertArgsForEthers = methodArguments =>
   methodArguments.map(arg =>
@@ -32,51 +32,74 @@ export const getReserves = async () => {
   const reserves = await promiseUtils.PromiseAllWithFails(
     map(uniswapTokens, token => getTokenReserves(token))
   );
-  return keyBy(compact(reserves), reserve => {
-    const address = get(reserve, 'token.address') || '';
-    return address.toLowerCase();
-  });
+  return keyBy(compact(reserves), reserve =>
+    toLower(get(reserve, 'token.address'))
+  );
 };
 
-const getGasLimit = (exchange, methodName, updatedMethodArgs, value) => {
+const getGasLimit = async (
+  accountAddress,
+  exchange,
+  methodName,
+  updatedMethodArgs,
+  value
+) => {
+  const params = { from: accountAddress, value };
   switch (methodName) {
     case 'ethToTokenSwapInput':
-      return exchange.estimate.ethToTokenSwapInput(...updatedMethodArgs, {
-        value,
-      });
+      return exchange.estimate.ethToTokenSwapInput(
+        ...updatedMethodArgs,
+        params
+      );
     case 'ethToTokenSwapOutput':
-      return exchange.estimate.ethToTokenSwapOutput(...updatedMethodArgs, {
-        value,
-      });
+      return exchange.estimate.ethToTokenSwapOutput(
+        ...updatedMethodArgs,
+        params
+      );
     case 'tokenToEthSwapInput':
-      return exchange.estimate.tokenToEthSwapInput(...updatedMethodArgs, {
-        value,
-      });
+      return exchange.estimate.tokenToEthSwapInput(
+        ...updatedMethodArgs,
+        params
+      );
     case 'tokenToEthSwapOutput':
-      return exchange.estimate.tokenToEthSwapOutput(...updatedMethodArgs, {
-        value,
-      });
+      return exchange.estimate.tokenToEthSwapOutput(
+        ...updatedMethodArgs,
+        params
+      );
     case 'tokenToTokenSwapInput':
-      return exchange.estimate.tokenToTokenSwapInput(...updatedMethodArgs, {
-        value,
-      });
+      return exchange.estimate.tokenToTokenSwapInput(
+        ...updatedMethodArgs,
+        params
+      );
     case 'tokenToTokenSwapOutput':
-      return exchange.estimate.tokenToTokenSwapOutput(...updatedMethodArgs, {
-        value,
-      });
+      return exchange.estimate.tokenToTokenSwapOutput(
+        ...updatedMethodArgs,
+        params
+      );
     default:
       return null;
   }
 };
 
-export const estimateSwapGasLimit = tradeDetails => {
-  const {
-    exchange,
-    methodName,
-    updatedMethodArgs,
-    value,
-  } = getContractExecutionDetails(tradeDetails, web3Provider);
-  return getGasLimit(exchange, methodName, updatedMethodArgs, value);
+export const estimateSwapGasLimit = async (accountAddress, tradeDetails) => {
+  try {
+    const {
+      exchange,
+      methodName,
+      updatedMethodArgs,
+      value,
+    } = getContractExecutionDetails(tradeDetails, web3Provider);
+    const gasLimit = await getGasLimit(
+      accountAddress,
+      exchange,
+      methodName,
+      updatedMethodArgs,
+      value
+    );
+    return gasLimit ? gasLimit.toString() : null;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const getContractExecutionDetails = (tradeDetails, providerOrSigner) => {
@@ -102,7 +125,7 @@ export const getContractExecutionDetails = (tradeDetails, providerOrSigner) => {
   };
 };
 
-export const executeSwap = async (tradeDetails, gasLimit) => {
+export const executeSwap = async (tradeDetails, gasLimit, gasPrice) => {
   const wallet = await loadWallet();
   if (!wallet) return null;
   const {
@@ -111,45 +134,42 @@ export const executeSwap = async (tradeDetails, gasLimit) => {
     updatedMethodArgs,
     value,
   } = getContractExecutionDetails(tradeDetails, wallet);
+  const transactionParams = {
+    gasLimit: gasLimit ? toHex(gasLimit) : undefined,
+    gasPrice: gasPrice ? toHex(gasPrice) : undefined,
+    value,
+  };
   switch (methodName) {
     case 'ethToTokenSwapInput':
-      return exchange.ethToTokenSwapInput(...updatedMethodArgs, {
-        gasLimit,
-        value,
-      });
+      return exchange.ethToTokenSwapInput(
+        ...updatedMethodArgs,
+        transactionParams
+      );
     case 'ethToTokenSwapOutput':
-      return exchange.ethToTokenSwapOutput(...updatedMethodArgs, {
-        gasLimit,
-        value,
-      });
-    case 'tokenToEthSwapInput': {
-      // TODO approval check
-      return exchange.tokenToEthSwapInput(...updatedMethodArgs, {
-        gasLimit,
-        value,
-      });
-    }
-    case 'tokenToEthSwapOutput': {
-      // TODO approval check
-      return exchange.tokenToEthSwapOutput(...updatedMethodArgs, {
-        gasLimit,
-        value,
-      });
-    }
-    case 'tokenToTokenSwapInput': {
-      // TODO approval check
-      return exchange.tokenToTokenSwapInput(...updatedMethodArgs, {
-        gasLimit,
-        value,
-      });
-    }
-    case 'tokenToTokenSwapOutput': {
-      // TODO approval check
-      return exchange.tokenToTokenSwapOutput(...updatedMethodArgs, {
-        gasLimit,
-        value,
-      });
-    }
+      return exchange.ethToTokenSwapOutput(
+        ...updatedMethodArgs,
+        transactionParams
+      );
+    case 'tokenToEthSwapInput':
+      return exchange.tokenToEthSwapInput(
+        ...updatedMethodArgs,
+        transactionParams
+      );
+    case 'tokenToEthSwapOutput':
+      return exchange.tokenToEthSwapOutput(
+        ...updatedMethodArgs,
+        transactionParams
+      );
+    case 'tokenToTokenSwapInput':
+      return exchange.tokenToTokenSwapInput(
+        ...updatedMethodArgs,
+        transactionParams
+      );
+    case 'tokenToTokenSwapOutput':
+      return exchange.tokenToTokenSwapOutput(
+        ...updatedMethodArgs,
+        transactionParams
+      );
     default:
       return null;
   }

@@ -88,6 +88,22 @@ export const sendTransaction = async ({ transaction }) => {
   }
 };
 
+export const signTransaction = async ({ transaction }) => {
+  try {
+    const wallet = await loadWallet();
+    if (!wallet) return null;
+    try {
+      return await wallet.sign(transaction);
+    } catch (error) {
+      Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      return null;
+    }
+  } catch (error) {
+    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    return null;
+  }
+};
+
 export const signMessage = async (
   message,
   authenticationPrompt = lang.t('wallet.authenticate.please')

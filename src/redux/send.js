@@ -5,7 +5,6 @@ import {
   formatInputDecimals,
 } from '../helpers/utilities';
 import { createSignableTransaction } from '../handlers/web3';
-import { resetGasTxFees } from './gas';
 import { ethereumUtils } from '../utils';
 import { dataAddNewTransaction } from './data';
 
@@ -42,7 +41,6 @@ export const sendModalInit = (options = {}) => (dispatch, getState) => {
     },
     type: SEND_MODAL_INIT,
   });
-  dispatch(resetGasTxFees());
 };
 
 export const sendTransaction = (

@@ -74,7 +74,8 @@ export default class ExchangeAssetList extends PureComponent {
     }
   };
 
-  rlvRef = React.createRef();
+  getStableId = index =>
+    get(this.state, `dataProvider._data[${index}].uniqueId`);
 
   updateList = () => {
     this.setState(prevState => ({
@@ -82,24 +83,24 @@ export default class ExchangeAssetList extends PureComponent {
     }));
   };
 
-  getStableId = index =>
-    get(this.state, `dataProvider._data[${index}].uniqueId`);
-
   renderRow = (type, data) => this.props.renderItem(data);
+
+  rlvRef = React.createRef();
 
   render = () => (
     <View backgroundColor={colors.white} flex={1} overflow="hidden">
       <RecyclerListView
         {...this.props}
         dataProvider={this.state.dataProvider}
-        layoutProvider={this.layoutProvider}
         itemAnimator={layoutItemAnimator}
+        layoutProvider={this.layoutProvider}
         onContentSizeChange={this.onContentSizeChange}
         onViewableItemsChanged={this.onViewableItemsChanged}
         optimizeForInsertDeleteAnimations
         ref={this.rlvRef}
         renderAheadOffset={deviceUtils.dimensions.height}
         rowRenderer={this.renderRow}
+        scrollThrottle={32}
         scrollViewProps={{
           directionalLockEnabled: true,
           keyboardDismissMode: 'none',

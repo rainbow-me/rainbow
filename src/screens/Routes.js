@@ -5,7 +5,7 @@ import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator } from 'react-navigation-stack';
 import { ExchangeModalNavigator, Navigation } from '../navigation';
-import { updateStackTransitionProps } from '../redux/navigation';
+import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
 import { colors } from '../styles';
 import { deviceUtils } from '../utils';
@@ -25,12 +25,11 @@ import {
   sheetPreset,
   backgroundPreset,
 } from '../navigation/transitions/effects';
-import restoreKeyboard from './restoreKeyboard';
 
 const onTransitionEnd = () =>
-  store.dispatch(updateStackTransitionProps({ isTransitioning: false }));
+  store.dispatch(updateTransitionProps({ isTransitioning: false }));
 const onTransitionStart = () =>
-  store.dispatch(updateStackTransitionProps({ isTransitioning: true }));
+  store.dispatch(updateTransitionProps({ isTransitioning: true }));
 
 const SwipeStack = createMaterialTopTabNavigator(
   {
@@ -83,9 +82,6 @@ const MainNavigator = createStackNavigator(
     ExchangeModal: {
       navigationOptions: {
         ...expandedPreset,
-        gestureResponseDistance: {
-          vertical: deviceUtils.dimensions.height,
-        },
         gestureVelocityImpact: 0.6,
         onTransitionStart: props => {
           expandedPreset.onTransitionStart(props);
@@ -133,15 +129,14 @@ const MainNavigator = createStackNavigator(
         onTransitionStart: props => {
           onTransitionStart(props);
           sheetPreset.onTransitionStart(props);
-          restoreKeyboard();
         },
       },
       screen: SendSheetWithData,
     },
     SettingsModal: {
       navigationOptions: {
-        gesturesEnabled: false,
         ...expandedPreset,
+        gesturesEnabled: false,
         onTransitionStart: props => {
           expandedPreset.onTransitionStart(props);
           onTransitionStart();
@@ -172,17 +167,18 @@ const MainNavigator = createStackNavigator(
       onTransitionEnd,
       onTransitionStart,
     },
-    disableKeyboardHandling: true, // XXX not sure about this from rebase
+    disableKeyboardHandling: true,
     headerMode: 'none',
     initialRouteName: 'SwipeLayout',
-    keyboardDismissMode: 'none', // true?
+    keyboardDismissMode: 'none',
     mode: 'modal',
   }
 );
 
 const AppContainer = createAppContainer(MainNavigator);
 
-const AppContainerWithAnalytics = ({ ref, screenProps }) => (
+// eslint-disable-next-line react/display-name
+const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
   <AppContainer
     onNavigationStateChange={(prevState, currentState) => {
       const { params, routeName } = Navigation.getActiveRoute(currentState);
@@ -203,13 +199,13 @@ const AppContainerWithAnalytics = ({ ref, screenProps }) => (
           prevRouteName === 'MainExchangeScreen' &&
           routeName === 'WalletScreen'
         ) {
-          store.dispatch(updateStackTransitionProps({ blurColor: null }));
+          store.dispatch(updateTransitionProps({ blurColor: null }));
         } else if (
           prevRouteName === 'WalletScreen' &&
           routeName === 'MainExchangeScreen'
         ) {
           store.dispatch(
-            updateStackTransitionProps({
+            updateTransitionProps({
               blurColor: colors.alpha(colors.black, 0.9),
             })
           );
@@ -230,8 +226,7 @@ const AppContainerWithAnalytics = ({ ref, screenProps }) => (
       }
     }}
     ref={ref}
-    screenProps={screenProps}
   />
-);
+));
 
 export default React.memo(AppContainerWithAnalytics);

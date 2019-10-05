@@ -10,8 +10,9 @@ const GasSpeedLabelPager = ({ label }) => {
 
   return (
     <Row align="center" height={GasSpeedLabelPagerItem.height} justify="end">
-      {gasUtils.GasSpeedTypes.map(speed => (
+      {gasUtils.GasSpeedOrder.map(speed => (
         <GasSpeedLabelPagerItem
+          height={28}
           key={speed}
           label={speed}
           selected={speed === label}
@@ -23,7 +24,7 @@ const GasSpeedLabelPager = ({ label }) => {
 };
 
 GasSpeedLabelPager.propTypes = {
-  label: PropTypes.oneOf(gasUtils.GasSpeedTypes),
+  label: PropTypes.oneOf(gasUtils.GasSpeedOrder),
 };
 
 export default React.memo(GasSpeedLabelPager);

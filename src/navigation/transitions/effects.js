@@ -2,21 +2,12 @@ import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import store from '../../redux/store';
-import { updateStackTransitionProps } from '../../redux/navigation';
+import { updateTransitionProps } from '../../redux/navigation';
+import { interpolate } from '../../components/animations';
 import { deviceUtils } from '../../utils';
 import { colors } from '../../styles';
 
-const {
-  and,
-  block,
-  call,
-  color,
-  cond,
-  eq,
-  interpolate,
-  or,
-  SpringUtils,
-} = Animated;
+const { and, block, call, color, cond, eq, or, SpringUtils } = Animated;
 
 const statusBarHeight = getStatusBarHeight(true);
 
@@ -35,7 +26,7 @@ const expandStyleInterpolator = ({
   current: { progress: current },
 }) => {
   const backgroundOpacity = interpolate(current, {
-    extrapolate: 'clamp',
+    extrapolate: Animated.Extrapolate.CLAMP,
     inputRange: [0, 0.975],
     outputRange: [0, 0.7],
   });
@@ -50,7 +41,7 @@ const expandStyleInterpolator = ({
     and(eq(closing, 1), eq(current, 1))
   );
   const setShowingModal = call([], () => {
-    store.dispatch(updateStackTransitionProps({ showingModal: true }));
+    store.dispatch(updateTransitionProps({ showingModal: true }));
   });
 
   return {
@@ -75,7 +66,7 @@ const sheetStyleInterpolator = ({
   ...rest
 }) => {
   const backgroundOpacity = interpolate(current, {
-    extrapolate: 'clamp',
+    extrapolate: Animated.Extrapolate.CLAMP,
     inputRange: [0, 0.975],
     outputRange: [0, 0.7],
   });
@@ -112,7 +103,7 @@ const backgroundInterpolator = ({
   }
   const dispatch = cond(
     call([], () => {
-      store.dispatch(updateStackTransitionProps({ position: next }));
+      store.dispatch(updateTransitionProps({ position: next }));
     })
   );
   return { cardStyle: { opacity: block([dispatch, 1]) } };

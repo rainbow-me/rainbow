@@ -12,18 +12,18 @@ import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 
 const StatusProps = {
-  failed: {
+  [TransactionStatusTypes.failed]: {
     name: 'closeCircled',
     style: position.maxSizeAsObject(12),
   },
-  received: {
+  [TransactionStatusTypes.received]: {
     direction: 'down',
     name: 'arrow',
   },
-  self: {
+  [TransactionStatusTypes.self]: {
     name: 'dot',
   },
-  sent: {
+  [TransactionStatusTypes.sent]: {
     name: 'sendSmall',
   },
 };
@@ -49,7 +49,7 @@ const TransactionStatusBadge = ({ pending, status, ...props }) => {
         />
       )}
       <Text color={statusColor} size="smedium" weight="semibold">
-        {upperFirst(status || 'Unknown status')}
+        {upperFirst(status)}
       </Text>
     </RowWithMargins>
   );

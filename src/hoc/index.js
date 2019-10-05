@@ -9,6 +9,7 @@ export {
 } from './withBlockedHorizontalSwipe';
 export { default as withBlurTransitionProps } from './withBlurTransitionProps';
 export { default as withDataInit } from './withDataInit';
+export { default as withDeepLink } from './withDeepLink';
 export { default as withFabSelection } from './withFabSelection';
 export { default as withFabSendAction } from './withFabSendAction';
 export { default as withGas } from './withGas';
@@ -19,9 +20,6 @@ export {
 export { default as withIsWalletEmpty } from './withIsWalletEmpty';
 export { default as withIsWalletEthZero } from './withIsWalletEthZero';
 export { default as withIsWalletImporting } from './withIsWalletImporting';
-export {
-  default as withKeyboardFocusHistory,
-} from './withKeyboardFocusHistory';
 export { default as withKeyboardHeight } from './withKeyboardHeight';
 export {
   default as withMessageSigningScreen,

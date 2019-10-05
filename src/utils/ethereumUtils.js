@@ -1,4 +1,4 @@
-import { find, get } from 'lodash';
+import { find, get, replace, toLower } from 'lodash';
 import chains from '../references/chains.json';
 import {
   add,
@@ -30,7 +30,7 @@ export const getAsset = (assets, address = 'eth') =>
  * @param  {String} hex
  * @return {String}
  */
-export const removeHexPrefix = hex => hex.toLowerCase().replace('0x', '');
+export const removeHexPrefix = hex => replace(toLower(hex), '0x', '');
 
 /**
  * @desc pad string to specific width and padding

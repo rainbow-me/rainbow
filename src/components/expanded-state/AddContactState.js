@@ -18,6 +18,7 @@ import { Text, TruncatedAddress } from '../text';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { AssetPanel } from './asset-panel';
 import FloatingPanels from './FloatingPanels';
+import PlaceholderText from '../text/PlaceholderText';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
@@ -47,6 +48,12 @@ class AddContactState extends PureComponent {
     value: get(this.props, 'contact.nickname', ''),
   };
 
+  componentDidMount = () => {
+    if (this.state.value.length === 0) {
+      this._text.updateValue('Name');
+    }
+  };
+
   inputRef = undefined;
 
   handleAddContact = async () => {
@@ -55,26 +62,33 @@ class AddContactState extends PureComponent {
 
     if (value.length > 0) {
       await addNewLocalContact(address, value, color);
-      onCloseModal();
+      if (onCloseModal) {
+        onCloseModal();
+      }
       navigation.goBack();
     }
   };
 
   handleCancel = () => {
     this.props.onUnmountModal('', 0, false);
-    this.props.onCloseModal();
+    if (this.props.onCloseModal) {
+      this.props.onCloseModal();
+    }
     this.props.navigation.goBack();
   };
 
   handleChange = ({ nativeEvent: { text } }) => {
     const value = text.charCodeAt(0) === 32 ? text.substring(1) : text;
-
+    if (value.length > 0) {
+      this._text.updateValue(' ');
+    } else {
+      this._text.updateValue('Name');
+    }
     this.setState({ value });
-    this.props.onUnmountModal(value, this.state.color, true);
   };
 
   handleChangeColor = async () => {
-    const { color, value } = this.state;
+    const { color } = this.state;
 
     let newColor = color + 1;
     if (newColor > colors.avatarColor.length - 1) {
@@ -82,7 +96,6 @@ class AddContactState extends PureComponent {
     }
 
     this.setState({ color: newColor });
-    this.props.onUnmountModal(value, newColor, true);
   };
 
   handleDeleteContact = () =>
@@ -123,14 +136,11 @@ class AddContactState extends PureComponent {
                   value={value}
                 />
               </ButtonPressAnimation>
-              <Text
-                color={colors.alpha(colors.blueGreyDark, 0.3)}
-                size="big"
-                style={{ marginBottom: -27 }}
-                weight="semibold"
-              >
-                {value.length > 0 ? ' ' : 'Name'}
-              </Text>
+              <PlaceholderText
+                ref={component => {
+                  this._text = component;
+                }}
+              />
               <Input
                 autoCapitalize
                 autoFocus

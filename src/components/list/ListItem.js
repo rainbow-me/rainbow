@@ -43,7 +43,7 @@ const ListItem = enhance(
       activeOpacity={activeOpacity}
       enableHapticFeedback={false}
       onPress={onPress}
-      scaleTo={1}
+      scaleTo={0.99}
     >
       <Row
         align="center"

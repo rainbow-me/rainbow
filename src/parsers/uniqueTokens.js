@@ -1,4 +1,4 @@
-import { filter, get, map, pick, uniq } from 'lodash';
+import { filter, find, get, map, pick, uniq } from 'lodash';
 
 /**
  * @desc parse unique tokens from opensea
@@ -6,11 +6,7 @@ import { filter, get, map, pick, uniq } from 'lodash';
  * @return {Array}
  */
 export const parseAccountUniqueTokens = data => {
-  const assets = get(data, 'data.assets', []);
-  const erc721s = filter(
-    assets,
-    asset => get(asset, 'asset_contract.schema_name') === 'ERC721'
-  );
+  const erc721s = get(data, 'data.assets', []);
   return erc721s.map(
     ({ asset_contract, background_color, token_id, ...asset }) => ({
       ...pick(asset, [
@@ -56,3 +52,25 @@ export const parseAccountUniqueTokens = data => {
 
 export const getFamilies = uniqueTokens =>
   uniq(map(uniqueTokens, u => get(u, 'asset_contract.address', '')));
+
+export const dedupeUniqueTokens = (assets, uniqueTokens) => {
+  const uniqueTokenFamilies = getFamilies(uniqueTokens);
+  let updatedAssets = assets;
+  if (assets.length) {
+    updatedAssets = filter(updatedAssets, asset => {
+      const matchingElement = find(
+        uniqueTokenFamilies,
+        uniqueTokenFamily =>
+          uniqueTokenFamily === get(asset, 'asset.asset_code')
+      );
+      return !matchingElement;
+    });
+  }
+  return updatedAssets;
+};
+
+export const dedupeAssetsWithFamilies = (assets, families) =>
+  filter(
+    assets,
+    asset => !find(families, family => family === get(asset, 'address'))
+  );

@@ -10,7 +10,11 @@ import {
 } from 'lodash';
 import { showActionSheetWithOptions } from './actionsheet';
 
-const GasSpeedTypes = ['slow', 'normal', 'fast'];
+const FAST = 'fast';
+const NORMAL = 'normal';
+const SLOW = 'slow';
+
+const GasSpeedOrder = [SLOW, NORMAL, FAST];
 
 const showTransactionSpeedOptions = (
   gasPrices,
@@ -31,8 +35,7 @@ const showTransactionSpeedOptions = (
     buttonIndex => {
       if (buttonIndex > 0) {
         const selectedGasPriceItem = options[buttonIndex];
-
-        updateGasOption(selectedGasPriceItem.value);
+        updateGasOption(selectedGasPriceItem.speed);
         analytics.track('Updated Gas Price', {
           gasPrice: selectedGasPriceItem.gweiValue,
         });
@@ -46,26 +49,24 @@ const showTransactionSpeedOptions = (
 };
 
 const formatGasSpeedItems = (gasPrices, txFees) => {
-  const gasItems = map(GasSpeedTypes, label => {
-    let speed = label;
-    if (label === 'normal') {
-      speed = 'average';
-    }
-
+  const gasItems = map(GasSpeedOrder, speed => {
     const cost = get(txFees, `[${speed}].txFee.native.value.display`);
     const gwei = get(gasPrices, `[${speed}].value.display`);
     const time = get(gasPrices, `[${speed}].estimatedTime.display`);
 
     return {
       gweiValue: gwei,
-      label: `${upperFirst(label)}: ${cost}   ~${time.slice(0, -1)}`,
-      value: speed,
+      label: `${upperFirst(speed)}: ${cost}   ~${time}`,
+      speed,
     };
   });
-  return sortBy(gasItems, ({ value }) => indexOf(GasSpeedTypes, value));
+  return sortBy(gasItems, ({ speed }) => indexOf(GasSpeedOrder, speed));
 };
 
 export default {
-  GasSpeedTypes,
+  FAST,
+  GasSpeedOrder,
+  NORMAL,
   showTransactionSpeedOptions,
+  SLOW,
 };

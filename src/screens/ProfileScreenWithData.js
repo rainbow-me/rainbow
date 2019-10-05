@@ -1,7 +1,6 @@
 import { compose, withHandlers, withProps } from 'recompact';
 import { setDisplayName } from 'recompose';
 import {
-  withAccountAddress,
   withAccountSettings,
   withAccountTransactions,
   withBlurTransitionProps,
@@ -12,7 +11,6 @@ import ProfileScreen from './ProfileScreen';
 
 export default compose(
   setDisplayName('ProfileScreen'),
-  withAccountAddress,
   withAccountSettings,
   withAccountTransactions,
   withBlurTransitionProps,

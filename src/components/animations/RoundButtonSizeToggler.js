@@ -5,6 +5,7 @@ import Animated from 'react-native-reanimated';
 import { View } from 'react-primitives';
 import styled from 'styled-components/primitives';
 import { borders, colors, position } from '../../styles';
+import { interpolate } from './procs';
 
 const {
   add,
@@ -13,7 +14,6 @@ const {
   clockRunning,
   cond,
   divide,
-  interpolate,
   multiply,
   set,
   spring,
@@ -78,8 +78,6 @@ export default class RoundButtonSizeToggler extends PureComponent {
     tension: 200,
   };
 
-  static capSize = RoundButtonCapSize;
-
   componentWillMount() {
     this._width = new Value(this.props.startingWidth);
   }
@@ -106,6 +104,8 @@ export default class RoundButtonSizeToggler extends PureComponent {
       });
     }
   }
+
+  static capSize = RoundButtonCapSize;
 
   render() {
     const {

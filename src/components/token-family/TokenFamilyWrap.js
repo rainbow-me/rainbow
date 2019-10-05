@@ -15,7 +15,6 @@ import {
 import { createSelector } from 'reselect';
 import { withOpenFamilyTabs, withFabSendAction } from '../../hoc';
 import { colors } from '../../styles';
-import { FadeInAnimation } from '../animations';
 import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyHeader from './TokenFamilyHeader';
 
@@ -48,11 +47,15 @@ const TokenFamilyWrap = ({
   highlight,
   isFamilyOpen,
   item,
-  marginTop,
+  paddingTop,
   onPressFamilyHeader,
   renderCollectibleItem,
 }) => (
-  <View backgroundColor={colors.white} marginTop={marginTop} overflow="hidden">
+  <View
+    backgroundColor={colors.white}
+    paddingTop={paddingTop}
+    overflow="hidden"
+  >
     <TokenFamilyHeader
       childrenAmount={childrenAmount}
       familyImage={familyImage}
@@ -62,13 +65,12 @@ const TokenFamilyWrap = ({
       onHeaderPress={onPressFamilyHeader}
     />
     {areChildrenVisible && (
-      <FadeInAnimation
-        duration={TokenFamilyHeader.animationDuration}
+      <View
         key={`uniqueTokenRow_${familyId}_fadeIn`}
-        style={{ paddingTop: TokenFamilyWrapPaddingTop }}
+        paddingTop={TokenFamilyWrapPaddingTop}
       >
         {times(item.length, renderCollectibleItem)}
-      </FadeInAnimation>
+      </View>
     )}
   </View>
 );
@@ -82,8 +84,8 @@ TokenFamilyWrap.propTypes = {
   highlight: PropTypes.bool,
   isFamilyOpen: PropTypes.bool,
   item: PropTypes.array,
-  marginTop: PropTypes.number,
   onPressFamilyHeader: PropTypes.func,
+  paddingTop: PropTypes.number,
   renderCollectibleItem: PropTypes.func,
 };
 
@@ -127,7 +129,6 @@ export default compose(
         setAreChildrenVisible(true);
       }
     },
-    /* eslint-disable react/display-name */
     renderCollectibleItem: ({ familyId, item }) => index => (
       <EnhancedUniqueTokenRow
         assetType="unique_token"
@@ -135,7 +136,6 @@ export default compose(
         key={`uniqueTokenRow_${familyId}_${index}`}
       />
     ),
-    /* eslint-enable react/display-name */
   }),
   lifecycle({
     componentDidMount() {
@@ -156,7 +156,7 @@ export default compose(
     'areChildrenVisible',
     'childrenAmount',
     'highlight',
-    'marginTop',
+    'paddingTop',
     'isFamilyOpen',
     'uniqueId',
   ])

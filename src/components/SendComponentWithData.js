@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { compose } from 'recompact';
 import { estimateGasLimit } from '../handlers/web3';
 import { greaterThan } from '../helpers/utilities';
-import { isValidAddress } from '../helpers/validators';
+import { checkIsValidAddress } from '../helpers/validators';
 import { withAccountData, withGas, withUniqueTokens } from '../hoc';
 import lang from '../languages';
 import {
@@ -53,8 +53,9 @@ export const withSendComponentWithData = (SendComponent, options) => {
       assets: PropTypes.array.isRequired,
       confirm: PropTypes.bool.isRequired,
       fetching: PropTypes.bool.isRequired,
-      gasLimit: PropTypes.number.isRequired,
+      gasLimit: PropTypes.number,
       gasPrices: PropTypes.object.isRequired,
+      gasUpdateDefaultGasLimit: PropTypes.func.isRequired,
       gasUpdateTxFee: PropTypes.func.isRequired,
       isSufficientBalance: PropTypes.bool.isRequired,
       isSufficientGas: PropTypes.bool.isRequired,
@@ -97,13 +98,14 @@ export const withSendComponentWithData = (SendComponent, options) => {
         defaultAsset: this.defaultAsset,
         gasFormat: this.gasFormat,
       });
+      this.props.gasUpdateDefaultGasLimit();
     }
 
     async componentDidUpdate(prevProps) {
       const { address, assetAmount, recipient, selected } = this.props;
 
       if (recipient !== prevProps.recipient) {
-        const validAddress = await isValidAddress(recipient);
+        const validAddress = await checkIsValidAddress(recipient);
         // eslint-disable-next-line react/no-did-update-set-state
         this.setState({ isValidAddress: validAddress });
       }
@@ -123,7 +125,9 @@ export const withSendComponentWithData = (SendComponent, options) => {
             .then(gasLimit => {
               this.props.gasUpdateTxFee(gasLimit);
             })
-            .catch(() => {});
+            .catch(() => {
+              this.props.gasUpdateTxFee(null);
+            });
         }
       }
     }

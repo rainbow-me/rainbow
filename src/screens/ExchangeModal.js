@@ -7,13 +7,13 @@ import {
   tradeTokensForExactTokensWithData,
 } from '@uniswap/sdk';
 import BigNumber from 'bignumber.js';
-import { get, isNil } from 'lodash';
+import { get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment, PureComponent } from 'react';
-import { InteractionManager, LayoutAnimation, TextInput } from 'react-native';
+import React, { Fragment, Component } from 'react';
+import { LayoutAnimation, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
-import { compose, mapProps, toClass } from 'recompact';
+import { compose, toClass, withProps } from 'recompact';
 import { estimateSwapGasLimit, executeSwap } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
@@ -26,24 +26,19 @@ import {
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
 import {
-  withAccountAddress,
   withAccountData,
   withAccountSettings,
   withBlockedHorizontalSwipe,
   withGas,
-  withKeyboardFocusHistory,
   withTransactionConfirmationScreen,
   withTransitionProps,
   withUniswapAllowances,
   withUniswapAssets,
 } from '../hoc';
+import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
-import {
-  contractUtils,
-  ethereumUtils,
-  gasUtils,
-  isNewValueForPath,
-} from '../utils';
+import { contractUtils, ethereumUtils, isNewValueForPath } from '../utils';
+import { interpolate } from '../components/animations';
 import {
   ConfirmExchangeButton,
   ExchangeInputField,
@@ -63,6 +58,8 @@ import { CurrencySelectionTypes } from './CurrencySelectModal';
 
 export const exchangeModalBorderRadius = 30;
 
+const { block, call, eq, onChange } = Animated;
+
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(
   toClass(FloatingPanels)
 );
@@ -72,40 +69,38 @@ const isSameAsset = (firstAsset, secondAsset) => {
     return false;
   }
 
-  const firstAddress = get(firstAsset, 'address', '').toLowerCase();
-  const secondAddress = get(secondAsset, 'address', '').toLowerCase();
+  const firstAddress = toLower(get(firstAsset, 'address', ''));
+  const secondAddress = toLower(get(secondAsset, 'address', ''));
   return firstAddress === secondAddress;
 };
 
-class ExchangeModal extends PureComponent {
+class ExchangeModal extends Component {
   static propTypes = {
     accountAddress: PropTypes.string,
     allAssets: PropTypes.array,
     allowances: PropTypes.object,
     chainId: PropTypes.number,
-    clearKeyboardFocusHistory: PropTypes.func,
     dataAddNewTransaction: PropTypes.func,
     gasLimit: PropTypes.string,
-    gasPrices: PropTypes.object,
-    gasUpdateGasPriceOption: PropTypes.string,
+    gasUpdateDefaultGasLimit: PropTypes.func,
     gasUpdateTxFee: PropTypes.func,
     isFocused: PropTypes.bool,
-    isTransitioning: PropTypes.bool,
-    keyboardFocusHistory: PropTypes.array,
     nativeCurrency: PropTypes.string,
     navigation: PropTypes.object,
-    pushKeyboardFocusHistory: PropTypes.func,
-    resetGasTxFees: PropTypes.func,
+    pendingApprovals: PropTypes.object,
     selectedGasPrice: PropTypes.object,
-    tokenReserves: PropTypes.array,
+    tabPosition: PropTypes.object, // animated value
+    tokenReserves: PropTypes.object,
     tradeDetails: PropTypes.object,
-    transitionPosition: PropTypes.object, // animated value
     txFees: PropTypes.object,
     uniswapGetTokenReserve: PropTypes.func,
     uniswapUpdateAllowances: PropTypes.func,
+    uniswapUpdatePendingApprovals: PropTypes.func,
   };
 
   state = {
+    approvalCreationTimestamp: null,
+    approvalEstimatedTimeInMs: null,
     inputAllowance: null,
     inputAmount: null,
     inputAmountDisplay: null,
@@ -116,6 +111,7 @@ class ExchangeModal extends PureComponent {
     isAssetApproved: true,
     isSufficientBalance: true,
     isUnlockingAsset: false,
+    lastFocusedInput: null,
     nativeAmount: null,
     outputAmount: null,
     outputAmountDisplay: null,
@@ -127,29 +123,11 @@ class ExchangeModal extends PureComponent {
     tradeDetails: null,
   };
 
+  componentDidMount = () => {
+    this.props.gasUpdateDefaultGasLimit(ethUnits.basic_swap);
+  };
+
   componentDidUpdate = (prevProps, prevState) => {
-    const { isFocused, isTransitioning, keyboardFocusHistory } = this.props;
-
-    if (isFocused && (!isTransitioning && prevProps.isTransitioning)) {
-      const lastFocusedInput =
-        keyboardFocusHistory[keyboardFocusHistory.length - 1];
-
-      if (lastFocusedInput) {
-        InteractionManager.runAfterInteractions(() => {
-          TextInput.State.focusTextInput(lastFocusedInput);
-        });
-      } else {
-        // console.log('ELSE')
-        // this.inputFieldRef.focus();
-      }
-    }
-
-    if (this.state.outputCurrency) {
-      // TODO
-      // eslint-disable-next-line react/no-did-update-set-state
-      this.setState({ showConfirmButton: true });
-    }
-
     const isNewInputAmount = isNewValueForPath(
       this.state,
       prevState,
@@ -160,7 +138,6 @@ class ExchangeModal extends PureComponent {
       prevState,
       'outputAmount'
     );
-
     const isNewNativeAmount =
       // Only consider 'new' if the native input isnt focused,
       // otherwise itll fight with the user's keystrokes
@@ -179,22 +156,26 @@ class ExchangeModal extends PureComponent {
     );
 
     const isNewAmount =
-      isNewNativeAmount || isNewInputAmount || isNewOutputAmount;
+      (this.state.inputAsExactAmount &&
+        (isNewNativeAmount || isNewInputAmount)) ||
+      (!this.state.inputAsExactAmount && isNewOutputAmount);
     const isNewCurrency = isNewInputCurrency || isNewOutputCurrency;
+
+    const input = toLower(get(this.state.inputCurrency, 'address'));
+    const removedFromPending =
+      !get(this.props, `pendingApprovals[${input}]`, null) &&
+      get(prevProps, `pendingApprovals[${input}]`, null);
 
     if (isNewAmount || isNewCurrency) {
       this.getMarketDetails();
       LayoutAnimation.easeInEaseOut();
     }
-
-    if (isNewValueForPath(this.state, prevState, 'inputCurrency.address')) {
+    if (
+      removedFromPending ||
+      isNewValueForPath(this.state, prevState, 'inputCurrency.address')
+    ) {
       this.getCurrencyAllowance();
     }
-  };
-
-  componentWillUnmount = () => {
-    this.props.resetGasTxFees();
-    this.props.clearKeyboardFocusHistory();
   };
 
   inputFieldRef = null;
@@ -218,7 +199,13 @@ class ExchangeModal extends PureComponent {
   };
 
   getCurrencyAllowance = async () => {
-    const { accountAddress, allowances, uniswapUpdateAllowances } = this.props;
+    const {
+      accountAddress,
+      allowances,
+      gasUpdateTxFee,
+      pendingApprovals,
+      uniswapUpdateAllowances,
+    } = this.props;
     const { inputCurrency } = this.state;
     const { address: inputAddress, exchangeAddress } = inputCurrency;
 
@@ -227,31 +214,60 @@ class ExchangeModal extends PureComponent {
     }
 
     let allowance = allowances[inputAddress];
-    if (!allowance) {
+    if (!greaterThan(allowance, 0)) {
       allowance = await contractUtils.getAllowance(
         accountAddress,
         inputCurrency,
         exchangeAddress
       );
-      uniswapUpdateAllowances(inputAddress, allowance);
+      uniswapUpdateAllowances({ [toLower(inputAddress)]: allowance });
     }
     const isAssetApproved = greaterThan(allowance, 0);
-    if (isAssetApproved) {
-      return this.setState({ isAssetApproved });
+    if (greaterThan(allowance, 0)) {
+      return this.setState({
+        approvalCreationTimestamp: null,
+        approvalEstimatedTimeInMs: null,
+        isAssetApproved,
+        isUnlockingAsset: false,
+      });
     }
+    const pendingApproval = pendingApprovals[toLower(inputCurrency.address)];
+    const isUnlockingAsset = !!pendingApproval;
+
     try {
       const gasLimit = await contractUtils.estimateApprove(
         inputCurrency.address,
         exchangeAddress
       );
-      return this.setState({ gasLimit: gasLimit.toFixed(), isAssetApproved });
+      gasUpdateTxFee(gasLimit);
+      return this.setState({
+        approvalCreationTimestamp: isUnlockingAsset
+          ? pendingApproval.creationTimestamp
+          : null,
+        approvalEstimatedTimeInMs: isUnlockingAsset
+          ? pendingApproval.estimatedTimeInMs
+          : null,
+        isAssetApproved,
+        isUnlockingAsset,
+      });
     } catch (error) {
-      return this.setState({ isAssetApproved });
+      gasUpdateTxFee();
+      return this.setState({
+        approvalCreationTimestamp: null,
+        approvalEstimatedTimeInMs: null,
+        isAssetApproved,
+        isUnlockingAsset: false,
+      });
     }
   };
 
   getMarketDetails = async () => {
-    const { chainId, gasUpdateTxFee, nativeCurrency } = this.props;
+    const {
+      accountAddress,
+      chainId,
+      gasUpdateTxFee,
+      nativeCurrency,
+    } = this.props;
     const {
       inputAmount,
       inputAsExactAmount,
@@ -367,7 +383,7 @@ class ExchangeModal extends PureComponent {
         );
       }
 
-      const slippage = get(tradeDetails, 'marketRateSlippage', 0).toFixed();
+      const slippage = get(tradeDetails, 'marketRateSlippage', 0).toString();
 
       this.setState({
         inputExecutionRate,
@@ -402,7 +418,11 @@ class ExchangeModal extends PureComponent {
             get(outputCurrency, 'price.value')
           );
 
-          this.setOutputAmount(rawUpdatedAmount, updatedAmountDisplay);
+          this.setOutputAmount(
+            rawUpdatedAmount,
+            updatedAmountDisplay,
+            inputAsExactAmount
+          );
         }
       }
 
@@ -421,14 +441,19 @@ class ExchangeModal extends PureComponent {
             get(inputCurrency, 'price.value')
           );
 
-          this.setInputAmount(rawUpdatedAmount, updatedAmountDisplay);
+          this.setInputAmount(
+            rawUpdatedAmount,
+            updatedAmountDisplay,
+            inputAsExactAmount
+          );
         }
       }
       if (isAssetApproved) {
-        const gasLimit = await estimateSwapGasLimit(tradeDetails);
-        if (gasLimit) {
-          gasUpdateTxFee(gasLimit.toString());
-        }
+        const gasLimit = await estimateSwapGasLimit(
+          accountAddress,
+          tradeDetails
+        );
+        gasUpdateTxFee(gasLimit);
       }
     } catch (error) {
       console.log('error getting market details', error);
@@ -445,8 +470,15 @@ class ExchangeModal extends PureComponent {
     if (!reserve) {
       reserve = await uniswapGetTokenReserve(tokenAddress);
     }
-
     return reserve;
+  };
+
+  handleBlurField = ({ currentTarget }) => {
+    console.log('blur', currentTarget);
+  };
+
+  handleFocusField = ({ currentTarget }) => {
+    this.setState({ lastFocusedInput: currentTarget });
   };
 
   handlePressMaxBalance = () => {
@@ -459,27 +491,19 @@ class ExchangeModal extends PureComponent {
     return this.setInputAmount(maxBalance);
   };
 
-  handlePressTransactionSpeed = () => {
-    const { gasPrices, gasUpdateGasPriceOption, txFees } = this.props;
-
-    gasUtils.showTransactionSpeedOptions(
-      gasPrices,
-      txFees,
-      gasUpdateGasPriceOption
-    );
-  };
-
   handleSubmit = async () => {
     const {
       accountAddress,
       dataAddNewTransaction,
       gasLimit,
       navigation,
+      selectedGasPrice,
     } = this.props;
     const { inputAmount, inputCurrency, tradeDetails } = this.state;
 
     try {
-      const txn = await executeSwap(tradeDetails, gasLimit);
+      const gasPrice = get(selectedGasPrice, 'value.amount');
+      const txn = await executeSwap(tradeDetails, gasLimit, gasPrice);
       if (txn) {
         dataAddNewTransaction({
           amount: inputAmount,
@@ -497,33 +521,58 @@ class ExchangeModal extends PureComponent {
     }
   };
 
-  handleWillFocus = ({ lastState }) => {
-    if (!lastState && this.inputFieldRef) {
-      this.inputFieldRef.focus();
+  handleUnlockAsset = async () => {
+    try {
+      const { inputCurrency } = this.state;
+      const {
+        gasLimit,
+        selectedGasPrice,
+        uniswapUpdatePendingApprovals,
+      } = this.props;
+      const {
+        creationTimestamp: approvalCreationTimestamp,
+        approval: { hash },
+      } = await contractUtils.approve(
+        inputCurrency.address,
+        inputCurrency.exchangeAddress,
+        gasLimit,
+        get(selectedGasPrice, 'value.amount')
+      );
+      const approvalEstimatedTimeInMs = get(
+        selectedGasPrice,
+        'estimatedTime.amount'
+      );
+      uniswapUpdatePendingApprovals(
+        inputCurrency.address,
+        hash,
+        approvalCreationTimestamp,
+        approvalEstimatedTimeInMs
+      );
+      this.setState({
+        approvalCreationTimestamp,
+        approvalEstimatedTimeInMs,
+        isUnlockingAsset: true,
+      });
+    } catch (error) {
+      console.log('could not unlock asset', error);
+      this.setState({
+        approvalCreationTimestamp: null,
+        approvalEstimatedTimeInMs: null,
+        isUnlockingAsset: false,
+      });
     }
   };
 
-  handleDidFocus = () => {
-    // console.log('DID FOCUS', this.props.navigation)
-  };
+  handleKeyboardManagement = () => {
+    const { lastFocusedInput } = this.state;
 
-  handleFocusField = ({ currentTarget }) => {
-    this.props.pushKeyboardFocusHistory(currentTarget);
-  };
+    if (!lastFocusedInput) {
+      return this.inputFieldRef.focus();
+    }
 
-  handleUnlockAsset = async () => {
-    /*
-    const {
-      inputCurrency: {
-        address: tokenAddress,
-        exchangeAddress: spender,
-      },
-    } = this.state;
-    */
-
-    // const approval = await contractUtils.approve(tokenAddress, spender);
-
-    this.setState({ isUnlockingAsset: true });
+    if (lastFocusedInput !== TextInput.State.currentlyFocusedField()) {
+      return TextInput.State.focusTextInput(lastFocusedInput);
+    }
   };
 
   navigateToSelectInputCurrency = () => {
@@ -540,13 +589,13 @@ class ExchangeModal extends PureComponent {
     });
   };
 
-  setInputAmount = (inputAmount, amountDisplay) => {
+  setInputAmount = (inputAmount, amountDisplay, inputAsExactAmount = true) => {
     this.setState(({ inputCurrency }) => {
       const newState = {
         inputAmount,
         inputAmountDisplay:
           amountDisplay !== undefined ? amountDisplay : inputAmount,
-        inputAsExactAmount: true,
+        inputAsExactAmount,
       };
 
       if (!this.nativeFieldRef.isFocused()) {
@@ -578,7 +627,7 @@ class ExchangeModal extends PureComponent {
     }
   };
 
-  setNativeAmount = nativeAmount => {
+  setNativeAmount = nativeAmount =>
     this.setState(({ inputCurrency }) => {
       let inputAmount = null;
       let inputAmountDisplay = null;
@@ -599,22 +648,23 @@ class ExchangeModal extends PureComponent {
         nativeAmount,
       };
     });
-  };
 
-  setOutputAmount = (outputAmount, amountDisplay) => {
-    this.setState(() => ({
-      inputAsExactAmount: false,
+  setOutputAmount = (outputAmount, amountDisplay, inputAsExactAmount = false) =>
+    this.setState({
+      inputAsExactAmount,
       outputAmount,
       outputAmountDisplay:
         amountDisplay !== undefined ? amountDisplay : outputAmount,
-    }));
-  };
+    });
 
   setOutputCurrency = (outputCurrency, force) => {
     const { allAssets } = this.props;
     const { inputCurrency } = this.state;
 
-    this.setState({ outputCurrency });
+    this.setState({
+      outputCurrency,
+      showConfirmButton: !!outputCurrency,
+    });
 
     if (!force && isSameAsset(inputCurrency, outputCurrency)) {
       const outputAddress = outputCurrency.address.toLowerCase();
@@ -628,10 +678,20 @@ class ExchangeModal extends PureComponent {
     }
   };
 
+  handleStackPosition = ([isAtTop]) => {
+    if (!isAtTop) return;
+
+    if (TextInput.State.currentlyFocusedField() === null) {
+      this.handleKeyboardManagement();
+    }
+  };
+
   render = () => {
-    const { nativeCurrency, transitionPosition } = this.props;
+    const { nativeCurrency, stackPosition, tabPosition } = this.props;
 
     const {
+      approvalCreationTimestamp,
+      approvalEstimatedTimeInMs,
       inputAmountDisplay,
       inputCurrency,
       // inputExecutionRate,
@@ -650,10 +710,7 @@ class ExchangeModal extends PureComponent {
 
     return (
       <KeyboardFixedOpenLayout>
-        <NavigationEvents
-          onDidFocus={this.handleDidFocus}
-          onWillFocus={this.handleWillFocus}
-        />
+        <NavigationEvents onWillFocus={this.handleKeyboardManagement} />
         <Centered
           {...position.sizeAsObject('100%')}
           backgroundColor={colors.transparent}
@@ -662,11 +719,17 @@ class ExchangeModal extends PureComponent {
           <AnimatedFloatingPanels
             margin={0}
             style={{
-              opacity: Animated.interpolate(transitionPosition, {
-                extrapolate: 'clamp',
-                inputRange: [0, 1],
-                outputRange: [1, 0],
-              }),
+              opacity: block([
+                onChange(
+                  eq(stackPosition, 1),
+                  call([eq(stackPosition, 1)], this.handleStackPosition)
+                ),
+                interpolate(tabPosition, {
+                  extrapolate: Animated.Extrapolate.CLAMP,
+                  inputRange: [0, 1],
+                  outputRange: [1, 0],
+                }),
+              ]),
             }}
           >
             <FloatingPanel
@@ -685,6 +748,7 @@ class ExchangeModal extends PureComponent {
                 nativeCurrency={nativeCurrency}
                 nativeFieldRef={this.assignNativeFieldRef}
                 onFocus={this.handleFocusField}
+                onBlur={this.handleBlurField}
                 onPressMaxBalance={this.handlePressMaxBalance}
                 onPressSelectInputCurrency={this.navigateToSelectInputCurrency}
                 onUnlockAsset={this.handleUnlockAsset}
@@ -692,6 +756,8 @@ class ExchangeModal extends PureComponent {
                 setNativeAmount={this.setNativeAmount}
               />
               <ExchangeOutputField
+                bottomRadius={exchangeModalBorderRadius}
+                onBlur={this.handleBlurField}
                 onFocus={this.handleFocusField}
                 onPressSelectOutputCurrency={
                   this.navigateToSelectOutputCurrency
@@ -700,7 +766,6 @@ class ExchangeModal extends PureComponent {
                 outputCurrency={get(outputCurrency, 'symbol', null)}
                 outputFieldRef={this.assignOutputFieldRef}
                 setOutputAmount={this.setOutputAmount}
-                bottomRadius={exchangeModalBorderRadius}
               />
             </FloatingPanel>
             {isSufficientBalance && <SlippageWarning slippage={slippage} />}
@@ -708,6 +773,7 @@ class ExchangeModal extends PureComponent {
               <Fragment>
                 <Centered css={padding(19, 15, 0)} flexShrink={0} width="100%">
                   <ConfirmExchangeButton
+                    creationTimestamp={approvalCreationTimestamp}
                     disabled={isAssetApproved && !Number(inputAmountDisplay)}
                     inputCurrencyName={get(inputCurrency, 'symbol')}
                     isAssetApproved={isAssetApproved}
@@ -716,6 +782,7 @@ class ExchangeModal extends PureComponent {
                     onSubmit={this.handleSubmit}
                     onUnlockAsset={this.handleUnlockAsset}
                     slippage={slippage}
+                    timeRemaining={approvalEstimatedTimeInMs}
                   />
                 </Centered>
                 <GasSpeedButton />
@@ -732,28 +799,17 @@ class ExchangeModal extends PureComponent {
 }
 
 export default compose(
-  withAccountAddress,
   withAccountData,
   withAccountSettings,
   withBlockedHorizontalSwipe,
   withGas,
-  withKeyboardFocusHistory,
   withNavigationFocus,
   withTransactionConfirmationScreen,
   withTransitionProps,
   withUniswapAllowances,
   withUniswapAssets,
-  mapProps(
-    ({
-      navigation,
-      stackTransitionProps: { isTransitioning: isStacksTransitioning },
-      tabsTransitionProps: { isTransitioning: isTabsTransitioning },
-      ...props
-    }) => ({
-      ...props,
-      isTransitioning: isStacksTransitioning || isTabsTransitioning,
-      navigation,
-      transitionPosition: get(navigation, 'state.params.position'),
-    })
-  )
+  withProps(({ navigation, transitionProps: { position: stackPosition } }) => ({
+    stackPosition,
+    tabPosition: get(navigation, 'state.params.position'),
+  }))
 )(ExchangeModal);

@@ -7,7 +7,7 @@ import { getIsWalletEmpty } from '../handlers/localstorage/storage';
 import { hasEthBalance } from '../handlers/web3';
 import { dataClearState, dataLoadState } from '../redux/data';
 import { explorerClearState, explorerInit } from '../redux/explorer';
-import { gasClearFields, gasPricesInit } from '../redux/gas';
+import { gasClearState, gasPricesInit } from '../redux/gas';
 import { clearIsWalletEmpty } from '../redux/isWalletEmpty';
 import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import { nonceClearState } from '../redux/nonce';
@@ -47,7 +47,7 @@ export default Component =>
         dataLoadState,
         explorerClearState,
         explorerInit,
-        gasClearFields,
+        gasClearState,
         gasPricesInit,
         nonceClearState,
         requestsClearState,
@@ -151,7 +151,7 @@ export default Component =>
           if (isImported) {
             await ownProps.clearAccountData();
           }
-          ownProps.settingsUpdateAccountAddress(walletAddress, 'RAINBOWWALLET');
+          ownProps.settingsUpdateAccountAddress(walletAddress);
           if (isNew) {
             ownProps.setIsWalletEthZero(true);
           } else if (isImported) {
