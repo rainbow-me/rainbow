@@ -76,7 +76,7 @@ class GasSpeedButton extends PureComponent {
     <ButtonPressAnimation
       hapticType="impactHeavy"
       onPress={this.handlePress}
-      scaleTo={0.99999999}
+      scaleTo={0.99999}
       width="100%"
     >
       <Column css={padding(14, 19, 0)} width="100%">

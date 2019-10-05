@@ -25,7 +25,6 @@ import {
   sheetPreset,
   backgroundPreset,
 } from '../navigation/transitions/effects';
-import restoreKeyboard from './restoreKeyboard';
 
 const onTransitionEnd = () =>
   store.dispatch(updateTransitionProps({ isTransitioning: false }));
@@ -83,9 +82,6 @@ const MainNavigator = createStackNavigator(
     ExchangeModal: {
       navigationOptions: {
         ...expandedPreset,
-        gestureResponseDistance: {
-          vertical: deviceUtils.dimensions.height,
-        },
         onTransitionStart: props => {
           expandedPreset.onTransitionStart(props);
           onTransitionStart();
@@ -132,15 +128,14 @@ const MainNavigator = createStackNavigator(
         onTransitionStart: props => {
           onTransitionStart(props);
           sheetPreset.onTransitionStart(props);
-          restoreKeyboard();
         },
       },
       screen: SendSheetWithData,
     },
     SettingsModal: {
       navigationOptions: {
-        gesturesEnabled: false,
         ...expandedPreset,
+        gesturesEnabled: false,
         onTransitionStart: props => {
           expandedPreset.onTransitionStart(props);
           onTransitionStart();
@@ -171,10 +166,10 @@ const MainNavigator = createStackNavigator(
       onTransitionEnd,
       onTransitionStart,
     },
-    disableKeyboardHandling: true, // XXX not sure about this from rebase
+    disableKeyboardHandling: true,
     headerMode: 'none',
     initialRouteName: 'SwipeLayout',
-    keyboardDismissMode: 'none', // true?
+    keyboardDismissMode: 'none',
     mode: 'modal',
   }
 );

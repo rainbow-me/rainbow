@@ -26,4 +26,4 @@ GestureBlocker.propTypes = {
   type: PropTypes.string,
 };
 
-export default GestureBlocker;
+export default React.memo(GestureBlocker);

@@ -14,7 +14,6 @@ class SmallBalancesWrapper extends PureComponent {
     balancesSum: PropTypes.string,
     openSmallBalances: PropTypes.bool,
     setOpenSmallBalances: PropTypes.func,
-    setSafeTimeout: PropTypes.func,
   };
 
   state = { areChildrenVisible: true };
