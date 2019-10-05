@@ -86,6 +86,7 @@ const MainNavigator = createStackNavigator(
         gestureResponseDistance: {
           vertical: deviceUtils.dimensions.height,
         },
+        gestureVelocityImpact: 0.6,
         onTransitionStart: props => {
           expandedPreset.onTransitionStart(props);
           onTransitionStart();
