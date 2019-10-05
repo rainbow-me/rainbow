@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Animated from 'react-native-reanimated';
+import { interpolate } from './procs';
 
 const {
   block,
@@ -8,7 +9,6 @@ const {
   clockRunning,
   concat,
   cond,
-  interpolate,
   multiply,
   set,
   spring,

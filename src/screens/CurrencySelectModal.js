@@ -9,6 +9,7 @@ import { withUniswapAssets } from '../hoc';
 import { borders, colors, position } from '../styles';
 import { isNewValueForPath } from '../utils';
 import { filterList } from '../utils/search';
+import { interpolate } from '../components/animations';
 import { EmptyAssetList } from '../components/asset-list';
 import { ExchangeCoinRow } from '../components/coin-row';
 import { ExchangeAssetList, ExchangeSearch } from '../components/exchange';
@@ -176,8 +177,8 @@ class CurrencySelectModal extends Component {
         <Animated.View
           style={{
             ...position.sizeAsObject('100%'),
-            opacity: Animated.interpolate(transitionPosition, {
-              extrapolate: 'clamp',
+            opacity: interpolate(transitionPosition, {
+              extrapolate: Animated.Extrapolate.CLAMP,
               inputRange: [0, 1],
               outputRange: [0, 1],
             }),

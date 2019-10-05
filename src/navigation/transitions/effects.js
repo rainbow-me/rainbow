@@ -3,20 +3,11 @@ import Animated from 'react-native-reanimated';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import store from '../../redux/store';
 import { updateTransitionProps } from '../../redux/navigation';
+import { interpolate } from '../../components/animations';
 import { deviceUtils } from '../../utils';
 import { colors } from '../../styles';
 
-const {
-  and,
-  block,
-  call,
-  color,
-  cond,
-  eq,
-  interpolate,
-  or,
-  SpringUtils,
-} = Animated;
+const { and, block, call, color, cond, eq, or, SpringUtils } = Animated;
 
 const statusBarHeight = getStatusBarHeight(true);
 
@@ -35,7 +26,7 @@ const expandStyleInterpolator = ({
   current: { progress: current },
 }) => {
   const backgroundOpacity = interpolate(current, {
-    extrapolate: 'clamp',
+    extrapolate: Animated.Extrapolate.CLAMP,
     inputRange: [0, 0.975],
     outputRange: [0, 0.7],
   });
@@ -75,7 +66,7 @@ const sheetStyleInterpolator = ({
   ...rest
 }) => {
   const backgroundOpacity = interpolate(current, {
-    extrapolate: 'clamp',
+    extrapolate: Animated.Extrapolate.CLAMP,
     inputRange: [0, 0.975],
     outputRange: [0, 0.7],
   });

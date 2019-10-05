@@ -1,6 +1,6 @@
 import { upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Animated, {
   Easing,
   Transitioning,
@@ -9,11 +9,12 @@ import Animated, {
 import { useTransition } from 'react-native-redash';
 import { withProps } from 'recompact';
 import { gasUtils } from '../../utils';
+import { interpolate } from '../animations';
 import { Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedEmoji from './GasSpeedEmoji';
 
-const { cond, eq, interpolate, neq } = Animated;
+const { cond, eq, neq } = Animated;
 
 const containerStyle = {
   bottom: 0,
@@ -31,16 +32,18 @@ const GasSpeedLabel = withProps({
 
 const distance = 20;
 const duration = 150;
-const height = 28;
 const transition = (
   <Transition.Change durationMs={duration} interpolation="easeOut" />
 );
 
-const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate }) => {
+const GasSpeedLabelPagerItem = ({ height, label, selected, shouldAnimate }) => {
   const ref = useRef();
-  if (shouldAnimate && ref.current) {
-    ref.current.animateNextTransition();
-  }
+
+  useEffect(() => {
+    if (shouldAnimate && ref.current) {
+      ref.current.animateNextTransition();
+    }
+  }, [shouldAnimate]);
 
   const index = gasUtils.GasSpeedOrder.indexOf(label);
   const isFirst = index === 0;
@@ -111,11 +114,10 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate }) => {
 };
 
 GasSpeedLabelPagerItem.propTypes = {
+  height: PropTypes.number,
   label: PropTypes.oneOf(gasUtils.GasSpeedOrder),
   selected: PropTypes.bool,
   shouldAnimate: PropTypes.bool,
 };
 
-GasSpeedLabelPagerItem.height = height;
-
-export default GasSpeedLabelPagerItem;
+export default React.memo(GasSpeedLabelPagerItem);

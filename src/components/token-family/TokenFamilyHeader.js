@@ -8,14 +8,14 @@ import { toClass, withProps } from 'recompact';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { borders, colors } from '../../styles';
 import { initials, isNewValueForPath } from '../../utils';
-import { ButtonPressAnimation } from '../animations';
+import { ButtonPressAnimation, interpolate } from '../animations';
 import Highlight from '../Highlight';
 import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
 import { Row, RowWithMargins } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import { TruncatedText, Monospace } from '../text';
 
-const { interpolate, timing, Value } = Animated;
+const { timing, Value } = Animated;
 
 const AnimatedMonospace = Animated.createAnimatedComponent(toClass(Monospace));
 const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);

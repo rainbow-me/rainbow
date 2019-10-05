@@ -25,6 +25,7 @@ export default class ExchangeInputField extends Component {
     nativeAmount: PropTypes.string,
     nativeCurrency: PropTypes.string,
     nativeFieldRef: PropTypes.func,
+    onBlur: PropTypes.func,
     onFocus: PropTypes.func,
     onPressMaxBalance: PropTypes.func,
     onPressSelectInputCurrency: PropTypes.func,
@@ -99,6 +100,7 @@ export default class ExchangeInputField extends Component {
       nativeAmount,
       nativeCurrency,
       nativeFieldRef,
+      onBlur,
       onFocus,
       onPressMaxBalance,
       onPressSelectInputCurrency,
@@ -128,6 +130,7 @@ export default class ExchangeInputField extends Component {
               <ExchangeInput
                 editable={!!inputCurrencySymbol}
                 onChangeText={setInputAmount}
+                onBlur={onBlur}
                 onFocus={onFocus}
                 placeholder={inputCurrencySymbol ? '0' : EnDash.unicode}
                 placeholderTextColor={
@@ -156,6 +159,7 @@ export default class ExchangeInputField extends Component {
             nativeAmount={nativeAmount}
             nativeCurrency={nativeCurrency}
             nativeFieldRef={nativeFieldRef}
+            onBlur={onBlur}
             onFocus={onFocus}
             setNativeAmount={setNativeAmount}
           />

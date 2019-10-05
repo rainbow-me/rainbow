@@ -115,7 +115,7 @@ PODS:
     - React
   - react-native-camera/RN (2.11.2):
     - React
-  - react-native-netinfo (4.3.0):
+  - react-native-netinfo (4.3.3):
     - React
   - react-native-version-number (0.3.6):
     - React
@@ -338,7 +338,7 @@ SPEC CHECKSUMS:
   React-jsinspector: e08662d1bf5b129a3d556eb9ea343a3f40353ae4
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: b5e6e34586ca6f588b0c736dcabfe0aad5ce2f3e
-  react-native-netinfo: 09681d744eb8a3ca04cb0404fb8c2537f71d3e58
+  react-native-netinfo: bd9b833f23ee1165b7e90c1b2c96731636fa9257
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   React-RCTActionSheet: b0f1ea83f4bf75fb966eae9bfc47b78c8d3efd90
   React-RCTAnimation: 359ba1b5690b1e87cc173558a78e82d35919333e

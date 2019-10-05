@@ -8,6 +8,7 @@ import Caret from '../../assets/show-all-arrow.png';
 import { deviceUtils } from '../../utils';
 import {
   ButtonPressAnimation,
+  interpolate,
   OpacityToggler,
   RotationArrow,
   RoundButtonSizeToggler,
@@ -22,7 +23,6 @@ const {
   Clock,
   clockRunning,
   cond,
-  interpolate,
   set,
   spring,
   SpringUtils,

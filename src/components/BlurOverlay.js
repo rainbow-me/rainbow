@@ -3,6 +3,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { BlurView } from '@react-native-community/blur';
+import { interpolate } from './animations';
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
@@ -19,7 +20,7 @@ const BlurOverlay = ({ blurType, intensity }) => (
     <AnimatedBlurView
       blurAmount={15}
       blurType={blurType}
-      opacity={Animated.interpolate(intensity, interpolationConfig)}
+      opacity={interpolate(intensity, interpolationConfig)}
       style={StyleSheet.absoluteFill}
     />
   </View>

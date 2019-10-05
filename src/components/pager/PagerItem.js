@@ -15,7 +15,6 @@ const PagerItem = ({ item: { component, dimensions } }) => (
 );
 
 PagerItem.propTypes = {
-  // eslint-disable-next-line react/no-unused-prop-types
   item: pagerPagePropType,
 };
 

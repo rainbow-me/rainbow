@@ -1,4 +1,4 @@
-import { omit, pick, toUpper } from 'lodash';
+import { omit, pick } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { InteractionManager } from 'react-native';
@@ -18,6 +18,7 @@ import {
 import stylePropType from 'react-style-proptype';
 import { animations, colors } from '../../styles';
 import { directionPropType } from '../../utils';
+import { interpolate } from './procs';
 
 const {
   block,
@@ -28,10 +29,6 @@ const {
   divide,
   eq,
   event,
-  floor,
-  greaterThan,
-  interpolate,
-  multiply,
   onChange,
   or,
   set,
@@ -39,15 +36,6 @@ const {
 } = Animated;
 
 const { ACTIVE, BEGAN, CANCELLED, END, FAILED, UNDETERMINED } = State;
-
-const TransformOriginMap = {
-  BOTTOM: 3,
-  LEFT: 4,
-  RIGHT: 2,
-  TOP: 1,
-};
-
-const { BOTTOM, LEFT, RIGHT, TOP } = TransformOriginMap;
 
 const AnimatedRawButton = createNativeWrapper(
   createAnimatedComponent(PureNativeButton),
@@ -124,17 +112,6 @@ export default class ButtonPressAnimation extends PureComponent {
       height: 0,
       width: 0,
     };
-
-    this.transformOrigin = props.transformOrigin
-      ? TransformOriginMap[toUpper(props.transformOrigin)]
-      : undefined;
-
-    const isDirectionNegative = or(
-      eq(this.transformOrigin, LEFT),
-      eq(this.transformOrigin, TOP)
-    );
-
-    this.directionMultiple = cond(isDirectionNegative, -1, 1);
 
     this.onGestureEvent = event([
       {
@@ -234,34 +211,29 @@ export default class ButtonPressAnimation extends PureComponent {
       exclusive,
       scaleTo,
       style,
+      transformOrigin,
       tapRef,
       ...props
     } = this.props;
 
-    const offsetX = cond(
-      or(eq(this.transformOrigin, LEFT), eq(this.transformOrigin, RIGHT)),
-      divide(multiply(floor(this.state.width), this.directionMultiple), 2),
-      0
-    );
+    const { height, width } = this.state;
 
-    const offsetY = cond(
-      or(eq(this.transformOrigin, BOTTOM), eq(this.transformOrigin, TOP)),
-      divide(multiply(floor(this.state.height), this.directionMultiple), 2),
-      0
-    );
+    let offsetX = 0;
+    let offsetY = 0;
 
-    const opacity = cond(
-      greaterThan(scaleTo, defaultScale),
-      activeOpacity,
-      interpolate(divide(this.scale, defaultScale), {
-        inputRange: [scaleTo, defaultScale],
-        outputRange: [activeOpacity, 1],
-      })
-    );
+    if (transformOrigin === 'left' || transformOrigin === 'right') {
+      offsetX = Math.floor(width / 2) * (transformOrigin === 'left' ? -1 : 1);
+    } else if (transformOrigin === 'bottom' || transformOrigin === 'top') {
+      offsetY = Math.floor(height / 2) * (transformOrigin === 'top' ? -1 : 1);
+    }
 
-    const transform = transformOriginUtil(offsetX, offsetY, {
-      scale: this.scale,
-    });
+    const opacity =
+      scaleTo > defaultScale
+        ? activeOpacity
+        : interpolate(divide(this.scale, defaultScale), {
+            inputRange: [scaleTo, defaultScale],
+            outputRange: [activeOpacity, 1],
+          });
 
     return (
       <Fragment>
@@ -276,8 +248,16 @@ export default class ButtonPressAnimation extends PureComponent {
         >
           <Animated.View
             accessible
-            onLayout={this.transformOrigin ? this.handleLayout : NOOP}
-            style={[style, { opacity, transform }]}
+            onLayout={transformOrigin ? this.handleLayout : NOOP}
+            style={[
+              style,
+              {
+                opacity,
+                transform: transformOriginUtil(offsetX, offsetY, {
+                  scale: this.scale,
+                }),
+              },
+            ]}
           >
             {children}
           </Animated.View>

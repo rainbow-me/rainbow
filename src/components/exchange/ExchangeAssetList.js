@@ -92,14 +92,15 @@ export default class ExchangeAssetList extends PureComponent {
       <RecyclerListView
         {...this.props}
         dataProvider={this.state.dataProvider}
-        layoutProvider={this.layoutProvider}
         itemAnimator={layoutItemAnimator}
+        layoutProvider={this.layoutProvider}
         onContentSizeChange={this.onContentSizeChange}
         onViewableItemsChanged={this.onViewableItemsChanged}
         optimizeForInsertDeleteAnimations
         ref={this.rlvRef}
         renderAheadOffset={deviceUtils.dimensions.height}
         rowRenderer={this.renderRow}
+        scrollThrottle={32}
         scrollViewProps={{
           directionalLockEnabled: true,
           keyboardDismissMode: 'none',

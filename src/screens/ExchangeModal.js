@@ -9,7 +9,7 @@ import {
 import BigNumber from 'bignumber.js';
 import { get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment, PureComponent } from 'react';
+import React, { Fragment, Component } from 'react';
 import { LayoutAnimation, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
@@ -31,12 +31,14 @@ import {
   withBlockedHorizontalSwipe,
   withGas,
   withTransactionConfirmationScreen,
+  withTransitionProps,
   withUniswapAllowances,
   withUniswapAssets,
 } from '../hoc';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
 import { contractUtils, ethereumUtils, isNewValueForPath } from '../utils';
+import { interpolate } from '../components/animations';
 import {
   ConfirmExchangeButton,
   ExchangeInputField,
@@ -56,6 +58,8 @@ import { CurrencySelectionTypes } from './CurrencySelectModal';
 
 export const exchangeModalBorderRadius = 30;
 
+const { block, call, eq, onChange } = Animated;
+
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(
   toClass(FloatingPanels)
 );
@@ -70,7 +74,7 @@ const isSameAsset = (firstAsset, secondAsset) => {
   return firstAddress === secondAddress;
 };
 
-class ExchangeModal extends PureComponent {
+class ExchangeModal extends Component {
   static propTypes = {
     accountAddress: PropTypes.string,
     allAssets: PropTypes.array,
@@ -85,9 +89,9 @@ class ExchangeModal extends PureComponent {
     navigation: PropTypes.object,
     pendingApprovals: PropTypes.object,
     selectedGasPrice: PropTypes.object,
+    tabPosition: PropTypes.object, // animated value
     tokenReserves: PropTypes.object,
     tradeDetails: PropTypes.object,
-    transitionPosition: PropTypes.object, // animated value
     txFees: PropTypes.object,
     uniswapGetTokenReserve: PropTypes.func,
     uniswapUpdateAllowances: PropTypes.func,
@@ -469,6 +473,10 @@ class ExchangeModal extends PureComponent {
     return reserve;
   };
 
+  handleBlurField = ({ currentTarget }) => {
+    console.log('blur', currentTarget);
+  };
+
   handleFocusField = ({ currentTarget }) => {
     this.setState({ lastFocusedInput: currentTarget });
   };
@@ -555,13 +563,15 @@ class ExchangeModal extends PureComponent {
     }
   };
 
-  handleWillFocus = () => {
+  handleKeyboardManagement = () => {
     const { lastFocusedInput } = this.state;
 
-    if (lastFocusedInput) {
-      TextInput.State.focusTextInput(lastFocusedInput);
-    } else {
-      this.inputFieldRef.focus();
+    if (!lastFocusedInput) {
+      return this.inputFieldRef.focus();
+    }
+
+    if (lastFocusedInput !== TextInput.State.currentlyFocusedField()) {
+      return TextInput.State.focusTextInput(lastFocusedInput);
     }
   };
 
@@ -668,8 +678,16 @@ class ExchangeModal extends PureComponent {
     }
   };
 
+  handleStackPosition = ([isAtTop]) => {
+    if (!isAtTop) return;
+
+    if (TextInput.State.currentlyFocusedField() === null) {
+      this.handleKeyboardManagement();
+    }
+  };
+
   render = () => {
-    const { nativeCurrency, transitionPosition } = this.props;
+    const { nativeCurrency, stackPosition, tabPosition } = this.props;
 
     const {
       approvalCreationTimestamp,
@@ -692,7 +710,7 @@ class ExchangeModal extends PureComponent {
 
     return (
       <KeyboardFixedOpenLayout>
-        <NavigationEvents onWillFocus={this.handleWillFocus} />
+        <NavigationEvents onWillFocus={this.handleKeyboardManagement} />
         <Centered
           {...position.sizeAsObject('100%')}
           backgroundColor={colors.transparent}
@@ -701,11 +719,17 @@ class ExchangeModal extends PureComponent {
           <AnimatedFloatingPanels
             margin={0}
             style={{
-              opacity: Animated.interpolate(transitionPosition, {
-                extrapolate: 'clamp',
-                inputRange: [0, 1],
-                outputRange: [1, 0],
-              }),
+              opacity: block([
+                onChange(
+                  eq(stackPosition, 1),
+                  call([eq(stackPosition, 1)], this.handleStackPosition)
+                ),
+                interpolate(tabPosition, {
+                  extrapolate: Animated.Extrapolate.CLAMP,
+                  inputRange: [0, 1],
+                  outputRange: [1, 0],
+                }),
+              ]),
             }}
           >
             <FloatingPanel
@@ -724,6 +748,7 @@ class ExchangeModal extends PureComponent {
                 nativeCurrency={nativeCurrency}
                 nativeFieldRef={this.assignNativeFieldRef}
                 onFocus={this.handleFocusField}
+                onBlur={this.handleBlurField}
                 onPressMaxBalance={this.handlePressMaxBalance}
                 onPressSelectInputCurrency={this.navigateToSelectInputCurrency}
                 onUnlockAsset={this.handleUnlockAsset}
@@ -731,6 +756,8 @@ class ExchangeModal extends PureComponent {
                 setNativeAmount={this.setNativeAmount}
               />
               <ExchangeOutputField
+                bottomRadius={exchangeModalBorderRadius}
+                onBlur={this.handleBlurField}
                 onFocus={this.handleFocusField}
                 onPressSelectOutputCurrency={
                   this.navigateToSelectOutputCurrency
@@ -739,7 +766,6 @@ class ExchangeModal extends PureComponent {
                 outputCurrency={get(outputCurrency, 'symbol', null)}
                 outputFieldRef={this.assignOutputFieldRef}
                 setOutputAmount={this.setOutputAmount}
-                bottomRadius={exchangeModalBorderRadius}
               />
             </FloatingPanel>
             {isSufficientBalance && <SlippageWarning slippage={slippage} />}
@@ -779,9 +805,11 @@ export default compose(
   withGas,
   withNavigationFocus,
   withTransactionConfirmationScreen,
+  withTransitionProps,
   withUniswapAllowances,
   withUniswapAssets,
-  withProps(({ navigation }) => ({
-    transitionPosition: get(navigation, 'state.params.position'),
+  withProps(({ navigation, transitionProps: { position: stackPosition } }) => ({
+    stackPosition,
+    tabPosition: get(navigation, 'state.params.position'),
   }))
 )(ExchangeModal);
