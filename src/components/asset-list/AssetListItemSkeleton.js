@@ -8,6 +8,7 @@ import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, padding, position } from '../../styles';
 import { deviceUtils } from '../../utils';
+import { interpolate } from '../animations';
 import { CoinRow } from '../coin-row';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
 
@@ -15,7 +16,6 @@ const {
   block,
   Clock,
   cond,
-  interpolate,
   set,
   startClock,
   stopClock,
@@ -75,17 +75,17 @@ export default class AssetListItemSkeleton extends PureComponent {
   startShimmerLoop = () => {
     const clock = new Clock();
 
+    const config = {
+      duration: new Value(1250),
+      easing: Easing.linear,
+      toValue: new Value(1),
+    };
+
     const state = {
       finished: new Value(0),
       frameTime: new Value(0),
       position: new Value(0),
       time: new Value(0),
-    };
-
-    const config = {
-      duration: new Value(1250),
-      easing: Easing.linear,
-      toValue: new Value(1),
     };
 
     return block([

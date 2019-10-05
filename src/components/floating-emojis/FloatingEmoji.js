@@ -4,8 +4,9 @@ import Animated, { Easing } from 'react-native-reanimated';
 import stylePropType from 'react-style-proptype';
 import { colors, fonts } from '../../styles';
 import { Emoji } from '../text';
+import { interpolate } from '../animations';
 
-const { concat, interpolate, timing, Value } = Animated;
+const { concat, timing, Value } = Animated;
 
 export default class FloatingEmoji extends PureComponent {
   static propTypes = {

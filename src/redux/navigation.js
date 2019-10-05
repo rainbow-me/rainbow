@@ -1,7 +1,5 @@
 import produce from 'immer';
-import { Animated } from 'react-native';
-
-const { Value } = Animated;
+import Animated from 'react-native-reanimated';
 
 // -- Constants --------------------------------------- //
 const UPDATE_TRANSITION_PROPS = 'navigation/UPDATE_TRANSITION_PROPS';
@@ -16,7 +14,7 @@ const INITIAL_STATE = {
     blurColor: null,
     effect: '',
     isTransitioning: false,
-    position: new Value(0),
+    position: new Animated.Value(0),
   },
 };
 

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import Animated, { Easing } from 'react-native-reanimated';
+import { interpolate } from './procs';
 
 const buildAnimation = (value, toValue) =>
   Animated.timing(value, {
@@ -24,7 +25,7 @@ export default class FlyInAnimation extends PureComponent {
   animation = new Animated.Value(0);
 
   buildInterpolation = outputRange =>
-    Animated.interpolate(this.animation, {
+    interpolate(this.animation, {
       inputRange: [0, 1],
       outputRange,
     });

@@ -5,6 +5,7 @@ import Animated from 'react-native-reanimated';
 import { View } from 'react-primitives';
 import styled from 'styled-components/primitives';
 import { borders, colors, position } from '../../styles';
+import { interpolate } from './procs';
 
 const {
   add,
@@ -13,7 +14,6 @@ const {
   clockRunning,
   cond,
   divide,
-  interpolate,
   multiply,
   set,
   spring,

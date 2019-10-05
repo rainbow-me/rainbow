@@ -6,11 +6,12 @@ import { compose, onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components';
 import { withNetInfo } from '../hoc';
 import { colors, padding, shadow } from '../styles';
+import { interpolate } from './animations';
 import { Icon } from './icons';
 import { RowWithMargins } from './layout';
 import { Text } from './text';
 
-const { interpolate, spring, Value, View } = Animated;
+const { spring, Value, View } = Animated;
 
 const Badge = styled(RowWithMargins).attrs({
   align: 'center',
