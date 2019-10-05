@@ -82,6 +82,7 @@ const MainNavigator = createStackNavigator(
     ExchangeModal: {
       navigationOptions: {
         ...expandedPreset,
+        gestureVelocityImpact: 0.6,
         onTransitionStart: props => {
           expandedPreset.onTransitionStart(props);
           onTransitionStart();
