@@ -121,7 +121,7 @@ InvestmentCard.propTypes = {
   gradientColors: PropTypes.arrayOf(PropTypes.string).isRequired,
   headerProps: PropTypes.shape(InvestmentCardHeader.propTypes),
   isExpandedState: PropTypes.bool,
-  onLayout: PropTypes.func.isRequired,
+  onLayout: PropTypes.func,
   onPress: PropTypes.func,
   openInvestmentCards: PropTypes.bool,
   uniqueId: PropTypes.string,

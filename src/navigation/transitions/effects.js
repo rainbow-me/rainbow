@@ -27,8 +27,8 @@ const expandStyleInterpolator = ({
 }) => {
   const backgroundOpacity = interpolate(current, {
     extrapolate: Animated.Extrapolate.CLAMP,
-    inputRange: [0, 0.975],
-    outputRange: [0, 0.7],
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, 0.7, 0.7],
   });
 
   const translateY = interpolate(current, {
@@ -63,18 +63,14 @@ const expandStyleInterpolator = ({
 const sheetStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },
-  ...rest
 }) => {
   const backgroundOpacity = interpolate(current, {
     extrapolate: Animated.Extrapolate.CLAMP,
-    inputRange: [0, 0.975],
-    outputRange: [0, 0.7],
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, 0.7, 0.7],
   });
 
-  console.log('tttt', current);
-
   const translateY = block([
-    call([current], ([currentd]) => console.log(currentd, 'llllll', rest)),
     interpolate(current, {
       inputRange: [0, 1],
       outputRange: [screen.height, statusBarHeight],
@@ -101,11 +97,9 @@ const backgroundInterpolator = ({
   if (next === undefined) {
     return { cardStyle: {} };
   }
-  const dispatch = cond(
-    call([], () => {
-      store.dispatch(updateTransitionProps({ position: next }));
-    })
-  );
+  const dispatch = call([], () => {
+    store.dispatch(updateTransitionProps({ position: next }));
+  });
   return { cardStyle: { opacity: block([dispatch, 1]) } };
 };
 

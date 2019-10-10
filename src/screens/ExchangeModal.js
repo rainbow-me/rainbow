@@ -9,10 +9,10 @@ import {
 import BigNumber from 'bignumber.js';
 import { get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment, Component } from 'react';
-import { LayoutAnimation, TextInput } from 'react-native';
+import React, { Fragment } from 'react';
+import { LayoutAnimation, TextInput, Keyboard } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { NavigationEvents, withNavigationFocus } from 'react-navigation';
+import { withNavigationFocus } from 'react-navigation';
 import { compose, toClass, withProps } from 'recompact';
 import { estimateSwapGasLimit, executeSwap } from '../handlers/uniswap';
 import {
@@ -58,7 +58,7 @@ import { CurrencySelectionTypes } from './CurrencySelectModal';
 
 export const exchangeModalBorderRadius = 30;
 
-const { block, call, eq, onChange } = Animated;
+const { block, call, onChange, greaterOrEq } = Animated;
 
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(
   toClass(FloatingPanels)
@@ -74,14 +74,14 @@ const isSameAsset = (firstAsset, secondAsset) => {
   return firstAddress === secondAddress;
 };
 
-class ExchangeModal extends Component {
+class ExchangeModal extends React.PureComponent {
   static propTypes = {
     accountAddress: PropTypes.string,
     allAssets: PropTypes.array,
     allowances: PropTypes.object,
     chainId: PropTypes.number,
     dataAddNewTransaction: PropTypes.func,
-    gasLimit: PropTypes.string,
+    gasLimit: PropTypes.number,
     gasUpdateDefaultGasLimit: PropTypes.func,
     gasUpdateTxFee: PropTypes.func,
     isFocused: PropTypes.bool,
@@ -111,7 +111,6 @@ class ExchangeModal extends Component {
     isAssetApproved: true,
     isSufficientBalance: true,
     isUnlockingAsset: false,
-    lastFocusedInput: null,
     nativeAmount: null,
     outputAmount: null,
     outputAmountDisplay: null,
@@ -178,6 +177,7 @@ class ExchangeModal extends Component {
     }
   };
 
+  lastFocusedInput = null;
   inputFieldRef = null;
   nativeFieldRef = null;
   outputFieldRef = null;
@@ -473,12 +473,8 @@ class ExchangeModal extends Component {
     return reserve;
   };
 
-  handleBlurField = ({ currentTarget }) => {
-    console.log('blur', currentTarget);
-  };
-
   handleFocusField = ({ currentTarget }) => {
-    this.setState({ lastFocusedInput: currentTarget });
+    this.lastFocusedInput = currentTarget;
   };
 
   handlePressMaxBalance = () => {
@@ -564,14 +560,12 @@ class ExchangeModal extends Component {
   };
 
   handleKeyboardManagement = () => {
-    const { lastFocusedInput } = this.state;
-
-    if (!lastFocusedInput) {
+    if (!this.lastFocusedInput) {
       return this.inputFieldRef.focus();
     }
 
-    if (lastFocusedInput !== TextInput.State.currentlyFocusedField()) {
-      return TextInput.State.focusTextInput(lastFocusedInput);
+    if (this.lastFocusedInput !== TextInput.State.currentlyFocusedField()) {
+      return TextInput.State.focusTextInput(this.lastFocusedInput);
     }
   };
 
@@ -710,26 +704,34 @@ class ExchangeModal extends Component {
 
     return (
       <KeyboardFixedOpenLayout>
-        <NavigationEvents onWillFocus={this.handleKeyboardManagement} />
         <Centered
           {...position.sizeAsObject('100%')}
           backgroundColor={colors.transparent}
           direction="column"
         >
+          <Animated.Code
+            key={stackPosition.__nodeID}
+            exec={block([
+              onChange(
+                greaterOrEq(stackPosition, 0.99),
+                call([greaterOrEq(stackPosition, 0.9)], ([isTop]) => {
+                  if (isTop) {
+                    this.handleKeyboardManagement();
+                  } else {
+                    Keyboard.dismiss();
+                  }
+                })
+              ),
+            ])}
+          />
           <AnimatedFloatingPanels
             margin={0}
             style={{
-              opacity: block([
-                onChange(
-                  eq(stackPosition, 1),
-                  call([eq(stackPosition, 1)], this.handleStackPosition)
-                ),
-                interpolate(tabPosition, {
-                  extrapolate: Animated.Extrapolate.CLAMP,
-                  inputRange: [0, 1],
-                  outputRange: [1, 0],
-                }),
-              ]),
+              opacity: interpolate(tabPosition, {
+                extrapolate: Animated.Extrapolate.CLAMP,
+                inputRange: [0, 1],
+                outputRange: [1, 0],
+              }),
             }}
           >
             <FloatingPanel
@@ -748,7 +750,6 @@ class ExchangeModal extends Component {
                 nativeCurrency={nativeCurrency}
                 nativeFieldRef={this.assignNativeFieldRef}
                 onFocus={this.handleFocusField}
-                onBlur={this.handleBlurField}
                 onPressMaxBalance={this.handlePressMaxBalance}
                 onPressSelectInputCurrency={this.navigateToSelectInputCurrency}
                 onUnlockAsset={this.handleUnlockAsset}
@@ -757,7 +758,6 @@ class ExchangeModal extends Component {
               />
               <ExchangeOutputField
                 bottomRadius={exchangeModalBorderRadius}
-                onBlur={this.handleBlurField}
                 onFocus={this.handleFocusField}
                 onPressSelectOutputCurrency={
                   this.navigateToSelectOutputCurrency

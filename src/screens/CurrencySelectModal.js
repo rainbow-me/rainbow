@@ -134,7 +134,7 @@ class CurrencySelectModal extends Component {
   handleWillFocus = () => {
     this.dangerouslySetIsGestureBlocked(true);
     if (this.searchInputRef.current) {
-      this.searchInputRef.current.focus();
+      //this.searchInputRef.current.focus();
     }
   };
 

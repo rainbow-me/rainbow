@@ -35,7 +35,7 @@ FloatingPanel.propTypes = {
   color: PropTypes.string,
   height: PropTypes.number,
   hideShadow: PropTypes.bool,
-  overflow: PropTypes.number,
+  overflow: PropTypes.string,
   radius: PropTypes.number,
   style: stylePropType,
   width: PropTypes.number,

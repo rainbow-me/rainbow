@@ -135,14 +135,14 @@ export const withSendComponentWithData = (SendComponent, options) => {
     onAddressInputFocus = async () => {
       const { recipient } = this.props;
 
-      const validAddress = await isValidAddress(recipient);
+      const validAddress = await checkIsValidAddress(recipient);
       this.setState({ isValidAddress: validAddress });
     };
 
     onAddressInputBlur = async () => {
       const { recipient } = this.props;
 
-      const validAddress = await isValidAddress(recipient);
+      const validAddress = await checkIsValidAddress(recipient);
       this.setState({ isValidAddress: validAddress });
     };
 
@@ -167,7 +167,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
 
       // Balance checks
       if (!this.props.confirm) {
-        const isAddressValid = await isValidAddress(this.props.recipient);
+        const isAddressValid = await checkIsValidAddress(this.props.recipient);
         if (!isAddressValid) {
           console.log(lang.t('notification.error.invalid_address'));
           return;
@@ -242,7 +242,7 @@ export const withSendComponentWithData = (SendComponent, options) => {
         : null;
       let result = false;
       if (data) {
-        result = await isValidAddress(data);
+        result = await checkIsValidAddress(data);
       }
       const onError = () =>
         console.log(lang.t('notification.error.invalid_address_scanned'));
