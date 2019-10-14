@@ -116,7 +116,7 @@ const closeSpec = {
     bounciness: 0,
     mass: 1,
     overshootClamping: true,
-    speed: 20,
+    speed: 25,
   }),
 };
 
@@ -124,9 +124,9 @@ const openSpec = {
   animation: 'spring',
   config: SpringUtils.makeConfigFromBouncinessAndSpeed({
     ...SpringUtils.makeDefaultConfig(),
-    bounciness: 5,
+    bounciness: 4,
     mass: 1,
-    speed: 20,
+    speed: 25,
   }),
 };
 
