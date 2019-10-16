@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import { LayoutAnimation, TextInput, Keyboard } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { withNavigationFocus } from 'react-navigation';
+import { withNavigationFocus, NavigationEvents } from 'react-navigation';
 import { compose, toClass, withProps } from 'recompact';
 import { estimateSwapGasLimit, executeSwap } from '../handlers/uniswap';
 import {
@@ -704,6 +704,10 @@ class ExchangeModal extends React.PureComponent {
 
     return (
       <KeyboardFixedOpenLayout>
+        <NavigationEvents
+          onWillFocus={this.handleKeyboardManagement}
+          onWillBlur={Keyboard.dismiss}
+        />
         <Centered
           {...position.sizeAsObject('100%')}
           backgroundColor={colors.transparent}
