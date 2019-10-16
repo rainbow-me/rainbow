@@ -15,7 +15,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
 import { isIphoneX } from 'react-native-iphone-x-helper';
-import { compose, withHandlers } from 'recompact';
+import { compose, withHandlers, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
 import {
@@ -30,17 +30,21 @@ import {
   withAccountData,
   withAccountSettings,
   withDataInit,
+  withTransitionProps,
   withUniqueTokens,
 } from '../hoc';
 import { colors } from '../styles';
 import { deviceUtils, isNewValueForPath } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
 import { getLocalContacts } from '../handlers/commonStorage';
+import Animated from 'react-native-reanimated';
 
 const Container = styled(Column)`
   background-color: ${colors.white};
   height: 100%;
 `;
+
+const { block, call, onChange, greaterOrEq } = Animated;
 
 const formatGasSpeedItem = (value, key) => {
   const cost = get(value, 'txFee.native.value.display');
@@ -259,6 +263,8 @@ class SendSheet extends Component {
       selected,
       sendableUniqueTokens,
       sendUpdateRecipient,
+      stackPosition,
+      navigation,
       ...props
     } = this.props;
     const showEmptyState = !isValidAddress;
@@ -269,6 +275,19 @@ class SendSheet extends Component {
       <Container>
         <KeyboardAvoidingView behavior="padding">
           <Container align="center">
+            <Animated.Code
+              key={stackPosition.__nodeID}
+              exec={block([
+                onChange(
+                  greaterOrEq(stackPosition, 0.99),
+                  call([greaterOrEq(stackPosition, 0.99)], ([isTop]) => {
+                    if (isTop) {
+                      navigation.emit('refocus');
+                    }
+                  })
+                ),
+              ])}
+            />
             <SendHeader
               contacts={this.state.contacts}
               isValid={isValidAddress}
@@ -332,6 +351,10 @@ export default compose(
   withUniqueTokens,
   withAccountSettings,
   withDataInit,
+  withTransitionProps,
+  withProps(({ transitionProps: { position: stackPosition } }) => ({
+    stackPosition,
+  })),
   withHandlers({
     fetchData: ({ refreshAccountData }) => async () => refreshAccountData(),
   })

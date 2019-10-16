@@ -718,7 +718,7 @@ class ExchangeModal extends React.PureComponent {
             exec={block([
               onChange(
                 greaterOrEq(stackPosition, 0.99),
-                call([greaterOrEq(stackPosition, 0.9)], ([isTop]) => {
+                call([greaterOrEq(stackPosition, 0.99)], ([isTop]) => {
                   if (isTop) {
                     this.handleKeyboardManagement();
                   } else {
