@@ -742,7 +742,10 @@ class ExchangeModal extends React.PureComponent {
               radius={exchangeModalBorderRadius}
               overflow="visible"
             >
-              <GestureBlocker type="top" />
+              <GestureBlocker
+                type="top"
+                onHandlerStateChange={() => this.props.navigation.pop()}
+              />
               <ExchangeModalHeader />
               <ExchangeInputField
                 inputAmount={inputAmountDisplay}
@@ -793,7 +796,10 @@ class ExchangeModal extends React.PureComponent {
               </Fragment>
             )}
             <Column>
-              <GestureBlocker type="bottom" />
+              <GestureBlocker
+                type="bottom"
+                onHandlerStateChange={() => this.props.navigation.pop()}
+              />
             </Column>
           </AnimatedFloatingPanels>
         </Centered>
