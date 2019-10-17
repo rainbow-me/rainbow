@@ -10,7 +10,7 @@ import BigNumber from 'bignumber.js';
 import { get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
-import { LayoutAnimation, TextInput, Keyboard } from 'react-native';
+import { LayoutAnimation, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { withNavigationFocus, NavigationEvents } from 'react-navigation';
 import { compose, toClass, withProps } from 'recompact';
@@ -58,8 +58,6 @@ import {
 import { CurrencySelectionTypes } from './CurrencySelectModal';
 
 export const exchangeModalBorderRadius = 30;
-
-const { block, call, onChange, greaterOrEq } = Animated;
 
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(
   toClass(FloatingPanels)
@@ -693,7 +691,7 @@ class ExchangeModal extends React.Component {
   };
 
   render = () => {
-    const { nativeCurrency, stackPosition, tabPosition } = this.props;
+    const { nativeCurrency, tabPosition } = this.props;
 
     const {
       approvalCreationTimestamp,
@@ -716,28 +714,12 @@ class ExchangeModal extends React.Component {
 
     return (
       <KeyboardFixedOpenLayout>
-        <NavigationEvents
-          onWillFocus={this.handleKeyboardManagement}
-          onWillBlur={Keyboard.dismiss}
-        />
+        <NavigationEvents onWillFocus={this.handleKeyboardManagement} />
         <Centered
           {...position.sizeAsObject('100%')}
           backgroundColor={colors.transparent}
           direction="column"
         >
-          <Animated.Code
-            key={stackPosition.__nodeID}
-            exec={block([
-              onChange(
-                greaterOrEq(stackPosition, 0.99),
-                call([greaterOrEq(stackPosition, 0.99)], ([isTop]) => {
-                  if (!isTop) {
-                    Keyboard.dismiss();
-                  }
-                })
-              ),
-            ])}
-          />
           <AnimatedFloatingPanels
             margin={0}
             style={{
@@ -828,14 +810,8 @@ export default compose(
   withTransitionProps,
   withUniswapAllowances,
   withUniswapAssets,
-  withProps(
-    ({
-      navigation,
-      transitionProps: { position: stackPosition, isTransitioning },
-    }) => ({
-      isTransitioning,
-      stackPosition,
-      tabPosition: get(navigation, 'state.params.position'),
-    })
-  )
+  withProps(({ navigation, transitionProps: { isTransitioning } }) => ({
+    isTransitioning,
+    tabPosition: get(navigation, 'state.params.position'),
+  }))
 )(ExchangeModal);

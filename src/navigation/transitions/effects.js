@@ -97,10 +97,8 @@ const backgroundInterpolator = ({
   if (next === undefined) {
     return { cardStyle: {} };
   }
-  const dispatch = call([], () => {
-    store.dispatch(updateTransitionProps({ position: next }));
-  });
-  return { cardStyle: { opacity: block([dispatch, 1]) } };
+
+  return { cardStyle: { opacity: 1 } };
 };
 
 const closeSpec = {
