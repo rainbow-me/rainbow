@@ -124,6 +124,10 @@ class ExchangeModal extends React.PureComponent {
 
   componentDidMount = () => {
     this.props.gasUpdateDefaultGasLimit(ethUnits.basic_swap);
+    this.focusListener = this.props.navigation.addListener(
+      'refocus',
+      this.handleKeyboardManagement
+    );
   };
 
   componentDidUpdate = (prevProps, prevState) => {
@@ -176,6 +180,10 @@ class ExchangeModal extends React.PureComponent {
       this.getCurrencyAllowance();
     }
   };
+
+  componentWillUnmount() {
+    this.focusListener.remove();
+  }
 
   lastFocusedInput = null;
   inputFieldRef = null;
@@ -720,9 +728,7 @@ class ExchangeModal extends React.PureComponent {
                 greaterOrEq(stackPosition, 0.99),
                 call([greaterOrEq(stackPosition, 0.99)], ([isTop]) => {
                   if (isTop) {
-                    this.handleKeyboardManagement();
-                  } else {
-                    Keyboard.dismiss();
+                    this.props.navigation.emit('refocus');
                   }
                 })
               ),
