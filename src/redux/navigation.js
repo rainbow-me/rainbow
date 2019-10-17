@@ -4,7 +4,10 @@ import Animated from 'react-native-reanimated';
 const UPDATE_TRANSITION_PROPS = 'navigation/UPDATE_TRANSITION_PROPS';
 
 export const updateTransitionProps = payload => (dispatch, getState) => {
-  if (payload.pasition === getState().navigation.transitionProps.position) {
+  if (
+    getState().navigation.transitionProps.position &&
+    payload.position === getState().navigation.transitionProps.position
+  ) {
     return;
   }
   dispatch({ payload, type: UPDATE_TRANSITION_PROPS });
@@ -22,7 +25,7 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   if (action.type === UPDATE_TRANSITION_PROPS) {
-    if (action.payload.position === state.position) {
+    if (action.payload.position === state.transitionProps.position) {
       return state;
     }
 

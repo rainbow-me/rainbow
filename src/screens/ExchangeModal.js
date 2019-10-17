@@ -14,6 +14,7 @@ import { LayoutAnimation, TextInput, Keyboard } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { withNavigationFocus, NavigationEvents } from 'react-navigation';
 import { compose, toClass, withProps } from 'recompact';
+
 import { estimateSwapGasLimit, executeSwap } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
@@ -74,7 +75,7 @@ const isSameAsset = (firstAsset, secondAsset) => {
   return firstAddress === secondAddress;
 };
 
-class ExchangeModal extends React.PureComponent {
+class ExchangeModal extends React.Component {
   static propTypes = {
     accountAddress: PropTypes.string,
     allAssets: PropTypes.array,
@@ -131,6 +132,9 @@ class ExchangeModal extends React.PureComponent {
   };
 
   componentDidUpdate = (prevProps, prevState) => {
+    if (prevProps.isTransitioning && !this.props.isTransitioning) {
+      this.props.navigation.emit('refocus');
+    }
     const isNewInputAmount = isNewValueForPath(
       this.state,
       prevState,
@@ -727,8 +731,8 @@ class ExchangeModal extends React.PureComponent {
               onChange(
                 greaterOrEq(stackPosition, 0.99),
                 call([greaterOrEq(stackPosition, 0.99)], ([isTop]) => {
-                  if (isTop) {
-                    this.props.navigation.emit('refocus');
+                  if (!isTop) {
+                    Keyboard.dismiss();
                   }
                 })
               ),
@@ -824,8 +828,14 @@ export default compose(
   withTransitionProps,
   withUniswapAllowances,
   withUniswapAssets,
-  withProps(({ navigation, transitionProps: { position: stackPosition } }) => ({
-    stackPosition,
-    tabPosition: get(navigation, 'state.params.position'),
-  }))
+  withProps(
+    ({
+      navigation,
+      transitionProps: { position: stackPosition, isTransitioning },
+    }) => ({
+      isTransitioning,
+      stackPosition,
+      tabPosition: get(navigation, 'state.params.position'),
+    })
+  )
 )(ExchangeModal);

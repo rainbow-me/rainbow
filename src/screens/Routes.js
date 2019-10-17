@@ -82,10 +82,11 @@ const MainNavigator = createStackNavigator(
       navigationOptions: {
         ...expandedPreset,
         gestureVelocityImpact: 0.6,
-        // onTransitionStart: props => {
-        //   expandedPreset.onTransitionStart(props);
-        //   onTransitionStart();
-        // },
+        onTransitionEnd,
+        onTransitionStart: props => {
+          expandedPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
       },
       params: {
         isGestureBlocked: false,

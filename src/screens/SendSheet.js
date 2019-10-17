@@ -37,14 +37,11 @@ import { colors } from '../styles';
 import { deviceUtils, isNewValueForPath } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
 import { getLocalContacts } from '../handlers/commonStorage';
-import Animated from 'react-native-reanimated';
 
 const Container = styled(Column)`
   background-color: ${colors.white};
   height: 100%;
 `;
-
-const { block, call, onChange, greaterOrEq } = Animated;
 
 const formatGasSpeedItem = (value, key) => {
   const cost = get(value, 'txFee.native.value.display');
@@ -119,6 +116,10 @@ class SendSheet extends Component {
       selected,
       sendUpdateSelected,
     } = this.props;
+
+    if (prevProps.isTransitioning && !this.props.isTransitioning) {
+      this.props.navigation.emit('refocus');
+    }
 
     const asset = get(navigation, 'state.params.asset');
 
@@ -263,8 +264,6 @@ class SendSheet extends Component {
       selected,
       sendableUniqueTokens,
       sendUpdateRecipient,
-      stackPosition,
-      navigation,
       ...props
     } = this.props;
     const showEmptyState = !isValidAddress;
@@ -275,19 +274,6 @@ class SendSheet extends Component {
       <Container>
         <KeyboardAvoidingView behavior="padding">
           <Container align="center">
-            <Animated.Code
-              key={stackPosition.__nodeID}
-              exec={block([
-                onChange(
-                  greaterOrEq(stackPosition, 0.99),
-                  call([greaterOrEq(stackPosition, 0.99)], ([isTop]) => {
-                    if (isTop) {
-                      navigation.emit('refocus');
-                    }
-                  })
-                ),
-              ])}
-            />
             <SendHeader
               contacts={this.state.contacts}
               isValid={isValidAddress}
@@ -352,8 +338,8 @@ export default compose(
   withAccountSettings,
   withDataInit,
   withTransitionProps,
-  withProps(({ transitionProps: { position: stackPosition } }) => ({
-    stackPosition,
+  withProps(({ transitionProps: { isTransitioning } }) => ({
+    isTransitioning,
   })),
   withHandlers({
     fetchData: ({ refreshAccountData }) => async () => refreshAccountData(),
