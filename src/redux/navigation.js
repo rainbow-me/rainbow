@@ -3,7 +3,10 @@ import Animated from 'react-native-reanimated';
 // -- Constants --------------------------------------- //
 const UPDATE_TRANSITION_PROPS = 'navigation/UPDATE_TRANSITION_PROPS';
 
-export const updateTransitionProps = payload => dispatch => {
+export const updateTransitionProps = payload => (dispatch, getState) => {
+  if (payload.pasition === getState().navigation.transitionProps.position) {
+    return;
+  }
   dispatch({ payload, type: UPDATE_TRANSITION_PROPS });
 };
 
