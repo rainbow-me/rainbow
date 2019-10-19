@@ -20,6 +20,46 @@ sheet.borderRadiusEnd = 16;
 
 export const sheetVerticalOffset = statusBarHeight;
 
+const exchangeStyleInterpolator = ({
+  closing,
+  layouts: { screen },
+  current: { progress: current },
+}) => {
+  const backgroundOpacity = interpolate(current, {
+    extrapolate: Animated.Extrapolate.CLAMP,
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, 1, 1],
+  });
+
+  const translateY = interpolate(current, {
+    inputRange: [0, 1],
+    outputRange: [screen.height, 0],
+  });
+
+  const onStart = or(
+    and(eq(closing, 0), eq(current, 0)),
+    and(eq(closing, 1), eq(current, 1))
+  );
+  const setShowingModal = call([], () => {
+    store.dispatch(updateTransitionProps({ showingModal: true }));
+  });
+
+  return {
+    cardStyle: {
+      opacity: block([cond(onStart, setShowingModal), 1]),
+      shadowColor: colors.black,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.4,
+      shadowRadius: 50,
+      // Translation for the animation of the current card
+      transform: [{ translateY }],
+    },
+    containerStyle: {
+      backgroundColor: color(25, 25, 25, backgroundOpacity),
+    },
+  };
+};
+
 const expandStyleInterpolator = ({
   closing,
   layouts: { screen },
@@ -108,7 +148,7 @@ const closeSpec = {
     bounciness: 0,
     mass: 1,
     overshootClamping: true,
-    speed: 20,
+    speed: 25,
   }),
 };
 
@@ -116,9 +156,9 @@ const openSpec = {
   animation: 'spring',
   config: SpringUtils.makeConfigFromBouncinessAndSpeed({
     ...SpringUtils.makeDefaultConfig(),
-    bounciness: 5,
+    bounciness: 4,
     mass: 1,
-    speed: 20,
+    speed: 25,
   }),
 };
 
@@ -132,6 +172,16 @@ export const onTransitionStart = props => {
   } else {
     StatusBar.setBarStyle('light-content');
   }
+};
+
+export const exchangePreset = {
+  cardShadowEnabled: true,
+  cardStyleInterpolator: exchangeStyleInterpolator,
+  cardTransparent: true,
+  gestureDirection: 'vertical',
+  gestureResponseDistance,
+  onTransitionStart,
+  transitionSpec: { close: closeSpec, open: openSpec },
 };
 
 export const expandedPreset = {

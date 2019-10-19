@@ -25,7 +25,7 @@ export default class ExchangeInput extends PureComponent {
     fontFamily: fonts.family.SFProDisplay,
     fontSize: fonts.size.h2,
     fontWeight: fonts.weight.medium,
-    mask: '[099999999999].[9999999999999]',
+    mask: '[099999999999999999].[999999999999999999]',
     placeholder: '0',
     placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.5),
   };

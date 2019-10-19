@@ -115,12 +115,22 @@ const parseTransaction = (txn, accountAddress, nativeCurrency) => {
   transaction.to = txn.address_to;
   const changes = get(txn, 'changes', []);
   let internalTransactions = changes;
-  if (isEmpty(changes) && txn.type === 'authorize') {
+  if (
+    isEmpty(changes) &&
+    txn.status === 'failed' &&
+    txn.type === 'execution' &&
+    txn.direction === 'out'
+  ) {
     const assetInternalTransaction = {
       address_from: transaction.from,
       address_to: transaction.to,
-      asset: get(txn, 'meta.asset'),
-      spender: get(txn, 'meta.spender'),
+      asset: {
+        address: 'eth',
+        decimals: 18,
+        name: 'Ethereum',
+        symbol: 'ETH',
+      },
+      value: 0,
     };
     internalTransactions = [assetInternalTransaction];
   }

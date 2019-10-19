@@ -7,7 +7,7 @@ import {
   saveLocal,
 } from './common';
 
-const transactionsVersion = '0.2.0';
+const transactionsVersion = '0.2.1';
 const uniqueTokensVersion = '0.2.0';
 const assetsVersion = '0.2.0';
 
