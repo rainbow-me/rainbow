@@ -36,7 +36,7 @@ const CoinIcon = enhance(({ bgColor, showShadow, size, symbol, ...props }) =>
         bgColor={bgColor}
         fallbackRenderer={CoinIconFallback}
         size={size}
-        symbol={symbol}
+        symbol={symbol || ''}
       />
     </ShadowStack>
   ) : (
@@ -54,7 +54,7 @@ CoinIcon.propTypes = {
   bgColor: PropTypes.string,
   showShadow: PropTypes.bool,
   size: PropTypes.number,
-  symbol: PropTypes.string,
+  symbol: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.string]),
 };
 
 CoinIcon.defaultProps = {

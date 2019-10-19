@@ -9,11 +9,12 @@ import {
 import BigNumber from 'bignumber.js';
 import { get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment, Component } from 'react';
+import React, { Fragment } from 'react';
 import { LayoutAnimation, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { NavigationEvents, withNavigationFocus } from 'react-navigation';
+import { withNavigationFocus, NavigationEvents } from 'react-navigation';
 import { compose, toClass, withProps } from 'recompact';
+
 import { estimateSwapGasLimit, executeSwap } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
@@ -58,8 +59,6 @@ import { CurrencySelectionTypes } from './CurrencySelectModal';
 
 export const exchangeModalBorderRadius = 30;
 
-const { block, call, eq, onChange } = Animated;
-
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(
   toClass(FloatingPanels)
 );
@@ -74,14 +73,14 @@ const isSameAsset = (firstAsset, secondAsset) => {
   return firstAddress === secondAddress;
 };
 
-class ExchangeModal extends Component {
+class ExchangeModal extends React.Component {
   static propTypes = {
     accountAddress: PropTypes.string,
     allAssets: PropTypes.array,
     allowances: PropTypes.object,
     chainId: PropTypes.number,
     dataAddNewTransaction: PropTypes.func,
-    gasLimit: PropTypes.string,
+    gasLimit: PropTypes.number,
     gasUpdateDefaultGasLimit: PropTypes.func,
     gasUpdateTxFee: PropTypes.func,
     isFocused: PropTypes.bool,
@@ -111,7 +110,6 @@ class ExchangeModal extends Component {
     isAssetApproved: true,
     isSufficientBalance: true,
     isUnlockingAsset: false,
-    lastFocusedInput: null,
     nativeAmount: null,
     outputAmount: null,
     outputAmountDisplay: null,
@@ -125,9 +123,16 @@ class ExchangeModal extends Component {
 
   componentDidMount = () => {
     this.props.gasUpdateDefaultGasLimit(ethUnits.basic_swap);
+    this.focusListener = this.props.navigation.addListener(
+      'refocus',
+      this.handleKeyboardManagement
+    );
   };
 
   componentDidUpdate = (prevProps, prevState) => {
+    if (prevProps.isTransitioning && !this.props.isTransitioning) {
+      this.props.navigation.emit('refocus');
+    }
     const isNewInputAmount = isNewValueForPath(
       this.state,
       prevState,
@@ -178,6 +183,11 @@ class ExchangeModal extends Component {
     }
   };
 
+  componentWillUnmount() {
+    this.focusListener.remove();
+  }
+
+  lastFocusedInput = null;
   inputFieldRef = null;
   nativeFieldRef = null;
   outputFieldRef = null;
@@ -473,12 +483,8 @@ class ExchangeModal extends Component {
     return reserve;
   };
 
-  handleBlurField = ({ currentTarget }) => {
-    console.log('blur', currentTarget);
-  };
-
   handleFocusField = ({ currentTarget }) => {
-    this.setState({ lastFocusedInput: currentTarget });
+    this.lastFocusedInput = currentTarget;
   };
 
   handlePressMaxBalance = () => {
@@ -564,14 +570,12 @@ class ExchangeModal extends Component {
   };
 
   handleKeyboardManagement = () => {
-    const { lastFocusedInput } = this.state;
-
-    if (!lastFocusedInput) {
+    if (!this.lastFocusedInput) {
       return this.inputFieldRef.focus();
     }
 
-    if (lastFocusedInput !== TextInput.State.currentlyFocusedField()) {
-      return TextInput.State.focusTextInput(lastFocusedInput);
+    if (this.lastFocusedInput !== TextInput.State.currentlyFocusedField()) {
+      return TextInput.State.focusTextInput(this.lastFocusedInput);
     }
   };
 
@@ -687,7 +691,7 @@ class ExchangeModal extends Component {
   };
 
   render = () => {
-    const { nativeCurrency, stackPosition, tabPosition } = this.props;
+    const { nativeCurrency, tabPosition } = this.props;
 
     const {
       approvalCreationTimestamp,
@@ -719,24 +723,21 @@ class ExchangeModal extends Component {
           <AnimatedFloatingPanels
             margin={0}
             style={{
-              opacity: block([
-                onChange(
-                  eq(stackPosition, 1),
-                  call([eq(stackPosition, 1)], this.handleStackPosition)
-                ),
-                interpolate(tabPosition, {
-                  extrapolate: Animated.Extrapolate.CLAMP,
-                  inputRange: [0, 1],
-                  outputRange: [1, 0],
-                }),
-              ]),
+              opacity: interpolate(tabPosition, {
+                extrapolate: Animated.Extrapolate.CLAMP,
+                inputRange: [0, 1],
+                outputRange: [1, 0],
+              }),
             }}
           >
             <FloatingPanel
               radius={exchangeModalBorderRadius}
               overflow="visible"
             >
-              <GestureBlocker type="top" />
+              <GestureBlocker
+                type="top"
+                onHandlerStateChange={() => this.props.navigation.pop()}
+              />
               <ExchangeModalHeader />
               <ExchangeInputField
                 inputAmount={inputAmountDisplay}
@@ -748,7 +749,6 @@ class ExchangeModal extends Component {
                 nativeCurrency={nativeCurrency}
                 nativeFieldRef={this.assignNativeFieldRef}
                 onFocus={this.handleFocusField}
-                onBlur={this.handleBlurField}
                 onPressMaxBalance={this.handlePressMaxBalance}
                 onPressSelectInputCurrency={this.navigateToSelectInputCurrency}
                 onUnlockAsset={this.handleUnlockAsset}
@@ -757,7 +757,6 @@ class ExchangeModal extends Component {
               />
               <ExchangeOutputField
                 bottomRadius={exchangeModalBorderRadius}
-                onBlur={this.handleBlurField}
                 onFocus={this.handleFocusField}
                 onPressSelectOutputCurrency={
                   this.navigateToSelectOutputCurrency
@@ -789,7 +788,10 @@ class ExchangeModal extends Component {
               </Fragment>
             )}
             <Column>
-              <GestureBlocker type="bottom" />
+              <GestureBlocker
+                type="bottom"
+                onHandlerStateChange={() => this.props.navigation.pop()}
+              />
             </Column>
           </AnimatedFloatingPanels>
         </Centered>
@@ -808,8 +810,8 @@ export default compose(
   withTransitionProps,
   withUniswapAllowances,
   withUniswapAssets,
-  withProps(({ navigation, transitionProps: { position: stackPosition } }) => ({
-    stackPosition,
+  withProps(({ navigation, transitionProps: { isTransitioning } }) => ({
+    isTransitioning,
     tabPosition: get(navigation, 'state.params.position'),
   }))
 )(ExchangeModal);

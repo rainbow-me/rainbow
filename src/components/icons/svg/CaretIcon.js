@@ -24,7 +24,7 @@ const CaretIcon = ({ color, size, ...props }) => (
 CaretIcon.propTypes = {
   color: PropTypes.string,
   direction: directionPropType,
-  size: PropTypes.number,
+  size: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 CaretIcon.defaultProps = {

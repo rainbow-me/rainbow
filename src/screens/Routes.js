@@ -7,7 +7,6 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { ExchangeModalNavigator, Navigation } from '../navigation';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
-import { colors } from '../styles';
 import { deviceUtils } from '../utils';
 import ExpandedAssetScreenWithData from './ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
@@ -83,6 +82,7 @@ const MainNavigator = createStackNavigator(
     ExchangeModal: {
       navigationOptions: {
         ...exchangePreset,
+        onTransitionEnd,
         onTransitionStart: props => {
           expandedPreset.onTransitionStart(props);
           onTransitionStart();
@@ -96,10 +96,10 @@ const MainNavigator = createStackNavigator(
     ExpandedAssetScreen: {
       navigationOptions: {
         ...expandedPreset,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
+        // onTransitionStart: props => {
+        //   expandedPreset.onTransitionStart(props);
+        //   onTransitionStart();
+        // },
       },
       screen: ExpandedAssetScreenWithData,
     },
@@ -199,16 +199,16 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
           prevRouteName === 'MainExchangeScreen' &&
           routeName === 'WalletScreen'
         ) {
-          store.dispatch(updateTransitionProps({ blurColor: null }));
+          // store.dispatch(updateTransitionProps({ blurColor: null }));
         } else if (
           prevRouteName === 'WalletScreen' &&
           routeName === 'MainExchangeScreen'
         ) {
-          store.dispatch(
-            updateTransitionProps({
-              blurColor: colors.alpha(colors.black, 0.9),
-            })
-          );
+          // store.dispatch(
+          //   updateTransitionProps({
+          //     blurColor: colors.alpha(colors.black, 0.9),
+          //   })
+          // );
         }
 
         if (routeName === 'ExpandedAssetScreen') {

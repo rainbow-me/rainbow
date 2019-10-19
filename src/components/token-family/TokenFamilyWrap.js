@@ -78,7 +78,7 @@ const TokenFamilyWrap = ({
 TokenFamilyWrap.propTypes = {
   areChildrenVisible: PropTypes.bool,
   childrenAmount: PropTypes.number,
-  familyId: PropTypes.string,
+  familyId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   familyImage: PropTypes.string,
   familyName: PropTypes.string,
   highlight: PropTypes.bool,

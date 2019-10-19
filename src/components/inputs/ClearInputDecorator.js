@@ -82,7 +82,7 @@ const ClearInputDecorator = ({ inputHeight, isVisible, onPress }) => {
 
 ClearInputDecorator.propTypes = {
   inputHeight: PropTypes.number,
-  isVisible: PropTypes.string,
+  isVisible: PropTypes.bool,
   onPress: PropTypes.func,
 };
 

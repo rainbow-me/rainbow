@@ -28,7 +28,7 @@ const BlurOverlay = ({ blurType, intensity }) => (
 
 BlurOverlay.propTypes = {
   blurType: PropTypes.oneOf(['default', 'light', 'dark']).isRequired,
-  intensity: PropTypes.number,
+  intensity: PropTypes.object,
 };
 
 BlurOverlay.defaultProps = {

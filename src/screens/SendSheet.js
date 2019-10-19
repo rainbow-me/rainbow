@@ -15,7 +15,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
 import { isIphoneX } from 'react-native-iphone-x-helper';
-import { compose, withHandlers } from 'recompact';
+import { compose, withHandlers, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
 import {
@@ -30,6 +30,7 @@ import {
   withAccountData,
   withAccountSettings,
   withDataInit,
+  withTransitionProps,
   withUniqueTokens,
 } from '../hoc';
 import { colors } from '../styles';
@@ -115,6 +116,10 @@ class SendSheet extends Component {
       selected,
       sendUpdateSelected,
     } = this.props;
+
+    if (prevProps.isTransitioning && !this.props.isTransitioning) {
+      this.props.navigation.emit('refocus');
+    }
 
     const asset = get(navigation, 'state.params.asset');
 
@@ -332,6 +337,10 @@ export default compose(
   withUniqueTokens,
   withAccountSettings,
   withDataInit,
+  withTransitionProps,
+  withProps(({ transitionProps: { isTransitioning } }) => ({
+    isTransitioning,
+  })),
   withHandlers({
     fetchData: ({ refreshAccountData }) => async () => refreshAccountData(),
   })

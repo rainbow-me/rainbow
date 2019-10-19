@@ -36,7 +36,7 @@ const Modal = ({
 
 Modal.propTypes = {
   containerPadding: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired,
+  height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   onCloseModal: PropTypes.func,
   statusBarStyle: PropTypes.oneOf(['default', 'light-content', 'dark-content']),
 };

@@ -70,7 +70,7 @@ export default class ButtonPressAnimation extends PureComponent {
     defaultScale: PropTypes.number,
     disabled: PropTypes.bool,
     duration: PropTypes.number,
-    easing: PropTypes.object,
+    easing: PropTypes.func,
     enableHapticFeedback: PropTypes.bool,
     exclusive: PropTypes.bool,
     hapticType: PropTypes.oneOf(Object.keys(HapticFeedbackTypes)),
