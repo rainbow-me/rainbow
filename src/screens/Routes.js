@@ -21,6 +21,7 @@ import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
 import {
+  exchangePreset,
   expandedPreset,
   sheetPreset,
   backgroundPreset,
@@ -81,7 +82,7 @@ const MainNavigator = createStackNavigator(
     ExampleScreen,
     ExchangeModal: {
       navigationOptions: {
-        ...expandedPreset,
+        ...exchangePreset,
         onTransitionStart: props => {
           expandedPreset.onTransitionStart(props);
           onTransitionStart();
