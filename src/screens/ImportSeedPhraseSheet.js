@@ -114,8 +114,6 @@ ImportSeedPhraseSheet.propTypes = {
   onInputChange: PropTypes.func,
   onPasteSeedPhrase: PropTypes.func,
   onPressEnterKey: PropTypes.func,
-  onPressHelp: PropTypes.func,
-  screenProps: PropTypes.shape({ handleWalletConfig: PropTypes.func }),
   seedPhrase: PropTypes.string,
   setSeedPhrase: PropTypes.func,
 };
