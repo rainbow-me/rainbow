@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
+  State,
   PanGestureHandler,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
@@ -12,6 +13,13 @@ const { height } = deviceUtils.dimensions;
 const GestureBlocker = ({ type, onHandlerStateChange }) => {
   const tab = React.useRef(null);
   const pan = React.useRef(null);
+
+  const handleGestureBlockerStateChange = ({ nativeEvent }) => {
+    if (nativeEvent.state === State.END) {
+      onHandlerStateChange();
+    }
+  };
+
   return (
     <View
       style={{
@@ -31,7 +39,7 @@ const GestureBlocker = ({ type, onHandlerStateChange }) => {
         <TapGestureHandler
           ref={tab}
           simultaneousHandlers={pan}
-          onHandlerStateChange={onHandlerStateChange}
+          onHandlerStateChange={handleGestureBlockerStateChange}
         >
           <View style={StyleSheet.absoluteFillObject} />
         </TapGestureHandler>
