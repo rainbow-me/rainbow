@@ -120,7 +120,6 @@ export const gasUpdateGasPriceOption = newGasPriceOption => (
   });
 };
 
-// TODO JIN and option
 export const gasUpdateDefaultGasLimit = (
   defaultGasLimit = ethUnits.basic_tx
 ) => dispatch => {
@@ -131,9 +130,13 @@ export const gasUpdateDefaultGasLimit = (
   dispatch(gasUpdateTxFee(defaultGasLimit));
 };
 
-export const gasUpdateTxFee = gasLimit => (dispatch, getState) => {
+export const gasUpdateTxFee = (gasLimit, overrideGasOption) => (
+  dispatch,
+  getState
+) => {
   const { defaultGasLimit, gasPrices, selectedGasPriceOption } = getState().gas;
   const _gasLimit = gasLimit || defaultGasLimit;
+  const _selectedGasPriceOption = overrideGasOption || selectedGasPriceOption;
   if (isEmpty(gasPrices)) return;
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
@@ -148,7 +151,7 @@ export const gasUpdateTxFee = gasLimit => (dispatch, getState) => {
     assets,
     gasPrices,
     txFees,
-    selectedGasPriceOption
+    _selectedGasPriceOption
   );
   dispatch({
     payload: {
