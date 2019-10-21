@@ -1,5 +1,4 @@
 export { default as ButtonPressAnimation } from './ButtonPressAnimation';
-export { default as FadeInAnimation } from './FadeInAnimation';
 export { default as FlyInAnimation } from './FlyInAnimation';
 export { interpolate } from './procs';
 export { default as OpacityToggler } from './OpacityToggler';

@@ -1,11 +1,9 @@
 import { BlurView } from '@react-native-community/blur';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
 import { colors, padding } from '../../styles';
 import ActivityIndicator from '../ActivityIndicator';
-import { FadeInAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import TouchableBackdrop from '../TouchableBackdrop';
@@ -32,12 +30,10 @@ const LoadingOverlay = ({ title }) => (
     disabled
     zIndex={999}
   >
-    <FadeInAnimation isInteraction>
-      <Overlay blurAmount={20} blurType="light" component={BlurView}>
-        <ActivityIndicator />
-        {title && <Title>{title}</Title>}
-      </Overlay>
-    </FadeInAnimation>
+    <Overlay blurAmount={20} blurType="light" component={BlurView}>
+      <ActivityIndicator />
+      {title && <Title>{title}</Title>}
+    </Overlay>
   </Centered>
 );
 
@@ -45,4 +41,4 @@ LoadingOverlay.propTypes = {
   title: PropTypes.string,
 };
 
-export default pure(LoadingOverlay);
+export default React.memo(LoadingOverlay);
