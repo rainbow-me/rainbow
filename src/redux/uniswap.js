@@ -25,7 +25,7 @@ import {
   saveAccountLocal,
   saveGlobal,
 } from '../handlers/localstorage/common';
-import { getLiquidityInfo, getReserve, getReserves } from '../handlers/uniswap';
+import { getLiquidityInfo, getReserve } from '../handlers/uniswap';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import { uniswapAssetsClean } from '../references';
 import { contractUtils, promiseUtils } from '../utils';
@@ -39,14 +39,14 @@ const UNISWAP_UPDATE_REQUEST = 'uniswap/UNISWAP_UPDATE_REQUEST';
 const UNISWAP_UPDATE_SUCCESS = 'uniswap/UNISWAP_UPDATE_SUCCESS';
 const UNISWAP_UPDATE_FAILURE = 'uniswap/UNISWAP_UPDATE_FAILURE';
 
-const UNISWAP_GET_TOKEN_RESERVES_REQUEST =
-  'uniswap/UNISWAP_GET_TOKEN_RESERVES_REQUEST';
-const UNISWAP_GET_TOKEN_RESERVES_SUCCESS =
-  'uniswap/UNISWAP_GET_TOKEN_RESERVES_SUCCESS';
-const UNISWAP_GET_TOKEN_RESERVES_FAILURE =
-  'uniswap/UNISWAP_GET_TOKEN_RESERVES_FAILURE';
-
+const UNISWAP_RESET_CURRENCIES_AND_RESERVES =
+  'uniswap/UNISWAP_RESET_CURRENCIES_AND_RESERVES';
 const UNISWAP_UPDATE_FAVORITES = 'uniswap/UNISWAP_UPDATE_FAVORITES';
+const UNISWAP_UPDATE_TOKEN_RESERVES = 'uniswap/UNISWAP_UPDATE_TOKEN_RESERVES';
+const UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE =
+  'uniswap/UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE';
+const UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE =
+  'uniswap/UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE';
 const UNISWAP_UPDATE_PENDING_APPROVALS =
   'uniswap/UNISWAP_UPDATE_PENDING_APPROVALS';
 const UNISWAP_UPDATE_ASSETS = 'uniswap/UNISWAP_UPDATE_ASSETS';
@@ -62,11 +62,8 @@ export const FAVORITES = 'favorites';
 export const LIQUIDITY = 'uniswapliquidity';
 export const LIQUIDITY_INFO = 'uniswap';
 export const PENDING_APPROVALS = 'uniswappendingapprovals';
-export const RESERVES = 'uniswapreserves';
 
 // -- Actions --------------------------------------------------------------- //
-let getTokenReservesInterval = null;
-
 export const uniswapLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   dispatch({ type: UNISWAP_LOAD_REQUEST });
@@ -89,12 +86,6 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
       network,
       {}
     );
-    const tokenReserves = await getAccountLocal(
-      RESERVES,
-      accountAddress,
-      network,
-      {}
-    );
     const uniswapAssets = await getAccountLocal(
       ASSETS,
       accountAddress,
@@ -113,7 +104,6 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
         favorites,
         liquidityTokens,
         pendingApprovals,
-        tokenReserves,
         uniswap,
         uniswapAssets,
       },
@@ -124,69 +114,43 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const uniswapGetTokenReserve = tokenAddress => (dispatch, getState) =>
-  new Promise((resolve, promiseReject) => {
-    tokenAddress = toLower(tokenAddress);
-    dispatch({ type: UNISWAP_GET_TOKEN_RESERVES_REQUEST });
-    const { accountAddress, network } = getState().settings;
-    const { tokenReserves } = getState().uniswap;
-    getReserve(tokenAddress)
-      .then(tokenReserve => {
-        const updatedTokenReserves = {
-          ...tokenReserves,
-          [tokenAddress]: tokenReserve,
-        };
-        dispatch({
-          payload: updatedTokenReserves,
-          type: UNISWAP_GET_TOKEN_RESERVES_SUCCESS,
-        });
-        saveAccountLocal(
-          RESERVES,
-          updatedTokenReserves,
-          accountAddress,
-          network
-        );
-        resolve(tokenReserve);
-      })
-      .catch(error => {
-        dispatch({ type: UNISWAP_GET_TOKEN_RESERVES_FAILURE });
-        promiseReject(error);
-      });
+export const uniswapUpdateTokenReserves = (
+  inputReserve,
+  outputReserve
+) => dispatch => {
+  dispatch({
+    payload: {
+      inputReserve,
+      outputReserve,
+    },
+    type: UNISWAP_UPDATE_TOKEN_RESERVES,
   });
+};
 
-export const uniswapTokenReservesRefreshState = () => (dispatch, getState) =>
-  new Promise((resolve, promiseReject) => {
-    const fetchTokenReserves = () =>
-      new Promise((fetchResolve, fetchReject) => {
-        dispatch({ type: UNISWAP_GET_TOKEN_RESERVES_REQUEST });
-        const { accountAddress, network } = getState().settings;
-        getReserves()
-          .then(tokenReserves => {
-            dispatch({
-              payload: tokenReserves,
-              type: UNISWAP_GET_TOKEN_RESERVES_SUCCESS,
-            });
-            saveAccountLocal(RESERVES, tokenReserves, accountAddress, network);
-            fetchResolve(true);
-          })
-          .catch(error => {
-            dispatch({ type: UNISWAP_GET_TOKEN_RESERVES_FAILURE });
-            fetchReject(error);
-          });
-      });
-
-    return fetchTokenReserves()
-      .then(() => {
-        clearInterval(getTokenReservesInterval);
-        getTokenReservesInterval = setInterval(fetchTokenReserves, 15000); // 15 secs
-        resolve(true);
-      })
-      .catch(error => {
-        clearInterval(getTokenReservesInterval);
-        getTokenReservesInterval = setInterval(fetchTokenReserves, 15000); // 15 secs
-        promiseReject(error);
-      });
+export const uniswapUpdateInputCurrency = inputCurrency => async dispatch => {
+  const inputReserve = await getReserve(get(inputCurrency, 'address'));
+  dispatch({
+    payload: {
+      inputCurrency,
+      inputReserve,
+    },
+    type: UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE,
   });
+};
+
+export const uniswapUpdateOutputCurrency = outputCurrency => async dispatch => {
+  const outputReserve = await getReserve(get(outputCurrency, 'address'));
+  dispatch({
+    payload: {
+      outputCurrency,
+      outputReserve,
+    },
+    type: UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE,
+  });
+};
+
+export const uniswapClearCurrenciesAndReserves = () => dispatch =>
+  dispatch({ type: UNISWAP_RESET_CURRENCIES_AND_RESERVES });
 
 export const uniswapClearState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
@@ -196,10 +160,8 @@ export const uniswapClearState = () => (dispatch, getState) => {
     LIQUIDITY_INFO,
     LIQUIDITY,
     PENDING_APPROVALS,
-    RESERVES,
   ];
   forEach(storageKeys, key => removeAccountLocal(key, accountAddress, network));
-  clearInterval(getTokenReservesInterval);
   dispatch({ type: UNISWAP_CLEAR_STATE });
 };
 
@@ -432,10 +394,13 @@ export const INITIAL_UNISWAP_STATE = {
   allowances: {},
   favorites: [],
   fetchingUniswap: false,
+  inputCurrency: null,
+  inputReserve: null,
   liquidityTokens: [],
   loadingUniswap: false,
+  outputCurrency: null,
+  outputReserve: null,
   pendingApprovals: {},
-  tokenReserves: {},
   uniswap: {},
   uniswapAssets: {},
 };
@@ -452,12 +417,23 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         draft.liquidityTokens = action.payload.liquidityTokens;
         draft.loadingUniswap = false;
         draft.pendingApprovals = action.payload.pendingApprovals;
-        draft.tokenReserves = action.payload.tokenReserves;
         draft.uniswap = action.payload.uniswap;
         draft.uniswapAssets = action.payload.uniswapAssets;
         break;
       case UNISWAP_UPDATE_FAVORITES:
         draft.favorites = action.payload;
+        break;
+      case UNISWAP_UPDATE_TOKEN_RESERVES:
+        draft.inputReserve = action.payload.inputReserve;
+        draft.outputReserve = action.payload.outputReserve;
+        break;
+      case UNISWAP_UPDATE_INPUT_CURRENCY_AND_RESERVE:
+        draft.inputCurrency = action.payload.inputCurrency;
+        draft.inputReserve = action.payload.inputReserve;
+        break;
+      case UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE:
+        draft.outputCurrency = action.payload.outputCurrency;
+        draft.outputReserve = action.payload.outputReserve;
         break;
       case UNISWAP_LOAD_FAILURE:
         draft.loadingUniswap = false;
@@ -484,8 +460,11 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
       case UNISWAP_UPDATE_ASSETS:
         draft.uniswapAssets = action.payload;
         break;
-      case UNISWAP_GET_TOKEN_RESERVES_SUCCESS:
-        draft.tokenReserves = action.payload;
+      case UNISWAP_RESET_CURRENCIES_AND_RESERVES:
+        draft.inputCurrency = INITIAL_UNISWAP_STATE.inputCurrency;
+        draft.inputReserve = INITIAL_UNISWAP_STATE.inputReserve;
+        draft.outputCurrency = INITIAL_UNISWAP_STATE.outputCurrency;
+        draft.outputReserve = INITIAL_UNISWAP_STATE.outputReserve;
         break;
       case UNISWAP_CLEAR_STATE:
         return INITIAL_UNISWAP_STATE;

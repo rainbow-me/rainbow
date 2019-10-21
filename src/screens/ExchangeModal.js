@@ -14,6 +14,22 @@ import { LayoutAnimation, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import { compose, toClass, withProps } from 'recompact';
+import { interpolate } from '../components/animations';
+import {
+  ConfirmExchangeButton,
+  ExchangeInputField,
+  ExchangeModalHeader,
+  ExchangeOutputField,
+  SlippageWarning,
+} from '../components/exchange';
+import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
+import { GasSpeedButton } from '../components/gas';
+import GestureBlocker from '../components/GestureBlocker';
+import {
+  Centered,
+  Column,
+  KeyboardFixedOpenLayout,
+} from '../components/layout';
 import { estimateSwapGasLimit, executeSwap } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
@@ -38,22 +54,6 @@ import {
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
 import { contractUtils, ethereumUtils, isNewValueForPath } from '../utils';
-import { interpolate } from '../components/animations';
-import {
-  ConfirmExchangeButton,
-  ExchangeInputField,
-  ExchangeModalHeader,
-  ExchangeOutputField,
-  SlippageWarning,
-} from '../components/exchange';
-import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
-import { GasSpeedButton } from '../components/gas';
-import GestureBlocker from '../components/GestureBlocker';
-import {
-  Centered,
-  Column,
-  KeyboardFixedOpenLayout,
-} from '../components/layout';
 import { CurrencySelectionTypes } from './CurrencySelectModal';
 
 export const exchangeModalBorderRadius = 30;
@@ -84,16 +84,17 @@ class ExchangeModal extends Component {
     gasLimit: PropTypes.string,
     gasUpdateDefaultGasLimit: PropTypes.func,
     gasUpdateTxFee: PropTypes.func,
+    inputReserve: PropTypes.object,
     isFocused: PropTypes.bool,
     nativeCurrency: PropTypes.string,
     navigation: PropTypes.object,
+    outputReserve: PropTypes.object,
     pendingApprovals: PropTypes.object,
     selectedGasPrice: PropTypes.object,
     tabPosition: PropTypes.object, // animated value
     tokenReserves: PropTypes.object,
     tradeDetails: PropTypes.object,
     txFees: PropTypes.object,
-    uniswapGetTokenReserve: PropTypes.func,
     uniswapUpdateAllowances: PropTypes.func,
     uniswapUpdatePendingApprovals: PropTypes.func,
   };
@@ -176,6 +177,10 @@ class ExchangeModal extends Component {
     ) {
       this.getCurrencyAllowance();
     }
+  };
+
+  componentWillUnmount = () => {
+    this.props.uniswapClearCurrenciesAndReserves();
   };
 
   inputFieldRef = null;
@@ -266,7 +271,9 @@ class ExchangeModal extends Component {
       accountAddress,
       chainId,
       gasUpdateTxFee,
+      inputReserve,
       nativeCurrency,
+      outputReserve,
     } = this.props;
     const {
       inputAmount,
@@ -280,7 +287,10 @@ class ExchangeModal extends Component {
 
     const isMissingAmounts = !inputAmount && !outputAmount;
     const isMissingCurrency = !inputCurrency || !outputCurrency;
-    if (isMissingAmounts || isMissingCurrency) {
+    const isMissingReserves =
+      (inputCurrency && inputCurrency.address !== 'eth' && !inputReserve) ||
+      (outputCurrency && outputCurrency.address !== 'eth' && !outputReserve);
+    if (isMissingAmounts || isMissingCurrency || isMissingReserves) {
       return;
     }
 
@@ -297,9 +307,6 @@ class ExchangeModal extends Component {
 
       const isInputEth = inputAddress === 'eth';
       const isOutputEth = outputAddress === 'eth';
-
-      const inputReserve = await this.getReserveData(inputAddress);
-      const outputReserve = await this.getReserveData(outputAddress);
 
       const rawInputAmount = convertAmountToRawAmount(
         inputAmount || 0,
@@ -461,18 +468,6 @@ class ExchangeModal extends Component {
     }
   };
 
-  getReserveData = async tokenAddress => {
-    if (tokenAddress === 'eth') return null;
-
-    const { tokenReserves, uniswapGetTokenReserve } = this.props;
-
-    let reserve = tokenReserves[tokenAddress.toLowerCase()];
-    if (!reserve) {
-      reserve = await uniswapGetTokenReserve(tokenAddress);
-    }
-    return reserve;
-  };
-
   handleBlurField = ({ currentTarget }) => {
     console.log('blur', currentTarget);
   };
@@ -618,6 +613,10 @@ class ExchangeModal extends Component {
 
     this.setState({ inputCurrency });
 
+    if (!force) {
+      this.props.uniswapUpdateInputCurrency(inputCurrency);
+    }
+
     if (!force && isSameAsset(inputCurrency, outputCurrency)) {
       if (!isNil(inputCurrency) && !isNil(outputCurrency)) {
         this.setOutputCurrency(null, true);
@@ -665,9 +664,12 @@ class ExchangeModal extends Component {
       outputCurrency,
       showConfirmButton: !!outputCurrency,
     });
+    if (!force) {
+      this.props.uniswapUpdateOutputCurrency(outputCurrency);
+    }
 
     if (!force && isSameAsset(inputCurrency, outputCurrency)) {
-      const outputAddress = outputCurrency.address.toLowerCase();
+      const outputAddress = toLower(outputCurrency.address);
       const asset = ethereumUtils.getAsset(allAssets, outputAddress);
 
       if (!isNil(asset) && !isNil(inputCurrency) && !isNil(outputCurrency)) {
