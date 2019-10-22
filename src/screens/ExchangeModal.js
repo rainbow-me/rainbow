@@ -558,11 +558,11 @@ class ExchangeModal extends React.Component {
 
   handleKeyboardManagement = () => {
     if (!this.lastFocusedInput) {
-      //return this.inputFieldRef.focus();
+      return this.inputFieldRef.focus();
     }
 
     if (this.lastFocusedInput !== TextInput.State.currentlyFocusedField()) {
-      //return TextInput.State.focusTextInput(this.lastFocusedInput);
+      return TextInput.State.focusTextInput(this.lastFocusedInput);
     }
   };
 
