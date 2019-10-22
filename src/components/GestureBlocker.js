@@ -13,17 +13,14 @@ const { call, cond, event, eq } = Animated;
 
 const { height } = deviceUtils.dimensions;
 
-const GestureBlocker = ({ type, onHandlerStateChange }) => {
+const GestureBlocker = ({ type, onTouchEnd }) => {
   const tab = React.useRef(null);
   const pan = React.useRef(null);
 
-  const onHandleStateChange = event([
+  const onHandlerStateChange = event([
     {
       nativeEvent: {
-        state: s =>
-          cond(
-            cond(cond(eq(State.END, s), call([], () => onHandlerStateChange())))
-          ),
+        state: s => cond(cond(cond(eq(State.END, s), call([], onTouchEnd)))),
       },
     },
   ]);
@@ -48,7 +45,7 @@ const GestureBlocker = ({ type, onHandlerStateChange }) => {
           <TapGestureHandler
             ref={tab}
             simultaneousHandlers={pan}
-            onHandlerStateChange={onHandleStateChange}
+            onHandlerStateChange={onHandlerStateChange}
           >
             <Animated.View style={StyleSheet.absoluteFillObject} />
           </TapGestureHandler>
@@ -59,7 +56,7 @@ const GestureBlocker = ({ type, onHandlerStateChange }) => {
 };
 
 GestureBlocker.propTypes = {
-  onHandlerStateChange: PropTypes.func,
+  onTouchEnd: PropTypes.func,
   type: PropTypes.string,
 };
 
