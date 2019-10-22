@@ -7,6 +7,9 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import { deviceUtils } from '../utils';
+import Animated from 'react-native-reanimated';
+
+const { call, cond, event, eq } = Animated;
 
 const { height } = deviceUtils.dimensions;
 
@@ -14,11 +17,16 @@ const GestureBlocker = ({ type, onHandlerStateChange }) => {
   const tab = React.useRef(null);
   const pan = React.useRef(null);
 
-  const handleGestureBlockerStateChange = ({ nativeEvent }) => {
-    if (nativeEvent.state === State.END) {
-      onHandlerStateChange();
-    }
-  };
+  const handleGestureBlockerStateChange = event([
+    {
+      nativeEvent: {
+        state: s =>
+          cond(
+            cond(cond(eq(State.END, s), call([], () => onHandlerStateChange())))
+          ),
+      },
+    },
+  ]);
 
   return (
     <View
@@ -36,13 +44,15 @@ const GestureBlocker = ({ type, onHandlerStateChange }) => {
         minDeltaX={1}
         minDeltaY={1}
       >
-        <TapGestureHandler
-          ref={tab}
-          simultaneousHandlers={pan}
-          onHandlerStateChange={handleGestureBlockerStateChange}
-        >
-          <View style={StyleSheet.absoluteFillObject} />
-        </TapGestureHandler>
+        <Animated.View style={StyleSheet.absoluteFillObject}>
+          <TapGestureHandler
+            ref={tab}
+            simultaneousHandlers={pan}
+            onHandlerStateChange={handleGestureBlockerStateChange}
+          >
+            <Animated.View style={StyleSheet.absoluteFillObject} />
+          </TapGestureHandler>
+        </Animated.View>
       </PanGestureHandler>
     </View>
   );

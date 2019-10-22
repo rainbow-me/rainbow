@@ -190,10 +190,7 @@ export default class ButtonPressAnimation extends PureComponent {
     }
   };
 
-  handleRunInteraction = () =>
-    this.props.isInteraction
-      ? InteractionManager.runAfterInteractions(this.handlePress)
-      : this.handlePress();
+  handleRunInteraction = () => this.handlePress();
 
   reset = () => {
     this.clearInteraction();
