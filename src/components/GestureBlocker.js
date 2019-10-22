@@ -17,7 +17,7 @@ const GestureBlocker = ({ type, onHandlerStateChange }) => {
   const tab = React.useRef(null);
   const pan = React.useRef(null);
 
-  const handleGestureBlockerStateChange = event([
+  const onHandleStateChange = event([
     {
       nativeEvent: {
         state: s =>
@@ -48,7 +48,7 @@ const GestureBlocker = ({ type, onHandlerStateChange }) => {
           <TapGestureHandler
             ref={tab}
             simultaneousHandlers={pan}
-            onHandlerStateChange={handleGestureBlockerStateChange}
+            onHandlerStateChange={onHandleStateChange}
           >
             <Animated.View style={StyleSheet.absoluteFillObject} />
           </TapGestureHandler>
