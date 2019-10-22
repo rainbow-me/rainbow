@@ -153,13 +153,13 @@ class SendSheet extends Component {
     );
 
     if (isNewValidAddress || isNewSelected || isNewContactList) {
-      let verticalGestureResponseDistance = 150;
+      let verticalGestureResponseDistance = 140;
 
       if (!isValidAddress && this.state.contacts.length !== 0) {
-        verticalGestureResponseDistance = 150;
+        verticalGestureResponseDistance = 140;
       } else if (isValidAddress) {
         verticalGestureResponseDistance = isEmpty(selected)
-          ? 150
+          ? 140
           : deviceUtils.dimensions.height;
       } else {
         verticalGestureResponseDistance = deviceUtils.dimensions.height;
