@@ -1,5 +1,5 @@
 import analytics from '@segment/analytics-react-native';
-import { get } from 'lodash';
+import { get, omit } from 'lodash';
 import React from 'react';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
@@ -125,10 +125,7 @@ const MainNavigator = createStackNavigator(
     },
     SendSheet: {
       navigationOptions: {
-        ...sheetPreset,
-        gestureResponseDistance: {
-          vertical: 140,
-        },
+        ...omit(sheetPreset, 'gestureResponseDistance'),
         onTransitionStart: props => {
           onTransitionStart(props);
           sheetPreset.onTransitionStart(props);

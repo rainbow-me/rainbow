@@ -118,7 +118,7 @@ class SendSheet extends Component {
     this.onUpdateContacts();
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     const {
       isValidAddress,
       navigation,
@@ -146,13 +146,20 @@ class SendSheet extends Component {
       prevProps,
       'isValidAddress'
     );
+    const isNewContactList = isNewValueForPath(
+      this.state,
+      prevState,
+      'contacts'
+    );
 
-    if (isNewValidAddress || isNewSelected) {
-      let verticalGestureResponseDistance = 0;
+    if (isNewValidAddress || isNewSelected || isNewContactList) {
+      let verticalGestureResponseDistance = 140;
 
-      if (isValidAddress) {
+      if (!isValidAddress && this.state.contacts.length !== 0) {
+        verticalGestureResponseDistance = 140;
+      } else if (isValidAddress) {
         verticalGestureResponseDistance = isEmpty(selected)
-          ? 150
+          ? 140
           : deviceUtils.dimensions.height;
       } else {
         verticalGestureResponseDistance = deviceUtils.dimensions.height;
