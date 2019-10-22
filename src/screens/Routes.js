@@ -167,10 +167,8 @@ const MainNavigator = createStackNavigator(
       onTransitionEnd,
       onTransitionStart,
     },
-    disableKeyboardHandling: true,
     headerMode: 'none',
     initialRouteName: 'SwipeLayout',
-    keyboardDismissMode: 'none',
     mode: 'modal',
   }
 );

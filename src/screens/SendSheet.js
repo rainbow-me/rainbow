@@ -14,7 +14,7 @@ import {
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
-import { isIphoneX } from 'react-native-iphone-x-helper';
+import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
 import { compose, withHandlers, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
@@ -33,14 +33,23 @@ import {
   withTransitionProps,
   withUniqueTokens,
 } from '../hoc';
-import { colors } from '../styles';
+import { borders, colors } from '../styles';
 import { deviceUtils, isNewValueForPath } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
 import { getLocalContacts } from '../handlers/commonStorage';
 
+const statusBarHeight = getStatusBarHeight(true);
+
 const Container = styled(Column)`
+  background-color: ${colors.transparent};
+  height: 100%;
+`;
+
+const SheetContainer = styled(Column)`
+  ${borders.buildRadius('top', 16)};
   background-color: ${colors.white};
   height: 100%;
+  top: ${statusBarHeight};
 `;
 
 const formatGasSpeedItem = (value, key) => {
@@ -271,7 +280,7 @@ class SendSheet extends Component {
     const showAssetForm = isValidAddress && !isEmpty(selected);
 
     return (
-      <Container>
+      <SheetContainer>
         <KeyboardAvoidingView behavior="padding">
           <Container align="center">
             <SendHeader
@@ -327,7 +336,7 @@ class SendSheet extends Component {
             )}
           </Container>
         </KeyboardAvoidingView>
-      </Container>
+      </SheetContainer>
     );
   }
 }

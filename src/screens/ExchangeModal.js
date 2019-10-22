@@ -36,7 +36,6 @@ import {
   withUniswapAllowances,
   withUniswapAssets,
 } from '../hoc';
-import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
 import { contractUtils, ethereumUtils, isNewValueForPath } from '../utils';
 import { interpolate } from '../components/animations';
@@ -121,14 +120,6 @@ class ExchangeModal extends React.Component {
     tradeDetails: null,
   };
 
-  componentDidMount = () => {
-    this.props.gasUpdateDefaultGasLimit(ethUnits.basic_swap);
-    this.focusListener = this.props.navigation.addListener(
-      'refocus',
-      this.handleKeyboardManagement
-    );
-  };
-
   componentDidUpdate = (prevProps, prevState) => {
     if (prevProps.isTransitioning && !this.props.isTransitioning) {
       this.props.navigation.emit('refocus');
@@ -182,10 +173,6 @@ class ExchangeModal extends React.Component {
       this.getCurrencyAllowance();
     }
   };
-
-  componentWillUnmount() {
-    this.focusListener.remove();
-  }
 
   lastFocusedInput = null;
   inputFieldRef = null;
@@ -571,11 +558,11 @@ class ExchangeModal extends React.Component {
 
   handleKeyboardManagement = () => {
     if (!this.lastFocusedInput) {
-      return this.inputFieldRef.focus();
+      //return this.inputFieldRef.focus();
     }
 
     if (this.lastFocusedInput !== TextInput.State.currentlyFocusedField()) {
-      return TextInput.State.focusTextInput(this.lastFocusedInput);
+      //return TextInput.State.focusTextInput(this.lastFocusedInput);
     }
   };
 
@@ -679,14 +666,6 @@ class ExchangeModal extends React.Component {
       } else {
         this.setInputCurrency(outputCurrency, true);
       }
-    }
-  };
-
-  handleStackPosition = ([isAtTop]) => {
-    if (!isAtTop) return;
-
-    if (TextInput.State.currentlyFocusedField() === null) {
-      this.handleKeyboardManagement();
     }
   };
 

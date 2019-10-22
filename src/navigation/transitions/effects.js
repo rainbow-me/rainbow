@@ -12,18 +12,14 @@ const { and, block, call, color, cond, eq, or, SpringUtils } = Animated;
 const statusBarHeight = getStatusBarHeight(true);
 
 const expand = {};
-expand.opacityEnd = 0.75;
 expand.translateY = deviceUtils.dimensions.height;
-
-const sheet = {};
-sheet.borderRadiusEnd = 16;
 
 export const sheetVerticalOffset = statusBarHeight;
 
 const exchangeStyleInterpolator = ({
   closing,
-  layouts: { screen },
   current: { progress: current },
+  layouts: { screen },
 }) => {
   const backgroundOpacity = interpolate(current, {
     extrapolate: Animated.Extrapolate.CLAMP,
@@ -62,8 +58,8 @@ const exchangeStyleInterpolator = ({
 
 const expandStyleInterpolator = ({
   closing,
-  layouts: { screen },
   current: { progress: current },
+  layouts: { screen },
 }) => {
   const backgroundOpacity = interpolate(current, {
     extrapolate: Animated.Extrapolate.CLAMP,
@@ -107,26 +103,27 @@ const sheetStyleInterpolator = ({
   const backgroundOpacity = interpolate(current, {
     extrapolate: Animated.Extrapolate.CLAMP,
     inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, 0.7, 0.7],
+    outputRange: [0, 0, 0.9, 0.9],
   });
 
   const translateY = block([
     interpolate(current, {
       inputRange: [0, 1],
-      outputRange: [screen.height, statusBarHeight],
+      outputRange: [screen.height, 0],
     }),
   ]);
 
   return {
     cardStyle: {
-      borderTopLeftRadius: sheet.borderRadiusEnd,
-      borderTopRightRadius: sheet.borderRadiusEnd,
-      overflow: 'hidden',
+      shadowColor: colors.black,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.4,
+      shadowRadius: 50,
       // Translation for the animation of the current card
       transform: [{ translateY }],
     },
     containerStyle: {
-      backgroundColor: color(37, 41, 46, backgroundOpacity),
+      backgroundColor: color(0, 0, 0, backgroundOpacity),
     },
   };
 };
@@ -162,6 +159,16 @@ const openSpec = {
   }),
 };
 
+const sheetOpenSpec = {
+  animation: 'spring',
+  config: SpringUtils.makeConfigFromBouncinessAndSpeed({
+    ...SpringUtils.makeDefaultConfig(),
+    bounciness: 0,
+    mass: 1,
+    speed: 22,
+  }),
+};
+
 const gestureResponseDistance = {
   vertical: deviceUtils.dimensions.height,
 };
@@ -181,7 +188,7 @@ export const exchangePreset = {
   gestureDirection: 'vertical',
   gestureResponseDistance,
   onTransitionStart,
-  transitionSpec: { close: closeSpec, open: openSpec },
+  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
 export const expandedPreset = {
@@ -195,12 +202,13 @@ export const expandedPreset = {
 };
 
 export const sheetPreset = {
+  cardShadowEnabled: true,
   cardStyleInterpolator: sheetStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
   onTransitionStart,
-  transitionSpec: { close: closeSpec, open: openSpec },
+  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
 export const backgroundPreset = {
