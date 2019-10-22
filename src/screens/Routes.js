@@ -126,6 +126,9 @@ const MainNavigator = createStackNavigator(
     SendSheet: {
       navigationOptions: {
         ...sheetPreset,
+        gestureResponseDistance: {
+          vertical: 140,
+        },
         onTransitionStart: props => {
           onTransitionStart(props);
           sheetPreset.onTransitionStart(props);
