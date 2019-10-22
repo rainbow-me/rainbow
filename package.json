@@ -60,7 +60,7 @@
     "lodash": "^4.17.15",
     "nanoid": "^2.0.3",
     "parse-ms": "^2.1.0",
-    "patch-package": "^6.1.2",
+    "patch-package": "^6.2.0",
     "path-browserify": "0.0.0",
     "postcss": "^7.0.13",
     "postinstall-postinstall": "^2.0.0",
