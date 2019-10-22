@@ -715,7 +715,7 @@ class ExchangeModal extends React.Component {
             >
               <GestureBlocker
                 type="top"
-                onHandlerStateChange={() => this.props.navigation.pop()}
+                onTouchEnd={() => this.props.navigation.pop()}
               />
               <ExchangeModalHeader />
               <ExchangeInputField
@@ -769,7 +769,7 @@ class ExchangeModal extends React.Component {
             <Column>
               <GestureBlocker
                 type="bottom"
-                onHandlerStateChange={() => this.props.navigation.pop()}
+                onTouchEnd={() => this.props.navigation.pop()}
               />
             </Column>
           </AnimatedFloatingPanels>
