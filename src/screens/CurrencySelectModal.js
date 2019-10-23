@@ -138,13 +138,19 @@ class CurrencySelectModal extends Component {
     }
   };
 
-  renderCurrencyItem = item => (
-    <ExchangeCoinRow
-      item={item}
-      onPress={this.handleSelectAsset}
-      uniqueId={item.uniqueId}
-    />
-  );
+  renderCurrencyItem = item => {
+    const { type } = this.props;
+
+    return (
+      <ExchangeCoinRow
+        item={item}
+        onPress={this.handleSelectAsset}
+        showBalance={type === CurrencySelectionTypes.input}
+        showFavoriteButton={type === CurrencySelectionTypes.output}
+        uniqueId={item.uniqueId}
+      />
+    );
+  };
 
   searchInputRef = React.createRef();
 

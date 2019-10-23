@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import { pure } from 'recompact';
 import { G, Path } from 'svgs';
 import { colors, position } from '../../../styles';
 import { Centered } from '../../layout';
@@ -21,6 +20,7 @@ const {
   sin,
   sub,
 } = Animated;
+
 const AnimatedPath = createAnimatedComponent(Path);
 
 const convertProgress = progress =>
@@ -116,4 +116,4 @@ ProgressIcon.defaultProps = {
   strokeWidth: 2,
 };
 
-export default pure(ProgressIcon);
+export default React.memo(ProgressIcon);

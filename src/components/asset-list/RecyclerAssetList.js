@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import { LayoutAnimation, RefreshControl, View } from 'react-native';
 import { compose, pure } from 'recompact';
 import {
+  BaseItemAnimator,
   DataProvider,
   LayoutProvider,
   RecyclerListView,
@@ -56,9 +57,9 @@ export const ViewTypes = {
 
 const NOOP = () => undefined;
 
-const layoutItemAnimator = {
-  animateDidMount: NOOP,
-  animateShift: () =>
+class LayoutItemAnimator extends BaseItemAnimator {
+  animateDidMount = NOOP;
+  animateShift = () =>
     LayoutAnimation.configureNext({
       duration: 200,
       update: {
@@ -66,11 +67,13 @@ const layoutItemAnimator = {
         springDamping: 1,
         type: LayoutAnimation.Types.spring,
       },
-    }),
-  animateWillMount: NOOP,
-  animateWillUnmount: NOOP,
-  animateWillUpdate: NOOP,
-};
+    });
+  animateWillMount = NOOP;
+  animateWillUnmount = NOOP;
+  animateWillUpdate = NOOP;
+}
+
+const layoutItemAnimator = new LayoutItemAnimator();
 
 const reloadHeightOffsetTop = -60;
 const reloadHeightOffsetBottom = -62;
@@ -370,7 +373,7 @@ class RecyclerAssetList extends Component {
           }))
         );
     }, []);
-    items.push({ item: { isLastPlaceholder: true }, renderItem: () => NOOP });
+    items.push({ item: { isLastPlaceholder: true }, renderItem: () => null });
     const areSmallCollectibles = (c => c && get(c, 'type') === 'small')(
       sections.find(e => e.collectibles)
     );
@@ -706,14 +709,14 @@ class RecyclerAssetList extends Component {
 
   rowRenderer = (type, data, index) => {
     if (isNil(data) || isNil(index)) {
-      return NOOP;
+      return null;
     }
 
     const { item = {}, renderItem } = data;
     const { hideHeader, sections } = this.props;
 
     if (type === ViewTypes.HEADER) {
-      return hideHeader ? NOOP : <AssetListHeaderRenderer {...data} />;
+      return hideHeader ? null : <AssetListHeaderRenderer {...data} />;
     }
 
     if (type === ViewTypes.COIN_SMALL_BALANCES) {
@@ -725,6 +728,7 @@ class RecyclerAssetList extends Component {
               ...item.assets[i],
               isSmall: true,
             },
+            key: `CoinSmallBalances${i}`,
           })
         );
       }
@@ -773,7 +777,7 @@ class RecyclerAssetList extends Component {
           <RecyclerListView
             {...props}
             dataProvider={dataProvider}
-            extendedState={headersIndices}
+            extendedState={{ headersIndices }}
             itemAnimator={layoutItemAnimator}
             externalScrollView={externalScrollView}
             layoutProvider={this.layoutProvider}

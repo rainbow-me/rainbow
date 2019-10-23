@@ -5,7 +5,6 @@ import Animated from 'react-native-reanimated';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
 import { compose, withProps } from 'recompact';
 import { AssetList } from '../components/asset-list';
-import BlurOverlay from '../components/BlurOverlay';
 import { FabWrapper } from '../components/fab';
 import {
   CameraHeaderButton,
@@ -133,7 +132,6 @@ class WalletScreen extends Component {
 
   render = () => {
     const {
-      blurIntensity,
       isEmpty,
       isWalletEthZero,
       navigation,
@@ -164,7 +162,6 @@ class WalletScreen extends Component {
             sections={sections}
           />
         </FabWrapper>
-        <BlurOverlay intensity={blurIntensity} />
       </Page>
     );
   };

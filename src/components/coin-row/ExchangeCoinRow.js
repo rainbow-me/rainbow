@@ -6,18 +6,24 @@ import { colors, position } from '../../styles';
 import { isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
-import { Monospace } from '../text';
+import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
-const BottomRow = ({ symbol }) => (
-  <Monospace color={colors.alpha(colors.blueGreyDark, 0.6)} size="smedium">
-    {symbol}
-  </Monospace>
+const BottomRow = ({ balance, native, showBalance, symbol }) => (
+  <BottomRowText>
+    {showBalance ? `${balance.display} ≈ ${native.balance.display}` : symbol}
+  </BottomRowText>
 );
 
-BottomRow.propTypes = {
+const balanceShape = {
   balance: PropTypes.shape({ display: PropTypes.string }),
+};
+
+BottomRow.propTypes = {
+  ...balanceShape,
+  native: PropTypes.shape(balanceShape),
+  showBalance: PropTypes.bool,
   symbol: PropTypes.string,
 };
 
@@ -36,6 +42,8 @@ class ExchangeCoinRow extends Component {
       symbol: PropTypes.string,
     }),
     onPress: PropTypes.func,
+    showBalance: PropTypes.bool,
+    showFavoriteButton: PropTypes.bool,
     uniqueId: PropTypes.string,
     uniswapUpdateFavorites: PropTypes.func,
   };
@@ -69,7 +77,7 @@ class ExchangeCoinRow extends Component {
   };
 
   render = () => {
-    const { item, ...props } = this.props;
+    const { item, showBalance, showFavoriteButton, ...props } = this.props;
     const { favorite } = this.state;
 
     return (
@@ -83,22 +91,25 @@ class ExchangeCoinRow extends Component {
           {...item}
           bottomRowRender={BottomRow}
           containerStyles="padding-right: 0"
+          showBalance={showBalance}
           topRowRender={TopRow}
         >
-          <ButtonPressAnimation
-            exclusive
-            onPress={this.toggleFavorite}
-            scaleTo={0.69}
-            style={{
-              ...position.centeredAsObject,
-              paddingHorizontal: 19,
-            }}
-          >
-            <Icon
-              color={favorite ? colors.orangeLight : '#E2E3E5'}
-              name="star"
-            />
-          </ButtonPressAnimation>
+          {showFavoriteButton && (
+            <ButtonPressAnimation
+              exclusive
+              onPress={this.toggleFavorite}
+              scaleTo={0.69}
+              style={{
+                ...position.centeredAsObject,
+                paddingHorizontal: 19,
+              }}
+            >
+              <Icon
+                color={favorite ? colors.orangeLight : '#E2E3E5'}
+                name="star"
+              />
+            </ButtonPressAnimation>
+          )}
         </CoinRow>
       </ButtonPressAnimation>
     );

@@ -1,28 +1,62 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { PanGestureHandler } from 'react-native-gesture-handler';
+import {
+  State,
+  PanGestureHandler,
+  TapGestureHandler,
+} from 'react-native-gesture-handler';
 import { deviceUtils } from '../utils';
+import Animated from 'react-native-reanimated';
+
+const { call, cond, event, eq } = Animated;
 
 const { height } = deviceUtils.dimensions;
 
-const GestureBlocker = ({ type }) => (
-  <View
-    style={{
-      height,
-      position: 'absolute',
-      [type]: -height,
-      width: '100%',
-      zIndex: 10,
-    }}
-  >
-    <PanGestureHandler minDeltaX={1} minDeltaY={1}>
-      <View style={StyleSheet.absoluteFillObject} />
-    </PanGestureHandler>
-  </View>
-);
+const GestureBlocker = ({ type, onTouchEnd }) => {
+  const tab = React.useRef(null);
+  const pan = React.useRef(null);
+
+  const onHandlerStateChange = event([
+    {
+      nativeEvent: {
+        state: s => cond(cond(cond(eq(State.END, s), call([], onTouchEnd)))),
+      },
+    },
+  ]);
+
+  return (
+    <View
+      style={{
+        height,
+        position: 'absolute',
+        [type]: -height,
+        width: '100%',
+        zIndex: 10,
+      }}
+    >
+      <PanGestureHandler
+        ref={pan}
+        simultaneousHandlers={tab}
+        minDeltaX={1}
+        minDeltaY={1}
+      >
+        <Animated.View style={StyleSheet.absoluteFillObject}>
+          <TapGestureHandler
+            ref={tab}
+            simultaneousHandlers={pan}
+            onHandlerStateChange={onHandlerStateChange}
+          >
+            <Animated.View style={StyleSheet.absoluteFillObject} />
+          </TapGestureHandler>
+        </Animated.View>
+      </PanGestureHandler>
+    </View>
+  );
+};
 
 GestureBlocker.propTypes = {
+  onTouchEnd: PropTypes.func,
   type: PropTypes.string,
 };
 

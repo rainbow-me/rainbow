@@ -10,7 +10,7 @@ export default class ExchangeInput extends PureComponent {
     disableTabularNums: PropTypes.bool,
     fontFamily: PropTypes.string,
     fontSize: PropTypes.string,
-    fontWeight: PropTypes.number,
+    fontWeight: PropTypes.string,
     mask: PropTypes.string,
     onChangeText: PropTypes.func,
     placeholder: PropTypes.string,

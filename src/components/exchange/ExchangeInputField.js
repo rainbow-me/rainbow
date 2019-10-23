@@ -128,6 +128,7 @@ export default class ExchangeInputField extends Component {
                 symbol={inputCurrencySymbol}
               />
               <ExchangeInput
+                autoFocus
                 editable={!!inputCurrencySymbol}
                 onChangeText={setInputAmount}
                 onBlur={onBlur}

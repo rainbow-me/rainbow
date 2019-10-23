@@ -9,24 +9,14 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing } from 'react-native-reanimated';
 import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
-import { colors, padding, position } from '../../styles';
-import { FadeInAnimation, ScaleInAnimation } from '../animations';
-import { BiometryIcon, Icon } from '../icons';
-import InnerBorder from '../InnerBorder';
-import { Centered } from '../layout';
-import { ShadowStack } from '../shadow-stack';
-import { Text } from '../text';
+import { colors, padding } from '../../../styles';
+import InnerBorder from '../../InnerBorder';
+import { Centered } from '../../layout';
+import { ShadowStack } from '../../shadow-stack';
+import { Text } from '../../text';
+import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
 
-const {
-  cond,
-  divide,
-  greaterThan,
-  multiply,
-  sub,
-  timing,
-  Value,
-  View,
-} = Animated;
+const { divide, multiply, timing, Value, View } = Animated;
 
 const ButtonBorderRadius = 30;
 const ButtonHeight = 59;
@@ -56,14 +46,6 @@ const Content = styled(Centered)`
   width: 100%;
 `;
 
-const BiometryIconSize = 31;
-const IconContainer = styled(Centered)`
-  ${position.size(BiometryIconSize)};
-  left: 19;
-  margin-bottom: 2;
-  position: absolute;
-`;
-
 const Title = withProps({
   color: 'white',
   size: 'large',
@@ -85,32 +67,6 @@ const buildAnimation = (value, options) => {
 
 const calculateReverseDuration = progess =>
   multiply(divide(progess, 100), progressDurationMs);
-
-const HoldToAuthorizeButtonIcon = ({ animatedValue }) => {
-  const isSpinnerVisible = greaterThan(animatedValue, 0);
-  const spinnerIn = sub(22, animatedValue);
-  const spinnerOut = divide(1, animatedValue);
-
-  return (
-    <IconContainer>
-      <FadeInAnimation duration={200}>
-        <ScaleInAnimation value={animatedValue}>
-          <BiometryIcon size={BiometryIconSize} />
-        </ScaleInAnimation>
-        <ScaleInAnimation
-          scaleTo={0.001}
-          value={cond(isSpinnerVisible, spinnerIn, spinnerOut)}
-        >
-          <Icon name="progress" progress={animatedValue} />
-        </ScaleInAnimation>
-      </FadeInAnimation>
-    </IconContainer>
-  );
-};
-
-HoldToAuthorizeButtonIcon.propTypes = {
-  animatedValue: PropTypes.object,
-};
 
 export default class HoldToAuthorizeButton extends PureComponent {
   static propTypes = {

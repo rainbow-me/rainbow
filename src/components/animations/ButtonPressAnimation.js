@@ -11,8 +11,8 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing } from 'react-native-reanimated';
 import {
   contains,
-  runDelay,
-  runTiming,
+  delay,
+  timing,
   transformOrigin as transformOriginUtil,
 } from 'react-native-redash';
 import stylePropType from 'react-style-proptype';
@@ -70,7 +70,7 @@ export default class ButtonPressAnimation extends PureComponent {
     defaultScale: PropTypes.number,
     disabled: PropTypes.bool,
     duration: PropTypes.number,
-    easing: PropTypes.object,
+    easing: PropTypes.func,
     enableHapticFeedback: PropTypes.bool,
     exclusive: PropTypes.bool,
     hapticType: PropTypes.oneOf(Object.keys(HapticFeedbackTypes)),
@@ -190,10 +190,7 @@ export default class ButtonPressAnimation extends PureComponent {
     }
   };
 
-  handleRunInteraction = () =>
-    this.props.isInteraction
-      ? InteractionManager.runAfterInteractions(this.handlePress)
-      : this.handlePress();
+  handleRunInteraction = () => this.handlePress();
 
   reset = () => {
     this.clearInteraction();
@@ -289,17 +286,19 @@ export default class ButtonPressAnimation extends PureComponent {
             ),
             cond(
               eq(this.gestureState, END),
-              runDelay(
+              delay(
                 [set(this.shouldSpring, 0), call([], this.clearInteraction)],
                 duration
               )
             ),
             set(
               this.scale,
-              runTiming(this.clock, this.scale, {
+              timing({
+                clock: this.clock,
                 duration,
                 easing,
-                toValue: cond(eq(this.shouldSpring, 1), scaleTo, defaultScale),
+                from: this.scale,
+                to: cond(eq(this.shouldSpring, 1), scaleTo, defaultScale),
               })
             ),
           ])}

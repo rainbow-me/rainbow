@@ -14,8 +14,8 @@ import {
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
-import { isIphoneX } from 'react-native-iphone-x-helper';
-import { compose, withHandlers } from 'recompact';
+import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
+import { compose, withHandlers, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
 import {
@@ -30,16 +30,26 @@ import {
   withAccountData,
   withAccountSettings,
   withDataInit,
+  withTransitionProps,
   withUniqueTokens,
 } from '../hoc';
-import { colors } from '../styles';
+import { borders, colors } from '../styles';
 import { deviceUtils, isNewValueForPath } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
 import { getLocalContacts } from '../handlers/commonStorage';
 
+const statusBarHeight = getStatusBarHeight(true);
+
 const Container = styled(Column)`
+  background-color: ${colors.transparent};
+  height: 100%;
+`;
+
+const SheetContainer = styled(Column)`
+  ${borders.buildRadius('top', 16)};
   background-color: ${colors.white};
   height: 100%;
+  top: ${statusBarHeight};
 `;
 
 const formatGasSpeedItem = (value, key) => {
@@ -108,13 +118,17 @@ class SendSheet extends Component {
     this.onUpdateContacts();
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     const {
       isValidAddress,
       navigation,
       selected,
       sendUpdateSelected,
     } = this.props;
+
+    if (prevProps.isTransitioning && !this.props.isTransitioning) {
+      this.props.navigation.emit('refocus');
+    }
 
     const asset = get(navigation, 'state.params.asset');
 
@@ -132,13 +146,20 @@ class SendSheet extends Component {
       prevProps,
       'isValidAddress'
     );
+    const isNewContactList = isNewValueForPath(
+      this.state,
+      prevState,
+      'contacts'
+    );
 
-    if (isNewValidAddress || isNewSelected) {
-      let verticalGestureResponseDistance = 0;
+    if (isNewValidAddress || isNewSelected || isNewContactList) {
+      let verticalGestureResponseDistance = 140;
 
-      if (isValidAddress) {
+      if (!isValidAddress && this.state.contacts.length !== 0) {
+        verticalGestureResponseDistance = 140;
+      } else if (isValidAddress) {
         verticalGestureResponseDistance = isEmpty(selected)
-          ? 150
+          ? 140
           : deviceUtils.dimensions.height;
       } else {
         verticalGestureResponseDistance = deviceUtils.dimensions.height;
@@ -266,7 +287,7 @@ class SendSheet extends Component {
     const showAssetForm = isValidAddress && !isEmpty(selected);
 
     return (
-      <Container>
+      <SheetContainer>
         <KeyboardAvoidingView behavior="padding">
           <Container align="center">
             <SendHeader
@@ -322,7 +343,7 @@ class SendSheet extends Component {
             )}
           </Container>
         </KeyboardAvoidingView>
-      </Container>
+      </SheetContainer>
     );
   }
 }
@@ -332,6 +353,10 @@ export default compose(
   withUniqueTokens,
   withAccountSettings,
   withDataInit,
+  withTransitionProps,
+  withProps(({ transitionProps: { isTransitioning } }) => ({
+    isTransitioning,
+  })),
   withHandlers({
     fetchData: ({ refreshAccountData }) => async () => refreshAccountData(),
   })

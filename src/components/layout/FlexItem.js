@@ -25,7 +25,7 @@ FlexItem.propTypes = {
   flex: PropTypes.number,
   grow: PropTypes.number,
   shrink: PropTypes.number,
-  style: stylePropType,
+  style: PropTypes.oneOfType([PropTypes.arrayOf(stylePropType), stylePropType]),
 };
 
 export default FlexItem;

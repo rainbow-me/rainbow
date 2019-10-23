@@ -23,7 +23,9 @@ const FabWrapper = enhance(({ children, disabled, fabs, ...props }) => (
         direction="row-reverse"
         margin={12}
       >
-        {fabs.map(fab => createElement(fab, props))}
+        {fabs.map((fab, id) =>
+          createElement(fab, { key: `fab-${id}`, ...props })
+        )}
       </RowWithMargins>
     )}
   </FlexItem>

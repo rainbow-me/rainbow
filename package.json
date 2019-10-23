@@ -98,7 +98,8 @@
     "react-native-radial-gradient": "shkatulo/react-native-radial-gradient",
     "react-native-randombytes": "^3.5.3",
     "react-native-reanimated": "1.3.0",
-    "react-native-redash": "^7.5.1",
+    "react-native-redash": "8.2.2",
+    "react-native-safe-area-context": "^0.5.0",
     "react-native-safe-area-view": "mikedemarais/react-native-safe-area-view",
     "react-native-screens": "^1.0.0-alpha.23",
     "react-native-splash-screen": "^3.2.0",
@@ -112,7 +113,7 @@
     "react-native-udp": "^2.6.1",
     "react-native-version-number": "^0.3.6",
     "react-navigation": "4.0.7",
-    "react-navigation-stack": "2.0.0-alpha.20",
+    "react-navigation-stack": "2.0.0-alpha.33",
     "react-navigation-tabs": "2.5.5",
     "react-primitives": "^0.8.0",
     "react-redux": "^5.0.7",
@@ -164,7 +165,6 @@
   },
   "resolutions": {
     "**/eslint-plugin-import": "2.14.0",
-    "**/react-navigation-stack": "https://github.com/react-navigation/stack#95fe56e11b6f8bca3c4d24b619295651944d4d03",
     "**/resolve": "1.8.1"
   },
   "jest": {

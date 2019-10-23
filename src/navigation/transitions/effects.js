@@ -12,23 +12,37 @@ const { and, block, call, color, cond, eq, or, SpringUtils } = Animated;
 const statusBarHeight = getStatusBarHeight(true);
 
 const expand = {};
-expand.opacityEnd = 0.75;
 expand.translateY = deviceUtils.dimensions.height;
-
-const sheet = {};
-sheet.borderRadiusEnd = 16;
 
 export const sheetVerticalOffset = statusBarHeight;
 
-const expandStyleInterpolator = ({
+const effectOpacity = Animated.proc((closing, current) =>
+  block([
+    cond(
+      // onStart
+      or(
+        and(eq(closing, 0), eq(current, 0)),
+        and(eq(closing, 1), eq(current, 1))
+      ),
+      // setShowingModal
+      call([], () => {
+        store.dispatch(updateTransitionProps({ showingModal: true }));
+      })
+    ),
+    // return opacity value of 1
+    1,
+  ])
+);
+
+const exchangeStyleInterpolator = ({
   closing,
-  layouts: { screen },
   current: { progress: current },
+  layouts: { screen },
 }) => {
   const backgroundOpacity = interpolate(current, {
     extrapolate: Animated.Extrapolate.CLAMP,
-    inputRange: [0, 0.975],
-    outputRange: [0, 0.7],
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, 1, 1],
   });
 
   const translateY = interpolate(current, {
@@ -36,17 +50,41 @@ const expandStyleInterpolator = ({
     outputRange: [screen.height, 0],
   });
 
-  const onStart = or(
-    and(eq(closing, 0), eq(current, 0)),
-    and(eq(closing, 1), eq(current, 1))
-  );
-  const setShowingModal = call([], () => {
-    store.dispatch(updateTransitionProps({ showingModal: true }));
+  return {
+    cardStyle: {
+      opacity: effectOpacity(closing, current),
+      shadowColor: colors.black,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.4,
+      shadowRadius: 50,
+      // Translation for the animation of the current card
+      transform: [{ translateY }],
+    },
+    containerStyle: {
+      backgroundColor: color(25, 25, 25, backgroundOpacity),
+    },
+  };
+};
+
+const expandStyleInterpolator = ({
+  closing,
+  current: { progress: current },
+  layouts: { screen },
+}) => {
+  const backgroundOpacity = interpolate(current, {
+    extrapolate: Animated.Extrapolate.CLAMP,
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, 0.7, 0.7],
+  });
+
+  const translateY = interpolate(current, {
+    inputRange: [0, 1],
+    outputRange: [screen.height, 0],
   });
 
   return {
     cardStyle: {
-      opacity: block([cond(onStart, setShowingModal), 1]),
+      opacity: effectOpacity(closing, current),
       shadowColor: colors.dark,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
@@ -63,34 +101,31 @@ const expandStyleInterpolator = ({
 const sheetStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },
-  ...rest
 }) => {
   const backgroundOpacity = interpolate(current, {
     extrapolate: Animated.Extrapolate.CLAMP,
-    inputRange: [0, 0.975],
-    outputRange: [0, 0.7],
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, 0.9, 0.9],
   });
 
-  console.log('tttt', current);
-
   const translateY = block([
-    call([current], ([currentd]) => console.log(currentd, 'llllll', rest)),
     interpolate(current, {
       inputRange: [0, 1],
-      outputRange: [screen.height, statusBarHeight],
+      outputRange: [screen.height, 0],
     }),
   ]);
 
   return {
     cardStyle: {
-      borderTopLeftRadius: sheet.borderRadiusEnd,
-      borderTopRightRadius: sheet.borderRadiusEnd,
-      overflow: 'hidden',
+      shadowColor: colors.black,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.4,
+      shadowRadius: 50,
       // Translation for the animation of the current card
       transform: [{ translateY }],
     },
     containerStyle: {
-      backgroundColor: color(37, 41, 46, backgroundOpacity),
+      backgroundColor: color(0, 0, 0, backgroundOpacity),
     },
   };
 };
@@ -101,12 +136,8 @@ const backgroundInterpolator = ({
   if (next === undefined) {
     return { cardStyle: {} };
   }
-  const dispatch = cond(
-    call([], () => {
-      store.dispatch(updateTransitionProps({ position: next }));
-    })
-  );
-  return { cardStyle: { opacity: block([dispatch, 1]) } };
+
+  return { cardStyle: { opacity: 1 } };
 };
 
 const closeSpec = {
@@ -130,6 +161,16 @@ const openSpec = {
   }),
 };
 
+const sheetOpenSpec = {
+  animation: 'spring',
+  config: SpringUtils.makeConfigFromBouncinessAndSpeed({
+    ...SpringUtils.makeDefaultConfig(),
+    bounciness: 0,
+    mass: 1,
+    speed: 22,
+  }),
+};
+
 const gestureResponseDistance = {
   vertical: deviceUtils.dimensions.height,
 };
@@ -140,6 +181,16 @@ export const onTransitionStart = props => {
   } else {
     StatusBar.setBarStyle('light-content');
   }
+};
+
+export const exchangePreset = {
+  cardShadowEnabled: true,
+  cardStyleInterpolator: exchangeStyleInterpolator,
+  cardTransparent: true,
+  gestureDirection: 'vertical',
+  gestureResponseDistance,
+  onTransitionStart,
+  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
 export const expandedPreset = {
@@ -153,12 +204,13 @@ export const expandedPreset = {
 };
 
 export const sheetPreset = {
+  cardShadowEnabled: true,
   cardStyleInterpolator: sheetStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
   onTransitionStart,
-  transitionSpec: { close: closeSpec, open: openSpec },
+  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
 export const backgroundPreset = {

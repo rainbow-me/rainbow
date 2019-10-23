@@ -1,6 +1,3 @@
-import produce from 'immer';
-import Animated from 'react-native-reanimated';
-
 // -- Constants --------------------------------------- //
 const UPDATE_TRANSITION_PROPS = 'navigation/UPDATE_TRANSITION_PROPS';
 
@@ -14,13 +11,18 @@ const INITIAL_STATE = {
     blurColor: null,
     effect: '',
     isTransitioning: false,
-    position: new Animated.Value(0),
   },
 };
 
-export default (state = INITIAL_STATE, action) =>
-  produce(state, draft => {
-    if (action.type === UPDATE_TRANSITION_PROPS) {
-      Object.assign(draft.transitionProps, action.payload);
-    }
-  });
+export default (state = INITIAL_STATE, action) => {
+  if (action.type === UPDATE_TRANSITION_PROPS) {
+    return {
+      ...state,
+      transitionProps: {
+        ...state.transitionProps,
+        ...action.payload,
+      },
+    };
+  }
+  return state;
+};

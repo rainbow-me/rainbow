@@ -21,8 +21,8 @@ const FlexElement = omitProps(...FlexPropBlacklist)(
 
 const Flex = styled(FlexElement)`
   ${({ self }) =>
-    self ? `align-self: ${getFlexStyleKeysFromShorthand(self)};` : null}
-  ${({ flex }) => (flex ? `flex: ${flex};` : null)}
+    self ? `align-self: ${getFlexStyleKeysFromShorthand(self)};` : ''}
+  ${({ flex }) => (flex ? `flex: ${flex};` : '')}
   align-items: ${({ align }) => getFlexStyleKeysFromShorthand(align)};
   flex-direction: ${({ direction }) => direction};
   flex-wrap: ${({ wrap }) => (wrap ? 'wrap' : 'nowrap')};
@@ -33,7 +33,7 @@ Flex.displayName = 'Flex';
 
 Flex.propTypes = {
   align: PropTypes.oneOf(['baseline', 'center', 'end', 'start', 'stretch']),
-  component: PropTypes.func,
+  component: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
   direction: PropTypes.oneOf([
     'column',
     'column-reverse',

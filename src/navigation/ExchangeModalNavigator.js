@@ -25,11 +25,8 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator(
     },
   },
   {
-    disableKeyboardHandling: true,
     headerMode: 'none',
     initialLayout: deviceUtils.dimensions,
-    keyboardDismissMode: 'none',
-    keyboardShouldPersistTaps: 'always',
     mode: 'modal',
     position: ExchangeModalTabPosition,
     springConfig: {
