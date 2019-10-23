@@ -16,6 +16,24 @@ expand.translateY = deviceUtils.dimensions.height;
 
 export const sheetVerticalOffset = statusBarHeight;
 
+const effectOpacity = Animated.proc((closing, current) =>
+  block([
+    cond(
+      // onStart
+      or(
+        and(eq(closing, 0), eq(current, 0)),
+        and(eq(closing, 1), eq(current, 1))
+      ),
+      // setShowingModal
+      call([], () => {
+        store.dispatch(updateTransitionProps({ showingModal: true }));
+      })
+    ),
+    // return opacity value of 1
+    1,
+  ])
+);
+
 const exchangeStyleInterpolator = ({
   closing,
   current: { progress: current },
@@ -32,17 +50,9 @@ const exchangeStyleInterpolator = ({
     outputRange: [screen.height, 0],
   });
 
-  const onStart = or(
-    and(eq(closing, 0), eq(current, 0)),
-    and(eq(closing, 1), eq(current, 1))
-  );
-  const setShowingModal = call([], () => {
-    store.dispatch(updateTransitionProps({ showingModal: true }));
-  });
-
   return {
     cardStyle: {
-      opacity: block([cond(onStart, setShowingModal), 1]),
+      opacity: effectOpacity(closing, current),
       shadowColor: colors.black,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.4,
@@ -72,17 +82,9 @@ const expandStyleInterpolator = ({
     outputRange: [screen.height, 0],
   });
 
-  const onStart = or(
-    and(eq(closing, 0), eq(current, 0)),
-    and(eq(closing, 1), eq(current, 1))
-  );
-  const setShowingModal = call([], () => {
-    store.dispatch(updateTransitionProps({ showingModal: true }));
-  });
-
   return {
     cardStyle: {
-      opacity: block([cond(onStart, setShowingModal), 1]),
+      opacity: effectOpacity(closing, current),
       shadowColor: colors.dark,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,

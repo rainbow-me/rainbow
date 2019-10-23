@@ -1,30 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { colors } from '../../styles';
-import { HoldToAuthorizeButton } from '../buttons';
-import { Icon } from '../icons';
-import { Centered, RowWithMargins } from '../layout';
-import { Text } from '../text';
+import { HoldToAuthorizeButton, UnlockingSpinner } from '../buttons';
 import { SlippageWarningTheshold } from './SlippageWarning';
-
-// lol this isnt done
-const UnlockingSpinner = ({ timeRemaining }) => (
-  <Centered direction="column">
-    <RowWithMargins margin={8}>
-      <Icon name="spinner" />
-      <Text color="white" size="large" weight="semibold">
-        Unlocking
-      </Text>
-    </RowWithMargins>
-    <Text color="white" opacity={0.4} size="smedium" weight="medium">
-      {`~ ${timeRemaining} Remaining`}
-    </Text>
-  </Centered>
-);
-
-UnlockingSpinner.propTypes = {
-  timeRemaining: PropTypes.string,
-};
 
 const ConfirmExchangeButton = ({
   disabled,

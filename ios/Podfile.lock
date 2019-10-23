@@ -115,7 +115,7 @@ PODS:
     - React
   - react-native-camera/RN (2.11.2):
     - React
-  - react-native-netinfo (4.3.3):
+  - react-native-netinfo (4.4.0):
     - React
   - react-native-safe-area-context (0.5.0):
     - React
@@ -343,7 +343,7 @@ SPEC CHECKSUMS:
   React-jsinspector: e08662d1bf5b129a3d556eb9ea343a3f40353ae4
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: b5e6e34586ca6f588b0c736dcabfe0aad5ce2f3e
-  react-native-netinfo: bd9b833f23ee1165b7e90c1b2c96731636fa9257
+  react-native-netinfo: 6bb847e64f45a2d69c6173741111cfd95c669301
   react-native-safe-area-context: 13004a45f3021328fdd9ee1f987c3131fb65928d
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   React-RCTActionSheet: b0f1ea83f4bf75fb966eae9bfc47b78c8d3efd90
@@ -372,4 +372,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 33865f4d2b0b4f3f246921d3679430cd55088e21
 
-COCOAPODS: 1.7.5
+COCOAPODS: 1.6.1

@@ -1,14 +1,12 @@
 import { includes, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import FastImage from 'react-native-fast-image';
 import { onlyUpdateForPropTypes } from 'recompact';
-import SpinnerImageSource from '../../assets/spinner.png';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { colors, position } from '../../styles';
-import { SpinAnimation } from '../animations';
 import Icon from '../icons/Icon';
 import { RowWithMargins } from '../layout';
+import Spinner from '../Spinner';
 import { Text } from '../text';
 
 const StatusProps = {
@@ -33,14 +31,7 @@ const TransactionStatusBadge = ({ pending, status, ...props }) => {
 
   return (
     <RowWithMargins align="center" margin={4} {...props}>
-      {pending && (
-        <SpinAnimation>
-          <FastImage
-            source={SpinnerImageSource}
-            style={position.sizeAsObject(12)}
-          />
-        </SpinAnimation>
-      )}
+      {pending && <Spinner color={colors.appleBlue} size={12} />}
       {status && includes(Object.keys(StatusProps), status) && (
         <Icon
           color={statusColor}
