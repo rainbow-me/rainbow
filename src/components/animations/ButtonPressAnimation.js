@@ -11,8 +11,8 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing } from 'react-native-reanimated';
 import {
   contains,
-  runDelay,
-  runTiming,
+  delay,
+  timing,
   transformOrigin as transformOriginUtil,
 } from 'react-native-redash';
 import stylePropType from 'react-style-proptype';
@@ -286,17 +286,19 @@ export default class ButtonPressAnimation extends PureComponent {
             ),
             cond(
               eq(this.gestureState, END),
-              runDelay(
+              delay(
                 [set(this.shouldSpring, 0), call([], this.clearInteraction)],
                 duration
               )
             ),
             set(
               this.scale,
-              runTiming(this.clock, this.scale, {
+              timing({
+                clock: this.clock,
                 duration,
                 easing,
-                toValue: cond(eq(this.shouldSpring, 1), scaleTo, defaultScale),
+                from: this.scale,
+                to: cond(eq(this.shouldSpring, 1), scaleTo, defaultScale),
               })
             ),
           ])}
