@@ -6,7 +6,7 @@ import Animated, {
   Transitioning,
   Transition,
 } from 'react-native-reanimated';
-import { useTransition } from 'react-native-redash';
+import { useToggle } from 'react-native-redash';
 import { withProps } from 'recompact';
 import { gasUtils } from '../../utils';
 import { interpolate } from '../animations';
@@ -14,7 +14,7 @@ import { Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedEmoji from './GasSpeedEmoji';
 
-const { cond, eq, neq } = Animated;
+const { cond } = Animated;
 
 const containerStyle = {
   bottom: 0,
@@ -22,6 +22,8 @@ const containerStyle = {
   right: 0,
   top: 0,
 };
+
+export const GasSpeedLabelPagerItemHeight = 28;
 
 const GasSpeedLabel = withProps({
   color: 'white',
@@ -36,7 +38,7 @@ const transition = (
   <Transition.Change durationMs={duration} interpolation="easeOut" />
 );
 
-const GasSpeedLabelPagerItem = ({ height, label, selected, shouldAnimate }) => {
+const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate }) => {
   const ref = useRef();
 
   useEffect(() => {
@@ -49,15 +51,13 @@ const GasSpeedLabelPagerItem = ({ height, label, selected, shouldAnimate }) => {
   const isFirst = index === 0;
   const isLast = index === gasUtils.GasSpeedOrder.length - 1;
 
-  const transitionVal = useTransition(
+  const transitionVal = useToggle(
     selected,
-    neq(selected, label),
-    eq(selected, label),
     duration + (isFirst ? 50 : 0),
     Easing.out(Easing.ease)
   );
 
-  const defaultOpacity = cond(selected, 1, 0);
+  const defaultOpacity = selected ? 1 : 0;
   const opacity = cond(
     shouldAnimate,
     cond(
@@ -102,7 +102,7 @@ const GasSpeedLabelPagerItem = ({ height, label, selected, shouldAnimate }) => {
       transition={transition}
     >
       <Animated.View style={{ opacity, transform: [{ translateX }] }}>
-        <Row align="end" height={height} justify="end">
+        <Row align="end" height={GasSpeedLabelPagerItemHeight} justify="end">
           <GasSpeedEmoji label={label} />
           <GasSpeedLabel style={{ marginBottom: 3 }}>
             {upperFirst(label)}
@@ -114,7 +114,6 @@ const GasSpeedLabelPagerItem = ({ height, label, selected, shouldAnimate }) => {
 };
 
 GasSpeedLabelPagerItem.propTypes = {
-  height: PropTypes.number,
   label: PropTypes.oneOf(gasUtils.GasSpeedOrder),
   selected: PropTypes.bool,
   shouldAnimate: PropTypes.bool,

@@ -5,6 +5,7 @@ import { View } from 'react-primitives';
 import { onlyUpdateForKeys } from 'recompact';
 import { gasUtils } from '../../utils';
 import { Emoji } from '../text';
+import { GasSpeedLabelPagerItemHeight } from './GasSpeedLabelPagerItem';
 
 const EmojiForGasSpeedType = {
   [gasUtils.FAST]: {
@@ -27,7 +28,7 @@ const GasSpeedEmoji = ({ label }) => {
     : EmojiForGasSpeedType[gasUtils.NORMAL];
 
   return (
-    <View height={28} width={25}>
+    <View height={GasSpeedLabelPagerItemHeight} width={25}>
       <Emoji
         lineHeight="looser"
         name={gasSpeed.emoji}
