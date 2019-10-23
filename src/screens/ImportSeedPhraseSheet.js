@@ -4,6 +4,7 @@ import { KeyboardAvoidingView } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { Icon } from '../components/icons';
 import { MultiLineInput } from '../components/inputs';
 import { Centered, Column, Row } from '../components/layout';
@@ -12,6 +13,8 @@ import { Text } from '../components/text';
 import { sheetVerticalOffset } from '../navigation/transitions/effects';
 import { borders, colors, padding } from '../styles';
 
+const statusBarHeight = getStatusBarHeight(true);
+
 const Container = styled(Column).attrs({
   align: 'center',
   flex: 1,
@@ -19,6 +22,7 @@ const Container = styled(Column).attrs({
   ${borders.buildRadius('top', 12)};
   ${padding(0, 16, 16)};
   background: ${colors.white};
+  top: ${statusBarHeight};
 `;
 
 const HandleIcon = styled(Icon).attrs({
