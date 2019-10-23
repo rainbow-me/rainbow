@@ -1,18 +1,16 @@
 import { getExecutionDetails, getTokenReserves } from '@uniswap/sdk';
 import contractMap from 'eth-contract-metadata';
 import { ethers } from 'ethers';
-import { compact, get, keyBy, map, slice, toLower, zipObject } from 'lodash';
+import { get, map, toLower, zipObject } from 'lodash';
 import {
   convertRawAmountToDecimalFormat,
   divide,
   fromWei,
   multiply,
 } from '../helpers/utilities';
-import { uniswapAssetAddresses } from '../references';
 import { loadWallet } from '../model/wallet';
 import exchangeABI from '../references/uniswap-exchange-abi.json';
 import erc20ABI from '../references/erc20-abi.json';
-import { promiseUtils } from '../utils';
 import { toHex, web3Provider } from './web3';
 
 const convertArgsForEthers = methodArguments =>
@@ -25,17 +23,10 @@ const convertValueForEthers = value => {
   return ethers.utils.hexlify(valueBigNumber);
 };
 
-export const getReserve = tokenAddress => getTokenReserves(tokenAddress);
-
-export const getReserves = async () => {
-  const uniswapTokens = slice(uniswapAssetAddresses, 1);
-  const reserves = await promiseUtils.PromiseAllWithFails(
-    map(uniswapTokens, token => getTokenReserves(token))
-  );
-  return keyBy(compact(reserves), reserve =>
-    toLower(get(reserve, 'token.address'))
-  );
-};
+export const getReserve = async tokenAddress =>
+  !tokenAddress || tokenAddress === 'eth'
+    ? Promise.resolve(null)
+    : getTokenReserves(toLower(tokenAddress));
 
 const getGasLimit = async (
   accountAddress,

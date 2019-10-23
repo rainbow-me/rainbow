@@ -20,7 +20,6 @@ import {
 import {
   uniswapLoadState,
   uniswapClearState,
-  uniswapTokenReservesRefreshState,
   uniswapUpdateState,
 } from '../redux/uniswap';
 import {
@@ -28,6 +27,10 @@ import {
   uniqueTokensLoadState,
   uniqueTokensRefreshState,
 } from '../redux/uniqueTokens';
+import {
+  web3ListenerClearState,
+  web3ListenerInit,
+} from '../redux/web3listener';
 import { walletInit } from '../model/wallet';
 import {
   walletConnectLoadState,
@@ -60,10 +63,10 @@ export default Component =>
         uniqueTokensRefreshState,
         uniswapClearState,
         uniswapLoadState,
-        uniswapTokenReservesRefreshState,
         uniswapUpdateState,
         walletConnectClearState,
         walletConnectLoadState,
+        web3ListenerInit,
       }
     ),
     withHideSplashScreen,
@@ -77,6 +80,7 @@ export default Component =>
         }
       },
       clearAccountData: ownProps => async () => {
+        web3ListenerClearState();
         const p0 = ownProps.explorerClearState();
         const p1 = ownProps.dataClearState();
         const p2 = ownProps.clearIsWalletEmpty();
@@ -104,7 +108,7 @@ export default Component =>
         try {
           ownProps.explorerInit();
           ownProps.gasPricesInit();
-          ownProps.uniswapTokenReservesRefreshState();
+          ownProps.web3ListenerInit();
           await ownProps.uniqueTokensRefreshState();
         } catch (error) {
           // TODO error state
