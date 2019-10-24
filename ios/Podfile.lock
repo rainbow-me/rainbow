@@ -499,10 +499,10 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 8909917ff7d8f21a57e443a866fd8d4560e50c65
   React-jsinspector: 111d7d342b07a904c400592e02a2b958f1098b60
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-camera: 375843010be62aed072d83c9df30efdeb3c8cbcb
-  react-native-netinfo: 892a5130be97ff8bb69c523739c424a2ffc296d1
-  react-native-safe-area-context: 329e0a80f124c687e00773fee417a3903788840a
-  react-native-version-number: 15563dc4145a94aabfc1faab2a9af10174a4204e
+  react-native-camera: b5e6e34586ca6f588b0c736dcabfe0aad5ce2f3e
+  react-native-netinfo: 6bb847e64f45a2d69c6173741111cfd95c669301
+  react-native-safe-area-context: 13004a45f3021328fdd9ee1f987c3131fb65928d
+  react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   React-RCTActionSheet: 89b037c0fb7d2671607cb645760164e7e0c013f6
   React-RCTAnimation: e3cefa93c38c004c318f7ec04b883eb14b8b8235
   React-RCTBlob: d26ac0e313fbf14e7203473fd593ccaaeee8329e
@@ -514,11 +514,11 @@ SPEC CHECKSUMS:
   React-RCTVibration: fb54c732fd20405a76598e431aa2f8c2bf527de9
   ReactCommon: 5848032ed2f274fcb40f6b9ec24067787c42d479
   RNAnalytics: d110195618296fed3907830911f01cb6e9be53d0
-  RNCAsyncStorage: 5ae4d57458804e99f73d427214442a6b10a53856
-  RNCMaskedView: 6200428cc4fb088ee7ae64a648e39bd8f4e70b41
-  RNDeviceInfo: bdc3e922b2ed0f086e9d9ab534e61bc316f08576
+  RNCAsyncStorage: 60a80e72d95bf02a01cace55d3697d9724f0d77f
+  RNCMaskedView: b79e193409a90bf6b5170d421684f437ff4e2278
+  RNDeviceInfo: 17e34f6dd902f08d88cbe2c0b7a01be948d43641
   RNFastImage: 9b0c22643872bb7494c8d87bbbb66cc4c0d9e7a2
-  RNIOS11DeviceCheck: d525b786c29d2793f8534bd3a321998a7a827a5f
+  RNIOS11DeviceCheck: a4a545fdd08230a17a8ce7608e95038ee23a32aa
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNReanimated: 6abbbae2e5e72609d85aabd92a982a94566885f1
   RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
