@@ -4,7 +4,7 @@ import {
   getUniqueTokens,
   saveUniqueTokens,
   removeUniqueTokens,
-} from '../handlers/localstorage/storage';
+} from '../handlers/localstorage/accountLocal';
 import { dedupeAssetsWithFamilies, getFamilies } from '../parsers/uniqueTokens';
 import { dataUpdateAssets } from './data';
 
@@ -69,7 +69,7 @@ export const uniqueTokensRefreshState = () => (dispatch, getState) =>
               );
               dispatch(dataUpdateAssets(dedupedAssets));
             }
-            saveUniqueTokens(accountAddress, uniqueTokens, network);
+            saveUniqueTokens(uniqueTokens, accountAddress, network);
             dispatch({
               payload: uniqueTokens,
               type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
