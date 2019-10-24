@@ -5,6 +5,7 @@ import { BorderlessButton } from 'react-native-gesture-handler';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { Icon } from '../components/icons';
 import { MultiLineInput } from '../components/inputs';
 import { Centered, Column, Row } from '../components/layout';

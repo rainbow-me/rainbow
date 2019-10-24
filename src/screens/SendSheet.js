@@ -126,10 +126,6 @@ class SendSheet extends Component {
       sendUpdateSelected,
     } = this.props;
 
-    if (prevProps.isTransitioning && !this.props.isTransitioning) {
-      this.props.navigation.emit('refocus');
-    }
-
     const asset = get(navigation, 'state.params.asset');
 
     if (isValidAddress && !prevProps.isValidAddress) {
