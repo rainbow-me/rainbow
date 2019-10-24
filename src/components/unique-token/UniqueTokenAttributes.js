@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import styled from 'styled-components/primitives';
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import {
@@ -11,18 +10,13 @@ import {
   withState,
 } from 'recompact';
 import { sortList } from '../../helpers/sortList';
-import { colors, margin, padding } from '../../styles';
+import { colors, margin, padding, position } from '../../styles';
 import { Centered, FlexItem } from '../layout';
 import { PagerControls } from '../pager';
 import Tag from '../Tag';
 
 const AttributesPadding = 15;
 const scrollInsetBottom = AttributesPadding + PagerControls.padding * 4;
-
-const Wrapper = styled(Centered).attrs({ wrap: true })`
-  ${padding(0, AttributesPadding * 1.125)}
-  flex-grow: 1;
-`;
 
 const AttributeItem = ({ trait_type: type, value }) =>
   type ? (
@@ -43,13 +37,10 @@ const UniqueTokenAttributes = ({
 }) => (
   <FlexItem>
     <ScrollView
-      centerContent={willListOverflow}
+      centerContent={!willListOverflow}
       contentContainerStyle={{
-        alignItems: 'center',
-        flexDirection: 'row',
+        ...position.centeredAsObject,
         flexGrow: 1,
-        flexWrap: 'wrap',
-        justifyContent: 'center',
         padding: willListOverflow ? AttributesPadding : 0,
         paddingBottom: willListOverflow ? scrollInsetBottom : AttributesPadding,
       }}
@@ -68,7 +59,13 @@ const UniqueTokenAttributes = ({
         paddingBottom: PagerControls.padding,
       }}
     >
-      <Wrapper onLayout={onListLayout}>{traits.map(AttributeItem)}</Wrapper>
+      <Centered
+        css={padding(0, AttributesPadding * 1.125)}
+        onLayout={onListLayout}
+        wrap
+      >
+        {traits.map(AttributeItem)}
+      </Centered>
     </ScrollView>
   </FlexItem>
 );
@@ -89,7 +86,6 @@ UniqueTokenAttributes.propTypes = {
 UniqueTokenAttributes.padding = AttributesPadding;
 
 const enhance = compose(
-  onlyUpdateForKeys(['traits', 'willListOverflow']),
   withState('willListOverflow', 'setWillListOverflow', false),
   withProps(({ traits }) => ({
     // Sort traits alphabetically by "trait_type"
@@ -102,7 +98,8 @@ const enhance = compose(
       setWillListOverflow(layout.height > dimensions.height);
     },
     onScroll: () => event => event.stopPropagation(),
-  })
+  }),
+  onlyUpdateForKeys(['traits', 'willListOverflow'])
 );
 
 export default hoistStatics(enhance)(UniqueTokenAttributes);
