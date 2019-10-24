@@ -27,6 +27,8 @@ export default class ExchangeSearch extends PureComponent {
     searchQuery: PropTypes.string,
   };
 
+  static height = ExchangeSearchHeight;
+
   clearInput = () => {
     if (this.inputRef && this.inputRef.current) {
       this.inputRef.current.clear();
