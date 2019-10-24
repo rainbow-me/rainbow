@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native-gesture-handler/Swipeable.js b/node_modules/react-native-gesture-handler/Swipeable.js
-index 22284a3..185e88b 100644
+index 2627cbf..26d1d71 100644
 --- a/node_modules/react-native-gesture-handler/Swipeable.js
 +++ b/node_modules/react-native-gesture-handler/Swipeable.js
-@@ -183,8 +183,8 @@ export default class Swipeable extends Component<PropType, StateType> {
+@@ -176,8 +176,8 @@ export default class Swipeable extends Component<PropType, StateType> {
        rightThreshold = rightWidth / 2,
      } = this.props;
  
@@ -13,7 +13,7 @@ index 22284a3..185e88b 100644
  
      let toValue = 0;
      if (rowState === 0) {
-@@ -205,7 +205,7 @@ export default class Swipeable extends Component<PropType, StateType> {
+@@ -198,7 +198,7 @@ export default class Swipeable extends Component<PropType, StateType> {
        }
      }
  

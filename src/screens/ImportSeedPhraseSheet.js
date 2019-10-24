@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { KeyboardAvoidingView } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { pure } from 'recompact';
 import styled from 'styled-components/primitives';
 import { Icon } from '../components/icons';
@@ -12,13 +13,16 @@ import { Text } from '../components/text';
 import { sheetVerticalOffset } from '../navigation/transitions/effects';
 import { borders, colors, padding } from '../styles';
 
+const statusBarHeight = getStatusBarHeight(true);
+
 const Container = styled(Column).attrs({
   align: 'center',
   flex: 1,
 })`
-  ${borders.buildRadius('top', 12)};
+  ${borders.buildRadius('top', 16)};
   ${padding(0, 16, 16)};
   background: ${colors.white};
+  top: ${statusBarHeight};
 `;
 
 const HandleIcon = styled(Icon).attrs({

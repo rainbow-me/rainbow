@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.facebook.react.ReactApplication;
 import com.RNTextInputMask.RNTextInputMaskPackage;
+import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 import org.reactnative.maskedview.RNCMaskedViewPackage;
 import com.RNTextInputMask.RNTextInputMaskPackage;
 import com.segment.analytics.reactnative.core.RNAnalyticsPackage;
@@ -62,6 +63,7 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
             new RNTextInputMaskPackage(),
+            new SafeAreaContextPackage(),
             new RNCMaskedViewPackage(),
             new RNTextInputMaskPackage(),
             new RNAnalyticsPackage(),
