@@ -86,7 +86,7 @@ export default class SwipeableContactRow extends PureComponent {
     const { address, color, navigation, nickname, onChange } = this.props;
 
     this.close();
-    navigation.navigate('ExpandedAssetScreen', {
+    navigation.navigate('OverlayExpandedAssetScreen', {
       address,
       asset: [],
       color,

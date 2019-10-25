@@ -117,7 +117,7 @@ class SendHeader extends PureComponent {
     }
 
     Keyboard.dismiss();
-    navigation.navigate('ExpandedAssetScreen', {
+    navigation.navigate('OverlayExpandedAssetScreen', {
       address: recipient,
       asset: [],
       color,
