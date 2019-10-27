@@ -67,7 +67,7 @@ class AddContactState extends PureComponent {
   handleAddContact = async () => {
     const { address, navigation, onCloseModal } = this.props;
     const { color, value } = this.state;
-    
+
     if (value.length > 0) {
       await addNewLocalContact(address, value, color);
       if (onCloseModal) {
