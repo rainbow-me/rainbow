@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
-import { Keyboard, Clipboard } from 'react-native';
+import { TextInput, Keyboard, Clipboard } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { withNeverRerender } from '../../hoc';
 import Divider from '../Divider';
@@ -110,6 +110,7 @@ class SendHeader extends PureComponent {
 
   navigateToContact = (contact = {}) => {
     const { navigation, onUpdateContacts, recipient } = this.props;
+    const input = TextInput.State.currentlyFocusedField();
 
     let color = get(contact, 'color');
     if (!isNumber(color)) {
@@ -123,6 +124,7 @@ class SendHeader extends PureComponent {
       color,
       contact: isEmpty(contact) ? false : contact,
       onCloseModal: onUpdateContacts,
+      refocusInput: input,
       type: 'contact',
     });
   };
