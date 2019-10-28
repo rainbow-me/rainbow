@@ -76,22 +76,22 @@ class ExchangeNativeField extends Component {
       symbol,
     } = this.props;
 
-    const opacity = this.state.isFocused ? 1 : 0.5;
+    const color = this.state.isFocused ? colors.dark : colors.blueGreyDark;
+    const opacity = this.state.isFocused ? 1 : (nativeAmount ? 0.5 : 0.3);
 
     return (
       <TouchableWithoutFeedback flex={0} onPress={this.focusNativeField}>
         <Row align="center" flex={1} height={height}>
           <Text
-            color={colors.dark}
             flex={0}
             size="large"
-            style={{ opacity }}
+            style={{ color, opacity }}
             weight="regular"
           >
             {symbol}
           </Text>
           <ExchangeInput
-            color={colors.alpha(colors.dark, opacity)}
+            color={colors.alpha(color, opacity)}
             disableTabularNums
             fontFamily={fonts.family.SFProText}
             fontSize={fonts.size.large}
