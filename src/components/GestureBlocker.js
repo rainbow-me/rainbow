@@ -60,4 +60,8 @@ GestureBlocker.propTypes = {
   type: PropTypes.string,
 };
 
+GestureBlocker.defaultProps = {
+  onTouchEnd: () => null,
+};
+
 export default React.memo(GestureBlocker);
