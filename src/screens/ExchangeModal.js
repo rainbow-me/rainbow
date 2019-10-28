@@ -386,29 +386,33 @@ class ExchangeModal extends React.Component {
         );
       }
 
+      const isSufficientBalance = !inputAmount ? true : (Number(inputBalance) >= Number(inputAmount) ? true : false);
       const slippage = get(tradeDetails, 'marketRateSlippage', 0).toString();
 
       this.setState({
         inputExecutionRate,
         inputNativePrice,
-        isSufficientBalance: Number(inputBalance) >= Number(inputAmount),
+        isSufficientBalance,
         outputExecutionRate,
         outputNativePrice,
         slippage,
         tradeDetails,
       });
 
-      const isInputZero = Number(rawInputAmount) === 0;
-      const isNativeZero = Number(nativeAmount || 0) === 0;
-      const isOutputZero = Number(rawOutputAmount) === 0;
+      const isInputEmpty = !inputAmount;
+      const isNativeEmpty = !nativeAmount;
+      const isOutputEmpty = !outputAmount;
 
-      if (this.nativeFieldRef.isFocused() && isNativeZero) {
+      const isInputZero = Number(inputAmount) === 0;
+      const isOutputZero = Number(outputAmount) === 0;
+
+      if (this.nativeFieldRef.isFocused() && isNativeEmpty) {
         this.clearForm();
       }
 
       if (inputAsExactAmount && !this.outputFieldRef.isFocused()) {
-        if (isInputZero) {
-          this.clearForm();
+        if (isInputEmpty || isInputZero) {
+          this.setOutputAmount();
         } else {
           const updatedAmount = get(tradeDetails, 'outputAmount.amount');
           const rawUpdatedAmount = convertRawAmountToDecimalFormat(
@@ -430,8 +434,13 @@ class ExchangeModal extends React.Component {
       }
 
       if (!inputAsExactAmount && !this.inputFieldRef.isFocused()) {
-        if (isOutputZero) {
-          this.clearForm();
+        if (isOutputEmpty || isOutputZero) {
+          this.setInputAmount();
+          if (this.inputFieldRef) this.inputFieldRef.clear();
+          if (this.nativeFieldRef) this.nativeFieldRef.clear();
+          this.setState({
+            isSufficientBalance: true,
+          });
         } else {
           const updatedAmount = get(tradeDetails, 'inputAmount.amount');
           const rawUpdatedAmount = convertRawAmountToDecimalFormat(
@@ -449,6 +458,10 @@ class ExchangeModal extends React.Component {
             updatedAmountDisplay,
             inputAsExactAmount
           );
+
+          this.setState({
+            isSufficientBalance: Number(inputBalance) >= Number(rawUpdatedAmount),
+          });
         }
       }
       if (isAssetApproved) {
@@ -602,7 +615,9 @@ class ExchangeModal extends React.Component {
       if (!this.nativeFieldRef.isFocused()) {
         let nativeAmount = null;
 
-        if (inputAmount) {
+        const isInputZero = Number(inputAmount) === 0;
+
+        if (inputAmount && !isInputZero) {
           const nativePrice = get(inputCurrency, 'native.price.amount', 0);
           nativeAmount = convertAmountToNativeAmount(inputAmount, nativePrice);
         }
@@ -637,7 +652,9 @@ class ExchangeModal extends React.Component {
       let inputAmount = null;
       let inputAmountDisplay = null;
 
-      if (nativeAmount) {
+      const isNativeZero = Number(nativeAmount) === 0;
+
+      if (nativeAmount && !isNativeZero) {
         const nativePrice = get(inputCurrency, 'native.price.amount', 0);
         inputAmount = convertAmountFromNativeValue(nativeAmount, nativePrice);
         inputAmountDisplay = updatePrecisionToDisplay(
