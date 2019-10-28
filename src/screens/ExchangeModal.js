@@ -436,8 +436,6 @@ class ExchangeModal extends React.Component {
       if (!inputAsExactAmount && !this.inputFieldRef.isFocused()) {
         if (isOutputEmpty || isOutputZero) {
           this.setInputAmount();
-          if (this.inputFieldRef) this.inputFieldRef.clear();
-          if (this.nativeFieldRef) this.nativeFieldRef.clear();
           this.setState({
             isSufficientBalance: true,
           });
