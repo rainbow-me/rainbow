@@ -118,7 +118,7 @@ export default class ExchangeInputField extends Component {
             <RowWithMargins
               align="center"
               flex={1}
-              margin={11}
+              margin={10}
               paddingLeft={this.padding}
             >
               <CoinIcon
@@ -169,7 +169,7 @@ export default class ExchangeInputField extends Component {
               <RowWithMargins
                 align="center"
                 height={BottomRowHeight}
-                margin={3}
+                margin={0}
                 paddingHorizontal={this.padding}
               >
                 <Emoji lineHeight="none" name="moneybag" size="lmedium" />
