@@ -7954,7 +7954,7 @@ open@^6.2.0, open@^6.4.0:
   dependencies:
     is-wsl "^1.1.0"
 
-opencollective-postinstall@^2.0.2:
+opencollective-postinstall@^2.0.0, opencollective-postinstall@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/opencollective-postinstall/-/opencollective-postinstall-2.0.2.tgz#5657f1bede69b6e33a45939b061eb53d3c6c3a89"
   integrity sha512-pVOEP16TrAO2/fjej1IdOyupJY8KDUM1CvsaScRbw6oddvpQoOfGk4ywha0HKKVAD6RkW4x6Q+tNBwhf3Bgpuw==
@@ -8611,11 +8611,6 @@ postcss@^7.0.0, postcss@^7.0.1, postcss@^7.0.13, postcss@^7.0.14, postcss@^7.0.1
     source-map "^0.6.1"
     supports-color "^6.1.0"
 
-postinstall-build@^5.0.1:
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/postinstall-build/-/postinstall-build-5.0.3.tgz#238692f712a481d8f5bc8960e94786036241efc7"
-  integrity sha512-vPvPe8TKgp4FLgY3+DfxCE5PIfoXBK2lyLfNCxsRbDsV6vS4oU5RG/IWxrblMn6heagbnMED3MemUQllQ2bQUg==
-
 postinstall-postinstall@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/postinstall-postinstall/-/postinstall-postinstall-2.0.0.tgz#7ba6711b4420575c4f561638836a81faad47f43f"
@@ -9006,14 +9001,13 @@ react-native-fast-image@andrewschenk-linx/react-native-fast-image#fix-ios-xcode-
   version "7.0.2"
   resolved "https://codeload.github.com/andrewschenk-linx/react-native-fast-image/tar.gz/d19ae11a6469de94cb49211d00a7bc002ea76ff8"
 
-react-native-firebase@^4.3.8:
-  version "4.3.8"
-  resolved "https://registry.yarnpkg.com/react-native-firebase/-/react-native-firebase-4.3.8.tgz#a425b260aca0b97cde023dd2556fc18d16a3b7b3"
-  integrity sha512-lQuRrcnRd6Y3Drk8X66GYodfqPhWqy82+3S0rjOCoB3LhapnYXpi6QCqKJwkdBsy49zTyVsuH9cmMgQyejYW+w==
+react-native-firebase@~5.5.5:
+  version "5.5.6"
+  resolved "https://registry.yarnpkg.com/react-native-firebase/-/react-native-firebase-5.5.6.tgz#17b34ec0d5dc39afaaf0e159fd160f6339e0f707"
+  integrity sha512-AdbpGwKEEiMFgaRar9WOPc8Li4sfxR//WOyNQzxYsQ1fpARC908j7feqy2gu73SLqk4wzIrnlfJWakOe0/Bclg==
   dependencies:
-    opencollective "^1.0.3"
-    postinstall-build "^5.0.1"
-    prop-types "^15.6.1"
+    opencollective-postinstall "^2.0.0"
+    prop-types "^15.7.2"
 
 react-native-gesture-handler@^1.4.1:
   version "1.4.1"
@@ -9075,12 +9069,11 @@ react-native-mail@^3.0.6:
   resolved "https://registry.yarnpkg.com/react-native-mail/-/react-native-mail-3.0.7.tgz#07e6aca43f6f1f85f3e58e96e7fcd16b31a927b8"
   integrity sha512-FHe4kKJKAGuCPPWcDwaRSjdUhEE4IWIsVtTZ05dgD/MgOm00isYmM20zuJHla7oiHVQ2HmzGji76g6IuhIrCjw==
 
-react-native-os@^1.2.2:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/react-native-os/-/react-native-os-1.2.5.tgz#4b10b010b8734bb300e8c0017f01bc67cad98e7a"
-  integrity sha512-cueg5nhzqA9vGwRXzX5/f/95JdhWjy7pNf9r5XW9YEfVf0C36CHzz5LNLrZQqJukmCWoeOEBDmtvllfpXVIpcA==
+react-native-os@icxcat/react-native-os#master:
+  version "1.1.0"
+  resolved "https://codeload.github.com/icxcat/react-native-os/tar.gz/1efb92b990fb4c02475fcc98a8260c3991c59b2d"
 
-react-native-permissions@^1.1.1:
+react-native-permissions@^1.1.1, react-native-permissions@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-1.2.1.tgz#cb1f6e53b8992b3912de5a4cfc1553ac2e82d0f6"
   integrity sha512-6NOGsA7EsuKT9hfULccQfMrsGmRhBkmN6Uv8nz2QObjEG87XtroQtw4Qi1+tAjIkSHawCeAMJp+SCtiXSGUD5Q==
@@ -9195,10 +9188,9 @@ react-native-text-input-mask@react-native-community/react-native-text-input-mask
   version "1.0.6"
   resolved "https://codeload.github.com/react-native-community/react-native-text-input-mask/tar.gz/abf0e7f538036bbc5719024fbd67a1efd756c4b9"
 
-react-native-tooltip@^5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/react-native-tooltip/-/react-native-tooltip-5.2.0.tgz#4358ea1e9bdcb49dad28bf5881440b0182927422"
-  integrity sha512-3mbPGd/VDfb3dUZmdmgg4eE8idJU4OyYM9ItGifnofz+Cz50Aua+sVGo2Ecc7zHV0S+kM0mOyLL758hhTz2gDw==
+react-native-tooltip@marcosrdz/react-native-tooltip#master:
+  version "5.2.1"
+  resolved "https://codeload.github.com/marcosrdz/react-native-tooltip/tar.gz/6df46e2cad1a44ad5ec961b848e090efda7b41a3"
 
 react-native-touch-id@^4.4.1:
   version "4.4.1"
