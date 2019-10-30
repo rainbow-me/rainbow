@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		03252948A60F4C4C87E4FD9E /* SF-Pro-Display-Ultralight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 35833023DB594F1AA6A72866 /* SF-Pro-Display-Ultralight.otf */; };
 		06B78001D9F2456D9C2D4A86 /* Graphik-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = DE019D6BCA1A4FF9B7F1E98A /* Graphik-Medium.otf */; };
@@ -22,7 +23,6 @@
 		216C17A836F44ACE8D79ACC7 /* SF-Pro-Display-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = 662C7FD632C1481AB5AB1DB7 /* SF-Pro-Display-Thin.otf */; };
 		23320186D7F747FEB02451C6 /* SF-Pro-Text-HeavyItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1DEDF110038147A598C9B152 /* SF-Pro-Text-HeavyItalic.otf */; };
 		24122D54232F2B3200BA0B17 /* InputMask.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24122D53232F2B3200BA0B17 /* InputMask.framework */; };
-		24122D55232F2B3200BA0B17 /* InputMask.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 24122D53232F2B3200BA0B17 /* InputMask.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 24979E7720F84004007EB0DA /* GoogleService-Info.plist */; };
 		26095B12C30047F89592D463 /* SF-Pro-Text-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 944CF612F0304DF281E33B66 /* SF-Pro-Text-Regular.otf */; };
 		2D7BB74FB1A44EE2A2426373 /* SF-Pro-Text-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = E672AB1C5404435897615660 /* SF-Pro-Text-Light.otf */; };
@@ -33,6 +33,7 @@
 		396C4BA42EEC4D0985CEBB42 /* SF-Pro-Text-SemiboldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FA887652F27F43869229AD50 /* SF-Pro-Text-SemiboldItalic.otf */; };
 		3C363E14D5DE4A028E43EA38 /* SF-Pro-Display-UltralightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = DCA738BE00E04734AEDA2F07 /* SF-Pro-Display-UltralightItalic.otf */; };
 		3C41C1415A994234A0FF2589 /* SF-Pro-Text-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 233322FCDC624F6FA60C4B52 /* SF-Pro-Text-Heavy.otf */; };
+		3D5D4DF2FD7C44EE962100E3 /* libRNTextInputMask.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0642ECCC7CB044FDB5A3CC32 /* libRNTextInputMask.a */; };
 		4013198EBD3D4D6F8052D25E /* SF-Pro-Display-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9DF45B9EB38D4E8FA18A04C6 /* SF-Pro-Display-Light.otf */; };
 		41804DE52CE94296995264E0 /* SF-Pro-Text-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 35A24AFF4AB449C287EE66A8 /* SF-Pro-Text-Medium.otf */; };
 		424410A1E84845328C5A0CAB /* Graphik-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 182DC054E3584C83822F2A82 /* Graphik-RegularItalic.otf */; };
@@ -63,6 +64,7 @@
 		C66451ECC2944B439E123CF2 /* SF-Pro-Display-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = BE239BA93F6B4EDC867B1A41 /* SF-Pro-Display-Black.otf */; };
 		CAD3BF43528D47159190E17B /* SF-Pro-Display-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3459F05BF10649C4A787D900 /* SF-Pro-Display-MediumItalic.otf */; };
 		CB988C526B0C48FC9750A038 /* SF-Pro-Display-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 84DB92DCDF5D4374B26FFCC6 /* SF-Pro-Display-BoldItalic.otf */; };
+		D6A5F5CB2369A22A009BEF29 /* InputMask.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 24122D53232F2B3200BA0B17 /* InputMask.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DBBDEB86E54044EE8712C882 /* Graphik-BlackItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = CEC826911B5641B8AF788BB3 /* Graphik-BlackItalic.otf */; };
 		E98BBF45029948B38545996F /* Graphik-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E6F010E529544E518E1792C7 /* Graphik-Bold.otf */; };
 		ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2971642150620600B7C4FE /* JavaScriptCore.framework */; };
@@ -310,16 +312,23 @@
 			remoteGlobalIDString = 358F4ED71D1E81A9004DF814;
 			remoteInfo = RCTBlob;
 		};
+		D6A5F5F12369A413009BEF29 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 838BD591AFF847ABA0F42AAC /* RNTextInputMask.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNTextInputMask;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		24122D56232F2B3300BA0B17 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				24122D55232F2B3200BA0B17 /* InputMask.framework in Embed Frameworks */,
+				D6A5F5CB2369A22A009BEF29 /* InputMask.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -334,6 +343,7 @@
 		00C302DF1ABCB9EE00DB3ED1 /* RCTVibration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTVibration.xcodeproj; path = "../node_modules/react-native/Libraries/Vibration/RCTVibration.xcodeproj"; sourceTree = "<group>"; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* RainbowTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RainbowTests.m; sourceTree = "<group>"; };
+		0642ECCC7CB044FDB5A3CC32 /* libRNTextInputMask.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNTextInputMask.a; sourceTree = "<group>"; };
 		0A8698C728414E56A3FD89A6 /* SFMono-Heavy.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Heavy.otf"; path = "../src/assets/fonts/SFMono-Heavy.otf"; sourceTree = "<group>"; };
 		139105B61AF99BAD00B5F7CC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = "../node_modules/react-native/Libraries/Settings/RCTSettings.xcodeproj"; sourceTree = "<group>"; };
 		139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = "../node_modules/react-native/Libraries/WebSocket/RCTWebSocket.xcodeproj"; sourceTree = "<group>"; };
@@ -396,6 +406,7 @@
 		7CD46377E5FC4E5EBFD57D71 /* Graphik-Super.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Super.otf"; path = "../src/assets/fonts/Graphik-Super.otf"; sourceTree = "<group>"; };
 		7CEEDA7A68C24426BBAA8D77 /* Graphik-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-BoldItalic.otf"; path = "../src/assets/fonts/Graphik-BoldItalic.otf"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
+		838BD591AFF847ABA0F42AAC /* RNTextInputMask.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNTextInputMask.xcodeproj; path = "../node_modules/react-native-text-input-mask/ios/RNTextInputMask.xcodeproj"; sourceTree = "<group>"; };
 		84DB92DCDF5D4374B26FFCC6 /* SF-Pro-Display-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-BoldItalic.otf"; path = "../src/assets/fonts/SF-Pro-Display-BoldItalic.otf"; sourceTree = "<group>"; };
 		86B30DBBDA594167BFE4747E /* SF-Pro-Display-SemiboldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-SemiboldItalic.otf"; path = "../src/assets/fonts/SF-Pro-Display-SemiboldItalic.otf"; sourceTree = "<group>"; };
 		8789D635428240B5ABF282EE /* SFMono-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Bold.otf"; path = "../src/assets/fonts/SFMono-Bold.otf"; sourceTree = "<group>"; };
@@ -446,6 +457,7 @@
 				ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */,
 				24122D54232F2B3200BA0B17 /* InputMask.framework in Frameworks */,
 				0E56AA9A8843EB50FA4BDD4F /* libPods-Rainbow.a in Frameworks */,
+				3D5D4DF2FD7C44EE962100E3 /* libRNTextInputMask.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -563,15 +575,9 @@
 			isa = PBXGroup;
 			children = (
 				9DEADFA4826D4D0BAA950D21 /* libRNFIRMessaging.a */,
-				C1324455238847F2AD5C08B4 /* libBVLinearGradient.a */,
 				B0C692B061D7430D8194DC98 /* ToolTipMenuTests.xctest */,
-				9E0A11D8843045ECB80C6AB8 /* libTouchID.a */,
-				D13995EB48584C438A10A161 /* libRNReactNativeHapticFeedback.a */,
-				3A7E5E09E14B4EA4B52CC6EE /* libRNGestureHandler.a */,
-				22E39434CDDE4C54848FBFD5 /* libCodePush.a */,
 				D755E71324B04FEE9C691D14 /* libRNFirebase.a */,
-				91A43F69E797469687978D51 /* libRNStoreReview.a */,
-				B0FE4F98AAFC420AAF52EFF0 /* libRNTextInputMask.a */,
+				0642ECCC7CB044FDB5A3CC32 /* libRNTextInputMask.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -640,6 +646,7 @@
 				00C302DF1ABCB9EE00DB3ED1 /* RCTVibration.xcodeproj */,
 				139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
+				838BD591AFF847ABA0F42AAC /* RNTextInputMask.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -697,6 +704,14 @@
 				E93A96605FE51CFC31676801 /* Pods-Rainbow.staging.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		D6A5F5EE2369A413009BEF29 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D6A5F5F22369A413009BEF29 /* libRNTextInputMask.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		DCAC1D8CC45E468FBB7E1395 /* Resources */ = {
@@ -864,6 +879,10 @@
 					ProductGroup = 146834001AC3E56700842450 /* Products */;
 					ProjectRef = 146833FF1AC3E56700842450 /* React.xcodeproj */;
 				},
+				{
+					ProductGroup = D6A5F5EE2369A413009BEF29 /* Products */;
+					ProjectRef = 838BD591AFF847ABA0F42AAC /* RNTextInputMask.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -920,20 +939,6 @@
 			fileType = archive.ar;
 			path = libReact.a;
 			remoteRef = 146834031AC3E56700842450 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		243A893E225F092800A13C7E /* libRNGestureHandler-tvOS.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libRNGestureHandler-tvOS.a";
-			remoteRef = 243A893D225F092800A13C7E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		24402FE822D6D3800045D406 /* libFastImage-tvOS.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libFastImage-tvOS.a";
-			remoteRef = 24402FE722D6D3800045D406 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		247947BB22568EAA006BBF56 /* libjsi.a */ = {
@@ -1125,6 +1130,13 @@
 			remoteRef = ADBDB9261DFEBF0700ED6528 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		D6A5F5F22369A413009BEF29 /* libRNTextInputMask.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNTextInputMask.a;
+			remoteRef = D6A5F5F12369A413009BEF29 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -1296,12 +1308,14 @@
 					"$(SRCROOT)/../node_modules/@ledgerhq/react-native-passcode-auth",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS/**",
+					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/**",
 				);
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"\"$(SRCROOT)/Rainbow\"",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1340,12 +1354,14 @@
 					"$(SRCROOT)/../node_modules/@ledgerhq/react-native-passcode-auth",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS/**",
+					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/**",
 				);
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"\"$(SRCROOT)/Rainbow\"",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1420,12 +1436,14 @@
 					"$(SRCROOT)/../node_modules/react-native-code-push/ios/**",
 					"$(SRCROOT)/../node_modules/@ledgerhq/react-native-passcode-auth",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
+					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/**",
 				);
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"\"$(SRCROOT)/Rainbow\"",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1501,12 +1519,14 @@
 					"$(SRCROOT)/../node_modules/react-native-code-push/ios/**",
 					"$(SRCROOT)/../node_modules/@ledgerhq/react-native-passcode-auth",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
+					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/**",
 				);
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"\"$(SRCROOT)/Rainbow\"",
 				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
