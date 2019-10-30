@@ -746,10 +746,7 @@ class ExchangeModal extends React.Component {
               radius={exchangeModalBorderRadius}
               overflow="visible"
             >
-              <GestureBlocker
-                type="top"
-                onTouchEnd={() => this.props.navigation.pop()}
-              />
+              <GestureBlocker type="top" />
               <ExchangeModalHeader />
               <ExchangeInputField
                 inputAmount={inputAmountDisplay}
@@ -800,10 +797,7 @@ class ExchangeModal extends React.Component {
               </Fragment>
             )}
             <Column>
-              <GestureBlocker
-                type="bottom"
-                onTouchEnd={() => this.props.navigation.pop()}
-              />
+              <GestureBlocker type="bottom" />
             </Column>
           </AnimatedFloatingPanels>
         </Centered>
