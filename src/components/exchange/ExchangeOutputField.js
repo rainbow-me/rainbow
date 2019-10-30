@@ -86,7 +86,7 @@ export default class ExchangeOutputField extends PureComponent {
         <RowWithMargins
           align="center"
           flex={1}
-          margin={11}
+          margin={10}
           onPress={this.handleFocusInput}
           paddingLeft={paddingValue}
         >

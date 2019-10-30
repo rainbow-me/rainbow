@@ -27,7 +27,7 @@ export default class ExchangeInput extends PureComponent {
     fontWeight: fonts.weight.medium,
     mask: '[099999999999999999].[999999999999999999]',
     placeholder: '0',
-    placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.5),
+    placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.3),
   };
 
   handleChangeText = (formatted, extracted) => {
