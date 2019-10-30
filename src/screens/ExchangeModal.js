@@ -386,13 +386,13 @@ class ExchangeModal extends React.Component {
         );
       }
 
-      const isSufficientBalance = !inputAmount ? true : (Number(inputBalance) >= Number(inputAmount) ? true : false);
       const slippage = get(tradeDetails, 'marketRateSlippage', 0).toString();
 
       this.setState({
         inputExecutionRate,
         inputNativePrice,
-        isSufficientBalance,
+        isSufficientBalance:
+          !inputAmount || Number(inputBalance) >= Number(inputAmount),
         outputExecutionRate,
         outputNativePrice,
         slippage,
@@ -458,7 +458,8 @@ class ExchangeModal extends React.Component {
           );
 
           this.setState({
-            isSufficientBalance: Number(inputBalance) >= Number(rawUpdatedAmount),
+            isSufficientBalance:
+              Number(inputBalance) >= Number(rawUpdatedAmount),
           });
         }
       }
