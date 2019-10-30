@@ -20,6 +20,7 @@ import { directionPropType } from '../../utils';
 import { interpolate } from './procs';
 
 const {
+  and,
   block,
   call,
   Clock,
@@ -28,13 +29,12 @@ const {
   divide,
   eq,
   event,
-  onChange,
-  set,
-  Value,
-  and,
   greaterThan,
   lessThan,
+  onChange,
+  set,
   stopClock,
+  Value,
 } = Animated;
 
 const { ACTIVE, CANCELLED, END, FAILED, UNDETERMINED } = State;
