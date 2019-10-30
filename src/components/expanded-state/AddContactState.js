@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { compose, onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
-import { addNewLocalContact } from '../../handlers/commonStorage';
+import { addNewLocalContact } from '../../handlers/localstorage/contacts';
 import { withAccountData, withAccountSettings } from '../../hoc';
 import { colors, margin, padding } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';

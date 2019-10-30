@@ -6,7 +6,7 @@ import {
   removeLocalTransactions,
   saveAssets,
   saveLocalTransactions,
-} from '../handlers/localstorage/storage';
+} from '../handlers/localstorage/accountLocal';
 import { parseAccountAssets, parseAsset } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import parseTransactions from '../parsers/transactions';
@@ -71,7 +71,7 @@ export const dataClearState = () => (dispatch, getState) => {
 export const dataUpdateAssets = assets => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   if (assets.length) {
-    saveAssets(accountAddress, assets, network);
+    saveAssets(assets, accountAddress, network);
     dispatch({
       payload: assets,
       type: DATA_UPDATE_ASSETS,
@@ -108,7 +108,7 @@ export const transactionsReceived = (message, appended = false) => (
     appended
   );
   dispatch(uniswapRemovePendingApproval(approvalTransactions));
-  saveLocalTransactions(accountAddress, dedupedResults, network);
+  saveLocalTransactions(dedupedResults, accountAddress, network);
   dispatch({
     payload: dedupedResults,
     type: DATA_UPDATE_TRANSACTIONS,
@@ -126,7 +126,7 @@ export const transactionsRemoved = message => (dispatch, getState) => {
   const removeHashes = map(transactionData, txn => txn.hash);
   remove(transactions, txn => includes(removeHashes, txn.hash));
 
-  saveLocalTransactions(accountAddress, transactions, network);
+  saveLocalTransactions(transactions, accountAddress, network);
   dispatch({
     payload: transactions,
     type: DATA_UPDATE_TRANSACTIONS,
@@ -157,7 +157,7 @@ export const addressAssetsReceived = (
       item => item.uniqueId
     );
   }
-  saveAssets(accountAddress, parsedAssets, network);
+  saveAssets(parsedAssets, accountAddress, network);
   dispatch({
     payload: parsedAssets,
     type: DATA_UPDATE_ASSETS,
@@ -185,7 +185,7 @@ export const dataAddNewTransaction = txDetails => (dispatch, getState) =>
     parseNewTransaction(txDetails, nativeCurrency)
       .then(parsedTransaction => {
         const _transactions = [parsedTransaction, ...transactions];
-        saveLocalTransactions(accountAddress, _transactions, network);
+        saveLocalTransactions(_transactions, accountAddress, network);
         dispatch({
           payload: _transactions,
           type: DATA_ADD_NEW_TRANSACTION_SUCCESS,

@@ -12,7 +12,11 @@ import {
   ProfileHeaderButton,
 } from '../components/header';
 import { Page } from '../components/layout';
-import { getGlobal } from '../handlers/localstorage/common';
+import {
+  getOpenFamilies,
+  getOpenInvestmentCards,
+  getSmallBalanceToggle,
+} from '../handlers/localstorage/accountLocal';
 import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import {
   withAccountData,
@@ -32,12 +36,9 @@ import store from '../redux/store';
 import { position } from '../styles';
 import { isNewValueForPath } from '../utils';
 
-const SMALL_BALANCE_TOGGLE = 'smallBalanceToggle';
-const OPEN_INVESTMENT_CARDS = 'openInvestmentCards';
-const OPEN_FAMILIES = 'openFamilies';
-
 class WalletScreen extends Component {
   static propTypes = {
+    accountAddress: PropTypes.string,
     allAssetsCount: PropTypes.number,
     assets: PropTypes.array,
     assetsTotal: PropTypes.object,
@@ -47,6 +48,7 @@ class WalletScreen extends Component {
     isFocused: PropTypes.bool,
     isWalletEthZero: PropTypes.bool.isRequired,
     navigation: PropTypes.object,
+    network: PropTypes.string,
     refreshAccountData: PropTypes.func,
     scrollViewTracker: PropTypes.object,
     sections: PropTypes.array,
@@ -56,8 +58,8 @@ class WalletScreen extends Component {
 
   componentDidMount = async () => {
     try {
-      await this.setInitialStatesForOpenAssets();
       await this.props.initializeWallet();
+      await this.setInitialStatesForOpenAssets();
     } catch (error) {
       // TODO error state
     }
@@ -121,9 +123,13 @@ class WalletScreen extends Component {
   };
 
   setInitialStatesForOpenAssets = async () => {
-    const toggle = await getGlobal(SMALL_BALANCE_TOGGLE, false);
-    const openInvestmentCards = await getGlobal(OPEN_INVESTMENT_CARDS, {});
-    const openFamilies = await getGlobal(OPEN_FAMILIES, {});
+    const { accountAddress, network } = this.props;
+    const toggle = await getSmallBalanceToggle(accountAddress, network);
+    const openInvestmentCards = await getOpenInvestmentCards(
+      accountAddress,
+      network
+    );
+    const openFamilies = await getOpenFamilies(accountAddress, network);
     await store.dispatch(setOpenSmallBalances(toggle));
     await store.dispatch(pushOpenInvestmentCard(openInvestmentCards));
     await store.dispatch(pushOpenFamilyTab(openFamilies));

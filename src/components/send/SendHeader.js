@@ -1,20 +1,20 @@
 import { find, get, isEmpty, isNumber } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
-import { compose, withProps } from 'recompact';
-import styled from 'styled-components/primitives';
 import { Keyboard, Clipboard } from 'react-native';
 import { withNavigation } from 'react-navigation';
+import { compose, withProps } from 'recompact';
+import styled from 'styled-components/primitives';
+import { deleteLocalContact } from '../../handlers/localstorage/contacts';
 import { withNeverRerender } from '../../hoc';
+import { colors, padding } from '../../styles';
+import { showActionSheetWithOptions } from '../../utils/actionsheet';
+import { AddContactButton, PasteAddressButton } from '../buttons';
 import Divider from '../Divider';
 import { AddressField } from '../fields';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Label } from '../text';
-import { colors, padding } from '../../styles';
-import { AddContactButton, PasteAddressButton } from '../buttons';
-import { showActionSheetWithOptions } from '../../utils/actionsheet';
-import { deleteLocalContact } from '../../handlers/commonStorage';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
   ${padding(19, 15)}

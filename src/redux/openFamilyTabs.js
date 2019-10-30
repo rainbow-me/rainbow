@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { saveOpenFamilies } from '../handlers/commonStorage';
+import { saveOpenFamilies } from '../handlers/localstorage/accountLocal';
 
 // -- Constants --------------------------------------- //
 const CLEAR_OPEN_FAMILY_TAB = 'openFamilyTabs/CLEAR_OPEN_FAMILY_TAB';
@@ -17,11 +17,19 @@ export const pushOpenFamilyTab = payload => dispatch =>
     type: PUSH_OPEN_FAMILY_TAB,
   });
 
-export const setOpenFamilyTabs = payload => dispatch =>
+export const setOpenFamilyTabs = payload => (dispatch, getState) => {
+  const { accountAddress, network } = getState().settings;
+  const { openFamilyTabs } = getState().openFamilyTabs;
+  const updatedFamilyTabs = {
+    ...openFamilyTabs,
+    [payload.index]: payload.state,
+  };
+  saveOpenFamilies(updatedFamilyTabs, accountAddress, network);
   dispatch({
-    payload,
+    payload: updatedFamilyTabs,
     type: SET_OPEN_FAMILY_TABS,
   });
+};
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
@@ -31,8 +39,7 @@ const INITIAL_STATE = {
 export default (state = INITIAL_STATE, action) =>
   produce(state, draft => {
     if (action.type === SET_OPEN_FAMILY_TABS) {
-      draft.openFamilyTabs[action.payload.index] = action.payload.state;
-      saveOpenFamilies(draft.openFamilyTabs);
+      draft.openFamilyTabs = action.payload;
     } else if (action.type === PUSH_OPEN_FAMILY_TAB) {
       draft.openFamilyTabs = action.payload;
     } else if (action.type === CLEAR_OPEN_FAMILY_TAB) {
