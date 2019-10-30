@@ -11,9 +11,8 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing } from 'react-native-reanimated';
 import {
   contains,
-  delay,
-  timing,
   transformOrigin as transformOriginUtil,
+  timing,
 } from 'react-native-redash';
 import stylePropType from 'react-style-proptype';
 import { animations, colors } from '../../styles';
@@ -21,6 +20,7 @@ import { directionPropType } from '../../utils';
 import { interpolate } from './procs';
 
 const {
+  and,
   block,
   call,
   Clock,
@@ -29,13 +29,15 @@ const {
   divide,
   eq,
   event,
+  greaterThan,
+  lessThan,
   onChange,
-  or,
   set,
+  stopClock,
   Value,
 } = Animated;
 
-const { ACTIVE, BEGAN, CANCELLED, END, FAILED, UNDETERMINED } = State;
+const { ACTIVE, CANCELLED, END, FAILED, UNDETERMINED } = State;
 
 const AnimatedRawButton = createNativeWrapper(
   createAnimatedComponent(PureNativeButton),
@@ -101,6 +103,8 @@ export default class ButtonPressAnimation extends PureComponent {
     super(props);
 
     this.clock = new Clock();
+    this.clockReversed = new Clock();
+    this.delayClock = new Clock();
     this.gestureState = new Value(UNDETERMINED);
     this.handle = undefined;
     this.longPressDetected = false;
@@ -134,7 +138,6 @@ export default class ButtonPressAnimation extends PureComponent {
   };
 
   clearLongPressListener = () => {
-    this.longPressDetected = false;
     if (this.longPressTimeout) {
       clearTimeout(this.longPressTimeout);
     }
@@ -190,8 +193,6 @@ export default class ButtonPressAnimation extends PureComponent {
     }
   };
 
-  handleRunInteraction = () => this.handlePress();
-
   reset = () => {
     this.clearInteraction();
     this.clearLongPressListener();
@@ -203,8 +204,6 @@ export default class ButtonPressAnimation extends PureComponent {
       children,
       defaultScale,
       disabled,
-      duration,
-      easing,
       exclusive,
       scaleTo,
       style,
@@ -223,6 +222,8 @@ export default class ButtonPressAnimation extends PureComponent {
     } else if (transformOrigin === 'bottom' || transformOrigin === 'top') {
       offsetY = Math.floor(height / 2) * (transformOrigin === 'top' ? -1 : 1);
     }
+
+    const scaleDiff = 1 - (this.props.defaultScale - this.props.scaleTo) / 2;
 
     const opacity =
       scaleTo > defaultScale
@@ -261,12 +262,15 @@ export default class ButtonPressAnimation extends PureComponent {
         </AnimatedRawButton>
         <Animated.Code
           exec={block([
-            cond(
-              or(eq(this.gestureState, ACTIVE), eq(this.gestureState, BEGAN)),
-              set(this.shouldSpring, 1)
-            ),
-            cond(contains([FAILED, CANCELLED], this.gestureState), [
-              set(this.shouldSpring, 0),
+            cond(eq(this.gestureState, ACTIVE), [
+              set(this.shouldSpring, 1),
+              stopClock(this.clockReversed),
+            ]),
+            cond(contains([FAILED, CANCELLED, END], this.gestureState), [
+              cond(
+                lessThan(this.scale, scaleDiff),
+                block([stopClock(this.clock), set(this.shouldSpring, 0)])
+              ),
               call([], this.reset),
             ]),
             onChange(
@@ -278,28 +282,34 @@ export default class ButtonPressAnimation extends PureComponent {
                   call([], this.createLongPressListener),
                   call([], this.handlePressStart),
                 ],
-                // else if
-                cond(eq(this.gestureState, END), [
-                  call([], this.handleRunInteraction),
-                ])
+                cond(eq(this.gestureState, END), [call([], this.handlePress)])
               )
             ),
             cond(
-              eq(this.gestureState, END),
-              delay(
-                [set(this.shouldSpring, 0), call([], this.clearInteraction)],
-                duration
+              and(greaterThan(this.scale, 0), eq(this.shouldSpring, 1)),
+              set(
+                this.scale,
+                timing({
+                  clock: this.clock,
+                  duration: this.props.duration,
+                  easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
+                  from: this.scale,
+                  to: this.props.scaleTo,
+                })
               )
             ),
-            set(
-              this.scale,
-              timing({
-                clock: this.clock,
-                duration,
-                easing,
-                from: this.scale,
-                to: cond(eq(this.shouldSpring, 1), scaleTo, defaultScale),
-              })
+            cond(
+              and(lessThan(this.scale, 1), eq(this.shouldSpring, 0)),
+              set(
+                this.scale,
+                timing({
+                  clock: this.clockReversed,
+                  duration: this.props.duration,
+                  easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
+                  from: this.scale,
+                  to: this.props.defaultScale,
+                })
+              )
             ),
           ])}
         />
