@@ -2,7 +2,7 @@ import { find, get, isEmpty, isNumber } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import styled from 'styled-components/primitives';
-import { TextInput, Keyboard, Clipboard } from 'react-native';
+import { Keyboard, Clipboard } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { compose, withProps } from 'recompact';
 import { deleteLocalContact } from '../../handlers/localstorage/contacts';
@@ -110,7 +110,7 @@ class SendHeader extends PureComponent {
 
   navigateToContact = (contact = {}) => {
     const { navigation, onUpdateContacts, recipient } = this.props;
-    const input = TextInput.State.currentlyFocusedField();
+    const refocusCallback = this.input.isFocused() && this.input.focus;
 
     let color = get(contact, 'color');
     if (!isNumber(color)) {
@@ -124,13 +124,18 @@ class SendHeader extends PureComponent {
       color,
       contact: isEmpty(contact) ? false : contact,
       onCloseModal: onUpdateContacts,
-      refocusInput: input,
+      onRefocusInput: refocusCallback,
       type: 'contact',
     });
   };
 
   openActionSheet = () =>
     openContactActionSheet(this.handleContactActionSheetSelection);
+
+  handleRef = ref => {
+    this.input = ref;
+    this.props.inputRef(ref);
+  };
 
   render = () => {
     const {
@@ -154,6 +159,7 @@ class SendHeader extends PureComponent {
             currentContact={contact}
             name={contact.nickname}
             onChange={onChangeAddressInput}
+            inputRef={this.handleRef}
           />
           {isValidAddress && (
             <AddContactButton

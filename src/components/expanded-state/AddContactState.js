@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { compose, onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
-import { TextInput } from 'react-native';
 import { addNewLocalContact } from '../../handlers/localstorage/contacts';
 import { withAccountData, withAccountSettings } from '../../hoc';
 import { colors, margin, padding } from '../../styles';
@@ -41,8 +40,8 @@ class AddContactState extends PureComponent {
     contact: PropTypes.object,
     navigation: PropTypes.object,
     onCloseModal: PropTypes.func,
+    onRefocusInput: PropTypes.func,
     onUnmountModal: PropTypes.func,
-    refocusInput: PropTypes.number,
   };
 
   state = {
@@ -57,8 +56,8 @@ class AddContactState extends PureComponent {
   };
 
   componentWillUnmount = () => {
-    if (this.props.refocusInput) {
-      TextInput.State.focusTextInput(this.props.refocusInput);
+    if (this.props.onRefocusInput) {
+      this.props.onRefocusInput();
     }
   };
 

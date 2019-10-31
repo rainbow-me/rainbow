@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { TextInput, Animated } from 'react-native';
+import { Animated } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { toClass } from 'recompact';
@@ -69,7 +69,7 @@ export default class SwipeableContactRow extends PureComponent {
   };
 
   swipeableRef = undefined;
-  inputID = null;
+  isFocused = false;
 
   close = () => this.swipeableRef.close();
 
@@ -85,6 +85,7 @@ export default class SwipeableContactRow extends PureComponent {
 
   handleEditContact = () => {
     const { address, color, navigation, nickname, onChange } = this.props;
+    const refocusCallback = this.isFocused && this.props.inputRef.focus;
 
     this.close();
     navigation.navigate('OverlayExpandedAssetScreen', {
@@ -93,7 +94,7 @@ export default class SwipeableContactRow extends PureComponent {
       color,
       contact: { address, color, nickname },
       onCloseModal: onChange,
-      refocusInput: this.inputID,
+      onRefocusInput: refocusCallback,
       type: 'contact',
     });
   };
@@ -104,7 +105,7 @@ export default class SwipeableContactRow extends PureComponent {
 
   handlePressStart = () => {
     this.props.onTouch(this.props.address);
-    this.inputID = TextInput.State.currentlyFocusedField();
+    this.isFocused = this.props.inputRef.isFocused();
   };
 
   handleRef = ref => {

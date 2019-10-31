@@ -265,6 +265,10 @@ class SendSheet extends Component {
     this.props.sendUpdateRecipient(event);
   };
 
+  handleRef = ref => {
+    this.input = ref;
+  };
+
   render() {
     const {
       allAssets,
@@ -294,6 +298,7 @@ class SendSheet extends Component {
               onPressPaste={sendUpdateRecipient}
               onUpdateContacts={this.onUpdateContacts}
               recipient={recipient}
+              inputRef={this.handleRef}
             />
             {showEmptyState && (
               <SendContactList
@@ -301,6 +306,7 @@ class SendSheet extends Component {
                 currentInput={this.state.currentInput}
                 onPressContact={sendUpdateRecipient}
                 onUpdateContacts={this.onUpdateContacts}
+                inputRef={this.input}
               />
             )}
             {showAssetList && (
