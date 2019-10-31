@@ -11,7 +11,7 @@ import { Centered } from '../components/layout';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { padding } from '../styles';
 import { deviceUtils, safeAreaInsetValues } from '../utils';
-import { addNewLocalContact } from '../handlers/commonStorage';
+import { addNewLocalContact } from '../handlers/localstorage/contacts';
 
 const { bottom: safeAreaBottom, top: safeAreaTop } = safeAreaInsetValues;
 

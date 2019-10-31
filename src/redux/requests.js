@@ -53,7 +53,7 @@ export const addRequestToApprove = (
     payload: updatedRequests,
     type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE,
   });
-  saveLocalRequests(accountAddress, network, updatedRequests);
+  saveLocalRequests(updatedRequests, accountAddress, network);
   return request;
 };
 

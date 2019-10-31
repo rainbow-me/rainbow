@@ -36,7 +36,7 @@ import {
 import { borders, colors } from '../styles';
 import { deviceUtils, isNewValueForPath } from '../utils';
 import { showActionSheetWithOptions } from '../utils/actionsheet';
-import { getLocalContacts } from '../handlers/commonStorage';
+import { getLocalContacts } from '../handlers/localstorage/contacts';
 
 const statusBarHeight = getStatusBarHeight(true);
 

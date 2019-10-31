@@ -52,7 +52,7 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate }) => {
   const isLast = index === gasUtils.GasSpeedOrder.length - 1;
 
   const transitionVal = useToggle(
-    selected,
+    !selected,
     duration + (isFirst ? 50 : 0),
     Easing.out(Easing.ease)
   );

@@ -4,7 +4,7 @@ import {
   getIsWalletEmpty,
   removeIsWalletEmpty,
   saveIsWalletEmpty,
-} from '../handlers/localstorage/storage';
+} from '../handlers/localstorage/accountLocal';
 
 // -- Constants --------------------------------------- //
 const SET_IS_WALLET_EMPTY = 'isWalletEmpty/SET_IS_WALLET_EMPTY';
@@ -27,7 +27,7 @@ export const setIsWalletEmpty = payload => (dispatch, getState) => {
     type: SET_IS_WALLET_EMPTY,
   });
   const { accountAddress, network } = getState().settings;
-  saveIsWalletEmpty(accountAddress, payload, network);
+  saveIsWalletEmpty(payload, accountAddress, network);
 };
 
 export const clearIsWalletEmpty = () => (dispatch, getState) => {

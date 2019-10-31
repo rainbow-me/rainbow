@@ -1,5 +1,5 @@
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { deleteLocalContact } from '../../handlers/commonStorage';
+import { deleteLocalContact } from '../../handlers/localstorage/contacts';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 
 const showDeleteContactActionSheet = ({ address, nickname, onDelete }) =>
