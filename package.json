@@ -81,7 +81,7 @@
     "react-native-emoji": "1.5.0",
     "react-native-fast-image": "andrewschenk-linx/react-native-fast-image#fix-ios-xcode-proj",
     "react-native-firebase": "^4.3.8",
-    "react-native-gesture-handler": "^1.4.1",
+    "react-native-gesture-handler": "1.4.1",
     "react-native-haptic-feedback": "^1.8.2",
     "react-native-indicators": "^0.13.0",
     "react-native-ios11-devicecheck": "^0.0.3",
