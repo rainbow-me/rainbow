@@ -103,6 +103,8 @@ class CurrencySelectModal extends Component {
     navigation.navigate('MainExchangeScreen');
   };
 
+  handleDidBlur = () => this.handleChangeSearchQuery('');
+
   handleWillBlur = () => this.dangerouslySetIsGestureBlocked(false);
 
   handleWillFocus = () => {
@@ -170,6 +172,7 @@ class CurrencySelectModal extends Component {
           >
             <GestureBlocker type="top" />
             <NavigationEvents
+              onDidBlur={this.handleDidBlur}
               onWillBlur={this.handleWillBlur}
               onWillFocus={this.handleWillFocus}
             />
