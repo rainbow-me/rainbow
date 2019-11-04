@@ -85,7 +85,7 @@ class CurrencySelectModal extends Component {
       .setParams({ isGestureBlocked });
   };
 
-  handleChangeSearchText = searchQuery => {
+  handleChangeSearchQuery = searchQuery => {
     this.setState({ searchQuery });
   };
 
@@ -180,7 +180,7 @@ class CurrencySelectModal extends Component {
               />
               <ExchangeSearch
                 autoFocus={false}
-                onChangeText={this.handleChangeSearchText}
+                onChangeText={this.handleChangeSearchQuery}
                 ref={this.searchInputRef}
                 searchQuery={searchQuery}
               />

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Transition, Transitioning } from 'react-native-reanimated';
 import { withNeverRerender } from '../../hoc';
 import { exchangeModalBorderRadius } from '../../screens/ExchangeModal';
 import { colors, position } from '../../styles';
@@ -11,14 +11,11 @@ import CurrencySelectModalHeader from './CurrencySelectModalHeader';
 import ExchangeAssetList from './ExchangeAssetList';
 import ExchangeSearch from './ExchangeSearch';
 
-const NoResultMessageOffset =
-  CurrencySelectModalHeader.height + ExchangeSearch.height;
-
 const NoResultMessage = withNeverRerender(() => (
   <ColumnWithMargins
     {...position.centeredAsObject}
     margin={10}
-    paddingBottom={NoResultMessageOffset}
+    paddingBottom={CurrencySelectModalHeader.height + ExchangeSearch.height}
   >
     <Centered>
       <Emoji lineHeight="none" name="ghost" size="h1" />
@@ -33,18 +30,40 @@ const NoResultMessage = withNeverRerender(() => (
   </ColumnWithMargins>
 ));
 
+const skeletonTransition = (
+  <Transition.Sequence>
+    <Transition.Out interpolation="easeOut" type="fade" />
+    <Transition.Change durationMs={0.001} interpolation="easeOut" />
+    <Transition.In durationMs={0.001} interpolation="easeOut" type="fade" />
+  </Transition.Sequence>
+);
+
 const CurrencySelectionList = ({ listItems, renderItem, showList, type }) => {
+  const skeletonTransitionRef = useRef();
+  const [showSkeleton, setShowSkeleton] = useState(true);
+
   const showNoResults = listItems.length === 0;
 
-  const [showSkeleton, setShowSkeleton] = useState(true);
+  const onListMount = () => {
+    if (showSkeleton && showList) {
+      skeletonTransitionRef.current.animateNextTransition();
+      setShowSkeleton(false);
+    }
+  };
+
   useEffect(() => {
-    if (showSkeleton && !showList) {
+    if (!showSkeleton && !showList) {
       setShowSkeleton(true);
     }
   }, [showList, showSkeleton]);
 
   return (
-    <View flex={1}>
+    <Transitioning.View
+      flex={1}
+      key={`TransitionView-${type}`}
+      ref={skeletonTransitionRef}
+      transition={skeletonTransition}
+    >
       {showList && (
         <Centered flex={1}>
           {showNoResults ? (
@@ -52,7 +71,7 @@ const CurrencySelectionList = ({ listItems, renderItem, showList, type }) => {
           ) : (
             <ExchangeAssetList
               items={listItems}
-              onMount={() => setShowSkeleton(false)}
+              onMount={onListMount}
               key={`ExchangeAssetListCurrencySelectionModal-${type}`}
               renderItem={renderItem}
               scrollIndicatorInsets={{
@@ -70,7 +89,7 @@ const CurrencySelectionList = ({ listItems, renderItem, showList, type }) => {
           pointerEvents="none"
         />
       )}
-    </View>
+    </Transitioning.View>
   );
 };
 
