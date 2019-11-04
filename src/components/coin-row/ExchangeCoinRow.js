@@ -10,11 +10,15 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
-const BottomRow = ({ balance, native, showBalance, symbol }) => (
-  <BottomRowText>
-    {showBalance ? `${balance.display} ≈ ${native.balance.display}` : symbol}
-  </BottomRowText>
-);
+const BottomRow = ({ balance, native, showBalance, symbol }) => {
+  let text = symbol;
+  if (showBalance && native) {
+    text = `${balance.display} ≈ ${native.balance.display}`;
+  } else if (showBalance) {
+    text = `${balance.display}`;
+  }
+  return <BottomRowText>{text}</BottomRowText>;
+};
 
 const balanceShape = {
   balance: PropTypes.shape({ display: PropTypes.string }),
