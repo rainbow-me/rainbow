@@ -42,7 +42,7 @@ PODS:
   - FirebaseCore (6.0.2):
     - GoogleUtilities/Environment (~> 6.0)
     - GoogleUtilities/Logger (~> 6.0)
-  - FirebaseInstanceID (4.2.6):
+  - FirebaseInstanceID (4.2.7):
     - FirebaseCore (~> 6.0)
     - GoogleUtilities/Environment (~> 6.0)
     - GoogleUtilities/UserDefaults (~> 6.0)
@@ -630,7 +630,7 @@ SPEC CHECKSUMS:
   FirebaseAnalytics: 629301c2b9925f3537d4093a17a72751ae5b7084
   FirebaseAnalyticsInterop: d48b6ab67bcf016a05e55b71fc39c61c0cb6b7f3
   FirebaseCore: b0f0262acebfa540e5f97b3832dbb13186980822
-  FirebaseInstanceID: d0eafcd8bdbd3447cd694594734078c3e3e77d8b
+  FirebaseInstanceID: ebd2ea79ee38db0cb5f5167b17a0d387e1cc7b6e
   FirebaseMessaging: 20b6626c41be7840aed7a3dd9a14003efae3d588
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
@@ -694,6 +694,10 @@ SPEC CHECKSUMS:
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
   Yoga: cf77b922ab94b28544e8d9b431697f6df735f5e5
 
+<<<<<<< HEAD
 PODFILE CHECKSUM: c2dd20b4f67edce36459865856cb810e185bdcd4
+=======
+PODFILE CHECKSUM: e87657d72331258847a818082180e92c3f95b480
+>>>>>>> f3b87a7f... Update or clear Swap inputs depending on new chosen currency
 
 COCOAPODS: 1.8.4
