@@ -188,6 +188,7 @@ export default class HoldToAuthorizeButton extends PureComponent {
       theme,
       ...props
     } = this.props;
+    const { isAuthorizing } = this.state;
 
     let bgColor = backgroundColor;
     if (disabled) {

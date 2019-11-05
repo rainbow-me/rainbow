@@ -11,11 +11,13 @@ import { Centered } from '../components/layout';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { padding } from '../styles';
 import { deviceUtils, safeAreaInsetValues } from '../utils';
+import ChartExpandedState from '../components/expanded-state/ChartExpandedState';
 import { addNewLocalContact } from '../handlers/commonStorage';
 
 const { bottom: safeAreaBottom, top: safeAreaTop } = safeAreaInsetValues;
 
 const ScreenTypes = {
+  chart: ChartExpandedState,
   contact: AddContactState,
   token: TokenExpandedState,
   unique_token: UniqueTokenExpandedState,

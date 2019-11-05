@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, split } from 'lodash';
 import BigNumber from 'bignumber.js';
 import supportedNativeCurrencies from '../references/native-currencies.json';
 

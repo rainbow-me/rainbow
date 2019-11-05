@@ -30,6 +30,7 @@
 		3310F0AEC95F47189C2B19DD /* Graphik-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 7CEEDA7A68C24426BBAA8D77 /* Graphik-BoldItalic.otf */; };
 		340305B6506A4DDFB4EB98AA /* SF-Pro-Text-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = F62BBE10D6534F74B2180711 /* SF-Pro-Text-Bold.otf */; };
 		35AD5968C62046E7BC7CF346 /* Graphik-Super.otf in Resources */ = {isa = PBXBuildFile; fileRef = 7CD46377E5FC4E5EBFD57D71 /* Graphik-Super.otf */; };
+		387F40C9BD694ED8854578EC /* libRNTextInputMask.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BEEA6222E09F4E33848CD812 /* libRNTextInputMask.a */; };
 		396C4BA42EEC4D0985CEBB42 /* SF-Pro-Text-SemiboldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FA887652F27F43869229AD50 /* SF-Pro-Text-SemiboldItalic.otf */; };
 		3C363E14D5DE4A028E43EA38 /* SF-Pro-Display-UltralightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = DCA738BE00E04734AEDA2F07 /* SF-Pro-Display-UltralightItalic.otf */; };
 		3C41C1415A994234A0FF2589 /* SF-Pro-Text-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 233322FCDC624F6FA60C4B52 /* SF-Pro-Text-Heavy.otf */; };
@@ -447,6 +448,7 @@
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		F62BBE10D6534F74B2180711 /* SF-Pro-Text-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-Bold.otf"; path = "../src/assets/fonts/SF-Pro-Text-Bold.otf"; sourceTree = "<group>"; };
 		FA887652F27F43869229AD50 /* SF-Pro-Text-SemiboldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-SemiboldItalic.otf"; path = "../src/assets/fonts/SF-Pro-Text-SemiboldItalic.otf"; sourceTree = "<group>"; };
+		FF9837E923C848EDA99BFD7E /* RNTextInputMask.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNTextInputMask.xcodeproj; path = "../node_modules/react-native-text-input-mask/ios/RNTextInputMask.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

@@ -761,6 +761,10 @@ class RecyclerAssetList extends Component {
         });
   };
 
+  overrideROwRenderer = (type, data, index) => {
+    return <AssetListHeader {...data} isSticky={true}/>;
+  };
+
   render() {
     const {
       externalScrollView,
@@ -773,7 +777,10 @@ class RecyclerAssetList extends Component {
 
     return (
       <View backgroundColor={colors.white} flex={1} overflow="hidden">
-        <StickyContainer stickyHeaderIndices={headersIndices}>
+        <StickyContainer
+          stickyHeaderIndices={headersIndices}
+          overrideRowRenderer={this.overrideROwRenderer}
+        >
           <RecyclerListView
             {...props}
             dataProvider={dataProvider}

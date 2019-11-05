@@ -2,7 +2,7 @@ import { compose, setDisplayName, withProps } from 'recompact';
 import { position } from '../../styles';
 import { ColumnWithMargins } from '../layout';
 
-const FloatingPanelsMargin = 20;
+const FloatingPanelsMargin = 0;
 
 const FloatingPanels = compose(
   setDisplayName('FloatingPanels'),
