@@ -388,11 +388,12 @@ class ExchangeModal extends React.Component {
         );
       }
 
-      const slippage = get(tradeDetails, 'marketRateSlippage', 0).toString();
+      const slippage = get(tradeDetails, 'executionRateSlippage', 0).toString();
       const inputBalance = ethereumUtils.getBalanceAmount(
         selectedGasPrice,
         inputCurrency
       );
+
       this.setState({
         inputExecutionRate,
         inputNativePrice,

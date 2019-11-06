@@ -1,4 +1,5 @@
-platform :ios, '9.0'
+platform :ios, '10.0'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 # Prevent Cocoapods from collecting stats, which adds time to each pod installation
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -9,14 +10,15 @@ target 'Rainbow' do
   pod 'Crashlytics', '~> 3.10.7'
 
   # Firebase
-  pod 'Firebase/Core', '~> 5.3.0'
-  pod 'Firebase/Messaging', '~> 5.3.0'
+  pod 'Firebase/Core', '~> 6.2.0'
+  pod 'Firebase/Messaging', '~> 6.2.0'
 
   # Core React
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"
   pod 'RCTRequired', :path => "../node_modules/react-native/Libraries/RCTRequired"
-  pod 'RCTTypeSafety', :path => "../node_modules/react-native/Libraries/TypeSafety"
+  pod 'RCTTypeSafety', :path =>
+  "../node_modules/react-native/Libraries/TypeSafety"
   pod 'React', :path => '../node_modules/react-native/'
   pod 'React-Core', :path => '../node_modules/react-native/'
   pod 'React-CoreModules', :path => '../node_modules/react-native/React/CoreModules'
@@ -44,31 +46,11 @@ target 'Rainbow' do
   pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
-
-  # React-Native-Community packages
-  pod 'react-native-blur', :path => '../node_modules/@react-native-community/blur'
-  pod 'react-native-netinfo', :path => '../node_modules/@react-native-community/netinfo'
-  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
-
-  # Third Party packages
-  pod 'react-native-camera', :path => '../node_modules/react-native-camera'
-  pod 'RNFastImage', :path => '../node_modules/react-native-fast-image'
-  pod 'react-native-version-number', :path => '../node_modules/react-native-version-number'
-
-  pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
-  pod 'RNDeviceInfo', :path => '../node_modules/react-native-device-info'
-  pod 'RNIOS11DeviceCheck', :path => '../node_modules/react-native-ios11-devicecheck/ios'
-  pod 'RNLanguages', :path => '../node_modules/react-native-languages'
-  pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
-  pod 'RNScreens', :path => '../node_modules/react-native-screens'
-  pod 'RNStoreReview', :path => '../node_modules/react-native-store-review/ios'
-
   pod 'FLAnimatedImage'
   pod 'libwebp'
-  pod 'RNAnalytics', :path => '../node_modules/@segment/analytics-react-native'
+  pod 'CodePush', :path => '../node_modules/react-native-code-push'
 
-  pod 'RNCMaskedView', :path => '../node_modules/@react-native-community/masked-view'
+  use_native_modules!
 
-  pod 'react-native-safe-area-context', :path => '../node_modules/react-native-safe-area-context'
 
 end

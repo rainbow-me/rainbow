@@ -51,7 +51,7 @@ const SendTransactionSpeed = ({
           }}
         />
         <Text color={colors.white} weight="medium">
-          Arrives in ~ {time.slice(0, -1)}
+          Arrives in ~ {time}
         </Text>
       </Button>
     </Row>

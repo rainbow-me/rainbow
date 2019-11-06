@@ -27,6 +27,8 @@ export default class ExchangeSearch extends PureComponent {
     searchQuery: PropTypes.string,
   };
 
+  static height = ExchangeSearchHeight;
+
   clearInput = () => {
     if (this.inputRef && this.inputRef.current) {
       this.inputRef.current.clear();
@@ -44,7 +46,7 @@ export default class ExchangeSearch extends PureComponent {
 
   render = () => (
     <TouchableWithoutFeedback onPress={this.focus} paddingHorizontal={15}>
-      <Container margin={6.5}>
+      <Container>
         <Icon color={colors.grey} flex={0} name="search" />
         <Input
           allowFontScaling={false}

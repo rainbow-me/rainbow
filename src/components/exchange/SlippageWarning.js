@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, onlyUpdateForKeys, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
+import { convertBipsToPercentage } from '../../helpers/utilities';
 import { colors, padding } from '../../styles';
 import { Icon } from '../icons';
 import { Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 
-export const SlippageWarningTheshold = 5;
-const SevereSlippageThreshold = SlippageWarningTheshold * 2;
+export const SlippageWarningThresholdInBips = 500;
+const SevereSlippageThresholdInBips = SlippageWarningThresholdInBips * 2;
 
 const Container = styled(Row).attrs({
   align: 'center',
@@ -21,7 +22,7 @@ const Container = styled(Row).attrs({
 `;
 
 const formatSlippage = slippage =>
-  slippage ? parseFloat(slippage).toFixed(1) : 0;
+  slippage ? convertBipsToPercentage(slippage, 1) : 0;
 
 const renderSlippageText = displayValue => (
   <Text color="white" size="smedium" weight="semibold">
@@ -32,42 +33,43 @@ const renderSlippageText = displayValue => (
 const enhance = compose(
   onlyUpdateForKeys(['slippage']),
   withProps(({ slippage }) => {
-    const fixedSlippage = formatSlippage(slippage);
-    const isSevere = fixedSlippage > SevereSlippageThreshold;
+    const isSevere = slippage >= SevereSlippageThresholdInBips;
 
     return {
       isSevere,
       severityColor: isSevere ? colors.brightRed : colors.brightOrange,
-      slippage: fixedSlippage,
+      showWarning: slippage >= SlippageWarningThresholdInBips,
     };
   })
 );
 
-const SlippageWarning = enhance(({ isSevere, severityColor, slippage }) =>
-  slippage < SlippageWarningTheshold ? null : (
-    <Container>
-      <RowWithMargins align="center" margin={5}>
-        <Icon color={severityColor} name="warning" size="lmedium" />
-        <AnimateNumber
-          formatter={formatSlippage}
-          interval={1}
-          renderContent={renderSlippageText}
-          steps={12}
-          timing="linear"
-          value={slippage}
-        />
-      </RowWithMargins>
-      <Text color={severityColor} size="smedium" weight="medium">
-        {isSevere ? 'Please swap less' : 'Consider swapping less'}
-      </Text>
-    </Container>
-  )
+const SlippageWarning = enhance(
+  ({ isSevere, severityColor, showWarning, slippage }) =>
+    showWarning ? (
+      <Container>
+        <RowWithMargins align="center" margin={5}>
+          <Icon color={severityColor} name="warning" size="lmedium" />
+          <AnimateNumber
+            formatter={formatSlippage}
+            interval={1}
+            renderContent={renderSlippageText}
+            steps={12}
+            timing="linear"
+            value={slippage}
+          />
+        </RowWithMargins>
+        <Text color={severityColor} size="smedium" weight="medium">
+          {isSevere ? 'Please swap less' : 'Consider swapping less'}
+        </Text>
+      </Container>
+    ) : null
 );
 
 SlippageWarning.propTypes = {
   isSevere: PropTypes.bool,
   onPress: PropTypes.func,
   severityColor: PropTypes.string,
+  showWarning: PropTypes.bool,
   slippage: PropTypes.string,
 };
 
