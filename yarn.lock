@@ -9104,7 +9104,7 @@ react-native-fast-image@andrewschenk-linx/react-native-fast-image#fix-ios-xcode-
   version "7.0.2"
   resolved "https://codeload.github.com/andrewschenk-linx/react-native-fast-image/tar.gz/d19ae11a6469de94cb49211d00a7bc002ea76ff8"
 
-react-native-firebase@~5.5.5:
+react-native-firebase@5.5.6:
   version "5.5.6"
   resolved "https://registry.yarnpkg.com/react-native-firebase/-/react-native-firebase-5.5.6.tgz#17b34ec0d5dc39afaaf0e159fd160f6339e0f707"
   integrity sha512-AdbpGwKEEiMFgaRar9WOPc8Li4sfxR//WOyNQzxYsQ1fpARC908j7feqy2gu73SLqk4wzIrnlfJWakOe0/Bclg==
