@@ -2,21 +2,25 @@ import { differenceInMinutes } from 'date-fns';
 import { omit, pickBy } from 'lodash';
 import {
   getAccountLocal,
-  getLocal,
   removeAccountLocal,
-  removeLocal,
   saveAccountLocal,
-  saveLocal,
 } from './common';
 
 const REQUESTS = 'requests';
+const WALLETCONNECT = 'walletconnect';
 
 /**
  * @desc get all wallet connect sessions
  * @return {Object}
  */
-export const getAllValidWalletConnectSessions = async () => {
-  const allSessions = await getAllWalletConnectSessions();
+export const getAllValidWalletConnectSessions = async (
+  accountAddress,
+  network
+) => {
+  const allSessions = await getAllWalletConnectSessions(
+    accountAddress,
+    network
+  );
   return pickBy(allSessions, value => value.connected);
 };
 
@@ -24,49 +28,56 @@ export const getAllValidWalletConnectSessions = async () => {
  * @desc get all wallet connect sessions
  * @return {Object}
  */
-export const getAllWalletConnectSessions = async () => {
-  const allSessions = await getLocal('walletconnect');
-  return allSessions || {};
-};
+const getAllWalletConnectSessions = (accountAddress, network) =>
+  getAccountLocal(WALLETCONNECT, accountAddress, network, {});
 
 /**
  * @desc save wallet connect session
  * @param  {String}   [peerId]
  * @param  {Object}   [session]
  */
-export const saveWalletConnectSession = async (peerId, session) => {
-  const allSessions = await getAllValidWalletConnectSessions();
+export const saveWalletConnectSession = async (
+  peerId,
+  session,
+  accountAddress,
+  network
+) => {
+  const allSessions = await getAllValidWalletConnectSessions(
+    accountAddress,
+    network
+  );
   allSessions[peerId] = session;
-  await saveLocal('walletconnect', allSessions);
-};
-
-/**
- * @desc remove wallet connect session
- * @param  {String}   [peerId]
- */
-export const removeWalletConnectSession = async peerId => {
-  const allSessions = await getAllWalletConnectSessions();
-  const session = allSessions ? allSessions[peerId] : null;
-  const resultingSessions = omit(allSessions, [peerId]);
-  await saveLocal('walletconnect', resultingSessions);
-  return session;
+  await saveAccountLocal(WALLETCONNECT, allSessions, accountAddress, network);
 };
 
 /**
  * @desc remove wallet connect sessions
  * @param  {String}   [sessionId]
  */
-export const removeWalletConnectSessions = async sessionIds => {
-  const allSessions = await getAllWalletConnectSessions();
+export const removeWalletConnectSessions = async (
+  sessionIds,
+  accountAddress,
+  network
+) => {
+  const allSessions = await getAllWalletConnectSessions(
+    accountAddress,
+    network
+  );
   const resultingSessions = omit(allSessions, sessionIds);
-  await saveLocal('walletconnect', resultingSessions);
+  await saveAccountLocal(
+    WALLETCONNECT,
+    resultingSessions,
+    accountAddress,
+    network
+  );
 };
 
 /**
  * @desc remove all wallet connect sessions
  * @param  {String}   [sessionId]
  */
-export const removeWalletConnect = () => removeLocal('walletconnect');
+export const removeWalletConnect = (accountAddress, network) =>
+  removeAccountLocal(WALLETCONNECT, accountAddress, network);
 
 const isRequestStillValid = request => {
   const createdAt = request.displayDetails.timestampInMs;
@@ -81,7 +92,7 @@ const isRequestStillValid = request => {
 export const getLocalRequests = async (accountAddress, network) => {
   const requests = getAccountLocal(REQUESTS, accountAddress, network, {});
   const openRequests = pickBy(requests, isRequestStillValid);
-  await saveLocalRequests(accountAddress, network, openRequests);
+  await saveLocalRequests(openRequests, accountAddress, network);
   return openRequests;
 };
 
@@ -91,7 +102,7 @@ export const getLocalRequests = async (accountAddress, network) => {
  * @param  {String}   [network]
  * @return {Void}
  */
-export const saveLocalRequests = async (accountAddress, network, requests) =>
+export const saveLocalRequests = async (requests, accountAddress, network) =>
   saveAccountLocal(REQUESTS, requests, accountAddress, network);
 
 /**
@@ -105,7 +116,7 @@ export const removeLocalRequest = async (address, network, requestId) => {
   const requests = await getLocalRequests(address, network);
   const updatedRequests = { ...requests };
   delete updatedRequests[requestId];
-  await saveLocalRequests(address, network, updatedRequests);
+  await saveLocalRequests(updatedRequests, address, network);
 };
 
 /**

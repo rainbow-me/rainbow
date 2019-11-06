@@ -1,5 +1,10 @@
 import { updateLanguage } from '../languages';
-import { getGlobal, saveGlobal } from '../handlers/localstorage/common';
+import {
+  getLanguage,
+  getNativeCurrency,
+  saveLanguage,
+  saveNativeCurrency,
+} from '../handlers/localstorage/globalSettings';
 import { dataClearState } from './data';
 import { explorerInit } from './explorer';
 import { ethereumUtils } from '../utils';
@@ -21,13 +26,10 @@ const SETTINGS_UPDATE_LANGUAGE_SUCCESS =
 const SETTINGS_UPDATE_LANGUAGE_FAILURE =
   'settings/SETTINGS_UPDATE_LANGUAGE_FAILURE';
 
-const LANGUAGE = 'language';
-const NATIVE_CURRENCY = 'nativeCurrency';
-
 // -- Actions --------------------------------------------------------------- //
 export const settingsLoadState = () => async dispatch => {
   try {
-    const language = await getGlobal(LANGUAGE, 'en');
+    const language = await getLanguage();
     dispatch({
       payload: language,
       type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
@@ -36,7 +38,7 @@ export const settingsLoadState = () => async dispatch => {
     dispatch({ type: SETTINGS_UPDATE_LANGUAGE_FAILURE });
   }
   try {
-    const nativeCurrency = await getGlobal(NATIVE_CURRENCY, 'USD');
+    const nativeCurrency = await getNativeCurrency();
     dispatch({
       payload: nativeCurrency,
       type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
@@ -72,7 +74,7 @@ export const settingsUpdateChainId = chainId => dispatch => {
 
 export const settingsChangeLanguage = language => dispatch => {
   updateLanguage(language);
-  saveGlobal(LANGUAGE, language)
+  saveLanguage(language)
     .then(() =>
       dispatch({
         payload: language,
@@ -88,7 +90,7 @@ export const settingsChangeLanguage = language => dispatch => {
 
 export const settingsChangeNativeCurrency = nativeCurrency => dispatch => {
   dispatch(dataClearState());
-  saveGlobal(NATIVE_CURRENCY, nativeCurrency)
+  saveNativeCurrency(nativeCurrency)
     .then(() => {
       dispatch({
         payload: nativeCurrency,

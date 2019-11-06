@@ -139,16 +139,21 @@ export const walletConnectUpdateTimestamp = () => dispatch =>
 export const walletConnectClearTimestamp = () => dispatch =>
   dispatch({ type: WALLETCONNECT_CLEAR_TIMESTAMP });
 
-export const walletConnectClearState = () => dispatch => {
-  removeWalletConnect();
+export const walletConnectClearState = () => (dispatch, getState) => {
+  const { accountAddress, network } = getState().settings;
+  removeWalletConnect(accountAddress, network);
   dispatch({ type: WALLETCONNECT_CLEAR_STATE });
 };
 
-export const walletConnectLoadState = () => async dispatch => {
+export const walletConnectLoadState = () => async (dispatch, getState) => {
   dispatch(walletConnectUpdateTimestamp());
+  const { accountAddress, network } = getState().settings;
   let walletConnectors = {};
   try {
-    const allSessions = await getAllValidWalletConnectSessions();
+    const allSessions = await getAllValidWalletConnectSessions(
+      accountAddress,
+      network
+    );
 
     const nativeOptions = await getNativeOptions();
 
@@ -233,7 +238,7 @@ export const walletConnectApproveSession = (peerId, callback) => (
   dispatch,
   getState
 ) => {
-  const { accountAddress, chainId } = getState().settings;
+  const { accountAddress, chainId, network } = getState().settings;
 
   const walletConnector = dispatch(getPendingRequest(peerId));
   walletConnector.approveSession({
@@ -242,7 +247,12 @@ export const walletConnectApproveSession = (peerId, callback) => (
   });
 
   dispatch(removePendingRequest(peerId));
-  saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
+  saveWalletConnectSession(
+    walletConnector.peerId,
+    walletConnector.session,
+    accountAddress,
+    network
+  );
 
   const listeningWalletConnector = dispatch(
     listenOnNewMessages(walletConnector)
@@ -267,6 +277,7 @@ export const walletConnectDisconnectAllByDappName = dappName => async (
   getState
 ) => {
   const { walletConnectors } = getState().walletconnect;
+  const { accountAddress, network } = getState().settings;
   const matchingWalletConnectors = values(
     pickBy(walletConnectors, session => session.peerMeta.name === dappName)
   );
@@ -277,7 +288,7 @@ export const walletConnectDisconnectAllByDappName = dappName => async (
         walletConnector => walletConnector.peerId
       )
     );
-    await removeWalletConnectSessions(peerIds);
+    await removeWalletConnectSessions(peerIds, accountAddress, network);
     forEach(matchingWalletConnectors, walletConnector =>
       walletConnector.killSession()
     );

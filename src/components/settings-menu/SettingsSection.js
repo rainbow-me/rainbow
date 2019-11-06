@@ -11,7 +11,10 @@ import CurrencyIcon from '../../assets/currency-icon.png';
 import LanguageIcon from '../../assets/language-icon.png';
 import NetworkIcon from '../../assets/network-icon.png';
 // import SecurityIcon from '../../assets/security-icon.png';
-import { getGlobal, saveGlobal } from '../../handlers/localstorage/common';
+import {
+  getAppStoreReviewCount,
+  saveAppStoreReviewCount,
+} from '../../handlers/localstorage/globalSettings';
 import { withAccountSettings, withSendFeedback } from '../../hoc';
 import { supportedLanguages } from '../../languages';
 import { position } from '../../styles';
@@ -24,8 +27,6 @@ import {
   ListItemDivider,
 } from '../list';
 import { Emoji } from '../text';
-
-const APPSTORE_REVIEW_COUNT = 'appStoreReviewRequestCount';
 
 const SettingsExternalURLs = {
   review:
@@ -172,7 +173,7 @@ export default compose(
   withHandlers({
     onPressReview: ({ onCloseModal }) => async () => {
       const maxRequestCount = 2;
-      const count = await getGlobal(APPSTORE_REVIEW_COUNT, 0);
+      const count = await getAppStoreReviewCount();
       const shouldDeeplinkToAppStore =
         count >= maxRequestCount || !StoreReview.isAvailable;
 
@@ -183,7 +184,7 @@ export default compose(
         InteractionManager.runAfterInteractions(StoreReview.requestReview);
       }
 
-      return saveGlobal(APPSTORE_REVIEW_COUNT, count + 1);
+      return saveAppStoreReviewCount(count + 1);
     },
     onPressTwitter: () => async () => {
       Linking.canOpenURL(SettingsExternalURLs.twitterDeepLink).then(supported =>

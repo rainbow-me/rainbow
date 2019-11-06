@@ -3,7 +3,6 @@ import {
   compact,
   concat,
   filter,
-  forEach,
   fromPairs,
   get,
   invertBy,
@@ -19,12 +18,20 @@ import {
   zip,
 } from 'lodash';
 import {
-  getAccountLocal,
-  getGlobal,
-  removeAccountLocal,
-  saveAccountLocal,
-  saveGlobal,
-} from '../handlers/localstorage/common';
+  getAllowances,
+  getLiquidity,
+  getUniswapAssets,
+  getUniswapFavorites,
+  getUniswapLiquidityInfo,
+  getUniswapPendingApprovals,
+  removeUniswapStorage,
+  saveAllowances,
+  saveLiquidity,
+  saveLiquidityInfo,
+  saveUniswapAssets,
+  saveUniswapFavorites,
+  saveUniswapPendingApprovals,
+} from '../handlers/localstorage/uniswap';
 import { getLiquidityInfo, getReserve } from '../handlers/uniswap';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import { uniswapAssetsClean } from '../references';
@@ -55,48 +62,19 @@ const UNISWAP_UPDATE_LIQUIDITY_TOKENS =
   'uniswap/UNISWAP_UPDATE_LIQUIDITY_TOKENS';
 const UNISWAP_CLEAR_STATE = 'uniswap/UNISWAP_CLEAR_STATE';
 
-// Localstorage keys
-export const ALLOWANCES = 'uniswapallowances';
-export const ASSETS = 'uniswapassets';
-export const FAVORITES = 'favorites';
-export const LIQUIDITY = 'uniswapliquidity';
-export const LIQUIDITY_INFO = 'uniswap';
-export const PENDING_APPROVALS = 'uniswappendingapprovals';
-
 // -- Actions --------------------------------------------------------------- //
 export const uniswapLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   dispatch({ type: UNISWAP_LOAD_REQUEST });
   try {
-    const uniswap = await getAccountLocal(
-      LIQUIDITY_INFO,
-      accountAddress,
-      network,
-      {}
-    );
-    const favorites = await getGlobal(FAVORITES, []);
-    const liquidityTokens = await getAccountLocal(
-      LIQUIDITY,
+    const uniswap = await getUniswapLiquidityInfo(accountAddress, network);
+    const favorites = await getUniswapFavorites();
+    const liquidityTokens = await getLiquidity(accountAddress, network);
+    const allowances = await getAllowances(accountAddress, network);
+    const uniswapAssets = await getUniswapAssets(accountAddress, network);
+    const pendingApprovals = await getUniswapPendingApprovals(
       accountAddress,
       network
-    );
-    const allowances = await getAccountLocal(
-      ALLOWANCES,
-      accountAddress,
-      network,
-      {}
-    );
-    const uniswapAssets = await getAccountLocal(
-      ASSETS,
-      accountAddress,
-      network,
-      {}
-    );
-    const pendingApprovals = await getAccountLocal(
-      PENDING_APPROVALS,
-      accountAddress,
-      network,
-      {}
     );
     dispatch({
       payload: {
@@ -154,14 +132,7 @@ export const uniswapClearCurrenciesAndReserves = () => dispatch =>
 
 export const uniswapClearState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  const storageKeys = [
-    ASSETS,
-    ALLOWANCES,
-    LIQUIDITY_INFO,
-    LIQUIDITY,
-    PENDING_APPROVALS,
-  ];
-  forEach(storageKeys, key => removeAccountLocal(key, accountAddress, network));
+  removeUniswapStorage(accountAddress, network);
   dispatch({ type: UNISWAP_CLEAR_STATE });
 };
 
@@ -185,12 +156,7 @@ export const uniswapUpdatePendingApprovals = (
     payload: updatedPendingApprovals,
     type: UNISWAP_UPDATE_PENDING_APPROVALS,
   });
-  saveAccountLocal(
-    PENDING_APPROVALS,
-    updatedPendingApprovals,
-    accountAddress,
-    network
-  );
+  saveUniswapPendingApprovals(updatedPendingApprovals, accountAddress, network);
 };
 
 const updateAllowancesForSuccessfulTransactions = assetAddresses => (
@@ -254,12 +220,7 @@ export const uniswapRemovePendingApproval = transactions => (
     updateAllowancesForSuccessfulTransactions(successfullyApprovedAddresses)
   );
   const { accountAddress, network } = getState().settings;
-  saveAccountLocal(
-    PENDING_APPROVALS,
-    updatedPendingApprovals,
-    accountAddress,
-    network
-  );
+  saveUniswapPendingApprovals(updatedPendingApprovals, accountAddress, network);
 };
 
 export const uniswapUpdateFavorites = (assetAddress, add = true) => (
@@ -275,7 +236,7 @@ export const uniswapUpdateFavorites = (assetAddress, add = true) => (
     payload: updatedFavorites,
     type: UNISWAP_UPDATE_FAVORITES,
   });
-  saveGlobal(FAVORITES, updatedFavorites);
+  saveUniswapFavorites(updatedFavorites);
 };
 
 export const uniswapUpdateAllowances = tokenAddressAllowances => (
@@ -292,7 +253,7 @@ export const uniswapUpdateAllowances = tokenAddressAllowances => (
     payload: updatedAllowances,
     type: UNISWAP_UPDATE_ALLOWANCES,
   });
-  saveAccountLocal(ALLOWANCES, updatedAllowances, accountAddress, network);
+  saveAllowances(updatedAllowances, accountAddress, network);
 };
 
 export const uniswapUpdateAssets = assets => (dispatch, getState) => {
@@ -314,7 +275,7 @@ export const uniswapUpdateAssets = assets => (dispatch, getState) => {
     payload: mappedAssets,
     type: UNISWAP_UPDATE_ASSETS,
   });
-  saveAccountLocal(ASSETS, mappedAssets, accountAddress, network);
+  saveUniswapAssets(mappedAssets, accountAddress, network);
 };
 
 export const uniswapUpdateAssetPrice = (address, price) => (
@@ -333,7 +294,7 @@ export const uniswapUpdateAssetPrice = (address, price) => (
     payload: updatedAssets,
     type: UNISWAP_UPDATE_ASSETS,
   });
-  saveAccountLocal(ASSETS, updatedAssets, accountAddress, network);
+  saveUniswapAssets(updatedAssets, accountAddress, network);
 };
 
 export const uniswapUpdateLiquidityTokens = (
@@ -356,7 +317,7 @@ export const uniswapUpdateLiquidityTokens = (
     payload: updatedLiquidityTokens,
     type: UNISWAP_UPDATE_LIQUIDITY_TOKENS,
   });
-  saveAccountLocal(LIQUIDITY, updatedLiquidityTokens, accountAddress, network);
+  saveLiquidity(updatedLiquidityTokens, accountAddress, network);
   dispatch(uniswapUpdateState());
 };
 
@@ -375,10 +336,10 @@ export const uniswapUpdateState = () => (dispatch, getState) =>
       get(x, 'asset.asset_code')
     );
     return getLiquidityInfo(accountAddress, exchangeContracts)
-      .then(uniswap => {
-        saveAccountLocal(LIQUIDITY_INFO, uniswap, accountAddress, network);
+      .then(liquidityInfo => {
+        saveLiquidityInfo(liquidityInfo, accountAddress, network);
         dispatch({
-          payload: uniswap,
+          payload: liquidityInfo,
           type: UNISWAP_UPDATE_SUCCESS,
         });
         resolve(true);

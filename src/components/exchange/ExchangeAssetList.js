@@ -45,6 +45,7 @@ const setLayoutForType = (type, dim) => {
 export default class ExchangeAssetList extends PureComponent {
   static propTypes = {
     items: PropTypes.arrayOf(PropTypes.object),
+    onMount: PropTypes.func,
     renderItem: PropTypes.func,
   };
 
@@ -77,25 +78,34 @@ export default class ExchangeAssetList extends PureComponent {
   getStableId = index =>
     get(this.state, `dataProvider._data[${index}].uniqueId`);
 
-  updateList = () => {
-    this.setState(prevState => ({
-      dataProvider: prevState.dataProvider.cloneWithRows(this.props.items),
-    }));
+  handleMount = () => {
+    if (this.props.onMount) {
+      this.props.onMount();
+    }
   };
 
   renderRow = (type, data) => this.props.renderItem(data);
 
   rlvRef = React.createRef();
 
+  updateList = () => {
+    this.setState(prevState => ({
+      dataProvider: prevState.dataProvider.cloneWithRows(this.props.items),
+    }));
+  };
+
   render = () => (
-    <View backgroundColor={colors.white} flex={1} overflow="hidden">
+    <View
+      backgroundColor={colors.white}
+      flex={1}
+      onLayout={this.handleMount}
+      overflow="hidden"
+    >
       <RecyclerListView
         {...this.props}
         dataProvider={this.state.dataProvider}
         itemAnimator={layoutItemAnimator}
         layoutProvider={this.layoutProvider}
-        onContentSizeChange={this.onContentSizeChange}
-        onViewableItemsChanged={this.onViewableItemsChanged}
         optimizeForInsertDeleteAnimations
         ref={this.rlvRef}
         renderAheadOffset={deviceUtils.dimensions.height}

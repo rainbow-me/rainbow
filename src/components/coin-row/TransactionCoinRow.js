@@ -5,7 +5,7 @@ import { compose, mapProps, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { Linking } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { css } from 'styled-components/primitives';
-import { getSelectedLocalContact } from '../../handlers/commonStorage';
+import { getSelectedLocalContact } from '../../handlers/localstorage/contacts';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { colors } from '../../styles';
 import { abbreviations } from '../../utils';

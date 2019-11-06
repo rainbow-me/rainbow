@@ -12,7 +12,7 @@ import TouchableBackdrop from '../components/TouchableBackdrop';
 import { padding } from '../styles';
 import { deviceUtils, safeAreaInsetValues } from '../utils';
 import ChartExpandedState from '../components/expanded-state/ChartExpandedState';
-import { addNewLocalContact } from '../handlers/commonStorage';
+import { addNewLocalContact } from '../handlers/localstorage/contacts';
 
 const { bottom: safeAreaBottom, top: safeAreaTop } = safeAreaInsetValues;
 
