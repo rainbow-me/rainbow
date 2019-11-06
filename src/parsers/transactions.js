@@ -134,6 +134,14 @@ const parseTransaction = (txn, accountAddress, nativeCurrency) => {
     };
     internalTransactions = [assetInternalTransaction];
   }
+  if (isEmpty(changes) && txn.type === 'authorize') {
+    const approveInternalTransaction = {
+      address_from: transaction.from,
+      address_to: transaction.to,
+      asset: get(txn, 'meta.asset'),
+    };
+    internalTransactions = [approveInternalTransaction];
+  }
   // logic below: prevent sending yourself money to be seen as a trade
   if (
     changes.length === 2 &&

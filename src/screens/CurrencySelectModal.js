@@ -3,50 +3,24 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
-import { compose, mapProps, withProps } from 'recompact';
-import styled from 'styled-components/primitives';
+import { compose, mapProps } from 'recompact';
 import { withUniswapAssets } from '../hoc';
-import { borders, colors, position } from '../styles';
+import { position } from '../styles';
 import { isNewValueForPath } from '../utils';
 import { filterList } from '../utils/search';
 import { interpolate } from '../components/animations';
-import { EmptyAssetList } from '../components/asset-list';
 import { ExchangeCoinRow } from '../components/coin-row';
-import { ExchangeAssetList, ExchangeSearch } from '../components/exchange';
-import GestureBlocker from '../components/GestureBlocker';
-import { BackButton } from '../components/header';
 import {
-  Centered,
-  Column,
-  FlexItem,
-  KeyboardFixedOpenLayout,
-} from '../components/layout';
+  CurrencySelectionList,
+  CurrencySelectModalHeader,
+  ExchangeSearch,
+} from '../components/exchange';
+import GestureBlocker from '../components/GestureBlocker';
+import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
-import { TruncatedText } from '../components/text';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 
 const EMPTY_ARRAY = [];
-
-const BackButtonWrapper = styled(Centered)`
-  left: 0;
-  margin-left: 15;
-  position: absolute;
-`;
-
-const HeaderContainer = styled(Centered).attrs({ flex: 0 })`
-  ${borders.buildRadius('top', 12)};
-  background-color: ${colors.white};
-  height: 60;
-  width: 100%;
-`;
-
-const HeaderTitle = withProps({
-  height: 21,
-  letterSpacing: 'tighter',
-  lineHeight: 'loose',
-  size: 'large',
-  weight: 'bold',
-})(TruncatedText);
 
 const appendAssetWithSearchableKey = asset => ({
   ...asset,
@@ -111,7 +85,7 @@ class CurrencySelectModal extends Component {
       .setParams({ isGestureBlocked });
   };
 
-  handleChangeSearchText = searchQuery => {
+  handleChangeSearchQuery = searchQuery => {
     this.setState({ searchQuery });
   };
 
@@ -128,6 +102,8 @@ class CurrencySelectModal extends Component {
     onSelectCurrency(item);
     navigation.navigate('MainExchangeScreen');
   };
+
+  handleDidBlur = () => this.handleChangeSearchQuery('');
 
   handleWillBlur = () => this.dangerouslySetIsGestureBlocked(false);
 
@@ -176,8 +152,6 @@ class CurrencySelectModal extends Component {
 
     const listItems = filterList(assets, searchQuery, 'uniqueId');
 
-    const isLoading = !isFocused || listItems.length === 0;
-
     return (
       <KeyboardFixedOpenLayout>
         <Animated.View
@@ -198,45 +172,28 @@ class CurrencySelectModal extends Component {
           >
             <GestureBlocker type="top" />
             <NavigationEvents
+              onDidBlur={this.handleDidBlur}
               onWillBlur={this.handleWillBlur}
               onWillFocus={this.handleWillFocus}
             />
             <Column flex={1}>
-              <HeaderContainer>
-                <BackButtonWrapper>
-                  <BackButton
-                    color={colors.black}
-                    direction="left"
-                    onPress={this.handlePressBack}
-                    size="9"
-                  />
-                </BackButtonWrapper>
-                <HeaderTitle>{headerTitle}</HeaderTitle>
-              </HeaderContainer>
+              <CurrencySelectModalHeader
+                onPressBack={this.handlePressBack}
+                title={headerTitle}
+              />
               <ExchangeSearch
                 autoFocus={false}
-                onChangeText={this.handleChangeSearchText}
+                onChangeText={this.handleChangeSearchQuery}
                 ref={this.searchInputRef}
                 searchQuery={searchQuery}
               />
-              <FlexItem>
-                {isFocused ? (
-                  <ExchangeAssetList
-                    key={`ExchangeAssetListCurrencySelectionModal-${type}`}
-                    items={listItems}
-                    renderItem={this.renderCurrencyItem}
-                    scrollIndicatorInsets={{
-                      bottom: exchangeModalBorderRadius,
-                    }}
-                  />
-                ) : null}
-                <EmptyAssetList
-                  {...position.coverAsObject}
-                  backgroundColor={colors.white}
-                  opacity={isLoading ? 1 : 0}
-                  pointerEvents="none"
-                />
-              </FlexItem>
+              <CurrencySelectionList
+                key={`CurrencySelectionList-${type}`}
+                listItems={listItems}
+                renderItem={this.renderCurrencyItem}
+                showList={isFocused}
+                type={type}
+              />
             </Column>
             <GestureBlocker type="bottom" />
           </Modal>
