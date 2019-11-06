@@ -34,7 +34,7 @@ import { pushOpenFamilyTab } from '../redux/openFamilyTabs';
 import { pushOpenInvestmentCard } from '../redux/openInvestmentCards';
 import store from '../redux/store';
 import { position } from '../styles';
-import { isNewValueForPath } from '../utils';
+import { compareObjectsAtPaths } from '../utils';
 
 class WalletScreen extends Component {
   static propTypes = {
@@ -42,7 +42,6 @@ class WalletScreen extends Component {
     allAssetsCount: PropTypes.number,
     assets: PropTypes.array,
     assetsTotal: PropTypes.object,
-    blurIntensity: PropTypes.object,
     initializeWallet: PropTypes.func,
     isEmpty: PropTypes.bool.isRequired,
     isFocused: PropTypes.bool,
@@ -66,60 +65,20 @@ class WalletScreen extends Component {
   };
 
   shouldComponentUpdate = nextProps => {
-    const isNewBlurIntensity = isNewValueForPath(
-      this.props,
-      nextProps,
-      'blurIntensity'
-    );
-    const isNewCurrency = isNewValueForPath(
-      this.props,
-      nextProps,
-      'nativeCurrency'
-    );
-    const isNewFetchingAssets = isNewValueForPath(
-      this.props,
-      nextProps,
-      'fetchingAssets'
-    );
-    const isNewFetchingUniqueTokens = isNewValueForPath(
-      this.props,
-      nextProps,
-      'fetchingUniqueTokens'
-    );
-    const isNewIsWalletEmpty = isNewValueForPath(
-      this.props,
-      nextProps,
-      'isEmpty'
-    );
-    const isNewIsWalletEthZero = isNewValueForPath(
-      this.props,
-      nextProps,
-      'isWalletEthZero'
-    );
-    const isNewLanguage = isNewValueForPath(this.props, nextProps, 'language');
-    const isNewSections = isNewValueForPath(this.props, nextProps, 'sections');
+    const shouldUpdate = compareObjectsAtPaths(this.props, nextProps, [
+      'fetchingAssets',
+      'fetchingUniqueTokens',
+      'isEmpty',
+      'isWalletEthZero',
+      'language',
+      'nativeCurrency',
+      'sections',
+    ]);
 
-    const isNewTransitionProps = isNewValueForPath(
-      this.props,
-      nextProps,
-      'transitionProps'
-    );
+    console.log('nextProps', nextProps);
+    console.log('shouldUpdate', shouldUpdate);
 
-    if (!nextProps.isFocused) {
-      return isNewBlurIntensity || isNewTransitionProps;
-    }
-
-    return (
-      isNewFetchingAssets ||
-      isNewFetchingUniqueTokens ||
-      isNewIsWalletEmpty ||
-      isNewIsWalletEthZero ||
-      isNewLanguage ||
-      isNewCurrency ||
-      isNewBlurIntensity ||
-      isNewSections ||
-      isNewTransitionProps
-    );
+    return shouldUpdate;
   };
 
   setInitialStatesForOpenAssets = async () => {
