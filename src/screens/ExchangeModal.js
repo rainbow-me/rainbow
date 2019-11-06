@@ -52,7 +52,12 @@ import {
   withUniswapAssets,
 } from '../hoc';
 import { colors, padding, position } from '../styles';
-import { contractUtils, ethereumUtils, isNewValueForPath } from '../utils';
+import {
+  contractUtils,
+  ethereumUtils,
+  gasUtils,
+  isNewValueForPath,
+} from '../utils';
 import { CurrencySelectionTypes } from './CurrencySelectModal';
 
 export const exchangeModalBorderRadius = 30;
@@ -240,7 +245,7 @@ class ExchangeModal extends React.Component {
         inputCurrency.address,
         exchangeAddress
       );
-      gasUpdateTxFee(gasLimit);
+      gasUpdateTxFee(gasLimit, gasUtils.FAST);
       return this.setState({
         approvalCreationTimestamp: isUnlockingAsset
           ? pendingApproval.creationTimestamp
@@ -270,6 +275,7 @@ class ExchangeModal extends React.Component {
       inputReserve,
       nativeCurrency,
       outputReserve,
+      selectedGasPrice,
     } = this.props;
     const {
       inputAmount,
@@ -291,11 +297,7 @@ class ExchangeModal extends React.Component {
     }
 
     try {
-      const {
-        address: inputAddress,
-        balance: { amount: inputBalance },
-        decimals: inputDecimals,
-      } = inputCurrency;
+      const { address: inputAddress, decimals: inputDecimals } = inputCurrency;
       const {
         address: outputAddress,
         decimals: outputDecimals,
@@ -386,7 +388,11 @@ class ExchangeModal extends React.Component {
         );
       }
 
-      const slippage = get(tradeDetails, 'marketRateSlippage', 0).toString();
+      const slippage = get(tradeDetails, 'executionRateSlippage', 0).toString();
+      const inputBalance = ethereumUtils.getBalanceAmount(
+        selectedGasPrice,
+        inputCurrency
+      );
 
       this.setState({
         inputExecutionRate,
@@ -539,11 +545,8 @@ class ExchangeModal extends React.Component {
   handleUnlockAsset = async () => {
     try {
       const { inputCurrency } = this.state;
-      const {
-        gasLimit,
-        selectedGasPrice,
-        uniswapUpdatePendingApprovals,
-      } = this.props;
+      const { gasLimit, gasPrices, uniswapUpdatePendingApprovals } = this.props;
+      const fastGasPrice = get(gasPrices, `[${gasUtils.FAST}]`);
       const {
         creationTimestamp: approvalCreationTimestamp,
         approval: { hash },
@@ -551,10 +554,10 @@ class ExchangeModal extends React.Component {
         inputCurrency.address,
         inputCurrency.exchangeAddress,
         gasLimit,
-        get(selectedGasPrice, 'value.amount')
+        get(fastGasPrice, 'value.amount')
       );
       const approvalEstimatedTimeInMs = get(
-        selectedGasPrice,
+        fastGasPrice,
         'estimatedTime.amount'
       );
       uniswapUpdatePendingApprovals(

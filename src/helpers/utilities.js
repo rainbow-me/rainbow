@@ -184,20 +184,6 @@ export const convertAmountFromNativeValue = (value, priceUnit) =>
     .toFixed();
 
 /**
- * @desc handle signficant decimals in display format
- * @param  {String|Number}   value
- * @param  {Number}   decimals
- * @param  {Number}   buffer
- * @return {String}
- */
-export const handleSignificantDecimals = (value, decimals, buffer) => {
-  const result = significantDecimals(value, decimals, buffer);
-  return BigNumber(`${result}`).dp() <= 2
-    ? BigNumber(`${result}`).toFormat(2)
-    : BigNumber(`${result}`).toFormat();
-};
-
-/**
  * @desc convert from string to number
  * @param  {String}  value
  * @return {Number}
@@ -220,7 +206,7 @@ export const smallerThan = (numberOne, numberTwo) =>
  * @param  {Number}   buffer
  * @return {String}
  */
-export const significantDecimals = (value, decimals, buffer) => {
+export const handleSignificantDecimals = (value, decimals, buffer) => {
   if (
     !BigNumber(`${decimals}`).isInteger() ||
     (buffer && !BigNumber(`${buffer}`).isInteger())
@@ -242,7 +228,9 @@ export const significantDecimals = (value, decimals, buffer) => {
   }
   let result = BigNumber(`${value}`).toFixed(decimals);
   result = BigNumber(`${result}`).toFixed();
-  return result;
+  return BigNumber(`${result}`).dp() <= 2
+    ? BigNumber(`${result}`).toFormat(2)
+    : BigNumber(`${result}`).toFormat();
 };
 
 /**
@@ -340,10 +328,25 @@ export const convertAmountToBalanceDisplay = (value, asset, buffer) => {
  * @param  {Number}     buffer
  * @return {String}
  */
-export const convertAmountToPercentageDisplay = (value, buffer) => {
-  const display = handleSignificantDecimals(value, 2, buffer);
+export const convertAmountToPercentageDisplay = (
+  value,
+  decimals = 2,
+  buffer
+) => {
+  const display = handleSignificantDecimals(value, decimals, buffer);
   return `${display}%`;
 };
+
+/**
+ * @desc convert from bips amount to percentage format
+ * @param  {BigNumber}  value in bips
+ * @param  {Number}     decimals
+ * @return {String}
+ */
+export const convertBipsToPercentage = (value, decimals = 2) =>
+  BigNumber(`${value}`)
+    .shiftedBy(-2)
+    .toFixed(decimals);
 
 /**
  * @desc convert from amount value to display formatted string

@@ -24,6 +24,7 @@ import {
   expandedPreset,
   sheetPreset,
   backgroundPreset,
+  overlayExpandedPreset,
 } from '../navigation/transitions/effects';
 
 const onTransitionEnd = () =>
@@ -112,6 +113,10 @@ const MainNavigator = createStackNavigator(
         },
       },
       screen: ImportSeedPhraseSheetWithData,
+    },
+    OverlayExpandedAssetScreen: {
+      navigationOptions: overlayExpandedPreset,
+      screen: ExpandedAssetScreenWithData,
     },
     ReceiveModal: {
       navigationOptions: {

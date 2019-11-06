@@ -19,6 +19,7 @@ import de.bonify.reactnativepiwik.PiwikPackage;
 import com.cmcewen.blurview.BlurViewPackage;
 import com.reactcommunity.rnlanguages.RNLanguagesPackage;
 import com.swmansion.reanimated.ReanimatedPackage;
+import com.microsoft.codepush.react.CodePush;
 import com.reactlibrary.RNReactNativeHapticFeedbackPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;

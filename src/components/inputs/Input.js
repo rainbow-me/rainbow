@@ -25,6 +25,8 @@ export default class Input extends PureComponent {
 
   focus = event => this.ref.current.focus(event);
 
+  isFocused = () => this.ref.current.isFocused();
+
   ref = React.createRef();
 
   render = () => {

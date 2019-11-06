@@ -167,6 +167,7 @@ dependencies {
     compile project(':react-native-blur')
     compile project(':react-native-languages')
     compile project(':react-native-reanimated')
+    compile project(':react-native-code-push')
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     compile "com.facebook.react:react-native:+"  // From node_modules
