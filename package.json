@@ -72,6 +72,7 @@
     "querystring-es3": "^0.2.1",
     "react": "16.9.0",
     "react-coin-icon": "^0.1.9",
+    "react-fast-compare": "^2.0.4",
     "react-native": "facebook/react-native",
     "react-native-actionsheet": "^2.4.2",
     "react-native-camera": "^2.11.0",
