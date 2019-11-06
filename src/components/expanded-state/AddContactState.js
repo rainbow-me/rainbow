@@ -40,6 +40,7 @@ class AddContactState extends PureComponent {
     contact: PropTypes.object,
     navigation: PropTypes.object,
     onCloseModal: PropTypes.func,
+    onRefocusInput: PropTypes.func,
     onUnmountModal: PropTypes.func,
   };
 
@@ -51,6 +52,12 @@ class AddContactState extends PureComponent {
   componentDidMount = () => {
     if (this.state.value.length === 0) {
       this._text.updateValue('Name');
+    }
+  };
+
+  componentWillUnmount = () => {
+    if (this.props.onRefocusInput) {
+      this.props.onRefocusInput();
     }
   };
 

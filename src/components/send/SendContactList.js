@@ -143,6 +143,7 @@ class SendContactList extends Component {
       onChange={this.props.onUpdateContacts}
       onPress={this.props.onPressContact}
       onTouch={this.closeAllDifferentContacts}
+      inputRef={this.props.inputRef}
       {...item}
     />
   );
