@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
+import { StatusBar } from 'react-native';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 import { Centered, Column } from '../layout';
