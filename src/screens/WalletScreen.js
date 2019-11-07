@@ -21,7 +21,6 @@ import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import {
   withAccountData,
   withAccountSettings,
-  withBlurTransitionProps,
   withDataInit,
   withIsWalletEmpty,
   withIsWalletEthZero,
@@ -64,8 +63,8 @@ class WalletScreen extends Component {
     }
   };
 
-  shouldComponentUpdate = nextProps => {
-    const shouldUpdate = compareObjectsAtPaths(this.props, nextProps, [
+  shouldComponentUpdate = nextProps =>
+    compareObjectsAtPaths(this.props, nextProps, [
       'fetchingAssets',
       'fetchingUniqueTokens',
       'isEmpty',
@@ -74,12 +73,6 @@ class WalletScreen extends Component {
       'nativeCurrency',
       'sections',
     ]);
-
-    console.log('nextProps', nextProps);
-    console.log('shouldUpdate', shouldUpdate);
-
-    return shouldUpdate;
-  };
 
   setInitialStatesForOpenAssets = async () => {
     const { accountAddress, network } = this.props;
@@ -141,7 +134,6 @@ export default compose(
   withSafeTimeout,
   withNavigation,
   withNavigationFocus,
-  withBlurTransitionProps,
   withIsWalletEmpty,
   withIsWalletEthZero,
   withStatusBarStyle('dark-content'),
