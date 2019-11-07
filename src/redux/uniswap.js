@@ -139,7 +139,7 @@ export const uniswapClearState = () => (dispatch, getState) => {
   dispatch({ type: UNISWAP_CLEAR_STATE });
 };
 
-export const uniswapUpdatePendingApprovals = (
+export const uniswapAddPendingApproval = (
   tokenAddress,
   txHash,
   creationTimestamp,
