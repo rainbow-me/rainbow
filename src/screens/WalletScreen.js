@@ -33,7 +33,7 @@ import { pushOpenFamilyTab } from '../redux/openFamilyTabs';
 import { pushOpenInvestmentCard } from '../redux/openInvestmentCards';
 import store from '../redux/store';
 import { position } from '../styles';
-import { compareObjectsAtPaths } from '../utils';
+import { isNewValueForObjectPaths } from '../utils';
 
 class WalletScreen extends Component {
   static propTypes = {
@@ -64,15 +64,17 @@ class WalletScreen extends Component {
   };
 
   shouldComponentUpdate = nextProps =>
-    compareObjectsAtPaths(this.props, nextProps, [
-      'fetchingAssets',
-      'fetchingUniqueTokens',
-      'isEmpty',
-      'isWalletEthZero',
-      'language',
-      'nativeCurrency',
-      'sections',
-    ]);
+    !nextProps.isFocused
+      ? false
+      : isNewValueForObjectPaths(this.props, nextProps, [
+          'fetchingAssets',
+          'fetchingUniqueTokens',
+          'isEmpty',
+          'isWalletEthZero',
+          'language',
+          'nativeCurrency',
+          'sections',
+        ]);
 
   setInitialStatesForOpenAssets = async () => {
     const { accountAddress, network } = this.props;

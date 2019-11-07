@@ -53,7 +53,7 @@ import {
 } from '../hoc';
 import { colors, padding, position } from '../styles';
 import {
-  compareObjectsAtPaths,
+  isNewValueForObjectPaths,
   contractUtils,
   ethereumUtils,
   gasUtils,
@@ -124,12 +124,12 @@ class ExchangeModal extends Component {
   };
 
   shouldComponentUpdate = (nextProps, nextState) => {
-    const isNewProps = compareObjectsAtPaths(this.props, nextProps, [
+    const isNewProps = isNewValueForObjectPaths(this.props, nextProps, [
       'inputReserve.token.address',
       'outputReserve.token.address',
     ]);
 
-    const isNewState = compareObjectsAtPaths(this.state, nextState, [
+    const isNewState = isNewValueForObjectPaths(this.state, nextState, [
       'approvalCreationTimestamp',
       'approvalEstimatedTimeInMs',
       'inputAmount',
@@ -150,12 +150,16 @@ class ExchangeModal extends Component {
       this.props.navigation.emit('refocus');
     }
 
-    const isNewAmountOrCurrency = compareObjectsAtPaths(this.state, prevState, [
-      'inputAmount',
-      'inputCurrency.uniqueId',
-      'outputAmount',
-      'outputCurrency.uniqueId',
-    ]);
+    const isNewAmountOrCurrency = isNewValueForObjectPaths(
+      this.state,
+      prevState,
+      [
+        'inputAmount',
+        'inputCurrency.uniqueId',
+        'outputAmount',
+        'outputCurrency.uniqueId',
+      ]
+    );
 
     let isNewNativeAmount = isNewValueForPath(
       this.state,
@@ -289,7 +293,7 @@ class ExchangeModal extends Component {
     }
   };
 
-  getMarketDetails = async isNewOutputCurrency => {
+  getMarketDetails = async isNewOutputReserveCurrency => {
     const {
       accountAddress,
       chainId,
@@ -438,7 +442,10 @@ class ExchangeModal extends Component {
         this.clearForm();
       }
 
-      if (inputAsExactAmount || (isNewOutputCurrency && inputAsExactAmount)) {
+      if (
+        inputAsExactAmount ||
+        (isNewOutputReserveCurrency && inputAsExactAmount)
+      ) {
         if (isInputEmpty || isInputZero) {
           this.setOutputAmount();
         } else {

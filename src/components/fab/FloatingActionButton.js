@@ -5,7 +5,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { ButtonPressAnimation } from '../animations';
 import InnerBorder from '../InnerBorder';
 import { borders, colors, position } from '../../styles';
-import { compareObjectsAtPaths } from '../../utils';
+import { isNewValueForObjectPaths } from '../../utils';
 import { ShadowStack } from '../shadow-stack';
 
 const FabSize = 56;
@@ -34,7 +34,7 @@ export default class FloatingActionButton extends Component {
   };
 
   shouldComponentUpdate = nextProps =>
-    compareObjectsAtPaths(this.props, nextProps, [
+    isNewValueForObjectPaths(this.props, nextProps, [
       'disabled',
       'isFabSelectionValid',
       'scaleTo',

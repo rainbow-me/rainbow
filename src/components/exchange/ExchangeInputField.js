@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { TouchableWithoutFeedback } from 'react-native';
 import { colors } from '../../styles';
-import { compareObjectsAtPaths } from '../../utils';
+import { isNewValueForObjectPaths } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { CoolButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
@@ -35,7 +35,7 @@ export default class ExchangeInputField extends Component {
   };
 
   shouldComponentUpdate = nextProps =>
-    compareObjectsAtPaths(this.props, nextProps, [
+    isNewValueForObjectPaths(this.props, nextProps, [
       'inputAmount',
       'inputCurrencySymbol',
       'isAssetApproved',
