@@ -802,7 +802,7 @@ class ExchangeModal extends Component {
             {isSufficientBalance && <SlippageWarning slippage={slippage} />}
             {showConfirmButton && (
               <Fragment>
-                <Centered css={padding(19, 15, 0)} flexShrink={0} width="100%">
+                <Centered css={padding(24, 15, 0)} flexShrink={0} width="100%">
                   <ConfirmExchangeButton
                     creationTimestamp={approvalCreationTimestamp}
                     disabled={isAssetApproved && !Number(inputAmountDisplay)}

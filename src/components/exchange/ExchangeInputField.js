@@ -80,7 +80,7 @@ export default class ExchangeInputField extends Component {
     const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
     return (
-      <ColumnWithMargins flex={0} margin={12} width="100%">
+      <ColumnWithMargins flex={0} margin={12} paddingTop={16} width="100%">
         <Row align="center">
           <TouchableWithoutFeedback onPress={this.handleFocusInputField}>
             <RowWithMargins
@@ -140,8 +140,19 @@ export default class ExchangeInputField extends Component {
                 margin={0}
                 paddingHorizontal={this.padding}
               >
-                <Emoji lineHeight="none" name="moneybag" size="lmedium" />
-                <Text color="appleBlue" size="medium" weight="semibold">
+                <Emoji
+                  lineHeight="none"
+                  name="moneybag"
+                  style={{ marginTop: 0.5 }}
+                  size="lmedium"
+                />
+                <Text
+                  align="center"
+                  color="appleBlue"
+                  size="lmedium"
+                  style={{ marginTop: 1 }}
+                  weight="semibold"
+                >
                   Max
                 </Text>
               </RowWithMargins>
