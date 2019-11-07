@@ -46,9 +46,9 @@ export { default as withUniqueTokens } from './withUniqueTokens';
 export { default as withUniswapAllowances } from './withUniswapAllowances';
 export { default as withUniswapAssets } from './withUniswapAssets';
 export {
-  default as withUniswapLiquidity,
+  default as withUniswapLiquidityTokenInfo,
   readableUniswapSelector,
-} from './withUniswapLiquidity';
+} from './withUniswapLiquidityTokenInfo';
 export {
   default as withWalletConnectConfirmationModal,
 } from './withWalletConnectConfirmationModal';

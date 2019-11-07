@@ -20,14 +20,15 @@ import {
 import { ethereumUtils } from '../utils';
 import withAccountSettings from './withAccountSettings';
 
-const mapStateToProps = ({ uniswap: { uniswap } }) => ({
-  uniswap,
+const mapStateToProps = ({ uniswap: { uniswapLiquidityTokenInfo } }) => ({
+  uniswapLiquidityTokenInfo,
 });
 
 const assetsSelector = state => state.assets;
 const nativeCurrencySelector = state => state.nativeCurrency;
 const nativeCurrencySymbolSelector = state => state.nativeCurrencySymbol;
-const uniswapSelector = state => state.uniswap;
+const uniswapLiquidityTokenInfoSelector = state =>
+  state.uniswapLiquidityTokenInfo;
 
 export const transformPool = (liquidityPool, ethPrice, nativeCurrency) => {
   if (isEmpty(liquidityPool)) {
@@ -74,12 +75,12 @@ const buildUniswapCards = (
   nativeCurrency,
   nativeCurrencySymbol,
   assets,
-  uniswap
+  uniswapLiquidityTokenInfo
 ) => {
   const ethPrice = get(ethereumUtils.getAsset(assets), 'price.value', 0);
 
   const uniswapPools = compact(
-    map(values(uniswap), liquidityPool =>
+    map(values(uniswapLiquidityTokenInfo), liquidityPool =>
       transformPool(liquidityPool, ethPrice, nativeCurrency)
     )
   );
@@ -108,7 +109,7 @@ export const readableUniswapSelector = createSelector(
     nativeCurrencySelector,
     nativeCurrencySymbolSelector,
     assetsSelector,
-    uniswapSelector,
+    uniswapLiquidityTokenInfoSelector,
   ],
   buildUniswapCards
 );

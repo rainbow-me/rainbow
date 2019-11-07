@@ -26,7 +26,7 @@ import {
   withIsWalletEthZero,
   withStatusBarStyle,
   withUniqueTokens,
-  withUniswapLiquidity,
+  withUniswapLiquidityTokenInfo,
 } from '../hoc';
 import { setOpenSmallBalances } from '../redux/openBalances';
 import { pushOpenFamilyTab } from '../redux/openFamilyTabs';
@@ -132,7 +132,7 @@ export default compose(
   withUniqueTokens,
   withAccountSettings,
   withDataInit,
-  withUniswapLiquidity,
+  withUniswapLiquidityTokenInfo,
   withSafeTimeout,
   withNavigation,
   withNavigationFocus,

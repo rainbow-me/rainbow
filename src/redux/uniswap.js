@@ -67,7 +67,10 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   dispatch({ type: UNISWAP_LOAD_REQUEST });
   try {
-    const uniswap = await getUniswapLiquidityInfo(accountAddress, network);
+    const uniswapLiquidityTokenInfo = await getUniswapLiquidityInfo(
+      accountAddress,
+      network
+    );
     const favorites = await getUniswapFavorites();
     const liquidityTokens = await getLiquidity(accountAddress, network);
     const allowances = await getAllowances(accountAddress, network);
@@ -82,8 +85,8 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
         favorites,
         liquidityTokens,
         pendingApprovals,
-        uniswap,
         uniswapAssets,
+        uniswapLiquidityTokenInfo,
       },
       type: UNISWAP_LOAD_SUCCESS,
     });
@@ -362,8 +365,8 @@ export const INITIAL_UNISWAP_STATE = {
   outputCurrency: null,
   outputReserve: null,
   pendingApprovals: {},
-  uniswap: {},
   uniswapAssets: {},
+  uniswapLiquidityTokenInfo: {},
 };
 
 export default (state = INITIAL_UNISWAP_STATE, action) =>
@@ -378,7 +381,8 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         draft.liquidityTokens = action.payload.liquidityTokens;
         draft.loadingUniswap = false;
         draft.pendingApprovals = action.payload.pendingApprovals;
-        draft.uniswap = action.payload.uniswap;
+        draft.uniswapLiquidityTokenInfo =
+          action.payload.uniswapLiquidityTokenInfo;
         draft.uniswapAssets = action.payload.uniswapAssets;
         break;
       case UNISWAP_UPDATE_FAVORITES:
@@ -404,7 +408,7 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         break;
       case UNISWAP_UPDATE_SUCCESS:
         draft.fetchingUniswap = false;
-        draft.uniswap = action.payload;
+        draft.uniswapLiquidityTokenInfo = action.payload;
         break;
       case UNISWAP_UPDATE_FAILURE:
         draft.fetchingUniswap = false;
