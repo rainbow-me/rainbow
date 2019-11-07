@@ -62,9 +62,9 @@ class GasSpeedButton extends PureComponent {
     analytics.track('Updated Gas Price', { gasPrice: nextSpeedGweiValue });
   };
 
-  formatAnimatedGasPrice = gasPrice => {
-    const price = parseFloat(gasPrice || '0.00').toFixed(3);
-    return `${this.props.nativeCurrencySymbol}${price}`;
+  formatAnimatedGasPrice = animatedPrice => {
+    const formattedPrice = parseFloat(animatedPrice).toFixed(3);
+    return `${this.props.nativeCurrencySymbol}${formattedPrice}`;
   };
 
   formatAnimatedEstimatedTime = estimatedTime => {
@@ -117,10 +117,12 @@ export default compose(
       ''
     ).split(' ');
 
+    const gasPrice = get(selectedGasPrice, 'txFee.native.value.amount');
+
     return {
       estimatedTimeUnit: estimatedTime[1] || 'min',
       estimatedTimeValue: estimatedTime[0] || 0,
-      price: get(selectedGasPrice, 'txFee.native.value.amount', '0.00'),
+      price: isNaN(gasPrice) ? '0.00' : gasPrice,
       ...props,
     };
   }),

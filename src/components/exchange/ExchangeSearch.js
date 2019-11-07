@@ -50,6 +50,7 @@ export default class ExchangeSearch extends PureComponent {
         <Icon color={colors.grey} flex={0} name="search" />
         <Input
           allowFontScaling={false}
+          autoCapitalize="words"
           autoFocus={this.props.autoFocus}
           blurOnSubmit={false}
           clearTextOnFocus

@@ -9,7 +9,7 @@ import {
 import BigNumber from 'bignumber.js';
 import { get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
+import React, { Component, Fragment } from 'react';
 import { LayoutAnimation, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { withNavigationFocus, NavigationEvents } from 'react-navigation';
@@ -53,6 +53,7 @@ import {
 } from '../hoc';
 import { colors, padding, position } from '../styles';
 import {
+  isNewValueForObjectPaths,
   contractUtils,
   ethereumUtils,
   gasUtils,
@@ -66,17 +67,14 @@ const AnimatedFloatingPanels = Animated.createAnimatedComponent(
   toClass(FloatingPanels)
 );
 
-const isSameAsset = (firstAsset, secondAsset) => {
-  if (!firstAsset || !secondAsset) {
-    return false;
-  }
-
-  const firstAddress = toLower(get(firstAsset, 'address', ''));
-  const secondAddress = toLower(get(secondAsset, 'address', ''));
-  return firstAddress === secondAddress;
+const isSameAsset = (a, b) => {
+  if (!a || !b) return false;
+  const assetA = toLower(get(a, 'address', ''));
+  const assetB = toLower(get(b, 'address', ''));
+  return assetA === assetB;
 };
 
-class ExchangeModal extends React.Component {
+class ExchangeModal extends Component {
   static propTypes = {
     accountAddress: PropTypes.string,
     allAssets: PropTypes.array,
@@ -125,55 +123,83 @@ class ExchangeModal extends React.Component {
     tradeDetails: null,
   };
 
+  shouldComponentUpdate = (nextProps, nextState) => {
+    const isNewProps = isNewValueForObjectPaths(this.props, nextProps, [
+      'inputReserve.token.address',
+      'outputReserve.token.address',
+    ]);
+
+    const isNewState = isNewValueForObjectPaths(this.state, nextState, [
+      'approvalCreationTimestamp',
+      'approvalEstimatedTimeInMs',
+      'inputAmount',
+      'inputCurrency.uniqueId',
+      'isAssetApproved',
+      'isUnlockingAsset',
+      'nativeAmount',
+      'outputAmount',
+      'outputCurrency.uniqueId',
+      'slippage',
+    ]);
+
+    return nextProps.isFocused ? isNewProps || isNewState : false;
+  };
+
   componentDidUpdate = (prevProps, prevState) => {
     if (prevProps.isTransitioning && !this.props.isTransitioning) {
       this.props.navigation.emit('refocus');
     }
-    const isNewInputAmount = isNewValueForPath(
+
+    const isNewAmountOrCurrency = isNewValueForObjectPaths(
       this.state,
       prevState,
-      'inputAmount'
+      [
+        'inputAmount',
+        'inputCurrency.uniqueId',
+        'outputAmount',
+        'outputCurrency.uniqueId',
+      ]
     );
-    const isNewOutputAmount = isNewValueForPath(
+
+    let isNewNativeAmount = isNewValueForPath(
       this.state,
       prevState,
-      'outputAmount'
+      'nativeAmount'
     );
-    const isNewNativeAmount =
+
+    if (isNewNativeAmount) {
       // Only consider 'new' if the native input isnt focused,
       // otherwise itll fight with the user's keystrokes
-      isNewValueForPath(this.state, prevState, 'nativeAmount') &&
-      this.nativeFieldRef.isFocused();
-
-    const isNewInputCurrency = isNewValueForPath(
-      this.state,
-      prevState,
-      'inputCurrency.uniqueId'
-    );
-    const isNewOutputCurrency = isNewValueForPath(
-      this.state,
-      prevState,
-      'outputCurrency.uniqueId'
-    );
-
-    const isNewAmount =
-      (this.state.inputAsExactAmount &&
-        (isNewNativeAmount || isNewInputAmount)) ||
-      (!this.state.inputAsExactAmount && isNewOutputAmount);
-    const isNewCurrency = isNewInputCurrency || isNewOutputCurrency;
-
-    const input = toLower(get(this.state.inputCurrency, 'address'));
-    const removedFromPending =
-      !get(this.props, `pendingApprovals[${input}]`, null) &&
-      get(prevProps, `pendingApprovals[${input}]`, null);
-
-    if (isNewAmount || isNewCurrency) {
-      this.getMarketDetails();
-      LayoutAnimation.easeInEaseOut();
+      isNewNativeAmount = this.nativeFieldRef.isFocused();
     }
+
+    const isNewOutputReserveCurrency = isNewValueForPath(
+      this.props,
+      prevProps,
+      'outputReserve.token.address'
+    );
+
+    if (
+      isNewAmountOrCurrency ||
+      isNewNativeAmount ||
+      isNewOutputReserveCurrency
+    ) {
+      LayoutAnimation.easeInEaseOut();
+      this.getMarketDetails(isNewOutputReserveCurrency);
+    }
+
+    const inputCurrencyAddressPath = 'inputCurrency.address';
+    const inputCurrencyAddress = toLower(
+      get(this.state, inputCurrencyAddressPath)
+    );
+
+    const removedFromPending =
+      !get(this.props, `pendingApprovals[${inputCurrencyAddress}]`, null) &&
+      get(prevProps, `pendingApprovals[${inputCurrencyAddress}]`, null);
+
     if (
       removedFromPending ||
-      isNewValueForPath(this.state, prevState, 'inputCurrency.address')
+      isNewValueForPath(this.props, prevProps, inputCurrencyAddressPath)
     ) {
       this.getCurrencyAllowance();
     }
@@ -267,7 +293,7 @@ class ExchangeModal extends React.Component {
     }
   };
 
-  getMarketDetails = async () => {
+  getMarketDetails = async isNewOutputReserveCurrency => {
     const {
       accountAddress,
       chainId,
@@ -416,7 +442,10 @@ class ExchangeModal extends React.Component {
         this.clearForm();
       }
 
-      if (inputAsExactAmount && !this.outputFieldRef.isFocused()) {
+      if (
+        inputAsExactAmount ||
+        (isNewOutputReserveCurrency && inputAsExactAmount)
+      ) {
         if (isInputEmpty || isInputZero) {
           this.setOutputAmount();
         } else {
@@ -469,6 +498,7 @@ class ExchangeModal extends React.Component {
           });
         }
       }
+
       if (isAssetApproved) {
         const gasLimit = await estimateSwapGasLimit(
           accountAddress,
@@ -480,22 +510,6 @@ class ExchangeModal extends React.Component {
       console.log('error getting market details', error);
       // TODO error state
     }
-  };
-
-  getReserveData = async tokenAddress => {
-    if (tokenAddress === 'eth') return null;
-
-    const { tokenReserves, uniswapGetTokenReserve } = this.props;
-
-    let reserve = tokenReserves[tokenAddress.toLowerCase()];
-    if (!reserve) {
-      reserve = await uniswapGetTokenReserve(tokenAddress);
-    }
-    return reserve;
-  };
-
-  handleBlurField = ({ currentTarget }) => {
-    console.log('blur', currentTarget);
   };
 
   handleFocusField = ({ currentTarget }) => {
@@ -634,6 +648,10 @@ class ExchangeModal extends React.Component {
   setInputCurrency = (inputCurrency, force) => {
     const { outputCurrency } = this.state;
 
+    if (!isSameAsset(inputCurrency, this.state.inputCurrency)) {
+      this.clearForm();
+    }
+
     this.setState({ inputCurrency });
 
     if (!force) {
@@ -685,13 +703,15 @@ class ExchangeModal extends React.Component {
     const { allAssets } = this.props;
     const { inputCurrency } = this.state;
 
-    this.setState({
-      outputCurrency,
-      showConfirmButton: !!outputCurrency,
-    });
     if (!force) {
       this.props.uniswapUpdateOutputCurrency(outputCurrency);
     }
+
+    this.setState({
+      inputAsExactAmount: true,
+      outputCurrency,
+      showConfirmButton: !!outputCurrency,
+    });
 
     if (!force && isSameAsset(inputCurrency, outputCurrency)) {
       const outputAddress = toLower(outputCurrency.address);

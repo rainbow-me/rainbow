@@ -65,17 +65,14 @@ class CurrencySelectModal extends Component {
 
     const currentAssetsUniqueId = buildUniqueIdForListData(currentAssets);
     const nextAssetsUniqueId = buildUniqueIdForListData(nextAssets);
-
     const isNewAssets = currentAssetsUniqueId !== nextAssetsUniqueId;
-    const isNewFocus = isNewValueForPath(this.props, nextProps, 'isFocused');
-    const isNewSearchQuery = isNewValueForPath(
-      this.state,
-      nextState,
-      'searchQuery'
-    );
-    const isNewType = isNewValueForPath(this.props, nextProps, 'type');
 
-    return isNewAssets || isNewFocus || isNewSearchQuery || isNewType;
+    return (
+      isNewAssets ||
+      isNewValueForPath(this.props, nextProps, 'isFocused') ||
+      isNewValueForPath(this.props, nextProps, 'type') ||
+      isNewValueForPath(this.state, nextState, 'searchQuery')
+    );
   };
 
   dangerouslySetIsGestureBlocked = isGestureBlocked => {

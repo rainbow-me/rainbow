@@ -5,7 +5,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { ButtonPressAnimation } from '../animations';
 import InnerBorder from '../InnerBorder';
 import { borders, colors, position } from '../../styles';
-import { isNewValueForPath } from '../../utils';
+import { isNewValueForObjectPaths } from '../../utils';
 import { ShadowStack } from '../shadow-stack';
 
 const FabSize = 56;
@@ -34,9 +34,11 @@ export default class FloatingActionButton extends Component {
   };
 
   shouldComponentUpdate = nextProps =>
-    isNewValueForPath(this.props, nextProps, 'disabled') ||
-    isNewValueForPath(this.props, nextProps, 'isFabSelectionValid') ||
-    isNewValueForPath(this.props, nextProps, 'scaleTo');
+    isNewValueForObjectPaths(this.props, nextProps, [
+      'disabled',
+      'isFabSelectionValid',
+      'scaleTo',
+    ]);
 
   static size = FabSize;
 

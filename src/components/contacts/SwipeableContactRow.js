@@ -68,8 +68,8 @@ export default class SwipeableContactRow extends PureComponent {
     onTransitionEnd: PropTypes.func,
   };
 
-  swipeableRef = undefined;
   isFocused = false;
+  swipeableRef = undefined;
 
   close = () => this.swipeableRef.close();
 

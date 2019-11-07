@@ -21,7 +21,6 @@ import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import {
   withAccountData,
   withAccountSettings,
-  withBlurTransitionProps,
   withDataInit,
   withIsWalletEmpty,
   withIsWalletEthZero,
@@ -34,7 +33,7 @@ import { pushOpenFamilyTab } from '../redux/openFamilyTabs';
 import { pushOpenInvestmentCard } from '../redux/openInvestmentCards';
 import store from '../redux/store';
 import { position } from '../styles';
-import { isNewValueForPath } from '../utils';
+import { isNewValueForObjectPaths } from '../utils';
 
 class WalletScreen extends Component {
   static propTypes = {
@@ -42,7 +41,6 @@ class WalletScreen extends Component {
     allAssetsCount: PropTypes.number,
     assets: PropTypes.array,
     assetsTotal: PropTypes.object,
-    blurIntensity: PropTypes.object,
     initializeWallet: PropTypes.func,
     isEmpty: PropTypes.bool.isRequired,
     isFocused: PropTypes.bool,
@@ -65,62 +63,18 @@ class WalletScreen extends Component {
     }
   };
 
-  shouldComponentUpdate = nextProps => {
-    const isNewBlurIntensity = isNewValueForPath(
-      this.props,
-      nextProps,
-      'blurIntensity'
-    );
-    const isNewCurrency = isNewValueForPath(
-      this.props,
-      nextProps,
-      'nativeCurrency'
-    );
-    const isNewFetchingAssets = isNewValueForPath(
-      this.props,
-      nextProps,
-      'fetchingAssets'
-    );
-    const isNewFetchingUniqueTokens = isNewValueForPath(
-      this.props,
-      nextProps,
-      'fetchingUniqueTokens'
-    );
-    const isNewIsWalletEmpty = isNewValueForPath(
-      this.props,
-      nextProps,
-      'isEmpty'
-    );
-    const isNewIsWalletEthZero = isNewValueForPath(
-      this.props,
-      nextProps,
-      'isWalletEthZero'
-    );
-    const isNewLanguage = isNewValueForPath(this.props, nextProps, 'language');
-    const isNewSections = isNewValueForPath(this.props, nextProps, 'sections');
-
-    const isNewTransitionProps = isNewValueForPath(
-      this.props,
-      nextProps,
-      'transitionProps'
-    );
-
-    if (!nextProps.isFocused) {
-      return isNewBlurIntensity || isNewTransitionProps;
-    }
-
-    return (
-      isNewFetchingAssets ||
-      isNewFetchingUniqueTokens ||
-      isNewIsWalletEmpty ||
-      isNewIsWalletEthZero ||
-      isNewLanguage ||
-      isNewCurrency ||
-      isNewBlurIntensity ||
-      isNewSections ||
-      isNewTransitionProps
-    );
-  };
+  shouldComponentUpdate = nextProps =>
+    !nextProps.isFocused
+      ? false
+      : isNewValueForObjectPaths(this.props, nextProps, [
+          'fetchingAssets',
+          'fetchingUniqueTokens',
+          'isEmpty',
+          'isWalletEthZero',
+          'language',
+          'nativeCurrency',
+          'sections',
+        ]);
 
   setInitialStatesForOpenAssets = async () => {
     const { accountAddress, network } = this.props;
@@ -182,7 +136,6 @@ export default compose(
   withSafeTimeout,
   withNavigation,
   withNavigationFocus,
-  withBlurTransitionProps,
   withIsWalletEmpty,
   withIsWalletEthZero,
   withStatusBarStyle('dark-content'),
