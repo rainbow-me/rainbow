@@ -28,10 +28,17 @@ export default class ExchangeInput extends PureComponent {
     mask: '[099999999999999999].[999999999999999999]',
     placeholder: '0',
     placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.3),
+    value: '',
   };
 
   handleChangeText = (formatted, extracted) => {
-    this.props.onChangeText(extracted ? formatted : '');
+    let text = extracted ? formatted : '';
+
+    if (!text.length && !this.props.value) {
+      text = '0.';
+    }
+
+    this.props.onChangeText(text);
   };
 
   render = () => {
@@ -55,7 +62,7 @@ export default class ExchangeInput extends PureComponent {
         allowFontScaling={false}
         flex={1}
         keyboardAppearance="dark"
-        keyboardType="decimal-pad"
+        keyboardType="numeric"
         mask={mask}
         onChangeText={this.handleChangeText}
         placeholder={placeholder}
