@@ -11,7 +11,7 @@ const BackButtonWrapper = styled(Centered)`
   bottom: 0;
   left: 0;
   position: absolute;
-  top: 5;
+  top: 3;
 `;
 
 const HeaderHeight = 59;
