@@ -36,6 +36,7 @@ import {
   convertAmountToNativeAmount,
   convertAmountToNativeDisplay,
   convertAmountToRawAmount,
+  convertNumberToString,
   convertRawAmountToDecimalFormat,
   greaterThan,
   subtract,
@@ -135,6 +136,7 @@ class ExchangeModal extends Component {
       'inputAmount',
       'inputCurrency.uniqueId',
       'isAssetApproved',
+      'isSufficientBalance',
       'isUnlockingAsset',
       'nativeAmount',
       'outputAmount',
@@ -415,17 +417,22 @@ class ExchangeModal extends Component {
         );
       }
 
-      const slippage = get(tradeDetails, 'executionRateSlippage', 0).toString();
+      const slippage = convertNumberToString(
+        get(tradeDetails, 'executionRateSlippage', 0)
+      );
       const inputBalance = ethereumUtils.getBalanceAmount(
         selectedGasPrice,
         inputCurrency
       );
 
+      const isSufficientBalance =
+        !parseFloat(inputAmount) ||
+        parseFloat(inputBalance) >= parseFloat(inputAmount);
+
       this.setState({
         inputExecutionRate,
         inputNativePrice,
-        isSufficientBalance:
-          !inputAmount || Number(inputBalance) >= Number(inputAmount),
+        isSufficientBalance,
         outputExecutionRate,
         outputNativePrice,
         slippage,
@@ -498,7 +505,7 @@ class ExchangeModal extends Component {
 
           this.setState({
             isSufficientBalance:
-              Number(inputBalance) >= Number(rawUpdatedInputAmount),
+              parseFloat(inputBalance) >= parseFloat(rawUpdatedInputAmount),
           });
         }
       }
@@ -736,6 +743,7 @@ class ExchangeModal extends Component {
     const {
       approvalCreationTimestamp,
       approvalEstimatedTimeInMs,
+      inputAmount,
       inputAmountDisplay,
       inputCurrency,
       // inputExecutionRate,
@@ -744,6 +752,7 @@ class ExchangeModal extends Component {
       isSufficientBalance,
       isUnlockingAsset,
       nativeAmount,
+      outputAmount,
       outputAmountDisplay,
       outputCurrency,
       // outputExecutionRate,
@@ -751,6 +760,9 @@ class ExchangeModal extends Component {
       showConfirmButton,
       slippage,
     } = this.state;
+
+    const isSlippageWarningVisible =
+      isSufficientBalance && !!inputAmount && !!outputAmount;
 
     return (
       <KeyboardFixedOpenLayout>
@@ -804,7 +816,9 @@ class ExchangeModal extends Component {
                 setOutputAmount={this.setOutputAmount}
               />
             </FloatingPanel>
-            {isSufficientBalance && <SlippageWarning slippage={slippage} />}
+            {isSlippageWarningVisible && (
+              <SlippageWarning slippage={slippage} />
+            )}
             {showConfirmButton && (
               <Fragment>
                 <Centered css={padding(24, 15, 0)} flexShrink={0} width="100%">
