@@ -150,6 +150,7 @@ export default class ButtonPressAnimation extends Component {
   };
 
   createLongPressListener = () => {
+    this.longPressDetected = false;
     const { minLongPressDuration, onLongPress } = this.props;
     if (onLongPress) {
       this.longPressTimeout = setTimeout(
@@ -176,6 +177,7 @@ export default class ButtonPressAnimation extends Component {
 
   handleDetectedLongPress = () => {
     this.longPressDetected = true;
+    clearTimeout(this.longPressTimeout);
     this.handleHaptic();
     this.props.onLongPress();
   };

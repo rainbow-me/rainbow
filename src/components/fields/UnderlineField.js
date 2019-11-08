@@ -6,7 +6,9 @@ import Animated, { Easing } from 'react-native-reanimated';
 import { colors, position } from '../../styles';
 import { Button } from '../buttons';
 import { Input } from '../inputs';
+import store from '../../redux/store';
 import { Column, FlexItem, Row } from '../layout';
+import { setSelectedInputId } from '../../redux/selectedInput';
 
 const Underline = styled(View)`
   ${position.cover};
@@ -78,6 +80,7 @@ export default class UnderlineField extends PureComponent {
     this.setState({ isFocused: false });
 
     if (this.props.onBlur) this.props.onBlur(...props);
+    store.dispatch(setSelectedInputId(null));
   };
 
   onChange = event => {
@@ -102,6 +105,13 @@ export default class UnderlineField extends PureComponent {
     this.setState({ isFocused: true });
 
     if (this.props.onFocus) this.props.onFocus(...props);
+    if (this.input && this.input.isFocused()) {
+      store.dispatch(setSelectedInputId(this.input));
+    }
+  };
+
+  handleRef = ref => {
+    this.input = ref;
   };
 
   render() {
@@ -126,6 +136,7 @@ export default class UnderlineField extends PureComponent {
         >
           <FlexItem style={{ paddingRight: 10 }}>
             <Input
+              ref={this.handleRef}
               autoFocus={autoFocus}
               color={colors.blueGreyDark}
               family="SFMono"

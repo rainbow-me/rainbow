@@ -12,6 +12,8 @@ import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
 import { SwipeableContactRow } from '../contacts';
 import SendEmptyState from './SendEmptyState';
+import withSelectedInput from '../../hoc/withSelectedInput';
+import { compose } from 'recompose';
 
 const LastRowPadding = 12;
 const rowHeight = 62;
@@ -27,7 +29,8 @@ class SendContactList extends Component {
     currentInput: PropTypes.string,
     navigation: PropTypes.object,
     onPressContact: PropTypes.func,
-    onUpdateContacts: PropTypes.array,
+    onUpdateContacts: PropTypes.func,
+    selectedInputId: PropTypes.object,
   };
 
   constructor(args) {
@@ -84,7 +87,7 @@ class SendContactList extends Component {
   };
 
   closeAllDifferentContacts = address => {
-    if (this.touchedContact) {
+    if (this.touchedContact && this.contacts[this.touchedContact]) {
       this.contacts[this.touchedContact].close();
     }
     this.touchedContact = address;
@@ -134,6 +137,22 @@ class SendContactList extends Component {
     return false;
   };
 
+  onSelectEdit = accountInfo => {
+    const { address, color, navigation, nickname, onChange } = accountInfo;
+    const refocusCallback =
+      this.props.selectedInputId && this.props.selectedInputId.focus;
+
+    navigation.navigate('OverlayExpandedAssetScreen', {
+      address,
+      asset: [],
+      color,
+      contact: { address, color, nickname },
+      onCloseModal: onChange,
+      onRefocusInput: refocusCallback,
+      type: 'contact',
+    });
+  };
+
   renderItem = (type, item) => (
     <SwipeableContactRow
       inputRef={this.props.inputRef}
@@ -141,6 +160,7 @@ class SendContactList extends Component {
       onChange={this.props.onUpdateContacts}
       onPress={this.props.onPressContact}
       onTouch={this.closeAllDifferentContacts}
+      onSelectEdit={this.onSelectEdit}
       ref={component => {
         this.contacts[item.address] = component;
       }}
@@ -169,4 +189,7 @@ class SendContactList extends Component {
   );
 }
 
-export default withNavigation(SendContactList);
+export default compose(
+  withSelectedInput,
+  withNavigation
+)(SendContactList);

@@ -15,6 +15,9 @@ import { AddressField } from '../fields';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Label } from '../text';
+import store from '../../redux/store';
+import withSelectedInput from '../../hoc/withSelectedInput';
+import { setSelectedInputId } from '../../redux/selectedInput';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
   ${padding(19, 15)}
@@ -87,6 +90,7 @@ class SendHeader extends PureComponent {
     onPressPaste: PropTypes.func,
     onUpdateContacts: PropTypes.func,
     recipient: PropTypes.string,
+    selectedInputId: PropTypes.object,
   };
 
   handleConfirmDeleteContactSelection = async buttonIndex => {
@@ -110,7 +114,9 @@ class SendHeader extends PureComponent {
 
   navigateToContact = (contact = {}) => {
     const { navigation, onUpdateContacts, recipient } = this.props;
-    const refocusCallback = this.input.isFocused() && this.input.focus;
+    const refocusCallback =
+      this.props.selectedInputId.isFocused() &&
+      this.props.selectedInputId.focus;
 
     let color = get(contact, 'color');
     if (!isNumber(color)) {
@@ -134,7 +140,15 @@ class SendHeader extends PureComponent {
 
   handleRef = ref => {
     this.input = ref;
-    this.props.inputRef(ref);
+  };
+
+  onFocus = () => {
+    store.dispatch(setSelectedInputId(this.input));
+  };
+
+  onBlur = () => {
+    console.log('blur');
+    store.dispatch(setSelectedInputId(null));
   };
 
   render = () => {
@@ -160,6 +174,8 @@ class SendHeader extends PureComponent {
             name={contact.nickname}
             onChange={onChangeAddressInput}
             inputRef={this.handleRef}
+            onFocus={this.onFocus}
+            onBlur={this.onBlur}
           />
           {isValidAddress && (
             <AddContactButton
@@ -185,5 +201,6 @@ class SendHeader extends PureComponent {
 
 export default compose(
   withNavigation,
+  withSelectedInput,
   withProps(getContactForRecipient)
 )(SendHeader);
