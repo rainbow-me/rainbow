@@ -42,6 +42,9 @@ const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';
 const UNISWAP_LOAD_SUCCESS = 'uniswap/UNISWAP_LOAD_SUCCESS';
 const UNISWAP_LOAD_FAILURE = 'uniswap/UNISWAP_LOAD_FAILURE';
 
+const UNISWAP_LOAD_LIQUIDITY_TOKEN_INFO_SUCCESS =
+  'uniswap/UNISWAP_LOAD_LIQUIDITY_TOKEN_INFO_SUCCESS';
+
 const UNISWAP_UPDATE_REQUEST = 'uniswap/UNISWAP_UPDATE_REQUEST';
 const UNISWAP_UPDATE_SUCCESS = 'uniswap/UNISWAP_UPDATE_SUCCESS';
 const UNISWAP_UPDATE_FAILURE = 'uniswap/UNISWAP_UPDATE_FAILURE';
@@ -71,14 +74,18 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
       accountAddress,
       network
     );
+    dispatch({
+      payload: uniswapLiquidityTokenInfo,
+      type: UNISWAP_LOAD_LIQUIDITY_TOKEN_INFO_SUCCESS,
+    });
+    const allowances = await getAllowances(accountAddress, network);
     const favorites = await getUniswapFavorites();
     const liquidityTokens = await getLiquidity(accountAddress, network);
-    const allowances = await getAllowances(accountAddress, network);
-    const uniswapAssets = await getUniswapAssets(accountAddress, network);
     const pendingApprovals = await getUniswapPendingApprovals(
       accountAddress,
       network
     );
+    const uniswapAssets = await getUniswapAssets(accountAddress, network);
     dispatch({
       payload: {
         allowances,
@@ -86,7 +93,6 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
         liquidityTokens,
         pendingApprovals,
         uniswapAssets,
-        uniswapLiquidityTokenInfo,
       },
       type: UNISWAP_LOAD_SUCCESS,
     });
@@ -375,14 +381,15 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
       case UNISWAP_LOAD_REQUEST:
         draft.loadingUniswap = true;
         break;
+      case UNISWAP_LOAD_LIQUIDITY_TOKEN_INFO_SUCCESS:
+        draft.uniswapLiquidityTokenInfo = action.payload;
+        break;
       case UNISWAP_LOAD_SUCCESS:
         draft.allowances = action.payload.allowances;
         draft.favorites = action.payload.favorites;
         draft.liquidityTokens = action.payload.liquidityTokens;
         draft.loadingUniswap = false;
         draft.pendingApprovals = action.payload.pendingApprovals;
-        draft.uniswapLiquidityTokenInfo =
-          action.payload.uniswapLiquidityTokenInfo;
         draft.uniswapAssets = action.payload.uniswapAssets;
         break;
       case UNISWAP_UPDATE_FAVORITES:
