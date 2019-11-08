@@ -102,6 +102,7 @@ export default withNavigation(
 
     handleInputRef = ref => {
       this.inputRef = ref;
+      this.props.inputRef(ref);
     };
 
     onChange = ({ nativeEvent: { text } }) => {

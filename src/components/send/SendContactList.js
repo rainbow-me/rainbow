@@ -136,13 +136,14 @@ class SendContactList extends Component {
 
   renderItem = (type, item) => (
     <SwipeableContactRow
-      ref={component => {
-        this.contacts[item.address] = component;
-      }}
+      inputRef={this.props.inputRef}
       navigation={this.props.navigation}
       onChange={this.props.onUpdateContacts}
       onPress={this.props.onPressContact}
       onTouch={this.closeAllDifferentContacts}
+      ref={component => {
+        this.contacts[item.address] = component;
+      }}
       {...item}
     />
   );

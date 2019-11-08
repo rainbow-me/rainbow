@@ -7,7 +7,7 @@ import { Flex } from '../layout';
 
 const HeaderButton = ({ children, onPress, transformOrigin, ...props }) => (
   <ButtonPressAnimation onPress={onPress} transformOrigin={transformOrigin}>
-    <Flex {...props} css={padding(10)}>
+    <Flex {...props} css={padding(10, 10, 8)}>
       {children}
     </Flex>
   </ButtonPressAnimation>
