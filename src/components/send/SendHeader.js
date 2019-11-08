@@ -147,7 +147,6 @@ class SendHeader extends PureComponent {
   };
 
   onBlur = () => {
-    console.log('blur');
     store.dispatch(setSelectedInputId(null));
   };
 

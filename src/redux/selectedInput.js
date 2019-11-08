@@ -4,7 +4,6 @@ import produce from 'immer';
 const SET_SELECTED_INPUT_ID = 'openBalances/SET_SELECTED_INPUT_ID';
 
 export const setSelectedInputId = payload => dispatch => {
-  console.log(payload);
   dispatch({
     payload,
     type: SET_SELECTED_INPUT_ID,
