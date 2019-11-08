@@ -333,11 +333,11 @@ class ExchangeModal extends Component {
       const isOutputEth = outputAddress === 'eth';
 
       const rawInputAmount = convertAmountToRawAmount(
-        inputAmount || 0,
+        parseFloat(inputAmount) || 0,
         inputDecimals
       );
       const rawOutputAmount = convertAmountToRawAmount(
-        outputAmount || 0,
+        parseFloat(outputAmount) || 0,
         outputDecimals
       );
 
@@ -447,7 +447,7 @@ class ExchangeModal extends Component {
         inputAsExactAmount ||
         (isNewOutputReserveCurrency && inputAsExactAmount)
       ) {
-        if (isInputEmpty || isInputZero) {
+        if ((isInputEmpty || isInputZero) && !this.outputFieldRef.isFocused()) {
           this.setOutputAmount();
         } else {
           const updatedOutputAmount = get(tradeDetails, 'outputAmount.amount');
@@ -456,16 +456,18 @@ class ExchangeModal extends Component {
             outputDecimals
           );
 
-          const updatedOutputAmountDisplay = updatePrecisionToDisplay(
-            rawUpdatedOutputAmount,
-            get(outputCurrency, 'price.value')
-          );
+          if (rawUpdatedOutputAmount !== '0') {
+            const updatedOutputAmountDisplay = updatePrecisionToDisplay(
+              rawUpdatedOutputAmount,
+              get(outputCurrency, 'price.value')
+            );
 
-          this.setOutputAmount(
-            rawUpdatedOutputAmount,
-            updatedOutputAmountDisplay,
-            inputAsExactAmount
-          );
+            this.setOutputAmount(
+              rawUpdatedOutputAmount,
+              updatedOutputAmountDisplay,
+              inputAsExactAmount
+            );
+          }
         }
       }
 
@@ -633,7 +635,7 @@ class ExchangeModal extends Component {
       if (!this.nativeFieldRef.isFocused()) {
         let nativeAmount = null;
 
-        const isInputZero = Number(inputAmount) === 0;
+        const isInputZero = parseFloat(inputAmount) === 0;
 
         if (inputAmount && !isInputZero) {
           const nativePrice = get(inputCurrency, 'native.price.amount', 0);
@@ -674,7 +676,7 @@ class ExchangeModal extends Component {
       let inputAmount = null;
       let inputAmountDisplay = null;
 
-      const isNativeZero = Number(nativeAmount) === 0;
+      const isNativeZero = parseFloat(nativeAmount) === 0;
 
       if (nativeAmount && !isNativeZero) {
         const nativePrice = get(inputCurrency, 'native.price.amount', 0);

@@ -1,10 +1,11 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import TextInputMask from 'react-native-text-input-mask';
 import stylePropType from 'react-style-proptype';
 import { colors, fonts } from '../../styles';
+import { isNewValueForObjectPaths } from '../../utils';
 
-export default class ExchangeInput extends PureComponent {
+export default class ExchangeInput extends Component {
   static propTypes = {
     color: PropTypes.string,
     disableTabularNums: PropTypes.bool,
@@ -31,20 +32,50 @@ export default class ExchangeInput extends PureComponent {
     value: '',
   };
 
-  handleChangeText = (formatted, extracted) => {
-    let text = extracted ? formatted : '';
+  state = { touched: false };
 
-    if (!text.length && !this.props.value) {
+  shouldComponentUpdate = (nextProps, nextState) =>
+    nextState.touched !== this.state.touched ||
+    isNewValueForObjectPaths(this.props, nextProps, [
+      'color',
+      'editable',
+      'placeholder',
+      'placeholderTextColor',
+      'value',
+    ]);
+
+  handleBlur = () => {
+    const { value } = this.props;
+
+    if (typeof value === 'string') {
+      const parts = value.split('.');
+      if (parts[0].length > 1 && !Number(parts[0])) {
+        this.props.onChangeText(`0.${parts[1]}`);
+      }
+    }
+  };
+
+  handleChangeText = formatted => {
+    let text = formatted;
+
+    if (this.state.touched && !text.length && !this.props.value) {
       text = '0.';
     }
 
     this.props.onChangeText(text);
   };
 
+  toggleTouched = () => {
+    if (!this.state.touched) {
+      this.setState({ touched: true });
+    }
+  };
+
   render = () => {
     const {
       color,
       disableTabularNums,
+      editable,
       fontFamily,
       fontSize,
       fontWeight,
@@ -60,10 +91,13 @@ export default class ExchangeInput extends PureComponent {
       <TextInputMask
         {...this.props}
         allowFontScaling={false}
+        editable={editable}
         flex={1}
         keyboardAppearance="dark"
-        keyboardType="numeric"
+        keyboardType="decimal-pad"
         mask={mask}
+        onBlur={this.handleBlur}
+        onChange={this.toggleTouched}
         onChangeText={this.handleChangeText}
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}

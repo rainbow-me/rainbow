@@ -70,10 +70,8 @@ class ExchangeCoinRow extends Component {
   };
 
   handlePress = () => {
-    const { item, onPress } = this.props;
-
-    if (onPress) {
-      onPress(item);
+    if (this.props.onPress) {
+      this.props.onPress(this.props.item);
     }
   };
 
