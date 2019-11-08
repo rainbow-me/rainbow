@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { hoistStatics, onlyUpdateForKeys, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
-import { borders, colors } from '../../styles';
+import { borders, colors, padding } from '../../styles';
 import { BackButton } from '../header';
 import { Centered } from '../layout';
 import { TruncatedText } from '../text';
@@ -11,10 +11,10 @@ const BackButtonWrapper = styled(Centered)`
   bottom: 0;
   left: 0;
   position: absolute;
-  top: 0;
+  top: 3;
 `;
 
-const HeaderHeight = 60;
+const HeaderHeight = 59;
 const HeaderContainer = styled(Centered).attrs({ flex: 0 })`
   ${borders.buildRadius('top', 12)};
   background-color: ${colors.white};
@@ -23,6 +23,7 @@ const HeaderContainer = styled(Centered).attrs({ flex: 0 })`
 `;
 
 const HeaderTitle = withProps({
+  align: 'center',
   height: 21,
   letterSpacing: 'tighter',
   lineHeight: 'loose',
@@ -38,11 +39,10 @@ const CurrencySelectModalHeader = ({ onPressBack, title }) => (
         direction="left"
         height={HeaderHeight}
         onPress={onPressBack}
-        paddingLeft={25}
-        size="9"
+        paddingLeft={27}
       />
     </BackButtonWrapper>
-    <HeaderTitle>{title}</HeaderTitle>
+    <HeaderTitle css={padding(1, 0, 0)}>{title}</HeaderTitle>
   </HeaderContainer>
 );
 

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { css } from 'styled-components/primitives';
 import { uniswapUpdateFavorites } from '../../redux/uniswap';
 import { colors, position } from '../../styles';
 import { isNewValueForPath } from '../../utils';
@@ -9,6 +10,11 @@ import { Icon } from '../icons';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+
+const containerStyles = css`
+  padding-left: 15;
+  padding-right: 0;
+`;
 
 const BottomRow = ({ balance, native, showBalance, symbol }) => {
   let text = symbol;
@@ -94,7 +100,7 @@ class ExchangeCoinRow extends Component {
         <CoinRow
           {...item}
           bottomRowRender={BottomRow}
-          containerStyles="padding-right: 0"
+          containerStyles={containerStyles}
           showBalance={showBalance}
           topRowRender={TopRow}
         >
@@ -105,6 +111,7 @@ class ExchangeCoinRow extends Component {
               scaleTo={0.69}
               style={{
                 ...position.centeredAsObject,
+                height: '100%',
                 paddingHorizontal: 19,
               }}
             >

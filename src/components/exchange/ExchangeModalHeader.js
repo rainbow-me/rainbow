@@ -6,9 +6,15 @@ import { SheetHandle } from '../sheet';
 import { Text } from '../text';
 
 const ExchangeModalHeader = () => (
-  <ColumnWithMargins align="center" css={padding(9, 0)} margin={6}>
+  <ColumnWithMargins align="center" css={padding(8, 0)} margin={6}>
     <SheetHandle />
-    <Text letterSpacing="tighter" lineHeight="loose" size="large" weight="bold">
+    <Text
+      align="center"
+      letterSpacing="tighter"
+      lineHeight="loose"
+      size="large"
+      weight="bold"
+    >
       Swap
     </Text>
   </ColumnWithMargins>

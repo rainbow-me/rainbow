@@ -75,7 +75,7 @@ export default class ExchangeOutputField extends PureComponent {
         flex={0}
         width="100%"
         css={`
-          ${padding(25 + paddingValue, 0, 25)};
+          ${padding(24 + paddingValue, 0, 26)};
           background-color: ${colors.white};
           overflow: hidden;
           border-bottom-left-radius: ${bottomRadius}px;

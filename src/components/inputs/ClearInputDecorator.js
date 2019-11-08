@@ -70,7 +70,7 @@ const ClearInputDecorator = ({ inputHeight, isVisible, onPress }) => {
               <Icon
                 color={colors.blueGreyDark}
                 name="clearInput"
-                opacity={0.4}
+                opacity={0.3}
               />
             </Centered>
           </ButtonPressAnimation>

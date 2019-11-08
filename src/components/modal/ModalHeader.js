@@ -44,8 +44,10 @@ const ModalHeader = ({
     )}
     <TitleContainer>
       <TruncatedText
+        align="center"
         height={21}
         letterSpacing="tighter"
+        lineHeight="loose"
         size="large"
         weight="bold"
       >

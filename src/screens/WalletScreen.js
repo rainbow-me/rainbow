@@ -110,7 +110,7 @@ class WalletScreen extends Component {
           scrollViewTracker={scrollViewTracker}
           sections={sections}
         >
-          <Header justify="space-between">
+          <Header marginTop={5} justify="space-between">
             <ProfileHeaderButton navigation={navigation} />
             <CameraHeaderButton navigation={navigation} />
           </Header>
