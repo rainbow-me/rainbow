@@ -449,20 +449,20 @@ class ExchangeModal extends Component {
         if (isInputEmpty || isInputZero) {
           this.setOutputAmount();
         } else {
-          const updatedAmount = get(tradeDetails, 'outputAmount.amount');
-          const rawUpdatedAmount = convertRawAmountToDecimalFormat(
-            updatedAmount,
+          const updatedOutputAmount = get(tradeDetails, 'outputAmount.amount');
+          const rawUpdatedOutputAmount = convertRawAmountToDecimalFormat(
+            updatedOutputAmount,
             outputDecimals
           );
 
-          const updatedAmountDisplay = updatePrecisionToDisplay(
-            rawUpdatedAmount,
+          const updatedOutputAmountDisplay = updatePrecisionToDisplay(
+            rawUpdatedOutputAmount,
             get(outputCurrency, 'price.value')
           );
 
           this.setOutputAmount(
-            rawUpdatedAmount,
-            updatedAmountDisplay,
+            rawUpdatedOutputAmount,
+            updatedOutputAmountDisplay,
             inputAsExactAmount
           );
         }
@@ -475,26 +475,26 @@ class ExchangeModal extends Component {
             isSufficientBalance: true,
           });
         } else {
-          const updatedAmount = get(tradeDetails, 'inputAmount.amount');
-          const rawUpdatedAmount = convertRawAmountToDecimalFormat(
-            updatedAmount,
+          const updatedInputAmount = get(tradeDetails, 'inputAmount.amount');
+          const rawUpdatedInputAmount = convertRawAmountToDecimalFormat(
+            updatedInputAmount,
             inputDecimals
           );
 
-          const updatedAmountDisplay = updatePrecisionToDisplay(
-            rawUpdatedAmount,
+          const updatedInputAmountDisplay = updatePrecisionToDisplay(
+            rawUpdatedInputAmount,
             get(inputCurrency, 'price.value')
           );
 
           this.setInputAmount(
-            rawUpdatedAmount,
-            updatedAmountDisplay,
+            rawUpdatedInputAmount,
+            updatedInputAmountDisplay,
             inputAsExactAmount
           );
 
           this.setState({
             isSufficientBalance:
-              Number(inputBalance) >= Number(rawUpdatedAmount),
+              Number(inputBalance) >= Number(rawUpdatedInputAmount),
           });
         }
       }
