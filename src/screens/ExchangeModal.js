@@ -405,7 +405,8 @@ class ExchangeModal extends Component {
         const outputPriceValue = get(outputCurrency, 'price.value', 0);
         outputExecutionRate = updatePrecisionToDisplay(
           get(tradeDetails, 'executionRate.rateInverted', BigNumber(0)),
-          outputPriceValue
+          outputPriceValue,
+          true
         );
 
         outputNativePrice = convertAmountToNativeDisplay(
@@ -483,7 +484,8 @@ class ExchangeModal extends Component {
 
           const updatedInputAmountDisplay = updatePrecisionToDisplay(
             rawUpdatedInputAmount,
-            get(inputCurrency, 'price.value')
+            get(inputCurrency, 'price.value'),
+            true
           );
 
           this.setInputAmount(
@@ -679,7 +681,8 @@ class ExchangeModal extends Component {
         inputAmount = convertAmountFromNativeValue(nativeAmount, nativePrice);
         inputAmountDisplay = updatePrecisionToDisplay(
           inputAmount,
-          get(inputCurrency, 'price.value')
+          get(inputCurrency, 'price.value'),
+          true
         );
       }
 
