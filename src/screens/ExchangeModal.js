@@ -1,4 +1,5 @@
 import {
+  getMarketDetails as getUniswapMarketDetails,
   tradeEthForExactTokensWithData,
   tradeExactEthForTokensWithData,
   tradeExactTokensForEthWithData,
@@ -38,6 +39,7 @@ import {
   convertAmountToRawAmount,
   convertNumberToString,
   convertRawAmountToDecimalFormat,
+  divide,
   greaterThan,
   subtract,
   updatePrecisionToDisplay,
@@ -634,6 +636,15 @@ class ExchangeModal extends Component {
     });
   };
 
+  getMarketPrice = () => {
+    const { allAssets, inputReserve } = this.props;
+    if (!inputReserve) return 0;
+    const ethPrice = ethereumUtils.getEthPriceUnit(allAssets);
+    const inputMarketDetails = getUniswapMarketDetails(undefined, inputReserve);
+    const assetToEthPrice = get(inputMarketDetails, 'marketRate.rate');
+    return divide(ethPrice, assetToEthPrice) || 0;
+  };
+
   setInputAmount = (inputAmount, amountDisplay, inputAsExactAmount = true) => {
     this.setState(({ inputCurrency }) => {
       const newState = {
@@ -649,7 +660,10 @@ class ExchangeModal extends Component {
         const isInputZero = parseFloat(inputAmount) === 0;
 
         if (inputAmount && !isInputZero) {
-          const nativePrice = get(inputCurrency, 'native.price.amount', 0);
+          let nativePrice = get(inputCurrency, 'native.price.amount', null);
+          if (isNil(nativePrice)) {
+            nativePrice = this.getMarketPrice();
+          }
           nativeAmount = convertAmountToNativeAmount(inputAmount, nativePrice);
         }
 
@@ -690,11 +704,14 @@ class ExchangeModal extends Component {
       const isNativeZero = parseFloat(nativeAmount) === 0;
 
       if (nativeAmount && !isNativeZero) {
-        const nativePrice = get(inputCurrency, 'native.price.amount', 0);
+        let nativePrice = get(inputCurrency, 'native.price.amount', null);
+        if (isNil(nativePrice)) {
+          nativePrice = this.getMarketPrice();
+        }
         inputAmount = convertAmountFromNativeValue(nativeAmount, nativePrice);
         inputAmountDisplay = updatePrecisionToDisplay(
           inputAmount,
-          get(inputCurrency, 'price.value'),
+          nativePrice,
           true
         );
       }
