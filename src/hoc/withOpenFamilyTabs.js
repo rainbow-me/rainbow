@@ -6,10 +6,7 @@ const mapStateToProps = ({ openFamilyTabs: { openFamilyTabs } }) => ({
 });
 
 export default Component =>
-  connect(
-    mapStateToProps,
-    {
-      pushOpenFamilyTab,
-      setOpenFamilyTabs,
-    }
-  )(Component);
+  connect(mapStateToProps, {
+    pushOpenFamilyTab,
+    setOpenFamilyTabs,
+  })(Component);

@@ -9,10 +9,7 @@ const mapStateToProps = ({ openInvestmentCards: { openInvestmentCards } }) => ({
 });
 
 export default Component =>
-  connect(
-    mapStateToProps,
-    {
-      pushOpenInvestmentCard,
-      setOpenInvestmentCards,
-    }
-  )(Component);
+  connect(mapStateToProps, {
+    pushOpenInvestmentCard,
+    setOpenInvestmentCards,
+  })(Component);

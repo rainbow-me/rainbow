@@ -31,10 +31,7 @@ const CoinRowHighlight = withProps({
   marginHorizontal: 8,
 })(Highlight);
 
-const enhance = compose(
-  withAccountSettings,
-  withFabSendAction
-);
+const enhance = compose(withAccountSettings, withFabSendAction);
 
 const CoinRow = enhance(
   ({

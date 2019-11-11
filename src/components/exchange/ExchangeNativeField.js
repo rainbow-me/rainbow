@@ -78,7 +78,10 @@ class ExchangeNativeField extends Component {
 
     const { isFocused } = this.state;
 
-    let opacity = nativeAmount ? 0.5 : 0.3;
+    const nativeAmountExists =
+      typeof nativeAmount === 'string' && nativeAmount.length > 0;
+
+    let opacity = nativeAmountExists ? 0.5 : 0.3;
     if (isFocused) {
       opacity = 1;
     }

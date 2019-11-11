@@ -54,6 +54,15 @@ it('updatePrecisionToDisplay1', () => {
   expect(result).toBe('0.000000001');
 });
 
+it('updatePrecisionToDisplay1RoundUp', () => {
+  const result = updatePrecisionToDisplay(
+    '0.00000000123',
+    '0.1234987234',
+    true
+  );
+  expect(result).toBe('0.000000002');
+});
+
 it('updatePrecisionToDisplay2', () => {
   const result = updatePrecisionToDisplay(
     '0.17987196800000002',
@@ -62,9 +71,23 @@ it('updatePrecisionToDisplay2', () => {
   expect(result).toBe('0.179');
 });
 
+it('updatePrecisionToDisplay2RoundUp', () => {
+  const result = updatePrecisionToDisplay(
+    '0.17987196800000002',
+    '0.1234987234',
+    true
+  );
+  expect(result).toBe('0.18');
+});
+
 it('updatePrecisionToDisplay3', () => {
   const result = updatePrecisionToDisplay('0.123456789', '3.001');
   expect(result).toBe('0.123');
+});
+
+it('updatePrecisionToDisplay3RoundUp', () => {
+  const result = updatePrecisionToDisplay('0.123456789', '3.001', true);
+  expect(result).toBe('0.124');
 });
 
 it('updatePrecisionToDisplay4', () => {
@@ -72,12 +95,27 @@ it('updatePrecisionToDisplay4', () => {
   expect(result).toBe('0.1234');
 });
 
+it('updatePrecisionToDisplay4RoundUp', () => {
+  const result = updatePrecisionToDisplay('0.123456789', '32.0412', true);
+  expect(result).toBe('0.1235');
+});
+
 it('updatePrecisionToDisplay5', () => {
   const result = updatePrecisionToDisplay('0.123456789', '132.0051');
   expect(result).toBe('0.12345');
 });
 
+it('updatePrecisionToDisplay5RoundUp', () => {
+  const result = updatePrecisionToDisplay('0.123456789', '132.0051', true);
+  expect(result).toBe('0.12346');
+});
+
 it('updatePrecisionToDisplay6', () => {
   const result = updatePrecisionToDisplay('0.123456789', '1320.0112');
   expect(result).toBe('0.123456');
+});
+
+it('updatePrecisionToDisplay6RoundUp', () => {
+  const result = updatePrecisionToDisplay('0.123456789', '1320.0112', true);
+  expect(result).toBe('0.123457');
 });
