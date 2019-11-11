@@ -44,13 +44,6 @@ const CurrencySelectionList = ({ listItems, renderItem, showList, type }) => {
 
   const showNoResults = listItems.length === 0;
 
-  const onListMount = () => {
-    if (showSkeleton && showList) {
-      skeletonTransitionRef.current.animateNextTransition();
-      setShowSkeleton(false);
-    }
-  };
-
   useEffect(() => {
     if (!showSkeleton && !showList) {
       setShowSkeleton(true);
@@ -71,8 +64,13 @@ const CurrencySelectionList = ({ listItems, renderItem, showList, type }) => {
           ) : (
             <ExchangeAssetList
               items={listItems}
-              onMount={onListMount}
               key={`ExchangeAssetListCurrencySelectionModal-${type}`}
+              onMount={() => {
+                if (showSkeleton && showList) {
+                  skeletonTransitionRef.current.animateNextTransition();
+                  setShowSkeleton(false);
+                }
+              }}
               renderItem={renderItem}
               scrollIndicatorInsets={{
                 bottom: exchangeModalBorderRadius,

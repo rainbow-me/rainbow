@@ -6,7 +6,4 @@ const mapStateToProps = ({ actionSheetManager: { isActionSheetOpen } }) => ({
 });
 
 export default Component =>
-  connect(
-    mapStateToProps,
-    { setIsActionSheetOpen }
-  )(Component);
+  connect(mapStateToProps, { setIsActionSheetOpen })(Component);

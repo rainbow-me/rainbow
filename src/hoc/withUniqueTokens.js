@@ -34,7 +34,4 @@ const sendableUniqueTokens = state => {
 };
 
 export default Component =>
-  compose(
-    connect(mapStateToProps),
-    withProps(sendableUniqueTokens)
-  )(Component);
+  compose(connect(mapStateToProps), withProps(sendableUniqueTokens))(Component);

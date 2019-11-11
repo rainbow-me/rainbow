@@ -36,6 +36,7 @@ import {
   convertAmountToNativeAmount,
   convertAmountToNativeDisplay,
   convertAmountToRawAmount,
+  convertNumberToString,
   convertRawAmountToDecimalFormat,
   greaterThan,
   subtract,
@@ -135,6 +136,7 @@ class ExchangeModal extends Component {
       'inputAmount',
       'inputCurrency.uniqueId',
       'isAssetApproved',
+      'isSufficientBalance',
       'isUnlockingAsset',
       'nativeAmount',
       'outputAmount',
@@ -142,7 +144,11 @@ class ExchangeModal extends Component {
       'slippage',
     ]);
 
-    return nextProps.isFocused ? isNewProps || isNewState : false;
+    if (this.props.isFocused && nextProps.isFocused) {
+      return isNewProps || isNewState;
+    }
+
+    return false;
   };
 
   componentDidUpdate = (prevProps, prevState) => {
@@ -333,11 +339,11 @@ class ExchangeModal extends Component {
       const isOutputEth = outputAddress === 'eth';
 
       const rawInputAmount = convertAmountToRawAmount(
-        inputAmount || 0,
+        parseFloat(inputAmount) || 0,
         inputDecimals
       );
       const rawOutputAmount = convertAmountToRawAmount(
-        outputAmount || 0,
+        parseFloat(outputAmount) || 0,
         outputDecimals
       );
 
@@ -415,17 +421,22 @@ class ExchangeModal extends Component {
         );
       }
 
-      const slippage = get(tradeDetails, 'executionRateSlippage', 0).toString();
+      const slippage = convertNumberToString(
+        get(tradeDetails, 'executionRateSlippage', 0)
+      );
       const inputBalance = ethereumUtils.getBalanceAmount(
         selectedGasPrice,
         inputCurrency
       );
 
+      const isSufficientBalance =
+        !parseFloat(inputAmount) ||
+        parseFloat(inputBalance) >= parseFloat(inputAmount);
+
       this.setState({
         inputExecutionRate,
         inputNativePrice,
-        isSufficientBalance:
-          !inputAmount || Number(inputBalance) >= Number(inputAmount),
+        isSufficientBalance,
         outputExecutionRate,
         outputNativePrice,
         slippage,
@@ -447,7 +458,7 @@ class ExchangeModal extends Component {
         inputAsExactAmount ||
         (isNewOutputReserveCurrency && inputAsExactAmount)
       ) {
-        if (isInputEmpty || isInputZero) {
+        if ((isInputEmpty || isInputZero) && !this.outputFieldRef.isFocused()) {
           this.setOutputAmount();
         } else {
           const updatedOutputAmount = get(tradeDetails, 'outputAmount.amount');
@@ -456,16 +467,18 @@ class ExchangeModal extends Component {
             outputDecimals
           );
 
-          const updatedOutputAmountDisplay = updatePrecisionToDisplay(
-            rawUpdatedOutputAmount,
-            get(outputCurrency, 'price.value')
-          );
+          if (rawUpdatedOutputAmount !== '0') {
+            const updatedOutputAmountDisplay = updatePrecisionToDisplay(
+              rawUpdatedOutputAmount,
+              get(outputCurrency, 'price.value')
+            );
 
-          this.setOutputAmount(
-            rawUpdatedOutputAmount,
-            updatedOutputAmountDisplay,
-            inputAsExactAmount
-          );
+            this.setOutputAmount(
+              rawUpdatedOutputAmount,
+              updatedOutputAmountDisplay,
+              inputAsExactAmount
+            );
+          }
         }
       }
 
@@ -496,7 +509,7 @@ class ExchangeModal extends Component {
 
           this.setState({
             isSufficientBalance:
-              Number(inputBalance) >= Number(rawUpdatedInputAmount),
+              parseFloat(inputBalance) >= parseFloat(rawUpdatedInputAmount),
           });
         }
       }
@@ -633,7 +646,7 @@ class ExchangeModal extends Component {
       if (!this.nativeFieldRef.isFocused()) {
         let nativeAmount = null;
 
-        const isInputZero = Number(inputAmount) === 0;
+        const isInputZero = parseFloat(inputAmount) === 0;
 
         if (inputAmount && !isInputZero) {
           const nativePrice = get(inputCurrency, 'native.price.amount', 0);
@@ -674,7 +687,7 @@ class ExchangeModal extends Component {
       let inputAmount = null;
       let inputAmountDisplay = null;
 
-      const isNativeZero = Number(nativeAmount) === 0;
+      const isNativeZero = parseFloat(nativeAmount) === 0;
 
       if (nativeAmount && !isNativeZero) {
         const nativePrice = get(inputCurrency, 'native.price.amount', 0);
@@ -734,6 +747,7 @@ class ExchangeModal extends Component {
     const {
       approvalCreationTimestamp,
       approvalEstimatedTimeInMs,
+      inputAmount,
       inputAmountDisplay,
       inputCurrency,
       // inputExecutionRate,
@@ -742,6 +756,7 @@ class ExchangeModal extends Component {
       isSufficientBalance,
       isUnlockingAsset,
       nativeAmount,
+      outputAmount,
       outputAmountDisplay,
       outputCurrency,
       // outputExecutionRate,
@@ -749,6 +764,9 @@ class ExchangeModal extends Component {
       showConfirmButton,
       slippage,
     } = this.state;
+
+    const isSlippageWarningVisible =
+      isSufficientBalance && !!inputAmount && !!outputAmount;
 
     return (
       <KeyboardFixedOpenLayout>
@@ -802,7 +820,9 @@ class ExchangeModal extends Component {
                 setOutputAmount={this.setOutputAmount}
               />
             </FloatingPanel>
-            {isSufficientBalance && <SlippageWarning slippage={slippage} />}
+            {isSlippageWarningVisible && (
+              <SlippageWarning slippage={slippage} />
+            )}
             {showConfirmButton && (
               <Fragment>
                 <Centered css={padding(24, 15, 0)} flexShrink={0} width="100%">

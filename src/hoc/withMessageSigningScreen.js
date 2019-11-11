@@ -6,9 +6,4 @@ const mapStateToProps = ({ walletconnect: { walletConnectors } }) => ({
 });
 
 export default Component =>
-  connect(
-    mapStateToProps,
-    {
-      removeRequest,
-    }
-  )(Component);
+  connect(mapStateToProps, { removeRequest })(Component);

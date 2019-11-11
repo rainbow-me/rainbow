@@ -199,12 +199,9 @@ const AppWithRedux = compose(
   withDeepLink,
   withWalletConnectConnections,
   withWalletConnectOnSessionRequest,
-  connect(
-    ({ walletconnect: { appInitTimestamp } }) => ({ appInitTimestamp }),
-    {
-      requestsForTopic,
-    }
-  )
+  connect(({ walletconnect: { appInitTimestamp } }) => ({ appInitTimestamp }), {
+    requestsForTopic,
+  })
 )(App);
 
 const AppWithCodePush = CodePush({

@@ -27,13 +27,10 @@ const withFabSelectionValidationSelector = createSelector(
 );
 
 export default compose(
-  connect(
-    mapStateToProps,
-    {
-      setActionType,
-      setScrollingVelocity,
-      updateSelectedID,
-    }
-  ),
+  connect(mapStateToProps, {
+    setActionType,
+    setScrollingVelocity,
+    updateSelectedID,
+  }),
   withProps(withFabSelectionValidationSelector)
 );

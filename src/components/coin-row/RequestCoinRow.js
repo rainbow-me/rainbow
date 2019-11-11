@@ -108,23 +108,26 @@ const getPercentageOfTimeElapsed = (startDate, endDate) => {
 };
 
 export default compose(
-  connect(
-    null,
-    { removeExpiredRequest: removeRequest }
-  ),
+  connect(null, { removeExpiredRequest: removeRequest }),
   withNavigation,
-  withProps(({ item: { displayDetails: { timestampInMs } } }) => {
-    const createdAt = new Date(timestampInMs);
-    const expiresAt = addHours(createdAt, 1);
-    const percentElapsed = getPercentageOfTimeElapsed(createdAt, expiresAt);
+  withProps(
+    ({
+      item: {
+        displayDetails: { timestampInMs },
+      },
+    }) => {
+      const createdAt = new Date(timestampInMs);
+      const expiresAt = addHours(createdAt, 1);
+      const percentElapsed = getPercentageOfTimeElapsed(createdAt, expiresAt);
 
-    return {
-      createdAt,
-      expirationColor:
-        percentElapsed > 25 ? colors.primaryBlue : colors.orangeMedium,
-      expiresAt,
-      percentElapsed,
-    };
-  }),
+      return {
+        createdAt,
+        expirationColor:
+          percentElapsed > 25 ? colors.primaryBlue : colors.orangeMedium,
+        expiresAt,
+        percentElapsed,
+      };
+    }
+  ),
   onlyUpdateForKeys(['expirationColor', 'expiresAt', 'percentElapsed'])
 )(RequestCoinRow);
