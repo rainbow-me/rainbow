@@ -405,7 +405,8 @@ class ExchangeModal extends Component {
         const outputPriceValue = get(outputCurrency, 'price.value', 0);
         outputExecutionRate = updatePrecisionToDisplay(
           get(tradeDetails, 'executionRate.rateInverted', BigNumber(0)),
-          outputPriceValue
+          outputPriceValue,
+          true
         );
 
         outputNativePrice = convertAmountToNativeDisplay(
@@ -449,20 +450,20 @@ class ExchangeModal extends Component {
         if (isInputEmpty || isInputZero) {
           this.setOutputAmount();
         } else {
-          const updatedAmount = get(tradeDetails, 'outputAmount.amount');
-          const rawUpdatedAmount = convertRawAmountToDecimalFormat(
-            updatedAmount,
+          const updatedOutputAmount = get(tradeDetails, 'outputAmount.amount');
+          const rawUpdatedOutputAmount = convertRawAmountToDecimalFormat(
+            updatedOutputAmount,
             outputDecimals
           );
 
-          const updatedAmountDisplay = updatePrecisionToDisplay(
-            rawUpdatedAmount,
+          const updatedOutputAmountDisplay = updatePrecisionToDisplay(
+            rawUpdatedOutputAmount,
             get(outputCurrency, 'price.value')
           );
 
           this.setOutputAmount(
-            rawUpdatedAmount,
-            updatedAmountDisplay,
+            rawUpdatedOutputAmount,
+            updatedOutputAmountDisplay,
             inputAsExactAmount
           );
         }
@@ -475,26 +476,27 @@ class ExchangeModal extends Component {
             isSufficientBalance: true,
           });
         } else {
-          const updatedAmount = get(tradeDetails, 'inputAmount.amount');
-          const rawUpdatedAmount = convertRawAmountToDecimalFormat(
-            updatedAmount,
+          const updatedInputAmount = get(tradeDetails, 'inputAmount.amount');
+          const rawUpdatedInputAmount = convertRawAmountToDecimalFormat(
+            updatedInputAmount,
             inputDecimals
           );
 
-          const updatedAmountDisplay = updatePrecisionToDisplay(
-            rawUpdatedAmount,
-            get(inputCurrency, 'price.value')
+          const updatedInputAmountDisplay = updatePrecisionToDisplay(
+            rawUpdatedInputAmount,
+            get(inputCurrency, 'price.value'),
+            true
           );
 
           this.setInputAmount(
-            rawUpdatedAmount,
-            updatedAmountDisplay,
+            rawUpdatedInputAmount,
+            updatedInputAmountDisplay,
             inputAsExactAmount
           );
 
           this.setState({
             isSufficientBalance:
-              Number(inputBalance) >= Number(rawUpdatedAmount),
+              Number(inputBalance) >= Number(rawUpdatedInputAmount),
           });
         }
       }
@@ -679,7 +681,8 @@ class ExchangeModal extends Component {
         inputAmount = convertAmountFromNativeValue(nativeAmount, nativePrice);
         inputAmountDisplay = updatePrecisionToDisplay(
           inputAmount,
-          get(inputCurrency, 'price.value')
+          get(inputCurrency, 'price.value'),
+          true
         );
       }
 
