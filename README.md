@@ -1,6 +1,7 @@
-# Rainbow Wallet
+#  Rainbow
+🌈️ — the pocket robot for your internet money. ⁖𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗯𝘆 𝗘𝘁𝗵𝗲𝗿𝗲𝘂𝗺⁖ 
 
-A mobile wallet for open finance and the decentralized web.
+📲️ [Available on the iOS App Store.](https://apps.apple.com/us/app/rainbow-ethereum-wallet/id1457119021)
 
 ## Requirements
 
