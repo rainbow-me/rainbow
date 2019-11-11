@@ -6,9 +6,4 @@ const mapStateToProps = ({ openBalances: { openSmallBalances } }) => ({
 });
 
 export default Component =>
-  connect(
-    mapStateToProps,
-    {
-      setOpenSmallBalances,
-    }
-  )(Component);
+  connect(mapStateToProps, { setOpenSmallBalances })(Component);

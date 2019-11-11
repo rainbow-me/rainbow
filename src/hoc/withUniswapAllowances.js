@@ -24,13 +24,10 @@ const mapStateToProps = ({
 });
 
 export default Component =>
-  connect(
-    mapStateToProps,
-    {
-      uniswapAddPendingApproval,
-      uniswapClearCurrenciesAndReserves,
-      uniswapUpdateAllowances,
-      uniswapUpdateInputCurrency,
-      uniswapUpdateOutputCurrency,
-    }
-  )(Component);
+  connect(mapStateToProps, {
+    uniswapAddPendingApproval,
+    uniswapClearCurrenciesAndReserves,
+    uniswapUpdateAllowances,
+    uniswapUpdateInputCurrency,
+    uniswapUpdateOutputCurrency,
+  })(Component);

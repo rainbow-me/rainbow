@@ -47,13 +47,10 @@ const walletConnectSelector = createSelector(
 
 export default Component =>
   compose(
-    connect(
-      mapStateToProps,
-      {
-        walletConnectClearTimestamp,
-        walletConnectDisconnectAllByDappName,
-        walletConnectUpdateTimestamp,
-      }
-    ),
+    connect(mapStateToProps, {
+      walletConnectClearTimestamp,
+      walletConnectDisconnectAllByDappName,
+      walletConnectUpdateTimestamp,
+    }),
     withProps(walletConnectSelector)
   )(Component);

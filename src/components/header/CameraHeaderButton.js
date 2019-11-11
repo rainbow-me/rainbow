@@ -17,7 +17,10 @@ const CameraHeaderButton = ({ onPress }) => (
     <ShadowStack
       {...borders.buildCircleAsObject(34)}
       backgroundColor={colors.paleBlue}
-      shadows={[[0, 3, 5, colors.dark, 0.2], [0, 6, 10, colors.dark, 0.14]]}
+      shadows={[
+        [0, 3, 5, colors.dark, 0.2],
+        [0, 6, 10, colors.dark, 0.14],
+      ]}
     >
       <Centered css={position.cover}>
         <Icon

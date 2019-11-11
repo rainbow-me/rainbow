@@ -9,12 +9,9 @@ const mapStateToProps = ({ nonce: { transactionCountNonce } }) => ({
 });
 
 export default Component =>
-  connect(
-    mapStateToProps,
-    {
-      dataAddNewTransaction,
-      removeRequest,
-      updateTransactionCountNonce,
-      walletConnectSendStatus,
-    }
-  )(Component);
+  connect(mapStateToProps, {
+    dataAddNewTransaction,
+    removeRequest,
+    updateTransactionCountNonce,
+    walletConnectSendStatus,
+  })(Component);
