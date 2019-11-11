@@ -3,13 +3,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { css } from 'styled-components/primitives';
 import { uniswapUpdateFavorites } from '../../redux/uniswap';
-import { colors, position } from '../../styles';
 import { isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { Icon } from '../icons';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import CoinRowFavoriteButton from './CoinRowFavoriteButton';
 
 const containerStyles = css`
   padding-left: 15;
@@ -85,13 +84,20 @@ class ExchangeCoinRow extends Component {
   };
 
   render = () => {
-    const { item, showBalance, showFavoriteButton, ...props } = this.props;
+    const {
+      item,
+      showBalance,
+      showFavoriteButton,
+      uniqueId,
+      ...props
+    } = this.props;
     const { favorite } = this.state;
 
     return (
       <ButtonPressAnimation
         {...props}
         height={CoinRow.height}
+        key={`ExchangeCoinRow-${uniqueId}`}
         onPress={this.handlePress}
         scaleTo={0.96}
       >
@@ -103,21 +109,10 @@ class ExchangeCoinRow extends Component {
           topRowRender={TopRow}
         >
           {showFavoriteButton && (
-            <ButtonPressAnimation
-              exclusive
+            <CoinRowFavoriteButton
+              isFavorited={favorite}
               onPress={this.toggleFavorite}
-              scaleTo={0.69}
-              style={{
-                ...position.centeredAsObject,
-                height: '100%',
-                paddingHorizontal: 19,
-              }}
-            >
-              <Icon
-                color={favorite ? colors.orangeLight : '#E2E3E5'}
-                name="star"
-              />
-            </ButtonPressAnimation>
+            />
           )}
         </CoinRow>
       </ButtonPressAnimation>
@@ -125,7 +120,4 @@ class ExchangeCoinRow extends Component {
   };
 }
 
-export default connect(
-  null,
-  { uniswapUpdateFavorites }
-)(ExchangeCoinRow);
+export default connect(null, { uniswapUpdateFavorites })(ExchangeCoinRow);
