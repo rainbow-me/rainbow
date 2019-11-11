@@ -12,7 +12,7 @@ import HeaderButton from './HeaderButton';
 const ContainerElement = omitProps('direction')(Flex);
 const Container = styled(ContainerElement).attrs({ align: 'end' })`
   height: 100%;
-  padding-bottom: 4;
+  padding-bottom: 2;
   padding-left: ${({ direction }) => (direction === 'left' ? 0 : 20)};
   padding-right: ${({ direction }) => (direction === 'right' ? 0 : 20)};
 `;

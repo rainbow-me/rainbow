@@ -244,21 +244,21 @@ class SendSheet extends Component {
           <Container align="center">
             <SendHeader
               contacts={this.state.contacts}
+              inputRef={this.handleRef}
               isValid={isValidAddress}
               isValidAddress={isValidAddress}
               onChangeAddressInput={this.onChangeInput}
               onPressPaste={sendUpdateRecipient}
               onUpdateContacts={this.onUpdateContacts}
               recipient={recipient}
-              inputRef={this.handleRef}
             />
             {showEmptyState && (
               <SendContactList
                 allAssets={this.state.contacts}
                 currentInput={this.state.currentInput}
+                inputRef={this.input}
                 onPressContact={sendUpdateRecipient}
                 onUpdateContacts={this.onUpdateContacts}
-                inputRef={this.input}
               />
             )}
             {showAssetList && (

@@ -13,7 +13,4 @@ const mapStateToProps = ({
 const sortAssets = state => sortAssetsByNativeAmountSelector(state);
 
 export default Component =>
-  compose(
-    connect(mapStateToProps),
-    withProps(sortAssets)
-  )(Component);
+  compose(connect(mapStateToProps), withProps(sortAssets))(Component);

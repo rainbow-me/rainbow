@@ -304,5 +304,11 @@
     "symbol": "ZRX",
     "decimals": 18,
     "exchangeAddress": "0xaE76c84C9262Cdb9abc0C2c8888e62Db8E22A0bF"
+  },
+  "0x23B608675a2B2fB1890d3ABBd85c5775c51691d5": {
+    "symbol": "SOCKS",
+    "name": "Unisocks Edition 0",
+    "decimals": 18,
+    "exchangeAddress": "0x22d8432cc7aA4f8712a655fC4cdfB1baEC29FCA9"
   }
 }

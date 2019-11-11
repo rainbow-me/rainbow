@@ -10,8 +10,14 @@ import CoinIcon from './CoinIcon';
 
 const RVLIBorderRadius = 16.25;
 const RVLIShadows = {
-  default: [[0, 4, 6, colors.dark, 0.04], [0, 1, 3, colors.dark, 0.08]],
-  large: [[0, 8, 11, colors.dark, 0.04], [0, 2, 6, colors.dark, 0.08]],
+  default: [
+    [0, 4, 6, colors.dark, 0.04],
+    [0, 1, 3, colors.dark, 0.08],
+  ],
+  large: [
+    [0, 8, 11, colors.dark, 0.04],
+    [0, 2, 6, colors.dark, 0.08],
+  ],
 };
 
 export default class RequestVendorLogoIcon extends PureComponent {

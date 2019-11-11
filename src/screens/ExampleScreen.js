@@ -66,7 +66,4 @@ class ExampleScreen extends PureComponent {
   );
 }
 
-export default compose(
-  withAccountData,
-  withDataInit
-)(ExampleScreen);
+export default compose(withAccountData, withDataInit)(ExampleScreen);

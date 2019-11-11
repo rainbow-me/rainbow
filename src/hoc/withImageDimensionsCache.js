@@ -9,10 +9,7 @@ const mapStateToProps = ({ imageDimensionsCache }) => ({
 });
 
 export default Component =>
-  connect(
-    mapStateToProps,
-    {
-      pruneCache: pruneImageDimensionsCache,
-      updateCache: updateImageDimensionsCache,
-    }
-  )(Component);
+  connect(mapStateToProps, {
+    pruneCache: pruneImageDimensionsCache,
+    updateCache: updateImageDimensionsCache,
+  })(Component);

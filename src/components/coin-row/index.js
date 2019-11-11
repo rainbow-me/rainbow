@@ -1,10 +1,9 @@
 export { default as BalanceCoinRow } from './BalanceCoinRow';
 export { default as BottomRowText } from './BottomRowText';
 export { default as CoinRow } from './CoinRow';
+export { default as CoinRowFavoriteButton } from './CoinRowFavoriteButton';
 export { default as CollectiblesSendRow } from './CollectiblesSendRow';
-export {
-  default as ContractInteractionCoinRow,
-} from './ContractInteractionCoinRow';
+export { default as ContractInteractionCoinRow } from './ContractInteractionCoinRow';
 export { default as ExchangeCoinRow } from './ExchangeCoinRow';
 export { default as RequestCoinRow } from './RequestCoinRow';
 export { default as SendCoinRow } from './SendCoinRow';

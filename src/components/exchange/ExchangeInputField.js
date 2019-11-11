@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { TouchableWithoutFeedback } from 'react-native';
 import { colors } from '../../styles';
-import { isNewValueForPath } from '../../utils';
+import { isNewValueForObjectPaths } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { CoolButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
@@ -34,47 +34,15 @@ export default class ExchangeInputField extends Component {
     setNativeAmount: PropTypes.func,
   };
 
-  shouldComponentUpdate = nextProps => {
-    const isNewAssetApproved = isNewValueForPath(
-      this.props,
-      nextProps,
-      'isAssetApproved'
-    );
-    const isNewInputAmount = isNewValueForPath(
-      this.props,
-      nextProps,
-      'inputAmount'
-    );
-    const isNewInputCurrency = isNewValueForPath(
-      this.props,
-      nextProps,
-      'inputCurrencySymbol'
-    );
-    const isNewNativeAmount = isNewValueForPath(
-      this.props,
-      nextProps,
-      'nativeAmount'
-    );
-    const isNewNativeCurrency = isNewValueForPath(
-      this.props,
-      nextProps,
-      'nativeCurrency'
-    );
-    const isNewUnlockingAsset = isNewValueForPath(
-      this.props,
-      nextProps,
-      'isUnlockingAsset'
-    );
-
-    return (
-      isNewAssetApproved ||
-      isNewInputAmount ||
-      isNewInputCurrency ||
-      isNewNativeAmount ||
-      isNewNativeCurrency ||
-      isNewUnlockingAsset
-    );
-  };
+  shouldComponentUpdate = nextProps =>
+    isNewValueForObjectPaths(this.props, nextProps, [
+      'inputAmount',
+      'inputCurrencySymbol',
+      'isAssetApproved',
+      'isUnlockingAsset',
+      'nativeAmount',
+      'nativeCurrency',
+    ]);
 
   inputFieldRef = undefined;
 
@@ -112,7 +80,7 @@ export default class ExchangeInputField extends Component {
     const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
     return (
-      <ColumnWithMargins flex={0} margin={12} width="100%">
+      <ColumnWithMargins flex={0} margin={12} paddingTop={16} width="100%">
         <Row align="center">
           <TouchableWithoutFeedback onPress={this.handleFocusInputField}>
             <RowWithMargins
@@ -172,8 +140,19 @@ export default class ExchangeInputField extends Component {
                 margin={0}
                 paddingHorizontal={this.padding}
               >
-                <Emoji lineHeight="none" name="moneybag" size="lmedium" />
-                <Text color="appleBlue" size="medium" weight="semibold">
+                <Emoji
+                  lineHeight="none"
+                  name="moneybag"
+                  style={{ marginTop: 0.5 }}
+                  size="lmedium"
+                />
+                <Text
+                  align="center"
+                  color="appleBlue"
+                  size="lmedium"
+                  style={{ marginTop: 1 }}
+                  weight="semibold"
+                >
                   Max
                 </Text>
               </RowWithMargins>

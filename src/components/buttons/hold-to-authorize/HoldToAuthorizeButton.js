@@ -32,7 +32,10 @@ const ButtonShadows = {
     [0, 6, 10, colors.dark, 0.14],
     [0, 1, 18, colors.dark, 0.12],
   ],
-  disabled: [[0, 2, 6, colors.dark, 0.06], [0, 3, 9, colors.dark, 0.08]],
+  disabled: [
+    [0, 2, 6, colors.dark, 0.06],
+    [0, 3, 9, colors.dark, 0.08],
+  ],
 };
 
 const progressDurationMs = 500; // @christian approves

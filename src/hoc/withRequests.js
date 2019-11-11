@@ -20,13 +20,7 @@ const withRequests = requests => {
   };
 };
 
-const withRequestsSelector = createSelector(
-  [requestsSelector],
-  withRequests
-);
+const withRequestsSelector = createSelector([requestsSelector], withRequests);
 
 export default Component =>
-  compose(
-    connect(mapStateToProps),
-    withProps(withRequestsSelector)
-  )(Component);
+  compose(connect(mapStateToProps), withProps(withRequestsSelector))(Component);

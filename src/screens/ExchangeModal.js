@@ -9,7 +9,7 @@ import {
 import BigNumber from 'bignumber.js';
 import { get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
+import React, { Component, Fragment } from 'react';
 import { LayoutAnimation, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { withNavigationFocus, NavigationEvents } from 'react-navigation';
@@ -36,6 +36,7 @@ import {
   convertAmountToNativeAmount,
   convertAmountToNativeDisplay,
   convertAmountToRawAmount,
+  convertNumberToString,
   convertRawAmountToDecimalFormat,
   greaterThan,
   subtract,
@@ -53,6 +54,7 @@ import {
 } from '../hoc';
 import { colors, padding, position } from '../styles';
 import {
+  isNewValueForObjectPaths,
   contractUtils,
   ethereumUtils,
   gasUtils,
@@ -66,17 +68,14 @@ const AnimatedFloatingPanels = Animated.createAnimatedComponent(
   toClass(FloatingPanels)
 );
 
-const isSameAsset = (firstAsset, secondAsset) => {
-  if (!firstAsset || !secondAsset) {
-    return false;
-  }
-
-  const firstAddress = toLower(get(firstAsset, 'address', ''));
-  const secondAddress = toLower(get(secondAsset, 'address', ''));
-  return firstAddress === secondAddress;
+const isSameAsset = (a, b) => {
+  if (!a || !b) return false;
+  const assetA = toLower(get(a, 'address', ''));
+  const assetB = toLower(get(b, 'address', ''));
+  return assetA === assetB;
 };
 
-class ExchangeModal extends React.Component {
+class ExchangeModal extends Component {
   static propTypes = {
     accountAddress: PropTypes.string,
     allAssets: PropTypes.array,
@@ -97,8 +96,8 @@ class ExchangeModal extends React.Component {
     tokenReserves: PropTypes.object,
     tradeDetails: PropTypes.object,
     txFees: PropTypes.object,
+    uniswapAddPendingApproval: PropTypes.func,
     uniswapUpdateAllowances: PropTypes.func,
-    uniswapUpdatePendingApprovals: PropTypes.func,
   };
 
   state = {
@@ -125,55 +124,88 @@ class ExchangeModal extends React.Component {
     tradeDetails: null,
   };
 
+  shouldComponentUpdate = (nextProps, nextState) => {
+    const isNewProps = isNewValueForObjectPaths(this.props, nextProps, [
+      'inputReserve.token.address',
+      'outputReserve.token.address',
+    ]);
+
+    const isNewState = isNewValueForObjectPaths(this.state, nextState, [
+      'approvalCreationTimestamp',
+      'approvalEstimatedTimeInMs',
+      'inputAmount',
+      'inputCurrency.uniqueId',
+      'isAssetApproved',
+      'isSufficientBalance',
+      'isUnlockingAsset',
+      'nativeAmount',
+      'outputAmount',
+      'outputCurrency.uniqueId',
+      'slippage',
+    ]);
+
+    if (this.props.isFocused && nextProps.isFocused) {
+      return isNewProps || isNewState;
+    }
+
+    return false;
+  };
+
   componentDidUpdate = (prevProps, prevState) => {
     if (prevProps.isTransitioning && !this.props.isTransitioning) {
       this.props.navigation.emit('refocus');
     }
-    const isNewInputAmount = isNewValueForPath(
+
+    const isNewAmountOrCurrency = isNewValueForObjectPaths(
       this.state,
       prevState,
-      'inputAmount'
+      [
+        'inputAmount',
+        'inputCurrency.uniqueId',
+        'outputAmount',
+        'outputCurrency.uniqueId',
+      ]
     );
-    const isNewOutputAmount = isNewValueForPath(
+
+    let isNewNativeAmount = isNewValueForPath(
       this.state,
       prevState,
-      'outputAmount'
+      'nativeAmount'
     );
-    const isNewNativeAmount =
+
+    if (isNewNativeAmount) {
       // Only consider 'new' if the native input isnt focused,
       // otherwise itll fight with the user's keystrokes
-      isNewValueForPath(this.state, prevState, 'nativeAmount') &&
-      this.nativeFieldRef.isFocused();
-
-    const isNewInputCurrency = isNewValueForPath(
-      this.state,
-      prevState,
-      'inputCurrency.uniqueId'
-    );
-    const isNewOutputCurrency = isNewValueForPath(
-      this.state,
-      prevState,
-      'outputCurrency.uniqueId'
-    );
-
-    const isNewAmount =
-      (this.state.inputAsExactAmount &&
-        (isNewNativeAmount || isNewInputAmount)) ||
-      (!this.state.inputAsExactAmount && isNewOutputAmount);
-    const isNewCurrency = isNewInputCurrency || isNewOutputCurrency;
-
-    const input = toLower(get(this.state.inputCurrency, 'address'));
-    const removedFromPending =
-      !get(this.props, `pendingApprovals[${input}]`, null) &&
-      get(prevProps, `pendingApprovals[${input}]`, null);
-
-    if (isNewAmount || isNewCurrency) {
-      this.getMarketDetails();
-      LayoutAnimation.easeInEaseOut();
+      isNewNativeAmount = this.nativeFieldRef.isFocused();
     }
+
+    const isNewOutputReserveCurrency = isNewValueForPath(
+      this.props,
+      prevProps,
+      'outputReserve.token.address'
+    );
+
+    if (
+      isNewAmountOrCurrency ||
+      isNewNativeAmount ||
+      isNewOutputReserveCurrency
+    ) {
+      LayoutAnimation.easeInEaseOut();
+      this.getMarketDetails(isNewOutputReserveCurrency);
+    }
+
+    const inputCurrencyAddressPath = 'inputCurrency.address';
+    const inputCurrencyAddress = toLower(
+      get(this.state, inputCurrencyAddressPath)
+    );
+
+    const removedFromPending =
+      !get(this.props, `pendingApprovals[${inputCurrencyAddress}]`, null) &&
+      get(prevProps, `pendingApprovals[${inputCurrencyAddress}]`, null);
+
     if (
       removedFromPending ||
-      isNewValueForPath(this.state, prevState, 'inputCurrency.address')
+      isNewValueForPath(this.props, prevProps, inputCurrencyAddressPath)
     ) {
       this.getCurrencyAllowance();
     }
@@ -267,7 +299,7 @@ class ExchangeModal extends React.Component {
     }
   };
 
-  getMarketDetails = async () => {
+  getMarketDetails = async isNewOutputReserveCurrency => {
     const {
       accountAddress,
       chainId,
@@ -307,11 +339,11 @@ class ExchangeModal extends React.Component {
       const isOutputEth = outputAddress === 'eth';
 
       const rawInputAmount = convertAmountToRawAmount(
-        inputAmount || 0,
+        parseFloat(inputAmount) || 0,
         inputDecimals
       );
       const rawOutputAmount = convertAmountToRawAmount(
-        outputAmount || 0,
+        parseFloat(outputAmount) || 0,
         outputDecimals
       );
 
@@ -379,7 +411,8 @@ class ExchangeModal extends React.Component {
         const outputPriceValue = get(outputCurrency, 'price.value', 0);
         outputExecutionRate = updatePrecisionToDisplay(
           get(tradeDetails, 'executionRate.rateInverted', BigNumber(0)),
-          outputPriceValue
+          outputPriceValue,
+          true
         );
 
         outputNativePrice = convertAmountToNativeDisplay(
@@ -388,17 +421,22 @@ class ExchangeModal extends React.Component {
         );
       }
 
-      const slippage = get(tradeDetails, 'executionRateSlippage', 0).toString();
+      const slippage = convertNumberToString(
+        get(tradeDetails, 'executionRateSlippage', 0)
+      );
       const inputBalance = ethereumUtils.getBalanceAmount(
         selectedGasPrice,
         inputCurrency
       );
 
+      const isSufficientBalance =
+        !parseFloat(inputAmount) ||
+        parseFloat(inputBalance) >= parseFloat(inputAmount);
+
       this.setState({
         inputExecutionRate,
         inputNativePrice,
-        isSufficientBalance:
-          !inputAmount || Number(inputBalance) >= Number(inputAmount),
+        isSufficientBalance,
         outputExecutionRate,
         outputNativePrice,
         slippage,
@@ -416,26 +454,31 @@ class ExchangeModal extends React.Component {
         this.clearForm();
       }
 
-      if (inputAsExactAmount && !this.outputFieldRef.isFocused()) {
-        if (isInputEmpty || isInputZero) {
+      if (
+        inputAsExactAmount ||
+        (isNewOutputReserveCurrency && inputAsExactAmount)
+      ) {
+        if ((isInputEmpty || isInputZero) && !this.outputFieldRef.isFocused()) {
           this.setOutputAmount();
         } else {
-          const updatedAmount = get(tradeDetails, 'outputAmount.amount');
-          const rawUpdatedAmount = convertRawAmountToDecimalFormat(
-            updatedAmount,
+          const updatedOutputAmount = get(tradeDetails, 'outputAmount.amount');
+          const rawUpdatedOutputAmount = convertRawAmountToDecimalFormat(
+            updatedOutputAmount,
             outputDecimals
           );
 
-          const updatedAmountDisplay = updatePrecisionToDisplay(
-            rawUpdatedAmount,
-            get(outputCurrency, 'price.value')
-          );
+          if (rawUpdatedOutputAmount !== '0') {
+            const updatedOutputAmountDisplay = updatePrecisionToDisplay(
+              rawUpdatedOutputAmount,
+              get(outputCurrency, 'price.value')
+            );
 
-          this.setOutputAmount(
-            rawUpdatedAmount,
-            updatedAmountDisplay,
-            inputAsExactAmount
-          );
+            this.setOutputAmount(
+              rawUpdatedOutputAmount,
+              updatedOutputAmountDisplay,
+              inputAsExactAmount
+            );
+          }
         }
       }
 
@@ -446,29 +489,31 @@ class ExchangeModal extends React.Component {
             isSufficientBalance: true,
           });
         } else {
-          const updatedAmount = get(tradeDetails, 'inputAmount.amount');
-          const rawUpdatedAmount = convertRawAmountToDecimalFormat(
-            updatedAmount,
+          const updatedInputAmount = get(tradeDetails, 'inputAmount.amount');
+          const rawUpdatedInputAmount = convertRawAmountToDecimalFormat(
+            updatedInputAmount,
             inputDecimals
           );
 
-          const updatedAmountDisplay = updatePrecisionToDisplay(
-            rawUpdatedAmount,
-            get(inputCurrency, 'price.value')
+          const updatedInputAmountDisplay = updatePrecisionToDisplay(
+            rawUpdatedInputAmount,
+            get(inputCurrency, 'price.value'),
+            true
           );
 
           this.setInputAmount(
-            rawUpdatedAmount,
-            updatedAmountDisplay,
+            rawUpdatedInputAmount,
+            updatedInputAmountDisplay,
             inputAsExactAmount
           );
 
           this.setState({
             isSufficientBalance:
-              Number(inputBalance) >= Number(rawUpdatedAmount),
+              parseFloat(inputBalance) >= parseFloat(rawUpdatedInputAmount),
           });
         }
       }
+
       if (isAssetApproved) {
         const gasLimit = await estimateSwapGasLimit(
           accountAddress,
@@ -480,22 +525,6 @@ class ExchangeModal extends React.Component {
       console.log('error getting market details', error);
       // TODO error state
     }
-  };
-
-  getReserveData = async tokenAddress => {
-    if (tokenAddress === 'eth') return null;
-
-    const { tokenReserves, uniswapGetTokenReserve } = this.props;
-
-    let reserve = tokenReserves[tokenAddress.toLowerCase()];
-    if (!reserve) {
-      reserve = await uniswapGetTokenReserve(tokenAddress);
-    }
-    return reserve;
-  };
-
-  handleBlurField = ({ currentTarget }) => {
-    console.log('blur', currentTarget);
   };
 
   handleFocusField = ({ currentTarget }) => {
@@ -545,7 +574,7 @@ class ExchangeModal extends React.Component {
   handleUnlockAsset = async () => {
     try {
       const { inputCurrency } = this.state;
-      const { gasLimit, gasPrices, uniswapUpdatePendingApprovals } = this.props;
+      const { gasLimit, gasPrices, uniswapAddPendingApproval } = this.props;
       const fastGasPrice = get(gasPrices, `[${gasUtils.FAST}]`);
       const {
         creationTimestamp: approvalCreationTimestamp,
@@ -560,7 +589,7 @@ class ExchangeModal extends React.Component {
         fastGasPrice,
         'estimatedTime.amount'
       );
-      uniswapUpdatePendingApprovals(
+      uniswapAddPendingApproval(
         inputCurrency.address,
         hash,
         approvalCreationTimestamp,
@@ -617,7 +646,7 @@ class ExchangeModal extends React.Component {
       if (!this.nativeFieldRef.isFocused()) {
         let nativeAmount = null;
 
-        const isInputZero = Number(inputAmount) === 0;
+        const isInputZero = parseFloat(inputAmount) === 0;
 
         if (inputAmount && !isInputZero) {
           const nativePrice = get(inputCurrency, 'native.price.amount', 0);
@@ -633,6 +662,10 @@ class ExchangeModal extends React.Component {
 
   setInputCurrency = (inputCurrency, force) => {
     const { outputCurrency } = this.state;
+
+    if (!isSameAsset(inputCurrency, this.state.inputCurrency)) {
+      this.clearForm();
+    }
 
     this.setState({ inputCurrency });
 
@@ -654,14 +687,15 @@ class ExchangeModal extends React.Component {
       let inputAmount = null;
       let inputAmountDisplay = null;
 
-      const isNativeZero = Number(nativeAmount) === 0;
+      const isNativeZero = parseFloat(nativeAmount) === 0;
 
       if (nativeAmount && !isNativeZero) {
         const nativePrice = get(inputCurrency, 'native.price.amount', 0);
         inputAmount = convertAmountFromNativeValue(nativeAmount, nativePrice);
         inputAmountDisplay = updatePrecisionToDisplay(
           inputAmount,
-          get(inputCurrency, 'price.value')
+          get(inputCurrency, 'price.value'),
+          true
         );
       }
 
@@ -685,13 +719,15 @@ class ExchangeModal extends React.Component {
     const { allAssets } = this.props;
     const { inputCurrency } = this.state;
 
-    this.setState({
-      outputCurrency,
-      showConfirmButton: !!outputCurrency,
-    });
     if (!force) {
       this.props.uniswapUpdateOutputCurrency(outputCurrency);
     }
+
+    this.setState({
+      inputAsExactAmount: true,
+      outputCurrency,
+      showConfirmButton: !!outputCurrency,
+    });
 
     if (!force && isSameAsset(inputCurrency, outputCurrency)) {
       const outputAddress = toLower(outputCurrency.address);
@@ -711,6 +747,7 @@ class ExchangeModal extends React.Component {
     const {
       approvalCreationTimestamp,
       approvalEstimatedTimeInMs,
+      inputAmount,
       inputAmountDisplay,
       inputCurrency,
       // inputExecutionRate,
@@ -719,6 +756,7 @@ class ExchangeModal extends React.Component {
       isSufficientBalance,
       isUnlockingAsset,
       nativeAmount,
+      outputAmount,
       outputAmountDisplay,
       outputCurrency,
       // outputExecutionRate,
@@ -726,6 +764,9 @@ class ExchangeModal extends React.Component {
       showConfirmButton,
       slippage,
     } = this.state;
+
+    const isSlippageWarningVisible =
+      isSufficientBalance && !!inputAmount && !!outputAmount;
 
     return (
       <KeyboardFixedOpenLayout>
@@ -779,10 +820,12 @@ class ExchangeModal extends React.Component {
                 setOutputAmount={this.setOutputAmount}
               />
             </FloatingPanel>
-            {isSufficientBalance && <SlippageWarning slippage={slippage} />}
+            {isSlippageWarningVisible && (
+              <SlippageWarning slippage={slippage} />
+            )}
             {showConfirmButton && (
               <Fragment>
-                <Centered css={padding(19, 15, 0)} flexShrink={0} width="100%">
+                <Centered css={padding(24, 15, 0)} flexShrink={0} width="100%">
                   <ConfirmExchangeButton
                     creationTimestamp={approvalCreationTimestamp}
                     disabled={isAssetApproved && !Number(inputAmountDisplay)}

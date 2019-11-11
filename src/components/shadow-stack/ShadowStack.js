@@ -9,8 +9,7 @@ import ShadowItem from './ShadowItem';
   // flex-shrink: 0;
 const ChildrenWrapper = styled.View`
   ${position.cover};
-  background-color: ${({ backgroundColor }) =>
-    backgroundColor || colors.transparent};
+  background-color: ${colors.transparent};
   border-radius: ${({ borderRadius }) => borderRadius};
   overflow: hidden;
 `;
@@ -18,8 +17,7 @@ const ChildrenWrapper = styled.View`
 const ShadowStackContainer = styled.View`
   ${({ height }) => (height ? `height: ${height};` : '')}
   ${({ width }) => (width ? `width: ${width};` : '')}
-  background-color: ${({ backgroundColor }) =>
-    backgroundColor || colors.transparent};
+  background-color: ${colors.transparent};
   border-radius: ${({ borderRadius }) => borderRadius};
   z-index: 1;
 `;

@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import './global';
 import './shim';
 

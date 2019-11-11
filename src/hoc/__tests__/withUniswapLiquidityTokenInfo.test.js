@@ -1,4 +1,4 @@
-import { transformPool } from '../withUniswapLiquidity';
+import { transformPool } from '../withUniswapLiquidityTokenInfo';
 
 it('transformPool', async () => {
   const pool = {

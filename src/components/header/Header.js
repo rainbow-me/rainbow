@@ -4,7 +4,7 @@ import { padding } from '../../styles';
 import { Row } from '../layout';
 
 const StatusBarHeight = getStatusBarHeight(true);
-const HeaderHeight = 52;
+const HeaderHeight = 44;
 const HeaderHeightWithStatusBar = HeaderHeight + StatusBarHeight;
 
 // eslint-disable-next-line react/display-name

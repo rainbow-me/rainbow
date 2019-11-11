@@ -24,11 +24,8 @@ const mapStateToProps = ({
 });
 
 export default Component =>
-  connect(
-    mapStateToProps,
-    {
-      gasUpdateDefaultGasLimit,
-      gasUpdateGasPriceOption,
-      gasUpdateTxFee,
-    }
-  )(Component);
+  connect(mapStateToProps, {
+    gasUpdateDefaultGasLimit,
+    gasUpdateGasPriceOption,
+    gasUpdateTxFee,
+  })(Component);

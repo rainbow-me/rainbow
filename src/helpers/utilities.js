@@ -90,21 +90,36 @@ export const floorDivide = (numberOne, numberTwo) =>
  */
 export const countDecimalPlaces = value => BigNumber(`${value}`).dp();
 
-export const updatePrecisionToDisplay = (amount, nativePrice) => {
+/**
+ * @desc update the amount to display precision
+ * equivalent to ~0.01 of the native price
+ * or use most significant decimal
+ * if the updated precision amounts to zero
+ * @param  {String}   amount
+ * @param  {String}   nativePrice
+ * @param  {Boolean}  use rounding up mode
+ * @return {String}   updated amount
+ */
+export const updatePrecisionToDisplay = (
+  amount,
+  nativePrice,
+  roundUp = false
+) => {
+  const roundingMode = roundUp ? BigNumber.ROUND_UP : BigNumber.ROUND_DOWN;
   const bnAmount = BigNumber(`${amount}`);
-  const significantDigits = BigNumber(`${nativePrice}`)
+  const significantDigitsOfNativePriceInteger = BigNumber(`${nativePrice}`)
     .decimalPlaces(0, BigNumber.ROUND_DOWN)
     .sd(true);
-  const truncatedPrecision = BigNumber(significantDigits)
+  const truncatedPrecision = BigNumber(significantDigitsOfNativePriceInteger)
     .plus(2, 10)
     .toNumber();
-  const result = bnAmount.decimalPlaces(
+  const truncatedAmount = bnAmount.decimalPlaces(
     truncatedPrecision,
     BigNumber.ROUND_DOWN
   );
-  return result.isZero()
-    ? BigNumber(bnAmount.toPrecision(1, BigNumber.ROUND_DOWN)).toFixed()
-    : result.toFixed();
+  return truncatedAmount.isZero()
+    ? BigNumber(bnAmount.toPrecision(1, roundingMode)).toFixed()
+    : bnAmount.decimalPlaces(truncatedPrecision, roundingMode).toFixed();
 };
 
 /**

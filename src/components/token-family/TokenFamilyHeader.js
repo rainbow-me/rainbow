@@ -66,7 +66,10 @@ export default class TokenFamilyHeader extends PureComponent {
       <ShadowStack
         {...size}
         backgroundColor={familyImage ? colors.white : colors.purpleLight}
-        shadows={[[0, 4, 6, colors.dark, 0.04], [0, 1, 3, colors.dark, 0.08]]}
+        shadows={[
+          [0, 4, 6, colors.dark, 0.04],
+          [0, 1, 3, colors.dark, 0.08],
+        ]}
       >
         {familyImage ? (
           <FamilyIcon familyImage={familyImage} style={size} />

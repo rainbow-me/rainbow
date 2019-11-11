@@ -1,14 +1,19 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { css } from 'styled-components/primitives';
 import { uniswapUpdateFavorites } from '../../redux/uniswap';
-import { colors, position } from '../../styles';
 import { isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { Icon } from '../icons';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import CoinRowFavoriteButton from './CoinRowFavoriteButton';
+
+const containerStyles = css`
+  padding-left: 15;
+  padding-right: 0;
+`;
 
 const BottomRow = ({ balance, native, showBalance, symbol }) => {
   let text = symbol;
@@ -64,10 +69,8 @@ class ExchangeCoinRow extends Component {
   };
 
   handlePress = () => {
-    const { item, onPress } = this.props;
-
-    if (onPress) {
-      onPress(item);
+    if (this.props.onPress) {
+      this.props.onPress(this.props.item);
     }
   };
 
@@ -81,38 +84,35 @@ class ExchangeCoinRow extends Component {
   };
 
   render = () => {
-    const { item, showBalance, showFavoriteButton, ...props } = this.props;
+    const {
+      item,
+      showBalance,
+      showFavoriteButton,
+      uniqueId,
+      ...props
+    } = this.props;
     const { favorite } = this.state;
 
     return (
       <ButtonPressAnimation
         {...props}
         height={CoinRow.height}
+        key={`ExchangeCoinRow-${uniqueId}`}
         onPress={this.handlePress}
         scaleTo={0.96}
       >
         <CoinRow
           {...item}
           bottomRowRender={BottomRow}
-          containerStyles="padding-right: 0"
+          containerStyles={containerStyles}
           showBalance={showBalance}
           topRowRender={TopRow}
         >
           {showFavoriteButton && (
-            <ButtonPressAnimation
-              exclusive
+            <CoinRowFavoriteButton
+              isFavorited={favorite}
               onPress={this.toggleFavorite}
-              scaleTo={0.69}
-              style={{
-                ...position.centeredAsObject,
-                paddingHorizontal: 19,
-              }}
-            >
-              <Icon
-                color={favorite ? colors.orangeLight : '#E2E3E5'}
-                name="star"
-              />
-            </ButtonPressAnimation>
+            />
           )}
         </CoinRow>
       </ButtonPressAnimation>
@@ -120,7 +120,4 @@ class ExchangeCoinRow extends Component {
   };
 }
 
-export default connect(
-  null,
-  { uniswapUpdateFavorites }
-)(ExchangeCoinRow);
+export default connect(null, { uniswapUpdateFavorites })(ExchangeCoinRow);

@@ -11,10 +11,10 @@ import { RowWithMargins } from '../layout';
 const ExchangeSearchHeight = 40;
 
 const Container = styled(RowWithMargins).attrs({
-  margin: 6.5,
+  margin: 7,
 })`
-  ${margin(0, 15, 10)};
-  ${padding(9, 13, 10)};
+  ${margin(0, 15, 4)};
+  ${padding(0, 13, 0)};
   background-color: ${colors.skeleton};
   border-radius: ${ExchangeSearchHeight / 2};
   height: ${ExchangeSearchHeight};
@@ -47,13 +47,20 @@ export default class ExchangeSearch extends PureComponent {
   render = () => (
     <TouchableWithoutFeedback onPress={this.focus} paddingHorizontal={15}>
       <Container>
-        <Icon color={colors.grey} flex={0} name="search" />
+        <Icon
+          color={colors.alpha(colors.blueGreyDark, 0.4)}
+          flex={0}
+          marginTop={10.5}
+          name="search"
+        />
         <Input
           allowFontScaling={false}
+          autoCapitalize="words"
           autoFocus={this.props.autoFocus}
           blurOnSubmit={false}
           clearTextOnFocus
           color={colors.dark}
+          enablesReturnKeyAutomatically
           flex={1}
           keyboardAppearance="dark"
           keyboardType="ascii-capable"

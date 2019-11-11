@@ -262,13 +262,13 @@ export const withSendComponentWithData = (SendComponent, options) => {
       return (
         <SendComponent
           isValidAddress={this.state.isValidAddress}
-          onSendMaxBalance={this.onSendMaxBalance}
-          onAddressInputFocus={this.onAddressInputFocus}
           onAddressInputBlur={this.onAddressInputBlur}
+          onAddressInputFocus={this.onAddressInputFocus}
           onClose={this.onClose}
-          onQRCodeValidate={this.onQRCodeValidate}
-          onQRCodeScan={this.onQRCodeScan}
           onQRCodeError={this.onQRCodeError}
+          onQRCodeScan={this.onQRCodeScan}
+          onQRCodeValidate={this.onQRCodeValidate}
+          onSendMaxBalance={this.onSendMaxBalance}
           onSubmit={this.onSubmit}
           showQRCodeReader={this.state.showQRCodeReader}
           toggleQRCodeReader={this.toggleQRCodeReader}
@@ -279,21 +279,17 @@ export const withSendComponentWithData = (SendComponent, options) => {
   }
 
   return compose(
-    connect(
-      mapStateToProps,
-      {
-        sendClearFields,
-        sendMaxBalance,
-        sendModalInit,
-        sendToggleConfirmationView,
-        sendTransaction,
-        sendUpdateAssetAmount,
-
-        sendUpdateNativeAmount,
-        sendUpdateRecipient,
-        sendUpdateSelected,
-      }
-    ),
+    connect(mapStateToProps, {
+      sendClearFields,
+      sendMaxBalance,
+      sendModalInit,
+      sendToggleConfirmationView,
+      sendTransaction,
+      sendUpdateAssetAmount,
+      sendUpdateNativeAmount,
+      sendUpdateRecipient,
+      sendUpdateSelected,
+    }),
     withGas,
     withAccountData,
     withUniqueTokens
