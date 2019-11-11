@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { InteractionManager } from 'react-native';
 import TextInputMask from 'react-native-text-input-mask';
 import stylePropType from 'react-style-proptype';
 import { colors, fonts } from '../../styles';
@@ -13,7 +14,10 @@ export default class ExchangeInput extends Component {
     fontSize: PropTypes.string,
     fontWeight: PropTypes.string,
     mask: PropTypes.string,
+    onBlur: PropTypes.func,
+    onChange: PropTypes.func,
     onChangeText: PropTypes.func,
+    onFocus: PropTypes.func,
     placeholder: PropTypes.string,
     placeholderTextColor: PropTypes.string,
     refInput: PropTypes.func,
@@ -32,10 +36,13 @@ export default class ExchangeInput extends Component {
     value: '',
   };
 
-  state = { touched: false };
+  state = {
+    isFocused: false,
+    isTouched: false,
+  };
 
   shouldComponentUpdate = (nextProps, nextState) =>
-    nextState.touched !== this.state.touched ||
+    nextState.isTouched !== this.state.isTouched ||
     isNewValueForObjectPaths(this.props, nextProps, [
       'color',
       'editable',
@@ -44,30 +51,57 @@ export default class ExchangeInput extends Component {
       'value',
     ]);
 
-  handleBlur = () => {
-    const { value } = this.props;
+  handleBlur = event => {
+    const { onBlur, onChangeText, value } = this.props;
 
     if (typeof value === 'string') {
       const parts = value.split('.');
       if (parts[0].length > 1 && !Number(parts[0])) {
-        this.props.onChangeText(`0.${parts[1]}`);
+        onChangeText(`0.${parts[1]}`);
       }
+    }
+
+    this.setState({
+      isFocused: false,
+      isTouched: false,
+    });
+
+    if (onBlur) {
+      onBlur(event);
+    }
+  };
+
+  handleFocus = event => {
+    this.setState({ isFocused: true });
+    if (this.props.onFocus) {
+      this.props.onFocus(event);
     }
   };
 
   handleChangeText = formatted => {
+    const { onChangeText, value } = this.props;
     let text = formatted;
 
-    if (this.state.touched && !text.length && !this.props.value) {
+    if (this.state.isTouched && !text.length && !value) {
       text = '0.';
     }
 
-    this.props.onChangeText(text);
+    if (onChangeText) {
+      onChangeText(text);
+    }
   };
 
-  toggleTouched = () => {
-    if (!this.state.touched) {
-      this.setState({ touched: true });
+  handleChange = event => {
+    const { isFocused, isTouched } = this.state;
+
+    if (isFocused && !isTouched) {
+      InteractionManager.runAfterInteractions(() => {
+        this.setState({ isTouched: true });
+      });
+    }
+
+    if (this.props.onChange) {
+      this.props.onChange(event);
     }
   };
 
@@ -97,8 +131,9 @@ export default class ExchangeInput extends Component {
         keyboardType="decimal-pad"
         mask={mask}
         onBlur={this.handleBlur}
-        onChange={this.toggleTouched}
+        onChange={this.handleChange}
         onChangeText={this.handleChangeText}
+        onFocus={this.handleFocus}
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
         refInput={refInput}

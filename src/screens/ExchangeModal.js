@@ -144,7 +144,11 @@ class ExchangeModal extends Component {
       'slippage',
     ]);
 
-    return nextProps.isFocused ? isNewProps || isNewState : false;
+    if (this.props.isFocused && nextProps.isFocused) {
+      return isNewProps || isNewState;
+    }
+
+    return false;
   };
 
   componentDidUpdate = (prevProps, prevState) => {
