@@ -3,12 +3,7 @@ import { isNil } from 'lodash';
 import { Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
-import {
-  getIsWalletEmpty,
-  getOpenFamilies,
-  getOpenInvestmentCards,
-  getSmallBalanceToggle,
-} from '../handlers/localstorage/accountLocal';
+import { getIsWalletEmpty } from '../handlers/localstorage/accountLocal';
 import { hasEthBalance } from '../handlers/web3';
 import { dataClearState, dataLoadState } from '../redux/data';
 import { explorerClearState, explorerInit } from '../redux/explorer';
@@ -16,9 +11,8 @@ import { gasClearState, gasPricesInit } from '../redux/gas';
 import { clearIsWalletEmpty } from '../redux/isWalletEmpty';
 import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import { nonceClearState } from '../redux/nonce';
-import { clearOpenFamilyTab, pushOpenFamilyTab } from '../redux/openFamilyTabs';
+import { clearOpenFamilyTab } from '../redux/openFamilyTabs';
 import { requestsLoadState, requestsClearState } from '../redux/requests';
-
 import {
   settingsLoadState,
   settingsUpdateAccountAddress,
@@ -42,10 +36,6 @@ import {
   walletConnectLoadState,
   walletConnectClearState,
 } from '../redux/walletconnect';
-import { setOpenSmallBalances } from '../redux/openBalances';
-
-import { pushOpenInvestmentCard } from '../redux/openInvestmentCards';
-import store from '../redux/store';
 import { promiseUtils } from '../utils';
 import withHideSplashScreen from './withHideSplashScreen';
 
@@ -146,17 +136,6 @@ export default Component =>
           throw error;
         }
       },
-      setInitialStatesForOpenAssets: () => async (walletAddress, network) => {
-        const toggle = await getSmallBalanceToggle(walletAddress, network);
-        const openInvestmentCards = await getOpenInvestmentCards(
-          walletAddress,
-          network
-        );
-        const openFamilies = await getOpenFamilies(walletAddress, network);
-        await store.dispatch(setOpenSmallBalances(toggle));
-        await store.dispatch(pushOpenInvestmentCard(openInvestmentCards));
-        await store.dispatch(pushOpenFamilyTab(openFamilies));
-      },
     }),
     withHandlers({
       initializeWallet: ownProps => async seedPhrase => {
@@ -170,10 +149,6 @@ export default Component =>
             );
             return null;
           }
-          await ownProps.setInitialStatesForOpenAssets(
-            walletAddress,
-            ownProps.network
-          );
           if (isImported) {
             await ownProps.clearAccountData();
           }
