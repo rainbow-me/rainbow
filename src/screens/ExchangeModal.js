@@ -95,8 +95,8 @@ class ExchangeModal extends Component {
     tokenReserves: PropTypes.object,
     tradeDetails: PropTypes.object,
     txFees: PropTypes.object,
+    uniswapAddPendingApproval: PropTypes.func,
     uniswapUpdateAllowances: PropTypes.func,
-    uniswapUpdatePendingApprovals: PropTypes.func,
   };
 
   state = {
@@ -559,7 +559,7 @@ class ExchangeModal extends Component {
   handleUnlockAsset = async () => {
     try {
       const { inputCurrency } = this.state;
-      const { gasLimit, gasPrices, uniswapUpdatePendingApprovals } = this.props;
+      const { gasLimit, gasPrices, uniswapAddPendingApproval } = this.props;
       const fastGasPrice = get(gasPrices, `[${gasUtils.FAST}]`);
       const {
         creationTimestamp: approvalCreationTimestamp,
@@ -574,7 +574,7 @@ class ExchangeModal extends Component {
         fastGasPrice,
         'estimatedTime.amount'
       );
-      uniswapUpdatePendingApprovals(
+      uniswapAddPendingApproval(
         inputCurrency.address,
         hash,
         approvalCreationTimestamp,

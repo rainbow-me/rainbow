@@ -1,10 +1,10 @@
 import { connect } from 'react-redux';
 import {
+  uniswapAddPendingApproval,
   uniswapClearCurrenciesAndReserves,
   uniswapUpdateAllowances,
   uniswapUpdateInputCurrency,
   uniswapUpdateOutputCurrency,
-  uniswapUpdatePendingApprovals,
 } from '../redux/uniswap';
 
 const mapStateToProps = ({
@@ -27,10 +27,10 @@ export default Component =>
   connect(
     mapStateToProps,
     {
+      uniswapAddPendingApproval,
       uniswapClearCurrenciesAndReserves,
       uniswapUpdateAllowances,
       uniswapUpdateInputCurrency,
       uniswapUpdateOutputCurrency,
-      uniswapUpdatePendingApprovals,
     }
   )(Component);
