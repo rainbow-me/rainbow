@@ -3,6 +3,8 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components/primitives';
 import { View } from 'react-native';
 import Animated, { Easing } from 'react-native-reanimated';
+import { setSelectedInputId } from '../../redux/selectedInput';
+import store from '../../redux/store';
 import { colors, position } from '../../styles';
 import { Button } from '../buttons';
 import { Input } from '../inputs';
@@ -78,6 +80,7 @@ export default class UnderlineField extends PureComponent {
     this.setState({ isFocused: false });
 
     if (this.props.onBlur) this.props.onBlur(...props);
+    store.dispatch(setSelectedInputId(null));
   };
 
   onChange = event => {
@@ -102,6 +105,13 @@ export default class UnderlineField extends PureComponent {
     this.setState({ isFocused: true });
 
     if (this.props.onFocus) this.props.onFocus(...props);
+    if (this.input && this.input.isFocused()) {
+      store.dispatch(setSelectedInputId(this.input));
+    }
+  };
+
+  handleRef = ref => {
+    this.input = ref;
   };
 
   render() {
@@ -135,6 +145,7 @@ export default class UnderlineField extends PureComponent {
               onChange={this.onChange}
               onFocus={this.onFocus}
               placeholder={placeholder}
+              ref={this.handleRef}
               size="h2"
               value={this.format(String(this.props.value || ''))}
             />

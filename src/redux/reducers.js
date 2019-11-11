@@ -15,6 +15,7 @@ import openBalances from './openBalances';
 import openFamilyTabs from './openFamilyTabs';
 import openInvestmentCards from './openInvestmentCards';
 import requests from './requests';
+import selectedInput from './selectedInput';
 import selectedWithFab from './selectedWithFab';
 import send from './send';
 import settings from './settings';
@@ -38,6 +39,7 @@ export default combineReducers({
   openFamilyTabs,
   openInvestmentCards,
   requests,
+  selectedInput,
   selectedWithFab,
   send,
   settings,

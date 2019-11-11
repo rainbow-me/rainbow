@@ -121,6 +121,9 @@ export default withNavigation(
 
     onBlur = () => {
       this.checkClipboard(this.state.address);
+      if (this.props.onBlur) {
+        this.props.onBlur();
+      }
     };
 
     checkClipboard = async address => {

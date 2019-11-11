@@ -12,11 +12,6 @@ import {
   ProfileHeaderButton,
 } from '../components/header';
 import { Page } from '../components/layout';
-import {
-  getOpenFamilies,
-  getOpenInvestmentCards,
-  getSmallBalanceToggle,
-} from '../handlers/localstorage/accountLocal';
 import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import {
   withAccountData,
@@ -28,10 +23,6 @@ import {
   withUniqueTokens,
   withUniswapLiquidityTokenInfo,
 } from '../hoc';
-import { setOpenSmallBalances } from '../redux/openBalances';
-import { pushOpenFamilyTab } from '../redux/openFamilyTabs';
-import { pushOpenInvestmentCard } from '../redux/openInvestmentCards';
-import store from '../redux/store';
 import { position } from '../styles';
 import { isNewValueForObjectPaths } from '../utils';
 
@@ -57,7 +48,6 @@ class WalletScreen extends Component {
   componentDidMount = async () => {
     try {
       await this.props.initializeWallet();
-      await this.setInitialStatesForOpenAssets();
     } catch (error) {
       // TODO error state
     }
@@ -75,20 +65,6 @@ class WalletScreen extends Component {
           'nativeCurrency',
           'sections',
         ]);
-
-  setInitialStatesForOpenAssets = async () => {
-    const { accountAddress, network } = this.props;
-    const toggle = await getSmallBalanceToggle(accountAddress, network);
-    const openInvestmentCards = await getOpenInvestmentCards(
-      accountAddress,
-      network
-    );
-    const openFamilies = await getOpenFamilies(accountAddress, network);
-    await store.dispatch(setOpenSmallBalances(toggle));
-    await store.dispatch(pushOpenInvestmentCard(openInvestmentCards));
-    await store.dispatch(pushOpenFamilyTab(openFamilies));
-    return true;
-  };
 
   render = () => {
     const {
