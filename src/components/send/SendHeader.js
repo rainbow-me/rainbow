@@ -6,9 +6,7 @@ import { Keyboard, Clipboard } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { compose, withProps } from 'recompact';
 import { deleteLocalContact } from '../../handlers/localstorage/contacts';
-import { withNeverRerender, withSelectedInput } from '../../hoc';
-import { setSelectedInputId } from '../../redux/selectedInput';
-import store from '../../redux/store';
+import { withNeverRerender } from '../../hoc';
 import { colors, padding } from '../../styles';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { AddContactButton, PasteAddressButton } from '../buttons';
@@ -89,7 +87,6 @@ class SendHeader extends PureComponent {
     onPressPaste: PropTypes.func,
     onUpdateContacts: PropTypes.func,
     recipient: PropTypes.string,
-    selectedInputId: PropTypes.object,
   };
 
   handleConfirmDeleteContactSelection = async buttonIndex => {
@@ -113,9 +110,7 @@ class SendHeader extends PureComponent {
 
   navigateToContact = (contact = {}) => {
     const { navigation, onUpdateContacts, recipient } = this.props;
-    const refocusCallback =
-      this.props.selectedInputId.isFocused() &&
-      this.props.selectedInputId.focus;
+    const refocusCallback = this.input.isFocused() && this.input.focus;
 
     let color = get(contact, 'color');
     if (!isNumber(color)) {
@@ -139,14 +134,7 @@ class SendHeader extends PureComponent {
 
   handleRef = ref => {
     this.input = ref;
-  };
-
-  onFocus = () => {
-    store.dispatch(setSelectedInputId(this.input));
-  };
-
-  onBlur = () => {
-    store.dispatch(setSelectedInputId(null));
+    this.props.inputRef(ref);
   };
 
   render = () => {
@@ -169,11 +157,9 @@ class SendHeader extends PureComponent {
             address={recipient}
             autoFocus
             currentContact={contact}
-            inputRef={this.handleRef}
             name={contact.nickname}
-            onBlur={this.onBlur}
             onChange={onChangeAddressInput}
-            onFocus={this.onFocus}
+            inputRef={this.handleRef}
           />
           {isValidAddress && (
             <AddContactButton
@@ -199,6 +185,5 @@ class SendHeader extends PureComponent {
 
 export default compose(
   withNavigation,
-  withSelectedInput,
   withProps(getContactForRecipient)
 )(SendHeader);

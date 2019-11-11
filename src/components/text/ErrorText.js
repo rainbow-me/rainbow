@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withNeverRerender } from '../../hoc';
-import { colors } from '../../styles';
+import { colors, fonts } from '../../styles';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import Monospace from './Monospace';
 
 const ErrorText = ({ color, error }) => (
-  <RowWithMargins align="center" margin={9}>
+  <RowWithMargins align="center" margin={fonts.size.micro}>
     <Icon color={color} name="warning" />
     <Monospace color={color} lineHeight="looser" size="lmedium" weight="medium">
       {error}
