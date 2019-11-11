@@ -1,7 +1,11 @@
 import React, { Fragment, PureComponent } from 'react';
 import { maxBy, minBy } from 'lodash';
 import Svg, { Path } from 'react-native-svg';
-import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import {
+  PanGestureHandler,
+  State,
+  TapGestureHandler,
+} from 'react-native-gesture-handler';
 import Animated, { Easing } from 'react-native-reanimated';
 import Bezier from 'bezier-spline';
 import { contains, timing } from 'react-native-redash';
@@ -17,6 +21,7 @@ const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 const {
   and,
+  or,
   eq,
   add,
   sub,
@@ -37,7 +42,7 @@ const {
   stopClock,
 } = Animated;
 
-const { ACTIVE, CANCELLED, END, FAILED, UNDETERMINED } = State;
+const { BEGAN, ACTIVE, CANCELLED, END, FAILED, UNDETERMINED } = State;
 
 const FALSE = 1;
 const TRUE = 0;
@@ -101,7 +106,17 @@ export default class ValueChart extends PureComponent {
     this.onGestureEvent = event([
       {
         nativeEvent: {
-          state: this.gestureState,
+          state: state =>
+            block([cond(neq(FAILED, state), set(this.gestureState, state))]),
+          x: x =>
+            cond(
+              and(
+                greaterOrEq(x, 0),
+                lessThan(x, width),
+                neq(BEGAN, this.gestureState)
+              ),
+              set(this.touchX, x)
+            ),
         },
       },
     ]);
@@ -232,98 +247,106 @@ export default class ValueChart extends PureComponent {
             this._text = component;
           }}
         />
-        <PanGestureHandler
-          minDist={0}
-          shouldActivateOnStart
-          onGestureEvent={this.onPanGestureEvent}
-          onHandlerStateChange={this.onGestureEvent}
-        >
-          <Animated.View
-            style={{
-              justifyContent: 'flex-start',
-            }}
-          >
-            <View style={{ flexDirection: 'row' }}>
-              <View
+        <TapGestureHandler onHandlerStateChange={this.onGestureEvent}>
+          <Animated.View>
+            <PanGestureHandler
+              minDist={0}
+              shouldActivateOnStart
+              onGestureEvent={this.onPanGestureEvent}
+              onHandlerStateChange={this.onGestureEvent}
+            >
+              <Animated.View
                 style={{
-                  height: 200,
-                  width,
+                  justifyContent: 'flex-start',
                 }}
               >
-                <Svg
-                  height={200}
-                  width={width}
-                  viewBox={`0 -50 ${width + 1} ${300}`}
-                  preserveAspectRatio="none"
-                  style={flipY}
-                >
-                  <AnimatedPath
-                    id="main-path"
-                    fill="none"
-                    stroke={colors.chartGreen}
-                    strokeWidth={2.4}
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                    d={animatedPath}
-                  />
-                </Svg>
-              </View>
-              <Animated.View
-                style={[
-                  {
-                    backgroundColor: colors.chartGreen,
-                    borderRadius: 2,
-                    height: 180,
-                    position: 'absolute',
-                    top: 10,
-                    width: 2,
-                    zIndex: 10,
-                  },
-                  {
-                    opacity: this.opacity,
-                    transform: [
+                <View style={{ flexDirection: 'row' }}>
+                  <View
+                    style={{
+                      height: 200,
+                      width,
+                    }}
+                  >
+                    <Svg
+                      height={200}
+                      width={width}
+                      viewBox={`0 -50 ${width + 1} ${300}`}
+                      preserveAspectRatio="none"
+                      style={flipY}
+                    >
+                      <AnimatedPath
+                        id="main-path"
+                        fill="none"
+                        stroke={colors.chartGreen}
+                        strokeWidth={2.4}
+                        strokeLinejoin="round"
+                        strokeLinecap="round"
+                        d={animatedPath}
+                      />
+                    </Svg>
+                  </View>
+                  <Animated.View
+                    style={[
                       {
-                        translateX: Animated.add(
-                          this.touchX,
-                          new Animated.Value(-1.5)
-                        ),
+                        backgroundColor: colors.chartGreen,
+                        borderRadius: 2,
+                        height: 180,
+                        position: 'absolute',
+                        top: 10,
+                        width: 2,
+                        zIndex: 10,
                       },
-                    ],
-                  },
-                ]}
-              />
-              <Animated.View
-                style={[
-                  {
-                    height: 200,
-                    justifyContent: 'space-between',
-                    paddingBottom: 20,
-                    paddingLeft: 20,
-                    paddingTop: 20,
-                    width: 100,
-                  },
-                  {
-                    opacity: this.loadingValue,
-                  },
-                ]}
-              >
-                <TimestampText>
-                  ${Number(maxValue.value).toFixed(2)}
-                </TimestampText>
-                <TimestampText>
-                  ${Number((maxValue.value + minValue.value) / 2).toFixed(2)}
-                </TimestampText>
-                <TimestampText>
-                  ${Number(minValue.value).toFixed(2)}
-                </TimestampText>
+                      {
+                        opacity: this.opacity,
+                        transform: [
+                          {
+                            translateX: Animated.add(
+                              this.touchX,
+                              new Animated.Value(-1.5)
+                            ),
+                          },
+                        ],
+                      },
+                    ]}
+                  />
+                  <Animated.View
+                    style={[
+                      {
+                        height: 200,
+                        justifyContent: 'space-between',
+                        paddingBottom: 20,
+                        paddingLeft: 20,
+                        paddingTop: 20,
+                        width: 100,
+                      },
+                      {
+                        opacity: this.loadingValue,
+                      },
+                    ]}
+                  >
+                    <TimestampText>
+                      ${Number(maxValue.value).toFixed(2)}
+                    </TimestampText>
+                    <TimestampText>
+                      $
+                      {Number((maxValue.value + minValue.value) / 2).toFixed(2)}
+                    </TimestampText>
+                    <TimestampText>
+                      ${Number(minValue.value).toFixed(2)}
+                    </TimestampText>
+                  </Animated.View>
+                </View>
               </Animated.View>
-            </View>
+            </PanGestureHandler>
           </Animated.View>
-        </PanGestureHandler>
+        </TapGestureHandler>
         <TimespanSelector reloadChart={this.reloadChart} />
         <Animated.Code
           exec={block([
-            cond(eq(this.gestureState, ACTIVE), set(this.shouldSpring, 1)),
+            cond(
+              or(eq(this.gestureState, ACTIVE), eq(this.gestureState, BEGAN)),
+              set(this.shouldSpring, 1)
+            ),
             cond(
               contains([FAILED, CANCELLED, END], this.gestureState),
               block([
