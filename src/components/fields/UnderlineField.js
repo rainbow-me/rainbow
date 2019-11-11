@@ -3,12 +3,12 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components/primitives';
 import { View } from 'react-native';
 import Animated, { Easing } from 'react-native-reanimated';
+import { setSelectedInputId } from '../../redux/selectedInput';
+import store from '../../redux/store';
 import { colors, position } from '../../styles';
 import { Button } from '../buttons';
 import { Input } from '../inputs';
-import store from '../../redux/store';
 import { Column, FlexItem, Row } from '../layout';
-import { setSelectedInputId } from '../../redux/selectedInput';
 
 const Underline = styled(View)`
   ${position.cover};
@@ -136,7 +136,6 @@ export default class UnderlineField extends PureComponent {
         >
           <FlexItem style={{ paddingRight: 10 }}>
             <Input
-              ref={this.handleRef}
               autoFocus={autoFocus}
               color={colors.blueGreyDark}
               family="SFMono"
@@ -146,6 +145,7 @@ export default class UnderlineField extends PureComponent {
               onChange={this.onChange}
               onFocus={this.onFocus}
               placeholder={placeholder}
+              ref={this.handleRef}
               size="h2"
               value={this.format(String(this.props.value || ''))}
             />

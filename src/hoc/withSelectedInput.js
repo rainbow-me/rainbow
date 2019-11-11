@@ -6,9 +6,4 @@ const mapStateToProps = ({ selectedInput: { selectedInputId } }) => ({
 });
 
 export default Component =>
-  connect(
-    mapStateToProps,
-    {
-      setSelectedInputId,
-    }
-  )(Component);
+  connect(mapStateToProps, { setSelectedInputId })(Component);

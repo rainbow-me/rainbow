@@ -6,7 +6,9 @@ import { Keyboard, Clipboard } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { compose, withProps } from 'recompact';
 import { deleteLocalContact } from '../../handlers/localstorage/contacts';
-import { withNeverRerender } from '../../hoc';
+import { withNeverRerender, withSelectedInput } from '../../hoc';
+import { setSelectedInputId } from '../../redux/selectedInput';
+import store from '../../redux/store';
 import { colors, padding } from '../../styles';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { AddContactButton, PasteAddressButton } from '../buttons';
@@ -15,9 +17,6 @@ import { AddressField } from '../fields';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Label } from '../text';
-import store from '../../redux/store';
-import withSelectedInput from '../../hoc/withSelectedInput';
-import { setSelectedInputId } from '../../redux/selectedInput';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
   ${padding(19, 15)}
@@ -170,11 +169,11 @@ class SendHeader extends PureComponent {
             address={recipient}
             autoFocus
             currentContact={contact}
-            name={contact.nickname}
-            onChange={onChangeAddressInput}
             inputRef={this.handleRef}
-            onFocus={this.onFocus}
+            name={contact.nickname}
             onBlur={this.onBlur}
+            onChange={onChangeAddressInput}
+            onFocus={this.onFocus}
           />
           {isValidAddress && (
             <AddContactButton

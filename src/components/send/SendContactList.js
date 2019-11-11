@@ -6,14 +6,14 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import { withNavigation } from 'react-navigation';
+import { compose } from 'recompose';
+import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
+import withSelectedInput from '../../hoc/withSelectedInput';
+import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
-import { sheetVerticalOffset } from '../../navigation/transitions/effects';
-import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
 import { SwipeableContactRow } from '../contacts';
 import SendEmptyState from './SendEmptyState';
-import withSelectedInput from '../../hoc/withSelectedInput';
-import { compose } from 'recompose';
 
 const LastRowPadding = 12;
 const rowHeight = 62;
@@ -159,8 +159,8 @@ class SendContactList extends Component {
       navigation={this.props.navigation}
       onChange={this.props.onUpdateContacts}
       onPress={this.props.onPressContact}
-      onTouch={this.closeAllDifferentContacts}
       onSelectEdit={this.onSelectEdit}
+      onTouch={this.closeAllDifferentContacts}
       ref={component => {
         this.contacts[item.address] = component;
       }}
@@ -189,7 +189,4 @@ class SendContactList extends Component {
   );
 }
 
-export default compose(
-  withSelectedInput,
-  withNavigation
-)(SendContactList);
+export default compose(withSelectedInput, withNavigation)(SendContactList);
