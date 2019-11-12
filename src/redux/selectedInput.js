@@ -1,7 +1,7 @@
 import produce from 'immer';
 
 // -- Constants --------------------------------------- //
-const SET_SELECTED_INPUT_ID = 'openBalances/SET_SELECTED_INPUT_ID';
+const SET_SELECTED_INPUT_ID = 'selectedInput/SET_SELECTED_INPUT_ID';
 
 export const setSelectedInputId = payload => dispatch => {
   dispatch({

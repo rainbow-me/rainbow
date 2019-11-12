@@ -8,7 +8,7 @@ import {
 import { withNavigation } from 'react-navigation';
 import { compose } from 'recompose';
 import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
-import withSelectedInput from '../../hoc/withSelectedInput';
+import { withSelectedInput } from '../../hoc';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
