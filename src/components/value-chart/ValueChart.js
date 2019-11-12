@@ -103,6 +103,19 @@ export default class ValueChart extends PureComponent {
     this.shouldSpring = new Value(0);
     this.isLoading = new Value(FALSE);
 
+    this.onTapGestureEvent = event([
+      {
+        nativeEvent: {
+          state: state => set(this.gestureState, state),
+          x: x =>
+            cond(
+              and(greaterOrEq(x, 0), lessThan(x, width)),
+              set(this.touchX, x)
+            ),
+        },
+      },
+    ]);
+
     this.onGestureEvent = event([
       {
         nativeEvent: {
@@ -110,11 +123,7 @@ export default class ValueChart extends PureComponent {
             block([cond(neq(FAILED, state), set(this.gestureState, state))]),
           x: x =>
             cond(
-              and(
-                greaterOrEq(x, 0),
-                lessThan(x, width),
-                neq(BEGAN, this.gestureState)
-              ),
+              and(greaterOrEq(x, 0), lessThan(x, width)),
               set(this.touchX, x)
             ),
         },
@@ -129,6 +138,7 @@ export default class ValueChart extends PureComponent {
   };
 
   touchX = new Value(150);
+  lastTouchX = new Value(150);
 
   onPanGestureEvent = event(
     [
@@ -136,8 +146,12 @@ export default class ValueChart extends PureComponent {
         nativeEvent: {
           x: x =>
             cond(
-              and(greaterOrEq(x, 0), lessThan(x, width)),
-              set(this.touchX, x)
+              and(
+                neq(this.lastTouchX, x),
+                greaterOrEq(x, 0),
+                lessThan(x, width)
+              ),
+              [set(this.touchX, x), set(this.lastTouchX, x)]
             ),
         },
       },
@@ -247,13 +261,17 @@ export default class ValueChart extends PureComponent {
             this._text = component;
           }}
         />
-        <TapGestureHandler onHandlerStateChange={this.onGestureEvent}>
+        <TapGestureHandler
+          onHandlerStateChange={this.onTapGestureEvent}
+          maxDeltaY={5}
+        >
           <Animated.View>
             <PanGestureHandler
-              minDist={0}
+              minDist={1}
               shouldActivateOnStart
               onGestureEvent={this.onPanGestureEvent}
               onHandlerStateChange={this.onGestureEvent}
+              failOffsetY={5}
             >
               <Animated.View
                 style={{
