@@ -1,3 +1,4 @@
+import { upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { InteractionManager, Linking, ScrollView } from 'react-native';
@@ -88,7 +89,7 @@ const SettingsSection = ({
         onPress={onPressNetwork}
         label="Network"
       >
-        <ListItemArrowGroup>{network || ''}</ListItemArrowGroup>
+        <ListItemArrowGroup>{upperFirst(network) || ''}</ListItemArrowGroup>
       </ListItem>
       <ListItem
         icon={<SettingIcon source={CurrencyIcon} />}
