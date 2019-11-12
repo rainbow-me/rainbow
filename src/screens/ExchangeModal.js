@@ -609,12 +609,9 @@ class ExchangeModal extends Component {
   };
 
   handleKeyboardManagement = () => {
-    if (!this.lastFocusedInput) {
-      return this.inputFieldRef.focus();
-    }
-
     if (this.lastFocusedInput !== TextInput.State.currentlyFocusedField()) {
-      return TextInput.State.focusTextInput(this.lastFocusedInput);
+      TextInput.State.focusTextInput(this.lastFocusedInput);
+      this.lastFocusedInput = null;
     }
   };
 
