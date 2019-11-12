@@ -146,11 +146,7 @@ class ExchangeModal extends Component {
       'slippage',
     ]);
 
-    if (this.props.isFocused && nextProps.isFocused) {
-      return isNewProps || isNewState;
-    }
-
-    return false;
+    return isNewProps || isNewState;
   };
 
   componentDidUpdate = (prevProps, prevState) => {
@@ -207,7 +203,7 @@ class ExchangeModal extends Component {
 
     if (
       removedFromPending ||
-      isNewValueForPath(this.props, prevProps, inputCurrencyAddressPath)
+      isNewValueForPath(this.state, prevState, inputCurrencyAddressPath)
     ) {
       this.getCurrencyAllowance();
     }
