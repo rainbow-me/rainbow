@@ -7,8 +7,6 @@ import { withNavigation } from 'react-navigation';
 import { compose, withProps } from 'recompact';
 import { deleteLocalContact } from '../../handlers/localstorage/contacts';
 import { withNeverRerender, withSelectedInput } from '../../hoc';
-import { setSelectedInputId } from '../../redux/selectedInput';
-import store from '../../redux/store';
 import { colors, padding } from '../../styles';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { AddContactButton, PasteAddressButton } from '../buttons';
@@ -90,6 +88,7 @@ class SendHeader extends PureComponent {
     onUpdateContacts: PropTypes.func,
     recipient: PropTypes.string,
     selectedInputId: PropTypes.object,
+    setSelectedInputId: PropTypes.func,
   };
 
   handleConfirmDeleteContactSelection = async buttonIndex => {
@@ -141,13 +140,9 @@ class SendHeader extends PureComponent {
     this.input = ref;
   };
 
-  onFocus = () => {
-    store.dispatch(setSelectedInputId(this.input));
-  };
+  onFocus = () => this.props.setSelectedInputId(this.input);
 
-  onBlur = () => {
-    store.dispatch(setSelectedInputId(null));
-  };
+  onBlur = () => this.props.setSelectedInputId(null);
 
   render = () => {
     const {
