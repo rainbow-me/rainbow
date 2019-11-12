@@ -22,17 +22,12 @@ const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
 // -- Actions --------------------------------------------------------------- //
 let getGasPricesInterval = null;
 
-const getEthPriceUnit = assets => {
-  const ethAsset = ethereumUtils.getAsset(assets);
-  return get(ethAsset, 'price.value', 0);
-};
-
 const getDefaultTxFees = () => (dispatch, getState) => {
   const { assets } = getState().data;
   const { gasLimit } = getState().gas;
   const { nativeCurrency } = getState().settings;
   const fallbackGasPrices = getFallbackGasPrices();
-  const ethPriceUnit = getEthPriceUnit(assets);
+  const ethPriceUnit = ethereumUtils.getEthPriceUnit(assets);
   const txFees = parseTxFees(
     fallbackGasPrices,
     ethPriceUnit,
@@ -140,7 +135,7 @@ export const gasUpdateTxFee = (gasLimit, overrideGasOption) => (
   if (isEmpty(gasPrices)) return;
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
-  const ethPriceUnit = getEthPriceUnit(assets);
+  const ethPriceUnit = ethereumUtils.getEthPriceUnit(assets);
   const txFees = parseTxFees(
     gasPrices,
     ethPriceUnit,
