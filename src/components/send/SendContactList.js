@@ -6,10 +6,12 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import { withNavigation } from 'react-navigation';
+import { compose } from 'recompose';
+import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
+import withSelectedInput from '../../hoc/withSelectedInput';
+import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import { deviceUtils } from '../../utils';
 import { FlyInAnimation } from '../animations';
-import { sheetVerticalOffset } from '../../navigation/transitions/effects';
-import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
 import { SwipeableContactRow } from '../contacts';
 import SendEmptyState from './SendEmptyState';
 
@@ -27,7 +29,8 @@ class SendContactList extends Component {
     currentInput: PropTypes.string,
     navigation: PropTypes.object,
     onPressContact: PropTypes.func,
-    onUpdateContacts: PropTypes.array,
+    onUpdateContacts: PropTypes.func,
+    selectedInputId: PropTypes.object,
   };
 
   constructor(args) {
@@ -84,7 +87,7 @@ class SendContactList extends Component {
   };
 
   closeAllDifferentContacts = address => {
-    if (this.touchedContact) {
+    if (this.touchedContact && this.contacts[this.touchedContact]) {
       this.contacts[this.touchedContact].close();
     }
     this.touchedContact = address;
@@ -134,12 +137,29 @@ class SendContactList extends Component {
     return false;
   };
 
+  onSelectEdit = accountInfo => {
+    const { address, color, navigation, nickname, onChange } = accountInfo;
+    const refocusCallback =
+      this.props.selectedInputId && this.props.selectedInputId.focus;
+
+    navigation.navigate('OverlayExpandedAssetScreen', {
+      address,
+      asset: [],
+      color,
+      contact: { address, color, nickname },
+      onCloseModal: onChange,
+      onRefocusInput: refocusCallback,
+      type: 'contact',
+    });
+  };
+
   renderItem = (type, item) => (
     <SwipeableContactRow
       inputRef={this.props.inputRef}
       navigation={this.props.navigation}
       onChange={this.props.onUpdateContacts}
       onPress={this.props.onPressContact}
+      onSelectEdit={this.onSelectEdit}
       onTouch={this.closeAllDifferentContacts}
       ref={component => {
         this.contacts[item.address] = component;
@@ -169,4 +189,4 @@ class SendContactList extends Component {
   );
 }
 
-export default withNavigation(SendContactList);
+export default compose(withSelectedInput, withNavigation)(SendContactList);
