@@ -95,7 +95,7 @@
     "react-native-linear-gradient": "^2.5.6",
     "react-native-mail": "^4.1.0",
     "react-native-os": "icxcat/react-native-os#master",
-    "react-native-permissions": "^2.0.3",
+    "react-native-permissions": "^1.2.1",
     "react-native-qrcode-scanner": "mikedemarais/react-native-qrcode-scanner#2ca70b8c64afb87e712aba578e11409c6406069e",
     "react-native-qrcode-svg": "git+https://github.com/mikedemarais/react-native-qrcode-svg.git",
     "react-native-radial-gradient": "shkatulo/react-native-radial-gradient",
