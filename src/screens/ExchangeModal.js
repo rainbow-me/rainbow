@@ -188,7 +188,6 @@ class ExchangeModal extends Component {
       isNewNativeAmount ||
       isNewOutputReserveCurrency
     ) {
-      LayoutAnimation.easeInEaseOut();
       this.getMarketDetails(isNewOutputReserveCurrency);
     }
 
