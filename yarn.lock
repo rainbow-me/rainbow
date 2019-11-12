@@ -5175,10 +5175,10 @@ he@1.2.0:
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
 
-hermes-engine@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/hermes-engine/-/hermes-engine-0.2.1.tgz#25c0f1ff852512a92cb5c5cc47cf967e1e722ea2"
-  integrity sha512-eNHUQHuadDMJARpaqvlCZoK/Nitpj6oywq3vQ3wCwEsww5morX34mW5PmKWQTO7aU0ck0hgulxR+EVDlXygGxQ==
+hermes-engine@~0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/hermes-engine/-/hermes-engine-0.3.0.tgz#c03ded211102eef775045a5f55e286783db8ad48"
+  integrity sha512-Xl21n/FohkoeQyz/9AeisoePhXaLvXRyT41xkYHOrqoNr+pkLUGc1xIo486ctIxSp5SN4BkN6T3YFWOdD0ntaQ==
 
 hmac-drbg@^1.0.0:
   version "1.0.1"
@@ -5288,9 +5288,9 @@ husky@^2.4.0:
     slash "^3.0.0"
 
 i18n-js@^3.0.11:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/i18n-js/-/i18n-js-3.3.0.tgz#05512f7184b5117c087ab597be649720a834c068"
-  integrity sha512-+m8jh84IIWlFwEJgwrWCkeIwIES9ilJKBOj5qx8ZTLLmlPz7bjKnCdxf254wRf6M4pkQHtgXGT9r9lGk0e9aug==
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/i18n-js/-/i18n-js-3.5.0.tgz#e2c41e1f90405d691d33ddce260f3dff9743215e"
+  integrity sha512-XosH7plfEisWo5XEYxkdlwONsDVQ3sYI3ZoKXcjXdyq+9eVNIJg2h2oPsgadfqcXxpPHMVMNBgmiyW3aEJXg1g==
 
 i18next@^17.0.3:
   version "17.3.1"
@@ -9460,7 +9460,7 @@ react-native-version-number@^0.3.6:
 
 react-native@facebook/react-native:
   version "1000.0.0"
-  resolved "https://codeload.github.com/facebook/react-native/tar.gz/8c63dd3b1a9008798f7a4432b1e1aec2f54a7eba"
+  resolved "https://codeload.github.com/facebook/react-native/tar.gz/8e750d75eedfe4f9465c98b9a28d1b6279257dc0"
   dependencies:
     "@babel/runtime" "^7.0.0"
     "@react-native-community/cli" "^3.0.0-alpha.1"
@@ -9475,7 +9475,7 @@ react-native@facebook/react-native:
     event-target-shim "^5.0.1"
     fbjs "^1.0.0"
     fbjs-scripts "^1.1.0"
-    hermes-engine "^0.2.1"
+    hermes-engine "~0.3.0"
     invariant "^2.2.4"
     jsc-android "^245459.0.0"
     metro-babel-register "0.57.0"
