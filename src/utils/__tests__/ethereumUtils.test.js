@@ -1,4 +1,4 @@
-import { getBalanceAmount } from '../ethereumUtils';
+import ethereumUtils from '../ethereumUtils';
 
 const gasPrice = {
   txFee: {
@@ -13,7 +13,7 @@ it('getBalanceAmountEth', () => {
     address: 'eth',
     balance: { amount: '1' },
   };
-  const updatedBalance = getBalanceAmount(gasPrice, selected);
+  const updatedBalance = ethereumUtils.getBalanceAmount(gasPrice, selected);
   expect(updatedBalance).toBe('0.999999999999979');
 });
 
@@ -22,7 +22,7 @@ it('getBalanceAmountInsufficientEth', () => {
     address: 'eth',
     balance: { amount: '0.00000000000000001' },
   };
-  const updatedBalance = getBalanceAmount(gasPrice, selected);
+  const updatedBalance = ethereumUtils.getBalanceAmount(gasPrice, selected);
   expect(updatedBalance).toBe('0');
 });
 
@@ -31,6 +31,6 @@ it('getBalanceAmountToken', () => {
     address: '0x12345',
     balance: { amount: '1' },
   };
-  const updatedBalance = getBalanceAmount(gasPrice, selected);
+  const updatedBalance = ethereumUtils.getBalanceAmount(gasPrice, selected);
   expect(updatedBalance).toBe('1');
 });

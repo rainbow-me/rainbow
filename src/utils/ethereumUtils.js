@@ -8,7 +8,12 @@ import {
   subtract,
 } from '../helpers/utilities';
 
-export const getBalanceAmount = (selectedGasPrice, selected) => {
+const getEthPriceUnit = assets => {
+  const ethAsset = getAsset(assets);
+  return get(ethAsset, 'price.value', 0);
+};
+
+const getBalanceAmount = (selectedGasPrice, selected) => {
   let amount = '';
   if (selected.address === 'eth') {
     const balanceAmount = get(selected, 'balance.amount', 0);
@@ -22,7 +27,7 @@ export const getBalanceAmount = (selectedGasPrice, selected) => {
   return amount;
 };
 
-export const getAsset = (assets, address = 'eth') =>
+const getAsset = (assets, address = 'eth') =>
   find(assets, asset => asset.address === address);
 
 /**
@@ -30,7 +35,7 @@ export const getAsset = (assets, address = 'eth') =>
  * @param  {String} hex
  * @return {String}
  */
-export const removeHexPrefix = hex => replace(toLower(hex), '0x', '');
+const removeHexPrefix = hex => replace(toLower(hex), '0x', '');
 
 /**
  * @desc pad string to specific width and padding
@@ -39,7 +44,7 @@ export const removeHexPrefix = hex => replace(toLower(hex), '0x', '');
  * @param  {String} z
  * @return {String}
  */
-export const padLeft = (n, width, z) => {
+const padLeft = (n, width, z) => {
   z = z || '0';
   n = n + '';
   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
@@ -51,7 +56,7 @@ export const padLeft = (n, width, z) => {
  * @param  {Array}  arrVals
  * @return {String}
  */
-export const getDataString = (func, arrVals) => {
+const getDataString = (func, arrVals) => {
   let val = '';
   for (let i = 0; i < arrVals.length; i++) val += padLeft(arrVals[i], 64);
   const data = func + val;
@@ -62,7 +67,7 @@ export const getDataString = (func, arrVals) => {
  * @desc get network string from chainId
  * @param  {Number} chainId
  */
-export const getNetworkFromChainId = chainId => {
+const getNetworkFromChainId = chainId => {
   const networkData = find(chains, ['chain_id', chainId]);
   return get(networkData, 'network', 'mainnet');
 };
@@ -71,7 +76,7 @@ export const getNetworkFromChainId = chainId => {
  * @desc get chainId from network string
  * @param  {String} network
  */
-export const getChainIdFromNetwork = network => {
+const getChainIdFromNetwork = network => {
   const chainData = find(chains, ['network', network]);
   return get(chainData, 'chain_id', 1);
 };
@@ -83,7 +88,7 @@ export const getChainIdFromNetwork = network => {
  * @param  {String} gasPrice
  * @return {Object} ethereum, balanceAmount, balance, requestedAmount, txFeeAmount, txFee, amountWithFees
  */
-export const transactionData = (assets, assetAmount, gasPrice) => {
+const transactionData = (assets, assetAmount, gasPrice) => {
   const ethereum = getAsset(assets);
   const balance = get(ethereum, 'balance.amount', 0);
   const requestedAmount = convertNumberToString(assetAmount);
@@ -104,6 +109,7 @@ export default {
   getBalanceAmount,
   getChainIdFromNetwork,
   getDataString,
+  getEthPriceUnit,
   getNetworkFromChainId,
   removeHexPrefix,
   transactionData,
