@@ -47,7 +47,7 @@ const mapStateToProps = ({ send, settings }) => ({
 export const withSendComponentWithData = (SendComponent, options) => {
   class SendComponentWithData extends Component {
     static propTypes = {
-      accountType: PropTypes.string.isRequired,
+      accountType: PropTypes.string,
       address: PropTypes.string,
       assetAmount: PropTypes.string.isRequired,
       assets: PropTypes.array.isRequired,

@@ -1,4 +1,5 @@
 import {
+  getMarketDetails as getUniswapMarketDetails,
   tradeEthForExactTokensWithData,
   tradeExactEthForTokensWithData,
   tradeExactTokensForEthWithData,
@@ -10,7 +11,7 @@ import BigNumber from 'bignumber.js';
 import { get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
-import { LayoutAnimation, TextInput } from 'react-native';
+import { TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { withNavigationFocus, NavigationEvents } from 'react-navigation';
 import { compose, toClass, withProps } from 'recompact';
@@ -38,6 +39,7 @@ import {
   convertAmountToRawAmount,
   convertNumberToString,
   convertRawAmountToDecimalFormat,
+  divide,
   greaterThan,
   subtract,
   updatePrecisionToDisplay,
@@ -144,11 +146,7 @@ class ExchangeModal extends Component {
       'slippage',
     ]);
 
-    if (this.props.isFocused && nextProps.isFocused) {
-      return isNewProps || isNewState;
-    }
-
-    return false;
+    return isNewProps || isNewState;
   };
 
   componentDidUpdate = (prevProps, prevState) => {
@@ -190,7 +188,6 @@ class ExchangeModal extends Component {
       isNewNativeAmount ||
       isNewOutputReserveCurrency
     ) {
-      LayoutAnimation.easeInEaseOut();
       this.getMarketDetails(isNewOutputReserveCurrency);
     }
 
@@ -205,7 +202,7 @@ class ExchangeModal extends Component {
 
     if (
       removedFromPending ||
-      isNewValueForPath(this.props, prevProps, inputCurrencyAddressPath)
+      isNewValueForPath(this.state, prevState, inputCurrencyAddressPath)
     ) {
       this.getCurrencyAllowance();
     }
@@ -611,12 +608,9 @@ class ExchangeModal extends Component {
   };
 
   handleKeyboardManagement = () => {
-    if (!this.lastFocusedInput) {
-      return this.inputFieldRef.focus();
-    }
-
     if (this.lastFocusedInput !== TextInput.State.currentlyFocusedField()) {
-      return TextInput.State.focusTextInput(this.lastFocusedInput);
+      TextInput.State.focusTextInput(this.lastFocusedInput);
+      this.lastFocusedInput = null;
     }
   };
 
@@ -634,6 +628,15 @@ class ExchangeModal extends Component {
     });
   };
 
+  getMarketPrice = () => {
+    const { allAssets, inputReserve } = this.props;
+    if (!inputReserve) return 0;
+    const ethPrice = ethereumUtils.getEthPriceUnit(allAssets);
+    const inputMarketDetails = getUniswapMarketDetails(undefined, inputReserve);
+    const assetToEthPrice = get(inputMarketDetails, 'marketRate.rate');
+    return divide(ethPrice, assetToEthPrice) || 0;
+  };
+
   setInputAmount = (inputAmount, amountDisplay, inputAsExactAmount = true) => {
     this.setState(({ inputCurrency }) => {
       const newState = {
@@ -649,7 +652,10 @@ class ExchangeModal extends Component {
         const isInputZero = parseFloat(inputAmount) === 0;
 
         if (inputAmount && !isInputZero) {
-          const nativePrice = get(inputCurrency, 'native.price.amount', 0);
+          let nativePrice = get(inputCurrency, 'native.price.amount', null);
+          if (isNil(nativePrice)) {
+            nativePrice = this.getMarketPrice();
+          }
           nativeAmount = convertAmountToNativeAmount(inputAmount, nativePrice);
         }
 
@@ -690,11 +696,14 @@ class ExchangeModal extends Component {
       const isNativeZero = parseFloat(nativeAmount) === 0;
 
       if (nativeAmount && !isNativeZero) {
-        const nativePrice = get(inputCurrency, 'native.price.amount', 0);
+        let nativePrice = get(inputCurrency, 'native.price.amount', null);
+        if (isNil(nativePrice)) {
+          nativePrice = this.getMarketPrice();
+        }
         inputAmount = convertAmountFromNativeValue(nativeAmount, nativePrice);
         inputAmountDisplay = updatePrecisionToDisplay(
           inputAmount,
-          get(inputCurrency, 'price.value'),
+          nativePrice,
           true
         );
       }

@@ -353,6 +353,8 @@ PODS:
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - ReactCommon/callinvoker (= 1000.0.0)
+  - ReactNativePermissions (1.2.1):
+    - React
   - RNAnalytics (1.1.0):
     - Analytics
     - React
@@ -382,8 +384,6 @@ PODS:
   - RNLanguages (3.0.2):
     - React
   - RNOS (1.1.0):
-    - React
-  - RNPermissions (2.0.3):
     - React
   - RNReactNativeHapticFeedback (1.8.2):
     - React
@@ -457,6 +457,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - ReactCommon/callinvoker (from `../node_modules/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - ReactNativePermissions (from `../node_modules/react-native-permissions`)
   - "RNAnalytics (from `../node_modules/@segment/analytics-react-native`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
@@ -467,7 +468,6 @@ DEPENDENCIES:
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNLanguages (from `../node_modules/react-native-languages`)
   - RNOS (from `../node_modules/react-native-os`)
-  - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReactNativeHapticFeedback (from `../node_modules/react-native-haptic-feedback`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -581,6 +581,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/Libraries/Vibration"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  ReactNativePermissions:
+    :path: "../node_modules/react-native-permissions"
   RNAnalytics:
     :path: "../node_modules/@segment/analytics-react-native"
   RNCAsyncStorage:
@@ -601,8 +603,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-languages"
   RNOS:
     :path: "../node_modules/react-native-os"
-  RNPermissions:
-    :path: "../node_modules/react-native-permissions"
   RNReactNativeHapticFeedback:
     :path: "../node_modules/react-native-haptic-feedback"
   RNReanimated:
@@ -633,8 +633,8 @@ SPEC CHECKSUMS:
   Crashlytics: 55e24fc23989680285a21cb1146578d9d18e432c
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   Fabric: 25d0963b691fc97be566392243ff0ecef5a68338
-  FBLazyVector: 5941a412090840d8454b63f5deddc334d3e66ec1
-  FBReactNativeSpec: 4e760ee4050dfda7e234635346f0ee7ca47ada49
+  FBLazyVector: 210b3eaff713673bf7d6bb43e41153ff91262431
+  FBReactNativeSpec: b78f09a9b711428a445e77b633c96291005be7a1
   Firebase: 5965bac23e7fcb5fa6d926ed429c9ecef8a2014e
   FirebaseAnalytics: 629301c2b9925f3537d4093a17a72751ae5b7084
   FirebaseAnalyticsInterop: d48b6ab67bcf016a05e55b71fc39c61c0cb6b7f3
@@ -650,15 +650,15 @@ SPEC CHECKSUMS:
   libwebp: 057912d6d0abfb6357d8bb05c0ea470301f5d61e
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   Protobuf: a4dc852ad69c027ca2166ed287b856697814375b
-  RCTRequired: 6cb19d0cdc3cdbd049f0f1d54d579ce45a2d18b3
-  RCTTypeSafety: 72c13a219b3e3f767f17a0207ead9b91e34dda98
-  React: e84718e1b6e37662a56676196e70cb548d5dc82d
-  React-Core: 410c225ed959c8b92bb0b6cf8e15269229e1bc4b
-  React-CoreModules: 178af3b46382139ec79adaab4d7df174aca8d708
-  React-cxxreact: 9b691755a0958781dfef5c3e006c948eaa89896a
-  React-jsi: de7c2b3f5677ca946990fefae03b185b1b1a3cab
-  React-jsiexecutor: 6ba5c0957102f46bb59ae1da5aa0a39dc0471ea2
-  React-jsinspector: 5f6f950665fe118bf09094c768f5e1585d6c9faf
+  RCTRequired: ee4195302dc3f8a69dd0208deb1ac4521639f236
+  RCTTypeSafety: 7fd7b22d06920927cf362b0cd45b3ae41c508728
+  React: fb5f888af23fd5ea0b15beaa339a2aa48cd7505f
+  React-Core: 86ac27467597319d5e3845ee016b9d4fe6e2b9ee
+  React-CoreModules: b9211dff9f5b58e187a41aa57b8210ade6906846
+  React-cxxreact: 815ae7adcaa6f83c9a14120202882b3e0fc551dc
+  React-jsi: 3df445e3ca2abf4176f11880c0cbbe3928215a08
+  React-jsiexecutor: 7eb566c1d783a74a81f38148ed59b663c89a804c
+  React-jsinspector: 66138c3ee67dd1fdec84c58072b86430e2268b5f
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: c529629e3ecd017dcdacfd0355576ef489d9d198
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
@@ -668,16 +668,17 @@ SPEC CHECKSUMS:
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-udp: 54a1aa9bf5c0824f930b1ba6dbfb3fd3e733bba9
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
-  React-RCTActionSheet: c8458a9d0d7068c89b080dceb703c62409362b9c
-  React-RCTAnimation: 683d473651a4fe92dcfcfbe46cd97e737a2d9524
-  React-RCTBlob: aad21f3f52f00d666fd4bba5e61b499ea973c768
-  React-RCTImage: 4860c2ee02200535ff6c4b98d2335d5caa0a5361
-  React-RCTLinking: da8550a85c729b7254a424d9bd2713c41af2a7a4
-  React-RCTNetwork: c1369c792662ef2bf6a9654dda5d6fed553eacbd
-  React-RCTSettings: 360a138e20baa5123c3707cc06252db6c01066ce
-  React-RCTText: 6667febb3da7f709cd0661d3c3c5e3f50207e6b0
-  React-RCTVibration: adfe01cff28981427aef496b578d1d63372b9efd
-  ReactCommon: 3e28aaf6de1505111189685989f4a5ebe6cc409c
+  React-RCTActionSheet: a1ef62eebe8c9d61d00ccce86f4bdf050c80a0ef
+  React-RCTAnimation: 5442181d0b3100a53eb1135c318659b1baa03a25
+  React-RCTBlob: 8e7beeb14dd9f4f25b10622cfb24f19cb123259d
+  React-RCTImage: 00f1c6e1c99f795dbc01425da43d8628f678b7ee
+  React-RCTLinking: 0d2288627f79fff0c4fd3cec800ae776b3e41197
+  React-RCTNetwork: 666ce399bc8a36e65fc51bc8bee787b8f0e07f4b
+  React-RCTSettings: c6e57cdc13eb6b46adca74463f462e3f448b63ed
+  React-RCTText: 2118cedfd39f0f11b865ef7345b132e77d5526f6
+  React-RCTVibration: 31dbba8d9e21ea73a34e0239b8b7fc0d3615df6f
+  ReactCommon: 7e9df6ab843723ae92083170f6221391626b7df8
+  ReactNativePermissions: 7cfad56d13c8961cd2a1005b4955b1400c79ef3e
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 60a80e72d95bf02a01cace55d3697d9724f0d77f
   RNCMaskedView: dd13f9f7b146a9ad82f9b7eb6c9b5548fcf6e990
@@ -688,7 +689,6 @@ SPEC CHECKSUMS:
   RNKeychain: 45dbd50d1ac4bd42c3740f76ffb135abf05746d0
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNOS: 811de7b4be8824a86a775ade934147a02edb9b5a
-  RNPermissions: 9e437a90de84a5402ff689d4da233730b81556c2
   RNReactNativeHapticFeedback: e11a4da0ce174e9f88b03cbaf5d76d94633cdee2
   RNReanimated: 6abbbae2e5e72609d85aabd92a982a94566885f1
   RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
@@ -701,7 +701,7 @@ SPEC CHECKSUMS:
   TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
-  Yoga: 03905d5f074f7f0bdb2d13b164010826bbeeeae6
+  Yoga: a3c2c5dfb24cd30eb3207b2c1808901f287ed319
 
 PODFILE CHECKSUM: c2dd20b4f67edce36459865856cb810e185bdcd4
 

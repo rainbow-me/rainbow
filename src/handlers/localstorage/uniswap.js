@@ -1,9 +1,10 @@
+import { forEach } from 'lodash';
 import {
   getAccountLocal,
   getGlobal,
-  removeAccountLocalMulti,
   saveAccountLocal,
   saveGlobal,
+  removeAccountLocal,
 } from './common';
 
 const ASSETS = 'uniswapassets';
@@ -66,4 +67,6 @@ export const saveUniswapPendingApprovals = (
   );
 
 export const removeUniswapStorage = (accountAddress, network) =>
-  removeAccountLocalMulti(uniswapAccountLocalKeys, accountAddress, network);
+  forEach(uniswapAccountLocalKeys, key =>
+    removeAccountLocal(key, accountAddress, network)
+  );

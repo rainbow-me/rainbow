@@ -1,5 +1,7 @@
 export { default as SendAssetForm } from './SendAssetForm';
+export { default as SendAssetFormCollectible } from './SendAssetFormCollectible';
 export { default as SendAssetFormField } from './SendAssetFormField';
+export { default as SendAssetFormToken } from './SendAssetFormToken';
 export { default as SendAssetList } from './SendAssetList';
 export { default as SendButton } from './SendButton';
 export { default as SendContactList } from './SendContactList';
