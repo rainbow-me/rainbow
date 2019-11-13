@@ -38,14 +38,9 @@ const FabShadow = [
   [0, 1, 18, colors.dark, 0.12],
 ];
 
-const BottomSendButtons = ({
-  onPressSend,
-  onPressSwap,
-}) => (
+const BottomSendButtons = ({ onPressSend, onPressSwap }) => (
   <Container>
-    <ButtonPressAnimation
-      onPress={onPressSwap}
-    >
+    <ButtonPressAnimation onPress={onPressSwap}>
       <ShadowStack
         height={52}
         borderRadius={26}
@@ -53,25 +48,14 @@ const BottomSendButtons = ({
         shadows={FabShadow}
         shadowProps={{ opacity: 1 }}
       >
-        <Button
-          backgroundColor={colors.dodgerBlue}
-        >
-          <Icon
-            height={22}
-            marginBottom={4}
-            name="swap"
-            width={23}
-          />
-          <ButtonText>
-            Swap
-          </ButtonText>
+        <Button backgroundColor={colors.dodgerBlue}>
+          <Icon height={22} marginBottom={4} name="swap" width={23} />
+          <ButtonText>Swap</ButtonText>
         </Button>
       </ShadowStack>
     </ButtonPressAnimation>
 
-    <ButtonPressAnimation
-      onPress={onPressSend}
-    >
+    <ButtonPressAnimation onPress={onPressSend}>
       <ShadowStack
         height={52}
         borderRadius={26}
@@ -79,18 +63,9 @@ const BottomSendButtons = ({
         shadows={FabShadow}
         shadowProps={{ opacity: 1 }}
       >
-        <Button
-          backgroundColor={colors.paleBlue}
-        >
-          <Icon
-            height={22}
-            marginBottom={4}
-            name="send"
-            width={23}
-          />
-          <ButtonText>
-            Send
-          </ButtonText>
+        <Button backgroundColor={colors.paleBlue}>
+          <Icon height={22} marginBottom={4} name="send" width={23} />
+          <ButtonText>Send</ButtonText>
         </Button>
       </ShadowStack>
     </ButtonPressAnimation>

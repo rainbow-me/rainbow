@@ -106,7 +106,7 @@ export default class ValueChart extends PureComponent {
     this.onTapGestureEvent = event([
       {
         nativeEvent: {
-          state: state => set(this.gestureState, state),
+          state: this.gestureState,
           x: x =>
             cond(
               and(greaterOrEq(x, 0), lessThan(x, width)),
@@ -116,16 +116,11 @@ export default class ValueChart extends PureComponent {
       },
     ]);
 
-    this.onGestureEvent = event([
+    this.onHandlerStateChange = event([
       {
         nativeEvent: {
           state: state =>
             block([cond(neq(FAILED, state), set(this.gestureState, state))]),
-          x: x =>
-            cond(
-              and(greaterOrEq(x, 0), lessThan(x, width)),
-              set(this.touchX, x)
-            ),
         },
       },
     ]);
@@ -263,15 +258,15 @@ export default class ValueChart extends PureComponent {
         />
         <TapGestureHandler
           onHandlerStateChange={this.onTapGestureEvent}
-          maxDeltaY={5}
+          maxDeltaY={50}
         >
           <Animated.View>
             <PanGestureHandler
               minDist={1}
               shouldActivateOnStart
               onGestureEvent={this.onPanGestureEvent}
-              onHandlerStateChange={this.onGestureEvent}
-              failOffsetY={5}
+              onHandlerStateChange={this.onHandlerStateChange}
+              failOffsetY={4}
             >
               <Animated.View
                 style={{

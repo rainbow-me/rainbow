@@ -31,30 +31,27 @@ class ValueText extends React.Component {
     direction: PropTypes.bool,
     headerText: PropTypes.string,
     startValue: PropTypes.string,
-    text: PropTypes.string,
   };
 
   state = {
     text: this.props.startValue,
-  }
+  };
 
-  updateValue = (text) => {
+  updateValue = text => {
     this.setState({ text });
-  }
+  };
 
   render() {
     return (
-      <View style={{
-        height: 85,
-        paddingLeft: 15,
-        width: deviceUtils.dimensions.width,
-      }}>
-        <Header>
-          {this.props.headerText}
-        </Header>
-        <Title>
-          ${Number(this.state.text).toFixed(2)}
-        </Title>
+      <View
+        style={{
+          height: 85,
+          paddingLeft: 15,
+          width: deviceUtils.dimensions.width,
+        }}
+      >
+        <Header>{this.props.headerText}</Header>
+        <Title>${Number(this.state.text).toFixed(2)}</Title>
         <TrendIndicatorText direction={this.props.direction}>
           {this.props.change}%
         </TrendIndicatorText>

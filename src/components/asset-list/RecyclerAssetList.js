@@ -761,8 +761,8 @@ class RecyclerAssetList extends Component {
         });
   };
 
-  overrideROwRenderer = (type, data, index) => {
-    return <AssetListHeader {...data} isSticky={true}/>;
+  overrideROwRenderer = (type, data) => {
+    return <AssetListHeader {...data} isSticky />;
   };
 
   render() {

@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, pure, withHandlers, withProps } from 'recompact';
-import styled from 'styled-components/primitives';
-import { colors, padding, shadow } from '../../styles';
+import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Nbsp } from '../html-entities';
 import { Column, Row } from '../layout';
@@ -24,12 +23,12 @@ const Title = withProps({
 const enhance = compose(
   pure,
   withHandlers({
-    onPress: ({ onPress }) => (event) => {
+    onPress: ({ onPress }) => event => {
       if (onPress) {
         onPress(event);
       }
     },
-  }),
+  })
 );
 
 const ExchangeGasFeeButton = enhance(({ gasPrice, onPress }) => (
@@ -38,22 +37,18 @@ const ExchangeGasFeeButton = enhance(({ gasPrice, onPress }) => (
       <Row align="center" justify="space-between">
         <Title>{gasPrice}</Title>
         <Row align="center" justify="end" height={26}>
-          <Emoji
-            letterSpacing="tight"
-            name="stopwatch"
-            size="lmedium"
-          />
+          <Emoji letterSpacing="tight" name="stopwatch" size="lmedium" />
           <Nbsp />
-          <Title>
-            Normal
-          </Title>
+          <Title>Normal</Title>
         </Row>
       </Row>
       <Row align="center" justify="space-between">
         <Label>Fee</Label>
         <Row align="center" justify="end">
           <Label>Swaps in ~</Label>
-          <Label><Nbsp />2 min</Label>
+          <Label>
+            <Nbsp />2 min
+          </Label>
         </Row>
       </Row>
     </Column>

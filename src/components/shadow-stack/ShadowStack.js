@@ -6,7 +6,7 @@ import styled from 'styled-components/primitives';
 import { colors, position } from '../../styles';
 import ShadowItem from './ShadowItem';
 
-  // flex-shrink: 0;
+// flex-shrink: 0;
 const ChildrenWrapper = styled.View`
   ${position.cover};
   background-color: ${colors.transparent};
@@ -21,8 +21,8 @@ const ShadowStackContainer = styled.View`
   border-radius: ${({ borderRadius }) => borderRadius};
   z-index: 1;
 `;
-  // width: ${({ width }) => width};
-  // height: ${({ height }) => height};
+// width: ${({ width }) => width};
+// height: ${({ height }) => height};
 
 const ShadowItemPropBlacklist = ['children', 'shadowProps', 'shadows', 'style'];
 
