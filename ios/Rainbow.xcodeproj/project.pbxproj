@@ -22,7 +22,6 @@
 		1B1113DAF261410889D80146 /* SF-Pro-Display-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2AEF0207B9724FE5A27519FF /* SF-Pro-Display-Medium.otf */; };
 		216C17A836F44ACE8D79ACC7 /* SF-Pro-Display-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = 662C7FD632C1481AB5AB1DB7 /* SF-Pro-Display-Thin.otf */; };
 		23320186D7F747FEB02451C6 /* SF-Pro-Text-HeavyItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1DEDF110038147A598C9B152 /* SF-Pro-Text-HeavyItalic.otf */; };
-		24122D54232F2B3200BA0B17 /* InputMask.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24122D53232F2B3200BA0B17 /* InputMask.framework */; };
 		24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 24979E7720F84004007EB0DA /* GoogleService-Info.plist */; };
 		26095B12C30047F89592D463 /* SF-Pro-Text-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 944CF612F0304DF281E33B66 /* SF-Pro-Text-Regular.otf */; };
 		2D7BB74FB1A44EE2A2426373 /* SF-Pro-Text-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = E672AB1C5404435897615660 /* SF-Pro-Text-Light.otf */; };
@@ -42,6 +41,8 @@
 		5D1949044DCB413FBE7AE82E /* SFMono-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2C4A4A4FB3D84F14A48989D8 /* SFMono-Light.otf */; };
 		5F34DEED060F41878C4C5A59 /* SFMono-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0A8698C728414E56A3FD89A6 /* SFMono-Heavy.otf */; };
 		66620AB752074CB6938E956A /* Graphik-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2DA6F347A6B540399883FF91 /* Graphik-MediumItalic.otf */; };
+		66CA6CFE237C27E200C8E3D6 /* InputMask.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CA6CFD237C27E200C8E3D6 /* InputMask.framework */; };
+		66CA6CFF237C27E200C8E3D6 /* InputMask.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 66CA6CFD237C27E200C8E3D6 /* InputMask.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6928E7805EA5404480C48640 /* Graphik-LightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = D551F7BECCAF4CE3BC8C0C3D /* Graphik-LightItalic.otf */; };
 		7287CE1EC33B4913AEE1F4B6 /* SFMono-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 668A9E253DAF444A90ECB997 /* SFMono-Medium.otf */; };
 		7E04FF8B32EC4F2BB6BF1403 /* Graphik-ExtralightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 273D2D617F3F43E99F8F404B /* Graphik-ExtralightItalic.otf */; };
@@ -64,7 +65,6 @@
 		C66451ECC2944B439E123CF2 /* SF-Pro-Display-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = BE239BA93F6B4EDC867B1A41 /* SF-Pro-Display-Black.otf */; };
 		CAD3BF43528D47159190E17B /* SF-Pro-Display-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3459F05BF10649C4A787D900 /* SF-Pro-Display-MediumItalic.otf */; };
 		CB988C526B0C48FC9750A038 /* SF-Pro-Display-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 84DB92DCDF5D4374B26FFCC6 /* SF-Pro-Display-BoldItalic.otf */; };
-		D6A5F5CB2369A22A009BEF29 /* InputMask.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 24122D53232F2B3200BA0B17 /* InputMask.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DBBDEB86E54044EE8712C882 /* Graphik-BlackItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = CEC826911B5641B8AF788BB3 /* Graphik-BlackItalic.otf */; };
 		E98BBF45029948B38545996F /* Graphik-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E6F010E529544E518E1792C7 /* Graphik-Bold.otf */; };
 		ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2971642150620600B7C4FE /* JavaScriptCore.framework */; };
@@ -90,7 +90,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				D6A5F5CB2369A22A009BEF29 /* InputMask.framework in Embed Frameworks */,
+				66CA6CFF237C27E200C8E3D6 /* InputMask.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -115,7 +115,6 @@
 		182DC054E3584C83822F2A82 /* Graphik-RegularItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-RegularItalic.otf"; path = "../src/assets/fonts/Graphik-RegularItalic.otf"; sourceTree = "<group>"; };
 		1DEDF110038147A598C9B152 /* SF-Pro-Text-HeavyItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-HeavyItalic.otf"; path = "../src/assets/fonts/SF-Pro-Text-HeavyItalic.otf"; sourceTree = "<group>"; };
 		233322FCDC624F6FA60C4B52 /* SF-Pro-Text-Heavy.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-Heavy.otf"; path = "../src/assets/fonts/SF-Pro-Text-Heavy.otf"; sourceTree = "<group>"; };
-		24122D53232F2B3200BA0B17 /* InputMask.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = InputMask.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		24979E3620F84003007EB0DA /* Protobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Protobuf.framework; path = Frameworks/Protobuf.framework; sourceTree = "<group>"; };
 		24979E7420F84004007EB0DA /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };
 		24979E7520F84004007EB0DA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCore.framework; path = Frameworks/FirebaseCore.framework; sourceTree = "<group>"; };
@@ -152,6 +151,7 @@
 		662C7FD632C1481AB5AB1DB7 /* SF-Pro-Display-Thin.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Thin.otf"; path = "../src/assets/fonts/SF-Pro-Display-Thin.otf"; sourceTree = "<group>"; };
 		668A9E253DAF444A90ECB997 /* SFMono-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Medium.otf"; path = "../src/assets/fonts/SFMono-Medium.otf"; sourceTree = "<group>"; };
 		66C5D39A1EDC48A6255FF83C /* Pods-Rainbow.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.debug.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.debug.xcconfig"; sourceTree = "<group>"; };
+		66CA6CFD237C27E200C8E3D6 /* InputMask.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = InputMask.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C1814FA03B309E79858CD16 /* libPods-Rainbow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rainbow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		715DAAA3174542BAB93807A6 /* SF-Pro-Text-RegularItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-RegularItalic.otf"; path = "../src/assets/fonts/SF-Pro-Text-RegularItalic.otf"; sourceTree = "<group>"; };
 		7818F79CD3944D17AF4196A5 /* Graphik-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Black.otf"; path = "../src/assets/fonts/Graphik-Black.otf"; sourceTree = "<group>"; };
@@ -206,9 +206,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */,
-				24122D54232F2B3200BA0B17 /* InputMask.framework in Frameworks */,
 				0E56AA9A8843EB50FA4BDD4F /* libPods-Rainbow.a in Frameworks */,
 				3D5D4DF2FD7C44EE962100E3 /* libRNTextInputMask.a in Frameworks */,
+				66CA6CFE237C27E200C8E3D6 /* InputMask.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,6 +263,7 @@
 			children = (
 				66139B432368A9AE0097D1D5 /* libRNFirebase.a */,
 				6613987F23689A430097D1D5 /* libReact-Core.a */,
+				66CA6CFD237C27E200C8E3D6 /* InputMask.framework */,
 				6613988123689A430097D1D5 /* libReact-CoreModules.a */,
 				6613988323689A430097D1D5 /* libReact-cxxreact.a */,
 				6613988523689A430097D1D5 /* libReact-jsi.a */,
@@ -301,7 +302,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				24122D53232F2B3200BA0B17 /* InputMask.framework */,
 				13B07FAE1A68108700A75B9A /* Rainbow */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* RainbowTests */,
