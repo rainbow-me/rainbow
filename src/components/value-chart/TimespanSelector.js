@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
 import Animated, { spring, Value } from 'react-native-reanimated';
+import ChartTypes from '../../helpers/chartTypes';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import ValueTime from './ValueTime';
@@ -52,7 +53,7 @@ class TimespanSelector extends React.Component {
     this.animateTransition(0);
     setTimeout(() => {
       this.setState({ currentInterval: interval.DAY });
-      this.props.reloadChart(interval.DAY);
+      this.props.reloadChart(ChartTypes.day);
     });
   };
 
@@ -60,7 +61,7 @@ class TimespanSelector extends React.Component {
     this.animateTransition(1);
     setTimeout(() => {
       this.setState({ currentInterval: interval.WEEK });
-      this.props.reloadChart(interval.WEEK);
+      this.props.reloadChart(ChartTypes.week);
     });
   };
 
@@ -68,7 +69,7 @@ class TimespanSelector extends React.Component {
     this.animateTransition(2);
     setTimeout(() => {
       this.setState({ currentInterval: interval.MONTH });
-      this.props.reloadChart(interval.MONTH);
+      this.props.reloadChart(ChartTypes.month);
     });
   };
 
@@ -76,7 +77,7 @@ class TimespanSelector extends React.Component {
     this.animateTransition(3);
     setTimeout(() => {
       this.setState({ currentInterval: interval.YEAR });
-      this.props.reloadChart(interval.YEAR);
+      this.props.reloadChart(ChartTypes.year);
     });
   };
 

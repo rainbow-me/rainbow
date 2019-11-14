@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, isEmpty, reverse } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { InteractionManager } from 'react-native';
@@ -10,7 +10,11 @@ import {
   withState,
 } from 'recompact';
 import styled from 'styled-components/primitives';
-import { withAccountData } from '../../hoc';
+import {
+  withAccountCharts,
+  withAccountData,
+  withAccountSettings,
+} from '../../hoc';
 import { colors } from '../../styles';
 import { deviceUtils, ethereumUtils } from '../../utils';
 import Divider from '../Divider';
@@ -71,35 +75,46 @@ const ChartExpandedState = ({ onPressSend, onPressSwap, selectedAsset }) => {
 };
 
 ChartExpandedState.propTypes = {
+  asset: PropTypes.object,
   change: PropTypes.string,
   changeDirection: PropTypes.bool,
-  isOpen: PropTypes.bool,
+  chart: PropTypes.array,
+  chartsUpdateChartType: PropTypes.func,
+  fetchingCharts: PropTypes.bool,
+  hasChart: PropTypes.bool,
+  isLoading: PropTypes.bool,
+  nativeCurrency: PropTypes.string,
   onPressSend: PropTypes.func,
   onPressSwap: PropTypes.func,
   price: PropTypes.string,
-  selectedAsset: PropTypes.object,
   subtitle: PropTypes.string,
   title: PropTypes.string,
 };
 
+// TODO JIN make this better by just passing in chart
 export default compose(
   withAccountData,
+  withAccountCharts,
+  withAccountSettings,
   withState('isOpen', 'setIsOpen', false),
-  withProps(({ asset: { address, ...asset }, assets }) => {
-    let selectedAsset = ethereumUtils.getAsset(assets, address);
-    if (!selectedAsset) {
-      selectedAsset = asset;
+  withProps(
+    ({ asset: { address, ...asset }, charts, assets, fetchingCharts }) => {
+      let selectedAsset = ethereumUtils.getAsset(assets, address);
+      if (!selectedAsset) {
+        selectedAsset = asset;
+      }
+      const chart = reverse(get(charts, `${asset.address}`, []));
+      const hasChart = !isEmpty(chart);
+      return {
+        change: get(asset, 'native.change', '-'),
+        changeDirection: get(asset, 'price.relative_change_24h', 0) > 0,
+        chart,
+        hasChart,
+        isLoading: !hasChart && fetchingCharts,
+      };
     }
-    return {
-      change: get(selectedAsset, 'native.change', '-'),
-      changeDirection: get(selectedAsset, 'price.relative_change_24h', 0) > 0,
-      selectedAsset,
-    };
-  }),
+  ),
   withHandlers({
-    onOpen: ({ setIsOpen }) => () => {
-      setIsOpen(true);
-    },
     onPressSend: ({ navigation, asset }) => () => {
       navigation.goBack();
 
@@ -115,5 +130,5 @@ export default compose(
       });
     },
   }),
-  onlyUpdateForKeys(['price', 'subtitle'])
+  onlyUpdateForKeys(['fetchingCharts', 'price', 'subtitle'])
 )(ChartExpandedState);

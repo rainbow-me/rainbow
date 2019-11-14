@@ -36,7 +36,7 @@ const TrendIndicatorText = ({ children, direction }) => (
 
 TrendIndicatorText.propTypes = {
   children: PropTypes.string,
-  direction: PropTypes.string,
+  direction: PropTypes.bool,
 };
 
 export default TrendIndicatorText;
