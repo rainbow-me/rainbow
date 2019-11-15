@@ -11,7 +11,7 @@ import BigNumber from 'bignumber.js';
 import { get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
-import { TextInput } from 'react-native';
+import { TextInput, InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { withNavigationFocus, NavigationEvents } from 'react-navigation';
 import { compose, toClass, withProps } from 'recompact';
@@ -132,6 +132,20 @@ class ExchangeModal extends Component {
       'outputReserve.token.address',
     ]);
 
+    // Code below is a workaround. We noticed that opening keyboard while animation
+    // (with autofocus) can lead to frame drops. In order not to limit this
+    // I manually can focus instead of relying on built-in autofocus.
+    // Maybe that's not perfect, but works for now ¯\_(ツ)_/¯
+    if (
+      this.props.isTransitioning &&
+      nextProps.isTransitioning &&
+      this.lastFocusedInput === null
+    ) {
+      this.inputFocusInteractionHandle = InteractionManager.runAfterInteractions(
+        this.inputFieldRef.focus
+      );
+    }
+
     const isNewState = isNewValueForObjectPaths(this.state, nextState, [
       'approvalCreationTimestamp',
       'approvalEstimatedTimeInMs',
@@ -209,6 +223,11 @@ class ExchangeModal extends Component {
   };
 
   componentWillUnmount = () => {
+    if (this.inputFocusInteractionHandle) {
+      InteractionManager.clearInteractionHandle(
+        this.inputFocusInteractionHandle
+      );
+    }
     this.props.uniswapClearCurrenciesAndReserves();
   };
 
@@ -776,7 +795,6 @@ class ExchangeModal extends Component {
 
     const isSlippageWarningVisible =
       isSufficientBalance && !!inputAmount && !!outputAmount;
-
     return (
       <KeyboardFixedOpenLayout>
         <NavigationEvents onWillFocus={this.handleKeyboardManagement} />
