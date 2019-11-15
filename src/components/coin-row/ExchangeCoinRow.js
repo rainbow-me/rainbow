@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -58,12 +59,16 @@ class ExchangeCoinRow extends Component {
   };
 
   state = {
-    favorite: !!this.props.item.favorite,
+    localFavorite: false,
   };
 
   shouldComponentUpdate = (nextProps, nextState) => {
     const isNewAsset = isNewValueForPath(this.props, nextProps, 'uniqueId');
-    const isNewFavorite = isNewValueForPath(this.state, nextState, 'favorite');
+    const isNewFavorite = isNewValueForPath(
+      this.state,
+      nextState,
+      'localFavorite'
+    );
 
     return isNewAsset || isNewFavorite;
   };
@@ -77,9 +82,9 @@ class ExchangeCoinRow extends Component {
   toggleFavorite = () => {
     const { item, uniswapUpdateFavorites } = this.props;
     this.setState(prevState => {
-      const favorite = !prevState.favorite;
-      uniswapUpdateFavorites(item.address, favorite);
-      return { favorite };
+      const localFavorite = !prevState.localFavorite;
+      uniswapUpdateFavorites(item.address, localFavorite);
+      return { localFavorite };
     });
   };
 
@@ -91,7 +96,7 @@ class ExchangeCoinRow extends Component {
       uniqueId,
       ...props
     } = this.props;
-    const { favorite } = this.state;
+    const { localFavorite } = this.state;
 
     return (
       <ButtonPressAnimation
@@ -110,7 +115,7 @@ class ExchangeCoinRow extends Component {
         >
           {showFavoriteButton && (
             <CoinRowFavoriteButton
-              isFavorited={favorite}
+              isFavorited={localFavorite || get(item, 'favorite', false)}
               onPress={this.toggleFavorite}
             />
           )}
