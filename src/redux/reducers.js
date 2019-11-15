@@ -11,9 +11,7 @@ import isWalletImporting from './isWalletImporting';
 import keyboardHeight from './keyboardHeight';
 import navigation from './navigation';
 import nonce from './nonce';
-import openBalances from './openBalances';
-import openFamilyTabs from './openFamilyTabs';
-import openInvestmentCards from './openInvestmentCards';
+import openStateSettings from './openStateSettings';
 import requests from './requests';
 import selectedInput from './selectedInput';
 import selectedWithFab from './selectedWithFab';
@@ -35,9 +33,7 @@ export default combineReducers({
   keyboardHeight,
   navigation,
   nonce,
-  openBalances,
-  openFamilyTabs,
-  openInvestmentCards,
+  openStateSettings,
   requests,
   selectedInput,
   selectedWithFab,
