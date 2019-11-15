@@ -71,7 +71,7 @@
     "punycode": "^1.4.1",
     "querystring-es3": "^0.2.1",
     "react": "16.11.0",
-    "react-coin-icon": "^0.1.9",
+    "react-coin-icon": "0.1.12",
     "react-fast-compare": "^2.0.4",
     "react-native": "facebook/react-native",
     "react-native-actionsheet": "^2.4.2",
