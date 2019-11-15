@@ -11,7 +11,7 @@ import BigNumber from 'bignumber.js';
 import { get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
-import { TextInput } from 'react-native';
+import { TextInput, InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { withNavigationFocus, NavigationEvents } from 'react-navigation';
 import { compose, toClass, withProps } from 'recompact';
@@ -141,7 +141,9 @@ class ExchangeModal extends Component {
       nextProps.isTransitioning &&
       this.lastFocusedInput === null
     ) {
-      this.initialFocusTimeout = setTimeout(this.inputFieldRef.focus, 300);
+      this.inputFocusInteractionHandle = InteractionManager.runAfterInteractions(
+        this.inputFieldRef.focus
+      );
     }
 
     const isNewState = isNewValueForObjectPaths(this.state, nextState, [
@@ -221,7 +223,11 @@ class ExchangeModal extends Component {
   };
 
   componentWillUnmount = () => {
-    clearTimeout(this.initialFocusTimeout);
+    if (this.inputFocusInteractionHandle) {
+      InteractionManager.clearInteractionHandle(
+        this.inputFocusInteractionHandle
+      );
+    }
     this.props.uniswapClearCurrenciesAndReserves();
   };
 
