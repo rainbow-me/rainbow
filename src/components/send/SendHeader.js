@@ -113,6 +113,7 @@ class SendHeader extends PureComponent {
   navigateToContact = (contact = {}) => {
     const { navigation, onUpdateContacts, recipient } = this.props;
     const refocusCallback =
+      this.props.selectedInputId &&
       this.props.selectedInputId.isFocused() &&
       this.props.selectedInputId.focus;
 
