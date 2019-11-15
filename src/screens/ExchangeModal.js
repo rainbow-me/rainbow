@@ -132,6 +132,18 @@ class ExchangeModal extends Component {
       'outputReserve.token.address',
     ]);
 
+    // Code below is a workaround. We noticed that opening keyboard while animation
+    // (with autofocus) can lead to frame drops. In order not to limit this
+    // I manually can focus instead of relying on built-in autofocus.
+    // Maybe that's not perfect, but works for now ¯\_(ツ)_/¯
+    if (
+      this.props.isTransitioning &&
+      nextProps.isTransitioning &&
+      this.lastFocusedInput === null
+    ) {
+      this.initialFocusTimeout = setTimeout(this.inputFieldRef.focus, 300);
+    }
+
     const isNewState = isNewValueForObjectPaths(this.state, nextState, [
       'approvalCreationTimestamp',
       'approvalEstimatedTimeInMs',
@@ -209,6 +221,7 @@ class ExchangeModal extends Component {
   };
 
   componentWillUnmount = () => {
+    clearTimeout(this.initialFocusTimeout);
     this.props.uniswapClearCurrenciesAndReserves();
   };
 
@@ -776,7 +789,6 @@ class ExchangeModal extends Component {
 
     const isSlippageWarningVisible =
       isSufficientBalance && !!inputAmount && !!outputAmount;
-
     return (
       <KeyboardFixedOpenLayout>
         <NavigationEvents onWillFocus={this.handleKeyboardManagement} />
