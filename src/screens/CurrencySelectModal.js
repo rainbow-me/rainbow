@@ -130,7 +130,6 @@ class CurrencySelectModal extends Component {
   render = () => {
     const {
       assetsAvailableOnUniswap,
-      favorites,
       isFocused,
       sortedUniswapAssets,
       transitionPosition,
@@ -146,13 +145,6 @@ class CurrencySelectModal extends Component {
       assets = assetsAvailableOnUniswap;
     } else if (type === CurrencySelectionTypes.output) {
       headerTitle = 'Receive';
-
-      if (Array.isArray(favorites) && favorites.length) {
-        assets = assets.map(asset => ({
-          ...asset,
-          favorite: favorites.includes(asset.address),
-        }));
-      }
     }
 
     const listItems = filterList(assets, searchQuery, 'uniqueId');

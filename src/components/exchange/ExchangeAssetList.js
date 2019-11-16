@@ -7,7 +7,7 @@ import {
   LayoutProvider,
   RecyclerListView,
 } from 'recyclerlistview';
-import { deviceUtils, isNewValueForObjectPaths } from '../../utils';
+import { deviceUtils, isNewValueForPath } from '../../utils';
 import { colors } from '../../styles';
 import { CoinRow } from '../coin-row';
 
@@ -30,8 +30,7 @@ const layoutItemAnimator = {
 
 const getLayoutTypeForIndex = () => ViewTypes.COIN_ROW;
 
-const hasRowChanged = (r1, r2) =>
-  isNewValueForObjectPaths(r1, r2, ['favorite', 'uniqueId']);
+const hasRowChanged = (r1, r2) => isNewValueForPath(r1, r2, 'uniqueId');
 
 const setLayoutForType = (type, dim) => {
   if (type === ViewTypes.COIN_ROW) {
