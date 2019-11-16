@@ -29,7 +29,10 @@ export const parseAccountAssets = (data, uniqueTokens) => {
 export const parseAsset = assetData => {
   const address = get(assetData, 'asset_code', null);
   const name = get(assetData, 'name') || 'Unknown Token';
-  const symbol = get(assetData, 'symbol') || '———';
+  let symbol = get(assetData, 'symbol') || '———';
+  if (symbol && symbol.includes('*')) {
+    symbol = symbol.replace(/[*]/g, '');
+  }
   const asset = {
     address,
     decimals: get(assetData, 'decimals'),
