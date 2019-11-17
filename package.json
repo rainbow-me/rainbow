@@ -110,7 +110,7 @@
     "react-native-store-review": "^0.1.5",
     "react-native-svg": "9.13.3",
     "react-native-tcp": "^3.3.2",
-    "react-native-text-input-mask": "react-native-community/react-native-text-input-mask#abf0e7f538036bbc5719024fbd67a1efd756c4b9",
+    "react-native-text-input-mask": "waqas19921/react-native-text-input-mask",
     "react-native-tooltip": "marcosrdz/react-native-tooltip#master",
     "react-native-touch-id": "^4.4.1",
     "react-native-udp": "^2.6.1",
