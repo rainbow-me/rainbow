@@ -113,6 +113,7 @@ class ExchangeModal extends Component {
     inputExecutionRate: null,
     inputNativePrice: null,
     isAssetApproved: true,
+    isAuthorizing: false,
     isSufficientBalance: true,
     isUnlockingAsset: false,
     nativeAmount: null,
@@ -152,6 +153,7 @@ class ExchangeModal extends Component {
       'inputAmount',
       'inputCurrency.uniqueId',
       'isAssetApproved',
+      'isAuthorizing',
       'isSufficientBalance',
       'isUnlockingAsset',
       'nativeAmount',
@@ -558,6 +560,7 @@ class ExchangeModal extends Component {
   };
 
   handleSubmit = async () => {
+    this.setState({ isAuthorizing: true });
     const {
       accountAddress,
       dataAddNewTransaction,
@@ -570,6 +573,7 @@ class ExchangeModal extends Component {
     try {
       const gasPrice = get(selectedGasPrice, 'value.amount');
       const txn = await executeSwap(tradeDetails, gasLimit, gasPrice);
+      this.setState({ isAuthorizing: false });
       if (txn) {
         dataAddNewTransaction({
           amount: inputAmount,
@@ -579,9 +583,10 @@ class ExchangeModal extends Component {
           nonce: get(txn, 'nonce'),
           to: get(txn, 'to'),
         });
+        navigation.navigate('ProfileScreen');
       }
-      navigation.navigate('ProfileScreen');
     } catch (error) {
+      this.setState({ isAuthorizing: false });
       console.log('error submitting swap', error);
       navigation.navigate('WalletScreen');
     }
@@ -781,6 +786,7 @@ class ExchangeModal extends Component {
       // inputExecutionRate,
       // inputNativePrice,
       isAssetApproved,
+      isAuthorizing,
       isSufficientBalance,
       isUnlockingAsset,
       nativeAmount,
@@ -858,6 +864,7 @@ class ExchangeModal extends Component {
                     disabled={isAssetApproved && !Number(inputAmountDisplay)}
                     inputCurrencyName={get(inputCurrency, 'symbol')}
                     isAssetApproved={isAssetApproved}
+                    isAuthorizing={isAuthorizing}
                     isSufficientBalance={isSufficientBalance}
                     isUnlockingAsset={isUnlockingAsset}
                     onSubmit={this.handleSubmit}
