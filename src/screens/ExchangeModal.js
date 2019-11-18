@@ -690,25 +690,18 @@ class ExchangeModal extends Component {
     });
   };
 
-  setInputCurrency = (inputCurrency, force) => {
-    const { outputCurrency } = this.state;
+  setInputCurrency = (inputCurrency, userSelected = true) => {
+    const { inputCurrency: previousInputCurrency, outputCurrency } = this.state;
 
-    if (!isSameAsset(inputCurrency, this.state.inputCurrency)) {
+    if (!isSameAsset(inputCurrency, previousInputCurrency)) {
       this.clearForm();
     }
 
     this.setState({ inputCurrency });
+    this.props.uniswapUpdateInputCurrency(inputCurrency);
 
-    if (!force) {
-      this.props.uniswapUpdateInputCurrency(inputCurrency);
-    }
-
-    if (!force && isSameAsset(inputCurrency, outputCurrency)) {
-      if (!isNil(inputCurrency) && !isNil(outputCurrency)) {
-        this.setOutputCurrency(null, true);
-      } else {
-        this.setOutputCurrency(inputCurrency, true);
-      }
+    if (userSelected && isSameAsset(inputCurrency, outputCurrency)) {
+      this.setOutputCurrency(previousInputCurrency, false);
     }
   };
 
@@ -748,13 +741,13 @@ class ExchangeModal extends Component {
         amountDisplay !== undefined ? amountDisplay : outputAmount,
     });
 
-  setOutputCurrency = (outputCurrency, force) => {
-    const { allAssets } = this.props;
-    const { inputCurrency } = this.state;
+  setOutputCurrency = (outputCurrency, userSelected = true) => {
+    const {
+      inputCurrency,
+      outputCurrency: previousOutputCurrency,
+    } = this.state;
 
-    if (!force) {
-      this.props.uniswapUpdateOutputCurrency(outputCurrency);
-    }
+    this.props.uniswapUpdateOutputCurrency(outputCurrency);
 
     this.setState({
       inputAsExactAmount: true,
@@ -762,15 +755,8 @@ class ExchangeModal extends Component {
       showConfirmButton: !!outputCurrency,
     });
 
-    if (!force && isSameAsset(inputCurrency, outputCurrency)) {
-      const outputAddress = toLower(outputCurrency.address);
-      const asset = ethereumUtils.getAsset(allAssets, outputAddress);
-
-      if (!isNil(asset) && !isNil(inputCurrency) && !isNil(outputCurrency)) {
-        this.setInputCurrency(null, true);
-      } else {
-        this.setInputCurrency(outputCurrency, true);
-      }
+    if (userSelected && isSameAsset(inputCurrency, outputCurrency)) {
+      this.setInputCurrency(previousOutputCurrency, false);
     }
   };
 
