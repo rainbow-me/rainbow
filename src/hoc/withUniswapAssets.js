@@ -12,6 +12,7 @@ import {
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { createSelector } from 'reselect';
+import { uniswapUpdateFavorites } from '../redux/uniswap';
 import { uniswapAssetAddresses, uniswapAssetsClean } from '../references';
 import withAccountData from './withAccountData';
 
@@ -70,7 +71,7 @@ const mapStateToProps = ({ uniswap: { favorites, uniswapAssets } }) => ({
 });
 
 export default compose(
-  connect(mapStateToProps),
+  connect(mapStateToProps, { uniswapUpdateFavorites }),
   withAccountData,
   withProps(withSortedUniswapAssetsSelector),
   withProps(withAssetsAvailableOnUniswapSelector)
