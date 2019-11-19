@@ -77,6 +77,8 @@ const isSameAsset = (a, b) => {
   return assetA === assetB;
 };
 
+const getNativeTag = field => get(field, '_nativeTag');
+
 class ExchangeModal extends Component {
   static propTypes = {
     accountAddress: PropTypes.string,
@@ -143,10 +145,9 @@ class ExchangeModal extends Component {
       this.lastFocusedInput === null
     ) {
       this.inputFocusInteractionHandle = InteractionManager.runAfterInteractions(
-        this.inputFieldRef.focus
+        this.focusInputField
       );
     }
-
     const isNewState = isNewValueForObjectPaths(this.state, nextState, [
       'approvalCreationTimestamp',
       'approvalEstimatedTimeInMs',
@@ -252,6 +253,12 @@ class ExchangeModal extends Component {
     if (this.inputFieldRef) this.inputFieldRef.clear();
     if (this.nativeFieldRef) this.nativeFieldRef.clear();
     if (this.outputFieldRef) this.outputFieldRef.clear();
+  };
+
+  focusInputField = () => {
+    if (this.inputFieldRef) {
+      this.inputFieldRef.focus();
+    }
   };
 
   getCurrencyAllowance = async () => {
@@ -631,9 +638,31 @@ class ExchangeModal extends Component {
     }
   };
 
+  findNextFocused = () => {
+    const inputRefTag = getNativeTag(this.inputFieldRef);
+    const nativeInputRefTag = getNativeTag(this.nativeFieldRef);
+    const outputRefTag = getNativeTag(this.outputFieldRef);
+
+    const lastFocusedIsInputType =
+      this.lastFocusedInput === inputRefTag ||
+      this.lastFocusedInput === nativeInputRefTag;
+
+    const lastFocusedIsOutputType = this.lastFocusedInput === outputRefTag;
+
+    if (lastFocusedIsInputType && !this.state.inputCurrency) {
+      return outputRefTag;
+    }
+
+    if (lastFocusedIsOutputType && !this.state.outputCurrency) {
+      return inputRefTag;
+    }
+
+    return this.lastFocusedInput;
+  };
+
   handleKeyboardManagement = () => {
     if (this.lastFocusedInput !== TextInput.State.currentlyFocusedField()) {
-      TextInput.State.focusTextInput(this.lastFocusedInput);
+      TextInput.State.focusTextInput(this.findNextFocused());
       this.lastFocusedInput = null;
     }
   };
