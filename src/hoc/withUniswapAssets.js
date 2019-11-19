@@ -2,11 +2,11 @@ import {
   concat,
   filter,
   get,
-  indexOf,
+  includes,
   map,
   partition,
-  property,
   sortBy,
+  toLower,
   values,
 } from 'lodash';
 import { connect } from 'react-redux';
@@ -22,28 +22,30 @@ const uniswapFavoritesSelector = state => state.favorites;
 const filterUniswapAssetsByAvailability = ({ address }) =>
   uniswapAssetAddresses.includes(address);
 
+const includeExchangeAddress = asset => ({
+  ...asset,
+  exchangeAddress: get(uniswapAssetsClean, `${asset.address}.exchangeAddress`),
+});
+
+const lowerAssetName = asset => toLower(asset.name);
+
+const includeFavorite = asset => ({
+  ...asset,
+  favorite: true,
+});
+
 const withAssetsAvailableOnUniswap = allAssets => {
   const availableAssets = filter(allAssets, filterUniswapAssetsByAvailability);
-  const assetsAvailableOnUniswap = map(availableAssets, asset => ({
-    ...asset,
-    exchangeAddress: get(
-      uniswapAssetsClean,
-      `${asset.address}.exchangeAddress`
-    ),
-  }));
+  const assetsAvailableOnUniswap = map(availableAssets, includeExchangeAddress);
   return { assetsAvailableOnUniswap };
 };
 
 const withSortedUniswapAssets = (unsortedUniswapAssets, favorites) => {
-  const sortedAssets = sortBy(values(unsortedUniswapAssets), property('name'));
-  const [favoriteAssets, remainingAssets] = partition(
-    sortedAssets,
-    asset => indexOf(favorites, asset.address) > -1
+  const sortedAssets = sortBy(values(unsortedUniswapAssets), lowerAssetName);
+  const [favoriteAssets, remainingAssets] = partition(sortedAssets, asset =>
+    includes(favorites, asset.address)
   );
-  const labeledFavorites = map(favoriteAssets, asset => ({
-    ...asset,
-    favorite: true,
-  }));
+  const labeledFavorites = map(favoriteAssets, includeFavorite);
   return {
     sortedUniswapAssets: concat(labeledFavorites, remainingAssets),
   };
