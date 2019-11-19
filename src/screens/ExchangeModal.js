@@ -133,6 +133,7 @@ class ExchangeModal extends Component {
     const isNewProps = isNewValueForObjectPaths(this.props, nextProps, [
       'inputReserve.token.address',
       'outputReserve.token.address',
+      'pendingApprovals',
     ]);
 
     // Code below is a workaround. We noticed that opening keyboard while animation
@@ -286,7 +287,7 @@ class ExchangeModal extends Component {
       uniswapUpdateAllowances({ [toLower(inputAddress)]: allowance });
     }
     const isAssetApproved = greaterThan(allowance, 0);
-    if (greaterThan(allowance, 0)) {
+    if (isAssetApproved) {
       return this.setState({
         approvalCreationTimestamp: null,
         approvalEstimatedTimeInMs: null,

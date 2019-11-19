@@ -3,7 +3,6 @@ import {
   compact,
   concat,
   filter,
-  fromPairs,
   get,
   invertBy,
   isEmpty,
@@ -11,11 +10,9 @@ import {
   map,
   mapValues,
   omit,
-  reject,
   toLower,
   uniq,
   without,
-  zip,
 } from 'lodash';
 import {
   getAllowances,
@@ -33,9 +30,7 @@ import {
   saveUniswapPendingApprovals,
 } from '../handlers/localstorage/uniswap';
 import { getLiquidityInfo, getReserve } from '../handlers/uniswap';
-import TransactionStatusTypes from '../helpers/transactionStatusTypes';
-import { uniswapAssetsClean } from '../references';
-import { contractUtils, promiseUtils } from '../utils';
+import { includeExchangeAddress } from '../hoc/withUniswapAssets';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';
@@ -66,6 +61,12 @@ const UNISWAP_UPDATE_LIQUIDITY_TOKENS =
 const UNISWAP_CLEAR_STATE = 'uniswap/UNISWAP_CLEAR_STATE';
 
 // -- Actions --------------------------------------------------------------- //
+const extractTransactionHash = txn => toLower(txn.hash).split('-')[0];
+const firstItem = value => get(value, '[0]');
+const lowerAddress = asset => toLower(asset.address);
+const hasTokenQuantity = token => token.quantity > 0;
+const getAssetCode = token => get(token, 'asset.asset_code');
+
 export const uniswapLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   dispatch({ type: UNISWAP_LOAD_REQUEST });
@@ -168,43 +169,15 @@ export const uniswapAddPendingApproval = (
   saveUniswapPendingApprovals(updatedPendingApprovals, accountAddress, network);
 };
 
-const updateAllowancesForSuccessfulTransactions = assetAddresses => (
-  dispatch,
-  getState
-) => {
-  if (isEmpty(assetAddresses)) return;
-  const { accountAddress } = getState().settings;
-  promiseUtils
-    .PromiseAllWithFails(
-      map(assetAddresses, async assetAddress => {
-        const asset = uniswapAssetsClean[assetAddress];
-        return contractUtils.getAllowance(
-          accountAddress,
-          asset,
-          asset.exchangeAddress
-        );
-      })
-    )
-    .then(allowances => {
-      const tokenAddressAllowances = fromPairs(zip(assetAddresses, allowances));
-      dispatch(uniswapUpdateAllowances(tokenAddressAllowances));
-    })
-    .catch(() => {});
-};
-
 export const uniswapRemovePendingApproval = transactions => (
   dispatch,
   getState
 ) => {
-  const newTransactions = map(transactions, txn => ({
-    ...txn,
-    hash: toLower(txn.hash).split('-')[0],
-  }));
+  const loweredTxHashes = map(transactions, extractTransactionHash);
   const { pendingApprovals } = getState().uniswap;
-  const loweredTxHashes = map(newTransactions, txn => txn.hash);
   const invertedPendingApprovals = mapValues(
     invertBy(pendingApprovals, value => value.hash),
-    value => get(value, '[0]')
+    firstItem
   );
   const updatedAddresses = compact(
     map(loweredTxHashes, hash => invertedPendingApprovals[hash])
@@ -215,19 +188,6 @@ export const uniswapRemovePendingApproval = transactions => (
     payload: updatedPendingApprovals,
     type: UNISWAP_UPDATE_PENDING_APPROVALS,
   });
-  const successfulApprovalHashes = map(
-    reject(
-      newTransactions,
-      txn => txn.status === TransactionStatusTypes.failed
-    ),
-    txn => toLower(txn.hash)
-  );
-  const successfullyApprovedAddresses = compact(
-    map(successfulApprovalHashes, hash => invertedPendingApprovals[hash])
-  );
-  dispatch(
-    updateAllowancesForSuccessfulTransactions(successfullyApprovedAddresses)
-  );
   const { accountAddress, network } = getState().settings;
   saveUniswapPendingApprovals(updatedPendingApprovals, accountAddress, network);
 };
@@ -267,19 +227,8 @@ export const uniswapUpdateAllowances = tokenAddressAllowances => (
 
 export const uniswapUpdateAssets = assets => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  const uniswapAssetPrices = map(assets, asset => {
-    const loweredAddress = toLower(asset.address);
-    return {
-      ...asset,
-      exchangeAddress: get(
-        uniswapAssetsClean,
-        `[${loweredAddress}].exchangeAddress`
-      ),
-    };
-  });
-  const mappedAssets = keyBy(uniswapAssetPrices, asset =>
-    toLower(asset.address)
-  );
+  const uniswapAssetPrices = map(assets, includeExchangeAddress);
+  const mappedAssets = keyBy(uniswapAssetPrices, lowerAddress);
   dispatch({
     payload: mappedAssets,
     type: UNISWAP_UPDATE_ASSETS,
@@ -310,15 +259,12 @@ export const uniswapUpdateLiquidityTokens = (
   liquidityTokens,
   appendOrChange
 ) => (dispatch, getState) => {
-  let updatedLiquidityTokens = filter(
-    liquidityTokens,
-    token => token.quantity > 0
-  );
+  let updatedLiquidityTokens = filter(liquidityTokens, hasTokenQuantity);
   if (appendOrChange) {
     const { liquidityTokens: existingLiquidityTokens } = getState().uniswap;
     updatedLiquidityTokens = uniq(
       concat(existingLiquidityTokens, ...updatedLiquidityTokens),
-      token => get(token, 'asset.asset_code')
+      getAssetCode
     );
   }
   const { accountAddress, network } = getState().settings;
@@ -341,9 +287,7 @@ export const uniswapUpdateState = () => (dispatch, getState) =>
 
     dispatch({ type: UNISWAP_UPDATE_REQUEST });
 
-    const exchangeContracts = map(liquidityTokens, x =>
-      get(x, 'asset.asset_code')
-    );
+    const exchangeContracts = map(liquidityTokens, getAssetCode);
     return getLiquidityInfo(accountAddress, exchangeContracts)
       .then(liquidityInfo => {
         saveLiquidityInfo(liquidityInfo, accountAddress, network);
