@@ -137,12 +137,6 @@
     "decimals": 9,
     "exchangeAddress": "0xA825CAE02B310E9901b4776806CE25db520c8642"
   },
-  "0x818Fc6C2Ec5986bc6E2CBf00939d90556aB12ce5": {
-    "name": "Kin",
-    "symbol": "KIN",
-    "decimals": 18,
-    "exchangeAddress": "0xb7520a5F8c832c573d6BD0Df955fC5c9b72400F7"
-  },
   "0x93ED3FBe21207Ec2E8f2d3c3de6e058Cb73Bc04d": {
     "name": "Kleros",
     "symbol": "PNK",
