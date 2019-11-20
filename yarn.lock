@@ -1170,6 +1170,11 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-4.6.0.tgz#fc0b79a226da78371158f885a2f798ff07c926be"
   integrity sha512-wz39BUpExDU1kTpLlBkDwwb0Efg+uuwixToosTSarZgpzG/CmcRvWdD786TMiE5tLDd+Mpi2xh3w4FrVM8zjoA==
 
+"@react-native-community/viewpager@3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-3.1.0.tgz#b33f80452bfb68c76a2501964c731f8a1b0c13b2"
+  integrity sha512-sWSlbjROjo8hrH7KNLfbUMX7SR0UjTCZsr7gTnItaFXOY5RVoe05ucrLjo8K64cX1ZnzTZiswHGdLteJ4XPMwg==
+
 "@react-navigation/core@^3.5.1":
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-3.5.1.tgz#7a2339fca3496979305fb3a8ab88c2ca8d8c214d"
@@ -9412,10 +9417,15 @@ react-native-svg@9.13.3:
     css-select "^2.0.2"
     css-tree "^1.0.0-alpha.37"
 
-react-native-tab-view@^2.9.0:
-  version "2.10.0"
-  resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-2.10.0.tgz#5e249e5650502010013449ffd4e5edc18a95364b"
-  integrity sha512-qgexVz5eO4yaFjdkmn/sURXgVvaBo6pZD/q1eoca96SbPVbaH3WzVhF3bRUfeTHwZkXwznFTpS3JURqIFU8vQA==
+react-native-tab-view-viewpager-adapter@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-tab-view-viewpager-adapter/-/react-native-tab-view-viewpager-adapter-1.0.0.tgz#1ffeb20a818afcd1494bf6b502216a0f0476015a"
+  integrity sha512-uil+96l21cDN8kyC9MCZVOl2kHlTeAzsfV5VP5jSRYbv9RJ7xwrTcb6eD8RuFJur4aND2/PyFKpb/9hvonAuyw==
+
+react-native-tab-view@^2.11.0:
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-2.11.0.tgz#2e57d1f617ccc88c7f452708804f3409f880b700"
+  integrity sha512-vqetlxGO7A8bnqvXcB50MWpRZAImXFrDGz1WCQKdCqe03Ey3ZzENe7yLuWrtBJYlepGfOLAsmCXv+wW82Yfm1w==
 
 react-native-tcp@^3.3.2:
   version "3.3.2"
@@ -9475,12 +9485,12 @@ react-native@facebook/react-native:
     event-target-shim "^5.0.1"
     fbjs "^1.0.0"
     fbjs-scripts "^1.1.0"
-    hermes-engine "~0.3.0"
+    hermes-engine "^0.2.1"
     invariant "^2.2.4"
     jsc-android "^245459.0.0"
-    metro-babel-register "0.57.0"
-    metro-react-native-babel-transformer "0.57.0"
-    metro-source-map "0.57.0"
+    metro-babel-register "0.56.3"
+    metro-react-native-babel-transformer "0.56.3"
+    metro-source-map "0.56.3"
     nullthrows "^1.1.1"
     pretty-format "^24.7.0"
     promise "^7.1.1"
@@ -9498,15 +9508,15 @@ react-navigation-stack@2.0.0-alpha.36:
   resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-2.0.0-alpha.36.tgz#b8b207a7523c7919f39713a652f178c161754a70"
   integrity sha512-29X8H4Z55MXzf7YWANj7TsfB5tHizALF5VWu2kgTENobNJWbNSeiwemQqXhsp58YmaWTmKcE1GpfeW3tPEoEvA==
 
-react-navigation-tabs@2.5.6:
-  version "2.5.6"
-  resolved "https://registry.yarnpkg.com/react-navigation-tabs/-/react-navigation-tabs-2.5.6.tgz#51f1a39b6c9525e6b5fe035945c243c04e53242b"
-  integrity sha512-4WivEAsChJ+MuJ6JHxhAUMekHnVIt/zc4y/07KChXD5NBkSE0sk4vmMRndZQ6AP3n/ZihACcfigBAsMoqt0JXA==
+react-navigation-tabs@2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/react-navigation-tabs/-/react-navigation-tabs-2.6.0.tgz#e7b7af54e6dab3f7cf7747859862c9684713d7df"
+  integrity sha512-ffDB9CquA+f+bV1WV228Z3VY3sqUa9eerFnwHw096wgG3YafPDYKo+Xs28N9jQWMQ9Sfb0JB8HvkpR/9pcIS1A==
   dependencies:
     hoist-non-react-statics "^3.3.0"
     react-lifecycles-compat "^3.0.4"
     react-native-safe-area-view "^0.14.6"
-    react-native-tab-view "^2.9.0"
+    react-native-tab-view "^2.11.0"
 
 react-navigation@4.0.10:
   version "4.0.10"

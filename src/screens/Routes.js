@@ -19,6 +19,7 @@ import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
+import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
 import {
   exchangePreset,
   expandedPreset,
@@ -53,6 +54,8 @@ const SwipeStack = createMaterialTopTabNavigator(
     initialLayout: deviceUtils.dimensions,
     initialRouteName: 'WalletScreen',
     mode: 'modal',
+    // eslint-disable-next-line react/display-name
+    renderPager: props => <ViewPagerAdapter {...props} />,
     springConfig: {
       damping: 16,
       mass: 0.3,
