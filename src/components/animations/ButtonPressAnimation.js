@@ -232,6 +232,8 @@ export default class ButtonPressAnimation extends Component {
       offsetX = Math.floor(width / 2) * (transformOrigin === 'left' ? -1 : 1);
     } else if (transformOrigin === 'bottom' || transformOrigin === 'top') {
       offsetY = Math.floor(height / 2) * (transformOrigin === 'top' ? -1 : 1);
+    } else if (transformOrigin === 'keyboard') {
+      offsetY = 8;
     }
 
     const scaleDiff =
@@ -289,7 +291,6 @@ export default class ButtonPressAnimation extends Component {
                 ),
                 block([stopClock(this.clock), set(this.shouldSpring, 0)])
               ),
-              call([], this.reset),
             ]),
             onChange(
               this.gestureState,

@@ -8,16 +8,17 @@ import { ExchangeModalNavigator, Navigation } from '../navigation';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
 import { deviceUtils } from '../utils';
+import AddCashSheet from './AddCashSheet';
+import ExampleScreen from './ExampleScreen';
 import ExpandedAssetScreenWithData from './ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from './ProfileScreenWithData';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
 import ReceiveModal from './ReceiveModal';
-import ExampleScreen from './ExampleScreen';
-import WalletConnectConfirmationModal from './WalletConnectConfirmationModal';
 import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
+import WalletConnectConfirmationModal from './WalletConnectConfirmationModal';
 import WalletScreen from './WalletScreen';
 import {
   exchangePreset,
@@ -69,6 +70,16 @@ const SwipeStack = createMaterialTopTabNavigator(
 
 const MainNavigator = createStackNavigator(
   {
+    AddCashSheet: {
+      navigationOptions: {
+        ...sheetPreset,
+        onTransitionStart: props => {
+          onTransitionStart(props);
+          sheetPreset.onTransitionStart(props);
+        },
+      },
+      screen: AddCashSheet,
+    },
     ConfirmRequest: {
       navigationOptions: {
         ...expandedPreset,
