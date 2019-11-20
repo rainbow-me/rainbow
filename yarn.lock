@@ -9360,10 +9360,10 @@ react-native-svg@9.13.3:
     css-select "^2.0.2"
     css-tree "^1.0.0-alpha.37"
 
-react-native-tab-view-viewpager-adapter@1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/react-native-tab-view-viewpager-adapter/-/react-native-tab-view-viewpager-adapter-1.0.3.tgz#b52a1cf42bd64887b077a5924ef7b977b1171372"
-  integrity sha512-Rjiej+TfZGRoxYhQT1cLmUKO/TD8VEP27airNHReXF6ohsNKsCNozDVILPqBzRma2kf+P2NZGWJ2SrDtV3HoqQ==
+react-native-tab-view-viewpager-adapter@1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-tab-view-viewpager-adapter/-/react-native-tab-view-viewpager-adapter-1.0.4.tgz#686a04d76eb2a024262d91ff731ec19e2fe86d5c"
+  integrity sha512-6CrvX0EYHI7BDUcBaDu9iyvkOQizoTxKS+DOCvRvRx0BZtTmMRFTydL3lWmeZfwUBuU/7Q7ydbzhoFZY/5YgYA==
 
 react-native-tab-view@^2.11.0:
   version "2.11.0"

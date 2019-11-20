@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { get, omit } from 'lodash';
 import React from 'react';
+import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator } from 'react-navigation-stack';
@@ -19,7 +20,6 @@ import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
 import WalletScreen from './WalletScreen';
-import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
 import {
   exchangePreset,
   expandedPreset,
@@ -55,7 +55,9 @@ const SwipeStack = createMaterialTopTabNavigator(
     initialRouteName: 'WalletScreen',
     mode: 'modal',
     // eslint-disable-next-line react/display-name
-    renderPager: props => <ViewPagerAdapter {...props} />,
+    renderPager: props => (
+      <ViewPagerAdapter style={{ backgroundColor: 'black' }} {...props} />
+    ),
     springConfig: {
       damping: 16,
       mass: 0.3,
