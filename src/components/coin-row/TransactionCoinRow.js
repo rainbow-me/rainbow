@@ -1,12 +1,12 @@
-import { compact, get } from 'lodash';
+import { compact, get, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, mapProps, onlyUpdateForKeys, withHandlers } from 'recompact';
 import { Linking } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { css } from 'styled-components/primitives';
-import { getSelectedLocalContact } from '../../handlers/localstorage/contacts';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import { withContacts } from '../../hoc';
 import { colors } from '../../styles';
 import { abbreviations } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
@@ -88,11 +88,12 @@ export default compose(
     pending,
     ...props,
   })),
+  withContacts,
   withNavigation,
   withHandlers({
-    onPressTransaction: ({ hash, item, navigation }) => async () => {
+    onPressTransaction: ({ contacts, hash, item, navigation }) => async () => {
       const { from, to, status } = item;
-      const isSent = status === 'sent';
+      const isSent = status === TransactionStatusTypes.sent;
 
       const headerInfo = {
         address: '',
@@ -101,7 +102,7 @@ export default compose(
       };
 
       const contactAddress = isSent ? to : from;
-      const contact = await getSelectedLocalContact(contactAddress);
+      const contact = contacts[toLower(contactAddress)];
       let contactColor = 0;
 
       if (contact) {

@@ -12,6 +12,7 @@ import { gasClearState, gasPricesInit } from '../redux/gas';
 import { clearIsWalletEmpty } from '../redux/isWalletEmpty';
 import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import { nonceClearState } from '../redux/nonce';
+import { contactsLoadState } from '../redux/contacts';
 import {
   clearOpenStateSettings,
   openStateSettingsLoadState,
@@ -47,6 +48,7 @@ export default Component =>
     connect(null, {
       clearIsWalletEmpty,
       clearOpenStateSettings,
+      contactsLoadState,
       dataClearState,
       dataLoadState,
       explorerClearState,
@@ -124,7 +126,8 @@ export default Component =>
         const p4 = ownProps.walletConnectLoadState();
         const p5 = ownProps.uniswapLoadState();
         const p6 = ownProps.requestsLoadState();
-        return promiseUtils.PromiseAllWithFails([p1, p2, p3, p4, p5, p6]);
+        const p7 = ownProps.contactsLoadState();
+        return promiseUtils.PromiseAllWithFails([p1, p2, p3, p4, p5, p6, p7]);
       },
       refreshAccountData: ownProps => async () => {
         try {
