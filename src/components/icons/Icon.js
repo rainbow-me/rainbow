@@ -2,9 +2,11 @@ import PropTypes from 'prop-types';
 import { createElement } from 'react';
 import Flex from '../layout/Flex';
 
+import ApplePayIcon from './svg/ApplePayIcon';
 import ArrowCircledIcon from './svg/ArrowCircledIcon';
 import ArrowIcon from './svg/ArrowIcon';
 import AvatarIcon from './svg/AvatarIcon';
+import BackspaceIcon from './svg/BackspaceIcon';
 import CameraIcon from './svg/CameraIcon';
 import CaretIcon from './svg/CaretIcon';
 import CaretThinIcon from './svg/CaretThinIcon';
@@ -54,9 +56,11 @@ const Icon = ({ name, ...props }) =>
   createElement(Icon.IconTypes[name] || Flex, props);
 
 Icon.IconTypes = {
+  applePay: ApplePayIcon,
   arrow: ArrowIcon,
   arrowCircled: ArrowCircledIcon,
   avatar: AvatarIcon,
+  backspace: BackspaceIcon,
   camera: CameraIcon,
   caret: CaretIcon,
   caretThin: CaretThinIcon,

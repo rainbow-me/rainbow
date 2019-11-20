@@ -5,6 +5,7 @@ font.family = {
   Graphik: 'Graphik',
   SFMono: 'SFMono-Regular',
   SFProDisplay: 'SF Pro Display',
+  SFProRounded: 'SF Pro Rounded',
   SFProText: 'SF Pro Text',
   SFProRounded: 'SF Pro Rounded',
 };
@@ -14,7 +15,10 @@ font.letterSpacing = {
   tighter: -0.2,
   tight: -0.1,
   loose: 0.15,
-  looser: 0.46,
+  looser: 0.3,
+  loosest: 0.46,
+  looseyGoosey: 0.6,
+  uppercase: 0.8,
 };
 
 font.lineHeight = {
@@ -24,6 +28,7 @@ font.lineHeight = {
   loose: 21,
   looser: 26,
   loosest: 28,
+  giant: 108,
 };
 
 font.size = {
@@ -41,6 +46,7 @@ font.size = {
   big: '22px',
   bigger: '26px',
   biggest: '27px',
+  giant: '90px',
   h1: '42px',
   h2: '30px',
   h3: '24px',
