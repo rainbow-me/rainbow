@@ -267,11 +267,8 @@ export default class ButtonPressAnimation extends Component {
         </AnimatedRawButton>
         <Animated.Code
           exec={block([
-            cond(eq(this.gestureState, ACTIVE), [
-              set(this.shouldSpring, 1),
-              stopClock(this.clockReversed),
-            ]),
-            cond(contains([FAILED, CANCELLED, END], this.gestureState), [
+            cond(
+              contains([FAILED, CANCELLED, END], this.gestureState),
               cond(
                 or(
                   and(
@@ -283,22 +280,27 @@ export default class ButtonPressAnimation extends Component {
                     greaterThan(this.scale, scaleDiff)
                   )
                 ),
-                block([stopClock(this.clock), set(this.shouldSpring, 0)])
-              ),
-              call([], this.reset),
-            ]),
-            onChange(
-              this.gestureState,
+                block(set(this.shouldSpring, 0))
+              )
+            ),
+            onChange(this.gestureState, [
               cond(
                 eq(this.gestureState, ACTIVE),
                 [
                   call([], this.createInteraction),
                   call([], this.createLongPressListener),
                   call([], this.handlePressStart),
+                  set(this.shouldSpring, 1),
+                  stopClock(this.clockReversed),
                 ],
-                cond(eq(this.gestureState, END), [call([], this.handlePress)])
-              )
-            ),
+                cond(eq(this.gestureState, END), call([], this.handlePress))
+              ),
+              cond(
+                contains([FAILED, CANCELLED, END], this.gestureState),
+                call([], this.reset),
+                stopClock(this.clock)
+              ),
+            ]),
             cond(
               eq(this.shouldSpring, 1),
               set(
@@ -314,6 +316,7 @@ export default class ButtonPressAnimation extends Component {
             ),
             cond(
               and(
+                eq(this.shouldSpring, 0),
                 or(
                   and(
                     greaterThan(this.props.defaultScale, this.props.scaleTo),
@@ -323,8 +326,7 @@ export default class ButtonPressAnimation extends Component {
                     lessThan(this.props.defaultScale, this.props.scaleTo),
                     greaterThan(this.scale, this.props.defaultScale)
                   )
-                ),
-                eq(this.shouldSpring, 0)
+                )
               ),
               set(
                 this.scale,
