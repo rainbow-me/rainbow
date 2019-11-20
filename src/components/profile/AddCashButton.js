@@ -92,9 +92,7 @@ const AddCashButton = enhance(({ children, onPress }) => (
 ));
 
 AddCashButton.propTypes = {
-  borderRadius: PropTypes.number,
   children: PropTypes.node,
-  color: PropTypes.string,
   onPress: PropTypes.func,
 };
 
