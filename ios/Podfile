@@ -49,6 +49,7 @@ target 'Rainbow' do
   pod 'FLAnimatedImage'
   pod 'libwebp'
   pod 'CodePush', :path => '../node_modules/react-native-code-push'
+  pod 'RNInputMask', :path => '../node_modules/react-native-text-input-mask/ios/InputMask'
 
   use_native_modules!
 

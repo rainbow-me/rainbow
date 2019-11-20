@@ -115,7 +115,7 @@ export const uniswapUpdateTokenReserves = (
 };
 
 export const uniswapUpdateInputCurrency = inputCurrency => async dispatch => {
-  const inputReserve = await getReserve(get(inputCurrency, 'address'));
+  const inputReserve = await getReserve(get(inputCurrency, 'address', null));
   dispatch({
     payload: {
       inputCurrency,
@@ -126,7 +126,7 @@ export const uniswapUpdateInputCurrency = inputCurrency => async dispatch => {
 };
 
 export const uniswapUpdateOutputCurrency = outputCurrency => async dispatch => {
-  const outputReserve = await getReserve(get(outputCurrency, 'address'));
+  const outputReserve = await getReserve(get(outputCurrency, 'address', null));
   dispatch({
     payload: {
       outputCurrency,

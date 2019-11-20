@@ -28,6 +28,7 @@ const {
   createAnimatedComponent,
   divide,
   eq,
+  or,
   event,
   greaterThan,
   lessThan,
@@ -225,7 +226,9 @@ export default class ButtonPressAnimation extends Component {
       offsetY = Math.floor(height / 2) * (transformOrigin === 'top' ? -1 : 1);
     }
 
-    const scaleDiff = 1 - (this.props.defaultScale - this.props.scaleTo) / 2;
+    const scaleDiff =
+      this.props.defaultScale -
+      (this.props.defaultScale - this.props.scaleTo) / 2;
 
     const opacity =
       scaleTo > defaultScale
@@ -270,7 +273,16 @@ export default class ButtonPressAnimation extends Component {
             ]),
             cond(contains([FAILED, CANCELLED, END], this.gestureState), [
               cond(
-                lessThan(this.scale, scaleDiff),
+                or(
+                  and(
+                    greaterThan(this.props.defaultScale, this.props.scaleTo),
+                    lessThan(this.scale, scaleDiff)
+                  ),
+                  and(
+                    lessThan(this.props.defaultScale, this.props.scaleTo),
+                    greaterThan(this.scale, scaleDiff)
+                  )
+                ),
                 block([stopClock(this.clock), set(this.shouldSpring, 0)])
               ),
               call([], this.reset),
@@ -288,26 +300,38 @@ export default class ButtonPressAnimation extends Component {
               )
             ),
             cond(
-              and(greaterThan(this.scale, 0), eq(this.shouldSpring, 1)),
+              eq(this.shouldSpring, 1),
               set(
                 this.scale,
                 timing({
                   clock: this.clock,
                   duration: this.props.duration,
-                  easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
+                  easing: this.props.easing,
                   from: this.scale,
                   to: this.props.scaleTo,
                 })
               )
             ),
             cond(
-              and(lessThan(this.scale, 1), eq(this.shouldSpring, 0)),
+              and(
+                or(
+                  and(
+                    greaterThan(this.props.defaultScale, this.props.scaleTo),
+                    lessThan(this.scale, this.props.defaultScale)
+                  ),
+                  and(
+                    lessThan(this.props.defaultScale, this.props.scaleTo),
+                    greaterThan(this.scale, this.props.defaultScale)
+                  )
+                ),
+                eq(this.shouldSpring, 0)
+              ),
               set(
                 this.scale,
                 timing({
                   clock: this.clockReversed,
                   duration: this.props.duration,
-                  easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
+                  easing: this.props.easing,
                   from: this.scale,
                   to: this.props.defaultScale,
                 })

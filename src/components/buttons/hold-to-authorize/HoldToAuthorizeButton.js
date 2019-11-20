@@ -99,8 +99,7 @@ export default class HoldToAuthorizeButton extends PureComponent {
 
   componentDidUpdate = () => {
     if (this.state.isAuthorizing && !this.props.isAuthorizing) {
-      // eslint-disable-next-line react/no-did-update-set-state
-      this.setState({ isAuthorizing: false });
+      this.onFinishAuthorizing();
     }
   };
 
@@ -109,6 +108,17 @@ export default class HoldToAuthorizeButton extends PureComponent {
   tapHandlerState = 1;
 
   animation = new Value(0);
+
+  onFinishAuthorizing = () => {
+    const { disabled } = this.props;
+    if (!disabled) {
+      buildAnimation(this.animation, {
+        duration: calculateReverseDuration(this.animation),
+        isInteraction: true,
+        toValue: 0,
+      }).start(() => this.setState({ isAuthorizing: false }));
+    }
+  };
 
   onTapChange = ({ nativeEvent: { state } }) => {
     const { disabled, onPress } = this.props;

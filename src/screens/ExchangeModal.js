@@ -11,7 +11,7 @@ import BigNumber from 'bignumber.js';
 import { get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
-import { TextInput } from 'react-native';
+import { TextInput, InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { withNavigationFocus, NavigationEvents } from 'react-navigation';
 import { compose, toClass, withProps } from 'recompact';
@@ -77,6 +77,8 @@ const isSameAsset = (a, b) => {
   return assetA === assetB;
 };
 
+const getNativeTag = field => get(field, '_nativeTag');
+
 class ExchangeModal extends Component {
   static propTypes = {
     accountAddress: PropTypes.string,
@@ -113,6 +115,7 @@ class ExchangeModal extends Component {
     inputExecutionRate: null,
     inputNativePrice: null,
     isAssetApproved: true,
+    isAuthorizing: false,
     isSufficientBalance: true,
     isUnlockingAsset: false,
     nativeAmount: null,
@@ -132,12 +135,26 @@ class ExchangeModal extends Component {
       'outputReserve.token.address',
     ]);
 
+    // Code below is a workaround. We noticed that opening keyboard while animation
+    // (with autofocus) can lead to frame drops. In order not to limit this
+    // I manually can focus instead of relying on built-in autofocus.
+    // Maybe that's not perfect, but works for now ¯\_(ツ)_/¯
+    if (
+      this.props.isTransitioning &&
+      nextProps.isTransitioning &&
+      this.lastFocusedInput === null
+    ) {
+      this.inputFocusInteractionHandle = InteractionManager.runAfterInteractions(
+        this.focusInputField
+      );
+    }
     const isNewState = isNewValueForObjectPaths(this.state, nextState, [
       'approvalCreationTimestamp',
       'approvalEstimatedTimeInMs',
       'inputAmount',
       'inputCurrency.uniqueId',
       'isAssetApproved',
+      'isAuthorizing',
       'isSufficientBalance',
       'isUnlockingAsset',
       'nativeAmount',
@@ -209,6 +226,11 @@ class ExchangeModal extends Component {
   };
 
   componentWillUnmount = () => {
+    if (this.inputFocusInteractionHandle) {
+      InteractionManager.clearInteractionHandle(
+        this.inputFocusInteractionHandle
+      );
+    }
     this.props.uniswapClearCurrenciesAndReserves();
   };
 
@@ -231,6 +253,12 @@ class ExchangeModal extends Component {
     if (this.inputFieldRef) this.inputFieldRef.clear();
     if (this.nativeFieldRef) this.nativeFieldRef.clear();
     if (this.outputFieldRef) this.outputFieldRef.clear();
+  };
+
+  focusInputField = () => {
+    if (this.inputFieldRef) {
+      this.inputFieldRef.focus();
+    }
   };
 
   getCurrencyAllowance = async () => {
@@ -539,6 +567,7 @@ class ExchangeModal extends Component {
   };
 
   handleSubmit = async () => {
+    this.setState({ isAuthorizing: true });
     const {
       accountAddress,
       dataAddNewTransaction,
@@ -551,6 +580,7 @@ class ExchangeModal extends Component {
     try {
       const gasPrice = get(selectedGasPrice, 'value.amount');
       const txn = await executeSwap(tradeDetails, gasLimit, gasPrice);
+      this.setState({ isAuthorizing: false });
       if (txn) {
         dataAddNewTransaction({
           amount: inputAmount,
@@ -560,9 +590,10 @@ class ExchangeModal extends Component {
           nonce: get(txn, 'nonce'),
           to: get(txn, 'to'),
         });
+        navigation.navigate('ProfileScreen');
       }
-      navigation.navigate('ProfileScreen');
     } catch (error) {
+      this.setState({ isAuthorizing: false });
       console.log('error submitting swap', error);
       navigation.navigate('WalletScreen');
     }
@@ -607,9 +638,31 @@ class ExchangeModal extends Component {
     }
   };
 
+  findNextFocused = () => {
+    const inputRefTag = getNativeTag(this.inputFieldRef);
+    const nativeInputRefTag = getNativeTag(this.nativeFieldRef);
+    const outputRefTag = getNativeTag(this.outputFieldRef);
+
+    const lastFocusedIsInputType =
+      this.lastFocusedInput === inputRefTag ||
+      this.lastFocusedInput === nativeInputRefTag;
+
+    const lastFocusedIsOutputType = this.lastFocusedInput === outputRefTag;
+
+    if (lastFocusedIsInputType && !this.state.inputCurrency) {
+      return outputRefTag;
+    }
+
+    if (lastFocusedIsOutputType && !this.state.outputCurrency) {
+      return inputRefTag;
+    }
+
+    return this.lastFocusedInput;
+  };
+
   handleKeyboardManagement = () => {
     if (this.lastFocusedInput !== TextInput.State.currentlyFocusedField()) {
-      TextInput.State.focusTextInput(this.lastFocusedInput);
+      TextInput.State.focusTextInput(this.findNextFocused());
       this.lastFocusedInput = null;
     }
   };
@@ -666,25 +719,18 @@ class ExchangeModal extends Component {
     });
   };
 
-  setInputCurrency = (inputCurrency, force) => {
-    const { outputCurrency } = this.state;
+  setInputCurrency = (inputCurrency, userSelected = true) => {
+    const { inputCurrency: previousInputCurrency, outputCurrency } = this.state;
 
-    if (!isSameAsset(inputCurrency, this.state.inputCurrency)) {
+    if (!isSameAsset(inputCurrency, previousInputCurrency)) {
       this.clearForm();
     }
 
     this.setState({ inputCurrency });
+    this.props.uniswapUpdateInputCurrency(inputCurrency);
 
-    if (!force) {
-      this.props.uniswapUpdateInputCurrency(inputCurrency);
-    }
-
-    if (!force && isSameAsset(inputCurrency, outputCurrency)) {
-      if (!isNil(inputCurrency) && !isNil(outputCurrency)) {
-        this.setOutputCurrency(null, true);
-      } else {
-        this.setOutputCurrency(inputCurrency, true);
-      }
+    if (userSelected && isSameAsset(inputCurrency, outputCurrency)) {
+      this.setOutputCurrency(previousInputCurrency, false);
     }
   };
 
@@ -724,13 +770,13 @@ class ExchangeModal extends Component {
         amountDisplay !== undefined ? amountDisplay : outputAmount,
     });
 
-  setOutputCurrency = (outputCurrency, force) => {
-    const { allAssets } = this.props;
-    const { inputCurrency } = this.state;
+  setOutputCurrency = (outputCurrency, userSelected = true) => {
+    const {
+      inputCurrency,
+      outputCurrency: previousOutputCurrency,
+    } = this.state;
 
-    if (!force) {
-      this.props.uniswapUpdateOutputCurrency(outputCurrency);
-    }
+    this.props.uniswapUpdateOutputCurrency(outputCurrency);
 
     this.setState({
       inputAsExactAmount: true,
@@ -738,15 +784,8 @@ class ExchangeModal extends Component {
       showConfirmButton: !!outputCurrency,
     });
 
-    if (!force && isSameAsset(inputCurrency, outputCurrency)) {
-      const outputAddress = toLower(outputCurrency.address);
-      const asset = ethereumUtils.getAsset(allAssets, outputAddress);
-
-      if (!isNil(asset) && !isNil(inputCurrency) && !isNil(outputCurrency)) {
-        this.setInputCurrency(null, true);
-      } else {
-        this.setInputCurrency(outputCurrency, true);
-      }
+    if (userSelected && isSameAsset(inputCurrency, outputCurrency)) {
+      this.setInputCurrency(previousOutputCurrency, false);
     }
   };
 
@@ -762,6 +801,7 @@ class ExchangeModal extends Component {
       // inputExecutionRate,
       // inputNativePrice,
       isAssetApproved,
+      isAuthorizing,
       isSufficientBalance,
       isUnlockingAsset,
       nativeAmount,
@@ -776,7 +816,6 @@ class ExchangeModal extends Component {
 
     const isSlippageWarningVisible =
       isSufficientBalance && !!inputAmount && !!outputAmount;
-
     return (
       <KeyboardFixedOpenLayout>
         <NavigationEvents onWillFocus={this.handleKeyboardManagement} />
@@ -840,6 +879,7 @@ class ExchangeModal extends Component {
                     disabled={isAssetApproved && !Number(inputAmountDisplay)}
                     inputCurrencyName={get(inputCurrency, 'symbol')}
                     isAssetApproved={isAssetApproved}
+                    isAuthorizing={isAuthorizing}
                     isSufficientBalance={isSufficientBalance}
                     isUnlockingAsset={isUnlockingAsset}
                     onSubmit={this.handleSubmit}

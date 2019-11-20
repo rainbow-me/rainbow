@@ -90,7 +90,8 @@
     "name": "Kleros"
   },
   "0x6758B7d441a9739b98552B373703d8d3d14f9e62": {
-    "name": "POA Network"
+    "name": "POA Network",
+    "symbol": "POA"
   },
   "0x255Aa6DF07540Cb5d3d297f0D0D4D84cb52bc8e6": {
     "name": "Raiden"
