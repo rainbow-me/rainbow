@@ -1,3 +1,4 @@
+import { ApolloProvider } from '@apollo/react-hooks';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import analytics from '@segment/analytics-react-native';
 import { init as initSentry, setRelease } from '@sentry/react-native';
@@ -20,6 +21,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
+import { client } from './apollo/client';
 import { FlexItem } from './components/layout';
 import OfflineBadge from './components/OfflineBadge';
 import { withDeepLink, withWalletConnectOnSessionRequest } from './hoc';
@@ -157,12 +159,14 @@ class App extends Component {
 
   render = () => (
     <SafeAreaProvider>
-      <Provider store={store}>
-        <FlexItem>
-          <Routes ref={this.handleNavigatorRef} />
-          <OfflineBadge />
-        </FlexItem>
-      </Provider>
+      <ApolloProvider client={client}>
+        <Provider store={store}>
+          <FlexItem>
+            <OfflineBadge />
+            <Routes ref={this.handleNavigatorRef} />
+          </FlexItem>
+        </Provider>
+      </ApolloProvider>
     </SafeAreaProvider>
   );
 }
