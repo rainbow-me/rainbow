@@ -3,7 +3,7 @@ import Text from './Text';
 
 export default withProps(({ style }) => ({
   color: 'blueGreyMedium',
-  letterSpacing: 'looser',
+  letterSpacing: 'loosest',
   size: 'smaller',
   style: [{ textTransform: 'uppercase' }, style],
   weight: 'semibold',

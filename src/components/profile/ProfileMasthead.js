@@ -3,11 +3,10 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { compose, withHandlers } from 'recompact';
 import FastImage from 'react-native-fast-image';
-import GraphemeSplitter from 'grapheme-splitter';
 import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
 import { margin, colors, borders } from '../../styles';
-import { abbreviations } from '../../utils';
+import { abbreviations, getFirstGrapheme } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { useNavigation } from 'react-navigation-hooks';
 import { useClipboard } from '../../hooks';
@@ -16,6 +15,7 @@ import Divider from '../Divider';
 import { Centered, RowWithMargins } from '../layout';
 import { FloatingEmojis } from '../floating-emojis';
 import { TruncatedAddress } from '../text';
+import AddCashButton from './AddCashButton';
 import ProfileAction from './ProfileAction';
 import { isAvatarPickerAvailable } from '../../config/experimental';
 
@@ -32,31 +32,30 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   margin-bottom: 24;
-  padding-bottom: 32;
+  padding-bottom: 12;
 `;
 
 const AvatarCircle = styled(View)`
   border-radius: 33px;
-  margin-bottom: 16px;
   height: 65px;
+  margin-bottom: 16px;
   width: 65px;
 `;
 
 const FirstLetter = styled(Text)`
-  width: 100%;
-  text-align: center;
   color: #fff;
-  font-weight: 600;
   font-size: 37;
+  font-weight: 600;
   line-height: 65;
+  text-align: center;
+  width: 100%;
 `;
 
 const ProfileMasthead = ({
   accountAddress,
-  showBottomDivider,
   accountColor,
   accountName,
-  onPressAvatar,
+  showBottomDivider,
 }) => {
   const { setClipboard } = useClipboard();
   const { navigate } = useNavigation();
@@ -66,15 +65,15 @@ const ProfileMasthead = ({
       {isAvatarPickerAvailable ? (
         <ButtonPressAnimation
           hapticType="impactMedium"
-          onPress={onPressAvatar}
+          onPress={() =>
+            navigate('AvatarBuilder', { accountColor, accountName })
+          }
           scaleTo={0.82}
         >
           <AvatarCircle
             style={{ backgroundColor: colors.avatarColor[accountColor] }}
           >
-            <FirstLetter>
-              {new GraphemeSplitter().splitGraphemes(accountName)[0]}
-            </FirstLetter>
+            <FirstLetter>{getFirstGrapheme(accountName)}</FirstLetter>
           </AvatarCircle>
         </ButtonPressAnimation>
       ) : (
@@ -86,7 +85,6 @@ const ProfileMasthead = ({
           }}
         />
       )}
-
       <CopyTooltip textToCopy={accountAddress} tooltipText="Copy Address">
         <AddressAbbreviation address={accountAddress} />
       </CopyTooltip>
@@ -111,6 +109,9 @@ const ProfileMasthead = ({
           text="Receive"
         />
       </RowWithMargins>
+      <AddCashButton onPress={() => navigate('AddCashSheet')}>
+        Add Cash
+      </AddCashButton>
       {showBottomDivider && (
         <Divider style={{ bottom: 0, position: 'absolute' }} />
       )}

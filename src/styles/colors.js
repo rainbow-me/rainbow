@@ -39,6 +39,7 @@ const base = {
   purpleLight: '#FFD9FE', // '255, 217, 254'
   red: '#d64b47', // '214, 75, 71'
   rowDivider: '#f9f9fa', // '249, 249, 250'
+  shadowGrey: '#6F6F6F', // '111, 111, 111'
   shimmer: '#edeef1', // '237, 238, 241'
   skeleton: '#f6f7f8', // '246, 247, 248'
   transparent: 'transparent',

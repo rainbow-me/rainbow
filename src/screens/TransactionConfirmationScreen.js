@@ -167,7 +167,7 @@ export default class TransactionConfirmationScreen extends PureComponent {
           size={60}
           style={{ marginBottom: 24 }}
         />
-        <Text color="white" letterSpacing="looser" size="h4" weight="semibold">
+        <Text color="white" letterSpacing="loosest" size="h4" weight="semibold">
           {this.props.dappName}
         </Text>
         <TransactionType>{this.requestHeader()}</TransactionType>
