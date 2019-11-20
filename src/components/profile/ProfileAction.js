@@ -13,7 +13,7 @@ const Container = styled(RowWithMargins).attrs({
   margin: 6,
 })`
   ${padding(8, 9)};
-  background-color: ${colors.white};
+  background-color: ${colors.transparent};
 `;
 
 const ProfileAction = ({ icon, iconSize, onPress, text, ...props }) => (

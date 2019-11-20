@@ -26,6 +26,8 @@ export default function useTransformOrigin(transformOrigin) {
       offsetX = Math.floor(width / 2) * offsetMultiplier;
     } else if (transformOrigin === 'bottom' || transformOrigin === 'top') {
       offsetY = Math.floor(height / 2) * offsetMultiplier;
+    } else if (transformOrigin === 'keyboard') {
+      offsetY = 8;
     }
     return { offsetX, offsetY };
   }, [height, transformOrigin, width]);

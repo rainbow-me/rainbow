@@ -12,6 +12,7 @@ import Divider from '../Divider';
 import { Centered, Column, RowWithMargins } from '../layout';
 import { FloatingEmojis } from '../floating-emojis';
 import { TruncatedAddress } from '../text';
+import AddCashButton from './AddCashButton';
 import ProfileAction from './ProfileAction';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
@@ -27,12 +28,13 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   margin-bottom: 24;
-  padding-bottom: 32;
+  padding-bottom: 12;
 `;
 
 const ProfileMasthead = ({
   accountAddress,
   emojiCount,
+  onPressAddCash,
   onPressCopy,
   onPressReceive,
   showBottomDivider,
@@ -70,6 +72,7 @@ const ProfileMasthead = ({
         text="Receive"
       />
     </RowWithMargins>
+    <AddCashButton onPress={onPressAddCash}>Add Cash</AddCashButton>
     {showBottomDivider && (
       <Divider style={{ bottom: 0, position: 'absolute' }} />
     )}
@@ -79,6 +82,7 @@ const ProfileMasthead = ({
 ProfileMasthead.propTypes = {
   accountAddress: PropTypes.string,
   emojiCount: PropTypes.number,
+  onPressAddCash: PropTypes.func,
   onPressCopy: PropTypes.func,
   onPressReceive: PropTypes.func,
   showBottomDivider: PropTypes.bool,
@@ -91,6 +95,8 @@ ProfileMasthead.defaultProps = {
 export default compose(
   withState('emojiCount', 'setEmojiCount', 0),
   withHandlers({
+    onPressAddCash: ({ navigation }) => () =>
+      navigation.navigate('AddCashSheet'),
     onPressCopy: ({ accountAddress, emojiCount, setEmojiCount }) => () => {
       setEmojiCount(emojiCount + 1);
       Clipboard.setString(accountAddress);

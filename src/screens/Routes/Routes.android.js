@@ -5,7 +5,6 @@ import { StatusBar } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
-
 import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
 import { createStackNavigator } from 'react-navigation-stack';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
@@ -13,6 +12,7 @@ import { ExchangeModalNavigator, Navigation } from '../../navigation';
 import { updateTransitionProps } from '../../redux/navigation';
 import store from '../../redux/store';
 import { deviceUtils } from '../../utils';
+import AddCashSheet from '../AddCashSheet';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from '../ProfileScreenWithData';
@@ -159,6 +159,9 @@ const setListener = listener => (appearListener = listener);
 
 const NativeStack = createNativeStackNavigator(
   {
+    AddCashSheet: function AddCashSheetWrapper(...props) {
+      return <AddCashSheet {...props} />;
+    },
     ImportSeedPhraseSheet: function ImportSeedPhraseSheetWrapper(...props) {
       return (
         <ImportSeedPhraseSheetWithData
@@ -184,6 +187,16 @@ const NativeStack = createNativeStackNavigator(
 
 const NativeStackFallback = createStackNavigator(
   {
+    AddCashSheet: {
+      navigationOptions: {
+        ...sheetPreset,
+        onTransitionStart: props => {
+          onTransitionStart(props);
+          sheetPreset.onTransitionStart(props);
+        },
+      },
+      screen: AddCashSheet,
+    },
     ImportSeedPhraseSheet: {
       navigationOptions: {
         ...sheetPreset,
