@@ -130,7 +130,7 @@ export default class ButtonPressAnimation extends Component {
                     eq(this.gestureState, END),
                     eq(this.gestureState, UNDETERMINED)
                   ),
-                  eq(s, State.END)
+                  eq(s, END)
                 ),
                 // I observed that often onGestureEvent is called immediately
                 // with State.END which means that GH didn't manage to deliver State.ACTIVE
