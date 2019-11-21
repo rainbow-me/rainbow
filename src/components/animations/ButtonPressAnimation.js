@@ -28,6 +28,7 @@ const {
   createAnimatedComponent,
   divide,
   eq,
+  neq,
   or,
   event,
   greaterThan,
@@ -122,9 +123,15 @@ export default class ButtonPressAnimation extends Component {
       {
         nativeEvent: {
           state: s =>
-            block([
+            onChange(s, [
               cond(
-                eq(this.gestureState, State.END),
+                and(
+                  or(
+                    eq(this.gestureState, END),
+                    eq(this.gestureState, UNDETERMINED)
+                  ),
+                  eq(s, State.END)
+                ),
                 // I observed that often onGestureEvent is called immediately
                 // with State.END which means that GH didn't manage to deliver State.ACTIVE
                 // event. It's possible because of coalescing of events (and very visible
@@ -132,9 +139,13 @@ export default class ButtonPressAnimation extends Component {
                 // gesture negotiations and this can lead to coalescing),
                 // but since we rely on this logic, I override the state
                 // to simulate "complete" workflow
-                call([], () => this.gestureState.setValue(State.ACTIVE))
+                [
+                  set(this.gestureState, ACTIVE),
+                  call([], () => this.gestureState.setValue(END)),
+                ],
+                cond(neq(s, -1), set(this.gestureState, s))
               ),
-              set(this.gestureState, s),
+              set(s, -1),
             ]),
         },
       },
