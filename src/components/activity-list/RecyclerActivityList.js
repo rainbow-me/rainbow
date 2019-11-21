@@ -71,6 +71,7 @@ const hasRowChanged = (r1, r2) => {
 
   return (
     r1Key !== r2Key ||
+    isNewValueForPath(r1, r2, 'contact') ||
     isNewValueForPath(r1, r2, 'native.symbol') ||
     isNewValueForPath(r1, r2, 'pending')
   );

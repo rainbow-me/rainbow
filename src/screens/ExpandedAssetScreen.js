@@ -11,7 +11,6 @@ import { Centered } from '../components/layout';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { padding } from '../styles';
 import { deviceUtils, safeAreaInsetValues } from '../utils';
-import { addNewLocalContact } from '../handlers/localstorage/contacts';
 
 const { bottom: safeAreaBottom, top: safeAreaTop } = safeAreaInsetValues;
 
@@ -37,31 +36,7 @@ export default class ExpandedAssetScreen extends Component {
     containerPadding: 15,
   };
 
-  state = {
-    color: 0,
-    shouldSave: false,
-    value: '',
-  };
-
   shouldComponentUpdate = () => false;
-
-  componentWillUnmount = async () => {
-    const { address, onCloseModal, type } = this.props;
-    const { color, shouldSave, value } = this.state;
-
-    if (type === 'contact' && shouldSave && value.length > 0) {
-      await addNewLocalContact(address, value, color);
-      onCloseModal();
-    }
-  };
-
-  setNewValuesToSave = (value, color, shouldSave = true) => {
-    this.setState({
-      color,
-      shouldSave,
-      value,
-    });
-  };
 
   render = () => (
     <Centered
@@ -77,7 +52,6 @@ export default class ExpandedAssetScreen extends Component {
       <TouchableBackdrop onPress={this.props.onPressBackground} />
       {createElement(ScreenTypes[this.props.type], {
         ...this.props,
-        onUnmountModal: this.setNewValuesToSave,
       })}
     </Centered>
   );

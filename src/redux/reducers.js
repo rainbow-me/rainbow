@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 
 import actionSheetManager from './actionSheetManager';
+import contacts from './contacts';
 import data from './data';
 import explorer from './explorer';
 import gas from './gas';
@@ -23,6 +24,7 @@ import walletconnect from './walletconnect';
 
 export default combineReducers({
   actionSheetManager,
+  contacts,
   data,
   explorer,
   gas,

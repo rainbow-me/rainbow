@@ -114,13 +114,11 @@ export const sendToggleConfirmationView = boolean => (dispatch, getState) => {
   });
 };
 
-export const sendUpdateRecipient = recipient => dispatch => {
-  const input = recipient.replace(/[^\w.]/g, '');
+export const sendUpdateRecipient = recipient => dispatch =>
   dispatch({
-    payload: input,
+    payload: recipient,
     type: SEND_UPDATE_RECIPIENT,
   });
-};
 
 export const sendUpdateAssetAmount = assetAmount => (dispatch, getState) => {
   const { nativeCurrency } = getState().settings;

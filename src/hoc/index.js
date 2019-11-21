@@ -6,6 +6,7 @@ export { default as withActionSheetManager } from './withActionSheetManager';
 export { default as withAppState } from './withAppState';
 export { default as withBlockedHorizontalSwipe } from './withBlockedHorizontalSwipe';
 export { default as withBlurTransitionProps } from './withBlurTransitionProps';
+export { default as withContacts } from './withContacts';
 export { default as withDataInit } from './withDataInit';
 export { default as withDeepLink } from './withDeepLink';
 export { default as withFabSelection } from './withFabSelection';

@@ -1,3 +1,4 @@
+import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
@@ -7,10 +8,10 @@ import {
 } from 'recyclerlistview';
 import { withNavigation } from 'react-navigation';
 import { compose } from 'recompose';
-import { removeFirstEmojiFromString } from '../../helpers/emojiHandler';
 import { withSelectedInput } from '../../hoc';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import { deviceUtils } from '../../utils';
+import { filterList } from '../../utils/search';
 import { FlyInAnimation } from '../animations';
 import { SwipeableContactRow } from '../contacts';
 import SendEmptyState from './SendEmptyState';
@@ -29,7 +30,7 @@ class SendContactList extends Component {
     currentInput: PropTypes.string,
     navigation: PropTypes.object,
     onPressContact: PropTypes.func,
-    onUpdateContacts: PropTypes.func,
+    removeContact: PropTypes.func,
     selectedInputId: PropTypes.object,
   };
 
@@ -67,10 +68,8 @@ class SendContactList extends Component {
   }
 
   componentWillReceiveProps = props => {
-    let newAssets = Object.assign([], props.allAssets);
-    newAssets.reverse();
-    newAssets = this.filterContactList(
-      newAssets,
+    const newAssets = filterList(
+      props.allAssets,
       props.currentInput,
       'nickname'
     );
@@ -90,40 +89,8 @@ class SendContactList extends Component {
     if (this.touchedContact && this.contacts[this.touchedContact]) {
       this.contacts[this.touchedContact].close();
     }
-    this.touchedContact = address;
+    this.touchedContact = toLower(address);
     this.recentlyRendered = false;
-  };
-
-  filterContactList = (
-    list,
-    searchPhrase,
-    searchParameter = false,
-    separator = ' '
-  ) => {
-    const filteredList = [];
-    if (list && searchPhrase.length > 0) {
-      for (let i = 0; i < list.length; i++) {
-        const searchedItem = searchParameter
-          ? list[i][searchParameter]
-          : list[i];
-        const splitedWordList = searchedItem.split(separator);
-        splitedWordList.push(searchedItem);
-        splitedWordList.push(removeFirstEmojiFromString(searchedItem).join(''));
-        for (let j = 0; j < splitedWordList.length; j++) {
-          if (
-            splitedWordList[j]
-              .toLowerCase()
-              .startsWith(searchPhrase.toLowerCase())
-          ) {
-            filteredList.push(list[i]);
-            break;
-          }
-        }
-      }
-    } else {
-      return list;
-    }
-    return filteredList;
   };
 
   handleScroll = (event, offsetX, offsetY) => {
@@ -153,20 +120,23 @@ class SendContactList extends Component {
     });
   };
 
-  renderItem = (type, item) => (
-    <SwipeableContactRow
-      inputRef={this.props.inputRef}
-      navigation={this.props.navigation}
-      onChange={this.props.onUpdateContacts}
-      onPress={this.props.onPressContact}
-      onSelectEdit={this.onSelectEdit}
-      onTouch={this.closeAllDifferentContacts}
-      ref={component => {
-        this.contacts[item.address] = component;
-      }}
-      {...item}
-    />
-  );
+  renderItem = (type, item) => {
+    const { inputRef, navigation, onPressContact, removeContact } = this.props;
+    return (
+      <SwipeableContactRow
+        inputRef={inputRef}
+        navigation={navigation}
+        onPress={onPressContact}
+        onSelectEdit={this.onSelectEdit}
+        onTouch={this.closeAllDifferentContacts}
+        ref={component => {
+          this.contacts[toLower(item.address)] = component;
+        }}
+        removeContact={removeContact}
+        {...item}
+      />
+    );
+  };
 
   render = () => (
     <FlyInAnimation
