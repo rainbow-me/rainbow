@@ -1,4 +1,4 @@
-import { compact, get, toLower } from 'lodash';
+import { compact, get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, mapProps, onlyUpdateForKeys, withHandlers } from 'recompact';
@@ -6,7 +6,6 @@ import { Linking } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
-import { withContacts } from '../../hoc';
 import { colors } from '../../styles';
 import { abbreviations } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
@@ -81,20 +80,21 @@ const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
 TransactionCoinRow.propTypes = rowRenderPropTypes;
 
 export default compose(
-  mapProps(({ item: { hash, native, pending, ...item }, ...props }) => ({
-    hash,
-    item,
-    native,
-    pending,
-    ...props,
-  })),
-  withContacts,
+  mapProps(
+    ({ item: { contact, hash, native, pending, ...item }, ...props }) => ({
+      contact,
+      hash,
+      item,
+      native,
+      pending,
+      ...props,
+    })
+  ),
   withNavigation,
   withHandlers({
-    onPressTransaction: ({ contacts, hash, item, navigation }) => async () => {
+    onPressTransaction: ({ contact, hash, item, navigation }) => async () => {
       const { from, to, status } = item;
       const isSent = status === TransactionStatusTypes.sent;
-
       const headerInfo = {
         address: '',
         divider: isSent ? 'to' : 'from',
@@ -102,7 +102,6 @@ export default compose(
       };
 
       const contactAddress = isSent ? to : from;
-      const contact = contacts[toLower(contactAddress)];
       let contactColor = 0;
 
       if (contact) {
