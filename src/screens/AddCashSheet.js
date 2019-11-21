@@ -152,8 +152,7 @@ class AddCashSheet extends Component {
               />
             </View>
             <Centered
-              bottom={safeAreaInsetValues.bottom + 21}
-              css={padding(24, 15, 0)}
+              css={padding(isTinyIphone ? 4 : 24, 15, isTinyIphone ? 15 : safeAreaInsetValues.bottom + 21)}
               width="100%"
             >
               <ApplePayButton disabled={false} />

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Text, View, ViewPropTypes } from 'react-native';
 import styled from 'styled-components/primitives';
-import { colors, padding } from '../../styles';
+import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import styles from './VirtualKeyboardStyle';
@@ -79,7 +79,6 @@ class VirtualKeyboard extends Component {
   Cell(symbol) {
     return (
       <ButtonPressAnimation
-        css={padding(0, 0)}
         duration={40}
         key={symbol}
         onPress={() => {
