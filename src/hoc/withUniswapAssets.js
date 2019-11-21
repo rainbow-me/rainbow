@@ -22,9 +22,12 @@ const uniswapFavoritesSelector = state => state.favorites;
 const filterUniswapAssetsByAvailability = ({ address }) =>
   uniswapAssetAddresses.includes(address);
 
-const includeExchangeAddress = asset => ({
+export const includeExchangeAddress = asset => ({
   ...asset,
-  exchangeAddress: get(uniswapAssetsClean, `${asset.address}.exchangeAddress`),
+  exchangeAddress: get(
+    uniswapAssetsClean,
+    `[${toLower(asset.address)}].exchangeAddress`
+  ),
 });
 
 const lowerAssetName = asset => toLower(asset.name);
