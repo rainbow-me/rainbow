@@ -121,7 +121,21 @@ export default class ButtonPressAnimation extends Component {
     this.onGestureEvent = event([
       {
         nativeEvent: {
-          state: this.gestureState,
+          state: s =>
+            block([
+              cond(
+                eq(this.gestureState, State.END),
+                // I observed that often onGestureEvent is called immediately
+                // with State.END which means that GH didn't manage to deliver State.ACTIVE
+                // event. It's possible because of coalescing of events (and very visible
+                // with native pager - button gets activated a bit later because of
+                // gesture negotiations and this can lead to coalescing),
+                // but since we rely on this logic, I override the state
+                // to simulate "complete" workflow
+                call([], () => this.gestureState.setValue(State.ACTIVE))
+              ),
+              set(this.gestureState, s),
+            ]),
         },
       },
     ]);
