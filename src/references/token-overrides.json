@@ -20,6 +20,12 @@
   "0x107c4504cd79C5d2696Ea0030a8dD4e92601B82e": {
     "name": "Bloom"
   },
+  "0x493c57c4763932315a328269e1adad09653b9081": {
+    "name": "bZx Dai"
+  },
+  "0x14094949152eddbfcd073717200da82fed8dc960": {
+    "name": "bZx Sai"
+  },
   "0x514910771AF9Ca656af840dff83E8264EcF986CA": {
     "name": "Chainlink"
   },
@@ -27,12 +33,13 @@
     "name": "Civic"
   },
   "0xF5DCe57282A584D2746FaF1593d3121Fcac444dC": {
-    "name": "Compound Dai"
+    "name": "Compound Sai",
+    "symbol": "cSAI"
   },
   "0xB4272071eCAdd69d933AdcD19cA99fe80664fc08": {
     "name": "CryptoFranc"
   },
-  "0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359": {
+  "0x6b175474e89094c44da98b954eedeac495271d0f": {
     "name": "Dai"
   },
   "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf": {
@@ -41,8 +48,11 @@
   "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942": {
     "name": "Decentraland"
   },
+  "0xe0b7927c4af23765cb51314a0e0521a9645f0e2a": {
+    "name": "DigixDAO"
+  },
   "0x4f3AfEC4E5a3F2A6a1A411DEF7D7dFe50eE057bF": {
-    "name": "Digix Gold Token"
+    "name": "Digix Gold"
   },
   "0x4946Fcea7C692606e8908002e55A582af44AC121": {
     "name": "FOAM"
@@ -78,7 +88,7 @@
     "name": "Livepeer"
   },
   "0xA4e8C3Ec456107eA67d3075bF9e3DF3A75823DB0": {
-    "name": "LoomToken"
+    "name": "Loom"
   },
   "0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD": {
     "name": "Loopring"
@@ -106,7 +116,7 @@
   },
   "0x6758B7d441a9739b98552B373703d8d3d14f9e62": {
     "name": "POA Network",
-    "symbol": "POA"
+    "symbol": "POA20"
   },
   "0x255Aa6DF07540Cb5d3d297f0D0D4D84cb52bc8e6": {
     "name": "Raiden"
@@ -116,6 +126,9 @@
   },
   "0xB4EFd85c19999D84251304bDA99E90B92300Bd93": {
     "name": "Rocket Pool"
+  },
+  "0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359": {
+    "name": "Sai"
   },
   "0x4156D3342D5c385a87D264F90653733592000581": {
     "name": "SALT"
@@ -129,13 +142,13 @@
   "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC": {
     "name": "Storj"
   },
-  "0x2Dea20405c52Fb477ecCa8Fe622661d316Ac5400": {
+  "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f": {
     "name": "Synthetix"
   },
-  "0x42456D7084eacF4083f1140d3229471bbA2949A8": {
+  "0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb": {
     "name": "Synthetix ETH"
   },
-  "0x0cbe2df57ca9191b64a7af3baa3f946fa7df2f25": {
+  "0x57ab1ec28d129707052df4df418d58a2d46d5f51": {
     "name": "Synthetix USD"
   },
   "0xdac17f958d2ee523a2206206994597c13d831ec7": {
@@ -148,7 +161,8 @@
     "name": "Unisocks Edition 0"
   },
   "0x09cabEC1eAd1c0Ba254B09efb3EE13841712bE14": {
-    "name": "Uniswap V1"
+    "name": "Uniswap V1",
+    "symbol": "UNI-V1:SAI"
   },
   "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48": {
     "name": "USD Coin"

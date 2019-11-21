@@ -41,6 +41,12 @@
     "decimals": 18,
     "exchangeAddress": "0x0E6A53B13688018A3df8C69f99aFB19A3068D04f"
   },
+  "0x14094949152eddbfcd073717200da82fed8dc960": {
+    "name": "bZx Sai",
+    "symbol": "ISAI",
+    "decimals": 18,
+    "exchangeAddress": "0x81eed7f1ecbd7fa9978fcc7584296fb0c215dc5c"
+  },
   "0x514910771AF9Ca656af840dff83E8264EcF986CA": {
     "name": "Chainlink",
     "symbol": "LINK",
@@ -54,8 +60,8 @@
     "exchangeAddress": "0x1C6c712b1F4a7c263B1DBd8F97fb447c945d3b9a"
   },
   "0xF5DCe57282A584D2746FaF1593d3121Fcac444dC": {
-    "name": "Compound Dai",
-    "symbol": "cDAI",
+    "name": "Compound Sai",
+    "symbol": "cSAI",
     "decimals": 8,
     "exchangeAddress": "0x45A2FDfED7F7a2c791fb1bdF6075b83faD821ddE"
   },
@@ -65,11 +71,11 @@
     "decimals": 18,
     "exchangeAddress": "0x8dE0d002DC83478f479dC31F76cB0a8aa7CcEa17"
   },
-  "0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359": {
+  "0x6b175474e89094c44da98b954eedeac495271d0f": {
     "name": "Dai",
     "symbol": "DAI",
     "decimals": 18,
-    "exchangeAddress": "0x09cabEC1eAd1c0Ba254B09efb3EE13841712bE14"
+    "exchangeAddress": "0x2a1530c4c41db0b0b2bb646cb5eb1a67b7158667"
   },
   "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf": {
     "name": "DAOstack",
@@ -83,8 +89,14 @@
     "decimals": 18,
     "exchangeAddress": "0xC6581Ce3A005e2801c1e0903281BBd318eC5B5C2"
   },
+  "0xe0b7927c4af23765cb51314a0e0521a9645f0e2a": {
+    "name": "DigixDAO",
+    "symbol": "DGD",
+    "decimals": 9,
+    "exchangeAddress": "0xd55c1ca9f5992a2e5e379dce49abf24294abe055"
+  },
   "0x4f3AfEC4E5a3F2A6a1A411DEF7D7dFe50eE057bF": {
-    "name": "Digix Gold Token",
+    "name": "Digix Gold",
     "symbol": "DGX",
     "decimals": 9,
     "exchangeAddress": "0xb92dE8B30584392Af27726D5ce04Ef3c4e5c9924"
@@ -150,7 +162,7 @@
     "exchangeAddress": "0xc4a1C45D5546029Fd57128483aE65b56124BFA6A"
   },
   "0xA4e8C3Ec456107eA67d3075bF9e3DF3A75823DB0": {
-    "name": "LoomToken",
+    "name": "Loom",
     "symbol": "LOOM",
     "decimals": 18,
     "exchangeAddress": "0x417CB32bc991fBbDCaE230C7c4771CC0D69daA6b"
@@ -227,6 +239,12 @@
     "decimals": 18,
     "exchangeAddress": "0x3Fb2F18065926DdB33E7571475c509541d15dA0e"
   },
+  "0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359": {
+    "name": "Sai",
+    "symbol": "SAI",
+    "decimals": 18,
+    "exchangeAddress": "0x09cabEC1eAd1c0Ba254B09efb3EE13841712bE14"
+  },
   "0x4156D3342D5c385a87D264F90653733592000581": {
     "name": "SALT",
     "symbol": "SALT",
@@ -251,23 +269,23 @@
     "decimals": 8,
     "exchangeAddress": "0xA7298541E52f96d42382eCBe4f242cBcBC534d02"
   },
-  "0x2Dea20405c52Fb477ecCa8Fe622661d316Ac5400": {
+  "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f": {
     "name": "Synthetix",
     "symbol": "SNX",
     "decimals": 18,
-    "exchangeAddress": "0x9fAA0Cb10912DE7Ad1D86705C65de291a9088A61"
+    "exchangeAddress": "0x3958b4ec427f8fa24eb60f42821760e88d485f7f"
   },
-  "0x42456D7084eacF4083f1140d3229471bbA2949A8": {
+  "0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb": {
     "name": "Synthetix ETH",
     "symbol": "sETH",
     "decimals": 18,
-    "exchangeAddress": "0x4740C758859D4651061CC9CDEFdBa92BDc3a845d"
+    "exchangeAddress": "0xe9cf7887b93150d4f2da7dfc6d502b216438f244"
   },
-  "0x0cbe2df57ca9191b64a7af3baa3f946fa7df2f25": {
+  "0x57ab1ec28d129707052df4df418d58a2d46d5f51": {
     "name": "Synthetix USD",
     "symbol": "sUSD",
     "decimals": 18,
-    "exchangeAddress": "0xA1ECDcca26150cF69090280eE2EE32347C238c7b"
+    "exchangeAddress": "0xb944d13b2f4047fc7bd3f7013bcf01b115fb260d"
   },
   "0x8dd5fbCe2F6a956C3022bA3663759011Dd51e73E": {
     "name": "TrueUSD",
@@ -283,7 +301,7 @@
   },
   "0x09cabEC1eAd1c0Ba254B09efb3EE13841712bE14": {
     "name": "Uniswap V1",
-    "symbol": "UNI-V1:DAI",
+    "symbol": "UNI-V1:SAI",
     "decimals": 18,
     "exchangeAddress": "0x601c32E0580D3aef9437dB52D09f5a5D7E60eC22"
   },
