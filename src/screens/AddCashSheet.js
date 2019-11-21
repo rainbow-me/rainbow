@@ -62,8 +62,13 @@ function runSpring(clock, value, dest, velocity, stiffness, damping) {
   ]);
 }
 
-const statusBarHeight = getStatusBarHeight(true);
+const cashLimit = 1500;
 
+const cashFontSize = deviceUtils.dimensions.width * 0.24;
+const isTinyIphone = deviceUtils.dimensions.width < 375 ? true : false;
+const keyboardWidth = isTinyIphone ? 275 : '100%';
+
+const statusBarHeight = getStatusBarHeight(true);
 const sheetHeight = deviceUtils.dimensions.height - statusBarHeight;
 
 const gradientXPoint = deviceUtils.dimensions.width - 48;
@@ -98,7 +103,7 @@ class AddCashSheet extends Component {
           <AddCashHeader />
           <ColumnWithMargins
             align="center"
-            css={padding(0, 24, 24)}
+            css={padding(0, 24, isTinyIphone ? 0 : 24)}
             width="100%"
           >
             <MaskedView
@@ -109,9 +114,10 @@ class AddCashSheet extends Component {
                     style={{
                       color: colors.white,
                       fontFamily: 'SF Pro Rounded',
-                      fontSize: 90,
+                      fontSize: cashFontSize,
                       fontWeight: 'bold',
-                      left: '-25%',
+                      left: '-50%',
+                      lineHeight: 108,
                       textAlign: 'center',
                       transform: [
                         {
@@ -119,7 +125,7 @@ class AddCashSheet extends Component {
                           translateX: this.state.shakeAnim,
                         },
                       ],
-                      width: '150%',
+                      width: '200%',
                     }}
                   >
                     {'$' + (this.state.text ? this.state.text : '0')}
@@ -131,7 +137,7 @@ class AddCashSheet extends Component {
                 center={gradientPoints}
                 colors={['#FFB114', '#FF54BB', '#00F0FF', '#34F3FF']}
                 radius={gradientXPoint}
-                style={{ height: 107, width: '100%' }}
+                style={{ height: 108, width: '100%' }}
                 stops={[0.2049, 0.6354, 0.8318, 0.9541]}
               />
             </MaskedView>
@@ -139,13 +145,15 @@ class AddCashSheet extends Component {
           <ColumnWithMargins align="center" margin={15}>
             <View style={{ maxWidth: 313 }}>
               <VirtualKeyboard
-                pressMode="char"
                 decimal="true"
+                pressMode="char"
+                rowStyle={{ width: keyboardWidth }}
                 onPress={val => this.onPress(val)}
               />
             </View>
             <Centered
-              css={padding(24, 15, safeAreaInsetValues.bottom + 21)}
+              bottom={safeAreaInsetValues.bottom + 21}
+              css={padding(24, 15, 0)}
               width="100%"
             >
               <ApplePayButton disabled={false} />
@@ -168,7 +176,7 @@ class AddCashSheet extends Component {
     } else if (isNaN(val)) {
       if (val === 'back') {
         curText = curText.slice(0, -1);
-      } else if (curText.includes('.') || curText > 1500) {
+      } else if (curText.includes('.')) {
         this.setState({
           shakeAnim: runSpring(new Clock(), -10, 0, -1000, 5500, 35),
         });
@@ -180,7 +188,7 @@ class AddCashSheet extends Component {
           shakeAnim: runSpring(new Clock(), -10, 0, -1000, 5500, 35),
         });
         return;
-      } else if (curText + val <= 1500) {
+      } else if (curText + val <= cashLimit) {
         curText += val;
       } else {
         this.setState({

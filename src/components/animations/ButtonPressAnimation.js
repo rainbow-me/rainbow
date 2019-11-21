@@ -277,11 +277,8 @@ export default class ButtonPressAnimation extends Component {
         </AnimatedRawButton>
         <Animated.Code
           exec={block([
-            cond(eq(this.gestureState, ACTIVE), [
-              set(this.shouldSpring, 1),
-              stopClock(this.clockReversed),
-            ]),
-            cond(contains([FAILED, CANCELLED, END], this.gestureState), [
+            cond(
+              contains([FAILED, CANCELLED, END], this.gestureState),
               cond(
                 isBetweenProc(
                   this.props.scaleTo,
@@ -300,6 +297,8 @@ export default class ButtonPressAnimation extends Component {
                   call([], this.createInteraction),
                   call([], this.createLongPressListener),
                   call([], this.handlePressStart),
+                  set(this.shouldSpring, 1),
+                  stopClock(this.clockReversed),
                 ],
                 condProc(eq(this.gestureState, END), [
                   call([], this.handlePress),
