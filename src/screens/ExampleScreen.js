@@ -5,7 +5,7 @@ import { GasSpeedButton } from '../components/gas';
 import { Centered, Page } from '../components/layout';
 import { withDataInit, withAccountData } from '../hoc';
 import { colors, position } from '../styles';
-import Example from '../components/Example';
+import { CompoundInvestmentCard } from '../components/investment-cards';
 
 class ExampleScreen extends PureComponent {
   static propTypes = {
@@ -33,7 +33,7 @@ class ExampleScreen extends PureComponent {
 
       */}
       <Centered width="100%">
-        <Example />
+        <CompoundInvestmentCard />
       </Centered>
     </Page>
   );
