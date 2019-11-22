@@ -48,7 +48,7 @@ const FALSE = 1;
 const TRUE = 0;
 
 const width = deviceUtils.dimensions.width - 100;
-const height = 200;
+const height = 170;
 
 const flipY = { transform: [{ scaleX: 1 }, { scaleY: -1 }] };
 
@@ -281,9 +281,9 @@ export default class ValueChart extends PureComponent {
                     }}
                   >
                     <Svg
-                      height={200}
+                      height={width}
                       width={width}
-                      viewBox={`0 -50 ${width + 1} ${300}`}
+                      viewBox={`2 ${height + 16 - width} ${width} ${width}`}
                       preserveAspectRatio="none"
                       style={flipY}
                     >
