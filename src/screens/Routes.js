@@ -55,7 +55,13 @@ const SwipeStack = createMaterialTopTabNavigator(
     initialRouteName: 'WalletScreen',
     mode: 'modal',
     // eslint-disable-next-line react/display-name
-    renderPager: props => <ViewPagerAdapter overdrag={false} {...props} />,
+    renderPager: props => (
+      <ViewPagerAdapter
+        overdrag={false}
+        style={{ backgroundColor: 'black' }}
+        {...props}
+      />
+    ),
     springConfig: {
       damping: 16,
       mass: 0.3,
