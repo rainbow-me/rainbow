@@ -49,6 +49,7 @@ const TRUE = 0;
 
 const width = deviceUtils.dimensions.width - 100;
 const height = 170;
+const chartPadding = 16;
 
 const flipY = { transform: [{ scaleX: 1 }, { scaleY: -1 }] };
 
@@ -194,6 +195,7 @@ export default class ValueChart extends PureComponent {
 
     const importantPoints = pickImportantPoints(points);
     const spline = new Bezier(importantPoints.map(({ x, y }) => [x, y]));
+    const loadingMultiplayer = height / 2 + chartPadding / 4;
     const splinePoints = points
       .map(({ x, y }) => {
         const matchingPoints = spline.getPoints(0, x);
@@ -214,7 +216,7 @@ export default class ValueChart extends PureComponent {
           ),
           this.loadingValue
         ),
-        sub(100, multiply(100, this.loadingValue))
+        sub(loadingMultiplayer, multiply(loadingMultiplayer, this.loadingValue))
       ),
       ...splinePoints.flatMap(({ x, y1, y2 }) => [
         'L',
@@ -225,7 +227,10 @@ export default class ValueChart extends PureComponent {
             add(y1, multiply(this.value, sub(y2, y1))),
             this.loadingValue
           ),
-          sub(100, multiply(100, this.loadingValue))
+          sub(
+            loadingMultiplayer,
+            multiply(loadingMultiplayer, this.loadingValue)
+          )
         ),
       ])
     );
@@ -283,7 +288,9 @@ export default class ValueChart extends PureComponent {
                     <Svg
                       height={width}
                       width={width}
-                      viewBox={`2 ${height + 16 - width} ${width} ${width}`}
+                      viewBox={`2 ${height +
+                        chartPadding -
+                        width} ${width} ${width}`}
                       preserveAspectRatio="none"
                       style={flipY}
                     >
@@ -291,7 +298,7 @@ export default class ValueChart extends PureComponent {
                         id="main-path"
                         fill="none"
                         stroke={colors.chartGreen}
-                        strokeWidth={2.4}
+                        strokeWidth={2}
                         strokeLinejoin="round"
                         strokeLinecap="round"
                         d={animatedPath}
