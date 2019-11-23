@@ -78,11 +78,7 @@ class CurrencySelectModal extends Component {
       'assetsToFavoriteQueue',
     ]);
 
-    const shouldUpdate = isNewAssets || isNewProps || isNewState;
-
-    // console.log('shouldUpdate CurrencySelectModal', shouldUpdate);
-
-    return shouldUpdate;
+    return isNewAssets || isNewProps || isNewState;
   };
 
   dangerouslySetIsGestureBlocked = isGestureBlocked => {
