@@ -8,18 +8,20 @@ import { ExchangeModalNavigator, Navigation } from '../navigation';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
 import { deviceUtils } from '../utils';
+import EmojiSheet from './EmojiSheet';
+import ExampleScreen from './ExampleScreen';
 import ExpandedAssetScreenWithData from './ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from './ProfileScreenWithData';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
 import ReceiveModal from './ReceiveModal';
-import ExampleScreen from './ExampleScreen';
-import WalletConnectConfirmationModal from './WalletConnectConfirmationModal';
 import SendSheetWithData from './SendSheetWithData';
 import SettingsModal from './SettingsModal';
 import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
+import WalletConnectConfirmationModal from './WalletConnectConfirmationModal';
 import WalletScreen from './WalletScreen';
 import {
+  emojiPreset,
   exchangePreset,
   expandedPreset,
   sheetPreset,
@@ -69,6 +71,13 @@ const SwipeStack = createMaterialTopTabNavigator(
 
 const MainNavigator = createStackNavigator(
   {
+    EmojiSheet: {
+      navigationOptions: {
+        ...emojiPreset,
+        gesturesEnabled: false,
+      },
+      screen: EmojiSheet,
+    },
     ConfirmRequest: {
       navigationOptions: {
         ...expandedPreset,

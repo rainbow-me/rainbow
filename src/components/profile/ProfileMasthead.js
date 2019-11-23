@@ -7,6 +7,7 @@ import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
 import { borders, margin } from '../../styles';
 import { abbreviations } from '../../utils';
+import { ButtonPressAnimation } from '../animations';
 import CopyTooltip from '../CopyTooltip';
 import Divider from '../Divider';
 import { Centered, Column, RowWithMargins } from '../layout';
@@ -33,18 +34,21 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
 const ProfileMasthead = ({
   accountAddress,
   emojiCount,
+  onPressAvatar,
   onPressCopy,
   onPressReceive,
   showBottomDivider,
 }) => (
   <Container>
-    <FastImage
-      source={AvatarImageSource}
-      style={{
-        ...borders.buildCircleAsObject(85),
-        marginBottom: 3,
-      }}
-    />
+    <ButtonPressAnimation onPress={onPressAvatar}>
+      <FastImage
+        source={AvatarImageSource}
+        style={{
+          ...borders.buildCircleAsObject(85),
+          marginBottom: 3,
+        }}
+      />
+    </ButtonPressAnimation>
     <CopyTooltip textToCopy={accountAddress} tooltipText="Copy Address">
       <AddressAbbreviation address={accountAddress} />
     </CopyTooltip>
@@ -54,7 +58,7 @@ const ProfileMasthead = ({
           icon="copy"
           onPress={onPressCopy}
           scaleTo={0.82}
-          text="Copy"
+          text="Copy Address"
         />
         <FloatingEmojis
           count={emojiCount}
@@ -79,6 +83,7 @@ const ProfileMasthead = ({
 ProfileMasthead.propTypes = {
   accountAddress: PropTypes.string,
   emojiCount: PropTypes.number,
+  onPressAvatar: PropTypes.func,
   onPressCopy: PropTypes.func,
   onPressReceive: PropTypes.func,
   showBottomDivider: PropTypes.bool,
@@ -91,6 +96,8 @@ ProfileMasthead.defaultProps = {
 export default compose(
   withState('emojiCount', 'setEmojiCount', 0),
   withHandlers({
+    onPressAvatar: ({ navigation }) => () =>
+      navigation.navigate('EmojiSheet'),
     onPressCopy: ({ accountAddress, emojiCount, setEmojiCount }) => () => {
       setEmojiCount(emojiCount + 1);
       Clipboard.setString(accountAddress);
