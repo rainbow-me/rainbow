@@ -21,10 +21,16 @@
     "name": "Bloom"
   },
   "0x493c57c4763932315a328269e1adad09653b9081": {
-    "name": "bZx Dai"
+    "name": "Fulcrum Dai",
+    "symbol": "iDAI"
   },
   "0x14094949152eddbfcd073717200da82fed8dc960": {
-    "name": "bZx Sai"
+    "name": "Fulcrum Sai",
+    "symbol": "iSAI"
+  },
+  "0xf013406a0b1d544238083df0b93ad0d2cbe0f65f": {
+    "name": "Fulcrum USD Coin",
+    "symbol": "iUSDC"
   },
   "0x514910771AF9Ca656af840dff83E8264EcF986CA": {
     "name": "Chainlink"
@@ -35,6 +41,10 @@
   "0xF5DCe57282A584D2746FaF1593d3121Fcac444dC": {
     "name": "Compound Sai",
     "symbol": "cSAI"
+  },
+  "0x39aa39c021dfbae8fac545936693ac917d5e7563": {
+    "name": "Compound USD Coin",
+    "symbol": "cUSDC"
   },
   "0xB4272071eCAdd69d933AdcD19cA99fe80664fc08": {
     "name": "CryptoFranc"

@@ -42,8 +42,8 @@
     "exchangeAddress": "0x0E6A53B13688018A3df8C69f99aFB19A3068D04f"
   },
   "0x14094949152eddbfcd073717200da82fed8dc960": {
-    "name": "bZx Sai",
-    "symbol": "ISAI",
+    "name": "Fulcrum Sai",
+    "symbol": "iSAI",
     "decimals": 18,
     "exchangeAddress": "0x81eed7f1ecbd7fa9978fcc7584296fb0c215dc5c"
   },
@@ -64,6 +64,12 @@
     "symbol": "cSAI",
     "decimals": 8,
     "exchangeAddress": "0x45A2FDfED7F7a2c791fb1bdF6075b83faD821ddE"
+  },
+  "0x39aa39c021dfbae8fac545936693ac917d5e7563": {
+    "name": "Compound USD Coin",
+    "symbol": "cUSDC",
+    "decimals": 8,
+    "exchangeAddress": "0xb791c10824296881f91bdbc16367bbd9743fd99b"
   },
   "0xB4272071eCAdd69d933AdcD19cA99fe80664fc08": {
     "name": "CryptoFranc",
