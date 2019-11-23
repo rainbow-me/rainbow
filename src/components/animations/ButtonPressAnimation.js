@@ -232,8 +232,6 @@ export default class ButtonPressAnimation extends Component {
       offsetX = Math.floor(width / 2) * (transformOrigin === 'left' ? -1 : 1);
     } else if (transformOrigin === 'bottom' || transformOrigin === 'top') {
       offsetY = Math.floor(height / 2) * (transformOrigin === 'top' ? -1 : 1);
-    } else if (transformOrigin === 'keyboard') {
-      offsetY = 8;
     }
 
     const scaleDiff =
@@ -277,8 +275,11 @@ export default class ButtonPressAnimation extends Component {
         </AnimatedRawButton>
         <Animated.Code
           exec={block([
-            cond(
-              contains([FAILED, CANCELLED, END], this.gestureState),
+            cond(eq(this.gestureState, ACTIVE), [
+              set(this.shouldSpring, 1),
+              stopClock(this.clockReversed),
+            ]),
+            cond(contains([FAILED, CANCELLED, END], this.gestureState), [
               cond(
                 isBetweenProc(
                   this.props.scaleTo,
@@ -288,6 +289,7 @@ export default class ButtonPressAnimation extends Component {
                 ),
                 block([stopClock(this.clock), set(this.shouldSpring, 0)])
               ),
+              call([], this.reset),
             ]),
             onChange(
               this.gestureState,
@@ -297,8 +299,6 @@ export default class ButtonPressAnimation extends Component {
                   call([], this.createInteraction),
                   call([], this.createLongPressListener),
                   call([], this.handlePressStart),
-                  set(this.shouldSpring, 1),
-                  stopClock(this.clockReversed),
                 ],
                 condProc(eq(this.gestureState, END), [
                   call([], this.handlePress),
