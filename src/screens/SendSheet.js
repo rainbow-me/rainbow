@@ -35,8 +35,10 @@ export default class SendSheet extends Component {
     allAssets: PropTypes.array,
     assetAmount: PropTypes.string,
     contacts: PropTypes.object,
+    currentInput: PropTypes.string,
     fetchData: PropTypes.func,
     gasPrices: PropTypes.object,
+    isAuthorizing: PropTypes.bool,
     isSufficientBalance: PropTypes.bool,
     isSufficientGas: PropTypes.bool,
     isValidAddress: PropTypes.bool,
@@ -54,6 +56,7 @@ export default class SendSheet extends Component {
     selected: PropTypes.object,
     selectedGasPrice: PropTypes.object,
     sendableUniqueTokens: PropTypes.arrayOf(PropTypes.object),
+    sendMaxBalance: PropTypes.func,
     sendUpdateRecipient: PropTypes.func,
     sortedContacts: PropTypes.array,
   };
@@ -116,6 +119,7 @@ export default class SendSheet extends Component {
       removeContact,
       selected,
       selectedGasPrice,
+      sendMaxBalance,
       sendableUniqueTokens,
       sendUpdateRecipient,
       sortedContacts,
@@ -170,6 +174,7 @@ export default class SendSheet extends Component {
                 onChangeNativeAmount={onChangeNativeAmount}
                 onResetAssetSelection={onResetAssetSelection}
                 selected={selected}
+                sendMaxBalance={sendMaxBalance}
                 txSpeedRenderer={
                   isIphoneX() && (
                     <SendTransactionSpeed

@@ -1,11 +1,16 @@
 import analytics from '@segment/analytics-react-native';
-import { get, isString, toLower } from 'lodash';
+import { get, isEmpty, isString, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { isIphoneX } from 'react-native-iphone-x-helper';
 import { compose, withHandlers, withProps } from 'recompact';
-import { estimateGasLimit } from '../handlers/web3';
-import { greaterThan } from '../helpers/utilities';
+import { createSignableTransaction, estimateGasLimit } from '../handlers/web3';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountFromNativeValue,
+  formatInputDecimals,
+  greaterThan,
+} from '../helpers/utilities';
 import { checkIsValidAddress } from '../helpers/validators';
 import {
   withAccountData,
@@ -13,92 +18,73 @@ import {
   withContacts,
   withDataInit,
   withGas,
-  withSend,
+  withTransactionConfirmationScreen,
   withTransitionProps,
   withUniqueTokens,
 } from '../hoc';
 import lang from '../languages';
+import { sendTransaction } from '../model/wallet';
 import { ethereumUtils, gasUtils, isNewValueForPath } from '../utils';
 import SendSheet from './SendSheet';
 
 class SendSheetWithData extends Component {
   static propTypes = {
-    address: PropTypes.string,
-    assetAmount: PropTypes.string.isRequired,
+    accountAddress: PropTypes.string,
     assets: PropTypes.array.isRequired,
-    confirm: PropTypes.bool.isRequired,
-    fetching: PropTypes.bool.isRequired,
+    dataAddNewTransaction: PropTypes.func,
     gasLimit: PropTypes.number,
     gasPrices: PropTypes.object.isRequired,
     gasUpdateDefaultGasLimit: PropTypes.func.isRequired,
     gasUpdateTxFee: PropTypes.func.isRequired,
-    isSufficientBalance: PropTypes.bool.isRequired,
     isSufficientGas: PropTypes.bool.isRequired,
-    nativeAmount: PropTypes.string.isRequired,
     nativeCurrency: PropTypes.string.isRequired,
     network: PropTypes.string.isRequired,
-    recipient: PropTypes.string.isRequired,
-    selected: PropTypes.object.isRequired,
     selectedGasPrice: PropTypes.shape({ txFee: PropTypes.object }),
     selectedGasPriceOption: PropTypes.string.isRequired,
-    sendClearFields: PropTypes.func.isRequired,
-    sendCreatedTransaction: PropTypes.func.isRequired,
-    sendMaxBalance: PropTypes.func.isRequired,
-    sendModalInit: PropTypes.func.isRequired,
-    sendToggleConfirmationView: PropTypes.func.isRequired,
-    sendUpdateAssetAmount: PropTypes.func.isRequired,
-    sendUpdateNativeAmount: PropTypes.func.isRequired,
-    sendUpdateRecipient: PropTypes.func.isRequired,
-    sendUpdateSelected: PropTypes.func.isRequired,
     txFees: PropTypes.object.isRequired,
-    txHash: PropTypes.string.isRequired,
   };
 
   constructor(props) {
     super(props);
 
     this.state = {
+      assetAmount: '',
+      confirm: false,
       contacts: [],
       currentInput: '',
       isAuthorizing: false,
+      isSufficientBalance: false,
       isValidAddress: false,
+      nativeAmount: '',
+      recipient: '',
+      selected: {},
     };
   }
 
   componentDidMount() {
-    this.props.sendModalInit();
     this.props.gasUpdateDefaultGasLimit();
-
-    const { navigation, sendUpdateRecipient } = this.props;
-    const address = get(navigation, 'state.params.address');
-
-    if (address) {
-      sendUpdateRecipient(address);
-    }
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    const {
-      address,
-      assetAmount,
-      navigation,
-      recipient,
-      selected,
-      sendUpdateSelected,
-    } = this.props;
-    const { isValidAddress } = this.state;
+    const { accountAddress, navigation } = this.props;
+    const { assetAmount, isValidAddress, recipient, selected } = this.state;
 
-    const asset = get(navigation, 'state.params.asset');
+    const assetOverride = get(navigation, 'state.params.asset');
+    const recipientOverride = get(navigation, 'state.params.address');
+
+    if (recipientOverride && !this.state.recipient) {
+      this.sendUpdateRecipient(recipientOverride);
+    }
 
     if (isValidAddress && !prevState.isValidAddress) {
-      if (asset) {
-        sendUpdateSelected(asset);
+      if (assetOverride) {
+        this.sendUpdateSelected(assetOverride);
       }
     }
 
     const isNewRecipient = isNewValueForPath(
-      this.props,
-      prevProps,
+      this.state,
+      prevState,
       'recipient'
     );
     if (isNewRecipient) {
@@ -109,12 +95,12 @@ class SendSheetWithData extends Component {
 
     if (isValidAddress) {
       if (
-        selected.symbol !== prevProps.selected.symbol ||
-        recipient !== prevProps.recipient ||
-        assetAmount !== prevProps.assetAmount
+        selected.symbol !== prevState.selected.symbol ||
+        recipient !== prevState.recipient ||
+        assetAmount !== prevState.assetAmount
       ) {
         estimateGasLimit({
-          address,
+          address: accountAddress,
           amount: assetAmount,
           asset: selected,
           recipient,
@@ -129,21 +115,72 @@ class SendSheetWithData extends Component {
     }
   }
 
-  componentWillUnmount() {
-    this.props.sendClearFields();
-  }
-
-  onChangeAssetAmount = assetAmount => {
-    if (isString(assetAmount)) {
-      this.props.sendUpdateAssetAmount(assetAmount);
-      analytics.track('Changed token input in Send flow');
+  sendUpdateAssetAmount = assetAmount => {
+    const { nativeCurrency, selectedGasPrice } = this.props;
+    const { selected } = this.state;
+    const _assetAmount = assetAmount.replace(/[^0-9.]/g, '');
+    let _nativeAmount = '';
+    if (_assetAmount.length) {
+      const priceUnit = get(selected, 'price.value', 0);
+      const { amount: nativeAmount } = convertAmountAndPriceToNativeDisplay(
+        _assetAmount,
+        priceUnit,
+        nativeCurrency
+      );
+      _nativeAmount = formatInputDecimals(nativeAmount, _assetAmount);
     }
+    const balanceAmount = ethereumUtils.getBalanceAmount(
+      selectedGasPrice,
+      selected
+    );
+    this.setState({
+      assetAmount: _assetAmount,
+      isSufficientBalance: Number(_assetAmount) <= Number(balanceAmount),
+      nativeAmount: _nativeAmount,
+    });
   };
 
   onChangeNativeAmount = nativeAmount => {
-    if (isString(nativeAmount)) {
-      this.props.sendUpdateNativeAmount(nativeAmount);
-      analytics.track('Changed native currency input in Send flow');
+    if (!isString(nativeAmount)) return;
+    const { selected } = this.state;
+    const { selectedGasPrice } = this.props;
+    const _nativeAmount = nativeAmount.replace(/[^0-9.]/g, '');
+    let _assetAmount = '';
+    if (_nativeAmount.length) {
+      const priceUnit = get(selected, 'price.value', 0);
+      const assetAmount = convertAmountFromNativeValue(
+        _nativeAmount,
+        priceUnit,
+        selected.decimals
+      );
+      _assetAmount = formatInputDecimals(assetAmount, _nativeAmount);
+    }
+
+    const balanceAmount = ethereumUtils.getBalanceAmount(
+      selectedGasPrice,
+      selected
+    );
+
+    this.setState({
+      assetAmount: _assetAmount,
+      isSufficientBalance: Number(_assetAmount) <= Number(balanceAmount),
+      nativeAmount: _nativeAmount,
+    });
+    analytics.track('Changed native currency input in Send flow');
+  };
+
+  sendMaxBalance = () => {
+    const balanceAmount = ethereumUtils.getBalanceAmount(
+      this.props.selectedGasPrice,
+      this.state.selected
+    );
+    this.sendUpdateAssetAmount(balanceAmount);
+  };
+
+  onChangeAssetAmount = assetAmount => {
+    if (isString(assetAmount)) {
+      this.sendUpdateAssetAmount(assetAmount);
+      analytics.track('Changed token input in Send flow');
     }
   };
 
@@ -169,19 +206,12 @@ class SendSheetWithData extends Component {
 
   onResetAssetSelection = () => {
     analytics.track('Reset asset selection in Send flow');
-    this.props.sendUpdateSelected({});
+    this.sendUpdateSelected({});
   };
 
-  onSelectAsset = asset => this.props.sendUpdateSelected(asset);
-
   submitTransaction = async () => {
-    const {
-      assetAmount,
-      navigation,
-      recipient,
-      selected,
-      sendClearFields,
-    } = this.props;
+    const { navigation } = this.props;
+    const { assetAmount, recipient, selected } = this.state;
 
     if (Number(assetAmount) <= 0) return false;
 
@@ -193,39 +223,63 @@ class SendSheetWithData extends Component {
         assetType: selected.isNft ? 'unique_token' : 'token',
         isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
       });
-      sendClearFields();
       navigation.navigate('ProfileScreen');
     } catch {
       this.setState({ isAuthorizing: false });
     }
   };
 
-  onChangeInput = event => {
-    this.setState({ currentInput: event });
-    this.props.sendUpdateRecipient(event);
+  onChangeInput = event =>
+    this.setState({ currentInput: event, recipient: event });
+
+  sendUpdateRecipient = recipient => this.setState({ recipient });
+
+  sendUpdateSelected = selected => {
+    if (get(selected, 'isNft')) {
+      this.setState({
+        assetAmount: '1',
+        isSufficientBalance: true,
+        selected: {
+          ...selected,
+          symbol: get(selected, 'asset_contract.name'),
+        },
+      });
+    } else {
+      const assetAmount = this.state.assetAmount;
+      this.setState({ selected });
+      this.sendUpdateAssetAmount(assetAmount);
+    }
   };
 
   onSubmit = async () => {
-    if (!this.props.selectedGasPrice.txFee) {
+    const {
+      accountAddress,
+      assets,
+      dataAddNewTransaction,
+      gasLimit,
+      selectedGasPrice,
+    } = this.props;
+    const { assetAmount, confirm, recipient, selected } = this.state;
+    if (!selectedGasPrice.txFee) {
       return;
     }
 
     // Balance checks
-    if (!this.props.confirm) {
-      const isAddressValid = await checkIsValidAddress(this.props.recipient);
+    if (!confirm) {
+      const isAddressValid = await checkIsValidAddress(recipient);
       if (!isAddressValid) {
         console.log(lang.t('notification.error.invalid_address'));
         return;
       }
-      if (this.props.selected.address === 'eth') {
+      if (selected.address === 'eth') {
         const {
           requestedAmount,
           balance,
           amountWithFees,
         } = ethereumUtils.transactionData(
-          this.props.assets,
-          this.props.assetAmount,
-          this.props.selectedGasPrice
+          assets,
+          assetAmount,
+          selectedGasPrice
         );
 
         if (greaterThan(requestedAmount, balance)) {
@@ -234,18 +288,18 @@ class SendSheetWithData extends Component {
         if (greaterThan(amountWithFees, balance)) {
           return;
         }
-      } else if (!this.props.selected.isNft) {
+      } else if (!selected.isNft) {
         const {
           requestedAmount,
           balance,
           txFee,
         } = ethereumUtils.transactionData(
-          this.props.assets,
-          this.props.assetAmount,
-          this.props.selectedGasPrice
+          assets,
+          assetAmount,
+          selectedGasPrice
         );
 
-        const tokenBalance = get(this.props, 'selected.balance.amount');
+        const tokenBalance = get(selected, 'balance.amount');
 
         if (greaterThan(requestedAmount, tokenBalance)) {
           return;
@@ -255,33 +309,65 @@ class SendSheetWithData extends Component {
         }
       }
 
-      this.props.sendToggleConfirmationView(true);
+      this.setState({ confirm: true });
 
-      return this.props.sendCreatedTransaction({
-        address: this.props.address,
-        amount: this.props.assetAmount,
-        asset: this.props.selected,
-        gasLimit: this.props.gasLimit,
-        gasPrice: this.props.selectedGasPrice,
-        recipient: this.props.recipient,
-      });
+      const txDetails = {
+        amount: assetAmount,
+        asset: selected,
+        from: accountAddress,
+        gasLimit,
+        gasPrice: get(selectedGasPrice, 'value.amount'),
+        nonce: null,
+        to: recipient,
+      };
+      try {
+        const signableTransaction = await createSignableTransaction(txDetails);
+        const txHash = sendTransaction({
+          transaction: signableTransaction,
+        });
+        if (!isEmpty(txHash)) {
+          txDetails.hash = txHash;
+          await dataAddNewTransaction(txDetails);
+        }
+        // eslint-disable-next-line no-empty
+      } catch (error) {}
     }
   };
 
   render() {
+    const {
+      assetAmount,
+      contacts,
+      currentInput,
+      isAuthorizing,
+      isSufficientBalance,
+      isSufficientGas,
+      isValidAddress,
+      nativeAmount,
+      recipient,
+      selected,
+    } = this.state;
     return (
       <SendSheet
-        contacts={this.state.contacts}
-        currentInput={this.state.currentInput}
-        isAuthorizing={this.state.isAuthorizing}
-        isValidAddress={this.state.isValidAddress}
+        assetAmount={assetAmount}
+        contacts={contacts}
+        currentInput={currentInput}
+        isAuthorizing={isAuthorizing}
+        isSufficientBalance={isSufficientBalance}
+        isSufficientGas={isSufficientGas}
+        isValidAddress={isValidAddress}
+        nativeAmount={nativeAmount}
         onChangeAssetAmount={this.onChangeAssetAmount}
         onChangeInput={this.onChangeInput}
         onChangeNativeAmount={this.onChangeNativeAmount}
         onLongPressSend={this.onLongPressSend}
         onPressTransactionSpeed={this.onPressTransactionSpeed}
         onResetAssetSelection={this.onResetAssetSelection}
-        onSelectAsset={this.onSelectAsset}
+        onSelectAsset={this.sendUpdateSelected}
+        recipient={recipient}
+        selected={selected}
+        sendMaxBalance={this.sendMaxBalance}
+        sendUpdateRecipient={this.sendUpdateRecipient}
         {...this.props}
       />
     );
@@ -303,9 +389,9 @@ export default compose(
   withAccountSettings,
   withContacts,
   withDataInit,
-  withSend,
   withGas,
   withUniqueTokens,
+  withTransactionConfirmationScreen,
   withTransitionProps,
   withProps(({ transitionProps: { isTransitioning } }) => ({
     isTransitioning,
