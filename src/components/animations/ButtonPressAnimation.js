@@ -9,31 +9,33 @@ import {
 } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing } from 'react-native-reanimated';
-import {
-  contains,
-  transformOrigin as transformOriginUtil,
-  timing,
-} from 'react-native-redash';
 import stylePropType from 'react-style-proptype';
 import { animations, colors } from '../../styles';
 import { directionPropType } from '../../utils';
-import { interpolate } from './procs';
+import {
+  and,
+  cond as condProc,
+  contains,
+  divide,
+  eq,
+  greaterThan,
+  interpolate,
+  lessThan,
+  or,
+  set,
+  timing,
+  transformOrigin as transformOriginUtil,
+} from './procs';
 
 const {
-  and,
   block,
   call,
   Clock,
   cond,
   createAnimatedComponent,
-  divide,
-  eq,
-  or,
   event,
-  greaterThan,
-  lessThan,
   onChange,
-  set,
+  proc,
   stopClock,
   Value,
 } = Animated;
@@ -65,6 +67,14 @@ const HapticFeedbackTypes = {
   notificationWarning: 'notificationWarning',
   selection: 'selection',
 };
+
+const isBetweenProc = proc(
+  (scaleTo, defaultScale, lessThanCondition, greaterThanCondition) =>
+    or(
+      and(lessThan(scaleTo, defaultScale), lessThanCondition),
+      and(greaterThan(scaleTo, defaultScale), greaterThanCondition)
+    )
+);
 
 export default class ButtonPressAnimation extends Component {
   static propTypes = {
@@ -205,13 +215,11 @@ export default class ButtonPressAnimation extends Component {
     const {
       activeOpacity,
       children,
-      defaultScale,
       disabled,
       exclusive,
-      scaleTo,
       style,
-      transformOrigin,
       tapRef,
+      transformOrigin,
       ...props
     } = this.props;
 
@@ -231,10 +239,10 @@ export default class ButtonPressAnimation extends Component {
       (this.props.defaultScale - this.props.scaleTo) / 2;
 
     const opacity =
-      scaleTo > defaultScale
+      this.props.scaleTo > this.props.defaultScale
         ? activeOpacity
-        : interpolate(divide(this.scale, defaultScale), {
-            inputRange: [scaleTo, defaultScale],
+        : interpolate(divide(this.scale, this.props.defaultScale), {
+            inputRange: [this.props.scaleTo, this.props.defaultScale],
             outputRange: [activeOpacity, 1],
           });
 
@@ -273,15 +281,11 @@ export default class ButtonPressAnimation extends Component {
             ]),
             cond(contains([FAILED, CANCELLED, END], this.gestureState), [
               cond(
-                or(
-                  and(
-                    greaterThan(this.props.defaultScale, this.props.scaleTo),
-                    lessThan(this.scale, scaleDiff)
-                  ),
-                  and(
-                    lessThan(this.props.defaultScale, this.props.scaleTo),
-                    greaterThan(this.scale, scaleDiff)
-                  )
+                isBetweenProc(
+                  this.props.scaleTo,
+                  this.props.defaultScale,
+                  lessThan(this.scale, scaleDiff),
+                  greaterThan(this.scale, scaleDiff)
                 ),
                 block([stopClock(this.clock), set(this.shouldSpring, 0)])
               ),
@@ -289,14 +293,16 @@ export default class ButtonPressAnimation extends Component {
             ]),
             onChange(
               this.gestureState,
-              cond(
+              condProc(
                 eq(this.gestureState, ACTIVE),
                 [
                   call([], this.createInteraction),
                   call([], this.createLongPressListener),
                   call([], this.handlePressStart),
                 ],
-                cond(eq(this.gestureState, END), [call([], this.handlePress)])
+                condProc(eq(this.gestureState, END), [
+                  call([], this.handlePress),
+                ])
               )
             ),
             cond(
@@ -314,17 +320,13 @@ export default class ButtonPressAnimation extends Component {
             ),
             cond(
               and(
-                or(
-                  and(
-                    greaterThan(this.props.defaultScale, this.props.scaleTo),
-                    lessThan(this.scale, this.props.defaultScale)
-                  ),
-                  and(
-                    lessThan(this.props.defaultScale, this.props.scaleTo),
-                    greaterThan(this.scale, this.props.defaultScale)
-                  )
-                ),
-                eq(this.shouldSpring, 0)
+                eq(this.shouldSpring, 0),
+                isBetweenProc(
+                  this.props.scaleTo,
+                  this.props.defaultScale,
+                  lessThan(this.scale, this.props.defaultScale),
+                  greaterThan(this.scale, this.props.defaultScale)
+                )
               ),
               set(
                 this.scale,

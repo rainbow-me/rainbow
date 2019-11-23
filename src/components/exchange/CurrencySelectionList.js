@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { withNeverRerender } from '../../hoc';
-import { exchangeModalBorderRadius } from '../../screens/ExchangeModal';
 import { colors, position } from '../../styles';
 import { EmptyAssetList } from '../asset-list';
 import { Centered, ColumnWithMargins } from '../layout';
@@ -38,7 +37,7 @@ const skeletonTransition = (
   </Transition.Sequence>
 );
 
-const CurrencySelectionList = ({ listItems, renderItem, showList, type }) => {
+const CurrencySelectionList = ({ itemProps, listItems, showList }) => {
   const skeletonTransitionRef = useRef();
   const [showSkeleton, setShowSkeleton] = useState(true);
 
@@ -50,10 +49,16 @@ const CurrencySelectionList = ({ listItems, renderItem, showList, type }) => {
     }
   }, [showList, showSkeleton]);
 
+  const onListLayout = () => {
+    if (showSkeleton && showList) {
+      skeletonTransitionRef.current.animateNextTransition();
+      setShowSkeleton(false);
+    }
+  };
+
   return (
     <Transitioning.View
       flex={1}
-      key={`TransitionView-${type}`}
       ref={skeletonTransitionRef}
       transition={skeletonTransition}
     >
@@ -63,18 +68,9 @@ const CurrencySelectionList = ({ listItems, renderItem, showList, type }) => {
             <NoResultMessage />
           ) : (
             <ExchangeAssetList
+              itemProps={itemProps}
               items={listItems}
-              key={`ExchangeAssetListCurrencySelectionModal-${type}`}
-              onMount={() => {
-                if (showSkeleton && showList) {
-                  skeletonTransitionRef.current.animateNextTransition();
-                  setShowSkeleton(false);
-                }
-              }}
-              renderItem={renderItem}
-              scrollIndicatorInsets={{
-                bottom: exchangeModalBorderRadius,
-              }}
+              onLayout={onListLayout}
             />
           )}
         </Centered>
@@ -83,7 +79,6 @@ const CurrencySelectionList = ({ listItems, renderItem, showList, type }) => {
         <EmptyAssetList
           {...position.coverAsObject}
           backgroundColor={colors.white}
-          key={`EmptyAssetList-${type}`}
           pointerEvents="none"
         />
       )}
@@ -92,10 +87,13 @@ const CurrencySelectionList = ({ listItems, renderItem, showList, type }) => {
 };
 
 CurrencySelectionList.propTypes = {
+  itemProps: PropTypes.object,
   listItems: PropTypes.array,
-  renderItem: PropTypes.func,
   showList: PropTypes.bool,
-  type: PropTypes.string,
 };
 
-export default React.memo(CurrencySelectionList);
+const propsAreEqual = (prev, next) =>
+  prev.listItems.length === next.listItems.length &&
+  prev.showList === next.showList;
+
+export default memo(CurrencySelectionList, propsAreEqual);
