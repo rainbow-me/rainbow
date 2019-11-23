@@ -54,6 +54,7 @@ import {
   withUniswapAllowances,
   withUniswapAssets,
 } from '../hoc';
+import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
 import {
   isNewValueForObjectPaths,
@@ -128,6 +129,10 @@ class ExchangeModal extends Component {
     slippage: null,
     tradeDetails: null,
   };
+
+  componentDidMount() {
+    this.props.gasUpdateDefaultGasLimit(ethUnits.basic_swap);
+  }
 
   shouldComponentUpdate = (nextProps, nextState) => {
     const isNewProps = isNewValueForObjectPaths(this.props, nextProps, [
