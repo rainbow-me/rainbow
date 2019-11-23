@@ -1,6 +1,7 @@
 import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import { transformOrigin } from 'react-native-redash';
 import store from '../../redux/store';
 import { updateTransitionProps } from '../../redux/navigation';
 import { interpolate } from '../../components/animations';
@@ -42,17 +43,17 @@ const emojiStyleInterpolator = ({
   const backgroundOpacity = interpolate(current, {
     extrapolate: Animated.Extrapolate.CLAMP,
     inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, 0.6, 0.6],
+    outputRange: [0, 0, 0.25, 0.25],
   });
 
   const scale = interpolate(current, {
     inputRange: [0, 1],
-    outputRange: [0, 1],
+    outputRange: [0.25, 1],
   });
 
   const translateY = interpolate(current, {
     inputRange: [0, 1],
-    outputRange: [screen.height, 0],
+    outputRange: [-screen.width, 0],
   });
 
   const opacity = interpolate(current, {
@@ -68,7 +69,11 @@ const emojiStyleInterpolator = ({
       shadowOpacity: 0.6,
       shadowRadius: 50,
       // Translation for the animation of the current card
-      transform: [{ translateY }],
+      transform: transformOrigin(
+        0,
+        -(screen.height / 2) + statusBarHeight + 132,
+        { scale }
+      ),
     },
     containerStyle: {
       backgroundColor: color(37, 41, 46, backgroundOpacity),
@@ -236,7 +241,7 @@ export const emojiPreset = {
   cardShadowEnabled: true,
   cardStyleInterpolator: emojiStyleInterpolator,
   cardTransparent: true,
-  gestureDirection: 'vertical',
+  gestureDirection: 'horizontal',
   transitionSpec: { close: closeSpec, open: openSpec },
 };
 

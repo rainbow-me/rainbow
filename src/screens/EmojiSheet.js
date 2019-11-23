@@ -26,7 +26,7 @@ const SheetContainer = styled(Column)`
   background-color: ${colors.white};
   height: 300px;
   margin-bottom: 160px;
-  width: ${sheetWidth};
+  width: 100%;
 `;
 
 class EmojiSheet extends Component {
@@ -51,6 +51,7 @@ class EmojiSheet extends Component {
             width="100%"
           >
             <EmojiSelector
+              columns={8}
               showSearchBar={false}
             />
           </ColumnWithMargins>
