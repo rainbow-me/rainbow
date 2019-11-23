@@ -26,7 +26,7 @@ const UnlockingSpinner = ({ interval, timeRemaining }) => {
 
   return (
     <ColumnWithMargins align="center" justify="center" margin={2}>
-      <RowWithMargins margin={8}>
+      <RowWithMargins align="center" margin={8}>
         <Spinner duration={1200} />
         <Text color="white" lineHeight="loose" size="large" weight="semibold">
           Unlocking
