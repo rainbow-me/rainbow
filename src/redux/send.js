@@ -1,10 +1,11 @@
 import { get, isEmpty } from 'lodash';
+import { createSignableTransaction } from '../handlers/web3';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
   formatInputDecimals,
 } from '../helpers/utilities';
-import { createSignableTransaction } from '../handlers/web3';
+import { sendTransaction } from '../model/wallet';
 import { ethereumUtils } from '../utils';
 import { dataAddNewTransaction } from './data';
 
@@ -29,24 +30,15 @@ const SEND_CLEAR_FIELDS = 'send/SEND_CLEAR_FIELDS';
 
 // -- Actions --------------------------------------------------------------- //
 
-export const sendModalInit = (options = {}) => (dispatch, getState) => {
+export const sendModalInit = () => (dispatch, getState) => {
   const { accountAddress } = getState().settings;
-  const { assets } = getState().data;
-  const selected =
-    assets.filter(asset => asset.address === options.defaultAsset)[0] || {};
   dispatch({
-    payload: {
-      address: accountAddress,
-      selected,
-    },
+    payload: accountAddress,
     type: SEND_MODAL_INIT,
   });
 };
 
-export const sendTransaction = (
-  transactionDetails,
-  signAndSendTransactionCb
-) => (dispatch, getState) =>
+export const sendCreatedTransaction = transactionDetails => dispatch =>
   new Promise((resolve, reject) => {
     dispatch({ type: SEND_TRANSACTION_REQUEST });
     const {
@@ -57,7 +49,6 @@ export const sendTransaction = (
       gasPrice,
       gasLimit,
     } = transactionDetails;
-    const { accountType } = getState().settings;
     const txDetails = {
       amount,
       asset,
@@ -69,8 +60,7 @@ export const sendTransaction = (
     };
     return createSignableTransaction(txDetails)
       .then(signableTransactionDetails => {
-        signAndSendTransactionCb({
-          accountType,
+        sendTransaction({
           transaction: signableTransactionDetails,
         })
           .then(txHash => {
@@ -231,8 +221,7 @@ export default (state = INITIAL_STATE, action) => {
     case SEND_MODAL_INIT:
       return {
         ...state,
-        address: action.payload.address,
-        selected: action.payload.selected,
+        address: action.payload,
       };
     case SEND_TRANSACTION_REQUEST:
       return { ...state, fetching: true };
