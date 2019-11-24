@@ -7,7 +7,7 @@ import { Text } from '../text';
 import InvestmentCard from './InvestmentCard';
 import { colors, padding } from '../../styles';
 import { graphql } from '@apollo/react-hoc';
-import { COMPOUND_MARKET_QUERY } from '../../apollo/queries';
+import { COMPOUND_MARKET_QUERY, COMPOUND_DAI_ACCOUNT_TOKEN_QUERY } from '../../apollo/queries';
 import Divider from '../Divider';
 
 const CompoundInvestmentCardHeight =  114;
@@ -22,10 +22,18 @@ const enhance = compose(
     withAccountSettings,
     withAccountData,
     graphql(COMPOUND_MARKET_QUERY, {
+      props: ({ data }) => {
+        return data
+      }
+    }),
+    graphql(COMPOUND_DAI_ACCOUNT_TOKEN_QUERY, {
+        options: (props) => ({
+          variables: {
+            address: props.accountAddress ? `0xf5dce57282a584d2746faf1593d3121fcac444dc-${props.accountAddress}` : "0xf5dce57282a584d2746faf1593d3121fcac444dc-0x00000000af5a61acaf76190794e3fdf1289288a1"
+          },  
+        }),
         props: ({ data }) => {
-            const info = data 
-            console.log('compound data', info);
-            return info
+          return data
         }
     }),
     withHandlers({
@@ -39,8 +47,8 @@ const enhance = compose(
 
 const CompoundInvestmentCard = enhance(
 ({ 
-   info,
    isCollapsible, 
+   markets,
    nativeCurrency, 
    onPress, 
    onPressContainer, 
@@ -52,24 +60,20 @@ const CompoundInvestmentCard = enhance(
   <InvestmentCard
    {...props}
    flex={0}
-   gradientColors={['#ECF1F5', '#E4E9F0']}
    containerHeight={CompoundInvestmentCard.height}
    isExpandedState={!onPress}
    headerProps={{
-       color: colors.dark,
+       color: colors.limeGreen,
        emoji: 'money_mouth_face',
-       title: 'Compound',
+       title: '',
        titleColor: '#D040FF',
-       value: 20.848271029
+       value: markets.length 
+              ? markets[1].exchangeRate // Set names for markets and  use those  as  keys instead. We don't have a balance. But this will become cToken balance * exchangeRate for the token with LifetimeSupplyAccrued on the opposite end.
+              : 1
    }}
         height={CompoundInvestmentCardHeight}
-        reverse
       >
-          <Divider 
-           disabled={!onPress}
-           onPress={onPressContainer}
-           scaleTo={0.96}
-          />
+
       </InvestmentCard>
   );
 })
