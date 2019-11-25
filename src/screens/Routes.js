@@ -8,7 +8,7 @@ import { ExchangeModalNavigator, Navigation } from '../navigation';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
 import { deviceUtils } from '../utils';
-import EmojiSheet from './EmojiSheet';
+import AvatarBuilder from './AvatarBuilder';
 import ExampleScreen from './ExampleScreen';
 import ExpandedAssetScreenWithData from './ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
@@ -81,7 +81,7 @@ const MainNavigator = createStackNavigator(
       },
       screen: TransactionConfirmationScreenWithData,
     },
-    EmojiSheet: {
+    AvatarBuilder: {
       navigationOptions: {
         ...emojiPreset,
         gestureEnabled: false,
@@ -90,7 +90,7 @@ const MainNavigator = createStackNavigator(
           onTransitionStart();
         },
       },
-      screen: EmojiSheet,
+      screen: AvatarBuilder,
     },
     ExampleScreen,
     ExchangeModal: {

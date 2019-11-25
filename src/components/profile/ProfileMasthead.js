@@ -100,7 +100,7 @@ ProfileMasthead.defaultProps = {
 export default compose(
   withState('emojiCount', 'setEmojiCount', 0),
   withHandlers({
-    onPressAvatar: ({ navigation }) => () => navigation.navigate('EmojiSheet'),
+    onPressAvatar: ({ navigation }) => () => navigation.navigate('AvatarBuilder'),
     onPressCopy: ({ accountAddress, emojiCount, setEmojiCount }) => () => {
       setEmojiCount(emojiCount + 1);
       Clipboard.setString(accountAddress);

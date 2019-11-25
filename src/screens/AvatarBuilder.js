@@ -128,7 +128,7 @@ const SheetContainer = styled(Column)`
   width: 100%;
 `;
 
-class EmojiSheet extends Component {
+class AvatarBuilder extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -276,4 +276,4 @@ export default compose(
     onPressBackground: ({ navigation }) => () => navigation.goBack(),
   }),
   withNavigation
-)(EmojiSheet);
+)(AvatarBuilder);
