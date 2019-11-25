@@ -65,7 +65,10 @@ const SendAssetForm = ({
           selected: true,
         })}
       </ShadowStack>
-      <TransactionContainer isNft={selected.isNft}>
+      <TransactionContainer
+        isNft={selected.isNft}
+        marginBottom={deviceUtils.dimensions.height < 812 ? 15.5 : 31}
+      >
         {selected.isNft ? (
           <SendAssetFormCollectible {...selected} />
         ) : (
