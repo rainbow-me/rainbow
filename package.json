@@ -99,7 +99,7 @@
     "react-native-permissions": "^1.2.1",
     "react-native-qrcode-scanner": "mikedemarais/react-native-qrcode-scanner#2ca70b8c64afb87e712aba578e11409c6406069e",
     "react-native-qrcode-svg": "git+https://github.com/mikedemarais/react-native-qrcode-svg.git",
-    "react-native-radial-gradient": "shkatulo/react-native-radial-gradient",
+    "react-native-radial-gradient": "christianbaroni/react-native-radial-gradient#c7c62f1bba91818c29f4a7ce874f723eb34b80ee",
     "react-native-randombytes": "^3.5.3",
     "react-native-reanimated": "software-mansion/react-native-reanimated",
     "react-native-redash": "8.2.2",

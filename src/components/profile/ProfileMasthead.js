@@ -40,7 +40,11 @@ const ProfileMasthead = ({
   showBottomDivider,
 }) => (
   <Container>
-    <ButtonPressAnimation onPress={onPressAvatar}>
+    <ButtonPressAnimation
+      hapticType="impactMedium"
+      onPress={onPressAvatar}
+      scaleTo={0.82}
+    >
       <FastImage
         source={AvatarImageSource}
         style={{
@@ -96,8 +100,7 @@ ProfileMasthead.defaultProps = {
 export default compose(
   withState('emojiCount', 'setEmojiCount', 0),
   withHandlers({
-    onPressAvatar: ({ navigation }) => () =>
-      navigation.navigate('EmojiSheet'),
+    onPressAvatar: ({ navigation }) => () => navigation.navigate('EmojiSheet'),
     onPressCopy: ({ accountAddress, emojiCount, setEmojiCount }) => () => {
       setEmojiCount(emojiCount + 1);
       Clipboard.setString(accountAddress);

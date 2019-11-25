@@ -36,24 +36,13 @@ const effectOpacity = Animated.proc((closing, current) =>
 );
 
 const emojiStyleInterpolator = ({
-  closing,
   current: { progress: current },
   layouts: { screen },
 }) => {
   const backgroundOpacity = interpolate(current, {
     extrapolate: Animated.Extrapolate.CLAMP,
     inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, 0.25, 0.25],
-  });
-
-  const scale = interpolate(current, {
-    inputRange: [0, 1],
-    outputRange: [0.25, 1],
-  });
-
-  const translateY = interpolate(current, {
-    inputRange: [0, 1],
-    outputRange: [-screen.width, 0],
+    outputRange: [0, 0, 1, 1],
   });
 
   const opacity = interpolate(current, {
@@ -61,22 +50,22 @@ const emojiStyleInterpolator = ({
     outputRange: [0, 1],
   });
 
+  const scale = interpolate(current, {
+    inputRange: [0, 1],
+    outputRange: [0.5, 1],
+  });
+
   return {
     cardStyle: {
       opacity: opacity,
-      shadowColor: colors.dark,
-      shadowOffset: { height: 10, width: 0 },
-      shadowOpacity: 0.6,
-      shadowRadius: 50,
-      // Translation for the animation of the current card
       transform: transformOrigin(
         0,
-        -(screen.height / 2) + statusBarHeight + 132,
+        -(screen.height / 2) + statusBarHeight + 78.5,
         { scale }
       ),
     },
     containerStyle: {
-      backgroundColor: color(37, 41, 46, backgroundOpacity),
+      backgroundColor: color(51, 54, 59, backgroundOpacity),
     },
   };
 };
@@ -103,7 +92,7 @@ const exchangeStyleInterpolator = ({
       shadowColor: colors.black,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.4,
-      shadowRadius: 50,
+      shadowRadius: 25,
       // Translation for the animation of the current card
       transform: [{ translateY }],
     },
@@ -135,7 +124,7 @@ const expandStyleInterpolator = ({
       shadowColor: colors.dark,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
-      shadowRadius: 50,
+      shadowRadius: 25,
       // Translation for the animation of the current card
       transform: [{ translateY }],
     },
@@ -174,7 +163,7 @@ const sheetStyleInterpolator = ({
       shadowColor: colors.black,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.4,
-      shadowRadius: 50,
+      shadowRadius: 25,
       // Translation for the animation of the current card
       transform: [{ translateY }],
     },
@@ -202,6 +191,28 @@ const closeSpec = {
     mass: 1,
     overshootClamping: true,
     speed: 25,
+  }),
+};
+
+const emojiCloseSpec = {
+  animation: 'spring',
+  config: SpringUtils.makeConfigFromBouncinessAndSpeed({
+    ...SpringUtils.makeDefaultConfig(),
+    bounciness: 6,
+    mass: 1,
+    overshootClamping: true,
+    speed: 40,
+  }),
+};
+
+const emojiOpenSpec = {
+  animation: 'spring',
+  config: SpringUtils.makeConfigFromBouncinessAndSpeed({
+    ...SpringUtils.makeDefaultConfig(),
+    bounciness: 6,
+    mass: 1,
+    overshootClamping: false,
+    speed: 28,
   }),
 };
 
@@ -241,8 +252,8 @@ export const emojiPreset = {
   cardShadowEnabled: true,
   cardStyleInterpolator: emojiStyleInterpolator,
   cardTransparent: true,
-  gestureDirection: 'horizontal',
-  transitionSpec: { close: closeSpec, open: openSpec },
+  onTransitionStart,
+  transitionSpec: { close: emojiCloseSpec, open: emojiOpenSpec },
 };
 
 export const exchangePreset = {

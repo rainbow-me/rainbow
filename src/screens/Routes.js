@@ -71,13 +71,6 @@ const SwipeStack = createMaterialTopTabNavigator(
 
 const MainNavigator = createStackNavigator(
   {
-    EmojiSheet: {
-      navigationOptions: {
-        ...emojiPreset,
-        gesturesEnabled: false,
-      },
-      screen: EmojiSheet,
-    },
     ConfirmRequest: {
       navigationOptions: {
         ...expandedPreset,
@@ -87,6 +80,17 @@ const MainNavigator = createStackNavigator(
         },
       },
       screen: TransactionConfirmationScreenWithData,
+    },
+    EmojiSheet: {
+      navigationOptions: {
+        ...emojiPreset,
+        gestureEnabled: false,
+        onTransitionStart: props => {
+          emojiPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
+      },
+      screen: EmojiSheet,
     },
     ExampleScreen,
     ExchangeModal: {
@@ -150,7 +154,6 @@ const MainNavigator = createStackNavigator(
     SettingsModal: {
       navigationOptions: {
         ...expandedPreset,
-        gesturesEnabled: false,
         onTransitionStart: props => {
           expandedPreset.onTransitionStart(props);
           onTransitionStart();

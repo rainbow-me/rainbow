@@ -108,7 +108,7 @@ const ImportSeedPhraseSheetWithData = compose(
       getClipboardContents();
 
       if (isImporting !== prevProps.isImporting) {
-        navigation.setParams({ gesturesEnabled: !isImporting });
+        navigation.setParams({ gestureEnabled: !isImporting });
       }
 
       if (!prevProps.isImporting && isImporting) {
@@ -126,10 +126,10 @@ const ImportSeedPhraseSheetWithData = compose(
 )(ImportSeedPhraseSheet);
 
 ImportSeedPhraseSheetWithData.navigationOptions = ({ navigation }) => ({
+  gestureEnabled: get(navigation, 'state.params.gestureEnabled', true),
   gestureResponseDistance: {
     vertical: deviceUtils.dimensions.height / 2,
   },
-  gesturesEnabled: get(navigation, 'state.params.gesturesEnabled', true),
 });
 
 export default ImportSeedPhraseSheetWithData;

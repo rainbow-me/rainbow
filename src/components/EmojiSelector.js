@@ -1,132 +1,154 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import emoji from 'emoji-datasource';
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-  Platform,
-  Dimensions,
   ActivityIndicator,
   AsyncStorage,
-  FlatList
-} from "react-native";
-import emoji from "emoji-datasource";
-import "string.fromcodepoint";
+  Dimensions,
+  FlatList,
+  Image,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import RadialGradient from 'react-native-radial-gradient';
+import 'string.fromcodepoint';
+import EmojiTabBarShadow from '../assets/emojiTabBarShadow.png';
+import { colors, position } from '../styles';
+import { ButtonPressAnimation } from './animations';
+import Icon from './icons/Icon';
 
 export const Categories = {
   all: {
-    symbol: null,
-    name: "All"
+    icon: null,
+    name: 'All',
   },
-  history: {
-    symbol: "🕘",
-    name: "Recently used"
-  },
+  // history: {
+  //   icon: "emojiRecent",
+  //   name: "Recently Used"
+  // },
   people: {
-    symbol: "😊",
-    name: "Smileys & People"
+    icon: 'emojiSmileys',
+    name: 'Smileys & People',
   },
   nature: {
-    symbol: "🦄",
-    name: "Animals & Nature"
+    icon: 'emojiAnimals',
+    name: 'Animals & Nature',
   },
   food: {
-    symbol: "🍔",
-    name: "Food & Drink"
+    icon: 'emojiFood',
+    name: 'Food & Drink',
   },
   activities: {
-    symbol: "⚾️",
-    name: "Activities"
+    icon: 'emojiActivities',
+    name: 'Activities',
   },
   places: {
-    symbol: "✈️",
-    name: "Travel & Places"
+    icon: 'emojiTravel',
+    name: 'Travel & Places',
   },
   objects: {
-    symbol: "💡",
-    name: "Objects"
+    icon: 'emojiObjects',
+    name: 'Objects',
   },
-  symbols: {
-    symbol: "🔣",
-    name: "Symbols"
+  icons: {
+    icon: 'emojiSymbols',
+    name: 'Symbols',
   },
   flags: {
-    symbol: "🏳️‍🌈",
-    name: "Flags"
-  }
+    icon: 'emojiFlags',
+    name: 'Flags',
+  },
 };
 
 const charFromUtf16 = utf16 =>
-  String.fromCodePoint(...utf16.split("-").map(u => "0x" + u));
+  String.fromCodePoint(...utf16.split('-').map(u => '0x' + u));
 export const charFromEmojiObject = obj => charFromUtf16(obj.unified);
-const filteredEmojis = emoji.filter(e => !e["obsoleted_by"]);
+const filteredEmojis = emoji.filter(e => !e['obsoleted_by']);
 const emojiByCategory = category =>
   filteredEmojis.filter(e => e.category === category);
 const sortEmoji = list => list.sort((a, b) => a.sort_order - b.sort_order);
-const { width } = Dimensions.get("screen");
+const { width } = Dimensions.get('screen');
 const categoryKeys = Object.keys(Categories);
 
 const TabBar = ({ theme, activeCategory, onPress }) => {
-  const tabSize = width / categoryKeys.length;
-
   return categoryKeys.map(c => {
     const category = Categories[c];
-    if (c !== "all")
+    if (c !== 'all')
       return (
-        <TouchableOpacity
+        <ButtonPressAnimation
+          activeOpacity={1}
+          duration={100}
+          enableHapticFeedback
           key={category.name}
           onPress={() => onPress(category)}
+          scaleTo={0.75}
           style={{
+            alignItems: 'center',
+            /*backgroundColor: category === activeCategory ? colors.alpha(colors.blueGreyDark, 0.05) : null,
+            borderRadius: 12,*/
             flex: 1,
-            height: tabSize,
-            borderColor: category === activeCategory ? theme : "#EEEEEE",
-            borderBottomWidth: 2,
-            alignItems: "center",
-            justifyContent: "center"
+            height: 30,
+            justifyContent: 'center',
+            maxWidth: 30,
           }}
         >
-          <Text
-            style={{
-              textAlign: "center",
-              paddingBottom: 8,
-              fontSize: tabSize - 24
-            }}
-          >
-            {category.symbol}
-          </Text>
-        </TouchableOpacity>
+          {category === activeCategory && (
+            <RadialGradient
+              borderRadius={14}
+              center={[32, 16]}
+              colors={['#FFB114', '#FF54BB', '#00F0FF']}
+              left={-1}
+              opacity={0.1}
+              overflow="hidden"
+              position="absolute"
+              radius={32}
+              style={{ height: 32, width: 32 }}
+              stops={[0, 0.635483871, 1]}
+              top={-1}
+            />
+          )}
+          <Icon
+            name={category.icon}
+            color={
+              category === activeCategory
+                ? null
+                : colors.alpha(colors.blueGreyDark, 0.4)
+            }
+          />
+        </ButtonPressAnimation>
       );
   });
 };
 
-const EmojiCell = ({ emoji, colSize, ...other }) => (
-  <TouchableOpacity
-    activeOpacity={0.5}
-    style={{
-      width: colSize,
-      height: colSize,
-      alignItems: "center",
-      justifyContent: "center"
-    }}
-    {...other}
-  >
-    <Text style={{ color: "#FFFFFF", fontSize: colSize - 12, lineHeight: colSize }}>
+const EmojiCell = ({ emoji, colNumber, colSize, ...other }) => (
+  <TouchableOpacity activeOpacity={0.5} {...other}>
+    <Text
+      style={{
+        fontSize: Math.floor(colSize) - 15,
+        height: (width - 21) / colNumber,
+        textAlign: 'center',
+        width: (width - 21) / colNumber,
+      }}
+    >
       {charFromEmojiObject(emoji)}
     </Text>
   </TouchableOpacity>
 );
 
-const storage_key = "@react-native-emoji-selector:HISTORY";
-export default class EmojiSelector extends Component {
+const storage_key = '@react-native-emoji-selector:HISTORY';
+export default class EmojiSelector extends PureComponent {
   state = {
-    searchQuery: "",
+    searchQuery: '',
     category: Categories.people,
     isReady: false,
     history: [],
     emojiList: null,
-    colSize: 0
+    colSize: 0,
   };
 
   //
@@ -134,11 +156,16 @@ export default class EmojiSelector extends Component {
   //
   handleTabSelect = category => {
     if (this.state.isReady) {
-      if (this.scrollview)
-        this.scrollview.scrollToOffset({ x: 0, y: 0, animated: false });
+      if (this.scrollview) {
+        if (category == this.state.category) {
+          this.scrollview.scrollToOffset({ animated: true, x: 0, y: 0 });
+        } else {
+          this.scrollview.scrollToOffset({ animated: false, x: 0, y: 0 });
+        }
+      }
       this.setState({
-        searchQuery: "",
-        category
+        searchQuery: '',
+        category,
       });
     }
   };
@@ -174,7 +201,7 @@ export default class EmojiSelector extends Component {
 
     AsyncStorage.setItem(storage_key, JSON.stringify(value));
     this.setState({
-      history: value
+      history: value,
     });
   };
 
@@ -195,25 +222,38 @@ export default class EmojiSelector extends Component {
       emoji={item.emoji}
       onPress={() => this.handleEmojiSelect(item.emoji)}
       colSize={this.state.colSize}
+      colNumber={this.props.columns}
     />
   );
 
+  renderListHeader = () => {
+    const title =
+      this.state.searchQuery !== ''
+        ? 'Search Results'
+        : this.state.category.name;
+    return (
+      this.props.showSectionTitles && (
+        <Text style={styles.sectionHeader}>{title}</Text>
+      )
+    );
+  };
+
   returnSectionData() {
     const { history, emojiList, searchQuery, category } = this.state;
-    if (category === Categories.all && searchQuery === "") {
+    if (category === Categories.all && searchQuery === '') {
       //TODO: OPTIMIZE THIS
       let largeList = [];
       categoryKeys.forEach(c => {
         const name = Categories[c].name;
         const list =
           name === Categories.history.name ? history : emojiList[name];
-        if (c !== "all" && c !== "history") largeList = largeList.concat(list);
+        if (c !== 'all' && c !== 'history') largeList = largeList.concat(list);
       });
 
       return largeList.map(emoji => ({ key: emoji.unified, emoji }));
     } else {
       let list;
-      const hasSearchQuery = searchQuery !== "";
+      const hasSearchQuery = searchQuery !== '';
       const name = category.name;
       if (hasSearchQuery) {
         const filtered = emoji.filter(e => {
@@ -224,8 +264,6 @@ export default class EmojiSelector extends Component {
           return display;
         });
         list = sortEmoji(filtered);
-      } else if (name === Categories.history.name) {
-        list = history;
       } else {
         list = emojiList[name];
       }
@@ -243,7 +281,7 @@ export default class EmojiSelector extends Component {
     this.setState(
       {
         emojiList,
-        colSize: Math.floor(width / this.props.columns)
+        colSize: width / this.props.columns,
       },
       cb
     );
@@ -265,9 +303,13 @@ export default class EmojiSelector extends Component {
     });
   }
 
-  handleLayout = ({ nativeEvent: { layout: { width: layoutWidth } } }) => {
-    this.setState({ colSize: Math.floor(layoutWidth / this.props.columns) });
-  }
+  handleLayout = ({
+    nativeEvent: {
+      layout: { width: layoutWidth },
+    },
+  }) => {
+    this.setState({ colSize: layoutWidth / this.props.columns });
+  };
 
   render() {
     const {
@@ -298,49 +340,79 @@ export default class EmojiSelector extends Component {
       </View>
     );
 
-    const title = searchQuery !== "" ? "Search Results" : category.name;
-
     return (
       <View style={styles.frame} {...other} onLayout={this.handleLayout}>
-        <View style={styles.tabBar}>
-          {showTabs && (
+        <View style={{ flex: 1 }}>
+          {showSearchBar && Searchbar}
+          {isReady ? (
+            <View style={styles.container}>
+              <FlatList
+                columnWrapperStyle={styles.row}
+                contentContainerStyle={{ paddingBottom: 75 }}
+                data={this.returnSectionData()}
+                horizontal={false}
+                keyboardShouldPersistTaps="always"
+                ListHeaderComponent={this.renderListHeader}
+                numColumns={columns}
+                ref={scrollview => (this.scrollview = scrollview)}
+                removeClippedSubviews
+                renderItem={this.renderEmojiCell}
+                scrollIndicatorInsets={{
+                  top: 34,
+                  left: 0,
+                  right: 0,
+                  bottom: 75,
+                }}
+                showsVerticalScrollIndicator={false}
+              />
+            </View>
+          ) : (
+            <View style={styles.loader} {...other}>
+              <ActivityIndicator
+                size="large"
+                color={Platform.OS === 'android' ? theme : '#000000'}
+              />
+            </View>
+          )}
+        </View>
+        {showTabs && (
+          <View style={styles.tabBar}>
+            <Image
+              opacity={0.6}
+              pointerEvents="none"
+              source={EmojiTabBarShadow}
+              style={{
+                position: 'absolute',
+                height: 138,
+                left: -50.5,
+                top: -46,
+                width: 377,
+              }}
+            />
+            <View
+              shadowColor={colors.black}
+              shadowOffset={{ height: 0, width: 0 }}
+              shadowOpacity={0.06}
+              shadowRadius={0.5}
+              style={position.coverAsObject}
+            >
+              <LinearGradient
+                borderRadius={17}
+                overflow="hidden"
+                colors={['#FFFFFF', '#FFFFFF', '#F0F5FA']}
+                end={{ x: 0.5, y: 1 }}
+                pointerEvents="none"
+                start={{ x: 0.5, y: 0 }}
+                style={position.coverAsObject}
+              />
+            </View>
             <TabBar
               activeCategory={category}
               onPress={this.handleTabSelect}
               theme={theme}
             />
-          )}
-        </View>
-        <View style={{ flex: 1 }}>
-          {showSearchBar && Searchbar}
-          {isReady ? (
-            <View style={{ flex: 1 }}>
-              <View style={styles.container}>
-                {showSectionTitles && (
-                  <Text style={styles.sectionHeader}>{title}</Text>
-                )}
-                <FlatList
-                  style={styles.scrollview}
-                  contentContainerStyle={{ paddingBottom: colSize }}
-                  data={this.returnSectionData()}
-                  renderItem={this.renderEmojiCell}
-                  horizontal={false}
-                  numColumns={columns}
-                  keyboardShouldPersistTaps={"always"}
-                  ref={scrollview => (this.scrollview = scrollview)}
-                  removeClippedSubviews
-                />
-              </View>
-            </View>
-          ) : (
-            <View style={styles.loader} {...other}>
-              <ActivityIndicator
-                size={"large"}
-                color={Platform.OS === "android" ? theme : "#000000"}
-              />
-            </View>
-          )}
-        </View>
+          </View>
+        )}
       </View>
     );
   }
@@ -372,61 +444,79 @@ EmojiSelector.propTypes = {
   category: PropTypes.object,
 
   /** Number of columns accross */
-  columns: PropTypes.number
+  columns: PropTypes.number,
 };
 EmojiSelector.defaultProps = {
-  theme: "#007AFF",
+  theme: '#007AFF',
   category: Categories.people,
   showTabs: true,
   showSearchBar: true,
   showHistory: false,
   showSectionTitles: true,
   columns: 7,
-  placeholder: "Search..."
+  placeholder: 'Search...',
 };
 
 const styles = StyleSheet.create({
   frame: {
     flex: 1,
-    width: "100%"
   },
   loader: {
+    alignItems: 'center',
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
+    justifyContent: 'center',
   },
   tabBar: {
-    flexDirection: "row"
-  },
-  scrollview: {
-    flex: 1
+    alignSelf: 'center',
+    bottom: 24,
+    flexDirection: 'row',
+    height: 38,
+    justifyContent: 'space-between',
+    padding: 4,
+    position: 'absolute',
+    /*shadowColor: "#1F1D19",
+    shadowOffset: { height: 10, width: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 25,*/
+    width: 276,
   },
   searchbar_container: {
-    width: "100%",
+    backgroundColor: 'rgba(255,255,255,0.75)',
+    width: '100%',
     zIndex: 1,
-    backgroundColor: "rgba(255,255,255,0.75)"
   },
   search: {
     ...Platform.select({
       ios: {
+        backgroundColor: 'rgba(255,255,255,0.75)',
+        borderRadius: 10,
         height: 36,
         paddingLeft: 8,
-        borderRadius: 10,
-        backgroundColor: "#E5E8E9"
-      }
+      },
     }),
-    margin: 8
+    margin: 8,
   },
   container: {
     flex: 1,
-    flexWrap: "wrap",
-    flexDirection: "row",
-    alignItems: "flex-start"
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'visible',
+    width: width,
+  },
+  row: {
+    alignItems: 'center',
   },
   sectionHeader: {
-    margin: 8,
-    fontSize: 17,
-    width: "100%",
-    color: "#8F8F8F"
-  }
+    color: '#3C4252',
+    fontSize: 12,
+    fontWeight: '600',
+    opacity: 0.5,
+    paddingBottom: 5,
+    paddingLeft: 8.3,
+    paddingRight: 4,
+    paddingTop: 15,
+    // textAlign: "center",
+    textTransform: 'uppercase',
+    width: '100%',
+  },
 });

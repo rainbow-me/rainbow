@@ -1,8 +1,8 @@
+import { BlurView } from '@react-native-community/blur';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { BlurView } from '@react-native-community/blur';
 import { interpolate } from './animations';
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
