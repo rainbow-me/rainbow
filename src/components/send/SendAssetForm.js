@@ -20,7 +20,7 @@ const Container = styled(Column)`
   overflow: hidden;
 `;
 
-const nftPaddingBottom = safeAreaInsetValues.bottom + 19;
+const nftPaddingBottom = safeAreaInsetValues.bottom + 39;
 const tokenPaddingBottom = sheetVerticalOffset + 19;
 
 const TransactionContainer = styled(Column).attrs({
@@ -65,10 +65,7 @@ const SendAssetForm = ({
           selected: true,
         })}
       </ShadowStack>
-      <TransactionContainer
-        isNft={selected.isNft}
-        marginBottom={deviceUtils.dimensions.height < 812 ? 15.5 : 31}
-      >
+      <TransactionContainer isNft={selected.isNft}>
         {selected.isNft ? (
           <SendAssetFormCollectible {...selected} />
         ) : (
