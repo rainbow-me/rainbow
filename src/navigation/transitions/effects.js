@@ -16,18 +16,18 @@ expand.translateY = deviceUtils.dimensions.height;
 
 export const sheetVerticalOffset = statusBarHeight;
 
+function setShowingModal() {
+  store.dispatch(updateTransitionProps({ showingModal: true }));
+}
+
 const effectOpacity = Animated.proc((closing, current) =>
   block([
     cond(
-      // onStart
       or(
         and(eq(closing, 0), eq(current, 0)),
         and(eq(closing, 1), eq(current, 1))
       ),
-      // setShowingModal
-      call([], () => {
-        store.dispatch(updateTransitionProps({ showingModal: true }));
-      })
+      call([], setShowingModal)
     ),
     // return opacity value of 1
     1,
@@ -114,12 +114,10 @@ const sheetStyleInterpolator = ({
     outputRange: [0, 0, 0, 1, 1],
   });
 
-  const translateY = block([
-    interpolate(current, {
-      inputRange: [0, 1],
-      outputRange: [screen.height, 0],
-    }),
-  ]);
+  const translateY = interpolate(current, {
+    inputRange: [0, 1],
+    outputRange: [screen.height, 0],
+  });
 
   return {
     cardStyle: {
