@@ -1,8 +1,19 @@
 import {
+  convertAmountFromNativeValue,
   convertBipsToPercentage,
   handleSignificantDecimals,
   updatePrecisionToDisplay,
 } from '../utilities';
+
+it('convertAmountFromNativeValue', () => {
+  const result = convertAmountFromNativeValue('1', '40.00505', 5);
+  expect(result).toBe('0.02499');
+});
+
+it('convertAmountFromNativeValue with trailing zeros', () => {
+  const result = convertAmountFromNativeValue('1', '1', 5);
+  expect(result).toBe('1');
+});
 
 it('handleSignificantDecimals greater than 1, decimals 2', () => {
   const result = handleSignificantDecimals('5.123', 2);

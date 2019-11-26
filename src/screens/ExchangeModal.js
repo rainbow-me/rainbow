@@ -755,7 +755,11 @@ class ExchangeModal extends Component {
         if (isNil(nativePrice)) {
           nativePrice = this.getMarketPrice();
         }
-        inputAmount = convertAmountFromNativeValue(nativeAmount, nativePrice);
+        inputAmount = convertAmountFromNativeValue(
+          nativeAmount,
+          nativePrice,
+          inputCurrency.decimals
+        );
         inputAmountDisplay = updatePrecisionToDisplay(
           inputAmount,
           nativePrice,
