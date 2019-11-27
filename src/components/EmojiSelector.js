@@ -233,7 +233,9 @@ export default class EmojiSelector extends PureComponent {
         : this.state.category.name;
     return (
       this.props.showSectionTitles && (
-        <Text style={styles.sectionHeader}>{title}</Text>
+        <View style={styles.sectionHeaderWrap}>
+          <Text style={styles.sectionHeader}>{title}</Text>
+        </View>
       )
     );
   };
@@ -355,7 +357,6 @@ export default class EmojiSelector extends PureComponent {
                 ListHeaderComponent={this.renderListHeader}
                 numColumns={columns}
                 ref={scrollview => (this.scrollview = scrollview)}
-                removeClippedSubviews
                 renderItem={this.renderEmojiCell}
                 scrollIndicatorInsets={{
                   top: 34,
@@ -364,6 +365,7 @@ export default class EmojiSelector extends PureComponent {
                   bottom: 75,
                 }}
                 showsVerticalScrollIndicator={false}
+                stickyHeaderIndices={[0]}
               />
             </View>
           ) : (
@@ -518,5 +520,8 @@ const styles = StyleSheet.create({
     // textAlign: "center",
     textTransform: 'uppercase',
     width: '100%',
+  },
+  sectionHeaderWrap: {
+    backgroundColor: '#ffffffdd',
   },
 });
