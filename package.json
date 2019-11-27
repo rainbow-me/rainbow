@@ -118,6 +118,7 @@
     "react-navigation": "4.0.10",
     "react-navigation-stack": "2.0.0-alpha.37",
     "react-navigation-tabs": "2.5.6",
+    "react-navigation-tabs-v1": "1.2.0",
     "react-primitives": "^0.8.0",
     "react-redux": "^5.0.7",
     "react-spring": "^5.7.2",
