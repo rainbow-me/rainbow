@@ -8,9 +8,10 @@ import { padding, position } from '../../styles';
 import { deviceUtils, safeAreaInsetValues } from '../../utils';
 import Centered from './Centered';
 import { setKeyboardHeight } from '../../handlers/localstorage/globalSettings';
+import { calculateKeyboardHeight } from '../../helpers/keyboardHeight';
 
-const FallbackKeyboardHeight = Math.floor(
-  deviceUtils.dimensions.height * 0.333
+const FallbackKeyboardHeight = calculateKeyboardHeight(
+  deviceUtils.dimensions.height
 );
 
 const Container = styled.View`
