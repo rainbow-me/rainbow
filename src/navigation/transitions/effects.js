@@ -1,13 +1,11 @@
 import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import store from '../../redux/store';
-import { updateTransitionProps } from '../../redux/navigation';
 import { interpolate } from '../../components/animations';
 import { deviceUtils } from '../../utils';
 import { colors } from '../../styles';
 
-const { and, block, call, color, cond, eq, or, SpringUtils } = Animated;
+const { color, SpringUtils } = Animated;
 
 const statusBarHeight = getStatusBarHeight(true);
 
@@ -16,26 +14,7 @@ expand.translateY = deviceUtils.dimensions.height;
 
 export const sheetVerticalOffset = statusBarHeight;
 
-function setShowingModal() {
-  store.dispatch(updateTransitionProps({ showingModal: true }));
-}
-
-const effectOpacity = Animated.proc((closing, current) =>
-  block([
-    cond(
-      or(
-        and(eq(closing, 0), eq(current, 0)),
-        and(eq(closing, 1), eq(current, 1))
-      ),
-      call([], setShowingModal)
-    ),
-    // return opacity value of 1
-    1,
-  ])
-);
-
 const exchangeStyleInterpolator = ({
-  closing,
   current: { progress: current },
   layouts: { screen },
 }) => {
@@ -52,7 +31,7 @@ const exchangeStyleInterpolator = ({
 
   return {
     cardStyle: {
-      opacity: effectOpacity(closing, current),
+      opacity: 1,
       shadowColor: colors.black,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.4,
@@ -67,7 +46,6 @@ const exchangeStyleInterpolator = ({
 };
 
 const expandStyleInterpolator = ({
-  closing,
   current: { progress: current },
   layouts: { screen },
 }) => {
@@ -84,7 +62,7 @@ const expandStyleInterpolator = ({
 
   return {
     cardStyle: {
-      opacity: effectOpacity(closing, current),
+      opacity: 1,
       shadowColor: colors.dark,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,

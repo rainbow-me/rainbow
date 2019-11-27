@@ -9,14 +9,11 @@ import {
 } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing } from 'react-native-reanimated';
-import {
-  contains,
-  transformOrigin as transformOriginUtil,
-} from 'react-native-redash';
+import { transformOrigin as transformOriginUtil } from 'react-native-redash';
 import stylePropType from 'react-style-proptype';
 import { animations, colors } from '../../styles';
 import { directionPropType } from '../../utils';
-import { interpolate, timing } from './procs';
+import { contains, interpolate, timing } from './procs';
 
 const {
   and,

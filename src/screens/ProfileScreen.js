@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { ActivityList } from '../components/activity-list';
 import AddFundsInterstitial from '../components/AddFundsInterstitial';
-import BlurOverlay from '../components/BlurOverlay';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { FlexItem, Page } from '../components/layout';
 import { Icon } from '../components/icons';
@@ -11,7 +10,6 @@ import { colors, position } from '../styles';
 
 const ProfileScreen = ({
   accountAddress,
-  blurIntensity,
   isEmpty,
   nativeCurrency,
   navigation,
@@ -48,13 +46,11 @@ const ProfileScreen = ({
       transactionsCount={transactionsCount}
     />
     {isEmpty && <AddFundsInterstitial />}
-    <BlurOverlay blurType="light" intensity={blurIntensity} />
   </Page>
 );
 
 ProfileScreen.propTypes = {
   accountAddress: PropTypes.string,
-  blurIntensity: PropTypes.object,
   isEmpty: PropTypes.bool,
   nativeCurrency: PropTypes.string,
   navigation: PropTypes.object,
