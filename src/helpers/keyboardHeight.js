@@ -1,5 +1,3 @@
-import { deviceUtils } from '../utils';
-
 export const calculateKeyboardHeight = screenHeight => {
   let keyboardHeight = 0;
   switch (screenHeight) {
@@ -19,7 +17,7 @@ export const calculateKeyboardHeight = screenHeight => {
       keyboardHeight = 301;
       break;
     default:
-      keyboardHeight = Math.floor(deviceUtils.dimensions.height * 0.333);
+      keyboardHeight = Math.floor(screenHeight * 0.333);
   }
   return keyboardHeight;
 };
