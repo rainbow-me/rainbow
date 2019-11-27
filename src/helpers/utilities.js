@@ -193,10 +193,12 @@ export const divide = (numberOne, numberTwo) =>
  * @param  {Number}   priceUnit
  * @return {String}
  */
-export const convertAmountFromNativeValue = (value, priceUnit) =>
-  BigNumber(value)
-    .dividedBy(BigNumber(priceUnit))
-    .toFixed();
+export const convertAmountFromNativeValue = (value, priceUnit, decimals = 18) =>
+  BigNumber(
+    BigNumber(value)
+      .dividedBy(BigNumber(priceUnit))
+      .toFixed(decimals, BigNumber.ROUND_DOWN)
+  ).toFixed();
 
 /**
  * @desc convert from string to number
