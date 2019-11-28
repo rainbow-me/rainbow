@@ -18,13 +18,13 @@ import {
 import {
   withAccountData,
   withAccountSettings,
+  withContacts,
   withDataInit,
   withTransitionProps,
   withUniqueTokens,
 } from '../hoc';
 import { borders, colors } from '../styles';
 import { deviceUtils, gasUtils, isNewValueForPath } from '../utils';
-import { getLocalContacts } from '../handlers/localstorage/contacts';
 
 const statusBarHeight = getStatusBarHeight(true);
 
@@ -44,6 +44,7 @@ class SendSheet extends Component {
   static propTypes = {
     allAssets: PropTypes.array,
     assetAmount: PropTypes.string,
+    contacts: PropTypes.object,
     fetchData: PropTypes.func,
     gasPrices: PropTypes.object,
     gasUpdateGasPriceOption: PropTypes.func,
@@ -54,6 +55,7 @@ class SendSheet extends Component {
     navigation: PropTypes.object,
     onSubmit: PropTypes.func,
     recipient: PropTypes.string,
+    removeContact: PropTypes.func,
     selected: PropTypes.object,
     selectedGasPrice: PropTypes.object,
     sendableUniqueTokens: PropTypes.arrayOf(PropTypes.object),
@@ -63,6 +65,7 @@ class SendSheet extends Component {
     sendUpdateNativeAmount: PropTypes.func,
     sendUpdateRecipient: PropTypes.func,
     sendUpdateSelected: PropTypes.func,
+    sortedContacts: PropTypes.array,
   };
 
   static defaultProps = {
@@ -72,7 +75,6 @@ class SendSheet extends Component {
   };
 
   state = {
-    contacts: [],
     currentInput: '',
     isAuthorizing: false,
   };
@@ -84,11 +86,11 @@ class SendSheet extends Component {
     if (address) {
       sendUpdateRecipient(address);
     }
-    this.onUpdateContacts();
   };
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     const {
+      contacts,
       isValidAddress,
       navigation,
       selected,
@@ -112,15 +114,15 @@ class SendSheet extends Component {
       'isValidAddress'
     );
     const isNewContactList = isNewValueForPath(
-      this.state,
-      prevState,
+      this.props,
+      prevProps,
       'contacts'
     );
 
     if (isNewValidAddress || isNewSelected || isNewContactList) {
       let verticalGestureResponseDistance = 140;
 
-      if (!isValidAddress && this.state.contacts.length !== 0) {
+      if (!isValidAddress && !isEmpty(contacts)) {
         verticalGestureResponseDistance = 140;
       } else if (isValidAddress) {
         verticalGestureResponseDistance = isEmpty(selected)
@@ -207,11 +209,6 @@ class SendSheet extends Component {
       });
   };
 
-  onUpdateContacts = async () => {
-    const contacts = await getLocalContacts();
-    this.setState({ contacts });
-  };
-
   onChangeInput = event => {
     this.setState({ currentInput: event });
     this.props.sendUpdateRecipient(event);
@@ -220,14 +217,17 @@ class SendSheet extends Component {
   render() {
     const {
       allAssets,
+      contacts,
       fetchData,
       isValidAddress,
       nativeCurrencySymbol,
       recipient,
+      removeContact,
       selected,
       selectedGasPrice,
       sendableUniqueTokens,
       sendUpdateRecipient,
+      sortedContacts,
       ...props
     } = this.props;
     const showEmptyState = !isValidAddress;
@@ -239,20 +239,20 @@ class SendSheet extends Component {
         <KeyboardAvoidingView behavior="padding">
           <Container align="center">
             <SendHeader
-              contacts={this.state.contacts}
+              contacts={contacts}
               isValid={isValidAddress}
               isValidAddress={isValidAddress}
               onChangeAddressInput={this.onChangeInput}
               onPressPaste={sendUpdateRecipient}
-              onUpdateContacts={this.onUpdateContacts}
               recipient={recipient}
+              removeContact={removeContact}
             />
             {showEmptyState && (
               <SendContactList
-                allAssets={this.state.contacts}
+                allAssets={sortedContacts}
                 currentInput={this.state.currentInput}
                 onPressContact={sendUpdateRecipient}
-                onUpdateContacts={this.onUpdateContacts}
+                removeContact={removeContact}
               />
             )}
             {showAssetList && (
@@ -298,6 +298,7 @@ class SendSheet extends Component {
 
 export default compose(
   withAccountData,
+  withContacts,
   withUniqueTokens,
   withAccountSettings,
   withDataInit,

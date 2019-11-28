@@ -80,7 +80,14 @@ export default class ExchangeInputField extends Component {
     const skeletonColor = colors.alpha(colors.blueGreyDark, 0.1);
 
     return (
-      <ColumnWithMargins flex={0} margin={12} paddingTop={16} width="100%">
+      <ColumnWithMargins
+        backgroundColor={colors.white}
+        flex={0}
+        margin={12}
+        paddingTop={16}
+        width="100%"
+        zIndex={1}
+      >
         <Row align="center">
           <TouchableWithoutFeedback onPress={this.handleFocusInputField}>
             <RowWithMargins
@@ -96,7 +103,6 @@ export default class ExchangeInputField extends Component {
                 symbol={inputCurrencySymbol}
               />
               <ExchangeInput
-                autoFocus
                 editable={!!inputCurrencySymbol}
                 onChangeText={setInputAmount}
                 onBlur={onBlur}

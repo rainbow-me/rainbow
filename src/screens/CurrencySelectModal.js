@@ -1,15 +1,15 @@
 import { get, map, property } from 'lodash';
 import PropTypes from 'prop-types';
+import { produce } from 'immer';
 import React, { Component } from 'react';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import { compose, mapProps } from 'recompact';
 import { withUniswapAssets } from '../hoc';
 import { position } from '../styles';
-import { isNewValueForPath } from '../utils';
+import { isNewValueForObjectPaths } from '../utils';
 import { filterList } from '../utils/search';
 import { interpolate } from '../components/animations';
-import { ExchangeCoinRow } from '../components/coin-row';
 import {
   CurrencySelectionList,
   CurrencySelectModalHeader,
@@ -49,6 +49,7 @@ class CurrencySelectModal extends Component {
   };
 
   state = {
+    assetsToFavoriteQueue: {},
     searchQuery: '',
   };
 
@@ -67,12 +68,17 @@ class CurrencySelectModal extends Component {
     const nextAssetsUniqueId = buildUniqueIdForListData(nextAssets);
     const isNewAssets = currentAssetsUniqueId !== nextAssetsUniqueId;
 
-    return (
-      isNewAssets ||
-      isNewValueForPath(this.props, nextProps, 'isFocused') ||
-      isNewValueForPath(this.props, nextProps, 'type') ||
-      isNewValueForPath(this.state, nextState, 'searchQuery')
-    );
+    const isNewProps = isNewValueForObjectPaths(this.props, nextProps, [
+      'isFocused',
+      'type',
+    ]);
+
+    const isNewState = isNewValueForObjectPaths(this.state, nextState, [
+      'searchQuery',
+      'assetsToFavoriteQueue',
+    ]);
+
+    return isNewAssets || isNewProps || isNewState;
   };
 
   dangerouslySetIsGestureBlocked = isGestureBlocked => {
@@ -84,6 +90,14 @@ class CurrencySelectModal extends Component {
 
   handleChangeSearchQuery = searchQuery => {
     this.setState({ searchQuery });
+  };
+
+  handleFavoriteAsset = (assetAddress, isFavorited) => {
+    this.setState(
+      produce(draft => {
+        draft.assetsToFavoriteQueue[assetAddress] = isFavorited;
+      })
+    );
   };
 
   handlePressBack = () => {
@@ -100,7 +114,19 @@ class CurrencySelectModal extends Component {
     navigation.navigate('MainExchangeScreen');
   };
 
-  handleDidBlur = () => this.handleChangeSearchQuery('');
+  handleDidBlur = () => {
+    const { uniswapUpdateFavorites } = this.props;
+    const { assetsToFavoriteQueue } = this.state;
+
+    Object.keys(assetsToFavoriteQueue).map(assetToFavorite =>
+      uniswapUpdateFavorites(
+        assetToFavorite,
+        assetsToFavoriteQueue[assetToFavorite]
+      )
+    );
+
+    this.handleChangeSearchQuery('');
+  };
 
   handleWillBlur = () => this.dangerouslySetIsGestureBlocked(false);
 
@@ -109,20 +135,6 @@ class CurrencySelectModal extends Component {
     if (this.searchInputRef.current) {
       this.searchInputRef.current.focus();
     }
-  };
-
-  renderCurrencyItem = item => {
-    const { type } = this.props;
-
-    return (
-      <ExchangeCoinRow
-        item={item}
-        onPress={this.handleSelectAsset}
-        showBalance={type === CurrencySelectionTypes.input}
-        showFavoriteButton={type === CurrencySelectionTypes.output}
-        uniqueId={item.uniqueId}
-      />
-    );
   };
 
   searchInputRef = React.createRef();
@@ -135,6 +147,10 @@ class CurrencySelectModal extends Component {
       transitionPosition,
       type,
     } = this.props;
+
+    if (type === null || type === undefined) {
+      return null;
+    }
 
     const { searchQuery } = this.state;
 
@@ -185,9 +201,14 @@ class CurrencySelectModal extends Component {
                 searchQuery={searchQuery}
               />
               <CurrencySelectionList
-                key={`CurrencySelectionList-${type}`}
+                itemProps={{
+                  onFavoriteAsset: this.handleFavoriteAsset,
+                  onPress: this.handleSelectAsset,
+                  showBalance: type === CurrencySelectionTypes.input,
+                  showFavoriteButton: type === CurrencySelectionTypes.output,
+                }}
                 listItems={listItems}
-                renderItem={this.renderCurrencyItem}
+                searchQuery={searchQuery}
                 showList={isFocused}
                 type={type}
               />

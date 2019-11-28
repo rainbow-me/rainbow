@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { compose, onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
-import { addNewLocalContact } from '../../handlers/localstorage/contacts';
-import { withAccountData, withAccountSettings } from '../../hoc';
+import { withAccountData, withAccountSettings, withContacts } from '../../hoc';
 import { colors, margin, padding } from '../../styles';
 import { abbreviations, deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
@@ -38,10 +37,11 @@ class AddContactState extends PureComponent {
     address: PropTypes.string,
     color: PropTypes.number,
     contact: PropTypes.object,
+    contactsAddOrUpdate: PropTypes.func,
     navigation: PropTypes.object,
     onCloseModal: PropTypes.func,
     onRefocusInput: PropTypes.func,
-    onUnmountModal: PropTypes.func,
+    removeContact: PropTypes.func,
   };
 
   state = {
@@ -64,11 +64,16 @@ class AddContactState extends PureComponent {
   inputRef = undefined;
 
   handleAddContact = async () => {
-    const { address, navigation, onCloseModal } = this.props;
+    const {
+      address,
+      contactsAddOrUpdate,
+      navigation,
+      onCloseModal,
+    } = this.props;
     const { color, value } = this.state;
 
     if (value.length > 0) {
-      await addNewLocalContact(address, value, color);
+      contactsAddOrUpdate(address, value, color);
       if (onCloseModal) {
         onCloseModal();
       }
@@ -77,7 +82,6 @@ class AddContactState extends PureComponent {
   };
 
   handleCancel = () => {
-    this.props.onUnmountModal('', 0, false);
     if (this.props.onCloseModal) {
       this.props.onCloseModal();
     }
@@ -110,6 +114,7 @@ class AddContactState extends PureComponent {
       address: this.props.address,
       nickname: this.state.value,
       onDelete: this.handleCancel,
+      removeContact: this.props.removeContact,
     });
 
   handleFocusInput = () => {
@@ -218,5 +223,6 @@ class AddContactState extends PureComponent {
 export default compose(
   withAccountData,
   withAccountSettings,
+  withContacts,
   onlyUpdateForKeys(['price', 'subtitle'])
 )(AddContactState);

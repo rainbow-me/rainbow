@@ -55,6 +55,7 @@ export default class TransactionConfirmationScreen extends PureComponent {
 
   state = {
     biometryType: null,
+    isAuthorizing: false,
     sendLongPressProgress: new Animated.Value(0),
   };
 
@@ -94,21 +95,28 @@ export default class TransactionConfirmationScreen extends PureComponent {
     const { onConfirm } = this.props;
     const { sendLongPressProgress } = this.state;
 
+    this.setState({ isAuthorizing: true });
     Animated.timing(sendLongPressProgress, {
       duration: (sendLongPressProgress._value / 100) * 800,
       toValue: 0,
     }).start();
 
-    await onConfirm();
+    try {
+      await onConfirm();
+      this.setState({ isAuthorizing: false });
+    } catch (error) {
+      this.setState({ isAuthorizing: false });
+    }
   };
 
   renderSendButton = () => (
     <HoldToAuthorizeButton
       isAuthorizing={this.state.isAuthorizing}
+      label={`Hold to ${
+        this.props.method === SEND_TRANSACTION ? 'Send' : 'Sign'
+      }`}
       onLongPress={this.onLongPressSend}
-    >
-      {`Hold to ${this.props.method === SEND_TRANSACTION ? 'Send' : 'Sign'}`}
-    </HoldToAuthorizeButton>
+    />
   );
 
   requestHeader = () => {

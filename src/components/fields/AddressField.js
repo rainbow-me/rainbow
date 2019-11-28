@@ -33,7 +33,6 @@ export default withNavigation(
     static propTypes = {
       address: PropTypes.string,
       autoFocus: PropTypes.bool,
-      contacts: PropTypes.array,
       currentContact: PropTypes.object,
       onChange: PropTypes.func.isRequired,
     };

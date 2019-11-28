@@ -8,6 +8,7 @@ const ConfirmExchangeButton = ({
   disabled,
   inputCurrencyName,
   isAssetApproved,
+  isAuthorizing,
   isSufficientBalance,
   isUnlockingAsset,
   onSubmit,
@@ -33,6 +34,7 @@ const ConfirmExchangeButton = ({
       disabledBackgroundColor={colors.grey20}
       flex={1}
       hideBiometricIcon={isUnlockingAsset || !isAssetApproved}
+      isAuthorizing={isAuthorizing}
       label={label}
       onLongPress={isAssetApproved ? onSubmit : null}
       onPress={isAssetApproved ? null : onUnlockAsset}
@@ -57,6 +59,7 @@ ConfirmExchangeButton.propTypes = {
   disabled: PropTypes.bool,
   inputCurrencyName: PropTypes.string,
   isAssetApproved: PropTypes.bool,
+  isAuthorizing: PropTypes.bool,
   isSufficientBalance: PropTypes.bool,
   isUnlockingAsset: PropTypes.bool,
   onSubmit: PropTypes.func,

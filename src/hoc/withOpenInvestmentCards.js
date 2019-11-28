@@ -2,9 +2,9 @@ import { connect } from 'react-redux';
 import {
   pushOpenInvestmentCard,
   setOpenInvestmentCards,
-} from '../redux/openInvestmentCards';
+} from '../redux/openStateSettings';
 
-const mapStateToProps = ({ openInvestmentCards: { openInvestmentCards } }) => ({
+const mapStateToProps = ({ openStateSettings: { openInvestmentCards } }) => ({
   openInvestmentCards,
 });
 

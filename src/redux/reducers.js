@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 
 import actionSheetManager from './actionSheetManager';
+import contacts from './contacts';
 import data from './data';
 import explorer from './explorer';
 import gas from './gas';
@@ -11,9 +12,7 @@ import isWalletImporting from './isWalletImporting';
 import keyboardHeight from './keyboardHeight';
 import navigation from './navigation';
 import nonce from './nonce';
-import openBalances from './openBalances';
-import openFamilyTabs from './openFamilyTabs';
-import openInvestmentCards from './openInvestmentCards';
+import openStateSettings from './openStateSettings';
 import requests from './requests';
 import selectedInput from './selectedInput';
 import selectedWithFab from './selectedWithFab';
@@ -25,6 +24,7 @@ import walletconnect from './walletconnect';
 
 export default combineReducers({
   actionSheetManager,
+  contacts,
   data,
   explorer,
   gas,
@@ -35,9 +35,7 @@ export default combineReducers({
   keyboardHeight,
   navigation,
   nonce,
-  openBalances,
-  openFamilyTabs,
-  openInvestmentCards,
+  openStateSettings,
   requests,
   selectedInput,
   selectedWithFab,

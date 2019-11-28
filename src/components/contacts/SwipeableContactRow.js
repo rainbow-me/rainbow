@@ -62,10 +62,11 @@ export default class SwipeableContactRow extends PureComponent {
     color: PropTypes.number,
     navigation: PropTypes.object,
     nickname: PropTypes.string,
-    onChange: PropTypes.func,
     onPress: PropTypes.func,
+    onSelectEdit: PropTypes.func,
     onTouch: PropTypes.func,
     onTransitionEnd: PropTypes.func,
+    removeContact: PropTypes.func,
     selectedInputId: PropTypes.object,
   };
 
@@ -74,12 +75,12 @@ export default class SwipeableContactRow extends PureComponent {
   close = () => this.swipeableRef.close();
 
   handleDeleteContact = async () => {
-    const { address, nickname, onChange } = this.props;
+    const { address, nickname, removeContact } = this.props;
     this.close();
     showDeleteContactActionSheet({
       address,
       nickname,
-      onDelete: onChange,
+      removeContact,
     });
   };
 

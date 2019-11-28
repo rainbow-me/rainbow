@@ -5,10 +5,12 @@ import {
   isToday,
   isYesterday,
 } from 'date-fns';
-import { get, groupBy, isEmpty } from 'lodash';
+import { get, groupBy, isEmpty, map, toLower } from 'lodash';
 import { createSelector } from 'reselect';
+import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 
 const accountAddressSelector = state => state.accountAddress;
+const contactsSelector = state => state.contacts;
 const requestsSelector = state => state.requests;
 const transactionsSelector = state => state.transactions;
 
@@ -27,11 +29,32 @@ const groupTransactionByDate = ({ pending, minedAt }) => {
   return format(timestamp, `MMMM${isThisYear(timestamp) ? '' : ' YYYY'}`);
 };
 
-const buildTransactionsSections = (accountAddress, requests, transactions) => {
+const addContactInfo = contacts => txn => {
+  const { from, to, status } = txn;
+  const isSent = status === TransactionStatusTypes.sent;
+  const contactAddress = isSent ? to : from;
+  const contact = get(contacts, `${[toLower(contactAddress)]}`, null);
+  return {
+    ...txn,
+    contact,
+  };
+};
+
+const buildTransactionsSections = (
+  accountAddress,
+  contacts,
+  requests,
+  transactions
+) => {
   let sectionedTransactions = [];
 
-  if (!isEmpty(transactions)) {
-    const transactionsByDate = groupBy(transactions, groupTransactionByDate);
+  const transactionsWithContacts = map(transactions, addContactInfo(contacts));
+
+  if (!isEmpty(transactionsWithContacts)) {
+    const transactionsByDate = groupBy(
+      transactionsWithContacts,
+      groupTransactionByDate
+    );
 
     sectionedTransactions = Object.keys(transactionsByDate).map(section => ({
       data: transactionsByDate[section],
@@ -55,6 +78,11 @@ const buildTransactionsSections = (accountAddress, requests, transactions) => {
 };
 
 export const buildTransactionsSectionsSelector = createSelector(
-  [accountAddressSelector, requestsSelector, transactionsSelector],
+  [
+    accountAddressSelector,
+    contactsSelector,
+    requestsSelector,
+    transactionsSelector,
+  ],
   buildTransactionsSections
 );
