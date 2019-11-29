@@ -51,6 +51,9 @@ const width = deviceUtils.dimensions.width - 100;
 const height = 170;
 const chartPadding = 16;
 
+const strokeWidth = 1.5;
+const thickStrokeWidthDifference = 1.5;
+
 const flipY = { transform: [{ scaleX: 1 }, { scaleY: -1 }] };
 
 const indexInterval = 25;
@@ -298,7 +301,10 @@ export default class ValueChart extends PureComponent {
                         id="main-path"
                         fill="none"
                         stroke={colors.chartGreen}
-                        strokeWidth={2}
+                        strokeWidth={add(
+                          strokeWidth,
+                          multiply(this.value, thickStrokeWidthDifference)
+                        )}
                         strokeLinejoin="round"
                         strokeLinecap="round"
                         d={animatedPath}
