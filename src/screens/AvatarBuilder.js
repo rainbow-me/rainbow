@@ -5,7 +5,7 @@ import Animated from 'react-native-reanimated';
 import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-import EmojiSelector from '../components/EmojiSelector';
+import EmojiSelector from '../components/avatar-builder/EmojiSelector';
 import { Column, Row } from '../components/layout';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { colors } from '../styles';
