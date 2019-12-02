@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-unused-styles */
 import emoji from 'emoji-datasource';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
@@ -89,7 +90,7 @@ const { width } = Dimensions.get('screen');
 const categoryKeys = Object.keys(Categories);
 
 const EmojiCell = ({ emoji, colNumber, colSize, ...other }) => (
-  <TouchableOpacity activeOpacity={0.5} {...other}>
+  <TouchableOpacity activeOpacity={0.5} {...other} style={{backgroundColor: 'white'}}>
     <Text
       style={{
         fontSize: Math.floor(colSize) - 15,
@@ -121,7 +122,7 @@ export default class EmojiSelector extends PureComponent {
       colSize: 0,
       emojiList: [],
       history: [],
-      isReady: true,
+      isReady: false,
       searchQuery: '',
     };
 
@@ -154,24 +155,25 @@ export default class EmojiSelector extends PureComponent {
   }
 
   componentDidMount() {
-    this.prerenderEmojis();
+    this.loadEmojis();
+    setTimeout(() => {
+      this.setState({ isReady: true });
+    }, 5000);
   }
 
   handleTabSelect = category => {
     blockCategories = true;
-    if (this.state.isReady) {
-      this.scrollToOffset(
-        category.index * 2 - 1 > 0
-          ? this.state.allEmojiList[category.index * 2 - 1].offset
-          : 0,
-        true
-      );
-      currentIndex = category.index;
-      this.setState({
-        category,
-        searchQuery: '',
-      });
-    }
+    this.scrollToOffset(
+      category.index * 2 - 1 > 0
+        ? this.state.allEmojiList[category.index * 2 - 1].offset
+        : 0,
+      true
+    );
+    currentIndex = category.index;
+    this.setState({
+      category,
+      searchQuery: '',
+    });
   };
 
   handleEmojiSelect = emoji => {
@@ -256,7 +258,7 @@ export default class EmojiSelector extends PureComponent {
     );
   };
 
-  prerenderEmojis(cb) {
+  loadEmojis(cb) {
     let allEmojiList = [];
     let offset = 0;
     categoryKeys.map(category => {
@@ -366,28 +368,11 @@ export default class EmojiSelector extends PureComponent {
     return (
       <View style={styles.frame} {...other}>
         <TapGestureHandler onHandlerStateChange={this.onTapChange}>
-          <View style={{ flex: 1 }}>
+          <View
+            style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}
+          >
             {showSearchBar && Searchbar}
-            {isReady ? (
-              <View style={styles.container}>
-                <StickyContainer
-                  stickyHeaderIndices={[0, 2, 4, 6, 8, 10, 12, 14, 16, 18]}
-                >
-                  <RecyclerListView
-                    dataProvider={new DataProvider(
-                      this.hasRowChanged
-                    ).cloneWithRows(this.state.allEmojiList)}
-                    layoutProvider={this._layoutProvider}
-                    rowRenderer={this.renderItem}
-                    style={{ width: deviceUtils.dimensions.width }}
-                    renderAheadOffset={10000}
-                    onScroll={this.handleScroll}
-                    renderFooter={() => <View style={{ height: 100 }} />}
-                    ref={this.handleListRef}
-                  />
-                </StickyContainer>
-              </View>
-            ) : (
+            {!isReady && (
               <View style={styles.loader} {...other}>
                 <ActivityIndicator
                   size="large"
@@ -395,6 +380,24 @@ export default class EmojiSelector extends PureComponent {
                 />
               </View>
             )}
+            <View style={styles.container}>
+              <StickyContainer
+                stickyHeaderIndices={[0, 2, 4, 6, 8, 10, 12, 14, 16, 18]}
+              >
+                <RecyclerListView
+                  dataProvider={new DataProvider(
+                    this.hasRowChanged
+                  ).cloneWithRows(this.state.allEmojiList)}
+                  layoutProvider={this._layoutProvider}
+                  rowRenderer={this.renderItem}
+                  style={{ width: deviceUtils.dimensions.width }}
+                  renderAheadOffset={10000}
+                  onScroll={this.handleScroll}
+                  renderFooter={() => <View style={{ height: 100 }} />}
+                  ref={this.handleListRef}
+                />
+              </StickyContainer>
+            </View>
           </View>
         </TapGestureHandler>
 
@@ -405,9 +408,9 @@ export default class EmojiSelector extends PureComponent {
               pointerEvents="none"
               source={EmojiTabBarShadow}
               style={{
-                position: 'absolute',
                 height: 138,
                 left: -50.5,
+                position: 'absolute',
                 top: -46,
                 width: 377,
               }}
@@ -473,17 +476,24 @@ EmojiSelector.propTypes = {
 };
 
 EmojiSelector.defaultProps = {
-  theme: '#007AFF',
   category: Categories.people,
-  showTabs: true,
-  showSearchBar: true,
-  showHistory: false,
-  showSectionTitles: true,
   columns: 7,
   placeholder: 'Search...',
+  showHistory: false,
+  showSearchBar: true,
+  showSectionTitles: true,
+  showTabs: true,
+  theme: '#007AFF',
 };
 
 const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    overflow: 'visible',
+    width: width,
+  },
   frame: {
     flex: 1,
   },
@@ -491,21 +501,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-  },
-  tabBar: {
-    alignSelf: 'center',
-    bottom: 24,
-    flexDirection: 'row',
-    height: 38,
-    justifyContent: 'space-between',
-    padding: 4,
     position: 'absolute',
-    width: 276,
   },
-  searchbar_container: {
-    backgroundColor: 'rgba(255,255,255,0.75)',
-    width: '100%',
-    zIndex: 1,
+  row: {
+    alignItems: 'center',
   },
   search: {
     ...Platform.select({
@@ -518,15 +517,10 @@ const styles = StyleSheet.create({
     }),
     margin: 8,
   },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'visible',
-    width: width,
-  },
-  row: {
-    alignItems: 'center',
+  searchbar_container: {
+    backgroundColor: 'rgba(255,255,255,0.75)',
+    width: '100%',
+    zIndex: 1,
   },
   sectionHeader: {
     color: '#3C4252',
@@ -545,5 +539,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffffdd',
     marginRight: 10,
     paddingLeft: 10,
+  },
+  tabBar: {
+    alignSelf: 'center',
+    bottom: 24,
+    flexDirection: 'row',
+    height: 38,
+    justifyContent: 'space-between',
+    padding: 4,
+    position: 'absolute',
+    width: 276,
   },
 });

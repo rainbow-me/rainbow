@@ -131,13 +131,20 @@ class AvatarBuilder extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      avatarColor: '#FFD963',
-      emoji: '🙃',
-      position: new Value(),
+      avatarColor:
+        colors.avatarColor[this.props.navigation.getParam('accountColor', 4)],
+      emoji: this.props.navigation.getParam('accountName', '🙃'),
+      position: new Value(
+        (this.props.navigation.getParam('accountColor', 4) - 4) * 39
+      ),
     };
   }
 
-  springAnim = runSpring(new Clock(), 0, 0);
+  springAnim = runSpring(
+    new Clock(),
+    (this.props.navigation.getParam('accountColor', 4) - 4) * 39,
+    (this.props.navigation.getParam('accountColor', 4) - 4) * 39
+  );
 
   onChangeEmoji = event => {
     this.setState({ emoji: event });
