@@ -71,16 +71,6 @@ const SwipeStack = createMaterialTopTabNavigator(
 
 const MainNavigator = createStackNavigator(
   {
-    ConfirmRequest: {
-      navigationOptions: {
-        ...expandedPreset,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      screen: TransactionConfirmationScreenWithData,
-    },
     AvatarBuilder: {
       navigationOptions: {
         ...emojiPreset,
@@ -91,6 +81,16 @@ const MainNavigator = createStackNavigator(
         },
       },
       screen: AvatarBuilder,
+    },
+    ConfirmRequest: {
+      navigationOptions: {
+        ...expandedPreset,
+        onTransitionStart: props => {
+          expandedPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
+      },
+      screen: TransactionConfirmationScreenWithData,
     },
     ExampleScreen,
     ExchangeModal: {

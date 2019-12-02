@@ -1,4 +1,6 @@
+/* eslint-disable sort-keys */
 /* eslint-disable react-native/no-unused-styles */
+// eslint-disable-next-line import/extensions
 import emoji from 'emoji-datasource';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
@@ -90,7 +92,11 @@ const { width } = Dimensions.get('screen');
 const categoryKeys = Object.keys(Categories);
 
 const EmojiCell = ({ emoji, colNumber, colSize, ...other }) => (
-  <TouchableOpacity activeOpacity={0.5} {...other} style={{backgroundColor: 'white'}}>
+  <TouchableOpacity
+    activeOpacity={0.5}
+    {...other}
+    style={{ backgroundColor: 'white' }}
+  >
     <Text
       style={{
         fontSize: Math.floor(colSize) - 15,
@@ -441,7 +447,6 @@ export default class EmojiSelector extends PureComponent {
           </View>
         )}
       </View>
-
     );
   }
 }

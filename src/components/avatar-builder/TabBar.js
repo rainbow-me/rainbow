@@ -5,7 +5,7 @@ import { Icon } from '../icons';
 import { RadialGradient } from 'svgs';
 import { Categories } from './EmojiSelector';
 
-const TabBar = ({ categoryKeys, theme, activeCategory, onPress }) => {
+const TabBar = ({ categoryKeys, activeCategory, onPress }) => {
   return categoryKeys.map(c => {
     const category = Categories[c];
     if (c !== 'all')

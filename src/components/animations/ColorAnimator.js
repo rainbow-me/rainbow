@@ -1,3 +1,4 @@
+/* eslint-disable sort-keys */
 import Animated from 'react-native-reanimated';
 
 const { round, interpolate, Extrapolate, color } = Animated;
