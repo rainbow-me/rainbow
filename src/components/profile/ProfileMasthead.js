@@ -59,6 +59,7 @@ const ProfileMasthead = ({
   const name = accountName || '🥰';
   const color = accountColor || 5;
 
+  console.log(accountColor);
   return (
     <Container>
       <ButtonPressAnimation
@@ -123,10 +124,10 @@ ProfileMasthead.defaultProps = {
 export default compose(
   withState('emojiCount', 'setEmojiCount', 0),
   withHandlers({
-    onPressAvatar: ({ navigation }) => () =>
+    onPressAvatar: ({ navigation, accountColor, accountName }) => () =>
       navigation.navigate('AvatarBuilder', {
-        accountColor: 5,
-        accountName: '🥰',
+        accountColor: accountColor,
+        accountName: accountName,
       }),
     onPressCopy: ({ accountAddress, emojiCount, setEmojiCount }) => () => {
       setEmojiCount(emojiCount + 1);

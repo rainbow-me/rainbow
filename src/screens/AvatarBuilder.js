@@ -11,6 +11,11 @@ import TouchableBackdrop from '../components/TouchableBackdrop';
 import { colors } from '../styles';
 import { deviceUtils } from '../utils';
 import ColorCircle from '../components/avatar-builder/ColorCircle';
+import store from '../redux/store';
+import {
+  settingsUpdateAccountName,
+  settingsUpdateAccountColor,
+} from '../redux/settings';
 
 const {
   block,
@@ -148,6 +153,7 @@ class AvatarBuilder extends PureComponent {
 
   onChangeEmoji = event => {
     this.setState({ emoji: event });
+    store.dispatch(settingsUpdateAccountName(event));
   };
 
   avatarColors = colors.avatarColor.map((color, index) => (
@@ -162,6 +168,7 @@ class AvatarBuilder extends PureComponent {
           this.state.position,
           destination
         );
+        store.dispatch(settingsUpdateAccountColor(index));
         this.setState({
           avatarColor: color,
         });
