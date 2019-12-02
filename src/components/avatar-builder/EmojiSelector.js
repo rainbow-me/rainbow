@@ -5,7 +5,6 @@ import {
   ActivityIndicator,
   AsyncStorage,
   Dimensions,
-  SectionList,
   Image,
   Platform,
   StyleSheet,
@@ -15,12 +14,9 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import RadialGradient from 'react-native-radial-gradient';
 import 'string.fromcodepoint';
 import EmojiTabBarShadow from '../../assets/emojiTabBarShadow.png';
 import { colors, position } from '../../styles';
-import { ButtonPressAnimation } from '../animations';
-import Icon from '../icons/Icon';
 import TabBar from './TabBar';
 import {
   RecyclerListView,
@@ -29,6 +25,7 @@ import {
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import { deviceUtils } from '../../utils';
+import { State, TapGestureHandler } from 'react-native-gesture-handler';
 
 export const Categories = {
   // all: {
@@ -41,34 +38,42 @@ export const Categories = {
   // },
   people: {
     icon: 'emojiSmileys',
+    index: 0,
     name: 'Smileys & People',
   },
   nature: {
     icon: 'emojiAnimals',
+    index: 1,
     name: 'Animals & Nature',
   },
   food: {
     icon: 'emojiFood',
+    index: 2,
     name: 'Food & Drink',
   },
   activities: {
     icon: 'emojiActivities',
+    index: 3,
     name: 'Activities',
   },
   places: {
     icon: 'emojiTravel',
+    index: 4,
     name: 'Travel & Places',
   },
   objects: {
     icon: 'emojiObjects',
+    index: 5,
     name: 'Objects',
   },
   icons: {
     icon: 'emojiSymbols',
+    index: 6,
     name: 'Symbols',
   },
   flags: {
     icon: 'emojiFlags',
+    index: 7,
     name: 'Flags',
   },
 };
@@ -104,6 +109,7 @@ const HEADER_ROW = 2;
 const storage_key = '@react-native-emoji-selector:HISTORY';
 
 let currentIndex = 0;
+let blockCategories = true;
 
 export default class EmojiSelector extends PureComponent {
   constructor(args) {
@@ -132,9 +138,9 @@ export default class EmojiSelector extends PureComponent {
       },
       (type, dim, i) => {
         if (type === EMOJI_CONTAINER) {
-          console.log(this.state.allEmojiList[i]);
           dim.height =
-            Math.floor(this.state.allEmojiList[i].data.length / 7 + 1) * 56.5;
+            Math.floor(this.state.allEmojiList[i].data.length / 7 + 1) *
+            ((width - 21) / this.props.columns);
           dim.width = deviceUtils.dimensions.width;
         } else if (type === HEADER_ROW) {
           dim.height = 35;
@@ -152,18 +158,18 @@ export default class EmojiSelector extends PureComponent {
   }
 
   handleTabSelect = category => {
+    blockCategories = true;
     if (this.state.isReady) {
-      if (this.scrollview) {
-        if (category == this.state.category) {
-          this.scrollview.scrollToOffset({ animated: true, x: 0, y: 0 });
-        } else {
-          this.scrollview.scrollToOffset({ animated: false, x: 0, y: 0 });
-        }
-        this.scrollview.scrollToOffset({ animated: true, x: 2000, y: 0 });
-      }
+      this.scrollToOffset(
+        category.index * 2 - 1 > 0
+          ? this.state.allEmojiList[category.index * 2 - 1].offset
+          : 0,
+        true
+      );
+      currentIndex = category.index;
       this.setState({
-        searchQuery: '',
         category,
+        searchQuery: '',
       });
     }
   };
@@ -267,7 +273,9 @@ export default class EmojiSelector extends PureComponent {
         },
       ];
       if (emojiCategory[1].data.length > 0) {
-        const height = Math.floor(emojiCategory[1].data.length / 7 + 1) * 56.5;
+        const height =
+          Math.floor(emojiCategory[1].data.length / 7 + 1) *
+          ((width - 21) / this.props.columns);
         emojiCategory[1].height = height;
         offset += height + 35;
         emojiCategory[1].offset = offset;
@@ -299,15 +307,33 @@ export default class EmojiSelector extends PureComponent {
   };
 
   handleScroll = (event, offsetX, offsetY) => {
-    if (offsetY > this.state.allEmojiList[(currentIndex + 1) * 2 - 1].offset) {
-      currentIndex += 1;
-      this.setState({ category: Categories[categoryKeys[currentIndex]] });
-    } else if (
-      currentIndex * 2 - 1 > 0 &&
-      offsetY < this.state.allEmojiList[currentIndex * 2 - 1].offset
-    ) {
-      currentIndex -= 1;
-      this.setState({ category: Categories[categoryKeys[currentIndex]] });
+    if (!blockCategories) {
+      if (
+        offsetY > this.state.allEmojiList[(currentIndex + 1) * 2 - 1].offset
+      ) {
+        currentIndex += 1;
+        this.setState({ category: Categories[categoryKeys[currentIndex]] });
+      } else if (
+        currentIndex * 2 - 1 > 0 &&
+        offsetY < this.state.allEmojiList[currentIndex * 2 - 1].offset
+      ) {
+        currentIndex -= 1;
+        this.setState({ category: Categories[categoryKeys[currentIndex]] });
+      }
+    }
+  };
+
+  scrollToOffset = (position, animated) => {
+    this.rlv.scrollToOffset(0, position, animated);
+  };
+
+  handleListRef = ref => {
+    this.rlv = ref;
+  };
+
+  onTapChange = ({ nativeEvent: { state } }) => {
+    if (state === State.BEGAN) {
+      blockCategories = false;
     }
   };
 
@@ -339,35 +365,39 @@ export default class EmojiSelector extends PureComponent {
 
     return (
       <View style={styles.frame} {...other}>
-        <View style={{ flex: 1 }}>
-          {showSearchBar && Searchbar}
-          {isReady ? (
-            <View style={styles.container}>
-              <StickyContainer
-                stickyHeaderIndices={[0, 2, 4, 6, 8, 10, 12, 14, 16, 18]}
-              >
-                <RecyclerListView
-                  dataProvider={new DataProvider(
-                    this.hasRowChanged
-                  ).cloneWithRows(this.state.allEmojiList)}
-                  layoutProvider={this._layoutProvider}
-                  rowRenderer={this.renderItem}
-                  style={{ width: deviceUtils.dimensions.width }}
-                  renderAheadOffset={10000}
-                  onScroll={this.handleScroll}
-                  renderFooter={() => <View style={{ height: 100 }} />}
+        <TapGestureHandler onHandlerStateChange={this.onTapChange}>
+          <View style={{ flex: 1 }}>
+            {showSearchBar && Searchbar}
+            {isReady ? (
+              <View style={styles.container}>
+                <StickyContainer
+                  stickyHeaderIndices={[0, 2, 4, 6, 8, 10, 12, 14, 16, 18]}
+                >
+                  <RecyclerListView
+                    dataProvider={new DataProvider(
+                      this.hasRowChanged
+                    ).cloneWithRows(this.state.allEmojiList)}
+                    layoutProvider={this._layoutProvider}
+                    rowRenderer={this.renderItem}
+                    style={{ width: deviceUtils.dimensions.width }}
+                    renderAheadOffset={10000}
+                    onScroll={this.handleScroll}
+                    renderFooter={() => <View style={{ height: 100 }} />}
+                    ref={this.handleListRef}
+                  />
+                </StickyContainer>
+              </View>
+            ) : (
+              <View style={styles.loader} {...other}>
+                <ActivityIndicator
+                  size="large"
+                  color={Platform.OS === 'android' ? theme : '#000000'}
                 />
-              </StickyContainer>
-            </View>
-          ) : (
-            <View style={styles.loader} {...other}>
-              <ActivityIndicator
-                size="large"
-                color={Platform.OS === 'android' ? theme : '#000000'}
-              />
-            </View>
-          )}
-        </View>
+              </View>
+            )}
+          </View>
+        </TapGestureHandler>
+
         {showTabs && (
           <View style={styles.tabBar}>
             <Image
@@ -408,6 +438,7 @@ export default class EmojiSelector extends PureComponent {
           </View>
         )}
       </View>
+
     );
   }
 }
