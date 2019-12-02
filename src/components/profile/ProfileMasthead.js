@@ -57,7 +57,7 @@ const ProfileMasthead = ({
   showBottomDivider,
 }) => {
   const name = accountName || '🥰';
-  const color = accountColor || 5;
+  const color = accountColor || 0;
 
   console.log(accountColor);
   return (
