@@ -1,20 +1,22 @@
 import { keys, mapKeys, mapValues, toLower } from 'lodash';
-import tokenOverrides from './token-overrides.json';
-import uniswapAssetsRaw from './uniswap-pairs.json';
+import tokenOverridesFallback from './token-overrides.json';
+import uniswapAssetsFallback from './uniswap-pairs.json';
 
-export const loweredTokenOverrides = mapKeys(tokenOverrides, (value, address) =>
-  toLower(address)
+export const loweredTokenOverridesFallback = mapKeys(
+  tokenOverridesFallback,
+  (_, address) => toLower(address)
 );
 
-const uniswapAssetsRawLoweredKeys = mapKeys(uniswapAssetsRaw, (value, key) =>
-  toLower(key)
+const uniswapAssetsRawLoweredKeys = mapKeys(
+  uniswapAssetsFallback,
+  (value, key) => toLower(key)
 );
 
 export const uniswapAssetsClean = mapValues(
   uniswapAssetsRawLoweredKeys,
   (value, key) => ({
     ...value,
-    ...loweredTokenOverrides[key],
+    ...loweredTokenOverridesFallback[key],
   })
 );
 

@@ -181,9 +181,6 @@
   "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599": {
     "name": "Wrapped Bitcoin"
   },
-  "0x09fE5f0236F0Ea5D930197DCE254d77B04128075": {
-    "name": "Wrapped CryptoKitties"
-  },
   "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2": {
     "name": "Wrapped Ether"
   }

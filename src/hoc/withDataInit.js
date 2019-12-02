@@ -6,7 +6,11 @@ import { compose, withHandlers } from 'recompact';
 import { getIsWalletEmpty } from '../handlers/localstorage/accountLocal';
 import { hasEthBalance } from '../handlers/web3';
 import { walletInit } from '../model/wallet';
-import { dataClearState, dataLoadState } from '../redux/data';
+import {
+  dataClearState,
+  dataLoadState,
+  dataTokenOverridesInit,
+} from '../redux/data';
 import { explorerClearState, explorerInit } from '../redux/explorer';
 import { gasClearState, gasPricesInit } from '../redux/gas';
 import { clearIsWalletEmpty } from '../redux/isWalletEmpty';
@@ -51,6 +55,7 @@ export default Component =>
       contactsLoadState,
       dataClearState,
       dataLoadState,
+      dataTokenOverridesInit,
       explorerClearState,
       explorerInit,
       gasClearState,
@@ -109,6 +114,7 @@ export default Component =>
       },
       initializeAccountData: ownProps => async () => {
         try {
+          await ownProps.dataTokenOverridesInit();
           ownProps.explorerInit();
           ownProps.gasPricesInit();
           ownProps.web3ListenerInit();
