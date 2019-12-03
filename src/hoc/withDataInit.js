@@ -29,6 +29,7 @@ import {
 import {
   uniswapLoadState,
   uniswapClearState,
+  uniswapPairsInit,
   uniswapUpdateState,
 } from '../redux/uniswap';
 import {
@@ -72,6 +73,7 @@ export default Component =>
       uniqueTokensRefreshState,
       uniswapClearState,
       uniswapLoadState,
+      uniswapPairsInit,
       uniswapUpdateState,
       walletConnectClearState,
       walletConnectLoadState,
@@ -116,6 +118,7 @@ export default Component =>
         try {
           await ownProps.dataTokenOverridesInit();
           ownProps.explorerInit();
+          ownProps.uniswapPairsInit();
           ownProps.gasPricesInit();
           ownProps.web3ListenerInit();
           await ownProps.uniqueTokensRefreshState();
