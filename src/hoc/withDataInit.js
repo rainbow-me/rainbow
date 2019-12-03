@@ -84,6 +84,7 @@ export default Component =>
       },
       clearAccountData: ownProps => async () => {
         web3ListenerClearState();
+        gasClearState();
         const p0 = ownProps.explorerClearState();
         const p1 = ownProps.dataClearState();
         const p2 = ownProps.clearIsWalletEmpty();
@@ -93,7 +94,6 @@ export default Component =>
         const p6 = ownProps.nonceClearState();
         const p7 = ownProps.requestsClearState();
         const p8 = ownProps.uniswapClearState();
-        const p9 = ownProps.gasClearState();
         return promiseUtils.PromiseAllWithFails([
           p0,
           p1,
@@ -104,7 +104,6 @@ export default Component =>
           p6,
           p7,
           p8,
-          p9,
         ]);
       },
       initializeAccountData: ownProps => async () => {

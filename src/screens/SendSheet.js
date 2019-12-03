@@ -1,10 +1,8 @@
-import analytics from '@segment/analytics-react-native';
-import { get, isEmpty, isString, toLower } from 'lodash';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
-import { compose, withHandlers, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
 import {
@@ -15,16 +13,8 @@ import {
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
-import {
-  withAccountData,
-  withAccountSettings,
-  withContacts,
-  withDataInit,
-  withTransitionProps,
-  withUniqueTokens,
-} from '../hoc';
 import { borders, colors } from '../styles';
-import { deviceUtils, gasUtils, isNewValueForPath } from '../utils';
+import { deviceUtils, isNewValueForPath } from '../utils';
 
 const statusBarHeight = getStatusBarHeight(true);
 
@@ -40,70 +30,41 @@ const SheetContainer = styled(Column)`
   top: ${statusBarHeight};
 `;
 
-class SendSheet extends Component {
+export default class SendSheet extends Component {
   static propTypes = {
     allAssets: PropTypes.array,
     assetAmount: PropTypes.string,
     contacts: PropTypes.object,
+    currentInput: PropTypes.string,
     fetchData: PropTypes.func,
     gasPrices: PropTypes.object,
-    gasUpdateGasPriceOption: PropTypes.func,
+    isAuthorizing: PropTypes.bool,
     isSufficientBalance: PropTypes.bool,
     isSufficientGas: PropTypes.bool,
     isValidAddress: PropTypes.bool,
     nativeCurrencySymbol: PropTypes.string,
     navigation: PropTypes.object,
-    onSubmit: PropTypes.func,
+    onChangeAssetAmount: PropTypes.func,
+    onChangeInput: PropTypes.func,
+    onChangeNativeAmount: PropTypes.func,
+    onLongPressSend: PropTypes.func,
+    onPressTransactionSpeed: PropTypes.func,
+    onResetAssetSelection: PropTypes.func,
+    onSelectAsset: PropTypes.func,
     recipient: PropTypes.string,
     removeContact: PropTypes.func,
     selected: PropTypes.object,
     selectedGasPrice: PropTypes.object,
     sendableUniqueTokens: PropTypes.arrayOf(PropTypes.object),
-    sendClearFields: PropTypes.func,
     sendMaxBalance: PropTypes.func,
-    sendUpdateAssetAmount: PropTypes.func,
-    sendUpdateNativeAmount: PropTypes.func,
     sendUpdateRecipient: PropTypes.func,
-    sendUpdateSelected: PropTypes.func,
     sortedContacts: PropTypes.array,
   };
 
-  static defaultProps = {
-    isSufficientBalance: false,
-    isSufficientGas: false,
-    isValidAddress: false,
-  };
-
-  state = {
-    currentInput: '',
-    isAuthorizing: false,
-  };
-
-  componentDidMount = async () => {
-    const { navigation, sendUpdateRecipient } = this.props;
-    const address = get(navigation, 'state.params.address');
-
-    if (address) {
-      sendUpdateRecipient(address);
-    }
-  };
-
   componentDidUpdate(prevProps) {
-    const {
-      contacts,
-      isValidAddress,
-      navigation,
-      selected,
-      sendUpdateSelected,
-    } = this.props;
-
-    const asset = get(navigation, 'state.params.asset');
+    const { contacts, isValidAddress, navigation, selected } = this.props;
 
     if (isValidAddress && !prevProps.isValidAddress) {
-      if (asset) {
-        sendUpdateSelected(asset);
-      }
-
       Keyboard.dismiss();
     }
 
@@ -136,95 +97,29 @@ class SendSheet extends Component {
     }
   }
 
-  componentWillUnmount() {
-    this.props.sendClearFields();
-  }
-
-  onChangeAssetAmount = assetAmount => {
-    if (isString(assetAmount)) {
-      this.props.sendUpdateAssetAmount(assetAmount);
-      analytics.track('Changed token input in Send flow');
-    }
-  };
-
-  onChangeNativeAmount = nativeAmount => {
-    if (isString(nativeAmount)) {
-      this.props.sendUpdateNativeAmount(nativeAmount);
-      analytics.track('Changed native currency input in Send flow');
-    }
-  };
-
-  onLongPressSend = () => {
-    this.setState({ isAuthorizing: true });
-
-    if (isIphoneX()) {
-      this.sendTransaction();
-    } else {
-      this.onPressTransactionSpeed(this.sendTransaction);
-    }
-  };
-
-  onPressTransactionSpeed = onSuccess => {
-    const { gasPrices, gasUpdateGasPriceOption, txFees } = this.props;
-    gasUtils.showTransactionSpeedOptions(
-      gasPrices,
-      txFees,
-      gasUpdateGasPriceOption,
-      onSuccess
-    );
-  };
-
-  onResetAssetSelection = () => {
-    analytics.track('Reset asset selection in Send flow');
-    this.props.sendUpdateSelected({});
-  };
-
-  onSelectAsset = asset => this.props.sendUpdateSelected(asset);
-
-  sendTransaction = () => {
-    const {
-      assetAmount,
-      navigation,
-      onSubmit,
-      recipient,
-      selected,
-      sendClearFields,
-    } = this.props;
-
-    if (Number(assetAmount) <= 0) return false;
-
-    return onSubmit()
-      .then(() => {
-        this.setState({ isAuthorizing: false });
-        analytics.track('Sent transaction', {
-          assetName: selected.name,
-          assetType: selected.isNft ? 'unique_token' : 'token',
-          isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
-        });
-        sendClearFields();
-        navigation.navigate('ProfileScreen');
-      })
-      .catch(() => {
-        this.setState({ isAuthorizing: false });
-      });
-  };
-
-  onChangeInput = event => {
-    this.setState({ currentInput: event });
-    this.props.sendUpdateRecipient(event);
-  };
-
   render() {
     const {
       allAssets,
       contacts,
+      currentInput,
       fetchData,
+      isAuthorizing,
+      isSufficientBalance,
+      isSufficientGas,
       isValidAddress,
       nativeCurrencySymbol,
+      onChangeAssetAmount,
+      onChangeInput,
+      onChangeNativeAmount,
+      onLongPressSend,
+      onPressTransactionSpeed,
+      onResetAssetSelection,
+      onSelectAsset,
       recipient,
       removeContact,
       selected,
       selectedGasPrice,
+      sendMaxBalance,
       sendableUniqueTokens,
       sendUpdateRecipient,
       sortedContacts,
@@ -240,9 +135,8 @@ class SendSheet extends Component {
           <Container align="center">
             <SendHeader
               contacts={contacts}
-              isValid={isValidAddress}
               isValidAddress={isValidAddress}
-              onChangeAddressInput={this.onChangeInput}
+              onChangeAddressInput={onChangeInput}
               onPressPaste={sendUpdateRecipient}
               recipient={recipient}
               removeContact={removeContact}
@@ -250,7 +144,7 @@ class SendSheet extends Component {
             {showEmptyState && (
               <SendContactList
                 allAssets={sortedContacts}
-                currentInput={this.state.currentInput}
+                currentInput={currentInput}
                 onPressContact={sendUpdateRecipient}
                 removeContact={removeContact}
               />
@@ -259,7 +153,7 @@ class SendSheet extends Component {
               <SendAssetList
                 allAssets={allAssets}
                 fetchData={fetchData}
-                onSelectAsset={this.onSelectAsset}
+                onSelectAsset={onSelectAsset}
                 uniqueTokens={sendableUniqueTokens}
               />
             )}
@@ -270,20 +164,23 @@ class SendSheet extends Component {
                 buttonRenderer={
                   <SendButton
                     {...props}
-                    isAuthorizing={this.state.isAuthorizing}
-                    onLongPress={this.onLongPressSend}
+                    isAuthorizing={isAuthorizing}
+                    isSufficientBalance={isSufficientBalance}
+                    isSufficientGas={isSufficientGas}
+                    onLongPress={onLongPressSend}
                   />
                 }
-                onChangeAssetAmount={this.onChangeAssetAmount}
-                onChangeNativeAmount={this.onChangeNativeAmount}
-                onResetAssetSelection={this.onResetAssetSelection}
+                onChangeAssetAmount={onChangeAssetAmount}
+                onChangeNativeAmount={onChangeNativeAmount}
+                onResetAssetSelection={onResetAssetSelection}
                 selected={selected}
+                sendMaxBalance={sendMaxBalance}
                 txSpeedRenderer={
                   isIphoneX() && (
                     <SendTransactionSpeed
                       gasPrice={selectedGasPrice}
                       nativeCurrencySymbol={nativeCurrencySymbol}
-                      onPressTransactionSpeed={this.onPressTransactionSpeed}
+                      onPressTransactionSpeed={onPressTransactionSpeed}
                     />
                   )
                 }
@@ -295,18 +192,3 @@ class SendSheet extends Component {
     );
   }
 }
-
-export default compose(
-  withAccountData,
-  withContacts,
-  withUniqueTokens,
-  withAccountSettings,
-  withDataInit,
-  withTransitionProps,
-  withProps(({ transitionProps: { isTransitioning } }) => ({
-    isTransitioning,
-  })),
-  withHandlers({
-    fetchData: ({ refreshAccountData }) => async () => refreshAccountData(),
-  })
-)(SendSheet);
