@@ -20,7 +20,7 @@ const Container = styled(Column)`
   overflow: hidden;
 `;
 
-const nftPaddingBottom = safeAreaInsetValues.bottom + 19;
+const nftPaddingBottom = safeAreaInsetValues.bottom + 39;
 const tokenPaddingBottom = sheetVerticalOffset + 19;
 
 const TransactionContainer = styled(Column).attrs({
