@@ -60,9 +60,9 @@ const MainNavigator = createStackNavigator(
   {
     ConfirmRequest: {
       navigationOptions: {
-        ...expandedPreset,
+        ...sheetPreset,
         onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
+          sheetPreset.onTransitionStart(props);
           onTransitionStart();
         },
       },
