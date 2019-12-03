@@ -59,7 +59,6 @@ const ProfileMasthead = ({
   const name = accountName || '🥰';
   const color = accountColor || 0;
 
-  console.log(accountColor);
   return (
     <Container>
       <ButtonPressAnimation

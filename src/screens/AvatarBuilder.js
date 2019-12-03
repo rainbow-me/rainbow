@@ -16,6 +16,8 @@ import {
   settingsUpdateAccountName,
   settingsUpdateAccountColor,
 } from '../redux/settings';
+import { saveAccountInfo } from '../handlers/localstorage/accountLocal';
+import { withAccountInfo } from '../hoc';
 
 const {
   block,
@@ -138,6 +140,7 @@ class AvatarBuilder extends PureComponent {
     this.state = {
       avatarColor:
         colors.avatarColor[this.props.navigation.getParam('accountColor', 4)],
+      avatarColorIndex: this.props.navigation.getParam('accountColor', 4),
       emoji: this.props.navigation.getParam('accountName', '🙃'),
       position: new Value(
         (this.props.navigation.getParam('accountColor', 4) - 4) * 39
@@ -154,6 +157,7 @@ class AvatarBuilder extends PureComponent {
   onChangeEmoji = event => {
     this.setState({ emoji: event });
     store.dispatch(settingsUpdateAccountName(event));
+    this.saveInfo(event, this.state.avatarColorIndex);
   };
 
   avatarColors = colors.avatarColor.map((color, index) => (
@@ -171,10 +175,20 @@ class AvatarBuilder extends PureComponent {
         store.dispatch(settingsUpdateAccountColor(index));
         this.setState({
           avatarColor: color,
+          avatarColorIndex: index,
         });
+        this.saveInfo(this.state.emoji, index);
       }}
     />
   ));
+
+  saveInfo = (name, color) => {
+    saveAccountInfo(
+      { color: color, name: name },
+      this.props.accountAddress,
+      'mainnet'
+    );
+  };
 
   render() {
     const colorCircleTopPadding = 8;
@@ -251,6 +265,7 @@ class AvatarBuilder extends PureComponent {
 }
 
 export default compose(
+  withAccountInfo,
   withHandlers({
     onPressBackground: ({ navigation }) => () => navigation.goBack(),
   }),

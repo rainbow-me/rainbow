@@ -3,7 +3,10 @@ import { isNil } from 'lodash';
 import { Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
-import { getIsWalletEmpty } from '../handlers/localstorage/accountLocal';
+import {
+  getIsWalletEmpty,
+  getAccountInfo,
+} from '../handlers/localstorage/accountLocal';
 import { hasEthBalance } from '../handlers/web3';
 import { walletInit } from '../model/wallet';
 import { dataClearState, dataLoadState } from '../redux/data';
@@ -21,6 +24,8 @@ import { requestsLoadState, requestsClearState } from '../redux/requests';
 import {
   settingsLoadState,
   settingsUpdateAccountAddress,
+  settingsUpdateAccountName,
+  settingsUpdateAccountColor,
 } from '../redux/settings';
 import {
   uniswapLoadState,
@@ -42,6 +47,7 @@ import {
 } from '../redux/web3listener';
 import { promiseUtils } from '../utils';
 import withHideSplashScreen from './withHideSplashScreen';
+import store from '../redux/store';
 
 export default Component =>
   compose(
@@ -181,6 +187,11 @@ export default Component =>
           }
           ownProps.onHideSplashScreen();
           ownProps.initializeAccountData();
+          const info = await getAccountInfo(walletAddress, ownProps.network);
+          if (info.name && info.color) {
+            store.dispatch(settingsUpdateAccountName(info.name));
+            store.dispatch(settingsUpdateAccountColor(info.color));
+          }
           return walletAddress;
         } catch (error) {
           // TODO specify error states more granular
