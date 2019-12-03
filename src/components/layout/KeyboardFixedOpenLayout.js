@@ -7,9 +7,11 @@ import { withKeyboardHeight } from '../../hoc';
 import { padding, position } from '../../styles';
 import { deviceUtils, safeAreaInsetValues } from '../../utils';
 import Centered from './Centered';
+import { setKeyboardHeight } from '../../handlers/localstorage/globalSettings';
+import { calculateKeyboardHeight } from '../../helpers/keyboardHeight';
 
-const FallbackKeyboardHeight = Math.floor(
-  deviceUtils.dimensions.height * 0.333
+const FallbackKeyboardHeight = calculateKeyboardHeight(
+  deviceUtils.dimensions.height
 );
 
 const Container = styled.View`
@@ -32,12 +34,10 @@ class KeyboardFixedOpenLayout extends PureComponent {
   };
 
   componentDidMount = () => {
-    if (!this.props.keyboardHeight) {
-      this.willShowListener = Keyboard.addListener(
-        'keyboardWillShow',
-        this.keyboardWillShow
-      );
-    }
+    this.willShowListener = Keyboard.addListener(
+      'keyboardWillShow',
+      this.keyboardWillShow
+    );
   };
 
   componentWillUnmount = () => this.clearKeyboardListeners();
@@ -53,7 +53,11 @@ class KeyboardFixedOpenLayout extends PureComponent {
   };
 
   keyboardWillShow = async ({ endCoordinates: { height } }) => {
-    this.props.setKeyboardHeight(Math.floor(height));
+    if (height !== this.props.keyboardHeight) {
+      const keyboardHeight = Math.floor(height);
+      setKeyboardHeight(keyboardHeight);
+      this.props.setKeyboardHeight(keyboardHeight);
+    }
     this.clearKeyboardListeners();
   };
 
