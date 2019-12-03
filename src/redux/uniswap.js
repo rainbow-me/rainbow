@@ -7,6 +7,7 @@ import {
   invertBy,
   isEmpty,
   keyBy,
+  keys,
   map,
   mapValues,
   omit,
@@ -29,8 +30,14 @@ import {
   saveUniswapFavorites,
   saveUniswapPendingApprovals,
 } from '../handlers/localstorage/uniswap';
-import { getLiquidityInfo, getReserve } from '../handlers/uniswap';
+import {
+  getLiquidityInfo,
+  getReserve,
+  getUniswapPairs,
+} from '../handlers/uniswap';
 import { includeExchangeAddress } from '../hoc/withUniswapAssets';
+import { cleanUniswapAssetsFallback } from '../references';
+import { resubscribeAssets } from './explorer';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';
@@ -39,6 +46,8 @@ const UNISWAP_LOAD_FAILURE = 'uniswap/UNISWAP_LOAD_FAILURE';
 
 const UNISWAP_LOAD_LIQUIDITY_TOKEN_INFO_SUCCESS =
   'uniswap/UNISWAP_LOAD_LIQUIDITY_TOKEN_INFO_SUCCESS';
+
+const UNISWAP_UPDATE_PAIRS = 'uniswap/UNISWAP_UPDATE_PAIRS';
 
 const UNISWAP_UPDATE_REQUEST = 'uniswap/UNISWAP_UPDATE_REQUEST';
 const UNISWAP_UPDATE_SUCCESS = 'uniswap/UNISWAP_UPDATE_SUCCESS';
@@ -100,6 +109,17 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
   } catch (error) {
     dispatch({ type: UNISWAP_LOAD_FAILURE });
   }
+};
+
+export const uniswapPairsInit = () => async (dispatch, getState) => {
+  try {
+    const { tokenOverrides } = getState().data;
+    const { pairs: existingPairs } = getState().uniswap;
+    const pairs = await getUniswapPairs(tokenOverrides);
+    dispatch(uniswapUpdatePairs(pairs));
+    dispatch(resubscribeAssets(keys(existingPairs), keys(pairs)));
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
 };
 
 export const uniswapUpdateTokenReserves = (
@@ -227,7 +247,8 @@ export const uniswapUpdateAllowances = tokenAddressAllowances => (
 
 export const uniswapUpdateAssets = assets => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  const uniswapAssetPrices = map(assets, includeExchangeAddress);
+  const { pairs } = getState().uniswap;
+  const uniswapAssetPrices = map(assets, includeExchangeAddress(pairs));
   const mappedAssets = keyBy(uniswapAssetPrices, lowerAddress);
   dispatch({
     payload: mappedAssets,
@@ -235,6 +256,12 @@ export const uniswapUpdateAssets = assets => (dispatch, getState) => {
   });
   saveUniswapAssets(mappedAssets, accountAddress, network);
 };
+
+export const uniswapUpdatePairs = pairs => dispatch =>
+  dispatch({
+    payload: pairs,
+    type: UNISWAP_UPDATE_PAIRS,
+  });
 
 export const uniswapUpdateAssetPrice = (address, price) => (
   dispatch,
@@ -314,6 +341,7 @@ export const INITIAL_UNISWAP_STATE = {
   loadingUniswap: false,
   outputCurrency: null,
   outputReserve: null,
+  pairs: cleanUniswapAssetsFallback,
   pendingApprovals: {},
   uniswapAssets: {},
   uniswapLiquidityTokenInfo: {},
@@ -327,6 +355,9 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         break;
       case UNISWAP_LOAD_LIQUIDITY_TOKEN_INFO_SUCCESS:
         draft.uniswapLiquidityTokenInfo = action.payload;
+        break;
+      case UNISWAP_UPDATE_PAIRS:
+        draft.pairs = action.payload;
         break;
       case UNISWAP_LOAD_SUCCESS:
         draft.allowances = action.payload.allowances;
