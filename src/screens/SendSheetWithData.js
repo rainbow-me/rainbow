@@ -322,15 +322,17 @@ class SendSheetWithData extends Component {
       };
       try {
         const signableTransaction = await createSignableTransaction(txDetails);
-        const txHash = sendTransaction({
-          transaction: signableTransaction,
-        });
-        if (!isEmpty(txHash)) {
-          txDetails.hash = txHash;
-          await dataAddNewTransaction(txDetails);
+        const txHash = await sendTransaction(signableTransaction);
+        if (isEmpty(txHash)) {
+          throw new Error('Could not send transaction');
         }
-        // eslint-disable-next-line no-empty
-      } catch (error) {}
+        txDetails.hash = txHash;
+        await dataAddNewTransaction(txDetails);
+      } catch (error) {
+        throw error;
+      } finally {
+        this.setState({ confirm: false });
+      }
     }
   };
 
@@ -341,7 +343,6 @@ class SendSheetWithData extends Component {
       currentInput,
       isAuthorizing,
       isSufficientBalance,
-      isSufficientGas,
       isValidAddress,
       nativeAmount,
       recipient,
@@ -354,7 +355,6 @@ class SendSheetWithData extends Component {
         currentInput={currentInput}
         isAuthorizing={isAuthorizing}
         isSufficientBalance={isSufficientBalance}
-        isSufficientGas={isSufficientGas}
         isValidAddress={isValidAddress}
         nativeAmount={nativeAmount}
         onChangeAssetAmount={this.onChangeAssetAmount}

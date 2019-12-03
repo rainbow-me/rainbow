@@ -34,7 +34,7 @@ export default class SendSheet extends Component {
   static propTypes = {
     allAssets: PropTypes.array,
     assetAmount: PropTypes.string,
-    contacts: PropTypes.object,
+    contacts: PropTypes.array,
     currentInput: PropTypes.string,
     fetchData: PropTypes.func,
     gasPrices: PropTypes.object,

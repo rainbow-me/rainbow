@@ -100,13 +100,9 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     txPayloadLatestNonce = omit(txPayloadLatestNonce, 'from');
     let result = null;
     if (sendInsteadOfSign) {
-      result = await sendTransaction({
-        transaction: txPayloadLatestNonce,
-      });
+      result = await sendTransaction(txPayloadLatestNonce);
     } else {
-      result = await signTransaction({
-        transaction: txPayloadLatestNonce,
-      });
+      result = await signTransaction(txPayloadLatestNonce);
     }
 
     if (result) {

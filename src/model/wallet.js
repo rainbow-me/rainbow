@@ -72,7 +72,7 @@ export const createTransaction = async (
   value: ethers.utils.parseEther(value),
 });
 
-export const sendTransaction = async ({ transaction }) => {
+export const sendTransaction = async transaction => {
   try {
     const wallet = await loadWallet();
     if (!wallet) return null;
@@ -91,7 +91,7 @@ export const sendTransaction = async ({ transaction }) => {
   }
 };
 
-export const signTransaction = async ({ transaction }) => {
+export const signTransaction = async transaction => {
   try {
     const wallet = await loadWallet();
     if (!wallet) return null;
