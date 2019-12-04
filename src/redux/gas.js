@@ -177,7 +177,9 @@ const getSelectedGasPrice = (
   };
 };
 
-export const gasClearState = () => clearInterval(getGasPricesInterval);
+export const gasClearState = () => () => {
+  clearInterval(getGasPricesInterval);
+};
 
 // -- Reducer --------------------------------------------------------------- //
 const INITIAL_STATE = {

@@ -7,6 +7,7 @@ import {
   tradeTokensForExactEthWithData,
   tradeTokensForExactTokensWithData,
 } from '@uniswap/sdk';
+import BigNumber from 'bignumber.js';
 import { get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
@@ -34,6 +35,7 @@ import { estimateSwapGasLimit, executeSwap } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
+  convertAmountToNativeDisplay,
   convertAmountToRawAmount,
   convertNumberToString,
   convertRawAmountToDecimalFormat,
@@ -111,6 +113,8 @@ class ExchangeModal extends Component {
     inputAmountDisplay: null,
     inputAsExactAmount: false,
     inputCurrency: ethereumUtils.getAsset(this.props.allAssets),
+    inputExecutionRate: null,
+    inputNativePrice: null,
     isAssetApproved: true,
     isAuthorizing: false,
     isSufficientBalance: true,
@@ -119,6 +123,8 @@ class ExchangeModal extends Component {
     outputAmount: null,
     outputAmountDisplay: null,
     outputCurrency: null,
+    outputExecutionRate: null,
+    outputNativePrice: null,
     showConfirmButton: false,
     slippage: null,
     tradeDetails: null,
@@ -330,6 +336,7 @@ class ExchangeModal extends Component {
       chainId,
       gasUpdateTxFee,
       inputReserve,
+      nativeCurrency,
       outputReserve,
       selectedGasPrice,
     } = this.props;
@@ -413,6 +420,38 @@ class ExchangeModal extends Component {
             );
       }
 
+      let inputExecutionRate = '';
+      let outputExecutionRate = '';
+      let inputNativePrice = '';
+      let outputNativePrice = '';
+
+      if (inputCurrency) {
+        const inputPriceValue = get(inputCurrency, 'price.value', 0);
+        inputExecutionRate = updatePrecisionToDisplay(
+          get(tradeDetails, 'executionRate.rate', BigNumber(0)),
+          inputPriceValue
+        );
+
+        inputNativePrice = convertAmountToNativeDisplay(
+          inputPriceValue,
+          nativeCurrency
+        );
+      }
+
+      if (outputCurrency) {
+        const outputPriceValue = get(outputCurrency, 'price.value', 0);
+        outputExecutionRate = updatePrecisionToDisplay(
+          get(tradeDetails, 'executionRate.rateInverted', BigNumber(0)),
+          outputPriceValue,
+          true
+        );
+
+        outputNativePrice = convertAmountToNativeDisplay(
+          outputPriceValue,
+          nativeCurrency
+        );
+      }
+
       const slippage = convertNumberToString(
         get(tradeDetails, 'executionRateSlippage', 0)
       );
@@ -426,7 +465,11 @@ class ExchangeModal extends Component {
         parseFloat(inputBalance) >= parseFloat(inputAmount);
 
       this.setState({
+        inputExecutionRate,
+        inputNativePrice,
         isSufficientBalance,
+        outputExecutionRate,
+        outputNativePrice,
         slippage,
         tradeDetails,
       });
@@ -768,6 +811,8 @@ class ExchangeModal extends Component {
       inputAmount,
       inputAmountDisplay,
       inputCurrency,
+      // inputExecutionRate,
+      // inputNativePrice,
       isAssetApproved,
       isAuthorizing,
       isSufficientBalance,
@@ -776,6 +821,8 @@ class ExchangeModal extends Component {
       outputAmount,
       outputAmountDisplay,
       outputCurrency,
+      // outputExecutionRate,
+      // outputNativePrice,
       showConfirmButton,
       slippage,
     } = this.state;

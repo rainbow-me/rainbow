@@ -39,7 +39,6 @@ const SendAssetForm = ({
   buttonRenderer,
   onResetAssetSelection,
   selected,
-  sendMaxBalance,
   txSpeedRenderer,
   ...props
 }) => {
@@ -70,11 +69,7 @@ const SendAssetForm = ({
         {selected.isNft ? (
           <SendAssetFormCollectible {...selected} />
         ) : (
-          <SendAssetFormToken
-            {...props}
-            sendMaxBalance={sendMaxBalance}
-            selected={selected}
-          />
+          <SendAssetFormToken {...props} selected={selected} />
         )}
         <ColumnWithMargins
           flex={0}
