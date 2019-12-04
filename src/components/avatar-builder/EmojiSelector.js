@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import {
   ActivityIndicator,
-  AsyncStorage,
   Dimensions,
   Image,
   Platform,
@@ -31,14 +30,6 @@ import { deviceUtils } from '../../utils';
 import { State, TapGestureHandler } from 'react-native-gesture-handler';
 
 export const Categories = {
-  // all: {
-  //   icon: null,
-  //   name: 'All',
-  // },
-  // history: {
-  //   icon: "emojiRecent",
-  //   name: "Recently Used"
-  // },
   people: {
     icon: 'emojiSmileys',
     index: 0,
@@ -91,29 +82,8 @@ const sortEmoji = list => list.sort((a, b) => a.sort_order - b.sort_order);
 const { width } = Dimensions.get('screen');
 const categoryKeys = Object.keys(Categories);
 
-const EmojiCell = ({ emoji, colNumber, colSize, ...other }) => (
-  <TouchableOpacity
-    activeOpacity={0.5}
-    {...other}
-    style={{ backgroundColor: 'white' }}
-  >
-    <Text
-      style={{
-        fontSize: Math.floor(colSize) - 15,
-        height: (width - 21) / colNumber,
-        textAlign: 'center',
-        width: (width - 21) / colNumber,
-      }}
-    >
-      {charFromEmojiObject(emoji)}
-    </Text>
-  </TouchableOpacity>
-);
-
 const EMOJI_CONTAINER = 1;
 const HEADER_ROW = 2;
-
-const storage_key = '@react-native-emoji-selector:HISTORY';
 
 let currentIndex = 0;
 let blockCategories = true;
@@ -183,74 +153,66 @@ export default class EmojiSelector extends PureComponent {
   };
 
   handleEmojiSelect = emoji => {
-    if (this.props.showHistory) {
-      this.addToHistoryAsync(emoji);
-    }
     this.props.onEmojiSelected(charFromEmojiObject(emoji));
   };
-
-  handleSearch = searchQuery => {
-    this.setState({ searchQuery });
-  };
-
-  addToHistoryAsync = async e => {
-    let history = await AsyncStorage.getItem(storage_key);
-
-    let value = [];
-    if (!history) {
-      // no history
-      let record = Object.assign({}, e, { count: 1 });
-      value.push(record);
-    } else {
-      let json = JSON.parse(history);
-      if (json.filter(r => r.unified === e.unified).length > 0) {
-        value = json;
-      } else {
-        let record = Object.assign({}, e, { count: 1 });
-        value = [record, ...json];
-      }
-    }
-
-    AsyncStorage.setItem(storage_key, JSON.stringify(value));
-    this.setState({
-      history: value,
-    });
-  };
-
-  loadHistoryAsync = async () => {
-    let result = await AsyncStorage.getItem(storage_key);
-    if (result) {
-      let history = JSON.parse(result);
-      this.setState({ history });
-    }
-  };
-
-  renderEmojiCell = item => (
-    <EmojiCell
-      key={item.key}
-      emoji={item.emoji}
-      onPress={() => this.handleEmojiSelect(item.emoji)}
-      colSize={this.state.colSize}
-      colNumber={this.props.columns}
-    />
-  );
 
   renderEmojis = ({ data }) => {
     let categoryEmojis = [];
     for (let i = 0; i < data.length; i += this.props.columns) {
       let rowContent = [];
+      let touchableNet = [];
       for (let j = 0; j < this.props.columns; j++) {
         if (i + j < data.length) {
-          rowContent.push(this.renderEmojiCell(data[i + j]));
+          rowContent.push(charFromEmojiObject(data[i + j].emoji));
+          touchableNet.push(
+            <TouchableOpacity
+              activeOpacity={0.5}
+              style={{
+                height: (width - 21) / this.props.columns,
+                width: (width - 21) / this.props.columns,
+                opacity: 0,
+                backgroundColor: 'white',
+              }}
+              onPress={() => this.handleEmojiSelect(data[i + j].emoji)}
+            />
+          );
         }
       }
       categoryEmojis.push(
-        <View style={{ flexDirection: 'row', marginHorizontal: 10 }}>
-          {rowContent}
+        <View
+          style={{
+            backgroundColor: colors.white,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+              marginHorizontal: 10,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: Math.floor(this.state.colSize) - 15,
+                height: (width - 21) / this.props.columns,
+                width: deviceUtils.dimensions.width,
+                letterSpacing: 8,
+              }}
+            >
+              {rowContent}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginHorizontal: 10,
+              position: 'absolute',
+            }}
+          >
+            {touchableNet}
+          </View>
         </View>
       );
     }
-    // return <View>{categoryEmojis}</View>;
     return <View>{categoryEmojis}</View>;
   };
 
