@@ -8,7 +8,6 @@ import {
   withHandlers,
   withProps,
   withState,
-  lifecycle,
 } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withAccountData, withAccountSettings } from '../../hoc';
@@ -16,11 +15,9 @@ import { ethereumUtils, deviceUtils } from '../../utils';
 import ValueChart from '../value-chart/ValueChart';
 import { BalanceCoinRow } from '../coin-row';
 import BottomSendButtons from '../value-chart/BottomSendButtons';
-import { colors, fonts } from '../../styles';
+import { colors } from '../../styles';
 import Divider from '../Divider';
 import { Icon } from '../icons';
-import SizeToggler from '../animations/SizeToggler';
-import { TruncatedText } from '../text';
 
 const HandleIcon = styled(Icon).attrs({
   color: '#C4C6CB',
@@ -53,20 +50,7 @@ const Container = styled.View`
   align-items: center;
 `;
 
-const LoadingText = styled(TruncatedText)`
-  font-size: ${fonts.size.smedium};
-  color: ${colors.blueGreyLight};
-  font-weight: ${fonts.weight.semibold};
-  letter-spacing: 1.3;
-  text-align: center;
-  background-color: ${colors.white};
-  width: ${deviceUtils.dimensions.width};
-  margin-top: -25px;
-  height: 25px;
-`;
-
 const TokenExpandedState = ({
-  isOpen,
   onPressSend,
   onPressSwap,
   change,
@@ -75,12 +59,9 @@ const TokenExpandedState = ({
 }) => (
   <Container>
     <HandleIcon />
-    <SizeToggler startingWidth={120} endingWidth={335} toggle={isOpen}>
-      <ChartContainer>
-        <ValueChart change={change} changeDirection={changeDirection} />
-      </ChartContainer>
-    </SizeToggler>
-    {!isOpen && <LoadingText>Loading chart...</LoadingText>}
+    <ChartContainer>
+      <ValueChart change={change} changeDirection={changeDirection} />
+    </ChartContainer>
     <Divider />
     <BottomContainer>
       <BalanceCoinRow {...selectedAsset} />
@@ -135,12 +116,5 @@ export default compose(
       });
     },
   }),
-  onlyUpdateForKeys(['price', 'subtitle', 'isOpen']),
-  lifecycle({
-    componentDidMount() {
-      setTimeout(() => {
-        this.props.onOpen();
-      }, 600);
-    },
-  })
+  onlyUpdateForKeys(['price', 'subtitle'])
 )(TokenExpandedState);

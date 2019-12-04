@@ -21,6 +21,7 @@ const bottomSpaceWidth = deviceUtils.dimensions.width / (4 * 2);
 
 class TimespanSelector extends React.Component {
   propTypes = {
+    direction: PropTypes.bool,
     reloadChart: PropTypes.func,
   };
 
@@ -66,7 +67,9 @@ class TimespanSelector extends React.Component {
         <Animated.View
           style={[
             {
-              backgroundColor: colors.chartGreen,
+              backgroundColor: this.props.direction
+                ? colors.chartGreen
+                : colors.red,
               borderRadius: 15,
               height: 30,
               marginBottom: -30,

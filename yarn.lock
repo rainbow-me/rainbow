@@ -3295,6 +3295,11 @@ cssstyle@^1.0.0:
   integrity sha512-GBrLZYZ4X4x6/QEoBnIrqb8B/f5l4+8me2dkom/j1Gtbxy0kBv6OGzKuAsGM75bkGwGAFkt56Iwg28S3XTZgSA==
   dependencies:
     cssom "0.3.x"
+  
+cubic-spline@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/cubic-spline/-/cubic-spline-3.0.0.tgz#7cca00f6f1f1b2df2cbaea9614cb324b3fc637a2"
+  integrity sha512-ZXuezf0UAw6h5l0kOBeoZLDXs2S4qP6enE+YOgHNLQXJr+BQ7BY5VnKWmrtgGNzw3g+QM91ZkIU/NaG4sA3NBA==
 
 currently-unhandled@^0.4.1:
   version "0.4.1"

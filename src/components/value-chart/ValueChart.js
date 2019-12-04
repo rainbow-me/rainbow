@@ -7,7 +7,7 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import Animated, { Easing } from 'react-native-reanimated';
-import Bezier from 'bezier-spline';
+import Spline from 'cubic-spline';
 import { contains, timing } from 'react-native-redash';
 import { View } from 'react-native';
 import { data1, data2, data3, data4 } from './data';
@@ -56,7 +56,7 @@ const thickStrokeWidthDifference = 1.5;
 
 const flipY = { transform: [{ scaleX: 1 }, { scaleY: -1 }] };
 
-const indexInterval = 25;
+const indexInterval = 7;
 const heightInterval = 200;
 
 const pickImportantPoints = array => {
@@ -81,7 +81,15 @@ const pickImportantPoints = array => {
       thresholdHeight = array[i].y;
     }
   }
-  return result;
+
+  const xs = [];
+  const ys = [];
+  result.forEach(point => {
+    xs.push(point.x);
+    ys.push(point.y);
+  });
+
+  return { xs, ys };
 };
 
 export default class ValueChart extends PureComponent {
@@ -91,7 +99,7 @@ export default class ValueChart extends PureComponent {
     this.state = {
       data: data1,
       hideLoadingBar: false,
-      shouldRenderChart: false,
+      shouldRenderChart: true,
     };
 
     this.clock = new Clock();
@@ -129,12 +137,6 @@ export default class ValueChart extends PureComponent {
       },
     ]);
   }
-
-  componentDidMount = () => {
-    setTimeout(() => {
-      this.setState({ shouldRenderChart: true });
-    }, 500);
-  };
 
   touchX = new Value(150);
   lastTouchX = new Value(150);
@@ -186,26 +188,12 @@ export default class ValueChart extends PureComponent {
       y: (value - minValue.value) * yMultiply,
     }));
 
-    // const startDate = String(new Date(this.state.data[0].timestamp).toLocaleTimeString());
-    // const endDate = String(new Date(this.state.data[this.state.data.length - 1].timestamp).toLocaleTimeString());
-
-    // const overallDate = String(new Date(this.state.data[0].timestamp).toLocaleDateString('en-US', {
-    //   day: 'numeric',
-    //   month: 'short',
-    //   weekday: 'long',
-    //   year: 'numeric',
-    // }));
-
     const importantPoints = pickImportantPoints(points);
-    const spline = new Bezier(importantPoints.map(({ x, y }) => [x, y]));
+    const spline = new Spline(importantPoints.xs, importantPoints.ys);
     const loadingMultiplayer = height / 2 + chartPadding / 4;
     const splinePoints = points
       .map(({ x, y }) => {
-        const matchingPoints = spline.getPoints(0, x);
-        if (matchingPoints.length !== 1) {
-          return null;
-        }
-        return { x, y1: y, y2: matchingPoints[0][1] };
+        return { x, y1: y, y2: spline.at(x) };
       })
       .filter(Boolean);
 
@@ -300,7 +288,7 @@ export default class ValueChart extends PureComponent {
                       <AnimatedPath
                         id="main-path"
                         fill="none"
-                        stroke={colors.chartGreen}
+                        stroke={change > 0 ? colors.chartGreen : colors.red}
                         strokeWidth={add(
                           strokeWidth,
                           multiply(this.value, thickStrokeWidthDifference)
@@ -314,7 +302,8 @@ export default class ValueChart extends PureComponent {
                   <Animated.View
                     style={[
                       {
-                        backgroundColor: colors.chartGreen,
+                        backgroundColor:
+                          change > 0 ? colors.chartGreen : colors.red,
                         borderRadius: 2,
                         height: 180,
                         position: 'absolute',
@@ -366,7 +355,10 @@ export default class ValueChart extends PureComponent {
             </PanGestureHandler>
           </Animated.View>
         </TapGestureHandler>
-        <TimespanSelector reloadChart={this.reloadChart} />
+        <TimespanSelector
+          reloadChart={this.reloadChart}
+          direction={change > 0}
+        />
         <Animated.Code
           exec={block([
             cond(
