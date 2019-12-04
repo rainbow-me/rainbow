@@ -5203,7 +5203,7 @@ hmac-drbg@^1.0.0:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.1"
 
-hoist-non-react-statics@^2.3.1:
+hoist-non-react-statics@^2.3.1, hoist-non-react-statics@^2.5.0:
   version "2.5.5"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.5.5.tgz#c5903cf409c0dfd908f388e619d86b9c1174cb47"
   integrity sha512-rqcy4pJo55FTTLWt+bU8ukscqHeE/e9KWvsOW2b/a3afxQZhwkQdT1rPPCJ0rYXdj4vNcasY8zHTH+jF/qStxw==
@@ -9133,10 +9133,10 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-coin-icon@0.1.12:
-  version "0.1.12"
-  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.12.tgz#27468537670ef374506f95e0e30d340e49ef1c8c"
-  integrity sha512-EkF3r35Si9cevjXyQcDJFkw1zK2h9ctSV5NiFyucdMsZLdd9DefnR2ji8BKVg/X0bOKsrRXhqa7b15SsXImLOw==
+react-coin-icon@0.1.13:
+  version "0.1.13"
+  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.13.tgz#0eb148637a7714f3b74a493b71de0bba34353634"
+  integrity sha512-j+6r6EcXbTbdlpJCf8DvBAvl44mXXFCdrNh5Bj9P3y4KON2brMXpNrkrN1ixrx7y87F+n55K++DERoM3XqdbJg==
   dependencies:
     "@svgr/cli" "^4.3.0"
     lodash "^4.17.11"
