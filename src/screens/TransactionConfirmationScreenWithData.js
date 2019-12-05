@@ -26,6 +26,7 @@ import {
 class TransactionConfirmationScreenWithData extends PureComponent {
   static propTypes = {
     dataAddNewTransaction: PropTypes.func,
+    gasPrices: PropTypes.object,
     isFocused: PropTypes.bool.isRequired,
     navigation: PropTypes.any,
     removeRequest: PropTypes.func,
@@ -69,7 +70,15 @@ class TransactionConfirmationScreenWithData extends PureComponent {
 
     const sendInsteadOfSign = method === SEND_TRANSACTION;
     const txPayload = get(params, '[0]');
-    let { gasLimit } = txPayload;
+    let { gasLimit, gasPrice } = txPayload;
+
+    if (isNil(gasPrice)) {
+      const { gasPrices } = this.props;
+      const rawGasPrice = get(gasPrices, `average.value.amount`);
+      if (rawGasPrice) {
+        gasPrice = toHex(rawGasPrice);
+      }
+    }
 
     if (isNil(gasLimit)) {
       try {
@@ -82,7 +91,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(this.props.transactionCountNonce, web3TxnCount);
     const nonce = ethers.utils.hexlify(maxTxnCount);
-    let txPayloadLatestNonce = { ...txPayload, nonce };
+    let txPayloadLatestNonce = { ...txPayload, gasLimit, gasPrice, nonce };
     txPayloadLatestNonce = omit(txPayloadLatestNonce, 'from');
     let result = null;
     if (sendInsteadOfSign) {
@@ -106,10 +115,10 @@ class TransactionConfirmationScreenWithData extends PureComponent {
           asset: get(displayDetails, 'request.asset'),
           dappName,
           from: get(displayDetails, 'request.from'),
-          gasLimit: get(displayDetails, 'request.gasLimit'),
-          gasPrice: get(displayDetails, 'request.gasPrice'),
+          gasLimit,
+          gasPrice,
           hash: result,
-          nonce: get(displayDetails, 'request.nonce'),
+          nonce,
           to: get(displayDetails, 'request.to'),
         };
         this.props.dataAddNewTransaction(txDetails);
