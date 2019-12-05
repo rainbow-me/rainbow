@@ -9,6 +9,7 @@ const TimestampText = ({ children, style }) => (
       color: colors.blueGreyDark,
       fontFamily: fonts.family.SFProDisplay,
       lineHeight: 17,
+      marginLeft: -15,
       opacity: 0.5,
       textAlign: 'center',
       ...style,

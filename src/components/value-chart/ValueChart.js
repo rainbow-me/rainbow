@@ -230,8 +230,8 @@ export default class ValueChart extends PureComponent {
   };
 
   checkValueBoundaries = value => {
-    if (Math.abs(value) > width / 2 - 25) {
-      return value > 0 ? value - 25 : value + 25;
+    if (Math.abs(value) > width / 2 - 30) {
+      return value > 0 ? value - 30 : value + 30;
     }
     return value;
   };
@@ -291,11 +291,17 @@ export default class ValueChart extends PureComponent {
                   justifyContent: 'flex-start',
                 }}
               >
-                <TimestampText
-                  style={{ transform: [{ translateX: maxValueDistance }] }}
+                <Animated.View
+                  style={{
+                    opacity: this.loadingValue,
+                  }}
                 >
-                  ${Number(maxValue.value).toFixed(2)}
-                </TimestampText>
+                  <TimestampText
+                    style={{ transform: [{ translateX: maxValueDistance }] }}
+                  >
+                    ${Number(maxValue.value).toFixed(2)}
+                  </TimestampText>
+                </Animated.View>
                 <View style={{ flexDirection: 'row' }}>
                   <View
                     style={{
@@ -352,11 +358,17 @@ export default class ValueChart extends PureComponent {
                     ]}
                   />
                 </View>
-                <TimestampText
-                  style={{ transform: [{ translateX: minValueDistance }] }}
+                <Animated.View
+                  style={{
+                    opacity: this.loadingValue,
+                  }}
                 >
-                  ${Number(minValue.value).toFixed(2)}
-                </TimestampText>
+                  <TimestampText
+                    style={{ transform: [{ translateX: minValueDistance }] }}
+                  >
+                    ${Number(minValue.value).toFixed(2)}
+                  </TimestampText>
+                </Animated.View>
               </Animated.View>
             </PanGestureHandler>
           </Animated.View>
