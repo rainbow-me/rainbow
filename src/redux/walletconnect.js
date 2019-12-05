@@ -28,13 +28,6 @@ const WALLETCONNECT_CLEAR_TIMESTAMP = 'walletconnect/WALLETCONNECT_CLEAR_TIMESTA
 const WALLETCONNECT_CLEAR_STATE = 'walletconnect/WALLETCONNECT_CLEAR_STATE';
 
 // -- Actions ---------------------------------------- //
-
-// TODO store approved list
-/*
-const previouslyApprovedDapps = [
-];
-*/
-
 const getNativeOptions = async () => {
   const language = 'en'; // TODO use lang from settings
   const token = await getFCMToken();

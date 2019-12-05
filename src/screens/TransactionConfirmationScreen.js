@@ -131,7 +131,7 @@ export default class TransactionConfirmationScreen extends PureComponent {
       );
     }
 
-    if (isTransactionDisplayType(method)) {
+    if (isTransactionDisplayType(method) && get(request, 'asset')) {
       return (
         <TransactionConfirmationSection
           asset={{
