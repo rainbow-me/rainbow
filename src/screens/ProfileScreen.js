@@ -7,7 +7,7 @@ import { BackButton, Header, HeaderButton } from '../components/header';
 import { FlexItem, Page } from '../components/layout';
 import { Icon } from '../components/icons';
 import { ProfileMasthead } from '../components/profile';
-import { position } from '../styles';
+import { colors, position } from '../styles';
 
 const ProfileScreen = ({
   accountAddress,
@@ -24,9 +24,13 @@ const ProfileScreen = ({
   <Page component={FlexItem} style={position.sizeAsObject('100%')}>
     <Header justify="space-between">
       <HeaderButton onPress={onPressSettings}>
-        <Icon name="gear" />
+        <Icon color={colors.black} name="gear" />
       </HeaderButton>
-      <BackButton direction="right" onPress={onPressBackButton} />
+      <BackButton
+        color={colors.black}
+        direction="right"
+        onPress={onPressBackButton}
+      />
     </Header>
     <ActivityList
       accountAddress={accountAddress}

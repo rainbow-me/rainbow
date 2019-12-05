@@ -173,7 +173,6 @@ export default class ButtonPressAnimation extends Component {
 
   handleHaptic = () => {
     const { enableHapticFeedback, hapticType } = this.props;
-
     if (enableHapticFeedback) {
       ReactNativeHapticFeedback.trigger(hapticType);
     }
@@ -195,12 +194,12 @@ export default class ButtonPressAnimation extends Component {
 
   handlePress = () => {
     if (!this.longPressDetected && this.props.onPress) {
-      this.handleHaptic();
       this.props.onPress();
     }
   };
 
   handlePressStart = () => {
+    this.handleHaptic();
     if (this.props.onPressStart) {
       this.props.onPressStart();
     }

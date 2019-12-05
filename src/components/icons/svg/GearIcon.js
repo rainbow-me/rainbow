@@ -19,7 +19,7 @@ GearIcon.propTypes = {
 };
 
 GearIcon.defaultProps = {
-  color: colors.black,
+  color: colors.dark,
 };
 
 export default GearIcon;
