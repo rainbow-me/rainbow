@@ -279,7 +279,8 @@ export default class EmojiSelector extends PureComponent {
   handleScroll = (event, offsetX, offsetY) => {
     if (!blockCategories) {
       if (
-        offsetY > this.state.allEmojiList[(currentIndex + 1) * 2 - 1].offset
+        offsetY > this.state.allEmojiList[(currentIndex + 1) * 2 - 1].offset &&
+        currentIndex < categoryKeys.length - 1
       ) {
         currentIndex += 1;
         this.setState({ category: Categories[categoryKeys[currentIndex]] });
