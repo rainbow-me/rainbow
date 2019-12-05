@@ -3,13 +3,15 @@ import React from 'react';
 import { Text } from 'react-primitives';
 import { colors, fonts } from '../../styles';
 
-const TimestampText = ({ children }) => (
+const TimestampText = ({ children, style }) => (
   <Text
     style={{
       color: colors.blueGreyDark,
       fontFamily: fonts.family.SFProDisplay,
       lineHeight: 17,
       opacity: 0.5,
+      textAlign: 'center',
+      ...style,
     }}
   >
     {children}

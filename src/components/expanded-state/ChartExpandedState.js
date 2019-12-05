@@ -24,20 +24,20 @@ const HandleIcon = styled(Icon).attrs({
   name: 'handle',
 })`
   margin-top: 12px;
-  margin-bottom: 8px;
 `;
 
 const ChartContainer = styled.View`
-  border-radius: 20;
   align-items: center;
   overflow: hidden;
+  padding-top: 18px;
+  padding-bottom: ${deviceUtils.isTallPhone ? '60px' : '30px'};
 `;
 
 const BottomContainer = styled.View`
   background-color: ${colors.white};
   width: ${deviceUtils.dimensions.width};
   padding-top: 8px;
-  padding-bottom: ${deviceUtils.isTallPhone ? '50px' : '20px'};
+  padding-bottom: 25px;
 `;
 
 const Container = styled.View`
@@ -59,14 +59,14 @@ const TokenExpandedState = ({
 }) => (
   <Container>
     <HandleIcon />
-    <ChartContainer>
-      <ValueChart change={change} changeDirection={changeDirection} />
-    </ChartContainer>
-    <Divider />
     <BottomContainer>
       <BalanceCoinRow {...selectedAsset} />
       <BottomSendButtons onPressSend={onPressSend} onPressSwap={onPressSwap} />
     </BottomContainer>
+    <Divider />
+    <ChartContainer>
+      <ValueChart change={change} changeDirection={changeDirection} />
+    </ChartContainer>
   </Container>
 );
 

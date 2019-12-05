@@ -47,7 +47,7 @@ const { BEGAN, ACTIVE, CANCELLED, END, FAILED, UNDETERMINED } = State;
 const FALSE = 1;
 const TRUE = 0;
 
-const width = deviceUtils.dimensions.width - 100;
+const width = deviceUtils.dimensions.width;
 const height = 170;
 const chartPadding = 16;
 
@@ -56,7 +56,7 @@ const thickStrokeWidthDifference = 1.5;
 
 const flipY = { transform: [{ scaleX: 1 }, { scaleY: -1 }] };
 
-const indexInterval = 7;
+const indexInterval = 10;
 const heightInterval = 200;
 
 const pickImportantPoints = array => {
@@ -229,6 +229,13 @@ export default class ValueChart extends PureComponent {
     return animatedPath;
   };
 
+  checkValueBoundaries = value => {
+    if (Math.abs(value) > width / 2 - 25) {
+      return value > 0 ? value - 25 : value + 25;
+    }
+    return value;
+  };
+
   render() {
     const maxValue = maxBy(this.state.data, 'value');
     const minValue = minBy(this.state.data, 'value');
@@ -238,13 +245,28 @@ export default class ValueChart extends PureComponent {
         this.state.data[0].value) *
       100;
 
+    const timePeriod =
+      this.state.data[this.state.data.length - 1].timestamp -
+      this.state.data[0].timestamp;
+
+    const maxValueDistance = this.checkValueBoundaries(
+      ((maxValue.timestamp - this.state.data[0].timestamp) / timePeriod) *
+        width -
+        width / 2
+    );
+    const minValueDistance = this.checkValueBoundaries(
+      ((minValue.timestamp - this.state.data[0].timestamp) / timePeriod) *
+        width -
+        width / 2
+    );
+
     const animatedPath = this.state.shouldRenderChart
       ? this.createAnimatedPath()
       : null;
     return (
       <Fragment>
         <ValueText
-          headerText="PRICE 🥳"
+          headerText="PRICE"
           startValue={this.state.data[this.state.data.length - 1].value}
           direction={change > 0}
           change={change.toFixed(2)}
@@ -269,6 +291,11 @@ export default class ValueChart extends PureComponent {
                   justifyContent: 'flex-start',
                 }}
               >
+                <TimestampText
+                  style={{ transform: [{ translateX: maxValueDistance }] }}
+                >
+                  ${Number(maxValue.value).toFixed(2)}
+                </TimestampText>
                 <View style={{ flexDirection: 'row' }}>
                   <View
                     style={{
@@ -324,33 +351,12 @@ export default class ValueChart extends PureComponent {
                       },
                     ]}
                   />
-                  <Animated.View
-                    style={[
-                      {
-                        height: 200,
-                        justifyContent: 'space-between',
-                        paddingBottom: 20,
-                        paddingLeft: 20,
-                        paddingTop: 20,
-                        width: 100,
-                      },
-                      {
-                        opacity: this.loadingValue,
-                      },
-                    ]}
-                  >
-                    <TimestampText>
-                      ${Number(maxValue.value).toFixed(2)}
-                    </TimestampText>
-                    <TimestampText>
-                      $
-                      {Number((maxValue.value + minValue.value) / 2).toFixed(2)}
-                    </TimestampText>
-                    <TimestampText>
-                      ${Number(minValue.value).toFixed(2)}
-                    </TimestampText>
-                  </Animated.View>
                 </View>
+                <TimestampText
+                  style={{ transform: [{ translateX: minValueDistance }] }}
+                >
+                  ${Number(minValue.value).toFixed(2)}
+                </TimestampText>
               </Animated.View>
             </PanGestureHandler>
           </Animated.View>
