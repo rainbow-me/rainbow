@@ -185,11 +185,7 @@ export default class EmojiSelector extends PureComponent {
         }
       }
       categoryEmojis.push(
-        <View
-          style={{
-            backgroundColor: colors.white,
-          }}
-        >
+        <View>
           <View
             style={{
               flexDirection: 'row',
@@ -202,6 +198,7 @@ export default class EmojiSelector extends PureComponent {
                 height: (width - 21) / this.props.columns,
                 width: deviceUtils.dimensions.width,
                 letterSpacing: 8,
+                backgroundColor: colors.white,
               }}
             >
               {rowContent}
