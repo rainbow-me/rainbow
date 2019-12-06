@@ -5,7 +5,6 @@ import emoji from 'emoji-datasource';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import {
-  ActivityIndicator,
   Dimensions,
   Image,
   Platform,
@@ -84,6 +83,7 @@ const categoryKeys = Object.keys(Categories);
 
 const EMOJI_CONTAINER = 1;
 const HEADER_ROW = 2;
+const OVERLAY = 3;
 
 let currentIndex = 0;
 let blockCategories = true;
@@ -108,10 +108,13 @@ export default class EmojiSelector extends PureComponent {
 
     this._layoutProvider = new LayoutProvider(
       i => {
-        if (i % 2 == 0) {
-          return HEADER_ROW;
+        if (i == 0 || i == this.state.allEmojiList.length - 1) {
+          return OVERLAY;
         }
-        return EMOJI_CONTAINER;
+        if (i % 2 == 0) {
+          return EMOJI_CONTAINER;
+        }
+        return HEADER_ROW;
       },
       (type, dim, i) => {
         if (type === EMOJI_CONTAINER) {
@@ -121,6 +124,9 @@ export default class EmojiSelector extends PureComponent {
           dim.width = deviceUtils.dimensions.width;
         } else if (type === HEADER_ROW) {
           dim.height = 35;
+          dim.width = deviceUtils.dimensions.width;
+        } else if (type === OVERLAY) {
+          dim.height = i == 0 ? 0.1 : 100;
           dim.width = deviceUtils.dimensions.width;
         } else {
           dim.height = 0;
@@ -134,14 +140,14 @@ export default class EmojiSelector extends PureComponent {
     this.loadEmojis();
     setTimeout(() => {
       this.setState({ isReady: true });
-    }, 5000);
+    }, 3000);
   }
 
   handleTabSelect = category => {
     blockCategories = true;
     this.scrollToOffset(
       category.index * 2 - 1 > 0
-        ? this.state.allEmojiList[category.index * 2 - 1].offset
+        ? this.state.allEmojiList[category.index * 2].offset
         : 0,
       true
     );
@@ -226,10 +232,11 @@ export default class EmojiSelector extends PureComponent {
     );
   };
 
-  loadEmojis(cb) {
-    let allEmojiList = [];
+  loadEmojis() {
+    let allEmojiList = [{ overlay: true }];
     let offset = 0;
-    categoryKeys.map(category => {
+    let keys = categoryKeys;
+    keys.map(category => {
       const emojiCategory = [
         { header: true, title: Categories[category].name },
         {
@@ -253,13 +260,12 @@ export default class EmojiSelector extends PureComponent {
       }
     });
 
-    this.setState(
-      {
-        allEmojiList,
-        colSize: width / this.props.columns,
-      },
-      cb
-    );
+    allEmojiList.push({ overlay: true });
+
+    this.setState({
+      allEmojiList,
+      colSize: width / this.props.columns,
+    });
   }
 
   hasRowChanged = (r1, r2) => {
@@ -269,24 +275,43 @@ export default class EmojiSelector extends PureComponent {
     return false;
   };
 
-  renderItem = (type, item) => {
+  renderItem = (type, item, index) => {
     if (type === HEADER_ROW) {
       return this.renderListHeader(item.title);
+    } else if (type === OVERLAY) {
+      return (
+        <View
+          style={{
+            top: index === 0 && -300,
+            bottom: index !== 0 && -300,
+            height: 400,
+            width: width,
+            backgroundColor: colors.white,
+            position: 'absolute',
+          }}
+        />
+      );
     }
     return this.renderEmojis(item);
   };
 
+  renderStickyItem = (type, item) => (
+    <View style={styles.sectionStickyHeaderWrap}>
+      <Text style={styles.sectionHeader}>{item.title}</Text>
+    </View>
+  );
+
   handleScroll = (event, offsetX, offsetY) => {
     if (!blockCategories) {
       if (
-        offsetY > this.state.allEmojiList[(currentIndex + 1) * 2 - 1].offset &&
-        currentIndex < categoryKeys.length - 1
+        offsetY > this.state.allEmojiList[(currentIndex + 1) * 2].offset &&
+        currentIndex < this.state.allEmojiList.length / 2 - 2
       ) {
         currentIndex += 1;
         this.setState({ category: Categories[categoryKeys[currentIndex]] });
       } else if (
         currentIndex * 2 - 1 > 0 &&
-        offsetY < this.state.allEmojiList[currentIndex * 2 - 1].offset
+        offsetY < this.state.allEmojiList[currentIndex * 2].offset
       ) {
         currentIndex -= 1;
         this.setState({ category: Categories[categoryKeys[currentIndex]] });
@@ -334,6 +359,38 @@ export default class EmojiSelector extends PureComponent {
       </View>
     );
 
+    const prerenderEmoji = [];
+    if (this.state.allEmojiList[2]) {
+      for (let i = 0; i < 70; i += 7) {
+        let emojis = [];
+        for (let j = 0; j < 7; j++) {
+          emojis.push(
+            charFromEmojiObject(this.state.allEmojiList[2].data[i + j].emoji)
+          );
+        }
+        prerenderEmoji.push(
+          <View
+            style={{
+              flexDirection: 'row',
+              marginHorizontal: 10,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: Math.floor(this.state.colSize) - 15,
+                height: (width - 21) / this.props.columns,
+                width: deviceUtils.dimensions.width,
+                letterSpacing: 8,
+                top: 0.8,
+              }}
+            >
+              {emojis}
+            </Text>
+          </View>
+        );
+      }
+    }
+
     return (
       <View style={styles.frame} {...other}>
         <TapGestureHandler onHandlerStateChange={this.onTapChange}>
@@ -343,15 +400,16 @@ export default class EmojiSelector extends PureComponent {
             {showSearchBar && Searchbar}
             {!isReady && (
               <View style={styles.loader} {...other}>
-                <ActivityIndicator
-                  size="large"
-                  color={Platform.OS === 'android' ? theme : '#000000'}
-                />
+                <View style={styles.sectionHeaderWrap}>
+                  <Text style={styles.sectionHeader}>Smileys & People</Text>
+                </View>
+                {prerenderEmoji}
               </View>
             )}
             <View style={styles.container}>
               <StickyContainer
-                stickyHeaderIndices={[0, 2, 4, 6, 8, 10, 12, 14, 16, 18]}
+                stickyHeaderIndices={[1, 3, 5, 7, 9, 11, 13, 15, 17]}
+                overrideRowRenderer={this.renderStickyItem}
               >
                 <RecyclerListView
                   dataProvider={new DataProvider(
@@ -362,7 +420,6 @@ export default class EmojiSelector extends PureComponent {
                   style={{ width: deviceUtils.dimensions.width }}
                   renderAheadOffset={10000}
                   onScroll={this.handleScroll}
-                  renderFooter={() => <View style={{ height: 100 }} />}
                   ref={this.handleListRef}
                 />
               </StickyContainer>
@@ -466,10 +523,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   loader: {
-    alignItems: 'center',
     flex: 1,
-    justifyContent: 'center',
     position: 'absolute',
+    width: width,
+    top: 0,
   },
   row: {
     alignItems: 'center',
@@ -504,6 +561,11 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   sectionHeaderWrap: {
+    backgroundColor: '#ffffff',
+    marginRight: 10,
+    paddingLeft: 10,
+  },
+  sectionStickyHeaderWrap: {
     backgroundColor: '#ffffffdd',
     marginRight: 10,
     paddingLeft: 10,
@@ -517,5 +579,10 @@ const styles = StyleSheet.create({
     padding: 4,
     position: 'absolute',
     width: 276,
+  },
+  overlay: {
+    height: 200,
+    width: width,
+    backgroundColor: colors.red,
   },
 });

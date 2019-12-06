@@ -157,6 +157,12 @@ export default Component =>
           const { isImported, isNew, walletAddress } = await walletInit(
             seedPhrase
           );
+          console.log(walletAddress);
+          const info = await getAccountInfo(walletAddress, ownProps.network);
+          if (info.name && info.color) {
+            store.dispatch(settingsUpdateAccountName(info.name));
+            store.dispatch(settingsUpdateAccountColor(info.color));
+          }
           if (isNil(walletAddress)) {
             Alert.alert(
               'Import failed due to an invalid private key. Please try again.'
@@ -187,11 +193,6 @@ export default Component =>
           }
           ownProps.onHideSplashScreen();
           ownProps.initializeAccountData();
-          const info = await getAccountInfo(walletAddress, ownProps.network);
-          if (info.name && info.color) {
-            store.dispatch(settingsUpdateAccountName(info.name));
-            store.dispatch(settingsUpdateAccountColor(info.color));
-          }
           return walletAddress;
         } catch (error) {
           // TODO specify error states more granular
