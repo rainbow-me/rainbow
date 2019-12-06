@@ -50,8 +50,6 @@ export default class TouchableScale extends React.Component {
       useNativeDriver: props.useNativeDriver,
     }).start();
 
-    this.handleHaptic();
-
     if (props.onPressIn) {
       props.onPressIn(...args);
     }
@@ -74,6 +72,8 @@ export default class TouchableScale extends React.Component {
       toValue: props.defaultScale,
       useNativeDriver: props.useNativeDriver,
     }).start();
+
+    this.handleHaptic();
 
     if (props.onPressOut) {
       props.onPressOut(...args);
