@@ -5192,7 +5192,7 @@ hmac-drbg@^1.0.0:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.1"
 
-hoist-non-react-statics@^2.3.1:
+hoist-non-react-statics@^2.3.1, hoist-non-react-statics@^2.5.0:
   version "2.5.5"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.5.5.tgz#c5903cf409c0dfd908f388e619d86b9c1174cb47"
   integrity sha512-rqcy4pJo55FTTLWt+bU8ukscqHeE/e9KWvsOW2b/a3afxQZhwkQdT1rPPCJ0rYXdj4vNcasY8zHTH+jF/qStxw==
@@ -9122,10 +9122,10 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-coin-icon@0.1.12:
-  version "0.1.12"
-  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.12.tgz#27468537670ef374506f95e0e30d340e49ef1c8c"
-  integrity sha512-EkF3r35Si9cevjXyQcDJFkw1zK2h9ctSV5NiFyucdMsZLdd9DefnR2ji8BKVg/X0bOKsrRXhqa7b15SsXImLOw==
+react-coin-icon@0.1.13:
+  version "0.1.13"
+  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.13.tgz#0eb148637a7714f3b74a493b71de0bba34353634"
+  integrity sha512-j+6r6EcXbTbdlpJCf8DvBAvl44mXXFCdrNh5Bj9P3y4KON2brMXpNrkrN1ixrx7y87F+n55K++DERoM3XqdbJg==
   dependencies:
     "@svgr/cli" "^4.3.0"
     lodash "^4.17.11"
@@ -9421,6 +9421,13 @@ react-native-svg@9.13.3:
     css-select "^2.0.2"
     css-tree "^1.0.0-alpha.37"
 
+react-native-tab-view@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-1.4.1.tgz#f113cd87485808f0c991abec937f70fa380478b9"
+  integrity sha512-Bke8KkDcDhvB/z0AS7MnQKMD2p6Kwfc1rSKlMOvg9CC5CnClQ2QEnhPSbwegKDYhUkBI92iH/BYy7hNSm5kbUQ==
+  dependencies:
+    prop-types "^15.6.1"
+
 react-native-tab-view@^2.9.0:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-2.11.0.tgz#2e57d1f617ccc88c7f452708804f3409f880b700"
@@ -9507,6 +9514,15 @@ react-navigation-stack@2.0.0-alpha.37:
   version "2.0.0-alpha.37"
   resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-2.0.0-alpha.37.tgz#15c38f7ef9923a2b6739c2bc8441f8ab70af3ec3"
   integrity sha512-2AcidUvhNgErV2QlV3s7wSdkbAJ+sQEAsHrHF4xK8PTf04I9+qG3/Ds9Orx31njhujHfuB5nN/77z+ih1iM+7g==
+
+react-navigation-tabs-v1@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-navigation-tabs-v1/-/react-navigation-tabs-v1-1.2.0.tgz#7cdfdfee62689cc0835d87da574c81486b4ad6ee"
+  integrity sha512-vpd/WLmh5OZr1Bl2CONk5b4/pSNKeQCMcnlqFcOPFRsnkewLXlcyqax8G6wMSp3CRES1+X7DZxe133ybLgwdiA==
+  dependencies:
+    hoist-non-react-statics "^2.5.0"
+    prop-types "^15.6.1"
+    react-native-tab-view "^1.4.1"
 
 react-navigation-tabs@2.5.6:
   version "2.5.6"

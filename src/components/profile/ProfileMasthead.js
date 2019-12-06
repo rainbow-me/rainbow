@@ -82,7 +82,7 @@ const ProfileMasthead = ({
             icon="copy"
             onPress={onPressCopy}
             scaleTo={0.82}
-            text="Copy"
+            text="Copy Address"
           />
           <FloatingEmojis
             count={emojiCount}

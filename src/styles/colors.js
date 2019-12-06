@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 
 const base = {
   appleBlue: '#0E76FD', // 14, 118, 253
+  backgroundGrey: '#141414', // 20, 20, 20
   black: '#000000', // '0, 0, 0'
   blueGreyDark: '#3C4252', // '60, 66, 82'
   blueGreyDarker: '#0F0F11', // '15, 15, 17'

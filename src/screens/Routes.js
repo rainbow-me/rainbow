@@ -2,7 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import { get, omit } from 'lodash';
 import React from 'react';
 import { createAppContainer } from 'react-navigation';
-import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
+import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
 import { createStackNavigator } from 'react-navigation-stack';
 import { ExchangeModalNavigator, Navigation } from '../navigation';
 import { updateTransitionProps } from '../redux/navigation';
@@ -54,17 +54,6 @@ const SwipeStack = createMaterialTopTabNavigator(
     headerMode: 'none',
     initialLayout: deviceUtils.dimensions,
     initialRouteName: 'WalletScreen',
-    mode: 'modal',
-    springConfig: {
-      damping: 16,
-      mass: 0.3,
-      overshootClamping: false,
-      restDisplacementThreshold: 1,
-      restSpeedThreshold: 1,
-      stiffness: 140,
-    },
-    swipeDistanceThreshold: 30,
-    swipeVelocityThreshold: 10,
     tabBarComponent: null,
   }
 );
@@ -84,9 +73,9 @@ const MainNavigator = createStackNavigator(
     },
     ConfirmRequest: {
       navigationOptions: {
-        ...expandedPreset,
+        ...sheetPreset,
         onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
+          sheetPreset.onTransitionStart(props);
           onTransitionStart();
         },
       },

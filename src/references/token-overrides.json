@@ -20,21 +20,23 @@
   "0x107c4504cd79C5d2696Ea0030a8dD4e92601B82e": {
     "name": "Bloom"
   },
-  "0x493c57c4763932315a328269e1adad09653b9081": {
-    "name": "bZx Dai"
-  },
-  "0x14094949152eddbfcd073717200da82fed8dc960": {
-    "name": "bZx Sai"
-  },
   "0x514910771AF9Ca656af840dff83E8264EcF986CA": {
     "name": "Chainlink"
   },
   "0x41e5560054824eA6B0732E656E3Ad64E20e94E45": {
     "name": "Civic"
   },
+  "0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643": {
+    "name": "Compound Dai",
+    "symbol": "cDAI"
+  },
   "0xF5DCe57282A584D2746FaF1593d3121Fcac444dC": {
     "name": "Compound Sai",
     "symbol": "cSAI"
+  },
+  "0x39aa39c021dfbae8fac545936693ac917d5e7563": {
+    "name": "Compound USD Coin",
+    "symbol": "cUSDC"
   },
   "0xB4272071eCAdd69d933AdcD19cA99fe80664fc08": {
     "name": "CryptoFranc"
@@ -56,6 +58,18 @@
   },
   "0x4946Fcea7C692606e8908002e55A582af44AC121": {
     "name": "FOAM"
+  },
+  "0x493c57c4763932315a328269e1adad09653b9081": {
+    "name": "Fulcrum Dai",
+    "symbol": "iDAI"
+  },
+  "0x14094949152eddbfcd073717200da82fed8dc960": {
+    "name": "Fulcrum Sai",
+    "symbol": "iSAI"
+  },
+  "0xf013406a0b1d544238083df0b93ad0d2cbe0f65f": {
+    "name": "Fulcrum USD Coin",
+    "symbol": "iUSDC"
   },
   "0x419D0d8BdD9aF5e606Ae2232ed285Aff190E711b": {
     "name": "FunFair"
