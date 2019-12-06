@@ -1,17 +1,23 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Text, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import Animated, { Easing } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { withNavigation } from 'react-navigation';
 import { compose, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
-import { ButtonPressAnimation } from '../components/animations';
-import EmojiSelector from '../components/EmojiSelector';
+import EmojiSelector from '../components/avatar-builder/EmojiSelector';
 import { Column, Row } from '../components/layout';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { colors } from '../styles';
 import { deviceUtils } from '../utils';
+import ColorCircle from '../components/avatar-builder/ColorCircle';
+import store from '../redux/store';
+import {
+  settingsUpdateAccountName,
+  settingsUpdateAccountColor,
+} from '../redux/settings';
+import { saveAccountInfo } from '../handlers/localstorage/accountLocal';
+import { withAccountInfo } from '../hoc';
 
 const {
   block,
@@ -128,68 +134,63 @@ const SheetContainer = styled(Column)`
   width: 100%;
 `;
 
-class AvatarBuilder extends Component {
+class AvatarBuilder extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      avatarColor: '#FFD963',
-      emoji: '🙃',
-      position: new Value(),
-      springAnim: runSpring(new Clock(), 0, 0),
+      avatarColor:
+        colors.avatarColor[this.props.navigation.getParam('accountColor', 4)],
+      avatarColorIndex: this.props.navigation.getParam('accountColor', 4),
+      emoji: this.props.navigation.getParam('accountName', '🙃'),
+      position: new Value(
+        (this.props.navigation.getParam('accountColor', 4) - 4) * 39
+      ),
     };
   }
 
-  render() {
-    const ColorCircle = ({ backgroundColor, colorIndex, isSelected }) => (
-      <View align="center" height={42} justify="center" width={39}>
-        <ButtonPressAnimation
-          alignSelf="center"
-          duration={100}
-          easing={Easing.bezier(0.19, 1, 0.22, 1)}
-          enableHapticFeedback
-          height={42}
-          justifyContent="center"
-          onPress={() => {
-            let destination = colorIndex * 39;
-            this.setState({
-              avatarColor: backgroundColor,
-              springAnim: runSpring(
-                new Clock(),
-                this.state.position,
-                destination
-              ),
-            });
-          }}
-          scaleTo={0.7}
-          width={39}
-        >
-          <View
-            backgroundColor={backgroundColor}
-            borderRadius={15}
-            height={24}
-            alignSelf="center"
-            isSelected={isSelected}
-            shadowColor={colors.black}
-            shadowOffset={{ height: 4, width: 0 }}
-            shadowOpacity={0.2}
-            shadowRadius={5}
-            width={24}
-          />
-        </ButtonPressAnimation>
-      </View>
+  springAnim = runSpring(
+    new Clock(),
+    (this.props.navigation.getParam('accountColor', 4) - 4) * 39,
+    (this.props.navigation.getParam('accountColor', 4) - 4) * 39
+  );
+
+  onChangeEmoji = event => {
+    this.setState({ emoji: event });
+    store.dispatch(settingsUpdateAccountName(event));
+    this.saveInfo(event, this.state.avatarColorIndex);
+  };
+
+  avatarColors = colors.avatarColor.map((color, index) => (
+    <ColorCircle
+      backgroundColor={color}
+      key={color}
+      isSelected={index - 4 === 0}
+      onPressColor={() => {
+        let destination = (index - 4) * 39;
+        this.springAnim = runSpring(
+          new Clock(),
+          this.state.position,
+          destination
+        );
+        store.dispatch(settingsUpdateAccountColor(index));
+        this.setState({
+          avatarColor: color,
+          avatarColorIndex: index,
+        });
+        this.saveInfo(this.state.emoji, index);
+      }}
+    />
+  ));
+
+  saveInfo = (name, color) => {
+    saveAccountInfo(
+      { color: color, name: name },
+      this.props.accountAddress,
+      'mainnet'
     );
+  };
 
-    ColorCircle.propTypes = {
-      backgroundColor: PropTypes.string,
-      colorIndex: PropTypes.number,
-      isSelected: PropTypes.bool,
-    };
-
-    ColorCircle.defaultProps = {
-      backgroundColor: 'blue',
-      isSelected: false,
-    };
-
+  render() {
     const colorCircleTopPadding = 8;
 
     return (
@@ -241,26 +242,18 @@ class AvatarBuilder extends Component {
               height={38}
               position="absolute"
               style={{
-                transform: [{ translateX: this.state.springAnim }],
+                transform: [{ translateX: this.springAnim }],
               }}
               top={colorCircleTopPadding}
               width={38}
             />
-            <ColorCircle backgroundColor="#FF494A" colorIndex={-4} />
-            <ColorCircle backgroundColor="#01D3FF" colorIndex={-3} />
-            <ColorCircle backgroundColor="#FB60C4" colorIndex={-2} />
-            <ColorCircle backgroundColor="#3F6AFF" colorIndex={-1} />
-            <ColorCircle backgroundColor="#FFD963" colorIndex={0} isSelected />
-            <ColorCircle backgroundColor="#B140FF" colorIndex={1} />
-            <ColorCircle backgroundColor="#41EBC1" colorIndex={2} />
-            <ColorCircle backgroundColor="#F46E38" colorIndex={3} />
-            <ColorCircle backgroundColor="#6D7E8F" colorIndex={4} />
+            {this.avatarColors}
           </Row>
 
           <SheetContainer>
             <EmojiSelector
               columns={7}
-              onEmojiSelected={emoji => this.setState({ emoji: emoji })}
+              onEmojiSelected={this.onChangeEmoji}
               showHistory={false}
               showSearchBar={false}
             />
@@ -272,6 +265,7 @@ class AvatarBuilder extends Component {
 }
 
 export default compose(
+  withAccountInfo,
   withHandlers({
     onPressBackground: ({ navigation }) => () => navigation.goBack(),
   }),

@@ -10,6 +10,8 @@ import { ProfileMasthead } from '../components/profile';
 import { position } from '../styles';
 
 const ProfileScreen = ({
+  accountColor,
+  accountName,
   accountAddress,
   blurIntensity,
   isEmpty,
@@ -30,9 +32,13 @@ const ProfileScreen = ({
     </Header>
     <ActivityList
       accountAddress={accountAddress}
+      accountColor={accountColor}
+      accountName={accountName}
       header={
         <ProfileMasthead
           accountAddress={accountAddress}
+          accountColor={accountColor}
+          accountName={accountName}
           navigation={navigation}
           showBottomDivider={!isEmpty}
         />

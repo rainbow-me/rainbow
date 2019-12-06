@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Clipboard } from 'react-native';
-import FastImage from 'react-native-fast-image';
-import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
+import { Clipboard, View, Text } from 'react-native';
+import { compose, withHandlers, withState } from 'recompact';
+import GraphemeSplitter from 'grapheme-splitter';
 import styled from 'styled-components/primitives';
-import AvatarImageSource from '../../assets/avatar.png';
-import { borders, margin } from '../../styles';
+import { margin, colors } from '../../styles';
 import { abbreviations } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import CopyTooltip from '../CopyTooltip';
@@ -31,61 +30,85 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   padding-bottom: 32;
 `;
 
+const AvatarCircle = styled(View)`
+  border-radius: 33px;
+  margin-bottom: 16px;
+  height: 65px;
+  width: 65px;
+`;
+
+const FirstLetter = styled(Text)`
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 37;
+  line-height: 65;
+`;
+
 const ProfileMasthead = ({
   accountAddress,
-  emojiCount,
+  accountColor,
+  accountName,
   onPressAvatar,
+  emojiCount,
   onPressCopy,
   onPressReceive,
   showBottomDivider,
-}) => (
-  <Container>
-    <ButtonPressAnimation
-      hapticType="impactMedium"
-      onPress={onPressAvatar}
-      scaleTo={0.82}
-    >
-      <FastImage
-        source={AvatarImageSource}
-        style={{
-          ...borders.buildCircleAsObject(85),
-          marginBottom: 3,
-        }}
-      />
-    </ButtonPressAnimation>
-    <CopyTooltip textToCopy={accountAddress} tooltipText="Copy Address">
-      <AddressAbbreviation address={accountAddress} />
-    </CopyTooltip>
-    <RowWithMargins align="center" margin={1}>
-      <Column>
-        <ProfileAction
-          icon="copy"
-          onPress={onPressCopy}
-          scaleTo={0.82}
-          text="Copy Address"
-        />
-        <FloatingEmojis
-          count={emojiCount}
-          distance={130}
-          emoji="+1"
-          size="h2"
-        />
-      </Column>
-      <ProfileAction
-        icon="inbox"
-        onPress={onPressReceive}
+}) => {
+  const name = accountName || '🥰';
+  const color = accountColor || 0;
+
+  return (
+    <Container>
+      <ButtonPressAnimation
+        hapticType="impactMedium"
+        onPress={onPressAvatar}
         scaleTo={0.82}
-        text="Receive"
-      />
-    </RowWithMargins>
-    {showBottomDivider && (
-      <Divider style={{ bottom: 0, position: 'absolute' }} />
-    )}
-  </Container>
-);
+      >
+        <AvatarCircle style={{ backgroundColor: colors.avatarColor[color] }}>
+          <FirstLetter>
+            {new GraphemeSplitter().splitGraphemes(name)[0]}
+          </FirstLetter>
+        </AvatarCircle>
+      </ButtonPressAnimation>
+
+      <CopyTooltip textToCopy={accountAddress} tooltipText="Copy Address">
+        <AddressAbbreviation address={accountAddress} />
+      </CopyTooltip>
+      <RowWithMargins align="center" margin={1}>
+        <Column>
+          <ProfileAction
+            icon="copy"
+            onPress={onPressCopy}
+            scaleTo={0.82}
+            text="Copy"
+          />
+          <FloatingEmojis
+            count={emojiCount}
+            distance={130}
+            emoji="+1"
+            size="h2"
+          />
+        </Column>
+        <ProfileAction
+          icon="inbox"
+          onPress={onPressReceive}
+          scaleTo={0.82}
+          text="Receive"
+        />
+      </RowWithMargins>
+      {showBottomDivider && (
+        <Divider style={{ bottom: 0, position: 'absolute' }} />
+      )}
+    </Container>
+  );
+};
 
 ProfileMasthead.propTypes = {
   accountAddress: PropTypes.string,
+  accountColor: PropTypes.number,
+  accountName: PropTypes.string,
   emojiCount: PropTypes.number,
   onPressAvatar: PropTypes.func,
   onPressCopy: PropTypes.func,
@@ -100,13 +123,16 @@ ProfileMasthead.defaultProps = {
 export default compose(
   withState('emojiCount', 'setEmojiCount', 0),
   withHandlers({
-    onPressAvatar: ({ navigation }) => () => navigation.navigate('AvatarBuilder'),
+    onPressAvatar: ({ navigation, accountColor, accountName }) => () =>
+      navigation.navigate('AvatarBuilder', {
+        accountColor: accountColor,
+        accountName: accountName,
+      }),
     onPressCopy: ({ accountAddress, emojiCount, setEmojiCount }) => () => {
       setEmojiCount(emojiCount + 1);
       Clipboard.setString(accountAddress);
     },
     onPressReceive: ({ navigation }) => () =>
       navigation.navigate('ReceiveModal'),
-  }),
-  onlyUpdateForKeys(['accountAddress', 'emojiCount', 'showBottomDivider'])
+  })
 )(ProfileMasthead);

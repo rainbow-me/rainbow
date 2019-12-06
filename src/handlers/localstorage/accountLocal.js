@@ -11,6 +11,7 @@ const transactionsVersion = '0.2.1';
 const uniqueTokensVersion = '0.2.0';
 const assetsVersion = '0.2.0';
 
+const ACCOUNT_INFO = 'accountInfo';
 const ASSETS = 'assets';
 const OPEN_FAMILIES = 'openFamilies';
 const OPEN_INVESTMENT_CARDS = 'openInvestmentCards';
@@ -254,3 +255,30 @@ export const saveOpenFamilies = (openFamilies, accountAddress, network) =>
  */
 export const removeOpenFamilies = (accountAddress, network) =>
   removeAccountLocal(OPEN_FAMILIES, accountAddress, network);
+
+/**
+ * @desc get profile info
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getAccountInfo = (accountAddress, network) =>
+  getAccountLocal(ACCOUNT_INFO, accountAddress, network, {});
+
+/**
+ * @desc save profile info
+ * @param  {String}   [address]
+ * @param  {Object}    [profile info]
+ * @param  {String}   [network]
+ */
+export const saveAccountInfo = (profileInfo, accountAddress, network) =>
+  saveAccountLocal(ACCOUNT_INFO, profileInfo, accountAddress, network);
+
+/**
+ * @desc remove profile info
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const removeAccountInfo = (accountAddress, network) =>
+  removeAccountLocal(ACCOUNT_INFO, accountAddress, network);
