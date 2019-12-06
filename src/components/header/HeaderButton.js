@@ -8,7 +8,6 @@ import { Flex } from '../layout';
 const HeaderButton = ({ children, onPress, transformOrigin, ...props }) => (
   <TouchableScale
     activeScale={0.8}
-    enableHapticFeedback
     hapticType="impactLight"
     pressInFriction={50}
     pressInTension={400}
