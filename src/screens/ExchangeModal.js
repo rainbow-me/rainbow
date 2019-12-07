@@ -741,7 +741,10 @@ class ExchangeModal extends Component {
       this.clearForm();
     }
 
-    this.setState({ inputCurrency });
+    this.setState({
+      inputCurrency,
+      showConfirmButton: !!inputCurrency && !!outputCurrency,
+    });
     this.props.uniswapUpdateInputCurrency(inputCurrency);
 
     if (userSelected && isSameAsset(inputCurrency, outputCurrency)) {
@@ -801,7 +804,7 @@ class ExchangeModal extends Component {
     this.setState({
       inputAsExactAmount: true,
       outputCurrency,
-      showConfirmButton: !!outputCurrency,
+      showConfirmButton: !!inputCurrency && !!outputCurrency,
     });
 
     const existsInWallet = find(
