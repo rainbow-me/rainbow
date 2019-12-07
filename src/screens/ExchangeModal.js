@@ -902,7 +902,7 @@ class ExchangeModal extends Component {
             {isSlippageWarningVisible && (
               <SlippageWarning slippage={slippage} />
             )}
-            {showConfirmButton && (
+            {(showConfirmButton || !isAssetApproved) && (
               <Fragment>
                 <Centered css={padding(24, 15, 0)} flexShrink={0} width="100%">
                   <ConfirmExchangeButton
