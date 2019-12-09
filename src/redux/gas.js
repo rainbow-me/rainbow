@@ -24,14 +24,14 @@ let getGasPricesInterval = null;
 
 const getDefaultTxFees = () => (dispatch, getState) => {
   const { assets } = getState().data;
-  const { gasLimit } = getState().gas;
+  const { defaultGasLimit } = getState().gas;
   const { nativeCurrency } = getState().settings;
   const fallbackGasPrices = getFallbackGasPrices();
   const ethPriceUnit = ethereumUtils.getEthPriceUnit(assets);
   const txFees = parseTxFees(
     fallbackGasPrices,
     ethPriceUnit,
-    gasLimit,
+    defaultGasLimit,
     nativeCurrency
   );
   const selectedGasPrice = {

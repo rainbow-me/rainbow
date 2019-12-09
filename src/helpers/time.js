@@ -13,10 +13,10 @@ const buildLocalizedTimeUnitString = ({ plural, short, unit }) => {
 };
 
 const getHighestResolutionUnit = timeUnitValues => {
-  const highestResolutionUnit = findKey(timeUnitValues);
+  const highestResolutionUnit = findKey(timeUnitValues) || 'seconds';
   return {
     unit: highestResolutionUnit,
-    value: timeUnitValues[highestResolutionUnit],
+    value: timeUnitValues[highestResolutionUnit] || 0,
   };
 };
 
