@@ -66,7 +66,7 @@ const InvestmentCard = enhance(
         paddingVertical={InvestmentCardMargin.vertical}
         style={{
           shadowColor: colors.dark,
-          shadowOffset: { height: 1, width: 0 },
+          shadowOffset: { height: 1.5, width: 0 },
           shadowOpacity: 0.1,
           shadowRadius: 3,
         }}
@@ -83,12 +83,6 @@ const InvestmentCard = enhance(
               borderRadius={InvestmentCardBorderRadius}
               justify="start"
               onLayout={onLayout}
-              overflow="hidden"
-              style={{
-                shadowColor: 'black',
-                shadowOpacity: 1,
-                shadowRadius: 10,
-              }}
             >
               <LinearGradient
                 colors={gradientColors}

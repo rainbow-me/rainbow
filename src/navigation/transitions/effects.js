@@ -56,7 +56,7 @@ const exchangeStyleInterpolator = ({
       shadowColor: colors.black,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.4,
-      shadowRadius: 50,
+      shadowRadius: 25,
       // Translation for the animation of the current card
       transform: [{ translateY }],
     },
@@ -88,7 +88,7 @@ const expandStyleInterpolator = ({
       shadowColor: colors.dark,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
-      shadowRadius: 50,
+      shadowRadius: 25,
       // Translation for the animation of the current card
       transform: [{ translateY }],
     },
@@ -127,7 +127,7 @@ const sheetStyleInterpolator = ({
       shadowColor: colors.black,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.4,
-      shadowRadius: 50,
+      shadowRadius: 25,
       // Translation for the animation of the current card
       transform: [{ translateY }],
     },
