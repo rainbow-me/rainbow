@@ -51,7 +51,6 @@ const InvestmentCard = enhance(
     <View
       style={
         headerProps.isCollapsible && {
-          backgroundColor: colors.white,
           height:
             UniswapInvestmentCard.height +
             2 * InvestmentCardWrap.margin.vertical +

@@ -84,7 +84,6 @@ export default class TokenFamilyHeader extends PureComponent {
     <ButtonPressAnimation onPress={this.props.onHeaderPress} scaleTo={0.96}>
       <Row
         align="center"
-        backgroundColor={colors.white}
         height={TokenFamilyHeaderHeight}
         justify="space-between"
         paddingHorizontal={this.props.isCoinRow ? 16 : 19}
