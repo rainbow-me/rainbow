@@ -28,7 +28,7 @@ CaretIcon.propTypes = {
 };
 
 CaretIcon.defaultProps = {
-  color: colors.black,
+  color: colors.dark,
 };
 
 export default withRotationForDirection(CaretIcon);
