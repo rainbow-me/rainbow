@@ -174,6 +174,8 @@ const sheetOpenSpec = {
     ...SpringUtils.makeDefaultConfig(),
     bounciness: 0,
     mass: 1,
+    restDisplacementThreshold: 1,
+    restSpeedThreshold: 1,
     speed: 22,
   }),
 };
