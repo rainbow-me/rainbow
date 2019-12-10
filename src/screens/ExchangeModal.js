@@ -8,7 +8,7 @@ import {
   tradeTokensForExactTokensWithData,
 } from '@uniswap/sdk';
 import BigNumber from 'bignumber.js';
-import { get, isNil, toLower } from 'lodash';
+import { find, get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { TextInput, InteractionManager } from 'react-native';
@@ -85,6 +85,7 @@ class ExchangeModal extends Component {
     accountAddress: PropTypes.string,
     allAssets: PropTypes.array,
     allowances: PropTypes.object,
+    assetsAvailableOnUniswap: PropTypes.arrayOf(PropTypes.object),
     chainId: PropTypes.number,
     dataAddNewTransaction: PropTypes.func,
     gasLimit: PropTypes.number,
@@ -276,6 +277,11 @@ class ExchangeModal extends Component {
       uniswapUpdateAllowances,
     } = this.props;
     const { inputCurrency } = this.state;
+
+    if (isNil(inputCurrency)) {
+      return this.setState({ isAssetApproved: true });
+    }
+
     const { address: inputAddress, exchangeAddress } = inputCurrency;
 
     if (inputAddress === 'eth') {
@@ -735,7 +741,10 @@ class ExchangeModal extends Component {
       this.clearForm();
     }
 
-    this.setState({ inputCurrency });
+    this.setState({
+      inputCurrency,
+      showConfirmButton: !!inputCurrency && !!outputCurrency,
+    });
     this.props.uniswapUpdateInputCurrency(inputCurrency);
 
     if (userSelected && isSameAsset(inputCurrency, outputCurrency)) {
@@ -788,17 +797,26 @@ class ExchangeModal extends Component {
       inputCurrency,
       outputCurrency: previousOutputCurrency,
     } = this.state;
+    const { assetsAvailableOnUniswap } = this.props;
 
     this.props.uniswapUpdateOutputCurrency(outputCurrency);
 
     this.setState({
       inputAsExactAmount: true,
       outputCurrency,
-      showConfirmButton: !!outputCurrency,
+      showConfirmButton: !!inputCurrency && !!outputCurrency,
     });
 
+    const existsInWallet = find(
+      assetsAvailableOnUniswap,
+      asset => get(asset, 'address') === get(previousOutputCurrency, 'address')
+    );
     if (userSelected && isSameAsset(inputCurrency, outputCurrency)) {
-      this.setInputCurrency(previousOutputCurrency, false);
+      if (existsInWallet) {
+        this.setInputCurrency(previousOutputCurrency, false);
+      } else {
+        this.setInputCurrency(null, false);
+      }
     }
   };
 
@@ -884,7 +902,7 @@ class ExchangeModal extends Component {
             {isSlippageWarningVisible && (
               <SlippageWarning slippage={slippage} />
             )}
-            {showConfirmButton && (
+            {(showConfirmButton || !isAssetApproved) && (
               <Fragment>
                 <Centered css={padding(24, 15, 0)} flexShrink={0} width="100%">
                   <ConfirmExchangeButton
