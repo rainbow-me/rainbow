@@ -19,6 +19,15 @@ const ListHeader = pure(
     titleRenderer,
   }) => (
     <Fragment>
+      {/*
+        <LinearGradient
+          colors={['#ffffffff', '#ffffff80', '#ffffff00']}
+          end={{ x: 0, y: 0 }}
+          pointerEvents="none"
+          start={{ x: 0, y: 0.5 }}
+          style={[position.coverAsObject]}
+        />
+      */}
       <Row
         align="center"
         backgroundColor={isSticky ? colors.white : colors.transparent}
