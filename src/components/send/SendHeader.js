@@ -35,7 +35,6 @@ const SheetHandle = compose(
 const contactPropType = PropTypes.shape({
   address: PropTypes.string,
   color: PropTypes.number,
-  inputRef: PropTypes.func,
   nickname: PropTypes.string,
   removeContact: PropTypes.func,
 });
@@ -138,7 +137,6 @@ class SendHeader extends PureComponent {
 
   handleRef = ref => {
     this.input = ref;
-    this.props.handleRef(ref);
   };
 
   onFocus = () => this.props.setSelectedInputId(this.input);
@@ -163,6 +161,7 @@ class SendHeader extends PureComponent {
           <Label style={{ marginRight: 6, opacity: 0.45 }}>To:</Label>
           <AddressField
             address={recipient}
+            autoFocus
             currentContact={contact}
             inputRef={this.handleRef}
             name={contact.nickname}
