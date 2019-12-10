@@ -2,11 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import { get, isEmpty, isString, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import {
-  Keyboard,
-  KeyboardAvoidingView,
-  InteractionManager,
-} from 'react-native';
+import { Keyboard, KeyboardAvoidingView } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
 import { compose, withHandlers, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
@@ -101,12 +97,6 @@ class SendSheet extends Component {
       sendUpdateSelected,
     } = this.props;
 
-    if (prevProps.isTransitioning && !this.props.isTransitioning) {
-      this.inputFocusInteractionHandle = InteractionManager.runAfterInteractions(
-        this.input && this.input.focus()
-      );
-    }
-
     const asset = get(navigation, 'state.params.asset');
 
     if (isValidAddress && !prevProps.isValidAddress) {
@@ -148,11 +138,6 @@ class SendSheet extends Component {
 
   componentWillUnmount() {
     this.props.sendClearFields();
-    if (this.inputFocusInteractionHandle) {
-      InteractionManager.clearInteractionHandle(
-        this.inputFocusInteractionHandle
-      );
-    }
   }
 
   onChangeAssetAmount = assetAmount => {
@@ -229,10 +214,6 @@ class SendSheet extends Component {
     this.props.sendUpdateRecipient(event);
   };
 
-  handleRef = ref => {
-    this.input = ref;
-  };
-
   render() {
     const {
       allAssets,
@@ -258,7 +239,6 @@ class SendSheet extends Component {
         <KeyboardAvoidingView behavior="padding">
           <Container align="center">
             <SendHeader
-              handleRef={this.handleRef}
               contacts={contacts}
               isValid={isValidAddress}
               isValidAddress={isValidAddress}
