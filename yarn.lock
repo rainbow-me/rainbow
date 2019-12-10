@@ -1160,6 +1160,13 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-4.6.1.tgz#09960b49217d555e54144f54e63485fe55d673ad"
   integrity sha512-RIcrNzVnkes6/d5jFprce8i6ruUO9+/FVZZgejlu/TSnysyFXHNJKgcIqxbKx+7XfQxfjrCGeCvsfYxrFrU0zw==
 
+"@react-native-community/push-notification-ios@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@react-native-community/push-notification-ios/-/push-notification-ios-1.0.3.tgz#cd2c7f29aeeb431942eda0bd729738fd2b444ae9"
+  integrity sha512-f+Y3lFLt5OBWHDtGHE+PiZH4aLeS8w2D47c0G/S5XpzeGoEeggOiALtou/r6raiVLP+D5CrLkIBMs2U2+LGJhw==
+  dependencies:
+    invariant "^2.2.4"
+
 "@react-native-firebase/app-types@6.2.0":
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/app-types/-/app-types-6.2.0.tgz#4d3c0e7fa4e4f00061c52b1a32d76e85e5db9f2c"

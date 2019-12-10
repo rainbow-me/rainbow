@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/default
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import analytics from '@segment/analytics-react-native';
 import { get, last } from 'lodash';
 import PropTypes from 'prop-types';
@@ -37,7 +39,6 @@ useScreens(false);
 class App extends Component {
   static propTypes = {
     addDeepLinkRequest: PropTypes.func,
-    appInitTimestamp: PropTypes.number,
     requestsForTopic: PropTypes.func,
     walletConnectClearTimestamp: PropTypes.func,
     walletConnectOnSessionRequest: PropTypes.func,
@@ -50,57 +51,32 @@ class App extends Component {
     AppState.addEventListener('change', this.handleAppStateChange);
     Linking.addEventListener('url', this.handleOpenLinkingURL);
     await this.handleInitializeAnalytics();
-    firebase
-      .notifications()
-      .getInitialNotification()
-      .then(notificationOpen => {
-        if (notificationOpen) {
-          const topic = get(notificationOpen, 'notification.data.topic');
-          this.onPushNotificationOpened(topic, false);
-        }
-      });
-
     saveFCMToken();
     this.onTokenRefreshListener = registerTokenRefreshListener();
-
-    // notification while app in foreground
-    this.notificationListener = firebase
-      .notifications()
-      .onNotification(notification => {
-        const route = Navigation.getActiveRouteName();
-        if (route === 'ConfirmRequest') {
-          const localNotification = new firebase.notifications.Notification()
-            .setTitle(notification.title)
-            .setBody(notification.body)
-            .setData({ ...notification.data, fromLocal: true });
-          firebase.notifications().displayNotification(localNotification);
-        } else {
-          const topic = get(notification, 'data.topic');
-          this.onPushNotificationOpened(topic, true);
-        }
-      });
-
-    // notification opened from background
-    this.notificationOpenedListener = firebase
-      .notifications()
-      .onNotificationOpened(notificationOpen => {
-        const topic = get(notificationOpen, 'notification.data.topic');
-        const fromLocal = get(
-          notificationOpen,
-          'notification.data.fromLocal',
-          false
-        );
-        this.onPushNotificationOpened(topic, false, fromLocal);
-      });
+    PushNotificationIOS.addEventListener(
+      'notification',
+      this.onRemoteNotification
+    );
   }
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
     Linking.removeEventListener('url', this.handleOpenLinkingURL);
-    this.notificationListener();
-    this.notificationOpenedListener();
+    PushNotificationIOS.removeEventListener(
+      'notification',
+      this.onRemoteNotification
+    );
     this.onTokenRefreshListener();
   }
+
+  onRemoteNotification = notification => {
+    const { appState } = this.state;
+    const topic = get(notification, '_data.topic');
+    notification.finish(PushNotificationIOS.FetchResult.NoData);
+    const shouldOpenAutomatically =
+      appState === 'active' || appState === 'inactive';
+    this.onPushNotificationOpened(topic, shouldOpenAutomatically);
+  };
 
   handleOpenLinkingURL = ({ url }) => {
     const { addDeepLinkRequest, walletConnectOnSessionRequest } = this.props;
@@ -118,28 +94,21 @@ class App extends Component {
     });
   };
 
-  onPushNotificationOpened = (topic, autoOpened = false, fromLocal = false) => {
-    const { appInitTimestamp, requestsForTopic } = this.props;
+  onPushNotificationOpened = (topic, openAutomatically = false) => {
+    const { requestsForTopic } = this.props;
     const requests = requestsForTopic(topic);
+
+    if (openAutomatically && requests) {
+      return Navigation.handleAction({
+        params: { openAutomatically, transactionDetails: last(requests) },
+        routeName: 'ConfirmRequest',
+      });
+    }
 
     if (requests && requests.length === 1) {
       const request = requests[0];
-
-      const transactionTimestamp = get(request, 'displayDetails.timestampInMs');
-      const isNewTransaction =
-        appInitTimestamp && transactionTimestamp > appInitTimestamp;
-
-      if (!autoOpened || isNewTransaction) {
-        return Navigation.handleAction({
-          params: { autoOpened, transactionDetails: request },
-          routeName: 'ConfirmRequest',
-        });
-      }
-    }
-
-    if (fromLocal) {
       return Navigation.handleAction({
-        params: { autoOpened, transactionDetails: last(requests) },
+        params: { openAutomatically, transactionDetails: request },
         routeName: 'ConfirmRequest',
       });
     }
@@ -172,7 +141,7 @@ class App extends Component {
   handleAppStateChange = async nextAppState => {
     if (nextAppState === 'active') {
       this.props.walletConnectUpdateTimestamp();
-      await firebase.notifications().removeAllDeliveredNotifications();
+      PushNotificationIOS.removeAllDeliveredNotifications();
     }
     if (nextAppState === 'background') {
       this.props.walletConnectClearTimestamp();
@@ -198,7 +167,7 @@ const AppWithRedux = compose(
   withDeepLink,
   withWalletConnectConnections,
   withWalletConnectOnSessionRequest,
-  connect(({ walletconnect: { appInitTimestamp } }) => ({ appInitTimestamp }), {
+  connect(null, {
     requestsForTopic,
   })
 )(App);

@@ -12,6 +12,7 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
 #import <React/RCTRootView.h>
+#import <RNCPushNotificationIOS.h>
 #import "RNSplashScreen.h"
 
 @implementation AppDelegate
@@ -50,16 +51,17 @@
   #endif
 }
 
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    [[RNFirebaseNotifications instance] didReceiveLocalNotification:notification];
+// Required for the notification event. You must call the completion handler after handling the remote notification.
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+  [RNCPushNotificationIOS didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHandler{
-  [[RNFirebaseNotifications instance] didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
-}
-
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
-    [[RNFirebaseMessaging instance] didRegisterUserNotificationSettings:notificationSettings];
+// Required for the localNotification event.
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+  [RNCPushNotificationIOS didReceiveLocalNotification:notification];
 }
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url

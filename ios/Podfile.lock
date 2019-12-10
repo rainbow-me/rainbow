@@ -376,6 +376,8 @@ PODS:
     - React
   - RNCMaskedView (0.1.5):
     - React
+  - RNCPushNotificationIOS (1.0.3):
+    - React
   - RNDeviceInfo (2.3.2):
     - React
   - RNFastImage (7.0.2):
@@ -477,6 +479,7 @@ DEPENDENCIES:
   - "RNAnalytics (from `../node_modules/@segment/analytics-react-native`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
+  - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
@@ -607,6 +610,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/async-storage"
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
+  RNCPushNotificationIOS:
+    :path: "../node_modules/@react-native-community/push-notification-ios"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
   RNFastImage:
@@ -657,8 +662,8 @@ SPEC CHECKSUMS:
   Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   Fabric: f988e33c97f08930a413e08123064d2e5f68d655
-  FBLazyVector: cee5277c189088563dfbfcdfb2fb90ce482549b7
-  FBReactNativeSpec: d89f618c1087b284b7930ca8431a4b9b7dd01663
+  FBLazyVector: d404836aeeaa2d8acfdbcdebbe70f77a2e4fe4e4
+  FBReactNativeSpec: 4dbf83fb73710a5a35d0c894c5e3ed0dcbac2450
   Firebase: 458d109512200d1aca2e1b9b6cf7d68a869a4a46
   FirebaseAnalytics: 45f36d9c429fc91d206283900ab75390cd05ee8a
   FirebaseAnalyticsInterop: d48b6ab67bcf016a05e55b71fc39c61c0cb6b7f3
@@ -678,15 +683,15 @@ SPEC CHECKSUMS:
   libwebp: 057912d6d0abfb6357d8bb05c0ea470301f5d61e
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   Protobuf: a4dc852ad69c027ca2166ed287b856697814375b
-  RCTRequired: 3718135886395b0fa06d65511d9839a21e1c4237
-  RCTTypeSafety: cb607d0b629091f1b6fce5d95fe09cee7c6715fd
-  React: 53b5a3d7bfb52ed8bbe55f6a4c147adab4bba4f4
-  React-Core: f74a5e1c147171ff271d345f209e5340cf101459
-  React-CoreModules: c44fd5637e4e96d907dbe2c57800a886c2980181
-  React-cxxreact: 370308ed0aabc8b5dc29b8b38d07171514e59740
-  React-jsi: ed8c383e93950c7f4175153571d0af11a0f272b1
-  React-jsiexecutor: f8e63cd38810b258de43d7ce58d9fb60ecb87536
-  React-jsinspector: 435a4f58ddbcf07ebd202401913451d15aec3c26
+  RCTRequired: 803acce5991522ab267d01eaa10a87da037233f3
+  RCTTypeSafety: 3a8265cde2a81a2796a443878169993faf60aa76
+  React: f6ecd230cd4efecf6af176921ab4de3d11a07964
+  React-Core: 05930428f3aead2f87e24e0d874840841e913868
+  React-CoreModules: 913abd1bd37142fe3a48bfeebf2d31e995d1b166
+  React-cxxreact: efaca513c76a265ce5779d3ea1defa47f8bd65d6
+  React-jsi: 901c02f197134dc58f26434420d9c4e103e48edf
+  React-jsiexecutor: 44f2200c6914c98c10cb078bc5a3fba2d13008bb
+  React-jsinspector: e69cce41a49d95767abb96b0abc3b976bfe71b77
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: 576f6dbb490af4285de1f8002a09dd3daa86c112
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
@@ -697,20 +702,21 @@ SPEC CHECKSUMS:
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 54a1aa9bf5c0824f930b1ba6dbfb3fd3e733bba9
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
-  React-RCTActionSheet: 7ef91294a1b9b73b2ea8ab4795253caf06440db9
-  React-RCTAnimation: 26602115e92a18318fa85962fb06932101f9cad2
-  React-RCTBlob: 011677c5f98bef3e749d8eb743ce7942732a65e6
-  React-RCTImage: 1e9184b0f93d6e367a47eb6df146d9a372c6366e
-  React-RCTLinking: 2adb6836662921a1d65bab45e1e1a44770abe495
-  React-RCTNetwork: 53d39cb9969c6d7f2279dbea9e1ba7dccd4a997e
-  React-RCTSettings: cb95158be9c445092e215e71dcc2a1505e44662a
-  React-RCTText: c753688e7b91fe95aa0156918983b6a84441064e
-  React-RCTVibration: 8e8b76d18b9bd2d99822085a7be08f5d5043c9a9
-  ReactCommon: 21cfc09dff47ac417086143cabcf4505aade833b
+  React-RCTActionSheet: 6ba1728ad985692e5fb3f71b5f43f026ece558d3
+  React-RCTAnimation: d87bd4d3d816cdb8085141c60721326ed0e6c972
+  React-RCTBlob: 8000ae9818e72a6ffda06f6adcfec59e30d354e4
+  React-RCTImage: 00a1e7e7e87cd1d416b9ea46fc21633ddfd42ae0
+  React-RCTLinking: f2301e75e9610aa35278a522f6f8a9dfc5835505
+  React-RCTNetwork: b93c472f746642c6d6807bcf0a2e4691ad41ab09
+  React-RCTSettings: 51990ae52e8da0aa1b9f5cce02f6976b0ad1af17
+  React-RCTText: feb3453236dcdd195878d576988df9c8fd500a19
+  React-RCTVibration: f1224b7b0eefef4b4e3f503889efd72791c52db5
+  ReactCommon: edc5a0b6f4b94e8dccd14145beb8940321be5698
   ReactNativePermissions: 7cfad56d13c8961cd2a1005b4955b1400c79ef3e
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 60a80e72d95bf02a01cace55d3697d9724f0d77f
   RNCMaskedView: dd13f9f7b146a9ad82f9b7eb6c9b5548fcf6e990
+  RNCPushNotificationIOS: 83ec11fe19d4ea9e32cc339d8e7d2cc3c88f543e
   RNDeviceInfo: 17e34f6dd902f08d88cbe2c0b7a01be948d43641
   RNFastImage: 9b0c22643872bb7494c8d87bbbb66cc4c0d9e7a2
   RNFBApp: 5b215aacc09105a1761de31b9a0eb2abcce06253
@@ -733,8 +739,8 @@ SPEC CHECKSUMS:
   TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
-  Yoga: 0116cce1e3bce6b133fb6b3064a6722e14e49a6b
+  Yoga: 9ead55da0909bc1214fd81897f52280e84b83e1d
 
-PODFILE CHECKSUM: aef26f80c98a94feb5ccc3dae817781bd425ca10
+PODFILE CHECKSUM: b931004d050eac701cdeaa72c5a620b2c25d49a0
 
 COCOAPODS: 1.8.4
