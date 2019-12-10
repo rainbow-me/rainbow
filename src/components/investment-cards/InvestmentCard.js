@@ -65,8 +65,8 @@ const InvestmentCard = enhance(
         paddingVertical={InvestmentCardMargin.vertical}
         style={{
           shadowColor: colors.dark,
-          shadowOffset: { height: 1.5, width: 0 },
-          shadowOpacity: 0.1,
+          shadowOffset: { height: 2, width: 0 },
+          shadowOpacity: 0.08,
           shadowRadius: 3,
         }}
       >
@@ -93,12 +93,16 @@ const InvestmentCard = enhance(
               <ButtonPressAnimation
                 disabled={!headerProps.isCollapsible}
                 onPress={onPress}
-                scaleTo={0.96}
+                scaleTo={0.98}
               >
                 <InvestmentCardHeader {...headerProps} collapsed={collapsed} />
               </ButtonPressAnimation>
               {children}
-              <InnerBorder radius={InvestmentCardBorderRadius} />
+              <InnerBorder
+                opacity={0.04}
+                radius={InvestmentCardBorderRadius}
+                width={0.5}
+              />
             </Column>
           </View>
         </SizeToggler>

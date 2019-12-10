@@ -35,8 +35,8 @@ const UniqueTokenCard = ({
       scaleTo={0.94}
       style={{
         shadowColor: colors.dark,
-        shadowOffset: { height: 1.5, width: 0 },
-        shadowOpacity: 0.1,
+        shadowOffset: { height: 2, width: 0 },
+        shadowOpacity: 0.08,
         shadowRadius: 3,
         ...shadowStyle,
       }}
@@ -57,7 +57,7 @@ const UniqueTokenCard = ({
         />
         {borderEnabled && (
           <InnerBorder
-            opacity={0.06}
+            opacity={0.04}
             radius={UniqueTokenCardBorderRadius}
             width={0.5}
           />
