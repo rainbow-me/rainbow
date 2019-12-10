@@ -7,7 +7,6 @@ import { AppRegistry, AppState, Linking } from 'react-native';
 // eslint-disable-next-line import/default
 import CodePush from 'react-native-code-push';
 import { REACT_APP_SEGMENT_API_WRITE_KEY } from 'react-native-dotenv';
-import firebase from 'react-native-firebase';
 // eslint-disable-next-line import/default
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 // eslint-disable-next-line import/no-unresolved

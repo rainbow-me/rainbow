@@ -5,24 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@import Firebase;
 #import "AppDelegate.h"
 #import <CodePush/CodePush.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
 #import <React/RCTRootView.h>
-#import <Firebase.h>
-#import "RNFirebaseMessaging.h"
-#import "RNFirebaseNotifications.h"
 #import "RNSplashScreen.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  // Firebase - Push Notifications
   [FIRApp configure];
-  [RNFirebaseNotifications configure];
   [application registerForRemoteNotifications];
    
   // React Native - Defaults
