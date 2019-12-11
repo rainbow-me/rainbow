@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import lang from 'i18n-js';
 import { Animated } from 'react-native';
-import TouchID from 'react-native-touch-id';
 import styled from 'styled-components';
 import { Button, HoldToAuthorizeButton } from '../components/buttons';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
@@ -54,20 +53,9 @@ export default class TransactionConfirmationScreen extends PureComponent {
   };
 
   state = {
-    biometryType: null,
     isAuthorizing: false,
     sendLongPressProgress: new Animated.Value(0),
   };
-
-  componentDidMount() {
-    TouchID.isSupported()
-      .then(biometryType => {
-        this.setState({ biometryType });
-      })
-      .catch(() => {
-        this.setState({ biometryType: 'FaceID' });
-      });
-  }
 
   componentWillUnmount() {
     this.state.sendLongPressProgress.stopAnimation();
