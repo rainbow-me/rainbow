@@ -12,7 +12,7 @@ const Header = React.memo(props => (
   <Row
     {...props}
     align="end"
-    css={padding(StatusBarHeight, 9, 0)}
+    css={padding(StatusBarHeight, 0, 0)}
     flexShrink={0}
     height={HeaderHeightWithStatusBar}
     width="100%"

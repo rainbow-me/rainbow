@@ -3,7 +3,6 @@ import { setDisplayName } from 'recompose';
 import {
   withAccountSettings,
   withAccountTransactions,
-  withBlurTransitionProps,
   withIsWalletEmpty,
   withRequests,
 } from '../hoc';
@@ -13,7 +12,6 @@ export default compose(
   setDisplayName('ProfileScreen'),
   withAccountSettings,
   withAccountTransactions,
-  withBlurTransitionProps,
   withIsWalletEmpty,
   withRequests,
   withHandlers({

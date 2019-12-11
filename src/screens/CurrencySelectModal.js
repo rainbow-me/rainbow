@@ -208,7 +208,6 @@ class CurrencySelectModal extends Component {
                   showFavoriteButton: type === CurrencySelectionTypes.output,
                 }}
                 listItems={listItems}
-                searchQuery={searchQuery}
                 showList={isFocused}
                 type={type}
               />

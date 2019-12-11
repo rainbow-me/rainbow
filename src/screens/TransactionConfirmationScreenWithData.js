@@ -7,7 +7,7 @@ import React, { PureComponent } from 'react';
 import { Alert, Vibration } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
-import { withTransactionConfirmationScreen } from '../hoc';
+import { withGas, withTransactionConfirmationScreen } from '../hoc';
 import {
   signMessage,
   signPersonalMessage,
@@ -15,6 +15,7 @@ import {
   sendTransaction,
 } from '../model/wallet';
 import { estimateGas, getTransactionCount, toHex } from '../handlers/web3';
+import { gasUtils } from '../utils';
 import {
   isMessageDisplayType,
   isSignFirstParamType,
@@ -26,6 +27,7 @@ import TransactionConfirmationScreen from './TransactionConfirmationScreen';
 class TransactionConfirmationScreenWithData extends PureComponent {
   static propTypes = {
     dataAddNewTransaction: PropTypes.func,
+    gasPrices: PropTypes.object,
     navigation: PropTypes.any,
     removeRequest: PropTypes.func,
     transactionCountNonce: PropTypes.number,
@@ -34,8 +36,11 @@ class TransactionConfirmationScreenWithData extends PureComponent {
   };
 
   componentDidMount() {
-    const autoOpened = get(this.props, 'navigation.state.params.autoOpened');
-    if (autoOpened) {
+    const openAutomatically = get(
+      this.props,
+      'navigation.state.params.openAutomatically'
+    );
+    if (openAutomatically) {
       Vibration.vibrate();
     }
   }
@@ -66,7 +71,15 @@ class TransactionConfirmationScreenWithData extends PureComponent {
 
     const sendInsteadOfSign = method === SEND_TRANSACTION;
     const txPayload = get(params, '[0]');
-    let { gasLimit } = txPayload;
+    let { gasLimit, gasPrice } = txPayload;
+
+    if (isNil(gasPrice)) {
+      const { gasPrices } = this.props;
+      const rawGasPrice = get(gasPrices, `${gasUtils.NORMAL}.value.amount`);
+      if (rawGasPrice) {
+        gasPrice = toHex(rawGasPrice);
+      }
+    }
 
     if (isNil(gasLimit)) {
       try {
@@ -83,7 +96,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
       web3TxnCount
     );
     const nonce = ethers.utils.hexlify(maxTxnCount);
-    let txPayloadLatestNonce = { ...txPayload, nonce };
+    let txPayloadLatestNonce = { ...txPayload, gasLimit, gasPrice, nonce };
     txPayloadLatestNonce = omit(txPayloadLatestNonce, 'from');
     let result = null;
     if (sendInsteadOfSign) {
@@ -107,10 +120,10 @@ class TransactionConfirmationScreenWithData extends PureComponent {
           asset: get(displayDetails, 'request.asset'),
           dappName,
           from: get(displayDetails, 'request.from'),
-          gasLimit: get(displayDetails, 'request.gasLimit'),
-          gasPrice: get(displayDetails, 'request.gasPrice'),
+          gasLimit,
+          gasPrice,
           hash: result,
-          nonce: get(displayDetails, 'request.nonce'),
+          nonce,
           to: get(displayDetails, 'request.to'),
         };
         this.props.dataAddNewTransaction(txDetails);
@@ -220,6 +233,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
 }
 
 export default compose(
+  withGas,
   withNavigationFocus,
   withTransactionConfirmationScreen
 )(TransactionConfirmationScreenWithData);
