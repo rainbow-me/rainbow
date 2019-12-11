@@ -98,7 +98,7 @@ const HEADER_ROW = 2;
 const OVERLAY = 3;
 
 let currentIndex = 0;
-let scrollPosition = new Animated.Value(1);
+let scrollPosition = new Animated.Value(0);
 let nextCategoryOffset = new Animated.Value(1);
 let blockCategories = true;
 
