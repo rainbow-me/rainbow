@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
-import { compose } from 'recompact';
 import styled from 'styled-components/primitives';
 import { withKeyboardHeight } from '../../hoc';
 import { padding, position } from '../../styles';
@@ -34,10 +33,12 @@ class KeyboardFixedOpenLayout extends PureComponent {
   };
 
   componentDidMount = () => {
-    this.willShowListener = Keyboard.addListener(
-      'keyboardWillShow',
-      this.keyboardWillShow
-    );
+    if (!this.willShowListener) {
+      this.willShowListener = Keyboard.addListener(
+        'keyboardWillShow',
+        this.keyboardWillShow
+      );
+    }
   };
 
   componentWillUnmount = () => this.clearKeyboardListeners();
@@ -46,8 +47,6 @@ class KeyboardFixedOpenLayout extends PureComponent {
 
   clearKeyboardListeners = () => {
     if (this.willShowListener) {
-      // console.log('this.willShowListener', this.willShowListener);
-
       this.willShowListener.remove();
     }
   };
@@ -78,7 +77,4 @@ class KeyboardFixedOpenLayout extends PureComponent {
   };
 }
 
-export default compose(
-  withKeyboardHeight
-  // onlyUpdateForKeys(['height']),
-)(KeyboardFixedOpenLayout);
+export default withKeyboardHeight(KeyboardFixedOpenLayout);
