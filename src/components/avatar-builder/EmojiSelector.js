@@ -27,47 +27,59 @@ import {
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import { deviceUtils } from '../../utils';
 import { State, TapGestureHandler } from 'react-native-gesture-handler';
+import { BlurView } from '@react-native-community/blur';
+import Animated from 'react-native-reanimated';
+
+// TODO width attribute is temporary solution that will be removed as soon as I figure out why proper scaling does not work
 
 export const Categories = {
   people: {
     icon: 'emojiSmileys',
     index: 0,
     name: 'Smileys & People',
+    width: 134,
   },
   nature: {
     icon: 'emojiAnimals',
     index: 1,
     name: 'Animals & Nature',
+    width: 138,
   },
   food: {
     icon: 'emojiFood',
     index: 2,
     name: 'Food & Drink',
+    width: 106,
   },
   activities: {
     icon: 'emojiActivities',
     index: 3,
     name: 'Activities',
+    width: 85,
   },
   places: {
     icon: 'emojiTravel',
     index: 4,
     name: 'Travel & Places',
+    width: 126,
   },
   objects: {
     icon: 'emojiObjects',
     index: 5,
     name: 'Objects',
+    width: 74,
   },
   icons: {
     icon: 'emojiSymbols',
     index: 6,
     name: 'Symbols',
+    width: 77,
   },
   flags: {
     icon: 'emojiFlags',
     index: 7,
     name: 'Flags',
+    width: 58,
   },
 };
 
@@ -86,6 +98,8 @@ const HEADER_ROW = 2;
 const OVERLAY = 3;
 
 let currentIndex = 0;
+let scrollPosition = new Animated.Value(1);
+let nextCategoryOffset = new Animated.Value(1);
 let blockCategories = true;
 
 export default class EmojiSelector extends PureComponent {
@@ -222,9 +236,11 @@ export default class EmojiSelector extends PureComponent {
   renderListHeader = title => {
     return (
       this.props.showSectionTitles && (
-        <View style={styles.sectionHeaderWrap}>
+        <Animated.View
+          style={[styles.sectionHeaderWrap, { opacity: nextCategoryOffset }]}
+        >
           <Text style={styles.sectionHeader}>{title}</Text>
-        </View>
+        </Animated.View>
       )
     );
   };
@@ -265,10 +281,7 @@ export default class EmojiSelector extends PureComponent {
     });
   }
 
-  hasRowChanged = (r1, r2) => {
-    if (r1 !== r2) {
-      return true;
-    }
+  hasRowChanged = () => {
     return false;
   };
 
@@ -292,27 +305,56 @@ export default class EmojiSelector extends PureComponent {
     return this.renderEmojis(item);
   };
 
-  renderStickyItem = (type, item) => (
+  renderStickyItem = (type, item, index) => (
     <View style={styles.sectionStickyHeaderWrap}>
-      <Text style={styles.sectionHeader}>{item.title}</Text>
+      <Animated.View
+        style={{
+          opacity: scrollPosition,
+        }}
+      >
+        <BlurView
+          blurType="light"
+          blurAmount={10}
+          style={[
+            styles.sectionStickyBlur,
+            { width: Categories[categoryKeys[(index - 1) / 2]].width },
+          ]}
+        >
+          <Text style={styles.sectionStickyHeader}>{item.title}</Text>
+        </BlurView>
+      </Animated.View>
     </View>
   );
 
   handleScroll = (event, offsetX, offsetY) => {
     if (!blockCategories) {
       if (
-        offsetY > this.state.allEmojiList[(currentIndex + 1) * 2].offset &&
+        offsetY - 0.5 >
+          this.state.allEmojiList[(currentIndex + 1) * 2].offset &&
         currentIndex < this.state.allEmojiList.length / 2 - 2
       ) {
         currentIndex += 1;
         this.setState({ category: Categories[categoryKeys[currentIndex]] });
       } else if (
         currentIndex * 2 - 1 > 0 &&
-        offsetY < this.state.allEmojiList[currentIndex * 2].offset
+        offsetY - 0.5 < this.state.allEmojiList[currentIndex * 2].offset
       ) {
         currentIndex -= 1;
         this.setState({ category: Categories[categoryKeys[currentIndex]] });
       }
+      scrollPosition.setValue(
+        -offsetY + this.state.allEmojiList[(currentIndex + 1) * 2].offset > 40
+          ? 1
+          : (-offsetY +
+              this.state.allEmojiList[(currentIndex + 1) * 2].offset) /
+              40
+      );
+      nextCategoryOffset.setValue(
+        -offsetY + this.state.allEmojiList[(currentIndex + 1) * 2].offset <
+          400 || offsetY < 1
+          ? 1
+          : 0
+      );
     }
   };
 
@@ -423,7 +465,6 @@ export default class EmojiSelector extends PureComponent {
             </View>
           </View>
         </TapGestureHandler>
-
         {showTabs && (
           <View style={styles.tabBar}>
             <Image
@@ -563,9 +604,24 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   sectionStickyHeaderWrap: {
-    backgroundColor: '#ffffffdd',
-    marginRight: 10,
-    paddingLeft: 10,
+    marginLeft: 10,
+    flex: 1,
+  },
+  sectionStickyHeader: {
+    color: '#3C4252',
+    fontSize: 12,
+    fontWeight: '600',
+    opacity: 0.5,
+    paddingBottom: 5,
+    paddingLeft: 8.3,
+    paddingRight: 4,
+    paddingTop: 5,
+    textTransform: 'uppercase',
+    backgroundColor: '#ffffffee',
+  },
+  sectionStickyBlur: {
+    marginTop: 10,
+    borderRadius: 15,
   },
   tabBar: {
     alignSelf: 'center',

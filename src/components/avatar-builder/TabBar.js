@@ -1,9 +1,9 @@
 import React from 'react';
 import { ButtonPressAnimation } from '../animations';
-import { colors } from '../../styles';
+import { colors, position } from '../../styles';
 import { Icon } from '../icons';
-import { RadialGradient } from 'svgs';
 import { Categories } from './EmojiSelector';
+import LinearGradient from 'react-native-linear-gradient';
 
 const TabBar = ({ categoryKeys, activeCategory, onPress }) => {
   return categoryKeys.map(c => {
@@ -19,8 +19,6 @@ const TabBar = ({ categoryKeys, activeCategory, onPress }) => {
           scaleTo={0.75}
           style={{
             alignItems: 'center',
-            /*backgroundColor: category === activeCategory ? colors.alpha(colors.blueGreyDark, 0.05) : null,
-            borderRadius: 12,*/
             flex: 1,
             height: 30,
             justifyContent: 'center',
@@ -28,18 +26,15 @@ const TabBar = ({ categoryKeys, activeCategory, onPress }) => {
           }}
         >
           {category === activeCategory && (
-            <RadialGradient
-              borderRadius={14}
-              center={[32, 16]}
-              colors={['#FFB114', '#FF54BB', '#00F0FF']}
-              left={-1}
-              opacity={0.1}
+            <LinearGradient
+              borderRadius={17}
               overflow="hidden"
-              position="absolute"
-              radius={32}
-              style={{ height: 32, width: 32 }}
-              stops={[0, 0.635483871, 1]}
-              top={-1}
+              colors={['#FFB114', '#FF54BB', '#00F0FF']}
+              end={{ x: 0, y: 0.5 }}
+              pointerEvents="none"
+              start={{ x: 1, y: 0.5 }}
+              opacity={0.1}
+              style={position.coverAsObject}
             />
           )}
           <Icon
