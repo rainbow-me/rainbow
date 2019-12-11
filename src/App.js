@@ -17,11 +17,7 @@ import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { FlexItem } from './components/layout';
 import OfflineBadge from './components/OfflineBadge';
-import {
-  withDeepLink,
-  withWalletConnectConnections,
-  withWalletConnectOnSessionRequest,
-} from './hoc';
+import { withDeepLink, withWalletConnectOnSessionRequest } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { Navigation } from './navigation';
@@ -40,9 +36,7 @@ class App extends Component {
   static propTypes = {
     addDeepLinkRequest: PropTypes.func,
     requestsForTopic: PropTypes.func,
-    walletConnectClearTimestamp: PropTypes.func,
     walletConnectOnSessionRequest: PropTypes.func,
-    walletConnectUpdateTimestamp: PropTypes.func,
   };
 
   state = { appState: AppState.currentState };
@@ -140,11 +134,7 @@ class App extends Component {
 
   handleAppStateChange = async nextAppState => {
     if (nextAppState === 'active') {
-      this.props.walletConnectUpdateTimestamp();
       PushNotificationIOS.removeAllDeliveredNotifications();
-    }
-    if (nextAppState === 'background') {
-      this.props.walletConnectClearTimestamp();
     }
     this.setState({ appState: nextAppState });
   };
@@ -165,7 +155,6 @@ class App extends Component {
 const AppWithRedux = compose(
   withProps({ store }),
   withDeepLink,
-  withWalletConnectConnections,
   withWalletConnectOnSessionRequest,
   connect(null, {
     requestsForTopic,
