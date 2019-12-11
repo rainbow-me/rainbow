@@ -41,12 +41,6 @@
     "decimals": 18,
     "exchangeAddress": "0x0E6A53B13688018A3df8C69f99aFB19A3068D04f"
   },
-  "0x14094949152eddbfcd073717200da82fed8dc960": {
-    "name": "bZx Sai",
-    "symbol": "ISAI",
-    "decimals": 18,
-    "exchangeAddress": "0x81eed7f1ecbd7fa9978fcc7584296fb0c215dc5c"
-  },
   "0x514910771AF9Ca656af840dff83E8264EcF986CA": {
     "name": "Chainlink",
     "symbol": "LINK",
@@ -59,11 +53,23 @@
     "decimals": 8,
     "exchangeAddress": "0x1C6c712b1F4a7c263B1DBd8F97fb447c945d3b9a"
   },
+  "0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643": {
+    "name": "Compound Dai",
+    "symbol": "cDAI",
+    "decimals": 8,
+    "exchangeAddress": "0x34E89740adF97C3A9D3f63Cc2cE4a914382c230b"
+  },
   "0xF5DCe57282A584D2746FaF1593d3121Fcac444dC": {
     "name": "Compound Sai",
     "symbol": "cSAI",
     "decimals": 8,
     "exchangeAddress": "0x45A2FDfED7F7a2c791fb1bdF6075b83faD821ddE"
+  },
+  "0x39aa39c021dfbae8fac545936693ac917d5e7563": {
+    "name": "Compound USD Coin",
+    "symbol": "cUSDC",
+    "decimals": 8,
+    "exchangeAddress": "0xb791c10824296881f91bdbc16367bbd9743fd99b"
   },
   "0xB4272071eCAdd69d933AdcD19cA99fe80664fc08": {
     "name": "CryptoFranc",
@@ -106,6 +112,12 @@
     "symbol": "FOAM",
     "decimals": 18,
     "exchangeAddress": "0xf79cb3BEA83BD502737586A6E8B133c378FD1fF2"
+  },
+  "0x14094949152eddbfcd073717200da82fed8dc960": {
+    "name": "Fulcrum Sai",
+    "symbol": "iSAI",
+    "decimals": 18,
+    "exchangeAddress": "0x81eed7f1ecbd7fa9978fcc7584296fb0c215dc5c"
   },
   "0x419D0d8BdD9aF5e606Ae2232ed285Aff190E711b": {
     "name": "FunFair",
@@ -310,12 +322,6 @@
     "symbol": "WBTC",
     "decimals": 8,
     "exchangeAddress": "0x4d2f5cFbA55AE412221182D8475bC85799A5644b"
-  },
-  "0x09fE5f0236F0Ea5D930197DCE254d77B04128075": {
-    "name": "Wrapped CryptoKitties",
-    "symbol": "WCK",
-    "decimals": 18,
-    "exchangeAddress": "0x4FF7Fa493559c40aBd6D157a0bfC35Df68d8D0aC"
   },
   "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2": {
     "name": "Wrapped Ether",

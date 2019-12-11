@@ -1,6 +1,7 @@
 import { getGlobal, saveGlobal } from './common';
 
 const APPSTORE_REVIEW_COUNT = 'appStoreReviewRequestCount';
+const KEYBOARD_HEIGHT = 'keyboardHeight';
 const LANGUAGE = 'language';
 const NATIVE_CURRENCY = 'nativeCurrency';
 
@@ -12,6 +13,10 @@ export const saveAppStoreReviewCount = reviewCount =>
 export const getLanguage = () => getGlobal(LANGUAGE, 'en');
 
 export const saveLanguage = language => saveGlobal(LANGUAGE, language);
+
+export const getKeyboardHeight = () => getGlobal(KEYBOARD_HEIGHT, null);
+
+export const setKeyboardHeight = height => saveGlobal(KEYBOARD_HEIGHT, height);
 
 export const getNativeCurrency = () => getGlobal(NATIVE_CURRENCY, 'USD');
 

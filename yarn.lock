@@ -9145,10 +9145,10 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-coin-icon@0.1.12:
-  version "0.1.12"
-  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.12.tgz#27468537670ef374506f95e0e30d340e49ef1c8c"
-  integrity sha512-EkF3r35Si9cevjXyQcDJFkw1zK2h9ctSV5NiFyucdMsZLdd9DefnR2ji8BKVg/X0bOKsrRXhqa7b15SsXImLOw==
+react-coin-icon@0.1.13:
+  version "0.1.13"
+  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.13.tgz#0eb148637a7714f3b74a493b71de0bba34353634"
+  integrity sha512-j+6r6EcXbTbdlpJCf8DvBAvl44mXXFCdrNh5Bj9P3y4KON2brMXpNrkrN1ixrx7y87F+n55K++DERoM3XqdbJg==
   dependencies:
     "@svgr/cli" "^4.3.0"
     lodash "^4.17.11"
@@ -9532,10 +9532,10 @@ react-native@facebook/react-native:
     use-subscription "^1.0.0"
     whatwg-fetch "^3.0.0"
 
-react-navigation-stack@2.0.0-alpha.37:
-  version "2.0.0-alpha.37"
-  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-2.0.0-alpha.37.tgz#15c38f7ef9923a2b6739c2bc8441f8ab70af3ec3"
-  integrity sha512-2AcidUvhNgErV2QlV3s7wSdkbAJ+sQEAsHrHF4xK8PTf04I9+qG3/Ds9Orx31njhujHfuB5nN/77z+ih1iM+7g==
+react-navigation-stack@2.0.0-alpha.39:
+  version "2.0.0-alpha.39"
+  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-2.0.0-alpha.39.tgz#e138a116f69397ead27d5760559489e23990ed3f"
+  integrity sha512-G6cKfiPodPpoTmEdTZhZQ1yYkjU9UeqM3W7KzEQp1Pk3iTswel9z+Arry1YFkR42zPDkzuSg7phU7VFwkvo+uw==
 
 react-navigation-tabs-v1@1.2.0:
   version "1.2.0"
