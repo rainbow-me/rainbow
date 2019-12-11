@@ -17,14 +17,16 @@ const {
   max,
   min,
   multiply,
+  proc,
   sin,
   sub,
 } = Animated;
 
 const AnimatedPath = createAnimatedComponent(Path);
 
-const convertProgress = progress =>
-  divide(multiply(360, min(100, max(0, progress))), 100);
+const convertProgress = proc(progress =>
+  divide(multiply(360, min(100, max(0, progress))), 100)
+);
 
 function polarToCartesian(center, radius, angleInDegrees) {
   const angleInRadians = divide(

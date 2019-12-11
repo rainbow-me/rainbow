@@ -1,17 +1,16 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import { withNeverRerender } from '../hoc';
 import { colors, position } from '../styles';
 
-const TouchableBackdrop = props => (
+const TouchableBackdrop = ({ zIndex, ...props }) => (
   <BorderlessButton
-    css={`
-      ${position.cover};
-      background-color: ${colors.transparent};
-      z-index: ${({ zIndex }) => zIndex};
-    `}
     {...props}
+    {...position.centeredAsObject}
+    {...position.coverAsObject}
+    activeOpacity={1}
+    backgroundColor={colors.transparent}
+    zIndex={zIndex}
   />
 );
 
@@ -23,4 +22,5 @@ TouchableBackdrop.defaultProps = {
   zIndex: 0,
 };
 
-export default withNeverRerender(TouchableBackdrop);
+const neverRerender = () => true;
+export default React.memo(TouchableBackdrop, neverRerender);

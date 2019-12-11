@@ -9,33 +9,28 @@ import {
 } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing } from 'react-native-reanimated';
+import { transformOrigin as transformOriginUtil } from 'react-native-redash';
 import stylePropType from 'react-style-proptype';
 import { animations, colors } from '../../styles';
 import { directionPropType } from '../../utils';
-import {
-  and,
-  cond as condProc,
-  contains,
-  divide,
-  eq,
-  greaterThan,
-  interpolate,
-  lessThan,
-  or,
-  set,
-  timing,
-  transformOrigin as transformOriginUtil,
-} from './procs';
+import { contains, interpolate, timing } from './procs';
 
 const {
+  and,
   block,
   call,
   Clock,
   cond,
   createAnimatedComponent,
+  divide,
+  eq,
   event,
+  greaterThan,
+  lessThan,
   onChange,
+  or,
   proc,
+  set,
   stopClock,
   Value,
 } = Animated;
@@ -292,16 +287,14 @@ export default class ButtonPressAnimation extends Component {
             ]),
             onChange(
               this.gestureState,
-              condProc(
+              cond(
                 eq(this.gestureState, ACTIVE),
                 [
                   call([], this.createInteraction),
                   call([], this.createLongPressListener),
                   call([], this.handlePressStart),
                 ],
-                condProc(eq(this.gestureState, END), [
-                  call([], this.handlePress),
-                ])
+                cond(eq(this.gestureState, END), [call([], this.handlePress)])
               )
             ),
             cond(
