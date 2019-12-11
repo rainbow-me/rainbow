@@ -5,14 +5,6 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
 target 'Rainbow' do
-  # Crashlytics
-  pod 'Fabric', '~> 1.7.11'
-  pod 'Crashlytics', '~> 3.10.7'
-
-  # Firebase
-  pod 'Firebase/Core', '~> 6.2.0'
-  pod 'Firebase/Messaging', '~> 6.2.0'
-
   # Core React
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"
@@ -53,5 +45,7 @@ target 'Rainbow' do
 
   use_native_modules!
 
+
+  pod 'RNCPushNotificationIOS', :path => '../node_modules/@react-native-community/push-notification-ios'
 
 end
