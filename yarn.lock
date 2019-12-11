@@ -9521,10 +9521,10 @@ react-native@facebook/react-native:
     use-subscription "^1.0.0"
     whatwg-fetch "^3.0.0"
 
-react-navigation-stack@2.0.0-alpha.37:
-  version "2.0.0-alpha.37"
-  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-2.0.0-alpha.37.tgz#15c38f7ef9923a2b6739c2bc8441f8ab70af3ec3"
-  integrity sha512-2AcidUvhNgErV2QlV3s7wSdkbAJ+sQEAsHrHF4xK8PTf04I9+qG3/Ds9Orx31njhujHfuB5nN/77z+ih1iM+7g==
+react-navigation-stack@2.0.0-alpha.39:
+  version "2.0.0-alpha.39"
+  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-2.0.0-alpha.39.tgz#e138a116f69397ead27d5760559489e23990ed3f"
+  integrity sha512-G6cKfiPodPpoTmEdTZhZQ1yYkjU9UeqM3W7KzEQp1Pk3iTswel9z+Arry1YFkR42zPDkzuSg7phU7VFwkvo+uw==
 
 react-navigation-tabs-v1@1.2.0:
   version "1.2.0"
