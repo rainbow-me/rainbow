@@ -6,7 +6,11 @@ import { compose, withHandlers } from 'recompact';
 import { getIsWalletEmpty } from '../handlers/localstorage/accountLocal';
 import { hasEthBalance } from '../handlers/web3';
 import { walletInit } from '../model/wallet';
-import { dataClearState, dataLoadState } from '../redux/data';
+import {
+  dataClearState,
+  dataLoadState,
+  dataTokenOverridesInit,
+} from '../redux/data';
 import { explorerClearState, explorerInit } from '../redux/explorer';
 import { gasClearState, gasPricesInit } from '../redux/gas';
 import { clearIsWalletEmpty } from '../redux/isWalletEmpty';
@@ -25,6 +29,7 @@ import {
 import {
   uniswapLoadState,
   uniswapClearState,
+  uniswapPairsInit,
   uniswapUpdateState,
 } from '../redux/uniswap';
 import {
@@ -51,6 +56,7 @@ export default Component =>
       contactsLoadState,
       dataClearState,
       dataLoadState,
+      dataTokenOverridesInit,
       explorerClearState,
       explorerInit,
       gasClearState,
@@ -67,6 +73,7 @@ export default Component =>
       uniqueTokensRefreshState,
       uniswapClearState,
       uniswapLoadState,
+      uniswapPairsInit,
       uniswapUpdateState,
       walletConnectClearState,
       walletConnectLoadState,
@@ -109,7 +116,9 @@ export default Component =>
       },
       initializeAccountData: ownProps => async () => {
         try {
+          // await ownProps.dataTokenOverridesInit();
           ownProps.explorerInit();
+          ownProps.uniswapPairsInit();
           ownProps.gasPricesInit();
           ownProps.web3ListenerInit();
           await ownProps.uniqueTokensRefreshState();

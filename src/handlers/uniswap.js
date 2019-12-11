@@ -1,7 +1,8 @@
 import { getExecutionDetails, getTokenReserves } from '@uniswap/sdk';
+import axios from 'axios';
 import contractMap from 'eth-contract-metadata';
 import { ethers } from 'ethers';
-import { get, map, toLower, zipObject } from 'lodash';
+import { get, map, mapKeys, mapValues, toLower, zipObject } from 'lodash';
 import {
   convertRawAmountToDecimalFormat,
   divide,
@@ -12,6 +13,30 @@ import { loadWallet } from '../model/wallet';
 import exchangeABI from '../references/uniswap-exchange-abi.json';
 import erc20ABI from '../references/erc20-abi.json';
 import { toHex, web3Provider } from './web3';
+
+const uniswapPairsEndpoint = axios.create({
+  baseURL:
+    'https://raw.githubusercontent.com/rainbow-me/asset-overrides/master/uniswap-pairs.json',
+  headers: {
+    Accept: 'application/json',
+  },
+  timeout: 20000, // 20 secs
+});
+
+export const getUniswapPairs = async tokenOverrides => {
+  try {
+    const data = await uniswapPairsEndpoint.get();
+    const pairs = get(data, 'data') || {};
+    const loweredPairs = mapKeys(pairs, (_, key) => toLower(key));
+    return mapValues(loweredPairs, (value, key) => ({
+      ...value,
+      ...tokenOverrides[key],
+    }));
+  } catch (error) {
+    console.log('Error getting uniswap pairs', error);
+    throw error;
+  }
+};
 
 const convertArgsForEthers = methodArguments =>
   methodArguments.map(arg =>

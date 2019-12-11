@@ -1,6 +1,5 @@
 import { get, toUpper } from 'lodash';
 import { convertRawAmountToBalance } from '../helpers/utilities';
-import { loweredTokenOverrides } from '../references';
 import { dedupeUniqueTokens } from './uniqueTokens';
 
 /**
@@ -8,10 +7,10 @@ import { dedupeUniqueTokens } from './uniqueTokens';
  * @param  {Object} [data]
  * @return {Array}
  */
-export const parseAccountAssets = (data, uniqueTokens) => {
+export const parseAccountAssets = (data, uniqueTokens, tokenOverrides) => {
   const dedupedAssets = dedupeUniqueTokens(data, uniqueTokens);
   let assets = dedupedAssets.map(assetData => {
-    const asset = parseAsset(assetData.asset);
+    const asset = parseAsset(assetData.asset, tokenOverrides);
     return {
       ...asset,
       balance: convertRawAmountToBalance(assetData.quantity, asset),
@@ -26,7 +25,7 @@ export const parseAccountAssets = (data, uniqueTokens) => {
  * @param  {Object} assetData
  * @return {Object}
  */
-export const parseAsset = assetData => {
+export const parseAsset = (assetData, tokenOverrides) => {
   const address = get(assetData, 'asset_code', null);
   const name = get(assetData, 'name') || 'Unknown Token';
   let symbol = get(assetData, 'symbol') || '———';
@@ -40,7 +39,7 @@ export const parseAsset = assetData => {
     price: get(assetData, 'price'),
     symbol: toUpper(symbol),
     uniqueId: address || name,
-    ...loweredTokenOverrides[address],
+    ...tokenOverrides[address],
   };
   return asset;
 };
