@@ -36,8 +36,11 @@ class TransactionConfirmationScreenWithData extends PureComponent {
   };
 
   componentDidMount() {
-    const autoOpened = get(this.props, 'navigation.state.params.autoOpened');
-    if (autoOpened) {
+    const openAutomatically = get(
+      this.props,
+      'navigation.state.params.openAutomatically'
+    );
+    if (openAutomatically) {
       Vibration.vibrate();
     }
   }
