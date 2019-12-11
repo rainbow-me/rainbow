@@ -116,7 +116,7 @@ export default Component =>
       },
       initializeAccountData: ownProps => async () => {
         try {
-          await ownProps.dataTokenOverridesInit();
+          // await ownProps.dataTokenOverridesInit();
           ownProps.explorerInit();
           ownProps.uniswapPairsInit();
           ownProps.gasPricesInit();
