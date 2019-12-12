@@ -51,8 +51,7 @@ const ConfirmImportAlert = onSuccess =>
     buttons: [
       {
         onPress: onSuccess,
-        style: 'destructive',
-        text: 'Delete and Import',
+        text: 'Import Wallet',
       },
       {
         style: 'cancel',
@@ -60,8 +59,8 @@ const ConfirmImportAlert = onSuccess =>
       },
     ],
     message:
-      'Importing this private key will overwrite your existing wallet. Before continuing, please make sure you’ve transferred its contents or backed up its private key.',
-    title: 'Are you sure you want to import?',
+      'This will replace your existing wallet.\n\nBefore continuing, please make sure you’ve backed up or emptied it!',
+    title: '🚨 Careful 🚨',
   });
 
 const ImportButton = ({ disabled, onPress, seedPhrase }) => (
