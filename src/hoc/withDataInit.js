@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import delay from 'delay';
 import { isNil } from 'lodash';
 import { Alert } from 'react-native';
@@ -125,6 +126,7 @@ export default Component =>
         } catch (error) {
           // TODO error state
           console.log('Error initializing account data: ', error);
+          captureException(error);
         }
       },
       loadAccountData: ownProps => async () => {
@@ -150,6 +152,7 @@ export default Component =>
           ]);
         } catch (error) {
           console.log('Error refreshing data', error);
+          captureException(error);
           throw error;
         }
       },
@@ -194,6 +197,7 @@ export default Component =>
         } catch (error) {
           // TODO specify error states more granular
           ownProps.onHideSplashScreen();
+          captureException(error);
           Alert.alert(
             'Import failed due to an invalid private key. Please try again.'
           );

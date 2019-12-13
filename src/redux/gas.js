@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { get, isEmpty } from 'lodash';
 import { apiGetGasPrices } from '../handlers/gasPrices';
 import { fromWei } from '../helpers/utilities';
@@ -77,6 +78,7 @@ export const gasPricesInit = () => (dispatch, getState) =>
               payload: fallbackGasPrices,
               type: GAS_PRICES_FAILURE,
             });
+            captureException(error);
             fetchReject(error);
           });
       });
