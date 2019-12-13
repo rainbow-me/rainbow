@@ -172,9 +172,10 @@ export default function ButtonPressAnimation({
 
   const scale = React.useRef(
     block([
-      cond(and(eq(gestureState, 4), eq(animationState, 3)), [
-        set(animationState, 0),
-      ]),
+      onChange(
+        gestureState,
+        cond(eq(gestureState, 4), [set(animationState, 0)])
+      ),
       ...(onLongPress
         ? [
             onChange(
@@ -303,7 +304,6 @@ ButtonPressAnimation.propTypes = {
 
 ButtonPressAnimation.defaultProps = {
   activeOpacity: 1,
-  defaultScale: animations.keyframes.button.from.scale,
   duration: 200,
   easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
   enableHapticFeedback: true,
