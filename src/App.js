@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/default
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import analytics from '@segment/analytics-react-native';
+import { init as initSentry } from '@sentry/react-native';
 import { get, last } from 'lodash';
 import PropTypes from 'prop-types';
 import nanoid from 'nanoid/non-secure';
@@ -8,7 +9,10 @@ import React, { Component } from 'react';
 import { AppRegistry, AppState, Linking } from 'react-native';
 // eslint-disable-next-line import/default
 import CodePush from 'react-native-code-push';
-import { REACT_APP_SEGMENT_API_WRITE_KEY } from 'react-native-dotenv';
+import {
+  REACT_APP_SEGMENT_API_WRITE_KEY,
+  SENTRY_ENDPOINT,
+} from 'react-native-dotenv';
 // eslint-disable-next-line import/default
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 // eslint-disable-next-line import/no-unresolved
@@ -25,6 +29,10 @@ import store from './redux/store';
 import { requestsForTopic } from './redux/requests';
 import Routes from './screens/Routes';
 import { parseQueryParams } from './utils';
+
+initSentry({
+  dsn: SENTRY_ENDPOINT,
+});
 
 if (process.env.NODE_ENV === 'development') {
   console.disableYellowBox = true;

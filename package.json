@@ -32,6 +32,7 @@
     "@react-native-firebase/crashlytics": "^6.2.0",
     "@react-native-firebase/messaging": "^6.2.0",
     "@segment/analytics-react-native": "^1.0.1",
+    "@sentry/react-native": "^1.2.0",
     "@staltz/react-native-tcp": "^3.3.1",
     "@tradle/react-native-http": "^2.0.1",
     "@uniswap/sdk": "^1.0.0-beta.4",
