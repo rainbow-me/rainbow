@@ -78,7 +78,7 @@ const isSameAsset = (a, b) => {
   return assetA === assetB;
 };
 
-const getNativeTag = field => get(field, '_nativeTag');
+const getNativeTag = field => get(field, '_inputRef._nativeTag');
 
 class ExchangeModal extends Component {
   static propTypes = {
