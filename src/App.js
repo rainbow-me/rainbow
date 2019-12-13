@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/default
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import analytics from '@segment/analytics-react-native';
-import { init as initSentry } from '@sentry/react-native';
+import { init as initSentry, setRelease } from '@sentry/react-native';
 import { get, last } from 'lodash';
 import PropTypes from 'prop-types';
 import nanoid from 'nanoid/non-secure';
@@ -37,6 +37,12 @@ initSentry({
 if (process.env.NODE_ENV === 'development') {
   console.disableYellowBox = true;
 }
+
+CodePush.getUpdateMetadata().then(update => {
+  if (update) {
+    setRelease(update.appVersion + '-codepush:' + update.label);
+  }
+});
 
 useScreens(false);
 
