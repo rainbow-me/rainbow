@@ -46,7 +46,7 @@ import {
   web3ListenerClearState,
   web3ListenerInit,
 } from '../redux/web3listener';
-import { promiseUtils } from '../utils';
+import { promiseUtils, sentryUtils } from '../utils';
 import withHideSplashScreen from './withHideSplashScreen';
 
 export default Component =>
@@ -118,6 +118,7 @@ export default Component =>
       initializeAccountData: ownProps => async () => {
         try {
           // await ownProps.dataTokenOverridesInit();
+          sentryUtils.addInfoBreadcrumb('Initialize account data');
           ownProps.explorerInit();
           ownProps.uniswapPairsInit();
           ownProps.gasPricesInit();
@@ -130,6 +131,7 @@ export default Component =>
         }
       },
       loadAccountData: ownProps => async () => {
+        sentryUtils.addInfoBreadcrumb('Load wallet data');
         await ownProps.openStateSettingsLoadState();
         const p1 = ownProps.settingsLoadState();
         const p2 = ownProps.dataLoadState();
@@ -160,6 +162,7 @@ export default Component =>
     withHandlers({
       initializeWallet: ownProps => async seedPhrase => {
         try {
+          sentryUtils.addInfoBreadcrumb('Start wallet setup');
           const { isImported, isNew, walletAddress } = await walletInit(
             seedPhrase
           );
@@ -192,6 +195,7 @@ export default Component =>
             await ownProps.loadAccountData();
           }
           ownProps.onHideSplashScreen();
+          sentryUtils.addInfoBreadcrumb('Hide splash screen');
           ownProps.initializeAccountData();
           return walletAddress;
         } catch (error) {
