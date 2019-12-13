@@ -80,6 +80,8 @@
 	<string>Rainbow</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Rainbow</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Rainbow</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Rainbow</string>
 	<key>UIAppFonts</key>
