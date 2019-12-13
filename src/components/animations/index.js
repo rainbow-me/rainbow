@@ -7,3 +7,4 @@ export { default as RoundButtonSizeToggler } from './RoundButtonSizeToggler';
 export { default as ScaleInAnimation } from './ScaleInAnimation';
 export { default as SizeToggler } from './SizeToggler';
 export { default as SpinAnimation } from './SpinAnimation';
+export { default as TouchableScale } from './TouchableScale';

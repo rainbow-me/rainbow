@@ -1,13 +1,11 @@
 import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import store from '../../redux/store';
-import { updateTransitionProps } from '../../redux/navigation';
 import { interpolate } from '../../components/animations';
 import { deviceUtils } from '../../utils';
 import { colors } from '../../styles';
 
-const { and, block, call, color, cond, eq, or, SpringUtils } = Animated;
+const { color, SpringUtils } = Animated;
 
 const statusBarHeight = getStatusBarHeight(true);
 
@@ -16,26 +14,7 @@ expand.translateY = deviceUtils.dimensions.height;
 
 export const sheetVerticalOffset = statusBarHeight;
 
-const effectOpacity = Animated.proc((closing, current) =>
-  block([
-    cond(
-      // onStart
-      or(
-        and(eq(closing, 0), eq(current, 0)),
-        and(eq(closing, 1), eq(current, 1))
-      ),
-      // setShowingModal
-      call([], () => {
-        store.dispatch(updateTransitionProps({ showingModal: true }));
-      })
-    ),
-    // return opacity value of 1
-    1,
-  ])
-);
-
 const exchangeStyleInterpolator = ({
-  closing,
   current: { progress: current },
   layouts: { screen },
 }) => {
@@ -52,11 +31,11 @@ const exchangeStyleInterpolator = ({
 
   return {
     cardStyle: {
-      opacity: effectOpacity(closing, current),
+      opacity: 1,
       shadowColor: colors.black,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.4,
-      shadowRadius: 50,
+      shadowRadius: 25,
       // Translation for the animation of the current card
       transform: [{ translateY }],
     },
@@ -67,7 +46,6 @@ const exchangeStyleInterpolator = ({
 };
 
 const expandStyleInterpolator = ({
-  closing,
   current: { progress: current },
   layouts: { screen },
 }) => {
@@ -84,11 +62,11 @@ const expandStyleInterpolator = ({
 
   return {
     cardStyle: {
-      opacity: effectOpacity(closing, current),
+      opacity: 1,
       shadowColor: colors.dark,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
-      shadowRadius: 50,
+      shadowRadius: 25,
       // Translation for the animation of the current card
       transform: [{ translateY }],
     },
@@ -114,12 +92,10 @@ const sheetStyleInterpolator = ({
     outputRange: [0, 0, 0, 1, 1],
   });
 
-  const translateY = block([
-    interpolate(current, {
-      inputRange: [0, 1],
-      outputRange: [screen.height, 0],
-    }),
-  ]);
+  const translateY = interpolate(current, {
+    inputRange: [0, 1],
+    outputRange: [screen.height, 0],
+  });
 
   return {
     cardStyle: {
@@ -127,7 +103,7 @@ const sheetStyleInterpolator = ({
       shadowColor: colors.black,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.4,
-      shadowRadius: 50,
+      shadowRadius: 25,
       // Translation for the animation of the current card
       transform: [{ translateY }],
     },

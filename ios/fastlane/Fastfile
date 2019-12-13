@@ -17,6 +17,7 @@ platform :ios do
   lane :refresh_dsyms do
     download_dsyms(version: "latest")
     upload_symbols_to_crashlytics
+    sentry_upload_dsym
     clean_build_artifacts
   end
 
@@ -44,37 +45,6 @@ platform :ios do
     pilot(
       app_identifier: "me.rainbow"
     )
-    download_dsyms
-    upload_symbols_to_crashlytics
-    clean_build_artifacts
-  end
-
-  desc "Submit a new Internal build to Apple TestFlight"
-  lane :internal do
-    update_info_plist(
-      plist_path: "Rainbow/Info.plist",
-      display_name: "Internal"
-    )
-    update_app_identifier(
-      app_identifier: "me.rainbow.internal",
-      xcodeproj: "Rainbow.xcodeproj",
-      plist_path: "Rainbow/Info.plist",
-    )
-    match(
-      type: "appstore",
-      app_identifier: "me.rainbow.internal",
-      git_url: "git@github.com:rainbow-me/rainbow-code-signing.git"
-    )
-    gym(
-      scheme: "Rainbow",
-      export_method: "app-store",
-      include_symbols: true,
-    )
-    pilot(
-      app_identifier: "me.rainbow.internal"
-    )
-    download_dsyms
-    upload_symbols_to_crashlytics
-    clean_build_artifacts
+    refresh_dsyms
   end
 end
