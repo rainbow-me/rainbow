@@ -17,6 +17,7 @@ platform :ios do
   lane :refresh_dsyms do
     download_dsyms(version: "latest")
     upload_symbols_to_crashlytics
+    sentry_upload_dsym
     clean_build_artifacts
   end
 
@@ -44,9 +45,7 @@ platform :ios do
     pilot(
       app_identifier: "me.rainbow"
     )
-    download_dsyms
-    upload_symbols_to_crashlytics
-    clean_build_artifacts
+    refresh_dsyms
   end
 
   desc "Submit a new Internal build to Apple TestFlight"
