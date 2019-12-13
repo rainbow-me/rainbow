@@ -285,13 +285,13 @@ PODS:
   - React-jsinspector (1000.0.0)
   - react-native-blur (0.8.0):
     - React
-  - react-native-camera (3.13.1):
+  - react-native-camera (3.14.0):
     - React
-    - react-native-camera/RCT (= 3.13.1)
-    - react-native-camera/RN (= 3.13.1)
-  - react-native-camera/RCT (3.13.1):
+    - react-native-camera/RCT (= 3.14.0)
+    - react-native-camera/RN (= 3.14.0)
+  - react-native-camera/RCT (3.14.0):
     - React
-  - react-native-camera/RN (3.13.1):
+  - react-native-camera/RN (3.14.0):
     - React
   - react-native-mail (4.1.0):
     - React
@@ -334,7 +334,9 @@ PODS:
     - React-RCTNetwork (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTLinking (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
     - React-Core/RCTLinkingHeaders (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTNetwork (1000.0.0):
     - FBReactNativeSpec (= 1000.0.0)
     - Folly (= 2018.10.22.00)
@@ -672,8 +674,8 @@ SPEC CHECKSUMS:
   Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   Fabric: f988e33c97f08930a413e08123064d2e5f68d655
-  FBLazyVector: 0c8f16d9593ebad7f10791657bc1e1fb25c9e4d7
-  FBReactNativeSpec: ad0ac4f5ceb4d0751442a3279a90cd439a8946d8
+  FBLazyVector: 79ecc874031236eebb3e9e5ffc2141086e16e847
+  FBReactNativeSpec: 5c88f1630d22de0aceaacc621c74240634db37eb
   Firebase: 458d109512200d1aca2e1b9b6cf7d68a869a4a46
   FirebaseAnalytics: 45f36d9c429fc91d206283900ab75390cd05ee8a
   FirebaseAnalyticsInterop: d48b6ab67bcf016a05e55b71fc39c61c0cb6b7f3
@@ -693,17 +695,17 @@ SPEC CHECKSUMS:
   libwebp: 057912d6d0abfb6357d8bb05c0ea470301f5d61e
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   Protobuf: 20d79da7f20b5928b80043b05080b816e802659e
-  RCTRequired: 4bff03fb8e73a84de3effa45afb6e9fe2d369359
-  RCTTypeSafety: cae5afa03fe5ad152ab88b57de114d6e924c6a90
-  React: dd5fc27559ffff9c10daafaa4eb6047fec676719
-  React-Core: 36df299bda3947558bffdba2d3ed1ac119c28928
-  React-CoreModules: 05fa745f9c0ede0c4c0bdc9faa76b570d2a7a430
-  React-cxxreact: 849bbf450d0b03ca6d928e8c7fa4d12d1939bb2d
-  React-jsi: 0372845dd9be330ccb15cfef5bcd28b0d9537ca5
-  React-jsiexecutor: 856e38224bf26f12f5becfb3ccc6743853588555
-  React-jsinspector: 4362afcdf41b3e2129ffe43c8e9c78fa1c72b889
+  RCTRequired: 9084bed4910a631f6b9e0adbd82861b1c6eb6114
+  RCTTypeSafety: e57c1b42239672cbab98d41350603f54212490e8
+  React: 3950154959c79f0003347cfb42d5bea280be85d2
+  React-Core: 03c3b8d777397f1a11f91819f071ffa989a53a6d
+  React-CoreModules: 6d594e2bd581aca66519995401b7fdcce50fee1a
+  React-cxxreact: 386d1f74b37a901bc3a4a06ccad5e3b8bf11bccb
+  React-jsi: b916b09ecd0956a90109e1cd218883229998f273
+  React-jsiexecutor: aecfc8420de9ace6ea78f3b50688b089c4401572
+  React-jsinspector: 4b34c2a995846801442cb9f147a70deb6b0a11c9
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-camera: 1df7f9a047591bbc2c9a7ec80bd6412d3c19579f
+  react-native-camera: 9f79d18f91fc8c35d693f1846d84a8b9094bcc65
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-netinfo: ddaca8bbb9e6e914b1a23787ccb879bc642931c9
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
@@ -712,16 +714,16 @@ SPEC CHECKSUMS:
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 54a1aa9bf5c0824f930b1ba6dbfb3fd3e733bba9
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
-  React-RCTActionSheet: 24e10177336fabb6d4225b8f7dcae0578c004ed1
-  React-RCTAnimation: d42afd4d6068196f726ef555ef5390264472afb5
-  React-RCTBlob: da0c00a5432821fbe734e102870b7e7653d5b7c2
-  React-RCTImage: 34723ca1d0c27bfcfb4a09d0833b4e5395b3bb79
-  React-RCTLinking: cb67c94e286bfca8ac8aefedb36f637d05b49037
-  React-RCTNetwork: d84ef16e0c65c468a2a729896e5776d831795dc8
-  React-RCTSettings: f3801a6b4124d6b3b864269028b9bd37d0d3b816
-  React-RCTText: b940518c1fa1b648e45a99faf075ba0bfa9bb625
-  React-RCTVibration: ffadac9ae2cf004f45cb164eda5820f061b9006d
-  ReactCommon: 71b393deff5112ced3ea4399fdf9d9322f25fb9a
+  React-RCTActionSheet: 7fa31ae3a9c06cefab8f31a269a9c88f51d59707
+  React-RCTAnimation: af3ae170bd4000dcf971a6108aeb49a15073c10f
+  React-RCTBlob: 3865f337cdddd685e6ab1be89caddb404ba91beb
+  React-RCTImage: f8bf76d61bd6c0ad98ee23bec11a3ac7d293a03b
+  React-RCTLinking: 3cc931c5f39e77235e59f6cc5cf900443b35d5b0
+  React-RCTNetwork: 95a254130217387eeb9c97dfcfbe55f75c9cb1a5
+  React-RCTSettings: bcfffacfc88602532825c49ccb866cb4cc5e7174
+  React-RCTText: be83a902438b819fdb9d99132132ecc8d3bcfcd7
+  React-RCTVibration: e96a5af6ccc9ce1211ef2c72524f4975ad023d47
+  ReactCommon: 531f5a47f0ab764f6ad72bf0e5680954801b5cdd
   ReactNativePermissions: 7cfad56d13c8961cd2a1005b4955b1400c79ef3e
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 60a80e72d95bf02a01cace55d3697d9724f0d77f
@@ -751,7 +753,7 @@ SPEC CHECKSUMS:
   TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
-  Yoga: 9d3eee93aa8637e12bb63443b72b334f2c43cd18
+  Yoga: 11364219d2b5158d2d16c9479f13f528534a6857
 
 PODFILE CHECKSUM: b931004d050eac701cdeaa72c5a620b2c25d49a0
 
