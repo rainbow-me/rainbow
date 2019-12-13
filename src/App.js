@@ -30,12 +30,10 @@ import { requestsForTopic } from './redux/requests';
 import Routes from './screens/Routes';
 import { parseQueryParams } from './utils';
 
-initSentry({
-  dsn: SENTRY_ENDPOINT,
-});
-
 if (process.env.NODE_ENV === 'development') {
   console.disableYellowBox = true;
+} else {
+  initSentry({ dsn: SENTRY_ENDPOINT });
 }
 
 CodePush.getUpdateMetadata().then(update => {
