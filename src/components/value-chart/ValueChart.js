@@ -42,10 +42,16 @@ const {
   stopClock,
 } = Animated;
 
+const usableData = [
+  data1.slice(0, 150),
+  data2.slice(0, 150),
+  data3.slice(0, 150),
+  data4.slice(0, 150),
+];
+
 const { BEGAN, ACTIVE, CANCELLED, END, FAILED, UNDETERMINED } = State;
 
 const FALSE = 1;
-const TRUE = 0;
 
 const width = deviceUtils.dimensions.width;
 const height = 170;
@@ -64,6 +70,7 @@ const pickImportantPoints = array => {
   result.push(array[0]);
   let thresholdIndex = indexInterval;
   let thresholdHeight = array[0].y;
+  console.log(array.length);
   for (let i = 1; i < array.length; i++) {
     if (i === array.length - 1) {
       result.push(array[i]);
@@ -97,7 +104,7 @@ export default class ValueChart extends PureComponent {
     super(props);
 
     this.state = {
-      data: data1,
+      data: data1.slice(0, 150),
       hideLoadingBar: false,
       shouldRenderChart: true,
     };
@@ -114,6 +121,32 @@ export default class ValueChart extends PureComponent {
     this.opacity = new Value(0);
     this.shouldSpring = new Value(0);
     this.isLoading = new Value(FALSE);
+    this.chartDay = new Value(1);
+    this.chartWeek = new Value(0);
+    this.chartMonth = new Value(0);
+    this.chartYear = new Value(0);
+
+    this.currentInterval = 0;
+
+    this.animatedPath = this.createAnimatedPath();
+
+    this._configUp = {
+      duration: 500,
+      easing: Easing.bezier(0.55, 0.06, 0.45, 0.94),
+      toValue: 1,
+    };
+    this._configDown = {
+      duration: 500,
+      easing: Easing.bezier(0.55, 0.06, 0.45, 0.94),
+      toValue: 0,
+    };
+
+    this.chartsMulti = [
+      this.chartDay,
+      this.chartWeek,
+      this.chartMonth,
+      this.chartYear,
+    ];
 
     this.onTapGestureEvent = event([
       {
@@ -161,66 +194,95 @@ export default class ValueChart extends PureComponent {
   );
 
   reloadChart = currentInterval => {
-    const dataset = [data1, data2, data3, data4];
-
-    this.isLoading.setValue(TRUE);
-    setTimeout(() => {
-      this.setState({ data: dataset[currentInterval] });
-    }, 400);
-    setTimeout(() => {
-      this.isLoading.setValue(FALSE);
-    }, 1200);
+    if (currentInterval !== this.currentInterval) {
+      Animated.timing(
+        this.chartsMulti[this.currentInterval],
+        this._configDown
+      ).start();
+      Animated.timing(
+        this.chartsMulti[currentInterval],
+        this._configUp
+      ).start();
+      this.currentInterval = currentInterval;
+      this.setState({ data: usableData[currentInterval] });
+    }
   };
 
   createAnimatedPath = () => {
-    const maxValue = maxBy(this.state.data, 'value');
-    const minValue = minBy(this.state.data, 'value');
+    let splinePoints = [];
+    for (let i = 0; i < 4; i++) {
+      const maxValue = maxBy(usableData[i], 'value');
+      const minValue = minBy(usableData[i], 'value');
 
-    const timestampLength =
-      this.state.data[this.state.data.length - 1].timestamp -
-      this.state.data[0].timestamp;
-    const xMultiply = width / timestampLength;
+      const timestampLength =
+        usableData[i][usableData[i].length - 1].timestamp -
+        usableData[i][0].timestamp;
+      const xMultiply = width / timestampLength;
 
-    const yMultiply = height / (maxValue.value - minValue.value);
+      const yMultiply = height / (maxValue.value - minValue.value);
 
-    const points = this.state.data.map(({ timestamp, value }) => ({
-      x: (timestamp - this.state.data[0].timestamp) * xMultiply,
-      y: (value - minValue.value) * yMultiply,
-    }));
+      const points = usableData[i].map(({ timestamp, value }) => ({
+        x: (timestamp - usableData[i][0].timestamp) * xMultiply,
+        y: (value - minValue.value) * yMultiply,
+      }));
 
-    const importantPoints = pickImportantPoints(points);
-    const spline = new Spline(importantPoints.xs, importantPoints.ys);
-    const loadingMultiplayer = height / 2 + chartPadding / 4;
-    const splinePoints = points
-      .map(({ x, y }) => {
-        return { x, y1: y, y2: spline.at(x) };
-      })
-      .filter(Boolean);
+      const importantPoints = pickImportantPoints(points);
+      const spline = new Spline(importantPoints.xs, importantPoints.ys);
+      splinePoints.push(
+        points
+          .map(({ x, y }) => {
+            return { x, y1: y, y2: spline.at(x) };
+          })
+          .filter(Boolean)
+      );
+    }
 
     const animatedPath = concat(
-      'M 2 ',
-      add(
-        multiply(
-          add(
-            splinePoints[0].y1,
-            multiply(this.value, sub(splinePoints[0].y2, splinePoints[0].y1))
-          ),
-          this.loadingValue
-        ),
-        sub(loadingMultiplayer, multiply(loadingMultiplayer, this.loadingValue))
-      ),
-      ...splinePoints.flatMap(({ x, y1, y2 }) => [
+      'M -20 0',
+      ...splinePoints[0].flatMap(({ x }, index) => [
         'L',
         x,
         ' ',
         add(
           multiply(
-            add(y1, multiply(this.value, sub(y2, y1))),
-            this.loadingValue
+            this.chartDay,
+            add(
+              splinePoints[0][index].y1,
+              multiply(
+                this.value,
+                sub(splinePoints[0][index].y2, splinePoints[0][index].y1)
+              )
+            )
           ),
-          sub(
-            loadingMultiplayer,
-            multiply(loadingMultiplayer, this.loadingValue)
+          multiply(
+            this.chartWeek,
+            add(
+              splinePoints[1][index].y1,
+              multiply(
+                this.value,
+                sub(splinePoints[1][index].y2, splinePoints[1][index].y1)
+              )
+            )
+          ),
+          multiply(
+            this.chartMonth,
+            add(
+              splinePoints[2][index].y1,
+              multiply(
+                this.value,
+                sub(splinePoints[2][index].y2, splinePoints[2][index].y1)
+              )
+            )
+          ),
+          multiply(
+            this.chartYear,
+            add(
+              splinePoints[3][index].y1,
+              multiply(
+                this.value,
+                sub(splinePoints[3][index].y2, splinePoints[3][index].y1)
+              )
+            )
           )
         ),
       ])
@@ -260,9 +322,6 @@ export default class ValueChart extends PureComponent {
         width / 2
     );
 
-    const animatedPath = this.state.shouldRenderChart
-      ? this.createAnimatedPath()
-      : null;
     return (
       <Fragment>
         <ValueText
@@ -328,7 +387,7 @@ export default class ValueChart extends PureComponent {
                         )}
                         strokeLinejoin="round"
                         strokeLinecap="round"
-                        d={animatedPath}
+                        d={this.animatedPath}
                       />
                     </Svg>
                   </View>
