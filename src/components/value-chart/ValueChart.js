@@ -70,7 +70,6 @@ const pickImportantPoints = array => {
   result.push(array[0]);
   let thresholdIndex = indexInterval;
   let thresholdHeight = array[0].y;
-  console.log(array.length);
   for (let i = 1; i < array.length; i++) {
     if (i === array.length - 1) {
       result.push(array[i]);
@@ -104,7 +103,8 @@ export default class ValueChart extends PureComponent {
     super(props);
 
     this.state = {
-      data: data1.slice(0, 150),
+      allData: usableData,
+      currentData: data1.slice(0, 150),
       hideLoadingBar: false,
       shouldRenderChart: true,
     };
@@ -204,38 +204,50 @@ export default class ValueChart extends PureComponent {
         this._configUp
       ).start();
       this.currentInterval = currentInterval;
-      this.setState({ data: usableData[currentInterval] });
+
+      // some download logic for allData
+      this.setState({ currentData: usableData[currentInterval] });
     }
   };
 
   createAnimatedPath = () => {
     let splinePoints = [];
-    for (let i = 0; i < 4; i++) {
-      const maxValue = maxBy(usableData[i], 'value');
-      const minValue = minBy(usableData[i], 'value');
+    for (let i = 0; i < this.state.allData.length; i++) {
+      if (this.state.allData[i].length > 0) {
+        const maxValue = maxBy(this.state.allData[i], 'value');
+        const minValue = minBy(this.state.allData[i], 'value');
 
-      const timestampLength =
-        usableData[i][usableData[i].length - 1].timestamp -
-        usableData[i][0].timestamp;
-      const xMultiply = width / timestampLength;
+        const timestampLength =
+          this.state.allData[i][this.state.allData[i].length - 1].timestamp -
+          this.state.allData[i][0].timestamp;
+        const xMultiply = width / timestampLength;
 
-      const yMultiply = height / (maxValue.value - minValue.value);
+        const yMultiply = height / (maxValue.value - minValue.value);
 
-      const points = usableData[i].map(({ timestamp, value }) => ({
-        x: (timestamp - usableData[i][0].timestamp) * xMultiply,
-        y: (value - minValue.value) * yMultiply,
-      }));
+        const points = this.state.allData[i].map(({ timestamp, value }) => ({
+          x: (timestamp - this.state.allData[i][0].timestamp) * xMultiply,
+          y: (value - minValue.value) * yMultiply,
+        }));
 
-      const importantPoints = pickImportantPoints(points);
-      const spline = new Spline(importantPoints.xs, importantPoints.ys);
-      splinePoints.push(
-        points
-          .map(({ x, y }) => {
-            return { x, y1: y, y2: spline.at(x) };
-          })
-          .filter(Boolean)
-      );
+        const importantPoints = pickImportantPoints(points);
+        const spline = new Spline(importantPoints.xs, importantPoints.ys);
+        splinePoints.push(
+          points
+            .map(({ x, y }) => {
+              return { x, y1: y, y2: spline.at(x) };
+            })
+            .filter(Boolean)
+        );
+      } else {
+        let emptyArray = new Array(150);
+        for (let j = 0; j < emptyArray.length; j++) {
+          emptyArray[j] = { x: 0, y1: 0, y2: 0 };
+        }
+        splinePoints.push(emptyArray);
+      }
     }
+
+    console.log(splinePoints);
 
     const animatedPath = concat(
       'M -20 0',
@@ -299,25 +311,27 @@ export default class ValueChart extends PureComponent {
   };
 
   render() {
-    const maxValue = maxBy(this.state.data, 'value');
-    const minValue = minBy(this.state.data, 'value');
+    const maxValue = maxBy(this.state.currentData, 'value');
+    const minValue = minBy(this.state.currentData, 'value');
     const change =
-      ((this.state.data[this.state.data.length - 1].value -
-        this.state.data[0].value) /
-        this.state.data[0].value) *
+      ((this.state.currentData[this.state.currentData.length - 1].value -
+        this.state.currentData[0].value) /
+        this.state.currentData[0].value) *
       100;
 
     const timePeriod =
-      this.state.data[this.state.data.length - 1].timestamp -
-      this.state.data[0].timestamp;
+      this.state.currentData[this.state.currentData.length - 1].timestamp -
+      this.state.currentData[0].timestamp;
 
     const maxValueDistance = this.checkValueBoundaries(
-      ((maxValue.timestamp - this.state.data[0].timestamp) / timePeriod) *
+      ((maxValue.timestamp - this.state.currentData[0].timestamp) /
+        timePeriod) *
         width -
         width / 2
     );
     const minValueDistance = this.checkValueBoundaries(
-      ((minValue.timestamp - this.state.data[0].timestamp) / timePeriod) *
+      ((minValue.timestamp - this.state.currentData[0].timestamp) /
+        timePeriod) *
         width -
         width / 2
     );
@@ -326,7 +340,9 @@ export default class ValueChart extends PureComponent {
       <Fragment>
         <ValueText
           headerText="PRICE"
-          startValue={this.state.data[this.state.data.length - 1].value}
+          startValue={
+            this.state.currentData[this.state.currentData.length - 1].value
+          }
           direction={change > 0}
           change={change.toFixed(2)}
           ref={component => {
@@ -448,7 +464,8 @@ export default class ValueChart extends PureComponent {
                 set(this.shouldSpring, 0),
                 call([], () => {
                   this._text.updateValue(
-                    this.state.data[this.state.data.length - 1].value
+                    this.state.currentData[this.state.currentData.length - 1]
+                      .value
                   );
                 }),
               ])
@@ -457,8 +474,8 @@ export default class ValueChart extends PureComponent {
               this.touchX,
               call([this.touchX], ([x]) => {
                 this._text.updateValue(
-                  this.state.data[
-                    Math.floor(x / (width / this.state.data.length))
+                  this.state.currentData[
+                    Math.floor(x / (width / this.state.currentData.length))
                   ].value
                 );
               })
