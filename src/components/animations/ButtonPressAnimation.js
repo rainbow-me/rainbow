@@ -319,7 +319,7 @@ ButtonPressAnimation.propTypes = {
 
 ButtonPressAnimation.defaultProps = {
   activeOpacity: 1,
-  duration: 200,
+  duration: 170,
   easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
   enableHapticFeedback: true,
   hapticType: HapticFeedbackTypes.selection,
