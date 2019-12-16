@@ -84,6 +84,7 @@ export default function ButtonPressAnimation({
   enableHapticFeedback,
   hapticType,
 }) {
+  const prevGestureState = useAnimatedValue(0);
   const gestureState = useAnimatedValue(0);
   const scaleValue = useAnimatedValue(1);
   const finished = useAnimatedValue(0);
@@ -154,7 +155,6 @@ export default function ButtonPressAnimation({
       offsetY =
         Math.floor(layout.height / 2) * (transformOrigin === 'top' ? -1 : 1);
     }
-    console.log(offsetX, offsetY);
     return { offsetX, offsetY };
   }, [layout.height, layout.width, transformOrigin]);
 
@@ -175,8 +175,15 @@ export default function ButtonPressAnimation({
     block([
       onChange(
         gestureState,
-        cond(eq(gestureState, 4), [set(animationState, 0)])
+        cond(
+          or(
+            eq(gestureState, 4),
+            and(neq(prevGestureState, 4), eq(gestureState, 5))
+          ),
+          [set(animationState, 0)]
+        )
       ),
+      set(prevGestureState, gestureState),
       ...(onLongPress
         ? [
             onChange(
