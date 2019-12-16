@@ -6,6 +6,7 @@ import { Linking } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { css } from 'styled-components/primitives';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import TransactionTypes from '../../helpers/transactionTypes';
 import { colors } from '../../styles';
 import { abbreviations } from '../../utils';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
@@ -25,10 +26,12 @@ const rowRenderPropTypes = {
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
 };
 
-const BottomRow = ({ name, native, status }) => {
+const BottomRow = ({ name, native, status, type }) => {
   const isFailed = status === TransactionStatusTypes.failed;
   const isReceived = status === TransactionStatusTypes.received;
   const isSent = status === TransactionStatusTypes.sent;
+  const isSwapped =
+    status === TransactionStatusTypes.sent && type === TransactionTypes.trade;
 
   let balanceTextColor = colors.blueGreyLight;
   if (isReceived) balanceTextColor = colors.limeGreen;
@@ -40,7 +43,7 @@ const BottomRow = ({ name, native, status }) => {
     : '';
 
   return (
-    <Row align="center" justify="space-between">
+    <Row align="center" justify="space-between" opacity={isSwapped ? 0.5 : 1}>
       <FlexItem flex={1}>
         <CoinName>{name}</CoinName>
       </FlexItem>
@@ -53,9 +56,9 @@ const BottomRow = ({ name, native, status }) => {
 
 BottomRow.propTypes = rowRenderPropTypes;
 
-const TopRow = ({ balance, pending, status }) => (
+const TopRow = ({ balance, pending, status, type }) => (
   <RowWithMargins align="center" justify="space-between" margin={19}>
-    <TransactionStatusBadge pending={pending} status={status} />
+    <TransactionStatusBadge pending={pending} status={status} type={type} />
     <Row align="center" flex={1} justify="end">
       <BottomRowText>{get(balance, 'display', '')}</BottomRowText>
     </Row>

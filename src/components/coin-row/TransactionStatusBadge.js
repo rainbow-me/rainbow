@@ -8,6 +8,7 @@ import Icon from '../icons/Icon';
 import { RowWithMargins } from '../layout';
 import Spinner from '../Spinner';
 import { Text } from '../text';
+import transactionTypes from '../../helpers/transactionTypes';
 
 const StatusProps = {
   [TransactionStatusTypes.failed]: {
@@ -24,23 +25,37 @@ const StatusProps = {
   [TransactionStatusTypes.sent]: {
     name: 'sendSmall',
   },
+  [TransactionStatusTypes.swapped]: {
+    name: 'smallSwap',
+    style: position.maxSizeAsObject(12),
+  },
 };
 
-const TransactionStatusBadge = ({ pending, status, ...props }) => {
+const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
   const statusColor = pending ? colors.primaryBlue : colors.blueGreyMediumLight;
 
+  let displayStatus =
+    type === transactionTypes.trade && status === TransactionStatusTypes.sent
+      ? TransactionStatusTypes.swapped
+      : status;
+
   return (
-    <RowWithMargins align="center" margin={4} {...props}>
+    <RowWithMargins
+      align="center"
+      margin={4}
+      opacity={displayStatus === TransactionStatusTypes.swapped ? 0.7 : 1}
+      {...props}
+    >
       {pending && <Spinner color={colors.appleBlue} size={12} />}
-      {status && includes(Object.keys(StatusProps), status) && (
+      {displayStatus && includes(Object.keys(StatusProps), displayStatus) && (
         <Icon
           color={statusColor}
           style={position.maxSizeAsObject(10)}
-          {...StatusProps[status]}
+          {...StatusProps[displayStatus]}
         />
       )}
       <Text color={statusColor} size="smedium" weight="semibold">
-        {upperFirst(status)}
+        {upperFirst(displayStatus)}
       </Text>
     </RowWithMargins>
   );
