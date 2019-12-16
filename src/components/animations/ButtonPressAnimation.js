@@ -110,6 +110,7 @@ export default function ButtonPressAnimation({
   const createLongPressHandle = React.useCallback(() => {
     longPressHandle.current = setTimeout(() => {
       onLongPress();
+      longPressHandle.current = null;
       if (enableHapticFeedback) {
         ReactNativeHapticFeedback.trigger(hapticType);
       }
@@ -211,6 +212,10 @@ export default function ButtonPressAnimation({
               cond(
                 eq(gestureState, 5),
                 call([], () => {
+                  if (onLongPress && !longPressHandle.current) {
+                    // assuming we've made long press
+                    return;
+                  }
                   if (enableHapticFeedback) {
                     ReactNativeHapticFeedback.trigger(hapticType);
                   }
@@ -271,7 +276,10 @@ export default function ButtonPressAnimation({
         style={[
           style,
           {
-            opacity: activeOpacity,
+            opacity: scaleValue.interpolate({
+              inputRange: [scaleTo, 1],
+              outputRange: [activeOpacity, 1],
+            }),
             transform: transformOriginUtil(offsetX, offsetY, {
               scale,
             }),
