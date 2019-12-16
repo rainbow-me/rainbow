@@ -148,7 +148,7 @@ class ExchangeModal extends Component {
     // Maybe that's not perfect, but works for now ¯\_(ツ)_/¯
     if (
       this.props.isTransitioning &&
-      nextProps.isTransitioning &&
+      !nextProps.isTransitioning &&
       this.lastFocusedInput === null
     ) {
       this.inputFocusInteractionHandle = InteractionManager.runAfterInteractions(
