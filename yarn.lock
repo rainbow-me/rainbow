@@ -1462,9 +1462,27 @@
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
 
 "@types/node@*":
+<<<<<<< HEAD
   version "13.7.0"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-13.7.0.tgz#b417deda18cf8400f278733499ad5547ed1abec4"
   integrity sha512-GnZbirvmqZUzMgkFn70c74OQpTTUcCzlhQliTzYjQMqg+hVKcDnxdL19Ne3UdYzdMA/+W3eb646FWn/ZaT1NfQ==
+=======
+<<<<<<< HEAD
+  version "13.1.4"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.1.4.tgz#4cfd90175a200ee9b02bd6b1cd19bc349741607e"
+  integrity sha512-Lue/mlp2egZJoHXZr4LndxDAd7i/7SQYhV0EjWfb/a4/OZ6tuVwMCVPiwkU5nsEipxEf7hmkSU7Em5VQ8P5NGA==
+=======
+<<<<<<< HEAD
+  version "12.12.21"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.21.tgz#aa44a6363291c7037111c47e4661ad210aded23f"
+  integrity sha512-8sRGhbpU+ck1n0PGAUgVrWrWdjSW2aqNeyC15W88GRsMpSwzv6RJGlLhE7s2RhVSOdyDmxbqlWSeThq4/7xqlA==
+=======
+  version "12.12.20"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.20.tgz#7b693038ce661fe57a7ffa4679440b5e7c5e8b99"
+  integrity sha512-VAe+DiwpnC/g448uN+/3gRl4th0BTdrR9gSLIOHA+SUQskaYZQDOHG7xmjiE7JUhjbXnbXytf6Ih+/pA6CtMFQ==
+>>>>>>> 4ebbef42... WIP
+>>>>>>> 0577b3fb... Create SwapDetailsState modal
+>>>>>>> bbcfbfc3... Create SwapDetailsState modal
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -7685,10 +7703,30 @@ node-notifier@^5.2.1, node-notifier@^5.4.2:
     shellwords "^0.1.1"
     which "^1.3.0"
 
+<<<<<<< HEAD
 node-releases@^1.1.47:
   version "1.1.47"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.47.tgz#c59ef739a1fd7ecbd9f0b7cf5b7871e8a8b591e4"
   integrity sha512-k4xjVPx5FpwBUj0Gw7uvFOTF4Ep8Hok1I6qjwL3pLfwe7Y0REQSAqOwwv9TWBCUtMHxcXfY4PgRLRozcChvTcA==
+=======
+<<<<<<< HEAD
+node-releases@^1.1.44:
+<<<<<<< HEAD
+  version "1.1.45"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.45.tgz#4cf7e9175d71b1317f15ffd68ce63bce1d53e9f2"
+  integrity sha512-cXvGSfhITKI8qsV116u2FTzH5EWZJfgG7d4cpqwF8I8+1tWpD6AsvvGRKq2onR0DNj1jfqsjkXZsm14JMS7Cyg==
+=======
+  version "1.1.44"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.44.tgz#cd66438a6eb875e3eb012b6a12e48d9f4326ffd7"
+  integrity sha512-NwbdvJyR7nrcGrXvKAvzc5raj/NkoJudkarh2yIpJ4t0NH4aqjUDz/486P+ynIW5eokKOfzGNRdYoLfBlomruw==
+=======
+node-releases@^1.1.42:
+  version "1.1.43"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.43.tgz#2c6ca237f88ce11d49631f11190bb01f8d0549f2"
+  integrity sha512-Rmfnj52WNhvr83MvuAWHEqXVoZXCcDQssSOffU4n4XOL9sPrP61mSZ88g25NqmABDvH7PiAlFCzoSCSdzA293w==
+>>>>>>> 0577b3fb... Create SwapDetailsState modal
+>>>>>>> 3a600c08... Create SwapDetailsState modal
+>>>>>>> bbcfbfc3... Create SwapDetailsState modal
   dependencies:
     semver "^6.3.0"
 
@@ -9216,10 +9254,24 @@ react-native-version-number@^0.3.6:
   resolved "https://registry.yarnpkg.com/react-native-version-number/-/react-native-version-number-0.3.6.tgz#dd8b1435fc217df0a166d7e4a61fdc993f3e7437"
   integrity sha512-TdyXiK90NiwmSbmAUlUBOV6WI1QGoqtvZZzI5zQY4fKl67B3ZrZn/h+Wy/OYIKKFMfePSiyfeIs8LtHGOZ/NgA==
 
+<<<<<<< HEAD
 react-native@0.62.0-rc.1:
   version "0.62.0-rc.1"
   resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.62.0-rc.1.tgz#11581e973a62e7bc2328a53d27c5e62c95f2c710"
   integrity sha512-z0VIsW10tT228xWROxaFyovbLSXHHSO5zEgilIsRkG7zFSyF5xk21VhrDjEe1QsDRn8OohNbdNVE3+IRoIcvtA==
+=======
+react-native@facebook/react-native:
+  version "1000.0.0"
+<<<<<<< HEAD
+  resolved "https://codeload.github.com/facebook/react-native/tar.gz/bd0c37e456392090507f227b8fb90c1eb7c3d327"
+=======
+<<<<<<< HEAD
+  resolved "https://codeload.github.com/facebook/react-native/tar.gz/048f88a33a53ebd4e45865b319c42291f1d6c7f2"
+=======
+  resolved "https://codeload.github.com/facebook/react-native/tar.gz/3714f3648a8ac51f2bb7f2791e2381551d0209b4"
+>>>>>>> 4ebbef42... WIP
+>>>>>>> 0577b3fb... Create SwapDetailsState modal
+>>>>>>> 3a600c08... Create SwapDetailsState modal
   dependencies:
     "@babel/runtime" "^7.0.0"
     "@react-native-community/cli" "^3.0.0"
@@ -9429,9 +9481,15 @@ readable-stream@1.1.x, readable-stream@^1.0.26-4, readable-stream@^1.0.27-1, rea
     string_decoder "~0.10.x"
 
 readable-stream@2, readable-stream@^2.0.1, readable-stream@^2.2.2, readable-stream@~2.3.6:
+<<<<<<< HEAD
   version "2.3.7"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.3.7.tgz#1eca1cf711aef814c04f62252a36a62f6cb23b57"
   integrity sha512-Ebho8K4jIbHAxnuxi7o42OrZgF/ZTNcsZj6nRKyUmkhLFq8CHItp/fy6hQZuZmP/n3yZ9VBUbp4zz/mX8hmYPw==
+=======
+  version "2.3.6"
+  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.3.6.tgz#b11c27d88b8ff1fbe070643cf94b0c79ae1b0aaf"
+  integrity sha512-tQtKA9WIAhBF3+VLAseyMqZeBjW0AHJoxOtYqSUZNJxauErmLbVm2FW1y+J/YA9dUrAC39ITejlZWhVIwawkKw==
+>>>>>>> 0577b3fb... Create SwapDetailsState modal
   dependencies:
     core-util-is "~1.0.0"
     inherits "~2.0.3"

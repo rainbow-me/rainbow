@@ -1,5 +1,6 @@
 import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import Animated from 'react-native-reanimated';
 import { deviceUtils } from '../../utils';
 import { colors } from '../../styles';
 
@@ -19,6 +20,12 @@ const exchangeStyleInterpolator = ({
     outputRange: [0, 0, 1, 1],
   });
 
+  const cardBackgroundOpacity = current.interpolate({
+    extrapolate: Animated.Extrapolate.CLAMP,
+    inputRange: [-1, 0, 0.96, 0.975, 2],
+    outputRange: [0, 0, 0, 1, 1],
+  });
+
   const translateY = current.interpolate({
     inputRange: [0, 1],
     outputRange: [screen.height, 0],
@@ -26,6 +33,8 @@ const exchangeStyleInterpolator = ({
 
   return {
     cardStyle: {
+      backgroundColor: '#121212',
+      opacity: cardBackgroundOpacity,
       transform: [{ translateY }],
     },
     overlayStyle: {

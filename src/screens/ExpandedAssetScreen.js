@@ -5,6 +5,7 @@ import {
   AddContactState,
   ChartExpandedState,
   InvestmentExpandedState,
+  SwapDetailsState,
   TokenExpandedState,
   UniqueTokenExpandedState,
 } from '../components/expanded-state';
@@ -18,6 +19,7 @@ const { bottom: safeAreaBottom, top: safeAreaTop } = safeAreaInsetValues;
 const ScreenTypes = {
   chart: ChartExpandedState,
   contact: AddContactState,
+  swap_details: SwapDetailsState,
   token: TokenExpandedState,
   unique_token: UniqueTokenExpandedState,
   uniswap: InvestmentExpandedState,
