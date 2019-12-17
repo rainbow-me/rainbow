@@ -16,7 +16,6 @@ const StatusProps = {
     style: position.maxSizeAsObject(12),
   },
   [TransactionStatusTypes.received]: {
-    direction: 'down',
     name: 'arrow',
   },
   [TransactionStatusTypes.self]: {
