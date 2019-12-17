@@ -97,15 +97,19 @@ export default class TransactionConfirmationScreen extends PureComponent {
     }
   };
 
-  renderSendButton = () => (
-    <HoldToAuthorizeButton
-      isAuthorizing={this.state.isAuthorizing}
-      label={`Hold to ${
-        this.props.method === SEND_TRANSACTION ? 'Send' : 'Sign'
-      }`}
-      onLongPress={this.onLongPressSend}
-    />
-  );
+  renderSendButton = () => {
+    const { method } = this.props;
+    const { isAuthorizing } = this.state;
+    const label = `Hold to ${method === SEND_TRANSACTION ? 'Send' : 'Sign'}`;
+
+    return (
+      <HoldToAuthorizeButton
+        isAuthorizing={isAuthorizing}
+        label={label}
+        onLongPress={this.onLongPressSend}
+      />
+    );
+  };
 
   requestHeader = () => {
     const { method } = this.props;

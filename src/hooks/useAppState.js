@@ -1,9 +1,17 @@
 import { useEffect, useState } from 'react';
 import { AppState } from 'react-native';
+import usePrevious from './usePrevious';
+
+const AppStateTypes = {
+  active: 'active',
+  background: 'background',
+  inactive: 'inactive',
+};
 
 export default function useAppState() {
   const currentState = AppState.currentState;
   const [appState, setAppState] = useState(currentState);
+  const prevAppState = usePrevious(appState);
 
   function onChange(newState) {
     setAppState(newState);
@@ -11,11 +19,13 @@ export default function useAppState() {
 
   useEffect(() => {
     AppState.addEventListener('change', onChange);
-
-    return () => {
-      AppState.removeEventListener('change', onChange);
-    };
+    return () => AppState.removeEventListener('change', onChange);
   });
 
-  return appState;
+  return {
+    appState,
+    justBecameActive:
+      appState === AppStateTypes.active &&
+      prevAppState !== AppStateTypes.active,
+  };
 }

@@ -3,7 +3,7 @@ import { Clipboard } from 'react-native';
 import useAppState from './useAppState';
 
 export default function useClipBoard() {
-  const appState = useAppState();
+  const { justBecameActive } = useAppState();
   const [data, updateClipboardData] = useState('');
 
   async function updateClipboard() {
@@ -12,10 +12,10 @@ export default function useClipBoard() {
   }
 
   useEffect(() => {
-    if (appState === 'active') {
+    if (justBecameActive) {
       updateClipboard();
     }
-  }, [appState]);
+  }, [justBecameActive]);
 
   const setString = useCallback(content => {
     Clipboard.setString(content);

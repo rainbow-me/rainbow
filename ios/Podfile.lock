@@ -119,7 +119,7 @@ PODS:
     - nanopb/encode (= 0.3.9011)
   - nanopb/decode (0.3.9011)
   - nanopb/encode (0.3.9011)
-  - Protobuf (3.11.1)
+  - Protobuf (3.11.2)
   - RCTRequired (1000.0.0)
   - RCTTypeSafety (1000.0.0):
     - FBLazyVector (= 1000.0.0)
@@ -285,17 +285,17 @@ PODS:
   - React-jsinspector (1000.0.0)
   - react-native-blur (0.8.0):
     - React
-  - react-native-camera (3.14.0):
+  - react-native-camera (3.15.0):
     - React
-    - react-native-camera/RCT (= 3.14.0)
-    - react-native-camera/RN (= 3.14.0)
-  - react-native-camera/RCT (3.14.0):
+    - react-native-camera/RCT (= 3.15.0)
+    - react-native-camera/RN (= 3.15.0)
+  - react-native-camera/RCT (3.15.0):
     - React
-  - react-native-camera/RN (3.14.0):
+  - react-native-camera/RN (3.15.0):
     - React
   - react-native-mail (4.1.0):
     - React
-  - react-native-netinfo (4.7.0):
+  - react-native-netinfo (5.0.0):
     - React
   - react-native-randombytes (3.5.3):
     - React
@@ -380,7 +380,7 @@ PODS:
     - React
   - RNCPushNotificationIOS (1.0.3):
     - React
-  - RNDeviceInfo (2.3.2):
+  - RNDeviceInfo (5.3.1):
     - React
   - RNFastImage (7.0.2):
     - React
@@ -402,7 +402,7 @@ PODS:
   - RNGestureHandler (1.5.2):
     - React
   - RNInputMask (4.1.0)
-  - RNKeychain (4.0.1):
+  - RNKeychain (4.0.3):
     - React
   - RNLanguages (3.0.2):
     - React
@@ -419,7 +419,7 @@ PODS:
     - Sentry (~> 4.4.0)
   - RNStoreReview (0.1.5):
     - React
-  - RNSVG (9.13.3):
+  - RNSVG (9.13.6):
     - React
   - SDWebImage (5.4.0):
     - SDWebImage/Core (= 5.4.0)
@@ -436,8 +436,6 @@ PODS:
   - TcpSockets (3.3.2):
     - React
   - ToolTipMenu (5.2.1):
-    - React
-  - TouchID (4.4.1):
     - React
   - Yoga (1.14.0)
 
@@ -507,7 +505,6 @@ DEPENDENCIES:
   - SRSRadialGradient (from `../node_modules/react-native-radial-gradient/ios`)
   - TcpSockets (from `../node_modules/react-native-tcp`)
   - ToolTipMenu (from `../node_modules/react-native-tooltip`)
-  - TouchID (from `../node_modules/react-native-touch-id`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -660,8 +657,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-tcp"
   ToolTipMenu:
     :path: "../node_modules/react-native-tooltip"
-  TouchID:
-    :path: "../node_modules/react-native-touch-id"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -674,8 +669,8 @@ SPEC CHECKSUMS:
   Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   Fabric: f988e33c97f08930a413e08123064d2e5f68d655
-  FBLazyVector: 79ecc874031236eebb3e9e5ffc2141086e16e847
-  FBReactNativeSpec: 5c88f1630d22de0aceaacc621c74240634db37eb
+  FBLazyVector: 6fdbec96876def36649fbd37a79bb66c2ca0f934
+  FBReactNativeSpec: 35aa98e7b8521d74f3ea9a7f9a5a84dd8a02a478
   Firebase: 458d109512200d1aca2e1b9b6cf7d68a869a4a46
   FirebaseAnalytics: 45f36d9c429fc91d206283900ab75390cd05ee8a
   FirebaseAnalyticsInterop: d48b6ab67bcf016a05e55b71fc39c61c0cb6b7f3
@@ -694,49 +689,49 @@ SPEC CHECKSUMS:
   JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
   libwebp: 057912d6d0abfb6357d8bb05c0ea470301f5d61e
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
-  Protobuf: 20d79da7f20b5928b80043b05080b816e802659e
-  RCTRequired: 9084bed4910a631f6b9e0adbd82861b1c6eb6114
-  RCTTypeSafety: e57c1b42239672cbab98d41350603f54212490e8
-  React: 3950154959c79f0003347cfb42d5bea280be85d2
-  React-Core: 03c3b8d777397f1a11f91819f071ffa989a53a6d
-  React-CoreModules: 6d594e2bd581aca66519995401b7fdcce50fee1a
-  React-cxxreact: 386d1f74b37a901bc3a4a06ccad5e3b8bf11bccb
-  React-jsi: b916b09ecd0956a90109e1cd218883229998f273
-  React-jsiexecutor: aecfc8420de9ace6ea78f3b50688b089c4401572
-  React-jsinspector: 4b34c2a995846801442cb9f147a70deb6b0a11c9
+  Protobuf: dd1aaea7140debfe4dd0683fb8ef208e527ae153
+  RCTRequired: eeebccb8cdeb32a92cfd75492800cf905de36916
+  RCTTypeSafety: 0fcc89877b56727b00149aedda51bf4502982e13
+  React: cb9c930b74a87600eeaa019554435741e35384bf
+  React-Core: 8c1fcef647f4d852b7ef158db967734efe40f552
+  React-CoreModules: 0cddf8228068e4fdee11c5fe5d41e25f7de1b00e
+  React-cxxreact: 7bb2f46f90043160f02f97660845ae8bfe9ad015
+  React-jsi: 4c2a52ce4e8169b3e9b897d3bd22c042ffbae558
+  React-jsiexecutor: c02c74b564cb3f89ac1f56720f43df3fb58575d0
+  React-jsinspector: fd153d75c557b4b1670601069e13f704ba80185e
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-camera: 9f79d18f91fc8c35d693f1846d84a8b9094bcc65
+  react-native-camera: 52114c432860b89986c9ee4919d00a48a6ba7abb
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
-  react-native-netinfo: ddaca8bbb9e6e914b1a23787ccb879bc642931c9
+  react-native-netinfo: 841c2a83fe7df998fed56fd48b73229f17a5aa5b
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-safe-area-context: 13004a45f3021328fdd9ee1f987c3131fb65928d
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 54a1aa9bf5c0824f930b1ba6dbfb3fd3e733bba9
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
-  React-RCTActionSheet: 7fa31ae3a9c06cefab8f31a269a9c88f51d59707
-  React-RCTAnimation: af3ae170bd4000dcf971a6108aeb49a15073c10f
-  React-RCTBlob: 3865f337cdddd685e6ab1be89caddb404ba91beb
-  React-RCTImage: f8bf76d61bd6c0ad98ee23bec11a3ac7d293a03b
-  React-RCTLinking: 3cc931c5f39e77235e59f6cc5cf900443b35d5b0
-  React-RCTNetwork: 95a254130217387eeb9c97dfcfbe55f75c9cb1a5
-  React-RCTSettings: bcfffacfc88602532825c49ccb866cb4cc5e7174
-  React-RCTText: be83a902438b819fdb9d99132132ecc8d3bcfcd7
-  React-RCTVibration: e96a5af6ccc9ce1211ef2c72524f4975ad023d47
-  ReactCommon: 531f5a47f0ab764f6ad72bf0e5680954801b5cdd
+  React-RCTActionSheet: 6cb962c7955837e9f3db3580039d1f539410716c
+  React-RCTAnimation: ade24eb32b88f5311618dd2f4ce06fa15e8c348f
+  React-RCTBlob: b9957b715bf6079991fc372d9caca3ff3ddb328a
+  React-RCTImage: 218535c10986a203a5f9bbd4ad30db06879edcb0
+  React-RCTLinking: 9bbfcedf6c7040fc356150b9d6986302f0d084d8
+  React-RCTNetwork: 9a8bdba7373b0dfdaab3c51a2b36aafa364e27d8
+  React-RCTSettings: 7ed52fb20bc45c89384ed2c094ecdb456cce8051
+  React-RCTText: 4bb3b55897e080f36caa155df65a426d095493b2
+  React-RCTVibration: 7aee713aa2e101aa32015aac1997269b10617f00
+  ReactCommon: d4ffbab7d574e645ab78c6edb8e1ac1ac6ab338f
   ReactNativePermissions: 7cfad56d13c8961cd2a1005b4955b1400c79ef3e
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 60a80e72d95bf02a01cace55d3697d9724f0d77f
   RNCMaskedView: dd13f9f7b146a9ad82f9b7eb6c9b5548fcf6e990
   RNCPushNotificationIOS: 83ec11fe19d4ea9e32cc339d8e7d2cc3c88f543e
-  RNDeviceInfo: 17e34f6dd902f08d88cbe2c0b7a01be948d43641
+  RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNFastImage: 9b0c22643872bb7494c8d87bbbb66cc4c0d9e7a2
   RNFBApp: 5b215aacc09105a1761de31b9a0eb2abcce06253
   RNFBCrashlytics: 0469cb96b00904e0c9604b9636d8eeab31115b08
   RNFBMessaging: be0b936394416ec5503add603f2c0a641c353063
   RNGestureHandler: 946a7691e41df61e2c4b1884deab41a4cdc3afff
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
-  RNKeychain: 45dbd50d1ac4bd42c3740f76ffb135abf05746d0
+  RNKeychain: f5783613aa3095af63345ddb9626a729bd4a3897
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNOS: 811de7b4be8824a86a775ade934147a02edb9b5a
   RNReactNativeHapticFeedback: e11a4da0ce174e9f88b03cbaf5d76d94633cdee2
@@ -744,7 +739,7 @@ SPEC CHECKSUMS:
   RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
   RNSentry: b63ba6a29ee142b5c3221896be8ff6cda587e03f
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
-  RNSVG: f6177f8d7c095fada7cfee2e4bb7388ba426064c
+  RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
   SDWebImage: 5bf6aec6481ae2a062bdc59f9d6c1d1e552090e0
   SDWebImageWebPCoder: 947093edd1349d820c40afbd9f42acb6cdecd987
   Sentry: 14bdd673870e8cf64932b149fad5bbbf39a9b390
@@ -752,8 +747,7 @@ SPEC CHECKSUMS:
   SSZipArchive: fa16b8cc4cdeceb698e5e5d9f67e9558532fbf23
   TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
-  TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
-  Yoga: 11364219d2b5158d2d16c9479f13f528534a6857
+  Yoga: ee9d98c1a44748e5cbecc5935a800fb505a04f76
 
 PODFILE CHECKSUM: b931004d050eac701cdeaa72c5a620b2c25d49a0
 

@@ -16,6 +16,7 @@ import {
 } from 'react-native-dotenv';
 // eslint-disable-next-line import/default
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-unresolved
 import { useScreens } from 'react-native-screens';
 import { connect, Provider } from 'react-redux';
@@ -156,12 +157,14 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   render = () => (
-    <Provider store={store}>
-      <FlexItem>
-        <OfflineBadge />
-        <Routes ref={this.handleNavigatorRef} />
-      </FlexItem>
-    </Provider>
+    <SafeAreaProvider>
+      <Provider store={store}>
+        <FlexItem>
+          <OfflineBadge />
+          <Routes ref={this.handleNavigatorRef} />
+        </FlexItem>
+      </Provider>
+    </SafeAreaProvider>
   );
 }
 
