@@ -32,6 +32,11 @@ position.cover = css`
   top: 0;
 `;
 
+position.centered = css`
+  align-items: center;
+  justify-content: center;
+`;
+
 position.centeredAsObject = {
   alignItems: 'center',
   justifyContent: 'center',

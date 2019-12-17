@@ -24,6 +24,12 @@ const exchangeStyleInterpolator = ({
     outputRange: [0, 0, 1, 1],
   });
 
+  const cardBackgroundOpacity = interpolate(current, {
+    extrapolate: Animated.Extrapolate.CLAMP,
+    inputRange: [-1, 0, 0.96, 0.975, 2],
+    outputRange: [0, 0, 0, 1, 1],
+  });
+
   const translateY = interpolate(current, {
     inputRange: [0, 1],
     outputRange: [screen.height, 0],
@@ -31,6 +37,7 @@ const exchangeStyleInterpolator = ({
 
   return {
     cardStyle: {
+      backgroundColor: color(18, 18, 18, cardBackgroundOpacity),
       opacity: 1,
       shadowColor: colors.black,
       shadowOffset: { height: 10, width: 0 },
