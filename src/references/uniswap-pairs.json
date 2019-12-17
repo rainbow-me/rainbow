@@ -251,6 +251,12 @@
     "decimals": 18,
     "exchangeAddress": "0x09cabEC1eAd1c0Ba254B09efb3EE13841712bE14"
   },
+  "0x06f65b8cfcb13a9fe37d836fe9708da38ecb29b2": {
+    "name": "Saint Fame",
+    "symbol": "FAME",
+    "decimals": 18,
+    "exchangeAddress": "0x5e7907aC70b9a781365c72F2acEE96710bdA042e"
+  },
   "0x4156D3342D5c385a87D264F90653733592000581": {
     "name": "SALT",
     "symbol": "SALT",
