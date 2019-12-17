@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 
-## [1.2.2-1](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.2-1)
+## [1.2.2-4](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.2-4)
 ### Added
 * Uniswap support 
 * Add to contacts
