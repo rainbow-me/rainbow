@@ -36,7 +36,12 @@ const ConfirmExchangeButton = ({
 
   return (
     <HoldToAuthorizeButton
-      disabled={disabled || !isSufficientBalance || isUnlockingAsset}
+      disabled={
+        disabled ||
+        // only consider isSufficientBalance for approved assets.
+        (isAssetApproved && !isSufficientBalance) ||
+        isUnlockingAsset
+      }
       disabledBackgroundColor={colors.grey20}
       flex={1}
       hideBiometricIcon={isUnlockingAsset || !isAssetApproved}
