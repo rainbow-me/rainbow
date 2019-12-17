@@ -103,7 +103,7 @@ export default class ValueChart extends PureComponent {
     super(props);
 
     this.state = {
-      allData: usableData,
+      allData: [usableData[0], [], [], []],
       currentData: data1.slice(0, 150),
       hideLoadingBar: false,
       shouldRenderChart: true,
@@ -193,8 +193,18 @@ export default class ValueChart extends PureComponent {
     { useNativeDriver: true }
   );
 
-  reloadChart = currentInterval => {
+  reloadChart = async currentInterval => {
     if (currentInterval !== this.currentInterval) {
+      let data = this.state.allData;
+      if (this.state.allData[currentInterval].length === 0) {
+        data[currentInterval] = usableData[currentInterval];
+        await this.setState({
+          addData: data,
+          currentData: usableData[currentInterval],
+        });
+
+        this.animatedPath = this.createAnimatedPath();
+      }
       Animated.timing(
         this.chartsMulti[this.currentInterval],
         this._configDown
@@ -204,9 +214,6 @@ export default class ValueChart extends PureComponent {
         this._configUp
       ).start();
       this.currentInterval = currentInterval;
-
-      // some download logic for allData
-      this.setState({ currentData: usableData[currentInterval] });
     }
   };
 
@@ -246,8 +253,6 @@ export default class ValueChart extends PureComponent {
         splinePoints.push(emptyArray);
       }
     }
-
-    console.log(splinePoints);
 
     const animatedPath = concat(
       'M -20 0',
