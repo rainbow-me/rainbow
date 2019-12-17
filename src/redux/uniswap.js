@@ -31,13 +31,15 @@ import {
   saveUniswapPendingApprovals,
 } from '../handlers/localstorage/uniswap';
 import {
-  DefaultUniswapFavorites,
   getLiquidityInfo,
   getReserve,
   getUniswapPairs,
 } from '../handlers/uniswap';
 import { includeExchangeAddress } from '../hoc/withUniswapAssets';
-import { cleanUniswapAssetsFallback } from '../references';
+import {
+  cleanUniswapAssetsFallback,
+  DefaultUniswapFavorites,
+} from '../references';
 import { resubscribeAssets } from './explorer';
 
 // -- Constants ------------------------------------------------------------- //
