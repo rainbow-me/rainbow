@@ -669,8 +669,33 @@ SPEC CHECKSUMS:
   Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   Fabric: f988e33c97f08930a413e08123064d2e5f68d655
+<<<<<<< HEAD
   FBLazyVector: 9349d70d60793fce157f7c3837f51c60bc81a91b
   FBReactNativeSpec: 36215b34017aa3bb62f1ed494b50fbaa242649fb
+=======
+<<<<<<< HEAD
+  FBLazyVector: 7756365b87597c6803cc234c3e9a1a59b5e3a64a
+  FBReactNativeSpec: 9cd0a365b35b8158ff29560cea543e8dcb67335a
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+  FBLazyVector: f4bf59b48e6732b1b5d328248ab8794130748b92
+  FBReactNativeSpec: bed51880b4206526f796433048ca5d929f1cf52d
+=======
+<<<<<<< HEAD
+  FBLazyVector: e7a6d9af306035b18059ad93f32899e390fade72
+  FBReactNativeSpec: 6ccecedee3f384c7d4aad9e7ff0c8b5c58a02412
+=======
+  FBLazyVector: 54cfc66f3980050543435629859c1befbf4e36fd
+  FBReactNativeSpec: 58b93e4634576735a780c55ccda36eaad4d7d72f
+>>>>>>> dddc1624... super WIP - but wanted to show wojciech
+>>>>>>> cb9dabfc... super WIP - but wanted to show wojciech
+=======
+  FBLazyVector: ab47aef4b52a4c3376746f192765150f2968a419
+  FBReactNativeSpec: 70e342d773fa13354333075f7c46e5954ab7eb74
+>>>>>>> 4ebbef42... WIP
+>>>>>>> 0577b3fb... Create SwapDetailsState modal
+>>>>>>> 3a600c08... Create SwapDetailsState modal
   Firebase: 458d109512200d1aca2e1b9b6cf7d68a869a4a46
   FirebaseAnalytics: 45f36d9c429fc91d206283900ab75390cd05ee8a
   FirebaseAnalyticsInterop: d48b6ab67bcf016a05e55b71fc39c61c0cb6b7f3
@@ -689,7 +714,10 @@ SPEC CHECKSUMS:
   JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
   libwebp: 057912d6d0abfb6357d8bb05c0ea470301f5d61e
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
+<<<<<<< HEAD
+<<<<<<< HEAD
   Protobuf: dd1aaea7140debfe4dd0683fb8ef208e527ae153
+<<<<<<< HEAD
   RCTRequired: 418abaf045a635a391e68ee0573035553c1c4d7b
   RCTTypeSafety: ea8dd81f61436a394b943dac4435a304c59906ff
   React: f591e8a044a8ee4a4b20ab632b2906461a241370
@@ -699,6 +727,65 @@ SPEC CHECKSUMS:
   React-jsi: e3f33d91999ba00d787ceceb6783aa314ecf175d
   React-jsiexecutor: ccf2361cd90f691e04ff73585f099aa179ae8b52
   React-jsinspector: fabb3a8cad7bce396f2d4c29cbf83e87022b07ec
+=======
+<<<<<<< HEAD
+  RCTRequired: da67b5686f79363daafcc52e86bd7abe7a68b0c2
+  RCTTypeSafety: 2a0b9cfb4aa6d3cc324ba3e8a6342b63d0940b36
+  React: 43e979dc2b0bb03187241931b463046d01fa7b87
+  React-Core: d7cf7213c884478265768fa8c9f4b17336704535
+  React-CoreModules: cc3430b95ca7c1cd835e55ed88b67dceefe594bd
+  React-cxxreact: 5dbd90e4c1cd612569b7933a7ad15d15a8455bd8
+  React-jsi: 46622a813f2a5000a80283b79f37a2c540fa6bec
+  React-jsiexecutor: 2509a117c41dc7d1667b56d801bcfb25c0abba8e
+  React-jsinspector: c38019329f9abe8f16d9827bde65fd0d5574d0c1
+=======
+<<<<<<< HEAD
+  RCTRequired: adc14902dcd9bd96162bff839191031802d1bbdf
+  RCTTypeSafety: 1bfc26cae1495204b3ee8e2aa1a416b586be2361
+  React: b6779e9431357663e2a761ca8b2384d37b81d585
+  React-Core: bbd3079bfbcfab4ccbbff76e508864d5be4c2d9f
+  React-CoreModules: 88908075a740de7f7772f9f67248af8786c4e892
+  React-cxxreact: c8533f3dba7760196f4bd88ef5e1fdacbde47c0b
+  React-jsi: 654b98b363c44145e9e39901f8be23696b5b69fe
+  React-jsiexecutor: 808812487bafd8fb39d0aeecd7bea852622a310a
+  React-jsinspector: 74c057ffb291d70dcf8297f46ba7cafff428e823
+=======
+  RCTRequired: 2d286795f7788c7955ec6a4428f2565b630c6198
+  RCTTypeSafety: f8b867cbec38be2e60c742983b84787ca93a1dd0
+  React: 54deb94a31a7003b210298f471454078f6e9a160
+  React-Core: 6514780e552233e5ec64cde60a093ae1da42293b
+  React-CoreModules: f69bd322dfb8984d8c86afca3c0bc0004e12f6b9
+  React-cxxreact: 66cc02b54ab543071bafc33fea878ab47e1fe139
+  React-jsi: ecc5648a5810729d5b5dc225ffc382e6021d4002
+  React-jsiexecutor: 4928ff60ddfc51b7196e6fa5c0cc9c3fed71f206
+  React-jsinspector: a3798eb4b1c375e1d4bc3243c0995b8d3292ab15
+=======
+  Protobuf: 20d79da7f20b5928b80043b05080b816e802659e
+  RCTRequired: 4b9095fc7d4a71cd997492a07c4a776eb8449341
+  RCTTypeSafety: e4088ebfd1f60c2c34a430c14b10d8bd0b99550e
+  React: ab84335b09293de28487efcbd3b617cc65649149
+  React-Core: 07e43a369aed49a6a5793d3189abe744f43db90c
+  React-CoreModules: be8e5d89281d8b1f9f19ad8076d271524c069ad9
+  React-cxxreact: 79fb09c51c4fc388002b29275d36d0805dd65b78
+  React-jsi: b7ff186d3a6aa736e8f953b9b634da543c02c563
+  React-jsiexecutor: 0713deef509ca0eca6fe6d2abc79b38beb43da3c
+  React-jsinspector: 49800d3c49409192b2de3092f37ccdbe568438bc
+>>>>>>> dddc1624... super WIP - but wanted to show wojciech
+>>>>>>> cb9dabfc... super WIP - but wanted to show wojciech
+=======
+  Protobuf: dd1aaea7140debfe4dd0683fb8ef208e527ae153
+  RCTRequired: 3201ee63bec687d504a348feefbd8f54a04893f6
+  RCTTypeSafety: 35efc845c953e0ad7362a0142af11dcf739757a9
+  React: 6bdbd87c9b355a3c8827417a151791f1d0ac3e5e
+  React-Core: b7753e00cd209237af549bfbfedbf4ae161b850e
+  React-CoreModules: 4699bb10174394870bb719ea540a5e5c49fcef79
+  React-cxxreact: 4b3ff5eb549a4bfa9917e07a5640002876c2c123
+  React-jsi: 5ccf83a2178767edc307278d845dee455c512eb7
+  React-jsiexecutor: 97db89e78f7397ba1eb587bf0745adfd6717851d
+  React-jsinspector: 09e4ebcf080058565f9cba63c6f1b72ef55c03b7
+>>>>>>> 4ebbef42... WIP
+>>>>>>> 0577b3fb... Create SwapDetailsState modal
+>>>>>>> 3a600c08... Create SwapDetailsState modal
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: 1ba3e7f2375a6b44ae09ce9be70268e0b225bc10
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
@@ -709,6 +796,7 @@ SPEC CHECKSUMS:
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: ff9d13e523f2b58e6bc5d4d32321ac60671b5dc9
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
+<<<<<<< HEAD
   React-RCTActionSheet: a9a397cdf75149175eab539e536eeb42518f529c
   React-RCTAnimation: 3fddf9e5dc82ea620c1c44b4206149688b43e054
   React-RCTBlob: 245f8f0b4578bbecff5e99062f8e2db580218434
@@ -719,6 +807,70 @@ SPEC CHECKSUMS:
   React-RCTText: f2f9976b77661b5a1d628cf7ebfe6c08b6168f8a
   React-RCTVibration: 2e7618e869b2ba4a15042d6def29dd32df734793
   ReactCommon: 13c3473a975e73db91b1999e0d6d89c62400785d
+=======
+<<<<<<< HEAD
+  React-RCTActionSheet: 50465277c629a13247c1c3e1884b571e86a4fb7f
+  React-RCTAnimation: 02de178d04f16e1992fc22d32366a5e30d79a194
+  React-RCTBlob: 77dbd56c011bf033e544d8aa0e2e8b4a92526b41
+  React-RCTImage: 66d1db3888b55d63cc01c00266c57ba785cd5d0b
+  React-RCTLinking: 8298373738b6ca275b9e8d3a56f697d3d853c80b
+  React-RCTNetwork: ec876620234dc06a7b0e7e02c93925398d1d754a
+  React-RCTSettings: 7fe88fe04d26bb971ea319fc0ee9eb4bedd29981
+  React-RCTText: e01f6bc33f22803f55a0d59969a04898dd80d612
+  React-RCTVibration: c17a731eff7b0a119737977a7d1ed8d6dbf680aa
+  ReactCommon: a1b38dd375a6688d39ccab4684879a7d431f62ae
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+  React-RCTActionSheet: 5de50477a51ffa4bda8b1a2e3a663cd0aa0f248a
+  React-RCTAnimation: eda92681d80e790260b52ec9935c49917a182cd3
+  React-RCTBlob: afa0ba6924c6cf2c471230bf24e03339dddadaa1
+  React-RCTImage: eddac7c4a8315fa421a62538667e98daf0108ba8
+  React-RCTLinking: b99a0100e0b3ad204de94d1eba9a28996d6ba602
+  React-RCTNetwork: 9d78746a30295a327da01f9916b134b71e50f002
+  React-RCTSettings: f331fcb5217b2c70b76d6069b512a9b1b732fde1
+  React-RCTText: 4f3cb6823a9eabae7068e2a93f3b8d71a8f0a25e
+  React-RCTVibration: e5a3c9aca8f46c3aadc4da9a0918e32bc192ad51
+  ReactCommon: 8d4559452b8c852c80df07ab2db6d71da97ce3a0
+=======
+<<<<<<< HEAD
+  React-RCTActionSheet: 67084a731390e9ab2826188f3ecdab9d4bbe6429
+  React-RCTAnimation: 9e3ec0ae6eaccb90613ee5b554b5e4d1ddd3f493
+  React-RCTBlob: 203966b5b92876226d006a380ecebe9c97ffe540
+  React-RCTImage: 71a39803369551179fa98a89f0edbe4346f8481b
+  React-RCTLinking: 12cbf883ceef2edebaa35e2e2b0738806088b13e
+  React-RCTNetwork: 7c636dae175b0db9581bdc01328fa862a45c439d
+  React-RCTSettings: 21c0be3aded8ba2e4e3a9fef3c68b6d2f5bf0517
+  React-RCTText: b3dadaa5d91454d81b240e2c8d852cec1af693ff
+  React-RCTVibration: 3ad34fbe24ef11d1cc6f009bae9df66ad3ffcac9
+  ReactCommon: e9bf317a5767c43cb932c09aeb680e3280ffc58f
+=======
+  React-RCTActionSheet: 033685eecd79b9414991808a2b582e605d5220c6
+  React-RCTAnimation: b061ff2f7ce6eb9bb4dff7465b6aaac4127f98ce
+  React-RCTBlob: 9df9d5f322a9e94408d109cf776fa0d7456ea82e
+  React-RCTImage: f4dfc67f39317641ed9eadae01fa91908a9e5f43
+  React-RCTLinking: 492c5cf36757eff491b5b434bfd7693f7ab6642a
+  React-RCTNetwork: 555b9658f6131e23fb8b72dced123640885c23e8
+  React-RCTSettings: 80ffa925238ec2af5c991925d61a98f02e44e956
+  React-RCTText: 80ef593ba511ec45690d473f2e537201f819b0cc
+  React-RCTVibration: a4cecd6b694cb51a7f41aae78710f30f8e04a437
+  ReactCommon: 8fb9adff5cae9ff6bf0328c1b3de67e748b42a48
+>>>>>>> dddc1624... super WIP - but wanted to show wojciech
+>>>>>>> cb9dabfc... super WIP - but wanted to show wojciech
+=======
+  React-RCTActionSheet: 1c669116ad6ef2ed503297771b8a2fce4838be08
+  React-RCTAnimation: bc9c2944bd1b060e232d9c287926115358fac6c9
+  React-RCTBlob: 6e9d3ae4919aac7b1094d225766485d5bc9deed6
+  React-RCTImage: 9fd2e710716daf963571a83c290471f03e7e72c7
+  React-RCTLinking: b622822218ebc9d206a0ba1f293b1651e7502428
+  React-RCTNetwork: 4772d88671285f743e24baa15d2b7036f386c7d3
+  React-RCTSettings: e048e64891d6e11c659a7a0d78443edbe0c0c64b
+  React-RCTText: 4e346f49f5eaf64392db0d7741bb5fc8bc4b99e3
+  React-RCTVibration: 80901caef1b663e8cebcdf890466308738260de7
+  ReactCommon: e4a5584c399e622859ae2daa28aa1709f8bd93df
+>>>>>>> 4ebbef42... WIP
+>>>>>>> 0577b3fb... Create SwapDetailsState modal
+>>>>>>> 3a600c08... Create SwapDetailsState modal
   ReactNativePermissions: 7cfad56d13c8961cd2a1005b4955b1400c79ef3e
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 60a80e72d95bf02a01cace55d3697d9724f0d77f
@@ -746,8 +898,30 @@ SPEC CHECKSUMS:
   SRSRadialGradient: 8fdf3adb76320500bc792390ecebc1b82aac54ec
   SSZipArchive: fa16b8cc4cdeceb698e5e5d9f67e9558532fbf23
   TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
+<<<<<<< HEAD
   ToolTipMenu: ad9f45c5ef375418275c81a667c2805bcac8692a
   Yoga: b9a1f7189009fa4b6266ee0a63235547326295d2
+=======
+  ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
+<<<<<<< HEAD
+  Yoga: 3dce89464db31915ccbe795de906cc3faafdf569
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+  Yoga: 613f9f1fadd893d425056f50d642946aa1587728
+=======
+<<<<<<< HEAD
+  Yoga: 86d6d484923536958fc866cd20f040887be31213
+=======
+  TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
+  Yoga: e1450ff4eb6a28789afda764cfa4aff90396ffda
+>>>>>>> dddc1624... super WIP - but wanted to show wojciech
+>>>>>>> cb9dabfc... super WIP - but wanted to show wojciech
+=======
+  Yoga: a531137b76b652b37af37894c853121168e7a43d
+>>>>>>> 4ebbef42... WIP
+>>>>>>> 0577b3fb... Create SwapDetailsState modal
+>>>>>>> 3a600c08... Create SwapDetailsState modal
 
 PODFILE CHECKSUM: 85d1a376657a62af7427d5a9d5e186c099944553
 
