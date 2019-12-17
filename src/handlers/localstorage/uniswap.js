@@ -22,7 +22,17 @@ const uniswapAccountLocalKeys = [
   PENDING_APPROVALS,
 ];
 
-export const getUniswapFavorites = () => getGlobal(UNISWAP_FAVORITES, []);
+export const DefaultUniswapFavorites = [
+  // Ethereum
+  'eth',
+  // DAI
+  '0x6b175474e89094c44da98b954eedeac495271d0f',
+  // SOCKS
+  '0x23B608675a2B2fB1890d3ABBd85c5775c51691d5',
+];
+
+export const getUniswapFavorites = () =>
+  getGlobal(UNISWAP_FAVORITES, DefaultUniswapFavorites);
 
 export const saveUniswapFavorites = favorites =>
   saveGlobal(UNISWAP_FAVORITES, favorites);
