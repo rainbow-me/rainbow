@@ -73,7 +73,6 @@ export const gasPricesInit = () => (dispatch, getState) =>
             fetchResolve(true);
           })
           .catch(error => {
-            console.error(error);
             dispatch({
               payload: fallbackGasPrices,
               type: GAS_PRICES_FAILURE,
