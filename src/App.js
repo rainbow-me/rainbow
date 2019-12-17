@@ -12,6 +12,7 @@ import CodePush from 'react-native-code-push';
 import {
   REACT_APP_SEGMENT_API_WRITE_KEY,
   SENTRY_ENDPOINT,
+  SENTRY_ENVIRONMENT,
 } from 'react-native-dotenv';
 // eslint-disable-next-line import/default
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
@@ -30,12 +31,10 @@ import { requestsForTopic } from './redux/requests';
 import Routes from './screens/Routes';
 import { parseQueryParams } from './utils';
 
-initSentry({
-  dsn: SENTRY_ENDPOINT,
-});
-
 if (process.env.NODE_ENV === 'development') {
   console.disableYellowBox = true;
+} else {
+  initSentry({ dsn: SENTRY_ENDPOINT, environment: SENTRY_ENVIRONMENT });
 }
 
 CodePush.getUpdateMetadata().then(update => {
