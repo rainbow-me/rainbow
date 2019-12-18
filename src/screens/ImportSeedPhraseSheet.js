@@ -98,7 +98,7 @@ const ImportSeedPhraseSheet = ({
   isEmpty,
   setAppearListener,
 }) => {
-  const [clipboard] = useClipboard();
+  const { clipboard } = useClipboard();
   const { navigate, setParams } = useNavigation();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
