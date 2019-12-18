@@ -55,7 +55,7 @@ PODS:
     - FirebaseCore (~> 6.0)
     - GoogleUtilities/Environment (~> 6.0)
     - GoogleUtilities/UserDefaults (~> 6.0)
-  - FirebaseMessaging (4.1.9):
+  - FirebaseMessaging (4.1.10):
     - FirebaseAnalyticsInterop (~> 1.3)
     - FirebaseCore (~> 6.2)
     - FirebaseInstanceID (~> 4.1)
@@ -82,26 +82,26 @@ PODS:
     - "GoogleUtilities/NSData+zlib (~> 6.0)"
     - nanopb (= 0.3.9011)
   - GoogleDataTransport (3.2.0)
-  - GoogleDataTransportCCTSupport (1.2.2):
+  - GoogleDataTransportCCTSupport (1.2.3):
     - GoogleDataTransport (~> 3.2)
     - nanopb (~> 0.3.901)
-  - GoogleUtilities/AppDelegateSwizzler (6.3.2):
+  - GoogleUtilities/AppDelegateSwizzler (6.4.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
-  - GoogleUtilities/Environment (6.3.2)
-  - GoogleUtilities/Logger (6.3.2):
+  - GoogleUtilities/Environment (6.4.0)
+  - GoogleUtilities/Logger (6.4.0):
     - GoogleUtilities/Environment
-  - GoogleUtilities/MethodSwizzler (6.3.2):
+  - GoogleUtilities/MethodSwizzler (6.4.0):
     - GoogleUtilities/Logger
-  - GoogleUtilities/Network (6.3.2):
+  - GoogleUtilities/Network (6.4.0):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (6.3.2)"
-  - GoogleUtilities/Reachability (6.3.2):
+  - "GoogleUtilities/NSData+zlib (6.4.0)"
+  - GoogleUtilities/Reachability (6.4.0):
     - GoogleUtilities/Logger
-  - GoogleUtilities/UserDefaults (6.3.2):
+  - GoogleUtilities/UserDefaults (6.4.0):
     - GoogleUtilities/Logger
   - JWT (3.0.0-beta.12):
     - Base64 (~> 1.1.2)
@@ -293,8 +293,6 @@ PODS:
     - React
   - react-native-camera/RN (3.15.0):
     - React
-  - react-native-hooks-persist (1.0.3):
-    - React
   - react-native-mail (4.1.0):
     - React
   - react-native-netinfo (5.0.0):
@@ -416,7 +414,7 @@ PODS:
     - React
   - RNScreens (1.0.0-alpha.23):
     - React
-  - RNSentry (1.2.0):
+  - RNSentry (1.2.1):
     - React
     - Sentry (~> 4.4.0)
   - RNStoreReview (0.1.5):
@@ -464,7 +462,6 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-camera (from `../node_modules/react-native-camera`)
-  - react-native-hooks-persist (from `../node_modules/react-native-hooks-persist`)
   - react-native-mail (from `../node_modules/react-native-mail`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
@@ -576,8 +573,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/blur"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
-  react-native-hooks-persist:
-    :path: "../node_modules/react-native-hooks-persist"
   react-native-mail:
     :path: "../node_modules/react-native-mail"
   react-native-netinfo:
@@ -674,8 +669,8 @@ SPEC CHECKSUMS:
   Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   Fabric: f988e33c97f08930a413e08123064d2e5f68d655
-  FBLazyVector: e7a6d9af306035b18059ad93f32899e390fade72
-  FBReactNativeSpec: 6ccecedee3f384c7d4aad9e7ff0c8b5c58a02412
+  FBLazyVector: f4bf59b48e6732b1b5d328248ab8794130748b92
+  FBReactNativeSpec: bed51880b4206526f796433048ca5d929f1cf52d
   Firebase: 458d109512200d1aca2e1b9b6cf7d68a869a4a46
   FirebaseAnalytics: 45f36d9c429fc91d206283900ab75390cd05ee8a
   FirebaseAnalyticsInterop: d48b6ab67bcf016a05e55b71fc39c61c0cb6b7f3
@@ -683,30 +678,29 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnostics: 511f4f3ed7d440bb69127e8b97c2bc8befae639e
   FirebaseCoreDiagnosticsInterop: e9b1b023157e3a2fc6418b5cb601e79b9af7b3a0
   FirebaseInstanceID: ebd2ea79ee38db0cb5f5167b17a0d387e1cc7b6e
-  FirebaseMessaging: e8d71368a5c579083da02203146c953f3386d503
+  FirebaseMessaging: 089b7a4991425783384acc8bcefcd78c0af913bd
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   GoogleAppMeasurement: dfe55efa543e899d906309eaaac6ca26d249862f
   GoogleDataTransport: 8e9b210c97d55fbff306cc5468ff91b9cb32dcf5
-  GoogleDataTransportCCTSupport: ef79a4728b864946a8aafdbab770d5294faf3b5f
-  GoogleUtilities: 547a86735c6f0ee30ad17e94df4fc21f616b71cb
+  GoogleDataTransportCCTSupport: 202d7cdf9c4a7d81a2bb7f7e7e1ba6faa421b1f2
+  GoogleUtilities: 29bd0d8f850efbd28cff6d99e8b7da1f8d236bcf
   JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
   libwebp: 057912d6d0abfb6357d8bb05c0ea470301f5d61e
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   Protobuf: dd1aaea7140debfe4dd0683fb8ef208e527ae153
-  RCTRequired: 2d286795f7788c7955ec6a4428f2565b630c6198
-  RCTTypeSafety: f8b867cbec38be2e60c742983b84787ca93a1dd0
-  React: 54deb94a31a7003b210298f471454078f6e9a160
-  React-Core: 6514780e552233e5ec64cde60a093ae1da42293b
-  React-CoreModules: f69bd322dfb8984d8c86afca3c0bc0004e12f6b9
-  React-cxxreact: 66cc02b54ab543071bafc33fea878ab47e1fe139
-  React-jsi: ecc5648a5810729d5b5dc225ffc382e6021d4002
-  React-jsiexecutor: 4928ff60ddfc51b7196e6fa5c0cc9c3fed71f206
-  React-jsinspector: a3798eb4b1c375e1d4bc3243c0995b8d3292ab15
+  RCTRequired: adc14902dcd9bd96162bff839191031802d1bbdf
+  RCTTypeSafety: 1bfc26cae1495204b3ee8e2aa1a416b586be2361
+  React: b6779e9431357663e2a761ca8b2384d37b81d585
+  React-Core: bbd3079bfbcfab4ccbbff76e508864d5be4c2d9f
+  React-CoreModules: 88908075a740de7f7772f9f67248af8786c4e892
+  React-cxxreact: c8533f3dba7760196f4bd88ef5e1fdacbde47c0b
+  React-jsi: 654b98b363c44145e9e39901f8be23696b5b69fe
+  React-jsiexecutor: 808812487bafd8fb39d0aeecd7bea852622a310a
+  React-jsinspector: 74c057ffb291d70dcf8297f46ba7cafff428e823
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: 52114c432860b89986c9ee4919d00a48a6ba7abb
-  react-native-hooks-persist: 956cc2055c81b9e8e8fc91e1d6a404abb02dfa8e
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-netinfo: 841c2a83fe7df998fed56fd48b73229f17a5aa5b
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
@@ -715,16 +709,16 @@ SPEC CHECKSUMS:
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 54a1aa9bf5c0824f930b1ba6dbfb3fd3e733bba9
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
-  React-RCTActionSheet: 67084a731390e9ab2826188f3ecdab9d4bbe6429
-  React-RCTAnimation: 9e3ec0ae6eaccb90613ee5b554b5e4d1ddd3f493
-  React-RCTBlob: 203966b5b92876226d006a380ecebe9c97ffe540
-  React-RCTImage: 71a39803369551179fa98a89f0edbe4346f8481b
-  React-RCTLinking: 12cbf883ceef2edebaa35e2e2b0738806088b13e
-  React-RCTNetwork: 7c636dae175b0db9581bdc01328fa862a45c439d
-  React-RCTSettings: 21c0be3aded8ba2e4e3a9fef3c68b6d2f5bf0517
-  React-RCTText: b3dadaa5d91454d81b240e2c8d852cec1af693ff
-  React-RCTVibration: 3ad34fbe24ef11d1cc6f009bae9df66ad3ffcac9
-  ReactCommon: e9bf317a5767c43cb932c09aeb680e3280ffc58f
+  React-RCTActionSheet: 5de50477a51ffa4bda8b1a2e3a663cd0aa0f248a
+  React-RCTAnimation: eda92681d80e790260b52ec9935c49917a182cd3
+  React-RCTBlob: afa0ba6924c6cf2c471230bf24e03339dddadaa1
+  React-RCTImage: eddac7c4a8315fa421a62538667e98daf0108ba8
+  React-RCTLinking: b99a0100e0b3ad204de94d1eba9a28996d6ba602
+  React-RCTNetwork: 9d78746a30295a327da01f9916b134b71e50f002
+  React-RCTSettings: f331fcb5217b2c70b76d6069b512a9b1b732fde1
+  React-RCTText: 4f3cb6823a9eabae7068e2a93f3b8d71a8f0a25e
+  React-RCTVibration: e5a3c9aca8f46c3aadc4da9a0918e32bc192ad51
+  ReactCommon: 8d4559452b8c852c80df07ab2db6d71da97ce3a0
   ReactNativePermissions: 7cfad56d13c8961cd2a1005b4955b1400c79ef3e
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 60a80e72d95bf02a01cace55d3697d9724f0d77f
@@ -743,7 +737,7 @@ SPEC CHECKSUMS:
   RNReactNativeHapticFeedback: e11a4da0ce174e9f88b03cbaf5d76d94633cdee2
   RNReanimated: 8b675a650fc67c87f63d4345a1b2d4a699c25e4f
   RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
-  RNSentry: b63ba6a29ee142b5c3221896be8ff6cda587e03f
+  RNSentry: 9b1d983b2d5d1c215ba6490348fd2a4cc23a8a9d
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
   SDWebImage: 5bf6aec6481ae2a062bdc59f9d6c1d1e552090e0
@@ -753,7 +747,7 @@ SPEC CHECKSUMS:
   SSZipArchive: fa16b8cc4cdeceb698e5e5d9f67e9558532fbf23
   TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
-  Yoga: 86d6d484923536958fc866cd20f040887be31213
+  Yoga: 613f9f1fadd893d425056f50d642946aa1587728
 
 PODFILE CHECKSUM: b931004d050eac701cdeaa72c5a620b2c25d49a0
 

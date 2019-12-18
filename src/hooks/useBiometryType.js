@@ -1,10 +1,9 @@
 import { isNil } from 'lodash';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { isPinOrFingerprintSet } from 'react-native-device-info';
 import * as Keychain from 'react-native-keychain';
 import useAppState from './useAppState';
 import usePrevious from './usePrevious';
-import useStorage from './useStorage';
 
 export const BiometryTypes = {
   FaceID: 'FaceID',
@@ -15,10 +14,7 @@ export const BiometryTypes = {
 
 export default function useBiometryType() {
   const { justBecameActive } = useAppState();
-  const [biometryType, setBiometryType] = useStorage(
-    'biometryType',
-    BiometryTypes.none
-  );
+  const [biometryType, setBiometryType] = useState(null);
   const prevBiometricType = usePrevious(biometryType);
 
   useEffect(() => {
@@ -41,14 +37,14 @@ export default function useBiometryType() {
       }
     };
 
-    if (justBecameActive) {
+    if (!biometryType || justBecameActive) {
       getSupportedBiometryType();
     }
 
     return () => {
       mounted = false;
     };
-  }, [justBecameActive, prevBiometricType, setBiometryType]);
+  }, [biometryType, justBecameActive, prevBiometricType, setBiometryType]);
 
   return biometryType;
 }
