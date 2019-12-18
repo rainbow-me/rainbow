@@ -77,7 +77,7 @@ const ImportButton = ({ disabled, onPress, seedPhrase }) => (
 );
 
 const ImportSeedPhraseSheet = ({ initializeWallet, isEmpty }) => {
-  const [clipboard] = useClipboard();
+  const { clipboard } = useClipboard();
   const { navigate, setParams } = useNavigation();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');

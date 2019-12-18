@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Clipboard, Share } from 'react-native';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
+import { Share } from 'react-native';
+import { useNavigation } from 'react-navigation-hooks';
+import { compose, onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
 import Divider from '../components/Divider';
 import { Column } from '../components/layout';
@@ -16,7 +16,9 @@ import QRCodeDisplay from '../components/QRCodeDisplay';
 import { FloatingEmojis } from '../components/floating-emojis';
 import { Br, Monospace, Text } from '../components/text';
 import { withAccountAddress } from '../hoc';
-import { colors, padding } from '../styles';
+import { useClipboard } from '../hooks';
+import { colors } from '../styles';
+import { haptics } from '../utils';
 
 const QRCodeSize = 180;
 
@@ -29,101 +31,68 @@ const AddressText = styled(Monospace).attrs({
   width: 100%;
 `;
 
-const AddressTextContainer = styled(Column)`
-  margin-top: 12;
-  width: ${QRCodeSize};
-`;
+const ReceiveScreen = ({ accountAddress }) => {
+  const { setClipboard } = useClipboard();
+  const { goBack } = useNavigation();
 
-const Content = styled(Column).attrs({
-  align: 'center',
-  flex: 1,
-  justify: 'start',
-})`
-  ${padding(25)}
-`;
-
-const DescriptionText = styled(Text)`
-  line-height: 21;
-  margin-bottom: 22;
-  text-align: center;
-`;
-
-const ReceiveScreen = ({
-  accountAddress,
-  emojiCount,
-  onCloseModal,
-  onPressCopyAddress,
-  onPressShareAddress,
-}) => (
-  <Modal height={472} onCloseModal={onCloseModal}>
-    <ModalHeader onPressClose={onCloseModal} title="Receive" />
-    <Divider inset={[0, 16]} />
-    <Content>
-      <DescriptionText>
-        Send Ether, ERC-20 tokens, or
-        <Br />
-        collectibles to your wallet:
-      </DescriptionText>
-      <QRCodeDisplay size={QRCodeSize} value={accountAddress} />
-      <AddressTextContainer>
-        <AddressText>
-          {accountAddress.substring(0, accountAddress.length / 2)}
-        </AddressText>
-        <AddressText>
-          {accountAddress.substring(accountAddress.length / 2)}
-        </AddressText>
-      </AddressTextContainer>
-    </Content>
-    <ModalFooterButtonsRow>
-      <Column flex={1}>
-        <ModalFooterButton
-          icon="copy"
-          label="Copy"
-          onPress={onPressCopyAddress}
+  return (
+    <Modal height={472} onCloseModal={goBack}>
+      <ModalHeader onPressClose={goBack} title="Receive" />
+      <Divider inset={[0, 16]} />
+      <Column align="center" flex={1} justify="start" padding={25}>
+        <Text align="center" lineHeight="loose">
+          Send Ether, ERC-20 tokens, or
+          <Br />
+          collectibles to your wallet:
+        </Text>
+        <QRCodeDisplay
+          marginTop={22}
+          size={QRCodeSize}
+          value={accountAddress}
         />
-        <FloatingEmojis
-          count={emojiCount}
-          distance={130}
-          emoji="+1"
-          size="h2"
-        />
+        <Column marginTop={12} width={QRCodeSize}>
+          <AddressText>
+            {accountAddress.substring(0, accountAddress.length / 2)}
+          </AddressText>
+          <AddressText>
+            {accountAddress.substring(accountAddress.length / 2)}
+          </AddressText>
+        </Column>
       </Column>
-      <ModalFooterButton
-        icon="share"
-        label="Share"
-        onPress={onPressShareAddress}
-      />
-    </ModalFooterButtonsRow>
-  </Modal>
-);
+      <ModalFooterButtonsRow>
+        <FloatingEmojis flex={1}>
+          {({ onNewEmoji }) => (
+            <ModalFooterButton
+              icon="copy"
+              label="Copy"
+              onPress={() => {
+                haptics.impactLight();
+                onNewEmoji();
+                setClipboard(accountAddress);
+              }}
+            />
+          )}
+        </FloatingEmojis>
+        <ModalFooterButton
+          icon="share"
+          label="Share"
+          onPress={() =>
+            Share.share({
+              message: accountAddress,
+              title: 'My account address:',
+            })
+          }
+        />
+      </ModalFooterButtonsRow>
+    </Modal>
+  );
+};
 
 ReceiveScreen.propTypes = {
   accountAddress: PropTypes.string.isRequired,
-  emojiCount: PropTypes.number,
-  onCloseModal: PropTypes.func.isRequired,
-  onPressCopyAddress: PropTypes.func,
-  onPressShareAddress: PropTypes.func,
 };
 
 export default compose(
   withAccountAddress,
-  withState('emojiCount', 'setEmojiCount', 0),
-  withHandlers({
-    onCloseModal: ({ navigation }) => () => navigation.goBack(),
-    onPressCopyAddress: ({
-      accountAddress,
-      emojiCount,
-      setEmojiCount,
-    }) => () => {
-      ReactNativeHapticFeedback.trigger('impactLight');
-      setEmojiCount(emojiCount + 1);
-      Clipboard.setString(accountAddress);
-    },
-    onPressShareAddress: ({ accountAddress }) => () =>
-      Share.share({
-        message: accountAddress,
-        title: 'My account address:',
-      }),
-  }),
-  onlyUpdateForKeys(['accountAddress', 'emojiCount'])
+  onlyUpdateForKeys(['accountAddress'])
 )(ReceiveScreen);

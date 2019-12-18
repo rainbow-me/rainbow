@@ -7,7 +7,9 @@ const Emoji = ({ lineHeight, size, ...props }) => (
   <EmojiRenderer
     {...props}
     css={`
-      font-size: ${fonts.size[size]};
+      font-size: ${Object.keys(fonts.size).includes(size)
+        ? fonts.size[size]
+        : size};
       line-height: ${fonts.lineHeight[lineHeight]};
     `}
   />

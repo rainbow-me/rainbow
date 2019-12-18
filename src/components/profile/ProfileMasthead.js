@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Clipboard } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
+import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
+import { useClipboard } from '../../hooks';
 import { borders, margin } from '../../styles';
-import { abbreviations } from '../../utils';
+import { abbreviations, isNewValueForObjectPaths } from '../../utils';
 import CopyTooltip from '../CopyTooltip';
 import Divider from '../Divider';
-import { Centered, Column, RowWithMargins } from '../layout';
+import { Centered, RowWithMargins } from '../layout';
 import { FloatingEmojis } from '../floating-emojis';
 import { TruncatedAddress } from '../text';
 import ProfileAction from './ProfileAction';
@@ -25,62 +25,52 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
   width: 100%;
 `;
 
-const Container = styled(Centered).attrs({ direction: 'column' })`
-  margin-bottom: 24;
-  padding-bottom: 32;
-`;
+const ProfileMasthead = ({ accountAddress, showBottomDivider }) => {
+  const { setClipboard } = useClipboard();
+  const { navigate } = useNavigation();
 
-const ProfileMasthead = ({
-  accountAddress,
-  emojiCount,
-  onPressCopy,
-  onPressReceive,
-  showBottomDivider,
-}) => (
-  <Container>
-    <FastImage
-      source={AvatarImageSource}
-      style={{
-        ...borders.buildCircleAsObject(85),
-        marginBottom: 3,
-      }}
-    />
-    <CopyTooltip textToCopy={accountAddress} tooltipText="Copy Address">
-      <AddressAbbreviation address={accountAddress} />
-    </CopyTooltip>
-    <RowWithMargins align="center" margin={1}>
-      <Column>
-        <ProfileAction
-          icon="copy"
-          onPress={onPressCopy}
-          scaleTo={0.88}
-          text="Copy Address"
-        />
-        <FloatingEmojis
-          count={emojiCount}
-          distance={130}
-          emoji="+1"
-          size="h2"
-        />
-      </Column>
-      <ProfileAction
-        icon="inbox"
-        onPress={onPressReceive}
-        scaleTo={0.88}
-        text="Receive"
+  return (
+    <Centered direction="column" marginBottom={24} paddingBottom={32}>
+      <FastImage
+        source={AvatarImageSource}
+        style={{
+          ...borders.buildCircleAsObject(85),
+          marginBottom: 3,
+        }}
       />
-    </RowWithMargins>
-    {showBottomDivider && (
-      <Divider style={{ bottom: 0, position: 'absolute' }} />
-    )}
-  </Container>
-);
+      <CopyTooltip textToCopy={accountAddress} tooltipText="Copy Address">
+        <AddressAbbreviation address={accountAddress} />
+      </CopyTooltip>
+      <RowWithMargins align="center" margin={1}>
+        <FloatingEmojis>
+          {({ onNewEmoji }) => (
+            <ProfileAction
+              icon="copy"
+              onPress={() => {
+                onNewEmoji();
+                setClipboard(accountAddress);
+              }}
+              scaleTo={0.88}
+              text="Copy Address"
+            />
+          )}
+        </FloatingEmojis>
+        <ProfileAction
+          icon="inbox"
+          onPress={() => navigate('ReceiveModal')}
+          scaleTo={0.88}
+          text="Receive"
+        />
+      </RowWithMargins>
+      {showBottomDivider && (
+        <Divider style={{ bottom: 0, position: 'absolute' }} />
+      )}
+    </Centered>
+  );
+};
 
 ProfileMasthead.propTypes = {
   accountAddress: PropTypes.string,
-  emojiCount: PropTypes.number,
-  onPressCopy: PropTypes.func,
-  onPressReceive: PropTypes.func,
   showBottomDivider: PropTypes.bool,
 };
 
@@ -88,15 +78,7 @@ ProfileMasthead.defaultProps = {
   showBottomDivider: true,
 };
 
-export default compose(
-  withState('emojiCount', 'setEmojiCount', 0),
-  withHandlers({
-    onPressCopy: ({ accountAddress, emojiCount, setEmojiCount }) => () => {
-      setEmojiCount(emojiCount + 1);
-      Clipboard.setString(accountAddress);
-    },
-    onPressReceive: ({ navigation }) => () =>
-      navigation.navigate('ReceiveModal'),
-  }),
-  onlyUpdateForKeys(['accountAddress', 'emojiCount', 'showBottomDivider'])
-)(ProfileMasthead);
+const arePropsEqual = (...props) =>
+  !isNewValueForObjectPaths(...props, ['accountAddress', 'showBottomDivider']);
+
+export default React.memo(ProfileMasthead, arePropsEqual);

@@ -12,6 +12,8 @@ const statusBarHeight = getStatusBarHeight(true);
 const expand = {};
 expand.translateY = deviceUtils.dimensions.height;
 
+export let expandedStateTransitionPosition = new Animated.Value(0);
+
 export const sheetVerticalOffset = statusBarHeight;
 
 const exchangeStyleInterpolator = ({
@@ -56,6 +58,8 @@ const expandStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },
 }) => {
+  expandedStateTransitionPosition = current;
+
   const backgroundOpacity = interpolate(current, {
     extrapolate: Animated.Extrapolate.CLAMP,
     inputRange: [-1, 0, 0.975, 2],
