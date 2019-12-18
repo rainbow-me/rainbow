@@ -33,9 +33,7 @@ export const includeExchangeAddress = uniswapPairs => asset => ({
   ),
 });
 
-const lowerAssetName = asset => toLower(asset.name);
-
-const includeFavorite = asset => ({
+const appendFavoriteKey = asset => ({
   ...asset,
   favorite: true,
 });
@@ -52,14 +50,17 @@ const withAssetsAvailableOnUniswap = (allAssets, uniswapPairs) => {
   return { assetsAvailableOnUniswap };
 };
 
-const withSortedUniswapAssets = (unsortedUniswapAssets, favorites) => {
-  const sortedAssets = sortBy(values(unsortedUniswapAssets), lowerAssetName);
-  const [favoriteAssets, remainingAssets] = partition(sortedAssets, asset =>
-    includes(favorites, asset.address)
+const withSortedUniswapAssets = (assets, favorites) => {
+  const sorted = sortBy(values(assets), ({ name }) => toLower(name));
+  const [favorited, notFavorited] = partition(sorted, ({ address }) =>
+    includes(map(favorites, toLower), toLower(address))
   );
-  const labeledFavorites = map(favoriteAssets, includeFavorite);
+
   return {
-    sortedUniswapAssets: concat(labeledFavorites, remainingAssets),
+    sortedUniswapAssets: concat(
+      map(favorited, appendFavoriteKey),
+      notFavorited
+    ),
   };
 };
 
