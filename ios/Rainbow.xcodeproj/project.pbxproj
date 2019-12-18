@@ -644,7 +644,7 @@
 					"$(PROJECT_DIR)",
 					"\"$(SRCROOT)/Rainbow\"",
 				);
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.2.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -694,7 +694,7 @@
 					"$(PROJECT_DIR)",
 					"\"$(SRCROOT)/Rainbow\"",
 				);
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.2.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -779,7 +779,7 @@
 					"$(PROJECT_DIR)",
 					"\"$(SRCROOT)/Rainbow\"",
 				);
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.2.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -865,7 +865,7 @@
 					"$(PROJECT_DIR)",
 					"\"$(SRCROOT)/Rainbow\"",
 				);
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.2.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

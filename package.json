@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.2.0-4",
+  "version": "1.2.2-4",
   "private": true,
   "scripts": {
     "android": "react-native run-android",

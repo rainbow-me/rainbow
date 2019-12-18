@@ -78,7 +78,7 @@ const isSameAsset = (a, b) => {
   return assetA === assetB;
 };
 
-const getNativeTag = field => get(field, '_nativeTag');
+const getNativeTag = field => get(field, '_inputRef._nativeTag');
 
 class ExchangeModal extends Component {
   static propTypes = {
@@ -148,13 +148,14 @@ class ExchangeModal extends Component {
     // Maybe that's not perfect, but works for now ¯\_(ツ)_/¯
     if (
       this.props.isTransitioning &&
-      nextProps.isTransitioning &&
+      !nextProps.isTransitioning &&
       this.lastFocusedInput === null
     ) {
       this.inputFocusInteractionHandle = InteractionManager.runAfterInteractions(
         this.focusInputField
       );
     }
+
     const isNewState = isNewValueForObjectPaths(this.state, nextState, [
       'approvalCreationTimestamp',
       'approvalEstimatedTimeInMs',
