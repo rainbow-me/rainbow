@@ -151,10 +151,11 @@ export default class ValueChart extends PureComponent {
     this.onTapGestureEvent = event([
       {
         nativeEvent: {
-          state: this.gestureState,
+          state: state =>
+            block([cond(neq(state, FAILED), set(this.gestureState, state))]),
           x: x =>
             cond(
-              and(greaterOrEq(x, 0), lessThan(x, width)),
+              and(greaterThan(x, 0), lessThan(x, width)),
               set(this.touchX, x)
             ),
         },
@@ -165,7 +166,7 @@ export default class ValueChart extends PureComponent {
       {
         nativeEvent: {
           state: state =>
-            block([cond(neq(FAILED, state), set(this.gestureState, state))]),
+            block([cond(neq(ACTIVE, state), set(this.gestureState, state))]),
         },
       },
     ]);
@@ -256,8 +257,6 @@ export default class ValueChart extends PureComponent {
         splinePoints.push(emptyArray);
       }
     }
-
-    console.log(splinePoints);
 
     const animatedPath = concat(
       'M -20 0',
@@ -478,17 +477,17 @@ export default class ValueChart extends PureComponent {
                       .value
                   );
                 }),
-              ])
-            ),
-            onChange(
-              this.touchX,
-              call([this.touchX], ([x]) => {
-                this._text.updateValue(
-                  this.state.currentData[
-                    Math.floor(x / (width / this.state.currentData.length))
-                  ].value
-                );
-              })
+              ]),
+              onChange(
+                this.touchX,
+                call([this.touchX], ([x]) => {
+                  this._text.updateValue(
+                    this.state.currentData[
+                      Math.floor(x / (width / this.state.currentData.length))
+                    ].value
+                  );
+                })
+              )
             ),
             cond(
               and(greaterThan(this.value, 0), eq(this.shouldSpring, 1)),
@@ -553,19 +552,6 @@ export default class ValueChart extends PureComponent {
                 ),
                 stopClock(this.opacityClock),
               ])
-            ),
-            cond(
-              neq(this.loadingValue, cond(eq(this.isLoading, 1), 1, 0)),
-              set(
-                this.loadingValue,
-                timing({
-                  clock: this.clock,
-                  duration: 150,
-                  easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
-                  from: this.loadingValue,
-                  to: cond(eq(this.isLoading, 1), 1, 0),
-                })
-              )
             ),
           ])}
         />
