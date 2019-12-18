@@ -40,7 +40,7 @@ const exchangeStyleInterpolator = ({
       transform: [{ translateY }],
     },
     containerStyle: {
-      backgroundColor: color(20, 20, 20, backgroundOpacity),
+      blur: Animated.multiply(backgroundOpacity, 10),
     },
   };
 };
