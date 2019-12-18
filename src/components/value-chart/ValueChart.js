@@ -200,7 +200,6 @@ export default class ValueChart extends PureComponent {
         data[currentInterval] = usableData[currentInterval];
         await this.setState({
           addData: data,
-          currentData: usableData[currentInterval],
         });
 
         this.animatedPath = this.createAnimatedPath();
@@ -214,6 +213,10 @@ export default class ValueChart extends PureComponent {
         this._configUp
       ).start();
       this.currentInterval = currentInterval;
+
+      await this.setState({
+        currentData: usableData[currentInterval],
+      });
     }
   };
 
@@ -253,6 +256,8 @@ export default class ValueChart extends PureComponent {
         splinePoints.push(emptyArray);
       }
     }
+
+    console.log(splinePoints);
 
     const animatedPath = concat(
       'M -20 0',
