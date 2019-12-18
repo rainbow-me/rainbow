@@ -684,9 +684,15 @@ SPEC CHECKSUMS:
 =======
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> d319b7f6... Improve FloatingEmojis
   FBLazyVector: f4bf59b48e6732b1b5d328248ab8794130748b92
   FBReactNativeSpec: bed51880b4206526f796433048ca5d929f1cf52d
 =======
+=======
+>>>>>>> 8398a5cb... refactor floatingemojis
 <<<<<<< HEAD
   FBLazyVector: e7a6d9af306035b18059ad93f32899e390fade72
   FBReactNativeSpec: 6ccecedee3f384c7d4aad9e7ff0c8b5c58a02412
@@ -694,13 +700,32 @@ SPEC CHECKSUMS:
   FBLazyVector: 54cfc66f3980050543435629859c1befbf4e36fd
   FBReactNativeSpec: 58b93e4634576735a780c55ccda36eaad4d7d72f
 >>>>>>> dddc1624... super WIP - but wanted to show wojciech
+<<<<<<< HEAD
 >>>>>>> cb9dabfc... super WIP - but wanted to show wojciech
 =======
+<<<<<<< HEAD
   FBLazyVector: ab47aef4b52a4c3376746f192765150f2968a419
   FBReactNativeSpec: 70e342d773fa13354333075f7c46e5954ab7eb74
 >>>>>>> 4ebbef42... WIP
+<<<<<<< HEAD
 >>>>>>> 0577b3fb... Create SwapDetailsState modal
+<<<<<<< HEAD
 >>>>>>> 3a600c08... Create SwapDetailsState modal
+=======
+=======
+=======
+=======
+  FBLazyVector: 94e928a3c096aa3ea836c0e2bc2a5802f45ea22a
+  FBReactNativeSpec: 83cbd89ce1cf0036c94666dd2daf70c36e72e7b6
+>>>>>>> 84a65a79... refactor floatingemojis
+>>>>>>> 8398a5cb... refactor floatingemojis
+=======
+  FBLazyVector: 51158b71b3b8586e0c558e05673d8fc1bd7675b2
+  FBReactNativeSpec: 84925d383b6c01504bdc7756f4e7a2d021cd2985
+>>>>>>> 52fb130f... Improve FloatingEmojis
+>>>>>>> d319b7f6... Improve FloatingEmojis
+>>>>>>> 2fc9a6fb... Improve FloatingEmojis
+>>>>>>> 41827352... Improve FloatingEmojis
   Firebase: 458d109512200d1aca2e1b9b6cf7d68a869a4a46
   FirebaseAnalytics: 45f36d9c429fc91d206283900ab75390cd05ee8a
   FirebaseAnalyticsInterop: d48b6ab67bcf016a05e55b71fc39c61c0cb6b7f3
@@ -721,7 +746,11 @@ SPEC CHECKSUMS:
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> d319b7f6... Improve FloatingEmojis
   Protobuf: dd1aaea7140debfe4dd0683fb8ef208e527ae153
+<<<<<<< HEAD
 <<<<<<< HEAD
   RCTRequired: 418abaf045a635a391e68ee0573035553c1c4d7b
   RCTTypeSafety: ea8dd81f61436a394b943dac4435a304c59906ff
@@ -733,6 +762,8 @@ SPEC CHECKSUMS:
   React-jsiexecutor: ccf2361cd90f691e04ff73585f099aa179ae8b52
   React-jsinspector: fabb3a8cad7bce396f2d4c29cbf83e87022b07ec
 =======
+=======
+>>>>>>> 41827352... Improve FloatingEmojis
 <<<<<<< HEAD
   RCTRequired: da67b5686f79363daafcc52e86bd7abe7a68b0c2
   RCTTypeSafety: 2a0b9cfb4aa6d3cc324ba3e8a6342b63d0940b36
@@ -744,6 +775,8 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 2509a117c41dc7d1667b56d801bcfb25c0abba8e
   React-jsinspector: c38019329f9abe8f16d9827bde65fd0d5574d0c1
 =======
+=======
+>>>>>>> 2fc9a6fb... Improve FloatingEmojis
 <<<<<<< HEAD
   RCTRequired: adc14902dcd9bd96162bff839191031802d1bbdf
   RCTTypeSafety: 1bfc26cae1495204b3ee8e2aa1a416b586be2361
@@ -766,6 +799,7 @@ SPEC CHECKSUMS:
   React-jsinspector: a3798eb4b1c375e1d4bc3243c0995b8d3292ab15
 =======
   Protobuf: 20d79da7f20b5928b80043b05080b816e802659e
+<<<<<<< HEAD
   RCTRequired: 4b9095fc7d4a71cd997492a07c4a776eb8449341
   RCTTypeSafety: e4088ebfd1f60c2c34a430c14b10d8bd0b99550e
   React: ab84335b09293de28487efcbd3b617cc65649149
@@ -776,8 +810,10 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 0713deef509ca0eca6fe6d2abc79b38beb43da3c
   React-jsinspector: 49800d3c49409192b2de3092f37ccdbe568438bc
 >>>>>>> dddc1624... super WIP - but wanted to show wojciech
+<<<<<<< HEAD
 >>>>>>> cb9dabfc... super WIP - but wanted to show wojciech
 =======
+<<<<<<< HEAD
   Protobuf: dd1aaea7140debfe4dd0683fb8ef208e527ae153
   RCTRequired: 3201ee63bec687d504a348feefbd8f54a04893f6
   RCTTypeSafety: 35efc845c953e0ad7362a0142af11dcf739757a9
@@ -789,8 +825,39 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 97db89e78f7397ba1eb587bf0745adfd6717851d
   React-jsinspector: 09e4ebcf080058565f9cba63c6f1b72ef55c03b7
 >>>>>>> 4ebbef42... WIP
+<<<<<<< HEAD
 >>>>>>> 0577b3fb... Create SwapDetailsState modal
+<<<<<<< HEAD
 >>>>>>> 3a600c08... Create SwapDetailsState modal
+=======
+=======
+=======
+=======
+  RCTRequired: c3ce2fb1e17f21c4bc7b6ff2d4c031c727b0296e
+  RCTTypeSafety: 9aaaec43f6948687401206e25b17683da770b59f
+  React: f7cdbc353d308a8af0be2e46712d58844b1f8d64
+  React-Core: f08c5af799cb2e651729587fe738061558bad530
+  React-CoreModules: 727191013afc2d59e9000a5c28bf08b737e084cb
+  React-cxxreact: da77dfe40e859696c05bb03149dd0cb06e15902f
+  React-jsi: 68a00e8cca0e590fd71083bc6cc9d6eecedb6a7c
+  React-jsiexecutor: 2013f75b304e9b2805036a00a275207d67fce609
+  React-jsinspector: 34ec5f78fb0cac7b470af2adc550ce6196ec8fcd
+>>>>>>> 84a65a79... refactor floatingemojis
+>>>>>>> 8398a5cb... refactor floatingemojis
+=======
+  RCTRequired: e4bbfb7b862412df263e95398036c128f9d1f136
+  RCTTypeSafety: e391a3e530a5cffe54296ad12f1c129c804ace4c
+  React: 4399aa4242fe8ac92ad3106519e83e7ee90d8307
+  React-Core: d3da6a0847b402a705e5e1978f953067fb96c548
+  React-CoreModules: 6f082520393fc329973bdcfc52922b4b5ddb315e
+  React-cxxreact: e8bc303bd9e6c9e68af4bba9453f592c6acfb161
+  React-jsi: 65498a597ef306abd864c86d37acff3021082e54
+  React-jsiexecutor: a3496f9adf84ab1cdb72123540976a6136a1c90a
+  React-jsinspector: 14aabf8d21e8c05bc698f20c31fd0134ea14733b
+>>>>>>> 52fb130f... Improve FloatingEmojis
+>>>>>>> d319b7f6... Improve FloatingEmojis
+>>>>>>> 2fc9a6fb... Improve FloatingEmojis
+>>>>>>> 41827352... Improve FloatingEmojis
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: 705c7e9412436957b4dc894a1af61f43830787e2
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
@@ -831,6 +898,10 @@ SPEC CHECKSUMS:
 =======
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> d319b7f6... Improve FloatingEmojis
   React-RCTActionSheet: 5de50477a51ffa4bda8b1a2e3a663cd0aa0f248a
   React-RCTAnimation: eda92681d80e790260b52ec9935c49917a182cd3
   React-RCTBlob: afa0ba6924c6cf2c471230bf24e03339dddadaa1
@@ -842,6 +913,8 @@ SPEC CHECKSUMS:
   React-RCTVibration: e5a3c9aca8f46c3aadc4da9a0918e32bc192ad51
   ReactCommon: 8d4559452b8c852c80df07ab2db6d71da97ce3a0
 =======
+=======
+>>>>>>> 8398a5cb... refactor floatingemojis
 <<<<<<< HEAD
   React-RCTActionSheet: 67084a731390e9ab2826188f3ecdab9d4bbe6429
   React-RCTAnimation: 9e3ec0ae6eaccb90613ee5b554b5e4d1ddd3f493
@@ -865,8 +938,10 @@ SPEC CHECKSUMS:
   React-RCTVibration: a4cecd6b694cb51a7f41aae78710f30f8e04a437
   ReactCommon: 8fb9adff5cae9ff6bf0328c1b3de67e748b42a48
 >>>>>>> dddc1624... super WIP - but wanted to show wojciech
+<<<<<<< HEAD
 >>>>>>> cb9dabfc... super WIP - but wanted to show wojciech
 =======
+<<<<<<< HEAD
   React-RCTActionSheet: 1c669116ad6ef2ed503297771b8a2fce4838be08
   React-RCTAnimation: bc9c2944bd1b060e232d9c287926115358fac6c9
   React-RCTBlob: 6e9d3ae4919aac7b1094d225766485d5bc9deed6
@@ -878,8 +953,41 @@ SPEC CHECKSUMS:
   React-RCTVibration: 80901caef1b663e8cebcdf890466308738260de7
   ReactCommon: e4a5584c399e622859ae2daa28aa1709f8bd93df
 >>>>>>> 4ebbef42... WIP
+<<<<<<< HEAD
 >>>>>>> 0577b3fb... Create SwapDetailsState modal
+<<<<<<< HEAD
 >>>>>>> 3a600c08... Create SwapDetailsState modal
+=======
+=======
+=======
+=======
+  React-RCTActionSheet: 3801478d96dda15460e7700abcddcfe5dad0bbfb
+  React-RCTAnimation: 01eb7a25a88b43f8e8f1fce2997c379932854f26
+  React-RCTBlob: b356c5ecd7b8e3673e3faaade302468c809ec944
+  React-RCTImage: 7782472fbeddc923b94cd28fac822d0d48efd55e
+  React-RCTLinking: e92932487310ee964a457533f897efec6993ab37
+  React-RCTNetwork: 3c3c4cc1901c38397c8c545f853f9ad2ad40e1cd
+  React-RCTSettings: 8519493d6e556a9030f71a7133d39c10d2dcbd8d
+  React-RCTText: f4f714b55f6aecd8923c07e8566a5033ab454ae1
+  React-RCTVibration: 31ad780053e988fa23811a65a8255b09266e0876
+  ReactCommon: 6a54dd8e84202251c55e7100d7549fe8b5df156b
+>>>>>>> 84a65a79... refactor floatingemojis
+>>>>>>> 8398a5cb... refactor floatingemojis
+=======
+  React-RCTActionSheet: 1d64384bf6d2dcd10bd38d12ff3d080da203cbc9
+  React-RCTAnimation: 4efedf814b521de1108def4439d9480580b500d2
+  React-RCTBlob: 7bef457eda403b27934b6a9fe28237973ae78951
+  React-RCTImage: 9b610449e936f9e441b66c13ac171f0c97407a32
+  React-RCTLinking: 92400331b1a16ac8b648655c2060fb8c094c1c09
+  React-RCTNetwork: c19ccd6cf4b45422fed03c13ea0ccaa5c74757d5
+  React-RCTSettings: 5afdfd4b264aa112af6a4e0c5f4cfd32e9c3af16
+  React-RCTText: 2ce8124cb5a3d98ec944385b4e8c519be98d674a
+  React-RCTVibration: da07932f886852f7003c01df39284d38dd8db8f0
+  ReactCommon: 1d279d4a07490a38eba641857c18e60d7d98b27d
+>>>>>>> 52fb130f... Improve FloatingEmojis
+>>>>>>> d319b7f6... Improve FloatingEmojis
+>>>>>>> 2fc9a6fb... Improve FloatingEmojis
+>>>>>>> 41827352... Improve FloatingEmojis
   ReactNativePermissions: 7cfad56d13c8961cd2a1005b4955b1400c79ef3e
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 44395cb9c7c1523104c2b499eb426ef7aff82bca
@@ -927,14 +1035,32 @@ SPEC CHECKSUMS:
   Yoga: 86d6d484923536958fc866cd20f040887be31213
 =======
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
+<<<<<<< HEAD
   Yoga: e1450ff4eb6a28789afda764cfa4aff90396ffda
 >>>>>>> dddc1624... super WIP - but wanted to show wojciech
+<<<<<<< HEAD
 >>>>>>> cb9dabfc... super WIP - but wanted to show wojciech
 =======
+<<<<<<< HEAD
   Yoga: a531137b76b652b37af37894c853121168e7a43d
 >>>>>>> 4ebbef42... WIP
+<<<<<<< HEAD
 >>>>>>> 0577b3fb... Create SwapDetailsState modal
+<<<<<<< HEAD
 >>>>>>> 3a600c08... Create SwapDetailsState modal
+=======
+=======
+=======
+=======
+  Yoga: a97a03748c58b18a1e91b2aee9aa1ef09c85053b
+>>>>>>> 84a65a79... refactor floatingemojis
+>>>>>>> 8398a5cb... refactor floatingemojis
+=======
+  Yoga: 035bd5526cfe9c6768b8c67606cbbc0709be26df
+>>>>>>> 52fb130f... Improve FloatingEmojis
+>>>>>>> d319b7f6... Improve FloatingEmojis
+>>>>>>> 2fc9a6fb... Improve FloatingEmojis
+>>>>>>> 41827352... Improve FloatingEmojis
 
 PODFILE CHECKSUM: 4e11b438fd6bb2763be24d82eeafc6f69c49a2f4
 

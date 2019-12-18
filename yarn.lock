@@ -1480,9 +1480,19 @@
   version "12.12.20"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.20.tgz#7b693038ce661fe57a7ffa4679440b5e7c5e8b99"
   integrity sha512-VAe+DiwpnC/g448uN+/3gRl4th0BTdrR9gSLIOHA+SUQskaYZQDOHG7xmjiE7JUhjbXnbXytf6Ih+/pA6CtMFQ==
+<<<<<<< HEAD
 >>>>>>> 4ebbef42... WIP
+<<<<<<< HEAD
 >>>>>>> 0577b3fb... Create SwapDetailsState modal
+<<<<<<< HEAD
 >>>>>>> bbcfbfc3... Create SwapDetailsState modal
+=======
+=======
+=======
+>>>>>>> 52fb130f... Improve FloatingEmojis
+>>>>>>> d319b7f6... Improve FloatingEmojis
+>>>>>>> 2fc9a6fb... Improve FloatingEmojis
+>>>>>>> 4c04a769... Improve FloatingEmojis
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -9269,9 +9279,19 @@ react-native@facebook/react-native:
   resolved "https://codeload.github.com/facebook/react-native/tar.gz/048f88a33a53ebd4e45865b319c42291f1d6c7f2"
 =======
   resolved "https://codeload.github.com/facebook/react-native/tar.gz/3714f3648a8ac51f2bb7f2791e2381551d0209b4"
+<<<<<<< HEAD
 >>>>>>> 4ebbef42... WIP
+<<<<<<< HEAD
 >>>>>>> 0577b3fb... Create SwapDetailsState modal
+<<<<<<< HEAD
 >>>>>>> 3a600c08... Create SwapDetailsState modal
+=======
+=======
+=======
+>>>>>>> 52fb130f... Improve FloatingEmojis
+>>>>>>> d319b7f6... Improve FloatingEmojis
+>>>>>>> 2fc9a6fb... Improve FloatingEmojis
+>>>>>>> 41827352... Improve FloatingEmojis
   dependencies:
     "@babel/runtime" "^7.0.0"
     "@react-native-community/cli" "^3.0.0"

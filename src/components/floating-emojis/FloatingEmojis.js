@@ -1,85 +1,132 @@
-import React, { PureComponent } from 'react';
-import { View } from 'react-primitives';
 import PropTypes from 'prop-types';
-import stylePropType from 'react-style-proptype';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { View } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { position } from '../../styles';
+import { interpolate } from '../animations';
 import FloatingEmoji from './FloatingEmoji';
+
+const { call, cond, lessThan, onChange, useCode } = Animated;
+
+const EMPTY_ARRAY = [];
+const pageTransitionThreshold = 0.93;
 
 const getRandomNumber = (min, max) => Math.random() * (max - min) + min;
 
-const createEmojiItem = range => {
-  const right = `${getRandomNumber(...range)}%`;
+const FloatingEmojis = ({
+  children,
+  distance,
+  duration,
+  emoji,
+  range,
+  size,
+  transitionPosition,
+  wiggleFactor,
+  ...props
+}) => {
+  const [emojis, setEmojis] = useState(EMPTY_ARRAY);
+  const [touched, setTouched] = useState(false);
 
-  return {
-    id: right,
-    right,
-  };
-};
+  const timeout = useRef(undefined);
+  useEffect(() => () => timeout.current && clearTimeout(timeout.current), []);
 
-export default class FloatingEmojis extends PureComponent {
-  static propTypes = {
-    color: PropTypes.string,
-    count: PropTypes.number,
-    distance: PropTypes.number,
-    duration: PropTypes.number,
-    emoji: PropTypes.string.isRequired,
-    range: PropTypes.arrayOf(PropTypes.number),
-    size: PropTypes.string.isRequired,
-    style: stylePropType,
-    top: PropTypes.number,
-  };
+  const clearEmojis = useCallback(() => setEmojis(EMPTY_ARRAY), [setEmojis]);
 
-  static defaultProps = {
-    count: -1,
-    range: [0, 80],
-    size: 'h2',
-  };
+  // Clear emojis if page transitionPosition falls below `pageTransitionThreshold`
+  // otherwise, the FloatingEmojis look weird during stack transitions
+  useCode(
+    ...(transitionPosition
+      ? [
+          onChange(
+            lessThan(transitionPosition, pageTransitionThreshold),
+            cond(
+              lessThan(transitionPosition, pageTransitionThreshold),
+              call([], clearEmojis)
+            )
+          ),
+        ]
+      : [])
+  );
 
-  state = {
-    emojis: [],
-  };
+  const onNewEmoji = useCallback(
+    (x, y) => {
+      if (timeout.current) clearTimeout(timeout.current);
+      timeout.current = setTimeout(clearEmojis, duration * 1.1);
 
-  componentDidUpdate(prevProps) {
-    const oldCount = prevProps.count;
-    const newCount = this.props.count;
-    const numEmojis = newCount - oldCount;
+      const newEmoji = {
+        // if a user has smashed the button 7 times, they deserve a 🌈️ rainbow
+        emojiToRender: touched && emojis.length % 7 === 0 ? 'rainbow' : emoji,
+        x: x ? x - getRandomNumber(-20, 20) : `${getRandomNumber(...range)}%`,
+        y: y || 0,
+      };
 
-    if (numEmojis <= 0) return;
+      setEmojis([...emojis, newEmoji]);
+      if (!touched) setTouched(true);
+    },
+    [
+      clearEmojis,
+      duration,
+      emoji,
+      emojis,
+      range,
+      setEmojis,
+      setTouched,
+      timeout,
+      touched,
+    ]
+  );
 
-    const items = Array(numEmojis).fill();
-    const newEmojis = items.map((_, i) => oldCount + i).map(this.createItem);
-
-    // TODO: refactor this component to utilize hooks, so that we can stop
-    // having to call setState inside componentDidUpdate.
-    // eslint-disable-next-line react/no-did-update-set-state
-    this.setState(prevState => ({
-      emojis: prevState.emojis.concat(newEmojis),
-    }));
-  }
-
-  createItem = () => createEmojiItem(this.props.range);
-
-  removeEmoji = id => {
-    this.setState(prevState => ({
-      emojis: prevState.emojis.filter(emoji => emoji.id !== id),
-    }));
-  };
-
-  render = () => (
-    <View css={position.cover} pointerEvents="none" style={this.props.style}>
-      {this.state.emojis.map(({ id, ...item }) => (
-        <FloatingEmoji
-          {...item}
-          distance={this.props.distance}
-          duration={this.props.duration}
-          emoji={this.props.emoji}
-          id={id}
-          key={id}
-          onComplete={this.removeEmoji}
-          size={this.props.size}
-          top={this.props.top}
-        />
-      ))}
+  return (
+    <View {...props}>
+      {children({ onNewEmoji })}
+      <Animated.View
+        pointerEvents="none"
+        style={{
+          ...position.coverAsObject,
+          opacity: !transitionPosition
+            ? 1
+            : interpolate(transitionPosition, {
+                inputRange: [pageTransitionThreshold, 1],
+                outputRange: [0, 1],
+              }),
+        }}
+      >
+        {emojis.map(({ emojiToRender, x, y }, index) => (
+          <FloatingEmoji
+            distance={Math.ceil(distance)}
+            duration={duration}
+            emoji={emojiToRender}
+            index={index}
+            key={`${x}${y}`}
+            left={x}
+            size={size}
+            top={y}
+            wiggleFactor={wiggleFactor}
+          />
+        ))}
+      </Animated.View>
     </View>
   );
-}
+};
+
+FloatingEmojis.propTypes = {
+  children: PropTypes.node,
+  distance: PropTypes.number,
+  duration: PropTypes.number,
+  emoji: PropTypes.string.isRequired,
+  range: PropTypes.arrayOf(PropTypes.number),
+  size: PropTypes.string.isRequired,
+  transitionPosition: PropTypes.object,
+  wiggleFactor: PropTypes.number,
+};
+
+FloatingEmojis.defaultProps = {
+  distance: 130,
+  duration: 2000,
+  emoji: '+1', // aka 👍️
+  range: [0, 80],
+  size: 30,
+  wiggleFactor: 0.5,
+};
+
+export default FloatingEmojis;
