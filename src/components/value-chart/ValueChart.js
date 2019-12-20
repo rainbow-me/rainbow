@@ -42,11 +42,34 @@ const {
   stopClock,
 } = Animated;
 
+const simplifyChartData = (data, destinatedNumberOfPoints) => {
+  if (data.length > destinatedNumberOfPoints) {
+    let destMul = data.length / destinatedNumberOfPoints;
+    // const maxValue = maxBy(data, 'value');
+    // const minValue = minBy(data, 'value');
+
+    let newData = [];
+    for (let i = 0; i < destinatedNumberOfPoints; i++) {
+      const indexPlace = i * destMul;
+      const r = indexPlace % 1;
+      const f = Math.floor(indexPlace);
+
+      const firstValue = data[f].value * r;
+      const secondValue = data[f + 1].value * (1 - r);
+
+      const finalValue = firstValue + secondValue;
+
+      newData.push({ timestamp: data[f].timestamp, value: finalValue });
+    }
+    return newData;
+  }
+};
+
 const usableData = [
-  data1.slice(0, 150),
-  data2.slice(0, 150),
-  data3.slice(0, 150),
-  data4.slice(0, 150),
+  simplifyChartData(data1, 120),
+  simplifyChartData(data2, 120),
+  simplifyChartData(data3, 120),
+  simplifyChartData(data4, 120),
 ];
 
 const { BEGAN, ACTIVE, CANCELLED, END, FAILED, UNDETERMINED } = State;
@@ -257,6 +280,8 @@ export default class ValueChart extends PureComponent {
         splinePoints.push(emptyArray);
       }
     }
+
+    console.log(splinePoints);
 
     const animatedPath = concat(
       'M -20 0',
