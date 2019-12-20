@@ -15,7 +15,6 @@ import openStateSettings from './openStateSettings';
 import requests from './requests';
 import selectedInput from './selectedInput';
 import selectedWithFab from './selectedWithFab';
-import send from './send';
 import settings from './settings';
 import uniqueTokens from './uniqueTokens';
 import uniswap from './uniswap';
@@ -37,7 +36,6 @@ export default combineReducers({
   requests,
   selectedInput,
   selectedWithFab,
-  send,
   settings,
   uniqueTokens,
   uniswap,
