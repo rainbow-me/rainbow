@@ -900,7 +900,7 @@ class ExchangeModal extends Component {
                   this.navigateToSelectOutputCurrency
                 }
                 outputAmount={outputAmountDisplay}
-                outputCurrency={get(outputCurrency, 'symbol', null)}
+                outputCurrencySymbol={get(outputCurrency, 'symbol', null)}
                 outputFieldRef={this.assignOutputFieldRef}
                 setOutputAmount={this.setOutputAmount}
               />

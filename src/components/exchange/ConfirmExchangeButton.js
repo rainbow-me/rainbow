@@ -25,7 +25,7 @@ const ConfirmExchangeButton = ({
 }) => {
   let label = 'Hold to Swap';
   if (!isAssetApproved) {
-    label = `Tap to Unlock ${inputCurrencyName}`;
+    label = `Hold to Unlock ${inputCurrencyName}`;
   } else if (!isSufficientBalance) {
     label = 'Insufficient Funds';
   } else if (slippage > SlippageWarningTheshold) {
@@ -44,7 +44,7 @@ const ConfirmExchangeButton = ({
       }
       disabledBackgroundColor={colors.grey20}
       flex={1}
-      hideBiometricIcon={isUnlockingAsset || !isAssetApproved}
+      hideBiometricIcon={isUnlockingAsset}
       isAuthorizing={isAuthorizing}
       label={label}
       onLongPress={isAssetApproved ? onSubmit : onUnlockAsset}
