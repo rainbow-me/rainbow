@@ -64,9 +64,9 @@ export const isValidMnemonic = value =>
  * @param  {String} address
  * @return {String} checksum address
  */
-export const toChecksumAddress = async address => {
+export const toChecksumAddress = address => {
   try {
-    return await ethers.utils.getAddress(address);
+    return ethers.utils.getAddress(address);
   } catch (error) {
     return null;
   }

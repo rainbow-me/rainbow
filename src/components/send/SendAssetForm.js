@@ -36,7 +36,9 @@ const TransactionContainer = styled(Column).attrs({
 
 const SendAssetForm = ({
   allAssets,
+  assetAmount,
   buttonRenderer,
+  nativeAmount,
   onResetAssetSelection,
   selected,
   sendMaxBalance,
@@ -72,6 +74,8 @@ const SendAssetForm = ({
         ) : (
           <SendAssetFormToken
             {...props}
+            assetAmount={assetAmount}
+            nativeAmount={nativeAmount}
             sendMaxBalance={sendMaxBalance}
             selected={selected}
           />
