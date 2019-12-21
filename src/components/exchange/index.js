@@ -9,4 +9,3 @@ export { default as ExchangeNativeField } from './ExchangeNativeField';
 export { default as ExchangeOutputField } from './ExchangeOutputField';
 export { default as ExchangeSearch } from './ExchangeSearch';
 export { default as SlippageWarning } from './SlippageWarning';
-export { default as UnlockAssetButton } from './UnlockAssetButton';
