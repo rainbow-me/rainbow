@@ -4,14 +4,13 @@ import { TouchableWithoutFeedback } from 'react-native';
 import { colors } from '../../styles';
 import { isNewValueForObjectPaths } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { CoolButton } from '../buttons';
+import { TokenSelectionButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
 import { EnDash } from '../html-entities';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 import ExchangeInput from './ExchangeInput';
 import ExchangeNativeField from './ExchangeNativeField';
-import UnlockAssetButton from './UnlockAssetButton';
 
 const BottomRowHeight = 32;
 
@@ -21,7 +20,6 @@ export default class ExchangeInputField extends Component {
     inputCurrencySymbol: PropTypes.string,
     inputFieldRef: PropTypes.func,
     isAssetApproved: PropTypes.bool,
-    isUnlockingAsset: PropTypes.bool,
     nativeAmount: PropTypes.string,
     nativeCurrency: PropTypes.string,
     nativeFieldRef: PropTypes.func,
@@ -29,7 +27,6 @@ export default class ExchangeInputField extends Component {
     onFocus: PropTypes.func,
     onPressMaxBalance: PropTypes.func,
     onPressSelectInputCurrency: PropTypes.func,
-    onUnlockAsset: PropTypes.func,
     setInputAmount: PropTypes.func,
     setNativeAmount: PropTypes.func,
   };
@@ -39,7 +36,6 @@ export default class ExchangeInputField extends Component {
       'inputAmount',
       'inputCurrencySymbol',
       'isAssetApproved',
-      'isUnlockingAsset',
       'nativeAmount',
       'nativeCurrency',
     ]);
@@ -64,7 +60,6 @@ export default class ExchangeInputField extends Component {
       inputAmount,
       inputCurrencySymbol,
       isAssetApproved,
-      isUnlockingAsset,
       nativeAmount,
       nativeCurrency,
       nativeFieldRef,
@@ -72,7 +67,6 @@ export default class ExchangeInputField extends Component {
       onFocus,
       onPressMaxBalance,
       onPressSelectInputCurrency,
-      onUnlockAsset,
       setInputAmount,
       setNativeAmount,
     } = this.props;
@@ -116,12 +110,11 @@ export default class ExchangeInputField extends Component {
               />
             </RowWithMargins>
           </TouchableWithoutFeedback>
-          <CoolButton
-            color={inputCurrencySymbol ? colors.dark : colors.appleBlue}
+          <TokenSelectionButton
             onPress={onPressSelectInputCurrency}
-          >
-            {inputCurrencySymbol || 'Choose a Coin'}
-          </CoolButton>
+            showLockIcon={inputCurrencySymbol && !isAssetApproved}
+            symbol={inputCurrencySymbol}
+          />
         </Row>
         <Row
           align="center"
@@ -138,34 +131,30 @@ export default class ExchangeInputField extends Component {
             onFocus={onFocus}
             setNativeAmount={setNativeAmount}
           />
-          {isAssetApproved || isUnlockingAsset ? (
-            <ButtonPressAnimation marginRight={4} onPress={onPressMaxBalance}>
-              <RowWithMargins
+          <ButtonPressAnimation marginRight={4} onPress={onPressMaxBalance}>
+            <RowWithMargins
+              align="center"
+              height={BottomRowHeight}
+              margin={0}
+              paddingHorizontal={this.padding}
+            >
+              <Emoji
+                lineHeight="none"
+                name="moneybag"
+                style={{ marginTop: 0.5 }}
+                size="lmedium"
+              />
+              <Text
                 align="center"
-                height={BottomRowHeight}
-                margin={0}
-                paddingHorizontal={this.padding}
+                color="appleBlue"
+                size="lmedium"
+                style={{ marginTop: 1 }}
+                weight="semibold"
               >
-                <Emoji
-                  lineHeight="none"
-                  name="moneybag"
-                  style={{ marginTop: 0.5 }}
-                  size="lmedium"
-                />
-                <Text
-                  align="center"
-                  color="appleBlue"
-                  size="lmedium"
-                  style={{ marginTop: 1 }}
-                  weight="semibold"
-                >
-                  Max
-                </Text>
-              </RowWithMargins>
-            </ButtonPressAnimation>
-          ) : (
-            <UnlockAssetButton onPress={onUnlockAsset} />
-          )}
+                Max
+              </Text>
+            </RowWithMargins>
+          </ButtonPressAnimation>
         </Row>
       </ColumnWithMargins>
     );
