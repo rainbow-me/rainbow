@@ -1,9 +1,10 @@
 import analytics from '@segment/analytics-react-native';
 import { get, isEmpty, isString, toLower } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
+import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
 import {
@@ -19,18 +20,12 @@ import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
   formatInputDecimals,
-  greaterThan,
 } from '../helpers/utilities';
 import { checkIsValidAddress } from '../helpers/validators';
-import lang from '../languages';
+import usePrevious from '../hooks/usePrevious'; // TODO JIN: update once merged with Mike's code
 import { sendTransaction } from '../model/wallet';
 import { borders, colors } from '../styles';
-import {
-  deviceUtils,
-  ethereumUtils,
-  gasUtils,
-  isNewValueForPath,
-} from '../utils';
+import { deviceUtils, ethereumUtils, gasUtils } from '../utils';
 
 const statusBarHeight = getStatusBarHeight(true);
 
@@ -46,437 +41,426 @@ const SheetContainer = styled(Column)`
   top: ${statusBarHeight};
 `;
 
-export default class SendSheet extends Component {
-  static propTypes = {
-    accountAddress: PropTypes.string,
-    allAssets: PropTypes.array,
-    dataAddNewTransaction: PropTypes.func,
-    fetchData: PropTypes.func,
-    gasLimit: PropTypes.number,
-    gasPrices: PropTypes.object,
-    gasUpdateDefaultGasLimit: PropTypes.func.isRequired,
-    gasUpdateTxFee: PropTypes.func.isRequired,
-    isSufficientGas: PropTypes.bool.isRequired,
-    nativeCurrencySymbol: PropTypes.string,
-    navigation: PropTypes.object,
-    removeContact: PropTypes.func,
-    selectedGasPrice: PropTypes.object,
-    sendableUniqueTokens: PropTypes.arrayOf(PropTypes.object),
-    sortedContacts: PropTypes.array,
-    txFees: PropTypes.object.isRequired,
-  };
+const SendSheet = ({
+  accountAddress,
+  allAssets,
+  contacts,
+  dataAddNewTransaction,
+  fetchData,
+  gasLimit,
+  gasPrices,
+  gasUpdateDefaultGasLimit,
+  gasUpdateGasPriceOption,
+  gasUpdateTxFee,
+  isSufficientGas,
+  nativeCurrency,
+  nativeCurrencySymbol,
+  removeContact,
+  selectedGasPrice,
+  sendableUniqueTokens,
+  sortedContacts,
+  txFees,
+  ...props
+}) => {
+  const { navigate, setParams } = useNavigation();
+  const [amountDetails, setAmountDetails] = useState({
+    assetAmount: '',
+    isSufficientBalance: false,
+    nativeAmount: '',
+  });
+  const [currentInput, setCurrentInput] = useState('');
+  const [isAuthorizing, setIsAuthorizing] = useState(false);
+  const [isValidAddress, setIsValidAddress] = useState(false);
+  const [recipient, setRecipient] = useState('');
+  const [selected, setSelected] = useState({});
 
-  constructor(props) {
-    super(props);
+  const showEmptyState = !isValidAddress;
+  const showAssetList = isValidAddress && isEmpty(selected);
+  const showAssetForm = isValidAddress && !isEmpty(selected);
 
-    this.state = {
-      assetAmount: '',
-      confirm: false,
-      currentInput: '',
-      isAuthorizing: false,
-      isSufficientBalance: false,
-      isValidAddress: false,
-      nativeAmount: '',
-      recipient: '',
-      selected: {},
-    };
-  }
+  const sendUpdateAssetAmount = useCallback(
+    newAssetAmount => {
+      const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
+      let _nativeAmount = '';
+      if (_assetAmount.length) {
+        const priceUnit = get(selected, 'price.value', 0);
+        const {
+          amount: convertedNativeAmount,
+        } = convertAmountAndPriceToNativeDisplay(
+          _assetAmount,
+          priceUnit,
+          nativeCurrency
+        );
+        _nativeAmount = formatInputDecimals(
+          convertedNativeAmount,
+          _assetAmount
+        );
+      }
+      const balanceAmount = ethereumUtils.getBalanceAmount(
+        selectedGasPrice,
+        selected
+      );
+      const _isSufficientBalance =
+        Number(_assetAmount) <= Number(balanceAmount);
+      setAmountDetails({
+        assetAmount: _assetAmount,
+        isSufficientBalance: _isSufficientBalance,
+        nativeAmount: _nativeAmount,
+      });
+    },
+    [nativeCurrency, selected, selectedGasPrice]
+  );
 
-  componentDidMount() {
-    this.props.gasUpdateDefaultGasLimit();
-  }
-
-  async componentDidUpdate(prevProps, prevState) {
-    const { accountAddress, contacts, navigation } = this.props;
-    const { assetAmount, isValidAddress, recipient, selected } = this.state;
-    if (isValidAddress && !prevState.isValidAddress) {
-      Keyboard.dismiss();
-    }
-
-    const isNewSelected = isNewValueForPath(this.state, prevState, 'selected');
-    const isNewValidAddress = isNewValueForPath(
-      this.state,
-      prevState,
-      'isValidAddress'
-    );
-    const isNewContactList = isNewValueForPath(
-      this.props,
-      prevProps,
-      'contacts'
-    );
-
-    if (isNewValidAddress || isNewSelected || isNewContactList) {
-      let verticalGestureResponseDistance = 140;
-
-      if (!isValidAddress && !isEmpty(contacts)) {
-        verticalGestureResponseDistance = 140;
-      } else if (isValidAddress) {
-        verticalGestureResponseDistance = isEmpty(selected)
-          ? 140
-          : deviceUtils.dimensions.height;
+  const sendUpdateSelected = useCallback(
+    newSelected => {
+      if (get(newSelected, 'isNft')) {
+        setAmountDetails({
+          assetAmount: '1',
+          isSufficientBalance: true,
+          nativeAmount: '0',
+        });
+        setSelected({
+          ...newSelected,
+          symbol: get(newSelected, 'asset_contract.name'),
+        });
       } else {
-        verticalGestureResponseDistance = deviceUtils.dimensions.height;
+        setSelected(newSelected);
+        sendUpdateAssetAmount(amountDetails.assetAmount);
+      }
+    },
+    [amountDetails.assetAmount, sendUpdateAssetAmount]
+  );
+
+  const sendUpdateRecipient = useCallback(newRecipient => {
+    setRecipient(newRecipient);
+  }, []);
+
+  const onChangeNativeAmount = useCallback(
+    newNativeAmount => {
+      if (!isString(newNativeAmount)) return;
+      const _nativeAmount = newNativeAmount.replace(/[^0-9.]/g, '');
+      let _assetAmount = '';
+      if (_nativeAmount.length) {
+        const priceUnit = get(selected, 'price.value', 0);
+        const convertedAssetAmount = convertAmountFromNativeValue(
+          _nativeAmount,
+          priceUnit,
+          selected.decimals
+        );
+        _assetAmount = formatInputDecimals(convertedAssetAmount, _nativeAmount);
       }
 
-      navigation.setParams({ verticalGestureResponseDistance });
-    }
-
-    const assetOverride = get(navigation, 'state.params.asset');
-    const recipientOverride = get(navigation, 'state.params.address');
-
-    if (recipientOverride && !this.state.recipient) {
-      this.sendUpdateRecipient(recipientOverride);
-    }
-
-    if (isValidAddress && !prevState.isValidAddress) {
-      if (assetOverride) {
-        this.sendUpdateSelected(assetOverride);
-      }
-    }
-
-    const isNewRecipient = isNewValueForPath(
-      this.state,
-      prevState,
-      'recipient'
-    );
-    if (isNewRecipient) {
-      const validAddress = await checkIsValidAddress(recipient);
-      // eslint-disable-next-line react/no-did-update-set-state
-      this.setState({ isValidAddress: validAddress });
-    }
-
-    if (isValidAddress) {
-      if (
-        selected.symbol !== prevState.selected.symbol ||
-        recipient !== prevState.recipient ||
-        assetAmount !== prevState.assetAmount
-      ) {
-        estimateGasLimit({
-          address: accountAddress,
-          amount: assetAmount,
-          asset: selected,
-          recipient,
-        })
-          .then(gasLimit => {
-            this.props.gasUpdateTxFee(gasLimit);
-          })
-          .catch(() => {
-            this.props.gasUpdateTxFee(null);
-          });
-      }
-    }
-  }
-
-  sendUpdateAssetAmount = assetAmount => {
-    const { nativeCurrency, selectedGasPrice } = this.props;
-    const { selected } = this.state;
-    const _assetAmount = assetAmount.replace(/[^0-9.]/g, '');
-    let _nativeAmount = '';
-    if (_assetAmount.length) {
-      const priceUnit = get(selected, 'price.value', 0);
-      const { amount: nativeAmount } = convertAmountAndPriceToNativeDisplay(
-        _assetAmount,
-        priceUnit,
-        nativeCurrency
+      const balanceAmount = ethereumUtils.getBalanceAmount(
+        selectedGasPrice,
+        selected
       );
-      _nativeAmount = formatInputDecimals(nativeAmount, _assetAmount);
-    }
+      const _isSufficientBalance =
+        Number(_assetAmount) <= Number(balanceAmount);
+
+      setAmountDetails({
+        assetAmount: _assetAmount,
+        isSufficientBalance: _isSufficientBalance,
+        nativeAmount: _nativeAmount,
+      });
+      analytics.track('Changed native currency input in Send flow');
+    },
+    [selected, selectedGasPrice]
+  );
+
+  const sendMaxBalance = useCallback(() => {
     const balanceAmount = ethereumUtils.getBalanceAmount(
       selectedGasPrice,
       selected
     );
-    this.setState({
-      assetAmount: _assetAmount,
-      isSufficientBalance: Number(_assetAmount) <= Number(balanceAmount),
-      nativeAmount: _nativeAmount,
-    });
-  };
+    sendUpdateAssetAmount(balanceAmount);
+  }, [selected, selectedGasPrice, sendUpdateAssetAmount]);
 
-  onChangeNativeAmount = nativeAmount => {
-    if (!isString(nativeAmount)) return;
-    const { selected } = this.state;
-    const { selectedGasPrice } = this.props;
-    const _nativeAmount = nativeAmount.replace(/[^0-9.]/g, '');
-    let _assetAmount = '';
-    if (_nativeAmount.length) {
-      const priceUnit = get(selected, 'price.value', 0);
-      const assetAmount = convertAmountFromNativeValue(
-        _nativeAmount,
-        priceUnit,
-        selected.decimals
-      );
-      _assetAmount = formatInputDecimals(assetAmount, _nativeAmount);
+  const onChangeAssetAmount = useCallback(
+    newAssetAmount => {
+      if (isString(newAssetAmount)) {
+        sendUpdateAssetAmount(newAssetAmount);
+        analytics.track('Changed token input in Send flow');
+      }
+    },
+    [sendUpdateAssetAmount]
+  );
+
+  const onSubmit = useCallback(async () => {
+    const validTransaction =
+      isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
+    if (!selectedGasPrice.txFee || !validTransaction || isAuthorizing)
+      return false;
+
+    let submitSuccess = false;
+    const txDetails = {
+      amount: amountDetails.assetAmount,
+      asset: selected,
+      from: accountAddress,
+      gasLimit,
+      gasPrice: get(selectedGasPrice, 'value.amount'),
+      nonce: null,
+      to: recipient,
+    };
+    try {
+      const signableTransaction = await createSignableTransaction(txDetails);
+      const txHash = await sendTransaction({
+        transaction: signableTransaction,
+      });
+      if (!isEmpty(txHash)) {
+        submitSuccess = true;
+        txDetails.hash = txHash;
+        await dataAddNewTransaction(txDetails);
+      }
+    } catch (error) {
+      submitSuccess = false;
+    } finally {
+      setIsAuthorizing(false);
     }
+    return submitSuccess;
+  }, [
+    accountAddress,
+    amountDetails.assetAmount,
+    amountDetails.isSufficientBalance,
+    dataAddNewTransaction,
+    gasLimit,
+    isAuthorizing,
+    isSufficientGas,
+    isValidAddress,
+    recipient,
+    selected,
+    selectedGasPrice,
+  ]);
 
-    const balanceAmount = ethereumUtils.getBalanceAmount(
-      selectedGasPrice,
-      selected
-    );
-    const isSufficientBalance = Number(_assetAmount) <= Number(balanceAmount);
-
-    this.setState({
-      assetAmount: _assetAmount,
-      isSufficientBalance,
-      nativeAmount: _nativeAmount,
-    });
-    analytics.track('Changed native currency input in Send flow');
-  };
-
-  sendMaxBalance = () => {
-    const balanceAmount = ethereumUtils.getBalanceAmount(
-      this.props.selectedGasPrice,
-      this.state.selected
-    );
-    this.sendUpdateAssetAmount(balanceAmount);
-  };
-
-  onChangeAssetAmount = assetAmount => {
-    if (isString(assetAmount)) {
-      this.sendUpdateAssetAmount(assetAmount);
-      analytics.track('Changed token input in Send flow');
-    }
-  };
-
-  onLongPressSend = () => {
-    this.setState({ isAuthorizing: true });
-
-    if (isIphoneX()) {
-      this.submitTransaction();
-    } else {
-      this.onPressTransactionSpeed(this.submitTransaction);
-    }
-  };
-
-  onPressTransactionSpeed = onSuccess => {
-    const { gasPrices, gasUpdateGasPriceOption, txFees } = this.props;
-    gasUtils.showTransactionSpeedOptions(
-      gasPrices,
-      txFees,
-      gasUpdateGasPriceOption,
-      onSuccess
-    );
-  };
-
-  onResetAssetSelection = () => {
-    analytics.track('Reset asset selection in Send flow');
-    this.sendUpdateSelected({});
-  };
-
-  submitTransaction = async () => {
-    const { navigation } = this.props;
-    const { assetAmount, recipient, selected } = this.state;
-
-    if (Number(assetAmount) <= 0) return false;
+  const submitTransaction = useCallback(async () => {
+    if (Number(amountDetails.assetAmount) <= 0) return false;
 
     try {
-      await this.onSubmit();
-      this.setState({ isAuthorizing: false });
+      const submitSuccessful = await onSubmit();
       analytics.track('Sent transaction', {
         assetName: selected.name,
         assetType: selected.isNft ? 'unique_token' : 'token',
         isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
       });
-      navigation.navigate('ProfileScreen');
-    } catch {
-      this.setState({ isAuthorizing: false });
+      if (submitSuccessful) {
+        navigate('ProfileScreen');
+      }
+    } catch (error) {
+      setIsAuthorizing(false);
     }
-  };
+  }, [
+    amountDetails.assetAmount,
+    navigate,
+    onSubmit,
+    recipient,
+    selected.isNft,
+    selected.name,
+  ]);
 
-  onChangeInput = event =>
-    this.setState({ currentInput: event, recipient: event });
+  const onPressTransactionSpeed = useCallback(
+    onSuccess => {
+      gasUtils.showTransactionSpeedOptions(
+        gasPrices,
+        txFees,
+        gasUpdateGasPriceOption,
+        onSuccess
+      );
+    },
+    [gasPrices, gasUpdateGasPriceOption, txFees]
+  );
 
-  sendUpdateRecipient = recipient => this.setState({ recipient });
+  const onLongPressSend = useCallback(() => {
+    setIsAuthorizing(true);
 
-  sendUpdateSelected = selected => {
-    if (get(selected, 'isNft')) {
-      this.setState({
-        assetAmount: '1',
-        isSufficientBalance: true,
-        selected: {
-          ...selected,
-          symbol: get(selected, 'asset_contract.name'),
-        },
-      });
+    if (isIphoneX()) {
+      submitTransaction();
     } else {
-      const assetAmount = this.state.assetAmount;
-      this.setState({ selected });
-      this.sendUpdateAssetAmount(assetAmount);
+      onPressTransactionSpeed(submitTransaction);
     }
-  };
+  }, [onPressTransactionSpeed, submitTransaction]);
 
-  onSubmit = async () => {
-    const {
-      accountAddress,
-      assets,
-      dataAddNewTransaction,
-      gasLimit,
-      selectedGasPrice,
-    } = this.props;
-    const { assetAmount, confirm, recipient, selected } = this.state;
-    if (!selectedGasPrice.txFee) {
-      return;
+  const onResetAssetSelection = useCallback(() => {
+    analytics.track('Reset asset selection in Send flow');
+    sendUpdateSelected({});
+  }, [sendUpdateSelected]);
+
+  const onChangeInput = useCallback(event => {
+    setCurrentInput(event);
+    setRecipient(event);
+  }, []);
+
+  useEffect(() => {
+    gasUpdateDefaultGasLimit();
+  }, [gasUpdateDefaultGasLimit]);
+
+  useEffect(() => {
+    if (isValidAddress) {
+      Keyboard.dismiss();
     }
+  }, [isValidAddress]);
 
-    // Balance checks
-    if (!confirm) {
-      const isAddressValid = await checkIsValidAddress(recipient);
-      if (!isAddressValid) {
-        console.log(lang.t('notification.error.invalid_address'));
-        return;
-      }
-      if (selected.address === 'eth') {
-        const {
-          requestedAmount,
-          balance,
-          amountWithFees,
-        } = ethereumUtils.transactionData(
-          assets,
-          assetAmount,
-          selectedGasPrice
-        );
+  const verticalGestureResponseDistance = useMemo(() => {
+    let verticalGestureResponseDistance = 140;
 
-        if (greaterThan(requestedAmount, balance)) {
-          return;
-        }
-        if (greaterThan(amountWithFees, balance)) {
-          return;
-        }
-      } else if (!selected.isNft) {
-        const {
-          requestedAmount,
-          balance,
-          txFee,
-        } = ethereumUtils.transactionData(
-          assets,
-          assetAmount,
-          selectedGasPrice
-        );
+    if (!isValidAddress && !isEmpty(contacts)) {
+      verticalGestureResponseDistance = 140;
+    } else if (isValidAddress) {
+      verticalGestureResponseDistance = isEmpty(selected)
+        ? 140
+        : deviceUtils.dimensions.height;
+    } else {
+      verticalGestureResponseDistance = deviceUtils.dimensions.height;
+    }
+    return verticalGestureResponseDistance;
+  }, [contacts, isValidAddress, selected]);
 
-        const tokenBalance = get(selected, 'balance.amount');
+  const prevResponseDistance = usePrevious(verticalGestureResponseDistance);
 
-        if (greaterThan(requestedAmount, tokenBalance)) {
-          return;
-        }
-        if (greaterThan(txFee, balance)) {
-          return;
-        }
-      }
+  useEffect(() => {
+    if (prevResponseDistance !== verticalGestureResponseDistance) {
+      setParams({ verticalGestureResponseDistance });
+    }
+  }, [prevResponseDistance, setParams, verticalGestureResponseDistance]);
 
-      this.setState({ confirm: true });
+  const assetOverride = useNavigationParam('asset');
 
-      const txDetails = {
-        amount: assetAmount,
+  useEffect(() => {
+    if (isValidAddress && assetOverride) {
+      sendUpdateSelected(assetOverride);
+    }
+  }, [assetOverride, isValidAddress, sendUpdateSelected]);
+
+  const recipientOverride = useNavigationParam('address');
+
+  useEffect(() => {
+    if (recipientOverride && !recipient) {
+      sendUpdateRecipient(recipientOverride);
+    }
+  }, [recipient, recipientOverride, sendUpdateRecipient]);
+
+  const checkAddress = useCallback(async () => {
+    const validAddress = await checkIsValidAddress(recipient);
+    setIsValidAddress(validAddress);
+  }, [recipient]);
+
+  useEffect(() => {
+    checkAddress();
+  }, [checkAddress]);
+
+  useEffect(() => {
+    if (isValidAddress) {
+      estimateGasLimit({
+        address: accountAddress,
+        amount: amountDetails.assetAmount,
         asset: selected,
-        from: accountAddress,
-        gasLimit,
-        gasPrice: get(selectedGasPrice, 'value.amount'),
-        nonce: null,
-        to: recipient,
-      };
-      try {
-        const signableTransaction = await createSignableTransaction(txDetails);
-        const txHash = sendTransaction({
-          transaction: signableTransaction,
+        recipient,
+      })
+        .then(gasLimit => {
+          gasUpdateTxFee(gasLimit);
+        })
+        .catch(() => {
+          gasUpdateTxFee(null);
         });
-        if (!isEmpty(txHash)) {
-          txDetails.hash = txHash;
-          await dataAddNewTransaction(txDetails);
-        }
-        // eslint-disable-next-line no-empty
-      } catch (error) {}
     }
-  };
+  }, [
+    accountAddress,
+    amountDetails.assetAmount,
+    gasUpdateTxFee,
+    isValidAddress,
+    recipient,
+    selected,
+  ]);
 
-  render() {
-    const {
-      allAssets,
-      contacts,
-      fetchData,
-      isSufficientGas,
-      nativeCurrencySymbol,
-      removeContact,
-      selectedGasPrice,
-      sendableUniqueTokens,
-      sortedContacts,
-      ...props
-    } = this.props;
-    const {
-      assetAmount,
-      currentInput,
-      isAuthorizing,
-      isSufficientBalance,
-      isValidAddress,
-      nativeAmount,
-      recipient,
-      selected,
-    } = this.state;
-    const showEmptyState = !isValidAddress;
-    const showAssetList = isValidAddress && isEmpty(selected);
-    const showAssetForm = isValidAddress && !isEmpty(selected);
-
-    return (
-      <SheetContainer>
-        <KeyboardAvoidingView behavior="padding">
-          <Container align="center">
-            <SendHeader
-              contacts={contacts}
-              isValidAddress={isValidAddress}
-              onChangeAddressInput={this.onChangeInput}
-              onPressPaste={this.sendUpdateRecipient}
-              recipient={recipient}
+  return (
+    <SheetContainer>
+      <KeyboardAvoidingView behavior="padding">
+        <Container align="center">
+          <SendHeader
+            contacts={contacts}
+            isValidAddress={isValidAddress}
+            onChangeAddressInput={onChangeInput}
+            onPressPaste={sendUpdateRecipient}
+            recipient={recipient}
+            removeContact={removeContact}
+          />
+          {showEmptyState && (
+            <SendContactList
+              allAssets={sortedContacts}
+              currentInput={currentInput}
+              onPressContact={sendUpdateRecipient}
               removeContact={removeContact}
             />
-            {showEmptyState && (
-              <SendContactList
-                allAssets={sortedContacts}
-                currentInput={currentInput}
-                onPressContact={this.sendUpdateRecipient}
-                removeContact={removeContact}
-              />
-            )}
-            {showAssetList && (
-              <SendAssetList
-                allAssets={allAssets}
-                fetchData={fetchData}
-                onSelectAsset={this.sendUpdateSelected}
-                uniqueTokens={sendableUniqueTokens}
-              />
-            )}
-            {showAssetForm && (
-              <SendAssetForm
-                {...props}
-                allAssets={allAssets}
-                assetAmount={assetAmount}
-                buttonRenderer={
-                  <SendButton
-                    {...props}
-                    assetAmount={assetAmount}
-                    isAuthorizing={isAuthorizing}
-                    isSufficientBalance={isSufficientBalance}
-                    isSufficientGas={isSufficientGas}
-                    onLongPress={this.onLongPressSend}
+          )}
+          {showAssetList && (
+            <SendAssetList
+              allAssets={allAssets}
+              fetchData={fetchData}
+              onSelectAsset={sendUpdateSelected}
+              uniqueTokens={sendableUniqueTokens}
+            />
+          )}
+          {showAssetForm && (
+            <SendAssetForm
+              {...props}
+              allAssets={allAssets}
+              assetAmount={amountDetails.assetAmount}
+              buttonRenderer={
+                <SendButton
+                  {...props}
+                  assetAmount={amountDetails.assetAmount}
+                  isAuthorizing={isAuthorizing}
+                  isSufficientBalance={amountDetails.isSufficientBalance}
+                  isSufficientGas={isSufficientGas}
+                  onLongPress={onLongPressSend}
+                />
+              }
+              nativeAmount={amountDetails.nativeAmount}
+              onChangeAssetAmount={onChangeAssetAmount}
+              onChangeNativeAmount={onChangeNativeAmount}
+              onResetAssetSelection={onResetAssetSelection}
+              selected={selected}
+              sendMaxBalance={sendMaxBalance}
+              txSpeedRenderer={
+                isIphoneX() && (
+                  <SendTransactionSpeed
+                    gasPrice={selectedGasPrice}
+                    nativeCurrencySymbol={nativeCurrencySymbol}
+                    onPressTransactionSpeed={onPressTransactionSpeed}
                   />
-                }
-                nativeAmount={nativeAmount}
-                onChangeAssetAmount={this.onChangeAssetAmount}
-                onChangeNativeAmount={this.onChangeNativeAmount}
-                onResetAssetSelection={this.onResetAssetSelection}
-                selected={selected}
-                sendMaxBalance={this.sendMaxBalance}
-                txSpeedRenderer={
-                  isIphoneX() && (
-                    <SendTransactionSpeed
-                      gasPrice={selectedGasPrice}
-                      nativeCurrencySymbol={nativeCurrencySymbol}
-                      onPressTransactionSpeed={this.onPressTransactionSpeed}
-                    />
-                  )
-                }
-              />
-            )}
-          </Container>
-        </KeyboardAvoidingView>
-      </SheetContainer>
-    );
-  }
-}
+                )
+              }
+            />
+          )}
+        </Container>
+      </KeyboardAvoidingView>
+    </SheetContainer>
+  );
+};
+
+SendSheet.propTypes = {
+  accountAddress: PropTypes.string.isRequired,
+  allAssets: PropTypes.array,
+  dataAddNewTransaction: PropTypes.func.isRequired,
+  fetchData: PropTypes.func.isRequired,
+  gasLimit: PropTypes.number,
+  gasPrices: PropTypes.object,
+  gasUpdateDefaultGasLimit: PropTypes.func.isRequired,
+  gasUpdateGasPriceOption: PropTypes.func.isRequired,
+  gasUpdateTxFee: PropTypes.func.isRequired,
+  isSufficientGas: PropTypes.bool.isRequired,
+  nativeCurrency: PropTypes.string.isRequired,
+  nativeCurrencySymbol: PropTypes.string.isRequired,
+  removeContact: PropTypes.func.isRequired,
+  selectedGasPrice: PropTypes.object,
+  sendableUniqueTokens: PropTypes.arrayOf(PropTypes.object),
+  sortedContacts: PropTypes.array,
+  txFees: PropTypes.object.isRequired,
+};
+
+const arePropsEqual = (prev, next) =>
+  prev.isSufficientGas === next.isSufficientGas &&
+  prev.gasLimit === next.gasLimit &&
+  prev.selectedGasPrice === next.selectedGasPrice &&
+  prev.txFees === next.txFees &&
+  prev.gasPrices === next.gasPrices &&
+  prev.allAssets === next.allAssets;
+export default React.memo(SendSheet, arePropsEqual);
