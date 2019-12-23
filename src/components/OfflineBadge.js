@@ -1,6 +1,6 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import { useSpringTransition } from 'react-native-redash';
+import { bin, useSpringTransition } from 'react-native-redash';
 import styled from 'styled-components';
 import { useInternetStatus } from '../hooks';
 import { colors, padding, shadow } from '../styles';
@@ -28,7 +28,7 @@ const DefaultAnimationValue = 60;
 const OfflineBadge = () => {
   const isConnected = useInternetStatus();
 
-  const animation = useSpringTransition(isConnected, {
+  const animation = useSpringTransition(bin(isConnected), {
     damping: 14,
     mass: 1,
     overshootClamping: false,
