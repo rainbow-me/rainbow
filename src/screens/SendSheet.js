@@ -22,7 +22,7 @@ import {
   formatInputDecimals,
 } from '../helpers/utilities';
 import { checkIsValidAddress } from '../helpers/validators';
-import usePrevious from '../hooks/usePrevious'; // TODO JIN: update once merged with Mike's code
+import { usePrevious } from '../hooks';
 import { sendTransaction } from '../model/wallet';
 import { borders, colors } from '../styles';
 import { deviceUtils, ethereumUtils, gasUtils } from '../utils';
