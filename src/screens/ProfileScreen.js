@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { requireNativeComponent } from 'react-native';
 import { ActivityList } from '../components/activity-list';
 import AddFundsInterstitial from '../components/AddFundsInterstitial';
 import { BackButton, Header, HeaderButton } from '../components/header';
@@ -7,6 +8,8 @@ import { FlexItem, Page } from '../components/layout';
 import { Icon } from '../components/icons';
 import { ProfileMasthead } from '../components/profile';
 import { colors, position } from '../styles';
+
+const TransactionList = requireNativeComponent('TransactionListView');
 
 const ProfileScreen = ({
   accountAddress,
@@ -30,6 +33,7 @@ const ProfileScreen = ({
         onPress={onPressBackButton}
       />
     </Header>
+    <TransactionList style={{ flex: 1 }} />
     <ActivityList
       accountAddress={accountAddress}
       header={
