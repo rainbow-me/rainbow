@@ -1,7 +1,6 @@
-import { isNil, toLower } from 'lodash';
+import { isNil, keys, toLower } from 'lodash';
 import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
-import { uniswapAssetAddresses } from '../references';
 import {
   addressAssetsReceived,
   assetsReceived,
@@ -69,6 +68,7 @@ const assetsSubscription = (assetCodes, currency, action = 'subscribe') => [
 const explorerUnsubscribe = () => (dispatch, getState) => {
   const { addressSocket, assetsSocket } = getState().explorer;
   const { accountAddress, nativeCurrency } = getState().settings;
+  const { pairs } = getState().uniswap;
   if (!isNil(addressSocket)) {
     addressSocket.emit(
       ...addressSubscription(accountAddress, nativeCurrency, 'unsubscribe')
@@ -77,11 +77,7 @@ const explorerUnsubscribe = () => (dispatch, getState) => {
   }
   if (!isNil(assetsSocket)) {
     assetsSocket.emit(
-      ...assetsSubscription(
-        uniswapAssetAddresses,
-        nativeCurrency,
-        'unsubscribe'
-      )
+      ...assetsSubscription(keys(pairs), nativeCurrency, 'unsubscribe')
     );
     assetsSocket.close();
   }
@@ -92,8 +88,23 @@ export const explorerClearState = () => dispatch => {
   dispatch({ type: EXPLORER_CLEAR_STATE });
 };
 
+export const resubscribeAssets = (oldAddresses, addresses) => (
+  dispatch,
+  getState
+) => {
+  const { nativeCurrency } = getState().settings;
+  const { assetsSocket } = getState().explorer;
+  if (!isNil(assetsSocket)) {
+    assetsSocket.emit(
+      ...assetsSubscription(keys(oldAddresses), nativeCurrency, 'unsubscribe')
+    );
+    assetsSocket.emit(...assetsSubscription(addresses, nativeCurrency));
+  }
+};
+
 export const explorerInit = () => (dispatch, getState) => {
   const { accountAddress, nativeCurrency } = getState().settings;
+  const { pairs } = getState().uniswap;
   const addressSocket = createSocket('address');
   const assetsSocket = createSocket('assets');
   dispatch({
@@ -101,9 +112,7 @@ export const explorerInit = () => (dispatch, getState) => {
     type: EXPLORER_UPDATE_SOCKETS,
   });
   assetsSocket.on(messages.CONNECT, () => {
-    assetsSocket.emit(
-      ...assetsSubscription(uniswapAssetAddresses, nativeCurrency)
-    );
+    assetsSocket.emit(...assetsSubscription(keys(pairs), nativeCurrency));
     dispatch(listenOnAssetMessages(assetsSocket));
   });
   addressSocket.on(messages.CONNECT, () => {

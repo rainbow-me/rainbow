@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { without } from 'lodash';
 import { apiGetAccountUniqueTokens } from '../handlers/opensea-api';
 import {
@@ -78,6 +79,7 @@ export const uniqueTokensRefreshState = () => (dispatch, getState) =>
           })
           .catch(error => {
             dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE });
+            captureException(error);
             fetchReject(error);
           });
       });

@@ -7,7 +7,7 @@ import Divider from '../Divider';
 import { Column } from '../layout';
 
 const Container = styled(Column).attrs({ justify: 'end' })`
-  ${borders.buildRadius('top', 15)}
+  ${borders.buildRadius('top', 20)}
   background-color: ${colors.white};
   flex-grow: 0;
   padding-bottom: ${safeAreaInsetValues.bottom};

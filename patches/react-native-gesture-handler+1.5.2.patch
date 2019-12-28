@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-gesture-handler/Swipeable.js b/node_modules/react-native-gesture-handler/Swipeable.js
-index 2627cbf..26d1d71 100644
+index 7da6911..a3f64a3 100644
 --- a/node_modules/react-native-gesture-handler/Swipeable.js
 +++ b/node_modules/react-native-gesture-handler/Swipeable.js
 @@ -176,8 +176,8 @@ export default class Swipeable extends Component<PropType, StateType> {
@@ -22,6 +22,39 @@ index 2627cbf..26d1d71 100644
    };
  
    _animateRow = (fromValue, toValue, velocityX) => {
+diff --git a/node_modules/react-native-gesture-handler/createHandler.js b/node_modules/react-native-gesture-handler/createHandler.js
+index 1fc1bbe..fc151c9 100644
+--- a/node_modules/react-native-gesture-handler/createHandler.js
++++ b/node_modules/react-native-gesture-handler/createHandler.js
+@@ -2,6 +2,7 @@ import React from 'react';
+ import {
+   findNodeHandle as findNodeHandleRN,
+   NativeModules,
++  NativeEventEmitter,
+   Touchable,
+   Platform,
+ } from 'react-native';
+@@ -16,6 +17,20 @@ function findNodeHandle(node) {
+ 
+ const { UIManager = {} } = NativeModules;
+ 
++// We need to hook up one listener so that react-native will call
++// into our module and bless our events declared there in supportedEvents
++// of RNGestureHandlerModule.m. Otherwise when we start sending
++// events later, we might crash (seemingly only in release builds) with
++// an error like:
++//   Unsupported top level event type "onGestureHandlerEvent"
++// Fixes: https://github.com/kmagiera/react-native-gesture-handler/issues/320
++const unusedEmitter = new NativeEventEmitter(NativeModules.RNGestureHandlerModule)
++// It's not enough to create an emitter -- you must also add a listener because
++// react-native does this initialization lazily
++const subscription = unusedEmitter.addListener("onGestureHandlerEvent",function(next){})
++// Now that our events are blessed by the system we can let go of the listener
++subscription.remove()
++
+ const customGHEventsConfig = {
+   onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
+   onGestureHandlerStateChange: {
 diff --git a/node_modules/react-native-gesture-handler/ios/RNGestureHandler.xcodeproj/xcuserdata/christian.xcuserdatad/xcschemes/xcschememanagement.plist b/node_modules/react-native-gesture-handler/ios/RNGestureHandler.xcodeproj/xcuserdata/christian.xcuserdatad/xcschemes/xcschememanagement.plist
 new file mode 100644
 index 0000000..cf96c26

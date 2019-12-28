@@ -122,7 +122,7 @@ const SettingsSection = ({
     <ColumnWithDividers dividerRenderer={ListItemDivider}>
       <ListItem
         icon={<Emoji name="seedling" />}
-        label="Import Wallet"
+        label="Replace Wallet"
         onPress={onPressImportSeedPhrase}
       />
       <ListItem

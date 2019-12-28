@@ -1,80 +1,90 @@
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
-import { compose } from 'recompact';
+import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
 import { withKeyboardHeight } from '../../hoc';
 import { padding, position } from '../../styles';
 import { deviceUtils, safeAreaInsetValues } from '../../utils';
 import Centered from './Centered';
+import { setKeyboardHeight as storeKeyboardHeight } from '../../handlers/localstorage/globalSettings';
+import { calculateKeyboardHeight } from '../../helpers/keyboardHeight';
 
-const FallbackKeyboardHeight = Math.floor(
-  deviceUtils.dimensions.height * 0.333
-);
+const deviceHeight = deviceUtils.dimensions.height;
 
-const Container = styled.View`
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-`;
+const FallbackKeyboardHeight = calculateKeyboardHeight(deviceHeight);
+
+const containerStyle = {
+  left: 0,
+  position: 'absolute',
+  right: 0,
+  top: 0,
+};
 
 const InnerWrapper = styled(Centered)`
   ${padding(safeAreaInsetValues.top, 0, 10)};
   ${position.size('100%')};
 `;
 
-class KeyboardFixedOpenLayout extends PureComponent {
-  static propTypes = {
-    children: PropTypes.node,
-    keyboardHeight: PropTypes.number,
-    setKeyboardHeight: PropTypes.func,
-  };
+const transition = (
+  <Transition.Change durationMs={150} interpolation="easeOut" />
+);
 
-  componentDidMount = () => {
-    if (!this.props.keyboardHeight) {
-      this.willShowListener = Keyboard.addListener(
+const KeyboardFixedOpenLayout = ({
+  keyboardHeight,
+  setKeyboardHeight,
+  ...props
+}) => {
+  const ref = useRef();
+  const [didMeasure, setDidMeasure] = useState(false);
+  const resolvedKeyboardHeight = keyboardHeight || FallbackKeyboardHeight;
+
+  const handleKeyboardWillShow = useCallback(
+    async ({ endCoordinates: { height } }) => {
+      if (height !== keyboardHeight) {
+        const newHeight = Math.floor(height);
+        setDidMeasure(true);
+        storeKeyboardHeight(newHeight);
+        setKeyboardHeight(newHeight);
+      }
+    },
+    [keyboardHeight, setDidMeasure, setKeyboardHeight]
+  );
+
+  useEffect(() => {
+    let listener = undefined;
+
+    if (!didMeasure) {
+      listener = Keyboard.addListener(
         'keyboardWillShow',
-        this.keyboardWillShow
+        handleKeyboardWillShow
       );
     }
-  };
 
-  componentWillUnmount = () => this.clearKeyboardListeners();
+    return () => {
+      if (listener) {
+        listener.remove();
+      }
+    };
+  }, [didMeasure, handleKeyboardWillShow]);
 
-  willShowListener = undefined;
+  return (
+    <Transitioning.View
+      ref={ref}
+      height={deviceHeight - resolvedKeyboardHeight}
+      style={containerStyle}
+      transition={transition}
+    >
+      <KeyboardAvoidingView behavior="height" enabled={!keyboardHeight}>
+        <InnerWrapper {...props} />
+      </KeyboardAvoidingView>
+    </Transitioning.View>
+  );
+};
 
-  clearKeyboardListeners = () => {
-    if (this.willShowListener) {
-      // console.log('this.willShowListener', this.willShowListener);
+KeyboardFixedOpenLayout.propTypes = {
+  keyboardHeight: PropTypes.number,
+  setKeyboardHeight: PropTypes.func,
+};
 
-      this.willShowListener.remove();
-    }
-  };
-
-  keyboardWillShow = async ({ endCoordinates: { height } }) => {
-    this.props.setKeyboardHeight(Math.floor(height));
-    this.clearKeyboardListeners();
-  };
-
-  render = () => {
-    const { keyboardHeight } = this.props;
-
-    const resolvedKeyboardHeight = keyboardHeight || FallbackKeyboardHeight;
-    const containerHeight =
-      deviceUtils.dimensions.height - resolvedKeyboardHeight;
-
-    return (
-      <Container height={containerHeight}>
-        <KeyboardAvoidingView behavior="height" enabled={!keyboardHeight}>
-          <InnerWrapper {...this.props} />
-        </KeyboardAvoidingView>
-      </Container>
-    );
-  };
-}
-
-export default compose(
-  withKeyboardHeight
-  // onlyUpdateForKeys(['height']),
-)(KeyboardFixedOpenLayout);
+export default withKeyboardHeight(KeyboardFixedOpenLayout);

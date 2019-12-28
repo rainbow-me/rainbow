@@ -15,4 +15,5 @@ export { default as parseQueryParams } from './parseQueryParams';
 export { default as promiseUtils } from './promise';
 export { default as reduceArrayToObject } from './reduceArrayToObject';
 export { default as safeAreaInsetValues } from './safeAreaInsetValues';
+export { default as sentryUtils } from './sentry';
 export { default as statusBar } from './statusBar';

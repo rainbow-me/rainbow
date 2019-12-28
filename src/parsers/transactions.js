@@ -44,13 +44,16 @@ export default (
   accountAddress,
   nativeCurrency,
   existingTransactions,
+  tokenOverrides,
   appended = false
 ) => {
   const data = appended
     ? dataFromLastTxHash(transactionData, existingTransactions)
     : transactionData;
   const parsedNewTransactions = flatten(
-    data.map(txn => parseTransaction(txn, accountAddress, nativeCurrency))
+    data.map(txn =>
+      parseTransaction(txn, accountAddress, nativeCurrency, tokenOverrides)
+    )
   );
   const [pendingTransactions, remainingTransactions] = partition(
     existingTransactions,
@@ -101,7 +104,12 @@ const transformUniswapRefund = internalTransactions => {
   return compact([updatedOut, txnIn]);
 };
 
-const parseTransaction = (txn, accountAddress, nativeCurrency) => {
+const parseTransaction = (
+  txn,
+  accountAddress,
+  nativeCurrency,
+  tokenOverrides
+) => {
   const transaction = pick(txn, [
     'hash',
     'nonce',
@@ -169,15 +177,19 @@ const parseTransaction = (txn, accountAddress, nativeCurrency) => {
     internalTransactions = transformUniswapRefund(internalTransactions);
   }
   internalTransactions = internalTransactions.map((internalTxn, index) => {
-    const symbol = get(internalTxn, 'asset.symbol') || '';
+    const address = toLower(get(internalTxn, 'asset.asset_code'));
     const updatedAsset = {
-      ...internalTxn.asset,
-      symbol: toUpper(symbol),
+      address,
+      decimals: get(internalTxn, 'asset.decimals'),
+      name: get(internalTxn, 'asset.name'),
+      symbol: toUpper(get(internalTxn, 'asset.symbol') || ''),
+      ...tokenOverrides[address],
     };
     const priceUnit = internalTxn.price || 0;
+    const valueUnit = internalTxn.value || 0;
     const nativeDisplay = convertRawAmountToNativeDisplay(
-      internalTxn.value,
-      internalTxn.asset.decimals,
+      valueUnit,
+      updatedAsset.decimals,
       priceUnit,
       nativeCurrency
     );
@@ -192,13 +204,13 @@ const parseTransaction = (txn, accountAddress, nativeCurrency) => {
 
     return {
       ...transaction,
-      balance: convertRawAmountToBalance(internalTxn.value, updatedAsset),
+      balance: convertRawAmountToBalance(valueUnit, updatedAsset),
       from: internalTxn.address_from,
       hash: `${transaction.hash}-${index}`,
-      name: get(updatedAsset, 'name', ''),
+      name: updatedAsset.name,
       native: nativeDisplay,
       status,
-      symbol: get(updatedAsset, 'symbol', ''),
+      symbol: updatedAsset.symbol,
       to: internalTxn.address_to,
     };
   });

@@ -22,7 +22,7 @@ import {
 } from '../utils/signingMethods';
 
 const CancelButtonContainer = styled.View`
-  bottom: 22;
+  bottom: 19;
   position: absolute;
   right: 19;
 `;
@@ -138,7 +138,7 @@ export default class TransactionConfirmationScreen extends PureComponent {
       );
     }
 
-    if (isTransactionDisplayType(method)) {
+    if (isTransactionDisplayType(method) && get(request, 'asset')) {
       return (
         <TransactionConfirmationSection
           asset={{
@@ -169,9 +169,9 @@ export default class TransactionConfirmationScreen extends PureComponent {
     <Container>
       <Masthead>
         <RequestVendorLogoIcon
+          backgroundColor="transparent"
           dappName={this.props.dappName}
           imageUrl={this.props.imageUrl}
-          showLargeShadow
           size={60}
           style={{ marginBottom: 24 }}
         />
@@ -183,8 +183,9 @@ export default class TransactionConfirmationScreen extends PureComponent {
           <Button
             backgroundColor={colors.blueGreyMedium}
             onPress={this.props.onCancel}
+            showShadow={false}
             size="small"
-            textProps={{ color: 'black', size: 'medium' }}
+            textProps={{ color: colors.backgroundGrey, size: 'lmedium' }}
           >
             {lang.t('wallet.action.reject')}
           </Button>

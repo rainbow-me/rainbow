@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { get, isEmpty } from 'lodash';
 import { apiGetGasPrices } from '../handlers/gasPrices';
 import { fromWei } from '../helpers/utilities';
@@ -24,14 +25,14 @@ let getGasPricesInterval = null;
 
 const getDefaultTxFees = () => (dispatch, getState) => {
   const { assets } = getState().data;
-  const { gasLimit } = getState().gas;
+  const { defaultGasLimit } = getState().gas;
   const { nativeCurrency } = getState().settings;
   const fallbackGasPrices = getFallbackGasPrices();
   const ethPriceUnit = ethereumUtils.getEthPriceUnit(assets);
   const txFees = parseTxFees(
     fallbackGasPrices,
     ethPriceUnit,
-    gasLimit,
+    defaultGasLimit,
     nativeCurrency
   );
   const selectedGasPrice = {
@@ -72,11 +73,11 @@ export const gasPricesInit = () => (dispatch, getState) =>
             fetchResolve(true);
           })
           .catch(error => {
-            console.error(error);
             dispatch({
               payload: fallbackGasPrices,
               type: GAS_PRICES_FAILURE,
             });
+            captureException(error);
             fetchReject(error);
           });
       });

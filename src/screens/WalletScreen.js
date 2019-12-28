@@ -22,9 +22,11 @@ import {
   withStatusBarStyle,
   withUniqueTokens,
   withUniswapLiquidityTokenInfo,
+  withKeyboardHeight,
 } from '../hoc';
 import { position } from '../styles';
 import { isNewValueForObjectPaths } from '../utils';
+import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
 
 class WalletScreen extends Component {
   static propTypes = {
@@ -41,6 +43,7 @@ class WalletScreen extends Component {
     refreshAccountData: PropTypes.func,
     scrollViewTracker: PropTypes.object,
     sections: PropTypes.array,
+    setKeyboardHeight: PropTypes.func,
     setSafeTimeout: PropTypes.func,
     uniqueTokens: PropTypes.array,
   };
@@ -48,6 +51,10 @@ class WalletScreen extends Component {
   componentDidMount = async () => {
     try {
       await this.props.initializeWallet();
+      const keyboardheight = await getKeyboardHeight();
+      if (keyboardheight) {
+        this.props.setKeyboardHeight(keyboardheight);
+      }
     } catch (error) {
       // TODO error state
     }
@@ -114,6 +121,7 @@ export default compose(
   withNavigationFocus,
   withIsWalletEmpty,
   withIsWalletEthZero,
+  withKeyboardHeight,
   withStatusBarStyle('dark-content'),
   withProps(buildWalletSectionsSelector),
   withProps({ scrollViewTracker: new Animated.Value(0) })
