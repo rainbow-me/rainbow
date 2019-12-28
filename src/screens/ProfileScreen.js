@@ -33,7 +33,7 @@ const ProfileScreen = ({
         onPress={onPressBackButton}
       />
     </Header>
-    <TransactionList style={{ flex: 1 }} />
+    <TransactionList transactions={transactions} style={{ flex: 1 }} />
     <ActivityList
       accountAddress={accountAddress}
       header={

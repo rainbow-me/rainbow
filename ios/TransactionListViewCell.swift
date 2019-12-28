@@ -22,12 +22,6 @@ class TransactionListViewCell: UITableViewCell {
     fatalError("init(coder:) has not been implemented")
   }
 
-  override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
-    let alert = UIAlertController(title: "Alert", message: "Message", preferredStyle: .alert)
-    alert.present(alert, animated: true, completion: nil)
-  }
-  
-  // PRAGMA private
   func set(transaction: Transaction) {
     transactionTypeLabelView.text = transaction.type
   }

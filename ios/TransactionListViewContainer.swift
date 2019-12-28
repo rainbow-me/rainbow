@@ -10,7 +10,11 @@ import Foundation
 
 class TransactionListViewContainer: UIView {
   
-  var transactions: [Transaction] = []
+  @objc var transactions: [NSDictionary] = [] {
+    didSet {
+      tableView.reloadData()
+    }
+  }
   var bridge: RCTBridge
   var tableView: UITableView
   
@@ -23,8 +27,6 @@ class TransactionListViewContainer: UIView {
     tableView.dataSource = self
     tableView.delegate = self
     tableView.register(TransactionListViewCell.self, forCellReuseIdentifier: "TransactionListViewCell")
-    
-    transactions = fetchData()
     
     addSubview(tableView)
   }
@@ -45,15 +47,8 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionListViewCell") as! TransactionListViewCell
-    let transaction = transactions[indexPath.row]
-    cell.set(transaction: transaction)
+    let transaction = transactions[indexPath.row];
+    cell.set(transaction: Transaction(type: transaction.value(forKey: "type") as! String))
     return cell
   }
 }
-
-extension TransactionListViewContainer {
-  func fetchData() -> [Transaction] {
-    return [Transaction(type: "Sent"), Transaction(type: "Received")]
-  }
-}
-
