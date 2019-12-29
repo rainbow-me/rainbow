@@ -42,8 +42,7 @@ target 'Rainbow' do
   pod 'CodePush', :path => '../node_modules/react-native-code-push'
   pod 'RNInputMask', :path => '../node_modules/react-native-text-input-mask/ios/InputMask'
 
-  # Node modules
-  pod 'RNInputMask', :path => '../node_modules/react-native-text-input-mask/ios/InputMask'
+  use_native_modules!
 
   pod 'RNCPushNotificationIOS', :path => '../node_modules/@react-native-community/push-notification-ios'
 
