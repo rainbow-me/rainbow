@@ -169,6 +169,8 @@ const gestureResponseDistance = {
   vertical: deviceUtils.dimensions.height,
 };
 
+const cardStyle = { backgroundColor: 'transparent' };
+
 export const onTransitionStart = props => {
   if (props.closing) {
     StatusBar.setBarStyle('dark-content');
@@ -179,6 +181,7 @@ export const onTransitionStart = props => {
 
 export const exchangePreset = {
   cardShadowEnabled: true,
+  cardStyle,
   cardStyleInterpolator: exchangeStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
@@ -189,6 +192,7 @@ export const exchangePreset = {
 
 export const overlayExpandedPreset = {
   cardShadowEnabled: true,
+  cardStyle,
   cardStyleInterpolator: expandStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
@@ -198,6 +202,7 @@ export const overlayExpandedPreset = {
 
 export const expandedPreset = {
   cardShadowEnabled: true,
+  cardStyle,
   cardStyleInterpolator: expandStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
@@ -208,6 +213,7 @@ export const expandedPreset = {
 
 export const sheetPreset = {
   cardShadowEnabled: true,
+  cardStyle,
   cardStyleInterpolator: sheetStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
