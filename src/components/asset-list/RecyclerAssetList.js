@@ -803,7 +803,7 @@ class RecyclerAssetList extends Component {
     const { dataProvider, headersIndices } = this.state;
 
     return (
-      <View backgroundColor={colors.white} flex={1} overflow="hidden" style={{ minHeight: 1 }}>
+      <View backgroundColor={colors.white} flex={1} overflow="hidden">
         <StickyContainer stickyHeaderIndices={headersIndices}>
           <RecyclerListView
             dataProvider={dataProvider}

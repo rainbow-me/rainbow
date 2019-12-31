@@ -140,7 +140,7 @@ class SendContactList extends Component {
 
   render = () => (
     <FlyInAnimation
-      style={{ flex: 1, minHeight: 1, paddingBottom: sheetVerticalOffset, width: '100%' }}
+      style={{ flex: 1, paddingBottom: sheetVerticalOffset, width: '100%' }}
     >
       {this.state.contacts.length === 0 ? (
         <SendEmptyState />

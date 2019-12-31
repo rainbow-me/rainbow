@@ -181,7 +181,7 @@ export default class RecyclerActivityList extends PureComponent {
   };
 
   render = () => (
-    <Wrapper style={{ minHeight: 1 }}>
+    <Wrapper>
       <StickyContainer stickyHeaderIndices={this.state.headersIndices}>
         <RecyclerListView
           dataProvider={this.state.dataProvider}

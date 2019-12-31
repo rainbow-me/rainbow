@@ -214,7 +214,7 @@ class SendAssetList extends React.Component {
   render() {
     return (
       <FlyInAnimation
-        style={{ flex: 1, minHeight: 1, paddingBottom: sheetVerticalOffset, width: '100%' }}
+        style={{ flex: 1, paddingBottom: sheetVerticalOffset, width: '100%' }}
       >
         <RecyclerListView
           ref={ref => {

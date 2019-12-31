@@ -17,7 +17,7 @@ import {
 // eslint-disable-next-line import/default
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 // eslint-disable-next-line import/no-unresolved
-import { enableScreens } from 'react-native-screens';
+import { useScreens } from 'react-native-screens';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { FlexItem } from './components/layout';
@@ -43,7 +43,7 @@ CodePush.getUpdateMetadata().then(update => {
   }
 });
 
-enableScreens();
+useScreens(false);
 
 class App extends Component {
   static propTypes = {

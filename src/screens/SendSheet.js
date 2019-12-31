@@ -27,7 +27,6 @@ import { borders, colors } from '../styles';
 import { deviceUtils, gasUtils, isNewValueForPath } from '../utils';
 
 const statusBarHeight = getStatusBarHeight(true);
-const sheetHeight = deviceUtils.dimensions.height - 10;
 
 const Container = styled(Column)`
   background-color: ${colors.transparent};
@@ -35,8 +34,10 @@ const Container = styled(Column)`
 `;
 
 const SheetContainer = styled(Column)`
+  ${borders.buildRadius('top', 16)};
   background-color: ${colors.white};
-  height: ${sheetHeight};
+  height: 100%;
+  top: ${statusBarHeight};
 `;
 
 class SendSheet extends Component {

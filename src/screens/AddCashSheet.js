@@ -69,7 +69,7 @@ const isTinyIphone = deviceUtils.dimensions.width < 375 ? true : false;
 const keyboardWidth = isTinyIphone ? 275 : '100%';
 
 const statusBarHeight = getStatusBarHeight(true);
-const sheetHeight = deviceUtils.dimensions.height - statusBarHeight - 10;
+const sheetHeight = deviceUtils.dimensions.height - statusBarHeight;
 
 const gradientXPoint = deviceUtils.dimensions.width - 48;
 const gradientPoints = [gradientXPoint, 53.5];
@@ -80,8 +80,10 @@ const Container = styled(Column)`
 `;
 
 const SheetContainer = styled(Column)`
+  ${borders.buildRadius('top', 30)};
   background-color: ${colors.white};
   height: ${sheetHeight};
+  top: ${statusBarHeight};
 `;
 
 class AddCashSheet extends Component {
