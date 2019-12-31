@@ -23,7 +23,7 @@ const AddCashLabel = withProps({
 const enhance = onlyUpdateForKeys(['children', 'color']);
 
 const AddCashButton = enhance(({ children, onPress }) => (
-  <ButtonPressAnimation onPress={onPress} scaleTo={0.92} zIndex={-1}>
+  <ButtonPressAnimation onPress={onPress} scaleTo={0.9} zIndex={-1}>
     <Row flex={0} css={margin(15, 15, 30)}>
       <View
         style={{
