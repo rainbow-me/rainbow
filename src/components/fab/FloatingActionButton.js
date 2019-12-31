@@ -29,7 +29,7 @@ export default class FloatingActionButton extends Component {
   };
 
   static defaultProps = {
-    scaleTo: 0.82,
+    scaleTo: 0.86,
     size: FabSize,
   };
 

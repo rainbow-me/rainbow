@@ -66,7 +66,7 @@ TopRow.propTypes = {
 };
 
 const BalanceCoinRow = ({ item, onPress, onPressSend, ...props }) => (
-  <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+  <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
     <CoinRow
       onPress={onPress}
       onPressSend={onPressSend}

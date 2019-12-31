@@ -65,7 +65,7 @@ const TopRow = ({ balance, pending, status }) => (
 TopRow.propTypes = rowRenderPropTypes;
 
 const TransactionCoinRow = ({ item, onPressTransaction, ...props }) => (
-  <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>
+  <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.98}>
     <CoinRow
       {...item}
       {...props}
