@@ -3,7 +3,7 @@ import { get, omit } from 'lodash';
 import React from 'react';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
-import { createStackNavigator } from 'react-navigation-stack';
+import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
 import { ExchangeModalNavigator, Navigation } from '../navigation';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
@@ -57,16 +57,9 @@ const SwipeStack = createMaterialTopTabNavigator(
   }
 );
 
-const MainNavigator = createStackNavigator(
+const MainNavigator = createNativeStackNavigator(
   {
     AddCashSheet: {
-      navigationOptions: {
-        ...sheetPreset,
-        onTransitionStart: props => {
-          onTransitionStart(props);
-          sheetPreset.onTransitionStart(props);
-        },
-      },
       screen: AddCashSheet,
     },
     ConfirmRequest: {
@@ -129,13 +122,6 @@ const MainNavigator = createStackNavigator(
       screen: ReceiveModal,
     },
     SendSheet: {
-      navigationOptions: {
-        ...omit(sheetPreset, 'gestureResponseDistance'),
-        onTransitionStart: props => {
-          onTransitionStart(props);
-          sheetPreset.onTransitionStart(props);
-        },
-      },
       screen: SendSheetWithData,
     },
     SettingsModal: {
