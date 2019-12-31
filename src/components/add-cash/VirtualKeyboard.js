@@ -62,7 +62,7 @@ class VirtualKeyboard extends Component {
         onPress={() => {
           this.onPress('back');
         }}
-        scaleTo={0.9}
+        scaleTo={0.88}
         style={styles.backspace}
         transformOrigin="keyboard"
       >
@@ -84,7 +84,7 @@ class VirtualKeyboard extends Component {
         onPress={() => {
           this.onPress(symbol.toString());
         }}
-        scaleTo={0.9}
+        scaleTo={0.88}
         transformOrigin="keyboard"
         width={80}
       >
