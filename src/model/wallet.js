@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get, isEmpty, isNil } from 'lodash';
@@ -80,10 +81,12 @@ export const sendTransaction = async ({ transaction }) => {
       return result.hash;
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      captureException(error);
       return null;
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    captureException(error);
     return null;
   }
 };
@@ -96,10 +99,12 @@ export const signTransaction = async ({ transaction }) => {
       return await wallet.sign(transaction);
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      captureException(error);
       return null;
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    captureException(error);
     return null;
   }
 };
@@ -117,10 +122,12 @@ export const signMessage = async (
       );
       return await ethers.utils.joinSignature(sigParams);
     } catch (error) {
+      captureException(error);
       return null;
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    captureException(error);
     return null;
   }
 };
@@ -136,10 +143,12 @@ export const signPersonalMessage = async (
         isHexString(message) ? ethers.utils.arrayify(message) : message
       );
     } catch (error) {
+      captureException(error);
       return null;
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    captureException(error);
     return null;
   }
 };
@@ -157,6 +166,7 @@ export const loadAddress = async () => {
   try {
     return await keychain.loadString(addressKey);
   } catch (error) {
+    captureException(error);
     return null;
   }
 };
@@ -183,6 +193,7 @@ const createWallet = async seed => {
     }
     return null;
   } catch (error) {
+    captureException(error);
     return null;
   }
 };
@@ -220,6 +231,7 @@ const loadPrivateKey = async (
     });
     return privateKey;
   } catch (error) {
+    captureException(error);
     return null;
   }
 };

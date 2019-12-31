@@ -13,8 +13,6 @@ const ContainerElement = omitProps('direction')(Flex);
 const Container = styled(ContainerElement).attrs({ align: 'end' })`
   height: 100%;
   padding-bottom: 2;
-  padding-left: ${({ direction }) => (direction === 'left' ? 0 : 20)};
-  padding-right: ${({ direction }) => (direction === 'right' ? 0 : 20)};
 `;
 
 const BackButton = ({ color, direction, onPress, ...props }) => (

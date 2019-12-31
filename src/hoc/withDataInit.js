@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import delay from 'delay';
 import { isNil } from 'lodash';
 import { Alert } from 'react-native';
@@ -6,7 +7,11 @@ import { compose, withHandlers } from 'recompact';
 import { getIsWalletEmpty } from '../handlers/localstorage/accountLocal';
 import { hasEthBalance } from '../handlers/web3';
 import { walletInit } from '../model/wallet';
-import { dataClearState, dataLoadState } from '../redux/data';
+import {
+  dataClearState,
+  dataLoadState,
+  dataTokenOverridesInit,
+} from '../redux/data';
 import { explorerClearState, explorerInit } from '../redux/explorer';
 import { gasClearState, gasPricesInit } from '../redux/gas';
 import { clearIsWalletEmpty } from '../redux/isWalletEmpty';
@@ -25,6 +30,7 @@ import {
 import {
   uniswapLoadState,
   uniswapClearState,
+  uniswapPairsInit,
   uniswapUpdateState,
 } from '../redux/uniswap';
 import {
@@ -40,7 +46,7 @@ import {
   web3ListenerClearState,
   web3ListenerInit,
 } from '../redux/web3listener';
-import { promiseUtils } from '../utils';
+import { promiseUtils, sentryUtils } from '../utils';
 import withHideSplashScreen from './withHideSplashScreen';
 
 export default Component =>
@@ -51,6 +57,7 @@ export default Component =>
       contactsLoadState,
       dataClearState,
       dataLoadState,
+      dataTokenOverridesInit,
       explorerClearState,
       explorerInit,
       gasClearState,
@@ -67,6 +74,7 @@ export default Component =>
       uniqueTokensRefreshState,
       uniswapClearState,
       uniswapLoadState,
+      uniswapPairsInit,
       uniswapUpdateState,
       walletConnectClearState,
       walletConnectLoadState,
@@ -109,16 +117,21 @@ export default Component =>
       },
       initializeAccountData: ownProps => async () => {
         try {
+          // await ownProps.dataTokenOverridesInit();
+          sentryUtils.addInfoBreadcrumb('Initialize account data');
           ownProps.explorerInit();
+          ownProps.uniswapPairsInit();
           ownProps.gasPricesInit();
           ownProps.web3ListenerInit();
           await ownProps.uniqueTokensRefreshState();
         } catch (error) {
           // TODO error state
           console.log('Error initializing account data: ', error);
+          captureException(error);
         }
       },
       loadAccountData: ownProps => async () => {
+        sentryUtils.addInfoBreadcrumb('Load wallet data');
         await ownProps.openStateSettingsLoadState();
         const p1 = ownProps.settingsLoadState();
         const p2 = ownProps.dataLoadState();
@@ -141,6 +154,7 @@ export default Component =>
           ]);
         } catch (error) {
           console.log('Error refreshing data', error);
+          captureException(error);
           throw error;
         }
       },
@@ -148,6 +162,7 @@ export default Component =>
     withHandlers({
       initializeWallet: ownProps => async seedPhrase => {
         try {
+          sentryUtils.addInfoBreadcrumb('Start wallet setup');
           const { isImported, isNew, walletAddress } = await walletInit(
             seedPhrase
           );
@@ -180,11 +195,13 @@ export default Component =>
             await ownProps.loadAccountData();
           }
           ownProps.onHideSplashScreen();
+          sentryUtils.addInfoBreadcrumb('Hide splash screen');
           ownProps.initializeAccountData();
           return walletAddress;
         } catch (error) {
           // TODO specify error states more granular
           ownProps.onHideSplashScreen();
+          captureException(error);
           Alert.alert(
             'Import failed due to an invalid private key. Please try again.'
           );

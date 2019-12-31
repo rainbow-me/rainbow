@@ -1,18 +1,10 @@
-platform :ios, '10.0'
+platform :ios, '11.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 # Prevent Cocoapods from collecting stats, which adds time to each pod installation
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
 target 'Rainbow' do
-  # Crashlytics
-  pod 'Fabric', '~> 1.7.11'
-  pod 'Crashlytics', '~> 3.10.7'
-
-  # Firebase
-  pod 'Firebase/Core', '~> 6.2.0'
-  pod 'Firebase/Messaging', '~> 6.2.0'
-
   # Core React
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"
@@ -53,5 +45,18 @@ target 'Rainbow' do
 
   use_native_modules!
 
+  pod 'RNCPushNotificationIOS', :path => '../node_modules/@react-native-community/push-notification-ios'
 
+end
+
+post_install do |installer|
+  # Improve the Pods project setting to match with the ones we want to have for the project
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_ENABLE_INSPECTOR=0'
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ENABLE_PACKAGER_CONNECTION=0'
+    end
+  end
 end

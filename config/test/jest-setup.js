@@ -5,6 +5,10 @@ jest.mock('@segment/analytics-react-native', () => ({
   setup: () => null,
 }));
 
+jest.mock('@sentry/react-native', () => ({
+  captureException: () => null,
+}));
+
 jest.autoMockOff();
 jest.mock('react-native-keychain', () => ({
   getGenericPassword: jest.fn(),

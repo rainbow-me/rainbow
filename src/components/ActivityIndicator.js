@@ -3,7 +3,6 @@ import React from 'react';
 import { UIActivityIndicator } from 'react-native-indicators';
 import { View } from 'react-primitives';
 import stylePropType from 'react-style-proptype';
-import { pure } from 'recompact';
 import { colors, position } from '../styles';
 
 const ActivityIndicator = ({ color, isInteraction, size, style }) => (
@@ -29,4 +28,5 @@ ActivityIndicator.defaultProps = {
   size: 25,
 };
 
-export default pure(ActivityIndicator);
+const neverRerender = () => true;
+export default React.memo(ActivityIndicator, neverRerender);

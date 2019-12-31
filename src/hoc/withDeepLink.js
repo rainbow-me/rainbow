@@ -124,8 +124,8 @@ export default Component =>
         };
         return Navigation.handleAction({
           params: {
-            autoOpened: true,
             callback: redirect,
+            openAutomatically: true,
             transactionDetails: request,
           },
           routeName: 'ConfirmRequest',

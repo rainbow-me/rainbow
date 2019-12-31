@@ -6,8 +6,8 @@ import {
   PanGestureHandler,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
-import { deviceUtils } from '../utils';
 import Animated from 'react-native-reanimated';
+import { deviceUtils } from '../utils';
 
 const { call, cond, event, eq } = Animated;
 
