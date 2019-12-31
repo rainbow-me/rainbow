@@ -96,7 +96,7 @@ export default compose(
   withState('emojiCount', 'setEmojiCount', 0),
   withHandlers({
     onPressAddCash: ({ navigation }) => () =>
-      navigation.push('AddCashSheet'),
+      navigation.navigate('AddCashSheet'),
     onPressCopy: ({ accountAddress, emojiCount, setEmojiCount }) => () => {
       setEmojiCount(emojiCount + 1);
       Clipboard.setString(accountAddress);

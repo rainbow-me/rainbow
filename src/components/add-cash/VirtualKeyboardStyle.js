@@ -12,7 +12,6 @@ module.exports = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    maxWidth: 80,
   },
   container: {
     alignItems: 'center',
@@ -23,6 +22,7 @@ module.exports = StyleSheet.create({
     fontWeight: fonts.weight.bold,
     lineHeight: 64,
     textAlign: 'center',
+    width: 80
   },
   row: {
     flexDirection: 'row',
