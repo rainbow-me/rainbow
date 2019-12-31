@@ -1,6 +1,6 @@
 import MaskedView from '@react-native-community/masked-view';
 import React, { Component } from 'react';
-import { StatusBar, View } from 'react-native';
+import { View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated from 'react-native-reanimated';
@@ -99,7 +99,6 @@ class AddCashSheet extends Component {
   render() {
     return (
       <SheetContainer>
-        <StatusBar barStyle="light-content" />
         <Container align="center" justify="space-between">
           <AddCashHeader />
           <ColumnWithMargins

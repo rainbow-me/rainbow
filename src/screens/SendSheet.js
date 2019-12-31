@@ -2,7 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import { get, isEmpty, isString, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Keyboard, KeyboardAvoidingView, StatusBar } from 'react-native';
+import { Keyboard, KeyboardAvoidingView } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
 import { compose, withHandlers, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
@@ -236,7 +236,6 @@ class SendSheet extends Component {
 
     return (
       <SheetContainer>
-        <StatusBar barStyle="light-content" />
         <KeyboardAvoidingView behavior="padding">
           <Container align="center">
             <SendHeader
