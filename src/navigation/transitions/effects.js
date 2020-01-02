@@ -4,6 +4,7 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { interpolate } from '../../components/animations';
 import { deviceUtils } from '../../utils';
 import { colors } from '../../styles';
+import { calculateKeyboardHeight } from '../../helpers/keyboardHeight';
 
 const { color, SpringUtils } = Animated;
 
@@ -73,16 +74,19 @@ const expandStyleInterpolator = ({
 
   return {
     cardStyle: {
+      // Translation for the animation of the current card
+      marginTop: translateY,
       opacity: 1,
       shadowColor: colors.dark,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
-      // Translation for the animation of the current card
-      transform: [{ translateY }],
     },
     containerStyle: {
       backgroundColor: color(37, 41, 46, backgroundOpacity),
+      borderBottomWidth: calculateKeyboardHeight(deviceUtils.dimensions.height),
+      borderColor: colors.blueGreyDarker,
+      overflow: 'hidden',
     },
   };
 };
