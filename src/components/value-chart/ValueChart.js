@@ -17,6 +17,7 @@ import { colors } from '../../styles';
 import TimestampText from './TimestampText';
 import TimespanSelector from './TimespanSelector';
 
+const amountOfPathPoints = 288;
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 const {
@@ -45,8 +46,8 @@ const {
 const simplifyChartData = (data, destinatedNumberOfPoints) => {
   if (data.length > destinatedNumberOfPoints) {
     let destMul = data.length / destinatedNumberOfPoints;
-    // const maxValue = maxBy(data, 'value');
-    // const minValue = minBy(data, 'value');
+    const maxValue = maxBy(data, 'value');
+    const minValue = minBy(data, 'value');
 
     let newData = [];
     for (let i = 0; i < destinatedNumberOfPoints; i++) {
@@ -57,19 +58,31 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
       const firstValue = data[f].value * r;
       const secondValue = data[f + 1].value * (1 - r);
 
-      const finalValue = firstValue + secondValue;
-
-      newData.push({ timestamp: data[f].timestamp, value: finalValue });
+      let finalValue;
+      if (firstValue === maxValue) {
+        finalValue = maxValue;
+      } else if (secondValue === minValue) {
+        finalValue = minValue;
+      } else {
+        finalValue = firstValue + secondValue;
+      }
+      const timestampMul = Math.floor(
+        data[0].timestamp - data[data.length - 1].timestamp
+      );
+      newData.push({
+        timestamp: data[0].timestamp + i * timestampMul,
+        value: finalValue,
+      });
     }
     return newData;
   }
 };
 
 const usableData = [
-  simplifyChartData(data1, 120),
-  simplifyChartData(data2, 120),
-  simplifyChartData(data3, 120),
-  simplifyChartData(data4, 120),
+  simplifyChartData(data1, amountOfPathPoints),
+  simplifyChartData(data4, amountOfPathPoints),
+  simplifyChartData(data3, amountOfPathPoints),
+  simplifyChartData(data2, amountOfPathPoints),
 ];
 
 const { BEGAN, ACTIVE, CANCELLED, END, FAILED, UNDETERMINED } = State;
@@ -127,7 +140,7 @@ export default class ValueChart extends PureComponent {
 
     this.state = {
       allData: [usableData[0], [], [], []],
-      currentData: data1.slice(0, 150),
+      currentData: data1.slice(0, amountOfPathPoints),
       hideLoadingBar: false,
       shouldRenderChart: true,
     };
@@ -273,15 +286,13 @@ export default class ValueChart extends PureComponent {
             .filter(Boolean)
         );
       } else {
-        let emptyArray = new Array(150);
+        let emptyArray = new Array(amountOfPathPoints);
         for (let j = 0; j < emptyArray.length; j++) {
           emptyArray[j] = { x: 0, y1: 0, y2: 0 };
         }
         splinePoints.push(emptyArray);
       }
     }
-
-    console.log(splinePoints);
 
     const animatedPath = concat(
       'M -20 0',
