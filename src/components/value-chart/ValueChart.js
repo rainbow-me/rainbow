@@ -98,28 +98,20 @@ const thickStrokeWidthDifference = 1.5;
 const flipY = { transform: [{ scaleX: 1 }, { scaleY: -1 }] };
 
 const indexInterval = 10;
-const heightInterval = 200;
 
 const pickImportantPoints = array => {
   const result = [];
   result.push(array[0]);
   let thresholdIndex = indexInterval;
-  let thresholdHeight = array[0].y;
   for (let i = 1; i < array.length; i++) {
     if (i === array.length - 1) {
       result.push(array[i]);
-    } else if (Math.abs(thresholdHeight - array[i].y) > heightInterval) {
-      result.push(array[i]);
-      thresholdIndex = i + indexInterval;
-      thresholdHeight = array[i].y;
     } else if (array[i].y === 0 || array[i].y === 200) {
       result.push(array[i]);
       thresholdIndex = i + indexInterval;
-      thresholdHeight = array[i].y;
     } else if (i === thresholdIndex) {
       result.push(array[i]);
       thresholdIndex += indexInterval;
-      thresholdHeight = array[i].y;
     }
   }
 
