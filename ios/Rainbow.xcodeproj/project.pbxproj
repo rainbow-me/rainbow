@@ -56,6 +56,13 @@
 		A4704B3D23C5414000E50E4B /* TransactionListViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A4704B3823C5414000E50E4B /* TransactionListViewManager.m */; };
 		A4704B3E23C5414000E50E4B /* TransactionListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4704B3923C5414000E50E4B /* TransactionListViewCell.swift */; };
 		A4704B3F23C5414000E50E4B /* TransactionListViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4704B3A23C5414000E50E4B /* TransactionListViewContainer.swift */; };
+		A46007CA23B7B7C20010A906 /* TransactionListViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A46007C923B7B7C20010A906 /* TransactionListViewManager.swift */; };
+		A46007E623B7B9830010A906 /* TransactionListViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A46007E523B7B9830010A906 /* TransactionListViewManager.m */; };
+		A46008E923B7C6D00010A906 /* TransactionListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A46008E723B7C6D00010A906 /* TransactionListViewCell.swift */; };
+		A46008EC23B7CEDB0010A906 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A46008EB23B7CEDB0010A906 /* Transaction.swift */; };
+		A46008EE23B7D1940010A906 /* TransactionListViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A46008ED23B7D1940010A906 /* TransactionListViewContainer.swift */; };
+		A46039C523BE95FD005DE764 /* TransactionListViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A46039C423BE95FD005DE764 /* TransactionListViewCell.xib */; };
+		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
 		AE47B46652EA48AFB68E7832 /* SF-Pro-Text-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6B0A8BE2484F46980BE9AC /* SF-Pro-Text-Semibold.otf */; };
 		AFCABA638327463693E67FD4 /* SF-Pro-Text-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 715DAAA3174542BAB93807A6 /* SF-Pro-Text-RegularItalic.otf */; };
 		AFD75D0B6EC9465C92C493A7 /* SF-Pro-Display-BlackItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = A8AE8DE50B9544B6BC186E6C /* SF-Pro-Display-BlackItalic.otf */; };
@@ -119,6 +126,10 @@
 		3C379D5D20FD1F92009AF81F /* Rainbow.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Rainbow.entitlements; path = Rainbow/Rainbow.entitlements; sourceTree = "<group>"; };
 		3CBE29CB2381E43800BE05AC /* Rainbow-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Rainbow-Bridging-Header.h"; sourceTree = "<group>"; };
 		3CBE29CC2381E43900BE05AC /* Dummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dummy.swift; sourceTree = "<group>"; };
+		35B7B17127FD476C81EA97E3 /* TcpSockets.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = TcpSockets.xcodeproj; path = "../node_modules/react-native-tcp/ios/TcpSockets.xcodeproj"; sourceTree = "<group>"; };
+		3A545B8C781B47AC8A7CD956 /* RNSVG.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSVG.xcodeproj; path = "../node_modules/react-native-svg/ios/RNSVG.xcodeproj"; sourceTree = "<group>"; };
+		3A7E5E09E14B4EA4B52CC6EE /* libRNGestureHandler.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNGestureHandler.a; sourceTree = "<group>"; };
+		3C39C266218BBE66004C763F /* FastImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FastImage.xcodeproj; path = "../node_modules/react-native-fast-image/ios/FastImage.xcodeproj"; sourceTree = "<group>"; };
 		3CC4B790228B298400D827EB /* libSDWebImage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libSDWebImage.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3CE850D5210FEA8F00672599 /* libGoogleToolboxForMac.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libGoogleToolboxForMac.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3CE850D7210FEACE00672599 /* libnanopb.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libnanopb.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -158,6 +169,16 @@
 		A4704B3923C5414000E50E4B /* TransactionListViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionListViewCell.swift; sourceTree = "<group>"; };
 		A4704B3A23C5414000E50E4B /* TransactionListViewContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionListViewContainer.swift; sourceTree = "<group>"; };
 		A671DF9861FA8D2C9A6FCB91 /* Pods-Rainbow.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.release.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.release.xcconfig"; sourceTree = "<group>"; };
+		9E0A11D8843045ECB80C6AB8 /* libTouchID.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libTouchID.a; sourceTree = "<group>"; };
+		A014AE1645874354A732EB35 /* libToolTipMenu.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libToolTipMenu.a; sourceTree = "<group>"; };
+		A0BA96258CF7FFF7BBE552F4 /* Pods-Rainbow.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.localrelease.xcconfig"; path = "Pods/Target Support Files/Pods-Rainbow/Pods-Rainbow.localrelease.xcconfig"; sourceTree = "<group>"; };
+		A46007C823B7B7C20010A906 /* Rainbow-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Rainbow-Bridging-Header.h"; sourceTree = "<group>"; };
+		A46007C923B7B7C20010A906 /* TransactionListViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListViewManager.swift; sourceTree = "<group>"; };
+		A46007E523B7B9830010A906 /* TransactionListViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TransactionListViewManager.m; sourceTree = "<group>"; };
+		A46008E723B7C6D00010A906 /* TransactionListViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListViewCell.swift; sourceTree = "<group>"; };
+		A46008EB23B7CEDB0010A906 /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
+		A46008ED23B7D1940010A906 /* TransactionListViewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListViewContainer.swift; sourceTree = "<group>"; };
+		A46039C423BE95FD005DE764 /* TransactionListViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionListViewCell.xib; sourceTree = "<group>"; };
 		A6EEFE6EA9354456B0DB4520 /* Graphik-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Regular.otf"; path = "../src/assets/fonts/Graphik-Regular.otf"; sourceTree = "<group>"; };
 		A7F0978B24BA4EC283C580D9 /* Graphik-SemiboldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-SemiboldItalic.otf"; path = "../src/assets/fonts/Graphik-SemiboldItalic.otf"; sourceTree = "<group>"; };
 		A8AE8DE50B9544B6BC186E6C /* SF-Pro-Display-BlackItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-BlackItalic.otf"; path = "../src/assets/fonts/SF-Pro-Display-BlackItalic.otf"; sourceTree = "<group>"; };
@@ -227,6 +248,12 @@
 				A4704B3A23C5414000E50E4B /* TransactionListViewContainer.swift */,
 				A4704B3823C5414000E50E4B /* TransactionListViewManager.m */,
 				A4704B3623C5413F00E50E4B /* TransactionListViewManager.swift */,
+				A46007E523B7B9830010A906 /* TransactionListViewManager.m */,
+				A46007C923B7B7C20010A906 /* TransactionListViewManager.swift */,
+				A46008EB23B7CEDB0010A906 /* Transaction.swift */,
+				A46008ED23B7D1940010A906 /* TransactionListViewContainer.swift */,
+				A46008E723B7C6D00010A906 /* TransactionListViewCell.swift */,
+				A46039C423BE95FD005DE764 /* TransactionListViewCell.xib */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -487,6 +514,7 @@
 				AFD75D0B6EC9465C92C493A7 /* SF-Pro-Display-BlackItalic.otf in Resources */,
 				F9EF1D44351840B8A380BD3E /* SF-Pro-Display-Bold.otf in Resources */,
 				CB988C526B0C48FC9750A038 /* SF-Pro-Display-BoldItalic.otf in Resources */,
+				A46039C523BE95FD005DE764 /* TransactionListViewCell.xib in Resources */,
 				184EB33331FB47F2960D2507 /* SF-Pro-Display-Heavy.otf in Resources */,
 				FBDF4EF177284CF4826D7BF9 /* SF-Pro-Display-HeavyItalic.otf in Resources */,
 				4013198EBD3D4D6F8052D25E /* SF-Pro-Display-Light.otf in Resources */,

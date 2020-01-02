@@ -9,7 +9,6 @@
 import Foundation
 
 class TransactionListViewContainer: UIView {
-  
   @objc var transactions: [NSDictionary] = [] {
     didSet {
       tableView.reloadData()
@@ -26,7 +25,8 @@ class TransactionListViewContainer: UIView {
     
     tableView.dataSource = self
     tableView.delegate = self
-    tableView.register(TransactionListViewCell.self, forCellReuseIdentifier: "TransactionListViewCell")
+    tableView.rowHeight = 60
+    tableView.register(UINib(nibName: "TransactionListViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListViewCell")
     
     addSubview(tableView)
   }
@@ -46,9 +46,23 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
   }
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionListViewCell") as! TransactionListViewCell
+    let identifier = "TransactionListViewCell"
+    let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! TransactionListViewCell
     let transaction = transactions[indexPath.row];
-    cell.set(transaction: Transaction(type: transaction.value(forKey: "type") as! String))
-    return cell
+    
+    let asset = transaction.value(forKey: "asset") as! NSDictionary
+    let type = transaction.value(forKey: "type") as! String
+    let native = transaction.value(forKey: "native") as! NSDictionary
+    let balance = transaction.value(forKey: "balance") as! NSDictionary
+    
+    cell.set(transaction: Transaction(
+      type: type == "send" ? "Sent" : "Received",
+      coinImage: (asset.value(forKey: "icon_url") as? String),
+      coinName: (asset.value(forKey: "name") as! String),
+      nativeDisplay: (native.value(forKey: "display") as! String),
+      balanceDisplay: (balance.value(forKey: "display") as! String)
+    ))
+    
+    return cell;
   }
 }

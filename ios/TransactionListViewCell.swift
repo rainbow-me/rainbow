@@ -9,28 +9,37 @@
 import UIKit
 
 class TransactionListViewCell: UITableViewCell {
+    
+    @IBOutlet weak var transactionType: UILabel!
+    @IBOutlet weak var coinName: UILabel!
+    @IBOutlet weak var balanceDisplay: UILabel!
+    @IBOutlet weak var nativeDisplay: UILabel!
+    @IBOutlet weak var coinImage: UIImageView!
   
-  var transactionTypeLabelView = UILabel()
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    }
 
-  override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-    super.init(style: style, reuseIdentifier: reuseIdentifier)
-    addSubview(transactionTypeLabelView)
-    configureTransactionTypeLabelView()
-  }
-  
-  required init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
-  }
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
 
-  func set(transaction: Transaction) {
-    transactionTypeLabelView.text = transaction.type
-  }
-  
-  func configureTransactionTypeLabelView() -> Void {
-    transactionTypeLabelView.translatesAutoresizingMaskIntoConstraints = false
-    transactionTypeLabelView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-    transactionTypeLabelView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20).isActive = true
-    transactionTypeLabelView.heightAnchor.constraint(equalToConstant: 80).isActive = true
-    transactionTypeLabelView.adjustsFontSizeToFitWidth = true
-  }
+    func set(transaction: Transaction) {
+        transactionType.text = transaction.type
+        coinName.text = transaction.coinName
+        nativeDisplay.text = transaction.nativeDisplay
+        balanceDisplay.text = transaction.balanceDisplay
+          
+        if transaction.coinImage != nil {
+            // Load image
+            DispatchQueue.global().async {
+                let url = URL(string: transaction.coinImage!)
+                let data = try? Data(contentsOf: url!)
+
+                DispatchQueue.main.async {
+                    self.coinImage.image = UIImage(data: data!)
+                }
+            }
+        }
+    }
 }
