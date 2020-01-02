@@ -292,7 +292,8 @@ export default function ButtonPressAnimation({
           {
             opacity: scaleValue.interpolate({
               inputRange: scaleTo > 1 ? [1, scaleTo] : [scaleTo, 1],
-              outputRange: [activeOpacity, 1],
+              outputRange:
+                scaleTo > 1 ? [1, activeOpacity] : [activeOpacity, 1],
             }),
             transform: transformOriginUtil(offsetX, offsetY, {
               scale,
