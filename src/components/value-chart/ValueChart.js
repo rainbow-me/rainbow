@@ -16,6 +16,7 @@ import { deviceUtils } from '../../utils';
 import { colors } from '../../styles';
 import TimestampText from './TimestampText';
 import TimespanSelector from './TimespanSelector';
+import ActivityIndicator from '../ActivityIndicator';
 
 const amountOfPathPoints = 288;
 const AnimatedPath = Animated.createAnimatedComponent(Path);
@@ -87,8 +88,6 @@ const usableData = [
 
 const { BEGAN, ACTIVE, CANCELLED, END, FAILED, UNDETERMINED } = State;
 
-const FALSE = 1;
-
 const width = deviceUtils.dimensions.width;
 const height = 170;
 const chartPadding = 16;
@@ -142,6 +141,7 @@ export default class ValueChart extends PureComponent {
       allData: [usableData[0], [], [], []],
       currentData: data1.slice(0, amountOfPathPoints),
       hideLoadingBar: false,
+      isLoading: false,
       shouldRenderChart: true,
     };
 
@@ -156,7 +156,6 @@ export default class ValueChart extends PureComponent {
     this.value = new Value(1);
     this.opacity = new Value(0);
     this.shouldSpring = new Value(0);
-    this.isLoading = new Value(FALSE);
     this.chartDay = new Value(1);
     this.chartWeek = new Value(0);
     this.chartMonth = new Value(0);
@@ -236,23 +235,26 @@ export default class ValueChart extends PureComponent {
       if (this.state.allData[currentInterval].length === 0) {
         data[currentInterval] = usableData[currentInterval];
         await this.setState({
-          addData: data,
+          isLoading: true,
         });
 
         this.animatedPath = this.createAnimatedPath();
       }
-      Animated.timing(
-        this.chartsMulti[this.currentInterval],
-        this._configDown
-      ).start();
-      Animated.timing(
-        this.chartsMulti[currentInterval],
-        this._configUp
-      ).start();
-      this.currentInterval = currentInterval;
+      setTimeout(async () => {
+        Animated.timing(
+          this.chartsMulti[this.currentInterval],
+          this._configDown
+        ).start();
+        Animated.timing(
+          this.chartsMulti[currentInterval],
+          this._configUp
+        ).start();
+        this.currentInterval = currentInterval;
 
-      await this.setState({
-        currentData: usableData[currentInterval],
+        await this.setState({
+          currentData: usableData[currentInterval],
+          isLoading: false,
+        });
       });
     }
   };
@@ -493,6 +495,21 @@ export default class ValueChart extends PureComponent {
             </PanGestureHandler>
           </Animated.View>
         </TapGestureHandler>
+        {this.state.isLoading && (
+          <View
+            style={{
+              alignItems: 'center',
+              backgroundColor: '#ffffffbb',
+              height: 235,
+              justifyContent: 'center',
+              position: 'absolute',
+              top: 100,
+              width: width,
+            }}
+          >
+            <ActivityIndicator />
+          </View>
+        )}
         <TimespanSelector
           reloadChart={this.reloadChart}
           direction={change > 0}
