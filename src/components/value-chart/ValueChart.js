@@ -8,7 +8,7 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, { Easing } from 'react-native-reanimated';
 import Spline from 'cubic-spline';
-import { contains, timing } from 'react-native-redash';
+import { contains, timing, delay } from 'react-native-redash';
 import { View } from 'react-native';
 import { data1, data2, data3, data4 } from './data';
 import ValueText from './ValueText';
@@ -144,6 +144,7 @@ export default class ValueChart extends PureComponent {
     this.loadingClock = new Clock();
     this.loadingValue = new Value(1);
     this.gestureState = new Value(UNDETERMINED);
+    this.panGestureState = new Value(UNDETERMINED);
     this.handle = undefined;
     this.value = new Value(1);
     this.opacity = new Value(0);
@@ -179,7 +180,13 @@ export default class ValueChart extends PureComponent {
       {
         nativeEvent: {
           state: state =>
-            block([cond(neq(state, FAILED), set(this.gestureState, state))]),
+            delay(
+              cond(
+                or(neq(state, State.FAILED), neq(this.panGestureState, 4)),
+                set(this.gestureState, state)
+              ),
+              100
+            ),
           x: x =>
             cond(
               and(greaterThan(x, 0), lessThan(x, width)),
@@ -193,7 +200,10 @@ export default class ValueChart extends PureComponent {
       {
         nativeEvent: {
           state: state =>
-            block([cond(neq(ACTIVE, state), set(this.gestureState, state))]),
+            block([
+              set(this.panGestureState, state),
+              cond(neq(ACTIVE, state), set(this.gestureState, state)),
+            ]),
         },
       },
     ]);
