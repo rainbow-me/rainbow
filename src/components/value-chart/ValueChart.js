@@ -180,15 +180,19 @@ export default class ValueChart extends PureComponent {
       {
         nativeEvent: {
           state: state =>
-            delay(
-              cond(
-                or(
-                  neq(state, State.FAILED),
-                  neq(this.panGestureState, State.ACTIVE)
+            cond(
+              or(eq(state, State.BEGAN), eq(state, State.END)),
+              set(this.gestureState, state),
+              delay(
+                cond(
+                  or(
+                    neq(state, State.FAILED),
+                    neq(this.panGestureState, State.ACTIVE)
+                  ),
+                  set(this.gestureState, state)
                 ),
-                set(this.gestureState, state)
-              ),
-              100
+                100
+              )
             ),
           x: x =>
             cond(
