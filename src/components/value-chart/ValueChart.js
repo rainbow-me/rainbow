@@ -182,7 +182,10 @@ export default class ValueChart extends PureComponent {
           state: state =>
             delay(
               cond(
-                or(neq(state, State.FAILED), neq(this.panGestureState, 4)),
+                or(
+                  neq(state, State.FAILED),
+                  neq(this.panGestureState, State.ACTIVE)
+                ),
                 set(this.gestureState, state)
               ),
               100
