@@ -66,7 +66,7 @@ const ProfileMasthead = ({
       <ProfileAction
         icon="inbox"
         onPress={onPressReceive}
-        scaleTo={1.1}
+        scaleTo={0.88}
         text="Receive"
       />
     </RowWithMargins>
