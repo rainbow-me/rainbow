@@ -59,9 +59,10 @@
 		A46007CA23B7B7C20010A906 /* TransactionListViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A46007C923B7B7C20010A906 /* TransactionListViewManager.swift */; };
 		A46007E623B7B9830010A906 /* TransactionListViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A46007E523B7B9830010A906 /* TransactionListViewManager.m */; };
 		A46008E923B7C6D00010A906 /* TransactionListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A46008E723B7C6D00010A906 /* TransactionListViewCell.swift */; };
-		A46008EC23B7CEDB0010A906 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A46008EB23B7CEDB0010A906 /* Transaction.swift */; };
 		A46008EE23B7D1940010A906 /* TransactionListViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A46008ED23B7D1940010A906 /* TransactionListViewContainer.swift */; };
 		A46039C523BE95FD005DE764 /* TransactionListViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A46039C423BE95FD005DE764 /* TransactionListViewCell.xib */; };
+		A4704AB523C0E0A400E50E4B /* Transaction.h in Sources */ = {isa = PBXBuildFile; fileRef = A4704AB423C0E0A400E50E4B /* Transaction.h */; };
+		A4704AFA23C0E8B800E50E4B /* Transaction.m in Sources */ = {isa = PBXBuildFile; fileRef = A4704AF923C0E8B800E50E4B /* Transaction.m */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
 		AE47B46652EA48AFB68E7832 /* SF-Pro-Text-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6B0A8BE2484F46980BE9AC /* SF-Pro-Text-Semibold.otf */; };
 		AFCABA638327463693E67FD4 /* SF-Pro-Text-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 715DAAA3174542BAB93807A6 /* SF-Pro-Text-RegularItalic.otf */; };
@@ -176,9 +177,11 @@
 		A46007C923B7B7C20010A906 /* TransactionListViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListViewManager.swift; sourceTree = "<group>"; };
 		A46007E523B7B9830010A906 /* TransactionListViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TransactionListViewManager.m; sourceTree = "<group>"; };
 		A46008E723B7C6D00010A906 /* TransactionListViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListViewCell.swift; sourceTree = "<group>"; };
-		A46008EB23B7CEDB0010A906 /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		A46008ED23B7D1940010A906 /* TransactionListViewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListViewContainer.swift; sourceTree = "<group>"; };
 		A46039C423BE95FD005DE764 /* TransactionListViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionListViewCell.xib; sourceTree = "<group>"; };
+		A4704AB423C0E0A400E50E4B /* Transaction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Transaction.h; sourceTree = "<group>"; };
+		A4704AF923C0E8B800E50E4B /* Transaction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Transaction.m; sourceTree = "<group>"; };
+		A4704AFB23C0F52E00E50E4B /* RCTConvert+TransactionList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+TransactionList.h"; sourceTree = "<group>"; };
 		A6EEFE6EA9354456B0DB4520 /* Graphik-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Regular.otf"; path = "../src/assets/fonts/Graphik-Regular.otf"; sourceTree = "<group>"; };
 		A7F0978B24BA4EC283C580D9 /* Graphik-SemiboldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-SemiboldItalic.otf"; path = "../src/assets/fonts/Graphik-SemiboldItalic.otf"; sourceTree = "<group>"; };
 		A8AE8DE50B9544B6BC186E6C /* SF-Pro-Display-BlackItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-BlackItalic.otf"; path = "../src/assets/fonts/SF-Pro-Display-BlackItalic.otf"; sourceTree = "<group>"; };
@@ -248,9 +251,11 @@
 				A4704B3A23C5414000E50E4B /* TransactionListViewContainer.swift */,
 				A4704B3823C5414000E50E4B /* TransactionListViewManager.m */,
 				A4704B3623C5413F00E50E4B /* TransactionListViewManager.swift */,
+				A4704AFB23C0F52E00E50E4B /* RCTConvert+TransactionList.h */,
 				A46007E523B7B9830010A906 /* TransactionListViewManager.m */,
 				A46007C923B7B7C20010A906 /* TransactionListViewManager.swift */,
-				A46008EB23B7CEDB0010A906 /* Transaction.swift */,
+				A4704AB423C0E0A400E50E4B /* Transaction.h */,
+				A4704AF923C0E8B800E50E4B /* Transaction.m */,
 				A46008ED23B7D1940010A906 /* TransactionListViewContainer.swift */,
 				A46008E723B7C6D00010A906 /* TransactionListViewCell.swift */,
 				A46039C423BE95FD005DE764 /* TransactionListViewCell.xib */,
@@ -638,6 +643,12 @@
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				A4704B3E23C5414000E50E4B /* TransactionListViewCell.swift in Sources */,
 				A4704B3C23C5414000E50E4B /* Transaction.swift in Sources */,
+				A46007CA23B7B7C20010A906 /* TransactionListViewManager.swift in Sources */,
+				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				A46008E923B7C6D00010A906 /* TransactionListViewCell.swift in Sources */,
+				A4704AB523C0E0A400E50E4B /* Transaction.h in Sources */,
+				A4704AFA23C0E8B800E50E4B /* Transaction.m in Sources */,
+				A46007E623B7B9830010A906 /* TransactionListViewManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

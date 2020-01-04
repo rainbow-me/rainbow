@@ -7,8 +7,10 @@
 //
 
 #import "React/RCTViewManager.h"
+#import "RCTConvert+TransactionList.h"
+
 @interface RCT_EXTERN_MODULE(TransactionListViewManager, RCTViewManager)
 
-RCT_EXPORT_VIEW_PROPERTY(transactions, NSArray)
+RCT_EXPORT_VIEW_PROPERTY(transactions, Transactions)
 
 @end

@@ -9,7 +9,7 @@
 import Foundation
 
 class TransactionListViewContainer: UIView {
-  @objc var transactions: [NSDictionary] = [] {
+  @objc var transactions: [Transaction] = [] {
     didSet {
       tableView.reloadData()
     }
@@ -50,18 +50,7 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
     let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! TransactionListViewCell
     let transaction = transactions[indexPath.row];
     
-    let asset = transaction.value(forKey: "asset") as! NSDictionary
-    let type = transaction.value(forKey: "type") as! String
-    let native = transaction.value(forKey: "native") as! NSDictionary
-    let balance = transaction.value(forKey: "balance") as! NSDictionary
-    
-    cell.set(transaction: Transaction(
-      type: type == "send" ? "Sent" : "Received",
-      coinImage: (asset.value(forKey: "icon_url") as? String),
-      coinName: (asset.value(forKey: "name") as! String),
-      nativeDisplay: (native.value(forKey: "display") as! String),
-      balanceDisplay: (balance.value(forKey: "display") as! String)
-    ))
+    cell.set(transaction: transaction)
     
     return cell;
   }

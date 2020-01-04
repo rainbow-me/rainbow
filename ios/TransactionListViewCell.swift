@@ -16,14 +16,6 @@ class TransactionListViewCell: UITableViewCell {
     @IBOutlet weak var nativeDisplay: UILabel!
     @IBOutlet weak var coinImage: UIImageView!
   
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
     func set(transaction: Transaction) {
         transactionType.text = transaction.type
         coinName.text = transaction.coinName
