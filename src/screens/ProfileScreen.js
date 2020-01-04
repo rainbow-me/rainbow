@@ -33,7 +33,11 @@ const ProfileScreen = ({
         onPress={onPressBackButton}
       />
     </Header>
-    <TransactionList transactions={transactions} style={{ flex: 1 }} />
+    <TransactionList
+      transactions={transactions}
+      onItemPress={e => console.log(e.nativeEvent)}
+      style={{ flex: 1 }}
+    />
     <ActivityList
       accountAddress={accountAddress}
       header={

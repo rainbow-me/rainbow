@@ -29,6 +29,7 @@
     NSDictionary *data = [self NSDictionary:t];
     Transaction *transaction = [[Transaction alloc] init];
     transaction.type = ([data[@"type"] isEqualToString:@"send"]) ? @"Sent" : @"Received";
+    transaction.symbol = data[@"asset"][@"symbol"];
     if (data[@"asset"][@"icon_url"] != [NSNull null]) {
       transaction.coinImage = data[@"asset"][@"icon_url"];
     }

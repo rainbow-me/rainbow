@@ -14,6 +14,8 @@ class TransactionListViewContainer: UIView {
       tableView.reloadData()
     }
   }
+  @objc lazy var onItemPress: RCTBubblingEventBlock = {_ in}
+  
   var bridge: RCTBridge
   var tableView: UITableView
   
@@ -26,6 +28,7 @@ class TransactionListViewContainer: UIView {
     tableView.dataSource = self
     tableView.delegate = self
     tableView.rowHeight = 60
+    tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
     tableView.register(UINib(nibName: "TransactionListViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListViewCell")
     
     addSubview(tableView)
@@ -51,7 +54,12 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
     let transaction = transactions[indexPath.row];
     
     cell.set(transaction: transaction)
+    cell.selectionStyle = .none
     
     return cell;
+  }
+ 
+  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    self.onItemPress(["rowIndex": indexPath.row])
   }
 }
