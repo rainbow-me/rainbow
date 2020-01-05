@@ -60,6 +60,28 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
   }
  
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    let cell = tableView.cellForRow(at: indexPath)
+    UIView.animate(withDuration: 0.1, animations: {
+      cell?.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+    }, completion: { _ in
+      UIView.animate(withDuration: 0.1, animations: {
+        cell?.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+      })
+    })
     self.onItemPress(["rowIndex": indexPath.row])
+  }
+  
+  func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
+    let cell = tableView.cellForRow(at: indexPath)
+    UIView.animate(withDuration: 0.1, animations: {
+      cell?.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+    })
+  }
+  
+  func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
+    let cell = tableView.cellForRow(at: indexPath)
+    UIView.animate(withDuration: 0.1, animations: {
+      cell?.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+    })
   }
 }
