@@ -59,12 +59,24 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
     return cell;
   }
  
+  /// Show incoming transactions green and outgoing transactions gray
+  func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    let transaction = transactions[indexPath.row];
+    if (transaction.type == "Sent") {
+      (cell as! TransactionListViewCell).nativeDisplay.textColor = UIColor(red:0.15, green:0.16, blue:0.18, alpha:1.0)
+      (cell as! TransactionListViewCell).nativeDisplay.text = "- " + transaction.nativeDisplay
+    } else {
+      (cell as! TransactionListViewCell).nativeDisplay.textColor = UIColor(red:0.25, green:0.80, blue:0.09, alpha:1.0)
+    }
+    
+  }
+  
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     let cell = tableView.cellForRow(at: indexPath)
-    UIView.animate(withDuration: 0.1, animations: {
+    UIView.animate(withDuration: 0.15, animations: {
       cell?.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
     }, completion: { _ in
-      UIView.animate(withDuration: 0.1, animations: {
+      UIView.animate(withDuration: 0.15, animations: {
         cell?.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
       })
     })
@@ -73,14 +85,14 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
   
   func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
     let cell = tableView.cellForRow(at: indexPath)
-    UIView.animate(withDuration: 0.1, animations: {
+    UIView.animate(withDuration: 0.15, animations: {
       cell?.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
     })
   }
   
   func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
     let cell = tableView.cellForRow(at: indexPath)
-    UIView.animate(withDuration: 0.1, animations: {
+    UIView.animate(withDuration: 0.15, animations: {
       cell?.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
     })
   }
