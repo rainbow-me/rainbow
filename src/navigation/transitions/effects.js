@@ -1,11 +1,8 @@
 import { StatusBar } from 'react-native';
-import Animated from 'react-native-reanimated';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { interpolate } from '../../components/animations';
 import { deviceUtils } from '../../utils';
 import { colors } from '../../styles';
-
-const { color, SpringUtils } = Animated;
 
 const statusBarHeight = getStatusBarHeight(true);
 
@@ -18,13 +15,12 @@ const exchangeStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },
 }) => {
-  const backgroundOpacity = interpolate(current, {
-    extrapolate: Animated.Extrapolate.CLAMP,
+  const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, 1, 1],
   });
 
-  const translateY = interpolate(current, {
+  const translateY = current.interpolate({
     inputRange: [0, 1],
     outputRange: [screen.height, 0],
   });
@@ -40,7 +36,8 @@ const exchangeStyleInterpolator = ({
       transform: [{ translateY }],
     },
     containerStyle: {
-      backgroundColor: color(20, 20, 20, backgroundOpacity),
+      backgroundColor: '#141414',
+      opacity: backgroundOpacity,
     },
   };
 };
@@ -50,7 +47,6 @@ const expandStyleInterpolator = ({
   layouts: { screen },
 }) => {
   const backgroundOpacity = interpolate(current, {
-    extrapolate: Animated.Extrapolate.CLAMP,
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, 0.7, 0.7],
   });
@@ -71,7 +67,8 @@ const expandStyleInterpolator = ({
       transform: [{ translateY }],
     },
     containerStyle: {
-      backgroundColor: color(37, 41, 46, backgroundOpacity),
+      backgroundColor: 'rgb(37, 41, 46)',
+      opacity: backgroundOpacity,
     },
   };
 };
@@ -80,26 +77,25 @@ const sheetStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },
 }) => {
-  const backgroundOpacity = interpolate(current, {
-    extrapolate: Animated.Extrapolate.CLAMP,
+  const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, 0.9, 0.9],
   });
 
-  const cardBackgroundOpacity = interpolate(current, {
-    extrapolate: Animated.Extrapolate.CLAMP,
+  const cardBackgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.99, 1, 2],
     outputRange: [0, 0, 0, 1, 1],
   });
 
-  const translateY = interpolate(current, {
+  const translateY = current.interpolate({
     inputRange: [0, 1],
     outputRange: [screen.height, 0],
   });
 
   return {
     cardStyle: {
-      backgroundColor: color(20, 20, 20, cardBackgroundOpacity),
+      backgroundColor: '#141414',
+      opacity: cardBackgroundOpacity,
       shadowColor: colors.black,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.4,
@@ -108,7 +104,8 @@ const sheetStyleInterpolator = ({
       transform: [{ translateY }],
     },
     containerStyle: {
-      backgroundColor: color(0, 0, 0, backgroundOpacity),
+      backgroundColor: '#000',
+      opacity: backgroundOpacity,
     },
   };
 };
@@ -125,33 +122,27 @@ const backgroundInterpolator = ({
 
 const closeSpec = {
   animation: 'spring',
-  config: SpringUtils.makeConfigFromBouncinessAndSpeed({
-    ...SpringUtils.makeDefaultConfig(),
+  config: {
     bounciness: 0,
-    mass: 1,
     overshootClamping: true,
     speed: 25,
-  }),
+  },
 };
 
 const openSpec = {
   animation: 'spring',
-  config: SpringUtils.makeConfigFromBouncinessAndSpeed({
-    ...SpringUtils.makeDefaultConfig(),
+  config: {
     bounciness: 4,
-    mass: 1,
     speed: 25,
-  }),
+  },
 };
 
 const sheetOpenSpec = {
   animation: 'spring',
-  config: SpringUtils.makeConfigFromBouncinessAndSpeed({
-    ...SpringUtils.makeDefaultConfig(),
+  config: {
     bounciness: 0,
-    mass: 1,
     speed: 22,
-  }),
+  },
 };
 
 const gestureResponseDistance = {
@@ -168,6 +159,7 @@ export const onTransitionStart = props => {
 
 export const exchangePreset = {
   cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: exchangeStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
@@ -178,7 +170,8 @@ export const exchangePreset = {
 
 export const overlayExpandedPreset = {
   cardShadowEnabled: true,
-  cardStyleInterpolator: expandStyleInterpolator,
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator_: expandStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
@@ -187,7 +180,8 @@ export const overlayExpandedPreset = {
 
 export const expandedPreset = {
   cardShadowEnabled: true,
-  cardStyleInterpolator: expandStyleInterpolator,
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator_: expandStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
@@ -197,7 +191,8 @@ export const expandedPreset = {
 
 export const sheetPreset = {
   cardShadowEnabled: true,
-  cardStyleInterpolator: sheetStyleInterpolator,
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator_: sheetStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
@@ -206,5 +201,6 @@ export const sheetPreset = {
 };
 
 export const backgroundPreset = {
+  cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: backgroundInterpolator,
 };
