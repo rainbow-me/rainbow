@@ -8,13 +8,25 @@
 
 import Foundation
 
+fileprivate struct TransactionSection {
+  var month: Date
+  var transactions: [Transaction]
+}
+
 class TransactionListViewContainer: UIView {
   @objc var transactions: [Transaction] = [] {
     didSet {
+      let groups = Dictionary(grouping: self.transactions) { (transaction) in
+          return firstDayOfMonth(date: transaction.mined_at)
+      }
+      sections = groups.map(TransactionSection.init(month:transactions:))
+      sections.sort { (lhs, rhs) in lhs.month > rhs.month }
       tableView.reloadData()
     }
   }
   @objc lazy var onItemPress: RCTBubblingEventBlock = {_ in}
+  
+  fileprivate var sections = [TransactionSection]()
   
   var bridge: RCTBridge
   var tableView: UITableView
@@ -41,17 +53,51 @@ class TransactionListViewContainer: UIView {
   override func layoutSubviews() {
     tableView.frame = self.bounds
   }
+  
+  private func firstDayOfMonth(date: Date) -> Date {
+      let calendar = Calendar.current
+      let components = calendar.dateComponents([.year, .month], from: date)
+      return calendar.date(from: components)!
+  }
 }
 
 extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelegate {
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return transactions.count
+    let section = self.sections[section]
+    return section.transactions.count
+  }
+  
+  func numberOfSections(in tableView: UITableView) -> Int {
+    return sections.count
+  }
+  
+  func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    return 40
+  }
+  
+  func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    let view = UIView(frame: CGRect(x: 0, y: 0, width: frame.width, height: 40))
+    view.backgroundColor = .white
+
+    let label = UILabel(frame: CGRect(x: 20, y: 0, width: view.frame.width, height: view.frame.height))
+
+    let section = sections[section]
+    let date = section.month
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "MMMM yyyy"
+    label.text = dateFormatter.string(from: date)
+    label.font = .boldSystemFont(ofSize: 18)
+    view.addSubview(label)
+
+    return view
   }
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let identifier = "TransactionListViewCell"
     let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! TransactionListViewCell
-    let transaction = transactions[indexPath.row];
+    
+    let section = sections[indexPath.section]
+    let transaction = section.transactions[indexPath.row]
     
     cell.set(transaction: transaction)
     cell.selectionStyle = .none

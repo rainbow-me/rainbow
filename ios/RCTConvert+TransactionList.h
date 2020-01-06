@@ -36,6 +36,7 @@
     transaction.coinName = data[@"asset"][@"name"];
     transaction.nativeDisplay = data[@"native"][@"display"];
     transaction.balanceDisplay = data[@"balance"][@"display"];
+    transaction.mined_at = [NSDate dateWithTimeIntervalSince1970: [data[@"mined_at"] doubleValue]];
     
     [result addObject:transaction];
   }

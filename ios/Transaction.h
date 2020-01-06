@@ -16,5 +16,6 @@
 @property (nonatomic, strong) NSString *coinName;
 @property (nonatomic, strong) NSString *nativeDisplay;
 @property (nonatomic, strong) NSString *balanceDisplay;
+@property (nonatomic, strong) NSDate *mined_at;
 
 @end
