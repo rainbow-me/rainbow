@@ -9,8 +9,7 @@ const AppStateTypes = {
 };
 
 export default function useAppState() {
-  const currentState = AppState.currentState;
-  const [appState, setAppState] = useState(currentState);
+  const [appState, setAppState] = useState(AppState.currentState);
   const prevAppState = usePrevious(appState);
 
   function onChange(newState) {
@@ -20,7 +19,7 @@ export default function useAppState() {
   useEffect(() => {
     AppState.addEventListener('change', onChange);
     return () => AppState.removeEventListener('change', onChange);
-  });
+  }, []);
 
   return {
     appState,
