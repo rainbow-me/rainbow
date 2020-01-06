@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Clipboard } from 'react-native';
 import useAppState from './useAppState';
 
-export default function useClipBoard() {
+export default function useClipboard() {
   const { justBecameActive } = useAppState();
   const [data, updateClipboardData] = useState('');
 

@@ -44,7 +44,7 @@ export default function useBiometryType() {
     return () => {
       mounted = false;
     };
-  }, [biometryType, justBecameActive, prevBiometricType, setBiometryType]);
+  }, [biometryType, justBecameActive, prevBiometricType]);
 
   return biometryType;
 }

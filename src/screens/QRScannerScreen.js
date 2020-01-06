@@ -88,7 +88,6 @@ QRScannerScreen.propTypes = {
   onScanSuccess: PropTypes.func,
   onSheetLayout: PropTypes.func,
   sheetHeight: PropTypes.number,
-  showSheet: PropTypes.bool,
   walletConnectorsByDappName: PropTypes.arrayOf(PropTypes.object),
   walletConnectorsCount: PropTypes.number,
 };
