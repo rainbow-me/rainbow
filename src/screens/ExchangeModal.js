@@ -649,6 +649,9 @@ class ExchangeModal extends Component {
     }
   };
 
+  handleRefocusLastInput = () =>
+    TextInput.State.focusTextInput(this.findNextFocused());
+
   navigateToSwapDetailsModal = () => {
     const {
       inputCurrency,
@@ -663,6 +666,7 @@ class ExchangeModal extends Component {
       inputCurrencySymbol: get(inputCurrency, 'symbol'),
       inputExecutionRate,
       inputNativePrice,
+      onRefocusInput: this.handleRefocusLastInput,
       outputCurrencySymbol: get(outputCurrency, 'symbol'),
       outputExecutionRate,
       outputNativePrice,
