@@ -110,25 +110,25 @@ const backgroundInterpolator = ({
 const closeSpec = {
   animation: 'spring',
   config: {
-    bounciness: 0,
+    bounciness: 2,
     overshootClamping: true,
-    speed: 25,
+    speed: 27,
   },
 };
 
 const openSpec = {
   animation: 'spring',
   config: {
-    bounciness: 4,
-    speed: 25,
+    bounciness: 5,
+    speed: 27,
   },
 };
 
 const sheetOpenSpec = {
   animation: 'spring',
   config: {
-    bounciness: 0,
-    speed: 22,
+    bounciness: 2,
+    speed: 23,
   },
 };
 
