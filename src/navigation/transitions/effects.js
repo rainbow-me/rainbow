@@ -1,6 +1,5 @@
 import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import { interpolate } from '../../components/animations';
 import { deviceUtils } from '../../utils';
 import { colors } from '../../styles';
 
@@ -27,17 +26,15 @@ const exchangeStyleInterpolator = ({
 
   return {
     cardStyle: {
-      opacity: 1,
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
+      opacity: backgroundOpacity,
       shadowColor: colors.black,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.4,
       shadowRadius: 25,
       // Translation for the animation of the current card
-      transform: [{ translateY }],
-    },
-    containerStyle: {
-      backgroundColor: '#141414',
-      opacity: backgroundOpacity,
     },
   };
 };
@@ -46,29 +43,27 @@ const expandStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },
 }) => {
-  const backgroundOpacity = interpolate(current, {
+  const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, 0.7, 0.7],
   });
 
-  const translateY = interpolate(current, {
+  const translateY = current.interpolate({
     inputRange: [0, 1],
     outputRange: [screen.height, 0],
   });
 
   return {
     cardStyle: {
-      opacity: 1,
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
+      backgroundColor: 'rgb(37, 41, 46)',
+      opacity: backgroundOpacity,
       shadowColor: colors.dark,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
-      // Translation for the animation of the current card
-      transform: [{ translateY }],
-    },
-    containerStyle: {
-      backgroundColor: 'rgb(37, 41, 46)',
-      opacity: backgroundOpacity,
     },
   };
 };
@@ -82,11 +77,6 @@ const sheetStyleInterpolator = ({
     outputRange: [0, 0, 0.9, 0.9],
   });
 
-  const cardBackgroundOpacity = current.interpolate({
-    inputRange: [-1, 0, 0.99, 1, 2],
-    outputRange: [0, 0, 0, 1, 1],
-  });
-
   const translateY = current.interpolate({
     inputRange: [0, 1],
     outputRange: [screen.height, 0],
@@ -94,18 +84,15 @@ const sheetStyleInterpolator = ({
 
   return {
     cardStyle: {
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
       backgroundColor: '#141414',
-      opacity: cardBackgroundOpacity,
+      opacity: backgroundOpacity,
       shadowColor: colors.black,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.4,
       shadowRadius: 25,
-      // Translation for the animation of the current card
-      transform: [{ translateY }],
-    },
-    containerStyle: {
-      backgroundColor: '#000',
-      opacity: backgroundOpacity,
     },
   };
 };
@@ -158,6 +145,7 @@ export const onTransitionStart = props => {
 };
 
 export const exchangePreset = {
+  cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: exchangeStyleInterpolator,
@@ -169,9 +157,10 @@ export const exchangePreset = {
 };
 
 export const overlayExpandedPreset = {
+  cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator_: expandStyleInterpolator,
+  cardStyleInterpolator: expandStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
@@ -179,9 +168,10 @@ export const overlayExpandedPreset = {
 };
 
 export const expandedPreset = {
+  cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator_: expandStyleInterpolator,
+  cardStyleInterpolator: expandStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
@@ -190,9 +180,10 @@ export const expandedPreset = {
 };
 
 export const sheetPreset = {
+  cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator_: sheetStyleInterpolator,
+  cardStyleInterpolator: sheetStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
