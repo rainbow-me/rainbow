@@ -1,8 +1,11 @@
 import analytics from '@segment/analytics-react-native';
-import { get, omit } from 'lodash';
+import { get } from 'lodash';
 import React from 'react';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
+// eslint-disable-next-line import/no-unresolved
+import { enableScreens } from 'react-native-screens';
+import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
 import { createStackNavigator } from 'react-navigation-stack';
 import { ExchangeModalNavigator, Navigation } from '../navigation';
 import { updateTransitionProps } from '../redux/navigation';
@@ -26,6 +29,8 @@ import {
   backgroundPreset,
   overlayExpandedPreset,
 } from '../navigation/transitions/effects';
+
+enableScreens();
 
 const onTransitionEnd = () =>
   store.dispatch(updateTransitionProps({ isTransitioning: false }));
@@ -93,16 +98,6 @@ const MainNavigator = createStackNavigator(
       },
       screen: ExpandedAssetScreenWithData,
     },
-    ImportSeedPhraseSheet: {
-      navigationOptions: {
-        ...sheetPreset,
-        onTransitionStart: props => {
-          sheetPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      screen: ImportSeedPhraseSheetWithData,
-    },
     OverlayExpandedAssetScreen: {
       navigationOptions: overlayExpandedPreset,
       screen: ExpandedAssetScreenWithData,
@@ -117,24 +112,11 @@ const MainNavigator = createStackNavigator(
       },
       screen: ReceiveModal,
     },
-    SendSheet: {
-      navigationOptions: {
-        ...omit(sheetPreset, 'gestureResponseDistance'),
-        onTransitionStart: props => {
-          onTransitionStart(props);
-          sheetPreset.onTransitionStart(props);
-        },
-      },
-      screen: SendSheetWithData,
-    },
     SettingsModal: {
       navigationOptions: {
         ...expandedPreset,
         gesturesEnabled: false,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
+        onTransitionStart,
       },
       screen: SettingsModal,
       transparentCard: true,
@@ -167,7 +149,20 @@ const MainNavigator = createStackNavigator(
   }
 );
 
-const AppContainer = createAppContainer(MainNavigator);
+const NativeStack = createNativeStackNavigator(
+  {
+    ImportSeedPhraseSheet: ImportSeedPhraseSheetWithData,
+    MainNavigator,
+    SendSheet: SendSheetWithData,
+  },
+  {
+    headerMode: 'none',
+    initialRouteName: 'MainNavigator',
+    mode: 'modal',
+  }
+);
+
+const AppContainer = createAppContainer(NativeStack);
 
 // eslint-disable-next-line react/display-name
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (

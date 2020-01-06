@@ -2,8 +2,8 @@ import analytics from '@segment/analytics-react-native';
 import { get, isEmpty, isString, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Keyboard, KeyboardAvoidingView } from 'react-native';
-import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
+import { Keyboard, KeyboardAvoidingView, StatusBar } from 'react-native';
+import { isIphoneX } from 'react-native-iphone-x-helper';
 import { compose, withHandlers, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
@@ -23,10 +23,10 @@ import {
   withTransitionProps,
   withUniqueTokens,
 } from '../hoc';
-import { borders, colors } from '../styles';
+import { colors } from '../styles';
 import { deviceUtils, gasUtils, isNewValueForPath } from '../utils';
 
-const statusBarHeight = getStatusBarHeight(true);
+const sheetHeight = deviceUtils.dimensions.height - 10;
 
 const Container = styled(Column)`
   background-color: ${colors.transparent};
@@ -34,10 +34,8 @@ const Container = styled(Column)`
 `;
 
 const SheetContainer = styled(Column)`
-  ${borders.buildRadius('top', 16)};
   background-color: ${colors.white};
-  height: 100%;
-  top: ${statusBarHeight};
+  height: ${sheetHeight};
 `;
 
 class SendSheet extends Component {
@@ -236,6 +234,7 @@ class SendSheet extends Component {
 
     return (
       <SheetContainer>
+        <StatusBar barStyle="light-content" />
         <KeyboardAvoidingView behavior="padding">
           <Container align="center">
             <SendHeader
