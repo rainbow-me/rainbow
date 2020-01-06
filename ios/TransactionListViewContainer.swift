@@ -3,7 +3,6 @@
 //  Rainbow
 //
 //  Created by Alexey Kureev on 28/12/2019.
-//  Copyright © 2019 Facebook. All rights reserved.
 //
 
 import Foundation
@@ -15,26 +14,24 @@ fileprivate struct TransactionSection {
 
 class TransactionListViewContainer: UIView {
   @objc var transactions: [Transaction] = [] {
+    /// Every time we receive a new set of transactions, regroup by mind_at in the format "MMMM yyyy"
+    /// Then, re-render tableView with the new data
     didSet {
       let groups = Dictionary(grouping: self.transactions) { (transaction) in
-          return firstDayOfMonth(date: transaction.mined_at)
+          return firstDayOfMonth(date: transaction.minedAt)
       }
       sections = groups.map(TransactionSection.init(month:transactions:))
       sections.sort { (lhs, rhs) in lhs.month > rhs.month }
       tableView.reloadData()
     }
   }
-  @objc lazy var onItemPress: RCTBubblingEventBlock = {_ in}
+  @objc lazy var onItemPress: RCTBubblingEventBlock = { _ in }
   
   fileprivate var sections = [TransactionSection]()
   
-  var bridge: RCTBridge
-  var tableView: UITableView
+  let tableView = UITableView()
   
-  init(bridge: RCTBridge) {
-    self.bridge = bridge
-    self.tableView = UITableView()
-    
+  override init(frame: CGRect) {
     super.init(frame: CGRect.zero)
     
     tableView.dataSource = self
@@ -50,6 +47,7 @@ class TransactionListViewContainer: UIView {
     fatalError("init(coder:) has not been implemented")
   }
   
+  /// React Native is known to re-render only first-level subviews. Since our tableView is a custom view that we add as a second-level subview, we need to relayout it manually
   override func layoutSubviews() {
     tableView.frame = self.bounds
   }
@@ -62,13 +60,13 @@ class TransactionListViewContainer: UIView {
 }
 
 extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelegate {
+  func numberOfSections(in tableView: UITableView) -> Int {
+    return sections.count
+  }
+  
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     let section = self.sections[section]
     return section.transactions.count
-  }
-  
-  func numberOfSections(in tableView: UITableView) -> Int {
-    return sections.count
   }
   
   func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -92,6 +90,7 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
     return view
   }
   
+  /// Sets a cell for a row at indexPath based on the active section
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let identifier = "TransactionListViewCell"
     let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! TransactionListViewCell
@@ -105,7 +104,7 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
     return cell;
   }
  
-  /// Show incoming transactions green and outgoing transactions gray
+  /// Show incoming transactions green and outgoing transactions gray with minus sign in front of it
   func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
     let transaction = transactions[indexPath.row];
     if (transaction.type == "Sent") {
@@ -117,7 +116,8 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
     
   }
   
-  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+  /// Play the select animation and propogate the event to JS runtime (so onItemPress property can receive a nativeEvent with rowIndex in it)
+  func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
     let cell = tableView.cellForRow(at: indexPath)
     UIView.animate(withDuration: 0.15, animations: {
       cell?.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
@@ -126,7 +126,9 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
         cell?.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
       })
     })
-    self.onItemPress(["rowIndex": indexPath.row])
+    let transaction = transactions[indexPath.row]
+    self.onItemPress(["rowIndex": indexPath.row, "hash": transaction.tHash])
+    return indexPath
   }
   
   func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
