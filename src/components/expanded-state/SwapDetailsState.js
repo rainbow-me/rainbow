@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import { expandedStateTransitionPosition } from '../../navigation/transitions/effects';
 import { colors, padding, position } from '../../styles';
@@ -30,11 +30,13 @@ const SwapDetailsState = ({
   inputCurrencySymbol,
   inputExecutionRate,
   inputNativePrice,
+  onRefocusInput,
   outputCurrencySymbol,
   outputExecutionRate,
   outputNativePrice,
 }) => {
   const { goBack } = useNavigation();
+  useEffect(() => () => onRefocusInput(), [onRefocusInput]);
 
   let emoji = 'unicorn_face';
   if ([inputCurrencySymbol, outputCurrencySymbol].includes('FAME')) {
