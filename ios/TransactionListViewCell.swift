@@ -23,14 +23,14 @@ class TransactionListViewCell: UITableViewCell {
   @IBOutlet weak var coinImage: UIImageView!
   
   func set(transaction: Transaction) {
-    transactionType.text = transaction.type
+    transactionType.text = transaction.status
     coinName.text = transaction.coinName
     nativeDisplay.text = transaction.nativeDisplay
     balanceDisplay.text = transaction.balanceDisplay
     
     if transaction.coinImage != nil {
       coinImage.kf.setImage(with: URL(string: transaction.coinImage!))
-    } else {
+    } else if transaction.symbol != nil {
       coinImage.image = generateCoinImage(transaction.symbol)
       coinImage.layer.cornerRadius = coinImage.frame.width * 0.5
     }

@@ -8,7 +8,7 @@
 import Foundation
 
 fileprivate struct TransactionSection {
-  var month: Date
+  var header: Date
   var transactions: [Transaction]
 }
 
@@ -17,11 +17,31 @@ class TransactionListViewContainer: UIView {
     /// Every time we receive a new set of transactions, regroup by mind_at in the format "MMMM yyyy"
     /// Then, re-render tableView with the new data
     didSet {
-      let groups = Dictionary(grouping: self.transactions) { (transaction) in
-          return firstDayOfMonth(date: transaction.minedAt)
+      var groups: [Date: [Transaction]] = [:]
+      let calendar = Calendar.current
+      
+      for transaction in transactions {
+        var date = groupByDate(transaction.minedAt)
+        
+        if calendar.isDateInToday(date) || calendar.isDateInYesterday(date) {
+          if groups[date] == nil {
+            groups[date] = []
+          }
+          groups[date]!.append(transaction)
+        } else {
+          let dateComponents = calendar.dateComponents([.year, .month], from: date)
+          date = calendar.date(from: dateComponents)!
+          
+          if groups[date] == nil {
+            groups[date] = []
+          }
+          
+          groups[date]!.append(transaction)
+        }
       }
-      sections = groups.map(TransactionSection.init(month:transactions:))
-      sections.sort { (lhs, rhs) in lhs.month > rhs.month }
+      
+      sections = groups.map(TransactionSection.init(header:transactions:))
+      sections.sort { (lhs, rhs) in lhs.header > rhs.header }
       tableView.reloadData()
     }
   }
@@ -52,10 +72,10 @@ class TransactionListViewContainer: UIView {
     tableView.frame = self.bounds
   }
   
-  private func firstDayOfMonth(date: Date) -> Date {
-      let calendar = Calendar.current
-      let components = calendar.dateComponents([.year, .month], from: date)
-      return calendar.date(from: components)!
+  private func groupByDate(_ date: Date) -> Date {
+    let calendar = Calendar.current
+    let components = calendar.dateComponents([.year, .month, .day], from: date)
+    return calendar.date(from: components)!
   }
 }
 
@@ -75,18 +95,23 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
   
   func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
     let view = UIView(frame: CGRect(x: 0, y: 0, width: frame.width, height: 40))
-    view.backgroundColor = .white
-
     let label = UILabel(frame: CGRect(x: 20, y: 0, width: view.frame.width, height: view.frame.height))
-
-    let section = sections[section]
-    let date = section.month
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "MMMM yyyy"
-    label.text = dateFormatter.string(from: date)
+    let calendar = Calendar.current
+    
+    if calendar.isDateInToday(sections[section].header) {
+      label.text = "Today"
+    } else if calendar.isDateInYesterday(sections[section].header) {
+      label.text = "Yesterday"
+    } else {
+      let dateFormatter = DateFormatter()
+      dateFormatter.dateFormat = "MMMM yyyy"
+      label.text = dateFormatter.string(from: sections[section].header)
+    }
+    
     label.font = .boldSystemFont(ofSize: 18)
+    view.backgroundColor = .white
     view.addSubview(label)
-
+    
     return view
   }
   
@@ -103,15 +128,23 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
     
     return cell;
   }
- 
+  
   /// Show incoming transactions green and outgoing transactions gray with minus sign in front of it
   func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
     let transaction = transactions[indexPath.row];
-    if (transaction.type == "Sent") {
-      (cell as! TransactionListViewCell).nativeDisplay.textColor = UIColor(red:0.15, green:0.16, blue:0.18, alpha:1.0)
-      (cell as! TransactionListViewCell).nativeDisplay.text = "- " + transaction.nativeDisplay
-    } else {
-      (cell as! TransactionListViewCell).nativeDisplay.textColor = UIColor(red:0.25, green:0.80, blue:0.09, alpha:1.0)
+    let listViewCell = cell as! TransactionListViewCell
+    
+    switch transaction.status {
+    case "Sent":
+      listViewCell.nativeDisplay.textColor = UIColor(red:0.15, green:0.16, blue:0.18, alpha:1.0)
+      listViewCell.nativeDisplay.text = "- " + transaction.nativeDisplay
+      break
+    case "Self":
+      listViewCell.nativeDisplay.textColor = UIColor(red:0.63, green:0.65, blue:0.67, alpha:1.0)
+      break
+    default:
+      listViewCell.nativeDisplay.textColor = UIColor(red:0.25, green:0.80, blue:0.09, alpha:1.0)
+      break
     }
     
   }
@@ -127,7 +160,7 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
       })
     })
     let transaction = transactions[indexPath.row]
-    self.onItemPress(["rowIndex": indexPath.row, "hash": transaction.tHash])
+    self.onItemPress(["rowIndex": indexPath.row, "hash": transaction.tHash as String])
     return indexPath
   }
   

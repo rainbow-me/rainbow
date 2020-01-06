@@ -27,19 +27,21 @@
   for (id t in json) {
     NSDictionary *data = [self NSDictionary:t];
     Transaction *transaction = [[Transaction alloc] init];
-    transaction.type = ([data[@"type"] isEqualToString:@"send"]) ? @"Sent" : @"Received";
-    transaction.symbol = data[@"asset"][@"symbol"];
+    transaction.status = [data[@"status"] capitalizedString];
+    transaction.symbol = data[@"symbol"];
     if (data[@"asset"][@"icon_url"] != [NSNull null]) {
       transaction.coinImage = data[@"asset"][@"icon_url"];
     }
-    transaction.coinName = data[@"asset"][@"name"];
+    transaction.coinName = data[@"name"];
     transaction.nativeDisplay = data[@"native"][@"display"];
     transaction.balanceDisplay = data[@"balance"][@"display"];
     transaction.tHash = data[@"hash"];
-    transaction.minedAt = [NSDate dateWithTimeIntervalSince1970: [data[@"mined_at"] doubleValue]];
+    transaction.minedAt = [NSDate dateWithTimeIntervalSince1970: [data[@"minedAt"] doubleValue]];
     
     [result addObject:transaction];
   }
+  
+//  NSLog(@"%@", json);
   
   return result;
 }

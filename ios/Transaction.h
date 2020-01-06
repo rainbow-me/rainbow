@@ -9,7 +9,7 @@
 
 @interface Transaction : NSObject
 
-@property (nonatomic, strong) NSString *type;
+@property (nonatomic, strong) NSString *status;
 @property (nonatomic, strong) NSString *symbol;
 @property (nonatomic, strong) NSString *coinImage;
 @property (nonatomic, strong) NSString *coinName;
