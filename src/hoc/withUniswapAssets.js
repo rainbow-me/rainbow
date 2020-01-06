@@ -38,16 +38,16 @@ const appendFavoriteKey = asset => ({
   favorite: true,
 });
 
-const withAssetsAvailableOnUniswap = (allAssets, uniswapPairs) => {
+const withUniswapAssetsInWallet = (allAssets, uniswapPairs) => {
   const availableAssets = filter(
     allAssets,
     filterUniswapAssetsByAvailability(keys(uniswapPairs))
   );
-  const assetsAvailableOnUniswap = map(
+  const uniswapAssetsInWallet = map(
     availableAssets,
     includeExchangeAddress(uniswapPairs)
   );
-  return { assetsAvailableOnUniswap };
+  return { uniswapAssetsInWallet };
 };
 
 const withSortedUniswapAssets = (assets, favorites) => {
@@ -64,9 +64,9 @@ const withSortedUniswapAssets = (assets, favorites) => {
   };
 };
 
-const withAssetsAvailableOnUniswapSelector = createSelector(
+const withUniswapAssetsInWalletSelector = createSelector(
   [allAssetsSelector, uniswapPairsSelector],
-  withAssetsAvailableOnUniswap
+  withUniswapAssetsInWallet
 );
 
 const withSortedUniswapAssetsSelector = createSelector(
@@ -84,5 +84,5 @@ export default compose(
   connect(mapStateToProps, { uniswapUpdateFavorites }),
   withAccountData,
   withProps(withSortedUniswapAssetsSelector),
-  withProps(withAssetsAvailableOnUniswapSelector)
+  withProps(withUniswapAssetsInWalletSelector)
 );

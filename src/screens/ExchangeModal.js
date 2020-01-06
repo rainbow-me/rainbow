@@ -83,7 +83,6 @@ class ExchangeModal extends Component {
     accountAddress: PropTypes.string,
     allAssets: PropTypes.array,
     allowances: PropTypes.object,
-    assetsAvailableOnUniswap: PropTypes.arrayOf(PropTypes.object),
     chainId: PropTypes.number,
     dataAddNewTransaction: PropTypes.func,
     gasLimit: PropTypes.number,
@@ -101,6 +100,7 @@ class ExchangeModal extends Component {
     tradeDetails: PropTypes.object,
     txFees: PropTypes.object,
     uniswapAddPendingApproval: PropTypes.func,
+    uniswapAssetsInWallet: PropTypes.arrayOf(PropTypes.object),
     uniswapUpdateAllowances: PropTypes.func,
   };
 
@@ -755,7 +755,7 @@ class ExchangeModal extends Component {
       inputCurrency,
       outputCurrency: previousOutputCurrency,
     } = this.state;
-    const { assetsAvailableOnUniswap } = this.props;
+    const { uniswapAssetsInWallet } = this.props;
 
     this.props.uniswapUpdateOutputCurrency(outputCurrency);
 
@@ -766,7 +766,7 @@ class ExchangeModal extends Component {
     });
 
     const existsInWallet = find(
-      assetsAvailableOnUniswap,
+      uniswapAssetsInWallet,
       asset => get(asset, 'address') === get(previousOutputCurrency, 'address')
     );
     if (userSelected && isSameAsset(inputCurrency, outputCurrency)) {
