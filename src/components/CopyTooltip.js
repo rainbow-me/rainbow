@@ -34,7 +34,7 @@ class CopyTooltip extends PureComponent {
 
   handleHideTooltip = () => this.tooltip.hideMenu();
 
-  handlePressIn = () => this.tooltip.showMenu();
+  handlePress = () => this.tooltip.showMenu();
 
   handleRef = ref => {
     this.tooltip = ref;
@@ -45,7 +45,7 @@ class CopyTooltip extends PureComponent {
       {...this.props}
       actions={[{ onPress: this.handleCopy, text: this.props.tooltipText }]}
       activeOpacity={this.props.activeOpacity}
-      onPressIn={this.handlePressIn}
+      onPress={this.handlePress}
       ref={this.handleRef}
       underlayColor={colors.transparent}
     />
