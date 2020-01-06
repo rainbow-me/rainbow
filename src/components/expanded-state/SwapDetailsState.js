@@ -36,6 +36,13 @@ const SwapDetailsState = ({
 }) => {
   const { goBack } = useNavigation();
 
+  let emoji = 'unicorn_face';
+  if ([inputCurrencySymbol, outputCurrencySymbol].includes('FAME')) {
+    emoji = 'prayer_beads';
+  } else if ([inputCurrencySymbol, outputCurrencySymbol].includes('SOCKS')) {
+    emoji = 'socks';
+  }
+
   return (
     <KeyboardFixedOpenLayout>
       <TouchableBackdrop onPress={goBack} />
@@ -44,7 +51,7 @@ const SwapDetailsState = ({
           <FloatingEmojis
             distance={350}
             duration={2000}
-            emoji="unicorn_face"
+            emoji={emoji}
             size={36}
             transitionPosition={expandedStateTransitionPosition}
             wiggleFactor={1}
