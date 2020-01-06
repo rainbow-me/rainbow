@@ -116,7 +116,10 @@ const MainNavigator = createStackNavigator(
       navigationOptions: {
         ...expandedPreset,
         gesturesEnabled: false,
-        onTransitionStart,
+        onTransitionStart: props => {
+          expandedPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
       },
       screen: SettingsModal,
       transparentCard: true,

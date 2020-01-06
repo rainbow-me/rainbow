@@ -9273,10 +9273,10 @@ react-navigation-hooks@^1.1.0:
   resolved "https://registry.yarnpkg.com/react-navigation-hooks/-/react-navigation-hooks-1.1.0.tgz#337c41a50ebc7b9030bb9d9333cd4fd6e1f86b68"
   integrity sha512-ZY/aiYJ88KXaOo8iOa4171O/0x6ztGhUPd2OYzdaJhLT/tP64zi5HB/RZFImuKhaBTODXjoSpFaOTA5xpePG4g==
 
-react-navigation-stack@2.0.9:
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-2.0.9.tgz#d7c2862fe3e42c545e3c5123faf2b6383f747c6e"
-  integrity sha512-eaCb0SMwhQ24vgTMhwL19r9vXAT3otil7RnmsWZ2TtxGjE9CivJ8HdcBuVqykcdK0u5wldu5TgipIOi+8BBhgg==
+react-navigation-stack@2.0.10:
+  version "2.0.10"
+  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-2.0.10.tgz#4a4f76f58a7addcc247fb6ce8127c224e6096252"
+  integrity sha512-WRXyujWzGA1st3uLfznC2jvk2QhD1j1k1V9SqHMl6VBrGj0pVpvIQ6wGDowKau/XY8gpEOjPkonCASCFBkXhtg==
   dependencies:
     color "^3.1.2"
     react-native-iphone-x-helper "^1.2.1"
