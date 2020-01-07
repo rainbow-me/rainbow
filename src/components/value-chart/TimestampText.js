@@ -7,7 +7,7 @@ const TimestampText = ({ children, style }) => (
   <Text
     style={{
       color: colors.blueGreyDark,
-      fontFamily: fonts.family.SFProDisplay,
+      fontFamily: fonts.family.SFProRounded,
       lineHeight: 17,
       marginLeft: -15,
       opacity: 0.5,

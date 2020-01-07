@@ -10,7 +10,7 @@ import { Transition, Transitioning } from 'react-native-reanimated';
 
 const HeadingTextStyles = {
   color: colors.dark,
-  family: 'SFProText',
+  family: 'SFProRounded',
   weight: 'bold',
 };
 
@@ -28,10 +28,15 @@ const Header = styled(TruncatedText)`
 
 const transition = (
   <Transition.Together>
-    <Transition.Out durationMs={150} type="fade" propagation="right" />
+    <Transition.Out
+      durationMs={220}
+      type="slide-top"
+      propagation="right"
+      interpolation="easeInOut"
+    />
     <Transition.In
       durationMs={200}
-      delayMs={140}
+      delayMs={120}
       type="fade"
       propagation="left"
     />

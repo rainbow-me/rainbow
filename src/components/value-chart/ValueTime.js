@@ -7,6 +7,7 @@ const ValueTime = ({ children, selected }) => (
   <Text
     style={{
       color: selected ? '#fff' : colors.grey,
+      fontFamily: fonts.family.SFProRounded,
       fontWeight: fonts.weight.semibold,
       height: 30,
       lineHeight: 30,

@@ -334,9 +334,7 @@ PODS:
     - React-RCTNetwork (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTLinking (1000.0.0):
-    - FBReactNativeSpec (= 1000.0.0)
     - React-Core/RCTLinkingHeaders (= 1000.0.0)
-    - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTNetwork (1000.0.0):
     - FBReactNativeSpec (= 1000.0.0)
     - Folly (= 2018.10.22.00)
@@ -674,8 +672,8 @@ SPEC CHECKSUMS:
   Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   Fabric: f988e33c97f08930a413e08123064d2e5f68d655
-  FBLazyVector: 9937910f2681d66c0d28631d16058aeec6b1d009
-  FBReactNativeSpec: 84bac6a4bcb261924c1e19c60833d0916439dba9
+  FBLazyVector: 5b90ff9125124f3807d039a88165dd57c608d175
+  FBReactNativeSpec: 94474128f097979e7c7031491c01f676dd862eda
   Firebase: 458d109512200d1aca2e1b9b6cf7d68a869a4a46
   FirebaseAnalytics: 45f36d9c429fc91d206283900ab75390cd05ee8a
   FirebaseAnalyticsInterop: d48b6ab67bcf016a05e55b71fc39c61c0cb6b7f3
@@ -695,15 +693,15 @@ SPEC CHECKSUMS:
   libwebp: 057912d6d0abfb6357d8bb05c0ea470301f5d61e
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   Protobuf: dd1aaea7140debfe4dd0683fb8ef208e527ae153
-  RCTRequired: 8261e5489a9c6a59fc1fb2ad37966ac8c76fd674
-  RCTTypeSafety: cfe8ceac14dd07464e36cc5a6db4d60c89c8d0c4
-  React: 1594d3f52fc5de51b1e55a521f93d07d68b814fb
-  React-Core: 4d1aba76c386522959c0d3d4e51ebb0554ad015f
-  React-CoreModules: 3a9d2a1c2df1936927163a19fdb0f2a5a13c1d76
-  React-cxxreact: 06df23866978079cfb525c68bf8b59bb52884a4e
-  React-jsi: a9e632da28b1168e8b41e92cc69c5c88d1af4642
-  React-jsiexecutor: 8e5e9d516a76c5ebbd5fa557a371de68f7b9d2b6
-  React-jsinspector: beded58f6e205bc58a38a3c57ce87443d7d20848
+  RCTRequired: 78edb99f6c176315c9c5b0401c3c696ad554ce0b
+  RCTTypeSafety: e6efbe1e6dc9148cbb8c4c80f7fa55962935a362
+  React: 31befaeb159c3093a3a1649280f35d473ab353b9
+  React-Core: a0424f260b0432c674cc2694552e7e55b1a8b1ad
+  React-CoreModules: 0f7f0da36c7e0b222164a56def8a59b8db8d5d21
+  React-cxxreact: 23135ccb4b565cb9aa9514594ef5d0fc006f0cdd
+  React-jsi: 41014fd027ac2dfae6784dffc3845d9107f7a9f0
+  React-jsiexecutor: 3e01ee15e68a113ea07db521ab7171f3faae6220
+  React-jsinspector: 126023daa24941ec5bcfdda3fa6e6562e9a3546b
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: 52114c432860b89986c9ee4919d00a48a6ba7abb
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
@@ -714,16 +712,16 @@ SPEC CHECKSUMS:
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 54a1aa9bf5c0824f930b1ba6dbfb3fd3e733bba9
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
-  React-RCTActionSheet: 1c82cde015e743883cb80b6846949e0ce971d77c
-  React-RCTAnimation: 34328140d4295757f618aa997b0db8f7ca63f15d
-  React-RCTBlob: 954ec69326178e62b0425c1fc1662b046d473964
-  React-RCTImage: b0d39340cb001dafbcb353d856ed3ab8ed842d2e
-  React-RCTLinking: 5ba5ceddfa18388cec61323f14653633d650bc1d
-  React-RCTNetwork: f36b6bc184f45f9c11b695ecf5dcc6bcf41c2714
-  React-RCTSettings: 086ae71d112cf26d42435d3e98c8acccdfb678d6
-  React-RCTText: 91ca55794c1eaf44e59ca6160fd561fec5697c49
-  React-RCTVibration: 7f9ac599dfeb48f11e6ad50add4b09ac3f38366b
-  ReactCommon: bfd19eca47e6320353b895fa3eab70223efe6923
+  React-RCTActionSheet: ecb497946ee5f4c855400dd6da14391b1f0d45be
+  React-RCTAnimation: c4d061c608789c9c68e021dcd2a1b313c94498f9
+  React-RCTBlob: 6a91b9adf3a75ecaf7f82ec327f632f0a4ffd28f
+  React-RCTImage: 6b73671c75413d7aa5701d9a3a5e512528f824bd
+  React-RCTLinking: ff6269241dc71979de12467eb0e3fae3bea981ae
+  React-RCTNetwork: 41684955158ad989a231637aa98591e2d4c70951
+  React-RCTSettings: d7b82c41fc2c2731b6553dd19f1e5e34e4d7ce75
+  React-RCTText: 9fe92155691b80db4d1692e6ab59bf8558a410e7
+  React-RCTVibration: 087302e228045c3c199a19845db819ce097c73b2
+  ReactCommon: f35415c1943f6436cb2ebc424fd27e0f342df9a4
   ReactNativePermissions: 7cfad56d13c8961cd2a1005b4955b1400c79ef3e
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 60a80e72d95bf02a01cace55d3697d9724f0d77f
@@ -751,9 +749,9 @@ SPEC CHECKSUMS:
   SRSRadialGradient: 8fdf3adb76320500bc792390ecebc1b82aac54ec
   SSZipArchive: fa16b8cc4cdeceb698e5e5d9f67e9558532fbf23
   TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
-  ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
+  ToolTipMenu: ad9f45c5ef375418275c81a667c2805bcac8692a
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
-  Yoga: f013762d91dd7bfd536dedce0d6c4a52ca0401cf
+  Yoga: e9e71ad269a7d25fe712dbaafefc8bf8524299a5
 
 PODFILE CHECKSUM: e38b8f3a80d4f969b2bd4796967957156faf7531
 
