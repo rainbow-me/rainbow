@@ -32,7 +32,7 @@ const {
   Value,
 } = Animated;
 
-const { ACTIVE, BEGAN, CANCELLED, FAILED, UNDETERMINED } = State;
+const { ACTIVE, BEGAN, CANCELLED, END, FAILED, UNDETERMINED } = State;
 
 const AnimatedRawButton = createNativeWrapper(
   createAnimatedComponent(PureNativeButton),
@@ -168,7 +168,7 @@ export default function ButtonPressAnimation({
         ? [
             onChange(
               gestureState,
-              cond(eq(gestureState, UNDETERMINED), call([], handlePress))
+              cond(eq(gestureState, END), call([], handlePress))
             ),
           ]
         : []),

@@ -8,7 +8,6 @@ export default function useTransformOrigin(transformOrigin) {
   const onLayout = useCallback(
     ({ nativeEvent: { layout } }) => {
       if (transformOrigin && !height && !width) {
-        console.log(width, height, transformOrigin);
         setHeight(layout.height);
         setWidth(layout.width);
       }
