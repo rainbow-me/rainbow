@@ -14,25 +14,28 @@ import {
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing } from 'react-native-reanimated';
 import stylePropType from 'react-style-proptype';
+import { useMemoOne } from 'use-memo-one';
 import { animations } from '../../styles';
 import { directionPropType } from '../../utils';
 import { transformOrigin as transformOriginUtil } from './procs';
 
 const {
-  neq,
   and,
-  timing,
-  startClock,
   block,
   call,
-  eq,
-  or,
-  set,
+  Clock,
   cond,
   createAnimatedComponent,
+  eq,
   event,
+  neq,
   onChange,
+  or,
+  set,
+  startClock,
   stopClock,
+  timing,
+  Value,
 } = Animated;
 
 const AnimatedRawButton = createNativeWrapper(
@@ -53,26 +56,6 @@ const HapticFeedbackTypes = {
   selection: 'selection',
 };
 
-function useAnimatedValue(initialValue) {
-  const animatedRef = useRef(null);
-
-  if (animatedRef.current == null) {
-    animatedRef.current = new Animated.Value(initialValue);
-  }
-
-  return animatedRef.current;
-}
-
-function useAnimatedClock() {
-  const animatedRef = useRef(null);
-
-  if (animatedRef.current == null) {
-    animatedRef.current = new Animated.Clock();
-  }
-
-  return animatedRef.current;
-}
-
 export default function ButtonPressAnimation({
   style,
   children,
@@ -90,17 +73,46 @@ export default function ButtonPressAnimation({
   enableHapticFeedback,
   hapticType,
 }) {
-  const prevGestureState = useAnimatedValue(0);
-  const gestureState = useAnimatedValue(0);
-  const scaleValue = useAnimatedValue(1);
-  const finished = useAnimatedValue(0);
-  const frameTime = useAnimatedValue(0);
-  const time = useAnimatedValue(0);
-  const toValue = useAnimatedValue(0.5);
-  const durationVal = useAnimatedValue(duration);
-  const animationState = useAnimatedValue(3);
-
   const interactionHandle = useRef();
+  const longPressHandle = useRef();
+  const [layout, setLayout] = useState({ height: 0, width: 0 });
+  const {
+    animationState,
+    durationVal,
+    finished,
+    frameTime,
+    gestureState,
+    onGestureEvent,
+    prevGestureState,
+    scaleValue,
+    time,
+    toValue,
+    zoomClock,
+  } = useMemoOne(() => {
+    const gestureState = new Value(0);
+    const onGestureEvent = event([
+      {
+        nativeEvent: {
+          state: gestureState,
+        },
+      },
+    ]);
+
+    return {
+      animationState: new Value(3),
+      durationVal: new Value(duration),
+      finished: new Value(0),
+      frameTime: new Value(0),
+      gestureState,
+      onGestureEvent,
+      prevGestureState: new Value(0),
+      scaleValue: new Value(1),
+      time: new Value(0),
+      toValue: new Value(0.5),
+      zoomClock: new Clock(),
+    };
+  }, []);
+
   const createHandle = useCallback(() => {
     interactionHandle.current = InteractionManager.createInteractionHandle();
   }, []);
@@ -111,8 +123,6 @@ export default function ButtonPressAnimation({
       interactionHandle.current = null;
     }
   }, []);
-
-  const longPressHandle = useRef();
 
   const createLongPressHandle = useCallback(() => {
     longPressHandle.current = setTimeout(() => {
@@ -135,8 +145,6 @@ export default function ButtonPressAnimation({
     removeLongPressHandle();
     removeHandle();
   });
-
-  const [layout, setLayout] = useState({ height: 0, width: 0 });
 
   const onLayout = useCallback(
     ({
@@ -165,20 +173,7 @@ export default function ButtonPressAnimation({
     return { offsetX, offsetY };
   }, [layout.height, layout.width, transformOrigin]);
 
-  const zoomClock = useAnimatedClock();
-
-  const onGestureEvent = useRef(
-    event([
-      {
-        nativeEvent: {
-          state: gestureState,
-        },
-      },
-    ]),
-    [gestureState]
-  ).current;
-
-  const scale = useRef(
+  const { current: scale } = useRef(
     block([
       onChange(
         gestureState,
@@ -262,7 +257,6 @@ export default function ButtonPressAnimation({
         set(time, 0),
         set(toValue, 1),
       ]),
-
       cond(and(eq(animationState, 2), finished), [
         set(animationState, 3),
         stopClock(zoomClock),
@@ -277,16 +271,16 @@ export default function ButtonPressAnimation({
       ),
       scaleValue,
     ])
-  ).current;
+  );
 
   return (
     <AnimatedRawButton
-      onHandlerStateChange={onGestureEvent}
       enabled={!disabled}
+      onHandlerStateChange={onGestureEvent}
     >
       <Animated.View
-        onLayout={onLayout}
         accessible
+        onLayout={onLayout}
         style={[
           style,
           {
