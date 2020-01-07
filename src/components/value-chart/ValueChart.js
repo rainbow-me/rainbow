@@ -466,7 +466,7 @@ export default class ValueChart extends PureComponent {
                   >
                     <Svg
                       height={width}
-                      width={width}
+                      width={width + 2}
                       viewBox={`2 ${height +
                         chartPadding -
                         width} ${width} ${width}`}
@@ -568,15 +568,23 @@ export default class ValueChart extends PureComponent {
                 this.touchX,
                 call([this.touchX], ([x]) => {
                   let curX = 0;
-                  if (x < 12) {
+                  if (x < (width / (amountOfPathPoints + 20)) * 10) {
                     curX = 0;
-                  } else if (x > width - 20) {
-                    curX = width - 21;
+                  } else if (
+                    x >
+                    width - (width / (amountOfPathPoints + 20)) * 10
+                  ) {
+                    curX = width - (width / (amountOfPathPoints + 20)) * 10 - 1;
                   } else {
-                    curX = x - 10;
+                    curX =
+                      x -
+                      (width / (amountOfPathPoints + 20)) * 10 +
+                      (x / width) * (width / (amountOfPathPoints + 20)) * 10;
                   }
                   const calculatedIndex = Math.floor(
-                    curX / ((width - 20) / this.state.currentData.length)
+                    curX /
+                      ((width - (width / (amountOfPathPoints + 20)) * 10) /
+                        this.state.currentData.length)
                   );
                   console.log(calculatedIndex);
                   this._text.updateValue(
