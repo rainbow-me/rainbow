@@ -2,7 +2,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { compose, mapProps, onlyUpdateForKeys, withProps } from 'recompact';
 import { buildTransactionsSectionsSelector } from '../../helpers/transactions';
-import { withAccountSettings, withAccountTransactions } from '../../hoc';
+import {
+  withAccountSettings,
+  withAccountTransactions,
+  withContacts,
+} from '../../hoc';
 import RecyclerActivityList from './RecyclerActivityList';
 
 const ActivityList = ({ header, isEmpty, sections }) => (
@@ -28,6 +32,7 @@ ActivityList.propTypes = {
 export default compose(
   withAccountSettings,
   withAccountTransactions,
+  withContacts,
   withProps(buildTransactionsSectionsSelector),
   mapProps(({ nativeCurrency, requests, sections, ...props }) => {
     let pendingTransactionsCount = 0;
@@ -46,6 +51,7 @@ export default compose(
     };
   }),
   onlyUpdateForKeys([
+    'contacts',
     'isEmpty',
     'nativeCurrency',
     'pendingTransactionsCount',

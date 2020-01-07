@@ -1,11 +1,10 @@
-import { find, get, isEmpty, isNumber } from 'lodash';
+import { get, isEmpty, isNumber, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import styled from 'styled-components/primitives';
 import { Keyboard, Clipboard } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { compose, withProps } from 'recompact';
-import { deleteLocalContact } from '../../handlers/localstorage/contacts';
 import { withNeverRerender, withSelectedInput } from '../../hoc';
 import { colors, padding } from '../../styles';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
@@ -37,6 +36,7 @@ const contactPropType = PropTypes.shape({
   address: PropTypes.string,
   color: PropTypes.number,
   nickname: PropTypes.string,
+  removeContact: PropTypes.func,
 });
 
 const DefaultContactItem = {
@@ -47,9 +47,8 @@ const DefaultContactItem = {
 
 const getContactForRecipient = ({ contacts, recipient }) => {
   let contact = DefaultContactItem;
-  if (recipient && contacts.length) {
-    const localContact = find(contacts, ({ address }) => address === recipient);
-    contact = localContact || DefaultContactItem;
+  if (recipient && !isEmpty(contacts)) {
+    contact = get(contacts, `${[toLower(recipient)]}`, DefaultContactItem);
   }
 
   return { contact };
@@ -85,16 +84,16 @@ class SendHeader extends PureComponent {
     navigation: PropTypes.any,
     onChangeAddressInput: PropTypes.func,
     onPressPaste: PropTypes.func,
-    onUpdateContacts: PropTypes.func,
     recipient: PropTypes.string,
+    removeContact: PropTypes.func,
     selectedInputId: PropTypes.object,
     setSelectedInputId: PropTypes.func,
   };
 
   handleConfirmDeleteContactSelection = async buttonIndex => {
+    const { removeContact, recipient } = this.props;
     if (buttonIndex === 0) {
-      await deleteLocalContact(this.props.recipient);
-      this.props.onUpdateContacts();
+      removeContact(recipient);
     }
   };
 
@@ -111,7 +110,7 @@ class SendHeader extends PureComponent {
   };
 
   navigateToContact = (contact = {}) => {
-    const { navigation, onUpdateContacts, recipient } = this.props;
+    const { navigation, recipient } = this.props;
     const refocusCallback =
       this.props.selectedInputId &&
       this.props.selectedInputId.isFocused() &&
@@ -128,7 +127,6 @@ class SendHeader extends PureComponent {
       asset: [],
       color,
       contact: isEmpty(contact) ? false : contact,
-      onCloseModal: onUpdateContacts,
       onRefocusInput: refocusCallback,
       type: 'contact',
     });

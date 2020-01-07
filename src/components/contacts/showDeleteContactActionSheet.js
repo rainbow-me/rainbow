@@ -1,8 +1,12 @@
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { deleteLocalContact } from '../../handlers/localstorage/contacts';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 
-const showDeleteContactActionSheet = ({ address, nickname, onDelete }) =>
+const showDeleteContactActionSheet = ({
+  address,
+  nickname,
+  onDelete,
+  removeContact,
+}) =>
   showActionSheetWithOptions(
     {
       cancelButtonIndex: 1,
@@ -13,7 +17,7 @@ const showDeleteContactActionSheet = ({ address, nickname, onDelete }) =>
     },
     async buttonIndex => {
       if (buttonIndex === 0) {
-        await deleteLocalContact(address);
+        removeContact(address);
         ReactNativeHapticFeedback.trigger('notificationSuccess');
         onDelete();
       }

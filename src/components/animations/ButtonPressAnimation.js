@@ -9,15 +9,11 @@ import {
 } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing } from 'react-native-reanimated';
-import {
-  contains,
-  transformOrigin as transformOriginUtil,
-  timing,
-} from 'react-native-redash';
+import { transformOrigin as transformOriginUtil } from 'react-native-redash';
 import stylePropType from 'react-style-proptype';
 import { animations, colors } from '../../styles';
 import { directionPropType } from '../../utils';
-import { interpolate } from './procs';
+import { contains, interpolate, timing } from './procs';
 
 const {
   and,
@@ -32,6 +28,8 @@ const {
   greaterThan,
   lessThan,
   onChange,
+  or,
+  proc,
   set,
   stopClock,
   Value,
@@ -64,6 +62,14 @@ const HapticFeedbackTypes = {
   notificationWarning: 'notificationWarning',
   selection: 'selection',
 };
+
+const isBetweenProc = proc(
+  (scaleTo, defaultScale, lessThanCondition, greaterThanCondition) =>
+    or(
+      and(lessThan(scaleTo, defaultScale), lessThanCondition),
+      and(greaterThan(scaleTo, defaultScale), greaterThanCondition)
+    )
+);
 
 export default class ButtonPressAnimation extends Component {
   static propTypes = {
@@ -162,7 +168,6 @@ export default class ButtonPressAnimation extends Component {
 
   handleHaptic = () => {
     const { enableHapticFeedback, hapticType } = this.props;
-
     if (enableHapticFeedback) {
       ReactNativeHapticFeedback.trigger(hapticType);
     }
@@ -204,13 +209,11 @@ export default class ButtonPressAnimation extends Component {
     const {
       activeOpacity,
       children,
-      defaultScale,
       disabled,
       exclusive,
-      scaleTo,
       style,
-      transformOrigin,
       tapRef,
+      transformOrigin,
       ...props
     } = this.props;
 
@@ -225,13 +228,15 @@ export default class ButtonPressAnimation extends Component {
       offsetY = Math.floor(height / 2) * (transformOrigin === 'top' ? -1 : 1);
     }
 
-    const scaleDiff = 1 - (this.props.defaultScale - this.props.scaleTo) / 2;
+    const scaleDiff =
+      this.props.defaultScale -
+      (this.props.defaultScale - this.props.scaleTo) / 2;
 
     const opacity =
-      scaleTo > defaultScale
+      this.props.scaleTo > this.props.defaultScale
         ? activeOpacity
-        : interpolate(divide(this.scale, defaultScale), {
-            inputRange: [scaleTo, defaultScale],
+        : interpolate(divide(this.scale, this.props.defaultScale), {
+            inputRange: [this.props.scaleTo, this.props.defaultScale],
             outputRange: [activeOpacity, 1],
           });
 
@@ -270,7 +275,12 @@ export default class ButtonPressAnimation extends Component {
             ]),
             cond(contains([FAILED, CANCELLED, END], this.gestureState), [
               cond(
-                lessThan(this.scale, scaleDiff),
+                isBetweenProc(
+                  this.props.scaleTo,
+                  this.props.defaultScale,
+                  lessThan(this.scale, scaleDiff),
+                  greaterThan(this.scale, scaleDiff)
+                ),
                 block([stopClock(this.clock), set(this.shouldSpring, 0)])
               ),
               call([], this.reset),
@@ -288,26 +298,34 @@ export default class ButtonPressAnimation extends Component {
               )
             ),
             cond(
-              and(greaterThan(this.scale, 0), eq(this.shouldSpring, 1)),
+              eq(this.shouldSpring, 1),
               set(
                 this.scale,
                 timing({
                   clock: this.clock,
                   duration: this.props.duration,
-                  easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
+                  easing: this.props.easing,
                   from: this.scale,
                   to: this.props.scaleTo,
                 })
               )
             ),
             cond(
-              and(lessThan(this.scale, 1), eq(this.shouldSpring, 0)),
+              and(
+                eq(this.shouldSpring, 0),
+                isBetweenProc(
+                  this.props.scaleTo,
+                  this.props.defaultScale,
+                  lessThan(this.scale, this.props.defaultScale),
+                  greaterThan(this.scale, this.props.defaultScale)
+                )
+              ),
               set(
                 this.scale,
                 timing({
                   clock: this.clockReversed,
                   duration: this.props.duration,
-                  easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
+                  easing: this.props.easing,
                   from: this.scale,
                   to: this.props.defaultScale,
                 })

@@ -1,84 +1,115 @@
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
-import DeviceInfo from 'react-native-device-info';
+import React, { useEffect, useRef, useState } from 'react';
 import FastImage from 'react-native-fast-image';
-import stylePropType from 'react-style-proptype';
-import styled from 'styled-components/primitives';
+import { Transition, Transitioning } from 'react-native-reanimated';
 import SimulatorFakeCameraImageSource from '../../assets/simulator-fake-camera-image.jpg';
+import { usePrevious } from '../../hooks';
 import { colors, position } from '../../styles';
+import { isNewValueForObjectPaths } from '../../utils';
 import { Centered } from '../layout';
 import { ErrorText } from '../text';
 import QRCodeScannerCamera from './QRCodeScannerCamera';
 import QRCodeScannerCrosshair from './QRCodeScannerCrosshair';
 
-const Container = styled(Centered).attrs({ direction: 'column' })`
-  ${position.cover};
-  background-color: ${colors.black};
-`;
+const transition = (
+  <Transition.Change durationMs={200} interpolation="easeInOut" />
+);
 
-export default class QRCodeScanner extends PureComponent {
-  static propTypes = {
-    contentStyles: stylePropType,
-    enableCamera: PropTypes.bool,
-    enableScanning: PropTypes.bool,
-    isCameraAuthorized: PropTypes.bool,
-    onSuccess: PropTypes.func,
-    showCrosshairText: PropTypes.bool,
-  };
+const QRCodeScanner = ({
+  contentPositionBottom,
+  contentPositionTop,
+  enableCamera,
+  enableScanning,
+  isCameraAuthorized,
+  isEmulator,
+  onSuccess,
+  showCrosshairText,
+}) => {
+  const ref = useRef();
+  const [error, setError] = useState(null);
+  const [isInitialized, setInitialized] = useState(false);
 
-  state = {
-    error: null,
-    isInitialized: false,
-  };
-
-  handleCameraReady = () => this.setState({ isInitialized: true });
-
-  handleMountError = () => this.setState({ error: 'mounting' });
-
-  renderCamera = () => {
-    if (DeviceInfo.isEmulator()) {
-      return (
-        <FastImage
-          source={SimulatorFakeCameraImageSource}
-          style={position.sizeAsObject('100%')}
-        />
-      );
+  const prevContentPositionBottom = usePrevious(contentPositionBottom);
+  useEffect(() => {
+    if (ref.current && contentPositionBottom !== prevContentPositionBottom) {
+      ref.current.animateNextTransition();
     }
+  }, [contentPositionBottom, prevContentPositionBottom]);
 
-    return this.props.enableCamera ? (
-      <QRCodeScannerCamera
-        enableScanning={this.props.enableScanning}
-        onCameraReady={this.handleCameraReady}
-        onMountError={this.handleMountError}
-        onSuccess={this.props.onSuccess}
+  let cameraRenderer = null;
+  if (isEmulator) {
+    cameraRenderer = (
+      <FastImage
+        source={SimulatorFakeCameraImageSource}
+        style={position.sizeAsObject('100%')}
       />
-    ) : null;
-  };
+    );
+  } else if (enableCamera) {
+    cameraRenderer = (
+      <QRCodeScannerCamera
+        enableScanning={enableScanning}
+        onCameraReady={() => setInitialized(true)}
+        onMountError={() => setError('mounting')}
+        onSuccess={onSuccess}
+      />
+    );
+  }
 
-  render = () => {
-    const { contentStyles, isCameraAuthorized, showCrosshairText } = this.props;
-    const { error, isInitialized } = this.state;
+  const showErrorMessage = error && !isInitialized;
+  const showCrosshair = !error && !showErrorMessage;
 
-    const showErrorMessage = error && !isInitialized;
-    const showCrosshair = !error && !showErrorMessage;
-
-    return (
-      <Container>
-        {this.renderCamera()}
-        {isCameraAuthorized && (
-          <Centered style={[position.coverAsObject, contentStyles]}>
+  return (
+    <Centered
+      {...position.coverAsObject}
+      backgroundColor={colors.black}
+      direction="column"
+    >
+      {cameraRenderer}
+      {isCameraAuthorized && (
+        <Transitioning.View
+          ref={ref}
+          style={position.coverAsObject}
+          transition={transition}
+        >
+          <Centered
+            {...position.coverAsObject}
+            bottom={contentPositionBottom}
+            top={contentPositionTop}
+          >
             {showErrorMessage && (
               <ErrorText color={colors.red} error={`Error ${error} camera`} />
             )}
             {showCrosshair && (
               <QRCodeScannerCrosshair
-                showText={showCrosshairText || DeviceInfo.isEmulator()}
-                text={DeviceInfo.isEmulator() ? 'Simulator Mode' : undefined}
+                showText={showCrosshairText || isEmulator}
+                text={isEmulator ? 'Simulator Mode' : undefined}
               />
             )}
           </Centered>
-        )}
-      </Container>
-    );
-  };
-}
+        </Transitioning.View>
+      )}
+    </Centered>
+  );
+};
+
+QRCodeScanner.propTypes = {
+  contentPositionBottom: PropTypes.node,
+  contentPositionTop: PropTypes.node,
+  enableCamera: PropTypes.bool,
+  enableScanning: PropTypes.bool,
+  isCameraAuthorized: PropTypes.bool,
+  isEmulator: PropTypes.bool,
+  onSuccess: PropTypes.func,
+  showCrosshairText: PropTypes.bool,
+};
+
+const arePropsEqual = (prev, next) =>
+  !isNewValueForObjectPaths(prev, next, [
+    'contentPositionBottom',
+    'enableCamera',
+    'enableScanning',
+    'isCameraAuthorized',
+    'showCrosshairText',
+  ]);
+
+export default React.memo(QRCodeScanner, arePropsEqual);

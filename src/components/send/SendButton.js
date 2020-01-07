@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { pure } from 'recompose';
 import { HoldToAuthorizeButton } from '../buttons';
 
 const SendButton = ({
@@ -46,4 +45,4 @@ SendButton.propTypes = {
   onLongPress: PropTypes.func,
 };
 
-export default pure(SendButton);
+export default React.memo(SendButton);

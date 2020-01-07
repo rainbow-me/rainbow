@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { css } from 'styled-components/primitives';
 import ReactCoinIcon, { FallbackIcon } from 'react-coin-icon';
-import { compose, withProps, onlyUpdateForKeys } from 'recompact';
+import { onlyUpdateForKeys } from 'recompact';
 import { borders, colors, fonts } from '../../styles';
 import { ShadowStack } from '../shadow-stack';
 
@@ -21,22 +21,7 @@ const CoinIconFallback = fallbackProps => (
   />
 );
 
-const enhance = compose(
-  onlyUpdateForKeys(['bgColor', 'symbol']),
-  withProps(({ symbol }) => {
-    let symbolOverride = symbol;
-
-    if (symbol === 'POA20') {
-      symbolOverride = 'POA';
-    } else if (typeof symbol === 'string' && symbol.includes('*')) {
-      symbolOverride = symbol.replace(/[*]/g, '');
-    }
-
-    return {
-      symbol: symbolOverride,
-    };
-  })
-);
+const enhance = onlyUpdateForKeys(['bgColor', 'symbol']);
 
 const CoinIcon = enhance(({ bgColor, showShadow, size, symbol, ...props }) =>
   showShadow ? (

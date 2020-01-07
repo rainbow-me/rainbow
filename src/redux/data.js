@@ -7,9 +7,11 @@ import {
   saveAssets,
   saveLocalTransactions,
 } from '../handlers/localstorage/accountLocal';
+import { apiGetTokenOverrides } from '../handlers/tokenOverrides';
 import { parseAccountAssets, parseAsset } from '../parsers/accounts';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import parseTransactions from '../parsers/transactions';
+import { loweredTokenOverridesFallback } from '../references';
 import { isLowerCaseMatch } from '../utils';
 import {
   uniswapRemovePendingApproval,
@@ -22,6 +24,7 @@ import {
 
 const DATA_UPDATE_ASSETS = 'data/DATA_UPDATE_ASSETS';
 const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
+const DATA_UPDATE_TOKEN_OVERRIDES = 'data/DATA_UPDATE_TOKEN_OVERRIDES';
 
 const DATA_LOAD_ASSETS_REQUEST = 'data/DATA_LOAD_ASSETS_REQUEST';
 const DATA_LOAD_ASSETS_SUCCESS = 'data/DATA_LOAD_ASSETS_SUCCESS';
@@ -61,6 +64,14 @@ export const dataLoadState = () => async (dispatch, getState) => {
   }
 };
 
+export const dataTokenOverridesInit = () => async dispatch => {
+  try {
+    const tokenOverrides = await apiGetTokenOverrides();
+    dispatch(dataUpdateTokenOverrides(tokenOverrides));
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
+};
+
 export const dataClearState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   removeAssets(accountAddress, network);
@@ -98,13 +109,14 @@ export const transactionsReceived = (message, appended = false) => (
   const transactionData = get(message, 'payload.transactions', []);
   if (!transactionData.length) return;
   const { accountAddress, nativeCurrency, network } = getState().settings;
-  const { transactions } = getState().data;
+  const { transactions, tokenOverrides } = getState().data;
   if (!transactionData.length) return;
   const { approvalTransactions, dedupedResults } = parseTransactions(
     transactionData,
     accountAddress,
     nativeCurrency,
     transactions,
+    tokenOverrides,
     appended
   );
   dispatch(uniswapRemovePendingApproval(approvalTransactions));
@@ -141,6 +153,7 @@ export const addressAssetsReceived = (
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
 
+  const { tokenOverrides } = getState().data;
   const { accountAddress, network } = getState().settings;
   const { uniqueTokens } = getState().uniqueTokens;
   const assets = get(message, 'payload.assets', []);
@@ -149,7 +162,7 @@ export const addressAssetsReceived = (
     return symbol === 'UNI' || symbol === 'uni-v1';
   });
   dispatch(uniswapUpdateLiquidityTokens(liquidityTokens, append || change));
-  let parsedAssets = parseAccountAssets(assets, uniqueTokens);
+  let parsedAssets = parseAccountAssets(assets, uniqueTokens, tokenOverrides);
   if (append || change) {
     const { assets: existingAssets } = getState().data;
     parsedAssets = uniqBy(
@@ -164,10 +177,17 @@ export const addressAssetsReceived = (
   });
 };
 
-export const assetsReceived = message => dispatch => {
+export const dataUpdateTokenOverrides = tokenOverrides => dispatch =>
+  dispatch({
+    payload: tokenOverrides,
+    type: DATA_UPDATE_TOKEN_OVERRIDES,
+  });
+
+export const assetsReceived = message => (dispatch, getState) => {
+  const { tokenOverrides } = getState().data;
   const assets = get(message, 'payload.assets', []);
   if (!assets.length) return;
-  const parsedAssets = map(assets, asset => parseAsset(asset));
+  const parsedAssets = map(assets, asset => parseAsset(asset, tokenOverrides));
   dispatch(uniswapUpdateAssets(parsedAssets));
 };
 
@@ -202,6 +222,7 @@ const INITIAL_STATE = {
   assets: [],
   loadingAssets: false,
   loadingTransactions: false,
+  tokenOverrides: loweredTokenOverridesFallback,
   transactions: [],
 };
 
@@ -209,6 +230,8 @@ export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case DATA_UPDATE_ASSETS:
       return { ...state, assets: action.payload };
+    case DATA_UPDATE_TOKEN_OVERRIDES:
+      return { ...state, tokenOverrides: action.payload };
     case DATA_UPDATE_TRANSACTIONS:
       return { ...state, transactions: action.payload };
     case DATA_LOAD_TRANSACTIONS_REQUEST:

@@ -1,9 +1,7 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { memo, useState } from 'react';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { css } from 'styled-components/primitives';
-import { uniswapUpdateFavorites } from '../../redux/uniswap';
-import { isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
@@ -42,82 +40,58 @@ TopRow.propTypes = {
   name: PropTypes.string,
 };
 
-class ExchangeCoinRow extends Component {
-  static propTypes = {
-    index: PropTypes.number,
-    item: PropTypes.shape({
-      address: PropTypes.string,
-      favorite: PropTypes.bool,
-      symbol: PropTypes.string,
-    }),
-    onPress: PropTypes.func,
-    showBalance: PropTypes.bool,
-    showFavoriteButton: PropTypes.bool,
-    uniqueId: PropTypes.string,
-    uniswapUpdateFavorites: PropTypes.func,
-  };
+const ExchangeCoinRow = ({
+  item,
+  onFavoriteAsset,
+  onPress,
+  showBalance,
+  showFavoriteButton,
+  ...props
+}) => {
+  const [localFavorite, setLocalFavorite] = useState(!!item.favorite);
 
-  state = {
-    favorite: !!this.props.item.favorite,
-  };
-
-  shouldComponentUpdate = (nextProps, nextState) => {
-    const isNewAsset = isNewValueForPath(this.props, nextProps, 'uniqueId');
-    const isNewFavorite = isNewValueForPath(this.state, nextState, 'favorite');
-
-    return isNewAsset || isNewFavorite;
-  };
-
-  handlePress = () => {
-    if (this.props.onPress) {
-      this.props.onPress(this.props.item);
-    }
-  };
-
-  toggleFavorite = () => {
-    const { item, uniswapUpdateFavorites } = this.props;
-    this.setState(prevState => {
-      const favorite = !prevState.favorite;
-      uniswapUpdateFavorites(item.address, favorite);
-      return { favorite };
-    });
-  };
-
-  render = () => {
-    const {
-      item,
-      showBalance,
-      showFavoriteButton,
-      uniqueId,
-      ...props
-    } = this.props;
-    const { favorite } = this.state;
-
-    return (
-      <ButtonPressAnimation
-        {...props}
-        height={CoinRow.height}
-        key={`ExchangeCoinRow-${uniqueId}`}
-        onPress={this.handlePress}
-        scaleTo={0.96}
+  return (
+    <ButtonPressAnimation
+      {...props}
+      height={CoinRow.height}
+      onPress={() => onPress(item)}
+      scaleTo={0.96}
+    >
+      <CoinRow
+        {...item}
+        bottomRowRender={BottomRow}
+        containerStyles={containerStyles}
+        showBalance={showBalance}
+        topRowRender={TopRow}
       >
-        <CoinRow
-          {...item}
-          bottomRowRender={BottomRow}
-          containerStyles={containerStyles}
-          showBalance={showBalance}
-          topRowRender={TopRow}
-        >
-          {showFavoriteButton && (
-            <CoinRowFavoriteButton
-              isFavorited={favorite}
-              onPress={this.toggleFavorite}
-            />
-          )}
-        </CoinRow>
-      </ButtonPressAnimation>
-    );
-  };
-}
+        {showFavoriteButton && (
+          <CoinRowFavoriteButton
+            isFavorited={localFavorite}
+            onPress={() => {
+              const newLocalFavorite = !localFavorite;
+              setLocalFavorite(newLocalFavorite);
+              onFavoriteAsset(item.address, newLocalFavorite);
+              ReactNativeHapticFeedback.trigger('selection');
+            }}
+          />
+        )}
+      </CoinRow>
+    </ButtonPressAnimation>
+  );
+};
 
-export default connect(null, { uniswapUpdateFavorites })(ExchangeCoinRow);
+ExchangeCoinRow.propTypes = {
+  item: PropTypes.shape({
+    address: PropTypes.string,
+    favorite: PropTypes.bool,
+    symbol: PropTypes.string,
+  }),
+  onFavoriteAsset: PropTypes.func,
+  onPress: PropTypes.func,
+  showBalance: PropTypes.bool,
+  showFavoriteButton: PropTypes.bool,
+};
+
+const neverRerender = () => true;
+
+export default memo(ExchangeCoinRow, neverRerender);

@@ -35,11 +35,9 @@ const CurrencySelectModalHeader = ({ onPressBack, title }) => (
   <HeaderContainer>
     <BackButtonWrapper>
       <BackButton
-        color={colors.dark}
         direction="left"
         height={HeaderHeight}
         onPress={onPressBack}
-        paddingLeft={27}
       />
     </BackButtonWrapper>
     <HeaderTitle css={padding(1, 0, 0)}>{title}</HeaderTitle>
