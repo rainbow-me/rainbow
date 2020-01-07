@@ -51,6 +51,11 @@
 		92D7BFC8AFDA4E649EA6FF08 /* SFMono-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B1089F835D6A4F578009B47F /* SFMono-Semibold.otf */; };
 		96E52368EDC94B9B80D1F29C /* SF-Pro-Text-LightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = D1641F1A96C841C085169B2E /* SF-Pro-Text-LightItalic.otf */; };
 		9E8553031AD44F52A814F2AB /* SF-Pro-Display-SemiboldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 86B30DBBDA594167BFE4747E /* SF-Pro-Display-SemiboldItalic.otf */; };
+		A4704B3B23C5414000E50E4B /* TransactionListViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4704B3623C5413F00E50E4B /* TransactionListViewManager.swift */; };
+		A4704B3C23C5414000E50E4B /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4704B3723C5413F00E50E4B /* Transaction.swift */; };
+		A4704B3D23C5414000E50E4B /* TransactionListViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A4704B3823C5414000E50E4B /* TransactionListViewManager.m */; };
+		A4704B3E23C5414000E50E4B /* TransactionListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4704B3923C5414000E50E4B /* TransactionListViewCell.swift */; };
+		A4704B3F23C5414000E50E4B /* TransactionListViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4704B3A23C5414000E50E4B /* TransactionListViewContainer.swift */; };
 		AE47B46652EA48AFB68E7832 /* SF-Pro-Text-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6B0A8BE2484F46980BE9AC /* SF-Pro-Text-Semibold.otf */; };
 		AFCABA638327463693E67FD4 /* SF-Pro-Text-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 715DAAA3174542BAB93807A6 /* SF-Pro-Text-RegularItalic.otf */; };
 		AFD75D0B6EC9465C92C493A7 /* SF-Pro-Display-BlackItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = A8AE8DE50B9544B6BC186E6C /* SF-Pro-Display-BlackItalic.otf */; };
@@ -147,6 +152,11 @@
 		98AED33BAB4247CEBEF8464D /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		9DEADFA4826D4D0BAA950D21 /* libRNFIRMessaging.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFIRMessaging.a; sourceTree = "<group>"; };
 		9DF45B9EB38D4E8FA18A04C6 /* SF-Pro-Display-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Light.otf"; path = "../src/assets/fonts/SF-Pro-Display-Light.otf"; sourceTree = "<group>"; };
+		A4704B3623C5413F00E50E4B /* TransactionListViewManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionListViewManager.swift; sourceTree = "<group>"; };
+		A4704B3723C5413F00E50E4B /* Transaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
+		A4704B3823C5414000E50E4B /* TransactionListViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TransactionListViewManager.m; sourceTree = "<group>"; };
+		A4704B3923C5414000E50E4B /* TransactionListViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionListViewCell.swift; sourceTree = "<group>"; };
+		A4704B3A23C5414000E50E4B /* TransactionListViewContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionListViewContainer.swift; sourceTree = "<group>"; };
 		A671DF9861FA8D2C9A6FCB91 /* Pods-Rainbow.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.release.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.release.xcconfig"; sourceTree = "<group>"; };
 		A6EEFE6EA9354456B0DB4520 /* Graphik-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Regular.otf"; path = "../src/assets/fonts/Graphik-Regular.otf"; sourceTree = "<group>"; };
 		A7F0978B24BA4EC283C580D9 /* Graphik-SemiboldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-SemiboldItalic.otf"; path = "../src/assets/fonts/Graphik-SemiboldItalic.otf"; sourceTree = "<group>"; };
@@ -212,6 +222,11 @@
 			isa = PBXGroup;
 			children = (
 				3C379D5D20FD1F92009AF81F /* Rainbow.entitlements */,
+				A4704B3723C5413F00E50E4B /* Transaction.swift */,
+				A4704B3923C5414000E50E4B /* TransactionListViewCell.swift */,
+				A4704B3A23C5414000E50E4B /* TransactionListViewContainer.swift */,
+				A4704B3823C5414000E50E4B /* TransactionListViewManager.m */,
+				A4704B3623C5413F00E50E4B /* TransactionListViewManager.swift */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -588,8 +603,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				A4704B3F23C5414000E50E4B /* TransactionListViewContainer.swift in Sources */,
+				A4704B3D23C5414000E50E4B /* TransactionListViewManager.m in Sources */,
 				3CBE29CD2381E43900BE05AC /* Dummy.swift in Sources */,
+				A4704B3B23C5414000E50E4B /* TransactionListViewManager.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				A4704B3E23C5414000E50E4B /* TransactionListViewCell.swift in Sources */,
+				A4704B3C23C5414000E50E4B /* Transaction.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
