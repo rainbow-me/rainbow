@@ -586,7 +586,6 @@ export default class ValueChart extends PureComponent {
                       ((width - (width / (amountOfPathPoints + 20)) * 10) /
                         this.state.currentData.length)
                   );
-                  console.log(calculatedIndex);
                   this._text.updateValue(
                     this.state.currentData[calculatedIndex].value
                   );
