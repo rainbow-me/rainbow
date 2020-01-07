@@ -1,16 +1,22 @@
-import React from 'react';
+import analytics from '@segment/analytics-react-native';
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
 import Animated from 'react-native-reanimated';
-import { bin, useSpringTransition } from 'react-native-redash';
+import { compose, onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components';
-import { useInternetStatus } from '../hooks';
+import { withNetInfo } from '../hoc';
 import { colors, padding, shadow } from '../styles';
 import { interpolate } from './animations';
 import { Icon } from './icons';
-import { Centered, RowWithMargins } from './layout';
+import { RowWithMargins } from './layout';
 import { Text } from './text';
 
-const StyledBadge = styled(RowWithMargins).attrs({
-  component: Centered,
+const { spring, Value, View } = Animated;
+
+const Badge = styled(RowWithMargins).attrs({
+  align: 'center',
+  component: View,
+  justify: 'center',
   margin: 5,
   self: 'center',
 })`
@@ -25,44 +31,60 @@ const StyledBadge = styled(RowWithMargins).attrs({
 
 const DefaultAnimationValue = 60;
 
-const OfflineBadge = () => {
-  const isConnected = useInternetStatus();
+class OfflineBadge extends PureComponent {
+  static propTypes = {
+    isConnected: PropTypes.bool,
+  };
 
-  const animation = useSpringTransition(bin(isConnected), {
-    damping: 14,
-    mass: 1,
-    overshootClamping: false,
-    restDisplacementThreshold: 0.001,
-    restSpeedThreshold: 0.001,
-    stiffness: 121.6,
-  });
+  static defaultProps = {
+    isConnected: true,
+  };
 
-  return (
-    <Animated.View
+  componentDidMount = () => this.runAnimation();
+
+  componentDidUpdate = () => this.runAnimation();
+
+  animation = new Value(DefaultAnimationValue);
+
+  runAnimation = () => {
+    const { isConnected } = this.props;
+
+    return spring(this.animation, {
+      damping: 14,
+      mass: 1,
+      overshootClamping: false,
+      restDisplacementThreshold: 0.001,
+      restSpeedThreshold: 0.001,
+      stiffness: 121.6,
+      toValue: isConnected ? DefaultAnimationValue : 0,
+    }).start(({ finished }) => {
+      if (!finished) return null;
+      return isConnected
+        ? analytics.track('Reconnected after offline')
+        : analytics.track('Offline / lost connection');
+    });
+  };
+
+  render = () => (
+    <Badge
+      shouldRasterizeIOS
       style={{
-        opacity: interpolate(animation, {
-          inputRange: [0, 1],
+        opacity: interpolate(this.animation, {
+          inputRange: [0, DefaultAnimationValue],
           outputRange: [1, 0],
         }),
-        transform: [
-          {
-            translateY: interpolate(animation, {
-              inputRange: [0, 1],
-              outputRange: [0, DefaultAnimationValue],
-            }),
-          },
-        ],
+        transform: [{ translateY: this.animation }],
       }}
     >
-      <StyledBadge shouldRasterizeIOS>
-        <Icon color={colors.white} marginTop={3} name="offline" />
-        <Text color={colors.white} size="smedium" weight="semibold">
-          Offline
-        </Text>
-      </StyledBadge>
-    </Animated.View>
+      <Icon color={colors.white} name="offline" style={{ marginBottom: -3 }} />
+      <Text color={colors.white} size="smedium" weight="semibold">
+        Offline
+      </Text>
+    </Badge>
   );
-};
+}
 
-const neverRerender = () => true;
-export default React.memo(OfflineBadge, neverRerender);
+export default compose(
+  withNetInfo,
+  onlyUpdateForKeys(['isConnected'])
+)(OfflineBadge);

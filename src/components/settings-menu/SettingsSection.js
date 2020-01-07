@@ -2,7 +2,7 @@ import { upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { InteractionManager, Linking, ScrollView } from 'react-native';
-import { isEmulatorSync } from 'react-native-device-info';
+import DeviceInfo from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
 import * as StoreReview from 'react-native-store-review';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
@@ -178,7 +178,7 @@ export default compose(
       const shouldDeeplinkToAppStore =
         count >= maxRequestCount || !StoreReview.isAvailable;
 
-      if (shouldDeeplinkToAppStore && !isEmulatorSync()) {
+      if (shouldDeeplinkToAppStore && !DeviceInfo.isEmulator()) {
         Linking.openURL(SettingsExternalURLs.review);
       } else {
         onCloseModal();

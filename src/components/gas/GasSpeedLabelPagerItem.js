@@ -6,7 +6,7 @@ import Animated, {
   Transitioning,
   Transition,
 } from 'react-native-reanimated';
-import { useTimingTransition } from 'react-native-redash';
+import { useToggle } from 'react-native-redash';
 import { withProps } from 'recompact';
 import { gasUtils } from '../../utils';
 import { interpolate } from '../animations';
@@ -51,7 +51,7 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate }) => {
   const isFirst = index === 0;
   const isLast = index === gasUtils.GasSpeedOrder.length - 1;
 
-  const transitionVal = useTimingTransition(
+  const transitionVal = useToggle(
     !selected,
     duration + (isFirst ? 50 : 0),
     Easing.out(Easing.ease)

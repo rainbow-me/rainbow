@@ -1,5 +1,4 @@
 import { forEach } from 'lodash';
-import { DefaultUniswapFavorites } from '../../references';
 import {
   getAccountLocal,
   getGlobal,
@@ -23,8 +22,7 @@ const uniswapAccountLocalKeys = [
   PENDING_APPROVALS,
 ];
 
-export const getUniswapFavorites = () =>
-  getGlobal(UNISWAP_FAVORITES, DefaultUniswapFavorites);
+export const getUniswapFavorites = () => getGlobal(UNISWAP_FAVORITES, []);
 
 export const saveUniswapFavorites = favorites =>
   saveGlobal(UNISWAP_FAVORITES, favorites);

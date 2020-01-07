@@ -5,21 +5,18 @@ import {
   State,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing } from 'react-native-reanimated';
 import { withProps } from 'recompact';
 import styled from 'styled-components/primitives';
-import { useBiometryType, BiometryTypes } from '../../../hooks';
 import { colors, padding } from '../../../styles';
-import { haptics } from '../../../utils';
 import InnerBorder from '../../InnerBorder';
 import { Centered } from '../../layout';
 import { ShadowStack } from '../../shadow-stack';
 import { Text } from '../../text';
 import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
 
-const { divide, multiply, proc, timing, Value } = Animated;
-
-const { ACTIVE, BEGAN, END } = State;
+const { divide, multiply, timing, Value, View } = Animated;
 
 const ButtonBorderRadius = 30;
 const ButtonHeight = 59;
@@ -41,8 +38,7 @@ const ButtonShadows = {
   ],
 };
 
-const buttonScaleDurationMs = 150;
-const longPressProgressDurationMs = 500; // @christian approves
+const progressDurationMs = 500; // @christian approves
 
 const Content = styled(Centered)`
   ${padding(15)};
@@ -60,21 +56,24 @@ const Title = withProps({
   weight: 'semibold',
 })(Text);
 
-const animate = (value, { duration = buttonScaleDurationMs, toValue }) =>
-  timing(value, {
+const buildAnimation = (value, options) => {
+  const { duration = 150, isInteraction = false, toValue } = options;
+
+  return timing(value, {
     duration,
     easing: Easing.inOut(Easing.ease),
+    isInteraction,
     toValue,
+    useNativeDriver: true,
   });
+};
 
-const calculateReverseDuration = proc(longPressProgress =>
-  multiply(divide(longPressProgress, 100), longPressProgressDurationMs)
-);
+const calculateReverseDuration = progess =>
+  multiply(divide(progess, 100), progressDurationMs);
 
-class HoldToAuthorizeButton extends PureComponent {
+export default class HoldToAuthorizeButton extends PureComponent {
   static propTypes = {
     backgroundColor: PropTypes.string,
-    biometryType: PropTypes.string,
     children: PropTypes.any,
     disabled: PropTypes.bool,
     disabledBackgroundColor: PropTypes.string,
@@ -82,6 +81,7 @@ class HoldToAuthorizeButton extends PureComponent {
     isAuthorizing: PropTypes.bool,
     label: PropTypes.string,
     onLongPress: PropTypes.func.isRequired,
+    onPress: PropTypes.func,
     shadows: PropTypes.arrayOf(PropTypes.array),
     style: PropTypes.object,
     theme: PropTypes.oneOf(['light', 'dark']),
@@ -103,91 +103,104 @@ class HoldToAuthorizeButton extends PureComponent {
     }
   };
 
-  buttonScale = new Value(1);
+  scale = new Value(1);
 
-  longPressProgress = new Value(0);
+  tapHandlerState = 1;
+
+  animation = new Value(0);
 
   onFinishAuthorizing = () => {
-    if (!this.props.disabled) {
-      animate(this.longPressProgress, {
-        duration: calculateReverseDuration(this.longPressProgress),
+    const { disabled } = this.props;
+    if (!disabled) {
+      buildAnimation(this.animation, {
+        duration: calculateReverseDuration(this.animation),
+        isInteraction: true,
         toValue: 0,
       }).start(() => this.setState({ isAuthorizing: false }));
     }
   };
 
-  handlePress = () => {
-    if (this.props.onLongPress) {
-      this.props.onLongPress();
+  onTapChange = ({ nativeEvent: { state } }) => {
+    const { disabled, onPress } = this.props;
+
+    this.tapHandlerState = state;
+
+    if (state === State.BEGAN) {
+      if (disabled) {
+        ReactNativeHapticFeedback.trigger('notificationWarning');
+        buildAnimation(this.scale, { toValue: 0.99 }).start(() => {
+          buildAnimation(this.scale, { toValue: 1 }).start();
+        });
+      } else {
+        buildAnimation(this.scale, { toValue: 0.97 }).start();
+        buildAnimation(this.animation, {
+          duration: progressDurationMs,
+          toValue: 100,
+        }).start();
+      }
+    } else if (!disabled && state === State.ACTIVE) {
+      if (onPress) {
+        onPress();
+      }
+    } else if (!disabled && state === State.END) {
+      buildAnimation(this.scale, { toValue: 1 }).start();
+      buildAnimation(this.animation, {
+        duration: calculateReverseDuration(this.animation),
+        isInteraction: true,
+        toValue: 0,
+      }).start();
     }
   };
 
-  onLongPressChange = ({ nativeEvent: { state } }) => {
-    const { disabled, enableLongPress } = this.props;
+  onLongPressChange = ({ nativeEvent }) => {
+    const { disabled, onLongPress } = this.props;
 
-    if (state === ACTIVE && !disabled && enableLongPress) {
-      haptics.notificationSuccess();
+    if (!disabled && nativeEvent.state === State.ACTIVE) {
+      ReactNativeHapticFeedback.trigger('notificationSuccess');
 
-      animate(this.buttonScale, {
+      buildAnimation(this.scale, {
+        isInteraction: true,
         toValue: 1,
       }).start(() => this.setState({ isAuthorizing: true }));
 
-      this.handlePress();
+      if (onLongPress) {
+        onLongPress();
+      }
     }
   };
 
-  onTapChange = ({ nativeEvent: { state } }) => {
-    const { disabled, enableLongPress } = this.props;
+  renderContent = () => {
+    const { children, disabled, hideBiometricIcon, label } = this.props;
 
-    if (disabled) {
-      if (state === BEGAN) {
-        animate(this.buttonScale, { toValue: 0.99 }).start(() => {
-          haptics.notificationWarning();
-          animate(this.buttonScale, { toValue: 1 }).start();
-        });
-      }
-    } else {
-      if (state === ACTIVE) {
-        if (!enableLongPress) {
-          this.handlePress();
-        }
-      } else if (state === BEGAN) {
-        animate(this.buttonScale, { toValue: 0.97 }).start();
-        if (enableLongPress) {
-          animate(this.longPressProgress, {
-            duration: longPressProgressDurationMs,
-            toValue: 100,
-          }).start();
-        }
-      } else if (state === END) {
-        animate(this.buttonScale, { toValue: 1 }).start();
-        if (enableLongPress) {
-          animate(this.longPressProgress, {
-            duration: calculateReverseDuration(this.longPressProgress),
-            toValue: 0,
-          }).start();
-        }
-      }
+    const { isAuthorizing } = this.state;
+
+    if (children) {
+      return children;
     }
+
+    return (
+      <Fragment>
+        {!disabled && !hideBiometricIcon && (
+          <HoldToAuthorizeButtonIcon
+            animatedValue={this.animation}
+            isAuthorizing={isAuthorizing}
+          />
+        )}
+        <Title>{isAuthorizing ? 'Authorizing' : label}</Title>
+      </Fragment>
+    );
   };
 
   render() {
     const {
       backgroundColor,
-      biometryType,
-      children,
       disabled,
       disabledBackgroundColor,
-      enableLongPress,
-      hideBiometricIcon,
-      label,
       shadows,
       style,
       theme,
       ...props
     } = this.props;
-
-    const { isAuthorizing } = this.state;
 
     let bgColor = backgroundColor;
     if (disabled) {
@@ -197,13 +210,12 @@ class HoldToAuthorizeButton extends PureComponent {
     return (
       <TapGestureHandler onHandlerStateChange={this.onTapChange}>
         <LongPressGestureHandler
-          enableLongPress={enableLongPress}
-          minDurationMs={longPressProgressDurationMs}
+          minDurationMs={progressDurationMs}
           onHandlerStateChange={this.onLongPressChange}
         >
-          <Animated.View
+          <View
             {...props}
-            style={[style, { transform: [{ scale: this.buttonScale }] }]}
+            style={[style, { transform: [{ scale: this.scale }] }]}
           >
             <ShadowStack
               backgroundColor={bgColor}
@@ -215,41 +227,13 @@ class HoldToAuthorizeButton extends PureComponent {
               width="100%"
             >
               <Content backgroundColor={bgColor}>
-                {children || (
-                  <Fragment>
-                    {!disabled && !hideBiometricIcon && (
-                      <HoldToAuthorizeButtonIcon
-                        animatedValue={this.longPressProgress}
-                        biometryType={biometryType}
-                      />
-                    )}
-                    <Title>{isAuthorizing ? 'Authorizing' : label}</Title>
-                  </Fragment>
-                )}
+                {this.renderContent()}
                 <InnerBorder radius={ButtonBorderRadius} />
               </Content>
             </ShadowStack>
-          </Animated.View>
+          </View>
         </LongPressGestureHandler>
       </TapGestureHandler>
     );
   }
 }
-
-const HoldToAuthorizeButtonWithBiometrics = ({ label, ...props }) => {
-  const biometryType = useBiometryType();
-  const enableLongPress =
-    biometryType === BiometryTypes.FaceID ||
-    biometryType === BiometryTypes.none;
-
-  return (
-    <HoldToAuthorizeButton
-      {...props}
-      biometryType={biometryType}
-      enableLongPress={enableLongPress}
-      label={enableLongPress ? label : label.replace('Hold', 'Tap')}
-    />
-  );
-};
-
-export default React.memo(HoldToAuthorizeButtonWithBiometrics);

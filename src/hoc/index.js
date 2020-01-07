@@ -17,6 +17,7 @@ export { default as withIsWalletEmpty } from './withIsWalletEmpty';
 export { default as withIsWalletEthZero } from './withIsWalletEthZero';
 export { default as withKeyboardHeight } from './withKeyboardHeight';
 export { default as withMessageSigningScreen } from './withMessageSigningScreen';
+export { default as withNetInfo } from './withNetInfo';
 export { default as withNeverRerender } from './withNeverRerender';
 export { default as withOpenFamilyTabs } from './withOpenFamilyTabs';
 export { default as withOpenInvestmentCards } from './withOpenInvestmentCards';

@@ -9,19 +9,20 @@ import { Centered } from '../../layout';
 
 const { cond, divide, greaterThan } = Animated;
 
-const Container = styled(Centered)`
-  ${position.size(31)};
-  left: 15;
+const BiometryIconSize = 31;
+const IconContainer = styled(Centered)`
+  ${position.size(BiometryIconSize)};
+  left: 19;
+  margin-bottom: 2;
   position: absolute;
 `;
 
-const HoldToAuthorizeButtonIcon = ({ animatedValue, biometryType }) => (
-  <Container>
-    <ScaleInAnimation alignItems="flex-start" value={animatedValue}>
-      <BiometryIcon biometryType={biometryType} />
+const HoldToAuthorizeButtonIcon = ({ animatedValue }) => (
+  <IconContainer>
+    <ScaleInAnimation value={animatedValue}>
+      <BiometryIcon size={BiometryIconSize} />
     </ScaleInAnimation>
     <ScaleInAnimation
-      alignItems="center"
       scaleTo={0.001}
       value={cond(
         greaterThan(animatedValue, 0),
@@ -35,13 +36,11 @@ const HoldToAuthorizeButtonIcon = ({ animatedValue, biometryType }) => (
     >
       <Icon name="progress" progress={animatedValue} />
     </ScaleInAnimation>
-  </Container>
+  </IconContainer>
 );
 
 HoldToAuthorizeButtonIcon.propTypes = {
   animatedValue: PropTypes.object,
-  biometryType: PropTypes.string,
 };
 
-const arePropsEqual = (prev, next) => prev.biometryType === next.biometryType;
-export default React.memo(HoldToAuthorizeButtonIcon, arePropsEqual);
+export default React.memo(HoldToAuthorizeButtonIcon);

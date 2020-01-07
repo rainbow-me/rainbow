@@ -1,6 +1,7 @@
+import { pick } from 'lodash';
 import { Dimensions } from 'react-native';
 
-const { height, width } = Dimensions.get('window');
+const { height, width } = pick(Dimensions.get('window'), ['height', 'width']);
 
 const deviceUtils = {};
 

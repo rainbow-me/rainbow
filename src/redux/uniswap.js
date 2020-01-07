@@ -36,10 +36,7 @@ import {
   getUniswapPairs,
 } from '../handlers/uniswap';
 import { includeExchangeAddress } from '../hoc/withUniswapAssets';
-import {
-  cleanUniswapAssetsFallback,
-  DefaultUniswapFavorites,
-} from '../references';
+import { cleanUniswapAssetsFallback } from '../references';
 import { resubscribeAssets } from './explorer';
 
 // -- Constants ------------------------------------------------------------- //
@@ -221,11 +218,9 @@ export const uniswapUpdateFavorites = (assetAddress, add = true) => (
 ) => {
   const address = toLower(assetAddress);
   const { favorites } = getState().uniswap;
-  const normalizedFavorites = map(favorites, toLower);
-
   const updatedFavorites = add
-    ? uniq(concat(normalizedFavorites, address))
-    : without(normalizedFavorites, address);
+    ? uniq(concat(favorites, address))
+    : without(favorites, address);
   dispatch({
     payload: updatedFavorites,
     type: UNISWAP_UPDATE_FAVORITES,
@@ -338,7 +333,7 @@ export const uniswapUpdateState = () => (dispatch, getState) =>
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNISWAP_STATE = {
   allowances: {},
-  favorites: DefaultUniswapFavorites,
+  favorites: [],
   fetchingUniswap: false,
   inputCurrency: null,
   inputReserve: null,

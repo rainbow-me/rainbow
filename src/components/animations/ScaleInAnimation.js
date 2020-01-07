@@ -8,10 +8,10 @@ import { interpolate } from './procs';
 const ScaleInAnimation = ({ range, scaleTo, style, value, ...props }) => (
   <Animated.View
     {...props}
-    justifyContent="center"
     style={[
       style,
       {
+        ...position.centeredAsObject,
         ...position.coverAsObject,
         opacity: interpolate(value, {
           extrapolate: Animated.Extrapolate.CLAMP,
