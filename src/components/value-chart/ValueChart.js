@@ -130,7 +130,7 @@ export default class ValueChart extends PureComponent {
     super(props);
 
     this.state = {
-      allData: [usableData[0], [], [], []],
+      allData: [[], [], [], []],
       currentData: data1.slice(0, amountOfPathPoints),
       hideLoadingBar: false,
       isLoading: false,
@@ -154,9 +154,9 @@ export default class ValueChart extends PureComponent {
     this.chartMonth = new Value(0);
     this.chartYear = new Value(0);
 
-    this.currentInterval = 0;
+    this.currentInterval = 1;
 
-    this.animatedPath = this.createAnimatedPath();
+    this.animatedPath = undefined;
 
     this._configUp = {
       duration: 500,
@@ -216,8 +216,12 @@ export default class ValueChart extends PureComponent {
     ]);
   }
 
-  touchX = new Value(150);
-  lastTouchX = new Value(150);
+  componentDidMount = () => {
+    this.reloadChart(0);
+  };
+
+  touchX = new Value(0);
+  lastTouchX = new Value(0);
 
   onPanGestureEvent = event(
     [
@@ -259,6 +263,10 @@ export default class ValueChart extends PureComponent {
           this._configUp
         ).start();
         this.currentInterval = currentInterval;
+        this._text.updateValue(
+          usableData[currentInterval][usableData[currentInterval].length - 1]
+            .value
+        );
 
         await this.setState({
           currentData: usableData[currentInterval],
@@ -396,9 +404,6 @@ export default class ValueChart extends PureComponent {
       <Fragment>
         <ValueText
           headerText="PRICE"
-          startValue={
-            this.state.currentData[this.state.currentData.length - 1].value
-          }
           direction={change > 0}
           change={change.toFixed(2)}
           ref={component => {

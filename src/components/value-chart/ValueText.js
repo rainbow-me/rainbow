@@ -6,6 +6,7 @@ import { colors, fonts } from '../../styles';
 import { TruncatedText } from '../text';
 import TrendIndicatorText from './TrendIndicatorText';
 import { deviceUtils } from '../../utils';
+import { Transition, Transitioning } from 'react-native-reanimated';
 
 const HeadingTextStyles = {
   color: colors.dark,
@@ -25,19 +26,31 @@ const Header = styled(TruncatedText)`
   letter-spacing: 1.3;
 `;
 
+const transition = (
+  <Transition.Together>
+    <Transition.Out durationMs={150} type="fade" propagation="right" />
+    <Transition.In
+      durationMs={200}
+      delayMs={140}
+      type="fade"
+      propagation="left"
+    />
+  </Transition.Together>
+);
+
 class ValueText extends React.Component {
   static propTypes = {
     change: PropTypes.string,
     direction: PropTypes.bool,
     headerText: PropTypes.string,
-    startValue: PropTypes.string,
   };
 
   state = {
-    text: this.props.startValue,
+    text: undefined,
   };
 
   updateValue = text => {
+    this.ref.animateNextTransition();
     this.setState({ text });
   };
 
@@ -50,11 +63,25 @@ class ValueText extends React.Component {
           width: deviceUtils.dimensions.width,
         }}
       >
-        <Header>{this.props.headerText}</Header>
-        <Title>${Number(this.state.text).toFixed(2)}</Title>
-        <TrendIndicatorText direction={this.props.direction}>
-          {this.props.change}%
-        </TrendIndicatorText>
+        <Transitioning.View
+          ref={ref => (this.ref = ref)}
+          transition={transition}
+        >
+          {this.state.text ? (
+            <View>
+              <Header>{this.props.headerText}</Header>
+              <Title>${Number(this.state.text).toFixed(2)}</Title>
+              <TrendIndicatorText direction={this.props.direction}>
+                ${this.props.change}%
+              </TrendIndicatorText>
+            </View>
+          ) : (
+            <>
+              <Header>Downloading data...</Header>
+              <Title>Loading...</Title>
+            </>
+          )}
+        </Transitioning.View>
       </View>
     );
   }
