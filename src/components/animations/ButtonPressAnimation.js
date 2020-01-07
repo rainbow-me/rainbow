@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import {
   createNativeWrapper,
   PureNativeButton,
+  State,
 } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing } from 'react-native-reanimated';
@@ -30,6 +31,8 @@ const {
   timing,
   Value,
 } = Animated;
+
+const { ACTIVE, BEGAN, CANCELLED, FAILED, UNDETERMINED } = State;
 
 const AnimatedRawButton = createNativeWrapper(
   createAnimatedComponent(PureNativeButton),
@@ -124,7 +127,7 @@ export default function ButtonPressAnimation({
     toValue,
     zoomClock,
   } = useMemoOne(() => {
-    const gestureState = new Value(0);
+    const gestureState = new Value(UNDETERMINED);
     const onGestureEvent = event([
       {
         nativeEvent: {
@@ -134,13 +137,13 @@ export default function ButtonPressAnimation({
     ]);
 
     return {
-      animationState: new Value(3),
+      animationState: new Value(CANCELLED),
       durationVal: new Value(duration),
       finished: new Value(0),
       frameTime: new Value(0),
       gestureState,
       onGestureEvent,
-      prevGestureState: new Value(0),
+      prevGestureState: new Value(UNDETERMINED),
       scaleValue: new Value(1),
       time: new Value(0),
       toValue: new Value(0.5),
@@ -154,10 +157,10 @@ export default function ButtonPressAnimation({
         gestureState,
         cond(
           or(
-            eq(gestureState, 4),
-            and(neq(prevGestureState, 4), eq(gestureState, 5))
+            eq(gestureState, ACTIVE),
+            and(neq(prevGestureState, ACTIVE), eq(gestureState, UNDETERMINED))
           ),
-          [set(animationState, 0)]
+          [set(animationState, UNDETERMINED)]
         )
       ),
       set(prevGestureState, gestureState),
@@ -165,16 +168,16 @@ export default function ButtonPressAnimation({
         ? [
             onChange(
               gestureState,
-              cond(eq(gestureState, 5), call([], handlePress))
+              cond(eq(gestureState, UNDETERMINED), call([], handlePress))
             ),
           ]
         : []),
       ...(onLongPress
         ? [
             onChange(
-              eq(gestureState, 4),
+              eq(gestureState, ACTIVE),
               call([gestureState], ([gs]) => {
-                if (gs === 4) {
+                if (gs === ACTIVE) {
                   createLongPressHandle();
                 } else {
                   removeLongPressHandle();
@@ -186,9 +189,9 @@ export default function ButtonPressAnimation({
       ...(isInteraction
         ? [
             onChange(
-              eq(gestureState, 4),
+              eq(gestureState, ACTIVE),
               call([gestureState], ([gs]) => {
-                if (gs === 4) {
+                if (gs === ACTIVE) {
                   createHandle();
                 } else {
                   removeHandle();
@@ -200,32 +203,35 @@ export default function ButtonPressAnimation({
       ...(onPressStart
         ? [
             onChange(
-              eq(gestureState, 4),
-              cond(eq(gestureState, 4), call([], onPressStart))
+              eq(gestureState, ACTIVE),
+              cond(eq(gestureState, ACTIVE), call([], onPressStart))
             ),
           ]
         : []),
-      cond(eq(animationState, 0), [
+      cond(eq(animationState, UNDETERMINED), [
         startClock(zoomClock),
         set(finished, 0),
-        set(animationState, 1),
+        set(animationState, FAILED),
         set(frameTime, 0),
         set(time, 0),
         set(toValue, scaleTo),
       ]),
-      cond(and(eq(animationState, 1), neq(gestureState, 4), finished), [
-        set(finished, 0),
-        set(animationState, 2),
-        set(frameTime, 0),
-        set(time, 0),
-        set(toValue, 1),
-      ]),
-      cond(and(eq(animationState, 2), finished), [
-        set(animationState, 3),
+      cond(
+        and(eq(animationState, FAILED), neq(gestureState, ACTIVE), finished),
+        [
+          set(finished, 0),
+          set(animationState, BEGAN),
+          set(frameTime, 0),
+          set(time, 0),
+          set(toValue, 1),
+        ]
+      ),
+      cond(and(eq(animationState, BEGAN), finished), [
+        set(animationState, CANCELLED),
         stopClock(zoomClock),
       ]),
       cond(
-        or(eq(animationState, 1), eq(animationState, 2)),
+        or(eq(animationState, FAILED), eq(animationState, BEGAN)),
         timing(
           zoomClock,
           { finished, frameTime, position: scaleValue, time },
