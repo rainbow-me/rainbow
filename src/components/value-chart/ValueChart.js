@@ -149,7 +149,7 @@ export default class ValueChart extends PureComponent {
     super(props);
 
     this.state = {
-      allData: [[], [], [], []],
+      allData: usableData,
       currentData: usableData[0],
       hideLoadingBar: false,
       isLoading: false,
@@ -236,7 +236,7 @@ export default class ValueChart extends PureComponent {
   }
 
   componentDidMount = () => {
-    this.reloadChart(0);
+    this.reloadChart(0, true);
   };
 
   touchX = new Value(0);
@@ -261,10 +261,10 @@ export default class ValueChart extends PureComponent {
     { useNativeDriver: true }
   );
 
-  reloadChart = async currentInterval => {
+  reloadChart = async (currentInterval, isInitial = false) => {
     if (currentInterval !== this.currentInterval) {
       let data = this.state.allData;
-      if (this.state.allData[currentInterval].length === 0) {
+      if (isInitial) {
         data[currentInterval] = usableData[currentInterval];
         await this.setState({
           isLoading: true,
