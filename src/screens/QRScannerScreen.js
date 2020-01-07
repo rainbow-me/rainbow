@@ -5,6 +5,7 @@ import { onlyUpdateForKeys } from 'recompact';
 import styled from 'styled-components/primitives';
 import { BubbleSheet } from '../components/bubble-sheet';
 import { Button } from '../components/buttons';
+import { DiscoverSheet } from '../components/discover-sheet';
 import { BackButton, Header } from '../components/header';
 import { Centered } from '../components/layout';
 import { QRCodeScanner } from '../components/qrcode-scanner';
@@ -48,8 +49,8 @@ const QRScannerScreen = ({
         bottom: sheetHeight,
         top: Header.height,
       }}
-      enableCamera={isFocused}
-      enableScanning={enableScanning}
+      enableCamera={false}
+      enableScanning={false}
       isCameraAuthorized={isCameraAuthorized}
       onSuccess={onScanSuccess}
       showCrosshairText={!!walletConnectorsCount}
@@ -74,16 +75,7 @@ const QRScannerScreen = ({
         </Button>
       )}
     </QRScannerScreenHeader>
-    <BubbleSheet
-      bottom={safeAreaInsetValues.bottom ? 21 : 0}
-      onLayout={onSheetLayout}
-    >
-      {walletConnectorsCount ? (
-        <WalletConnectList items={walletConnectorsByDappName} />
-      ) : (
-        <WalletConnectExplainer />
-      )}
-    </BubbleSheet>
+    <DiscoverSheet />
   </Container>
 );
 

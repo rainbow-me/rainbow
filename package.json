@@ -13,11 +13,6 @@
     "nodeify": "./node_modules/.bin/rn-nodeify --install \"crypto\" --hack",
     "postinstall": "patch-package && rn-nodeify --install --hack"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn lint && yarn test"
-    }
-  },
   "dependencies": {
     "@bankify/react-native-animate-number": "^0.2.1",
     "@hocs/omit-props": "^0.4.0",
