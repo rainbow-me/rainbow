@@ -50,8 +50,19 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
     const maxValue = maxBy(data, 'value');
     const minValue = minBy(data, 'value');
 
+    const timestampMul = Math.floor(
+      (data[data.length - 1].timestamp - data[0].timestamp) / data.length
+    );
     let newData = [];
-    for (let i = 0; i < destinatedNumberOfPoints; i++) {
+    newData.push({
+      timestamp: data[0].timestamp - timestampMul * 10,
+      value: data[0].value,
+    });
+    newData.push({
+      timestamp: data[0].timestamp,
+      value: data[0].value,
+    });
+    for (let i = 2; i < destinatedNumberOfPoints - 2; i++) {
       const indexPlace = i * destMul;
       const r = indexPlace % 1;
       const f = Math.floor(indexPlace);
@@ -67,14 +78,22 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
       } else {
         finalValue = firstValue + secondValue;
       }
-      const timestampMul = Math.floor(
-        data[0].timestamp - data[data.length - 1].timestamp
-      );
       newData.push({
         timestamp: data[0].timestamp + i * timestampMul,
         value: finalValue,
       });
     }
+    newData.push({
+      timestamp: data[0].timestamp + destinatedNumberOfPoints * timestampMul,
+      value: data[data.length - 1].value,
+    });
+    newData.push({
+      timestamp:
+        data[0].timestamp +
+        destinatedNumberOfPoints * timestampMul +
+        timestampMul * 10,
+      value: data[data.length - 1].value,
+    });
     return newData;
   }
 };
@@ -131,7 +150,7 @@ export default class ValueChart extends PureComponent {
 
     this.state = {
       allData: [[], [], [], []],
-      currentData: data1.slice(0, amountOfPathPoints),
+      currentData: usableData[0],
       hideLoadingBar: false,
       isLoading: false,
       shouldRenderChart: true,
@@ -368,8 +387,8 @@ export default class ValueChart extends PureComponent {
   };
 
   checkValueBoundaries = value => {
-    if (Math.abs(value) > width / 2 - 30) {
-      return value > 0 ? value - 30 : value + 30;
+    if (Math.abs(value) > width / 2 - 45) {
+      return value > 0 ? value - 45 : value + 45;
     }
     return value;
   };
@@ -548,10 +567,20 @@ export default class ValueChart extends PureComponent {
               onChange(
                 this.touchX,
                 call([this.touchX], ([x]) => {
+                  let curX = 0;
+                  if (x < 12) {
+                    curX = 0;
+                  } else if (x > width - 20) {
+                    curX = width - 21;
+                  } else {
+                    curX = x - 10;
+                  }
+                  const calculatedIndex = Math.floor(
+                    curX / ((width - 20) / this.state.currentData.length)
+                  );
+                  console.log(calculatedIndex);
                   this._text.updateValue(
-                    this.state.currentData[
-                      Math.floor(x / (width / this.state.currentData.length))
-                    ].value
+                    this.state.currentData[calculatedIndex].value
                   );
                 })
               )
