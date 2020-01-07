@@ -1,12 +1,5 @@
 import PropTypes from 'prop-types';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { InteractionManager } from 'react-native';
+import React, { useCallback, useEffect, useRef } from 'react';
 import {
   createNativeWrapper,
   PureNativeButton,
@@ -15,9 +8,9 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { Easing } from 'react-native-reanimated';
 import stylePropType from 'react-style-proptype';
 import { useMemoOne } from 'use-memo-one';
+import { useInteraction, useTransformOrigin } from '../../hooks';
 import { animations } from '../../styles';
 import { directionPropType } from '../../utils';
-import { transformOrigin as transformOriginUtil } from './procs';
 
 const {
   and,
@@ -46,36 +39,78 @@ const AnimatedRawButton = createNativeWrapper(
   }
 );
 
-const HapticFeedbackTypes = {
-  impactHeavy: 'impactHeavy',
-  impactLight: 'impactLight',
-  impactMedium: 'impactMedium',
-  notificationError: 'notificationError',
-  notificationSuccess: 'notificationSuccess',
-  notificationWarning: 'notificationWarning',
-  selection: 'selection',
-};
+function usePressHandler({
+  interactionHandle = {},
+  minLongPressDuration,
+  onLongPress,
+  onPress,
+  optionallyTriggerHaptic,
+}) {
+  const longPressHandle = useRef();
+
+  const createHandle = useCallback(() => {
+    longPressHandle.current = setTimeout(() => {
+      onLongPress();
+      longPressHandle.current = null;
+      optionallyTriggerHaptic();
+    }, minLongPressDuration);
+  }, [minLongPressDuration, onLongPress, optionallyTriggerHaptic]);
+
+  const handlePress = useCallback(() => {
+    if (onLongPress && !longPressHandle.current) return;
+    onPress();
+    optionallyTriggerHaptic();
+  }, [longPressHandle, onLongPress, onPress, optionallyTriggerHaptic]);
+
+  const removeHandle = useCallback(() => {
+    if (interactionHandle.current) {
+      clearTimeout(longPressHandle.current);
+      longPressHandle.current = null;
+    }
+  }, [interactionHandle]);
+
+  useEffect(() => () => removeHandle());
+  return [handlePress, createHandle, removeHandle];
+}
 
 export default function ButtonPressAnimation({
-  style,
-  children,
-  onPress,
-  scaleTo,
-  duration,
-  onPressStart,
-  easing,
-  transformOrigin,
-  isInteraction,
   activeOpacity,
+  children,
   disabled,
-  onLongPress,
-  minLongPressDuration,
+  duration,
+  easing,
   enableHapticFeedback,
   hapticType,
+  isInteraction,
+  minLongPressDuration,
+  onLongPress,
+  onPress,
+  onPressStart,
+  scaleTo,
+  style,
+  transformOrigin,
 }) {
-  const interactionHandle = useRef();
-  const longPressHandle = useRef();
-  const [layout, setLayout] = useState({ height: 0, width: 0 });
+  const [interactionHandle, createHandle, removeHandle] = useInteraction();
+  const { onLayout, withTransformOrigin } = useTransformOrigin(transformOrigin);
+
+  const optionallyTriggerHaptic = useCallback(() => {
+    if (enableHapticFeedback) {
+      ReactNativeHapticFeedback.trigger(hapticType);
+    }
+  }, [enableHapticFeedback, hapticType]);
+
+  const [
+    handlePress,
+    createLongPressHandle,
+    removeLongPressHandle,
+  ] = usePressHandler({
+    interactionHandle,
+    minLongPressDuration,
+    onLongPress,
+    onPress,
+    optionallyTriggerHaptic,
+  });
+
   const {
     animationState,
     durationVal,
@@ -113,67 +148,7 @@ export default function ButtonPressAnimation({
     };
   }, []);
 
-  const createHandle = useCallback(() => {
-    interactionHandle.current = InteractionManager.createInteractionHandle();
-  }, []);
-
-  const removeHandle = useCallback(() => {
-    if (interactionHandle.current) {
-      InteractionManager.clearInteractionHandle(interactionHandle.current);
-      interactionHandle.current = null;
-    }
-  }, []);
-
-  const createLongPressHandle = useCallback(() => {
-    longPressHandle.current = setTimeout(() => {
-      onLongPress();
-      longPressHandle.current = null;
-      if (enableHapticFeedback) {
-        ReactNativeHapticFeedback.trigger(hapticType);
-      }
-    }, minLongPressDuration);
-  }, [enableHapticFeedback, hapticType, minLongPressDuration, onLongPress]);
-
-  const removeLongPressHandle = useCallback(() => {
-    if (interactionHandle.current) {
-      clearTimeout(longPressHandle.current);
-      longPressHandle.current = null;
-    }
-  }, []);
-
-  useEffect(() => () => {
-    removeLongPressHandle();
-    removeHandle();
-  });
-
-  const onLayout = useCallback(
-    ({
-      nativeEvent: {
-        layout: { width, height },
-      },
-    }) => {
-      if (transformOrigin && !Object.values(layout).reduce((a, b) => a + b)) {
-        console.log(width, height, transformOrigin);
-        setLayout({ height, width });
-      }
-    },
-    [layout, transformOrigin]
-  );
-  const { offsetX, offsetY } = useMemo(() => {
-    let offsetX = 0;
-    let offsetY = 0;
-
-    if (transformOrigin === 'left' || transformOrigin === 'right') {
-      offsetX =
-        Math.floor(layout.width / 2) * (transformOrigin === 'left' ? -1 : 1);
-    } else if (transformOrigin === 'bottom' || transformOrigin === 'top') {
-      offsetY =
-        Math.floor(layout.height / 2) * (transformOrigin === 'top' ? -1 : 1);
-    }
-    return { offsetX, offsetY };
-  }, [layout.height, layout.width, transformOrigin]);
-
-  const { current: scale } = useRef(
+  const scale = useRef(
     block([
       onChange(
         gestureState,
@@ -190,19 +165,7 @@ export default function ButtonPressAnimation({
         ? [
             onChange(
               gestureState,
-              cond(
-                eq(gestureState, 5),
-                call([], () => {
-                  if (onLongPress && !longPressHandle.current) {
-                    // assuming we've made long press
-                    return;
-                  }
-                  if (enableHapticFeedback) {
-                    ReactNativeHapticFeedback.trigger(hapticType);
-                  }
-                  onPress();
-                })
-              )
+              cond(eq(gestureState, 5), call([], handlePress))
             ),
           ]
         : []),
@@ -271,7 +234,7 @@ export default function ButtonPressAnimation({
       ),
       scaleValue,
     ])
-  );
+  ).current;
 
   return (
     <AnimatedRawButton
@@ -289,9 +252,7 @@ export default function ButtonPressAnimation({
               outputRange:
                 scaleTo > 1 ? [1, activeOpacity] : [activeOpacity, 1],
             }),
-            transform: transformOriginUtil(offsetX, offsetY, {
-              scale,
-            }),
+            transform: withTransformOrigin({ scale }),
           },
         ]}
       >
@@ -308,7 +269,7 @@ ButtonPressAnimation.propTypes = {
   duration: PropTypes.number,
   easing: PropTypes.func,
   enableHapticFeedback: PropTypes.bool,
-  hapticType: PropTypes.oneOf(Object.keys(HapticFeedbackTypes)),
+  hapticType: PropTypes.string,
   isInteraction: PropTypes.bool,
   minLongPressDuration: PropTypes.number,
   onLongPress: PropTypes.func,
@@ -324,7 +285,7 @@ ButtonPressAnimation.defaultProps = {
   duration: 170,
   easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
   enableHapticFeedback: true,
-  hapticType: HapticFeedbackTypes.selection,
+  hapticType: 'selection',
   minLongPressDuration: 500,
   scaleTo: animations.keyframes.button.to.scale,
 };
