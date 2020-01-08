@@ -1,68 +1,59 @@
-import { withSafeTimeout } from '@hocs/safe-timers';
 import { get, isNumber } from 'lodash';
 import PropTypes from 'prop-types';
 import { View } from 'react-native';
-import React, { Fragment, PureComponent } from 'react';
-import { compose, withProps } from 'recompact';
+import React, { Fragment, useCallback, useMemo } from 'react';
+import { compose, onlyUpdateForPropTypes } from 'recompact';
 import { withAccountSettings, withOpenBalances } from '../../hoc';
 import { OpacityToggler } from '../animations';
 import CoinDivider from './CoinDivider';
 
-class SmallBalancesWrapper extends PureComponent {
-  static propTypes = {
-    assets: PropTypes.array,
-    balancesSum: PropTypes.string,
-    openSmallBalances: PropTypes.bool,
-    setOpenSmallBalances: PropTypes.func,
-  };
+const balancePath = 'props.item.native.balance.amount';
+const getBalance = asset =>
+  parseFloat(isNumber(asset) ? asset : get(asset, balancePath, 0));
+const reduceBalances = (acc, cur) => getBalance(acc) + getBalance(cur);
 
-  state = { areChildrenVisible: true };
+const SmallBalancesWrapper = ({
+  assets,
+  nativeCurrencySymbol,
+  openSmallBalances,
+  setOpenSmallBalances,
+}) => {
+  const balance = useMemo(() => assets.reduce(reduceBalances, 0), [assets]);
+  const handlePress = useCallback(
+    () => setOpenSmallBalances(!openSmallBalances),
+    [openSmallBalances, setOpenSmallBalances]
+  );
 
-  handlePress = () =>
-    this.props.setOpenSmallBalances(!this.props.openSmallBalances);
+  return (
+    <Fragment>
+      <CoinDivider
+        balancesSum={
+          balance ? `${nativeCurrencySymbol}${balance.toFixed(2)}` : null
+        }
+        onPress={handlePress}
+        openSmallBalances={openSmallBalances}
+      />
+      <OpacityToggler
+        endingOpacity={1}
+        isVisible={openSmallBalances}
+        startingOpacity={0}
+      >
+        <View pointerEvents={openSmallBalances ? 'auto' : 'none'}>
+          {assets}
+        </View>
+      </OpacityToggler>
+    </Fragment>
+  );
+};
 
-  render = () => {
-    const { assets, balancesSum, openSmallBalances } = this.props;
-
-    return (
-      <Fragment>
-        <CoinDivider
-          balancesSum={balancesSum}
-          onPress={this.handlePress}
-          openSmallBalances={openSmallBalances}
-        />
-        <OpacityToggler
-          endingOpacity={1}
-          isVisible={openSmallBalances}
-          startingOpacity={0}
-        >
-          <View pointerEvents={openSmallBalances ? 'auto' : 'none'}>
-            {assets}
-          </View>
-        </OpacityToggler>
-      </Fragment>
-    );
-  };
-}
-
-const getBalanceFromAsset = asset =>
-  Number(get(asset, 'props.item.native.balance.amount', 0));
-const reduceBalances = (accumulator, currentValue) => {
-  const balance = getBalanceFromAsset(currentValue);
-  const sum = isNumber(accumulator)
-    ? accumulator
-    : getBalanceFromAsset(accumulator);
-  return sum + balance;
+SmallBalancesWrapper.propTypes = {
+  assets: PropTypes.array,
+  nativeCurrencySymbol: PropTypes.string,
+  openSmallBalances: PropTypes.bool,
+  setOpenSmallBalances: PropTypes.func,
 };
 
 export default compose(
   withAccountSettings,
   withOpenBalances,
-  withSafeTimeout,
-  withProps(({ assets, nativeCurrencySymbol }) => {
-    const balance = assets.reduce(reduceBalances, 0);
-    return isNumber(balance)
-      ? { balancesSum: `${nativeCurrencySymbol}${balance.toFixed(2)}` }
-      : {};
-  })
 )(SmallBalancesWrapper);
