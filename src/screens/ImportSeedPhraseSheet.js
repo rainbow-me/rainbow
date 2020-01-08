@@ -2,7 +2,6 @@ import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { KeyboardAvoidingView } from 'react-native';
-import { useClipboard } from 'react-native-hooks';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useNavigation } from 'react-navigation-hooks';
@@ -13,6 +12,7 @@ import { MultiLineInput } from '../components/inputs';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { Text } from '../components/text';
+import { useClipboard } from '../hooks';
 import { sheetVerticalOffset } from '../navigation/transitions/effects';
 import { borders, colors, padding, shadow } from '../styles';
 import { isValidSeed as validateSeed } from '../helpers/validators';
@@ -95,7 +95,7 @@ const ImportSeedPhraseSheet = ({ initializeWallet, isEmpty }) => {
       setImporting(newImportingState);
       setParams({ gesturesEnabled: !newImportingState });
     },
-    [setImporting, setParams]
+    [setParams]
   );
 
   const handleSetSeedPhrase = useCallback(
@@ -103,7 +103,7 @@ const ImportSeedPhraseSheet = ({ initializeWallet, isEmpty }) => {
       if (isImporting) return null;
       return setSeedPhrase(text);
     },
-    [isImporting, setSeedPhrase]
+    [isImporting]
   );
 
   const onPressImportButton = () => {

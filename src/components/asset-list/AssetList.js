@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import isEqual from 'react-fast-compare';
-import { safeAreaInsetValues } from '../../utils';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { FabWrapper, FloatingActionButton } from '../fab';
 import { ListFooter } from '../list';
 import EmptyAssetList from './EmptyAssetList';
@@ -9,9 +9,6 @@ import RecyclerAssetList from './RecyclerAssetList';
 
 const FabSizeWithPadding =
   FloatingActionButton.size + FabWrapper.bottomPosition * 2;
-
-const PaddingBottom =
-  safeAreaInsetValues.bottom + FabSizeWithPadding - ListFooter.height;
 
 const AssetList = ({
   fetchData,
@@ -21,8 +18,10 @@ const AssetList = ({
   scrollViewTracker,
   sections,
   ...props
-}) =>
-  isEmpty ? (
+}) => {
+  const insets = useSafeArea();
+
+  return isEmpty ? (
     <EmptyAssetList
       {...props}
       hideHeader={hideHeader}
@@ -32,12 +31,13 @@ const AssetList = ({
     <RecyclerAssetList
       fetchData={fetchData}
       hideHeader={hideHeader}
-      paddingBottom={PaddingBottom}
+      paddingBottom={insets.bottom + FabSizeWithPadding - ListFooter.height}
       scrollViewTracker={scrollViewTracker}
       sections={sections}
       {...props}
     />
   );
+};
 
 AssetList.propTypes = {
   fetchData: PropTypes.func.isRequired,

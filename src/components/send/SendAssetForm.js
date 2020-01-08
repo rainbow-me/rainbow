@@ -36,9 +36,12 @@ const TransactionContainer = styled(Column).attrs({
 
 const SendAssetForm = ({
   allAssets,
+  assetAmount,
   buttonRenderer,
+  nativeAmount,
   onResetAssetSelection,
   selected,
+  sendMaxBalance,
   txSpeedRenderer,
   ...props
 }) => {
@@ -69,7 +72,13 @@ const SendAssetForm = ({
         {selected.isNft ? (
           <SendAssetFormCollectible {...selected} />
         ) : (
-          <SendAssetFormToken {...props} selected={selected} />
+          <SendAssetFormToken
+            {...props}
+            assetAmount={assetAmount}
+            nativeAmount={nativeAmount}
+            sendMaxBalance={sendMaxBalance}
+            selected={selected}
+          />
         )}
         <ColumnWithMargins
           flex={0}
