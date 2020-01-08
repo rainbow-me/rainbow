@@ -26,6 +26,7 @@ const {
   onChange,
   or,
   set,
+  proc,
   startClock,
   stopClock,
   timing,
@@ -61,7 +62,7 @@ function usePressHandler({
 
   const handlePress = useCallback(() => {
     if (onLongPress && !longPressHandle.current) return;
-    onPress();
+    onPress && onPress();
     optionallyTriggerHaptic();
   }, [longPressHandle, onLongPress, onPress, optionallyTriggerHaptic]);
 
@@ -75,6 +76,78 @@ function usePressHandler({
   useEffect(() => () => removeHandle());
   return [handlePress, createHandle, removeHandle];
 }
+
+const ButtonPressAnimationProc = proc(function(
+  animationState,
+  durationVal,
+  finished,
+  frameTime,
+  gestureState,
+  onGestureEvent,
+  prevGestureState,
+  scaleValue,
+  time,
+  toValue,
+  zoomClock,
+  scaleTo,
+  onPressCall,
+  onPressStartCall,
+  onLongPressCall,
+  interactionCall
+) {
+  return block([
+    onChange(
+      gestureState,
+      cond(
+        or(
+          eq(gestureState, ACTIVE),
+          and(neq(prevGestureState, ACTIVE), eq(gestureState, UNDETERMINED))
+        ),
+        [set(animationState, UNDETERMINED)]
+      )
+    ),
+    set(prevGestureState, gestureState),
+    onChange(gestureState, cond(eq(gestureState, END), onPressCall)),
+    onChange(eq(gestureState, ACTIVE), onLongPressCall),
+    onChange(eq(gestureState, ACTIVE), interactionCall),
+    onChange(
+      eq(gestureState, ACTIVE),
+      cond(eq(gestureState, ACTIVE), onPressStartCall)
+    ),
+    cond(eq(animationState, UNDETERMINED), [
+      startClock(zoomClock),
+      set(finished, 0),
+      set(animationState, FAILED),
+      set(frameTime, 0),
+      set(time, 0),
+      set(toValue, scaleTo),
+    ]),
+    cond(and(eq(animationState, FAILED), neq(gestureState, ACTIVE), finished), [
+      set(finished, 0),
+      set(animationState, BEGAN),
+      set(frameTime, 0),
+      set(time, 0),
+      set(toValue, 1),
+    ]),
+    cond(and(eq(animationState, BEGAN), finished), [
+      set(animationState, CANCELLED),
+      stopClock(zoomClock),
+    ]),
+    cond(
+      or(eq(animationState, FAILED), eq(animationState, BEGAN)),
+      timing(
+        zoomClock,
+        { finished, frameTime, position: scaleValue, time },
+        {
+          duration: durationVal,
+          easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
+          toValue,
+        }
+      )
+    ),
+    scaleValue,
+  ]);
+});
 
 export default function ButtonPressAnimation({
   activeOpacity,
@@ -152,94 +225,42 @@ export default function ButtonPressAnimation({
   }, []);
 
   const scale = useRef(
-    block([
-      onChange(
-        gestureState,
-        cond(
-          or(
-            eq(gestureState, ACTIVE),
-            and(neq(prevGestureState, ACTIVE), eq(gestureState, UNDETERMINED))
-          ),
-          [set(animationState, UNDETERMINED)]
-        )
-      ),
-      set(prevGestureState, gestureState),
-      ...(onPress
-        ? [
-            onChange(
-              gestureState,
-              cond(eq(gestureState, END), call([], handlePress))
-            ),
-          ]
-        : []),
-      ...(onLongPress
-        ? [
-            onChange(
-              eq(gestureState, ACTIVE),
-              call([gestureState], ([gs]) => {
-                if (gs === ACTIVE) {
-                  createLongPressHandle();
-                } else {
-                  removeLongPressHandle();
-                }
-              })
-            ),
-          ]
-        : []),
-      ...(isInteraction
-        ? [
-            onChange(
-              eq(gestureState, ACTIVE),
-              call([gestureState], ([gs]) => {
-                if (gs === ACTIVE) {
-                  createHandle();
-                } else {
-                  removeHandle();
-                }
-              })
-            ),
-          ]
-        : []),
-      ...(onPressStart
-        ? [
-            onChange(
-              eq(gestureState, ACTIVE),
-              cond(eq(gestureState, ACTIVE), call([], onPressStart))
-            ),
-          ]
-        : []),
-      cond(eq(animationState, UNDETERMINED), [
-        startClock(zoomClock),
-        set(finished, 0),
-        set(animationState, FAILED),
-        set(frameTime, 0),
-        set(time, 0),
-        set(toValue, scaleTo),
-      ]),
-      cond(
-        and(eq(animationState, FAILED), neq(gestureState, ACTIVE), finished),
-        [
-          set(finished, 0),
-          set(animationState, BEGAN),
-          set(frameTime, 0),
-          set(time, 0),
-          set(toValue, 1),
-        ]
-      ),
-      cond(and(eq(animationState, BEGAN), finished), [
-        set(animationState, CANCELLED),
-        stopClock(zoomClock),
-      ]),
-      cond(
-        or(eq(animationState, FAILED), eq(animationState, BEGAN)),
-        timing(
-          zoomClock,
-          { finished, frameTime, position: scaleValue, time },
-          { duration: durationVal, easing, toValue }
-        )
-      ),
+    ButtonPressAnimationProc(
+      animationState,
+      durationVal,
+      finished,
+      frameTime,
+      gestureState,
+      onGestureEvent,
+      prevGestureState,
       scaleValue,
-    ])
+      time,
+      toValue,
+      zoomClock,
+      scaleTo,
+      call([], handlePress),
+      call([], () => onPressStart && onPressStart()),
+      call([gestureState], ([gs]) => {
+        if (!onLongPress) {
+          return;
+        }
+        if (gs === ACTIVE) {
+          createLongPressHandle();
+        } else {
+          removeLongPressHandle();
+        }
+      }),
+      call([gestureState], ([gs]) => {
+        if (!isInteraction) {
+          return;
+        }
+        if (gs === ACTIVE) {
+          createHandle();
+        } else {
+          removeHandle();
+        }
+      })
+    )
   ).current;
 
   return (
