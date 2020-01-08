@@ -110,17 +110,17 @@ const backgroundInterpolator = ({
 const closeSpec = {
   animation: 'spring',
   config: {
-    bounciness: 2,
+    bounciness: 0,
     overshootClamping: true,
-    speed: 27,
+    speed: 25,
   },
 };
 
 const openSpec = {
   animation: 'spring',
   config: {
-    bounciness: 5,
-    speed: 27,
+    bounciness: 4,
+    speed: 25,
   },
 };
 
