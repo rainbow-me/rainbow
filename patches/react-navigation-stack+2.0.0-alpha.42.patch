@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-navigation-stack/src/vendor/views/Stack/PointerEventsView.tsx b/node_modules/react-navigation-stack/src/vendor/views/Stack/PointerEventsView.tsx
+index 8ed409e..f068f30 100644
+--- a/node_modules/react-navigation-stack/src/vendor/views/Stack/PointerEventsView.tsx
++++ b/node_modules/react-navigation-stack/src/vendor/views/Stack/PointerEventsView.tsx
+@@ -26,7 +26,7 @@ export default class PointerEventsView extends React.Component<Props> {
+   componentDidUpdate(prevProps: Props) {
+     if (this.props.active !== prevProps.active) {
+       this.pointerEventsEnabled.setValue(this.props.active ? TRUE : FALSE);
+-      this.setPointerEventsEnabled(this.props.active);
++      // this.setPointerEventsEnabled(this.props.active);
+     }
+   }
+ 
