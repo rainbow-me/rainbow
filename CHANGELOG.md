@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 ### Removed
 
 ### Changed
+## [1.2.3-1](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.3-1)
+### Changed
+* Better biometric support
+* Fix import wallet showing old wallet balances
 
 ## [1.2.2-4](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.2-4)
 ### Added
