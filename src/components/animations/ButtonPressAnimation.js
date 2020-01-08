@@ -23,7 +23,6 @@ const {
   eq,
   event,
   neq,
-  onChange,
   or,
   set,
   proc,
@@ -96,24 +95,22 @@ const ButtonPressAnimationProc = proc(function(
   interactionCall
 ) {
   return block([
-    onChange(
-      gestureState,
+    cond(neq(prevGestureState, gestureState), [
       cond(
         or(
           eq(gestureState, ACTIVE),
           and(neq(prevGestureState, ACTIVE), eq(gestureState, UNDETERMINED))
         ),
         [set(animationState, UNDETERMINED)]
-      )
-    ),
+      ),
+      cond(eq(gestureState, END), onPressCall),
+      cond(eq(gestureState, ACTIVE), [
+        onLongPressCall,
+        interactionCall,
+        onPressStartCall,
+      ]),
+    ]),
     set(prevGestureState, gestureState),
-    onChange(gestureState, cond(eq(gestureState, END), onPressCall)),
-    onChange(eq(gestureState, ACTIVE), onLongPressCall),
-    onChange(eq(gestureState, ACTIVE), interactionCall),
-    onChange(
-      eq(gestureState, ACTIVE),
-      cond(eq(gestureState, ACTIVE), onPressStartCall)
-    ),
     cond(eq(animationState, UNDETERMINED), [
       startClock(zoomClock),
       set(finished, 0),
@@ -137,7 +134,12 @@ const ButtonPressAnimationProc = proc(function(
       or(eq(animationState, FAILED), eq(animationState, BEGAN)),
       timing(
         zoomClock,
-        { finished, frameTime, position: scaleValue, time },
+        {
+          finished,
+          frameTime,
+          position: scaleValue,
+          time,
+        },
         {
           duration: durationVal,
           easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
@@ -154,7 +156,6 @@ export default function ButtonPressAnimation({
   children,
   disabled,
   duration,
-  easing,
   enableHapticFeedback,
   hapticType,
   isInteraction,
@@ -294,7 +295,6 @@ ButtonPressAnimation.propTypes = {
   children: PropTypes.any,
   disabled: PropTypes.bool,
   duration: PropTypes.number,
-  easing: PropTypes.func,
   enableHapticFeedback: PropTypes.bool,
   hapticType: PropTypes.string,
   isInteraction: PropTypes.bool,
@@ -310,7 +310,6 @@ ButtonPressAnimation.propTypes = {
 ButtonPressAnimation.defaultProps = {
   activeOpacity: 1,
   duration: 170,
-  easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
   enableHapticFeedback: true,
   hapticType: 'selection',
   minLongPressDuration: 500,
