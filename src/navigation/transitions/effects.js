@@ -127,8 +127,8 @@ const openSpec = {
 const sheetOpenSpec = {
   animation: 'spring',
   config: {
-    bounciness: 2,
-    speed: 23,
+    bounciness: 0,
+    speed: 22,
   },
 };
 
