@@ -26,29 +26,31 @@ class ContextMenu extends PureComponent {
     options: PropTypes.arrayOf(PropTypes.string).isRequired,
     setIsActionSheetOpen: PropTypes.func,
     title: PropTypes.string,
-  }
+  };
 
   static defaultProps = {
     options: [],
-  }
+  };
 
-  actionSheetRef = null
+  actionSheetRef = null;
 
-  handleActionSheetRef = (ref) => { this.actionSheetRef = ref; }
+  handleActionSheetRef = ref => {
+    this.actionSheetRef = ref;
+  };
 
   showActionSheet = () => {
     if (this.props.isActionSheetOpen) return;
     this.props.setIsActionSheetOpen(true);
     this.actionSheetRef.show();
-  }
+  };
 
-  handlePressActionSheet = (buttonIndex) => {
+  handlePressActionSheet = buttonIndex => {
     if (this.props.onPressActionSheet) {
       this.props.onPressActionSheet(buttonIndex);
     }
 
     this.props.setIsActionSheetOpen(false);
-  }
+  };
 
   render = () => (
     <Fragment>
@@ -63,12 +65,14 @@ class ContextMenu extends PureComponent {
       </ButtonPressAnimation>
       <ActionSheet
         {...pick(this.props, ActionSheetProps)}
-        cancelButtonIndex={this.props.cancelButtonIndex || (this.props.options.length - 1)}
+        cancelButtonIndex={
+          this.props.cancelButtonIndex || this.props.options.length - 1
+        }
         onPress={this.handlePressActionSheet}
         ref={this.handleActionSheetRef}
       />
     </Fragment>
-  )
+  );
 }
 
 export default withActionSheetManager(ContextMenu);

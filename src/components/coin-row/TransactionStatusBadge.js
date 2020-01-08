@@ -1,29 +1,27 @@
 import { includes, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import FastImage from 'react-native-fast-image';
 import { onlyUpdateForPropTypes } from 'recompact';
-import SpinnerImageSource from '../../assets/spinner.png';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { colors, position } from '../../styles';
-import { SpinAnimation } from '../animations';
 import Icon from '../icons/Icon';
 import { RowWithMargins } from '../layout';
+import Spinner from '../Spinner';
 import { Text } from '../text';
 
 const StatusProps = {
-  failed: {
+  [TransactionStatusTypes.failed]: {
     name: 'closeCircled',
     style: position.maxSizeAsObject(12),
   },
-  received: {
+  [TransactionStatusTypes.received]: {
     direction: 'down',
     name: 'arrow',
   },
-  self: {
+  [TransactionStatusTypes.self]: {
     name: 'dot',
   },
-  sent: {
+  [TransactionStatusTypes.sent]: {
     name: 'sendSmall',
   },
 };
@@ -33,15 +31,8 @@ const TransactionStatusBadge = ({ pending, status, ...props }) => {
 
   return (
     <RowWithMargins align="center" margin={4} {...props}>
-      {pending && (
-        <SpinAnimation>
-          <FastImage
-            source={SpinnerImageSource}
-            style={position.sizeAsObject(12)}
-          />
-        </SpinAnimation>
-      )}
-      {(status && includes(Object.keys(StatusProps), status)) && (
+      {pending && <Spinner color={colors.appleBlue} size={12} />}
+      {status && includes(Object.keys(StatusProps), status) && (
         <Icon
           color={statusColor}
           style={position.maxSizeAsObject(10)}
@@ -49,7 +40,7 @@ const TransactionStatusBadge = ({ pending, status, ...props }) => {
         />
       )}
       <Text color={statusColor} size="smedium" weight="semibold">
-        {upperFirst(status || 'Unknown status')}
+        {upperFirst(status)}
       </Text>
     </RowWithMargins>
   );

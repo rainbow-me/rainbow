@@ -16,9 +16,7 @@ const AnimatedPagerItem = ({ children, translateX, ...props }) => (
     {...props}
     style={[styles.item, { transform: [{ translateX }] }]}
   >
-    <FlexItem style={position.sizeAsObject('100%')}>
-      {children}
-    </FlexItem>
+    <FlexItem style={position.sizeAsObject('100%')}>{children}</FlexItem>
   </Animated.View>
 );
 

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import lang from 'i18n-js';
 import { Animated } from 'react-native';
-import TouchID from 'react-native-touch-id';
 import styled from 'styled-components';
 import { Button, HoldToAuthorizeButton } from '../components/buttons';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
@@ -15,16 +14,20 @@ import {
 } from '../components/transaction';
 import { Text } from '../components/text';
 import { colors, position } from '../styles';
+import {
+  isMessageDisplayType,
+  isTransactionDisplayType,
+  SEND_TRANSACTION,
+} from '../utils/signingMethods';
 
 const CancelButtonContainer = styled.View`
-  bottom: 22;
+  bottom: 19;
   position: absolute;
   right: 19;
 `;
 
 const Container = styled(Column)`
   ${position.size('100%')}
-  background-color: ${colors.black};
   flex: 1;
 `;
 
@@ -43,26 +46,16 @@ export default class TransactionConfirmationScreen extends PureComponent {
   static propTypes = {
     dappName: PropTypes.string,
     imageUrl: PropTypes.string,
+    method: PropTypes.string,
     onCancel: PropTypes.func,
     onConfirm: PropTypes.func,
     request: PropTypes.object,
-    requestType: PropTypes.string,
-  }
+  };
 
   state = {
-    biometryType: null,
+    isAuthorizing: false,
     sendLongPressProgress: new Animated.Value(0),
-  }
-
-  componentDidMount() {
-    TouchID.isSupported()
-      .then(biometryType => {
-        this.setState({ biometryType });
-      })
-      .catch(() => {
-        this.setState({ biometryType: 'FaceID' });
-      });
-  }
+  };
 
   componentWillUnmount() {
     this.state.sendLongPressProgress.stopAnimation();
@@ -75,7 +68,7 @@ export default class TransactionConfirmationScreen extends PureComponent {
       duration: 800,
       toValue: 100,
     }).start();
-  }
+  };
 
   onReleaseSend = () => {
     const { sendLongPressProgress } = this.state;
@@ -84,34 +77,51 @@ export default class TransactionConfirmationScreen extends PureComponent {
       duration: (sendLongPressProgress._value / 100) * 800,
       toValue: 0,
     }).start();
-  }
+  };
 
   onLongPressSend = async () => {
-    const { onConfirm, requestType } = this.props;
+    const { onConfirm } = this.props;
     const { sendLongPressProgress } = this.state;
 
+    this.setState({ isAuthorizing: true });
     Animated.timing(sendLongPressProgress, {
       duration: (sendLongPressProgress._value / 100) * 800,
       toValue: 0,
     }).start();
 
-    await onConfirm(requestType);
-  }
+    try {
+      await onConfirm();
+      this.setState({ isAuthorizing: false });
+    } catch (error) {
+      this.setState({ isAuthorizing: false });
+    }
+  };
 
-  renderSendButton = () => (
-    <HoldToAuthorizeButton
-      isAuthorizing={this.state.isAuthorizing}
-      onLongPress={this.onLongPressSend}
-    >
-      {`Hold to ${(this.props.requestType === 'message' || this.props.requestType === 'messagePersonal') ? 'Sign' : 'Send'}`}
-    </HoldToAuthorizeButton>
-  )
+  renderSendButton = () => {
+    const { method } = this.props;
+    const { isAuthorizing } = this.state;
+    const label = `Hold to ${method === SEND_TRANSACTION ? 'Send' : 'Sign'}`;
+
+    return (
+      <HoldToAuthorizeButton
+        isAuthorizing={isAuthorizing}
+        label={label}
+        onLongPress={this.onLongPressSend}
+      />
+    );
+  };
+
+  requestHeader = () => {
+    const { method } = this.props;
+    return isMessageDisplayType(method)
+      ? lang.t('wallet.message_signing.request')
+      : lang.t('wallet.transaction.request');
+  };
 
   renderTransactionSection = () => {
-    const { request, requestType } = this.props;
+    const { request, method } = this.props;
 
-    if (requestType === 'message'
-        || requestType === 'messagePersonal') {
+    if (isMessageDisplayType(method)) {
       return (
         <MessageSigningSection
           message={request}
@@ -120,7 +130,7 @@ export default class TransactionConfirmationScreen extends PureComponent {
       );
     }
 
-    if (requestType === 'transaction') {
+    if (isTransactionDisplayType(method) && get(request, 'asset')) {
       return (
         <TransactionConfirmationSection
           asset={{
@@ -145,35 +155,29 @@ export default class TransactionConfirmationScreen extends PureComponent {
         sendButton={this.renderSendButton()}
       />
     );
-  }
+  };
 
   render = () => (
     <Container>
       <Masthead>
         <RequestVendorLogoIcon
+          backgroundColor="transparent"
           dappName={this.props.dappName}
           imageUrl={this.props.imageUrl}
-          showLargeShadow={true}
           size={60}
           style={{ marginBottom: 24 }}
         />
-        <Text
-          color="white"
-          letterSpacing="looser"
-          size="h4"
-          weight="semibold"
-        >
+        <Text color="white" letterSpacing="looser" size="h4" weight="semibold">
           {this.props.dappName}
         </Text>
-        <TransactionType>
-          {lang.t('wallet.transaction.request')}
-        </TransactionType>
+        <TransactionType>{this.requestHeader()}</TransactionType>
         <CancelButtonContainer>
           <Button
             backgroundColor={colors.blueGreyMedium}
             onPress={this.props.onCancel}
+            showShadow={false}
             size="small"
-            textProps={{ color: 'black', size: 'medium' }}
+            textProps={{ color: colors.backgroundGrey, size: 'lmedium' }}
           >
             {lang.t('wallet.action.reject')}
           </Button>
@@ -181,5 +185,5 @@ export default class TransactionConfirmationScreen extends PureComponent {
       </Masthead>
       {this.renderTransactionSection()}
     </Container>
-  )
+  );
 }

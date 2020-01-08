@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get, isEmpty, isNil } from 'lodash';
@@ -55,7 +56,14 @@ export const getChainId = async () => {
   return get(wallet, 'provider.chainId');
 };
 
-export const createTransaction = async (to, data, value, gasLimit, gasPrice, nonce = null) => ({
+export const createTransaction = async (
+  to,
+  data,
+  value,
+  gasLimit,
+  gasPrice,
+  nonce = null
+) => ({
   data,
   gasLimit,
   gasPrice,
@@ -73,46 +81,84 @@ export const sendTransaction = async ({ transaction }) => {
       return result.hash;
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      captureException(error);
       return null;
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    captureException(error);
     return null;
   }
 };
 
-export const signMessage = async (message, authenticationPrompt = lang.t('wallet.authenticate.please')) => {
+export const signTransaction = async ({ transaction }) => {
+  try {
+    const wallet = await loadWallet();
+    if (!wallet) return null;
+    try {
+      return await wallet.sign(transaction);
+    } catch (error) {
+      Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
+      captureException(error);
+      return null;
+    }
+  } catch (error) {
+    Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    captureException(error);
+    return null;
+  }
+};
+
+export const signMessage = async (
+  message,
+  authenticationPrompt = lang.t('wallet.authenticate.please')
+) => {
   try {
     const wallet = await loadWallet(authenticationPrompt);
     try {
       const signingKey = new ethers.utils.SigningKey(wallet.privateKey);
-      const sigParams = await signingKey.signDigest(ethers.utils.arrayify(message));
+      const sigParams = await signingKey.signDigest(
+        ethers.utils.arrayify(message)
+      );
       return await ethers.utils.joinSignature(sigParams);
     } catch (error) {
+      captureException(error);
       return null;
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    captureException(error);
     return null;
   }
 };
 
-export const signPersonalMessage = async (message, authenticationPrompt = lang.t('wallet.authenticate.please')) => {
+export const signPersonalMessage = async (
+  message,
+  authenticationPrompt = lang.t('wallet.authenticate.please')
+) => {
   try {
     const wallet = await loadWallet(authenticationPrompt);
     try {
-      return await wallet.signMessage(isHexString(message) ? ethers.utils.arrayify(message) : message);
+      return await wallet.signMessage(
+        isHexString(message) ? ethers.utils.arrayify(message) : message
+      );
     } catch (error) {
+      captureException(error);
       return null;
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
+    captureException(error);
     return null;
   }
 };
 
-export const loadSeedPhrase = async (authenticationPrompt = lang.t('wallet.authenticate.please_seed_phrase')) => {
-  const seedPhrase = await keychain.loadString(seedPhraseKey, { authenticationPrompt });
+export const loadSeedPhrase = async (
+  authenticationPrompt = lang.t('wallet.authenticate.please_seed_phrase')
+) => {
+  const seedPhrase = await keychain.loadString(seedPhraseKey, {
+    authenticationPrompt,
+  });
   return seedPhrase;
 };
 
@@ -120,16 +166,19 @@ export const loadAddress = async () => {
   try {
     return await keychain.loadString(addressKey);
   } catch (error) {
+    captureException(error);
     return null;
   }
 };
 
-const createWallet = async (seed) => {
+const createWallet = async seed => {
   const walletSeed = seed || generateSeedPhrase();
   let wallet = null;
   try {
-    if (isHexStringIgnorePrefix(walletSeed)
-        && addHexPrefix(walletSeed).length === 66) {
+    if (
+      isHexStringIgnorePrefix(walletSeed) &&
+      addHexPrefix(walletSeed).length === 66
+    ) {
       wallet = new ethers.Wallet(walletSeed);
     } else if (isValidMnemonic(walletSeed)) {
       wallet = ethers.Wallet.fromMnemonic(walletSeed);
@@ -144,15 +193,21 @@ const createWallet = async (seed) => {
     }
     return null;
   } catch (error) {
+    captureException(error);
     return null;
   }
 };
 
 const saveWalletDetails = async (seedPhrase, privateKey, address) => {
-  const canAuthenticate = await canImplyAuthentication({ authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS });
+  const canAuthenticate = await canImplyAuthentication({
+    authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
+  });
   let accessControlOptions = {};
   if (canAuthenticate) {
-    accessControlOptions = { accessControl: ACCESS_CONTROL.USER_PRESENCE, accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY };
+    accessControlOptions = {
+      accessControl: ACCESS_CONTROL.USER_PRESENCE,
+      accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+    };
   }
   saveSeedPhrase(seedPhrase, accessControlOptions);
   savePrivateKey(privateKey, accessControlOptions);
@@ -167,15 +222,20 @@ const savePrivateKey = async (privateKey, accessControlOptions = {}) => {
   await keychain.saveString(privateKeyKey, privateKey, accessControlOptions);
 };
 
-const loadPrivateKey = async (authenticationPrompt = lang.t('wallet.authenticate.please')) => {
+const loadPrivateKey = async (
+  authenticationPrompt = lang.t('wallet.authenticate.please')
+) => {
   try {
-    const privateKey = await keychain.loadString(privateKeyKey, { authenticationPrompt });
+    const privateKey = await keychain.loadString(privateKeyKey, {
+      authenticationPrompt,
+    });
     return privateKey;
   } catch (error) {
+    captureException(error);
     return null;
   }
 };
 
-const saveAddress = async (address) => {
+const saveAddress = async address => {
   await keychain.saveString(addressKey, address);
 };

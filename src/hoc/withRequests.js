@@ -9,8 +9,10 @@ const mapStateToProps = ({ requests: { requests } }) => ({
 
 const requestsSelector = state => state.requests;
 
-const withRequests = (requests) => {
-  const sortedRequests = reverse(sortBy(values(requests), 'displayDetails.timestampInMs'));
+const withRequests = requests => {
+  const sortedRequests = reverse(
+    sortBy(values(requests), 'displayDetails.timestampInMs')
+  );
 
   return {
     pendingRequestCount: sortedRequests.length,
@@ -18,12 +20,7 @@ const withRequests = (requests) => {
   };
 };
 
-const withRequestsSelector = createSelector(
-  [requestsSelector],
-  withRequests,
-);
+const withRequestsSelector = createSelector([requestsSelector], withRequests);
 
-export default Component => compose(
-  connect(mapStateToProps),
-  withProps(withRequestsSelector),
-)(Component);
+export default Component =>
+  compose(connect(mapStateToProps), withProps(withRequestsSelector))(Component);

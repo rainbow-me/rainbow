@@ -1,6 +1,12 @@
-import { get, isFunction, isString } from 'lodash';
+import { get, isFunction, isString, toLower } from 'lodash';
 
-export const sortList = (array = [], sortByKey, direction, defaultValue, formatter) => (
+export const sortList = (
+  array = [],
+  sortByKey,
+  direction,
+  defaultValue,
+  formatter
+) =>
   array.slice(0).sort((a, b) => {
     const isAscending = direction === 'asc';
 
@@ -18,13 +24,12 @@ export const sortList = (array = [], sortByKey, direction, defaultValue, formatt
     }
 
     if (isString(itemA) && isString(itemB)) {
-      itemA = itemA.toLowerCase();
-      itemB = itemB.toLowerCase();
+      itemA = toLower(itemA);
+      itemB = toLower(itemB);
     }
 
     if (itemA < itemB) return isAscending ? -1 : 1;
     if (itemA > itemB) return isAscending ? 1 : -1;
 
     return 0;
-  })
-);
+  });

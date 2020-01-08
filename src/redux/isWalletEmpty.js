@@ -4,7 +4,7 @@ import {
   getIsWalletEmpty,
   removeIsWalletEmpty,
   saveIsWalletEmpty,
-} from '../handlers/commonStorage';
+} from '../handlers/localstorage/accountLocal';
 
 // -- Constants --------------------------------------- //
 const SET_IS_WALLET_EMPTY = 'isWalletEmpty/SET_IS_WALLET_EMPTY';
@@ -27,7 +27,7 @@ export const setIsWalletEmpty = payload => (dispatch, getState) => {
     type: SET_IS_WALLET_EMPTY,
   });
   const { accountAddress, network } = getState().settings;
-  saveIsWalletEmpty(accountAddress, payload, network);
+  saveIsWalletEmpty(payload, accountAddress, network);
 };
 
 export const clearIsWalletEmpty = () => (dispatch, getState) => {
@@ -36,20 +36,18 @@ export const clearIsWalletEmpty = () => (dispatch, getState) => {
   dispatch({ type: CLEAR_IS_WALLET_EMPTY });
 };
 
-
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = { isWalletEmpty: true };
 
-export default (state = INITIAL_STATE, action) => (
+export default (state = INITIAL_STATE, action) =>
   produce(state, draft => {
     switch (action.type) {
-    case SET_IS_WALLET_EMPTY:
-      draft.isWalletEmpty = action.payload;
-      break;
-    case CLEAR_IS_WALLET_EMPTY:
-      return INITIAL_STATE;
-    default:
-      break;
+      case SET_IS_WALLET_EMPTY:
+        draft.isWalletEmpty = action.payload;
+        break;
+      case CLEAR_IS_WALLET_EMPTY:
+        return INITIAL_STATE;
+      default:
+        break;
     }
-  })
-);
+  });

@@ -180,26 +180,63 @@
       "generic_error": "Oups, une erreur s’est produite"
     },
     "time": {
-      "ms": "ms",
-      "milisecond": "milliseconde",
-      "miliseconds": "millisecondes",
-      "s": "s",
-      "sec": "sec",
-      "secs": "secs",
-      "second": "seconde",
-      "seconds": "secondes",
-      "min": "min",
-      "mins": "mins",
-      "minute": "minute",
-      "minutes": "minutes",
-      "hr": "h",
-      "hrs": "hres",
-      "hour": "heure",
-      "hours": "heures",
-      "day": "jour",
-      "days": "jours",
-      "now": "Maintenant"
+      "days": {
+        "long": {
+          "singular": "jour",
+          "plural": "jours"
+        },
+        "micro": "j",
+        "short": {
+          "singular": "jour",
+          "plural": "jours"
+        }
       },
+      "hours": {
+        "long": {
+          "singular": "heure",
+          "plural": "heures"
+        },
+        "micro": "h",
+        "short": {
+          "singular": "h",
+          "plural": "hres"
+        }
+      },
+      "milliseconds": {
+        "long": {
+          "singular": "milliseconde",
+          "plural": "millisecondes"
+        },
+        "micro": "ms",
+        "short": {
+          "singular": "ms",
+          "plural": "ms"
+        }
+      },
+      "minutes": {
+        "long": {
+          "singular": "minute",
+          "plural": "minutes"
+        },
+        "micro": "m",
+        "short": {
+          "singular": "min",
+          "plural": "mins"
+        }
+      },
+      "now": "Maintenant",
+      "seconds": {
+        "long": {
+          "singular": "seconde",
+          "plural": "secondes"
+        },
+        "micro": "s",
+        "short": {
+          "singular": "sec",
+          "plural": "secs"
+        }
+      }
+    },
     "wallet": {
       "action": {
         "cancel": "Annuler",

@@ -9,7 +9,7 @@ import { ShadowStack } from './shadow-stack';
 
 const Container = styled(Centered)`
   ${position.cover}
-  background-color: ${colors.lightGrey};
+  background-color: ${colors.lighterGrey};
   border-radius: ${({ size }) => size};
 `;
 
@@ -29,10 +29,7 @@ const Avatar = ({ size, source }) => (
           style={position.sizeAsObject(size)}
         />
       ) : (
-        <Icon
-          name="avatar"
-          size={size}
-        />
+        <Icon name="avatar" size={size} />
       )}
     </Container>
   </ShadowStack>

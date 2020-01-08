@@ -1,7 +1,8 @@
+import { upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { InteractionManager, Linking, ScrollView } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
+import { isEmulatorSync } from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
 import * as StoreReview from 'react-native-store-review';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
@@ -12,15 +13,14 @@ import LanguageIcon from '../../assets/language-icon.png';
 import NetworkIcon from '../../assets/network-icon.png';
 // import SecurityIcon from '../../assets/security-icon.png';
 import {
-  getAppStoreReviewRequestCount,
-  setAppStoreReviewRequestCount,
-} from '../../handlers/commonStorage';
+  getAppStoreReviewCount,
+  saveAppStoreReviewCount,
+} from '../../handlers/localstorage/globalSettings';
 import { withAccountSettings, withSendFeedback } from '../../hoc';
 import { supportedLanguages } from '../../languages';
-import { colors, position } from '../../styles';
+import { position } from '../../styles';
 import AppVersionStamp from '../AppVersionStamp';
-import { Icon } from '../icons';
-import { Centered, Column, ColumnWithDividers } from '../layout';
+import { Column, ColumnWithDividers } from '../layout';
 import {
   ListFooter,
   ListItem,
@@ -30,7 +30,8 @@ import {
 import { Emoji } from '../text';
 
 const SettingsExternalURLs = {
-  review: 'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review',
+  review:
+    'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review',
   twitterDeepLink: 'twitter://user?screen_name=rainbowdotme',
   twitterWebUrl: 'https://twitter.com/rainbowdotme',
 };
@@ -55,8 +56,6 @@ const SettingsSection = ({
   onPressReview,
   onPressTwitter,
   onSendFeedback,
-  // onPressSecurity,
-  ...props
 }) => (
   <ScrollView
     contentContainerStyle={position.sizeAsObject('100%')}
@@ -90,18 +89,14 @@ const SettingsSection = ({
         onPress={onPressNetwork}
         label="Network"
       >
-        <ListItemArrowGroup>
-          {network || ''}
-        </ListItemArrowGroup>
+        <ListItemArrowGroup>{upperFirst(network) || ''}</ListItemArrowGroup>
       </ListItem>
       <ListItem
         icon={<SettingIcon source={CurrencyIcon} />}
         onPress={onPressCurrency}
         label="Currency"
       >
-        <ListItemArrowGroup>
-          {nativeCurrency || ''}
-        </ListItemArrowGroup>
+        <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
       </ListItem>
       <ListItem
         icon={<SettingIcon source={LanguageIcon} />}
@@ -127,7 +122,7 @@ const SettingsSection = ({
     <ColumnWithDividers dividerRenderer={ListItemDivider}>
       <ListItem
         icon={<Emoji name="seedling" />}
-        label="Import Wallet"
+        label="Replace Wallet"
         onPress={onPressImportSeedPhrase}
       />
       <ListItem
@@ -147,12 +142,7 @@ const SettingsSection = ({
         onPress={onPressReview}
       />
     </ColumnWithDividers>
-    <Column
-      align="center"
-      flex={1}
-      justify="end"
-      paddingBottom={24}
-    >
+    <Column align="center" flex={1} justify="end" paddingBottom={24}>
       <AppVersionStamp />
     </Column>
   </ScrollView>
@@ -184,25 +174,26 @@ export default compose(
   withHandlers({
     onPressReview: ({ onCloseModal }) => async () => {
       const maxRequestCount = 2;
-      const count = await getAppStoreReviewRequestCount();
-      const shouldDeeplinkToAppStore = (count >= maxRequestCount) || !StoreReview.isAvailable;
+      const count = await getAppStoreReviewCount();
+      const shouldDeeplinkToAppStore =
+        count >= maxRequestCount || !StoreReview.isAvailable;
 
-      if (shouldDeeplinkToAppStore && !DeviceInfo.isEmulator()) {
+      if (shouldDeeplinkToAppStore && !isEmulatorSync()) {
         Linking.openURL(SettingsExternalURLs.review);
       } else {
         onCloseModal();
         InteractionManager.runAfterInteractions(StoreReview.requestReview);
       }
 
-      return setAppStoreReviewRequestCount(count + 1);
+      return saveAppStoreReviewCount(count + 1);
     },
     onPressTwitter: () => async () => {
-      Linking.canOpenURL(SettingsExternalURLs.twitterDeepLink).then((supported) => (
+      Linking.canOpenURL(SettingsExternalURLs.twitterDeepLink).then(supported =>
         supported
           ? Linking.openURL(SettingsExternalURLs.twitterDeepLink)
           : Linking.openURL(SettingsExternalURLs.twitterWebUrl)
-      ));
+      );
     },
   }),
-  onlyUpdateForKeys(['language', 'nativeCurrency']),
+  onlyUpdateForKeys(['language', 'nativeCurrency'])
 )(SettingsSection);

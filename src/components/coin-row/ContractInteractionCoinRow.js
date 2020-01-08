@@ -17,9 +17,9 @@ import TransactionStatusBadge from './TransactionStatusBadge';
 import { RequestVendorLogoIcon } from '../coin-icon';
 
 const rowRenderPropTypes = {
+  // eslint-disable-next-line react/no-unused-prop-types
   dappName: PropTypes.string,
-  item: PropTypes.object,
-  onPressTransaction: PropTypes.func,
+  // eslint-disable-next-line react/no-unused-prop-types
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
 };
 
@@ -42,7 +42,7 @@ const ContractInteractionCoinRow = ({ item, onPressTransaction, ...props }) => (
       {...props}
       bottomRowRender={BottomRow}
       coinIconRender={ContractInteractionVenderLogoIcon}
-      shouldRasterizeIOS={true}
+      shouldRasterizeIOS
       topRowRender={TopRow}
     />
   </ButtonPressAnimation>
@@ -51,14 +51,7 @@ const ContractInteractionCoinRow = ({ item, onPressTransaction, ...props }) => (
 ContractInteractionCoinRow.propTypes = rowRenderPropTypes;
 
 export default compose(
-  mapProps(({
-    item: {
-      hash,
-      pending,
-      ...item
-    },
-    ...props
-  }) => ({
+  mapProps(({ item: { hash, pending, ...item }, ...props }) => ({
     hash,
     item,
     pending,
@@ -67,17 +60,20 @@ export default compose(
   withHandlers({
     onPressTransaction: ({ hash }) => () => {
       if (hash) {
-        showActionSheetWithOptions({
-          cancelButtonIndex: 1,
-          options: ['View on Etherscan', 'Cancel'],
-        }, (buttonIndex) => {
-          if (buttonIndex === 0) {
-            const normalizedHash = hash.replace(/-.*/g, '');
-            Linking.openURL(`https://etherscan.io/tx/${normalizedHash}`);
+        showActionSheetWithOptions(
+          {
+            cancelButtonIndex: 1,
+            options: ['View on Etherscan', 'Cancel'],
+          },
+          buttonIndex => {
+            if (buttonIndex === 0) {
+              const normalizedHash = hash.replace(/-.*/g, '');
+              Linking.openURL(`https://etherscan.io/tx/${normalizedHash}`);
+            }
           }
-        });
+        );
       }
     },
   }),
-  onlyUpdateForKeys(['hash', 'pending']),
+  onlyUpdateForKeys(['hash', 'pending'])
 )(ContractInteractionCoinRow);

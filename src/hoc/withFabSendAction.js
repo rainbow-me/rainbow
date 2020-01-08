@@ -1,17 +1,13 @@
 import { connect } from 'react-redux';
-import {
-  compose,
-  lifecycle,
-  omitProps,
-  pure,
-  withProps,
-} from 'recompact';
+import { compose, lifecycle, omitProps, pure, withProps } from 'recompact';
 import { createSelector } from 'reselect';
 import withFabSelection from './withFabSelection';
 import withOpenFamilyTabs from './withOpenFamilyTabs';
 import { extraStates } from '../components/fab/MovableFabWrapper';
 
-const mapStateToProps = ({ selectedWithFab: { actionType } }) => ({ actionType });
+const mapStateToProps = ({ selectedWithFab: { actionType } }) => ({
+  actionType,
+});
 
 const familyNameSelector = state => state.familyName;
 const selectedIdSelector = state => state.selectedId;
@@ -20,16 +16,12 @@ const uniqueIdSelector = state => state.uniqueId;
 const derivePropsFromSelectedId = (familyName, selectedId, uniqueId) => ({
   fabDropped: selectedId === extraStates.gestureInactive,
   family: selectedId === familyName,
-  highlight: (selectedId === uniqueId) || (selectedId === familyName),
+  highlight: selectedId === uniqueId || selectedId === familyName,
 });
 
 const withPropsDerivedFromSelectedId = createSelector(
-  [
-    familyNameSelector,
-    selectedIdSelector,
-    uniqueIdSelector,
-  ],
-  derivePropsFromSelectedId,
+  [familyNameSelector, selectedIdSelector, uniqueIdSelector],
+  derivePropsFromSelectedId
 );
 
 let openFamilyCheck = 0;
@@ -79,5 +71,5 @@ export default compose(
       }
     },
   }),
-  pure,
+  pure
 );

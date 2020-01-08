@@ -1,18 +1,10 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
-import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Animated from 'react-native-reanimated';
-import { withNavigation, withNavigationFocus } from 'react-navigation';
-import {
-  compose,
-  withHandlers,
-  withProps,
-  withState,
-} from 'recompact';
-import { FadeInAnimation } from '../components/animations';
+import { withNavigation } from 'react-navigation';
+import { compose, withProps } from 'recompact';
 import { AssetList } from '../components/asset-list';
-import BlurOverlay from '../components/BlurOverlay';
 import { FabWrapper } from '../components/fab';
 import {
   CameraHeaderButton,
@@ -22,97 +14,72 @@ import {
 import { Page } from '../components/layout';
 import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import {
-  getShowShitcoinsSetting,
-  updateShowShitcoinsSetting,
-} from '../handlers/commonStorage';
-import {
   withAccountData,
   withAccountSettings,
-  withBlurTransitionProps,
   withDataInit,
   withIsWalletEmpty,
   withIsWalletEthZero,
-  withUniqueTokens,
   withStatusBarStyle,
-  withUniswapLiquidity,
+  withUniqueTokens,
+  withUniswapLiquidityTokenInfo,
+  withKeyboardHeight,
 } from '../hoc';
 import { position } from '../styles';
-import { isNewValueForPath } from '../utils';
+import { isNewValueForObjectPaths } from '../utils';
+import { getKeyboardHeight } from '../handlers/localstorage/globalSettings';
 
 class WalletScreen extends Component {
   static propTypes = {
+    accountAddress: PropTypes.string,
     allAssetsCount: PropTypes.number,
     assets: PropTypes.array,
     assetsTotal: PropTypes.object,
-    blurOpacity: PropTypes.object,
     initializeWallet: PropTypes.func,
     isEmpty: PropTypes.bool.isRequired,
     isFocused: PropTypes.bool,
     isWalletEthZero: PropTypes.bool.isRequired,
     navigation: PropTypes.object,
+    network: PropTypes.string,
     refreshAccountData: PropTypes.func,
     scrollViewTracker: PropTypes.object,
     sections: PropTypes.array,
+    setKeyboardHeight: PropTypes.func,
     setSafeTimeout: PropTypes.func,
-    showBlur: PropTypes.bool,
-    toggleShowShitcoins: PropTypes.func,
     uniqueTokens: PropTypes.array,
-  }
+  };
 
   componentDidMount = async () => {
     try {
       await this.props.initializeWallet();
-      const showShitcoins = await getShowShitcoinsSetting();
-      if (showShitcoins !== null) {
-        this.props.toggleShowShitcoins(showShitcoins);
+      const keyboardheight = await getKeyboardHeight();
+      if (keyboardheight) {
+        this.props.setKeyboardHeight(keyboardheight);
       }
     } catch (error) {
-      // TODO
+      // TODO error state
     }
-  }
+  };
 
-  shouldComponentUpdate = (nextProps) => {
-    const isNewBlurOpacity = isNewValueForPath(this.props, nextProps, 'blurOpacity');
-    const isNewCurrency = isNewValueForPath(this.props, nextProps, 'nativeCurrency');
-    const isNewFetchingAssets = isNewValueForPath(this.props, nextProps, 'fetchingAssets');
-    const isNewFetchingUniqueTokens = isNewValueForPath(this.props, nextProps, 'fetchingUniqueTokens');
-    const isNewIsWalletEmpty = isNewValueForPath(this.props, nextProps, 'isEmpty');
-    const isNewIsWalletEthZero = isNewValueForPath(this.props, nextProps, 'isWalletEthZero');
-    const isNewLanguage = isNewValueForPath(this.props, nextProps, 'language');
-    const isNewSections = isNewValueForPath(this.props, nextProps, 'sections');
-    const isNewShowBlur = isNewValueForPath(this.props, nextProps, 'showBlur');
-    const isNewShowShitcoins = isNewValueForPath(this.props, nextProps, 'showShitcoins');
-    const isNewTransitionProps = isNewValueForPath(this.props, nextProps, 'transitionProps');
-
-    if (!nextProps.isFocused && !nextProps.showBlur) {
-      return isNewBlurOpacity
-        || isNewShowBlur
-        || isNewTransitionProps;
-    }
-
-    return isNewFetchingAssets
-    || isNewFetchingUniqueTokens
-    || isNewIsWalletEmpty
-    || isNewIsWalletEthZero
-    || isNewLanguage
-    || isNewCurrency
-    || isNewBlurOpacity
-    || isNewSections
-    || isNewShowShitcoins
-    || isNewTransitionProps
-    || isNewShowBlur;
-  }
+  shouldComponentUpdate = nextProps =>
+    nextProps.navigation.isFocused() &&
+    isNewValueForObjectPaths(this.props, nextProps, [
+      'fetchingAssets',
+      'fetchingUniqueTokens',
+      'isEmpty',
+      'isWalletEthZero',
+      'language',
+      'nativeCurrency',
+      'sections',
+    ]);
 
   render = () => {
     const {
-      blurOpacity,
       isEmpty,
       isWalletEthZero,
       navigation,
       refreshAccountData,
       scrollViewTracker,
       sections,
-      showBlur,
     } = this.props;
 
     return (
@@ -125,7 +92,7 @@ class WalletScreen extends Component {
           scrollViewTracker={scrollViewTracker}
           sections={sections}
         >
-          <Header justify="space-between">
+          <Header marginTop={5} justify="space-between">
             <ProfileHeaderButton navigation={navigation} />
             <CameraHeaderButton navigation={navigation} />
           </Header>
@@ -137,14 +104,9 @@ class WalletScreen extends Component {
             sections={sections}
           />
         </FabWrapper>
-        {showBlur && (
-          <FadeInAnimation css={position.cover} duration={315} zIndex={1}>
-            <BlurOverlay opacity={blurOpacity} />
-          </FadeInAnimation>
-        )}
       </Page>
     );
-  }
+  };
 }
 
 export default compose(
@@ -152,30 +114,13 @@ export default compose(
   withUniqueTokens,
   withAccountSettings,
   withDataInit,
-  withUniswapLiquidity,
+  withUniswapLiquidityTokenInfo,
   withSafeTimeout,
   withNavigation,
-  withNavigationFocus,
-  withBlurTransitionProps,
   withIsWalletEmpty,
   withIsWalletEthZero,
+  withKeyboardHeight,
   withStatusBarStyle('dark-content'),
-  withState('showShitcoins', 'toggleShowShitcoins', true),
-  withHandlers({
-    onToggleShowShitcoins: ({ showShitcoins, toggleShowShitcoins }) => (index) => {
-      if (index === 0) {
-        const updatedShowShitcoinsSetting = !showShitcoins;
-        toggleShowShitcoins(updatedShowShitcoinsSetting);
-        updateShowShitcoinsSetting(updatedShowShitcoinsSetting);
-
-        if (updatedShowShitcoinsSetting) {
-          analytics.track('Showed shitcoins');
-        } else {
-          analytics.track('Hid shitcoins');
-        }
-      }
-    },
-  }),
   withProps(buildWalletSectionsSelector),
-  withProps({ scrollViewTracker: new Animated.Value(0) }),
+  withProps({ scrollViewTracker: new Animated.Value(0) })
 )(WalletScreen);

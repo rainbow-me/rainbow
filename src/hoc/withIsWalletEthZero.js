@@ -3,4 +3,5 @@ import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 
 const mapStateToProps = ({ isWalletEthZero }) => isWalletEthZero;
 
-export default Component => connect(mapStateToProps, { setIsWalletEthZero })(Component);
+export default Component =>
+  connect(mapStateToProps, { setIsWalletEthZero })(Component);

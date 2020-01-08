@@ -5,7 +5,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { ButtonPressAnimation } from '../animations';
 import InnerBorder from '../InnerBorder';
 import { borders, colors, position } from '../../styles';
-import { isNewValueForPath } from '../../utils';
+import { isNewValueForObjectPaths } from '../../utils';
 import { ShadowStack } from '../shadow-stack';
 
 const FabSize = 56;
@@ -17,6 +17,7 @@ const FabShadow = [
 
 export default class FloatingActionButton extends Component {
   static propTypes = {
+    backgroundColor: PropTypes.string,
     children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
     disabled: PropTypes.bool,
     isFabSelectionValid: PropTypes.bool,
@@ -25,39 +26,41 @@ export default class FloatingActionButton extends Component {
     scaleTo: PropTypes.number,
     size: PropTypes.number,
     tapRef: PropTypes.object,
-  }
+  };
 
   static defaultProps = {
     scaleTo: 0.82,
     size: FabSize,
-  }
+  };
 
-  static size = FabSize
+  shouldComponentUpdate = nextProps =>
+    isNewValueForObjectPaths(this.props, nextProps, [
+      'disabled',
+      'isFabSelectionValid',
+      'scaleTo',
+    ]);
 
-  static sizeWhileDragging = 74
+  static size = FabSize;
 
-  static shadow = FabShadow
+  static sizeWhileDragging = 74;
 
-  shouldComponentUpdate = nextProps => (
-    isNewValueForPath(this.props, nextProps, 'disabled')
-    || isNewValueForPath(this.props, nextProps, 'isFabSelectionValid')
-    || isNewValueForPath(this.props, nextProps, 'scaleTo')
-  )
+  static shadow = FabShadow;
 
-  handlePress = (event) => {
+  handlePress = event => {
     const { onPress } = this.props;
     ReactNativeHapticFeedback.trigger('impactLight');
     if (onPress) onPress(event);
-  }
+  };
 
-  handlePressIn = (event) => {
+  handlePressIn = event => {
     const { onPressIn } = this.props;
     ReactNativeHapticFeedback.trigger('impactLight');
     if (onPressIn) onPressIn(event);
-  }
+  };
 
   render = () => {
     const {
+      backgroundColor,
       children,
       disabled,
       isFabSelectionValid,
@@ -84,23 +87,15 @@ export default class FloatingActionButton extends Component {
           <View
             {...position.centeredAsObject}
             {...position.coverAsObject}
-            backgroundColor={isDisabled ? colors.grey : colors.paleBlue}
+            backgroundColor={isDisabled ? colors.grey : backgroundColor}
             disabled={disabled}
             isFabSelectionValid={isFabSelectionValid}
           >
-            {(typeof children === 'function')
-              ? children({ size })
-              : children
-            }
-            {!disabled && (
-              <InnerBorder
-                opacity={0.06}
-                radius={size / 2}
-              />
-            )}
+            {typeof children === 'function' ? children({ size }) : children}
+            {!disabled && <InnerBorder opacity={0.06} radius={size / 2} />}
           </View>
         </ShadowStack>
       </ButtonPressAnimation>
     );
-  }
+  };
 }

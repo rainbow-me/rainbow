@@ -8,15 +8,14 @@ import UniqueTokenCard from './UniqueTokenCard';
 
 const CardMargin = 15;
 const RowPadding = 19;
-const CardSize = (deviceUtils.dimensions.width - (RowPadding * 2) - CardMargin) / 2;
+const CardSize =
+  (deviceUtils.dimensions.width - RowPadding * 2 - CardMargin) / 2;
 
-const enhance = shouldUpdate((...props) => isNewValueForPath(...props, 'item.uniqueId'));
+const enhance = shouldUpdate((...props) =>
+  isNewValueForPath(...props, 'item.uniqueId')
+);
 
-const UniqueTokenRow = enhance(({
-  item,
-  onPress,
-  onPressSend,
-}) => (
+const UniqueTokenRow = enhance(({ item, onPress, onPressSend }) => (
   <Row
     align="center"
     css={`
@@ -33,7 +32,7 @@ const UniqueTokenRow = enhance(({
         key={uniqueToken.uniqueId}
         onPress={onPress}
         onPressSend={onPressSend}
-        style={{ marginLeft: (itemIndex >= 1) ? CardMargin : 0 }}
+        style={{ marginLeft: itemIndex >= 1 ? CardMargin : 0 }}
       />
     ))}
   </Row>

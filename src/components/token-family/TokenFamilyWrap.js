@@ -15,26 +15,28 @@ import {
 import { createSelector } from 'reselect';
 import { withOpenFamilyTabs, withFabSendAction } from '../../hoc';
 import { colors } from '../../styles';
-import { FadeInAnimation } from '../animations';
 import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyHeader from './TokenFamilyHeader';
+
+export const TokenFamilyWrapPaddingTop = 6;
 
 const EnhancedUniqueTokenRow = compose(
   withNavigation,
   withHandlers({
-    onPress: ({ assetType, navigation }) => (item) => {
+    onPress: ({ assetType, navigation }) => item => {
       navigation.navigate('ExpandedAssetScreen', {
         asset: item,
         type: assetType,
       });
     },
-    onPressSend: ({ navigation }) => (asset) => {
+    onPressSend: ({ navigation }) => asset => {
       navigation.navigate('SendSheet', { asset });
     },
-  }),
+  })
 )(UniqueTokenRow);
 
-const getHeight = (openFamilyTab) => (openFamilyTab ? UniqueTokenRow.height + 100 : 100);
+const getHeight = openFamilyTab =>
+  openFamilyTab ? UniqueTokenRow.height + 100 : 100;
 
 const TokenFamilyWrap = ({
   areChildrenVisible,
@@ -45,10 +47,15 @@ const TokenFamilyWrap = ({
   highlight,
   isFamilyOpen,
   item,
+  paddingTop,
   onPressFamilyHeader,
   renderCollectibleItem,
 }) => (
-  <View backgroundColor={colors.white} overflow="hidden">
+  <View
+    backgroundColor={colors.white}
+    paddingTop={paddingTop}
+    overflow="hidden"
+  >
     <TokenFamilyHeader
       childrenAmount={childrenAmount}
       familyImage={familyImage}
@@ -58,12 +65,12 @@ const TokenFamilyWrap = ({
       onHeaderPress={onPressFamilyHeader}
     />
     {areChildrenVisible && (
-      <FadeInAnimation
-        duration={TokenFamilyHeader.animationDuration}
+      <View
         key={`uniqueTokenRow_${familyId}_fadeIn`}
+        paddingTop={TokenFamilyWrapPaddingTop}
       >
         {times(item.length, renderCollectibleItem)}
-      </FadeInAnimation>
+      </View>
     )}
   </View>
 );
@@ -71,14 +78,14 @@ const TokenFamilyWrap = ({
 TokenFamilyWrap.propTypes = {
   areChildrenVisible: PropTypes.bool,
   childrenAmount: PropTypes.number,
-  familyId: PropTypes.string,
+  familyId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   familyImage: PropTypes.string,
   familyName: PropTypes.string,
   highlight: PropTypes.bool,
   isFamilyOpen: PropTypes.bool,
-  isOpen: PropTypes.bool,
   item: PropTypes.array,
   onPressFamilyHeader: PropTypes.func,
+  paddingTop: PropTypes.number,
   renderCollectibleItem: PropTypes.func,
 };
 
@@ -93,7 +100,7 @@ const isFamilyOpenSelector = (familyId, openFamilyTabs) => ({
 
 const withFamilyOpenStateProps = createSelector(
   [familyIdSelector, openFamilyTabsSelector],
-  isFamilyOpenSelector,
+  isFamilyOpenSelector
 );
 
 export default compose(
@@ -108,33 +115,40 @@ export default compose(
         setAreChildrenVisible(false);
       }
     },
-    onPressFamilyHeader: ({ familyId, isFamilyOpen, setOpenFamilyTabs }) => () => (
+    onPressFamilyHeader: ({
+      familyId,
+      isFamilyOpen,
+      setOpenFamilyTabs,
+    }) => () =>
       setOpenFamilyTabs({
         index: familyId,
         state: !isFamilyOpen,
-      })
-    ),
+      }),
     onShowChildren: ({ areChildrenVisible, setAreChildrenVisible }) => () => {
       if (!areChildrenVisible) {
         setAreChildrenVisible(true);
       }
     },
-    /* eslint-disable react/display-name */
-    renderCollectibleItem: ({ familyId, item }) => (index) => (
+    renderCollectibleItem: ({ familyId, item }) => index => (
       <EnhancedUniqueTokenRow
         assetType="unique_token"
         item={item[index]}
         key={`uniqueTokenRow_${familyId}_${index}`}
       />
     ),
-    /* eslint-enable react/display-name */
   }),
   lifecycle({
+    componentDidMount() {
+      this.props.onShowChildren();
+    },
     componentDidUpdate() {
       if (!this.props.isFamilyOpen) {
         this.props.onHideChildren();
       } else if (!this.props.areChildrenVisible) {
-        this.props.setSafeTimeout(this.props.onShowChildren, TokenFamilyHeader.animationDuration);
+        this.props.setSafeTimeout(
+          this.props.onShowChildren,
+          TokenFamilyHeader.animationDuration
+        );
       }
     },
   }),
@@ -142,7 +156,8 @@ export default compose(
     'areChildrenVisible',
     'childrenAmount',
     'highlight',
+    'paddingTop',
     'isFamilyOpen',
     'uniqueId',
-  ]),
+  ])
 )(TokenFamilyWrap);

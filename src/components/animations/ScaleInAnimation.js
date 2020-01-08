@@ -1,39 +1,34 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { pure, toClass } from 'recompact';
 import Animated from 'react-native-reanimated';
 import stylePropType from 'react-style-proptype';
 import { position } from '../../styles';
-import { Centered } from '../layout';
+import { interpolate } from './procs';
 
-const { createAnimatedComponent, interpolate } = Animated;
-
-const AnimatedCentered = createAnimatedComponent(toClass(Centered));
-
-const ScaleInAnimation = ({
-  range,
-  scaleTo,
-  style,
-  value,
-  ...props
-}) => (
-  <AnimatedCentered
+const ScaleInAnimation = ({ range, scaleTo, style, value, ...props }) => (
+  <Animated.View
     {...props}
-    style={[style, {
-      ...position.coverAsObject,
-      opacity: interpolate(value, {
-        extrapolate: 'clamp',
-        inputRange: [range.from, range.to * 0.1, range.to * 0.25],
-        outputRange: [1, 0.333, 0],
-      }),
-      transform: [{
-        scale: interpolate(value, {
-          extrapolate: 'clamp',
-          inputRange: [range.from, range.to * 0.333],
-          outputRange: [1, scaleTo],
+    justifyContent="center"
+    style={[
+      style,
+      {
+        ...position.coverAsObject,
+        opacity: interpolate(value, {
+          extrapolate: Animated.Extrapolate.CLAMP,
+          inputRange: [range.from, range.to * 0.1, range.to * 0.25],
+          outputRange: [1, 0.333, 0],
         }),
-      }],
-    }]}
+        transform: [
+          {
+            scale: interpolate(value, {
+              extrapolate: Animated.Extrapolate.IDENTITY,
+              inputRange: [range.from, range.to * 0.333],
+              outputRange: [1, scaleTo],
+            }),
+          },
+        ],
+      },
+    ]}
   />
 );
 
@@ -52,7 +47,7 @@ ScaleInAnimation.defaultProps = {
     from: 0,
     to: 100,
   },
-  scaleTo: 0.420,
+  scaleTo: 0.42,
 };
 
-export default pure(ScaleInAnimation);
+export default React.memo(ScaleInAnimation);

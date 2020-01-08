@@ -3,7 +3,8 @@ import { pure } from 'recompact';
 import { createElement } from 'react';
 import Text from './Text';
 
-const TruncatedText = ({ component, ...props }) => createElement(component, props);
+const TruncatedText = ({ component, ...props }) =>
+  createElement(component, props);
 
 TruncatedText.propTypes = {
   component: PropTypes.func,

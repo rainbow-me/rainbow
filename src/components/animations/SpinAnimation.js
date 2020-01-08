@@ -8,15 +8,13 @@ export default class SpinAnimation extends PureComponent {
     children: PropTypes.node,
     duration: PropTypes.number,
     style: stylePropType,
-  }
+  };
 
   static defaultProps = {
     duration: 2000,
-  }
+  };
 
-  animatedValue = new Animated.Value(0)
-
-  componentDidMount = () => (
+  componentDidMount = () =>
     Animated.loop(
       Animated.timing(this.animatedValue, {
         duration: this.props.duration,
@@ -24,26 +22,31 @@ export default class SpinAnimation extends PureComponent {
         isInteraction: false,
         toValue: 1,
         useNativeDriver: true,
-      }),
-    ).start()
-  )
+      })
+    ).start();
 
-  componentWillUnmount = () => this.animatedValue.stopAnimation()
+  componentWillUnmount = () => this.animatedValue.stopAnimation();
 
-  interpolatedAnimation = () => (
+  animatedValue = new Animated.Value(0);
+
+  interpolatedAnimation = () =>
     this.animatedValue.interpolate({
       inputRange: [0, 1],
       outputRange: ['0deg', '360deg'],
-    })
-  )
+    });
 
   render = () => {
     const { children, style } = this.props;
 
     return (
-      <Animated.View style={[style, { transform: [{ rotate: this.interpolatedAnimation() }] }]}>
+      <Animated.View
+        style={[
+          style,
+          { transform: [{ rotate: this.interpolatedAnimation() }] },
+        ]}
+      >
         {children}
       </Animated.View>
     );
-  }
+  };
 }

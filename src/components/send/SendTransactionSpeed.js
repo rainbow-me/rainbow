@@ -7,8 +7,16 @@ import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text } from '../text';
 
-const SendTransactionSpeed = ({ gasPrice, nativeCurrencySymbol, onPressTransactionSpeed }) => {
-  const fee = get(gasPrice, 'txFee.native.value.display', `${nativeCurrencySymbol}0.00`);
+const SendTransactionSpeed = ({
+  gasPrice,
+  nativeCurrencySymbol,
+  onPressTransactionSpeed,
+}) => {
+  const fee = get(
+    gasPrice,
+    'txFee.native.value.display',
+    `${nativeCurrencySymbol}0.00`
+  );
   const time = get(gasPrice, 'estimatedTime.display', '');
 
   return (
@@ -17,7 +25,7 @@ const SendTransactionSpeed = ({ gasPrice, nativeCurrencySymbol, onPressTransacti
         backgroundColor={colors.white}
         borderColor={colors.dark}
         borderWidth={1}
-        disabled={true}
+        disabled
         showShadow={false}
         size="small"
         textProps={{ color: colors.blueGreyLightest }}
@@ -43,7 +51,7 @@ const SendTransactionSpeed = ({ gasPrice, nativeCurrencySymbol, onPressTransacti
           }}
         />
         <Text color={colors.white} weight="medium">
-          Arrives in ~ {time.slice(0, -1)}
+          Arrives in ~ {time}
         </Text>
       </Button>
     </Row>

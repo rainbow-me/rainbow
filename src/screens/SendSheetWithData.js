@@ -7,8 +7,11 @@ const SendSheetWithData = withSendComponentWithData(SendSheet, {
   sendTransactionCallback: sendTransaction,
 });
 
-SendSheetWithData.navigationOptions = ({ navigation: { state: { params } } }) => ({
-  effect: 'sheet',
+SendSheetWithData.navigationOptions = ({
+  navigation: {
+    state: { params },
+  },
+}) => ({
   gestureResponseDistance: {
     vertical: params && params.verticalGestureResponseDistance,
   },

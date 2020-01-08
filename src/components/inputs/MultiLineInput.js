@@ -6,5 +6,5 @@ export default compose(
   withProps({
     lineHeight: 'loosest',
     multiline: true,
-  }),
+  })
 )(Input);

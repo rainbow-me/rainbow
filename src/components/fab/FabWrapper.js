@@ -4,16 +4,12 @@ import { onlyUpdateForKeys } from 'recompact';
 import { safeAreaInsetValues } from '../../utils';
 import { FlexItem, RowWithMargins } from '../layout';
 import SendFab from './SendFab';
+import ExchangeFab from './ExchangeFab';
 
 const bottomPosition = 21 + safeAreaInsetValues.bottom;
 
 const enhance = onlyUpdateForKeys(['children', 'disabled']);
-const FabWrapper = enhance(({
-  children,
-  disabled,
-  fabs,
-  ...props
-}) => (
+const FabWrapper = enhance(({ children, disabled, fabs, ...props }) => (
   <FlexItem>
     {children}
     {!disabled && (
@@ -26,9 +22,10 @@ const FabWrapper = enhance(({
         `}
         direction="row-reverse"
         margin={12}
-        marginKey="left"
       >
-        {fabs.map(fab => createElement(fab, props))}
+        {fabs.map((fab, id) =>
+          createElement(fab, { key: `fab-${id}`, ...props })
+        )}
       </RowWithMargins>
     )}
   </FlexItem>
@@ -43,7 +40,7 @@ FabWrapper.propTypes = {
 };
 
 FabWrapper.defaultProps = {
-  fabs: [SendFab],
+  fabs: [ExchangeFab, SendFab],
 };
 
 FabWrapper.bottomPosition = bottomPosition;

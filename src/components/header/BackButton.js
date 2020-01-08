@@ -12,21 +12,13 @@ import HeaderButton from './HeaderButton';
 const ContainerElement = omitProps('direction')(Flex);
 const Container = styled(ContainerElement).attrs({ align: 'end' })`
   height: 100%;
-  padding-bottom: 4;
-  padding-left: ${({ direction }) => ((direction === 'left') ? 0 : 20)};
-  padding-right: ${({ direction }) => ((direction === 'right') ? 0 : 20)};
+  padding-bottom: 2;
 `;
 
-const BackButton = ({
-  color, direction, onPress, ...props
-}) => (
+const BackButton = ({ color, direction, onPress, ...props }) => (
   <HeaderButton onPress={onPress} transformOrigin={direction}>
     <Container direction={direction} {...props}>
-      <Icon
-        color={color}
-        direction={direction}
-        name="caret"
-      />
+      <Icon color={color} direction={direction} name="caret" {...props} />
     </Container>
   </HeaderButton>
 );
@@ -40,12 +32,12 @@ BackButton.propTypes = {
 export default compose(
   withNavigation,
   withHandlers({
-    onPress: ({ navigation, onPress }) => (event) => {
+    onPress: ({ navigation, onPress }) => event => {
       if (onPress) {
         return onPress(event);
       }
 
       return navigation.dispatch(NavigationActions.back());
     },
-  }),
+  })
 )(BackButton);

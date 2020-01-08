@@ -15,7 +15,7 @@ const ModalFooterButtonsRow = ({ children, ...props }) => (
     {Children.map(children, (child, index) => (
       <Fragment>
         {child}
-        {(index < children.length - 1) && <Divider horizontal={false} />}
+        {index < children.length - 1 && <Divider horizontal={false} />}
       </Fragment>
     ))}
   </Container>

@@ -1,9 +1,15 @@
 import { connect } from 'react-redux';
-import { pushOpenFamilyTab, setOpenFamilyTabs } from '../redux/openFamilyTabs';
-
-const mapStateToProps = ({ openFamilyTabs: { openFamilyTabs } }) => ({ openFamilyTabs });
-
-export default Component => connect(mapStateToProps, {
+import {
   pushOpenFamilyTab,
   setOpenFamilyTabs,
-})(Component);
+} from '../redux/openStateSettings';
+
+const mapStateToProps = ({ openStateSettings: { openFamilyTabs } }) => ({
+  openFamilyTabs,
+});
+
+export default Component =>
+  connect(mapStateToProps, {
+    pushOpenFamilyTab,
+    setOpenFamilyTabs,
+  })(Component);

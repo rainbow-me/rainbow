@@ -5,47 +5,22 @@ import {
   isToday,
   isYesterday,
 } from 'date-fns';
-import { get, groupBy, isEmpty } from 'lodash';
+import { get, groupBy, isEmpty, map, toLower } from 'lodash';
 import { createSelector } from 'reselect';
-import TransactionStatusTypes from './transactionStatusTypes';
-import { isLowerCaseMatch } from '../utils';
+import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 
 const accountAddressSelector = state => state.accountAddress;
-const nativeCurrencySelector = state => state.nativeCurrency;
+const contactsSelector = state => state.contacts;
 const requestsSelector = state => state.requests;
 const transactionsSelector = state => state.transactions;
 
-export const buildTransactionUniqueIdentifier = ({ hash, displayDetails }) => (
-  hash || get(displayDetails, 'timestampInMs')
-);
+export const buildTransactionUniqueIdentifier = ({ hash, displayDetails }) =>
+  hash || get(displayDetails, 'timestampInMs');
 
-export const getTransactionStatus = ({
-  accountAddress,
-  from,
-  pending,
-  status,
-  to,
-}) => {
-  const isFromAccount = isLowerCaseMatch(from, accountAddress);
-  const isToAccount = isLowerCaseMatch(to, accountAddress);
-
-  if (pending && isFromAccount) return TransactionStatusTypes.sending;
-  if (pending && isToAccount) return TransactionStatusTypes.receiving;
-
-  if (status === 'failed') return TransactionStatusTypes.failed;
-
-  if (isFromAccount && isToAccount) return TransactionStatusTypes.self;
-
-  if (isFromAccount) return TransactionStatusTypes.sent;
-  if (isToAccount) return TransactionStatusTypes.received;
-
-  return undefined;
-};
-
-const groupTransactionByDate = ({ pending, mined_at: time }) => {
+const groupTransactionByDate = ({ pending, minedAt }) => {
   if (pending) return 'Pending';
 
-  const timestamp = new Date(parseInt(time, 10) * 1000);
+  const timestamp = new Date(parseInt(minedAt, 10) * 1000);
 
   if (isToday(timestamp)) return 'Today';
   if (isYesterday(timestamp)) return 'Yesterday';
@@ -54,34 +29,32 @@ const groupTransactionByDate = ({ pending, mined_at: time }) => {
   return format(timestamp, `MMMM${isThisYear(timestamp) ? '' : ' YYYY'}`);
 };
 
-const normalizeTransactions = ({ accountAddress, nativeCurrency, transactions }) => (
-  transactions.map(({
-    asset,
-    ...tx
-  }) => ({
-    ...tx,
-    name: get(asset, 'name', ''),
-    status: getTransactionStatus({ accountAddress, ...tx }),
-    symbol: get(asset, 'symbol', ''),
-  }))
-);
+const addContactInfo = contacts => txn => {
+  const { from, to, status } = txn;
+  const isSent = status === TransactionStatusTypes.sent;
+  const contactAddress = isSent ? to : from;
+  const contact = get(contacts, `${[toLower(contactAddress)]}`, null);
+  return {
+    ...txn,
+    contact,
+  };
+};
 
 const buildTransactionsSections = (
   accountAddress,
-  nativeCurrency,
+  contacts,
   requests,
-  transactions,
+  transactions
 ) => {
   let sectionedTransactions = [];
 
-  if (!isEmpty(transactions)) {
-    const normalizedTransactions = normalizeTransactions({
-      accountAddress,
-      nativeCurrency,
-      transactions,
-    });
+  const transactionsWithContacts = map(transactions, addContactInfo(contacts));
 
-    const transactionsByDate = groupBy(normalizedTransactions, groupTransactionByDate);
+  if (!isEmpty(transactionsWithContacts)) {
+    const transactionsByDate = groupBy(
+      transactionsWithContacts,
+      groupTransactionByDate
+    );
 
     sectionedTransactions = Object.keys(transactionsByDate).map(section => ({
       data: transactionsByDate[section],
@@ -91,26 +64,25 @@ const buildTransactionsSections = (
 
   let requestsToApprove = [];
   if (!isEmpty(requests)) {
-    requestsToApprove = [{
-      data: requests,
-      title: 'Requests',
-    }];
+    requestsToApprove = [
+      {
+        data: requests,
+        title: 'Requests',
+      },
+    ];
   }
 
   return {
-    sections: [
-      ...requestsToApprove,
-      ...sectionedTransactions,
-    ],
+    sections: [...requestsToApprove, ...sectionedTransactions],
   };
 };
 
 export const buildTransactionsSectionsSelector = createSelector(
   [
     accountAddressSelector,
-    nativeCurrencySelector,
+    contactsSelector,
     requestsSelector,
     transactionsSelector,
   ],
-  buildTransactionsSections,
+  buildTransactionsSections
 );

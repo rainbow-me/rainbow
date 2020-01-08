@@ -29,21 +29,21 @@ export default class RequestVendorLogoIcon extends PureComponent {
     shouldPrioritizeImageLoading: PropTypes.bool,
     showLargeShadow: PropTypes.bool,
     size: PropTypes.number.isRequired,
-  }
+  };
 
   static defaultProps = {
     backgroundColor: colors.dark,
     borderRadius: RVLIBorderRadius,
     size: CoinIcon.size,
-  }
-
-  static size = CoinIcon.size;
+  };
 
   state = {
     error: null,
-  }
+  };
 
-  handleError = error => this.setState({ error })
+  static size = CoinIcon.size;
+
+  handleError = error => this.setState({ error });
 
   renderFallbackText = () => (
     <Text
@@ -54,18 +54,21 @@ export default class RequestVendorLogoIcon extends PureComponent {
     >
       {initials(this.props.dappName)}
     </Text>
-  )
+  );
 
   renderImage = () => (
     <FastImage
       onError={this.handleError}
       source={{
-        priority: FastImage.priority[this.props.shouldPrioritizeImageLoading ? 'high' : 'low'],
+        priority:
+          FastImage.priority[
+            this.props.shouldPrioritizeImageLoading ? 'high' : 'low'
+          ],
         uri: this.props.imageUrl,
       }}
       style={position.sizeAsObject('100%')}
     />
-  )
+  );
 
   render = () => {
     const {
@@ -87,12 +90,11 @@ export default class RequestVendorLogoIcon extends PureComponent {
         shouldRasterizeIOS
       >
         <Centered style={{ ...position.sizeAsObject(size), backgroundColor }}>
-          {(imageUrl && !this.state.error)
+          {imageUrl && !this.state.error
             ? this.renderImage()
-            : this.renderFallbackText()
-          }
+            : this.renderFallbackText()}
         </Centered>
       </ShadowStack>
     );
-  }
+  };
 }

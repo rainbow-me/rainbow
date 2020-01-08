@@ -1,37 +1,45 @@
-import { get } from 'lodash';
+import { get, toUpper } from 'lodash';
 import { convertRawAmountToBalance } from '../helpers/utilities';
+import { dedupeUniqueTokens } from './uniqueTokens';
 
 /**
  * @desc parse account assets
  * @param  {Object} [data]
  * @return {Array}
  */
-export const parseAccountAssets = data => {
-  try {
-    let assets = [...data];
-    assets = assets.map(assetData => {
-      const name = get(assetData, 'asset.name') || 'Unknown Token';
-      const symbol = get(assetData, 'asset.symbol') || '———';
-      const asset = {
-        address: get(assetData, 'asset.asset_code', null),
-        decimals: get(assetData, 'asset.decimals'),
-        name,
-        price: get(assetData, 'asset.price'),
-        symbol: symbol.toUpperCase(),
-        uniqueId: get(assetData, 'asset.asset_code') || name,
-      };
-      return {
-        ...asset,
-        balance: convertRawAmountToBalance(assetData.quantity, asset),
-      };
-    });
+export const parseAccountAssets = (data, uniqueTokens, tokenOverrides) => {
+  const dedupedAssets = dedupeUniqueTokens(data, uniqueTokens);
+  let assets = dedupedAssets.map(assetData => {
+    const asset = parseAsset(assetData.asset, tokenOverrides);
+    return {
+      ...asset,
+      balance: convertRawAmountToBalance(assetData.quantity, asset),
+    };
+  });
 
-    assets = assets.filter(
-      asset => !!Number(get(asset, 'balance.amount')),
-    );
+  return assets.filter(asset => !!Number(get(asset, 'balance.amount')));
+};
 
-    return assets;
-  } catch (error) {
-    throw error;
+/**
+ * @desc parse asset
+ * @param  {Object} assetData
+ * @return {Object}
+ */
+export const parseAsset = (assetData, tokenOverrides) => {
+  const address = get(assetData, 'asset_code', null);
+  const name = get(assetData, 'name') || 'Unknown Token';
+  let symbol = get(assetData, 'symbol') || '———';
+  if (symbol && symbol.includes('*')) {
+    symbol = symbol.replace(/[*]/g, '');
   }
+  const asset = {
+    address,
+    decimals: get(assetData, 'decimals'),
+    name,
+    price: get(assetData, 'price'),
+    symbol: toUpper(symbol),
+    uniqueId: address || name,
+    ...tokenOverrides[address],
+  };
+  return asset;
 };

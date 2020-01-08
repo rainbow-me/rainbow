@@ -1,3 +1,4 @@
+/* eslint-disable sort-keys */
 const font = {};
 
 font.family = {
@@ -8,7 +9,7 @@ font.family = {
 };
 
 font.letterSpacing = {
-  /* eslint-disable sort-keys */
+  tightest: -0.3,
   tighter: -0.2,
   tight: -0.1,
   loose: 0.15,
@@ -16,17 +17,15 @@ font.letterSpacing = {
 };
 
 font.lineHeight = {
-  /* eslint-disable sort-keys */
   none: 0,
   tight: 16,
   normal: 20,
   loose: 21,
-  looser: 25,
+  looser: 26,
   loosest: 28,
 };
 
 font.size = {
-  /* eslint-disable sort-keys */
   micro: '9px',
   tiny: '11px',
   smaller: '12px',
@@ -40,6 +39,7 @@ font.size = {
   blarge: '21px',
   big: '22px',
   bigger: '26px',
+  biggest: '27px',
   h1: '42px',
   h2: '30px',
   h3: '24px',
@@ -50,7 +50,6 @@ font.size = {
 
 // react-native requires font weights to be defined as strings
 font.weight = {
-  /* eslint-disable sort-keys */
   thin: '100',
   ultraLight: '200',
   light: '300',

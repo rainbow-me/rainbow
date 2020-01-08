@@ -3,6 +3,8 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components/primitives';
 import { View } from 'react-native';
 import Animated, { Easing } from 'react-native-reanimated';
+import { setSelectedInputId } from '../../redux/selectedInput';
+import store from '../../redux/store';
 import { colors, position } from '../../styles';
 import { Button } from '../buttons';
 import { Input } from '../inputs';
@@ -40,11 +42,11 @@ export default class UnderlineField extends PureComponent {
     onPressButton: PropTypes.func,
     placeholder: PropTypes.string,
     value: PropTypes.any,
-  }
+  };
 
   static defaultProps = {
     autoFocus: false,
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -55,21 +57,18 @@ export default class UnderlineField extends PureComponent {
     };
   }
 
-  animation = new Animated.Value(0)
-
   componentDidUpdate(prevProps) {
     const { value } = this.props;
 
     if (value !== prevProps.value) {
+      // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ value });
     }
   }
 
-  format = (string) => (
-    this.props.format
-      ? this.props.format(string)
-      : string
-  )
+  animation = new Animated.Value(0);
+
+  format = string => (this.props.format ? this.props.format(string) : string);
 
   onBlur = (...props) => {
     Animated.timing(this.animation, {
@@ -81,9 +80,10 @@ export default class UnderlineField extends PureComponent {
     this.setState({ isFocused: false });
 
     if (this.props.onBlur) this.props.onBlur(...props);
-  }
+    store.dispatch(setSelectedInputId(null));
+  };
 
-  onChange = (event) => {
+  onChange = event => {
     const { nativeEvent } = event;
 
     const value = this.format(nativeEvent.text);
@@ -93,7 +93,7 @@ export default class UnderlineField extends PureComponent {
 
       if (this.props.onChange) this.props.onChange(String(value));
     }
-  }
+  };
 
   onFocus = (...props) => {
     Animated.timing(this.animation, {
@@ -105,7 +105,14 @@ export default class UnderlineField extends PureComponent {
     this.setState({ isFocused: true });
 
     if (this.props.onFocus) this.props.onFocus(...props);
-  }
+    if (this.input && this.input.isFocused()) {
+      store.dispatch(setSelectedInputId(this.input));
+    }
+  };
+
+  handleRef = ref => {
+    this.input = ref;
+  };
 
   render() {
     const {
@@ -138,6 +145,7 @@ export default class UnderlineField extends PureComponent {
               onChange={this.onChange}
               onFocus={this.onFocus}
               placeholder={placeholder}
+              ref={this.handleRef}
               size="h2"
               value={this.format(String(this.props.value || ''))}
             />
@@ -156,7 +164,9 @@ export default class UnderlineField extends PureComponent {
         </Row>
         <UnderlineContainer>
           <Underline />
-          <UnderlineAnimated style={{ transform: [{ scaleX: this.animation }] }} />
+          <UnderlineAnimated
+            style={{ transform: [{ scaleX: this.animation }] }}
+          />
         </UnderlineContainer>
       </Column>
     );

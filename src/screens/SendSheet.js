@@ -1,71 +1,53 @@
 import analytics from '@segment/analytics-react-native';
-import {
-  get,
-  indexOf,
-  isEmpty,
-  isFunction,
-  isString,
-  map,
-  property,
-  sortBy,
-  upperFirst,
-} from 'lodash';
+import { get, isEmpty, isString, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
-import { isIphoneX } from 'react-native-iphone-x-helper';
-import { compose, withHandlers } from 'recompact';
+import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
+import { compose, withHandlers, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
 import {
   SendAssetForm,
   SendAssetList,
   SendButton,
-  SendEmptyState,
+  SendContactList,
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
 import {
   withAccountData,
   withAccountSettings,
+  withContacts,
   withDataInit,
+  withTransitionProps,
   withUniqueTokens,
 } from '../hoc';
-import { colors } from '../styles';
-import { deviceUtils, isNewValueForPath } from '../utils';
-import { showActionSheetWithOptions } from '../utils/actionsheet';
+import { borders, colors } from '../styles';
+import { deviceUtils, gasUtils, isNewValueForPath } from '../utils';
+
+const statusBarHeight = getStatusBarHeight(true);
 
 const Container = styled(Column)`
-  background-color: ${colors.white};
+  background-color: ${colors.transparent};
   height: 100%;
 `;
 
-const formatGastSpeedItem = (value, key) => {
-  const cost = get(value, 'txFee.native.value.display');
-  const gwei = get(value, 'value.display');
-  const time = get(value, 'estimatedTime.display');
-
-  return {
-    gweiValue: gwei,
-    label: `${upperFirst(key)}: ${cost}   ~${time.slice(0, -1)}`,
-    value: key,
-  };
-};
-
-const labelOrder = ['slow', 'average', 'fast'];
-
-const formatGasSpeedItems = (gasPrices) => {
-  const gasItems = map(gasPrices, formatGastSpeedItem);
-  return sortBy(gasItems, ({ value }) => indexOf(labelOrder, value));
-};
+const SheetContainer = styled(Column)`
+  ${borders.buildRadius('top', 16)};
+  background-color: ${colors.white};
+  height: 100%;
+  top: ${statusBarHeight};
+`;
 
 class SendSheet extends Component {
   static propTypes = {
     allAssets: PropTypes.array,
     assetAmount: PropTypes.string,
+    contacts: PropTypes.object,
     fetchData: PropTypes.func,
-    gasPrice: PropTypes.object,
     gasPrices: PropTypes.object,
+    gasUpdateGasPriceOption: PropTypes.func,
     isSufficientBalance: PropTypes.bool,
     isSufficientGas: PropTypes.bool,
     isValidAddress: PropTypes.bool,
@@ -73,38 +55,42 @@ class SendSheet extends Component {
     navigation: PropTypes.object,
     onSubmit: PropTypes.func,
     recipient: PropTypes.string,
+    removeContact: PropTypes.func,
     selected: PropTypes.object,
+    selectedGasPrice: PropTypes.object,
     sendableUniqueTokens: PropTypes.arrayOf(PropTypes.object),
     sendClearFields: PropTypes.func,
     sendMaxBalance: PropTypes.func,
     sendUpdateAssetAmount: PropTypes.func,
-    sendUpdateGasPrice: PropTypes.func,
     sendUpdateNativeAmount: PropTypes.func,
     sendUpdateRecipient: PropTypes.func,
     sendUpdateSelected: PropTypes.func,
-  }
+    sortedContacts: PropTypes.array,
+  };
 
   static defaultProps = {
     isSufficientBalance: false,
     isSufficientGas: false,
     isValidAddress: false,
-  }
+  };
 
   state = {
+    currentInput: '',
     isAuthorizing: false,
-  }
+  };
 
-  componentDidMount() {
+  componentDidMount = async () => {
     const { navigation, sendUpdateRecipient } = this.props;
     const address = get(navigation, 'state.params.address');
 
     if (address) {
       sendUpdateRecipient(address);
     }
-  }
+  };
 
   componentDidUpdate(prevProps) {
     const {
+      contacts,
       isValidAddress,
       navigation,
       selected,
@@ -122,13 +108,26 @@ class SendSheet extends Component {
     }
 
     const isNewSelected = isNewValueForPath(this.props, prevProps, 'selected');
-    const isNewValidAddress = isNewValueForPath(this.props, prevProps, 'isValidAddress');
+    const isNewValidAddress = isNewValueForPath(
+      this.props,
+      prevProps,
+      'isValidAddress'
+    );
+    const isNewContactList = isNewValueForPath(
+      this.props,
+      prevProps,
+      'contacts'
+    );
 
-    if (isNewValidAddress || isNewSelected) {
-      let verticalGestureResponseDistance = 0;
+    if (isNewValidAddress || isNewSelected || isNewContactList) {
+      let verticalGestureResponseDistance = 140;
 
-      if (isValidAddress) {
-        verticalGestureResponseDistance = isEmpty(selected) ? 150 : deviceUtils.dimensions.height;
+      if (!isValidAddress && !isEmpty(contacts)) {
+        verticalGestureResponseDistance = 140;
+      } else if (isValidAddress) {
+        verticalGestureResponseDistance = isEmpty(selected)
+          ? 140
+          : deviceUtils.dimensions.height;
       } else {
         verticalGestureResponseDistance = deviceUtils.dimensions.height;
       }
@@ -141,19 +140,19 @@ class SendSheet extends Component {
     this.props.sendClearFields();
   }
 
-  onChangeAssetAmount = (assetAmount) => {
+  onChangeAssetAmount = assetAmount => {
     if (isString(assetAmount)) {
       this.props.sendUpdateAssetAmount(assetAmount);
       analytics.track('Changed token input in Send flow');
     }
-  }
+  };
 
-  onChangeNativeAmount = (nativeAmount) => {
+  onChangeNativeAmount = nativeAmount => {
     if (isString(nativeAmount)) {
       this.props.sendUpdateNativeAmount(nativeAmount);
       analytics.track('Changed native currency input in Send flow');
     }
-  }
+  };
 
   onLongPressSend = () => {
     this.setState({ isAuthorizing: true });
@@ -163,39 +162,24 @@ class SendSheet extends Component {
     } else {
       this.onPressTransactionSpeed(this.sendTransaction);
     }
-  }
+  };
 
-  onPressTransactionSpeed = (onSuccess) => {
-    const { gasPrices, sendUpdateGasPrice } = this.props;
-
-    const options = [
-      { label: 'Cancel' },
-      ...formatGasSpeedItems(gasPrices),
-    ];
-
-    showActionSheetWithOptions({
-      cancelButtonIndex: 0,
-      options: options.map(property('label')),
-    }, (buttonIndex) => {
-      if (buttonIndex > 0) {
-        const selectedGasPriceItem = options[buttonIndex];
-
-        sendUpdateGasPrice(selectedGasPriceItem.value);
-        analytics.track('Updated Gas Price', { gasPrice: selectedGasPriceItem.gweiValue });
-      }
-
-      if (isFunction(onSuccess)) {
-        onSuccess();
-      }
-    });
-  }
+  onPressTransactionSpeed = onSuccess => {
+    const { gasPrices, gasUpdateGasPriceOption, txFees } = this.props;
+    gasUtils.showTransactionSpeedOptions(
+      gasPrices,
+      txFees,
+      gasUpdateGasPriceOption,
+      onSuccess
+    );
+  };
 
   onResetAssetSelection = () => {
     analytics.track('Reset asset selection in Send flow');
     this.props.sendUpdateSelected({});
-  }
+  };
 
-  onSelectAsset = asset => this.props.sendUpdateSelected(asset)
+  onSelectAsset = asset => this.props.sendUpdateSelected(asset);
 
   sendTransaction = () => {
     const {
@@ -209,31 +193,41 @@ class SendSheet extends Component {
 
     if (Number(assetAmount) <= 0) return false;
 
-    return onSubmit().then(() => {
-      this.setState({ isAuthorizing: false });
-      analytics.track('Sent transaction', {
-        assetName: selected.name,
-        assetType: selected.isNft ? 'unique_token' : 'token',
-        isRecepientENS: recipient.slice(-4).toLowerCase() === '.eth',
+    return onSubmit()
+      .then(() => {
+        this.setState({ isAuthorizing: false });
+        analytics.track('Sent transaction', {
+          assetName: selected.name,
+          assetType: selected.isNft ? 'unique_token' : 'token',
+          isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
+        });
+        sendClearFields();
+        navigation.navigate('ProfileScreen');
+      })
+      .catch(() => {
+        this.setState({ isAuthorizing: false });
       });
-      sendClearFields();
-      navigation.navigate('ProfileScreen');
-    }).catch(error => {
-      this.setState({ isAuthorizing: false });
-    });
-  }
+  };
+
+  onChangeInput = event => {
+    this.setState({ currentInput: event });
+    this.props.sendUpdateRecipient(event);
+  };
 
   render() {
     const {
       allAssets,
+      contacts,
       fetchData,
-      gasPrice,
       isValidAddress,
       nativeCurrencySymbol,
       recipient,
+      removeContact,
       selected,
+      selectedGasPrice,
       sendableUniqueTokens,
       sendUpdateRecipient,
+      sortedContacts,
       ...props
     } = this.props;
     const showEmptyState = !isValidAddress;
@@ -241,15 +235,26 @@ class SendSheet extends Component {
     const showAssetForm = isValidAddress && !isEmpty(selected);
 
     return (
-      <Container>
-        <KeyboardAvoidingView behavior="padding" enabled={!showAssetList}>
+      <SheetContainer>
+        <KeyboardAvoidingView behavior="padding">
           <Container align="center">
             <SendHeader
+              contacts={contacts}
               isValid={isValidAddress}
-              onChangeAddressInput={sendUpdateRecipient}
+              isValidAddress={isValidAddress}
+              onChangeAddressInput={this.onChangeInput}
+              onPressPaste={sendUpdateRecipient}
               recipient={recipient}
+              removeContact={removeContact}
             />
-            {showEmptyState && <SendEmptyState onPressPaste={sendUpdateRecipient} />}
+            {showEmptyState && (
+              <SendContactList
+                allAssets={sortedContacts}
+                currentInput={this.state.currentInput}
+                onPressContact={sendUpdateRecipient}
+                removeContact={removeContact}
+              />
+            )}
             {showAssetList && (
               <SendAssetList
                 allAssets={allAssets}
@@ -262,41 +267,46 @@ class SendSheet extends Component {
               <SendAssetForm
                 {...props}
                 allAssets={allAssets}
-                buttonRenderer={(
+                buttonRenderer={
                   <SendButton
                     {...props}
                     isAuthorizing={this.state.isAuthorizing}
                     onLongPress={this.onLongPressSend}
                   />
-                )}
+                }
                 onChangeAssetAmount={this.onChangeAssetAmount}
                 onChangeNativeAmount={this.onChangeNativeAmount}
                 onResetAssetSelection={this.onResetAssetSelection}
                 selected={selected}
-                txSpeedRenderer={(
+                txSpeedRenderer={
                   isIphoneX() && (
                     <SendTransactionSpeed
-                      gasPrice={gasPrice}
+                      gasPrice={selectedGasPrice}
                       nativeCurrencySymbol={nativeCurrencySymbol}
                       onPressTransactionSpeed={this.onPressTransactionSpeed}
                     />
                   )
-                )}
+                }
               />
             )}
           </Container>
         </KeyboardAvoidingView>
-      </Container>
+      </SheetContainer>
     );
   }
 }
 
 export default compose(
   withAccountData,
+  withContacts,
   withUniqueTokens,
   withAccountSettings,
   withDataInit,
+  withTransitionProps,
+  withProps(({ transitionProps: { isTransitioning } }) => ({
+    isTransitioning,
+  })),
   withHandlers({
     fetchData: ({ refreshAccountData }) => async () => refreshAccountData(),
-  }),
+  })
 )(SendSheet);

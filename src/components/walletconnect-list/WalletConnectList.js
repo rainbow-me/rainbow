@@ -17,7 +17,6 @@ const scrollIndicatorInsets = {
 
 const keyExtractor = ({ expires }) => expires;
 
-// eslint-disable-next-line react/prop-types
 const renderItem = ({ item }) => <WalletConnectListItem {...item} />;
 
 const WalletConnectList = ({ items, onLayout, ...props }) => (

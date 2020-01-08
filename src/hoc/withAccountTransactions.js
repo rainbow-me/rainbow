@@ -4,18 +4,17 @@ import { createSelector } from 'reselect';
 
 const transactionsSelector = state => state.transactions;
 
-const mapStateToProps = ({
-  data: { transactions },
-}) => ({
+const mapStateToProps = ({ data: { transactions } }) => ({
   transactions,
 });
 
 const transactionsCountSelector = createSelector(
   [transactionsSelector],
-  (transactions) => ({ transactionsCount: transactions.length }),
+  transactions => ({ transactionsCount: transactions.length })
 );
 
-export default Component => compose(
-  connect(mapStateToProps),
-  withProps(transactionsCountSelector),
-)(Component);
+export default Component =>
+  compose(
+    connect(mapStateToProps),
+    withProps(transactionsCountSelector)
+  )(Component);

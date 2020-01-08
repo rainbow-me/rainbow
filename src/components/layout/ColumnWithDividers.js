@@ -9,5 +9,5 @@ export default compose(
       horizontal: true,
       ...dividerProps,
     },
-  })),
+  }))
 )(LayoutWithDividers);

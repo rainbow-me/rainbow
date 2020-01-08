@@ -31,7 +31,7 @@ class QRScannerScreenWithData extends Component {
     enableScanning: true,
     isCameraAuthorized: true,
     sheetHeight: 240,
-  }
+  };
 
   componentDidUpdate = (prevProps, prevState) => {
     if (this.props.isFocused && !prevProps.isFocused) {
@@ -43,17 +43,18 @@ class QRScannerScreenWithData extends Component {
         }
       });
 
+      // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ enableScanning: true });
     }
-  }
+  };
 
   handleSheetLayout = ({ nativeEvent }) => {
     this.setState({ sheetHeight: get(nativeEvent, 'layout.height') });
-  }
+  };
 
-  handlePastedUri = async (uri) => this.props.walletConnectOnSessionRequest(uri)
+  handlePastedUri = async uri => this.props.walletConnectOnSessionRequest(uri);
 
-  handlePressBackButton = () => this.props.navigation.navigate('WalletScreen')
+  handlePressBackButton = () => this.props.navigation.navigate('WalletScreen');
 
   handlePressPasteSessionUri = () => {
     Prompt({
@@ -62,9 +63,9 @@ class QRScannerScreenWithData extends Component {
       title: 'New WalletConnect Session',
       type: 'plain-text',
     });
-  }
+  };
 
-  handleReenableScanning = () => this.setState({ enableScanning: true })
+  handleReenableScanning = () => this.setState({ enableScanning: true });
 
   handleScanSuccess = async ({ data }) => {
     const {
@@ -92,28 +93,27 @@ class QRScannerScreenWithData extends Component {
       return setSafeTimeout(this.handleReenableScanning, 2000);
     }
 
-    analytics.track('Scanned broken or unsupported QR code', { qrCodeData: data });
+    analytics.track('Scanned broken or unsupported QR code', {
+      qrCodeData: data,
+    });
     return Alert({
       callback: this.handleReenableScanning,
       message: lang.t('wallet.unrecognized_qrcode'),
       title: lang.t('wallet.unrecognized_qrcode_title'),
     });
-  }
+  };
 
   render = () => (
     <QRScannerScreen
       {...this.props}
       {...this.state}
-      enableScanning={
-        this.state.enableScanning
-        && this.props.isFocused
-      }
+      enableScanning={this.state.enableScanning && this.props.isFocused}
       onPressBackButton={this.handlePressBackButton}
       onPressPasteSessionUri={this.handlePressPasteSessionUri}
       onScanSuccess={this.handleScanSuccess}
       onSheetLayout={this.handleSheetLayout}
     />
-  )
+  );
 }
 
 export default compose(
@@ -122,5 +122,5 @@ export default compose(
   withAccountAddress,
   withSafeTimeout,
   withWalletConnectConnections,
-  withStatusBarStyle('light-content'),
+  withStatusBarStyle('light-content')
 )(QRScannerScreenWithData);

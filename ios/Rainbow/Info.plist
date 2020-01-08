@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1.7</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -34,7 +34,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>CodePushDeploymentKey</key>
 	<string>$(CODEPUSH_KEY)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -60,12 +60,16 @@
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Rainbow</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Rainbow</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Rainbow</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Rainbow</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Used to scan QR codes</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Rainbow</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Used to sign transactions</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -75,6 +79,8 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Rainbow</string>
 	<key>NSMotionUsageDescription</key>
+	<string>Rainbow</string>
+	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Rainbow</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Rainbow</string>
@@ -145,12 +151,16 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>UIStatusBarHidden</key>
+	<true/>
 	<key>UIStatusBarStyle</key>
-	<string>UIStatusBarStyleLightContent</string>
+	<string>UIStatusBarStyleDarkContent</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>UIUserInterfaceStyle</key>
+	<string>Light</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>

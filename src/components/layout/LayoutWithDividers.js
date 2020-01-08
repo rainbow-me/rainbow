@@ -1,10 +1,5 @@
 import PropTypes from 'prop-types';
-import React, {
-  Children,
-  cloneElement,
-  createElement,
-  Fragment,
-} from 'react';
+import React, { Children, cloneElement, createElement, Fragment } from 'react';
 import Flex from './Flex';
 import Divider from '../Divider';
 
@@ -18,10 +13,9 @@ const LayoutWithDividers = ({
     {Children.toArray(children).map((child, index, array) => (
       <Fragment key={index}>
         {cloneElement(child)}
-        {(index < array.length - 1)
+        {index < array.length - 1
           ? createElement(dividerRenderer, dividerProps)
-          : null
-        }
+          : null}
       </Fragment>
     ))}
   </Flex>

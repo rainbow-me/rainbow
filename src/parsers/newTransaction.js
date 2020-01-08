@@ -4,6 +4,7 @@ import {
   convertAmountToBalanceDisplay,
 } from '../helpers/utilities';
 import { getTransactionCount } from '../handlers/web3';
+import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 
 /**
  * @desc parse transactions from native prices
@@ -13,7 +14,7 @@ import { getTransactionCount } from '../handlers/web3';
  */
 export const parseNewTransaction = async (
   txDetails = null,
-  nativeCurrency = '',
+  nativeCurrency = ''
 ) => {
   let balance = null;
   const { amount } = txDetails;
@@ -26,26 +27,20 @@ export const parseNewTransaction = async (
   const native = convertAmountAndPriceToNativeDisplay(
     amount,
     get(txDetails, 'asset.price.value', 0),
-    nativeCurrency,
+    nativeCurrency
   );
-  let tx = pick(txDetails, [
-    'asset',
-    'dappName',
-    'from',
-    'hash',
-    'nonce',
-    'to',
-  ]);
-  const nonce = tx.nonce
-    || (tx.from ? await getTransactionCount(tx.from) : '');
+  let tx = pick(txDetails, ['dappName', 'from', 'hash', 'nonce', 'to']);
+  const nonce = tx.nonce || (tx.from ? await getTransactionCount(tx.from) : '');
   tx = {
     ...tx,
     balance,
-    error: false,
-    mined_at: null, // eslint-disable-line camelcase
+    minedAt: null,
+    name: get(txDetails, 'asset.name'),
     native,
     nonce,
     pending: !!txDetails.hash,
+    status: TransactionStatusTypes.sending,
+    symbol: get(txDetails, 'asset.symbol'),
   };
 
   return tx;

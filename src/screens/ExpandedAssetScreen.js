@@ -1,55 +1,58 @@
 import PropTypes from 'prop-types';
-import React, { createElement } from 'react';
+import React, { Component, createElement } from 'react';
 import { StatusBar } from 'react-native';
 import {
+  AddContactState,
   InvestmentExpandedState,
   TokenExpandedState,
   UniqueTokenExpandedState,
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import TouchableBackdrop from '../components/TouchableBackdrop';
-import { withNeverRerender } from '../hoc';
 import { padding } from '../styles';
 import { deviceUtils, safeAreaInsetValues } from '../utils';
 
-const {
-  bottom: safeAreaBottom,
-  top: safeAreaTop,
-} = safeAreaInsetValues;
+const { bottom: safeAreaBottom, top: safeAreaTop } = safeAreaInsetValues;
 
 const ScreenTypes = {
+  contact: AddContactState,
   token: TokenExpandedState,
   unique_token: UniqueTokenExpandedState,
   uniswap: InvestmentExpandedState,
 };
 
-const ExpandedAssetScreen = withNeverRerender(({
-  containerPadding,
-  onPressBackground,
-  type,
-  ...props
-}) => (
-  <Centered
-    {...deviceUtils.dimensions}
-    css={padding(safeAreaTop, containerPadding, safeAreaBottom || safeAreaTop)}
-    direction="column"
-  >
-    <StatusBar barStyle="light-content" />
-    <TouchableBackdrop onPress={onPressBackground} />
-    {createElement(ScreenTypes[type], props)}
-  </Centered>
-));
+export default class ExpandedAssetScreen extends Component {
+  static propTypes = {
+    address: PropTypes.string,
+    asset: PropTypes.object,
+    containerPadding: PropTypes.number.isRequired,
+    onCloseModal: PropTypes.func,
+    onPressBackground: PropTypes.func,
+    panelWidth: PropTypes.number,
+    type: PropTypes.oneOf(Object.keys(ScreenTypes)).isRequired,
+  };
 
-ExpandedAssetScreen.propTypes = {
-  asset: PropTypes.object,
-  containerPadding: PropTypes.number.isRequired,
-  onPressBackground: PropTypes.func,
-  panelWidth: PropTypes.number,
-  type: PropTypes.oneOf(['token', 'unique_token', 'uniswap']),
-};
+  static defaultProps = {
+    containerPadding: 15,
+  };
 
-ExpandedAssetScreen.defaultProps = {
-  containerPadding: 15,
-};
+  shouldComponentUpdate = () => false;
 
-export default ExpandedAssetScreen;
+  render = () => (
+    <Centered
+      {...deviceUtils.dimensions}
+      css={padding(
+        safeAreaTop,
+        this.props.containerPadding,
+        safeAreaBottom || safeAreaTop
+      )}
+      direction="column"
+    >
+      <StatusBar barStyle="light-content" />
+      <TouchableBackdrop onPress={this.props.onPressBackground} />
+      {createElement(ScreenTypes[this.props.type], {
+        ...this.props,
+      })}
+    </Centered>
+  );
+}

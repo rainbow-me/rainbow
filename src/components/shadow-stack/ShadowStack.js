@@ -8,18 +8,16 @@ import ShadowItem from './ShadowItem';
 
 const ChildrenWrapper = styled.View`
   ${position.cover};
-  background-color: ${({ backgroundColor }) => backgroundColor || colors.transparent};
+  background-color: ${colors.transparent};
   border-radius: ${({ borderRadius }) => borderRadius};
   overflow: hidden;
-  justify-content: center;
-  align-items: center;
 `;
 
 const ShadowStackContainer = styled.View`
-  background-color: ${({ backgroundColor }) => backgroundColor || colors.transparent};
+  ${({ height }) => (height ? `height: ${height};` : '')}
+  ${({ width }) => (width ? `width: ${width};` : '')}
+  background-color: ${colors.transparent};
   border-radius: ${({ borderRadius }) => borderRadius};
-  height: ${({ height }) => height};
-  width: ${({ width }) => width};
   z-index: 1;
 `;
 
@@ -27,18 +25,20 @@ const ShadowItemPropBlacklist = ['children', 'shadowProps', 'shadows', 'style'];
 
 export default class ShadowStack extends PureComponent {
   static propTypes = {
-    borderRadius: PropTypes.number.isRequired,
+    borderRadius: PropTypes.number,
     children: PropTypes.node,
-    height: PropTypes.number.isRequired,
+    childrenWrapperStyle: stylePropType,
+    height: PropTypes.number,
     shadowProps: PropTypes.object,
     shadows: PropTypes.arrayOf(PropTypes.array).isRequired,
     style: stylePropType,
-    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-  }
+    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  };
 
   static defaultProps = {
+    borderRadius: 0,
     shadows: [],
-  }
+  };
 
   renderItem = (shadow, index) => (
     <ShadowItem
@@ -48,11 +48,12 @@ export default class ShadowStack extends PureComponent {
       zIndex={index + 2}
       {...this.props.shadowProps}
     />
-  )
+  );
 
   render = () => {
     const {
       children,
+      childrenWrapperStyle,
       shadows,
       style,
       ...props
@@ -61,10 +62,13 @@ export default class ShadowStack extends PureComponent {
     return (
       <ShadowStackContainer {...props} style={style}>
         {shadows.map(this.renderItem)}
-        <ChildrenWrapper {...props} style={{ zIndex: shadows.length + 2 }}>
+        <ChildrenWrapper
+          {...props}
+          style={[childrenWrapperStyle, { zIndex: shadows.length + 2 }]}
+        >
           {children}
         </ChildrenWrapper>
       </ShadowStackContainer>
     );
-  }
+  };
 }

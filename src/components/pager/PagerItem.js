@@ -11,9 +11,7 @@ export const pagerPagePropType = PropTypes.shape({
 });
 
 const PagerItem = ({ item: { component, dimensions } }) => (
-  <View style={dimensions}>
-    {cloneElement(component, { dimensions })}
-  </View>
+  <View style={dimensions}>{cloneElement(component, { dimensions })}</View>
 );
 
 PagerItem.propTypes = {

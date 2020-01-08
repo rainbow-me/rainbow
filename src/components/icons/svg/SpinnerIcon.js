@@ -5,7 +5,7 @@ import { colors } from '../../../styles';
 import { SpinAnimation } from '../../animations';
 import Svg from '../Svg';
 
-const SpinnerIcon = ({ color, size, ...props }) => (
+const SpinnerIcon = ({ color, size }) => (
   <SpinAnimation>
     <Svg height={size} width={size}>
       <Path

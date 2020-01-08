@@ -1,11 +1,4 @@
-import {
-  get,
-  groupBy,
-  isEmpty,
-  isNil,
-  map,
-  toNumber,
-} from 'lodash';
+import { get, groupBy, isEmpty, isNil, map, toNumber } from 'lodash';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
 import {
@@ -34,7 +27,13 @@ const sortAssetsByNativeAmount = (originalAssets, nativeCurrency) => {
     noValue = EMPTY_ARRAY,
   } = groupAssetsByMarketValue(assetsNativePrices);
 
-  const sortedAssets = sortList(hasValue, 'native.balance.amount', 'desc', 0, toNumber);
+  const sortedAssets = sortList(
+    hasValue,
+    'native.balance.amount',
+    'desc',
+    0,
+    toNumber
+  );
   const sortedShitcoins = sortList(noValue, 'name', 'asc');
   const allAssets = sortedAssets.concat(sortedShitcoins);
 
@@ -50,14 +49,10 @@ const sortAssetsByNativeAmount = (originalAssets, nativeCurrency) => {
   };
 };
 
-const groupAssetsByMarketValue = assets => groupBy(assets, ({ native }) => (
-  isNil(native) ? 'noValue' : 'hasValue'
-));
+const groupAssetsByMarketValue = assets =>
+  groupBy(assets, ({ native }) => (isNil(native) ? 'noValue' : 'hasValue'));
 
-const parseAssetsNative = (
-  assets,
-  nativeCurrency,
-) => {
+const parseAssetsNative = (assets, nativeCurrency) => {
   let assetsNative = assets;
   assetsNative = map(assets, asset => {
     const assetNativePrice = get(asset, 'price');
@@ -69,16 +64,17 @@ const parseAssetsNative = (
     const nativeDisplay = convertAmountAndPriceToNativeDisplay(
       get(asset, 'balance.amount', 0),
       priceUnit,
-      nativeCurrency,
+      nativeCurrency
     );
     return {
       ...asset,
       native: {
         balance: nativeDisplay,
-        change:
-          isLowerCaseMatch(get(asset, 'symbol'), nativeCurrency)
-            ? '———'
-            : convertAmountToPercentageDisplay(assetNativePrice.relative_change_24h),
+        change: isLowerCaseMatch(get(asset, 'symbol'), nativeCurrency)
+          ? '———'
+          : convertAmountToPercentageDisplay(
+              assetNativePrice.relative_change_24h
+            ),
         price: {
           amount: priceUnit,
           display: convertAmountToNativeDisplay(priceUnit, nativeCurrency),
@@ -87,17 +83,18 @@ const parseAssetsNative = (
     };
   });
   const totalAmount = assetsNative.reduce(
-    (total, asset) => add(
-      total,
-      get(asset, 'native.balance.amount', 0),
-    ), 0,
+    (total, asset) => add(total, get(asset, 'native.balance.amount', 0)),
+    0
   );
-  const totalDisplay = convertAmountToNativeDisplay(totalAmount, nativeCurrency);
+  const totalDisplay = convertAmountToNativeDisplay(
+    totalAmount,
+    nativeCurrency
+  );
   const total = { amount: totalAmount, display: totalDisplay };
   return { assetsNativePrices: assetsNative, total };
 };
 
 export const sortAssetsByNativeAmountSelector = createSelector(
   [assetsSelector, nativeCurrencySelector],
-  sortAssetsByNativeAmount,
+  sortAssetsByNativeAmount
 );

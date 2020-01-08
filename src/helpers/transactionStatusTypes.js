@@ -5,4 +5,5 @@ export default {
   self: 'self',
   sending: 'sending',
   sent: 'sent',
+  unknown: 'unknown status',
 };

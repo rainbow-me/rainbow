@@ -10,46 +10,49 @@ class CopyTooltip extends PureComponent {
   static propTypes = {
     activeOpacity: PropTypes.number,
     navigation: PropTypes.object,
+    setSafeTimeout: PropTypes.func,
     textToCopy: PropTypes.string,
     tooltipText: PropTypes.string,
-  }
+  };
 
   static defaultProps = {
     activeOpacity: 0.666,
     tooltipText: 'Copy',
-  }
-
-  tooltip = null
+  };
 
   componentDidUpdate = () => {
     if (this.props.navigation.state.isTransitioning) {
       this.handleHideTooltip();
     }
-  }
+  };
 
-  componentWillUnmount = () => this.handleHideTooltip()
+  componentWillUnmount = () => this.handleHideTooltip();
 
-  handleCopy = () => Clipboard.setString(this.props.textToCopy)
+  tooltip = null;
 
-  handleHideTooltip = () => this.tooltip.hideMenu()
+  handleCopy = () => Clipboard.setString(this.props.textToCopy);
 
-  handlePressIn = () => this.tooltip.showMenu()
+  handleHideTooltip = () => this.tooltip.hideMenu();
 
-  handleRef = (ref) => { this.tooltip = ref; }
+  handlePress = () => this.tooltip.showMenu();
+
+  handleRef = ref => {
+    this.tooltip = ref;
+  };
 
   render = () => (
     <ToolTip
       {...this.props}
       actions={[{ onPress: this.handleCopy, text: this.props.tooltipText }]}
       activeOpacity={this.props.activeOpacity}
-      onPressIn={this.handlePressIn}
+      onPress={this.handlePress}
       ref={this.handleRef}
       underlayColor={colors.transparent}
     />
-  )
+  );
 }
 
 export default compose(
   withNavigation,
-  onlyUpdateForKeys(['textToCopy', 'tooltipText']),
+  onlyUpdateForKeys(['textToCopy', 'tooltipText'])
 )(CopyTooltip);

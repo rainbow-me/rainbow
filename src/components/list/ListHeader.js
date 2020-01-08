@@ -1,43 +1,61 @@
 import PropTypes from 'prop-types';
 import React, { createElement, Fragment } from 'react';
+import { View } from 'react-native';
 import { pure } from 'recompact';
-import styled from 'styled-components/primitives';
-import { colors, padding } from '../../styles';
+import { colors, padding, position } from '../../styles';
+import LinearGradient from 'react-native-linear-gradient';
 import { Row } from '../layout';
 import { H1 } from '../text';
 import ContextMenu from '../ContextMenu';
 import Divider from '../Divider';
+import { deviceUtils } from '../../utils';
 
-const ListHeaderHeight = 42;
+const height = 42;
 
-const Header = styled(Row).attrs({
-  align: 'center',
-  justify: 'space-between',
-})`
-  ${padding(0, 19, 3, 19)}
-  background-color: ${colors.white};
-  height: ${ListHeaderHeight};
-  width: 100%;
-`;
-
-const ListHeader = pure(({
-  children,
-  contextMenuOptions,
-  showDivider,
-  title,
-  titleRenderer,
-}) => (
-  <Fragment>
-    <Header>
-      <Row align="center">
-        {createElement(titleRenderer, { children: title })}
-        {contextMenuOptions && (<ContextMenu {...contextMenuOptions} />)}
+const ListHeader = pure(
+  ({
+    children,
+    contextMenuOptions,
+    isSticky,
+    showDivider,
+    title,
+    titleRenderer,
+  }) => (
+    <Fragment>
+      <LinearGradient
+        colors={['#ffffffff', '#ffffff80', '#ffffff00']}
+        end={{ x: 0, y: 0 }}
+        pointerEvents="none"
+        start={{ x: 0, y: 0.5 }}
+        style={[position.coverAsObject]}
+      />
+      <Row
+        align="center"
+        backgroundColor={isSticky ? colors.white : colors.transparent}
+        css={padding(0, 19, 3, 19)}
+        height={height}
+        justify="space-between"
+        width="100%"
+      >
+        <Row align="center">
+          {createElement(titleRenderer, { children: title })}
+          {contextMenuOptions && <ContextMenu {...contextMenuOptions} />}
+        </Row>
+        {children}
       </Row>
-      {children}
-    </Header>
-    {showDivider && <Divider />}
-  </Fragment>
-));
+      {showDivider && <Divider />}
+      {!isSticky && title !== 'Balances' && (
+        <View
+          style={{
+            backgroundColor: colors.white,
+            height: deviceUtils.dimensions.height,
+            width: deviceUtils.dimensions.width,
+          }}
+        />
+      )}
+    </Fragment>
+  )
+);
 
 ListHeader.propTypes = {
   children: PropTypes.node,
@@ -52,6 +70,6 @@ ListHeader.defaultProps = {
   titleRenderer: H1,
 };
 
-ListHeader.height = ListHeaderHeight;
+ListHeader.height = height;
 
 export default ListHeader;

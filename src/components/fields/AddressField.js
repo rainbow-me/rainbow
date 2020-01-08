@@ -1,20 +1,17 @@
 import { omit } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React from 'react';
 import styled from 'styled-components/primitives';
+import { withNavigation } from 'react-navigation';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { Clipboard } from 'react-native';
+import { checkIsValidAddress } from '../../helpers/validators';
+import { isHexString } from '../../handlers/web3';
+import { colors } from '../../styles';
+import { abbreviations, addressUtils, isNewValueForPath } from '../../utils';
 import { Input } from '../inputs';
 import { Row } from '../layout';
-import { colors } from '../../styles';
 import { Label } from '../text';
-import { isValidAddress } from '../../helpers/validators';
-import { isHexString } from '../../handlers/web3';
-import { abbreviations, addressUtils, isNewValueForPath } from '../../utils';
-
-const AddressInput = styled(Input).attrs({ family: 'SFMono' })`
-  flex-grow: 1;
-  margin-top: 1;
-  z-index: 1;
-`;
 
 const Placeholder = styled(Row)`
   position: absolute;
@@ -26,75 +23,158 @@ const PlaceholderText = styled(Label)`
   opacity: 0.45;
 `;
 
-const formatValue = value => (
-  (isHexString(value) && (value.length === addressUtils.maxLength))
-    ? abbreviations.address(value)
-    : value
+const formatValue = value =>
+  isHexString(value) && value.length === addressUtils.maxLength
+    ? abbreviations.address(value, 4, 10)
+    : value;
+
+export default withNavigation(
+  class AddressField extends React.Component {
+    static propTypes = {
+      address: PropTypes.string,
+      autoFocus: PropTypes.bool,
+      currentContact: PropTypes.object,
+      onChange: PropTypes.func.isRequired,
+    };
+
+    state = {
+      address: '',
+      currentContact: false,
+      inputValue: '',
+      isValid: false,
+    };
+
+    componentDidMount() {
+      this.focusListener = this.props.navigation.addListener('refocus', () =>
+        this.inputRef.focus()
+      );
+    }
+    shouldComponentUpdate(nextProps, nextState) {
+      const isNewAddress = isNewValueForPath(this.props, this.state, 'address');
+      const isNewInputValue = isNewValueForPath(
+        this.state,
+        nextState,
+        'inputValue'
+      );
+      const isNewNickname = isNewValueForPath(
+        this.props,
+        nextProps,
+        'currentContact.nickname'
+      );
+      const isNewValid = isNewValueForPath(this.state, nextState, 'isValid');
+      return isNewAddress || isNewInputValue || isNewNickname || isNewValid;
+    }
+
+    componentDidUpdate(prevProps) {
+      const { address, currentContact } = this.props;
+
+      const isNewNickname = isNewValueForPath(
+        this.props,
+        prevProps,
+        'currentContact.nickname'
+      );
+      const isNewAddress = address !== this.state.address;
+
+      if (isNewAddress || isNewNickname) {
+        const newState = {
+          address,
+          inputValue: currentContact.nickname
+            ? currentContact.nickname
+            : address,
+          isValid: true,
+        };
+
+        if (isNewNickname) {
+          newState.currentContact = currentContact;
+        }
+
+        // eslint-disable-next-line react/no-did-update-set-state
+        this.setState(newState);
+      }
+    }
+
+    componentWillUnmount() {
+      this.focusListener.remove();
+    }
+
+    inputRef = undefined;
+
+    handleInputRef = ref => {
+      this.inputRef = ref;
+      this.props.inputRef(ref);
+    };
+
+    onChange = ({ nativeEvent: { text } }) => {
+      this.props.onChange(text);
+      this.validateAddress(text);
+      this.checkClipboard(this.state.address);
+      return this.setState({ address: text });
+    };
+
+    onChangeText = inputValue => this.setState({ inputValue });
+
+    validateAddress = async address => {
+      const isValid = await checkIsValidAddress(address);
+      return this.setState({ isValid });
+    };
+
+    onBlur = () => {
+      this.checkClipboard(this.state.address);
+      if (this.props.onBlur) {
+        this.props.onBlur();
+      }
+    };
+
+    checkClipboard = async address => {
+      const clipboard = await Clipboard.getString();
+      if (abbreviations.address(address, 4, 10) === clipboard) {
+        Clipboard.setString(address);
+      }
+    };
+
+    onPressNickname = () => {
+      this.inputRef.focus();
+    };
+
+    render() {
+      const { autoFocus, ...props } = this.props;
+      const { inputValue, isValid } = this.state;
+
+      return (
+        <Row flex={1}>
+          <Input
+            {...props}
+            {...omit(Label.textProps, 'opacity')}
+            autoCorrect={false}
+            autoFocus={autoFocus}
+            color={isValid ? colors.appleBlue : colors.blueGreyDark}
+            maxLength={addressUtils.maxLength}
+            onBlur={this.onBlur}
+            onChange={this.onChange}
+            onChangeText={this.onChangeText}
+            ref={this.handleInputRef}
+            selectTextOnFocus
+            spellCheck
+            size="bmedium"
+            style={{
+              flexGrow: 1,
+              marginTop: 1,
+              zIndex: 1,
+            }}
+            value={formatValue(inputValue)}
+            weight="semibold"
+          />
+          {!inputValue && (
+            <Placeholder>
+              <TouchableWithoutFeedback onPress={this.onPressNickname}>
+                <PlaceholderText>ENS or Address (</PlaceholderText>
+              </TouchableWithoutFeedback>
+              <PlaceholderText family="SFMono">0x</PlaceholderText>
+              <PlaceholderText>...)</PlaceholderText>
+            </Placeholder>
+          )}
+        </Row>
+      );
+    }
+  }
 );
-
-export default class AddressField extends PureComponent {
-  static propTypes = {
-    address: PropTypes.string,
-    autoFocus: PropTypes.bool,
-    onChange: PropTypes.func.isRequired,
-  }
-
-  state = {
-    address: '',
-    isValid: false,
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    // Validate 'address' whenever its value changes
-    if (isNewValueForPath(this.state, prevState, 'address')) {
-      this.validateAddress(this.state.address);
-    }
-
-    // Allow component state to be overwritten by parent component through the
-    // use of the 'address' prop. Assume that 'address' is valid because redux handles that for us.
-    if (this.props.address && !this.state.address) {
-      this.setState({
-        address: this.props.address,
-        isValid: true,
-      });
-    }
-  }
-
-  onChange = ({ nativeEvent }) => this.props.onChange(nativeEvent.text)
-
-  onChangeText = address => this.setState({ address })
-
-  validateAddress = async (inputValue) => {
-    const isValid = await isValidAddress(inputValue);
-    return this.setState({ isValid });
-  }
-
-  render() {
-    const { autoFocus, ...props } = this.props;
-    const { address, isValid } = this.state;
-
-    return (
-      <Row flex={1}>
-        <AddressInput
-          {...props}
-          {...omit(Label.textProps, 'opacity')}
-          autoCorrect={false}
-          autoFocus={autoFocus}
-          color={isValid ? colors.appleBlue : colors.blueGreyDark}
-          maxLength={addressUtils.maxLength}
-          onChange={this.onChange}
-          onChangeText={this.onChangeText}
-          selectTextOnFocus={true}
-          value={formatValue(address)}
-        />
-        {!address && (
-          <Placeholder>
-            <PlaceholderText>ENS or Address (</PlaceholderText>
-            <PlaceholderText family="SFMono">0x</PlaceholderText>
-            <PlaceholderText>...)</PlaceholderText>
-          </Placeholder>
-        )}
-      </Row>
-    );
-  }
-}

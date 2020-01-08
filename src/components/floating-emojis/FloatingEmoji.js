@@ -4,14 +4,9 @@ import Animated, { Easing } from 'react-native-reanimated';
 import stylePropType from 'react-style-proptype';
 import { colors, fonts } from '../../styles';
 import { Emoji } from '../text';
+import { interpolate } from '../animations';
 
-const {
-  concat,
-  interpolate,
-  timing,
-  Value,
-  View,
-} = Animated;
+const { concat, timing, Value } = Animated;
 
 export default class FloatingEmoji extends PureComponent {
   static propTypes = {
@@ -23,16 +18,15 @@ export default class FloatingEmoji extends PureComponent {
     right: PropTypes.string.isRequired,
     size: PropTypes.string.isRequired,
     style: stylePropType,
-  }
+    top: PropTypes.number,
+  };
 
   static defaultProps = {
     distance: 100,
     duration: 2000,
     emoji: '+1',
     right: 0,
-  }
-
-  position = new Value(0)
+  };
 
   componentDidMount() {
     const animationConfig = {
@@ -44,15 +38,12 @@ export default class FloatingEmoji extends PureComponent {
     timing(this.position, animationConfig).start(this.handleAnimationComplete);
   }
 
-  handleAnimationComplete = () => this.props.onComplete(this.props.id)
+  position = new Value(0);
+
+  handleAnimationComplete = () => this.props.onComplete(this.props.id);
 
   render() {
-    const {
-      emoji,
-      right,
-      size,
-      style,
-    } = this.props;
+    const { emoji, right, size, style, top } = this.props;
 
     const distance = Math.ceil(this.props.distance);
     const negativeHeight = distance * -1;
@@ -85,14 +76,14 @@ export default class FloatingEmoji extends PureComponent {
     });
 
     return (
-      <View
+      <Animated.View
         style={{
           ...style,
           backgroundColor: colors.transparent,
           opacity: this.opacityAnimation,
           position: 'absolute',
           right,
-          top: sizeAsNumber * -0.5,
+          top: top || sizeAsNumber * -0.5,
           transform: [
             { rotate: concat(this.rotateAnimation, 'deg') },
             { scale: this.scaleAnimation },
@@ -102,7 +93,7 @@ export default class FloatingEmoji extends PureComponent {
         }}
       >
         <Emoji name={emoji} size={size} />
-      </View>
+      </Animated.View>
     );
   }
 }

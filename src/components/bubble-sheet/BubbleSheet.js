@@ -4,7 +4,7 @@ import { Column } from '../layout';
 
 const BubbleSheetBorderRadius = 30;
 
-const BubbleSheet = (props) => (
+const BubbleSheet = props => (
   <Column
     css={`
       ${shadow.build(0, 10, 50, colors.black, 0.6)}

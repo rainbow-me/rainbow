@@ -16,13 +16,7 @@ const Container = styled(RowWithMargins).attrs({
   background-color: ${colors.white};
 `;
 
-const ProfileAction = ({
-  icon,
-  iconSize,
-  onPress,
-  text,
-  ...props
-}) => (
+const ProfileAction = ({ icon, iconSize, onPress, text, ...props }) => (
   <ButtonPressAnimation onPress={onPress} {...props}>
     <Container>
       <Icon
@@ -30,11 +24,7 @@ const ProfileAction = ({
         name={icon}
         style={{ maxHeight: iconSize }}
       />
-      <Text
-        color="appleBlue"
-        size="lmedium"
-        weight="semibold"
-      >
+      <Text color="appleBlue" size="lmedium" weight="semibold">
         {text}
       </Text>
     </Container>

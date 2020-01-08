@@ -5,7 +5,7 @@ import position from './position';
 
 const border = {};
 
-border.color = colors.lightGrey;
+border.color = colors.lighterGrey;
 border.radius = 6;
 border.width = 1;
 

@@ -41,5 +41,5 @@ export default compose(
   withHandlers({
     onPress: ({ navigation }) => () => navigation.navigate('QRScannerScreen'),
   }),
-  onlyUpdateForPropTypes,
+  onlyUpdateForPropTypes
 )(CameraHeaderButton);

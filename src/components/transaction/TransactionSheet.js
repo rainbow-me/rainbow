@@ -7,7 +7,7 @@ import Divider from '../Divider';
 import { Column } from '../layout';
 
 const Container = styled(Column).attrs({ justify: 'end' })`
-  ${borders.buildRadius('top', 15)}
+  ${borders.buildRadius('top', 20)}
   background-color: ${colors.white};
   flex-grow: 0;
   padding-bottom: ${safeAreaInsetValues.bottom};
@@ -25,12 +25,10 @@ const TransactionSheet = ({ children, sendButton, ...props }) => (
     {Children.map(children, (child, index) => (
       <Fragment>
         {child}
-        {(index < children.length - 1) && <Divider />}
+        {index < children.length - 1 && <Divider />}
       </Fragment>
     ))}
-    <SendButtonContainer>
-      {sendButton}
-    </SendButtonContainer>
+    <SendButtonContainer>{sendButton}</SendButtonContainer>
   </Container>
 );
 

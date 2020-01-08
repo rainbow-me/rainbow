@@ -4,7 +4,6 @@ import { Path } from 'svgs';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
-/* eslint-disable max-len */
 const CheckmarkIcon = ({ color, ...props }) => (
   <Svg height="11" width="10" viewBox="0 0 11 10" {...props}>
     <Path
@@ -14,7 +13,6 @@ const CheckmarkIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
-/* eslint-disable max-len */
 
 CheckmarkIcon.propTypes = {
   color: PropTypes.string,

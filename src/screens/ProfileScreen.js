@@ -2,8 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { ActivityList } from '../components/activity-list';
 import AddFundsInterstitial from '../components/AddFundsInterstitial';
-import { FadeInAnimation } from '../components/animations';
-import BlurOverlay from '../components/BlurOverlay';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { FlexItem, Page } from '../components/layout';
 import { Icon } from '../components/icons';
@@ -12,36 +10,35 @@ import { colors, position } from '../styles';
 
 const ProfileScreen = ({
   accountAddress,
-  blurOpacity,
   isEmpty,
   nativeCurrency,
   navigation,
   onPressBackButton,
   onPressSettings,
   requests,
-  showBlur,
   transactions,
   transactionsCount,
 }) => (
   <Page component={FlexItem} style={position.sizeAsObject('100%')}>
     <Header justify="space-between">
       <HeaderButton onPress={onPressSettings}>
-        <Icon name="gear" />
+        <Icon color={colors.black} name="gear" />
       </HeaderButton>
       <BackButton
+        color={colors.black}
         direction="right"
         onPress={onPressBackButton}
       />
     </Header>
     <ActivityList
       accountAddress={accountAddress}
-      header={(
+      header={
         <ProfileMasthead
           accountAddress={accountAddress}
           navigation={navigation}
           showBottomDivider={!isEmpty}
         />
-      )}
+      }
       isEmpty={isEmpty}
       nativeCurrency={nativeCurrency}
       requests={requests}
@@ -49,28 +46,17 @@ const ProfileScreen = ({
       transactionsCount={transactionsCount}
     />
     {isEmpty && <AddFundsInterstitial />}
-    {showBlur && (
-      <FadeInAnimation duration={315} style={{ ...position.coverAsObject, zIndex: 1 }}>
-        <BlurOverlay
-          backgroundColor={colors.alpha(colors.blueGreyDarker, 0.4)}
-          blurType="light"
-          opacity={blurOpacity}
-        />
-      </FadeInAnimation>
-    )}
   </Page>
 );
 
 ProfileScreen.propTypes = {
   accountAddress: PropTypes.string,
-  blurOpacity: PropTypes.object,
   isEmpty: PropTypes.bool,
   nativeCurrency: PropTypes.string,
   navigation: PropTypes.object,
   onPressBackButton: PropTypes.func,
   onPressSettings: PropTypes.func,
   requests: PropTypes.array,
-  showBlur: PropTypes.bool,
   transactions: PropTypes.array,
   transactionsCount: PropTypes.number,
 };

@@ -1,14 +1,9 @@
 import { floor } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  compose,
-  pure,
-  withHandlers,
-  withProps,
-} from 'recompact';
+import { compose, pure, withHandlers, withProps } from 'recompact';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
-import { withAccountSettings } from '../../hoc';
+import { withAccountSettings, withOpenInvestmentCards } from '../../hoc';
 import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import Divider from '../Divider';
@@ -34,35 +29,39 @@ const enhance = compose(
         onPress(item);
       }
     },
-  }),
+  })
 );
 
-const UniswapInvestmentCard = enhance(({
-  item: {
-    ethBalance,
-    tokenBalance,
-    tokenName,
-    tokenSymbol,
-    totalBalanceAmount,
-    totalNativeDisplay,
-  },
-  onPress,
-  onPressContainer,
-  nativeCurrency,
-  ...props
-}) => (
-  <ButtonPressAnimation
-    disabled={!onPress}
-    onPress={onPressContainer}
-    scaleTo={0.96}
-  >
+const UniswapInvestmentCard = enhance(
+  ({
+    isCollapsible,
+    item: {
+      ethBalance,
+      tokenBalance,
+      tokenName,
+      tokenSymbol,
+      totalBalanceAmount,
+      totalNativeDisplay,
+      uniqueId,
+    },
+    nativeCurrency,
+    onPress,
+    onPressContainer,
+    openInvestmentCards,
+    ...props
+  }) => (
     <InvestmentCard
       {...props}
       flex={0}
       gradientColors={['#ECF1F5', '#E4E9F0']}
+      collapsed={openInvestmentCards[uniqueId]}
+      uniqueId={uniqueId}
+      containerHeight={UniswapInvestmentCard.height}
+      isExpandedState={!onPress}
       headerProps={{
         color: colors.dark,
         emoji: 'unicorn_face',
+        isCollapsible,
         title: 'Uniswap',
         titleColor: '#D040FF',
         value: floor(parseFloat(totalBalanceAmount), 4)
@@ -75,26 +74,29 @@ const UniswapInvestmentCard = enhance(({
         backgroundColor={colors.transparent}
         color={colors.alpha(colors.blueGreyDark, 0.02)}
       />
-      <ColumnWithMargins css={padding(8, 15, 15)} margin={6}>
-        <Row align="center" justify="space-between">
-          <AssetLabel>Ethereum</AssetLabel>
-          <AssetLabel>{tokenName}</AssetLabel>
-        </Row>
-        <Row align="center" justify="space-between">
-          <InvestmentCardPill
-            symbol="ETH"
-            value={ethBalance}
-          />
-          <InvestmentCardPill
-            reverse
-            symbol={tokenSymbol}
-            value={tokenBalance}
-          />
-        </Row>
-      </ColumnWithMargins>
+      <ButtonPressAnimation
+        disabled={!onPress}
+        onPress={onPressContainer}
+        scaleTo={0.96}
+      >
+        <ColumnWithMargins css={padding(8, 15, 15)} margin={6}>
+          <Row align="center" justify="space-between">
+            <AssetLabel>Ethereum</AssetLabel>
+            <AssetLabel>{tokenName}</AssetLabel>
+          </Row>
+          <Row align="center" justify="space-between">
+            <InvestmentCardPill symbol="ETH" value={ethBalance} />
+            <InvestmentCardPill
+              reverse
+              symbol={tokenSymbol}
+              value={tokenBalance}
+            />
+          </Row>
+        </ColumnWithMargins>
+      </ButtonPressAnimation>
     </InvestmentCard>
-  </ButtonPressAnimation>
-));
+  )
+);
 
 UniswapInvestmentCard.propTypes = {
   item: PropTypes.object,
@@ -105,4 +107,4 @@ UniswapInvestmentCard.propTypes = {
 
 UniswapInvestmentCard.height = UniswapInvestmentCardHeight;
 
-export default UniswapInvestmentCard;
+export default withOpenInvestmentCards(UniswapInvestmentCard);

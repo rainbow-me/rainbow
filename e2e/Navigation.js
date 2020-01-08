@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 describe('Basic test', () => {
   beforeEach(async () => {
     await device.reloadReactNative();
@@ -8,7 +9,7 @@ describe('Basic test', () => {
   });
 
   it('should navigate without imported wallet', async () => {
-    const importButton = element(by.label('Import Wallet')).atIndex(1)
+    const importButton = element(by.label('Import Wallet')).atIndex(1);
     await expect(importButton).toBeVisible();
     await element(by.label('Balances')).swipe('left', 'fast', 0.5);
     await expect(element(by.label('Scan to send'))).toBeVisible();
@@ -32,6 +33,5 @@ describe('Basic test', () => {
     await expect(element(by.label('Scan to send'))).toBeVisible();
     await element(by.id('goToBalancesFromScanner')).tap();
     await expect(element(by.label('Balances'))).toBeVisible();
-
   });
 });

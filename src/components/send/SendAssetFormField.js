@@ -7,7 +7,6 @@ import { RowWithMargins } from '../layout';
 import { Monospace } from '../text';
 
 const SendAssetFormField = ({
-  assetAmount,
   autoFocus,
   format,
   label,
@@ -36,10 +35,9 @@ const SendAssetFormField = ({
       value={value}
     />
     <Monospace color="blueGreyDark" size="h2">
-      {((label.length > labelMaxLength)
+      {label.length > labelMaxLength
         ? label.substring(0, labelMaxLength)
-        : label
-      )}
+        : label}
     </Monospace>
   </RowWithMargins>
 );
@@ -62,7 +60,7 @@ SendAssetFormField.defaultProps = {
 
 export default compose(
   withHandlers({
-    onPressButton: ({ onPressButton }) => (event) => {
+    onPressButton: ({ onPressButton }) => event => {
       analytics.track('Clicked "Max" in Send flow input');
 
       if (onPressButton) {
@@ -70,5 +68,5 @@ export default compose(
       }
     },
   }),
-  pure,
+  pure
 )(SendAssetFormField);

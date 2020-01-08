@@ -41,12 +41,7 @@ const Title = styled(TruncatedText).attrs(HeadingTextStyles)`
   padding-right: ${({ paddingRight }) => paddingRight};
 `;
 
-const AssetPanelHeader = ({
-  price,
-  priceLabel,
-  subtitle,
-  title,
-}) => (
+const AssetPanelHeader = ({ price, priceLabel, subtitle, title }) => (
   <Container>
     <HeaderRow>
       <Title paddingRight={price ? FloatingPanel.padding.x * 1.25 : 0}>

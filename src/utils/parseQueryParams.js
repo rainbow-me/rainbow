@@ -11,10 +11,9 @@ export default queryString => {
     const valueArr = pairs[i].match(/=.+/i) || [];
     if (keyArr[0]) {
       result[decodeURIComponent(keyArr[0])] = decodeURIComponent(
-        valueArr[0].substr(1),
+        valueArr[0].substr(1)
       );
     }
   }
-
   return result;
 };

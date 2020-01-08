@@ -2,12 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Clipboard } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {
-  compose,
-  onlyUpdateForKeys,
-  withHandlers,
-  withState,
-} from 'recompact';
+import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
 import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
 import { borders, margin } from '../../styles';
@@ -33,7 +28,6 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
 const Container = styled(Centered).attrs({ direction: 'column' })`
   margin-bottom: 24;
   padding-bottom: 32;
-  padding-top: 3;
 `;
 
 const ProfileMasthead = ({
@@ -60,7 +54,7 @@ const ProfileMasthead = ({
           icon="copy"
           onPress={onPressCopy}
           scaleTo={0.82}
-          text="Copy"
+          text="Copy Address"
         />
         <FloatingEmojis
           count={emojiCount}
@@ -76,7 +70,9 @@ const ProfileMasthead = ({
         text="Receive"
       />
     </RowWithMargins>
-    {showBottomDivider && <Divider style={{ bottom: 0, position: 'absolute' }} />}
+    {showBottomDivider && (
+      <Divider style={{ bottom: 0, position: 'absolute' }} />
+    )}
   </Container>
 );
 
@@ -99,7 +95,8 @@ export default compose(
       setEmojiCount(emojiCount + 1);
       Clipboard.setString(accountAddress);
     },
-    onPressReceive: ({ navigation }) => () => navigation.navigate('ReceiveModal'),
+    onPressReceive: ({ navigation }) => () =>
+      navigation.navigate('ReceiveModal'),
   }),
-  onlyUpdateForKeys(['accountAddress', 'emojiCount', 'showBottomDivider']),
+  onlyUpdateForKeys(['accountAddress', 'emojiCount', 'showBottomDivider'])
 )(ProfileMasthead);

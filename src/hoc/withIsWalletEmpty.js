@@ -3,4 +3,5 @@ import { setIsWalletEmpty } from '../redux/isWalletEmpty';
 
 const mapStateToProps = ({ isWalletEmpty }) => isWalletEmpty;
 
-export default Component => connect(mapStateToProps, { setIsWalletEmpty })(Component);
+export default Component =>
+  connect(mapStateToProps, { setIsWalletEmpty })(Component);

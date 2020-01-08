@@ -8,11 +8,11 @@ import { CoinIcon } from '../coin-icon';
 import Highlight from '../Highlight';
 import { Column, Row } from '../layout';
 
-const CoinRowPaddingTop = 10;
-const CoinRowPaddingBottom = 11.5;
+const CoinRowPaddingTop = 15;
+const CoinRowPaddingBottom = 7;
 
 const Container = styled(Row)`
-  ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom, 15)}
+  ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom, 19)}
   background-color: ${colors.white};
   width: 100%;
 `;
@@ -31,39 +31,37 @@ const CoinRowHighlight = withProps({
   marginHorizontal: 8,
 })(Highlight);
 
-const enhance = compose(
-  withAccountSettings,
-  withFabSendAction,
-);
+const enhance = compose(withAccountSettings, withFabSendAction);
 
-const CoinRow = enhance(({
-  bottomRowRender,
-  children,
-  coinIconRender,
-  containerStyles,
-  contentStyles,
-  highlight,
-  symbol,
-  topRowRender,
-  ...props
-}) => (
-  <Container align="center" css={containerStyles}>
-    <CoinRowHighlight visible={highlight} />
-    {createElement(coinIconRender, { symbol, ...props })}
-    <Content css={contentStyles}>
-      <Row align="center" justify="space-between">
-        {topRowRender({ symbol, ...props })}
-      </Row>
-      <Row align="center" justify="space-between">
-        {bottomRowRender({ symbol, ...props })}
-      </Row>
-    </Content>
-    {(typeof children === 'function')
-      ? children({ symbol, ...props })
-      : children
-    }
-  </Container>
-));
+const CoinRow = enhance(
+  ({
+    bottomRowRender,
+    children,
+    coinIconRender,
+    containerStyles,
+    contentStyles,
+    highlight,
+    symbol,
+    topRowRender,
+    ...props
+  }) => (
+    <Container align="center" css={containerStyles}>
+      <CoinRowHighlight visible={highlight} />
+      {createElement(coinIconRender, { symbol, ...props })}
+      <Content css={contentStyles}>
+        <Row align="center" justify="space-between">
+          {topRowRender({ symbol, ...props })}
+        </Row>
+        <Row align="center" justify="space-between">
+          {bottomRowRender({ symbol, ...props })}
+        </Row>
+      </Content>
+      {typeof children === 'function'
+        ? children({ symbol, ...props })
+        : children}
+    </Container>
+  )
+);
 
 CoinRow.propTypes = {
   bottomRowRender: PropTypes.func,
@@ -72,6 +70,7 @@ CoinRow.propTypes = {
   containerStyles: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
   contentStyles: PropTypes.string,
   highlight: PropTypes.bool,
+  onPress: PropTypes.func,
   symbol: PropTypes.string,
   topRowRender: PropTypes.func,
 };

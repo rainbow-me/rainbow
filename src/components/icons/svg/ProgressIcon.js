@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import { pure } from 'recompact';
 import { G, Path } from 'svgs';
 import { colors, position } from '../../../styles';
 import { Centered } from '../../layout';
@@ -18,15 +17,22 @@ const {
   max,
   min,
   multiply,
+  proc,
   sin,
   sub,
 } = Animated;
+
 const AnimatedPath = createAnimatedComponent(Path);
 
-const convertProgress = progress => divide(multiply(360, min(100, max(0, progress))), 100);
+const convertProgress = proc(progress =>
+  divide(multiply(360, min(100, max(0, progress))), 100)
+);
 
 function polarToCartesian(center, radius, angleInDegrees) {
-  const angleInRadians = divide(multiply(sub(angleInDegrees, 90), Math.PI), 180);
+  const angleInRadians = divide(
+    multiply(sub(angleInDegrees, 90), Math.PI),
+    180
+  );
 
   return {
     x: concat(add(center, multiply(radius, cos(angleInRadians)))),
@@ -40,8 +46,17 @@ function circlePath(center, radius, startAngle, endAngle) {
   const largeArcFlag = cond(lessOrEq(sub(endAngle, startAngle), 180), 0, 1);
 
   const path = [
-    'M', start.x, start.y,
-    'A', radius, radius, 0, largeArcFlag, 0, end.x, end.y,
+    'M',
+    start.x,
+    start.y,
+    'A',
+    radius,
+    radius,
+    0,
+    largeArcFlag,
+    0,
+    end.x,
+    end.y,
   ];
 
   const pathWithSpaces = path.reduce((arr, p) => [...arr, p, ' '], []);
@@ -58,13 +73,10 @@ const ProgressIcon = ({
 }) => {
   const radius = size / 2;
   const center = radius + 2;
-  const viewBoxSize = size + (strokeWidth * 2);
+  const viewBoxSize = size + strokeWidth * 2;
 
   return (
-    <Centered
-      {...props}
-      {...position.sizeAsObject(size)}
-    >
+    <Centered {...props} {...position.sizeAsObject(size)}>
       <AnimatedSvg
         {...position.sizeAsObject(size)}
         viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}
@@ -106,4 +118,4 @@ ProgressIcon.defaultProps = {
   strokeWidth: 2,
 };
 
-export default pure(ProgressIcon);
+export default React.memo(ProgressIcon);

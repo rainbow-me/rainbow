@@ -1,26 +1,21 @@
-import { Animated } from 'react-native';
-
 // -- Constants --------------------------------------- //
 const UPDATE_TRANSITION_PROPS = 'navigation/UPDATE_TRANSITION_PROPS';
 
-export const updateTransitionProps = (payload) => (dispatch) => {
+export const updateTransitionProps = payload => dispatch => {
   dispatch({ payload, type: UPDATE_TRANSITION_PROPS });
 };
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   transitionProps: {
+    blurColor: null,
     effect: '',
     isTransitioning: false,
-    nextIndex: 1,
-    position: new Animated.Value(0),
-    prevIndex: 0,
   },
 };
 
 export default (state = INITIAL_STATE, action) => {
-  switch (action.type) {
-  case UPDATE_TRANSITION_PROPS:
+  if (action.type === UPDATE_TRANSITION_PROPS) {
     return {
       ...state,
       transitionProps: {
@@ -28,7 +23,6 @@ export default (state = INITIAL_STATE, action) => {
         ...action.payload,
       },
     };
-  default:
-    return state;
   }
+  return state;
 };

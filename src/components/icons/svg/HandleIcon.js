@@ -4,7 +4,6 @@ import { Path } from 'svgs';
 import { colors } from '../../../styles';
 import Svg from '../Svg';
 
-/* eslint-disable max-len */
 const HandleIcon = ({ color, ...props }) => (
   <Svg height="11" width="37" viewBox="0 0 37 11" {...props}>
     <Path
@@ -14,7 +13,6 @@ const HandleIcon = ({ color, ...props }) => (
     />
   </Svg>
 );
-/* eslint-disable max-len */
 
 HandleIcon.propTypes = {
   color: PropTypes.string,

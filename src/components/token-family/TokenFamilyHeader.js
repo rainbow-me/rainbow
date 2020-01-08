@@ -5,24 +5,23 @@ import FastImage from 'react-native-fast-image';
 import Animated, { Easing } from 'react-native-reanimated';
 import { toRad } from 'react-native-redash';
 import { toClass, withProps } from 'recompact';
-import styled from 'styled-components/primitives';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
-import { borders, colors, padding } from '../../styles';
+import { borders, colors } from '../../styles';
 import { initials, isNewValueForPath } from '../../utils';
-import { ButtonPressAnimation } from '../animations';
+import { ButtonPressAnimation, interpolate } from '../animations';
 import Highlight from '../Highlight';
 import ImageWithCachedDimensions from '../ImageWithCachedDimensions';
 import { Row, RowWithMargins } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import { TruncatedText, Monospace } from '../text';
 
-const { interpolate, timing, Value } = Animated;
+const { timing, Value } = Animated;
 
 const AnimatedMonospace = Animated.createAnimatedComponent(toClass(Monospace));
 const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
 
 const TokenFamilyHeaderAnimationDuration = 200;
-const TokenFamilyHeaderHeight = 54;
+const TokenFamilyHeaderHeight = 50;
 
 const FamilyIcon = withProps(({ familyImage }) => ({
   id: familyImage,
@@ -38,29 +37,26 @@ export default class TokenFamilyHeader extends PureComponent {
     isCoinRow: PropTypes.bool,
     isOpen: PropTypes.bool,
     onHeaderPress: PropTypes.func,
-  }
+  };
+
+  componentDidUpdate = prevProps => {
+    if (isNewValueForPath(this.props, prevProps, 'isOpen')) {
+      this.runTiming();
+    }
+  };
 
   static animationDuration = TokenFamilyHeaderAnimationDuration;
 
   static height = TokenFamilyHeaderHeight;
 
-  animation = new Value(0)
+  animation = new Value(this.props.isOpen ? 1 : 0);
 
-  componentDidMount = () => this.runTiming()
-
-  componentDidUpdate = (prevProps) => {
-    if (isNewValueForPath(this.props, prevProps, 'isOpen')) {
-      this.runTiming();
-    }
-  }
-
-  runTiming = () => (
+  runTiming = () =>
     timing(this.animation, {
       duration: TokenFamilyHeaderAnimationDuration,
-      easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
       toValue: this.props.isOpen ? 1 : 0,
-    }).start()
-  )
+    }).start();
 
   renderFamilyIcon = () => {
     const { familyImage, familyName, isCoinRow } = this.props;
@@ -75,66 +71,74 @@ export default class TokenFamilyHeader extends PureComponent {
           [0, 1, 3, colors.dark, 0.08],
         ]}
       >
-        {familyImage
-          ? <FamilyIcon familyImage={familyImage} style={size} />
-          : <FallbackIcon {...size} symbol={initials(familyName)} />
-        }
+        {familyImage ? (
+          <FamilyIcon familyImage={familyImage} style={size} />
+        ) : (
+          <FallbackIcon {...size} symbol={initials(familyName)} />
+        )}
       </ShadowStack>
     );
-  }
+  };
 
   render = () => (
-    <ButtonPressAnimation
-      onPress={this.props.onHeaderPress}
-      scaleTo={0.96}
-    >
+    <ButtonPressAnimation onPress={this.props.onHeaderPress} scaleTo={0.96}>
       <Row
         align="center"
         backgroundColor={colors.white}
         height={TokenFamilyHeaderHeight}
         justify="space-between"
         paddingHorizontal={this.props.isCoinRow ? 16 : 19}
-        paddingVertical={7.5}
         width="100%"
       >
         <Highlight visible={this.props.highlight} />
-        <RowWithMargins align="center" margin={9}>
+        <RowWithMargins align="center" margin={10}>
           {this.renderFamilyIcon()}
           <TruncatedText
+            letterSpacing="tight"
             lineHeight="normal"
-            size="medium"
+            size="lmedium"
+            style={{ marginBottom: 1 }}
             weight="semibold"
           >
             {this.props.familyName}
           </TruncatedText>
+        </RowWithMargins>
+        <RowWithMargins align="center" margin={14}>
+          <AnimatedMonospace
+            color="dark"
+            size="lmedium"
+            style={{
+              marginBottom: 1,
+              opacity: interpolate(this.animation, {
+                inputRange: [0, 1],
+                outputRange: [1, 0],
+              }),
+            }}
+          >
+            {this.props.childrenAmount}
+          </AnimatedMonospace>
           <AnimatedFastImage
             resizeMode={FastImage.resizeMode.contain}
             source={CaretImageSource}
             style={{
-              height: 15,
-              transform: [{
-                rotate: toRad(interpolate(this.animation, {
-                  inputRange: [0, 1],
-                  outputRange: [0, 90],
-                })),
-              }],
-              width: 5.84,
+              height: 17,
+              marginBottom: 1,
+              right: 4,
+              transform: [
+                {
+                  rotate: toRad(
+                    interpolate(this.animation, {
+                      inputRange: [0, 1],
+                      outputRange: [0, 90],
+                    })
+                  ),
+                },
+              ],
+              width: 9,
             }}
           />
         </RowWithMargins>
-        <AnimatedMonospace
-          color="blueGreyDark"
-          size="lmedium"
-          style={{
-            opacity: interpolate(this.animation, {
-              inputRange: [0, 1],
-              outputRange: [1, 0],
-            }),
-          }}
-        >
-          {this.props.childrenAmount}
-        </AnimatedMonospace>
       </Row>
     </ButtonPressAnimation>
-  )
+  );
 }

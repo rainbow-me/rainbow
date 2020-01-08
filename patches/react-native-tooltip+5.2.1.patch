@@ -1,0 +1,43 @@
+diff --git a/node_modules/react-native-tooltip/ToolTip.ios.js b/node_modules/react-native-tooltip/ToolTip.ios.js
+index c6754e2..997d584 100644
+--- a/node_modules/react-native-tooltip/ToolTip.ios.js
++++ b/node_modules/react-native-tooltip/ToolTip.ios.js
+@@ -57,20 +57,6 @@ export default class ToolTip extends PureComponent {
+         return null;
+     };
+ 
+-    getTouchableHighlightProps = () => {
+-        const props = {};
+-
+-        Object.keys(TouchableHighlight.propTypes).forEach((key) => props[key] = this.props[key]);
+-
+-        if (this.props.longPress) {
+-            props.onLongPress = this.showMenu;
+-        } else {
+-            props.onPress = this.showMenu;
+-        }
+-
+-        return props;
+-    };
+-
+     handleToolTipTextChange = (event) => {
+         const callback = this.getCallback(event.nativeEvent.text);
+         if (callback) {
+@@ -83,13 +69,13 @@ export default class ToolTip extends PureComponent {
+     };
+ 
+     render() {
++        const { children, ...props } = this.props;
++
+         return (
+             <RCTToolTipText ref='toolTipText' onChange={this.handleToolTipTextChange} onBlur={this.handleBlurToolTip}>
+-              <TouchableHighlight
+-                  {...this.getTouchableHighlightProps()}
+-              >
++              <TouchableHighlight {...props}>
+                 <View>
+-                    {this.props.children}
++                    {children}
+                 </View>
+               </TouchableHighlight>
+             </RCTToolTipText>

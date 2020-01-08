@@ -9,7 +9,9 @@ import { RadioList, RadioListItem } from '../radio-list';
 
 // Only show languages that have 'wallet' translations available.
 const hasWalletTranslations = language => get(language, 'translation.wallet');
-const languagesWithWalletTranslations = keys(pickBy(resources, hasWalletTranslations));
+const languagesWithWalletTranslations = keys(
+  pickBy(resources, hasWalletTranslations)
+);
 
 const languageListItems = languagesWithWalletTranslations.map(code => ({
   code,
@@ -18,13 +20,8 @@ const languageListItems = languagesWithWalletTranslations.map(code => ({
   value: code,
 }));
 
-// eslint-disable-next-line react/prop-types
 const renderLanguageListItem = ({ code, language, ...item }) => (
-  <RadioListItem
-    {...item}
-    label={language}
-    value={code}
-  />
+  <RadioListItem {...item} label={language} value={code} />
 );
 
 const LanguageSection = ({ language, onSelectLanguage }) => (
@@ -45,10 +42,10 @@ LanguageSection.propTypes = {
 export default compose(
   withAccountSettings,
   withHandlers({
-    onSelectLanguage: ({ settingsChangeLanguage }) => (language) => {
+    onSelectLanguage: ({ settingsChangeLanguage }) => language => {
       settingsChangeLanguage(language);
       analytics.track('Changed language', { language });
     },
   }),
-  onlyUpdateForKeys(['language']),
+  onlyUpdateForKeys(['language'])
 )(LanguageSection);

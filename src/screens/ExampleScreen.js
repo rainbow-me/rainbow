@@ -1,20 +1,29 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { Page } from '../components/layout';
-import { withHideSplashScreen } from '../hoc';
-import { position } from '../styles';
+import { compose } from 'recompact';
+import { GasSpeedButton } from '../components/gas';
+import { Centered, Page } from '../components/layout';
+import { withDataInit, withAccountData } from '../hoc';
+import { colors, position } from '../styles';
 
 class ExampleScreen extends PureComponent {
   static propTypes = {
-    onHideSplashScreen: PropTypes.func,
-  }
+    initializeWallet: PropTypes.func,
+  };
 
-  componentDidMount = () => this.props.onHideSplashScreen()
+  componentDidMount = async () => {
+    try {
+      await this.props.initializeWallet();
+    } catch (error) {
+      console.log('lol error on ExampleScreen like a n00b: ', error);
+    }
+  };
 
   render = () => (
     <Page
       {...position.centeredAsObject}
       {...position.sizeAsObject('100%')}
+      color={colors.dark}
       flex={1}
     >
       {/*
@@ -22,8 +31,11 @@ class ExampleScreen extends PureComponent {
         // ... i dont want to set up storybook right now
 
       */}
+      <Centered width="100%">
+        <GasSpeedButton flex={1} />
+      </Centered>
     </Page>
-  )
+  );
 }
 
-export default withHideSplashScreen(ExampleScreen);
+export default compose(withAccountData, withDataInit)(ExampleScreen);

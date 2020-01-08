@@ -38,9 +38,12 @@ WalletConnectLearnMoreButton.propTypes = {
   onPressLearnMore: PropTypes.func,
 };
 
-const openWalletConnectWebsite = () => Linking.openURL('https://walletconnect.org/');
+const openWalletConnectWebsite = () =>
+  Linking.openURL('https://walletconnect.org/');
 
 export default compose(
   pure,
-  withHandlers({ onPressLearnMore: () => debounce(openWalletConnectWebsite, 200) }),
+  withHandlers({
+    onPressLearnMore: () => debounce(openWalletConnectWebsite, 200),
+  })
 )(WalletConnectLearnMoreButton);

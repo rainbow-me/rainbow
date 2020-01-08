@@ -1,37 +1,27 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { View } from 'react-native';
 import stylePropType from 'react-style-proptype';
-import {
-  compose,
-  onlyUpdateForKeys,
-  withHandlers,
-  withProps,
-} from 'recompact';
+import { compose, onlyUpdateForKeys, withHandlers, withProps } from 'recompact';
 import { withFabSendAction } from '../../hoc';
-import { colors, position } from '../../styles';
+import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import Highlight from '../Highlight';
 import InnerBorder from '../InnerBorder';
-import { Centered } from '../layout';
-import { ShadowStack } from '../shadow-stack';
 import UniqueTokenImage from './UniqueTokenImage';
 
 const UniqueTokenCardBorderRadius = 18;
 
 const UniqueTokenCard = ({
+  borderEnabled,
   disabled,
   height,
-  item: {
-    background,
-    image_preview_url,
-    ...item
-  },
+  item: { background, image_preview_url, ...item },
   onPress,
   onPressSend,
-  size,
   highlight,
   resizeMode,
-  shadows,
+  shadowStyle,
   style,
   width,
   ...props
@@ -43,68 +33,65 @@ const UniqueTokenCard = ({
       onPress={onPress}
       onPressSend={onPressSend}
       scaleTo={0.94}
+      style={{
+        shadowColor: colors.dark,
+        shadowOffset: { height: 2, width: 0 },
+        shadowOpacity: 0.08,
+        shadowRadius: 3,
+        ...shadowStyle,
+      }}
     >
-      <ShadowStack
+      <View
         {...props}
-        backgroundColor={backgroundColor}
         borderRadius={UniqueTokenCardBorderRadius}
         height={height}
-        shadows={shadows}
+        overflow="hidden"
         style={style}
         width={width}
       >
-        <Centered
-          style={{
-            ...position.coverAsObject,
-            backgroundColor,
-            borderRadius: UniqueTokenCardBorderRadius,
-          }}
-        >
-          <UniqueTokenImage
-            backgroundColor={backgroundColor}
-            resizeMode={resizeMode}
-            imageUrl={image_preview_url} // eslint-disable-line camelcase
-            item={item}
-          />
+        <UniqueTokenImage
+          backgroundColor={backgroundColor}
+          resizeMode={resizeMode}
+          imageUrl={image_preview_url}
+          item={item}
+        />
+        {borderEnabled && (
           <InnerBorder
             opacity={0.04}
             radius={UniqueTokenCardBorderRadius}
+            width={0.5}
           />
-          <Highlight
-            backgroundColor={colors.alpha(colors.white, 0.33)}
-            visible={highlight}
-          />
-        </Centered>
-      </ShadowStack>
+        )}
+        <Highlight
+          backgroundColor={colors.alpha(colors.white, 0.33)}
+          visible={highlight}
+        />
+      </View>
     </ButtonPressAnimation>
   );
 };
 
 UniqueTokenCard.propTypes = {
+  borderEnabled: PropTypes.bool,
   disabled: PropTypes.bool,
   height: PropTypes.number,
   highlight: PropTypes.bool,
   item: PropTypes.shape({
     background: PropTypes.string,
-    // eslint-disable-next-line camelcase
     image_preview_url: PropTypes.string,
   }),
   onPress: PropTypes.func,
   onPressSend: PropTypes.func,
   resizeMode: UniqueTokenImage.propTypes.resizeMode,
-  shadows: PropTypes.array,
+  shadowStyle: stylePropType,
   size: PropTypes.number,
   style: stylePropType,
   width: PropTypes.number,
 };
 
 UniqueTokenCard.defaultProps = {
-  shadows: [
-    [0, 1, 3, colors.dark, 0.06],
-    [0, 4, 6, colors.dark, 0.04],
-  ],
+  borderEnabled: true,
 };
-
 
 export default compose(
   withHandlers({
@@ -121,5 +108,5 @@ export default compose(
   }),
   withProps(({ item: { uniqueId } }) => ({ uniqueId })),
   withFabSendAction,
-  onlyUpdateForKeys(['height', 'style', 'uniqueId', 'width', 'highlight']),
+  onlyUpdateForKeys(['height', 'style', 'uniqueId', 'width', 'highlight'])
 )(UniqueTokenCard);

@@ -5,14 +5,11 @@ import { withImageDimensionsCache } from '../hoc';
 const ImageWithCachedDimensions = compose(
   withImageDimensionsCache,
   withHandlers({
-    onLoad: ({
-      id,
-      imageDimensionsCache,
-      onLoad,
-      updateCache,
-    }) => event => {
+    onLoad: ({ id, imageDimensionsCache, onLoad, updateCache }) => event => {
       event.persist();
-      const { nativeEvent: { height, width } } = event;
+      const {
+        nativeEvent: { height, width },
+      } = event;
 
       if (!imageDimensionsCache[id]) {
         updateCache({
@@ -29,7 +26,7 @@ const ImageWithCachedDimensions = compose(
         onLoad(event);
       }
     },
-  }),
+  })
 )(FastImage);
 
 export default ImageWithCachedDimensions;

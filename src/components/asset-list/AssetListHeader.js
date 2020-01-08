@@ -5,15 +5,10 @@ import Divider from '../Divider';
 import { Monospace } from '../text';
 import { ListHeader } from '../list';
 
-const enhance = onlyUpdateForKeys(['showShitcoins', 'title', 'totalValue']);
+const enhance = onlyUpdateForKeys(['title', 'totalValue']);
 
-const AssetListHeader = enhance(({
-  showShitcoins,
-  title,
-  totalValue,
-  ...props
-}) => (
-  <ListHeader showShitcoins={showShitcoins} title={title} {...props}>
+const AssetListHeader = enhance(({ title, totalValue, isSticky, ...props }) => (
+  <ListHeader isSticky={isSticky} title={title} {...props}>
     {totalValue ? (
       <Monospace size="larger" weight="semibold">
         {totalValue}
@@ -23,9 +18,13 @@ const AssetListHeader = enhance(({
 ));
 
 AssetListHeader.propTypes = {
-  showShitcoins: PropTypes.bool,
+  isSticky: PropTypes.bool,
   title: PropTypes.string,
   totalValue: PropTypes.string,
+};
+
+AssetListHeader.defaultProps = {
+  isSticky: false,
 };
 
 AssetListHeader.height = ListHeader.height + Divider.size;

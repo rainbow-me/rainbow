@@ -10,21 +10,24 @@ import { Monospace } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 
+const containerStyles = css`
+  padding-left: 15;
+  padding-top: 17;
+`;
+
 const selectedHeight = 78;
 
 const selectedStyles = css`
-  ${padding(17, 15, 19, 15)};
+  ${padding(15, 15, 19, 15)};
   height: ${selectedHeight};
 `;
 
 const BottomRow = ({ balance, native, nativeCurrencySymbol }) => {
-  const fiatValue = get(native, 'balance.display') || `${nativeCurrencySymbol}0.00`;
+  const fiatValue =
+    get(native, 'balance.display') || `${nativeCurrencySymbol}0.00`;
 
   return (
-    <Monospace
-      color={colors.alpha(colors.blueGreyDark, 0.6)}
-      size="smedium"
-    >
+    <Monospace color={colors.alpha(colors.blueGreyDark, 0.6)} size="smedium">
       {get(balance, 'display')} ≈ {fiatValue}
     </Monospace>
   );
@@ -37,9 +40,7 @@ BottomRow.propTypes = {
 };
 
 const TopRow = ({ name, selected }) => (
-  <CoinName weight={selected ? 'semibold' : 'regular'}>
-    {name}
-  </CoinName>
+  <CoinName weight={selected ? 'semibold' : 'regular'}>{name}</CoinName>
 );
 
 TopRow.propTypes = {
@@ -54,20 +55,15 @@ const enhance = shouldUpdate((props, nextProps) => {
   return itemIdentifier !== nextItemIdentifier;
 });
 
-const SendCoinRow = enhance(({
-  item,
-  onPress,
-  selected,
-  ...props
-}) => (
+const SendCoinRow = enhance(({ item, onPress, selected, ...props }) => (
   <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
     <CoinRow
       {...item}
-      {...props}
       bottomRowRender={BottomRow}
-      containerStyles={selected ? selectedStyles : null}
+      containerStyles={selected ? selectedStyles : containerStyles}
       selected={selected}
       topRowRender={TopRow}
+      {...props}
     />
   </ButtonPressAnimation>
 ));

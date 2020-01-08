@@ -1,8 +1,8 @@
+import messaging from '@react-native-firebase/messaging';
 import lang from 'i18n-js';
 import { get } from 'lodash';
-import firebase from 'react-native-firebase';
 import { Alert } from '../components/alerts';
-import { getLocal, saveLocal } from '../handlers/commonStorage';
+import { getLocal, saveLocal } from '../handlers/localstorage/common';
 
 export const getFCMToken = async () => {
   const fcmTokenLocal = await getLocal('rainbowFcmToken');
@@ -15,7 +15,7 @@ export const getFCMToken = async () => {
 
 export const saveFCMToken = async () => {
   try {
-    const fcmToken = await firebase.messaging().getToken();
+    const fcmToken = await messaging().getToken();
     if (fcmToken) {
       saveLocal('rainbowFcmToken', { data: fcmToken });
     }
@@ -24,9 +24,9 @@ export const saveFCMToken = async () => {
   }
 };
 
-export const hasPermission = async () => firebase.messaging().hasPermission();
+export const hasPermission = () => messaging().hasPermission();
 
-export const requestPermission = async () => firebase.messaging().requestPermission();
+export const requestPermission = () => messaging().requestPermission();
 
 export const checkPushNotificationPermissions = async () => {
   const arePushNotificationsAuthorized = await hasPermission();
@@ -49,18 +49,7 @@ export const checkPushNotificationPermissions = async () => {
   }
 };
 
-export const registerTokenRefreshListener = () => firebase.messaging().onTokenRefresh(fcmToken => {
-  saveLocal('rainbowFcmToken', { data: fcmToken });
-});
-
-export const registerNotificationListener = () => firebase.notifications().onNotification(notification => {
-  console.log('onNotification');
-});
-
-// TODO this.onPushNotificationOpened
-export const registerNotificationOpenedListener = () => firebase.notifications().onNotificationOpened(notificationOpen => {
-  const { callId, sessionId } = notificationOpen.notification.data;
-  this.onPushNotificationOpened(callId, sessionId, false);
-});
-
-export const getInitialNotification = () => firebase.notifications().getInitialNotification();
+export const registerTokenRefreshListener = () =>
+  messaging().onTokenRefresh(fcmToken => {
+    saveLocal('rainbowFcmToken', { data: fcmToken });
+  });
