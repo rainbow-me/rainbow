@@ -8936,10 +8936,10 @@ rc@^1.0.1, rc@^1.1.6:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-coin-icon@0.1.13:
-  version "0.1.13"
-  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.13.tgz#0eb148637a7714f3b74a493b71de0bba34353634"
-  integrity sha512-j+6r6EcXbTbdlpJCf8DvBAvl44mXXFCdrNh5Bj9P3y4KON2brMXpNrkrN1ixrx7y87F+n55K++DERoM3XqdbJg==
+react-coin-icon@0.1.14:
+  version "0.1.14"
+  resolved "https://registry.yarnpkg.com/react-coin-icon/-/react-coin-icon-0.1.14.tgz#4d919b2d60f40405bf48fd86b6b02278e7d8bbb8"
+  integrity sha512-UkBGfEHRJBMkoEXLnALbiD/KBBmrTTPvz2VAAvBDr2LAwDN7Izj1Yy0vXvLLBBuzznjulH1NRWMWC5b5yViRpg==
   dependencies:
     "@svgr/cli" "^4.3.0"
     lodash "^4.17.11"
