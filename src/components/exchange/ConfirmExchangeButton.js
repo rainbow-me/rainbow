@@ -67,7 +67,7 @@ ConfirmExchangeButton.propTypes = {
   onSubmit: PropTypes.func,
   onUnlockAsset: PropTypes.func,
   slippage: PropTypes.number,
-  timeRemaining: PropTypes.string,
+  timeRemaining: PropTypes.number,
 };
 
 export default React.memo(ConfirmExchangeButton);
