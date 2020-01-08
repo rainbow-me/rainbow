@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForPropTypes } from 'recompact';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import transactionTypes from '../../helpers/transactionTypes';
 import { colors, position } from '../../styles';
 import Icon from '../icons/Icon';
 import { RowWithMargins } from '../layout';
 import Spinner from '../Spinner';
 import { Text } from '../text';
-import transactionTypes from '../../helpers/transactionTypes';
 
 const StatusProps = {
   [TransactionStatusTypes.failed]: {
@@ -32,10 +32,17 @@ const StatusProps = {
 };
 
 const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
-  const statusColor = pending ? colors.primaryBlue : colors.blueGreyMediumLight;
+  const isTrade = type === transactionTypes.trade;
 
-  let displayStatus =
-    type === transactionTypes.trade && status === TransactionStatusTypes.sent
+  let statusColor = colors.blueGreyMediumLight;
+  if (pending) {
+    statusColor = colors.primaryBlue;
+  } else if (isTrade && status === TransactionStatusTypes.received) {
+    statusColor = colors.dodgerBlue;
+  }
+
+  const displayStatus =
+    isTrade && status === TransactionStatusTypes.sent
       ? TransactionStatusTypes.swapped
       : status;
 
@@ -64,6 +71,7 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
 TransactionStatusBadge.propTypes = {
   pending: PropTypes.bool,
   status: PropTypes.oneOf(Object.values(TransactionStatusTypes)),
+  type: PropTypes.oneOf(Object.values(transactionTypes)),
 };
 
 TransactionStatusBadge.defaultProps = {
