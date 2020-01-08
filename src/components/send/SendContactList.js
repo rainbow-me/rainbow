@@ -111,7 +111,7 @@ class SendContactList extends Component {
 
     navigation.navigate('OverlayExpandedAssetScreen', {
       address,
-      asset: [],
+      asset: {},
       color,
       contact: { address, color, nickname },
       onCloseModal: onChange,

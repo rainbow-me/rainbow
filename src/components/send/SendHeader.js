@@ -124,7 +124,7 @@ class SendHeader extends PureComponent {
     Keyboard.dismiss();
     navigation.navigate('OverlayExpandedAssetScreen', {
       address: recipient,
-      asset: [],
+      asset: {},
       color,
       contact: isEmpty(contact) ? false : contact,
       onRefocusInput: refocusCallback,

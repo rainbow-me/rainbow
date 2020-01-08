@@ -66,7 +66,7 @@ class RequestCoinRow extends React.PureComponent {
     return (
       <ButtonPressAnimation
         onPress={this.handlePressOpen}
-        scaleTo={0.96}
+        scaleTo={0.98}
         waitFor={this.buttonRef}
       >
         <CoinRow
