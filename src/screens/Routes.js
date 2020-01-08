@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
 import React from 'react';
+import { StatusBar } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
 // eslint-disable-next-line import/no-unresolved
@@ -173,6 +174,12 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
     onNavigationStateChange={(prevState, currentState) => {
       const { params, routeName } = Navigation.getActiveRoute(currentState);
       const prevRouteName = Navigation.getActiveRouteName(prevState);
+      if (
+        prevRouteName === 'ImportSeedPhraseSheet' &&
+        (routeName === 'ProfileScreen' || routeName === 'WalletScreen')
+      ) {
+        StatusBar.setBarStyle('dark-content');
+      }
 
       if (routeName === 'SettingsModal') {
         let subRoute = get(params, 'section.title');
