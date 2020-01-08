@@ -25,7 +25,8 @@ const StatusProps = {
     name: 'sendSmall',
   },
   [TransactionStatusTypes.swapped]: {
-    name: 'smallSwap',
+    name: 'swap',
+    small: true,
     style: position.maxSizeAsObject(12),
   },
 };
