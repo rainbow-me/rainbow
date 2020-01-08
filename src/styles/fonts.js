@@ -16,7 +16,8 @@ font.letterSpacing = {
   loose: 0.15,
   looser: 0.3,
   loosest: 0.46,
-  looseyGoosey: 0.8,
+  looseyGoosey: 0.6,
+  uppercase: 0.8,
 };
 
 font.lineHeight = {

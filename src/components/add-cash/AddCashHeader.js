@@ -11,7 +11,8 @@ const AddCashHeader = () => (
     <Text
       align="center"
       css={{ paddingTop: 5 }}
-      letterSpacing="tighter"
+      family="SFProRounded"
+      letterSpacing="looseyGoosey"
       lineHeight="loose"
       size="large"
       weight="bold"
@@ -22,7 +23,7 @@ const AddCashHeader = () => (
       align="center"
       color={colors.alpha(colors.blueGreyDark, 0.5)}
       family="SFProRounded"
-      letterSpacing="looseyGoosey"
+      letterSpacing="uppercase"
       lineHeight="loose"
       size="smedium"
       style={{ textTransform: 'uppercase' }}

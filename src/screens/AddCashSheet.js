@@ -1,6 +1,6 @@
 import MaskedView from '@react-native-community/masked-view';
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { StatusBar, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated from 'react-native-reanimated';
@@ -12,9 +12,13 @@ import {
   ApplePayButton,
   VirtualKeyboard,
 } from '../components/add-cash';
-import { Centered, Column, ColumnWithMargins } from '../components/layout';
+import { ButtonPressAnimation } from '../components/animations';
+import { CoinIcon } from '../components/coin-icon';
+import { Centered, Column, ColumnWithMargins, Row, RowWithMargins } from '../components/layout';
+import { ShadowStack } from '../components/shadow-stack';
+import { Text } from '../components/text';
 import { withTransitionProps } from '../hoc';
-import { borders, colors, padding } from '../styles';
+import { borders, colors, fonts, padding, position } from '../styles';
 import { deviceUtils, safeAreaInsetValues } from '../utils';
 
 const {
@@ -86,10 +90,44 @@ const SheetContainer = styled(Column)`
   top: ${statusBarHeight};
 `;
 
+const CoinButton = styled(Row)`
+  border-radius: 20px;
+  height: 40px;
+  marginLeft: 4px;
+`;
+
+const CoinButtonShadow = [
+  [0, 0, 9, colors.shadowGrey, 0.1],
+  [0, 5, 15, colors.shadowGrey, 0.12],
+  [0, 10, 30, colors.shadowGrey, 0.06],
+];
+
+const CoinText = styled(Text)`
+  color: ${colors.alpha(colors.blueGreyDark, 0.5)};
+  font-family: ${fonts.family.SFProRounded};
+  font-size: ${fonts.size.large};
+  font-weight: ${fonts.weight.semibold};
+  height: 40px;
+  letter-spacing: ${fonts.letterSpacing.looseyGoosey};
+  line-height: 39px;
+  margin-left: 6px;
+  margin-right: 11px;
+  text-align: center;
+`;
+
+const MiniCoinIcon = styled(CoinIcon).attrs({
+  alignSelf: "center",
+  size: 26,
+})`
+  margin-left: 7px;
+`;
+
 class AddCashSheet extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      coinButtonWidth: 80,
+      coinButtonX: 98,
       scaleAnim: 1,
       shakeAnim: 0,
       text: null,
@@ -104,6 +142,7 @@ class AddCashSheet extends Component {
           <ColumnWithMargins
             align="center"
             css={padding(0, 24, isTinyIphone ? 0 : 24)}
+            margin={8}
             width="100%"
           >
             <MaskedView
@@ -141,7 +180,44 @@ class AddCashSheet extends Component {
                 stops={[0.2049, 0.6354, 0.8318, 0.9541]}
               />
             </MaskedView>
+
+            <RowWithMargins margin={4}>
+            <ShadowStack
+                backgroundColor="white"
+                borderRadius={20}
+                height={40}
+                position="absolute"
+                shadows={CoinButtonShadow}
+                style={{ zIndex: -1, transform: [{ translateX: this.state.coinButtonX }] }}
+                width={this.state.coinButtonWidth}
+              />
+              <CoinButton>
+                <ButtonPressAnimation onPress={null} scaleTo={0.9}>
+                  <Row>
+                    <MiniCoinIcon symbol="ETH" />
+                    <CoinText>ETH</CoinText>
+                  </Row>
+                </ButtonPressAnimation>
+              </CoinButton>
+              <CoinButton>
+                <ButtonPressAnimation onPress={null} scaleTo={0.9}>
+                  <Row>
+                    <MiniCoinIcon symbol="DAI" />
+                    <CoinText style={{ color: colors.alpha(colors.blueGreyDark, 0.7) }}>DAI</CoinText>
+                  </Row>
+                </ButtonPressAnimation>
+              </CoinButton>
+              <CoinButton>
+                <ButtonPressAnimation onPress={null} scaleTo={0.9}>
+                  <Row>
+                    <MiniCoinIcon symbol="USDC" />
+                    <CoinText>USDC</CoinText>
+                  </Row>
+                </ButtonPressAnimation>
+              </CoinButton>
+            </RowWithMargins>
           </ColumnWithMargins>
+
           <ColumnWithMargins align="center" margin={15}>
             <View style={{ maxWidth: 313 }}>
               <VirtualKeyboard
@@ -197,11 +273,11 @@ class AddCashSheet extends Component {
       }
     }
     let prevPosition = 1;
-    if (this.state.text && this.state.text.length > 2) {
-      prevPosition = 1 - (this.state.text.length - 2) * 0.06;
+    if (this.state.text && this.state.text.length > 3) {
+      prevPosition = 1 - (this.state.text.length - 3) * 0.075;
     }
-    if (curText.length > 2) {
-      let characterCount = 1 - (curText.length - 2) * 0.06;
+    if (curText.length > 3) {
+      let characterCount = 1 - (curText.length - 3) * 0.075;
       this.setState({
         scaleAnim: runSpring(
           new Clock(),
@@ -212,7 +288,7 @@ class AddCashSheet extends Component {
           40
         ),
       });
-    } else if (curText.length == 2) {
+    } else if (curText.length == 3) {
       this.setState({
         scaleAnim: runSpring(new Clock(), prevPosition, 1, 0, 400, 40),
       });

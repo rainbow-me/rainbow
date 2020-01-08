@@ -58,11 +58,11 @@ class VirtualKeyboard extends Component {
   Backspace() {
     return (
       <ButtonPressAnimation
-        duration={40}
+        duration={35}
         onPress={() => {
           this.onPress('back');
         }}
-        scaleTo={0.88}
+        scaleTo={1.6}
         style={styles.backspace}
         transformOrigin="keyboard"
       >
@@ -79,12 +79,12 @@ class VirtualKeyboard extends Component {
   Cell(symbol) {
     return (
       <ButtonPressAnimation
-        duration={40}
+        duration={35}
         key={symbol}
         onPress={() => {
           this.onPress(symbol.toString());
         }}
-        scaleTo={0.88}
+        scaleTo={1.6}
         transformOrigin="keyboard"
         width={80}
       >
