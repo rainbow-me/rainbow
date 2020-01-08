@@ -5,7 +5,7 @@ import { HoldToAuthorizeButton } from '../buttons';
 import { Icon } from '../icons';
 
 const ApplePayButton = ({ disabled, onSubmit, ...props }) => {
-  let label = null;
+  let label = '';
   if (disabled) {
     label = 'Enter an Amount';
   }
