@@ -358,7 +358,7 @@ ButtonPressAnimation.propTypes = {
 
 ButtonPressAnimation.defaultProps = {
   activeOpacity: 1,
-  duration: 170,
+  duration: 160,
   enableHapticFeedback: true,
   hapticType: 'selection',
   minLongPressDuration: 500,

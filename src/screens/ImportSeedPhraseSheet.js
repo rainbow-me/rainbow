@@ -95,7 +95,7 @@ const ImportSeedPhraseSheet = ({ initializeWallet, isEmpty }) => {
       setImporting(newImportingState);
       setParams({ gesturesEnabled: !newImportingState });
     },
-    [setImporting, setParams]
+    [setParams]
   );
 
   const handleSetSeedPhrase = useCallback(
@@ -103,7 +103,7 @@ const ImportSeedPhraseSheet = ({ initializeWallet, isEmpty }) => {
       if (isImporting) return null;
       return setSeedPhrase(text);
     },
-    [isImporting, setSeedPhrase]
+    [isImporting]
   );
 
   const onPressImportButton = () => {
