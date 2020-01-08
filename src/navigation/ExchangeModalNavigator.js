@@ -41,6 +41,9 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator(
     swipeVelocityImpact: 1,
     swipeVelocityScale: 1,
     tabBarComponent: null,
+    timingConfig: {
+      duration: 570,
+    },
     transparentCard: true,
   }
 );

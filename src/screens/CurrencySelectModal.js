@@ -175,6 +175,22 @@ class CurrencySelectModal extends Component {
               inputRange: [0, 1],
               outputRange: [0, 1],
             }),
+            transform: [
+              {
+                translateX: transitionPosition.interpolate({
+                  extrapolate: Animated.Extrapolate.CLAMP,
+                  inputRange: [0.01, 0.99],
+                  outputRange: [0, 1],
+                }),
+              },
+              {
+                scale: transitionPosition.interpolate({
+                  extrapolate: Animated.Extrapolate.CLAMP,
+                  inputRange: [0.01, 0.99],
+                  outputRange: [0.7, 1],
+                }),
+              },
+            ],
           }}
         >
           <Modal

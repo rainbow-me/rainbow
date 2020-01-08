@@ -864,6 +864,22 @@ class ExchangeModal extends Component {
                 inputRange: [0, 1],
                 outputRange: [1, 0],
               }),
+              transform: [
+                {
+                  translateX: tabPosition.interpolate({
+                    extrapolate: Animated.Extrapolate.CLAMP,
+                    inputRange: [0.01, 0.99],
+                    outputRange: [0, -30],
+                  }),
+                },
+                {
+                  scale: tabPosition.interpolate({
+                    extrapolate: Animated.Extrapolate.CLAMP,
+                    inputRange: [0.01, 0.99],
+                    outputRange: [1, 0.7],
+                  }),
+                },
+              ],
             }}
           >
             <FloatingPanel
