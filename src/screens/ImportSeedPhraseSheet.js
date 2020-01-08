@@ -16,12 +16,13 @@ import { sheetVerticalOffset } from '../navigation/transitions/effects';
 import { colors, padding, shadow } from '../styles';
 import { isValidSeed as validateSeed } from '../helpers/validators';
 
-const keyboardVerticalOffset = sheetVerticalOffset + 19;
+const keyboardVerticalOffset = sheetVerticalOffset + 10;
 
 const Container = styled(Column).attrs({
   align: 'center',
   flex: 1,
 })`
+  ${padding(0, 19)};
   background: ${colors.white};
 `;
 
@@ -34,11 +35,12 @@ const HandleIcon = styled(Icon).attrs({
 `;
 
 const StyledImportButton = styled(BorderlessButton)`
-  ${padding(6, 8)};
-  ${shadow.build(0, 6, 10, colors.dark, 0.14)};
+  ${padding(5, 9, 7)};
+  ${shadow.build(0, 6, 10, colors.dark, 0.16)};
   background-color: ${({ disabled }) =>
     disabled ? '#D2D3D7' : colors.appleBlue};
   border-radius: 15px;
+  margin-bottom: 19px;
 `;
 
 const ConfirmImportAlert = onSuccess =>
@@ -59,12 +61,12 @@ const ConfirmImportAlert = onSuccess =>
   });
 
 const ImportButton = ({ disabled, onPress, seedPhrase }) => (
-  <StyledImportButton disabled={disabled} onPress={onPress}>
+  <StyledImportButton disabled={disabled} onPress={onPress} overflow="visible">
     <RowWithMargins align="center" margin={5}>
       {!!seedPhrase && (
         <Icon color={colors.white} direction="right" name="arrowCircled" />
       )}
-      <Text color="white" weight="bold">
+      <Text color="white" weight="semibold">
         {seedPhrase ? 'Import' : 'Paste'}
       </Text>
     </RowWithMargins>
