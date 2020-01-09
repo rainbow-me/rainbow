@@ -1,27 +1,19 @@
 // import PropTypes from 'prop-types';
 import React from 'react';
 import { View, Text } from 'react-native';
-import Animated, { Easing } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import styled from 'styled-components/primitives';
-import RadialGradient from 'react-native-radial-gradient';
 import { colors, fonts } from '../../styles';
 import { CoinIcon } from '../coin-icon';
+import { ShadowStack } from '../shadow-stack';
 
-const { Clock, Value } = Animated;
+const { Value } = Animated;
 
 const maxWidth = 300;
-const bottomSpaceWidth =
-  (deviceUtils.dimensions.width > maxWidth
-    ? maxWidth
-    : deviceUtils.dimensions.width) /
-  (3 * 2);
-const gradientXRadius = deviceUtils.dimensions.width - 48;
-const gradientXPoint = deviceUtils.dimensions.width - 48;
-const gradientPoints = [gradientXPoint, 53.5];
 
-const componentWidths = [90, 85, 105];
+const componentWidths = [94, 88, 109];
 const positionDiff = (componentWidths[0] - componentWidths[2]) / 2;
 const centerDiff =
   (componentWidths[1] -
@@ -40,15 +32,15 @@ const componentPositions = [
 ];
 
 const springConfig = {
-  damping: 46,
+  damping: 38,
   mass: 1,
   overshootClamping: false,
   restDisplacementThreshold: 0.001,
   restSpeedThreshold: 0.001,
-  stiffness: 800,
+  stiffness: 600,
 };
 
-const { sub, multiply } = Animated;
+const AnimatedShadowStack = Animated.createAnimatedComponent(ShadowStack);
 
 const MiniCoinIcon = styled(CoinIcon).attrs({
   alignSelf: 'center',
@@ -56,6 +48,12 @@ const MiniCoinIcon = styled(CoinIcon).attrs({
 })`
   margin-left: 7px;
 `;
+
+const CoinButtonShadow = [
+  [0, 0, 9, colors.shadowGrey, 0.1],
+  [0, 5, 15, colors.shadowGrey, 0.12],
+  [0, 10, 30, colors.shadowGrey, 0.06],
+];
 
 const CoinText = styled(Text)`
   color: ${colors.alpha(colors.blueGreyDark, 0.5)};
@@ -78,11 +76,8 @@ class AddCashSelector extends React.Component {
   constructor(props) {
     super(props);
 
-    this.clock = new Clock();
-    this.widthClock = new Clock();
     this.translateX = new Value(componentPositions[1]);
     this.width = new Value(componentWidths[1]);
-    this.destinatedWidth = new Value(componentWidths[1]);
 
     this.state = {
       currentOption: 1,
@@ -94,50 +89,42 @@ class AddCashSelector extends React.Component {
       toValue: componentPositions[index],
       ...springConfig,
     }).start();
-    Animated.timing(this.width, {
-      duration: 150,
-      easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
+    Animated.spring(this.width, {
       toValue: componentWidths[index],
+      ...springConfig,
     }).start();
   };
 
   onSelectFirst = () => {
     this.animateTransition(0);
-    setTimeout(() => {
-      this.setState({ currentOption: 0 });
-    }, 75);
+    this.setState({ currentOption: 0 });
     // this.props.onPress(0);
   };
 
   onSelectSecond = () => {
     this.animateTransition(1);
-    setTimeout(() => {
-      this.setState({ currentOption: 1 });
-    }, 75);
+    this.setState({ currentOption: 1 });
     // this.props.onPress(1);
   };
 
   onSelectThird = () => {
     this.animateTransition(2);
-    setTimeout(() => {
-      this.setState({ currentOption: 2 });
-    }, 75);
+    this.setState({ currentOption: 2 });
     // this.props.onPress(2);
   };
 
   render() {
     return (
       <>
-        <Animated.View
+        <AnimatedShadowStack
+          borderRadius={20}
+          height={40}
+          marginLeft={4}
+          marginRight={4}
+          shadows={CoinButtonShadow}
           style={[
             {
-              backgroundColor: colors.white,
-              borderRadius: 20,
               marginBottom: -40,
-              shadowColor: colors.blueGreyDark,
-              shadowOffset: { height: 0, width: 0 },
-              shadowOpacity: 0.3,
-              shadowRadius: 4,
               zIndex: 10,
             },
             {
@@ -145,42 +132,7 @@ class AddCashSelector extends React.Component {
               width: this.width,
             },
           ]}
-        >
-          <View
-            style={{
-              borderRadius: 20,
-              height: 40,
-              overflow: 'hidden',
-              shadowOpacity: 0,
-            }}
-          >
-            <Animated.View
-              style={{
-                transform: [
-                  {
-                    translateX: sub(
-                      multiply(this.translateX, -1),
-                      bottomSpaceWidth * 2.2
-                    ),
-                  },
-                ],
-              }}
-            >
-              <RadialGradient
-                center={gradientPoints}
-                colors={['#00F0FF', '#FFB114', '#aaa']}
-                opacity={0}
-                radius={gradientXRadius}
-                style={{
-                  height: 40,
-                  position: 'absolute',
-                  width: deviceUtils.dimensions.width,
-                }}
-                stops={[0.2049, 0.6354, 0.8318, 0.9541]}
-              />
-            </Animated.View>
-          </View>
-        </Animated.View>
+        />
         <View
           style={{
             flexDirection: 'row',
@@ -192,6 +144,7 @@ class AddCashSelector extends React.Component {
         >
           <ButtonPressAnimation
             onPress={this.onSelectFirst}
+            scaleTo={0.92}
             style={{
               flexDirection: 'row',
               justifyContent: 'center',
@@ -212,6 +165,7 @@ class AddCashSelector extends React.Component {
           </ButtonPressAnimation>
           <ButtonPressAnimation
             onPress={this.onSelectSecond}
+            scaleTo={0.92}
             style={{
               flexDirection: 'row',
               justifyContent: 'center',
@@ -232,6 +186,7 @@ class AddCashSelector extends React.Component {
           </ButtonPressAnimation>
           <ButtonPressAnimation
             onPress={this.onSelectThird}
+            scaleTo={0.92}
             style={{
               flexDirection: 'row',
               justifyContent: 'center',
