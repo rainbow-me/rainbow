@@ -174,6 +174,7 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
     onNavigationStateChange={(prevState, currentState) => {
       const { params, routeName } = Navigation.getActiveRoute(currentState);
       const prevRouteName = Navigation.getActiveRouteName(prevState);
+      // native stack rn does not support onTransitionEnd and onTransitionStart
       if (
         prevRouteName === 'ImportSeedPhraseSheet' &&
         (routeName === 'ProfileScreen' || routeName === 'WalletScreen')
