@@ -11,6 +11,8 @@ const ConfirmExchangeButtonShadows = [
 ];
 
 const ConfirmExchangeButton = ({
+  creationTimestamp,
+  estimatedApprovalTimeInMs,
   disabled,
   inputCurrencyName,
   isAssetApproved,
@@ -20,7 +22,6 @@ const ConfirmExchangeButton = ({
   onSubmit,
   onUnlockAsset,
   slippage,
-  timeRemaining,
   ...props
 }) => {
   let label = 'Hold to Swap';
@@ -52,13 +53,20 @@ const ConfirmExchangeButton = ({
       theme="dark"
       {...props}
     >
-      {isUnlockingAsset && <UnlockingSpinner timeRemaining={timeRemaining} />}
+      {isUnlockingAsset && (
+        <UnlockingSpinner
+          creationTimestamp={creationTimestamp}
+          estimatedApprovalTimeInMs={estimatedApprovalTimeInMs}
+        />
+      )}
     </HoldToAuthorizeButton>
   );
 };
 
 ConfirmExchangeButton.propTypes = {
+  creationTimestamp: PropTypes.number,
   disabled: PropTypes.bool,
+  estimatedApprovalTimeInMs: PropTypes.number,
   inputCurrencyName: PropTypes.string,
   isAssetApproved: PropTypes.bool,
   isAuthorizing: PropTypes.bool,
@@ -67,7 +75,6 @@ ConfirmExchangeButton.propTypes = {
   onSubmit: PropTypes.func,
   onUnlockAsset: PropTypes.func,
   slippage: PropTypes.number,
-  timeRemaining: PropTypes.number,
 };
 
 export default React.memo(ConfirmExchangeButton);

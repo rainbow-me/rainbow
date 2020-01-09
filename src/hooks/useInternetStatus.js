@@ -23,5 +23,5 @@ export default function useInternetStatus() {
     return unsubscribe;
   }, []);
 
-  return !!isInternetReachable;
+  return isInternetReachable;
 }
