@@ -143,8 +143,9 @@ class AddCashSelector extends React.Component {
           }}
         >
           <ButtonPressAnimation
+            enableHapticFeedback={false}
             onPress={this.onSelectFirst}
-            scaleTo={0.92}
+            scaleTo={0.94}
             style={{
               flexDirection: 'row',
               justifyContent: 'center',
@@ -164,8 +165,9 @@ class AddCashSelector extends React.Component {
             </CoinText>
           </ButtonPressAnimation>
           <ButtonPressAnimation
+            enableHapticFeedback={false}
             onPress={this.onSelectSecond}
-            scaleTo={0.92}
+            scaleTo={0.94}
             style={{
               flexDirection: 'row',
               justifyContent: 'center',
@@ -185,8 +187,9 @@ class AddCashSelector extends React.Component {
             </CoinText>
           </ButtonPressAnimation>
           <ButtonPressAnimation
+            enableHapticFeedback={false}
             onPress={this.onSelectThird}
-            scaleTo={0.92}
+            scaleTo={0.94}
             style={{
               flexDirection: 'row',
               justifyContent: 'center',
