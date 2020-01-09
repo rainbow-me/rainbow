@@ -1,7 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { get, isEmpty, isString, toLower } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, StatusBar } from 'react-native';
 import { isIphoneX } from 'react-native-iphone-x-helper';
 import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
@@ -22,7 +22,6 @@ import {
   formatInputDecimals,
 } from '../helpers/utilities';
 import { checkIsValidAddress } from '../helpers/validators';
-import { usePrevious } from '../hooks';
 import { sendTransaction } from '../model/wallet';
 import { colors } from '../styles';
 import { deviceUtils, ethereumUtils, gasUtils } from '../utils';
@@ -56,11 +55,12 @@ const SendSheet = ({
   removeContact,
   selectedGasPrice,
   sendableUniqueTokens,
+  setAppearListener,
   sortedContacts,
   txFees,
   ...props
 }) => {
-  const { navigate, setParams } = useNavigation();
+  const { navigate } = useNavigation();
   const [amountDetails, setAmountDetails] = useState({
     assetAmount: '',
     isSufficientBalance: false,
@@ -296,31 +296,9 @@ const SendSheet = ({
     }
   }, [isValidAddress]);
 
-  const verticalGestureResponseDistance = useMemo(() => {
-    let verticalGestureResponseDistance = 140;
-
-    if (!isValidAddress && !isEmpty(contacts)) {
-      verticalGestureResponseDistance = 140;
-    } else if (isValidAddress) {
-      verticalGestureResponseDistance = isEmpty(selected)
-        ? 140
-        : deviceUtils.dimensions.height;
-    } else {
-      verticalGestureResponseDistance = deviceUtils.dimensions.height;
-    }
-    return verticalGestureResponseDistance;
-  }, [contacts, isValidAddress, selected]);
-
-  const prevResponseDistance = usePrevious(verticalGestureResponseDistance);
-
-  useEffect(() => {
-    if (prevResponseDistance !== verticalGestureResponseDistance) {
-      setParams({ verticalGestureResponseDistance });
-    }
-  }, [prevResponseDistance, setParams, verticalGestureResponseDistance]);
-
   const assetOverride = useNavigationParam('asset');
 
+  console.log()
   useEffect(() => {
     if (isValidAddress && assetOverride) {
       sendUpdateSelected(assetOverride);
@@ -374,6 +352,7 @@ const SendSheet = ({
       <KeyboardAvoidingView behavior="padding">
         <Container align="center">
           <SendHeader
+            setAppearListener={setAppearListener}
             contacts={contacts}
             isValidAddress={isValidAddress}
             onChangeAddressInput={onChangeInput}
@@ -451,6 +430,7 @@ SendSheet.propTypes = {
   removeContact: PropTypes.func.isRequired,
   selectedGasPrice: PropTypes.object,
   sendableUniqueTokens: PropTypes.arrayOf(PropTypes.object),
+  setAppearListener: PropTypes.func,
   sortedContacts: PropTypes.array,
   txFees: PropTypes.object.isRequired,
 };

@@ -1,13 +1,19 @@
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from 'react';
 import { KeyboardAvoidingView, StatusBar } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import { Alert } from '../components/alerts';
 import { Icon } from '../components/icons';
-import { MultiLineInput } from '../components/inputs';
+import { Input } from '../components/inputs';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { Text } from '../components/text';
@@ -73,11 +79,25 @@ const ImportButton = ({ disabled, onPress, seedPhrase }) => (
   </StyledImportButton>
 );
 
-const ImportSeedPhraseSheet = ({ initializeWallet, isEmpty }) => {
+const ImportSeedPhraseSheet = ({
+  initializeWallet,
+  isEmpty,
+  setAppearListener,
+}) => {
   const [clipboard] = useClipboard();
   const { navigate, setParams } = useNavigation();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
+
+  const inputRef = useRef(null);
+  const focusListener = useCallback(() => {
+    inputRef.current && inputRef.current.focus();
+  }, []);
+
+  useEffect(() => {
+    setAppearListener(focusListener);
+    return () => setAppearListener(null);
+  });
 
   const isClipboardValidSeedPhrase = useMemo(() => validateSeed(clipboard), [
     clipboard,
@@ -157,7 +177,10 @@ const ImportSeedPhraseSheet = ({ initializeWallet, isEmpty }) => {
         keyboardVerticalOffset={keyboardVerticalOffset}
       >
         <Centered css={padding(0, 50)} flex={1}>
-          <MultiLineInput
+          <Input
+            lineHeight="loosest"
+            multiline
+            ref={inputRef}
             align="center"
             autoFocus
             enablesReturnKeyAutomatically
@@ -194,6 +217,7 @@ const ImportSeedPhraseSheet = ({ initializeWallet, isEmpty }) => {
 ImportSeedPhraseSheet.propTypes = {
   initializeWallet: PropTypes.func,
   isEmpty: PropTypes.bool,
+  setAppearListener: PropTypes.func,
 };
 
 const neverRerender = () => true;

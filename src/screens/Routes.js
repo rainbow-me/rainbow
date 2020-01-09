@@ -153,13 +153,26 @@ const MainNavigator = createStackNavigator(
   }
 );
 
+let appearListener = null;
+const setListener = listener => (appearListener = listener);
+
 const NativeStack = createNativeStackNavigator(
   {
-    ImportSeedPhraseSheet: ImportSeedPhraseSheetWithData,
+    ImportSeedPhraseSheet: (...props) => (
+      <ImportSeedPhraseSheetWithData
+        {...props}
+        setAppearListener={setListener}
+      />
+    ),
     MainNavigator,
-    SendSheet: SendSheetWithData,
+    SendSheet: (...props) => (
+      <SendSheetWithData {...props} setAppearListener={setListener} />
+    ),
   },
   {
+    defaultNavigationOptions: {
+      onAppear: () => appearListener && appearListener(),
+    },
     headerMode: 'none',
     initialRouteName: 'MainNavigator',
     mode: 'modal',
