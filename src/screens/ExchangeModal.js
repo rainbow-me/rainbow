@@ -112,7 +112,7 @@ class ExchangeModal extends Component {
 
   state = {
     approvalCreationTimestamp: null,
-    approvalEstimatedTimeInMs: null,
+    estimatedApprovalTimeInMs: null,
     inputAllowance: null,
     inputAmount: null,
     inputAmountDisplay: null,
@@ -162,7 +162,7 @@ class ExchangeModal extends Component {
 
     const isNewState = isNewValueForObjectPaths(this.state, nextState, [
       'approvalCreationTimestamp',
-      'approvalEstimatedTimeInMs',
+      'estimatedApprovalTimeInMs',
       'inputAmount',
       'inputCurrency.uniqueId',
       'inputExecutionRate',
@@ -328,7 +328,7 @@ class ExchangeModal extends Component {
     if (isAssetApproved) {
       return this.setState({
         approvalCreationTimestamp: null,
-        approvalEstimatedTimeInMs: null,
+        estimatedApprovalTimeInMs: null,
         isAssetApproved,
         isUnlockingAsset: false,
       });
@@ -346,7 +346,7 @@ class ExchangeModal extends Component {
         approvalCreationTimestamp: isUnlockingAsset
           ? pendingApproval.creationTimestamp
           : null,
-        approvalEstimatedTimeInMs: isUnlockingAsset
+        estimatedApprovalTimeInMs: isUnlockingAsset
           ? pendingApproval.estimatedTimeInMs
           : null,
         isAssetApproved,
@@ -356,7 +356,7 @@ class ExchangeModal extends Component {
       gasUpdateTxFee();
       return this.setState({
         approvalCreationTimestamp: null,
-        approvalEstimatedTimeInMs: null,
+        estimatedApprovalTimeInMs: null,
         isAssetApproved,
         isUnlockingAsset: false,
       });
@@ -698,25 +698,25 @@ class ExchangeModal extends Component {
         gasLimit,
         get(fastGasPrice, 'value.amount')
       );
-      const approvalEstimatedTimeInMs =
+      const estimatedApprovalTimeInMs =
         parseInt(get(fastGasPrice, 'estimatedTime.amount')) ||
         DEFAULT_APPROVAL_ESTIMATION_TIME_IN_MS;
       uniswapAddPendingApproval(
         inputCurrency.address,
         hash,
         approvalCreationTimestamp,
-        approvalEstimatedTimeInMs
+        estimatedApprovalTimeInMs
       );
       this.setState({
         approvalCreationTimestamp,
-        approvalEstimatedTimeInMs,
+        estimatedApprovalTimeInMs,
         isUnlockingAsset: true,
       });
     } catch (error) {
       console.log('could not unlock asset', error);
       this.setState({
         approvalCreationTimestamp: null,
-        approvalEstimatedTimeInMs: null,
+        estimatedApprovalTimeInMs: null,
         isUnlockingAsset: false,
       });
     }
@@ -889,7 +889,7 @@ class ExchangeModal extends Component {
 
     const {
       approvalCreationTimestamp,
-      approvalEstimatedTimeInMs,
+      estimatedApprovalTimeInMs,
       inputAmount,
       inputAmountDisplay,
       inputCurrency,
@@ -986,6 +986,7 @@ class ExchangeModal extends Component {
                   <ConfirmExchangeButton
                     creationTimestamp={approvalCreationTimestamp}
                     disabled={isAssetApproved && !Number(inputAmountDisplay)}
+                    estimatedApprovalTimeInMs={estimatedApprovalTimeInMs}
                     inputCurrencyName={get(inputCurrency, 'symbol')}
                     isAssetApproved={isAssetApproved}
                     isAuthorizing={isAuthorizing}
@@ -994,7 +995,6 @@ class ExchangeModal extends Component {
                     onSubmit={this.handleSubmit}
                     onUnlockAsset={this.handleUnlockAsset}
                     slippage={slippage}
-                    timeRemaining={approvalEstimatedTimeInMs}
                   />
                 </Centered>
                 <GasSpeedButton />

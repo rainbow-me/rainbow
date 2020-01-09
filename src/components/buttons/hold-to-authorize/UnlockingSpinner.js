@@ -1,6 +1,12 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { colors } from '../../../styles';
 import { ColumnWithMargins, RowWithMargins } from '../../layout';
@@ -58,7 +64,16 @@ const renderCountdownText = animatedTimeRemaining => (
   </Text>
 );
 
-const UnlockingSpinner = ({ interval, timeRemaining }) => {
+const UnlockingSpinner = ({
+  creationTimestamp,
+  estimatedApprovalTimeInMs,
+  interval,
+}) => {
+  const timeRemaining = useMemo(
+    () =>
+      Math.max(creationTimestamp + estimatedApprovalTimeInMs - Date.now(), 0),
+    [creationTimestamp, estimatedApprovalTimeInMs]
+  );
   const timingRemainingRef = useRef();
   const unlockingRef = useRef();
   const [showTimeRemaining, setShowTimeRemaining] = useState(false);
@@ -93,7 +108,7 @@ const UnlockingSpinner = ({ interval, timeRemaining }) => {
       clearTimeout(removeTimeRemaining);
       clearTimeout(showTimeRemaining);
     };
-  }, [animateNextTransition, setShowTimeRemaining, timeRemaining]);
+  }, [animateNextTransition, timeRemaining]);
 
   return (
     <ColumnWithMargins align="center" height="100%" justify="center" margin={2}>
@@ -125,8 +140,9 @@ const UnlockingSpinner = ({ interval, timeRemaining }) => {
 };
 
 UnlockingSpinner.propTypes = {
+  creationTimestamp: PropTypes.number,
+  estimatedApprovalTimeInMs: PropTypes.number,
   interval: PropTypes.number,
-  timeRemaining: PropTypes.number,
 };
 
 UnlockingSpinner.defaultProps = {
