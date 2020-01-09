@@ -20,6 +20,7 @@ import { Text } from '../components/text';
 import { withTransitionProps } from '../hoc';
 import { borders, colors, fonts, padding, position } from '../styles';
 import { deviceUtils, safeAreaInsetValues } from '../utils';
+import AddCashSelector from '../components/add-cash/AddCashSelector';
 
 const {
   set,
@@ -90,38 +91,6 @@ const SheetContainer = styled(Column)`
   top: ${statusBarHeight};
 `;
 
-const CoinButton = styled(Row)`
-  border-radius: 20px;
-  height: 40px;
-  marginLeft: 4px;
-`;
-
-const CoinButtonShadow = [
-  [0, 0, 9, colors.shadowGrey, 0.1],
-  [0, 5, 15, colors.shadowGrey, 0.12],
-  [0, 10, 30, colors.shadowGrey, 0.06],
-];
-
-const CoinText = styled(Text)`
-  color: ${colors.alpha(colors.blueGreyDark, 0.5)};
-  font-family: ${fonts.family.SFProRounded};
-  font-size: ${fonts.size.large};
-  font-weight: ${fonts.weight.semibold};
-  height: 40px;
-  letter-spacing: ${fonts.letterSpacing.looseyGoosey};
-  line-height: 39px;
-  margin-left: 6px;
-  margin-right: 11px;
-  text-align: center;
-`;
-
-const MiniCoinIcon = styled(CoinIcon).attrs({
-  alignSelf: "center",
-  size: 26,
-})`
-  margin-left: 7px;
-`;
-
 class AddCashSheet extends Component {
   constructor(props) {
     super(props);
@@ -181,41 +150,7 @@ class AddCashSheet extends Component {
               />
             </MaskedView>
 
-            <RowWithMargins margin={4}>
-            <ShadowStack
-                backgroundColor="white"
-                borderRadius={20}
-                height={40}
-                position="absolute"
-                shadows={CoinButtonShadow}
-                style={{ zIndex: -1, transform: [{ translateX: this.state.coinButtonX }] }}
-                width={this.state.coinButtonWidth}
-              />
-              <CoinButton>
-                <ButtonPressAnimation onPress={null} scaleTo={0.9}>
-                  <Row>
-                    <MiniCoinIcon symbol="ETH" />
-                    <CoinText>ETH</CoinText>
-                  </Row>
-                </ButtonPressAnimation>
-              </CoinButton>
-              <CoinButton>
-                <ButtonPressAnimation onPress={null} scaleTo={0.9}>
-                  <Row>
-                    <MiniCoinIcon symbol="DAI" />
-                    <CoinText style={{ color: colors.alpha(colors.blueGreyDark, 0.7) }}>DAI</CoinText>
-                  </Row>
-                </ButtonPressAnimation>
-              </CoinButton>
-              <CoinButton>
-                <ButtonPressAnimation onPress={null} scaleTo={0.9}>
-                  <Row>
-                    <MiniCoinIcon symbol="USDC" />
-                    <CoinText>USDC</CoinText>
-                  </Row>
-                </ButtonPressAnimation>
-              </CoinButton>
-            </RowWithMargins>
+            <AddCashSelector />
           </ColumnWithMargins>
 
           <ColumnWithMargins align="center" margin={15}>
