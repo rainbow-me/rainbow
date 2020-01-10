@@ -33,7 +33,7 @@ const {
   Value,
 } = Animated;
 
-const { ACTIVE, BEGAN, CANCELLED, END, FAILED, UNDETERMINED } = State;
+const { ACTIVE, CANCELLED, END, UNDETERMINED } = State;
 const ANIMATION_STATE_0 = 0;
 const ANIMATION_STATE_1 = 1;
 const ANIMATION_STATE_2 = 2;
@@ -81,7 +81,7 @@ function usePressHandler({
   return [handlePress, createHandle, removeHandle];
 }
 
-const ButtonPressAnimationProc2 = proc(function(
+const ButtonPressAnimationProc = proc(function(
   animationState,
   durationVal,
   finished,
@@ -166,7 +166,7 @@ const ButtonPressAnimationProc2 = proc(function(
   ]);
 });
 
-const ButtonPressAnimationProc1 = proc(function(
+const ButtonPressAnimationHelperProc = proc(function(
   animationState,
   gestureState,
   prevGestureState,
@@ -260,7 +260,7 @@ export default function ButtonPressAnimation({
 
   const scale = useRef(
     block([
-      ButtonPressAnimationProc1(
+      ButtonPressAnimationHelperProc(
         animationState,
         gestureState,
         prevGestureState,
@@ -274,7 +274,7 @@ export default function ButtonPressAnimation({
         ),
         set(animationState, ANIMATION_STATE_0)
       ),
-      ButtonPressAnimationProc2(
+      ButtonPressAnimationProc(
         animationState,
         durationVal,
         finished,
