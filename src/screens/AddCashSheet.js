@@ -21,6 +21,7 @@ import { withTransitionProps } from '../hoc';
 import { borders, colors, fonts, padding, position } from '../styles';
 import { deviceUtils, safeAreaInsetValues } from '../utils';
 import AddCashSelector from '../components/add-cash/AddCashSelector';
+import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 
 const {
   set,
@@ -74,22 +75,32 @@ const isTinyIphone = deviceUtils.dimensions.width < 375 ? true : false;
 const keyboardWidth = isTinyIphone ? 275 : '100%';
 
 const statusBarHeight = getStatusBarHeight(true);
-const sheetHeight = deviceUtils.dimensions.height - statusBarHeight;
+const sheetHeight = isNativeStackAvailable ? deviceUtils.dimensions.height - statusBarHeight - 10 : deviceUtils.dimensions.height - statusBarHeight;
 
 const gradientXPoint = deviceUtils.dimensions.width - 48;
 const gradientPoints = [gradientXPoint, 53.5];
 
-const Container = styled(Column)`
-  background-color: ${colors.transparent};
-  height: 100%;
-`;
+const Container = isNativeStackAvailable
+  ? styled(Column)`
+      background-color: ${colors.transparent};
+      height: ${sheetHeight};
+    `
+  : styled(Column)`
+      background-color: ${colors.transparent};
+      height: 100%;
+    `;
 
-const SheetContainer = styled(Column)`
-  ${borders.buildRadius('top', 30)};
-  background-color: ${colors.white};
-  height: ${sheetHeight};
-  top: ${statusBarHeight};
-`;
+const SheetContainer = isNativeStackAvailable
+  ? styled(Column)`
+      background-color: ${colors.white};
+      height: ${deviceUtils.dimensions.height};
+    `
+  : styled(Column)`
+      ${borders.buildRadius('top', 30)};
+      background-color: ${colors.white};
+      height: ${sheetHeight};
+      top: ${statusBarHeight};
+    `;
 
 class AddCashSheet extends Component {
   constructor(props) {
@@ -106,6 +117,7 @@ class AddCashSheet extends Component {
   render() {
     return (
       <SheetContainer>
+        <StatusBar barStyle="light-content" />
         <Container align="center" justify="space-between">
           <AddCashHeader />
           <ColumnWithMargins
