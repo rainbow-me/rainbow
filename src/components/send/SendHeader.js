@@ -101,7 +101,6 @@ class SendHeader extends PureComponent {
   }
 
   focusInput = () => {
-    console.log(this.props.selectedInputId);
     if (this.props.selectedInputId) {
       this.props.selectedInputId.focus();
     } else {
