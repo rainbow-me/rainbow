@@ -92,17 +92,18 @@ class SendHeader extends PureComponent {
   };
 
   componentDidMount() {
-    this.props.setAppearListener(this.focusInput);
+    this.props.setAppearListener &&
+      this.props.setAppearListener(this.focusInput);
   }
 
   componentWillUnmount() {
-    this.props.setAppearListener(null);
+    this.props.setAppearListener && this.props.setAppearListener(null);
   }
 
   focusInput = () => {
-    console.log(this.props.selectedInputId)
+    console.log(this.props.selectedInputId);
     if (this.props.selectedInputId) {
-      this.props.selectedInputId.focus()
+      this.props.selectedInputId.focus();
     } else {
       this.input && this.input.focus();
     }

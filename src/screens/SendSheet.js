@@ -3,7 +3,7 @@ import { get, isEmpty, isString, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, StatusBar } from 'react-native';
-import { isIphoneX } from 'react-native-iphone-x-helper';
+import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
 import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
@@ -23,8 +23,9 @@ import {
 } from '../helpers/utilities';
 import { checkIsValidAddress } from '../helpers/validators';
 import { sendTransaction } from '../model/wallet';
-import { colors } from '../styles';
+import { borders, colors } from '../styles';
 import { deviceUtils, ethereumUtils, gasUtils } from '../utils';
+import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 
 const sheetHeight = deviceUtils.dimensions.height - 10;
 
@@ -33,10 +34,19 @@ const Container = styled(Column)`
   height: 100%;
 `;
 
-const SheetContainer = styled(Column)`
-  background-color: ${colors.white};
-  height: ${sheetHeight};
-`;
+const statusBarHeight = getStatusBarHeight(true);
+
+const SheetContainer = isNativeStackAvailable
+  ? styled(Column)`
+      background-color: ${colors.white};
+      height: ${sheetHeight};
+    `
+  : styled(Column)`
+      ${borders.buildRadius('top', 16)};
+      background-color: ${colors.white};
+      height: 100%;
+      top: ${statusBarHeight};
+    `;
 
 const SendSheet = ({
   accountAddress,
@@ -298,7 +308,6 @@ const SendSheet = ({
 
   const assetOverride = useNavigationParam('asset');
 
-  console.log()
   useEffect(() => {
     if (isValidAddress && assetOverride) {
       sendUpdateSelected(assetOverride);

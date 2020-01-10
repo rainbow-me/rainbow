@@ -1,5 +1,5 @@
 import analytics from '@segment/analytics-react-native';
-import { get } from 'lodash';
+import { get, omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { createAppContainer } from 'react-navigation';
@@ -8,6 +8,7 @@ import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
 import { enableScreens } from 'react-native-screens';
 import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
 import { createStackNavigator } from 'react-navigation-stack';
+import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { ExchangeModalNavigator, Navigation } from '../navigation';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
@@ -158,16 +159,18 @@ const setListener = listener => (appearListener = listener);
 
 const NativeStack = createNativeStackNavigator(
   {
-    ImportSeedPhraseSheet: (...props) => (
-      <ImportSeedPhraseSheetWithData
-        {...props}
-        setAppearListener={setListener}
-      />
-    ),
+    ImportSeedPhraseSheet: function ImportSeedPhraseSheetWrapper(...props) {
+      return (
+        <ImportSeedPhraseSheetWithData
+          {...props}
+          setAppearListener={setListener}
+        />
+      );
+    },
     MainNavigator,
-    SendSheet: (...props) => (
-      <SendSheetWithData {...props} setAppearListener={setListener} />
-    ),
+    SendSheet: function SendSheetWrapper(...props) {
+      return <SendSheetWithData {...props} setAppearListener={setListener} />;
+    },
   },
   {
     defaultNavigationOptions: {
@@ -179,7 +182,44 @@ const NativeStack = createNativeStackNavigator(
   }
 );
 
-const AppContainer = createAppContainer(NativeStack);
+const NativeStackFallback = createStackNavigator(
+  {
+    ImportSeedPhraseSheet: {
+      navigationOptions: {
+        ...sheetPreset,
+        onTransitionStart: props => {
+          sheetPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
+      },
+      screen: ImportSeedPhraseSheetWithData,
+    },
+    MainNavigator,
+    SendSheet: {
+      navigationOptions: {
+        ...omit(sheetPreset, 'gestureResponseDistance'),
+        onTransitionStart: props => {
+          onTransitionStart(props);
+          sheetPreset.onTransitionStart(props);
+        },
+      },
+      screen: SendSheetWithData,
+    },
+  },
+  {
+    defaultNavigationOptions: {
+      onTransitionEnd,
+      onTransitionStart,
+    },
+    headerMode: 'none',
+    initialRouteName: 'MainNavigator',
+    mode: 'modal',
+  }
+);
+
+const Stack = isNativeStackAvailable ? NativeStack : NativeStackFallback;
+
+const AppContainer = createAppContainer(Stack);
 
 // eslint-disable-next-line react/display-name
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (

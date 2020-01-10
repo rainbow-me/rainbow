@@ -11,6 +11,7 @@ import { KeyboardAvoidingView, StatusBar } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { Alert } from '../components/alerts';
 import { Icon } from '../components/icons';
 import { Input } from '../components/inputs';
@@ -19,18 +20,31 @@ import { LoadingOverlay } from '../components/modal';
 import { Text } from '../components/text';
 import { useClipboard } from '../hooks';
 import { sheetVerticalOffset } from '../navigation/transitions/effects';
-import { colors, padding, shadow } from '../styles';
+import { colors, padding, shadow, borders } from '../styles';
 import { isValidSeed as validateSeed } from '../helpers/validators';
+import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 
 const keyboardVerticalOffset = sheetVerticalOffset + 10;
 
-const Container = styled(Column).attrs({
-  align: 'center',
-  flex: 1,
-})`
-  ${padding(0, 19)};
-  background: ${colors.white};
-`;
+const statusBarHeight = getStatusBarHeight(true);
+
+const Container = isNativeStackAvailable
+  ? styled(Column).attrs({
+      align: 'center',
+      flex: 1,
+    })`
+      ${padding(0, 19)};
+      background: ${colors.white};
+    `
+  : styled(Column).attrs({
+      align: 'center',
+      flex: 1,
+    })`
+      ${borders.buildRadius('top', 16)};
+      ${padding(0, 16, 16)};
+      background: ${colors.white};
+      top: ${statusBarHeight};
+    `;
 
 const HandleIcon = styled(Icon).attrs({
   color: '#C4C6CB',
@@ -95,8 +109,8 @@ const ImportSeedPhraseSheet = ({
   }, []);
 
   useEffect(() => {
-    setAppearListener(focusListener);
-    return () => setAppearListener(null);
+    setAppearListener && setAppearListener(focusListener);
+    return () => setAppearListener && setAppearListener(null);
   });
 
   const isClipboardValidSeedPhrase = useMemo(() => validateSeed(clipboard), [
