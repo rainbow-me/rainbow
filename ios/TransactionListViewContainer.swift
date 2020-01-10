@@ -13,6 +13,11 @@ fileprivate struct TransactionSection {
 }
 
 class TransactionListViewContainer: UIView {
+  @objc var accountAddress: String? = nil {
+    didSet {
+      header.accountAddress.text = accountAddress
+    }
+  }
   @objc var transactions: [Transaction] = [] {
     /// Every time we receive a new set of transactions, regroup by mind_at in the format "MMMM yyyy"
     /// Then, re-render tableView with the new data
@@ -50,6 +55,8 @@ class TransactionListViewContainer: UIView {
   fileprivate var sections = [TransactionSection]()
   
   let tableView = UITableView()
+  let header: TransactionListViewHeader = TransactionListViewHeader.fromNib()
+  let headerSeparator = UIView()
   
   override init(frame: CGRect) {
     super.init(frame: CGRect.zero)
@@ -59,6 +66,12 @@ class TransactionListViewContainer: UIView {
     tableView.rowHeight = 60
     tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
     tableView.register(UINib(nibName: "TransactionListViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListViewCell")
+    
+    header.backgroundColor = .white
+    header.addSubview(headerSeparator)
+    
+    headerSeparator.backgroundColor = UIColor(red:0.8, green:0.8, blue:0.8, alpha:1.0)
+    tableView.tableHeaderView = header
     
     addSubview(tableView)
   }
@@ -70,6 +83,8 @@ class TransactionListViewContainer: UIView {
   /// React Native is known to re-render only first-level subviews. Since our tableView is a custom view that we add as a second-level subview, we need to relayout it manually
   override func layoutSubviews() {
     tableView.frame = self.bounds
+    header.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 200)
+    headerSeparator.frame = CGRect(x: 20, y: header.frame.size.height - 1, width: tableView.bounds.width - 20, height: 1)
   }
   
   private func groupByDate(_ date: Date) -> Date {

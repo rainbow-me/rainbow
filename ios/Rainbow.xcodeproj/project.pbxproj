@@ -58,6 +58,8 @@
 		A4704B4B23C546DA00E50E4B /* TransactionListViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4704B4423C546D900E50E4B /* TransactionListViewManager.swift */; };
 		A4704B4C23C546DA00E50E4B /* TransactionListViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A4704B4523C546D900E50E4B /* TransactionListViewManager.m */; };
 		A4704B4D23C546DA00E50E4B /* TransactionListViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4704B4623C546D900E50E4B /* TransactionListViewCell.xib */; };
+		A485E61423C8ED6000E5C3D4 /* TransactionListViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A485E61323C8ED6000E5C3D4 /* TransactionListViewHeader.swift */; };
+		A485E61623C8F4A400E5C3D4 /* TransactionListViewHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = A485E61223C8EC4400E5C3D4 /* TransactionListViewHeader.xib */; };
 		ADBDB9381DFEBF1600ED6528 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		AE47B46652EA48AFB68E7832 /* SF-Pro-Text-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6B0A8BE2484F46980BE9AC /* SF-Pro-Text-Semibold.otf */; };
 		AFCABA638327463693E67FD4 /* SF-Pro-Text-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 715DAAA3174542BAB93807A6 /* SF-Pro-Text-RegularItalic.otf */; };
@@ -163,6 +165,8 @@
 		A4704B4523C546D900E50E4B /* TransactionListViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TransactionListViewManager.m; sourceTree = "<group>"; };
 		A4704B4623C546D900E50E4B /* TransactionListViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TransactionListViewCell.xib; sourceTree = "<group>"; };
 		A4704B4723C546DA00E50E4B /* RCTConvert+TransactionList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+TransactionList.h"; sourceTree = "<group>"; };
+		A485E61223C8EC4400E5C3D4 /* TransactionListViewHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = TransactionListViewHeader.xib; path = /Users/kureev/Projects/rainbow/ios/TransactionListViewHeader.xib; sourceTree = "<absolute>"; };
+		A485E61323C8ED6000E5C3D4 /* TransactionListViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListViewHeader.swift; sourceTree = "<group>"; };
 		A671DF9861FA8D2C9A6FCB91 /* Pods-Rainbow.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.release.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.release.xcconfig"; sourceTree = "<group>"; };
 		A6EEFE6EA9354456B0DB4520 /* Graphik-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Regular.otf"; path = "../src/assets/fonts/Graphik-Regular.otf"; sourceTree = "<group>"; };
 		A7F0978B24BA4EC283C580D9 /* Graphik-SemiboldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-SemiboldItalic.otf"; path = "../src/assets/fonts/Graphik-SemiboldItalic.otf"; sourceTree = "<group>"; };
@@ -234,6 +238,8 @@
 				A4704B4323C546D900E50E4B /* Transaction.m */,
 				A4704B4023C546D900E50E4B /* TransactionListViewCell.swift */,
 				A4704B4623C546D900E50E4B /* TransactionListViewCell.xib */,
+				A485E61223C8EC4400E5C3D4 /* TransactionListViewHeader.xib */,
+				A485E61323C8ED6000E5C3D4 /* TransactionListViewHeader.swift */,
 				A4704B4123C546D900E50E4B /* TransactionListViewContainer.swift */,
 				A4704B4523C546D900E50E4B /* TransactionListViewManager.m */,
 				A4704B4423C546D900E50E4B /* TransactionListViewManager.swift */,
@@ -502,6 +508,7 @@
 				3049BEF5B7E0435F905556DD /* Graphik-ThinItalic.otf in Resources */,
 				C66451ECC2944B439E123CF2 /* SF-Pro-Display-Black.otf in Resources */,
 				AFD75D0B6EC9465C92C493A7 /* SF-Pro-Display-BlackItalic.otf in Resources */,
+				A485E61623C8F4A400E5C3D4 /* TransactionListViewHeader.xib in Resources */,
 				F9EF1D44351840B8A380BD3E /* SF-Pro-Display-Bold.otf in Resources */,
 				CB988C526B0C48FC9750A038 /* SF-Pro-Display-BoldItalic.otf in Resources */,
 				A4704B4D23C546DA00E50E4B /* TransactionListViewCell.xib in Resources */,
@@ -626,6 +633,7 @@
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				A4704B4C23C546DA00E50E4B /* TransactionListViewManager.m in Sources */,
 				A4704B4823C546DA00E50E4B /* TransactionListViewCell.swift in Sources */,
+				A485E61423C8ED6000E5C3D4 /* TransactionListViewHeader.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				A4704B4B23C546DA00E50E4B /* TransactionListViewManager.swift in Sources */,
 				A4704B4923C546DA00E50E4B /* TransactionListViewContainer.swift in Sources */,

@@ -50,6 +50,7 @@ const ProfileScreen = ({
     </Header>
     <TransactionList
       transactions={transactions}
+      accountAddress={accountAddress}
       onPressTransaction={e => onPressTransaction(e)}
       style={{ flex: 1 }}
     />

@@ -8,6 +8,7 @@ export default class TransactionList extends React.PureComponent {
     return (
       <NativeTransactionListView
         transactions={this.props.transactions}
+        accountAddress={this.props.accountAddress}
         onItemPress={e => this.props.onPressTransaction(e.nativeEvent)}
         style={this.props.style}
       />

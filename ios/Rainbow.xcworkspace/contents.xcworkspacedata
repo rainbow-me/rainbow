@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:/Users/kureev/Projects/rainbow/ios/TransactionListViewHeader.xib">
+   </FileRef>
+   <FileRef
       location = "group:Rainbow.xcodeproj">
    </FileRef>
    <FileRef

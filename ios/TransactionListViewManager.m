@@ -11,6 +11,7 @@
 @interface RCT_EXTERN_MODULE(TransactionListViewManager, RCTViewManager)
 
 RCT_EXPORT_VIEW_PROPERTY(transactions, Transactions)
+RCT_EXPORT_VIEW_PROPERTY(accountAddress, NSString)
 RCT_EXPORT_VIEW_PROPERTY(onItemPress, RCTBubblingEventBlock)
 
 @end
