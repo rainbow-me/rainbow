@@ -34,6 +34,7 @@ const {
 } = Animated;
 
 const { ACTIVE, CANCELLED, END, UNDETERMINED } = State;
+const END_TOUCHED = 7;
 const ANIMATION_STATE_0 = 0;
 const ANIMATION_STATE_1 = 1;
 const ANIMATION_STATE_2 = 2;
@@ -162,6 +163,10 @@ const ButtonPressAnimationProc = proc(function(
         }
       )
     ),
+    cond(eq(prevGestureState, END), [
+      set(prevGestureState, END_TOUCHED),
+      set(gestureState, END_TOUCHED),
+    ]),
     scaleValue,
   ]);
 });
@@ -176,7 +181,7 @@ const ButtonPressAnimationHelperProc = proc(function(
     cond(
       and(
         eq(gestureState, END),
-        eq(prevGestureState, END),
+        eq(prevGestureState, END_TOUCHED),
         not(clockRunning(zoomClock))
       ),
       set(prevGestureState, UNDETERMINED)
