@@ -9215,7 +9215,7 @@ react-native-randombytes@^3.5.3:
 
 react-native-reanimated@software-mansion/react-native-reanimated:
   version "1.4.0"
-  resolved "https://codeload.github.com/software-mansion/react-native-reanimated/tar.gz/513ff6ffff3753555900c08b287a6d446a4d2474"
+  resolved "https://codeload.github.com/software-mansion/react-native-reanimated/tar.gz/ad41f5fc5b8eee584f480a692a6df2e0513d7d22"
 
 react-native-redash@9.0.0:
   version "9.0.0"
