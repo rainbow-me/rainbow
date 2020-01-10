@@ -89,7 +89,7 @@ export default class SwipeableContactRow extends PureComponent {
     this.props.onSelectEdit(this.props);
   };
 
-  handleLongPress = () => this.swipeableRef.openRight();
+  handleLongPress = () => this.swipeableRef && this.swipeableRef.openRight();
 
   handlePress = () => this.props.onPress(this.props.address);
 

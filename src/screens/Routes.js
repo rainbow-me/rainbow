@@ -1,9 +1,14 @@
 import analytics from '@segment/analytics-react-native';
 import { get, omit } from 'lodash';
 import React from 'react';
+import { StatusBar } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
+// eslint-disable-next-line import/no-unresolved
+import { enableScreens } from 'react-native-screens';
+import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
 import { createStackNavigator } from 'react-navigation-stack';
+import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { ExchangeModalNavigator, Navigation } from '../navigation';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
@@ -27,6 +32,8 @@ import {
   backgroundPreset,
   overlayExpandedPreset,
 } from '../navigation/transitions/effects';
+
+enableScreens();
 
 const onTransitionEnd = () =>
   store.dispatch(updateTransitionProps({ isTransitioning: false }));
@@ -59,16 +66,6 @@ const SwipeStack = createMaterialTopTabNavigator(
 
 const MainNavigator = createStackNavigator(
   {
-    AddCashSheet: {
-      navigationOptions: {
-        ...sheetPreset,
-        onTransitionStart: props => {
-          onTransitionStart(props);
-          sheetPreset.onTransitionStart(props);
-        },
-      },
-      screen: AddCashSheet,
-    },
     ConfirmRequest: {
       navigationOptions: {
         ...sheetPreset,
@@ -104,16 +101,6 @@ const MainNavigator = createStackNavigator(
       },
       screen: ExpandedAssetScreenWithData,
     },
-    ImportSeedPhraseSheet: {
-      navigationOptions: {
-        ...sheetPreset,
-        onTransitionStart: props => {
-          sheetPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      screen: ImportSeedPhraseSheetWithData,
-    },
     OverlayExpandedAssetScreen: {
       navigationOptions: overlayExpandedPreset,
       screen: ExpandedAssetScreenWithData,
@@ -127,16 +114,6 @@ const MainNavigator = createStackNavigator(
         },
       },
       screen: ReceiveModal,
-    },
-    SendSheet: {
-      navigationOptions: {
-        ...omit(sheetPreset, 'gestureResponseDistance'),
-        onTransitionStart: props => {
-          onTransitionStart(props);
-          sheetPreset.onTransitionStart(props);
-        },
-      },
-      screen: SendSheetWithData,
     },
     SettingsModal: {
       navigationOptions: {
@@ -178,7 +155,85 @@ const MainNavigator = createStackNavigator(
   }
 );
 
-const AppContainer = createAppContainer(MainNavigator);
+let appearListener = null;
+const setListener = listener => (appearListener = listener);
+
+const NativeStack = createNativeStackNavigator(
+  {
+    AddCashSheet: function AddCashSheetWrapper(...props) {
+      return <AddCashSheet {...props} />;
+    },
+    ImportSeedPhraseSheet: function ImportSeedPhraseSheetWrapper(...props) {
+      return (
+        <ImportSeedPhraseSheetWithData
+          {...props}
+          setAppearListener={setListener}
+        />
+      );
+    },
+    MainNavigator,
+    SendSheet: function SendSheetWrapper(...props) {
+      return <SendSheetWithData {...props} setAppearListener={setListener} />;
+    },
+  },
+  {
+    defaultNavigationOptions: {
+      onAppear: () => appearListener && appearListener(),
+    },
+    headerMode: 'none',
+    initialRouteName: 'MainNavigator',
+    mode: 'modal',
+  }
+);
+
+const NativeStackFallback = createStackNavigator(
+  {
+    AddCashSheet: {
+      navigationOptions: {
+        ...sheetPreset,
+        onTransitionStart: props => {
+          onTransitionStart(props);
+          sheetPreset.onTransitionStart(props);
+        },
+      },
+      screen: AddCashSheet,
+    },
+    ImportSeedPhraseSheet: {
+      navigationOptions: {
+        ...sheetPreset,
+        onTransitionStart: props => {
+          sheetPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
+      },
+      screen: ImportSeedPhraseSheetWithData,
+    },
+    MainNavigator,
+    SendSheet: {
+      navigationOptions: {
+        ...omit(sheetPreset, 'gestureResponseDistance'),
+        onTransitionStart: props => {
+          onTransitionStart(props);
+          sheetPreset.onTransitionStart(props);
+        },
+      },
+      screen: SendSheetWithData,
+    },
+  },
+  {
+    defaultNavigationOptions: {
+      onTransitionEnd,
+      onTransitionStart,
+    },
+    headerMode: 'none',
+    initialRouteName: 'MainNavigator',
+    mode: 'modal',
+  }
+);
+
+const Stack = isNativeStackAvailable ? NativeStack : NativeStackFallback;
+
+const AppContainer = createAppContainer(Stack);
 
 // eslint-disable-next-line react/display-name
 const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
@@ -186,6 +241,13 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
     onNavigationStateChange={(prevState, currentState) => {
       const { params, routeName } = Navigation.getActiveRoute(currentState);
       const prevRouteName = Navigation.getActiveRouteName(prevState);
+      // native stack rn does not support onTransitionEnd and onTransitionStart
+      if (
+        prevRouteName === 'ImportSeedPhraseSheet' &&
+        (routeName === 'ProfileScreen' || routeName === 'WalletScreen')
+      ) {
+        StatusBar.setBarStyle('dark-content');
+      }
 
       if (routeName === 'SettingsModal') {
         let subRoute = get(params, 'section.title');

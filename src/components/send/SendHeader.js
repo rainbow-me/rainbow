@@ -87,7 +87,25 @@ class SendHeader extends PureComponent {
     recipient: PropTypes.string,
     removeContact: PropTypes.func,
     selectedInputId: PropTypes.object,
+    setAppearListener: PropTypes.func,
     setSelectedInputId: PropTypes.func,
+  };
+
+  componentDidMount() {
+    this.props.setAppearListener &&
+      this.props.setAppearListener(this.focusInput);
+  }
+
+  componentWillUnmount() {
+    this.props.setAppearListener && this.props.setAppearListener(null);
+  }
+
+  focusInput = () => {
+    if (this.props.selectedInputId) {
+      this.props.selectedInputId.focus();
+    } else {
+      this.input && this.input.focus();
+    }
   };
 
   handleConfirmDeleteContactSelection = async buttonIndex => {
