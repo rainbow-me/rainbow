@@ -31,8 +31,12 @@ class TransactionListViewCell: UITableViewCell {
     if transaction.coinImage != nil {
       coinImage.kf.setImage(with: URL(string: transaction.coinImage!))
     } else if transaction.symbol != nil {
-      coinImage.image = generateCoinImage(transaction.symbol)
-      coinImage.layer.cornerRadius = coinImage.frame.width * 0.5
+      if let img = UIImage.init(named: transaction.symbol.lowercased()) {
+        coinImage.image = img
+      } else {
+        coinImage.image = generateCoinImage(transaction.symbol)
+        coinImage.layer.cornerRadius = coinImage.frame.width * 0.5
+      }
     }
   }
   
