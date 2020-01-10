@@ -48,7 +48,7 @@ const KeyboardFixedOpenLayout = ({
         setKeyboardHeight(newHeight);
       }
     },
-    [keyboardHeight, setDidMeasure, setKeyboardHeight]
+    [keyboardHeight, setKeyboardHeight]
   );
 
   useEffect(() => {

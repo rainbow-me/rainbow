@@ -832,6 +832,7 @@ class RecyclerAssetList extends Component {
             }}
             style={{
               backgroundColor: colors.white,
+              minHeight: 1,
             }}
           />
         </StickyContainer>

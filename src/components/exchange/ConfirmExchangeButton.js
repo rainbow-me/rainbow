@@ -4,6 +4,12 @@ import { colors } from '../../styles';
 import { HoldToAuthorizeButton, UnlockingSpinner } from '../buttons';
 import { SlippageWarningTheshold } from './SlippageWarning';
 
+const ConfirmExchangeButtonShadows = [
+  [0, 3, 5, colors.black, 0.2],
+  [0, 6, 10, colors.black, 0.14],
+  [0, 1, 18, colors.black, 0.12],
+];
+
 const ConfirmExchangeButton = ({
   disabled,
   inputCurrencyName,
@@ -30,27 +36,23 @@ const ConfirmExchangeButton = ({
 
   return (
     <HoldToAuthorizeButton
-      disabled={disabled || !isSufficientBalance || isUnlockingAsset}
+      disabled={
+        disabled ||
+        // only consider isSufficientBalance for approved assets.
+        (isAssetApproved && !isSufficientBalance) ||
+        isUnlockingAsset
+      }
       disabledBackgroundColor={colors.grey20}
       flex={1}
       hideBiometricIcon={isUnlockingAsset || !isAssetApproved}
       isAuthorizing={isAuthorizing}
       label={label}
-      onLongPress={isAssetApproved ? onSubmit : null}
-      onPress={isAssetApproved ? null : onUnlockAsset}
-      shadows={[
-        [0, 3, 5, colors.black, 0.2],
-        [0, 6, 10, colors.black, 0.14],
-        [0, 1, 18, colors.black, 0.12],
-      ]}
+      onLongPress={isAssetApproved ? onSubmit : onUnlockAsset}
+      shadows={ConfirmExchangeButtonShadows}
       theme="dark"
       {...props}
     >
-      {isUnlockingAsset ? (
-        <UnlockingSpinner timeRemaining={timeRemaining} />
-      ) : (
-        undefined
-      )}
+      {isUnlockingAsset && <UnlockingSpinner timeRemaining={timeRemaining} />}
     </HoldToAuthorizeButton>
   );
 };
@@ -68,4 +70,4 @@ ConfirmExchangeButton.propTypes = {
   timeRemaining: PropTypes.string,
 };
 
-export default ConfirmExchangeButton;
+export default React.memo(ConfirmExchangeButton);
