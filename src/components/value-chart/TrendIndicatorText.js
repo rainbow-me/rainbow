@@ -18,7 +18,7 @@ const TrendIndicatorText = ({ children, direction }) => (
       <Icon
         color={direction ? colors.chartGreen : colors.red}
         name="arrow"
-        direction={direction ? 'up' : 'down'}
+        direction={direction ? 'left' : 'right'}
       />
     </View>
     <Text

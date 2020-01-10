@@ -2,11 +2,20 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
 import Animated, { Easing } from 'react-native-reanimated';
-import { timing } from 'react-native-redash';
+import { spring } from 'react-native-redash';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import ValueTime from './ValueTime';
 import { colors } from '../../styles';
+
+const springConfig = {
+  damping: 38,
+  mass: 1,
+  overshootClamping: false,
+  restDisplacementThreshold: 0.001,
+  restSpeedThreshold: 0.001,
+  stiffness: 600,
+};
 
 const interval = {
   DAY: 0,
@@ -115,9 +124,10 @@ class TimespanSelector extends React.Component {
             neq(this.positionX, this.translateX),
             set(
               this.translateX,
-              timing({
+              spring({
                 clock: this.clock,
-                duration: 150,
+                config: springConfig,
+                duration: 120,
                 easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
                 from: this.translateX,
                 to: this.positionX,
