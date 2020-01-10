@@ -12,13 +12,9 @@ import {
   ApplePayButton,
   VirtualKeyboard,
 } from '../components/add-cash';
-import { ButtonPressAnimation } from '../components/animations';
-import { CoinIcon } from '../components/coin-icon';
-import { Centered, Column, ColumnWithMargins, Row, RowWithMargins } from '../components/layout';
-import { ShadowStack } from '../components/shadow-stack';
-import { Text } from '../components/text';
+import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { withTransitionProps } from '../hoc';
-import { borders, colors, fonts, padding, position } from '../styles';
+import { borders, colors, padding } from '../styles';
 import { deviceUtils, safeAreaInsetValues } from '../utils';
 import AddCashSelector from '../components/add-cash/AddCashSelector';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
@@ -75,7 +71,9 @@ const isTinyIphone = deviceUtils.dimensions.width < 375 ? true : false;
 const keyboardWidth = isTinyIphone ? 275 : '100%';
 
 const statusBarHeight = getStatusBarHeight(true);
-const sheetHeight = isNativeStackAvailable ? deviceUtils.dimensions.height - statusBarHeight - 10 : deviceUtils.dimensions.height - statusBarHeight;
+const sheetHeight = isNativeStackAvailable
+  ? deviceUtils.dimensions.height - statusBarHeight - 10
+  : deviceUtils.dimensions.height - statusBarHeight;
 
 const gradientXPoint = deviceUtils.dimensions.width - 48;
 const gradientPoints = [gradientXPoint, 53.5];
@@ -112,6 +110,63 @@ class AddCashSheet extends Component {
       shakeAnim: 0,
       text: null,
     };
+  }
+
+  onPress(val) {
+    let curText = this.state.text;
+    if (!curText) {
+      if (val === '0' || isNaN(val)) {
+        this.setState({
+          shakeAnim: runSpring(new Clock(), -10, 0, -1000, 5500, 35),
+        });
+        return;
+      } else curText = val;
+    } else if (isNaN(val)) {
+      if (val === 'back') {
+        curText = curText.slice(0, -1);
+      } else if (curText.includes('.')) {
+        this.setState({
+          shakeAnim: runSpring(new Clock(), -10, 0, -1000, 5500, 35),
+        });
+        return;
+      } else curText += val;
+    } else {
+      if (curText.charAt(curText.length - 3) === '.') {
+        this.setState({
+          shakeAnim: runSpring(new Clock(), -10, 0, -1000, 5500, 35),
+        });
+        return;
+      } else if (curText + val <= cashLimit) {
+        curText += val;
+      } else {
+        this.setState({
+          shakeAnim: runSpring(new Clock(), -10, 0, -1000, 5500, 35),
+        });
+        return;
+      }
+    }
+    let prevPosition = 1;
+    if (this.state.text && this.state.text.length > 3) {
+      prevPosition = 1 - (this.state.text.length - 3) * 0.075;
+    }
+    if (curText.length > 3) {
+      let characterCount = 1 - (curText.length - 3) * 0.075;
+      this.setState({
+        scaleAnim: runSpring(
+          new Clock(),
+          prevPosition,
+          characterCount,
+          0,
+          400,
+          40
+        ),
+      });
+    } else if (curText.length == 3) {
+      this.setState({
+        scaleAnim: runSpring(new Clock(), prevPosition, 1, 0, 400, 40),
+      });
+    }
+    this.setState({ text: curText });
   }
 
   render() {
@@ -175,7 +230,11 @@ class AddCashSheet extends Component {
               />
             </View>
             <Centered
-              css={padding(isTinyIphone ? 4 : 24, 15, isTinyIphone ? 15 : safeAreaInsetValues.bottom + 21)}
+              css={padding(
+                isTinyIphone ? 4 : 24,
+                15,
+                isTinyIphone ? 15 : safeAreaInsetValues.bottom + 21
+              )}
               width="100%"
             >
               <ApplePayButton disabled={false} />
@@ -184,63 +243,6 @@ class AddCashSheet extends Component {
         </Container>
       </SheetContainer>
     );
-  }
-
-  onPress(val) {
-    let curText = this.state.text;
-    if (!curText) {
-      if (val === '0' || isNaN(val)) {
-        this.setState({
-          shakeAnim: runSpring(new Clock(), -10, 0, -1000, 5500, 35),
-        });
-        return;
-      } else curText = val;
-    } else if (isNaN(val)) {
-      if (val === 'back') {
-        curText = curText.slice(0, -1);
-      } else if (curText.includes('.')) {
-        this.setState({
-          shakeAnim: runSpring(new Clock(), -10, 0, -1000, 5500, 35),
-        });
-        return;
-      } else curText += val;
-    } else {
-      if (curText.charAt(curText.length - 3) === '.') {
-        this.setState({
-          shakeAnim: runSpring(new Clock(), -10, 0, -1000, 5500, 35),
-        });
-        return;
-      } else if (curText + val <= cashLimit) {
-        curText += val;
-      } else {
-        this.setState({
-          shakeAnim: runSpring(new Clock(), -10, 0, -1000, 5500, 35),
-        });
-        return;
-      }
-    }
-    let prevPosition = 1;
-    if (this.state.text && this.state.text.length > 3) {
-      prevPosition = 1 - (this.state.text.length - 3) * 0.075;
-    }
-    if (curText.length > 3) {
-      let characterCount = 1 - (curText.length - 3) * 0.075;
-      this.setState({
-        scaleAnim: runSpring(
-          new Clock(),
-          prevPosition,
-          characterCount,
-          0,
-          400,
-          40
-        ),
-      });
-    } else if (curText.length == 3) {
-      this.setState({
-        scaleAnim: runSpring(new Clock(), prevPosition, 1, 0, 400, 40),
-      });
-    }
-    this.setState({ text: curText });
   }
 }
 

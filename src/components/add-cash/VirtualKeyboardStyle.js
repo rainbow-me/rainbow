@@ -22,7 +22,7 @@ module.exports = StyleSheet.create({
     fontWeight: fonts.weight.bold,
     lineHeight: 64,
     textAlign: 'center',
-    width: 80
+    width: 80,
   },
   row: {
     flexDirection: 'row',
