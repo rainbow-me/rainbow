@@ -1,8 +1,8 @@
 import analytics from '@segment/analytics-react-native';
 import { get, isEmpty, isString, toLower } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard, KeyboardAvoidingView } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Keyboard, KeyboardAvoidingView, StatusBar } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
 import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
@@ -22,24 +22,31 @@ import {
   formatInputDecimals,
 } from '../helpers/utilities';
 import { checkIsValidAddress } from '../helpers/validators';
-import { usePrevious } from '../hooks';
 import { sendTransaction } from '../model/wallet';
 import { borders, colors } from '../styles';
 import { deviceUtils, ethereumUtils, gasUtils } from '../utils';
+import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 
-const statusBarHeight = getStatusBarHeight(true);
+const sheetHeight = deviceUtils.dimensions.height - 10;
 
 const Container = styled(Column)`
   background-color: ${colors.transparent};
   height: 100%;
 `;
 
-const SheetContainer = styled(Column)`
-  ${borders.buildRadius('top', 16)};
-  background-color: ${colors.white};
-  height: 100%;
-  top: ${statusBarHeight};
-`;
+const statusBarHeight = getStatusBarHeight(true);
+
+const SheetContainer = isNativeStackAvailable
+  ? styled(Column)`
+      background-color: ${colors.white};
+      height: ${sheetHeight};
+    `
+  : styled(Column)`
+      ${borders.buildRadius('top', 16)};
+      background-color: ${colors.white};
+      height: 100%;
+      top: ${statusBarHeight};
+    `;
 
 const SendSheet = ({
   accountAddress,
@@ -58,11 +65,12 @@ const SendSheet = ({
   removeContact,
   selectedGasPrice,
   sendableUniqueTokens,
+  setAppearListener,
   sortedContacts,
   txFees,
   ...props
 }) => {
-  const { navigate, setParams } = useNavigation();
+  const { navigate } = useNavigation();
   const [amountDetails, setAmountDetails] = useState({
     assetAmount: '',
     isSufficientBalance: false,
@@ -298,29 +306,6 @@ const SendSheet = ({
     }
   }, [isValidAddress]);
 
-  const verticalGestureResponseDistance = useMemo(() => {
-    let verticalGestureResponseDistance = 140;
-
-    if (!isValidAddress && !isEmpty(contacts)) {
-      verticalGestureResponseDistance = 140;
-    } else if (isValidAddress) {
-      verticalGestureResponseDistance = isEmpty(selected)
-        ? 140
-        : deviceUtils.dimensions.height;
-    } else {
-      verticalGestureResponseDistance = deviceUtils.dimensions.height;
-    }
-    return verticalGestureResponseDistance;
-  }, [contacts, isValidAddress, selected]);
-
-  const prevResponseDistance = usePrevious(verticalGestureResponseDistance);
-
-  useEffect(() => {
-    if (prevResponseDistance !== verticalGestureResponseDistance) {
-      setParams({ verticalGestureResponseDistance });
-    }
-  }, [prevResponseDistance, setParams, verticalGestureResponseDistance]);
-
   const assetOverride = useNavigationParam('asset');
 
   useEffect(() => {
@@ -372,9 +357,11 @@ const SendSheet = ({
 
   return (
     <SheetContainer>
+      <StatusBar barStyle="light-content" />
       <KeyboardAvoidingView behavior="padding">
         <Container align="center">
           <SendHeader
+            setAppearListener={setAppearListener}
             contacts={contacts}
             isValidAddress={isValidAddress}
             onChangeAddressInput={onChangeInput}
@@ -452,6 +439,7 @@ SendSheet.propTypes = {
   removeContact: PropTypes.func.isRequired,
   selectedGasPrice: PropTypes.object,
   sendableUniqueTokens: PropTypes.arrayOf(PropTypes.object),
+  setAppearListener: PropTypes.func,
   sortedContacts: PropTypes.array,
   txFees: PropTypes.object.isRequired,
 };
