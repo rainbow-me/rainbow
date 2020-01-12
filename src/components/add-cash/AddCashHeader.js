@@ -1,4 +1,5 @@
 import React from 'react';
+import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { withNeverRerender } from '../../hoc';
 import { colors, padding } from '../../styles';
 import { ColumnWithMargins } from '../layout';
@@ -6,7 +7,7 @@ import { SheetHandle } from '../sheet';
 import { Text } from '../text';
 
 const AddCashHeader = () => (
-  <ColumnWithMargins align="center" css={padding(8, 0)} margin={1}>
+  <ColumnWithMargins align="center" css={padding(isNativeStackAvailable ? 6 : 8, 0)} margin={1}>
     <SheetHandle />
     <Text
       align="center"
