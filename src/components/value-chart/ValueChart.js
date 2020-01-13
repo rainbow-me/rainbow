@@ -150,7 +150,7 @@ export default class ValueChart extends PureComponent {
 
     this.state = {
       allData: [[], [], [], []],
-      currentData: usableData[0],
+      currentData: [],
       hideLoadingBar: false,
       isLoading: false,
       shouldRenderChart: true,
@@ -394,30 +394,39 @@ export default class ValueChart extends PureComponent {
   };
 
   render() {
-    const maxValue = maxBy(this.state.currentData, 'value');
-    const minValue = minBy(this.state.currentData, 'value');
-    const change =
-      ((this.state.currentData[this.state.currentData.length - 1].value -
-        this.state.currentData[0].value) /
-        this.state.currentData[0].value) *
-      100;
+    let maxValue = 0,
+      minValue = 0,
+      change = 0,
+      timePeriod = 0,
+      maxValueDistance = 999,
+      minValueDistance = 999;
 
-    const timePeriod =
-      this.state.currentData[this.state.currentData.length - 1].timestamp -
-      this.state.currentData[0].timestamp;
+    if (this.state.currentData.length > 0) {
+      maxValue = maxBy(this.state.currentData, 'value');
+      minValue = minBy(this.state.currentData, 'value');
+      change =
+        ((this.state.currentData[this.state.currentData.length - 1].value -
+          this.state.currentData[0].value) /
+          this.state.currentData[0].value) *
+        100;
 
-    const maxValueDistance = this.checkValueBoundaries(
-      ((maxValue.timestamp - this.state.currentData[0].timestamp) /
-        timePeriod) *
-        width -
-        width / 2
-    );
-    const minValueDistance = this.checkValueBoundaries(
-      ((minValue.timestamp - this.state.currentData[0].timestamp) /
-        timePeriod) *
-        width -
-        width / 2
-    );
+      timePeriod =
+        this.state.currentData[this.state.currentData.length - 1].timestamp -
+        this.state.currentData[0].timestamp;
+
+      maxValueDistance = this.checkValueBoundaries(
+        ((maxValue.timestamp - this.state.currentData[0].timestamp) /
+          timePeriod) *
+          width -
+          width / 2
+      );
+      minValueDistance = this.checkValueBoundaries(
+        ((minValue.timestamp - this.state.currentData[0].timestamp) /
+          timePeriod) *
+          width -
+          width / 2
+      );
+    }
 
     return (
       <Fragment>
