@@ -1,10 +1,10 @@
 import analytics from '@segment/analytics-react-native';
 import { get, isEmpty, isString, toLower } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Keyboard, KeyboardAvoidingView } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Keyboard, KeyboardAvoidingView, StatusBar } from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
-import { compose, withHandlers, withProps } from 'recompact';
+import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import { Column } from '../components/layout';
 import {
@@ -15,298 +15,440 @@ import {
   SendHeader,
   SendTransactionSpeed,
 } from '../components/send';
+import { createSignableTransaction, estimateGasLimit } from '../handlers/web3';
 import {
-  withAccountData,
-  withAccountSettings,
-  withContacts,
-  withDataInit,
-  withTransitionProps,
-  withUniqueTokens,
-} from '../hoc';
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountFromNativeValue,
+  formatInputDecimals,
+} from '../helpers/utilities';
+import { checkIsValidAddress } from '../helpers/validators';
+import { sendTransaction } from '../model/wallet';
 import { borders, colors } from '../styles';
-import { deviceUtils, gasUtils, isNewValueForPath } from '../utils';
+import { deviceUtils, ethereumUtils, gasUtils } from '../utils';
+import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 
-const statusBarHeight = getStatusBarHeight(true);
+const sheetHeight = deviceUtils.dimensions.height - 10;
 
 const Container = styled(Column)`
   background-color: ${colors.transparent};
   height: 100%;
 `;
 
-const SheetContainer = styled(Column)`
-  ${borders.buildRadius('top', 16)};
-  background-color: ${colors.white};
-  height: 100%;
-  top: ${statusBarHeight};
-`;
+const statusBarHeight = getStatusBarHeight(true);
 
-class SendSheet extends Component {
-  static propTypes = {
-    allAssets: PropTypes.array,
-    assetAmount: PropTypes.string,
-    contacts: PropTypes.object,
-    fetchData: PropTypes.func,
-    gasPrices: PropTypes.object,
-    gasUpdateGasPriceOption: PropTypes.func,
-    isSufficientBalance: PropTypes.bool,
-    isSufficientGas: PropTypes.bool,
-    isValidAddress: PropTypes.bool,
-    nativeCurrencySymbol: PropTypes.string,
-    navigation: PropTypes.object,
-    onSubmit: PropTypes.func,
-    recipient: PropTypes.string,
-    removeContact: PropTypes.func,
-    selected: PropTypes.object,
-    selectedGasPrice: PropTypes.object,
-    sendableUniqueTokens: PropTypes.arrayOf(PropTypes.object),
-    sendClearFields: PropTypes.func,
-    sendMaxBalance: PropTypes.func,
-    sendUpdateAssetAmount: PropTypes.func,
-    sendUpdateNativeAmount: PropTypes.func,
-    sendUpdateRecipient: PropTypes.func,
-    sendUpdateSelected: PropTypes.func,
-    sortedContacts: PropTypes.array,
-  };
+const SheetContainer = isNativeStackAvailable
+  ? styled(Column)`
+      background-color: ${colors.white};
+      height: ${sheetHeight};
+    `
+  : styled(Column)`
+      ${borders.buildRadius('top', 16)};
+      background-color: ${colors.white};
+      height: 100%;
+      top: ${statusBarHeight};
+    `;
 
-  static defaultProps = {
+const SendSheet = ({
+  accountAddress,
+  allAssets,
+  contacts,
+  dataAddNewTransaction,
+  fetchData,
+  gasLimit,
+  gasPrices,
+  gasUpdateDefaultGasLimit,
+  gasUpdateGasPriceOption,
+  gasUpdateTxFee,
+  isSufficientGas,
+  nativeCurrency,
+  nativeCurrencySymbol,
+  removeContact,
+  selectedGasPrice,
+  sendableUniqueTokens,
+  setAppearListener,
+  sortedContacts,
+  txFees,
+  ...props
+}) => {
+  const { navigate } = useNavigation();
+  const [amountDetails, setAmountDetails] = useState({
+    assetAmount: '',
     isSufficientBalance: false,
-    isSufficientGas: false,
-    isValidAddress: false,
-  };
+    nativeAmount: '',
+  });
+  const [currentInput, setCurrentInput] = useState('');
+  const [isAuthorizing, setIsAuthorizing] = useState(false);
+  const [isValidAddress, setIsValidAddress] = useState(false);
+  const [recipient, setRecipient] = useState('');
+  const [selected, setSelected] = useState({});
 
-  state = {
-    currentInput: '',
-    isAuthorizing: false,
-  };
+  const showEmptyState = !isValidAddress;
+  const showAssetList = isValidAddress && isEmpty(selected);
+  const showAssetForm = isValidAddress && !isEmpty(selected);
 
-  componentDidMount = async () => {
-    const { navigation, sendUpdateRecipient } = this.props;
-    const address = get(navigation, 'state.params.address');
-
-    if (address) {
-      sendUpdateRecipient(address);
-    }
-  };
-
-  componentDidUpdate(prevProps) {
-    const {
-      contacts,
-      isValidAddress,
-      navigation,
-      selected,
-      sendUpdateSelected,
-    } = this.props;
-
-    const asset = get(navigation, 'state.params.asset');
-
-    if (isValidAddress && !prevProps.isValidAddress) {
-      if (asset) {
-        sendUpdateSelected(asset);
+  const sendUpdateAssetAmount = useCallback(
+    newAssetAmount => {
+      const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
+      let _nativeAmount = '';
+      if (_assetAmount.length) {
+        const priceUnit = get(selected, 'price.value', 0);
+        const {
+          amount: convertedNativeAmount,
+        } = convertAmountAndPriceToNativeDisplay(
+          _assetAmount,
+          priceUnit,
+          nativeCurrency
+        );
+        _nativeAmount = formatInputDecimals(
+          convertedNativeAmount,
+          _assetAmount
+        );
       }
+      const balanceAmount = ethereumUtils.getBalanceAmount(
+        selectedGasPrice,
+        selected
+      );
+      const _isSufficientBalance =
+        Number(_assetAmount) <= Number(balanceAmount);
+      setAmountDetails({
+        assetAmount: _assetAmount,
+        isSufficientBalance: _isSufficientBalance,
+        nativeAmount: _nativeAmount,
+      });
+    },
+    [nativeCurrency, selected, selectedGasPrice]
+  );
 
-      Keyboard.dismiss();
-    }
-
-    const isNewSelected = isNewValueForPath(this.props, prevProps, 'selected');
-    const isNewValidAddress = isNewValueForPath(
-      this.props,
-      prevProps,
-      'isValidAddress'
-    );
-    const isNewContactList = isNewValueForPath(
-      this.props,
-      prevProps,
-      'contacts'
-    );
-
-    if (isNewValidAddress || isNewSelected || isNewContactList) {
-      let verticalGestureResponseDistance = 140;
-
-      if (!isValidAddress && !isEmpty(contacts)) {
-        verticalGestureResponseDistance = 140;
-      } else if (isValidAddress) {
-        verticalGestureResponseDistance = isEmpty(selected)
-          ? 140
-          : deviceUtils.dimensions.height;
+  const sendUpdateSelected = useCallback(
+    newSelected => {
+      if (get(newSelected, 'isNft')) {
+        setAmountDetails({
+          assetAmount: '1',
+          isSufficientBalance: true,
+          nativeAmount: '0',
+        });
+        setSelected({
+          ...newSelected,
+          symbol: get(newSelected, 'asset_contract.name'),
+        });
       } else {
-        verticalGestureResponseDistance = deviceUtils.dimensions.height;
+        setSelected(newSelected);
+        sendUpdateAssetAmount(amountDetails.assetAmount);
+      }
+    },
+    [amountDetails.assetAmount, sendUpdateAssetAmount]
+  );
+
+  const sendUpdateRecipient = useCallback(newRecipient => {
+    setRecipient(newRecipient);
+  }, []);
+
+  const onChangeNativeAmount = useCallback(
+    newNativeAmount => {
+      if (!isString(newNativeAmount)) return;
+      const _nativeAmount = newNativeAmount.replace(/[^0-9.]/g, '');
+      let _assetAmount = '';
+      if (_nativeAmount.length) {
+        const priceUnit = get(selected, 'price.value', 0);
+        const convertedAssetAmount = convertAmountFromNativeValue(
+          _nativeAmount,
+          priceUnit,
+          selected.decimals
+        );
+        _assetAmount = formatInputDecimals(convertedAssetAmount, _nativeAmount);
       }
 
-      navigation.setParams({ verticalGestureResponseDistance });
-    }
-  }
+      const balanceAmount = ethereumUtils.getBalanceAmount(
+        selectedGasPrice,
+        selected
+      );
+      const _isSufficientBalance =
+        Number(_assetAmount) <= Number(balanceAmount);
 
-  componentWillUnmount() {
-    this.props.sendClearFields();
-  }
-
-  onChangeAssetAmount = assetAmount => {
-    if (isString(assetAmount)) {
-      this.props.sendUpdateAssetAmount(assetAmount);
-      analytics.track('Changed token input in Send flow');
-    }
-  };
-
-  onChangeNativeAmount = nativeAmount => {
-    if (isString(nativeAmount)) {
-      this.props.sendUpdateNativeAmount(nativeAmount);
+      setAmountDetails({
+        assetAmount: _assetAmount,
+        isSufficientBalance: _isSufficientBalance,
+        nativeAmount: _nativeAmount,
+      });
       analytics.track('Changed native currency input in Send flow');
-    }
-  };
+    },
+    [selected, selectedGasPrice]
+  );
 
-  onLongPressSend = () => {
-    this.setState({ isAuthorizing: true });
+  const sendMaxBalance = useCallback(() => {
+    const balanceAmount = ethereumUtils.getBalanceAmount(
+      selectedGasPrice,
+      selected
+    );
+    sendUpdateAssetAmount(balanceAmount);
+  }, [selected, selectedGasPrice, sendUpdateAssetAmount]);
+
+  const onChangeAssetAmount = useCallback(
+    newAssetAmount => {
+      if (isString(newAssetAmount)) {
+        sendUpdateAssetAmount(newAssetAmount);
+        analytics.track('Changed token input in Send flow');
+      }
+    },
+    [sendUpdateAssetAmount]
+  );
+
+  const onSubmit = useCallback(async () => {
+    const validTransaction =
+      isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
+    if (!selectedGasPrice.txFee || !validTransaction || isAuthorizing)
+      return false;
+
+    let submitSuccess = false;
+    const txDetails = {
+      amount: amountDetails.assetAmount,
+      asset: selected,
+      from: accountAddress,
+      gasLimit,
+      gasPrice: get(selectedGasPrice, 'value.amount'),
+      nonce: null,
+      to: recipient,
+    };
+    try {
+      const signableTransaction = await createSignableTransaction(txDetails);
+      const txHash = await sendTransaction({
+        transaction: signableTransaction,
+      });
+      if (!isEmpty(txHash)) {
+        submitSuccess = true;
+        txDetails.hash = txHash;
+        await dataAddNewTransaction(txDetails);
+      }
+    } catch (error) {
+      submitSuccess = false;
+    } finally {
+      setIsAuthorizing(false);
+    }
+    return submitSuccess;
+  }, [
+    accountAddress,
+    amountDetails.assetAmount,
+    amountDetails.isSufficientBalance,
+    dataAddNewTransaction,
+    gasLimit,
+    isAuthorizing,
+    isSufficientGas,
+    isValidAddress,
+    recipient,
+    selected,
+    selectedGasPrice,
+  ]);
+
+  const submitTransaction = useCallback(async () => {
+    if (Number(amountDetails.assetAmount) <= 0) return false;
+
+    try {
+      const submitSuccessful = await onSubmit();
+      analytics.track('Sent transaction', {
+        assetName: selected.name,
+        assetType: selected.isNft ? 'unique_token' : 'token',
+        isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
+      });
+      if (submitSuccessful) {
+        navigate('ProfileScreen');
+      }
+    } catch (error) {
+      setIsAuthorizing(false);
+    }
+  }, [
+    amountDetails.assetAmount,
+    navigate,
+    onSubmit,
+    recipient,
+    selected.isNft,
+    selected.name,
+  ]);
+
+  const onPressTransactionSpeed = useCallback(
+    onSuccess => {
+      gasUtils.showTransactionSpeedOptions(
+        gasPrices,
+        txFees,
+        gasUpdateGasPriceOption,
+        onSuccess
+      );
+    },
+    [gasPrices, gasUpdateGasPriceOption, txFees]
+  );
+
+  const onLongPressSend = useCallback(() => {
+    setIsAuthorizing(true);
 
     if (isIphoneX()) {
-      this.sendTransaction();
+      submitTransaction();
     } else {
-      this.onPressTransactionSpeed(this.sendTransaction);
+      onPressTransactionSpeed(submitTransaction);
     }
-  };
+  }, [onPressTransactionSpeed, submitTransaction]);
 
-  onPressTransactionSpeed = onSuccess => {
-    const { gasPrices, gasUpdateGasPriceOption, txFees } = this.props;
-    gasUtils.showTransactionSpeedOptions(
-      gasPrices,
-      txFees,
-      gasUpdateGasPriceOption,
-      onSuccess
-    );
-  };
-
-  onResetAssetSelection = () => {
+  const onResetAssetSelection = useCallback(() => {
     analytics.track('Reset asset selection in Send flow');
-    this.props.sendUpdateSelected({});
-  };
+    sendUpdateSelected({});
+  }, [sendUpdateSelected]);
 
-  onSelectAsset = asset => this.props.sendUpdateSelected(asset);
+  const onChangeInput = useCallback(event => {
+    setCurrentInput(event);
+    setRecipient(event);
+  }, []);
 
-  sendTransaction = () => {
-    const {
-      assetAmount,
-      navigation,
-      onSubmit,
-      recipient,
-      selected,
-      sendClearFields,
-    } = this.props;
+  useEffect(() => {
+    gasUpdateDefaultGasLimit();
+  }, [gasUpdateDefaultGasLimit]);
 
-    if (Number(assetAmount) <= 0) return false;
+  useEffect(() => {
+    if (isValidAddress) {
+      Keyboard.dismiss();
+    }
+  }, [isValidAddress]);
 
-    return onSubmit()
-      .then(() => {
-        this.setState({ isAuthorizing: false });
-        analytics.track('Sent transaction', {
-          assetName: selected.name,
-          assetType: selected.isNft ? 'unique_token' : 'token',
-          isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
-        });
-        sendClearFields();
-        navigation.navigate('ProfileScreen');
+  const assetOverride = useNavigationParam('asset');
+
+  useEffect(() => {
+    if (isValidAddress && assetOverride) {
+      sendUpdateSelected(assetOverride);
+    }
+  }, [assetOverride, isValidAddress, sendUpdateSelected]);
+
+  const recipientOverride = useNavigationParam('address');
+
+  useEffect(() => {
+    if (recipientOverride && !recipient) {
+      sendUpdateRecipient(recipientOverride);
+    }
+  }, [recipient, recipientOverride, sendUpdateRecipient]);
+
+  const checkAddress = useCallback(async () => {
+    const validAddress = await checkIsValidAddress(recipient);
+    setIsValidAddress(validAddress);
+  }, [recipient]);
+
+  useEffect(() => {
+    checkAddress();
+  }, [checkAddress]);
+
+  useEffect(() => {
+    if (isValidAddress) {
+      estimateGasLimit({
+        address: accountAddress,
+        amount: amountDetails.assetAmount,
+        asset: selected,
+        recipient,
       })
-      .catch(() => {
-        this.setState({ isAuthorizing: false });
-      });
-  };
+        .then(gasLimit => {
+          gasUpdateTxFee(gasLimit);
+        })
+        .catch(() => {
+          gasUpdateTxFee(null);
+        });
+    }
+  }, [
+    accountAddress,
+    amountDetails.assetAmount,
+    gasUpdateTxFee,
+    isValidAddress,
+    recipient,
+    selected,
+  ]);
 
-  onChangeInput = event => {
-    this.setState({ currentInput: event });
-    this.props.sendUpdateRecipient(event);
-  };
-
-  render() {
-    const {
-      allAssets,
-      contacts,
-      fetchData,
-      isValidAddress,
-      nativeCurrencySymbol,
-      recipient,
-      removeContact,
-      selected,
-      selectedGasPrice,
-      sendableUniqueTokens,
-      sendUpdateRecipient,
-      sortedContacts,
-      ...props
-    } = this.props;
-    const showEmptyState = !isValidAddress;
-    const showAssetList = isValidAddress && isEmpty(selected);
-    const showAssetForm = isValidAddress && !isEmpty(selected);
-
-    return (
-      <SheetContainer>
-        <KeyboardAvoidingView behavior="padding">
-          <Container align="center">
-            <SendHeader
-              contacts={contacts}
-              isValid={isValidAddress}
-              isValidAddress={isValidAddress}
-              onChangeAddressInput={this.onChangeInput}
-              onPressPaste={sendUpdateRecipient}
-              recipient={recipient}
+  return (
+    <SheetContainer>
+      <StatusBar barStyle="light-content" />
+      <KeyboardAvoidingView behavior="padding">
+        <Container align="center">
+          <SendHeader
+            setAppearListener={setAppearListener}
+            contacts={contacts}
+            isValidAddress={isValidAddress}
+            onChangeAddressInput={onChangeInput}
+            onPressPaste={sendUpdateRecipient}
+            recipient={recipient}
+            removeContact={removeContact}
+          />
+          {showEmptyState && (
+            <SendContactList
+              allAssets={sortedContacts}
+              currentInput={currentInput}
+              onPressContact={sendUpdateRecipient}
               removeContact={removeContact}
             />
-            {showEmptyState && (
-              <SendContactList
-                allAssets={sortedContacts}
-                currentInput={this.state.currentInput}
-                onPressContact={sendUpdateRecipient}
-                removeContact={removeContact}
-              />
-            )}
-            {showAssetList && (
-              <SendAssetList
-                allAssets={allAssets}
-                fetchData={fetchData}
-                onSelectAsset={this.onSelectAsset}
-                uniqueTokens={sendableUniqueTokens}
-              />
-            )}
-            {showAssetForm && (
-              <SendAssetForm
-                {...props}
-                allAssets={allAssets}
-                buttonRenderer={
-                  <SendButton
-                    {...props}
-                    isAuthorizing={this.state.isAuthorizing}
-                    onLongPress={this.onLongPressSend}
+          )}
+          {showAssetList && (
+            <SendAssetList
+              allAssets={allAssets}
+              fetchData={fetchData}
+              onSelectAsset={sendUpdateSelected}
+              uniqueTokens={sendableUniqueTokens}
+            />
+          )}
+          {showAssetForm && (
+            <SendAssetForm
+              {...props}
+              allAssets={allAssets}
+              assetAmount={amountDetails.assetAmount}
+              buttonRenderer={
+                <SendButton
+                  {...props}
+                  assetAmount={amountDetails.assetAmount}
+                  isAuthorizing={isAuthorizing}
+                  isSufficientBalance={amountDetails.isSufficientBalance}
+                  isSufficientGas={isSufficientGas}
+                  onLongPress={onLongPressSend}
+                />
+              }
+              nativeAmount={amountDetails.nativeAmount}
+              onChangeAssetAmount={onChangeAssetAmount}
+              onChangeNativeAmount={onChangeNativeAmount}
+              onResetAssetSelection={onResetAssetSelection}
+              selected={selected}
+              sendMaxBalance={sendMaxBalance}
+              txSpeedRenderer={
+                isIphoneX() && (
+                  <SendTransactionSpeed
+                    gasPrice={selectedGasPrice}
+                    nativeCurrencySymbol={nativeCurrencySymbol}
+                    onPressTransactionSpeed={onPressTransactionSpeed}
                   />
-                }
-                onChangeAssetAmount={this.onChangeAssetAmount}
-                onChangeNativeAmount={this.onChangeNativeAmount}
-                onResetAssetSelection={this.onResetAssetSelection}
-                selected={selected}
-                txSpeedRenderer={
-                  isIphoneX() && (
-                    <SendTransactionSpeed
-                      gasPrice={selectedGasPrice}
-                      nativeCurrencySymbol={nativeCurrencySymbol}
-                      onPressTransactionSpeed={this.onPressTransactionSpeed}
-                    />
-                  )
-                }
-              />
-            )}
-          </Container>
-        </KeyboardAvoidingView>
-      </SheetContainer>
-    );
-  }
-}
+                )
+              }
+            />
+          )}
+        </Container>
+      </KeyboardAvoidingView>
+    </SheetContainer>
+  );
+};
 
-export default compose(
-  withAccountData,
-  withContacts,
-  withUniqueTokens,
-  withAccountSettings,
-  withDataInit,
-  withTransitionProps,
-  withProps(({ transitionProps: { isTransitioning } }) => ({
-    isTransitioning,
-  })),
-  withHandlers({
-    fetchData: ({ refreshAccountData }) => async () => refreshAccountData(),
-  })
-)(SendSheet);
+SendSheet.propTypes = {
+  accountAddress: PropTypes.string.isRequired,
+  allAssets: PropTypes.array,
+  dataAddNewTransaction: PropTypes.func.isRequired,
+  fetchData: PropTypes.func.isRequired,
+  gasLimit: PropTypes.number,
+  gasPrices: PropTypes.object,
+  gasUpdateDefaultGasLimit: PropTypes.func.isRequired,
+  gasUpdateGasPriceOption: PropTypes.func.isRequired,
+  gasUpdateTxFee: PropTypes.func.isRequired,
+  isSufficientGas: PropTypes.bool.isRequired,
+  nativeCurrency: PropTypes.string.isRequired,
+  nativeCurrencySymbol: PropTypes.string.isRequired,
+  removeContact: PropTypes.func.isRequired,
+  selectedGasPrice: PropTypes.object,
+  sendableUniqueTokens: PropTypes.arrayOf(PropTypes.object),
+  setAppearListener: PropTypes.func,
+  sortedContacts: PropTypes.array,
+  txFees: PropTypes.object.isRequired,
+};
+
+const arePropsEqual = (prev, next) =>
+  prev.isSufficientGas === next.isSufficientGas &&
+  prev.gasLimit === next.gasLimit &&
+  prev.selectedGasPrice === next.selectedGasPrice &&
+  prev.txFees === next.txFees &&
+  prev.gasPrices === next.gasPrices &&
+  prev.allAssets === next.allAssets;
+export default React.memo(SendSheet, arePropsEqual);

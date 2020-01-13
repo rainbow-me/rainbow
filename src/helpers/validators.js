@@ -39,7 +39,7 @@ export const checkIsValidAddress = async address => {
     /^(0x)?[0-9A-F]{40}$/.test(address)
   )
     return true;
-  return address === (await toChecksumAddress(address));
+  return address === toChecksumAddress(address);
 };
 
 /**

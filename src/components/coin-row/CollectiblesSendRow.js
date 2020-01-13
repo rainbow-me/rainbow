@@ -108,7 +108,7 @@ const CollectiblesSendRow = enhance(
           <Divider color={colors.alpha(colors.blueGreyLighter, 0.05)} />
         </Centered>
       )}
-      <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
         <CoinRow
           {...props}
           {...item}

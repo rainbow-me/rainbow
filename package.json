@@ -13,6 +13,11 @@
     "nodeify": "./node_modules/.bin/rn-nodeify --install \"crypto\" --hack",
     "postinstall": "patch-package && rn-nodeify --install --hack"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint"
+    }
+  },
   "dependencies": {
     "@bankify/react-native-animate-number": "^0.2.1",
     "@hocs/omit-props": "^0.4.0",
@@ -71,7 +76,7 @@
     "punycode": "^1.4.1",
     "querystring-es3": "^0.2.1",
     "react": "16.11.0",
-    "react-coin-icon": "0.1.13",
+    "react-coin-icon": "0.1.14",
     "react-fast-compare": "^2.0.4",
     "react-native": "facebook/react-native",
     "react-native-actionsheet": "^2.4.2",
@@ -140,6 +145,7 @@
     "timers-browserify": "^1.4.2",
     "tty-browserify": "0.0.0",
     "url": "^0.10.3",
+    "use-memo-one": "^1.1.1",
     "util": "^0.10.3",
     "vm-browserify": "0.0.4"
   },

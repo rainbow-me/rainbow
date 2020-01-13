@@ -36,7 +36,7 @@ const ContractInteractionVenderLogoIcon = withProps({
 })(RequestVendorLogoIcon);
 
 const ContractInteractionCoinRow = ({ item, onPressTransaction, ...props }) => (
-  <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>
+  <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.98}>
     <CoinRow
       {...item}
       {...props}

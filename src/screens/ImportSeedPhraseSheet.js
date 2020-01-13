@@ -1,34 +1,50 @@
 import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { KeyboardAvoidingView } from 'react-native';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from 'react';
+import { KeyboardAvoidingView, StatusBar } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { Alert } from '../components/alerts';
 import { Icon } from '../components/icons';
-import { MultiLineInput } from '../components/inputs';
+import { Input } from '../components/inputs';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { Text } from '../components/text';
 import { useClipboard } from '../hooks';
 import { sheetVerticalOffset } from '../navigation/transitions/effects';
-import { borders, colors, padding, shadow } from '../styles';
+import { colors, padding, shadow, borders } from '../styles';
 import { isValidSeed as validateSeed } from '../helpers/validators';
+import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 
-const keyboardVerticalOffset = sheetVerticalOffset + 19;
+const keyboardVerticalOffset = sheetVerticalOffset + 10;
+
 const statusBarHeight = getStatusBarHeight(true);
 
-const Container = styled(Column).attrs({
-  align: 'center',
-  flex: 1,
-})`
-  ${borders.buildRadius('top', 16)};
-  ${padding(0, 16, 16)};
-  background: ${colors.white};
-  top: ${statusBarHeight};
-`;
+const Container = isNativeStackAvailable
+  ? styled(Column).attrs({
+      align: 'center',
+      flex: 1,
+    })`
+      ${padding(0, 19)};
+      background: ${colors.white};
+    `
+  : styled(Column).attrs({
+      align: 'center',
+      flex: 1,
+    })`
+      ${borders.buildRadius('top', 16)};
+      ${padding(0, 16, 16)};
+      background: ${colors.white};
+      top: ${statusBarHeight};
+    `;
 
 const HandleIcon = styled(Icon).attrs({
   color: '#C4C6CB',
@@ -39,11 +55,12 @@ const HandleIcon = styled(Icon).attrs({
 `;
 
 const StyledImportButton = styled(BorderlessButton)`
-  ${padding(6, 8)};
-  ${shadow.build(0, 6, 10, colors.dark, 0.14)};
+  ${padding(5, 9, 7)};
+  ${shadow.build(0, 6, 10, colors.dark, 0.16)};
   background-color: ${({ disabled }) =>
     disabled ? '#D2D3D7' : colors.appleBlue};
   border-radius: 15px;
+  margin-bottom: 19px;
 `;
 
 const ConfirmImportAlert = onSuccess =>
@@ -64,23 +81,37 @@ const ConfirmImportAlert = onSuccess =>
   });
 
 const ImportButton = ({ disabled, onPress, seedPhrase }) => (
-  <StyledImportButton disabled={disabled} onPress={onPress}>
+  <StyledImportButton disabled={disabled} onPress={onPress} overflow="visible">
     <RowWithMargins align="center" margin={5}>
       {!!seedPhrase && (
         <Icon color={colors.white} direction="right" name="arrowCircled" />
       )}
-      <Text color="white" weight="bold">
+      <Text color="white" weight="semibold">
         {seedPhrase ? 'Import' : 'Paste'}
       </Text>
     </RowWithMargins>
   </StyledImportButton>
 );
 
-const ImportSeedPhraseSheet = ({ initializeWallet, isEmpty }) => {
+const ImportSeedPhraseSheet = ({
+  initializeWallet,
+  isEmpty,
+  setAppearListener,
+}) => {
   const [clipboard] = useClipboard();
   const { navigate, setParams } = useNavigation();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
+
+  const inputRef = useRef(null);
+  const focusListener = useCallback(() => {
+    inputRef.current && inputRef.current.focus();
+  }, []);
+
+  useEffect(() => {
+    setAppearListener && setAppearListener(focusListener);
+    return () => setAppearListener && setAppearListener(null);
+  });
 
   const isClipboardValidSeedPhrase = useMemo(() => validateSeed(clipboard), [
     clipboard,
@@ -95,7 +126,7 @@ const ImportSeedPhraseSheet = ({ initializeWallet, isEmpty }) => {
       setImporting(newImportingState);
       setParams({ gesturesEnabled: !newImportingState });
     },
-    [setImporting, setParams]
+    [setParams]
   );
 
   const handleSetSeedPhrase = useCallback(
@@ -103,7 +134,7 @@ const ImportSeedPhraseSheet = ({ initializeWallet, isEmpty }) => {
       if (isImporting) return null;
       return setSeedPhrase(text);
     },
-    [isImporting, setSeedPhrase]
+    [isImporting]
   );
 
   const onPressImportButton = () => {
@@ -150,6 +181,7 @@ const ImportSeedPhraseSheet = ({ initializeWallet, isEmpty }) => {
 
   return (
     <Container>
+      <StatusBar barStyle="light-content" />
       <HandleIcon />
       <Text size="large" weight="bold">
         Import
@@ -159,7 +191,10 @@ const ImportSeedPhraseSheet = ({ initializeWallet, isEmpty }) => {
         keyboardVerticalOffset={keyboardVerticalOffset}
       >
         <Centered css={padding(0, 50)} flex={1}>
-          <MultiLineInput
+          <Input
+            lineHeight="loosest"
+            multiline
+            ref={inputRef}
             align="center"
             autoFocus
             enablesReturnKeyAutomatically
@@ -196,6 +231,7 @@ const ImportSeedPhraseSheet = ({ initializeWallet, isEmpty }) => {
 ImportSeedPhraseSheet.propTypes = {
   initializeWallet: PropTypes.func,
   isEmpty: PropTypes.bool,
+  setAppearListener: PropTypes.func,
 };
 
 const neverRerender = () => true;
