@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, StatusBar } from 'react-native';
 import { compose, onlyUpdateForKeys, withHandlers, withProps } from 'recompact';
 import { Column } from '../components/layout';
 import { Modal, ModalHeader } from '../components/modal';
@@ -101,6 +101,7 @@ export default compose(
       navigation.goBack();
       InteractionManager.runAfterInteractions(() => {
         navigation.navigate('ImportSeedPhraseSheet');
+        StatusBar.setBarStyle('light-content');
       });
     },
     onPressSection: ({ navigation }) => section => () =>

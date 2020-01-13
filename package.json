@@ -15,7 +15,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint && yarn test"
+      "pre-commit": "yarn lint"
     }
   },
   "dependencies": {
@@ -108,7 +108,7 @@
     "react-native-redash": "9.0.0",
     "react-native-safe-area-context": "^0.5.0",
     "react-native-safe-area-view": "mikedemarais/react-native-safe-area-view",
-    "react-native-screens": "^1.0.0-alpha.23",
+    "react-native-screens": "kmagiera/react-native-screens",
     "react-native-splash-screen": "^3.2.0",
     "react-native-storage": "^1.0.1",
     "react-native-store-review": "^0.1.5",
@@ -120,7 +120,7 @@
     "react-native-version-number": "^0.3.6",
     "react-navigation": "4.0.10",
     "react-navigation-hooks": "^1.1.0",
-    "react-navigation-stack": "2.0.0-alpha.39",
+    "react-navigation-stack": "2.0.11",
     "react-navigation-tabs": "2.6.2",
     "react-navigation-tabs-v1": "1.2.0",
     "react-primitives": "^0.8.0",
@@ -145,6 +145,7 @@
     "timers-browserify": "^1.4.2",
     "tty-browserify": "0.0.0",
     "url": "^0.10.3",
+    "use-memo-one": "^1.1.1",
     "util": "^0.10.3",
     "vm-browserify": "0.0.4"
   },

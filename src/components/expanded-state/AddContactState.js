@@ -154,14 +154,14 @@ class AddContactState extends PureComponent {
                 }}
               />
               <Input
-                autoCapitalize
+                autoCapitalize="words"
                 autoFocus
                 letterSpacing="tightest"
                 onChange={this.handleChange}
                 onSubmitEditing={this.handleAddContact}
                 returnKeyType="done"
                 size="big"
-                spellCheck="false"
+                spellCheck={false}
                 ref={this.handleInputRef}
                 style={{ width: '100%' }}
                 textAlign="center"
