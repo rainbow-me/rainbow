@@ -16,6 +16,10 @@
 @property (nonatomic, strong) NSString *nativeDisplay;
 @property (nonatomic, strong) NSString *balanceDisplay;
 @property (nonatomic, strong) NSString *tHash;
+@property (nonatomic, strong) NSString *from;
+@property (nonatomic, strong) NSString *to;
+@property (nonatomic, strong) NSString *type;
+@property (nonatomic, assign) BOOL pending;
 @property (nonatomic, strong) NSDate *minedAt;
 
 @end

@@ -67,10 +67,9 @@ class TransactionListViewContainer: UIView {
     tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
     tableView.register(UINib(nibName: "TransactionListViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListViewCell")
     
-    header.backgroundColor = .white
     header.addSubview(headerSeparator)
     
-    headerSeparator.backgroundColor = UIColor(red:0.8, green:0.8, blue:0.8, alpha:1.0)
+    headerSeparator.backgroundColor = UIColor(red:0.40, green:0.42, blue:0.45, alpha:0.05)
     tableView.tableHeaderView = header
     
     addSubview(tableView)
@@ -84,7 +83,7 @@ class TransactionListViewContainer: UIView {
   override func layoutSubviews() {
     tableView.frame = self.bounds
     header.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 200)
-    headerSeparator.frame = CGRect(x: 20, y: header.frame.size.height - 1, width: tableView.bounds.width - 20, height: 1)
+    headerSeparator.frame = CGRect(x: 20, y: header.frame.size.height - 2, width: tableView.bounds.width - 20, height: 2)
   }
   
   private func groupByDate(_ date: Date) -> Date {
@@ -105,12 +104,12 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
   }
   
   func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-    return 40
+    return 60
   }
   
   func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
     let view = UIView(frame: CGRect(x: 0, y: 0, width: frame.width, height: 40))
-    let label = UILabel(frame: CGRect(x: 20, y: 0, width: view.frame.width, height: view.frame.height))
+    let label = UILabel(frame: CGRect(x: 20, y: 20, width: view.frame.width, height: view.frame.height))
     let calendar = Calendar.current
     
     if calendar.isDateInToday(sections[section].header) {
@@ -142,26 +141,6 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
     cell.selectionStyle = .none
     
     return cell;
-  }
-  
-  /// Show incoming transactions green and outgoing transactions gray with minus sign in front of it
-  func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-    let transaction = transactions[indexPath.row];
-    let listViewCell = cell as! TransactionListViewCell
-    
-    switch transaction.status {
-    case "Sent":
-      listViewCell.nativeDisplay.textColor = UIColor(red:0.15, green:0.16, blue:0.18, alpha:1.0)
-      listViewCell.nativeDisplay.text = "- " + transaction.nativeDisplay
-      break
-    case "Self":
-      listViewCell.nativeDisplay.textColor = UIColor(red:0.63, green:0.65, blue:0.67, alpha:1.0)
-      break
-    default:
-      listViewCell.nativeDisplay.textColor = UIColor(red:0.25, green:0.80, blue:0.09, alpha:1.0)
-      break
-    }
-    
   }
   
   /// Play the select animation and propogate the event to JS runtime (so onItemPress property can receive a nativeEvent with rowIndex in it)

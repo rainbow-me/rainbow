@@ -32,16 +32,20 @@
     if (data[@"asset"][@"icon_url"] != [NSNull null]) {
       transaction.coinImage = data[@"asset"][@"icon_url"];
     }
+    transaction.from = data[@"from"];
+    transaction.to = data[@"to"];
     transaction.coinName = data[@"name"];
     transaction.nativeDisplay = data[@"native"][@"display"];
     transaction.balanceDisplay = data[@"balance"][@"display"];
     transaction.tHash = data[@"hash"];
+    transaction.type = data[@"type"];
+    transaction.pending = [[data valueForKey:@"pending"] boolValue];
     transaction.minedAt = [NSDate dateWithTimeIntervalSince1970: [data[@"minedAt"] doubleValue]];
     
     [result addObject:transaction];
   }
   
-//  NSLog(@"%@", json);
+  NSLog(@"%@", json);
   
   return result;
 }

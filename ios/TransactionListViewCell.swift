@@ -17,6 +17,7 @@ class MyBoundedLabel: UILabel {
 class TransactionListViewCell: UITableViewCell {
   
   @IBOutlet weak var transactionType: UILabel!
+  @IBOutlet weak var transactionIcon: UIImageView!
   @IBOutlet weak var coinName: UILabel!
   @IBOutlet weak var balanceDisplay: UILabel!
   @IBOutlet weak var nativeDisplay: UILabel!
@@ -28,6 +29,12 @@ class TransactionListViewCell: UITableViewCell {
     nativeDisplay.text = transaction.nativeDisplay
     balanceDisplay.text = transaction.balanceDisplay
     
+    transactionIcon.image = UIImage.init(named: transaction.status.lowercased())
+    transactionIcon.tintAdjustmentMode = .normal
+    
+    setStatusColor(transaction)
+    setCellColors(transaction)
+    
     if transaction.coinImage != nil {
       coinImage.kf.setImage(with: URL(string: transaction.coinImage!))
     } else if transaction.symbol != nil {
@@ -37,6 +44,50 @@ class TransactionListViewCell: UITableViewCell {
         coinImage.image = generateCoinImage(transaction.symbol)
         coinImage.layer.cornerRadius = coinImage.frame.width * 0.5
       }
+    }
+  }
+  
+  fileprivate func setStatusColor(_ transaction: Transaction) {
+    let transactionColors = UIColor.RainbowTheme.Transactions.self
+    var color = transactionColors.blueGreyMediumLight
+    
+    if transaction.pending {
+      color = transactionColors.primaryBlue
+    } else if transaction.type == "trade" {
+      if transaction.status.lowercased() == "received" {
+        color = transactionColors.dodgerBlue
+      } else if transaction.status.lowercased() == "sent" {
+        color = transactionColors.dodgerBlue
+        transactionIcon.image = UIImage.init(named: "swapped")
+        transactionType.text = "Swapped"
+      }
+    }
+    
+    transactionIcon.tintColor = color
+    transactionType.textColor = color
+  }
+  
+  fileprivate func setCellColors(_ transaction: Transaction) {
+    coinName.alpha = 1.0
+    nativeDisplay.alpha = 1.0
+    
+    if transaction.type == "trade" {
+      if transaction.status.lowercased() == "sent" {
+        coinName.alpha = 0.5
+        nativeDisplay.alpha = 0.5
+      }
+    }
+    
+    switch transaction.status {
+    case "Sent":
+      nativeDisplay.textColor = UIColor.RainbowTheme.Transactions.dark
+      nativeDisplay.text = "- " + transaction.nativeDisplay
+      break
+    case "Received":
+      nativeDisplay.textColor = UIColor.RainbowTheme.Transactions.limeGreen
+      break
+    default:
+      break
     }
   }
   
