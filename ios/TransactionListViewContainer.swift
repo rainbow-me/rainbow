@@ -116,6 +116,8 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
       label.text = "Today"
     } else if calendar.isDateInYesterday(sections[section].header) {
       label.text = "Yesterday"
+    } else if calendar.isDate(sections[section].header, equalTo: Date(), toGranularity: .month) {
+      label.text = "This month"
     } else {
       let dateFormatter = DateFormatter()
       dateFormatter.dateFormat = "MMMM yyyy"
