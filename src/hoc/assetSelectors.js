@@ -1,4 +1,4 @@
-import { get, groupBy, isEmpty, isNil, map, toNumber } from 'lodash';
+import { concat, get, groupBy, isEmpty, isNil, map, toNumber } from 'lodash';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
 import {
@@ -12,13 +12,18 @@ import { isLowerCaseMatch } from '../utils';
 const EMPTY_ARRAY = [];
 
 const assetsSelector = state => state.assets;
+const compoundAssetsSelector = state => state.compoundAssets;
 const nativeCurrencySelector = state => state.nativeCurrency;
 
-const sortAssetsByNativeAmount = (originalAssets, nativeCurrency) => {
-  let assetsNativePrices = originalAssets;
+const sortAssetsByNativeAmount = (
+  originalAssets,
+  compoundAssets,
+  nativeCurrency
+) => {
+  let assetsNativePrices = concat(originalAssets, compoundAssets);
   let total = null;
-  if (!isEmpty(originalAssets)) {
-    const parsedAssets = parseAssetsNative(originalAssets, nativeCurrency);
+  if (!isEmpty(assetsNativePrices)) {
+    const parsedAssets = parseAssetsNative(assetsNativePrices, nativeCurrency);
     assetsNativePrices = parsedAssets.assetsNativePrices;
     total = parsedAssets.total;
   }
@@ -95,6 +100,6 @@ const parseAssetsNative = (assets, nativeCurrency) => {
 };
 
 export const sortAssetsByNativeAmountSelector = createSelector(
-  [assetsSelector, nativeCurrencySelector],
+  [assetsSelector, compoundAssetsSelector, nativeCurrencySelector],
   sortAssetsByNativeAmount
 );
