@@ -4,6 +4,7 @@ import { useIsEmulator } from 'react-native-device-info';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { BubbleSheet } from '../components/bubble-sheet';
 import { Button } from '../components/buttons';
+import { DiscoverSheet } from '../components/discover-sheet';
 import { BackButton, Header } from '../components/header';
 import { Centered } from '../components/layout';
 import { QRCodeScanner } from '../components/qrcode-scanner';
@@ -13,6 +14,7 @@ import {
 } from '../components/walletconnect-list';
 import { colors, position } from '../styles';
 import { isNewValueForObjectPaths } from '../utils';
+import { discoverSheetAvailable } from '../experimentalConfig';
 
 const QRScannerScreen = ({
   enableScanning,
@@ -68,13 +70,17 @@ const QRScannerScreen = ({
           </Button>
         )}
       </Header>
-      <BubbleSheet bottom={insets.bottom ? 21 : 0} onLayout={onSheetLayout}>
-        {walletConnectorsCount ? (
-          <WalletConnectList items={walletConnectorsByDappName} />
-        ) : (
-          <WalletConnectExplainer />
-        )}
-      </BubbleSheet>
+      {discoverSheetAvailable ? (
+        <DiscoverSheet />
+      ) : (
+        <BubbleSheet bottom={insets.bottom ? 21 : 0} onLayout={onSheetLayout}>
+          {walletConnectorsCount ? (
+            <WalletConnectList items={walletConnectorsByDappName} />
+          ) : (
+            <WalletConnectExplainer />
+          )}
+        </BubbleSheet>
+      )}
     </Centered>
   );
 };
