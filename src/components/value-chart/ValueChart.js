@@ -399,9 +399,11 @@ export default class ValueChart extends PureComponent {
       change = 0,
       timePeriod = 0,
       maxValueDistance = 999,
-      minValueDistance = 999;
+      minValueDistance = 999,
+      isLoading = true;
 
     if (this.state.currentData.length > 0) {
+      isLoading = false;
       maxValue = maxBy(this.state.currentData, 'value');
       minValue = minBy(this.state.currentData, 'value');
       change =
@@ -555,6 +557,7 @@ export default class ValueChart extends PureComponent {
         <TimespanSelector
           reloadChart={this.reloadChart}
           direction={change > 0}
+          isLoading={isLoading}
         />
         <Animated.Code
           exec={block([

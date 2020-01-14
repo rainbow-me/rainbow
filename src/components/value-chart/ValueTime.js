@@ -3,7 +3,7 @@ import React from 'react';
 import { Text } from 'react-primitives';
 import { colors, fonts } from '../../styles';
 
-const ValueTime = ({ children, selected }) => (
+const ValueTime = ({ children, selected, marginRight }) => (
   <Text
     style={{
       color: selected ? '#fff' : colors.grey,
@@ -11,6 +11,7 @@ const ValueTime = ({ children, selected }) => (
       fontWeight: fonts.weight.semibold,
       height: 30,
       lineHeight: 30,
+      marginRight,
       overflow: 'hidden',
       textAlign: 'center',
       width: 30,

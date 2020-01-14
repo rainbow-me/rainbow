@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
-import Animated, { Easing } from 'react-native-reanimated';
-import { spring } from 'react-native-redash';
+import Animated from 'react-native-reanimated';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import ValueTime from './ValueTime';
@@ -24,21 +23,21 @@ const interval = {
   YEAR: 3,
 };
 
-const { Clock, cond, neq, set, Value, stopClock } = Animated;
+const { Value } = Animated;
 
 const bottomSpaceWidth = deviceUtils.dimensions.width / (4 * 2);
 
 class TimespanSelector extends React.Component {
   propTypes = {
     direction: PropTypes.bool,
+    isLoading: PropTypes.bool,
     reloadChart: PropTypes.func,
   };
 
   constructor(props) {
     super(props);
 
-    this.positionX = new Value(-bottomSpaceWidth * 3);
-    this.translateX = new Value(-bottomSpaceWidth * 3);
+    this.translateX = new Value(Math.round(-bottomSpaceWidth * 3));
 
     this.state = {
       currentInterval: 0,
@@ -47,7 +46,7 @@ class TimespanSelector extends React.Component {
 
   animateTransition = index => {
     Animated.spring(this.translateX, {
-      toValue: bottomSpaceWidth * (index * 2 - 3),
+      toValue: Math.floor(bottomSpaceWidth * (index * 2 - 3)),
       ...springConfig,
     }).start();
   };
@@ -85,14 +84,16 @@ class TimespanSelector extends React.Component {
   };
 
   render() {
+    let color = 'gray';
+    if (!this.props.isLoading) {
+      color = this.props.direction ? colors.chartGreen : colors.red;
+    }
     return (
       <>
         <Animated.View
           style={[
             {
-              backgroundColor: this.props.direction
-                ? colors.chartGreen
-                : colors.red,
+              backgroundColor: color,
               borderRadius: 15,
               height: 30,
               marginBottom: -30,
@@ -123,7 +124,10 @@ class TimespanSelector extends React.Component {
             </ValueTime>
           </ButtonPressAnimation>
           <ButtonPressAnimation onPress={this.reloadChartToMonth}>
-            <ValueTime selected={this.state.currentInterval === interval.MONTH}>
+            <ValueTime
+              selected={this.state.currentInterval === interval.MONTH}
+              marginRight={1}
+            >
               1M
             </ValueTime>
           </ButtonPressAnimation>
