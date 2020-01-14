@@ -14,6 +14,7 @@ import {
 } from '../components/walletconnect-list';
 import { colors, position } from '../styles';
 import { isNewValueForObjectPaths } from '../utils';
+import { discoverSheetAvailable } from '../experimentalConfig';
 
 const QRScannerScreen = ({
   enableScanning,
@@ -42,8 +43,8 @@ const QRScannerScreen = ({
         {...props}
         contentPositionBottom={sheetHeight}
         contentPositionTop={Header.height}
-        enableCamera={false}
-        enableScanning={false}
+        enableCamera={isFocused}
+        enableScanning={enableScanning}
         isCameraAuthorized={isCameraAuthorized}
         isEmulator={isEmulator}
         onSuccess={onScanSuccess}
@@ -69,7 +70,17 @@ const QRScannerScreen = ({
           </Button>
         )}
       </Header>
-      <DiscoverSheet />
+      {discoverSheetAvailable ? (
+        <DiscoverSheet />
+      ) : (
+        <BubbleSheet bottom={insets.bottom ? 21 : 0} onLayout={onSheetLayout}>
+          {walletConnectorsCount ? (
+            <WalletConnectList items={walletConnectorsByDappName} />
+          ) : (
+            <WalletConnectExplainer />
+          )}
+        </BubbleSheet>
+      )}
     </Centered>
   );
 };

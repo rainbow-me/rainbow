@@ -360,8 +360,6 @@ const Lorem = () => (
   </View>
 );
 export default class DiscoverSheet extends React.Component {
-
-
   renderInner = () => (
     <View style={{ backgroundColor: 'white', paddingTop: 12 }}>
       <View style={styles.header}>
