@@ -178,7 +178,10 @@ export default Component =>
           if (isNew) {
             ownProps.setIsWalletEthZero(true);
           } else if (isImported) {
-            await ownProps.checkEthBalance(walletAddress);
+            try {
+              await ownProps.checkEthBalance(walletAddress);
+              // eslint-disable-next-line no-empty
+            } catch (error) {}
           } else {
             const isWalletEmpty = await getIsWalletEmpty(
               walletAddress,
@@ -189,8 +192,6 @@ export default Component =>
             } else {
               ownProps.setIsWalletEthZero(isWalletEmpty);
             }
-          }
-          if (!(isImported || isNew)) {
             await ownProps.loadAccountData();
           }
           ownProps.onHideSplashScreen();
