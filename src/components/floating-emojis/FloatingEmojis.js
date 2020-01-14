@@ -19,7 +19,6 @@ const FloatingEmojis = ({
   ...props
 }) => {
   const [emojis, setEmojis] = useState(EMPTY_ARRAY);
-  const [touched, setTouched] = useState(false);
 
   const timeout = useRef(undefined);
   useEffect(() => () => timeout.current && clearTimeout(timeout.current), []);
@@ -36,27 +35,18 @@ const FloatingEmojis = ({
       if (timeout.current) clearTimeout(timeout.current);
       timeout.current = setTimeout(clearEmojis, duration * 1.1);
 
-      const newEmoji = {
-        // if a user has smashed the button 7 times, they deserve a 🌈️ rainbow
-        emojiToRender: touched && emojis.length % 7 === 0 ? 'rainbow' : emoji,
-        x: x ? x - getRandomNumber(-20, 20) : `${getRandomNumber(...range)}%`,
-        y: y || 0,
-      };
-
-      setEmojis([...emojis, newEmoji]);
-      if (!touched) setTouched(true);
+      setEmojis(existingEmojis => {
+        const newEmoji = {
+          // if a user has smashed the button 7 times, they deserve a 🌈 rainbow
+          emojiToRender:
+            (existingEmojis.length + 1) % 7 === 0 ? 'rainbow' : emoji,
+          x: x ? x - getRandomNumber(-20, 20) : `${getRandomNumber(...range)}%`,
+          y: y || 0,
+        };
+        return [...existingEmojis, newEmoji];
+      });
     },
-    [
-      clearEmojis,
-      duration,
-      emoji,
-      emojis,
-      range,
-      setEmojis,
-      setTouched,
-      timeout,
-      touched,
-    ]
+    [clearEmojis, duration, emoji, range, timeout]
   );
 
   return (
