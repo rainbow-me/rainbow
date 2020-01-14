@@ -24,7 +24,7 @@ const interval = {
   YEAR: 3,
 };
 
-const { Clock, cond, neq, set, Value } = Animated;
+const { Clock, cond, neq, set, Value, stopClock } = Animated;
 
 const bottomSpaceWidth = deviceUtils.dimensions.width / (4 * 2);
 
@@ -37,7 +37,6 @@ class TimespanSelector extends React.Component {
   constructor(props) {
     super(props);
 
-    this.clock = new Clock();
     this.positionX = new Value(-bottomSpaceWidth * 3);
     this.translateX = new Value(-bottomSpaceWidth * 3);
 
@@ -46,28 +45,43 @@ class TimespanSelector extends React.Component {
     };
   }
 
+  animateTransition = index => {
+    Animated.spring(this.translateX, {
+      toValue: bottomSpaceWidth * (index * 2 - 3),
+      ...springConfig,
+    }).start();
+  };
+
   reloadChartToDay = () => {
-    this.positionX.setValue(-bottomSpaceWidth * 3);
-    this.setState({ currentInterval: interval.DAY });
-    this.props.reloadChart(interval.DAY);
+    this.animateTransition(0);
+    setTimeout(() => {
+      this.setState({ currentInterval: interval.DAY });
+      this.props.reloadChart(interval.DAY);
+    });
   };
 
   reloadChartToWeek = () => {
-    this.positionX.setValue(-bottomSpaceWidth);
-    this.setState({ currentInterval: interval.WEEK });
-    this.props.reloadChart(interval.WEEK);
+    this.animateTransition(1);
+    setTimeout(() => {
+      this.setState({ currentInterval: interval.WEEK });
+      this.props.reloadChart(interval.WEEK);
+    });
   };
 
   reloadChartToMonth = () => {
-    this.positionX.setValue(bottomSpaceWidth);
-    this.setState({ currentInterval: interval.MONTH });
-    this.props.reloadChart(interval.MONTH);
+    this.animateTransition(2);
+    setTimeout(() => {
+      this.setState({ currentInterval: interval.MONTH });
+      this.props.reloadChart(interval.MONTH);
+    });
   };
 
   reloadChartToYear = () => {
-    this.positionX.setValue(bottomSpaceWidth * 3);
-    this.setState({ currentInterval: interval.YEAR });
-    this.props.reloadChart(interval.YEAR);
+    this.animateTransition(3);
+    setTimeout(() => {
+      this.setState({ currentInterval: interval.YEAR });
+      this.props.reloadChart(interval.YEAR);
+    });
   };
 
   render() {
@@ -119,22 +133,6 @@ class TimespanSelector extends React.Component {
             </ValueTime>
           </ButtonPressAnimation>
         </View>
-        <Animated.Code
-          exec={cond(
-            neq(this.positionX, this.translateX),
-            set(
-              this.translateX,
-              spring({
-                clock: this.clock,
-                config: springConfig,
-                duration: 120,
-                easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
-                from: this.translateX,
-                to: this.positionX,
-              })
-            )
-          )}
-        />
       </>
     );
   }
