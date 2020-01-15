@@ -5,3 +5,4 @@
  */
 
 export const discoverSheetAvailable = false;
+export const chartExpandedAvailable = false;

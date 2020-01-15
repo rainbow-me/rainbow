@@ -24,7 +24,8 @@ const TrendIndicatorText = ({ children, direction }) => (
     <Text
       style={{
         color: direction ? colors.chartGreen : colors.red,
-        fontFamily: fonts.family.SFProRounded,
+        // FIXME @osdnk add font
+        // fontFamily: fonts.family.SFProRounded,
         fontWeight: fonts.weight.semibold,
         lineHeight: 17,
         paddingLeft: 2,

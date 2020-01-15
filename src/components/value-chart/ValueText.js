@@ -10,7 +10,8 @@ import { Transition, Transitioning } from 'react-native-reanimated';
 
 const HeadingTextStyles = {
   color: colors.dark,
-  family: 'SFProRounded',
+  // FIXME @osdnk add font
+  //family: 'SFProRounded',
   weight: 'bold',
 };
 
