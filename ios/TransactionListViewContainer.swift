@@ -51,6 +51,21 @@ class TransactionListViewContainer: UIView {
     }
   }
   @objc lazy var onItemPress: RCTBubblingEventBlock = { _ in }
+  @objc lazy var onReceivePress: RCTBubblingEventBlock = { _ in }
+  @objc lazy var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
+  
+  @objc func onReceivePressed(_ sender: UIButton) {
+    self.onReceivePress([:])
+  }
+  @objc func onCopyAddressPressed(_ sender: UIButton) {
+      let rect = sender.convert(sender.frame, to: self)
+      self.onCopyAddressPress([
+        "x": rect.origin.x,
+        "y": rect.origin.y,
+        "width": sender.frame.width,
+        "height": sender.frame.height
+      ])
+  }
   
   fileprivate var sections = [TransactionSection]()
   
@@ -64,10 +79,13 @@ class TransactionListViewContainer: UIView {
     tableView.dataSource = self
     tableView.delegate = self
     tableView.rowHeight = 60
+    tableView.delaysContentTouches = false
     tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
     tableView.register(UINib(nibName: "TransactionListViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListViewCell")
     
     header.addSubview(headerSeparator)
+    header.receive.addTarget(self, action: #selector(onReceivePressed(_:)), for: .touchUpInside)
+    header.copyAddress.addTarget(self, action: #selector(onCopyAddressPressed(_:)), for: .touchUpInside)
     
     headerSeparator.backgroundColor = UIColor(red:0.40, green:0.42, blue:0.45, alpha:0.05)
     tableView.tableHeaderView = header

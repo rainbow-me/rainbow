@@ -98,5 +98,5 @@ export default compose(
     onPressReceive: ({ navigation }) => () =>
       navigation.navigate('ReceiveModal'),
   }),
-  onlyUpdateForKeys(['accountAddress', 'emojiCount', 'showBottomDivider'])
+  onlyUpdateForKeys(['accountAddress', 'emojiCount', 'showBottomDivider']),
 )(ProfileMasthead);
