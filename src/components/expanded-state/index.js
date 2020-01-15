@@ -1,3 +1,4 @@
+export { default as ChartExpandedState } from './ChartExpandedState';
 export { default as FloatingPanel } from './FloatingPanel';
 export { default as FloatingPanels } from './FloatingPanels';
 export { default as InvestmentExpandedState } from './InvestmentExpandedState';
