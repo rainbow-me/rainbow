@@ -10,10 +10,10 @@ import {
   DataProvider,
 } from 'recyclerlistview';
 import { LayoutAnimation } from 'react-native';
+import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { colors } from '../../styles';
 
 const rowHeight = 64;
@@ -206,8 +206,9 @@ class SendAssetList extends React.Component {
       return this.collectiblesRenderItem(data);
     } else if (type === 'COLLECTIBLE_ROW_CLOSED') {
       return this.collectiblesRenderItem(data);
+    } else {
+      return null;
     }
-    return null;
   }
 
   render() {

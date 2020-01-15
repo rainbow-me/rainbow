@@ -714,13 +714,13 @@ class RecyclerAssetList extends Component {
     }
 
     if (
-      ((contentSize.height - layoutMeasurement.height >= offsetY &&
+      (contentSize.height - layoutMeasurement.height >= offsetY &&
         offsetY >= 0) ||
-        (offsetY < reloadHeightOffsetTop &&
-          offsetY > reloadHeightOffsetBottom)) &&
-      this.props.scrollViewTracker
+      (offsetY < reloadHeightOffsetTop && offsetY > reloadHeightOffsetBottom)
     ) {
-      this.props.scrollViewTracker.setValue(offsetY);
+      if (this.props.scrollViewTracker) {
+        this.props.scrollViewTracker.setValue(offsetY);
+      }
     }
   };
 
@@ -793,10 +793,6 @@ class RecyclerAssetList extends Component {
         });
   };
 
-  overrideROwRenderer = (type, data) => {
-    return <AssetListHeader {...data} isSticky />;
-  };
-
   render() {
     const {
       externalScrollView,
@@ -808,10 +804,7 @@ class RecyclerAssetList extends Component {
 
     return (
       <View backgroundColor={colors.white} flex={1} overflow="hidden">
-        <StickyContainer
-          stickyHeaderIndices={headersIndices}
-          overrideRowRenderer={this.overrideROwRenderer}
-        >
+        <StickyContainer stickyHeaderIndices={headersIndices}>
           <RecyclerListView
             dataProvider={dataProvider}
             extendedState={{ headersIndices }}
