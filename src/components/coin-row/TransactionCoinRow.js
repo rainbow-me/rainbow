@@ -91,7 +91,7 @@ export default compose(
       native,
       pending,
       ...props,
-    })
+    }),
   ),
   withNavigation,
   withHandlers({
@@ -139,10 +139,10 @@ export default compose(
               const normalizedHash = hash.replace(/-.*/g, '');
               Linking.openURL(`https://etherscan.io/tx/${normalizedHash}`);
             }
-          }
+          },
         );
       }
     },
   }),
-  onlyUpdateForKeys(['hash', 'native', 'pending'])
+  onlyUpdateForKeys(['hash', 'native', 'pending']),
 )(TransactionCoinRow);

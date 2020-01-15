@@ -172,8 +172,7 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
         cell?.transform = .identity
       })
     })
-    let transaction = transactions[indexPath.row]
-    self.onItemPress(["rowIndex": indexPath.row, "hash": transaction.tHash as String])
+    self.onItemPress(["index": indexPath.row])
     return indexPath
   }
   
