@@ -13,6 +13,9 @@ fileprivate struct TransactionSection {
 }
 
 class TransactionListViewContainer: UIView {
+  @objc lazy var onItemPress: RCTBubblingEventBlock = { _ in }
+  @objc lazy var onReceivePress: RCTBubblingEventBlock = { _ in }
+  @objc lazy var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
   @objc var accountAddress: String? = nil {
     didSet {
       header.accountAddress.text = accountAddress
@@ -50,10 +53,6 @@ class TransactionListViewContainer: UIView {
       tableView.reloadData()
     }
   }
-  @objc lazy var onItemPress: RCTBubblingEventBlock = { _ in }
-  @objc lazy var onReceivePress: RCTBubblingEventBlock = { _ in }
-  @objc lazy var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
-  
   @objc func onReceivePressed(_ sender: UIButton) {
     self.onReceivePress([:])
   }
@@ -166,11 +165,11 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
   /// Play the select animation and propogate the event to JS runtime (so onItemPress property can receive a nativeEvent with rowIndex in it)
   func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
     let cell = tableView.cellForRow(at: indexPath)
-    UIView.animate(withDuration: 0.15, animations: {
+    UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseInOut, animations: {
       cell?.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
     }, completion: { _ in
-      UIView.animate(withDuration: 0.15, animations: {
-        cell?.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+      UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseInOut, animations: {
+        cell?.transform = .identity
       })
     })
     let transaction = transactions[indexPath.row]
@@ -180,14 +179,14 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
   
   func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
     let cell = tableView.cellForRow(at: indexPath)
-    UIView.animate(withDuration: 0.15, animations: {
+    UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseInOut, animations: {
       cell?.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
     })
   }
   
   func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
     let cell = tableView.cellForRow(at: indexPath)
-    UIView.animate(withDuration: 0.15, animations: {
+    UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseInOut, animations: {
       cell?.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
     })
   }
