@@ -361,6 +361,7 @@ const SendSheet = ({
       <KeyboardAvoidingView behavior="padding">
         <Container align="center">
           <SendHeader
+            showAssetList={showAssetList}
             setAppearListener={setAppearListener}
             contacts={contacts}
             isValidAddress={isValidAddress}
