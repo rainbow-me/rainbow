@@ -60,7 +60,7 @@ const SwipeStack = createMaterialTopTabNavigator(
     initialLayout: deviceUtils.dimensions,
     initialRouteName: 'WalletScreen',
     tabBarComponent: null,
-  },
+  }
 );
 
 const MainNavigator = createStackNavigator(
@@ -151,7 +151,7 @@ const MainNavigator = createStackNavigator(
     headerMode: 'none',
     initialRouteName: 'SwipeLayout',
     mode: 'modal',
-  },
+  }
 );
 
 let appearListener = null;
@@ -239,7 +239,7 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
         let subRoute = get(params, 'section.title');
         if (subRoute === 'Settings') subRoute = null;
         return analytics.screen(
-          `${routeName}${subRoute ? `>${subRoute}` : ''}`,
+          `${routeName}${subRoute ? `>${subRoute}` : ''}`
         );
       }
 

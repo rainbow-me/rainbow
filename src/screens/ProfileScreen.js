@@ -8,6 +8,7 @@ import { Icon } from '../components/icons';
 import { ProfileMasthead } from '../components/profile';
 import { colors, position } from '../styles';
 import TransactionList from '../components/transaction-list/TransactionList';
+import { nativeTransactionListAvailable } from '../experimentalConfig';
 
 const ProfileScreen = ({
   accountAddress,
@@ -31,22 +32,25 @@ const ProfileScreen = ({
         onPress={onPressBackButton}
       />
     </Header>
-    <ActivityList
-      accountAddress={accountAddress}
-      header={
-        <ProfileMasthead
-          accountAddress={accountAddress}
-          navigation={navigation}
-          showBottomDivider={!isEmpty}
-        />
-      }
-      isEmpty={isEmpty}
-      nativeCurrency={nativeCurrency}
-      requests={requests}
-      transactions={transactions}
-      transactionsCount={transactionsCount}
-    />
-    <TransactionList navigation={navigation} style={{ flex: 1 }} />
+    {nativeTransactionListAvailable ? (
+      <TransactionList navigation={navigation} style={{ flex: 1 }} />
+    ) : (
+      <ActivityList
+        accountAddress={accountAddress}
+        header={
+          <ProfileMasthead
+            accountAddress={accountAddress}
+            navigation={navigation}
+            showBottomDivider={!isEmpty}
+          />
+        }
+        isEmpty={isEmpty}
+        nativeCurrency={nativeCurrency}
+        requests={requests}
+        transactions={transactions}
+        transactionsCount={transactionsCount}
+      />
+    )}
     {isEmpty && <AddFundsInterstitial />}
   </Page>
 );

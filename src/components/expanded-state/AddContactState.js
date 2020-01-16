@@ -224,5 +224,5 @@ export default compose(
   withAccountData,
   withAccountSettings,
   withContacts,
-  onlyUpdateForKeys(['price', 'subtitle']),
+  onlyUpdateForKeys(['price', 'subtitle'])
 )(AddContactState);

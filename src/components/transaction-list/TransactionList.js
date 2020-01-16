@@ -33,10 +33,10 @@ class TransactionList extends React.PureComponent {
         />
         <FloatingEmojis
           style={{
+            height: 0,
             left: this.props.tapTarget[0] - 24,
             top: this.props.tapTarget[1] - this.props.tapTarget[3],
             width: this.props.tapTarget[2],
-            height: 0,
           }}
           count={this.props.emojiCount}
           distance={130}
@@ -67,8 +67,6 @@ export default compose(
       setEmojiCount(emojiCount + 1);
       Clipboard.setString(accountAddress);
     },
-    onReceivePress: ({ navigation }) => () =>
-      navigation.navigate('ReceiveModal'),
     onItemPress: ({ transactions, contacts, navigation }) => e => {
       const { index } = e.nativeEvent;
       const item = transactions[index];
@@ -117,9 +115,11 @@ export default compose(
               const normalizedHash = hash.replace(/-.*/g, '');
               Linking.openURL(`https://etherscan.io/tx/${normalizedHash}`);
             }
-          },
+          }
         );
       }
     },
-  }),
+    onReceivePress: ({ navigation }) => () =>
+      navigation.navigate('ReceiveModal'),
+  })
 )(TransactionList);
