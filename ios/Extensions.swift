@@ -4,24 +4,30 @@
 //
 //  Created by Alexey Kureev on 13/01/2020.
 //
-
-/// Color theme for Rainbow app
-extension UIColor {
-  struct RainbowTheme {
-    struct Transactions {
-      static let blueGreyMediumLight = UIColor(red:0.48, green:0.50, blue:0.54, alpha:1.0)
-      static let blueGreyDark = UIColor(red:0.24, green:0.26, blue:0.32, alpha:1.0)
-      static let primaryBlue = UIColor(red:0.36, green:0.62, blue:0.96, alpha:1.0)
-      static let dodgerBlue = UIColor(red:0.34, green:0.36, blue:1.00, alpha:1.0)
-      static let dark = UIColor(red:0.15, green:0.16, blue:0.18, alpha:1.0)
-      static let limeGreen = UIColor(red:0.25, green:0.80, blue:0.09, alpha:1.0)
-    }
-  }
-}
-
-/// Load views from NIBs
 extension UIView {
-  class func fromNib<T: UIView>() -> T {
+  static func fromNib<T: UIView>() -> T {
     return Bundle(for: T.self).loadNibNamed(String(describing: T.self), owner: nil, options: nil)![0] as! T
+  }
+  
+  func animateQuickTap(duration: TimeInterval = 0.15, options: UIView.AnimationOptions = .curveEaseInOut, scale: CGFloat = 0.97) {
+    UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
+      self.transform = CGAffineTransform(scaleX: scale, y: scale)
+    }, completion: { _ in
+      UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
+        self.transform = .identity
+      })
+    })
+  }
+  
+  func animateTapStart(duration: TimeInterval = 0.15, options: UIView.AnimationOptions = .curveEaseInOut, scale: CGFloat = 0.97) {
+    UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
+      self.transform = CGAffineTransform(scaleX: scale, y: scale)
+    })
+  }
+  
+  func animateTapEnd(duration: TimeInterval = 0.15, options: UIView.AnimationOptions = .curveEaseInOut, scale: CGFloat = 0.97) {
+    UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
+      self.transform = .identity
+    })
   }
 }

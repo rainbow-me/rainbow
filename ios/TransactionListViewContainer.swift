@@ -57,13 +57,13 @@ class TransactionListViewContainer: UIView {
     self.onReceivePress([:])
   }
   @objc func onCopyAddressPressed(_ sender: UIButton) {
-      let rect = sender.convert(sender.frame, to: self)
-      self.onCopyAddressPress([
-        "x": rect.origin.x,
-        "y": rect.origin.y,
-        "width": sender.frame.width,
-        "height": sender.frame.height
-      ])
+    let rect = sender.convert(sender.frame, to: self)
+    self.onCopyAddressPress([
+      "x": rect.origin.x,
+      "y": rect.origin.y,
+      "width": sender.frame.width,
+      "height": sender.frame.height
+    ])
   }
   
   fileprivate var sections = [TransactionSection]()
@@ -164,29 +164,22 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
   
   /// Play the select animation and propogate the event to JS runtime (so onItemPress property can receive a nativeEvent with rowIndex in it)
   func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-    let cell = tableView.cellForRow(at: indexPath)
-    UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseInOut, animations: {
-      cell?.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
-    }, completion: { _ in
-      UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseInOut, animations: {
-        cell?.transform = .identity
-      })
-    })
-    self.onItemPress(["index": indexPath.row])
+    if let cell = tableView.cellForRow(at: indexPath) {
+      cell.animateQuickTap()
+      self.onItemPress(["index": indexPath.row])
+    }
     return indexPath
   }
   
   func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
-    let cell = tableView.cellForRow(at: indexPath)
-    UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseInOut, animations: {
-      cell?.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
-    })
+    if let cell = tableView.cellForRow(at: indexPath) {
+      cell.animateTapStart()
+    }
   }
   
   func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
-    let cell = tableView.cellForRow(at: indexPath)
-    UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseInOut, animations: {
-      cell?.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
-    })
+    if let cell = tableView.cellForRow(at: indexPath) {
+      cell.animateTapEnd()
+    }
   }
 }
