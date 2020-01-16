@@ -28,14 +28,4 @@ const SendSheetWithData = compose(
   })
 )(SendSheet);
 
-SendSheetWithData.navigationOptions = ({
-  navigation: {
-    state: { params },
-  },
-}) => ({
-  gestureResponseDistance: {
-    vertical: params && params.verticalGestureResponseDistance,
-  },
-});
-
 export default SendSheetWithData;

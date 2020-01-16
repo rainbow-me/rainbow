@@ -1,17 +1,24 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { ActivityList } from '../components/activity-list';
 import AddFundsInterstitial from '../components/AddFundsInterstitial';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { FlexItem, Page } from '../components/layout';
 import { Icon } from '../components/icons';
+import { ProfileMasthead } from '../components/profile';
 import { colors, position } from '../styles';
 import TransactionList from '../components/transaction-list/TransactionList';
 
 const ProfileScreen = ({
+  accountAddress,
   isEmpty,
+  nativeCurrency,
+  navigation,
   onPressBackButton,
   onPressSettings,
-  navigation,
+  requests,
+  transactions,
+  transactionsCount,
 }) => (
   <Page component={FlexItem} style={position.sizeAsObject('100%')}>
     <Header justify="space-between">
@@ -24,6 +31,21 @@ const ProfileScreen = ({
         onPress={onPressBackButton}
       />
     </Header>
+    <ActivityList
+      accountAddress={accountAddress}
+      header={
+        <ProfileMasthead
+          accountAddress={accountAddress}
+          navigation={navigation}
+          showBottomDivider={!isEmpty}
+        />
+      }
+      isEmpty={isEmpty}
+      nativeCurrency={nativeCurrency}
+      requests={requests}
+      transactions={transactions}
+      transactionsCount={transactionsCount}
+    />
     <TransactionList navigation={navigation} style={{ flex: 1 }} />
     {isEmpty && <AddFundsInterstitial />}
   </Page>

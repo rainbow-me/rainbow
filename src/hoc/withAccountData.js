@@ -3,10 +3,11 @@ import { compose, withProps } from 'recompact';
 import { sortAssetsByNativeAmountSelector } from './assetSelectors';
 
 const mapStateToProps = ({
-  data: { assets },
+  data: { assets, compoundAssets },
   settings: { nativeCurrency },
 }) => ({
   assets,
+  compoundAssets,
   nativeCurrency,
 });
 
