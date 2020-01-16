@@ -9,15 +9,13 @@ import { dedupeUniqueTokens } from './uniqueTokens';
  */
 export const parseAccountAssets = (data, uniqueTokens, tokenOverrides) => {
   const dedupedAssets = dedupeUniqueTokens(data, uniqueTokens);
-  let assets = dedupedAssets.map(assetData => {
+  return dedupedAssets.map(assetData => {
     const asset = parseAsset(assetData.asset, tokenOverrides);
     return {
       ...asset,
       balance: convertRawAmountToBalance(assetData.quantity, asset),
     };
   });
-
-  return assets.filter(asset => !!Number(get(asset, 'balance.amount')));
 };
 
 /**
