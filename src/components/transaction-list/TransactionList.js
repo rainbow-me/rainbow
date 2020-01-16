@@ -1,6 +1,6 @@
 import React from 'react';
 import { compose, withHandlers, withState } from 'recompact';
-import { requireNativeComponent, Clipboard, View } from 'react-native';
+import { requireNativeComponent, Clipboard, Linking, View } from 'react-native';
 import { FloatingEmojis } from '../floating-emojis';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import {
