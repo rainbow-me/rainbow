@@ -641,17 +641,21 @@ class ExchangeModal extends Component {
   };
 
   navigateToSelectInputCurrency = () => {
-    this.props.navigation.navigate('CurrencySelectScreen', {
-      onSelectCurrency: this.setInputCurrency,
-      type: CurrencySelectionTypes.input,
-    });
+    InteractionManager.runAfterInteractions(() =>
+      this.props.navigation.navigate('CurrencySelectScreen', {
+        onSelectCurrency: this.setInputCurrency,
+        type: CurrencySelectionTypes.input,
+      })
+    );
   };
 
   navigateToSelectOutputCurrency = () => {
-    this.props.navigation.navigate('CurrencySelectScreen', {
-      onSelectCurrency: this.setOutputCurrency,
-      type: CurrencySelectionTypes.output,
-    });
+    InteractionManager.runAfterInteractions(() =>
+      this.props.navigation.navigate('CurrencySelectScreen', {
+        onSelectCurrency: this.setOutputCurrency,
+        type: CurrencySelectionTypes.output,
+      })
+    );
   };
 
   getMarketPrice = () => {
