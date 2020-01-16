@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 ### Removed
 
 ### Changed
+## [1.2.3-1](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.3-1)
+### Changed
+* Better biometric support
+* Fix import wallet showing old wallet balances
 
 ## [1.2.2-4](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.2-4)
 ### Added
@@ -21,6 +25,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 * Upgraded Firebase
+
+## [1.1.5-2](https://github.com/rainbow-me/rainbow/releases/tag/v1.1.5-2)
+### Changed
+* Bugfix for transaction history with null symbol
 
 ## [1.1.5-2](https://github.com/rainbow-me/rainbow/releases/tag/v1.1.5-2)
 ### Changed

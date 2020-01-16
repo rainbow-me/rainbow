@@ -32,7 +32,7 @@ export const parseAsset = (assetData, tokenOverrides) => {
   if (symbol && symbol.includes('*')) {
     symbol = symbol.replace(/[*]/g, '');
   }
-  const asset = {
+  return {
     address,
     decimals: get(assetData, 'decimals'),
     name,
@@ -41,5 +41,4 @@ export const parseAsset = (assetData, tokenOverrides) => {
     uniqueId: address || name,
     ...tokenOverrides[address],
   };
-  return asset;
 };
