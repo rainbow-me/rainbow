@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -53,7 +53,6 @@
 		9E8553031AD44F52A814F2AB /* SF-Pro-Display-SemiboldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 86B30DBBDA594167BFE4747E /* SF-Pro-Display-SemiboldItalic.otf */; };
 		A4277D9F23CBD1910042BAF4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277D9E23CBD1910042BAF4 /* Extensions.swift */; };
 		A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277DA223CFE85F0042BAF4 /* Theme.swift */; };
-		A4704AFE23C135A100E50E4B /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = A4704AFD23C135A100E50E4B /* Kingfisher */; };
 		A4704B4823C546DA00E50E4B /* TransactionListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4704B4023C546D900E50E4B /* TransactionListViewCell.swift */; };
 		A4704B4923C546DA00E50E4B /* TransactionListViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4704B4123C546D900E50E4B /* TransactionListViewContainer.swift */; };
 		A4704B4A23C546DA00E50E4B /* Transaction.m in Sources */ = {isa = PBXBuildFile; fileRef = A4704B4323C546D900E50E4B /* Transaction.m */; };
@@ -62,6 +61,9 @@
 		A4704B4D23C546DA00E50E4B /* TransactionListViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4704B4623C546D900E50E4B /* TransactionListViewCell.xib */; };
 		A485E61423C8ED6000E5C3D4 /* TransactionListViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A485E61323C8ED6000E5C3D4 /* TransactionListViewHeader.swift */; };
 		A485E61623C8F4A400E5C3D4 /* TransactionListViewHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = A485E61223C8EC4400E5C3D4 /* TransactionListViewHeader.xib */; };
+		A4D04BA923D12F99008C1DEC /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BA823D12F99008C1DEC /* Button.swift */; };
+		A4D04BAC23D12FD5008C1DEC /* ButtonManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */; };
+		A4D04BAE23D13299008C1DEC /* ButtonManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BAD23D13299008C1DEC /* ButtonManager.swift */; };
 		ADBDB9381DFEBF1600ED6528 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		AE47B46652EA48AFB68E7832 /* SF-Pro-Text-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6B0A8BE2484F46980BE9AC /* SF-Pro-Text-Semibold.otf */; };
 		AFCABA638327463693E67FD4 /* SF-Pro-Text-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 715DAAA3174542BAB93807A6 /* SF-Pro-Text-RegularItalic.otf */; };
@@ -171,6 +173,9 @@
 		A4704B4723C546DA00E50E4B /* RCTConvert+TransactionList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+TransactionList.h"; sourceTree = "<group>"; };
 		A485E61223C8EC4400E5C3D4 /* TransactionListViewHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionListViewHeader.xib; sourceTree = "<group>"; };
 		A485E61323C8ED6000E5C3D4 /* TransactionListViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListViewHeader.swift; sourceTree = "<group>"; };
+		A4D04BA823D12F99008C1DEC /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
+		A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ButtonManager.m; sourceTree = "<group>"; };
+		A4D04BAD23D13299008C1DEC /* ButtonManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonManager.swift; sourceTree = "<group>"; };
 		A671DF9861FA8D2C9A6FCB91 /* Pods-Rainbow.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.release.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.release.xcconfig"; sourceTree = "<group>"; };
 		A6EEFE6EA9354456B0DB4520 /* Graphik-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Regular.otf"; path = "../src/assets/fonts/Graphik-Regular.otf"; sourceTree = "<group>"; };
 		A7F0978B24BA4EC283C580D9 /* Graphik-SemiboldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-SemiboldItalic.otf"; path = "../src/assets/fonts/Graphik-SemiboldItalic.otf"; sourceTree = "<group>"; };
@@ -210,7 +215,6 @@
 				0E56AA9A8843EB50FA4BDD4F /* libPods-Rainbow.a in Frameworks */,
 				C72F456C99A646399192517D /* libz.tbd in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* (null) in Frameworks */,
-				A4704AFE23C135A100E50E4B /* Kingfisher in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -237,6 +241,7 @@
 		13B07FAE1A68108700A75B9A /* Rainbow */ = {
 			isa = PBXGroup;
 			children = (
+				A4D04BA723D12F27008C1DEC /* Button */,
 				A4277DA023CBD3590042BAF4 /* Transactions */,
 				3C379D5D20FD1F92009AF81F /* Rainbow.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -348,6 +353,16 @@
 			name = Transactions;
 			sourceTree = "<group>";
 		};
+		A4D04BA723D12F27008C1DEC /* Button */ = {
+			isa = PBXGroup;
+			children = (
+				A4D04BA823D12F99008C1DEC /* Button.swift */,
+				A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */,
+				A4D04BAD23D13299008C1DEC /* ButtonManager.swift */,
+			);
+			name = Button;
+			sourceTree = "<group>";
+		};
 		C640359C0E6575CE0A7ECD73 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -442,7 +457,6 @@
 			);
 			name = Rainbow;
 			packageProductDependencies = (
-				A4704AFD23C135A100E50E4B /* Kingfisher */,
 			);
 			productName = "Hello World";
 			productReference = 13B07F961A680F5B00A75B9A /* Rainbow.app */;
@@ -483,7 +497,6 @@
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			packageReferences = (
-				A4704AFC23C135A100E50E4B /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
@@ -652,6 +665,9 @@
 				A4704B4B23C546DA00E50E4B /* TransactionListViewManager.swift in Sources */,
 				A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */,
 				A4277D9F23CBD1910042BAF4 /* Extensions.swift in Sources */,
+				A4D04BAE23D13299008C1DEC /* ButtonManager.swift in Sources */,
+				A4D04BAC23D12FD5008C1DEC /* ButtonManager.m in Sources */,
+				A4D04BA923D12F99008C1DEC /* Button.swift in Sources */,
 				A4704B4923C546DA00E50E4B /* TransactionListViewContainer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -704,10 +720,7 @@
 				);
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -763,10 +776,7 @@
 				);
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -857,10 +867,7 @@
 				);
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -952,10 +959,7 @@
 				);
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1082,25 +1086,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		A4704AFC23C135A100E50E4B /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.12.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		A4704AFD23C135A100E50E4B /* Kingfisher */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A4704AFC23C135A100E50E4B /* XCRemoteSwiftPackageReference "Kingfisher" */;
-			productName = Kingfisher;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }

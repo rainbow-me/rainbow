@@ -35,9 +35,7 @@ class TransactionListViewCell: UITableViewCell {
     setStatusColor(transaction)
     setCellColors(transaction)
     
-    if transaction.coinImage != nil {
-      coinImage.kf.setImage(with: URL(string: transaction.coinImage!))
-    } else if transaction.symbol != nil {
+    if transaction.symbol != nil {
       if let img = UIImage.init(named: transaction.symbol.lowercased()) {
         coinImage.image = img
       } else {

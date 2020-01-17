@@ -44,9 +44,6 @@
     
     [result addObject:transaction];
   }
-  
-  NSLog(@"%@", json);
-  
   return result;
 }
 

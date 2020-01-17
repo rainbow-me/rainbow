@@ -115,11 +115,11 @@ export default compose(
               const normalizedHash = hash.replace(/-.*/g, '');
               Linking.openURL(`https://etherscan.io/tx/${normalizedHash}`);
             }
-          }
+          },
         );
       }
     },
     onReceivePress: ({ navigation }) => () =>
       navigation.navigate('ReceiveModal'),
-  })
+  }),
 )(TransactionList);

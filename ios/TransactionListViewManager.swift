@@ -5,7 +5,6 @@
 //  Created by Alexey Kureev on 28/12/2019.
 //
 
-
 @objc(TransactionListViewManager)
 class TransactionListViewManager: RCTViewManager {
   

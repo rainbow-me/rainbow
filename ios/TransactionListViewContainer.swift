@@ -141,7 +141,7 @@ extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelega
       label.text = dateFormatter.string(from: sections[section].header)
     }
     
-    label.font = .boldSystemFont(ofSize: 18)
+    label.font = .systemFont(ofSize: 18.0, weight: .semibold)
     view.backgroundColor = .white
     view.addSubview(label)
     

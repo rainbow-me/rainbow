@@ -7,3 +7,4 @@
 export const discoverSheetAvailable = false;
 export const chartExpandedAvailable = false;
 export const nativeTransactionListAvailable = true;
+export const nativeButtonPressAnimationAvailable = true;

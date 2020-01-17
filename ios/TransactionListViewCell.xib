@@ -40,21 +40,21 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="topRight" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" text="balance.display" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1V8-g7-TeW">
-                        <rect key="frame" x="304" y="10" width="226" height="17"/>
+                        <rect key="frame" x="304" y="8" width="226" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" name="SFMono-Regular" family="SF Mono" pointSize="14"/>
                         <color key="textColor" red="0.4823529412" green="0.49803921569999998" blue="0.54117647059999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" layoutMarginsFollowReadableWidth="YES" text="transactionType" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Fc7-NQ-tMz">
-                        <rect key="frame" x="82" y="9" width="206" height="19"/>
+                        <rect key="frame" x="82" y="7" width="206" height="19"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" red="0.63137254899999995" green="0.64705882349999999" blue="0.67450980390000004" alpha="0.70023544520547942" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="baB-yy-Mav">
-                        <rect key="frame" x="67" y="11" width="14" height="14"/>
+                        <rect key="frame" x="67" y="9" width="14" height="14"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     </imageView>
                 </subviews>
@@ -67,7 +67,7 @@
                 <outlet property="transactionIcon" destination="baB-yy-Mav" id="2PN-Qq-urT"/>
                 <outlet property="transactionType" destination="Fc7-NQ-tMz" id="N4q-cv-IX9"/>
             </connections>
-            <point key="canvasLocation" x="60.869565217391312" y="48.883928571428569"/>
+            <point key="canvasLocation" x="894" y="66"/>
         </tableViewCell>
     </objects>
 </document>
