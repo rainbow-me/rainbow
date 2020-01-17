@@ -8,7 +8,7 @@ import { Icon } from '../components/icons';
 import { ProfileMasthead } from '../components/profile';
 import { colors, position } from '../styles';
 import TransactionList from '../components/transaction-list/TransactionList';
-import { nativeTransactionListAvailable } from '../experimentalConfig';
+import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 
 const ProfileScreen = ({
   accountAddress,
