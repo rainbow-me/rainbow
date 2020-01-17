@@ -5,10 +5,6 @@ const NativeButton = requireNativeComponent('Button');
 
 export default class Button extends React.PureComponent {
   render() {
-    return (
-      <NativeButton style={this.props.style}>
-        {this.props.children}
-      </NativeButton>
-    );
+    return <NativeButton {...this.props}>{this.props.children}</NativeButton>;
   }
 }

@@ -6,8 +6,19 @@
 //
 
 class Button : RCTView {
-  override func insertReactSubview(_ subview: UIView!, at atIndex: Int) {
-    print("wtf am I doing here?")
-    super.insertReactSubview(subview, at: atIndex)
+  
+  @objc lazy var onPress: RCTBubblingEventBlock = { _ in }
+  
+  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    animateTapStart()
+  }
+  
+  override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+    animateTapEnd()
+    onPress([:])
+  }
+  
+  override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+    animateTapEnd()
   }
 }

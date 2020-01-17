@@ -73,7 +73,7 @@ class TransactionListView: UIView {
   let headerSeparator = UIView()
   
   override init(frame: CGRect) {
-    super.init(frame: CGRect.zero)
+    super.init(frame: frame)
     
     tableView.dataSource = self
     tableView.delegate = self
