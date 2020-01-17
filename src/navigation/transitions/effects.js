@@ -72,6 +72,37 @@ const expandStyleInterpolator = ({
   };
 };
 
+const savingsStyleInterpolator = ({
+  current: { progress: current },
+  layouts: { screen },
+}) => {
+  const backgroundOpacity = interpolate(current, {
+    extrapolate: Animated.Extrapolate.CLAMP,
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, 0.4, 0.4],
+  });
+
+  const translateY = interpolate(current, {
+    inputRange: [0, 1],
+    outputRange: [screen.height, 0],
+  });
+
+  return {
+    cardStyle: {
+      opacity: 1,
+      shadowColor: colors.dark,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.6,
+      shadowRadius: 25,
+      // Translation for the animation of the current card
+      transform: [{ translateY }],
+    },
+    containerStyle: {
+      backgroundColor: color(37, 41, 46, backgroundOpacity),
+    },
+  };
+};
+
 const sheetStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },
@@ -216,6 +247,15 @@ export const overlayExpandedPreset = {
   gestureDirection: 'vertical',
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: openSpec },
+};
+
+export const savingsPreset = {
+  cardShadowEnabled: true,
+  cardStyleInterpolator: savingsStyleInterpolator,
+  cardTransparent: true,
+  gestureDirection: 'vertical',
+  gestureResponseDistance,
+  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
 export const sheetPreset = {

@@ -6,6 +6,11 @@ export default function useClipboard() {
   const { justBecameActive } = useAppState();
   const [data, updateClipboardData] = useState('');
 
+  const setString = useCallback(content => {
+    Clipboard.setString(content);
+    updateClipboardData(content);
+  }, []);
+
   async function updateClipboard() {
     const content = await Clipboard.getString();
     updateClipboardData(content);
@@ -16,11 +21,6 @@ export default function useClipboard() {
       updateClipboard();
     }
   }, [justBecameActive]);
-
-  const setString = useCallback(content => {
-    Clipboard.setString(content);
-    updateClipboardData(content);
-  }, []);
 
   return {
     clipboard: data,

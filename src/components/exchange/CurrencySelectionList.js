@@ -17,7 +17,7 @@ const NoResultMessage = withNeverRerender(() => (
     paddingBottom={CurrencySelectModalHeader.height + ExchangeSearch.height}
   >
     <Centered>
-      <Emoji lineHeight="none" name="ghost" size="h1" />
+      <Emoji lineHeight="none" name="ghost" size={42} />
     </Centered>
     <Text
       color={colors.alpha(colors.blueGreyDark, 0.4)}
