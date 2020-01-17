@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Svg, { Path } from 'svgs';
+import { Path } from 'svgs';
+import Svg from '../Svg';
 
 const StarIcon = ({ color, ...props }) => (
   <Svg height="18" width="19" viewBox="0 0 18 19" {...props}>

@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Svg, { Path } from 'svgs';
+import { Path } from 'svgs';
 import { colors } from '../../../styles';
+import Svg from '../Svg';
 
 const SendIcon = ({ color, ...props }) => (
   <Svg viewBox="0 0 23 22" {...props}>

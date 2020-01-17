@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Svg, { Path } from 'svgs';
+import { Path } from 'svgs';
 import { colors } from '../../../styles';
+import Svg from '../Svg';
 
 const TouchIdIcon = ({ color, size, ...props }) => (
   <Svg height={size} width={size} viewBox="0 0 34 34" {...props}>

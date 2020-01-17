@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Svg, { Path } from 'svgs';
+import { Path } from 'svgs';
 import { colors } from '../../../styles';
+import Svg from '../Svg';
 
 const CompassIcon = ({ color, size, ...props }) => (
   <Svg height={size || 24} width={size || 24} viewBox="0 0 24 24" {...props}>
