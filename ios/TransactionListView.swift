@@ -1,5 +1,5 @@
 //
-//  TransactionListViewController.swift
+//  TransactionListView.swift
 //  Rainbow
 //
 //  Created by Alexey Kureev on 28/12/2019.
@@ -12,7 +12,7 @@ fileprivate struct TransactionSection {
   var transactions: [Transaction]
 }
 
-class TransactionListViewContainer: UIView {
+class TransactionListView: UIView {
   @objc lazy var onItemPress: RCTBubblingEventBlock = { _ in }
   @objc lazy var onReceivePress: RCTBubblingEventBlock = { _ in }
   @objc lazy var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
@@ -110,7 +110,7 @@ class TransactionListViewContainer: UIView {
   }
 }
 
-extension TransactionListViewContainer: UITableViewDataSource, UITableViewDelegate {
+extension TransactionListView: UITableViewDataSource, UITableViewDelegate {
   func numberOfSections(in tableView: UITableView) -> Int {
     return sections.count
   }

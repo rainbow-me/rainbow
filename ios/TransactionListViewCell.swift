@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Kingfisher
 
 class MyBoundedLabel: UILabel {
   override func drawText(in rect: CGRect) {

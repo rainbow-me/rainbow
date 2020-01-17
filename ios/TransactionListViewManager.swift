@@ -9,10 +9,6 @@
 class TransactionListViewManager: RCTViewManager {
   
   override func view() -> UIView! {
-    return TransactionListViewContainer()
-  }
-  
-  override static func requiresMainQueueSetup() -> Bool {
-    return true
+    return TransactionListView()
   }
 }
