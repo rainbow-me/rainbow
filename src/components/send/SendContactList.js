@@ -67,16 +67,17 @@ class SendContactList extends Component {
     );
   }
 
-  componentWillReceiveProps = props => {
+  static getDerivedStateFromProps(props, state) {
     const newAssets = filterList(
       props.allAssets,
       props.currentInput,
       'nickname'
     );
-    if (newAssets !== this.state.contacts) {
-      this.setState({ contacts: newAssets });
+    if (newAssets !== state.contacts) {
+      return { ...state, contacts: newAssets };
     }
-  };
+    return state;
+  }
 
   shouldComponentUpdate = () => {
     if (position < 0) {
