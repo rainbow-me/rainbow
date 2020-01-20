@@ -18,7 +18,7 @@ import BottomSendButtons from '../value-chart/BottomSendButtons';
 import { colors } from '../../styles';
 import Divider from '../Divider';
 import { Icon } from '../icons';
-// import { data1, data2, data3, data4 } from '../value-chart/data';
+import { data1, data2, data3, data4 } from '../value-chart/data';
 
 const HandleIcon = styled(Icon).attrs({
   color: '#C4C6CB',
@@ -52,6 +52,7 @@ const Container = styled.View`
 `;
 
 const TokenExpandedState = ({ onPressSend, onPressSwap, selectedAsset }) => {
+  const data = [data1, data2, data3, data4];
   return (
     <Container>
       <HandleIcon />
@@ -65,34 +66,36 @@ const TokenExpandedState = ({ onPressSend, onPressSwap, selectedAsset }) => {
       <Divider />
       <ChartContainer>
         <ValueChart
+          // DONE:
+          mode="detailed" // "gesture-managed" / "detailed" / "simplified"
+          enableSelect // enable checking value in touched point of chart
+
+          // TODO:
+          sectionsRender="switch-between" // "switch-between" (for switch between there must be fixed amount of points in every section, if you want to lower amount is points to some certain value specify amountOfPoints prop) / "one-chart"
+          amountOfPathPoints={288} // amount of points for switch between charts
+          generateImportantPoints // you can specify if you want to select important points in data or do it automatically inside chart
+          data={data}
+          // data={[
+          //   {
+          //     name: '1W',
+          //     segments: [
+          //       {
+          //         color: 'red',
+          //         line: 'dotted',
+          //         points: [
+          //           {
+          //             important: true,
+          //             timestamp: 0,
+          //             value: 0,
+          //           },
+          //         ],
+          //         renderStartSeparator: () => null, // or renderEndSeparator
+          //       },
+          //     ],
+          //   },
+          // ]}
           // onValueUpdate={onValueUpdate}
-          data={[
-            {
-              name: '1W',
-              segments: [
-                {
-                  color: 'red',
-                  line: 'dotted',
-                  points: [
-                    {
-                      important: true,
-                      x: 0,
-                      y: 0,
-                    },
-                  ],
-                  renderStartSeparator: () => null, // or renderEndSeparator
-                },
-              ],
-            },
-          ]}
-          currentDataSource={0}
-
-          mode="gesture-managed"
-          // mode="detailed"
-          // mode="simplified"
-
-          switchBetweenSections
-          generateImportantPoints
+          // currentDataSource={0}
         />
       </ChartContainer>
     </Container>

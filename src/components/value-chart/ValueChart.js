@@ -144,6 +144,8 @@ const pickImportantPoints = array => {
 
 export default class ValueChart extends PureComponent {
   propTypes = {
+    data: PropTypes.array,
+    enableSelect: PropTypes.bool,
     mode: PropTypes.oneOf(['gesture-managed', 'detailed', 'simplified']),
   };
 
@@ -337,54 +339,35 @@ export default class ValueChart extends PureComponent {
       }
     }
 
+    let chartNode = (multiplyNode, index, chartIndex) =>
+      multiply(
+        multiplyNode,
+        add(
+          splinePoints[chartIndex][index].y1,
+          multiply(
+            this.value,
+            sub(
+              splinePoints[chartIndex][index].y2,
+              splinePoints[chartIndex][index].y1
+            )
+          )
+        )
+      );
+
+    const allNodes = index =>
+      this.props.data.map((value, i) => {
+        return chartNode(this.chartsMulti[i], index, i);
+      });
+
+    console.log(allNodes(2));
+
     const animatedPath = concat(
       'M -20 0',
       ...splinePoints[0].flatMap(({ x }, index) => [
         'L',
         x,
         ' ',
-        add(
-          multiply(
-            this.chartDay,
-            add(
-              splinePoints[0][index].y1,
-              multiply(
-                this.value,
-                sub(splinePoints[0][index].y2, splinePoints[0][index].y1)
-              )
-            )
-          ),
-          multiply(
-            this.chartWeek,
-            add(
-              splinePoints[1][index].y1,
-              multiply(
-                this.value,
-                sub(splinePoints[1][index].y2, splinePoints[1][index].y1)
-              )
-            )
-          ),
-          multiply(
-            this.chartMonth,
-            add(
-              splinePoints[2][index].y1,
-              multiply(
-                this.value,
-                sub(splinePoints[2][index].y2, splinePoints[2][index].y1)
-              )
-            )
-          ),
-          multiply(
-            this.chartYear,
-            add(
-              splinePoints[3][index].y1,
-              multiply(
-                this.value,
-                sub(splinePoints[3][index].y2, splinePoints[3][index].y1)
-              )
-            )
-          )
-        ),
+        add(...allNodes(index)),
       ])
     );
 
@@ -446,7 +429,7 @@ export default class ValueChart extends PureComponent {
           }}
         />
         <GestureWrapper
-          enabled={this.props.mode === 'gesture-managed'}
+          enabled={this.props.enableSelect}
           onTapGestureEvent={this.onTapGestureEvent}
           onPanGestureEvent={this.onPanGestureEvent}
           onHandlerStateChange={this.onHandlerStateChange}
