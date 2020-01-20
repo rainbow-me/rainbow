@@ -16,6 +16,10 @@ class TransactionListView: UIView {
   @objc lazy var onItemPress: RCTBubblingEventBlock = { _ in }
   @objc lazy var onReceivePress: RCTBubblingEventBlock = { _ in }
   @objc lazy var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
+  @objc var duration: TimeInterval = 0.15
+  @objc var scaleTo: CGFloat = 0.97
+  @objc var enableHapticFeedback: Bool = true
+  @objc var hapticType: String = "selection"
   @objc var accountAddress: String? = nil {
     didSet {
       header.accountAddress.text = accountAddress
@@ -164,10 +168,7 @@ extension TransactionListView: UITableViewDataSource, UITableViewDelegate {
   
   /// Play the select animation and propogate the event to JS runtime (so onItemPress property can receive a nativeEvent with rowIndex in it)
   func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-    if let cell = tableView.cellForRow(at: indexPath) {
-      cell.animateQuickTap()
-      self.onItemPress(["index": indexPath.row])
-    }
+    onItemPress(["index": indexPath.row])
     return indexPath
   }
   
@@ -179,7 +180,7 @@ extension TransactionListView: UITableViewDataSource, UITableViewDelegate {
   
   func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
     if let cell = tableView.cellForRow(at: indexPath) {
-      cell.animateTapEnd()
+      cell.animateTapEnd(duration: duration, options: [], scale: scaleTo)
     }
   }
 }

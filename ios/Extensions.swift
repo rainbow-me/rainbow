@@ -46,12 +46,8 @@ extension UIView {
     options: UIView.AnimationOptions = .curveEaseInOut,
     scale: CGFloat = 0.97
   ) {
-    UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
+    UIView.animate(withDuration: duration, delay: 0, options: [options, .autoreverse], animations: {
       self.transform = CGAffineTransform(scaleX: scale, y: scale)
-    }, completion: { _ in
-      UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
-        self.transform = .identity
-      })
     })
   }
   
@@ -70,7 +66,7 @@ extension UIView {
   }
   
   func animateTapEnd(duration: TimeInterval = 0.15, options: UIView.AnimationOptions = .curveEaseInOut, scale: CGFloat = 0.97) {
-    UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
+    UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: 0.3, initialSpringVelocity: 10.0, options: options, animations: {
       self.transform = .identity
     })
   }

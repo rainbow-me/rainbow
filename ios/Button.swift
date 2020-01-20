@@ -16,6 +16,7 @@ class Button : RCTView {
     }
   }
   @objc var duration: TimeInterval = 0.15
+  @objc var scaleTo: CGFloat = 0.97
   @objc var enableHapticFeedback: Bool = true
   @objc var hapticType: String = "selection"
   @objc var minLongPressDuration: TimeInterval = 0.5 {
@@ -25,7 +26,6 @@ class Button : RCTView {
       }
     }
   }
-  @objc var scaleTo: CGFloat = 0.97
   
   @objc func onLongPressHandler(_ sender: UIGestureRecognizer? = nil) {
     if sender != nil {
