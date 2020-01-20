@@ -7,7 +7,6 @@ import Animated, { Easing } from 'react-native-reanimated';
 import Spline from 'cubic-spline';
 import { contains, timing, delay } from 'react-native-redash';
 import { View } from 'react-native';
-import { data1, data2, data3, data4 } from './data';
 import ValueText from './ValueText';
 import { deviceUtils } from '../../utils';
 import { colors } from '../../styles';
@@ -16,7 +15,6 @@ import TimespanSelector from './TimespanSelector';
 import ActivityIndicator from '../ActivityIndicator';
 import GestureWrapper from './GestureWrapper';
 
-const amountOfPathPoints = 288;
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 const {
@@ -96,13 +94,6 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
   }
 };
 
-const usableData = [
-  simplifyChartData(data1, amountOfPathPoints),
-  simplifyChartData(data4, amountOfPathPoints),
-  simplifyChartData(data3, amountOfPathPoints),
-  simplifyChartData(data2, amountOfPathPoints),
-];
-
 const { BEGAN, ACTIVE, CANCELLED, END, FAILED, UNDETERMINED } = State;
 
 const width = deviceUtils.dimensions.width;
@@ -147,14 +138,20 @@ export default class ValueChart extends PureComponent {
     data: PropTypes.array,
     enableSelect: PropTypes.bool,
     mode: PropTypes.oneOf(['gesture-managed', 'detailed', 'simplified']),
+    sectionsRender: PropTypes.oneOf(['switch-between', 'one-chart']),
   };
 
   constructor(props) {
     super(props);
 
     this.state = {
-      allData: usableData,
-      currentData: usableData[0],
+      allData: this.props.data.map(data =>
+        simplifyChartData(data, this.props.amountOfPathPoints)
+      ),
+      currentData: simplifyChartData(
+        this.props.data[0],
+        this.props.amountOfPathPoints
+      ),
       hideLoadingBar: false,
       isLoading: false,
       shouldRenderChart: true,
@@ -272,7 +269,7 @@ export default class ValueChart extends PureComponent {
     if (currentInterval !== this.currentInterval) {
       let data = this.state.allData;
       if (isInitial) {
-        data[currentInterval] = usableData[currentInterval];
+        data[currentInterval] = this.state.allData[currentInterval];
         await this.setState({
           isLoading: true,
         });
@@ -290,14 +287,15 @@ export default class ValueChart extends PureComponent {
         ).start();
         this.currentInterval = currentInterval;
         this._text.updateValue(
-          usableData[currentInterval][usableData[currentInterval].length - 1]
-            .value
+          this.state.allData[currentInterval][
+            this.state.allData[currentInterval].length - 1
+          ].value
         );
 
-        await this.setState({
-          currentData: usableData[currentInterval],
+        await this.setState(prevState => ({
+          currentData: prevState.allData[currentInterval],
           isLoading: false,
-        });
+        }));
       });
     }
   };
@@ -331,7 +329,7 @@ export default class ValueChart extends PureComponent {
             .filter(Boolean)
         );
       } else {
-        let emptyArray = new Array(amountOfPathPoints);
+        let emptyArray = new Array(this.props.amountOfPathPoints);
         for (let j = 0; j < emptyArray.length; j++) {
           emptyArray[j] = { x: 0, y1: 0, y2: 0 };
         }
@@ -382,6 +380,7 @@ export default class ValueChart extends PureComponent {
   };
 
   render() {
+    const { amountOfPathPoints } = this.props;
     let maxValue = 0,
       minValue = 0,
       change = 0,
