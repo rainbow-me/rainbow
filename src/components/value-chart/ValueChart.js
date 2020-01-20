@@ -1,11 +1,8 @@
+import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { maxBy, minBy } from 'lodash';
 import Svg, { Path } from 'react-native-svg';
-import {
-  PanGestureHandler,
-  State,
-  TapGestureHandler,
-} from 'react-native-gesture-handler';
+import { State } from 'react-native-gesture-handler';
 import Animated, { Easing } from 'react-native-reanimated';
 import Spline from 'cubic-spline';
 import { contains, timing, delay } from 'react-native-redash';
@@ -17,6 +14,7 @@ import { colors } from '../../styles';
 import TimestampText from './TimestampText';
 import TimespanSelector from './TimespanSelector';
 import ActivityIndicator from '../ActivityIndicator';
+import GestureWrapper from './GestureWrapper';
 
 const amountOfPathPoints = 288;
 const AnimatedPath = Animated.createAnimatedComponent(Path);
@@ -145,6 +143,10 @@ const pickImportantPoints = array => {
 };
 
 export default class ValueChart extends PureComponent {
+  propTypes = {
+    mode: PropTypes.oneOf(['gesture-managed', 'detailed', 'simplified']),
+  };
+
   constructor(props) {
     super(props);
 
@@ -165,13 +167,16 @@ export default class ValueChart extends PureComponent {
     this.gestureState = new Value(UNDETERMINED);
     this.panGestureState = new Value(UNDETERMINED);
     this.handle = undefined;
-    this.value = new Value(1);
+    this.value = new Value(this.props.mode === 'detailed' ? 0 : 1);
     this.opacity = new Value(0);
     this.shouldSpring = new Value(0);
     this.chartDay = new Value(1);
     this.chartWeek = new Value(0);
     this.chartMonth = new Value(0);
     this.chartYear = new Value(0);
+    this.shouldReactToGestures = new Value(
+      this.props.mode === 'gesture-managed' ? 1 : 0
+    );
 
     this.currentInterval = 1;
 
@@ -440,105 +445,97 @@ export default class ValueChart extends PureComponent {
             this._text = component;
           }}
         />
-        <TapGestureHandler
-          onHandlerStateChange={this.onTapGestureEvent}
-          maxDeltaY={50}
+        <GestureWrapper
+          enabled={this.props.mode === 'gesture-managed'}
+          onTapGestureEvent={this.onTapGestureEvent}
+          onPanGestureEvent={this.onPanGestureEvent}
+          onHandlerStateChange={this.onHandlerStateChange}
         >
-          <Animated.View>
-            <PanGestureHandler
-              minDist={1}
-              shouldActivateOnStart
-              onGestureEvent={this.onPanGestureEvent}
-              onHandlerStateChange={this.onHandlerStateChange}
-              failOffsetY={4}
+          <Animated.View
+            style={{
+              justifyContent: 'flex-start',
+            }}
+          >
+            <Animated.View
+              style={{
+                opacity: this.loadingValue,
+              }}
             >
-              <Animated.View
+              <TimestampText
+                style={{ transform: [{ translateX: maxValueDistance }] }}
+              >
+                ${Number(maxValue.value).toFixed(2)}
+              </TimestampText>
+            </Animated.View>
+            <View style={{ flexDirection: 'row' }}>
+              <View
                 style={{
-                  justifyContent: 'flex-start',
+                  height: 200,
+                  width,
                 }}
               >
-                <Animated.View
-                  style={{
-                    opacity: this.loadingValue,
-                  }}
+                <Svg
+                  height={width}
+                  width={width + 2}
+                  viewBox={`2 ${height +
+                    chartPadding -
+                    width} ${width} ${width}`}
+                  preserveAspectRatio="none"
+                  style={flipY}
                 >
-                  <TimestampText
-                    style={{ transform: [{ translateX: maxValueDistance }] }}
-                  >
-                    ${Number(maxValue.value).toFixed(2)}
-                  </TimestampText>
-                </Animated.View>
-                <View style={{ flexDirection: 'row' }}>
-                  <View
-                    style={{
-                      height: 200,
-                      width,
-                    }}
-                  >
-                    <Svg
-                      height={width}
-                      width={width + 2}
-                      viewBox={`2 ${height +
-                        chartPadding -
-                        width} ${width} ${width}`}
-                      preserveAspectRatio="none"
-                      style={flipY}
-                    >
-                      <AnimatedPath
-                        id="main-path"
-                        fill="none"
-                        stroke={change > 0 ? colors.chartGreen : colors.red}
-                        strokeWidth={add(
-                          strokeWidth,
-                          multiply(this.value, thickStrokeWidthDifference)
-                        )}
-                        strokeLinejoin="round"
-                        strokeLinecap="round"
-                        d={this.animatedPath}
-                      />
-                    </Svg>
-                  </View>
-                  <Animated.View
-                    style={[
-                      {
-                        backgroundColor:
-                          change > 0 ? colors.chartGreen : colors.red,
-                        borderRadius: 2,
-                        height: 180,
-                        position: 'absolute',
-                        top: 10,
-                        width: 2,
-                        zIndex: 10,
-                      },
-                      {
-                        opacity: this.opacity,
-                        transform: [
-                          {
-                            translateX: Animated.add(
-                              this.touchX,
-                              new Animated.Value(-1.5)
-                            ),
-                          },
-                        ],
-                      },
-                    ]}
+                  <AnimatedPath
+                    id="main-path"
+                    fill="none"
+                    stroke={change > 0 ? colors.chartGreen : colors.red}
+                    strokeWidth={add(
+                      strokeWidth,
+                      multiply(this.value, thickStrokeWidthDifference)
+                    )}
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                    d={this.animatedPath}
                   />
-                </View>
-                <Animated.View
-                  style={{
-                    opacity: this.loadingValue,
-                  }}
-                >
-                  <TimestampText
-                    style={{ transform: [{ translateX: minValueDistance }] }}
-                  >
-                    ${Number(minValue.value).toFixed(2)}
-                  </TimestampText>
-                </Animated.View>
-              </Animated.View>
-            </PanGestureHandler>
+                </Svg>
+              </View>
+              <Animated.View
+                style={[
+                  {
+                    backgroundColor:
+                      change > 0 ? colors.chartGreen : colors.red,
+                    borderRadius: 2,
+                    height: 180,
+                    position: 'absolute',
+                    top: 10,
+                    width: 2,
+                    zIndex: 10,
+                  },
+                  {
+                    opacity: this.opacity,
+                    transform: [
+                      {
+                        translateX: Animated.add(
+                          this.touchX,
+                          new Animated.Value(-1.5)
+                        ),
+                      },
+                    ],
+                  },
+                ]}
+              />
+            </View>
+            <Animated.View
+              style={{
+                opacity: this.loadingValue,
+              }}
+            >
+              <TimestampText
+                style={{ transform: [{ translateX: minValueDistance }] }}
+              >
+                ${Number(minValue.value).toFixed(2)}
+              </TimestampText>
+            </Animated.View>
           </Animated.View>
-        </TapGestureHandler>
+        </GestureWrapper>
         {this.state.isLoading && (
           <View
             style={{
@@ -604,38 +601,40 @@ export default class ValueChart extends PureComponent {
                 })
               )
             ),
-            cond(
-              and(greaterThan(this.value, 0), eq(this.shouldSpring, 1)),
-              block([
-                stopClock(this.clockReversed),
-                set(
-                  this.value,
-                  timing({
-                    clock: this.clock,
-                    duration: 350,
-                    easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
-                    from: this.value,
-                    to: 0,
-                  })
-                ),
-              ])
-            ),
-            cond(
-              and(lessThan(this.value, 1), eq(this.shouldSpring, 0)),
-              block([
-                stopClock(this.clock),
-                set(
-                  this.value,
-                  timing({
-                    clock: this.clockReversed,
-                    duration: 350,
-                    easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
-                    from: this.value,
-                    to: 1,
-                  })
-                ),
-              ])
-            ),
+            cond(this.shouldReactToGestures, [
+              cond(
+                and(greaterThan(this.value, 0), eq(this.shouldSpring, 1)),
+                block([
+                  stopClock(this.clockReversed),
+                  set(
+                    this.value,
+                    timing({
+                      clock: this.clock,
+                      duration: 350,
+                      easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
+                      from: this.value,
+                      to: 0,
+                    })
+                  ),
+                ])
+              ),
+              cond(
+                and(lessThan(this.value, 1), eq(this.shouldSpring, 0)),
+                block([
+                  stopClock(this.clock),
+                  set(
+                    this.value,
+                    timing({
+                      clock: this.clockReversed,
+                      duration: 350,
+                      easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
+                      from: this.value,
+                      to: 1,
+                    })
+                  ),
+                ])
+              ),
+            ]),
             cond(
               and(lessThan(this.opacity, 1), eq(this.shouldSpring, 1)),
               block([

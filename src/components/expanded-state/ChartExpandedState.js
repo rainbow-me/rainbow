@@ -18,6 +18,7 @@ import BottomSendButtons from '../value-chart/BottomSendButtons';
 import { colors } from '../../styles';
 import Divider from '../Divider';
 import { Icon } from '../icons';
+// import { data1, data2, data3, data4 } from '../value-chart/data';
 
 const HandleIcon = styled(Icon).attrs({
   color: '#C4C6CB',
@@ -50,25 +51,53 @@ const Container = styled.View`
   align-items: center;
 `;
 
-const TokenExpandedState = ({
-  onPressSend,
-  onPressSwap,
-  change,
-  changeDirection,
-  selectedAsset,
-}) => (
-  <Container>
-    <HandleIcon />
-    <BottomContainer>
-      <BalanceCoinRow {...selectedAsset} />
-      <BottomSendButtons onPressSend={onPressSend} onPressSwap={onPressSwap} />
-    </BottomContainer>
-    <Divider />
-    <ChartContainer>
-      <ValueChart change={change} changeDirection={changeDirection} />
-    </ChartContainer>
-  </Container>
-);
+const TokenExpandedState = ({ onPressSend, onPressSwap, selectedAsset }) => {
+  return (
+    <Container>
+      <HandleIcon />
+      <BottomContainer>
+        <BalanceCoinRow {...selectedAsset} />
+        <BottomSendButtons
+          onPressSend={onPressSend}
+          onPressSwap={onPressSwap}
+        />
+      </BottomContainer>
+      <Divider />
+      <ChartContainer>
+        <ValueChart
+          // onValueUpdate={onValueUpdate}
+          data={[
+            {
+              name: '1W',
+              segments: [
+                {
+                  color: 'red',
+                  line: 'dotted',
+                  points: [
+                    {
+                      important: true,
+                      x: 0,
+                      y: 0,
+                    },
+                  ],
+                  renderStartSeparator: () => null, // or renderEndSeparator
+                },
+              ],
+            },
+          ]}
+          currentDataSource={0}
+
+          mode="gesture-managed"
+          // mode="detailed"
+          // mode="simplified"
+
+          switchBetweenSections
+          generateImportantPoints
+        />
+      </ChartContainer>
+    </Container>
+  );
+};
 
 TokenExpandedState.propTypes = {
   change: PropTypes.string,
