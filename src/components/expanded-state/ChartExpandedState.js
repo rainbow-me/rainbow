@@ -18,15 +18,6 @@ import BottomSendButtons from '../value-chart/BottomSendButtons';
 import { colors } from '../../styles';
 import Divider from '../Divider';
 import { Icon } from '../icons';
-import {
-  data1,
-  data2,
-  data3,
-  data4,
-  dataColored1,
-  dataColored2,
-  dataColored3,
-} from '../value-chart/data';
 
 const HandleIcon = styled(Icon).attrs({
   color: '#C4C6CB',
@@ -60,8 +51,6 @@ const Container = styled.View`
 `;
 
 const TokenExpandedState = ({ onPressSend, onPressSwap, selectedAsset }) => {
-  const dataSwitching = [data1, data2, data3, data4];
-  const dataColored = [dataColored1, dataColored2, dataColored3];
   return (
     <Container>
       <HandleIcon />
@@ -74,42 +63,7 @@ const TokenExpandedState = ({ onPressSend, onPressSwap, selectedAsset }) => {
       </BottomContainer>
       <Divider />
       <ChartContainer>
-        <ValueChart
-          // DONE:
-          mode="detailed" // "gesture-managed" / "detailed" / "simplified"
-          enableSelect // enable checking value in touched point of chart
-
-          // INPROGRESS:
-          amountOfPathPoints={50} // amount of points for switch between charts
-          sectionsRender="switch-between" // "switch-between" (for switch between there must be fixed amount of points in every section, if you want to lower amount is points to some certain value specify amountOfPoints prop) / "one-chart"
-          // data={dataSwitching}
-          data={dataColored}
-          // data={[
-          //   {
-          //     name: '1W',
-          //     segments: [
-          //       {
-          //         color: 'red',
-          //         line: 'dotted',
-          //         points: [
-          //           {
-          //             important: true,
-          //             timestamp: 0,
-          //             value: 0,
-          //           },
-          //         ],
-          //         renderStartSeparator: () => null, // or renderEndSeparator
-          //       },
-          //     ],
-          //   },
-          // ]}
-
-
-          // TODO:
-          generateImportantPoints // you can specify if you want to select important points in data or do it automatically inside chart
-          // onValueUpdate={onValueUpdate}
-          // currentDataSource={0}
-        />
+        <ValueChart />
       </ChartContainer>
     </Container>
   );
