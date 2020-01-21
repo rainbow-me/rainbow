@@ -7,9 +7,8 @@ import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import Divider from '../Divider';
-import { Centered } from '../layout';
+import { Centered, InnerBorder } from '../layout';
 import { Monospace, TruncatedText } from '../text';
-import InnerBorder from '../InnerBorder';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 

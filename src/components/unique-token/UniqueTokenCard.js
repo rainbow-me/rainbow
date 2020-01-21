@@ -6,8 +6,8 @@ import { compose, onlyUpdateForKeys, withHandlers, withProps } from 'recompact';
 import { withFabSendAction } from '../../hoc';
 import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
+import { InnerBorder } from '../layout';
 import Highlight from '../Highlight';
-import InnerBorder from '../InnerBorder';
 import UniqueTokenImage from './UniqueTokenImage';
 
 const UniqueTokenCardBorderRadius = 18;

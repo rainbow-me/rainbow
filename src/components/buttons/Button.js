@@ -4,8 +4,7 @@ import React from 'react';
 import styled from 'styled-components/primitives';
 import { colors, padding } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
-import InnerBorder from '../InnerBorder';
-import { Centered } from '../layout';
+import { Centered, InnerBorder } from '../layout';
 import { Text } from '../text';
 
 const ButtonSizeTypes = {

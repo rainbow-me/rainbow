@@ -7,8 +7,7 @@ import { colors, margin, padding, position } from '../../styles';
 import { isNewValueForObjectPaths } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
-import InnerBorder from '../InnerBorder';
-import { Row } from '../layout';
+import { InnerBorder, Row } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import { Text } from '../text';
 

@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-primitives';
-import { onlyUpdateForPropTypes } from 'recompact';
-import { colors, position } from '../styles';
+import { colors, position } from '../../styles';
 
 const InnerBorder = ({ color, opacity, radius, width, ...props }) => (
   <View
@@ -32,4 +31,4 @@ InnerBorder.defaultProps = {
   width: 0.5,
 };
 
-export default onlyUpdateForPropTypes(InnerBorder);
+export default React.memo(InnerBorder);

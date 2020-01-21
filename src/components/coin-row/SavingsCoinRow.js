@@ -1,11 +1,10 @@
 import { get } from 'lodash'
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
-import { colors, padding } from '../../styles';
-import { isNewValueForObjectPaths } from '../../utils';
+import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
-import { Centered, FlexItem, Row, RowWithMargins } from '../layout';
+import { FlexItem, Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import BalanceText from './BalanceText';
 import CoinName from './CoinName';
@@ -50,20 +49,17 @@ TopRow.propTypes = {
 };
 
 const SavingsCoinRow = ({ item, onPress, onPressSend, ...props }) => (
+  <ButtonPressAnimation onPress={onPress} scaleTo={1.01}>
     <CoinRow
       {...item}
       {...props}
+      bottomRowRender={BottomRow}
       onPress={onPress}
       onPressSend={onPressSend}
-      bottomRowRender={BottomRow}
       topRowRender={TopRow}
     />
+  </ButtonPressAnimation>
 );
-
-
-
-  // <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
-  // </ButtonPressAnimation>
 
 SavingsCoinRow.propTypes = {
   item: PropTypes.object,
