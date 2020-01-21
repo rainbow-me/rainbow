@@ -83,7 +83,7 @@ class TransactionListView: UIView {
     tableView.delegate = self
     tableView.rowHeight = 60
     tableView.delaysContentTouches = false
-    tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+    tableView.separatorStyle = .none
     tableView.register(UINib(nibName: "TransactionListViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListViewCell")
     
     header.addSubview(headerSeparator)
