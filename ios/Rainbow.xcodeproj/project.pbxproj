@@ -88,6 +88,7 @@
 		26ECB74E0DE3400BB3F825D4 /* SF-Pro-Rounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6EC72920E3F74A0DB9512E48 /* SF-Pro-Rounded-Medium.otf */; };
 		3F7494BC3E28457D946B815A /* SF-Pro-Rounded-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 85D9548686364F04BCD3CA0E /* SF-Pro-Rounded-Regular.otf */; };
 		83DB669A1C3B4CABBCCD9AB3 /* SF-Pro-Rounded-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 566C33D6583F4A2AB2A260D6 /* SF-Pro-Rounded-Semibold.otf */; };
+		5910AD85BEF64AF9B4B9ED0F /* SF-Pro-Rounded-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9132DFD459E24884961D4D6E /* SF-Pro-Rounded-Heavy.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -212,6 +213,7 @@
 		6EC72920E3F74A0DB9512E48 /* SF-Pro-Rounded-Medium.otf */ = {isa = PBXFileReference; name = "SF-Pro-Rounded-Medium.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Medium.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		85D9548686364F04BCD3CA0E /* SF-Pro-Rounded-Regular.otf */ = {isa = PBXFileReference; name = "SF-Pro-Rounded-Regular.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		566C33D6583F4A2AB2A260D6 /* SF-Pro-Rounded-Semibold.otf */ = {isa = PBXFileReference; name = "SF-Pro-Rounded-Semibold.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Semibold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		9132DFD459E24884961D4D6E /* SF-Pro-Rounded-Heavy.otf */ = {isa = PBXFileReference; name = "SF-Pro-Rounded-Heavy.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Heavy.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -443,6 +445,7 @@
 				6EC72920E3F74A0DB9512E48 /* SF-Pro-Rounded-Medium.otf */,
 				85D9548686364F04BCD3CA0E /* SF-Pro-Rounded-Regular.otf */,
 				566C33D6583F4A2AB2A260D6 /* SF-Pro-Rounded-Semibold.otf */,
+				9132DFD459E24884961D4D6E /* SF-Pro-Rounded-Heavy.otf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -587,6 +590,7 @@
 				26ECB74E0DE3400BB3F825D4 /* SF-Pro-Rounded-Medium.otf in Resources */,
 				3F7494BC3E28457D946B815A /* SF-Pro-Rounded-Regular.otf in Resources */,
 				83DB669A1C3B4CABBCCD9AB3 /* SF-Pro-Rounded-Semibold.otf in Resources */,
+				5910AD85BEF64AF9B4B9ED0F /* SF-Pro-Rounded-Heavy.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
