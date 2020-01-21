@@ -1,17 +1,14 @@
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
+import React from 'react';
+import { useWindowDimensions } from 'react-native';
 import stylePropType from 'react-style-proptype';
-import { colors, margin, padding, position } from '../../styles';
+import { colors, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
-import InnerBorder from '../InnerBorder';
-import { Centered, Row, RowWithMargins } from '../layout';
+import { InnerBorder, RowWithMargins } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import { Text } from '../text';
 
-
-
-        // height={44}
 const SheetButton = ({
   borderRadius,
   children,
@@ -21,35 +18,42 @@ const SheetButton = ({
   onPress,
   shadows,
   style,
-}) => (
-  <ButtonPressAnimation
-    flex={1}
-    onPress={onPress}
-    style={[position.centeredAsObject, style]}
-  >
-    <ShadowStack
-      {...position.coverAsObject}
-      backgroundColor={color}
-      borderRadius={borderRadius}
-      shadows={shadows}
-    />
-    {children || (
-      <RowWithMargins
-        align="center"
-        css={padding(9.5, 14, 11, 15)}
-        margin={4}
-    height={44}
-        zIndex={1}
-      >
-        <Icon color="white" name={icon} size={16} />
-        <Text color="white" size="lmedium" weight="semibold">
-          {label}
-        </Text>
-      </RowWithMargins>
-    )}
-    <InnerBorder radius={borderRadius} />
-  </ButtonPressAnimation>
-);
+  ...props
+}) => {
+  const dims = useWindowDimensions();
+
+  return (
+    <ButtonPressAnimation
+      {...props}
+      flex={1}
+      onPress={onPress}
+      scaleTo={0.96}
+      style={[position.centeredAsObject, style]}
+    >
+      <ShadowStack
+        {...position.coverAsObject}
+        backgroundColor={color}
+        borderRadius={borderRadius}
+        shadows={shadows}
+      />
+      {children || (
+        <RowWithMargins
+          align="center"
+          css={padding(9.5, 14, 11, 15)}
+          height={dims.width >= 414 ? 44 : 40}
+          margin={4}
+          zIndex={1}
+        >
+          <Icon color="white" name={icon} size={16} />
+          <Text color="white" size="lmedium" weight="semibold">
+            {label}
+          </Text>
+        </RowWithMargins>
+      )}
+      <InnerBorder radius={borderRadius} />
+    </ButtonPressAnimation>
+  );
+};
 
 SheetButton.propTypes = {
   borderRadius: PropTypes.number,
