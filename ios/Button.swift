@@ -8,7 +8,7 @@
 class Button : RCTView {
   @objc lazy var onPress: RCTBubblingEventBlock = { _ in }
   @objc lazy var onPressStart: RCTBubblingEventBlock = { _ in }
-  @objc lazy var onLongPress: RCTBubblingEventBlock = { _ in }
+  @objc lazy var onLongPress: RCTBubblingEventBlock? = nil;
   @objc var disabled: Bool = false {
     didSet {
       isUserInteractionEnabled = !disabled
@@ -31,7 +31,7 @@ class Button : RCTView {
     if sender != nil {
       switch sender!.state {
       case .began:
-        onLongPress([:])
+        onLongPress!([:])
       default: break
       }
     }
@@ -42,8 +42,10 @@ class Button : RCTView {
   override init(frame: CGRect) {
     super.init(frame: frame)
     
-    longPress = UILongPressGestureRecognizer(target: self, action: #selector(onLongPressHandler(_:)))
-    addGestureRecognizer(longPress!)
+    if (onLongPress != nil) {
+      longPress = UILongPressGestureRecognizer(target: self, action: #selector(onLongPressHandler(_:)))
+      addGestureRecognizer(longPress!)
+    }
     isUserInteractionEnabled = true
   }
   
