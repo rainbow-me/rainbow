@@ -26,7 +26,7 @@ class TransactionListView: UIView {
     }
   }
   @objc var transactions: [Transaction] = [] {
-    /// Every time we receive a new set of transactions, regroup by mind_at in the format "MMMM yyyy"
+    /// Every time we receive a new set of transactions, regroup by minedAt in the format "MMMM yyyy"
     /// Then, re-render tableView with the new data
     didSet {
       var groups: [Date: [Transaction]] = [:]
@@ -139,6 +139,10 @@ extension TransactionListView: UITableViewDataSource, UITableViewDelegate {
       label.text = "Yesterday"
     } else if calendar.isDate(sections[section].header, equalTo: Date(), toGranularity: .month) {
       label.text = "This month"
+    } else if calendar.isDate(sections[section].header, equalTo: Date(), toGranularity: .year) {
+      let dateFormatter = DateFormatter()
+      dateFormatter.dateFormat = "MMMM"
+      label.text = dateFormatter.string(from: sections[section].header)
     } else {
       let dateFormatter = DateFormatter()
       dateFormatter.dateFormat = "MMMM yyyy"
