@@ -40,12 +40,12 @@ export const CurrencySelectionTypes = {
 
 class CurrencySelectModal extends Component {
   static propTypes = {
-    assetsAvailableOnUniswap: PropTypes.arrayOf(PropTypes.object),
     isFocused: PropTypes.bool,
     navigation: PropTypes.object,
     sortedUniswapAssets: PropTypes.array,
     transitionPosition: PropTypes.object,
     type: PropTypes.oneOf(Object.keys(CurrencySelectionTypes)),
+    uniswapAssetsInWallet: PropTypes.arrayOf(PropTypes.object),
   };
 
   state = {
@@ -58,8 +58,8 @@ class CurrencySelectModal extends Component {
     let nextAssets = EMPTY_ARRAY;
 
     if (nextProps.type === CurrencySelectionTypes.input) {
-      currentAssets = this.props.assetsAvailableOnUniswap;
-      nextAssets = nextProps.assetsAvailableOnUniswap;
+      currentAssets = this.props.uniswapAssetsInWallet;
+      nextAssets = nextProps.uniswapAssetsInWallet;
     } else if (nextProps.type === CurrencySelectionTypes.output) {
       nextAssets = nextProps.sortedUniswapAssets;
     }
@@ -141,7 +141,7 @@ class CurrencySelectModal extends Component {
 
   render = () => {
     const {
-      assetsAvailableOnUniswap,
+      uniswapAssetsInWallet,
       isFocused,
       sortedUniswapAssets,
       transitionPosition,
@@ -158,7 +158,7 @@ class CurrencySelectModal extends Component {
     let assets = sortedUniswapAssets;
     if (type === CurrencySelectionTypes.input) {
       headerTitle = 'Swap';
-      assets = assetsAvailableOnUniswap;
+      assets = uniswapAssetsInWallet;
     } else if (type === CurrencySelectionTypes.output) {
       headerTitle = 'Receive';
     }
@@ -224,18 +224,13 @@ export default compose(
   withNavigationFocus,
   withUniswapAssets,
   mapProps(
-    ({
-      assetsAvailableOnUniswap,
-      navigation,
-      sortedUniswapAssets,
-      ...props
-    }) => ({
+    ({ uniswapAssetsInWallet, navigation, sortedUniswapAssets, ...props }) => ({
       ...props,
-      assetsAvailableOnUniswap: normalizeAssetItems(assetsAvailableOnUniswap),
       navigation,
       sortedUniswapAssets: normalizeAssetItems(sortedUniswapAssets),
       transitionPosition: get(navigation, 'state.params.position'),
       type: get(navigation, 'state.params.type', null),
+      uniswapAssetsInWallet: normalizeAssetItems(uniswapAssetsInWallet),
     })
   )
 )(CurrencySelectModal);

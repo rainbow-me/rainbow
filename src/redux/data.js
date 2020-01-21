@@ -187,6 +187,9 @@ export const addressAssetsReceived = (
       item => item.uniqueId
     );
   }
+  parsedAssets = parsedAssets.filter(
+    asset => !!Number(get(asset, 'balance.amount'))
+  );
   saveAssets(parsedAssets, accountAddress, network);
   dispatch({
     payload: parsedAssets,
