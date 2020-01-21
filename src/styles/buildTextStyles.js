@@ -14,7 +14,8 @@ export default css`
   color: ${({ color }) => colors.get(color) || colors.dark}
   ${({ emoji, family = 'SFProText', mono }) =>
     emoji ? '' : `font-family: ${fonts.family[mono ? 'SFMono' : family]}`};
-  font-size: ${({ size }) => fonts.size[size || 'medium']};
+  font-size: ${({ size }) =>
+    typeof size === 'number' ? size : fonts.size[size || 'medium']};
   ${({ emoji, weight }) =>
     emoji ? '' : `font-weight: ${fonts.weight[weight || 'regular']}`};
 `;
