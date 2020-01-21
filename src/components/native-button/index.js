@@ -1,10 +1,4 @@
-import React from 'react';
 import { requireNativeComponent } from 'react-native';
+import { pure } from 'recompact';
 
-const NativeButton = requireNativeComponent('Button');
-
-export default class Button extends React.PureComponent {
-  render() {
-    return <NativeButton {...this.props}>{this.props.children}</NativeButton>;
-  }
-}
+export default pure(requireNativeComponent('Button'));

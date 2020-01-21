@@ -12,6 +12,8 @@ import { useMemoOne } from 'use-memo-one';
 import { useInteraction, useTransformOrigin } from '../../hooks';
 import { animations } from '../../styles';
 import { directionPropType } from '../../utils';
+import Button from '../native-button';
+import isNativeButtonAvailable from '../../helpers/isNativeButtonAvailable';
 
 const {
   and,
@@ -45,7 +47,7 @@ const AnimatedRawButton = createNativeWrapper(
   {
     shouldActivateOnStart: true,
     shouldCancelWhenOutside: true,
-  },
+  }
 );
 
 function usePressHandler({
@@ -82,7 +84,9 @@ function usePressHandler({
   return [handlePress, createHandle, removeHandle];
 }
 
-const ButtonPressAnimationProc = proc(function(
+const maybeProc = isNativeButtonAvailable ? a => a : proc;
+
+const ButtonPressAnimationProc = maybeProc(function(
   animationState,
   durationVal,
   finished,
@@ -98,16 +102,16 @@ const ButtonPressAnimationProc = proc(function(
   onPressCall,
   onPressStartCall,
   onLongPressCall,
-  interactionCall,
+  interactionCall
 ) {
   return block([
     cond(neq(prevGestureState, gestureState), [
       cond(
         or(
           eq(gestureState, ACTIVE),
-          and(neq(prevGestureState, ACTIVE), eq(gestureState, UNDETERMINED)),
+          and(neq(prevGestureState, ACTIVE), eq(gestureState, UNDETERMINED))
         ),
-        [set(animationState, ANIMATION_STATE_0)],
+        [set(animationState, ANIMATION_STATE_0)]
       ),
       cond(eq(gestureState, END), onPressCall),
       cond(eq(gestureState, ACTIVE), [
@@ -129,7 +133,7 @@ const ButtonPressAnimationProc = proc(function(
       and(
         eq(animationState, ANIMATION_STATE_1),
         neq(gestureState, ACTIVE),
-        finished,
+        finished
       ),
       [
         set(finished, 0),
@@ -137,7 +141,7 @@ const ButtonPressAnimationProc = proc(function(
         set(frameTime, 0),
         set(time, 0),
         set(toValue, 1),
-      ],
+      ]
     ),
     cond(and(eq(animationState, ANIMATION_STATE_2), finished), [
       set(animationState, ANIMATION_STATE_3),
@@ -146,7 +150,7 @@ const ButtonPressAnimationProc = proc(function(
     cond(
       or(
         eq(animationState, ANIMATION_STATE_1),
-        eq(animationState, ANIMATION_STATE_2),
+        eq(animationState, ANIMATION_STATE_2)
       ),
       timing(
         zoomClock,
@@ -160,8 +164,8 @@ const ButtonPressAnimationProc = proc(function(
           duration: durationVal,
           easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
           toValue,
-        },
-      ),
+        }
+      )
     ),
     cond(eq(prevGestureState, END), [
       set(prevGestureState, END_TOUCHED),
@@ -171,25 +175,25 @@ const ButtonPressAnimationProc = proc(function(
   ]);
 });
 
-const ButtonPressAnimationHelperProc = proc(function(
+const ButtonPressAnimationHelperProc = maybeProc(function(
   animationState,
   gestureState,
   prevGestureState,
-  zoomClock,
+  zoomClock
 ) {
   return block([
     cond(
       and(
         eq(gestureState, END),
         eq(prevGestureState, END_TOUCHED),
-        not(clockRunning(zoomClock)),
+        not(clockRunning(zoomClock))
       ),
-      set(prevGestureState, UNDETERMINED),
+      set(prevGestureState, UNDETERMINED)
     ),
   ]);
 });
 
-export default function ButtonPressAnimation({
+function ButtonPressAnimationJS({
   activeOpacity,
   children,
   disabled,
@@ -269,15 +273,15 @@ export default function ButtonPressAnimation({
         animationState,
         gestureState,
         prevGestureState,
-        zoomClock,
+        zoomClock
       ),
       cond(
         and(
           eq(prevGestureState, UNDETERMINED),
           eq(gestureState, END),
-          neq(animationState, ANIMATION_STATE_0),
+          neq(animationState, ANIMATION_STATE_0)
         ),
-        set(animationState, ANIMATION_STATE_0),
+        set(animationState, ANIMATION_STATE_0)
       ),
       ButtonPressAnimationProc(
         animationState,
@@ -313,9 +317,9 @@ export default function ButtonPressAnimation({
           } else {
             removeHandle();
           }
-        }),
+        })
       ),
-    ]),
+    ])
   ).current;
 
   return (
@@ -344,6 +348,12 @@ export default function ButtonPressAnimation({
   );
 }
 
+const ButtonPressAnimation = isNativeButtonAvailable
+  ? Button
+  : ButtonPressAnimationJS;
+
+export default ButtonPressAnimation;
+
 ButtonPressAnimation.propTypes = {
   activeOpacity: PropTypes.number,
   children: PropTypes.any,
@@ -362,6 +372,15 @@ ButtonPressAnimation.propTypes = {
 };
 
 ButtonPressAnimation.defaultProps = {
+  activeOpacity: 1,
+  duration: 160,
+  enableHapticFeedback: true,
+  hapticType: 'selection',
+  minLongPressDuration: 500,
+  scaleTo: animations.keyframes.button.to.scale,
+};
+
+Button.defaultProps = {
   activeOpacity: 1,
   duration: 160,
   enableHapticFeedback: true,

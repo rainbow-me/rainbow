@@ -7,13 +7,11 @@ import { withAccountSettings, withOpenBalances } from '../../hoc';
 import { colors } from '../../styles';
 import { isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import NativeButton from '../native-button';
 import { FlexItem, Row } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { nativeButtonPressAnimationAvailable } from '../../experimentalConfig';
 
 const formatPercentageString = percentString =>
   percentString
@@ -67,13 +65,8 @@ TopRow.propTypes = {
   nativeCurrencySymbol: PropTypes.string,
 };
 
-let ButtonPressAnimationComponent = ButtonPressAnimation;
-if (nativeButtonPressAnimationAvailable) {
-  ButtonPressAnimationComponent = NativeButton;
-}
-
 const BalanceCoinRow = ({ item, onPress, onPressSend, ...props }) => (
-  <ButtonPressAnimationComponent onPress={onPress} scaleTo={0.98}>
+  <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
     <CoinRow
       onPress={onPress}
       onPressSend={onPressSend}
@@ -82,7 +75,7 @@ const BalanceCoinRow = ({ item, onPress, onPressSend, ...props }) => (
       bottomRowRender={BottomRow}
       topRowRender={TopRow}
     />
-  </ButtonPressAnimationComponent>
+  </ButtonPressAnimation>
 );
 
 BalanceCoinRow.propTypes = {
@@ -118,9 +111,9 @@ export default compose(
     const isNewNativeCurrency = isNewValueForPath(
       props,
       nextProps,
-      'nativeCurrency',
+      'nativeCurrency'
     );
 
     return isNewItem || isNewNativeCurrency || isChangeInOpenAssets;
-  }),
+  })
 )(BalanceCoinRow);
