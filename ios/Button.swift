@@ -42,7 +42,7 @@ class Button : RCTView {
   override init(frame: CGRect) {
     super.init(frame: frame)
     
-    if (onLongPress != nil) {
+    if onLongPress != nil {
       longPress = UILongPressGestureRecognizer(target: self, action: #selector(onLongPressHandler(_:)))
       addGestureRecognizer(longPress!)
     }
