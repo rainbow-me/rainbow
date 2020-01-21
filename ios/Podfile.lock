@@ -329,6 +329,7 @@ PODS:
   - React-RCTImage (0.62.0-rc.1):
     - FBReactNativeSpec (= 0.62.0-rc.1)
     - Folly (= 2018.10.22.00)
+<<<<<<< HEAD
     - RCTTypeSafety (= 0.62.0-rc.1)
     - React-Core/RCTImageHeaders (= 0.62.0-rc.1)
     - React-RCTNetwork (= 0.62.0-rc.1)
@@ -339,6 +340,18 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.62.0-rc.1)
   - React-RCTNetwork (0.62.0-rc.1):
     - FBReactNativeSpec (= 0.62.0-rc.1)
+=======
+    - RCTTypeSafety (= 1000.0.0)
+    - React-Core/RCTImageHeaders (= 1000.0.0)
+    - React-RCTNetwork (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-RCTLinking (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - React-Core/RCTLinkingHeaders (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-RCTNetwork (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+>>>>>>> 2c6105a5... upgrade reanimated to #master
     - Folly (= 2018.10.22.00)
     - RCTTypeSafety (= 0.62.0-rc.1)
     - React-Core/RCTNetworkHeaders (= 0.62.0-rc.1)
@@ -411,6 +424,7 @@ PODS:
   - RNReactNativeHapticFeedback (1.8.2):
     - React
 <<<<<<< HEAD
+<<<<<<< HEAD
   - RNReanimated (1.7.0):
 =======
 <<<<<<< HEAD
@@ -419,6 +433,9 @@ PODS:
   - RNReanimated (1.5.0):
 >>>>>>> 36aa0ccd... letzgoooooooooo
 >>>>>>> ba3acbde... letzgoooooooooo
+=======
+  - RNReanimated (1.7.0):
+>>>>>>> 2c6105a5... upgrade reanimated to #master
     - React
   - RNScreens (2.0.0-alpha.24):
     - React
@@ -430,6 +447,7 @@ PODS:
   - RNSVG (9.13.6):
     - React
 <<<<<<< HEAD
+<<<<<<< HEAD
   - SDWebImage (5.5.1):
     - SDWebImage/Core (= 5.5.1)
   - SDWebImage/Core (5.5.1)
@@ -438,6 +456,11 @@ PODS:
     - SDWebImage/Core (= 5.5.0)
   - SDWebImage/Core (5.5.0)
 >>>>>>> ba3acbde... letzgoooooooooo
+=======
+  - SDWebImage (5.5.1):
+    - SDWebImage/Core (= 5.5.1)
+  - SDWebImage/Core (5.5.1)
+>>>>>>> 2c6105a5... upgrade reanimated to #master
   - SDWebImageWebPCoder (0.2.5):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.0)
@@ -681,8 +704,9 @@ SPEC CHECKSUMS:
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
   CodePush: d2e54ad42df82a8db65b2d23d8191b950ba945e1
   Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
-  DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
+  DoubleConversion: cde416483dac037923206447da6e1454df403714
   Fabric: f988e33c97f08930a413e08123064d2e5f68d655
+<<<<<<< HEAD
 <<<<<<< HEAD
   FBLazyVector: 9349d70d60793fce157f7c3837f51c60bc81a91b
   FBReactNativeSpec: 36215b34017aa3bb62f1ed494b50fbaa242649fb
@@ -762,6 +786,10 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: 1be8773d61900be2968b34e956a4fbec96d921e3
 >>>>>>> 36aa0ccd... letzgoooooooooo
 >>>>>>> ba3acbde... letzgoooooooooo
+=======
+  FBLazyVector: b47f109c4c4879095c8160fbf6aec9190ba93fb1
+  FBReactNativeSpec: cf621784eb7946869e136ac976bf5a72aaa61430
+>>>>>>> 2c6105a5... upgrade reanimated to #master
   Firebase: 458d109512200d1aca2e1b9b6cf7d68a869a4a46
   FirebaseAnalytics: 45f36d9c429fc91d206283900ab75390cd05ee8a
   FirebaseAnalyticsInterop: 3f86269c38ae41f47afeb43ebf32a001f58fcdae
@@ -771,8 +799,8 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: ebd2ea79ee38db0cb5f5167b17a0d387e1cc7b6e
   FirebaseMessaging: 089b7a4991425783384acc8bcefcd78c0af913bd
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
-  Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
-  glog: 1f3da668190260b06b429bb211bfbee5cd790c28
+  Folly: f1c65c1bdabb35617432cac9cf17d0cad310ce6f
+  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   GoogleAppMeasurement: dfe55efa543e899d906309eaaac6ca26d249862f
   GoogleDataTransport: 574a983e829327d7c18f2627f65d9e80164ea8a4
   GoogleDataTransportCCTSupport: cad3cd6cdbdbad6b5c2c9206ec413402755faaaa
@@ -781,6 +809,7 @@ SPEC CHECKSUMS:
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   Protobuf: dd1aaea7140debfe4dd0683fb8ef208e527ae153
+<<<<<<< HEAD
 <<<<<<< HEAD
   RCTRequired: 418abaf045a635a391e68ee0573035553c1c4d7b
   RCTTypeSafety: ea8dd81f61436a394b943dac4435a304c59906ff
@@ -945,6 +974,17 @@ SPEC CHECKSUMS:
   React-jsinspector: 6909104c5796152b3518c7336a2a9498858c8c50
 >>>>>>> 36aa0ccd... letzgoooooooooo
 >>>>>>> ba3acbde... letzgoooooooooo
+=======
+  RCTRequired: 9c3595bb58de70df86acd3e4727a35207b668bf9
+  RCTTypeSafety: 5ab5c371c0539b1f135d1ca964ce22c9f54f31f7
+  React: c8103e35925699b281299222189c94da92f91521
+  React-Core: f3306244f33356e80bd8e68d2cb710033443f292
+  React-CoreModules: 77304142cc5d0ce51cc1f5d46c6c78ff769d07df
+  React-cxxreact: 40e8a2273b09fcbda122358355d695cbe6ef8264
+  React-jsi: 689a25dae5f58e19dfb956e4fc4bf0613a927d54
+  React-jsiexecutor: a48d7ad92bb519406711bb13f9e63805ae7ca3b3
+  React-jsinspector: c530b6a2dd486c6c65946ef99481411192046c34
+>>>>>>> 2c6105a5... upgrade reanimated to #master
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: 1ba3e7f2375a6b44ae09ce9be70268e0b225bc10
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
@@ -955,6 +995,7 @@ SPEC CHECKSUMS:
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: ff9d13e523f2b58e6bc5d4d32321ac60671b5dc9
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
+<<<<<<< HEAD
 <<<<<<< HEAD
   React-RCTActionSheet: a9a397cdf75149175eab539e536eeb42518f529c
   React-RCTAnimation: 3fddf9e5dc82ea620c1c44b4206149688b43e054
@@ -1131,6 +1172,18 @@ SPEC CHECKSUMS:
   ReactCommon: 87bacdeb1b6d1a92df7b9f1f40ff03dcdc90e5e5
 >>>>>>> 36aa0ccd... letzgoooooooooo
 >>>>>>> ba3acbde... letzgoooooooooo
+=======
+  React-RCTActionSheet: a6f9ec91e327c086de4a587f59c3532c3a88284f
+  React-RCTAnimation: 99d5587a31056b6e11d42cbdb497cc7b6362cb9a
+  React-RCTBlob: 7a9e86de40674822f577de8c05f379dd3e23ccda
+  React-RCTImage: de795706c24e5c84dad06800996efcefedecdbf5
+  React-RCTLinking: d3bae771f2bd3a994df91441a5d5927872d88929
+  React-RCTNetwork: 2653b0043edb77176c93706e599f07a70e2b3545
+  React-RCTSettings: fb6519c770507b242945fe0e513e273114d94245
+  React-RCTText: 03dd30edc90681440f3ed45e3c34bb8a6d66000b
+  React-RCTVibration: f18da5cf863d3208a7fd26c724cba4504bbec58e
+  ReactCommon: 8cdd4c088580cc341eab9f6b087b88d576ad345e
+>>>>>>> 2c6105a5... upgrade reanimated to #master
   ReactNativePermissions: 7cfad56d13c8961cd2a1005b4955b1400c79ef3e
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 60a80e72d95bf02a01cace55d3697d9724f0d77f
@@ -1148,30 +1201,35 @@ SPEC CHECKSUMS:
   RNOS: 811de7b4be8824a86a775ade934147a02edb9b5a
   RNReactNativeHapticFeedback: e11a4da0ce174e9f88b03cbaf5d76d94633cdee2
 <<<<<<< HEAD
+<<<<<<< HEAD
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
 =======
 <<<<<<< HEAD
   RNReanimated: e1251783216c7cb0a395314c9889d6662d86ed73
 >>>>>>> ba3acbde... letzgoooooooooo
-  RNScreens: 52650fc6874b8ba68a88da452833562fcf45afb5
 =======
-  RNReanimated: 1761c14b3982fc77fc9fdad6ea2f42ed861c342a
-  RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
->>>>>>> 36aa0ccd... letzgoooooooooo
+  RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
+>>>>>>> 2c6105a5... upgrade reanimated to #master
+  RNScreens: 52650fc6874b8ba68a88da452833562fcf45afb5
   RNSentry: 9b1d983b2d5d1c215ba6490348fd2a4cc23a8a9d
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
+<<<<<<< HEAD
 <<<<<<< HEAD
   SDWebImage: 1245d058b7b8f59adef7a6da6bbafd4f1ab67041
 =======
   SDWebImage: 86589f0d47a7de15827640c71813e23fd428965c
 >>>>>>> ba3acbde... letzgoooooooooo
+=======
+  SDWebImage: 1245d058b7b8f59adef7a6da6bbafd4f1ab67041
+>>>>>>> 2c6105a5... upgrade reanimated to #master
   SDWebImageWebPCoder: 947093edd1349d820c40afbd9f42acb6cdecd987
   Sentry: 14bdd673870e8cf64932b149fad5bbbf39a9b390
   SRSRadialGradient: 77bcb1ae812d0c77560e54ed9e52166df032db1d
   SSZipArchive: fa16b8cc4cdeceb698e5e5d9f67e9558532fbf23
   TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
+<<<<<<< HEAD
 <<<<<<< HEAD
   Yoga: b9a1f7189009fa4b6266ee0a63235547326295d2
 =======
@@ -1231,6 +1289,9 @@ SPEC CHECKSUMS:
   Yoga: e344230d8bed6e5baee6d291cceb39cf6ae1e813
 >>>>>>> 36aa0ccd... letzgoooooooooo
 >>>>>>> ba3acbde... letzgoooooooooo
+=======
+  Yoga: 14293148c128a9e7f790fd9f0d5f728f7e853028
+>>>>>>> 2c6105a5... upgrade reanimated to #master
 
 PODFILE CHECKSUM: 85d1a376657a62af7427d5a9d5e186c099944553
 
