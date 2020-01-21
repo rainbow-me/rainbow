@@ -12,6 +12,8 @@ import { useMemoOne } from 'use-memo-one';
 import { useInteraction, useTransformOrigin } from '../../hooks';
 import { animations } from '../../styles';
 import { directionPropType } from '../../utils';
+import Button from '../native-button';
+import isNativeButtonAvailable from '../../helpers/isNativeButtonAvailable';
 
 const {
   and,
@@ -82,7 +84,9 @@ function usePressHandler({
   return [handlePress, createHandle, removeHandle];
 }
 
-const ButtonPressAnimationProc = proc(function(
+const maybeProc = isNativeButtonAvailable ? a => a : proc;
+
+const ButtonPressAnimationProc = maybeProc(function(
   animationState,
   durationVal,
   finished,
@@ -171,7 +175,7 @@ const ButtonPressAnimationProc = proc(function(
   ]);
 });
 
-const ButtonPressAnimationHelperProc = proc(function(
+const ButtonPressAnimationHelperProc = maybeProc(function(
   animationState,
   gestureState,
   prevGestureState,
@@ -189,7 +193,7 @@ const ButtonPressAnimationHelperProc = proc(function(
   ]);
 });
 
-export default function ButtonPressAnimation({
+function ButtonPressAnimationJS({
   activeOpacity,
   children,
   disabled,
@@ -344,6 +348,12 @@ export default function ButtonPressAnimation({
   );
 }
 
+const ButtonPressAnimation = isNativeButtonAvailable
+  ? Button
+  : ButtonPressAnimationJS;
+
+export default ButtonPressAnimation;
+
 ButtonPressAnimation.propTypes = {
   activeOpacity: PropTypes.number,
   children: PropTypes.any,
@@ -362,6 +372,15 @@ ButtonPressAnimation.propTypes = {
 };
 
 ButtonPressAnimation.defaultProps = {
+  activeOpacity: 1,
+  duration: 160,
+  enableHapticFeedback: true,
+  hapticType: 'selection',
+  minLongPressDuration: 500,
+  scaleTo: animations.keyframes.button.to.scale,
+};
+
+Button.defaultProps = {
   activeOpacity: 1,
   duration: 160,
   enableHapticFeedback: true,
