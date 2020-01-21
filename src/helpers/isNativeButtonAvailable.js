@@ -1,5 +1,5 @@
 import { UIManager } from 'react-native';
-import { nativeTransactionListAvailable } from '../experimentalConfig';
+import { nativeButtonPressAnimationAvailable } from '../experimentalConfig';
 
-export default nativeTransactionListAvailable &&
+export default nativeButtonPressAnimationAvailable &&
   !!UIManager.getViewManagerConfig('Button');
