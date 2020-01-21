@@ -50,7 +50,7 @@ const FloatingEmojis = ({
   );
 
   return (
-    <View {...props}>
+    <View zIndex={1} {...props}>
       {typeof children === 'function' ? children({ onNewEmoji }) : children}
       <Animated.View
         pointerEvents="none"
