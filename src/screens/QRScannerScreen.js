@@ -61,7 +61,6 @@ const QRScannerScreen = ({
           <Button
             backgroundColor={colors.white}
             color={colors.sendScreen.brightBlue}
-            marginBottom={10}
             onPress={onPressPasteSessionUri}
             size="small"
             type="pill"
