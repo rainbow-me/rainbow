@@ -9594,10 +9594,10 @@ recursive-readdir@^2.2.2:
   dependencies:
     minimatch "3.0.4"
 
-recyclerlistview@2.0.1-alpha.1:
-  version "2.0.1-alpha.1"
-  resolved "https://registry.yarnpkg.com/recyclerlistview/-/recyclerlistview-2.0.1-alpha.1.tgz#881955e6917911fb54a9b272004e39e5c0d64f4a"
-  integrity sha512-UaeJyxG9LL8lcfiAqkp0kPLxvjbYg95Dcq1U/QUvzwXU4+H2khg/LAws/FssxPX6CXNMw7BLcT2YHAhkFElqRQ==
+recyclerlistview@2.0.12:
+  version "2.0.12"
+  resolved "https://registry.yarnpkg.com/recyclerlistview/-/recyclerlistview-2.0.12.tgz#d50ee959409947faccd3f3abf2789e7acfdc31f9"
+  integrity sha512-5krJqESA6Pf5RqeWiRL8DcoXjyHLdz5fw/B3WGe4er9hAOv5Oj6hb4RXcgLTDAeoUePuO2Dyd+MZ7n0KP9VnQQ==
   dependencies:
     lodash.debounce "4.0.8"
     prop-types "15.5.8"

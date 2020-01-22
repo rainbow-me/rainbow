@@ -17,7 +17,7 @@ import styled from 'styled-components/primitives/dist/styled-components-primitiv
 import { colors } from '../../styles';
 
 const rowHeight = 64;
-const familyHeaderHeight = 64;
+const familyHeaderHeight = 62;
 const dividerHeight = 18;
 
 const Divider = styled.View`
@@ -217,6 +217,7 @@ class SendAssetList extends React.Component {
         style={{ flex: 1, paddingBottom: sheetVerticalOffset, width: '100%' }}
       >
         <RecyclerListView
+          disableRecycling
           ref={ref => {
             this.rlv = ref;
           }}
