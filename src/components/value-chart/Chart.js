@@ -10,7 +10,6 @@ import { View } from 'react-native';
 import { deviceUtils } from '../../utils';
 import { colors } from '../../styles';
 import TimestampText from './TimestampText';
-import TimespanSelector from './TimespanSelector';
 import ActivityIndicator from '../ActivityIndicator';
 import GestureWrapper from './GestureWrapper';
 
@@ -151,7 +150,7 @@ export default class Chart extends PureComponent {
         this.props.amountOfPathPoints
       ),
       hideLoadingBar: false,
-      isLoading: false,
+      isLoading: true,
       shouldRenderChart: true,
     };
 
@@ -238,9 +237,16 @@ export default class Chart extends PureComponent {
   }
 
   componentDidMount = () => {
-    this.reloadChart(0, true);
+    setTimeout(() => {
+      this.reloadChart(0, true);
+    }, 1000);
   };
 
+  getSnapshotBeforeUpdate() {
+    if (this.currentInterval !== this.props.currentDataSource) {
+      this.reloadChart(this.props.currentDataSource);
+    }
+  }
   touchX = new Value(0);
   lastTouchX = new Value(0);
 
@@ -284,16 +290,16 @@ export default class Chart extends PureComponent {
           this._configUp
         ).start();
         this.currentInterval = currentInterval;
-        // this._text.updateValue(
-        //   this.state.allData[currentInterval][
-        //     this.state.allData[currentInterval].length - 1
-        //   ].value
-        // );
 
         await this.setState(prevState => ({
           currentData: prevState.allData[currentInterval],
           isLoading: false,
         }));
+        this.props.onValueUpdate(
+          this.state.allData[currentInterval][
+            this.state.allData[currentInterval].length - 1
+          ].value
+        );
       });
     }
   };
@@ -355,8 +361,6 @@ export default class Chart extends PureComponent {
         return chartNode(this.chartsMulti[i], index, i);
       });
 
-    console.log(allNodes(2));
-
     const animatedPath = concat(
       'M -20 0',
       ...splinePoints[0].flatMap(({ x }, index) => [
@@ -384,11 +388,9 @@ export default class Chart extends PureComponent {
       change = 0,
       timePeriod = 0,
       maxValueDistance = 999,
-      minValueDistance = 999,
-      isLoading = true;
+      minValueDistance = 999;
 
     if (this.state.currentData.length > 0) {
-      isLoading = false;
       maxValue = maxBy(this.state.currentData, 'value');
       minValue = minBy(this.state.currentData, 'value');
       change =
@@ -523,11 +525,6 @@ export default class Chart extends PureComponent {
             <ActivityIndicator />
           </View>
         )}
-        <TimespanSelector
-          reloadChart={this.reloadChart}
-          direction={change > 0}
-          isLoading={isLoading}
-        />
         <Animated.Code
           exec={block([
             cond(
