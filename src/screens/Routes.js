@@ -3,7 +3,7 @@ import { get, omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { createAppContainer } from 'react-navigation';
-import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
+import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 // eslint-disable-next-line import/no-unresolved
 import { enableScreens } from 'react-native-screens';
 import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
@@ -31,6 +31,7 @@ import {
   backgroundPreset,
   overlayExpandedPreset,
 } from '../navigation/transitions/effects';
+import { ScrollPager } from 'react-native-tab-view';
 
 enableScreens();
 
@@ -59,6 +60,8 @@ const SwipeStack = createMaterialTopTabNavigator(
     headerMode: 'none',
     initialLayout: deviceUtils.dimensions,
     initialRouteName: 'WalletScreen',
+    // eslint-disable-next-line react/display-name
+    renderPager: props => <ScrollPager {...props} />,
     tabBarComponent: null,
   }
 );
