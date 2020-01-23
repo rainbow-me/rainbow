@@ -704,8 +704,9 @@ SPEC CHECKSUMS:
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
   CodePush: d2e54ad42df82a8db65b2d23d8191b950ba945e1
   Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
-  DoubleConversion: cde416483dac037923206447da6e1454df403714
+  DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   Fabric: f988e33c97f08930a413e08123064d2e5f68d655
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   FBLazyVector: 9349d70d60793fce157f7c3837f51c60bc81a91b
@@ -790,6 +791,10 @@ SPEC CHECKSUMS:
   FBLazyVector: b47f109c4c4879095c8160fbf6aec9190ba93fb1
   FBReactNativeSpec: cf621784eb7946869e136ac976bf5a72aaa61430
 >>>>>>> 2c6105a5... upgrade reanimated to #master
+=======
+  FBLazyVector: ebbc0a29f77fa007488a736e2c18c02878943003
+  FBReactNativeSpec: 94a234dd826f45cafdd71ca0b9db49110f9e7a9f
+>>>>>>> bc91fd4d... pointlessly upgrade .lock files
   Firebase: 458d109512200d1aca2e1b9b6cf7d68a869a4a46
   FirebaseAnalytics: 45f36d9c429fc91d206283900ab75390cd05ee8a
   FirebaseAnalyticsInterop: 3f86269c38ae41f47afeb43ebf32a001f58fcdae
@@ -799,8 +804,8 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: ebd2ea79ee38db0cb5f5167b17a0d387e1cc7b6e
   FirebaseMessaging: 089b7a4991425783384acc8bcefcd78c0af913bd
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
-  Folly: f1c65c1bdabb35617432cac9cf17d0cad310ce6f
-  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
+  Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
+  glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   GoogleAppMeasurement: dfe55efa543e899d906309eaaac6ca26d249862f
   GoogleDataTransport: 574a983e829327d7c18f2627f65d9e80164ea8a4
   GoogleDataTransportCCTSupport: cad3cd6cdbdbad6b5c2c9206ec413402755faaaa
@@ -809,6 +814,7 @@ SPEC CHECKSUMS:
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   Protobuf: dd1aaea7140debfe4dd0683fb8ef208e527ae153
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   RCTRequired: 418abaf045a635a391e68ee0573035553c1c4d7b
@@ -985,6 +991,17 @@ SPEC CHECKSUMS:
   React-jsiexecutor: a48d7ad92bb519406711bb13f9e63805ae7ca3b3
   React-jsinspector: c530b6a2dd486c6c65946ef99481411192046c34
 >>>>>>> 2c6105a5... upgrade reanimated to #master
+=======
+  RCTRequired: 2a3446ef975634d8d68dd1a5dcf68252db78654a
+  RCTTypeSafety: 2a699fed554b2b7f58ee6af176eee4e79fdf9578
+  React: b1aa40db6c2c53640416b50332d77a7bc7059f49
+  React-Core: 97084bc38a0a5c25f8b13376a7a9449811e1d789
+  React-CoreModules: eb141c702b2f1037cf0f4675f4d7a61ae2838ea3
+  React-cxxreact: ec598ee9e8081df48855745073c5f099f26747e1
+  React-jsi: 05770eb88952df1c6cd0e7aa9d1d9a6992cc60d0
+  React-jsiexecutor: 6db0484bc4957c01aad3d5d6bbf87b826f76c48a
+  React-jsinspector: 91113ff83e66423db53abbb704b47a08fb688e81
+>>>>>>> bc91fd4d... pointlessly upgrade .lock files
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: 1ba3e7f2375a6b44ae09ce9be70268e0b225bc10
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
@@ -995,6 +1012,7 @@ SPEC CHECKSUMS:
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: ff9d13e523f2b58e6bc5d4d32321ac60671b5dc9
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   React-RCTActionSheet: a9a397cdf75149175eab539e536eeb42518f529c
@@ -1184,6 +1202,18 @@ SPEC CHECKSUMS:
   React-RCTVibration: f18da5cf863d3208a7fd26c724cba4504bbec58e
   ReactCommon: 8cdd4c088580cc341eab9f6b087b88d576ad345e
 >>>>>>> 2c6105a5... upgrade reanimated to #master
+=======
+  React-RCTActionSheet: f38e815b151922556250198b74b2c7f98d6c358b
+  React-RCTAnimation: 973b732a56c3d00ab04efd1458207ae16d300d3f
+  React-RCTBlob: 71df54a6271bb43f5242bdde847445c5c6e544f3
+  React-RCTImage: 63688a5a5e8796b2eb6f4bb32d06187548f6c5f1
+  React-RCTLinking: db82ba74b0ef2f4fbb9731aae160548ca4d6f85d
+  React-RCTNetwork: 1e49bfee3856b738afbd0dd60ff8992b57af4fc5
+  React-RCTSettings: e5afc5fa9176cb5b37f390ffad0fcb39df0d4fd8
+  React-RCTText: a13839605b22457d59bf105771d177ac638a59eb
+  React-RCTVibration: da04e5d7de23fdc3f2cc5c528a26dd267edf3f07
+  ReactCommon: 402974f57e601f5a3e1dcb64fef3b8fec1343739
+>>>>>>> bc91fd4d... pointlessly upgrade .lock files
   ReactNativePermissions: 7cfad56d13c8961cd2a1005b4955b1400c79ef3e
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 60a80e72d95bf02a01cace55d3697d9724f0d77f
@@ -1229,6 +1259,7 @@ SPEC CHECKSUMS:
   SSZipArchive: fa16b8cc4cdeceb698e5e5d9f67e9558532fbf23
   TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   Yoga: b9a1f7189009fa4b6266ee0a63235547326295d2
@@ -1292,6 +1323,9 @@ SPEC CHECKSUMS:
 =======
   Yoga: 14293148c128a9e7f790fd9f0d5f728f7e853028
 >>>>>>> 2c6105a5... upgrade reanimated to #master
+=======
+  Yoga: bf66bc2b1b49227ce6398e7bc7435c0e4890ed71
+>>>>>>> bc91fd4d... pointlessly upgrade .lock files
 
 PODFILE CHECKSUM: 85d1a376657a62af7427d5a9d5e186c099944553
 
