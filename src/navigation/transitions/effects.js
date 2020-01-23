@@ -1,17 +1,18 @@
-import { StatusBar } from 'react-native';
+import { Animated, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import Animated from 'react-native-reanimated';
-import { deviceUtils } from '../../utils';
+import { calculateKeyboardHeight } from '../../helpers/keyboardHeight';
 import { colors } from '../../styles';
+import { deviceUtils } from '../../utils';
 
 const statusBarHeight = getStatusBarHeight(true);
-
-const expand = {};
-expand.translateY = deviceUtils.dimensions.height;
-
-export let expandedStateTransitionPosition = new Animated.Value(0);
-
 export const sheetVerticalOffset = statusBarHeight;
+export let swapDetailsTransitionPosition = new Animated.Value(0);
+
+const backgroundInterpolator = ({
+  next: { progress: next } = { next: undefined },
+}) => ({
+  cardStyle: next === undefined ? {} : { opacity: 1 },
+});
 
 const exchangeStyleInterpolator = ({
   current: { progress: current },
@@ -22,12 +23,6 @@ const exchangeStyleInterpolator = ({
     outputRange: [0, 0, 1, 1],
   });
 
-  const cardBackgroundOpacity = current.interpolate({
-    extrapolate: Animated.Extrapolate.CLAMP,
-    inputRange: [-1, 0, 0.96, 0.975, 2],
-    outputRange: [0, 0, 0, 1, 1],
-  });
-
   const translateY = current.interpolate({
     inputRange: [0, 1],
     outputRange: [screen.height, 0],
@@ -35,8 +30,7 @@ const exchangeStyleInterpolator = ({
 
   return {
     cardStyle: {
-      backgroundColor: '#121212',
-      opacity: cardBackgroundOpacity,
+      // Translation for the animation of the current card
       transform: [{ translateY }],
     },
     overlayStyle: {
@@ -45,7 +39,6 @@ const exchangeStyleInterpolator = ({
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.4,
       shadowRadius: 25,
-      // Translation for the animation of the current card
     },
   };
 };
@@ -54,10 +47,7 @@ const expandStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },
 }) => {
-  expandedStateTransitionPosition = current;
-
   const backgroundOpacity = current.interpolate({
-    extrapolate: Animated.Extrapolate.CLAMP,
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, 0.7, 0.7],
   });
@@ -111,14 +101,44 @@ const sheetStyleInterpolator = ({
   };
 };
 
-const backgroundInterpolator = ({
-  next: { progress: next } = { next: undefined },
+const swapDetailInterpolator = ({
+  current: { progress: current },
+  layouts: { screen },
 }) => {
-  if (next === undefined) {
-    return { cardStyle: {} };
-  }
+  // kinda hacky... but lets me expose the
+  // stack's transitionPosition in an exportable wayy
+  Animated.spring(swapDetailsTransitionPosition, {
+    toValue: current,
+    useNativeDriver: true,
+  }).start();
 
-  return { cardStyle: { opacity: 1 } };
+  const backgroundOpacity = current.interpolate({
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, 0.7, 0.7],
+  });
+
+  const translateY = current.interpolate({
+    inputRange: [0, 1],
+    outputRange: [screen.height, 0],
+  });
+
+  return {
+    cardStyle: {
+      // Translation for the animation of the current card
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
+      backgroundColor: 'rgb(37, 41, 46)',
+      borderBottomWidth: calculateKeyboardHeight(deviceUtils.dimensions.height),
+      borderColor: colors.blueGreyDarker,
+      opacity: backgroundOpacity,
+      overflow: 'hidden',
+      shadowColor: colors.dark,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.6,
+      shadowRadius: 25,
+    },
+  };
 };
 
 const closeSpec = {
@@ -158,6 +178,11 @@ export const onTransitionStart = props => {
   }
 };
 
+export const backgroundPreset = {
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: backgroundInterpolator,
+};
+
 export const exchangePreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
@@ -170,17 +195,6 @@ export const exchangePreset = {
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
-export const overlayExpandedPreset = {
-  cardOverlayEnabled: true,
-  cardShadowEnabled: true,
-  cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: expandStyleInterpolator,
-  cardTransparent: true,
-  gestureDirection: 'vertical',
-  gestureResponseDistance,
-  transitionSpec: { close: closeSpec, open: openSpec },
-};
-
 export const expandedPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
@@ -190,6 +204,17 @@ export const expandedPreset = {
   gestureDirection: 'vertical',
   gestureResponseDistance,
   onTransitionStart,
+  transitionSpec: { close: closeSpec, open: openSpec },
+};
+
+export const overlayExpandedPreset = {
+  cardOverlayEnabled: true,
+  cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: expandStyleInterpolator,
+  cardTransparent: true,
+  gestureDirection: 'vertical',
+  gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: openSpec },
 };
 
@@ -205,7 +230,12 @@ export const sheetPreset = {
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
-export const backgroundPreset = {
+export const swapDetailsPreset = {
+  cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: backgroundInterpolator,
+  cardStyleInterpolator: swapDetailInterpolator,
+  cardTransparent: true,
+  gestureDirection: 'vertical',
+  gestureResponseDistance,
+  transitionSpec: { close: closeSpec, open: openSpec },
 };

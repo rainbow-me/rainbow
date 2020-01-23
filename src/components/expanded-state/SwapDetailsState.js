@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
-import { expandedStateTransitionPosition } from '../../navigation/transitions/effects';
+import { swapDetailsTransitionPosition } from '../../navigation/transitions/effects';
 import { colors, padding, position } from '../../styles';
+import { TouchableScale } from '../animations';
 import { FloatingEmojis, FloatingEmojisTapHandler } from '../floating-emojis';
 import {
   ColumnWithMargins,
@@ -25,6 +26,11 @@ const DetailsRow = ({ label, value, ...props }) => (
     </Text>
   </Row>
 );
+
+const FloatingEmojisOpacity = swapDetailsTransitionPosition.interpolate({
+  inputRange: [0.93, 1],
+  outputRange: [0, 1],
+});
 
 const SwapDetailsState = ({
   inputCurrencySymbol,
@@ -49,65 +55,67 @@ const SwapDetailsState = ({
     <KeyboardFixedOpenLayout>
       <TouchableBackdrop onPress={goBack} />
       <FloatingPanels maxWidth={275} width={275}>
-        <AssetPanel overflow="visible">
-          <FloatingEmojis
-            distance={350}
-            duration={2000}
-            emoji={emoji}
-            size={36}
-            transitionPosition={expandedStateTransitionPosition}
-            wiggleFactor={1}
-          >
-            {({ onNewEmoji }) => (
-              <FloatingEmojisTapHandler onNewEmoji={onNewEmoji}>
-                <ColumnWithMargins
-                  {...position.centeredAsObject}
-                  css={padding(24, 19)}
-                  margin={24}
-                >
-                  {inputCurrencySymbol && inputExecutionRate && (
-                    <DetailsRow
-                      label={`1 ${inputCurrencySymbol}`}
-                      value={`${inputExecutionRate} ${outputCurrencySymbol}`}
-                    />
-                  )}
-                  {outputCurrencySymbol && outputExecutionRate && (
-                    <DetailsRow
-                      label={`1 ${outputCurrencySymbol}`}
-                      value={`${outputExecutionRate} ${inputCurrencySymbol}`}
-                    />
-                  )}
-                  {inputCurrencySymbol && inputNativePrice && (
-                    <DetailsRow
-                      label={inputCurrencySymbol}
-                      value={inputNativePrice}
-                    />
-                  )}
-                  {outputCurrencySymbol && outputNativePrice && (
-                    <DetailsRow
-                      label={outputCurrencySymbol}
-                      value={outputNativePrice}
-                    />
-                  )}
-                  <Row align="center" justify="space-between">
-                    <Text size="lmedium">Exchange</Text>
-                    <RowWithMargins align="center" margin={5}>
-                      <Emoji
-                        lineHeight="none"
-                        name="unicorn_face"
-                        size="lmedium"
-                        weight="medium"
+        <FloatingEmojis
+          distance={350}
+          duration={2000}
+          emoji={emoji}
+          opacity={FloatingEmojisOpacity}
+          size={36}
+          wiggleFactor={1}
+        >
+          {({ onNewEmoji }) => (
+            <FloatingEmojisTapHandler onNewEmoji={onNewEmoji}>
+              <TouchableScale activeScale={1.01}>
+                <AssetPanel overflow="visible">
+                  <ColumnWithMargins
+                    {...position.centeredAsObject}
+                    css={padding(24, 19)}
+                    margin={24}
+                  >
+                    {inputCurrencySymbol && inputExecutionRate && (
+                      <DetailsRow
+                        label={`1 ${inputCurrencySymbol}`}
+                        value={`${inputExecutionRate} ${outputCurrencySymbol}`}
                       />
-                      <Text color="#DC6BE5" size="lmedium" weight="medium">
-                        Uniswap
-                      </Text>
-                    </RowWithMargins>
-                  </Row>
-                </ColumnWithMargins>
-              </FloatingEmojisTapHandler>
-            )}
-          </FloatingEmojis>
-        </AssetPanel>
+                    )}
+                    {outputCurrencySymbol && outputExecutionRate && (
+                      <DetailsRow
+                        label={`1 ${outputCurrencySymbol}`}
+                        value={`${outputExecutionRate} ${inputCurrencySymbol}`}
+                      />
+                    )}
+                    {inputCurrencySymbol && inputNativePrice && (
+                      <DetailsRow
+                        label={inputCurrencySymbol}
+                        value={inputNativePrice}
+                      />
+                    )}
+                    {outputCurrencySymbol && outputNativePrice && (
+                      <DetailsRow
+                        label={outputCurrencySymbol}
+                        value={outputNativePrice}
+                      />
+                    )}
+                    <Row align="center" justify="space-between">
+                      <Text size="lmedium">Exchange</Text>
+                      <RowWithMargins align="center" margin={5}>
+                        <Emoji
+                          lineHeight="none"
+                          name="unicorn_face"
+                          size="lmedium"
+                          weight="medium"
+                        />
+                        <Text color="#DC6BE5" size="lmedium" weight="medium">
+                          Uniswap
+                        </Text>
+                      </RowWithMargins>
+                    </Row>
+                  </ColumnWithMargins>
+                </AssetPanel>
+              </TouchableScale>
+            </FloatingEmojisTapHandler>
+          )}
+        </FloatingEmojis>
       </FloatingPanels>
     </KeyboardFixedOpenLayout>
   );
