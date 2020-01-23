@@ -25,12 +25,15 @@ import SettingsModal from '../SettingsModal';
 import TransactionConfirmationScreenWithData from '../TransactionConfirmationScreenWithData';
 import WalletScreen from '../WalletScreen';
 import {
+  backgroundPreset,
   exchangePreset,
   expandedPreset,
-  sheetPreset,
-  backgroundPreset,
   overlayExpandedPreset,
+  sheetPreset,
+  swapDetailsPreset,
 } from '../../navigation/transitions/effects';
+
+enableScreens();
 
 const onTransitionEnd = () =>
   store.dispatch(updateTransitionProps({ isTransitioning: false }));
@@ -126,6 +129,10 @@ const MainNavigator = createStackNavigator(
       screen: SettingsModal,
       transparentCard: true,
     },
+    SwapDetailsScreen: {
+      navigationOptions: swapDetailsPreset,
+      screen: ExpandedAssetScreenWithData,
+    },
     SwipeLayout: {
       navigationOptions: {
         ...backgroundPreset,
@@ -150,6 +157,7 @@ const MainNavigator = createStackNavigator(
     },
     headerMode: 'none',
     initialRouteName: 'SwipeLayout',
+    keyboardHandlingEnabled: false,
     mode: 'modal',
   }
 );

@@ -1,16 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { Animated, View } from 'react-native';
 import { position } from '../../styles';
-import { interpolate } from '../animations';
 import FloatingEmoji from './FloatingEmoji';
 
-const { call, cond, lessThan, onChange, useCode } = Animated;
-
 const EMPTY_ARRAY = [];
-const pageTransitionThreshold = 0.93;
-
 const getRandomNumber = (min, max) => Math.random() * (max - min) + min;
 
 const FloatingEmojis = ({
@@ -18,9 +12,9 @@ const FloatingEmojis = ({
   distance,
   duration,
   emoji,
+  opacity,
   range,
   size,
-  transitionPosition,
   wiggleFactor,
   ...props
 }) => {
@@ -30,26 +24,15 @@ const FloatingEmojis = ({
   const timeout = useRef(undefined);
   useEffect(() => () => timeout.current && clearTimeout(timeout.current), []);
 
-  const clearEmojis = useCallback(() => setEmojis(EMPTY_ARRAY), [setEmojis]);
+  const clearEmojis = useCallback(() => setEmojis(EMPTY_ARRAY), []);
 
-  // Clear emojis if page transitionPosition falls below `pageTransitionThreshold`
+  // 🚧️ TODO: 🚧️
+  // Clear emojis if page navigatorPosition falls below 0.93 (which we should call like `pageTransitionThreshold` or something)
   // otherwise, the FloatingEmojis look weird during stack transitions
-  useCode(
-    ...(transitionPosition
-      ? [
-          onChange(
-            lessThan(transitionPosition, pageTransitionThreshold),
-            cond(
-              lessThan(transitionPosition, pageTransitionThreshold),
-              call([], clearEmojis)
-            )
-          ),
-        ]
-      : [])
-  );
 
   const onNewEmoji = useCallback(
     (x, y) => {
+      // Set timeout to automatically clearEmojis after the latest one has finished animating
       if (timeout.current) clearTimeout(timeout.current);
       timeout.current = setTimeout(clearEmojis, duration * 1.1);
 
@@ -81,15 +64,7 @@ const FloatingEmojis = ({
       {typeof children === 'function' ? children({ onNewEmoji }) : children}
       <Animated.View
         pointerEvents="none"
-        style={{
-          ...position.coverAsObject,
-          opacity: !transitionPosition
-            ? 1
-            : interpolate(transitionPosition, {
-                inputRange: [pageTransitionThreshold, 1],
-                outputRange: [0, 1],
-              }),
-        }}
+        style={{ opacity, ...position.coverAsObject }}
       >
         {emojis.map(({ emojiToRender, x, y }, index) => (
           <FloatingEmoji
@@ -114,16 +89,21 @@ FloatingEmojis.propTypes = {
   distance: PropTypes.number,
   duration: PropTypes.number,
   emoji: PropTypes.string.isRequired,
+  opacity: PropTypes.oneOfType([PropTypes.number, PropTypes.object]),
   range: PropTypes.arrayOf(PropTypes.number),
   size: PropTypes.string.isRequired,
-  transitionPosition: PropTypes.object,
   wiggleFactor: PropTypes.number,
 };
 
 FloatingEmojis.defaultProps = {
   distance: 130,
   duration: 2000,
-  emoji: '+1', // aka 👍️
+  // Defaults the emoji to 👍️ (thumbs up).
+  // To view complete list of emojis compatible with this component,
+  // head to https://unicodey.com/emoji-data/table.htm and reference the
+  // table's "Short Name" column.
+  emoji: '+1',
+  opacity: 1,
   range: [0, 80],
   size: 30,
   wiggleFactor: 0.5,
