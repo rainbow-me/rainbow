@@ -4,17 +4,25 @@ import {
   get,
   includes,
   isNil,
+  keyBy,
   map,
+  mapValues,
+  property,
   remove,
   uniqBy,
 } from 'lodash';
+import { uniswapClient } from '../apollo/client';
+import { UNISWAP_PRICES_QUERY } from '../apollo/queries';
 import {
+  getAssetPricesFromUniswap,
   getAssets,
   getCompoundAssets,
   getLocalTransactions,
+  removeAssetPricesFromUniswap,
   removeAssets,
   removeCompoundAssets,
   removeLocalTransactions,
+  saveAssetPricesFromUniswap,
   saveAssets,
   saveCompoundAssets,
   saveLocalTransactions,
@@ -22,12 +30,13 @@ import {
 import { apiGetTokenOverrides } from '../handlers/tokenOverrides';
 import { getTransactionByHash } from '../handlers/web3';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
+import { divide } from '../helpers/utilities';
 import { parseAccountAssets, parseAsset } from '../parsers/accounts';
 import { parseCompoundDeposits } from '../parsers/compound';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import parseTransactions from '../parsers/transactions';
 import { loweredTokenOverridesFallback } from '../references';
-import { isLowerCaseMatch } from '../utils';
+import { ethereumUtils, isLowerCaseMatch } from '../utils';
 import {
   uniswapRemovePendingApproval,
   uniswapUpdateAssetPrice,
@@ -39,14 +48,21 @@ let watchPendingTransactionsHandler = null;
 
 // -- Constants --------------------------------------- //
 
+const DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP =
+  'data/DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP';
 const DATA_UPDATE_ASSETS = 'data/DATA_UPDATE_ASSETS';
 const DATA_UPDATE_COMPOUND_ASSETS = 'data/DATA_UPDATE_COMPOUND_ASSETS';
 const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
 const DATA_UPDATE_TOKEN_OVERRIDES = 'data/DATA_UPDATE_TOKEN_OVERRIDES';
+const DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION =
+  'data/DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION';
 
 const DATA_LOAD_ASSETS_REQUEST = 'data/DATA_LOAD_ASSETS_REQUEST';
 const DATA_LOAD_ASSETS_SUCCESS = 'data/DATA_LOAD_ASSETS_SUCCESS';
 const DATA_LOAD_ASSETS_FAILURE = 'data/DATA_LOAD_ASSETS_FAILURE';
+
+const DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS =
+  'data/DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS';
 
 const DATA_LOAD_COMPOUND_ASSETS_SUCCESS =
   'data/DATA_LOAD_COMPOUND_ASSETS_SUCCESS';
@@ -63,6 +79,17 @@ const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
 // -- Actions ---------------------------------------- //
 export const dataLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
+  try {
+    const assetPricesFromUniswap = await getAssetPricesFromUniswap(
+      accountAddress,
+      network
+    );
+    dispatch({
+      payload: assetPricesFromUniswap,
+      type: DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS,
+    });
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
   try {
     dispatch({ type: DATA_LOAD_ASSETS_REQUEST });
     const assets = await getAssets(accountAddress, network);
@@ -102,8 +129,11 @@ export const dataTokenOverridesInit = () => async dispatch => {
 };
 
 export const dataClearState = () => (dispatch, getState) => {
+  const { uniswapPricesSubscription } = getState().data;
   const { accountAddress, network } = getState().settings;
+  uniswapPricesSubscription.unsubscribe();
   removeAssets(accountAddress, network);
+  removeAssetPricesFromUniswap(accountAddress, network);
   removeCompoundAssets(accountAddress, network);
   removeLocalTransactions(accountAddress, network);
   dispatch({ type: DATA_CLEAR_STATE });
@@ -203,11 +233,56 @@ export const addressAssetsReceived = (
   parsedAssets = parsedAssets.filter(
     asset => !!Number(get(asset, 'balance.amount'))
   );
+  if (!change) {
+    const missingPriceAssetAddresses = map(
+      filter(parsedAssets, asset => isNil(asset.price)),
+      property('address')
+    );
+    dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
+  }
   saveAssets(parsedAssets, accountAddress, network);
   dispatch({
     payload: parsedAssets,
     type: DATA_UPDATE_ASSETS,
   });
+};
+
+const subscribeToMissingPrices = addresses => (dispatch, getState) => {
+  const { accountAddress, network } = getState().settings;
+  const { assets, uniswapPricesSubscription } = getState().data;
+  if (uniswapPricesSubscription) {
+    uniswapPricesSubscription.refetch({ addresses });
+  } else {
+    const newSubscription = uniswapClient.watchQuery({
+      fetchPolicy: 'network-only',
+      pollInterval: 15000, // 15 seconds
+      query: UNISWAP_PRICES_QUERY,
+      variables: {
+        addresses,
+      },
+    });
+
+    newSubscription.subscribe({
+      next: ({ data }) => {
+        if (data && data.exchanges) {
+          const nativePriceOfEth = ethereumUtils.getEthPriceUnit(assets);
+          const mappedData = keyBy(data.exchanges, 'tokenAddress');
+          const missingPrices = mapValues(mappedData, value =>
+            divide(nativePriceOfEth, value.price)
+          );
+          saveAssetPricesFromUniswap(missingPrices, accountAddress, network);
+          dispatch({
+            payload: missingPrices,
+            type: DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP,
+          });
+        }
+      },
+    });
+    dispatch({
+      payload: newSubscription,
+      type: DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION,
+    });
+  }
 };
 
 export const compoundInfoReceived = message => (dispatch, getState) => {
@@ -324,16 +399,22 @@ const startPendingTransactionWatcher = () => async dispatch => {
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
+  assetPricesFromUniswap: {},
   assets: [],
   compoundAssets: [],
   loadingAssets: false,
   loadingTransactions: false,
   tokenOverrides: loweredTokenOverridesFallback,
   transactions: [],
+  uniswapPricesSubscription: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
+    case DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION:
+      return { ...state, uniswapPricesSubscription: action.payload };
+    case DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP:
+      return { ...state, assetPricesFromUniswap: action.payload };
     case DATA_UPDATE_ASSETS:
       return { ...state, assets: action.payload };
     case DATA_UPDATE_COMPOUND_ASSETS:
@@ -362,6 +443,11 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         loadingAssets: true,
+      };
+    case DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS:
+      return {
+        ...state,
+        assetPricesFromUniswap: action.payload,
       };
     case DATA_LOAD_ASSETS_SUCCESS:
       return {
