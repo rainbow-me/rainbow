@@ -38,9 +38,9 @@ class TransactionConfirmationScreenWithData extends PureComponent {
   componentDidMount() {
     const openAutomatically = get(
       this.props,
-      'navigation.state.params.openAutomatically'
+      'navigation.state.params.openAutomatically',
     );
-    if (openAutomatically) {
+    if (openAutomatically && !__DEV__) {
       Vibration.vibrate();
     }
   }
@@ -93,7 +93,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     const web3TxnCount = await getTransactionCount(txPayload.from);
     const maxTxnCount = Math.max(
       this.props.transactionCountNonce,
-      web3TxnCount
+      web3TxnCount,
     );
     const nonce = ethers.utils.hexlify(maxTxnCount);
     let txPayloadLatestNonce = { ...txPayload, gasLimit, gasPrice, nonce };
@@ -165,7 +165,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
         await this.props.walletConnectSendStatus(
           peerId,
           requestId,
-          flatFormatSignature
+          flatFormatSignature,
         );
       }
       if (callback) {
@@ -235,5 +235,5 @@ class TransactionConfirmationScreenWithData extends PureComponent {
 export default compose(
   withGas,
   withNavigationFocus,
-  withTransactionConfirmationScreen
+  withTransactionConfirmationScreen,
 )(TransactionConfirmationScreenWithData);

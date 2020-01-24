@@ -21,10 +21,14 @@ class TransactionList extends React.PureComponent {
   };
 
   render() {
+    const data = {
+      transactions: this.props.transactions,
+      requests: this.props.requests,
+    };
     return (
       <View style={this.props.style}>
         <NativeTransactionListView
-          transactions={this.props.transactions}
+          data={data}
           accountAddress={this.props.accountAddress}
           onReceivePress={this.props.onReceivePress}
           onCopyAddressPress={this.props.onCopyAddressPress}
@@ -115,11 +119,11 @@ export default compose(
               const normalizedHash = hash.replace(/-.*/g, '');
               Linking.openURL(`https://etherscan.io/tx/${normalizedHash}`);
             }
-          }
+          },
         );
       }
     },
     onReceivePress: ({ navigation }) => () =>
       navigation.navigate('ReceiveModal'),
-  })
+  }),
 )(TransactionList);

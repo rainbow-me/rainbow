@@ -38,7 +38,7 @@ class TransactionListViewCell: UITableViewCell {
       if let img = UIImage.init(named: transaction.symbol.lowercased()) {
         coinImage.image = img
       } else {
-        coinImage.image = generateCoinImage(transaction.symbol)
+        coinImage.image = generateTextImage(transaction.symbol)
         coinImage.layer.cornerRadius = coinImage.frame.width * 0.5
       }
     }
@@ -86,24 +86,5 @@ class TransactionListViewCell: UITableViewCell {
     default:
       break
     }
-  }
-  
-  fileprivate func generateCoinImage(_ coinCode: String) -> UIImage? {
-    let frame = CGRect(x: 0, y: 0, width: 40, height: 40)
-    
-    let nameLabel = MyBoundedLabel(frame: frame)
-    nameLabel.textAlignment = .center
-    nameLabel.backgroundColor = UIColor(red: 0.23, green: 0.24, blue: 0.32, alpha: 1.0)
-    nameLabel.textColor = .white
-    nameLabel.font = .systemFont(ofSize: 14, weight: .regular)
-    nameLabel.text = coinCode
-    nameLabel.adjustsFontSizeToFitWidth = true
-    
-    UIGraphicsBeginImageContext(frame.size)
-    if let currentContext = UIGraphicsGetCurrentContext() {
-      nameLabel.layer.render(in: currentContext)
-      return UIGraphicsGetImageFromCurrentImageContext()
-    }
-    return nil
   }
 }

@@ -20,40 +20,43 @@ const ProfileScreen = ({
   requests,
   transactions,
   transactionsCount,
-}) => (
-  <Page component={FlexItem} style={position.sizeAsObject('100%')}>
-    <Header justify="space-between">
-      <HeaderButton onPress={onPressSettings}>
-        <Icon color={colors.black} name="gear" />
-      </HeaderButton>
-      <BackButton
-        color={colors.black}
-        direction="right"
-        onPress={onPressBackButton}
-      />
-    </Header>
-    {nativeTransactionListAvailable ? (
-      <TransactionList navigation={navigation} style={{ flex: 1 }} />
-    ) : (
-      <ActivityList
-        accountAddress={accountAddress}
-        header={
-          <ProfileMasthead
-            accountAddress={accountAddress}
-            navigation={navigation}
-            showBottomDivider={!isEmpty}
-          />
-        }
-        isEmpty={isEmpty}
-        nativeCurrency={nativeCurrency}
-        requests={requests}
-        transactions={transactions}
-        transactionsCount={transactionsCount}
-      />
-    )}
-    {isEmpty && <AddFundsInterstitial />}
-  </Page>
-);
+}) => {
+  console.log('REQUESTS', requests);
+  return (
+    <Page component={FlexItem} style={position.sizeAsObject('100%')}>
+      <Header justify="space-between">
+        <HeaderButton onPress={onPressSettings}>
+          <Icon color={colors.black} name="gear" />
+        </HeaderButton>
+        <BackButton
+          color={colors.black}
+          direction="right"
+          onPress={onPressBackButton}
+        />
+      </Header>
+      {nativeTransactionListAvailable ? (
+        <TransactionList navigation={navigation} style={{ flex: 1 }} />
+      ) : (
+        <ActivityList
+          accountAddress={accountAddress}
+          header={
+            <ProfileMasthead
+              accountAddress={accountAddress}
+              navigation={navigation}
+              showBottomDivider={!isEmpty}
+            />
+          }
+          isEmpty={isEmpty}
+          nativeCurrency={nativeCurrency}
+          requests={requests}
+          transactions={transactions}
+          transactionsCount={transactionsCount}
+        />
+      )}
+      {isEmpty && <AddFundsInterstitial />}
+    </Page>
+  );
+};
 
 ProfileScreen.propTypes = {
   accountAddress: PropTypes.string,

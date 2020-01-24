@@ -7,9 +7,15 @@
 
 import Foundation
 
-fileprivate struct TransactionSection {
+enum TransactionSectionTypes {
+  case requests
+  case transactions
+}
+
+struct TransactionSection {
   var header: Date
-  var transactions: [Transaction]
+  var data: [AnyObject]
+  var type: TransactionSectionTypes = .transactions
 }
 
 class TransactionListView: UIView {
@@ -25,14 +31,12 @@ class TransactionListView: UIView {
       header.accountAddress.text = accountAddress
     }
   }
-  @objc var transactions: [Transaction] = [] {
-    /// Every time we receive a new set of transactions, regroup by minedAt in the format "MMMM yyyy"
-    /// Then, re-render tableView with the new data
+  @objc var data: TransactionData = TransactionData() {
     didSet {
       var groups: [Date: [Transaction]] = [:]
       let calendar = Calendar.current
       
-      for transaction in transactions {
+      for transaction in data.value(forKey: "transactions") as! [Transaction] {
         var date = groupByDate(transaction.minedAt)
         
         if calendar.isDateInToday(date) || calendar.isDateInYesterday(date) {
@@ -52,8 +56,24 @@ class TransactionListView: UIView {
         }
       }
       
-      sections = groups.map(TransactionSection.init(header:transactions:))
+      sections = groups.map{ (group) -> TransactionSection in
+        let (header, data) = group
+        return TransactionSection.init(
+          header: header,
+          data: data,
+          type: .transactions)
+      }
       sections.sort { (lhs, rhs) in lhs.header > rhs.header }
+      
+      let requests = data.value(forKey: "requests") as! [TransactionRequest]
+      if requests.count > 0 {
+        if sections.first?.type != .requests {
+          let requestSection = TransactionSection(header: Date(), data: requests, type: .requests)
+          sections.insert(requestSection, at: 0)
+        } else {
+          sections[0].data = requests
+        }
+      }
       tableView.reloadData()
     }
   }
@@ -85,6 +105,7 @@ class TransactionListView: UIView {
     tableView.delaysContentTouches = false
     tableView.separatorStyle = .none
     tableView.register(UINib(nibName: "TransactionListViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListViewCell")
+    tableView.register(UINib(nibName: "TransactionListRequestViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListRequestViewCell")
     
     header.addSubview(headerSeparator)
     header.receive.addTarget(self, action: #selector(onReceivePressed(_:)), for: .touchUpInside)
@@ -121,7 +142,7 @@ extension TransactionListView: UITableViewDataSource, UITableViewDelegate {
   
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     let section = self.sections[section]
-    return section.transactions.count
+    return section.data.count
   }
   
   func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -133,20 +154,24 @@ extension TransactionListView: UITableViewDataSource, UITableViewDelegate {
     let label = UILabel(frame: CGRect(x: 20, y: 20, width: view.frame.width, height: view.frame.height))
     let calendar = Calendar.current
     
-    if calendar.isDateInToday(sections[section].header) {
-      label.text = "Today"
-    } else if calendar.isDateInYesterday(sections[section].header) {
-      label.text = "Yesterday"
-    } else if calendar.isDate(sections[section].header, equalTo: Date(), toGranularity: .month) {
-      label.text = "This month"
-    } else if calendar.isDate(sections[section].header, equalTo: Date(), toGranularity: .year) {
-      let dateFormatter = DateFormatter()
-      dateFormatter.dateFormat = "MMMM"
-      label.text = dateFormatter.string(from: sections[section].header)
+    if sections[section].type == .requests {
+      label.text = "Requests"
     } else {
-      let dateFormatter = DateFormatter()
-      dateFormatter.dateFormat = "MMMM yyyy"
-      label.text = dateFormatter.string(from: sections[section].header)
+      if calendar.isDateInToday(sections[section].header) {
+        label.text = "Today"
+      } else if calendar.isDateInYesterday(sections[section].header) {
+        label.text = "Yesterday"
+      } else if calendar.isDate(sections[section].header, equalTo: Date(), toGranularity: .month) {
+        label.text = "This month"
+      } else if calendar.isDate(sections[section].header, equalTo: Date(), toGranularity: .year) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMMM"
+        label.text = dateFormatter.string(from: sections[section].header)
+      } else {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMMM yyyy"
+        label.text = dateFormatter.string(from: sections[section].header)
+      }
     }
     
     label.font = .systemFont(ofSize: 18.0, weight: .semibold)
@@ -158,16 +183,27 @@ extension TransactionListView: UITableViewDataSource, UITableViewDelegate {
   
   /// Sets a cell for a row at indexPath based on the active section
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let identifier = "TransactionListViewCell"
-    let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! TransactionListViewCell
-    
     let section = sections[indexPath.section]
-    let transaction = section.transactions[indexPath.row]
     
-    cell.set(transaction: transaction)
-    cell.selectionStyle = .none
-    
-    return cell;
+    if section.type == .transactions {
+      let identifier = "TransactionListViewCell"
+      let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! TransactionListViewCell
+      let transaction = section.data[indexPath.row] as! Transaction
+      
+      cell.set(transaction: transaction)
+      cell.selectionStyle = .none
+      
+      return cell;
+    } else {
+      let identifier = "TransactionListRequestViewCell"
+      let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! TransactionListRequestViewCell
+      let request = section.data[indexPath.row] as! TransactionRequest
+      
+      cell.set(request: request)
+      cell.selectionStyle = .none
+      
+      return cell;
+    }
   }
   
   /// Play the select animation and propogate the event to JS runtime (so onItemPress property can receive a nativeEvent with rowIndex in it)

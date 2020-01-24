@@ -76,7 +76,9 @@ class QRScannerScreenWithData extends Component {
 
     if (!data) return null;
     this.setState({ enableScanning: false });
-    Vibration.vibrate();
+    if (!__DEV__) {
+      Vibration.vibrate();
+    }
 
     const address = await addressUtils.getEthereumAddressFromQRCodeData(data);
 
@@ -122,5 +124,5 @@ export default compose(
   withAccountAddress,
   withSafeTimeout,
   withWalletConnectConnections,
-  withStatusBarStyle('light-content')
+  withStatusBarStyle('light-content'),
 )(QRScannerScreenWithData);
