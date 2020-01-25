@@ -89,11 +89,18 @@ class SendHeader extends PureComponent {
     selectedInputId: PropTypes.object,
     setAppearListener: PropTypes.func,
     setSelectedInputId: PropTypes.func,
+    showAssetList: PropTypes.bool,
   };
 
   componentDidMount() {
     this.props.setAppearListener &&
       this.props.setAppearListener(this.focusInput);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (!prevProps.showAssetList && this.props.showAssetList) {
+      this.onBlur();
+    }
   }
 
   componentWillUnmount() {
@@ -104,7 +111,7 @@ class SendHeader extends PureComponent {
     if (this.props.selectedInputId) {
       this.props.selectedInputId.focus();
     } else {
-      this.input && this.input.focus();
+      !this.props.showAssetList && this.input && this.input.focus();
     }
   };
 
@@ -168,6 +175,7 @@ class SendHeader extends PureComponent {
       onChangeAddressInput,
       onPressPaste,
       recipient,
+      showAssetList,
     } = this.props;
 
     const isPreExistingContact = contact.nickname.length > 0;
@@ -179,7 +187,7 @@ class SendHeader extends PureComponent {
           <Label style={{ marginRight: 6, opacity: 0.45 }}>To:</Label>
           <AddressField
             address={recipient}
-            autoFocus
+            autoFocus={!showAssetList}
             currentContact={contact}
             inputRef={this.handleRef}
             name={contact.nickname}

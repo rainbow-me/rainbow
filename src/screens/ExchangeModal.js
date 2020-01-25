@@ -39,6 +39,8 @@ import {
   convertRawAmountToDecimalFormat,
   divide,
   greaterThan,
+  greaterThanOrEqualTo,
+  isZero,
   subtract,
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
@@ -83,7 +85,6 @@ class ExchangeModal extends Component {
     accountAddress: PropTypes.string,
     allAssets: PropTypes.array,
     allowances: PropTypes.object,
-    assetsAvailableOnUniswap: PropTypes.arrayOf(PropTypes.object),
     chainId: PropTypes.number,
     dataAddNewTransaction: PropTypes.func,
     gasLimit: PropTypes.number,
@@ -101,6 +102,7 @@ class ExchangeModal extends Component {
     tradeDetails: PropTypes.object,
     txFees: PropTypes.object,
     uniswapAddPendingApproval: PropTypes.func,
+    uniswapAssetsInWallet: PropTypes.arrayOf(PropTypes.object),
     uniswapUpdateAllowances: PropTypes.func,
   };
 
@@ -370,11 +372,11 @@ class ExchangeModal extends Component {
       const isOutputEth = outputAddress === 'eth';
 
       const rawInputAmount = convertAmountToRawAmount(
-        parseFloat(inputAmount) || 0,
+        inputAmount || 0,
         inputDecimals
       );
       const rawOutputAmount = convertAmountToRawAmount(
-        parseFloat(outputAmount) || 0,
+        outputAmount || 0,
         outputDecimals
       );
 
@@ -429,8 +431,7 @@ class ExchangeModal extends Component {
       );
 
       const isSufficientBalance =
-        !parseFloat(inputAmount) ||
-        parseFloat(inputBalance) >= parseFloat(inputAmount);
+        !inputAmount || greaterThanOrEqualTo(inputBalance, inputAmount);
 
       this.setState({
         isSufficientBalance,
@@ -506,8 +507,10 @@ class ExchangeModal extends Component {
           );
 
           this.setState({
-            isSufficientBalance:
-              parseFloat(inputBalance) >= parseFloat(rawUpdatedInputAmount),
+            isSufficientBalance: greaterThanOrEqualTo(
+              inputBalance,
+              rawUpdatedInputAmount
+            ),
           });
         }
       }
@@ -641,17 +644,21 @@ class ExchangeModal extends Component {
   };
 
   navigateToSelectInputCurrency = () => {
-    this.props.navigation.navigate('CurrencySelectScreen', {
-      onSelectCurrency: this.setInputCurrency,
-      type: CurrencySelectionTypes.input,
-    });
+    InteractionManager.runAfterInteractions(() =>
+      this.props.navigation.navigate('CurrencySelectScreen', {
+        onSelectCurrency: this.setInputCurrency,
+        type: CurrencySelectionTypes.input,
+      })
+    );
   };
 
   navigateToSelectOutputCurrency = () => {
-    this.props.navigation.navigate('CurrencySelectScreen', {
-      onSelectCurrency: this.setOutputCurrency,
-      type: CurrencySelectionTypes.output,
-    });
+    InteractionManager.runAfterInteractions(() =>
+      this.props.navigation.navigate('CurrencySelectScreen', {
+        onSelectCurrency: this.setOutputCurrency,
+        type: CurrencySelectionTypes.output,
+      })
+    );
   };
 
   getMarketPrice = () => {
@@ -675,7 +682,7 @@ class ExchangeModal extends Component {
       if (!this.nativeFieldRef.isFocused()) {
         let nativeAmount = null;
 
-        const isInputZero = parseFloat(inputAmount) === 0;
+        const isInputZero = isZero(inputAmount);
 
         if (inputAmount && !isInputZero) {
           let nativePrice = get(inputCurrency, 'native.price.amount', null);
@@ -715,7 +722,7 @@ class ExchangeModal extends Component {
       let inputAmount = null;
       let inputAmountDisplay = null;
 
-      const isNativeZero = parseFloat(nativeAmount) === 0;
+      const isNativeZero = isZero(nativeAmount);
 
       if (nativeAmount && !isNativeZero) {
         let nativePrice = get(inputCurrency, 'native.price.amount', null);
@@ -755,7 +762,7 @@ class ExchangeModal extends Component {
       inputCurrency,
       outputCurrency: previousOutputCurrency,
     } = this.state;
-    const { assetsAvailableOnUniswap } = this.props;
+    const { uniswapAssetsInWallet } = this.props;
 
     this.props.uniswapUpdateOutputCurrency(outputCurrency);
 
@@ -766,7 +773,7 @@ class ExchangeModal extends Component {
     });
 
     const existsInWallet = find(
-      assetsAvailableOnUniswap,
+      uniswapAssetsInWallet,
       asset => get(asset, 'address') === get(previousOutputCurrency, 'address')
     );
     if (userSelected && isSameAsset(inputCurrency, outputCurrency)) {

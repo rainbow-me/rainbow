@@ -793,6 +793,10 @@ class RecyclerAssetList extends Component {
         });
   };
 
+  stickyRowRenderer = (_, data) => (
+    <AssetListHeaderRenderer {...data} isSticky />
+  );
+
   render() {
     const {
       externalScrollView,
@@ -804,17 +808,20 @@ class RecyclerAssetList extends Component {
 
     return (
       <View backgroundColor={colors.white} flex={1} overflow="hidden">
-        <StickyContainer stickyHeaderIndices={headersIndices}>
+        <StickyContainer
+          overrideRowRenderer={this.stickyRowRenderer}
+          stickyHeaderIndices={headersIndices}
+        >
           <RecyclerListView
             dataProvider={dataProvider}
+            disableRecycling
             extendedState={{ headersIndices }}
-            itemAnimator={layoutItemAnimator}
             externalScrollView={externalScrollView}
+            itemAnimator={layoutItemAnimator}
             layoutProvider={this.layoutProvider}
             onScroll={this.handleScroll}
             ref={this.handleListRef}
             renderAheadOffset={renderAheadOffset}
-            disableRecycling
             rowRenderer={this.rowRenderer}
             scrollIndicatorInsets={{
               bottom: safeAreaInsetValues.bottom,

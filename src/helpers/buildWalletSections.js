@@ -14,7 +14,6 @@ import { chartExpandedAvailable } from '../experimentalConfig';
 
 const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
-const assetsSelector = state => state.assets;
 const assetsTotalSelector = state => state.assetsTotal;
 const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
 const isWalletEthZeroSelector = state => state.isWalletEthZero;
@@ -102,7 +101,6 @@ const withUniswapSection = (
 const withBalanceSection = (
   allAssets,
   allAssetsCount,
-  assets,
   assetsTotal,
   isBalancesSectionEmpty,
   isWalletEthZero,
@@ -213,7 +211,6 @@ const balanceSectionSelector = createSelector(
   [
     allAssetsSelector,
     allAssetsCountSelector,
-    assetsSelector,
     assetsTotalSelector,
     isBalancesSectionEmptySelector,
     isWalletEthZeroSelector,
