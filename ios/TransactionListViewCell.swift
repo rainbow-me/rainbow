@@ -28,8 +28,10 @@ class TransactionListViewCell: UITableViewCell {
     nativeDisplay.text = transaction.nativeDisplay
     balanceDisplay.text = transaction.balanceDisplay
     
-    transactionIcon.image = UIImage.init(named: transaction.status.lowercased())
-    transactionIcon.tintAdjustmentMode = .normal
+    if let image = UIImage.init(named: transaction.status.lowercased()) {
+      transactionIcon.image = image
+      transactionIcon.tintAdjustmentMode = .normal
+    }
     
     setStatusColor(transaction)
     setCellColors(transaction)

@@ -8,12 +8,10 @@
 import Foundation
 
 class TransactionViewModelTransactionRequestItem : TransactionViewModelProtocol {
+  var sections: [TransactionSectionProtocol]
   var type: TransactionSectionTypes = .requests
-  var sectionTitle: String? = "Requests"
-  
-  var requests: [TransactionRequest]
   
   init(requests: [TransactionRequest]) {
-    self.requests = requests;
+    self.sections = [TransactionRequestSection(data: requests)]
   }
 }

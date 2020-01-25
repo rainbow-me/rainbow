@@ -17,13 +17,13 @@
 
 @implementation RCTConvert (TransactionList)
 
-+ (NSDictionary *)TransactionData:(id)json
++ (TransactionData *)TransactionData:(id)json
 {
   json = [self NSDictionary:json];
-  return @{
-    @"requests": [RCTConvert TransactionRequests:[json valueForKey:@"requests"]],
-    @"transactions": [RCTConvert Transactions:[json valueForKey:@"transactions"]]
-  };
+  TransactionData *data = [[TransactionData alloc] init];
+  data.requests = [RCTConvert TransactionRequests:[json valueForKey:@"requests"]];
+  data.transactions = [RCTConvert Transactions:[json valueForKey:@"transactions"]];
+  return data;
 }
 
 + (NSArray<Transaction*> *)Transactions:(id)json
@@ -46,7 +46,11 @@
     transaction.balanceDisplay = data[@"balance"][@"display"];
     transaction.type = data[@"type"];
     transaction.pending = [[data valueForKey:@"pending"] boolValue];
-    transaction.minedAt = [NSDate dateWithTimeIntervalSince1970: [data[@"minedAt"] doubleValue]];
+    if (data[@"minedAt"] != [NSNull null]) {
+      transaction.minedAt = [NSDate dateWithTimeIntervalSince1970: [data[@"minedAt"] doubleValue]];
+    } else {
+      transaction.minedAt = [[NSDate alloc] init];
+    }
     
     [result addObject:transaction];
   }
@@ -64,7 +68,7 @@
     request.clientId = data[@"clientId"];
     request.dappName = data[@"dappName"];
     request.imageUrl = data[@"imageUrl"];
-    request.requestedAt = [[NSDate alloc] initWithTimeIntervalSince1970: [data[@"displayDetails"][@"timestampInMs"] doubleValue] / 1000.0];
+    request.requestedAt = [NSDate dateWithTimeIntervalSince1970: [data[@"displayDetails"][@"timestampInMs"] doubleValue] / 1000.0];
     
     [result addObject:request];
   }

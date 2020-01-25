@@ -7,7 +7,8 @@
 
 import Foundation
 
-@objc class TransactionData: NSObject {
-  var transactions: [Transaction] = []
-  var requests: [TransactionRequest] = []
+@objc(TransactionData)
+class TransactionData: NSObject {
+  @objc var transactions: [Transaction] = []
+  @objc var requests: [TransactionRequest] = []
 }
