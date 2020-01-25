@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
@@ -14,11 +15,12 @@ import {
 } from '../components/floating-emojis';
 import { Sheet, SheetButton, SheetButtonRow } from '../components/sheet';
 import Divider from '../components/Divider';
-
-const FAKE_DAI_ITEM = { name: 'Dai', symbol: 'DAI', balance: { display: '$15.12' } };
-const FAKE_USDC_ITEM = { name: 'USD Coin', symbol: 'USDC', balance: { display: '$25.20' } };
+import { useSavingsAccount } from '../hooks';
 
 const SavingsSheet = () => {
+  const savings = useSavingsAccount();
+  console.log('savings', savings);
+
   return (
     <Sheet>
       <SavingsSheetHeader balance="$420.59" lifetimeAccruedInterest="$20.59" />
@@ -41,8 +43,16 @@ const SavingsSheet = () => {
         {({ onNewEmoji }) => (
           <FloatingEmojisTapHandler onNewEmoji={onNewEmoji}>
             <Column paddingBottom={8}>
-              <SavingsCoinRow item={FAKE_DAI_ITEM} />
-              <SavingsCoinRow item={FAKE_USDC_ITEM} />
+              {savings.map(({ name, symbol, ...item }) => (
+                <SavingsCoinRow
+                  item={{
+                    ...item,
+                    name: name.replace('Compound ', ''),
+                    symbol: symbol.substr(1),
+                  }}
+                  key={get(item, 'cTokenAddress')}
+                />
+              ))}
             </Column>
           </FloatingEmojisTapHandler>
         )}

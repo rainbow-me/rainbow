@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { COMPOUND_MARKET_QUERY, COMPOUND_ACCOUNT_TOKEN_QUERY } from '../apollo/queries';
-import { useQuery, useApolloClient } from '@apollo/react-hooks';
+import { useQuery, useApolloClient } from '@apollo/client';
 import { Text } from '../components/text';
 import { useSavingsAccount } from '../hooks';
 import { client } from '../apollo/client';
@@ -41,7 +41,7 @@ const Example = () => {
 
     return data;
   }
-  
+
   const final = exchangeData()
   console.log('data dump ', final)
 

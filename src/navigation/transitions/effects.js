@@ -53,6 +53,7 @@ const expandStyleInterpolator = ({
   });
 
   const translateY = current.interpolate({
+    extrapolate: 'clamp',
     inputRange: [0, 1],
     outputRange: [screen.height, 0],
   });
@@ -76,29 +77,28 @@ const savingsStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },
 }) => {
-  const backgroundOpacity = interpolate(current, {
-    extrapolate: Animated.Extrapolate.CLAMP,
+  const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, 0.4, 0.4],
   });
 
-  const translateY = interpolate(current, {
+  const translateY = current.interpolate({
+    extrapolate: 'clamp',
     inputRange: [0, 1],
     outputRange: [screen.height, 0],
   });
 
   return {
     cardStyle: {
-      opacity: 1,
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
+      backgroundColor: 'rgb(37, 41, 46)',
+      opacity: backgroundOpacity,
       shadowColor: colors.dark,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
       shadowRadius: 25,
-      // Translation for the animation of the current card
-      transform: [{ translateY }],
-    },
-    containerStyle: {
-      backgroundColor: color(37, 41, 46, backgroundOpacity),
     },
   };
 };
@@ -113,6 +113,7 @@ const sheetStyleInterpolator = ({
   });
 
   const translateY = current.interpolate({
+    extrapolate: 'clamp',
     inputRange: [0, 1],
     outputRange: [screen.height, 0],
   });
@@ -250,7 +251,9 @@ export const overlayExpandedPreset = {
 };
 
 export const savingsPreset = {
+  cardOverlayEnabled: true,
   cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: savingsStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',

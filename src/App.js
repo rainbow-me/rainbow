@@ -1,4 +1,4 @@
-import { ApolloProvider } from '@apollo/react-hooks';
+import { ApolloProvider } from '@apollo/client';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import analytics from '@segment/analytics-react-native';
 import { init as initSentry, setRelease } from '@sentry/react-native';
@@ -158,16 +158,16 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   render = () => (
-    <SafeAreaProvider>
       <ApolloProvider client={client}>
+    <SafeAreaProvider>
         <Provider store={store}>
           <FlexItem>
             <OfflineBadge />
             <Routes ref={this.handleNavigatorRef} />
           </FlexItem>
         </Provider>
-      </ApolloProvider>
     </SafeAreaProvider>
+      </ApolloProvider>
   );
 }
 

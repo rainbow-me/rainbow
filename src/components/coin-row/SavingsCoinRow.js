@@ -1,4 +1,3 @@
-import { get } from 'lodash'
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import { colors } from '../../styles';
@@ -11,26 +10,25 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { APRPill } from '../savings';
 
-const BottomRow = ({ balance, native }) => {
-  return (
-    <Fragment>
-      <APRPill>6.82% APR</APRPill>
-      <RowWithMargins align="center" margin={4}>
-        <Icon name="plusCircled" size={15} />
-        <Text color={colors.limeGreen} size="smedium" weight="semibold">
-          20.59 USDC
-        </Text>
-      </RowWithMargins>
-    </Fragment>
-  );
-};
+const BottomRow = ({ lifetimeSupplyInterestAccrued, supplyRate, symbol }) => (
+  <Fragment>
+    <APRPill>{`${(parseFloat(supplyRate) * 100).toFixed(4)}% APR`}</APRPill>
+    <RowWithMargins align="center" margin={4}>
+      <Icon name="plusCircled" size={15} />
+      <Text color={colors.limeGreen} size="smedium" weight="semibold">
+        {parseFloat(lifetimeSupplyInterestAccrued).toFixed(3)} {symbol}
+      </Text>
+    </RowWithMargins>
+  </Fragment>
+);
 
 BottomRow.propTypes = {
-  balance: PropTypes.shape({ display: PropTypes.string }),
-  native: PropTypes.object,
+  lifetimeSupplyInterestAccrued: PropTypes.string,
+  supplyRate: PropTypes.string,
+  symbol: PropTypes.string,
 };
 
-const TopRow = ({ balance, name }) => (
+const TopRow = ({ name, supplyBalanceUnderlying, symbol }) => (
   <Row align="center" justify="space-between" marginBottom={3}>
     <FlexItem flex={1}>
       <CoinName letterSpacing="tight" weight="semibold">
@@ -38,14 +36,17 @@ const TopRow = ({ balance, name }) => (
       </CoinName>
     </FlexItem>
     <FlexItem flex={0}>
-      <BalanceText>{get(balance, 'display', '_')}</BalanceText>
+      <BalanceText>
+        {`${parseFloat(supplyBalanceUnderlying).toFixed(6)} ${symbol}`}
+      </BalanceText>
     </FlexItem>
   </Row>
 );
 
 TopRow.propTypes = {
-  balance: PropTypes.shape({ display: PropTypes.string }),
   name: PropTypes.string,
+  supplyBalanceUnderlying: PropTypes.string,
+  symbol: PropTypes.string,
 };
 
 const SavingsCoinRow = ({ item, onPress, onPressSend, ...props }) => (
