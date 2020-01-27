@@ -13,8 +13,8 @@ import {
 import TimespanSelector from './TimespanSelector';
 import { colors } from '../../styles';
 
-const dataSwitching = [data1, data2, data3, data4];
 const dataColored = [dataColored1, dataColored2, dataColored3];
+const dataSwitching = [dataColored, [data2], [data3], [data4]];
 
 class ValueChart extends React.Component {
   constructor(props) {
@@ -24,10 +24,10 @@ class ValueChart extends React.Component {
       currentChart: 0,
     };
 
-    this.data = [
-      {
-        name: 'Detailed',
-        sections: dataColored.map(data => {
+    this.data = dataSwitching.map((sectionsData, index) => {
+      return {
+        name: index,
+        segments: sectionsData.map(data => {
           return {
             color: 'red',
             line: 'dotted',
@@ -38,23 +38,6 @@ class ValueChart extends React.Component {
             renderStartSeparatator: () => null,
           };
         }),
-      },
-    ];
-
-    this.data = dataSwitching.map((data, index) => {
-      return {
-        name: index,
-        segments: [
-          {
-            color: 'red',
-            line: 'dotted',
-            points: data.map(values => {
-              return { x: values.timestamp, y: values.value };
-            }),
-            renderEndSeparor: () => null,
-            renderStartSeparatator: () => null,
-          },
-        ],
       };
     });
   }
@@ -74,18 +57,17 @@ class ValueChart extends React.Component {
         />
         <Chart
           // DONE:
-          mode="detailed" // "gesture-managed" / "detailed" / "simplified"
+          mode="gesture-managed" // "gesture-managed" / "detailed" / "simplified"
           enableSelect // enable checking value in touched point of chart
           onValueUpdate={value => {
             this._text.updateValue(value);
           }}
-          // INPROGRESS:
           currentDataSource={this.state.currentChart}
-          // TODO:
           amountOfPathPoints={200} // amount of points for switch between charts
+          // TODO:
           autoGenerateImportantPoints // you can specify if you want to select important points in data or do it automatically inside chart
-          // data={dataSwitching}
           data={dataSwitching}
+          newData={this.data}
         />
         <TimespanSelector
           reloadChart={index => this.setState({ currentChart: index })}

@@ -38,31 +38,41 @@ const {
   stopClock,
 } = Animated;
 
-const simplifyChartData = (data, destinatedNumberOfPoints) => {
-  if (data.length > destinatedNumberOfPoints) {
-    let destMul = data.length / destinatedNumberOfPoints;
-    const maxValue = maxBy(data, 'value');
-    const minValue = minBy(data, 'value');
+let allPointsForData = [];
 
-    const timestampMul = Math.floor(
-      (data[data.length - 1].timestamp - data[0].timestamp) / data.length
+const simplifyChartData1 = (data, destinatedNumberOfPoints) => {
+  let allSegmentsPoints = [];
+  if (data.segments.length > 0) {
+    for (let i = 0; i < data.segments.length; i++) {
+      allSegmentsPoints = allSegmentsPoints.concat(data.segments[i].points);
+    }
+  }
+  if (allSegmentsPoints.length > destinatedNumberOfPoints) {
+    let destMul = allSegmentsPoints.length / destinatedNumberOfPoints;
+    const maxValue = maxBy(allSegmentsPoints, 'y');
+    const minValue = minBy(allSegmentsPoints, 'y');
+
+    const xMul = Math.floor(
+      (allSegmentsPoints[allSegmentsPoints.length - 1].x -
+        allSegmentsPoints[0].x) /
+        allSegmentsPoints.length
     );
     let newData = [];
     newData.push({
-      timestamp: data[0].timestamp - timestampMul * 10,
-      value: data[0].value,
+      x: allSegmentsPoints[0].x - xMul * 10,
+      y: allSegmentsPoints[0].y,
     });
     newData.push({
-      timestamp: data[0].timestamp,
-      value: data[0].value,
+      x: allSegmentsPoints[0].x,
+      y: allSegmentsPoints[0].y,
     });
     for (let i = 2; i < destinatedNumberOfPoints - 2; i++) {
       const indexPlace = i * destMul;
       const r = indexPlace % 1;
       const f = Math.floor(indexPlace);
 
-      const firstValue = data[f].value * r;
-      const secondValue = data[f + 1].value * (1 - r);
+      const firstValue = allSegmentsPoints[f].y * r;
+      const secondValue = allSegmentsPoints[f + 1].y * (1 - r);
 
       let finalValue;
       if (firstValue === maxValue) {
@@ -73,21 +83,23 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
         finalValue = firstValue + secondValue;
       }
       newData.push({
-        timestamp: data[0].timestamp + i * timestampMul,
-        value: finalValue,
+        x: allSegmentsPoints[0].x + i * xMul,
+        y: finalValue,
       });
     }
     newData.push({
-      timestamp: data[0].timestamp + destinatedNumberOfPoints * timestampMul,
-      value: data[data.length - 1].value,
+      x: allSegmentsPoints[0].x + destinatedNumberOfPoints * xMul,
+      y: allSegmentsPoints[allSegmentsPoints.length - 1].y,
     });
     newData.push({
-      timestamp:
-        data[0].timestamp +
-        destinatedNumberOfPoints * timestampMul +
-        timestampMul * 10,
-      value: data[data.length - 1].value,
+      x: allSegmentsPoints[0].x + destinatedNumberOfPoints * xMul + xMul * 10,
+      y: allSegmentsPoints[allSegmentsPoints.length - 1].y,
     });
+
+    console.log(data);
+    console.log(newData);
+
+    allPointsForData = allSegmentsPoints;
     return newData;
   }
 };
@@ -142,11 +154,12 @@ export default class Chart extends PureComponent {
     super(props);
 
     this.state = {
-      allData: this.props.data.map(data =>
-        simplifyChartData(data, this.props.amountOfPathPoints)
+      allNewData: this.props.newData.map(data =>
+        simplifyChartData1(data, this.props.amountOfPathPoints)
       ),
-      currentData: simplifyChartData(
-        this.props.data[0],
+
+      currentData: simplifyChartData1(
+        this.props.newData[0],
         this.props.amountOfPathPoints
       ),
       hideLoadingBar: false,
@@ -271,9 +284,9 @@ export default class Chart extends PureComponent {
 
   reloadChart = async (currentInterval, isInitial = false) => {
     if (currentInterval !== this.currentInterval) {
-      let data = this.state.allData;
+      let data = this.state.allNewData;
       if (isInitial) {
-        data[currentInterval] = this.state.allData[currentInterval];
+        data[currentInterval] = this.state.allNewData[currentInterval];
         await this.setState({
           isLoading: true,
         });
@@ -292,12 +305,12 @@ export default class Chart extends PureComponent {
         this.currentInterval = currentInterval;
 
         await this.setState(prevState => ({
-          currentData: prevState.allData[currentInterval],
+          currentData: prevState.allNewData[currentInterval],
           isLoading: false,
         }));
         this.props.onValueUpdate(
-          this.state.allData[currentInterval][
-            this.state.allData[currentInterval].length - 1
+          this.state.allNewData[currentInterval][
+            this.state.allNewData[currentInterval].length - 1
           ].value
         );
       });
@@ -357,7 +370,7 @@ export default class Chart extends PureComponent {
       );
 
     const allNodes = index =>
-      this.props.data.map((value, i) => {
+      this.state.allData.map((value, i) => {
         return chartNode(this.chartsMulti[i], index, i);
       });
 
@@ -371,7 +384,20 @@ export default class Chart extends PureComponent {
       ])
     );
 
-    return animatedPath;
+    return (
+      <AnimatedPath
+        id="main-path"
+        fill="none"
+        stroke={colors.red}
+        strokeWidth={add(
+          strokeWidth,
+          multiply(this.value, thickStrokeWidthDifference)
+        )}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        d={animatedPath}
+      />
+    );
   };
 
   checkValueBoundaries = value => {
@@ -391,28 +417,24 @@ export default class Chart extends PureComponent {
       minValueDistance = 999;
 
     if (this.state.currentData.length > 0) {
-      maxValue = maxBy(this.state.currentData, 'value');
-      minValue = minBy(this.state.currentData, 'value');
+      maxValue = maxBy(this.state.currentData, 'y');
+      minValue = minBy(this.state.currentData, 'y');
       change =
-        ((this.state.currentData[this.state.currentData.length - 1].value -
-          this.state.currentData[0].value) /
-          this.state.currentData[0].value) *
+        ((this.state.currentData[this.state.currentData.length - 1].y -
+          this.state.currentData[0].y) /
+          this.state.currentData[0].y) *
         100;
 
       timePeriod =
-        this.state.currentData[this.state.currentData.length - 1].timestamp -
-        this.state.currentData[0].timestamp;
+        this.state.currentData[this.state.currentData.length - 1].x -
+        this.state.currentData[0].x;
 
       maxValueDistance = this.checkValueBoundaries(
-        ((maxValue.timestamp - this.state.currentData[0].timestamp) /
-          timePeriod) *
-          width -
+        ((maxValue.x - this.state.currentData[0].x) / timePeriod) * width -
           width / 2
       );
       minValueDistance = this.checkValueBoundaries(
-        ((minValue.timestamp - this.state.currentData[0].timestamp) /
-          timePeriod) *
-          width -
+        ((minValue.x - this.state.currentData[0].x) / timePeriod) * width -
           width / 2
       );
     }
@@ -438,7 +460,7 @@ export default class Chart extends PureComponent {
               <TimestampText
                 style={{ transform: [{ translateX: maxValueDistance }] }}
               >
-                ${Number(maxValue.value).toFixed(2)}
+                ${Number(maxValue.y).toFixed(2)}
               </TimestampText>
             </Animated.View>
             <View style={{ flexDirection: 'row' }}>
@@ -457,18 +479,7 @@ export default class Chart extends PureComponent {
                   preserveAspectRatio="none"
                   style={flipY}
                 >
-                  <AnimatedPath
-                    id="main-path"
-                    fill="none"
-                    stroke={change > 0 ? colors.chartGreen : colors.red}
-                    strokeWidth={add(
-                      strokeWidth,
-                      multiply(this.value, thickStrokeWidthDifference)
-                    )}
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                    d={this.animatedPath}
-                  />
+                  {this.animatedPath}
                 </Svg>
               </View>
               <Animated.View
@@ -505,7 +516,7 @@ export default class Chart extends PureComponent {
               <TimestampText
                 style={{ transform: [{ translateX: minValueDistance }] }}
               >
-                ${Number(minValue.value).toFixed(2)}
+                ${Number(minValue.y).toFixed(2)}
               </TimestampText>
             </Animated.View>
           </Animated.View>
@@ -565,7 +576,7 @@ export default class Chart extends PureComponent {
                         this.state.currentData.length)
                   );
                   this.props.onValueUpdate(
-                    this.state.currentData[calculatedIndex].value
+                    this.state.currentData[calculatedIndex].y
                   );
                 })
               )
