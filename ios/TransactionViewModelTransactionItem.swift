@@ -9,8 +9,9 @@ import Foundation
 
 class TransactionViewModelTransactionItem : TransactionViewModelProtocol {
   var sections: [TransactionSectionProtocol] = [TransactionSection]()
+  var onItemPress: (Dictionary<AnyHashable, Any>) -> Void = { _ in }
   var type: TransactionSectionTypes = .transactions
-  
+
   init(transactions: [Transaction]) {
     var groups: [Date: [Transaction]] = [:]
     let calendar = Calendar.current

@@ -8,9 +8,9 @@
 import Foundation
 
 class TransactionListView: UIView, UITableViewDelegate {
-  @objc lazy var onItemPress: RCTBubblingEventBlock = { _ in }
-  @objc lazy var onReceivePress: RCTBubblingEventBlock = { _ in }
-  @objc lazy var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
+  @objc var onItemPress: RCTBubblingEventBlock = { _ in }
+  @objc var onReceivePress: RCTBubblingEventBlock = { _ in }
+  @objc var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
   @objc var duration: TimeInterval = 0.15
   @objc var scaleTo: CGFloat = 0.97
   @objc var enableHapticFeedback: Bool = true
@@ -23,6 +23,7 @@ class TransactionListView: UIView, UITableViewDelegate {
   @objc var data: TransactionData = TransactionData() {
     didSet {
       viewModel = TransactionViewModel(data: data)
+      viewModel!.onItemPress = onItemPress
       tableView.dataSource = viewModel
       tableView.reloadData()
     }
@@ -98,25 +99,5 @@ class TransactionListView: UIView, UITableViewDelegate {
     view.addSubview(label)
     
     return view
-  }
-  
-  // MARK: Handlers
-  
-  /// Play the select animation and propogate the event to JS runtime (so onItemPress property can receive a nativeEvent with rowIndex in it)
-  func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-    onItemPress(["index": indexPath.row])
-    return indexPath
-  }
-  
-  func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
-    if let cell = tableView.cellForRow(at: indexPath) {
-      cell.animateTapStart()
-    }
-  }
-  
-  func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
-    if let cell = tableView.cellForRow(at: indexPath) {
-      cell.animateTapEnd(duration: duration, options: [], scale: scaleTo)
-    }
   }
 }

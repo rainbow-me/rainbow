@@ -15,6 +15,7 @@ enum TransactionSectionTypes {
 protocol TransactionViewModelProtocol {
   var type: TransactionSectionTypes { get }
   var sections: [TransactionSectionProtocol] { get }
+  var onItemPress: (Dictionary<AnyHashable, Any>) -> Void { get }
 }
 
 protocol TransactionSectionProtocol {

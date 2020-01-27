@@ -9,6 +9,7 @@ import Foundation
 
 class TransactionViewModelTransactionRequestItem : TransactionViewModelProtocol {
   var sections: [TransactionSectionProtocol]
+  var onItemPress: (Dictionary<AnyHashable, Any>) -> Void = { _ in }
   var type: TransactionSectionTypes = .requests
   
   init(requests: [TransactionRequest]) {
