@@ -9,7 +9,8 @@ import Foundation
 
 class TransactionViewModel : NSObject, UITableViewDataSource {
   var items = [TransactionViewModelProtocol]()
-  var onItemPress: (Dictionary<AnyHashable, Any>) -> Void = { _ in }
+  var onTransactionPress: (Dictionary<AnyHashable, Any>) -> Void = { _ in }
+  var onRequestPress: (Dictionary<AnyHashable, Any>) -> Void = { _ in }
   var sections: [TransactionSectionProtocol] {
     get {
       return items.flatMap { $0.sections }
@@ -52,7 +53,7 @@ class TransactionViewModel : NSObject, UITableViewDataSource {
       let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionListViewCell", for: indexPath) as! TransactionListViewCell
       let transaction = sections[indexPath.section].data[indexPath.row] as! Transaction
       
-      cell.onItemPress = onItemPress
+      cell.onItemPress = onTransactionPress
       cell.row = indexPath.row
       cell.set(transaction: transaction)
       cell.selectionStyle = .none
@@ -62,7 +63,7 @@ class TransactionViewModel : NSObject, UITableViewDataSource {
       let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionListRequestViewCell", for: indexPath) as! TransactionListRequestViewCell
       let request = sections[indexPath.section].data[indexPath.row] as! TransactionRequest
       
-      cell.onItemPress = onItemPress
+      cell.onItemPress = onRequestPress
       cell.row = indexPath.row
       cell.set(request: request)
       cell.selectionStyle = .none

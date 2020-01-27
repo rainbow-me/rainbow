@@ -7,19 +7,18 @@
 
 import Kingfisher
 
-class TransactionListRequestViewCell: UITableViewCell {
+class TransactionListRequestViewCell: TransactionListBaseCell {
   @IBOutlet weak var openButton: UIView!
   @IBOutlet weak var transactionType: UILabel!
   @IBOutlet weak var walletName: UILabel!
   @IBOutlet weak var walletImage: UIImageView!
   
-  private let duration = 0.1
-  private let scaleTo: CGFloat = 0.97
-  private let hapticType = "select"
-  
   var timer: Timer? = nil
-  var onItemPress: (Dictionary<AnyHashable, Any>) -> Void = { _ in }
-  var row: Int? = nil
+  
+  override func awakeFromNib() {
+    super.awakeFromNib()
+    addShadowLayer(walletImage)
+  }
   
   func set(request: TransactionRequest) {
     let expirationTime = request.requestedAt.addingTimeInterval(3600.0)
@@ -41,26 +40,6 @@ class TransactionListRequestViewCell: UITableViewCell {
       let url = URL(string: request.imageUrl!)
       self.walletImage.kf.setImage(with: url)
     }
-  }
-  
-  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapStart(
-      duration: duration,
-      options: .curveEaseOut,
-      scale: scaleTo,
-      useHaptic: hapticType
-    )
-  }
-  
-  override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapEnd(duration: duration, options: .curveEaseOut, scale: scaleTo)
-    if row != nil {
-      onItemPress(["index":row!])
-    }
-  }
-  
-  override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapEnd(duration: duration, options: .curveEaseOut, scale: scaleTo)
   }
   
   deinit {

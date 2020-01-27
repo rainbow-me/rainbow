@@ -32,7 +32,8 @@ class TransactionList extends React.PureComponent {
           accountAddress={this.props.accountAddress}
           onReceivePress={this.props.onReceivePress}
           onCopyAddressPress={this.props.onCopyAddressPress}
-          onItemPress={this.props.onItemPress}
+          onRequestPress={this.props.onRequestPress}
+          onTransactionPress={this.props.onTransactionPress}
           style={this.props.style}
         />
         <FloatingEmojis
@@ -71,7 +72,16 @@ export default compose(
       setEmojiCount(emojiCount + 1);
       Clipboard.setString(accountAddress);
     },
-    onItemPress: ({ transactions, contacts, navigation }) => e => {
+    onRequestPress: ({ requests, navigation }) => e => {
+      const { index } = e.nativeEvent;
+      const item = requests[index];
+      navigation.navigate({
+        params: { transactionDetails: item },
+        routeName: 'ConfirmRequest',
+      });
+      return;
+    },
+    onTransactionPress: ({ transactions, contacts, navigation }) => e => {
       const { index } = e.nativeEvent;
       const item = transactions[index];
       const { hash, from, to, status } = item;

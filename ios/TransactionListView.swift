@@ -8,7 +8,8 @@
 import Foundation
 
 class TransactionListView: UIView, UITableViewDelegate {
-  @objc var onItemPress: RCTBubblingEventBlock = { _ in }
+  @objc var onTransactionPress: RCTBubblingEventBlock = { _ in }
+  @objc var onRequestPress: RCTBubblingEventBlock = { _ in }
   @objc var onReceivePress: RCTBubblingEventBlock = { _ in }
   @objc var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
   @objc var duration: TimeInterval = 0.15
@@ -23,7 +24,8 @@ class TransactionListView: UIView, UITableViewDelegate {
   @objc var data: TransactionData = TransactionData() {
     didSet {
       viewModel = TransactionViewModel(data: data)
-      viewModel!.onItemPress = onItemPress
+      viewModel!.onRequestPress = onRequestPress
+      viewModel!.onTransactionPress = onTransactionPress
       tableView.dataSource = viewModel
       tableView.reloadData()
     }
