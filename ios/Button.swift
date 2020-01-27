@@ -15,7 +15,7 @@ class Button : RCTView {
       alpha = disabled ? 0.3 : 1.0
     }
   }
-  @objc var duration: TimeInterval = 0.15
+  @objc var duration: TimeInterval = 0.1
   @objc var scaleTo: CGFloat = 0.97
   @objc var enableHapticFeedback: Bool = true
   @objc var hapticType: String = "selection"
