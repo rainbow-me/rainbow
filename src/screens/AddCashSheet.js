@@ -1,5 +1,7 @@
 import MaskedView from '@react-native-community/masked-view';
-import React, { Component } from 'react';
+import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import { StatusBar, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import RadialGradient from 'react-native-radial-gradient';
@@ -13,7 +15,8 @@ import {
   VirtualKeyboard,
 } from '../components/add-cash';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
-import { withTransitionProps } from '../hoc';
+import { requestWyreApplePay } from '../handlers/wyre';
+import { withAccountAddress, withTransitionProps } from '../hoc';
 import { borders, colors, padding } from '../styles';
 import { deviceUtils, safeAreaInsetValues } from '../utils';
 import AddCashSelector from '../components/add-cash/AddCashSelector';
@@ -64,7 +67,8 @@ function runSpring(clock, value, dest, velocity, stiffness, damping) {
   ]);
 }
 
-const cashLimit = 1500;
+const cashLimitAnnually = 1500;
+const cashLimitDaily = 250;
 
 const cashFontSize = deviceUtils.dimensions.width * 0.24;
 const isTinyIphone = deviceUtils.dimensions.width < 375 ? true : false;
@@ -100,153 +104,152 @@ const SheetContainer = isNativeStackAvailable
       top: ${statusBarHeight};
     `;
 
-class AddCashSheet extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      coinButtonWidth: 80,
-      coinButtonX: 98,
-      scaleAnim: 1,
-      shakeAnim: 0,
-      text: null,
-    };
-  }
+const shakeAnimation = () => runSpring(new Clock(), -10, 0, -1000, 5500, 35);
 
-  onPress(val) {
-    let curText = this.state.text;
-    if (!curText) {
-      if (val === '0' || isNaN(val)) {
-        this.setState({
-          shakeAnim: runSpring(new Clock(), -10, 0, -1000, 5500, 35),
-        });
-        return;
-      } else curText = val;
-    } else if (isNaN(val)) {
-      if (val === 'back') {
-        curText = curText.slice(0, -1);
-      } else if (curText.includes('.')) {
-        this.setState({
-          shakeAnim: runSpring(new Clock(), -10, 0, -1000, 5500, 35),
-        });
-        return;
-      } else curText += val;
-    } else {
-      if (curText.charAt(curText.length - 3) === '.') {
-        this.setState({
-          shakeAnim: runSpring(new Clock(), -10, 0, -1000, 5500, 35),
-        });
-        return;
-      } else if (curText + val <= cashLimit) {
-        curText += val;
+const currencies = ['ETH', 'DAI', 'USDC'];
+const initialCurrencyIndex = 1;
+
+const AddCashSheet = ({ accountAddress }) => {
+  const [scaleAnim, setScaleAnim] = useState(1);
+  const [shakeAnim, setShakeAnim] = useState(0);
+  const [text, setText] = useState(null);
+  const [destCurrency, setDestCurrency] = useState(
+    currencies[initialCurrencyIndex]
+  );
+
+  const onPress = val =>
+    setText(prevText => {
+      let curText = prevText;
+      if (!curText) {
+        if (val === '0' || isNaN(val)) {
+          setShakeAnim(shakeAnimation());
+          return prevText;
+        } else curText = val;
+      } else if (isNaN(val)) {
+        if (val === 'back') {
+          curText = curText.slice(0, -1);
+        } else if (curText.includes('.')) {
+          setShakeAnim(shakeAnimation());
+          return prevText;
+        } else curText += val;
       } else {
-        this.setState({
-          shakeAnim: runSpring(new Clock(), -10, 0, -1000, 5500, 35),
-        });
-        return;
+        if (curText.charAt(curText.length - 3) === '.') {
+          setShakeAnim(shakeAnimation());
+          return prevText;
+        } else if (curText + val <= cashLimitDaily) {
+          curText += val;
+        } else {
+          setShakeAnim(shakeAnimation());
+          return prevText;
+        }
       }
-    }
-    let prevPosition = 1;
-    if (this.state.text && this.state.text.length > 3) {
-      prevPosition = 1 - (this.state.text.length - 3) * 0.075;
-    }
-    if (curText.length > 3) {
-      let characterCount = 1 - (curText.length - 3) * 0.075;
-      this.setState({
-        scaleAnim: runSpring(
-          new Clock(),
-          prevPosition,
-          characterCount,
-          0,
-          400,
-          40
-        ),
-      });
-    } else if (curText.length == 3) {
-      this.setState({
-        scaleAnim: runSpring(new Clock(), prevPosition, 1, 0, 400, 40),
-      });
-    }
-    this.setState({ text: curText });
-  }
+      let prevPosition = 1;
+      if (prevText && prevText.length > 3) {
+        prevPosition = 1 - (prevText.length - 3) * 0.075;
+      }
+      if (curText.length > 3) {
+        let characterCount = 1 - (curText.length - 3) * 0.075;
+        setScaleAnim(
+          runSpring(new Clock(), prevPosition, characterCount, 0, 400, 40)
+        );
+      } else if (curText.length == 3) {
+        setScaleAnim(runSpring(new Clock(), prevPosition, 1, 0, 400, 40));
+      }
+      return curText;
+    });
 
-  render() {
-    return (
-      <SheetContainer>
-        <StatusBar barStyle="light-content" />
-        <Container align="center" justify="space-between">
-          <AddCashHeader />
-          <ColumnWithMargins
-            align="center"
-            css={padding(0, 24, isTinyIphone ? 0 : 24)}
-            margin={8}
+  const onSubmit = () =>
+    requestWyreApplePay(accountAddress, destCurrency, text);
+
+  const disabled = isEmpty(text) || parseFloat(text) === 0;
+
+  return (
+    <SheetContainer>
+      <StatusBar barStyle="light-content" />
+      <Container align="center" justify="space-between">
+        <AddCashHeader
+          limitDaily={cashLimitDaily}
+          limitAnnually={cashLimitAnnually}
+        />
+        <ColumnWithMargins
+          align="center"
+          css={padding(0, 24, isTinyIphone ? 0 : 24)}
+          margin={8}
+          width="100%"
+        >
+          <MaskedView
+            width="100%"
+            maskElement={
+              <Animated.View>
+                <Animated.Text
+                  style={{
+                    color: colors.white,
+                    fontFamily: 'SF Pro Rounded',
+                    fontSize: cashFontSize,
+                    fontWeight: 'bold',
+                    left: '-50%',
+                    lineHeight: 108,
+                    textAlign: 'center',
+                    transform: [
+                      {
+                        scale: scaleAnim,
+                        translateX: shakeAnim,
+                      },
+                    ],
+                    width: '200%',
+                  }}
+                >
+                  {'$' + (text ? text : '0')}
+                </Animated.Text>
+              </Animated.View>
+            }
+          >
+            <RadialGradient
+              center={gradientPoints}
+              colors={['#FFB114', '#FF54BB', '#00F0FF', '#34F3FF']}
+              radius={gradientXPoint}
+              style={{ height: 108, width: '100%' }}
+              stops={[0.2049, 0.6354, 0.8318, 0.9541]}
+            />
+          </MaskedView>
+
+          <AddCashSelector
+            currencies={currencies}
+            initialCurrencyIndex={initialCurrencyIndex}
+            onSelect={setDestCurrency}
+          />
+        </ColumnWithMargins>
+
+        <ColumnWithMargins align="center" margin={15}>
+          <View style={{ maxWidth: 313 }}>
+            <VirtualKeyboard
+              decimal
+              rowStyle={{ width: keyboardWidth }}
+              onPress={val => onPress(val)}
+            />
+          </View>
+          <Centered
+            css={padding(
+              isTinyIphone ? 4 : 24,
+              15,
+              isTinyIphone ? 15 : safeAreaInsetValues.bottom + 21
+            )}
             width="100%"
           >
-            <MaskedView
-              width="100%"
-              maskElement={
-                <Animated.View>
-                  <Animated.Text
-                    style={{
-                      color: colors.white,
-                      fontFamily: 'SF Pro Rounded',
-                      fontSize: cashFontSize,
-                      fontWeight: 'bold',
-                      left: '-50%',
-                      lineHeight: 108,
-                      textAlign: 'center',
-                      transform: [
-                        {
-                          scale: this.state.scaleAnim,
-                          translateX: this.state.shakeAnim,
-                        },
-                      ],
-                      width: '200%',
-                    }}
-                  >
-                    {'$' + (this.state.text ? this.state.text : '0')}
-                  </Animated.Text>
-                </Animated.View>
-              }
-            >
-              <RadialGradient
-                center={gradientPoints}
-                colors={['#FFB114', '#FF54BB', '#00F0FF', '#34F3FF']}
-                radius={gradientXPoint}
-                style={{ height: 108, width: '100%' }}
-                stops={[0.2049, 0.6354, 0.8318, 0.9541]}
-              />
-            </MaskedView>
+            <ApplePayButton disabled={disabled} onSubmit={onSubmit} />
+          </Centered>
+        </ColumnWithMargins>
+      </Container>
+    </SheetContainer>
+  );
+};
 
-            <AddCashSelector />
-          </ColumnWithMargins>
-
-          <ColumnWithMargins align="center" margin={15}>
-            <View style={{ maxWidth: 313 }}>
-              <VirtualKeyboard
-                decimal="true"
-                pressMode="char"
-                rowStyle={{ width: keyboardWidth }}
-                onPress={val => this.onPress(val)}
-              />
-            </View>
-            <Centered
-              css={padding(
-                isTinyIphone ? 4 : 24,
-                15,
-                isTinyIphone ? 15 : safeAreaInsetValues.bottom + 21
-              )}
-              width="100%"
-            >
-              <ApplePayButton disabled={false} />
-            </Centered>
-          </ColumnWithMargins>
-        </Container>
-      </SheetContainer>
-    );
-  }
-}
+AddCashSheet.propTypes = {
+  accountAddress: PropTypes.string,
+};
 
 export default compose(
+  withAccountAddress,
   withNavigation,
   withTransitionProps,
   withProps(({ transitionProps: { isTransitioning } }) => ({
