@@ -6,7 +6,7 @@ import { ColumnWithMargins } from '../layout';
 import { SheetHandle } from '../sheet';
 import { Text } from '../text';
 
-const AddCashHeader = () => (
+const AddCashHeader = ({ limit }) => (
   <ColumnWithMargins
     align="center"
     css={padding(isNativeStackAvailable ? 6 : 8, 0)}
@@ -34,7 +34,7 @@ const AddCashHeader = () => (
       style={{ textTransform: 'uppercase' }}
       weight="semibold"
     >
-      Up to $1500
+      {`Up to $${limit}`}
     </Text>
   </ColumnWithMargins>
 );

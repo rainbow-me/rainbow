@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { fonts } from '../../styles';
 
-module.exports = StyleSheet.create({
+const styles = StyleSheet.create({
   backspace: {
     alignItems: 'center',
     flex: 1,
@@ -30,3 +30,5 @@ module.exports = StyleSheet.create({
     width: '100%',
   },
 });
+
+export default styles;

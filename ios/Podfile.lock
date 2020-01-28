@@ -369,6 +369,8 @@ PODS:
     - React-cxxreact (= 0.62.0-rc.1)
     - React-jsi (= 0.62.0-rc.1)
     - ReactCommon/callinvoker (= 0.62.0-rc.1)
+  - ReactNativePayments (1.1.0):
+    - React
   - ReactNativePermissions (1.2.1):
     - React
   - RNAnalytics (1.1.0):
@@ -399,6 +401,8 @@ PODS:
     - Firebase/Messaging (~> 6.13.0)
     - React
     - RNFBApp
+  - RNFS (2.16.2):
+    - React
   - RNGestureHandler (1.5.2):
     - React
   - RNInputMask (4.1.0)
@@ -481,6 +485,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - ReactCommon/callinvoker (from `../node_modules/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - ReactNativePayments (from `../node_modules/react-native-payments/lib/ios`)
   - ReactNativePermissions (from `../node_modules/react-native-permissions`)
   - "RNAnalytics (from `../node_modules/@segment/analytics-react-native`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
@@ -491,6 +496,7 @@ DEPENDENCIES:
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
+  - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNInputMask (from `../node_modules/react-native-text-input-mask/ios/InputMask`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
@@ -609,6 +615,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/Libraries/Vibration"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  ReactNativePayments:
+    :path: "../node_modules/react-native-payments/lib/ios"
   ReactNativePermissions:
     :path: "../node_modules/react-native-permissions"
   RNAnalytics:
@@ -629,6 +637,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/crashlytics"
   RNFBMessaging:
     :path: "../node_modules/@react-native-firebase/messaging"
+  RNFS:
+    :path: "../node_modules/react-native-fs"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNInputMask:
@@ -719,6 +729,7 @@ SPEC CHECKSUMS:
   React-RCTText: f2f9976b77661b5a1d628cf7ebfe6c08b6168f8a
   React-RCTVibration: 2e7618e869b2ba4a15042d6def29dd32df734793
   ReactCommon: 13c3473a975e73db91b1999e0d6d89c62400785d
+  ReactNativePayments: 16b0ad3ee773cb1f474347352896fe696d692654
   ReactNativePermissions: 7cfad56d13c8961cd2a1005b4955b1400c79ef3e
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 60a80e72d95bf02a01cace55d3697d9724f0d77f
@@ -729,6 +740,7 @@ SPEC CHECKSUMS:
   RNFBApp: 5b215aacc09105a1761de31b9a0eb2abcce06253
   RNFBCrashlytics: 0469cb96b00904e0c9604b9636d8eeab31115b08
   RNFBMessaging: be0b936394416ec5503add603f2c0a641c353063
+  RNFS: 0d4191b1052bef9ce70deff00a5b4169c62bbd9b
   RNGestureHandler: 946a7691e41df61e2c4b1884deab41a4cdc3afff
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeychain: f5783613aa3095af63345ddb9626a729bd4a3897
@@ -749,6 +761,6 @@ SPEC CHECKSUMS:
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   Yoga: b9a1f7189009fa4b6266ee0a63235547326295d2
 
-PODFILE CHECKSUM: 858ea85d96dddb4fec76530e24f48c8339e93c76
+PODFILE CHECKSUM: 75ccd779a9b40a3a8218cf9eb939534c1a6595fa
 
 COCOAPODS: 1.8.4
