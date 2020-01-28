@@ -2,7 +2,6 @@ import React from 'react';
 import Chart from './Chart';
 import ValueText from './ValueText';
 import {
-  data1,
   data2,
   data3,
   data4,
@@ -56,7 +55,6 @@ class ValueChart extends React.Component {
           }}
         />
         <Chart
-          // DONE:
           mode="gesture-managed" // "gesture-managed" / "detailed" / "simplified"
           enableSelect // enable checking value in touched point of chart
           onValueUpdate={value => {
@@ -64,9 +62,6 @@ class ValueChart extends React.Component {
           }}
           currentDataSource={this.state.currentChart}
           amountOfPathPoints={200} // amount of points for switch between charts
-          // TODO:
-          autoGenerateImportantPoints // you can specify if you want to select important points in data or do it automatically inside chart
-          data={dataSwitching}
           newData={this.data}
         />
         <TimespanSelector

@@ -38,8 +38,6 @@ const {
   stopClock,
 } = Animated;
 
-let allPointsForData = [];
-
 const simplifyChartData1 = (data, destinatedNumberOfPoints) => {
   let allSegmentsPoints = [];
   if (data.segments.length > 0) {
@@ -96,10 +94,6 @@ const simplifyChartData1 = (data, destinatedNumberOfPoints) => {
       y: allSegmentsPoints[allSegmentsPoints.length - 1].y,
     });
 
-    console.log(data);
-    console.log(newData);
-
-    allPointsForData = allSegmentsPoints;
     return newData;
   }
 };
@@ -145,7 +139,7 @@ const pickImportantPoints = array => {
 
 export default class Chart extends PureComponent {
   propTypes = {
-    data: PropTypes.array,
+    // data: PropTypes.array,
     enableSelect: PropTypes.bool,
     mode: PropTypes.oneOf(['gesture-managed', 'detailed', 'simplified']),
   };
@@ -311,7 +305,7 @@ export default class Chart extends PureComponent {
         this.props.onValueUpdate(
           this.state.allNewData[currentInterval][
             this.state.allNewData[currentInterval].length - 1
-          ].value
+          ].y
         );
       });
     }
@@ -319,21 +313,21 @@ export default class Chart extends PureComponent {
 
   createAnimatedPath = () => {
     let splinePoints = [];
-    for (let i = 0; i < this.state.allData.length; i++) {
-      if (this.state.allData[i].length > 0) {
-        const maxValue = maxBy(this.state.allData[i], 'value');
-        const minValue = minBy(this.state.allData[i], 'value');
+    for (let i = 0; i < this.state.allNewData.length; i++) {
+      if (this.state.allNewData[i].length > 0) {
+        const maxValue = maxBy(this.state.allNewData[i], 'y');
+        const minValue = minBy(this.state.allNewData[i], 'y');
 
         const timestampLength =
-          this.state.allData[i][this.state.allData[i].length - 1].timestamp -
-          this.state.allData[i][0].timestamp;
+          this.state.allNewData[i][this.state.allNewData[i].length - 1].x -
+          this.state.allNewData[i][0].x;
         const xMultiply = width / timestampLength;
 
-        const yMultiply = height / (maxValue.value - minValue.value);
+        const yMultiply = height / (maxValue.y - minValue.y);
 
-        const points = this.state.allData[i].map(({ timestamp, value }) => ({
-          x: (timestamp - this.state.allData[i][0].timestamp) * xMultiply,
-          y: (value - minValue.value) * yMultiply,
+        const points = this.state.allNewData[i].map(({ x, y }) => ({
+          x: (x - this.state.allNewData[i][0].x) * xMultiply,
+          y: (y - minValue.y) * yMultiply,
         }));
 
         const importantPoints = pickImportantPoints(points);
@@ -370,22 +364,47 @@ export default class Chart extends PureComponent {
       );
 
     const allNodes = index =>
-      this.state.allData.map((value, i) => {
+      this.state.allNewData.map((value, i) => {
         return chartNode(this.chartsMulti[i], index, i);
       });
 
-    const animatedPath = concat(
+    const animatedPath1 = concat(
       'M -20 0',
-      ...splinePoints[0].flatMap(({ x }, index) => [
-        'L',
-        x,
-        ' ',
-        add(...allNodes(index)),
-      ])
+      ...splinePoints[0].flatMap(({ x }, index) => {
+        if (index < 100) {
+          return ['L', x, ' ', add(...allNodes(index))];
+        }
+      })
     );
 
-    return (
+    const animatedPath2 = concat(
+      'M 0 0',
+      ...splinePoints[0].flatMap(({ x }, index) => {
+        if (index == 40) {
+          return ['M', x, ' ', add(...allNodes(index))];
+        }
+        if (index >= 40 && index < 120) {
+          return ['L', x, ' ', add(...allNodes(index))];
+        }
+      })
+    );
+
+    const animatedPath3 = concat(
+      'M 0 0',
+      ...splinePoints[0].flatMap(({ x }, index) => {
+        if (index == 119) {
+          return ['M', x, ' ', add(...allNodes(index))];
+        }
+        if (index >= 120) {
+          return ['L', x, ' ', add(...allNodes(index))];
+        }
+      })
+    );
+
+    console.log(animatedPath1);
+    return [
       <AnimatedPath
+        key={1}
         id="main-path"
         fill="none"
         stroke={colors.red}
@@ -395,9 +414,35 @@ export default class Chart extends PureComponent {
         )}
         strokeLinejoin="round"
         strokeLinecap="round"
-        d={animatedPath}
-      />
-    );
+        d={animatedPath1}
+      />,
+      <AnimatedPath
+        key={2}
+        id="main-path"
+        fill="none"
+        stroke={colors.green}
+        strokeWidth={add(
+          strokeWidth,
+          multiply(this.value, thickStrokeWidthDifference)
+        )}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        d={animatedPath2}
+      />,
+      <AnimatedPath
+        key={3}
+        id="main-path"
+        fill="none"
+        stroke={colors.red}
+        strokeWidth={add(
+          strokeWidth,
+          multiply(this.value, thickStrokeWidthDifference)
+        )}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        d={animatedPath3}
+      />,
+    ];
   };
 
   checkValueBoundaries = value => {
@@ -548,8 +593,7 @@ export default class Chart extends PureComponent {
                 set(this.shouldSpring, 0),
                 call([], () => {
                   this.props.onValueUpdate(
-                    this.state.currentData[this.state.currentData.length - 1]
-                      .value
+                    this.state.currentData[this.state.currentData.length - 1].y
                   );
                 }),
               ]),
