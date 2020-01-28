@@ -1,11 +1,11 @@
-// import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from 'prop-types';
+import React, { Fragment, useRef, useState } from 'react';
 import { View, Text } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { deviceUtils } from '../../utils';
-import { ButtonPressAnimation } from '../animations';
 import styled from 'styled-components/primitives';
 import { colors, fonts } from '../../styles';
+import { deviceUtils } from '../../utils';
+import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { ShadowStack } from '../shadow-stack';
 
@@ -14,13 +14,16 @@ const { Value } = Animated;
 const maxWidth = 300;
 
 const componentWidths = [94, 88, 109];
+
 const positionDiff = (componentWidths[0] - componentWidths[2]) / 2;
+
 const centerDiff =
   (componentWidths[1] -
     (componentWidths[2] > componentWidths[0]
       ? componentWidths[0]
       : componentWidths[2])) /
   2;
+
 const componentPositions = [
   -componentWidths[1] +
     (componentWidths[2] > componentWidths[0] ? positionDiff : 0) +
@@ -68,150 +71,98 @@ const CoinText = styled(Text)`
   text-align: center;
 `;
 
-class AddCashSelector extends React.Component {
-  propTypes = {
-    // onPress: PropTypes.func,
-  };
+const initialTranslateX = new Value(componentPositions[1]);
+const initialWidth = new Value(componentWidths[1]);
 
-  constructor(props) {
-    super(props);
+const AddCashSelector = ({ currencies, initialCurrencyIndex, onSelect }) => {
+  const translateX = useRef(initialTranslateX);
+  const width = useRef(initialWidth);
 
-    this.translateX = new Value(componentPositions[1]);
-    this.width = new Value(componentWidths[1]);
+  const [currentOption, setCurrentOption] = useState(initialCurrencyIndex);
 
-    this.state = {
-      currentOption: 1,
-    };
-  }
-
-  animateTransition = index => {
-    Animated.spring(this.translateX, {
+  const animateTransition = index => {
+    Animated.spring(translateX.current, {
       toValue: componentPositions[index],
       ...springConfig,
     }).start();
-    Animated.spring(this.width, {
+    Animated.spring(width.current, {
       toValue: componentWidths[index],
       ...springConfig,
     }).start();
   };
 
-  onSelectFirst = () => {
-    this.animateTransition(0);
-    this.setState({ currentOption: 0 });
-    // this.props.onPress(0);
+  const onSelectCurrency = index => {
+    animateTransition(index);
+    setCurrentOption(index);
+    onSelect(currencies[index]);
   };
 
-  onSelectSecond = () => {
-    this.animateTransition(1);
-    this.setState({ currentOption: 1 });
-    // this.props.onPress(1);
-  };
-
-  onSelectThird = () => {
-    this.animateTransition(2);
-    this.setState({ currentOption: 2 });
-    // this.props.onPress(2);
-  };
-
-  render() {
+  const currencyItems = currencies.map((currency, index) => {
     return (
-      <>
-        <AnimatedShadowStack
-          borderRadius={20}
-          height={40}
-          marginLeft={4}
-          marginRight={4}
-          shadows={CoinButtonShadow}
-          style={[
-            {
-              marginBottom: -40,
-              zIndex: 10,
-            },
-            {
-              transform: [{ translateX: this.translateX }],
-              width: this.width,
-            },
-          ]}
-        />
-        <View
+      <ButtonPressAnimation
+        enableHapticFeedback={false}
+        key={index}
+        onPress={() => onSelectCurrency(index)}
+        scaleTo={0.94}
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          width: componentWidths[index],
+        }}
+      >
+        <MiniCoinIcon symbol={currency} />
+        <CoinText
           style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            maxWidth,
-            width: deviceUtils.dimensions.width,
-            zIndex: 11,
+            color:
+              currentOption === index
+                ? colors.alpha(colors.blueGreyDark, 0.7)
+                : colors.alpha(colors.blueGreyDark, 0.5),
           }}
         >
-          <ButtonPressAnimation
-            enableHapticFeedback={false}
-            onPress={this.onSelectFirst}
-            scaleTo={0.94}
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              width: componentWidths[0],
-            }}
-          >
-            <MiniCoinIcon symbol="ETH" />
-            <CoinText
-              style={{
-                color:
-                  this.state.currentOption === 0
-                    ? colors.alpha(colors.blueGreyDark, 0.7)
-                    : colors.alpha(colors.blueGreyDark, 0.5),
-              }}
-            >
-              ETH
-            </CoinText>
-          </ButtonPressAnimation>
-          <ButtonPressAnimation
-            enableHapticFeedback={false}
-            onPress={this.onSelectSecond}
-            scaleTo={0.94}
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              width: componentWidths[1],
-            }}
-          >
-            <MiniCoinIcon symbol="DAI" />
-            <CoinText
-              style={{
-                color:
-                  this.state.currentOption === 1
-                    ? colors.alpha(colors.blueGreyDark, 0.7)
-                    : colors.alpha(colors.blueGreyDark, 0.5),
-              }}
-            >
-              DAI
-            </CoinText>
-          </ButtonPressAnimation>
-          <ButtonPressAnimation
-            enableHapticFeedback={false}
-            onPress={this.onSelectThird}
-            scaleTo={0.94}
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              width: componentWidths[2],
-            }}
-          >
-            <MiniCoinIcon symbol="USDC" />
-            <CoinText
-              style={{
-                color:
-                  this.state.currentOption === 2
-                    ? colors.alpha(colors.blueGreyDark, 0.7)
-                    : colors.alpha(colors.blueGreyDark, 0.5),
-              }}
-            >
-              USDC
-            </CoinText>
-          </ButtonPressAnimation>
-        </View>
-      </>
+          {currency}
+        </CoinText>
+      </ButtonPressAnimation>
     );
-  }
-}
+  });
+
+  return (
+    <Fragment>
+      <AnimatedShadowStack
+        borderRadius={20}
+        height={40}
+        marginLeft={4}
+        marginRight={4}
+        shadows={CoinButtonShadow}
+        style={[
+          {
+            marginBottom: -40,
+            zIndex: 10,
+          },
+          {
+            transform: [{ translateX: translateX.current }],
+            width: width.current,
+          },
+        ]}
+      />
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          maxWidth,
+          width: deviceUtils.dimensions.width,
+          zIndex: 11,
+        }}
+      >
+        {currencyItems}
+      </View>
+    </Fragment>
+  );
+};
+
+AddCashSelector.propTypes = {
+  currencies: PropTypes.array,
+  initialCurrencyIndex: PropTypes.number,
+  onSelect: PropTypes.func,
+};
 
 export default AddCashSelector;

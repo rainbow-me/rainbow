@@ -109,6 +109,7 @@
     "react-native-mail": "^4.1.0",
     "react-native-os": "software-mansion-labs/react-native-os#41a08e45260b8c1c53c77ad00e13ae954cb9337c",
     "react-native-masked-text": "^1.13.0",
+    "react-native-payments-alive": "^0.9.1",
     "react-native-permissions": "^1.2.1",
     "react-native-qrcode-scanner": "mikedemarais/react-native-qrcode-scanner#2ca70b8c64afb87e712aba578e11409c6406069e",
     "react-native-qrcode-svg": "git+https://github.com/mikedemarais/react-native-qrcode-svg.git",
