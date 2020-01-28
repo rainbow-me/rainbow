@@ -8,9 +8,9 @@
 import Foundation
 
 class TransactionListBaseCell : UITableViewCell {
-  private let duration = 0.1
-  private let scaleTo: CGFloat = 0.97
-  private let hapticType = "select"
+  internal let duration = 0.1
+  internal let scaleTo: CGFloat = 0.97
+  internal let hapticType = "select"
   
   var onItemPress: (Dictionary<AnyHashable, Any>) -> Void = { _ in }
   var row: Int? = nil
