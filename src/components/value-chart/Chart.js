@@ -38,6 +38,8 @@ const {
   stopClock,
 } = Animated;
 
+// let allPointsForData = [];
+
 const simplifyChartData1 = (data, destinatedNumberOfPoints) => {
   let allSegmentsPoints = [];
   if (data.segments.length > 0) {
@@ -94,7 +96,14 @@ const simplifyChartData1 = (data, destinatedNumberOfPoints) => {
       y: allSegmentsPoints[allSegmentsPoints.length - 1].y,
     });
 
-    return newData;
+    let returnData = {
+      color: data.segments[0].color,
+      line: data.segments[0].line,
+      points: newData,
+    };
+
+    // allPointsForData = allSegmentsPoints;
+    return returnData;
   }
 };
 
@@ -278,9 +287,7 @@ export default class Chart extends PureComponent {
 
   reloadChart = async (currentInterval, isInitial = false) => {
     if (currentInterval !== this.currentInterval) {
-      let data = this.state.allNewData;
       if (isInitial) {
-        data[currentInterval] = this.state.allNewData[currentInterval];
         await this.setState({
           isLoading: true,
         });
@@ -303,7 +310,7 @@ export default class Chart extends PureComponent {
           isLoading: false,
         }));
         this.props.onValueUpdate(
-          this.state.allNewData[currentInterval][
+          this.state.allNewData[currentInterval].points[
             this.state.allNewData[currentInterval].length - 1
           ].y
         );
@@ -312,21 +319,22 @@ export default class Chart extends PureComponent {
   };
 
   createAnimatedPath = () => {
+    const { allNewData } = this.state;
     let splinePoints = [];
-    for (let i = 0; i < this.state.allNewData.length; i++) {
-      if (this.state.allNewData[i].length > 0) {
-        const maxValue = maxBy(this.state.allNewData[i], 'y');
-        const minValue = minBy(this.state.allNewData[i], 'y');
+    for (let i = 0; i < allNewData.length; i++) {
+      if (allNewData[i].points.length > 0) {
+        const maxValue = maxBy(allNewData[i].points, 'y');
+        const minValue = minBy(allNewData[i].points, 'y');
 
         const timestampLength =
-          this.state.allNewData[i][this.state.allNewData[i].length - 1].x -
-          this.state.allNewData[i][0].x;
+          allNewData[i].points[allNewData[i].points.length - 1].x -
+          allNewData[i].points[0].x;
+
         const xMultiply = width / timestampLength;
 
         const yMultiply = height / (maxValue.y - minValue.y);
-
-        const points = this.state.allNewData[i].map(({ x, y }) => ({
-          x: (x - this.state.allNewData[i][0].x) * xMultiply,
+        const points = allNewData[i].points.map(({ x, y }) => ({
+          x: (x - allNewData[i].points[0].x) * xMultiply,
           y: (y - minValue.y) * yMultiply,
         }));
 
@@ -363,15 +371,16 @@ export default class Chart extends PureComponent {
         )
       );
 
-    const allNodes = index =>
-      this.state.allNewData.map((value, i) => {
+    const allNodes = index => {
+      return allNewData.map((value, i) => {
         return chartNode(this.chartsMulti[i], index, i);
       });
+    };
 
     const animatedPath1 = concat(
       'M -20 0',
       ...splinePoints[0].flatMap(({ x }, index) => {
-        if (index < 100) {
+        if (index <= 40) {
           return ['L', x, ' ', add(...allNodes(index))];
         }
       })
@@ -383,7 +392,7 @@ export default class Chart extends PureComponent {
         if (index == 40) {
           return ['M', x, ' ', add(...allNodes(index))];
         }
-        if (index >= 40 && index < 120) {
+        if (index >= 40 && index <= 120) {
           return ['L', x, ' ', add(...allNodes(index))];
         }
       })
@@ -392,7 +401,7 @@ export default class Chart extends PureComponent {
     const animatedPath3 = concat(
       'M 0 0',
       ...splinePoints[0].flatMap(({ x }, index) => {
-        if (index == 119) {
+        if (index == 120) {
           return ['M', x, ' ', add(...allNodes(index))];
         }
         if (index >= 120) {
@@ -454,6 +463,7 @@ export default class Chart extends PureComponent {
 
   render() {
     const { amountOfPathPoints } = this.props;
+    const { currentData } = this.state;
     let maxValue = 0,
       minValue = 0,
       change = 0,
@@ -461,25 +471,25 @@ export default class Chart extends PureComponent {
       maxValueDistance = 999,
       minValueDistance = 999;
 
-    if (this.state.currentData.length > 0) {
-      maxValue = maxBy(this.state.currentData, 'y');
-      minValue = minBy(this.state.currentData, 'y');
+    if (currentData.points.length > 0) {
+      maxValue = maxBy(currentData.points, 'y');
+      minValue = minBy(currentData.points, 'y');
       change =
-        ((this.state.currentData[this.state.currentData.length - 1].y -
-          this.state.currentData[0].y) /
-          this.state.currentData[0].y) *
+        ((currentData.points[currentData.points.length - 1].y -
+          currentData.points[0].y) /
+          currentData.points[0].y) *
         100;
 
       timePeriod =
-        this.state.currentData[this.state.currentData.length - 1].x -
-        this.state.currentData[0].x;
+        currentData.points[currentData.points.length - 1].x -
+        currentData.points[0].x;
 
       maxValueDistance = this.checkValueBoundaries(
-        ((maxValue.x - this.state.currentData[0].x) / timePeriod) * width -
+        ((maxValue.x - currentData.points[0].x) / timePeriod) * width -
           width / 2
       );
       minValueDistance = this.checkValueBoundaries(
-        ((minValue.x - this.state.currentData[0].x) / timePeriod) * width -
+        ((minValue.x - currentData.points[0].x) / timePeriod) * width -
           width / 2
       );
     }
@@ -593,7 +603,7 @@ export default class Chart extends PureComponent {
                 set(this.shouldSpring, 0),
                 call([], () => {
                   this.props.onValueUpdate(
-                    this.state.currentData[this.state.currentData.length - 1].y
+                    currentData.points[currentData.points.length - 1].y
                   );
                 }),
               ]),
@@ -617,10 +627,10 @@ export default class Chart extends PureComponent {
                   const calculatedIndex = Math.floor(
                     curX /
                       ((width - (width / (amountOfPathPoints + 20)) * 10) /
-                        this.state.currentData.length)
+                        currentData.points.length)
                   );
                   this.props.onValueUpdate(
-                    this.state.currentData[calculatedIndex].y
+                    currentData.points[calculatedIndex].y
                   );
                 })
               )
