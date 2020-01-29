@@ -1,0 +1,85 @@
+diff --git a/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js b/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js
+index c3eda89..7c6acbb 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js
++++ b/node_modules/recyclerlistview/dist/reactnative/core/ViewabilityTracker.js
+@@ -36,7 +36,7 @@ var ViewabilityTracker = /** @class */ (function () {
+         this._windowBound = isHorizontal ? dimension.width : dimension.height;
+     };
+     ViewabilityTracker.prototype.forceRefresh = function () {
+-        var shouldForceScroll = this._currentOffset >= (this._maxOffset - this._windowBound);
++        var shouldForceScroll = false;
+         this.forceRefreshWithOffset(this._currentOffset);
+         return shouldForceScroll;
+     };
+diff --git a/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyHeader.js b/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyHeader.js
+index 7074f36..5e72f6e 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyHeader.js
++++ b/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyHeader.js
+@@ -60,7 +60,7 @@ var StickyHeader = /** @class */ (function (_super) {
+         return offsetY;
+     };
+     StickyHeader.prototype.hasReachedBoundary = function (offsetY, distanceFromWindow, _windowBound) {
+-        return offsetY <= distanceFromWindow;
++        return offsetY < distanceFromWindow;
+     };
+     return StickyHeader;
+ }(StickyObject_1.default));
+diff --git a/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyObject.js b/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyObject.js
+index 8da004f..8ec46b0 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyObject.js
++++ b/node_modules/recyclerlistview/dist/reactnative/core/sticky/StickyObject.js
+@@ -32,6 +32,7 @@ var StickyObject = /** @class */ (function (_super) {
+         _this.stickyType = StickyType.HEADER;
+         _this.stickyTypeMultiplier = 1;
+         _this.stickyVisiblity = false;
++        _this.visibility = false;
+         _this.currentIndex = 0;
+         _this.currentStickyIndex = 0;
+         _this.visibleIndices = [];
+@@ -44,7 +45,7 @@ var StickyObject = /** @class */ (function (_super) {
+         _this._largestVisibleIndex = 0;
+         _this._offsetY = 0;
+         _this.state = {
+-            visible: _this.stickyVisiblity,
++            visibility: true,
+         };
+         return _this;
+     }
+@@ -58,7 +59,7 @@ var StickyObject = /** @class */ (function (_super) {
+         return (React.createElement(react_native_1.Animated.View, { style: [
+                 { position: "absolute", width: this._scrollableWidth, transform: [{ translateY: this._stickyViewOffset }] },
+                 this.containerPosition,
+-            ] }, this.state.visible ?
++            ] }, this.visibility ?
+             this._renderSticky()
+             : null));
+     };
+@@ -74,6 +75,15 @@ var StickyObject = /** @class */ (function (_super) {
+         this.stickyViewVisible(this.stickyVisiblity);
+     };
+     StickyObject.prototype.onScroll = function (offsetY) {
++        const prevVisibility = this.visibility;
++        if (offsetY < 0 && prevVisibility == true || this._smallestVisibleIndex < this.currentStickyIndex) {
++            this.visibility = false;
++        } else if (offsetY >= 0 && prevVisibility == false) {
++            this.visibility = true;
++        }
++        if (prevVisibility !== this.visibility) {
++            this.render();
++        }
+         this._initParams();
+         this._offsetY = offsetY;
+         this.boundaryProcessing(offsetY, this.props.getDistanceFromWindow(), this._windowBound);
+diff --git a/node_modules/recyclerlistview/dist/reactnative/utils/BinarySearch.js b/node_modules/recyclerlistview/dist/reactnative/utils/BinarySearch.js
+index 0ad973f..74f37c5 100644
+--- a/node_modules/recyclerlistview/dist/reactnative/utils/BinarySearch.js
++++ b/node_modules/recyclerlistview/dist/reactnative/utils/BinarySearch.js
+@@ -74,7 +74,7 @@ var BinarySearch = /** @class */ (function () {
+     BinarySearch.findValueSmallerThanTarget = function (values, target) {
+         var low = 0;
+         var high = values.length - 1;
+-        if (target > values[high]) {
++        if (target >= values[high]) {
+             return {
+                 value: values[high],
+                 index: high,
