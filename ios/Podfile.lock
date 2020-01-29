@@ -776,6 +776,7 @@ SPEC CHECKSUMS:
   TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
 =======
 <<<<<<< HEAD
@@ -786,6 +787,9 @@ SPEC CHECKSUMS:
 =======
 >>>>>>> 1cb4dfcc... Prevent undefined exception in OfflineBadge
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
+=======
+  ToolTipMenu: ad9f45c5ef375418275c81a667c2805bcac8692a
+>>>>>>> 0f459076... Restructure navigators
   Yoga: b9a1f7189009fa4b6266ee0a63235547326295d2
 
 PODFILE CHECKSUM: 4e11b438fd6bb2763be24d82eeafc6f69c49a2f4

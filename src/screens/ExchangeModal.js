@@ -997,7 +997,7 @@ class ExchangeModal extends Component {
               <GestureBlocker type="top" />
               <ExchangeModalHeader
                 onPressDetails={this.navigateToSwapDetailsModal}
-                showDetailsButton={showDetailsButton}
+                showDetailsButton={true}
               />
               <ExchangeInputField
                 inputAmount={inputAmountDisplay}

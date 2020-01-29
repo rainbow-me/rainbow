@@ -5,13 +5,11 @@ import { StatusBar } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
-
+// eslint-disable-next-line import/no-unresolved
+import { enableScreens } from 'react-native-screens';
 import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
-import { createStackNavigator } from 'react-navigation-stack';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { ExchangeModalNavigator, Navigation } from '../../navigation';
-import { updateTransitionProps } from '../../redux/navigation';
-import store from '../../redux/store';
 import { deviceUtils } from '../../utils';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
@@ -32,13 +30,12 @@ import {
   sheetPreset,
   swapDetailsPreset,
 } from '../../navigation/transitions/effects';
+import createStackNavigator, {
+  onTransitionEnd,
+  onTransitionStart,
+} from '../../navigation/createStackNavigator';
 
 enableScreens();
-
-const onTransitionEnd = () =>
-  store.dispatch(updateTransitionProps({ isTransitioning: false }));
-const onTransitionStart = () =>
-  store.dispatch(updateTransitionProps({ isTransitioning: true }));
 
 const SwipeStack = createMaterialTopTabNavigator(
   {
@@ -66,101 +63,85 @@ const SwipeStack = createMaterialTopTabNavigator(
   }
 );
 
-const MainNavigator = createStackNavigator(
-  {
-    ConfirmRequest: {
-      navigationOptions: {
-        ...sheetPreset,
-        onTransitionStart: props => {
-          sheetPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
+const MainNavigator = createStackNavigator({
+  ConfirmRequest: {
+    navigationOptions: {
+      ...sheetPreset,
+      onTransitionStart: props => {
+        sheetPreset.onTransitionStart(props);
+        onTransitionStart();
       },
-      screen: TransactionConfirmationScreenWithData,
     },
-    ExampleScreen,
-    ExchangeModal: {
-      navigationOptions: {
-        ...exchangePreset,
-        onTransitionEnd,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      params: {
-        isGestureBlocked: false,
-      },
-      screen: ExchangeModalNavigator,
-    },
-    ExpandedAssetScreen: {
-      navigationOptions: {
-        ...expandedPreset,
-        // onTransitionStart: props => {
-        //   expandedPreset.onTransitionStart(props);
-        //   onTransitionStart();
-        // },
-      },
-      screen: ExpandedAssetScreenWithData,
-    },
-    OverlayExpandedAssetScreen: {
-      navigationOptions: overlayExpandedPreset,
-      screen: ExpandedAssetScreenWithData,
-    },
-    ReceiveModal: {
-      navigationOptions: {
-        ...expandedPreset,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      screen: ReceiveModal,
-    },
-    SettingsModal: {
-      navigationOptions: {
-        ...expandedPreset,
-        gesturesEnabled: false,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      screen: SettingsModal,
-      transparentCard: true,
-    },
-    SwapDetailsScreen: {
-      navigationOptions: swapDetailsPreset,
-      screen: ExpandedAssetScreenWithData,
-    },
-    SwipeLayout: {
-      navigationOptions: {
-        ...backgroundPreset,
-      },
-      screen: SwipeStack,
-    },
-    WalletConnectConfirmationModal: {
-      navigationOptions: {
-        ...expandedPreset,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      screen: WalletConnectConfirmationModal,
-    },
+    screen: TransactionConfirmationScreenWithData,
   },
-  {
-    defaultNavigationOptions: {
+  ExampleScreen,
+  ExchangeModal: {
+    navigationOptions: {
+      ...exchangePreset,
       onTransitionEnd,
-      onTransitionStart,
+      onTransitionStart: props => {
+        expandedPreset.onTransitionStart(props);
+        onTransitionStart();
+      },
     },
-    headerMode: 'none',
-    initialRouteName: 'SwipeLayout',
-    keyboardHandlingEnabled: false,
-    mode: 'modal',
-  }
-);
+    params: {
+      isGestureBlocked: false,
+    },
+    screen: ExchangeModalNavigator,
+  },
+  ExpandedAssetScreen: {
+    navigationOptions: {
+      ...expandedPreset,
+      // onTransitionStart: props => {
+      //   expandedPreset.onTransitionStart(props);
+      //   onTransitionStart();
+      // },
+    },
+    screen: ExpandedAssetScreenWithData,
+  },
+  OverlayExpandedAssetScreen: {
+    navigationOptions: overlayExpandedPreset,
+    screen: ExpandedAssetScreenWithData,
+  },
+  ReceiveModal: {
+    navigationOptions: {
+      ...expandedPreset,
+      onTransitionStart: props => {
+        expandedPreset.onTransitionStart(props);
+        onTransitionStart();
+      },
+    },
+    screen: ReceiveModal,
+  },
+  SettingsModal: {
+    navigationOptions: {
+      ...expandedPreset,
+      gesturesEnabled: false,
+      onTransitionStart: props => {
+        expandedPreset.onTransitionStart(props);
+        onTransitionStart();
+      },
+    },
+    screen: SettingsModal,
+    transparentCard: true,
+  },
+  SwipeLayout: {
+    navigationOptions: {
+      ...backgroundPreset,
+    },
+    screen: SwipeStack,
+  },
+  WalletConnectConfirmationModal: {
+    navigationOptions: {
+      ...expandedPreset,
+      onTransitionStart: props => {
+        expandedPreset.onTransitionStart(props);
+        onTransitionStart();
+      },
+    },
+    screen: WalletConnectConfirmationModal,
+  },
+});
 
 let appearListener = null;
 const setListener = listener => (appearListener = listener);
@@ -215,13 +196,7 @@ const NativeStackFallback = createStackNavigator(
     },
   },
   {
-    defaultNavigationOptions: {
-      onTransitionEnd,
-      onTransitionStart,
-    },
-    headerMode: 'none',
     initialRouteName: 'MainNavigator',
-    mode: 'modal',
   }
 );
 
