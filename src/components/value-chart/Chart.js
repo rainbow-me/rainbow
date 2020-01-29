@@ -38,13 +38,18 @@ const {
   stopClock,
 } = Animated;
 
-// let allPointsForData = [];
-
 const simplifyChartData1 = (data, destinatedNumberOfPoints) => {
   let allSegmentsPoints = [];
+  let colors = [];
+  let lastPoints = [];
   if (data.segments.length > 0) {
     for (let i = 0; i < data.segments.length; i++) {
       allSegmentsPoints = allSegmentsPoints.concat(data.segments[i].points);
+      allSegmentsPoints[allSegmentsPoints.length - 1] = {
+        ...allSegmentsPoints[allSegmentsPoints.length - 1],
+        lastPoint: true,
+      };
+      colors.push(data.segments[i].color);
     }
   }
   if (allSegmentsPoints.length > destinatedNumberOfPoints) {
@@ -96,13 +101,14 @@ const simplifyChartData1 = (data, destinatedNumberOfPoints) => {
       y: allSegmentsPoints[allSegmentsPoints.length - 1].y,
     });
 
+    console.log(allSegmentsPoints);
     let returnData = {
-      color: data.segments[0].color,
+      allPointsForData: allSegmentsPoints,
+      colors: ['red', 'green', 'yellow'],
       line: data.segments[0].line,
       points: newData,
     };
 
-    // allPointsForData = allSegmentsPoints;
     return returnData;
   }
 };
@@ -416,7 +422,7 @@ export default class Chart extends PureComponent {
         key={1}
         id="main-path"
         fill="none"
-        stroke={colors.red}
+        stroke={allNewData[0].colors[0]}
         strokeWidth={add(
           strokeWidth,
           multiply(this.value, thickStrokeWidthDifference)
@@ -429,7 +435,7 @@ export default class Chart extends PureComponent {
         key={2}
         id="main-path"
         fill="none"
-        stroke={colors.green}
+        stroke={allNewData[0].colors[1]}
         strokeWidth={add(
           strokeWidth,
           multiply(this.value, thickStrokeWidthDifference)
@@ -442,7 +448,9 @@ export default class Chart extends PureComponent {
         key={3}
         id="main-path"
         fill="none"
-        stroke={colors.red}
+        stroke={allNewData[0].colors[2]}
+        strokeDasharray={[2, 10]}
+        strokeDashoffset={3}
         strokeWidth={add(
           strokeWidth,
           multiply(this.value, thickStrokeWidthDifference)
