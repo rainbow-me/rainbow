@@ -8,7 +8,6 @@ import Spline from 'cubic-spline';
 import { contains, timing, delay } from 'react-native-redash';
 import { View } from 'react-native';
 import { deviceUtils } from '../../utils';
-import { colors } from '../../styles';
 import TimestampText from './TimestampText';
 import ActivityIndicator from '../ActivityIndicator';
 import GestureWrapper from './GestureWrapper';
@@ -125,11 +124,11 @@ const simplifyChartData1 = (data, destinatedNumberOfPoints) => {
 const hexToRgb = hex => {
   let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
-    ? {
-        b: parseInt(result[3], 16),
-        g: parseInt(result[2], 16),
-        r: parseInt(result[1], 16),
-      }
+    ? [
+        parseInt(result[1], 16),
+        parseInt(result[2], 16),
+        parseInt(result[3], 16),
+      ]
     : null;
 };
 
@@ -346,8 +345,32 @@ export default class Chart extends PureComponent {
     }
   };
 
+  createSegmentColorsArray = (segments, data) => {
+    segments.sort(function(a, b) {
+      return a - b;
+    });
+    let segmentColors = [];
+    for (let i = 0; i < segments.length + 1; i++) {
+      segmentColors.push([]);
+    }
+    for (let i = 0; i < data.length; i++) {
+      let dataIndex = 0;
+      for (let j = 0; j < segments.length + 1; j++) {
+        segmentColors[j].push(dataIndex);
+        if (segments[j] == data[i].lastPoints[dataIndex]) {
+          dataIndex++;
+        }
+      }
+    }
+    return segmentColors;
+  };
+
   createAnimatedPath = () => {
     const { allNewData } = this.state;
+    const segmentColors = this.createSegmentColorsArray(
+      allSegmentDividers,
+      allNewData
+    );
     let splinePoints = [];
     for (let i = 0; i < allNewData.length; i++) {
       if (allNewData[i].points.length > 0) {
@@ -435,18 +458,29 @@ export default class Chart extends PureComponent {
         })
       );
 
-      const color = hexToRgb(allNewData[0].colors[i]);
-      const otherColor = hexToRgb(allNewData[1].colors[0]);
+      const colorMatrix = index => {
+        return index < allNewData.length - 1
+          ? cond(
+              eq(this.currentChart, index),
+              Animated.color(
+                ...hexToRgb(allNewData[index].colors[segmentColors[i][index]])
+              ),
+              colorMatrix(index + 1)
+            )
+          : cond(
+              eq(this.currentChart, index),
+              Animated.color(
+                ...hexToRgb(allNewData[index].colors[segmentColors[i][index]])
+              )
+            );
+      };
+
       returnPaths.push(
         <AnimatedPath
           key={i}
           id="main-path"
           fill="none"
-          stroke={cond(
-            eq(this.currentChart, 0),
-            Animated.color(color.r, color.g, color.b),
-            Animated.color(otherColor.r, otherColor.g, otherColor.b)
-          )}
+          stroke={colorMatrix(0)}
           strokeWidth={add(
             strokeWidth,
             multiply(this.value, thickStrokeWidthDifference)
@@ -473,7 +507,6 @@ export default class Chart extends PureComponent {
     const { currentData } = this.state;
     let maxValue = 0,
       minValue = 0,
-      change = 0,
       timePeriod = 0,
       maxValueDistance = 999,
       minValueDistance = 999;
@@ -481,11 +514,6 @@ export default class Chart extends PureComponent {
     if (currentData.points.length > 0) {
       maxValue = maxBy(currentData.points, 'y');
       minValue = minBy(currentData.points, 'y');
-      change =
-        ((currentData.points[currentData.points.length - 1].y -
-          currentData.points[0].y) /
-          currentData.points[0].y) *
-        100;
 
       timePeriod =
         currentData.points[currentData.points.length - 1].x -
@@ -547,8 +575,7 @@ export default class Chart extends PureComponent {
               <Animated.View
                 style={[
                   {
-                    backgroundColor:
-                      change > 0 ? colors.chartGreen : colors.red,
+                    backgroundColor: this.props.barColor,
                     borderRadius: 2,
                     height: 180,
                     position: 'absolute',
