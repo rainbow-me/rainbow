@@ -2,6 +2,7 @@ import React from 'react';
 import Chart from './Chart';
 import ValueText from './ValueText';
 import {
+  // data1,
   data2,
   data3,
   data4,
@@ -14,6 +15,14 @@ import { colors } from '../../styles';
 
 const dataColored = [dataColored1, dataColored2, dataColored3];
 const dataSwitching = [dataColored, [data2], [data3], [data4]];
+
+const colorsArray = [
+  colors.red,
+  colors.grey,
+  colors.green,
+  colors.purple,
+  colors.blueGreyDark,
+];
 
 class ValueChart extends React.Component {
   constructor(props) {
@@ -28,7 +37,7 @@ class ValueChart extends React.Component {
         name: index,
         segments: sectionsData.map(data => {
           return {
-            color: 'red',
+            color: colorsArray[Math.floor(Math.random() * colorsArray.length)],
             line: 'dotted',
             points: data.map(values => {
               return { x: values.timestamp, y: values.value };

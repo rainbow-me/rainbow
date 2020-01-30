@@ -38,10 +38,13 @@ const {
   stopClock,
 } = Animated;
 
+let allSegmentDividers = [];
+
 const simplifyChartData1 = (data, destinatedNumberOfPoints) => {
   let allSegmentsPoints = [];
   let colors = [];
   let lastPoints = [];
+  let createdLastPoints = [];
   if (data.segments.length > 0) {
     for (let i = 0; i < data.segments.length; i++) {
       allSegmentsPoints = allSegmentsPoints.concat(data.segments[i].points);
@@ -49,6 +52,7 @@ const simplifyChartData1 = (data, destinatedNumberOfPoints) => {
         ...allSegmentsPoints[allSegmentsPoints.length - 1],
         lastPoint: true,
       };
+      lastPoints.push(allSegmentsPoints.length - 1);
       colors.push(data.segments[i].color);
     }
   }
@@ -87,6 +91,9 @@ const simplifyChartData1 = (data, destinatedNumberOfPoints) => {
       } else {
         finalValue = firstValue + secondValue;
       }
+      if (i * destMul > lastPoints[createdLastPoints.length]) {
+        createdLastPoints.push(newData.length);
+      }
       newData.push({
         x: allSegmentsPoints[0].x + i * xMul,
         y: finalValue,
@@ -101,16 +108,29 @@ const simplifyChartData1 = (data, destinatedNumberOfPoints) => {
       y: allSegmentsPoints[allSegmentsPoints.length - 1].y,
     });
 
-    console.log(allSegmentsPoints);
+    allSegmentDividers = allSegmentDividers.concat(createdLastPoints);
+
     let returnData = {
       allPointsForData: allSegmentsPoints,
-      colors: ['red', 'green', 'yellow'],
+      colors,
+      lastPoints: createdLastPoints,
       line: data.segments[0].line,
       points: newData,
     };
 
     return returnData;
   }
+};
+
+const hexToRgb = hex => {
+  let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        b: parseInt(result[3], 16),
+        g: parseInt(result[2], 16),
+        r: parseInt(result[1], 16),
+      }
+    : null;
 };
 
 const { BEGAN, ACTIVE, CANCELLED, END, FAILED, UNDETERMINED } = State;
@@ -162,15 +182,15 @@ export default class Chart extends PureComponent {
   constructor(props) {
     super(props);
 
-    this.state = {
-      allNewData: this.props.newData.map(data =>
-        simplifyChartData1(data, this.props.amountOfPathPoints)
-      ),
+    allSegmentDividers = [];
+    this.data = this.props.newData.map(data =>
+      simplifyChartData1(data, this.props.amountOfPathPoints)
+    );
 
-      currentData: simplifyChartData1(
-        this.props.newData[0],
-        this.props.amountOfPathPoints
-      ),
+    this.state = {
+      allNewData: this.data,
+
+      currentData: this.data[0],
       hideLoadingBar: false,
       isLoading: true,
       shouldRenderChart: true,
@@ -195,6 +215,7 @@ export default class Chart extends PureComponent {
     this.shouldReactToGestures = new Value(
       this.props.mode === 'gesture-managed' ? 1 : 0
     );
+    this.currentChart = new Value(0);
 
     this.currentInterval = 1;
 
@@ -266,6 +287,7 @@ export default class Chart extends PureComponent {
 
   getSnapshotBeforeUpdate() {
     if (this.currentInterval !== this.props.currentDataSource) {
+      this.currentChart.setValue(this.props.currentDataSource);
       this.reloadChart(this.props.currentDataSource);
     }
   }
@@ -317,7 +339,7 @@ export default class Chart extends PureComponent {
         }));
         this.props.onValueUpdate(
           this.state.allNewData[currentInterval].points[
-            this.state.allNewData[currentInterval].length - 1
+            this.state.allNewData[currentInterval].points.length - 1
           ].y
         );
       });
@@ -383,83 +405,60 @@ export default class Chart extends PureComponent {
       });
     };
 
-    const animatedPath1 = concat(
-      'M -20 0',
-      ...splinePoints[0].flatMap(({ x }, index) => {
-        if (index <= 40) {
-          return ['L', x, ' ', add(...allNodes(index))];
-        }
-      })
-    );
+    let returnPaths = [];
+    for (let i = 0; i <= allSegmentDividers.length; i++) {
+      const animatedPath = concat(
+        'M 0 0',
+        ...splinePoints[0].flatMap(({ x }, index) => {
+          if (i == 0) {
+            if (index <= allSegmentDividers[i]) {
+              return ['L', x, ' ', add(...allNodes(index))];
+            }
+          } else if (i == allSegmentDividers.length) {
+            if (index == allSegmentDividers[i - 1]) {
+              return ['M', x, ' ', add(...allNodes(index))];
+            }
+            if (index >= allSegmentDividers[i - 1]) {
+              return ['L', x, ' ', add(...allNodes(index))];
+            }
+          } else {
+            if (index == allSegmentDividers[i - 1]) {
+              return ['M', x, ' ', add(...allNodes(index))];
+            }
+            if (
+              index >= allSegmentDividers[i - 1] &&
+              index <= allSegmentDividers[i]
+            ) {
+              return ['L', x, ' ', add(...allNodes(index))];
+            }
+          }
+        })
+      );
 
-    const animatedPath2 = concat(
-      'M 0 0',
-      ...splinePoints[0].flatMap(({ x }, index) => {
-        if (index == 40) {
-          return ['M', x, ' ', add(...allNodes(index))];
-        }
-        if (index >= 40 && index <= 120) {
-          return ['L', x, ' ', add(...allNodes(index))];
-        }
-      })
-    );
+      const color = hexToRgb(allNewData[0].colors[i]);
+      const otherColor = hexToRgb(allNewData[1].colors[0]);
+      returnPaths.push(
+        <AnimatedPath
+          key={i}
+          id="main-path"
+          fill="none"
+          stroke={cond(
+            eq(this.currentChart, 0),
+            Animated.color(color.r, color.g, color.b),
+            Animated.color(otherColor.r, otherColor.g, otherColor.b)
+          )}
+          strokeWidth={add(
+            strokeWidth,
+            multiply(this.value, thickStrokeWidthDifference)
+          )}
+          strokeLinejoin="round"
+          strokeLinecap="round"
+          d={animatedPath}
+        />
+      );
+    }
 
-    const animatedPath3 = concat(
-      'M 0 0',
-      ...splinePoints[0].flatMap(({ x }, index) => {
-        if (index == 120) {
-          return ['M', x, ' ', add(...allNodes(index))];
-        }
-        if (index >= 120) {
-          return ['L', x, ' ', add(...allNodes(index))];
-        }
-      })
-    );
-
-    console.log(animatedPath1);
-    return [
-      <AnimatedPath
-        key={1}
-        id="main-path"
-        fill="none"
-        stroke={allNewData[0].colors[0]}
-        strokeWidth={add(
-          strokeWidth,
-          multiply(this.value, thickStrokeWidthDifference)
-        )}
-        strokeLinejoin="round"
-        strokeLinecap="round"
-        d={animatedPath1}
-      />,
-      <AnimatedPath
-        key={2}
-        id="main-path"
-        fill="none"
-        stroke={allNewData[0].colors[1]}
-        strokeWidth={add(
-          strokeWidth,
-          multiply(this.value, thickStrokeWidthDifference)
-        )}
-        strokeLinejoin="round"
-        strokeLinecap="round"
-        d={animatedPath2}
-      />,
-      <AnimatedPath
-        key={3}
-        id="main-path"
-        fill="none"
-        stroke={allNewData[0].colors[2]}
-        strokeDasharray={[2, 10]}
-        strokeDashoffset={3}
-        strokeWidth={add(
-          strokeWidth,
-          multiply(this.value, thickStrokeWidthDifference)
-        )}
-        strokeLinejoin="round"
-        strokeLinecap="round"
-        d={animatedPath3}
-      />,
-    ];
+    return returnPaths;
   };
 
   checkValueBoundaries = value => {

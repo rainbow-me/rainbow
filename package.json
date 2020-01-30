@@ -113,7 +113,7 @@
     "react-native-splash-screen": "^3.2.0",
     "react-native-storage": "^1.0.1",
     "react-native-store-review": "^0.1.5",
-    "react-native-svg": "9.13.6",
+    "react-native-svg": "11.0.0",
     "react-native-tcp": "^3.3.2",
     "react-native-text-input-mask": "waqas19921/react-native-text-input-mask",
     "react-native-tooltip": "marcosrdz/react-native-tooltip#master",
