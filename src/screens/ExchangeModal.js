@@ -788,6 +788,10 @@ class ExchangeModal extends Component {
       outputNativePrice,
     } = this.state;
 
+    this.inputFieldRef.blur();
+    this.outputFieldRef.blur();
+    this.nativeFieldRef.blur();
+
     this.props.navigation.navigate('SwapDetailsScreen', {
       inputCurrencySymbol: get(inputCurrency, 'symbol'),
       inputExecutionRate,
@@ -997,7 +1001,7 @@ class ExchangeModal extends Component {
               <GestureBlocker type="top" />
               <ExchangeModalHeader
                 onPressDetails={this.navigateToSwapDetailsModal}
-                showDetailsButton={true}
+                showDetailsButton={showDetailsButton}
               />
               <ExchangeInputField
                 inputAmount={inputAmountDisplay}

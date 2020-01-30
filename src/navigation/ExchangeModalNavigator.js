@@ -23,12 +23,15 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator(
             screen: ExchangeModal,
           },
           SwapDetailsScreen: {
+            navigationOptions: {
+              ...exchangePreset,
+            },
             screen: ExpandedAssetScreenWithData,
           },
         },
         {
-          defaultNavigationOptions: exchangePreset,
           initialRouteName: 'MainExchangeScreen',
+          transparentCard: true,
         }
       ),
     },
