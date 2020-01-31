@@ -5,7 +5,7 @@ import {
   data1,
   // data2,
   // data3,
-  data4,
+  // data4,
   dataColored1,
   dataColored2,
   dataColored3,
@@ -18,7 +18,7 @@ const dataSwitching = [
   dataColored,
   [dataColored1, dataColored2],
   [dataColored2, dataColored3, data1],
-  [data4],
+  [dataColored1, dataColored2],
 ];
 
 const colorsArray = [
@@ -42,6 +42,7 @@ class ValueChart extends React.Component {
   constructor(props) {
     super(props);
 
+    colorIndex = 0;
     this.state = {
       currentChart: 0,
     };
@@ -49,10 +50,10 @@ class ValueChart extends React.Component {
     this.data = dataSwitching.map((sectionsData, index) => {
       return {
         name: index,
-        segments: sectionsData.map(data => {
+        segments: sectionsData.map((data, i) => {
           return {
             color: colorsArray[colorIndex++],
-            line: 'dotted',
+            line: i * 5,
             points: data.map(values => {
               return { x: values.timestamp, y: values.value };
             }),
@@ -85,8 +86,9 @@ class ValueChart extends React.Component {
           }}
           currentDataSource={this.state.currentChart}
           amountOfPathPoints={200} // amount of points for switch between charts
-          newData={this.data}
+          data={this.data}
           barColor={change > 0 ? colors.chartGreen : colors.red}
+          stroke={{ detailed: 1.5, simplified: 3 }}
         />
         <TimespanSelector
           reloadChart={index => this.setState({ currentChart: index })}

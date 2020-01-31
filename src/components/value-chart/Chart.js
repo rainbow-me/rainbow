@@ -39,9 +39,10 @@ const {
 
 let allSegmentDividers = [];
 
-const simplifyChartData1 = (data, destinatedNumberOfPoints) => {
+const simplifyChartData = (data, destinatedNumberOfPoints) => {
   let allSegmentsPoints = [];
   let colors = [];
+  let lines = [];
   let lastPoints = [];
   let createdLastPoints = [];
   if (data.segments.length > 0) {
@@ -53,6 +54,7 @@ const simplifyChartData1 = (data, destinatedNumberOfPoints) => {
       };
       lastPoints.push(allSegmentsPoints.length - 1);
       colors.push(data.segments[i].color);
+      lines.push(data.segments[i].line);
     }
   }
   if (allSegmentsPoints.length > destinatedNumberOfPoints) {
@@ -113,7 +115,7 @@ const simplifyChartData1 = (data, destinatedNumberOfPoints) => {
       allPointsForData: allSegmentsPoints,
       colors,
       lastPoints: createdLastPoints,
-      line: data.segments[0].line,
+      lines,
       points: newData,
     };
 
@@ -137,9 +139,6 @@ const { BEGAN, ACTIVE, CANCELLED, END, FAILED, UNDETERMINED } = State;
 const width = deviceUtils.dimensions.width;
 const height = 170;
 const chartPadding = 16;
-
-const strokeWidth = 1.5;
-const thickStrokeWidthDifference = 1.5;
 
 const flipY = { transform: [{ scaleX: 1 }, { scaleY: -1 }] };
 
@@ -173,21 +172,28 @@ const pickImportantPoints = array => {
 
 export default class Chart extends PureComponent {
   propTypes = {
-    // data: PropTypes.array,
+    data: PropTypes.array,
     enableSelect: PropTypes.bool,
     mode: PropTypes.oneOf(['gesture-managed', 'detailed', 'simplified']),
+    stroke: PropTypes.object,
+  };
+
+  static defaultProps = {
+    enableSelect: true,
+    mode: 'gesture-managed',
+    stroke: { detailed: 1.5, simplified: 3 },
   };
 
   constructor(props) {
     super(props);
 
     allSegmentDividers = [];
-    this.data = this.props.newData.map(data =>
-      simplifyChartData1(data, this.props.amountOfPathPoints)
+    this.data = this.props.data.map(data =>
+      simplifyChartData(data, this.props.amountOfPathPoints)
     );
 
     this.state = {
-      allNewData: this.data,
+      chartData: this.data,
 
       currentData: this.data[0],
       hideLoadingBar: false,
@@ -287,6 +293,7 @@ export default class Chart extends PureComponent {
   getSnapshotBeforeUpdate() {
     if (this.currentInterval !== this.props.currentDataSource) {
       this.currentChart.setValue(this.props.currentDataSource);
+      this.touchX.setValue(deviceUtils.dimensions.width - 1);
       this.reloadChart(this.props.currentDataSource);
     }
   }
@@ -333,7 +340,7 @@ export default class Chart extends PureComponent {
         this.currentInterval = currentInterval;
 
         await this.setState(prevState => ({
-          currentData: prevState.allNewData[currentInterval],
+          currentData: prevState.chartData[currentInterval],
           isLoading: false,
         }));
         this.props.onValueUpdate(
@@ -346,9 +353,6 @@ export default class Chart extends PureComponent {
   };
 
   createSegmentColorsArray = (segments, data) => {
-    segments.sort(function(a, b) {
-      return a - b;
-    });
     let segmentColors = [];
     for (let i = 0; i < segments.length + 1; i++) {
       segmentColors.push([]);
@@ -366,26 +370,38 @@ export default class Chart extends PureComponent {
   };
 
   createAnimatedPath = () => {
-    const { allNewData } = this.state;
+    const { chartData } = this.state;
+    allSegmentDividers.sort(function(a, b) {
+      return a - b;
+    });
+    var segmentsWithDeletedDuplicates = [];
+    allSegmentDividers.forEach(function(x) {
+      if (
+        segmentsWithDeletedDuplicates.length == 0 ||
+        segmentsWithDeletedDuplicates.slice(-1)[0] !== x
+      )
+        segmentsWithDeletedDuplicates.push(x);
+    });
+    allSegmentDividers = segmentsWithDeletedDuplicates;
     const segmentColors = this.createSegmentColorsArray(
       allSegmentDividers,
-      allNewData
+      chartData
     );
     let splinePoints = [];
-    for (let i = 0; i < allNewData.length; i++) {
-      if (allNewData[i].points.length > 0) {
-        const maxValue = maxBy(allNewData[i].points, 'y');
-        const minValue = minBy(allNewData[i].points, 'y');
+    for (let i = 0; i < chartData.length; i++) {
+      if (chartData[i].points.length > 0) {
+        const maxValue = maxBy(chartData[i].points, 'y');
+        const minValue = minBy(chartData[i].points, 'y');
 
         const timestampLength =
-          allNewData[i].points[allNewData[i].points.length - 1].x -
-          allNewData[i].points[0].x;
+          chartData[i].points[chartData[i].points.length - 1].x -
+          chartData[i].points[0].x;
 
         const xMultiply = width / timestampLength;
 
         const yMultiply = height / (maxValue.y - minValue.y);
-        const points = allNewData[i].points.map(({ x, y }) => ({
-          x: (x - allNewData[i].points[0].x) * xMultiply,
+        const points = chartData[i].points.map(({ x, y }) => ({
+          x: (x - chartData[i].points[0].x) * xMultiply,
           y: (y - minValue.y) * yMultiply,
         }));
 
@@ -423,7 +439,7 @@ export default class Chart extends PureComponent {
       );
 
     const allNodes = index => {
-      return allNewData.map((value, i) => {
+      return chartData.map((_, i) => {
         return chartNode(this.chartsMulti[i], index, i);
       });
     };
@@ -459,19 +475,32 @@ export default class Chart extends PureComponent {
       );
 
       const colorMatrix = index => {
-        return index < allNewData.length - 1
+        return index < chartData.length - 1
           ? cond(
               eq(this.currentChart, index),
               Animated.color(
-                ...hexToRgb(allNewData[index].colors[segmentColors[i][index]])
+                ...hexToRgb(chartData[index].colors[segmentColors[i][index]])
               ),
               colorMatrix(index + 1)
             )
           : cond(
               eq(this.currentChart, index),
               Animated.color(
-                ...hexToRgb(allNewData[index].colors[segmentColors[i][index]])
+                ...hexToRgb(chartData[index].colors[segmentColors[i][index]])
               )
+            );
+      };
+
+      const lineMatrix = index => {
+        return index < chartData.length - 1
+          ? cond(
+              eq(this.currentChart, index),
+              chartData[index].lines[segmentColors[i][index]],
+              lineMatrix(index + 1)
+            )
+          : cond(
+              eq(this.currentChart, index),
+              chartData[index].lines[segmentColors[i][index]]
             );
       };
 
@@ -481,9 +510,13 @@ export default class Chart extends PureComponent {
           id="main-path"
           fill="none"
           stroke={colorMatrix(0)}
+          strokeDasharray={lineMatrix(0)}
           strokeWidth={add(
-            strokeWidth,
-            multiply(this.value, thickStrokeWidthDifference)
+            this.props.stroke.detailed,
+            multiply(
+              this.value,
+              sub(this.props.stroke.simplified, this.props.stroke.detailed)
+            )
           )}
           strokeLinejoin="round"
           strokeLinecap="round"
