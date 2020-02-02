@@ -44,7 +44,7 @@ CodePush.getUpdateMetadata().then(update => {
   }
 });
 
-enableScreens(true);
+enableScreens();
 
 class App extends Component {
   static propTypes = {

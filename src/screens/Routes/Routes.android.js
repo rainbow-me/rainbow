@@ -3,36 +3,34 @@ import { get, omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { createAppContainer } from 'react-navigation';
-import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
-// eslint-disable-next-line import/no-unresolved
-import { enableScreens } from 'react-native-screens';
+import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
+import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
+
 import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
 import { createStackNavigator } from 'react-navigation-stack';
-import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
-import { ExchangeModalNavigator, Navigation } from '../navigation';
-import { updateTransitionProps } from '../redux/navigation';
-import store from '../redux/store';
-import { deviceUtils } from '../utils';
-import ExpandedAssetScreenWithData from './ExpandedAssetScreenWithData';
-import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
-import ProfileScreenWithData from './ProfileScreenWithData';
-import QRScannerScreenWithData from './QRScannerScreenWithData';
-import ReceiveModal from './ReceiveModal';
-import ExampleScreen from './ExampleScreen';
-import WalletConnectConfirmationModal from './WalletConnectConfirmationModal';
-import SendSheetWithData from './SendSheetWithData';
-import SettingsModal from './SettingsModal';
-import TransactionConfirmationScreenWithData from './TransactionConfirmationScreenWithData';
-import WalletScreen from './WalletScreen';
+import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
+import { ExchangeModalNavigator, Navigation } from '../../navigation';
+import { updateTransitionProps } from '../../redux/navigation';
+import store from '../../redux/store';
+import { deviceUtils } from '../../utils';
+import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
+import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
+import ProfileScreenWithData from '../ProfileScreenWithData';
+import QRScannerScreenWithData from '../QRScannerScreenWithData';
+import ReceiveModal from '../ReceiveModal';
+import ExampleScreen from '../ExampleScreen';
+import WalletConnectConfirmationModal from '../WalletConnectConfirmationModal';
+import SendSheetWithData from '../SendSheetWithData';
+import SettingsModal from '../SettingsModal';
+import TransactionConfirmationScreenWithData from '../TransactionConfirmationScreenWithData';
+import WalletScreen from '../WalletScreen';
 import {
   exchangePreset,
   expandedPreset,
   sheetPreset,
   backgroundPreset,
   overlayExpandedPreset,
-} from '../navigation/transitions/effects';
-
-enableScreens();
+} from '../../navigation/transitions/effects';
 
 const onTransitionEnd = () =>
   store.dispatch(updateTransitionProps({ isTransitioning: false }));
@@ -59,6 +57,8 @@ const SwipeStack = createMaterialTopTabNavigator(
     headerMode: 'none',
     initialLayout: deviceUtils.dimensions,
     initialRouteName: 'WalletScreen',
+    pagerComponent: ViewPagerAdapter,
+    swipeEnabled: true,
     tabBarComponent: null,
   }
 );
@@ -244,7 +244,7 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
       }
 
       if (routeName !== prevRouteName) {
-        let paramsToTrack = null;
+        let paramsToTrack = {};
 
         if (
           prevRouteName === 'MainExchangeScreen' &&
