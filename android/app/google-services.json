@@ -1,0 +1,45 @@
+{
+  "project_info": {
+    "project_number": "401822667691",
+    "firebase_url": "https://rainbow-a485e.firebaseio.com",
+    "project_id": "rainbow-a485e",
+    "storage_bucket": "rainbow-a485e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:401822667691:android:c03bb0d490f8efd3",
+        "android_client_info": {
+          "package_name": "me.rainbow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "401822667691-0lh31s28po2q1jevo849lhcm57pl1oa8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtAokiK5mb_KJwdRbR6RP6-vuWIHvKcfo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-78554584-1"
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
