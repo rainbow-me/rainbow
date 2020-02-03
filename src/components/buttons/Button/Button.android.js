@@ -1,12 +1,12 @@
-import { isArray, isString, pick } from 'lodash';
+import { isArray, isString } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { TouchableOpacity } from 'react-native';
 import styled from 'styled-components/primitives';
-import { colors, padding } from '../../styles';
-import { ButtonPressAnimation } from '../animations';
-import InnerBorder from '../InnerBorder';
-import { Centered } from '../layout';
-import { Text } from '../text';
+import { colors, padding } from '../../../styles';
+import InnerBorder from '../../InnerBorder';
+import { Centered } from '../../layout';
+import { Text } from '../../text';
 
 const ButtonSizeTypes = {
   default: {
@@ -59,22 +59,16 @@ const Button = ({
   type,
   ...props
 }) => (
-  <ButtonPressAnimation
-    {...pick(props, Object.keys(ButtonPressAnimation.propTypes))}
+  <Container
+    {...props}
     backgroundColor={backgroundColor}
-    disabled={disabled}
-    style={[props.style, { borderRadius: type === 'rounded' ? 14 : 50 }]}
-    onPress={onPress}
+    css={containerStyles}
+    showShadow={showShadow}
+    size={size}
+    style={style}
+    type={type}
   >
-    <Container
-      {...props}
-      backgroundColor={backgroundColor}
-      css={containerStyles}
-      showShadow={showShadow}
-      size={size}
-      style={style}
-      type={type}
-    >
+    <TouchableOpacity onPress={onPress}>
       {!shouldRenderChildrenAsText(children) ? (
         children
       ) : (
@@ -95,8 +89,8 @@ const Button = ({
           width={borderWidth}
         />
       )}
-    </Container>
-  </ButtonPressAnimation>
+    </TouchableOpacity>
+  </Container>
 );
 
 Button.propTypes = {

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Rainbow</string>
+    <string moduleConfig="true" name="CodePushDeploymentKey">DeploymentKey</string>
 </resources>
