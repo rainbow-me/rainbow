@@ -160,7 +160,7 @@ export const overlayExpandedPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: expandStyleInterpolator(0.2),
+  cardStyleInterpolator: expandStyleInterpolator(0.4),
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
