@@ -12,7 +12,7 @@ import {
 import styled from 'styled-components/primitives';
 import { withAccountData, withAccountSettings } from '../../hoc';
 import { ethereumUtils, deviceUtils } from '../../utils';
-import ValueChart from '../value-chart/ValueChart';
+import Chart from '../value-chart/Chart';
 import { BalanceCoinRow } from '../coin-row';
 import BottomSendButtons from '../value-chart/BottomSendButtons';
 import { colors } from '../../styles';
@@ -63,7 +63,7 @@ const TokenExpandedState = ({ onPressSend, onPressSwap, selectedAsset }) => {
       </BottomContainer>
       <Divider />
       <ChartContainer>
-        <ValueChart />
+        <Chart />
       </ChartContainer>
     </Container>
   );
