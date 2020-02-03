@@ -9,11 +9,11 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, { clockRunning, Easing } from 'react-native-reanimated';
 import stylePropType from 'react-style-proptype';
 import { useMemoOne } from 'use-memo-one';
-import { useInteraction, useTransformOrigin } from '../../hooks';
-import { animations } from '../../styles';
-import { directionPropType } from '../../utils';
-import Button from '../native-button';
-import isNativeButtonAvailable from '../../helpers/isNativeButtonAvailable';
+import { useInteraction, useTransformOrigin } from '../../../hooks';
+import { animations } from '../../../styles';
+import { directionPropType } from '../../../utils';
+import Button from '../../native-button';
+import isNativeButtonAvailable from '../../../helpers/isNativeButtonAvailable';
 
 const {
   and,

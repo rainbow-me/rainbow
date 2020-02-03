@@ -7,8 +7,9 @@ import React, {
   useState,
   useRef,
 } from 'react';
-import { KeyboardAvoidingView, StatusBar } from 'react-native';
+import { KeyboardAvoidingView, StatusBar, Platform } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
+import { Button } from '../components/buttons';
 import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
@@ -54,7 +55,9 @@ const HandleIcon = styled(Icon).attrs({
   margin-bottom: 2;
 `;
 
-const StyledImportButton = styled(BorderlessButton)`
+const StyledImportButton = styled(
+  Platform.OS === 'ios' ? BorderlessButton : Button
+)`
   ${padding(5, 9, 7)};
   ${shadow.build(0, 6, 10, colors.dark, 0.16)};
   background-color: ${({ disabled }) =>
