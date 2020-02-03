@@ -39,13 +39,13 @@ const exchangeStyleInterpolator = ({
   };
 };
 
-const expandStyleInterpolator = ({
+const expandStyleInterpolator = targetOpacity => ({
   current: { progress: current },
   layouts: { screen },
 }) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, 0.7, 0.7],
+    outputRange: [0, 0, targetOpacity, targetOpacity],
   });
 
   const translateY = current.interpolate({
@@ -160,7 +160,7 @@ export const overlayExpandedPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: expandStyleInterpolator,
+  cardStyleInterpolator: expandStyleInterpolator(0.4),
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
@@ -171,7 +171,7 @@ export const expandedPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: expandStyleInterpolator,
+  cardStyleInterpolator: expandStyleInterpolator(0.7),
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
