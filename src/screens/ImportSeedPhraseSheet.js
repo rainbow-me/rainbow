@@ -111,6 +111,11 @@ const ImportSeedPhraseSheet = ({
     inputRef.current && inputRef.current.focus();
   }, []);
 
+  const inputRefListener = useCallback(value => {
+    value && setTimeout(value.focus, 100);
+    inputRef.current = value;
+  }, []);
+
   useEffect(() => {
     setAppearListener && setAppearListener(focusListener);
     return () => setAppearListener && setAppearListener(null);
@@ -197,7 +202,7 @@ const ImportSeedPhraseSheet = ({
           <Input
             lineHeight="loosest"
             multiline
-            ref={inputRef}
+            ref={isNativeStackAvailable ? inputRef : inputRefListener}
             align="center"
             autoFocus
             enablesReturnKeyAutomatically
