@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
-import { swapDetailsTransitionPosition } from '../../navigation/transitions/effects';
 import { colors, padding, position } from '../../styles';
 import { TouchableScale } from '../animations';
 import { FloatingEmojis, FloatingEmojisTapHandler } from '../floating-emojis';
@@ -26,11 +25,6 @@ const DetailsRow = ({ label, value, ...props }) => (
     </Text>
   </Row>
 );
-
-const FloatingEmojisOpacity = swapDetailsTransitionPosition.interpolate({
-  inputRange: [0.93, 1],
-  outputRange: [0, 1],
-});
 
 const SwapDetailsState = ({
   inputCurrencySymbol,
@@ -59,7 +53,6 @@ const SwapDetailsState = ({
           distance={350}
           duration={2000}
           emoji={emoji}
-          opacity={FloatingEmojisOpacity}
           size={36}
           wiggleFactor={1}
         >
