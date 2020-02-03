@@ -20,7 +20,7 @@ export default compose(
     onPressSettings: ({ navigation }) => () =>
       navigation.navigate('SettingsModal'),
   }),
-  withProps(({ isWalletEmpty, transactionsCount }) => ({
-    isEmpty: isWalletEmpty && !transactionsCount,
+  withProps(({ isWalletEmpty, transactionsCount, pendingRequestCount }) => ({
+    isEmpty: isWalletEmpty && !transactionsCount && !pendingRequestCount,
   }))
 )(ProfileScreen);

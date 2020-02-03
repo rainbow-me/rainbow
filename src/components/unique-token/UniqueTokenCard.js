@@ -32,7 +32,7 @@ const UniqueTokenCard = ({
       disabled={disabled}
       onPress={onPress}
       onPressSend={onPressSend}
-      scaleTo={0.94}
+      scaleTo={0.96}
       style={{
         shadowColor: colors.dark,
         shadowOffset: { height: 2, width: 0 },

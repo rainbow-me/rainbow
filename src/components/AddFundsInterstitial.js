@@ -83,8 +83,10 @@ export default compose(
   pure,
   withNavigation,
   withHandlers({
-    onPressAddFunds: ({ navigation }) => () =>
-      navigation.navigate('ReceiveModal'),
+    onPressAddFunds: ({ navigation }) => () => {
+      console.log('should go to modal');
+      navigation.navigate('ReceiveModal');
+    },
     onPressImportWallet: ({ navigation }) => () =>
       navigation.navigate('ImportSeedPhraseSheet'),
   })

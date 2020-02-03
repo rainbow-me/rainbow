@@ -113,7 +113,7 @@ export default class CoinDivider extends PureComponent {
         <Highlight highlight={isCoinDivider} />
         <ButtonPressAnimation
           onPress={onPress}
-          scaleTo={0.8}
+          scaleTo={0.96}
           style={{ width: openSmallBalances ? 80 : 54 }}
         >
           <Row

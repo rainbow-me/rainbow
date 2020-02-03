@@ -9,15 +9,13 @@ import { dedupeUniqueTokens } from './uniqueTokens';
  */
 export const parseAccountAssets = (data, uniqueTokens, tokenOverrides) => {
   const dedupedAssets = dedupeUniqueTokens(data, uniqueTokens);
-  let assets = dedupedAssets.map(assetData => {
+  return dedupedAssets.map(assetData => {
     const asset = parseAsset(assetData.asset, tokenOverrides);
     return {
       ...asset,
       balance: convertRawAmountToBalance(assetData.quantity, asset),
     };
   });
-
-  return assets.filter(asset => !!Number(get(asset, 'balance.amount')));
 };
 
 /**
@@ -32,7 +30,7 @@ export const parseAsset = (assetData, tokenOverrides) => {
   if (symbol && symbol.includes('*')) {
     symbol = symbol.replace(/[*]/g, '');
   }
-  const asset = {
+  return {
     address,
     decimals: get(assetData, 'decimals'),
     name,
@@ -41,5 +39,4 @@ export const parseAsset = (assetData, tokenOverrides) => {
     uniqueId: address || name,
     ...tokenOverrides[address],
   };
-  return asset;
 };

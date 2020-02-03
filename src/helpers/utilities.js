@@ -24,6 +24,8 @@ export const convertAmountToRawAmount = (value, decimals) =>
     .times(BigNumber(10).pow(decimals))
     .toFixed();
 
+export const isZero = value => BigNumber(value).isZero();
+
 /**
  * @desc convert from number to string
  * @param  {Number}  value
@@ -38,7 +40,16 @@ export const convertNumberToString = value => BigNumber(`${value}`).toFixed();
  * @return {String}
  */
 export const greaterThan = (numberOne, numberTwo) =>
-  BigNumber(`${numberOne}`).comparedTo(BigNumber(`${numberTwo}`)) === 1;
+  BigNumber(`${numberOne}`).gt(BigNumber(`${numberTwo}`));
+
+/**
+ * @desc compares if numberOne is greater than or equal to numberTwo
+ * @param  {Number}   numberOne
+ * @param  {Number}   numberTwo
+ * @return {String}
+ */
+export const greaterThanOrEqualTo = (numberOne, numberTwo) =>
+  BigNumber(`${numberOne}`).gte(BigNumber(`${numberTwo}`));
 
 /**
  * @desc format fixed number of decimals

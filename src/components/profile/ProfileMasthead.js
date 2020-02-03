@@ -7,7 +7,7 @@ import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
 import { borders, margin } from '../../styles';
 import { abbreviations } from '../../utils';
-import CopyTooltip from '../CopyTooltip';
+import CopyTooltip from '../copy-tooltip';
 import Divider from '../Divider';
 import { Centered, Column, RowWithMargins } from '../layout';
 import { FloatingEmojis } from '../floating-emojis';
@@ -53,7 +53,7 @@ const ProfileMasthead = ({
         <ProfileAction
           icon="copy"
           onPress={onPressCopy}
-          scaleTo={0.82}
+          scaleTo={0.88}
           text="Copy Address"
         />
         <FloatingEmojis
@@ -66,7 +66,7 @@ const ProfileMasthead = ({
       <ProfileAction
         icon="inbox"
         onPress={onPressReceive}
-        scaleTo={0.82}
+        scaleTo={0.88}
         text="Receive"
       />
     </RowWithMargins>

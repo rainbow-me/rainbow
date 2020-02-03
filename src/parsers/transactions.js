@@ -64,6 +64,7 @@ export default (
     txn => txn.type === 'authorize'
   );
   const updatedPendingTransactions = dedupePendingTransactions(
+    accountAddress,
     pendingTransactions,
     parsedTransactions
   );
@@ -217,7 +218,11 @@ const parseTransaction = (
   return reverse(internalTransactions);
 };
 
-const dedupePendingTransactions = (pendingTransactions, parsedTransactions) => {
+export const dedupePendingTransactions = (
+  accountAddress,
+  pendingTransactions,
+  parsedTransactions
+) => {
   let updatedPendingTransactions = pendingTransactions;
   if (pendingTransactions.length) {
     updatedPendingTransactions = filter(
@@ -228,7 +233,9 @@ const dedupePendingTransactions = (pendingTransactions, parsedTransactions) => {
           txn =>
             txn.hash &&
             (startsWith(toLower(txn.hash), toLower(pendingTxn.hash)) ||
-              (txn.nonce && txn.nonce >= pendingTxn.nonce))
+              (toLower(txn.from) === toLower(accountAddress) &&
+                txn.nonce &&
+                txn.nonce >= pendingTxn.nonce))
         );
         return !matchingElement;
       }
