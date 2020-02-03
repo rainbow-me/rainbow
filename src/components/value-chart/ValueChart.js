@@ -3,9 +3,9 @@ import Chart from './Chart';
 import ValueText from './ValueText';
 import {
   data1,
-  // data2,
-  // data3,
-  // data4,
+  data2,
+  data3,
+  data4,
   dataColored1,
   dataColored2,
   dataColored3,
@@ -17,8 +17,8 @@ const dataColored = [dataColored1, dataColored2, dataColored3];
 const dataSwitching = [
   dataColored,
   [dataColored1, dataColored2],
-  [dataColored2, dataColored3, data1],
-  [dataColored1, dataColored2],
+  [dataColored2, dataColored3],
+  [data4],
 ];
 
 const colorsArray = [
@@ -85,7 +85,7 @@ class ValueChart extends React.Component {
             this._text.updateValue(value);
           }}
           currentDataSource={this.state.currentChart}
-          amountOfPathPoints={200} // amount of points for switch between charts
+          amountOfPathPoints={150} // amount of points for switch between charts
           data={this.data}
           barColor={change > 0 ? colors.chartGreen : colors.red}
           stroke={{ detailed: 1.5, simplified: 3 }}
