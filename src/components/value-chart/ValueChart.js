@@ -2,9 +2,9 @@ import React from 'react';
 import Chart from './Chart';
 import ValueText from './ValueText';
 import {
-  data1,
-  data2,
-  data3,
+  // data1,
+  // data2,
+  // data3,
   data4,
   dataColored1,
   dataColored2,
@@ -57,8 +57,12 @@ class ValueChart extends React.Component {
             points: data.map(values => {
               return { x: values.timestamp, y: values.value };
             }),
-            renderEndSeparor: () => null,
-            renderStartSeparatator: () => null,
+            renderStartSeparatator: {
+              fill: colorsArray[colorIndex],
+              r: 7,
+              stroke: 'white',
+              strokeWidth: colorIndex + 2,
+            },
           };
         }),
       };

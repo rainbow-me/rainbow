@@ -44,6 +44,7 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
   let allSegmentsPoints = [];
   let colors = [];
   let lines = [];
+  let dividers = [];
   let lastPoints = [];
   let createdLastPoints = [];
   if (data.segments.length > 0) {
@@ -56,6 +57,7 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
       lastPoints.push(allSegmentsPoints.length - 1);
       colors.push(data.segments[i].color);
       lines.push(data.segments[i].line);
+      dividers.push(data.segments[i].renderStartSeparatator);
     }
   }
   if (allSegmentsPoints.length > destinatedNumberOfPoints) {
@@ -118,6 +120,7 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
       lastPoints: createdLastPoints,
       lines,
       points: newData,
+      startSeparatator: dividers,
     };
 
     return returnData;
@@ -383,7 +386,8 @@ export default class Chart extends PureComponent {
     allSegmentDividers.sort(function(a, b) {
       return a - b;
     });
-    var segmentsWithDeletedDuplicates = [];
+    let segmentsWithDeletedDuplicates = [];
+
     allSegmentDividers.forEach(function(x) {
       if (
         segmentsWithDeletedDuplicates.length == 0 ||
@@ -392,6 +396,7 @@ export default class Chart extends PureComponent {
         segmentsWithDeletedDuplicates.push(x);
     });
     allSegmentDividers = segmentsWithDeletedDuplicates;
+
     const segments = this.createSegmentColorsArray(
       allSegmentDividers,
       chartData
@@ -466,6 +471,7 @@ export default class Chart extends PureComponent {
           } else if (i == allSegmentDividers.length) {
             if (index == allSegmentDividers[i - 1]) {
               sectionEndPoints.push({
+                index: segments.dividers[i - 1],
                 opacity: this.chartsMulti[segments.dividers[i - 1]],
                 x,
                 y: add(...allNodes(index)),
@@ -478,6 +484,7 @@ export default class Chart extends PureComponent {
           } else {
             if (index == allSegmentDividers[i - 1]) {
               sectionEndPoints.push({
+                index: segments.dividers[i - 1],
                 opacity: this.chartsMulti[segments.dividers[i - 1]],
                 x,
                 y: add(...allNodes(index)),
@@ -545,16 +552,29 @@ export default class Chart extends PureComponent {
       );
     }
 
-    console.log(sectionEndPoints);
+    let something = [0, 0, 0, 0];
     sectionEndPoints.forEach(element => {
       returnPoints.push(
         <AnimatedCircle
           cx={element.x}
           cy={element.y}
-          r={10}
-          stroke="white"
-          strokeWidth={3}
-          fill="gray"
+          r={
+            chartData[element.index].startSeparatator[something[element.index]]
+              .r
+          }
+          stroke={
+            chartData[element.index].startSeparatator[something[element.index]]
+              .stroke
+          }
+          strokeWidth={
+            chartData[element.index].startSeparatator[something[element.index]]
+              .strokeWidth
+          }
+          fill={
+            chartData[element.index].startSeparatator[
+              something[element.index]++
+            ].fill
+          }
           opacity={element.opacity}
         />
       );
