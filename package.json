@@ -54,7 +54,7 @@
     "dns.js": "^1.0.1",
     "domain-browser": "^1.2.0",
     "eth-contract-metadata": "^1.9.3",
-    "ethers": "^4.0.39",
+    "ethers": "^4.0.44",
     "events": "^1.1.1",
     "global": "^4.3.2",
     "grapheme-splitter": "^1.0.4",
