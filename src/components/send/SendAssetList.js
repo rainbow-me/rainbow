@@ -10,10 +10,10 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import { LayoutAnimation } from 'react-native';
+import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { sheetVerticalOffset } from '../../navigation/transitions/effects';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { colors } from '../../styles';
 
 const dividerHeight = 18;
