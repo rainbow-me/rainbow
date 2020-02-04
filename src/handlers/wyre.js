@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import axios from 'axios';
-import { get } from 'lodash';
+import { get, isEmpty, split } from 'lodash';
 import {
   RAINBOW_WYRE_MERCHANT_ID,
   WYRE_ACCOUNT_ID,
@@ -11,6 +11,7 @@ import { add, feeCalculation, toFixedDecimals } from '../helpers/utilities';
 
 const WYRE_PERCENT_FEE = 4;
 const WYRE_FLAT_FEE_USD = 0.3;
+const SOURCE_CURRENCY_USD = 'USD';
 
 const wyreApi = axios.create({
   baseURL: WYRE_ENDPOINT,
@@ -37,7 +38,7 @@ export const requestWyreApplePay = (
   accountAddress,
   destCurrency,
   sourceAmount,
-  sourceCurrency = 'USD'
+  trackOrder
 ) => {
   const destAddress = `ethereum:${accountAddress}`;
 
@@ -53,7 +54,7 @@ export const requestWyreApplePay = (
     {
       data: {
         countryCode: 'US',
-        currencyCode: sourceCurrency,
+        currencyCode: SOURCE_CURRENCY_USD,
         merchantIdentifier: RAINBOW_WYRE_MERCHANT_ID,
         supportedCountries: ['US'],
         supportedNetworks: ['visa', 'mastercard', 'amex'],
@@ -64,7 +65,6 @@ export const requestWyreApplePay = (
 
   const paymentDetails = getWyrePaymentDetails(
     sourceAmount,
-    sourceCurrency,
     destCurrency,
     feeAmount,
     totalAmount
@@ -89,15 +89,13 @@ export const requestWyreApplePay = (
         paymentResponse,
         totalAmount,
         destAddress,
-        destCurrency,
-        sourceCurrency
+        destCurrency
       )
-        .then(isSuccess => {
-          console.log('process wyre payment is success', isSuccess);
-          paymentResponse.complete(isSuccess ? 'success' : 'failure');
+        .then(orderId => {
+          paymentResponse.complete(!isEmpty(orderId) ? 'success' : 'failure');
+          trackOrder(orderId);
         })
         .catch(error => {
-          console.log('error!', error);
           paymentResponse.complete('failure');
         });
     })
@@ -106,20 +104,80 @@ export const requestWyreApplePay = (
     });
 };
 
+export const trackWyreOrder = async orderId => {
+  try {
+    const response = await wyreApi.get(`/v3/orders/${orderId}`);
+    if (response.status >= 200 && response.status < 300) {
+      const orderStatus = get(response, 'data.status');
+      const transferId = get(response, 'data.transferId');
+      return { orderStatus, transferId };
+    }
+    const {
+      data: { exceptionId, message },
+    } = response;
+    throw new WyreAPIException(exceptionId, message);
+  } catch (error) {
+    captureException(error);
+    throw error;
+  }
+};
+
+export const trackWyreTransfer = async transferId => {
+  try {
+    const response = await wyreApi.get(`/v2/transfer/${transferId}/track`);
+    if (response.status >= 200 && response.status < 300) {
+      const transferHash = get(response, 'data.blockchainNetworkTx');
+      const destAmount = get(response, 'data.destAmount');
+      const destCurrency = get(response, 'data.destCurrency');
+      const transferStatus = get(response, 'data.status');
+      return { destAmount, destCurrency, transferHash, transferStatus };
+    }
+    const {
+      data: { exceptionId, message },
+    } = response;
+    throw new WyreAPIException(exceptionId, message);
+  } catch (error) {
+    captureException(error);
+    throw error;
+  }
+};
+
+const processWyrePayment = async (
+  paymentResponse,
+  amount,
+  dest,
+  destCurrency
+) => {
+  const data = createPayload(paymentResponse, amount, dest, destCurrency);
+  try {
+    const response = await wyreApi.post('/v3/apple-pay/process/partner', data);
+    if (response.status >= 200 && response.status < 300) {
+      return get(response, 'data.id', null);
+    }
+    const {
+      data: { exceptionId, message },
+    } = response;
+    captureException(new WyreAPIException(exceptionId, message));
+    return null;
+  } catch (error) {
+    captureException(error);
+    return null;
+  }
+};
+
 const getWyrePaymentDetails = (
   sourceAmount,
-  sourceCurrency,
   destCurrency,
   feeAmount,
   totalAmount
 ) => ({
   displayItems: [
     {
-      amount: { currency: sourceCurrency, value: sourceAmount },
+      amount: { currency: SOURCE_CURRENCY_USD, value: sourceAmount },
       label: `Purchase ${destCurrency}`,
     },
     {
-      amount: { currency: sourceCurrency, value: feeAmount },
+      amount: { currency: SOURCE_CURRENCY_USD, value: feeAmount },
       label: `Fee ${WYRE_PERCENT_FEE}% + $${toFixedDecimals(
         WYRE_FLAT_FEE_USD,
         2
@@ -128,51 +186,12 @@ const getWyrePaymentDetails = (
   ],
   id: 'rainbow-wyre',
   total: {
-    amount: { currency: sourceCurrency, value: totalAmount },
+    amount: { currency: SOURCE_CURRENCY_USD, value: totalAmount },
     label: 'Rainbow',
   },
 });
 
-const processWyrePayment = async (
-  paymentResponse,
-  amount,
-  dest,
-  destCurrency,
-  sourceCurrency
-) => {
-  console.log('payment response', paymentResponse);
-  const data = createPayload(
-    paymentResponse,
-    amount,
-    dest,
-    destCurrency,
-    sourceCurrency
-  );
-  try {
-    console.log('posting data to wyre api', data);
-    const response = await wyreApi.post('/v3/apple-pay/process/partner', data);
-    console.log('sendwyre response!', response);
-    if (response.status >= 200 && response.status < 300) {
-      return true;
-    }
-    const {
-      data: { exceptionId, message },
-    } = response;
-    captureException(new WyreAPIException(exceptionId, message));
-    return false;
-  } catch (error) {
-    captureException(error);
-    return false;
-  }
-};
-
-const createPayload = (
-  paymentResponse,
-  amount,
-  dest,
-  destCurrency,
-  sourceCurrency
-) => {
+const createPayload = (paymentResponse, amount, dest, destCurrency) => {
   const {
     details: {
       billingContact: billingInfo,
@@ -196,10 +215,10 @@ const createPayload = (
         amount,
         dest,
         destCurrency,
-        sourceCurrency,
+        sourceCurrency: SOURCE_CURRENCY_USD,
       },
       paymentObject: {
-        billingContact: getAddressDetails(billingInfo),
+        billingContact,
         shippingContact,
         token: {
           paymentData,
@@ -216,8 +235,9 @@ const createPayload = (
 
 const getAddressDetails = addressInfo => {
   const { name, postalAddress: address } = addressInfo;
+  const addressLines = split(address.street, '\n');
   return {
-    addressLines: [address.street],
+    addressLines,
     administrativeArea: address.state,
     country: address.country,
     countryCode: address.ISOCountryCode,
