@@ -7,26 +7,33 @@ import { compose, withHandlers } from 'recompact';
 import { getIsWalletEmpty } from '../handlers/localstorage/accountLocal';
 import { hasEthBalance } from '../handlers/web3';
 import { walletInit } from '../model/wallet';
+
 import {
   dataClearState,
   dataLoadState,
   dataTokenOverridesInit,
+  dataWatchPendingTransactions
 } from '../redux/data';
+
 import { explorerClearState, explorerInit } from '../redux/explorer';
 import { gasClearState, gasPricesInit } from '../redux/gas';
 import { clearIsWalletEmpty } from '../redux/isWalletEmpty';
 import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import { nonceClearState } from '../redux/nonce';
 import { contactsLoadState } from '../redux/contacts';
+
 import {
   clearOpenStateSettings,
   openStateSettingsLoadState,
 } from '../redux/openStateSettings';
+
 import { requestsLoadState, requestsClearState } from '../redux/requests';
+
 import {
   settingsLoadState,
   settingsUpdateAccountAddress,
 } from '../redux/settings';
+
 import {
   uniswapLoadState,
   uniswapClearState,
@@ -58,6 +65,7 @@ export default Component =>
       dataClearState,
       dataLoadState,
       dataTokenOverridesInit,
+      dataWatchPendingTransactions,
       explorerClearState,
       explorerInit,
       gasClearState,
