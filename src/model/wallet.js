@@ -3,6 +3,7 @@ import { ethers } from 'ethers';
 import lang from 'i18n-js';
 import { get, isEmpty, isNil } from 'lodash';
 import { Alert } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 import {
   ACCESS_CONTROL,
   ACCESSIBLE,
@@ -203,7 +204,15 @@ const saveWalletDetails = async (seedPhrase, privateKey, address) => {
     authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
   });
   let accessControlOptions = {};
+
+  let isSimulator = false;
+
   if (canAuthenticate) {
+    // eslint-disable-next-line no-undef
+    isSimulator = __DEV__ && (await DeviceInfo.isSimulator());
+  }
+
+  if (canAuthenticate && !isSimulator) {
     accessControlOptions = {
       accessControl: ACCESS_CONTROL.USER_PRESENCE,
       accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
