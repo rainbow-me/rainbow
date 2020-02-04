@@ -1,4 +1,13 @@
-import { concat, get, includes, isNil, map, remove, uniqBy } from 'lodash';
+import {
+  concat,
+  filter,
+  get,
+  includes,
+  isNil,
+  map,
+  remove,
+  uniqBy,
+} from 'lodash';
 import {
   getAssets,
   getCompoundAssets,
@@ -11,14 +20,14 @@ import {
   saveLocalTransactions,
 } from '../handlers/localstorage/accountLocal';
 import { apiGetTokenOverrides } from '../handlers/tokenOverrides';
+import { getTransactionByHash } from '../handlers/web3';
+import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import { parseAccountAssets, parseAsset } from '../parsers/accounts';
 import { parseCompoundDeposits } from '../parsers/compound';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import parseTransactions from '../parsers/transactions';
 import { loweredTokenOverridesFallback } from '../references';
 import { isLowerCaseMatch } from '../utils';
-import TransactionStatusTypes from '../helpers/transactionStatusTypes';
-import { sendRpcCall } from '../handlers/web3';
 import {
   uniswapRemovePendingApproval,
   uniswapUpdateAssetPrice,
@@ -141,11 +150,11 @@ export const transactionsReceived = (message, appended = false) => (
     appended
   );
   dispatch(uniswapRemovePendingApproval(approvalTransactions));
-  saveLocalTransactions(dedupedResults, accountAddress, network);
   dispatch({
     payload: dedupedResults,
     type: DATA_UPDATE_TRANSACTIONS,
   });
+  saveLocalTransactions(dedupedResults, accountAddress, network);
 };
 
 export const transactionsRemoved = message => (dispatch, getState) => {
@@ -159,11 +168,11 @@ export const transactionsRemoved = message => (dispatch, getState) => {
   const removeHashes = map(transactionData, txn => txn.hash);
   remove(transactions, txn => includes(removeHashes, txn.hash));
 
-  saveLocalTransactions(transactions, accountAddress, network);
   dispatch({
     payload: transactions,
     type: DATA_UPDATE_TRANSACTIONS,
   });
+  saveLocalTransactions(transactions, accountAddress, network);
 };
 
 export const addressAssetsReceived = (
@@ -243,14 +252,12 @@ export const dataAddNewTransaction = txDetails => (dispatch, getState) =>
     parseNewTransaction(txDetails, nativeCurrency)
       .then(parsedTransaction => {
         const _transactions = [parsedTransaction, ...transactions];
-        saveLocalTransactions(_transactions, accountAddress, network);
         dispatch({
           payload: _transactions,
           type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
         });
-
+        saveLocalTransactions(_transactions, accountAddress, network);
         dispatch(startPendingTransactionWatcher());
-
         resolve(true);
       })
       .catch(error => {
@@ -267,32 +274,29 @@ export const dataWatchPendingTransactions = () => async (
   const updatedTransactions = [...transactions];
   let txStatusesDidChange = false;
 
+  const pending = filter(transactions, ['pending', true]);
   await Promise.all(
-    transactions.map(async (tx, index) => {
-      if (tx.pending) {
-        const txHash = tx.hash.split('-').shift();
-        const payload = {
-          method: 'eth_getTransactionByHash',
-          params: [txHash],
-        };
-        const txObj = await sendRpcCall(payload);
+    pending.map(async (tx, index) => {
+      const txHash = tx.hash.split('-').shift();
+      try {
+        const txObj = await getTransactionByHash(txHash);
         if (txObj && txObj.blockNumber) {
           txStatusesDidChange = true;
           updatedTransactions[index].status = TransactionStatusTypes.sent;
           updatedTransactions[index].pending = false;
         }
-      }
+        // eslint-disable-next-line no-empty
+      } catch (error) {}
     })
   );
 
   if (txStatusesDidChange) {
     const { accountAddress, network } = getState().settings;
-    saveLocalTransactions(updatedTransactions, accountAddress, network);
-
     dispatch({
       payload: updatedTransactions,
       type: DATA_UPDATE_TRANSACTIONS,
     });
+    saveLocalTransactions(updatedTransactions, accountAddress, network);
 
     const pendingTx = updatedTransactions.find(tx => tx.pending);
     if (!pendingTx) {
