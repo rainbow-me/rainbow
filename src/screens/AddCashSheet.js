@@ -16,7 +16,7 @@ import {
 } from '../components/add-cash';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { requestWyreApplePay } from '../handlers/wyre';
-import { withAccountAddress, withTransitionProps } from '../hoc';
+import { withAccountAddress, withTransitionProps, withWyre } from '../hoc';
 import { borders, colors, padding } from '../styles';
 import { deviceUtils, safeAreaInsetValues } from '../utils';
 import AddCashSelector from '../components/add-cash/AddCashSelector';
@@ -109,7 +109,7 @@ const shakeAnimation = () => runSpring(new Clock(), -10, 0, -1000, 5500, 35);
 const currencies = ['ETH', 'DAI', 'USDC'];
 const initialCurrencyIndex = 1;
 
-const AddCashSheet = ({ accountAddress }) => {
+const AddCashSheet = ({ accountAddress, wyreAddOrder }) => {
   const [scaleAnim, setScaleAnim] = useState(1);
   const [shakeAnim, setShakeAnim] = useState(0);
   const [text, setText] = useState(null);
@@ -159,7 +159,7 @@ const AddCashSheet = ({ accountAddress }) => {
     });
 
   const onSubmit = () =>
-    requestWyreApplePay(accountAddress, destCurrency, text);
+    requestWyreApplePay(accountAddress, destCurrency, text, wyreAddOrder);
 
   const disabled = isEmpty(text) || parseFloat(text) === 0;
 
@@ -246,10 +246,12 @@ const AddCashSheet = ({ accountAddress }) => {
 
 AddCashSheet.propTypes = {
   accountAddress: PropTypes.string,
+  wyreAddOrder: PropTypes.func,
 };
 
 export default compose(
   withAccountAddress,
+  withWyre,
   withNavigation,
   withTransitionProps,
   withProps(({ transitionProps: { isTransitioning } }) => ({

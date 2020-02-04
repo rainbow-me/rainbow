@@ -19,6 +19,7 @@ import settings from './settings';
 import uniqueTokens from './uniqueTokens';
 import uniswap from './uniswap';
 import walletconnect from './walletconnect';
+import wyre from './wyre';
 
 export default combineReducers({
   actionSheetManager,
@@ -40,4 +41,5 @@ export default combineReducers({
   uniqueTokens,
   uniswap,
   walletconnect,
+  wyre,
 });

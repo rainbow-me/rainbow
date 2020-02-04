@@ -40,3 +40,4 @@ export {
 export { default as withWalletConnectConfirmationModal } from './withWalletConnectConfirmationModal';
 export { default as withWalletConnectConnections } from './withWalletConnectConnections';
 export { default as withWalletConnectOnSessionRequest } from './withWalletConnectOnSessionRequest';
+export { default as withWyre } from './withWyre';
