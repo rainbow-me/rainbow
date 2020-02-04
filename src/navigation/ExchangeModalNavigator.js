@@ -6,7 +6,7 @@ import CurrencySelectModal from '../screens/CurrencySelectModal';
 import ExchangeModal from '../screens/ExchangeModal';
 import { deviceUtils } from '../utils';
 import createStackNavigator from './createStackNavigator';
-import { exchangePreset } from './transitions/effects';
+import { exchangeDetailsPreset } from './transitions/effects';
 import ExpandedAssetScreenWithData from '../screens/ExpandedAssetScreenWithData';
 
 const ExchangeModalTabPosition = new Animated.Value(0);
@@ -24,7 +24,7 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator(
           },
           SwapDetailsScreen: {
             navigationOptions: {
-              ...exchangePreset,
+              ...exchangeDetailsPreset,
             },
             screen: ExpandedAssetScreenWithData,
           },

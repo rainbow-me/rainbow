@@ -42,6 +42,35 @@ const exchangeStyleInterpolator = ({
   };
 };
 
+const exchangeDetailsStyleInterpolator = ({
+  current: { progress: current },
+  layouts: { screen },
+}) => {
+  const backgroundOpacity = current.interpolate({
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, 0.7, 0.7],
+  });
+
+  const translateY = current.interpolate({
+    inputRange: [0, 1],
+    outputRange: [screen.height, 0],
+  });
+
+  return {
+    cardStyle: {
+      // Translation for the animation of the current card
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
+      opacity: backgroundOpacity,
+      shadowColor: colors.black,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.4,
+      shadowRadius: 25,
+    },
+  };
+};
+
 const expandStyleInterpolator = targetOpacity => ({
   current: { progress: current },
   layouts: { screen },
@@ -147,6 +176,17 @@ export const exchangePreset = {
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
   cardStyleInterpolator: exchangeStyleInterpolator,
+  cardTransparent: true,
+  gestureDirection: 'vertical',
+  gestureResponseDistance,
+  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+};
+
+export const exchangeDetailsPreset = {
+  cardOverlayEnabled: true,
+  cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: exchangeDetailsStyleInterpolator,
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
