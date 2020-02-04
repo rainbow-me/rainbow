@@ -16,22 +16,19 @@ const UniqueTokenCard = ({
   borderEnabled,
   disabled,
   height,
+  highlight,
   item: { background, image_preview_url, ...item },
   onPress,
-  onPressSend,
-  highlight,
   resizeMode,
   shadowStyle,
   style,
   width,
   ...props
 }) => {
-  const backgroundColor = background || colors.lightestGrey;
   return (
     <ButtonPressAnimation
       disabled={disabled}
       onPress={onPress}
-      onPressSend={onPressSend}
       scaleTo={0.96}
       style={{
         shadowColor: colors.dark,
@@ -50,10 +47,10 @@ const UniqueTokenCard = ({
         width={width}
       >
         <UniqueTokenImage
-          backgroundColor={backgroundColor}
-          resizeMode={resizeMode}
+          backgroundColor={background || colors.lightestGrey}
           imageUrl={image_preview_url}
           item={item}
+          resizeMode={resizeMode}
         />
         {borderEnabled && (
           <InnerBorder
@@ -81,7 +78,6 @@ UniqueTokenCard.propTypes = {
     image_preview_url: PropTypes.string,
   }),
   onPress: PropTypes.func,
-  onPressSend: PropTypes.func,
   resizeMode: UniqueTokenImage.propTypes.resizeMode,
   shadowStyle: stylePropType,
   size: PropTypes.number,
@@ -94,19 +90,14 @@ UniqueTokenCard.defaultProps = {
 };
 
 export default compose(
+  withFabSendAction,
   withHandlers({
     onPress: ({ item, onPress }) => () => {
       if (onPress) {
         onPress(item);
       }
     },
-    onPressSend: ({ item, onPressSend }) => () => {
-      if (onPressSend) {
-        onPressSend(item);
-      }
-    },
   }),
   withProps(({ item: { uniqueId } }) => ({ uniqueId })),
-  withFabSendAction,
-  onlyUpdateForKeys(['height', 'style', 'uniqueId', 'width', 'highlight'])
+  onlyUpdateForKeys(['height', 'highlight', 'style', 'uniqueId', 'width'])
 )(UniqueTokenCard);

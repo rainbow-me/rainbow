@@ -1,33 +1,14 @@
 import { gql } from '@apollo/client';
 
-const compoundMarketFields = `
-blockTimestamp
-exchangeRate
-id
-interestRateModelAddress
-name
-supplyRate
-underlyingAddress
-underlyingDecimals
-underlyingPrice
-underlyingPriceUSD
-`;
+const CDAI_TOKEN_ADDRESS = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';
 
-export const compoundTokenFields = `
-cTokenBalance
-id
-lifetimeSupplyInterestAccrued
-supplyBalanceUnderlying
-symbol
-totalUnderlyingSupplied
-`;
-
-export const COMPOUND_ACCOUNT = gql`
-  query Account($accountAddress: String!) {
-    account(id: $accountAddress) {
+export const COMPOUND_ACCOUNT_QUERY = gql`
+  query account($id: ID!) {
+    account(id: $id) {
       id
       health
-      tokens(first: 7) {
+      tokens(first: 15) {
+        borrowBalanceUnderlying
         cTokenBalance
         id
         lifetimeSupplyInterestAccrued
@@ -41,26 +22,28 @@ export const COMPOUND_ACCOUNT = gql`
   }
 `;
 
+export const COMPOUND_CDAI_SUPPLY_RATE = gql`
+  query markets {
+    markets(where: { id: ${CDAI_TOKEN_ADDRESS} }) {
+      id
+      supplyRate
+    }
+  }
+`;
+
 export const COMPOUND_MARKET_QUERY = gql`
   query markets {
     markets(first: 15) {
-      ${compoundMarketFields}
+      blockTimestamp
+      exchangeRate
+      id
+      interestRateModelAddress
+      name
+      supplyRate
+      underlyingAddress
+      underlyingDecimals
+      underlyingPrice
+      underlyingPriceUSD
     }
   }
-`;
-
-export const COMPOUND_DAI_ACCOUNT_TOKEN_QUERY = gql`
-  query accountCToken($addr: String!) {
-    accountCToken(where: { id: $addr }) {
-      ${compoundTokenFields}
-    }
-  }
-`;
-
-export const COMPOUND_USDC_ACCOUNT_TOKEN_QUERY = gql`
-  query accountCToken {
-    accountCToken(id: "0x39aa39c021dfbae8fac545936693ac917d5e7563-0xf0f21ab2012731542731df194cff6c77d29cb31a") {
-      ${compoundTokenFields}
-    }
- }
 `;

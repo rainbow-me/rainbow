@@ -141,26 +141,26 @@ class CurrencySelectModal extends Component {
 
   render = () => {
     const {
-      uniswapAssetsInWallet,
+      headerTitle,
       isFocused,
       sortedUniswapAssets,
       transitionPosition,
       type,
+      uniswapAssetsInWallet,
     } = this.props;
+    const { searchQuery } = this.state;
 
     if (type === null || type === undefined) {
       return null;
     }
 
-    const { searchQuery } = this.state;
-
-    let headerTitle = '';
     let assets = sortedUniswapAssets;
+    let title = headerTitle || '';
     if (type === CurrencySelectionTypes.input) {
-      headerTitle = 'Swap';
+      title = 'Swap';
       assets = uniswapAssetsInWallet;
     } else if (type === CurrencySelectionTypes.output) {
-      headerTitle = 'Receive';
+      title = 'Receive';
     }
 
     const listItems = filterList(assets, searchQuery, 'uniqueId');
@@ -192,7 +192,7 @@ class CurrencySelectModal extends Component {
             <Column flex={1}>
               <CurrencySelectModalHeader
                 onPressBack={this.handlePressBack}
-                title={headerTitle}
+                title={title}
               />
               <ExchangeSearch
                 autoFocus={false}
@@ -226,6 +226,7 @@ export default compose(
   mapProps(
     ({ uniswapAssetsInWallet, navigation, sortedUniswapAssets, ...props }) => ({
       ...props,
+      headerTitle: get(navigation, 'state.params.headerTitle', undefined),
       navigation,
       sortedUniswapAssets: normalizeAssetItems(sortedUniswapAssets),
       transitionPosition: get(navigation, 'state.params.position'),

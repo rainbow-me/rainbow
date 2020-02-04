@@ -8,7 +8,7 @@ import { createSelector } from 'reselect';
 import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
-import { TokenFamilyWrap } from '../components/token-family';
+import { CollectibleTokenFamily, TokenFamilyWrap } from '../components/token-family';
 import { buildUniqueTokenList, buildCoinsList } from './assets';
 import { chartExpandedAvailable } from '../experimentalConfig';
 
@@ -52,7 +52,7 @@ const balancesRenderItem = item => (
   />
 );
 const tokenFamilyItem = item => (
-  <TokenFamilyWrap {...item} uniqueId={item.uniqueId} />
+  <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />
 );
 const uniswapRenderItem = item => (
   <UniswapCardItem {...item} assetType="uniswap" isCollapsible />
@@ -108,7 +108,12 @@ const withBalanceSection = (
   nativeCurrency,
   showShitcoins
 ) => {
-  let balanceSectionData = buildCoinsList(allAssets);
+  // const savingsSection = {
+  //   isSavingsSection: true,
+  //   item: {},
+  // };
+
+  let balanceSectionData = buildCoinsList(allAssets); //[...buildCoinsList(allAssets), savingsSection];
   const isLoadingBalances = !isWalletEthZero && isBalancesSectionEmpty;
   if (isLoadingBalances) {
     balanceSectionData = [{ item: { uniqueId: 'skeleton0' } }];

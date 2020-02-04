@@ -832,6 +832,7 @@ class RecyclerAssetList extends Component {
             }}
             style={{
               backgroundColor: colors.white,
+              flex: 1,
               minHeight: 1,
             }}
           />

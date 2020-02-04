@@ -9,7 +9,11 @@ import { enableScreens } from 'react-native-screens';
 import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
 import { createStackNavigator } from 'react-navigation-stack';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
-import { ExchangeModalNavigator, Navigation } from '../navigation';
+import {
+  ExchangeModalNavigator,
+  Navigation,
+  SavingModalNavigator,
+} from '../navigation';
 import { updateTransitionProps } from '../redux/navigation';
 import store from '../redux/store';
 import { deviceUtils } from '../utils';
@@ -18,6 +22,7 @@ import ImportSeedPhraseSheetWithData from './ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from './ProfileScreenWithData';
 import QRScannerScreenWithData from './QRScannerScreenWithData';
 import ReceiveModal from './ReceiveModal';
+import WithdrawModal from './WithdrawModal';
 import ExampleScreen from './ExampleScreen';
 import SavingsSheet from './SavingsSheet';
 import SendSheetWithData from './SendSheetWithData';
@@ -117,11 +122,39 @@ const MainNavigator = createStackNavigator(
       },
       screen: ReceiveModal,
     },
+    SavingsDepositModal: {
+      navigationOptions: {
+        ...exchangePreset,
+        onTransitionEnd,
+        onTransitionStart: props => {
+          expandedPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
+      },
+      params: {
+        isGestureBlocked: false,
+      },
+      screen: SavingModalNavigator,
+    },
     SavingsSheet: {
       navigationOptions: {
         ...savingsPreset,
       },
       screen: SavingsSheet,
+    },
+    SavingsWithdrawModal: {
+      navigationOptions: {
+        ...exchangePreset,
+        onTransitionEnd,
+        onTransitionStart: props => {
+          expandedPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
+      },
+      params: {
+        isGestureBlocked: false,
+      },
+      screen: WithdrawModal,
     },
     SettingsModal: {
       navigationOptions: {

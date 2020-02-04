@@ -1,9 +1,8 @@
 import { get } from 'lodash';
-import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components/primitives';
+import { useNavigation } from 'react-navigation-hooks';
 import { Column } from '../components/layout';
-import { borders, colors, padding, position } from '../styles';
+import { colors } from '../styles';
 import { SavingsCoinRow } from '../components/coin-row';
 import {
   SavingsPredictionStepper,
@@ -17,19 +16,27 @@ import { Sheet, SheetButton, SheetButtonRow } from '../components/sheet';
 import Divider from '../components/Divider';
 import { useSavingsAccount } from '../hooks';
 
-const SavingsSheet = () => {
+function SavingsSheet() {
+  const { navigate } = useNavigation();
   const savings = useSavingsAccount();
+
   console.log('savings', savings);
 
   return (
     <Sheet>
       <SavingsSheetHeader balance="$420.59" lifetimeAccruedInterest="$20.59" />
       <SheetButtonRow>
-        <SheetButton color={colors.dark} icon="minusCircled" label="Withdraw" />
+        <SheetButton
+          color={colors.dark}
+          icon="minusCircled"
+          label="Withdraw"
+          onPress={() => navigate('SavingsWithdrawModal')}
+        />
         <SheetButton
           color={colors.dodgerBlue}
           icon="plusCircled"
           label="Deposit"
+          onPress={() => navigate('SavingsDepositModal')}
         />
       </SheetButtonRow>
       <Divider zIndex={0} />
@@ -61,10 +68,6 @@ const SavingsSheet = () => {
       <SavingsPredictionStepper />
     </Sheet>
   );
-};
+}
 
-SavingsSheet.propTypes = {
-  //
-};
-
-export default SavingsSheet;
+export default React.memo(SavingsSheet);

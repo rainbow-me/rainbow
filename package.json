@@ -19,7 +19,7 @@
     }
   },
   "dependencies": {
-    "@apollo/client": "^3.0.0-beta.25",
+    "@apollo/client": "^3.0.0-beta.30",
     "@bankify/react-native-animate-number": "^0.2.1",
     "@hocs/omit-props": "^0.4.0",
     "@hocs/safe-timers": "^0.4.0",
@@ -111,7 +111,7 @@
     "react-native-redash": "9.0.0",
     "react-native-safe-area-context": "^0.5.0",
     "react-native-safe-area-view": "mikedemarais/react-native-safe-area-view",
-    "react-native-screens": "2.0.0-alpha.24",
+    "react-native-screens": "kmagiera/react-native-screens",
     "react-native-splash-screen": "^3.2.0",
     "react-native-storage": "^1.0.1",
     "react-native-store-review": "^0.1.5",
@@ -162,6 +162,7 @@
     "babel-eslint": "^10.0.3",
     "babel-jest": "^24.9.0",
     "babel-plugin-date-fns": "^0.2.1",
+    "babel-plugin-graphql-tag": "^2.5.0",
     "babel-plugin-lodash": "^3.3.4",
     "babel-plugin-rewire": "^1.2.0",
     "babel-plugin-styled-components": "^1.10.6",

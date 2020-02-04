@@ -15,7 +15,7 @@ const enhance = shouldUpdate((...props) =>
   isNewValueForPath(...props, 'item.uniqueId')
 );
 
-const UniqueTokenRow = enhance(({ item, onPress, onPressSend }) => (
+const UniqueTokenRow = ({ item, onPress }) => (
   <Row
     align="center"
     css={`
@@ -31,17 +31,15 @@ const UniqueTokenRow = enhance(({ item, onPress, onPressSend }) => (
         item={uniqueToken}
         key={uniqueToken.uniqueId}
         onPress={onPress}
-        onPressSend={onPressSend}
         style={{ marginLeft: itemIndex >= 1 ? CardMargin : 0 }}
       />
     ))}
   </Row>
-));
+); //enhance();
 
 UniqueTokenRow.propTypes = {
   item: PropTypes.array,
   onPress: PropTypes.func,
-  onPressSend: PropTypes.func,
 };
 
 UniqueTokenRow.height = CardSize + CardMargin;

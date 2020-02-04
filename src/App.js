@@ -20,6 +20,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-unresolved
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider } from 'react-redux';
+import { Provider as TrackedProvider } from 'reactive-react-redux';
 import { compose, withProps } from 'recompact';
 import { client } from './apollo/client';
 import { FlexItem } from './components/layout';
@@ -160,6 +161,8 @@ class App extends Component {
   render = () => (
       <ApolloProvider client={client}>
     <SafeAreaProvider>
+
+
         <Provider store={store}>
           <FlexItem>
             <OfflineBadge />
@@ -170,6 +173,9 @@ class App extends Component {
       </ApolloProvider>
   );
 }
+
+    // <TrackedProvider store={store}>
+    //   </TrackedProvider>
 
 const AppWithRedux = compose(
   withProps({ store }),

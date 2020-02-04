@@ -2,8 +2,9 @@ import React from 'react';
 import { View } from 'react-primitives';
 import { colors } from '../../styles';
 
-const SheetHandle = () => (
+const SheetHandle = props => (
   <View
+    {...props}
     backgroundColor={colors.alpha(colors.blueGreyDark, 0.3)}
     borderRadius={3}
     height={5}

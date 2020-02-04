@@ -16,6 +16,7 @@ module.exports = {
   plugins: [
     'babel-plugin-styled-components',
     'date-fns',
+    'graphql-tag',
     ['lodash', { id: ['lodash', 'recompact', 'recompose'] }],
   ],
   presets: [

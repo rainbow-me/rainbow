@@ -6,12 +6,13 @@ import { withNavigation } from 'react-navigation';
 import { compose, withProps } from 'recompact';
 import { AssetList } from '../components/asset-list';
 import { FabWrapper } from '../components/fab';
+import { SavingsWrapper } from '../components/savings';
 import {
   CameraHeaderButton,
   Header,
   ProfileHeaderButton,
 } from '../components/header';
-import { Page } from '../components/layout';
+import { Centered, Page } from '../components/layout';
 import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import {
   withAccountData,
@@ -82,6 +83,12 @@ class WalletScreen extends Component {
       sections,
     } = this.props;
 
+
+          // <Centered>
+          //   <SavingsWrapper />
+          // </Centered>
+
+
     return (
       <Page {...position.sizeAsObject('100%')} flex={1}>
         {/* Line below appears to be needed for having scrollViewTracker persistent while
@@ -96,6 +103,7 @@ class WalletScreen extends Component {
             <ProfileHeaderButton navigation={navigation} />
             <CameraHeaderButton navigation={navigation} />
           </Header>
+
           <AssetList
             fetchData={refreshAccountData}
             isEmpty={isEmpty}

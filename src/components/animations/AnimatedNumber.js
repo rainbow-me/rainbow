@@ -1,47 +1,61 @@
-import { toString } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { StyleSheet, TextInput } from 'react-native';
-
-const styles = StyleSheet.create({
-  textInput: {
-    fontVariant: ['tabular-nums'],
-    textAlign: 'right',
-  },
-});
+import { InteractionManager, TextInput } from 'react-native';
 
 const clearHandle = handle => handle && clearInterval(handle);
 
-const AnimatedNumber = ({ formatter, steps, style, time, value, ...props }) => {
-  const currentValue = useRef(0);
+export const defaultAnimatedNumberProps = {
+  formatter: value => Number(value).toString(),
+  steps: 10,
+  textAlign: 'right',
+  time: 6,
+};
+
+const AnimatedNumber = ({
+  disableTabularNums,
+  formatter,
+  steps,
+  style,
+  textAlign,
+  time,
+  value,
+  ...props
+}) => {
+  const currentValue = useRef(value);
   const intervalHandle = useRef();
   const textInputRef = useRef();
 
+  const isPositive = useMemo(() => value - currentValue.current > 0, [value]);
   const stepSize = useMemo(
     () => (value - currentValue.current) / Number(steps),
     [steps, value]
   );
 
   const animateNumber = useCallback(() => {
-    const nextVal = currentValue.current + stepSize;
-    currentValue.current = nextVal;
+    const nextValue = currentValue.current + stepSize;
+    const isComplete =
+      (isPositive && nextValue >= value) || (!isPositive && nextValue <= value);
+
+    currentValue.current = isComplete ? value : nextValue;
 
     if (textInputRef.current) {
       textInputRef.current.setNativeProps({
-        text: formatter(nextVal),
+        text: formatter(currentValue.current),
       });
     }
 
-    if (nextVal >= value) {
+    if (isComplete) {
       clearHandle(intervalHandle.current);
     }
-  }, [formatter, stepSize, value]);
+  }, [formatter, isPositive, stepSize, value]);
 
   useEffect(() => {
     if (currentValue.current !== value) {
-      intervalHandle.current = setInterval(animateNumber, Number(time));
+      clearHandle(intervalHandle.current);
+      InteractionManager.runAfterInteractions(() => {
+        intervalHandle.current = setInterval(animateNumber, Number(time));
+      });
     }
-
     return () => clearHandle(intervalHandle.current);
   }, [animateNumber, time, value]);
 
@@ -50,26 +64,27 @@ const AnimatedNumber = ({ formatter, steps, style, time, value, ...props }) => {
       {...props}
       editable={false}
       ref={textInputRef}
-      style={[styles.textInput, style]}
+      style={[
+        {
+          fontVariant: disableTabularNums ? undefined : ['tabular-nums'],
+          textAlign,
+        },
+        style,
+      ]}
       value={formatter(currentValue.current)}
     />
   );
 };
 
 AnimatedNumber.propTypes = {
+  disableTabularNums: PropTypes.bool,
   formatter: PropTypes.func,
   steps: PropTypes.number,
+  textAlign: PropTypes.string,
   time: PropTypes.number,
   value: PropTypes.number,
 };
 
-const defaultFormatter = value =>
-  toString(Number.isInteger(value) ? Number(value) : Number(value).toFixed(2));
+AnimatedNumber.defaultProps = defaultAnimatedNumberProps;
 
-AnimatedNumber.defaultProps = {
-  formatter: defaultFormatter,
-  steps: 32,
-  time: 10,
-};
-
-export default AnimatedNumber;
+export default React.memo(AnimatedNumber);

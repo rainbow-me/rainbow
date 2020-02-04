@@ -1,3 +1,4 @@
+export { default as useAccountData } from './useAccountData';
 export { default as useAppState } from './useAppState';
 export { default as useBiometryType, BiometryTypes } from './useBiometryType';
 export { default as useClipboard } from './useClipboard';
