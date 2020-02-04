@@ -18,9 +18,7 @@ import parseTransactions from '../parsers/transactions';
 import { loweredTokenOverridesFallback } from '../references';
 import { isLowerCaseMatch } from '../utils';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
-
 import { sendRpcCall } from '../handlers/web3';
-
 import {
   uniswapRemovePendingApproval,
   uniswapUpdateAssetPrice,
@@ -250,7 +248,6 @@ export const dataAddNewTransaction = txDetails => (dispatch, getState) =>
           payload: _transactions,
           type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
         });
-        console.log('NEW TX: ', parsedTransaction);
 
         dispatch(startPendingTransactionWatcher());
 
@@ -270,45 +267,32 @@ export const dataWatchPendingTransactions = () => async (
   const updatedTransactions = [...transactions];
   let txStatusesDidChange = false;
 
-  console.log('[TX]: waiting for promise.all');
   await Promise.all(
     transactions.map(async (tx, index) => {
       if (tx.pending) {
-        try {
-          const txHash = tx.hash.split('-').shift();
-          const payload = {
-            method: 'eth_getTransactionByHash',
-            params: [txHash],
-          };
-          console.log('[TX]: Sending RPC call', payload);
-          const txObj = await sendRpcCall(payload);
-          console.log('[TX]: GOT TX OBJ', txObj);
-          if (txObj && txObj.blockNumber) {
-            txStatusesDidChange = true;
-            console.log('[TX]: HAS A blockNumber');
-            updatedTransactions[index].status = TransactionStatusTypes.sent;
-            updatedTransactions[index].pending = false;
-          }
-        } catch (e) {
-          console.log('[TX]: Error getting txbyhash', e);
+        const txHash = tx.hash.split('-').shift();
+        const payload = {
+          method: 'eth_getTransactionByHash',
+          params: [txHash],
+        };
+        const txObj = await sendRpcCall(payload);
+        if (txObj && txObj.blockNumber) {
+          txStatusesDidChange = true;
+          updatedTransactions[index].status = TransactionStatusTypes.sent;
+          updatedTransactions[index].pending = false;
         }
       }
     })
   );
 
   if (txStatusesDidChange) {
-    console.log('[TX]: txStatusesDidChange!');
-
     const { accountAddress, network } = getState().settings;
-    console.log('[TX]: txStatusesDidChange!');
     saveLocalTransactions(updatedTransactions, accountAddress, network);
 
     dispatch({
       payload: updatedTransactions,
       type: DATA_UPDATE_TRANSACTIONS,
     });
-
-    console.log('[TX]: List updated');
 
     const pendingTx = updatedTransactions.find(tx => tx.pending);
     if (!pendingTx) {
@@ -320,17 +304,13 @@ export const dataWatchPendingTransactions = () => async (
 };
 
 const startPendingTransactionWatcher = () => async dispatch => {
-  console.log('[TX]: TOP LEVEL:::WATCHING!');
   watchPendingTransactionsHandler &&
     clearTimeout(watchPendingTransactionsHandler);
 
   const done = await dispatch(dataWatchPendingTransactions());
 
   if (!done) {
-    console.log('[TX]: TOP LEVEL:: NOT DONE!');
-
     watchPendingTransactionsHandler = setTimeout(() => {
-      console.log('[TX]: TOP LEVEL::: SHOULD KEEP WATCHING!');
       dispatch(startPendingTransactionWatcher());
     }, 1000);
   }
