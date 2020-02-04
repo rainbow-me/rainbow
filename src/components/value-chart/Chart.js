@@ -554,30 +554,35 @@ export default class Chart extends PureComponent {
 
     let something = [0, 0, 0, 0];
     sectionEndPoints.forEach(element => {
-      returnPoints.push(
-        <AnimatedCircle
-          cx={element.x}
-          cy={element.y}
-          r={
-            chartData[element.index].startSeparatator[something[element.index]]
-              .r
-          }
-          stroke={
-            chartData[element.index].startSeparatator[something[element.index]]
-              .stroke
-          }
-          strokeWidth={
-            chartData[element.index].startSeparatator[something[element.index]]
-              .strokeWidth
-          }
-          fill={
-            chartData[element.index].startSeparatator[
-              something[element.index]++
-            ].fill
-          }
-          opacity={element.opacity}
-        />
-      );
+      if (chartData[element.index].startSeparatator[something[element.index]]) {
+        returnPoints.push(
+          <AnimatedCircle
+            cx={element.x}
+            cy={element.y}
+            r={
+              chartData[element.index].startSeparatator[
+                something[element.index]
+              ].r
+            }
+            stroke={
+              chartData[element.index].startSeparatator[
+                something[element.index]
+              ].stroke
+            }
+            strokeWidth={
+              chartData[element.index].startSeparatator[
+                something[element.index]
+              ].strokeWidth
+            }
+            fill={
+              chartData[element.index].startSeparatator[
+                something[element.index]++
+              ].fill
+            }
+            opacity={element.opacity}
+          />
+        );
+      }
     });
 
     return { paths: returnPaths, points: returnPoints };

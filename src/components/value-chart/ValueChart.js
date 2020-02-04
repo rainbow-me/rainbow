@@ -57,12 +57,15 @@ class ValueChart extends React.Component {
             points: data.map(values => {
               return { x: values.timestamp, y: values.value };
             }),
-            renderStartSeparatator: {
-              fill: colorsArray[colorIndex],
-              r: 7,
-              stroke: 'white',
-              strokeWidth: colorIndex + 2,
-            },
+            renderStartSeparatator:
+              colorIndex % 2 != 0
+                ? {
+                    fill: colorsArray[colorIndex],
+                    r: 7,
+                    stroke: 'white',
+                    strokeWidth: colorIndex + 2,
+                  }
+                : undefined,
           };
         }),
       };
