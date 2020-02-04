@@ -6,6 +6,7 @@
     "android": "react-native run-android",
     "clean": "react-native clean-project-auto",
     "start": "react-native start",
+    "start:clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && react-native start -- --reset-cache",
     "test": "jest test.js",
     "install-pods": "cd ios && pod install && cd ..",
     "ios": "react-native run-ios --simulator='iPhone X'",
