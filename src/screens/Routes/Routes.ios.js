@@ -100,10 +100,6 @@ const MainNavigator = createStackNavigator(
       },
       screen: ExpandedAssetScreenWithData,
     },
-    OverlayExpandedAssetScreen: {
-      navigationOptions: overlayExpandedPreset,
-      screen: ExpandedAssetScreenWithData,
-    },
     ReceiveModal: {
       navigationOptions: {
         ...expandedPreset,
@@ -168,9 +164,28 @@ const NativeStack = createNativeStackNavigator(
       );
     },
     MainNavigator,
-    SendSheet: function SendSheetWrapper(...props) {
-      return <SendSheetWithData {...props} setAppearListener={setListener} />;
-    },
+    SendSheetNavigator: createStackNavigator(
+      {
+        OverlayExpandedAssetScreen: {
+          navigationOptions: overlayExpandedPreset,
+          screen: ExpandedAssetScreenWithData,
+        },
+        SendSheet: function SendSheetWrapper(...props) {
+          return (
+            <SendSheetWithData {...props} setAppearListener={setListener} />
+          );
+        },
+      },
+      {
+        defaultNavigationOptions: {
+          onTransitionEnd,
+          onTransitionStart,
+        },
+        headerMode: 'none',
+        initialRouteName: 'SendSheet',
+        mode: 'modal',
+      }
+    ),
   },
   {
     defaultNavigationOptions: {

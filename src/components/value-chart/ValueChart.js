@@ -114,7 +114,7 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
 
     allSegmentDividers = allSegmentDividers.concat(createdLastPoints);
 
-    let returnData = {
+    let data = {
       allPointsForData: allSegmentsPoints,
       colors,
       lastPoints: createdLastPoints,
@@ -123,11 +123,12 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
       startSeparatator: dividers,
     };
 
-    return returnData;
+    return data;
   }
 };
 
 const hexToRgb = hex => {
+  // result contain table of [r, g, b] from given hex string
   let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? [
@@ -175,10 +176,14 @@ const pickImportantPoints = array => {
 };
 
 export default class Chart extends PureComponent {
-  propTypes = {
+  static propTypes = {
+    amountOfPathPoints: PropTypes.number,
+    barColor: PropTypes.string,
+    currentDataSource: PropTypes.number,
     data: PropTypes.array,
     enableSelect: PropTypes.bool,
     mode: PropTypes.oneOf(['gesture-managed', 'detailed', 'simplified']),
+    onValueUpdate: PropTypes.func,
     stroke: PropTypes.object,
   };
 
@@ -229,7 +234,6 @@ export default class Chart extends PureComponent {
     this.currentInterval = 1;
 
     this.animatedPath = undefined;
-    this.animatedDividers = undefined;
 
     this._configUp = {
       duration: 500,
@@ -290,9 +294,7 @@ export default class Chart extends PureComponent {
   }
 
   componentDidMount = () => {
-    setTimeout(() => {
-      this.reloadChart(0, true);
-    }, 1000);
+    this.reloadChart(0, true);
   };
 
   getSnapshotBeforeUpdate() {
@@ -594,7 +596,6 @@ export default class Chart extends PureComponent {
     }
     return value;
   };
-
   render() {
     const { amountOfPathPoints } = this.props;
     const { currentData } = this.state;
