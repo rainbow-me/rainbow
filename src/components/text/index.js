@@ -1,7 +1,9 @@
 export { default as Bold } from './Bold';
 export { default as Br } from './Br';
+export { default as DollarFigure } from './DollarFigure';
 export { default as Emoji } from './Emoji';
 export { default as ErrorText } from './ErrorText';
+export { default as GradientText } from './GradientText';
 export { default as H1 } from './H1';
 export { default as Label } from './Label';
 export { default as Monospace } from './Monospace';

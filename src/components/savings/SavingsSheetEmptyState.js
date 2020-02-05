@@ -1,41 +1,70 @@
-import { get } from 'lodash';
 import React from 'react';
 import { useNavigation } from 'react-navigation-hooks';
-import { useQuery } from '@apollo/client';
-import { COMPOUND_CDAI_SUPPLY_RATE } from '../../apollo/queries';
-import { colors } from '../../styles';
-import { Centered, Column, ColumnWithMargins } from '../layout';
-import { Sheet, SheetButton, SheetButtonRow } from '../sheet';
+import { colors, fonts, padding } from '../../styles';
+import { useCompoundSupplyRate } from '../../hooks';
 import { CoinIcon } from '../coin-icon';
 import Divider from '../Divider';
+import { Centered, ColumnWithMargins } from '../layout';
+import { SheetButton } from '../sheet';
+import { Br, GradientText, Rounded } from '../text';
 
-import { Br, Text } from '../text';
-import { useSavingsAccount } from '../../hooks';
+const APRHeadingTextStyle = {
+  fontSize: 23,
+  fontWeight: fonts.weight.semibold,
+  letterSpacing: 0.6,
+  lineHeight: 27,
+};
 
-const SavingSheetEmptyState = () => {
-  const supplyRate = useQuery(COMPOUND_CDAI_SUPPLY_RATE);
+const APRHeadingText = p => <Rounded {...p} style={APRHeadingTextStyle} />;
 
-  console.log('supplyRate', supplyRate);
+const SavingsSheetEmptyState = () => {
+  const { navigate } = useNavigation();
+  const supplyRate = useCompoundSupplyRate();
 
   return (
-    <Centered direction="column">
-      <CoinIcon symbol="DAI" />
-      <Text>Get 7.5% on your dollars</Text>
-      <Text>
+    <Centered direction="column" paddingTop={9}>
+      <CoinIcon size={50} symbol="DAI" />
+      <Centered marginBottom={12} marginTop={15}>
+        <APRHeadingText>Get </APRHeadingText>
+        <GradientText
+          angle={114.53}
+          renderer={Rounded}
+          style={APRHeadingTextStyle}
+        >
+          {supplyRate}
+        </GradientText>
+        <APRHeadingText> on your dollars</APRHeadingText>
+      </Centered>
+      <Rounded
+        align="center"
+        color={colors.alpha(colors.blueGreyDark, 0.5)}
+        lineHeight="looser"
+        size="large"
+        style={{ letterSpacing: 0.6, paddingBottom: 30 }}
+      >
         With digital dollars like Dai, saving <Br />
         earns you more than ever before
-      </Text>
-      <Divider />
-      <ColumnWithMargins margin={10}>
-        <Text>Deposit from wallet</Text>
-        <Text>Deposit from apple pay bitchhhh</Text>
+      </Rounded>
+      <Divider inset={[0, 42]} />
+      <ColumnWithMargins css={padding(19, 15)} margin={19} width="100%">
+        <SheetButton
+          color={colors.dodgerBlue}
+          icon="plusCircled"
+          label="Deposit from wallet"
+          onPress={() => navigate('SavingsDepositModal')}
+        />
+        {/*
+          <SheetButton
+            color={colors.white}
+            label="Deposit with Pay"
+            onPress={() => navigate('SavingsDepositModal')}
+            textColor={colors.dark}
+          />
+        */}
       </ColumnWithMargins>
     </Centered>
   );
-}
-
-SavingSheetEmptyState.propTypes = {
-  //
 };
 
-export default SavingSheetEmptyState;
+const neverRerender = () => true;
+export default React.memo(SavingsSheetEmptyState, neverRerender);

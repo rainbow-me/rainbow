@@ -7,3 +7,4 @@ export { default as useInternetStatus } from './useInternetStatus';
 export { default as usePrevious } from './usePrevious';
 export { default as useSavingsAccount } from './useSavingsAccount';
 export { default as useTransformOrigin } from './useTransformOrigin';
+export { default as useCompoundSupplyRate } from './useCompoundSupplyRate';

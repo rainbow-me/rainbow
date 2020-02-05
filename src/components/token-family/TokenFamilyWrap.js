@@ -4,17 +4,11 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { View } from 'react-primitives';
 import { compose } from 'recompact';
-import { useDispatch, useSelector } from 'react-redux';
 import { withFabSendAction } from '../../hoc';
 import { colors } from '../../styles';
-import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyHeader from './TokenFamilyHeader';
-import { setOpenFamilyTabs } from '../../redux/openStateSettings';
 
 export const TokenFamilyWrapPaddingTop = 6;
-
-const getHeight = openFamilyTab =>
-  openFamilyTab ? UniqueTokenRow.height + 100 : 100;
 
 const transition = (
   <Transition.In
@@ -27,32 +21,22 @@ const transition = (
 
 const TokenFamilyWrap = ({
   childrenAmount,
-  familyId,
   highlight,
+  isFirst,
+  isOpen,
   item,
-  paddingTop,
+  onToggle,
   renderItem,
   title,
   ...props
 }) => {
-  const dispatch = useDispatch();
   const transitionRef = useRef();
-
   const [areChildrenVisible, setAreChildrenVisible] = useState(false);
-  const isFamilyOpen = useSelector(
-    ({ openStateSettings }) => openStateSettings.openFamilyTabs[familyId]
-  );
 
   const timeoutHandle = useRef();
   const clearHandle = useCallback(
     () => timeoutHandle.current && clearTimeout(timeoutHandle.current),
     []
-  );
-
-  const handleHeaderPress = useCallback(
-    () =>
-      dispatch(setOpenFamilyTabs({ index: familyId, state: !isFamilyOpen })),
-    [dispatch, familyId, isFamilyOpen]
   );
 
   const showChildren = useCallback(() => {
@@ -66,33 +50,35 @@ const TokenFamilyWrap = ({
 
   useEffect(() => {
     clearHandle();
-    if (areChildrenVisible && !isFamilyOpen) {
+    if (areChildrenVisible && !isOpen) {
       setAreChildrenVisible(false);
-    } else if (!areChildrenVisible && isFamilyOpen) {
+    } else if (!areChildrenVisible && isOpen) {
       timeoutHandle.current = setTimeout(
         showChildren,
         TokenFamilyHeader.animationDuration
       );
     }
     return () => clearHandle();
-  }, [areChildrenVisible, clearHandle, isFamilyOpen, showChildren]);
+  }, [areChildrenVisible, clearHandle, isOpen, showChildren]);
 
   return (
     <View
       backgroundColor={colors.white}
       overflow="hidden"
-      paddingTop={paddingTop}
+      paddingTop={isFirst ? TokenFamilyWrapPaddingTop : 0}
     >
       <TokenFamilyHeader
         {...props}
         childrenAmount={childrenAmount}
         highlight={highlight}
-        isOpen={isFamilyOpen}
-        onPress={handleHeaderPress}
+        isOpen={isOpen}
+        onPress={onToggle}
         title={title}
       />
+      {/*
+          XXX 👇️👇️👇️👇️ not sure if this Transitioning.View should have a `key` defined for performance or not
+      */}
       <Transitioning.View
-        key={`tokenFamily_${familyId}_fadeIn`}
         paddingTop={areChildrenVisible ? TokenFamilyWrapPaddingTop : 0}
         ref={transitionRef}
         transition={transition}
@@ -105,14 +91,13 @@ const TokenFamilyWrap = ({
 
 TokenFamilyWrap.propTypes = {
   childrenAmount: PropTypes.number,
-  familyId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   highlight: PropTypes.bool,
+  isFirst: PropTypes.bool,
+  isOpen: PropTypes.bool,
   item: PropTypes.array,
-  paddingTop: PropTypes.number,
+  onToggle: PropTypes.func,
   renderItem: PropTypes.func,
   title: PropTypes.string,
 };
-
-TokenFamilyWrap.getHeight = getHeight;
 
 export default compose(withFabSendAction)(TokenFamilyWrap);

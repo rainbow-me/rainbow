@@ -1,7 +1,5 @@
 import { gql } from '@apollo/client';
 
-const CDAI_TOKEN_ADDRESS = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';
-
 export const COMPOUND_ACCOUNT_QUERY = gql`
   query account($id: ID!) {
     account(id: $id) {
@@ -22,16 +20,7 @@ export const COMPOUND_ACCOUNT_QUERY = gql`
   }
 `;
 
-export const COMPOUND_CDAI_SUPPLY_RATE = gql`
-  query markets {
-    markets(where: { id: ${CDAI_TOKEN_ADDRESS} }) {
-      id
-      supplyRate
-    }
-  }
-`;
-
-export const COMPOUND_MARKET_QUERY = gql`
+export const COMPOUND_ALL_MARKETS_QUERY = gql`
   query markets {
     markets(first: 15) {
       blockTimestamp
@@ -44,6 +33,15 @@ export const COMPOUND_MARKET_QUERY = gql`
       underlyingDecimals
       underlyingPrice
       underlyingPriceUSD
+    }
+  }
+`;
+
+export const COMPOUND_SUPPLY_RATE = gql`
+  query markets($cTokenAddress: ID!) {
+    markets(where: { id: $cTokenAddress }) {
+      id
+      supplyRate
     }
   }
 `;

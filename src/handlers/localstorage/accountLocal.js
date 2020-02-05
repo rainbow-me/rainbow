@@ -17,6 +17,7 @@ const COMPOUND_ASSETS = 'compoundAssets';
 const OPEN_FAMILIES = 'openFamilies';
 const OPEN_INVESTMENT_CARDS = 'openInvestmentCards';
 const SMALL_BALANCE_TOGGLE = 'smallBalanceToggle';
+const SAVINGS_TOGGLE = 'savingsToggle';
 const TRANSACTIONS = 'transactions';
 const UNIQUE_TOKENS = 'uniquetokens';
 const WALLET_EMPTY = 'iswalletempty';
@@ -232,6 +233,33 @@ export const saveSmallBalanceToggle = (
  */
 export const removeSmallBalanceToggle = (accountAddress, network) =>
   removeAccountLocal(SMALL_BALANCE_TOGGLE, accountAddress, network);
+
+/**
+ * @desc get open savings
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getSavingsToggle = (accountAddress, network) =>
+  getAccountLocal(SAVINGS_TOGGLE, accountAddress, network, false);
+
+/**
+ * @desc save small balance toggle
+ * @param  {String}   [address]
+ * @param  {Boolean}    [small balance toggle]
+ * @param  {String}   [network]
+ */
+export const saveSavingsToggle = (isOpen, accountAddress, network) =>
+  saveAccountLocal(SAVINGS_TOGGLE, isOpen, accountAddress, network);
+
+/**
+ * @desc remove small balance toggle
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const removeSavingsToggle = (accountAddress, network) =>
+  removeAccountLocal(SAVINGS_TOGGLE, accountAddress, network);
 
 /**
  * @desc get open investment cards

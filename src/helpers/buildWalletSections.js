@@ -12,8 +12,8 @@ import { CollectibleTokenFamily, TokenFamilyWrap } from '../components/token-fam
 import { buildUniqueTokenList, buildCoinsList } from './assets';
 import { chartExpandedAvailable } from '../experimentalConfig';
 
-const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
+const allAssetsSelector = state => state.allAssets;
 const assetsTotalSelector = state => state.assetsTotal;
 const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
 const isWalletEthZeroSelector = state => state.isWalletEthZero;
@@ -108,10 +108,10 @@ const withBalanceSection = (
   nativeCurrency,
   showShitcoins
 ) => {
-  // const savingsSection = {
-  //   isSavingsSection: true,
-  //   item: {},
-  // };
+  const savingsSection = {
+    isSavingsSection: true,
+    item: {},
+  };
 
   let balanceSectionData = buildCoinsList(allAssets); //[...buildCoinsList(allAssets), savingsSection];
   const isLoadingBalances = !isWalletEthZero && isBalancesSectionEmpty;

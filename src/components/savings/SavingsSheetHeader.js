@@ -1,54 +1,36 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import styled from 'styled-components/primitives';
-import { borders, colors, padding } from '../../styles';
+import React from 'react';
+import { colors, padding } from '../../styles';
 import { Icon } from '../icons';
-import { Centered, Column, Row, RowWithMargins } from '../layout';
-import { Rounded, Text } from '../text';
+import { Centered, RowWithMargins } from '../layout';
+import { DollarFigure, Rounded } from '../text';
 
-const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => {
-  const balanceParts = balance.split('.');
-
-  return (
-    <Centered css={padding(9, 0, 3)} direction="column">
+const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => (
+  <Centered css={padding(9, 0, 3)} direction="column">
+    <Rounded
+      color={colors.alpha(colors.blueGreyDark, 0.5)}
+      letterSpacing="tooLoose"
+      size="smedium"
+      uppercase
+      weight="semibold"
+    >
+      Savings
+    </Rounded>
+    <DollarFigure value={balance} />
+    <RowWithMargins align="center" margin={5} marginTop={1}>
+      <Icon name="plusCircled" />
       <Rounded
-        color={colors.alpha(colors.blueGreyDark, 0.5)}
-        letterSpacing="tooLoose"
-        size="smedium"
-        uppercase
-        weight="semibold"
+        color={colors.limeGreen}
+        letterSpacing="looser"
+        size="large"
+        lineHeight="loose"
+        weight="bold"
       >
-        Savings
+        {lifetimeAccruedInterest}
       </Rounded>
-      <RowWithMargins margin={1}>
-        <Rounded letterSpacing={0.2} size="h1" weight="heavy">
-          {balanceParts[0]}
-        </Rounded>
-        <Rounded
-          color={colors.dark}
-          letterSpacing={0.1}
-          size="large"
-          style={{ top: 7 }}
-          weight="heavy"
-        >
-          {`.${balanceParts[1]}`}
-        </Rounded>
-      </RowWithMargins>
-      <RowWithMargins align="center" margin={5} marginTop={1}>
-        <Icon name="plusCircled" />
-        <Rounded
-          color={colors.limeGreen}
-          letterSpacing="looser"
-          size="large"
-          lineHeight="loose"
-          weight="bold"
-        >
-          {lifetimeAccruedInterest}
-        </Rounded>
-      </RowWithMargins>
-    </Centered>
-  );
-};
+    </RowWithMargins>
+  </Centered>
+);
 
 SavingsSheetHeader.propTypes = {
   balance: PropTypes.string,

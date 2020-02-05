@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useWindowDimensions } from 'react-native';
 import stylePropType from 'react-style-proptype';
 import { colors, padding, position } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
@@ -8,24 +9,26 @@ import { InnerBorder, RowWithMargins } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import { Text } from '../text';
 
-const SheetButton = ({
+const SheetActionButton = ({
   borderRadius,
+  children,
   color,
   icon,
   label,
   onPress,
   shadows,
   style,
-  textColor,
   ...props
 }) => {
+  const dims = useWindowDimensions();
+
   return (
     <ButtonPressAnimation
       {...props}
+      flex={1}
       onPress={onPress}
       scaleTo={0.96}
       style={[position.centeredAsObject, style]}
-      width="100%"
     >
       <ShadowStack
         {...position.coverAsObject}
@@ -33,34 +36,26 @@ const SheetButton = ({
         borderRadius={borderRadius}
         shadows={shadows}
       />
-      <RowWithMargins
-        align="center"
-        css={padding(9.5, 14, 11, 15)}
-        height={56}
-        margin={6}
-        zIndex={1}
-      >
-        {icon && <Icon color={textColor} name={icon} size={20} />}
-        <Text
+      {children || (
+        <RowWithMargins
           align="center"
-          color={textColor}
-          size="larger"
-          style={{
-            letterSpacing: 0, // confirm w/ @christian.. spec calls for 0.6 but its fugly
-            lineHeight: 24,
-          }}
-          weight="semibold"
+          css={padding(9.5, 14, 11, 15)}
+          height={dims.width >= 414 ? 44 : 40}
+          margin={4}
+          zIndex={1}
         >
-          {label}
-        </Text>
-      </RowWithMargins>
+          <Icon color="white" name={icon} size={16} />
+          <Text color="white" size="lmedium" weight="semibold">
+            {label}
+          </Text>
+        </RowWithMargins>
+      )}
       <InnerBorder radius={borderRadius} />
     </ButtonPressAnimation>
   );
 };
 
-SheetButton.propTypes = {
-  backgroundColor: PropTypes.string,
+SheetActionButton.propTypes = {
   borderRadius: PropTypes.number,
   children: PropTypes.node,
   color: PropTypes.string,
@@ -69,14 +64,14 @@ SheetButton.propTypes = {
   style: stylePropType,
 };
 
-SheetButton.defaultProps = {
+SheetActionButton.defaultProps = {
   borderRadius: 50,
+  // color: 'pink',
   shadows: [
     [0, 2, 5, colors.dark, 0.15],
     [0, 6, 10, colors.dark, 0.14],
     [0, 1, 18, colors.dark, 0.08],
   ],
-  textColor: colors.white,
 };
 
-export default React.memo(SheetButton);
+export default SheetActionButton;

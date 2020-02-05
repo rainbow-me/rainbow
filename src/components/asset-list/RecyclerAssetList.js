@@ -785,8 +785,8 @@ class RecyclerAssetList extends Component {
           familyId: item.familyId,
           familyImage: item.familyImage,
           familyName: item.familyName,
+          isFirst: type.isFirst,
           item: item.tokens,
-          paddingTop: type.isFirst ? 4 : 0,
           shouldPrioritizeImageLoading:
             index < get(sections, '[0].data.length', 0) + 9,
           uniqueId: item.uniqueId,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { COMPOUND_MARKET_QUERY, COMPOUND_ACCOUNT_TOKEN_QUERY } from '../apollo/queries';
+import { COMPOUND_ALL_MARKETS_QUERY, COMPOUND_ACCOUNT_TOKEN_QUERY } from '../apollo/queries';
 import { useQuery, useApolloClient } from '@apollo/client';
 import { Text } from '../components/text';
 import { useSavingsAccount } from '../hooks';

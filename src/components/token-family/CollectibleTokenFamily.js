@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigation } from 'react-navigation-hooks';
+import React, { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { UniqueTokenRow } from '../unique-token';
 import { setOpenFamilyTabs } from '../../redux/openStateSettings';
 import TokenFamilyWrap from './TokenFamilyWrap';
@@ -12,22 +12,21 @@ const CollectibleTokenFamily = ({
   item,
   ...props
 }) => {
-  const { navigate } = useNavigation();
+  const dispatch = useDispatch();
 
-  const handleItemPress = useCallback(
-    asset => navigate('ExpandedAssetScreen', { asset, type: 'unique_token' }),
-    [navigate]
+  const isFamilyOpen = useSelector(
+    ({ openStateSettings }) => openStateSettings.openFamilyTabs[familyId]
+  );
+
+  const handleToggle = useCallback(
+    () =>
+      dispatch(setOpenFamilyTabs({ index: familyId, state: !isFamilyOpen })),
+    [dispatch, familyId, isFamilyOpen]
   );
 
   const renderChild = useCallback(
-    index => (
-      <UniqueTokenRow
-        item={item[index]}
-        key={`tokenFamily_${familyId}_${index}`}
-        onPress={handleItemPress}
-      />
-    ),
-    [familyId, handleItemPress, item]
+    i => <UniqueTokenRow item={item[i]} key={`${familyName}_${i}`} />,
+    [familyName, item]
   );
 
   return (
@@ -35,7 +34,9 @@ const CollectibleTokenFamily = ({
       {...props}
       familyId={familyId}
       familyImage={familyImage}
+      isOpen={isFamilyOpen}
       item={item}
+      onToggle={handleToggle}
       renderItem={renderChild}
       title={familyName}
     />
