@@ -15,6 +15,7 @@ fileprivate struct TransactionSection {
 class TransactionListView: UIView {
   @objc lazy var onItemPress: RCTBubblingEventBlock = { _ in }
   @objc lazy var onReceivePress: RCTBubblingEventBlock = { _ in }
+  @objc lazy var onAvatarPress: RCTBubblingEventBlock = { _ in }
   @objc lazy var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
   @objc var duration: TimeInterval = 0.15
   @objc var scaleTo: CGFloat = 0.97
@@ -23,6 +24,16 @@ class TransactionListView: UIView {
   @objc var accountAddress: String? = nil {
     didSet {
       header.accountAddress.text = accountAddress
+    }
+  }
+  @objc var accountColor: UIColor? = nil {
+    didSet {
+      header.accountView.backgroundColor = accountColor
+    }
+  }
+  @objc var accountName: String? = nil {
+    didSet {
+      header.accountName.text = accountName
     }
   }
   @objc var transactions: [Transaction] = [] {
@@ -57,6 +68,9 @@ class TransactionListView: UIView {
       tableView.reloadData()
     }
   }
+  @objc func onAvatarPressed(_ sender: UIButton) {
+    self.onAvatarPress([:])
+  }
   @objc func onReceivePressed(_ sender: UIButton) {
     self.onReceivePress([:])
   }
@@ -87,6 +101,7 @@ class TransactionListView: UIView {
     tableView.register(UINib(nibName: "TransactionListViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListViewCell")
     
     header.addSubview(headerSeparator)
+    header.openEmojiSelector.addTarget(self, action: #selector(onAvatarPressed(_:)), for: .touchUpInside)
     header.receive.addTarget(self, action: #selector(onReceivePressed(_:)), for: .touchUpInside)
     header.copyAddress.addTarget(self, action: #selector(onCopyAddressPressed(_:)), for: .touchUpInside)
     
