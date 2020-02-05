@@ -4,8 +4,8 @@ let internalCounter = 0;
 
 const PREFIX = `[NETWORKING]:`;
 const EXCLUDED_URLS = [
-  'http://localhost:8081/symbolicate',
-  'https://clients3.google.com/generate_204',
+  'http://localhost:8081/symbolicate', // RN packager
+  'https://clients3.google.com/generate_204', // Offline connection detection
 ];
 
 export default function monitorNetwork(
