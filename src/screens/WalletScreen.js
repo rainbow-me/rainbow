@@ -2,7 +2,7 @@ import { withSafeTimeout } from '@hocs/safe-timers';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Animated from 'react-native-reanimated';
-import { withNavigation, withNavigationFocus } from 'react-navigation';
+import { withNavigation } from 'react-navigation';
 import { compose, withProps } from 'recompact';
 import { AssetList } from '../components/asset-list';
 import { FabWrapper } from '../components/fab';
@@ -61,17 +61,16 @@ class WalletScreen extends Component {
   };
 
   shouldComponentUpdate = nextProps =>
-    !nextProps.isFocused
-      ? false
-      : isNewValueForObjectPaths(this.props, nextProps, [
-          'fetchingAssets',
-          'fetchingUniqueTokens',
-          'isEmpty',
-          'isWalletEthZero',
-          'language',
-          'nativeCurrency',
-          'sections',
-        ]);
+    nextProps.navigation.isFocused() &&
+    isNewValueForObjectPaths(this.props, nextProps, [
+      'fetchingAssets',
+      'fetchingUniqueTokens',
+      'isEmpty',
+      'isWalletEthZero',
+      'language',
+      'nativeCurrency',
+      'sections',
+    ]);
 
   render = () => {
     const {
@@ -118,7 +117,6 @@ export default compose(
   withUniswapLiquidityTokenInfo,
   withSafeTimeout,
   withNavigation,
-  withNavigationFocus,
   withIsWalletEmpty,
   withIsWalletEthZero,
   withKeyboardHeight,

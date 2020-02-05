@@ -34,6 +34,7 @@ import HandleIcon from './svg/HandleIcon';
 import InboxIcon from './svg/InboxIcon';
 import LockIcon from './svg/LockIcon';
 import OfflineIcon from './svg/OfflineIcon';
+import PasscodeIcon from './svg/PasscodeIcon';
 import ProgressIcon from './svg/ProgressIcon';
 import SearchIcon from './svg/SearchIcon';
 import SendIcon from './svg/SendIcon';
@@ -84,6 +85,7 @@ Icon.IconTypes = {
   inbox: InboxIcon,
   lock: LockIcon,
   offline: OfflineIcon,
+  passcode: PasscodeIcon,
   progress: ProgressIcon,
   search: SearchIcon,
   send: SendIcon,

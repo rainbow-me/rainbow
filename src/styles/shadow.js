@@ -18,7 +18,7 @@ shadow.build = (
   shadow-color: ${color};
   shadow-offset: ${addUnitToNumberValues(x)} ${addUnitToNumberValues(y)};
   shadow-opacity: ${opacity};
-  shadow-radius: ${addUnitToNumberValues(radius)};
+  shadow-radius: ${addUnitToNumberValues(radius / 2)};
 `;
 
 export default shadow;

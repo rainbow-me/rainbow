@@ -21,7 +21,6 @@ import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
 } from '../helpers/utilities';
-import { loweredTokenOverrides } from '../references';
 import { isLowerCaseMatch } from '../utils';
 
 const DIRECTION_OUT = 'out';
@@ -45,13 +44,16 @@ export default (
   accountAddress,
   nativeCurrency,
   existingTransactions,
+  tokenOverrides,
   appended = false
 ) => {
   const data = appended
     ? dataFromLastTxHash(transactionData, existingTransactions)
     : transactionData;
   const parsedNewTransactions = flatten(
-    data.map(txn => parseTransaction(txn, accountAddress, nativeCurrency))
+    data.map(txn =>
+      parseTransaction(txn, accountAddress, nativeCurrency, tokenOverrides)
+    )
   );
   const [pendingTransactions, remainingTransactions] = partition(
     existingTransactions,
@@ -62,6 +64,7 @@ export default (
     txn => txn.type === 'authorize'
   );
   const updatedPendingTransactions = dedupePendingTransactions(
+    accountAddress,
     pendingTransactions,
     parsedTransactions
   );
@@ -102,7 +105,12 @@ const transformUniswapRefund = internalTransactions => {
   return compact([updatedOut, txnIn]);
 };
 
-const parseTransaction = (txn, accountAddress, nativeCurrency) => {
+const parseTransaction = (
+  txn,
+  accountAddress,
+  nativeCurrency,
+  tokenOverrides
+) => {
   const transaction = pick(txn, [
     'hash',
     'nonce',
@@ -176,7 +184,7 @@ const parseTransaction = (txn, accountAddress, nativeCurrency) => {
       decimals: get(internalTxn, 'asset.decimals'),
       name: get(internalTxn, 'asset.name'),
       symbol: toUpper(get(internalTxn, 'asset.symbol') || ''),
-      ...loweredTokenOverrides[address],
+      ...tokenOverrides[address],
     };
     const priceUnit = internalTxn.price || 0;
     const valueUnit = internalTxn.value || 0;
@@ -210,7 +218,11 @@ const parseTransaction = (txn, accountAddress, nativeCurrency) => {
   return reverse(internalTransactions);
 };
 
-const dedupePendingTransactions = (pendingTransactions, parsedTransactions) => {
+export const dedupePendingTransactions = (
+  accountAddress,
+  pendingTransactions,
+  parsedTransactions
+) => {
   let updatedPendingTransactions = pendingTransactions;
   if (pendingTransactions.length) {
     updatedPendingTransactions = filter(
@@ -221,7 +233,9 @@ const dedupePendingTransactions = (pendingTransactions, parsedTransactions) => {
           txn =>
             txn.hash &&
             (startsWith(toLower(txn.hash), toLower(pendingTxn.hash)) ||
-              (txn.nonce && txn.nonce >= pendingTxn.nonce))
+              (toLower(txn.from) === toLower(accountAddress) &&
+                txn.nonce &&
+                txn.nonce >= pendingTxn.nonce))
         );
         return !matchingElement;
       }

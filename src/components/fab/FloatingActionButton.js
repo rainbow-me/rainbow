@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { View } from 'react-primitives';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { ButtonPressAnimation } from '../animations';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import InnerBorder from '../InnerBorder';
 import { borders, colors, position } from '../../styles';
 import { isNewValueForObjectPaths } from '../../utils';
@@ -29,7 +29,7 @@ export default class FloatingActionButton extends Component {
   };
 
   static defaultProps = {
-    scaleTo: 0.82,
+    scaleTo: 0.86,
     size: FabSize,
   };
 

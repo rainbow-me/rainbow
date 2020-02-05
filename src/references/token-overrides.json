@@ -141,6 +141,9 @@
   "0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359": {
     "name": "Sai"
   },
+  "0x06f65b8cfcb13a9fe37d836fe9708da38ecb29b2": {
+    "name": "Saint Fame"
+  },
   "0x4156D3342D5c385a87D264F90653733592000581": {
     "name": "SALT"
   },
@@ -180,9 +183,6 @@
   },
   "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599": {
     "name": "Wrapped Bitcoin"
-  },
-  "0x09fE5f0236F0Ea5D930197DCE254d77B04128075": {
-    "name": "Wrapped CryptoKitties"
   },
   "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2": {
     "name": "Wrapped Ether"

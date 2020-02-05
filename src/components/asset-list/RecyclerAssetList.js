@@ -77,6 +77,7 @@ const layoutItemAnimator = new LayoutItemAnimator();
 
 const reloadHeightOffsetTop = -60;
 const reloadHeightOffsetBottom = -62;
+let smallBalancedChanged = false;
 
 const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
 
@@ -105,6 +106,28 @@ const hasRowChanged = (r1, r2) => {
       r2,
       'item.native.balance.display'
     );
+  }
+
+  if (
+    r1.item &&
+    r2.item &&
+    r1.item.smallBalancesContainer &&
+    r2.item.smallBalancesContainer
+  ) {
+    if (r1.item.assets.length !== r2.item.assets.length) {
+      smallBalancedChanged = true;
+    } else if (r2.item.assets.length > 0) {
+      for (let i = 0; i < r2.item.assets.length; i++) {
+        if (r1.item.assets[i].native) {
+          if (
+            r1.item.assets[i].native.balance.display !==
+            r2.item.assets[i].native.balance.display
+          ) {
+            smallBalancedChanged = true;
+          }
+        }
+      }
+    }
   }
 
   return (
@@ -615,6 +638,8 @@ class RecyclerAssetList extends Component {
 
   position = 0;
 
+  renderList = [];
+
   scrollToOffset = (position, animated) => {
     setTimeout(() => {
       this.rlv.scrollToOffset(0, position, animated);
@@ -720,20 +745,27 @@ class RecyclerAssetList extends Component {
     }
 
     if (type === ViewTypes.COIN_SMALL_BALANCES) {
-      const renderList = [];
-      for (let i = 0; i < item.assets.length; i++) {
-        renderList.push(
-          renderItem({
-            item: {
-              ...item.assets[i],
-              isSmall: true,
-            },
-            key: `CoinSmallBalances${i}`,
-          })
-        );
+      if (
+        this.renderList.length !== item.assets.length ||
+        smallBalancedChanged
+      ) {
+        smallBalancedChanged = false;
+        const renderList = [];
+        for (let i = 0; i < item.assets.length; i++) {
+          renderList.push(
+            renderItem({
+              item: {
+                ...item.assets[i],
+                isSmall: true,
+              },
+              key: `CoinSmallBalances${i}`,
+            })
+          );
+        }
+        this.renderList = renderList;
       }
 
-      return <SmallBalancesWrapper assets={renderList} />;
+      return <SmallBalancesWrapper assets={this.renderList} />;
     }
 
     const isNotUniqueToken =
@@ -761,30 +793,35 @@ class RecyclerAssetList extends Component {
         });
   };
 
+  stickyRowRenderer = (_, data) => (
+    <AssetListHeaderRenderer {...data} isSticky />
+  );
+
   render() {
     const {
       externalScrollView,
       fetchData,
       hideHeader,
       renderAheadOffset,
-      ...props
     } = this.props;
     const { dataProvider, headersIndices } = this.state;
 
     return (
       <View backgroundColor={colors.white} flex={1} overflow="hidden">
-        <StickyContainer stickyHeaderIndices={headersIndices}>
+        <StickyContainer
+          overrideRowRenderer={this.stickyRowRenderer}
+          stickyHeaderIndices={headersIndices}
+        >
           <RecyclerListView
-            {...props}
             dataProvider={dataProvider}
+            disableRecycling
             extendedState={{ headersIndices }}
-            itemAnimator={layoutItemAnimator}
             externalScrollView={externalScrollView}
+            itemAnimator={layoutItemAnimator}
             layoutProvider={this.layoutProvider}
             onScroll={this.handleScroll}
             ref={this.handleListRef}
             renderAheadOffset={renderAheadOffset}
-            disableRecycling
             rowRenderer={this.rowRenderer}
             scrollIndicatorInsets={{
               bottom: safeAreaInsetValues.bottom,
@@ -795,6 +832,7 @@ class RecyclerAssetList extends Component {
             }}
             style={{
               backgroundColor: colors.white,
+              minHeight: 1,
             }}
           />
         </StickyContainer>

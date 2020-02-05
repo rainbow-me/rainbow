@@ -56,7 +56,7 @@ const enhance = shouldUpdate((props, nextProps) => {
 });
 
 const SendCoinRow = enhance(({ item, onPress, selected, ...props }) => (
-  <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+  <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
     <CoinRow
       {...item}
       bottomRowRender={BottomRow}

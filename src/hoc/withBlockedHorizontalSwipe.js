@@ -6,7 +6,7 @@ import { setDisplayName } from 'recompact';
 // before it got delivered to navigator
 export default InnerComponent =>
   setDisplayName('HorizontalGestureBlocker')(props => (
-    <PanGestureHandler minDeltaX={5} minDeltaY={1000}>
+    <PanGestureHandler minDeltaX={20} minDeltaY={1000}>
       <Animated.View>
         <InnerComponent {...props} />
       </Animated.View>

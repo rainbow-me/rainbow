@@ -7,11 +7,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 ### Added
-* Support for deeplinking
-* Support eth_signTransaction
+
+### Removed
 
 ### Changed
-* Updated icons and splash screen
+## [1.2.3-1](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.3-1)
+### Changed
+* Better biometric support
+* Fix import wallet showing old wallet balances
+
+## [1.2.2-4](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.2-4)
+### Added
+* Uniswap support 
+* Add to contacts
+* Support for deep linking
+* Support for Sentry
+
+### Changed
+* Upgraded Firebase
+
+## [1.1.5-2](https://github.com/rainbow-me/rainbow/releases/tag/v1.1.5-2)
+### Changed
+* Bugfix for transaction history with null symbol
 
 ## [1.1.5-2](https://github.com/rainbow-me/rainbow/releases/tag/v1.1.5-2)
 ### Changed

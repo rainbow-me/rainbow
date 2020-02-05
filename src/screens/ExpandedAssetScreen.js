@@ -3,6 +3,7 @@ import React, { Component, createElement } from 'react';
 import { StatusBar } from 'react-native';
 import {
   AddContactState,
+  ChartExpandedState,
   InvestmentExpandedState,
   TokenExpandedState,
   UniqueTokenExpandedState,
@@ -15,6 +16,7 @@ import { deviceUtils, safeAreaInsetValues } from '../utils';
 const { bottom: safeAreaBottom, top: safeAreaTop } = safeAreaInsetValues;
 
 const ScreenTypes = {
+  chart: ChartExpandedState,
   contact: AddContactState,
   token: TokenExpandedState,
   unique_token: UniqueTokenExpandedState,

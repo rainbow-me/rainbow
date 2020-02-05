@@ -7,8 +7,7 @@ import {
   tradeTokensForExactEthWithData,
   tradeTokensForExactTokensWithData,
 } from '@uniswap/sdk';
-import BigNumber from 'bignumber.js';
-import { get, isNil, toLower } from 'lodash';
+import { find, get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { TextInput, InteractionManager } from 'react-native';
@@ -35,12 +34,13 @@ import { estimateSwapGasLimit, executeSwap } from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
-  convertAmountToNativeDisplay,
   convertAmountToRawAmount,
   convertNumberToString,
   convertRawAmountToDecimalFormat,
   divide,
   greaterThan,
+  greaterThanOrEqualTo,
+  isZero,
   subtract,
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
@@ -78,7 +78,7 @@ const isSameAsset = (a, b) => {
   return assetA === assetB;
 };
 
-const getNativeTag = field => get(field, '_nativeTag');
+const getNativeTag = field => get(field, '_inputRef._nativeTag');
 
 class ExchangeModal extends Component {
   static propTypes = {
@@ -102,6 +102,7 @@ class ExchangeModal extends Component {
     tradeDetails: PropTypes.object,
     txFees: PropTypes.object,
     uniswapAddPendingApproval: PropTypes.func,
+    uniswapAssetsInWallet: PropTypes.arrayOf(PropTypes.object),
     uniswapUpdateAllowances: PropTypes.func,
   };
 
@@ -113,8 +114,6 @@ class ExchangeModal extends Component {
     inputAmountDisplay: null,
     inputAsExactAmount: false,
     inputCurrency: ethereumUtils.getAsset(this.props.allAssets),
-    inputExecutionRate: null,
-    inputNativePrice: null,
     isAssetApproved: true,
     isAuthorizing: false,
     isSufficientBalance: true,
@@ -123,8 +122,6 @@ class ExchangeModal extends Component {
     outputAmount: null,
     outputAmountDisplay: null,
     outputCurrency: null,
-    outputExecutionRate: null,
-    outputNativePrice: null,
     showConfirmButton: false,
     slippage: null,
     tradeDetails: null,
@@ -147,13 +144,14 @@ class ExchangeModal extends Component {
     // Maybe that's not perfect, but works for now ¯\_(ツ)_/¯
     if (
       this.props.isTransitioning &&
-      nextProps.isTransitioning &&
+      !nextProps.isTransitioning &&
       this.lastFocusedInput === null
     ) {
       this.inputFocusInteractionHandle = InteractionManager.runAfterInteractions(
         this.focusInputField
       );
     }
+
     const isNewState = isNewValueForObjectPaths(this.state, nextState, [
       'approvalCreationTimestamp',
       'approvalEstimatedTimeInMs',
@@ -276,6 +274,11 @@ class ExchangeModal extends Component {
       uniswapUpdateAllowances,
     } = this.props;
     const { inputCurrency } = this.state;
+
+    if (isNil(inputCurrency)) {
+      return this.setState({ isAssetApproved: true });
+    }
+
     const { address: inputAddress, exchangeAddress } = inputCurrency;
 
     if (inputAddress === 'eth') {
@@ -336,7 +339,6 @@ class ExchangeModal extends Component {
       chainId,
       gasUpdateTxFee,
       inputReserve,
-      nativeCurrency,
       outputReserve,
       selectedGasPrice,
     } = this.props;
@@ -370,11 +372,11 @@ class ExchangeModal extends Component {
       const isOutputEth = outputAddress === 'eth';
 
       const rawInputAmount = convertAmountToRawAmount(
-        parseFloat(inputAmount) || 0,
+        inputAmount || 0,
         inputDecimals
       );
       const rawOutputAmount = convertAmountToRawAmount(
-        parseFloat(outputAmount) || 0,
+        outputAmount || 0,
         outputDecimals
       );
 
@@ -420,38 +422,6 @@ class ExchangeModal extends Component {
             );
       }
 
-      let inputExecutionRate = '';
-      let outputExecutionRate = '';
-      let inputNativePrice = '';
-      let outputNativePrice = '';
-
-      if (inputCurrency) {
-        const inputPriceValue = get(inputCurrency, 'price.value', 0);
-        inputExecutionRate = updatePrecisionToDisplay(
-          get(tradeDetails, 'executionRate.rate', BigNumber(0)),
-          inputPriceValue
-        );
-
-        inputNativePrice = convertAmountToNativeDisplay(
-          inputPriceValue,
-          nativeCurrency
-        );
-      }
-
-      if (outputCurrency) {
-        const outputPriceValue = get(outputCurrency, 'price.value', 0);
-        outputExecutionRate = updatePrecisionToDisplay(
-          get(tradeDetails, 'executionRate.rateInverted', BigNumber(0)),
-          outputPriceValue,
-          true
-        );
-
-        outputNativePrice = convertAmountToNativeDisplay(
-          outputPriceValue,
-          nativeCurrency
-        );
-      }
-
       const slippage = convertNumberToString(
         get(tradeDetails, 'executionRateSlippage', 0)
       );
@@ -461,15 +431,10 @@ class ExchangeModal extends Component {
       );
 
       const isSufficientBalance =
-        !parseFloat(inputAmount) ||
-        parseFloat(inputBalance) >= parseFloat(inputAmount);
+        !inputAmount || greaterThanOrEqualTo(inputBalance, inputAmount);
 
       this.setState({
-        inputExecutionRate,
-        inputNativePrice,
         isSufficientBalance,
-        outputExecutionRate,
-        outputNativePrice,
         slippage,
         tradeDetails,
       });
@@ -542,8 +507,10 @@ class ExchangeModal extends Component {
           );
 
           this.setState({
-            isSufficientBalance:
-              parseFloat(inputBalance) >= parseFloat(rawUpdatedInputAmount),
+            isSufficientBalance: greaterThanOrEqualTo(
+              inputBalance,
+              rawUpdatedInputAmount
+            ),
           });
         }
       }
@@ -677,17 +644,21 @@ class ExchangeModal extends Component {
   };
 
   navigateToSelectInputCurrency = () => {
-    this.props.navigation.navigate('CurrencySelectScreen', {
-      onSelectCurrency: this.setInputCurrency,
-      type: CurrencySelectionTypes.input,
-    });
+    InteractionManager.runAfterInteractions(() =>
+      this.props.navigation.navigate('CurrencySelectScreen', {
+        onSelectCurrency: this.setInputCurrency,
+        type: CurrencySelectionTypes.input,
+      })
+    );
   };
 
   navigateToSelectOutputCurrency = () => {
-    this.props.navigation.navigate('CurrencySelectScreen', {
-      onSelectCurrency: this.setOutputCurrency,
-      type: CurrencySelectionTypes.output,
-    });
+    InteractionManager.runAfterInteractions(() =>
+      this.props.navigation.navigate('CurrencySelectScreen', {
+        onSelectCurrency: this.setOutputCurrency,
+        type: CurrencySelectionTypes.output,
+      })
+    );
   };
 
   getMarketPrice = () => {
@@ -711,7 +682,7 @@ class ExchangeModal extends Component {
       if (!this.nativeFieldRef.isFocused()) {
         let nativeAmount = null;
 
-        const isInputZero = parseFloat(inputAmount) === 0;
+        const isInputZero = isZero(inputAmount);
 
         if (inputAmount && !isInputZero) {
           let nativePrice = get(inputCurrency, 'native.price.amount', null);
@@ -735,7 +706,10 @@ class ExchangeModal extends Component {
       this.clearForm();
     }
 
-    this.setState({ inputCurrency });
+    this.setState({
+      inputCurrency,
+      showConfirmButton: !!inputCurrency && !!outputCurrency,
+    });
     this.props.uniswapUpdateInputCurrency(inputCurrency);
 
     if (userSelected && isSameAsset(inputCurrency, outputCurrency)) {
@@ -748,7 +722,7 @@ class ExchangeModal extends Component {
       let inputAmount = null;
       let inputAmountDisplay = null;
 
-      const isNativeZero = parseFloat(nativeAmount) === 0;
+      const isNativeZero = isZero(nativeAmount);
 
       if (nativeAmount && !isNativeZero) {
         let nativePrice = get(inputCurrency, 'native.price.amount', null);
@@ -788,17 +762,26 @@ class ExchangeModal extends Component {
       inputCurrency,
       outputCurrency: previousOutputCurrency,
     } = this.state;
+    const { uniswapAssetsInWallet } = this.props;
 
     this.props.uniswapUpdateOutputCurrency(outputCurrency);
 
     this.setState({
       inputAsExactAmount: true,
       outputCurrency,
-      showConfirmButton: !!outputCurrency,
+      showConfirmButton: !!inputCurrency && !!outputCurrency,
     });
 
+    const existsInWallet = find(
+      uniswapAssetsInWallet,
+      asset => get(asset, 'address') === get(previousOutputCurrency, 'address')
+    );
     if (userSelected && isSameAsset(inputCurrency, outputCurrency)) {
-      this.setInputCurrency(previousOutputCurrency, false);
+      if (existsInWallet) {
+        this.setInputCurrency(previousOutputCurrency, false);
+      } else {
+        this.setInputCurrency(null, false);
+      }
     }
   };
 
@@ -811,8 +794,6 @@ class ExchangeModal extends Component {
       inputAmount,
       inputAmountDisplay,
       inputCurrency,
-      // inputExecutionRate,
-      // inputNativePrice,
       isAssetApproved,
       isAuthorizing,
       isSufficientBalance,
@@ -821,8 +802,6 @@ class ExchangeModal extends Component {
       outputAmount,
       outputAmountDisplay,
       outputCurrency,
-      // outputExecutionRate,
-      // outputNativePrice,
       showConfirmButton,
       slippage,
     } = this.state;
@@ -884,7 +863,7 @@ class ExchangeModal extends Component {
             {isSlippageWarningVisible && (
               <SlippageWarning slippage={slippage} />
             )}
-            {showConfirmButton && (
+            {(showConfirmButton || !isAssetApproved) && (
               <Fragment>
                 <Centered css={padding(24, 15, 0)} flexShrink={0} width="100%">
                   <ConfirmExchangeButton

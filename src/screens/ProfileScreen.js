@@ -2,18 +2,18 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { ActivityList } from '../components/activity-list';
 import AddFundsInterstitial from '../components/AddFundsInterstitial';
-import BlurOverlay from '../components/BlurOverlay';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { FlexItem, Page } from '../components/layout';
 import { Icon } from '../components/icons';
 import { ProfileMasthead } from '../components/profile';
-import { position } from '../styles';
+import { colors, position } from '../styles';
+import TransactionList from '../components/transaction-list/TransactionList';
+import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 
 const ProfileScreen = ({
   accountColor,
   accountName,
   accountAddress,
-  blurIntensity,
   isEmpty,
   nativeCurrency,
   navigation,
@@ -26,37 +26,43 @@ const ProfileScreen = ({
   <Page component={FlexItem} style={position.sizeAsObject('100%')}>
     <Header justify="space-between">
       <HeaderButton onPress={onPressSettings}>
-        <Icon name="gear" />
+        <Icon color={colors.black} name="gear" />
       </HeaderButton>
-      <BackButton direction="right" onPress={onPressBackButton} />
+      <BackButton
+        color={colors.black}
+        direction="right"
+        onPress={onPressBackButton}
+      />
     </Header>
-    <ActivityList
-      accountAddress={accountAddress}
-      accountColor={accountColor}
-      accountName={accountName}
-      header={
-        <ProfileMasthead
-          accountAddress={accountAddress}
-          accountColor={accountColor}
-          accountName={accountName}
-          navigation={navigation}
-          showBottomDivider={!isEmpty}
-        />
-      }
-      isEmpty={isEmpty}
-      nativeCurrency={nativeCurrency}
-      requests={requests}
-      transactions={transactions}
-      transactionsCount={transactionsCount}
-    />
+    {nativeTransactionListAvailable ? (
+      <TransactionList navigation={navigation} style={{ flex: 1 }} />
+    ) : (
+      <ActivityList
+        accountAddress={accountAddress}
+        accountColor={accountColor}
+        accountName={accountName}
+        header={
+          <ProfileMasthead
+            accountAddress={accountAddress}
+            accountColor={accountColor}
+            accountName={accountName}
+            navigation={navigation}
+            showBottomDivider={!isEmpty}
+          />
+        }
+        isEmpty={isEmpty}
+        nativeCurrency={nativeCurrency}
+        requests={requests}
+        transactions={transactions}
+        transactionsCount={transactionsCount}
+      />
+    )}
     {isEmpty && <AddFundsInterstitial />}
-    <BlurOverlay blurType="light" intensity={blurIntensity} />
   </Page>
 );
 
 ProfileScreen.propTypes = {
   accountAddress: PropTypes.string,
-  blurIntensity: PropTypes.object,
   isEmpty: PropTypes.bool,
   nativeCurrency: PropTypes.string,
   navigation: PropTypes.object,

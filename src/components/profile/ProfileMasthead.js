@@ -7,7 +7,7 @@ import styled from 'styled-components/primitives';
 import { margin, colors } from '../../styles';
 import { abbreviations } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import CopyTooltip from '../CopyTooltip';
+import CopyTooltip from '../copy-tooltip';
 import Divider from '../Divider';
 import { Centered, Column, RowWithMargins } from '../layout';
 import { FloatingEmojis } from '../floating-emojis';

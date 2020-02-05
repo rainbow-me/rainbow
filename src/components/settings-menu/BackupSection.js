@@ -10,7 +10,7 @@ import { colors, padding, position, shadow } from '../../styles';
 import { Button } from '../buttons';
 import { Centered, Column } from '../layout';
 import { Br, Monospace, Text } from '../text';
-import CopyTooltip from '../CopyTooltip';
+import CopyTooltip from '../copy-tooltip';
 
 const Content = styled(Centered)`
   margin-bottom: 34;

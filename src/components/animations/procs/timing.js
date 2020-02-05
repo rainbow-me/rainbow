@@ -1,5 +1,4 @@
 import Animated, { Easing } from 'react-native-reanimated';
-import { set } from './operators';
 import { updateState } from './updateState';
 
 const {
@@ -7,6 +6,7 @@ const {
   Clock,
   clockRunning,
   cond,
+  set,
   startClock,
   stopClock,
   Value,

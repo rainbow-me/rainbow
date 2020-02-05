@@ -1,15 +1,21 @@
 import { concat, get, includes, isNil, map, remove, uniqBy } from 'lodash';
 import {
   getAssets,
+  getCompoundAssets,
   getLocalTransactions,
   removeAssets,
+  removeCompoundAssets,
   removeLocalTransactions,
   saveAssets,
+  saveCompoundAssets,
   saveLocalTransactions,
 } from '../handlers/localstorage/accountLocal';
+import { apiGetTokenOverrides } from '../handlers/tokenOverrides';
 import { parseAccountAssets, parseAsset } from '../parsers/accounts';
+import { parseCompoundDeposits } from '../parsers/compound';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import parseTransactions from '../parsers/transactions';
+import { loweredTokenOverridesFallback } from '../references';
 import { isLowerCaseMatch } from '../utils';
 import {
   uniswapRemovePendingApproval,
@@ -21,11 +27,16 @@ import {
 // -- Constants --------------------------------------- //
 
 const DATA_UPDATE_ASSETS = 'data/DATA_UPDATE_ASSETS';
+const DATA_UPDATE_COMPOUND_ASSETS = 'data/DATA_UPDATE_COMPOUND_ASSETS';
 const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
+const DATA_UPDATE_TOKEN_OVERRIDES = 'data/DATA_UPDATE_TOKEN_OVERRIDES';
 
 const DATA_LOAD_ASSETS_REQUEST = 'data/DATA_LOAD_ASSETS_REQUEST';
 const DATA_LOAD_ASSETS_SUCCESS = 'data/DATA_LOAD_ASSETS_SUCCESS';
 const DATA_LOAD_ASSETS_FAILURE = 'data/DATA_LOAD_ASSETS_FAILURE';
+
+const DATA_LOAD_COMPOUND_ASSETS_SUCCESS =
+  'data/DATA_LOAD_COMPOUND_ASSETS_SUCCESS';
 
 const DATA_LOAD_TRANSACTIONS_REQUEST = 'data/DATA_LOAD_TRANSACTIONS_REQUEST';
 const DATA_LOAD_TRANSACTIONS_SUCCESS = 'data/DATA_LOAD_TRANSACTIONS_SUCCESS';
@@ -50,6 +61,14 @@ export const dataLoadState = () => async (dispatch, getState) => {
     dispatch({ type: DATA_LOAD_ASSETS_FAILURE });
   }
   try {
+    const compoundAssets = await getCompoundAssets(accountAddress, network);
+    dispatch({
+      payload: compoundAssets,
+      type: DATA_LOAD_COMPOUND_ASSETS_SUCCESS,
+    });
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
+  try {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_REQUEST });
     const transactions = await getLocalTransactions(accountAddress, network);
     dispatch({
@@ -61,9 +80,18 @@ export const dataLoadState = () => async (dispatch, getState) => {
   }
 };
 
+export const dataTokenOverridesInit = () => async dispatch => {
+  try {
+    const tokenOverrides = await apiGetTokenOverrides();
+    dispatch(dataUpdateTokenOverrides(tokenOverrides));
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
+};
+
 export const dataClearState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   removeAssets(accountAddress, network);
+  removeCompoundAssets(accountAddress, network);
   removeLocalTransactions(accountAddress, network);
   dispatch({ type: DATA_CLEAR_STATE });
 };
@@ -98,13 +126,14 @@ export const transactionsReceived = (message, appended = false) => (
   const transactionData = get(message, 'payload.transactions', []);
   if (!transactionData.length) return;
   const { accountAddress, nativeCurrency, network } = getState().settings;
-  const { transactions } = getState().data;
+  const { transactions, tokenOverrides } = getState().data;
   if (!transactionData.length) return;
   const { approvalTransactions, dedupedResults } = parseTransactions(
     transactionData,
     accountAddress,
     nativeCurrency,
     transactions,
+    tokenOverrides,
     appended
   );
   dispatch(uniswapRemovePendingApproval(approvalTransactions));
@@ -141,6 +170,7 @@ export const addressAssetsReceived = (
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
 
+  const { tokenOverrides } = getState().data;
   const { accountAddress, network } = getState().settings;
   const { uniqueTokens } = getState().uniqueTokens;
   const assets = get(message, 'payload.assets', []);
@@ -149,7 +179,7 @@ export const addressAssetsReceived = (
     return symbol === 'UNI' || symbol === 'uni-v1';
   });
   dispatch(uniswapUpdateLiquidityTokens(liquidityTokens, append || change));
-  let parsedAssets = parseAccountAssets(assets, uniqueTokens);
+  let parsedAssets = parseAccountAssets(assets, uniqueTokens, tokenOverrides);
   if (append || change) {
     const { assets: existingAssets } = getState().data;
     parsedAssets = uniqBy(
@@ -157,6 +187,9 @@ export const addressAssetsReceived = (
       item => item.uniqueId
     );
   }
+  parsedAssets = parsedAssets.filter(
+    asset => !!Number(get(asset, 'balance.amount'))
+  );
   saveAssets(parsedAssets, accountAddress, network);
   dispatch({
     payload: parsedAssets,
@@ -164,10 +197,31 @@ export const addressAssetsReceived = (
   });
 };
 
-export const assetsReceived = message => dispatch => {
+export const compoundInfoReceived = message => (dispatch, getState) => {
+  const isValidMeta = dispatch(checkMeta(message));
+  if (!isValidMeta) return;
+  const { tokenOverrides } = getState().data;
+  const { accountAddress, network } = getState().settings;
+  const deposits = get(message, 'payload.info.deposits', []);
+  const parsedDeposits = parseCompoundDeposits(deposits, tokenOverrides);
+  dispatch({
+    payload: parsedDeposits,
+    type: DATA_UPDATE_COMPOUND_ASSETS,
+  });
+  saveCompoundAssets(parsedDeposits, accountAddress, network);
+};
+
+export const dataUpdateTokenOverrides = tokenOverrides => dispatch =>
+  dispatch({
+    payload: tokenOverrides,
+    type: DATA_UPDATE_TOKEN_OVERRIDES,
+  });
+
+export const assetsReceived = message => (dispatch, getState) => {
+  const { tokenOverrides } = getState().data;
   const assets = get(message, 'payload.assets', []);
   if (!assets.length) return;
-  const parsedAssets = map(assets, asset => parseAsset(asset));
+  const parsedAssets = map(assets, asset => parseAsset(asset, tokenOverrides));
   dispatch(uniswapUpdateAssets(parsedAssets));
 };
 
@@ -200,8 +254,10 @@ export const dataAddNewTransaction = txDetails => (dispatch, getState) =>
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   assets: [],
+  compoundAssets: [],
   loadingAssets: false,
   loadingTransactions: false,
+  tokenOverrides: loweredTokenOverridesFallback,
   transactions: [],
 };
 
@@ -209,6 +265,10 @@ export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case DATA_UPDATE_ASSETS:
       return { ...state, assets: action.payload };
+    case DATA_UPDATE_COMPOUND_ASSETS:
+      return { ...state, compoundAssets: action.payload };
+    case DATA_UPDATE_TOKEN_OVERRIDES:
+      return { ...state, tokenOverrides: action.payload };
     case DATA_UPDATE_TRANSACTIONS:
       return { ...state, transactions: action.payload };
     case DATA_LOAD_TRANSACTIONS_REQUEST:
@@ -237,6 +297,11 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         assets: action.payload,
         loadingAssets: false,
+      };
+    case DATA_LOAD_COMPOUND_ASSETS_SUCCESS:
+      return {
+        ...state,
+        compoundAssets: action.payload,
       };
     case DATA_LOAD_ASSETS_FAILURE:
       return {

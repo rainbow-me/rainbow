@@ -116,7 +116,7 @@ function runSpring(clock, value, dest) {
     ]),
     springFill(clock, state, config),
     cond(state.finished, stopClock(clock)),
-    set(value, state.position),
+    // set(value, state.position),
   ]);
 }
 

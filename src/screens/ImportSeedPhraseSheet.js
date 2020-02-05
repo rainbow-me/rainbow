@@ -1,29 +1,51 @@
+import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { KeyboardAvoidingView } from 'react-native';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from 'react';
+import { KeyboardAvoidingView, StatusBar, Platform } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import { pure } from 'recompact';
+import { Button } from '../components/buttons';
+import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import { Alert } from '../components/alerts';
 import { Icon } from '../components/icons';
-import { MultiLineInput } from '../components/inputs';
-import { Centered, Column, Row } from '../components/layout';
+import { Input } from '../components/inputs';
+import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { LoadingOverlay } from '../components/modal';
 import { Text } from '../components/text';
+import { useClipboard } from '../hooks';
 import { sheetVerticalOffset } from '../navigation/transitions/effects';
-import { borders, colors, padding } from '../styles';
+import { colors, padding, shadow, borders } from '../styles';
+import { isValidSeed as validateSeed } from '../helpers/validators';
+import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+
+const keyboardVerticalOffset = sheetVerticalOffset + 10;
 
 const statusBarHeight = getStatusBarHeight(true);
 
-const Container = styled(Column).attrs({
-  align: 'center',
-  flex: 1,
-})`
-  ${borders.buildRadius('top', 16)};
-  ${padding(0, 16, 16)};
-  background: ${colors.white};
-  top: ${statusBarHeight};
-`;
+const Container = isNativeStackAvailable
+  ? styled(Column).attrs({
+      align: 'center',
+      flex: 1,
+    })`
+      ${padding(0, 19)};
+      background: ${colors.white};
+    `
+  : styled(Column).attrs({
+      align: 'center',
+      flex: 1,
+    })`
+      ${borders.buildRadius('top', 16)};
+      ${padding(0, 16, 16)};
+      background: ${colors.white};
+      top: ${statusBarHeight};
+    `;
 
 const HandleIcon = styled(Icon).attrs({
   color: '#C4C6CB',
@@ -33,94 +55,192 @@ const HandleIcon = styled(Icon).attrs({
   margin-bottom: 2;
 `;
 
-const ImportButton = styled(Row).attrs({
-  align: 'center',
-  component: BorderlessButton,
-})`
-  ${padding(6, 8)}
-  background: ${props => (props.disabled ? '#D2D3D7' : colors.appleBlue)};
+const StyledImportButton = styled(
+  Platform.OS === 'ios' ? BorderlessButton : Button
+)`
+  ${padding(5, 9, 7)};
+  ${shadow.build(0, 6, 10, colors.dark, 0.16)};
+  background-color: ${({ disabled }) =>
+    disabled ? '#D2D3D7' : colors.appleBlue};
   border-radius: 15px;
-  shadow-color: ${colors.dark};
-  shadow-offset: 0px 6px;
-  shadow-opacity: 0.14;
-  shadow-radius: 10;
+  margin-bottom: 19px;
 `;
 
-const ImportSeedPhraseSheet = ({
-  isClipboardContentsValidSeedPhrase,
-  isImporting,
-  isSeedPhraseValid,
-  onImportSeedPhrase,
-  onInputChange,
-  onPasteSeedPhrase,
-  onPressEnterKey,
-  seedPhrase,
-}) => (
-  <Container>
-    <HandleIcon />
-    <Text size="large" weight="bold">
-      Import
-    </Text>
-    <KeyboardAvoidingView
-      behavior="padding"
-      keyboardVerticalOffset={sheetVerticalOffset + 19}
-    >
-      <Centered css={padding(0, 50)} flex={1}>
-        <MultiLineInput
-          align="center"
-          autoFocus
-          editable={!isImporting}
-          enablesReturnKeyAutomatically
-          onChange={onInputChange}
-          onSubmitEditing={onPressEnterKey}
-          placeholder="Seed phrase or private key"
-          returnKeyType="done"
-          size="large"
-          style={{ width: '100%' }}
-          value={seedPhrase}
-          weight="semibold"
-        />
-      </Centered>
-      <Row align="start" justify="end">
-        <ImportButton
-          disabled={
-            seedPhrase
-              ? !isSeedPhraseValid
-              : !isClipboardContentsValidSeedPhrase
-          }
-          onPress={seedPhrase ? onImportSeedPhrase : onPasteSeedPhrase}
-        >
-          {!!seedPhrase && (
-            <Icon
-              color={colors.white}
-              direction="right"
-              name="arrowCircled"
-              style={{ paddingRight: 5 }}
-            />
-          )}
-          <Text
-            color="white"
-            style={{ paddingLeft: seedPhrase ? 5 : 0 }}
-            weight="bold"
-          >
-            {seedPhrase ? 'Import' : 'Paste'}
-          </Text>
-        </ImportButton>
-      </Row>
-    </KeyboardAvoidingView>
-    {isImporting && <LoadingOverlay title="Importing..." />}
-  </Container>
+const ConfirmImportAlert = onSuccess =>
+  Alert({
+    buttons: [
+      {
+        onPress: onSuccess,
+        text: 'Import Wallet',
+      },
+      {
+        style: 'cancel',
+        text: 'Cancel',
+      },
+    ],
+    message:
+      'This will replace your existing wallet.\n\nBefore continuing, please make sure you’ve backed up or emptied it!',
+    title: '🚨 Careful 🚨',
+  });
+
+const ImportButton = ({ disabled, onPress, seedPhrase }) => (
+  <StyledImportButton disabled={disabled} onPress={onPress} overflow="visible">
+    <RowWithMargins align="center" margin={5}>
+      {!!seedPhrase && (
+        <Icon color={colors.white} direction="right" name="arrowCircled" />
+      )}
+      <Text color="white" weight="semibold">
+        {seedPhrase ? 'Import' : 'Paste'}
+      </Text>
+    </RowWithMargins>
+  </StyledImportButton>
 );
 
-ImportSeedPhraseSheet.propTypes = {
-  isClipboardContentsValidSeedPhrase: PropTypes.bool,
-  isImporting: PropTypes.bool,
-  isSeedPhraseValid: PropTypes.bool,
-  onImportSeedPhrase: PropTypes.func,
-  onInputChange: PropTypes.func,
-  onPasteSeedPhrase: PropTypes.func,
-  onPressEnterKey: PropTypes.func,
-  seedPhrase: PropTypes.string,
+const ImportSeedPhraseSheet = ({
+  initializeWallet,
+  isEmpty,
+  setAppearListener,
+}) => {
+  const [clipboard] = useClipboard();
+  const { navigate, setParams } = useNavigation();
+  const [isImporting, setImporting] = useState(false);
+  const [seedPhrase, setSeedPhrase] = useState('');
+
+  const inputRef = useRef(null);
+  const focusListener = useCallback(() => {
+    inputRef.current && inputRef.current.focus();
+  }, []);
+
+  const inputRefListener = useCallback(value => {
+    value && setTimeout(value.focus, 100);
+    inputRef.current = value;
+  }, []);
+
+  useEffect(() => {
+    setAppearListener && setAppearListener(focusListener);
+    return () => setAppearListener && setAppearListener(null);
+  });
+
+  const isClipboardValidSeedPhrase = useMemo(() => validateSeed(clipboard), [
+    clipboard,
+  ]);
+
+  const isSeedPhraseValid = useMemo(() => validateSeed(seedPhrase), [
+    seedPhrase,
+  ]);
+
+  const toggleImporting = useCallback(
+    newImportingState => {
+      setImporting(newImportingState);
+      setParams({ gesturesEnabled: !newImportingState });
+    },
+    [setParams]
+  );
+
+  const handleSetSeedPhrase = useCallback(
+    text => {
+      if (isImporting) return null;
+      return setSeedPhrase(text);
+    },
+    [isImporting]
+  );
+
+  const onPressImportButton = () => {
+    if (isSeedPhraseValid && seedPhrase) {
+      return ConfirmImportAlert(() => toggleImporting(true));
+    }
+
+    if (isClipboardValidSeedPhrase && clipboard) {
+      return handleSetSeedPhrase(clipboard);
+    }
+  };
+
+  useEffect(() => {
+    if (isImporting) {
+      const id = setTimeout(() => {
+        initializeWallet(seedPhrase.trim())
+          .then(success => {
+            if (success) {
+              toggleImporting(false);
+              analytics.track('Imported seed phrase', {
+                hadPreviousAddressWithValue: isEmpty,
+              });
+              navigate('WalletScreen');
+            } else {
+              toggleImporting(false);
+            }
+          })
+          .catch(error => {
+            toggleImporting(false);
+            console.error('error importing seed phrase: ', error);
+          });
+      }, 50);
+
+      return () => clearTimeout(id);
+    }
+  }, [
+    initializeWallet,
+    isEmpty,
+    isImporting,
+    navigate,
+    seedPhrase,
+    toggleImporting,
+  ]);
+
+  return (
+    <Container>
+      <StatusBar barStyle="light-content" />
+      <HandleIcon />
+      <Text size="large" weight="bold">
+        Import
+      </Text>
+      <KeyboardAvoidingView
+        behavior="padding"
+        keyboardVerticalOffset={keyboardVerticalOffset}
+      >
+        <Centered css={padding(0, 50)} flex={1}>
+          <Input
+            lineHeight="loosest"
+            multiline
+            ref={isNativeStackAvailable ? inputRef : inputRefListener}
+            align="center"
+            autoFocus
+            enablesReturnKeyAutomatically
+            onChangeText={handleSetSeedPhrase}
+            onSubmitEditing={onPressImportButton}
+            placeholder="Seed phrase or private key"
+            returnKeyType="done"
+            size="large"
+            value={seedPhrase}
+            weight="semibold"
+            width="100%"
+          />
+        </Centered>
+        <Row align="start" justify="end">
+          <ImportButton
+            disabled={
+              seedPhrase ? !isSeedPhraseValid : !isClipboardValidSeedPhrase
+            }
+            onPress={onPressImportButton}
+            seedPhrase={seedPhrase}
+          />
+        </Row>
+        {isImporting && (
+          <LoadingOverlay
+            paddingTop={keyboardVerticalOffset}
+            title="Importing..."
+          />
+        )}
+      </KeyboardAvoidingView>
+    </Container>
+  );
 };
 
-export default pure(ImportSeedPhraseSheet);
+ImportSeedPhraseSheet.propTypes = {
+  initializeWallet: PropTypes.func,
+  isEmpty: PropTypes.bool,
+  setAppearListener: PropTypes.func,
+};
+
+const neverRerender = () => true;
+export default React.memo(ImportSeedPhraseSheet, neverRerender);

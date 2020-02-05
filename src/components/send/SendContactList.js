@@ -67,16 +67,17 @@ class SendContactList extends Component {
     );
   }
 
-  componentWillReceiveProps = props => {
+  static getDerivedStateFromProps(props, state) {
     const newAssets = filterList(
       props.allAssets,
       props.currentInput,
       'nickname'
     );
-    if (newAssets !== this.state.contacts) {
-      this.setState({ contacts: newAssets });
+    if (newAssets !== state.contacts) {
+      return { ...state, contacts: newAssets };
     }
-  };
+    return state;
+  }
 
   shouldComponentUpdate = () => {
     if (position < 0) {
@@ -111,7 +112,7 @@ class SendContactList extends Component {
 
     navigation.navigate('OverlayExpandedAssetScreen', {
       address,
-      asset: [],
+      asset: {},
       color,
       contact: { address, color, nickname },
       onCloseModal: onChange,
@@ -152,6 +153,9 @@ class SendContactList extends Component {
           layoutProvider={this._layoutProvider}
           onScroll={this.handleScroll}
           optimizeForInsertDeleteAnimations
+          scrollViewProps={{
+            keyboardShouldPersistTaps: 'always',
+          }}
           rowRenderer={this.renderItem}
         />
       )}
