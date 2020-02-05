@@ -4,7 +4,7 @@ import lang from 'i18n-js';
 import { get, isNil, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { Alert, Vibration, InteractionManager } from 'react-native';
+import { Alert, InteractionManager, Vibration } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
 import { withGas, withTransactionConfirmationScreen } from '../hoc';
