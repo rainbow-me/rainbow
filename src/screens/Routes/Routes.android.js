@@ -28,7 +28,6 @@ import {
   expandedPreset,
   overlayExpandedPreset,
   sheetPreset,
-  swapDetailsPreset,
 } from '../../navigation/transitions/effects';
 import createStackNavigator, {
   onTransitionEnd,

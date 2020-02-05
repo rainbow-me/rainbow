@@ -1,11 +1,10 @@
-import { Animated, StatusBar } from 'react-native';
+import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { colors } from '../../styles';
 import { deviceUtils } from '../../utils';
 
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
-export let swapDetailsTransitionPosition = new Animated.Value(0);
 
 const backgroundInterpolator = ({
   next: { progress: next } = { next: undefined },

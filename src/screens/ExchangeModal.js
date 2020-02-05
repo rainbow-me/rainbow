@@ -775,8 +775,11 @@ class ExchangeModal extends Component {
     }
   };
 
-  handleRefocusLastInput = () =>
-    TextInput.State.focusTextInput(this.findNextFocused());
+  handleRefocusLastInput = () => {
+    InteractionManager.runAfterInteractions(() => {
+      TextInput.State.focusTextInput(this.findNextFocused());
+    });
+  };
 
   navigateToSwapDetailsModal = () => {
     const {
