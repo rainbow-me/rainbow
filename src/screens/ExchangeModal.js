@@ -48,6 +48,7 @@ import {
   withAccountData,
   withAccountSettings,
   withBlockedHorizontalSwipe,
+  withBlockPolling,
   withGas,
   withTransactionConfirmationScreen,
   withTransitionProps,
@@ -106,6 +107,8 @@ class ExchangeModal extends Component {
     uniswapAddPendingApproval: PropTypes.func,
     uniswapAssetsInWallet: PropTypes.arrayOf(PropTypes.object),
     uniswapUpdateAllowances: PropTypes.func,
+    web3ListenerInit: PropTypes.func,
+    web3ListenerStop: PropTypes.func,
   };
 
   state = {
@@ -133,6 +136,7 @@ class ExchangeModal extends Component {
     this.props.gasUpdateDefaultGasLimit(ethUnits.basic_swap);
     InteractionManager.runAfterInteractions(() => {
       this.props.gasPricesStartPolling();
+      this.props.web3ListenerInit();
     });
   }
 
@@ -242,6 +246,7 @@ class ExchangeModal extends Component {
     }
     this.props.uniswapClearCurrenciesAndReserves();
     this.props.gasPricesStopPolling();
+    this.props.web3ListenerStop();
   };
 
   lastFocusedInput = null;
@@ -904,6 +909,7 @@ export default compose(
   withAccountSettings,
   withBlockedHorizontalSwipe,
   withGas,
+  withBlockPolling,
   withNavigationFocus,
   withTransactionConfirmationScreen,
   withTransitionProps,

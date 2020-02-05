@@ -42,10 +42,7 @@ import {
   walletConnectLoadState,
   walletConnectClearState,
 } from '../redux/walletconnect';
-import {
-  web3ListenerClearState,
-  web3ListenerInit,
-} from '../redux/web3listener';
+
 import { promiseUtils, sentryUtils } from '../utils';
 import withHideSplashScreen from './withHideSplashScreen';
 
@@ -77,7 +74,6 @@ export default Component =>
       uniswapUpdateState,
       walletConnectClearState,
       walletConnectLoadState,
-      web3ListenerInit,
     }),
     withHideSplashScreen,
     withHandlers({
@@ -90,7 +86,6 @@ export default Component =>
         }
       },
       clearAccountData: ownProps => async () => {
-        web3ListenerClearState();
         const p0 = ownProps.explorerClearState();
         const p1 = ownProps.dataClearState();
         const p2 = ownProps.clearIsWalletEmpty();
@@ -118,7 +113,6 @@ export default Component =>
           sentryUtils.addInfoBreadcrumb('Initialize account data');
           ownProps.explorerInit();
           ownProps.uniswapPairsInit();
-          ownProps.web3ListenerInit();
           await ownProps.uniqueTokensRefreshState();
         } catch (error) {
           // TODO error state
