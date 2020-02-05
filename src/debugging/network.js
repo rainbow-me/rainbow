@@ -86,7 +86,7 @@ export default function monitorNetwork(
             } ${url}`
           );
           emptyLine();
-          if (timeout) {
+          if (timeout && status > 400) {
             console.log(` ⚠️ ⚠️  TIMEOUT!  ⚠️ ⚠️ `);
           }
 
