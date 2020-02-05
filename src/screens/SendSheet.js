@@ -31,7 +31,6 @@ import { sendTransaction } from '../model/wallet';
 import { borders, colors } from '../styles';
 import { deviceUtils, ethereumUtils, gasUtils } from '../utils';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
-import { gasPricesStopPolling } from '../redux/gas';
 
 const sheetHeight = deviceUtils.dimensions.height - 10;
 
