@@ -10,7 +10,7 @@ import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { TokenFamilyWrap } from '../components/token-family';
 import { buildUniqueTokenList, buildCoinsList } from './assets';
-import { chartExpandedAvailable } from '../experimentalConfig';
+import { chartExpandedAvailable } from '../config/experimental';
 
 const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
