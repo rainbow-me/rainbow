@@ -5,7 +5,11 @@ import { compose, withHandlers } from 'recompact';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
-import { margin, colors, borders } from '../../styles';
+import {
+  addCashButtonAvailable,
+  isAvatarPickerAvailable,
+} from '../../config/experimental';
+import { colors, borders, margin } from '../../styles';
 import { abbreviations, getFirstGrapheme } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { useNavigation } from 'react-navigation-hooks';
@@ -17,7 +21,6 @@ import { FloatingEmojis } from '../floating-emojis';
 import { TruncatedAddress } from '../text';
 import AddCashButton from './AddCashButton';
 import ProfileAction from './ProfileAction';
-import { isAvatarPickerAvailable } from '../../config/experimental';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
@@ -32,7 +35,7 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   margin-bottom: 24;
-  padding-bottom: 12;
+  padding-bottom: ${addCashButtonAvailable ? 12 : 32};
 `;
 
 const AvatarCircle = styled(View)`
@@ -109,9 +112,11 @@ const ProfileMasthead = ({
           text="Receive"
         />
       </RowWithMargins>
-      <AddCashButton onPress={() => navigate('AddCashSheet')}>
-        Add Cash
-      </AddCashButton>
+      {addCashButtonAvailable && (
+        <AddCashButton onPress={() => navigate('AddCashSheet')}>
+          Add Cash
+        </AddCashButton>
+      )}
       {showBottomDivider && (
         <Divider style={{ bottom: 0, position: 'absolute' }} />
       )}
