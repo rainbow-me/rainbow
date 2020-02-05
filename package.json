@@ -16,8 +16,14 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint"
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.{js,jsx,json}": [
+      "eslint --ext '.js,.jsx,.json'",
+      "git add"
+    ]
   },
   "dependencies": {
     "@bankify/react-native-animate-number": "^0.2.1",
@@ -65,6 +71,7 @@
     "i18next": "^17.0.3",
     "immer": "^5.0.0",
     "inherits": "^2.0.3",
+    "lint-staged": "^10.0.7",
     "lodash": "^4.17.15",
     "match-sorter": "^4.0.2",
     "nanoid": "^2.1.6",
