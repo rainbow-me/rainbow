@@ -21,7 +21,7 @@ const GAS_UPDATE_TX_FEE = 'gas/GAS_UPDATE_TX_FEE';
 const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
 
 // -- Actions --------------------------------------------------------------- //
-let getGasPricesInterval = null;
+let getGasPricesTimeoutHandler = null;
 
 const getDefaultTxFees = () => (dispatch, getState) => {
   const { assets } = getState().data;
@@ -46,53 +46,57 @@ const getDefaultTxFees = () => (dispatch, getState) => {
   };
 };
 
-export const gasPricesInit = () => (dispatch, getState) =>
-  new Promise((resolve, reject) => {
-    const { fallbackGasPrices, selectedGasPrice, txFees } = dispatch(
-      getDefaultTxFees()
-    );
-    dispatch({
-      payload: {
-        gasPrices: fallbackGasPrices,
-        selectedGasPrice,
-        txFees,
-      },
-      type: GAS_PRICES_DEFAULT,
+export const gasPricesStartPolling = () => async (dispatch, getState) => {
+  console.log('[GAS]: START POLLING');
+  const { fallbackGasPrices, selectedGasPrice, txFees } = dispatch(
+    getDefaultTxFees()
+  );
+  dispatch({
+    payload: {
+      gasPrices: fallbackGasPrices,
+      selectedGasPrice,
+      txFees,
+    },
+    type: GAS_PRICES_DEFAULT,
+  });
+
+  const getGasPrices = () =>
+    new Promise((fetchResolve, fetchReject) => {
+      console.log('[GAS]: GETTING PRICES');
+      const { useShortGasFormat } = getState().gas;
+      apiGetGasPrices()
+        .then(({ data }) => {
+          const adjustedGasPrices = bumpGasPrices(data);
+          let gasPrices = parseGasPrices(adjustedGasPrices, useShortGasFormat);
+          dispatch({
+            payload: gasPrices,
+            type: GAS_PRICES_SUCCESS,
+          });
+          fetchResolve(true);
+        })
+        .catch(error => {
+          dispatch({
+            payload: fallbackGasPrices,
+            type: GAS_PRICES_FAILURE,
+          });
+          captureException(error);
+          fetchReject(error);
+        });
     });
 
-    const getGasPrices = () =>
-      new Promise((fetchResolve, fetchReject) => {
-        const { useShortGasFormat } = getState().gas;
-        apiGetGasPrices()
-          .then(({ data }) => {
-            const gasPrices = parseGasPrices(data, useShortGasFormat);
-            dispatch({
-              payload: gasPrices,
-              type: GAS_PRICES_SUCCESS,
-            });
-            fetchResolve(true);
-          })
-          .catch(error => {
-            dispatch({
-              payload: fallbackGasPrices,
-              type: GAS_PRICES_FAILURE,
-            });
-            captureException(error);
-            fetchReject(error);
-          });
-      });
-    return getGasPrices()
-      .then(() => {
-        clearInterval(getGasPricesInterval);
-        getGasPricesInterval = setInterval(getGasPrices, 15000); // 15 secs
-        resolve(true);
-      })
-      .catch(error => {
-        clearInterval(getGasPricesInterval);
-        getGasPricesInterval = setInterval(getGasPrices, 15000); // 15 secs
-        reject(error);
-      });
-  });
+  const gasPricesPolling = async () => {
+    getGasPricesTimeoutHandler && clearTimeout(getGasPricesTimeoutHandler);
+    try {
+      await getGasPrices();
+      // eslint-disable-next-line no-empty
+    } catch (e) {
+    } finally {
+      getGasPricesTimeoutHandler = setTimeout(gasPricesPolling, 15000); // 15 secs
+    }
+  };
+
+  gasPricesPolling();
+};
 
 export const gasUpdateGasPriceOption = newGasPriceOption => (
   dispatch,
@@ -178,7 +182,27 @@ const getSelectedGasPrice = (
   };
 };
 
-export const gasClearState = () => clearInterval(getGasPricesInterval);
+const bumpGasPrices = data => {
+  if (data.fast) {
+    data.fast = (parseFloat(data.fast) * 1.101).toFixed(2);
+  }
+  if (data.fastest) {
+    data.fastest = (parseFloat(data.fastest) * 1.101).toFixed(2);
+  }
+  if (data.safeLow) {
+    data.safeLow = (parseFloat(data.safeLow) * 1.101).toFixed(2);
+  }
+  if (data.average) {
+    data.average = (parseFloat(data.average) * 1.101).toFixed(2);
+  }
+
+  return data;
+};
+
+export const gasPricesStopPolling = () => () => {
+  console.log('[GAS]: STOP POLLING');
+  getGasPricesTimeoutHandler && clearTimeout(getGasPricesTimeoutHandler);
+};
 
 // -- Reducer --------------------------------------------------------------- //
 const INITIAL_STATE = {

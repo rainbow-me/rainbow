@@ -13,7 +13,7 @@ import {
   dataTokenOverridesInit,
 } from '../redux/data';
 import { explorerClearState, explorerInit } from '../redux/explorer';
-import { gasClearState, gasPricesInit } from '../redux/gas';
+import { gasPricesStartPolling } from '../redux/gas';
 import { clearIsWalletEmpty } from '../redux/isWalletEmpty';
 import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import { nonceClearState } from '../redux/nonce';
@@ -60,8 +60,7 @@ export default Component =>
       dataTokenOverridesInit,
       explorerClearState,
       explorerInit,
-      gasClearState,
-      gasPricesInit,
+      gasPricesStartPolling,
       nonceClearState,
       openStateSettingsLoadState,
       requestsClearState,
@@ -92,7 +91,6 @@ export default Component =>
       },
       clearAccountData: ownProps => async () => {
         web3ListenerClearState();
-        gasClearState();
         const p0 = ownProps.explorerClearState();
         const p1 = ownProps.dataClearState();
         const p2 = ownProps.clearIsWalletEmpty();
@@ -120,7 +118,6 @@ export default Component =>
           sentryUtils.addInfoBreadcrumb('Initialize account data');
           ownProps.explorerInit();
           ownProps.uniswapPairsInit();
-          ownProps.gasPricesInit();
           ownProps.web3ListenerInit();
           await ownProps.uniqueTokensRefreshState();
         } catch (error) {

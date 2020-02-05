@@ -2,7 +2,12 @@ import analytics from '@segment/analytics-react-native';
 import { get, isEmpty, isString, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, StatusBar } from 'react-native';
+import {
+  InteractionManager,
+  Keyboard,
+  KeyboardAvoidingView,
+  StatusBar,
+} from 'react-native';
 import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
 import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
@@ -26,6 +31,7 @@ import { sendTransaction } from '../model/wallet';
 import { borders, colors } from '../styles';
 import { deviceUtils, ethereumUtils, gasUtils } from '../utils';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
+import { gasPricesStopPolling } from '../redux/gas';
 
 const sheetHeight = deviceUtils.dimensions.height - 10;
 
@@ -56,6 +62,7 @@ const SendSheet = ({
   fetchData,
   gasLimit,
   gasPrices,
+  gasPricesStartPolling,
   gasUpdateDefaultGasLimit,
   gasUpdateGasPriceOption,
   gasUpdateTxFee,
@@ -85,6 +92,16 @@ const SendSheet = ({
   const showEmptyState = !isValidAddress;
   const showAssetList = isValidAddress && isEmpty(selected);
   const showAssetForm = isValidAddress && !isEmpty(selected);
+
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      gasPricesStartPolling();
+    });
+    return () => {
+      gasPricesStopPolling();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const sendUpdateAssetAmount = useCallback(
     newAssetAmount => {
