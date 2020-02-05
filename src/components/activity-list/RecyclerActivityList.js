@@ -8,6 +8,7 @@ import {
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
+import { addCashButtonAvailable } from '../../experimentalConfig';
 import { buildTransactionUniqueIdentifier } from '../../helpers/transactions';
 import { colors } from '../../styles';
 import {
@@ -127,7 +128,9 @@ export default class RecyclerActivityList extends PureComponent {
         } else {
           dim.height = this.props.isLoading
             ? deviceUtils.dimensions.height
-            : 276;
+            : addCashButtonAvailable
+            ? 276
+            : 204;
         }
       }
     );
