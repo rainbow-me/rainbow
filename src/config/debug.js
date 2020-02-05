@@ -4,6 +4,6 @@
  */
 
 export const reactNativeDisableYellowBox = false;
-export const reactNativeEnableLogbox = true;
-export const showNetworkRequests = true;
-export const showNetworkResponses = true;
+export const reactNativeEnableLogbox = false;
+export const showNetworkRequests = false;
+export const showNetworkResponses = false;
