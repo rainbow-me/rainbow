@@ -63,6 +63,7 @@ const SendSheet = ({
   gasLimit,
   gasPrices,
   gasPricesStartPolling,
+  gasPricesStopPolling,
   gasUpdateDefaultGasLimit,
   gasUpdateGasPriceOption,
   gasUpdateTxFee,

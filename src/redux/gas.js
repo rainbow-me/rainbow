@@ -11,7 +11,7 @@ import ethUnits from '../references/ethereum-units.json';
 import { ethereumUtils, gasUtils } from '../utils';
 
 // -- Constants ------------------------------------------------------------- //
-
+const GAS_MULTIPLIER = 1.101;
 const GAS_UPDATE_DEFAULT_GAS_LIMIT = 'gas/GAS_UPDATE_DEFAULT_GAS_LIMIT';
 const GAS_PRICES_DEFAULT = 'gas/GAS_PRICES_DEFAULT';
 const GAS_PRICES_SUCCESS = 'gas/GAS_PRICES_SUCCESS';
@@ -47,7 +47,6 @@ const getDefaultTxFees = () => (dispatch, getState) => {
 };
 
 export const gasPricesStartPolling = () => async (dispatch, getState) => {
-  console.log('[GAS]: START POLLING');
   const { fallbackGasPrices, selectedGasPrice, txFees } = dispatch(
     getDefaultTxFees()
   );
@@ -62,7 +61,6 @@ export const gasPricesStartPolling = () => async (dispatch, getState) => {
 
   const getGasPrices = () =>
     new Promise((fetchResolve, fetchReject) => {
-      console.log('[GAS]: GETTING PRICES');
       const { useShortGasFormat } = getState().gas;
       apiGetGasPrices()
         .then(({ data }) => {
@@ -183,24 +181,19 @@ const getSelectedGasPrice = (
 };
 
 const bumpGasPrices = data => {
-  if (data.fast) {
-    data.fast = (parseFloat(data.fast) * 1.101).toFixed(2);
-  }
-  if (data.fastest) {
-    data.fastest = (parseFloat(data.fastest) * 1.101).toFixed(2);
-  }
-  if (data.safeLow) {
-    data.safeLow = (parseFloat(data.safeLow) * 1.101).toFixed(2);
-  }
-  if (data.average) {
-    data.average = (parseFloat(data.average) * 1.101).toFixed(2);
-  }
-
-  return data;
+  const processedData = { ...data };
+  const gasPricesKeys = ['average', 'fast', 'fastest', 'safeLow'];
+  Object.keys(processedData).forEach(key => {
+    if (gasPricesKeys.indexOf(key) !== -1) {
+      processedData[key] = (
+        parseFloat(processedData[key]) * GAS_MULTIPLIER
+      ).toFixed(2);
+    }
+  });
+  return processedData;
 };
 
 export const gasPricesStopPolling = () => () => {
-  console.log('[GAS]: STOP POLLING');
   getGasPricesTimeoutHandler && clearTimeout(getGasPricesTimeoutHandler);
 };
 
