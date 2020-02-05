@@ -5,6 +5,7 @@ import FastImage from 'react-native-fast-image';
 import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
 import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
+import { addCashButtonAvailable } from '../../experimentalConfig';
 import { borders, margin } from '../../styles';
 import { abbreviations } from '../../utils';
 import CopyTooltip from '../copy-tooltip';
@@ -28,7 +29,7 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   margin-bottom: 24;
-  padding-bottom: 12;
+  padding-bottom: ${addCashButtonAvailable ? 12 : 32};
 `;
 
 const ProfileMasthead = ({
@@ -72,7 +73,9 @@ const ProfileMasthead = ({
         text="Receive"
       />
     </RowWithMargins>
-    <AddCashButton onPress={onPressAddCash}>Add Cash</AddCashButton>
+    {addCashButtonAvailable && (
+      <AddCashButton onPress={onPressAddCash}>Add Cash</AddCashButton>
+    )}
     {showBottomDivider && (
       <Divider style={{ bottom: 0, position: 'absolute' }} />
     )}
