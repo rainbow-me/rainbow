@@ -256,7 +256,11 @@ export default class Chart extends PureComponent {
         nativeEvent: {
           state: state =>
             cond(
-              or(eq(state, State.BEGAN), eq(state, State.END)),
+              or(
+                eq(state, State.BEGAN),
+                eq(state, State.END),
+                eq(state, State.CANCELLED)
+              ),
               set(this.gestureState, state),
               delay(
                 cond(

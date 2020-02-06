@@ -14,7 +14,7 @@ const TimestampText = ({
   onHandlerStateChange,
 }) =>
   enabled ? (
-    <TapGestureHandler onHandlerStateChange={onTapGestureEvent} maxDeltaY={50}>
+    <TapGestureHandler onHandlerStateChange={onTapGestureEvent} maxDeltaY={30}>
       <Animated.View>
         <PanGestureHandler
           minDist={1}
