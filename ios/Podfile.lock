@@ -410,9 +410,13 @@ PODS:
     - React-jsi (= 0.62.0-rc.1)
     - ReactCommon/callinvoker (= 0.62.0-rc.1)
 <<<<<<< HEAD
+<<<<<<< HEAD
   - ReactNativePayments (1.1.5):
 =======
   - ReactNativePaymentsAlive (0.9.1):
+=======
+  - ReactNativePayments (1.1.3):
+>>>>>>> 37c20bc2... Separate out Add Cash form and status
     - React
   - ReactNativePermissions (1.2.1):
 >>>>>>> 56393ade... Wyre integration
@@ -550,9 +554,13 @@ DEPENDENCIES:
   - ReactCommon/callinvoker (from `../node_modules/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
 <<<<<<< HEAD
+<<<<<<< HEAD
   - "ReactNativePayments (from `../node_modules/@rainbow-me/react-native-payments/lib/ios`)"
 =======
   - ReactNativePaymentsAlive (from `../node_modules/react-native-payments-alive`)
+=======
+  - "ReactNativePayments (from `../node_modules/@rainbow-me/react-native-payments/lib/ios`)"
+>>>>>>> 37c20bc2... Separate out Add Cash form and status
   - ReactNativePermissions (from `../node_modules/react-native-permissions`)
 >>>>>>> 56393ade... Wyre integration
   - "RNAnalytics (from `../node_modules/@segment/analytics-react-native`)"
@@ -690,11 +698,16 @@ EXTERNAL SOURCES:
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
 <<<<<<< HEAD
+<<<<<<< HEAD
   ReactNativePayments:
     :path: "../node_modules/@rainbow-me/react-native-payments/lib/ios"
 =======
   ReactNativePaymentsAlive:
     :path: "../node_modules/react-native-payments-alive"
+=======
+  ReactNativePayments:
+    :path: "../node_modules/@rainbow-me/react-native-payments/lib/ios"
+>>>>>>> 37c20bc2... Separate out Add Cash form and status
   ReactNativePermissions:
     :path: "../node_modules/react-native-permissions"
 >>>>>>> 56393ade... Wyre integration
@@ -822,9 +835,13 @@ SPEC CHECKSUMS:
   React-RCTVibration: 2e7618e869b2ba4a15042d6def29dd32df734793
   ReactCommon: 13c3473a975e73db91b1999e0d6d89c62400785d
 <<<<<<< HEAD
+<<<<<<< HEAD
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
 =======
   ReactNativePaymentsAlive: a8485408bc59145aa772b3afb331dc39521bdf5a
+=======
+  ReactNativePayments: 56363b0ac491c96c8c98f3913860ee5568f061ae
+>>>>>>> 37c20bc2... Separate out Add Cash form and status
   ReactNativePermissions: 7cfad56d13c8961cd2a1005b4955b1400c79ef3e
 >>>>>>> 56393ade... Wyre integration
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
