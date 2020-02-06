@@ -1,12 +1,12 @@
+import { PaymentRequest } from '@rainbow-me/react-native-payments';
 import { captureException } from '@sentry/react-native';
 import axios from 'axios';
-import { get, isEmpty, split } from 'lodash';
+import { get, isEmpty, last, split } from 'lodash';
 import {
   RAINBOW_WYRE_MERCHANT_ID,
   WYRE_ACCOUNT_ID,
   WYRE_ENDPOINT,
 } from 'react-native-dotenv';
-import { PaymentRequest } from 'react-native-payments';
 import { add, feeCalculation, toFixedDecimals } from '../helpers/utilities';
 
 const WYRE_PERCENT_FEE = 4;
@@ -129,7 +129,8 @@ export const trackWyreTransfer = async transferId => {
       const transferHash = get(response, 'data.blockchainNetworkTx');
       const destAmount = get(response, 'data.destAmount');
       const destCurrency = get(response, 'data.destCurrency');
-      const transferStatus = get(response, 'data.status');
+      const statusTimeline = get(response, 'data.successTimeline', []);
+      const transferStatus = get(last(statusTimeline), 'state');
       return { destAmount, destCurrency, transferHash, transferStatus };
     }
     const {
