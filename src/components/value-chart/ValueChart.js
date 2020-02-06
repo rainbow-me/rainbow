@@ -57,7 +57,7 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
       lastPoints.push(allSegmentsPoints.length - 1);
       colors.push(data.segments[i].color);
       lines.push(data.segments[i].line);
-      dividers.push(data.segments[i].renderStartSeparatator);
+      dividers.push(data.segments[i].renderStartSeparator);
     }
   }
   if (allSegmentsPoints.length > destinatedNumberOfPoints) {

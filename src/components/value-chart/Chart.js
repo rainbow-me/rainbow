@@ -51,14 +51,14 @@ export default function Chart() {
             points: data.map(values => {
               return { x: values.timestamp, y: values.value };
             }),
-            renderStartSeparatator:
+            renderStartSeparator:
               colorIndex % 2 != 0
                 ? {
-                  fill: colorsArray[colorIndex],
-                  r: 7,
-                  stroke: 'white',
-                  strokeWidth: colorIndex + 2,
-                }
+                    fill: colorsArray[colorIndex],
+                    r: 7,
+                    stroke: 'white',
+                    strokeWidth: colorIndex + 2,
+                  }
                 : undefined,
           };
         }),
