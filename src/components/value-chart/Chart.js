@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import ValueChart from './ValueChart';
 import ValueText from './ValueText';
 import {
@@ -38,16 +38,10 @@ const colorsArray = [
 
 let colorIndex = 0;
 
-class Chart extends React.Component {
-  constructor(props) {
-    super(props);
-
-    colorIndex = 0;
-    this.state = {
-      currentChart: 0,
-    };
-
-    this.data = dataSwitching.map((sectionsData, index) => {
+export default function Chart() {
+  const textInputRef = useRef(null);
+  const data = useMemo(() => {
+    return dataSwitching.map((sectionsData, index) => {
       return {
         name: index,
         segments: sectionsData.map((data, i) => {
@@ -60,51 +54,46 @@ class Chart extends React.Component {
             renderStartSeparatator:
               colorIndex % 2 != 0
                 ? {
-                    fill: colorsArray[colorIndex],
-                    r: 7,
-                    stroke: 'white',
-                    strokeWidth: colorIndex + 2,
-                  }
+                  fill: colorsArray[colorIndex],
+                  r: 7,
+                  stroke: 'white',
+                  strokeWidth: colorIndex + 2,
+                }
                 : undefined,
           };
         }),
       };
     });
-  }
+  }, []);
 
-  render() {
-    const change = this.state.currentChart % 2 == 0 ? 20 : -20; // placeholder
+  const [currentChart, setCurrentChart] = useState(0);
+  const change = currentChart % 2 === 0 ? 20 : -20; // placeholder
 
-    return (
-      <>
-        <ValueText
-          headerText="PRICE"
-          direction={change > 0}
-          change={change.toFixed(2)}
-          ref={component => {
-            this._text = component;
-          }}
-        />
-        <ValueChart
-          mode="gesture-managed" // "gesture-managed" / "detailed" / "simplified"
-          enableSelect // enable checking value in touched point of chart
-          onValueUpdate={value => {
-            this._text.updateValue(value);
-          }}
-          currentDataSource={this.state.currentChart}
-          amountOfPathPoints={150} // amount of points for switch between charts
-          data={this.data}
-          barColor={change > 0 ? colors.chartGreen : colors.red}
-          stroke={{ detailed: 1.5, simplified: 3 }}
-        />
-        <TimespanSelector
-          reloadChart={index => this.setState({ currentChart: index })}
-          color={change > 0 ? colors.chartGreen : colors.red}
-          isLoading={false}
-        />
-      </>
-    );
-  }
+  return (
+    <>
+      <ValueText
+        headerText="PRICE"
+        direction={change > 0}
+        change={change.toFixed(2)}
+        ref={textInputRef}
+      />
+      <ValueChart
+        mode="gesture-managed" // "gesture-managed" / "detailed" / "simplified"
+        enableSelect // enable checking value in touched point of chart
+        onValueUpdate={value => {
+          textInputRef.current.updateValue(value);
+        }}
+        currentDataSource={currentChart}
+        amountOfPathPoints={200} // amount of points for switch between charts
+        data={data}
+        barColor={change > 0 ? colors.chartGreen : colors.red}
+        stroke={{ detailed: 1.5, simplified: 3 }}
+      />
+      <TimespanSelector
+        reloadChart={setCurrentChart}
+        color={change > 0 ? colors.chartGreen : colors.red}
+        isLoading={false}
+      />
+    </>
+  );
 }
-
-export default Chart;
