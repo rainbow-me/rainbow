@@ -1,5 +1,6 @@
+import { sum } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { Fragment, useRef, useState } from 'react';
+import React, { Fragment, useRef, useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/primitives';
@@ -12,28 +13,22 @@ import { ShadowStack } from '../shadow-stack';
 const { Value } = Animated;
 
 const maxWidth = 300;
+const horizontalMargin = 5;
 
-const componentWidths = [94, 88];
+let componentWidths = [];
+let calculatedComponentWidths = 0;
 
-const positionDiff = (componentWidths[0] - componentWidths[1]) / 2;
+let componentPositions = [];
 
-const centerDiff =
-  (componentWidths[1] -
-    (componentWidths[1] > componentWidths[0]
-      ? componentWidths[0]
-      : componentWidths[1])) /
-  2;
-
-const componentPositions = [
-  (-componentWidths[1] +
-    (componentWidths[1] > componentWidths[0] ? positionDiff : 0) +
-    centerDiff) /
-    2,
-  (componentWidths[1] +
-    (componentWidths[0] > componentWidths[1] ? positionDiff : 0) -
-    centerDiff) /
-    2,
-];
+const calculatePosition = () => {
+  const widthSum = sum(componentWidths);
+  const center = widthSum / 2;
+  let w = 0;
+  for (let i = 0; i < componentWidths.length; i++) {
+    componentPositions[i] = w + componentWidths[i] / 2 - center;
+    w += componentWidths[i];
+  }
+};
 
 const springConfig = {
   damping: 38,
@@ -73,12 +68,19 @@ const CoinText = styled(Text)`
 `;
 
 const AddCashSelector = ({ currencies, initialCurrencyIndex, onSelect }) => {
-  const translateX = useRef(
-    new Value(componentPositions[initialCurrencyIndex])
-  );
-  const width = useRef(new Value(componentWidths[initialCurrencyIndex]));
+  const translateX = useRef(new Value(0));
+  const width = useRef(new Value(0));
 
   const [currentOption, setCurrentOption] = useState(initialCurrencyIndex);
+
+  useEffect(() => {
+    componentWidths = [];
+    componentPositions = [];
+
+    return () => {
+      calculatedComponentWidths = 0;
+    };
+  }, []);
 
   const animateTransition = index => {
     Animated.spring(translateX.current, {
@@ -86,7 +88,7 @@ const AddCashSelector = ({ currencies, initialCurrencyIndex, onSelect }) => {
       ...springConfig,
     }).start();
     Animated.spring(width.current, {
-      toValue: componentWidths[index],
+      toValue: componentWidths[index] + horizontalMargin,
       ...springConfig,
     }).start();
   };
@@ -99,29 +101,41 @@ const AddCashSelector = ({ currencies, initialCurrencyIndex, onSelect }) => {
 
   const currencyItems = currencies.map((currency, index) => {
     return (
-      <ButtonPressAnimation
-        enableHapticFeedback={false}
+      <View
         key={index}
-        onPress={() => onSelectCurrency(index)}
-        scaleTo={0.94}
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'center',
-          width: componentWidths[index],
+        onLayout={({ nativeEvent }) => {
+          componentWidths[index] = nativeEvent.layout.width;
+          calculatedComponentWidths++;
+          if (currencies.length === calculatedComponentWidths) {
+            calculatePosition();
+            animateTransition(initialCurrencyIndex);
+          }
         }}
       >
-        <MiniCoinIcon symbol={currency} />
-        <CoinText
+        <ButtonPressAnimation
+          enableHapticFeedback={false}
+          key={index}
+          onPress={() => onSelectCurrency(index)}
+          scaleTo={0.94}
           style={{
-            color:
-              currentOption === index
-                ? colors.alpha(colors.blueGreyDark, 0.7)
-                : colors.alpha(colors.blueGreyDark, 0.5),
+            flexDirection: 'row',
+            justifyContent: 'center',
+            width: componentWidths[index],
           }}
         >
-          {currency}
-        </CoinText>
-      </ButtonPressAnimation>
+          <MiniCoinIcon symbol={currency} />
+          <CoinText
+            style={{
+              color:
+                currentOption === index
+                  ? colors.alpha(colors.blueGreyDark, 0.7)
+                  : colors.alpha(colors.blueGreyDark, 0.5),
+            }}
+          >
+            {currency}
+          </CoinText>
+        </ButtonPressAnimation>
+      </View>
     );
   });
 
