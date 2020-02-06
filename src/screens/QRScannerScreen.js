@@ -14,7 +14,7 @@ import {
 } from '../components/walletconnect-list';
 import { colors, position } from '../styles';
 import { isNewValueForObjectPaths } from '../utils';
-import { discoverSheetAvailable } from '../experimentalConfig';
+import { discoverSheetAvailable } from '../config/experimental';
 
 const QRScannerScreen = ({
   enableScanning,

@@ -6,6 +6,7 @@
     "android": "react-native run-android",
     "clean": "react-native clean-project-auto",
     "start": "react-native start",
+    "start:clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && react-native start -- --reset-cache",
     "test": "jest test.js",
     "install-pods": "cd ios && pod install && cd ..",
     "ios": "react-native run-ios --simulator='iPhone X'",
@@ -15,8 +16,14 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint"
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.{js,jsx,json}": [
+      "eslint --ext '.js,.jsx,.json'",
+      "git add"
+    ]
   },
   "dependencies": {
     "@bankify/react-native-animate-number": "^0.2.1",
@@ -64,6 +71,7 @@
     "i18next": "^17.0.3",
     "immer": "^5.0.0",
     "inherits": "^2.0.3",
+    "lint-staged": "^10.0.7",
     "lodash": "^4.17.15",
     "match-sorter": "^4.0.2",
     "nanoid": "^2.1.6",

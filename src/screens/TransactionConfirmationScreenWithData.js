@@ -4,7 +4,7 @@ import lang from 'i18n-js';
 import { get, isNil, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { Alert, Vibration } from 'react-native';
+import { Alert, InteractionManager, Vibration } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
 import { withGas, withTransactionConfirmationScreen } from '../hoc';
@@ -28,6 +28,8 @@ class TransactionConfirmationScreenWithData extends PureComponent {
   static propTypes = {
     dataAddNewTransaction: PropTypes.func,
     gasPrices: PropTypes.object,
+    gasPricesStartPolling: PropTypes.func,
+    gasPricesStopPolling: PropTypes.func,
     navigation: PropTypes.any,
     removeRequest: PropTypes.func,
     transactionCountNonce: PropTypes.number,
@@ -43,6 +45,10 @@ class TransactionConfirmationScreenWithData extends PureComponent {
     if (openAutomatically) {
       Vibration.vibrate();
     }
+
+    InteractionManager.runAfterInteractions(() => {
+      this.props.gasPricesStartPolling();
+    });
   }
 
   handleConfirm = async () => {
@@ -207,6 +213,7 @@ class TransactionConfirmationScreenWithData extends PureComponent {
 
   closeScreen = () => {
     this.props.navigation.popToTop();
+    this.props.gasPricesStopPolling();
   };
 
   render = () => {

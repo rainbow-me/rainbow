@@ -1,5 +1,7 @@
 import { connect } from 'react-redux';
 import {
+  gasPricesStartPolling,
+  gasPricesStopPolling,
   gasUpdateDefaultGasLimit,
   gasUpdateGasPriceOption,
   gasUpdateTxFee,
@@ -25,6 +27,8 @@ const mapStateToProps = ({
 
 export default Component =>
   connect(mapStateToProps, {
+    gasPricesStartPolling,
+    gasPricesStopPolling,
     gasUpdateDefaultGasLimit,
     gasUpdateGasPriceOption,
     gasUpdateTxFee,
