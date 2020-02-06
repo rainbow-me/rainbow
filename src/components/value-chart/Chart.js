@@ -52,7 +52,7 @@ export default function Chart() {
               return { x: values.timestamp, y: values.value };
             }),
             renderStartSeparator:
-              colorIndex % 2 != 0
+              colorIndex % 2 !== 0
                 ? {
                     fill: colorsArray[colorIndex],
                     r: 7,
