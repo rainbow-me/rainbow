@@ -21,7 +21,7 @@ const TimestampText = ({
           shouldActivateOnStart
           onGestureEvent={onPanGestureEvent}
           onHandlerStateChange={onHandlerStateChange}
-          failOffsetY={4}
+          failOffsetY={2}
         >
           {children}
         </PanGestureHandler>
