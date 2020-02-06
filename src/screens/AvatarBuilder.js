@@ -19,106 +19,16 @@ import {
 import { saveAccountInfo } from '../handlers/localstorage/accountLocal';
 import { withAccountInfo } from '../hoc';
 
-const {
-  block,
-  Clock,
-  clockRunning,
-  cond,
-  proc,
-  set,
-  spring,
-  startClock,
-  stopClock,
-  Value,
-} = Animated;
+const { Value } = Animated;
 
-const betterSpring = proc(
-  (
-    finished,
-    velocity,
-    position,
-    time,
-    prevPosition,
-    toValue,
-    damping,
-    mass,
-    stiffness,
-    overshootClamping,
-    restSpeedThreshold,
-    restDisplacementThreshold,
-    clock
-  ) =>
-    spring(
-      clock,
-      {
-        finished,
-        position,
-        prevPosition,
-        time,
-        velocity,
-      },
-      {
-        damping,
-        mass,
-        overshootClamping,
-        restDisplacementThreshold,
-        restSpeedThreshold,
-        stiffness,
-        toValue,
-      }
-    )
-);
-
-function springFill(clock, state, config) {
-  return betterSpring(
-    state.finished,
-    state.velocity,
-    state.position,
-    state.time,
-    new Value(0),
-    config.toValue,
-    config.damping,
-    config.mass,
-    config.stiffness,
-    config.overshootClamping,
-    config.restSpeedThreshold,
-    config.restDisplacementThreshold,
-    clock
-  );
-}
-
-function runSpring(clock, value, dest) {
-  const state = {
-    finished: new Value(0),
-    position: new Value(0),
-    time: new Value(0),
-    velocity: new Value(0),
-  };
-
-  const config = {
-    damping: 46,
-    mass: 1,
-    overshootClamping: false,
-    restDisplacementThreshold: 0.001,
-    restSpeedThreshold: 0.001,
-    stiffness: 800,
-    toValue: new Value(0),
-  };
-
-  return block([
-    cond(clockRunning(clock), 0, [
-      set(state.finished, 0),
-      set(state.time, 0),
-      set(state.position, value),
-      set(state.velocity, 0),
-      set(config.toValue, dest),
-      startClock(clock),
-    ]),
-    springFill(clock, state, config),
-    cond(state.finished, stopClock(clock)),
-    // set(value, state.position),
-  ]);
-}
+const springConfig = {
+  damping: 38,
+  mass: 1,
+  overshootClamping: false,
+  restDisplacementThreshold: 0.001,
+  restSpeedThreshold: 0.001,
+  stiffness: 600,
+};
 
 const statusBarHeight = getStatusBarHeight(true);
 
@@ -146,13 +56,11 @@ class AvatarBuilder extends PureComponent {
         (this.props.navigation.getParam('accountColor', 4) - 4) * 39
       ),
     };
-  }
 
-  springAnim = runSpring(
-    new Clock(),
-    (this.props.navigation.getParam('accountColor', 4) - 4) * 39,
-    (this.props.navigation.getParam('accountColor', 4) - 4) * 39
-  );
+    this.springAnim = new Value(
+      (this.props.navigation.getParam('accountColor', 4) - 4) * 39
+    );
+  }
 
   onChangeEmoji = event => {
     this.setState({ emoji: event });
@@ -167,11 +75,10 @@ class AvatarBuilder extends PureComponent {
       isSelected={index - 4 === 0}
       onPressColor={() => {
         let destination = (index - 4) * 39;
-        this.springAnim = runSpring(
-          new Clock(),
-          this.state.position,
-          destination
-        );
+        Animated.spring(this.springAnim, {
+          toValue: destination,
+          ...springConfig,
+        }).start();
         store.dispatch(settingsUpdateAccountColor(index));
         this.setState({
           avatarColor: color,
