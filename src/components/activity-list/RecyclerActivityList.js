@@ -8,7 +8,7 @@ import {
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
-import { addCashButtonAvailable } from '../../experimentalConfig';
+import { addCashButtonAvailable } from '../../config/experimental';
 import { buildTransactionUniqueIdentifier } from '../../helpers/transactions';
 import { colors } from '../../styles';
 import {

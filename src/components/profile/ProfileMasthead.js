@@ -5,7 +5,7 @@ import FastImage from 'react-native-fast-image';
 import { compose, onlyUpdateForKeys, withHandlers, withState } from 'recompact';
 import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
-import { addCashButtonAvailable } from '../../experimentalConfig';
+import { addCashButtonAvailable } from '../../config/experimental';
 import { borders, margin } from '../../styles';
 import { abbreviations } from '../../utils';
 import CopyTooltip from '../copy-tooltip';
