@@ -85,7 +85,7 @@ export default function Chart() {
           textInputRef.current.updateValue(value);
         }}
         currentDataSource={currentChart}
-        amountOfPathPoints={200} // amount of points for switch between charts
+        amountOfPathPoints={100} // amount of points for switch between charts
         data={data}
         barColor={change > 0 ? colors.chartGreen : colors.red}
         stroke={{ detailed: 1.5, simplified: 3 }}
