@@ -1,6 +1,6 @@
 import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { withNavigation } from 'react-navigation';
@@ -47,7 +47,16 @@ const SheetContainer = isNativeStackAvailable
       top: ${statusBarHeight};
     `;
 
-const AddCashSheet = ({ orderStatus, transferHash, transferStatus }) => {
+const AddCashSheet = ({
+  orderStatus,
+  transferHash,
+  transferStatus,
+  wyreClearState,
+}) => {
+  useEffect(() => {
+    return () => wyreClearState();
+  }, [wyreClearState]);
+
   return (
     <SheetContainer>
       <StatusBar barStyle="light-content" />
@@ -77,6 +86,7 @@ AddCashSheet.propTypes = {
   orderStatus: PropTypes.string,
   transferHash: PropTypes.string,
   transferStatus: PropTypes.string,
+  wyreClearState: PropTypes.func,
 };
 
 export default compose(

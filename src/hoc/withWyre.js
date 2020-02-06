@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { wyreAddOrder } from '../redux/wyre';
+import { wyreAddOrder, wyreClearState } from '../redux/wyre';
 
 const mapStateToProps = ({
   wyre: { orderId, orderStatus, transferHash, transferId, transferStatus },
@@ -12,4 +12,4 @@ const mapStateToProps = ({
 });
 
 export default Component =>
-  connect(mapStateToProps, { wyreAddOrder })(Component);
+  connect(mapStateToProps, { wyreAddOrder, wyreClearState })(Component);
