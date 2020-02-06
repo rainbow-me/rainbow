@@ -45,7 +45,8 @@ const Container = styled.View`
   width: ${deviceUtils.dimensions.width};
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  bottom: 0;
+  bottom: -200;
+  padding-bottom: 200;
   position: absolute;
   align-items: center;
 `;
