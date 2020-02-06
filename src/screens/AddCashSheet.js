@@ -106,8 +106,8 @@ const SheetContainer = isNativeStackAvailable
 
 const shakeAnimation = () => runSpring(new Clock(), -10, 0, -1000, 5500, 35);
 
-const currencies = ['ETH', 'DAI', 'USDC'];
-const initialCurrencyIndex = 1;
+const currencies = ['ETH', 'DAI'];
+const initialCurrencyIndex = 0;
 
 const AddCashSheet = ({ accountAddress, wyreAddOrder }) => {
   const [scaleAnim, setScaleAnim] = useState(1);
