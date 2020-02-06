@@ -116,6 +116,7 @@ export default class EmojiSelector extends PureComponent {
       searchQuery: '',
     };
 
+    nextCategoryOffset = new Animated.Value(1);
     this.recentlyRendered = false;
     this.touchedContact = undefined;
     this.contacts = {};
@@ -154,7 +155,7 @@ export default class EmojiSelector extends PureComponent {
     this.loadEmojis();
     setTimeout(() => {
       this.setState({ isReady: true });
-    }, 3000);
+    }, 1000);
   }
 
   handleTabSelect = category => {
