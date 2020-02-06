@@ -13,25 +13,26 @@ const { Value } = Animated;
 
 const maxWidth = 300;
 
-const componentWidths = [94, 88, 109];
+const componentWidths = [94, 88];
 
-const positionDiff = (componentWidths[0] - componentWidths[2]) / 2;
+const positionDiff = (componentWidths[0] - componentWidths[1]) / 2;
 
 const centerDiff =
   (componentWidths[1] -
-    (componentWidths[2] > componentWidths[0]
+    (componentWidths[1] > componentWidths[0]
       ? componentWidths[0]
-      : componentWidths[2])) /
+      : componentWidths[1])) /
   2;
 
 const componentPositions = [
-  -componentWidths[1] +
-    (componentWidths[2] > componentWidths[0] ? positionDiff : 0) +
-    centerDiff,
-  positionDiff,
-  componentWidths[1] +
-    (componentWidths[0] > componentWidths[2] ? positionDiff : 0) -
-    centerDiff,
+  (-componentWidths[1] +
+    (componentWidths[1] > componentWidths[0] ? positionDiff : 0) +
+    centerDiff) /
+    2,
+  (componentWidths[1] +
+    (componentWidths[0] > componentWidths[1] ? positionDiff : 0) -
+    centerDiff) /
+    2,
 ];
 
 const springConfig = {
@@ -71,12 +72,11 @@ const CoinText = styled(Text)`
   text-align: center;
 `;
 
-const initialTranslateX = new Value(componentPositions[1]);
-const initialWidth = new Value(componentWidths[1]);
-
 const AddCashSelector = ({ currencies, initialCurrencyIndex, onSelect }) => {
-  const translateX = useRef(initialTranslateX);
-  const width = useRef(initialWidth);
+  const translateX = useRef(
+    new Value(componentPositions[initialCurrencyIndex])
+  );
+  const width = useRef(new Value(componentWidths[initialCurrencyIndex]));
 
   const [currentOption, setCurrentOption] = useState(initialCurrencyIndex);
 
