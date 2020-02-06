@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { maxBy, minBy } from 'lodash';
-import Svg, { Path } from 'react-native-svg';
+import Svg, { Path, Circle } from 'react-native-svg';
 import { State } from 'react-native-gesture-handler';
 import Animated, { Easing } from 'react-native-reanimated';
 import Spline from 'cubic-spline';
@@ -13,6 +13,7 @@ import ActivityIndicator from '../ActivityIndicator';
 import GestureWrapper from './GestureWrapper';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const {
   and,
@@ -43,6 +44,7 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
   let allSegmentsPoints = [];
   let colors = [];
   let lines = [];
+  let dividers = [];
   let lastPoints = [];
   let createdLastPoints = [];
   if (data.segments.length > 0) {
@@ -55,6 +57,7 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
       lastPoints.push(allSegmentsPoints.length - 1);
       colors.push(data.segments[i].color);
       lines.push(data.segments[i].line);
+      dividers.push(data.segments[i].renderStartSeparatator);
     }
   }
   if (allSegmentsPoints.length > destinatedNumberOfPoints) {
@@ -117,6 +120,7 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
       lastPoints: createdLastPoints,
       lines,
       points: newData,
+      startSeparatator: dividers,
     };
 
     return data;
@@ -193,7 +197,6 @@ export default class Chart extends PureComponent {
     super(props);
 
     allSegmentDividers = [];
-
     this.data = this.props.data.map(data =>
       simplifyChartData(data, this.props.amountOfPathPoints)
     );
@@ -330,7 +333,9 @@ export default class Chart extends PureComponent {
           isLoading: true,
         });
 
-        this.animatedPath = this.createAnimatedPath();
+        const createdSVG = this.createAnimatedPath();
+        this.animatedPath = createdSVG.paths;
+        this.animatedDividers = createdSVG.points;
       }
       setTimeout(async () => {
         Animated.timing(
@@ -348,8 +353,8 @@ export default class Chart extends PureComponent {
           isLoading: false,
         }));
         this.props.onValueUpdate(
-          this.state.allNewData[currentInterval].points[
-            this.state.allNewData[currentInterval].points.length - 1
+          this.state.chartData[currentInterval].points[
+            this.state.chartData[currentInterval].points.length - 1
           ].y
         );
       });
@@ -358,27 +363,33 @@ export default class Chart extends PureComponent {
 
   createSegmentColorsArray = (segments, data) => {
     let segmentColors = [];
+    let segmentSwitch = [];
     for (let i = 0; i < segments.length + 1; i++) {
       segmentColors.push([]);
+      segmentSwitch.push([]);
     }
     for (let i = 0; i < data.length; i++) {
       let dataIndex = 0;
       for (let j = 0; j < segments.length + 1; j++) {
         segmentColors[j].push(dataIndex);
         if (segments[j] == data[i].lastPoints[dataIndex]) {
+          segmentSwitch[j].push(i);
           dataIndex++;
         }
       }
     }
-    return segmentColors;
+    segmentSwitch.pop();
+    return { colors: segmentColors, dividers: segmentSwitch };
   };
 
   createAnimatedPath = () => {
+    let sectionEndPoints = [];
     const { chartData } = this.state;
     allSegmentDividers.sort(function(a, b) {
       return a - b;
     });
-    var segmentsWithDeletedDuplicates = [];
+    let segmentsWithDeletedDuplicates = [];
+
     allSegmentDividers.forEach(function(x) {
       if (
         segmentsWithDeletedDuplicates.length == 0 ||
@@ -387,7 +398,8 @@ export default class Chart extends PureComponent {
         segmentsWithDeletedDuplicates.push(x);
     });
     allSegmentDividers = segmentsWithDeletedDuplicates;
-    const segmentColors = this.createSegmentColorsArray(
+
+    const segments = this.createSegmentColorsArray(
       allSegmentDividers,
       chartData
     );
@@ -449,6 +461,7 @@ export default class Chart extends PureComponent {
     };
 
     let returnPaths = [];
+    let returnPoints = [];
     for (let i = 0; i <= allSegmentDividers.length; i++) {
       const animatedPath = concat(
         'M 0 0',
@@ -459,6 +472,12 @@ export default class Chart extends PureComponent {
             }
           } else if (i == allSegmentDividers.length) {
             if (index == allSegmentDividers[i - 1]) {
+              sectionEndPoints.push({
+                index: segments.dividers[i - 1],
+                opacity: this.chartsMulti[segments.dividers[i - 1]],
+                x,
+                y: add(...allNodes(index)),
+              });
               return ['M', x, ' ', add(...allNodes(index))];
             }
             if (index >= allSegmentDividers[i - 1]) {
@@ -466,6 +485,12 @@ export default class Chart extends PureComponent {
             }
           } else {
             if (index == allSegmentDividers[i - 1]) {
+              sectionEndPoints.push({
+                index: segments.dividers[i - 1],
+                opacity: this.chartsMulti[segments.dividers[i - 1]],
+                x,
+                y: add(...allNodes(index)),
+              });
               return ['M', x, ' ', add(...allNodes(index))];
             }
             if (
@@ -483,14 +508,14 @@ export default class Chart extends PureComponent {
           ? cond(
               eq(this.currentChart, index),
               Animated.color(
-                ...hexToRgb(chartData[index].colors[segmentColors[i][index]])
+                ...hexToRgb(chartData[index].colors[segments.colors[i][index]])
               ),
               colorMatrix(index + 1)
             )
           : cond(
               eq(this.currentChart, index),
               Animated.color(
-                ...hexToRgb(chartData[index].colors[segmentColors[i][index]])
+                ...hexToRgb(chartData[index].colors[segments.colors[i][index]])
               )
             );
       };
@@ -499,12 +524,12 @@ export default class Chart extends PureComponent {
         return index < chartData.length - 1
           ? cond(
               eq(this.currentChart, index),
-              chartData[index].lines[segmentColors[i][index]],
+              chartData[index].lines[segments.colors[i][index]],
               lineMatrix(index + 1)
             )
           : cond(
               eq(this.currentChart, index),
-              chartData[index].lines[segmentColors[i][index]]
+              chartData[index].lines[segments.colors[i][index]]
             );
       };
 
@@ -529,7 +554,40 @@ export default class Chart extends PureComponent {
       );
     }
 
-    return returnPaths;
+    let something = [0, 0, 0, 0];
+    sectionEndPoints.forEach(element => {
+      if (chartData[element.index].startSeparatator[something[element.index]]) {
+        returnPoints.push(
+          <AnimatedCircle
+            cx={element.x}
+            cy={element.y}
+            r={
+              chartData[element.index].startSeparatator[
+                something[element.index]
+              ].r
+            }
+            stroke={
+              chartData[element.index].startSeparatator[
+                something[element.index]
+              ].stroke
+            }
+            strokeWidth={
+              chartData[element.index].startSeparatator[
+                something[element.index]
+              ].strokeWidth
+            }
+            fill={
+              chartData[element.index].startSeparatator[
+                something[element.index]++
+              ].fill
+            }
+            opacity={element.opacity}
+          />
+        );
+      }
+    });
+
+    return { paths: returnPaths, points: returnPoints };
   };
 
   checkValueBoundaries = value => {
@@ -538,7 +596,6 @@ export default class Chart extends PureComponent {
     }
     return value;
   };
-
   render() {
     const { amountOfPathPoints } = this.props;
     const { currentData } = this.state;
@@ -607,6 +664,7 @@ export default class Chart extends PureComponent {
                   style={flipY}
                 >
                   {this.animatedPath}
+                  {this.animatedDividers}
                 </Svg>
               </View>
               <Animated.View
