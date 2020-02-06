@@ -142,7 +142,7 @@ class AvatarBuilder extends PureComponent {
           >
             <Animated.View
               alignSelf="center"
-              marginTop={2}
+              marginTop={-7}
               borderColor={this.state.avatarColor}
               borderRadius={19}
               borderWidth={3}
