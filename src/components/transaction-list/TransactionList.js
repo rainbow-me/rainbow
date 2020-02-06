@@ -33,6 +33,7 @@ class TransactionList extends React.PureComponent {
           onReceivePress={this.props.onReceivePress}
           onCopyAddressPress={this.props.onCopyAddressPress}
           onRequestPress={this.props.onRequestPress}
+          onRequestExpire={this.props.onRequestExpire}
           onTransactionPress={this.props.onTransactionPress}
           style={this.props.style}
         />
@@ -80,6 +81,11 @@ export default compose(
         routeName: 'ConfirmRequest',
       });
       return;
+    },
+    onRequestExpire: ({ requests, navigation }) => e => {
+      const { index } = e.nativeEvent;
+      const item = requests[index];
+      console.log(`item ${JSON.stringify(item)} has expired`);
     },
     onTransactionPress: ({ transactions, contacts, navigation }) => e => {
       const { index } = e.nativeEvent;

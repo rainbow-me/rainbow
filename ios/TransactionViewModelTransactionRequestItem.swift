@@ -9,7 +9,8 @@ import Foundation
 
 class TransactionViewModelTransactionRequestItem : TransactionViewModelProtocol {
   var sections: [TransactionSectionProtocol]
-  var onItemPress: (Dictionary<AnyHashable, Any>) -> Void = { _ in }
+  var onItemPress: RCTBubblingEventBlock = { _ in }
+  var onRequestExpire: RCTBubblingEventBlock = { _ in }
   var type: TransactionSectionTypes = .requests
   
   init(requests: [TransactionRequest]) {

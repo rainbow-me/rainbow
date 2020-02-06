@@ -9,8 +9,9 @@ import Foundation
 
 class TransactionViewModel : NSObject, UITableViewDataSource {
   var items = [TransactionViewModelProtocol]()
-  var onTransactionPress: (Dictionary<AnyHashable, Any>) -> Void = { _ in }
-  var onRequestPress: (Dictionary<AnyHashable, Any>) -> Void = { _ in }
+  var onTransactionPress: RCTBubblingEventBlock = { _ in }
+  var onRequestPress: RCTBubblingEventBlock = { _ in }
+  var onRequestExpire: RCTBubblingEventBlock = { _ in }
   var sections: [TransactionSectionProtocol] {
     get {
       return items.flatMap { $0.sections }
@@ -64,6 +65,7 @@ class TransactionViewModel : NSObject, UITableViewDataSource {
       let request = sections[indexPath.section].data[indexPath.row] as! TransactionRequest
       
       cell.onItemPress = onRequestPress
+      cell.onRequestExpire = onRequestExpire
       cell.row = indexPath.row
       cell.set(request: request)
       cell.selectionStyle = .none

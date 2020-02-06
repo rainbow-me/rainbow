@@ -13,6 +13,7 @@
 RCT_EXPORT_VIEW_PROPERTY(data, TransactionData)
 RCT_EXPORT_VIEW_PROPERTY(accountAddress, NSString)
 RCT_EXPORT_VIEW_PROPERTY(onRequestPress, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onRequestExpire, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onTransactionPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onReceivePress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onCopyAddressPress, RCTBubblingEventBlock)

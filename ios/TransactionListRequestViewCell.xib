@@ -23,7 +23,7 @@
                         <color key="textColor" red="0.1450980392" green="0.16078431369999999" blue="0.18039215689999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="aJu-zS-tdo">
+                    <imageView autoresizesSubviews="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="aJu-zS-tdo" customClass="CoinIconWithProgressBar" customModule="Rainbow" customModuleProvider="target">
                         <rect key="frame" x="20" y="9" width="40" height="40"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </imageView>

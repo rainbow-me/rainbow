@@ -23,6 +23,7 @@
 import Foundation
 
 @objcMembers class TransactionRequest: NSObject {
+  var payloadId: NSNumber!
   var clientId: String!
   var dappName: String!
   var imageUrl: String!

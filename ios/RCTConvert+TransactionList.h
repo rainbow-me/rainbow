@@ -65,6 +65,7 @@
   for (id t in json) {
     NSDictionary *data = [self NSDictionary:t];
     TransactionRequest *request = [[TransactionRequest alloc] init];
+    request.payloadId = data[@"payload"][@"id"];
     request.clientId = data[@"clientId"];
     request.dappName = data[@"dappName"];
     request.imageUrl = data[@"imageUrl"];

@@ -11,13 +11,17 @@ class TransactionListRequestViewCell: TransactionListBaseCell {
   @IBOutlet weak var openButton: UIButton!
   @IBOutlet weak var transactionType: UILabel!
   @IBOutlet weak var walletName: UILabel!
-  @IBOutlet weak var walletImage: UIImageView!
+  @IBOutlet weak var walletImage: CoinIconWithProgressBar!
   
   @IBAction func onOpenButtonPress(_ sender: Any) {
     onItemPress(["index": row!])
   }
   
+  var onRequestExpire: RCTBubblingEventBlock = { _ in }
+  
   var timer: Timer? = nil
+  
+  private let timeout = 10.0 // 3600.0
   
   override func awakeFromNib() {
     super.awakeFromNib()
@@ -25,14 +29,24 @@ class TransactionListRequestViewCell: TransactionListBaseCell {
   }
   
   func set(request: TransactionRequest) {
-    let expirationTime = request.requestedAt.addingTimeInterval(3600.0)
+    let expirationTime = request.requestedAt.addingTimeInterval(timeout)
     
     let minutes = expirationTime.minutes(from: Date())
     self.transactionType.text = "Expires in \(minutes) min"
     
     timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true, block: { _ in
-      let minutes = expirationTime.minutes(from: Date())
+      let currentTime = Date()
+      let minutes = expirationTime.minutes(from: currentTime)
+      if minutes < 0 {
+        self.timer?.invalidate()
+        self.onRequestExpire(["index": self.row!])
+      }
       self.transactionType.text = "Expires in \(minutes) min"
+      
+      let progress = CGFloat(
+        (expirationTime.timeIntervalSince1970 - currentTime.timeIntervalSince1970) / self.timeout
+      )
+      self.walletImage.changeProgress(progress)
     })
     
     walletName.text = request.dappName
