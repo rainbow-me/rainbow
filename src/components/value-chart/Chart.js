@@ -41,6 +41,7 @@ let colorIndex = 0;
 export default function Chart() {
   const textInputRef = useRef(null);
   const data = useMemo(() => {
+    colorIndex = 0;
     return dataSwitching.map((sectionsData, index) => {
       return {
         name: index,
