@@ -63,6 +63,25 @@ const SwipeStack = createMaterialTopTabNavigator(
   }
 );
 
+const sendFlowRoutes = {
+  OverlayExpandedAssetScreen: {
+    navigationOptions: overlayExpandedPreset,
+    screen: ExpandedAssetScreenWithData,
+  },
+  SendSheet: {
+    navigationOptions: {
+      ...expandedPreset,
+      onTransitionStart: props => {
+        expandedPreset.onTransitionStart(props);
+        onTransitionStart();
+      },
+    },
+    screen: function SendSheetWrapper(...props) {
+      return <SendSheetWithData {...props} setAppearListener={setListener} />;
+    },
+  },
+};
+
 const MainNavigator = createStackNavigator(
   {
     ConfirmRequest: {
@@ -138,6 +157,7 @@ const MainNavigator = createStackNavigator(
       },
       screen: WalletConnectConfirmationModal,
     },
+    ...(isNativeStackAvailable ? {} : sendFlowRoutes),
   },
   {
     defaultNavigationOptions: {
@@ -164,28 +184,17 @@ const NativeStack = createNativeStackNavigator(
       );
     },
     MainNavigator,
-    SendSheetNavigator: createStackNavigator(
-      {
-        OverlayExpandedAssetScreen: {
-          navigationOptions: overlayExpandedPreset,
-          screen: ExpandedAssetScreenWithData,
-        },
-        SendSheet: function SendSheetWrapper(...props) {
-          return (
-            <SendSheetWithData {...props} setAppearListener={setListener} />
-          );
-        },
-      },
-      {
-        defaultNavigationOptions: {
-          onTransitionEnd,
-          onTransitionStart,
-        },
-        headerMode: 'none',
-        initialRouteName: 'SendSheet',
-        mode: 'modal',
-      }
-    ),
+    SendSheetNavigator: isNativeStackAvailable
+      ? createStackNavigator(sendFlowRoutes, {
+          defaultNavigationOptions: {
+            onTransitionEnd,
+            onTransitionStart,
+          },
+          headerMode: 'none',
+          initialRouteName: 'SendSheet',
+          mode: 'modal',
+        })
+      : () => null,
   },
   {
     defaultNavigationOptions: {
