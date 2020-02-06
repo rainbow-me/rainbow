@@ -421,7 +421,7 @@ PODS:
     - Sentry (~> 4.4.0)
   - RNStoreReview (0.1.5):
     - React
-  - RNSVG (11.0.1):
+  - RNSVG (11.0.0):
     - React
   - SDWebImage (5.4.1):
     - SDWebImage/Core (= 5.4.1)
@@ -745,14 +745,14 @@ SPEC CHECKSUMS:
   RNScreens: 031d10e2b648afc9546f16b6a786d2efc6870310
   RNSentry: 9cfa3717b1e6bf9ad4b124683e78e3b98b01d3af
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
-  RNSVG: 67f1f12dae2cef6ed59a42cae74a6b8f5a9e7b46
+  RNSVG: 82d44baa568873faae1a9929dd30d29db8f06732
   SDWebImage: 29c340dbdcef342bb13125553f4e19ce056b07a7
   SDWebImageWebPCoder: 947093edd1349d820c40afbd9f42acb6cdecd987
   Sentry: 14bdd673870e8cf64932b149fad5bbbf39a9b390
   SRSRadialGradient: 8fdf3adb76320500bc792390ecebc1b82aac54ec
   SSZipArchive: fa16b8cc4cdeceb698e5e5d9f67e9558532fbf23
   TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
-  ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
+  ToolTipMenu: ad9f45c5ef375418275c81a667c2805bcac8692a
   Yoga: b9a1f7189009fa4b6266ee0a63235547326295d2
 
 PODFILE CHECKSUM: 4e11b438fd6bb2763be24d82eeafc6f69c49a2f4
