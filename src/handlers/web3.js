@@ -32,6 +32,12 @@ export const web3SetHttpProvider = network => {
 export const sendRpcCall = async payload =>
   web3Provider.send(payload.method, payload.params);
 
+export const getTransactionByHash = txHash =>
+  sendRpcCall({
+    method: 'eth_getTransactionByHash',
+    params: [txHash],
+  });
+
 /**
  * @desc check if hex string
  * @param {String} value

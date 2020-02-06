@@ -1,4 +1,13 @@
-import { concat, get, includes, isNil, map, remove, uniqBy } from 'lodash';
+import {
+  concat,
+  filter,
+  get,
+  includes,
+  isNil,
+  map,
+  remove,
+  uniqBy,
+} from 'lodash';
 import {
   getAssets,
   getCompoundAssets,
@@ -11,6 +20,8 @@ import {
   saveLocalTransactions,
 } from '../handlers/localstorage/accountLocal';
 import { apiGetTokenOverrides } from '../handlers/tokenOverrides';
+import { getTransactionByHash } from '../handlers/web3';
+import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import { parseAccountAssets, parseAsset } from '../parsers/accounts';
 import { parseCompoundDeposits } from '../parsers/compound';
 import { parseNewTransaction } from '../parsers/newTransaction';
@@ -23,6 +34,8 @@ import {
   uniswapUpdateAssets,
   uniswapUpdateLiquidityTokens,
 } from './uniswap';
+
+let watchPendingTransactionsHandler = null;
 
 // -- Constants --------------------------------------- //
 
@@ -137,11 +150,11 @@ export const transactionsReceived = (message, appended = false) => (
     appended
   );
   dispatch(uniswapRemovePendingApproval(approvalTransactions));
-  saveLocalTransactions(dedupedResults, accountAddress, network);
   dispatch({
     payload: dedupedResults,
     type: DATA_UPDATE_TRANSACTIONS,
   });
+  saveLocalTransactions(dedupedResults, accountAddress, network);
 };
 
 export const transactionsRemoved = message => (dispatch, getState) => {
@@ -155,11 +168,11 @@ export const transactionsRemoved = message => (dispatch, getState) => {
   const removeHashes = map(transactionData, txn => txn.hash);
   remove(transactions, txn => includes(removeHashes, txn.hash));
 
-  saveLocalTransactions(transactions, accountAddress, network);
   dispatch({
     payload: transactions,
     type: DATA_UPDATE_TRANSACTIONS,
   });
+  saveLocalTransactions(transactions, accountAddress, network);
 };
 
 export const addressAssetsReceived = (
@@ -239,17 +252,73 @@ export const dataAddNewTransaction = txDetails => (dispatch, getState) =>
     parseNewTransaction(txDetails, nativeCurrency)
       .then(parsedTransaction => {
         const _transactions = [parsedTransaction, ...transactions];
-        saveLocalTransactions(_transactions, accountAddress, network);
         dispatch({
           payload: _transactions,
           type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
         });
+        saveLocalTransactions(_transactions, accountAddress, network);
+        dispatch(startPendingTransactionWatcher());
         resolve(true);
       })
       .catch(error => {
         reject(error);
       });
   });
+
+export const dataWatchPendingTransactions = () => async (
+  dispatch,
+  getState
+) => {
+  const { transactions } = getState().data;
+  if (!transactions.length) return false;
+  const updatedTransactions = [...transactions];
+  let txStatusesDidChange = false;
+
+  const pending = filter(transactions, ['pending', true]);
+  await Promise.all(
+    pending.map(async (tx, index) => {
+      const txHash = tx.hash.split('-').shift();
+      try {
+        const txObj = await getTransactionByHash(txHash);
+        if (txObj && txObj.blockNumber) {
+          txStatusesDidChange = true;
+          updatedTransactions[index].status = TransactionStatusTypes.sent;
+          updatedTransactions[index].pending = false;
+        }
+        // eslint-disable-next-line no-empty
+      } catch (error) {}
+    })
+  );
+
+  if (txStatusesDidChange) {
+    const { accountAddress, network } = getState().settings;
+    dispatch({
+      payload: updatedTransactions,
+      type: DATA_UPDATE_TRANSACTIONS,
+    });
+    saveLocalTransactions(updatedTransactions, accountAddress, network);
+
+    const pendingTx = updatedTransactions.find(tx => tx.pending);
+    if (!pendingTx) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+const startPendingTransactionWatcher = () => async dispatch => {
+  watchPendingTransactionsHandler &&
+    clearTimeout(watchPendingTransactionsHandler);
+
+  const done = await dispatch(dataWatchPendingTransactions());
+
+  if (!done) {
+    watchPendingTransactionsHandler = setTimeout(() => {
+      dispatch(startPendingTransactionWatcher());
+    }, 1000);
+  }
+};
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
