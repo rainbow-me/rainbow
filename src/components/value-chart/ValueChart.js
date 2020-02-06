@@ -214,11 +214,9 @@ export default class Chart extends PureComponent {
     this.clockReversed = new Clock();
     this.opacityClock = new Clock();
     this.opacityClockReversed = new Clock();
-    this.loadingClock = new Clock();
     this.loadingValue = new Value(1);
     this.gestureState = new Value(UNDETERMINED);
     this.panGestureState = new Value(UNDETERMINED);
-    this.handle = undefined;
     this.value = new Value(this.props.mode === 'detailed' ? 0 : 1);
     this.opacity = new Value(0);
     this.shouldSpring = new Value(0);
@@ -372,7 +370,7 @@ export default class Chart extends PureComponent {
       let dataIndex = 0;
       for (let j = 0; j < segments.length + 1; j++) {
         segmentColors[j].push(dataIndex);
-        if (segments[j] == data[i].lastPoints[dataIndex]) {
+        if (segments[j] === data[i].lastPoints[dataIndex]) {
           segmentSwitch[j].push(i);
           dataIndex++;
         }
@@ -392,7 +390,7 @@ export default class Chart extends PureComponent {
 
     allSegmentDividers.forEach(function(x) {
       if (
-        segmentsWithDeletedDuplicates.length == 0 ||
+        segmentsWithDeletedDuplicates.length === 0 ||
         segmentsWithDeletedDuplicates.slice(-1)[0] !== x
       )
         segmentsWithDeletedDuplicates.push(x);
@@ -466,25 +464,12 @@ export default class Chart extends PureComponent {
       const animatedPath = concat(
         'M 0 0',
         ...splinePoints[0].flatMap(({ x }, index) => {
-          if (i == 0) {
+          if (i === 0) {
             if (index <= allSegmentDividers[i]) {
               return ['L', x, ' ', add(...allNodes(index))];
             }
-          } else if (i == allSegmentDividers.length) {
-            if (index == allSegmentDividers[i - 1]) {
-              sectionEndPoints.push({
-                index: segments.dividers[i - 1],
-                opacity: this.chartsMulti[segments.dividers[i - 1]],
-                x,
-                y: add(...allNodes(index)),
-              });
-              return ['M', x, ' ', add(...allNodes(index))];
-            }
-            if (index >= allSegmentDividers[i - 1]) {
-              return ['L', x, ' ', add(...allNodes(index))];
-            }
           } else {
-            if (index == allSegmentDividers[i - 1]) {
+            if (index === allSegmentDividers[i - 1]) {
               sectionEndPoints.push({
                 index: segments.dividers[i - 1],
                 opacity: this.chartsMulti[segments.dividers[i - 1]],
@@ -493,11 +478,17 @@ export default class Chart extends PureComponent {
               });
               return ['M', x, ' ', add(...allNodes(index))];
             }
-            if (
-              index >= allSegmentDividers[i - 1] &&
-              index <= allSegmentDividers[i]
-            ) {
-              return ['L', x, ' ', add(...allNodes(index))];
+            if (i === allSegmentDividers.length) {
+              if (index >= allSegmentDividers[i - 1]) {
+                return ['L', x, ' ', add(...allNodes(index))];
+              }
+            } else {
+              if (
+                index >= allSegmentDividers[i - 1] &&
+                index <= allSegmentDividers[i]
+              ) {
+                return ['L', x, ' ', add(...allNodes(index))];
+              }
             }
           }
         })
