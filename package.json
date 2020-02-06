@@ -132,7 +132,7 @@
     "react-native-version-number": "^0.3.6",
     "react-navigation": "4.0.10",
     "react-navigation-hooks": "^1.1.0",
-    "react-navigation-stack": "2.0.15",
+    "react-navigation-stack": "2.1.1",
     "react-navigation-tabs": "2.6.2",
     "react-navigation-tabs-v1": "1.2.0",
     "react-primitives": "^0.8.0",
