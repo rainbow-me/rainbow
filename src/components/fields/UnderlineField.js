@@ -79,8 +79,9 @@ export default class UnderlineField extends PureComponent {
 
     this.setState({ isFocused: false });
 
-    if (this.props.onBlur) this.props.onBlur(...props);
-    store.dispatch(setSelectedInputId(null));
+    if (this.props.onBlur) {
+      this.props.onBlur(...props);
+    }
   };
 
   onChange = event => {

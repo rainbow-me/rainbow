@@ -20,8 +20,8 @@ const exchangeStyleInterpolator = ({
   });
 
   const translateY = current.interpolate({
-    inputRange: [0, 1],
-    outputRange: [screen.height, 0],
+    inputRange: [-1, 0, 1, 2],
+    outputRange: [screen.height, screen.height, 0, 0],
   });
 
   return {
@@ -34,23 +34,22 @@ const exchangeStyleInterpolator = ({
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.4,
       shadowRadius: 25,
-      // Translation for the animation of the current card
     },
   };
 };
 
-const expandStyleInterpolator = ({
+const expandStyleInterpolator = targetOpacity => ({
   current: { progress: current },
   layouts: { screen },
 }) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, 0.7, 0.7],
+    outputRange: [0, 0, targetOpacity, targetOpacity],
   });
 
   const translateY = current.interpolate({
-    inputRange: [0, 1],
-    outputRange: [screen.height, 0],
+    inputRange: [0, 1, 2],
+    outputRange: [screen.height, 0, -screen.height / 3],
   });
 
   return {
@@ -160,7 +159,7 @@ export const overlayExpandedPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: expandStyleInterpolator,
+  cardStyleInterpolator: expandStyleInterpolator(0.4),
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
@@ -170,8 +169,8 @@ export const overlayExpandedPreset = {
 export const expandedPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
-  cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: expandStyleInterpolator,
+  cardStyle: { backgroundColor: 'transparent', overflow: 'visible' },
+  cardStyleInterpolator: expandStyleInterpolator(0.7),
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
