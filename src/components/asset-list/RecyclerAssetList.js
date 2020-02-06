@@ -714,13 +714,13 @@ class RecyclerAssetList extends Component {
     }
 
     if (
-      (contentSize.height - layoutMeasurement.height >= offsetY &&
+      ((contentSize.height - layoutMeasurement.height >= offsetY &&
         offsetY >= 0) ||
-      (offsetY < reloadHeightOffsetTop && offsetY > reloadHeightOffsetBottom)
+        (offsetY < reloadHeightOffsetTop &&
+          offsetY > reloadHeightOffsetBottom)) &&
+      this.props.scrollViewTracker
     ) {
-      if (this.props.scrollViewTracker) {
-        this.props.scrollViewTracker.setValue(offsetY);
-      }
+      this.props.scrollViewTracker.setValue(offsetY);
     }
   };
 
