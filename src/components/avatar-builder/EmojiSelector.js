@@ -365,8 +365,15 @@ export default class EmojiSelector extends PureComponent {
     }
   };
 
+  handleListRef = ref => {
+    this.rlv = ref;
+  };
+
+  svRef = React.createRef();
+
   scrollToOffset = (position, animated) => {
-    this.svRef.scrollToOffset(0, position, animated);
+    this.rlv.scrollToOffset(0, position, animated);
+    this.svRef.current.scrollTo({ y: position, x: 0 }, animated);
   };
 
   prerenderEmojis(emojisRows) {
@@ -423,7 +430,6 @@ export default class EmojiSelector extends PureComponent {
   };
 
   panRef = React.createRef();
-  svRef = React.createRef();
 
   render() {
     const {
