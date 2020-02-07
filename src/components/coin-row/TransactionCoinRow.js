@@ -29,7 +29,9 @@ const rowRenderPropTypes = {
 
 const BottomRow = ({ name, native, status, type }) => {
   const isFailed = status === TransactionStatusTypes.failed;
-  const isReceived = status === TransactionStatusTypes.received;
+  const isReceived =
+    status === TransactionStatusTypes.received ||
+    status === TransactionStatusTypes.purchased;
   const isSent = status === TransactionStatusTypes.sent;
   const isSwapped =
     status === TransactionStatusTypes.sent && type === TransactionTypes.trade;

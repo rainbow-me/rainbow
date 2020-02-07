@@ -15,6 +15,9 @@ const StatusProps = {
     name: 'closeCircled',
     style: position.maxSizeAsObject(12),
   },
+  [TransactionStatusTypes.purchased]: {
+    name: 'arrow',
+  },
   [TransactionStatusTypes.received]: {
     name: 'arrow',
   },
@@ -33,11 +36,14 @@ const StatusProps = {
 
 const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
   const isTrade = type === transactionTypes.trade;
+  const isPurchase = type === transactionTypes.purchase;
 
   let statusColor = colors.blueGreyMediumLight;
   if (pending) {
     statusColor = colors.primaryBlue;
   } else if (isTrade && status === TransactionStatusTypes.received) {
+    statusColor = colors.dodgerBlue;
+  } else if (isPurchase && status === TransactionStatusTypes.purchased) {
     statusColor = colors.dodgerBlue;
   }
 
