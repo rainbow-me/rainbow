@@ -91,8 +91,7 @@ const initialCurrencyIndex = 0;
 const AddCashForm = ({
   accountAddress,
   assets,
-  dataAddNewTransaction,
-  // limitAnnually,
+  dataAddNewPurchaseTransaction,
   limitDaily,
   transferHash,
   setOrderStatus,
@@ -102,23 +101,45 @@ const AddCashForm = ({
   const [scaleAnim, setScaleAnim] = useState(1);
   const [shakeAnim, setShakeAnim] = useState(0);
   const [text, setText] = useState(null);
+  const [completedPaymentResponse, setCompletedPaymentResponse] = useState(
+    false
+  );
   const [destCurrency, setDestCurrency] = useState(
     currencies[initialCurrencyIndex]
   );
 
-  const wyreOrderStatus = async orderId => {
+  const wyreOrderStatus = async (orderId, paymentResponse) => {
     try {
+      if (!completedPaymentResponse && isEmpty(orderId)) {
+        paymentResponse.complete('failure');
+        setCompletedPaymentResponse(true);
+      }
       const { orderStatus, transferId } = await trackWyreOrder(orderId);
       setOrderStatus(orderStatus);
+      if (
+        !completedPaymentResponse &&
+        orderStatus === WYRE_ORDER_STATUS_TYPES.failed
+      ) {
+        paymentResponse.complete('failed');
+        setCompletedPaymentResponse(true);
+      }
+      if (
+        !completedPaymentResponse &&
+        (orderStatus === WYRE_ORDER_STATUS_TYPES.pending ||
+          orderStatus === WYRE_ORDER_STATUS_TYPES.success)
+      ) {
+        paymentResponse.complete('success');
+        setCompletedPaymentResponse(true);
+      }
       if (transferId) {
         wyreTransferHash(transferId);
       } else {
         if (orderStatus !== WYRE_ORDER_STATUS_TYPES.failed) {
-          setTimeout(() => wyreOrderStatus(orderId), 1000);
+          setTimeout(() => wyreOrderStatus(orderId, paymentResponse), 1000);
         }
       }
     } catch (error) {
-      setTimeout(() => wyreOrderStatus(orderId), 1000);
+      setTimeout(() => wyreOrderStatus(orderId, paymentResponse), 1000);
     }
   };
 
@@ -151,8 +172,7 @@ const AddCashForm = ({
           to: accountAddress,
           type: TransactionTypes.purchase,
         };
-        dataAddNewTransaction(txDetails);
-        // TODO JIN save the transferHash into local storage
+        dataAddNewPurchaseTransaction(txDetails);
         wyreTransferStatus(transferId);
       }
     } catch (error) {
@@ -303,8 +323,7 @@ const AddCashForm = ({
 AddCashForm.propTypes = {
   accountAddress: PropTypes.string,
   assets: PropTypes.array,
-  dataAddNewTransaction: PropTypes.func,
-  // limitAnnually: PropTypes.number,
+  dataAddNewPurchaseTransaction: PropTypes.func,
   limitDaily: PropTypes.number,
 };
 

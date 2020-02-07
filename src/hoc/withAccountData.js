@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { compose, withProps } from 'recompact';
-import { dataAddNewTransaction } from '../redux/data';
+import { dataAddNewPurchaseTransaction } from '../redux/data';
 import { sortAssetsByNativeAmountSelector } from './assetSelectors';
 
 const mapStateToProps = ({
@@ -19,7 +19,7 @@ const sortAssets = state => sortAssetsByNativeAmountSelector(state);
 export default Component =>
   compose(
     connect(mapStateToProps, {
-      dataAddNewTransaction,
+      dataAddNewPurchaseTransaction,
     }),
     withProps(sortAssets)
   )(Component);

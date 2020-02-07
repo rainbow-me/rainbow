@@ -10,6 +10,7 @@ import {
 const assetPricesFromUniswapVersion = '0.1.0';
 const assetsVersion = '0.2.0';
 const compoundAssetsVersion = '0.1.0';
+const purchaseTransactionsVersion = '0.1.0';
 const transactionsVersion = '0.2.2';
 const uniqueTokensVersion = '0.2.0';
 
@@ -19,6 +20,7 @@ const ASSETS = 'assets';
 const COMPOUND_ASSETS = 'compoundAssets';
 const OPEN_FAMILIES = 'openFamilies';
 const OPEN_INVESTMENT_CARDS = 'openInvestmentCards';
+const PURCHASE_TRANSACTIONS = 'purchaseTransactions';
 const SMALL_BALANCE_TOGGLE = 'smallBalanceToggle';
 const TRANSACTIONS = 'transactions';
 const UNIQUE_TOKENS = 'uniquetokens';
@@ -132,6 +134,49 @@ export const saveCompoundAssets = (compoundAssets, accountAddress, network) =>
  */
 export const removeCompoundAssets = (accountAddress, network) =>
   removeAccountLocal(COMPOUND_ASSETS, accountAddress, network);
+
+/**
+ * @desc get purchase transactions
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getPurchaseTransactions = (accountAddress, network) =>
+  getAccountLocal(
+    PURCHASE_TRANSACTIONS,
+    accountAddress,
+    network,
+    [],
+    purchaseTransactionsVersion
+  );
+
+/**
+ * @desc save purchase transactions
+ * @param  {String}   [address]
+ * @param  {Array}   [purchaseTransactions]
+ * @param  {String}   [network]
+ */
+export const savePurchaseTransactions = (
+  purchaseTransactions,
+  accountAddress,
+  network
+) =>
+  saveAccountLocal(
+    PURCHASE_TRANSACTIONS,
+    purchaseTransactions,
+    accountAddress,
+    network,
+    purchaseTransactionsVersion
+  );
+
+/**
+ * @desc remove purchase transactions
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const removePurchaseTransactions = (accountAddress, network) =>
+  removeAccountLocal(PURCHASE_TRANSACTIONS, accountAddress, network);
 
 /**
  * @desc get transactions
