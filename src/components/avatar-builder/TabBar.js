@@ -5,7 +5,7 @@ import { Icon } from '../icons';
 import { Categories } from './EmojiSelector';
 import LinearGradient from 'react-native-linear-gradient';
 
-const TabBar = ({ categoryKeys, activeCategory, onPress }) => {
+export default const TabBar = ({ categoryKeys, activeCategory, onPress }) => {
   return categoryKeys.map(c => {
     const category = Categories[c];
     if (c !== 'all')
@@ -49,5 +49,3 @@ const TabBar = ({ categoryKeys, activeCategory, onPress }) => {
       );
   });
 };
-
-export default TabBar;
