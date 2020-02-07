@@ -1,6 +1,5 @@
 import { isNil } from 'lodash';
-import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { withNavigation } from 'react-navigation';
@@ -12,7 +11,7 @@ import {
   AddCashStatus,
 } from '../components/add-cash';
 import { Column } from '../components/layout';
-import { withTransitionProps, withWyre } from '../hoc';
+import { withTransitionProps } from '../hoc';
 import { borders, colors } from '../styles';
 import { deviceUtils } from '../utils';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
@@ -47,15 +46,10 @@ const SheetContainer = isNativeStackAvailable
       top: ${statusBarHeight};
     `;
 
-const AddCashSheet = ({
-  orderStatus,
-  transferHash,
-  transferStatus,
-  wyreClearState,
-}) => {
-  useEffect(() => {
-    return () => wyreClearState();
-  }, [wyreClearState]);
+const AddCashSheet = () => {
+  const [orderStatus, setOrderStatus] = useState(null);
+  const [transferHash, setTransferHash] = useState(null);
+  const [transferStatus, setTransferStatus] = useState(null);
 
   return (
     <SheetContainer>
@@ -75,6 +69,10 @@ const AddCashSheet = ({
           <AddCashForm
             limitDaily={cashLimitDaily}
             limitAnnually={cashLimitAnnually}
+            transferHash={transferHash}
+            setOrderStatus={setOrderStatus}
+            setTransferHash={setTransferHash}
+            setTransferStatus={setTransferStatus}
           />
         )}
       </Container>
@@ -82,15 +80,7 @@ const AddCashSheet = ({
   );
 };
 
-AddCashSheet.propTypes = {
-  orderStatus: PropTypes.string,
-  transferHash: PropTypes.string,
-  transferStatus: PropTypes.string,
-  wyreClearState: PropTypes.func,
-};
-
 export default compose(
-  withWyre,
   withNavigation,
   withTransitionProps,
   withProps(({ transitionProps: { isTransitioning } }) => ({
