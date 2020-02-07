@@ -18,5 +18,6 @@ RCT_EXPORT_VIEW_PROPERTY(onItemPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onReceivePress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onAvatarPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onCopyAddressPress, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(isAvatarPickerAvailable, BOOL)
 
 @end

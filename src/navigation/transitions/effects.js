@@ -149,28 +149,6 @@ const closeSpec = {
   },
 };
 
-// const emojiCloseSpec = {
-//   animation: 'spring',
-//   config: SpringUtils.makeConfigFromBouncinessAndSpeed({
-//     ...SpringUtils.makeDefaultConfig(),
-//     bounciness: 6,
-//     mass: 1,
-//     overshootClamping: true,
-//     speed: 40,
-//   }),
-// };
-
-// const emojiOpenSpec = {
-//   animation: 'spring',
-//   config: SpringUtils.makeConfigFromBouncinessAndSpeed({
-//     ...SpringUtils.makeDefaultConfig(),
-//     bounciness: 6,
-//     mass: 1,
-//     overshootClamping: false,
-//     speed: 28,
-//   }),
-// };
-
 const openSpec = {
   animation: 'spring',
   config: {

@@ -18,6 +18,15 @@ class TransactionListView: UIView {
   @objc lazy var onAvatarPress: RCTBubblingEventBlock = { _ in }
   @objc lazy var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
   @objc var duration: TimeInterval = 0.15
+  @objc var isAvatarPickerAvailable: Bool = true {
+    didSet {
+      if isAvatarPickerAvailable {
+        header.avatarView.isHidden = true
+      } else {
+        header.accountView.isHidden = true
+      }
+    }
+  }
   @objc var scaleTo: CGFloat = 0.97
   @objc var enableHapticFeedback: Bool = true
   @objc var hapticType: String = "selection"
@@ -124,7 +133,6 @@ class TransactionListView: UIView {
     
     headerSeparator.backgroundColor = UIColor(red:0.40, green:0.42, blue:0.45, alpha:0.05)
     tableView.tableHeaderView = header
-    
     addSubview(tableView)
   }
   

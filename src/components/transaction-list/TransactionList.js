@@ -3,6 +3,7 @@ import { compose, withHandlers, withState } from 'recompact';
 import { requireNativeComponent, Clipboard, Linking, View } from 'react-native';
 import { FloatingEmojis } from '../floating-emojis';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import { isAvatarPickerAvailable } from '../../config/experimental';
 import {
   withAccountInfo,
   withAccountSettings,
@@ -34,6 +35,7 @@ class TransactionList extends React.PureComponent {
           onCopyAddressPress={this.props.onCopyAddressPress}
           onItemPress={this.props.onItemPress}
           style={this.props.style}
+          isAvatarPickerAvailable={isAvatarPickerAvailable}
         />
         <FloatingEmojis
           style={{

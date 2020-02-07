@@ -162,7 +162,6 @@ export default Component =>
           const { isImported, isNew, walletAddress } = await walletInit(
             seedPhrase
           );
-          console.log(walletAddress);
           const info = await getAccountInfo(walletAddress, ownProps.network);
           if (info.name && info.color) {
             store.dispatch(settingsUpdateAccountName(info.name));

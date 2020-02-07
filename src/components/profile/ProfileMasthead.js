@@ -2,9 +2,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Clipboard, View, Text } from 'react-native';
 import { compose, withHandlers, withState } from 'recompact';
+import FastImage from 'react-native-fast-image';
 import GraphemeSplitter from 'grapheme-splitter';
 import styled from 'styled-components/primitives';
-import { margin, colors } from '../../styles';
+import AvatarImageSource from '../../assets/avatar.png';
+import { margin, colors, borders } from '../../styles';
 import { abbreviations } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import CopyTooltip from '../copy-tooltip';
@@ -13,6 +15,7 @@ import { Centered, Column, RowWithMargins } from '../layout';
 import { FloatingEmojis } from '../floating-emojis';
 import { TruncatedAddress } from '../text';
 import ProfileAction from './ProfileAction';
+import { isAvatarPickerAvailable } from '../../config/experimental';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
@@ -61,17 +64,27 @@ const ProfileMasthead = ({
 
   return (
     <Container>
-      <ButtonPressAnimation
-        hapticType="impactMedium"
-        onPress={onPressAvatar}
-        scaleTo={0.82}
-      >
-        <AvatarCircle style={{ backgroundColor: colors.avatarColor[color] }}>
-          <FirstLetter>
-            {new GraphemeSplitter().splitGraphemes(name)[0]}
-          </FirstLetter>
-        </AvatarCircle>
-      </ButtonPressAnimation>
+      {isAvatarPickerAvailable ? (
+        <ButtonPressAnimation
+          hapticType="impactMedium"
+          onPress={onPressAvatar}
+          scaleTo={0.82}
+        >
+          <AvatarCircle style={{ backgroundColor: colors.avatarColor[color] }}>
+            <FirstLetter>
+              {new GraphemeSplitter().splitGraphemes(name)[0]}
+            </FirstLetter>
+          </AvatarCircle>
+        </ButtonPressAnimation>
+      ) : (
+        <FastImage
+          source={AvatarImageSource}
+          style={{
+            ...borders.buildCircleAsObject(85),
+            marginBottom: 3,
+          }}
+        />
+      )}
 
       <CopyTooltip textToCopy={accountAddress} tooltipText="Copy Address">
         <AddressAbbreviation address={accountAddress} />

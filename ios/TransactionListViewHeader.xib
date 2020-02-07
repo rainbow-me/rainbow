@@ -13,6 +13,10 @@
             <rect key="frame" x="0.0" y="0.0" width="340" height="189"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" id="FtZ-Ws-R6l">
+                    <rect key="frame" x="129" y="20" width="85" height="85"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
+                </imageView>
                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="D2U-hh-YBz">
                     <rect key="frame" x="35" y="138" width="273" height="51"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
@@ -69,6 +73,7 @@
                 <outlet property="accountAddress" destination="LxS-BQ-P6T" id="8DP-PZ-Bwv"/>
                 <outlet property="accountName" destination="ocF-Nb-nBA" id="BwB-OR-r28"/>
                 <outlet property="accountView" destination="Hor-dz-ni1" id="cir-Qv-c3R"/>
+                <outlet property="avatarView" destination="FtZ-Ws-R6l" id="Bpb-UI-1m8"/>
                 <outlet property="copyAddress" destination="a0n-Oe-SxC" id="zrO-dh-wBT"/>
                 <outlet property="receive" destination="bT8-DB-DfA" id="fl9-Xt-Cih"/>
             </connections>
@@ -76,6 +81,7 @@
         </view>
     </objects>
     <resources>
+        <image name="avatar" width="255" height="255"/>
         <image name="copy" width="16" height="16"/>
         <image name="receive" width="16" height="16"/>
     </resources>
