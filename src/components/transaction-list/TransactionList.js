@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { compose, withHandlers, withState } from 'recompact';
 import { requireNativeComponent, Clipboard, Linking, View } from 'react-native';
 import { FloatingEmojis } from '../floating-emojis';
@@ -9,6 +10,7 @@ import {
   withRequests,
   withContacts,
 } from '../../hoc';
+import { removeRequest } from '../../redux/requests';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { colors } from '../../styles';
 import { abbreviations } from '../../utils';
@@ -55,6 +57,7 @@ class TransactionList extends React.PureComponent {
 }
 
 export default compose(
+  connect(null, { removeExpiredRequest: removeRequest }),
   withAccountSettings,
   withAccountTransactions,
   withRequests,
@@ -82,10 +85,10 @@ export default compose(
       });
       return;
     },
-    onRequestExpire: ({ requests, navigation }) => e => {
+    onRequestExpire: ({ requests, removeExpiredRequest }) => e => {
       const { index } = e.nativeEvent;
       const item = requests[index];
-      console.log(`item ${JSON.stringify(item)} has expired`);
+      removeExpiredRequest(item.requestId);
     },
     onTransactionPress: ({ transactions, contacts, navigation }) => e => {
       const { index } = e.nativeEvent;
