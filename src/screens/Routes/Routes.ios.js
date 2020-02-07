@@ -3,9 +3,9 @@ import { get, omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { createAppContainer } from 'react-navigation';
-import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
-import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
-
+import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
+// eslint-disable-next-line import/no-unresolved
+import { enableScreens } from 'react-native-screens';
 import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
 import { createStackNavigator } from 'react-navigation-stack';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
@@ -34,6 +34,8 @@ import {
   overlayExpandedPreset,
 } from '../../navigation/transitions/effects';
 
+enableScreens();
+
 const onTransitionEnd = () =>
   store.dispatch(updateTransitionProps({ isTransitioning: false }));
 const onTransitionStart = () =>
@@ -59,8 +61,6 @@ const SwipeStack = createMaterialTopTabNavigator(
     headerMode: 'none',
     initialLayout: deviceUtils.dimensions,
     initialRouteName: 'WalletScreen',
-    pagerComponent: ViewPagerAdapter,
-    swipeEnabled: true,
     tabBarComponent: null,
   }
 );
@@ -110,10 +110,6 @@ const MainNavigator = createStackNavigator(
         //   onTransitionStart();
         // },
       },
-      screen: ExpandedAssetScreenWithData,
-    },
-    OverlayExpandedAssetScreen: {
-      navigationOptions: overlayExpandedPreset,
       screen: ExpandedAssetScreenWithData,
     },
     ReceiveModal: {
@@ -180,9 +176,28 @@ const NativeStack = createNativeStackNavigator(
       );
     },
     MainNavigator,
-    SendSheet: function SendSheetWrapper(...props) {
-      return <SendSheetWithData {...props} setAppearListener={setListener} />;
-    },
+    SendSheetNavigator: createStackNavigator(
+      {
+        OverlayExpandedAssetScreen: {
+          navigationOptions: overlayExpandedPreset,
+          screen: ExpandedAssetScreenWithData,
+        },
+        SendSheet: function SendSheetWrapper(...props) {
+          return (
+            <SendSheetWithData {...props} setAppearListener={setListener} />
+          );
+        },
+      },
+      {
+        defaultNavigationOptions: {
+          onTransitionEnd,
+          onTransitionStart,
+        },
+        headerMode: 'none',
+        initialRouteName: 'SendSheet',
+        mode: 'modal',
+      }
+    ),
   },
   {
     defaultNavigationOptions: {
@@ -256,7 +271,7 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
       }
 
       if (routeName !== prevRouteName) {
-        let paramsToTrack = {};
+        let paramsToTrack = null;
 
         if (
           prevRouteName === 'MainExchangeScreen' &&
