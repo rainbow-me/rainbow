@@ -20,11 +20,8 @@ class TransactionListView: UIView {
   @objc var duration: TimeInterval = 0.15
   @objc var isAvatarPickerAvailable: Bool = true {
     didSet {
-      if isAvatarPickerAvailable {
-        header.avatarView.isHidden = true
-      } else {
-        header.accountView.isHidden = true
-      }
+      header.avatarView.isHidden = isAvatarPickerAvailable
+      header.accountView.isHidden = !isAvatarPickerAvailable
     }
   }
   @objc var scaleTo: CGFloat = 0.97
