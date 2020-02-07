@@ -73,7 +73,7 @@ class TransactionListView: UIView {
   }
   
   @objc func onPressInAvatar(_ sender: UIButton) {
-    header.accountView.animateTapStart(scale: 0.83)
+    header.accountView.animateTapStart(scale: 0.89)
   }
 
   @objc func onPressOutAvatar(_ sender: UIButton) {
