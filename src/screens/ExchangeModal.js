@@ -81,6 +81,7 @@ const isSameAsset = (a, b) => {
 };
 
 const DEFAULT_APPROVAL_ESTIMATION_TIME_IN_MS = 30000; // 30 seconds
+const DEFAULT_NATIVE_INPUT_AMOUNT = 50;
 
 const getNativeTag = field => get(field, '_inputRef._nativeTag');
 
@@ -392,7 +393,6 @@ class ExchangeModal extends Component {
     const isMissingAmounts = !inputAmount && !outputAmount;
 
     if (isMissingAmounts) {
-      const DEFAULT_NATIVE_INPUT_AMOUNT = 50;
       const inputNativePrice = this.getMarketPrice();
       inputAmount = convertAmountFromNativeValue(
         DEFAULT_NATIVE_INPUT_AMOUNT,
