@@ -479,15 +479,11 @@ export default class EmojiSelector extends PureComponent {
                         simultaneousHandlers="Pan2"
                         activeOffsetY={[-5, 5]}
                       >
-                        <View
-                          style={[StyleSheet.absoluteFill, { width: '100%' }]}
-                        >
-                          <ScrollView
-                            {...props}
-                            simultaneousHandlers="Pan1"
-                            id="Pan2"
-                          />
-                        </View>
+                        <ScrollView
+                          {...props}
+                          simultaneousHandlers="Pan1"
+                          id="Pan2"
+                        />
                       </PanGestureHandler>
                     )
                   }
