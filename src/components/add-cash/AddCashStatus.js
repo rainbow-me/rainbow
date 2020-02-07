@@ -5,7 +5,7 @@ import { Centered } from '../../components/layout';
 import {
   WYRE_ORDER_STATUS_TYPES,
   WYRE_TRANSFER_STATUS_TYPES,
-} from '../../redux/wyre';
+} from '../../helpers/wyreStatusTypes';
 
 const AddCashStatus = ({ orderStatus, transferHash, transferStatus }) => {
   console.log('add cash status', orderStatus, transferHash, transferStatus);

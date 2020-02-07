@@ -1,5 +1,5 @@
 import MaskedView from '@react-native-community/masked-view';
-import { isEmpty } from 'lodash';
+import { isEmpty, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, useState } from 'react';
 import { View } from 'react-native';
@@ -9,10 +9,25 @@ import { withNavigation } from 'react-navigation';
 import { compose, withProps } from 'recompact';
 import { ApplePayButton, VirtualKeyboard } from '../../components/add-cash';
 import { Centered, ColumnWithMargins } from '../../components/layout';
-import { requestWyreApplePay } from '../../handlers/wyre';
-import { withAccountAddress, withTransitionProps, withWyre } from '../../hoc';
+import {
+  requestWyreApplePay,
+  trackWyreOrder,
+  trackWyreTransfer,
+} from '../../handlers/wyre';
+import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import TransactionTypes from '../../helpers/transactionTypes';
+import {
+  WYRE_ORDER_STATUS_TYPES,
+  WYRE_TRANSFER_STATUS_TYPES,
+} from '../../helpers/wyreStatusTypes';
+import {
+  withAccountAddress,
+  withAccountData,
+  withTransitionProps,
+} from '../../hoc';
+import { AddCashCurrencies, AddCashCurrencyInfo } from '../../references';
 import { colors, padding } from '../../styles';
-import { deviceUtils, safeAreaInsetValues } from '../../utils';
+import { deviceUtils, ethereumUtils, safeAreaInsetValues } from '../../utils';
 import AddCashSelector from '../../components/add-cash/AddCashSelector';
 import { Text } from '../text';
 
@@ -75,9 +90,14 @@ const initialCurrencyIndex = 0;
 
 const AddCashForm = ({
   accountAddress,
-  limitAnnually,
+  assets,
+  dataAddNewTransaction,
+  // limitAnnually,
   limitDaily,
-  wyreAddOrder,
+  transferHash,
+  setOrderStatus,
+  setTransferHash,
+  setTransferStatus,
 }) => {
   const [scaleAnim, setScaleAnim] = useState(1);
   const [shakeAnim, setShakeAnim] = useState(0);
@@ -85,6 +105,79 @@ const AddCashForm = ({
   const [destCurrency, setDestCurrency] = useState(
     currencies[initialCurrencyIndex]
   );
+
+  const wyreOrderStatus = async orderId => {
+    try {
+      const { orderStatus, transferId } = await trackWyreOrder(orderId);
+      setOrderStatus(orderStatus);
+      if (transferId) {
+        wyreTransferHash(transferId);
+      } else {
+        if (orderStatus !== WYRE_ORDER_STATUS_TYPES.failed) {
+          setTimeout(() => wyreOrderStatus(orderId), 1000);
+        }
+      }
+    } catch (error) {
+      setTimeout(() => wyreOrderStatus(orderId), 1000);
+    }
+  };
+
+  const wyreTransferHash = async transferId => {
+    try {
+      const {
+        destAmount,
+        destCurrency,
+        transferHash,
+        transferStatus,
+      } = await trackWyreTransfer(transferId);
+      setTransferStatus(transferStatus);
+      const destAssetAddress = toLower(AddCashCurrencies[destCurrency]);
+      if (!transferHash) {
+        setTimeout(() => wyreTransferHash(transferId), 1000);
+      } else {
+        setTransferHash(transferHash);
+        let asset = ethereumUtils.getAsset(assets, destAssetAddress);
+        if (!asset) {
+          asset = AddCashCurrencyInfo[destAssetAddress];
+          // TODO JIN fetch the price
+        }
+        const txDetails = {
+          amount: destAmount,
+          asset,
+          from: null,
+          hash: transferHash,
+          nonce: null,
+          status: TransactionStatusTypes.purchasing,
+          to: accountAddress,
+          type: TransactionTypes.purchase,
+        };
+        dataAddNewTransaction(txDetails);
+        // TODO JIN save the transferHash into local storage
+        wyreTransferStatus(transferId);
+      }
+    } catch (error) {
+      setTimeout(() => wyreTransferHash(transferId), 1000);
+    }
+  };
+
+  // TODO JIN kill set timeouts if unmounted
+  const wyreTransferStatus = async transferId => {
+    try {
+      const { transferStatus } = await trackWyreTransfer(transferId);
+      setTransferStatus(transferStatus);
+      if (
+        transferStatus === WYRE_TRANSFER_STATUS_TYPES.success ||
+        transferStatus === WYRE_TRANSFER_STATUS_TYPES.failed
+      ) {
+        setTransferHash(transferHash);
+        setTransferStatus(transferStatus);
+      } else {
+        setTimeout(() => wyreTransferStatus(transferId), 10000);
+      }
+    } catch (error) {
+      setTimeout(() => wyreTransferStatus(transferId), 1000);
+    }
+  };
 
   const onPress = val =>
     setText(prevText => {
@@ -128,7 +221,7 @@ const AddCashForm = ({
     });
 
   const onSubmit = () =>
-    requestWyreApplePay(accountAddress, destCurrency, text, wyreAddOrder);
+    requestWyreApplePay(accountAddress, destCurrency, text, wyreOrderStatus);
 
   const disabled = isEmpty(text) || parseFloat(text) === 0;
 
@@ -209,14 +302,15 @@ const AddCashForm = ({
 
 AddCashForm.propTypes = {
   accountAddress: PropTypes.string,
-  limitAnnually: PropTypes.number,
+  assets: PropTypes.array,
+  dataAddNewTransaction: PropTypes.func,
+  // limitAnnually: PropTypes.number,
   limitDaily: PropTypes.number,
-  wyreAddOrder: PropTypes.func,
 };
 
 export default compose(
+  withAccountData,
   withAccountAddress,
-  withWyre,
   withNavigation,
   withTransitionProps,
   withProps(({ transitionProps: { isTransitioning } }) => ({

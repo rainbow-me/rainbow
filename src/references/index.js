@@ -2,6 +2,24 @@ import { mapKeys, mapValues, toLower } from 'lodash';
 import tokenOverridesFallback from './token-overrides.json';
 import uniswapAssetsFallback from './uniswap-pairs.json';
 
+export const AddCashCurrencies = {
+  DAI: '0x6b175474e89094c44da98b954eedeac495271d0f',
+  ETH: 'eth',
+};
+
+export const AddCashCurrencyInfo = {
+  '0x6b175474e89094c44da98b954eedeac495271d0f': {
+    decimals: 18,
+    name: 'Dai',
+    symbol: 'DAI',
+  },
+  eth: {
+    decimals: 18,
+    name: 'Ethereum',
+    symbol: 'ETH',
+  },
+};
+
 export const DefaultUniswapFavorites = {
   mainnet: [
     // Ethereum
