@@ -384,6 +384,9 @@ export default class EmojiSelector extends PureComponent {
     }
   };
 
+  panRef = React.createRef();
+  svRef = React.createRef();
+
   render() {
     const {
       theme,
@@ -457,39 +460,35 @@ export default class EmojiSelector extends PureComponent {
                 {prerenderEmoji}
               </View>
             ) : null}
-            <View style={styles.container}>
-              <StickyContainer
-                stickyHeaderIndices={[1, 3, 5, 7, 9, 11, 13, 15, 17]}
-                overrideRowRenderer={this.renderStickyItem}
-              >
-                <RecyclerListView
-                  dataProvider={new DataProvider(
-                    this.hasRowChanged
-                  ).cloneWithRows(this.state.allEmojiList)}
-                  layoutProvider={this._layoutProvider}
-                  rowRenderer={this.renderItem}
-                  style={{ width: deviceUtils.dimensions.width }}
-                  renderAheadOffset={10000}
-                  onScroll={this.handleScroll}
-                  ref={this.handleListRef}
-                  externalScrollView={props =>
-                    console.log(props) || (
-                      <PanGestureHandler
-                        id="Pan1"
-                        simultaneousHandlers="Pan2"
-                        activeOffsetY={[-5, 5]}
-                      >
-                        <ScrollView
-                          {...props}
-                          simultaneousHandlers="Pan1"
-                          id="Pan2"
-                        />
-                      </PanGestureHandler>
-                    )
-                  }
-                />
-              </StickyContainer>
-            </View>
+            <PanGestureHandler
+              ref={this.panRef}
+              simultaneousHandlers={this.svRef}
+              activeOffsetY={[-5, 5]}
+            >
+              <View style={styles.container}>
+                <StickyContainer
+                  stickyHeaderIndices={[1, 3, 5, 7, 9, 11, 13, 15, 17]}
+                  overrideRowRenderer={this.renderStickyItem}
+                >
+                  <RecyclerListView
+                    dataProvider={new DataProvider(
+                      this.hasRowChanged
+                    ).cloneWithRows(this.state.allEmojiList)}
+                    layoutProvider={this._layoutProvider}
+                    rowRenderer={this.renderItem}
+                    style={{ width: deviceUtils.dimensions.width }}
+                    renderAheadOffset={10000}
+                    onScroll={this.handleScroll}
+                    ref={this.handleListRef}
+                    scrollViewProps={{
+                      simultaneousHandlers: this.panRef,
+                      ref: this.svRef,
+                    }}
+                    externalScrollView={ScrollView}
+                  />
+                </StickyContainer>
+              </View>
+            </PanGestureHandler>
           </View>
         </TapGestureHandler>
         {showTabs ? (
