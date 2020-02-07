@@ -7,7 +7,7 @@ import { ColumnWithMargins } from '../layout';
 import { SheetHandle } from '../sheet';
 import { Text } from '../text';
 
-const AddCashHeader = ({ limitDaily, limitAnnually }) => (
+const AddCashHeader = ({ limitDaily, limitYearly }) => (
   <ColumnWithMargins
     align="center"
     css={padding(isNativeStackAvailable ? 6 : 8, 0)}
@@ -41,8 +41,8 @@ const AddCashHeader = ({ limitDaily, limitAnnually }) => (
 );
 
 AddCashHeader.propTypes = {
-  limitAnnually: PropTypes.number,
   limitDaily: PropTypes.number,
+  limitYearly: PropTypes.number,
 };
 
 export default withNeverRerender(AddCashHeader);

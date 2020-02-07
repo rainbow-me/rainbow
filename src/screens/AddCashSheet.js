@@ -16,7 +16,7 @@ import { borders, colors } from '../styles';
 import { deviceUtils } from '../utils';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 
-const cashLimitAnnually = 1500;
+const cashLimitYearly = 1500;
 const cashLimitDaily = 250;
 
 const statusBarHeight = getStatusBarHeight(true);
@@ -57,7 +57,7 @@ const AddCashSheet = () => {
       <Container align="center" justify="space-between">
         <AddCashHeader
           limitDaily={cashLimitDaily}
-          limitAnnually={cashLimitAnnually}
+          limitYearly={cashLimitYearly}
         />
         {!isNil(orderStatus) ? (
           <AddCashStatus
@@ -68,7 +68,7 @@ const AddCashSheet = () => {
         ) : (
           <AddCashForm
             limitDaily={cashLimitDaily}
-            limitAnnually={cashLimitAnnually}
+            limitYearly={cashLimitYearly}
             transferHash={transferHash}
             setOrderStatus={setOrderStatus}
             setTransferHash={setTransferHash}

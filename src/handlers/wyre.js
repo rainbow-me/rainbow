@@ -1,7 +1,7 @@
 import { PaymentRequest } from '@rainbow-me/react-native-payments';
 import { captureException } from '@sentry/react-native';
 import axios from 'axios';
-import { get, isEmpty, last, split } from 'lodash';
+import { get, last, split } from 'lodash';
 import {
   RAINBOW_WYRE_MERCHANT_ID,
   WYRE_ACCOUNT_ID,
@@ -92,8 +92,7 @@ export const requestWyreApplePay = (
         destCurrency
       )
         .then(orderId => {
-          paymentResponse.complete(!isEmpty(orderId) ? 'success' : 'failure');
-          trackOrder(orderId);
+          trackOrder(orderId, paymentResponse);
         })
         .catch(error => {
           paymentResponse.complete('failure');
