@@ -16,8 +16,14 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint"
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.{js,jsx,json}": [
+      "eslint --ext '.js,.jsx,.json'",
+      "git add"
+    ]
   },
   "dependencies": {
     "@bankify/react-native-animate-number": "^0.2.1",
@@ -65,6 +71,7 @@
     "i18next": "^17.0.3",
     "immer": "^5.0.0",
     "inherits": "^2.0.3",
+    "lint-staged": "^10.0.7",
     "lodash": "^4.17.15",
     "match-sorter": "^4.0.2",
     "nanoid": "^2.1.6",
@@ -114,7 +121,7 @@
     "react-native-splash-screen": "^3.2.0",
     "react-native-storage": "^1.0.1",
     "react-native-store-review": "^0.1.5",
-    "react-native-svg": "^11.0.1",
+    "react-native-svg": "11.0.0",
     "react-native-tab-view-viewpager-adapter": "^1.0.7",
     "react-native-tab-view": "^2.12.0",
     "react-native-tcp": "^3.3.2",
@@ -124,7 +131,7 @@
     "react-native-version-number": "^0.3.6",
     "react-navigation": "4.0.10",
     "react-navigation-hooks": "^1.1.0",
-    "react-navigation-stack": "2.0.15",
+    "react-navigation-stack": "2.1.1",
     "react-navigation-tabs": "2.6.2",
     "react-navigation-tabs-v1": "1.2.0",
     "react-primitives": "^0.8.0",
