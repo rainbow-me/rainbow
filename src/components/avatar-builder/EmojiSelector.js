@@ -3,6 +3,7 @@
 // eslint-disable-next-line import/extensions
 import emoji from 'emoji-datasource';
 import PropTypes from 'prop-types';
+import { isEmulatorSync } from 'react-native-device-info';
 import React, { PureComponent } from 'react';
 import {
   Dimensions,
@@ -28,7 +29,6 @@ import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContai
 import { deviceUtils } from '../../utils';
 import {
   State,
-  PanGestureHandler,
   TapGestureHandler,
   ScrollView,
 } from 'react-native-gesture-handler';
@@ -413,11 +413,7 @@ export default class EmojiSelector extends PureComponent {
     }
 
     return (
-      <ScrollView
-        {...props}
-        simultaneousHandlers={this.panRef}
-        ref={this.svRef}
-      >
+      <ScrollView {...props}>
         {this.state.isReady ? children : this.prerenderEmojis(prerenderEmoji)}
       </ScrollView>
     );
@@ -428,8 +424,6 @@ export default class EmojiSelector extends PureComponent {
       blockCategories = false;
     }
   };
-
-  panRef = React.createRef();
 
   render() {
     const {
@@ -464,6 +458,9 @@ export default class EmojiSelector extends PureComponent {
             style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}
           >
             {showSearchBar ? Searchbar : null}
+            {isEmulatorSync() ? (
+              <Text> Scrolling might not work perfectly on a simulator</Text>
+            ) : null}
             {!isReady ? (
               <View style={styles.loader} {...other}>
                 <View style={styles.sectionHeaderWrap}>
@@ -472,31 +469,25 @@ export default class EmojiSelector extends PureComponent {
                 {null}
               </View>
             ) : null}
-            <PanGestureHandler
-              ref={this.panRef}
-              simultaneousHandlers={this.svRef}
-              activeOffsetY={[-7, 7]}
-            >
-              <View style={styles.container}>
-                <StickyContainer
-                  stickyHeaderIndices={[1, 3, 5, 7, 9, 11, 13, 15, 17]}
-                  overrideRowRenderer={this.renderStickyItem}
-                >
-                  <ProgressiveListView
-                    dataProvider={new DataProvider(
-                      this.hasRowChanged
-                    ).cloneWithRows(this.state.allEmojiList)}
-                    layoutProvider={this._layoutProvider}
-                    renderAheadOffset={10}
-                    rowRenderer={this.renderItem}
-                    style={{ width: deviceUtils.dimensions.width }}
-                    onScroll={this.handleScroll}
-                    ref={this.handleListRef}
-                    externalScrollView={this.renderScrollView}
-                  />
-                </StickyContainer>
-              </View>
-            </PanGestureHandler>
+            <View style={styles.container}>
+              <StickyContainer
+                stickyHeaderIndices={[1, 3, 5, 7, 9, 11, 13, 15, 17]}
+                overrideRowRenderer={this.renderStickyItem}
+              >
+                <ProgressiveListView
+                  dataProvider={new DataProvider(
+                    this.hasRowChanged
+                  ).cloneWithRows(this.state.allEmojiList)}
+                  layoutProvider={this._layoutProvider}
+                  renderAheadOffset={10}
+                  rowRenderer={this.renderItem}
+                  style={{ width: deviceUtils.dimensions.width }}
+                  onScroll={this.handleScroll}
+                  ref={this.handleListRef}
+                  externalScrollView={this.renderScrollView}
+                />
+              </StickyContainer>
+            </View>
           </View>
         </TapGestureHandler>
         {showTabs ? (
