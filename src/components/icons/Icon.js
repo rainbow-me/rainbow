@@ -4,6 +4,7 @@ import Flex from '../layout/Flex';
 
 import ArrowCircledIcon from './svg/ArrowCircledIcon';
 import ArrowIcon from './svg/ArrowIcon';
+import ArrowBackIcon from './svg/ArrowBack';
 import AvatarIcon from './svg/AvatarIcon';
 import CameraIcon from './svg/CameraIcon';
 import CaretIcon from './svg/CaretIcon';
@@ -17,6 +18,7 @@ import CloseIcon from './svg/CloseIcon';
 import CompassIcon from './svg/CompassIcon';
 import CopyIcon from './svg/CopyIcon';
 import CrosshairIcon from './svg/CrosshairIcon';
+import PlusIcon from './svg/PlusIcon';
 import DotIcon from './svg/DotIcon';
 import DoubleCaretIcon from './svg/DoubleCaretIcon';
 import FaceIdIcon from './svg/FaceIdIcon';
@@ -45,6 +47,7 @@ const Icon = ({ name, ...props }) =>
 
 Icon.IconTypes = {
   arrow: ArrowIcon,
+  arrowBack: ArrowBackIcon,
   arrowCircled: ArrowCircledIcon,
   avatar: AvatarIcon,
   camera: CameraIcon,
@@ -68,6 +71,7 @@ Icon.IconTypes = {
   lock: LockIcon,
   offline: OfflineIcon,
   passcode: PasscodeIcon,
+  plus: PlusIcon,
   progress: ProgressIcon,
   search: SearchIcon,
   send: SendIcon,

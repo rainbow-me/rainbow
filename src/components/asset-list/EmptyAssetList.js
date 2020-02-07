@@ -32,9 +32,10 @@ const EmptyAssetList = ({
           />
         ))}
       </Column>
-      {isWalletEthZero && (
-        <AddFundsInterstitial offsetY={InterstitialOffset * -1} />
-      )}
+      <AddFundsInterstitial
+        isEmpty={isWalletEthZero}
+        offsetY={InterstitialOffset * -1}
+      />
     </Centered>
   </Column>
 );

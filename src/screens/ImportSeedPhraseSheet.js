@@ -66,12 +66,22 @@ const StyledImportButton = styled(
   margin-bottom: 19px;
 `;
 
-const ConfirmImportAlert = onSuccess =>
+const ConfirmImportAlert = (onSuccess, navigation) =>
   Alert({
     buttons: [
       {
-        onPress: onSuccess,
-        text: 'Import Wallet',
+        onPress: () =>
+          navigation.navigate('ExpandedAssetScreen', {
+            actionType: 'Import',
+            address: undefined,
+            asset: [],
+            isCurrentProfile: false,
+            isNewProfile: true,
+            onCloseModal: isCanceled => (isCanceled ? null : onSuccess()),
+            profile: {},
+            type: 'profile_creator',
+          }),
+        text: 'Import As New Wallet',
       },
       {
         style: 'cancel',
@@ -79,8 +89,8 @@ const ConfirmImportAlert = onSuccess =>
       },
     ],
     message:
-      'This will replace your existing wallet.\n\nBefore continuing, please make sure you’ve backed up or emptied it!',
-    title: '🚨 Careful 🚨',
+      'Importing this private key will create new wallet. You can switch between your existing wallets in the menu on the top of profile screen.',
+    title: 'Are you sure you want to import new wallet?',
   });
 
 const ImportButton = ({ disabled, onPress, seedPhrase }) => (
@@ -145,9 +155,16 @@ const ImportSeedPhraseSheet = ({
     [isImporting]
   );
 
-  const onPressImportButton = () => {
+  const onPressImportButton = ({ setIsWalletImporting, navigation }) => {
     if (isSeedPhraseValid && seedPhrase) {
-      return ConfirmImportAlert(() => toggleImporting(true));
+      return ConfirmImportAlert(
+        () =>
+          setTimeout(() => {
+            setIsWalletImporting(true);
+            toggleImporting(true);
+          }, 20),
+        navigation
+      );
     }
 
     if (isClipboardValidSeedPhrase && clipboard) {

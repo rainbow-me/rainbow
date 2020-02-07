@@ -7,6 +7,7 @@ import {
   InvestmentExpandedState,
   TokenExpandedState,
   UniqueTokenExpandedState,
+  ProfileCreator,
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import TouchableBackdrop from '../components/TouchableBackdrop';
@@ -18,6 +19,7 @@ const { bottom: safeAreaBottom, top: safeAreaTop } = safeAreaInsetValues;
 const ScreenTypes = {
   chart: ChartExpandedState,
   contact: AddContactState,
+  profile_creator: ProfileCreator,
   token: TokenExpandedState,
   unique_token: UniqueTokenExpandedState,
   uniswap: InvestmentExpandedState,

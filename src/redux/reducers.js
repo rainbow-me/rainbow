@@ -8,6 +8,7 @@ import gas from './gas';
 import imageDimensionsCache from './imageDimensionsCache';
 import isWalletEmpty from './isWalletEmpty';
 import isWalletEthZero from './isWalletEthZero';
+import isWalletImporting from './isWalletImporting';
 import keyboardHeight from './keyboardHeight';
 import navigation from './navigation';
 import nonce from './nonce';
@@ -29,6 +30,7 @@ export default combineReducers({
   imageDimensionsCache,
   isWalletEmpty,
   isWalletEthZero,
+  isWalletImporting,
   keyboardHeight,
   navigation,
   nonce,

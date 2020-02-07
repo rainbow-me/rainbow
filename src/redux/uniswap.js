@@ -72,6 +72,8 @@ const UNISWAP_UPDATE_LIQUIDITY_TOKENS =
   'uniswap/UNISWAP_UPDATE_LIQUIDITY_TOKENS';
 const UNISWAP_CLEAR_STATE = 'uniswap/UNISWAP_CLEAR_STATE';
 
+let shouldUpdateUniswap = false;
+
 // -- Actions --------------------------------------------------------------- //
 const extractTransactionHash = txn => toLower(txn.hash).split('-')[0];
 const firstItem = value => get(value, '[0]');
@@ -163,8 +165,12 @@ export const uniswapUpdateOutputCurrency = outputCurrency => async dispatch => {
 export const uniswapClearCurrenciesAndReserves = () => dispatch =>
   dispatch({ type: UNISWAP_RESET_CURRENCIES_AND_RESERVES });
 
-export const uniswapClearState = () => (dispatch, getState) => {
-  const { accountAddress, network } = getState().settings;
+export const uniswapClearState = (address = null) => (dispatch, getState) => {
+  let { accountAddress, network } = getState().settings;
+  if (address) {
+    accountAddress = address;
+  }
+  shouldUpdateUniswap = false;
   removeUniswapStorage(accountAddress, network);
   dispatch({ type: UNISWAP_CLEAR_STATE });
 };
@@ -322,12 +328,14 @@ export const uniswapUpdateState = () => (dispatch, getState) =>
     const exchangeContracts = map(liquidityTokens, getAssetCode);
     return getLiquidityInfo(accountAddress, exchangeContracts)
       .then(liquidityInfo => {
-        saveLiquidityInfo(liquidityInfo, accountAddress, network);
-        dispatch({
-          payload: liquidityInfo,
-          type: UNISWAP_UPDATE_SUCCESS,
-        });
-        resolve(true);
+        if (shouldUpdateUniswap) {
+          saveLiquidityInfo(liquidityInfo, accountAddress, network);
+          dispatch({
+            payload: liquidityInfo,
+            type: UNISWAP_UPDATE_SUCCESS,
+          });
+          resolve(true);
+        }
       })
       .catch(error => {
         dispatch({ type: UNISWAP_UPDATE_FAILURE });

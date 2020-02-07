@@ -1,6 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { compose, mapProps, onlyUpdateForKeys, withProps } from 'recompact';
+import {
+  compose,
+  mapProps,
+  onlyUpdateForKeys,
+  withProps,
+  shouldUpdate,
+} from 'recompact';
 import { buildTransactionsSectionsSelector } from '../../helpers/transactions';
 import {
   withAccountSettings,
@@ -56,5 +62,9 @@ export default compose(
     'nativeCurrency',
     'pendingTransactionsCount',
     'sections',
-  ])
+    'header',
+  ]),
+  shouldUpdate((props, nextProps) => {
+    return nextProps.shouldUpdate;
+  })
 )(ActivityList);

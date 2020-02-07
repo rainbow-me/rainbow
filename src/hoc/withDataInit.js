@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
 import { getIsWalletEmpty } from '../handlers/localstorage/accountLocal';
 import { hasEthBalance } from '../handlers/web3';
-import { walletInit } from '../model/wallet';
 import {
   dataClearState,
   dataLoadState,
@@ -26,6 +25,8 @@ import { requestsLoadState, requestsClearState } from '../redux/requests';
 import {
   settingsLoadState,
   settingsUpdateAccountAddress,
+  settingsUpdateAccountColor,
+  settingsUpdateAccountName,
 } from '../redux/settings';
 import {
   uniswapLoadState,
@@ -38,6 +39,14 @@ import {
   uniqueTokensLoadState,
   uniqueTokensRefreshState,
 } from '../redux/uniqueTokens';
+
+import {
+  walletInit,
+  loadUserDataForAddress,
+  createWallet,
+  saveWalletDetails,
+  saveName,
+} from '../model/wallet';
 import {
   walletConnectLoadState,
   walletConnectClearState,
@@ -45,6 +54,42 @@ import {
 
 import { promiseUtils, sentryUtils } from '../utils';
 import withHideSplashScreen from './withHideSplashScreen';
+
+const walletInitialization = async (
+  isImported,
+  isNew,
+  walletAddress,
+  ownProps
+) => {
+  if (isNil(walletAddress)) {
+    Alert.alert(
+      'Import failed due to an invalid private key. Please try again.'
+    );
+    return null;
+  }
+  if (!(isImported || isNew)) {
+    await ownProps.loadAccountData();
+  }
+  if (isImported) {
+    await ownProps.clearAccountData();
+  }
+  ownProps.settingsUpdateAccountAddress(walletAddress);
+  if (isNew) {
+    ownProps.setIsWalletEthZero(true);
+  } else if (isImported) {
+    await ownProps.checkEthBalance(walletAddress);
+  } else {
+    const isWalletEmpty = await getIsWalletEmpty(walletAddress, 'mainnet');
+    if (isNil(isWalletEmpty)) {
+      ownProps.checkEthBalance(walletAddress);
+    } else {
+      ownProps.setIsWalletEthZero(isWalletEmpty);
+    }
+  }
+  ownProps.onHideSplashScreen();
+  ownProps.initializeAccountData();
+  return walletAddress;
+};
 
 export default Component =>
   compose(
@@ -65,6 +110,8 @@ export default Component =>
       setIsWalletEthZero,
       settingsLoadState,
       settingsUpdateAccountAddress,
+      settingsUpdateAccountColor,
+      settingsUpdateAccountName,
       uniqueTokensClearState,
       uniqueTokensLoadState,
       uniqueTokensRefreshState,
@@ -109,6 +156,7 @@ export default Component =>
       },
       initializeAccountData: ownProps => async () => {
         try {
+          // TODO EXPLORE THIS FUNCTION
           // await ownProps.dataTokenOverridesInit();
           sentryUtils.addInfoBreadcrumb('Initialize account data');
           ownProps.explorerInit();
@@ -150,45 +198,75 @@ export default Component =>
       },
     }),
     withHandlers({
+      createNewWallet: ownProps => async () => {
+        try {
+          const name = ownProps.accountName || 'My Wallet';
+          const color = ownProps.accountColor || 0;
+          const walletAddress = await createWallet(false, name, color);
+          await ownProps.settingsUpdateAccountName(name);
+          ownProps.settingsUpdateAccountColor(color);
+
+          await ownProps.uniqueTokensLoadState(walletAddress);
+          await ownProps.dataLoadState(walletAddress);
+          await ownProps.uniswapLoadState(walletAddress);
+
+          return await walletInitialization(
+            false,
+            true,
+            walletAddress,
+            ownProps
+          );
+        } catch (error) {
+          ownProps.onHideSplashScreen();
+          Alert.alert('Something went wrong during wallet creation process.');
+          return null;
+        }
+      },
+      deleteWallet: ownProps => async deleteAddress => {
+        try {
+          await ownProps.dataClearState(deleteAddress, true);
+          await ownProps.uniqueTokensClearState(deleteAddress);
+          await ownProps.uniswapClearState(deleteAddress);
+
+          return true;
+        } catch (error) {
+          ownProps.onHideSplashScreen();
+          return null;
+        }
+      },
       initializeWallet: ownProps => async seedPhrase => {
         try {
           sentryUtils.addInfoBreadcrumb('Start wallet setup');
           const { isImported, isNew, walletAddress } = await walletInit(
-            seedPhrase
+            seedPhrase,
+            ownProps.accountName,
+            ownProps.accountColor
           );
-          if (isNil(walletAddress)) {
-            Alert.alert(
-              'Import failed due to an invalid private key. Please try again.'
-            );
-            return null;
-          }
-          if (isImported) {
-            await ownProps.clearAccountData();
-          }
-          ownProps.settingsUpdateAccountAddress(walletAddress);
-          if (isNew) {
-            ownProps.setIsWalletEthZero(true);
-          } else if (isImported) {
-            try {
-              await ownProps.checkEthBalance(walletAddress);
-              // eslint-disable-next-line no-empty
-            } catch (error) {}
-          } else {
-            const isWalletEmpty = await getIsWalletEmpty(
-              walletAddress,
-              'mainnet'
-            );
-            if (isNil(isWalletEmpty)) {
-              ownProps.checkEthBalance(walletAddress);
-            } else {
-              ownProps.setIsWalletEthZero(isWalletEmpty);
+
+          let name = ownProps.accountName ? ownProps.accountName : 'My Wallet';
+          let color = ownProps.accountColor ? ownProps.accountColor : 0;
+          // await ownProps.openStateSettingsLoadState();
+          if (!ownProps.accountName && !ownProps.accountColor) {
+            const localData = await loadUserDataForAddress(walletAddress);
+            if (localData) {
+              name = localData.searchedName;
+              color = localData.searchedColor;
             }
-            await ownProps.loadAccountData();
           }
-          ownProps.onHideSplashScreen();
-          sentryUtils.addInfoBreadcrumb('Hide splash screen');
-          ownProps.initializeAccountData();
-          return walletAddress;
+
+          await ownProps.settingsUpdateAccountName(name);
+          ownProps.settingsUpdateAccountColor(color);
+
+          await ownProps.uniqueTokensLoadState(walletAddress);
+          await ownProps.dataLoadState(walletAddress);
+          await ownProps.uniswapLoadState(walletAddress);
+
+          return await walletInitialization(
+            isImported,
+            isNew,
+            walletAddress,
+            ownProps
+          );
         } catch (error) {
           // TODO specify error states more granular
           ownProps.onHideSplashScreen();
@@ -196,6 +274,39 @@ export default Component =>
           Alert.alert(
             'Import failed due to an invalid private key. Please try again.'
           );
+          return null;
+        }
+      },
+      initializeWalletWithProfile: ownProps => async (
+        isImported,
+        isNew,
+        profile
+      ) => {
+        try {
+          saveWalletDetails(
+            profile.name,
+            profile.color,
+            profile.seedPhrase,
+            profile.privateKey,
+            profile.address
+          );
+          await ownProps.settingsUpdateAccountName(profile.name);
+          ownProps.settingsUpdateAccountColor(profile.color);
+          saveName(profile.name);
+
+          await ownProps.uniqueTokensLoadState(profile.address);
+          await ownProps.dataLoadState(profile.address);
+          await ownProps.uniswapLoadState(profile.address);
+
+          return await walletInitialization(
+            isImported,
+            isNew,
+            profile.address,
+            ownProps
+          );
+        } catch (error) {
+          // TODO specify error states more granular
+          ownProps.onHideSplashScreen();
           return null;
         }
       },

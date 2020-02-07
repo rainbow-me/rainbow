@@ -13,6 +13,7 @@ import { ExchangeModalNavigator, Navigation } from '../../navigation';
 import { updateTransitionProps } from '../../redux/navigation';
 import store from '../../redux/store';
 import { deviceUtils } from '../../utils';
+import ChangeWalletModal from '../ChangeWalletModal';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
 import ProfileScreenWithData from '../ProfileScreenWithData';
@@ -29,6 +30,7 @@ import {
   expandedPreset,
   sheetPreset,
   backgroundPreset,
+  expandedPresetReverse,
   overlayExpandedPreset,
 } from '../../navigation/transitions/effects';
 
@@ -65,6 +67,16 @@ const SwipeStack = createMaterialTopTabNavigator(
 
 const MainNavigator = createStackNavigator(
   {
+    ChangeWalletModal: {
+      navigationOptions: {
+        ...expandedPresetReverse,
+        onTransitionStart: props => {
+          expandedPresetReverse.onTransitionStart(props);
+          onTransitionStart();
+        },
+      },
+      screen: ChangeWalletModal,
+    },
     ConfirmRequest: {
       navigationOptions: {
         ...sheetPreset,

@@ -13,6 +13,7 @@ const ModalElement = styled(Column)`
   flex-shrink: 0;
   height: ${({ height }) => height};
   width: 100%;
+  margin-top: ${({ fixedToTop }) => (fixedToTop ? 91 : 0)};
 `;
 
 const Modal = ({
@@ -23,6 +24,7 @@ const Modal = ({
   ...props
 }) => (
   <Centered
+    style={{ justifyContent: props.fixedToTop ? 'flex-start' : 'center' }}
     direction="column"
     height="100%"
     padding={containerPadding}
@@ -36,6 +38,7 @@ const Modal = ({
 
 Modal.propTypes = {
   containerPadding: PropTypes.number.isRequired,
+  fixedToTop: PropTypes.bool,
   height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   onCloseModal: PropTypes.func,
   statusBarStyle: PropTypes.oneOf(['default', 'light-content', 'dark-content']),
@@ -43,6 +46,7 @@ Modal.propTypes = {
 
 Modal.defaultProps = {
   containerPadding: 15,
+  fixedToTop: false,
   height: deviceUtils.dimensions.height - 230,
   onCloseModal: () => null,
   statusBarStyle: 'light-content',

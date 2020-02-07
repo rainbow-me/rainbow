@@ -61,8 +61,11 @@ const DATA_ADD_NEW_TRANSACTION_SUCCESS =
 const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
 
 // -- Actions ---------------------------------------- //
-export const dataLoadState = () => async (dispatch, getState) => {
-  const { accountAddress, network } = getState().settings;
+export const dataLoadState = (address = null) => async (dispatch, getState) => {
+  let { accountAddress, network } = getState().settings;
+  if (address) {
+    accountAddress = address;
+  }
   try {
     dispatch({ type: DATA_LOAD_ASSETS_REQUEST });
     const assets = await getAssets(accountAddress, network);
@@ -93,20 +96,23 @@ export const dataLoadState = () => async (dispatch, getState) => {
   }
 };
 
+export const dataClearState = (address = null) => (dispatch, getState) => {
+  let { accountAddress, network } = getState().settings;
+  if (address) {
+    accountAddress = address;
+  }
+
+  removeAssets(accountAddress, network);
+  removeCompoundAssets(accountAddress, network);
+  removeLocalTransactions(accountAddress, network);
+};
+
 export const dataTokenOverridesInit = () => async dispatch => {
   try {
     const tokenOverrides = await apiGetTokenOverrides();
     dispatch(dataUpdateTokenOverrides(tokenOverrides));
     // eslint-disable-next-line no-empty
   } catch (error) {}
-};
-
-export const dataClearState = () => (dispatch, getState) => {
-  const { accountAddress, network } = getState().settings;
-  removeAssets(accountAddress, network);
-  removeCompoundAssets(accountAddress, network);
-  removeLocalTransactions(accountAddress, network);
-  dispatch({ type: DATA_CLEAR_STATE });
 };
 
 export const dataUpdateAssets = assets => (dispatch, getState) => {

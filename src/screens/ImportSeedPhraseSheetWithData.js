@@ -1,13 +1,19 @@
 import { get } from 'lodash';
-import { compose, pure } from 'recompact';
-import { withDataInit, withIsWalletEmpty } from '../hoc';
+import { compose } from 'recompact';
+import {
+  withDataInit,
+  withIsWalletEmpty,
+  withIsWalletImporting,
+  withAccountAddress,
+} from '../hoc';
 import { deviceUtils } from '../utils';
 import ImportSeedPhraseSheet from './ImportSeedPhraseSheet';
 
 const ImportSeedPhraseSheetWithData = compose(
   withDataInit,
   withIsWalletEmpty,
-  pure
+  withIsWalletImporting,
+  withAccountAddress
 )(ImportSeedPhraseSheet);
 
 ImportSeedPhraseSheetWithData.navigationOptions = ({ navigation }) => ({

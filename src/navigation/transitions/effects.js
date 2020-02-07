@@ -1,5 +1,6 @@
 import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import { transformOrigin } from './transformOriginAnimated';
 import { deviceUtils } from '../../utils';
 import { colors } from '../../styles';
 
@@ -63,6 +64,47 @@ const expandStyleInterpolator = targetOpacity => ({
       shadowColor: colors.dark,
       shadowOffset: { height: 10, width: 0 },
       shadowOpacity: 0.6,
+      shadowRadius: 25,
+    },
+  };
+};
+
+const changeWalletStyleInterpolator = targetOpacity => ({
+  current: { progress: current },
+  layouts: { screen },
+}) => {
+  const backgroundOpacity = current.interpolate({
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, targetOpacity, targetOpacity],
+  });
+
+  const cardOpacity = current.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.01, 1],
+  });
+
+  const scale = current.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.21, 1],
+  });
+
+  return {
+    cardStyle: {
+      opacity: cardOpacity,
+      transform: transformOrigin(
+        {
+          x: 0,
+          y: -(screen.height / 2) + statusBarHeight + 62,
+        },
+        { scale }
+      ),
+    },
+    overlayStyle: {
+      backgroundColor: '#141414',
+      opacity: backgroundOpacity,
+      shadowColor: colors.black,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.4,
       shadowRadius: 25,
     },
   };
@@ -174,6 +216,18 @@ export const expandedPreset = {
   cardStyleInterpolator: expandStyleInterpolator(0.7),
   cardTransparent: true,
   gestureDirection: 'vertical',
+  gestureResponseDistance,
+  onTransitionStart,
+  transitionSpec: { close: closeSpec, open: openSpec },
+};
+
+export const expandedPresetReverse = {
+  cardOverlayEnabled: true,
+  cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: changeWalletStyleInterpolator(0.7),
+  cardTransparent: true,
+  gestureDirection: 'vertical-inverted',
   gestureResponseDistance,
   onTransitionStart,
   transitionSpec: { close: closeSpec, open: openSpec },
