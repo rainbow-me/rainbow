@@ -20,9 +20,9 @@ import EmojiTabBarShadow from '../../assets/emojiTabBarShadow.png';
 import { colors, position } from '../../styles';
 import TabBar from './TabBar';
 import {
-  RecyclerListView,
   DataProvider,
   LayoutProvider,
+  ProgressiveListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import { deviceUtils } from '../../utils';
@@ -110,6 +110,7 @@ let blockCategories = true;
 export default class EmojiSelector extends PureComponent {
   constructor(args) {
     super(args);
+    this.renderScrollView = this.renderScrollView.bind(this);
 
     this.state = {
       allEmojiList: [],
@@ -158,7 +159,7 @@ export default class EmojiSelector extends PureComponent {
     this.loadEmojis();
     setTimeout(() => {
       this.setState({ isReady: true });
-    }, 1000);
+    }, 300);
   }
 
   handleTabSelect = category => {
@@ -200,24 +201,18 @@ export default class EmojiSelector extends PureComponent {
       <View>
         {categoryEmojis.map(({ rowContent, touchableNet }, categoryIndex) => (
           <View key={`categoryEmoji${categoryIndex}`}>
-            <View
+            <Text
               style={{
-                flexDirection: 'row',
                 marginHorizontal: 10,
+                fontSize: Math.floor(this.state.colSize) - 15,
+                height: (width - 21) / this.props.columns,
+                width: deviceUtils.dimensions.width,
+                letterSpacing: 8,
+                backgroundColor: colors.white,
               }}
             >
-              <Text
-                style={{
-                  fontSize: Math.floor(this.state.colSize) - 15,
-                  height: (width - 21) / this.props.columns,
-                  width: deviceUtils.dimensions.width,
-                  letterSpacing: 8,
-                  backgroundColor: colors.white,
-                }}
-              >
-                {rowContent}
-              </Text>
-            </View>
+              {rowContent}
+            </Text>
             <View
               style={{
                 flexDirection: 'row',
@@ -371,12 +366,55 @@ export default class EmojiSelector extends PureComponent {
   };
 
   scrollToOffset = (position, animated) => {
-    this.rlv.scrollToOffset(0, position, animated);
+    this.svRef.scrollToOffset(0, position, animated);
   };
 
-  handleListRef = ref => {
-    this.rlv = ref;
-  };
+  prerenderEmojis(emojisRows) {
+    return (
+      <View style={{ marginTop: 34 }}>
+        {emojisRows.map((emojis, i) => (
+          <Text
+            key={`emojiRow${i}`}
+            style={{
+              marginHorizontal: 10,
+              fontSize: Math.floor(this.state.colSize) - 15,
+              height: (width - 21) / this.props.columns,
+              width: deviceUtils.dimensions.width,
+              letterSpacing: 8,
+              top: 0.8,
+            }}
+          >
+            {emojis}
+          </Text>
+        ))}
+      </View>
+    );
+  }
+
+  renderScrollView({ children, ...props }) {
+    const prerenderEmoji = [];
+    if (this.state.allEmojiList[2]) {
+      for (let i = 0; i < this.props.columns * 10; i += this.props.columns) {
+        let emojis = [];
+        for (let j = 0; j < this.props.columns; j++) {
+          emojis.push(
+            charFromEmojiObject(this.state.allEmojiList[2].data[i + j].emoji)
+          );
+        }
+        prerenderEmoji.push(emojis);
+      }
+    }
+
+    return (
+      <ScrollView
+        {...props}
+        simultaneousHandlers={this.panRef}
+        ref={this.svRef}
+      >
+        {this.state.isReady ? children : this.prerenderEmojis(prerenderEmoji)}
+      </ScrollView>
+    );
+  }
 
   onTapChange = ({ nativeEvent: { state } }) => {
     if (state === State.BEGAN) {
@@ -413,38 +451,6 @@ export default class EmojiSelector extends PureComponent {
       </View>
     );
 
-    const prerenderEmoji = [];
-    if (this.state.allEmojiList[2]) {
-      for (let i = 0; i < 70; i += 7) {
-        let emojis = [];
-        for (let j = 0; j < 7; j++) {
-          emojis.push(
-            charFromEmojiObject(this.state.allEmojiList[2].data[i + j].emoji)
-          );
-        }
-        prerenderEmoji.push(
-          <View
-            style={{
-              flexDirection: 'row',
-              marginHorizontal: 10,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: Math.floor(this.state.colSize) - 15,
-                height: (width - 21) / this.props.columns,
-                width: deviceUtils.dimensions.width,
-                letterSpacing: 8,
-                top: 0.8,
-              }}
-            >
-              {emojis}
-            </Text>
-          </View>
-        );
-      }
-    }
-
     return (
       <View style={styles.frame} {...other}>
         <TapGestureHandler onHandlerStateChange={this.onTapChange}>
@@ -457,34 +463,30 @@ export default class EmojiSelector extends PureComponent {
                 <View style={styles.sectionHeaderWrap}>
                   <Text style={styles.sectionHeader}>Smileys & People</Text>
                 </View>
-                {prerenderEmoji}
+                {null}
               </View>
             ) : null}
             <PanGestureHandler
               ref={this.panRef}
               simultaneousHandlers={this.svRef}
-              activeOffsetY={[-5, 5]}
+              activeOffsetY={[-7, 7]}
             >
               <View style={styles.container}>
                 <StickyContainer
                   stickyHeaderIndices={[1, 3, 5, 7, 9, 11, 13, 15, 17]}
                   overrideRowRenderer={this.renderStickyItem}
                 >
-                  <RecyclerListView
+                  <ProgressiveListView
                     dataProvider={new DataProvider(
                       this.hasRowChanged
                     ).cloneWithRows(this.state.allEmojiList)}
                     layoutProvider={this._layoutProvider}
+                    renderAheadOffset={10}
                     rowRenderer={this.renderItem}
                     style={{ width: deviceUtils.dimensions.width }}
-                    renderAheadOffset={10000}
                     onScroll={this.handleScroll}
                     ref={this.handleListRef}
-                    scrollViewProps={{
-                      simultaneousHandlers: this.panRef,
-                      ref: this.svRef,
-                    }}
-                    externalScrollView={ScrollView}
+                    externalScrollView={this.renderScrollView}
                   />
                 </StickyContainer>
               </View>
