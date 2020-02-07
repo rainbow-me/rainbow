@@ -71,6 +71,15 @@ class TransactionListView: UIView {
   @objc func onAvatarPressed(_ sender: UIButton) {
     self.onAvatarPress([:])
   }
+  
+  @objc func onPressInAvatar(_ sender: UIButton) {
+    header.accountView.animateTapStart(scale: 0.83)
+  }
+
+  @objc func onPressOutAvatar(_ sender: UIButton) {
+    header.accountView.animateTapStart(scale: 1.0)
+  }
+  
   @objc func onReceivePressed(_ sender: UIButton) {
     self.onReceivePress([:])
   }
@@ -101,7 +110,15 @@ class TransactionListView: UIView {
     tableView.register(UINib(nibName: "TransactionListViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListViewCell")
     
     header.addSubview(headerSeparator)
-    header.openEmojiSelector.addTarget(self, action: #selector(onAvatarPressed(_:)), for: .touchUpInside)
+    
+    header.accountView.addTarget(self, action: #selector(onAvatarPressed(_:)), for: .touchUpInside)
+    header.accountView.addTarget(self, action: #selector(onPressInAvatar(_:)), for: .touchDown)
+    header.accountView.addTarget(self, action: #selector(onPressInAvatar(_:)), for: .touchDragInside)
+    header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchUpInside)
+    header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchDragOutside)
+    header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchCancel)
+    header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchUpOutside)
+    
     header.receive.addTarget(self, action: #selector(onReceivePressed(_:)), for: .touchUpInside)
     header.copyAddress.addTarget(self, action: #selector(onCopyAddressPressed(_:)), for: .touchUpInside)
     

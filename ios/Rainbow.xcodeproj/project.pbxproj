@@ -358,6 +358,7 @@
 		A4277DA023CBD3590042BAF4 /* Transactions */ = {
 			isa = PBXGroup;
 			children = (
+				66FEC91523EDA13F00A0F367 /* RoundedCornerView.swift */,
 				A4704B4723C546DA00E50E4B /* RCTConvert+TransactionList.h */,
 				A4704B4223C546D900E50E4B /* Transaction.h */,
 				A4704B4323C546D900E50E4B /* Transaction.m */,
@@ -698,6 +699,7 @@
 				A4704B4C23C546DA00E50E4B /* TransactionListViewManager.m in Sources */,
 				A4704B4823C546DA00E50E4B /* TransactionListViewCell.swift in Sources */,
 				A485E61423C8ED6000E5C3D4 /* TransactionListViewHeader.swift in Sources */,
+				66FEC91623EDA14000A0F367 /* RoundedCornerView.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				A4704B4B23C546DA00E50E4B /* TransactionListViewManager.swift in Sources */,
 				A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */,
