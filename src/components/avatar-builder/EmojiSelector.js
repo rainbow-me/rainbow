@@ -26,7 +26,12 @@ import {
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import { deviceUtils } from '../../utils';
-import { State, TapGestureHandler } from 'react-native-gesture-handler';
+import {
+  State,
+  PanGestureHandler,
+  TapGestureHandler,
+  ScrollView,
+} from 'react-native-gesture-handler';
 import { BlurView } from '@react-native-community/blur';
 import Animated from 'react-native-reanimated';
 
@@ -117,16 +122,14 @@ export default class EmojiSelector extends PureComponent {
     };
 
     nextCategoryOffset = new Animated.Value(1);
-    this.recentlyRendered = false;
-    this.touchedContact = undefined;
     this.contacts = {};
 
     this._layoutProvider = new LayoutProvider(
       i => {
-        if (i == 0 || i == this.state.allEmojiList.length - 1) {
+        if (i === 0 || i === this.state.allEmojiList.length - 1) {
           return OVERLAY;
         }
-        if (i % 2 == 0) {
+        if (i % 2 === 0) {
           return EMOJI_CONTAINER;
         }
         return HEADER_ROW;
@@ -141,7 +144,7 @@ export default class EmojiSelector extends PureComponent {
           dim.height = 35;
           dim.width = deviceUtils.dimensions.width;
         } else if (type === OVERLAY) {
-          dim.height = i == 0 ? 0.1 : 100;
+          dim.height = i === 0 ? 0.1 : 100;
           dim.width = deviceUtils.dimensions.width;
         } else {
           dim.height = 0;
@@ -177,7 +180,7 @@ export default class EmojiSelector extends PureComponent {
     this.props.onEmojiSelected(charFromEmojiObject(emoji));
   };
 
-  renderEmojis = ({ data }) => {
+  renderEmojis({ data }) {
     let categoryEmojis = [];
     for (let i = 0; i < data.length; i += this.props.columns) {
       let rowContent = [];
@@ -185,54 +188,62 @@ export default class EmojiSelector extends PureComponent {
       for (let j = 0; j < this.props.columns; j++) {
         if (i + j < data.length) {
           rowContent.push(charFromEmojiObject(data[i + j].emoji));
-          touchableNet.push(
-            <TouchableOpacity
-              activeOpacity={0.5}
-              style={{
-                height: (width - 21) / this.props.columns,
-                width: (width - 21) / this.props.columns,
-                opacity: 0,
-                backgroundColor: 'white',
-              }}
-              onPress={() => this.handleEmojiSelect(data[i + j].emoji)}
-            />
-          );
+          touchableNet.push(data[i + j].emoji);
         }
       }
-      categoryEmojis.push(
-        <View>
-          <View
-            style={{
-              flexDirection: 'row',
-              marginHorizontal: 10,
-            }}
-          >
-            <Text
+      categoryEmojis.push({
+        rowContent,
+        touchableNet,
+      });
+    }
+    return (
+      <View>
+        {categoryEmojis.map(({ rowContent, touchableNet }, categoryIndex) => (
+          <View key={`categoryEmoji${categoryIndex}`}>
+            <View
               style={{
-                fontSize: Math.floor(this.state.colSize) - 15,
-                height: (width - 21) / this.props.columns,
-                width: deviceUtils.dimensions.width,
-                letterSpacing: 8,
-                backgroundColor: colors.white,
+                flexDirection: 'row',
+                marginHorizontal: 10,
               }}
             >
-              {rowContent}
-            </Text>
+              <Text
+                style={{
+                  fontSize: Math.floor(this.state.colSize) - 15,
+                  height: (width - 21) / this.props.columns,
+                  width: deviceUtils.dimensions.width,
+                  letterSpacing: 8,
+                  backgroundColor: colors.white,
+                }}
+              >
+                {rowContent}
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                marginHorizontal: 10,
+                position: 'absolute',
+              }}
+            >
+              {touchableNet.map((singleLine, index) => (
+                <TouchableOpacity
+                  key={`categoryEmojiTouchableOpacity${categoryIndex}${index}`}
+                  activeOpacity={0.5}
+                  style={{
+                    height: (width - 21) / this.props.columns,
+                    width: (width - 21) / this.props.columns,
+                    opacity: 0,
+                    backgroundColor: 'white',
+                  }}
+                  onPress={() => this.handleEmojiSelect(singleLine)}
+                />
+              ))}
+            </View>
           </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              marginHorizontal: 10,
-              position: 'absolute',
-            }}
-          >
-            {touchableNet}
-          </View>
-        </View>
-      );
-    }
-    return <View>{categoryEmojis}</View>;
-  };
+        ))}
+      </View>
+    );
+  }
 
   renderListHeader = title => {
     return (
@@ -437,15 +448,15 @@ export default class EmojiSelector extends PureComponent {
           <View
             style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}
           >
-            {showSearchBar && Searchbar}
-            {!isReady && (
+            {showSearchBar ? Searchbar : null}
+            {!isReady ? (
               <View style={styles.loader} {...other}>
                 <View style={styles.sectionHeaderWrap}>
                   <Text style={styles.sectionHeader}>Smileys & People</Text>
                 </View>
                 {prerenderEmoji}
               </View>
-            )}
+            ) : null}
             <View style={styles.container}>
               <StickyContainer
                 stickyHeaderIndices={[1, 3, 5, 7, 9, 11, 13, 15, 17]}
@@ -461,12 +472,31 @@ export default class EmojiSelector extends PureComponent {
                   renderAheadOffset={10000}
                   onScroll={this.handleScroll}
                   ref={this.handleListRef}
+                  externalScrollView={props =>
+                    console.log(props) || (
+                      <PanGestureHandler
+                        id="Pan1"
+                        simultaneousHandlers="Pan2"
+                        activeOffsetY={[-5, 5]}
+                      >
+                        <View
+                          style={[StyleSheet.absoluteFill, { width: '100%' }]}
+                        >
+                          <ScrollView
+                            {...props}
+                            simultaneousHandlers="Pan1"
+                            id="Pan2"
+                          />
+                        </View>
+                      </PanGestureHandler>
+                    )
+                  }
                 />
               </StickyContainer>
             </View>
           </View>
         </TapGestureHandler>
-        {showTabs && (
+        {showTabs ? (
           <View style={styles.tabBar}>
             <Image
               opacity={0.6}
@@ -504,7 +534,7 @@ export default class EmojiSelector extends PureComponent {
               categoryKeys={categoryKeys}
             />
           </View>
-        )}
+        ) : null}
       </View>
     );
   }
@@ -535,7 +565,7 @@ EmojiSelector.propTypes = {
   /** Set the default category. Use the `Categories` class */
   category: PropTypes.object,
 
-  /** Number of columns accross */
+  /** Number of columns across */
   columns: PropTypes.number,
 };
 
