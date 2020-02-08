@@ -37,10 +37,10 @@ const SheetButton = ({
         align="center"
         css={padding(9.5, 14, 11, 15)}
         height={56}
-        margin={6}
+        margin={7}
         zIndex={1}
       >
-        {icon && <Icon color={textColor} name={icon} size={20} />}
+        {icon && <Icon color={textColor} name={icon} size={21} />}
         <Text
           align="center"
           color={textColor}

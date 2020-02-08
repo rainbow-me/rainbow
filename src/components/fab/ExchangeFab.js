@@ -27,7 +27,10 @@ export default compose(
   withFabSelection,
   withNavigation,
   withHandlers({
-    onPress: ({ navigation }) => () => navigation.navigate('SavingsSheet'),
+    onPress: ({ navigation }) => () => {
+      console.log('HAPPENING!!!!');
+      navigation.navigate('ExchangeModal');
+    },
   }),
   onlyUpdateForKeys(['disabled'])
 )(ExchangeFab);

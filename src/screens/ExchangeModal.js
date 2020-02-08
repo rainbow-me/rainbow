@@ -11,7 +11,7 @@ import BigNumber from 'bignumber.js';
 import { find, get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
-import { TextInput, InteractionManager } from 'react-native';
+import { findNodeHandle, TextInput, InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { withNavigationFocus, NavigationEvents } from 'react-navigation';
 import { compose, toClass, withProps } from 'recompact';
@@ -82,7 +82,7 @@ const isSameAsset = (a, b) => {
 
 const DEFAULT_APPROVAL_ESTIMATION_TIME_IN_MS = 30000; // 30 seconds
 
-const getNativeTag = field => get(field, '_inputRef._nativeTag');
+const getNativeTag = field => get(field, '_nativeTag');
 
 class ExchangeModal extends Component {
   static propTypes = {
@@ -273,6 +273,15 @@ class ExchangeModal extends Component {
     const inputRefTag = getNativeTag(this.inputFieldRef);
     const nativeInputRefTag = getNativeTag(this.nativeFieldRef);
     const outputRefTag = getNativeTag(this.outputFieldRef);
+
+    console.log('')
+    console.log('inputRefTag', inputRefTag);
+    console.log('nativeInputRefTag', nativeInputRefTag);
+    console.log('outputRefTag', outputRefTag);
+
+    console.log('lastFocusedInput', this.lastFocusedInput);
+    console.log('handle', findNodeHandle(this.inputFieldRef));
+    console.log('')
 
     const lastFocusedIsInputType =
       this.lastFocusedInput === inputRefTag ||

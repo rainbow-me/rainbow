@@ -1,13 +1,3 @@
-import {
-  getMarketDetails as getUniswapMarketDetails,
-  tradeEthForExactTokensWithData,
-  tradeExactEthForTokensWithData,
-  tradeExactTokensForEthWithData,
-  tradeExactTokensForTokensWithData,
-  tradeTokensForExactEthWithData,
-  tradeTokensForExactTokensWithData,
-} from '@uniswap/sdk';
-import BigNumber from 'bignumber.js';
 import { find, get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useRef, useState } from 'react';
@@ -18,20 +8,17 @@ import { withNavigationFocus, NavigationEvents } from 'react-navigation';
 import { compose, toClass, withProps } from 'recompact';
 import { interpolate } from '../components/animations';
 import {
-  ConfirmExchangeButton,
   ExchangeInputField,
   ExchangeModalHeader,
 } from '../components/exchange';
 import { FloatingPanel, FloatingPanels } from '../components/expanded-state';
-import { GasSpeedButton } from '../components/gas';
 import GestureBlocker from '../components/GestureBlocker';
 import {
   Centered,
   Column,
   KeyboardFixedOpenLayout,
 } from '../components/layout';
-import { estimateSwapGasLimit, executeSwap } from '../handlers/uniswap';
-import { useAccountData } from '../hooks';
+import { useAccountData, useMagicFocus, usePrevious } from '../hooks';
 import {
   withTransactionConfirmationScreen,
   withGas,
@@ -45,23 +32,15 @@ const AnimatedFloatingPanels = Animated.createAnimatedComponent(
   toClass(FloatingPanels)
 );
 
-const isSameAsset = (a, b) => {
-  if (!a || !b) return false;
-  const assetA = toLower(get(a, 'address', ''));
-  const assetB = toLower(get(b, 'address', ''));
-  return assetA === assetB;
-};
-
-const DEFAULT_APPROVAL_ESTIMATION_TIME_IN_MS = 30000; // 30 seconds
-
-const getNativeTag = field => get(field, '_inputRef._nativeTag');
-
 const DepositModal = ({ tabPosition }) => {
   const { navigate } = useNavigation();
   const [inputCurrency, setInputCurrency] = useState({ symbol: 'DAI' });
 
   const inputFieldRef = useRef();
   const nativeFieldRef = useRef();
+
+  const [handleFocus] = useMagicFocus(inputFieldRef.current);
+
   const {
     settings: { nativeCurrency },
     ...accountData
@@ -70,8 +49,16 @@ const DepositModal = ({ tabPosition }) => {
   const inputAmountDisplay = '';
   const nativeAmount = '';
 
-  console.log('accountData', accountData);
-  console.log('nativeCurrency', nativeCurrency);
+  // const handleFocusField = useCallback(
+  //   () => {
+              // onFocus={handleFocusField}
+  //     lastFocusedInput.current =
+  //   }, []);
+
+  // console.log('')
+
+  // console.log('accountData', accountData);
+  // console.log('nativeCurrency', nativeCurrency);
 
   const navigateToSelectInputCurrency = useCallback(() => {
     InteractionManager.runAfterInteractions(() =>
@@ -120,6 +107,7 @@ const DepositModal = ({ tabPosition }) => {
                 nativeFieldRef.current = ref;
               }}
               nativeCurrency={nativeCurrency}
+              onFocus={handleFocus}
               onPressMaxBalance={() => console.log('PRESSED MAX BALANCE')}
               onPressSelectInputCurrency={navigateToSelectInputCurrency}
               setInputAmount={setInputAmount}

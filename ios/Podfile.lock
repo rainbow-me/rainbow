@@ -9,10 +9,10 @@ PODS:
     - JWT (~> 3.0.0-beta.7)
     - React
     - SSZipArchive (~> 2.1)
-  - Crashlytics (3.12.0):
-    - Fabric (~> 1.9.0)
+  - Crashlytics (3.14.0):
+    - Fabric (~> 1.10.2)
   - DoubleConversion (1.1.6)
-  - Fabric (1.9.0)
+  - Fabric (1.10.2)
   - FBLazyVector (0.62.0-rc.1)
   - FBReactNativeSpec (0.62.0-rc.1):
     - Folly (= 2018.10.22.00)
@@ -285,13 +285,13 @@ PODS:
   - React-jsinspector (0.62.0-rc.1)
   - react-native-blur (0.8.0):
     - React
-  - react-native-camera (3.16.0):
+  - react-native-camera (3.17.0):
     - React
-    - react-native-camera/RCT (= 3.16.0)
-    - react-native-camera/RN (= 3.16.0)
-  - react-native-camera/RCT (3.16.0):
+    - react-native-camera/RCT (= 3.17.0)
+    - react-native-camera/RN (= 3.17.0)
+  - react-native-camera/RCT (3.17.0):
     - React
-  - react-native-camera/RN (3.16.0):
+  - react-native-camera/RN (3.17.0):
     - React
   - react-native-mail (4.1.0):
     - React
@@ -386,16 +386,16 @@ PODS:
     - React
     - SDWebImage (~> 5.0)
     - SDWebImageWebPCoder (~> 0.2.3)
-  - RNFBApp (6.2.0):
+  - RNFBApp (6.3.1):
     - Firebase/Core (~> 6.13.0)
     - React
-  - RNFBCrashlytics (6.2.0):
-    - Crashlytics (~> 3.12.0)
-    - Fabric (~> 1.9.0)
+  - RNFBCrashlytics (6.3.1):
+    - Crashlytics (~> 3.14.0)
+    - Fabric (~> 1.10.2)
     - Firebase/Core (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBMessaging (6.2.0):
+  - RNFBMessaging (6.3.1):
     - Firebase/Messaging (~> 6.13.0)
     - React
     - RNFBApp
@@ -412,7 +412,7 @@ PODS:
     - React
   - RNReanimated (1.7.0):
     - React
-  - RNScreens (2.0.0-alpha.34):
+  - RNScreens (2.0.0-beta.2):
     - React
   - RNSentry (1.2.2):
     - React
@@ -666,9 +666,9 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
   CodePush: d2e54ad42df82a8db65b2d23d8191b950ba945e1
-  Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
+  Crashlytics: 540b7e5f5da5a042647227a5e3ac51d85eed06df
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
-  Fabric: f988e33c97f08930a413e08123064d2e5f68d655
+  Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
   FBLazyVector: 9349d70d60793fce157f7c3837f51c60bc81a91b
   FBReactNativeSpec: 36215b34017aa3bb62f1ed494b50fbaa242649fb
   Firebase: 458d109512200d1aca2e1b9b6cf7d68a869a4a46
@@ -700,7 +700,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: ccf2361cd90f691e04ff73585f099aa179ae8b52
   React-jsinspector: fabb3a8cad7bce396f2d4c29cbf83e87022b07ec
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-camera: 705c7e9412436957b4dc894a1af61f43830787e2
+  react-native-camera: c549d50495c989688ef1819dab49441c7dc7c17d
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-netinfo: 8884d510fe67349940b4399c01db3e3591c922aa
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
@@ -726,9 +726,9 @@ SPEC CHECKSUMS:
   RNCPushNotificationIOS: 4a5c5d92ce51227f8c3409b0b7542382c0b5f008
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNFastImage: 9b0c22643872bb7494c8d87bbbb66cc4c0d9e7a2
-  RNFBApp: 5b215aacc09105a1761de31b9a0eb2abcce06253
-  RNFBCrashlytics: 0469cb96b00904e0c9604b9636d8eeab31115b08
-  RNFBMessaging: be0b936394416ec5503add603f2c0a641c353063
+  RNFBApp: 279ec5c4bb43b8fc7b8031eed90ad7d2bea7a048
+  RNFBCrashlytics: 90f2954f19196d8f45baa924adb49235d4ebc9db
+  RNFBMessaging: 29971efd7fd939ff2053f30f5c337d6ca78fd215
   RNGestureHandler: 946a7691e41df61e2c4b1884deab41a4cdc3afff
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeychain: f5783613aa3095af63345ddb9626a729bd4a3897
@@ -736,7 +736,7 @@ SPEC CHECKSUMS:
   RNOS: 811de7b4be8824a86a775ade934147a02edb9b5a
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
-  RNScreens: 9d8a2900cd4f967af70dbfed74b64f77fbb6600a
+  RNScreens: 5e4758109c6d35f9a009ce72af873df907548020
   RNSentry: 9cfa3717b1e6bf9ad4b124683e78e3b98b01d3af
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f

@@ -15,7 +15,7 @@ export default function useSavingsAccount() {
   const marketsQuery = useQuery(COMPOUND_ALL_MARKETS_QUERY, { pollInterval });
   const markets = keyBy(get(marketsQuery, 'data.markets', []), property('id'));
 
-  console.log('marketsQuery', marketsQuery);
+  // console.log('marketsQuery', marketsQuery);
 
   const tokenQuery = useQuery(COMPOUND_ACCOUNT_QUERY, {
     pollInterval,
