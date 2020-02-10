@@ -6,6 +6,39 @@ import { deviceUtils } from '../../utils';
 const statusBarHeight = getStatusBarHeight(true);
 export const sheetVerticalOffset = statusBarHeight;
 
+const emojiStyleInterpolator = ({
+  current: { progress: current },
+  layouts: { screen },
+}) => {
+  const backgroundOpacity = current.interpolate({
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, 1, 1],
+  });
+
+  const translateY = current.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-screen.height / 2, 0],
+  });
+
+  const scale = current.interpolate({
+    inputRange: [-1, 0, 0.99, 2],
+    outputRange: [0.01, 0.01, 1, 1],
+  });
+
+  return {
+    cardStyle: {
+      transform: [{ translateY }, { scale }],
+    },
+    overlayStyle: {
+      backgroundColor: 'rgb(37, 41, 46)',
+      opacity: backgroundOpacity,
+      shadowColor: colors.dark,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.6,
+      shadowRadius: 25,
+    },
+  };
+};
 const backgroundInterpolator = ({
   next: { progress: next } = { next: undefined },
 }) => ({
@@ -163,6 +196,18 @@ export const onTransitionStart = props => {
   } else {
     StatusBar.setBarStyle('light-content');
   }
+};
+
+export const emojiPreset = {
+  cardOverlayEnabled: true,
+  cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: emojiStyleInterpolator,
+  cardTransparent: true,
+  gestureDirection: 'vertical-inverted',
+  gestureResponseDistance,
+  onTransitionStart,
+  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
 export const backgroundPreset = {

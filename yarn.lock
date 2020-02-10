@@ -3866,6 +3866,11 @@ elliptic@6.5.2, elliptic@^6.0.0:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.0"
 
+emoji-datasource@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/emoji-datasource/-/emoji-datasource-4.1.0.tgz#b44557f78a2dfac2f350393391b170a567ec28ad"
+  integrity sha1-tEVX94ot+sLzUDkzkbFwpWfsKK0=
+
 emoji-regex@^7.0.1:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-7.0.3.tgz#933a04052860c85e83c122479c4748a8e4c72156"
@@ -9418,9 +9423,9 @@ react-native-qrcode-scanner@mikedemarais/react-native-qrcode-scanner#2ca70b8c64a
     prop-types "^15.5.10"
     qrcode "^1.2.0"
 
-react-native-radial-gradient@shkatulo/react-native-radial-gradient:
-  version "1.0.5"
-  resolved "https://codeload.github.com/shkatulo/react-native-radial-gradient/tar.gz/ea663afcc9a4a477e7341d45666492e9cf6cbe63"
+react-native-radial-gradient@christianbaroni/react-native-radial-gradient#c7c62f1bba91818c29f4a7ce874f723eb34b80ee:
+  version "1.0.6"
+  resolved "https://codeload.github.com/christianbaroni/react-native-radial-gradient/tar.gz/c7c62f1bba91818c29f4a7ce874f723eb34b80ee"
 
 react-native-randombytes@^3.5.3:
   version "3.5.3"
@@ -10993,6 +10998,11 @@ string-width@^4.1.0, string-width@^4.2.0:
     emoji-regex "^8.0.0"
     is-fullwidth-code-point "^3.0.0"
     strip-ansi "^6.0.0"
+
+string.fromcodepoint@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/string.fromcodepoint/-/string.fromcodepoint-0.2.1.tgz#8d978333c0bc92538f50f383e4888f3e5619d653"
+  integrity sha1-jZeDM8C8klOPUPOD5IiPPlYZ1lM=
 
 string.prototype.matchall@^4.0.2:
   version "4.0.2"

@@ -3,7 +3,9 @@ import { compose, withHandlers, withState } from 'recompact';
 import { requireNativeComponent, Clipboard, Linking, View } from 'react-native';
 import { FloatingEmojis } from '../floating-emojis';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import { isAvatarPickerAvailable } from '../../config/experimental';
 import {
+  withAccountInfo,
   withAccountSettings,
   withAccountTransactions,
   withRequests,
@@ -26,10 +28,14 @@ class TransactionList extends React.PureComponent {
         <NativeTransactionListView
           transactions={this.props.transactions}
           accountAddress={this.props.accountAddress}
+          accountColor={colors.avatarColor[this.props.accountColor]}
+          accountName={this.props.accountName}
           onReceivePress={this.props.onReceivePress}
+          onAvatarPress={this.props.onAvatarPress}
           onCopyAddressPress={this.props.onCopyAddressPress}
           onItemPress={this.props.onItemPress}
           style={this.props.style}
+          isAvatarPickerAvailable={isAvatarPickerAvailable}
         />
         <FloatingEmojis
           style={{
@@ -49,6 +55,7 @@ class TransactionList extends React.PureComponent {
 }
 
 export default compose(
+  withAccountInfo,
   withAccountSettings,
   withAccountTransactions,
   withRequests,
@@ -56,6 +63,12 @@ export default compose(
   withState('emojiCount', 'setEmojiCount', 0),
   withState('tapTarget', 'setTapTarget', [0, 0, 0, 0]),
   withHandlers({
+    onAvatarPress: ({ navigation, accountColor, accountName }) => () => {
+      navigation.navigate('AvatarBuilder', {
+        accountColor,
+        accountName,
+      });
+    },
     onCopyAddressPress: ({
       accountAddress,
       emojiCount,

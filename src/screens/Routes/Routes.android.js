@@ -22,7 +22,9 @@ import SendSheetWithData from '../SendSheetWithData';
 import SettingsModal from '../SettingsModal';
 import TransactionConfirmationScreenWithData from '../TransactionConfirmationScreenWithData';
 import WalletScreen from '../WalletScreen';
+import AvatarBuilder from '../AvatarBuilder';
 import {
+  emojiPreset,
   backgroundPreset,
   exchangePreset,
   expandedPreset,
@@ -63,6 +65,13 @@ const SwipeStack = createMaterialTopTabNavigator(
 );
 
 const MainNavigator = createStackNavigator({
+  AvatarBuilder: {
+    navigationOptions: {
+      ...emojiPreset,
+    },
+    screen: AvatarBuilder,
+    transparentCard: true,
+  },
   ConfirmRequest: {
     navigationOptions: {
       ...sheetPreset,

@@ -1,18 +1,23 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { View, Text } from 'react-native';
+import { compose, withHandlers, withState } from 'recompact';
 import FastImage from 'react-native-fast-image';
-import { useNavigation } from 'react-navigation-hooks';
+import GraphemeSplitter from 'grapheme-splitter';
 import styled from 'styled-components/primitives';
 import AvatarImageSource from '../../assets/avatar.png';
+import { margin, colors, borders } from '../../styles';
+import { abbreviations } from '../../utils';
+import { ButtonPressAnimation } from '../animations';
+import { useNavigation } from 'react-navigation-hooks';
 import { useClipboard } from '../../hooks';
-import { borders, margin } from '../../styles';
-import { abbreviations, isNewValueForObjectPaths } from '../../utils';
 import CopyTooltip from '../copy-tooltip';
 import Divider from '../Divider';
 import { Centered, RowWithMargins } from '../layout';
 import { FloatingEmojis } from '../floating-emojis';
 import { TruncatedAddress } from '../text';
 import ProfileAction from './ProfileAction';
+import { isAvatarPickerAvailable } from '../../config/experimental';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs({
   align: 'center',
@@ -25,19 +30,63 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs({
   width: 100%;
 `;
 
-const ProfileMasthead = ({ accountAddress, showBottomDivider }) => {
+const Container = styled(Centered).attrs({ direction: 'column' })`
+  margin-bottom: 24;
+  padding-bottom: 32;
+`;
+
+const AvatarCircle = styled(View)`
+  border-radius: 33px;
+  margin-bottom: 16px;
+  height: 65px;
+  width: 65px;
+`;
+
+const FirstLetter = styled(Text)`
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 37;
+  line-height: 65;
+`;
+
+const ProfileMasthead = ({
+  accountAddress,
+  showBottomDivider,
+  accountColor,
+  accountName,
+  onPressAvatar,
+}) => {
   const { setClipboard } = useClipboard();
   const { navigate } = useNavigation();
 
   return (
-    <Centered direction="column" marginBottom={24} paddingBottom={32}>
-      <FastImage
-        source={AvatarImageSource}
-        style={{
-          ...borders.buildCircleAsObject(85),
-          marginBottom: 3,
-        }}
-      />
+    <Container>
+      {isAvatarPickerAvailable ? (
+        <ButtonPressAnimation
+          hapticType="impactMedium"
+          onPress={onPressAvatar}
+          scaleTo={0.82}
+        >
+          <AvatarCircle
+            style={{ backgroundColor: colors.avatarColor[accountColor] }}
+          >
+            <FirstLetter>
+              {new GraphemeSplitter().splitGraphemes(accountName)[0]}
+            </FirstLetter>
+          </AvatarCircle>
+        </ButtonPressAnimation>
+      ) : (
+        <FastImage
+          source={AvatarImageSource}
+          style={{
+            ...borders.buildCircleAsObject(85),
+            marginBottom: 3,
+          }}
+        />
+      )}
+
       <CopyTooltip textToCopy={accountAddress} tooltipText="Copy Address">
         <AddressAbbreviation address={accountAddress} />
       </CopyTooltip>
@@ -65,12 +114,14 @@ const ProfileMasthead = ({ accountAddress, showBottomDivider }) => {
       {showBottomDivider && (
         <Divider style={{ bottom: 0, position: 'absolute' }} />
       )}
-    </Centered>
+    </Container>
   );
 };
 
 ProfileMasthead.propTypes = {
   accountAddress: PropTypes.string,
+  accountColor: PropTypes.number,
+  accountName: PropTypes.string,
   showBottomDivider: PropTypes.bool,
 };
 
@@ -78,7 +129,13 @@ ProfileMasthead.defaultProps = {
   showBottomDivider: true,
 };
 
-const arePropsEqual = (...props) =>
-  !isNewValueForObjectPaths(...props, ['accountAddress', 'showBottomDivider']);
-
-export default React.memo(ProfileMasthead, arePropsEqual);
+export default compose(
+  withState('emojiCount', 'setEmojiCount', 0),
+  withHandlers({
+    onPressAvatar: ({ navigation, accountColor, accountName }) => () =>
+      navigation.navigate('AvatarBuilder', {
+        accountColor: accountColor,
+        accountName: accountName,
+      }),
+  })
+)(ProfileMasthead);
