@@ -2,9 +2,9 @@ import React, { useMemo, useState, useRef } from 'react';
 import ValueChart from './ValueChart';
 import ValueText from './ValueText';
 import {
-  // data1,
-  // data2,
-  // data3,
+  data1,
+  data2,
+  data3,
   data4,
   dataColored1,
   dataColored2,
@@ -14,11 +14,18 @@ import TimespanSelector from './TimespanSelector';
 import { colors } from '../../styles';
 
 const dataColored = [dataColored1, dataColored2, dataColored3];
-const dataSwitching = [
+const dataSwitching1 = [
   dataColored,
   [dataColored1, dataColored2],
   [dataColored2, dataColored3],
   [data4],
+];
+
+const dataSwitching2 = [
+  [data2],
+  [data1],
+  [dataColored2, dataColored3],
+  [data3],
 ];
 
 const colorsArray = [
@@ -40,9 +47,37 @@ let colorIndex = 0;
 
 export default function Chart() {
   const textInputRef = useRef(null);
-  const data = useMemo(() => {
+
+  const data1 = useMemo(() => {
     colorIndex = 0;
-    return dataSwitching.map((sectionsData, index) => {
+    return dataSwitching1.map((sectionsData, index) => {
+      return {
+        name: index,
+        segments: sectionsData.map((data, i) => {
+          return {
+            color: colorsArray[colorIndex++],
+            line: i * 5,
+            points: data.map(values => {
+              return { x: values.timestamp, y: values.value };
+            }),
+            renderStartSeparator:
+              colorIndex % 2 !== 0
+                ? {
+                    fill: colorsArray[colorIndex],
+                    r: 7,
+                    stroke: 'white',
+                    strokeWidth: colorIndex + 2,
+                  }
+                : undefined,
+          };
+        }),
+      };
+    });
+  }, []);
+
+  const data2 = useMemo(() => {
+    colorIndex = 0;
+    return dataSwitching2.map((sectionsData, index) => {
       return {
         name: index,
         segments: sectionsData.map((data, i) => {
@@ -86,7 +121,7 @@ export default function Chart() {
         }}
         currentDataSource={currentChart}
         amountOfPathPoints={100} // amount of points for switch between charts
-        data={data}
+        data={data1}
         barColor={change > 0 ? colors.chartGreen : colors.red}
         stroke={{ detailed: 1.5, simplified: 3 }}
       />
