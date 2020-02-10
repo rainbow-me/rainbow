@@ -1,13 +1,9 @@
 import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import { deviceUtils } from '../../utils';
 import { colors } from '../../styles';
+import { deviceUtils } from '../../utils';
 
 const statusBarHeight = getStatusBarHeight(true);
-
-const expand = {};
-expand.translateY = deviceUtils.dimensions.height;
-
 export const sheetVerticalOffset = statusBarHeight;
 
 const emojiStyleInterpolator = ({
@@ -43,6 +39,11 @@ const emojiStyleInterpolator = ({
     },
   };
 };
+const backgroundInterpolator = ({
+  next: { progress: next } = { next: undefined },
+}) => ({
+  cardStyle: next === undefined ? {} : { opacity: 1 },
+});
 
 const exchangeStyleInterpolator = ({
   current: { progress: current },
@@ -60,6 +61,36 @@ const exchangeStyleInterpolator = ({
 
   return {
     cardStyle: {
+      // Translation for the animation of the current card
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
+      opacity: backgroundOpacity,
+      shadowColor: colors.black,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.4,
+      shadowRadius: 25,
+    },
+  };
+};
+
+const exchangeDetailsStyleInterpolator = ({
+  current: { progress: current },
+  layouts: { screen },
+}) => {
+  const backgroundOpacity = current.interpolate({
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, 0.7, 0.7],
+  });
+
+  const translateY = current.interpolate({
+    inputRange: [0, 1],
+    outputRange: [screen.height, 0],
+  });
+
+  return {
+    cardStyle: {
+      // Translation for the animation of the current card
       transform: [{ translateY }],
     },
     overlayStyle: {
@@ -130,16 +161,6 @@ const sheetStyleInterpolator = ({
   };
 };
 
-const backgroundInterpolator = ({
-  next: { progress: next } = { next: undefined },
-}) => {
-  if (next === undefined) {
-    return { cardStyle: {} };
-  }
-
-  return { cardStyle: { opacity: 1 } };
-};
-
 const closeSpec = {
   animation: 'spring',
   config: {
@@ -189,6 +210,11 @@ export const emojiPreset = {
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
+export const backgroundPreset = {
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: backgroundInterpolator,
+};
+
 export const exchangePreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
@@ -197,11 +223,21 @@ export const exchangePreset = {
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
-  onTransitionStart,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
-export const overlayExpandedPreset = {
+export const exchangeDetailsPreset = {
+  cardOverlayEnabled: true,
+  cardShadowEnabled: true,
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: exchangeDetailsStyleInterpolator,
+  cardTransparent: true,
+  gestureDirection: 'vertical',
+  gestureResponseDistance,
+  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+};
+
+export const expandedPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
@@ -209,10 +245,11 @@ export const overlayExpandedPreset = {
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
+  onTransitionStart,
   transitionSpec: { close: closeSpec, open: openSpec },
 };
 
-export const expandedPreset = {
+export const overlayExpandedPreset = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent', overflow: 'visible' },
@@ -220,7 +257,6 @@ export const expandedPreset = {
   cardTransparent: true,
   gestureDirection: 'vertical',
   gestureResponseDistance,
-  onTransitionStart,
   transitionSpec: { close: closeSpec, open: openSpec },
 };
 
@@ -234,9 +270,4 @@ export const sheetPreset = {
   gestureResponseDistance,
   onTransitionStart,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
-};
-
-export const backgroundPreset = {
-  cardStyle: { backgroundColor: 'transparent' },
-  cardStyleInterpolator: backgroundInterpolator,
 };

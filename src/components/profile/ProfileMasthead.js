@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Clipboard, View, Text } from 'react-native';
+import { View, Text } from 'react-native';
 import { compose, withHandlers, withState } from 'recompact';
 import FastImage from 'react-native-fast-image';
 import GraphemeSplitter from 'grapheme-splitter';
@@ -9,9 +9,11 @@ import AvatarImageSource from '../../assets/avatar.png';
 import { margin, colors, borders } from '../../styles';
 import { abbreviations } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
+import { useNavigation } from 'react-navigation-hooks';
+import { useClipboard } from '../../hooks';
 import CopyTooltip from '../copy-tooltip';
 import Divider from '../Divider';
-import { Centered, Column, RowWithMargins } from '../layout';
+import { Centered, RowWithMargins } from '../layout';
 import { FloatingEmojis } from '../floating-emojis';
 import { TruncatedAddress } from '../text';
 import ProfileAction from './ProfileAction';
@@ -51,16 +53,13 @@ const FirstLetter = styled(Text)`
 
 const ProfileMasthead = ({
   accountAddress,
+  showBottomDivider,
   accountColor,
   accountName,
   onPressAvatar,
-  emojiCount,
-  onPressCopy,
-  onPressReceive,
-  showBottomDivider,
 }) => {
-  const name = accountName || '🥰';
-  const color = accountColor || 0;
+  const { setClipboard } = useClipboard();
+  const { navigate } = useNavigation();
 
   return (
     <Container>
@@ -70,9 +69,11 @@ const ProfileMasthead = ({
           onPress={onPressAvatar}
           scaleTo={0.82}
         >
-          <AvatarCircle style={{ backgroundColor: colors.avatarColor[color] }}>
+          <AvatarCircle
+            style={{ backgroundColor: colors.avatarColor[accountColor] }}
+          >
             <FirstLetter>
-              {new GraphemeSplitter().splitGraphemes(name)[0]}
+              {new GraphemeSplitter().splitGraphemes(accountName)[0]}
             </FirstLetter>
           </AvatarCircle>
         </ButtonPressAnimation>
@@ -90,24 +91,23 @@ const ProfileMasthead = ({
         <AddressAbbreviation address={accountAddress} />
       </CopyTooltip>
       <RowWithMargins align="center" margin={1}>
-        <Column>
-          <ProfileAction
-            icon="copy"
-            onPress={onPressCopy}
-            scaleTo={0.82}
-            text="Copy Address"
-          />
-          <FloatingEmojis
-            count={emojiCount}
-            distance={130}
-            emoji="+1"
-            size="h2"
-          />
-        </Column>
+        <FloatingEmojis>
+          {({ onNewEmoji }) => (
+            <ProfileAction
+              icon="copy"
+              onPress={() => {
+                onNewEmoji();
+                setClipboard(accountAddress);
+              }}
+              scaleTo={0.88}
+              text="Copy Address"
+            />
+          )}
+        </FloatingEmojis>
         <ProfileAction
           icon="inbox"
-          onPress={onPressReceive}
-          scaleTo={0.82}
+          onPress={() => navigate('ReceiveModal')}
+          scaleTo={0.88}
           text="Receive"
         />
       </RowWithMargins>
@@ -122,10 +122,6 @@ ProfileMasthead.propTypes = {
   accountAddress: PropTypes.string,
   accountColor: PropTypes.number,
   accountName: PropTypes.string,
-  emojiCount: PropTypes.number,
-  onPressAvatar: PropTypes.func,
-  onPressCopy: PropTypes.func,
-  onPressReceive: PropTypes.func,
   showBottomDivider: PropTypes.bool,
 };
 
@@ -141,11 +137,5 @@ export default compose(
         accountColor: accountColor,
         accountName: accountName,
       }),
-    onPressCopy: ({ accountAddress, emojiCount, setEmojiCount }) => () => {
-      setEmojiCount(emojiCount + 1);
-      Clipboard.setString(accountAddress);
-    },
-    onPressReceive: ({ navigation }) => () =>
-      navigation.navigate('ReceiveModal'),
   })
 )(ProfileMasthead);

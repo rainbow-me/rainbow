@@ -32,6 +32,7 @@ import FaceIdIcon from './svg/FaceIdIcon';
 import GearIcon from './svg/GearIcon';
 import HandleIcon from './svg/HandleIcon';
 import InboxIcon from './svg/InboxIcon';
+import InfoIcon from './svg/InfoIcon';
 import LockIcon from './svg/LockIcon';
 import OfflineIcon from './svg/OfflineIcon';
 import PasscodeIcon from './svg/PasscodeIcon';
@@ -83,6 +84,7 @@ Icon.IconTypes = {
   gear: GearIcon,
   handle: HandleIcon,
   inbox: InboxIcon,
+  info: InfoIcon,
   lock: LockIcon,
   offline: OfflineIcon,
   passcode: PasscodeIcon,

@@ -11,6 +11,8 @@ const ConfirmExchangeButtonShadows = [
 ];
 
 const ConfirmExchangeButton = ({
+  creationTimestamp,
+  estimatedApprovalTimeInMs,
   disabled,
   inputCurrencyName,
   isAssetApproved,
@@ -20,12 +22,11 @@ const ConfirmExchangeButton = ({
   onSubmit,
   onUnlockAsset,
   slippage,
-  timeRemaining,
   ...props
 }) => {
   let label = 'Hold to Swap';
   if (!isAssetApproved) {
-    label = `Tap to Unlock ${inputCurrencyName}`;
+    label = `Hold to Unlock ${inputCurrencyName}`;
   } else if (!isSufficientBalance) {
     label = 'Insufficient Funds';
   } else if (slippage > SlippageWarningTheshold) {
@@ -44,7 +45,7 @@ const ConfirmExchangeButton = ({
       }
       disabledBackgroundColor={colors.grey20}
       flex={1}
-      hideBiometricIcon={isUnlockingAsset || !isAssetApproved}
+      hideBiometricIcon={isUnlockingAsset}
       isAuthorizing={isAuthorizing}
       label={label}
       onLongPress={isAssetApproved ? onSubmit : onUnlockAsset}
@@ -52,13 +53,20 @@ const ConfirmExchangeButton = ({
       theme="dark"
       {...props}
     >
-      {isUnlockingAsset && <UnlockingSpinner timeRemaining={timeRemaining} />}
+      {isUnlockingAsset && (
+        <UnlockingSpinner
+          creationTimestamp={creationTimestamp}
+          estimatedApprovalTimeInMs={estimatedApprovalTimeInMs}
+        />
+      )}
     </HoldToAuthorizeButton>
   );
 };
 
 ConfirmExchangeButton.propTypes = {
+  creationTimestamp: PropTypes.number,
   disabled: PropTypes.bool,
+  estimatedApprovalTimeInMs: PropTypes.number,
   inputCurrencyName: PropTypes.string,
   isAssetApproved: PropTypes.bool,
   isAuthorizing: PropTypes.bool,
@@ -67,7 +75,6 @@ ConfirmExchangeButton.propTypes = {
   onSubmit: PropTypes.func,
   onUnlockAsset: PropTypes.func,
   slippage: PropTypes.number,
-  timeRemaining: PropTypes.string,
 };
 
 export default React.memo(ConfirmExchangeButton);

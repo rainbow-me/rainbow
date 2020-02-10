@@ -10,6 +10,7 @@ import { Centered } from '../layout';
 import Avatar from '../Avatar';
 import HeaderButton from './HeaderButton';
 import { colors } from '../../styles';
+import { isAvatarPickerAvailable } from '../../config/experimental';
 
 const AvatarCircle = styled(View)`
   border-radius: 17px;
@@ -42,13 +43,15 @@ const ProfileHeaderButton = ({
     transformOrigin="left"
   >
     <Centered>
-      <AvatarCircle
-        style={{ backgroundColor: colors.avatarColor[accountColor] }}
-      >
-        <FirstLetter>
-          {new GraphemeSplitter().splitGraphemes(accountName)[0]}
-        </FirstLetter>
-      </AvatarCircle>
+      {isAvatarPickerAvailable ? (
+        <AvatarCircle
+          style={{ backgroundColor: colors.avatarColor[accountColor] }}
+        >
+          <FirstLetter>
+            {new GraphemeSplitter().splitGraphemes(accountName)[0]}
+          </FirstLetter>
+        </AvatarCircle>
+      ) : null}
       <Avatar size={34} />
       {pendingRequestCount > 0 && (
         <Badge delay={1500} value={pendingRequestCount} zIndex={1} />
