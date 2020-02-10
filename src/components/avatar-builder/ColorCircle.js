@@ -12,7 +12,6 @@ const ColorCircle = ({ backgroundColor, isSelected, onPressColor }) => (
       duration={100}
       easing={Easing.bezier(0.19, 1, 0.22, 1)}
       enableHapticFeedback
-      height={42}
       justifyContent="center"
       onPress={onPressColor}
       scaleTo={0.7}
