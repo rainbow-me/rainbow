@@ -33,20 +33,19 @@ class TransactionListBaseCell : UITableViewCell {
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     animateTapStart(
       duration: duration,
-      options: .curveEaseOut,
       scale: scaleTo,
       useHaptic: hapticType
     )
   }
   
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapEnd(duration: duration, options: .curveEaseOut, scale: scaleTo)
+    animateTapEnd(duration: duration, scale: scaleTo)
     if row != nil {
       onItemPress(["index":row!])
     }
   }
   
   override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapEnd(duration: duration, options: .curveEaseOut, scale: scaleTo)
+    animateTapEnd(duration: duration, scale: scaleTo)
   }
 }
