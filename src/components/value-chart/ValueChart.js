@@ -221,7 +221,6 @@ export default class Chart extends PureComponent {
   constructor(props) {
     super(props);
 
-    console.log(this.props.data);
     allSegmentDividers = [];
     this.data = this.props.data.map(data =>
       simplifyChartData(data, this.props.amountOfPathPoints)
