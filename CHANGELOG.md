@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 ### Removed
 
 ### Changed
+
+## [1.2.4-1](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.4-1)
+### Changed
+* Bugfixes for broken button animation
+* Performance improvements for network calls
+* Improved support for Sentry sourcemaps
+
 ## [1.2.3-1](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.3-1)
 ### Changed
 * Better biometric support
