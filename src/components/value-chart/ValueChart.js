@@ -202,6 +202,8 @@ export default class Chart extends PureComponent {
     );
 
     this.state = {
+      animatedDividers: undefined,
+      animatedPath: undefined,
       chartData: this.data,
 
       currentData: this.data[0],
@@ -230,8 +232,6 @@ export default class Chart extends PureComponent {
     this.currentChart = new Value(0);
 
     this.currentInterval = 1;
-
-    this.animatedPath = undefined;
 
     this._configUp = {
       duration: 500,
@@ -299,7 +299,11 @@ export default class Chart extends PureComponent {
     this.reloadChart(0, true);
   };
 
-  getSnapshotBeforeUpdate() {
+  getSnapshotBeforeUpdate(prevProps) {
+    if (JSON.stringify(prevProps.data) != JSON.stringify(this.props.data)) {
+      allSegmentDividers = [];
+      this.reloadChart(0, true);
+    }
     if (this.currentInterval !== this.props.currentDataSource) {
       this.currentChart.setValue(this.props.currentDataSource);
       this.touchX.setValue(deviceUtils.dimensions.width - 1);
@@ -328,17 +332,25 @@ export default class Chart extends PureComponent {
     { useNativeDriver: true }
   );
 
-  reloadChart = async (currentInterval, isInitial = false) => {
-    if (currentInterval !== this.currentInterval) {
-      if (isInitial) {
-        await this.setState({
-          isLoading: true,
-        });
-
+  reloadChart = async (currentInterval, isNewData = false) => {
+    if (isNewData) {
+      const data = this.props.data.map(data =>
+        simplifyChartData(data, this.props.amountOfPathPoints)
+      );
+      await this.setState({
+        chartData: data,
+        isLoading: true,
+      });
+      setTimeout(async () => {
         const createdSVG = this.createAnimatedPath();
-        this.animatedPath = createdSVG.paths;
-        this.animatedDividers = createdSVG.points;
-      }
+        await this.setState({
+          animatedDividers: createdSVG.points,
+          animatedPath: createdSVG.paths,
+          isLoading: false,
+        });
+      });
+    }
+    if (currentInterval !== this.currentInterval) {
       setTimeout(async () => {
         Animated.timing(
           this.chartsMulti[this.currentInterval],
@@ -658,8 +670,8 @@ export default class Chart extends PureComponent {
                   preserveAspectRatio="none"
                   style={flipY}
                 >
-                  {this.animatedPath}
-                  {this.animatedDividers}
+                  {this.state.animatedPath}
+                  {this.state.animatedDividers}
                 </Svg>
               </View>
               <Animated.View
