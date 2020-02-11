@@ -44,7 +44,11 @@ PODS:
     - FirebaseCoreDiagnosticsInterop (~> 1.0)
     - GoogleUtilities/Environment (~> 6.2)
     - GoogleUtilities/Logger (~> 6.2)
+<<<<<<< HEAD
   - FirebaseCoreDiagnostics (1.2.1):
+=======
+  - FirebaseCoreDiagnostics (1.2.0):
+>>>>>>> c3be441b... begin mike add cash
     - FirebaseCoreDiagnosticsInterop (~> 1.2)
     - GoogleDataTransportCCTSupport (~> 1.3)
     - GoogleUtilities/Environment (~> 6.5)
@@ -82,6 +86,7 @@ PODS:
     - "GoogleUtilities/NSData+zlib (~> 6.0)"
     - nanopb (= 0.3.9011)
 <<<<<<< HEAD
+<<<<<<< HEAD
   - GoogleDataTransport (4.0.1)
   - GoogleDataTransportCCTSupport (1.4.1):
     - GoogleDataTransport (~> 4.0)
@@ -107,25 +112,34 @@ PODS:
   - GoogleDataTransport (3.2.0)
   - GoogleDataTransportCCTSupport (1.2.3):
     - GoogleDataTransport (~> 3.2)
+=======
+  - GoogleDataTransport (3.3.1)
+  - GoogleDataTransportCCTSupport (1.3.1):
+    - GoogleDataTransport (~> 3.3)
+>>>>>>> c3be441b... begin mike add cash
     - nanopb (~> 0.3.901)
-  - GoogleUtilities/AppDelegateSwizzler (6.4.0):
+  - GoogleUtilities/AppDelegateSwizzler (6.5.1):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
-  - GoogleUtilities/Environment (6.4.0)
-  - GoogleUtilities/Logger (6.4.0):
+  - GoogleUtilities/Environment (6.5.1)
+  - GoogleUtilities/Logger (6.5.1):
     - GoogleUtilities/Environment
-  - GoogleUtilities/MethodSwizzler (6.4.0):
+  - GoogleUtilities/MethodSwizzler (6.5.1):
     - GoogleUtilities/Logger
-  - GoogleUtilities/Network (6.4.0):
+  - GoogleUtilities/Network (6.5.1):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (6.4.0)"
-  - GoogleUtilities/Reachability (6.4.0):
+  - "GoogleUtilities/NSData+zlib (6.5.1)"
+  - GoogleUtilities/Reachability (6.5.1):
     - GoogleUtilities/Logger
+<<<<<<< HEAD
   - GoogleUtilities/UserDefaults (6.4.0):
 >>>>>>> de72933f... Cash cash 💸💸💸
+=======
+  - GoogleUtilities/UserDefaults (6.5.1):
+>>>>>>> c3be441b... begin mike add cash
     - GoogleUtilities/Logger
   - JWT (3.0.0-beta.12):
     - Base64 (~> 1.1.2)
@@ -143,11 +157,15 @@ PODS:
     - nanopb/encode (= 0.3.9011)
   - nanopb/decode (0.3.9011)
   - nanopb/encode (0.3.9011)
+<<<<<<< HEAD
   - Permission-Camera (2.0.9):
     - RNPermissions
   - Permission-FaceID (2.0.9):
     - RNPermissions
   - Protobuf (3.11.4)
+=======
+  - Protobuf (3.11.3)
+>>>>>>> c3be441b... begin mike add cash
   - RCTRequired (0.62.0-rc.1)
   - RCTTypeSafety (0.62.0-rc.1):
     - FBLazyVector (= 0.62.0-rc.1)
@@ -482,8 +500,9 @@ PODS:
     - Sentry (~> 4.4.0)
   - RNStoreReview (0.1.5):
     - React
-  - RNSVG (11.0.1):
+  - RNSVG (11.0.0):
     - React
+<<<<<<< HEAD
 <<<<<<< HEAD
   - SDWebImage (5.5.2):
     - SDWebImage/Core (= 5.5.2)
@@ -493,6 +512,11 @@ PODS:
     - SDWebImage/Core (= 5.4.2)
   - SDWebImage/Core (5.4.2)
 >>>>>>> de72933f... Cash cash 💸💸💸
+=======
+  - SDWebImage (5.5.2):
+    - SDWebImage/Core (= 5.5.2)
+  - SDWebImage/Core (5.5.2)
+>>>>>>> c3be441b... begin mike add cash
   - SDWebImageWebPCoder (0.2.5):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.0)
@@ -777,7 +801,11 @@ SPEC CHECKSUMS:
   FirebaseAnalytics: 45f36d9c429fc91d206283900ab75390cd05ee8a
   FirebaseAnalyticsInterop: 3f86269c38ae41f47afeb43ebf32a001f58fcdae
   FirebaseCore: 307ea2508df730c5865334e41965bd9ea344b0e5
+<<<<<<< HEAD
   FirebaseCoreDiagnostics: 2109d10c35e8289b1ee6cabf44d9ffb055620194
+=======
+  FirebaseCoreDiagnostics: 5e78803ab276bc5b50340e3c539c06c3de35c649
+>>>>>>> c3be441b... begin mike add cash
   FirebaseCoreDiagnosticsInterop: 296e2c5f5314500a850ad0b83e9e7c10b011a850
   FirebaseInstanceID: ebd2ea79ee38db0cb5f5167b17a0d387e1cc7b6e
   FirebaseMessaging: 089b7a4991425783384acc8bcefcd78c0af913bd
@@ -785,6 +813,7 @@ SPEC CHECKSUMS:
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   GoogleAppMeasurement: dfe55efa543e899d906309eaaac6ca26d249862f
+<<<<<<< HEAD
 <<<<<<< HEAD
   GoogleDataTransport: 653963cf5be60fb59cf051e070f0836fdc305f81
   GoogleDataTransportCCTSupport: 84e4d4bbab642f2e9d83ee65d78aca2b5527d314
@@ -800,6 +829,15 @@ SPEC CHECKSUMS:
   Permission-Camera: 8fe4753b02396489b11c5089e4f57bab7fe1ef42
   Permission-FaceID: 29c3f213a033c24330a554a5dad7681d6e3698f8
   Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
+=======
+  GoogleDataTransport: 0048df6388dab1c254799f2a30365b1dffe20422
+  GoogleDataTransportCCTSupport: f880d70972efa2ed1be4e9173a0f4c5f3dc2d176
+  GoogleUtilities: 06eb53bb579efe7099152735900dd04bf09e7275
+  JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
+  libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
+  nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
+  Protobuf: 0e94afe3b47cb11876eb6aee296638711a24bf75
+>>>>>>> c3be441b... begin mike add cash
   RCTRequired: 418abaf045a635a391e68ee0573035553c1c4d7b
   RCTTypeSafety: ea8dd81f61436a394b943dac4435a304c59906ff
   React: f591e8a044a8ee4a4b20ab632b2906461a241370
@@ -871,12 +909,17 @@ SPEC CHECKSUMS:
   RNScreens: ba539a5086136eb356e43699cb588a80369763ca
   RNSentry: 2ec85f3e314c6a650b1c51b30ff764b6103ed7e2
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
+<<<<<<< HEAD
   RNSVG: 67f1f12dae2cef6ed59a42cae74a6b8f5a9e7b46
 <<<<<<< HEAD
   SDWebImage: 4d5c027c935438f341ed33dbac53ff9f479922ca
 =======
   SDWebImage: 4ca2dc4eefae4224bea8f504251cda485a363745
 >>>>>>> de72933f... Cash cash 💸💸💸
+=======
+  RNSVG: 82d44baa568873faae1a9929dd30d29db8f06732
+  SDWebImage: 4d5c027c935438f341ed33dbac53ff9f479922ca
+>>>>>>> c3be441b... begin mike add cash
   SDWebImageWebPCoder: 947093edd1349d820c40afbd9f42acb6cdecd987
   Sentry: 14bdd673870e8cf64932b149fad5bbbf39a9b390
   SRSRadialGradient: 77bcb1ae812d0c77560e54ed9e52166df032db1d
