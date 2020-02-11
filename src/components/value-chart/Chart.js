@@ -128,6 +128,7 @@ export default function Chart() {
         data={data2}
         barColor={change > 0 ? colors.chartGreen : colors.red}
         stroke={{ detailed: 1.5, simplified: 3 }}
+        importantPointsIndexInterval={25}
       />
       <TimespanSelector
         reloadChart={setCurrentChart}

@@ -145,9 +145,7 @@ const chartPadding = 16;
 
 const flipY = { transform: [{ scaleX: 1 }, { scaleY: -1 }] };
 
-const indexInterval = 10;
-
-const pickImportantPoints = array => {
+const pickImportantPoints = (array, indexInterval) => {
   const result = [];
   let xs = [];
   let ys = [];
@@ -207,6 +205,7 @@ export default class Chart extends PureComponent {
       }),
     }),
     enableSelect: PropTypes.bool,
+    importantPointsIndexInterval: PropTypes.number,
     mode: PropTypes.oneOf(['gesture-managed', 'detailed', 'simplified']),
     onValueUpdate: PropTypes.func,
     stroke: PropTypes.object,
@@ -214,6 +213,7 @@ export default class Chart extends PureComponent {
 
   static defaultProps = {
     enableSelect: true,
+    importantPointsIndexInterval: 10,
     mode: 'gesture-managed',
     stroke: { detailed: 1.5, simplified: 3 },
   };
@@ -456,7 +456,10 @@ export default class Chart extends PureComponent {
           y: (y - minValue.y) * yMultiply,
         }));
 
-        const importantPoints = pickImportantPoints(points);
+        const importantPoints = pickImportantPoints(
+          points,
+          this.props.importantPointsIndexInterval
+        );
         const spline = new Spline(importantPoints.xs, importantPoints.ys);
         splinePoints.push(
           points
