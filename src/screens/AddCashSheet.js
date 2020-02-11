@@ -19,32 +19,17 @@ import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 const cashLimitYearly = 1500;
 const cashLimitDaily = 250;
 
+const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);
-const sheetHeight = isNativeStackAvailable
-  ? deviceUtils.dimensions.height - statusBarHeight - 10
-  : deviceUtils.dimensions.height - statusBarHeight;
+const sheetHeight =
+  deviceHeight - statusBarHeight - (isNativeStackAvailable ? 10 : 0);
 
-const Container = isNativeStackAvailable
-  ? styled(Column)`
-      background-color: ${colors.transparent};
-      height: ${sheetHeight};
-    `
-  : styled(Column)`
-      background-color: ${colors.transparent};
-      height: 100%;
-    `;
-
-const SheetContainer = isNativeStackAvailable
-  ? styled(Column)`
-      background-color: ${colors.white};
-      height: ${deviceUtils.dimensions.height};
-    `
-  : styled(Column)`
-      ${borders.buildRadius('top', 30)};
-      background-color: ${colors.white};
-      height: ${sheetHeight};
-      top: ${statusBarHeight};
-    `;
+const SheetContainer = styled(Column)`
+  ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 30)};
+  background-color: ${colors.white};
+  height: ${isNativeStackAvailable ? deviceHeight : sheetHeight};
+  top: ${isNativeStackAvailable ? 0 : statusBarHeight};
+`;
 
 const AddCashSheet = () => {
   const [orderStatus, setOrderStatus] = useState(null);
@@ -54,7 +39,11 @@ const AddCashSheet = () => {
   return (
     <SheetContainer>
       <StatusBar barStyle="light-content" />
-      <Container align="center" justify="space-between">
+      <Column
+        align="center"
+        height={isNativeStackAvailable ? sheetHeight : '100%'}
+        justify="space-between"
+      >
         <AddCashHeader
           limitDaily={cashLimitDaily}
           limitYearly={cashLimitYearly}
@@ -75,7 +64,7 @@ const AddCashSheet = () => {
             setTransferStatus={setTransferStatus}
           />
         )}
-      </Container>
+      </Column>
     </SheetContainer>
   );
 };

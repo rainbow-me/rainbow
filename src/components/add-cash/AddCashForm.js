@@ -85,7 +85,7 @@ const gradientPoints = [gradientXPoint, 53.5];
 
 const shakeAnimation = () => runSpring(new Clock(), -10, 0, -1000, 5500, 35);
 
-const currencies = ['ETH', 'DAI'];
+const currencies = ['DAI', 'ETH'];
 const initialCurrencyIndex = 0;
 
 const AddCashForm = ({
@@ -256,14 +256,19 @@ const AddCashForm = ({
         <MaskedView
           width="100%"
           maskElement={
-            <Animated.View>
+            <Animated.View
+              style={{
+                left: '-50%',
+                transform: [{ translateX: shakeAnim }],
+                width: '200%',
+              }}
+            >
               <Animated.Text
                 style={{
                   color: colors.white,
                   fontFamily: 'SF Pro Rounded',
                   fontSize: cashFontSize,
                   fontWeight: 'bold',
-                  left: '-50%',
                   lineHeight: 108,
                   textAlign: 'center',
                   transform: [
@@ -272,7 +277,6 @@ const AddCashForm = ({
                       translateX: shakeAnim,
                     },
                   ],
-                  width: '200%',
                 }}
               >
                 {'$' + (text ? text : '0')}
@@ -288,21 +292,15 @@ const AddCashForm = ({
             stops={[0.2049, 0.6354, 0.8318, 0.9541]}
           />
         </MaskedView>
-
         <AddCashSelector
           currencies={currencies}
           initialCurrencyIndex={initialCurrencyIndex}
           onSelect={setDestCurrency}
         />
       </ColumnWithMargins>
-
       <ColumnWithMargins align="center" margin={15}>
         <View style={{ maxWidth: 313 }}>
-          <VirtualKeyboard
-            decimal
-            rowStyle={{ width: keyboardWidth }}
-            onPress={val => onPress(val)}
-          />
+          <VirtualKeyboard onPress={onPress} width={keyboardWidth} />
         </View>
         <Centered
           css={padding(

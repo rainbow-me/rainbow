@@ -1,108 +1,68 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, Text, View, ViewPropTypes } from 'react-native';
-import styled from 'styled-components/primitives';
-import { colors, fonts } from '../../styles';
+import { withProps } from 'recompact';
+import { colors } from '../../styles';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
+import { Centered, FlexItem, Row } from '../layout';
+import { Rounded } from '../text';
 
-const Backspace = styled(Icon).attrs({
+const KeyColor = colors.alpha(colors.blueGreyDark, 0.8);
+const defaultTransform = { transform: [{ scale: 0.5 }] };
+
+const KeyboardButton = ({ children, ...props }) => (
+  <ButtonPressAnimation
+    {...props}
+    duration={35}
+    scaleTo={1.6}
+    transformOrigin="keyboard"
+  >
+    <Centered height={64} style={defaultTransform} width={80}>
+      {children}
+    </Centered>
+  </ButtonPressAnimation>
+);
+
+const KeyboardRow = withProps({
   align: 'center',
-  name: 'backspace',
-  opacity: 0.8,
-})`
-  width: 40;
-  transform: scale(0.5);
-`;
+  justify: 'space-between',
+  width: '100%',
+})(Row);
 
-const NumberColor = colors.alpha(colors.blueGreyDark, 0.8);
-
-const styles = StyleSheet.create({
-  backspace: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-    width: 80,
-  },
-  container: {
-    alignItems: 'center',
-  },
-  number: {
-    fontFamily: fonts.family.SFProRounded,
-    fontSize: 44,
-    fontWeight: fonts.weight.bold,
-    lineHeight: 64,
-    textAlign: 'center',
-    width: 80,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-});
-
-const VirtualKeyboard = ({ decimal = true, onPress, rowStyle }) => {
-  const BackspaceButton = () => (
-    <ButtonPressAnimation
-      duration={35}
-      onPress={() => {
-        onPress('back');
-      }}
-      scaleTo={1.6}
-      style={styles.backspace}
-      transformOrigin="keyboard"
-    >
-      <Backspace />
-    </ButtonPressAnimation>
-  );
-
-  const Row = numbersArray => {
-    let cells = numbersArray.map(val => Cell(val));
-    return <View style={[styles.row, rowStyle]}>{cells}</View>;
-  };
-
-  const Cell = symbol => (
-    <ButtonPressAnimation
-      duration={35}
-      key={symbol}
-      onPress={() => {
-        onPress(symbol.toString());
-      }}
-      scaleTo={1.6}
-      transformOrigin="keyboard"
-      width={80}
-    >
-      <Text
-        style={[
-          styles.number,
-          { color: NumberColor },
-          { transform: [{ scale: 0.5 }] },
-        ]}
-      >
+const VirtualKeyboard = ({ decimal, onPress, ...props }) => {
+  const renderCell = symbol => (
+    <KeyboardButton key={symbol} onPress={() => onPress(symbol.toString())}>
+      <Rounded align="center" color={KeyColor} size={44} weight="bold">
         {symbol}
-      </Text>
-    </ButtonPressAnimation>
+      </Rounded>
+    </KeyboardButton>
   );
+
+  const renderRow = cells => <KeyboardRow>{cells.map(renderCell)}</KeyboardRow>;
 
   return (
-    <View style={[styles.container]}>
-      {Row([1, 2, 3])}
-      {Row([4, 5, 6])}
-      {Row([7, 8, 9])}
-      <View style={[styles.row, rowStyle]}>
-        {decimal ? Cell('.') : <View style={{ flex: 1 }} />}
-        {Cell(0)}
-        {BackspaceButton()}
-      </View>
-    </View>
+    <Centered direction="column" {...props}>
+      {renderRow([1, 2, 3])}
+      {renderRow([4, 5, 6])}
+      {renderRow([7, 8, 9])}
+      <KeyboardRow>
+        {decimal ? renderCell('.') : <FlexItem />}
+        {renderCell(0)}
+        <KeyboardButton onPress={() => onPress('back')}>
+          <Icon align="center" color={KeyColor} name="backspace" width={40} />
+        </KeyboardButton>
+      </KeyboardRow>
+    </Centered>
   );
 };
 
 VirtualKeyboard.propTypes = {
   decimal: PropTypes.bool,
   onPress: PropTypes.func.isRequired,
-  rowStyle: ViewPropTypes.style,
 };
 
-export default VirtualKeyboard;
+VirtualKeyboard.defaultProps = {
+  decimal: true,
+};
+
+export default React.memo(VirtualKeyboard);
