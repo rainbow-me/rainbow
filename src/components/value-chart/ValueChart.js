@@ -247,14 +247,16 @@ export default class Chart extends PureComponent {
     this.value = new Value(this.props.mode === 'detailed' ? 0 : 1);
     this.opacity = new Value(0);
     this.shouldSpring = new Value(0);
-    this.chartDay = new Value(1);
-    this.chartWeek = new Value(0);
-    this.chartMonth = new Value(0);
-    this.chartYear = new Value(0);
     this.shouldReactToGestures = new Value(
       this.props.mode === 'gesture-managed' ? 1 : 0
     );
     this.currentChart = new Value(0);
+    this.chartAnimationValues = [
+      new Value(1),
+      new Value(0),
+      new Value(0),
+      new Value(0),
+    ];
 
     this.currentInterval = 1;
 
@@ -268,13 +270,6 @@ export default class Chart extends PureComponent {
       easing: Easing.bezier(0.55, 0.06, 0.45, 0.94),
       toValue: 0,
     };
-
-    this.chartsMulti = [
-      this.chartDay,
-      this.chartWeek,
-      this.chartMonth,
-      this.chartYear,
-    ];
 
     this.onTapGestureEvent = event([
       {
@@ -378,11 +373,11 @@ export default class Chart extends PureComponent {
     if (currentInterval !== this.currentInterval) {
       setTimeout(async () => {
         Animated.timing(
-          this.chartsMulti[this.currentInterval],
+          this.chartAnimationValues[this.currentInterval],
           this._configDown
         ).start();
         Animated.timing(
-          this.chartsMulti[currentInterval],
+          this.chartAnimationValues[currentInterval],
           this._configUp
         ).start();
         this.currentInterval = currentInterval;
@@ -496,7 +491,7 @@ export default class Chart extends PureComponent {
 
     const allNodes = index => {
       return chartData.map((_, i) => {
-        return chartNode(this.chartsMulti[i], index, i);
+        return chartNode(this.chartAnimationValues[i], index, i);
       });
     };
 
@@ -514,7 +509,7 @@ export default class Chart extends PureComponent {
             if (index === allSegmentDividers[i - 1]) {
               sectionEndPoints.push({
                 index: segments.dividers[i - 1],
-                opacity: this.chartsMulti[segments.dividers[i - 1]],
+                opacity: this.chartAnimationValues[segments.dividers[i - 1]],
                 x,
                 y: add(...allNodes(index)),
               });
