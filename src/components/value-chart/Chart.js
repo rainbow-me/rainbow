@@ -58,7 +58,11 @@ export default function Chart() {
             color: colorsArray[colorIndex++],
             line: i * 5,
             points: data.map(values => {
-              return { x: values.timestamp, y: values.value };
+              return {
+                isImportant: Math.random() < 0.05 ? true : false,
+                x: values.timestamp,
+                y: values.value,
+              };
             }),
             renderStartSeparator:
               colorIndex % 2 !== 0
@@ -121,7 +125,7 @@ export default function Chart() {
         }}
         currentDataSource={currentChart}
         amountOfPathPoints={100} // amount of points for switch between charts
-        data={data1}
+        data={data2}
         barColor={change > 0 ? colors.chartGreen : colors.red}
         stroke={{ detailed: 1.5, simplified: 3 }}
       />

@@ -72,14 +72,11 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
     );
     let newData = [];
     newData.push({
-      x: allSegmentsPoints[0].x - xMul * 10,
+      isImportant: true,
+      x: allSegmentsPoints[0].x - xMul * 2,
       y: allSegmentsPoints[0].y,
     });
-    newData.push({
-      x: allSegmentsPoints[0].x,
-      y: allSegmentsPoints[0].y,
-    });
-    for (let i = 2; i < destinatedNumberOfPoints - 2; i++) {
+    for (let i = 1; i < destinatedNumberOfPoints - 1; i++) {
       const indexPlace = i * destMul;
       const r = indexPlace % 1;
       const f = Math.floor(indexPlace);
@@ -99,16 +96,17 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
         createdLastPoints.push(newData.length);
       }
       newData.push({
+        isImportant:
+          (allSegmentsPoints[f].isImportant ||
+            allSegmentsPoints[f + 1].isImportant) &&
+          !newData[newData.length - 1].isImportant,
         x: allSegmentsPoints[0].x + i * xMul,
         y: finalValue,
       });
     }
     newData.push({
-      x: allSegmentsPoints[0].x + destinatedNumberOfPoints * xMul,
-      y: allSegmentsPoints[allSegmentsPoints.length - 1].y,
-    });
-    newData.push({
-      x: allSegmentsPoints[0].x + destinatedNumberOfPoints * xMul + xMul * 10,
+      isImportant: true,
+      x: allSegmentsPoints[0].x + destinatedNumberOfPoints * xMul + xMul * 2,
       y: allSegmentsPoints[allSegmentsPoints.length - 1].y,
     });
 
@@ -151,26 +149,37 @@ const indexInterval = 10;
 
 const pickImportantPoints = array => {
   const result = [];
-  result.push(array[0]);
-  let thresholdIndex = indexInterval;
-  for (let i = 1; i < array.length; i++) {
-    if (i === array.length - 1) {
-      result.push(array[i]);
-    } else if (array[i].y === 0 || array[i].y === 200) {
-      result.push(array[i]);
-      thresholdIndex = i + indexInterval;
-    } else if (i === thresholdIndex) {
-      result.push(array[i]);
-      thresholdIndex += indexInterval;
+  let xs = [];
+  let ys = [];
+  array.forEach(point => {
+    if (point.isImportant) {
+      xs.push(point.x);
+      ys.push(point.y);
     }
-  }
-
-  const xs = [];
-  const ys = [];
-  result.forEach(point => {
-    xs.push(point.x);
-    ys.push(point.y);
   });
+
+  if (xs.length <= 2) {
+    result.push(array[0]);
+    let thresholdIndex = indexInterval;
+    for (let i = 1; i < array.length; i++) {
+      if (i === array.length - 1) {
+        result.push(array[i]);
+      } else if (array[i].y === 0 || array[i].y === 200) {
+        result.push(array[i]);
+        thresholdIndex = i + indexInterval;
+      } else if (i === thresholdIndex) {
+        result.push(array[i]);
+        thresholdIndex += indexInterval;
+      }
+    }
+
+    xs = [];
+    ys = [];
+    result.forEach(point => {
+      xs.push(point.x);
+      ys.push(point.y);
+    });
+  }
 
   return { xs, ys };
 };
@@ -180,7 +189,23 @@ export default class Chart extends PureComponent {
     amountOfPathPoints: PropTypes.number,
     barColor: PropTypes.string,
     currentDataSource: PropTypes.number,
-    data: PropTypes.array,
+    data: PropTypes.arrayOf({
+      name: PropTypes.number,
+      segments: PropTypes.arrayOf({
+        color: PropTypes.string,
+        line: PropTypes.number,
+        points: PropTypes.arrayOf({
+          x: PropTypes.number,
+          y: PropTypes.number,
+        }),
+        renderStartSeparator: {
+          fill: PropTypes.string,
+          r: PropTypes.number,
+          stroke: PropTypes.string,
+          strokeWidth: PropTypes.number,
+        },
+      }),
+    }),
     enableSelect: PropTypes.bool,
     mode: PropTypes.oneOf(['gesture-managed', 'detailed', 'simplified']),
     onValueUpdate: PropTypes.func,
@@ -196,6 +221,7 @@ export default class Chart extends PureComponent {
   constructor(props) {
     super(props);
 
+    console.log(this.props.data);
     allSegmentDividers = [];
     this.data = this.props.data.map(data =>
       simplifyChartData(data, this.props.amountOfPathPoints)
@@ -296,13 +322,13 @@ export default class Chart extends PureComponent {
   }
 
   componentDidMount = () => {
-    this.reloadChart(0, true);
+    this.reloadChart(1, true);
   };
 
   getSnapshotBeforeUpdate(prevProps) {
     if (JSON.stringify(prevProps.data) != JSON.stringify(this.props.data)) {
       allSegmentDividers = [];
-      this.reloadChart(0, true);
+      this.reloadChart(this.currentInterval, true);
     }
     if (this.currentInterval !== this.props.currentDataSource) {
       this.currentChart.setValue(this.props.currentDataSource);
@@ -430,7 +456,8 @@ export default class Chart extends PureComponent {
         const xMultiply = width / timestampLength;
 
         const yMultiply = height / (maxValue.y - minValue.y);
-        const points = chartData[i].points.map(({ x, y }) => ({
+        const points = chartData[i].points.map(({ x, y, isImportant }) => ({
+          isImportant,
           x: (x - chartData[i].points[0].x) * xMultiply,
           y: (y - minValue.y) * yMultiply,
         }));
