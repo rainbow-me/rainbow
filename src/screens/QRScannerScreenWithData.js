@@ -34,12 +34,16 @@ class QRScannerScreenWithData extends Component {
   };
 
   componentDidUpdate = (prevProps, prevState) => {
-    if (this.props.isFocused && !prevProps.isFocused) {
-      Permissions.request('camera').then(permission => {
-        const isCameraAuthorized = permission === 'authorized';
+    const prevNavParam = prevProps.navigation.getParam('focus', false);
+    const newNavParam = this.props.navigation.getParam('focus', false);
 
+    if (newNavParam && !prevNavParam) {
+      Permissions.request('camera').then(permission => {
+        console.log('got permission status', permission);
+        const isCameraAuthorized = permission === 'authorized';
         if (prevState.isCameraAuthorized !== isCameraAuthorized) {
-          this.setState({ isCameraAuthorized });
+          console.log('permission status updated', permission);
+          !this.state.enableScanning && this.setState({ isCameraAuthorized });
         }
       });
 
@@ -54,7 +58,9 @@ class QRScannerScreenWithData extends Component {
 
   handlePastedUri = async uri => this.props.walletConnectOnSessionRequest(uri);
 
-  handlePressBackButton = () => this.props.navigation.navigate('WalletScreen');
+  handlePressBackButton = () => {
+    this.props.navigation.navigate('WalletScreen');
+  };
 
   handlePressPasteSessionUri = () => {
     Prompt({
@@ -103,17 +109,22 @@ class QRScannerScreenWithData extends Component {
     });
   };
 
-  render = () => (
-    <QRScannerScreen
-      {...this.props}
-      {...this.state}
-      enableScanning={this.state.enableScanning && this.props.isFocused}
-      onPressBackButton={this.handlePressBackButton}
-      onPressPasteSessionUri={this.handlePressPasteSessionUri}
-      onScanSuccess={this.handleScanSuccess}
-      onSheetLayout={this.handleSheetLayout}
-    />
-  );
+  render = () => {
+    const isFocused = this.props.navigation.getParam('focus', false);
+
+    return (
+      <QRScannerScreen
+        {...this.props}
+        {...this.state}
+        isFocused={isFocused}
+        enableScanning={this.state.enableScanning && isFocused}
+        onPressBackButton={this.handlePressBackButton}
+        onPressPasteSessionUri={this.handlePressPasteSessionUri}
+        onScanSuccess={this.handleScanSuccess}
+        onSheetLayout={this.handleSheetLayout}
+      />
+    );
+  };
 }
 
 export default compose(
