@@ -115,7 +115,16 @@ const MainNavigator = createStackNavigator(
       },
       screen: TransactionConfirmationScreenWithData,
     },
-    ExampleScreen,
+    ExampleScreen: {
+      navigationOptions: {
+        ...expandedPreset,
+        onTransitionStart: props => {
+          expandedPreset.onTransitionStart(props);
+          onTransitionStart();
+        },
+      },
+      screen: ExampleScreen,
+    },
     ExchangeModal: {
       navigationOptions: {
         ...exchangePreset,

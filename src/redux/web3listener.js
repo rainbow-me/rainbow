@@ -5,7 +5,7 @@ import { promiseUtils } from '../utils';
 import { uniswapUpdateTokenReserves } from './uniswap';
 
 // -- Actions ---------------------------------------- //
-const web3UpdateReserves = () => async (dispatch, getState) => {
+export const web3UpdateReserves = () => async (dispatch, getState) => {
   const { inputCurrency, outputCurrency } = getState().uniswap;
   if (!(inputCurrency || outputCurrency)) return;
   const [inputReserve, outputReserve] = await promiseUtils.PromiseAllWithFails([

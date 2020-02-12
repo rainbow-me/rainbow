@@ -1,100 +1,22 @@
 import PropTypes from 'prop-types';
-import React, { PureComponent, useState } from 'react';
-import { TextInput, KeyboardAvoidingView, useWindowDimensions } from 'react-native';
+import React, { PureComponent } from 'react';
+import { Text } from 'react-native';
 import { compose } from 'recompact';
-import { AnimatedNumber, defaultAnimatedNumberProps } from '../components/animations';
-import { Button } from '../components/buttons';
-import { GasSpeedButton } from '../components/gas';
-import { Text } from '../components/text';
-import { Input } from '../components/inputs';
-import { Centered,ColumnWithMargins, Column, Row, FlexItem, Page } from '../components/layout';
-import { withDataInit, withAccountData } from '../hoc';
+import Button from '../components/buttons/Button';
+import { Centered, Page } from '../components/layout';
+import {
+  withDataInit,
+  withAccountData,
+  withUniswapAssets,
+  withGas,
+  withUniswapAllowances,
+  withBlockPolling,
+} from '../hoc';
 import { colors, position } from '../styles';
-import { CompoundInvestmentCard } from '../components/investment-cards';
-
-const Thingy = () => {
-  const dims = useWindowDimensions();
-  const [value, setValue] = useState(0);
-  const [time, setTime] = useState(`${defaultAnimatedNumberProps.time}`);
-  const [steps, setSteps] = useState(`${defaultAnimatedNumberProps.steps}`);
-
-  let huh = false;
-  const loop = () => {
-    setValue(p => {
-
-      if (p > 1000) {
-        huh = true;
-      }
-
-      return p + (200.65 * (huh ? -1 : 1));
-    })
-  }
-
-  return (
-    <KeyboardAvoidingView behavior="padding">
-      <Column {...position.size('100%')} backgroundColor="white" align="start" justify="center">
-        <Centered height={dims.height / 3} padding={80} width="100%">
-          <Centered {...position.coverAsObject} marginTop={50} margin={34} backgroundColor="pink" borderRadius={20}>
-            <AnimatedNumber
-              color="white"
-              fontSize={40}
-              steps={steps}
-              time={time}
-              value={value}
-            />
-          </Centered>
-        </Centered>
-        <ColumnWithMargins
-          backgroundColor={colors.white}
-          direction="column"
-          flexGrow={1}
-          flexShrink={0}
-          maxHeight={dims.height / 3}
-          paddingHorizontal={19}
-          paddingVertical={50}
-          width="100%"
-        >
-          <Row align="center" justify="space-between" width="100%">
-            <Text>Time:</Text>
-            <Input
-              align="right"
-              backgroundColor="white"
-              defaultValue={time}
-              keyboardType="numeric"
-              height={30}
-              onChange={({ nativeEvent: { text } }) => setTime(text)}
-              value={time}
-              width={dims.width / 3}
-            />
-          </Row>
-          <Row align="center" justify="space-between" width="100%">
-            <Text>Steps:</Text>
-            <Input
-              align="right"
-              backgroundColor="white"
-              keyboardType="numeric"
-              defaultValue={steps}
-              height={30}
-              onChange={({ nativeEvent: { text } }) => setSteps(text)}
-              value={steps}
-              width={dims.width / 3}
-            />
-          </Row>
-        </ColumnWithMargins>
-        <Centered
-          backgroundColor={colors.dark}
-          flexGrow={1}
-          flexShrink={0}
-          maxHeight={dims.height / 3}
-          padding={50}
-          width="100%"
-        >
-          <Button onPress={loop}>Animate Number</Button>
-        </Centered>
-      </Column>
-    </KeyboardAvoidingView>
-  );
-}
+import swapOnUniswap from '../raps/swap-uniswap';
+import { loadWallet } from '../model/wallet';
+import { gasUtils } from '../utils';
+import { get } from 'lodash';
 
 class ExampleScreen extends PureComponent {
   static propTypes = {
@@ -104,32 +26,85 @@ class ExampleScreen extends PureComponent {
   componentDidMount = async () => {
     try {
       await this.props.initializeWallet();
+      this.props.gasPricesStartPolling();
+      this.props.web3ListenerInit();
     } catch (error) {
       console.log('lol error on ExampleScreen like a n00b: ', error);
     }
   };
 
+  componentWillUnmount() {
+    this.props.web3ListenerStop();
+    this.props.gasPricesStopPolling();
+  }
+
+  doSwap = async () => {
+    const wallet = await loadWallet();
+
+    const { gasPrices, inputReserve, outputReserve } = this.props;
+
+    const inputCurrency = {
+      address: '0x6b175474e89094c44da98b954eedeac495271d0f',
+      decimals: 18,
+      exchangeAddress: '0x2a1530c4c41db0b0b2bb646cb5eb1a67b7158667',
+    };
+    const outputCurrency = {
+      address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+      decimals: 18,
+    };
+
+    await this.props.uniswapUpdateInputCurrency(inputCurrency);
+    await this.props.uniswapUpdateOutputCurrency(outputCurrency);
+    await this.props.web3UpdateReserves();
+
+    const inputAmount = 0.1; // DAI
+    const outputAmount = 0.0004; // WETH
+    const selectedGasPrice = get(gasPrices, `[${gasUtils.NORMAL}]`);
+    const inputAsExactAmount = true;
+
+    try {
+      const swap = await swapOnUniswap(
+        wallet,
+        inputCurrency,
+        outputCurrency,
+        inputAmount,
+        outputAmount,
+        selectedGasPrice,
+        gasPrices,
+        inputAsExactAmount,
+        inputReserve,
+        outputReserve
+      );
+
+      console.log('SWAP EXECUTED!', swap.hash);
+      await swap.wait();
+      console.log('SWAP CONFIRMED');
+    } catch (e) {
+      console.log('SWAP FAILED', e);
+    }
+  };
+
   render = () => (
-        <Thingy />
+    <Page
+      {...position.centeredAsObject}
+      {...position.sizeAsObject('100%')}
+      color={colors.dark}
+      flex={1}
+    >
+      <Centered width="100%">
+        <Button onPress={this.doSwap}>
+          <Text>Swap</Text>
+        </Button>
+      </Centered>
+    </Page>
   );
 }
 
-export default compose(withAccountData, withDataInit)(ExampleScreen);
-
-
-       // {/*<CompoundInvestmentCard />*/}
-
-    //   {
-    //     // haha you can put stuff here if you wanna test a component in isolation!
-    //     // ... i dont want to set up storybook right now
-
-    // <Page
-    //   {...position.centeredAsObject}
-    //   {...position.sizeAsObject('100%')}
-    //   color={colors.dark}
-    //   flex={1}
-    // >
-    //   <Centered width="100%">
-    //   </Centered>
-    // </Page>
-    //   }
+export default compose(
+  withAccountData,
+  withDataInit,
+  withUniswapAssets,
+  withUniswapAllowances,
+  withGas,
+  withBlockPolling
+)(ExampleScreen);

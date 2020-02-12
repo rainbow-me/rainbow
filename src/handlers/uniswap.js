@@ -143,15 +143,20 @@ export const getContractExecutionDetails = (tradeDetails, providerOrSigner) => {
   };
 };
 
-export const executeSwap = async (tradeDetails, gasLimit, gasPrice) => {
-  const wallet = await loadWallet();
-  if (!wallet) return null;
+export const executeSwap = async (
+  tradeDetails,
+  gasLimit,
+  gasPrice,
+  wallet = null
+) => {
+  const walletToUse = wallet || (await loadWallet());
+  if (!walletToUse) return null;
   const {
     exchange,
     methodName,
     updatedMethodArgs,
     value,
-  } = getContractExecutionDetails(tradeDetails, wallet);
+  } = getContractExecutionDetails(tradeDetails, walletToUse);
   const transactionParams = {
     gasLimit: gasLimit ? toHex(gasLimit) : undefined,
     gasPrice: gasPrice ? toHex(gasPrice) : undefined,
