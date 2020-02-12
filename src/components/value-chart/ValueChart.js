@@ -12,6 +12,8 @@ import TimestampText from './TimestampText';
 import ActivityIndicator from '../ActivityIndicator';
 import GestureWrapper from './GestureWrapper';
 
+import deepEqual from 'fbjs/lib/areEqual';
+
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -356,7 +358,7 @@ export default class Chart extends PureComponent {
   };
 
   getSnapshotBeforeUpdate(prevProps) {
-    if (JSON.stringify(prevProps.data) != JSON.stringify(this.props.data)) {
+    if (!deepEqual(prevProps.data, this.props.data)) {
       allSegmentDividers = [];
       this.reloadChart(this.currentInterval, true);
     }
