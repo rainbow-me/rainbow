@@ -26,12 +26,19 @@ const sortAssetsByNativeAmount = (
   if (!isEmpty(assetPricesFromUniswap)) {
     updatedAssets = map(originalAssets, asset => {
       if (isNil(asset.price)) {
-        const assetPrice = get(assetPricesFromUniswap, `[${asset.address}]`);
+        const assetPrice = get(
+          assetPricesFromUniswap,
+          `[${asset.address}].price`
+        );
+        const relativePriceChange = get(
+          assetPricesFromUniswap,
+          `[${asset.address}].relativePriceChange`
+        );
         if (assetPrice) {
           return {
             ...asset,
             price: {
-              relative_change_24h: 0,
+              relative_change_24h: relativePriceChange,
               value: assetPrice,
             },
           };

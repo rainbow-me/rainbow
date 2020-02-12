@@ -1,3 +1,4 @@
+import { getUnixTime, subDays } from 'date-fns';
 import {
   concat,
   filter,
@@ -6,13 +7,17 @@ import {
   isNil,
   keyBy,
   map,
+  mapKeys,
   mapValues,
   property,
   remove,
   uniqBy,
 } from 'lodash';
 import { uniswapClient } from '../apollo/client';
-import { UNISWAP_PRICES_QUERY } from '../apollo/queries';
+import {
+  UNISWAP_24HOUR_PRICE_QUERY,
+  UNISWAP_PRICES_QUERY,
+} from '../apollo/queries';
 import {
   getAssetPricesFromUniswap,
   getAssets,
@@ -263,16 +268,54 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
     });
 
     newSubscription.subscribe({
-      next: ({ data }) => {
+      next: async ({ data }) => {
         if (data && data.exchanges) {
           const nativePriceOfEth = ethereumUtils.getEthPriceUnit(assets);
-          const mappedData = keyBy(data.exchanges, 'tokenAddress');
-          const missingPrices = mapValues(mappedData, value =>
+          const exchangeAddresses = map(data.exchanges, property('id'));
+
+          const yesterday = getUnixTime(subDays(new Date(), 1));
+          const historicalPriceCalls = map(exchangeAddresses, address =>
+            get24HourPrice(address, yesterday)
+          );
+          const historicalPriceResults = await Promise.all(
+            historicalPriceCalls
+          );
+          const mappedHistoricalData = keyBy(
+            historicalPriceResults,
+            'exchangeAddress'
+          );
+          const missingHistoricalPrices = mapValues(
+            mappedHistoricalData,
+            value => divide(nativePriceOfEth, value.price)
+          );
+
+          const mappedPricingData = keyBy(data.exchanges, 'id');
+          const missingPrices = mapValues(mappedPricingData, value =>
             divide(nativePriceOfEth, value.price)
           );
-          saveAssetPricesFromUniswap(missingPrices, accountAddress, network);
+          const missingPriceInfo = mapValues(
+            missingPrices,
+            (currentPrice, key) => {
+              const historicalPrice = get(missingHistoricalPrices, `[${key}]`);
+              const tokenAddress = get(
+                mappedPricingData,
+                `[${key}].tokenAddress`
+              );
+              const relativePriceChange = historicalPrice
+                ? ((currentPrice - historicalPrice) / currentPrice) * 100
+                : 0;
+              return {
+                price: currentPrice,
+                relativePriceChange,
+                tokenAddress,
+              };
+            }
+          );
+          const tokenPricingInfo = mapKeys(missingPriceInfo, 'tokenAddress');
+
+          saveAssetPricesFromUniswap(tokenPricingInfo, accountAddress, network);
           dispatch({
-            payload: missingPrices,
+            payload: tokenPricingInfo,
             type: DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP,
           });
         }
@@ -283,6 +326,18 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
       type: DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION,
     });
   }
+};
+
+const get24HourPrice = async (exchangeAddress, yesterday) => {
+  const result = await uniswapClient.query({
+    query: UNISWAP_24HOUR_PRICE_QUERY,
+    variables: {
+      exchangeAddress,
+      fetchPolicy: 'network-only',
+      timestamp: yesterday,
+    },
+  });
+  return get(result, 'data.exchangeHistoricalDatas[0]');
 };
 
 export const compoundInfoReceived = message => (dispatch, getState) => {

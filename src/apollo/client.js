@@ -1,6 +1,4 @@
-import { ApolloClient } from 'apollo-client';
-import { InMemoryCache } from 'apollo-cache-inmemory';
-import { HttpLink } from 'apollo-link-http';
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client';
 
 export const client = new ApolloClient({
   cache: new InMemoryCache(),
