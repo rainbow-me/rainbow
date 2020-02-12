@@ -81,7 +81,7 @@ export default class TokenFamilyHeader extends PureComponent {
   };
 
   render = () => (
-    <ButtonPressAnimation onPress={this.props.onHeaderPress} scaleTo={0.96}>
+    <ButtonPressAnimation onPress={this.props.onHeaderPress} scaleTo={0.98}>
       <Row
         align="center"
         backgroundColor={colors.white}

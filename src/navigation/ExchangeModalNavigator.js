@@ -5,16 +5,36 @@ import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
 import ExchangeModal from '../screens/ExchangeModal';
 import { deviceUtils } from '../utils';
+import createStackNavigator from './createStackNavigator';
+import { exchangeDetailsPreset } from './transitions/effects';
+import ExpandedAssetScreenWithData from '../screens/ExpandedAssetScreenWithData';
+import { withBlockedHorizontalSwipe } from '../hoc';
 
 const ExchangeModalTabPosition = new Animated.Value(0);
 
 const ExchangeModalNavigator = createMaterialTopTabNavigator(
   {
-    MainExchangeScreen: {
-      params: {
-        position: ExchangeModalTabPosition,
-      },
-      screen: ExchangeModal,
+    MainExchangeNavigator: {
+      screen: createStackNavigator(
+        {
+          MainExchangeScreen: {
+            params: {
+              position: ExchangeModalTabPosition,
+            },
+            screen: ExchangeModal,
+          },
+          SwapDetailsScreen: {
+            navigationOptions: {
+              ...exchangeDetailsPreset,
+            },
+            screen: withBlockedHorizontalSwipe(ExpandedAssetScreenWithData),
+          },
+        },
+        {
+          initialRouteName: 'MainExchangeScreen',
+          transparentCard: true,
+        }
+      ),
     },
     // eslint-disable-next-line sort-keys
     CurrencySelectScreen: {

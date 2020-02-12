@@ -111,6 +111,8 @@ const hasRowChanged = (r1, r2) => {
   if (
     r1.item &&
     r2.item &&
+    r1.item.assets &&
+    r2.item.assets &&
     r1.item.smallBalancesContainer &&
     r2.item.smallBalancesContainer
   ) {
@@ -714,13 +716,13 @@ class RecyclerAssetList extends Component {
     }
 
     if (
-      (contentSize.height - layoutMeasurement.height >= offsetY &&
+      ((contentSize.height - layoutMeasurement.height >= offsetY &&
         offsetY >= 0) ||
-      (offsetY < reloadHeightOffsetTop && offsetY > reloadHeightOffsetBottom)
+        (offsetY < reloadHeightOffsetTop &&
+          offsetY > reloadHeightOffsetBottom)) &&
+      this.props.scrollViewTracker
     ) {
-      if (this.props.scrollViewTracker) {
-        this.props.scrollViewTracker.setValue(offsetY);
-      }
+      this.props.scrollViewTracker.setValue(offsetY);
     }
   };
 
@@ -793,6 +795,10 @@ class RecyclerAssetList extends Component {
         });
   };
 
+  stickyRowRenderer = (_, data) => (
+    <AssetListHeaderRenderer {...data} isSticky />
+  );
+
   render() {
     const {
       externalScrollView,
@@ -804,17 +810,20 @@ class RecyclerAssetList extends Component {
 
     return (
       <View backgroundColor={colors.white} flex={1} overflow="hidden">
-        <StickyContainer stickyHeaderIndices={headersIndices}>
+        <StickyContainer
+          overrideRowRenderer={this.stickyRowRenderer}
+          stickyHeaderIndices={headersIndices}
+        >
           <RecyclerListView
             dataProvider={dataProvider}
+            disableRecycling
             extendedState={{ headersIndices }}
-            itemAnimator={layoutItemAnimator}
             externalScrollView={externalScrollView}
+            itemAnimator={layoutItemAnimator}
             layoutProvider={this.layoutProvider}
             onScroll={this.handleScroll}
             ref={this.handleListRef}
             renderAheadOffset={renderAheadOffset}
-            disableRecycling
             rowRenderer={this.rowRenderer}
             scrollIndicatorInsets={{
               bottom: safeAreaInsetValues.bottom,
@@ -825,6 +834,7 @@ class RecyclerAssetList extends Component {
             }}
             style={{
               backgroundColor: colors.white,
+              minHeight: 1,
             }}
           />
         </StickyContainer>

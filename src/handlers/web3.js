@@ -32,6 +32,12 @@ export const web3SetHttpProvider = network => {
 export const sendRpcCall = async payload =>
   web3Provider.send(payload.method, payload.params);
 
+export const getTransactionByHash = txHash =>
+  sendRpcCall({
+    method: 'eth_getTransactionByHash',
+    params: [txHash],
+  });
+
 /**
  * @desc check if hex string
  * @param {String} value
@@ -64,9 +70,9 @@ export const isValidMnemonic = value =>
  * @param  {String} address
  * @return {String} checksum address
  */
-export const toChecksumAddress = async address => {
+export const toChecksumAddress = address => {
   try {
-    return await ethers.utils.getAddress(address);
+    return ethers.utils.getAddress(address);
   } catch (error) {
     return null;
   }

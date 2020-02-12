@@ -1,14 +1,29 @@
-import { concat, get, includes, isNil, map, remove, uniqBy } from 'lodash';
+import {
+  concat,
+  filter,
+  get,
+  includes,
+  isNil,
+  map,
+  remove,
+  uniqBy,
+} from 'lodash';
 import {
   getAssets,
+  getCompoundAssets,
   getLocalTransactions,
   removeAssets,
+  removeCompoundAssets,
   removeLocalTransactions,
   saveAssets,
+  saveCompoundAssets,
   saveLocalTransactions,
 } from '../handlers/localstorage/accountLocal';
 import { apiGetTokenOverrides } from '../handlers/tokenOverrides';
+import { getTransactionByHash } from '../handlers/web3';
+import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import { parseAccountAssets, parseAsset } from '../parsers/accounts';
+import { parseCompoundDeposits } from '../parsers/compound';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import parseTransactions from '../parsers/transactions';
 import { loweredTokenOverridesFallback } from '../references';
@@ -20,15 +35,21 @@ import {
   uniswapUpdateLiquidityTokens,
 } from './uniswap';
 
+let watchPendingTransactionsHandler = null;
+
 // -- Constants --------------------------------------- //
 
 const DATA_UPDATE_ASSETS = 'data/DATA_UPDATE_ASSETS';
+const DATA_UPDATE_COMPOUND_ASSETS = 'data/DATA_UPDATE_COMPOUND_ASSETS';
 const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
 const DATA_UPDATE_TOKEN_OVERRIDES = 'data/DATA_UPDATE_TOKEN_OVERRIDES';
 
 const DATA_LOAD_ASSETS_REQUEST = 'data/DATA_LOAD_ASSETS_REQUEST';
 const DATA_LOAD_ASSETS_SUCCESS = 'data/DATA_LOAD_ASSETS_SUCCESS';
 const DATA_LOAD_ASSETS_FAILURE = 'data/DATA_LOAD_ASSETS_FAILURE';
+
+const DATA_LOAD_COMPOUND_ASSETS_SUCCESS =
+  'data/DATA_LOAD_COMPOUND_ASSETS_SUCCESS';
 
 const DATA_LOAD_TRANSACTIONS_REQUEST = 'data/DATA_LOAD_TRANSACTIONS_REQUEST';
 const DATA_LOAD_TRANSACTIONS_SUCCESS = 'data/DATA_LOAD_TRANSACTIONS_SUCCESS';
@@ -53,6 +74,14 @@ export const dataLoadState = () => async (dispatch, getState) => {
     dispatch({ type: DATA_LOAD_ASSETS_FAILURE });
   }
   try {
+    const compoundAssets = await getCompoundAssets(accountAddress, network);
+    dispatch({
+      payload: compoundAssets,
+      type: DATA_LOAD_COMPOUND_ASSETS_SUCCESS,
+    });
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
+  try {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_REQUEST });
     const transactions = await getLocalTransactions(accountAddress, network);
     dispatch({
@@ -75,6 +104,7 @@ export const dataTokenOverridesInit = () => async dispatch => {
 export const dataClearState = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   removeAssets(accountAddress, network);
+  removeCompoundAssets(accountAddress, network);
   removeLocalTransactions(accountAddress, network);
   dispatch({ type: DATA_CLEAR_STATE });
 };
@@ -120,11 +150,11 @@ export const transactionsReceived = (message, appended = false) => (
     appended
   );
   dispatch(uniswapRemovePendingApproval(approvalTransactions));
-  saveLocalTransactions(dedupedResults, accountAddress, network);
   dispatch({
     payload: dedupedResults,
     type: DATA_UPDATE_TRANSACTIONS,
   });
+  saveLocalTransactions(dedupedResults, accountAddress, network);
 };
 
 export const transactionsRemoved = message => (dispatch, getState) => {
@@ -138,11 +168,11 @@ export const transactionsRemoved = message => (dispatch, getState) => {
   const removeHashes = map(transactionData, txn => txn.hash);
   remove(transactions, txn => includes(removeHashes, txn.hash));
 
-  saveLocalTransactions(transactions, accountAddress, network);
   dispatch({
     payload: transactions,
     type: DATA_UPDATE_TRANSACTIONS,
   });
+  saveLocalTransactions(transactions, accountAddress, network);
 };
 
 export const addressAssetsReceived = (
@@ -170,11 +200,28 @@ export const addressAssetsReceived = (
       item => item.uniqueId
     );
   }
+  parsedAssets = parsedAssets.filter(
+    asset => !!Number(get(asset, 'balance.amount'))
+  );
   saveAssets(parsedAssets, accountAddress, network);
   dispatch({
     payload: parsedAssets,
     type: DATA_UPDATE_ASSETS,
   });
+};
+
+export const compoundInfoReceived = message => (dispatch, getState) => {
+  const isValidMeta = dispatch(checkMeta(message));
+  if (!isValidMeta) return;
+  const { tokenOverrides } = getState().data;
+  const { accountAddress, network } = getState().settings;
+  const deposits = get(message, 'payload.info.deposits', []);
+  const parsedDeposits = parseCompoundDeposits(deposits, tokenOverrides);
+  dispatch({
+    payload: parsedDeposits,
+    type: DATA_UPDATE_COMPOUND_ASSETS,
+  });
+  saveCompoundAssets(parsedDeposits, accountAddress, network);
 };
 
 export const dataUpdateTokenOverrides = tokenOverrides => dispatch =>
@@ -205,11 +252,12 @@ export const dataAddNewTransaction = txDetails => (dispatch, getState) =>
     parseNewTransaction(txDetails, nativeCurrency)
       .then(parsedTransaction => {
         const _transactions = [parsedTransaction, ...transactions];
-        saveLocalTransactions(_transactions, accountAddress, network);
         dispatch({
           payload: _transactions,
           type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
         });
+        saveLocalTransactions(_transactions, accountAddress, network);
+        dispatch(startPendingTransactionWatcher());
         resolve(true);
       })
       .catch(error => {
@@ -217,9 +265,65 @@ export const dataAddNewTransaction = txDetails => (dispatch, getState) =>
       });
   });
 
+export const dataWatchPendingTransactions = () => async (
+  dispatch,
+  getState
+) => {
+  const { transactions } = getState().data;
+  if (!transactions.length) return false;
+  const updatedTransactions = [...transactions];
+  let txStatusesDidChange = false;
+
+  const pending = filter(transactions, ['pending', true]);
+  await Promise.all(
+    pending.map(async (tx, index) => {
+      const txHash = tx.hash.split('-').shift();
+      try {
+        const txObj = await getTransactionByHash(txHash);
+        if (txObj && txObj.blockNumber) {
+          txStatusesDidChange = true;
+          updatedTransactions[index].status = TransactionStatusTypes.sent;
+          updatedTransactions[index].pending = false;
+        }
+        // eslint-disable-next-line no-empty
+      } catch (error) {}
+    })
+  );
+
+  if (txStatusesDidChange) {
+    const { accountAddress, network } = getState().settings;
+    dispatch({
+      payload: updatedTransactions,
+      type: DATA_UPDATE_TRANSACTIONS,
+    });
+    saveLocalTransactions(updatedTransactions, accountAddress, network);
+
+    const pendingTx = updatedTransactions.find(tx => tx.pending);
+    if (!pendingTx) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+const startPendingTransactionWatcher = () => async dispatch => {
+  watchPendingTransactionsHandler &&
+    clearTimeout(watchPendingTransactionsHandler);
+
+  const done = await dispatch(dataWatchPendingTransactions());
+
+  if (!done) {
+    watchPendingTransactionsHandler = setTimeout(() => {
+      dispatch(startPendingTransactionWatcher());
+    }, 1000);
+  }
+};
+
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
   assets: [],
+  compoundAssets: [],
   loadingAssets: false,
   loadingTransactions: false,
   tokenOverrides: loweredTokenOverridesFallback,
@@ -230,6 +334,8 @@ export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case DATA_UPDATE_ASSETS:
       return { ...state, assets: action.payload };
+    case DATA_UPDATE_COMPOUND_ASSETS:
+      return { ...state, compoundAssets: action.payload };
     case DATA_UPDATE_TOKEN_OVERRIDES:
       return { ...state, tokenOverrides: action.payload };
     case DATA_UPDATE_TRANSACTIONS:
@@ -260,6 +366,11 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         assets: action.payload,
         loadingAssets: false,
+      };
+    case DATA_LOAD_COMPOUND_ASSETS_SUCCESS:
+      return {
+        ...state,
+        compoundAssets: action.payload,
       };
     case DATA_LOAD_ASSETS_FAILURE:
       return {

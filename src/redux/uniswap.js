@@ -291,6 +291,7 @@ export const uniswapUpdateLiquidityTokens = (
   liquidityTokens,
   appendOrChange
 ) => (dispatch, getState) => {
+  if (isEmpty(liquidityTokens)) return;
   let updatedLiquidityTokens = filter(liquidityTokens, hasTokenQuantity);
   if (appendOrChange) {
     const { liquidityTokens: existingLiquidityTokens } = getState().uniswap;
@@ -311,7 +312,7 @@ export const uniswapUpdateLiquidityTokens = (
 export const uniswapUpdateState = () => (dispatch, getState) =>
   new Promise((resolve, promiseReject) => {
     const { accountAddress, network } = getState().settings;
-    const { liquidityTokens } = getState().uniswap;
+    const { liquidityTokens, pairs } = getState().uniswap;
 
     if (isEmpty(liquidityTokens)) {
       return resolve(false);
@@ -320,7 +321,7 @@ export const uniswapUpdateState = () => (dispatch, getState) =>
     dispatch({ type: UNISWAP_UPDATE_REQUEST });
 
     const exchangeContracts = map(liquidityTokens, getAssetCode);
-    return getLiquidityInfo(accountAddress, exchangeContracts)
+    return getLiquidityInfo(accountAddress, exchangeContracts, pairs)
       .then(liquidityInfo => {
         saveLiquidityInfo(liquidityInfo, accountAddress, network);
         dispatch({

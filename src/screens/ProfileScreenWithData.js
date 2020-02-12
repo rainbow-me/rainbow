@@ -1,6 +1,7 @@
 import { compose, withHandlers, withProps } from 'recompact';
 import { setDisplayName } from 'recompose';
 import {
+  withAccountInfo,
   withAccountSettings,
   withAccountTransactions,
   withIsWalletEmpty,
@@ -10,6 +11,7 @@ import ProfileScreen from './ProfileScreen';
 
 export default compose(
   setDisplayName('ProfileScreen'),
+  withAccountInfo,
   withAccountSettings,
   withAccountTransactions,
   withIsWalletEmpty,
@@ -20,7 +22,7 @@ export default compose(
     onPressSettings: ({ navigation }) => () =>
       navigation.navigate('SettingsModal'),
   }),
-  withProps(({ isWalletEmpty, transactionsCount }) => ({
-    isEmpty: isWalletEmpty && !transactionsCount,
+  withProps(({ isWalletEmpty, transactionsCount, pendingRequestCount }) => ({
+    isEmpty: isWalletEmpty && !transactionsCount && !pendingRequestCount,
   }))
 )(ProfileScreen);

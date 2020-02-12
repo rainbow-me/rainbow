@@ -46,8 +46,8 @@ export default function timing(params) {
     clock: new Clock(),
     duration: 250,
     easing: Easing.linear,
-    from: 0,
-    to: 1,
+    from: new Value(0),
+    to: new Value(1),
     ...params,
   };
 

@@ -10,10 +10,10 @@ import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { TokenFamilyWrap } from '../components/token-family';
 import { buildUniqueTokenList, buildCoinsList } from './assets';
+import { chartExpandedAvailable } from '../config/experimental';
 
 const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
-const assetsSelector = state => state.assets;
 const assetsTotalSelector = state => state.assetsTotal;
 const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
 const isWalletEthZeroSelector = state => state.isWalletEthZero;
@@ -45,7 +45,12 @@ const UniswapCardItem = enhanceRenderItem(UniswapInvestmentCard);
 const balancesSkeletonRenderItem = item => (
   <AssetListItemSkeleton animated descendingOpacity={false} {...item} />
 );
-const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
+const balancesRenderItem = item => (
+  <TokenItem
+    {...item}
+    assetType={item.item.price && chartExpandedAvailable ? 'chart' : 'token'}
+  />
+);
 const tokenFamilyItem = item => (
   <TokenFamilyWrap {...item} uniqueId={item.uniqueId} />
 );
@@ -96,7 +101,6 @@ const withUniswapSection = (
 const withBalanceSection = (
   allAssets,
   allAssetsCount,
-  assets,
   assetsTotal,
   isBalancesSectionEmpty,
   isWalletEthZero,
@@ -207,7 +211,6 @@ const balanceSectionSelector = createSelector(
   [
     allAssetsSelector,
     allAssetsCountSelector,
-    assetsSelector,
     assetsTotalSelector,
     isBalancesSectionEmptySelector,
     isWalletEthZeroSelector,

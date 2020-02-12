@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { withNeverRerender } from '../../hoc';
 import { colors, padding } from '../../styles';
-import { CoolButton } from '../buttons';
+import { TokenSelectionButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
 import { EnDash } from '../html-entities';
 import { Row, RowWithMargins } from '../layout';
@@ -38,7 +38,7 @@ export default class ExchangeOutputField extends PureComponent {
     onFocus: PropTypes.func,
     onPressSelectOutputCurrency: PropTypes.func,
     outputAmount: PropTypes.string,
-    outputCurrency: PropTypes.string,
+    outputCurrencySymbol: PropTypes.string,
     outputFieldRef: PropTypes.func.isRequired,
     setOutputAmount: PropTypes.func,
   };
@@ -63,7 +63,7 @@ export default class ExchangeOutputField extends PureComponent {
       onFocus,
       onPressSelectOutputCurrency,
       outputAmount,
-      outputCurrency,
+      outputCurrencySymbol,
       setOutputAmount,
     } = this.props;
 
@@ -91,28 +91,28 @@ export default class ExchangeOutputField extends PureComponent {
           paddingLeft={paddingValue}
         >
           <CoinIcon
-            bgColor={outputCurrency ? undefined : skeletonColor}
+            bgColor={outputCurrencySymbol ? undefined : skeletonColor}
             flex={0}
             size={40}
-            symbol={outputCurrency}
+            symbol={outputCurrencySymbol}
           />
           <ExchangeInput
-            editable={!!outputCurrency}
+            editable={!!outputCurrencySymbol}
             onBlur={onBlur}
             onChangeText={setOutputAmount}
             onFocus={onFocus}
-            placeholder={outputCurrency ? '0' : EnDash.unicode}
-            placeholderTextColor={outputCurrency ? undefined : skeletonColor}
+            placeholder={outputCurrencySymbol ? '0' : EnDash.unicode}
+            placeholderTextColor={
+              outputCurrencySymbol ? undefined : skeletonColor
+            }
             refInput={this.props.outputFieldRef}
             value={outputAmount}
           />
         </RowWithMargins>
-        <CoolButton
-          color={outputCurrency ? colors.dark : colors.appleBlue}
+        <TokenSelectionButton
           onPress={onPressSelectOutputCurrency}
-        >
-          {outputCurrency || 'Choose a Coin'}
-        </CoolButton>
+          symbol={outputCurrencySymbol}
+        />
       </Row>
     );
   };

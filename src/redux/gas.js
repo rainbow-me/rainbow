@@ -11,7 +11,7 @@ import ethUnits from '../references/ethereum-units.json';
 import { ethereumUtils, gasUtils } from '../utils';
 
 // -- Constants ------------------------------------------------------------- //
-
+const GAS_MULTIPLIER = 1.101;
 const GAS_UPDATE_DEFAULT_GAS_LIMIT = 'gas/GAS_UPDATE_DEFAULT_GAS_LIMIT';
 const GAS_PRICES_DEFAULT = 'gas/GAS_PRICES_DEFAULT';
 const GAS_PRICES_SUCCESS = 'gas/GAS_PRICES_SUCCESS';
@@ -21,7 +21,7 @@ const GAS_UPDATE_TX_FEE = 'gas/GAS_UPDATE_TX_FEE';
 const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
 
 // -- Actions --------------------------------------------------------------- //
-let getGasPricesInterval = null;
+let getGasPricesTimeoutHandler = null;
 
 const getDefaultTxFees = () => (dispatch, getState) => {
   const { assets } = getState().data;
@@ -46,53 +46,55 @@ const getDefaultTxFees = () => (dispatch, getState) => {
   };
 };
 
-export const gasPricesInit = () => (dispatch, getState) =>
-  new Promise((resolve, reject) => {
-    const { fallbackGasPrices, selectedGasPrice, txFees } = dispatch(
-      getDefaultTxFees()
-    );
-    dispatch({
-      payload: {
-        gasPrices: fallbackGasPrices,
-        selectedGasPrice,
-        txFees,
-      },
-      type: GAS_PRICES_DEFAULT,
+export const gasPricesStartPolling = () => async (dispatch, getState) => {
+  const { fallbackGasPrices, selectedGasPrice, txFees } = dispatch(
+    getDefaultTxFees()
+  );
+  dispatch({
+    payload: {
+      gasPrices: fallbackGasPrices,
+      selectedGasPrice,
+      txFees,
+    },
+    type: GAS_PRICES_DEFAULT,
+  });
+
+  const getGasPrices = () =>
+    new Promise((fetchResolve, fetchReject) => {
+      const { useShortGasFormat } = getState().gas;
+      apiGetGasPrices()
+        .then(({ data }) => {
+          const adjustedGasPrices = bumpGasPrices(data);
+          let gasPrices = parseGasPrices(adjustedGasPrices, useShortGasFormat);
+          dispatch({
+            payload: gasPrices,
+            type: GAS_PRICES_SUCCESS,
+          });
+          fetchResolve(true);
+        })
+        .catch(error => {
+          dispatch({
+            payload: fallbackGasPrices,
+            type: GAS_PRICES_FAILURE,
+          });
+          captureException(error);
+          fetchReject(error);
+        });
     });
 
-    const getGasPrices = () =>
-      new Promise((fetchResolve, fetchReject) => {
-        const { useShortGasFormat } = getState().gas;
-        apiGetGasPrices()
-          .then(({ data }) => {
-            const gasPrices = parseGasPrices(data, useShortGasFormat);
-            dispatch({
-              payload: gasPrices,
-              type: GAS_PRICES_SUCCESS,
-            });
-            fetchResolve(true);
-          })
-          .catch(error => {
-            dispatch({
-              payload: fallbackGasPrices,
-              type: GAS_PRICES_FAILURE,
-            });
-            captureException(error);
-            fetchReject(error);
-          });
-      });
-    return getGasPrices()
-      .then(() => {
-        clearInterval(getGasPricesInterval);
-        getGasPricesInterval = setInterval(getGasPrices, 15000); // 15 secs
-        resolve(true);
-      })
-      .catch(error => {
-        clearInterval(getGasPricesInterval);
-        getGasPricesInterval = setInterval(getGasPrices, 15000); // 15 secs
-        reject(error);
-      });
-  });
+  const gasPricesPolling = async () => {
+    getGasPricesTimeoutHandler && clearTimeout(getGasPricesTimeoutHandler);
+    try {
+      await getGasPrices();
+      // eslint-disable-next-line no-empty
+    } catch (e) {
+    } finally {
+      getGasPricesTimeoutHandler = setTimeout(gasPricesPolling, 15000); // 15 secs
+    }
+  };
+
+  gasPricesPolling();
+};
 
 export const gasUpdateGasPriceOption = newGasPriceOption => (
   dispatch,
@@ -178,8 +180,21 @@ const getSelectedGasPrice = (
   };
 };
 
-export const gasClearState = () => () => {
-  clearInterval(getGasPricesInterval);
+const bumpGasPrices = data => {
+  const processedData = { ...data };
+  const gasPricesKeys = ['average', 'fast', 'fastest', 'safeLow'];
+  Object.keys(processedData).forEach(key => {
+    if (gasPricesKeys.indexOf(key) !== -1) {
+      processedData[key] = (
+        parseFloat(processedData[key]) * GAS_MULTIPLIER
+      ).toFixed(2);
+    }
+  });
+  return processedData;
+};
+
+export const gasPricesStopPolling = () => () => {
+  getGasPricesTimeoutHandler && clearTimeout(getGasPricesTimeoutHandler);
 };
 
 // -- Reducer --------------------------------------------------------------- //

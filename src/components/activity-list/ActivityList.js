@@ -56,5 +56,7 @@ export default compose(
     'nativeCurrency',
     'pendingTransactionsCount',
     'sections',
+    'accountName',
+    'accountColor',
   ])
 )(ActivityList);

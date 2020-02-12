@@ -87,7 +87,32 @@ class SendHeader extends PureComponent {
     recipient: PropTypes.string,
     removeContact: PropTypes.func,
     selectedInputId: PropTypes.object,
+    setAppearListener: PropTypes.func,
     setSelectedInputId: PropTypes.func,
+    showAssetList: PropTypes.bool,
+  };
+
+  componentDidMount() {
+    this.props.setAppearListener &&
+      this.props.setAppearListener(this.focusInput);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (!prevProps.showAssetList && this.props.showAssetList) {
+      this.onBlur();
+    }
+  }
+
+  componentWillUnmount() {
+    this.props.setAppearListener && this.props.setAppearListener(null);
+  }
+
+  focusInput = () => {
+    if (this.props.selectedInputId) {
+      this.props.selectedInputId.focus();
+    } else {
+      !this.props.showAssetList && this.input && this.input.focus();
+    }
   };
 
   handleConfirmDeleteContactSelection = async buttonIndex => {
@@ -124,7 +149,7 @@ class SendHeader extends PureComponent {
     Keyboard.dismiss();
     navigation.navigate('OverlayExpandedAssetScreen', {
       address: recipient,
-      asset: [],
+      asset: {},
       color,
       contact: isEmpty(contact) ? false : contact,
       onRefocusInput: refocusCallback,
@@ -150,6 +175,7 @@ class SendHeader extends PureComponent {
       onChangeAddressInput,
       onPressPaste,
       recipient,
+      showAssetList,
     } = this.props;
 
     const isPreExistingContact = contact.nickname.length > 0;
@@ -161,7 +187,7 @@ class SendHeader extends PureComponent {
           <Label style={{ marginRight: 6, opacity: 0.45 }}>To:</Label>
           <AddressField
             address={recipient}
-            autoFocus
+            autoFocus={!showAssetList}
             currentContact={contact}
             inputRef={this.handleRef}
             name={contact.nickname}

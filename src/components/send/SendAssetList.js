@@ -5,9 +5,9 @@ import { FlyInAnimation } from '../animations';
 import { CollectiblesSendRow, SendCoinRow } from '../coin-row';
 import { View } from 'react-primitives';
 import {
-  RecyclerListView,
-  LayoutProvider,
   DataProvider,
+  LayoutProvider,
+  RecyclerListView,
 } from 'recyclerlistview';
 import { LayoutAnimation } from 'react-native';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
@@ -16,9 +16,9 @@ import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/primitives/dist/styled-components-primitives.esm';
 import { colors } from '../../styles';
 
-const rowHeight = 64;
-const familyHeaderHeight = 64;
 const dividerHeight = 18;
+const familyHeaderHeight = 62;
+const rowHeight = 64;
 
 const Divider = styled.View`
   background-color: ${colors.lighterGrey};
@@ -206,9 +206,8 @@ class SendAssetList extends React.Component {
       return this.collectiblesRenderItem(data);
     } else if (type === 'COLLECTIBLE_ROW_CLOSED') {
       return this.collectiblesRenderItem(data);
-    } else {
-      return null;
     }
+    return null;
   }
 
   render() {
@@ -217,6 +216,7 @@ class SendAssetList extends React.Component {
         style={{ flex: 1, paddingBottom: sheetVerticalOffset, width: '100%' }}
       >
         <RecyclerListView
+          disableRecycling
           ref={ref => {
             this.rlv = ref;
           }}
@@ -227,6 +227,7 @@ class SendAssetList extends React.Component {
             this.componentHeight = event.nativeEvent.layoutMeasurement.height;
             this.position = event.nativeEvent.contentOffset.y;
           }}
+          style={{ minHeight: 1 }}
         />
       </FlyInAnimation>
     );

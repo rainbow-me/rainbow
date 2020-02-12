@@ -22,5 +22,8 @@ export default function useClipboard() {
     updateClipboardData(content);
   }, []);
 
-  return [data, setString];
+  return {
+    clipboard: data,
+    setClipboard: setString,
+  };
 }

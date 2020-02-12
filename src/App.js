@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/default
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import analytics from '@segment/analytics-react-native';
 import { init as initSentry, setRelease } from '@sentry/react-native';
@@ -6,7 +5,12 @@ import { get, last } from 'lodash';
 import PropTypes from 'prop-types';
 import nanoid from 'nanoid/non-secure';
 import React, { Component } from 'react';
-import { AppRegistry, AppState, Linking } from 'react-native';
+import {
+  AppRegistry,
+  AppState,
+  Linking,
+  unstable_enableLogBox,
+} from 'react-native';
 // eslint-disable-next-line import/default
 import CodePush from 'react-native-code-push';
 import {
@@ -18,11 +22,19 @@ import {
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-unresolved
-import { useScreens } from 'react-native-screens';
+import { enableScreens } from 'react-native-screens';
+import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { FlexItem } from './components/layout';
 import OfflineBadge from './components/OfflineBadge';
+import {
+  reactNativeDisableYellowBox,
+  reactNativeEnableLogbox,
+  showNetworkRequests,
+  showNetworkResponses,
+} from './config/debug';
+import monitorNetwork from './debugging/network';
 import { withDeepLink, withWalletConnectOnSessionRequest } from './hoc';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
@@ -32,19 +44,25 @@ import { requestsForTopic } from './redux/requests';
 import Routes from './screens/Routes';
 import { parseQueryParams } from './utils';
 
-if (process.env.NODE_ENV === 'development') {
-  console.disableYellowBox = true;
+// eslint-disable-next-line no-undef
+if (__DEV__) {
+  console.disableYellowBox = reactNativeDisableYellowBox;
+  reactNativeEnableLogbox && unstable_enableLogBox();
+  (showNetworkRequests || showNetworkResponses) &&
+    monitorNetwork(showNetworkRequests, showNetworkResponses);
 } else {
   initSentry({ dsn: SENTRY_ENDPOINT, environment: SENTRY_ENVIRONMENT });
 }
 
 CodePush.getUpdateMetadata().then(update => {
   if (update) {
-    setRelease(update.appVersion + '-codepush:' + update.label);
+    setRelease(`me.rainbow-${update.appVersion}-codepush:${update.label}`);
+  } else {
+    setRelease(`me.rainbow-${VersionNumber.appVersion}`);
   }
 });
 
-useScreens(false);
+enableScreens();
 
 class App extends Component {
   static propTypes = {

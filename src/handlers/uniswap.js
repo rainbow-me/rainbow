@@ -191,7 +191,11 @@ export const executeSwap = async (tradeDetails, gasLimit, gasPrice) => {
   }
 };
 
-export const getLiquidityInfo = async (accountAddress, exchangeContracts) => {
+export const getLiquidityInfo = async (
+  accountAddress,
+  exchangeContracts,
+  pairs
+) => {
   const promises = map(exchangeContracts, async exchangeAddress => {
     try {
       const ethReserveCall = web3Provider.getBalance(exchangeAddress);
@@ -221,42 +225,49 @@ export const getLiquidityInfo = async (accountAddress, exchangeContracts) => {
         erc20ABI,
         web3Provider
       );
-      const tokenReserveCall = tokenContract.balanceOf(exchangeAddress);
-      const tokenDecimalsCall = tokenContract.decimals();
+      const token = get(pairs, `[${toLower(tokenAddress)}]`);
 
-      const [reserve, decimals] = await Promise.all([
-        tokenReserveCall,
-        tokenDecimalsCall,
-      ]);
-
+      let decimals = 18;
       let name = '';
-      try {
-        name = await tokenContract.name().catch();
-      } catch (error) {
-        name = get(contractMap, `[${tokenAddress}].name`, '');
-        if (!name) {
-          console.log(
-            'error getting name for token: ',
-            tokenAddress,
-            ' Error = ',
-            error
-          );
+      let symbol = '';
+      if (token) {
+        name = token.name;
+        symbol = token.symbol;
+        decimals = token.decimals;
+      } else {
+        decimals = await tokenContract.decimals();
+
+        try {
+          name = await tokenContract.name().catch();
+        } catch (error) {
+          name = get(contractMap, `[${tokenAddress}].name`, '');
+          if (!name) {
+            console.log(
+              'error getting name for token: ',
+              tokenAddress,
+              ' Error = ',
+              error
+            );
+          }
+        }
+
+        let symbol = get(contractMap, `[${tokenAddress}].symbol`, '');
+        try {
+          symbol = await tokenContract.symbol().catch();
+        } catch (error) {
+          if (!symbol) {
+            console.log(
+              'error getting symbol for token: ',
+              tokenAddress,
+              ' Error = ',
+              error
+            );
+          }
         }
       }
 
-      let symbol = get(contractMap, `[${tokenAddress}].symbol`, '');
-      try {
-        symbol = await tokenContract.symbol().catch();
-      } catch (error) {
-        if (!symbol) {
-          console.log(
-            'error getting symbol for token: ',
-            tokenAddress,
-            ' Error = ',
-            error
-          );
-        }
-      }
+      const reserve = await tokenContract.balanceOf(exchangeAddress);
+
       const ethBalance = fromWei(
         divide(multiply(ethReserve, balance), totalSupply)
       );

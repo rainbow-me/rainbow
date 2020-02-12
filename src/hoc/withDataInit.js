@@ -4,7 +4,10 @@ import { isNil } from 'lodash';
 import { Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { compose, withHandlers } from 'recompact';
-import { getIsWalletEmpty } from '../handlers/localstorage/accountLocal';
+import {
+  getIsWalletEmpty,
+  getAccountInfo,
+} from '../handlers/localstorage/accountLocal';
 import { hasEthBalance } from '../handlers/web3';
 import { walletInit } from '../model/wallet';
 import {
@@ -13,7 +16,7 @@ import {
   dataTokenOverridesInit,
 } from '../redux/data';
 import { explorerClearState, explorerInit } from '../redux/explorer';
-import { gasClearState, gasPricesInit } from '../redux/gas';
+import { gasPricesStartPolling } from '../redux/gas';
 import { clearIsWalletEmpty } from '../redux/isWalletEmpty';
 import { setIsWalletEthZero } from '../redux/isWalletEthZero';
 import { nonceClearState } from '../redux/nonce';
@@ -26,6 +29,8 @@ import { requestsLoadState, requestsClearState } from '../redux/requests';
 import {
   settingsLoadState,
   settingsUpdateAccountAddress,
+  settingsUpdateAccountName,
+  settingsUpdateAccountColor,
 } from '../redux/settings';
 import {
   uniswapLoadState,
@@ -42,12 +47,10 @@ import {
   walletConnectLoadState,
   walletConnectClearState,
 } from '../redux/walletconnect';
-import {
-  web3ListenerClearState,
-  web3ListenerInit,
-} from '../redux/web3listener';
+
 import { promiseUtils, sentryUtils } from '../utils';
 import withHideSplashScreen from './withHideSplashScreen';
+import store from '../redux/store';
 
 export default Component =>
   compose(
@@ -60,8 +63,7 @@ export default Component =>
       dataTokenOverridesInit,
       explorerClearState,
       explorerInit,
-      gasClearState,
-      gasPricesInit,
+      gasPricesStartPolling,
       nonceClearState,
       openStateSettingsLoadState,
       requestsClearState,
@@ -78,7 +80,6 @@ export default Component =>
       uniswapUpdateState,
       walletConnectClearState,
       walletConnectLoadState,
-      web3ListenerInit,
     }),
     withHideSplashScreen,
     withHandlers({
@@ -91,7 +92,6 @@ export default Component =>
         }
       },
       clearAccountData: ownProps => async () => {
-        web3ListenerClearState();
         const p0 = ownProps.explorerClearState();
         const p1 = ownProps.dataClearState();
         const p2 = ownProps.clearIsWalletEmpty();
@@ -101,7 +101,6 @@ export default Component =>
         const p6 = ownProps.nonceClearState();
         const p7 = ownProps.requestsClearState();
         const p8 = ownProps.uniswapClearState();
-        const p9 = ownProps.gasClearState();
         return promiseUtils.PromiseAllWithFails([
           p0,
           p1,
@@ -112,7 +111,6 @@ export default Component =>
           p6,
           p7,
           p8,
-          p9,
         ]);
       },
       initializeAccountData: ownProps => async () => {
@@ -121,8 +119,6 @@ export default Component =>
           sentryUtils.addInfoBreadcrumb('Initialize account data');
           ownProps.explorerInit();
           ownProps.uniswapPairsInit();
-          ownProps.gasPricesInit();
-          ownProps.web3ListenerInit();
           await ownProps.uniqueTokensRefreshState();
         } catch (error) {
           // TODO error state
@@ -166,6 +162,11 @@ export default Component =>
           const { isImported, isNew, walletAddress } = await walletInit(
             seedPhrase
           );
+          const info = await getAccountInfo(walletAddress, ownProps.network);
+          if (info.name && info.color) {
+            store.dispatch(settingsUpdateAccountName(info.name));
+            store.dispatch(settingsUpdateAccountColor(info.color));
+          }
           if (isNil(walletAddress)) {
             Alert.alert(
               'Import failed due to an invalid private key. Please try again.'
@@ -179,7 +180,10 @@ export default Component =>
           if (isNew) {
             ownProps.setIsWalletEthZero(true);
           } else if (isImported) {
-            await ownProps.checkEthBalance(walletAddress);
+            try {
+              await ownProps.checkEthBalance(walletAddress);
+              // eslint-disable-next-line no-empty
+            } catch (error) {}
           } else {
             const isWalletEmpty = await getIsWalletEmpty(
               walletAddress,
@@ -190,8 +194,6 @@ export default Component =>
             } else {
               ownProps.setIsWalletEthZero(isWalletEmpty);
             }
-          }
-          if (!(isImported || isNew)) {
             await ownProps.loadAccountData();
           }
           ownProps.onHideSplashScreen();
