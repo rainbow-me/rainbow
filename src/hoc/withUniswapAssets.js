@@ -5,6 +5,7 @@ import {
   includes,
   keys,
   map,
+  mapValues,
   partition,
   sortBy,
   toLower,
@@ -17,7 +18,6 @@ import { uniswapUpdateFavorites } from '../redux/uniswap';
 import withAccountData from './withAccountData';
 
 const allAssetsSelector = state => state.allAssets;
-const uniswapAssetsSelector = state => state.uniswapAssets;
 const uniswapFavoritesSelector = state => state.favorites;
 const uniswapPairsSelector = state => state.pairs;
 
@@ -25,7 +25,7 @@ const filterUniswapAssetsByAvailability = uniswapAssetAddresses => ({
   address,
 }) => uniswapAssetAddresses.includes(address);
 
-export const includeExchangeAddress = uniswapPairs => asset => ({
+const includeExchangeAddress = uniswapPairs => asset => ({
   ...asset,
   exchangeAddress: get(
     uniswapPairs,
@@ -51,7 +51,11 @@ const withUniswapAssetsInWallet = (allAssets, uniswapPairs) => {
 };
 
 const withSortedUniswapAssets = (assets, favorites) => {
-  const sorted = sortBy(values(assets), ({ name }) => toLower(name));
+  const assetsWithAddress = mapValues(assets, (value, key) => ({
+    ...value,
+    address: key,
+  }));
+  const sorted = sortBy(values(assetsWithAddress), ({ name }) => toLower(name));
   const [favorited, notFavorited] = partition(sorted, ({ address }) =>
     includes(map(favorites, toLower), toLower(address))
   );
@@ -70,14 +74,13 @@ const withUniswapAssetsInWalletSelector = createSelector(
 );
 
 const withSortedUniswapAssetsSelector = createSelector(
-  [uniswapAssetsSelector, uniswapFavoritesSelector],
+  [uniswapPairsSelector, uniswapFavoritesSelector],
   withSortedUniswapAssets
 );
 
-const mapStateToProps = ({ uniswap: { favorites, pairs, uniswapAssets } }) => ({
+const mapStateToProps = ({ uniswap: { favorites, pairs } }) => ({
   favorites,
   pairs,
-  uniswapAssets,
 });
 
 export default compose(

@@ -36,7 +36,7 @@ import { apiGetTokenOverrides } from '../handlers/tokenOverrides';
 import { getTransactionByHash } from '../handlers/web3';
 import TransactionStatusTypes from '../helpers/transactionStatusTypes';
 import { divide } from '../helpers/utilities';
-import { parseAccountAssets, parseAsset } from '../parsers/accounts';
+import { parseAccountAssets } from '../parsers/accounts';
 import { parseCompoundDeposits } from '../parsers/compound';
 import { parseNewTransaction } from '../parsers/newTransaction';
 import parseTransactions from '../parsers/transactions';
@@ -44,8 +44,6 @@ import { loweredTokenOverridesFallback } from '../references';
 import { ethereumUtils, isLowerCaseMatch } from '../utils';
 import {
   uniswapRemovePendingApproval,
-  uniswapUpdateAssetPrice,
-  uniswapUpdateAssets,
   uniswapUpdateLiquidityTokens,
 } from './uniswap';
 
@@ -359,21 +357,6 @@ export const dataUpdateTokenOverrides = tokenOverrides => dispatch =>
     payload: tokenOverrides,
     type: DATA_UPDATE_TOKEN_OVERRIDES,
   });
-
-export const assetsReceived = message => (dispatch, getState) => {
-  const { tokenOverrides } = getState().data;
-  const assets = get(message, 'payload.assets', []);
-  if (!assets.length) return;
-  const parsedAssets = map(assets, asset => parseAsset(asset, tokenOverrides));
-  dispatch(uniswapUpdateAssets(parsedAssets));
-};
-
-export const priceChanged = message => dispatch => {
-  const address = get(message, 'meta.asset_code');
-  const price = get(message, 'payload.price');
-  if (isNil(price)) return;
-  dispatch(uniswapUpdateAssetPrice(address, price));
-};
 
 export const dataAddNewTransaction = txDetails => (dispatch, getState) =>
   new Promise((resolve, reject) => {

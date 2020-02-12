@@ -6,8 +6,6 @@ import {
   get,
   invertBy,
   isEmpty,
-  keyBy,
-  keys,
   map,
   mapValues,
   omit,
@@ -18,7 +16,6 @@ import {
 import {
   getAllowances,
   getLiquidity,
-  getUniswapAssets,
   getUniswapFavorites,
   getUniswapLiquidityInfo,
   getUniswapPendingApprovals,
@@ -26,7 +23,6 @@ import {
   saveAllowances,
   saveLiquidity,
   saveLiquidityInfo,
-  saveUniswapAssets,
   saveUniswapFavorites,
   saveUniswapPendingApprovals,
 } from '../handlers/localstorage/uniswap';
@@ -35,12 +31,10 @@ import {
   getReserve,
   getUniswapPairs,
 } from '../handlers/uniswap';
-import { includeExchangeAddress } from '../hoc/withUniswapAssets';
 import {
   cleanUniswapAssetsFallback,
   DefaultUniswapFavorites,
 } from '../references';
-import { resubscribeAssets } from './explorer';
 
 // -- Constants ------------------------------------------------------------- //
 const UNISWAP_LOAD_REQUEST = 'uniswap/UNISWAP_LOAD_REQUEST';
@@ -66,7 +60,6 @@ const UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE =
   'uniswap/UNISWAP_UPDATE_OUTPUT_CURRENCY_AND_RESERVE';
 const UNISWAP_UPDATE_PENDING_APPROVALS =
   'uniswap/UNISWAP_UPDATE_PENDING_APPROVALS';
-const UNISWAP_UPDATE_ASSETS = 'uniswap/UNISWAP_UPDATE_ASSETS';
 const UNISWAP_UPDATE_ALLOWANCES = 'uniswap/UNISWAP_UPDATE_ALLOWANCES';
 const UNISWAP_UPDATE_LIQUIDITY_TOKENS =
   'uniswap/UNISWAP_UPDATE_LIQUIDITY_TOKENS';
@@ -75,7 +68,6 @@ const UNISWAP_CLEAR_STATE = 'uniswap/UNISWAP_CLEAR_STATE';
 // -- Actions --------------------------------------------------------------- //
 const extractTransactionHash = txn => toLower(txn.hash).split('-')[0];
 const firstItem = value => get(value, '[0]');
-const lowerAddress = asset => toLower(asset.address);
 const hasTokenQuantity = token => token.quantity > 0;
 const getAssetCode = token => get(token, 'asset.asset_code');
 
@@ -98,14 +90,12 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
       accountAddress,
       network
     );
-    const uniswapAssets = await getUniswapAssets(accountAddress, network);
     dispatch({
       payload: {
         allowances,
         favorites,
         liquidityTokens,
         pendingApprovals,
-        uniswapAssets,
       },
       type: UNISWAP_LOAD_SUCCESS,
     });
@@ -117,10 +107,11 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
 export const uniswapPairsInit = () => async (dispatch, getState) => {
   try {
     const { tokenOverrides } = getState().data;
-    const { pairs: existingPairs } = getState().uniswap;
     const pairs = await getUniswapPairs(tokenOverrides);
-    dispatch(uniswapUpdatePairs(pairs));
-    dispatch(resubscribeAssets(keys(existingPairs), keys(pairs)));
+    dispatch({
+      payload: pairs,
+      type: UNISWAP_UPDATE_PAIRS,
+    });
     // eslint-disable-next-line no-empty
   } catch (error) {}
 };
@@ -250,43 +241,6 @@ export const uniswapUpdateAllowances = tokenAddressAllowances => (
   saveAllowances(updatedAllowances, accountAddress, network);
 };
 
-export const uniswapUpdateAssets = assets => (dispatch, getState) => {
-  const { accountAddress, network } = getState().settings;
-  const { pairs } = getState().uniswap;
-  const uniswapAssetPrices = map(assets, includeExchangeAddress(pairs));
-  const mappedAssets = keyBy(uniswapAssetPrices, lowerAddress);
-  dispatch({
-    payload: mappedAssets,
-    type: UNISWAP_UPDATE_ASSETS,
-  });
-  saveUniswapAssets(mappedAssets, accountAddress, network);
-};
-
-export const uniswapUpdatePairs = pairs => dispatch =>
-  dispatch({
-    payload: pairs,
-    type: UNISWAP_UPDATE_PAIRS,
-  });
-
-export const uniswapUpdateAssetPrice = (address, price) => (
-  dispatch,
-  getState
-) => {
-  const addressKey = toLower(address);
-  const { accountAddress, network } = getState().settings;
-  const { uniswapAssets } = getState().uniswap;
-  const updatedAsset = { ...uniswapAssets[addressKey], price };
-  const updatedAssets = {
-    ...uniswapAssets,
-    [addressKey]: updatedAsset,
-  };
-  dispatch({
-    payload: updatedAssets,
-    type: UNISWAP_UPDATE_ASSETS,
-  });
-  saveUniswapAssets(updatedAssets, accountAddress, network);
-};
-
 export const uniswapUpdateLiquidityTokens = (
   liquidityTokens,
   appendOrChange
@@ -349,7 +303,6 @@ export const INITIAL_UNISWAP_STATE = {
   outputReserve: null,
   pairs: cleanUniswapAssetsFallback,
   pendingApprovals: {},
-  uniswapAssets: {},
   uniswapLiquidityTokenInfo: {},
 };
 
@@ -371,7 +324,6 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         draft.liquidityTokens = action.payload.liquidityTokens;
         draft.loadingUniswap = false;
         draft.pendingApprovals = action.payload.pendingApprovals;
-        draft.uniswapAssets = action.payload.uniswapAssets;
         break;
       case UNISWAP_UPDATE_FAVORITES:
         draft.favorites = action.payload;
@@ -409,9 +361,6 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         break;
       case UNISWAP_UPDATE_ALLOWANCES:
         draft.allowances = action.payload;
-        break;
-      case UNISWAP_UPDATE_ASSETS:
-        draft.uniswapAssets = action.payload;
         break;
       case UNISWAP_RESET_CURRENCIES_AND_RESERVES:
         draft.inputCurrency = INITIAL_UNISWAP_STATE.inputCurrency;
