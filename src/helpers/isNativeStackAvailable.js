@@ -1,3 +1,3 @@
 import { Platform } from 'react-native';
 
-export default Platform.OS === 'ios' && Platform.Version >= 13;
+export default Platform.OS === 'ios' && parseFloat(Platform.Version) >= 13;
