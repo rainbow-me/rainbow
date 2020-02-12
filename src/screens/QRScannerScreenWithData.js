@@ -39,10 +39,8 @@ class QRScannerScreenWithData extends Component {
 
     if (newNavParam && !prevNavParam) {
       Permissions.request('camera').then(permission => {
-        console.log('got permission status', permission);
         const isCameraAuthorized = permission === 'authorized';
         if (prevState.isCameraAuthorized !== isCameraAuthorized) {
-          console.log('permission status updated', permission);
           !this.state.enableScanning && this.setState({ isCameraAuthorized });
         }
       });
@@ -58,9 +56,7 @@ class QRScannerScreenWithData extends Component {
 
   handlePastedUri = async uri => this.props.walletConnectOnSessionRequest(uri);
 
-  handlePressBackButton = () => {
-    this.props.navigation.navigate('WalletScreen');
-  };
+  handlePressBackButton = () => this.props.navigation.navigate('WalletScreen');
 
   handlePressPasteSessionUri = () => {
     Prompt({
