@@ -1,5 +1,3 @@
-import { greaterThan, convertAmountToRawAmount } from '../helpers/utilities';
-import { contractUtils, gasUtils } from '../utils';
 import { get } from 'lodash';
 import {
   tradeExactEthForTokensWithData,
@@ -10,6 +8,15 @@ import {
   tradeTokensForExactTokensWithData,
 } from '@uniswap/sdk';
 import { executeSwap, estimateSwapGasLimit } from '../handlers/uniswap';
+import { greaterThan, convertAmountToRawAmount } from '../helpers/utilities';
+import store from '../redux/store';
+import { contractUtils, gasUtils } from '../utils';
+import { rapsAddOrUpdate, rapsLoadState } from '../redux/raps';
+import {
+  uniswapUpdateInputCurrency,
+  uniswapUpdateOutputCurrency,
+} from '../redux/uniswap';
+import { web3UpdateReserves } from '../redux/web3listener';
 
 /**
  * @desc Swap two assets on Uniswap
@@ -26,12 +33,42 @@ const swapOnUniswap = async (
   outputCurrency,
   inputAmount,
   outputAmount,
-  selectedGasPrice,
-  gasPrices,
+  selectedGasPrice = null,
   inputAsExactAmount,
-  inputReserve,
-  outputReserve
+  rap = null
 ) => {
+  let currentRap = rap;
+  const { dispatch } = store;
+  const { gasPrices } = store.getState().gas;
+  // It's a new rap, simple unlock(?) & swap
+  if (currentRap === null) {
+    const now = new Date().getTime();
+    currentRap = {
+      completed_at: null,
+      id: `rap_${now}`,
+      parameters: {
+        inputAmount,
+        inputAsExactAmount,
+        inputCurrency,
+        outputAmount,
+        outputCurrency,
+        selectedGasPrice,
+      },
+      started_at: now,
+      transactions: {
+        swap: { confirmed: null, hash: null },
+      },
+      type: 'swap-uniswap',
+    };
+
+    console.log('Storing new rap', currentRap);
+    dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
+  } else {
+    // It's part of a bigger rap, let's load it
+    const raps = await dispatch(rapsLoadState());
+    currentRap = raps[rap];
+  }
+
   const {
     address: inputAddress,
     decimals: inputDecimals,
@@ -39,6 +76,10 @@ const swapOnUniswap = async (
   } = inputCurrency;
 
   const { address: outputAddress, decimals: outputDecimals } = outputCurrency;
+
+  await dispatch(uniswapUpdateInputCurrency(inputCurrency));
+  await dispatch(uniswapUpdateOutputCurrency(outputCurrency));
+  const { inputReserve, outputReserve } = await dispatch(web3UpdateReserves());
 
   let allowance = 0;
 
@@ -57,7 +98,10 @@ const swapOnUniswap = async (
       exchangeAddress
     );
   }
-  needsUnlocking = !greaterThan(allowance, 0);
+
+  // needsUnlocking = !greaterThan(allowance, 0);
+  // ONLY FOR TESTING PURPOSES
+  //needsUnlocking = true;
 
   if (needsUnlocking) {
     //  1.3 - Deal with approval first
@@ -68,6 +112,11 @@ const swapOnUniswap = async (
       inputAddress,
       exchangeAddress
     );
+
+    currentRap.transactions.approval = { confirmed: null, hash: null };
+    console.log('Adding approval to rap', currentRap);
+    dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
+
     const { approval } = await contractUtils.approve(
       inputAddress,
       exchangeAddress,
@@ -76,9 +125,14 @@ const swapOnUniswap = async (
       wallet
     );
 
+    currentRap.transactions.approval = approval.hash;
+    dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
+
     console.log('APPROVAL SUBMITTED, HASH', approval.hash);
     console.log('WAITING TO BE MINED...');
     await approval.wait();
+    currentRap.transactions.approval.confirmed = true;
+    dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
     console.log('APPROVAL READY, LETS GOOO');
   } else {
     console.log('No need to unlock');
@@ -124,7 +178,11 @@ const swapOnUniswap = async (
   }
 
   // 2.2 - Execute Swap
-  const gasPrice = get(selectedGasPrice, 'value.amount');
+
+  let gasPrice = get(selectedGasPrice, 'value.amount');
+  if (!gasPrice) {
+    gasPrice = get(gasPrices, `[${gasUtils.FAST}]`);
+  }
   const gasLimit = await estimateSwapGasLimit(wallet.address, tradeDetails);
 
   console.log('About to execute swap with', {
@@ -134,7 +192,10 @@ const swapOnUniswap = async (
     wallet,
   });
 
-  return executeSwap(tradeDetails, gasLimit, gasPrice, wallet);
+  const swap = await executeSwap(tradeDetails, gasLimit, gasPrice, wallet);
+  currentRap.transactions.swap.hash = swap.hash;
+  dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
+  return { rap: currentRap, swap };
 };
 
 export default swapOnUniswap;

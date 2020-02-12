@@ -12,6 +12,7 @@ import keyboardHeight from './keyboardHeight';
 import navigation from './navigation';
 import nonce from './nonce';
 import openStateSettings from './openStateSettings';
+import raps from './raps';
 import requests from './requests';
 import selectedInput from './selectedInput';
 import selectedWithFab from './selectedWithFab';
@@ -33,6 +34,7 @@ export default combineReducers({
   navigation,
   nonce,
   openStateSettings,
+  raps,
   requests,
   selectedInput,
   selectedWithFab,

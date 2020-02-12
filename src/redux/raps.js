@@ -31,9 +31,9 @@ export const rapsAddOrUpdate = (id, data) => (dispatch, getState) => {
   });
 };
 
-export const removeContact = id => (dispatch, getState) => {
+export const rapsRemove = id => (dispatch, getState) => {
   const { raps } = getState().raps;
-  const updatedraps = omit(raps, id);
+  const updatedraps = id ? omit(raps, id) : {};
   saveRaps(updatedraps);
   dispatch({
     payload: updatedraps,

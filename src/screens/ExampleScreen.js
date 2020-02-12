@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { compose } from 'recompact';
 import Button from '../components/buttons/Button';
 import { Centered, Page } from '../components/layout';
@@ -11,12 +11,11 @@ import {
   withGas,
   withUniswapAllowances,
   withBlockPolling,
+  withRaps,
 } from '../hoc';
 import { colors, position } from '../styles';
 import swapOnUniswap from '../raps/swap-uniswap';
 import { loadWallet } from '../model/wallet';
-import { gasUtils } from '../utils';
-import { get } from 'lodash';
 
 class ExampleScreen extends PureComponent {
   static propTypes = {
@@ -26,8 +25,7 @@ class ExampleScreen extends PureComponent {
   componentDidMount = async () => {
     try {
       await this.props.initializeWallet();
-      await this.props.gasPricesStartPolling();
-      await this.props.web3ListenerInit();
+      await this.props.rapsRemove();
     } catch (error) {
       console.log('lol error on ExampleScreen like a n00b: ', error);
     }
@@ -35,12 +33,10 @@ class ExampleScreen extends PureComponent {
 
   componentWillUnmount() {
     this.props.web3ListenerStop();
-    this.props.gasPricesStopPolling();
   }
 
   doSwap = async () => {
     const wallet = await loadWallet();
-    const { gasPrices } = this.props;
 
     const inputCurrency = {
       address: '0x6b175474e89094c44da98b954eedeac495271d0f',
@@ -52,36 +48,26 @@ class ExampleScreen extends PureComponent {
       decimals: 18,
     };
 
-    await this.props.uniswapUpdateInputCurrency(inputCurrency);
-    await this.props.uniswapUpdateOutputCurrency(outputCurrency);
-    const {
-      inputReserve,
-      outputReserve,
-    } = await this.props.web3UpdateReserves();
-
     const inputAmount = 0.1; // DAI
-    const outputAmount = 0.0004; // WETH
-    const selectedGasPrice = get(gasPrices, `[${gasUtils.NORMAL}]`);
+    const outputAmount = 0.0003; // WETH
     const inputAsExactAmount = true;
 
-    console.log('RESERVES BEFORE SWAP', inputReserve, outputReserve);
-
     try {
-      const swap = await swapOnUniswap(
+      const { swap, rap } = await swapOnUniswap(
         wallet,
         inputCurrency,
         outputCurrency,
         inputAmount,
         outputAmount,
-        selectedGasPrice,
-        gasPrices,
-        inputAsExactAmount,
-        inputReserve,
-        outputReserve
+        null,
+        inputAsExactAmount
       );
 
       console.log('SWAP EXECUTED!', swap.hash);
       await swap.wait();
+      rap.transactions.swap.confirmed = true;
+      rap.transactions.completed_at = new Date().getTime();
+      this.props.rapsAddOrUpdate(rap.id, rap);
       console.log('SWAP CONFIRMED');
     } catch (e) {
       console.log('SWAP FAILED', e);
@@ -95,6 +81,9 @@ class ExampleScreen extends PureComponent {
       color={colors.dark}
       flex={1}
     >
+      <View style={{ backgroundColor: `white` }}>
+        <Text>{JSON.stringify(this.props.raps)}</Text>
+      </View>
       <Centered width="100%">
         <Button onPress={this.doSwap}>
           <Text>Swap</Text>
@@ -110,5 +99,6 @@ export default compose(
   withUniswapAssets,
   withUniswapAllowances,
   withGas,
-  withBlockPolling
+  withBlockPolling,
+  withRaps
 )(ExampleScreen);
