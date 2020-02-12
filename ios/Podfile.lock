@@ -285,13 +285,13 @@ PODS:
   - React-jsinspector (0.62.0-rc.1)
   - react-native-blur (0.8.0):
     - React
-  - react-native-camera (3.16.0):
+  - react-native-camera (3.17.0):
     - React
-    - react-native-camera/RCT (= 3.16.0)
-    - react-native-camera/RN (= 3.16.0)
-  - react-native-camera/RCT (3.16.0):
+    - react-native-camera/RCT (= 3.17.0)
+    - react-native-camera/RN (= 3.17.0)
+  - react-native-camera/RCT (3.17.0):
     - React
-  - react-native-camera/RN (3.16.0):
+  - react-native-camera/RN (3.17.0):
     - React
   - react-native-mail (4.1.0):
     - React
@@ -371,6 +371,8 @@ PODS:
     - React-cxxreact (= 0.62.0-rc.1)
     - React-jsi (= 0.62.0-rc.1)
     - ReactCommon/callinvoker (= 0.62.0-rc.1)
+  - ReactNativePayments (1.1.3):
+    - React
   - ReactNativePermissions (1.2.1):
     - React
   - RNAnalytics (1.1.0):
@@ -380,7 +382,7 @@ PODS:
     - React
   - RNCMaskedView (0.1.6):
     - React
-  - RNCPushNotificationIOS (1.0.5):
+  - RNCPushNotificationIOS (1.0.6):
     - React
   - RNDeviceInfo (5.3.1):
     - React
@@ -388,20 +390,20 @@ PODS:
     - React
     - SDWebImage (~> 5.0)
     - SDWebImageWebPCoder (~> 0.2.3)
-  - RNFBApp (6.3.0):
+  - RNFBApp (6.3.2):
     - Firebase/Core (~> 6.13.0)
     - React
-  - RNFBCrashlytics (6.3.0):
+  - RNFBCrashlytics (6.3.2):
     - Crashlytics (~> 3.14.0)
     - Fabric (~> 1.10.2)
     - Firebase/Core (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBMessaging (6.3.0):
+  - RNFBMessaging (6.3.2):
     - Firebase/Messaging (~> 6.13.0)
     - React
     - RNFBApp
-  - RNGestureHandler (1.5.3):
+  - RNGestureHandler (1.5.6):
     - React
   - RNInputMask (4.1.0)
   - RNKeychain (4.0.3):
@@ -484,6 +486,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - ReactCommon/callinvoker (from `../node_modules/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - "ReactNativePayments (from `../node_modules/@rainbow-me/react-native-payments/lib/ios`)"
   - ReactNativePermissions (from `../node_modules/react-native-permissions`)
   - "RNAnalytics (from `../node_modules/@segment/analytics-react-native`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
@@ -614,6 +617,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/Libraries/Vibration"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  ReactNativePayments:
+    :path: "../node_modules/@rainbow-me/react-native-payments/lib/ios"
   ReactNativePermissions:
     :path: "../node_modules/react-native-permissions"
   RNAnalytics:
@@ -705,7 +710,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: ccf2361cd90f691e04ff73585f099aa179ae8b52
   React-jsinspector: fabb3a8cad7bce396f2d4c29cbf83e87022b07ec
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-camera: 705c7e9412436957b4dc894a1af61f43830787e2
+  react-native-camera: c549d50495c989688ef1819dab49441c7dc7c17d
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-netinfo: 8884d510fe67349940b4399c01db3e3591c922aa
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
@@ -725,17 +730,18 @@ SPEC CHECKSUMS:
   React-RCTText: f2f9976b77661b5a1d628cf7ebfe6c08b6168f8a
   React-RCTVibration: 2e7618e869b2ba4a15042d6def29dd32df734793
   ReactCommon: 13c3473a975e73db91b1999e0d6d89c62400785d
+  ReactNativePayments: 56363b0ac491c96c8c98f3913860ee5568f061ae
   ReactNativePermissions: 7cfad56d13c8961cd2a1005b4955b1400c79ef3e
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 44395cb9c7c1523104c2b499eb426ef7aff82bca
   RNCMaskedView: a88953beefbd347a29072d9eba90e42945fe291e
-  RNCPushNotificationIOS: 4a5c5d92ce51227f8c3409b0b7542382c0b5f008
+  RNCPushNotificationIOS: 05262c52fcfb861a2b79aa8e51cad66263c9ea52
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNFastImage: 9b0c22643872bb7494c8d87bbbb66cc4c0d9e7a2
-  RNFBApp: ad3fbf3071c5ac5308e02b8dc21845f547976757
-  RNFBCrashlytics: c77c78a712a3f185b0b8193654c324fa3f939b55
-  RNFBMessaging: 6f2cc90155bea4fad1c7d74dfe0fa880d215c3fd
-  RNGestureHandler: 02905abe54e1f6e59c081a10b4bd689721e17aa6
+  RNFBApp: fc62d1e8adbc871fc7c27314c8e0842aebb44514
+  RNFBCrashlytics: eca9004e24f54b1edf32341c8809a157015fdeea
+  RNFBMessaging: 64114226de3857998b142ae893d54f326221e124
+  RNGestureHandler: 911d3b110a7a233a34c4f800e7188a84b75319c6
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeychain: f5783613aa3095af63345ddb9626a729bd4a3897
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
@@ -746,13 +752,13 @@ SPEC CHECKSUMS:
   RNSentry: 9cfa3717b1e6bf9ad4b124683e78e3b98b01d3af
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: 82d44baa568873faae1a9929dd30d29db8f06732
-  SDWebImage: 29c340dbdcef342bb13125553f4e19ce056b07a7
+  SDWebImage: 4d5c027c935438f341ed33dbac53ff9f479922ca
   SDWebImageWebPCoder: 947093edd1349d820c40afbd9f42acb6cdecd987
   Sentry: 14bdd673870e8cf64932b149fad5bbbf39a9b390
   SRSRadialGradient: 77bcb1ae812d0c77560e54ed9e52166df032db1d
   SSZipArchive: fa16b8cc4cdeceb698e5e5d9f67e9558532fbf23
   TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
-  ToolTipMenu: ad9f45c5ef375418275c81a667c2805bcac8692a
+  ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   Yoga: b9a1f7189009fa4b6266ee0a63235547326295d2
 
 PODFILE CHECKSUM: 4e11b438fd6bb2763be24d82eeafc6f69c49a2f4
