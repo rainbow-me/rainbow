@@ -41,12 +41,12 @@ class QRScannerScreenWithData extends Component {
       Permissions.request('camera').then(permission => {
         const isCameraAuthorized = permission === 'authorized';
         if (prevState.isCameraAuthorized !== isCameraAuthorized) {
-          !this.state.enableScanning && this.setState({ isCameraAuthorized });
+          this.setState({ isCameraAuthorized });
         }
       });
 
       // eslint-disable-next-line react/no-did-update-set-state
-      this.setState({ enableScanning: true });
+      !this.state.enableScanning && this.setState({ enableScanning: true });
     }
   };
 
