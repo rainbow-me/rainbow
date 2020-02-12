@@ -227,6 +227,7 @@ class SendAssetList extends React.Component {
             this.componentHeight = event.nativeEvent.layoutMeasurement.height;
             this.position = event.nativeEvent.contentOffset.y;
           }}
+          style={{ minHeight: 1 }}
         />
       </FlyInAnimation>
     );
