@@ -255,9 +255,11 @@ class ExchangeModal extends Component {
         this.inputFocusInteractionHandle
       );
     }
-    this.props.uniswapClearCurrenciesAndReserves();
-    this.props.gasPricesStopPolling();
-    this.props.web3ListenerStop();
+    InteractionManager.runAfterInteractions(() => {
+      this.props.uniswapClearCurrenciesAndReserves();
+      this.props.gasPricesStopPolling();
+      this.props.web3ListenerStop();
+    });
   };
 
   lastFocusedInput = null;
