@@ -89,3 +89,22 @@ export const UNISWAP_24HOUR_PRICE_QUERY = gql`
     }
   }
 `;
+
+export const DIRECTORY_QUERY = gql`
+  query exchanges($excluded: [String]!, $first: Int!, $skip: Int!) {
+    exchanges(
+      first: $first
+      skip: $skip
+      orderBy: combinedBalanceInUSD
+      orderDirection: desc
+      where: { tokenAddress_not_in: $excluded }
+    ) {
+      id
+      tokenSymbol
+      tokenName
+      tokenDecimals
+      tokenAddress
+      ethBalance
+    }
+  }
+`;

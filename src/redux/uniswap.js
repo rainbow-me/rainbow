@@ -6,6 +6,7 @@ import {
   get,
   invertBy,
   isEmpty,
+  keys,
   map,
   mapValues,
   omit,
@@ -27,6 +28,7 @@ import {
   saveUniswapPendingApprovals,
 } from '../handlers/localstorage/uniswap';
 import {
+  getAllExchanges,
   getLiquidityInfo,
   getReserve,
   getUniswapPairs,
@@ -45,6 +47,7 @@ const UNISWAP_LOAD_LIQUIDITY_TOKEN_INFO_SUCCESS =
   'uniswap/UNISWAP_LOAD_LIQUIDITY_TOKEN_INFO_SUCCESS';
 
 const UNISWAP_UPDATE_PAIRS = 'uniswap/UNISWAP_UPDATE_PAIRS';
+const UNISWAP_UPDATE_ALL_PAIRS = 'uniswap/UNISWAP_UPDATE_ALL_PAIRS';
 
 const UNISWAP_UPDATE_REQUEST = 'uniswap/UNISWAP_UPDATE_REQUEST';
 const UNISWAP_UPDATE_SUCCESS = 'uniswap/UNISWAP_UPDATE_SUCCESS';
@@ -102,6 +105,20 @@ export const uniswapLoadState = () => async (dispatch, getState) => {
   } catch (error) {
     dispatch({ type: UNISWAP_LOAD_FAILURE });
   }
+};
+
+export const uniswapGetAllExchanges = () => async (dispatch, getState) => {
+  const { tokenOverrides } = getState().data;
+  const { pairs } = getState().uniswap;
+  try {
+    const ignoredTokens = filter(keys(pairs), x => x !== 'eth');
+    const allPairs = await getAllExchanges(tokenOverrides, ignoredTokens);
+    dispatch({
+      payload: allPairs,
+      type: UNISWAP_UPDATE_ALL_PAIRS,
+    });
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
 };
 
 export const uniswapPairsInit = () => async (dispatch, getState) => {
@@ -293,6 +310,7 @@ export const uniswapUpdateState = () => (dispatch, getState) =>
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNISWAP_STATE = {
   allowances: {},
+  allPairs: {},
   favorites: DefaultUniswapFavorites,
   fetchingUniswap: false,
   inputCurrency: null,
@@ -314,6 +332,9 @@ export default (state = INITIAL_UNISWAP_STATE, action) =>
         break;
       case UNISWAP_LOAD_LIQUIDITY_TOKEN_INFO_SUCCESS:
         draft.uniswapLiquidityTokenInfo = action.payload;
+        break;
+      case UNISWAP_UPDATE_ALL_PAIRS:
+        draft.allPairs = action.payload;
         break;
       case UNISWAP_UPDATE_PAIRS:
         draft.pairs = action.payload;

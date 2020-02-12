@@ -68,6 +68,7 @@
     "events": "^1.1.1",
     "global": "^4.3.2",
     "grapheme-splitter": "^1.0.4",
+    "graphql-tag": "^2.10.3",
     "https-browserify": "0.0.1",
     "husky": "^2.4.0",
     "i18n-js": "^3.0.11",
