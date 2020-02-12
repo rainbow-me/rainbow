@@ -118,13 +118,13 @@ export default function Chart() {
         ref={textInputRef}
       />
       <ValueChart
-        mode="gesture-managed" // "gesture-managed" / "detailed" / "simplified"
-        enableSelect // enable checking value in touched point of chart
+        mode="gesture-managed"
+        enableSelect
         onValueUpdate={value => {
           textInputRef.current.updateValue(value);
         }}
         currentDataSource={currentChart}
-        amountOfPathPoints={100} // amount of points for switch between charts
+        amountOfPathPoints={100}
         data={data2}
         barColor={change > 0 ? colors.chartGreen : colors.red}
         stroke={{ detailed: 1.5, simplified: 3 }}
