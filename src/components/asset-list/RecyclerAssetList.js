@@ -111,6 +111,8 @@ const hasRowChanged = (r1, r2) => {
   if (
     r1.item &&
     r2.item &&
+    r1.item.assets &&
+    r2.item.assets &&
     r1.item.smallBalancesContainer &&
     r2.item.smallBalancesContainer
   ) {

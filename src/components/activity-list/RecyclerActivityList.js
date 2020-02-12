@@ -194,6 +194,7 @@ export default class RecyclerActivityList extends PureComponent {
           scrollIndicatorInsets={{
             bottom: safeAreaInsetValues.bottom,
           }}
+          style={{ minHeight: 1 }}
         />
       </StickyContainer>
     </Wrapper>

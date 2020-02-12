@@ -157,6 +157,7 @@ class SendContactList extends Component {
             keyboardShouldPersistTaps: 'always',
           }}
           rowRenderer={this.renderItem}
+          style={{ minHeight: 1 }}
         />
       )}
     </FlyInAnimation>

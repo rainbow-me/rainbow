@@ -23,6 +23,7 @@ import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-unresolved
 import { enableScreens } from 'react-native-screens';
+import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
 import { compose, withProps } from 'recompact';
 import { FlexItem } from './components/layout';
@@ -55,7 +56,9 @@ if (__DEV__) {
 
 CodePush.getUpdateMetadata().then(update => {
   if (update) {
-    setRelease(update.appVersion + '-codepush:' + update.label);
+    setRelease(`me.rainbow-${update.appVersion}-codepush:${update.label}`);
+  } else {
+    setRelease(`me.rainbow-${VersionNumber.appVersion}`);
   }
 });
 

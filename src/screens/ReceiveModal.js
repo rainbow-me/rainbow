@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types';
+import { toLower } from 'lodash';
 import React from 'react';
 import { Share } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
-import { compose, onlyUpdateForKeys } from 'recompact';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components/primitives';
 import Divider from '../components/Divider';
 import { Column } from '../components/layout';
@@ -15,7 +15,6 @@ import {
 import QRCodeDisplay from '../components/QRCodeDisplay';
 import { FloatingEmojis } from '../components/floating-emojis';
 import { Br, Monospace, Text } from '../components/text';
-import { withAccountAddress } from '../hoc';
 import { useClipboard } from '../hooks';
 import { colors } from '../styles';
 import { haptics } from '../utils';
@@ -31,9 +30,12 @@ const AddressText = styled(Monospace).attrs({
   width: 100%;
 `;
 
-const ReceiveScreen = ({ accountAddress }) => {
+const ReceiveModal = () => {
   const { setClipboard } = useClipboard();
   const { goBack } = useNavigation();
+  const accountAddress = useSelector(({ settings: { accountAddress } }) =>
+    toLower(accountAddress)
+  );
 
   return (
     <Modal height={472} onCloseModal={goBack}>
@@ -88,11 +90,4 @@ const ReceiveScreen = ({ accountAddress }) => {
   );
 };
 
-ReceiveScreen.propTypes = {
-  accountAddress: PropTypes.string.isRequired,
-};
-
-export default compose(
-  withAccountAddress,
-  onlyUpdateForKeys(['accountAddress'])
-)(ReceiveScreen);
+export default React.memo(ReceiveModal);

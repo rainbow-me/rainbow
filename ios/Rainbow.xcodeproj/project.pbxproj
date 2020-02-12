@@ -269,8 +269,8 @@
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
-				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				3CBE29CC2381E43900BE05AC /* Dummy.swift */,
 				3CBE29CB2381E43800BE05AC /* Rainbow-Bridging-Header.h */,
 				A4277D9E23CBD1910042BAF4 /* Extensions.swift */,
@@ -624,7 +624,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export SENTRY_PROPERTIES=sentry.properties\nexport NODE_ARGS=--max-old-space-size=2048\n../node_modules/@sentry/cli/bin/sentry-cli react-native xcode ../node_modules/react-native/scripts/react-native-xcode.sh\n";
+			shellScript = "export SENTRY_PROPERTIES=sentry.properties\nexport NODE_ARGS=--max-old-space-size=2048\nDEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\nexport EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DEST/main.jsbundle.map\"\n../node_modules/@sentry/cli/bin/sentry-cli react-native xcode  ../node_modules/react-native/scripts/react-native-xcode.sh\ncp $DEST/main.jsbundle* ../ios/\n";
 		};
 		3CF823D3218F310D0024B77B /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -734,10 +734,10 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 3;
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = L74NQAQB8H;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
@@ -763,7 +763,7 @@
 					"\"$(SRCROOT)/Rainbow\"",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.2.4;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -791,9 +791,9 @@
 				CODE_SIGN_ENTITLEMENTS = Rainbow/Rainbow.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = L74NQAQB8H;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
@@ -819,7 +819,7 @@
 					"\"$(SRCROOT)/Rainbow\"",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.2.4;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -883,9 +883,9 @@
 				CODE_SIGN_ENTITLEMENTS = Rainbow/Rainbow.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = L74NQAQB8H;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
@@ -910,7 +910,7 @@
 					"\"$(SRCROOT)/Rainbow\"",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.2.4;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -975,9 +975,9 @@
 				CODE_SIGN_ENTITLEMENTS = Rainbow/Rainbow.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = L74NQAQB8H;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
@@ -1002,7 +1002,7 @@
 					"\"$(SRCROOT)/Rainbow\"",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.2.4;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
