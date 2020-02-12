@@ -26,8 +26,8 @@ class ExampleScreen extends PureComponent {
   componentDidMount = async () => {
     try {
       await this.props.initializeWallet();
-      this.props.gasPricesStartPolling();
-      this.props.web3ListenerInit();
+      await this.props.gasPricesStartPolling();
+      await this.props.web3ListenerInit();
     } catch (error) {
       console.log('lol error on ExampleScreen like a n00b: ', error);
     }
@@ -40,8 +40,7 @@ class ExampleScreen extends PureComponent {
 
   doSwap = async () => {
     const wallet = await loadWallet();
-
-    const { gasPrices, inputReserve, outputReserve } = this.props;
+    const { gasPrices } = this.props;
 
     const inputCurrency = {
       address: '0x6b175474e89094c44da98b954eedeac495271d0f',
@@ -55,12 +54,17 @@ class ExampleScreen extends PureComponent {
 
     await this.props.uniswapUpdateInputCurrency(inputCurrency);
     await this.props.uniswapUpdateOutputCurrency(outputCurrency);
-    await this.props.web3UpdateReserves();
+    const {
+      inputReserve,
+      outputReserve,
+    } = await this.props.web3UpdateReserves();
 
     const inputAmount = 0.1; // DAI
     const outputAmount = 0.0004; // WETH
     const selectedGasPrice = get(gasPrices, `[${gasUtils.NORMAL}]`);
     const inputAsExactAmount = true;
+
+    console.log('RESERVES BEFORE SWAP', inputReserve, outputReserve);
 
     try {
       const swap = await swapOnUniswap(
