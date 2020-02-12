@@ -184,9 +184,18 @@ const pickImportantPoints = (array, indexInterval) => {
 
 export default class Chart extends PureComponent {
   static propTypes = {
+    /* amount of points that data is simplified to. */
+    /* to make animation between charts possible we need to have fixed amount of points in each chart */
+    /* if provided data doesn't have perfect amount of points we can simplify it to fixed value */
     amountOfPathPoints: PropTypes.number,
+
+    /* touch bar color */
     barColor: PropTypes.string,
+
+    /* index of currently visible data chart */
     currentDataSource: PropTypes.number,
+
+    /* chart data JSON */
     data: PropTypes.arrayOf({
       name: PropTypes.number,
       segments: PropTypes.arrayOf({
@@ -204,10 +213,21 @@ export default class Chart extends PureComponent {
         },
       }),
     }),
+
+    /* flag  that specify if gestures are active on chart */
     enableSelect: PropTypes.bool,
+
+    /* if important points are generated automaticaly in component */
+    /* you can specify the graduality from important points */
     importantPointsIndexInterval: PropTypes.number,
+
+    /* specify what kind of chart will be displayed */
     mode: PropTypes.oneOf(['gesture-managed', 'detailed', 'simplified']),
+
+    /* callback that returns value of original data x for touched y */
     onValueUpdate: PropTypes.func,
+
+    /* specify stroke width */
     stroke: PropTypes.object,
   };
 
@@ -237,36 +257,36 @@ export default class Chart extends PureComponent {
       shouldRenderChart: true,
     };
 
-    // clocks and value responsible for animation of the chart between simplified and detailed chart
+    /* clocks and value responsible for animation of the chart between simplified and detailed chart */
     this.clock = new Clock();
     this.clockReversed = new Clock();
     this.value = new Value(this.props.mode === 'detailed' ? 0 : 1);
 
-    // clocks and value responsible for opacity animation of the indicator bar
+    /* clocks and value responsible for opacity animation of the indicator bar */
     this.opacityClock = new Clock();
     this.opacityClockReversed = new Clock();
     this.opacity = new Value(0);
 
-    // value that control opacity of the chart during loading
+    /* value that control opacity of the chart during loading */
     this.loadingValue = new Value(1);
 
-    // two different gesture states one for tapGestureHandler and one for panGestureHandler respectively
+    /* two different gesture states one for tapGestureHandler and one for panGestureHandler respectively */
     this.gestureState = new Value(UNDETERMINED);
     this.panGestureState = new Value(UNDETERMINED);
 
-    // value that is used in reanimated code to recognize if values should animate to default values
+    /* value that is used in reanimated code to recognize if values should animate to default values */
     this.shouldSpring = new Value(0);
 
-    // value that mirror string prop to the reanimated code
+    /* value that mirror string prop to the reanimated code */
     this.shouldReactToGestures = new Value(
       this.props.mode === 'gesture-managed' ? 1 : 0
     );
 
-    // value that point currently selected chart
+    /* value that point currently selected chart */
     this.currentChart = new Value(0);
 
-    // table of animation values that are used to animate between different charts on the run.
-    // only one can be set to 1 at the time because all charts are multiplied by this table and summed
+    /* table of animation values that are used to animate between different charts on the run. */
+    /* only one can be set to 1 at the time because all charts are multiplied by this table and summed */
     this.chartAnimationValues = [
       new Value(1),
       new Value(0),
