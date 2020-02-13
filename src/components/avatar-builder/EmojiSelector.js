@@ -324,7 +324,12 @@ export default class EmojiSelector extends PureComponent {
           blurAmount={10}
           style={[
             styles.sectionStickyBlur,
-            { width: Categories[categoryKeys[(index - 1) / 2]].width },
+            {
+              width:
+                (index - 1) / 2 <= categoryKeys.length - 1
+                  ? Categories[categoryKeys[(index - 1) / 2]].width
+                  : Categories[categoryKeys[categoryKeys.length - 1]].width,
+            },
           ]}
         >
           <Text style={styles.sectionStickyHeader}>{item.title}</Text>
@@ -369,11 +374,8 @@ export default class EmojiSelector extends PureComponent {
     this.rlv = ref;
   };
 
-  svRef = React.createRef();
-
   scrollToOffset = (position, animated) => {
-    this.rlv.scrollToOffset(0, position, animated);
-    this.svRef.current.scrollTo({ y: position, x: 0 }, animated);
+    this.rlv.scrollTo(position, 0, animated);
   };
 
   prerenderEmojis(emojisRows) {
@@ -413,7 +415,7 @@ export default class EmojiSelector extends PureComponent {
     }
 
     return (
-      <ScrollView {...props}>
+      <ScrollView {...props} ref={this.handleListRef}>
         {this.state.isReady ? children : this.prerenderEmojis(prerenderEmoji)}
       </ScrollView>
     );
@@ -483,7 +485,6 @@ export default class EmojiSelector extends PureComponent {
                   rowRenderer={this.renderItem}
                   style={{ width: deviceUtils.dimensions.width }}
                   onScroll={this.handleScroll}
-                  ref={this.handleListRef}
                   externalScrollView={this.renderScrollView}
                 />
               </StickyContainer>
