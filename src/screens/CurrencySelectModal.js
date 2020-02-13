@@ -159,20 +159,20 @@ class CurrencySelectModal extends Component {
     } else if (type === CurrencySelectionTypes.output) {
       headerTitle = 'Receive';
       const curatedSection = concat(favorites, curatedAssets);
-      if (!isEmpty(searchQuery)) {
-        const [filteredBest, filteredHigh, filteredLow] = map(
-          [curatedSection, globalHighLiquidityAssets, globalLowLiquidityAssets],
-          section => {
-            return filterList(section, searchQuery, ['symbol', 'name']);
-          }
-        );
-        // filteredList = concat(filteredBest, filteredHigh, filteredLow);
-        filteredList = [
-          { data: filteredBest, title: 'Best' },
-          { data: filteredHigh, title: 'Good' },
-          { data: filteredLow, title: 'More results' },
-        ];
-      }
+      // if (!isEmpty(searchQuery)) {
+      const [filteredBest, filteredHigh, filteredLow] = map(
+        [curatedSection, globalHighLiquidityAssets, globalLowLiquidityAssets],
+        section => {
+          return filterList(section, searchQuery, ['symbol', 'name']);
+        }
+      );
+      // filteredList = concat(filteredBest, filteredHigh, filteredLow);
+      filteredList = [
+        { data: filteredBest, title: 'Best' },
+        { data: filteredHigh, title: 'Good' },
+        { data: filteredLow, title: 'More results' },
+      ];
+      // }
     }
 
     const isFocused = this.props.navigation.getParam('focused', false);
