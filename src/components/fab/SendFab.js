@@ -15,11 +15,11 @@ import FloatingActionButton from './FloatingActionButton';
 let onPressMutex = false;
 /**
  * This function is a bit hacky workaround for an issue of blinking
- * keyboard while navigating from watter screen to send sheet immediately
- * after closing asset screen. Firstly, I guarantee that there's no
- * collapsing of event by mutex, then I set addition timeout with flexible
+ * keyboard while navigating from wallet screen to send sheet immediately
+ * after closing asset screen. Firstly, I guarantee that there're no
+ * collapsing events by mutex, then I set additional timeout with flexible
  * time set in order to make sure that there's always enough time
- * to close the keyboard after transition
+ * to close the keyboard after transition.
  */
 function performSafely(operation, transitionProps) {
   if (onPressMutex) {
