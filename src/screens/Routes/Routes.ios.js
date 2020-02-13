@@ -2,7 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import { get, omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
-import { createAppContainer } from 'react-navigation';
+import { createAppContainer, NavigationActions } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
 // eslint-disable-next-line import/no-unresolved
 import { enableScreens } from 'react-native-screens';
@@ -24,7 +24,9 @@ import SendSheetWithData from '../SendSheetWithData';
 import SettingsModal from '../SettingsModal';
 import TransactionConfirmationScreenWithData from '../TransactionConfirmationScreenWithData';
 import WalletScreen from '../WalletScreen';
+import AvatarBuilder from '../AvatarBuilder';
 import {
+  emojiPreset,
   exchangePreset,
   expandedPreset,
   sheetPreset,
@@ -35,9 +37,13 @@ import {
 enableScreens();
 
 const onTransitionEnd = () =>
-  store.dispatch(updateTransitionProps({ isTransitioning: false }));
+  store.dispatch(
+    updateTransitionProps({ date: Date.now(), isTransitioning: false })
+  );
 const onTransitionStart = () =>
-  store.dispatch(updateTransitionProps({ isTransitioning: true }));
+  store.dispatch(
+    updateTransitionProps({ date: Date.now(), isTransitioning: true })
+  );
 
 const SwipeStack = createMaterialTopTabNavigator(
   {
@@ -63,8 +69,34 @@ const SwipeStack = createMaterialTopTabNavigator(
   }
 );
 
+const sendFlowRoutes = {
+  OverlayExpandedAssetScreen: {
+    navigationOptions: overlayExpandedPreset,
+    screen: ExpandedAssetScreenWithData,
+  },
+  SendSheet: {
+    navigationOptions: {
+      ...expandedPreset,
+      onTransitionStart: props => {
+        expandedPreset.onTransitionStart(props);
+        onTransitionStart();
+      },
+    },
+    screen: function SendSheetWrapper(...props) {
+      return <SendSheetWithData {...props} setAppearListener={setListener} />;
+    },
+  },
+};
+
 const MainNavigator = createStackNavigator(
   {
+    AvatarBuilder: {
+      navigationOptions: {
+        ...emojiPreset,
+      },
+      screen: AvatarBuilder,
+      transparentCard: true,
+    },
     ConfirmRequest: {
       navigationOptions: {
         ...sheetPreset,
@@ -138,6 +170,7 @@ const MainNavigator = createStackNavigator(
       },
       screen: WalletConnectConfirmationModal,
     },
+    ...(isNativeStackAvailable ? {} : sendFlowRoutes),
   },
   {
     defaultNavigationOptions: {
@@ -164,28 +197,17 @@ const NativeStack = createNativeStackNavigator(
       );
     },
     MainNavigator,
-    SendSheetNavigator: createStackNavigator(
-      {
-        OverlayExpandedAssetScreen: {
-          navigationOptions: overlayExpandedPreset,
-          screen: ExpandedAssetScreenWithData,
-        },
-        SendSheet: function SendSheetWrapper(...props) {
-          return (
-            <SendSheetWithData {...props} setAppearListener={setListener} />
-          );
-        },
-      },
-      {
-        defaultNavigationOptions: {
-          onTransitionEnd,
-          onTransitionStart,
-        },
-        headerMode: 'none',
-        initialRouteName: 'SendSheet',
-        mode: 'modal',
-      }
-    ),
+    SendSheetNavigator: isNativeStackAvailable
+      ? createStackNavigator(sendFlowRoutes, {
+          defaultNavigationOptions: {
+            onTransitionEnd,
+            onTransitionStart,
+          },
+          headerMode: 'none',
+          initialRouteName: 'SendSheet',
+          mode: 'modal',
+        })
+      : () => null,
   },
   {
     defaultNavigationOptions: {
@@ -243,10 +265,49 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
       const { params, routeName } = Navigation.getActiveRoute(currentState);
       const prevRouteName = Navigation.getActiveRouteName(prevState);
       // native stack rn does not support onTransitionEnd and onTransitionStart
+      // Set focus manually on route changes
+      if (prevRouteName !== routeName) {
+        Navigation.handleAction(
+          NavigationActions.setParams({
+            key: routeName,
+            params: { focused: true },
+          })
+        );
+
+        Navigation.handleAction(
+          NavigationActions.setParams({
+            key: prevRouteName,
+            params: { focused: false },
+          })
+        );
+      }
+
+      if (
+        prevRouteName !== 'QRScannerScreen' &&
+        routeName === 'QRScannerScreen'
+      ) {
+        StatusBar.setBarStyle('light-content');
+      }
+
+      if (
+        prevRouteName === 'QRScannerScreen' &&
+        routeName !== 'QRScannerScreen'
+      ) {
+        StatusBar.setBarStyle('dark-content');
+      }
+
       if (
         prevRouteName === 'ImportSeedPhraseSheet' &&
         (routeName === 'ProfileScreen' || routeName === 'WalletScreen')
       ) {
+        StatusBar.setBarStyle('dark-content');
+      }
+
+      if (prevRouteName === 'WalletScreen' && routeName === 'SendSheet') {
+        StatusBar.setBarStyle('light-content');
+      }
+
+      if (prevRouteName === 'SendSheet' && routeName === 'WalletScreen') {
         StatusBar.setBarStyle('dark-content');
       }
 

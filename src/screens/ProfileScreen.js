@@ -11,6 +11,8 @@ import TransactionList from '../components/transaction-list/TransactionList';
 import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
 
 const ProfileScreen = ({
+  accountColor,
+  accountName,
   accountAddress,
   isEmpty,
   nativeCurrency,
@@ -37,9 +39,13 @@ const ProfileScreen = ({
     ) : (
       <ActivityList
         accountAddress={accountAddress}
+        accountColor={accountColor}
+        accountName={accountName}
         header={
           <ProfileMasthead
             accountAddress={accountAddress}
+            accountColor={accountColor}
+            accountName={accountName}
             navigation={navigation}
             showBottomDivider={!isEmpty}
           />

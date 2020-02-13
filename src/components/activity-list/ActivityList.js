@@ -25,7 +25,7 @@ ActivityList.propTypes = {
       data: PropTypes.array,
       renderItem: PropTypes.func,
       title: PropTypes.string.isRequired,
-    }),
+    })
   ),
 };
 
@@ -56,5 +56,7 @@ export default compose(
     'nativeCurrency',
     'pendingTransactionsCount',
     'sections',
-  ]),
+    'accountName',
+    'accountColor',
+  ])
 )(ActivityList);

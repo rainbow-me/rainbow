@@ -19,10 +19,20 @@ import CopyIcon from './svg/CopyIcon';
 import CrosshairIcon from './svg/CrosshairIcon';
 import DotIcon from './svg/DotIcon';
 import DoubleCaretIcon from './svg/DoubleCaretIcon';
+import EmojiActivitiesIcon from './svg/EmojiActivitiesIcon';
+import EmojiAnimalsIcon from './svg/EmojiAnimalsIcon';
+import EmojiFlagsIcon from './svg/EmojiFlagsIcon';
+import EmojiFoodIcon from './svg/EmojiFoodIcon';
+import EmojiObjectsIcon from './svg/EmojiObjectsIcon';
+import EmojiRecentIcon from './svg/EmojiRecentIcon';
+import EmojiSmileysIcon from './svg/EmojiSmileysIcon';
+import EmojiSymbolsIcon from './svg/EmojiSymbolsIcon';
+import EmojiTravelIcon from './svg/EmojiTravelIcon';
 import FaceIdIcon from './svg/FaceIdIcon';
 import GearIcon from './svg/GearIcon';
 import HandleIcon from './svg/HandleIcon';
 import InboxIcon from './svg/InboxIcon';
+import InfoIcon from './svg/InfoIcon';
 import LockIcon from './svg/LockIcon';
 import OfflineIcon from './svg/OfflineIcon';
 import PasscodeIcon from './svg/PasscodeIcon';
@@ -61,10 +71,20 @@ Icon.IconTypes = {
   crosshair: CrosshairIcon,
   dot: DotIcon,
   doubleCaret: DoubleCaretIcon,
+  emojiActivities: EmojiActivitiesIcon,
+  emojiAnimals: EmojiAnimalsIcon,
+  emojiFlags: EmojiFlagsIcon,
+  emojiFood: EmojiFoodIcon,
+  emojiObjects: EmojiObjectsIcon,
+  emojiRecent: EmojiRecentIcon,
+  emojiSmileys: EmojiSmileysIcon,
+  emojiSymbols: EmojiSymbolsIcon,
+  emojiTravel: EmojiTravelIcon,
   faceid: FaceIdIcon,
   gear: GearIcon,
   handle: HandleIcon,
   inbox: InboxIcon,
+  info: InfoIcon,
   lock: LockIcon,
   offline: OfflineIcon,
   passcode: PasscodeIcon,

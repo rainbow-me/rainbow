@@ -2,16 +2,14 @@ import analytics from '@segment/analytics-react-native';
 import { get, omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
-import { createAppContainer } from 'react-navigation';
+import { createAppContainer, NavigationActions } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
-
+// eslint-disable-next-line import/no-unresolved
+import { enableScreens } from 'react-native-screens';
 import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
-import { createStackNavigator } from 'react-navigation-stack';
 import isNativeStackAvailable from '../../helpers/isNativeStackAvailable';
 import { ExchangeModalNavigator, Navigation } from '../../navigation';
-import { updateTransitionProps } from '../../redux/navigation';
-import store from '../../redux/store';
 import { deviceUtils } from '../../utils';
 import ExpandedAssetScreenWithData from '../ExpandedAssetScreenWithData';
 import ImportSeedPhraseSheetWithData from '../ImportSeedPhraseSheetWithData';
@@ -24,18 +22,21 @@ import SendSheetWithData from '../SendSheetWithData';
 import SettingsModal from '../SettingsModal';
 import TransactionConfirmationScreenWithData from '../TransactionConfirmationScreenWithData';
 import WalletScreen from '../WalletScreen';
+import AvatarBuilder from '../AvatarBuilder';
 import {
+  emojiPreset,
+  backgroundPreset,
   exchangePreset,
   expandedPreset,
-  sheetPreset,
-  backgroundPreset,
   overlayExpandedPreset,
+  sheetPreset,
 } from '../../navigation/transitions/effects';
+import createStackNavigator, {
+  onTransitionEnd,
+  onTransitionStart,
+} from '../../navigation/createStackNavigator';
 
-const onTransitionEnd = () =>
-  store.dispatch(updateTransitionProps({ isTransitioning: false }));
-const onTransitionStart = () =>
-  store.dispatch(updateTransitionProps({ isTransitioning: true }));
+enableScreens();
 
 const SwipeStack = createMaterialTopTabNavigator(
   {
@@ -63,96 +64,92 @@ const SwipeStack = createMaterialTopTabNavigator(
   }
 );
 
-const MainNavigator = createStackNavigator(
-  {
-    ConfirmRequest: {
-      navigationOptions: {
-        ...sheetPreset,
-        onTransitionStart: props => {
-          sheetPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      screen: TransactionConfirmationScreenWithData,
+const MainNavigator = createStackNavigator({
+  AvatarBuilder: {
+    navigationOptions: {
+      ...emojiPreset,
     },
-    ExampleScreen,
-    ExchangeModal: {
-      navigationOptions: {
-        ...exchangePreset,
-        onTransitionEnd,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      params: {
-        isGestureBlocked: false,
-      },
-      screen: ExchangeModalNavigator,
-    },
-    ExpandedAssetScreen: {
-      navigationOptions: {
-        ...expandedPreset,
-        // onTransitionStart: props => {
-        //   expandedPreset.onTransitionStart(props);
-        //   onTransitionStart();
-        // },
-      },
-      screen: ExpandedAssetScreenWithData,
-    },
-    OverlayExpandedAssetScreen: {
-      navigationOptions: overlayExpandedPreset,
-      screen: ExpandedAssetScreenWithData,
-    },
-    ReceiveModal: {
-      navigationOptions: {
-        ...expandedPreset,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      screen: ReceiveModal,
-    },
-    SettingsModal: {
-      navigationOptions: {
-        ...expandedPreset,
-        gesturesEnabled: false,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      screen: SettingsModal,
-      transparentCard: true,
-    },
-    SwipeLayout: {
-      navigationOptions: {
-        ...backgroundPreset,
-      },
-      screen: SwipeStack,
-    },
-    WalletConnectConfirmationModal: {
-      navigationOptions: {
-        ...expandedPreset,
-        onTransitionStart: props => {
-          expandedPreset.onTransitionStart(props);
-          onTransitionStart();
-        },
-      },
-      screen: WalletConnectConfirmationModal,
-    },
+    screen: AvatarBuilder,
+    transparentCard: true,
   },
-  {
-    defaultNavigationOptions: {
-      onTransitionEnd,
-      onTransitionStart,
+  ConfirmRequest: {
+    navigationOptions: {
+      ...sheetPreset,
+      onTransitionStart: props => {
+        sheetPreset.onTransitionStart(props);
+        onTransitionStart();
+      },
     },
-    headerMode: 'none',
-    initialRouteName: 'SwipeLayout',
-    mode: 'modal',
-  }
-);
+    screen: TransactionConfirmationScreenWithData,
+  },
+  ExampleScreen,
+  ExchangeModal: {
+    navigationOptions: {
+      ...exchangePreset,
+      onTransitionEnd,
+      onTransitionStart: props => {
+        expandedPreset.onTransitionStart(props);
+        onTransitionStart();
+      },
+    },
+    params: {
+      isGestureBlocked: false,
+    },
+    screen: ExchangeModalNavigator,
+  },
+  ExpandedAssetScreen: {
+    navigationOptions: {
+      ...expandedPreset,
+      // onTransitionStart: props => {
+      //   expandedPreset.onTransitionStart(props);
+      //   onTransitionStart();
+      // },
+    },
+    screen: ExpandedAssetScreenWithData,
+  },
+  OverlayExpandedAssetScreen: {
+    navigationOptions: overlayExpandedPreset,
+    screen: ExpandedAssetScreenWithData,
+  },
+  ReceiveModal: {
+    navigationOptions: {
+      ...expandedPreset,
+      onTransitionStart: props => {
+        expandedPreset.onTransitionStart(props);
+        onTransitionStart();
+      },
+    },
+    screen: ReceiveModal,
+  },
+  SettingsModal: {
+    navigationOptions: {
+      ...expandedPreset,
+      gesturesEnabled: false,
+      onTransitionStart: props => {
+        expandedPreset.onTransitionStart(props);
+        onTransitionStart();
+      },
+    },
+    screen: SettingsModal,
+    transparentCard: true,
+  },
+  SwipeLayout: {
+    navigationOptions: {
+      ...backgroundPreset,
+    },
+    screen: SwipeStack,
+  },
+  WalletConnectConfirmationModal: {
+    navigationOptions: {
+      ...expandedPreset,
+      onTransitionStart: props => {
+        expandedPreset.onTransitionStart(props);
+        onTransitionStart();
+      },
+    },
+    screen: WalletConnectConfirmationModal,
+  },
+});
 
 let appearListener = null;
 const setListener = listener => (appearListener = listener);
@@ -207,13 +204,7 @@ const NativeStackFallback = createStackNavigator(
     },
   },
   {
-    defaultNavigationOptions: {
-      onTransitionEnd,
-      onTransitionStart,
-    },
-    headerMode: 'none',
     initialRouteName: 'MainNavigator',
-    mode: 'modal',
   }
 );
 
@@ -228,10 +219,49 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
       const { params, routeName } = Navigation.getActiveRoute(currentState);
       const prevRouteName = Navigation.getActiveRouteName(prevState);
       // native stack rn does not support onTransitionEnd and onTransitionStart
+      // Set focus manually on route changes
+      if (prevRouteName !== routeName) {
+        Navigation.handleAction(
+          NavigationActions.setParams({
+            key: routeName,
+            params: { focused: true },
+          })
+        );
+
+        Navigation.handleAction(
+          NavigationActions.setParams({
+            key: prevRouteName,
+            params: { focused: false },
+          })
+        );
+      }
+
+      if (
+        prevRouteName !== 'QRScannerScreen' &&
+        routeName === 'QRScannerScreen'
+      ) {
+        StatusBar.setBarStyle('light-content');
+      }
+
+      if (
+        prevRouteName === 'QRScannerScreen' &&
+        routeName !== 'QRScannerScreen'
+      ) {
+        StatusBar.setBarStyle('dark-content');
+      }
+
       if (
         prevRouteName === 'ImportSeedPhraseSheet' &&
         (routeName === 'ProfileScreen' || routeName === 'WalletScreen')
       ) {
+        StatusBar.setBarStyle('dark-content');
+      }
+
+      if (prevRouteName === 'WalletScreen' && routeName === 'SendSheet') {
+        StatusBar.setBarStyle('light-content');
+      }
+
+      if (prevRouteName === 'SendSheet' && routeName === 'WalletScreen') {
         StatusBar.setBarStyle('dark-content');
       }
 
@@ -244,7 +274,7 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
       }
 
       if (routeName !== prevRouteName) {
-        let paramsToTrack = {};
+        let paramsToTrack = null;
 
         if (
           prevRouteName === 'MainExchangeScreen' &&

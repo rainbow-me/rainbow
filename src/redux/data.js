@@ -281,9 +281,11 @@ export const dataWatchPendingTransactions = () => async (
       try {
         const txObj = await getTransactionByHash(txHash);
         if (txObj && txObj.blockNumber) {
+          const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;
           updatedTransactions[index].status = TransactionStatusTypes.sent;
           updatedTransactions[index].pending = false;
+          updatedTransactions[index].minedAt = minedAt;
         }
         // eslint-disable-next-line no-empty
       } catch (error) {}

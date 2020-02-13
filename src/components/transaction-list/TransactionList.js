@@ -4,7 +4,9 @@ import { compose, withHandlers, withState } from 'recompact';
 import { requireNativeComponent, Clipboard, Linking, View } from 'react-native';
 import { FloatingEmojis } from '../floating-emojis';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
+import { isAvatarPickerAvailable } from '../../config/experimental';
 import {
+  withAccountInfo,
   withAccountSettings,
   withAccountTransactions,
   withRequests,
@@ -24,20 +26,24 @@ class TransactionList extends React.PureComponent {
 
   render() {
     const data = {
-      transactions: this.props.transactions,
       requests: this.props.requests,
+      transactions: this.props.transactions,
     };
     return (
       <View style={this.props.style}>
         <NativeTransactionListView
           data={data}
           accountAddress={this.props.accountAddress}
+          accountColor={colors.avatarColor[this.props.accountColor]}
+          accountName={this.props.accountName}
           onReceivePress={this.props.onReceivePress}
+          onAvatarPress={this.props.onAvatarPress}
           onCopyAddressPress={this.props.onCopyAddressPress}
           onRequestPress={this.props.onRequestPress}
           onRequestExpire={this.props.onRequestExpire}
           onTransactionPress={this.props.onTransactionPress}
           style={this.props.style}
+          isAvatarPickerAvailable={isAvatarPickerAvailable}
         />
         <FloatingEmojis
           style={{
@@ -58,6 +64,7 @@ class TransactionList extends React.PureComponent {
 
 export default compose(
   connect(null, { removeExpiredRequest: removeRequest }),
+  withAccountInfo,
   withAccountSettings,
   withAccountTransactions,
   withRequests,
@@ -65,6 +72,12 @@ export default compose(
   withState('emojiCount', 'setEmojiCount', 0),
   withState('tapTarget', 'setTapTarget', [0, 0, 0, 0]),
   withHandlers({
+    onAvatarPress: ({ navigation, accountColor, accountName }) => () => {
+      navigation.navigate('AvatarBuilder', {
+        accountColor,
+        accountName,
+      });
+    },
     onCopyAddressPress: ({
       accountAddress,
       emojiCount,
@@ -76,6 +89,14 @@ export default compose(
       setEmojiCount(emojiCount + 1);
       Clipboard.setString(accountAddress);
     },
+    onReceivePress: ({ navigation }) => () => {
+      navigation.navigate('ReceiveModal');
+    },
+    onRequestExpire: ({ requests, removeExpiredRequest }) => e => {
+      const { index } = e.nativeEvent;
+      const item = requests[index];
+      removeExpiredRequest(item.requestId);
+    },
     onRequestPress: ({ requests, navigation }) => e => {
       const { index } = e.nativeEvent;
       const item = requests[index];
@@ -84,11 +105,6 @@ export default compose(
         routeName: 'ConfirmRequest',
       });
       return;
-    },
-    onRequestExpire: ({ requests, removeExpiredRequest }) => e => {
-      const { index } = e.nativeEvent;
-      const item = requests[index];
-      removeExpiredRequest(item.requestId);
     },
     onTransactionPress: ({ transactions, contacts, navigation }) => e => {
       const { index } = e.nativeEvent;
@@ -138,11 +154,9 @@ export default compose(
               const normalizedHash = hash.replace(/-.*/g, '');
               Linking.openURL(`https://etherscan.io/tx/${normalizedHash}`);
             }
-          },
+          }
         );
       }
     },
-    onReceivePress: ({ navigation }) => () =>
-      navigation.navigate('ReceiveModal'),
-  }),
+  })
 )(TransactionList);

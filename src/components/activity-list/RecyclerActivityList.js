@@ -61,7 +61,9 @@ const LoadingState = ({ children }) => (
 const hasRowChanged = (r1, r2) => {
   if (
     r1.hash === '_header' &&
-    isNewValueForPath(r1, r2, 'header.props.accountAddress')
+    (isNewValueForPath(r1, r2, 'header.props.accountAddress') ||
+      isNewValueForPath(r1, r2, 'header.props.accountName') ||
+      isNewValueForPath(r1, r2, 'header.props.accountColor'))
   ) {
     return true;
   }
@@ -192,6 +194,7 @@ export default class RecyclerActivityList extends PureComponent {
           scrollIndicatorInsets={{
             bottom: safeAreaInsetValues.bottom,
           }}
+          style={{ minHeight: 1 }}
         />
       </StickyContainer>
     </Wrapper>

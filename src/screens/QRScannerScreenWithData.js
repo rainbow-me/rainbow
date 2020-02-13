@@ -34,17 +34,19 @@ class QRScannerScreenWithData extends Component {
   };
 
   componentDidUpdate = (prevProps, prevState) => {
-    if (this.props.isFocused && !prevProps.isFocused) {
+    const wasFocused = prevProps.navigation.getParam('focused', false);
+    const isFocused = this.props.navigation.getParam('focused', false);
+
+    if (isFocused && !wasFocused) {
       Permissions.request('camera').then(permission => {
         const isCameraAuthorized = permission === 'authorized';
-
         if (prevState.isCameraAuthorized !== isCameraAuthorized) {
           this.setState({ isCameraAuthorized });
         }
       });
 
       // eslint-disable-next-line react/no-did-update-set-state
-      this.setState({ enableScanning: true });
+      !this.state.enableScanning && this.setState({ enableScanning: true });
     }
   };
 
@@ -105,17 +107,22 @@ class QRScannerScreenWithData extends Component {
     });
   };
 
-  render = () => (
-    <QRScannerScreen
-      {...this.props}
-      {...this.state}
-      enableScanning={this.state.enableScanning && this.props.isFocused}
-      onPressBackButton={this.handlePressBackButton}
-      onPressPasteSessionUri={this.handlePressPasteSessionUri}
-      onScanSuccess={this.handleScanSuccess}
-      onSheetLayout={this.handleSheetLayout}
-    />
-  );
+  render = () => {
+    const isFocused = this.props.navigation.getParam('focused', false);
+
+    return (
+      <QRScannerScreen
+        {...this.props}
+        {...this.state}
+        isFocused={isFocused}
+        enableScanning={this.state.enableScanning && isFocused}
+        onPressBackButton={this.handlePressBackButton}
+        onPressPasteSessionUri={this.handlePressPasteSessionUri}
+        onScanSuccess={this.handleScanSuccess}
+        onSheetLayout={this.handleSheetLayout}
+      />
+    );
+  };
 }
 
 export default compose(
@@ -124,5 +131,5 @@ export default compose(
   withAccountAddress,
   withSafeTimeout,
   withWalletConnectConnections,
-  withStatusBarStyle('light-content'),
+  withStatusBarStyle('light-content')
 )(QRScannerScreenWithData);

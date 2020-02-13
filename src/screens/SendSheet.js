@@ -98,7 +98,9 @@ const SendSheet = ({
       gasPricesStartPolling();
     });
     return () => {
-      gasPricesStopPolling();
+      InteractionManager.runAfterInteractions(() => {
+        gasPricesStopPolling();
+      });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
