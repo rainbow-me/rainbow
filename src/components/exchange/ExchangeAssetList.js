@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { SectionList, StyleSheet, View } from 'react-native';
-// import { FlatList } from 'react-native-gesture-handler';
+import { StyleSheet, View } from 'react-native';
+import { SectionList } from 'react-native-gesture-handler';
 import { exchangeModalBorderRadius } from '../../screens/ExchangeModal';
 import { CoinRow, ExchangeCoinRow } from '../coin-row';
 import { Text } from '../text';
@@ -33,8 +33,11 @@ const scrollIndicatorInsets = {
 };
 
 const ExchangeAssetList = ({ itemProps, items, onLayout }) => {
+  let scrolling = false;
   const renderItemCallback = useCallback(
-    ({ item }) => <ExchangeCoinRow {...itemProps} item={item} />,
+    ({ item }) => (
+      <ExchangeCoinRow {...itemProps} item={item} scrolling={scrolling} />
+    ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
@@ -64,6 +67,14 @@ const ExchangeAssetList = ({ itemProps, items, onLayout }) => {
   console.log('ITEMS', items);
   return (
     <SectionList
+      onScrollEndDrag={() => {
+        scrolling = false;
+        console.log('SCROLL END DRAG', scrolling);
+      }}
+      onScrollBeginDrag={() => {
+        scrolling = true;
+        console.log('SCROLL BEGIN DRAG', scrolling);
+      }}
       alwaysBounceVertical
       contentContainerStyle={contentContainerStyle}
       sections={items}
