@@ -39,42 +39,16 @@ const ExchangeAssetList = ({ itemProps, items, onLayout }) => {
     []
   );
 
-  const renderSectionHeaderCallback = useCallback(({ section }) => {
-    if (section.title) {
-      return (
+  const renderSectionHeaderCallback = useCallback(
+    ({ section }) =>
+      section.title ? (
         <View style={styles.headerStyle}>
           <Text>{section.title}</Text>
         </View>
-      );
-    } else {
-      return null;
-    }
-  }, []);
-
-  /*
-  return (
-    <FlatList
-      alwaysBounceVertical
-      contentContainerStyle={contentContainerStyle}
-      data={items}
-      directionalLockEnabled
-      getItemLayout={getItemLayout}
-      height="100%"
-      initialNumToRender={8}
-      keyboardDismissMode="none"
-      keyboardShouldPersistTaps="always"
-      keyExtractor={keyExtractor}
-      onLayout={onLayout}
-      removeClippedSubviews
-      renderItem={renderItemCallback}
-      scrollEventThrottle={32}
-      scrollIndicatorInsets={scrollIndicatorInsets}
-      windowSize={11}
-    />
+      ) : null,
+    []
   );
-  */
 
-  console.log('ITEMS', items);
   return (
     <SectionList
       alwaysBounceVertical
@@ -88,7 +62,6 @@ const ExchangeAssetList = ({ itemProps, items, onLayout }) => {
       keyboardShouldPersistTaps="always"
       keyExtractor={keyExtractor}
       onLayout={onLayout}
-      removeClippedSubviews
       renderItem={renderItemCallback}
       renderSectionHeader={renderSectionHeaderCallback}
       scrollEventThrottle={32}
