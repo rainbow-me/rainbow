@@ -1,0 +1,75 @@
+format_version: 1.1.0
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+app:
+  envs:
+  - NODE_VERSION: "10.15.3"
+
+trigger_map:
+- push_branch: "develop"
+  workflow: tests
+workflows:
+  _build_setup:
+    steps:
+    - activate-ssh-key: {}
+    - git-clone:
+        inputs:
+        - clone_depth: ''
+        title: Cloning Repo
+    - script:
+        inputs:
+        - content: |-
+            #!/bin/bash
+            nvm --version
+            echo $NODE_VERSION
+            brew update
+            brew tap wix/brew
+            brew install --HEAD applesimutils
+            brew install watchman
+            nvm install $NODE_VERSION
+            nvm use $NODE_VERSION
+            nvm alias default $NODE_VERSION
+            brew install yarn
+            yarn global add react-native-cli
+            yarn global add detox-cli
+            detox clean-framework-cache && detox build-framework-cache
+            yarn install --network-timeout 300000 --frozen-lockfile --network-concurrency 1
+            pod repo update
+            yarn install-pods
+        title: Build setup
+    before_run:
+    after_run:
+  _lint:
+    before_run: []
+    after_run: []
+    steps:
+    - script:
+        inputs:
+        - content: |-
+            #!/bin/bash
+
+            yarn lint
+        title: Lint
+  _detox_tests:
+    before_run: []
+    after_run: []
+    steps:
+    - script:
+        inputs:
+        - content: |-
+            #!/bin/bash
+
+            detox build --configuration ios.sim.release
+        title: Detox - Build Release App
+    - script:
+        inputs:
+        - content: |-
+            #!/bin/bash
+
+            detox test --configuration ios.sim.release --cleanup
+        title: Detox - Run E2E Tests
+  tests:
+    before_run:
+    - _build_setup
+    - _lint
+    - _detox_tests
+    after_run: []
