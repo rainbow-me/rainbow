@@ -40,7 +40,6 @@ export const CurrencySelectionTypes = {
 
 class CurrencySelectModal extends Component {
   static propTypes = {
-    isFocused: PropTypes.bool,
     navigation: PropTypes.object,
     sortedUniswapAssets: PropTypes.array,
     transitionPosition: PropTypes.object,
@@ -67,11 +66,14 @@ class CurrencySelectModal extends Component {
     const currentAssetsUniqueId = buildUniqueIdForListData(currentAssets);
     const nextAssetsUniqueId = buildUniqueIdForListData(nextAssets);
     const isNewAssets = currentAssetsUniqueId !== nextAssetsUniqueId;
+    const isFocused = this.props.navigation.getParam('focused', false);
+    const willBeFocused = nextProps.navigation.getParam('focused', false);
 
-    const isNewProps = isNewValueForObjectPaths(this.props, nextProps, [
-      'isFocused',
-      'type',
-    ]);
+    const isNewProps = isNewValueForObjectPaths(
+      { ...this.props, isFocused },
+      { ...nextProps, isFocused: willBeFocused },
+      ['isFocused', 'type']
+    );
 
     const isNewState = isNewValueForObjectPaths(this.state, nextState, [
       'searchQuery',
@@ -142,7 +144,6 @@ class CurrencySelectModal extends Component {
   render = () => {
     const {
       uniswapAssetsInWallet,
-      isFocused,
       sortedUniswapAssets,
       transitionPosition,
       type,
@@ -164,6 +165,7 @@ class CurrencySelectModal extends Component {
     }
 
     const listItems = filterList(assets, searchQuery, 'uniqueId');
+    const isFocused = this.props.navigation.getParam('focused', false);
 
     return (
       <KeyboardFixedOpenLayout>

@@ -261,18 +261,28 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
       const { params, routeName } = Navigation.getActiveRoute(currentState);
       const prevRouteName = Navigation.getActiveRouteName(prevState);
       // native stack rn does not support onTransitionEnd and onTransitionStart
+      // Set focus manually on route changes
+      if (prevRouteName !== routeName) {
+        Navigation.handleAction(
+          NavigationActions.setParams({
+            key: routeName,
+            params: { focused: true },
+          })
+        );
+
+        Navigation.handleAction(
+          NavigationActions.setParams({
+            key: prevRouteName,
+            params: { focused: false },
+          })
+        );
+      }
 
       if (
         prevRouteName !== 'QRScannerScreen' &&
         routeName === 'QRScannerScreen'
       ) {
         StatusBar.setBarStyle('light-content');
-        Navigation.handleAction(
-          NavigationActions.setParams({
-            key: 'QRScannerScreen',
-            params: { focused: true },
-          })
-        );
       }
 
       if (
@@ -280,12 +290,6 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
         routeName !== 'QRScannerScreen'
       ) {
         StatusBar.setBarStyle('dark-content');
-        Navigation.handleAction(
-          NavigationActions.setParams({
-            key: 'QRScannerScreen',
-            params: { focused: false },
-          })
-        );
       }
 
       if (
