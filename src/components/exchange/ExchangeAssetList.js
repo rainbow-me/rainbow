@@ -1,10 +1,20 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { SectionList } from 'react-native';
+import { SectionList, StyleSheet, View } from 'react-native';
 // import { FlatList } from 'react-native-gesture-handler';
 import { exchangeModalBorderRadius } from '../../screens/ExchangeModal';
 import { CoinRow, ExchangeCoinRow } from '../coin-row';
 import { Text } from '../text';
+import { colors } from '../../styles';
+
+const styles = StyleSheet.create({
+  headerStyle: {
+    backgroundColor: colors.white,
+    flex: 1,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+  },
+});
 
 const getItemLayout = (_, index) => ({
   index,
@@ -67,7 +77,17 @@ const ExchangeAssetList = ({ itemProps, items, onLayout }) => {
       onLayout={onLayout}
       removeClippedSubviews
       renderItem={renderItemCallback}
-      renderSectionHeader={({ section: { title } }) => <Text>{title}</Text>}
+      renderSectionHeader={({ section }) => {
+        if (section.title) {
+          return (
+            <View style={styles.headerStyle}>
+              <Text>{section.title}</Text>
+            </View>
+          );
+        } else {
+          return null;
+        }
+      }}
       scrollEventThrottle={32}
       scrollIndicatorInsets={scrollIndicatorInsets}
       windowSize={11}
