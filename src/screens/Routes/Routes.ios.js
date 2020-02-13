@@ -37,9 +37,13 @@ import {
 enableScreens();
 
 const onTransitionEnd = () =>
-  store.dispatch(updateTransitionProps({ isTransitioning: false }));
+  store.dispatch(
+    updateTransitionProps({ date: Date.now(), isTransitioning: false })
+  );
 const onTransitionStart = () =>
-  store.dispatch(updateTransitionProps({ isTransitioning: true }));
+  store.dispatch(
+    updateTransitionProps({ date: Date.now(), isTransitioning: true })
+  );
 
 const SwipeStack = createMaterialTopTabNavigator(
   {
