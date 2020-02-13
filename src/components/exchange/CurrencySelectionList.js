@@ -37,7 +37,7 @@ const skeletonTransition = (
   </Transition.Sequence>
 );
 
-const CurrencySelectionList = ({ itemProps, listItems, showList }) => {
+const CurrencySelectionList = ({ itemProps, listItems, showList, query }) => {
   const skeletonTransitionRef = useRef();
   const [showSkeleton, setShowSkeleton] = useState(true);
 
@@ -71,6 +71,7 @@ const CurrencySelectionList = ({ itemProps, listItems, showList }) => {
               itemProps={itemProps}
               items={listItems}
               onLayout={onListLayout}
+              query={query}
             />
           )}
         </Centered>

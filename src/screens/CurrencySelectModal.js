@@ -225,6 +225,7 @@ class CurrencySelectModal extends Component {
                 listItems={filteredList}
                 showList={isFocused}
                 type={type}
+                query={searchQuery}
               />
             </Column>
             <GestureBlocker type="bottom" />
