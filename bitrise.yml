@@ -8,9 +8,10 @@ trigger_map:
 - push_branch: "develop"
   workflow: tests
 workflows:
-  _build_setup:
+  build_setup:
     steps:
-    - activate-ssh-key: {}
+     - activate-ssh-key@4.0.3:
+        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
     - git-clone:
         inputs:
         - clone_depth: ''
@@ -19,37 +20,60 @@ workflows:
         inputs:
         - content: |-
             #!/bin/bash
-            nvm --version
-            echo $NODE_VERSION
             brew update
             brew tap wix/brew
             brew install --HEAD applesimutils
             brew install watchman
-            nvm install $NODE_VERSION
-            nvm use $NODE_VERSION
-            nvm alias default $NODE_VERSION
-            brew install yarn
-            yarn global add react-native-cli
-            yarn global add detox-cli
-            detox clean-framework-cache && detox build-framework-cache
-            yarn install --network-timeout 300000 --frozen-lockfile --network-concurrency 1
-            pod repo update
-            yarn install-pods
-        title: Build setup
-    before_run:
-    after_run:
-  _lint:
-    before_run: []
-    after_run: []
-    steps:
+        title: Installing deps via Brew
     - script:
         inputs:
         - content: |-
             #!/bin/bash
-
-            yarn lint
-        title: Lint
-  _detox_tests:
+            nvm --version
+            echo $NODE_VERSION
+            nvm install $NODE_VERSION
+            nvm use $NODE_VERSION
+            nvm alias default $NODE_VERSION
+        title: Setting up NVM
+    - yarn@0.1.0:
+        inputs:
+        - command: global add react-native-cli
+        title: Installing react-native-cli
+    - yarn@0.1.0:
+        inputs:
+        - command: detox-cli
+        title: Installing detox-cli
+    - yarn@0.1.0:
+        inputs:
+        - command: install --network-timeout 300000 --frozen-lockfile --network-concurrency 1
+        title: Installing dependencies via yarn
+    - script:
+        inputs:
+        - content: |-
+            #!/bin/bash
+           pod repo update
+        title: Updating Pods repo
+    - yarn@0.1.0:
+        inputs:
+        - command: install-pods
+        title: Installing pods
+    - script:
+        inputs:
+        - content: |-
+            #!/bin/bash
+            detox clean-framework-cache && detox build-framework-cache
+        title: Build detox framework cache
+    before_run:
+    after_run:
+  lint:
+    before_run: []
+    after_run: []
+    steps:
+    - yarn@0.1.0:
+        inputs:
+        - command: lint
+        title: Linting for Errors
+  detox_tests:
     before_run: []
     after_run: []
     steps:
@@ -69,7 +93,7 @@ workflows:
         title: Detox - Run E2E Tests
   tests:
     before_run:
-    - _build_setup
-    - _lint
-    - _detox_tests
+    - build_setup
+    - lint
+    - detox_tests
     after_run: []
