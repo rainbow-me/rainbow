@@ -2,7 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import { get, omit } from 'lodash';
 import React from 'react';
 import { StatusBar } from 'react-native';
-import { createAppContainer } from 'react-navigation';
+import { createAppContainer, NavigationActions } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs-v1';
 // eslint-disable-next-line import/no-unresolved
 import { enableScreens } from 'react-native-screens';
@@ -261,6 +261,37 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
       const { params, routeName } = Navigation.getActiveRoute(currentState);
       const prevRouteName = Navigation.getActiveRouteName(prevState);
       // native stack rn does not support onTransitionEnd and onTransitionStart
+      // Set focus manually on route changes
+      if (prevRouteName !== routeName) {
+        Navigation.handleAction(
+          NavigationActions.setParams({
+            key: routeName,
+            params: { focused: true },
+          })
+        );
+
+        Navigation.handleAction(
+          NavigationActions.setParams({
+            key: prevRouteName,
+            params: { focused: false },
+          })
+        );
+      }
+
+      if (
+        prevRouteName !== 'QRScannerScreen' &&
+        routeName === 'QRScannerScreen'
+      ) {
+        StatusBar.setBarStyle('light-content');
+      }
+
+      if (
+        prevRouteName === 'QRScannerScreen' &&
+        routeName !== 'QRScannerScreen'
+      ) {
+        StatusBar.setBarStyle('dark-content');
+      }
+
       if (
         prevRouteName === 'ImportSeedPhraseSheet' &&
         (routeName === 'ProfileScreen' || routeName === 'WalletScreen')
