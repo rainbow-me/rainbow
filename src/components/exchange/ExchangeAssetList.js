@@ -33,14 +33,24 @@ const scrollIndicatorInsets = {
 };
 
 const ExchangeAssetList = ({ itemProps, items, onLayout }) => {
-  let scrolling = false;
   const renderItemCallback = useCallback(
-    ({ item }) => (
-      <ExchangeCoinRow {...itemProps} item={item} scrolling={scrolling} />
-    ),
+    ({ item }) => <ExchangeCoinRow {...itemProps} item={item} />,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
+
+  const renderSectionHeaderCallback = useCallback(({ section }) => {
+    if (section.title) {
+      return (
+        <View style={styles.headerStyle}>
+          <Text>{section.title}</Text>
+        </View>
+      );
+    } else {
+      return null;
+    }
+  }, []);
+
   /*
   return (
     <FlatList
@@ -67,14 +77,6 @@ const ExchangeAssetList = ({ itemProps, items, onLayout }) => {
   console.log('ITEMS', items);
   return (
     <SectionList
-      onScrollEndDrag={() => {
-        scrolling = false;
-        console.log('SCROLL END DRAG', scrolling);
-      }}
-      onScrollBeginDrag={() => {
-        scrolling = true;
-        console.log('SCROLL BEGIN DRAG', scrolling);
-      }}
       alwaysBounceVertical
       contentContainerStyle={contentContainerStyle}
       sections={items}
@@ -88,17 +90,7 @@ const ExchangeAssetList = ({ itemProps, items, onLayout }) => {
       onLayout={onLayout}
       removeClippedSubviews
       renderItem={renderItemCallback}
-      renderSectionHeader={({ section }) => {
-        if (section.title) {
-          return (
-            <View style={styles.headerStyle}>
-              <Text>{section.title}</Text>
-            </View>
-          );
-        } else {
-          return null;
-        }
-      }}
+      renderSectionHeader={renderSectionHeaderCallback}
       scrollEventThrottle={32}
       scrollIndicatorInsets={scrollIndicatorInsets}
       windowSize={11}
