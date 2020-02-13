@@ -26,21 +26,12 @@ function performSafely(operation, transitionProps) {
     return;
   }
   onPressMutex = true;
-  function commit() {
-    operation();
-    onPressMutex = false;
-  }
   InteractionManager.runAfterInteractions(() => {
     const current = Date.now();
-    setTimeout(
-      commit,
-      Math.max(
-        1000 - current + transitionProps.date + transitionProps.isTransitioning
-          ? 400
-          : 0,
-        0
-      )
-    );
+    setTimeout(() => {
+      operation();
+      onPressMutex = false;
+    }, Math.max(1000 - current + transitionProps.date + transitionProps.isTransitioning ? 400 : 0, 0));
   });
 }
 
