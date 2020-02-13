@@ -28,6 +28,8 @@ const appendAssetWithUniqueId = asset => ({
 const normalizeAssetItems = assetsArray =>
   map(assetsArray, appendAssetWithUniqueId);
 
+const headerlessSection = data => [{ data, title: '' }];
+
 export const CurrencySelectionTypes = {
   input: 'input',
   output: 'output',
@@ -146,35 +148,34 @@ class CurrencySelectModal extends Component {
     const { searchQuery } = this.state;
 
     let headerTitle = '';
-    let filteredList = concat(favorites, curatedAssets);
+    let filteredList = [];
     if (type === CurrencySelectionTypes.input) {
       headerTitle = 'Swap';
-      filteredList = uniswapAssetsInWallet;
+      filteredList = headerlessSection(uniswapAssetsInWallet);
       if (!isEmpty(searchQuery)) {
         filteredList = filterList(uniswapAssetsInWallet, searchQuery, [
           'symbol',
           'name',
         ]);
       }
-      // Input list doesn't need headers
-      filteredList = [{ data: filteredList, title: '' }];
+      filteredList = headerlessSection(filteredList);
     } else if (type === CurrencySelectionTypes.output) {
       headerTitle = 'Receive';
+      filteredList = headerlessSection(concat(favorites, curatedAssets));
       const curatedSection = concat(favorites, curatedAssets);
-      //if (!isEmpty(searchQuery)) {
-      const [filteredBest, filteredHigh, filteredLow] = map(
-        [curatedSection, globalHighLiquidityAssets, globalLowLiquidityAssets],
-        section => {
-          return filterList(section, searchQuery, ['symbol', 'name']);
-        }
-      );
-      // filteredList = concat(filteredBest, filteredHigh, filteredLow);
-      filteredList = [
-        { data: filteredBest, title: '' },
-        { data: filteredHigh, title: 'Good' },
-        { data: filteredLow, title: 'More results' },
-      ];
-      // }
+      if (!isEmpty(searchQuery)) {
+        const [filteredBest, filteredHigh, filteredLow] = map(
+          [curatedSection, globalHighLiquidityAssets, globalLowLiquidityAssets],
+          section => {
+            return filterList(section, searchQuery, ['symbol', 'name']);
+          }
+        );
+        filteredList = [
+          { data: filteredBest, title: '' },
+          { data: filteredHigh, title: 'Good' },
+          { data: filteredLow, title: 'More results' },
+        ];
+      }
     }
 
     const isFocused = this.props.navigation.getParam('focused', false);
