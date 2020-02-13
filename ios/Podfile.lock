@@ -295,7 +295,7 @@ PODS:
     - React
   - react-native-mail (4.1.0):
     - React
-  - react-native-netinfo (5.3.3):
+  - react-native-netinfo (5.5.0):
     - React
   - react-native-randombytes (3.5.3):
     - React
@@ -390,16 +390,16 @@ PODS:
     - React
     - SDWebImage (~> 5.0)
     - SDWebImageWebPCoder (~> 0.2.3)
-  - RNFBApp (6.3.2):
+  - RNFBApp (6.3.3):
     - Firebase/Core (~> 6.13.0)
     - React
-  - RNFBCrashlytics (6.3.2):
+  - RNFBCrashlytics (6.3.3):
     - Crashlytics (~> 3.14.0)
     - Fabric (~> 1.10.2)
     - Firebase/Core (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBMessaging (6.3.2):
+  - RNFBMessaging (6.3.3):
     - Firebase/Messaging (~> 6.13.0)
     - React
     - RNFBApp
@@ -418,7 +418,7 @@ PODS:
     - React
   - RNScreens (2.0.0-alpha.25):
     - React
-  - RNSentry (1.2.2):
+  - RNSentry (1.3.0):
     - React
     - Sentry (~> 4.4.0)
   - RNStoreReview (0.1.5):
@@ -712,7 +712,7 @@ SPEC CHECKSUMS:
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: c549d50495c989688ef1819dab49441c7dc7c17d
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
-  react-native-netinfo: 8884d510fe67349940b4399c01db3e3591c922aa
+  react-native-netinfo: b84ff0cae1147315b5dc1daf0f65c0cc6ee71fb3
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-safe-area-context: 13004a45f3021328fdd9ee1f987c3131fb65928d
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
@@ -738,9 +738,9 @@ SPEC CHECKSUMS:
   RNCPushNotificationIOS: 05262c52fcfb861a2b79aa8e51cad66263c9ea52
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNFastImage: 9b0c22643872bb7494c8d87bbbb66cc4c0d9e7a2
-  RNFBApp: fc62d1e8adbc871fc7c27314c8e0842aebb44514
-  RNFBCrashlytics: eca9004e24f54b1edf32341c8809a157015fdeea
-  RNFBMessaging: 64114226de3857998b142ae893d54f326221e124
+  RNFBApp: 887ccc5840f93abad3202ff23eb0faf7bee4ac12
+  RNFBCrashlytics: 22dada190d23a867127a541d7175d6160640f089
+  RNFBMessaging: 591a196b643d913bfad6492fab292b7da037bf78
   RNGestureHandler: 911d3b110a7a233a34c4f800e7188a84b75319c6
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeychain: f5783613aa3095af63345ddb9626a729bd4a3897
@@ -749,7 +749,7 @@ SPEC CHECKSUMS:
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
   RNScreens: 031d10e2b648afc9546f16b6a786d2efc6870310
-  RNSentry: 9cfa3717b1e6bf9ad4b124683e78e3b98b01d3af
+  RNSentry: ba3ec79ffc91a1d808ec689bf615ffc5f960baa4
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
   RNSVG: 82d44baa568873faae1a9929dd30d29db8f06732
   SDWebImage: 4d5c027c935438f341ed33dbac53ff9f479922ca
