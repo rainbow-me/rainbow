@@ -270,7 +270,7 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
         Navigation.handleAction(
           NavigationActions.setParams({
             key: 'QRScannerScreen',
-            params: { focus: true },
+            params: { focused: true },
           })
         );
       }
@@ -283,7 +283,7 @@ const AppContainerWithAnalytics = React.forwardRef((props, ref) => (
         Navigation.handleAction(
           NavigationActions.setParams({
             key: 'QRScannerScreen',
-            params: { focus: false },
+            params: { focused: false },
           })
         );
       }

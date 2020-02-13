@@ -34,8 +34,8 @@ class QRScannerScreenWithData extends Component {
   };
 
   componentDidUpdate = (prevProps, prevState) => {
-    const prevNavParam = prevProps.navigation.getParam('focus', false);
-    const newNavParam = this.props.navigation.getParam('focus', false);
+    const prevNavParam = prevProps.navigation.getParam('focused', false);
+    const newNavParam = this.props.navigation.getParam('focused', false);
 
     if (newNavParam && !prevNavParam) {
       Permissions.request('camera').then(permission => {
@@ -106,7 +106,7 @@ class QRScannerScreenWithData extends Component {
   };
 
   render = () => {
-    const isFocused = this.props.navigation.getParam('focus', false);
+    const isFocused = this.props.navigation.getParam('focused', false);
 
     return (
       <QRScannerScreen
