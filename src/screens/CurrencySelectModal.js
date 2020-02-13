@@ -139,8 +139,6 @@ class CurrencySelectModal extends Component {
       uniswapAssetsInWallet,
     } = this.props;
 
-    console.log('Currency section rendering');
-
     if (type === null || type === undefined) {
       return null;
     }
@@ -162,13 +160,18 @@ class CurrencySelectModal extends Component {
       headerTitle = 'Receive';
       const curatedSection = concat(favorites, curatedAssets);
       if (!isEmpty(searchQuery)) {
-        const results = map(
+        const [filteredBest, filteredHigh, filteredLow] = map(
           [curatedSection, globalHighLiquidityAssets, globalLowLiquidityAssets],
           section => {
             return filterList(section, searchQuery, ['symbol', 'name']);
           }
         );
-        filteredList = concat(...results);
+        // filteredList = concat(filteredBest, filteredHigh, filteredLow);
+        filteredList = [
+          { data: filteredBest, title: 'Best' },
+          { data: filteredHigh, title: 'Good' },
+          { data: filteredLow, title: 'More results' },
+        ];
       }
     }
 

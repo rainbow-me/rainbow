@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { FlatList } from 'react-native-gesture-handler';
+import { SectionList } from 'react-native';
+// import { FlatList } from 'react-native-gesture-handler';
 import { exchangeModalBorderRadius } from '../../screens/ExchangeModal';
 import { CoinRow, ExchangeCoinRow } from '../coin-row';
+import { Text } from '../text';
 
 const getItemLayout = (_, index) => ({
   index,
@@ -26,7 +28,7 @@ const ExchangeAssetList = ({ itemProps, items, onLayout }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
-
+  /*
   return (
     <FlatList
       alwaysBounceVertical
@@ -42,6 +44,30 @@ const ExchangeAssetList = ({ itemProps, items, onLayout }) => {
       onLayout={onLayout}
       removeClippedSubviews
       renderItem={renderItemCallback}
+      scrollEventThrottle={32}
+      scrollIndicatorInsets={scrollIndicatorInsets}
+      windowSize={11}
+    />
+  );
+  */
+
+  console.log('ITEMS', items);
+  return (
+    <SectionList
+      alwaysBounceVertical
+      contentContainerStyle={contentContainerStyle}
+      sections={items}
+      directionalLockEnabled
+      getItemLayout={getItemLayout}
+      height="100%"
+      initialNumToRender={8}
+      keyboardDismissMode="none"
+      keyboardShouldPersistTaps="always"
+      keyExtractor={keyExtractor}
+      onLayout={onLayout}
+      removeClippedSubviews
+      renderItem={renderItemCallback}
+      renderSectionHeader={({ section: { title } }) => <Text>{title}</Text>}
       scrollEventThrottle={32}
       scrollIndicatorInsets={scrollIndicatorInsets}
       windowSize={11}
