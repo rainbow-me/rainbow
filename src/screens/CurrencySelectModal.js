@@ -50,6 +50,7 @@ class CurrencySelectModal extends Component {
   state = {
     assetsToFavoriteQueue: {},
     searchQuery: '',
+    searchQueryForSearch: '',
   };
 
   shouldComponentUpdate = (nextProps, nextState) => {
@@ -66,11 +67,14 @@ class CurrencySelectModal extends Component {
 
     const isNewState = isNewValueForObjectPaths(this.state, nextState, [
       'searchQuery',
+      'searchQueryForSearch',
       'assetsToFavoriteQueue',
     ]);
 
     return isNewType || isNewProps || isNewState;
   };
+
+  debounceHandler = null;
 
   dangerouslySetIsGestureBlocked = isGestureBlocked => {
     // dangerouslyGetParent is a bad pattern in general, but in this case is exactly what we expect
@@ -80,7 +84,12 @@ class CurrencySelectModal extends Component {
   };
 
   handleChangeSearchQuery = searchQuery => {
-    this.setState({ searchQuery });
+    this.setState({ searchQuery }, () => {
+      if (this.debounceHandler) clearTimeout(this.debounceHandler);
+      this.debounceHandler = setTimeout(() => {
+        this.setState({ searchQueryForSearch: searchQuery });
+      }, 300);
+    });
   };
 
   handleFavoriteAsset = (assetAddress, isFavorited) => {
@@ -145,15 +154,15 @@ class CurrencySelectModal extends Component {
       return null;
     }
 
-    const { searchQuery } = this.state;
+    const { searchQuery, searchQueryForSearch } = this.state;
 
     let headerTitle = '';
     let filteredList = [];
     if (type === CurrencySelectionTypes.input) {
       headerTitle = 'Swap';
       filteredList = headerlessSection(uniswapAssetsInWallet);
-      if (!isEmpty(searchQuery)) {
-        filteredList = filterList(uniswapAssetsInWallet, searchQuery, [
+      if (!isEmpty(searchQueryForSearch)) {
+        filteredList = filterList(uniswapAssetsInWallet, searchQueryForSearch, [
           'symbol',
           'name',
         ]);
@@ -162,11 +171,14 @@ class CurrencySelectModal extends Component {
     } else if (type === CurrencySelectionTypes.output) {
       headerTitle = 'Receive';
       const curatedSection = concat(favorites, curatedAssets);
-      if (!isEmpty(searchQuery)) {
+      if (!isEmpty(searchQueryForSearch)) {
         const [filteredBest, filteredHigh, filteredLow] = map(
           [curatedSection, globalHighLiquidityAssets, globalLowLiquidityAssets],
           section => {
-            return filterList(section, searchQuery, ['symbol', 'name']);
+            return filterList(section, searchQueryForSearch, [
+              'symbol',
+              'name',
+            ]);
           }
         );
 
@@ -238,7 +250,7 @@ class CurrencySelectModal extends Component {
                 listItems={filteredList}
                 showList={isFocused}
                 type={type}
-                query={searchQuery}
+                query={searchQueryForSearch}
               />
             </Column>
             <GestureBlocker type="bottom" />
