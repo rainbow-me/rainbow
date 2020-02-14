@@ -166,8 +166,8 @@ class CurrencySelectModal extends Component {
           'symbol',
           'name',
         ]);
+        filteredList = headerlessSection(filteredList);
       }
-      filteredList = headerlessSection(filteredList);
     } else if (type === CurrencySelectionTypes.output) {
       headerTitle = 'Receive';
       const curatedSection = concat(favorites, curatedAssets);

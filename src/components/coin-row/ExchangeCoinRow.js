@@ -15,9 +15,9 @@ const containerStyles = css`
 
 const BottomRow = ({ balance, native, showBalance, symbol }) => {
   let text = symbol;
-  if (showBalance && native) {
+  if (balance && showBalance && native) {
     text = `${balance.display} ≈ ${native.balance.display}`;
-  } else if (showBalance) {
+  } else if (balance && showBalance) {
     text = `${balance.display}`;
   }
   return <BottomRowText>{text}</BottomRowText>;
