@@ -88,7 +88,7 @@ class CurrencySelectModal extends Component {
       if (this.debounceHandler) clearTimeout(this.debounceHandler);
       this.debounceHandler = setTimeout(() => {
         this.setState({ searchQueryForSearch: searchQuery });
-      }, 300);
+      }, 250);
     });
   };
 
