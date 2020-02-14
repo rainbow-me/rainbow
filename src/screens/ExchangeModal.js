@@ -50,6 +50,7 @@ import {
   withAccountData,
   withAccountSettings,
   withBlockedHorizontalSwipe,
+  withBlockPolling,
   withGas,
   withTransactionConfirmationScreen,
   withTransitionProps,
@@ -82,7 +83,7 @@ const isSameAsset = (a, b) => {
 
 const DEFAULT_APPROVAL_ESTIMATION_TIME_IN_MS = 30000; // 30 seconds
 
-const getNativeTag = field => get(field, '_nativeTag');
+const getNativeTag = field => get(field, '_inputRef._nativeTag');
 
 class ExchangeModal extends Component {
   static propTypes = {
@@ -92,6 +93,8 @@ class ExchangeModal extends Component {
     chainId: PropTypes.number,
     dataAddNewTransaction: PropTypes.func,
     gasLimit: PropTypes.number,
+    gasPricesStartPolling: PropTypes.func,
+    gasPricesStopPolling: PropTypes.func,
     gasUpdateDefaultGasLimit: PropTypes.func,
     gasUpdateTxFee: PropTypes.func,
     inputReserve: PropTypes.object,
@@ -110,6 +113,8 @@ class ExchangeModal extends Component {
     uniswapUpdateAllowances: PropTypes.func,
     uniswapUpdateInputCurrency: PropTypes.func,
     uniswapUpdateOutputCurrency: PropTypes.func,
+    web3ListenerInit: PropTypes.func,
+    web3ListenerStop: PropTypes.func,
   };
 
   state = {
@@ -139,6 +144,10 @@ class ExchangeModal extends Component {
 
   componentDidMount() {
     this.props.gasUpdateDefaultGasLimit(ethUnits.basic_swap);
+    InteractionManager.runAfterInteractions(() => {
+      this.props.gasPricesStartPolling();
+      this.props.web3ListenerInit();
+    });
   }
 
   shouldComponentUpdate = (nextProps, nextState) => {
@@ -245,7 +254,11 @@ class ExchangeModal extends Component {
         this.inputFocusInteractionHandle
       );
     }
-    this.props.uniswapClearCurrenciesAndReserves();
+    InteractionManager.runAfterInteractions(() => {
+      this.props.uniswapClearCurrenciesAndReserves();
+      this.props.gasPricesStopPolling();
+      this.props.web3ListenerStop();
+    });
   };
 
   lastFocusedInput = null;
@@ -273,15 +286,6 @@ class ExchangeModal extends Component {
     const inputRefTag = getNativeTag(this.inputFieldRef);
     const nativeInputRefTag = getNativeTag(this.nativeFieldRef);
     const outputRefTag = getNativeTag(this.outputFieldRef);
-
-    console.log('')
-    console.log('inputRefTag', inputRefTag);
-    console.log('nativeInputRefTag', nativeInputRefTag);
-    console.log('outputRefTag', outputRefTag);
-
-    console.log('lastFocusedInput', this.lastFocusedInput);
-    console.log('handle', findNodeHandle(this.inputFieldRef));
-    console.log('')
 
     const lastFocusedIsInputType =
       this.lastFocusedInput === inputRefTag ||
@@ -778,8 +782,11 @@ class ExchangeModal extends Component {
     }
   };
 
-  handleRefocusLastInput = () =>
-    TextInput.State.focusTextInput(this.findNextFocused());
+  handleRefocusLastInput = () => {
+    InteractionManager.runAfterInteractions(() => {
+      TextInput.State.focusTextInput(this.findNextFocused());
+    });
+  };
 
   navigateToSwapDetailsModal = () => {
     const {
@@ -790,6 +797,10 @@ class ExchangeModal extends Component {
       outputExecutionRate,
       outputNativePrice,
     } = this.state;
+
+    this.inputFieldRef.blur();
+    this.outputFieldRef.blur();
+    this.nativeFieldRef.blur();
 
     this.props.navigation.navigate('SwapDetailsScreen', {
       inputCurrencySymbol: get(inputCurrency, 'symbol'),
@@ -1068,6 +1079,7 @@ export default compose(
   withAccountSettings,
   withBlockedHorizontalSwipe,
   withGas,
+  withBlockPolling,
   withNavigationFocus,
   withTransactionConfirmationScreen,
   withTransitionProps,

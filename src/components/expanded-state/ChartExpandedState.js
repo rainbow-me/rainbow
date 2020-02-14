@@ -12,7 +12,7 @@ import {
 import styled from 'styled-components/primitives';
 import { withAccountData, withAccountSettings } from '../../hoc';
 import { ethereumUtils, deviceUtils } from '../../utils';
-import ValueChart from '../value-chart/ValueChart';
+import Chart from '../value-chart/Chart';
 import { BalanceCoinRow } from '../coin-row';
 import BottomSendButtons from '../value-chart/BottomSendButtons';
 import { colors } from '../../styles';
@@ -45,30 +45,30 @@ const Container = styled.View`
   width: ${deviceUtils.dimensions.width};
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  bottom: 0;
+  bottom: -200;
+  padding-bottom: 200;
   position: absolute;
   align-items: center;
 `;
 
-const TokenExpandedState = ({
-  onPressSend,
-  onPressSwap,
-  change,
-  changeDirection,
-  selectedAsset,
-}) => (
-  <Container>
-    <HandleIcon />
-    <BottomContainer>
-      <BalanceCoinRow {...selectedAsset} />
-      <BottomSendButtons onPressSend={onPressSend} onPressSwap={onPressSwap} />
-    </BottomContainer>
-    <Divider />
-    <ChartContainer>
-      <ValueChart change={change} changeDirection={changeDirection} />
-    </ChartContainer>
-  </Container>
-);
+const TokenExpandedState = ({ onPressSend, onPressSwap, selectedAsset }) => {
+  return (
+    <Container>
+      <HandleIcon />
+      <BottomContainer>
+        <BalanceCoinRow {...selectedAsset} />
+        <BottomSendButtons
+          onPressSend={onPressSend}
+          onPressSwap={onPressSwap}
+        />
+      </BottomContainer>
+      <Divider />
+      <ChartContainer>
+        <Chart />
+      </ChartContainer>
+    </Container>
+  );
+};
 
 TokenExpandedState.propTypes = {
   change: PropTypes.string,

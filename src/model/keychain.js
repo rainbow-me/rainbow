@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import {
   getInternetCredentials,
   resetInternetCredentials,
@@ -13,6 +14,7 @@ export async function saveString(key, value, accessControlOptions) {
     console.log(
       `Keychain: failed to save string for key: ${key} error: ${err}`
     );
+    captureException(err);
   }
 }
 
@@ -28,6 +30,7 @@ export async function loadString(key, authenticationPrompt) {
     console.log(
       `Keychain: failed to load string for key: ${key} error: ${err}`
     );
+    captureException(err);
   }
   return null;
 }
@@ -47,6 +50,7 @@ export async function loadObject(key) {
     console.log(
       `Keychain: failed to parse object for key: ${key} error: ${err}`
     );
+    captureException(err);
   }
   return null;
 }
@@ -59,5 +63,6 @@ export async function remove(key) {
     console.log(
       `Keychain: failed to remove value for key: ${key} error: ${err}`
     );
+    captureException(err);
   }
 }

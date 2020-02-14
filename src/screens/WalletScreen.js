@@ -53,6 +53,7 @@ class WalletScreen extends Component {
     try {
       await this.props.initializeWallet();
       const keyboardheight = await getKeyboardHeight();
+
       if (keyboardheight) {
         this.props.setKeyboardHeight(keyboardheight);
       }
@@ -62,7 +63,7 @@ class WalletScreen extends Component {
   };
 
   shouldComponentUpdate = nextProps =>
-    nextProps.navigation.isFocused() &&
+    nextProps.navigation.getParam('focused', true) &&
     isNewValueForObjectPaths(this.props, nextProps, [
       'fetchingAssets',
       'fetchingUniqueTokens',

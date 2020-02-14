@@ -15,4 +15,4 @@ Emoji.defaultProps = {
   size: 'h4',
 };
 
-export default Emoji;
+export default React.memo(Emoji);

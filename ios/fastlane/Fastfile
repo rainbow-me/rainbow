@@ -18,11 +18,26 @@ platform :ios do
     download_dsyms(version: "latest")
     upload_symbols_to_crashlytics
     sentry_upload_dsym
+    sentry_create_release(
+      finalize: true # Whether to finalize the release. If not provided or false, the release can be finalized using the sentry_finalize_release action
+    )
+    sentry_upload_sourcemap(
+      sourcemap: './main.jsbundle', # file to upload
+      rewrite: true
+    )
+    sentry_upload_sourcemap(
+      sourcemap: './main.jsbundle.map', # sourcemap to upload
+      rewrite: true
+    )
     clean_build_artifacts
   end
 
   desc "Submit a new Beta build to Apple TestFlight"
   lane :beta do
+    increment_build_number({
+      build_number: latest_testflight_build_number + 1
+    })
+
     update_info_plist(
       plist_path: "Rainbow/Info.plist",
       display_name: "Rainbow"

@@ -153,7 +153,11 @@ class SendContactList extends Component {
           layoutProvider={this._layoutProvider}
           onScroll={this.handleScroll}
           optimizeForInsertDeleteAnimations
+          scrollViewProps={{
+            keyboardShouldPersistTaps: 'always',
+          }}
           rowRenderer={this.renderItem}
+          style={{ minHeight: 1 }}
         />
       )}
     </FlyInAnimation>
