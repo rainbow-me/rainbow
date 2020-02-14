@@ -90,11 +90,16 @@ const CurrencySelectionList = ({ itemProps, listItems, showList, query }) => {
 CurrencySelectionList.propTypes = {
   itemProps: PropTypes.object,
   listItems: PropTypes.array,
+  query: PropTypes.string,
   showList: PropTypes.bool,
 };
 
-const propsAreEqual = (prev, next) =>
-  prev.listItems.length === next.listItems.length &&
-  prev.showList === next.showList;
+const propsAreEqual = (prev, next) => {
+  return (
+    prev.listItems.length === next.listItems.length &&
+    prev.query === next.query &&
+    prev.showList === next.showList
+  );
+};
 
 export default memo(CurrencySelectionList, propsAreEqual);

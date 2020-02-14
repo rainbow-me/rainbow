@@ -93,8 +93,11 @@ ExchangeAssetList.propTypes = {
   itemProps: PropTypes.object,
   items: PropTypes.array.isRequired,
   onLayout: PropTypes.func,
+  query: PropTypes.string,
 };
 
-const propsAreEqual = (prev, next) => prev.items.length === next.items.length;
+const propsAreEqual = (prev, next) => {
+  return prev.items.length === next.items.length && prev.query === next.query;
+};
 
 export default React.memo(ExchangeAssetList, propsAreEqual);

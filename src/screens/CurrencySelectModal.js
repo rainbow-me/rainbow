@@ -161,7 +161,6 @@ class CurrencySelectModal extends Component {
       filteredList = headerlessSection(filteredList);
     } else if (type === CurrencySelectionTypes.output) {
       headerTitle = 'Receive';
-      filteredList = headerlessSection(concat(favorites, curatedAssets));
       const curatedSection = concat(favorites, curatedAssets);
       if (!isEmpty(searchQuery)) {
         const [filteredBest, filteredHigh, filteredLow] = map(
@@ -170,11 +169,25 @@ class CurrencySelectModal extends Component {
             return filterList(section, searchQuery, ['symbol', 'name']);
           }
         );
-        filteredList = [
-          { data: filteredBest, title: '' },
-          { data: filteredHigh, title: 'Good' },
-          { data: filteredLow, title: 'More results' },
-        ];
+
+        filteredList = [];
+
+        filteredBest.length &&
+          filteredList.push({ data: filteredBest, title: '' });
+
+        filteredHigh.length &&
+          filteredList.push({
+            data: filteredHigh,
+            title: 'Good',
+          });
+
+        filteredLow.length &&
+          filteredList.push({
+            data: filteredLow,
+            title: 'More results',
+          });
+      } else {
+        filteredList = headerlessSection(concat(favorites, curatedAssets));
       }
     }
 
