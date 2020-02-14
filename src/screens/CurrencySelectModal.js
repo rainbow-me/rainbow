@@ -190,7 +190,7 @@ class CurrencySelectModal extends Component {
         filteredHigh.length &&
           filteredList.push({
             data: filteredHigh,
-            title: 'MORE RESULTS',
+            title: filteredBest.length ? 'MORE RESULTS' : '',
           });
 
         filteredLow.length &&
