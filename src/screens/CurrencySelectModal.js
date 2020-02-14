@@ -190,13 +190,13 @@ class CurrencySelectModal extends Component {
         filteredHigh.length &&
           filteredList.push({
             data: filteredHigh,
-            title: 'Good',
+            title: 'MORE RESULTS',
           });
 
         filteredLow.length &&
           filteredList.push({
             data: filteredLow,
-            title: 'More results',
+            title: 'LOW LIQUIDITY',
           });
       } else {
         filteredList = headerlessSection(concat(favorites, curatedAssets));

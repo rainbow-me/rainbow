@@ -11,8 +11,14 @@ const styles = StyleSheet.create({
   headerStyle: {
     backgroundColor: colors.white,
     flex: 1,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingBottom: 6,
+    paddingHorizontal: 19,
+    paddingTop: 12,
+  },
+  headerStyleText: {
+    color: colors.blueGreyDark,
+    fontSize: 12,
+    opacity: 0.4,
   },
 });
 
@@ -60,7 +66,7 @@ const ExchangeAssetList = ({ itemProps, items, onLayout, query }) => {
     ({ section }) =>
       section.title ? (
         <View style={styles.headerStyle}>
-          <Text>{section.title}</Text>
+          <Text style={styles.headerStyleText}>{section.title}</Text>
         </View>
       ) : null,
     []
