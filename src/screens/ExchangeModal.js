@@ -145,11 +145,11 @@ class ExchangeModal extends Component {
   };
 
   componentDidMount() {
-    this.props.uniswapGetAllExchanges();
     this.props.gasUpdateDefaultGasLimit(ethUnits.basic_swap);
     InteractionManager.runAfterInteractions(() => {
       this.props.gasPricesStartPolling();
       this.props.web3ListenerInit();
+      this.props.uniswapGetAllExchanges();
     });
   }
 
