@@ -111,6 +111,7 @@ class ExchangeModal extends Component {
     txFees: PropTypes.object,
     uniswapAddPendingApproval: PropTypes.func,
     uniswapAssetsInWallet: PropTypes.arrayOf(PropTypes.object),
+    uniswapGetAllExchanges: PropTypes.func,
     uniswapUpdateAllowances: PropTypes.func,
     uniswapUpdateInputCurrency: PropTypes.func,
     uniswapUpdateOutputCurrency: PropTypes.func,
@@ -144,6 +145,7 @@ class ExchangeModal extends Component {
   };
 
   componentDidMount() {
+    this.props.uniswapGetAllExchanges();
     this.props.gasUpdateDefaultGasLimit(ethUnits.basic_swap);
     InteractionManager.runAfterInteractions(() => {
       this.props.gasPricesStartPolling();
