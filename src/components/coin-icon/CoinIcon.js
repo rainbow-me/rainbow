@@ -4,9 +4,9 @@ import FastImage from 'react-native-fast-image';
 import { css } from 'styled-components/primitives';
 import ReactCoinIcon, { FallbackIcon } from 'react-coin-icon';
 import { onlyUpdateForKeys } from 'recompact';
-import { borders, colors, fonts } from '../../styles';
 import { ShadowStack } from '../shadow-stack';
 import { toChecksumAddress } from '../../handlers/web3';
+import { borders, colors, fonts } from '../../styles';
 const CoinIconSize = 40;
 
 const fallbackTextStyles = css`

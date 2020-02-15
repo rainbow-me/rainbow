@@ -76,7 +76,6 @@ EnhancedExchangeModalNavigator.router = ExchangeModalNavigator.router;
 EnhancedExchangeModalNavigator.navigationOptions = ({ navigation }) => ({
   ...navigation.state.params,
   gestureEnabled: !get(navigation, 'state.params.isGestureBlocked'),
-  isFocused: get(navigation, 'state.params.focused'),
 });
 
 export default EnhancedExchangeModalNavigator;
