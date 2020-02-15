@@ -31,10 +31,8 @@ const CoinIconFallback = fallbackProps => {
       const response = await fetch(potentialIconUrl);
       if (response.status >= 400) {
         setRemoteIconUrl(false);
-        console.log('ICON NOT AVAILABLE', potentialIconUrl);
       } else {
         setRemoteIconUrl(potentialIconUrl);
-        console.log('ICON AVAILABLE', potentialIconUrl);
       }
     } catch (e) {
       setRemoteIconUrl(false);
@@ -60,7 +58,7 @@ const CoinIconFallback = fallbackProps => {
   }
 };
 
-const enhance = onlyUpdateForKeys(['bgColor', 'symbol']);
+const enhance = onlyUpdateForKeys(['bgColor', 'symbol', 'address']);
 
 const CoinIcon = enhance(
   ({ bgColor, showShadow, size, symbol, address, ...props }) =>
@@ -96,6 +94,7 @@ const CoinIcon = enhance(
 );
 
 CoinIcon.propTypes = {
+  address: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.string]),
   bgColor: PropTypes.string,
   showShadow: PropTypes.bool,
   size: PropTypes.number,

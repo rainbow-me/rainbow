@@ -17,6 +17,7 @@ const BottomRowHeight = 32;
 export default class ExchangeInputField extends Component {
   static propTypes = {
     inputAmount: PropTypes.string,
+    inputCurrencyAddress: PropTypes.string,
     inputCurrencySymbol: PropTypes.string,
     inputFieldRef: PropTypes.func,
     isAssetApproved: PropTypes.bool,
@@ -58,6 +59,7 @@ export default class ExchangeInputField extends Component {
   render = () => {
     const {
       inputAmount,
+      inputCurrencyAddress,
       inputCurrencySymbol,
       isAssetApproved,
       nativeAmount,
@@ -95,6 +97,7 @@ export default class ExchangeInputField extends Component {
                 flex={0}
                 size={40}
                 symbol={inputCurrencySymbol}
+                address={inputCurrencyAddress}
               />
               <ExchangeInput
                 editable={!!inputCurrencySymbol}
