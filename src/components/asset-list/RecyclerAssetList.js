@@ -42,6 +42,7 @@ export const ViewTypes = {
   COIN_ROW: 1,
   COIN_ROW_LAST: 2,
   COIN_SMALL_BALANCES: 3,
+  COIN_SAVINGS: 12,
   FOOTER: 11,
   UNIQUE_TOKEN_ROW: 4,
   UNIQUE_TOKEN_ROW_CLOSED: 5,
@@ -78,6 +79,8 @@ const layoutItemAnimator = new LayoutItemAnimator();
 const reloadHeightOffsetTop = -60;
 const reloadHeightOffsetBottom = -62;
 let smallBalancedChanged = false;
+let smallBalancesIndex = 0;
+let savingsIndex = 0;
 
 const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
 
@@ -225,12 +228,28 @@ class RecyclerAssetList extends Component {
           );
           const lastBalanceIndex =
             headersIndices[balancesIndex] + balanceItemsCount;
+          if (index === lastBalanceIndex - 1) {
+            if (
+              sections[balancesIndex].data[lastBalanceIndex - 2]
+                .smallBalancesContainer
+            ) {
+              smallBalancesIndex = index - 1;
+              return ViewTypes.COIN_SMALL_BALANCES;
+            }
+          }
           if (index === lastBalanceIndex) {
             if (
               sections[balancesIndex].data[lastBalanceIndex - 1]
                 .smallBalancesContainer
             ) {
+              smallBalancesIndex = index - 1;
               return ViewTypes.COIN_SMALL_BALANCES;
+            } else if (
+              sections[balancesIndex].data[lastBalanceIndex - 1]
+                .savingsContainer
+            ) {
+              savingsIndex = index - 1;
+              return ViewTypes.COIN_SAVINGS;
             }
             return ViewTypes.COIN_ROW_LAST;
           }
@@ -345,12 +364,17 @@ class RecyclerAssetList extends Component {
             ({ name }) => name === 'balances'
           );
           const size =
-            sections[balancesIndex].data[
-              sections[balancesIndex].data.length - 1
-            ].assets.length;
+            sections[balancesIndex].data[smallBalancesIndex].assets.length;
           dim.height = openSmallBalances
             ? CoinDivider.height + size * CoinRow.height + ListFooter.height + 9
             : CoinDivider.height + ListFooter.height + 16;
+        } else if (type === ViewTypes.COIN_SAVINGS) {
+          const balancesIndex = findIndex(
+            sections,
+            ({ name }) => name === 'balances'
+          );
+          dim.height =
+            100 + 70 * sections[balancesIndex].data[savingsIndex].assets.length;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRow.height;
         } else if (type === ViewTypes.UNISWAP_ROW_LAST) {
@@ -744,6 +768,10 @@ class RecyclerAssetList extends Component {
 
     if (type === ViewTypes.HEADER) {
       return hideHeader ? null : <AssetListHeaderRenderer {...data} />;
+    }
+
+    if (type === ViewTypes.COIN_SAVINGS) {
+      return null;
     }
 
     if (type === ViewTypes.COIN_SMALL_BALANCES) {

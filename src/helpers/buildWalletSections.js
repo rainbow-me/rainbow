@@ -8,9 +8,12 @@ import { createSelector } from 'reselect';
 import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
-import { CollectibleTokenFamily, TokenFamilyWrap } from '../components/token-family';
+import { CollectibleTokenFamily } from '../components/token-family';
 import { buildUniqueTokenList, buildCoinsList } from './assets';
-import { chartExpandedAvailable } from '../config/experimental';
+import {
+  chartExpandedAvailable,
+  isSavingsDummyDataInjected,
+} from '../config/experimental';
 
 const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;
@@ -108,12 +111,16 @@ const withBalanceSection = (
   nativeCurrency,
   showShitcoins
 ) => {
-  const savingsSection = {
-    isSavingsSection: true,
-    item: {},
-  };
-
   let balanceSectionData = buildCoinsList(allAssets); //[...buildCoinsList(allAssets), savingsSection];
+  if (isSavingsDummyDataInjected) {
+    balanceSectionData.push({
+      assets: [
+        { data1: '123', data2: '12dsfa' },
+        { data1: '123', data2: '12dsfa' },
+      ],
+      savingsContainer: true,
+    });
+  }
   const isLoadingBalances = !isWalletEthZero && isBalancesSectionEmpty;
   if (isLoadingBalances) {
     balanceSectionData = [{ item: { uniqueId: 'skeleton0' } }];
