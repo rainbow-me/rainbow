@@ -134,7 +134,9 @@ export const dataTokenOverridesInit = () => async dispatch => {
 export const dataClearState = () => (dispatch, getState) => {
   const { uniswapPricesSubscription } = getState().data;
   const { accountAddress, network } = getState().settings;
-  uniswapPricesSubscription.unsubscribe();
+  uniswapPricesSubscription &&
+    uniswapPricesSubscription.unsubscribe &&
+    uniswapPricesSubscription.unsubscribe();
   removeAssets(accountAddress, network);
   removeAssetPricesFromUniswap(accountAddress, network);
   removeCompoundAssets(accountAddress, network);
