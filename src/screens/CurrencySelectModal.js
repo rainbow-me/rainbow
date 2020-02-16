@@ -2,6 +2,7 @@ import { concat, get, isEmpty, map } from 'lodash';
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 import React, { Component } from 'react';
+import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import { compose, mapProps } from 'recompact';
@@ -45,6 +46,7 @@ class CurrencySelectModal extends Component {
     transitionPosition: PropTypes.object,
     type: PropTypes.oneOf(Object.keys(CurrencySelectionTypes)),
     uniswapAssetsInWallet: PropTypes.arrayOf(PropTypes.object),
+    uniswapGetAllExchanges: PropTypes.func,
   };
 
   state = {
@@ -53,11 +55,27 @@ class CurrencySelectModal extends Component {
     searchQueryForSearch: '',
   };
 
+  componentDidMount() {
+    InteractionManager.runAfterInteractions(() => {
+      this.props.uniswapGetAllExchanges();
+    });
+  }
+
   shouldComponentUpdate = (nextProps, nextState) => {
     const isNewType = this.props.type !== nextProps.type;
 
     const isFocused = this.props.navigation.getParam('focused', false);
     const willBeFocused = nextProps.navigation.getParam('focused', false);
+
+    if (!isFocused && willBeFocused) {
+      this.handleWillFocus();
+    } else if (isFocused && !willBeFocused) {
+      this.handleWillBlur();
+      InteractionManager.runAfterInteractions(() => {
+        this.handleDidBlur();
+        this.props.navigation.state.params.restoreFocusOnSwapModal();
+      });
+    }
 
     const isNewProps = isNewValueForObjectPaths(
       { ...this.props, isFocused },
@@ -166,8 +184,8 @@ class CurrencySelectModal extends Component {
           'symbol',
           'name',
         ]);
+        filteredList = headerlessSection(filteredList);
       }
-      filteredList = headerlessSection(filteredList);
     } else if (type === CurrencySelectionTypes.output) {
       headerTitle = 'Receive';
       const curatedSection = concat(favorites, curatedAssets);
