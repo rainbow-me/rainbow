@@ -3,7 +3,7 @@
 //  Rainbow
 //
 //  Created by Alexey Kureev on 06/02/2020.
-//  Copyright © 2020 Facebook. All rights reserved.
+//  Copyright © 2020 Rainbow. All rights reserved.
 //
 
 import Foundation
