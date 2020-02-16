@@ -35,6 +35,8 @@ import { ListFooter } from '../list';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
 import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
+import SavingsListHeader from '../savings/SavingsListHeader';
+import withOpenSavings from '../../hoc/withOpenSavings';
 
 /* eslint-disable sort-keys */
 export const ViewTypes = {
@@ -157,6 +159,7 @@ class RecyclerAssetList extends Component {
     hideHeader: PropTypes.bool,
     openFamilyTabs: PropTypes.object,
     openInvestmentCards: PropTypes.object,
+    openSavings: PropTypes.bool,
     openSmallBalances: PropTypes.bool,
     paddingBottom: PropTypes.number,
     renderAheadOffset: PropTypes.number,
@@ -320,6 +323,7 @@ class RecyclerAssetList extends Component {
       (type, dim) => {
         const {
           hideHeader,
+          openSavings,
           openSmallBalances,
           paddingBottom,
           sections,
@@ -363,18 +367,23 @@ class RecyclerAssetList extends Component {
             sections,
             ({ name }) => name === 'balances'
           );
+          const additionalHeight =
+            savingsIndex < smallBalancesIndex ? ListFooter.height : 0;
           const size =
             sections[balancesIndex].data[smallBalancesIndex].assets.length;
           dim.height = openSmallBalances
-            ? CoinDivider.height + size * CoinRow.height + ListFooter.height + 9
-            : CoinDivider.height + ListFooter.height + 16;
+            ? CoinDivider.height + size * CoinRow.height + additionalHeight + 9
+            : CoinDivider.height + additionalHeight + 16;
         } else if (type === ViewTypes.COIN_SAVINGS) {
           const balancesIndex = findIndex(
             sections,
             ({ name }) => name === 'balances'
           );
-          dim.height =
-            100 + 70 * sections[balancesIndex].data[savingsIndex].assets.length;
+          dim.height = openSavings
+            ? TokenFamilyHeaderHeight +
+              ListFooter.height +
+              70 * sections[balancesIndex].data[savingsIndex].assets.length
+            : TokenFamilyHeaderHeight + ListFooter.height;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRow.height;
         } else if (type === ViewTypes.UNISWAP_ROW_LAST) {
@@ -771,7 +780,7 @@ class RecyclerAssetList extends Component {
     }
 
     if (type === ViewTypes.COIN_SAVINGS) {
-      return null;
+      return <SavingsListHeader amount="$320.59" />;
     }
 
     if (type === ViewTypes.COIN_SMALL_BALANCES) {
@@ -876,5 +885,6 @@ export default compose(
   withFabSelection,
   withOpenFamilyTabs,
   withOpenInvestmentCards,
-  withOpenBalances
+  withOpenBalances,
+  withOpenSavings
 )(RecyclerAssetList);
