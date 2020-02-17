@@ -35,8 +35,8 @@ import { ListFooter } from '../list';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
 import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
-import SavingsListHeader from '../savings/SavingsListHeader';
 import withOpenSavings from '../../hoc/withOpenSavings';
+import SavingsListWrapper from '../savings/SavingsListWrapper';
 
 /* eslint-disable sort-keys */
 export const ViewTypes = {
@@ -382,7 +382,7 @@ class RecyclerAssetList extends Component {
           dim.height = openSavings
             ? TokenFamilyHeaderHeight +
               ListFooter.height +
-              70 * sections[balancesIndex].data[savingsIndex].assets.length
+              75 * sections[balancesIndex].data[savingsIndex].assets.length
             : TokenFamilyHeaderHeight + ListFooter.height;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRow.height;
@@ -674,6 +674,7 @@ class RecyclerAssetList extends Component {
   position = 0;
 
   renderList = [];
+  savingsList = [];
 
   scrollToOffset = (position, animated) => {
     setTimeout(() => {
@@ -780,7 +781,23 @@ class RecyclerAssetList extends Component {
     }
 
     if (type === ViewTypes.COIN_SAVINGS) {
-      return <SavingsListHeader amount="$320.59" />;
+      if (this.savingsList.length !== item.assets.length) {
+        smallBalancedChanged = false;
+        const savingsList = [];
+        for (let i = 0; i < item.assets.length; i++) {
+          savingsList.push(
+            renderItem({
+              item: {
+                ...item.assets[i],
+                isSaving: true,
+              },
+              key: `Savings${i}`,
+            })
+          );
+        }
+        this.savingsList = savingsList;
+      }
+      return <SavingsListWrapper assets={this.savingsList} amount="$123.43" />;
     }
 
     if (type === ViewTypes.COIN_SMALL_BALANCES) {

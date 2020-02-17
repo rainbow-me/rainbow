@@ -69,7 +69,7 @@ SendFab.defaultProps = {
 export default compose(
   withNavigation,
   withHandlers({
-    onPress: ({ navigation }) => () => navigation.navigate('SavingsSheet'),
+    onPress: ({ navigation }) => () => navigation.navigate('SendSheet'),
   }),
   onlyUpdateForKeys(['disabled', 'sections'])
   // withProps({
