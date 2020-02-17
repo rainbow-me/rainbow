@@ -37,6 +37,7 @@ import AssetListHeader from './AssetListHeader';
 import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
 import withOpenSavings from '../../hoc/withOpenSavings';
 import SavingsListWrapper from '../savings/SavingsListWrapper';
+import SavingsListRow from '../savings/SavingsListRow';
 
 /* eslint-disable sort-keys */
 export const ViewTypes = {
@@ -85,6 +86,7 @@ let smallBalancesIndex = 0;
 let savingsIndex = 0;
 
 const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
+const SavingsListRowRenderer = pure(data => <SavingsListRow {...data} />);
 
 const hasRowChanged = (r1, r2) => {
   const isNewShowShitcoinsValue = isNewValueForPath(r1, r2, 'showShitcoins');
@@ -382,7 +384,7 @@ class RecyclerAssetList extends Component {
           dim.height = openSavings
             ? TokenFamilyHeaderHeight +
               ListFooter.height +
-              75 * sections[balancesIndex].data[savingsIndex].assets.length
+              61 * sections[balancesIndex].data[savingsIndex].assets.length
             : TokenFamilyHeaderHeight + ListFooter.height;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRow.height;
@@ -776,6 +778,7 @@ class RecyclerAssetList extends Component {
     const { item = {}, renderItem } = data;
     const { hideHeader, sections } = this.props;
 
+    console.log(data);
     if (type === ViewTypes.HEADER) {
       return hideHeader ? null : <AssetListHeaderRenderer {...data} />;
     }
@@ -785,15 +788,7 @@ class RecyclerAssetList extends Component {
         smallBalancedChanged = false;
         const savingsList = [];
         for (let i = 0; i < item.assets.length; i++) {
-          savingsList.push(
-            renderItem({
-              item: {
-                ...item.assets[i],
-                isSaving: true,
-              },
-              key: `Savings${i}`,
-            })
-          );
+          savingsList.push(<SavingsListRowRenderer {...item.assets[i]} />);
         }
         this.savingsList = savingsList;
       }

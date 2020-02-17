@@ -12,7 +12,7 @@ import { ButtonPressAnimation } from '../animations';
 import { compose, withHandlers } from 'recompact';
 import { withNavigation } from 'react-navigation';
 
-const SavingsSheetHeader = ({ APY, onPress }) => (
+const SavingsSheetHeader = ({ APY, currency, value, onPress }) => (
   <Centered css={padding(9, 0, 3)} direction="column">
     <ShadowStack
       height={50}
@@ -39,44 +39,60 @@ const SavingsSheetHeader = ({ APY, onPress }) => (
             justifyContent: 'space-between',
           }}
         >
-          <Text
-            style={{
-              fontSize: 16,
-              fontWeight: fonts.weight.semibold,
-              marginRight: 10,
-              opacity: 0.5,
-            }}
-          >
-            $0.00
-          </Text>
-          <ButtonPressAnimation onPress={onPress}>
-            <ShadowStack
-              width={97}
-              height={30}
-              borderRadius={25}
-              paddingHorizontal={8}
-              backgroundColor="#575CFF"
-              alignItems="center"
-              flexDirection="row"
-              shadows={[
-                [0, 3, 5, colors.dark, 0.2],
-                [0, 6, 10, colors.dark, 0.14],
-              ]}
+          {value ? (
+            <Text
+              style={{
+                color: colors.blueGreyDark,
+                fontSize: 16,
+                fontWeight: fonts.weight.semibold,
+                marginRight: 10,
+              }}
             >
-              <Icon name="plusCircled" color={colors.white} height={16} />
+              ${Number(value)}
+            </Text>
+          ) : (
+            <>
               <Text
                 style={{
-                  color: colors.white,
-                  fontSize: 15,
+                  color: colors.blueGreyDark,
+                  fontSize: 16,
                   fontWeight: fonts.weight.semibold,
-                  marginLeft: -7.5,
-                  paddingHorizontal: 10,
+                  marginRight: 10,
+                  opacity: 0.5,
                 }}
               >
-                Deposit
+                $0.00
               </Text>
-            </ShadowStack>
-          </ButtonPressAnimation>
+              <ButtonPressAnimation onPress={onPress}>
+                <ShadowStack
+                  width={97}
+                  height={30}
+                  borderRadius={25}
+                  paddingHorizontal={8}
+                  backgroundColor="#575CFF"
+                  alignItems="center"
+                  flexDirection="row"
+                  shadows={[
+                    [0, 3, 5, colors.dark, 0.2],
+                    [0, 6, 10, colors.dark, 0.14],
+                  ]}
+                >
+                  <Icon name="plusCircled" color={colors.white} height={16} />
+                  <Text
+                    style={{
+                      color: colors.white,
+                      fontSize: 15,
+                      fontWeight: fonts.weight.semibold,
+                      marginLeft: -7.5,
+                      paddingHorizontal: 10,
+                    }}
+                  >
+                    Deposit
+                  </Text>
+                </ShadowStack>
+              </ButtonPressAnimation>
+            </>
+          )}
         </View>
         <View
           style={{
@@ -102,7 +118,7 @@ const SavingsSheetHeader = ({ APY, onPress }) => (
               paddingHorizontal: 10,
             }}
           >
-            {APY} APY
+            {String(APY)}% APY
           </GradientText>
         </View>
       </View>
