@@ -18,10 +18,10 @@ const TokenFamilyHeaderAnimationDuration = 200;
 const TokenFamilyHeaderHeight = 50;
 
 const SavingsListHeader = ({
-  amount,
   emoji,
   highlight,
   openSavings,
+  savingsSumValue,
   setOpenSavings,
 }) => {
   const animation = useTimingTransition(openSavings, {
@@ -66,7 +66,7 @@ const SavingsListHeader = ({
             }}
           >
             <Monospace color="dark" size="lmedium" style={{ marginBottom: 1 }}>
-              {amount}
+              {Number(savingsSumValue).toFixed(2)}
             </Monospace>
           </Animated.View>
           <AnimatedFastImage
@@ -100,10 +100,10 @@ SavingsListHeader.animationDuration = TokenFamilyHeaderAnimationDuration;
 SavingsListHeader.height = TokenFamilyHeaderHeight;
 
 SavingsListHeader.propTypes = {
-  amount: PropTypes.number,
   emoji: PropTypes.string,
   highlight: PropTypes.bool,
   openSavings: PropTypes.bool,
+  savingsSumValue: PropTypes.number,
   setOpenSavings: PropTypes.func,
 };
 

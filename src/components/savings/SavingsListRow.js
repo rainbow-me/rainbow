@@ -63,7 +63,7 @@ const SavingsSheetHeader = ({ APY, currency, value, onPress }) => (
               >
                 $0.00
               </Text>
-              <ButtonPressAnimation onPress={onPress}>
+              <ButtonPressAnimation onPress={onPress} scaleTo={0.92}>
                 <ShadowStack
                   width={97}
                   height={30}

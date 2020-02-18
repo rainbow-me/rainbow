@@ -677,6 +677,7 @@ class RecyclerAssetList extends Component {
 
   renderList = [];
   savingsList = [];
+  savingsSumValue = 0;
 
   scrollToOffset = (position, animated) => {
     setTimeout(() => {
@@ -778,7 +779,6 @@ class RecyclerAssetList extends Component {
     const { item = {}, renderItem } = data;
     const { hideHeader, sections } = this.props;
 
-    console.log(data);
     if (type === ViewTypes.HEADER) {
       return hideHeader ? null : <AssetListHeaderRenderer {...data} />;
     }
@@ -787,12 +787,19 @@ class RecyclerAssetList extends Component {
       if (this.savingsList.length !== item.assets.length) {
         smallBalancedChanged = false;
         const savingsList = [];
+        this.savingsSumValue = 0;
         for (let i = 0; i < item.assets.length; i++) {
+          this.savingsSumValue += item.assets[i].value || 0;
           savingsList.push(<SavingsListRowRenderer {...item.assets[i]} />);
         }
         this.savingsList = savingsList;
       }
-      return <SavingsListWrapper assets={this.savingsList} amount="$123.43" />;
+      return (
+        <SavingsListWrapper
+          assets={this.savingsList}
+          savingsSumValue={this.savingsSumValue}
+        />
+      );
     }
 
     if (type === ViewTypes.COIN_SMALL_BALANCES) {

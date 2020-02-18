@@ -6,10 +6,10 @@ import withOpenSavings from '../../hoc/withOpenSavings';
 import { OpacityToggler } from '../animations';
 import { View } from 'react-native';
 
-const SavingsListWrapper = ({ amount, assets, openSavings }) => {
+const SavingsListWrapper = ({ savingsSumValue, assets, openSavings }) => {
   return (
     <>
-      <SavingsListHeader amount={amount} />
+      <SavingsListHeader savingsSumValue={savingsSumValue} />
       <View pointerEvents={openSavings ? 'auto' : 'none'}>
         <OpacityToggler
           endingOpacity={1}
@@ -24,8 +24,8 @@ const SavingsListWrapper = ({ amount, assets, openSavings }) => {
 };
 
 SavingsListWrapper.propTypes = {
-  amount: PropTypes.string,
   assets: PropTypes.array,
+  savingsSumValue: PropTypes.number,
 };
 
 export default compose(withOpenSavings)(SavingsListWrapper);
