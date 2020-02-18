@@ -115,7 +115,7 @@ const withBalanceSection = (
   if (isSavingsDummyDataInjected) {
     balanceSectionData.push({
       assets: [
-        { APY: 7.5, currency: 'Dai', value: 320.3241 },
+        { APY: 7.5, currency: 'Dai', value: 320.3241253452 },
         { APY: 6.5, currency: 'Eth', value: 20.45 },
         { APY: 2.5 },
       ],

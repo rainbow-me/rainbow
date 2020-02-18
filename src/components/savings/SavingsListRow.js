@@ -41,7 +41,10 @@ const SavingsSheetHeader = ({ APY, currency, value, onPress }) => (
             <CoinIcon symbol={currency} size={26} style={{ marginRight: 7 }} />
           ) : null}
           {value ? (
-            <Text
+            <GradientText
+              colors={['#000000', '#2CCC00']}
+              steps={[0.6, 1]}
+              end={{ x: 0.9, y: 0.5 }}
               style={{
                 color: colors.blueGreyDark,
                 fontSize: 16,
@@ -50,7 +53,7 @@ const SavingsSheetHeader = ({ APY, currency, value, onPress }) => (
               }}
             >
               ${Number(value)}
-            </Text>
+            </GradientText>
           ) : (
             <>
               <Text
