@@ -1,22 +1,22 @@
+---
 format_version: 1.1.0
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 app:
   envs:
-  - NODE_VERSION: "10.15.3"
-
+  - SOME_VAR: SOME_VAL
 trigger_map:
-- push_branch: "develop"
+- push_branch: "*"
+  workflow: build_setup
+- pull_request_source_branch: "*"
   workflow: tests
+  pull_request_target_branch: develop
 workflows:
   build_setup:
     steps:
-     - activate-ssh-key@4.0.3:
+    - activate-ssh-key@4.0.5:
         run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
-    - git-clone:
-        inputs:
-        - clone_depth: ''
-        title: Cloning Repo
-    - script:
+    - git-clone@4.0.18: {}
+    - script@1.1.6:
         inputs:
         - content: |-
             #!/bin/bash
@@ -25,51 +25,45 @@ workflows:
             brew install --HEAD applesimutils
             brew install watchman
         title: Installing deps via Brew
-    - script:
+    - nvm@1.2.2:
         inputs:
-        - content: |-
-            #!/bin/bash
-            nvm --version
-            echo $NODE_VERSION
-            nvm install $NODE_VERSION
-            nvm use $NODE_VERSION
-            nvm alias default $NODE_VERSION
-        title: Setting up NVM
-    - yarn@0.1.0:
+        - node_version: 10.15.3
+    - yarn@0.1.1:
         inputs:
         - command: global add react-native-cli
         title: Installing react-native-cli
-    - yarn@0.1.0:
+    - yarn@0.1.1:
         inputs:
-        - command: detox-cli
+        - command: global add detox-cli
         title: Installing detox-cli
-    - yarn@0.1.0:
+    - yarn@0.1.1:
         inputs:
-        - command: install --network-timeout 300000 --frozen-lockfile --network-concurrency 1
+        - command: install --network-timeout 300000 --frozen-lockfile --network-concurrency
+            1
         title: Installing dependencies via yarn
-    - script:
+    - script@1.1.6:
         inputs:
         - content: |-
             #!/bin/bash
-           pod repo update
+            pod repo update
         title: Updating Pods repo
-    - yarn@0.1.0:
+    - yarn@0.1.1:
         inputs:
         - command: install-pods
         title: Installing pods
-    - script:
+    - script@1.1.6:
         inputs:
         - content: |-
             #!/bin/bash
             detox clean-framework-cache && detox build-framework-cache
         title: Build detox framework cache
-    before_run:
-    after_run:
+    before_run: 
+    after_run: 
   lint:
     before_run: []
     after_run: []
     steps:
-    - yarn@0.1.0:
+    - yarn@0.1.1:
         inputs:
         - command: lint
         title: Linting for Errors
@@ -77,14 +71,14 @@ workflows:
     before_run: []
     after_run: []
     steps:
-    - script:
+    - script@1.1.6:
         inputs:
         - content: |-
             #!/bin/bash
 
             detox build --configuration ios.sim.release
         title: Detox - Build Release App
-    - script:
+    - script@1.1.6:
         inputs:
         - content: |-
             #!/bin/bash
@@ -97,3 +91,13 @@ workflows:
     - lint
     - detox_tests
     after_run: []
+  testflight:
+    before_run:
+    - build_setup
+    steps:
+    - fastlane@2.7.0:
+        inputs:
+        - lane: beta
+    - fastlane@2.7.0:
+        inputs:
+        - lane: refresh_dsyms
