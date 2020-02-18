@@ -11,6 +11,7 @@ import { Icon } from '../icons';
 import { ButtonPressAnimation } from '../animations';
 import { compose, withHandlers } from 'recompact';
 import { withNavigation } from 'react-navigation';
+import { CoinIcon } from '../coin-icon';
 
 const SavingsSheetHeader = ({ APY, currency, value, onPress }) => (
   <Centered css={padding(9, 0, 3)} direction="column">
@@ -39,6 +40,9 @@ const SavingsSheetHeader = ({ APY, currency, value, onPress }) => (
             justifyContent: 'space-between',
           }}
         >
+          {currency ? (
+            <CoinIcon symbol={currency} size={26} style={{ marginRight: 7 }} />
+          ) : null}
           {value ? (
             <Text
               style={{

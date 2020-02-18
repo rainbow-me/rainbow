@@ -66,7 +66,7 @@ const SavingsListHeader = ({
             }}
           >
             <Monospace color="dark" size="lmedium" style={{ marginBottom: 1 }}>
-              {Number(savingsSumValue).toFixed(2)}
+              ${Number(savingsSumValue).toFixed(2)}
             </Monospace>
           </Animated.View>
           <AnimatedFastImage
