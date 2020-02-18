@@ -63,7 +63,8 @@ platform :ios do
       include_symbols: true,
     )
     pilot(
-      app_identifier: "me.rainbow"
+      app_identifier: "me.rainbow",
+      skip_waiting_for_build_processing: true
     )
   end
 end

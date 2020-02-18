@@ -3,12 +3,12 @@ format_version: 1.1.0
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 app:
   envs:
-  - SOME_VAR: SOME_VAL
+  - FASTLANE_USER: ''
 trigger_map:
 - push_branch: "*"
   workflow: build_setup
 - pull_request_source_branch: "*"
-  workflow: tests
+  workflow: workflow_tests
   pull_request_target_branch: develop
 workflows:
   build_setup:
@@ -16,47 +16,14 @@ workflows:
     - activate-ssh-key@4.0.5:
         run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
     - git-clone@4.0.18: {}
-    - script@1.1.6:
-        inputs:
-        - content: |-
-            #!/bin/bash
-            brew update
-            brew tap wix/brew
-            brew install --HEAD applesimutils
-            brew install watchman
-        title: Installing deps via Brew
     - nvm@1.2.2:
         inputs:
         - node_version: 10.15.3
     - yarn@0.1.1:
         inputs:
-        - command: global add react-native-cli
-        title: Installing react-native-cli
-    - yarn@0.1.1:
-        inputs:
-        - command: global add detox-cli
-        title: Installing detox-cli
-    - yarn@0.1.1:
-        inputs:
         - command: install --network-timeout 300000 --frozen-lockfile --network-concurrency
             1
         title: Installing dependencies via yarn
-    - script@1.1.6:
-        inputs:
-        - content: |-
-            #!/bin/bash
-            pod repo update
-        title: Updating Pods repo
-    - yarn@0.1.1:
-        inputs:
-        - command: install-pods
-        title: Installing pods
-    - script@1.1.6:
-        inputs:
-        - content: |-
-            #!/bin/bash
-            detox clean-framework-cache && detox build-framework-cache
-        title: Build detox framework cache
     before_run: 
     after_run: 
   lint:
@@ -85,19 +52,61 @@ workflows:
 
             detox test --configuration ios.sim.release --cleanup
         title: Detox - Run E2E Tests
-  tests:
-    before_run:
-    - build_setup
-    - lint
-    - detox_tests
-    after_run: []
-  testflight:
+  detox_setup:
+    steps:
+    - yarn@0.1.1:
+        inputs:
+        - cache_local_deps: 'yes'
+        - command: global add detox-cli
+        title: Detox - Install CLI
+    - script@1.1.6:
+        inputs:
+        - content: |-
+            #!/bin/bash
+            detox clean-framework-cache && detox build-framework-cache
+        title: Detox - Clean & Build Framework cache
+  pods_setup:
+    steps:
+    - script@1.1.6:
+        inputs:
+        - content: pod repo update
+        title: Pods - Update repo
+    - script@1.1.6:
+        inputs:
+        - content: cd ios && pod install
+        title: Pods - Install
+  react_native_setup:
+    before_run: []
+    steps:
+    - script@1.1.6:
+        inputs:
+        - content: |-
+            #!/bin/bash
+            brew update
+            brew tap wix/brew
+            brew install --HEAD applesimutils
+            brew install watchman
+        title: React Native - Install dependencies via Brew
+    - yarn@0.1.1:
+        inputs:
+        - command: global add react-native-cli
+        title: React Native - Install CLI
+  workflow_testflight:
     before_run:
     - build_setup
     steps:
     - fastlane@2.7.0:
         inputs:
         - lane: beta
+        title: Fastlane - Submit to Testflight
     - fastlane@2.7.0:
         inputs:
         - lane: refresh_dsyms
+        title: Fastlane - Upload debug information
+  workflow_tests:
+    before_run:
+    - build_setup
+    - lint
+    - pods_setup
+    - detox_setup
+    - detox_tests
