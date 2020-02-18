@@ -1,12 +1,9 @@
 ---
 format_version: 1.1.0
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
-app:
-  envs:
-  - FASTLANE_USER: ''
 trigger_map:
 - push_branch: "*"
-  workflow: build_setup
+  workflow: workflow_tests
 - pull_request_source_branch: "*"
   workflow: workflow_tests
   pull_request_target_branch: develop
@@ -21,6 +18,7 @@ workflows:
         - node_version: 10.15.3
     - yarn@0.1.1:
         inputs:
+        - cache_local_deps: 'yes'
         - command: install --network-timeout 300000 --frozen-lockfile --network-concurrency
             1
         title: Installing dependencies via yarn
@@ -94,6 +92,7 @@ workflows:
   workflow_testflight:
     before_run:
     - build_setup
+    - generate_dot_env
     steps:
     - fastlane@2.7.0:
         inputs:
@@ -102,11 +101,41 @@ workflows:
     - fastlane@2.7.0:
         inputs:
         - lane: refresh_dsyms
-        title: Fastlane - Upload debug information
+        title: Fastlane - Upload debug symbols and sourcemaps
+    envs:
+    - opts:
+        is_expand: false
+      SENTRY_ENVIRONMENT: Release
   workflow_tests:
     before_run:
     - build_setup
     - lint
     - pods_setup
     - detox_setup
+    - generate_dot_env
     - detox_tests
+    envs:
+    - opts:
+        is_expand: false
+      SENTRY_ENVIRONMENT: LocalRelease
+  generate_dot_env:
+    steps:
+    - script@1.1.6:
+        inputs:
+        - content: |+
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # write your script here
+            touch .env
+            echo "DATA_ORIGIN=$DATA_ORIGIN" >> .env
+            echo "REACT_APP_INFURA_PROJECT_ID=$REACT_APP_INFURA_PROJECT_ID" >> .env
+            echo "REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY" >> .env
+            echo "DATA_API_KEY=$DATA_API_KEY" >> .env
+            echo "WYRE_ENDPOINT=$WYRE_ENDPOINT" >> .env
+            echo "WYRE_ACCOUNT_ID=$WYRE_ACCOUNT_ID" >> .env
+            echo "RAINBOW_WYRE_MERCHANT_ID=$RAINBOW_WYRE_MERCHANT_ID" >> .env
+        title: Generate .env file
