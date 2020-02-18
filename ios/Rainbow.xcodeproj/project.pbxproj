@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -65,7 +65,6 @@
 		A4704B4823C546DA00E50E4B /* TransactionListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4704B4023C546D900E50E4B /* TransactionListViewCell.swift */; };
 		A4704B4923C546DA00E50E4B /* TransactionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4704B4123C546D900E50E4B /* TransactionListView.swift */; };
 		A4704B4D23C546DA00E50E4B /* TransactionListViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A4704B4623C546D900E50E4B /* TransactionListViewCell.xib */; };
-		A477567A23DA7C3D005AE8FD /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = A477567923DA7C3D005AE8FD /* Kingfisher */; };
 		A477567C23DB2FAA005AE8FD /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A477567B23DB2FAA005AE8FD /* Transaction.swift */; };
 		A477567E23DB3A85005AE8FD /* TransactionListViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A477567D23DB3A85005AE8FD /* TransactionListViewManager.m */; };
 		A485E61423C8ED6000E5C3D4 /* TransactionListViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A485E61323C8ED6000E5C3D4 /* TransactionListViewHeader.swift */; };
@@ -213,8 +212,6 @@
 		A4D04BA823D12F99008C1DEC /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ButtonManager.m; sourceTree = "<group>"; };
 		A4F8DACA23DF85DF00560E47 /* TransactionListBaseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListBaseCell.swift; sourceTree = "<group>"; };
-		A671DF9861FA8D2C9A6FCB91 /* Pods-Rainbow.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.release.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.release.xcconfig"; sourceTree = "<group>"; };
-		A4D04BAD23D13299008C1DEC /* ButtonManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonManager.swift; sourceTree = "<group>"; };
 		A6EEFE6EA9354456B0DB4520 /* Graphik-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-Regular.otf"; path = "../src/assets/fonts/Graphik-Regular.otf"; sourceTree = "<group>"; };
 		A7F0978B24BA4EC283C580D9 /* Graphik-SemiboldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Graphik-SemiboldItalic.otf"; path = "../src/assets/fonts/Graphik-SemiboldItalic.otf"; sourceTree = "<group>"; };
 		A8AE8DE50B9544B6BC186E6C /* SF-Pro-Display-BlackItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-BlackItalic.otf"; path = "../src/assets/fonts/SF-Pro-Display-BlackItalic.otf"; sourceTree = "<group>"; };
@@ -257,7 +254,6 @@
 				C72F456C99A646399192517D /* libz.tbd in Frameworks */,
 				F504FABC04ED3FF96616663B /* libPods-Rainbow.a in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* (null) in Frameworks */,
-				A477567A23DA7C3D005AE8FD /* Kingfisher in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -388,8 +384,6 @@
 				A44A4EED23EC928900B543F1 /* CoinIconWithProgressBar.swift */,
 				66FEC91523EDA13F00A0F367 /* RoundedCornerView.swift */,
 				A4704B4723C546DA00E50E4B /* RCTConvert+TransactionList.h */,
-				A4704B4223C546D900E50E4B /* Transaction.h */,
-				A4704B4323C546D900E50E4B /* Transaction.m */,
 				A4704B4023C546D900E50E4B /* TransactionListViewCell.swift */,
 				A4704B4623C546D900E50E4B /* TransactionListViewCell.xib */,
 				A4AF3CCF23DA3A0F00F230F3 /* TransactionListRequestViewCell.swift */,
@@ -417,7 +411,6 @@
 		A49B52B123DB41DD00A00918 /* Bridging */ = {
 			isa = PBXGroup;
 			children = (
-				A4704B4723C546DA00E50E4B /* RCTConvert+TransactionList.h */,
 				A477567D23DB3A85005AE8FD /* TransactionListViewManager.m */,
 			);
 			name = Bridging;
@@ -546,7 +539,6 @@
 			);
 			name = Rainbow;
 			packageProductDependencies = (
-				A477567923DA7C3D005AE8FD /* Kingfisher */,
 			);
 			productName = "Hello World";
 			productReference = 13B07F961A680F5B00A75B9A /* Rainbow.app */;
@@ -587,7 +579,6 @@
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			packageReferences = (
-				A477567823DA7C3D005AE8FD /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
@@ -831,10 +822,7 @@
 				);
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -890,10 +878,7 @@
 				);
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -984,10 +969,7 @@
 				);
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1079,10 +1061,7 @@
 				);
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1209,25 +1188,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		A477567823DA7C3D005AE8FD /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/onevcat/Kingfisher";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.13.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		A477567923DA7C3D005AE8FD /* Kingfisher */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A477567823DA7C3D005AE8FD /* XCRemoteSwiftPackageReference "Kingfisher" */;
-			productName = Kingfisher;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }
