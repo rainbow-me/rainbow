@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { colors, padding, position, fonts } from '../../styles';
-import { Centered } from '../layout';
+import { Centered, Row } from '../layout';
 import LinearGradient from 'react-native-linear-gradient';
-import { View } from 'react-native';
 import { ShadowStack } from '../shadow-stack';
 import { deviceUtils } from '../../utils';
 import { GradientText, Text } from '../text';
@@ -24,19 +23,17 @@ const SavingsSheetHeader = ({ APY, currency, value, onPress }) => (
         [0, 6, 10, colors.dark, 0.14],
       ]}
     >
-      <View
+      <Row
         style={{
           alignItems: 'center',
-          flexDirection: 'row',
           justifyContent: 'space-between',
           marginLeft: 5,
           padding: 10,
         }}
       >
-        <View
+        <Row
           style={{
             alignItems: 'center',
-            flexDirection: 'row',
             justifyContent: 'space-between',
           }}
         >
@@ -97,12 +94,10 @@ const SavingsSheetHeader = ({ APY, currency, value, onPress }) => (
               </ButtonPressAnimation>
             </>
           )}
-        </View>
-        <View
+        </Row>
+        <Centered
           style={{
-            alignItems: 'center',
             height: 30,
-            justifyContent: 'center',
           }}
         >
           <LinearGradient
@@ -124,14 +119,17 @@ const SavingsSheetHeader = ({ APY, currency, value, onPress }) => (
           >
             {String(APY)}% APY
           </GradientText>
-        </View>
-      </View>
+        </Centered>
+      </Row>
     </ShadowStack>
   </Centered>
 );
 
 SavingsSheetHeader.propTypes = {
   APY: PropTypes.string,
+  currency: PropTypes.string,
+  onPress: PropTypes.func,
+  value: PropTypes.number,
 };
 
 export default compose(
