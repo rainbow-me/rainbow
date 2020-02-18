@@ -98,7 +98,6 @@ export default compose(
     onPressBack: ({ navigation }) => () =>
       navigation.setParams({ section: SettingsPages.default }),
     onPressImportSeedPhrase: ({ navigation }) => () => {
-      navigation.goBack();
       InteractionManager.runAfterInteractions(() => {
         navigation.navigate('ImportSeedPhraseSheet');
         StatusBar.setBarStyle('light-content');

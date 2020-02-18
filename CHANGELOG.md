@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 
+## [1.2.4-5](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.4-5)
+### Changed
+* Fix navigation isFocused issues causing different parts of the app to break
+
 ## [1.2.4-1](https://github.com/rainbow-me/rainbow/releases/tag/v1.2.4-1)
 ### Changed
 * Bugfixes for broken button animation

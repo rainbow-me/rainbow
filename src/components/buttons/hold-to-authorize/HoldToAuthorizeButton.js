@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
+import { Keyboard } from 'react-native';
 import {
   LongPressGestureHandler,
   State,
@@ -126,6 +127,7 @@ class HoldToAuthorizeButton extends PureComponent {
 
     if (state === ACTIVE && !disabled && enableLongPress) {
       haptics.notificationSuccess();
+      Keyboard.dismiss();
 
       animate(this.buttonScale, {
         toValue: 1,
