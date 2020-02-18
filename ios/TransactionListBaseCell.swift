@@ -48,4 +48,23 @@ class TransactionListBaseCell : UITableViewCell {
   override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
     animateTapEnd(duration: duration, scale: scaleTo)
   }
+  
+  func generateTextImage(_ text: String) -> UIImage? {
+    let frame = CGRect(x: 0, y: 0, width: 120, height: 120)
+    
+    let nameLabel = MyBoundedLabel(frame: frame)
+    nameLabel.textAlignment = .center
+    nameLabel.backgroundColor = UIColor(red: 0.23, green: 0.24, blue: 0.32, alpha: 1.0)
+    nameLabel.textColor = .white
+    nameLabel.font = .systemFont(ofSize: 42, weight: .regular)
+    nameLabel.text = text
+    nameLabel.adjustsFontSizeToFitWidth = true
+    
+    UIGraphicsBeginImageContext(frame.size)
+    if let currentContext = UIGraphicsGetCurrentContext() {
+      nameLabel.layer.render(in: currentContext)
+      return UIGraphicsGetImageFromCurrentImageContext()
+    }
+    return nil
+  }
 }
