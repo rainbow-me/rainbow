@@ -1,5 +1,4 @@
 app_identifier("me.rainbow") # The bundle identifier of your app
-apple_id("admin@rainbow.me") # Your Apple email address
 
 itc_team_id("1457119021") # App Store Connect Team ID
 team_id("L74NQAQB8H") # Developer Portal Team ID
