@@ -22,5 +22,5 @@ export default function useMagicFocus(autofocusTarget) {
   if (!focus.current) magicallyFocus();
   useNavigationWillFocusEffect(magicallyFocus);
 
-  return [handleFocus];
+  return [focus, handleFocus];
 }

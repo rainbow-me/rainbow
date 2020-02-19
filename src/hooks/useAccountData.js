@@ -5,6 +5,7 @@ export default function useAccountData() {
   const accountData = useSelector(({ data, settings }) => ({
     accountAddress: settings.accountAddress,
     assets: data.assets,
+    chainId: settings.chainId,
     compoundAssets: data.compoundAssets,
     nativeCurrency: settings.nativeCurrency,
     settings,

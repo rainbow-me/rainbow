@@ -51,7 +51,7 @@ import {
   subtract,
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
-import { usePrevious } from '../hooks';
+import { useAccountData, useMagicFocus, usePrevious } from '../hooks';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
 import { contractUtils, ethereumUtils, gasUtils } from '../utils';
@@ -62,16 +62,6 @@ export const exchangeModalBorderRadius = 30;
 const AnimatedFloatingPanels = Animated.createAnimatedComponent(
   toClass(FloatingPanels)
 );
-
-// TODO JIN
-// first update ExchangeModal with the new props
-// inputHeaderTitle (Swap or Deposit)
-// focus stuff
-// pass in the defaultInputAddress
-// pass in showOutputField
-// pass in the confirmation function
-// use accountData
-// need to swap or not?
 
 const isSameAsset = (a, b) => {
   if (!a || !b) return false;
@@ -84,30 +74,32 @@ const DEFAULT_APPROVAL_ESTIMATION_TIME_IN_MS = 30000; // 30 seconds
 
 const getNativeTag = field => get(field, '_inputRef._nativeTag');
 
+// TODO JIN
+// pass in the confirmation function
+// need to swap or not?
+// hookify selectors
+// remove the unlock stuff
+// show the slippage
+
 const ExchangeModal = ({
-  accountAddress,
-  allAssets,
   allowances,
-  chainId,
   dataAddNewTransaction,
-  defaultInputAddress, // TODO JIN
+  defaultInputAddress,
   gasLimit,
   gasPrices,
   gasPricesStartPolling,
   gasPricesStopPolling,
   gasUpdateDefaultGasLimit,
   gasUpdateTxFee,
-  inputHeaderTitle, // TODO JIN
+  inputHeaderTitle,
   inputReserve,
   isTransitioning,
-  nativeCurrency,
   navigation,
   outputReserve,
   pendingApprovals,
   selectedGasPrice,
   showOutputField,
   tabPosition,
-  // tradeDetails, // TODO JIN
   uniswapAddPendingApproval,
   uniswapAssetsInWallet,
   uniswapClearCurrenciesAndReserves,
@@ -117,15 +109,19 @@ const ExchangeModal = ({
   web3ListenerInit,
   web3ListenerStop,
 }) => {
-  console.log('what about the nav', navigation);
-  console.log('what about the header', inputHeaderTitle);
+  const {
+    accountAddress,
+    allAssets,
+    chainId,
+    nativeCurrency,
+  } = useAccountData();
+
   const [approvalCreationTimestamp, setApprovalCreationTimestamp] = useState(
     null
   );
   const [estimatedApprovalTimeInMs, setEstimatedApprovalTimeInMs] = useState(
     null
   );
-  // const [inputAllowance, setInputAllowance] = useState(null);
   const [inputAmount, setInputAmount] = useState(null);
   const [inputAmountDisplay, setInputAmountDisplay] = useState(null);
   const [inputAsExactAmount, setInputAsExactAmount] = useState(true);
@@ -148,11 +144,11 @@ const ExchangeModal = ({
   const [slippage, setSlippage] = useState(null);
   const [tradeDetails, setTradeDetails] = useState(null);
 
-  // const inputFocusInteractionHandle = useRef(null);
-  const lastFocusedInput = useRef();
   const inputFieldRef = useRef();
   const nativeFieldRef = useRef();
   const outputFieldRef = useRef();
+
+  const [lastFocusedInput, handleFocus] = useMagicFocus(inputFieldRef.current);
 
   useEffect(() => {
     gasUpdateDefaultGasLimit(ethUnits.basic_swap);
@@ -171,70 +167,6 @@ const ExchangeModal = ({
     web3ListenerInit,
     web3ListenerStop,
   ]);
-
-  /*
-  useEffect(() => {
-    console.log('use effect!');
-    // const someCopy = inputFocusInteractionHandle.current;
-    navigation.setParams({ focused: true });
-    return () => {
-      if (someCopy) {
-        InteractionManager.clearInteractionHandle(someCopy);
-      }
-    };
-  }, [
-    navigation,
-  ]);
-  */
-
-  /*
-  shouldComponentUpdate = (nextProps, nextState) => {
-    const isFocused = navigation.getParam('focused', false);
-    const willBeFocused = nextProps.navigation.getParam('focused', false);
-
-    const isNewProps = isNewValueForObjectPaths(this.props, nextProps, [
-      'inputReserve.token.address',
-      'outputReserve.token.address',
-      'pendingApprovals',
-    ]);
-
-    // Code below is a workaround. We noticed that opening keyboard while animation
-    // (with autofocus) can lead to frame drops. In order not to limit this
-    // I manually can focus instead of relying on built-in autofocus.
-    // Maybe that's not perfect, but works for now ¯\_(ツ)_/¯
-    if (
-      (isTransitioning &&
-        !nextProps.isTransitioning &&
-        (lastFocusedInput && lastFocusedInput.current === null)) ||
-      (!isFocused && willBeFocused)
-    ) {
-      inputFocusInteractionHandle.current = InteractionManager.runAfterInteractions(
-        focusInputField
-      );
-    }
-
-    const isNewState = isNewValueForObjectPaths(this.state, nextState, [
-      'approvalCreationTimestamp',
-      'estimatedApprovalTimeInMs',
-      'inputAmount',
-      'inputCurrency.uniqueId',
-      'inputExecutionRate',
-      'inputNativePrice',
-      'isAssetApproved',
-      'isAuthorizing',
-      'isSufficientBalance',
-      'isUnlockingAsset',
-      'nativeAmount',
-      'outputAmount',
-      'outputExecutionRate',
-      'outputNativePrice',
-      'outputCurrency.uniqueId',
-      'slippage',
-    ]);
-
-    return isNewProps || isNewState;
-  };
-  */
 
   const prevIsTransitioning = usePrevious(isTransitioning);
   const prevInputAmount = usePrevious(inputAmount);
@@ -341,9 +273,11 @@ const ExchangeModal = ({
   };
 
   const clearForm = () => {
-    if (inputFieldRef) inputFieldRef.current.clear();
-    if (nativeFieldRef) nativeFieldRef.current.clear();
-    if (outputFieldRef) outputFieldRef.current.clear();
+    if (inputFieldRef && inputFieldRef.current) inputFieldRef.current.clear();
+    if (nativeFieldRef && nativeFieldRef.current)
+      nativeFieldRef.current.clear();
+    if (outputFieldRef && outputFieldRef.current)
+      outputFieldRef.current.clear();
   };
 
   const findNextFocused = () => {
@@ -351,12 +285,13 @@ const ExchangeModal = ({
     const nativeInputRefTag = getNativeTag(nativeFieldRef.current);
     const outputRefTag = getNativeTag(outputFieldRef.current);
 
-    // TODO JIN null checks?
     const lastFocusedIsInputType =
-      lastFocusedInput.current === inputRefTag ||
-      lastFocusedInput.current === nativeInputRefTag;
+      lastFocusedInput &&
+      (lastFocusedInput.current === inputRefTag ||
+        lastFocusedInput.current === nativeInputRefTag);
 
-    const lastFocusedIsOutputType = lastFocusedInput.current === outputRefTag;
+    const lastFocusedIsOutputType =
+      lastFocusedInput && lastFocusedInput.current === outputRefTag;
 
     if (lastFocusedIsInputType && !inputCurrency) {
       return outputRefTag;
@@ -369,12 +304,7 @@ const ExchangeModal = ({
     return lastFocusedInput.current;
   };
 
-  const focusInputField = () => {
-    if (inputFieldRef && inputFieldRef.current) {
-      inputFieldRef.current.focus();
-    }
-  };
-
+  // TODO JIN need to make this more generic
   const getCurrencyAllowance = useCallback(async () => {
     if (isNil(inputCurrency)) {
       return setIsAssetApproved(true);
@@ -400,7 +330,8 @@ const ExchangeModal = ({
       setApprovalCreationTimestamp(null);
       setEstimatedApprovalTimeInMs(null);
       setIsAssetApproved(isAssetApproved);
-      return setIsUnlockingAsset(false); // TODO JIN return?
+      setIsUnlockingAsset(false);
+      return;
     }
     const pendingApproval = pendingApprovals[toLower(inputCurrency.address)];
     const isUnlockingAsset = !!pendingApproval;
@@ -418,13 +349,15 @@ const ExchangeModal = ({
         isUnlockingAsset ? pendingApproval.estimatedTimeInMs : null
       );
       setIsAssetApproved(isAssetApproved);
-      return setIsUnlockingAsset(isUnlockingAsset); // TODO JIN reeturn
+      setIsUnlockingAsset(isUnlockingAsset);
+      return;
     } catch (error) {
       gasUpdateTxFee();
       setApprovalCreationTimestamp(null);
       setEstimatedApprovalTimeInMs(null);
       setIsAssetApproved(isAssetApproved);
-      return setIsUnlockingAsset(false); // TODO JIN return
+      setIsUnlockingAsset(false);
+      return;
     }
   }, [
     accountAddress,
@@ -553,7 +486,6 @@ const ExchangeModal = ({
     outputReserve,
   ]);
 
-  // TODO JIN make sure i'm not overriding variable names
   const getMarketDetails = useCallback(async () => {
     const isMissingCurrency = !inputCurrency || !outputCurrency;
     const isMissingReserves =
@@ -613,7 +545,6 @@ const ExchangeModal = ({
       const isSufficientBalance =
         !inputAmount || greaterThanOrEqualTo(inputBalance, inputAmount);
 
-      // TODO JIN the updated values
       setInputExecutionRate(inputExecutionRate);
       setInputNativePrice(inputNativePrice);
       setIsSufficientBalance(isSufficientBalance);
@@ -637,10 +568,11 @@ const ExchangeModal = ({
         clearForm();
       }
 
-      // TODO JIN current null check
       if (inputAsExactAmount) {
         if (
           (isInputEmpty || isInputZero) &&
+          outputFieldRef &&
+          outputFieldRef.current &&
           !outputFieldRef.current.isFocused()
         ) {
           updateOutputAmount();
@@ -669,8 +601,12 @@ const ExchangeModal = ({
         }
       }
 
-      // TODO JIN current null check
-      if (!inputAsExactAmount && !inputFieldRef.current.isFocused()) {
+      if (
+        !inputAsExactAmount &&
+        inputFieldRef &&
+        inputFieldRef.current &&
+        !inputFieldRef.current.isFocused()
+      ) {
         if (isOutputEmpty || isOutputZero) {
           updateInputAmount();
           setIsSufficientBalance(true);
@@ -708,7 +644,6 @@ const ExchangeModal = ({
       }
     } catch (error) {
       console.log('error getting market details', error);
-      // TODO error state
     }
   }, [
     accountAddress,
@@ -752,10 +687,6 @@ const ExchangeModal = ({
     },
     [allAssets, inputCurrency, inputReserve, outputCurrency, outputReserve]
   );
-
-  const handleFocusField = ({ currentTarget }) => {
-    lastFocusedInput.current = currentTarget;
-  };
 
   const handlePressMaxBalance = () => {
     let maxBalance = get(inputCurrency, 'balance.amount', 0);
@@ -955,15 +886,11 @@ const ExchangeModal = ({
     amountDisplay,
     inputAsExactAmount = false
   ) => {
-    console.log('1 update output amount', outputAmount);
     setInputAsExactAmount(inputAsExactAmount);
-    console.log('2', inputAsExactAmount);
     setOutputAmount(outputAmount);
-    console.log('3');
     setOutputAmountDisplay(
       amountDisplay !== undefined ? amountDisplay : outputAmount
     );
-    console.log('4 output amount display', amountDisplay);
   };
 
   const previousOutputCurrency = usePrevious(outputCurrency);
@@ -991,6 +918,7 @@ const ExchangeModal = ({
   const isSlippageWarningVisible =
     isSufficientBalance && !!inputAmount && !!outputAmount;
 
+  // TODO JIN does showing details make sense
   const showDetailsButton =
     get(inputCurrency, 'symbol') &&
     get(outputCurrency, 'symbol') &&
@@ -1018,11 +946,16 @@ const ExchangeModal = ({
             }),
           }}
         >
-          <FloatingPanel radius={exchangeModalBorderRadius} overflow="visible">
+          <FloatingPanel
+            radius={exchangeModalBorderRadius}
+            overflow="visible"
+            style={{ paddingBottom: showOutputField ? 0 : 26 }}
+          >
             <GestureBlocker type="top" />
             <ExchangeModalHeader
               onPressDetails={navigateToSwapDetailsModal}
               showDetailsButton={showDetailsButton}
+              title={inputHeaderTitle}
             />
             <ExchangeInputField
               inputAmount={inputAmountDisplay}
@@ -1034,7 +967,7 @@ const ExchangeModal = ({
               nativeAmount={nativeAmount}
               nativeCurrency={nativeCurrency}
               nativeFieldRef={assignNativeFieldRef}
-              onFocus={handleFocusField}
+              onFocus={handleFocus}
               onPressMaxBalance={handlePressMaxBalance}
               onPressSelectInputCurrency={navigateToSelectInputCurrency}
               onUnlockAsset={handleUnlockAsset}
@@ -1044,7 +977,7 @@ const ExchangeModal = ({
             {showOutputField && (
               <ExchangeOutputField
                 bottomRadius={exchangeModalBorderRadius}
-                onFocus={handleFocusField}
+                onFocus={handleFocus}
                 onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
                 outputAmount={outputAmountDisplay}
                 outputCurrencyAddress={get(outputCurrency, 'address', null)}
@@ -1085,10 +1018,7 @@ const ExchangeModal = ({
 };
 
 ExchangeModal.propTypes = {
-  accountAddress: PropTypes.string,
-  allAssets: PropTypes.array,
   allowances: PropTypes.object,
-  chainId: PropTypes.number,
   dataAddNewTransaction: PropTypes.func,
   defaultInputAddress: PropTypes.string,
   gasLimit: PropTypes.number,
@@ -1098,7 +1028,6 @@ ExchangeModal.propTypes = {
   gasUpdateTxFee: PropTypes.func,
   inputHeaderTitle: PropTypes.string,
   inputReserve: PropTypes.object,
-  nativeCurrency: PropTypes.string,
   navigation: PropTypes.object,
   outputReserve: PropTypes.object,
   pendingApprovals: PropTypes.object,
