@@ -11,16 +11,43 @@ import { isLowerCaseMatch } from '../utils';
 
 const EMPTY_ARRAY = [];
 
+const assetPricesFromUniswapSelector = state => state.assetPricesFromUniswap;
 const assetsSelector = state => state.assets;
 const compoundAssetsSelector = state => state.compoundAssets;
 const nativeCurrencySelector = state => state.nativeCurrency;
 
 const sortAssetsByNativeAmount = (
   originalAssets,
+  assetPricesFromUniswap,
   compoundAssets,
   nativeCurrency
 ) => {
-  let assetsNativePrices = concat(originalAssets, compoundAssets);
+  let updatedAssets = originalAssets;
+  if (!isEmpty(assetPricesFromUniswap)) {
+    updatedAssets = map(originalAssets, asset => {
+      if (isNil(asset.price)) {
+        const assetPrice = get(
+          assetPricesFromUniswap,
+          `[${asset.address}].price`
+        );
+        const relativePriceChange = get(
+          assetPricesFromUniswap,
+          `[${asset.address}].relativePriceChange`
+        );
+        if (assetPrice) {
+          return {
+            ...asset,
+            price: {
+              relative_change_24h: relativePriceChange,
+              value: assetPrice,
+            },
+          };
+        }
+      }
+      return asset;
+    });
+  }
+  let assetsNativePrices = concat(updatedAssets, compoundAssets);
   let total = null;
   if (!isEmpty(assetsNativePrices)) {
     const parsedAssets = parseAssetsNative(assetsNativePrices, nativeCurrency);
@@ -100,6 +127,11 @@ const parseAssetsNative = (assets, nativeCurrency) => {
 };
 
 export const sortAssetsByNativeAmountSelector = createSelector(
-  [assetsSelector, compoundAssetsSelector, nativeCurrencySelector],
+  [
+    assetsSelector,
+    assetPricesFromUniswapSelector,
+    compoundAssetsSelector,
+    nativeCurrencySelector,
+  ],
   sortAssetsByNativeAmount
 );

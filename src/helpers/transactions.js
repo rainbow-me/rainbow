@@ -26,7 +26,7 @@ const groupTransactionByDate = ({ pending, minedAt }) => {
   if (isYesterday(timestamp)) return 'Yesterday';
   if (isThisMonth(timestamp)) return 'This Month';
 
-  return format(timestamp, `MMMM${isThisYear(timestamp) ? '' : ' YYYY'}`);
+  return format(timestamp, `MMMM${isThisYear(timestamp) ? '' : ' yyyy'}`);
 };
 
 const addContactInfo = contacts => txn => {

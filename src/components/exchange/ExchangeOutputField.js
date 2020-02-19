@@ -38,6 +38,7 @@ export default class ExchangeOutputField extends PureComponent {
     onFocus: PropTypes.func,
     onPressSelectOutputCurrency: PropTypes.func,
     outputAmount: PropTypes.string,
+    outputCurrencyAddress: PropTypes.string,
     outputCurrencySymbol: PropTypes.string,
     outputFieldRef: PropTypes.func.isRequired,
     setOutputAmount: PropTypes.func,
@@ -63,6 +64,7 @@ export default class ExchangeOutputField extends PureComponent {
       onFocus,
       onPressSelectOutputCurrency,
       outputAmount,
+      outputCurrencyAddress,
       outputCurrencySymbol,
       setOutputAmount,
     } = this.props;
@@ -94,6 +96,7 @@ export default class ExchangeOutputField extends PureComponent {
             bgColor={outputCurrencySymbol ? undefined : skeletonColor}
             flex={0}
             size={40}
+            address={outputCurrencyAddress}
             symbol={outputCurrencySymbol}
           />
           <ExchangeInput
