@@ -42,6 +42,7 @@ class CurrencySelectModal extends Component {
     favorites: PropTypes.array,
     globalHighLiquidityAssets: PropTypes.array,
     globalLowLiquidityAssets: PropTypes.array,
+    headerTitle: PropTypes.string,
     navigation: PropTypes.object,
     transitionPosition: PropTypes.object,
     type: PropTypes.oneOf(Object.keys(CurrencySelectionTypes)),
@@ -163,6 +164,7 @@ class CurrencySelectModal extends Component {
       favorites,
       globalHighLiquidityAssets,
       globalLowLiquidityAssets,
+      headerTitle,
       transitionPosition,
       type,
       uniswapAssetsInWallet,
@@ -174,10 +176,8 @@ class CurrencySelectModal extends Component {
 
     const { searchQuery, searchQueryForSearch } = this.state;
 
-    let headerTitle = '';
     let filteredList = [];
     if (type === CurrencySelectionTypes.input) {
-      headerTitle = 'Swap';
       filteredList = headerlessSection(uniswapAssetsInWallet);
       if (!isEmpty(searchQueryForSearch)) {
         filteredList = filterList(uniswapAssetsInWallet, searchQueryForSearch, [
@@ -187,7 +187,6 @@ class CurrencySelectModal extends Component {
         filteredList = headerlessSection(filteredList);
       }
     } else if (type === CurrencySelectionTypes.output) {
-      headerTitle = 'Receive';
       const curatedSection = concat(favorites, curatedAssets);
       if (!isEmpty(searchQueryForSearch)) {
         const [filteredBest, filteredHigh, filteredLow] = map(
