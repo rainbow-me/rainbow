@@ -1001,10 +1001,10 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@rainbow-me/react-native-payments@^1.1.4":
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/react-native-payments/-/react-native-payments-1.1.4.tgz#f4dabce2b31c521f20a714ba6161af9499f7b9a3"
-  integrity sha512-nfhT8W+5GKLxpqEDmXOF5pbip4WeycOlUg4Ci5wmt6Ees0Rb1ew3OLWZYVxfMUO5WVcsNAe1sz/Gzddlr02t/Q==
+"@rainbow-me/react-native-payments@^1.1.5":
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/react-native-payments/-/react-native-payments-1.1.5.tgz#cdf03c8a55070f0c6cb000a58b906dc9980d9d3f"
+  integrity sha512-8Eyc940oCNep9nYjEZ3bYEfJVGz2fzCb+FIfQx7BuvlfcEIYLw02J7I0Umi+08O9NdWtLswTiEpLcfN3bLEQYg==
   dependencies:
     es6-error "^4.0.2"
     uuid "3.3.2"
