@@ -1,10 +1,9 @@
-import { find, get, isNil, toLower } from 'lodash';
-import PropTypes from 'prop-types';
-import React, { Fragment, useCallback, useRef, useState } from 'react';
-import { TextInput, InteractionManager } from 'react-native';
+import { get } from 'lodash';
+import React, { useCallback, useRef, useState } from 'react';
+import { InteractionManager } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
 import Animated from 'react-native-reanimated';
-import { withNavigationFocus, NavigationEvents } from 'react-navigation';
+import { withNavigationFocus } from 'react-navigation';
 import { compose, toClass, withProps } from 'recompact';
 import { interpolate } from '../components/animations';
 import {
@@ -18,13 +17,13 @@ import {
   Column,
   KeyboardFixedOpenLayout,
 } from '../components/layout';
-import { useAccountData, useMagicFocus, usePrevious } from '../hooks';
+import { useAccountData, useMagicFocus } from '../hooks';
 import {
   withTransactionConfirmationScreen,
   withGas,
   withTransitionProps,
 } from '../hoc';
-import { colors, padding, position } from '../styles';
+import { colors, position } from '../styles';
 import { CurrencySelectionTypes } from './CurrencySelectModal';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 
@@ -43,7 +42,7 @@ const DepositModal = ({ tabPosition }) => {
 
   const {
     settings: { nativeCurrency },
-    ...accountData
+    // ...accountData
   } = useAccountData();
 
   const inputAmountDisplay = '';
@@ -51,7 +50,7 @@ const DepositModal = ({ tabPosition }) => {
 
   // const handleFocusField = useCallback(
   //   () => {
-              // onFocus={handleFocusField}
+  // onFocus={handleFocusField}
   //     lastFocusedInput.current =
   //   }, []);
 
@@ -121,15 +120,15 @@ const DepositModal = ({ tabPosition }) => {
       </Centered>
     </KeyboardFixedOpenLayout>
   );
-}
+};
 
 export default compose(
   withGas,
   withNavigationFocus,
   withTransactionConfirmationScreen,
   withTransitionProps,
-//   withUniswapAllowances,
-//   withUniswapAssets,
+  //   withUniswapAllowances,
+  //   withUniswapAssets,
   withProps(({ navigation, transitionProps: { isTransitioning } }) => ({
     isTransitioning,
     tabPosition: get(navigation, 'state.params.position'),

@@ -11,7 +11,7 @@ import BigNumber from 'bignumber.js';
 import { find, get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
-import { findNodeHandle, TextInput, InteractionManager } from 'react-native';
+import { TextInput, InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { compose, toClass, withProps } from 'recompact';
 import { interpolate } from '../components/animations';
