@@ -15,11 +15,14 @@ default_platform(:ios)
 platform :ios do
   desc "Refresh dSYMs"
   lane :refresh_dsyms do
+    upload_symbols_to_crashlytics(
+      dsym_path: './Rainbow.app.dSYM.zip'
+    )
+    sentry_upload_dsym(
+      dsym_path: './Rainbow.app.dSYM.zip'
+    )
     version_from_plist = get_version_number
     release_version = "me.rainbow-#{version_from_plist}"
-    download_dsyms(version: version_from_plist)
-    upload_symbols_to_crashlytics
-    sentry_upload_dsym
     sentry_create_release(
       finalize: true, # Whether to finalize the release. If not provided or false, the release can be finalized using the sentry_finalize_release action
       version: release_version

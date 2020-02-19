@@ -2,8 +2,8 @@
 format_version: 1.1.0
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 trigger_map:
-- push_branch: "*"
-  workflow: workflow_tests
+- push_branch: develop
+  workflow: workflow_testflight
 - pull_request_source_branch: "*"
   workflow: workflow_tests
   pull_request_target_branch: develop
@@ -16,6 +16,8 @@ workflows:
     - nvm@1.2.2:
         inputs:
         - node_version: 10.15.3
+    - cache-pull@2.1.4:
+        title: Restoring cache
     - yarn@0.1.1:
         inputs:
         - cache_local_deps: 'yes'
@@ -94,18 +96,27 @@ workflows:
     - generate_dot_env
     - pods_setup
     steps:
+    - certificate-and-profile-installer@1.10.3: {}
     - fastlane@2.7.0:
         inputs:
+        - work_dir: "$BITRISE_SOURCE_DIR/ios"
         - lane: beta
         title: Fastlane - Submit to Testflight
+    - yarn@0.1.1:
+        inputs:
+        - command: global add sentry-cli
+        title: Install Sentry CLI
     - fastlane@2.7.0:
         inputs:
+        - work_dir: "$BITRISE_SOURCE_DIR/ios"
         - lane: refresh_dsyms
         title: Fastlane - Upload debug symbols and sourcemaps
     envs:
     - opts:
         is_expand: false
       SENTRY_ENVIRONMENT: Release
+    after_run:
+    - store_cache_artifacts
   workflow_tests:
     before_run:
     - build_setup
@@ -130,6 +141,8 @@ workflows:
         - emoji_on_error: ''
         - from_username_on_error: Bitrise bot
         - webhook_url: "$SLACK_WEBHOOK_URL"
+    after_run:
+    - store_cache_artifacts
   generate_dot_env:
     steps:
     - script@1.1.6:
@@ -153,3 +166,13 @@ workflows:
             echo "WYRE_ACCOUNT_ID=$WYRE_ACCOUNT_ID" >> .env
             echo "RAINBOW_WYRE_MERCHANT_ID=$RAINBOW_WYRE_MERCHANT_ID" >> .env
         title: Generate .env file
+  store_cache_artifacts:
+    steps:
+    - cache-push@2.2.3:
+        inputs:
+        - cache_paths: |-
+            $BITRISE_CACHE_DIR
+            $BITRISE_SOURCE_DIR/node_modules
+            ~/Library/Developer/Xcode/DerivedData
+        title: Store cache artifacts
+        is_always_run: true
