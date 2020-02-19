@@ -206,9 +206,8 @@ class SendAssetList extends React.Component {
       return this.collectiblesRenderItem(data);
     } else if (type === 'COLLECTIBLE_ROW_CLOSED') {
       return this.collectiblesRenderItem(data);
-    } else {
-      return null;
     }
+    return null;
   }
 
   render() {
@@ -228,6 +227,7 @@ class SendAssetList extends React.Component {
             this.componentHeight = event.nativeEvent.layoutMeasurement.height;
             this.position = event.nativeEvent.contentOffset.y;
           }}
+          style={{ minHeight: 1 }}
         />
       </FlyInAnimation>
     );

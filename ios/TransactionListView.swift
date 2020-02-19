@@ -15,14 +15,31 @@ fileprivate struct TransactionSection {
 class TransactionListView: UIView {
   @objc lazy var onItemPress: RCTBubblingEventBlock = { _ in }
   @objc lazy var onReceivePress: RCTBubblingEventBlock = { _ in }
+  @objc lazy var onAvatarPress: RCTBubblingEventBlock = { _ in }
   @objc lazy var onCopyAddressPress: RCTBubblingEventBlock = { _ in }
   @objc var duration: TimeInterval = 0.15
+  @objc var isAvatarPickerAvailable: Bool = true {
+    didSet {
+      header.avatarView.isHidden = isAvatarPickerAvailable
+      header.accountView.isHidden = !isAvatarPickerAvailable
+    }
+  }
   @objc var scaleTo: CGFloat = 0.97
   @objc var enableHapticFeedback: Bool = true
   @objc var hapticType: String = "selection"
   @objc var accountAddress: String? = nil {
     didSet {
       header.accountAddress.text = accountAddress
+    }
+  }
+  @objc var accountColor: UIColor? = nil {
+    didSet {
+      header.accountView.backgroundColor = accountColor
+    }
+  }
+  @objc var accountName: String? = nil {
+    didSet {
+      header.accountName.text = accountName
     }
   }
   @objc var transactions: [Transaction] = [] {
@@ -57,6 +74,18 @@ class TransactionListView: UIView {
       tableView.reloadData()
     }
   }
+  @objc func onAvatarPressed(_ sender: UIButton) {
+    self.onAvatarPress([:])
+  }
+  
+  @objc func onPressInAvatar(_ sender: UIButton) {
+    header.accountView.animateTapStart(scale: 0.89)
+  }
+
+  @objc func onPressOutAvatar(_ sender: UIButton) {
+    header.accountView.animateTapStart(scale: 1.0)
+  }
+  
   @objc func onReceivePressed(_ sender: UIButton) {
     self.onReceivePress([:])
   }
@@ -87,12 +116,20 @@ class TransactionListView: UIView {
     tableView.register(UINib(nibName: "TransactionListViewCell", bundle: nil), forCellReuseIdentifier: "TransactionListViewCell")
     
     header.addSubview(headerSeparator)
+    
+    header.accountView.addTarget(self, action: #selector(onAvatarPressed(_:)), for: .touchUpInside)
+    header.accountView.addTarget(self, action: #selector(onPressInAvatar(_:)), for: .touchDown)
+    header.accountView.addTarget(self, action: #selector(onPressInAvatar(_:)), for: .touchDragInside)
+    header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchUpInside)
+    header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchDragOutside)
+    header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchCancel)
+    header.accountView.addTarget(self, action: #selector(onPressOutAvatar(_:)), for: .touchUpOutside)
+    
     header.receive.addTarget(self, action: #selector(onReceivePressed(_:)), for: .touchUpInside)
     header.copyAddress.addTarget(self, action: #selector(onCopyAddressPressed(_:)), for: .touchUpInside)
     
     headerSeparator.backgroundColor = UIColor(red:0.40, green:0.42, blue:0.45, alpha:0.05)
     tableView.tableHeaderView = header
-    
     addSubview(tableView)
   }
   

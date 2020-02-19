@@ -9,7 +9,7 @@ import { abbreviations, deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Button } from '../buttons';
 import { ContactAvatar, showDeleteContactActionSheet } from '../contacts';
-import CopyTooltip from '../CopyTooltip';
+import CopyTooltip from '../copy-tooltip';
 import Divider from '../Divider';
 import { Input } from '../inputs';
 import { Centered, KeyboardFixedOpenLayout } from '../layout';

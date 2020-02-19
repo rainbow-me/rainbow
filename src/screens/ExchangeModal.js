@@ -13,7 +13,6 @@ import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { findNodeHandle, TextInput, InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { withNavigationFocus, NavigationEvents } from 'react-navigation';
 import { compose, toClass, withProps } from 'recompact';
 import { interpolate } from '../components/animations';
 import {
@@ -50,6 +49,7 @@ import {
   withAccountData,
   withAccountSettings,
   withBlockedHorizontalSwipe,
+  withBlockPolling,
   withGas,
   withTransactionConfirmationScreen,
   withTransitionProps,
@@ -82,7 +82,7 @@ const isSameAsset = (a, b) => {
 
 const DEFAULT_APPROVAL_ESTIMATION_TIME_IN_MS = 30000; // 30 seconds
 
-const getNativeTag = field => get(field, '_nativeTag');
+const getNativeTag = field => get(field, '_inputRef._nativeTag');
 
 class ExchangeModal extends Component {
   static propTypes = {
@@ -92,6 +92,8 @@ class ExchangeModal extends Component {
     chainId: PropTypes.number,
     dataAddNewTransaction: PropTypes.func,
     gasLimit: PropTypes.number,
+    gasPricesStartPolling: PropTypes.func,
+    gasPricesStopPolling: PropTypes.func,
     gasUpdateDefaultGasLimit: PropTypes.func,
     gasUpdateTxFee: PropTypes.func,
     inputReserve: PropTypes.object,
@@ -110,6 +112,8 @@ class ExchangeModal extends Component {
     uniswapUpdateAllowances: PropTypes.func,
     uniswapUpdateInputCurrency: PropTypes.func,
     uniswapUpdateOutputCurrency: PropTypes.func,
+    web3ListenerInit: PropTypes.func,
+    web3ListenerStop: PropTypes.func,
   };
 
   state = {
@@ -138,10 +142,18 @@ class ExchangeModal extends Component {
   };
 
   componentDidMount() {
-    this.props.gasUpdateDefaultGasLimit(ethUnits.basic_swap);
+    InteractionManager.runAfterInteractions(() => {
+      this.props.navigation.setParams({ focused: true });
+      this.props.gasUpdateDefaultGasLimit(ethUnits.basic_swap);
+      this.props.gasPricesStartPolling();
+      this.props.web3ListenerInit();
+    });
   }
 
   shouldComponentUpdate = (nextProps, nextState) => {
+    const isFocused = this.props.navigation.getParam('focused', false);
+    const willBeFocused = nextProps.navigation.getParam('focused', false);
+
     const isNewProps = isNewValueForObjectPaths(this.props, nextProps, [
       'inputReserve.token.address',
       'outputReserve.token.address',
@@ -153,9 +165,10 @@ class ExchangeModal extends Component {
     // I manually can focus instead of relying on built-in autofocus.
     // Maybe that's not perfect, but works for now ¯\_(ツ)_/¯
     if (
-      this.props.isTransitioning &&
-      !nextProps.isTransitioning &&
-      this.lastFocusedInput === null
+      (this.props.isTransitioning &&
+        !nextProps.isTransitioning &&
+        this.lastFocusedInput === null) ||
+      (!isFocused && willBeFocused)
     ) {
       this.inputFocusInteractionHandle = InteractionManager.runAfterInteractions(
         this.focusInputField
@@ -245,7 +258,11 @@ class ExchangeModal extends Component {
         this.inputFocusInteractionHandle
       );
     }
-    this.props.uniswapClearCurrenciesAndReserves();
+    InteractionManager.runAfterInteractions(() => {
+      this.props.uniswapClearCurrenciesAndReserves();
+      this.props.gasPricesStopPolling();
+      this.props.web3ListenerStop();
+    });
   };
 
   lastFocusedInput = null;
@@ -273,15 +290,6 @@ class ExchangeModal extends Component {
     const inputRefTag = getNativeTag(this.inputFieldRef);
     const nativeInputRefTag = getNativeTag(this.nativeFieldRef);
     const outputRefTag = getNativeTag(this.outputFieldRef);
-
-    console.log('')
-    console.log('inputRefTag', inputRefTag);
-    console.log('nativeInputRefTag', nativeInputRefTag);
-    console.log('outputRefTag', outputRefTag);
-
-    console.log('lastFocusedInput', this.lastFocusedInput);
-    console.log('handle', findNodeHandle(this.inputFieldRef));
-    console.log('')
 
     const lastFocusedIsInputType =
       this.lastFocusedInput === inputRefTag ||
@@ -724,11 +732,13 @@ class ExchangeModal extends Component {
           nonce: get(txn, 'nonce'),
           to: get(txn, 'to'),
         });
+        navigation.setParams({ focused: false });
         navigation.navigate('ProfileScreen');
       }
     } catch (error) {
       this.setState({ isAuthorizing: false });
       console.log('error submitting swap', error);
+      navigation.setParams({ focused: false });
       navigation.navigate('WalletScreen');
     }
   };
@@ -778,8 +788,11 @@ class ExchangeModal extends Component {
     }
   };
 
-  handleRefocusLastInput = () =>
-    TextInput.State.focusTextInput(this.findNextFocused());
+  handleRefocusLastInput = () => {
+    InteractionManager.runAfterInteractions(() => {
+      TextInput.State.focusTextInput(this.findNextFocused());
+    });
+  };
 
   navigateToSwapDetailsModal = () => {
     const {
@@ -791,6 +804,10 @@ class ExchangeModal extends Component {
       outputNativePrice,
     } = this.state;
 
+    this.inputFieldRef.blur();
+    this.outputFieldRef.blur();
+    this.nativeFieldRef.blur();
+    this.props.navigation.setParams({ focused: false });
     this.props.navigation.navigate('SwapDetailsScreen', {
       inputCurrencySymbol: get(inputCurrency, 'symbol'),
       inputExecutionRate,
@@ -799,26 +816,37 @@ class ExchangeModal extends Component {
       outputCurrencySymbol: get(outputCurrency, 'symbol'),
       outputExecutionRate,
       outputNativePrice,
+      restoreFocusOnSwapModal: () => {
+        this.props.navigation.setParams({ focused: true });
+      },
       type: 'swap_details',
     });
   };
 
   navigateToSelectInputCurrency = () => {
-    InteractionManager.runAfterInteractions(() =>
+    InteractionManager.runAfterInteractions(() => {
+      this.props.navigation.setParams({ focused: false });
       this.props.navigation.navigate('CurrencySelectScreen', {
         onSelectCurrency: this.setInputCurrency,
+        restoreFocusOnSwapModal: () => {
+          this.props.navigation.setParams({ focused: true });
+        },
         type: CurrencySelectionTypes.input,
-      })
-    );
+      });
+    });
   };
 
   navigateToSelectOutputCurrency = () => {
-    InteractionManager.runAfterInteractions(() =>
+    InteractionManager.runAfterInteractions(() => {
+      this.props.navigation.setParams({ focused: false });
       this.props.navigation.navigate('CurrencySelectScreen', {
         onSelectCurrency: this.setOutputCurrency,
+        restoreFocusOnSwapModal: () => {
+          this.props.navigation.setParams({ focused: true });
+        },
         type: CurrencySelectionTypes.output,
-      })
-    );
+      });
+    });
   };
 
   setInputAmount = (inputAmount, amountDisplay, inputAsExactAmount = true) => {
@@ -977,7 +1005,6 @@ class ExchangeModal extends Component {
 
     return (
       <KeyboardFixedOpenLayout>
-        <NavigationEvents onWillFocus={this.handleKeyboardManagement} />
         <Centered
           {...position.sizeAsObject('100%')}
           backgroundColor={colors.transparent}
@@ -1004,6 +1031,7 @@ class ExchangeModal extends Component {
               />
               <ExchangeInputField
                 inputAmount={inputAmountDisplay}
+                inputCurrencyAddress={get(inputCurrency, 'address', null)}
                 inputCurrencySymbol={get(inputCurrency, 'symbol', null)}
                 inputFieldRef={this.assignInputFieldRef}
                 isAssetApproved={isAssetApproved}
@@ -1025,6 +1053,7 @@ class ExchangeModal extends Component {
                   this.navigateToSelectOutputCurrency
                 }
                 outputAmount={outputAmountDisplay}
+                outputCurrencyAddress={get(outputCurrency, 'address', null)}
                 outputCurrencySymbol={get(outputCurrency, 'symbol', null)}
                 outputFieldRef={this.assignOutputFieldRef}
                 setOutputAmount={this.setOutputAmount}
@@ -1068,7 +1097,7 @@ export default compose(
   withAccountSettings,
   withBlockedHorizontalSwipe,
   withGas,
-  withNavigationFocus,
+  withBlockPolling,
   withTransactionConfirmationScreen,
   withTransitionProps,
   withUniswapAllowances,

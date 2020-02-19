@@ -1,7 +1,8 @@
-import { get, map, property } from 'lodash';
+import { concat, get, isEmpty, map } from 'lodash';
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 import React, { Component } from 'react';
+import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import { compose, mapProps } from 'recompact';
@@ -20,18 +21,15 @@ import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 
-const EMPTY_ARRAY = [];
-
-const appendAssetWithSearchableKey = asset => ({
+const appendAssetWithUniqueId = asset => ({
   ...asset,
-  uniqueId: `${asset.name} ${asset.symbol}`,
+  uniqueId: `${asset.address}`,
 });
 
-const buildUniqueIdForListData = (items = EMPTY_ARRAY) =>
-  items.map(property('address')).join('_');
-
 const normalizeAssetItems = assetsArray =>
-  map(assetsArray, appendAssetWithSearchableKey);
+  map(assetsArray, appendAssetWithUniqueId);
+
+const headerlessSection = data => [{ data, title: '' }];
 
 export const CurrencySelectionTypes = {
   input: 'input',
@@ -40,46 +38,61 @@ export const CurrencySelectionTypes = {
 
 class CurrencySelectModal extends Component {
   static propTypes = {
-    isFocused: PropTypes.bool,
+    curatedAssets: PropTypes.array,
+    favorites: PropTypes.array,
+    globalHighLiquidityAssets: PropTypes.array,
+    globalLowLiquidityAssets: PropTypes.array,
     navigation: PropTypes.object,
-    sortedUniswapAssets: PropTypes.array,
     transitionPosition: PropTypes.object,
     type: PropTypes.oneOf(Object.keys(CurrencySelectionTypes)),
     uniswapAssetsInWallet: PropTypes.arrayOf(PropTypes.object),
+    uniswapGetAllExchanges: PropTypes.func,
   };
 
   state = {
     assetsToFavoriteQueue: {},
     searchQuery: '',
+    searchQueryForSearch: '',
   };
 
-  shouldComponentUpdate = (nextProps, nextState) => {
-    let currentAssets = this.props.sortedUniswapAssets;
-    let nextAssets = EMPTY_ARRAY;
+  componentDidMount() {
+    InteractionManager.runAfterInteractions(() => {
+      this.props.uniswapGetAllExchanges();
+    });
+  }
 
-    if (nextProps.type === CurrencySelectionTypes.input) {
-      currentAssets = this.props.uniswapAssetsInWallet;
-      nextAssets = nextProps.uniswapAssetsInWallet;
-    } else if (nextProps.type === CurrencySelectionTypes.output) {
-      nextAssets = nextProps.sortedUniswapAssets;
+  shouldComponentUpdate = (nextProps, nextState) => {
+    const isNewType = this.props.type !== nextProps.type;
+
+    const isFocused = this.props.navigation.getParam('focused', false);
+    const willBeFocused = nextProps.navigation.getParam('focused', false);
+
+    if (!isFocused && willBeFocused) {
+      this.handleWillFocus();
+    } else if (isFocused && !willBeFocused) {
+      this.handleWillBlur();
+      InteractionManager.runAfterInteractions(() => {
+        this.handleDidBlur();
+        this.props.navigation.state.params.restoreFocusOnSwapModal();
+      });
     }
 
-    const currentAssetsUniqueId = buildUniqueIdForListData(currentAssets);
-    const nextAssetsUniqueId = buildUniqueIdForListData(nextAssets);
-    const isNewAssets = currentAssetsUniqueId !== nextAssetsUniqueId;
-
-    const isNewProps = isNewValueForObjectPaths(this.props, nextProps, [
-      'isFocused',
-      'type',
-    ]);
+    const isNewProps = isNewValueForObjectPaths(
+      { ...this.props, isFocused },
+      { ...nextProps, isFocused: willBeFocused },
+      ['isFocused', 'type']
+    );
 
     const isNewState = isNewValueForObjectPaths(this.state, nextState, [
       'searchQuery',
+      'searchQueryForSearch',
       'assetsToFavoriteQueue',
     ]);
 
-    return isNewAssets || isNewProps || isNewState;
+    return isNewType || isNewProps || isNewState;
   };
+
+  debounceHandler = null;
 
   dangerouslySetIsGestureBlocked = isGestureBlocked => {
     // dangerouslyGetParent is a bad pattern in general, but in this case is exactly what we expect
@@ -89,7 +102,12 @@ class CurrencySelectModal extends Component {
   };
 
   handleChangeSearchQuery = searchQuery => {
-    this.setState({ searchQuery });
+    this.setState({ searchQuery }, () => {
+      if (this.debounceHandler) clearTimeout(this.debounceHandler);
+      this.debounceHandler = setTimeout(() => {
+        this.setState({ searchQueryForSearch: searchQuery });
+      }, 250);
+    });
   };
 
   handleFavoriteAsset = (assetAddress, isFavorited) => {
@@ -207,9 +225,10 @@ class CurrencySelectModal extends Component {
                   showBalance: type === CurrencySelectionTypes.input,
                   showFavoriteButton: type === CurrencySelectionTypes.output,
                 }}
-                listItems={listItems}
+                listItems={filteredList}
                 showList={isFocused}
                 type={type}
+                query={searchQueryForSearch}
               />
             </Column>
             <GestureBlocker type="bottom" />
@@ -224,14 +243,19 @@ export default compose(
   withNavigationFocus,
   withUniswapAssets,
   mapProps(
-    ({ uniswapAssetsInWallet, navigation, sortedUniswapAssets, ...props }) => ({
+    ({
+      curatedAssets,
+      favorites,
+      globalHighLiquidityAssets,
+      globalLowLiquidityAssets,
+      navigation,
+      ...props
+    }) => ({
       ...props,
       headerTitle: get(navigation, 'state.params.headerTitle', undefined),
       navigation,
-      sortedUniswapAssets: normalizeAssetItems(sortedUniswapAssets),
       transitionPosition: get(navigation, 'state.params.position'),
       type: get(navigation, 'state.params.type', null),
-      uniswapAssetsInWallet: normalizeAssetItems(uniswapAssetsInWallet),
     })
   )
 )(CurrencySelectModal);

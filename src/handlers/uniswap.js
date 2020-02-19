@@ -3,6 +3,8 @@ import axios from 'axios';
 import contractMap from 'eth-contract-metadata';
 import { ethers } from 'ethers';
 import { get, map, mapKeys, mapValues, toLower, zipObject } from 'lodash';
+import { uniswapClient } from '../apollo/client';
+import { DIRECTORY_QUERY } from '../apollo/queries';
 import {
   convertRawAmountToDecimalFormat,
   divide,
@@ -191,7 +193,11 @@ export const executeSwap = async (tradeDetails, gasLimit, gasPrice) => {
   }
 };
 
-export const getLiquidityInfo = async (accountAddress, exchangeContracts) => {
+export const getLiquidityInfo = async (
+  accountAddress,
+  exchangeContracts,
+  pairs
+) => {
   const promises = map(exchangeContracts, async exchangeAddress => {
     try {
       const ethReserveCall = web3Provider.getBalance(exchangeAddress);
@@ -221,42 +227,49 @@ export const getLiquidityInfo = async (accountAddress, exchangeContracts) => {
         erc20ABI,
         web3Provider
       );
-      const tokenReserveCall = tokenContract.balanceOf(exchangeAddress);
-      const tokenDecimalsCall = tokenContract.decimals();
+      const token = get(pairs, `[${toLower(tokenAddress)}]`);
 
-      const [reserve, decimals] = await Promise.all([
-        tokenReserveCall,
-        tokenDecimalsCall,
-      ]);
-
+      let decimals = 18;
       let name = '';
-      try {
-        name = await tokenContract.name().catch();
-      } catch (error) {
-        name = get(contractMap, `[${tokenAddress}].name`, '');
-        if (!name) {
-          console.log(
-            'error getting name for token: ',
-            tokenAddress,
-            ' Error = ',
-            error
-          );
+      let symbol = '';
+      if (token) {
+        name = token.name;
+        symbol = token.symbol;
+        decimals = token.decimals;
+      } else {
+        decimals = await tokenContract.decimals();
+
+        try {
+          name = await tokenContract.name().catch();
+        } catch (error) {
+          name = get(contractMap, `[${tokenAddress}].name`, '');
+          if (!name) {
+            console.log(
+              'error getting name for token: ',
+              tokenAddress,
+              ' Error = ',
+              error
+            );
+          }
+        }
+
+        let symbol = get(contractMap, `[${tokenAddress}].symbol`, '');
+        try {
+          symbol = await tokenContract.symbol().catch();
+        } catch (error) {
+          if (!symbol) {
+            console.log(
+              'error getting symbol for token: ',
+              tokenAddress,
+              ' Error = ',
+              error
+            );
+          }
         }
       }
 
-      let symbol = get(contractMap, `[${tokenAddress}].symbol`, '');
-      try {
-        symbol = await tokenContract.symbol().catch();
-      } catch (error) {
-        if (!symbol) {
-          console.log(
-            'error getting symbol for token: ',
-            tokenAddress,
-            ' Error = ',
-            error
-          );
-        }
-      }
+      const reserve = await tokenContract.balanceOf(exchangeAddress);
+
       const ethBalance = fromWei(
         divide(multiply(ethReserve, balance), totalSupply)
       );
@@ -287,4 +300,43 @@ export const getLiquidityInfo = async (accountAddress, exchangeContracts) => {
 
   const results = await Promise.all(promises);
   return zipObject(exchangeContracts, results);
+};
+
+export const getAllExchanges = async (tokenOverrides, excluded = []) => {
+  let allTokens = {};
+  let data = [];
+  try {
+    let dataEnd = false;
+    let skip = 0;
+    while (!dataEnd) {
+      let result = await uniswapClient.query({
+        query: DIRECTORY_QUERY,
+        variables: {
+          excluded,
+          first: 100,
+          skip: skip,
+        },
+      });
+      data = data.concat(result.data.exchanges);
+      skip = skip + 100;
+      if (result.data.exchanges.length < 100) {
+        dataEnd = true;
+      }
+    }
+  } catch (err) {
+    console.log('error: ', err);
+  }
+  data.forEach(exchange => {
+    const tokenAddress = toLower(exchange.tokenAddress);
+    const tokenExchangeInfo = {
+      decimals: exchange.tokenDecimals,
+      ethBalance: exchange.ethBalance,
+      exchangeAddress: exchange.id,
+      name: exchange.tokenName,
+      symbol: exchange.tokenSymbol,
+      ...tokenOverrides[tokenAddress],
+    };
+    allTokens[tokenAddress] = tokenExchangeInfo;
+  });
+  return allTokens;
 };

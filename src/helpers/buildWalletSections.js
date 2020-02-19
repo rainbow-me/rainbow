@@ -8,9 +8,12 @@ import { createSelector } from 'reselect';
 import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
-import { CollectibleTokenFamily, TokenFamilyWrap } from '../components/token-family';
+import { CollectibleTokenFamily } from '../components/token-family';
 import { buildUniqueTokenList, buildCoinsList } from './assets';
-import { chartExpandedAvailable } from '../experimentalConfig';
+import {
+  chartExpandedAvailable,
+  isSavingsDummyDataInjected,
+} from '../config/experimental';
 
 const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;
@@ -108,12 +111,26 @@ const withBalanceSection = (
   nativeCurrency,
   showShitcoins
 ) => {
-  const savingsSection = {
-    isSavingsSection: true,
-    item: {},
-  };
-
+  let totalValue = get(assetsTotal, 'amount', '');
   let balanceSectionData = buildCoinsList(allAssets); //[...buildCoinsList(allAssets), savingsSection];
+  if (isSavingsDummyDataInjected) {
+    const assets = [
+      { APY: 7.5, currency: 'Dai', value: 320.3241253452 },
+      { APY: 6.5, currency: 'Eth', value: 20.45 },
+      { APY: 2.5 },
+    ];
+
+    balanceSectionData.push({
+      assets,
+      savingsContainer: true,
+    });
+
+    assets.forEach(saving => {
+      if (saving.value) {
+        totalValue = Number(totalValue) + Number(saving.value);
+      }
+    });
+  }
   const isLoadingBalances = !isWalletEthZero && isBalancesSectionEmpty;
   if (isLoadingBalances) {
     balanceSectionData = [{ item: { uniqueId: 'skeleton0' } }];
@@ -126,7 +143,7 @@ const withBalanceSection = (
       showShitcoins,
       title: lang.t('account.tab_balances'),
       totalItems: isLoadingBalances ? 1 : allAssetsCount,
-      totalValue: get(assetsTotal, 'display', ''),
+      totalValue: `$${totalValue.toFixed(2)}`,
     },
     name: 'balances',
     renderItem: isLoadingBalances

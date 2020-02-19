@@ -1,7 +1,6 @@
 import matchSorter from 'match-sorter';
 
-export const filterList = (list, searchQuery, searchListByKey) => {
-  return matchSorter(list, searchQuery, {
-    keys: searchListByKey ? [searchListByKey] : null,
+export const filterList = (list, searchQuery, keys = null) =>
+  matchSorter(list, searchQuery, {
+    keys,
   });
-};

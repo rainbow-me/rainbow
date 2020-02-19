@@ -35,6 +35,9 @@ import { ListFooter } from '../list';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
 import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
+import withOpenSavings from '../../hoc/withOpenSavings';
+import SavingsListWrapper from '../savings/SavingsListWrapper';
+import SavingsListRow from '../savings/SavingsListRow';
 
 /* eslint-disable sort-keys */
 export const ViewTypes = {
@@ -42,6 +45,7 @@ export const ViewTypes = {
   COIN_ROW: 1,
   COIN_ROW_LAST: 2,
   COIN_SMALL_BALANCES: 3,
+  COIN_SAVINGS: 12,
   FOOTER: 11,
   UNIQUE_TOKEN_ROW: 4,
   UNIQUE_TOKEN_ROW_CLOSED: 5,
@@ -78,8 +82,11 @@ const layoutItemAnimator = new LayoutItemAnimator();
 const reloadHeightOffsetTop = -60;
 const reloadHeightOffsetBottom = -62;
 let smallBalancedChanged = false;
+let smallBalancesIndex = 0;
+let savingsIndex = 0;
 
 const AssetListHeaderRenderer = pure(data => <AssetListHeader {...data} />);
+const SavingsListRowRenderer = pure(data => <SavingsListRow {...data} />);
 
 const hasRowChanged = (r1, r2) => {
   const isNewShowShitcoinsValue = isNewValueForPath(r1, r2, 'showShitcoins');
@@ -111,6 +118,8 @@ const hasRowChanged = (r1, r2) => {
   if (
     r1.item &&
     r2.item &&
+    r1.item.assets &&
+    r2.item.assets &&
     r1.item.smallBalancesContainer &&
     r2.item.smallBalancesContainer
   ) {
@@ -152,6 +161,7 @@ class RecyclerAssetList extends Component {
     hideHeader: PropTypes.bool,
     openFamilyTabs: PropTypes.object,
     openInvestmentCards: PropTypes.object,
+    openSavings: PropTypes.bool,
     openSmallBalances: PropTypes.bool,
     paddingBottom: PropTypes.number,
     renderAheadOffset: PropTypes.number,
@@ -223,12 +233,28 @@ class RecyclerAssetList extends Component {
           );
           const lastBalanceIndex =
             headersIndices[balancesIndex] + balanceItemsCount;
+          if (index === lastBalanceIndex - 1) {
+            if (
+              sections[balancesIndex].data[lastBalanceIndex - 2]
+                .smallBalancesContainer
+            ) {
+              smallBalancesIndex = index - 1;
+              return ViewTypes.COIN_SMALL_BALANCES;
+            }
+          }
           if (index === lastBalanceIndex) {
             if (
               sections[balancesIndex].data[lastBalanceIndex - 1]
                 .smallBalancesContainer
             ) {
+              smallBalancesIndex = index - 1;
               return ViewTypes.COIN_SMALL_BALANCES;
+            } else if (
+              sections[balancesIndex].data[lastBalanceIndex - 1]
+                .savingsContainer
+            ) {
+              savingsIndex = index - 1;
+              return ViewTypes.COIN_SAVINGS;
             }
             return ViewTypes.COIN_ROW_LAST;
           }
@@ -299,6 +325,7 @@ class RecyclerAssetList extends Component {
       (type, dim) => {
         const {
           hideHeader,
+          openSavings,
           openSmallBalances,
           paddingBottom,
           sections,
@@ -342,13 +369,23 @@ class RecyclerAssetList extends Component {
             sections,
             ({ name }) => name === 'balances'
           );
+          const additionalHeight =
+            savingsIndex < smallBalancesIndex ? ListFooter.height : 0;
           const size =
-            sections[balancesIndex].data[
-              sections[balancesIndex].data.length - 1
-            ].assets.length;
+            sections[balancesIndex].data[smallBalancesIndex].assets.length;
           dim.height = openSmallBalances
-            ? CoinDivider.height + size * CoinRow.height + ListFooter.height + 9
-            : CoinDivider.height + ListFooter.height + 16;
+            ? CoinDivider.height + size * CoinRow.height + additionalHeight + 9
+            : CoinDivider.height + additionalHeight + 16;
+        } else if (type === ViewTypes.COIN_SAVINGS) {
+          const balancesIndex = findIndex(
+            sections,
+            ({ name }) => name === 'balances'
+          );
+          dim.height = openSavings
+            ? TokenFamilyHeaderHeight +
+              ListFooter.height +
+              61 * sections[balancesIndex].data[savingsIndex].assets.length
+            : TokenFamilyHeaderHeight + ListFooter.height;
         } else if (type === ViewTypes.COIN_ROW) {
           dim.height = CoinRow.height;
         } else if (type === ViewTypes.UNISWAP_ROW_LAST) {
@@ -639,6 +676,8 @@ class RecyclerAssetList extends Component {
   position = 0;
 
   renderList = [];
+  savingsList = [];
+  savingsSumValue = 0;
 
   scrollToOffset = (position, animated) => {
     setTimeout(() => {
@@ -714,13 +753,13 @@ class RecyclerAssetList extends Component {
     }
 
     if (
-      (contentSize.height - layoutMeasurement.height >= offsetY &&
+      ((contentSize.height - layoutMeasurement.height >= offsetY &&
         offsetY >= 0) ||
-      (offsetY < reloadHeightOffsetTop && offsetY > reloadHeightOffsetBottom)
+        (offsetY < reloadHeightOffsetTop &&
+          offsetY > reloadHeightOffsetBottom)) &&
+      this.props.scrollViewTracker
     ) {
-      if (this.props.scrollViewTracker) {
-        this.props.scrollViewTracker.setValue(offsetY);
-      }
+      this.props.scrollViewTracker.setValue(offsetY);
     }
   };
 
@@ -742,6 +781,25 @@ class RecyclerAssetList extends Component {
 
     if (type === ViewTypes.HEADER) {
       return hideHeader ? null : <AssetListHeaderRenderer {...data} />;
+    }
+
+    if (type === ViewTypes.COIN_SAVINGS) {
+      if (this.savingsList.length !== item.assets.length) {
+        smallBalancedChanged = false;
+        const savingsList = [];
+        this.savingsSumValue = 0;
+        for (let i = 0; i < item.assets.length; i++) {
+          this.savingsSumValue += item.assets[i].value || 0;
+          savingsList.push(<SavingsListRowRenderer {...item.assets[i]} />);
+        }
+        this.savingsList = savingsList;
+      }
+      return (
+        <SavingsListWrapper
+          assets={this.savingsList}
+          savingsSumValue={this.savingsSumValue}
+        />
+      );
     }
 
     if (type === ViewTypes.COIN_SMALL_BALANCES) {
@@ -846,5 +904,6 @@ export default compose(
   withFabSelection,
   withOpenFamilyTabs,
   withOpenInvestmentCards,
-  withOpenBalances
+  withOpenBalances,
+  withOpenSavings
 )(RecyclerAssetList);

@@ -5,7 +5,6 @@ import Animated from 'react-native-reanimated';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import ValueTime from './ValueTime';
-import { colors } from '../../styles';
 
 const springConfig = {
   damping: 38,
@@ -29,7 +28,7 @@ const bottomSpaceWidth = deviceUtils.dimensions.width / (4 * 2);
 
 class TimespanSelector extends React.Component {
   propTypes = {
-    direction: PropTypes.bool,
+    color: PropTypes.string,
     isLoading: PropTypes.bool,
     reloadChart: PropTypes.func,
   };
@@ -86,7 +85,7 @@ class TimespanSelector extends React.Component {
   render() {
     let color = 'gray';
     if (!this.props.isLoading) {
-      color = this.props.direction ? colors.chartGreen : colors.red;
+      color = this.props.color;
     }
     return (
       <>

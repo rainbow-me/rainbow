@@ -7,11 +7,14 @@ import {
   saveLocal,
 } from './common';
 
-const transactionsVersion = '0.2.1';
-const uniqueTokensVersion = '0.2.0';
+const assetPricesFromUniswapVersion = '0.1.0';
 const assetsVersion = '0.2.0';
 const compoundAssetsVersion = '0.1.0';
+const transactionsVersion = '0.2.2';
+const uniqueTokensVersion = '0.2.0';
 
+const ACCOUNT_INFO = 'accountInfo';
+const ASSET_PRICES_FROM_UNISWAP = 'assetPricesFromUniswap';
 const ASSETS = 'assets';
 const COMPOUND_ASSETS = 'compoundAssets';
 const OPEN_FAMILIES = 'openFamilies';
@@ -48,6 +51,49 @@ export const saveAssets = (assets, accountAddress, network) =>
  */
 export const removeAssets = (accountAddress, network) =>
   removeAccountLocal(ASSETS, accountAddress, network);
+
+/**
+ * @desc get asset prices from Uniswap
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getAssetPricesFromUniswap = (accountAddress, network) =>
+  getAccountLocal(
+    ASSET_PRICES_FROM_UNISWAP,
+    accountAddress,
+    network,
+    [],
+    assetPricesFromUniswapVersion
+  );
+
+/**
+ * @desc save asset prices from Uniswap
+ * @param  {String}   [address]
+ * @param  {Array}    [assets]
+ * @param  {String}   [network]
+ */
+export const saveAssetPricesFromUniswap = (
+  assetPrices,
+  accountAddress,
+  network
+) =>
+  saveAccountLocal(
+    ASSET_PRICES_FROM_UNISWAP,
+    assetPrices,
+    accountAddress,
+    network,
+    assetPricesFromUniswapVersion
+  );
+
+/**
+ * @desc remove asset from Uniswap
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const removeAssetPricesFromUniswap = (accountAddress, network) =>
+  removeAccountLocal(ASSET_PRICES_FROM_UNISWAP, accountAddress, network);
 
 /**
  * @desc get compound assets
@@ -323,3 +369,30 @@ export const saveOpenFamilies = (openFamilies, accountAddress, network) =>
  */
 export const removeOpenFamilies = (accountAddress, network) =>
   removeAccountLocal(OPEN_FAMILIES, accountAddress, network);
+
+/**
+ * @desc get profile info
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getAccountInfo = (accountAddress, network) =>
+  getAccountLocal(ACCOUNT_INFO, accountAddress, network, {});
+
+/**
+ * @desc save profile info
+ * @param  {String}   [address]
+ * @param  {Object}    [profile info]
+ * @param  {String}   [network]
+ */
+export const saveAccountInfo = (profileInfo, accountAddress, network) =>
+  saveAccountLocal(ACCOUNT_INFO, profileInfo, accountAddress, network);
+
+/**
+ * @desc remove profile info
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const removeAccountInfo = (accountAddress, network) =>
+  removeAccountLocal(ACCOUNT_INFO, accountAddress, network);

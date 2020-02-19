@@ -16,9 +16,10 @@ const web3UpdateReserves = () => async (dispatch, getState) => {
 };
 
 export const web3ListenerInit = () => dispatch => {
+  web3Provider.pollingInterval = 8000;
   web3Provider.on('block', () => dispatch(web3UpdateReserves()));
 };
 
-export const web3ListenerClearState = () => {
+export const web3ListenerStop = () => () => {
   web3Provider.removeAllListeners('block');
 };

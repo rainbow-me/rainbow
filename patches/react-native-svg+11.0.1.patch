@@ -1,0 +1,12 @@
+diff --git a/node_modules/react-native-svg/ios/Elements/RNSVGGroup.m b/node_modules/react-native-svg/ios/Elements/RNSVGGroup.m
+index e7b8bce..810da97 100644
+--- a/node_modules/react-native-svg/ios/Elements/RNSVGGroup.m
++++ b/node_modules/react-native-svg/ios/Elements/RNSVGGroup.m
+@@ -155,7 +155,6 @@ - (CGPathRef)getPath:(CGContextRef)context
+     [self traverseSubviews:^(RNSVGNode *node) {
+         if ([node isKindOfClass:[RNSVGNode class]] && ![node isKindOfClass:[RNSVGMask class]]) {
+             CGAffineTransform transform = CGAffineTransformConcat(node.matrix, node.transforms);
+-            CGPathAddPath(path, &transform, [node getPath:context]);
+             CGPathAddPath(path, &transform, [node markerPath]);
+             node.dirty = false;
+         }
