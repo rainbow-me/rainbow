@@ -159,29 +159,61 @@ class CurrencySelectModal extends Component {
 
   render = () => {
     const {
-      headerTitle,
-      isFocused,
-      sortedUniswapAssets,
+      curatedAssets,
+      favorites,
+      globalHighLiquidityAssets,
+      globalLowLiquidityAssets,
       transitionPosition,
       type,
       uniswapAssetsInWallet,
     } = this.props;
-    const { searchQuery } = this.state;
 
     if (type === null || type === undefined) {
       return null;
     }
 
-    let assets = sortedUniswapAssets;
-    let title = headerTitle || '';
+    const { searchQuery, searchQueryForSearch } = this.state;
+
+    let headerTitle = '';
+    let filteredList = [];
     if (type === CurrencySelectionTypes.input) {
-      title = 'Swap';
-      assets = uniswapAssetsInWallet;
+      headerTitle = 'Swap';
+      filteredList = headerlessSection(uniswapAssetsInWallet);
+      if (!isEmpty(searchQueryForSearch)) {
+        filteredList = filterList(uniswapAssetsInWallet, searchQueryForSearch, [
+          'symbol',
+          'name',
+        ]);
+        filteredList = headerlessSection(filteredList);
+      }
     } else if (type === CurrencySelectionTypes.output) {
-      title = 'Receive';
+      headerTitle = 'Receive';
+      const curatedSection = concat(favorites, curatedAssets);
+      if (!isEmpty(searchQueryForSearch)) {
+        const [filteredBest, filteredHigh, filteredLow] = map(
+          [curatedSection, globalHighLiquidityAssets, globalLowLiquidityAssets],
+          section =>
+            filterList(section, searchQueryForSearch, ['symbol', 'name'])
+        );
+
+        filteredList = [];
+        filteredBest.length &&
+          filteredList.push({ data: filteredBest, title: '' });
+
+        filteredHigh.length &&
+          filteredList.push({
+            data: filteredHigh,
+            title: filteredBest.length ? 'MORE RESULTS' : '',
+          });
+
+        filteredLow.length &&
+          filteredList.push({ data: filteredLow, title: 'LOW LIQUIDITY' });
+      } else {
+        filteredList = headerlessSection(concat(favorites, curatedAssets));
+      }
     }
 
-    const listItems = filterList(assets, searchQuery, 'uniqueId');
+    const isFocused = this.props.navigation.getParam('focused', false);
 
     return (
       <KeyboardFixedOpenLayout>
@@ -210,7 +242,7 @@ class CurrencySelectModal extends Component {
             <Column flex={1}>
               <CurrencySelectModalHeader
                 onPressBack={this.handlePressBack}
-                title={title}
+                title={headerTitle}
               />
               <ExchangeSearch
                 autoFocus={false}
@@ -252,7 +284,10 @@ export default compose(
       ...props
     }) => ({
       ...props,
-      headerTitle: get(navigation, 'state.params.headerTitle', undefined),
+      curatedAssets: normalizeAssetItems(curatedAssets),
+      favorites: normalizeAssetItems(favorites),
+      globalHighLiquidityAssets: normalizeAssetItems(globalHighLiquidityAssets),
+      globalLowLiquidityAssets: normalizeAssetItems(globalLowLiquidityAssets),
       navigation,
       transitionPosition: get(navigation, 'state.params.position'),
       type: get(navigation, 'state.params.type', null),
