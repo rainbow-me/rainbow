@@ -83,7 +83,6 @@ workflows:
             brew update
             brew tap wix/brew
             brew install --HEAD applesimutils
-            brew install watchman
         title: React Native - Install dependencies via Brew
     - yarn@0.1.1:
         inputs:
@@ -93,6 +92,7 @@ workflows:
     before_run:
     - build_setup
     - generate_dot_env
+    - pods_setup
     steps:
     - fastlane@2.7.0:
         inputs:
@@ -113,6 +113,7 @@ workflows:
     - pods_setup
     - detox_setup
     - generate_dot_env
+    - react_native_setup
     - detox_tests
     envs:
     - opts:
