@@ -63,11 +63,11 @@ class Button : RCTView {
   }
   
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapEnd(duration: duration, scale: scaleTo)
+    animateTapEnd(duration: duration)
     onPress([:])
   }
   
   override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapEnd(duration: duration, scale: scaleTo)
+    animateTapEnd(duration: duration)
   }
 }

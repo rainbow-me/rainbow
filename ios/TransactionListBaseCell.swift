@@ -29,24 +29,23 @@ class TransactionListBaseCell : UITableViewCell {
     
     layer.addSublayer(shadowLayer)
   }
-  
+
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     animateTapStart(
       duration: duration,
-      scale: scaleTo,
-      useHaptic: hapticType
+      scale: scaleTo
     )
   }
   
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapEnd(duration: duration, scale: scaleTo)
+    animateTapEnd(duration: duration)
     if row != nil {
       onItemPress(["index":row!])
     }
   }
   
   override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapEnd(duration: duration, scale: scaleTo)
+    animateTapEnd(duration: duration)
   }
   
   func generateTextImage(_ text: String) -> UIImage? {

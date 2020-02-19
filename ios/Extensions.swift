@@ -40,23 +40,7 @@ extension UIView {
   static func fromNib<T: UIView>() -> T {
     return Bundle(for: T.self).loadNibNamed(String(describing: T.self), owner: nil, options: nil)![0] as! T
   }
-  
-  func animateQuickTap(
-    duration: TimeInterval = 0.1,
-    scale: CGFloat = 0.97
-  ) {
-    let timingFunction = CAMediaTimingFunction(controlPoints: 0.25, 0.46, 0.45, 0.94)
-    
-    CATransaction.begin()
-    CATransaction.setAnimationTimingFunction(timingFunction)
-    
-    UIView.animate(withDuration: duration, delay: 0, options: [.autoreverse], animations: {
-      self.transform = CGAffineTransform(scaleX: scale, y: scale)
-    })
-    
-    CATransaction.commit()
-  }
-  
+
   func animateTapStart(
     duration: TimeInterval = 0.1,
     scale: CGFloat = 0.97,
@@ -78,7 +62,7 @@ extension UIView {
     CATransaction.commit()
   }
   
-  func animateTapEnd(duration: TimeInterval = 0.1, scale: CGFloat = 0.97) {
+  func animateTapEnd(duration: TimeInterval = 0.1) {
     let timingFunction = CAMediaTimingFunction(controlPoints: 0.25, 0.46, 0.45, 0.94)
     
     CATransaction.begin()
