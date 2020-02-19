@@ -12,6 +12,8 @@ import TimestampText from './TimestampText';
 import ActivityIndicator from '../ActivityIndicator';
 import GestureWrapper from './GestureWrapper';
 
+import deepEqual from 'fbjs/lib/areEqual';
+
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -72,14 +74,11 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
     );
     let newData = [];
     newData.push({
-      x: allSegmentsPoints[0].x - xMul * 10,
+      isImportant: true,
+      x: allSegmentsPoints[0].x - xMul * 2,
       y: allSegmentsPoints[0].y,
     });
-    newData.push({
-      x: allSegmentsPoints[0].x,
-      y: allSegmentsPoints[0].y,
-    });
-    for (let i = 2; i < destinatedNumberOfPoints - 2; i++) {
+    for (let i = 1; i < destinatedNumberOfPoints - 1; i++) {
       const indexPlace = i * destMul;
       const r = indexPlace % 1;
       const f = Math.floor(indexPlace);
@@ -99,16 +98,17 @@ const simplifyChartData = (data, destinatedNumberOfPoints) => {
         createdLastPoints.push(newData.length);
       }
       newData.push({
+        isImportant:
+          (allSegmentsPoints[f].isImportant ||
+            allSegmentsPoints[f + 1].isImportant) &&
+          !newData[newData.length - 1].isImportant,
         x: allSegmentsPoints[0].x + i * xMul,
         y: finalValue,
       });
     }
     newData.push({
-      x: allSegmentsPoints[0].x + destinatedNumberOfPoints * xMul,
-      y: allSegmentsPoints[allSegmentsPoints.length - 1].y,
-    });
-    newData.push({
-      x: allSegmentsPoints[0].x + destinatedNumberOfPoints * xMul + xMul * 10,
+      isImportant: true,
+      x: allSegmentsPoints[0].x + destinatedNumberOfPoints * xMul + xMul * 2,
       y: allSegmentsPoints[allSegmentsPoints.length - 1].y,
     });
 
@@ -147,48 +147,95 @@ const chartPadding = 16;
 
 const flipY = { transform: [{ scaleX: 1 }, { scaleY: -1 }] };
 
-const indexInterval = 10;
-
-const pickImportantPoints = array => {
+const pickImportantPoints = (array, indexInterval) => {
   const result = [];
-  result.push(array[0]);
-  let thresholdIndex = indexInterval;
-  for (let i = 1; i < array.length; i++) {
-    if (i === array.length - 1) {
-      result.push(array[i]);
-    } else if (array[i].y === 0 || array[i].y === 200) {
-      result.push(array[i]);
-      thresholdIndex = i + indexInterval;
-    } else if (i === thresholdIndex) {
-      result.push(array[i]);
-      thresholdIndex += indexInterval;
+  let xs = [];
+  let ys = [];
+  array.forEach(point => {
+    if (point.isImportant) {
+      xs.push(point.x);
+      ys.push(point.y);
     }
-  }
-
-  const xs = [];
-  const ys = [];
-  result.forEach(point => {
-    xs.push(point.x);
-    ys.push(point.y);
   });
+
+  if (xs.length <= 2) {
+    result.push(array[0]);
+    let thresholdIndex = indexInterval;
+    for (let i = 1; i < array.length; i++) {
+      if (i === array.length - 1) {
+        result.push(array[i]);
+      } else if (array[i].y === 0 || array[i].y === 200) {
+        result.push(array[i]);
+        thresholdIndex = i + indexInterval;
+      } else if (i === thresholdIndex) {
+        result.push(array[i]);
+        thresholdIndex += indexInterval;
+      }
+    }
+
+    xs = [];
+    ys = [];
+    result.forEach(point => {
+      xs.push(point.x);
+      ys.push(point.y);
+    });
+  }
 
   return { xs, ys };
 };
 
 export default class Chart extends PureComponent {
   static propTypes = {
+    /* amount of points that data is simplified to. */
+    /* to make animation between charts possible we need to have fixed amount of points in each chart */
+    /* if provided data doesn't have perfect amount of points we can simplify it to fixed value */
     amountOfPathPoints: PropTypes.number,
+
+    /* touch bar color */
     barColor: PropTypes.string,
+
+    /* index of currently visible data chart */
     currentDataSource: PropTypes.number,
-    data: PropTypes.array,
+
+    /* chart data JSON */
+    data: PropTypes.arrayOf({
+      name: PropTypes.number,
+      segments: PropTypes.arrayOf({
+        color: PropTypes.string,
+        line: PropTypes.number,
+        points: PropTypes.arrayOf({
+          x: PropTypes.number,
+          y: PropTypes.number,
+        }),
+        renderStartSeparator: {
+          fill: PropTypes.string,
+          r: PropTypes.number,
+          stroke: PropTypes.string,
+          strokeWidth: PropTypes.number,
+        },
+      }),
+    }),
+
+    /* flag  that specify if gestures are active on chart */
     enableSelect: PropTypes.bool,
+
+    /* if important points are generated automaticaly in component */
+    /* you can specify the graduality from important points */
+    importantPointsIndexInterval: PropTypes.number,
+
+    /* specify what kind of chart will be displayed */
     mode: PropTypes.oneOf(['gesture-managed', 'detailed', 'simplified']),
+
+    /* callback that returns value of original data x for touched y */
     onValueUpdate: PropTypes.func,
+
+    /* specify stroke width */
     stroke: PropTypes.object,
   };
 
   static defaultProps = {
     enableSelect: true,
+    importantPointsIndexInterval: 10,
     mode: 'gesture-managed',
     stroke: { detailed: 1.5, simplified: 3 },
   };
@@ -202,6 +249,8 @@ export default class Chart extends PureComponent {
     );
 
     this.state = {
+      animatedDividers: undefined,
+      animatedPath: undefined,
       chartData: this.data,
 
       currentData: this.data[0],
@@ -210,28 +259,44 @@ export default class Chart extends PureComponent {
       shouldRenderChart: true,
     };
 
+    /* clocks and value responsible for animation of the chart between simplified and detailed chart */
     this.clock = new Clock();
     this.clockReversed = new Clock();
+    this.value = new Value(this.props.mode === 'detailed' ? 0 : 1);
+
+    /* clocks and value responsible for opacity animation of the indicator bar */
     this.opacityClock = new Clock();
     this.opacityClockReversed = new Clock();
+    this.opacity = new Value(0);
+
+    /* value that control opacity of the chart during loading */
     this.loadingValue = new Value(1);
+
+    /* two different gesture states one for tapGestureHandler and one for panGestureHandler respectively */
     this.gestureState = new Value(UNDETERMINED);
     this.panGestureState = new Value(UNDETERMINED);
-    this.value = new Value(this.props.mode === 'detailed' ? 0 : 1);
-    this.opacity = new Value(0);
+
+    /* value that is used in reanimated code to recognize if values should animate to default values */
     this.shouldSpring = new Value(0);
-    this.chartDay = new Value(1);
-    this.chartWeek = new Value(0);
-    this.chartMonth = new Value(0);
-    this.chartYear = new Value(0);
+
+    /* value that mirror string prop to the reanimated code */
     this.shouldReactToGestures = new Value(
       this.props.mode === 'gesture-managed' ? 1 : 0
     );
+
+    /* value that point currently selected chart */
     this.currentChart = new Value(0);
 
-    this.currentInterval = 1;
+    /* table of animation values that are used to animate between different charts on the run. */
+    /* only one can be set to 1 at the time because all charts are multiplied by this table and summed */
+    this.chartAnimationValues = [
+      new Value(1),
+      new Value(0),
+      new Value(0),
+      new Value(0),
+    ];
 
-    this.animatedPath = undefined;
+    this.currentInterval = 1;
 
     this._configUp = {
       duration: 500,
@@ -243,13 +308,6 @@ export default class Chart extends PureComponent {
       easing: Easing.bezier(0.55, 0.06, 0.45, 0.94),
       toValue: 0,
     };
-
-    this.chartsMulti = [
-      this.chartDay,
-      this.chartWeek,
-      this.chartMonth,
-      this.chartYear,
-    ];
 
     this.onTapGestureEvent = event([
       {
@@ -296,10 +354,14 @@ export default class Chart extends PureComponent {
   }
 
   componentDidMount = () => {
-    this.reloadChart(0, true);
+    this.reloadChart(1, true);
   };
 
-  getSnapshotBeforeUpdate() {
+  getSnapshotBeforeUpdate(prevProps) {
+    if (!deepEqual(prevProps.data, this.props.data)) {
+      allSegmentDividers = [];
+      this.reloadChart(this.currentInterval, true);
+    }
     if (this.currentInterval !== this.props.currentDataSource) {
       this.currentChart.setValue(this.props.currentDataSource);
       this.touchX.setValue(deviceUtils.dimensions.width - 1);
@@ -328,24 +390,32 @@ export default class Chart extends PureComponent {
     { useNativeDriver: true }
   );
 
-  reloadChart = async (currentInterval, isInitial = false) => {
-    if (currentInterval !== this.currentInterval) {
-      if (isInitial) {
-        await this.setState({
-          isLoading: true,
-        });
-
+  reloadChart = async (currentInterval, isNewData = false) => {
+    if (isNewData) {
+      const data = this.props.data.map(data =>
+        simplifyChartData(data, this.props.amountOfPathPoints)
+      );
+      await this.setState({
+        chartData: data,
+        isLoading: true,
+      });
+      setTimeout(async () => {
         const createdSVG = this.createAnimatedPath();
-        this.animatedPath = createdSVG.paths;
-        this.animatedDividers = createdSVG.points;
-      }
+        await this.setState({
+          animatedDividers: createdSVG.points,
+          animatedPath: createdSVG.paths,
+          isLoading: false,
+        });
+      });
+    }
+    if (currentInterval !== this.currentInterval) {
       setTimeout(async () => {
         Animated.timing(
-          this.chartsMulti[this.currentInterval],
+          this.chartAnimationValues[this.currentInterval],
           this._configDown
         ).start();
         Animated.timing(
-          this.chartsMulti[currentInterval],
+          this.chartAnimationValues[currentInterval],
           this._configUp
         ).start();
         this.currentInterval = currentInterval;
@@ -418,12 +488,16 @@ export default class Chart extends PureComponent {
         const xMultiply = width / timestampLength;
 
         const yMultiply = height / (maxValue.y - minValue.y);
-        const points = chartData[i].points.map(({ x, y }) => ({
+        const points = chartData[i].points.map(({ x, y, isImportant }) => ({
+          isImportant,
           x: (x - chartData[i].points[0].x) * xMultiply,
           y: (y - minValue.y) * yMultiply,
         }));
 
-        const importantPoints = pickImportantPoints(points);
+        const importantPoints = pickImportantPoints(
+          points,
+          this.props.importantPointsIndexInterval
+        );
         const spline = new Spline(importantPoints.xs, importantPoints.ys);
         splinePoints.push(
           points
@@ -458,7 +532,7 @@ export default class Chart extends PureComponent {
 
     const allNodes = index => {
       return chartData.map((_, i) => {
-        return chartNode(this.chartsMulti[i], index, i);
+        return chartNode(this.chartAnimationValues[i], index, i);
       });
     };
 
@@ -476,7 +550,7 @@ export default class Chart extends PureComponent {
             if (index === allSegmentDividers[i - 1]) {
               sectionEndPoints.push({
                 index: segments.dividers[i - 1],
-                opacity: this.chartsMulti[segments.dividers[i - 1]],
+                opacity: this.chartAnimationValues[segments.dividers[i - 1]],
                 x,
                 y: add(...allNodes(index)),
               });
@@ -658,8 +732,8 @@ export default class Chart extends PureComponent {
                   preserveAspectRatio="none"
                   style={flipY}
                 >
-                  {this.animatedPath}
-                  {this.animatedDividers}
+                  {this.state.animatedPath}
+                  {this.state.animatedDividers}
                 </Svg>
               </View>
               <Animated.View

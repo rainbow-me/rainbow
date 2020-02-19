@@ -17,7 +17,7 @@ const emojiStyleInterpolator = ({
 
   const translateY = current.interpolate({
     inputRange: [0, 1],
-    outputRange: [-screen.height / 2, 0],
+    outputRange: [-(screen.height / 2) + statusBarHeight + 78.5, 0],
   });
 
   const scale = current.interpolate({
@@ -27,6 +27,7 @@ const emojiStyleInterpolator = ({
 
   return {
     cardStyle: {
+      opacity: backgroundOpacity,
       transform: [{ translateY }, { scale }],
     },
     overlayStyle: {

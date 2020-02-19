@@ -37,7 +37,7 @@ const skeletonTransition = (
   </Transition.Sequence>
 );
 
-const CurrencySelectionList = ({ itemProps, listItems, showList }) => {
+const CurrencySelectionList = ({ itemProps, listItems, showList, query }) => {
   const skeletonTransitionRef = useRef();
   const [showSkeleton, setShowSkeleton] = useState(true);
 
@@ -71,6 +71,7 @@ const CurrencySelectionList = ({ itemProps, listItems, showList }) => {
               itemProps={itemProps}
               items={listItems}
               onLayout={onListLayout}
+              query={query}
             />
           )}
         </Centered>
@@ -89,11 +90,16 @@ const CurrencySelectionList = ({ itemProps, listItems, showList }) => {
 CurrencySelectionList.propTypes = {
   itemProps: PropTypes.object,
   listItems: PropTypes.array,
+  query: PropTypes.string,
   showList: PropTypes.bool,
 };
 
-const propsAreEqual = (prev, next) =>
-  prev.listItems.length === next.listItems.length &&
-  prev.showList === next.showList;
+const propsAreEqual = (prev, next) => {
+  return (
+    prev.listItems.length === next.listItems.length &&
+    prev.query === next.query &&
+    prev.showList === next.showList
+  );
+};
 
 export default memo(CurrencySelectionList, propsAreEqual);
