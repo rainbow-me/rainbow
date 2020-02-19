@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { TextInput, InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { compose, toClass, withProps } from 'recompact';
+import { toClass } from 'recompact';
 import { interpolate } from '../components/animations';
 import {
   ConfirmExchangeButton,
@@ -45,17 +45,6 @@ import {
   subtract,
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
-import {
-  withAccountData,
-  withAccountSettings,
-  withBlockedHorizontalSwipe,
-  withBlockPolling,
-  withGas,
-  withTransactionConfirmationScreen,
-  withTransitionProps,
-  withUniswapAllowances,
-  withUniswapAssets,
-} from '../hoc';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
 import {
@@ -1092,18 +1081,4 @@ class ExchangeModal extends Component {
   };
 }
 
-export default compose(
-  withAccountData,
-  withAccountSettings,
-  withBlockedHorizontalSwipe,
-  withGas,
-  withBlockPolling,
-  withTransactionConfirmationScreen,
-  withTransitionProps,
-  withUniswapAllowances,
-  withUniswapAssets,
-  withProps(({ navigation, transitionProps: { isTransitioning } }) => ({
-    isTransitioning,
-    tabPosition: get(navigation, 'state.params.position'),
-  }))
-)(ExchangeModal);
+export default ExchangeModal;

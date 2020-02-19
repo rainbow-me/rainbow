@@ -3,7 +3,7 @@ import React from 'react';
 import Animated from 'react-native-reanimated';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
-import ExchangeModal from '../screens/ExchangeModal';
+import ExchangeModalWithData from '../screens/ExchangeModalWithData';
 import { deviceUtils } from '../utils';
 import createStackNavigator from './createStackNavigator';
 import { exchangeDetailsPreset } from './transitions/effects';
@@ -21,7 +21,7 @@ const ExchangeModalNavigator = createMaterialTopTabNavigator(
             params: {
               position: ExchangeModalTabPosition,
             },
-            screen: ExchangeModal,
+            screen: ExchangeModalWithData,
           },
           SwapDetailsScreen: {
             navigationOptions: {
