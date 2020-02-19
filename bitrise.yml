@@ -118,11 +118,22 @@ workflows:
     - opts:
         is_expand: false
       SENTRY_ENVIRONMENT: LocalRelease
+    steps:
+    - slack@3.1.3:
+        inputs:
+        - channel: "#bitrise"
+        - from_username: Bitrise Bot
+        - pretext: "* All Tests Passed! *"
+        - channel_on_error: "#bitrise"
+        - text_on_error: Build failed
+        - emoji_on_error: ''
+        - from_username_on_error: Bitrise bot
+        - webhook_url: "$SLACK_WEBHOOK_URL"
   generate_dot_env:
     steps:
     - script@1.1.6:
         inputs:
-        - content: |+
+        - content: |
             #!/usr/bin/env bash
             # fail if any commands fails
             set -e
@@ -135,6 +146,8 @@ workflows:
             echo "REACT_APP_INFURA_PROJECT_ID=$REACT_APP_INFURA_PROJECT_ID" >> .env
             echo "REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY" >> .env
             echo "DATA_API_KEY=$DATA_API_KEY" >> .env
+            echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
+            echo "SENTRY_ENVIRONMENT=$SENTRY_ENVIRONMENT" >> .env
             echo "WYRE_ENDPOINT=$WYRE_ENDPOINT" >> .env
             echo "WYRE_ACCOUNT_ID=$WYRE_ACCOUNT_ID" >> .env
             echo "RAINBOW_WYRE_MERCHANT_ID=$RAINBOW_WYRE_MERCHANT_ID" >> .env
