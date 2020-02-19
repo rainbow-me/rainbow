@@ -111,15 +111,24 @@ const withBalanceSection = (
   nativeCurrency,
   showShitcoins
 ) => {
+  let totalValue = get(assetsTotal, 'amount', '');
   let balanceSectionData = buildCoinsList(allAssets); //[...buildCoinsList(allAssets), savingsSection];
   if (isSavingsDummyDataInjected) {
+    const assets = [
+      { APY: 7.5, currency: 'Dai', value: 320.3241253452 },
+      { APY: 6.5, currency: 'Eth', value: 20.45 },
+      { APY: 2.5 },
+    ];
+
     balanceSectionData.push({
-      assets: [
-        { APY: 7.5, currency: 'Dai', value: 320.3241253452 },
-        { APY: 6.5, currency: 'Eth', value: 20.45 },
-        { APY: 2.5 },
-      ],
+      assets,
       savingsContainer: true,
+    });
+
+    assets.forEach(saving => {
+      if (saving.value) {
+        totalValue = Number(totalValue) + Number(saving.value);
+      }
     });
   }
   const isLoadingBalances = !isWalletEthZero && isBalancesSectionEmpty;
@@ -134,7 +143,7 @@ const withBalanceSection = (
       showShitcoins,
       title: lang.t('account.tab_balances'),
       totalItems: isLoadingBalances ? 1 : allAssetsCount,
-      totalValue: get(assetsTotal, 'display', ''),
+      totalValue: `$${totalValue.toFixed(2)}`,
     },
     name: 'balances',
     renderItem: isLoadingBalances
