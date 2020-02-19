@@ -24,6 +24,15 @@ class TransactionList extends React.PureComponent {
     style: {},
   };
 
+  onCopyAddressPress = e => {
+    const { x, y, width, height } = e.nativeEvent;
+    this.props.setTapTarget([x, y, width, height]);
+    if (this.onNewEmoji) {
+      this.onNewEmoji();
+    }
+    Clipboard.setString(this.props.accountAddress);
+  };
+
   render() {
     const data = {
       requests: this.props.requests,
@@ -38,7 +47,7 @@ class TransactionList extends React.PureComponent {
           accountName={this.props.accountName}
           onReceivePress={this.props.onReceivePress}
           onAvatarPress={this.props.onAvatarPress}
-          onCopyAddressPress={this.props.onCopyAddressPress}
+          onCopyAddressPress={this.onCopyAddressPress}
           onRequestPress={this.props.onRequestPress}
           onRequestExpire={this.props.onRequestExpire}
           onTransactionPress={this.props.onTransactionPress}
@@ -49,14 +58,18 @@ class TransactionList extends React.PureComponent {
           style={{
             height: 0,
             left: this.props.tapTarget[0] - 24,
+            position: 'absolute',
             top: this.props.tapTarget[1] - this.props.tapTarget[3],
             width: this.props.tapTarget[2],
           }}
-          count={this.props.emojiCount}
-          distance={130}
-          emoji="+1"
-          size="h2"
-        />
+        >
+          {({ onNewEmoji }) => {
+            if (!this.onNewEmoji) {
+              this.onNewEmoji = onNewEmoji;
+            }
+            return null;
+          }}
+        </FloatingEmojis>
       </View>
     );
   }
@@ -69,7 +82,6 @@ export default compose(
   withAccountTransactions,
   withRequests,
   withContacts,
-  withState('emojiCount', 'setEmojiCount', 0),
   withState('tapTarget', 'setTapTarget', [0, 0, 0, 0]),
   withHandlers({
     onAvatarPress: ({ navigation, accountColor, accountName }) => () => {
@@ -77,17 +89,6 @@ export default compose(
         accountColor,
         accountName,
       });
-    },
-    onCopyAddressPress: ({
-      accountAddress,
-      emojiCount,
-      setEmojiCount,
-      setTapTarget,
-    }) => e => {
-      const { x, y, width, height } = e.nativeEvent;
-      setTapTarget([x, y, width, height]);
-      setEmojiCount(emojiCount + 1);
-      Clipboard.setString(accountAddress);
     },
     onReceivePress: ({ navigation }) => () => {
       navigation.navigate('ReceiveModal');
