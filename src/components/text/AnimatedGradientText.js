@@ -12,7 +12,7 @@ const AnimatedChangeText = ({ value }) => {
 
   useEffect(() => {
     let changeIndex = null;
-    const nextValue = String(Number(curValue) + Math.random() * Math.random());
+    const nextValue = String(value);
     const nextValueStringTable = String(curValue).split('');
     const curValueStringTable = String(nextValue).split('');
     for (let i = 0; i < curValueStringTable.length; i++) {
@@ -24,13 +24,10 @@ const AnimatedChangeText = ({ value }) => {
 
     const stable = nextValue.slice(0, changeIndex);
     const change = nextValue.slice(changeIndex);
-
-    setTimeout(() => {
-      setCurValue(nextValue);
-      setCurValueStable(stable);
-      setCurValueChange(change);
-    }, 4000);
-  }, [curValue]);
+    setCurValue(value);
+    setCurValueStable(stable);
+    setCurValueChange(change);
+  }, [value]);
 
   return (
     <View
@@ -43,6 +40,8 @@ const AnimatedChangeText = ({ value }) => {
           color: colors.blueGreyDark,
           fontSize: 16,
           fontWeight: fonts.weight.semibold,
+          // because of the rendering issue two separate components
+          marginRight: -0.5,
         }}
       >
         {curValueStable}
