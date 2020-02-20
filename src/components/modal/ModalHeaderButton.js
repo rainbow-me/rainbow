@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Platform } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import { Button } from '../buttons';
 import styled from 'styled-components';
 import { colors } from '../../styles';
 import { Icon } from '../icons';
@@ -30,7 +28,7 @@ const Text = styled(UnstyledText).attrs({
 
 const ModalHeaderButton = ({ label, showBackArrow, side, ...props }) => (
   <Container
-    component={Platform.OS === 'ios' ? BorderlessButton : Button}
+    component={BorderlessButton}
     justify={side === 'left' ? 'start' : 'end'}
     side={side}
     {...props}

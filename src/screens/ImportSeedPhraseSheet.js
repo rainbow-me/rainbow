@@ -9,7 +9,6 @@ import React, {
 } from 'react';
 import { KeyboardAvoidingView, StatusBar, Platform } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import { Button } from '../components/buttons';
 import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
@@ -25,7 +24,10 @@ import { colors, padding, shadow, borders } from '../styles';
 import { isValidSeed as validateSeed } from '../helpers/validators';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 
-const keyboardVerticalOffset = sheetVerticalOffset + 10;
+const keyboardVerticalOffset =
+  Platform.OS === 'android'
+    ? sheetVerticalOffset - 240
+    : sheetVerticalOffset + 10;
 
 const statusBarHeight = getStatusBarHeight(true);
 
@@ -55,9 +57,7 @@ const HandleIcon = styled(Icon).attrs({
   margin-bottom: 2;
 `;
 
-const StyledImportButton = styled(
-  Platform.OS === 'ios' ? BorderlessButton : Button
-)`
+const StyledImportButton = styled(BorderlessButton)`
   ${padding(5, 9, 7)};
   ${shadow.build(0, 6, 10, colors.dark, 0.16)};
   background-color: ${({ disabled }) =>
@@ -200,8 +200,9 @@ const ImportSeedPhraseSheet = ({
       >
         <Centered css={padding(0, 50)} flex={1}>
           <Input
-            lineHeight="loosest"
+            style={{ minHeight: 50 }}
             multiline
+            numberOfLines={3}
             ref={isNativeStackAvailable ? inputRef : inputRefListener}
             align="center"
             autoFocus
@@ -214,6 +215,11 @@ const ImportSeedPhraseSheet = ({
             value={seedPhrase}
             weight="semibold"
             width="100%"
+            keyboardType={
+              Platform.OS === 'android' ? 'visible-password' : 'default'
+            }
+            autoCapitalize="none"
+            autoCorrect={false}
           />
         </Centered>
         <Row align="start" justify="end">
