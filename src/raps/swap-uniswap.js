@@ -6,23 +6,26 @@ import {
 } from '../handlers/uniswap';
 import { greaterThan } from '../helpers/utilities';
 import store from '../redux/store';
-import { contractUtils, gasUtils } from '../utils';
+import { dataAddNewTransaction } from '../redux/data';
 import { rapsAddOrUpdate, rapsLoadState } from '../redux/raps';
-import {
-  uniswapUpdateAllowances,
-  uniswapUpdateInputCurrency,
-  uniswapUpdateOutputCurrency,
-} from '../redux/uniswap';
-import { web3UpdateReserves } from '../redux/web3listener';
+import { uniswapUpdateAllowances } from '../redux/uniswap';
+import { contractUtils, gasUtils } from '../utils';
 
 const handleUnlockIfNeeded = async (assetToUnlock, currentRap, wallet) => {
-  const needsUnlocking = assetNeedsUnlocking(wallet.address, assetToUnlock);
+  console.log('handle unlock if needed', assetToUnlock);
+  const { accountAddress } = store.getState().settings;
+  const needsUnlocking = await assetNeedsUnlocking(
+    accountAddress,
+    assetToUnlock
+  );
+  console.log('does this thing need unlocking?', needsUnlocking);
   if (!needsUnlocking) return;
 
   const { dispatch } = store;
   const { gasPrices } = store.getState().gas;
   const { address: assetAddress, exchangeAddress } = assetToUnlock;
   const fastGasPrice = get(gasPrices, `[${gasUtils.FAST}]`);
+  console.log('probs not');
   const gasLimit = await contractUtils.estimateApprove(
     assetAddress,
     exchangeAddress
@@ -41,6 +44,17 @@ const handleUnlockIfNeeded = async (assetToUnlock, currentRap, wallet) => {
   );
 
   currentRap.transactions.approval = approval.hash;
+  console.log('adding a new txn for the approval', approval.hash);
+  dispatch(
+    dataAddNewTransaction({
+      amount: 0,
+      asset: assetToUnlock,
+      from: wallet.address,
+      hash: approval.hash,
+      nonce: get(approval, 'nonce'),
+      to: get(approval, 'to'),
+    })
+  );
   dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
 
   console.log('APPROVAL SUBMITTED, HASH', approval.hash);
@@ -53,12 +67,13 @@ const handleUnlockIfNeeded = async (assetToUnlock, currentRap, wallet) => {
 
 const assetNeedsUnlocking = async (accountAddress, currency) => {
   const { address, exchangeAddress } = currency;
+  console.log('asset needs unlocking check, should be lowered', address);
   const { allowances } = store.getState().uniswap;
   const isInputEth = address === 'eth';
   if (isInputEth) {
     return false;
   }
-  let allowance = allowances[address];
+  let allowance = allowances[toLower(address)];
   if (greaterThan(allowance, 0)) return false;
   allowance = await contractUtils.getAllowance(
     accountAddress,
@@ -122,11 +137,15 @@ const swapOnUniswap = async (
   inputAsExactAmount,
   rap = null
 ) => {
+  console.log('swap on uniswap!');
   let currentRap = rap;
   const { dispatch } = store;
   const { gasPrices } = store.getState().gas;
+  const { accountAddress, chainId } = store.getState().settings;
+  const { inputReserve, outputReserve } = store.getState().uniswap;
   // It's a new rap, simple unlock(?) & swap
   if (currentRap === null) {
+    console.log('new rap!');
     currentRap = createNewRap(
       inputAmount,
       inputAsExactAmount,
@@ -137,20 +156,19 @@ const swapOnUniswap = async (
     );
   } else {
     // It's part of a bigger rap, let's load it
+    console.log('loading a rap');
     const raps = await dispatch(rapsLoadState());
-    currentRap = raps[rap]; // TODO JIN is this rap ID?
+    currentRap = raps[rap];
   }
 
-  await dispatch(uniswapUpdateInputCurrency(inputCurrency)); // TODO JIN not needed?
-  await dispatch(uniswapUpdateOutputCurrency(outputCurrency)); // TODO JIN not needed?
-  const { inputReserve, outputReserve } = await dispatch(web3UpdateReserves()); // TODO JIN not needed
-
-  // TODO JIN should be adding pending txns
+  // TODO JIN raps should accept a callback after data add new txns if not already called
+  // TODO JIN should I use existing trade details if not unlocked?
   await handleUnlockIfNeeded(inputCurrency, currentRap, wallet);
+
+  console.log('calculating trade details');
 
   //  2 - Swap
   // 2.1 - Get Trade Details
-  const chainId = get(wallet, 'provider.chainId');
   const tradeDetails = calculateTradeDetails(
     chainId,
     inputAmount,
@@ -164,11 +182,12 @@ const swapOnUniswap = async (
 
   // 2.2 - Execute Swap
 
+  console.log('execute the swap');
   let gasPrice = get(selectedGasPrice, 'value.amount');
   if (!gasPrice) {
-    gasPrice = get(gasPrices, `[${gasUtils.FAST}]`);
+    gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
   }
-  const gasLimit = await estimateSwapGasLimit(wallet.address, tradeDetails);
+  const gasLimit = await estimateSwapGasLimit(accountAddress, tradeDetails);
 
   console.log('About to execute swap with', {
     gasLimit,
@@ -179,6 +198,17 @@ const swapOnUniswap = async (
 
   const swap = await executeSwap(tradeDetails, gasLimit, gasPrice, wallet);
   currentRap.transactions.swap.hash = swap.hash;
+  console.log('adding a new swap txn to pending', swap.hash);
+  dispatch(
+    dataAddNewTransaction({
+      amount: inputAmount,
+      asset: inputCurrency,
+      from: accountAddress,
+      hash: swap.hash,
+      nonce: get(swap, 'nonce'),
+      to: get(swap, 'to'),
+    })
+  );
   dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
   return { rap: currentRap, swap };
 };
