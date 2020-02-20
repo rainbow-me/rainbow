@@ -4,6 +4,7 @@ export { default as DollarFigure } from './DollarFigure';
 export { default as Emoji } from './Emoji';
 export { default as ErrorText } from './ErrorText';
 export { default as GradientText } from './GradientText';
+export { default as AnimatedGradientText } from './AnimatedGradientText';
 export { default as H1 } from './H1';
 export { default as Label } from './Label';
 export { default as Monospace } from './Monospace';

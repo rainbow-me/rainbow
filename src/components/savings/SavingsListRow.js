@@ -11,6 +11,7 @@ import { ButtonPressAnimation } from '../animations';
 import { compose, withHandlers } from 'recompact';
 import { withNavigation } from 'react-navigation';
 import { CoinIcon } from '../coin-icon';
+import AnimatedChangeText from '../text/AnimatedGradientText';
 
 const SavingsSheetHeader = ({ APY, currency, value, onPress }) => (
   <Centered css={padding(9, 0, 3)} direction="column">
@@ -41,19 +42,7 @@ const SavingsSheetHeader = ({ APY, currency, value, onPress }) => (
             <CoinIcon symbol={currency} size={26} style={{ marginRight: 7 }} />
           ) : null}
           {value ? (
-            <GradientText
-              colors={['#000000', '#2CCC00']}
-              steps={[0.6, 1]}
-              end={{ x: 0.9, y: 0.5 }}
-              style={{
-                color: colors.blueGreyDark,
-                fontSize: 16,
-                fontWeight: fonts.weight.semibold,
-                marginRight: 10,
-              }}
-            >
-              ${Number(value)}
-            </GradientText>
+            <AnimatedChangeText value={value} />
           ) : (
             <>
               <Text
