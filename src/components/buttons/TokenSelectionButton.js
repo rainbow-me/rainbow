@@ -1,44 +1,15 @@
 import PropTypes from 'prop-types';
-import React, { useRef } from 'react';
+import React from 'react';
 import FastImage from 'react-native-fast-image';
-import { Transition, Transitioning } from 'react-native-reanimated';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { colors, margin, padding, position } from '../../styles';
 import { isNewValueForObjectPaths } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
-import { Icon } from '../icons';
 import { InnerBorder, Row } from '../layout';
 import { ShadowStack } from '../shadow-stack';
 import { Text } from '../text';
 
-const lockTransition = (
-  <Transition.Sequence>
-    <Transition.Out durationMs={0} />
-    <Transition.Change durationMs={200} interpolation="easeInOut" />
-    <Transition.Together>
-      <Transition.In
-        delayMs={10}
-        durationMs={200}
-        interpolation="easeOut"
-        type="fade"
-      />
-      <Transition.In durationMs={75} interpolation="easeOut" type="slide-top" />
-    </Transition.Together>
-  </Transition.Sequence>
-);
-
-const TokenSelectionButton = ({
-  borderRadius,
-  onPress,
-  shadows,
-  showLockIcon,
-  symbol,
-}) => {
-  const lockRef = useRef();
-  if (lockRef.current) {
-    lockRef.current.animateNextTransition();
-  }
-
+const TokenSelectionButton = ({ borderRadius, onPress, shadows, symbol }) => {
   return (
     <ButtonPressAnimation onPress={onPress}>
       <Row accessible flex={0} css={margin(0, 15)}>
@@ -49,16 +20,11 @@ const TokenSelectionButton = ({
           shadows={shadows}
         />
         <Row align="center" css={padding(9.5, 14, 11, 15)} zIndex={1}>
-          <Transitioning.View ref={lockRef} transition={lockTransition}>
-            {showLockIcon && (
-              <Icon color={colors.white} marginBottom={1} name="lock" />
-            )}
-          </Transitioning.View>
           <Text
             color={colors.white}
             size="lmedium"
             style={{
-              marginLeft: showLockIcon ? 5 : 0,
+              marginLeft: 0,
               marginRight: 7,
             }}
             weight="semibold"

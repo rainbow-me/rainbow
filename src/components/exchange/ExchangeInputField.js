@@ -20,7 +20,6 @@ export default class ExchangeInputField extends Component {
     inputCurrencyAddress: PropTypes.string,
     inputCurrencySymbol: PropTypes.string,
     inputFieldRef: PropTypes.func,
-    isAssetApproved: PropTypes.bool,
     nativeAmount: PropTypes.string,
     nativeCurrency: PropTypes.string,
     nativeFieldRef: PropTypes.func,
@@ -36,7 +35,6 @@ export default class ExchangeInputField extends Component {
     isNewValueForObjectPaths(this.props, nextProps, [
       'inputAmount',
       'inputCurrencySymbol',
-      'isAssetApproved',
       'nativeAmount',
       'nativeCurrency',
     ]);
@@ -61,7 +59,6 @@ export default class ExchangeInputField extends Component {
       inputAmount,
       inputCurrencyAddress,
       inputCurrencySymbol,
-      isAssetApproved,
       nativeAmount,
       nativeCurrency,
       nativeFieldRef,
@@ -115,7 +112,6 @@ export default class ExchangeInputField extends Component {
           </TouchableWithoutFeedback>
           <TokenSelectionButton
             onPress={onPressSelectInputCurrency}
-            showLockIcon={inputCurrencySymbol && !isAssetApproved}
             symbol={inputCurrencySymbol}
           />
         </Row>

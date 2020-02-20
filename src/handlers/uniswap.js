@@ -1,4 +1,13 @@
-import { getExecutionDetails, getTokenReserves } from '@uniswap/sdk';
+import {
+  getExecutionDetails,
+  getTokenReserves,
+  tradeExactEthForTokensWithData,
+  tradeEthForExactTokensWithData,
+  tradeExactTokensForEthWithData,
+  tradeTokensForExactEthWithData,
+  tradeExactTokensForTokensWithData,
+  tradeTokensForExactTokensWithData,
+} from '@uniswap/sdk';
 import axios from 'axios';
 import contractMap from 'eth-contract-metadata';
 import { ethers } from 'ethers';
@@ -6,6 +15,7 @@ import { get, map, mapKeys, mapValues, toLower, zipObject } from 'lodash';
 import { uniswapClient } from '../apollo/client';
 import { DIRECTORY_QUERY } from '../apollo/queries';
 import {
+  convertAmountToRawAmount,
   convertRawAmountToDecimalFormat,
   divide,
   fromWei,
@@ -344,4 +354,58 @@ export const getAllExchanges = async (tokenOverrides, excluded = []) => {
     allTokens[tokenAddress] = tokenExchangeInfo;
   });
   return allTokens;
+};
+
+export const calculateTradeDetails = (
+  chainId,
+  inputAmount,
+  inputCurrency,
+  inputReserve,
+  outputAmount,
+  outputCurrency,
+  outputReserve,
+  inputAsExactAmount
+) => {
+  const { address: inputAddress, decimals: inputDecimals } = inputCurrency;
+  const { address: outputAddress, decimals: outputDecimals } = outputCurrency;
+
+  const isInputEth = inputAddress === 'eth';
+  const isOutputEth = outputAddress === 'eth';
+
+  const rawInputAmount = convertAmountToRawAmount(
+    parseFloat(inputAmount) || 0,
+    inputDecimals
+  );
+
+  const rawOutputAmount = convertAmountToRawAmount(
+    parseFloat(outputAmount) || 0,
+    outputDecimals
+  );
+
+  let tradeDetails = null;
+
+  if (isInputEth && !isOutputEth) {
+    tradeDetails = inputAsExactAmount
+      ? tradeExactEthForTokensWithData(outputReserve, rawInputAmount, chainId)
+      : tradeEthForExactTokensWithData(outputReserve, rawOutputAmount, chainId);
+  } else if (!isInputEth && isOutputEth) {
+    tradeDetails = inputAsExactAmount
+      ? tradeExactTokensForEthWithData(inputReserve, rawInputAmount, chainId)
+      : tradeTokensForExactEthWithData(inputReserve, rawOutputAmount, chainId);
+  } else if (!isInputEth && !isOutputEth) {
+    tradeDetails = inputAsExactAmount
+      ? tradeExactTokensForTokensWithData(
+          inputReserve,
+          outputReserve,
+          rawInputAmount,
+          chainId
+        )
+      : tradeTokensForExactTokensWithData(
+          inputReserve,
+          outputReserve,
+          rawOutputAmount,
+          chainId
+        );
+  }
+  return tradeDetails;
 };

@@ -1,12 +1,4 @@
-import {
-  getMarketDetails as getUniswapMarketDetails,
-  tradeEthForExactTokensWithData,
-  tradeExactEthForTokensWithData,
-  tradeExactTokensForEthWithData,
-  tradeExactTokensForTokensWithData,
-  tradeTokensForExactEthWithData,
-  tradeTokensForExactTokensWithData,
-} from '@uniswap/sdk';
+import { getMarketDetails as getUniswapMarketDetails } from '@uniswap/sdk';
 import BigNumber from 'bignumber.js';
 import { find, get, isNil, toLower } from 'lodash';
 import PropTypes from 'prop-types';
@@ -36,16 +28,18 @@ import {
   Column,
   KeyboardFixedOpenLayout,
 } from '../components/layout';
-import { estimateSwapGasLimit, executeSwap } from '../handlers/uniswap';
+import {
+  calculateTradeDetails,
+  estimateSwapGasLimit,
+  executeSwap,
+} from '../handlers/uniswap';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
   convertAmountToNativeDisplay,
-  convertAmountToRawAmount,
   convertNumberToString,
   convertRawAmountToDecimalFormat,
   divide,
-  greaterThan,
   greaterThanOrEqualTo,
   isZero,
   subtract,
@@ -54,7 +48,7 @@ import {
 import { useAccountData, useMagicFocus, usePrevious } from '../hooks';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
-import { contractUtils, ethereumUtils, gasUtils } from '../utils';
+import { ethereumUtils } from '../utils';
 import { CurrencySelectionTypes } from './CurrencySelectModal';
 
 export const exchangeModalBorderRadius = 30;
@@ -70,23 +64,17 @@ const isSameAsset = (a, b) => {
   return assetA === assetB;
 };
 
-const DEFAULT_APPROVAL_ESTIMATION_TIME_IN_MS = 30000; // 30 seconds
-
 const getNativeTag = field => get(field, '_inputRef._nativeTag');
 
 // TODO JIN
 // pass in the confirmation function
 // need to swap or not?
 // hookify selectors
-// remove the unlock stuff
-// show the slippage
 
 const ExchangeModal = ({
-  allowances,
   dataAddNewTransaction,
   defaultInputAddress,
   gasLimit,
-  gasPrices,
   gasPricesStartPolling,
   gasPricesStopPolling,
   gasUpdateDefaultGasLimit,
@@ -96,14 +84,11 @@ const ExchangeModal = ({
   isTransitioning,
   navigation,
   outputReserve,
-  pendingApprovals,
   selectedGasPrice,
   showOutputField,
   tabPosition,
-  uniswapAddPendingApproval,
   uniswapAssetsInWallet,
   uniswapClearCurrenciesAndReserves,
-  uniswapUpdateAllowances,
   uniswapUpdateInputCurrency,
   uniswapUpdateOutputCurrency,
   web3ListenerInit,
@@ -116,30 +101,20 @@ const ExchangeModal = ({
     nativeCurrency,
   } = useAccountData();
 
-  const [approvalCreationTimestamp, setApprovalCreationTimestamp] = useState(
-    null
-  );
-  const [estimatedApprovalTimeInMs, setEstimatedApprovalTimeInMs] = useState(
-    null
-  );
   const [inputAmount, setInputAmount] = useState(null);
   const [inputAmountDisplay, setInputAmountDisplay] = useState(null);
   const [inputAsExactAmount, setInputAsExactAmount] = useState(true);
   const [inputCurrency, setInputCurrency] = useState(
     ethereumUtils.getAsset(allAssets, defaultInputAddress)
   );
-  const [inputExecutionRate, setInputExecutionRate] = useState(null);
-  const [inputNativePrice, setInputNativePrice] = useState(null);
-  const [isAssetApproved, setIsAssetApproved] = useState(true);
+
+  const [swapDetails, setSwapDetails] = useState({});
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [isSufficientBalance, setIsSufficientBalance] = useState(true);
-  const [isUnlockingAsset, setIsUnlockingAsset] = useState(false);
   const [nativeAmount, setNativeAmount] = useState(null);
   const [outputAmount, setOutputAmount] = useState(null);
   const [outputAmountDisplay, setOutputAmountDisplay] = useState(null);
   const [outputCurrency, setOutputCurrency] = useState(null);
-  const [outputExecutionRate, setOutputExecutionRate] = useState(null);
-  const [outputNativePrice, setOutputNativePrice] = useState(null);
   const [showConfirmButton, setShowConfirmButton] = useState(false);
   const [slippage, setSlippage] = useState(null);
   const [tradeDetails, setTradeDetails] = useState(null);
@@ -182,31 +157,6 @@ const ExchangeModal = ({
 
   const prevInputReserveTokenAddress = usePrevious(inputReserveTokenAddress);
   const prevOutputReserveTokenAddress = usePrevious(outputReserveTokenAddress);
-  const inputCurrencyAddress = toLower(get(inputCurrency, 'address'));
-  const prevInputCurrencyAddress = usePrevious(inputCurrencyAddress);
-
-  const prevPendingApprovals = usePrevious(pendingApprovals);
-
-  useEffect(() => {
-    console.log('use effect 2!');
-    const removedFromPending =
-      !get(pendingApprovals, `[${inputCurrencyAddress}]`, null) &&
-      get(prevPendingApprovals, `[${inputCurrencyAddress}]`, null); // TODO JIN prev props
-
-    // TODO JIN will this input currency prev input currency address check work?
-    if (
-      removedFromPending ||
-      inputCurrencyAddress !== prevInputCurrencyAddress
-    ) {
-      getCurrencyAllowance();
-    }
-  }, [
-    getCurrencyAllowance,
-    inputCurrencyAddress,
-    pendingApprovals,
-    prevInputCurrencyAddress,
-    prevPendingApprovals,
-  ]);
 
   useEffect(() => {
     console.log('use effect 3!');
@@ -304,79 +254,9 @@ const ExchangeModal = ({
     return lastFocusedInput.current;
   };
 
-  // TODO JIN need to make this more generic
-  const getCurrencyAllowance = useCallback(async () => {
-    if (isNil(inputCurrency)) {
-      return setIsAssetApproved(true);
-    }
-
-    const { address: inputAddress, exchangeAddress } = inputCurrency;
-
-    if (inputAddress === 'eth') {
-      return setIsAssetApproved(true);
-    }
-
-    let allowance = allowances[inputAddress];
-    if (!greaterThan(allowance, 0)) {
-      allowance = await contractUtils.getAllowance(
-        accountAddress,
-        inputCurrency,
-        exchangeAddress
-      );
-      uniswapUpdateAllowances({ [toLower(inputAddress)]: allowance });
-    }
-    const isAssetApproved = greaterThan(allowance, 0);
-    if (isAssetApproved) {
-      setApprovalCreationTimestamp(null);
-      setEstimatedApprovalTimeInMs(null);
-      setIsAssetApproved(isAssetApproved);
-      setIsUnlockingAsset(false);
-      return;
-    }
-    const pendingApproval = pendingApprovals[toLower(inputCurrency.address)];
-    const isUnlockingAsset = !!pendingApproval;
-
-    try {
-      const gasLimit = await contractUtils.estimateApprove(
-        inputCurrency.address,
-        exchangeAddress
-      );
-      gasUpdateTxFee(gasLimit, gasUtils.FAST);
-      setApprovalCreationTimestamp(
-        isUnlockingAsset ? pendingApproval.creationTimestamp : null
-      );
-      setEstimatedApprovalTimeInMs(
-        isUnlockingAsset ? pendingApproval.estimatedTimeInMs : null
-      );
-      setIsAssetApproved(isAssetApproved);
-      setIsUnlockingAsset(isUnlockingAsset);
-      return;
-    } catch (error) {
-      gasUpdateTxFee();
-      setApprovalCreationTimestamp(null);
-      setEstimatedApprovalTimeInMs(null);
-      setIsAssetApproved(isAssetApproved);
-      setIsUnlockingAsset(false);
-      return;
-    }
-  }, [
-    accountAddress,
-    allowances,
-    gasUpdateTxFee,
-    inputCurrency,
-    pendingApprovals,
-    uniswapUpdateAllowances,
-  ]);
-
   const updateTradeExecutionDetails = useCallback(() => {
     const _inputAmount = inputAmount;
     const _inputAsExactAmount = inputAsExactAmount;
-
-    const { address: inputAddress, decimals: inputDecimals } = inputCurrency;
-    const { address: outputAddress, decimals: outputDecimals } = outputCurrency;
-
-    const isInputEth = inputAddress === 'eth';
-    const isOutputEth = outputAddress === 'eth';
 
     let inputAmount = _inputAmount;
     let inputAsExactAmount = _inputAsExactAmount;
@@ -393,49 +273,16 @@ const ExchangeModal = ({
       inputAsExactAmount = true;
     }
 
-    const rawInputAmount = convertAmountToRawAmount(
-      parseFloat(inputAmount) || 0,
-      inputDecimals
+    const tradeDetails = calculateTradeDetails(
+      chainId,
+      inputAmount,
+      inputCurrency,
+      inputReserve,
+      outputAmount,
+      outputCurrency,
+      outputReserve,
+      inputAsExactAmount
     );
-
-    const rawOutputAmount = convertAmountToRawAmount(
-      parseFloat(outputAmount) || 0,
-      outputDecimals
-    );
-
-    let tradeDetails = null;
-
-    if (isInputEth && !isOutputEth) {
-      tradeDetails = inputAsExactAmount
-        ? tradeExactEthForTokensWithData(outputReserve, rawInputAmount, chainId)
-        : tradeEthForExactTokensWithData(
-            outputReserve,
-            rawOutputAmount,
-            chainId
-          );
-    } else if (!isInputEth && isOutputEth) {
-      tradeDetails = inputAsExactAmount
-        ? tradeExactTokensForEthWithData(inputReserve, rawInputAmount, chainId)
-        : tradeTokensForExactEthWithData(
-            inputReserve,
-            rawOutputAmount,
-            chainId
-          );
-    } else if (!isInputEth && !isOutputEth) {
-      tradeDetails = inputAsExactAmount
-        ? tradeExactTokensForTokensWithData(
-            inputReserve,
-            outputReserve,
-            rawInputAmount,
-            chainId
-          )
-        : tradeTokensForExactTokensWithData(
-            inputReserve,
-            outputReserve,
-            rawOutputAmount,
-            chainId
-          );
-    }
 
     let inputExecutionRate = '';
     let inputNativePrice = '';
@@ -468,10 +315,12 @@ const ExchangeModal = ({
       );
     }
 
-    setInputExecutionRate(inputExecutionRate);
-    setInputNativePrice(inputNativePrice);
-    setOutputExecutionRate(outputExecutionRate);
-    setOutputNativePrice(outputNativePrice);
+    setSwapDetails({
+      inputExecutionRate,
+      inputNativePrice,
+      outputExecutionRate,
+      outputNativePrice,
+    });
     setTradeDetails(tradeDetails);
 
     return tradeDetails;
@@ -502,41 +351,10 @@ const ExchangeModal = ({
       const { decimals: inputDecimals } = inputCurrency;
       const { decimals: outputDecimals } = outputCurrency;
 
-      let inputExecutionRate = '';
-      let outputExecutionRate = '';
-      let inputNativePrice = '';
-      let outputNativePrice = '';
-
-      if (inputCurrency) {
-        const inputPriceValue = get(inputCurrency, 'price.value', 0);
-        inputExecutionRate = updatePrecisionToDisplay(
-          get(tradeDetails, 'executionRate.rate', BigNumber(0)),
-          inputPriceValue
-        );
-
-        inputNativePrice = convertAmountToNativeDisplay(
-          inputPriceValue,
-          nativeCurrency
-        );
-      }
-
-      if (outputCurrency) {
-        const outputPriceValue = get(outputCurrency, 'price.value', 0);
-        outputExecutionRate = updatePrecisionToDisplay(
-          get(tradeDetails, 'executionRate.rateInverted', BigNumber(0)),
-          outputPriceValue,
-          true
-        );
-
-        outputNativePrice = convertAmountToNativeDisplay(
-          outputPriceValue,
-          nativeCurrency
-        );
-      }
-
       const slippage = convertNumberToString(
         get(tradeDetails, 'executionRateSlippage', 0)
       );
+
       const inputBalance = ethereumUtils.getBalanceAmount(
         selectedGasPrice,
         inputCurrency
@@ -545,11 +363,7 @@ const ExchangeModal = ({
       const isSufficientBalance =
         !inputAmount || greaterThanOrEqualTo(inputBalance, inputAmount);
 
-      setInputExecutionRate(inputExecutionRate);
-      setInputNativePrice(inputNativePrice);
       setIsSufficientBalance(isSufficientBalance);
-      setOutputExecutionRate(outputExecutionRate);
-      setOutputNativePrice(outputNativePrice);
       setSlippage(slippage);
 
       const isInputEmpty = !inputAmount;
@@ -635,12 +449,14 @@ const ExchangeModal = ({
         }
       }
 
-      if (isAssetApproved) {
+      try {
         const gasLimit = await estimateSwapGasLimit(
           accountAddress,
           tradeDetails
         );
         gasUpdateTxFee(gasLimit);
+      } catch (error) {
+        gasUpdateTxFee(ethUnits.basic_swap);
       }
     } catch (error) {
       console.log('error getting market details', error);
@@ -653,9 +469,7 @@ const ExchangeModal = ({
     inputAsExactAmount,
     inputCurrency,
     inputReserve,
-    isAssetApproved,
     nativeAmount,
-    nativeCurrency,
     outputAmount,
     outputCurrency,
     outputReserve,
@@ -723,38 +537,6 @@ const ExchangeModal = ({
     }
   };
 
-  const handleUnlockAsset = async () => {
-    try {
-      const fastGasPrice = get(gasPrices, `[${gasUtils.FAST}]`);
-      const {
-        creationTimestamp: approvalCreationTimestamp,
-        approval: { hash },
-      } = await contractUtils.approve(
-        inputCurrency.address,
-        inputCurrency.exchangeAddress,
-        gasLimit,
-        get(fastGasPrice, 'value.amount')
-      );
-      const estimatedApprovalTimeInMs =
-        parseInt(get(fastGasPrice, 'estimatedTime.amount')) ||
-        DEFAULT_APPROVAL_ESTIMATION_TIME_IN_MS;
-      uniswapAddPendingApproval(
-        inputCurrency.address,
-        hash,
-        approvalCreationTimestamp,
-        estimatedApprovalTimeInMs
-      );
-      setApprovalCreationTimestamp(approvalCreationTimestamp);
-      setEstimatedApprovalTimeInMs(estimatedApprovalTimeInMs);
-      setIsUnlockingAsset(true);
-    } catch (error) {
-      console.log('could not unlock asset', error);
-      setApprovalCreationTimestamp(null);
-      setEstimatedApprovalTimeInMs(null);
-      setIsUnlockingAsset(false);
-    }
-  };
-
   const handleRefocusLastInput = () => {
     InteractionManager.runAfterInteractions(() => {
       TextInput.State.focusTextInput(findNextFocused());
@@ -767,13 +549,10 @@ const ExchangeModal = ({
     nativeFieldRef.current.blur();
     navigation.setParams({ focused: false });
     navigation.navigate('SwapDetailsScreen', {
+      ...swapDetails,
       inputCurrencySymbol: get(inputCurrency, 'symbol'),
-      inputExecutionRate,
-      inputNativePrice,
       onRefocusInput: handleRefocusLastInput,
       outputCurrencySymbol: get(outputCurrency, 'symbol'),
-      outputExecutionRate,
-      outputNativePrice,
       restoreFocusOnSwapModal: () => {
         navigation.setParams({ focused: true });
       },
@@ -918,8 +697,15 @@ const ExchangeModal = ({
   const isSlippageWarningVisible =
     isSufficientBalance && !!inputAmount && !!outputAmount;
 
-  // TODO JIN does showing details make sense
+  const {
+    inputExecutionRate,
+    inputNativePrice,
+    outputExecutionRate,
+    outputNativePrice,
+  } = swapDetails;
+
   const showDetailsButton =
+    !showOutputField &&
     get(inputCurrency, 'symbol') &&
     get(outputCurrency, 'symbol') &&
     inputExecutionRate !== 'NaN' &&
@@ -962,15 +748,12 @@ const ExchangeModal = ({
               inputCurrencyAddress={get(inputCurrency, 'address', null)}
               inputCurrencySymbol={get(inputCurrency, 'symbol', null)}
               inputFieldRef={assignInputFieldRef}
-              isAssetApproved={isAssetApproved}
-              isUnlockingAsset={isUnlockingAsset}
               nativeAmount={nativeAmount}
               nativeCurrency={nativeCurrency}
               nativeFieldRef={assignNativeFieldRef}
               onFocus={handleFocus}
               onPressMaxBalance={handlePressMaxBalance}
               onPressSelectInputCurrency={navigateToSelectInputCurrency}
-              onUnlockAsset={handleUnlockAsset}
               setInputAmount={updateInputAmount}
               setNativeAmount={updateNativeAmount}
             />
@@ -988,20 +771,14 @@ const ExchangeModal = ({
             )}
           </FloatingPanel>
           {isSlippageWarningVisible && <SlippageWarning slippage={slippage} />}
-          {(showConfirmButton || !isAssetApproved) && (
+          {showConfirmButton && (
             <Fragment>
               <Centered css={padding(24, 15, 0)} flexShrink={0} width="100%">
                 <ConfirmExchangeButton
-                  creationTimestamp={approvalCreationTimestamp}
-                  disabled={isAssetApproved && !Number(inputAmountDisplay)}
-                  estimatedApprovalTimeInMs={estimatedApprovalTimeInMs}
-                  inputCurrencyName={get(inputCurrency, 'symbol')}
-                  isAssetApproved={isAssetApproved}
+                  disabled={!Number(inputAmountDisplay)}
                   isAuthorizing={isAuthorizing}
                   isSufficientBalance={isSufficientBalance}
-                  isUnlockingAsset={isUnlockingAsset}
                   onSubmit={handleSubmit}
-                  onUnlockAsset={handleUnlockAsset}
                   slippage={slippage}
                 />
               </Centered>
@@ -1018,7 +795,6 @@ const ExchangeModal = ({
 };
 
 ExchangeModal.propTypes = {
-  allowances: PropTypes.object,
   dataAddNewTransaction: PropTypes.func,
   defaultInputAddress: PropTypes.string,
   gasLimit: PropTypes.number,
@@ -1030,13 +806,10 @@ ExchangeModal.propTypes = {
   inputReserve: PropTypes.object,
   navigation: PropTypes.object,
   outputReserve: PropTypes.object,
-  pendingApprovals: PropTypes.object,
   selectedGasPrice: PropTypes.object,
   tabPosition: PropTypes.object, // animated value
   tradeDetails: PropTypes.object,
-  uniswapAddPendingApproval: PropTypes.func,
   uniswapAssetsInWallet: PropTypes.arrayOf(PropTypes.object),
-  uniswapUpdateAllowances: PropTypes.func,
   uniswapUpdateInputCurrency: PropTypes.func,
   uniswapUpdateOutputCurrency: PropTypes.func,
   web3ListenerInit: PropTypes.func,
