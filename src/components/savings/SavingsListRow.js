@@ -17,7 +17,12 @@ const SavingsSheetHeader = ({ APY, currency, value, onPress }) => {
   const [curValue, setCurValue] = useState(value);
 
   useEffect(() => {
-    const nextValue = String(Number(curValue) + Math.random() * Math.random());
+    // all useEffect is dummy data changes injection to see change digits animation
+    let nextValue = String(Number(curValue) + Math.random() * Math.random());
+
+    if (nextValue < 100) {
+      nextValue = Number(nextValue).toFixed(3);
+    }
 
     setTimeout(() => {
       setCurValue(nextValue);

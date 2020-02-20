@@ -32,6 +32,7 @@ const Switch = ({ valueString }) => {
         color: color,
         fontSize: 16,
         fontWeight: fonts.weight.semibold,
+        marginLeft: 0,
       }}
     >
       {valueString}

@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import { fonts, colors } from '../../styles';
 import ColorChangeAnimation from '../animations/ColorChangeAnimation';
-import Text from './Text';
 
 const AnimatedChangeText = ({ value }) => {
   const [curValue, setCurValue] = useState(value);
@@ -40,8 +39,6 @@ const AnimatedChangeText = ({ value }) => {
           color: colors.blueGreyDark,
           fontSize: 16,
           fontWeight: fonts.weight.semibold,
-          // because of the rendering issue two separate components
-          marginRight: -0.5,
         }}
       >
         {curValueStable}
