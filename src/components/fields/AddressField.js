@@ -4,7 +4,7 @@ import React from 'react';
 import styled from 'styled-components/primitives';
 import { withNavigation } from 'react-navigation';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { Clipboard } from 'react-native';
+import { Clipboard, Platform } from 'react-native';
 import { checkIsValidAddress } from '../../helpers/validators';
 import { isHexString } from '../../handlers/web3';
 import { colors } from '../../styles';
@@ -146,9 +146,13 @@ export default withNavigation(
           <Input
             {...props}
             {...omit(Label.textProps, 'opacity')}
+            autoCapitalize="none"
             autoCorrect={false}
             autoFocus={autoFocus}
             color={isValid ? colors.appleBlue : colors.blueGreyDark}
+            keyboardType={
+              Platform.OS === 'android' ? 'visible-password' : 'default'
+            }
             maxLength={addressUtils.maxLength}
             onBlur={this.onBlur}
             onChange={this.onChange}
@@ -166,7 +170,9 @@ export default withNavigation(
             weight="semibold"
           />
           {!inputValue && (
-            <Placeholder>
+            <Placeholder
+              style={{ marginTop: Platform.OS === 'android' ? 13 : 0 }}
+            >
               <TouchableWithoutFeedback onPress={this.onPressNickname}>
                 <PlaceholderText>ENS or Address (</PlaceholderText>
               </TouchableWithoutFeedback>

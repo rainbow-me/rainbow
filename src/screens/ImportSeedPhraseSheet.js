@@ -200,26 +200,26 @@ const ImportSeedPhraseSheet = ({
       >
         <Centered css={padding(0, 50)} flex={1}>
           <Input
-            style={{ minHeight: 50 }}
+            align="center"
+            autoFocus
+            autoCapitalize="none"
+            autoCorrect={false}
+            enablesReturnKeyAutomatically
+            keyboardType={
+              Platform.OS === 'android' ? 'visible-password' : 'default'
+            }
             multiline
             numberOfLines={3}
             ref={isNativeStackAvailable ? inputRef : inputRefListener}
-            align="center"
-            autoFocus
-            enablesReturnKeyAutomatically
             onChangeText={handleSetSeedPhrase}
             onSubmitEditing={onPressImportButton}
             placeholder="Seed phrase or private key"
             returnKeyType="done"
             size="large"
+            style={{ minHeight: 50 }}
             value={seedPhrase}
             weight="semibold"
             width="100%"
-            keyboardType={
-              Platform.OS === 'android' ? 'visible-password' : 'default'
-            }
-            autoCapitalize="none"
-            autoCorrect={false}
           />
         </Centered>
         <Row align="start" justify="end">
