@@ -119,6 +119,10 @@ PODS:
     - nanopb/encode (= 0.3.9011)
   - nanopb/decode (0.3.9011)
   - nanopb/encode (0.3.9011)
+  - Permission-Camera (2.0.9):
+    - RNPermissions
+  - Permission-FaceID (2.0.9):
+    - RNPermissions
   - Protobuf (3.11.3)
   - RCTRequired (0.62.0-rc.1)
   - RCTTypeSafety (0.62.0-rc.1):
@@ -373,8 +377,6 @@ PODS:
     - ReactCommon/callinvoker (= 0.62.0-rc.1)
   - ReactNativePayments (1.1.3):
     - React
-  - ReactNativePermissions (1.2.1):
-    - React
   - RNAnalytics (1.1.0):
     - Analytics
     - React
@@ -411,6 +413,8 @@ PODS:
   - RNLanguages (3.0.2):
     - React
   - RNOS (1.2.8):
+    - React
+  - RNPermissions (2.0.9):
     - React
   - RNReactNativeHapticFeedback (1.9.0):
     - React
@@ -453,6 +457,8 @@ DEPENDENCIES:
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - libwebp
+  - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera.podspec`)
+  - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
   - React (from `../node_modules/react-native/`)
@@ -487,7 +493,6 @@ DEPENDENCIES:
   - ReactCommon/callinvoker (from `../node_modules/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "ReactNativePayments (from `../node_modules/@rainbow-me/react-native-payments/lib/ios`)"
-  - ReactNativePermissions (from `../node_modules/react-native-permissions`)
   - "RNAnalytics (from `../node_modules/@segment/analytics-react-native`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
@@ -502,6 +507,7 @@ DEPENDENCIES:
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNLanguages (from `../node_modules/react-native-languages`)
   - RNOS (from `../node_modules/react-native-os`)
+  - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReactNativeHapticFeedback (from `../node_modules/react-native-haptic-feedback`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -557,6 +563,10 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/Folly.podspec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
+  Permission-Camera:
+    :path: "../node_modules/react-native-permissions/ios/Camera.podspec"
+  Permission-FaceID:
+    :path: "../node_modules/react-native-permissions/ios/FaceID.podspec"
   RCTRequired:
     :path: "../node_modules/react-native/Libraries/RCTRequired"
   RCTTypeSafety:
@@ -619,8 +629,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   ReactNativePayments:
     :path: "../node_modules/@rainbow-me/react-native-payments/lib/ios"
-  ReactNativePermissions:
-    :path: "../node_modules/react-native-permissions"
   RNAnalytics:
     :path: "../node_modules/@segment/analytics-react-native"
   RNCAsyncStorage:
@@ -649,6 +657,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-languages"
   RNOS:
     :path: "../node_modules/react-native-os"
+  RNPermissions:
+    :path: "../node_modules/react-native-permissions"
   RNReactNativeHapticFeedback:
     :path: "../node_modules/react-native-haptic-feedback"
   RNReanimated:
@@ -699,6 +709,8 @@ SPEC CHECKSUMS:
   JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
+  Permission-Camera: 8fe4753b02396489b11c5089e4f57bab7fe1ef42
+  Permission-FaceID: 29c3f213a033c24330a554a5dad7681d6e3698f8
   Protobuf: 0e94afe3b47cb11876eb6aee296638711a24bf75
   RCTRequired: 418abaf045a635a391e68ee0573035553c1c4d7b
   RCTTypeSafety: ea8dd81f61436a394b943dac4435a304c59906ff
@@ -731,7 +743,6 @@ SPEC CHECKSUMS:
   React-RCTVibration: 2e7618e869b2ba4a15042d6def29dd32df734793
   ReactCommon: 13c3473a975e73db91b1999e0d6d89c62400785d
   ReactNativePayments: 56363b0ac491c96c8c98f3913860ee5568f061ae
-  ReactNativePermissions: 7cfad56d13c8961cd2a1005b4955b1400c79ef3e
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 44395cb9c7c1523104c2b499eb426ef7aff82bca
   RNCMaskedView: a88953beefbd347a29072d9eba90e42945fe291e
@@ -746,6 +757,7 @@ SPEC CHECKSUMS:
   RNKeychain: f5783613aa3095af63345ddb9626a729bd4a3897
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
+  RNPermissions: 2f74237e97b08beda01e914301e12524ddddf5b8
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
   RNScreens: 031d10e2b648afc9546f16b6a786d2efc6870310
@@ -761,6 +773,6 @@ SPEC CHECKSUMS:
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   Yoga: b9a1f7189009fa4b6266ee0a63235547326295d2
 
-PODFILE CHECKSUM: 4e11b438fd6bb2763be24d82eeafc6f69c49a2f4
+PODFILE CHECKSUM: 5b3b67c31489543be6a567cd5513d6e295e3c505
 
 COCOAPODS: 1.8.4
