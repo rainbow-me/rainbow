@@ -3,7 +3,7 @@ import { Animated, Easing } from 'react-native';
 import { fonts, colors } from '../../styles';
 import AnimateNumber from '@bankify/react-native-animate-number';
 
-const Switch = ({ valueString, changeIndex }) => {
+const Switch = ({ amountOfDigits, changeIndex, valueString }) => {
   const [value] = useState(new Animated.Value(0));
 
   const color = value.interpolate({
@@ -41,9 +41,8 @@ const Switch = ({ valueString, changeIndex }) => {
     );
   };
 
-  const formatAnimatedEstimatedTime = estimatedTime => {
-    return parseFloat(estimatedTime || 0).toFixed(3);
-  };
+  const formatAnimatedEstimatedTime = estimatedTime =>
+    parseFloat(estimatedTime || 0).toFixed(amountOfDigits);
 
   return (
     <AnimateNumber

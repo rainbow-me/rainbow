@@ -42,7 +42,13 @@ const AnimatedChangeText = ({ value }) => {
       >
         {curValueStable}
       </Text>
-      <ColorChangeAnimation valueString={curValue} changeIndex={index} />
+      <ColorChangeAnimation
+        valueString={curValue}
+        changeIndex={index}
+        amountOfDigits={
+          value.toString().length - Math.floor(value).toString().length - 1
+        }
+      />
     </View>
   );
 };
