@@ -231,7 +231,7 @@ const ImportSeedPhraseSheet = ({
             seedPhrase={seedPhrase}
           />
         </Row>
-        {isImporting && (
+        {!isImporting && (
           <LoadingOverlay
             paddingTop={keyboardVerticalOffset}
             title="Importing..."

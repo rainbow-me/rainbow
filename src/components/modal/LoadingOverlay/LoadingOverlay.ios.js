@@ -2,11 +2,11 @@ import { BlurView } from '@react-native-community/blur';
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components/primitives';
-import { colors, padding, position } from '../../styles';
-import ActivityIndicator from '../ActivityIndicator';
-import { Centered } from '../layout';
-import { Text } from '../text';
-import TouchableBackdrop from '../TouchableBackdrop';
+import { colors, padding, position } from '../../../styles';
+import ActivityIndicator from '../../ActivityIndicator';
+import { Centered } from '../../layout';
+import { Text } from '../../text';
+import TouchableBackdrop from '../../TouchableBackdrop';
 
 const Overlay = styled(Centered)`
   ${padding(19, 19, 22)};
