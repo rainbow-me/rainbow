@@ -41,7 +41,6 @@ import {
   divide,
   greaterThanOrEqualTo,
   isZero,
-  subtract,
   updatePrecisionToDisplay,
 } from '../helpers/utilities';
 import { useAccountData, useMagicFocus, usePrevious } from '../hooks';
@@ -120,6 +119,7 @@ const ExchangeModal = ({
   const [lastFocusedInput, handleFocus] = useMagicFocus(inputFieldRef.current);
 
   useEffect(() => {
+    console.log('[effect 1] gasPrices');
     gasUpdateDefaultGasLimit(ethUnits.basic_swap);
     gasPricesStartPolling();
     web3ListenerInit();
@@ -522,10 +522,13 @@ const ExchangeModal = ({
   };
 
   const handlePressMaxBalance = () => {
-    let maxBalance = get(inputCurrency, 'balance.amount', 0);
-    if (inputCurrency.address === 'eth') {
-      maxBalance = subtract(maxBalance, 0.01);
-    }
+    console.log('[max] selectedGasPrice', selectedGasPrice);
+    console.log('[max] inputCurrency', inputCurrency);
+    const maxBalance = ethereumUtils.getBalanceAmount(
+      selectedGasPrice,
+      inputCurrency
+    );
+    console.log('[max] maxBalance', maxBalance);
 
     return updateInputAmount(maxBalance);
   };
@@ -600,6 +603,7 @@ const ExchangeModal = ({
   };
 
   const navigateToSelectOutputCurrency = () => {
+    console.log('[nav to select output curr]', inputCurrency);
     InteractionManager.runAfterInteractions(() => {
       navigation.setParams({ focused: false });
       navigation.navigate('CurrencySelectScreen', {
@@ -614,12 +618,12 @@ const ExchangeModal = ({
   };
 
   const updateInputAmount = useCallback(
-    (
-      newInputAmount = null,
-      newAmountDisplay = null,
-      newInputAsExactAmount = true
-    ) => {
-      console.log('update input amount', newInputAmount, newInputAsExactAmount);
+    (newInputAmount, newAmountDisplay, newInputAsExactAmount = true) => {
+      console.log(
+        '[update input amount]',
+        newInputAmount,
+        newInputAsExactAmount
+      );
       setInputAmount(newInputAmount);
       setInputAsExactAmount(newInputAsExactAmount);
       setInputAmountDisplay(
@@ -649,17 +653,26 @@ const ExchangeModal = ({
 
   const previousInputCurrency = usePrevious(inputCurrency);
 
-  const updateInputCurrency = (inputCurrency, userSelected = true) => {
-    if (!isSameAsset(inputCurrency, previousInputCurrency)) {
+  const updateInputCurrency = (newInputCurrency, userSelected = true) => {
+    console.log(
+      '[update input curr] new input curr, user selected?',
+      newInputCurrency,
+      userSelected
+    );
+    console.log('[update input curr] prev input curr', previousInputCurrency);
+    if (!isSameAsset(newInputCurrency, previousInputCurrency)) {
+      console.log('[update input curr] clear form');
       clearForm();
     }
 
-    setInputCurrency(inputCurrency);
-    setShowConfirmButton(!!inputCurrency && !!outputCurrency);
+    console.log('[update input curr] setting input curr', newInputCurrency);
+    setInputCurrency(newInputCurrency);
+    setShowConfirmButton(!!newInputCurrency && !!outputCurrency);
 
-    uniswapUpdateInputCurrency(inputCurrency);
+    uniswapUpdateInputCurrency(newInputCurrency);
 
-    if (userSelected && isSameAsset(inputCurrency, outputCurrency)) {
+    if (userSelected && isSameAsset(newInputCurrency, outputCurrency)) {
+      console.log('[update input curr] setting output curr to prev input curr');
       updateOutputCurrency(previousInputCurrency, false);
     }
   };
@@ -695,8 +708,8 @@ const ExchangeModal = ({
   };
 
   const updateOutputAmount = (
-    newOutputAmount = null,
-    newAmountDisplay = null,
+    newOutputAmount,
+    newAmountDisplay,
     newInputAsExactAmount = false
   ) => {
     console.log('update output amt', newInputAsExactAmount);
@@ -709,21 +722,38 @@ const ExchangeModal = ({
 
   const previousOutputCurrency = usePrevious(outputCurrency);
 
-  const updateOutputCurrency = (outputCurrency, userSelected = true) => {
-    uniswapUpdateOutputCurrency(outputCurrency);
+  const updateOutputCurrency = (newOutputCurrency, userSelected = true) => {
+    console.log(
+      '[update output curr] new output curr, user selected?',
+      newOutputCurrency,
+      userSelected
+    );
+    console.log(
+      '[update output curr] input currency at the moment',
+      inputCurrency
+    );
+    uniswapUpdateOutputCurrency(newOutputCurrency);
 
     setInputAsExactAmount(true);
-    setOutputCurrency(outputCurrency);
-    setShowConfirmButton(!!inputCurrency && !!outputCurrency);
+    setOutputCurrency(newOutputCurrency);
+    setShowConfirmButton(!!inputCurrency && !!newOutputCurrency);
 
+    console.log(
+      '[update output curr] prev output curr',
+      previousOutputCurrency
+    );
     const existsInWallet = find(
       uniswapAssetsInWallet,
       asset => get(asset, 'address') === get(previousOutputCurrency, 'address')
     );
-    if (userSelected && isSameAsset(inputCurrency, outputCurrency)) {
+    if (userSelected && isSameAsset(inputCurrency, newOutputCurrency)) {
       if (existsInWallet) {
+        console.log(
+          '[update output curr] updating input curr with prev output curr'
+        );
         updateInputCurrency(previousOutputCurrency, false);
       } else {
+        console.log('[update output curr] updating input curr with nothing');
         updateInputCurrency(null, false);
       }
     }
@@ -782,10 +812,10 @@ const ExchangeModal = ({
               inputAmount={inputAmountDisplay}
               inputCurrencyAddress={get(inputCurrency, 'address', null)}
               inputCurrencySymbol={get(inputCurrency, 'symbol', null)}
-              inputFieldRef={assignInputFieldRef}
+              assignInputFieldRef={assignInputFieldRef}
               nativeAmount={nativeAmount}
               nativeCurrency={nativeCurrency}
-              nativeFieldRef={assignNativeFieldRef}
+              assignNativeFieldRef={assignNativeFieldRef}
               onFocus={handleFocus}
               onPressMaxBalance={handlePressMaxBalance}
               onPressSelectInputCurrency={navigateToSelectInputCurrency}
@@ -800,7 +830,7 @@ const ExchangeModal = ({
                 outputAmount={outputAmountDisplay}
                 outputCurrencyAddress={get(outputCurrency, 'address', null)}
                 outputCurrencySymbol={get(outputCurrency, 'symbol', null)}
-                outputFieldRef={assignOutputFieldRef}
+                assignOutputFieldRef={assignOutputFieldRef}
                 setOutputAmount={updateOutputAmount}
               />
             )}
