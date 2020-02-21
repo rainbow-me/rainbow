@@ -48,6 +48,7 @@ let colorIndex = 0;
 export default function Chart() {
   const textInputRef = useRef(null);
 
+  // eslint-disable-next-line no-unused-vars
   const data1 = useMemo(() => {
     colorIndex = 0;
     return dataSwitching1.map((sectionsData, index) => {

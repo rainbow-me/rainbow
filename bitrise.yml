@@ -1,0 +1,178 @@
+---
+format_version: 1.1.0
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+trigger_map:
+- push_branch: develop
+  workflow: workflow_testflight
+- pull_request_source_branch: "*"
+  workflow: workflow_tests
+  pull_request_target_branch: develop
+workflows:
+  build_setup:
+    steps:
+    - activate-ssh-key@4.0.5:
+        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
+    - git-clone@4.0.18: {}
+    - nvm@1.2.2:
+        inputs:
+        - node_version: 10.15.3
+    - cache-pull@2.1.4:
+        title: Restoring cache
+    - yarn@0.1.1:
+        inputs:
+        - cache_local_deps: 'yes'
+        - command: install --network-timeout 300000 --frozen-lockfile --network-concurrency
+            1
+        title: Installing dependencies via yarn
+    before_run: 
+    after_run: 
+  lint:
+    before_run: []
+    after_run: []
+    steps:
+    - yarn@0.1.1:
+        inputs:
+        - command: lint
+        title: Linting for Errors
+  detox_tests:
+    before_run: []
+    after_run: []
+    steps:
+    - script@1.1.6:
+        inputs:
+        - content: |-
+            #!/bin/bash
+
+            detox build --configuration ios.sim.release
+        title: Detox - Build Release App
+    - script@1.1.6:
+        inputs:
+        - content: |-
+            #!/bin/bash
+
+            detox test --configuration ios.sim.release --cleanup
+        title: Detox - Run E2E Tests
+  detox_setup:
+    steps:
+    - yarn@0.1.1:
+        inputs:
+        - cache_local_deps: 'yes'
+        - command: global add detox-cli
+        title: Detox - Install CLI
+    - script@1.1.6:
+        inputs:
+        - content: |-
+            #!/bin/bash
+            detox clean-framework-cache && detox build-framework-cache
+        title: Detox - Clean & Build Framework cache
+  pods_setup:
+    steps:
+    - script@1.1.6:
+        inputs:
+        - content: pod repo update
+        title: Pods - Update repo
+    - script@1.1.6:
+        inputs:
+        - content: cd ios && pod install
+        title: Pods - Install
+  react_native_setup:
+    before_run: []
+    steps:
+    - script@1.1.6:
+        inputs:
+        - content: |-
+            #!/bin/bash
+            brew update
+            brew tap wix/brew
+            brew install --HEAD applesimutils
+        title: React Native - Install dependencies via Brew
+    - yarn@0.1.1:
+        inputs:
+        - command: global add react-native-cli
+        title: React Native - Install CLI
+  workflow_testflight:
+    before_run:
+    - build_setup
+    - generate_dot_env
+    - pods_setup
+    steps:
+    - certificate-and-profile-installer@1.10.3: {}
+    - fastlane@2.7.0:
+        inputs:
+        - work_dir: "$BITRISE_SOURCE_DIR/ios"
+        - lane: beta
+        title: Fastlane - Submit to Testflight
+    - yarn@0.1.1:
+        inputs:
+        - command: global add sentry-cli
+        title: Install Sentry CLI
+    - fastlane@2.7.0:
+        inputs:
+        - work_dir: "$BITRISE_SOURCE_DIR/ios"
+        - lane: refresh_dsyms
+        title: Fastlane - Upload debug symbols and sourcemaps
+    envs:
+    - opts:
+        is_expand: false
+      SENTRY_ENVIRONMENT: Release
+    after_run:
+    - store_cache_artifacts
+  workflow_tests:
+    before_run:
+    - build_setup
+    - lint
+    - pods_setup
+    - detox_setup
+    - generate_dot_env
+    - react_native_setup
+    - detox_tests
+    envs:
+    - opts:
+        is_expand: false
+      SENTRY_ENVIRONMENT: LocalRelease
+    steps:
+    - slack@3.1.3:
+        inputs:
+        - channel: "#bitrise"
+        - from_username: Bitrise Bot
+        - pretext: "* All Tests Passed! *"
+        - channel_on_error: "#bitrise"
+        - text_on_error: Build failed
+        - emoji_on_error: ''
+        - from_username_on_error: Bitrise bot
+        - webhook_url: "$SLACK_WEBHOOK_URL"
+    after_run:
+    - store_cache_artifacts
+  generate_dot_env:
+    steps:
+    - script@1.1.6:
+        inputs:
+        - content: |
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # write your script here
+            touch .env
+            echo "DATA_ORIGIN=$DATA_ORIGIN" >> .env
+            echo "REACT_APP_INFURA_PROJECT_ID=$REACT_APP_INFURA_PROJECT_ID" >> .env
+            echo "REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY" >> .env
+            echo "DATA_API_KEY=$DATA_API_KEY" >> .env
+            echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
+            echo "SENTRY_ENVIRONMENT=$SENTRY_ENVIRONMENT" >> .env
+            echo "WYRE_ENDPOINT=$WYRE_ENDPOINT" >> .env
+            echo "WYRE_ACCOUNT_ID=$WYRE_ACCOUNT_ID" >> .env
+            echo "RAINBOW_WYRE_MERCHANT_ID=$RAINBOW_WYRE_MERCHANT_ID" >> .env
+        title: Generate .env file
+  store_cache_artifacts:
+    steps:
+    - cache-push@2.2.3:
+        inputs:
+        - cache_paths: |-
+            $BITRISE_CACHE_DIR
+            $BITRISE_SOURCE_DIR/node_modules
+            ~/Library/Developer/Xcode/DerivedData
+        title: Store cache artifacts
+        is_always_run: true

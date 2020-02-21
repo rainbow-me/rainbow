@@ -181,12 +181,11 @@
     "babel-plugin-rewire": "^1.2.0",
     "babel-plugin-styled-components": "^1.10.6",
     "babel-plugin-transform-remove-console": "^6.9.4",
-    "detox": "^12.8.0",
+    "detox": "^15.2.2",
     "eslint": "^6.6.0",
     "eslint-config-satya164": "^2.4.1",
     "jest": "^24.9.0",
     "metro-react-native-babel-preset": "^0.57.0",
-    "mocha": "^6.2.2",
     "react-native-bundle-visualizer": "^2.0.1",
     "react-native-clean-project": "^3.1.0",
     "react-test-renderer": "16.9.0",
@@ -210,19 +209,24 @@
   "detox": {
     "configurations": {
       "ios.sim.release": {
-        "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/Rainbow.app",
-        "build": "xcodebuild -workspace ios/Rainbow.xcworkspace/ -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet",
+        "binaryPath": "ios/build/Rainbow/Build/Products/Release-iphonesimulator/Rainbow.app",
+        "build": "./node_modules/.bin/react-native run-ios  --configuration Release --simulator 'iPhone 11 Pro'",
         "type": "ios.simulator",
-        "name": "iPhone 8"
+        "device": {
+          "type": "iPhone 11 Pro"
+        }
       },
       "ios.sim.debug.local": {
-        "binaryPath": "ios/build/Products/Debug-iphonesimulator/Rainbow.app",
-        "build": "xcodebuild -workspace ios/Rainbow.xcworkspace/ -scheme Rainbow -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet",
+        "binaryPath": "ios/build/Rainbow/Build/Products/Debug-iphonesimulator/Rainbow.app",
+        "build": "./node_modules/.bin/react-native run-ios --simulator 'iPhone 11 Pro'",
         "type": "ios.simulator",
-        "name": "iPhone 6s"
+        "device": {
+          "type": "iPhone 11 Pro"
+        }
       }
     },
-    "test-runner": "mocha"
+    "runner-config": "e2e/config.json",
+    "test-runner": "jest"
   },
   "react-native": {
     "zlib": "browserify-zlib",
