@@ -38,6 +38,7 @@ const AnimatedChangeText = ({ value }) => {
           color: colors.blueGreyDark,
           fontSize: 16,
           fontWeight: fonts.weight.semibold,
+          margin: 0,
         }}
       >
         ${curValueStable}

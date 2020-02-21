@@ -34,6 +34,7 @@ const Switch = ({ amountOfDigits, changeIndex, valueString }) => {
           color: color,
           fontSize: 16,
           fontWeight: fonts.weight.semibold,
+          marginLeft: -0.05,
         }}
       >
         {String(animatedNumber).slice(changeIndex)}
