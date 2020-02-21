@@ -22,7 +22,7 @@ export const rapsAddOrUpdate = (id, data) => (dispatch, getState) => {
   const { raps } = getState().raps;
   const updatedRaps = {
     ...raps,
-    [id]: data,
+    [id]: omit(data, ['callback']),
   };
   saveRaps(updatedRaps);
   dispatch({

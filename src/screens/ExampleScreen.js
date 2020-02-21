@@ -14,7 +14,7 @@ import {
   withRaps,
 } from '../hoc';
 import { colors, position } from '../styles';
-import swapOnUniswap from '../raps/swap-uniswap';
+import unlockAndSwap from '../raps/unlockAndSwap';
 import { loadWallet } from '../model/wallet';
 
 class ExampleScreen extends PureComponent {
@@ -53,7 +53,7 @@ class ExampleScreen extends PureComponent {
     const inputAsExactAmount = true;
 
     try {
-      const { swap, rap } = await swapOnUniswap(
+      const { swap, rap } = await unlockAndSwap(
         wallet,
         inputCurrency,
         outputCurrency,

@@ -46,7 +46,8 @@ import {
 } from '../helpers/utilities';
 import { useAccountData, useMagicFocus, usePrevious } from '../hooks';
 import { loadWallet } from '../model/wallet';
-import swapOnUniswap from '../raps/swap-uniswap';
+import { executeRap } from '../raps/common';
+import createUnlockAndSwapRap from '../raps/unlockAndSwap';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
 import { ethereumUtils } from '../utils';
@@ -529,41 +530,33 @@ const ExchangeModal = ({
     return updateInputAmount(maxBalance);
   };
 
-  // TODO JIN handle submit
   const handleSubmit = async () => {
     setIsAuthorizing(true);
     try {
       const wallet = await loadWallet();
       setIsAuthorizing(false);
-      // const gasPrice = get(selectedGasPrice, 'value.amount');
-      const { swap, rap } = await swapOnUniswap(
-        wallet,
+      const callback = () => {
+        navigation.setParams({ focused: false });
+        navigation.navigate('ProfileScreen');
+      };
+      const unlockAndSwapRap = createUnlockAndSwapRap(
         inputCurrency,
         outputCurrency,
         inputAmount,
         outputAmount,
         null,
-        inputAsExactAmount
+        inputAsExactAmount,
+        callback
       );
-
-      // TODO JIN should we reveal all approval txns? txn parsers
-      /*
-      if (txn) {
-        dataAddNewTransaction({
-          amount: inputAmount,
-          asset: inputCurrency,
-          from: accountAddress,
-          hash: txn.hash,
-          nonce: get(txn, 'nonce'),
-          to: get(txn, 'to'),
-        });
-        navigation.setParams({ focused: false });
-        navigation.navigate('ProfileScreen');
-      }
-    */
+      console.log(
+        '[exchange - handle submit] created unlock and swap rap',
+        unlockAndSwapRap
+      );
+      executeRap(wallet, unlockAndSwapRap);
+      console.log('[exchange - handle submit] executed rap!');
     } catch (error) {
       setIsAuthorizing(false);
-      console.log('error submitting swap', error);
+      console.log('[exchange - handle submit] error submitting swap', error);
       navigation.setParams({ focused: false });
       navigation.navigate('WalletScreen');
     }
