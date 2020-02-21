@@ -4,6 +4,7 @@ import React from 'react';
 import { InteractionManager, Linking, ScrollView } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import * as StoreReview from 'react-native-store-review';
 import { compose, onlyUpdateForKeys, withHandlers } from 'recompact';
 import styled from 'styled-components/primitives';
@@ -28,7 +29,6 @@ import {
   ListItemDivider,
 } from '../list';
 import { Emoji } from '../text';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 const SettingsExternalURLs = {
   review:
