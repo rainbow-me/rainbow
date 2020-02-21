@@ -7,7 +7,6 @@ import ColorChangeAnimation from '../animations/ColorChangeAnimation';
 const AnimatedChangeText = ({ value }) => {
   const [index, setIndex] = useState(0);
   const [curValue, setCurValue] = useState(value);
-  const [curValueStable, setCurValueStable] = useState(value);
 
   useEffect(() => {
     let changeIndex = null;
@@ -21,10 +20,8 @@ const AnimatedChangeText = ({ value }) => {
       }
     }
 
-    const stable = nextValue.slice(0, changeIndex);
     setIndex(changeIndex);
     setCurValue(value);
-    setCurValueStable(stable);
   }, [value]);
 
   return (
@@ -41,14 +38,22 @@ const AnimatedChangeText = ({ value }) => {
           margin: 0,
         }}
       >
-        ${curValueStable}
+        $
       </Text>
       <ColorChangeAnimation
+        basicColor={colors.blueGreyDark}
+        changeColor={colors.chartGreen}
+        animationDurations={{
+          end: 1200,
+          start: 120,
+          timeout: 180,
+        }}
         valueString={curValue}
         changeIndex={index}
         amountOfDigits={
           value.toString().length - Math.floor(value).toString().length - 1
         }
+        animateNumberInterval={20}
       />
     </View>
   );
