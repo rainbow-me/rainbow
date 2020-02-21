@@ -1,7 +1,7 @@
 import { upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Alert, InteractionManager, Linking, ScrollView } from 'react-native';
+import { InteractionManager, Linking, ScrollView } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
 import FastImage from 'react-native-fast-image';
 import * as StoreReview from 'react-native-store-review';
@@ -54,6 +54,7 @@ const SettingsSection = ({
   network,
   onPressBackup,
   onPressCurrency,
+  onPressHiddenFeature,
   onPressImportSeedPhrase,
   onPressLanguage,
   onPressNetwork,
@@ -66,7 +67,7 @@ const SettingsSection = ({
     versionNumberOfTaps++;
 
     if (versionNumberOfTaps === 5) {
-      Alert.alert('Wow', 'You unlocked a hidden feature');
+      onPressHiddenFeature();
     }
 
     versionPressInterval = setTimeout(() => {
@@ -175,6 +176,7 @@ SettingsSection.propTypes = {
   network: PropTypes.string.isRequired,
   onPressBackup: PropTypes.func.isRequired,
   onPressCurrency: PropTypes.func.isRequired,
+  onPressHiddenFeature: PropTypes.func.isRequired,
   onPressImportSeedPhrase: PropTypes.func.isRequired,
   onPressLanguage: PropTypes.func.isRequired,
   onPressNetwork: PropTypes.func,
