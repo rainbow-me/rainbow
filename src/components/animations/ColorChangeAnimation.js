@@ -13,6 +13,7 @@ const Switch = ({
   animateNumberInterval,
 }) => {
   const [value] = useState(new Animated.Value(0));
+  const [lastValueString, setLastValueString] = useState(undefined);
 
   const color = value.interpolate({
     inputRange: [0, 1],
@@ -20,20 +21,23 @@ const Switch = ({
   });
 
   useEffect(() => {
-    Animated.timing(value, {
-      duration: animationDurations.start,
-      easing: Easing.linear,
-      toValue: 1,
-    }).start();
-
-    setTimeout(() => {
+    if (lastValueString) {
       Animated.timing(value, {
-        duration: animationDurations.end,
+        duration: animationDurations.start,
         easing: Easing.linear,
-        toValue: 0,
+        toValue: 1,
       }).start();
-    }, animationDurations.start + animationDurations.timeout);
-  });
+
+      setTimeout(() => {
+        Animated.timing(value, {
+          duration: animationDurations.end,
+          easing: Easing.linear,
+          toValue: 0,
+        }).start();
+      }, animationDurations.start + animationDurations.timeout);
+    }
+    setLastValueString(valueString);
+  }, [valueString]);
 
   const renderEstimatedTimeText = animatedNumber => {
     return (
@@ -73,6 +77,7 @@ const Switch = ({
       steps={6}
       timing="linear"
       value={valueString}
+      initial={valueString}
     />
   );
 };
