@@ -40,7 +40,7 @@ const AnimatedChangeText = ({ value }) => {
           fontWeight: fonts.weight.semibold,
         }}
       >
-        {curValueStable}
+        ${curValueStable}
       </Text>
       <ColorChangeAnimation
         valueString={curValue}
