@@ -5,9 +5,9 @@ import { fonts, colors } from '../../styles';
 import ColorChangeAnimation from '../animations/ColorChangeAnimation';
 
 const AnimatedChangeText = ({ value }) => {
+  const [index, setIndex] = useState(0);
   const [curValue, setCurValue] = useState(value);
   const [curValueStable, setCurValueStable] = useState(value);
-  const [curValueChange, setCurValueChange] = useState('');
 
   useEffect(() => {
     let changeIndex = null;
@@ -22,10 +22,9 @@ const AnimatedChangeText = ({ value }) => {
     }
 
     const stable = nextValue.slice(0, changeIndex);
-    const change = nextValue.slice(changeIndex);
+    setIndex(changeIndex);
     setCurValue(value);
     setCurValueStable(stable);
-    setCurValueChange(change);
   }, [value]);
 
   return (
@@ -43,7 +42,7 @@ const AnimatedChangeText = ({ value }) => {
       >
         {curValueStable}
       </Text>
-      <ColorChangeAnimation valueString={curValueChange} />
+      <ColorChangeAnimation valueString={curValue} changeIndex={index} />
     </View>
   );
 };

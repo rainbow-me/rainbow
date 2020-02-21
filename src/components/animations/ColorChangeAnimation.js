@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Animated, Easing } from 'react-native';
 import { fonts, colors } from '../../styles';
+import AnimateNumber from '@bankify/react-native-animate-number';
 
-const Switch = ({ valueString }) => {
+const Switch = ({ valueString, changeIndex }) => {
   const [value] = useState(new Animated.Value(0));
 
   const color = value.interpolate({
@@ -26,17 +27,33 @@ const Switch = ({ valueString }) => {
     }, 300);
   });
 
+  const renderEstimatedTimeText = animatedNumber => {
+    return (
+      <Animated.Text
+        style={{
+          color: color,
+          fontSize: 16,
+          fontWeight: fonts.weight.semibold,
+        }}
+      >
+        {String(animatedNumber).slice(changeIndex)}
+      </Animated.Text>
+    );
+  };
+
+  const formatAnimatedEstimatedTime = estimatedTime => {
+    return parseFloat(estimatedTime || 0).toFixed(3);
+  };
+
   return (
-    <Animated.Text
-      style={{
-        color: color,
-        fontSize: 16,
-        fontWeight: fonts.weight.semibold,
-        marginLeft: 0,
-      }}
-    >
-      {valueString}
-    </Animated.Text>
+    <AnimateNumber
+      formatter={formatAnimatedEstimatedTime}
+      interval={20}
+      renderContent={renderEstimatedTimeText}
+      steps={6}
+      timing="linear"
+      value={valueString}
+    />
   );
 };
 
