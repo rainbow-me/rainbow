@@ -8,7 +8,7 @@ import {
   getIsWalletEmpty,
   getAccountInfo,
 } from '../handlers/localstorage/accountLocal';
-import { hasEthBalance } from '../handlers/web3';
+import { hasEthBalance, web3SetHttpProvider } from '../handlers/web3';
 import { walletInit } from '../model/wallet';
 import {
   dataClearState,
@@ -120,6 +120,7 @@ export default Component =>
           ownProps.explorerInit();
           ownProps.uniswapPairsInit();
           await ownProps.uniqueTokensRefreshState();
+          web3SetHttpProvider(ownProps.network);
         } catch (error) {
           // TODO error state
           console.log('Error initializing account data: ', error);
@@ -187,7 +188,7 @@ export default Component =>
           } else {
             const isWalletEmpty = await getIsWalletEmpty(
               walletAddress,
-              'mainnet'
+              ownProps.network
             );
             if (isNil(isWalletEmpty)) {
               ownProps.checkEthBalance(walletAddress);

@@ -186,11 +186,6 @@ SettingsSection.propTypes = {
   onSendFeedback: PropTypes.func.isRequired,
 };
 
-SettingsSection.defaultProps = {
-  // XXX TODO: Delete this default once testnet support exists
-  network: 'Mainnet',
-};
-
 export default compose(
   withAccountSettings,
   withSendFeedback,

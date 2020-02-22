@@ -1,28 +1,32 @@
+import analytics from '@segment/analytics-react-native';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForKeys } from 'recompact';
+import { compose, withHandlers } from 'recompose';
 import { RadioList, RadioListItem } from '../radio-list';
+import { withAccountSettings, withDataInit } from '../../hoc';
+import upperFirst from 'lodash/upperFirst';
 
 const NETWORKS = [
-  { name: 'Mainnet', selected: true },
+  { disabled: false, name: 'Mainnet' },
   { disabled: true, name: 'Ropsten' },
   { disabled: true, name: 'Kovan' },
-  { disabled: true, name: 'Rinkeby' },
+  { disabled: false, name: 'Rinkeby' },
 ];
 
-const buildNetworkListItem = ({ disabled, name }) => ({
-  disabled,
-  key: name,
-  label: name,
-  value: name,
-});
-
-const NetworkSection = ({ network }) => (
+const NetworkSection = ({ network, onNetworkChange }) => (
   <RadioList
     extraData={network}
-    items={NETWORKS.map(buildNetworkListItem)}
+    items={NETWORKS.map(({ disabled, name }) => ({
+      disabled,
+      key: name,
+      label: name,
+      selected: network.toLowerCase() === name.toLowerCase() ? true : false,
+      value: name,
+    }))}
     renderItem={RadioListItem}
-    value={network}
+    value={upperFirst(network)}
+    onChange={onNetworkChange}
   />
 );
 
@@ -31,7 +35,21 @@ NetworkSection.propTypes = {
 };
 
 NetworkSection.defaultProps = {
-  network: 'Mainnet',
+  onNetworkChange: PropTypes.func.isRequired,
 };
 
-export default onlyUpdateForKeys(['network'])(NetworkSection);
+export default compose(
+  withAccountSettings,
+  withDataInit,
+  withHandlers({
+    onNetworkChange: ({
+      settingsUpdateNetwork,
+      clearAccountData,
+    }) => network => {
+      settingsUpdateNetwork(network.toLowerCase());
+      clearAccountData();
+      analytics.track('Changed network', { network });
+    },
+  }),
+  onlyUpdateForKeys(['network'])
+)(NetworkSection);
