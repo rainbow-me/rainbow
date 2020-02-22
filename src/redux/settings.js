@@ -1,7 +1,7 @@
-import { getNetwork } from 'ethers/utils';
 import { updateLanguage } from '../languages';
 import {
   getLanguage,
+  getNetwork,
   getNativeCurrency,
   saveLanguage,
   saveNativeCurrency,
@@ -11,6 +11,7 @@ import {
 import { dataClearState } from './data';
 import { explorerInit } from './explorer';
 import { ethereumUtils } from '../utils';
+import { web3SetHttpProvider } from '../handlers/web3';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -54,11 +55,14 @@ export const settingsLoadState = () => async dispatch => {
   } catch (error) {
     dispatch({ type: SETTINGS_UPDATE_NATIVE_CURRENCY_FAILURE });
   }
+};
+
+export const settingsLoadNetwork = () => async dispatch => {
   try {
     const network = await getNetwork();
     const chainId = ethereumUtils.getChainIdFromNetwork(network);
-
-    dispatch({
+    web3SetHttpProvider(network);
+    return dispatch({
       payload: { chainId, network },
       type: SETTINGS_UPDATE_NETWORK_SUCCESS,
     });
@@ -90,8 +94,8 @@ export const settingsUpdateAccountAddress = accountAddress => dispatch =>
 export const settingsUpdateNetwork = network => dispatch => {
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
   console.log('switching network to', network);
-
-  saveNetwork(network)
+  web3SetHttpProvider(network);
+  return saveNetwork(network)
     .then(() => {
       dispatch({
         payload: { chainId, network },

@@ -62,16 +62,20 @@ class WalletScreen extends Component {
   };
 
   shouldComponentUpdate = nextProps =>
-    nextProps.navigation.getParam('focused', true) &&
     isNewValueForObjectPaths(this.props, nextProps, [
-      'fetchingAssets',
-      'fetchingUniqueTokens',
-      'isEmpty',
-      'isWalletEthZero',
-      'language',
-      'nativeCurrency',
-      'sections',
-    ]);
+      'network',
+      'accountAddress',
+    ]) ||
+    (nextProps.navigation.getParam('focused', true) &&
+      isNewValueForObjectPaths(this.props, nextProps, [
+        'fetchingAssets',
+        'fetchingUniqueTokens',
+        'isEmpty',
+        'isWalletEthZero',
+        'language',
+        'nativeCurrency',
+        'sections',
+      ]));
 
   render = () => {
     const {
@@ -82,6 +86,8 @@ class WalletScreen extends Component {
       scrollViewTracker,
       sections,
     } = this.props;
+
+    console.log('RE_RENDERING WALLET', sections);
 
     return (
       <Page {...position.sizeAsObject('100%')} flex={1}>

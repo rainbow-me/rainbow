@@ -8,7 +8,7 @@ import {
   getIsWalletEmpty,
   getAccountInfo,
 } from '../handlers/localstorage/accountLocal';
-import { hasEthBalance, web3SetHttpProvider } from '../handlers/web3';
+import { hasEthBalance } from '../handlers/web3';
 import { walletInit } from '../model/wallet';
 import {
   dataClearState,
@@ -27,6 +27,7 @@ import {
 } from '../redux/openStateSettings';
 import { requestsLoadState, requestsClearState } from '../redux/requests';
 import {
+  settingsLoadNetwork,
   settingsLoadState,
   settingsUpdateAccountAddress,
   settingsUpdateAccountName,
@@ -69,6 +70,7 @@ export default Component =>
       requestsClearState,
       requestsLoadState,
       setIsWalletEthZero,
+      settingsLoadNetwork,
       settingsLoadState,
       settingsUpdateAccountAddress,
       uniqueTokensClearState,
@@ -117,10 +119,14 @@ export default Component =>
         try {
           // await ownProps.dataTokenOverridesInit();
           sentryUtils.addInfoBreadcrumb('Initialize account data');
-          ownProps.explorerInit();
-          ownProps.uniswapPairsInit();
-          await ownProps.uniqueTokensRefreshState();
-          web3SetHttpProvider(ownProps.network);
+          console.log('Initialize account data for ', ownProps.network);
+          if (ownProps.network === 'mainnet') {
+            ownProps.explorerInit();
+            ownProps.uniswapPairsInit();
+            await ownProps.uniqueTokensRefreshState();
+          } else {
+            console.log('wont init initializeAccountData');
+          }
         } catch (error) {
           // TODO error state
           console.log('Error initializing account data: ', error);
@@ -129,26 +135,42 @@ export default Component =>
       },
       loadAccountData: ownProps => async () => {
         sentryUtils.addInfoBreadcrumb('Load wallet data');
+        console.log('Load wallet data ', ownProps.network);
         await ownProps.openStateSettingsLoadState();
+        const promises = [];
         const p1 = ownProps.settingsLoadState();
-        const p2 = ownProps.dataLoadState();
-        const p3 = ownProps.uniqueTokensLoadState();
-        const p4 = ownProps.walletConnectLoadState();
-        const p5 = ownProps.uniswapLoadState();
-        const p6 = ownProps.requestsLoadState();
+        promises.push(p1);
+        if (ownProps.network === 'mainnet') {
+          const p2 = ownProps.dataLoadState();
+          promises.push(p2);
+          const p3 = ownProps.uniqueTokensLoadState();
+          promises.push(p3);
+          const p4 = ownProps.walletConnectLoadState();
+          promises.push(p4);
+          const p5 = ownProps.uniswapLoadState();
+          promises.push(p5);
+          const p6 = ownProps.requestsLoadState();
+          promises.push(p6);
+        } else {
+          console.log('wont init loadAccountData');
+        }
         const p7 = ownProps.contactsLoadState();
-        return promiseUtils.PromiseAllWithFails([p1, p2, p3, p4, p5, p6, p7]);
+        promises.push(p7);
+
+        return promiseUtils.PromiseAllWithFails(promises);
       },
       refreshAccountData: ownProps => async () => {
         try {
-          const getUniswap = ownProps.uniswapUpdateState();
-          const getUniqueTokens = ownProps.uniqueTokensRefreshState();
+          if (ownProps.network === 'mainnet') {
+            const getUniswap = ownProps.uniswapUpdateState();
+            const getUniqueTokens = ownProps.uniqueTokensRefreshState();
 
-          return Promise.all([
-            delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
-            getUniswap,
-            getUniqueTokens,
-          ]);
+            return Promise.all([
+              delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
+              getUniswap,
+              getUniqueTokens,
+            ]);
+          }
         } catch (error) {
           console.log('Error refreshing data', error);
           captureException(error);
@@ -160,6 +182,9 @@ export default Component =>
       initializeWallet: ownProps => async seedPhrase => {
         try {
           sentryUtils.addInfoBreadcrumb('Start wallet setup');
+          // Load the network first
+          await ownProps.settingsLoadNetwork();
+
           const { isImported, isNew, walletAddress } = await walletInit(
             seedPhrase
           );

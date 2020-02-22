@@ -45,9 +45,13 @@ export default compose(
     onNetworkChange: ({
       settingsUpdateNetwork,
       clearAccountData,
-    }) => network => {
-      settingsUpdateNetwork(network.toLowerCase());
-      clearAccountData();
+      loadAccountData,
+      initializeAccountData,
+    }) => async network => {
+      await clearAccountData();
+      await settingsUpdateNetwork(network.toLowerCase());
+      await loadAccountData();
+      await initializeAccountData();
       analytics.track('Changed network', { network });
     },
   }),
