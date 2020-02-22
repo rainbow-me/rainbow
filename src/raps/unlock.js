@@ -55,14 +55,17 @@ const unlock = async (wallet, currentRap, index, parameters) => {
 
   console.log('[unlock] add a new txn');
   dispatch(
-    dataAddNewTransaction({
-      amount: 0,
-      asset: assetToUnlock,
-      from: wallet.address,
-      hash: approval.hash,
-      nonce: get(approval, 'nonce'),
-      to: get(approval, 'to'),
-    })
+    dataAddNewTransaction(
+      {
+        amount: 0,
+        asset: assetToUnlock,
+        from: wallet.address,
+        hash: approval.hash,
+        nonce: get(approval, 'nonce'),
+        to: get(approval, 'to'),
+      },
+      true
+    )
   );
   console.log('[unlock] calling callback');
   currentRap.callback();

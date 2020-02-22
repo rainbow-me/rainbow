@@ -360,7 +360,10 @@ export const dataUpdateTokenOverrides = tokenOverrides => dispatch =>
     type: DATA_UPDATE_TOKEN_OVERRIDES,
   });
 
-export const dataAddNewTransaction = txDetails => (dispatch, getState) =>
+export const dataAddNewTransaction = (txDetails, disableTxnWatcher = false) => (
+  dispatch,
+  getState
+) =>
   new Promise((resolve, reject) => {
     const { transactions } = getState().data;
     const { accountAddress, nativeCurrency, network } = getState().settings;
@@ -372,7 +375,9 @@ export const dataAddNewTransaction = txDetails => (dispatch, getState) =>
           type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
         });
         saveLocalTransactions(_transactions, accountAddress, network);
-        dispatch(startPendingTransactionWatcher());
+        if (!disableTxnWatcher) {
+          dispatch(startPendingTransactionWatcher());
+        }
         resolve(true);
       })
       .catch(error => {
