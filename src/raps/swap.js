@@ -55,6 +55,7 @@ const swap = async (wallet, currentRap, index, parameters) => {
   });
 
   const swap = await executeSwap(tradeDetails, gasLimit, gasPrice, wallet);
+  console.log('[swap] response', swap);
   currentRap.actions[index].transaction.hash = swap.hash;
   dispatch(rapsAddOrUpdate(currentRap.id, currentRap));
   console.log('[swap] adding a new swap txn to pending', swap.hash);

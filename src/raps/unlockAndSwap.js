@@ -2,17 +2,15 @@ import store from '../redux/store';
 import { rapsAddOrUpdate } from '../redux/raps';
 import { createNewAction, createNewRap, RapActionTypes } from './common';
 
-const NOOP = () => undefined;
-
-const createUnlockAndSwapRap = (
+const createUnlockAndSwapRap = ({
   inputCurrency,
   outputCurrency,
   inputAmount,
   outputAmount,
-  selectedGasPrice = null,
+  selectedGasPrice,
   inputAsExactAmount,
-  callback = NOOP
-) => {
+  callback,
+}) => {
   // create unlock rap
   const unlock = createNewAction(RapActionTypes.unlock, {
     assetToUnlock: inputCurrency,

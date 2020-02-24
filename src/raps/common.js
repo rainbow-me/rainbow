@@ -1,4 +1,5 @@
 import { rapsAddOrUpdate } from '../redux/raps';
+import depositCompound from './depositCompound';
 import unlock from './unlock';
 import swap from './swap';
 import store from '../redux/store';
@@ -18,6 +19,8 @@ const findActionByType = type => {
       return unlock;
     case RapActionTypes.swap:
       return swap;
+    case RapActionTypes.depositCompound:
+      return depositCompound;
     default:
       return NOOP;
   }
@@ -48,7 +51,7 @@ export const executeRap = async (wallet, rap) => {
   console.log('[common - executing rap] finished execute rap function');
 };
 
-export const createNewRap = (actions, callback) => {
+export const createNewRap = (actions, callback = NOOP) => {
   const { dispatch } = store;
   const now = new Date().getTime();
   const currentRap = {

@@ -46,7 +46,6 @@ import {
 import { useAccountData, useMagicFocus, usePrevious } from '../hooks';
 import { loadWallet } from '../model/wallet';
 import { executeRap } from '../raps/common';
-import createUnlockAndSwapRap from '../raps/unlockAndSwap';
 import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
 import { ethereumUtils } from '../utils';
@@ -78,6 +77,7 @@ const ExchangeModal = ({
   isTransitioning,
   navigation,
   outputReserve,
+  createRap,
   selectedGasPrice,
   showOutputField,
   tabPosition,
@@ -533,6 +533,8 @@ const ExchangeModal = ({
     return updateInputAmount(maxBalance);
   };
 
+  // TODO JIN how to update selected output currency to DAI
+  // updateOutputCurrency(newOutputCurrency, userSelected = true);
   const handleSubmit = async () => {
     setIsAuthorizing(true);
     try {
@@ -542,20 +544,17 @@ const ExchangeModal = ({
         navigation.setParams({ focused: false });
         navigation.navigate('ProfileScreen');
       };
-      const unlockAndSwapRap = createUnlockAndSwapRap(
-        inputCurrency,
-        outputCurrency,
+      const rap = createRap({
+        callback,
         inputAmount,
-        outputAmount,
-        null,
         inputAsExactAmount,
-        callback
-      );
-      console.log(
-        '[exchange - handle submit] created unlock and swap rap',
-        unlockAndSwapRap
-      );
-      executeRap(wallet, unlockAndSwapRap);
+        inputCurrency,
+        outputAmount,
+        outputCurrency,
+        selectedGasPrice: null,
+      });
+      console.log('[exchange - handle submit] rap', rap);
+      executeRap(wallet, rap);
       console.log('[exchange - handle submit] executed rap!');
     } catch (error) {
       setIsAuthorizing(false);
@@ -860,6 +859,7 @@ const ExchangeModal = ({
 };
 
 ExchangeModal.propTypes = {
+  createRap: PropTypes.func,
   defaultInputAddress: PropTypes.string,
   gasPricesStartPolling: PropTypes.func,
   gasPricesStopPolling: PropTypes.func,
