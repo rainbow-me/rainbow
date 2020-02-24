@@ -15,6 +15,7 @@ import {
   withOpenBalances,
   withOpenFamilyTabs,
   withOpenInvestmentCards,
+  withOpenSavings,
 } from '../../hoc';
 import { colors } from '../../styles';
 import {
@@ -35,9 +36,7 @@ import { ListFooter } from '../list';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
 import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
-import withOpenSavings from '../../hoc/withOpenSavings';
-import SavingsListWrapper from '../savings/SavingsListWrapper';
-import SavingsListRow from '../savings/SavingsListRow';
+import { SavingsListWrapper, SavingsListRow } from '../savings';
 
 /* eslint-disable sort-keys */
 export const ViewTypes = {
