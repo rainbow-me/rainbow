@@ -120,13 +120,9 @@ export default Component =>
           // await ownProps.dataTokenOverridesInit();
           sentryUtils.addInfoBreadcrumb('Initialize account data');
           console.log('Initialize account data for ', ownProps.network);
-          if (ownProps.network === 'mainnet') {
-            ownProps.explorerInit();
-            ownProps.uniswapPairsInit();
-            await ownProps.uniqueTokensRefreshState();
-          } else {
-            console.log('wont init initializeAccountData');
-          }
+          ownProps.explorerInit(ownProps.network);
+          ownProps.uniswapPairsInit(ownProps.network);
+          await ownProps.uniqueTokensRefreshState(ownProps.network);
         } catch (error) {
           // TODO error state
           console.log('Error initializing account data: ', error);
@@ -147,13 +143,14 @@ export default Component =>
           promises.push(p3);
           const p4 = ownProps.walletConnectLoadState();
           promises.push(p4);
-          const p5 = ownProps.uniswapLoadState();
-          promises.push(p5);
           const p6 = ownProps.requestsLoadState();
           promises.push(p6);
         } else {
           console.log('wont init loadAccountData');
         }
+
+        const p5 = ownProps.uniswapLoadState();
+        promises.push(p5);
         const p7 = ownProps.contactsLoadState();
         promises.push(p7);
 
@@ -161,16 +158,16 @@ export default Component =>
       },
       refreshAccountData: ownProps => async () => {
         try {
-          if (ownProps.network === 'mainnet') {
-            const getUniswap = ownProps.uniswapUpdateState();
-            const getUniqueTokens = ownProps.uniqueTokensRefreshState();
+          const getUniswap = ownProps.uniswapUpdateState();
+          const getUniqueTokens = ownProps.uniqueTokensRefreshState(
+            ownProps.network
+          );
 
-            return Promise.all([
-              delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
-              getUniswap,
-              getUniqueTokens,
-            ]);
-          }
+          return Promise.all([
+            delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
+            getUniswap,
+            getUniqueTokens,
+          ]);
         } catch (error) {
           console.log('Error refreshing data', error);
           captureException(error);

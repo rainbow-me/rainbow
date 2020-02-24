@@ -7,6 +7,7 @@ import {
   transactionsReceived,
   transactionsRemoved,
 } from './data';
+import { testnetExplorerInit } from './testnetExplorer';
 
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
@@ -88,7 +89,11 @@ export const explorerClearState = () => dispatch => {
   dispatch({ type: EXPLORER_CLEAR_STATE });
 };
 
-export const explorerInit = () => (dispatch, getState) => {
+export const explorerInit = network => (dispatch, getState) => {
+  if (network !== 'mainnet') {
+    return dispatch(testnetExplorerInit(network));
+  }
+
   const { accountAddress, nativeCurrency } = getState().settings;
   const addressSocket = createSocket('address');
   const compoundSocket = createSocket('compound');
@@ -131,6 +136,11 @@ const listenOnAddressMessages = socket => dispatch => {
   });
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
+    console.log(
+      'ADDRESS_TRANSACTIONS RECEIVED',
+      JSON.stringify(message).substr(0, 1300)
+    );
+
     dispatch(addressAssetsReceived(message));
   });
 

@@ -13,6 +13,7 @@ import {
 } from '../helpers/utilities';
 import { loadWallet } from '../model/wallet';
 import exchangeABI from '../references/uniswap-exchange-abi.json';
+import uniswapTestnetAssets from '../references/uniswap-pairs-testnet.json';
 import erc20ABI from '../references/erc20-abi.json';
 import { toHex, web3Provider } from './web3';
 
@@ -33,6 +34,19 @@ export const getUniswapPairs = async tokenOverrides => {
     return mapValues(loweredPairs, (value, key) => ({
       ...value,
       ...tokenOverrides[key],
+    }));
+  } catch (error) {
+    console.log('Error getting uniswap pairs', error);
+    throw error;
+  }
+};
+
+export const getTestnetUniswapPairs = async network => {
+  try {
+    const pairs = uniswapTestnetAssets[network];
+    const loweredPairs = mapKeys(pairs, (_, key) => toLower(key));
+    return mapValues(loweredPairs, value => ({
+      ...value,
     }));
   } catch (error) {
     console.log('Error getting uniswap pairs', error);

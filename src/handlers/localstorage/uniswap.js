@@ -23,8 +23,8 @@ const uniswapAccountLocalKeys = [
   PENDING_APPROVALS,
 ];
 
-export const getUniswapFavorites = () =>
-  getGlobal(UNISWAP_FAVORITES, DefaultUniswapFavorites);
+export const getUniswapFavorites = network =>
+  getGlobal(UNISWAP_FAVORITES, DefaultUniswapFavorites[network]);
 
 export const saveUniswapFavorites = favorites =>
   saveGlobal(UNISWAP_FAVORITES, favorites);
