@@ -453,6 +453,7 @@ class RecyclerAssetList extends Component {
     const {
       openFamilyTabs,
       openInvestmentCards,
+      openSavings,
       openSmallBalances,
       scrollingVelocity,
       sections,
@@ -518,16 +519,32 @@ class RecyclerAssetList extends Component {
           if (balances.data) {
             balancesHeight += CoinRow.height * (balances.data.length - 1);
             if (
-              balances.data[balances.data.length - 1].smallBalancesContainer
+              balances.data[balances.data.length - 1].smallBalancesContainer ||
+              balances.data[balances.data.length - 2].smallBalancesContainer
             ) {
-              balancesHeight += CoinDivider.height + ListFooter.height + 9;
+              balancesHeight +=
+                CoinDivider.height +
+                (balances.data[balances.data.length - 1].smallBalancesContainer
+                  ? ListFooter.height + 4
+                  : 20);
               if (openSmallBalances) {
                 balancesHeight +=
                   CoinRow.height *
-                  balances.data[balances.data.length - 1].assets.length;
+                  balances.data[
+                    balances.data.length -
+                      (balances.data[balances.data.length - 1]
+                        .smallBalancesContainer
+                        ? 1
+                        : 2)
+                  ].assets.length;
               }
-            } else {
-              balancesHeight += CoinDivider.height + ListFooter.height + 16;
+            }
+            if (balances.data[balances.data.length - 1].savingsContainer) {
+              if (openSavings) {
+                balancesHeight +=
+                  61 * balances.data[balances.data.length - 1].assets.length -
+                  1;
+              }
             }
           }
           const verticalOffset = 10;
@@ -595,15 +612,32 @@ class RecyclerAssetList extends Component {
       let balancesHeight = 0;
       if (balances.data) {
         balancesHeight += CoinRow.height * (balances.data.length - 1);
-        if (balances.data[balances.data.length - 1].smallBalancesContainer) {
-          balancesHeight += CoinDivider.height + ListFooter.height;
+        if (
+          balances.data[balances.data.length - 1].smallBalancesContainer ||
+          balances.data[balances.data.length - 2].smallBalancesContainer
+        ) {
+          balancesHeight +=
+            CoinDivider.height +
+            (balances.data[balances.data.length - 1].smallBalancesContainer
+              ? ListFooter.height + 4
+              : 20);
           if (openSmallBalances) {
             balancesHeight +=
               CoinRow.height *
-              balances.data[balances.data.length - 1].assets.length;
+              balances.data[
+                balances.data.length -
+                  (balances.data[balances.data.length - 1]
+                    .smallBalancesContainer
+                    ? 1
+                    : 2)
+              ].assets.length;
           }
-        } else {
-          balancesHeight += CoinRow.height + ListFooter.height;
+        }
+        if (balances.data[balances.data.length - 1].savingsContainer) {
+          if (openSavings) {
+            balancesHeight +=
+              61 * balances.data[balances.data.length - 1].assets.length - 1;
+          }
         }
       }
 

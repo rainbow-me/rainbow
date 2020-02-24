@@ -13,7 +13,7 @@ import { withNavigation } from 'react-navigation';
 import { CoinIcon } from '../coin-icon';
 import AnimatedChangeText from '../text/AnimatedGradientText';
 
-const SavingsSheetHeader = ({ APY, currency, value, onPress }) => {
+const SavingsListRow = ({ APY, currency, value, onPress }) => {
   const [curValue, setCurValue] = useState(value);
 
   useEffect(() => {
@@ -139,7 +139,9 @@ const SavingsSheetHeader = ({ APY, currency, value, onPress }) => {
   );
 };
 
-SavingsSheetHeader.propTypes = {
+SavingsListRow.height = 61;
+
+SavingsListRow.propTypes = {
   APY: PropTypes.string,
   currency: PropTypes.string,
   onPress: PropTypes.func,
@@ -151,4 +153,4 @@ export default compose(
   withHandlers({
     onPress: ({ navigation }) => () => navigation.navigate('SavingsSheet'),
   })
-)(SavingsSheetHeader);
+)(SavingsListRow);
