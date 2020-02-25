@@ -63,6 +63,8 @@ class WalletScreen extends Component {
 
   shouldComponentUpdate = nextProps =>
     isNewValueForObjectPaths(this.props, nextProps, [
+      'language',
+      'nativeCurrency',
       'network',
       'accountAddress',
     ]) ||
@@ -72,8 +74,6 @@ class WalletScreen extends Component {
         'fetchingUniqueTokens',
         'isEmpty',
         'isWalletEthZero',
-        'language',
-        'nativeCurrency',
         'sections',
       ]));
 

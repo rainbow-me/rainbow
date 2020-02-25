@@ -49,7 +49,7 @@ export const getTestnetUniswapPairs = async network => {
       ...value,
     }));
   } catch (error) {
-    console.log('Error getting uniswap pairs', error);
+    console.log('Error getting uniswap testnet pairs', error);
     throw error;
   }
 };
