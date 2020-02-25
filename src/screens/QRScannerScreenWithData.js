@@ -4,7 +4,7 @@ import lang from 'i18n-js';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Vibration } from 'react-native';
+import { Platform, Vibration } from 'react-native';
 import { request, PERMISSIONS } from 'react-native-permissions';
 import { withNavigationFocus } from 'react-navigation';
 import { compose } from 'recompact';
@@ -37,7 +37,7 @@ class QRScannerScreenWithData extends Component {
     const wasFocused = prevProps.navigation.getParam('focused', false);
     const isFocused = this.props.navigation.getParam('focused', false);
 
-    if (isFocused && !wasFocused) {
+    if (isFocused && !wasFocused && Platform.OS === 'ios') {
       request(PERMISSIONS.IOS.CAMERA).then(permission => {
         const isCameraAuthorized = permission === 'granted';
         if (prevState.isCameraAuthorized !== isCameraAuthorized) {
