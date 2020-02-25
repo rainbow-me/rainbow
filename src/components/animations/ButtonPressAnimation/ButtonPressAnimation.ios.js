@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   createNativeWrapper,
   PureNativeButton,
@@ -268,60 +268,83 @@ function ButtonPressAnimationJS({
     };
   }, []);
 
-  const scale = useRef(
-    block([
-      ButtonPressAnimationHelperProc(
-        animationState,
-        gestureState,
-        prevGestureState,
-        zoomClock
-      ),
-      cond(
-        and(
-          eq(prevGestureState, UNDETERMINED),
-          eq(gestureState, END),
-          neq(animationState, ANIMATION_STATE_0)
+  const scale = useMemo(
+    () =>
+      block([
+        ButtonPressAnimationHelperProc(
+          animationState,
+          gestureState,
+          prevGestureState,
+          zoomClock
         ),
-        set(animationState, ANIMATION_STATE_0)
-      ),
-      ButtonPressAnimationProc(
-        animationState,
-        durationVal,
-        finished,
-        frameTime,
-        gestureState,
-        onGestureEvent,
-        prevGestureState,
-        scaleValue,
-        time,
-        toValue,
-        zoomClock,
-        scaleTo,
-        call([], handlePress),
-        call([], () => onPressStart && onPressStart()),
-        call([gestureState], ([gs]) => {
-          if (!onLongPress) {
-            return;
-          }
-          if (gs === ACTIVE) {
-            createLongPressHandle();
-          } else {
-            removeLongPressHandle();
-          }
-        }),
-        call([gestureState], ([gs]) => {
-          if (!isInteraction) {
-            return;
-          }
-          if (gs === ACTIVE) {
-            createHandle();
-          } else {
-            removeHandle();
-          }
-        })
-      ),
-    ])
-  ).current;
+        cond(
+          and(
+            eq(prevGestureState, UNDETERMINED),
+            eq(gestureState, END),
+            neq(animationState, ANIMATION_STATE_0)
+          ),
+          set(animationState, ANIMATION_STATE_0)
+        ),
+        ButtonPressAnimationProc(
+          animationState,
+          durationVal,
+          finished,
+          frameTime,
+          gestureState,
+          onGestureEvent,
+          prevGestureState,
+          scaleValue,
+          time,
+          toValue,
+          zoomClock,
+          scaleTo,
+          call([], handlePress),
+          call([], () => onPressStart && onPressStart()),
+          call([gestureState], ([gs]) => {
+            if (!onLongPress) {
+              return;
+            }
+            if (gs === ACTIVE) {
+              createLongPressHandle();
+            } else {
+              removeLongPressHandle();
+            }
+          }),
+          call([gestureState], ([gs]) => {
+            if (!isInteraction) {
+              return;
+            }
+            if (gs === ACTIVE) {
+              createHandle();
+            } else {
+              removeHandle();
+            }
+          })
+        ),
+      ]),
+    [
+      animationState,
+      createHandle,
+      createLongPressHandle,
+      durationVal,
+      finished,
+      frameTime,
+      gestureState,
+      handlePress,
+      isInteraction,
+      onGestureEvent,
+      onLongPress,
+      onPressStart,
+      prevGestureState,
+      removeHandle,
+      removeLongPressHandle,
+      scaleTo,
+      scaleValue,
+      time,
+      toValue,
+      zoomClock,
+    ]
+  );
 
   return (
     <AnimatedRawButton

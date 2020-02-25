@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
-import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native';
 import { colors } from '../../styles';
-// import { ButtonPressAnimation } from '../animations';
+import { ButtonPressAnimation } from '../animations';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon } from '../coin-icon';
 import { EnDash } from '../html-entities';
@@ -101,7 +101,7 @@ const ExchangeInputField = ({
           onFocus={onFocus}
           setNativeAmount={setNativeAmount}
         />
-        <TouchableOpacity marginRight={4} onPress={onPressMaxBalance}>
+        <ButtonPressAnimation marginRight={4} onPress={onPressMaxBalance}>
           <RowWithMargins
             align="center"
             height={BottomRowHeight}
@@ -124,7 +124,7 @@ const ExchangeInputField = ({
               Max
             </Text>
           </RowWithMargins>
-        </TouchableOpacity>
+        </ButtonPressAnimation>
       </Row>
     </ColumnWithMargins>
   );
