@@ -143,7 +143,7 @@ const withBalanceSection = (
       showShitcoins,
       title: lang.t('account.tab_balances'),
       totalItems: isLoadingBalances ? 1 : allAssetsCount,
-      totalValue: `$${totalValue.toFixed(2)}`,
+      totalValue: `$${Number(totalValue).toFixed(2)}`,
     },
     name: 'balances',
     renderItem: isLoadingBalances
