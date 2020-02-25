@@ -184,7 +184,7 @@ class SendHeader extends PureComponent {
       <Fragment>
         <SheetHandle />
         <AddressInputContainer>
-          <Label style={{ marginRight: 10, opacity: 0.45 }}>To:</Label>
+          <Label style={{ marginRight: 6, opacity: 0.45 }}>To:</Label>
           <AddressField
             address={recipient}
             autoFocus={!showAssetList}

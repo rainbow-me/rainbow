@@ -14,6 +14,7 @@ import { Row } from '../layout';
 import { Label } from '../text';
 
 const Placeholder = styled(Row)`
+  margin-top: ${Platform.OS === 'android' ? 13 : 0};
   position: absolute;
   top: 0;
   z-index: 1;
@@ -170,9 +171,7 @@ export default withNavigation(
             weight="semibold"
           />
           {!inputValue && (
-            <Placeholder
-              style={{ marginTop: Platform.OS === 'android' ? 13 : 0 }}
-            >
+            <Placeholder>
               <TouchableWithoutFeedback onPress={this.onPressNickname}>
                 <PlaceholderText>ENS or Address (</PlaceholderText>
               </TouchableWithoutFeedback>

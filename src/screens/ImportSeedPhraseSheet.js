@@ -66,6 +66,10 @@ const StyledImportButton = styled(BorderlessButton)`
   margin-bottom: 19px;
 `;
 
+const StyledInput = styled(Input)`
+  min-height: 50;
+`;
+
 const ConfirmImportAlert = onSuccess =>
   Alert({
     buttons: [
@@ -199,7 +203,7 @@ const ImportSeedPhraseSheet = ({
         keyboardVerticalOffset={keyboardVerticalOffset}
       >
         <Centered css={padding(0, 50)} flex={1}>
-          <Input
+          <StyledInput
             align="center"
             autoFocus
             autoCapitalize="none"
@@ -216,7 +220,6 @@ const ImportSeedPhraseSheet = ({
             placeholder="Seed phrase or private key"
             returnKeyType="done"
             size="large"
-            style={{ minHeight: 50 }}
             value={seedPhrase}
             weight="semibold"
             width="100%"
