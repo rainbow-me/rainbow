@@ -1,7 +1,8 @@
-import { get, map, property } from 'lodash';
+import { concat, get, isEmpty, map } from 'lodash';
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 import React, { Component } from 'react';
+import { InteractionManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { NavigationEvents, withNavigationFocus } from 'react-navigation';
 import { compose, mapProps } from 'recompact';
@@ -20,18 +21,15 @@ import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { exchangeModalBorderRadius } from './ExchangeModal';
 
-const EMPTY_ARRAY = [];
-
-const appendAssetWithSearchableKey = asset => ({
+const appendAssetWithUniqueId = asset => ({
   ...asset,
-  uniqueId: `${asset.name} ${asset.symbol}`,
+  uniqueId: `${asset.address}`,
 });
 
-const buildUniqueIdForListData = (items = EMPTY_ARRAY) =>
-  items.map(property('address')).join('_');
-
 const normalizeAssetItems = assetsArray =>
-  map(assetsArray, appendAssetWithSearchableKey);
+  map(assetsArray, appendAssetWithUniqueId);
+
+const headerlessSection = data => [{ data, title: '' }];
 
 export const CurrencySelectionTypes = {
   input: 'input',
@@ -40,34 +38,44 @@ export const CurrencySelectionTypes = {
 
 class CurrencySelectModal extends Component {
   static propTypes = {
+    curatedAssets: PropTypes.array,
+    favorites: PropTypes.array,
+    globalHighLiquidityAssets: PropTypes.array,
+    globalLowLiquidityAssets: PropTypes.array,
     navigation: PropTypes.object,
-    sortedUniswapAssets: PropTypes.array,
     transitionPosition: PropTypes.object,
     type: PropTypes.oneOf(Object.keys(CurrencySelectionTypes)),
     uniswapAssetsInWallet: PropTypes.arrayOf(PropTypes.object),
+    uniswapGetAllExchanges: PropTypes.func,
   };
 
   state = {
     assetsToFavoriteQueue: {},
     searchQuery: '',
+    searchQueryForSearch: '',
   };
 
+  componentDidMount() {
+    InteractionManager.runAfterInteractions(() => {
+      this.props.uniswapGetAllExchanges();
+    });
+  }
+
   shouldComponentUpdate = (nextProps, nextState) => {
-    let currentAssets = this.props.sortedUniswapAssets;
-    let nextAssets = EMPTY_ARRAY;
+    const isNewType = this.props.type !== nextProps.type;
 
-    if (nextProps.type === CurrencySelectionTypes.input) {
-      currentAssets = this.props.uniswapAssetsInWallet;
-      nextAssets = nextProps.uniswapAssetsInWallet;
-    } else if (nextProps.type === CurrencySelectionTypes.output) {
-      nextAssets = nextProps.sortedUniswapAssets;
-    }
-
-    const currentAssetsUniqueId = buildUniqueIdForListData(currentAssets);
-    const nextAssetsUniqueId = buildUniqueIdForListData(nextAssets);
-    const isNewAssets = currentAssetsUniqueId !== nextAssetsUniqueId;
     const isFocused = this.props.navigation.getParam('focused', false);
     const willBeFocused = nextProps.navigation.getParam('focused', false);
+
+    if (!isFocused && willBeFocused) {
+      this.handleWillFocus();
+    } else if (isFocused && !willBeFocused) {
+      this.handleWillBlur();
+      InteractionManager.runAfterInteractions(() => {
+        this.handleDidBlur();
+        this.props.navigation.state.params.restoreFocusOnSwapModal();
+      });
+    }
 
     const isNewProps = isNewValueForObjectPaths(
       { ...this.props, isFocused },
@@ -77,11 +85,14 @@ class CurrencySelectModal extends Component {
 
     const isNewState = isNewValueForObjectPaths(this.state, nextState, [
       'searchQuery',
+      'searchQueryForSearch',
       'assetsToFavoriteQueue',
     ]);
 
-    return isNewAssets || isNewProps || isNewState;
+    return isNewType || isNewProps || isNewState;
   };
+
+  debounceHandler = null;
 
   dangerouslySetIsGestureBlocked = isGestureBlocked => {
     // dangerouslyGetParent is a bad pattern in general, but in this case is exactly what we expect
@@ -91,7 +102,12 @@ class CurrencySelectModal extends Component {
   };
 
   handleChangeSearchQuery = searchQuery => {
-    this.setState({ searchQuery });
+    this.setState({ searchQuery }, () => {
+      if (this.debounceHandler) clearTimeout(this.debounceHandler);
+      this.debounceHandler = setTimeout(() => {
+        this.setState({ searchQueryForSearch: searchQuery });
+      }, 250);
+    });
   };
 
   handleFavoriteAsset = (assetAddress, isFavorited) => {
@@ -143,28 +159,68 @@ class CurrencySelectModal extends Component {
 
   render = () => {
     const {
-      uniswapAssetsInWallet,
-      sortedUniswapAssets,
+      favorites,
+      globalHighLiquidityAssets,
+      globalLowLiquidityAssets,
+      curatedAssets,
       transitionPosition,
       type,
+      uniswapAssetsInWallet,
     } = this.props;
 
     if (type === null || type === undefined) {
       return null;
     }
 
-    const { searchQuery } = this.state;
+    const { searchQuery, searchQueryForSearch } = this.state;
 
     let headerTitle = '';
-    let assets = sortedUniswapAssets;
+    let filteredList = [];
     if (type === CurrencySelectionTypes.input) {
       headerTitle = 'Swap';
-      assets = uniswapAssetsInWallet;
+      filteredList = headerlessSection(uniswapAssetsInWallet);
+      if (!isEmpty(searchQueryForSearch)) {
+        filteredList = filterList(uniswapAssetsInWallet, searchQueryForSearch, [
+          'symbol',
+          'name',
+        ]);
+        filteredList = headerlessSection(filteredList);
+      }
     } else if (type === CurrencySelectionTypes.output) {
       headerTitle = 'Receive';
+      const curatedSection = concat(favorites, curatedAssets);
+      if (!isEmpty(searchQueryForSearch)) {
+        const [filteredBest, filteredHigh, filteredLow] = map(
+          [curatedSection, globalHighLiquidityAssets, globalLowLiquidityAssets],
+          section => {
+            return filterList(section, searchQueryForSearch, [
+              'symbol',
+              'name',
+            ]);
+          }
+        );
+
+        filteredList = [];
+
+        filteredBest.length &&
+          filteredList.push({ data: filteredBest, title: '' });
+
+        filteredHigh.length &&
+          filteredList.push({
+            data: filteredHigh,
+            title: filteredBest.length ? 'MORE RESULTS' : '',
+          });
+
+        filteredLow.length &&
+          filteredList.push({
+            data: filteredLow,
+            title: 'LOW LIQUIDITY',
+          });
+      } else {
+        filteredList = headerlessSection(concat(favorites, curatedAssets));
+      }
     }
 
-    const listItems = filterList(assets, searchQuery, 'uniqueId');
     const isFocused = this.props.navigation.getParam('focused', false);
 
     return (
@@ -209,9 +265,10 @@ class CurrencySelectModal extends Component {
                   showBalance: type === CurrencySelectionTypes.input,
                   showFavoriteButton: type === CurrencySelectionTypes.output,
                 }}
-                listItems={listItems}
+                listItems={filteredList}
                 showList={isFocused}
                 type={type}
+                query={searchQueryForSearch}
               />
             </Column>
             <GestureBlocker type="bottom" />
@@ -226,13 +283,22 @@ export default compose(
   withNavigationFocus,
   withUniswapAssets,
   mapProps(
-    ({ uniswapAssetsInWallet, navigation, sortedUniswapAssets, ...props }) => ({
-      ...props,
+    ({
+      curatedAssets,
+      favorites,
+      globalHighLiquidityAssets,
+      globalLowLiquidityAssets,
       navigation,
-      sortedUniswapAssets: normalizeAssetItems(sortedUniswapAssets),
+      ...props
+    }) => ({
+      ...props,
+      curatedAssets: normalizeAssetItems(curatedAssets),
+      favorites: normalizeAssetItems(favorites),
+      globalHighLiquidityAssets: normalizeAssetItems(globalHighLiquidityAssets),
+      globalLowLiquidityAssets: normalizeAssetItems(globalLowLiquidityAssets),
+      navigation,
       transitionPosition: get(navigation, 'state.params.position'),
       type: get(navigation, 'state.params.type', null),
-      uniswapAssetsInWallet: normalizeAssetItems(uniswapAssetsInWallet),
     })
   )
 )(CurrencySelectModal);

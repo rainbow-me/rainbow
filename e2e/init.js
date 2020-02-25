@@ -1,21 +1,23 @@
-/* eslint-disable import/no-commonjs,no-undef,babel/no-invalid-this */
-const detox = require('detox');
-const config = require('../package.json').detox;
-const adapter = require('detox/runners/mocha/adapter');
+/* eslint-disable no-undef */
 
-before(async () => {
-  await detox.init(config);
+import detox from 'detox';
+import adapter from 'detox/runners/jest/adapter';
+const config = require('../package.json').detox;
+
+jest.setTimeout(60000);
+// eslint-disable-next-line jest/no-jasmine-globals
+jasmine.getEnv().addReporter(adapter);
+
+beforeAll(async () => {
+  await detox.init(config, { launchApp: false });
   await device.launchApp({ permissions: { camera: 'YES' } });
 });
 
-beforeEach(async function() {
-  await adapter.beforeEach(this);
+beforeEach(async () => {
+  await adapter.beforeEach();
 });
 
-afterEach(async function() {
-  await adapter.afterEach(this);
-});
-
-after(async () => {
+afterAll(async () => {
+  await adapter.afterAll();
   await detox.cleanup();
 });

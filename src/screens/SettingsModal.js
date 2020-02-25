@@ -1,7 +1,9 @@
+import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import { InteractionManager, StatusBar } from 'react-native';
+import { request, PERMISSIONS } from 'react-native-permissions';
 import { compose, onlyUpdateForKeys, withHandlers, withProps } from 'recompact';
 import { Column } from '../components/layout';
 import { Modal, ModalHeader } from '../components/modal';
@@ -37,6 +39,17 @@ const SettingsPages = {
   },
 };
 
+const requestFaceIDPermission = () =>
+  request(PERMISSIONS.IOS.FACE_ID)
+    .then(permission => {
+      if (permission !== 'granted') {
+        captureException(new Error(`FaceID permission: ${permission}`));
+      }
+    })
+    .catch(error => {
+      captureException(error);
+    });
+
 const SettingsModal = ({
   currentSettingsPage,
   navigation,
@@ -65,6 +78,7 @@ const SettingsModal = ({
             onCloseModal={onCloseModal}
             onPressBackup={onPressSection(SettingsPages.backup)}
             onPressCurrency={onPressSection(SettingsPages.currency)}
+            onPressHiddenFeature={requestFaceIDPermission}
             onPressImportSeedPhrase={onPressImportSeedPhrase}
             onPressLanguage={onPressSection(SettingsPages.language)}
             onPressNetwork={onPressSection(SettingsPages.network)}

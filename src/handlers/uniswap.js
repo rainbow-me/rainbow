@@ -3,6 +3,8 @@ import axios from 'axios';
 import contractMap from 'eth-contract-metadata';
 import { ethers } from 'ethers';
 import { get, map, mapKeys, mapValues, toLower, zipObject } from 'lodash';
+import { uniswapClient } from '../apollo/client';
+import { DIRECTORY_QUERY } from '../apollo/queries';
 import {
   convertRawAmountToDecimalFormat,
   divide,
@@ -298,4 +300,43 @@ export const getLiquidityInfo = async (
 
   const results = await Promise.all(promises);
   return zipObject(exchangeContracts, results);
+};
+
+export const getAllExchanges = async (tokenOverrides, excluded = []) => {
+  let allTokens = {};
+  let data = [];
+  try {
+    let dataEnd = false;
+    let skip = 0;
+    while (!dataEnd) {
+      let result = await uniswapClient.query({
+        query: DIRECTORY_QUERY,
+        variables: {
+          excluded,
+          first: 100,
+          skip: skip,
+        },
+      });
+      data = data.concat(result.data.exchanges);
+      skip = skip + 100;
+      if (result.data.exchanges.length < 100) {
+        dataEnd = true;
+      }
+    }
+  } catch (err) {
+    console.log('error: ', err);
+  }
+  data.forEach(exchange => {
+    const tokenAddress = toLower(exchange.tokenAddress);
+    const tokenExchangeInfo = {
+      decimals: exchange.tokenDecimals,
+      ethBalance: exchange.ethBalance,
+      exchangeAddress: exchange.id,
+      name: exchange.tokenName,
+      symbol: exchange.tokenSymbol,
+      ...tokenOverrides[tokenAddress],
+    };
+    allTokens[tokenAddress] = tokenExchangeInfo;
+  });
+  return allTokens;
 };

@@ -13,6 +13,6 @@ it('filterListWithParameter', () => {
     { name: '0x Protocol Token', symbol: 'ZRX' },
   ];
   const searchPhrase = 'eth';
-  const result = filterList(list, searchPhrase, 'name');
+  const result = filterList(list, searchPhrase, ['name']);
   expect(result.length).toBe(1);
 });
