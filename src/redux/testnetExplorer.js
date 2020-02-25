@@ -19,7 +19,7 @@ const fetchAssetPrice = async (coingecko_id, nativeCurrency) => {
       value: priceResponse[coingecko_id][`${formattedNativeCurrency}`],
     };
   } catch (e) {
-    console.log(`Error trying to fetch ${coingecko_id} price`);
+    console.log(`Error trying to fetch ${coingecko_id} price`, e);
   }
 };
 
@@ -41,8 +41,8 @@ const fetchAssetBalance = async (contractAddress, address) => {
   }
 };
 
-export const testnetExplorerInit = network => async (dispatch, getState) => {
-  const { accountAddress, nativeCurrency } = getState().settings;
+export const testnetExplorerInit = () => async (dispatch, getState) => {
+  const { accountAddress, nativeCurrency, network } = getState().settings;
 
   const allAssets = {
     rinkeby: [
@@ -81,6 +81,7 @@ export const testnetExplorerInit = network => async (dispatch, getState) => {
   };
 
   const fetchAssetsBalancesAndPrices = async () => {
+    console.log('fetching assets for network', network);
     const assets = allAssets[network];
 
     for (let i = 0; i < assets.length; i++) {

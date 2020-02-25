@@ -9,8 +9,6 @@ import upperFirst from 'lodash/upperFirst';
 
 const NETWORKS = [
   { disabled: false, name: 'Mainnet' },
-  { disabled: true, name: 'Ropsten' },
-  { disabled: true, name: 'Kovan' },
   { disabled: false, name: 'Rinkeby' },
 ];
 

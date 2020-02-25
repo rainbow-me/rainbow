@@ -120,9 +120,9 @@ export default Component =>
           // await ownProps.dataTokenOverridesInit();
           sentryUtils.addInfoBreadcrumb('Initialize account data');
           console.log('Initialize account data for ', ownProps.network);
-          ownProps.explorerInit(ownProps.network);
-          ownProps.uniswapPairsInit(ownProps.network);
-          await ownProps.uniqueTokensRefreshState(ownProps.network);
+          ownProps.explorerInit();
+          ownProps.uniswapPairsInit();
+          await ownProps.uniqueTokensRefreshState();
         } catch (error) {
           // TODO error state
           console.log('Error initializing account data: ', error);
@@ -159,9 +159,7 @@ export default Component =>
       refreshAccountData: ownProps => async () => {
         try {
           const getUniswap = ownProps.uniswapUpdateState();
-          const getUniqueTokens = ownProps.uniqueTokensRefreshState(
-            ownProps.network
-          );
+          const getUniqueTokens = ownProps.uniqueTokensRefreshState();
 
           return Promise.all([
             delay(1250), // minimum duration we want the "Pull to Refresh" animation to last

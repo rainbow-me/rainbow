@@ -122,9 +122,10 @@ export const uniswapGetAllExchanges = () => async (dispatch, getState) => {
   } catch (error) {}
 };
 
-export const uniswapPairsInit = network => async (dispatch, getState) => {
+export const uniswapPairsInit = () => async (dispatch, getState) => {
   try {
     const { tokenOverrides } = getState().data;
+    const { network } = getState().settings;
     const pairs =
       network === 'mainnet'
         ? await getUniswapPairs(tokenOverrides)

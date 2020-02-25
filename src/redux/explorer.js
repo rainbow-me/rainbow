@@ -89,12 +89,12 @@ export const explorerClearState = () => dispatch => {
   dispatch({ type: EXPLORER_CLEAR_STATE });
 };
 
-export const explorerInit = network => (dispatch, getState) => {
+export const explorerInit = () => (dispatch, getState) => {
+  const { network, accountAddress, nativeCurrency } = getState().settings;
   if (network !== 'mainnet') {
-    return dispatch(testnetExplorerInit(network));
+    return dispatch(testnetExplorerInit());
   }
 
-  const { accountAddress, nativeCurrency } = getState().settings;
   const addressSocket = createSocket('address');
   const compoundSocket = createSocket('compound');
   dispatch({

@@ -67,7 +67,7 @@ const convertValueForEthers = value => {
 export const getReserve = async tokenAddress =>
   !tokenAddress || tokenAddress === 'eth'
     ? Promise.resolve(null)
-    : getTokenReserves(toLower(tokenAddress));
+    : getTokenReserves(toLower(tokenAddress), web3Provider);
 
 const getGasLimit = async (
   accountAddress,
