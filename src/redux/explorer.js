@@ -91,6 +91,8 @@ export const explorerClearState = () => dispatch => {
 
 export const explorerInit = () => (dispatch, getState) => {
   const { network, accountAddress, nativeCurrency } = getState().settings;
+  // Fallback to the testnet data provider
+  // if we're not on mainnnet
   if (network !== 'mainnet') {
     return dispatch(testnetExplorerInit());
   }
@@ -136,11 +138,6 @@ const listenOnAddressMessages = socket => dispatch => {
   });
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
-    console.log(
-      'ADDRESS_TRANSACTIONS RECEIVED',
-      JSON.stringify(message).substr(0, 1300)
-    );
-
     dispatch(addressAssetsReceived(message));
   });
 

@@ -131,7 +131,6 @@ export default Component =>
       },
       loadAccountData: ownProps => async () => {
         sentryUtils.addInfoBreadcrumb('Load wallet data');
-        console.log('Load wallet data ', ownProps.network);
         await ownProps.openStateSettingsLoadState();
         const promises = [];
         const p1 = ownProps.settingsLoadState();
@@ -143,12 +142,12 @@ export default Component =>
           promises.push(p3);
           const p4 = ownProps.walletConnectLoadState();
           promises.push(p4);
-          const p6 = ownProps.requestsLoadState();
-          promises.push(p6);
+          const p5 = ownProps.requestsLoadState();
+          promises.push(p5);
         }
 
-        const p5 = ownProps.uniswapLoadState();
-        promises.push(p5);
+        const p6 = ownProps.uniswapLoadState();
+        promises.push(p6);
         const p7 = ownProps.contactsLoadState();
         promises.push(p7);
 

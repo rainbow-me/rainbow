@@ -24,7 +24,6 @@ export const web3SetHttpProvider = network => {
   web3Provider = new ethers.providers.JsonRpcProvider(
     replace(infuraUrl, 'network', network)
   );
-  console.log('provider updated to ', network);
 };
 
 export const sendRpcCall = async payload =>
