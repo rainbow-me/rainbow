@@ -5,9 +5,10 @@ import ExchangeModalWithData from './ExchangeModalWithData';
 
 const DepositModal = ({ ...props }) => (
   <ExchangeModalWithData
-    inputHeaderTitle="Deposit"
-    defaultInputAddress={DAI_ADDRESS}
     createRap={createSwapAndDepositCompoundRap}
+    defaultInputAddress={DAI_ADDRESS}
+    inputHeaderTitle="Deposit"
+    isDeposit
     showOutputField={false}
     {...props}
   />

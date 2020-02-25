@@ -14,15 +14,22 @@ const NOOP = () => undefined;
 const estimateDepositGasLimit = async (
   compound,
   accountAddress,
-  mintAmount
+  rawMintAmount
 ) => {
   try {
-    const methodArgs = { mintAmount };
-    const params = { from: accountAddress, value: 0 };
-    const gasLimit = compound.estimate.mint(methodArgs, params);
+    console.log('[deposit] estimating gas');
+    const params = { from: accountAddress, value: toHex(0) };
+    const gasLimit = await compound.estimate.mint(rawMintAmount, params);
+    console.log('[deposit] estimated gas limit for deposit', gasLimit);
+    console.log(
+      '[deposit] estimated gas limit for deposit toString',
+      gasLimit.toString
+    );
     return gasLimit ? gasLimit.toString() : null;
   } catch (error) {
-    return null;
+    console.log('[deposit] ERROR estimating gas', error);
+    throw error;
+    // return null;
   }
 };
 
@@ -44,25 +51,27 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
     gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
   }
 
-  const gasLimit = estimateDepositGasLimit(
+  const compound = new ethers.Contract(CDAI_CONTRACT, compoundCDAIABI, wallet);
+
+  const gasLimit = await estimateDepositGasLimit(
     compound,
     accountAddress,
     rawInputAmount
   );
 
-  const compound = new ethers.Contract(CDAI_CONTRACT, compoundCDAIABI, wallet);
   const transactionParams = {
     gasLimit: gasLimit ? toHex(gasLimit) : undefined,
     gasPrice: gasPrice ? toHex(gasPrice) : undefined,
     value: toHex(0),
   };
-  const methodArguments = { mintAmount: rawInputAmount };
-  const deposit = compound.mint(methodArguments, transactionParams);
+  console.log('[deposit] txn params', transactionParams);
+  const deposit = await compound.mint(rawInputAmount, transactionParams);
+  console.log('[deposit] minted - result', deposit);
 
   currentRap.actions[index].transaction.hash = deposit.hash;
 
   const newTransaction = {
-    amount: rawInputAmount,
+    amount: inputAmount,
     asset: inputCurrency,
     from: accountAddress,
     hash: deposit.hash,

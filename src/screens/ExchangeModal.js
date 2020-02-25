@@ -74,6 +74,7 @@ const ExchangeModal = ({
   gasUpdateTxFee,
   inputHeaderTitle,
   inputReserve,
+  isDeposit,
   isTransitioning,
   navigation,
   outputReserve,
@@ -109,7 +110,9 @@ const ExchangeModal = ({
   const [outputAmount, setOutputAmount] = useState(null);
   const [outputAmountDisplay, setOutputAmountDisplay] = useState(null);
   const [outputCurrency, setOutputCurrency] = useState(null);
-  const [showConfirmButton, setShowConfirmButton] = useState(false);
+  const [showConfirmButton, setShowConfirmButton] = useState(
+    isDeposit ? true : false
+  );
   const [slippage, setSlippage] = useState(null);
 
   const inputFieldRef = useRef();
@@ -120,7 +123,9 @@ const ExchangeModal = ({
 
   useEffect(() => {
     console.log('[effect 1] gasPrices');
-    gasUpdateDefaultGasLimit(ethUnits.basic_swap);
+    gasUpdateDefaultGasLimit(
+      isDeposit ? ethUnits.basic_deposit : ethUnits.basic_swap
+    );
     gasPricesStartPolling();
     web3ListenerInit();
     return () => {
@@ -132,6 +137,7 @@ const ExchangeModal = ({
     gasPricesStartPolling,
     gasPricesStopPolling,
     gasUpdateDefaultGasLimit,
+    isDeposit,
     uniswapClearCurrenciesAndReserves,
     web3ListenerInit,
     web3ListenerStop,
@@ -150,19 +156,40 @@ const ExchangeModal = ({
   }, [isTransitioning, navigation]);
 
   useEffect(() => {
+    if (
+      isDeposit &&
+      inputCurrency &&
+      inputCurrency.address === defaultInputAddress
+    )
+      return;
     const isNewNativeAmount = nativeFieldRef.current.isFocused();
     if (isNewNativeAmount) {
       getMarketDetails();
     }
-  }, [getMarketDetails, nativeAmount]);
+  }, [
+    defaultInputAddress,
+    getMarketDetails,
+    inputCurrency,
+    isDeposit,
+    nativeAmount,
+  ]);
 
   useEffect(() => {
+    if (
+      isDeposit &&
+      inputCurrency &&
+      inputCurrency.address === defaultInputAddress
+    )
+      return;
     getMarketDetails();
   }, [
+    defaultInputAddress,
     getMarketDetails,
     inputAmount,
+    inputCurrency,
     inputCurrencyUniqueId,
     inputReserveTokenAddress,
+    isDeposit,
     outputAmount,
     outputCurrencyUniqueId,
     outputReserveTokenAddress,
@@ -533,8 +560,6 @@ const ExchangeModal = ({
     return updateInputAmount(maxBalance);
   };
 
-  // TODO JIN how to update selected output currency to DAI
-  // updateOutputCurrency(newOutputCurrency, userSelected = true);
   const handleSubmit = async () => {
     setIsAuthorizing(true);
     try {
@@ -666,13 +691,24 @@ const ExchangeModal = ({
 
     console.log('[update input curr] setting input curr', newInputCurrency);
     setInputCurrency(newInputCurrency);
-    setShowConfirmButton(!!newInputCurrency && !!outputCurrency);
+    setShowConfirmButton(
+      isDeposit ? !!newInputCurrency : !!newInputCurrency && !!outputCurrency
+    );
 
     uniswapUpdateInputCurrency(newInputCurrency);
 
     if (userSelected && isSameAsset(newInputCurrency, outputCurrency)) {
       console.log('[update input curr] setting output curr to prev input curr');
-      updateOutputCurrency(previousInputCurrency, false);
+      if (isDeposit) {
+        updateOutputCurrency(null, false);
+      } else {
+        updateOutputCurrency(previousInputCurrency, false);
+      }
+    }
+
+    if (isDeposit && newInputCurrency.address !== defaultInputAddress) {
+      const dai = ethereumUtils.getAsset(allAssets, defaultInputAddress);
+      updateOutputCurrency(dai, false);
     }
   };
 
@@ -735,7 +771,9 @@ const ExchangeModal = ({
 
     setInputAsExactAmount(true);
     setOutputCurrency(newOutputCurrency);
-    setShowConfirmButton(!!inputCurrency && !!newOutputCurrency);
+    setShowConfirmButton(
+      isDeposit ? !!inputCurrency : !!inputCurrency && !!newOutputCurrency
+    );
 
     console.log(
       '[update output curr] prev output curr',
@@ -841,6 +879,7 @@ const ExchangeModal = ({
                 <ConfirmExchangeButton
                   disabled={!Number(inputAmountDisplay)}
                   isAuthorizing={isAuthorizing}
+                  isDeposit={isDeposit}
                   isSufficientBalance={isSufficientBalance}
                   onSubmit={handleSubmit}
                   slippage={slippage}

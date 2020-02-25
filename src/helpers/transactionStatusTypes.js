@@ -1,4 +1,5 @@
 export default {
+  deposited: 'deposited',
   failed: 'failed',
   received: 'received',
   receiving: 'receiving',

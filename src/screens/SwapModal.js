@@ -6,6 +6,7 @@ const SwapModal = ({ ...props }) => (
   <ExchangeModalWithData
     createRap={createUnlockAndSwapRap}
     inputHeaderTitle="Swap"
+    isDeposit={false}
     showOutputField
     {...props}
   />

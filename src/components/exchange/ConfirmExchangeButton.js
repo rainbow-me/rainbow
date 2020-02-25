@@ -13,12 +13,13 @@ const ConfirmExchangeButtonShadows = [
 const ConfirmExchangeButton = ({
   disabled,
   isAuthorizing,
+  isDeposit,
   isSufficientBalance,
   onSubmit,
   slippage,
   ...props
 }) => {
-  let label = 'Hold to Swap';
+  let label = isDeposit ? 'Deposit to Savings' : 'Hold to Swap';
   if (!isSufficientBalance) {
     label = 'Insufficient Funds';
   } else if (slippage > SlippageWarningTheshold) {
@@ -45,6 +46,7 @@ const ConfirmExchangeButton = ({
 ConfirmExchangeButton.propTypes = {
   disabled: PropTypes.bool,
   isAuthorizing: PropTypes.bool,
+  isDeposit: PropTypes.bool,
   isSufficientBalance: PropTypes.bool,
   onSubmit: PropTypes.func,
   slippage: PropTypes.number,

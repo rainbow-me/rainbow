@@ -11,6 +11,9 @@ import Spinner from '../Spinner';
 import { Text } from '../text';
 
 const StatusProps = {
+  [TransactionStatusTypes.deposited]: {
+    name: 'arrow',
+  },
   [TransactionStatusTypes.failed]: {
     name: 'closeCircled',
     style: position.maxSizeAsObject(12),
@@ -37,7 +40,10 @@ const TransactionStatusBadge = ({ pending, status, type, ...props }) => {
   let statusColor = colors.blueGreyMediumLight;
   if (pending) {
     statusColor = colors.primaryBlue;
-  } else if (isTrade && status === TransactionStatusTypes.received) {
+  } else if (
+    (isTrade && status === TransactionStatusTypes.received) ||
+    TransactionStatusTypes.deposited
+  ) {
     statusColor = colors.dodgerBlue;
   }
 

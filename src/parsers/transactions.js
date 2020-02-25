@@ -200,7 +200,8 @@ const parseTransaction = (
       internalTxn.address_from,
       transaction.pending,
       transaction.status,
-      internalTxn.address_to
+      internalTxn.address_to,
+      transaction.type
     );
 
     return {
@@ -244,7 +245,14 @@ export const dedupePendingTransactions = (
   return updatedPendingTransactions;
 };
 
-const getTransactionLabel = (accountAddress, from, pending, status, to) => {
+const getTransactionLabel = (
+  accountAddress,
+  from,
+  pending,
+  status,
+  to,
+  type
+) => {
   const isFromAccount = isLowerCaseMatch(from, accountAddress);
   const isToAccount = isLowerCaseMatch(to, accountAddress);
 
@@ -252,6 +260,8 @@ const getTransactionLabel = (accountAddress, from, pending, status, to) => {
   if (pending && isToAccount) return TransactionStatusTypes.receiving;
 
   if (status === 'failed') return TransactionStatusTypes.failed;
+
+  if (type === 'deposit') return TransactionStatusTypes.deposited;
 
   if (isFromAccount && isToAccount) return TransactionStatusTypes.self;
 
