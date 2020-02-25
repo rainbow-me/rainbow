@@ -62,16 +62,20 @@ class WalletScreen extends Component {
   };
 
   shouldComponentUpdate = nextProps =>
-    nextProps.navigation.getParam('focused', true) &&
     isNewValueForObjectPaths(this.props, nextProps, [
-      'fetchingAssets',
-      'fetchingUniqueTokens',
-      'isEmpty',
-      'isWalletEthZero',
       'language',
       'nativeCurrency',
-      'sections',
-    ]);
+      'network',
+      'accountAddress',
+    ]) ||
+    (nextProps.navigation.getParam('focused', true) &&
+      isNewValueForObjectPaths(this.props, nextProps, [
+        'fetchingAssets',
+        'fetchingUniqueTokens',
+        'isEmpty',
+        'isWalletEthZero',
+        'sections',
+      ]));
 
   render = () => {
     const {

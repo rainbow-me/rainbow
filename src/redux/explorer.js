@@ -7,6 +7,7 @@ import {
   transactionsReceived,
   transactionsRemoved,
 } from './data';
+import { testnetExplorerInit } from './testnetExplorer';
 
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
@@ -89,7 +90,13 @@ export const explorerClearState = () => dispatch => {
 };
 
 export const explorerInit = () => (dispatch, getState) => {
-  const { accountAddress, nativeCurrency } = getState().settings;
+  const { network, accountAddress, nativeCurrency } = getState().settings;
+  // Fallback to the testnet data provider
+  // if we're not on mainnnet
+  if (network !== 'mainnet') {
+    return dispatch(testnetExplorerInit());
+  }
+
   const addressSocket = createSocket('address');
   const compoundSocket = createSocket('compound');
   dispatch({

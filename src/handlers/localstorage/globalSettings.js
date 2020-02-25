@@ -4,6 +4,7 @@ const APPSTORE_REVIEW_COUNT = 'appStoreReviewRequestCount';
 const KEYBOARD_HEIGHT = 'keyboardHeight';
 const LANGUAGE = 'language';
 const NATIVE_CURRENCY = 'nativeCurrency';
+const NETWORK = 'network';
 
 export const getAppStoreReviewCount = () => getGlobal(APPSTORE_REVIEW_COUNT, 0);
 
@@ -13,6 +14,10 @@ export const saveAppStoreReviewCount = reviewCount =>
 export const getLanguage = () => getGlobal(LANGUAGE, 'en');
 
 export const saveLanguage = language => saveGlobal(LANGUAGE, language);
+
+export const getNetwork = () => getGlobal(NETWORK, 'mainnet');
+
+export const saveNetwork = network => saveGlobal(NETWORK, network);
 
 export const getKeyboardHeight = () => getGlobal(KEYBOARD_HEIGHT, null);
 

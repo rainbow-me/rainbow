@@ -13,6 +13,7 @@ import {
 } from '../helpers/utilities';
 import { loadWallet } from '../model/wallet';
 import exchangeABI from '../references/uniswap-exchange-abi.json';
+import uniswapTestnetAssets from '../references/uniswap-pairs-testnet.json';
 import erc20ABI from '../references/erc20-abi.json';
 import { toHex, web3Provider } from './web3';
 
@@ -40,6 +41,19 @@ export const getUniswapPairs = async tokenOverrides => {
   }
 };
 
+export const getTestnetUniswapPairs = async network => {
+  try {
+    const pairs = uniswapTestnetAssets[network];
+    const loweredPairs = mapKeys(pairs, (_, key) => toLower(key));
+    return mapValues(loweredPairs, value => ({
+      ...value,
+    }));
+  } catch (error) {
+    console.log('Error getting uniswap testnet pairs', error);
+    throw error;
+  }
+};
+
 const convertArgsForEthers = methodArguments =>
   methodArguments.map(arg =>
     typeof arg === 'object' ? ethers.utils.bigNumberify(arg.toFixed()) : arg
@@ -53,7 +67,7 @@ const convertValueForEthers = value => {
 export const getReserve = async tokenAddress =>
   !tokenAddress || tokenAddress === 'eth'
     ? Promise.resolve(null)
-    : getTokenReserves(toLower(tokenAddress));
+    : getTokenReserves(toLower(tokenAddress), web3Provider);
 
 const getGasLimit = async (
   accountAddress,
