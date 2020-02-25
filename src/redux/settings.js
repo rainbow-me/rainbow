@@ -62,7 +62,7 @@ export const settingsLoadNetwork = () => async dispatch => {
     const network = await getNetwork();
     const chainId = ethereumUtils.getChainIdFromNetwork(network);
     web3SetHttpProvider(network);
-    return dispatch({
+    dispatch({
       payload: { chainId, network },
       type: SETTINGS_UPDATE_NETWORK_SUCCESS,
     });
@@ -91,22 +91,20 @@ export const settingsUpdateAccountAddress = accountAddress => dispatch =>
     type: SETTINGS_UPDATE_SETTINGS_ADDRESS,
   });
 
-export const settingsUpdateNetwork = network => dispatch => {
+export const settingsUpdateNetwork = network => async dispatch => {
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
-  console.log('switching network to', network);
   web3SetHttpProvider(network);
-  return saveNetwork(network)
-    .then(() => {
-      dispatch({
-        payload: { chainId, network },
-        type: SETTINGS_UPDATE_NETWORK_SUCCESS,
-      });
-    })
-    .catch(() => {
-      dispatch({
-        type: SETTINGS_UPDATE_LANGUAGE_FAILURE,
-      });
+  try {
+    await saveNetwork(network);
+    dispatch({
+      payload: { chainId, network },
+      type: SETTINGS_UPDATE_NETWORK_SUCCESS,
     });
+  } catch (error) {
+    dispatch({
+      type: SETTINGS_UPDATE_NETWORK_FAILURE,
+    });
+  }
 };
 
 export const settingsChangeLanguage = language => dispatch => {

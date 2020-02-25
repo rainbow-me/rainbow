@@ -1,8 +1,9 @@
-import { addressAssetsReceived } from './data';
+import { ethers } from 'ethers';
+import { toLower } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
 import testnetAssets from '../references/testnet-assets.json';
-import { ethers } from 'ethers';
+import { addressAssetsReceived } from './data';
 
 const BALANCE_CHECKER_CONTRACT_ADDRESS =
   '0xc55386617db7b4021d87750daaed485eb3ab0154';
@@ -49,7 +50,7 @@ const fetchAssetBalances = async (tokens, address) => {
 
 export const testnetExplorerInit = () => async (dispatch, getState) => {
   const { accountAddress, nativeCurrency, network } = getState().settings;
-  const formattedNativeCurrency = nativeCurrency.toLowerCase();
+  const formattedNativeCurrency = toLower(nativeCurrency);
   const fetchAssetsBalancesAndPrices = async () => {
     const assets = testnetAssets[network];
 
@@ -61,9 +62,7 @@ export const testnetExplorerInit = () => async (dispatch, getState) => {
     if (prices) {
       Object.keys(prices).forEach(key => {
         for (let i = 0; i < assets.length; i++) {
-          if (
-            assets[i].asset.coingecko_id.toLowerCase() === key.toLowerCase()
-          ) {
+          if (toLower(assets[i].asset.coingecko_id) === toLower(key)) {
             assets[i].asset.price = {
               changed_at: prices[key].last_updated_at,
               relative_change_24h:

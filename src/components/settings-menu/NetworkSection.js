@@ -1,11 +1,11 @@
 import analytics from '@segment/analytics-react-native';
+import { toLower, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForKeys } from 'recompact';
 import { compose, withHandlers } from 'recompose';
-import { RadioList, RadioListItem } from '../radio-list';
 import { withAccountSettings, withDataInit } from '../../hoc';
-import upperFirst from 'lodash/upperFirst';
+import { RadioList, RadioListItem } from '../radio-list';
 
 const NETWORKS = [
   { disabled: false, name: 'Mainnet' },
@@ -19,7 +19,7 @@ const NetworkSection = ({ network, onNetworkChange }) => (
       disabled,
       key: name,
       label: name,
-      selected: network.toLowerCase() === name.toLowerCase() ? true : false,
+      selected: toLower(network) === toLower(name),
       value: name,
     }))}
     renderItem={RadioListItem}
@@ -30,9 +30,6 @@ const NetworkSection = ({ network, onNetworkChange }) => (
 
 NetworkSection.propTypes = {
   network: PropTypes.string,
-};
-
-NetworkSection.defaultProps = {
   onNetworkChange: PropTypes.func.isRequired,
 };
 
@@ -47,7 +44,7 @@ export default compose(
       initializeAccountData,
     }) => async network => {
       await clearAccountData();
-      await settingsUpdateNetwork(network.toLowerCase());
+      await settingsUpdateNetwork(toLower(network));
       await loadAccountData();
       await initializeAccountData();
       analytics.track('Changed network', { network });
