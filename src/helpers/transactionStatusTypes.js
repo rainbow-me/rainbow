@@ -1,4 +1,6 @@
 export default {
+  approved: 'approved',
+  approving: 'approving',
   deposited: 'deposited',
   failed: 'failed',
   received: 'received',

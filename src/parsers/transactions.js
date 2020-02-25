@@ -39,7 +39,7 @@ const dataFromLastTxHash = (transactionData, transactions) => {
   return transactionData;
 };
 
-export default (
+export const parseTransactions = (
   transactionData,
   accountAddress,
   nativeCurrency,
@@ -59,22 +59,17 @@ export default (
     existingTransactions,
     txn => txn.pending
   );
-  const [approvalTransactions, parsedTransactions] = partition(
-    parsedNewTransactions,
-    txn => txn.type === 'authorize'
-  );
   const updatedPendingTransactions = dedupePendingTransactions(
     accountAddress,
     pendingTransactions,
-    parsedTransactions
+    parsedNewTransactions
   );
   const updatedResults = concat(
     updatedPendingTransactions,
-    parsedTransactions,
+    parsedNewTransactions,
     remainingTransactions
   );
-  const dedupedResults = uniqBy(updatedResults, txn => txn.hash);
-  return { approvalTransactions, dedupedResults };
+  return uniqBy(updatedResults, txn => txn.hash);
 };
 
 const transformUniswapRefund = internalTransactions => {
@@ -256,12 +251,13 @@ const getTransactionLabel = (
   const isFromAccount = isLowerCaseMatch(from, accountAddress);
   const isToAccount = isLowerCaseMatch(to, accountAddress);
 
+  if (pending && type === 'authorize') return TransactionStatusTypes.approving;
   if (pending && isFromAccount) return TransactionStatusTypes.sending;
   if (pending && isToAccount) return TransactionStatusTypes.receiving;
 
   if (status === 'failed') return TransactionStatusTypes.failed;
-
   if (type === 'deposit') return TransactionStatusTypes.deposited;
+  if (type === 'authorize') return TransactionStatusTypes.approved;
 
   if (isFromAccount && isToAccount) return TransactionStatusTypes.self;
 

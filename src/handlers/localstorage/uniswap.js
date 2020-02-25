@@ -12,16 +12,9 @@ const ASSETS = 'uniswapassets';
 const ALLOWANCES = 'uniswapallowances';
 const LIQUIDITY = 'uniswapliquidity';
 const LIQUIDITY_INFO = 'uniswap';
-const PENDING_APPROVALS = 'uniswappendingapprovals';
 const UNISWAP_FAVORITES = 'uniswapFavorites';
 
-const uniswapAccountLocalKeys = [
-  ASSETS,
-  ALLOWANCES,
-  LIQUIDITY,
-  LIQUIDITY_INFO,
-  PENDING_APPROVALS,
-];
+const uniswapAccountLocalKeys = [ASSETS, ALLOWANCES, LIQUIDITY, LIQUIDITY_INFO];
 
 export const getUniswapFavorites = () =>
   getGlobal(UNISWAP_FAVORITES, DefaultUniswapFavorites);
@@ -52,21 +45,6 @@ export const getUniswapAssets = (accountAddress, network) =>
 
 export const saveUniswapAssets = (assets, accountAddress, network) =>
   saveAccountLocal(ASSETS, assets, accountAddress, network);
-
-export const getUniswapPendingApprovals = (accountAddress, network) =>
-  getAccountLocal(PENDING_APPROVALS, accountAddress, network, {});
-
-export const saveUniswapPendingApprovals = (
-  pendingApprovals,
-  accountAddress,
-  network
-) =>
-  saveAccountLocal(
-    PENDING_APPROVALS,
-    pendingApprovals,
-    accountAddress,
-    network
-  );
 
 export const removeUniswapStorage = (accountAddress, network) =>
   forEach(uniswapAccountLocalKeys, key =>

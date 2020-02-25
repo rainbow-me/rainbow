@@ -39,13 +39,10 @@ import { divide } from '../helpers/utilities';
 import { parseAccountAssets } from '../parsers/accounts';
 import { parseCompoundDeposits } from '../parsers/compound';
 import { parseNewTransaction } from '../parsers/newTransaction';
-import parseTransactions from '../parsers/transactions';
+import { parseTransactions } from '../parsers/transactions';
 import { loweredTokenOverridesFallback } from '../references';
 import { ethereumUtils, isLowerCaseMatch } from '../utils';
-import {
-  uniswapRemovePendingApproval,
-  uniswapUpdateLiquidityTokens,
-} from './uniswap';
+import { uniswapUpdateLiquidityTokens } from './uniswap';
 
 let watchPendingTransactionsHandler = null;
 
@@ -176,7 +173,7 @@ export const transactionsReceived = (message, appended = false) => (
   const { accountAddress, nativeCurrency, network } = getState().settings;
   const { transactions, tokenOverrides } = getState().data;
   if (!transactionData.length) return;
-  const { approvalTransactions, dedupedResults } = parseTransactions(
+  const dedupedResults = parseTransactions(
     transactionData,
     accountAddress,
     nativeCurrency,
@@ -184,7 +181,6 @@ export const transactionsReceived = (message, appended = false) => (
     tokenOverrides,
     appended
   );
-  dispatch(uniswapRemovePendingApproval(approvalTransactions));
   dispatch({
     payload: dedupedResults,
     type: DATA_UPDATE_TRANSACTIONS,
