@@ -6,21 +6,14 @@ import { uniswapUpdateTokenReserves } from './uniswap';
 
 // -- Actions ---------------------------------------- //
 const web3UpdateReserves = () => async (dispatch, getState) => {
-  console.log('[UNISWAP]: updating reserves!');
   const { inputCurrency, outputCurrency } = getState().uniswap;
-  console.log('[UNISWAP]: currencies!', {
-    inputCurrency,
-    outputCurrency,
-  });
+
   if (!(inputCurrency || outputCurrency)) return;
   const [inputReserve, outputReserve] = await promiseUtils.PromiseAllWithFails([
     getReserve(get(inputCurrency, 'address')),
     getReserve(get(outputCurrency, 'address')),
   ]);
-  console.log('[UNISWAP]: reserves!', {
-    inputReserve,
-    outputReserve,
-  });
+
   dispatch(uniswapUpdateTokenReserves(inputReserve, outputReserve));
 };
 

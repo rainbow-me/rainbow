@@ -145,8 +145,6 @@ export default Component =>
           promises.push(p4);
           const p6 = ownProps.requestsLoadState();
           promises.push(p6);
-        } else {
-          console.log('wont init loadAccountData');
         }
 
         const p5 = ownProps.uniswapLoadState();
