@@ -106,7 +106,7 @@ import com.android.build.OutputFile
 
 project.ext.react = [
     entryFile: "index.js",
-    enableHermes: false,  // clean and rebuild if changing
+    enableHermes: true,  // clean and rebuild if changing
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -189,16 +189,16 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('debug.keystore')
+            storeFile file('./keystores/debug.keystore')
             storePassword 'android'
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
 
         def pass = getPassword("rainbow","rainbow-android-key")
-
+        
         release {
-            storeFile file('rainbow-key.keystore')
+            storeFile file('./keystores/rainbow-key.keystore')
             storePassword pass
             keyAlias 'rainbow-alias'
             keyPassword pass
