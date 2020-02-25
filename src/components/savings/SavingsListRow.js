@@ -12,7 +12,7 @@ import { compose, withHandlers } from 'recompact';
 import { withNavigation } from 'react-navigation';
 import { CoinIcon } from '../coin-icon';
 
-const SavingsSheetHeader = ({ APY, currency, value, onPress }) => (
+const SavingsListRow = ({ APY, currency, value, onPress }) => (
   <Centered css={padding(9, 0, 3)} direction="column">
     <ShadowStack
       height={50}
@@ -128,7 +128,7 @@ const SavingsSheetHeader = ({ APY, currency, value, onPress }) => (
   </Centered>
 );
 
-SavingsSheetHeader.propTypes = {
+SavingsListRow.propTypes = {
   APY: PropTypes.string,
   currency: PropTypes.string,
   onPress: PropTypes.func,
@@ -140,4 +140,4 @@ export default compose(
   withHandlers({
     onPress: ({ navigation }) => () => navigation.navigate('SavingsSheet'),
   })
-)(SavingsSheetHeader);
+)(SavingsListRow);
