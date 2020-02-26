@@ -1,4 +1,5 @@
 import { withSafeTimeout } from '@hocs/safe-timers';
+import { isEmulatorSync } from 'react-native-device-info';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import { get } from 'lodash';
@@ -78,7 +79,7 @@ class QRScannerScreenWithData extends Component {
 
     if (!data) return null;
     this.setState({ enableScanning: false });
-    if (!__DEV__) {
+    if (!isEmulatorSync()) {
       Vibration.vibrate();
     }
 
