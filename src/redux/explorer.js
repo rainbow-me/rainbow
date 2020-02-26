@@ -7,7 +7,10 @@ import {
   transactionsReceived,
   transactionsRemoved,
 } from './data';
-import { testnetExplorerInit } from './testnetExplorer';
+import {
+  testnetExplorerInit,
+  testnetExplorerClearState,
+} from './testnetExplorer';
 
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
@@ -83,7 +86,13 @@ const explorerUnsubscribe = () => (dispatch, getState) => {
   }
 };
 
-export const explorerClearState = () => dispatch => {
+export const explorerClearState = () => (dispatch, getState) => {
+  const { network } = getState().settings;
+  // Fallback to the testnet data provider
+  // if we're not on mainnnet
+  if (network !== 'mainnet') {
+    return testnetExplorerClearState();
+  }
   clearInterval(getCompoundInterval);
   dispatch(explorerUnsubscribe());
   dispatch({ type: EXPLORER_CLEAR_STATE });

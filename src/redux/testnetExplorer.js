@@ -113,6 +113,6 @@ export const testnetExplorerInit = () => async (dispatch, getState) => {
   fetchAssetsBalancesAndPrices();
 };
 
-export const testnetExplorerClearState = () => () => {
+export const testnetExplorerClearState = () => {
   clearTimeout(tesnetExplorerHandler);
 };
