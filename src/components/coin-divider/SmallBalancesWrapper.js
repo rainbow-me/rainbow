@@ -4,15 +4,22 @@ import PropTypes from 'prop-types';
 import { View } from 'react-native';
 import React, { Fragment, PureComponent } from 'react';
 import { compose, withProps } from 'recompact';
-import { withAccountSettings, withOpenBalances } from '../../hoc';
+import {
+  withAccountSettings,
+  withOpenBalances,
+  withEditOptions,
+} from '../../hoc';
 import { OpacityToggler } from '../animations';
 import CoinDivider from './CoinDivider';
+import TransitionToggler from '../animations/TransitionToggler';
 
 class SmallBalancesWrapper extends PureComponent {
   static propTypes = {
     assets: PropTypes.array,
     balancesSum: PropTypes.string,
+    isCoinListEdited: PropTypes.bool,
     openSmallBalances: PropTypes.bool,
+    setIsCoinListEdited: PropTypes.func,
     setOpenSmallBalances: PropTypes.func,
   };
 
@@ -22,13 +29,21 @@ class SmallBalancesWrapper extends PureComponent {
     this.props.setOpenSmallBalances(!this.props.openSmallBalances);
 
   render = () => {
-    const { assets, balancesSum, openSmallBalances } = this.props;
+    const {
+      assets,
+      balancesSum,
+      openSmallBalances,
+      isCoinListEdited,
+      setIsCoinListEdited,
+    } = this.props;
 
     return (
       <Fragment>
         <CoinDivider
           balancesSum={balancesSum}
           onPress={this.handlePress}
+          onEdit={setIsCoinListEdited}
+          isCoinListEdited={isCoinListEdited}
           openSmallBalances={openSmallBalances}
         />
         <OpacityToggler
@@ -37,7 +52,13 @@ class SmallBalancesWrapper extends PureComponent {
           startingOpacity={0}
         >
           <View pointerEvents={openSmallBalances ? 'auto' : 'none'}>
-            {assets}
+            <TransitionToggler
+              startingWidth={0}
+              endingWidth={50}
+              toggle={isCoinListEdited}
+            >
+              {assets}
+            </TransitionToggler>
           </View>
         </OpacityToggler>
       </Fragment>
@@ -59,6 +80,7 @@ export default compose(
   withAccountSettings,
   withOpenBalances,
   withSafeTimeout,
+  withEditOptions,
   withProps(({ assets, nativeCurrencySymbol }) => {
     const balance = assets.reduce(reduceBalances, 0);
     return isNumber(balance)

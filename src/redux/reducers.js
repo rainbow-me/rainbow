@@ -3,6 +3,7 @@ import { combineReducers } from 'redux';
 import actionSheetManager from './actionSheetManager';
 import contacts from './contacts';
 import data from './data';
+import editOptions from './editOptions';
 import explorer from './explorer';
 import gas from './gas';
 import imageDimensionsCache from './imageDimensionsCache';
@@ -24,6 +25,7 @@ export default combineReducers({
   actionSheetManager,
   contacts,
   data,
+  editOptions,
   explorer,
   gas,
   imageDimensionsCache,

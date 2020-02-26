@@ -15,8 +15,9 @@ import {
 } from '../animations';
 import Highlight from '../Highlight';
 import { Row } from '../layout';
-import { Monospace } from '../text';
+import { Monospace, Text } from '../text';
 import CoinDividerButtonLabel from './CoinDividerButtonLabel';
+import { colors } from '../../styles';
 
 const {
   block,
@@ -60,12 +61,17 @@ function runTiming(clock, value, dest) {
   ]);
 }
 
-export default class CoinDivider extends PureComponent {
+class CoinDivider extends PureComponent {
   static propTypes = {
     balancesSum: PropTypes.string,
     isCoinDivider: PropTypes.bool,
+    onEdit: PropTypes.func,
     onPress: PropTypes.func,
     openSmallBalances: PropTypes.bool,
+  };
+
+  state = {
+    isCurrentlyCoinListEdited: this.props.isCoinListEdited,
   };
 
   componentWillMount() {
@@ -97,6 +103,8 @@ export default class CoinDivider extends PureComponent {
     const {
       balancesSum,
       isCoinDivider,
+      onEdit,
+      isCoinListEdited,
       onPress,
       openSmallBalances,
     } = this.props;
@@ -157,15 +165,69 @@ export default class CoinDivider extends PureComponent {
             </View>
           </Row>
         </ButtonPressAnimation>
-        <OpacityToggler
-          isVisible={openSmallBalances}
-          animationNode={this._node}
-        >
-          <Monospace color="dark" size="lmedium" style={{ paddingBottom: 1 }}>
-            {balancesSum}
-          </Monospace>
-        </OpacityToggler>
+        <View style={{ flexDirection: 'row' }}>
+          <View
+            style={{
+              height: 30,
+              justifyContent: 'center',
+            }}
+          >
+            <OpacityToggler
+              isVisible={openSmallBalances}
+              animationNode={this._node}
+            >
+              <Monospace
+                color="dark"
+                size="lmedium"
+                style={{ paddingBottom: 1 }}
+              >
+                {balancesSum}
+              </Monospace>
+            </OpacityToggler>
+          </View>
+          <OpacityToggler
+            endingOpacity={1}
+            startingOpacity={0}
+            isVisible={openSmallBalances}
+            animationNode={this._node}
+          >
+            <ButtonPressAnimation
+              onPress={() => {
+                this.setState(prevState => {
+                  console.log(prevState.isCurrentlyCoinListEdited);
+                  onEdit(!prevState.isCurrentlyCoinListEdited);
+                  return {
+                    isCurrentlyCoinListEdited: !prevState.isCurrentlyCoinListEdited,
+                  };
+                });
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: isCoinListEdited
+                    ? colors.appleBlue
+                    : colors.lightBlueGrey,
+                  borderRadius: 15,
+                  height: 30,
+                  justifyContent: 'center',
+                  paddingHorizontal: 10,
+                }}
+              >
+                <Text
+                  color={isCoinListEdited ? 'white' : 'blueGreyDarkTransparent'}
+                  letterSpacing="tighter"
+                  size="lmedium"
+                  weight="semibold"
+                >
+                  {isCoinListEdited ? 'Done' : 'Edit'}
+                </Text>
+              </View>
+            </ButtonPressAnimation>
+          </OpacityToggler>
+        </View>
       </Row>
     );
   }
 }
+
+export default CoinDivider;

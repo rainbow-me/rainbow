@@ -28,9 +28,9 @@ export const buildCoinsList = assets => {
       assets[i].address === 'eth' ||
       assets.length < 4
     ) {
-      newAssets.push(assets[i]);
+      newAssets.push({ isSmall: false, ...assets[i] });
     } else {
-      smallBalances.assets.push(assets[i]);
+      smallBalances.assets.push({ isSmall: true, ...assets[i] });
     }
   }
 

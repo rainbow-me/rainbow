@@ -10,6 +10,7 @@ export { default as withBlockPolling } from './withBlockPolling';
 export { default as withContacts } from './withContacts';
 export { default as withDataInit } from './withDataInit';
 export { default as withDeepLink } from './withDeepLink';
+export { default as withEditOptions } from './withEditOptions';
 export { default as withFabSelection } from './withFabSelection';
 export { default as withFabSendAction } from './withFabSendAction';
 export { default as withGas } from './withGas';

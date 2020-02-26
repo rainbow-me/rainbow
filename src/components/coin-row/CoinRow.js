@@ -2,11 +2,16 @@ import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
-import { withAccountSettings, withFabSendAction } from '../../hoc';
+import {
+  withAccountSettings,
+  withFabSendAction,
+  withEditOptions,
+} from '../../hoc';
 import { colors, padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import Highlight from '../Highlight';
 import { Column, Row } from '../layout';
+import TransitionToggler from '../animations/TransitionToggler';
 
 const CoinRowPaddingTop = 15;
 const CoinRowPaddingBottom = 7;
@@ -42,25 +47,41 @@ const CoinRow = enhance(
     contentStyles,
     highlight,
     symbol,
+    isCoinListEdited,
+    isSmall,
     topRowRender,
     ...props
-  }) => (
-    <Container align="center" css={containerStyles}>
-      <CoinRowHighlight visible={highlight} />
-      {createElement(coinIconRender, { symbol, ...props })}
-      <Content css={contentStyles}>
-        <Row align="center" justify="space-between">
-          {topRowRender({ symbol, ...props })}
-        </Row>
-        <Row align="center" justify="space-between">
-          {bottomRowRender({ symbol, ...props })}
-        </Row>
-      </Content>
-      {typeof children === 'function'
-        ? children({ symbol, ...props })
-        : children}
-    </Container>
-  )
+  }) => {
+    const coinRow = (
+      <Container align="center" css={containerStyles}>
+        <CoinRowHighlight visible={highlight} />
+        {createElement(coinIconRender, { symbol, ...props })}
+        <Content css={contentStyles}>
+          <Row align="center" justify="space-between">
+            {topRowRender({ symbol, ...props })}
+          </Row>
+          <Row align="center" justify="space-between">
+            {bottomRowRender({ symbol, ...props })}
+          </Row>
+        </Content>
+        {typeof children === 'function'
+          ? children({ symbol, ...props })
+          : children}
+      </Container>
+    );
+
+    return isSmall ? (
+      coinRow
+    ) : (
+      <TransitionToggler
+        startingWidth={0}
+        endingWidth={50}
+        toggle={isCoinListEdited}
+      >
+        {coinRow}
+      </TransitionToggler>
+    );
+  }
 );
 
 CoinRow.propTypes = {
@@ -81,4 +102,4 @@ CoinRow.defaultProps = {
 
 CoinRow.height = CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom;
 
-export default CoinRow;
+export default compose(withEditOptions)(CoinRow);
