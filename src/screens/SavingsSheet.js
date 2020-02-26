@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, toLower } from 'lodash';
 import React, { Fragment } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import { Column } from '../components/layout';
@@ -20,7 +20,6 @@ import {
 } from '../components/sheet';
 import Divider from '../components/Divider';
 import { useSavingsAccount } from '../hooks';
-import toLower from 'lodash/toLower';
 
 function SavingsSheet() {
   const { getParam, navigate } = useNavigation();
