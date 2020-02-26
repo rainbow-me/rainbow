@@ -1,8 +1,15 @@
 import React from 'react';
 import { View } from 'react-native';
+import { position, colors } from '../../styles';
 import { ColumnWithMargins, Centered } from '../layout';
 import { Emoji, Br, Text } from '../text';
-import { position, colors } from '../../styles';
+
+const sx = StyleSheet.create({
+  text: {
+    lineHeight: 25,
+    textAlign: 'center',
+  },
+});
 
 export default function TestnetEmptyState({ children }) {
   return (
@@ -24,7 +31,7 @@ export default function TestnetEmptyState({ children }) {
             color={colors.alpha(colors.blueGreyDark, 0.4)}
             size="lmedium"
             weight="medium"
-            style={{ lineHeight: 25, textAlign: 'center' }}
+            style={sx.text}
           >
             Your testnet transaction <Br />
             history starts now!
