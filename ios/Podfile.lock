@@ -375,7 +375,7 @@ PODS:
     - React-cxxreact (= 0.62.0-rc.1)
     - React-jsi (= 0.62.0-rc.1)
     - ReactCommon/callinvoker (= 0.62.0-rc.1)
-  - ReactNativePayments (1.1.3):
+  - ReactNativePayments (1.1.5):
     - React
   - RNAnalytics (1.1.0):
     - Analytics
@@ -405,7 +405,7 @@ PODS:
     - Firebase/Messaging (~> 6.13.0)
     - React
     - RNFBApp
-  - RNGestureHandler (1.5.6):
+  - RNGestureHandler (1.6.0):
     - React
   - RNInputMask (4.1.0)
   - RNKeychain (4.0.3):
@@ -420,14 +420,14 @@ PODS:
     - React
   - RNReanimated (1.7.0):
     - React
-  - RNScreens (2.0.0-alpha.25):
+  - RNScreens (2.0.0-beta.13):
     - React
   - RNSentry (1.3.0):
     - React
     - Sentry (~> 4.4.0)
   - RNStoreReview (0.1.5):
     - React
-  - RNSVG (11.0.0):
+  - RNSVG (11.0.1):
     - React
   - SDWebImage (5.5.2):
     - SDWebImage/Core (= 5.5.2)
@@ -742,7 +742,7 @@ SPEC CHECKSUMS:
   React-RCTText: f2f9976b77661b5a1d628cf7ebfe6c08b6168f8a
   React-RCTVibration: 2e7618e869b2ba4a15042d6def29dd32df734793
   ReactCommon: 13c3473a975e73db91b1999e0d6d89c62400785d
-  ReactNativePayments: 56363b0ac491c96c8c98f3913860ee5568f061ae
+  ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
   RNAnalytics: 35a54cb740c472a0a6a3de765176b82cccc2d1ef
   RNCAsyncStorage: 44395cb9c7c1523104c2b499eb426ef7aff82bca
   RNCMaskedView: a88953beefbd347a29072d9eba90e42945fe291e
@@ -752,7 +752,7 @@ SPEC CHECKSUMS:
   RNFBApp: 887ccc5840f93abad3202ff23eb0faf7bee4ac12
   RNFBCrashlytics: 22dada190d23a867127a541d7175d6160640f089
   RNFBMessaging: 591a196b643d913bfad6492fab292b7da037bf78
-  RNGestureHandler: 911d3b110a7a233a34c4f800e7188a84b75319c6
+  RNGestureHandler: dde546180bf24af0b5f737c8ad04b6f3fa51609a
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeychain: f5783613aa3095af63345ddb9626a729bd4a3897
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
@@ -760,10 +760,10 @@ SPEC CHECKSUMS:
   RNPermissions: 2f74237e97b08beda01e914301e12524ddddf5b8
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
-  RNScreens: 031d10e2b648afc9546f16b6a786d2efc6870310
+  RNScreens: ba539a5086136eb356e43699cb588a80369763ca
   RNSentry: ba3ec79ffc91a1d808ec689bf615ffc5f960baa4
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
-  RNSVG: 82d44baa568873faae1a9929dd30d29db8f06732
+  RNSVG: 67f1f12dae2cef6ed59a42cae74a6b8f5a9e7b46
   SDWebImage: 4d5c027c935438f341ed33dbac53ff9f479922ca
   SDWebImageWebPCoder: 947093edd1349d820c40afbd9f42acb6cdecd987
   Sentry: 14bdd673870e8cf64932b149fad5bbbf39a9b390

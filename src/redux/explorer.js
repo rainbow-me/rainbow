@@ -42,7 +42,7 @@ let getCompoundInterval = null;
 
 const createSocket = endpoint =>
   io(`wss://api.zerion.io/${endpoint}?api_token=${DATA_API_KEY}`, {
-    extraHeaders: { Origin: DATA_ORIGIN },
+    extraHeaders: { origin: DATA_ORIGIN },
     transports: ['websocket'],
   });
 

@@ -1,4 +1,33 @@
 apply plugin: "com.android.application"
+apply plugin: 'io.fabric'
+
+
+def getPassword(String currentUser, String keyChain) {
+    def stdout = new ByteArrayOutputStream()
+    def stderr = new ByteArrayOutputStream()
+    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        exec {
+            commandLine 'security', '-q', 'find-generic-password', '-a', currentUser, '-s', keyChain, '-w'
+            standardOutput = stdout
+            errorOutput = stderr
+            ignoreExitValue true
+        }
+    } else if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
+        exec {
+            // In order for this to work you need to store it:
+            // secret-tool store --label='mm' server mm user mm key mm-upload-key
+            commandLine 'secret-tool', 'lookup', 'server', currentUser, 'user', currentUser, 'key', keyChain
+            standardOutput = stdout
+            errorOutput = stderr
+            ignoreExitValue true
+        }
+    } else {
+        throw new GradleException('Unsupported OS! Only MacOSx and Linux are supported')
+    }
+    //noinspection GroovyAssignabilityCheck
+    stdout.toString().trim()
+}
+
 
 import com.android.build.OutputFile
 
@@ -140,7 +169,16 @@ android {
         renderscriptTargetApi 23
         renderscriptSupportModeEnabled true
         multiDexEnabled true
+        testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
+
+    dexOptions {
+        preDexLibraries true
+        javaMaxHeapSize "2g" // Use gig increments depending on needs
+        incremental true
+    }
+
     splits {
         abi {
             reset()
@@ -151,10 +189,19 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('debug.keystore')
+            storeFile file('../keystores/debug.keystore')
             storePassword 'android'
             keyAlias 'androiddebugkey'
             keyPassword 'android'
+        }
+
+        def pass = getPassword("rainbow","rainbow-android-key")
+        
+        release {
+            storeFile file('../keystores/rainbow-key.keystore')
+            storePassword pass
+            keyAlias 'rainbow-alias'
+            keyPassword pass
         }
     }
     buildTypes {
@@ -164,7 +211,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://facebook.github.io/react-native/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
@@ -207,6 +254,10 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    // DETOX
+    androidTestImplementation('com.wix:detox:+') { transitive = true } 
+    androidTestImplementation 'junit:junit:4.12'
 }
 
 // Run this once to be able to run the application with BUCK
@@ -214,6 +265,10 @@ dependencies {
 task copyDownloadableDepsToLibs(type: Copy) {
     from configurations.compile
     into 'libs'
+}
+
+crashlytics {
+  enableNdk true
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

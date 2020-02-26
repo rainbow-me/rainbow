@@ -1,3 +1,4 @@
+import { Platform, View } from 'react-native';
 import { BlurView } from '@react-native-community/blur';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -24,27 +25,44 @@ const Title = styled(Text).attrs({
   margin-left: 8;
 `;
 
-const LoadingOverlay = ({ title, ...props }) => (
-  <TouchableBackdrop
-    {...props}
-    {...position.sizeAsObject('100%')}
-    disabled
-    zIndex={999}
-  >
-    <Overlay>
-      <Centered zIndex={2}>
-        <ActivityIndicator />
-        {title && <Title>{title}</Title>}
-      </Centered>
-      <BlurView
-        {...position.coverAsObject}
-        blurAmount={20}
-        blurType="light"
-        zIndex={1}
-      />
-    </Overlay>
-  </TouchableBackdrop>
+const Content = title => (
+  <Overlay>
+    <Centered zIndex={2}>
+      <ActivityIndicator />
+      {title && <Title>{title}</Title>}
+    </Centered>
+    <BlurView
+      {...position.coverAsObject}
+      blurAmount={20}
+      blurType="light"
+      zIndex={1}
+    />
+  </Overlay>
 );
+
+const LoadingOverlay = ({ title, ...props }) =>
+  Platform.OS === 'android' ? (
+    <View
+      {...props}
+      {...position.sizeAsObject('100%')}
+      zIndex={999}
+      style={{
+        alignSelf: 'center',
+        flex: 1,
+      }}
+    >
+      {Content(title)}
+    </View>
+  ) : (
+    <TouchableBackdrop
+      {...props}
+      {...position.sizeAsObject('100%')}
+      disabled
+      zIndex={999}
+    >
+      {Content(title)}
+    </TouchableBackdrop>
+  );
 
 LoadingOverlay.propTypes = {
   title: PropTypes.string,
