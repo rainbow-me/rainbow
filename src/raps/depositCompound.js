@@ -22,14 +22,13 @@ const estimateDepositGasLimit = async (
     const gasLimit = await compound.estimate.mint(rawMintAmount, params);
     console.log('[deposit] estimated gas limit for deposit', gasLimit);
     console.log(
-      '[deposit] estimated gas limit for deposit toString',
-      gasLimit.toString
+      '[deposit] TO STRING estimated gas limit for deposit',
+      gasLimit.toString()
     );
     return gasLimit ? gasLimit.toString() : null;
   } catch (error) {
     console.log('[deposit] ERROR estimating gas', error);
-    throw error;
-    // return null;
+    return null;
   }
 };
 
@@ -50,6 +49,7 @@ const depositCompound = async (wallet, currentRap, index, parameters) => {
   if (!gasPrice) {
     gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
   }
+  console.log('[deposit] gas price', gasPrice);
 
   const compound = new ethers.Contract(CDAI_CONTRACT, compoundCDAIABI, wallet);
 
