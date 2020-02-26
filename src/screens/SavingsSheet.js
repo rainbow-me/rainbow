@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, toLower } from 'lodash';
 import React, { Fragment } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import { Column } from '../components/layout';
@@ -22,10 +22,11 @@ import Divider from '../components/Divider';
 import { useSavingsAccount } from '../hooks';
 
 function SavingsSheet() {
-  const { getParam, navigate, ...navigation } = useNavigation();
+  const { getParam, navigate } = useNavigation();
   const savings = useSavingsAccount();
 
-  const isEmpty = getParam('isEmpty', true); // false
+  const isEmpty = getParam('isEmpty', false); // false
+  const currency = getParam('currency', true); // false
 
   return (
     <Sheet>
@@ -62,16 +63,21 @@ function SavingsSheet() {
             {({ onNewEmoji }) => (
               <FloatingEmojisTapHandler onNewEmoji={onNewEmoji}>
                 <Column paddingBottom={8}>
-                  {savings.map(({ name, symbol, ...item }) => (
-                    <SavingsCoinRow
-                      item={{
-                        ...item,
-                        name: name.replace('Compound ', ''),
-                        symbol: symbol.substr(1),
-                      }}
-                      key={get(item, 'cTokenAddress')}
-                    />
-                  ))}
+                  {savings
+                    .filter(
+                      ({ symbol }) =>
+                        toLower(symbol.substr(1)) === toLower(currency)
+                    )
+                    .map(({ name, symbol, ...item }) => (
+                      <SavingsCoinRow
+                        item={{
+                          ...item,
+                          name: name.replace('Compound ', ''),
+                          symbol: symbol.substr(1),
+                        }}
+                        key={get(item, 'cTokenAddress')}
+                      />
+                    ))}
                 </Column>
               </FloatingEmojisTapHandler>
             )}
