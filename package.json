@@ -176,7 +176,7 @@
   "devDependencies": {
     "@babel/core": "^7.7.2",
     "@babel/runtime": "^7.7.2",
-    "@react-native-community/cli": "3.0.4",
+    "@react-native-community/cli": "4.2.1",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.0.3",
     "babel-jest": "^24.9.0",
