@@ -179,6 +179,7 @@ export const transactionsReceived = (message, appended = false) => (
     nativeCurrency,
     transactions,
     tokenOverrides,
+    network,
     appended
   );
   dispatch({

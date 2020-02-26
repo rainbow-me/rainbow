@@ -21,7 +21,7 @@ import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
 } from '../helpers/utilities';
-import { DAI_ADDRESS } from '../references';
+import { savingsAssetsList } from '../references';
 import { isLowerCaseMatch } from '../utils';
 
 const DIRECTION_OUT = 'out';
@@ -46,6 +46,7 @@ export const parseTransactions = (
   nativeCurrency,
   existingTransactions,
   tokenOverrides,
+  network,
   appended = false
 ) => {
   const data = appended
@@ -53,7 +54,13 @@ export const parseTransactions = (
     : transactionData;
   const parsedNewTransactions = flatten(
     data.map(txn =>
-      parseTransaction(txn, accountAddress, nativeCurrency, tokenOverrides)
+      parseTransaction(
+        txn,
+        accountAddress,
+        nativeCurrency,
+        tokenOverrides,
+        network
+      )
     )
   );
   const [pendingTransactions, remainingTransactions] = partition(
@@ -105,7 +112,8 @@ const parseTransaction = (
   txn,
   accountAddress,
   nativeCurrency,
-  tokenOverrides
+  tokenOverrides,
+  network
 ) => {
   const transaction = pick(txn, [
     'hash',
@@ -122,16 +130,13 @@ const parseTransaction = (
   let internalTransactions = changes;
   // TODO JIN match the transaction.to with the right asset
   if (isEmpty(changes) && txn.status === 'failed' && txn.type === 'deposit') {
+    const asset = savingsAssetsList[network][toLower(transaction.to)];
+
     const assetInternalTransaction = {
       address_from: transaction.from,
       address_to: transaction.to,
-      asset: {
-        address: DAI_ADDRESS,
-        decimals: 18,
-        name: 'Dai',
-        symbol: 'DAI',
-      },
-      value: 0,
+      asset,
+      value: transaction.value,
     };
     internalTransactions = [assetInternalTransaction];
   }
