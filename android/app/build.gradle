@@ -189,7 +189,7 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('./keystores/debug.keystore')
+            storeFile file('../keystores/debug.keystore')
             storePassword 'android'
             keyAlias 'androiddebugkey'
             keyPassword 'android'
@@ -198,7 +198,7 @@ android {
         def pass = getPassword("rainbow","rainbow-android-key")
         
         release {
-            storeFile file('./keystores/rainbow-key.keystore')
+            storeFile file('../keystores/rainbow-key.keystore')
             storePassword pass
             keyAlias 'rainbow-alias'
             keyPassword pass

@@ -213,7 +213,7 @@ const ImportSeedPhraseSheet = ({
               Platform.OS === 'android' ? 'visible-password' : 'default'
             }
             multiline
-            numberOfLines={3}
+            numberOfLines={7}
             ref={isNativeStackAvailable ? inputRef : inputRefListener}
             onChangeText={handleSetSeedPhrase}
             onSubmitEditing={onPressImportButton}
