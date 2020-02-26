@@ -1,3 +1,4 @@
+import networkTypes from '../../helpers/networkTypes';
 import { getGlobal, saveGlobal } from './common';
 
 const APPSTORE_REVIEW_COUNT = 'appStoreReviewRequestCount';
@@ -15,7 +16,7 @@ export const getLanguage = () => getGlobal(LANGUAGE, 'en');
 
 export const saveLanguage = language => saveGlobal(LANGUAGE, language);
 
-export const getNetwork = () => getGlobal(NETWORK, 'mainnet');
+export const getNetwork = () => getGlobal(NETWORK, networkTypes.mainnet);
 
 export const saveNetwork = network => saveGlobal(NETWORK, network);
 

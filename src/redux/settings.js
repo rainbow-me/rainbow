@@ -12,6 +12,7 @@ import { dataClearState } from './data';
 import { explorerInit } from './explorer';
 import { ethereumUtils } from '../utils';
 import { web3SetHttpProvider } from '../handlers/web3';
+import networkTypes from '../helpers/networkTypes';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -148,7 +149,7 @@ export const INITIAL_STATE = {
   chainId: 1,
   language: 'en',
   nativeCurrency: 'USD',
-  network: 'mainnet',
+  network: networkTypes.mainnet,
 };
 
 export default (state = INITIAL_STATE, action) => {

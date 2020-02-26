@@ -1,5 +1,6 @@
 import { find, get, replace, toLower } from 'lodash';
 import chains from '../references/chains.json';
+import networkTypes from '../helpers/networkTypes';
 import {
   add,
   convertNumberToString,
@@ -69,7 +70,7 @@ const getDataString = (func, arrVals) => {
  */
 const getNetworkFromChainId = chainId => {
   const networkData = find(chains, ['chain_id', chainId]);
-  return get(networkData, 'network', 'mainnet');
+  return get(networkData, 'network', networkTypes.mainnet);
 };
 
 /**

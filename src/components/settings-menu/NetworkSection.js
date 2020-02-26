@@ -9,7 +9,10 @@ import { RadioList, RadioListItem } from '../radio-list';
 
 const NETWORKS = [
   { disabled: false, name: 'Mainnet' },
+  { disabled: false, name: 'Ropsten' },
+  { disabled: false, name: 'Kovan' },
   { disabled: false, name: 'Rinkeby' },
+  { disabled: false, name: 'Goerli' },
 ];
 
 const NetworkSection = ({ network, onNetworkChange }) => (
