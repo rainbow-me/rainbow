@@ -9,6 +9,7 @@ import {
   getAccountInfo,
 } from '../handlers/localstorage/accountLocal';
 import { hasEthBalance } from '../handlers/web3';
+import networkTypes from '../helpers/networkTypes';
 import { walletInit } from '../model/wallet';
 import {
   dataClearState,
@@ -135,7 +136,7 @@ export default Component =>
         const promises = [];
         const p1 = ownProps.settingsLoadState();
         promises.push(p1);
-        if (ownProps.network === 'mainnet') {
+        if (ownProps.network === networkTypes.mainnet) {
           const p2 = ownProps.dataLoadState();
           promises.push(p2);
           const p3 = ownProps.uniqueTokensLoadState();
