@@ -68,14 +68,18 @@ class WalletScreen extends Component {
       this.props.sections.length !== nextProps.sections.length;
 
     return (
+      // We need it when coming back from settings
       (!isFocused && willBeFocused) ||
+      // We need it when switching accounts or network
       sectionLengthHasChanged ||
+      // We need it when loading assets or empty wallet
       isNewValueForObjectPaths(this.props, nextProps, [
         'loadingAssets',
         'fetchingUniqueTokens',
         'isEmpty',
         'isWalletEthZero',
       ]) ||
+      // We need it to update prices / balances (only when focused!)
       (willBeFocused &&
         isNewValueForObjectPaths(this.props, nextProps, ['sections']))
     );
