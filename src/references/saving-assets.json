@@ -1,0 +1,96 @@
+{
+    "mainnet": {
+        "0x6c8c6b02e7b2be14d4fa6022dfd6d75921d90e4e": {
+            "address": "0x6c8c6b02e7b2be14d4fa6022dfd6d75921d90e4e",
+            "decimals": 8,
+            "name": "Compound Basic Attention Token",
+            "symbol": "cBAT"
+        },
+        "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643": {
+            "address": "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643",
+            "decimals": 8,
+            "name": "Compound Dai",
+            "symbol": "cDAI"
+        },
+        "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5": {
+            "address": "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5",
+            "decimals": 8,
+            "name": "Compound Ether",
+            "symbol": "cETH"
+        },
+        "0x158079ee67fce2f58472a96584a73c7ab9ac95c1": {
+            "address": "0x158079ee67fce2f58472a96584a73c7ab9ac95c1",
+            "decimals": 8,
+            "name": "Compound Augur",
+            "symbol": "cREP"
+        },
+        "0xf5dce57282a584d2746faf1593d3121fcac444dc": {
+            "address": "0xf5dce57282a584d2746faf1593d3121fcac444dc",
+            "decimals": 8,
+            "name": "Compound Sai",
+            "symbol": "SAI"
+        },
+        "0x39aa39c021dfbae8fac545936693ac917d5e7563": {
+            "address": "0x39aa39c021dfbae8fac545936693ac917d5e7563",
+            "decimals": 8,
+            "name": "Compound USD Coin",
+            "symbol": "cUSDC"
+        },
+        "0xc11b1268c1a384e55c48c2391d8d480264a3a7f4": {
+            "address": "0xc11b1268c1a384e55c48c2391d8d480264a3a7f4",
+            "decimals": 8,
+            "name": "Compound Wrapped BTC",
+            "symbol": "cWBTC"
+        },
+        "0xb3319f5d18bc0d84dd1b4825dcde5d5f7266d407": {
+            "address": "0xb3319f5d18bc0d84dd1b4825dcde5d5f7266d407",
+            "decimals": 8,
+            "name": "Compound 0x",
+            "symbol": "cZRX"
+        }
+    },
+    "rinkeby": {
+        "0xebf1a11532b93a529b5bc942b4baa98647913002": {
+            "address": "0xebf1a11532b93a529b5bc942b4baa98647913002",
+            "decimals": 8,
+            "name": "Compound Basic Attention Token",
+            "symbol": "cBAT"
+        },
+        "0x6d7f0754ffeb405d23c51ce938289d4835be3b14": {
+            "address": "0x6d7f0754ffeb405d23c51ce938289d4835be3b14",
+            "decimals": 8,
+            "name": "Compound Dai",
+            "symbol": "cDAI"
+        },
+        "0xd6801a1dffcd0a410336ef88def4320d6df1883e": {
+            "address": "0xd6801a1dffcd0a410336ef88def4320d6df1883e",
+            "decimals": 8,
+            "name": "Compound Ether",
+            "symbol": "cETH"
+        },
+        "0xebe09eb3411d18f4ff8d859e096c533cac5c6b60": {
+            "address": "0xebe09eb3411d18f4ff8d859e096c533cac5c6b60",
+            "decimals": 8,
+            "name": "Compound Augur",
+            "symbol": "cREP"
+        },
+        "0x5b281a6dda0b271e91ae35de655ad301c976edb1": {
+            "address": "0x5b281a6dda0b271e91ae35de655ad301c976edb1",
+            "decimals": 8,
+            "name": "Compound USD Coin",
+            "symbol": "cUSDC"
+        },
+        "0x0014f450b8ae7708593f4a46f8fa6e5d50620f96": {
+            "address": "0x0014f450b8ae7708593f4a46f8fa6e5d50620f96",
+            "decimals": 8,
+            "name": "Compound Wrapped BTC",
+            "symbol": "cWBTC"
+        },
+        "0x52201ff1720134bbbbb2f6bc97bf3715490ec19b": {
+            "address": "0x52201ff1720134bbbbb2f6bc97bf3715490ec19b",
+            "decimals": 8,
+            "name": "Compound 0x",
+            "symbol": "cZRX"
+        }
+    }
+}
