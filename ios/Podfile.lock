@@ -105,9 +105,6 @@ PODS:
     - GoogleUtilities/Logger
   - JWT (3.0.0-beta.12):
     - Base64 (~> 1.1.2)
-  - Kingfisher (5.13.1):
-    - Kingfisher/Core (= 5.13.1)
-  - Kingfisher/Core (5.13.1)
   - libwebp (1.1.0):
     - libwebp/demux (= 1.1.0)
     - libwebp/mux (= 1.1.0)
@@ -459,7 +456,6 @@ DEPENDENCIES:
   - FLAnimatedImage
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
-  - Kingfisher
   - libwebp
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera.podspec`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID.podspec`)
@@ -544,7 +540,6 @@ SPEC REPOS:
     - GoogleDataTransportCCTSupport
     - GoogleUtilities
     - JWT
-    - Kingfisher
     - libwebp
     - nanopb
     - Protobuf
@@ -712,7 +707,6 @@ SPEC CHECKSUMS:
   GoogleDataTransportCCTSupport: f880d70972efa2ed1be4e9173a0f4c5f3dc2d176
   GoogleUtilities: 06eb53bb579efe7099152735900dd04bf09e7275
   JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
-  Kingfisher: f33a848445e33c543620812158dc5d47f6bf90df
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   Permission-Camera: 8fe4753b02396489b11c5089e4f57bab7fe1ef42
@@ -779,6 +773,6 @@ SPEC CHECKSUMS:
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   Yoga: b9a1f7189009fa4b6266ee0a63235547326295d2
 
-PODFILE CHECKSUM: 29080f1855ae6be2c85d9f4befc83c63100195d4
+PODFILE CHECKSUM: 5b3b67c31489543be6a567cd5513d6e295e3c505
 
 COCOAPODS: 1.8.4

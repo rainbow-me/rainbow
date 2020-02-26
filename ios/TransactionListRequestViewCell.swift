@@ -55,7 +55,7 @@ class TransactionListRequestViewCell: TransactionListBaseCell {
     
     if request.imageUrl != nil {
       let url = URL(string: request.imageUrl!)
-      self.walletImage.kf.setImage(with: url)
+      self.walletImage.sd_setImage(with: url)
     }
   }
   
