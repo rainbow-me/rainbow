@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { position, colors } from '../../styles';
 import { ColumnWithMargins, Centered } from '../layout';
 import { Emoji, Br, Text } from '../text';
