@@ -66,6 +66,6 @@ TokenSelectionButton.defaultProps = {
 };
 
 const arePropsEqual = (...props) =>
-  !isNewValueForObjectPaths(...props, ['showLockIcon', 'symbol']);
+  !isNewValueForObjectPaths(...props, ['onPress', 'showLockIcon', 'symbol']);
 
 export default React.memo(TokenSelectionButton, arePropsEqual);

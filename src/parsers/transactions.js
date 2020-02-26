@@ -21,6 +21,7 @@ import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
 } from '../helpers/utilities';
+import { DAI_ADDRESS } from '../references';
 import { isLowerCaseMatch } from '../utils';
 
 const DIRECTION_OUT = 'out';
@@ -119,6 +120,21 @@ const parseTransaction = (
   transaction.to = txn.address_to;
   const changes = get(txn, 'changes', []);
   let internalTransactions = changes;
+  // TODO JIN match the transaction.to with the right asset
+  if (isEmpty(changes) && txn.status === 'failed' && txn.type === 'deposit') {
+    const assetInternalTransaction = {
+      address_from: transaction.from,
+      address_to: transaction.to,
+      asset: {
+        address: DAI_ADDRESS,
+        decimals: 18,
+        name: 'Dai',
+        symbol: 'DAI',
+      },
+      value: 0,
+    };
+    internalTransactions = [assetInternalTransaction];
+  }
   if (
     isEmpty(changes) &&
     txn.status === 'failed' &&

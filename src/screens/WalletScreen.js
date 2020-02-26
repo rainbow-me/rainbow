@@ -6,13 +6,12 @@ import { withNavigation } from 'react-navigation';
 import { compose, withProps } from 'recompact';
 import { AssetList } from '../components/asset-list';
 import { FabWrapper } from '../components/fab';
-import { SavingsWrapper } from '../components/savings';
 import {
   CameraHeaderButton,
   Header,
   ProfileHeaderButton,
 } from '../components/header';
-import { Centered, Page } from '../components/layout';
+import { Page } from '../components/layout';
 import buildWalletSectionsSelector from '../helpers/buildWalletSections';
 import {
   withAccountData,
@@ -83,12 +82,6 @@ class WalletScreen extends Component {
       scrollViewTracker,
       sections,
     } = this.props;
-
-
-          // <Centered>
-          //   <SavingsWrapper />
-          // </Centered>
-
 
     return (
       <Page {...position.sizeAsObject('100%')} flex={1}>
