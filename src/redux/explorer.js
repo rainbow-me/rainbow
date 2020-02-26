@@ -88,8 +88,7 @@ const explorerUnsubscribe = () => (dispatch, getState) => {
 
 export const explorerClearState = () => (dispatch, getState) => {
   const { network } = getState().settings;
-  // Fallback to the testnet data provider
-  // if we're not on mainnnet
+  // if we're not on mainnnet clear the testnet state
   if (network !== 'mainnet') {
     return testnetExplorerClearState();
   }

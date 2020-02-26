@@ -134,7 +134,6 @@ export const dataTokenOverridesInit = () => async dispatch => {
 export const dataClearState = () => (dispatch, getState) => {
   const { uniswapPricesSubscription } = getState().data;
   const { accountAddress, network } = getState().settings;
-  console.log('clearing state for network', network);
   uniswapPricesSubscription &&
     uniswapPricesSubscription.unsubscribe &&
     uniswapPricesSubscription.unsubscribe();
@@ -143,7 +142,6 @@ export const dataClearState = () => (dispatch, getState) => {
   removeCompoundAssets(accountAddress, network);
   removeLocalTransactions(accountAddress, network);
   dispatch({ type: DATA_CLEAR_STATE });
-  console.log('done clearing state for', network);
 };
 
 export const dataUpdateAssets = assets => (dispatch, getState) => {
