@@ -15,17 +15,21 @@ const AssetList = ({
   hideHeader,
   isEmpty,
   isWalletEthZero,
+  network,
   scrollViewTracker,
   sections,
   ...props
 }) => {
   const insets = useSafeArea();
 
+  console.log('ASSET LIST NETWORK', network);
+
   return isEmpty ? (
     <EmptyAssetList
       {...props}
       hideHeader={hideHeader}
       isWalletEthZero={isWalletEthZero}
+      network={network}
     />
   ) : (
     <RecyclerAssetList
