@@ -3,7 +3,11 @@ import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import { compose, shouldUpdate, withHandlers } from 'recompact';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
-import { withAccountSettings, withOpenBalances } from '../../hoc';
+import {
+  withAccountSettings,
+  withOpenBalances,
+  withEditOptions,
+} from '../../hoc';
 import { colors } from '../../styles';
 import { isNewValueForPath } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
@@ -12,6 +16,8 @@ import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import CoinCheckButton from './CoinCheckButton';
+import TransitionToggler from '../animations/TransitionToggler';
 
 const formatPercentageString = percentString =>
   percentString
@@ -65,18 +71,45 @@ TopRow.propTypes = {
   nativeCurrencySymbol: PropTypes.string,
 };
 
-const BalanceCoinRow = ({ item, onPress, onPressSend, ...props }) => (
-  <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
-    <CoinRow
-      onPress={onPress}
-      onPressSend={onPressSend}
-      {...item}
-      {...props}
-      bottomRowRender={BottomRow}
-      topRowRender={TopRow}
-    />
-  </ButtonPressAnimation>
-);
+const BalanceCoinRow = ({
+  item,
+  onPress,
+  onPressSend,
+  isCoinListEdited,
+  ...props
+}) =>
+  item.isSmall ? (
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
+      <CoinRow
+        onPress={onPress}
+        onPressSend={onPressSend}
+        {...item}
+        {...props}
+        bottomRowRender={BottomRow}
+        topRowRender={TopRow}
+      />
+    </ButtonPressAnimation>
+  ) : (
+    <>
+      <CoinCheckButton isAbsolute {...item} />
+      <TransitionToggler
+        startingWidth={0}
+        endingWidth={42}
+        toggle={isCoinListEdited}
+      >
+        <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
+          <CoinRow
+            onPress={onPress}
+            onPressSend={onPressSend}
+            {...item}
+            {...props}
+            bottomRowRender={BottomRow}
+            topRowRender={TopRow}
+          />
+        </ButtonPressAnimation>
+      </TransitionToggler>
+    </>
+  );
 
 BalanceCoinRow.propTypes = {
   item: PropTypes.object,
@@ -89,6 +122,7 @@ BalanceCoinRow.propTypes = {
 export default compose(
   withAccountSettings,
   withOpenBalances,
+  withEditOptions,
   withHandlers({
     onPress: ({ item, onPress }) => () => {
       if (onPress) {
@@ -113,7 +147,8 @@ export default compose(
       nextProps,
       'nativeCurrency'
     );
+    const isEdited = isNewValueForPath(props, nextProps, 'isCoinListEdited');
 
-    return isNewItem || isNewNativeCurrency || isChangeInOpenAssets;
+    return isNewItem || isNewNativeCurrency || isChangeInOpenAssets || isEdited;
   })
 )(BalanceCoinRow);

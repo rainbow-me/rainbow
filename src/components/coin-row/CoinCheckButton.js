@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { pure } from 'recompact';
@@ -9,7 +10,7 @@ import { Icon } from '../icons';
 const CoinRowPaddingTop = 15;
 const CoinRowPaddingBottom = 7;
 
-const CoinCheckButton = () => {
+const CoinCheckButton = ({ isAbsolute }) => {
   const [toggle, setToggle] = useState(false);
 
   return (
@@ -17,7 +18,7 @@ const CoinCheckButton = () => {
       style={{
         height: CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom,
         paddingTop: 10,
-        position: 'absolute',
+        position: isAbsolute ? 'absolute' : 'relative',
         width: 66,
       }}
     >
@@ -67,7 +68,9 @@ const CoinCheckButton = () => {
   );
 };
 
-CoinCheckButton.propTypes = {};
+CoinCheckButton.propTypes = {
+  isAbsolute: PropTypes.bool,
+};
 
 CoinCheckButton.defaultProps = {};
 

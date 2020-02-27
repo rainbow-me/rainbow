@@ -35,6 +35,7 @@ import { ListFooter } from '../list';
 import { UniqueTokenRow } from '../unique-token';
 import AssetListHeader from './AssetListHeader';
 import { TokenFamilyWrapPaddingTop } from '../token-family/TokenFamilyWrap';
+import CoinCheckButton from '../coin-row/CoinCheckButton';
 
 /* eslint-disable sort-keys */
 export const ViewTypes = {
@@ -641,6 +642,7 @@ class RecyclerAssetList extends Component {
   position = 0;
 
   renderList = [];
+  checkList = [];
 
   scrollToOffset = (position, animated) => {
     setTimeout(() => {
@@ -753,6 +755,7 @@ class RecyclerAssetList extends Component {
       ) {
         smallBalancedChanged = false;
         const renderList = [];
+        const checkList = [];
         for (let i = 0; i < item.assets.length; i++) {
           renderList.push(
             renderItem({
@@ -763,11 +766,19 @@ class RecyclerAssetList extends Component {
               key: `CoinSmallBalances${i}`,
             })
           );
+          checkList.push(<CoinCheckButton {...item.assets[i]} />);
+          console.log(item.assets[i]);
         }
         this.renderList = renderList;
+        this.checkList = checkList;
       }
 
-      return <SmallBalancesWrapper assets={this.renderList} />;
+      return (
+        <SmallBalancesWrapper
+          assets={this.renderList}
+          checkList={this.checkList}
+        />
+      );
     }
 
     const isNotUniqueToken =

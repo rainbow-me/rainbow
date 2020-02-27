@@ -2,17 +2,11 @@ import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
-import {
-  withAccountSettings,
-  withFabSendAction,
-  withEditOptions,
-} from '../../hoc';
+import { withAccountSettings, withFabSendAction } from '../../hoc';
 import { padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import Highlight from '../Highlight';
 import { Column, Row } from '../layout';
-import TransitionToggler from '../animations/TransitionToggler';
-import CoinCheckButton from './CoinCheckButton';
 
 const CoinRowPaddingTop = 15;
 const CoinRowPaddingBottom = 7;
@@ -47,45 +41,25 @@ const CoinRow = enhance(
     contentStyles,
     highlight,
     symbol,
-    isCoin,
-    isCoinListEdited,
-    isSmall,
     topRowRender,
     ...props
-  }) => {
-    const coinRow = (
-      <Container align="center" css={containerStyles}>
-        <CoinRowHighlight visible={highlight} />
-        {createElement(coinIconRender, { symbol, ...props })}
-        <Content css={contentStyles}>
-          <Row align="center" justify="space-between">
-            {topRowRender({ symbol, ...props })}
-          </Row>
-          <Row align="center" justify="space-between">
-            {bottomRowRender({ symbol, ...props })}
-          </Row>
-        </Content>
-        {typeof children === 'function'
-          ? children({ symbol, ...props })
-          : children}
-      </Container>
-    );
-
-    return isSmall || !isCoin ? (
-      coinRow
-    ) : (
-      <>
-        <CoinCheckButton />
-        <TransitionToggler
-          startingWidth={0}
-          endingWidth={35}
-          toggle={isCoinListEdited}
-        >
-          {coinRow}
-        </TransitionToggler>
-      </>
-    );
-  }
+  }) => (
+    <Container align="center" css={containerStyles}>
+      <CoinRowHighlight visible={highlight} />
+      {createElement(coinIconRender, { symbol, ...props })}
+      <Content css={contentStyles}>
+        <Row align="center" justify="space-between">
+          {topRowRender({ symbol, ...props })}
+        </Row>
+        <Row align="center" justify="space-between">
+          {bottomRowRender({ symbol, ...props })}
+        </Row>
+      </Content>
+      {typeof children === 'function'
+        ? children({ symbol, ...props })
+        : children}
+    </Container>
+  )
 );
 
 CoinRow.propTypes = {
@@ -106,4 +80,4 @@ CoinRow.defaultProps = {
 
 CoinRow.height = CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom;
 
-export default compose(withEditOptions)(CoinRow);
+export default CoinRow;

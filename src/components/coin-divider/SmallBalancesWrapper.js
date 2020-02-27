@@ -32,6 +32,7 @@ class SmallBalancesWrapper extends PureComponent {
     const {
       assets,
       balancesSum,
+      checkList,
       openSmallBalances,
       isCoinListEdited,
       setIsCoinListEdited,
@@ -52,9 +53,10 @@ class SmallBalancesWrapper extends PureComponent {
           startingOpacity={0}
         >
           <View pointerEvents={openSmallBalances ? 'auto' : 'none'}>
+            <View style={{ position: 'absolute' }}>{checkList}</View>
             <TransitionToggler
               startingWidth={0}
-              endingWidth={35}
+              endingWidth={42}
               toggle={isCoinListEdited}
             >
               {assets}

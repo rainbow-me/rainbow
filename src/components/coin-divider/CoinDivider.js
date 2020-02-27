@@ -185,45 +185,50 @@ class CoinDivider extends PureComponent {
               </Monospace>
             </OpacityToggler>
           </View>
-          <OpacityToggler
-            endingOpacity={1}
-            startingOpacity={0}
-            isVisible={openSmallBalances}
-            animationNode={this._node}
+          <View
+            style={{ alignItems: 'flex-end', position: 'absolute', width: 62 }}
           >
-            <ButtonPressAnimation
-              onPress={() => {
-                this.setState(prevState => {
-                  console.log(prevState.isCurrentlyCoinListEdited);
-                  onEdit(!prevState.isCurrentlyCoinListEdited);
-                  return {
-                    isCurrentlyCoinListEdited: !prevState.isCurrentlyCoinListEdited,
-                  };
-                });
-              }}
+            <OpacityToggler
+              endingOpacity={1}
+              startingOpacity={0}
+              isVisible={openSmallBalances}
+              animationNode={this._node}
             >
-              <View
-                style={{
-                  backgroundColor: isCoinListEdited
-                    ? colors.appleBlue
-                    : colors.lightBlueGrey,
-                  borderRadius: 15,
-                  height: 30,
-                  justifyContent: 'center',
-                  paddingHorizontal: 10,
+              <ButtonPressAnimation
+                onPress={() => {
+                  this.setState(prevState => {
+                    onEdit(!prevState.isCurrentlyCoinListEdited);
+                    return {
+                      isCurrentlyCoinListEdited: !prevState.isCurrentlyCoinListEdited,
+                    };
+                  });
                 }}
               >
-                <Text
-                  color={isCoinListEdited ? 'white' : 'blueGreyDarkTransparent'}
-                  letterSpacing="tighter"
-                  size="lmedium"
-                  weight="semibold"
+                <View
+                  style={{
+                    backgroundColor: isCoinListEdited
+                      ? colors.appleBlue
+                      : colors.lightBlueGrey,
+                    borderRadius: 15,
+                    height: 30,
+                    justifyContent: 'center',
+                    paddingHorizontal: 10,
+                  }}
                 >
-                  {isCoinListEdited ? 'Done' : 'Edit'}
-                </Text>
-              </View>
-            </ButtonPressAnimation>
-          </OpacityToggler>
+                  <Text
+                    color={
+                      isCoinListEdited ? 'white' : 'blueGreyDarkTransparent'
+                    }
+                    letterSpacing="tighter"
+                    size="lmedium"
+                    weight="semibold"
+                  >
+                    {isCoinListEdited ? 'Done' : 'Edit'}
+                  </Text>
+                </View>
+              </ButtonPressAnimation>
+            </OpacityToggler>
+          </View>
         </View>
       </Row>
     );
