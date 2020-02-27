@@ -1,4 +1,4 @@
-import { concat, get, groupBy, isEmpty, isNil, map, toNumber } from 'lodash';
+import { get, groupBy, isEmpty, isNil, map, toNumber } from 'lodash';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
 import {
@@ -13,13 +13,11 @@ const EMPTY_ARRAY = [];
 
 const assetPricesFromUniswapSelector = state => state.assetPricesFromUniswap;
 const assetsSelector = state => state.assets;
-const compoundAssetsSelector = state => state.compoundAssets;
 const nativeCurrencySelector = state => state.nativeCurrency;
 
 const sortAssetsByNativeAmount = (
   originalAssets,
   assetPricesFromUniswap,
-  compoundAssets,
   nativeCurrency
 ) => {
   let updatedAssets = originalAssets;
@@ -47,7 +45,7 @@ const sortAssetsByNativeAmount = (
       return asset;
     });
   }
-  let assetsNativePrices = concat(updatedAssets, compoundAssets);
+  let assetsNativePrices = updatedAssets;
   let total = null;
   if (!isEmpty(assetsNativePrices)) {
     const parsedAssets = parseAssetsNative(assetsNativePrices, nativeCurrency);
@@ -127,11 +125,6 @@ const parseAssetsNative = (assets, nativeCurrency) => {
 };
 
 export const sortAssetsByNativeAmountSelector = createSelector(
-  [
-    assetsSelector,
-    assetPricesFromUniswapSelector,
-    compoundAssetsSelector,
-    nativeCurrencySelector,
-  ],
+  [assetsSelector, assetPricesFromUniswapSelector, nativeCurrencySelector],
   sortAssetsByNativeAmount
 );

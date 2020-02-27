@@ -4,12 +4,11 @@ import { sortAssetsByNativeAmountSelector } from '../hoc/assetSelectors';
 export default function useAccountAssets() {
   const accountData = useSelector(
     ({
-      data: { assetPricesFromUniswap, assets, compoundAssets },
+      data: { assetPricesFromUniswap, assets },
       settings: { nativeCurrency },
     }) => ({
       assetPricesFromUniswap,
       assets,
-      compoundAssets,
       nativeCurrency,
     })
   );

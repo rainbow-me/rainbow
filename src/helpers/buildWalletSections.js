@@ -15,7 +15,6 @@ import { chartExpandedAvailable } from '../config/experimental';
 const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;
 const assetsTotalSelector = state => state.assetsTotal;
-const compoundAssetsSelector = state => state.compoundAssets; // TODO JIN
 const savingsSelector = state => state.savings;
 const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
 const isWalletEthZeroSelector = state => state.isWalletEthZero;
@@ -104,7 +103,6 @@ const withBalanceSection = (
   allAssets,
   allAssetsCount,
   assetsTotal,
-  compoundAssets, // TODO JIN
   savings,
   isBalancesSectionEmpty,
   isWalletEthZero,
@@ -258,8 +256,7 @@ const balanceSectionSelector = createSelector(
     allAssetsSelector,
     allAssetsCountSelector,
     assetsTotalSelector,
-    compoundAssetsSelector, // TODO JIN
-    savingsSelector, // TODO JIN
+    savingsSelector,
     isBalancesSectionEmptySelector,
     isWalletEthZeroSelector,
     languageSelector,

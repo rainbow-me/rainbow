@@ -9,14 +9,12 @@ import {
 
 const assetPricesFromUniswapVersion = '0.1.0';
 const assetsVersion = '0.2.0';
-const compoundAssetsVersion = '0.1.0';
 const transactionsVersion = '0.2.3';
 const uniqueTokensVersion = '0.2.0';
 
 const ACCOUNT_INFO = 'accountInfo';
 const ASSET_PRICES_FROM_UNISWAP = 'assetPricesFromUniswap';
 const ASSETS = 'assets';
-const COMPOUND_ASSETS = 'compoundAssets';
 const OPEN_FAMILIES = 'openFamilies';
 const OPEN_INVESTMENT_CARDS = 'openInvestmentCards';
 const SMALL_BALANCE_TOGGLE = 'smallBalanceToggle';
@@ -94,45 +92,6 @@ export const saveAssetPricesFromUniswap = (
  */
 export const removeAssetPricesFromUniswap = (accountAddress, network) =>
   removeAccountLocal(ASSET_PRICES_FROM_UNISWAP, accountAddress, network);
-
-/**
- * @desc get compound assets
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getCompoundAssets = (accountAddress, network) =>
-  getAccountLocal(
-    COMPOUND_ASSETS,
-    accountAddress,
-    network,
-    [],
-    compoundAssetsVersion
-  );
-
-/**
- * @desc save compound assets
- * @param  {String}   [address]
- * @param  {Array}    [compound assets]
- * @param  {String}   [network]
- */
-export const saveCompoundAssets = (compoundAssets, accountAddress, network) =>
-  saveAccountLocal(
-    COMPOUND_ASSETS,
-    compoundAssets,
-    accountAddress,
-    network,
-    compoundAssetsVersion
-  );
-
-/**
- * @desc remove compound assets
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const removeCompoundAssets = (accountAddress, network) =>
-  removeAccountLocal(COMPOUND_ASSETS, accountAddress, network);
 
 /**
  * @desc get transactions

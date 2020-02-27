@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import { get, keyBy, property } from 'lodash';
+import { get, keyBy, property, toLower } from 'lodash';
 import { compoundClient } from '../apollo/client';
 import {
   COMPOUND_ACCOUNT_QUERY,
@@ -25,10 +25,11 @@ export default function useSavingsAccount() {
   const tokenQuery = useQuery(COMPOUND_ACCOUNT_QUERY, {
     client: compoundClient,
     // pollInterval,
-    skip: !accountAddress.toLowerCase(),
-    variables: { id: accountAddress.toLowerCase() },
+    skip: !toLower(accountAddress),
+    variables: { id: toLower(accountAddress) },
   });
 
+  console.log('[USE SAVINGS] token query', tokenQuery);
   const tokens = get(tokenQuery, 'data.account.tokens', []).map(token => {
     const address = token.id.split('-')[0];
     const { name, symbol, ...marketData } = markets[address] || {};

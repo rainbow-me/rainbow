@@ -6,7 +6,6 @@ export default function useAccountData() {
     accountAddress: settings.accountAddress,
     assets: data.assets,
     chainId: settings.chainId,
-    compoundAssets: data.compoundAssets,
     nativeCurrency: settings.nativeCurrency,
     settings,
     tokenOverrides: data.tokenOverrides,
