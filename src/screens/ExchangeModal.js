@@ -50,6 +50,7 @@ import ethUnits from '../references/ethereum-units.json';
 import { colors, padding, position } from '../styles';
 import { ethereumUtils } from '../utils';
 import { CurrencySelectionTypes } from './CurrencySelectModal';
+import SwapInfo from '../components/exchange/SwapInfo';
 
 export const exchangeModalBorderRadius = 30;
 
@@ -872,6 +873,10 @@ const ExchangeModal = ({
               />
             )}
           </FloatingPanel>
+          <SwapInfo
+            asset={outputCurrency}
+            amount={(inputAmount > 0 && outputAmountDisplay) || null}
+          />
           {isSlippageWarningVisible && <SlippageWarning slippage={slippage} />}
           {showConfirmButton && (
             <Fragment>
