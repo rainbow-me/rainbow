@@ -27,15 +27,16 @@ platform :ios do
       finalize: true, # Whether to finalize the release. If not provided or false, the release can be finalized using the sentry_finalize_release action
       version: release_version
     )
-    sentry_upload_sourcemap(
-      sourcemap: './main.jsbundle', # file to upload
-      rewrite: true,
-      version: release_version
+    sentry_upload_file(
+      file: './main.jsbundle', # file to upload
+      version: release_version,
+      dist: latest_testflight_build_number
     )
     sentry_upload_sourcemap(
       sourcemap: './main.jsbundle.map', # sourcemap to upload
       rewrite: true,
-      version: release_version
+      version: release_version,
+      dist: latest_testflight_build_number
     )
     clean_build_artifacts
   end
