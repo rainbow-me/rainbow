@@ -83,6 +83,19 @@ const getChainIdFromNetwork = network => {
 };
 
 /**
+ * @desc get etherscan host from network string
+ * @param  {String} network
+ */
+const getEtherscanHostFromNetwork = network => {
+  const base_host = 'etherscan.io';
+  if (network === networkTypes.mainnet) {
+    return base_host;
+  } else {
+    return `${network}.${base_host}`;
+  }
+};
+
+/**
  * @desc returns an object
  * @param  {Array} assets
  * @param  {String} assetAmount
@@ -110,6 +123,7 @@ export default {
   getBalanceAmount,
   getChainIdFromNetwork,
   getDataString,
+  getEtherscanHostFromNetwork,
   getEthPriceUnit,
   getNetworkFromChainId,
   removeHexPrefix,

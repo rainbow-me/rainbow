@@ -10,11 +10,13 @@ import {
 import { Linking } from 'react-native';
 import TransactionStatusTypes from '../../helpers/transactionStatusTypes';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
+import { getEtherscanHostFromNetwork } from '../../utils/ethereumUtils';
 import { ButtonPressAnimation } from '../animations';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 import { RequestVendorLogoIcon } from '../coin-icon';
+import { withAccountSettings } from '../../hoc';
 
 const rowRenderPropTypes = {
   // eslint-disable-next-line react/no-unused-prop-types
@@ -57,8 +59,9 @@ export default compose(
     pending,
     ...props,
   })),
+  withAccountSettings,
   withHandlers({
-    onPressTransaction: ({ hash }) => () => {
+    onPressTransaction: ({ hash, network }) => () => {
       if (hash) {
         showActionSheetWithOptions(
           {
@@ -68,7 +71,11 @@ export default compose(
           buttonIndex => {
             if (buttonIndex === 0) {
               const normalizedHash = hash.replace(/-.*/g, '');
-              Linking.openURL(`https://etherscan.io/tx/${normalizedHash}`);
+              Linking.openURL(
+                `https://${getEtherscanHostFromNetwork(
+                  network
+                )}/tx/${normalizedHash}`
+              );
             }
           }
         );
