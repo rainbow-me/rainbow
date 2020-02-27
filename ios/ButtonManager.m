@@ -6,6 +6,7 @@
 //
 
 #import "React/RCTViewManager.h"
+#import "Rainbow-Swift.h"
 
 @interface RCT_EXTERN_MODULE(ButtonManager, RCTViewManager)
 
@@ -19,4 +20,12 @@ RCT_EXPORT_VIEW_PROPERTY(hapticType, NSString)
 RCT_EXPORT_VIEW_PROPERTY(minLongPressDuration, NSTimeInterval)
 RCT_EXPORT_VIEW_PROPERTY(scaleTo, CGFloat)
 
-@end 
+@end
+
+@implementation ButtonManager : RCTViewManager
+
+- (UIView *)view {
+  return [[Button alloc] init];
+}
+
+@end

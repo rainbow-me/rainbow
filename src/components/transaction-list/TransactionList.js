@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { compose, withHandlers, withState } from 'recompact';
 import { requireNativeComponent, Clipboard, Linking, View } from 'react-native';
 import { FloatingEmojis } from '../floating-emojis';
@@ -11,6 +12,7 @@ import {
   withRequests,
   withContacts,
 } from '../../hoc';
+import { removeRequest } from '../../redux/requests';
 import { showActionSheetWithOptions } from '../../utils/actionsheet';
 import { colors } from '../../styles';
 import { abbreviations } from '../../utils';
@@ -22,18 +24,33 @@ class TransactionList extends React.PureComponent {
     style: {},
   };
 
+  onCopyAddressPress = e => {
+    const { x, y, width, height } = e.nativeEvent;
+    this.props.setTapTarget([x, y, width, height]);
+    if (this.onNewEmoji) {
+      this.onNewEmoji();
+    }
+    Clipboard.setString(this.props.accountAddress);
+  };
+
   render() {
+    const data = {
+      requests: this.props.requests,
+      transactions: this.props.transactions,
+    };
     return (
       <View style={this.props.style}>
         <NativeTransactionListView
-          transactions={this.props.transactions}
+          data={data}
           accountAddress={this.props.accountAddress}
           accountColor={colors.avatarColor[this.props.accountColor]}
           accountName={this.props.accountName}
           onReceivePress={this.props.onReceivePress}
           onAvatarPress={this.props.onAvatarPress}
-          onCopyAddressPress={this.props.onCopyAddressPress}
-          onItemPress={this.props.onItemPress}
+          onCopyAddressPress={this.onCopyAddressPress}
+          onRequestPress={this.props.onRequestPress}
+          onRequestExpire={this.props.onRequestExpire}
+          onTransactionPress={this.props.onTransactionPress}
           style={this.props.style}
           isAvatarPickerAvailable={isAvatarPickerAvailable}
         />
@@ -41,26 +58,30 @@ class TransactionList extends React.PureComponent {
           style={{
             height: 0,
             left: this.props.tapTarget[0] - 24,
+            position: 'absolute',
             top: this.props.tapTarget[1] - this.props.tapTarget[3],
             width: this.props.tapTarget[2],
           }}
-          count={this.props.emojiCount}
-          distance={130}
-          emoji="+1"
-          size="h2"
-        />
+        >
+          {({ onNewEmoji }) => {
+            if (!this.onNewEmoji) {
+              this.onNewEmoji = onNewEmoji;
+            }
+            return null;
+          }}
+        </FloatingEmojis>
       </View>
     );
   }
 }
 
 export default compose(
+  connect(null, { removeExpiredRequest: removeRequest }),
   withAccountInfo,
   withAccountSettings,
   withAccountTransactions,
   withRequests,
   withContacts,
-  withState('emojiCount', 'setEmojiCount', 0),
   withState('tapTarget', 'setTapTarget', [0, 0, 0, 0]),
   withHandlers({
     onAvatarPress: ({ navigation, accountColor, accountName }) => () => {
@@ -69,18 +90,24 @@ export default compose(
         accountName,
       });
     },
-    onCopyAddressPress: ({
-      accountAddress,
-      emojiCount,
-      setEmojiCount,
-      setTapTarget,
-    }) => e => {
-      const { x, y, width, height } = e.nativeEvent;
-      setTapTarget([x, y, width, height]);
-      setEmojiCount(emojiCount + 1);
-      Clipboard.setString(accountAddress);
+    onReceivePress: ({ navigation }) => () => {
+      navigation.navigate('ReceiveModal');
     },
-    onItemPress: ({ transactions, contacts, navigation }) => e => {
+    onRequestExpire: ({ requests, removeExpiredRequest }) => e => {
+      const { index } = e.nativeEvent;
+      const item = requests[index];
+      removeExpiredRequest(item.requestId);
+    },
+    onRequestPress: ({ requests, navigation }) => e => {
+      const { index } = e.nativeEvent;
+      const item = requests[index];
+      navigation.navigate({
+        params: { transactionDetails: item },
+        routeName: 'ConfirmRequest',
+      });
+      return;
+    },
+    onTransactionPress: ({ transactions, contacts, navigation }) => e => {
       const { index } = e.nativeEvent;
       const item = transactions[index];
       const { hash, from, to, status } = item;
@@ -132,7 +159,5 @@ export default compose(
         );
       }
     },
-    onReceivePress: ({ navigation }) => () =>
-      navigation.navigate('ReceiveModal'),
   })
 )(TransactionList);

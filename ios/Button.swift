@@ -15,7 +15,7 @@ class Button : RCTView {
       alpha = disabled ? 0.3 : 1.0
     }
   }
-  @objc var duration: TimeInterval = 0.15
+  @objc var duration: TimeInterval = 0.1
   @objc var scaleTo: CGFloat = 0.97
   @objc var enableHapticFeedback: Bool = true
   @objc var hapticType: String = "selection"
@@ -56,7 +56,6 @@ class Button : RCTView {
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     animateTapStart(
       duration: duration,
-      options: .curveEaseOut,
       scale: scaleTo,
       useHaptic: enableHapticFeedback ? hapticType: nil
     )
@@ -64,11 +63,11 @@ class Button : RCTView {
   }
   
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapEnd(duration: duration, options: .curveEaseOut, scale: scaleTo)
+    animateTapEnd(duration: duration)
     onPress([:])
   }
   
   override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-    animateTapEnd(duration: duration, options: .curveEaseOut, scale: scaleTo)
+    animateTapEnd(duration: duration)
   }
 }
