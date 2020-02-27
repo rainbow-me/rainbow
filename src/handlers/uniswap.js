@@ -13,7 +13,7 @@ import contractMap from 'eth-contract-metadata';
 import { ethers } from 'ethers';
 import { get, map, mapKeys, mapValues, toLower, zipObject } from 'lodash';
 import { uniswapClient } from '../apollo/client';
-import { DIRECTORY_QUERY } from '../apollo/queries';
+import { UNISWAP_ALL_EXCHANGES_QUERY } from '../apollo/queries';
 import {
   convertAmountToRawAmount,
   convertRawAmountToDecimalFormat,
@@ -325,7 +325,7 @@ export const getAllExchanges = async (tokenOverrides, excluded = []) => {
     let skip = 0;
     while (!dataEnd) {
       let result = await uniswapClient.query({
-        query: DIRECTORY_QUERY,
+        query: UNISWAP_ALL_EXCHANGES_QUERY,
         variables: {
           excluded,
           first: 100,

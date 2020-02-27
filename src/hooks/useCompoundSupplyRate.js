@@ -1,6 +1,7 @@
 import { get } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
+import { compoundClient } from '../apollo/client';
 import { COMPOUND_SUPPLY_RATE } from '../apollo/queries';
 
 const CDAI_TOKEN_ADDRESS = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';
@@ -10,6 +11,7 @@ export default function useCompoundSupplyRate(
 ) {
   const [supplyRate, setSupplyRate] = useState(null);
   const { data } = useQuery(COMPOUND_SUPPLY_RATE, {
+    client: compoundClient,
     pollInterval: 1000,
     variables: { cTokenAddress },
   });

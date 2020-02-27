@@ -1,4 +1,3 @@
-import { ApolloProvider } from '@apollo/client';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import analytics from '@segment/analytics-react-native';
 import { init as initSentry, setRelease } from '@sentry/react-native';
@@ -26,9 +25,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
-import { Provider as TrackedProvider } from 'reactive-react-redux';
 import { compose, withProps } from 'recompact';
-import { client } from './apollo/client';
 import { FlexItem } from './components/layout';
 import OfflineBadge from './components/OfflineBadge';
 import {
@@ -178,23 +175,16 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   render = () => (
-      <ApolloProvider client={client}>
     <SafeAreaProvider>
-
-
-        <Provider store={store}>
-          <FlexItem>
-            <OfflineBadge />
-            <Routes ref={this.handleNavigatorRef} />
-          </FlexItem>
-        </Provider>
+      <Provider store={store}>
+        <FlexItem>
+          <OfflineBadge />
+          <Routes ref={this.handleNavigatorRef} />
+        </FlexItem>
+      </Provider>
     </SafeAreaProvider>
-      </ApolloProvider>
   );
 }
-
-    // <TrackedProvider store={store}>
-    //   </TrackedProvider>
 
 const AppWithRedux = compose(
   withProps({ store }),

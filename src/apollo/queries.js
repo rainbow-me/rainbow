@@ -1,64 +1,42 @@
 import gql from 'graphql-tag';
 
-export const COMPOUND_MARKET_QUERY = gql`
-  query markets {
-    markets(first: 7) {
-      blockTimestamp
+export const COMPOUND_ACCOUNT_QUERY = gql`
+  query account($id: ID!) {
+    account(id: $id) {
       id
+      tokens {
+        borrowBalanceUnderlying
+        cTokenBalance
+        id
+        lifetimeSupplyInterestAccrued
+        supplyBalanceUnderlying
+        symbol
+        totalUnderlyingSupplied
+      }
+    }
+  }
+`;
+
+export const COMPOUND_ALL_MARKETS_QUERY = gql`
+  query markets {
+    markets {
       exchangeRate
-      interestRateModelAddress
+      id
       name
       supplyRate
       underlyingAddress
+      underlyingSymbol
       underlyingDecimals
-      underlyingPriceUSD
       underlyingPrice
     }
   }
 `;
 
-export const COMPOUND_DAI_ACCOUNT_TOKEN_QUERY = gql`
-  query accountCToken($addr: String!) {
-    accountCToken(where: { id: $addr }) {
-      cTokenBalance
+export const COMPOUND_SUPPLY_RATE = gql`
+  query markets($cTokenAddress: ID!) {
+    markets(where: { id: $cTokenAddress }) {
       id
-      lifetimeSupplyInterestAccrued
-      market {
-        blockTimestamp
-        id
-        exchangeRate
-        interestRateModelAddress
-        name
-        supplyRate
-        underlyingAddress
-        underlyingDecimals
-        underlyingPriceUSD
-        underlyingPrice
-      }
-    }
-  }
-`;
-
-export const COMPOUND_USDC_ACCOUNT_TOKEN_QUERY = gql`
-  query accountCToken {
-    accountCToken(
-      id: "0x39aa39c021dfbae8fac545936693ac917d5e7563-0xf0f21ab2012731542731df194cff6c77d29cb31a"
-    ) {
-      cTokenBalance
-      id
-      lifetimeSupplyInterestAccrued
-      market {
-        blockTimestamp
-        id
-        exchangeRate
-        interestRateModelAddress
-        name
-        supplyRate
-        underlyingAddress
-        underlyingDecimals
-        underlyingPriceUSD
-        underlyingPrice
-      }
+      supplyRate
     }
   }
 `;
@@ -90,7 +68,7 @@ export const UNISWAP_24HOUR_PRICE_QUERY = gql`
   }
 `;
 
-export const DIRECTORY_QUERY = gql`
+export const UNISWAP_ALL_EXCHANGES_QUERY = gql`
   query exchanges($excluded: [String]!, $first: Int!, $skip: Int!) {
     exchanges(
       first: $first
@@ -105,52 +83,6 @@ export const DIRECTORY_QUERY = gql`
       tokenDecimals
       tokenAddress
       ethBalance
-    }
-  }
-`;
-
-export const COMPOUND_ACCOUNT_QUERY = gql`
-  query account($id: ID!) {
-    account(id: $id) {
-      id
-      health
-      tokens(first: 15) {
-        borrowBalanceUnderlying
-        cTokenBalance
-        id
-        lifetimeSupplyInterestAccrued
-        supplyBalanceUnderlying
-        symbol
-        totalUnderlyingSupplied
-      }
-      totalBorrowValueInEth
-      totalCollateralValueInEth
-    }
-  }
-`;
-
-export const COMPOUND_ALL_MARKETS_QUERY = gql`
-  query markets {
-    markets(first: 15) {
-      blockTimestamp
-      exchangeRate
-      id
-      interestRateModelAddress
-      name
-      supplyRate
-      underlyingAddress
-      underlyingDecimals
-      underlyingPrice
-      underlyingPriceUSD
-    }
-  }
-`;
-
-export const COMPOUND_SUPPLY_RATE = gql`
-  query markets($cTokenAddress: ID!) {
-    markets(where: { id: $cTokenAddress }) {
-      id
-      supplyRate
     }
   }
 `;
