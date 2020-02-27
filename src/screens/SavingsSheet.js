@@ -1,4 +1,3 @@
-import { get, toLower } from 'lodash';
 import React, { Fragment } from 'react';
 import { useNavigation } from 'react-navigation-hooks';
 import { Column } from '../components/layout';
@@ -20,34 +19,25 @@ import {
 } from '../components/sheet';
 import Divider from '../components/Divider';
 import { convertAmountToDepositDisplay } from '../helpers/utilities';
-import { useSavingsAccount } from '../hooks';
 
 const SavingsSheet = () => {
   console.log('[SAVINGS SHEET]');
   const { getParam, navigate } = useNavigation();
-  const savings = useSavingsAccount();
 
   const isEmpty = getParam('isEmpty');
-  const currency = getParam('currency');
+  const underlying = getParam('underlying');
+  const lifetimeSupplyInterestAccrued = getParam(
+    'lifetimeSupplyInterestAccrued'
+  );
+  const supplyBalanceUnderlying = getParam('supplyBalanceUnderlying');
+  const supplyRate = getParam('supplyRate');
 
-  // console.log('[SAVINGS SHEET] is empty?', isEmpty);
-  // console.log('[SAVINGS SHEET] currency', currency);
-  // console.log('[SAVINGS SHEET]', savings);
   // TODO JIN transactions list
-  const {
-    lifetimeSupplyInterestAccrued,
-    supplyBalanceUnderlying,
-    underlyingAddress,
-    underlyingDecimals,
-    underlyingSymbol,
-  } = savings;
   const balance = convertAmountToDepositDisplay(supplyBalanceUnderlying, {
-    address: underlyingAddress,
-    decimals: underlyingDecimals,
-    symbol: underlyingSymbol,
+    address: underlying.address,
+    decimals: underlying.decimals,
+    symbol: underlying.symbol,
   });
-  // symbol
-  // TODO JIN token balance in USD?
 
   return (
     <Sheet>
@@ -84,21 +74,16 @@ const SavingsSheet = () => {
             {({ onNewEmoji }) => (
               <FloatingEmojisTapHandler onNewEmoji={onNewEmoji}>
                 <Column paddingBottom={8}>
-                  {savings
-                    .filter(
-                      ({ symbol }) =>
-                        toLower(symbol.substr(1)) === toLower(currency)
-                    )
-                    .map(({ name, symbol, ...item }) => (
-                      <SavingsCoinRow
-                        item={{
-                          ...item,
-                          name: name.replace('Compound ', ''),
-                          symbol: symbol.substr(1),
-                        }}
-                        key={get(item, 'cTokenAddress')}
-                      />
-                    ))}
+                  <SavingsCoinRow
+                    item={{
+                      lifetimeSupplyInterestAccrued,
+                      name: underlying.symbol,
+                      supplyBalanceUnderlying,
+                      supplyRate,
+                      symbol: underlying.symbol,
+                    }}
+                    key={underlying.address}
+                  />
                 </Column>
               </FloatingEmojisTapHandler>
             )}

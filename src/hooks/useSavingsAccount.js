@@ -8,7 +8,7 @@ import {
 import { parseAssetName, parseAssetSymbol } from '../parsers/accounts';
 import useAccountData from './useAccountData';
 
-const pollInterval = 15000;
+// const pollInterval = 15000;
 
 export default function useSavingsAccount() {
   console.log('[USE SAVINGS ACCT]');
@@ -16,7 +16,7 @@ export default function useSavingsAccount() {
 
   const marketsQuery = useQuery(COMPOUND_ALL_MARKETS_QUERY, {
     client: compoundClient,
-    pollInterval,
+    //    pollInterval,
   });
   const markets = keyBy(get(marketsQuery, 'data.markets', []), property('id'));
 
@@ -24,7 +24,7 @@ export default function useSavingsAccount() {
 
   const tokenQuery = useQuery(COMPOUND_ACCOUNT_QUERY, {
     client: compoundClient,
-    pollInterval,
+    // pollInterval,
     skip: !accountAddress.toLowerCase(),
     variables: { id: accountAddress.toLowerCase() },
   });

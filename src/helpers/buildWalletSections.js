@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { compact, flattenDeep, get, groupBy, property } from 'lodash';
+import { compact, flattenDeep, get, groupBy, map, property } from 'lodash';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
 import { withNavigation } from 'react-navigation';
@@ -11,10 +11,12 @@ import { UniswapInvestmentCard } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
 import { buildUniqueTokenList, buildCoinsList } from './assets';
 import { chartExpandedAvailable } from '../config/experimental';
+
 const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;
 const assetsTotalSelector = state => state.assetsTotal;
 const compoundAssetsSelector = state => state.compoundAssets; // TODO JIN
+const savingsSelector = state => state.savings;
 const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
 const isWalletEthZeroSelector = state => state.isWalletEthZero;
 const languageSelector = state => state.language;
@@ -103,20 +105,44 @@ const withBalanceSection = (
   allAssetsCount,
   assetsTotal,
   compoundAssets, // TODO JIN
+  savings,
   isBalancesSectionEmpty,
   isWalletEthZero,
   language,
   nativeCurrency,
   showShitcoins
 ) => {
-  console.log('[SELECTOR] compound assets', compoundAssets);
+  console.log('[BUILD WALLET SECTIONS]', savings);
   let totalValue = Number(get(assetsTotal, 'amount', 0));
-  // TODO JIN
+  const assets = map(savings, cToken => {
+    const {
+      lifetimeSupplyInterestAccrued,
+      supplyBalanceUnderlying,
+      supplyRate,
+      underlyingAddress,
+      underlyingDecimals,
+      underlyingSymbol,
+    } = cToken;
+    return {
+      lifetimeSupplyInterestAccrued,
+      supplyBalanceUnderlying,
+      supplyRate,
+      underlying: {
+        address: underlyingAddress,
+        decimals: underlyingDecimals,
+        symbol: underlyingSymbol,
+      },
+    };
+  });
+  // TODO JIN get the DAI APY, currency, set to 0 if it does not exist already
+  console.log('ASSETS', assets);
+  /*
   const assets = [
     { APY: 7.5, currency: 'Dai', value: 320.3241253452 },
     { APY: 6.5, currency: 'Eth', value: 20.45 },
     { APY: 2.5 },
   ];
+  */
   const savingsSection = {
     assets,
     savingsContainer: true,
@@ -233,6 +259,7 @@ const balanceSectionSelector = createSelector(
     allAssetsCountSelector,
     assetsTotalSelector,
     compoundAssetsSelector, // TODO JIN
+    savingsSelector, // TODO JIN
     isBalancesSectionEmptySelector,
     isWalletEthZeroSelector,
     languageSelector,
@@ -256,7 +283,7 @@ const uniqueTokenFamiliesSelector = createSelector(
   withUniqueTokenFamiliesSection
 );
 
-export default createSelector(
+export const buildWalletSectionsSelector = createSelector(
   [
     balanceSectionSelector,
     setIsWalletEmptySelector,
