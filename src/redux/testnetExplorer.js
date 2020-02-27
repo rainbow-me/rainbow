@@ -1,16 +1,10 @@
 import { ethers } from 'ethers';
-import { toLower } from 'lodash';
+import { toLower, get } from 'lodash';
 import { web3Provider } from '../handlers/web3';
+import networkInfo from '../helpers/networkInfo';
 import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
 import testnetAssets from '../references/testnet-assets.json';
 import { addressAssetsReceived } from './data';
-
-const BALANCE_CHECKER_CONTRACT_ADDRESS = {
-  goerli: '0xf3352813b612a2d198e437691557069316b84ebe',
-  kovan: '0xf3352813b612a2d198e437691557069316b84ebe',
-  rinkeby: '0xc55386617db7b4021d87750daaed485eb3ab0154',
-  ropsten: '0xf17adbb5094639142ca1c2add4ce0a0ef146c3f9',
-};
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -30,8 +24,9 @@ const fetchAssetPrices = async (coingecko_ids, nativeCurrency) => {
 };
 
 const fetchAssetBalances = async (tokens, address, network) => {
+  console.log('fetching balances for ', network);
   const balanceCheckerContract = new ethers.Contract(
-    BALANCE_CHECKER_CONTRACT_ADDRESS[network],
+    get(networkInfo[network], 'balance_checker_contract_address'),
     balanceCheckerContractAbi,
     web3Provider
   );
@@ -79,7 +74,7 @@ export const testnetExplorerInit = () => async (dispatch, getState) => {
         }
       });
     }
-
+    console.log('fetching balances!');
     const balances = await fetchAssetBalances(
       assets.map(({ asset: { asset_code } }) =>
         asset_code === 'eth' ? ETH_ADDRESS : asset_code
@@ -89,6 +84,7 @@ export const testnetExplorerInit = () => async (dispatch, getState) => {
     );
 
     if (balances) {
+      console.log('got balances!', balances);
       Object.keys(balances).forEach(key => {
         for (let i = 0; i < assets.length; i++) {
           if (
@@ -100,6 +96,8 @@ export const testnetExplorerInit = () => async (dispatch, getState) => {
           }
         }
       });
+    } else {
+      console.log('fail getting balances!', balances);
     }
 
     dispatch(
