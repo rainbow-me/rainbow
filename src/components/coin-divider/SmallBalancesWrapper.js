@@ -54,7 +54,7 @@ class SmallBalancesWrapper extends PureComponent {
           <View pointerEvents={openSmallBalances ? 'auto' : 'none'}>
             <TransitionToggler
               startingWidth={0}
-              endingWidth={50}
+              endingWidth={35}
               toggle={isCoinListEdited}
             >
               {assets}
