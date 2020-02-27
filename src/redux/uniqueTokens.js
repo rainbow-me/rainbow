@@ -52,6 +52,9 @@ export const uniqueTokensClearState = () => (dispatch, getState) => {
 
 export const uniqueTokensRefreshState = () => (dispatch, getState) =>
   new Promise((resolve, reject) => {
+    const { network } = getState().settings;
+    // Currently not supported in testnets
+    if (network !== 'mainnet') return;
     const fetchUniqueTokens = () =>
       new Promise((fetchResolve, fetchReject) => {
         dispatch({ type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_REQUEST });

@@ -93,7 +93,7 @@ class AvatarBuilder extends PureComponent {
     saveAccountInfo(
       { color: color, name: name },
       this.props.accountAddress,
-      'mainnet'
+      this.props.network
     );
   };
 

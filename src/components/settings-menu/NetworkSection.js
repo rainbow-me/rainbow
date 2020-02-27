@@ -1,37 +1,54 @@
+import analytics from '@segment/analytics-react-native';
+import { toLower, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { onlyUpdateForKeys } from 'recompact';
+import { compose, withHandlers } from 'recompose';
+import { withAccountSettings, withDataInit } from '../../hoc';
 import { RadioList, RadioListItem } from '../radio-list';
 
 const NETWORKS = [
-  { name: 'Mainnet', selected: true },
-  { disabled: true, name: 'Ropsten' },
-  { disabled: true, name: 'Kovan' },
-  { disabled: true, name: 'Rinkeby' },
+  { disabled: false, name: 'Mainnet' },
+  { disabled: false, name: 'Rinkeby' },
 ];
 
-const buildNetworkListItem = ({ disabled, name }) => ({
-  disabled,
-  key: name,
-  label: name,
-  value: name,
-});
-
-const NetworkSection = ({ network }) => (
+const NetworkSection = ({ network, onNetworkChange }) => (
   <RadioList
     extraData={network}
-    items={NETWORKS.map(buildNetworkListItem)}
+    items={NETWORKS.map(({ disabled, name }) => ({
+      disabled,
+      key: name,
+      label: name,
+      selected: toLower(network) === toLower(name),
+      value: name,
+    }))}
     renderItem={RadioListItem}
-    value={network}
+    value={upperFirst(network)}
+    onChange={onNetworkChange}
   />
 );
 
 NetworkSection.propTypes = {
   network: PropTypes.string,
+  onNetworkChange: PropTypes.func.isRequired,
 };
 
-NetworkSection.defaultProps = {
-  network: 'Mainnet',
-};
-
-export default onlyUpdateForKeys(['network'])(NetworkSection);
+export default compose(
+  withAccountSettings,
+  withDataInit,
+  withHandlers({
+    onNetworkChange: ({
+      settingsUpdateNetwork,
+      clearAccountData,
+      loadAccountData,
+      initializeAccountData,
+    }) => async network => {
+      await clearAccountData();
+      await settingsUpdateNetwork(toLower(network));
+      await loadAccountData();
+      await initializeAccountData();
+      analytics.track('Changed network', { network });
+    },
+  }),
+  onlyUpdateForKeys(['network'])
+)(NetworkSection);

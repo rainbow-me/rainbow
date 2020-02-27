@@ -7,16 +7,18 @@ import { uniswapUpdateTokenReserves } from './uniswap';
 // -- Actions ---------------------------------------- //
 const web3UpdateReserves = () => async (dispatch, getState) => {
   const { inputCurrency, outputCurrency } = getState().uniswap;
+
   if (!(inputCurrency || outputCurrency)) return;
   const [inputReserve, outputReserve] = await promiseUtils.PromiseAllWithFails([
     getReserve(get(inputCurrency, 'address')),
     getReserve(get(outputCurrency, 'address')),
   ]);
+
   dispatch(uniswapUpdateTokenReserves(inputReserve, outputReserve));
 };
 
 export const web3ListenerInit = () => dispatch => {
-  web3Provider.pollingInterval = 8000;
+  web3Provider.pollingInterval = 10000;
   web3Provider.on('block', () => dispatch(web3UpdateReserves()));
 };
 

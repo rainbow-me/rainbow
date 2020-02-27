@@ -8,14 +8,18 @@ import {
   withContacts,
 } from '../../hoc';
 import RecyclerActivityList from './RecyclerActivityList';
+import TestnetEmptyState from './TestnetEmptyState';
 
-const ActivityList = ({ header, isEmpty, sections }) => (
-  <RecyclerActivityList
-    header={header}
-    isLoading={!isEmpty && !sections.length}
-    sections={sections}
-  />
-);
+const ActivityList = ({ header, isEmpty, sections, network }) =>
+  network === 'mainnet' || sections.length ? (
+    <RecyclerActivityList
+      header={header}
+      isLoading={!isEmpty && !sections.length}
+      sections={sections}
+    />
+  ) : (
+    <TestnetEmptyState>{header}</TestnetEmptyState>
+  );
 
 ActivityList.propTypes = {
   header: PropTypes.node,
@@ -51,6 +55,7 @@ export default compose(
     };
   }),
   onlyUpdateForKeys([
+    'network',
     'contacts',
     'isEmpty',
     'nativeCurrency',

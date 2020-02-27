@@ -7,6 +7,10 @@ import {
   transactionsReceived,
   transactionsRemoved,
 } from './data';
+import {
+  testnetExplorerInit,
+  testnetExplorerClearState,
+} from './testnetExplorer';
 
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
@@ -41,7 +45,7 @@ let getCompoundInterval = null;
 
 const createSocket = endpoint =>
   io(`wss://api.zerion.io/${endpoint}?api_token=${DATA_API_KEY}`, {
-    extraHeaders: { Origin: DATA_ORIGIN },
+    extraHeaders: { origin: DATA_ORIGIN },
     transports: ['websocket'],
   });
 
@@ -82,14 +86,25 @@ const explorerUnsubscribe = () => (dispatch, getState) => {
   }
 };
 
-export const explorerClearState = () => dispatch => {
+export const explorerClearState = () => (dispatch, getState) => {
+  const { network } = getState().settings;
+  // if we're not on mainnnet clear the testnet state
+  if (network !== 'mainnet') {
+    return testnetExplorerClearState();
+  }
   clearInterval(getCompoundInterval);
   dispatch(explorerUnsubscribe());
   dispatch({ type: EXPLORER_CLEAR_STATE });
 };
 
 export const explorerInit = () => (dispatch, getState) => {
-  const { accountAddress, nativeCurrency } = getState().settings;
+  const { network, accountAddress, nativeCurrency } = getState().settings;
+  // Fallback to the testnet data provider
+  // if we're not on mainnnet
+  if (network !== 'mainnet') {
+    return dispatch(testnetExplorerInit());
+  }
+
   const addressSocket = createSocket('address');
   const compoundSocket = createSocket('compound');
   dispatch({

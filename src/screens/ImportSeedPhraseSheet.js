@@ -9,7 +9,6 @@ import React, {
 } from 'react';
 import { KeyboardAvoidingView, StatusBar, Platform } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import { Button } from '../components/buttons';
 import { useNavigation } from 'react-navigation-hooks';
 import styled from 'styled-components/primitives';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
@@ -25,7 +24,10 @@ import { colors, padding, shadow, borders } from '../styles';
 import { isValidSeed as validateSeed } from '../helpers/validators';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 
-const keyboardVerticalOffset = sheetVerticalOffset + 10;
+const keyboardVerticalOffset =
+  Platform.OS === 'android'
+    ? sheetVerticalOffset - 240
+    : sheetVerticalOffset + 10;
 
 const statusBarHeight = getStatusBarHeight(true);
 
@@ -55,15 +57,17 @@ const HandleIcon = styled(Icon).attrs({
   margin-bottom: 2;
 `;
 
-const StyledImportButton = styled(
-  Platform.OS === 'ios' ? BorderlessButton : Button
-)`
+const StyledImportButton = styled(BorderlessButton)`
   ${padding(5, 9, 7)};
   ${shadow.build(0, 6, 10, colors.dark, 0.16)};
   background-color: ${({ disabled }) =>
     disabled ? '#D2D3D7' : colors.appleBlue};
   border-radius: 15px;
   margin-bottom: 19px;
+`;
+
+const StyledInput = styled(Input)`
+  min-height: 50;
 `;
 
 const ConfirmImportAlert = onSuccess =>
@@ -199,13 +203,18 @@ const ImportSeedPhraseSheet = ({
         keyboardVerticalOffset={keyboardVerticalOffset}
       >
         <Centered css={padding(0, 50)} flex={1}>
-          <Input
-            lineHeight="loosest"
-            multiline
-            ref={isNativeStackAvailable ? inputRef : inputRefListener}
+          <StyledInput
             align="center"
             autoFocus
+            autoCapitalize="none"
+            autoCorrect={false}
             enablesReturnKeyAutomatically
+            keyboardType={
+              Platform.OS === 'android' ? 'visible-password' : 'default'
+            }
+            multiline
+            numberOfLines={7}
+            ref={isNativeStackAvailable ? inputRef : inputRefListener}
             onChangeText={handleSetSeedPhrase}
             onSubmitEditing={onPressImportButton}
             placeholder="Seed phrase or private key"
