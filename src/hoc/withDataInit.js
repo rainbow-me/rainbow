@@ -155,6 +155,11 @@ export default Component =>
         return promiseUtils.PromiseAllWithFails(promises);
       },
       refreshAccountData: ownProps => async () => {
+        // Nothing to refresh for testnets
+        if (ownProps.network !== networkTypes.mainnet) {
+          return Promise.all([delay(1250)]);
+        }
+
         try {
           const getUniswap = ownProps.uniswapUpdateState();
           const getUniqueTokens = ownProps.uniqueTokensRefreshState();

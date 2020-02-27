@@ -9,6 +9,7 @@ import { ProfileMasthead } from '../components/profile';
 import { colors, position } from '../styles';
 import TransactionList from '../components/transaction-list/TransactionList';
 import nativeTransactionListAvailable from '../helpers/isNativeTransactionListAvailable';
+import networkTypes from '../helpers/networkTypes';
 
 const ProfileScreen = ({
   accountColor,
@@ -17,6 +18,7 @@ const ProfileScreen = ({
   isEmpty,
   nativeCurrency,
   navigation,
+  network,
   onPressBackButton,
   onPressSettings,
   requests,
@@ -57,7 +59,8 @@ const ProfileScreen = ({
         transactionsCount={transactionsCount}
       />
     )}
-    {isEmpty && <AddFundsInterstitial />}
+    {/* Show the interstitial only for mainnet */}
+    {isEmpty && network === networkTypes.mainnet && <AddFundsInterstitial />}
   </Page>
 );
 

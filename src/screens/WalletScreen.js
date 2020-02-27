@@ -90,6 +90,7 @@ class WalletScreen extends Component {
       isEmpty,
       isWalletEthZero,
       navigation,
+      network,
       refreshAccountData,
       scrollViewTracker,
       sections,
@@ -115,6 +116,7 @@ class WalletScreen extends Component {
             isWalletEthZero={isWalletEthZero}
             scrollViewTracker={scrollViewTracker}
             sections={sections}
+            network={network}
           />
         </FabWrapper>
       </Page>
