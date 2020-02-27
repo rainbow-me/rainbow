@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
-import { View } from 'react-native';
 import { compose, withProps } from 'recompact';
 import styled from 'styled-components/primitives';
 import {
@@ -8,13 +7,12 @@ import {
   withFabSendAction,
   withEditOptions,
 } from '../../hoc';
-import { colors, padding } from '../../styles';
+import { padding } from '../../styles';
 import { CoinIcon } from '../coin-icon';
 import Highlight from '../Highlight';
 import { Column, Row } from '../layout';
 import TransitionToggler from '../animations/TransitionToggler';
-import { ButtonPressAnimation } from '../animations';
-import { Icon } from '../icons';
+import CoinCheckButton from './CoinCheckButton';
 
 const CoinRowPaddingTop = 15;
 const CoinRowPaddingBottom = 7;
@@ -77,54 +75,7 @@ const CoinRow = enhance(
       coinRow
     ) : (
       <>
-        <View
-          style={{
-            height: CoinIcon.size + CoinRowPaddingTop + CoinRowPaddingBottom,
-            paddingTop: 10,
-            position: 'absolute',
-            width: 66,
-          }}
-        >
-          <ButtonPressAnimation>
-            <View
-              style={{
-                alignItems: 'center',
-                height: '100%',
-                justifyContent: 'center',
-                width: '100%',
-              }}
-            >
-              {/* <View
-              style={{
-                borderColor: colors.blueGreyDarkTransparent,
-                borderRadius: 11,
-                borderWidth: 1.5,
-                height: 22,
-                opacity: 0.15,
-                width: 22,
-              }}
-            /> */}
-              <View
-                style={{
-                  backgroundColor: colors.appleBlue,
-                  borderRadius: 11,
-                  height: 22,
-                  padding: 4.5,
-                  shadowColor: colors.appleBlue,
-                  shadowOffset: {
-                    height: 4,
-                    width: 0,
-                  },
-                  shadowOpacity: 0.4,
-                  shadowRadius: 12,
-                  width: 22,
-                }}
-              >
-                <Icon name="checkmark" color="white" />
-              </View>
-            </View>
-          </ButtonPressAnimation>
-        </View>
+        <CoinCheckButton />
         <TransitionToggler
           startingWidth={0}
           endingWidth={35}
