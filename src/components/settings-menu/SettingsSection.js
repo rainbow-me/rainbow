@@ -1,4 +1,4 @@
-import { upperFirst } from 'lodash';
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { InteractionManager, Linking, ScrollView } from 'react-native';
@@ -17,6 +17,7 @@ import {
   getAppStoreReviewCount,
   saveAppStoreReviewCount,
 } from '../../handlers/localstorage/globalSettings';
+import networkInfo from '../../helpers/networkInfo';
 import { withAccountSettings, withSendFeedback } from '../../hoc';
 import { supportedLanguages } from '../../languages';
 import { position } from '../../styles';
@@ -108,7 +109,9 @@ const SettingsSection = ({
           onPress={onPressNetwork}
           label="Network"
         >
-          <ListItemArrowGroup>{upperFirst(network) || ''}</ListItemArrowGroup>
+          <ListItemArrowGroup>
+            {get(networkInfo, `[${[network]}].name`)}
+          </ListItemArrowGroup>
         </ListItem>
         <ListItem
           icon={<SettingIcon source={CurrencyIcon} />}
@@ -213,5 +216,5 @@ export default compose(
       );
     },
   }),
-  onlyUpdateForKeys(['language', 'nativeCurrency'])
+  onlyUpdateForKeys(['language', 'nativeCurrency', 'network'])
 )(SettingsSection);
