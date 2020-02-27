@@ -1,14 +1,15 @@
 import analytics from '@segment/analytics-react-native';
-import { toLower } from 'lodash';
+import { toLower, values } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { InteractionManager } from 'react-native';
 import { onlyUpdateForKeys } from 'recompact';
 import { compose, withHandlers } from 'recompose';
+import networkInfo from '../../helpers/networkInfo';
 import { withAccountSettings, withDataInit } from '../../hoc';
 import { RadioList, RadioListItem } from '../radio-list';
-import networkInfo from '../../helpers/networkInfo';
 
-const networks = Object.keys(networkInfo).map(key => networkInfo[key]);
+const networks = values(networkInfo);
 
 const NetworkSection = ({ network, onNetworkChange }) => (
   <RadioList
@@ -42,11 +43,12 @@ export default compose(
       initializeAccountData,
     }) => async network => {
       await clearAccountData();
-      console.log('Switching to ', network);
       await settingsUpdateNetwork(toLower(network));
-      await loadAccountData();
-      await initializeAccountData();
-      analytics.track('Changed network', { network });
+      InteractionManager.runAfterInteractions(async () => {
+        await loadAccountData();
+        await initializeAccountData();
+        analytics.track('Changed network', { network });
+      });
     },
   }),
   onlyUpdateForKeys(['network'])

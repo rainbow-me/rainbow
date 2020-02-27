@@ -5,6 +5,7 @@ import networkInfo from '../helpers/networkInfo';
 import balanceCheckerContractAbi from '../references/balances-checker-abi.json';
 import testnetAssets from '../references/testnet-assets.json';
 import { addressAssetsReceived } from './data';
+import { setIsWalletEthZero } from './isWalletEthZero';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -24,7 +25,6 @@ const fetchAssetPrices = async (coingecko_ids, nativeCurrency) => {
 };
 
 const fetchAssetBalances = async (tokens, address, network) => {
-  console.log('fetching balances for ', network);
   const balanceCheckerContract = new ethers.Contract(
     get(networkInfo[network], 'balance_checker_contract_address'),
     balanceCheckerContractAbi,
@@ -43,15 +43,24 @@ const fetchAssetBalances = async (tokens, address, network) => {
     });
     return balances[address];
   } catch (e) {
-    console.log('Error fetching balances from balanceCheckerContract', e);
+    console.log(
+      'Error fetching balances from balanceCheckerContract',
+      network,
+      e
+    );
     return null;
   }
 };
 
 export const testnetExplorerInit = () => async (dispatch, getState) => {
-  const { accountAddress, nativeCurrency, network } = getState().settings;
+  const {
+    accountAddress,
+    nativeCurrency,
+    isWalletEthZero,
+  } = getState().settings;
   const formattedNativeCurrency = toLower(nativeCurrency);
   const fetchAssetsBalancesAndPrices = async () => {
+    const { network } = getState().settings;
     const assets = testnetAssets[network];
 
     const prices = await fetchAssetPrices(
@@ -74,7 +83,6 @@ export const testnetExplorerInit = () => async (dispatch, getState) => {
         }
       });
     }
-    console.log('fetching balances!');
     const balances = await fetchAssetBalances(
       assets.map(({ asset: { asset_code } }) =>
         asset_code === 'eth' ? ETH_ADDRESS : asset_code
@@ -83,8 +91,9 @@ export const testnetExplorerInit = () => async (dispatch, getState) => {
       network
     );
 
+    let total = ethers.utils.bigNumberify(0);
+
     if (balances) {
-      console.log('got balances!', balances);
       Object.keys(balances).forEach(key => {
         for (let i = 0; i < assets.length; i++) {
           if (
@@ -95,9 +104,13 @@ export const testnetExplorerInit = () => async (dispatch, getState) => {
             break;
           }
         }
+        total = total.add(balances[key]);
       });
-    } else {
-      console.log('fail getting balances!', balances);
+
+      const isNowZero = total.isZero();
+      if (isWalletEthZero !== isNowZero) {
+        dispatch(setIsWalletEthZero(isNowZero));
+      }
     }
 
     dispatch(
@@ -110,10 +123,8 @@ export const testnetExplorerInit = () => async (dispatch, getState) => {
         payload: { assets },
       })
     );
-
     tesnetExplorerHandler = setTimeout(fetchAssetsBalancesAndPrices, 5000);
   };
-
   fetchAssetsBalancesAndPrices();
 };
 
