@@ -22,8 +22,6 @@ const AssetList = ({
 }) => {
   const insets = useSafeArea();
 
-  console.log('ASSET LIST NETWORK', network);
-
   return isEmpty ? (
     <EmptyAssetList
       {...props}

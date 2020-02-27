@@ -110,7 +110,7 @@ const SettingsSection = ({
           label="Network"
         >
           <ListItemArrowGroup>
-            {get(networkInfo, `[${[network]}].name`)}
+            {get(networkInfo, `[${network}].name`)}
           </ListItemArrowGroup>
         </ListItem>
         <ListItem

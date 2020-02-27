@@ -50,8 +50,6 @@ const buildInterstitialTransform = offsetY => ({
 });
 
 const onAddFromFaucet = network => {
-  console.log('network', network);
-  console.log('networkInfo', networkInfo);
   const faucet_url = get(networkInfo[network], 'faucet_url');
   Linking.openURL(faucet_url);
 };
