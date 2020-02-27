@@ -10,14 +10,11 @@ import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentCard } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
 import { buildUniqueTokenList, buildCoinsList } from './assets';
-import {
-  chartExpandedAvailable,
-  isSavingsDummyDataInjected,
-} from '../config/experimental';
-
+import { chartExpandedAvailable } from '../config/experimental';
 const allAssetsCountSelector = state => state.allAssetsCount;
 const allAssetsSelector = state => state.allAssets;
 const assetsTotalSelector = state => state.assetsTotal;
+const compoundAssetsSelector = state => state.compoundAssets; // TODO JIN
 const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
 const isWalletEthZeroSelector = state => state.isWalletEthZero;
 const languageSelector = state => state.language;
@@ -105,32 +102,33 @@ const withBalanceSection = (
   allAssets,
   allAssetsCount,
   assetsTotal,
+  compoundAssets, // TODO JIN
   isBalancesSectionEmpty,
   isWalletEthZero,
   language,
   nativeCurrency,
   showShitcoins
 ) => {
-  let totalValue = get(assetsTotal, 'amount', '');
-  let balanceSectionData = buildCoinsList(allAssets); //[...buildCoinsList(allAssets), savingsSection];
-  if (isSavingsDummyDataInjected) {
-    const assets = [
-      { APY: 7.5, currency: 'Dai', value: 320.3241253452 },
-      { APY: 6.5, currency: 'Eth', value: 20.45 },
-      { APY: 2.5 },
-    ];
-
-    balanceSectionData.push({
-      assets,
-      savingsContainer: true,
-    });
-
-    assets.forEach(saving => {
-      if (saving.value) {
-        totalValue = Number(totalValue) + Number(saving.value);
-      }
-    });
-  }
+  console.log('[SELECTOR] compound assets', compoundAssets);
+  let totalValue = Number(get(assetsTotal, 'amount', 0));
+  // TODO JIN
+  const assets = [
+    { APY: 7.5, currency: 'Dai', value: 320.3241253452 },
+    { APY: 6.5, currency: 'Eth', value: 20.45 },
+    { APY: 2.5 },
+  ];
+  const savingsSection = {
+    assets,
+    savingsContainer: true,
+  };
+  let balanceSectionData = [...buildCoinsList(allAssets), savingsSection];
+  /*
+  assets.forEach(saving => {
+    if (saving.value) {
+      totalValue = Number(totalValue) + Number(saving.value);
+    }
+  });
+  */
   const isLoadingBalances = !isWalletEthZero && isBalancesSectionEmpty;
   if (isLoadingBalances) {
     balanceSectionData = [{ item: { uniqueId: 'skeleton0' } }];
@@ -234,6 +232,7 @@ const balanceSectionSelector = createSelector(
     allAssetsSelector,
     allAssetsCountSelector,
     assetsTotalSelector,
+    compoundAssetsSelector, // TODO JIN
     isBalancesSectionEmptySelector,
     isWalletEthZeroSelector,
     languageSelector,

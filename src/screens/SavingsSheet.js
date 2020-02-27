@@ -19,14 +19,35 @@ import {
   SheetActionButtonRow,
 } from '../components/sheet';
 import Divider from '../components/Divider';
+import { convertAmountToDepositDisplay } from '../helpers/utilities';
 import { useSavingsAccount } from '../hooks';
 
-function SavingsSheet() {
+const SavingsSheet = () => {
+  console.log('[SAVINGS SHEET]');
   const { getParam, navigate } = useNavigation();
   const savings = useSavingsAccount();
 
-  const isEmpty = getParam('isEmpty', false); // false
-  const currency = getParam('currency', true); // false
+  const isEmpty = getParam('isEmpty');
+  const currency = getParam('currency');
+
+  // console.log('[SAVINGS SHEET] is empty?', isEmpty);
+  // console.log('[SAVINGS SHEET] currency', currency);
+  // console.log('[SAVINGS SHEET]', savings);
+  // TODO JIN transactions list
+  const {
+    lifetimeSupplyInterestAccrued,
+    supplyBalanceUnderlying,
+    underlyingAddress,
+    underlyingDecimals,
+    underlyingSymbol,
+  } = savings;
+  const balance = convertAmountToDepositDisplay(supplyBalanceUnderlying, {
+    address: underlyingAddress,
+    decimals: underlyingDecimals,
+    symbol: underlyingSymbol,
+  });
+  // symbol
+  // TODO JIN token balance in USD?
 
   return (
     <Sheet>
@@ -35,8 +56,8 @@ function SavingsSheet() {
       ) : (
         <Fragment>
           <SavingsSheetHeader
-            balance="$420.59"
-            lifetimeAccruedInterest="$20.59"
+            balance={balance}
+            lifetimeAccruedInterest={lifetimeSupplyInterestAccrued}
           />
           <SheetActionButtonRow>
             <SheetActionButton
@@ -88,6 +109,6 @@ function SavingsSheet() {
       )}
     </Sheet>
   );
-}
+};
 
 export default React.memo(SavingsSheet);

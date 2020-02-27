@@ -1,5 +1,6 @@
 import { get } from 'lodash';
 import BigNumber from 'bignumber.js';
+import { DAI_ADDRESS, USDC_ADDRESS } from '../references';
 import supportedNativeCurrencies from '../references/native-currencies.json';
 
 /**
@@ -348,6 +349,21 @@ export const convertAmountToBalanceDisplay = (value, asset, buffer) => {
   const decimals = get(asset, 'decimals', 18);
   const display = handleSignificantDecimals(value, decimals, buffer);
   return `${display} ${asset.symbol}`;
+};
+
+/**
+ * @desc deposit display
+ * @param  {BigNumber}  value
+ * @param  {Object}     asset
+ * @return {String}
+ */
+export const convertAmountToDepositDisplay = (value, asset) => {
+  let prettyAmount = value;
+  if (asset.address === DAI_ADDRESS || asset.address === USDC_ADDRESS) {
+    prettyAmount = BigNumber(value).toFixed(2);
+    return `$${prettyAmount}`;
+  }
+  return `${prettyAmount} ${asset.symbol}`;
 };
 
 /**
